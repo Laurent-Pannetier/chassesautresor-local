@@ -320,6 +320,11 @@ function utilisateur_peut_modifier_post($post_id)
         return false;
     }
 
+    // ✅ Les administrateurs peuvent toujours modifier
+    if (current_user_can('manage_options')) {
+        return true;
+    }
+
     $user_id = get_current_user_id();
     $post_type = get_post_type($post_id);
 
@@ -608,6 +613,11 @@ function utilisateur_peut_voir_panneau(int $post_id): bool
         return false;
     }
 
+    // ✅ Les administrateurs ont toujours accès aux panneaux
+    if (current_user_can('manage_options')) {
+        return true;
+    }
+
     $user  = wp_get_current_user();
 
     if (!est_organisateur($user->ID)) {
@@ -652,6 +662,11 @@ function utilisateur_peut_editer_champs(int $post_id): bool
 {
     if (!utilisateur_peut_voir_panneau($post_id)) {
         return false;
+    }
+
+    // ✅ Les administrateurs peuvent toujours éditer les champs
+    if (current_user_can('manage_options')) {
+        return true;
     }
 
     $type   = get_post_type($post_id);
@@ -706,6 +721,11 @@ function utilisateur_peut_editer_champs(int $post_id): bool
 function champ_est_editable($champ, $post_id, $user_id = null)
 {
     if (!$post_id || !is_user_logged_in()) return false;
+
+    // ✅ Les administrateurs peuvent éditer tous les champs
+    if (current_user_can('manage_options')) {
+        return true;
+    }
 
     if (!$user_id) {
         $user_id = get_current_user_id();
