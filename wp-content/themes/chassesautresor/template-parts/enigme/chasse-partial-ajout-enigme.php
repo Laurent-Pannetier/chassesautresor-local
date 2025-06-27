@@ -7,9 +7,10 @@ defined('ABSPATH') || exit;
  * - $args['has_enigmes'] (bool) : indique s’il y a déjà des énigmes
  */
 
-$has_enigmes = $args['has_enigmes'] ?? false;
-$chasse_id   = $args['chasse_id'] ?? null;
-$disabled    = $args['disabled'] ?? true;
+$has_enigmes     = $args['has_enigmes'] ?? false;
+$chasse_id       = $args['chasse_id'] ?? null;
+$disabled        = $args['disabled'] ?? true;
+$highlight_pulse = $args['highlight_pulse'] ?? false;
 if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') return;
 
 $ajout_url = esc_url(add_query_arg('chasse_id', $chasse_id, home_url('/creer-enigme/')));
@@ -19,7 +20,7 @@ $ajout_url = esc_url(add_query_arg('chasse_id', $chasse_id, home_url('/creer-eni
 <a
   href="<?php echo $ajout_url; ?>"
   id="carte-ajout-enigme"
-  class="carte-ajout-enigme <?php echo $has_enigmes ? 'etat-suivante' : 'etat-vide'; ?> <?php echo $disabled ? 'disabled' : ''; ?>"
+  class="carte-ajout-enigme <?php echo $has_enigmes ? 'etat-suivante' : 'etat-vide'; ?> <?php echo $disabled ? 'disabled' : ''; ?><?php echo $highlight_pulse ? ' pulsation' : ''; ?>"
   data-post-id="0">
   <div class="contenu-carte">
     ➕ <?php echo $has_enigmes ? 'Ajouter une énigme' : 'Créer la première énigme'; ?>

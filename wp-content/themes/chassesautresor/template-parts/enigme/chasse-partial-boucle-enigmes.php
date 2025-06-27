@@ -68,10 +68,27 @@ $has_enigmes = !empty($posts_visibles);
   if (utilisateur_peut_ajouter_enigme($chasse_id, $utilisateur_id)) {
     verifier_ou_mettre_a_jour_cache_complet($chasse_id);
     $complete = (bool) get_field('chasse_cache_complet', $chasse_id);
+
+    $highlight_pulse = false;
+    if (!$has_enigmes) {
+      $wp_status         = get_post_status($chasse_id);
+      $statut_metier     = get_field('chasse_cache_statut', $chasse_id);
+      $statut_validation = get_field('chasse_cache_statut_validation', $chasse_id);
+
+      if (
+        $wp_status === 'pending' &&
+        $statut_metier === 'revision' &&
+        in_array($statut_validation, ['creation', 'correction'], true)
+      ) {
+        $highlight_pulse = true;
+      }
+    }
+
     get_template_part('template-parts/enigme/chasse-partial-ajout-enigme', null, [
-      'has_enigmes' => $has_enigmes,
-      'chasse_id'   => $chasse_id,
-      'disabled'    => !$complete,
+      'has_enigmes'     => $has_enigmes,
+      'chasse_id'       => $chasse_id,
+      'disabled'        => !$complete,
+      'highlight_pulse' => $highlight_pulse,
     ]);
   }
   ?>
