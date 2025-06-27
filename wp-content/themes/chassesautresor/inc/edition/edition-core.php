@@ -482,40 +482,34 @@ function injection_classe_edition_active(array $classes): array
  */
 function formater_date($date): string
 {
-  if (empty($date)) {
-    return 'Non spécifiée';
-  }
-
-  if ($date instanceof DateTimeInterface) {
-    return $date->format('d/m/Y');
-  }
-
-  if (is_array($date) && isset($date['date'])) {
-    $date = $date['date'];
-  }
-
-  $date = (string) $date;
-
-  if (preg_match('/^\d{9,10}$/', $date)) {
-    $timestamp = (int) $date;
-    return date_i18n('d/m/Y', $timestamp);
-  }
-
-
-  if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $date)) {
-    return $date;
-  }
-
-  if (preg_match('/^\d{8}$/', $date)) {
-    $dt = DateTime::createFromFormat('Ymd', $date);
-    if ($dt) {
-      return $dt->format('d/m/Y');
+    if (empty($date)) {
+        return 'Non spécifiée';
     }
-  }
 
+    if ($date instanceof DateTimeInterface) {
+        return $date->format('d/m/Y');
+    }
 
-  $timestamp = strtotime($date);
-  return ($timestamp !== false) ? date_i18n('d/m/Y', $timestamp) : 'Non spécifiée';
+    if (is_array($date) && isset($date['date'])) {
+        $date = $date['date'];
+    }
+
+    $date = (string) $date;
+
+    // Déjà formatée ?
+    if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $date)) {
+        return $date;
+    }
+
+    // Format '27/06/2025 1:55 pm'
+    $dt = DateTime::createFromFormat('d/m/Y g:i a', $date);
+    if ($dt instanceof DateTime) {
+        return $dt->format('d/m/Y');
+    }
+
+    // Dernière tentative : strtotime
+    $timestamp = strtotime($date);
+    return ($timestamp !== false) ? date_i18n('d/m/Y', $timestamp) : 'Non spécifiée';
 }
 
 
