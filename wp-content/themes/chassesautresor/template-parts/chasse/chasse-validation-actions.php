@@ -8,6 +8,8 @@ if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
 }
 
 error_log('[chasse-validation-actions] affichage du formulaire pour la chasse #' . $chasse_id . ', user=' . get_current_user_id());
+$roles = wp_get_current_user()->roles;
+error_log('[chasse-validation-actions] roles=' . implode(',', $roles) . ', is_admin=' . (current_user_can('administrator') ? '1' : '0'));
 
 $organisateur_id = get_organisateur_from_chasse($chasse_id);
 $org_status = $organisateur_id ? get_post_status($organisateur_id) : '';
