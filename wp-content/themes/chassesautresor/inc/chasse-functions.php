@@ -423,10 +423,11 @@ function afficher_message_validation_chasse(int $chasse_id): void
     if ($validation_envoyee) {
         echo '<p class="message-succes">✅ Votre demande de validation est en cours de traitement par l’équipe.</p>';
         echo '<script>if(window.history.replaceState){const u=new URL(window.location);u.searchParams.delete("validation_demandee");history.replaceState(null,"",u);}</script>';
-    } elseif ($statut_validation === 'en_attente') {
+    } elseif ($statut_validation === 'en_attente' && !current_user_can('administrator')) {
         echo '<p class="message-info">⏳ Votre demande est en cours de traitement</p>';
     }
 }
+
 
 /**
  * Vérifie si la solution d'une énigme peut être affichée.
