@@ -496,6 +496,11 @@ function formater_date($date): string
 
   $date = (string) $date;
 
+  if (preg_match('/^\d{9,10}$/', $date)) {
+    $timestamp = (int) $date;
+    return date_i18n('d/m/Y', $timestamp);
+  }
+
   if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $date)) {
     return $date; // Déjà formatée
   }
@@ -535,6 +540,13 @@ function convertir_en_datetime(?string $date_string, array $formats = [
     return null;
   }
 
+  if (preg_match('/^\d{9,10}$/', $date_string)) {
+    $timezone = function_exists('wp_timezone') ? wp_timezone() : new DateTimeZone('UTC');
+    $dt = new DateTime('@' . $date_string);
+    $dt->setTimezone($timezone);
+    return $dt;
+  }
+
   $timezone = function_exists('wp_timezone') ? wp_timezone() : new DateTimeZone('UTC');
 
   foreach ($formats as $format) {
@@ -563,6 +575,10 @@ function convertir_en_timestamp(?string $date)
   }
 
   $date = (string) $date;
+
+  if (preg_match('/^\d{9,10}$/', $date)) {
+    return (int) $date;
+  }
 
   if (preg_match('/^\d{8}$/', $date)) {
     $dt = DateTime::createFromFormat('Ymd', $date);
