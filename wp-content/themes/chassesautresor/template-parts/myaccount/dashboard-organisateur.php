@@ -15,7 +15,7 @@ $trophees_output    = $args['trophees_output'] ?? '';
 </div>
 
 <div class="dashboard-section">
-    <h3 class="dashboard-section-title">Identité</h3>
+    <h3 class="dashboard-section-title">Contenu</h3>
     <div class="dashboard-grid">
         <div class="dashboard-card">
             <div class="dashboard-card-header">
