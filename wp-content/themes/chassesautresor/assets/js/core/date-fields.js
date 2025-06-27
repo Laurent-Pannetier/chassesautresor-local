@@ -72,7 +72,7 @@ function initChampDate(input) {
 
   const enregistrer = () => {
     const valeurBrute = input.value.trim();
-    console.log('[🧪 initChampDate]', champ, '| valeur saisie :', valeurBrute);
+    console.log('[🧪 initChampDate]', champ, '| valeur saisie :', valeurBrute, '| previous :', input.dataset.previous);
     const regexDate = /^\d{4}-\d{2}-\d{2}$/;
     const regexDateTime = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
     if (!regexDate.test(valeurBrute) && !regexDateTime.test(valeurBrute)) {
@@ -101,6 +101,7 @@ function initChampDate(input) {
       typeof window.enregistrerDatesChasse === 'function' &&
       (champ.endsWith('_date_debut') || champ.endsWith('_date_fin'))
     ) {
+      console.log('[initChampDate] appel enregistrerDatesChasse pour', champ);
       window.enregistrerDatesChasse().then(success => {
         if (success) {
           input.dataset.previous = valeurBrute;
