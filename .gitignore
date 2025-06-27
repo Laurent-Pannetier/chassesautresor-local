@@ -5,3 +5,5 @@ wp-config.php
 .env
 *.log
 *.sql
+vendor/
+composer.phar
