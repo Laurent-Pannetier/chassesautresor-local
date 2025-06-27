@@ -500,6 +500,11 @@ function formater_date($date): string
     return $date; // Déjà formatée
   }
 
+  $datetime = convertir_en_datetime($date);
+  if ($datetime) {
+    return $datetime->format('d/m/Y');
+  }
+
   $timestamp = strtotime($date);
   return ($timestamp !== false) ? date_i18n('d/m/Y', $timestamp) : 'Non spécifiée';
 }
