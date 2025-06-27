@@ -375,6 +375,18 @@
     margin-top:10px;
 }
 
+/* Mise en avant pour les organisateurs en création */
+.dashboard-card.creation-card {
+    border: 2px dashed var(--color-editor-error);
+    background: rgba(217, 48, 37, 0.1);
+}
+.dashboard-card.creation-card ul {
+    padding-left: 1.2em;
+}
+.dashboard-card.creation-card li {
+    list-style: disc;
+}
+
 /* tuile Taux de Conversion admin */
 /* 📌 Overlay pour bloquer la tuile par défaut */
 .overlay-taux {

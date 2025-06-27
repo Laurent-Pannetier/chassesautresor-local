@@ -89,15 +89,27 @@ $taux_conversion = get_taux_conversion_actuel();
 
     <!-- 📌 Tuiles en Bas (Accès Rapides) -->
     <div class="dashboard-grid">
-        <div class="dashboard-card">
+        <?php $creations = recuperer_organisateurs_en_creation();
+        if (!empty($creations)) : ?>
+        <div class="dashboard-card creation-card">
             <div class="dashboard-card-header">
-                <span class="icon">📦</span>
+                <span class="icon">🚧</span>
                 <h3>Organisateurs création</h3>
             </div>
             <div class="stats-content">
-                <?php afficher_tableau_organisateurs_en_creation(); ?>
+                <ul>
+                    <?php foreach ($creations as $entry) : ?>
+                        <li>
+                            <a href="<?php echo esc_url(get_permalink($entry['chasse_id'])); ?>">
+                                <?php echo esc_html($entry['chasse_titre']); ?>
+                            </a>
+                            (<?php echo esc_html($entry['organisateur_titre']); ?>)
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
             </div>
         </div>
+        <?php endif; ?>
         <?php if (current_user_can('administrator')) : ?>
             <div class="dashboard-card">
                 <div class="dashboard-card-header">
