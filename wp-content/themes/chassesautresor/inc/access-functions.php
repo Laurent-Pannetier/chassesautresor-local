@@ -1132,6 +1132,11 @@ function chasse_est_visible_pour_utilisateur(int $chasse_id, int $user_id): bool
 
     $validation = get_field('chasse_cache_statut_validation', $chasse_id) ?? '';
 
+    // Les administrateurs peuvent toujours voir la chasse, sauf si elle est bannie
+    if (user_can($user_id, 'manage_options')) {
+        return $validation !== 'banni';
+    }
+
     if ($status === 'pending') {
         $assoc = utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
 
