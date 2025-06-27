@@ -89,7 +89,13 @@ $taux_conversion = get_taux_conversion_actuel();
 
     <!-- 📌 Tuiles en Bas (Accès Rapides) -->
     <div class="dashboard-grid">
-        <?php $creations = recuperer_organisateurs_en_creation();
+        <?php
+        $creations = array_filter(
+            recuperer_organisateurs_pending(),
+            function ($entry) {
+                return !empty($entry['chasse_id']) && $entry['validation'] === 'en_attente';
+            }
+        );
         if (!empty($creations)) : ?>
         <div class="dashboard-card creation-card">
             <div class="dashboard-card-header">
