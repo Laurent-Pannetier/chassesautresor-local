@@ -70,7 +70,11 @@ function initChampDate(input) {
     }
   }
 
+  let saving = false;
+
   const enregistrer = () => {
+    if (saving) return;
+    saving = true;
     const valeurBrute = input.value.trim();
     console.log('[🧪 initChampDate]', champ, '| valeur saisie :', valeurBrute, '| previous :', input.dataset.previous);
     const regexDate = /^\d{4}-\d{2}-\d{2}$/;
@@ -103,6 +107,7 @@ function initChampDate(input) {
     ) {
       console.log('[initChampDate] appel enregistrerDatesChasse pour', champ);
       window.enregistrerDatesChasse().then(success => {
+        saving = false;
         if (success) {
           input.dataset.previous = valeurBrute;
           if (typeof window.onDateFieldUpdated === 'function') {
@@ -114,6 +119,7 @@ function initChampDate(input) {
       });
     } else {
       modifierChampSimple(champ, valeur, postId, cpt).then(success => {
+        saving = false;
         if (success) {
           input.dataset.previous = valeurBrute;
           if (typeof window.onDateFieldUpdated === 'function') {
@@ -132,6 +138,7 @@ function initChampDate(input) {
   // sélection dans le datepicker. On ajoute donc un fallback sur "blur" si la
   // valeur a effectivement été modifiée.
   input.addEventListener('blur', () => {
+    if (saving) return;
     if (input.value.trim() !== (input.dataset.previous || '')) {
       enregistrer();
     }
