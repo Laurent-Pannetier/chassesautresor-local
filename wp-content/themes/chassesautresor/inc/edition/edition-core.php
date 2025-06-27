@@ -501,8 +501,9 @@ function formater_date($date): string
     return date_i18n('d/m/Y', $timestamp);
   }
 
+
   if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $date)) {
-    return $date; // Déjà formatée
+    return $date;
   }
 
   if (preg_match('/^\d{8}$/', $date)) {
@@ -512,9 +513,11 @@ function formater_date($date): string
     }
   }
 
+
   $timestamp = strtotime($date);
   return ($timestamp !== false) ? date_i18n('d/m/Y', $timestamp) : 'Non spécifiée';
 }
+
 
 /**
  * 🗓️ Convertit une date string en objet DateTime en testant plusieurs formats.
@@ -783,7 +786,7 @@ function mettre_a_jour_sous_champ_group(int $post_id, string $group_key_or_name,
   }
 
   $champ_a_enregistrer = [];
-  
+
   $sub_field_type = null;
 
   foreach ($group_object['sub_fields'] as $sub_field) {
@@ -880,8 +883,6 @@ function mettre_a_jour_sous_champ_group(int $post_id, string $group_key_or_name,
         return $result;
       }
       cat_debug('[DEBUG] Impossible de convertir les dates pour comparaison');
-
-
     }
 
     $str_new  = is_array($new_value) ? implode(',', $new_value) : (string) $new_value;
@@ -897,4 +898,3 @@ function mettre_a_jour_sous_champ_group(int $post_id, string $group_key_or_name,
   error_log('[mettre_a_jour_sous_champ_group] verification failed for ' . $subfield_name);
   return false;
 }
-

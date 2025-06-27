@@ -100,6 +100,7 @@ if (!empty($organisateurs_liste)) :
             <tr>
                 <th>Organisateur</th>
                 <th>Chasse</th>
+                <th data-col="etat">État</th>
                 <th>Utilisateur</th>
                 <th>Créé le</th>
             </tr>
@@ -127,6 +128,7 @@ if (!empty($organisateurs_liste)) :
                             -
                         <?php endif; ?>
                     </td>
+                    <td data-col="etat"><?php echo esc_html($entry['validation']); ?></td>
                     <td>
                         <?php if ($entry['user_id']) : ?>
                             <a href="<?php echo esc_url($entry['user_link']); ?>" target="_blank">
