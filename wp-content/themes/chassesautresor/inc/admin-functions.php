@@ -1690,7 +1690,7 @@ function envoyer_mail_demande_correction(int $organisateur_id, int $chasse_id, s
     };
     add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
-    wp_mail($email, $subject, $body, $headers);
+    wp_mail($emails, $subject, $body, $headers);
     remove_filter('wp_mail_from_name', $from_filter, 10);
 
 }
@@ -1740,7 +1740,7 @@ function envoyer_mail_chasse_bannie(int $organisateur_id, int $chasse_id)
     };
     add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
-    wp_mail($email, $subject, $body, $headers);
+    wp_mail($emails, $subject, $body, $headers);
     remove_filter('wp_mail_from_name', $from_filter, 10);
 }
 
@@ -1789,7 +1789,7 @@ function envoyer_mail_chasse_supprimee(int $organisateur_id, int $chasse_id)
     };
     add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
-    wp_mail($email, $subject, $body, $headers);
+    wp_mail($emails, $subject, $body, $headers);
     remove_filter('wp_mail_from_name', $from_filter, 10);
 }
 
@@ -1807,23 +1807,32 @@ function envoyer_mail_chasse_validee(int $organisateur_id, int $chasse_id)
         return;
     }
 
-    $email = get_field('email_organisateur', $organisateur_id);
-    if (is_array($email)) {
-        $email = reset($email);
+    $emails = [];
+
+    $acf_email = get_field('email_organisateur', $organisateur_id);
+    if (is_array($acf_email)) {
+        $acf_email = reset($acf_email);
+    }
+    if (is_string($acf_email) && is_email($acf_email)) {
+        $emails[] = sanitize_email($acf_email);
     }
 
-    if (!is_string($email) || !is_email($email)) {
-        $users   = (array) get_field('utilisateurs_associes', $organisateur_id);
-        $user_id = $users ? intval(reset($users)) : 0;
+    $users = (array) get_field('utilisateurs_associes', $organisateur_id);
+    foreach ($users as $uid) {
+        $user_id = is_object($uid) ? $uid->ID : intval($uid);
         if ($user_id) {
-            $user  = get_user_by('ID', $user_id);
-            $email = $user ? $user->user_email : '';
+            $user = get_user_by('ID', $user_id);
+            if ($user && is_email($user->user_email)) {
+                $emails[] = sanitize_email($user->user_email);
+            }
         }
     }
 
-    if (!$email || !is_email($email)) {
-        $email = get_option('admin_email');
+    if (!$emails) {
+        $emails[] = get_option('admin_email');
     }
+
+    $emails = array_unique($emails);
 
     $admin_email = get_option('admin_email');
     $titre_chasse = get_the_title($chasse_id);
@@ -1859,7 +1868,7 @@ function envoyer_mail_chasse_validee(int $organisateur_id, int $chasse_id)
     };
     add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
-    wp_mail($email, $subject, $body, $headers);
+    wp_mail($emails, $subject, $body, $headers);
     remove_filter('wp_mail_from_name', $from_filter, 10);
 }
 
