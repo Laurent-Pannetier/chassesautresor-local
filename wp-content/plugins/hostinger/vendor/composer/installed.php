@@ -1,0 +1,52 @@
+<?php return array(
+    'root' => array(
+        'name' => 'hostinger/hostinger',
+        'pretty_version' => 'dev-main',
+        'version' => 'dev-main',
+        'reference' => 'fbbe6a635db5f8592785baff59fedebbad681f44',
+        'type' => 'library',
+        'install_path' => __DIR__ . '/../../',
+        'aliases' => array(),
+        'dev' => false,
+    ),
+    'versions' => array(
+        'automattic/jetpack-autoloader' => array(
+            'pretty_version' => 'dev-trunk',
+            'version' => 'dev-trunk',
+            'reference' => '33caed2a97299f8ccb23fbba86512ad8b52cb3e0',
+            'type' => 'composer-plugin',
+            'install_path' => __DIR__ . '/../automattic/jetpack-autoloader',
+            'aliases' => array(
+                0 => '5.0.x-dev',
+            ),
+            'dev_requirement' => false,
+        ),
+        'hostinger/hostinger' => array(
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'reference' => 'fbbe6a635db5f8592785baff59fedebbad681f44',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../../',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'hostinger/hostinger-wp-helper' => array(
+            'pretty_version' => '1.0.10',
+            'version' => '1.0.10.0',
+            'reference' => '156a764738a8d694e9f76d1073988a291293b215',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../hostinger/hostinger-wp-helper',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'hostinger/hostinger-wp-menu-manager' => array(
+            'pretty_version' => '1.2.16',
+            'version' => '1.2.16.0',
+            'reference' => '8c2f86b995721cfdd6af381819008cff3bf71dd0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../hostinger/hostinger-wp-menu-manager',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+    ),
+);
