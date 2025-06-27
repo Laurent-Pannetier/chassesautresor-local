@@ -327,8 +327,12 @@ function validerDatesAvantEnvoi(champModifie) {
   const dateMaximum = new Date();
   dateMaximum.setFullYear(dateMaximum.getFullYear() + 5);
 
+  console.log('[validerDatesAvantEnvoi] bornes=', dateMinimum.toISOString(), dateMaximum.toISOString());
+
   const debut = new Date(inputDateDebut.value);
   const fin = new Date(inputDateFin.value);
+
+  console.log('[validerDatesAvantEnvoi] debut=', debut.toISOString(), 'fin=', fin.toISOString());
 
   if (debut < dateMinimum || debut > dateMaximum) {
     if (champModifie === 'debut' && erreurDebut) {
@@ -683,6 +687,7 @@ function enregistrerDatesChasse() {
     date_fin: checkboxIllimitee?.checked ? '' : inputDateFin.value.trim(),
     illimitee: checkboxIllimitee?.checked ? 1 : 0
   });
+  console.log('[enregistrerDatesChasse] params=', params.toString());
 
   return fetch(ajaxurl, {
     method: 'POST',
@@ -691,6 +696,7 @@ function enregistrerDatesChasse() {
   })
     .then(r => r.json())
     .then(res => {
+      console.log('[enregistrerDatesChasse] reponse=', res);
       if (res.success) {
         rafraichirStatutChasse(postId);
         mettreAJourAffichageDateFin();
