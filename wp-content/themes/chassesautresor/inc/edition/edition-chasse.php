@@ -223,7 +223,15 @@ function modifier_dates_chasse()
   $ok3 = update_field('chasse_infos_date_fin', $illimitee ? '' : $dt_fin->format('Y-m-d'), $post_id);
   error_log('[modifier_dates_chasse] update chasse_infos_date_fin=' . var_export($ok3, true));
 
-  if ($ok1 && $ok2 && $ok3) {
+  $saved_debut = get_field('chasse_infos_date_debut', $post_id);
+  $saved_fin   = get_field('chasse_infos_date_fin', $post_id);
+  $saved_illim = get_field('chasse_infos_duree_illimitee', $post_id);
+
+  $debut_ok = $saved_debut === $dt_debut->format('Y-m-d H:i:s');
+  $fin_ok   = $saved_fin === ($illimitee ? '' : $dt_fin->format('Y-m-d'));
+  $illim_ok = (int) $saved_illim === ($illimitee ? 1 : 0);
+
+  if (($ok1 || $debut_ok) && ($ok2 || $illim_ok) && ($ok3 || $fin_ok)) {
     mettre_a_jour_statuts_chasse($post_id);
     error_log('[modifier_dates_chasse] mise a jour reussie');
     wp_send_json_success([
