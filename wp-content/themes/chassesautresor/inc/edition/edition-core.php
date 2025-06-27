@@ -500,6 +500,13 @@ function formater_date($date): string
     return $date; // Déjà formatée
   }
 
+  if (preg_match('/^\d{8}$/', $date)) {
+    $dt = DateTime::createFromFormat('Ymd', $date);
+    if ($dt) {
+      return $dt->format('d/m/Y');
+    }
+  }
+
   $timestamp = strtotime($date);
   return ($timestamp !== false) ? date_i18n('d/m/Y', $timestamp) : 'Non spécifiée';
 }
@@ -518,7 +525,9 @@ function convertir_en_datetime(?string $date_string, array $formats = [
   'd/m/Y',
   'Y-m-d H:i:s',
   'Y-m-d\TH:i',
-  'Y-m-d'
+  'Y-m-d',
+  'Ymd',
+  'YmdHis'
 ]): ?DateTime
 {
   if (empty($date_string)) {
