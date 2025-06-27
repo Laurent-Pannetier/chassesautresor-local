@@ -1,0 +1,19 @@
+{
+  "name": "chassesautresor/wordpress",
+  "require": {},
+  "require-dev": {
+    "phpunit/phpunit": "^9.6",
+    "yoast/phpunit-polyfills": "^2.0"
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Hostinger\\Tests\\": "wp-content/plugins/hostinger/vendor/hostinger/hostinger-wp-helper/tests/phpunit"
+    }
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit -c wp-content/plugins/hostinger/vendor/hostinger/hostinger-wp-helper/phpunit.xml.dist"
+  },
+  "config": {
+    "platform-check": false
+  }
+}
