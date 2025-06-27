@@ -18,7 +18,14 @@ window.onDateFieldUpdated = function(input, valeur) {
     },
     'chasse_infos_date_fin': (val) => {
       const span = document.querySelector('.date-fin');
-      if (span) span.textContent = formatDateFr(val);
+      if (!span) return;
+
+      const checkboxIllimitee = document.getElementById('duree-illimitee');
+      if (checkboxIllimitee && checkboxIllimitee.checked) {
+        span.textContent = 'Illimitée';
+      } else {
+        span.textContent = formatDateFr(val);
+      }
     }
     // Ajoutez ici d'autres handlers spécifiques si nécessaire
   };
