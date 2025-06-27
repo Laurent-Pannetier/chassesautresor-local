@@ -62,11 +62,7 @@ $total_enigmes = count($enigmes_associees);
 $enigmes_resolues = compter_enigmes_resolues($chasse_id, $user_id);
 
 $statut = get_field('champs_caches')['chasse_cache_statut'] ?? 'revision';
-$cache_global = get_field('champs_caches');
-if (!$cache_global) {
-    error_log('[single-chasse] ⚠️ champs_caches introuvables pour la chasse #' . $chasse_id);
-}
-$statut_validation = $cache_global['chasse_cache_statut_validation'] ?? get_field('chasse_cache_statut_validation', $chasse_id);
+$statut_validation = get_field('chasse_cache_statut_validation', $chasse_id);
 $nb_joueurs = 0;
 
 get_header();
