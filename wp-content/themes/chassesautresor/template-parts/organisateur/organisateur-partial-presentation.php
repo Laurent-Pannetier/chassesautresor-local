@@ -66,16 +66,6 @@ if (!empty($liens_publics) && is_array($liens_publics)) {
               </div>
             <?php endif; ?>
         
-            <?php if ($peut_modifier) : ?>
-              <button type="button"
-                      class="champ-modifier modifier-liens"
-                      aria-label="Configurer vos liens"
-                      data-champ="liens_publics"
-                      data-cpt="organisateur"
-                      data-post-id="<?= esc_attr($organisateur_id); ?>">
-                ✏️
-              </button>
-            <?php endif; ?>
           </div>
         
           <div class="champ-feedback"></div>
