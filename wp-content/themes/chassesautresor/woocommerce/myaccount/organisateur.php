@@ -132,78 +132,137 @@ $tableau_contenu = ob_get_clean(); // Récupérer la sortie et l'effacer du buff
         </div>
     </div>
 
-    <!-- 📌 Tuiles en Bas (Accès Rapides) -->
+    <!-- 📌 Tableau de bord -->
     <div class="section-separator">
         <hr class="separator-line">
         <span class="separator-text">MON ESPACE</span>
         <hr class="separator-line">
     </div>
-    <div class="dashboard-grid">
-        <div class="dashboard-card">
-            <div class="dashboard-card-header">
-                <i class="fas fa-landmark"></i>
-                <h3>Vos entités</h3>
-            </div>
-            <div class="stats-content">
-                <?php echo $liste_chasses_organisateur; ?>
-            </div>
-        </div>
-        
-        <div class="dashboard-card points-card">
-            <div class="dashboard-card-header">
-                <i class="fa-solid fa-money-bill-transfer"></i>
-                <h3>Convertisseur</h3>
-            </div>
-            <div class="stats-content">
-                <?php echo do_shortcode('[demande_paiement]'); ?>
-        
-                <?php if (!$conversion_autorisee) : ?>
-                    <!-- Overlay bloquant -->
-                    <div class="overlay-taux">
-                        <p class="message-bloque"><?php echo wp_kses_post($statut_conversion); ?></p>
-                    </div>
-                <?php endif; ?>
-            </div>
-        </div>
-        
-        <div class="dashboard-card stats-card">
-            <div class="dashboard-card-header">
-                <i class="fas fa-chart-line"></i>
-                <h3>Mes Stats</h3>
-            </div>
-            <div class="stats-content">
-                <?php echo !empty($stats_output) ? $stats_output : "<p>Aucune statistique disponible.</p>"; ?>
-            </div>
-        </div>
-        
-        <?php if (!empty($commandes_output)) : ?>
-            <a href="<?php echo esc_url(wc_get_account_endpoint_url('orders')); ?>" class="dashboard-card">
+
+    <div class="dashboard-section">
+        <h3 class="dashboard-section-title">Identité</h3>
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
                 <div class="dashboard-card-header">
-                    <i class="fas fa-shopping-cart"></i>
-                    <h3>Mes Commandes</h3>
+                    <i class="fas fa-landmark"></i>
+                    <h3>Organisateur</h3>
                 </div>
                 <div class="stats-content">
-                    <?php echo $commandes_output; ?>
+                    <?php if ($organisateur_id) : ?>
+                        <p><a href="<?php echo esc_url(get_permalink($organisateur_id)); ?>"><?php echo esc_html($organisateur_titre); ?></a></p>
+                        <p>Nb de chasses : <?php echo intval($nombre_chasses); ?></p>
+                        <p>Nb de joueurs : xx</p>
+                        <p>Depuis le <?php echo esc_html(date_i18n('d/m/Y', strtotime(get_post_field('post_date', $organisateur_id)))); ?></p>
+                    <?php else : ?>
+                        <p><?php echo esc_html($organisateur_titre); ?></p>
+                    <?php endif; ?>
                 </div>
-            </a>
-        <?php endif; ?>
-        
-        <?php if (!empty($trophees_output)) : ?>
-            <a href="#" class="dashboard-card no-click">
+            </div>
+
+            <div class="dashboard-card points-card">
                 <div class="dashboard-card-header">
-                    <i class="fas fa-trophy"></i>
-                    <h3>Mes Trophées</h3>
+                    <i class="fa-solid fa-money-bill-transfer"></i>
+                    <h3>Convertisseur</h3>
                 </div>
-                <div class="trophees-content">
-                    <?php echo $trophees_output; ?>
+                <div class="stats-content">
+                    <?php echo do_shortcode('[demande_paiement]'); ?>
+                    <?php if (!$conversion_autorisee) : ?>
+                        <div class="overlay-taux">
+                            <p class="message-bloque"><?php echo wp_kses_post($statut_conversion); ?></p>
+                        </div>
+                    <?php endif; ?>
                 </div>
-            </a>
-        <?php endif; ?>
-    
-        <a href="<?php echo esc_url('/mon-compte/outils/'); ?>" class="dashboard-card">
-            <span class="icon">⚙️</span>
-            <h3>Outils</h3>
-        </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-section">
+        <h3 class="dashboard-section-title">Chasse</h3>
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <div class="dashboard-card-header">
+                    <i class="fas fa-map"></i>
+                    <h3>Chasses</h3>
+                </div>
+                <div class="stats-content">
+                    <?php
+                    if ($organisateur_id) {
+                        $chasses_query = new WP_Query([
+                            'post_type'      => 'chasse',
+                            'posts_per_page' => 5,
+                            'post_status'    => ['publish', 'pending'],
+                            'meta_query'     => [
+                                [
+                                    'key'     => 'chasse_cache_organisateur',
+                                    'value'   => '"' . strval($organisateur_id) . '"',
+                                    'compare' => 'LIKE'
+                                ]
+                            ],
+                            'orderby' => 'date',
+                            'order'   => 'DESC'
+                        ]);
+                        $total_chasses = $chasses_query->found_posts;
+                        if ($chasses_query->have_posts()) {
+                            echo '<table class="stats-table"><thead><tr><th>Titre</th><th>Énigmes</th><th>Joueurs</th></tr></thead><tbody>';
+                            foreach ($chasses_query->posts as $cid) {
+                                $nb_enigmes = count(recuperer_enigmes_associees($cid));
+                                echo '<tr>';
+                                echo '<td><a href="' . esc_url(get_permalink($cid)) . '">' . esc_html(get_the_title($cid)) . '</a></td>';
+                                echo '<td>' . intval($nb_enigmes) . '</td>';
+                                echo '<td>xx</td>';
+                                echo '</tr>';
+                            }
+                            echo '</tbody></table>';
+                            if ($total_chasses > 5) {
+                                echo '<p>' . intval($total_chasses) . ' chasses au total</p>';
+                            }
+                        } else {
+                            echo '<p>Aucune chasse trouvée.</p>';
+                        }
+                    } else {
+                        echo '<p>Aucune chasse trouvée.</p>';
+                    }
+                    ?>
+                </div>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="dashboard-card-header">
+                    <i class="fas fa-question-circle"></i>
+                    <h3>Enigmes</h3>
+                </div>
+                <div class="stats-content">
+                    <p>Placeholder 1</p>
+                    <p>Placeholder 2</p>
+                    <p>tentatives : xx</p>
+                </div>
+            </div>
+
+            <?php if (!empty($commandes_output)) : ?>
+                <a href="<?php echo esc_url(wc_get_account_endpoint_url('orders')); ?>" class="dashboard-card">
+                    <div class="dashboard-card-header">
+                        <i class="fas fa-shopping-cart"></i>
+                        <h3>Mes Commandes</h3>
+                    </div>
+                    <div class="stats-content">
+                        <?php echo $commandes_output; ?>
+                    </div>
+                </a>
+            <?php endif; ?>
+
+            <?php if (!empty($trophees_output)) : ?>
+                <a href="#" class="dashboard-card no-click">
+                    <div class="dashboard-card-header">
+                        <i class="fas fa-trophy"></i>
+                        <h3>Mes Trophées</h3>
+                    </div>
+                    <div class="trophees-content">
+                        <?php echo $trophees_output; ?>
+                    </div>
+                </a>
+            <?php endif; ?>
+        </div>
     </div>
 
 </div>
+
