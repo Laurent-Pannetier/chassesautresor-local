@@ -11,19 +11,22 @@ $champTitreParDefaut = 'nouvelle chasse';
 $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut);
 
 
-// Champs ACF principaux
-$lot               = get_field('chasse_infos_recompense_texte', $chasse_id);
-$titre_recompense  = get_field('chasse_infos_recompense_titre', $chasse_id);
-$valeur_recompense = get_field('chasse_infos_recompense_valeur', $chasse_id);
-$cout_points       = get_field('chasse_infos_cout_points', $chasse_id) ?: 0;
-$date_debut        = get_field('chasse_infos_date_debut', $chasse_id);
-$date_fin          = get_field('chasse_infos_date_fin', $chasse_id);
-$illimitee         = get_field('chasse_infos_duree_illimitee', $chasse_id);
-$nb_max            = get_field('chasse_infos_nb_max_gagants', $chasse_id) ?: 0;
+// Champs principaux (avec fallback direct en meta)
+$champs = chasse_get_champs($chasse_id);
+$lot               = $champs['lot'];
+$titre_recompense  = $champs['titre_recompense'];
+$valeur_recompense = $champs['valeur_recompense'];
+$cout_points       = $champs['cout_points'];
+$date_debut        = $champs['date_debut'];
+$date_fin          = $champs['date_fin'];
+$illimitee         = $champs['illimitee'];
+$nb_max            = $champs['nb_max'];
 
 // Champs cachés
-$date_decouverte      = get_field('chasse_cache_date_decouverte', $chasse_id);
-$current_stored_statut = get_field('chasse_cache_statut', $chasse_id);
+$date_decouverte      = $champs['date_decouverte'];
+$current_stored_statut = $champs['current_stored_statut'];
+
+error_log('[chasse-affichage-complet] brut date_debut=' . var_export($date_debut, true) . ' date_fin=' . var_export($date_fin, true));
 
 // Données supplémentaires
 $description = get_field('chasse_principale_description', $chasse_id);
@@ -43,6 +46,7 @@ $nb_joueurs = 0;
 // Dates
 $date_debut_formatee = formater_date($date_debut);
 $date_fin_formatee = $illimitee ? 'Illimitée' : ($date_fin ? formater_date($date_fin) : 'Non spécifiée');
+error_log('[chasse-affichage-complet] formate date_debut=' . var_export($date_debut_formatee, true) . ' date_fin=' . var_export($date_fin_formatee, true));
 
 // Edition
 $edition_active = utilisateur_peut_modifier_post($chasse_id);
