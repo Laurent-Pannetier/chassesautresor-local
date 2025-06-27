@@ -99,7 +99,7 @@ $taux_conversion = get_taux_conversion_actuel();
         if (!empty($creations)) : ?>
         <div class="dashboard-card creation-card">
             <div class="dashboard-card-header">
-                <span class="icon">🚧</span>
+                <i class="fas fa-user-plus"></i>
                 <h3>Organisateurs création</h3>
             </div>
             <div class="stats-content">
