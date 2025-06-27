@@ -538,6 +538,10 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
   border-radius: 8px;
   padding-left: 5px;
 }
+.champ-attention a {
+  color: var(--color-editor-text);
+  text-decoration: underline;
+}
 
 @keyframes pulse-attention {
   0%   { background-color: #fff5f5; }
