@@ -42,7 +42,10 @@ $has_enigmes = !empty($posts_visibles);
     $cta = get_cta_enigme($enigme_id);
 
     $est_orga = est_organisateur();
-    $voir_bordure = $est_orga && utilisateur_est_organisateur_associe_a_chasse($utilisateur_id, $chasse_id);
+    $wp_statut = get_post_status($chasse_id);
+    $voir_bordure = $est_orga &&
+      utilisateur_est_organisateur_associe_a_chasse($utilisateur_id, $chasse_id) &&
+      $wp_statut !== 'publish';
     $classe_completion = '';
     if ($voir_bordure) {
       verifier_ou_mettre_a_jour_cache_complet($enigme_id);
