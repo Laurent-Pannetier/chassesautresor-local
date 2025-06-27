@@ -133,12 +133,6 @@ $tableau_contenu = ob_get_clean(); // Récupérer la sortie et l'effacer du buff
     </div>
 
     <!-- 📌 Tableau de bord -->
-    <div class="section-separator">
-        <hr class="separator-line">
-        <span class="separator-text">MON ESPACE</span>
-        <hr class="separator-line">
-    </div>
-
     <?php get_template_part('template-parts/myaccount/dashboard-organisateur', null, [
         'organisateur_id'    => $organisateur_id,
         'organisateur_titre' => $organisateur_titre,
