@@ -14,7 +14,7 @@ defined('ABSPATH') || exit;
 // Valeurs par défaut des titres lors de la création des CPT
 define('TITRE_DEFAUT_ORGANISATEUR', 'Votre nom d’organisateur');
 define('TITRE_DEFAUT_CHASSE', 'Nouvelle chasse');
-define('TITRE_DEFAUT_ENIGME', 'Nouvelle énigme');
+define('TITRE_DEFAUT_ENIGME', 'en création');
 
 /**
  * Retourne le titre par défaut associé à un type de post donné.

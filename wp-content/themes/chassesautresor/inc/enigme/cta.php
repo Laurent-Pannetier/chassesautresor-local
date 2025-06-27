@@ -54,7 +54,7 @@ defined('ABSPATH') || exit;
             if (
                 $mode !== 'aucune' &&
                 $mode !== null &&
-                stripos($titre, 'nouvelle énigme') !== 0
+                stripos($titre, TITRE_DEFAUT_ENIGME) !== 0
             ) {
                 $resultats[$id] = $titre;
             }

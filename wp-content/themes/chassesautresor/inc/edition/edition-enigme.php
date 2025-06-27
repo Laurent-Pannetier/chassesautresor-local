@@ -162,7 +162,7 @@ function creer_enigme_et_rediriger_si_appel()
     wp_die($enigme_id->get_error_message(), 'Erreur', ['response' => 500]);
   }
 
-  // Redirige vers la nouvelle énigme
+  // Redirige vers l’énigme en création
   $preview_url = add_query_arg('edition', 'open', get_preview_post_link($enigme_id));
   wp_redirect($preview_url);
 
