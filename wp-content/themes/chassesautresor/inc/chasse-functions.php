@@ -384,6 +384,30 @@ function render_form_validation_chasse(int $chasse_id): string
 }
 
 /**
+ * Affiche un message relatif à la validation d'une chasse.
+ *
+ * - Après l'envoi de la demande via ?validation_demandee=1,
+ *   un message de succès est affiché une seule fois.
+ * - Tant que le statut reste "en_attente", un message
+ *   d'information indique que la demande est en cours.
+ *
+ * @param int $chasse_id ID de la chasse.
+ * @return void
+ */
+function afficher_message_validation_chasse(int $chasse_id): void
+{
+    $validation_envoyee = !empty($_GET['validation_demandee']);
+    $statut_validation  = get_field('chasse_cache_statut_validation', $chasse_id);
+
+    if ($validation_envoyee) {
+        echo '<p class="message-succes">✅ Votre demande de validation est en cours de traitement par l’équipe.</p>';
+        echo '<script>if(window.history.replaceState){const u=new URL(window.location);u.searchParams.delete("validation_demandee");history.replaceState(null,"",u);}</script>';
+    } elseif ($statut_validation === 'en_attente') {
+        echo '<p class="message-info">⏳ Votre demande est en cours de traitement</p>';
+    }
+}
+
+/**
  * Vérifie si la solution d'une énigme peut être affichée.
  *
  * La solution n'est visible que si la chasse associée est terminée
