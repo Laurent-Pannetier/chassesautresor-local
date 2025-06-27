@@ -64,6 +64,7 @@ $enigmes_resolues = compter_enigmes_resolues($chasse_id, $user_id);
 $statut = get_field('champs_caches')['chasse_cache_statut'] ?? 'revision';
 $cache_global = get_field('champs_caches', $chasse_id);
 $statut_validation = $cache_global['chasse_cache_statut_validation'] ?? '';
+error_log("[single-chasse] statut_validation={$statut_validation}, user_id={$user_id}, admin=" . (current_user_can('administrator') ? '1' : '0'));
 $nb_joueurs = 0;
 
 get_header();
@@ -97,10 +98,14 @@ $validation_envoyee = !empty($_GET['validation_demandee']);
       ?>
 
       <?php
+      error_log('[single-chasse] admin check before validation block: is_admin=' . (current_user_can('administrator') ? '1' : '0') . ', statut_validation=' . $statut_validation);
       if (current_user_can('administrator') && $statut_validation === 'en_attente') {
+        error_log('[single-chasse] affichage du bloc de validation pour la chasse #' . $chasse_id);
         get_template_part('template-parts/chasse/chasse-validation-actions', null, [
           'chasse_id' => $chasse_id,
         ]);
+      } else {
+        error_log('[single-chasse] bloc de validation masqué');
       }
       ?>
 

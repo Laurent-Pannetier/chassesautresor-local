@@ -3,11 +3,16 @@ defined('ABSPATH') || exit;
 
 $chasse_id = $args['chasse_id'] ?? null;
 if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
+    error_log('[chasse-validation-actions] appel invalide, chasse_id=' . var_export($chasse_id, true));
     return;
 }
 
+error_log('[chasse-validation-actions] affichage du formulaire pour la chasse #' . $chasse_id . ', user=' . get_current_user_id());
+
 $organisateur_id = get_organisateur_from_chasse($chasse_id);
 $org_status = $organisateur_id ? get_post_status($organisateur_id) : '';
+$debug_info = '[chasse-validation-actions] organisateur_id=' . var_export($organisateur_id, true) . ', status=' . $org_status;
+error_log($debug_info);
 $titre_bloc = $org_status === 'pending'
     ? "traitement d'une création de chasse"
     : "demande de validation nouvelle chasse";
