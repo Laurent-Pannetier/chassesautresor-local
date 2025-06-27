@@ -558,7 +558,20 @@ function convertir_en_datetime(?string $date_string, array $formats = [
  */
 function convertir_en_timestamp(?string $date)
 {
-  return $date ? strtotime(str_replace('/', '-', $date)) : false;
+  if (!$date) {
+    return false;
+  }
+
+  $date = (string) $date;
+
+  if (preg_match('/^\d{8}$/', $date)) {
+    $dt = DateTime::createFromFormat('Ymd', $date);
+    if ($dt) {
+      return $dt->getTimestamp();
+    }
+  }
+
+  return strtotime(str_replace('/', '-', $date));
 }
 
 /**
