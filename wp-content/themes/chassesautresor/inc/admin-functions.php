@@ -1581,6 +1581,8 @@ function traiter_validation_chasse_admin() {
             }
         }
 
+        envoyer_mail_chasse_validee($organisateur_id, $chasse_id);
+
     } elseif ($action === 'correction') {
         $cache = get_field('champs_caches', $chasse_id) ?: [];
         $cache['chasse_cache_statut_validation'] = 'correction';
@@ -1688,7 +1690,7 @@ function envoyer_mail_demande_correction(int $organisateur_id, int $chasse_id, s
     };
     add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
-    wp_mail($email, $subject, $body, $headers);
+    wp_mail($emails, $subject, $body, $headers);
     remove_filter('wp_mail_from_name', $from_filter, 10);
 
 }
@@ -1738,7 +1740,7 @@ function envoyer_mail_chasse_bannie(int $organisateur_id, int $chasse_id)
     };
     add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
-    wp_mail($email, $subject, $body, $headers);
+    wp_mail($emails, $subject, $body, $headers);
     remove_filter('wp_mail_from_name', $from_filter, 10);
 }
 
@@ -1787,7 +1789,86 @@ function envoyer_mail_chasse_supprimee(int $organisateur_id, int $chasse_id)
     };
     add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
-    wp_mail($email, $subject, $body, $headers);
+    wp_mail($emails, $subject, $body, $headers);
+    remove_filter('wp_mail_from_name', $from_filter, 10);
+}
+
+/**
+ * Envoie un email informant l'organisateur que sa chasse est validée.
+ *
+ * @param int $organisateur_id ID du CPT organisateur.
+ * @param int $chasse_id       ID de la chasse concernée.
+ *
+ * @return void
+ */
+function envoyer_mail_chasse_validee(int $organisateur_id, int $chasse_id)
+{
+    if (!$organisateur_id || !$chasse_id) {
+        return;
+    }
+
+    $emails = [];
+
+    $acf_email = get_field('email_organisateur', $organisateur_id);
+    if (is_array($acf_email)) {
+        $acf_email = reset($acf_email);
+    }
+    if (is_string($acf_email) && is_email($acf_email)) {
+        $emails[] = sanitize_email($acf_email);
+    }
+
+    $users = (array) get_field('utilisateurs_associes', $organisateur_id);
+    foreach ($users as $uid) {
+        $user_id = is_object($uid) ? $uid->ID : intval($uid);
+        if ($user_id) {
+            $user = get_user_by('ID', $user_id);
+            if ($user && is_email($user->user_email)) {
+                $emails[] = sanitize_email($user->user_email);
+            }
+        }
+    }
+
+    if (!$emails) {
+        $emails[] = get_option('admin_email');
+    }
+
+    $emails = array_unique($emails);
+
+    $admin_email = get_option('admin_email');
+    $titre_chasse = get_the_title($chasse_id);
+    $url_chasse   = get_permalink($chasse_id);
+    $url_qr_code  = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=' . rawurlencode($url_chasse);
+
+    $subject_raw = '✅ Votre chasse est maintenant validée !';
+    $subject = function_exists('wp_encode_mime_header')
+        ? wp_encode_mime_header($subject_raw)
+        : mb_encode_mimeheader($subject_raw, 'UTF-8', 'B', "\r\n");
+
+    $body  = '<p>Bonjour,</p>';
+    $body .= '<p>Votre chasse <strong>&laquo;' . esc_html($titre_chasse) . '&raquo;</strong> a été <strong>validée avec succès</strong> par notre équipe 🎉<br>';
+    $body .= 'Elle est désormais <strong>accessible aux joueurs</strong>.</p>';
+    $body .= '<hr>';
+    $body .= '<p>🔗 <strong>Lien vers votre chasse :</strong><br>';
+    $body .= '<a href="' . esc_url($url_chasse) . '" target="_blank">' . esc_html($url_chasse) . '</a></p>';
+    $body .= '<p>📲 <strong>QR code à partager :</strong><br>';
+    $body .= '<img src="' . esc_url($url_qr_code) . '" alt="QR code vers la chasse" style="max-width:200px; height:auto; display:block; margin-top:1em;">';
+    $body .= '<br><a href="' . esc_url($url_qr_code) . '" download>Télécharger le QR code</a></p>';
+    $body .= '<hr>';
+    $body .= '<p>Nous vous souhaitons une belle aventure, et restons à votre écoute si besoin.<br>';
+    $body .= 'À très bientôt,<br>L’équipe <strong>Chasses au Trésor</strong></p>';
+
+    $headers = [
+        'Content-Type: text/html; charset=UTF-8',
+        'Bcc: ' . $admin_email,
+    ];
+
+    $from_filter = function ($name) use ($organisateur_id) {
+        $titre = get_the_title($organisateur_id);
+        return $titre ?: $name;
+    };
+    add_filter('wp_mail_from_name', $from_filter, 10, 1);
+
+    wp_mail($emails, $subject, $body, $headers);
     remove_filter('wp_mail_from_name', $from_filter, 10);
 }
 
