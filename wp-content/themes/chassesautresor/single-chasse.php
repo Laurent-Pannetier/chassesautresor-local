@@ -90,7 +90,10 @@ $validation_envoyee = !empty($_GET['validation_demandee']);
       <?php
       if ($can_validate) {
         echo '<div class="cta-chasse">';
-        echo '<p>Lorsque vous avez finalisé votre chasse, demandez sa validation :</p>';
+        $msg = ($statut_validation === 'correction')
+          ? 'Lorsque vous aurez terminé vos corrections, demandez sa validation :'
+          : 'Lorsque vous avez finalisé votre chasse, demandez sa validation :';
+        echo '<p>' . $msg . '</p>';
         echo render_form_validation_chasse($chasse_id);
         echo '</div>';
       }
