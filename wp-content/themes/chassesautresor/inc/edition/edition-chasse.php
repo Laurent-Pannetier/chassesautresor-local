@@ -225,9 +225,10 @@ function modifier_dates_chasse()
   $ok3 = update_field('chasse_infos_date_fin', $illimitee ? '' : $dt_fin->format('Y-m-d'), $post_id);
   error_log('[modifier_dates_chasse] update chasse_infos_date_fin=' . var_export($ok3, true));
 
-  $saved_debut_raw = get_field('chasse_infos_date_debut', $post_id, false);
-  $saved_fin_raw   = get_field('chasse_infos_date_fin', $post_id, false);
-  $saved_illim     = get_field('chasse_infos_duree_illimitee', $post_id, false);
+  // Lecture directe pour éviter un cache ACF éventuel
+  $saved_debut_raw = get_post_meta($post_id, 'chasse_infos_date_debut', true);
+  $saved_fin_raw   = get_post_meta($post_id, 'chasse_infos_date_fin', true);
+  $saved_illim     = get_post_meta($post_id, 'chasse_infos_duree_illimitee', true);
 
   $saved_debut_dt = convertir_en_datetime($saved_debut_raw, ['Y-m-d H:i:s', 'Y-m-d\TH:i', 'Y-m-d', 'YmdHis', 'Ymd']);
   $saved_fin_dt   = convertir_en_datetime($saved_fin_raw, ['Y-m-d', 'Ymd', 'Y-m-d H:i:s', 'Y-m-d\TH:i']);
