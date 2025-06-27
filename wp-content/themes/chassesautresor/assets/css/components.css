@@ -534,6 +534,7 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
   border: 2px dashed #D93025 !important;
   animation: pulse-attention 1.2s ease-in-out infinite;
   background-color: #fff5f5;
+  color: var(--color-editor-text);
   border-radius: 8px;
   padding-left: 5px;
 }
