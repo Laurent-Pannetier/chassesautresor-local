@@ -1555,6 +1555,7 @@ function traiter_validation_chasse_admin() {
         $cache = get_field('champs_caches', $chasse_id) ?: [];
         $cache['chasse_cache_statut_validation'] = 'valide';
         update_field('champs_caches', $cache, $chasse_id);
+        update_field('chasse_cache_statut_validation', 'valide', $chasse_id);
         mettre_a_jour_statuts_chasse($chasse_id);
 
         foreach ($enigmes as $eid) {
@@ -1583,6 +1584,7 @@ function traiter_validation_chasse_admin() {
         $cache = get_field('champs_caches', $chasse_id) ?: [];
         $cache['chasse_cache_statut_validation'] = 'correction';
         update_field('champs_caches', $cache, $chasse_id);
+        update_field('chasse_cache_statut_validation', 'correction', $chasse_id);
 
         $message = isset($_POST['validation_admin_message'])
             ? sanitize_textarea_field(wp_unslash($_POST['validation_admin_message']))
@@ -1600,6 +1602,7 @@ function traiter_validation_chasse_admin() {
         $cache = get_field('champs_caches', $chasse_id) ?: [];
         $cache['chasse_cache_statut_validation'] = 'banni';
         update_field('champs_caches', $cache, $chasse_id);
+        update_field('chasse_cache_statut_validation', 'banni', $chasse_id);
 
         foreach ($enigmes as $eid) {
             wp_update_post(['ID' => $eid, 'post_status' => 'draft']);
