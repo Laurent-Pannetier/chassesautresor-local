@@ -73,6 +73,7 @@ get_header();
 
 $can_validate = peut_valider_chasse($chasse_id, $user_id);
 $validation_envoyee = !empty($_GET['validation_demandee']);
+$en_attente = ($statut_validation === 'en_attente');
 ?>
 
 <div id="primary" class="content-area">
@@ -99,6 +100,9 @@ $validation_envoyee = !empty($_GET['validation_demandee']);
       }
       if ($validation_envoyee) {
         echo '<p class="message-succes">✅ Votre demande de validation a bien été envoyée. Elle sera traitée par l’équipe.</p>';
+        echo '<script>if(window.history.replaceState){const u=new URL(window.location);u.searchParams.delete("validation_demandee");window.history.replaceState({},"",u);}</script>';
+      } elseif ($en_attente) {
+        echo '<p class="message-info">✅ Votre demande de validation est en cours de traitement par l’équipe.</p>';
       }
       ?>
 
