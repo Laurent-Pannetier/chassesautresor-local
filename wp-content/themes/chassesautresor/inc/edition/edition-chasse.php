@@ -525,3 +525,37 @@ function assigner_organisateur_a_chasse($post_id, $post)
   }
 }
 add_action('save_post_chasse', 'assigner_organisateur_a_chasse', 20, 2);
+
+/**
+ * Définit automatiquement une date de fin par défaut lors de la création d'une chasse.
+ *
+ * Si aucune date n'est encore renseignée, on initialise le champ avec la
+ * date du jour + 2 ans, en suivant la même logique que le JavaScript frontal.
+ *
+ * @param int     $post_id ID de la chasse.
+ * @param WP_Post $post    Objet du post courant.
+ */
+function definir_date_fin_par_defaut($post_id, $post)
+{
+  if ($post->post_type !== 'chasse') {
+    return;
+  }
+
+  if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+    return;
+  }
+
+  $date_fin = get_post_meta($post_id, 'chasse_infos_date_fin', true);
+  if ($date_fin) {
+    return;
+  }
+
+  $timestamp   = current_time('timestamp');
+  $in_two_years = date('Y-m-d', strtotime('+2 years', $timestamp));
+
+  $ok = update_field('chasse_infos_date_fin', $in_two_years, $post_id);
+  if ($ok === false) {
+    update_post_meta($post_id, 'chasse_infos_date_fin', $in_two_years);
+  }
+}
+add_action('save_post_chasse', 'definir_date_fin_par_defaut', 10, 2);
