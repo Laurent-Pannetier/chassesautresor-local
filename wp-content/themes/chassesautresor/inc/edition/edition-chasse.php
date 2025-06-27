@@ -230,7 +230,12 @@ function modifier_dates_chasse()
   $ok2 = update_field('chasse_infos_duree_illimitee', $illimitee ? 1 : 0, $post_id);
   error_log('[modifier_dates_chasse] update chasse_infos_duree_illimitee=' . var_export($ok2, true));
 
-  $ok3 = update_field('chasse_infos_date_fin', $illimitee ? '' : $dt_fin->format('Y-m-d'), $post_id);
+  if ($illimitee) {
+    // Ne pas modifier la date de fin en base
+    $ok3 = true;
+  } else {
+    $ok3 = update_field('chasse_infos_date_fin', $dt_fin->format('Y-m-d'), $post_id);
+  }
   error_log('[modifier_dates_chasse] update chasse_infos_date_fin=' . var_export($ok3, true));
 
   // 🔎 Métas après mise à jour
@@ -251,7 +256,7 @@ function modifier_dates_chasse()
   }
 
   $debut_ok = $saved_debut_dt && $saved_debut_dt->format('Y-m-d H:i:s') === $dt_debut->format('Y-m-d H:i:s');
-  $fin_ok   = $illimitee ? empty($saved_fin_raw) : ($saved_fin_dt && $saved_fin_dt->format('Y-m-d H:i:s') === $dt_fin->format('Y-m-d H:i:s'));
+  $fin_ok   = $illimitee ? true : ($saved_fin_dt && $saved_fin_dt->format('Y-m-d H:i:s') === $dt_fin->format('Y-m-d H:i:s'));
   $illim_ok = (int) $saved_illim === ($illimitee ? 1 : 0);
 
   error_log("[modifier_dates_chasse] verifs: debut_ok=" . var_export($debut_ok, true) . ' fin_ok=' . var_export($fin_ok, true) . ' illim_ok=' . var_export($illim_ok, true));

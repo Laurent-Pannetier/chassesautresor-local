@@ -709,7 +709,8 @@ function enregistrerDatesChasse() {
     action: 'modifier_dates_chasse',
     post_id: postId,
     date_debut: inputDateDebut.value.trim(),
-    date_fin: checkboxIllimitee?.checked ? '' : inputDateFin.value.trim(),
+    // On conserve toujours la date en base, même si l'affichage est "Illimitée"
+    date_fin: inputDateFin.value.trim(),
     illimitee: checkboxIllimitee?.checked ? 1 : 0
   });
   console.log('[enregistrerDatesChasse] params=', params.toString());
