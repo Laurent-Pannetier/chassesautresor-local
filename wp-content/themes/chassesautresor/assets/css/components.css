@@ -687,6 +687,15 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
     margin-top: 15px;
 }
 
+/* ========== ℹ️ MESSAGE INFO ========== */
+.message-info {
+    text-align: center;
+    font-weight: bold;
+    color: #333;
+    font-size: 16px;
+    margin-top: 15px;
+}
+
 /* ========== 🖼️ ICONES SVG ========== */
 .icone-aces-casino, .icone-compass-rose {
   color: var(--color-text-primary);

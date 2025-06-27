@@ -477,13 +477,28 @@ function injection_classe_edition_active(array $classes): array
 /**
  * 📅 Formate une date au format `d/m/Y` ou retourne "Non spécifiée".
  *
- * @param string|null $date La date à formater.
+ * @param mixed $date La date à formater.
  * @return string La date formatée ou "Non spécifiée" si invalide.
  */
-function formater_date(?string $date): string
+function formater_date($date): string
 {
-  if (!$date) return 'Non spécifiée';
-  if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $date)) return $date; // Déjà formatée
+  if (empty($date)) {
+    return 'Non spécifiée';
+  }
+
+  if ($date instanceof DateTimeInterface) {
+    return $date->format('d/m/Y');
+  }
+
+  if (is_array($date) && isset($date['date'])) {
+    $date = $date['date'];
+  }
+
+  $date = (string) $date;
+
+  if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $date)) {
+    return $date; // Déjà formatée
+  }
 
   $timestamp = strtotime($date);
   return ($timestamp !== false) ? date_i18n('d/m/Y', $timestamp) : 'Non spécifiée';
