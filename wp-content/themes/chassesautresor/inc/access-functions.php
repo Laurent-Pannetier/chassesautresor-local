@@ -665,17 +665,11 @@ function utilisateur_peut_editer_champs(int $post_id): bool
             return in_array(ROLE_ORGANISATEUR_CREATION, $roles, true) && $status === 'pending';
 
         case 'chasse':
-            $val     = get_field('chasse_cache_statut_validation', $post_id) ?? '';
-            $stat    = get_field('chasse_cache_statut', $post_id) ?? '';
-            $complet = (bool) get_field('chasse_cache_complet', $post_id);
-            $complet = (bool) get_field('chasse_cache_complet', $post_id);
+            $val  = get_field('chasse_cache_statut_validation', $post_id) ?? '';
+            $stat = get_field('chasse_cache_statut', $post_id) ?? '';
 
-            // Les organisateurs en cours de création peuvent éditer toute chasse
-            // incomplète tant qu'elle est en attente de validation.
-            if (in_array(ROLE_ORGANISATEUR_CREATION, $roles, true)) {
-                return $status === 'pending' && !$complet;
-            }
-
+            // L’édition n'est autorisée que pour les chasses en attente de validation
+            // et dont le statut est « revision » (phase de création ou de correction).
             return $status === 'pending'
                 && $stat === 'revision'
                 && in_array($val, ['creation', 'correction'], true);
