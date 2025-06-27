@@ -132,78 +132,15 @@ $tableau_contenu = ob_get_clean(); // Récupérer la sortie et l'effacer du buff
         </div>
     </div>
 
-    <!-- 📌 Tuiles en Bas (Accès Rapides) -->
-    <div class="section-separator">
-        <hr class="separator-line">
-        <span class="separator-text">MON ESPACE</span>
-        <hr class="separator-line">
-    </div>
-    <div class="dashboard-grid">
-        <div class="dashboard-card">
-            <div class="dashboard-card-header">
-                <i class="fas fa-landmark"></i>
-                <h3>Vos entités</h3>
-            </div>
-            <div class="stats-content">
-                <?php echo $liste_chasses_organisateur; ?>
-            </div>
-        </div>
-        
-        <div class="dashboard-card points-card">
-            <div class="dashboard-card-header">
-                <i class="fa-solid fa-money-bill-transfer"></i>
-                <h3>Convertisseur</h3>
-            </div>
-            <div class="stats-content">
-                <?php echo do_shortcode('[demande_paiement]'); ?>
-        
-                <?php if (!$conversion_autorisee) : ?>
-                    <!-- Overlay bloquant -->
-                    <div class="overlay-taux">
-                        <p class="message-bloque"><?php echo wp_kses_post($statut_conversion); ?></p>
-                    </div>
-                <?php endif; ?>
-            </div>
-        </div>
-        
-        <div class="dashboard-card stats-card">
-            <div class="dashboard-card-header">
-                <i class="fas fa-chart-line"></i>
-                <h3>Mes Stats</h3>
-            </div>
-            <div class="stats-content">
-                <?php echo !empty($stats_output) ? $stats_output : "<p>Aucune statistique disponible.</p>"; ?>
-            </div>
-        </div>
-        
-        <?php if (!empty($commandes_output)) : ?>
-            <a href="<?php echo esc_url(wc_get_account_endpoint_url('orders')); ?>" class="dashboard-card">
-                <div class="dashboard-card-header">
-                    <i class="fas fa-shopping-cart"></i>
-                    <h3>Mes Commandes</h3>
-                </div>
-                <div class="stats-content">
-                    <?php echo $commandes_output; ?>
-                </div>
-            </a>
-        <?php endif; ?>
-        
-        <?php if (!empty($trophees_output)) : ?>
-            <a href="#" class="dashboard-card no-click">
-                <div class="dashboard-card-header">
-                    <i class="fas fa-trophy"></i>
-                    <h3>Mes Trophées</h3>
-                </div>
-                <div class="trophees-content">
-                    <?php echo $trophees_output; ?>
-                </div>
-            </a>
-        <?php endif; ?>
-    
-        <a href="<?php echo esc_url('/mon-compte/outils/'); ?>" class="dashboard-card">
-            <span class="icon">⚙️</span>
-            <h3>Outils</h3>
-        </a>
-    </div>
-
+    <!-- 📌 Tableau de bord -->
+    <?php get_template_part('template-parts/myaccount/dashboard-organisateur', null, [
+        'organisateur_id'    => $organisateur_id,
+        'organisateur_titre' => $organisateur_titre,
+        'nombre_chasses'     => $nombre_chasses,
+        'conversion_autorisee' => $conversion_autorisee,
+        'statut_conversion'  => $statut_conversion,
+        'commandes_output'   => $commandes_output,
+        'trophees_output'    => $trophees_output,
+    ]); ?>
 </div>
+

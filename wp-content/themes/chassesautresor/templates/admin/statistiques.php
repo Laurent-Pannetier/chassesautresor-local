@@ -88,21 +88,7 @@ $logout_url = wc_get_account_endpoint_url('customer-logout'); // Lien déconnexi
                 </div>
             </div>
         
-            <!-- 📌 Tuiles en Bas (Accès Rapides) -->
-            <div class="dashboard-grid">
-                <a href="<?php echo esc_url(wc_get_account_endpoint_url('orders')); ?>" class="dashboard-card">
-                    <span class="icon">📦</span>
-                    <h3>Organisateurs</h3>
-                </a>
-                <a href="<?php echo esc_url(wc_get_account_endpoint_url('users')); ?>" class="dashboard-card">
-                    <span class="icon">👤</span>
-                    <h3>Statistiques</h3>
-                </a>
-                <a href="<?php echo esc_url(wc_get_account_endpoint_url('site-settings')); ?>" class="dashboard-card">
-                    <span class="icon">⚙️</span>
-                    <h3>Outils</h3>
-                </a>
-            </div>
+            <?php get_template_part('template-parts/myaccount/dashboard-admin', null, ['taux_conversion' => get_taux_conversion_actuel()]); ?>
         
         </div>
     </main>
