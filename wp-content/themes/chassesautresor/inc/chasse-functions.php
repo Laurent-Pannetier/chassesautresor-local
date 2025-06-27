@@ -53,11 +53,25 @@ function chasse_get_champs($chasse_id) {
         // Lecture directe des dates pour éviter un éventuel cache ACF
         'date_debut' => (function() use ($chasse_id) {
             $val = get_field('chasse_infos_date_debut', $chasse_id);
-            return $val ?: get_post_meta($chasse_id, 'chasse_infos_date_debut', true);
+            error_log("🔍 chasse {$chasse_id} get_field('date_debut') => " . var_export($val, true));
+            if (!$val) {
+                $meta = get_post_meta($chasse_id, 'chasse_infos_date_debut', true);
+                error_log("📦 chasse {$chasse_id} get_post_meta('date_debut') => " . var_export($meta, true));
+                $val = $meta;
+            }
+            error_log("✅ chasse {$chasse_id} valeur finale date_debut => " . var_export($val, true));
+            return $val;
         })(),
         'date_fin' => (function() use ($chasse_id) {
             $val = get_field('chasse_infos_date_fin', $chasse_id);
-            return $val ?: get_post_meta($chasse_id, 'chasse_infos_date_fin', true);
+            error_log("🔍 chasse {$chasse_id} get_field('date_fin') => " . var_export($val, true));
+            if (!$val) {
+                $meta = get_post_meta($chasse_id, 'chasse_infos_date_fin', true);
+                error_log("📦 chasse {$chasse_id} get_post_meta('date_fin') => " . var_export($meta, true));
+                $val = $meta;
+            }
+            error_log("✅ chasse {$chasse_id} valeur finale date_fin => " . var_export($val, true));
+            return $val;
         })(),
         'illimitee' => get_field('chasse_infos_duree_illimitee', $chasse_id) ?? false,
         'nb_max' => get_field('chasse_infos_nb_max_gagants', $chasse_id) ?? 0,
