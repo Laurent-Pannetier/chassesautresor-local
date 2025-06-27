@@ -570,9 +570,9 @@ function utilisateur_peut_ajouter_chasse(int $organisateur_id): bool
     $roles      = (array) $user->roles;
     $user_id    = (int) $user->ID;
 
-    // Administrateur → accès total
-    if (in_array('administrator', $roles, true)) {
-        return true;
+    // Administrateur → pas d'ajout via l'interface publique
+    if (user_can($user_id, 'manage_options')) {
+        return false;
     }
 
     // L'utilisateur doit être lié à l'organisateur
