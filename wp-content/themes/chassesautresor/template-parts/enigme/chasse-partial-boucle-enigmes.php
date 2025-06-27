@@ -29,6 +29,8 @@ $posts = get_posts([
 // 🔒 Ne garder que les énigmes visibles pour l'utilisateur courant
 $posts_visibles = array_filter($posts, fn($post) => utilisateur_peut_voir_enigme($post->ID, $utilisateur_id));
 $has_enigmes = !empty($posts_visibles);
+// ✅ Une chasse publiée ne doit plus afficher la bordure d'indicateur sur les énigmes
+$chasse_publiee = get_post_status($chasse_id) === 'publish';
 ?>
 
 <div class="bloc-enigmes-chasse">
@@ -41,8 +43,9 @@ $has_enigmes = !empty($posts_visibles);
     $statut_utilisateur = enigme_get_statut_utilisateur($enigme_id, $utilisateur_id);
     $cta = get_cta_enigme($enigme_id);
 
-    $est_orga = est_organisateur();
-    $voir_bordure = $est_orga && utilisateur_est_organisateur_associe_a_chasse($utilisateur_id, $chasse_id);
+  $est_orga = est_organisateur();
+  $associe = utilisateur_est_organisateur_associe_a_chasse($utilisateur_id, $chasse_id);
+  $voir_bordure = $est_orga && $associe && !$chasse_publiee;
     $classe_completion = '';
     if ($voir_bordure) {
       verifier_ou_mettre_a_jour_cache_complet($enigme_id);
