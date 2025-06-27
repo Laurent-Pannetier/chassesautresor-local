@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
 // 📅 Formatage des dates Y-m-d ➔ d/m/Y
 // ==============================
 function formatDateFr(dateStr) {
-  console.log('[formatDateFr] input=', dateStr);
   if (!dateStr) return '';
   if (dateStr.includes('T')) {
     const [datePart] = dateStr.split('T');
@@ -32,7 +31,6 @@ function formatDateFr(dateStr) {
 // 📅 Mise à jour affichage Date Fin
 // ==============================
 function mettreAJourAffichageDateFin() {
-  console.log('[mettreAJourAffichageDateFin]');
   const spanDateFin = document.querySelector('.chasse-date-plage .date-fin');
   const inputDateFin = document.getElementById('chasse-date-fin');
   const checkboxIllimitee = document.getElementById('duree-illimitee');
@@ -49,7 +47,6 @@ function mettreAJourAffichageDateFin() {
 // 📅 initChampDate
 // ==============================
 function initChampDate(input) {
-  console.log('⏱️ Attachement initChampDate à', input, '→ ID:', input.id);
 
   if (input.disabled) {
     return;
@@ -76,7 +73,6 @@ function initChampDate(input) {
     if (saving) return;
     saving = true;
     const valeurBrute = input.value.trim();
-    console.log('[🧪 initChampDate]', champ, '| valeur saisie :', valeurBrute, '| previous :', input.dataset.previous);
     const regexDate = /^\d{4}-\d{2}-\d{2}$/;
     const regexDateTime = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
     if (!regexDate.test(valeurBrute) && !regexDateTime.test(valeurBrute)) {
@@ -105,7 +101,6 @@ function initChampDate(input) {
       typeof window.enregistrerDatesChasse === 'function' &&
       (champ.endsWith('_date_debut') || champ.endsWith('_date_fin'))
     ) {
-      console.log('[initChampDate] appel enregistrerDatesChasse pour', champ);
       window.enregistrerDatesChasse().then(success => {
         saving = false;
         if (success) {

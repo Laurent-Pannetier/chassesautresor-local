@@ -174,11 +174,6 @@ function modifier_dates_chasse()
 
   error_log("[modifier_dates_chasse] post_id={$post_id} date_debut={$date_debut} date_fin={$date_fin} illimitee={$illimitee}");
 
-  // 📦 Valeurs existantes avant mise à jour (pour debug)
-  $old_debut = get_post_meta($post_id, 'chasse_infos_date_debut', true);
-  $old_fin   = get_post_meta($post_id, 'chasse_infos_date_fin', true);
-  $old_illim = get_post_meta($post_id, 'chasse_infos_duree_illimitee', true);
-  error_log("[modifier_dates_chasse] metas_avant: debut={$old_debut} fin={$old_fin} illim={$old_illim}");
 
   if (!$post_id || get_post_type($post_id) !== 'chasse') {
     wp_send_json_error('post_invalide');
@@ -231,30 +226,7 @@ function modifier_dates_chasse()
   $ok3 = update_field('chasse_infos_date_fin', $illimitee ? '' : $dt_fin->format('Y-m-d'), $post_id);
   error_log('[modifier_dates_chasse] update chasse_infos_date_fin=' . var_export($ok3, true));
 
-  // 🔎 Métas après mise à jour
-  $new_debut = get_post_meta($post_id, 'chasse_infos_date_debut', true);
-  $new_fin   = get_post_meta($post_id, 'chasse_infos_date_fin', true);
-  $new_illim = get_post_meta($post_id, 'chasse_infos_duree_illimitee', true);
-  error_log("[modifier_dates_chasse] metas_apres: debut={$new_debut} fin={$new_fin} illim={$new_illim}");
-
-  // Lecture directe pour éviter un cache ACF éventuel
-  $saved_debut_raw = get_post_meta($post_id, 'chasse_infos_date_debut', true);
-  $saved_fin_raw   = get_post_meta($post_id, 'chasse_infos_date_fin', true);
-  $saved_illim     = get_post_meta($post_id, 'chasse_infos_duree_illimitee', true);
-
-  $saved_debut_dt = convertir_en_datetime($saved_debut_raw, ['Y-m-d H:i:s', 'Y-m-d\TH:i', 'Y-m-d', 'YmdHis', 'Ymd']);
-  $saved_fin_dt   = convertir_en_datetime($saved_fin_raw, ['Y-m-d', 'Ymd', 'Y-m-d H:i:s', 'Y-m-d\TH:i']);
-  if ($saved_fin_dt) {
-    $saved_fin_dt->setTime(0, 0, 0);
-  }
-
-  $debut_ok = $saved_debut_dt && $saved_debut_dt->format('Y-m-d H:i:s') === $dt_debut->format('Y-m-d H:i:s');
-  $fin_ok   = $illimitee ? empty($saved_fin_raw) : ($saved_fin_dt && $saved_fin_dt->format('Y-m-d H:i:s') === $dt_fin->format('Y-m-d H:i:s'));
-  $illim_ok = (int) $saved_illim === ($illimitee ? 1 : 0);
-
-  error_log("[modifier_dates_chasse] verifs: debut_ok=" . var_export($debut_ok, true) . ' fin_ok=' . var_export($fin_ok, true) . ' illim_ok=' . var_export($illim_ok, true));
-
-  if (($ok1 || $debut_ok) && ($ok2 || $illim_ok) && ($ok3 || $fin_ok)) {
+  if ($ok1 && $ok2 && $ok3) {
     mettre_a_jour_statuts_chasse($post_id);
     error_log('[modifier_dates_chasse] mise a jour reussie');
     wp_send_json_success([
@@ -264,7 +236,6 @@ function modifier_dates_chasse()
     ]);
   }
 
-  error_log('[modifier_dates_chasse] conditions: ok1=' . var_export($ok1, true) . ' ok2=' . var_export($ok2, true) . ' ok3=' . var_export($ok3, true));
   error_log('[modifier_dates_chasse] echec mise a jour');
   wp_send_json_error('echec_mise_a_jour');
 }

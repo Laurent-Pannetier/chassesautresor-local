@@ -312,7 +312,7 @@ function initLiensChasse(bloc) {
 // 🔎 Validation logique entre date de début et date de fin
 // ==============================
 function validerDatesAvantEnvoi(champModifie) {
-  console.log('[validerDatesAvantEnvoi] champModifie=', champModifie);
+  DEBUG && console.log('[validerDatesAvantEnvoi] champModifie=', champModifie);
   // ✅ Si illimité, on n'applique aucun contrôle
   if (checkboxIllimitee?.checked) return true;
 
@@ -327,12 +327,9 @@ function validerDatesAvantEnvoi(champModifie) {
   const dateMaximum = new Date();
   dateMaximum.setFullYear(dateMaximum.getFullYear() + 5);
 
-  console.log('[validerDatesAvantEnvoi] bornes=', dateMinimum.toISOString(), dateMaximum.toISOString());
 
   const debut = new Date(inputDateDebut.value);
   const fin = new Date(inputDateFin.value);
-
-  console.log('[validerDatesAvantEnvoi] debut=', debut.toISOString(), 'fin=', fin.toISOString());
 
   if (debut < dateMinimum || debut > dateMaximum) {
     if (champModifie === 'debut' && erreurDebut) {
@@ -384,7 +381,7 @@ function validerDatesAvantEnvoi(champModifie) {
 // 🔥 Affichage d'un message global temporaire
 // ==============================
 function afficherErreurGlobale(message) {
-  console.log('[afficherErreurGlobale]', message);
+  DEBUG && console.log('[afficherErreurGlobale]', message);
   const erreurGlobal = document.getElementById('erreur-global');
   if (!erreurGlobal) return;
 
@@ -617,7 +614,7 @@ document.addEventListener('acf/submit_success', function (e) {
 // 🔁 Rafraîchissement dynamique du statut de la chasse
 // ================================
 function rafraichirStatutChasse(postId) {
-  console.log('[rafraichirStatutChasse] postId=', postId);
+  DEBUG && console.log('[rafraichirStatutChasse] postId=', postId);
   if (!postId) return;
 
   fetch(ajaxurl, {
@@ -674,7 +671,7 @@ function rafraichirStatutChasse(postId) {
 // 💾 Enregistrement groupé des dates de chasse
 // ================================
 function enregistrerDatesChasse() {
-  console.log('[enregistrerDatesChasse]');
+  DEBUG && console.log('[enregistrerDatesChasse]');
   if (!inputDateDebut || !inputDateFin) return Promise.resolve(false);
 
   const postId = inputDateDebut.closest('.champ-chasse')?.dataset.postId;
@@ -687,7 +684,6 @@ function enregistrerDatesChasse() {
     date_fin: checkboxIllimitee?.checked ? '' : inputDateFin.value.trim(),
     illimitee: checkboxIllimitee?.checked ? 1 : 0
   });
-  console.log('[enregistrerDatesChasse] params=', params.toString());
 
   return fetch(ajaxurl, {
     method: 'POST',
@@ -696,7 +692,7 @@ function enregistrerDatesChasse() {
   })
     .then(r => r.json())
     .then(res => {
-      console.log('[enregistrerDatesChasse] reponse=', res);
+      DEBUG && console.log('[enregistrerDatesChasse] reponse=', res);
       if (res.success) {
         rafraichirStatutChasse(postId);
         mettreAJourAffichageDateFin();
