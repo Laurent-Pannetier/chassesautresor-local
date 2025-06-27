@@ -136,6 +136,8 @@ function creer_chasse_et_rediriger_si_appel()
   update_field('chasse_infos_date_debut', $today, $post_id);
   update_field('chasse_infos_date_fin', $in_two_years, $post_id);
   update_field('chasse_infos_duree_illimitee', false, $post_id);
+  // Coût par défaut à 0 (mode gratuit)
+  update_field('chasse_infos_cout_points', 0, $post_id);
 
   update_field('chasse_cache_statut', 'revision', $post_id);
   update_field('chasse_cache_statut_validation', 'creation', $post_id);
