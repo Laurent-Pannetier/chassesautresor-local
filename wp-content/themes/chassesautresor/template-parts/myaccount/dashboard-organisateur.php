@@ -47,24 +47,13 @@ $trophees_output    = $args['trophees_output'] ?? '';
             <div class="stats-content">
                 <?php
                 if ($organisateur_id) {
-                    $chasses_query = new WP_Query([
-                        'post_type'      => 'chasse',
-                        'posts_per_page' => 5,
-                        'post_status'    => ['publish', 'pending'],
-                        'meta_query'     => [
-                            [
-                                'key'     => 'chasse_cache_organisateur',
-                                'value'   => '"' . strval($organisateur_id) . '"',
-                                'compare' => 'LIKE'
-                            ]
-                        ],
-                        'orderby' => 'date',
-                        'order'   => 'DESC'
-                    ]);
-                    $total_chasses = $chasses_query->found_posts;
-                    if ($chasses_query->have_posts()) {
+                    $query_total    = get_chasses_de_organisateur($organisateur_id);
+                    $total_chasses  = $query_total->found_posts;
+                    $recent_chasses = array_slice($query_total->posts, 0, 5);
+                    if ($total_chasses) {
                         echo '<table class="stats-table"><thead><tr><th>Titre</th><th>Énigmes</th><th>Joueurs</th></tr></thead><tbody>';
-                        foreach ($chasses_query->posts as $cid) {
+                        foreach ($recent_chasses as $post) {
+                            $cid        = $post->ID;
                             $nb_enigmes = count(recuperer_enigmes_associees($cid));
                             echo '<tr>';
                             echo '<td><a href="' . esc_url(get_permalink($cid)) . '">' . esc_html(get_the_title($cid)) . '</a></td>';
@@ -81,7 +70,7 @@ $trophees_output    = $args['trophees_output'] ?? '';
                         if ($peut_ajouter) {
                             get_template_part('template-parts/chasse/chasse-partial-ajout-chasse', null, [
                                 'organisateur_id' => $organisateur_id,
-                                'has_chasses' => false
+                                'has_chasses'     => false,
                             ]);
                         } else {
                             echo '<p><a href="' . esc_url(get_permalink($organisateur_id)) . '">Complétez votre profil organisateur</a></p>';

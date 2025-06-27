@@ -9,17 +9,6 @@
     background: var(--color-background);
     color: var(--color-text-primary);
 }
-/* ==========================================================
-📌 Styles Généraux - Conteneur & Typographie
-========================================================== */
-.dashboard-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0;
-    font-family: var(--font-main);
-    background: var(--color-background);
-    color: var(--color-text-primary);
-}
 
 
 /* ==========================================================
