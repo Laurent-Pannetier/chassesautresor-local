@@ -496,18 +496,24 @@ function formater_date($date): string
 
   $date = (string) $date;
 
-  // Déjà formatée ?
+  if (preg_match('/^\d{9,10}$/', $date)) {
+    $timestamp = (int) $date;
+    return date_i18n('d/m/Y', $timestamp);
+  }
+
+
   if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $date)) {
     return $date;
   }
 
-  // Format '27/06/2025 1:55 pm'
-  $dt = DateTime::createFromFormat('d/m/Y g:i a', $date);
-  if ($dt instanceof DateTime) {
-    return $dt->format('d/m/Y');
+  if (preg_match('/^\d{8}$/', $date)) {
+    $dt = DateTime::createFromFormat('Ymd', $date);
+    if ($dt) {
+      return $dt->format('d/m/Y');
+    }
   }
 
-  // Dernière tentative : strtotime
+
   $timestamp = strtotime($date);
   return ($timestamp !== false) ? date_i18n('d/m/Y', $timestamp) : 'Non spécifiée';
 }
@@ -527,12 +533,21 @@ function convertir_en_datetime(?string $date_string, array $formats = [
   'd/m/Y',
   'Y-m-d H:i:s',
   'Y-m-d\TH:i',
-  'Y-m-d'
+  'Y-m-d',
+  'Ymd',
+  'YmdHis'
 ]): ?DateTime
 {
   if (empty($date_string)) {
     cat_debug("🚫 Date vide ou non fournie.");
     return null;
+  }
+
+  if (preg_match('/^\d{9,10}$/', $date_string)) {
+    $timezone = function_exists('wp_timezone') ? wp_timezone() : new DateTimeZone('UTC');
+    $dt = new DateTime('@' . $date_string);
+    $dt->setTimezone($timezone);
+    return $dt;
   }
 
   $timezone = function_exists('wp_timezone') ? wp_timezone() : new DateTimeZone('UTC');
@@ -558,7 +573,24 @@ function convertir_en_datetime(?string $date_string, array $formats = [
  */
 function convertir_en_timestamp(?string $date)
 {
-  return $date ? strtotime(str_replace('/', '-', $date)) : false;
+  if (!$date) {
+    return false;
+  }
+
+  $date = (string) $date;
+
+  if (preg_match('/^\d{9,10}$/', $date)) {
+    return (int) $date;
+  }
+
+  if (preg_match('/^\d{8}$/', $date)) {
+    $dt = DateTime::createFromFormat('Ymd', $date);
+    if ($dt) {
+      return $dt->getTimestamp();
+    }
+  }
+
+  return strtotime(str_replace('/', '-', $date));
 }
 
 /**
