@@ -3,6 +3,7 @@ defined('ABSPATH') || exit;
 
 $chasse_id = $args['chasse_id'] ?? null;
 if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
+    error_log('[chasse-validation-actions] appel invalide, chasse_id=' . var_export($chasse_id, true));
     return;
 }
 
