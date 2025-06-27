@@ -96,6 +96,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof window.mettreAJourCarteAjoutEnigme === 'function') {
     window.mettreAJourCarteAjoutEnigme();
   }
+  if (typeof window.mettreAJourEtatIntroChasse === 'function') {
+    window.mettreAJourEtatIntroChasse();
+  }
 
   // ==============================
   // 📅 Gestion Date de fin + Durée illimitée
@@ -586,6 +589,28 @@ window.mettreAJourCarteAjoutEnigme = function () {
       <p>Complétez d’abord : ${texte}</p>
     `;
   }
+};
+
+// ==============================
+// 🎨 Mise à jour visuelle de l'intro de la chasse
+// ==============================
+window.mettreAJourEtatIntroChasse = function () {
+  const section = document.querySelector('.chasse-section-intro');
+  const panel = document.querySelector('.edition-panel-chasse');
+  if (!section || !panel) return;
+
+  const selectors = [
+    '[data-champ="post_title"]',
+    '[data-champ="chasse_principale_image"]',
+    '[data-champ="chasse_principale_description"]'
+  ];
+
+  const incomplets = selectors.filter(sel => {
+    const li = panel.querySelector('.resume-infos ' + sel);
+    return li && li.classList.contains('champ-vide');
+  });
+
+  section.classList.toggle('champ-vide-obligatoire', incomplets.length > 0);
 };
 
 
