@@ -20,7 +20,7 @@ $cout_points       = $champs['cout_points'];
 $date_debut        = $champs['date_debut'];
 $date_fin          = $champs['date_fin'];
 $illimitee         = $champs['illimitee'];
-$nb_max            = $champs['nb_max'];
+$nb_max            = $champs['nb_max'];   
 
 // Champs cachés
 $date_decouverte      = $champs['date_decouverte'];
