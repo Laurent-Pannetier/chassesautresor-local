@@ -753,10 +753,11 @@ function champ_est_editable($champ, $post_id, $user_id = null)
         return false;
     }
 
-    // 🔓 Le titre d'une énigme est éditable tant que l'utilisateur peut
-    // modifier l'énigme via l'édition frontale.
+    // 🔓 Le titre d'une énigme n'est éditable que si l'énigme est encore
+    // en phase de création ou de correction. On applique les mêmes
+    // conditions que pour l'édition générale des champs.
     if ($post_type === 'enigme' && $champ === 'post_title') {
-        return true;
+        return utilisateur_peut_editer_champs($post_id);
     }
 
     // ⚠️ Autres règles spécifiques à définir manuellement ensuite
