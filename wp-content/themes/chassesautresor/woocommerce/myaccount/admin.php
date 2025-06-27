@@ -132,17 +132,6 @@ $taux_conversion = get_taux_conversion_actuel();
             </div>
         <?php endif; ?>
 
-        <?php if (!empty($commandes_output)) : ?>
-            <a href="<?php echo esc_url(wc_get_account_endpoint_url('orders')); ?>" class="dashboard-card">
-                <div class="dashboard-card-header">
-                    <i class="fas fa-shopping-cart"></i>
-                    <h3>Mes Commandes</h3>
-                </div>
-                <div class="stats-content">
-                    <?php echo $commandes_output; ?>
-                </div>
-            </a>
-        <?php endif; ?>
         <div class="dashboard-card">
             <div class="dashboard-card-header">
                 <i class="fas fa-euro-sign"></i>
