@@ -1480,7 +1480,7 @@ function afficher_tableau_organisateurs_pending() {
     }
 
     echo '<table class="table-organisateurs">';
-    echo '<thead><tr><th>Organisateur</th><th>Chasse</th><th>Utilisateur</th><th>Créé le</th></tr></thead><tbody>';
+    echo '<thead><tr><th>Organisateur</th><th>Chasse</th><th>État</th><th>Utilisateur</th><th>Créé le</th></tr></thead><tbody>';
 
     foreach ($liste as $entry) {
         $class_org = $entry['organisateur_complet'] ? 'carte-complete' : 'carte-incomplete';
@@ -1498,6 +1498,7 @@ function afficher_tableau_organisateurs_pending() {
         } else {
             echo '<td>-</td>';
         }
+        echo '<td>' . esc_html($entry['validation']) . '</td>';
         if ($entry['user_id']) {
             echo '<td><a href="' . esc_url($entry['user_link']) . '" target="_blank">' . esc_html($entry['user_name']) . '</a></td>';
         } else {

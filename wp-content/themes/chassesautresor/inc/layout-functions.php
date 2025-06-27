@@ -155,6 +155,13 @@ function charger_scripts_personnalises() {
       filemtime(get_stylesheet_directory() . '/assets/js/validation-admin.js'),
       true
     );
+    wp_enqueue_script(
+      'tri-organisateurs',
+      $theme_dir . 'tri-organisateurs.js',
+      [],
+      filemtime(get_stylesheet_directory() . '/assets/js/tri-organisateurs.js'),
+      true
+    );
 }
 // ✅ Ajout des scripts au chargement de WordPress
 add_action('wp_enqueue_scripts', 'charger_scripts_personnalises');
