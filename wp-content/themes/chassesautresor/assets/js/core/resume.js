@@ -101,7 +101,7 @@ window.mettreAJourResumeInfos = function () {
       // Règles spécifiques pour les énigmes
       if (champ === 'post_title') {
         const valeur = blocEdition?.querySelector('.champ-input')?.value.trim().toLowerCase();
-        const titreParDefaut = 'nouvelle énigme';
+        const titreParDefaut = 'en création';
         estRempli = valeur && valeur !== titreParDefaut;
       }
 

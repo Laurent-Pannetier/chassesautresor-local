@@ -47,7 +47,7 @@ $pre_requis_ok   = enigme_pre_requis_remplis($enigme_id, $user_id);
 
 // 🔹 Données affichables
 $titre              = get_the_title($enigme_id);
-$titre_defaut       = 'nouvelle énigme';
+$titre_defaut       = TITRE_DEFAUT_ENIGME;
 $isTitreParDefaut   = strtolower(trim($titre)) === strtolower($titre_defaut);
 $legende            = get_field('enigme_visuel_legende', $enigme_id);
 $image_url = get_image_enigme($enigme_id, 'large');
