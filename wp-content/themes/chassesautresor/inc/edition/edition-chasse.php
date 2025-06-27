@@ -208,6 +208,8 @@ function modifier_dates_chasse()
     if (!$dt_fin) {
       wp_send_json_error('format_fin_invalide');
     }
+    // Uniformise l'heure pour faciliter la comparaison
+    $dt_fin->setTime(0, 0, 0);
     if ($dt_fin->getTimestamp() <= $dt_debut->getTimestamp()) {
       wp_send_json_error('date_fin_avant_debut');
     }
@@ -223,15 +225,18 @@ function modifier_dates_chasse()
   $ok3 = update_field('chasse_infos_date_fin', $illimitee ? '' : $dt_fin->format('Y-m-d'), $post_id);
   error_log('[modifier_dates_chasse] update chasse_infos_date_fin=' . var_export($ok3, true));
 
-  $saved_debut_raw = get_field('chasse_infos_date_debut', $post_id);
-  $saved_fin_raw   = get_field('chasse_infos_date_fin', $post_id);
-  $saved_illim     = get_field('chasse_infos_duree_illimitee', $post_id);
+  $saved_debut_raw = get_field('chasse_infos_date_debut', $post_id, false);
+  $saved_fin_raw   = get_field('chasse_infos_date_fin', $post_id, false);
+  $saved_illim     = get_field('chasse_infos_duree_illimitee', $post_id, false);
 
-  $saved_debut_dt = convertir_en_datetime($saved_debut_raw, ['Y-m-d H:i:s', 'Y-m-d\TH:i', 'Y-m-d']);
-  $saved_fin_dt   = convertir_en_datetime($saved_fin_raw, ['Y-m-d', 'Y-m-d H:i:s', 'Y-m-d\TH:i']);
+  $saved_debut_dt = convertir_en_datetime($saved_debut_raw, ['Y-m-d H:i:s', 'Y-m-d\TH:i', 'Y-m-d', 'YmdHis', 'Ymd']);
+  $saved_fin_dt   = convertir_en_datetime($saved_fin_raw, ['Y-m-d', 'Ymd', 'Y-m-d H:i:s', 'Y-m-d\TH:i']);
+  if ($saved_fin_dt) {
+    $saved_fin_dt->setTime(0, 0, 0);
+  }
 
   $debut_ok = $saved_debut_dt && $saved_debut_dt->format('Y-m-d H:i:s') === $dt_debut->format('Y-m-d H:i:s');
-  $fin_ok   = $illimitee ? empty($saved_fin_raw) : ($saved_fin_dt && $saved_fin_dt->format('Y-m-d') === $dt_fin->format('Y-m-d'));
+  $fin_ok   = $illimitee ? empty($saved_fin_raw) : ($saved_fin_dt && $saved_fin_dt->format('Y-m-d H:i:s') === $dt_fin->format('Y-m-d H:i:s'));
   $illim_ok = (int) $saved_illim === ($illimitee ? 1 : 0);
 
   if (($ok1 || $debut_ok) && ($ok2 || $illim_ok) && ($ok3 || $fin_ok)) {
