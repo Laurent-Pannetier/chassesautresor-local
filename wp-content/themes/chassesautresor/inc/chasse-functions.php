@@ -50,8 +50,15 @@ function chasse_get_champs($chasse_id) {
         'titre_recompense' => get_field('chasse_infos_recompense_titre', $chasse_id) ?? '',
         'valeur_recompense' => get_field('chasse_infos_recompense_valeur', $chasse_id) ?? '',
         'cout_points' => get_field('chasse_infos_cout_points', $chasse_id) ?? 0,
-        'date_debut' => get_field('chasse_infos_date_debut', $chasse_id),
-        'date_fin' => get_field('chasse_infos_date_fin', $chasse_id),
+        // Lecture directe des dates pour éviter un éventuel cache ACF
+        'date_debut' => (function() use ($chasse_id) {
+            $val = get_field('chasse_infos_date_debut', $chasse_id);
+            return $val ?: get_post_meta($chasse_id, 'chasse_infos_date_debut', true);
+        })(),
+        'date_fin' => (function() use ($chasse_id) {
+            $val = get_field('chasse_infos_date_fin', $chasse_id);
+            return $val ?: get_post_meta($chasse_id, 'chasse_infos_date_fin', true);
+        })(),
         'illimitee' => get_field('chasse_infos_duree_illimitee', $chasse_id) ?? false,
         'nb_max' => get_field('chasse_infos_nb_max_gagants', $chasse_id) ?? 0,
         'date_decouverte' => get_field('chasse_cache_date_decouverte', $chasse_id),
