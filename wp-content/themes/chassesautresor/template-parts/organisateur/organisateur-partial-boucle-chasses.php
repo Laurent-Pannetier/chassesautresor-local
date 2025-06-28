@@ -33,7 +33,10 @@ $posts   = array_values(array_filter($posts, function ($post) use ($user_id) {
     <?php
     $chasse_id = $post->ID;
     $est_orga = est_organisateur();
-    $voir_bordure = $est_orga && utilisateur_est_organisateur_associe_a_chasse(get_current_user_id(), $chasse_id);
+    $wp_status = get_post_status($chasse_id);
+    $voir_bordure = $est_orga &&
+      utilisateur_est_organisateur_associe_a_chasse(get_current_user_id(), $chasse_id) &&
+      $wp_status !== 'publish';
     $classe_completion = '';
     if ($voir_bordure) {
       verifier_ou_mettre_a_jour_cache_complet($chasse_id);

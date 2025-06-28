@@ -52,10 +52,12 @@ foreach ($posts as $p) {
     $cta = get_cta_enigme($enigme_id);
 
     $est_orga = est_organisateur();
-    $wp_statut = get_post_status($chasse_id);
+    $statut_chasse = get_post_status($chasse_id);
+    $statut_enigme = get_post_status($enigme_id);
     $voir_bordure = $est_orga &&
       utilisateur_est_organisateur_associe_a_chasse($utilisateur_id, $chasse_id) &&
-      $wp_statut !== 'publish';
+      $statut_chasse !== 'publish' &&
+      $statut_enigme !== 'publish';
     $classe_completion = '';
     if ($voir_bordure) {
       verifier_ou_mettre_a_jour_cache_complet($enigme_id);
