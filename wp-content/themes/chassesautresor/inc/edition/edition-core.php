@@ -452,7 +452,7 @@ function injection_classe_edition_active(array $classes): array
   // === CHASSE ===
   if (
     $post->post_type === 'chasse' &&
-    in_array(ROLE_ORGANISATEUR_CREATION, $roles, true)
+    (in_array(ROLE_ORGANISATEUR_CREATION, $roles, true) || in_array(ROLE_ORGANISATEUR, $roles, true))
   ) {
     $organisateur_id = get_organisateur_from_chasse($post->ID);
     $associes = get_field('utilisateurs_associes', $organisateur_id, false);
@@ -461,9 +461,12 @@ function injection_classe_edition_active(array $classes): array
     if (in_array((string) $user_id, $associes, true)) {
       verifier_ou_mettre_a_jour_cache_complet($post->ID);
 
+      $validation = get_field('chasse_cache_statut_validation', $post->ID);
+      $statut = get_field('chasse_cache_statut', $post->ID);
+
       if (
-        get_post_status($post) === 'pending' &&
-        !get_field('chasse_cache_complet', $post->ID)
+        $statut === 'revision' &&
+        in_array($validation, ['creation', 'correction'], true)
       ) {
         $classes[] = 'edition-active-chasse';
       }

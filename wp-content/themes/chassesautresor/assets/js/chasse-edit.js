@@ -55,6 +55,16 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ==============================
+  // 🧭 Déclencheur automatique
+  // ==============================
+  const params = new URLSearchParams(window.location.search);
+  const doitOuvrir = params.get('edition') === 'open';
+  if (doitOuvrir) {
+    document.getElementById('toggle-mode-edition-chasse')?.click();
+    DEBUG && console.log('🔧 Ouverture auto du panneau édition chasse via ?edition=open');
+  }
+
+  // ==============================
   // 📜 Panneau description (wysiwyg)
   // ==============================
   document.addEventListener('click', (e) => {
