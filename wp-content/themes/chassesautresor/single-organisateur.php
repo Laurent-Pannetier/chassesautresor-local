@@ -94,27 +94,26 @@ get_header();
                 </div>
                 <div class="ligne-chasses"></div>
                 <div class="liste-chasses">
-                    <div class="grille-3">
-                            <?php foreach ($chasses as $post) :
-                                $chasse_id = $post->ID; ?>
-                                <article class="carte-chasse" data-post-id="<?= esc_attr($chasse_id); ?>">
-                                    <div class="carte-core">
-                                        <?php afficher_picture_vignette_chasse($chasse_id); ?>
-                                        <h2><?= esc_html(get_the_title($chasse_id)); ?></h2>
-                                    </div>
-                                </article>
-                            <?php endforeach; ?>
+                    <?php
+                    ob_start();
+                    if ($peut_ajouter && $statut_organisateur !== 'publish') {
+                        get_template_part('template-parts/chasse/chasse-partial-ajout-chasse', null, [
+                            'has_chasses'     => $has_chasses,
+                            'organisateur_id' => $organisateur_id,
+                            'highlight_pulse' => $highlight_pulse,
+                        ]);
+                    }
+                    $after_items = ob_get_clean();
 
-                            <?php if ($peut_ajouter && $statut_organisateur !== 'publish') :
-                                get_template_part('template-parts/chasse/chasse-partial-ajout-chasse', null, [
-                                    'has_chasses'     => $has_chasses,
-                                    'organisateur_id' => $organisateur_id,
-                                    'highlight_pulse' => $highlight_pulse,
-                                ]);
-                            endif; ?>
-                        </div>
-                    </div>
+                    get_template_part('template-parts/organisateur/organisateur-partial-boucle-chasses', null, [
+                        'organisateur_id' => $organisateur_id,
+                        'show_header'     => false,
+                        'grid_class'      => 'grille-3',
+                        'after_items'     => $after_items,
+                    ]);
+                    ?>
                 </div>
+            </div>
         </section>
 
     </main>
