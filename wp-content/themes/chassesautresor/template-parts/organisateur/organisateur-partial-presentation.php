@@ -4,6 +4,7 @@ defined('ABSPATH') || exit;
 
 $organisateur_id = get_organisateur_id_from_context($args ?? []);
 $peut_modifier = utilisateur_peut_modifier_post($organisateur_id);
+$nb_chasses     = organisateur_get_nb_chasses_publiees($organisateur_id);
 
 $description = get_field('description_longue', $organisateur_id);
 $date_inscription = get_the_date('d/m/Y', $organisateur_id);
@@ -101,7 +102,7 @@ if (!empty($liens_publics) && is_array($liens_publics)) {
           <div class="meta-etiquette" title="Nombre de chasses publiées">
             <i class="fa-solid fa-compass-drafting"></i>
             <strong>Chasses :</strong>
-            <span data-champ="nb_chasses">—</span>
+            <span data-champ="nb_chasses"><?php echo intval($nb_chasses); ?></span>
           </div>
         
           <div class="meta-etiquette" title="Nombre de joueurs ayant participé à ses chasses">

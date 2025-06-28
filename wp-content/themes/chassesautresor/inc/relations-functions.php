@@ -257,6 +257,49 @@ function get_chasses_de_organisateur($organisateur_id)
 }
 
 /**
+ * Retourne le nombre de chasses publiées pour un organisateur donné.
+ *
+ * Utilise un cache statique pour éviter des requêtes répétées.
+ *
+ * @param int $organisateur_id ID de l'organisateur.
+ * @return int Nombre de chasses publiées.
+ */
+function organisateur_get_nb_chasses_publiees(int $organisateur_id): int
+{
+  static $cache = [];
+
+  if (isset($cache[$organisateur_id])) {
+    return $cache[$organisateur_id];
+  }
+
+  if ($organisateur_id <= 0) {
+    return $cache[$organisateur_id] = 0;
+  }
+
+  $query = new WP_Query([
+    'post_type'              => 'chasse',
+    'posts_per_page'         => 1,
+    'post_status'            => 'publish',
+    'fields'                 => 'ids',
+    'no_found_rows'          => false,
+    'update_post_meta_cache' => false,
+    'update_post_term_cache' => false,
+    'meta_query'             => [
+      [
+        'key'     => 'chasse_cache_organisateur',
+        'value'   => '"' . $organisateur_id . '"',
+        'compare' => 'LIKE',
+      ],
+    ],
+  ]);
+
+  $count = (int) $query->found_posts;
+  $cache[$organisateur_id] = $count;
+
+  return $count;
+}
+
+/**
  * 🔹 get_chasses_en_creation() → Récupère les chasses en création pour un organisateur donné.
  *
  * @param int $organisateur_id
