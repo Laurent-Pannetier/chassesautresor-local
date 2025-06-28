@@ -341,7 +341,9 @@ function peut_valider_chasse(int $chasse_id, int $user_id): bool
         return false;
     }
 
-    $enigmes = recuperer_enigmes_associees($chasse_id);
+    // Utilise la requête directe pour lister toutes les énigmes rattachées
+    // afin d'éviter toute incohérence liée au cache "chasse_cache_enigmes".
+    $enigmes = recuperer_ids_enigmes_pour_chasse($chasse_id);
     if (empty($enigmes)) {
         return false;
     }
