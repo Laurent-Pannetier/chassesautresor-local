@@ -585,8 +585,11 @@ function utilisateur_peut_ajouter_chasse(int $organisateur_id): bool
         return false;
     }
 
-    // Organisateur : aucune limite
+    // Organisateur : une seule chasse en attente à la fois une fois publié
     if (in_array(ROLE_ORGANISATEUR, $roles, true)) {
+        if (get_post_status($organisateur_id) === 'publish' && organisateur_a_chasse_pending($organisateur_id)) {
+            return false;
+        }
         return true;
     }
 

@@ -110,6 +110,15 @@ function creer_chasse_et_rediriger_si_appel()
     }
   }
 
+  // 🔒 Organisateur publié : une seule chasse en attente à la fois
+  if (
+    !current_user_can('manage_options') &&
+    get_post_status($organisateur_id) === 'publish' &&
+    organisateur_a_chasse_pending($organisateur_id)
+  ) {
+    wp_die('Une chasse est déjà en attente de validation.');
+  }
+
   // 📝 Création du post "chasse"
   $post_id = wp_insert_post([
     'post_type'   => 'chasse',
