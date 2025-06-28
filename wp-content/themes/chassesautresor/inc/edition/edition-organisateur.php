@@ -28,8 +28,10 @@ function organisateur_get_liens_actifs(int $organisateur_id): array
 
   if (!empty($liens_publics) && is_array($liens_publics)) {
     foreach ($liens_publics as $entree) {
-      $type = $entree['type_de_lien'] ?? null;
-      $url  = $entree['url_lien'] ?? null;
+      $type_raw = $entree['type_de_lien'] ?? null;
+      $url      = $entree['url_lien'] ?? null;
+
+      $type = is_array($type_raw) ? ($type_raw[0] ?? '') : $type_raw;
 
       if (is_string($type) && trim($type) !== '' && is_string($url) && trim($url) !== '') {
         $liens_actifs[$type] = esc_url($url);
