@@ -9,7 +9,7 @@ let erreurFin;
 let checkboxIllimitee;
 
 
-document.addEventListener('DOMContentLoaded', () => {
+function initChasseEdit() {
   if (typeof initZonesClicEdition === 'function') initZonesClicEdition();
   inputDateDebut = document.getElementById('chasse-date-debut');
   inputDateFin = document.getElementById('chasse-date-fin');
@@ -304,7 +304,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
   }
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initChasseEdit);
+} else {
+  initChasseEdit();
+}
 
 
 // ==============================

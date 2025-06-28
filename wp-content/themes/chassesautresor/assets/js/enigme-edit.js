@@ -7,7 +7,7 @@ let panneauEdition;
 
 
 
-document.addEventListener('DOMContentLoaded', () => {
+function initEnigmeEdit() {
   if (typeof initZonesClicEdition === 'function') initZonesClicEdition();
   boutonToggle = document.getElementById('toggle-mode-edition-enigme');
   panneauEdition = document.querySelector('.edition-panel-enigme');
@@ -301,7 +301,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initEnigmeEdit);
+} else {
+  initEnigmeEdit();
+}
 
 // ================================
 // 🖼️ Panneau images galerie (ACF gallery)
@@ -490,7 +496,7 @@ window.onCoutPointsUpdated = function (bloc, champ, valeur, postId, cpt) {
 // ==============================
 // 🔐 Champ bonne réponse – Limite 75 caractères + message d’alerte
 // ==============================
-document.addEventListener('DOMContentLoaded', () => {
+function initChampBonneReponse() {
   const bloc = document.querySelector('[data-champ="enigme_reponse_bonne"]');
   if (!bloc) return;
 
@@ -538,7 +544,13 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 400);
     }
   });
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initChampBonneReponse);
+} else {
+  initChampBonneReponse();
+}
 
 
 // ==============================
@@ -1006,7 +1018,7 @@ document.querySelector('#panneau-solution-enigme .panneau-fermer')?.addEventList
 // ==============================
 // ✅ Enregistrement condition "pré-requis" à la sélection du radio
 // ==============================
-document.addEventListener('DOMContentLoaded', () => {
+function initEnregistrementPreRequis() {
   const radioPreRequis = document.querySelector('input[name="acf[enigme_acces_condition]"][value="pre_requis"]');
   const champBloc = document.querySelector('[data-champ="enigme_acces_pre_requis"]');
   const postId = champBloc?.dataset.postId;
@@ -1042,7 +1054,13 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('❌ Erreur réseau lors de l’enregistrement de la condition pré-requis', err);
       });
   });
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initEnregistrementPreRequis);
+} else {
+  initEnregistrementPreRequis();
+}
 
 function appliquerEtatGratuitEnLive() {
   DEBUG && console.log('✅ enappliquerEtatGratuit() chargé');
