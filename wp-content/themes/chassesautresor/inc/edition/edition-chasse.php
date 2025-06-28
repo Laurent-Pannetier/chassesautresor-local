@@ -152,8 +152,8 @@ function creer_chasse_et_rediriger_si_appel()
   update_field('chasse_cache_statut_validation', 'creation', $post_id);
   update_field('chasse_cache_organisateur', [$organisateur_id], $post_id);
 
-  // 🚀 Redirection vers la prévisualisation frontale avec panneau ouvert
-  $preview_url = add_query_arg('edition', 'open', get_preview_post_link($post_id));
+  // 🚀 Redirection vers la prévisualisation frontale
+  $preview_url = get_preview_post_link($post_id);
   cat_debug("➡️ Redirection vers : {$preview_url}");
   wp_redirect($preview_url);
   exit;
