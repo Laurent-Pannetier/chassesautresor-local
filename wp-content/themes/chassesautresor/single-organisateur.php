@@ -60,6 +60,22 @@ get_header();
             get_current_user_id() === (int) get_post_field('post_author', $organisateur_id) &&
             $statut_organisateur === 'pending' &&
             !organisateur_a_des_chasses($organisateur_id);
+
+        $query       = get_chasses_de_organisateur($organisateur_id);
+        $chasses     = is_a($query, 'WP_Query') ? $query->posts : (array) $query;
+        $user_id     = get_current_user_id();
+        $chasses     = array_values(array_filter(
+            $chasses,
+            static fn($post) => chasse_est_visible_pour_utilisateur($post->ID, $user_id)
+        ));
+        $peut_ajouter   = utilisateur_peut_ajouter_chasse($organisateur_id);
+        $has_chasses    = !empty($chasses);
+        $cache_complet  = (bool) get_field('organisateur_cache_complet', $organisateur_id);
+        $highlight_pulse =
+            !$has_chasses &&
+            $is_owner &&
+            in_array(ROLE_ORGANISATEUR_CREATION, $roles, true) &&
+            $cache_complet;
         ?>
 
         <!-- Section Chasses -->
@@ -79,24 +95,8 @@ get_header();
                 <div class="ligne-chasses"></div>
                 <div class="liste-chasses">
                     <div class="grille-3">
-                            <?php
-                            $organisateur_id = get_the_ID();
-                            $query = get_chasses_de_organisateur($organisateur_id);
-                            $chasses = is_a($query, 'WP_Query') ? $query->posts : (array) $query;
-                            $user_id = get_current_user_id();
-                            $chasses = array_values(array_filter($chasses, function ($post) use ($user_id) {
-                                return chasse_est_visible_pour_utilisateur($post->ID, $user_id);
-                            }));
-                            $peut_ajouter = utilisateur_peut_ajouter_chasse($organisateur_id);
-                            $has_chasses = !empty($chasses);
-                            $cache_complet = (bool) get_field('organisateur_cache_complet', $organisateur_id);
-                            $highlight_pulse = !$has_chasses && $is_owner && in_array(ROLE_ORGANISATEUR_CREATION, $roles, true) && $cache_complet;
-
-
-                            foreach ($chasses as $post) :
-                                $chasse_id = $post->ID;
-
-                            ?>
+                            <?php foreach ($chasses as $post) :
+                                $chasse_id = $post->ID; ?>
                                 <article class="carte-chasse" data-post-id="<?= esc_attr($chasse_id); ?>">
                                     <div class="carte-core">
                                         <?php afficher_picture_vignette_chasse($chasse_id); ?>
