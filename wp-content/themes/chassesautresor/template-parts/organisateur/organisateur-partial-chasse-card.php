@@ -20,7 +20,10 @@ $permalink = get_permalink($chasse_id);
 $description = get_field('description_chasse', $chasse_id);
 $statut = null;
 verifier_ou_recalculer_statut_chasse($chasse_id);
-$statut = get_field('chasse_cache_statut', $chasse_id) ?? 'revision';
+$statut = get_field('chasse_cache_statut', $chasse_id);
+if (empty($statut)) {
+    $statut = 'revision';
+}
 $statut_validation = get_field('chasse_cache_statut_validation', $chasse_id);
 $statut_label = ucfirst(str_replace('_', ' ', $statut));
 if ($statut === 'revision') {
@@ -98,11 +101,9 @@ $classe_verrouillee = '';
         </div>
     <?php endif; ?>
     <div class="carte-ligne__image">
-        <?php if ($statut): ?>
-            <span class="badge-statut <?php echo esc_attr($badge_class); ?>">
-                <?php echo esc_html($statut_label); ?>
-            </span>
-        <?php endif; ?>
+        <span class="badge-statut <?php echo esc_attr($badge_class); ?>" data-post-id="<?php echo esc_attr($chasse_id); ?>">
+            <?php echo esc_html($statut_label); ?>
+        </span>
 
 
         <img src="<?php echo esc_url($image); ?>" alt="<?php echo esc_attr($titre); ?>">
