@@ -15,9 +15,26 @@ $completion_class = $args['completion_class'] ?? '';
 
 // 🔹 Récupération des données de la chasse
 $titre = get_the_title($chasse_id);
-$image = get_the_post_thumbnail_url($chasse_id, 'medium_large');
 $permalink = get_permalink($chasse_id);
-$description = get_field('description_chasse', $chasse_id);
+$image_data = get_field('chasse_principale_image', $chasse_id);
+$image = '';
+if (is_array($image_data) && !empty($image_data['sizes']['medium'])) {
+    $image = $image_data['sizes']['medium'];
+} elseif ($image_data) {
+    $image_id = is_array($image_data) ? ($image_data['ID'] ?? 0) : (int) $image_data;
+    $image = $image_id ? wp_get_attachment_image_url($image_id, 'medium') : '';
+}
+if (!$image) {
+    $image = get_the_post_thumbnail_url($chasse_id, 'medium');
+}
+$champs = chasse_get_champs($chasse_id);
+$titre_recompense  = $champs['titre_recompense'];
+$valeur_recompense = $champs['valeur_recompense'];
+$cout_points       = $champs['cout_points'];
+$date_debut        = $champs['date_debut'];
+$date_fin          = $champs['date_fin'];
+$illimitee         = $champs['illimitee'];
+$description = get_field('chasse_principale_description', $chasse_id);
 $statut = null;
 verifier_ou_recalculer_statut_chasse($chasse_id);
 $statut = get_field('chasse_cache_statut', $chasse_id);
@@ -36,13 +53,7 @@ if ($statut === 'revision') {
     }
 }
 
-// 🔹 Lecture directe des sous-champs ACF
-$date_debut     = get_field('chasse_infos_date_debut', $chasse_id);
-$date_fin       = get_field('chasse_infos_date_fin', $chasse_id);
-$illimitee      = get_field('chasse_infos_duree_illimitee', $chasse_id); // "stop" ou "continue"
-$valeur_tresor  = get_field('contre_valeur_tresor', $chasse_id);
-$lot_description = get_field('lot', $chasse_id);
-
+// 🔹 Informations supplémentaires
 $nb_joueurs = get_field('total_joueurs_souscription_chasse', $chasse_id);
 
 
@@ -52,120 +63,81 @@ $classe_statut = $badge_class;
 $enigmes_associees = recuperer_enigmes_associees($chasse_id);
 $total_enigmes = count($enigmes_associees);
 
-$menu_items = [];  // MENU CONTEXTUEL
-$peut_ajouter_enigme = utilisateur_peut_creer_post('enigme', $chasse_id);
-if (utilisateur_peut_modifier_post($chasse_id)) {
-    $edit_link = get_edit_post_link($chasse_id);
-if ($edit_link) {
-    $menu_items[] = '<li><a href="' . esc_url($edit_link) . '" class="menu-btn">
-                        <i class="fa fa-edit"></i> <span>Modifier</span>
-                     </a></li>';
-} else {
-    error_log("⚠️ [DEBUG] Aucun lien d'édition disponible pour la chasse ID: {$chasse_id}");
-}
-
-}
-
-if ($peut_ajouter_enigme) {
-    $menu_items[] = '<li>
-                        <a href="' . esc_url(admin_url('post-new.php?post_type=enigme&chasse_associee=' . $chasse_id)) . '" 
-                           class="menu-btn ajouter-enigme">
-                            <i class="fa fa-plus"></i> <span>Ajouter énigme</span>
-                        </a>
-                    </li>';
-
-    if ($total_enigmes === 0) {
-        $menu_items[] = '<li class="tooltip-ajouter-enigme">
-                            <div class="tooltip-content">
-                                <i class="fa fa-info-circle"></i> Prochaine étape
-                                <button class="close-tooltip">&times;</button>
-                            </div>
-                        </li>';
-    }
-}
 
 // Pourra servir à appliquer des styles spécifiques selon le statut
 $classe_verrouillee = '';
 ?>
 
 <div class="carte carte-ligne carte-chasse <?php echo esc_attr(trim($classe_statut . ' ' . $classe_verrouillee . ' ' . $completion_class)); ?>">
-    <?php // ✅ Afficher le menu uniquement s'il y a des actions
-    if (!empty($menu_items)) : ?>
-        <div class="menu-actions">
-            <button class="menu-btn-toggle">
-                <i class="fa fa-ellipsis-h"></i>
-            </button>
-            <ul class="menu-dropdown">
-                <?php echo implode("\n", $menu_items); ?>
-            </ul>
-        </div>
-    <?php endif; ?>
     <div class="carte-ligne__image">
         <span class="badge-statut <?php echo esc_attr($badge_class); ?>" data-post-id="<?php echo esc_attr($chasse_id); ?>">
             <?php echo esc_html($statut_label); ?>
         </span>
-
-
         <img src="<?php echo esc_url($image); ?>" alt="<?php echo esc_attr($titre); ?>">
     </div>
 
     <div class="carte-ligne__contenu">
         <h3 class="carte-ligne__titre"><a href="<?php echo esc_url($permalink); ?>"><?php echo esc_html($titre); ?></a></h3>
-        
-        <?php if ($description): ?>
-            <div class="carte-ligne__description"><?php echo limiter_texte_avec_toggle($description, 350); ?></div>
-        <?php endif; ?>
 
-        <div class="carte-ligne__details">
-            <?php if ($date_debut || $date_fin): ?>
-                <span><i class="fa fa-calendar"></i> 
-                    Début : <?php echo esc_html(formater_date($date_debut)); ?> - 
-                    Fin : <?php echo esc_html($date_fin ? formater_date($date_fin) : 'Illimité'); ?>
+        <div class="meta-row svg-xsmall">
+            <div class="meta-regular">
+                <?php echo get_svg_icon('enigme'); ?> <?php echo esc_html($total_enigmes); ?> énigme<?php echo ($total_enigmes > 1 ? 's' : ''); ?> —
+                <?php echo get_svg_icon('participants'); ?><?php echo esc_html($nb_joueurs); ?> joueur<?php echo ($nb_joueurs > 1 ? 's' : ''); ?>
+            </div>
+            <div class="meta-etiquette">
+                <?php echo get_svg_icon('calendar'); ?>
+                <span class="chasse-date-plage">
+                    <span class="date-debut"><?php echo esc_html(formater_date($date_debut)); ?></span> →
+                    <span class="date-fin"><?php echo esc_html($illimitee ? 'Illimitée' : ($date_fin ? formater_date($date_fin) : 'Non spécifiée')); ?></span>
                 </span>
-            <?php endif; ?>
-            
-            <?php if ($nb_joueurs): ?>
-                <span><i class="fa fa-users"></i> <?php echo esc_html($nb_joueurs); ?> joueurs</span>
-            <?php endif; ?>
-
-            <?php if ($valeur_tresor): ?>
-                <span><i class="fa fa-gem"></i> <?php echo esc_html($valeur_tresor); ?>€</span>
-            <?php endif; ?>
-            
-            <?php if ($total_enigmes > 0): ?>
-                <span><i class="fa fa-puzzle-piece"></i> <?php echo esc_html($total_enigmes); ?> énigmes</span>
-            <?php else: ?>
-                <span>
-                    <i class="fa fa-exclamation-triangle" style="color: red;"></i>
-                    <span style="color: red; font-weight: bold;">0</span> énigme
-                </span>
-            <?php endif; ?>
-
-
+            </div>
         </div>
 
-        <?php if ($statut === 'termine') : ?>
-            <div class="chasse-terminee">
-                <?php 
-                // 🔹 Date de découverte
-                $date_decouverte = get_field('date_de_decouverte', $chasse_id);
-                $gagnants = get_field('gagnant', $chasse_id) ?? [];
-                ?>
-                <p>
-                    <?php echo esc_html($date_decouverte ? formater_date($date_decouverte) : __('Solution non trouvée', 'textdomain')); ?>
-                </p>
-                <?php 
-                // 🔹 Limite à 3 gagnants
-                if (!empty($gagnants)) :
-                    $gagnants_affiches = array_slice((array) $gagnants, 0, 3);
-                    ?>
-                    <p><i class="fa fa-user"></i> Gagnant(s) : <?php echo esc_html(implode(', ', $gagnants_affiches)); ?></p>
-                <?php endif; ?>
-        
+        <?php
+        $texte_complet = wp_strip_all_tags($description);
+        $extrait = wp_trim_words($texte_complet, 60, '...');
+        ?>
+        <?php if ($extrait) : ?>
+            <p class="chasse-intro-extrait liste-elegante"><strong>Présentation :</strong> <?php echo esc_html($extrait); ?></p>
+        <?php endif; ?>
+
+        <?php if (!empty($titre_recompense) && (float) $valeur_recompense > 0) : ?>
+            <div class="chasse-lot" aria-live="polite">
+                <?php echo get_svg_icon('trophee'); ?>
+                <?php echo esc_html($titre_recompense); ?> — <?php echo esc_html($valeur_recompense); ?> €
             </div>
         <?php endif; ?>
 
+        <?php
+        $liens = get_field('chasse_principale_liens', $chasse_id);
+        $liens = is_array($liens) ? $liens : [];
+        if (empty($liens)) {
+            $orga_id = get_organisateur_from_chasse($chasse_id);
+            $liens_org = organisateur_get_liens_actifs($orga_id);
+            foreach ($liens_org as $type => $url) {
+                $liens[] = [
+                    'chasse_principale_liens_type' => $type,
+                    'chasse_principale_liens_url'  => $url,
+                ];
+            }
+        }
+        ?>
 
-        <a href="<?php echo esc_url($permalink); ?>" class="bouton bouton-secondaire">Voir la chasse</a>
+        <div class="carte-ligne__footer meta-etiquette">
+            <div class="prix chasse-prix" data-cpt="chasse" data-post-id="<?php echo esc_attr($chasse_id); ?>">
+                <span class="cout-affichage" data-cout="<?php echo esc_attr((int) $cout_points); ?>">
+                    <?php if ((int) $cout_points === 0) : ?>
+                        <span class="texte-cout">Gratuit</span>
+                    <?php else : ?>
+                        <span class="valeur-cout"><?php echo esc_html($cout_points); ?></span>
+                        <span class="prix-devise">pts</span>
+                    <?php endif; ?>
+                </span>
+            </div>
+            <div class="liens-publics-carte">
+                <?php echo render_liens_publics($liens, 'chasse'); ?>
+            </div>
+        </div>
+
     </div>
 </div>

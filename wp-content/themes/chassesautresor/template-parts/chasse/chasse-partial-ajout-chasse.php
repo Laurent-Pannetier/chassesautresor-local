@@ -25,19 +25,21 @@ if (!$organisateur_id || get_post_type($organisateur_id) !== 'organisateur') {
   <a
     href="<?= esc_url(site_url('/creer-chasse/')); ?>"
     id="carte-ajout-chasse"
-    class="carte-chasse carte-ajout-chasse disabled<?= $highlight_pulse ? ' pulsation' : ''; ?>"
+    class="carte carte-ligne carte-chasse carte-ajout-chasse disabled<?= $highlight_pulse ? ' pulsation' : ''; ?>"
     data-post-id="0">
 
-    <div class="carte-chasse-contenu">
+    <div class="carte-ligne__image">
       <div class="icone-ajout">
         <i class="fa-solid fa-circle-plus fa-3x"></i>
       </div>
-      <h2><?= $has_chasses ? 'Ajouter une nouvelle chasse' : 'Créer ma première chasse'; ?></h2>
     </div>
 
-    <div class="overlay-message">
-      <i class="fa-solid fa-circle-info"></i>
-      <p>Complétez d’abord : titre, logo, description</p>
+    <div class="carte-ligne__contenu">
+      <h3 class="carte-ligne__titre"><?= $has_chasses ? 'Ajouter une nouvelle chasse' : 'Créer ma première chasse'; ?></h3>
+      <div class="overlay-message">
+        <i class="fa-solid fa-circle-info"></i>
+        <p>Complétez d’abord : titre, logo, description</p>
+      </div>
     </div>
   </a>
 <?php endif; ?>
