@@ -215,17 +215,18 @@ function ajax_modifier_champ_organisateur()
       wp_send_json_error('⚠️ format_invalide');
     }
 
-    $repetitions = array_values(array_filter(array_map(function ($ligne) {
+    $repetitions = [];
+    foreach ($tableau as $ligne) {
       $type = sanitize_text_field($ligne['type_de_lien'] ?? '');
       $url  = esc_url_raw($ligne['url_lien'] ?? '');
 
-      if (!$type || !$url) return null;
-
-      return [
-        'type_de_lien' => [$type], // 🔁 forcé array (select multiple)
-        'url_lien'     => $url
-      ];
-    }, $tableau)));
+      if ($type && $url) {
+        $repetitions[] = [
+          'type_de_lien' => $type,
+          'url_lien'     => $url
+        ];
+      }
+    }
 
     $ok = update_field('liens_publics', $repetitions, $post_id);
 

@@ -153,14 +153,13 @@ function initLiensPublics(bloc, { panneauId, formId, action, reload = false }) {
     e.preventDefault();
     e.stopPropagation();
 
-    const lignes = formulaire.querySelectorAll('.ligne-lien-formulaire');
     const donnees = [];
+    formulaire.querySelectorAll('.champ-url-lien').forEach((input) => {
+      const ligne = input.closest('[data-type]');
+      const type = ligne?.dataset.type;
+      const url = input.value.trim();
 
-    lignes.forEach((ligne) => {
-      const type = ligne.dataset.type;
-      const input = ligne.querySelector('input[type="url"]');
-      const url = input?.value.trim();
-      if (type && url) {
+      if (type && url !== '') {
         try {
           new URL(url);
           donnees.push({ type_de_lien: type, url_lien: url });
