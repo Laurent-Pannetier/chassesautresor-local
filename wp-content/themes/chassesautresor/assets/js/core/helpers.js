@@ -199,7 +199,7 @@ function initLiensPublics(bloc, { panneauId, formId, action, reload = false }) {
         if (zoneAffichage && typeof renderLiensPublicsJS === 'function') {
           zoneAffichage.innerHTML = renderLiensPublicsJS(donnees);
 
-          if (!bloc.querySelector('.champ-modifier')) {
+          if (!zoneAffichage.dataset.noEdit && !bloc.querySelector('.champ-modifier')) {
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.className = 'champ-modifier ouvrir-panneau-liens';
@@ -228,7 +228,7 @@ function initLiensPublics(bloc, { panneauId, formId, action, reload = false }) {
             if (zone && typeof renderLiensPublicsJS === 'function') {
               zone.innerHTML = renderLiensPublicsJS(donnees);
 
-              if (!blocCible.querySelector('.champ-modifier')) {
+              if (!zone.dataset.noEdit && !blocCible.querySelector('.champ-modifier')) {
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.className = 'champ-modifier ouvrir-panneau-liens';
