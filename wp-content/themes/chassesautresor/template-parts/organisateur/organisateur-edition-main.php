@@ -146,6 +146,9 @@ $classe_vide_coordonnees = ($iban_vide || $bic_vide) ? 'champ-vide' : '';
                 <?php if ($peut_editer) : ?>
                   <button type="button"
                           class="champ-modifier ouvrir-panneau-liens"
+                          data-champ="liens_publics"
+                          data-cpt="organisateur"
+                          data-post-id="<?= esc_attr($organisateur_id); ?>"
                           aria-label="Configurer les liens publics">
                     ✏️
                   </button>
