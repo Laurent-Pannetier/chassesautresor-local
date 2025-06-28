@@ -175,8 +175,14 @@ function verifier_acces_conversion($user_id) {
     $bic = get_field('gagnez_de_largent_bic', $organisateur_id);
 
     if (empty($iban) || empty($bic)) {
-        $lien_edition = get_edit_post_link($organisateur_id);
-        if (!$lien_edition) {
+        $lien_edition = get_permalink($organisateur_id);
+        if ($lien_edition) {
+            $lien_edition = add_query_arg([
+                'edition'  => 'open',
+                'onglet'   => 'revenus',
+                'highlight' => 'coordonnees'
+            ], $lien_edition);
+        } else {
             $lien_edition = admin_url('post.php?post=' . $organisateur_id . '&action=edit'); // 🔹 Génération manuelle du lien
         }
 
