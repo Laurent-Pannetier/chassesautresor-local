@@ -195,8 +195,7 @@ function modifier_dates_chasse()
     wp_send_json_error('post_invalide');
   }
 
-  $auteur = (int) get_post_field('post_author', $post_id);
-  if ($auteur !== get_current_user_id()) {
+  if (!utilisateur_peut_modifier_post($post_id)) {
     wp_send_json_error('acces_refuse');
   }
 
@@ -320,8 +319,7 @@ function modifier_champ_chasse()
     wp_send_json_error('⚠️ post_invalide');
   }
 
-  $auteur = (int) get_post_field('post_author', $post_id);
-  if ($auteur !== $user_id) {
+  if (!utilisateur_peut_modifier_post($post_id)) {
     wp_send_json_error('⚠️ acces_refuse');
   }
 
