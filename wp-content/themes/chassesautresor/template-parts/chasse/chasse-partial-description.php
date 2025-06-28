@@ -36,16 +36,4 @@ $mode = $args['mode'] ?? 'complet'; // 'complet' ou 'compact'
 
     </div>
   <?php endif; ?>
-
-  <?php if ($mode === 'complet') : ?>
-    <div class="chasse-gagnants" style="margin-top: 30px;">
-      <h3>👥 Nombre maximum de gagnants</h3>
-        <p>
-          <span class="nb-gagnants-affichage" data-post-id="<?= esc_attr($chasse_id); ?>">
-            <?= ($nb_max == 0) ? 'Nombre illimité de gagnants' : esc_html($nb_max) . ' gagnant' . ($nb_max > 1 ? 's' : ''); ?>
-          </span>
-        </p>
-
-    </div>
-  <?php endif; ?>
 </section>
