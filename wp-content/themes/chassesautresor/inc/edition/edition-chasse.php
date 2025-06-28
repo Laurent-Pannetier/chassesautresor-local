@@ -419,6 +419,14 @@ function modifier_champ_chasse()
   ];
   if (in_array($champ, $champs_recompense, true)) {
     $sous_champ = str_replace('caracteristiques.', '', $champ);
+
+    // Validation spécifique pour la valeur monétaire
+    if ($sous_champ === 'chasse_infos_recompense_valeur') {
+      if (!is_numeric($valeur) || $valeur <= 0 || $valeur > 5000000) {
+        wp_send_json_error('valeur_invalide');
+      }
+    }
+
     $ok = update_field($sous_champ, $valeur, $post_id);
     if ($ok !== false) $champ_valide = true;
     $doit_recalculer_statut = true;

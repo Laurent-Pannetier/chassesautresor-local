@@ -225,8 +225,8 @@ function initChasseEdit() {
         return;
       }
 
-      if (isNaN(valeur) || valeur <= 0) {
-        alert('Veuillez saisir une valeur en euros strictement supérieure à 0.');
+      if (isNaN(valeur) || valeur <= 0 || valeur > 5000000) {
+        alert('Veuillez saisir une valeur en euros comprise entre 0 et 5\u00a0000\u00a0000.');
         return;
       }
 

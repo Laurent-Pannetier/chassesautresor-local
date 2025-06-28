@@ -46,7 +46,7 @@ function recuperer_infos_chasse($chasse_id) {
  */
 function chasse_get_champs($chasse_id) {
     return [
-        'lot' => get_field('chasse_infos_recompense_texte', $chasse_id) ?? '',
+        'lot' => get_field('chasse_infos_recompense_texte', $chasse_id, false) ?? '',
         'titre_recompense' => get_field('chasse_infos_recompense_titre', $chasse_id) ?? '',
         'valeur_recompense' => get_field('chasse_infos_recompense_valeur', $chasse_id) ?? '',
         'cout_points' => get_field('chasse_infos_cout_points', $chasse_id) ?? 0,
