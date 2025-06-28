@@ -80,6 +80,10 @@
   overflow: hidden;
 }
 
+.carte-ligne__image {
+  position: relative;
+}
+
 .carte-enigme-image {
   position: relative;
   flex: 2;
