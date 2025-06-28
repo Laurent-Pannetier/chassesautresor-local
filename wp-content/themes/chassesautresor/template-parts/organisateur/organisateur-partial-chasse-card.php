@@ -123,14 +123,12 @@ $classe_verrouillee = '';
         }
         ?>
 
-        <div class="carte-ligne__footer">
+        <div class="carte-ligne__footer meta-etiquette">
             <div class="prix chasse-prix" data-cpt="chasse" data-post-id="<?php echo esc_attr($chasse_id); ?>">
                 <span class="cout-affichage" data-cout="<?php echo esc_attr((int) $cout_points); ?>">
                     <?php if ((int) $cout_points === 0) : ?>
-                        <?php echo get_svg_icon('free'); ?>
                         <span class="texte-cout">Gratuit</span>
                     <?php else : ?>
-                        <?php echo get_svg_icon('unlock'); ?>
                         <span class="valeur-cout"><?php echo esc_html($cout_points); ?></span>
                         <span class="prix-devise">pts</span>
                     <?php endif; ?>
