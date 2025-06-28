@@ -15,8 +15,18 @@ $completion_class = $args['completion_class'] ?? '';
 
 // 🔹 Récupération des données de la chasse
 $titre = get_the_title($chasse_id);
-$image = get_the_post_thumbnail_url($chasse_id, 'medium');
 $permalink = get_permalink($chasse_id);
+$image_data = get_field('chasse_principale_image', $chasse_id);
+$image = '';
+if (is_array($image_data) && !empty($image_data['sizes']['medium'])) {
+    $image = $image_data['sizes']['medium'];
+} elseif ($image_data) {
+    $image_id = is_array($image_data) ? ($image_data['ID'] ?? 0) : (int) $image_data;
+    $image = $image_id ? wp_get_attachment_image_url($image_id, 'medium') : '';
+}
+if (!$image) {
+    $image = get_the_post_thumbnail_url($chasse_id, 'medium');
+}
 $champs = chasse_get_champs($chasse_id);
 $titre_recompense  = $champs['titre_recompense'];
 $valeur_recompense = $champs['valeur_recompense'];
