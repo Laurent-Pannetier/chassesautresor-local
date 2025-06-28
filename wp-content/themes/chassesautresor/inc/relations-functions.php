@@ -235,6 +235,36 @@ function organisateur_a_des_chasses($organisateur_id)
 }
 
 /**
+ * Vérifie si un organisateur possède au moins une chasse en attente (status "pending").
+ *
+ * @param int $organisateur_id ID de l'organisateur.
+ * @return bool True si une chasse en attente existe, False sinon.
+ */
+function organisateur_a_chasse_pending(int $organisateur_id): bool
+{
+  $query = new WP_Query([
+    'post_type'      => 'chasse',
+    'posts_per_page' => 1,
+    'post_status'    => 'pending',
+    'meta_query'     => [
+      'relation' => 'AND',
+      [
+        'key'     => 'chasse_cache_organisateur',
+        'value'   => '"' . $organisateur_id . '"',
+        'compare' => 'LIKE'
+      ],
+      [
+        'key'     => 'chasse_cache_statut_validation',
+        'value'   => 'banni',
+        'compare' => '!='
+      ]
+    ]
+  ]);
+
+  return $query->have_posts();
+}
+
+/**
  * Récupère les chasses associées à un organisateur.
  *
  * @param int $organisateur_id ID de l'organisateur.
