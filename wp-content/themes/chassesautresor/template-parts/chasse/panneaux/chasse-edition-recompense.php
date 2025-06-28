@@ -3,7 +3,7 @@ defined('ABSPATH') || exit;
 $chasse_id = $args['chasse_id'] ?? null;
 if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') return;
 
-$texte_recompense  = get_field('chasse_infos_recompense_texte', $chasse_id);
+$texte_recompense  = get_field('chasse_infos_recompense_texte', $chasse_id, false);
 $valeur_recompense = get_field('chasse_infos_recompense_valeur', $chasse_id);
 ?>
 
@@ -26,7 +26,7 @@ $valeur_recompense = get_field('chasse_infos_recompense_valeur', $chasse_id);
 
 
       <label for="champ-recompense-valeur">Valeur en euros (€) <span class="champ-obligatoire">*</span></label>
-      <input id="champ-recompense-valeur" class="w-175" type="number" min="0" step="0.01" placeholder="Ex : 50" value="<?= esc_attr($valeur_recompense); ?>">
+      <input id="champ-recompense-valeur" class="w-175" type="number" min="0" max="5000000" step="0.01" placeholder="Ex : 50" value="<?= esc_attr($valeur_recompense); ?>">
 
       <div class="panneau-lateral__actions">
         <button id="bouton-enregistrer-recompense" type="button" class="bouton-enregistrer-description bouton-enregistrer-liens">💾 Enregistrer</button>
