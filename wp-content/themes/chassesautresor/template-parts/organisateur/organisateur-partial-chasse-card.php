@@ -18,7 +18,20 @@ $titre = get_the_title($chasse_id);
 $image = get_the_post_thumbnail_url($chasse_id, 'medium_large');
 $permalink = get_permalink($chasse_id);
 $description = get_field('description_chasse', $chasse_id);
-$statut = mettre_a_jour_statuts_chasse($chasse_id);
+$statut = null;
+verifier_ou_recalculer_statut_chasse($chasse_id);
+$statut = get_field('chasse_cache_statut', $chasse_id) ?? 'revision';
+$statut_validation = get_field('chasse_cache_statut_validation', $chasse_id);
+$statut_label = ucfirst(str_replace('_', ' ', $statut));
+if ($statut === 'revision') {
+    if ($statut_validation === 'creation') {
+        $statut_label = 'création';
+    } elseif ($statut_validation === 'correction') {
+        $statut_label = 'correction';
+    } elseif ($statut_validation === 'en_attente') {
+        $statut_label = 'en attente';
+    }
+}
 
 // 🔹 Lecture directe des sous-champs ACF
 $date_debut     = get_field('chasse_infos_date_debut', $chasse_id);
@@ -30,14 +43,9 @@ $lot_description = get_field('lot', $chasse_id);
 $nb_joueurs = get_field('total_joueurs_souscription_chasse', $chasse_id);
 
 
-// 🔹 Définition du statut CSS (badge)
-$statut_classes = [
-    'En cours' => 'en-cours',
-    'À venir' => 'statut-a-venir',
-    'Terminée' => 'termine'
-];
-$classe_statut = $statut_classes[$statut] ?? 'statut-en-cours';
-$texte_statut = $statut;
+// 🔹 Préparation du badge de statut
+$badge_class = 'statut-' . $statut;
+$classe_statut = $badge_class;
 $enigmes_associees = recuperer_enigmes_associees($chasse_id);
 $total_enigmes = count($enigmes_associees);
 
@@ -73,8 +81,8 @@ if ($peut_ajouter_enigme) {
     }
 }
 
-// 🔹 Désactiver le CTA si la chasse est verrouillée
-$classe_verrouillee = ($statut === 'Verrouillée') ? 'statut-verrouille' : '';
+// Pourra servir à appliquer des styles spécifiques selon le statut
+$classe_verrouillee = '';
 ?>
 
 <div class="carte carte-ligne carte-chasse <?php echo esc_attr(trim($classe_statut . ' ' . $classe_verrouillee . ' ' . $completion_class)); ?>">
@@ -91,8 +99,8 @@ $classe_verrouillee = ($statut === 'Verrouillée') ? 'statut-verrouille' : '';
     <?php endif; ?>
     <div class="carte-ligne__image">
         <?php if ($statut): ?>
-            <span class="badge-statut <?php echo esc_attr($statut_classes[$statut] ?? 'statut-en-cours'); ?>">
-                <?php echo esc_html($texte_statut); ?>
+            <span class="badge-statut <?php echo esc_attr($badge_class); ?>">
+                <?php echo esc_html($statut_label); ?>
             </span>
         <?php endif; ?>
 
@@ -135,7 +143,7 @@ $classe_verrouillee = ($statut === 'Verrouillée') ? 'statut-verrouille' : '';
 
         </div>
 
-        <?php if ($statut === 'Terminée') : ?>
+        <?php if ($statut === 'termine') : ?>
             <div class="chasse-terminee">
                 <?php 
                 // 🔹 Date de découverte
@@ -157,8 +165,6 @@ $classe_verrouillee = ($statut === 'Verrouillée') ? 'statut-verrouille' : '';
         <?php endif; ?>
 
 
-        <?php if ($statut !== 'Verrouillée'): ?>
-            <a href="<?php echo esc_url($permalink); ?>" class="bouton bouton-secondaire">Voir la chasse</a>
-        <?php endif; ?>
+        <a href="<?php echo esc_url($permalink); ?>" class="bouton bouton-secondaire">Voir la chasse</a>
     </div>
 </div>
