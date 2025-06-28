@@ -151,7 +151,7 @@ $classe_vide_coordonnees = ($iban_vide || $bic_vide) ? 'champ-vide' : '';
 
                 <?php
                 $classes = ['champ-organisateur', 'ligne-liens'];
-                $classes[] = organisateur_a_des_liens($organisateur_id) ? 'champ-rempli' : 'champ-vide';
+                $classes[] = count($liens_publics) > 0 ? 'champ-rempli' : 'champ-vide';
                 ?>
 
                 <li class="<?= implode(' ', $classes); ?>"
