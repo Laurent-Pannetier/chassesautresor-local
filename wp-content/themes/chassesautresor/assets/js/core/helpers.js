@@ -212,6 +212,12 @@ function initLiensPublics(bloc, { panneauId, formId, action, reload = false }) {
         bloc.classList.toggle('champ-vide', donnees.length === 0);
         bloc.classList.toggle('champ-rempli', donnees.length > 0);
 
+        // ✅ Mise à jour du bloc résumé dans le panneau principal
+        const blocResume = document.querySelector(`.champ-organisateur[data-champ="${champ}"][data-post-id="${postId}"]`);
+        if (blocResume) {
+          blocResume.classList.toggle('champ-vide', donnees.length === 0);
+          blocResume.classList.toggle('champ-rempli', donnees.length > 0);
+        }
 
         if (typeof window.closePanel === 'function') {
           window.closePanel(panneauId);
@@ -221,7 +227,6 @@ function initLiensPublics(bloc, { panneauId, formId, action, reload = false }) {
           panneau.setAttribute('aria-hidden', 'true');
         }
 
-
         if (typeof window.mettreAJourResumeInfos === 'function') {
           window.mettreAJourResumeInfos();
         }
@@ -230,6 +235,7 @@ function initLiensPublics(bloc, { panneauId, formId, action, reload = false }) {
           location.reload();
         }
       })
+
       .catch((err) => {
         console.error('❌ AJAX fail', err.message || err);
         if (feedback) {

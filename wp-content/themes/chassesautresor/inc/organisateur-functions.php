@@ -11,7 +11,23 @@ defined( 'ABSPATH' ) || exit;
 //
 
 
+function organisateur_a_des_liens($organisateur_id): bool {
+  $liens = get_field('liens_publics', $organisateur_id);
+  if (!is_array($liens)) return false;
+  error_log('organisateur_a_des_liens() - ' . print_r($liens, true));
 
+  foreach ($liens as $entree) {
+    $type_raw = $entree['type_de_lien'] ?? null;
+    $url      = $entree['url_lien'] ?? null;
+    $type     = is_array($type_raw) ? ($type_raw[0] ?? '') : $type_raw;
+
+    if (is_string($type) && trim($type) !== '' && is_string($url) && trim($url) !== '') {
+      return true;
+    }
+  }
+
+  return false;
+}
 
 // ==================================================
 // 📦 CHARGEMENT DES DONNEES

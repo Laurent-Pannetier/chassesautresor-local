@@ -176,7 +176,6 @@ function initLiensOrganisateur(bloc) {
       panneauId: 'panneau-liens-publics',
       formId: 'formulaire-liens-publics',
       action: 'modifier_champ_organisateur',
-      reload: true
     });
   }
 }

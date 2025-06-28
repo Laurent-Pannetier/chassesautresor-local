@@ -25,8 +25,18 @@ $site         = get_field('lien_site_web', $organisateur_id);
 $email_contact = get_field('profil_public_email_contact', $organisateur_id);
 $iban         = get_field('coordonnees_bancaires_iban', $organisateur_id);
 $bic          = get_field('coordonnees_bancaires_bic', $organisateur_id);
-$liens_actifs = organisateur_get_liens_actifs($organisateur_id);
-$nb_liens = count($liens_actifs);
+
+$liens_publics = get_field('liens_publics', $organisateur_id); // ← manquant !
+$liens_publics = is_array($liens_publics) ? array_filter($liens_publics, function ($entree) {
+  $type_raw = $entree['type_de_lien'] ?? null;
+  $url      = $entree['url_lien'] ?? null;
+  $type = is_array($type_raw) ? ($type_raw[0] ?? '') : $type_raw;
+
+  return is_string($type) && trim($type) !== '' && is_string($url) && trim($url) !== '';
+}) : [];
+
+$nb_liens = count($liens_publics);
+
 
 $peut_editer_titre = champ_est_editable('post_title', $organisateur_id);
 
@@ -63,195 +73,215 @@ $classe_vide_coordonnees = ($iban_vide || $bic_vide) ? 'champ-vide' : '';
         <h2><i class="fa-solid fa-sliders"></i> Paramètres</h2>
       </div>
       <div class="edition-panel-body">
-      <div class="edition-panel-section edition-panel-section-ligne">
-        <h3 class="section-title">
-          <i class="fa-solid fa-sliders" aria-hidden="true"></i>
-          Paramètres
-        </h3>
+        <div class="edition-panel-section edition-panel-section-ligne">
+          <h3 class="section-title">
+            <i class="fa-solid fa-sliders" aria-hidden="true"></i>
+            Paramètres
+          </h3>
 
-        <div class="section-content deux-col-wrapper">
-          <!-- 📌 Édition du profil -->
-          <div class="resume-bloc resume-obligatoire deux-col-bloc">
-            <h3>Champs obligatoires</h3>
-            <ul class="resume-infos">
-              <li class="champ-organisateur champ-titre ligne-titre <?= empty($titre) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer_titre ? '' : ' champ-desactive'; ?>"
-                data-champ="post_title"
-                data-cpt="organisateur"
-                data-post-id="<?= esc_attr($organisateur_id); ?>">
-
-                <div class="champ-affichage">
-                  <label for="champ-titre-organisateur">Nom d’organisateur</label>
-                  <?php if ($peut_editer_titre) : ?>
-                    <button type="button"
-                      class="champ-modifier"
-                      aria-label="Modifier le nom d’organisateur">
-                      ✏️
-                    </button>
-                  <?php endif; ?>
-                </div>
-
-                <div class="champ-edition" style="display: none;">
-                  <input type="text"
-                    class="champ-input"
-                    maxlength="50"
-                    value="<?= esc_attr($titre); ?>"
-                    id="champ-titre-organisateur" <?= $peut_editer_titre ? '' : 'disabled'; ?> >
-                  <button type="button" class="champ-enregistrer">✓</button>
-                  <button type="button" class="champ-annuler">✖</button>
-                </div>
-
-                <div class="champ-feedback"></div>
-              </li>
-
-              <li class="champ-organisateur champ-logo ligne-logo <?= !empty($logo) ? 'champ-rempli' : 'champ-vide'; ?>" data-champ="profil_public_logo_organisateur">
-                Un logo
-                <?php if ($peut_editer) : ?>
-                  <button type="button"
-                    class="champ-modifier"
-                    aria-label="Modifier le logo"
-                    data-champ="profil_public_logo_organisateur"
-                    data-cpt="organisateur"
-                    data-post-id="<?php echo esc_attr($organisateur_id); ?>">
-                    ✏️
-                  </button>
-
-                <?php endif; ?>
-                <input type="hidden" class="champ-input" value="<?= esc_attr($logo_id ?? '') ?>">
-                <div class="champ-feedback"></div>
-              </li>
-              <?php $class_description = empty($description) ? 'champ-vide' : 'champ-rempli'; ?>
-              <li class="champ-organisateur champ-description ligne-description <?= $class_description; ?>" data-champ="description_longue">
-                Une présentation
-                <?php if ($peut_editer) : ?>
-                  <button type="button"
-                    class="champ-modifier ouvrir-panneau-description"
-                    aria-label="Modifier la description longue">
-                    ✏️
-                  </button>
-
-                <?php endif; ?>
-              </li>
-            </ul>
-          </div>
-
-          <!-- 🟡 Facultatif -->
-          <div class="resume-bloc resume-facultatif deux-col-bloc">
-            <h3>Facultatif (mais recommandé)</h3>
-            <ul class="resume-infos">
-
-              <li class="champ-organisateur ligne-liens <?= ($nb_liens > 0) ? 'champ-rempli' : ''; ?>"
-                  data-champ="liens_publics" data-cpt="organisateur"
-                  data-post-id="<?= esc_attr($organisateur_id); ?>">
-                des liens externes (réseau social ou site)
-                <?php if ($peut_editer) : ?>
-                  <button type="button"
-                          class="champ-modifier ouvrir-panneau-liens"
-                          data-champ="liens_publics"
-                          data-cpt="organisateur"
-                          data-post-id="<?= esc_attr($organisateur_id); ?>"
-                          aria-label="Configurer les liens publics">
-                    ✏️
-                  </button>
-                <?php endif; ?>
-              </li>
-
-
-              <li class="ligne-email <?= !empty($email_contact) ? 'champ-rempli' : ''; ?>">
-                <i aria-hidden="true" class="fa-regular fa-solid fa-envelope"></i>
-                <div class="champ-organisateur champ-email-contact"
-                  data-champ="profil_public_email_contact"
+          <div class="section-content deux-col-wrapper">
+            <!-- 📌 Édition du profil -->
+            <div class="resume-bloc resume-obligatoire deux-col-bloc">
+              <h3>Champs obligatoires</h3>
+              <ul class="resume-infos">
+                <li class="champ-organisateur champ-titre ligne-titre <?= empty($titre) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer_titre ? '' : ' champ-desactive'; ?>"
+                  data-champ="post_title"
                   data-cpt="organisateur"
                   data-post-id="<?= esc_attr($organisateur_id); ?>">
 
                   <div class="champ-affichage">
-
-                    Email de contact :
-                    <?= esc_html($email_contact ?: get_the_author_meta('user_email', get_post_field('post_author', $organisateur_id))); ?>
-
-                    <button type="button" class="icone-info"
-                      aria-label="Informations sur l’adresse email de contact"
-                      onclick="alert('Quand aucune adresse n est renseignée, votre email utilisateur est utilisé par défaut.');">
-                      <i class="fa-solid fa-circle-question" aria-hidden="true"></i>
-                    </button>
-                    <?php if ($peut_editer) : ?>
+                    <label for="champ-titre-organisateur">Nom d’organisateur</label>
+                    <?php if ($peut_editer_titre) : ?>
                       <button type="button"
                         class="champ-modifier"
-                        aria-label="Modifier l’adresse email de contact">
+                        aria-label="Modifier le nom d’organisateur">
                         ✏️
                       </button>
                     <?php endif; ?>
                   </div>
 
                   <div class="champ-edition" style="display: none;">
-                    <input type="email" maxlength="255"
-                      value="<?= esc_attr($email_contact); ?>"
+                    <input type="text"
                       class="champ-input"
-                      placeholder="exemple@domaine.com">
+                      maxlength="50"
+                      value="<?= esc_attr($titre); ?>"
+                      id="champ-titre-organisateur" <?= $peut_editer_titre ? '' : 'disabled'; ?>>
                     <button type="button" class="champ-enregistrer">✓</button>
                     <button type="button" class="champ-annuler">✖</button>
                   </div>
 
                   <div class="champ-feedback"></div>
-                </div>
-              </li>
+                </li>
 
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div> <!-- .edition-panel-body -->
-    </div> <!-- #organisateur-tab-param -->
-
-      <div id="organisateur-tab-stats" class="edition-tab-content" style="display:none;">
-        <i class="fa-solid fa-chart-column tab-watermark" aria-hidden="true"></i>
-        <div class="edition-panel-header">
-          <h2><i class="fa-solid fa-chart-column"></i> Statistiques</h2>
-        </div>
-        <p class="edition-placeholder">La section « Statistiques » sera bientôt disponible.</p>
-      </div>
-
-      <div id="organisateur-tab-revenus" class="edition-tab-content" style="display:none;">
-        <i class="fa-solid fa-coins tab-watermark" aria-hidden="true"></i>
-        <div class="edition-panel-header">
-          <h2><i class="fa-solid fa-coins"></i> Revenus</h2>
-        </div>
-        <div class="edition-panel-body">
-          <div class="edition-panel-section edition-panel-section-ligne">
-            <h3 class="section-title">
-              <i class="fa-solid fa-coins" aria-hidden="true"></i>
-              Revenus
-            </h3>
-
-            <div class="section-content deux-col-wrapper">
-              <div class="resume-bloc resume-facultatif deux-col-bloc">
-                <h3>Information bancaires</h3>
-
-                <ul class="resume-infos">
-                  <li id="ligne-coordonnees" class="champ-organisateur champ-coordonnees ligne-coordonnees <?= !empty($iban) ? 'champ-rempli' : ''; ?>" data-champ="coordonnees_bancaires">
-                    Coordonnées bancaires
-                    <button type="button" class="icone-info" aria-label="Informations sur les coordonnées bancaires"
-                      onclick="alert('Ces informations sont nécessaires uniquement pour vous verser les gains issus de la conversion de vos points en euros. Nous ne prélevons jamais d\u2019argent.');">
-                      <i class="fa-solid fa-circle-question" aria-hidden="true"></i>
+                <li class="champ-organisateur champ-logo ligne-logo <?= !empty($logo) ? 'champ-rempli' : 'champ-vide'; ?>" data-champ="profil_public_logo_organisateur">
+                  Un logo
+                  <?php if ($peut_editer) : ?>
+                    <button type="button"
+                      class="champ-modifier"
+                      aria-label="Modifier le logo"
+                      data-champ="profil_public_logo_organisateur"
+                      data-cpt="organisateur"
+                      data-post-id="<?php echo esc_attr($organisateur_id); ?>">
+                      ✏️
                     </button>
-                    <?php if ($peut_editer) : ?>
-                      <button type="button"
-                        id="ouvrir-coordonnees"
-                        class="champ-modifier"
-                        aria-label="Modifier les coordonnées bancaires"
-                        data-champ="coordonnees_bancaires"
-                        data-cpt="organisateur"
-                        data-post-id="<?php echo esc_attr($organisateur_id); ?>">
-                        ✏️
-                      </button>
 
-                    <?php endif; ?>
-                  </li>
-                </ul>
-              </div>
+                  <?php endif; ?>
+                  <input type="hidden" class="champ-input" value="<?= esc_attr($logo_id ?? '') ?>">
+                  <div class="champ-feedback"></div>
+                </li>
+                <?php $class_description = empty($description) ? 'champ-vide' : 'champ-rempli'; ?>
+                <li class="champ-organisateur champ-description ligne-description <?= $class_description; ?>" data-champ="description_longue">
+                  Une présentation
+                  <?php if ($peut_editer) : ?>
+                    <button type="button"
+                      class="champ-modifier ouvrir-panneau-description"
+                      aria-label="Modifier la description longue">
+                      ✏️
+                    </button>
+
+                  <?php endif; ?>
+                </li>
+              </ul>
+            </div>
+
+            <!-- 🟡 Facultatif -->
+            <div class="resume-bloc resume-facultatif deux-col-bloc">
+              <h3>Facultatif (mais recommandé)</h3>
+              <ul class="resume-infos">
+
+
+
+                <?php
+                $classes = ['champ-organisateur', 'ligne-liens'];
+                $classes[] = organisateur_a_des_liens($organisateur_id) ? 'champ-rempli' : 'champ-vide';
+                ?>
+
+                <?php
+                echo '<pre style="background:yellow;">✔️ a_des_liens: ';
+                var_dump(organisateur_a_des_liens($organisateur_id));
+                echo '</pre>';
+                echo '<pre style="background:orange;">✔️ classes: ';
+                var_dump($classes);
+                echo '</pre>';
+
+                ?>
+
+
+
+                <li class="<?= implode(' ', $classes); ?>"
+                  data-champ="liens_publics"
+                  data-cpt="organisateur"
+                  data-post-id="<?= esc_attr($organisateur_id); ?>">
+
+                  des liens externes (réseau social ou site)
+                  <?php if ($peut_editer) : ?>
+                    <button type="button"
+                      class="champ-modifier ouvrir-panneau-liens"
+                      data-champ="liens_publics"
+                      data-cpt="organisateur"
+                      data-post-id="<?= esc_attr($organisateur_id); ?>"
+                      aria-label="Configurer les liens publics">
+                      ✏️
+                    </button>
+                  <?php endif; ?>
+                </li>
+
+                <li class="ligne-email <?= !empty($email_contact) ? 'champ-rempli' : ''; ?>">
+                  <i aria-hidden="true" class="fa-regular fa-solid fa-envelope"></i>
+                  <div class="champ-organisateur champ-email-contact"
+                    data-champ="profil_public_email_contact"
+                    data-cpt="organisateur"
+                    data-post-id="<?= esc_attr($organisateur_id); ?>">
+
+                    <div class="champ-affichage">
+
+                      Email de contact :
+                      <?= esc_html($email_contact ?: get_the_author_meta('user_email', get_post_field('post_author', $organisateur_id))); ?>
+
+                      <button type="button" class="icone-info"
+                        aria-label="Informations sur l’adresse email de contact"
+                        onclick="alert('Quand aucune adresse n est renseignée, votre email utilisateur est utilisé par défaut.');">
+                        <i class="fa-solid fa-circle-question" aria-hidden="true"></i>
+                      </button>
+                      <?php if ($peut_editer) : ?>
+                        <button type="button"
+                          class="champ-modifier"
+                          aria-label="Modifier l’adresse email de contact">
+                          ✏️
+                        </button>
+                      <?php endif; ?>
+                    </div>
+
+                    <div class="champ-edition" style="display: none;">
+                      <input type="email" maxlength="255"
+                        value="<?= esc_attr($email_contact); ?>"
+                        class="champ-input"
+                        placeholder="exemple@domaine.com">
+                      <button type="button" class="champ-enregistrer">✓</button>
+                      <button type="button" class="champ-annuler">✖</button>
+                    </div>
+
+                    <div class="champ-feedback"></div>
+                  </div>
+                </li>
+
+              </ul>
             </div>
           </div>
-        </div> <!-- .edition-panel-body -->
+        </div>
+      </div> <!-- .edition-panel-body -->
+    </div> <!-- #organisateur-tab-param -->
+
+    <div id="organisateur-tab-stats" class="edition-tab-content" style="display:none;">
+      <i class="fa-solid fa-chart-column tab-watermark" aria-hidden="true"></i>
+      <div class="edition-panel-header">
+        <h2><i class="fa-solid fa-chart-column"></i> Statistiques</h2>
       </div>
+      <p class="edition-placeholder">La section « Statistiques » sera bientôt disponible.</p>
+    </div>
+
+    <div id="organisateur-tab-revenus" class="edition-tab-content" style="display:none;">
+      <i class="fa-solid fa-coins tab-watermark" aria-hidden="true"></i>
+      <div class="edition-panel-header">
+        <h2><i class="fa-solid fa-coins"></i> Revenus</h2>
+      </div>
+      <div class="edition-panel-body">
+        <div class="edition-panel-section edition-panel-section-ligne">
+          <h3 class="section-title">
+            <i class="fa-solid fa-coins" aria-hidden="true"></i>
+            Revenus
+          </h3>
+
+          <div class="section-content deux-col-wrapper">
+            <div class="resume-bloc resume-facultatif deux-col-bloc">
+              <h3>Information bancaires</h3>
+
+              <ul class="resume-infos">
+                <li id="ligne-coordonnees" class="champ-organisateur champ-coordonnees ligne-coordonnees <?= !empty($iban) ? 'champ-rempli' : ''; ?>" data-champ="coordonnees_bancaires">
+                  Coordonnées bancaires
+                  <button type="button" class="icone-info" aria-label="Informations sur les coordonnées bancaires"
+                    onclick="alert('Ces informations sont nécessaires uniquement pour vous verser les gains issus de la conversion de vos points en euros. Nous ne prélevons jamais d\u2019argent.');">
+                    <i class="fa-solid fa-circle-question" aria-hidden="true"></i>
+                  </button>
+                  <?php if ($peut_editer) : ?>
+                    <button type="button"
+                      id="ouvrir-coordonnees"
+                      class="champ-modifier"
+                      aria-label="Modifier les coordonnées bancaires"
+                      data-champ="coordonnees_bancaires"
+                      data-cpt="organisateur"
+                      data-post-id="<?php echo esc_attr($organisateur_id); ?>">
+                      ✏️
+                    </button>
+
+                  <?php endif; ?>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div> <!-- .edition-panel-body -->
+    </div>
 
     <div class="edition-panel-footer"></div>
   </section>
