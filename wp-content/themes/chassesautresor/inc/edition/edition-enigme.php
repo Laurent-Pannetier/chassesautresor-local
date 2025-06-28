@@ -195,8 +195,7 @@ function modifier_champ_enigme()
     wp_send_json_error('⚠️ donnees_invalides');
   }
 
-  $auteur = (int) get_post_field('post_author', $post_id);
-  if ($auteur !== $user_id) {
+  if (!utilisateur_peut_modifier_post($post_id)) {
     wp_send_json_error('⚠️ acces_refuse');
   }
 
@@ -345,13 +344,17 @@ function modifier_champ_enigme()
 add_action('wp_ajax_enregistrer_fichier_solution_enigme', 'enregistrer_fichier_solution_enigme');
 function enregistrer_fichier_solution_enigme()
 {
-  if (!current_user_can('edit_posts')) {
+  if (!is_user_logged_in()) {
     wp_send_json_error("Non autorisé.");
   }
 
   $post_id = intval($_POST['post_id'] ?? 0);
   if (!$post_id || get_post_type($post_id) !== 'enigme') {
     wp_send_json_error("ID de post invalide.");
+  }
+
+  if (!utilisateur_peut_modifier_post($post_id)) {
+    wp_send_json_error("Non autorisé.");
   }
 
   if (empty($_FILES['fichier_pdf']) || $_FILES['fichier_pdf']['error'] !== 0) {
