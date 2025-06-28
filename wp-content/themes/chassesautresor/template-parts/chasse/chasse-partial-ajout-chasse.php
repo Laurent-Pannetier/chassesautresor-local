@@ -16,14 +16,10 @@ if (!$organisateur_id || get_post_type($organisateur_id) !== 'organisateur') {
   <a
     href="<?= esc_url(site_url('/creer-chasse/')); ?>"
     id="carte-ajout-chasse"
-    class="carte-ajout-chasse bouton-ajout-cercle disabled<?= $highlight_pulse ? ' pulsation' : ''; ?>"
-    data-post-id="0">
+    data-post-id="0"
+  >
     <i class="fa-solid fa-circle-plus fa-lg"></i>
     <span class="screen-reader-text">Ajouter une chasse</span>
-    <div class="overlay-message">
-      <i class="fa-solid fa-circle-info"></i>
-      <p>Complétez d’abord : titre, logo, description</p>
-    </div>
   </a>
 <?php else : ?>
   <a

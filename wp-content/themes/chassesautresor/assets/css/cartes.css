@@ -168,24 +168,6 @@
   padding: 0 1rem;
 }
 
-/* ========== 🔘 Bouton circulaire d'ajout de chasse ========== */
-.bouton-ajout-cercle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  border: 2px dashed var(--color-editor-border);
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--color-secondary);
-  position: relative;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
-}
-
-.bouton-ajout-cercle:hover {
-  transform: scale(1.05);
-}
 
 /* ========== ✅ Indicateurs de complétion ========== */
 .carte-complete {
