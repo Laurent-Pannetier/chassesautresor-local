@@ -20,9 +20,6 @@ $permalink = get_permalink($chasse_id);
 $description = get_field('description_chasse', $chasse_id);
 $statut = mettre_a_jour_statuts_chasse($chasse_id);
 
-// 🔹 Récupération des groupes ACF
-$trophee = get_field('trophee', $chasse_id) ?? [];
-
 // 🔹 Lecture directe des sous-champs ACF
 $date_debut     = get_field('chasse_infos_date_debut', $chasse_id);
 $date_fin       = get_field('chasse_infos_date_fin', $chasse_id);
@@ -32,7 +29,6 @@ $lot_description = get_field('lot', $chasse_id);
 
 $nb_joueurs = get_field('total_joueurs_souscription_chasse', $chasse_id);
 
-$trophee_html = afficher_trophee_chasse($chasse_id, $statut);
 
 // 🔹 Définition du statut CSS (badge)
 $statut_classes = [
@@ -157,13 +153,6 @@ $classe_verrouillee = ($statut === 'Verrouillée') ? 'statut-verrouille' : '';
                     <p><i class="fa fa-user"></i> Gagnant(s) : <?php echo esc_html(implode(', ', $gagnants_affiches)); ?></p>
                 <?php endif; ?>
         
-                <?php 
-                // 🔹 Affichage du trophée
-                $trophee_html = afficher_trophee_chasse($chasse_id, $statut);
-                if ($trophee_html) {
-                    echo $trophee_html;
-                }
-                ?>
             </div>
         <?php endif; ?>
 

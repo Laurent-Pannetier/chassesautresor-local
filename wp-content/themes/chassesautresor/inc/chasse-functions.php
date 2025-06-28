@@ -184,8 +184,7 @@ function gerer_chasse_terminee($chasse_id) {
         return;
     }
 
-    // 🎯 Afficher le trophée si applicable
-    afficher_trophee_chasse($chasse_id, $statut_chasse);
+
 
     // 🏆 Gérer l'attribution des récompenses (ex: points, trophées, médailles)
     //attribuer_recompenses_chasse($chasse_id);
