@@ -104,7 +104,7 @@ function creer_organisateur_pour_utilisateur($user_id)
  */
 function enqueue_script_organisateur_edit()
 {
-  $cpts = ['organisateur', 'chasse'];
+  $cpts = ['organisateur', 'chasse', 'enigme'];
 
   if (!is_singular($cpts)) return;
 
