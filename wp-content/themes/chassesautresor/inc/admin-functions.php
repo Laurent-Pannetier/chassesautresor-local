@@ -971,7 +971,6 @@ function supprimer_souscriptions_utilisateur() {
  * 🔄 Réinitialise l’état d’une énigme pour un utilisateur donné :
  * - Supprime le statut et la date de résolution.
  * - Réinitialise les indices débloqués.
- * - Supprime les trophées liés à l’énigme et à la chasse associée.
  * - Réinitialise le statut de la chasse si nécessaire.
  * - Nettoie les caches liés à l’utilisateur et à l’énigme.
  *
@@ -1000,36 +999,11 @@ function reinitialiser_enigme($user_id, $enigme_id) {
         error_log("🧹 Indices débloqués réinitialisés pour l'énigme (ID: {$enigme_id})");
     }
 
-    // 🏆 3. Suppression du trophée associé à l’énigme
-    $trophees_utilisateur = get_user_meta($user_id, 'trophees_utilisateur', true);
-    $trophees_utilisateur = is_array($trophees_utilisateur) ? $trophees_utilisateur : [];
-
-    $trophee_enigme = get_field('trophee_associe', $enigme_id);
-    if ($trophee_enigme) {
-        $trophee_enigme_id = is_array($trophee_enigme) ? reset($trophee_enigme) : $trophee_enigme;
-        if (($key = array_search($trophee_enigme_id, $trophees_utilisateur)) !== false) {
-            unset($trophees_utilisateur[$key]);
-            update_user_meta($user_id, 'trophees_utilisateur', array_values($trophees_utilisateur));
-            error_log("🏆 Trophée de l'énigme (ID: {$trophee_enigme_id}) supprimé pour l'utilisateur (ID: {$user_id})");
-        }
-    }
-
-    // 🏴‍☠️ 4. Gestion de la chasse associée
+    // 🏴‍☠️ 3. Gestion de la chasse associée
     $chasse_id = get_field('chasse_associee', $enigme_id, false);
     $chasse_id = is_array($chasse_id) ? reset($chasse_id) : $chasse_id;
 
     if ($chasse_id && is_numeric($chasse_id)) {
-        // 🏆 Suppression du trophée associé à la chasse
-        $trophee_chasse = get_field('trophee_associe', $chasse_id);
-        if ($trophee_chasse) {
-            $trophee_chasse_id = is_array($trophee_chasse) ? reset($trophee_chasse) : $trophee_chasse;
-            if (($key = array_search($trophee_chasse_id, $trophees_utilisateur)) !== false) {
-                unset($trophees_utilisateur[$key]);
-                update_user_meta($user_id, 'trophees_utilisateur', array_values($trophees_utilisateur));
-                error_log("🏆 Trophée de chasse (ID: {$trophee_chasse_id}) supprimé pour l'utilisateur (ID: {$user_id})");
-            }
-        }
-
         // 🔄 Si la chasse est en mode "stop" et terminée, la remettre en cours
         $illimitee = get_field('illimitee', $chasse_id); // Récupère le mode de la chasse (stop / continue)
         $statut_chasse = get_field('statut_chasse', $chasse_id);

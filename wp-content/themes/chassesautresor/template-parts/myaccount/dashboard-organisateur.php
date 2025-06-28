@@ -6,7 +6,6 @@ $nombre_chasses     = $args['nombre_chasses'] ?? 0;
 $conversion_autorisee = $args['conversion_autorisee'] ?? false;
 $statut_conversion  = $args['statut_conversion'] ?? '';
 $commandes_output   = $args['commandes_output'] ?? '';
-$trophees_output    = $args['trophees_output'] ?? '';
 ?>
 <div class="section-separator">
     <hr class="separator-line">
@@ -107,17 +106,6 @@ $trophees_output    = $args['trophees_output'] ?? '';
             </a>
         <?php endif; ?>
 
-        <?php if (!empty($trophees_output)) : ?>
-            <a href="#" class="dashboard-card no-click">
-                <div class="dashboard-card-header">
-                    <i class="fas fa-trophy"></i>
-                    <h3>Mes Trophées</h3>
-                </div>
-                <div class="trophees-content">
-                    <?php echo $trophees_output; ?>
-                </div>
-            </a>
-        <?php endif; ?>
     </div>
 </div>
 

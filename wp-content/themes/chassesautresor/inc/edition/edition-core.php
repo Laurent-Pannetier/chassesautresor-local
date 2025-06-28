@@ -324,7 +324,7 @@ function masquer_admin_interface_pour_non_admins()
     }, 999);
 
     // 🔹 Liste des pages autorisées + AJAX WordPress (ajout de async-upload.php)
-    $pages_autorisees = ['post.php', 'post-new.php', 'edit.php', 'edit.php?post_type=trophee', 'admin-ajax.php', 'async-upload.php'];
+    $pages_autorisees = ['post.php', 'post-new.php', 'edit.php', 'admin-ajax.php', 'async-upload.php'];
 
     // 🔹 Redirige les utilisateurs non-admins s'ils essaient d'aller ailleurs
     add_action('admin_init', function () use ($pages_autorisees) {
