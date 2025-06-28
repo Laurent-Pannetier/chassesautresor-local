@@ -75,9 +75,10 @@ get_header();
                             'use_button'      => true,
                         ]);
                     endif; ?>
-                    <div class="ligne-chasses"></div>
-                    <div class="liste-chasses">
-                        <div class="grille-3">
+                </div>
+                <div class="ligne-chasses"></div>
+                <div class="liste-chasses">
+                    <div class="grille-3">
                             <?php
                             $organisateur_id = get_the_ID();
                             $query = get_chasses_de_organisateur($organisateur_id);
