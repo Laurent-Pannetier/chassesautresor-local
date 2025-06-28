@@ -112,13 +112,24 @@ $classe_verrouillee = '';
         $liens = get_field('chasse_principale_liens', $chasse_id);
         $liens = is_array($liens) ? $liens : [];
         if (empty($liens)) {
-            $orga_id = get_organisateur_from_chasse($chasse_id);
+            $orga_id   = get_organisateur_from_chasse($chasse_id);
             $liens_org = organisateur_get_liens_actifs($orga_id);
             foreach ($liens_org as $type => $url) {
                 $liens[] = [
                     'chasse_principale_liens_type' => $type,
                     'chasse_principale_liens_url'  => $url,
                 ];
+            }
+        }
+
+        $has_lien = false;
+        foreach ($liens as $entree) {
+            $type_raw = $entree['chasse_principale_liens_type'] ?? null;
+            $url      = $entree['chasse_principale_liens_url'] ?? null;
+            $type     = is_array($type_raw) ? ($type_raw[0] ?? '') : $type_raw;
+            if (is_string($type) && trim($type) !== '' && is_string($url) && trim($url) !== '') {
+                $has_lien = true;
+                break;
             }
         }
         ?>
@@ -135,7 +146,9 @@ $classe_verrouillee = '';
                 </span>
             </div>
             <div class="liens-publics-carte">
-                <?php echo render_liens_publics($liens, 'chasse'); ?>
+                <?php if ($has_lien) : ?>
+                    <?php echo render_liens_publics($liens, 'chasse'); ?>
+                <?php endif; ?>
             </div>
         </div>
 
