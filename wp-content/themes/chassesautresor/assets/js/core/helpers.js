@@ -213,11 +213,34 @@ function initLiensPublics(bloc, { panneauId, formId, action, reload = false }) {
         bloc.classList.toggle('champ-rempli', donnees.length > 0);
 
         // ✅ Mise à jour du bloc résumé dans le panneau principal
-        const blocResume = document.querySelector(`.champ-organisateur[data-champ="${champ}"][data-post-id="${postId}"]`);
-        if (blocResume) {
-          blocResume.classList.toggle('champ-vide', donnees.length === 0);
-          blocResume.classList.toggle('champ-rempli', donnees.length > 0);
-        }
+        // ✅ Mise à jour de tous les blocs affichant ces liens
+        document
+          .querySelectorAll(`.champ-organisateur[data-champ="${champ}"][data-post-id="${postId}"]`)
+          .forEach((blocCible) => {
+            let zone = blocCible.querySelector('.champ-affichage');
+            if (!zone) {
+              const fiche = document.querySelector(
+                `.champ-chasse.champ-fiche-publication[data-champ="${champ}"][data-post-id="${postId}"]`
+              );
+              zone = fiche?.querySelector('.champ-affichage');
+            }
+
+            if (zone && typeof renderLiensPublicsJS === 'function') {
+              zone.innerHTML = renderLiensPublicsJS(donnees);
+
+              if (!blocCible.querySelector('.champ-modifier')) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'champ-modifier ouvrir-panneau-liens';
+                btn.setAttribute('aria-label', 'Configurer vos liens');
+                btn.textContent = '✏️';
+                zone.appendChild(btn);
+              }
+            }
+
+            blocCible.classList.toggle('champ-vide', donnees.length === 0);
+            blocCible.classList.toggle('champ-rempli', donnees.length > 0);
+          });
 
         if (typeof window.closePanel === 'function') {
           window.closePanel(panneauId);
