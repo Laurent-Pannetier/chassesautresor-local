@@ -139,12 +139,14 @@ $classe_vide_coordonnees = ($iban_vide || $bic_vide) ? 'champ-vide' : '';
             <h3>Facultatif (mais recommandé)</h3>
             <ul class="resume-infos">
 
-              <li class="ligne-liens <?= ($nb_liens > 0) ? 'champ-rempli' : ''; ?>" data-champ="liens_publics">
+              <li class="champ-organisateur ligne-liens <?= ($nb_liens > 0) ? 'champ-rempli' : ''; ?>"
+                  data-champ="liens_publics" data-cpt="organisateur"
+                  data-post-id="<?= esc_attr($organisateur_id); ?>">
                 des liens externes (réseau social ou site)
                 <?php if ($peut_editer) : ?>
                   <button type="button"
-                    class="champ-modifier ouvrir-panneau-liens"
-                    aria-label="Configurer les liens publics">
+                          class="champ-modifier ouvrir-panneau-liens"
+                          aria-label="Configurer les liens publics">
                     ✏️
                   </button>
                 <?php endif; ?>
