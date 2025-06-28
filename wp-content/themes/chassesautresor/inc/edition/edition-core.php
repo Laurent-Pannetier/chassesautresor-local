@@ -462,11 +462,12 @@ function injection_classe_edition_active(array $classes): array
       verifier_ou_mettre_a_jour_cache_complet($post->ID);
 
       $validation = get_field('chasse_cache_statut_validation', $post->ID);
-      $statut = get_field('chasse_cache_statut', $post->ID);
+      $statut     = get_field('chasse_cache_statut', $post->ID);
 
       if (
         $statut === 'revision' &&
-        in_array($validation, ['creation', 'correction'], true)
+        in_array($validation, ['creation', 'correction'], true) &&
+        !get_field('chasse_cache_complet', $post->ID)
       ) {
         $classes[] = 'edition-active-chasse';
       }
