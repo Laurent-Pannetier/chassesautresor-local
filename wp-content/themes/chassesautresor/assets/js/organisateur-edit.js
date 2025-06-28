@@ -157,7 +157,9 @@ document.addEventListener('DOMContentLoaded', () => {
     tabBtn?.click();
 
     if (params.get('highlight') === 'coordonnees') {
-      document.getElementById('ligne-coordonnees')?.classList.add('pulsation');
+      document
+        .getElementById('ligne-coordonnees')
+        ?.classList.add('champ-vide-obligatoire');
     }
   }
 
