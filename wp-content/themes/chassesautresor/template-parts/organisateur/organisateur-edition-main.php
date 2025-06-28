@@ -149,24 +149,10 @@ $classe_vide_coordonnees = ($iban_vide || $bic_vide) ? 'champ-vide' : '';
               <h3>Facultatif (mais recommandé)</h3>
               <ul class="resume-infos">
 
-
-
                 <?php
                 $classes = ['champ-organisateur', 'ligne-liens'];
                 $classes[] = organisateur_a_des_liens($organisateur_id) ? 'champ-rempli' : 'champ-vide';
                 ?>
-
-                <?php
-                echo '<pre style="background:yellow;">✔️ a_des_liens: ';
-                var_dump(organisateur_a_des_liens($organisateur_id));
-                echo '</pre>';
-                echo '<pre style="background:orange;">✔️ classes: ';
-                var_dump($classes);
-                echo '</pre>';
-
-                ?>
-
-
 
                 <li class="<?= implode(' ', $classes); ?>"
                   data-champ="liens_publics"
