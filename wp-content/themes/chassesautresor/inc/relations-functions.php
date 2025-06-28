@@ -438,8 +438,8 @@ function recuperer_enigmes_pour_chasse(int $chasse_id): array
     'meta_query'     => [
       [
         'key'     => 'enigme_chasse_associee',
-        'value'   => '"' . $chasse_id . '"',
-        'compare' => 'LIKE',
+        'value'   => $chasse_id,
+        'compare' => '=', // champ Relationship stocké sous forme d'ID
       ],
     ],
   ]);
@@ -466,8 +466,8 @@ function recuperer_ids_enigmes_pour_chasse(int $chasse_id): array
     'meta_query'     => [
       [
         'key'     => 'enigme_chasse_associee',
-        'value'   => '"' . $chasse_id . '"',
-        'compare' => 'LIKE',
+        'value'   => $chasse_id,
+        'compare' => '=',
       ],
     ],
   ]);
