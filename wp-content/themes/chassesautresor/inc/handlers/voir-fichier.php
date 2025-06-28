@@ -3,7 +3,7 @@
 $log_prefix = '[voir-fichier.php]';
 
 function logf($message) {
-    error_log("[voir-fichier.php] $message");
+    cat_debug("[voir-fichier.php] $message");
 }
 
 // Vérifier l'utilisateur connecté

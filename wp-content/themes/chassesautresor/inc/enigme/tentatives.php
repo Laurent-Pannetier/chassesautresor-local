@@ -66,16 +66,16 @@ defined('ABSPATH') || exit;
         $table = $wpdb->prefix . 'enigme_tentatives';
 
 
-        error_log("👣 Tentative traitement UID=$uid par IP=" . ($_SERVER['REMOTE_ADDR'] ?? 'inconnue'));
+        cat_debug("👣 Tentative traitement UID=$uid par IP=" . ($_SERVER['REMOTE_ADDR'] ?? 'inconnue'));
 
         $tentative = get_tentative_by_uid($uid);
         if (!$tentative) {
-            error_log("❌ Tentative introuvable");
+            cat_debug("❌ Tentative introuvable");
             return false;
         }
 
         if ($tentative->resultat !== 'attente') {
-            error_log("⛔ Tentative déjà traitée → statut actuel = " . $tentative->resultat);
+            cat_debug("⛔ Tentative déjà traitée → statut actuel = " . $tentative->resultat);
             return false;
         }
 
@@ -91,7 +91,7 @@ defined('ABSPATH') || exit;
         ));
 
         if ($statut_user === 'resolue') {
-            error_log("⛔ Statut utilisateur déjà 'resolue' → refus de traitement UID=$uid");
+            cat_debug("⛔ Statut utilisateur déjà 'resolue' → refus de traitement UID=$uid");
             return false;
         }
 
@@ -105,7 +105,7 @@ defined('ABSPATH') || exit;
             !current_user_can('manage_options') &&
             !in_array($current_user_id, array_map('intval', $organisateur_user_ids), true)
         ) {
-            error_log("⛔ Accès interdit au traitement pour UID=$uid");
+            cat_debug("⛔ Accès interdit au traitement pour UID=$uid");
             return false;
         }
 
@@ -123,7 +123,7 @@ defined('ABSPATH') || exit;
         envoyer_mail_resultat_joueur($user_id, $enigme_id, $resultat);
 
 
-        error_log("✅ Tentative UID=$uid traitée comme $resultat → statut joueur mis à jour en $nouveau_statut");
+        cat_debug("✅ Tentative UID=$uid traitée comme $resultat → statut joueur mis à jour en $nouveau_statut");
         return true;
     }
 

@@ -85,6 +85,9 @@ add_action('wp_head', 'ajouter_ajaxurl_script');
  * Charge FontAwesome pour les icônes réseaux sociaux.
  */
 function charger_fontawesome() {
+    if (is_admin()) {
+        return;
+    }
     wp_enqueue_style('fontawesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css', [], null);
 }
 add_action('wp_enqueue_scripts', 'charger_fontawesome');
@@ -126,6 +129,10 @@ function imagify_get_webp_url($image_url) {
  * 📌 Charge les scripts nécessaires au fonctionnement du site.
  */
 function charger_scripts_personnalises() {
+    if (is_admin()) {
+        return;
+    }
+
     $theme_dir = get_stylesheet_directory_uri() . '/assets/js/';
 
     // 📌 Chargement des scripts JS personnalisés

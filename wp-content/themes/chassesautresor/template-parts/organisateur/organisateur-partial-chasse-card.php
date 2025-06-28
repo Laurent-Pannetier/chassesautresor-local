@@ -54,7 +54,7 @@ if ($edit_link) {
                         <i class="fa fa-edit"></i> <span>Modifier</span>
                      </a></li>';
 } else {
-    error_log("⚠️ [DEBUG] Aucun lien d'édition disponible pour la chasse ID: {$chasse_id}");
+    cat_debug("⚠️ [DEBUG] Aucun lien d'édition disponible pour la chasse ID: {$chasse_id}");
 }
 
 }

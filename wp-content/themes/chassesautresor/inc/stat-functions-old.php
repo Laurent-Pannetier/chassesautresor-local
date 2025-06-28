@@ -69,7 +69,7 @@ add_action('init', function() {
  * Cette fonction unifie les méthodes de récupération des statistiques tout en conservant
  * la logique spécifique de chaque entité (post_meta, user_meta, clés dynamiques...).
  *
- * 🔍 En cas d'erreur (ID manquant, type inconnu, JSON invalide), un `error_log()` est déclenché.
+ * 🔍 En cas d'erreur (ID manquant, type inconnu, JSON invalide), un `cat_debug()` est déclenché.
  *
  * @param string $type Type de l'entité : 'enigme', 'chasse', 'user', 'organisateur'.
  * @param int    $id   ID de l’entité ciblée.
@@ -78,7 +78,7 @@ add_action('init', function() {
  */
 function recuperer_stats(string $type, int $id, array $stats = []) {
     if (!$id || !in_array($type, ['enigme', 'chasse', 'user', 'organisateur'], true)) {
-        error_log("❌ [recuperer_stats] Paramètres invalides : type={$type}, id={$id}");
+        cat_debug("❌ [recuperer_stats] Paramètres invalides : type={$type}, id={$id}");
         return false;
     }
 
@@ -140,7 +140,7 @@ function recuperer_stats(string $type, int $id, array $stats = []) {
         if ($meta_key === 'progression_chasse') {
             $decoded = is_string($value) ? json_decode($value, true) : [];
             if (json_last_error() !== JSON_ERROR_NONE) {
-                error_log("❌ [recuperer_stats] JSON invalide pour progression_chasse (ID {$id}) : " . json_last_error_msg());
+                cat_debug("❌ [recuperer_stats] JSON invalide pour progression_chasse (ID {$id}) : " . json_last_error_msg());
                 $value = [];
             } else {
                 $value = $decoded;
@@ -329,12 +329,12 @@ function afficher_stats_organisateur($organisateur_id, $stats = []) {
  */
 function incrementer_tentatives_enigme($user_id, $enigme_id) {
     if (!$user_id || !$enigme_id) {
-        error_log("🚨 ERREUR : ID utilisateur ou ID énigme manquant");
+        cat_debug("🚨 ERREUR : ID utilisateur ou ID énigme manquant");
         return;
     }
 
     // Vérification et log
-    error_log("🟢 Tentative détectée pour l'énigme ID: " . $enigme_id . " par l'utilisateur ID: " . $user_id);
+    cat_debug("🟢 Tentative détectée pour l'énigme ID: " . $enigme_id . " par l'utilisateur ID: " . $user_id);
 
     // Récupérer la clé et la valeur actuelle
     $cle_meta = 'total_tentatives_enigme_' . $enigme_id;
@@ -345,7 +345,7 @@ function incrementer_tentatives_enigme($user_id, $enigme_id) {
 
     // Si aucune valeur n'existe, initialiser à 0
     if ($tentatives === '' || $tentatives === false) {
-        error_log("🔍 Aucune méta trouvée, initialisation à 0 : " . $cle_meta);
+        cat_debug("🔍 Aucune méta trouvée, initialisation à 0 : " . $cle_meta);
         $tentatives = 0;
     }
 
@@ -355,7 +355,7 @@ function incrementer_tentatives_enigme($user_id, $enigme_id) {
 
     // Vérification après mise à jour
     $tentatives_apres = get_post_meta($enigme_id, $cle_meta, true);
-    error_log("✅ Nouvelle valeur forcée de $cle_meta : " . $tentatives_apres);
+    cat_debug("✅ Nouvelle valeur forcée de $cle_meta : " . $tentatives_apres);
 }
 /**
  * Forcer ACF à récupérer la vraie valeur du champ total_tentatives_enigme.
@@ -383,12 +383,12 @@ add_filter('acf/load_value/name=total_tentatives_enigme', 'acf_total_tentatives_
  */
 function incrementer_indices_debloques_enigme($user_id, $enigme_id) {
     if (!$user_id || !$enigme_id) {
-        error_log("🚨 ERREUR : ID utilisateur ou ID énigme manquant");
+        cat_debug("🚨 ERREUR : ID utilisateur ou ID énigme manquant");
         return;
     }
 
     // Log de la détection du déblocage
-    error_log("🟢 Indice débloqué pour l'énigme ID: " . $enigme_id . " par l'utilisateur ID: " . $user_id);
+    cat_debug("🟢 Indice débloqué pour l'énigme ID: " . $enigme_id . " par l'utilisateur ID: " . $user_id);
 
     // Définition de la clé de méta
     $meta_key = 'total_indices_debloques_enigme_' . $enigme_id;
@@ -399,7 +399,7 @@ function incrementer_indices_debloques_enigme($user_id, $enigme_id) {
 
     // Initialisation à 0 si inexistant
     if ($indices === '' || $indices === false) {
-        error_log("🔍 Aucune méta trouvée, initialisation à 0 : " . $meta_key);
+        cat_debug("🔍 Aucune méta trouvée, initialisation à 0 : " . $meta_key);
         $indices = 0;
     }
 
@@ -409,7 +409,7 @@ function incrementer_indices_debloques_enigme($user_id, $enigme_id) {
 
     // Vérification après mise à jour
     $indices_apres = get_post_meta($enigme_id, $meta_key, true);
-    error_log("✅ Nouvelle valeur forcée de $meta_key : " . $indices_apres);
+    cat_debug("✅ Nouvelle valeur forcée de $meta_key : " . $indices_apres);
 }
 /**
  * Forcer ACF à récupérer la vraie valeur du champ total_indices_debloques_enigme.
@@ -433,12 +433,12 @@ add_filter('acf/load_value/name=total_indices_debloques_enigme', 'acf_total_indi
  */
 function incrementer_points_depenses_enigme($enigme_id, $points) {
     if (!$enigme_id || $points <= 0) {
-        error_log("🚨 ERREUR : ID énigme manquant ou montant invalide ({$points})");
+        cat_debug("🚨 ERREUR : ID énigme manquant ou montant invalide ({$points})");
         return;
     }
 
     // Log de la transaction
-    error_log("💰 Dépense de {$points} points pour débloquer un indice sur l'énigme ID: " . $enigme_id);
+    cat_debug("💰 Dépense de {$points} points pour débloquer un indice sur l'énigme ID: " . $enigme_id);
 
     // Définition de la clé de méta
     $meta_key = 'total_points_depenses_enigme_' . $enigme_id;
@@ -449,7 +449,7 @@ function incrementer_points_depenses_enigme($enigme_id, $points) {
 
     // Initialisation si inexistant
     if ($total_depenses === '' || $total_depenses === false) {
-        error_log("🔍 Aucune méta trouvée, initialisation à 0 : " . $meta_key);
+        cat_debug("🔍 Aucune méta trouvée, initialisation à 0 : " . $meta_key);
         $total_depenses = 0;
     }
 
@@ -459,7 +459,7 @@ function incrementer_points_depenses_enigme($enigme_id, $points) {
 
     // Vérification après mise à jour
     $total_apres = get_post_meta($enigme_id, $meta_key, true);
-    error_log("✅ Nouvelle valeur forcée de $meta_key : " . $total_apres);
+    cat_debug("✅ Nouvelle valeur forcée de $meta_key : " . $total_apres);
 }
 /**
  * Forcer ACF à récupérer la vraie valeur du champ total_points_depenses_enigme.
@@ -484,7 +484,7 @@ add_filter('acf/load_value/name=total_points_depenses_enigme', 'acf_total_points
  */
 function incrementer_joueurs_ayant_resolu_enigme($user_id, $enigme_id) {
     if (!$user_id || !$enigme_id) {
-        error_log("🚨 ERREUR : ID utilisateur ou énigme manquant");
+        cat_debug("🚨 ERREUR : ID utilisateur ou énigme manquant");
         return;
     }
 
@@ -492,7 +492,7 @@ function incrementer_joueurs_ayant_resolu_enigme($user_id, $enigme_id) {
     $deja_resolu = get_user_meta($user_id, "enigme_{$enigme_id}_resolue", true);
     
     if ($deja_resolu) {
-        error_log("⚠️ L'utilisateur ID {$user_id} a déjà résolu l'énigme ID {$enigme_id}. Pas d'incrémentation.");
+        cat_debug("⚠️ L'utilisateur ID {$user_id} a déjà résolu l'énigme ID {$enigme_id}. Pas d'incrémentation.");
         return;
     }
 
@@ -506,14 +506,14 @@ function incrementer_joueurs_ayant_resolu_enigme($user_id, $enigme_id) {
     delete_post_meta($enigme_id, $meta_key); // Suppression pour éviter un cache persistant
 
     if ($total_joueurs === '' || $total_joueurs === false) {
-        error_log("🔍 Aucune méta trouvée, initialisation à 0 : " . $meta_key);
+        cat_debug("🔍 Aucune méta trouvée, initialisation à 0 : " . $meta_key);
         $total_joueurs = 0;
     }
 
     $total_joueurs++;
     update_post_meta($enigme_id, $meta_key, $total_joueurs);
 
-    error_log("✅ Nouvelle valeur de $meta_key : " . $total_joueurs);
+    cat_debug("✅ Nouvelle valeur de $meta_key : " . $total_joueurs);
 }
 /**
  * Forcer ACF à récupérer la vraie valeur du champ total_joueurs_ayant_resolu_enigme.
@@ -537,7 +537,7 @@ add_filter('acf/load_value/name=total_joueurs_ayant_resolu_enigme', 'acf_total_j
  */
 function incrementer_joueurs_souscription_enigme($user_id, $enigme_id) {
     if (!$user_id || !$enigme_id) {
-        error_log("🚨 ERREUR : ID utilisateur ou énigme manquant");
+        cat_debug("🚨 ERREUR : ID utilisateur ou énigme manquant");
         return;
     }
 
@@ -545,7 +545,7 @@ function incrementer_joueurs_souscription_enigme($user_id, $enigme_id) {
     $deja_souscrit = get_user_meta($user_id, "enigme_{$enigme_id}_souscrit", true);
     
     if ($deja_souscrit) {
-        error_log("⚠️ L'utilisateur ID {$user_id} a déjà souscrit à l'énigme ID {$enigme_id}. Pas d'incrémentation.");
+        cat_debug("⚠️ L'utilisateur ID {$user_id} a déjà souscrit à l'énigme ID {$enigme_id}. Pas d'incrémentation.");
         return;
     }
 
@@ -559,14 +559,14 @@ function incrementer_joueurs_souscription_enigme($user_id, $enigme_id) {
     delete_post_meta($enigme_id, $meta_key); // Suppression pour éviter un cache persistant
 
     if ($total_souscriptions === '' || $total_souscriptions === false) {
-        error_log("🔍 Aucune méta trouvée, initialisation à 0 : " . $meta_key);
+        cat_debug("🔍 Aucune méta trouvée, initialisation à 0 : " . $meta_key);
         $total_souscriptions = 0;
     }
 
     $total_souscriptions++;
     update_post_meta($enigme_id, $meta_key, $total_souscriptions);
 
-    error_log("✅ Nouvelle valeur de $meta_key : " . $total_souscriptions);
+    cat_debug("✅ Nouvelle valeur de $meta_key : " . $total_souscriptions);
 }
 /**
  * Forcer ACF à récupérer la vraie valeur du champ total_joueurs_souscription_enigme.
@@ -592,18 +592,18 @@ add_filter('acf/load_value/name=total_joueurs_souscription_enigme', 'acf_total_j
  */
 function incrementer_tentatives_chasse($chasse_id) {
     if (!$chasse_id) {
-        error_log("🚨 ERREUR : ID de la chasse manquant pour l'incrémentation des tentatives.");
+        cat_debug("🚨 ERREUR : ID de la chasse manquant pour l'incrémentation des tentatives.");
         return;
     }
 
     $meta_key = "total_tentatives_chasse_{$chasse_id}";
     $total_tentatives = get_post_meta($chasse_id, $meta_key, true) ?: 0;
     
-    error_log("🔍 Vérification avant mise à jour - Chasse ID : {$chasse_id}, Tentatives actuelles : {$total_tentatives}");
+    cat_debug("🔍 Vérification avant mise à jour - Chasse ID : {$chasse_id}, Tentatives actuelles : {$total_tentatives}");
     
     update_post_meta($chasse_id, $meta_key, $total_tentatives + 1);
 
-    error_log("✅ Tentative enregistrée pour la chasse ID {$chasse_id}. Nouveau total : " . ($total_tentatives + 1));
+    cat_debug("✅ Tentative enregistrée pour la chasse ID {$chasse_id}. Nouveau total : " . ($total_tentatives + 1));
 }
 
 /**
@@ -627,7 +627,7 @@ add_filter('acf/load_value/name=total_tentatives_chasse', 'acf_total_tentatives_
  */
 function incrementer_indices_debloques_chasse($chasse_id) {
     if (!$chasse_id) {
-        error_log("🚨 ERREUR : ID de la chasse manquant pour l'incrémentation des indices.");
+        cat_debug("🚨 ERREUR : ID de la chasse manquant pour l'incrémentation des indices.");
         return;
     }
 
@@ -635,7 +635,7 @@ function incrementer_indices_debloques_chasse($chasse_id) {
     $total_indices = get_post_meta($chasse_id, $meta_key, true) ?: 0;
     update_post_meta($chasse_id, $meta_key, $total_indices + 1);
 
-    error_log("✅ Indice débloqué enregistré pour la chasse ID {$chasse_id}. Nouveau total : " . ($total_indices + 1));
+    cat_debug("✅ Indice débloqué enregistré pour la chasse ID {$chasse_id}. Nouveau total : " . ($total_indices + 1));
 }
 /**
  * Forcer ACF à récupérer la vraie valeur du champ total_indices_debloques_chasse.
@@ -659,7 +659,7 @@ add_filter('acf/load_value/name=total_indices_debloques_chasse', 'acf_total_indi
  */
 function incrementer_points_depenses_chasse($chasse_id, $montant) {
     if (!$chasse_id || $montant <= 0) {
-        error_log("🚨 ERREUR : ID de la chasse invalide ou montant incorrect pour l'incrémentation des points dépensés.");
+        cat_debug("🚨 ERREUR : ID de la chasse invalide ou montant incorrect pour l'incrémentation des points dépensés.");
         return;
     }
 
@@ -667,7 +667,7 @@ function incrementer_points_depenses_chasse($chasse_id, $montant) {
     $total_points = get_post_meta($chasse_id, $meta_key, true) ?: 0;
     update_post_meta($chasse_id, $meta_key, $total_points + $montant);
 
-    error_log("✅ Points dépensés mis à jour pour la chasse ID {$chasse_id}. Nouveau total : " . ($total_points + $montant));
+    cat_debug("✅ Points dépensés mis à jour pour la chasse ID {$chasse_id}. Nouveau total : " . ($total_points + $montant));
 }
 /**
  * Forcer ACF à récupérer la vraie valeur du champ total_points_depenses_chasse.
@@ -692,10 +692,10 @@ add_filter('acf/load_value/name=total_points_depenses_chasse', 'acf_total_points
  */
 function mettre_a_jour_progression_chasse($chasse_id, $user_id) {
     if (!$chasse_id || !$user_id) {
-        error_log("🚨 ERREUR : ID chasse ou utilisateur manquant.");
+        cat_debug("🚨 ERREUR : ID chasse ou utilisateur manquant.");
         return;
     }
-    error_log("🔍 Appel de mettre_a_jour_progression_chasse() - Chasse ID : {$chasse_id}, Utilisateur ID : {$user_id}");
+    cat_debug("🔍 Appel de mettre_a_jour_progression_chasse() - Chasse ID : {$chasse_id}, Utilisateur ID : {$user_id}");
 
     // 🔍 Récupération et désérialisation de la progression actuelle
     $progression_json = get_post_meta($chasse_id, 'progression_chasse', true);
@@ -712,14 +712,14 @@ function mettre_a_jour_progression_chasse($chasse_id, $user_id) {
     $progression[$user_id] = $nombre_resolues;
     
     // 🔍 Vérification avant mise à jour
-    error_log("📄 Données actuelles de progression_chasse AVANT mise à jour : " . print_r($progression, true));
+    cat_debug("📄 Données actuelles de progression_chasse AVANT mise à jour : " . print_r($progression, true));
 
     // 🔄 Sauvegarde en format JSON
     update_post_meta($chasse_id, 'progression_chasse', json_encode($progression));
-    error_log("🔎 Nouvelle valeur de progression_chasse : " . get_post_meta($chasse_id, 'progression_chasse', true));
+    cat_debug("🔎 Nouvelle valeur de progression_chasse : " . get_post_meta($chasse_id, 'progression_chasse', true));
 
 
-    error_log("✅ Progression mise à jour pour l'utilisateur {$user_id} dans la chasse {$chasse_id} : {$nombre_resolues} énigmes résolues.");
+    cat_debug("✅ Progression mise à jour pour l'utilisateur {$user_id} dans la chasse {$chasse_id} : {$nombre_resolues} énigmes résolues.");
 }
 
 /**
@@ -744,10 +744,10 @@ add_filter('acf/load_value/name=progression_chasse', 'acf_progression_chasse_val
  */
 function incrementer_souscriptions_chasse($user_id, $enigme_id) {
     if (!$user_id || !$enigme_id) {
-        error_log("🚨 ERREUR : ID utilisateur ou énigme manquant.");
+        cat_debug("🚨 ERREUR : ID utilisateur ou énigme manquant.");
         return;
     }
-    error_log("🟠 Appel de incrementer_souscriptions_chasse() - Utilisateur ID: {$user_id}, Énigme ID: {$enigme_id}");
+    cat_debug("🟠 Appel de incrementer_souscriptions_chasse() - Utilisateur ID: {$user_id}, Énigme ID: {$enigme_id}");
 
     // 🏴‍☠️ Récupération de la chasse associée à l’énigme
     // ✅ Utilisation de la méthode correcte pour récupérer la chasse associée
@@ -755,7 +755,7 @@ function incrementer_souscriptions_chasse($user_id, $enigme_id) {
     $chasse_id = $chasse ? $chasse->ID : null;
 
     if (!$chasse_id) {
-        error_log("⚠️ Aucune chasse valide trouvée pour l'énigme ID {$enigme_id}");
+        cat_debug("⚠️ Aucune chasse valide trouvée pour l'énigme ID {$enigme_id}");
         return;
     }
 
@@ -771,9 +771,9 @@ function incrementer_souscriptions_chasse($user_id, $enigme_id) {
         $total_souscriptions = intval(get_post_meta($chasse_id, $meta_key, true)) ?: 0;
         update_post_meta($chasse_id, $meta_key, $total_souscriptions + 1);
 
-        error_log("✅ Nouvelle souscription à la chasse ID {$chasse_id} par l'utilisateur ID {$user_id}. Total : " . ($total_souscriptions + 1));
+        cat_debug("✅ Nouvelle souscription à la chasse ID {$chasse_id} par l'utilisateur ID {$user_id}. Total : " . ($total_souscriptions + 1));
     } else {
-        error_log("🔄 L'utilisateur ID {$user_id} avait déjà souscrit à la chasse ID {$chasse_id}. Pas de mise à jour.");
+        cat_debug("🔄 L'utilisateur ID {$user_id} avait déjà souscrit à la chasse ID {$chasse_id}. Pas de mise à jour.");
     }
 }
 function acf_total_joueurs_souscription_chasse($value, $post_id, $field) {
@@ -800,7 +800,7 @@ function maj_total_enigmes_trouvees($user_id, $enigme_id) {
     }
 
     // 🔍 Log pour vérifier si cette fonction est bien appelée
-    error_log("🔄 maj_total_enigmes_trouvees() exécutée pour user $user_id et énigme $enigme_id");
+    cat_debug("🔄 maj_total_enigmes_trouvees() exécutée pour user $user_id et énigme $enigme_id");
 
     // Récupération et initialisation si vide
     $trouvees = get_user_meta($user_id, 'total_enigmes_trouvees', true);
@@ -821,17 +821,17 @@ function maj_total_enigmes_trouvees($user_id, $enigme_id) {
  * @return int Nombre total d'énigmes trouvées.
  */
 function get_total_enigmes_trouvees($user_id) {
-    error_log("🔄 Fonction get_total_enigmes_trouvees() exécutée pour user $user_id");
+    cat_debug("🔄 Fonction get_total_enigmes_trouvees() exécutée pour user $user_id");
     $trouvees = get_user_meta($user_id, 'total_enigmes_trouvees', true);
     
     // 🔍 Log pour voir la valeur brute récupérée
-    error_log("🔍 Contenu brut récupéré par get_user_meta pour user $user_id : " . print_r($trouvees, true));
+    cat_debug("🔍 Contenu brut récupéré par get_user_meta pour user $user_id : " . print_r($trouvees, true));
 
     // 🔄 Forcer la désérialisation si nécessaire
     $trouvees = maybe_unserialize($trouvees);
 
     // 🔍 Log après désérialisation
-    error_log("✅ Contenu après désérialisation : " . print_r($trouvees, true));
+    cat_debug("✅ Contenu après désérialisation : " . print_r($trouvees, true));
 
     // 🏗️ Vérifier si c'est bien un tableau et retourner le nombre d'énigmes trouvées
     return is_array($trouvees) ? count($trouvees) : 0;
@@ -876,7 +876,7 @@ function incrementer_total_indices_debloques_utilisateur($user_id) {
 
     // Mise à jour de la méta
     update_user_meta($user_id, 'total_indices_debloques', $total_indices);
-    error_log("✅ Mise à jour du total d'indices débloqués pour l'utilisateur {$user_id} : {$total_indices}");
+    cat_debug("✅ Mise à jour du total d'indices débloqués pour l'utilisateur {$user_id} : {$total_indices}");
 }
 /**
  * 🔄 Incrémente le total des points dépensés par un utilisateur.
@@ -896,7 +896,7 @@ function incrementer_total_points_depenses_utilisateur($user_id, $montant) {
 
     // Mise à jour de la méta
     update_user_meta($user_id, 'total_points_depenses', $total_depenses);
-    error_log("✅ Mise à jour du total des points dépensés pour l'utilisateur {$user_id} : {$total_depenses} points");
+    cat_debug("✅ Mise à jour du total des points dépensés pour l'utilisateur {$user_id} : {$total_depenses} points");
 }
 
 /**
@@ -906,7 +906,7 @@ function incrementer_total_points_depenses_utilisateur($user_id, $montant) {
  */
 function incrementer_total_chasses_terminees_utilisateur($user_id) {
     if (!$user_id) {
-        error_log("🚨 ERREUR : ID utilisateur invalide pour l'incrémentation des chasses terminées.");
+        cat_debug("🚨 ERREUR : ID utilisateur invalide pour l'incrémentation des chasses terminées.");
         return;
     }
 
@@ -924,7 +924,7 @@ function incrementer_total_chasses_terminees_utilisateur($user_id) {
     // 💾 Mise à jour en BDD
     update_user_meta($user_id, 'total_chasses_terminees', $total_chasses);
 
-    error_log("✅ Mise à jour : total_chasses_terminees pour user {$user_id} = {$total_chasses}");
+    cat_debug("✅ Mise à jour : total_chasses_terminees pour user {$user_id} = {$total_chasses}");
 }
 
 /**
@@ -935,7 +935,7 @@ function incrementer_total_chasses_terminees_utilisateur($user_id) {
  */
 function incrementer_points_percus_organisateur($organisateur_id, $points) {
     if (!$organisateur_id || $points <= 0) {
-        error_log("⚠️ Tentative d'incrémentation invalide des points perçus par l'organisateur (ID: {$organisateur_id}, Points: {$points})");
+        cat_debug("⚠️ Tentative d'incrémentation invalide des points perçus par l'organisateur (ID: {$organisateur_id}, Points: {$points})");
         return;
     }
 
@@ -948,9 +948,9 @@ function incrementer_points_percus_organisateur($organisateur_id, $points) {
 
     // 🔍 Vérification après mise à jour
     if ($nouveau_total === ($ancien_total + $points)) {
-        error_log("✅ Points mis à jour pour l'organisateur (ID: {$organisateur_id}, Ancien total: {$ancien_total}, Ajouté: {$points}, Nouveau total: {$nouveau_total})");
+        cat_debug("✅ Points mis à jour pour l'organisateur (ID: {$organisateur_id}, Ancien total: {$ancien_total}, Ajouté: {$points}, Nouveau total: {$nouveau_total})");
     } else {
-        error_log("⚠️ Problème lors de la mise à jour des points (ID: {$organisateur_id}, Attendu: " . ($ancien_total + $points) . ", Actuel: {$nouveau_total})");
+        cat_debug("⚠️ Problème lors de la mise à jour des points (ID: {$organisateur_id}, Attendu: " . ($ancien_total + $points) . ", Actuel: {$nouveau_total})");
     }
 
     // 🔄 Mise à jour de la méta `total_points_percus_organisateur`
@@ -960,7 +960,7 @@ function incrementer_points_percus_organisateur($organisateur_id, $points) {
 
     update_user_meta($organisateur_id, $meta_key, $nouveau_total_meta);
 
-    error_log("✅ Mise à jour de la méta total_points_percus_organisateur pour l'organisateur {$organisateur_id} : Ancien : {$ancien_total_meta}, Ajouté : {$points}, Nouveau : {$nouveau_total_meta}");
+    cat_debug("✅ Mise à jour de la méta total_points_percus_organisateur pour l'organisateur {$organisateur_id} : Ancien : {$ancien_total_meta}, Ajouté : {$points}, Nouveau : {$nouveau_total_meta}");
 }
 
 /**
@@ -975,7 +975,7 @@ function mettre_a_jour_points_depenses($points) {
     $total_actuel = get_option("total_points_depenses_mois_$mois_actuel", 0);
     update_option("total_points_depenses_mois_$mois_actuel", $total_actuel + $points);
 
-    error_log("✅ Points dépensés mis à jour : $points ajoutés. Total : " . ($total_actuel + $points));
+    cat_debug("✅ Points dépensés mis à jour : $points ajoutés. Total : " . ($total_actuel + $points));
 }
 
 /**
@@ -990,7 +990,7 @@ function mettre_a_jour_points_achetes($points) {
     $total_actuel = get_option("total_points_vendus_mensuel_$mois_actuel", 0);
     update_option("total_points_vendus_mensuel_$mois_actuel", $total_actuel + $points);
 
-    error_log("✅ Points achetés mis à jour : $points ajoutés. Total : " . ($total_actuel + $points));
+    cat_debug("✅ Points achetés mis à jour : $points ajoutés. Total : " . ($total_actuel + $points));
 }
 
 /**
@@ -1005,7 +1005,7 @@ function mettre_a_jour_paiements_organisateurs($montant) {
     $total_actuel = get_option("total_paiements_effectues_mensuel_$mois_actuel", 0);
     update_option("total_paiements_effectues_mensuel_$mois_actuel", $total_actuel + $montant);
 
-    error_log("✅ Paiement aux organisateurs mis à jour : $montant € ajoutés. Total : " . ($total_actuel + $montant) . " €");
+    cat_debug("✅ Paiement aux organisateurs mis à jour : $montant € ajoutés. Total : " . ($total_actuel + $montant) . " €");
 }
 
 /**
@@ -1042,7 +1042,7 @@ function update_revenu_total_organisateur($organisateur_id, $points) {
     update_user_meta($organisateur_id, 'revenu_total_organisateur', $nouveau_revenu);
 
     // 📌 Log pour debug
-    error_log("✅ Revenu total mis à jour pour l'organisateur ID {$organisateur_id}. Nouveau total : {$nouveau_revenu}€");
+    cat_debug("✅ Revenu total mis à jour pour l'organisateur ID {$organisateur_id}. Nouveau total : {$nouveau_revenu}€");
 }
 
 /**
@@ -1127,7 +1127,7 @@ function cloturer_statistiques_mensuelles() {
     // 🔍 Vérification et correction des points en circulation
     mettre_a_jour_points_en_circulation();
 
-    error_log("✅ Clôture mensuelle effectuée pour $mois_precedent. Stats réinitialisées pour $mois_actuel.");
+    cat_debug("✅ Clôture mensuelle effectuée pour $mois_precedent. Stats réinitialisées pour $mois_actuel.");
 }
 
 /**
@@ -1154,7 +1154,7 @@ function mettre_a_jour_points_en_circulation() {
     $total_points = max(0, $points_vendus - $points_depenses);
     update_option('total_points_en_circulation', $total_points);
 
-    error_log("✅ Points en circulation mis à jour : $total_points points.");
+    cat_debug("✅ Points en circulation mis à jour : $total_points points.");
 }
 
 /**
@@ -1176,7 +1176,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verifier_points_circu
     }
 
     mettre_a_jour_points_en_circulation();
-    error_log("✅ Vérification manuelle des points en circulation effectuée.");
+    cat_debug("✅ Vérification manuelle des points en circulation effectuée.");
 
     wp_redirect(add_query_arg('updated', 'points_circulation', admin_url('administration/statistiques')));
     exit;
@@ -1201,7 +1201,7 @@ function purger_anciennes_statistiques() {
         for ($i = 24; $i <= 60; $i++) { // On purge les 2+ ans
             $mois_a_supprimer = date('Y_m', strtotime("-$i months"));
             delete_option($meta . $mois_a_supprimer);
-            error_log("✅ Purge de la méta : {$meta}{$mois_a_supprimer}");
+            cat_debug("✅ Purge de la méta : {$meta}{$mois_a_supprimer}");
         }
     }
 }

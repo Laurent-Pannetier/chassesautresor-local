@@ -106,9 +106,9 @@ function charger_template_utilisateur($template) {
         $custom_template = get_stylesheet_directory() . '/templates/admin/' . $mapping_templates[$request_uri];
         
         if (!file_exists($custom_template)) {
-            error_log('Fichier de template introuvable : ' . $custom_template);
+            cat_debug('Fichier de template introuvable : ' . $custom_template);
         }
-        error_log('Chargement du template : ' . $custom_template);
+        cat_debug('Chargement du template : ' . $custom_template);
 
         // Vérification de l'existence du fichier avant de le retourner
         if (file_exists($custom_template)) {
@@ -433,7 +433,7 @@ function ajouter_role_organisateur_creation($post_id, $post, $update) {
     // 🔹 Vérifie si l'utilisateur est "subscriber" avant de lui attribuer "organisateur_creation"
     if (in_array('subscriber', $user->roles, true)) {
         $user->add_role(ROLE_ORGANISATEUR_CREATION); // ✅ Ajoute le rôle sans retirer "subscriber"
-        error_log("✅ L'utilisateur $user_id a maintenant aussi le rôle 'organisateur_creation'.");
+        cat_debug("✅ L'utilisateur $user_id a maintenant aussi le rôle 'organisateur_creation'.");
     }
 }
 add_action('save_post', 'ajouter_role_organisateur_creation', 10, 3);

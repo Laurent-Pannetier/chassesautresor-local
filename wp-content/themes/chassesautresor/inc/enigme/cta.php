@@ -33,13 +33,13 @@ defined('ABSPATH') || exit;
         $chasse_id = is_object($chasse) ? $chasse->ID : (int)$chasse;
 
         if (!$chasse_id) {
-            error_log("[DEBUG] Aucun chasse associée trouvée pour énigme #$enigme_id");
+            cat_debug("[DEBUG] Aucun chasse associée trouvée pour énigme #$enigme_id");
             return [];
         }
 
         $ids = recuperer_enigmes_associees($chasse_id);
         if (empty($ids)) {
-            error_log("[DEBUG] Aucune énigme associée à la chasse #$chasse_id");
+            cat_debug("[DEBUG] Aucune énigme associée à la chasse #$chasse_id");
             return [];
         }
 

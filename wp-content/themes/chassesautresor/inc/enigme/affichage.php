@@ -77,7 +77,7 @@ defined('ABSPATH') || exit;
         } elseif (locate_template($fallback)) {
             get_template_part("{$base_path}/{$slug_final}", null, $args);
         } else {
-            error_log("❌ Aucun partial trouvé pour $slug (style: $style)");
+            cat_debug("❌ Aucun partial trouvé pour $slug (style: $style)");
         }
     }
 

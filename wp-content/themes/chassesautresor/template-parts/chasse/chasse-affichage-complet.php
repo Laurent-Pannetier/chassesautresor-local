@@ -26,7 +26,7 @@ $nb_max            = $champs['nb_max'];
 $date_decouverte      = $champs['date_decouverte'];
 $current_stored_statut = $champs['current_stored_statut'];
 
-error_log('[chasse-affichage-complet] brut date_debut=' . var_export($date_debut, true) . ' date_fin=' . var_export($date_fin, true));
+cat_debug('[chasse-affichage-complet] brut date_debut=' . var_export($date_debut, true) . ' date_fin=' . var_export($date_fin, true));
 
 // Données supplémentaires
 $description = get_field('chasse_principale_description', $chasse_id);
@@ -46,7 +46,7 @@ $nb_joueurs = 0;
 // Dates
 $date_debut_formatee = formater_date($date_debut);
 $date_fin_formatee = $illimitee ? 'Illimitée' : ($date_fin ? formater_date($date_fin) : 'Non spécifiée');
-error_log('[chasse-affichage-complet] formate date_debut=' . var_export($date_debut_formatee, true) . ' date_fin=' . var_export($date_fin_formatee, true));
+cat_debug('[chasse-affichage-complet] formate date_debut=' . var_export($date_debut_formatee, true) . ' date_fin=' . var_export($date_fin_formatee, true));
 
 // Edition
 $edition_active = utilisateur_peut_modifier_post($chasse_id);
@@ -59,14 +59,14 @@ $organisateur_nom = $organisateur_id ? get_the_title($organisateur_id) : get_the
 if (current_user_can('administrator')) {
   $chasse_id = get_the_ID();
 
-  error_log("📦 [TEST] Statut stocké (admin) : " . get_field('chasse_cache_statut', $chasse_id));
+  cat_debug("📦 [TEST] Statut stocké (admin) : " . get_field('chasse_cache_statut', $chasse_id));
 
   verifier_ou_recalculer_statut_chasse($chasse_id);
 
 
   mettre_a_jour_statuts_chasse($chasse_id);
 
-  error_log("✅ [TEST] Recalcul exécuté via mettre_a_jour_statuts_chasse($chasse_id)");
+  cat_debug("✅ [TEST] Recalcul exécuté via mettre_a_jour_statuts_chasse($chasse_id)");
 }
 
 

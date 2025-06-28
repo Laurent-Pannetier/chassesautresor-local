@@ -53,24 +53,24 @@ function chasse_get_champs($chasse_id) {
         // Lecture directe des dates pour éviter un éventuel cache ACF
         'date_debut' => (function() use ($chasse_id) {
             $val = get_field('chasse_infos_date_debut', $chasse_id);
-            error_log("🔍 chasse {$chasse_id} get_field('date_debut') => " . var_export($val, true));
+            cat_debug("🔍 chasse {$chasse_id} get_field('date_debut') => " . var_export($val, true));
             if (!$val) {
                 $meta = get_post_meta($chasse_id, 'chasse_infos_date_debut', true);
-                error_log("📦 chasse {$chasse_id} get_post_meta('date_debut') => " . var_export($meta, true));
+                cat_debug("📦 chasse {$chasse_id} get_post_meta('date_debut') => " . var_export($meta, true));
                 $val = $meta;
             }
-            error_log("✅ chasse {$chasse_id} valeur finale date_debut => " . var_export($val, true));
+            cat_debug("✅ chasse {$chasse_id} valeur finale date_debut => " . var_export($val, true));
             return $val;
         })(),
         'date_fin' => (function() use ($chasse_id) {
             $val = get_field('chasse_infos_date_fin', $chasse_id);
-            error_log("🔍 chasse {$chasse_id} get_field('date_fin') => " . var_export($val, true));
+            cat_debug("🔍 chasse {$chasse_id} get_field('date_fin') => " . var_export($val, true));
             if (!$val) {
                 $meta = get_post_meta($chasse_id, 'chasse_infos_date_fin', true);
-                error_log("📦 chasse {$chasse_id} get_post_meta('date_fin') => " . var_export($meta, true));
+                cat_debug("📦 chasse {$chasse_id} get_post_meta('date_fin') => " . var_export($meta, true));
                 $val = $meta;
             }
-            error_log("✅ chasse {$chasse_id} valeur finale date_fin => " . var_export($val, true));
+            cat_debug("✅ chasse {$chasse_id} valeur finale date_fin => " . var_export($val, true));
             return $val;
         })(),
         'illimitee' => get_field('chasse_infos_duree_illimitee', $chasse_id) ?? false,
@@ -91,21 +91,21 @@ function chasse_get_champs($chasse_id) {
 function verifier_souscription_chasse($user_id, $enigme_id) {
 
     if (!$user_id || !$enigme_id) {
-        error_log("🚨 ERREUR : ID utilisateur ou énigme manquant.");
+        cat_debug("🚨 ERREUR : ID utilisateur ou énigme manquant.");
         return;
     }
 
     // 🏴‍☠️ Récupération de la chasse associée à l’énigme
     $chasse_id = get_field('chasse_associee', $enigme_id);
     if (!$chasse_id) {
-        error_log("⚠️ Aucune chasse associée à l'énigme ID {$enigme_id}");
+        cat_debug("⚠️ Aucune chasse associée à l'énigme ID {$enigme_id}");
         return;
     }
 
     // 🔍 Vérification si l'utilisateur a déjà joué une énigme de cette chasse
     $enigmes_associees = get_field('enigmes_associees', $chasse_id);
     if (!$enigmes_associees || !is_array($enigmes_associees)) {
-        error_log("⚠️ Pas d'énigmes associées à la chasse ID {$chasse_id}");
+        cat_debug("⚠️ Pas d'énigmes associées à la chasse ID {$chasse_id}");
         return;
     }
 
@@ -114,12 +114,12 @@ function verifier_souscription_chasse($user_id, $enigme_id) {
 
         // 🚫 Si une énigme a déjà été souscrite, tentée ou trouvée, la chasse est déjà souscrite
         if ($statut && $statut !== 'non_souscrit') {
-            error_log("🔄 L'utilisateur ID {$user_id} a déjà interagi avec l'énigme ID {$eid}. Chasse ID {$chasse_id} déjà souscrite.");
+            cat_debug("🔄 L'utilisateur ID {$user_id} a déjà interagi avec l'énigme ID {$eid}. Chasse ID {$chasse_id} déjà souscrite.");
             return;
         }
     }
     
-    error_log("🔍 Vérification avant mise à jour souscription chasse ID {$chasse_id} : Utilisateur ID {$user_id}");
+    cat_debug("🔍 Vérification avant mise à jour souscription chasse ID {$chasse_id} : Utilisateur ID {$user_id}");
 
     // ✅ Première souscription à une énigme de cette chasse => Marquer la chasse comme souscrite
     update_user_meta($user_id, "souscription_chasse_{$chasse_id}", true);
@@ -128,10 +128,10 @@ function verifier_souscription_chasse($user_id, $enigme_id) {
     $meta_key = "total_joueurs_souscription_chasse_{$chasse_id}";
     $total_souscriptions = get_post_meta($chasse_id, $meta_key, true) ?: 0;
     update_post_meta($chasse_id, $meta_key, $total_souscriptions + 1);
-    error_log("✅ Nouvelle valeur souscription chasse {$chasse_id} : " . get_post_meta($chasse_id, $meta_key, true));
+    cat_debug("✅ Nouvelle valeur souscription chasse {$chasse_id} : " . get_post_meta($chasse_id, $meta_key, true));
 
 
-    error_log("✅ Nouvelle souscription à la chasse ID {$chasse_id} par l'utilisateur ID {$user_id}");
+    cat_debug("✅ Nouvelle souscription à la chasse ID {$chasse_id} par l'utilisateur ID {$user_id}");
 }
 
 /**

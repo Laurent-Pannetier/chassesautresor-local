@@ -316,7 +316,7 @@ function utilisateur_peut_creer_post($post_type, $chasse_id = null)
 function utilisateur_peut_modifier_post($post_id)
 {
     if (!is_user_logged_in() || !$post_id) {
-        error_log('❌ utilisateur_peut_modifier_post: utilisateur non connecté ou post_id invalide');
+        cat_debug('❌ utilisateur_peut_modifier_post: utilisateur non connecté ou post_id invalide');
         return false;
     }
 
@@ -350,7 +350,7 @@ function utilisateur_peut_modifier_post($post_id)
             return $organisateur_id ? utilisateur_peut_modifier_post($organisateur_id) : false;
 
         default:
-            error_log("❌ utilisateur_peut_modifier_post: post_type inconnu ($post_type)");
+            cat_debug("❌ utilisateur_peut_modifier_post: post_type inconnu ($post_type)");
             return false;
     }
 }
@@ -365,7 +365,7 @@ function utilisateur_peut_modifier_post($post_id)
 function utilisateur_peut_voir_enigme(int $enigme_id, ?int $user_id = null): bool
 {
     if (get_post_type($enigme_id) !== 'enigme') {
-        error_log("❌ [voir énigme] post #$enigme_id n'est pas une énigme.");
+        cat_debug("❌ [voir énigme] post #$enigme_id n'est pas une énigme.");
         return false;
     }
 
@@ -373,53 +373,53 @@ function utilisateur_peut_voir_enigme(int $enigme_id, ?int $user_id = null): boo
     $etat_systeme  = get_field('enigme_cache_etat_systeme', $enigme_id);
     $user_id       = $user_id ?? get_current_user_id();
 
-    error_log("🔎 [voir énigme] #$enigme_id | statut = $post_status | etat = $etat_systeme | user_id = $user_id");
+    cat_debug("🔎 [voir énigme] #$enigme_id | statut = $post_status | etat = $etat_systeme | user_id = $user_id");
 
     // 🔓 Administrateur → accès total
     if (current_user_can('administrator')) {
-        error_log("✅ [voir énigme] accès admin");
+        cat_debug("✅ [voir énigme] accès admin");
         return true;
     }
 
     // 🔍 Anonyme ou abonné : uniquement publish + accessible
     if (!is_user_logged_in() || in_array('abonne', wp_get_current_user()->roles, true)) {
         $autorise = ($post_status === 'publish') && ($etat_systeme === 'accessible');
-        error_log("👤 [voir énigme] visiteur/abonné → accès " . ($autorise ? 'OK' : 'REFUSÉ'));
+        cat_debug("👤 [voir énigme] visiteur/abonné → accès " . ($autorise ? 'OK' : 'REFUSÉ'));
         return $autorise;
     }
 
     if ($post_status === 'draft') {
-        error_log("❌ [voir énigme] brouillon interdit pour utilisateur #$user_id");
+        cat_debug("❌ [voir énigme] brouillon interdit pour utilisateur #$user_id");
         return false;
     }
 
     // 🎯 Chasse liée
     $chasse_id = recuperer_id_chasse_associee($enigme_id);
     if (!$chasse_id) {
-        error_log("❌ [voir énigme] pas de chasse associée");
+        cat_debug("❌ [voir énigme] pas de chasse associée");
         return false;
     }
 
     // 🔐 L’utilisateur doit être lié à l’organisateur de la chasse
     if (!utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
-        error_log("❌ [voir énigme] user #$user_id n'est pas lié à la chasse #$chasse_id");
+        cat_debug("❌ [voir énigme] user #$user_id n'est pas lié à la chasse #$chasse_id");
         return false;
     }
 
     // ✅ Exception organisateur : accès si chasse en création, correction
     //    ou en attente de validation
     $statut_validation = get_field('chasse_cache_statut_validation', $chasse_id);
-    error_log("🧪 [voir énigme] chasse #$chasse_id → statut_validation = $statut_validation");
+    cat_debug("🧪 [voir énigme] chasse #$chasse_id → statut_validation = $statut_validation");
 
     if (in_array($statut_validation, ['creation', 'correction', 'en_attente'], true)) {
         $autorise = in_array($post_status, ['publish', 'pending'], true);
-        error_log("🟡 [voir énigme] organisateur → chasse = $statut_validation → accès " . ($autorise ? 'OK' : 'REFUSÉ'));
+        cat_debug("🟡 [voir énigme] organisateur → chasse = $statut_validation → accès " . ($autorise ? 'OK' : 'REFUSÉ'));
         return $autorise;
     }
 
     // ✅ Cas standard : uniquement publish + accessible
     $autorise = ($post_status === 'publish') && ($etat_systeme === 'accessible');
-    error_log("🟠 [voir énigme] cas standard → accès " . ($autorise ? 'OK' : 'REFUSÉ'));
+    cat_debug("🟠 [voir énigme] cas standard → accès " . ($autorise ? 'OK' : 'REFUSÉ'));
     return $autorise;
 }
 
@@ -439,18 +439,18 @@ function utilisateur_peut_voir_enigme(int $enigme_id, ?int $user_id = null): boo
 function utilisateur_peut_ajouter_enigme(int $chasse_id, ?int $user_id = null): bool
 {
     if (get_post_type($chasse_id) !== 'chasse') {
-        error_log("❌ [ajout énigme] ID $chasse_id n'est pas une chasse.");
+        cat_debug("❌ [ajout énigme] ID $chasse_id n'est pas une chasse.");
         return false;
     }
 
     $user_id = $user_id ?? get_current_user_id();
     if (!$user_id || !is_user_logged_in()) {
-        error_log("❌ [ajout énigme] utilisateur non connecté.");
+        cat_debug("❌ [ajout énigme] utilisateur non connecté.");
         return false;
     }
 
     if (!est_organisateur($user_id)) {
-        error_log("❌ [ajout énigme] rôle utilisateur #$user_id invalide");
+        cat_debug("❌ [ajout énigme] rôle utilisateur #$user_id invalide");
         return false;
     }
 
@@ -458,18 +458,18 @@ function utilisateur_peut_ajouter_enigme(int $chasse_id, ?int $user_id = null): 
     $statut_metier     = get_field('chasse_cache_statut', $chasse_id);
 
     if ($statut_metier !== 'revision') {
-        error_log("❌ [ajout énigme] chasse #$chasse_id statut metier : $statut_metier");
+        cat_debug("❌ [ajout énigme] chasse #$chasse_id statut metier : $statut_metier");
         return false;
     }
 
     if (!in_array($statut_validation, ['creation', 'correction'], true)) {
-        error_log("❌ [ajout énigme] chasse #$chasse_id statut validation : $statut_validation");
+        cat_debug("❌ [ajout énigme] chasse #$chasse_id statut validation : $statut_validation");
         return false;
     }
 
     $est_associe = utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
     if (!$est_associe) {
-        error_log("❌ [ajout énigme] utilisateur #$user_id non associé à la chasse #$chasse_id");
+        cat_debug("❌ [ajout énigme] utilisateur #$user_id non associé à la chasse #$chasse_id");
         return false;
     }
 
@@ -477,11 +477,11 @@ function utilisateur_peut_ajouter_enigme(int $chasse_id, ?int $user_id = null): 
     $nb = count($ids);
 
     if ($nb >= 40) {
-        error_log("❌ [ajout énigme] chasse #$chasse_id a déjà $nb énigmes (limite 40)");
+        cat_debug("❌ [ajout énigme] chasse #$chasse_id a déjà $nb énigmes (limite 40)");
         return false;
     }
 
-    error_log("✅ [ajout énigme] autorisé pour user #$user_id sur chasse #$chasse_id ($nb / 40)");
+    cat_debug("✅ [ajout énigme] autorisé pour user #$user_id sur chasse #$chasse_id ($nb / 40)");
     return true;
 }
 
@@ -951,7 +951,7 @@ add_action('template_redirect', function () {
 
 add_action('init', function () {
     if (isset($_GET['voir_fichier'])) {
-        error_log('[🔍 DEBUG] $_GET[voir_fichier] = ' . $_GET['voir_fichier']);
+        cat_debug('[🔍 DEBUG] $_GET[voir_fichier] = ' . $_GET['voir_fichier']);
     }
 });
 

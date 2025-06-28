@@ -103,7 +103,7 @@ defined('ABSPATH') || exit;
             ));
 
             if (in_array($current_statut, ['resolue', 'terminee'], true)) {
-                error_log("❌ Tentative rejetée car joueur a déjà résolu l’énigme (UID=$user_id / Enigme=$enigme_id).");
+                cat_debug("❌ Tentative rejetée car joueur a déjà résolu l’énigme (UID=$user_id / Enigme=$enigme_id).");
                 return;
             }
 

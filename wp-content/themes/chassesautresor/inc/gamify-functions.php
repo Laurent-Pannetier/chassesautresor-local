@@ -284,42 +284,42 @@ function compter_enigmes_resolues($chasse_id, $user_id): int {
  * @param int $enigme_id ID de l'énigme résolue.
  */
 function verifier_fin_de_chasse($user_id, $enigme_id) {
-    error_log("🔍 Vérification de fin de chasse pour l'utilisateur {$user_id} (énigme : {$enigme_id})");
+    cat_debug("🔍 Vérification de fin de chasse pour l'utilisateur {$user_id} (énigme : {$enigme_id})");
 
     // 🧭 Récupération de la chasse associée
     $chasse_id = get_field('chasse_associee', $enigme_id, false);
     $chasse_id = is_array($chasse_id) ? reset($chasse_id) : $chasse_id;
 
     if (!$chasse_id) {
-        error_log("❌ Aucune chasse associée trouvée.");
+        cat_debug("❌ Aucune chasse associée trouvée.");
         return;
     }
 
     // 📄 Récupération des énigmes associées
     $enigmes_associees = get_field('enigmes_associees', $chasse_id);
     if (empty($enigmes_associees) || !is_array($enigmes_associees)) {
-        error_log("⚠️ Pas d'énigmes associées à la chasse (ID: {$chasse_id})");
+        cat_debug("⚠️ Pas d'énigmes associées à la chasse (ID: {$chasse_id})");
         return;
     }
 
     $enigmes_ids = array_filter($enigmes_associees, 'is_numeric');
     if (empty($enigmes_ids)) {
-        error_log("❌ Aucun ID valide parmi les énigmes.");
+        cat_debug("❌ Aucun ID valide parmi les énigmes.");
         return;
     }
 
     // ✅ Vérification des énigmes résolues
     $enigmes_resolues = array_filter($enigmes_ids, function($associee_id) use ($user_id) {
         $statut = get_user_meta($user_id, "statut_enigme_{$associee_id}", true);
-        error_log("📄 Énigme (ID: {$associee_id}) - Statut: {$statut}");
+        cat_debug("📄 Énigme (ID: {$associee_id}) - Statut: {$statut}");
         return $statut === 'terminée';
     });
 
-    error_log("✅ Résolues : " . count($enigmes_resolues) . " / " . count($enigmes_ids));
+    cat_debug("✅ Résolues : " . count($enigmes_resolues) . " / " . count($enigmes_ids));
 
     // 🏆 Si toutes les énigmes sont résolues
     if (count($enigmes_resolues) === count($enigmes_ids)) {
-        error_log("🏁 Toutes les énigmes sont résolues. Attribution du trophée de chasse.");
+        cat_debug("🏁 Toutes les énigmes sont résolues. Attribution du trophée de chasse.");
         attribuer_trophee_si_associe($user_id, $chasse_id); // 🏅 Attribue le trophée de chasse
     
         $illimitee = get_field('illimitee', $chasse_id); // Récupère le mode de la chasse ("stop" ou "continue")
@@ -338,7 +338,7 @@ function verifier_fin_de_chasse($user_id, $enigme_id) {
             wp_cache_delete($chasse_id, 'post_meta');
             clean_post_cache($chasse_id);
     
-            error_log("🏆 Chasse (ID: {$chasse_id}) terminée. Gagnant : {$gagnant}");
+            cat_debug("🏆 Chasse (ID: {$chasse_id}) terminée. Gagnant : {$gagnant}");
             incrementer_total_chasses_terminees_utilisateur($user_id);
         }
     
@@ -476,21 +476,21 @@ function afficher_trophees_utilisateur_callback($nombre = null) {
  */
 function attribuer_trophee_si_associe($user_id, $post_id) {
     if (!is_numeric($user_id) || !is_numeric($post_id)) {
-        error_log("⚠️ Paramètres invalides : user_id={$user_id}, post_id={$post_id}");
+        cat_debug("⚠️ Paramètres invalides : user_id={$user_id}, post_id={$post_id}");
         return;
     }
 
     // 🏅 Récupère le trophée associé au post (champ ACF 'trophee_associe')
     $trophee_id = get_field('trophee_associe', $post_id);
     if (!$trophee_id) {
-        error_log("ℹ️ Aucun trophée associé au post (ID: {$post_id})");
+        cat_debug("ℹ️ Aucun trophée associé au post (ID: {$post_id})");
         return; // 🚫 Pas de trophée
     }
 
     // 📦 Gestion du cas où le champ est un tableau (Relation ou Post Object ACF)
     $trophee_id = is_array($trophee_id) ? reset($trophee_id) : $trophee_id;
     if (!is_numeric($trophee_id)) {
-        error_log("⚠️ ID de trophée non valide (post ID: {$post_id}, valeur : {$trophee_id})");
+        cat_debug("⚠️ ID de trophée non valide (post ID: {$post_id}, valeur : {$trophee_id})");
         return; // 🚫 ID incorrect
     }
 
@@ -500,7 +500,7 @@ function attribuer_trophee_si_associe($user_id, $post_id) {
 
     // 🚫 Vérifie si l’utilisateur possède déjà ce trophée
     if (in_array($trophee_id, $trophees_utilisateur, true)) {
-        error_log("🚫 Utilisateur (ID: {$user_id}) possède déjà le trophée (ID: {$trophee_id})");
+        cat_debug("🚫 Utilisateur (ID: {$user_id}) possède déjà le trophée (ID: {$trophee_id})");
         return;
     }
 
@@ -508,7 +508,7 @@ function attribuer_trophee_si_associe($user_id, $post_id) {
     $trophees_utilisateur[] = $trophee_id;
     update_user_meta($user_id, 'trophees_utilisateur', $trophees_utilisateur);
 
-    error_log("🏆 Trophée (ID: {$trophee_id}) attribué à l'utilisateur (ID: {$user_id}) avec succès.");
+    cat_debug("🏆 Trophée (ID: {$trophee_id}) attribué à l'utilisateur (ID: {$user_id}) avec succès.");
 }
 
 /**
@@ -521,7 +521,7 @@ function attribuer_trophee_si_associe($user_id, $post_id) {
  */
 function attribuer_badge_utilisateur($user_id, $badge_slug = 'enfantun') {
     if (!$user_id || empty($badge_slug) || !get_userdata($user_id)) {
-        error_log("❌ Attribution de badge échouée : utilisateur invalide ou badge manquant.");
+        cat_debug("❌ Attribution de badge échouée : utilisateur invalide ou badge manquant.");
         return false; 
     }
 
@@ -533,11 +533,11 @@ function attribuer_badge_utilisateur($user_id, $badge_slug = 'enfantun') {
         update_user_meta($user_id, 'badges_utilisateur', $badges_utilisateur);
 
         clean_user_cache($user_id); // 🔄 Nettoie le cache utilisateur
-        error_log("🏅 Badge '{$badge_slug}' attribué à l'utilisateur (ID: {$user_id}).");
+        cat_debug("🏅 Badge '{$badge_slug}' attribué à l'utilisateur (ID: {$user_id}).");
         return true;
     }
 
-    error_log("🚫 L'utilisateur (ID: {$user_id}) possède déjà le badge '{$badge_slug}'.");
+    cat_debug("🚫 L'utilisateur (ID: {$user_id}) possède déjà le badge '{$badge_slug}'.");
     return false;
 }
 add_action('enigme_resolue', function($user_id) {
@@ -579,7 +579,7 @@ add_action('save_post', function ($post_id, $post, $update) {
         $chasse_associee = get_field('chasse_associee', $post_id);
 
         if (empty($chasse_associee)) {
-            error_log("⚠️ ERREUR : Aucun ID de chasse associé au trophée personnalisé ID {$post_id}.");
+            cat_debug("⚠️ ERREUR : Aucun ID de chasse associé au trophée personnalisé ID {$post_id}.");
         }
     }
 }, 10, 3);
@@ -633,7 +633,7 @@ function gerer_trophee_personnalise($post_id, $nom_trophee, $icone_trophee, $typ
             ]);
 
             set_post_thumbnail($trophee_id, $icone_trophee);
-            error_log("♻️ Trophée unique ID {$trophee_id} mis à jour.");
+            cat_debug("♻️ Trophée unique ID {$trophee_id} mis à jour.");
         }
 
         return;
@@ -651,12 +651,12 @@ function gerer_trophee_personnalise($post_id, $nom_trophee, $icone_trophee, $typ
     ]);
 
     if (is_wp_error($trophee_id)) {
-        error_log("❌ ERREUR : Impossible de créer le trophée pour le post ID {$post_id}.");
+        cat_debug("❌ ERREUR : Impossible de créer le trophée pour le post ID {$post_id}.");
         return;
     }
 
     set_post_thumbnail($trophee_id, $icone_trophee);
-    error_log("✅ Trophée unique (ID: {$trophee_id}) créé pour {$type} ID {$post_id}.");
+    cat_debug("✅ Trophée unique (ID: {$trophee_id}) créé pour {$type} ID {$post_id}.");
 }
 
 /**
@@ -706,7 +706,7 @@ function gerer_trophee_pour_post($post_id, $type, $association_trophee, $nom_tro
         if ($trophee_existante->have_posts()) {
             $trophee_id = $trophee_existante->posts[0]->ID;
             wp_delete_post($trophee_id, true); // Suppression définitive
-            error_log("🗑️ Trophée unique ID {$trophee_id} supprimé car le {$type} ID {$post_id} utilise maintenant un trophée système.");
+            cat_debug("🗑️ Trophée unique ID {$trophee_id} supprimé car le {$type} ID {$post_id} utilise maintenant un trophée système.");
         }
     } elseif ($association_trophee === 'le_mien') {
         // ✨ Création d’un trophée personnalisé → On vide le champ relation
@@ -714,7 +714,7 @@ function gerer_trophee_pour_post($post_id, $type, $association_trophee, $nom_tro
 
         // 🚨 Vérification que les champs sont bien remplis
         if (empty($nom_trophee) || empty($icone_trophee)) {
-            error_log("⚠️ ERREUR : Nom ou icône du trophée manquant pour le {$type} ID {$post_id}.");
+            cat_debug("⚠️ ERREUR : Nom ou icône du trophée manquant pour le {$type} ID {$post_id}.");
             return;
         }
 

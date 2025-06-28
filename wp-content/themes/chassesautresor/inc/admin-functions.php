@@ -120,7 +120,7 @@ function traiter_gestion_points() {
     // Mettre à jour les points de l'utilisateur
     update_user_points($user_id, $nouveau_solde);
 
-    error_log("✅ Points modifiés : $nombre_points $type_modification pour l'utilisateur $utilisateur");
+    cat_debug("✅ Points modifiés : $nombre_points $type_modification pour l'utilisateur $utilisateur");
 
     // ✅ Redirection après soumission
     wp_redirect(add_query_arg('points_modifies', '1', wp_get_referer()));
@@ -441,11 +441,11 @@ function regler_paiement_admin() {
     // Récupérer les paiements
     $paiements = get_user_meta($user_id, 'demande_paiement', true);
     if (empty($paiements) || !isset($paiements[$index])) {
-        error_log("❌ Erreur : Paiement non trouvé pour user_id=$user_id, index=$index");
+        cat_debug("❌ Erreur : Paiement non trouvé pour user_id=$user_id, index=$index");
         return;
     }
 
-    error_log("🛠️ Paiements AVANT mise à jour : " . print_r($paiements, true));
+    cat_debug("🛠️ Paiements AVANT mise à jour : " . print_r($paiements, true));
 
     // Mise à jour du statut du paiement
     $paiements[$index]['statut'] = 'reglé';
@@ -454,14 +454,14 @@ function regler_paiement_admin() {
     // Enregistrement de la mise à jour
     $update_success = update_user_meta($user_id, 'demande_paiement', $paiements);
 
-    error_log("✅ Paiement réglé pour user_id=$user_id, index=$index");
+    cat_debug("✅ Paiement réglé pour user_id=$user_id, index=$index");
 
     // Vérification après mise à jour
     $paiements_apres = get_user_meta($user_id, 'demande_paiement', true);
-    error_log("🛠️ Paiements APRÈS mise à jour : " . print_r($paiements_apres, true));
+    cat_debug("🛠️ Paiements APRÈS mise à jour : " . print_r($paiements_apres, true));
 
     if (!$update_success) {
-        error_log("❌ ERREUR : La mise à jour des paiements a échoué !");
+        cat_debug("❌ ERREUR : La mise à jour des paiements a échoué !");
     }
 
     // Rediriger pour éviter de re-traiter la requête en cas de rechargement
@@ -542,7 +542,7 @@ function traiter_demande_paiement() {
     update_user_meta($user_id, 'demande_paiement', $paiements);
     update_user_points($user_id, -$points_a_convertir);
 
-    error_log("✅ Demande enregistrée : " . json_encode($nouvelle_demande));
+    cat_debug("✅ Demande enregistrée : " . json_encode($nouvelle_demande));
 
     // 📧 Notification admin
     $admin_email = get_option('admin_email');
@@ -555,7 +555,7 @@ function traiter_demande_paiement() {
     $message .= "Statut : En attente";
 
     wp_mail($admin_email, $subject, $message);
-    error_log("📧 Notification envoyée à l'administrateur.");
+    cat_debug("📧 Notification envoyée à l'administrateur.");
 
     // ✅ Redirection après soumission
     wp_redirect(add_query_arg('paiement_envoye', '1', wp_get_referer()));
@@ -591,11 +591,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modifier_statut'], $_
         $paiements[$paiement_id]['statut'] = sanitize_text_field($_POST['statut']);
         $paiements[$paiement_id]['paiement_date_reglement'] = ($paiements[$paiement_id]['statut'] === 'regle') ? current_time('mysql') : '';
         update_user_meta($user_id, 'demande_paiement', $paiements);
-        error_log("✅ Statut mis à jour pour l'entrée $paiement_id : " . $paiements[$paiement_id]['statut']);
+        cat_debug("✅ Statut mis à jour pour l'entrée $paiement_id : " . $paiements[$paiement_id]['statut']);
         if ($paiements[$paiement_id]['statut'] === 'regle') {
         $montant_paye = floatval($paiements[$paiement_id]['paiement_demande_montant']);
         mettre_a_jour_paiements_organisateurs($montant_paye); // 🔄 Mise à jour des paiements aux organisateurs
-        error_log("✅ Paiement ajouté aux statistiques : {$montant_paye} €.");
+        cat_debug("✅ Paiement ajouté aux statistiques : {$montant_paye} €.");
         }   
     }
 }
@@ -655,7 +655,7 @@ function traiter_reinitialisation_stats() {
     if (!isset($_POST['reset_stats']) || !check_admin_referer('reset_stats_action', 'reset_stats_nonce')) return;
     if (!get_option('activer_reinitialisation_stats', false)) return; // Vérification activée
 
-    error_log("🛠 Début de la suppression des statistiques...");
+    cat_debug("🛠 Début de la suppression des statistiques...");
 
     supprimer_metas_utilisateur([
         'total_enigmes_jouees', 'total_chasses_terminees', 'total_indices_debloques',
@@ -686,9 +686,9 @@ function traiter_reinitialisation_stats() {
     if (!empty($paiements_post)) {
         $post_id = $paiements_post[0]->ID;
         delete_field('taux_conversion', $post_id);
-        error_log("✅ Taux de conversion réinitialisé pour le post ID : {$post_id}");
+        cat_debug("✅ Taux de conversion réinitialisé pour le post ID : {$post_id}");
     } else {
-        error_log("⚠️ Aucun post 'Paiements' trouvé, impossible de réinitialiser les taux.");
+        cat_debug("⚠️ Aucun post 'Paiements' trouvé, impossible de réinitialiser les taux.");
     }
     supprimer_metas_globales();
     supprimer_metas_organisateur();
@@ -697,17 +697,17 @@ function traiter_reinitialisation_stats() {
     // 🔄 Désactiver l'option après suppression
     delete_option('activer_reinitialisation_stats');
 
-    error_log("✅ Statistiques réinitialisées avec succès.");
+    cat_debug("✅ Statistiques réinitialisées avec succès.");
 
     // ✅ Vérification du problème d'écran blanc
-    error_log("✅ Fin du script, lancement de la redirection...");
+    cat_debug("✅ Fin du script, lancement de la redirection...");
     
     // Vérifier si les headers sont déjà envoyés
     if (!headers_sent()) {
         wp_redirect(home_url('/administration/outils/?updated=true'));
         exit;
     } else {
-        error_log("⛔ Problème de redirection : headers déjà envoyés.");
+        cat_debug("⛔ Problème de redirection : headers déjà envoyés.");
         die("⛔ Problème de redirection. Recharge manuelle nécessaire.");
     }
 }
@@ -775,26 +775,26 @@ function ajouter_bouton_reinitialisation_stats() {
  * 📌 Gestion de l'activation/désactivation de la réinitialisation des stats
  */
 function gerer_activation_reinitialisation_stats() {
-    error_log("🛠 Début du traitement de l'activation/désactivation");
+    cat_debug("🛠 Début du traitement de l'activation/désactivation");
 
     // ✅ Vérification des permissions administrateur
     if (!current_user_can('manage_options')) {
-        error_log("⛔ Problème de permission : utilisateur non autorisé.");
+        cat_debug("⛔ Problème de permission : utilisateur non autorisé.");
         wp_die(__('⛔ Accès refusé. Vous n’avez pas la permission d’effectuer cette action.', 'textdomain'));
     }
-    error_log("🔎 Permission OK");
+    cat_debug("🔎 Permission OK");
 
     // ✅ Vérification de la requête POST et de la sécurité
     if (!isset($_POST['enregistrer_reinit']) || !check_admin_referer('toggle_reinit_stats_action', 'toggle_reinit_stats_nonce')) {
-        error_log("⛔ Problème de nonce ou bouton non soumis.");
+        cat_debug("⛔ Problème de nonce ou bouton non soumis.");
         wp_die(__('⛔ Erreur de sécurité. Veuillez réessayer.', 'textdomain'));
     }
-    error_log("🔎 Nonce OK");
+    cat_debug("🔎 Nonce OK");
 
     // ✅ Mise à jour de l'option d'activation
     $activer = isset($_POST['activer_reinit']) ? 1 : 0;
     update_option('activer_reinitialisation_stats', $activer);
-    error_log("✅ Option mise à jour : " . ($activer ? 'Activée' : 'Désactivée'));
+    cat_debug("✅ Option mise à jour : " . ($activer ? 'Activée' : 'Désactivée'));
 
     // ✅ Ajout d’un message d’alerte WordPress
     add_action('admin_notices', function() use ($activer) {
@@ -809,12 +809,12 @@ function gerer_activation_reinitialisation_stats() {
         $redirect_url = home_url('/administration/outils/?updated=true');
     }
 
-    error_log("🔄 Redirection vers : " . $redirect_url);
+    cat_debug("🔄 Redirection vers : " . $redirect_url);
     if (!headers_sent()) {
         wp_redirect($redirect_url);
         exit;
     } else {
-        error_log("⛔ Problème de redirection : headers déjà envoyés.");
+        cat_debug("⛔ Problème de redirection : headers déjà envoyés.");
     }
 
     exit;
@@ -841,7 +841,7 @@ function supprimer_metas_organisateur() {
     ]);
 
     if (empty($organisateurs)) {
-        error_log("ℹ️ Aucun organisateur trouvé. Rien à supprimer.");
+        cat_debug("ℹ️ Aucun organisateur trouvé. Rien à supprimer.");
         return;
     }
 
@@ -853,22 +853,22 @@ function supprimer_metas_organisateur() {
                 if ($meta_key === 'demande_paiement') {
                     // Suppression forcée via SQL pour l'historique des paiements
                     $wpdb->delete($wpdb->usermeta, ['user_id' => $user_id, 'meta_key' => $meta_key]);
-                    error_log("✅ Suppression forcée via SQL pour : {$meta_key} (user_id {$user_id})");
+                    cat_debug("✅ Suppression forcée via SQL pour : {$meta_key} (user_id {$user_id})");
                 } else {
                     // Suppression normale pour les autres méta
                     delete_user_meta($user_id, $meta_key);
-                    error_log("✅ Suppression réussie de : {$meta_key} pour user_id {$user_id}");
+                    cat_debug("✅ Suppression réussie de : {$meta_key} pour user_id {$user_id}");
                 }
 
                 // Vérification post-suppression
                 $meta_post_suppression = get_user_meta($user_id, $meta_key, true);
                 if (!empty($meta_post_suppression)) {
-                    error_log("⚠️ Problème : {$meta_key} n'a pas été supprimé pour user_id {$user_id}.");
+                    cat_debug("⚠️ Problème : {$meta_key} n'a pas été supprimé pour user_id {$user_id}.");
                 } else {
-                    error_log("✅ Vérification OK : {$meta_key} a bien été supprimé pour user_id {$user_id}.");
+                    cat_debug("✅ Vérification OK : {$meta_key} a bien été supprimé pour user_id {$user_id}.");
                 }
             } else {
-                error_log("ℹ️ Aucune méta trouvée pour : {$meta_key} de user_id {$user_id}.");
+                cat_debug("ℹ️ Aucune méta trouvée pour : {$meta_key} de user_id {$user_id}.");
             }
         }
     }
@@ -889,7 +889,7 @@ function supprimer_metas_utilisateur($meta_keys) {
 
     // Vérification d'erreur SQL
     if (!empty($wpdb->last_error)) {
-        error_log("⚠️ Erreur SQL lors de la suppression des metas utilisateur : " . $wpdb->last_error);
+        cat_debug("⚠️ Erreur SQL lors de la suppression des metas utilisateur : " . $wpdb->last_error);
     }
     $wpdb->query("DELETE FROM {$wpdb->usermeta} WHERE meta_key LIKE 'enigme_%_resolue'");
 
@@ -910,7 +910,7 @@ function supprimer_metas_globales() {
 
     foreach ($metas_globales as $meta) {
         delete_option($meta);
-        error_log("✅ Suppression réussie de l'option : $meta");
+        cat_debug("✅ Suppression réussie de l'option : $meta");
     }
 }
 
@@ -927,7 +927,7 @@ function supprimer_metas_post($post_type, $meta_keys) {
     ]);
 
     if (empty($post_ids)) {
-        error_log("ℹ️ Aucun post trouvé pour le type : {$post_type}. Rien à supprimer.");
+        cat_debug("ℹ️ Aucun post trouvé pour le type : {$post_type}. Rien à supprimer.");
         return;
     }
 
@@ -944,9 +944,9 @@ function supprimer_metas_post($post_type, $meta_keys) {
                 "DELETE FROM {$wpdb->postmeta} WHERE meta_key LIKE %s",
                 $meta_key . '%'
             ));
-            error_log("✅ Suppression réussie pour : {$meta_key}%");
+            cat_debug("✅ Suppression réussie pour : {$meta_key}%");
         } else {
-            error_log("ℹ️ Aucune méta trouvée pour : {$meta_key}%");
+            cat_debug("ℹ️ Aucune méta trouvée pour : {$meta_key}%");
         }
     }
 }
@@ -961,9 +961,9 @@ function supprimer_souscriptions_utilisateur() {
     $wpdb->query("DELETE FROM {$wpdb->usermeta} WHERE meta_key LIKE 'enigme_%_souscrit'");
 
     if (!empty($wpdb->last_error)) {
-        error_log("⚠️ Erreur SQL lors de la suppression des souscriptions utilisateur : " . $wpdb->last_error);
+        cat_debug("⚠️ Erreur SQL lors de la suppression des souscriptions utilisateur : " . $wpdb->last_error);
     } else {
-        error_log("✅ Suppression réussie des souscriptions aux énigmes.");
+        cat_debug("✅ Suppression réussie des souscriptions aux énigmes.");
     }
 }
 
@@ -980,16 +980,16 @@ function supprimer_souscriptions_utilisateur() {
  */
 function reinitialiser_enigme($user_id, $enigme_id) {
     if (!is_numeric($user_id) || !is_numeric($enigme_id)) {
-        error_log("⚠️ Paramètres invalides : user_id={$user_id}, enigme_id={$enigme_id}");
+        cat_debug("⚠️ Paramètres invalides : user_id={$user_id}, enigme_id={$enigme_id}");
         return;
     }
 
-    error_log("🔄 DÉBUT de la réinitialisation pour l'utilisateur (ID: {$user_id}) sur l'énigme (ID: {$enigme_id})");
+    cat_debug("🔄 DÉBUT de la réinitialisation pour l'utilisateur (ID: {$user_id}) sur l'énigme (ID: {$enigme_id})");
 
     // 🧹 1. Suppression du statut et de la date de résolution
     delete_user_meta($user_id, "statut_enigme_{$enigme_id}");
     delete_user_meta($user_id, "enigme_{$enigme_id}_resolution_date");
-    error_log("🧹 Statut et date de résolution supprimés pour l'énigme (ID: {$enigme_id})");
+    cat_debug("🧹 Statut et date de résolution supprimés pour l'énigme (ID: {$enigme_id})");
 
     // 🗑️ 2. Réinitialisation des indices débloqués
     $indices = get_field('indices', $enigme_id); 
@@ -997,7 +997,7 @@ function reinitialiser_enigme($user_id, $enigme_id) {
         foreach ($indices as $index => $indice) {
             delete_user_meta($user_id, "indice_debloque_{$enigme_id}_{$index}");
         }
-        error_log("🧹 Indices débloqués réinitialisés pour l'énigme (ID: {$enigme_id})");
+        cat_debug("🧹 Indices débloqués réinitialisés pour l'énigme (ID: {$enigme_id})");
     }
 
     // 🏆 3. Suppression du trophée associé à l’énigme
@@ -1010,7 +1010,7 @@ function reinitialiser_enigme($user_id, $enigme_id) {
         if (($key = array_search($trophee_enigme_id, $trophees_utilisateur)) !== false) {
             unset($trophees_utilisateur[$key]);
             update_user_meta($user_id, 'trophees_utilisateur', array_values($trophees_utilisateur));
-            error_log("🏆 Trophée de l'énigme (ID: {$trophee_enigme_id}) supprimé pour l'utilisateur (ID: {$user_id})");
+            cat_debug("🏆 Trophée de l'énigme (ID: {$trophee_enigme_id}) supprimé pour l'utilisateur (ID: {$user_id})");
         }
     }
 
@@ -1026,7 +1026,7 @@ function reinitialiser_enigme($user_id, $enigme_id) {
             if (($key = array_search($trophee_chasse_id, $trophees_utilisateur)) !== false) {
                 unset($trophees_utilisateur[$key]);
                 update_user_meta($user_id, 'trophees_utilisateur', array_values($trophees_utilisateur));
-                error_log("🏆 Trophée de chasse (ID: {$trophee_chasse_id}) supprimé pour l'utilisateur (ID: {$user_id})");
+                cat_debug("🏆 Trophée de chasse (ID: {$trophee_chasse_id}) supprimé pour l'utilisateur (ID: {$user_id})");
             }
         }
 
@@ -1047,14 +1047,14 @@ function reinitialiser_enigme($user_id, $enigme_id) {
             wp_cache_delete($chasse_id, 'post_meta');
             clean_post_cache($chasse_id);
         
-            error_log("🔄 Chasse (ID: {$chasse_id}) réinitialisée : statut 'en cours', gagnant et date supprimés.");
+            cat_debug("🔄 Chasse (ID: {$chasse_id}) réinitialisée : statut 'en cours', gagnant et date supprimés.");
         }
     }
 
     // 🚀 5. (Optionnel) Réinitialisation de la souscription pour permettre de rejouer immédiatement
     // Décommentez la ligne suivante si vous souhaitez que le bouton "JOUER" apparaisse directement après réinitialisation :
     // update_user_meta($user_id, "statut_enigme_{$enigme_id}", 'souscrit');
-    // error_log("🔄 Souscription réinitialisée pour l'énigme (ID: {$enigme_id}) → bouton 'JOUER' réactivé.");
+    // cat_debug("🔄 Souscription réinitialisée pour l'énigme (ID: {$enigme_id}) → bouton 'JOUER' réactivé.");
 
     // 🧹 6. Nettoyage des caches
     // 🚀 5. Rafraîchissement des caches WordPress pour garantir l'affichage correct
@@ -1065,8 +1065,8 @@ wp_cache_delete($enigme_id, 'post_meta'); // Supprime le cache des métas du pos
 clean_user_cache($user_id); // Nettoie le cache complet de l'utilisateur
 clean_post_cache($enigme_id); // Nettoie le cache du post énigme
 
-error_log("🔄 Caches utilisateur et post nettoyés après réinitialisation.");
-error_log("✅ Réinitialisation complète terminée pour l'utilisateur (ID: {$user_id}) sur l'énigme (ID: {$enigme_id})");
+cat_debug("🔄 Caches utilisateur et post nettoyés après réinitialisation.");
+cat_debug("✅ Réinitialisation complète terminée pour l'utilisateur (ID: {$user_id}) sur l'énigme (ID: {$enigme_id})");
 
 }
 
