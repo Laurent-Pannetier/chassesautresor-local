@@ -28,8 +28,10 @@ function organisateur_get_liens_actifs(int $organisateur_id): array
 
   if (!empty($liens_publics) && is_array($liens_publics)) {
     foreach ($liens_publics as $entree) {
-      $type = $entree['type_de_lien'] ?? null;
-      $url  = $entree['url_lien'] ?? null;
+      $type_raw = $entree['type_de_lien'] ?? null;
+      $url      = $entree['url_lien'] ?? null;
+
+      $type = is_array($type_raw) ? ($type_raw[0] ?? '') : $type_raw;
 
       if (is_string($type) && trim($type) !== '' && is_string($url) && trim($url) !== '') {
         $liens_actifs[$type] = esc_url($url);
@@ -213,22 +215,24 @@ function ajax_modifier_champ_organisateur()
       wp_send_json_error('⚠️ format_invalide');
     }
 
-    $repetitions = array_values(array_filter(array_map(function ($ligne) {
+    $repetitions = [];
+    foreach ($tableau as $ligne) {
       $type = sanitize_text_field($ligne['type_de_lien'] ?? '');
       $url  = esc_url_raw($ligne['url_lien'] ?? '');
 
-      if (!$type || !$url) return null;
-
-      return [
-        'type_de_lien' => [$type], // 🔁 forcé array (select multiple)
-        'url_lien'     => $url
-      ];
-    }, $tableau)));
+      if ($type && $url) {
+        $repetitions[] = [
+          'type_de_lien' => $type,
+          'url_lien'     => $url
+        ];
+      }
+    }
 
     $ok = update_field('liens_publics', $repetitions, $post_id);
 
     // ✅ ASTUCE MAJEURE : ACF retourne false si même valeur que l’existant → comparer aussi
     $enregistre = get_field('liens_publics', $post_id);
+    $enregistre = is_array($enregistre) ? array_values($enregistre) : [];
     $equivalent = json_encode($enregistre) === json_encode($repetitions);
 
     if ($ok || $equivalent) {

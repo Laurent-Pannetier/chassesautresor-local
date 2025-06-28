@@ -26,8 +26,11 @@ window.mettreAJourResumeInfos = function () {
 
       if (champ === 'liens_publics') {
         const ul = bloc?.querySelector('.liste-liens-publics');
-        estRempli = ul && ul.children.length > 0;
+        // ➕ Ajout d'une condition fallback sur le dataset ou la classe
+        const aDesLiens = bloc?.classList.contains('champ-rempli') || bloc?.dataset.valeurs?.length > 0;
+        estRempli = (ul && ul.children.length > 0) || aDesLiens;
       }
+
 
       // Mise à jour visuelle + marquage obligatoire
       mettreAJourLigneResume(ligne, champ, estRempli, 'organisateur');

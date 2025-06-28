@@ -348,17 +348,25 @@ function modifier_champ_chasse()
     if (!is_array($tableau)) {
       wp_send_json_error('⚠️ format_invalide');
     }
-    $repetitions = array_values(array_filter(array_map(function ($ligne) {
+    $repetitions = [];
+    foreach ($tableau as $ligne) {
       $type = sanitize_text_field($ligne['type_de_lien'] ?? '');
       $url  = sanitize_text_field($ligne['url_lien'] ?? '');
-      return ($type && $url) ? [
-        'chasse_principale_liens_type' => [$type],
-        'chasse_principale_liens_url'  => $url
-      ] : null;
-    }, $tableau)));
+      if ($type && $url) {
+        $repetitions[] = [
+          'chasse_principale_liens_type' => $type,
+          'chasse_principale_liens_url'  => $url
+        ];
+      }
+    }
 
     $ok = update_field('chasse_principale_liens', $repetitions, $post_id);
-    if ($ok) wp_send_json_success($reponse);
+
+    $enregistre = get_field('chasse_principale_liens', $post_id);
+    $enregistre = is_array($enregistre) ? array_values($enregistre) : [];
+    $equiv = json_encode($enregistre) === json_encode($repetitions);
+
+    if ($ok || $equiv) wp_send_json_success($reponse);
     wp_send_json_error('⚠️ echec_mise_a_jour_liens');
   }
 
