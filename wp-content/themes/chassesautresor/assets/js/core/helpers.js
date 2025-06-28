@@ -110,7 +110,7 @@ function mettreAJourVisuelCPT(cpt, postId, nouvelleUrl) {
  * @param {string} params.formId - ID du formulaire de liens
  * @param {string} params.action - Action AJAX à appeler
  */
-function initLiensPublics(bloc, { panneauId, formId, action }) {
+function initLiensPublics(bloc, { panneauId, formId, action, reload = false }) {
   const champ = bloc.dataset.champ;
   const postId = bloc.dataset.postId;
   const bouton = bloc.querySelector('.champ-modifier');
@@ -225,6 +225,10 @@ function initLiensPublics(bloc, { panneauId, formId, action }) {
 
         if (typeof window.mettreAJourResumeInfos === 'function') {
           window.mettreAJourResumeInfos();
+        }
+
+        if (reload) {
+          location.reload();
         }
       })
       .catch((err) => {

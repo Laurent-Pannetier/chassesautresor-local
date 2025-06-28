@@ -358,7 +358,12 @@ function modifier_champ_chasse()
     }, $tableau)));
 
     $ok = update_field('chasse_principale_liens', $repetitions, $post_id);
-    if ($ok) wp_send_json_success($reponse);
+
+    $enregistre = get_field('chasse_principale_liens', $post_id);
+    $enregistre = is_array($enregistre) ? array_values($enregistre) : [];
+    $equiv = json_encode($enregistre) === json_encode($repetitions);
+
+    if ($ok || $equiv) wp_send_json_success($reponse);
     wp_send_json_error('⚠️ echec_mise_a_jour_liens');
   }
 

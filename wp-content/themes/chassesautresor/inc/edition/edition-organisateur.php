@@ -229,6 +229,7 @@ function ajax_modifier_champ_organisateur()
 
     // ✅ ASTUCE MAJEURE : ACF retourne false si même valeur que l’existant → comparer aussi
     $enregistre = get_field('liens_publics', $post_id);
+    $enregistre = is_array($enregistre) ? array_values($enregistre) : [];
     $equivalent = json_encode($enregistre) === json_encode($repetitions);
 
     if ($ok || $equivalent) {
