@@ -1,10 +1,16 @@
 <?php
 defined('ABSPATH') || exit;
 
+
 $organisateur_id = $args['organisateur_id'] ?? null;
 if (!$organisateur_id || get_post_type($organisateur_id) !== 'organisateur') {
   return;
 }
+
+$show_header  = $args['show_header'] ?? true;
+$grid_class   = $args['grid_class'] ?? 'grille-liste';
+$before_items = $args['before_items'] ?? '';
+$after_items  = $args['after_items'] ?? '';
 
 $query = get_chasses_de_organisateur($organisateur_id);
 $posts = is_a($query, 'WP_Query') ? $query->posts : (array) $query;
@@ -17,9 +23,12 @@ $posts   = array_values(array_filter($posts, function ($post) use ($user_id) {
 
 ?>
 
+<?php if ($show_header) : ?>
 <h2>Ses chasses</h2>
 <div class="separateur-2"></div>
-<div class="grille-liste">
+<?php endif; ?>
+<div class="<?php echo esc_attr($grid_class); ?>">
+<?php echo $before_items; ?>
   <?php foreach ($posts as $post) : ?>
     <?php
     $chasse_id = $post->ID;
@@ -37,4 +46,5 @@ $posts   = array_values(array_filter($posts, function ($post) use ($user_id) {
     ]);
     ?>
   <?php endforeach; ?>
+<?php echo $after_items; ?>
 </div>
