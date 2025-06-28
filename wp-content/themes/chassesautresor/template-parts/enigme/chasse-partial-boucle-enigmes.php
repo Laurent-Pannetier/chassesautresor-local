@@ -29,6 +29,16 @@ $posts = get_posts([
 // 🔒 Ne garder que les énigmes visibles pour l'utilisateur courant
 $posts_visibles = array_filter($posts, fn($post) => utilisateur_peut_voir_enigme($post->ID, $utilisateur_id));
 $has_enigmes = !empty($posts_visibles);
+
+// 🟠 Détecte la présence d’au moins une énigme incomplète
+$has_incomplete = false;
+foreach ($posts as $p) {
+  verifier_ou_mettre_a_jour_cache_complet($p->ID);
+  if (!get_field('enigme_cache_complet', $p->ID)) {
+    $has_incomplete = true;
+    break;
+  }
+}
 ?>
 
 <div class="bloc-enigmes-chasse">
@@ -68,7 +78,7 @@ $has_enigmes = !empty($posts_visibles);
   <?php endforeach; ?>
 
   <?php
-  if (utilisateur_peut_ajouter_enigme($chasse_id, $utilisateur_id)) {
+  if (utilisateur_peut_ajouter_enigme($chasse_id, $utilisateur_id) && !$has_incomplete && !$has_enigmes) {
     verifier_ou_mettre_a_jour_cache_complet($chasse_id);
     $complete = (bool) get_field('chasse_cache_complet', $chasse_id);
 
@@ -92,6 +102,7 @@ $has_enigmes = !empty($posts_visibles);
       'chasse_id'       => $chasse_id,
       'disabled'        => !$complete,
       'highlight_pulse' => $highlight_pulse,
+      'use_button'      => false,
     ]);
   }
   ?>

@@ -284,3 +284,9 @@ span.champ-obligatoire {
   align-items: center;
   gap: 1rem;
 }
+
+.titre-enigmes-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}

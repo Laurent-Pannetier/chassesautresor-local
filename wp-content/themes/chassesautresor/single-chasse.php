@@ -60,6 +60,15 @@ $image_url = $image_id ? wp_get_attachment_image_src($image_id, 'large')[0] : nu
 $enigmes_associees = recuperer_enigmes_associees($chasse_id);
 $total_enigmes = count($enigmes_associees);
 $enigmes_resolues = compter_enigmes_resolues($chasse_id, $user_id);
+$peut_ajouter_enigme = utilisateur_peut_ajouter_enigme($chasse_id);
+$has_incomplete_enigme = false;
+foreach ($enigmes_associees as $eid) {
+    verifier_ou_mettre_a_jour_cache_complet($eid);
+    if (!get_field('enigme_cache_complet', $eid)) {
+        $has_incomplete_enigme = true;
+        break;
+    }
+}
 
 $statut = get_field('champs_caches')['chasse_cache_statut'] ?? 'revision';
 $statut_validation = get_field('chasse_cache_statut_validation', $chasse_id);
@@ -149,7 +158,16 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
           </div>
         </header>
 
-        <h2>Énigmes</h2>
+        <div class="titre-enigmes-wrapper">
+          <h2>Énigmes</h2>
+          <?php if ($peut_ajouter_enigme && $total_enigmes > 0 && !$has_incomplete_enigme) :
+            get_template_part('template-parts/enigme/chasse-partial-ajout-enigme', null, [
+              'has_enigmes' => true,
+              'chasse_id'   => $chasse_id,
+              'use_button'  => true,
+            ]);
+          endif; ?>
+        </div>
         <div class="chasse-enigmes-liste">
           <?php
           get_template_part('template-parts/enigme/chasse-partial-boucle-enigmes', null, [
