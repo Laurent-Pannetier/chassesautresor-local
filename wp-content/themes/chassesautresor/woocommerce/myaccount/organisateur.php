@@ -35,6 +35,7 @@ if ($user_id) {
 
 //* récupération des trophées
 $trophees = get_user_meta($user_id, 'trophees_utilisateur', true);
+$trophees_output = '';
 
 // Vérifier si l'utilisateur a des trophées
 if (!empty($trophees)) {

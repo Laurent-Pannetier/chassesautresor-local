@@ -4,6 +4,9 @@ defined('ABSPATH') || exit;
  * Template pour les pages des organisateurs (CPT "organisateur").
  */
 
+// 🛠 Assure la disponibilité des fonctions d'accès
+require_once get_stylesheet_directory() . '/inc/access-functions.php';
+
 // ==================================================
 // 📩 GESTION DE L’ENDPOINT /contact
 // ==================================================
@@ -72,6 +75,7 @@ get_header();
                         <div class="grille-3">
                             <?php
                             $organisateur_id = get_the_ID();
+                            $peut_ajouter = false;
                             $query = get_chasses_de_organisateur($organisateur_id);
                             $chasses = is_a($query, 'WP_Query') ? $query->posts : (array) $query;
                             $user_id = get_current_user_id();
