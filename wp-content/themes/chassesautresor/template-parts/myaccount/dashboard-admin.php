@@ -53,7 +53,7 @@ $taux_conversion = $args['taux_conversion'] ?? get_taux_conversion_actuel();
         <div class="dashboard-card">
             <div class="dashboard-card-header">
                 <i class="fas fa-hammer"></i>
-                <h3>en création</h3>
+                <h3>en édition</h3>
             </div>
             <div class="stats-content">
                 <ul>
