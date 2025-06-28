@@ -53,54 +53,12 @@ $classe_statut = $badge_class;
 $enigmes_associees = recuperer_enigmes_associees($chasse_id);
 $total_enigmes = count($enigmes_associees);
 
-$menu_items = [];  // MENU CONTEXTUEL
-$peut_ajouter_enigme = utilisateur_peut_creer_post('enigme', $chasse_id);
-if (utilisateur_peut_modifier_post($chasse_id)) {
-    $edit_link = get_edit_post_link($chasse_id);
-if ($edit_link) {
-    $menu_items[] = '<li><a href="' . esc_url($edit_link) . '" class="menu-btn">
-                        <i class="fa fa-edit"></i> <span>Modifier</span>
-                     </a></li>';
-} else {
-    error_log("⚠️ [DEBUG] Aucun lien d'édition disponible pour la chasse ID: {$chasse_id}");
-}
-
-}
-
-if ($peut_ajouter_enigme) {
-    $menu_items[] = '<li>
-                        <a href="' . esc_url(admin_url('post-new.php?post_type=enigme&chasse_associee=' . $chasse_id)) . '" 
-                           class="menu-btn ajouter-enigme">
-                            <i class="fa fa-plus"></i> <span>Ajouter énigme</span>
-                        </a>
-                    </li>';
-
-    if ($total_enigmes === 0) {
-        $menu_items[] = '<li class="tooltip-ajouter-enigme">
-                            <div class="tooltip-content">
-                                <i class="fa fa-info-circle"></i> Prochaine étape
-                                <button class="close-tooltip">&times;</button>
-                            </div>
-                        </li>';
-    }
-}
 
 // Pourra servir à appliquer des styles spécifiques selon le statut
 $classe_verrouillee = '';
 ?>
 
 <div class="carte carte-ligne carte-chasse <?php echo esc_attr(trim($classe_statut . ' ' . $classe_verrouillee . ' ' . $completion_class)); ?>">
-    <?php // ✅ Afficher le menu uniquement s'il y a des actions
-    if (!empty($menu_items)) : ?>
-        <div class="menu-actions">
-            <button class="menu-btn-toggle">
-                <i class="fa fa-ellipsis-h"></i>
-            </button>
-            <ul class="menu-dropdown">
-                <?php echo implode("\n", $menu_items); ?>
-            </ul>
-        </div>
-    <?php endif; ?>
     <div class="carte-ligne__image">
         <span class="badge-statut <?php echo esc_attr($badge_class); ?>" data-post-id="<?php echo esc_attr($chasse_id); ?>">
             <?php echo esc_html($statut_label); ?>
