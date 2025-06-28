@@ -293,7 +293,9 @@ function initChasseEdit() {
               document.body.focus(); // 🔥 Correction ultime ici
             }
 
-            location.reload();
+            const url = new URL(window.location.href);
+            url.searchParams.set('edition', 'open');
+            window.location.href = url.toString();
 
           } else {
             console.error('❌ Erreur valeur récompense', res.data);
