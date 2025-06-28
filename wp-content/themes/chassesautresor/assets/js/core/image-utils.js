@@ -90,7 +90,5 @@ function initChampImage(bloc) {
   };
 
   // ✅ On expose la fonction pour la déclencher manuellement
-  bloc.dataset.imageInitReady = '1';
-  bloc.dataset.imageInitTrigger = ouvrirMedia;
   bloc.__ouvrirMedia = ouvrirMedia;
 }
