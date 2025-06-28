@@ -222,7 +222,7 @@ $classe_vide_coordonnees = ($iban_vide || $bic_vide) ? 'champ-vide' : '';
                 <h3>Information bancaires</h3>
 
                 <ul class="resume-infos">
-                  <li class="champ-organisateur champ-coordonnees ligne-coordonnees <?= !empty($iban) ? 'champ-rempli' : ''; ?>" data-champ="coordonnees_bancaires">
+                  <li id="ligne-coordonnees" class="champ-organisateur champ-coordonnees ligne-coordonnees <?= !empty($iban) ? 'champ-rempli' : ''; ?>" data-champ="coordonnees_bancaires">
                     Coordonnées bancaires
                     <button type="button" class="icone-info" aria-label="Informations sur les coordonnées bancaires"
                       onclick="alert('Ces informations sont nécessaires uniquement pour vous verser les gains issus de la conversion de vos points en euros. Nous ne prélevons jamais d\u2019argent.');">
