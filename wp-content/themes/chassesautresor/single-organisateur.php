@@ -108,7 +108,7 @@ get_header();
                     get_template_part('template-parts/organisateur/organisateur-partial-boucle-chasses', null, [
                         'organisateur_id' => $organisateur_id,
                         'show_header'     => false,
-                        'grid_class'      => 'grille-3',
+                        'grid_class'      => 'grille-liste',
                         'after_items'     => $after_items,
                     ]);
                     ?>

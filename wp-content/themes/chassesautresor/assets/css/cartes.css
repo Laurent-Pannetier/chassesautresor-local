@@ -125,6 +125,21 @@
   flex: 1;
 }
 
+.carte-ligne__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.carte-ligne__footer .liste-liens-publics {
+  gap: 0.5rem;
+}
+
+.carte-ligne__footer .texte-lien {
+  display: none;
+}
+
 /* ========== ➕ Cartes d'ajout d'énigme et de chasse ========== */
 .carte-ajout-enigme,
 .carte-ajout-chasse {
