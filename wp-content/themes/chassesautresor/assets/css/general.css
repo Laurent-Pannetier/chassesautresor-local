@@ -277,3 +277,10 @@ span.champ-obligatoire {
 .media-modal-content button {
     color: var(--color-text-fond-clair);
 }
+
+/* ========== 🏷️ Titre chasses et bouton ========== */
+.titre-chasses-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}

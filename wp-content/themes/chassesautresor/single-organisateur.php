@@ -67,6 +67,14 @@ get_header();
             <div class="conteneur">
                 <div class="titre-chasses-wrapper">
                     <h2>Chasses au Trésor</h2>
+                    <?php if ($peut_ajouter && $has_publish) :
+                        get_template_part('template-parts/chasse/chasse-partial-ajout-chasse', null, [
+                            'has_chasses'     => $has_chasses,
+                            'organisateur_id' => $organisateur_id,
+                            'highlight_pulse' => $highlight_pulse,
+                            'use_button'      => true,
+                        ]);
+                    endif; ?>
                     <div class="ligne-chasses"></div>
                     <div class="liste-chasses">
                         <div class="grille-3">
@@ -80,6 +88,13 @@ get_header();
                             }));
                             $peut_ajouter = utilisateur_peut_ajouter_chasse($organisateur_id);
                             $has_chasses = !empty($chasses);
+                            $has_publish  = false;
+                            foreach ($chasses as $cpost) {
+                                if (get_post_status($cpost->ID) === 'publish') {
+                                    $has_publish = true;
+                                    break;
+                                }
+                            }
                             $cache_complet = (bool) get_field('organisateur_cache_complet', $organisateur_id);
                             $highlight_pulse = !$has_chasses && $is_owner && in_array(ROLE_ORGANISATEUR_CREATION, $roles, true) && $cache_complet;
 
@@ -96,9 +111,9 @@ get_header();
                                 </article>
                             <?php endforeach; ?>
 
-                            <?php if ($peut_ajouter) :
+                            <?php if ($peut_ajouter && !$has_publish) :
                                 get_template_part('template-parts/chasse/chasse-partial-ajout-chasse', null, [
-                                    'has_chasses'    => $has_chasses,
+                                    'has_chasses'     => $has_chasses,
                                     'organisateur_id' => $organisateur_id,
                                     'highlight_pulse' => $highlight_pulse,
                                 ]);
