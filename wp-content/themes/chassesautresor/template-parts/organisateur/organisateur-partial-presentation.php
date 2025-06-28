@@ -40,7 +40,7 @@ if (!empty($liens_publics) && is_array($liens_publics)) {
              data-cpt="organisateur"
              data-post-id="<?= esc_attr($organisateur_id); ?>">
         
-            <div class="champ-affichage champ-affichage-liens bloc-liens-publics header-organisateur__liens <?= count($liens_actifs) >= 3 ? 'liens-compacts' : ''; ?>">
+            <div class="champ-affichage champ-affichage-liens bloc-liens-publics header-organisateur__liens <?= count($liens_actifs) >= 3 ? 'liens-compacts' : ''; ?>" data-no-edit="1">
         
             <?php if (!empty($liens_actifs)) : ?>
               <ul class="liste-liens-publics">
