@@ -76,13 +76,6 @@ if (!empty($liens_publics) && is_array($liens_publics)) {
      data-post-id="<?= esc_attr($organisateur_id); ?>">
         <div class="flex-row titre-presentation">
           <h2>Présentation</h2>
-          <?php if ($peut_modifier) : ?>
-            <button type="button"
-                    class="champ-modifier ouvrir-panneau-description"
-                    aria-label="Modifier la présentation">
-                ✏️
-            </button>
-          <?php endif; ?>
         </div>
 
         <div class="separateur-2"></div>
