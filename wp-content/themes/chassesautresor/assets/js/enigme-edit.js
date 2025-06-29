@@ -68,7 +68,7 @@ function initEnigmeEdit() {
   // ==============================
   const explicationValidation = {
     'aucune': "Aucun formulaire de réponse ne sera affiché pour cette énigme.",
-    'manuelle': "Le joueur devra rédiger une réponse libre. Vous recevrez sa proposition par email, et pourrez la valider ou la refuser directement depuis ce message.",
+    'manuelle': "Le joueur devra rédiger une réponse libre. Vous recevrez sa proposition par email, et pourrez la valider ou la refuser à partir de ce message.",
     'automatique': "Le joueur devra saisir une réponse exacte. Celle-ci sera automatiquement vérifiée selon les critères définis (réponse attendue, casse, variantes)."
   };
 
