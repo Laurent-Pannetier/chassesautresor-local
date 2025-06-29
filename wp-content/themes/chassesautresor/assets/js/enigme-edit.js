@@ -1069,8 +1069,10 @@ function appliquerEtatGratuitEnLive() {
   if (!$cout || !$checkbox) return;
 
   function syncGratuit() {
-    const val = parseInt($cout.value.trim(), 10);
-    const estGratuit = val === 0;
+    const raw = $cout.value;
+    const trimmed = raw.trim();
+    const valeur = trimmed === '' ? 0 : parseInt(trimmed, 10);
+    const estGratuit = valeur === 0;
 
     DEBUG && console.log('[🎯 syncGratuit] coût =', $cout.value, '| gratuit ?', estGratuit);
     $checkbox.checked = estGratuit;
