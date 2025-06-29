@@ -267,10 +267,15 @@ function initEnigmeEdit() {
 
     DEBUG && console.log('[INIT GRATUIT] valeur brute =', raw, '| valeur interprétée =', valeur);
 
-  const estGratuit = valeur === 0;
+    const estGratuit = valeur === 0;
 
-  $checkbox.checked = estGratuit;
-  $cout.disabled = estGratuit;
+    $checkbox.checked = estGratuit;
+    $cout.disabled = estGratuit;
+
+    // 🔄 Mettre à jour le message sur les tentatives après init coût
+    if (typeof window.mettreAJourMessageTentatives === 'function') {
+      window.mettreAJourMessageTentatives();
+    }
   })();
 
   const boutonSupprimer = document.getElementById('bouton-supprimer-enigme');
