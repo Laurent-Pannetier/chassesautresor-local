@@ -19,16 +19,32 @@ $commandes_output   = $args['commandes_output'] ?? '';
         <div class="dashboard-card">
             <div class="dashboard-card-header">
                 <i class="fas fa-landmark"></i>
-                <h3>Organisateur</h3>
+                <?php if ($organisateur_id) : ?>
+                    <h3><a href="<?php echo esc_url(get_permalink($organisateur_id)); ?>"><?php echo esc_html($organisateur_titre); ?></a></h3>
+                <?php else : ?>
+                    <h3><?php echo esc_html($organisateur_titre); ?></h3>
+                <?php endif; ?>
             </div>
             <div class="stats-content">
                 <?php if ($organisateur_id) : ?>
-                    <p><a href="<?php echo esc_url(get_permalink($organisateur_id)); ?>"><?php echo esc_html($organisateur_titre); ?></a></p>
-                    <p>Nb de chasses : <?php echo intval($nombre_chasses); ?></p>
-                    <p>Nb de joueurs : xx</p>
+                    <?php
+                    $query = get_chasses_de_organisateur($organisateur_id);
+                    $recent_chasses = $query && $query->have_posts() ? array_slice($query->posts, 0, 3) : [];
+                    if ($recent_chasses) {
+                        echo '<ul class="liste-chasses-recentes">';
+                        foreach ($recent_chasses as $post) {
+                            $validation = get_field('chasse_cache_statut_validation', $post->ID);
+                            $label = ucfirst(str_replace('_', ' ', $validation));
+                            echo '<li><a href="' . esc_url(get_permalink($post->ID)) . '">' . esc_html(get_the_title($post->ID)) . '</a> (' . esc_html($label) . ')</li>';
+                        }
+                        echo '</ul>';
+                    } else {
+                        echo '<p>Aucune chasse trouvée.</p>';
+                    }
+                    ?>
                     <p>Depuis le <?php echo esc_html(date_i18n('d/m/Y', strtotime(get_post_field('post_date', $organisateur_id)))); ?></p>
                 <?php else : ?>
-                    <p><?php echo esc_html($organisateur_titre); ?></p>
+                    <p>Aucun organisateur associé.</p>
                 <?php endif; ?>
             </div>
         </div>
