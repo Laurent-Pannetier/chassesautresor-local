@@ -143,7 +143,7 @@ function initEnigmeEdit() {
   // ==============================
   // 💰 Affichage dynamique tentatives (message coût)
   // ==============================
-  const blocCout = document.querySelector('[data-champ="enigme_tentative_cout_points"]');
+  const blocCout = document.querySelector('[data-champ="enigme_tentative.enigme_tentative_cout_points"]');
   if (blocCout && typeof window.onCoutPointsUpdated === 'function') {
     const champ = blocCout.dataset.champ;
     const valeur = parseInt(blocCout.querySelector('.champ-input')?.value || '0', 10);
@@ -267,10 +267,15 @@ function initEnigmeEdit() {
 
     DEBUG && console.log('[INIT GRATUIT] valeur brute =', raw, '| valeur interprétée =', valeur);
 
-  const estGratuit = valeur === 0;
+    const estGratuit = valeur === 0;
 
-  $checkbox.checked = estGratuit;
-  $cout.disabled = estGratuit;
+    $checkbox.checked = estGratuit;
+    $cout.disabled = estGratuit;
+
+    // 🔄 Mettre à jour le message sur les tentatives après init coût
+    if (typeof window.mettreAJourMessageTentatives === 'function') {
+      window.mettreAJourMessageTentatives();
+    }
   })();
 
   const boutonSupprimer = document.getElementById('bouton-supprimer-enigme');
@@ -384,7 +389,7 @@ document.querySelector('#panneau-images-enigme .panneau-fermer')?.addEventListen
 // 🔢 Initialisation champ enigme_tentative_max (tentatives/jour)
 // ================================
 function initChampNbTentatives() {
-  const bloc = document.querySelector('[data-champ="enigme_tentative_max"]');
+  const bloc = document.querySelector('[data-champ="enigme_tentative.enigme_tentative_max"]');
   if (!bloc) return;
 
   const input = bloc.querySelector('.champ-input');
@@ -407,7 +412,7 @@ function initChampNbTentatives() {
 
   // 🔄 Fonction centralisée
   function mettreAJourAideTentatives() {
-    const coutInput = document.querySelector('[data-champ="enigme_tentative_cout_points"] .champ-input');
+    const coutInput = document.querySelector('[data-champ="enigme_tentative.enigme_tentative_cout_points"] .champ-input');
     if (!coutInput) return;
 
     const cout = parseInt(coutInput.value.trim(), 10);
@@ -435,7 +440,7 @@ function initChampNbTentatives() {
       input.value = '1';
     }
 
-    const coutInput = document.querySelector('[data-champ="enigme_tentative_cout_points"] .champ-input');
+    const coutInput = document.querySelector('[data-champ="enigme_tentative.enigme_tentative_cout_points"] .champ-input');
     const cout = parseInt(coutInput?.value.trim() || '0', 10);
     const estGratuit = isNaN(cout) || cout === 0;
 
@@ -454,8 +459,8 @@ function initChampNbTentatives() {
   mettreAJourAideTentatives();
 
   // 🔁 Lié aux modifs de coût (input + checkbox)
-  const coutInput = document.querySelector('[data-champ="enigme_tentative_cout_points"] .champ-input');
-  const checkbox = document.querySelector('[data-champ="enigme_tentative_cout_points"] input[type="checkbox"]');
+  const coutInput = document.querySelector('[data-champ="enigme_tentative.enigme_tentative_cout_points"] .champ-input');
+  const checkbox = document.querySelector('[data-champ="enigme_tentative.enigme_tentative_cout_points"] input[type="checkbox"]');
   if (coutInput) coutInput.addEventListener('input', mettreAJourAideTentatives);
   if (checkbox) checkbox.addEventListener('change', mettreAJourAideTentatives);
 
@@ -470,7 +475,7 @@ function initChampNbTentatives() {
 // ================================
 window.onCoutPointsUpdated = function (bloc, champ, valeur, postId, cpt) {
   if (champ === 'enigme_tentative_cout_points') {
-    const champMax = document.querySelector('[data-champ="enigme_tentative_max"] .champ-input');
+    const champMax = document.querySelector('[data-champ="enigme_tentative.enigme_tentative_max"] .champ-input');
     if (champMax) {
       const valeurActuelle = parseInt(champMax.value, 10);
 
@@ -1077,6 +1082,9 @@ function appliquerEtatGratuitEnLive() {
     DEBUG && console.log('[🎯 syncGratuit] coût =', $cout.value, '| gratuit ?', estGratuit);
     $checkbox.checked = estGratuit;
     $cout.disabled = estGratuit;
+    if (typeof window.mettreAJourMessageTentatives === 'function') {
+      window.mettreAJourMessageTentatives();
+    }
   }
 
   $cout.addEventListener('input', syncGratuit);
