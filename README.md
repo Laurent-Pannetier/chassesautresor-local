@@ -19,3 +19,15 @@ composer test
 
 La commande composer test exécute PHPUnit à l’aide de la configuration du plugin hostinger.
 
+Gestion des traductions du thème
+--------------------------------
+
+Les fichiers de langues du thème sont placés dans `wp-content/themes/chassesautresor/languages/`.
+Pour générer ou mettre à jour le fichier POT, utilisez WP‑CLI :
+
+```bash
+wp i18n make-pot ./wp-content/themes/chassesautresor ./wp-content/themes/chassesautresor/languages/chassesautresor-com.pot
+```
+
+Ajoutez ensuite vos fichiers `.mo` compilés dans ce même dossier pour charger les traductions en front‑end.
+

@@ -6,10 +6,10 @@
 require_once get_stylesheet_directory() . '/inc/enigme-functions.php';
 
 $uid = sanitize_text_field($_GET['uid'] ?? '');
-if (!$uid) wp_die("Paramètre UID manquant.");
+if (!$uid) wp_die( __( 'Paramètre UID manquant.', 'chassesautresor-com' ) );
 
 $tentative = get_tentative_by_uid($uid);
-if (!$tentative) wp_die("Tentative introuvable.");
+if (!$tentative) wp_die( __( 'Tentative introuvable.', 'chassesautresor-com' ) );
 
 $enigme_id = (int) $tentative->enigme_id;
 $infos = recuperer_infos_tentative($uid);
@@ -26,7 +26,7 @@ if (
   !current_user_can('manage_options') &&
   !in_array($current_user_id, array_map('intval', $organisateur_user_ids), true)
 ) {
-  wp_die("⛔️ Accès refusé.");
+  wp_die( __( '⛔️ Accès refusé.', 'chassesautresor-com' ) );
 }
 
 // 💚 Réinitialisations

@@ -1172,7 +1172,7 @@ function mettre_a_jour_points_en_circulation() {
  */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verifier_points_circulation'])) {
     if (!current_user_can('administrator') || !check_admin_referer('verifier_points_circulation_action', 'verifier_points_circulation_nonce')) {
-        wp_die(__('Accès non autorisé.'));
+        wp_die( __( 'Accès non autorisé.', 'chassesautresor-com' ) );
     }
 
     mettre_a_jour_points_en_circulation();

@@ -13,6 +13,14 @@ defined( 'ABSPATH' ) || exit;
  */
 define( 'CHILD_THEME_CHASSESAUTRESOR_COM_VERSION', '1.0.0' );
 
+/**
+ * Charge le domaine de traduction du thème enfant.
+ */
+function cta_load_textdomain() {
+    load_child_theme_textdomain( 'chassesautresor-com', get_stylesheet_directory() . '/languages' );
+}
+add_action( 'after_setup_theme', 'cta_load_textdomain' );
+
 
 /**
  * Chargement des styles du thème parent et enfant avec prise en charge d'Astra.

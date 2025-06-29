@@ -9,7 +9,7 @@ defined('ABSPATH') || exit;
 // 🧠 LOGIQUE MÉTIER
 $chasse_id = get_the_ID();
 if (!$chasse_id) {
-  wp_die('Chasse introuvable.');
+  wp_die( __( 'Chasse introuvable.', 'chassesautresor-com' ) );
 }
 
 verifier_ou_recalculer_statut_chasse($chasse_id);
