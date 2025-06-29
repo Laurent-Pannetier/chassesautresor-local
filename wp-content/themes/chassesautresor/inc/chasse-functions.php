@@ -159,13 +159,13 @@ add_filter('acf/validate_value/name=date_de_fin', function ($valid, $value, $fie
 
     // ✅ Vérification : La date de fin ne peut pas être avant la date de début
     if (!empty($date_debut) && !empty($value) && strtotime($value) < strtotime($date_debut)) {
-        return __('⚠️ Erreur : La date de fin ne peut pas être antérieure à la date de début.', 'textdomain');
+        return __( '⚠️ Erreur : La date de fin ne peut pas être antérieure à la date de début.', 'chassesautresor-com' );
     }
 
     // ✅ Vérification : Si "maintenant" est sélectionné, date_de_fin ne peut pas être antérieure à aujourd'hui
     if ($_POST['acf'][$caracteristiques_key]['field_67ca858935c21'] === 'maintenant' &&
         !empty($value) && strtotime($value) < strtotime(date('Y-m-d'))) {
-        return __('⚠️ Erreur : La date de fin ne peut pas être antérieure à la date du jour si la chasse commence maintenant.', 'textdomain');
+        return __( '⚠️ Erreur : La date de fin ne peut pas être antérieure à la date du jour si la chasse commence maintenant.', 'chassesautresor-com' );
     }
 
     return $valid;

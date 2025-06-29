@@ -34,14 +34,14 @@ defined( 'ABSPATH' ) || exit;
 function rechercher_utilisateur_ajax() {
     // ✅ Vérifier que la requête est bien envoyée par un administrateur
     if (!current_user_can('administrator')) {
-        wp_send_json_error(['message' => '⛔ Accès refusé.']);
+        wp_send_json_error(['message' => __( '⛔ Accès refusé.', 'chassesautresor-com' )]);
     }
 
     // ✅ Vérifier la présence du paramètre de recherche
     $search = isset($_GET['term']) ? sanitize_text_field($_GET['term']) : '';
 
     if (empty($search)) {
-        wp_send_json_error(['message' => '❌ Requête vide.']);
+        wp_send_json_error(['message' => __( '❌ Requête vide.', 'chassesautresor-com' )]);
     }
 
     // ✅ Requête pour récupérer tous les utilisateurs sans restriction de rôle
@@ -52,7 +52,7 @@ function rechercher_utilisateur_ajax() {
 
     // ✅ Vérifier que des utilisateurs sont trouvés
     if (empty($users)) {
-        wp_send_json_error(['message' => '❌ Aucun utilisateur trouvé.']);
+        wp_send_json_error(['message' => __( '❌ Aucun utilisateur trouvé.', 'chassesautresor-com' )]);
     }
 
     // ✅ Formatage des résultats en JSON
@@ -79,12 +79,12 @@ function traiter_gestion_points() {
     
     // ✅ Vérification du nonce pour la sécurité
     if (!isset($_POST['gestion_points_nonce']) || !wp_verify_nonce($_POST['gestion_points_nonce'], 'gestion_points_action')) {
-        wp_die('❌ Vérification du nonce échouée.');
+        wp_die( __( '❌ Vérification du nonce échouée.', 'chassesautresor-com' ) );
     }
 
     // ✅ Vérification que l'utilisateur est administrateur
     if (!current_user_can('administrator')) {
-        wp_die('❌ Accès refusé.');
+        wp_die( __( '❌ Accès refusé.', 'chassesautresor-com' ) );
     }
 
     // ✅ Vérification et assainissement des données
@@ -93,13 +93,13 @@ function traiter_gestion_points() {
     $nombre_points = intval($_POST['nombre_points']);
 
     if (!$utilisateur || !$type_modification || $nombre_points <= 0) {
-        wp_die('❌ Données invalides.');
+        wp_die( __( '❌ Données invalides.', 'chassesautresor-com' ) );
     }
 
     // Récupérer l'ID de l'utilisateur
     $user = get_user_by('ID', intval($utilisateur));
     if (!$user) {
-        wp_die('❌ Utilisateur introuvable.');
+        wp_die( __( '❌ Utilisateur introuvable.', 'chassesautresor-com' ) );
     }
 
     $user_id = $user->ID;
@@ -110,11 +110,11 @@ function traiter_gestion_points() {
         $nouveau_solde = $solde_actuel + $nombre_points;
     } elseif ($type_modification === "retirer") {
         if ($nombre_points > $solde_actuel) {
-            wp_die('❌ Impossible de retirer plus de points que l’utilisateur en possède.');
+            wp_die( __( '❌ Impossible de retirer plus de points que l’utilisateur en possède.', 'chassesautresor-com' ) );
         }
         $nouveau_solde = $solde_actuel - $nombre_points;
     } else {
-        wp_die('❌ Action invalide.');
+        wp_die( __( '❌ Action invalide.', 'chassesautresor-com' ) );
     }
 
     // Mettre à jour les points de l'utilisateur
@@ -166,7 +166,7 @@ function gerer_organisateur() {
     
 
     if (!current_user_can('manage_options')) {
-        wp_send_json_error(array("message" => "Permission refusée."));
+        wp_send_json_error( array( 'message' => __( 'Permission refusée.', 'chassesautresor-com' ) ) );
         exit;
     }
 
@@ -174,7 +174,7 @@ function gerer_organisateur() {
     $type = sanitize_text_field($_POST['type']);
 
     if (!$post_id || empty($type)) {
-        wp_send_json_error(array("message" => "Requête invalide."));
+        wp_send_json_error( array( 'message' => __( 'Requête invalide.', 'chassesautresor-com' ) ) );
         exit;
     }
 
@@ -216,7 +216,7 @@ function gerer_organisateur() {
         wp_send_json_success(array("message" => "Demande refusée et supprimée."));
     }
 
-    wp_send_json_error(array("message" => "Action inconnue."));
+    wp_send_json_error( array( 'message' => __( 'Action inconnue.', 'chassesautresor-com' ) ) );
 }
 
 
@@ -338,18 +338,18 @@ function traiter_mise_a_jour_taux_conversion() {
         
         // Vérifier le nonce pour la sécurité
         if (!isset($_POST['modifier_taux_conversion_nonce']) || !wp_verify_nonce($_POST['modifier_taux_conversion_nonce'], 'modifier_taux_conversion_action')) {
-            wp_die('❌ Vérification du nonce échouée.');
+            wp_die( __( '❌ Vérification du nonce échouée.', 'chassesautresor-com' ) );
         }
 
         // Vérifier que l'utilisateur est bien un administrateur
         if (!current_user_can('administrator')) {
-            wp_die('❌ Accès refusé.');
+            wp_die( __( '❌ Accès refusé.', 'chassesautresor-com' ) );
         }
 
         // Vérifier et assainir la valeur entrée
         $nouveau_taux = isset($_POST['nouveau_taux']) ? floatval($_POST['nouveau_taux']) : null;
         if ($nouveau_taux === null || $nouveau_taux <= 0) {
-            wp_die('❌ Veuillez entrer un taux de conversion valide.');
+            wp_die( __( '❌ Veuillez entrer un taux de conversion valide.', 'chassesautresor-com' ) );
         }
 
         // Mettre à jour le taux dans les options WordPress
@@ -498,12 +498,12 @@ function traiter_demande_paiement() {
 
     // ✅ Vérification du nonce pour la sécurité
     if (!isset($_POST['demande_paiement_nonce']) || !wp_verify_nonce($_POST['demande_paiement_nonce'], 'demande_paiement_action')) {
-        wp_die('❌ Vérification du nonce échouée.');
+        wp_die( __( '❌ Vérification du nonce échouée.', 'chassesautresor-com' ) );
     }
 
     // ✅ Vérification de l'utilisateur connecté
     if (!is_user_logged_in()) {
-        wp_die('❌ Vous devez être connecté pour effectuer cette action.');
+        wp_die( __( '❌ Vous devez être connecté pour effectuer cette action.', 'chassesautresor-com' ) );
     }
 
     $user_id = get_current_user_id();
@@ -514,11 +514,11 @@ function traiter_demande_paiement() {
     $points_a_convertir = isset($_POST['points_a_convertir']) ? intval($_POST['points_a_convertir']) : 0;
 
     if ($points_a_convertir < 500) {
-        wp_die('❌ Le minimum pour une conversion est de 500 points.');
+        wp_die( __( '❌ Le minimum pour une conversion est de 500 points.', 'chassesautresor-com' ) );
     }
 
     if ($points_a_convertir > $solde_actuel) {
-        wp_die('❌ Vous n\'avez pas assez de points pour effectuer cette conversion.');
+        wp_die( __( '❌ Vous n\'avez pas assez de points pour effectuer cette conversion.', 'chassesautresor-com' ) );
     }
 
     // ✅ Calcul du montant en euros
@@ -780,14 +780,14 @@ function gerer_activation_reinitialisation_stats() {
     // ✅ Vérification des permissions administrateur
     if (!current_user_can('manage_options')) {
         error_log("⛔ Problème de permission : utilisateur non autorisé.");
-        wp_die(__('⛔ Accès refusé. Vous n’avez pas la permission d’effectuer cette action.', 'textdomain'));
+        wp_die( __( '⛔ Accès refusé. Vous n’avez pas la permission d’effectuer cette action.', 'chassesautresor-com' ) );
     }
     error_log("🔎 Permission OK");
 
     // ✅ Vérification de la requête POST et de la sécurité
     if (!isset($_POST['enregistrer_reinit']) || !check_admin_referer('toggle_reinit_stats_action', 'toggle_reinit_stats_nonce')) {
         error_log("⛔ Problème de nonce ou bouton non soumis.");
-        wp_die(__('⛔ Erreur de sécurité. Veuillez réessayer.', 'textdomain'));
+        wp_die( __( '⛔ Erreur de sécurité. Veuillez réessayer.', 'chassesautresor-com' ) );
     }
     error_log("🔎 Nonce OK");
 
@@ -1228,7 +1228,7 @@ add_action('admin_notices', function() {
 // =============================================
 function recuperer_details_acf() {
     if (!current_user_can('administrator')) {
-        wp_send_json_error('Non autorisé');
+        wp_send_json_error( __( 'Non autorisé', 'chassesautresor-com' ) );
     }
 
     // Utilisation des "keys" ACF directement car les IDs ne sont pas fiables
@@ -1504,18 +1504,18 @@ function traiter_validation_chasse_admin() {
     }
 
     if (!current_user_can('administrator')) {
-        wp_die('Accès refusé.');
+        wp_die( __( 'Accès refusé.', 'chassesautresor-com' ) );
     }
 
     $chasse_id = isset($_POST['chasse_id']) ? intval($_POST['chasse_id']) : 0;
     $action    = sanitize_text_field($_POST['validation_admin_action']);
 
     if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
-        wp_die('ID de chasse invalide.');
+        wp_die( __( 'ID de chasse invalide.', 'chassesautresor-com' ) );
     }
 
     if (!isset($_POST['validation_admin_nonce']) || !wp_verify_nonce($_POST['validation_admin_nonce'], 'validation_admin_' . $chasse_id)) {
-        wp_die('Nonce invalide.');
+        wp_die( __( 'Nonce invalide.', 'chassesautresor-com' ) );
     }
 
     $enigmes = recuperer_enigmes_associees($chasse_id);

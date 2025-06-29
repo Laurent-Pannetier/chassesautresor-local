@@ -153,7 +153,7 @@ function creer_enigme_et_rediriger_si_appel()
   $chasse_id = isset($_GET['chasse_id']) ? absint($_GET['chasse_id']) : 0;
 
   if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
-    wp_die('Chasse non spécifiée ou invalide.', 'Erreur', ['response' => 400]);
+    wp_die( __( 'Chasse non spécifiée ou invalide.', 'chassesautresor-com' ), 'Erreur', ['response' => 400] );
   }
 
   $enigme_id = creer_enigme_pour_chasse($chasse_id, $user_id);

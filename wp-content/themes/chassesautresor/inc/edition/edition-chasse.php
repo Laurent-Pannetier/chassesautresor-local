@@ -95,7 +95,7 @@ function creer_chasse_et_rediriger_si_appel()
   $organisateur_id = get_organisateur_from_user($user_id);
   if (!$organisateur_id) {
     cat_debug("🛑 Aucun organisateur trouvé pour l'utilisateur {$user_id}");
-    wp_die('Aucun organisateur associé.');
+    wp_die( __( 'Aucun organisateur associé.', 'chassesautresor-com' ) );
   }
   cat_debug("✅ Organisateur trouvé : {$organisateur_id}");
 
@@ -103,10 +103,10 @@ function creer_chasse_et_rediriger_si_appel()
   if (!current_user_can('administrator') && !current_user_can(ROLE_ORGANISATEUR)) {
     if (in_array(ROLE_ORGANISATEUR_CREATION, $roles, true)) {
       if (organisateur_a_des_chasses($organisateur_id)) {
-        wp_die('Limite atteinte');
+        wp_die( __( 'Limite atteinte', 'chassesautresor-com' ) );
       }
     } else {
-      wp_die('Accès refusé');
+      wp_die( __( 'Accès refusé', 'chassesautresor-com' ) );
     }
   }
 
@@ -116,7 +116,7 @@ function creer_chasse_et_rediriger_si_appel()
     get_post_status($organisateur_id) === 'publish' &&
     organisateur_a_chasse_pending($organisateur_id)
   ) {
-    wp_die('Une chasse est déjà en attente de validation.');
+    wp_die( __( 'Une chasse est déjà en attente de validation.', 'chassesautresor-com' ) );
   }
 
   // 📝 Création du post "chasse"
@@ -129,7 +129,7 @@ function creer_chasse_et_rediriger_si_appel()
 
   if (is_wp_error($post_id)) {
     cat_debug("🛑 Erreur création post : " . $post_id->get_error_message());
-    wp_die('Erreur lors de la création de la chasse.');
+    wp_die( __( 'Erreur lors de la création de la chasse.', 'chassesautresor-com' ) );
   }
 
   cat_debug("✅ Chasse créée avec l’ID : {$post_id}");
