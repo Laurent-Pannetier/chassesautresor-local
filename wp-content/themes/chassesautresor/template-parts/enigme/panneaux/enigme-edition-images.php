@@ -21,7 +21,11 @@ if (!$enigme_id || get_post_type($enigme_id) !== 'enigme') return;
       'html_submit_button'  => '<div class="panneau-lateral__actions"><button type="submit" class="bouton-enregistrer-description bouton-enregistrer-liens">%s</button></div>',
       'html_before_fields'  => '<div class="champ-wrapper">',
       'html_after_fields'   => '</div>',
-      'return'              => get_permalink() . '#images-enigme',
+      // Après sauvegarde, on revient sur la même page en ouvrant
+      // automatiquement le panneau principal grâce au paramètre
+      // ?edition=open. L'ancre #images-enigme permet de scroller
+      // directement sur le panneau images.
+      'return'              => add_query_arg('edition', 'open', get_permalink()) . '#images-enigme',
       'updated_message'     => __('Images mises à jour.', 'chassesautresor')
     ]);
     ?>
