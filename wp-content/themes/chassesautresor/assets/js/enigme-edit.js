@@ -1077,6 +1077,9 @@ function appliquerEtatGratuitEnLive() {
     DEBUG && console.log('[🎯 syncGratuit] coût =', $cout.value, '| gratuit ?', estGratuit);
     $checkbox.checked = estGratuit;
     $cout.disabled = estGratuit;
+    if (typeof window.mettreAJourMessageTentatives === 'function') {
+      window.mettreAJourMessageTentatives();
+    }
   }
 
   $cout.addEventListener('input', syncGratuit);
