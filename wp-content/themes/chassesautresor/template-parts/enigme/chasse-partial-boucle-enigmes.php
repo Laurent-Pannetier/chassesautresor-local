@@ -68,7 +68,7 @@ foreach ($posts as $p) {
     <article class="carte carte-enigme <?= esc_attr($classe_completion); ?>">
       <div class="carte-core">
         <div class="carte-enigme-image">
-          <?php afficher_picture_vignette_enigme($enigme_id, 'Vignette de l’énigme'); ?>
+          <?php afficher_picture_vignette_enigme($enigme_id, 'Vignette de l’énigme', ['medium']); ?>
           <div class="carte-enigme-cta">
             <?php render_cta_enigme($cta, $enigme_id); ?>
           </div>
