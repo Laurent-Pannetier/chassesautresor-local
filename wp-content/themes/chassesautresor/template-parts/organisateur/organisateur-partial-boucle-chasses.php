@@ -43,7 +43,7 @@ $posts   = array_values(array_filter($posts, function ($post) use ($user_id) {
       $complet = (bool) get_field('chasse_cache_complet', $chasse_id);
       $classe_completion = $complet ? 'carte-complete' : 'carte-incomplete';
     }
-    get_template_part('template-parts/chasse-card', null, [
+    get_template_part('template-parts/chasse/chasse-card', null, [
       'chasse_id' => $chasse_id,
       'completion_class' => $classe_completion,
     ]);
