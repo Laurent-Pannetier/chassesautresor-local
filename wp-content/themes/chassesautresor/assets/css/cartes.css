@@ -83,7 +83,7 @@
 
 .carte-ligne__image {
   width: 300px;
-  height: 300px;
+  height: auto;
   overflow: hidden;
   position: relative;
   flex-shrink: 0;
@@ -126,6 +126,10 @@
   padding: 1rem;
   flex: 1;
 }
+.carte-ligne__contenu h3 {
+  margin: 0;
+}
+
 
 .carte-ligne__footer {
   display: flex;
