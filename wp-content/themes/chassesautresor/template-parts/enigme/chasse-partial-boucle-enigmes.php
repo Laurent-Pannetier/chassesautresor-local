@@ -1,16 +1,44 @@
 <?php
 defined('ABSPATH') || exit;
 
-$chasse_id = $args['chasse_id'] ?? null;
-if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') return;
+error_log("🔍 [BLOC ENIGMES] Début exécution partial chasse-partial-boucle-enigmes.php");
 
+$chasse_id = $args['chasse_id'] ?? null;
+if (!$chasse_id) {
+    error_log("❌ [BLOC ENIGMES] Aucun ID de chasse fourni.");
+    return;
+}
+
+$post_type = get_post_type($chasse_id);
+error_log("ℹ️ [BLOC ENIGMES] chasse_id = $chasse_id | post_type = $post_type");
+
+if ($post_type !== 'chasse') {
+    error_log("❌ [BLOC ENIGMES] Le post n'est pas de type 'chasse'.");
+    return;
+}
 
 $utilisateur_id = get_current_user_id();
+error_log("👤 [BLOC ENIGMES] Utilisateur courant ID = $utilisateur_id");
 
 if (!chasse_est_visible_pour_utilisateur($chasse_id, $utilisateur_id)) {
-  return;
-
+    error_log("❌ [BLOC ENIGMES] chasse_est_visible_pour_utilisateur = false → sortie");
+    return;
 }
+error_log("✅ [BLOC ENIGMES] chasse_est_visible_pour_utilisateur = true");
+
+// 🔒 Vérifie autorisation à voir la boucle d'énigmes
+$autorise_boucle = (
+    user_can($utilisateur_id, 'manage_options') ||
+    utilisateur_est_organisateur_associe_a_chasse($utilisateur_id, $chasse_id) ||
+    utilisateur_est_engage_dans_chasse($utilisateur_id, $chasse_id)
+);
+error_log("🔐 [BLOC ENIGMES] autorisé à voir boucle ? " . ($autorise_boucle ? 'OUI' : 'NON'));
+
+if (!$autorise_boucle) {
+    error_log("❌ [BLOC ENIGMES] utilisateur non autorisé à voir la boucle → sortie");
+    return;
+}
+error_log("✅ [BLOC ENIGMES] utilisateur autorisé à voir la boucle");
 
 // 🔎 Récupération des énigmes associées à la chasse
 $posts = get_posts([
@@ -21,24 +49,35 @@ $posts = get_posts([
   'post_status'    => ['publish', 'pending', 'draft'],
   'meta_query'     => [[
     'key'     => 'enigme_chasse_associee',
-    'value'   => $chasse_id,
-    'compare' => '='
+    'value'   => '"' . $chasse_id . '"',
+    'compare' => 'LIKE',
   ]]
 ]);
 
-// 🔒 Ne garder que les énigmes visibles pour l'utilisateur courant
-$posts_visibles = array_filter($posts, fn($post) => utilisateur_peut_voir_enigme($post->ID, $utilisateur_id));
-$has_enigmes = !empty($posts_visibles);
+error_log("📦 [BLOC ENIGMES] Nombre d'énigmes récupérées : " . count($posts));
 
-// 🟠 Détecte la présence d’au moins une énigme incomplète
+// 💡 Optionnel : afficher les ID récupérés
+foreach ($posts as $post) {
+    error_log("🧩 [ENIGME] ID = {$post->ID} | statut = " . get_post_status($post));
+}
+
+$posts_visibles = $posts;
+$has_enigmes = !empty($posts_visibles);
+error_log("👁️ [BLOC ENIGMES] posts_visibles = " . ($has_enigmes ? 'OUI' : 'NON'));
+
+// 🟠 Détection des énigmes incomplètes
 $has_incomplete = false;
 foreach ($posts as $p) {
   verifier_ou_mettre_a_jour_cache_complet($p->ID);
-  if (!get_field('enigme_cache_complet', $p->ID)) {
+  $complet = (bool) get_field('enigme_cache_complet', $p->ID);
+  error_log("📋 [ENIGME #{$p->ID}] complet ? " . ($complet ? 'OUI' : 'NON'));
+  if (!$complet) {
     $has_incomplete = true;
     break;
   }
 }
+error_log("✅ [BLOC ENIGMES] has_incomplete = " . ($has_incomplete ? 'OUI' : 'NON'));
+
 ?>
 
 <div class="bloc-enigmes-chasse">
