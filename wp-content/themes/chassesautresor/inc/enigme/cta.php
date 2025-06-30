@@ -74,129 +74,180 @@ defined('ABSPATH') || exit;
      * - continuer   → énigme en cours
      * - revoir      → énigme résolue
      * - terminee    → énigme finalisée (lecture seule)
-     * - bloquee     → bloquée par la chasse ou une date
+     * - soumis      → réponse en attente de validation
+     * - bloquee     → bloquée par la chasse, une date ou un prérequis
      * - invalide    → configuration incorrecte
+     * - echouee     → tentative échouée, ré-engagement possible
+     * - abandonnee  → énigme abandonnée, ré-engagement possible
+     * - erreur      → statut inconnu
      *
-     * @param int $enigme_id
-     * @param int|null $user_id
+     * @param int $enigme_id ID de l’énigme concernée
+     * @param int|null $user_id ID utilisateur (optionnel, défaut : utilisateur courant)
      * @return array{
+     *   etat_systeme: string,
+     *   statut_utilisateur: string,
      *   type: string,
      *   label: string,
      *   sous_label: string|null,
      *   action: 'form'|'link'|'disabled',
      *   url: string|null,
-     *   points: int|null
+     *   points: int,
+     *   classe_css: string,
+     *   badge: string
      * }
      */
     function get_cta_enigme(int $enigme_id, ?int $user_id = null): array
-    {
-        $user_id = $user_id ?? get_current_user_id();
+{
+    $user_id = $user_id ?? get_current_user_id();
+    $chasse_id = recuperer_id_chasse_associee($enigme_id);
 
-        $chasse_id = recuperer_id_chasse_associee($enigme_id);
-        if (
-            current_user_can('manage_options') ||
-            utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)
-        ) {
-            return [
-                'type'       => 'voir',
-                'label'      => 'Voir l’énigme',
+    $etat_systeme = enigme_get_etat_systeme($enigme_id);
+    $statut_utilisateur = enigme_get_statut_utilisateur($enigme_id, $user_id);
+    $tentative = get_field('enigme_tentative', $enigme_id);
+    $points = intval($tentative['enigme_tentative_cout_points'] ?? 0);
+
+    // Base commune
+    $cta = [
+        'etat_systeme'       => $etat_systeme,
+        'statut_utilisateur' => $statut_utilisateur,
+        'type'               => 'inconnu',
+        'label'              => '',
+        'sous_label'         => null,
+        'action'             => 'disabled',
+        'url'                => null,
+        'points'             => $points,
+        'classe_css'         => 'cta-inconnu',
+        'badge'              => 'Indéfini',
+    ];
+
+    // 👑 Admin ou organisateur → accès direct
+    if (
+        current_user_can('manage_options') ||
+        utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)
+    ) {
+        return array_merge($cta, [
+            'type'       => 'voir',
+            'label'      => 'Voir l’énigme',
+            'action'     => 'link',
+            'url'        => get_permalink($enigme_id),
+            'classe_css' => 'cta-voir',
+            'badge'      => 'Accès total',
+        ]);
+    }
+
+    // 🔐 Visiteur non connecté
+    if (!is_user_logged_in()) {
+        return array_merge($cta, [
+            'type'       => 'connexion',
+            'label'      => '🔐 Connectez-vous',
+            'action'     => 'link',
+            'url'        => site_url('/mon-compte'),
+            'classe_css' => 'cta-connexion',
+            'badge'      => 'Connexion requise',
+        ]);
+    }
+
+    // 🚫 Énigme bloquée ou mal configurée
+    if (!in_array($etat_systeme, ['accessible'], true)) {
+        $type = in_array($etat_systeme, ['bloquee_date', 'bloquee_chasse']) ? 'bloquee' : 'invalide';
+        $badge = [
+            'bloquee_date'       => 'À venir',
+            'bloquee_chasse'     => 'Chasse verrouillée',
+            'bloquee_pre_requis' => 'Pré-requis',
+            'invalide'           => 'Invalide',
+            'cache_invalide'     => 'Erreur config'
+        ][$etat_systeme] ?? 'Bloquée';
+
+        return array_merge($cta, [
+            'type'       => $type,
+            'label'      => 'Indisponible',
+            'sous_label' => 'Cette énigme est bloquée ou mal configurée.',
+            'action'     => 'disabled',
+            'classe_css' => 'cta-' . $type,
+            'badge'      => $badge,
+        ]);
+    }
+
+    // ✅ Cas accessible → traitement par statut utilisateur
+    switch ($statut_utilisateur) {
+        case 'non_commencee':
+            return array_merge($cta, [
+                'type'       => 'engager',
+                'label'      => $points > 0 ? "Débloquer pour $points pts" : "Commencer",
+                'action'     => 'form',
+                'url'        => site_url('/traitement-engagement'),
+                'classe_css' => 'cta-engager',
+                'badge'      => 'À tenter',
+            ]);
+
+        case 'en_cours':
+            return array_merge($cta, [
+                'type'       => 'continuer',
+                'label'      => '▶️ Continuer',
                 'action'     => 'link',
                 'url'        => get_permalink($enigme_id),
-                'points'     => null,
-            ];
-        }
+                'classe_css' => 'cta-en-cours',
+                'badge'      => 'En cours',
+            ]);
 
-        if (!is_user_logged_in()) {
-            return [
-                'type'       => 'connexion',
-                'label'      => '🔐 Connectez-vous',
-                'sous_label' => null,
+        case 'resolue':
+            return array_merge($cta, [
+                'type'       => 'revoir',
+                'label'      => '🔁 Revoir',
                 'action'     => 'link',
-                'url'        => site_url('/mon-compte'),
-                'points'     => null,
-            ];
-        }
+                'url'        => get_permalink($enigme_id),
+                'classe_css' => 'cta-resolue',
+                'badge'      => 'Résolue',
+            ]);
 
-        $etat = enigme_get_etat_systeme($enigme_id);
-        $statut = enigme_get_statut_utilisateur($enigme_id, $user_id);
-        $tentative = get_field('enigme_tentative', $enigme_id);
-        $points = intval($tentative['enigme_tentative_cout_points'] ?? 0);
-
-        if (!in_array($etat, ['accessible'], true)) {
-            $type = in_array($etat, ['bloquee_date', 'bloquee_chasse']) ? 'bloquee' : 'invalide';
-            return [
-                'type'       => $type,
-                'label'      => 'Indisponible',
-                'sous_label' => 'Cette énigme est bloquée ou mal configurée.',
+        case 'terminee':
+            return array_merge($cta, [
+                'type'       => 'terminee',
+                'label'      => '✔️ Terminée',
                 'action'     => 'disabled',
-                'url'        => null,
-                'points'     => null,
-            ];
-        }
+                'classe_css' => 'cta-terminee',
+                'badge'      => 'Clôturée',
+            ]);
 
-        switch ($statut) {
-            case 'resolue':
-                return [
-                    'type'       => 'revoir',
-                    'label'      => '🔁 Revoir',
-                    'sous_label' => 'Énigme déjà résolue',
-                    'action'     => 'link',
-                    'url'        => get_permalink($enigme_id),
-                    'points'     => null,
-                ];
+        case 'soumis':
+            return array_merge($cta, [
+                'type'       => 'soumis',
+                'label'      => '⏳ En attente',
+                'action'     => 'disabled',
+                'classe_css' => 'cta-soumis',
+                'badge'      => 'Soumise',
+            ]);
 
-            case 'en_cours':
-                return [
-                    'type'       => 'continuer',
-                    'label'      => '▶️ Continuer',
-                    'sous_label' => null,
-                    'action'     => 'link',
-                    'url'        => get_permalink($enigme_id),
-                    'points'     => null,
-                ];
+        case 'echouee':
+            return array_merge($cta, [
+                'type'       => 'engager',
+                'label'      => $points > 0 ? "Réessayer pour $points pts" : "Réessayer",
+                'action'     => 'form',
+                'url'        => site_url('/traitement-engagement'),
+                'classe_css' => 'cta-echouee',
+                'badge'      => 'Échouée',
+            ]);
 
-            case 'terminee':
-                return [
-                    'type'       => 'terminee',
-                    'label'      => '✔️ Terminé',
-                    'sous_label' => null,
-                    'action'     => 'disabled',
-                    'url'        => null,
-                    'points'     => null,
-                ];
+        case 'abandonnee':
+            return array_merge($cta, [
+                'type'       => 'engager',
+                'label'      => $points > 0 ? "Recommencer pour $points pts" : "Recommencer",
+                'action'     => 'form',
+                'url'        => site_url('/traitement-engagement'),
+                'classe_css' => 'cta-abandonnee',
+                'badge'      => 'Abandonnée',
+            ]);
 
-            case 'echouee':
-                return [
-                    'type'       => 'engager',
-                    'label'      => ($points > 0) ? "Réessayer pour $points pts" : "Réessayer",
-                    'sous_label' => null,
-                    'action'     => 'form',
-                    'url'        => site_url('/traitement-engagement'),
-                    'points'     => $points,
-                ];
-
-            case 'abandonnee':
-            case 'echouee':
-                return [
-                    'type'       => 'engager',
-                    'label'      => ($points > 0) ? "Débloquer pour $points pts" : "Commencer",
-                    'sous_label' => null,
-                    'action'     => 'form',
-                    'url'        => site_url('/traitement-engagement'),
-                    'points'     => $points,
-                ];
-
-            default:
-                return [
-                    'type'       => 'invalide',
-                    'label'      => 'Erreur',
-                    'sous_label' => 'Statut utilisateur inconnu',
-                    'action'     => 'disabled',
-                    'url'        => null,
-                    'points'     => null,
-                ];
-        }
+        default:
+            return array_merge($cta, [
+                'type'       => 'erreur',
+                'label'      => 'Erreur',
+                'sous_label' => 'Statut inconnu',
+                'classe_css' => 'cta-erreur',
+                'badge'      => 'Erreur',
+            ]);
     }
+}
 
 
     /**

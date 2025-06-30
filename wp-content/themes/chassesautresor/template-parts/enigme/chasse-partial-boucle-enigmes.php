@@ -111,7 +111,7 @@ foreach ($posts as $p) {
               <?php afficher_picture_vignette_enigme($enigme_id, 'Vignette de l’énigme', ['medium']); ?>
             <?php else : ?>
               <div class="enigme-placeholder">
-                <img src="<?= esc_url(get_stylesheet_directory_uri() . '/assets/img/carte-surchargee.jpg'); ?>" alt="Énigme verrouillée">
+                <img src="<?= esc_url(get_stylesheet_directory_uri() . '/assets/images/carte-surchargee.jpg'); ?>" alt="Énigme verrouillée">
               </div>
             <?php endif; ?>
           </div>
