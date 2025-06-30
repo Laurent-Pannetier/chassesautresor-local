@@ -398,6 +398,15 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
     $date_debut = get_field('chasse_infos_date_debut', $chasse_id);
     $date_fin   = get_field('chasse_infos_date_fin', $chasse_id);
 
+    // Priorité : utilisateur non connecté -> bouton d'identification
+    if (!$user_id) {
+        return [
+            'cta_html'    => '<a href="' . esc_url(site_url('/mon-compte')) . '" class="bouton-cta">' .
+                             "S'identifier" . '</a>',
+            'cta_message' => 'Vous devez être identifié pour participer à cette chasse',
+        ];
+    }
+
     $is_admin   = current_user_can('administrator');
     $is_associe = utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
 
