@@ -15,7 +15,7 @@ if (!chasse_est_visible_pour_utilisateur($chasse_id, $utilisateur_id)) {
 //     aux organisateurs associés ou aux administrateurs
 $engage   = utilisateur_est_engage_dans_chasse($utilisateur_id, $chasse_id);
 $associe  = utilisateur_est_organisateur_associe_a_chasse($utilisateur_id, $chasse_id);
-$is_admin = current_user_can('administrator');
+$is_admin = user_can($utilisateur_id, 'manage_options');
 
 if (!$engage && !$associe && !$is_admin) {
   return;
