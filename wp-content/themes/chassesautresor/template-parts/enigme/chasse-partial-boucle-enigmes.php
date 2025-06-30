@@ -48,9 +48,9 @@ $posts = get_posts([
   'order'          => 'ASC',
   'post_status'    => ['publish', 'pending', 'draft'],
   'meta_query'     => [[
-  'key'     => 'enigme_chasse_associee',
-  'value'   => '"' . $chasse_id . '"',
-  'compare' => 'LIKE',
+    'key'     => 'enigme_chasse_associee',
+    'value'   => '"' . $chasse_id . '"',
+    'compare' => 'LIKE',
   ]]
 ]);
 
@@ -72,8 +72,8 @@ foreach ($posts as $p) {
   $complet = (bool) get_field('enigme_cache_complet', $p->ID);
   // error_log("📋 [ENIGME #{$p->ID}] complet ? " . ($complet ? 'OUI' : 'NON'));
   if (!$complet) {
-  $has_incomplete = true;
-  break;
+    $has_incomplete = true;
+    break;
   }
 }
 // error_log("✅ [BLOC ENIGMES] has_incomplete = " . ($has_incomplete ? 'OUI' : 'NON'));
@@ -82,70 +82,73 @@ foreach ($posts as $p) {
 
 <div class="bloc-enigmes-chasse">
   <div class="grille-3">
-  <?php foreach ($posts_visibles as $post): ?>
-  <?php
-  $enigme_id = $post->ID;
-  $titre = get_the_title($enigme_id);
-  $etat_systeme = enigme_get_etat_systeme($enigme_id);
-  $statut_utilisateur = enigme_get_statut_utilisateur($enigme_id, $utilisateur_id);
-  $cta = get_cta_enigme($enigme_id);
+    <?php foreach ($posts_visibles as $post): ?>
+      <?php
+      $enigme_id = $post->ID;
+      $titre = get_the_title($enigme_id);
+      $etat_systeme = enigme_get_etat_systeme($enigme_id);
+      $statut_utilisateur = enigme_get_statut_utilisateur($enigme_id, $utilisateur_id);
+      $cta = get_cta_enigme($enigme_id);
 
-  $est_orga = est_organisateur();
-  $statut_chasse = get_post_status($chasse_id);
-  $statut_enigme = get_post_status($enigme_id);
-  $voir_bordure = $est_orga &&
-    utilisateur_est_organisateur_associe_a_chasse($utilisateur_id, $chasse_id) &&
-    $statut_chasse !== 'publish' &&
-    $statut_enigme !== 'publish';
-  $classe_completion = '';
-  if ($voir_bordure) {
-    verifier_ou_mettre_a_jour_cache_complet($enigme_id);
-    $complet = (bool) get_field('enigme_cache_complet', $enigme_id);
-    $classe_completion = $complet ? 'carte-complete' : 'carte-incomplete';
-  }
-  ?>
-  <article class="carte carte-enigme <?= esc_attr($classe_completion); ?>">
-    <div class="carte-core">
-    <div class="carte-enigme-image">
-      <?php afficher_picture_vignette_enigme($enigme_id, 'Vignette de l’énigme', ['medium']); ?>
-      <div class="carte-enigme-cta">
-      <?php render_cta_enigme($cta, $enigme_id); ?>
-      </div>
-    </div>
-    <h3><?= esc_html($titre); ?></h3>
-    </div>
-  </article>
+      $est_orga = est_organisateur();
+      $statut_chasse = get_post_status($chasse_id);
+      $statut_enigme = get_post_status($enigme_id);
+      $voir_bordure = $est_orga &&
+        utilisateur_est_organisateur_associe_a_chasse($utilisateur_id, $chasse_id) &&
+        $statut_chasse !== 'publish' &&
+        $statut_enigme !== 'publish';
+      $classe_completion = '';
+      if ($voir_bordure) {
+        verifier_ou_mettre_a_jour_cache_complet($enigme_id);
+        $complet = (bool) get_field('enigme_cache_complet', $enigme_id);
+        $classe_completion = $complet ? 'carte-complete' : 'carte-incomplete';
+      }
+      ?>
+      <article class="carte carte-enigme <?= esc_attr($classe_completion); ?>">
+        <div class="carte-core">
+          <div class="carte-enigme-image">
+            <?php if (utilisateur_peut_voir_enigme($enigme_id, $utilisateur_id)) : ?>
+              <?php afficher_picture_vignette_enigme($enigme_id, 'Vignette de l’énigme', ['medium']); ?>
+            <?php else : ?>
+              <div class="enigme-placeholder">
+                <img src="<?= esc_url(get_stylesheet_directory_uri() . '/assets/img/carte-surchargee.jpg'); ?>" alt="Énigme verrouillée">
+              </div>
+            <?php endif; ?>
+          </div>
+          <h3><?= esc_html($titre); ?></h3>
+        </div>
+      </article>
 
-  <?php endforeach; ?>
+    <?php endforeach; ?>
 
-  <?php
-  if (utilisateur_peut_ajouter_enigme($chasse_id, $utilisateur_id) && !$has_incomplete && !$has_enigmes) {
-  verifier_ou_mettre_a_jour_cache_complet($chasse_id);
-  $complete = (bool) get_field('chasse_cache_complet', $chasse_id);
+    <?php
+    if (utilisateur_peut_ajouter_enigme($chasse_id, $utilisateur_id) && !$has_incomplete && !$has_enigmes) {
+      verifier_ou_mettre_a_jour_cache_complet($chasse_id);
+      $complete = (bool) get_field('chasse_cache_complet', $chasse_id);
 
-  $highlight_pulse = false;
-  if (!$has_enigmes) {
-    $wp_status         = get_post_status($chasse_id);
-    $statut_metier     = get_field('chasse_cache_statut', $chasse_id);
-    $statut_validation = get_field('chasse_cache_statut_validation', $chasse_id);
+      $highlight_pulse = false;
+      if (!$has_enigmes) {
+        $wp_status         = get_post_status($chasse_id);
+        $statut_metier     = get_field('chasse_cache_statut', $chasse_id);
+        $statut_validation = get_field('chasse_cache_statut_validation', $chasse_id);
 
-    if (
-    $wp_status === 'pending' &&
-    $statut_metier === 'revision' &&
-    in_array($statut_validation, ['creation', 'correction'], true)
-    ) {
-    $highlight_pulse = true;
+        if (
+          $wp_status === 'pending' &&
+          $statut_metier === 'revision' &&
+          in_array($statut_validation, ['creation', 'correction'], true)
+        ) {
+          $highlight_pulse = true;
+        }
+      }
+
+      get_template_part('template-parts/enigme/chasse-partial-ajout-enigme', null, [
+        'has_enigmes'     => $has_enigmes,
+        'chasse_id'       => $chasse_id,
+        'disabled'        => !$complete,
+        'highlight_pulse' => $highlight_pulse,
+        'use_button'      => false,
+      ]);
     }
-  }
-
-  get_template_part('template-parts/enigme/chasse-partial-ajout-enigme', null, [
-    'has_enigmes'     => $has_enigmes,
-    'chasse_id'       => $chasse_id,
-    'disabled'        => !$complete,
-    'highlight_pulse' => $highlight_pulse,
-    'use_button'      => false,
-  ]);
-  }
-  ?>
-</div>
+    ?>
   </div>
+</div>
