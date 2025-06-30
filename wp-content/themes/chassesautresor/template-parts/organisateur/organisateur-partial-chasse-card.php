@@ -90,8 +90,32 @@ $classe_verrouillee = '';
                     <span class="date-debut"><?php echo esc_html(formater_date($date_debut)); ?></span> →
                     <span class="date-fin"><?php echo esc_html($illimitee ? 'Illimitée' : ($date_fin ? formater_date($date_fin) : 'Non spécifiée')); ?></span>
                 </span>
-            </div>
-        </div>
+</div>
+</div>
+
+<?php
+// ➡️ CTA participation ou accès direct à la chasse
+$user_id   = get_current_user_id();
+$is_admin  = current_user_can('administrator');
+$is_associe = utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
+
+if ($is_admin || $is_associe) {
+    echo '<div class="cta-chasse">';
+    echo '<a href="' . esc_url($permalink) . '" class="bouton-cta">' . esc_html__('Voir', 'chassesautresor') . '</a>';
+    echo '</div>';
+} else {
+    $validation = get_field('chasse_cache_statut_validation', $chasse_id);
+    if ($validation === 'valide') {
+        $points = (int) get_field('chasse_infos_cout_points', $chasse_id);
+        echo '<div class="cta-chasse">';
+        echo '<a href="' . esc_url($permalink) . '" class="bouton-cta">' . esc_html__('Participer', 'chassesautresor') . '</a>';
+        if ($points > 0) {
+            echo '<div class="cta-sous-label">' . sprintf(esc_html__('(%d points)', 'chassesautresor'), $points) . '</div>';
+        }
+        echo '</div>';
+    }
+}
+?>
 
         <?php
         $texte_complet = wp_strip_all_tags($description);
