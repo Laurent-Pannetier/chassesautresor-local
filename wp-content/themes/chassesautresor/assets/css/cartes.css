@@ -124,10 +124,12 @@
 }
 
 .carte-ligne__contenu {
-  padding: 1rem;
+  padding: 1rem 2rem;
   flex: 1;
 }
-
+.carte-ligne__contenu .chasse-intro-extrait {
+  margin : 15px 0
+}
 .carte-ligne__contenu h3 {
   margin: 0;
 }

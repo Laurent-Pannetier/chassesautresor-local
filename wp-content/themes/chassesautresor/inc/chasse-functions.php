@@ -681,13 +681,14 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id): array
     $lot_html = '';
     if (!empty($titre_recompense) && (float) $valeur_recompense > 0) {
         $footer_icones[] = 'trophy';
-        $lot_html = '<div class="chasse-lot" aria-live="polite">' .
-            get_svg_icon('trophee') .
-            esc_html($titre_recompense) . ' — ' . esc_html($valeur_recompense) . ' €' .
-            '</div>';
+        $lot_html = '<div class="chasse-lot" aria-live="polite">'
+            . '<strong>Récompense :</strong> '
+            . esc_html($titre_recompense) . ' — ' . esc_html($valeur_recompense) . ' €'
+            . '</div>';
     }
 
-    $extrait_html = $extrait ? '<p class="chasse-intro-extrait liste-elegante"><strong>Présentation :</strong> ' . esc_html($extrait) . '</p>' : '';
+
+    $extrait_html = $extrait ? '<p class="chasse-intro-extrait liste-elegante"> <strong>Présentation :</strong> ' . esc_html($extrait) . '</p>' : '';
 
     $cta_html = '';
     if (!empty($cta)) {
