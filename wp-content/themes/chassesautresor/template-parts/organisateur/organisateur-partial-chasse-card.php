@@ -66,6 +66,31 @@ $total_enigmes = count($enigmes_associees);
 
 // Pourra servir à appliquer des styles spécifiques selon le statut
 $classe_verrouillee = '';
+
+// 🔹 Liens publics de la chasse
+$liens = get_field('chasse_principale_liens', $chasse_id);
+$liens = is_array($liens) ? $liens : [];
+if (empty($liens)) {
+    $orga_id   = get_organisateur_from_chasse($chasse_id);
+    $liens_org = organisateur_get_liens_actifs($orga_id);
+    foreach ($liens_org as $type => $url) {
+        $liens[] = [
+            'chasse_principale_liens_type' => $type,
+            'chasse_principale_liens_url'  => $url,
+        ];
+    }
+}
+
+$has_lien = false;
+foreach ($liens as $entree) {
+    $type_raw = $entree['chasse_principale_liens_type'] ?? null;
+    $url      = $entree['chasse_principale_liens_url'] ?? null;
+    $type     = is_array($type_raw) ? ($type_raw[0] ?? '') : $type_raw;
+    if (is_string($type) && trim($type) !== '' && is_string($url) && trim($url) !== '') {
+        $has_lien = true;
+        break;
+    }
+}
 ?>
 
 <div class="carte carte-ligne carte-chasse <?php echo esc_attr(trim($classe_statut . ' ' . $classe_verrouillee . ' ' . $completion_class)); ?>">
@@ -74,6 +99,14 @@ $classe_verrouillee = '';
             <?php echo esc_html($statut_label); ?>
         </span>
         <img src="<?php echo esc_url($image); ?>" alt="<?php echo esc_attr($titre); ?>">
+    </div>
+
+    <div class="carte-ligne__footer meta-etiquette">
+        <div class="liens-publics-carte">
+            <?php if ($has_lien) : ?>
+                <?php echo render_liens_publics($liens, 'chasse'); ?>
+            <?php endif; ?>
+        </div>
     </div>
 
     <div class="carte-ligne__contenu">
@@ -141,50 +174,6 @@ if ($is_admin || $is_associe) {
                 <?php echo esc_html($titre_recompense); ?> — <?php echo esc_html($valeur_recompense); ?> €
             </div>
         <?php endif; ?>
-
-        <?php
-        $liens = get_field('chasse_principale_liens', $chasse_id);
-        $liens = is_array($liens) ? $liens : [];
-        if (empty($liens)) {
-            $orga_id   = get_organisateur_from_chasse($chasse_id);
-            $liens_org = organisateur_get_liens_actifs($orga_id);
-            foreach ($liens_org as $type => $url) {
-                $liens[] = [
-                    'chasse_principale_liens_type' => $type,
-                    'chasse_principale_liens_url'  => $url,
-                ];
-            }
-        }
-
-        $has_lien = false;
-        foreach ($liens as $entree) {
-            $type_raw = $entree['chasse_principale_liens_type'] ?? null;
-            $url      = $entree['chasse_principale_liens_url'] ?? null;
-            $type     = is_array($type_raw) ? ($type_raw[0] ?? '') : $type_raw;
-            if (is_string($type) && trim($type) !== '' && is_string($url) && trim($url) !== '') {
-                $has_lien = true;
-                break;
-            }
-        }
-        ?>
-
-        <div class="carte-ligne__footer meta-etiquette">
-            <div class="prix chasse-prix" data-cpt="chasse" data-post-id="<?php echo esc_attr($chasse_id); ?>">
-                <span class="cout-affichage" data-cout="<?php echo esc_attr((int) $cout_points); ?>">
-                    <?php if ((int) $cout_points === 0) : ?>
-                        <span class="texte-cout">Gratuit</span>
-                    <?php else : ?>
-                        <span class="valeur-cout"><?php echo esc_html($cout_points); ?></span>
-                        <span class="prix-devise">pts</span>
-                    <?php endif; ?>
-                </span>
-            </div>
-            <div class="liens-publics-carte">
-                <?php if ($has_lien) : ?>
-                    <?php echo render_liens_publics($liens, 'chasse'); ?>
-                <?php endif; ?>
-            </div>
-        </div>
 
     </div>
 </div>
