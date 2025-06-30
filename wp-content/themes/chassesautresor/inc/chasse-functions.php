@@ -400,6 +400,22 @@ function compter_joueurs_engages_chasse(int $chasse_id): int
 }
 
 /**
+ * Formate le libellé internationalisé du nombre de joueurs.
+ *
+ * @param int $nombre Nombre de joueurs.
+ * @return string Libellé formaté.
+ */
+function formater_nombre_joueurs(int $nombre): string
+{
+    $quantite = ($nombre === 0 || $nombre === 1) ? 1 : $nombre;
+
+    return sprintf(
+        _n('%d joueur', '%d joueurs', $quantite, 'chassesautresor'),
+        $nombre
+    );
+}
+
+/**
  * Retourne la première chasse pouvant être soumise à validation pour un utilisateur.
  *
  * @param int $user_id ID utilisateur.

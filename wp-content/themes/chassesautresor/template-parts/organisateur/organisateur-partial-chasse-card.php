@@ -82,7 +82,7 @@ $classe_verrouillee = '';
         <div class="meta-row svg-xsmall">
             <div class="meta-regular">
                 <?php echo get_svg_icon('enigme'); ?> <?php echo esc_html($total_enigmes); ?> énigme<?php echo ($total_enigmes > 1 ? 's' : ''); ?> —
-                <?php echo get_svg_icon('participants'); ?><?php echo esc_html(sprintf(_n('%d joueur', '%d joueurs', $nb_joueurs, 'chassesautresor'), $nb_joueurs)); ?>
+                <?php echo get_svg_icon('participants'); ?><?php echo esc_html(formater_nombre_joueurs($nb_joueurs)); ?>
             </div>
             <div class="meta-etiquette">
                 <?php echo get_svg_icon('calendar'); ?>
