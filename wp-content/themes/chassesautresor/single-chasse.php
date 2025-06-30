@@ -49,6 +49,20 @@ $timestamp_decouverte = convertir_en_timestamp($date_decouverte);
 $organisateur_id = get_organisateur_from_chasse($chasse_id);
 $organisateur_nom = $organisateur_id ? get_the_title($organisateur_id) : get_the_author();
 
+// 🔒 Accès réservé aux joueurs engagés
+$is_admin   = current_user_can('administrator');
+$is_associe = utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
+if (!$is_admin && !$is_associe) {
+    if (!is_user_logged_in() || !utilisateur_est_engage_dans_chasse($user_id, $chasse_id)) {
+        if ($organisateur_id) {
+            wp_redirect(get_permalink($organisateur_id));
+        } else {
+            wp_redirect(home_url('/'));
+        }
+        exit;
+    }
+}
+
 // Contenu
 $description = get_field('chasse_principale_description', $chasse_id);
 $extrait = wp_trim_words(wp_strip_all_tags($description), 30, '...');

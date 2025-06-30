@@ -95,8 +95,8 @@ $classe_verrouillee = '';
 
 <?php
 // ➡️ CTA participation ou accès direct à la chasse
-$user_id   = get_current_user_id();
-$is_admin  = current_user_can('administrator');
+$user_id    = get_current_user_id();
+$is_admin   = current_user_can('administrator');
 $is_associe = utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
 
 if ($is_admin || $is_associe) {
@@ -106,11 +106,21 @@ if ($is_admin || $is_associe) {
 } else {
     $validation = get_field('chasse_cache_statut_validation', $chasse_id);
     if ($validation === 'valide') {
-        $points = (int) get_field('chasse_infos_cout_points', $chasse_id);
         echo '<div class="cta-chasse">';
-        echo '<a href="' . esc_url($permalink) . '" class="bouton-cta">' . esc_html__('Participer', 'chassesautresor') . '</a>';
-        if ($points > 0) {
-            echo '<div class="cta-sous-label">' . sprintf(esc_html__('(%d points)', 'chassesautresor'), $points) . '</div>';
+        if (!$user_id) {
+            echo '<a href="' . esc_url(site_url('/mon-compte')) . '" class="bouton-cta">' . esc_html__("S'identifier", 'chassesautresor') . '</a>';
+            echo '<div class="cta-sous-label">' . esc_html__('identification requise', 'chassesautresor') . '</div>';
+        } else {
+            $points = (int) get_field('chasse_infos_cout_points', $chasse_id);
+            if ($points > 0 && !utilisateur_a_assez_de_points($user_id, $points)) {
+                echo '<a href="' . esc_url(home_url('/boutique/')) . '" class="bouton-cta">' . esc_html__('Acheter des points', 'chassesautresor') . '</a>';
+                echo '<div class="cta-sous-label">' . esc_html__("vous n'avez pas suffisamment de points", 'chassesautresor') . '</div>';
+            } else {
+                echo '<a href="' . esc_url($permalink) . '" class="bouton-cta">' . esc_html__('Participer', 'chassesautresor') . '</a>';
+                if ($points > 0) {
+                    echo '<div class="cta-sous-label">' . sprintf(esc_html__('(%d points)', 'chassesautresor'), $points) . '</div>';
+                }
+            }
         }
         echo '</div>';
     }
