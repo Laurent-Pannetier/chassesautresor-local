@@ -896,6 +896,20 @@ Ces deux champs combines determinent :
 - les messages d aide ou de verrouillage
 - le badge d etat
 
+### 🔎 Icônes de footer sur les cartes
+
+Chaque carte de chasse peut afficher des pictogrammes dans son pied de carte. Les fichiers SVG sont stockés dans `assets/svg/` du thème.
+
+| Fichier | Condition d’apparition |
+|---------|-----------------------|
+| `coins-points.svg` | Coût en points supérieur à 0 |
+| `reply-mail.svg` | Au moins une énigme en validation manuelle |
+| `reply-auto.svg` | Sinon, au moins une énigme en validation automatique |
+| `trophy.svg` | Récompense renseignée et valeur > 0 € |
+
+La fonction `preparer_infos_affichage_carte_chasse()` prépare ces icônes dans la clé `footer_icones`.
+Cette fonction sert de couche de présentation : elle regroupe toute la logique métier nécessaire avant affichage d’une carte.
+
 ### 🔄 enigme_cache_etat_systeme – statut logique global
 Definit si l enigme est techniquement disponible ou non.
 

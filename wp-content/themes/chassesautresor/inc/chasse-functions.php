@@ -539,3 +539,183 @@ function solution_peut_etre_affichee(int $enigme_id): bool
     return true;
 }
 
+/**
+ * Prépare les informations d'affichage pour une carte de chasse.
+ *
+ * @param int $chasse_id ID de la chasse.
+ * @return array Tableau associatif prêt pour le template.
+ */
+function preparer_infos_affichage_carte_chasse(int $chasse_id): array
+{
+    if (get_post_type($chasse_id) !== 'chasse') {
+        return [];
+    }
+
+    $titre     = get_the_title($chasse_id);
+    $permalink = get_permalink($chasse_id);
+
+    $description   = get_field('chasse_principale_description', $chasse_id);
+    $texte_complet = wp_strip_all_tags($description);
+    $extrait       = wp_trim_words($texte_complet, 60, '...');
+
+    $image_data = get_field('chasse_principale_image', $chasse_id);
+    $image = '';
+    if (is_array($image_data) && !empty($image_data['sizes']['medium'])) {
+        $image = $image_data['sizes']['medium'];
+    } elseif ($image_data) {
+        $image_id = is_array($image_data) ? ($image_data['ID'] ?? 0) : (int) $image_data;
+        $image = $image_id ? wp_get_attachment_image_url($image_id, 'medium') : '';
+    }
+    if (!$image) {
+        $image = get_the_post_thumbnail_url($chasse_id, 'medium');
+    }
+
+    $champs = chasse_get_champs($chasse_id);
+    $titre_recompense  = $champs['titre_recompense'];
+    $valeur_recompense = $champs['valeur_recompense'];
+    $cout_points       = (int) $champs['cout_points'];
+    $date_debut        = $champs['date_debut'];
+    $date_fin          = $champs['date_fin'];
+    $illimitee         = $champs['illimitee'];
+
+    $date_debut_affichage = formater_date($date_debut);
+    $date_fin_affichage   = $illimitee ? 'Illimitée' : ($date_fin ? formater_date($date_fin) : 'Non spécifiée');
+
+    $nb_joueurs       = compter_joueurs_engages_chasse($chasse_id);
+    $nb_joueurs_label = formater_nombre_joueurs($nb_joueurs);
+
+    verifier_ou_recalculer_statut_chasse($chasse_id);
+    $statut            = get_field('chasse_cache_statut', $chasse_id) ?: 'revision';
+    $statut_validation = get_field('chasse_cache_statut_validation', $chasse_id);
+    $statut_label      = ucfirst(str_replace('_', ' ', $statut));
+    if ($statut === 'revision') {
+        if ($statut_validation === 'creation') {
+            $statut_label = 'création';
+        } elseif ($statut_validation === 'correction') {
+            $statut_label = 'correction';
+        } elseif ($statut_validation === 'en_attente') {
+            $statut_label = 'en attente';
+        }
+    }
+    $badge_class = 'statut-' . $statut;
+
+    $enigmes_associees = recuperer_enigmes_associees($chasse_id);
+    $total_enigmes     = count($enigmes_associees);
+
+    $user_id    = get_current_user_id();
+    $is_admin   = current_user_can('administrator');
+    $is_associe = utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
+
+    $cta = '';
+    $cta_sous_label = '';
+    if ($is_admin || $is_associe) {
+        $cta = '<a href="' . esc_url($permalink) . '" class="bouton-cta">' . esc_html__('Voir', 'chassesautresor') . '</a>';
+    } elseif ($statut_validation === 'valide') {
+        if (!$user_id) {
+            $cta = '<a href="' . esc_url(site_url('/mon-compte')) . '" class="bouton-cta">' . esc_html__("S'identifier", 'chassesautresor') . '</a>';
+            $cta_sous_label = esc_html__('identification requise', 'chassesautresor');
+        } else {
+            if ($cout_points > 0 && !utilisateur_a_assez_de_points($user_id, $cout_points)) {
+                $cta = '<a href="' . esc_url(home_url('/boutique/')) . '" class="bouton-cta">' . esc_html__('Acheter des points', 'chassesautresor') . '</a>';
+                $cta_sous_label = esc_html__("vous n'avez pas suffisamment de points", 'chassesautresor');
+            } else {
+                $cta = '<a href="' . esc_url($permalink) . '" class="bouton-cta">' . esc_html__('Participer', 'chassesautresor') . '</a>';
+                if ($cout_points > 0) {
+                    $cta_sous_label = sprintf(esc_html__('(%d points)', 'chassesautresor'), $cout_points);
+                }
+            }
+        }
+    }
+
+    $liens = get_field('chasse_principale_liens', $chasse_id);
+    $liens = is_array($liens) ? $liens : [];
+    if (empty($liens)) {
+        $orga_id   = get_organisateur_from_chasse($chasse_id);
+        $liens_org = organisateur_get_liens_actifs($orga_id);
+        foreach ($liens_org as $type => $url) {
+            $liens[] = [
+                'chasse_principale_liens_type' => $type,
+                'chasse_principale_liens_url'  => $url,
+            ];
+        }
+    }
+    $has_lien = false;
+    foreach ($liens as $entree) {
+        $type_raw = $entree['chasse_principale_liens_type'] ?? null;
+        $url      = $entree['chasse_principale_liens_url'] ?? null;
+        $type     = is_array($type_raw) ? ($type_raw[0] ?? '') : $type_raw;
+        if (is_string($type) && trim($type) !== '' && is_string($url) && trim($url) !== '') {
+            $has_lien = true;
+            break;
+        }
+    }
+    $liens_html = $has_lien ? render_liens_publics($liens, 'chasse') : '';
+
+    $footer_icones = [];
+    if ($cout_points > 0) {
+        $footer_icones[] = 'coins-points';
+    }
+
+    $modes = [];
+    foreach ($enigmes_associees as $eid) {
+        $mode = get_field('enigme_mode_validation', $eid);
+        if ($mode) {
+            $modes[$mode] = true;
+        }
+    }
+    if (isset($modes['manuelle'])) {
+        $footer_icones[] = 'reply-mail';
+    } elseif (isset($modes['automatique'])) {
+        $footer_icones[] = 'reply-auto';
+    }
+
+    $lot_html = '';
+    if (!empty($titre_recompense) && (float) $valeur_recompense > 0) {
+        $footer_icones[] = 'trophy';
+        $lot_html = '<div class="chasse-lot" aria-live="polite">' .
+            get_svg_icon('trophee') .
+            esc_html($titre_recompense) . ' — ' . esc_html($valeur_recompense) . ' €' .
+            '</div>';
+    }
+
+    $extrait_html = $extrait ? '<p class="chasse-intro-extrait liste-elegante"><strong>Présentation :</strong> ' . esc_html($extrait) . '</p>' : '';
+
+    $cta_html = '';
+    if (!empty($cta)) {
+        $cta_html = '<div class="cta-chasse-row"><div class="cta-action">' . $cta;
+        if ($cta_sous_label) {
+            $cta_html .= '<div class="cta-sous-label">' . esc_html($cta_sous_label) . '</div>';
+        }
+        $cta_html .= '</div><div class="cta-message" aria-live="polite"></div></div>';
+    }
+
+    $footer_html = '';
+    if ($has_lien || !empty($footer_icones)) {
+        $footer_html = '<div class="carte-ligne__footer meta-etiquette">';
+        if ($has_lien) {
+            $footer_html .= '<div class="liens-publics-carte">' . $liens_html . '</div>';
+        }
+        foreach ($footer_icones as $icn) {
+            $footer_html .= get_svg_icon($icn);
+        }
+        $footer_html .= '</div>';
+    }
+
+    return [
+        'titre'             => $titre,
+        'permalink'         => $permalink,
+        'image'             => $image,
+        'total_enigmes'     => $total_enigmes,
+        'nb_joueurs_label'  => $nb_joueurs_label,
+        'date_debut'        => $date_debut_affichage,
+        'date_fin'          => $date_fin_affichage,
+        'badge_class'       => $badge_class,
+        'statut_label'      => $statut_label,
+        'classe_statut'     => $badge_class,
+        'extrait_html'      => $extrait_html,
+        'lot_html'          => $lot_html,
+        'cta_html'          => $cta_html,
+        'footer_html'       => $footer_html,
+    ];
+}
+

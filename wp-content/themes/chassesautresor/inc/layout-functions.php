@@ -220,6 +220,11 @@ function get_svg_icon($icone) {
             ';
 
         default:
+            $icone = preg_replace('/\.svg$/', '', $icone);
+            $path = get_stylesheet_directory() . '/assets/svg/' . $icone . '.svg';
+            if (file_exists($path)) {
+                return file_get_contents($path);
+            }
             return '';
     }
 }
