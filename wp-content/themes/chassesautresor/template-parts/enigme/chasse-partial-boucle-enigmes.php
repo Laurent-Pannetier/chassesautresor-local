@@ -11,8 +11,13 @@ if (!chasse_est_visible_pour_utilisateur($chasse_id, $utilisateur_id)) {
   return;
 }
 
-// 🔒 L'utilisateur doit être engagé dans la chasse
-if (!utilisateur_est_engage_dans_chasse($utilisateur_id, $chasse_id)) {
+// 🔒 L'accès à la boucle est réservé aux joueurs engagés,
+//     aux organisateurs associés ou aux administrateurs
+$engage   = utilisateur_est_engage_dans_chasse($utilisateur_id, $chasse_id);
+$associe  = utilisateur_est_organisateur_associe_a_chasse($utilisateur_id, $chasse_id);
+$is_admin = current_user_can('administrator');
+
+if (!$engage && !$associe && !$is_admin) {
   return;
 }
 
