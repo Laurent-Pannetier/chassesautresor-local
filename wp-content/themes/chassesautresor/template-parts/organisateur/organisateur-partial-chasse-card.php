@@ -54,7 +54,7 @@ if ($statut === 'revision') {
 }
 
 // 🔹 Informations supplémentaires
-$nb_joueurs = get_field('total_joueurs_souscription_chasse', $chasse_id);
+$nb_joueurs = compter_joueurs_engages_chasse($chasse_id);
 
 
 // 🔹 Préparation du badge de statut
@@ -82,7 +82,7 @@ $classe_verrouillee = '';
         <div class="meta-row svg-xsmall">
             <div class="meta-regular">
                 <?php echo get_svg_icon('enigme'); ?> <?php echo esc_html($total_enigmes); ?> énigme<?php echo ($total_enigmes > 1 ? 's' : ''); ?> —
-                <?php echo get_svg_icon('participants'); ?><?php echo esc_html($nb_joueurs); ?> joueur<?php echo ($nb_joueurs > 1 ? 's' : ''); ?>
+                <?php echo get_svg_icon('participants'); ?><?php echo esc_html(formater_nombre_joueurs($nb_joueurs)); ?>
             </div>
             <div class="meta-etiquette">
                 <?php echo get_svg_icon('calendar'); ?>
