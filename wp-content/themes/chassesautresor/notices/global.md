@@ -896,6 +896,7 @@ page enigme
 L’affichage dynamique des boutons, statuts ou badges (sur les énigmes notamment)
 dépend du champ ACF `enigme_cache_etat_systeme` et du suivi individuel stocké
 dans la table `wp_enigme_statuts_utilisateur` :
+Structure détaillée : voir annexe « 🗄️ Tables personnalisées ».
 
 - `enigme_cache_etat_systeme` → état logique global, calculé automatiquement
 - `wp_enigme_statuts_utilisateur` → statut individuel du joueur
@@ -931,6 +932,8 @@ Definit si l enigme est techniquement disponible ou non.
 | bloquee_chasse     | La chasse liee est bloquee                       |
 | invalide           | Donnees manquantes ou mal configurees            |
 | cache_invalide     | Erreur technique, logique ACF cassee             |
+
+Structure détaillée : voir annexe « 🗄️ Tables personnalisées ».
 
 👤 Statut individuel du joueur (table `wp_enigme_statuts_utilisateur`)
 Definit le niveau de progression du joueur sur une enigme donnee.
@@ -1190,6 +1193,49 @@ Chaque champ ciblé par un module JS (inline, conditionnel, panneau, etc.) doit 
 
 Cas particulier : les boutons déclencheurs de panneau doivent en plus avoir `.champ-modifier` et un `aria-label`.
 
+### 🗄️ Tables personnalisées
+
+Certaines fonctionnalités s'appuient sur trois tables SQL dédiées.
+
+#### `wp_engagements`
+
+| Colonne | Type | Commentaire |
+|---------|------|-------------|
+| id | bigint unsigned AUTO_INCREMENT | clé primaire |
+| user_id | bigint unsigned | identifiant du joueur |
+| enigme_id | bigint unsigned | identifiant de l'énigme |
+| chasse_id | bigint NULL | identifiant de la chasse |
+| date_engagement | datetime NULL DEFAULT CURRENT_TIMESTAMP | date d'engagement |
+
+Index :
+- `PRIMARY(id)`
+- `INDEX(enigme_id, user_id)`
+- `INDEX(chasse_id)`
+
+#### `wp_enigme_statuts_utilisateur`
+
+| Colonne | Type | Commentaire |
+|---------|------|-------------|
+| user_id | bigint unsigned | identifiant du joueur |
+| enigme_id | bigint unsigned | identifiant de l'énigme |
+| statut | enum('non_commencee','en_cours','abandonnee','echouee','resolue','terminee','soumis') DEFAULT 'non_commencee' | progression |
+| date_mise_a_jour | datetime NULL DEFAULT CURRENT_TIMESTAMP | dernière modification |
+
+#### `wp_enigme_tentatives`
+
+| Colonne | Type | Commentaire |
+|---------|------|-------------|
+| id | bigint unsigned AUTO_INCREMENT | clé primaire |
+| tentative_uid | varchar(64) | identifiant unique |
+| user_id | bigint unsigned | identifiant du joueur |
+| enigme_id | bigint unsigned | identifiant de l'énigme |
+| reponse_saisie | text NULL | texte saisi |
+| resultat | enum('bon','variante','faux','attente') DEFAULT 'attente' | résultat |
+| points_utilises | int unsigned NULL DEFAULT 0 | points consommés |
+| date_tentative | datetime NULL DEFAULT CURRENT_TIMESTAMP | date |
+| ip | varchar(45) NULL | adresse IP |
+| user_agent | text NULL | navigateur |
+| traitee | tinyint(1) NULL DEFAULT 0 | état de traitement |
 
 
 ### 📂 Références internes utiles (template-parts/, data-champ, etc.)
