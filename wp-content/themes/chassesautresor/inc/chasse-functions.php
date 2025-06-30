@@ -133,6 +133,18 @@ function verifier_souscription_chasse($user_id, $enigme_id) {
 
     error_log("✅ Nouvelle souscription à la chasse ID {$chasse_id} par l'utilisateur ID {$user_id}");
 }
+/**
+ * Vérifie si un utilisateur est déjà engagé dans une chasse.
+ *
+ * @param int $user_id
+ * @param int $chasse_id
+ * @return bool
+ */
+function utilisateur_est_engage_dans_chasse(int $user_id, int $chasse_id): bool {
+    if (!$user_id || !$chasse_id) return false;
+    return (bool) get_user_meta($user_id, "souscription_chasse_{$chasse_id}", true);
+}
+
 
 /**
  * 📌 Validation des incohérences de dates dans les chasses.
