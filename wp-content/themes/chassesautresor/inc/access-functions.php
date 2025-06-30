@@ -1134,21 +1134,15 @@ add_action('wp_ajax_verifier_et_enregistrer_condition_pre_requis', 'verifier_et_
 // 📌 VISIBILITÉ ET AFFICHAGE (RÉSERVÉ FUTUR)
 // ==================================================
 
-/*Préparer un bloc vide commenté pour y ajouter par exemple :
-enigme_est_affichable_pour_joueur() (à venir)
-get_cta_enigme() (à déplacer ici si elle migre du fichier visuel)
-tout helper type est_cliquable, affiche_indice, etc. */
-
 /**
  * Détermine si une chasse doit être visible pour un utilisateur.
  *
- * Conditions :
- * - La chasse doit être en statut 'publish' ou 'pending'
- * - Elle ne doit pas être bannie
- * - Un administrateur ou un organisateur associé peut toujours y accéder
- * - Un utilisateur standard ne peut y accéder que si :
- *     - La chasse est en statut 'publish'
- *     - Il est engagé dans cette chasse (table wp_engagements)
+ * Règles de visibilité :
+ * - Si statut WP = 'publish' ET 'chasse_cache_statut_validation' = 'valide'
+ *     → visible par tous les utilisateurs (y compris anonymes)
+ * - Si statut WP = 'pending'
+ *     → visible uniquement si user est admin OU lié à la chasse
+ * - Tous les autres cas → invisible
  *
  * @param int $chasse_id ID de la chasse.
  * @param int $user_id   ID de l'utilisateur.
@@ -1156,46 +1150,31 @@ tout helper type est_cliquable, affiche_indice, etc. */
  */
 function chasse_est_visible_pour_utilisateur(int $chasse_id, int $user_id): bool
 {
-    error_log("🔍 Vérification visibilité chasse ID={$chasse_id} pour user ID={$user_id}");
-
     $status = get_post_status($chasse_id);
-    error_log("📄 Statut WP de la chasse : {$status}");
-
-    if (!in_array($status, ['pending', 'publish'], true)) {
-        error_log("❌ Statut non autorisé : chasse invisible");
-        return false;
-    }
-
     $validation = get_field('chasse_cache_statut_validation', $chasse_id) ?? '';
-    error_log("📦 Statut de validation : {$validation}");
 
-    if ($validation === 'banni') {
-        error_log("❌ Chasse bannie : accès refusé");
+    // ✅ Cas 1 : chasse publiée et valide → visible par tous
+    if ($status === 'publish' && $validation === 'valide') {
+        return true;
+    }
+
+    // ✅ Cas 2 : chasse en attente → visible pour admin ou organisateur associé
+    if ($status === 'pending') {
+        if (user_can($user_id, 'manage_options')) {
+            return true;
+        }
+
+        if (utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
+            return true;
+        }
+
         return false;
     }
 
-    // Administrateur : accès total sauf banni
-    if (user_can($user_id, 'manage_options')) {
-        error_log("✅ Administrateur : accès autorisé");
-        return true;
-    }
-
-    // Organisateur associé : accès autorisé (peu importe statut publish/pending)
-    if (utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
-        error_log("✅ Organisateur associé : accès autorisé");
-        return true;
-    }
-
-    // Utilisateur standard : uniquement si publish + engagé
-    if ($status === 'publish') {
-        $engage = utilisateur_est_engage_dans_chasse($user_id, $chasse_id);
-        error_log("👤 Utilisateur standard : engagement ? " . ($engage ? 'oui' : 'non'));
-        return $engage;
-    }
-
-    error_log("❌ Aucun cas ne donne accès à la chasse");
+    // ❌ Tous les autres cas : non visible
     return false;
 }
+
 
 
 /**
