@@ -1142,35 +1142,61 @@ tout helper type est_cliquable, affiche_indice, etc. */
 /**
  * Détermine si une chasse doit être visible pour un utilisateur.
  *
+ * Conditions :
+ * - La chasse doit être en statut 'publish' ou 'pending'
+ * - Elle ne doit pas être bannie
+ * - Un administrateur ou un organisateur associé peut toujours y accéder
+ * - Un utilisateur standard ne peut y accéder que si :
+ *     - La chasse est en statut 'publish'
+ *     - Il est engagé dans cette chasse (table wp_engagements)
+ *
  * @param int $chasse_id ID de la chasse.
  * @param int $user_id   ID de l'utilisateur.
  * @return bool          True si visible, false sinon.
  */
 function chasse_est_visible_pour_utilisateur(int $chasse_id, int $user_id): bool
 {
+    error_log("🔍 Vérification visibilité chasse ID={$chasse_id} pour user ID={$user_id}");
+
     $status = get_post_status($chasse_id);
+    error_log("📄 Statut WP de la chasse : {$status}");
+
     if (!in_array($status, ['pending', 'publish'], true)) {
+        error_log("❌ Statut non autorisé : chasse invisible");
         return false;
     }
 
     $validation = get_field('chasse_cache_statut_validation', $chasse_id) ?? '';
+    error_log("📦 Statut de validation : {$validation}");
 
-    // Les administrateurs peuvent toujours voir la chasse, sauf si elle est bannie
+    if ($validation === 'banni') {
+        error_log("❌ Chasse bannie : accès refusé");
+        return false;
+    }
+
+    // Administrateur : accès total sauf banni
     if (user_can($user_id, 'manage_options')) {
-        return $validation !== 'banni';
+        error_log("✅ Administrateur : accès autorisé");
+        return true;
     }
 
-    if ($status === 'pending') {
-        $assoc = utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
-
-        return $validation !== 'banni'
-            && $assoc
-            && est_organisateur($user_id);
+    // Organisateur associé : accès autorisé (peu importe statut publish/pending)
+    if (utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
+        error_log("✅ Organisateur associé : accès autorisé");
+        return true;
     }
 
-    return $validation !== 'banni';
+    // Utilisateur standard : uniquement si publish + engagé
+    if ($status === 'publish') {
+        $engage = utilisateur_est_engage_dans_chasse($user_id, $chasse_id);
+        error_log("👤 Utilisateur standard : engagement ? " . ($engage ? 'oui' : 'non'));
+        return $engage;
+    }
 
+    error_log("❌ Aucun cas ne donne accès à la chasse");
+    return false;
 }
+
 
 /**
  * Autorise la consultation des énigmes non publiées pour les organisateurs
