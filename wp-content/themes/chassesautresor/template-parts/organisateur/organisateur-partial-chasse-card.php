@@ -99,9 +99,6 @@ foreach ($liens as $entree) {
             <?php echo esc_html($statut_label); ?>
         </span>
         <img src="<?php echo esc_url($image); ?>" alt="<?php echo esc_attr($titre); ?>">
-    </div>
-
-    <div class="carte-ligne__footer meta-etiquette">
         <div class="liens-publics-carte">
             <?php if ($has_lien) : ?>
                 <?php echo render_liens_publics($liens, 'chasse'); ?>
