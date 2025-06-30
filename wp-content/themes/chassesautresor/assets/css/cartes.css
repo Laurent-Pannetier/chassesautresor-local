@@ -144,7 +144,7 @@
 
 .carte-ligne__footer .footer-icones {
   display: flex;
-  gap: 0.5rem;
+  gap: 1rem;
 }
 .carte-ligne__footer .footer-icones svg{
   color: var(--color-gris-3);
