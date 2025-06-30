@@ -9,7 +9,11 @@ $utilisateur_id = get_current_user_id();
 
 if (!chasse_est_visible_pour_utilisateur($chasse_id, $utilisateur_id)) {
   return;
+}
 
+// 🔒 L'utilisateur doit être engagé dans la chasse
+if (!utilisateur_est_engage_dans_chasse($utilisateur_id, $chasse_id)) {
+  return;
 }
 
 // 🔎 Récupération des énigmes associées à la chasse
@@ -18,7 +22,7 @@ $posts = get_posts([
   'posts_per_page' => -1,
   'orderby'        => 'menu_order',
   'order'          => 'ASC',
-  'post_status'    => ['publish', 'pending', 'draft'],
+  'post_status'    => ['publish', 'pending'],
   'meta_query'     => [[
     'key'     => 'enigme_chasse_associee',
     'value'   => $chasse_id,
@@ -26,8 +30,8 @@ $posts = get_posts([
   ]]
 ]);
 
-// 🔒 Ne garder que les énigmes visibles pour l'utilisateur courant
-$posts_visibles = array_filter($posts, fn($post) => utilisateur_peut_voir_enigme($post->ID, $utilisateur_id));
+// 🔹 Toutes les énigmes associées sont listées sans filtrage supplémentaire
+$posts_visibles = $posts;
 $has_enigmes = !empty($posts_visibles);
 
 // 🟠 Détecte la présence d’au moins une énigme incomplète
@@ -51,6 +55,19 @@ foreach ($posts as $p) {
     $statut_utilisateur = enigme_get_statut_utilisateur($enigme_id, $utilisateur_id);
     $cta = get_cta_enigme($enigme_id);
 
+    $message_bloque = '';
+    if ($etat_systeme === 'bloquee_date') {
+      $date_raw = get_field('enigme_acces_date', $enigme_id);
+      $dt = convertir_en_datetime($date_raw, ['Y-m-d H:i:s', 'Y-m-d\TH:i', 'Y-m-d']);
+      $message_bloque = $dt ? 'Accessible le ' . $dt->format('d/m/Y \à H\hi') : 'Accessible prochainement';
+    } elseif ($etat_systeme === 'bloquee_chasse') {
+      $message_bloque = 'Chasse indisponible';
+    } elseif (in_array($etat_systeme, ['invalide', 'cache_invalide'], true)) {
+      $message_bloque = 'Invalide';
+    } elseif ($etat_systeme === 'bloquee_pre_requis') {
+      $message_bloque = 'Pré-requis nécessaires';
+    }
+
     $est_orga = est_organisateur();
     $statut_chasse = get_post_status($chasse_id);
     $statut_enigme = get_post_status($enigme_id);
@@ -70,7 +87,13 @@ foreach ($posts as $p) {
         <div class="carte-enigme-image">
           <?php afficher_picture_vignette_enigme($enigme_id, 'Vignette de l’énigme', ['medium']); ?>
           <div class="carte-enigme-cta">
-            <?php render_cta_enigme($cta, $enigme_id); ?>
+            <?php if ($etat_systeme === 'accessible'): ?>
+              <?php render_cta_enigme($cta, $enigme_id); ?>
+            <?php elseif ($message_bloque): ?>
+              <p class="cta-enigme-desactive bouton-secondaire no-click">
+                <?= esc_html($message_bloque); ?>
+              </p>
+            <?php endif; ?>
           </div>
         </div>
         <h3><?= esc_html($titre); ?></h3>
