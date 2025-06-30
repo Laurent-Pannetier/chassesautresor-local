@@ -192,6 +192,16 @@ template-parts/
         │   └── images.php
         ...
 
+structure des templates possibles pour les chasses
+template-parts/
+└── chasse/
+    ├── chasse-card.php
+    ├── chasse-affichage-complet.php
+    ├── chasse-partial-ajout-chasse.php
+    ├── chasse-partial-description.php
+    ├── chasse-validation-actions.php
+    └── panneaux/
+
         
 
 
