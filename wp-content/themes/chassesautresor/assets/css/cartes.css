@@ -9,12 +9,13 @@
   border: 1px solid var(--color-secondary);
   border-radius: 8px;
   padding: 1rem;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   transition: transform 0.2s, box-shadow 0.2s;
 }
+
 .carte:hover {
   transform: translateY(-4px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
 /* ========== 🗂️ Grilles utilitaires ========== */
@@ -126,6 +127,7 @@
   padding: 1rem;
   flex: 1;
 }
+
 .carte-ligne__contenu h3 {
   margin: 0;
 }
@@ -138,6 +140,15 @@
   margin-top: 1rem;
 }
 
+.carte-ligne__footer .footer-icones {
+  display: flex;
+  gap: 0.5rem;
+}
+.carte-ligne__footer .footer-icones svg{
+  color: var(--color-gris-3);
+  width: 20px;
+  height: 20px;
+}
 .carte-ligne__footer .liste-liens-publics {
   gap: 0.5rem;
 }

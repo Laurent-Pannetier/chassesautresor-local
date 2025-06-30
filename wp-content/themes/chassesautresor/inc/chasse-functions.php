@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || exit;
+defined('ABSPATH') || exit;
 
 
 //
@@ -27,7 +27,8 @@ defined( 'ABSPATH' ) || exit;
  * @param int $chasse_id ID de la chasse.
  * @return array Associatif avec 'lot', 'date_de_debut', 'date_de_fin'.
  */
-function recuperer_infos_chasse($chasse_id) {
+function recuperer_infos_chasse($chasse_id)
+{
     $champs = get_fields($chasse_id);
     return [
         'lot' => $champs['lot'] ?? 'Non spécifié',
@@ -44,14 +45,15 @@ function recuperer_infos_chasse($chasse_id) {
  * @param int $chasse_id ID de la chasse.
  * @return array
  */
-function chasse_get_champs($chasse_id) {
+function chasse_get_champs($chasse_id)
+{
     return [
         'lot' => get_field('chasse_infos_recompense_texte', $chasse_id, false) ?? '',
         'titre_recompense' => get_field('chasse_infos_recompense_titre', $chasse_id) ?? '',
         'valeur_recompense' => get_field('chasse_infos_recompense_valeur', $chasse_id) ?? '',
         'cout_points' => get_field('chasse_infos_cout_points', $chasse_id) ?? 0,
         // Lecture directe des dates pour éviter un éventuel cache ACF
-        'date_debut' => (function() use ($chasse_id) {
+        'date_debut' => (function () use ($chasse_id) {
             $val = get_field('chasse_infos_date_debut', $chasse_id);
             error_log("🔍 chasse {$chasse_id} get_field('date_debut') => " . var_export($val, true));
             if (!$val) {
@@ -62,7 +64,7 @@ function chasse_get_champs($chasse_id) {
             error_log("✅ chasse {$chasse_id} valeur finale date_debut => " . var_export($val, true));
             return $val;
         })(),
-        'date_fin' => (function() use ($chasse_id) {
+        'date_fin' => (function () use ($chasse_id) {
             $val = get_field('chasse_infos_date_fin', $chasse_id);
             error_log("🔍 chasse {$chasse_id} get_field('date_fin') => " . var_export($val, true));
             if (!$val) {
@@ -88,7 +90,8 @@ function chasse_get_champs($chasse_id) {
  * @param int $user_id ID de l'utilisateur
  * @param int $enigme_id ID de l'énigme souscrite
  */
-function verifier_souscription_chasse($user_id, $enigme_id) {
+function verifier_souscription_chasse($user_id, $enigme_id)
+{
 
     if (!$user_id || !$enigme_id) {
         error_log("🚨 ERREUR : ID utilisateur ou énigme manquant.");
@@ -118,12 +121,12 @@ function verifier_souscription_chasse($user_id, $enigme_id) {
             return;
         }
     }
-    
+
     error_log("🔍 Vérification avant mise à jour souscription chasse ID {$chasse_id} : Utilisateur ID {$user_id}");
 
     // ✅ Première souscription à une énigme de cette chasse => Marquer la chasse comme souscrite
     update_user_meta($user_id, "souscription_chasse_{$chasse_id}", true);
-    
+
     // 🔄 Mise à jour du compteur global de souscriptions à la chasse
     $meta_key = "total_joueurs_souscription_chasse_{$chasse_id}";
     $total_souscriptions = get_post_meta($chasse_id, $meta_key, true) ?: 0;
@@ -140,7 +143,8 @@ function verifier_souscription_chasse($user_id, $enigme_id) {
  * @param int $chasse_id
  * @return bool
  */
-function utilisateur_est_engage_dans_chasse(int $user_id, int $chasse_id): bool {
+function utilisateur_est_engage_dans_chasse(int $user_id, int $chasse_id): bool
+{
     if (!$user_id || !$chasse_id) return false;
     return (bool) get_user_meta($user_id, "souscription_chasse_{$chasse_id}", true);
 }
@@ -171,13 +175,15 @@ add_filter('acf/validate_value/name=date_de_fin', function ($valid, $value, $fie
 
     // ✅ Vérification : La date de fin ne peut pas être avant la date de début
     if (!empty($date_debut) && !empty($value) && strtotime($value) < strtotime($date_debut)) {
-        return __( '⚠️ Erreur : La date de fin ne peut pas être antérieure à la date de début.', 'chassesautresor-com' );
+        return __('⚠️ Erreur : La date de fin ne peut pas être antérieure à la date de début.', 'chassesautresor-com');
     }
 
     // ✅ Vérification : Si "maintenant" est sélectionné, date_de_fin ne peut pas être antérieure à aujourd'hui
-    if ($_POST['acf'][$caracteristiques_key]['field_67ca858935c21'] === 'maintenant' &&
-        !empty($value) && strtotime($value) < strtotime(date('Y-m-d'))) {
-        return __( '⚠️ Erreur : La date de fin ne peut pas être antérieure à la date du jour si la chasse commence maintenant.', 'chassesautresor-com' );
+    if (
+        $_POST['acf'][$caracteristiques_key]['field_67ca858935c21'] === 'maintenant' &&
+        !empty($value) && strtotime($value) < strtotime(date('Y-m-d'))
+    ) {
+        return __('⚠️ Erreur : La date de fin ne peut pas être antérieure à la date du jour si la chasse commence maintenant.', 'chassesautresor-com');
     }
 
     return $valid;
@@ -189,7 +195,8 @@ add_filter('acf/validate_value/name=date_de_fin', function ($valid, $value, $fie
  * @param int $chasse_id ID de la chasse concernée.
  * @return void
  */
-function gerer_chasse_terminee($chasse_id) {
+function gerer_chasse_terminee($chasse_id)
+{
     // ✅ Vérification que la chasse est bien "Terminée"
     $statut_chasse = get_field('statut_chasse', $chasse_id);
     if ($statut_chasse !== 'Terminée') {
@@ -215,7 +222,7 @@ function gerer_chasse_terminee($chasse_id) {
 /**
  * 🔹 afficher_picture_vignette_chasse() → Affiche une balise <picture> responsive pour l’image d’une chasse.
  * 🔹 afficher_chasse_associee_callback → ffiche les informations principales de la chasse associée à l’énigme.
-*/
+ */
 
 
 /**
@@ -223,29 +230,30 @@ function gerer_chasse_terminee($chasse_id) {
  * @param int    $chasse_id
  * @param string $alt Texte alternatif pour l’image (optionnel)
  */
-function afficher_picture_vignette_chasse($chasse_id, $alt = '') {
-  if (!is_numeric($chasse_id)) return;
+function afficher_picture_vignette_chasse($chasse_id, $alt = '')
+{
+    if (!is_numeric($chasse_id)) return;
 
-  $image = get_field('chasse_principale_image', $chasse_id);
-  $permalink = get_permalink($chasse_id);
+    $image = get_field('chasse_principale_image', $chasse_id);
+    $permalink = get_permalink($chasse_id);
 
-  if (!is_array($image) || empty($image['url'])) {
-    echo '<a href="' . esc_url($permalink) . '" class="image-chasse-placeholder">';
-    echo '<i class="fa-solid fa-map fa-2x"></i>';
+    if (!is_array($image) || empty($image['url'])) {
+        echo '<a href="' . esc_url($permalink) . '" class="image-chasse-placeholder">';
+        echo '<i class="fa-solid fa-map fa-2x"></i>';
+        echo '</a>';
+        return;
+    }
+
+    $src_small = $image['sizes']['medium'] ?? $image['url'];
+    $src_large = $image['sizes']['large'] ?? $image['url'];
+    $alt = esc_attr($alt ?: $image['alt'] ?? get_the_title($chasse_id));
+
+    echo '<a href="' . esc_url($permalink) . '">';
+    echo '<picture>';
+    echo '<source media="(min-width: 768px)" srcset="' . esc_url($src_large) . '">';
+    echo '<img src="' . esc_url($src_small) . '" alt="' . $alt . '" loading="lazy">';
+    echo '</picture>';
     echo '</a>';
-    return;
-  }
-
-  $src_small = $image['sizes']['medium'] ?? $image['url'];
-  $src_large = $image['sizes']['large'] ?? $image['url'];
-  $alt = esc_attr($alt ?: $image['alt'] ?? get_the_title($chasse_id));
-
-  echo '<a href="' . esc_url($permalink) . '">';
-  echo '<picture>';
-  echo '<source media="(min-width: 768px)" srcset="' . esc_url($src_large) . '">';
-  echo '<img src="' . esc_url($src_small) . '" alt="' . $alt . '" loading="lazy">';
-  echo '</picture>';
-  echo '</a>';
 }
 
 
@@ -261,7 +269,8 @@ function afficher_picture_vignette_chasse($chasse_id, $alt = '') {
  *
  * @return string HTML des informations de la chasse ou chaîne vide si aucune chasse associée ou énigme en cours.
  */
-function afficher_chasse_associee_callback() {
+function afficher_chasse_associee_callback()
+{
     if (!is_singular('enigme')) return '';
 
     $enigme_id = get_the_ID();
@@ -300,7 +309,7 @@ function afficher_chasse_associee_callback() {
             </p>
         <?php endif; ?>
     </section>
-    <?php
+<?php
     return ob_get_clean();
 }
 
@@ -450,14 +459,14 @@ function render_form_validation_chasse(int $chasse_id): string
 {
     $nonce = wp_create_nonce('validation_chasse_' . $chasse_id);
     ob_start();
-    ?>
+?>
     <form method="post" action="<?= esc_url(site_url('/traitement-validation-chasse')); ?>" class="form-validation-chasse">
         <input type="hidden" name="chasse_id" value="<?= esc_attr($chasse_id); ?>">
         <input type="hidden" name="validation_chasse_nonce" value="<?= esc_attr($nonce); ?>">
         <input type="hidden" name="demande_validation_chasse" value="1">
         <button type="submit" class="bouton-cta bouton-validation-chasse">VALIDATION</button>
     </form>
-    <?php
+<?php
     return ob_get_clean();
 }
 
@@ -689,17 +698,29 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id): array
         $cta_html .= '</div><div class="cta-message" aria-live="polite"></div></div>';
     }
 
-    $footer_html = '';
-    if ($has_lien || !empty($footer_icones)) {
-        $footer_html = '<div class="carte-ligne__footer meta-etiquette">';
-        if ($has_lien) {
-            $footer_html .= '<div class="liens-publics-carte">' . $liens_html . '</div>';
-        }
-        foreach ($footer_icones as $icn) {
-            $footer_html .= get_svg_icon($icn);
-        }
-        $footer_html .= '</div>';
+    $footer_liens_html = '';
+    $footer_icones_html = '';
+
+    if ($has_lien) {
+        $footer_liens_html = '<div class="liens-publics-carte">' . $liens_html . '</div>';
     }
+
+    if (!empty($footer_icones)) {
+        $footer_icones_html = '<div class="footer-icones">';
+        foreach ($footer_icones as $icn) {
+            $footer_icones_html .= get_svg_icon($icn);
+        }
+        $footer_icones_html .= '</div>';
+    }
+
+    $footer_html = '';
+    if ($footer_liens_html || $footer_icones_html) {
+        $footer_html = '<div class="carte-ligne__footer meta-etiquette">'
+            . $footer_icones_html
+            . $footer_liens_html
+            . '</div>';
+    }
+
 
     return [
         'titre'             => $titre,
@@ -718,4 +739,3 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id): array
         'footer_html'       => $footer_html,
     ];
 }
-
