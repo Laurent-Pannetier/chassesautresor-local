@@ -16,12 +16,8 @@ verifier_ou_recalculer_statut_chasse($chasse_id);
 verifier_et_synchroniser_cache_enigmes_si_autorise($chasse_id);
 verifier_ou_mettre_a_jour_cache_complet($chasse_id);
 
-$edition_active = utilisateur_peut_modifier_post($chasse_id);
-$user_id = get_current_user_id();
-if (!current_user_can('manage_options') && !chasse_est_visible_pour_utilisateur($chasse_id, $user_id)) {
-  wp_redirect(home_url('/'));
-  exit;
-}
+$edition_active     = utilisateur_peut_modifier_post($chasse_id);
+$user_id            = get_current_user_id();
 $points_utilisateur = get_user_points($user_id);
 
 // Champs principaux
@@ -49,19 +45,7 @@ $timestamp_decouverte = convertir_en_timestamp($date_decouverte);
 $organisateur_id = get_organisateur_from_chasse($chasse_id);
 $organisateur_nom = $organisateur_id ? get_the_title($organisateur_id) : get_the_author();
 
-// 🔒 Accès réservé aux joueurs engagés
-$is_admin   = current_user_can('administrator');
-$is_associe = utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
-if (!$is_admin && !$is_associe) {
-    if (!is_user_logged_in() || !utilisateur_est_engage_dans_chasse($user_id, $chasse_id)) {
-        if ($organisateur_id) {
-            wp_redirect(get_permalink($organisateur_id));
-        } else {
-            wp_redirect(home_url('/'));
-        }
-        exit;
-    }
-}
+
 
 // Contenu
 $description = get_field('chasse_principale_description', $chasse_id);
@@ -140,6 +124,14 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
         'chasse_id' => $chasse_id
       ]);
       ?>
+
+      <?php
+      $cta_data = generer_cta_chasse($chasse_id, $user_id);
+      ?>
+      <div class="cta-chasse-row">
+        <div class="cta-action"><?php echo $cta_data['cta_html']; ?></div>
+        <div class="cta-message" aria-live="polite"><?php echo $cta_data['cta_message']; ?></div>
+      </div>
 
       <div class="separateur-avec-icone"></div>
 

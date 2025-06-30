@@ -381,6 +381,90 @@ function peut_valider_chasse(int $chasse_id, int $user_id): bool
 }
 
 /**
+ * Génère le bouton d'action et le message d'explication pour une chasse.
+ *
+ * @param int      $chasse_id ID de la chasse.
+ * @param int|null $user_id   ID de l'utilisateur (par défaut : utilisateur courant).
+ *
+ * @return array{cta_html:string, cta_message:string}
+ */
+function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
+{
+    $user_id    = $user_id ?? get_current_user_id();
+    $permalink  = get_permalink($chasse_id);
+    $statut     = get_field('chasse_cache_statut', $chasse_id) ?: 'revision';
+    $validation = get_field('chasse_cache_statut_validation', $chasse_id);
+    $cout       = (int) get_field('chasse_infos_cout_points', $chasse_id);
+    $date_debut = get_field('chasse_infos_date_debut', $chasse_id);
+    $date_fin   = get_field('chasse_infos_date_fin', $chasse_id);
+
+    // Priorité : utilisateur non connecté -> bouton d'identification
+    if (!$user_id) {
+        return [
+            'cta_html'    => '<a href="' . esc_url(site_url('/mon-compte')) . '" class="bouton-cta">' .
+                             "S'identifier" . '</a>',
+            'cta_message' => 'Vous devez être identifié pour participer à cette chasse',
+        ];
+    }
+
+    $is_admin   = current_user_can('administrator');
+    $is_associe = utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
+
+    // 🔒 Bypass complet pour les administrateurs et organisateurs associés.
+    if ($is_admin || $is_associe) {
+        return [
+            'cta_html'    => '<a href="' . esc_url($permalink) . '" class="bouton-cta">Voir</a>',
+            'cta_message' => '',
+        ];
+    }
+
+    if ($validation !== 'valide') {
+        return ['cta_html' => '', 'cta_message' => ''];
+    }
+
+    $html    = '';
+    $message = '';
+    $points_utilisateur = $user_id ? get_user_points($user_id) : 0;
+
+    if ($statut === 'a_venir') {
+        $html = '<button class="bouton-cta" disabled>Indisponible</button>';
+        if ($date_debut) {
+            $ts = strtotime($date_debut);
+            $message = 'Chasse disponible à partir du ' . date_i18n('d/m/Y \à H:i', $ts);
+        } else {
+            $message = 'Chasse disponible prochainement';
+        }
+    } elseif ($statut === 'en_cours' || $statut === 'payante') {
+        if ($cout > 0) {
+            if ($points_utilisateur >= $cout) {
+                $html    = '<a href="' . esc_url($permalink) . '" class="bouton-cta">Participer (' . $cout . ' points)</a>';
+                $message = "L'accès à cette chasse coûte <strong>{$cout} points</strong>";
+            } else {
+                $html    = '<button class="bouton-cta" disabled>Points insuffisants (' . $cout . ' points)</button>';
+                $manque  = max(0, $cout - $points_utilisateur);
+                $message = 'Il vous manque <strong>' . $manque . ' points</strong> pour participer à cette chasse. ';
+                $message .= '<a href="' . esc_url(home_url('/boutique')) . '">Acheter des points</a>';
+            }
+        } else {
+            $html    = '<a href="' . esc_url($permalink) . '" class="bouton-cta">Participer</a>';
+            $message = 'Accès gratuit à cette chasse';
+        }
+    } elseif ($statut === 'termine') {
+        $html = '<a href="' . esc_url($permalink) . '" class="bouton-cta">Voir</a>';
+        if ($date_fin) {
+            $message = 'Cette chasse est terminée depuis le ' . date_i18n('d/m/Y', strtotime($date_fin));
+        } else {
+            $message = 'Cette chasse est terminée';
+        }
+    }
+
+    return [
+        'cta_html'    => $html,
+        'cta_message' => $message,
+    ];
+}
+
+/**
  * Compte le nombre de joueurs ayant engagé au moins une énigme de la chasse.
  *
  * @param int $chasse_id ID de la chasse.
@@ -611,30 +695,8 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id): array
     $enigmes_associees = recuperer_enigmes_associees($chasse_id);
     $total_enigmes     = count($enigmes_associees);
 
-    $user_id    = get_current_user_id();
-    $is_admin   = current_user_can('administrator');
-    $is_associe = utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
-
-    $cta = '';
-    $cta_sous_label = '';
-    if ($is_admin || $is_associe) {
-        $cta = '<a href="' . esc_url($permalink) . '" class="bouton-cta">' . esc_html__('Voir', 'chassesautresor') . '</a>';
-    } elseif ($statut_validation === 'valide') {
-        if (!$user_id) {
-            $cta = '<a href="' . esc_url(site_url('/mon-compte')) . '" class="bouton-cta">' . esc_html__("S'identifier", 'chassesautresor') . '</a>';
-            $cta_sous_label = esc_html__('identification requise', 'chassesautresor');
-        } else {
-            if ($cout_points > 0 && !utilisateur_a_assez_de_points($user_id, $cout_points)) {
-                $cta = '<a href="' . esc_url(home_url('/boutique/')) . '" class="bouton-cta">' . esc_html__('Acheter des points', 'chassesautresor') . '</a>';
-                $cta_sous_label = esc_html__("vous n'avez pas suffisamment de points", 'chassesautresor');
-            } else {
-                $cta = '<a href="' . esc_url($permalink) . '" class="bouton-cta">' . esc_html__('Participer', 'chassesautresor') . '</a>';
-                if ($cout_points > 0) {
-                    $cta_sous_label = sprintf(esc_html__('(%d points)', 'chassesautresor'), $cout_points);
-                }
-            }
-        }
-    }
+    $user_id = get_current_user_id();
+    $cta_data = generer_cta_chasse($chasse_id, $user_id);
 
     $liens = get_field('chasse_principale_liens', $chasse_id);
     $liens = is_array($liens) ? $liens : [];
@@ -690,14 +752,8 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id): array
 
     $extrait_html = $extrait ? '<p class="chasse-intro-extrait liste-elegante"> <strong>Présentation :</strong> ' . esc_html($extrait) . '</p>' : '';
 
-    $cta_html = '';
-    if (!empty($cta)) {
-        $cta_html = '<div class="cta-chasse-row"><div class="cta-action">' . $cta;
-        if ($cta_sous_label) {
-            $cta_html .= '<div class="cta-sous-label">' . esc_html($cta_sous_label) . '</div>';
-        }
-        $cta_html .= '</div><div class="cta-message" aria-live="polite"></div></div>';
-    }
+    $cta_html    = $cta_data['cta_html'] ?? '';
+    $cta_message = $cta_data['cta_message'] ?? '';
 
     $footer_liens_html = '';
     $footer_icones_html = '';
@@ -737,6 +793,7 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id): array
         'extrait_html'      => $extrait_html,
         'lot_html'          => $lot_html,
         'cta_html'          => $cta_html,
+        'cta_message'       => $cta_message,
         'footer_html'       => $footer_html,
     ];
 }
