@@ -372,6 +372,34 @@ function peut_valider_chasse(int $chasse_id, int $user_id): bool
 }
 
 /**
+ * Compte le nombre de joueurs ayant engagé au moins une énigme de la chasse.
+ *
+ * @param int $chasse_id ID de la chasse.
+ * @return int Nombre de joueurs uniques engagés.
+ */
+function compter_joueurs_engages_chasse(int $chasse_id): int
+{
+    if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
+        return 0;
+    }
+
+    $enigmes = recuperer_enigmes_associees($chasse_id);
+    if (empty($enigmes)) {
+        return 0;
+    }
+
+    global $wpdb;
+    $table = $wpdb->prefix . 'engagements';
+    $placeholders = implode(',', array_fill(0, count($enigmes), '%d'));
+    $query = $wpdb->prepare(
+        "SELECT COUNT(DISTINCT user_id) FROM $table WHERE enigme_id IN ($placeholders)",
+        ...$enigmes
+    );
+
+    return (int) $wpdb->get_var($query);
+}
+
+/**
  * Retourne la première chasse pouvant être soumise à validation pour un utilisateur.
  *
  * @param int $user_id ID utilisateur.
