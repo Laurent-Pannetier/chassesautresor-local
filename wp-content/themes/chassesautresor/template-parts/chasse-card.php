@@ -43,7 +43,10 @@ if (empty($infos)) {
 
         <?php echo $infos['extrait_html']; ?>
         <?php echo $infos['lot_html']; ?>
-        <?php echo $infos['cta_html']; ?>
+        <div class="cta-chasse-row">
+            <div class="cta-action"><?php echo $infos['cta_html']; ?></div>
+            <div class="cta-message" aria-live="polite"><?php echo $infos['cta_message']; ?></div>
+        </div>
         <?php echo $infos['footer_html']; ?>
     </div>
 </div>
