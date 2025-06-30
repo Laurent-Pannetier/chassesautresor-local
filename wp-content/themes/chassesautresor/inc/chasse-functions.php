@@ -410,10 +410,10 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
     $is_admin   = current_user_can('administrator');
     $is_associe = utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
 
-    // 🔒 Bypass complet pour les administrateurs et organisateurs associés.
+    // 🔒 Aucun bouton d'action pour les administrateurs ou organisateurs associés.
     if ($is_admin || $is_associe) {
         return [
-            'cta_html'    => '<a href="' . esc_url($permalink) . '" class="bouton-cta">Voir</a>',
+            'cta_html'    => '',
             'cta_message' => '',
         ];
     }
