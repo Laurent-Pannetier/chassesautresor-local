@@ -15,9 +15,11 @@ $utilisateur_id = get_current_user_id();
 // 🔒 Vérification d'accès à la chasse
 if (!chasse_est_visible_pour_utilisateur($chasse_id, $utilisateur_id)) return;
 
+$est_orga_associe = $args['est_orga_associe'] ?? utilisateur_est_organisateur_associe_a_chasse($utilisateur_id, $chasse_id);
+
 $autorise_boucle = (
   user_can($utilisateur_id, 'manage_options') ||
-  utilisateur_est_organisateur_associe_a_chasse($utilisateur_id, $chasse_id) ||
+  $est_orga_associe ||
   utilisateur_est_engage_dans_chasse($utilisateur_id, $chasse_id)
 );
 if (!$autorise_boucle) return;
@@ -38,6 +40,9 @@ $posts = get_posts([
 
 $posts_visibles = $posts;
 $has_enigmes = !empty($posts_visibles);
+
+$est_orga = est_organisateur();
+$statut_chasse = get_post_status($chasse_id);
 
 // 📌 Vérifie si une énigme est incomplète
 $has_incomplete = false;
@@ -60,11 +65,9 @@ foreach ($posts as $p) {
       $classe_cta = 'cta-' . sanitize_html_class($type_cta);
 
       // 🔍 Vérification bordure admin/orga
-      $est_orga = est_organisateur();
-      $statut_chasse = get_post_status($chasse_id);
       $statut_enigme = get_post_status($enigme_id);
       $voir_bordure = $est_orga &&
-        utilisateur_est_organisateur_associe_a_chasse($utilisateur_id, $chasse_id) &&
+        $est_orga_associe &&
         $statut_chasse !== 'publish' &&
         $statut_enigme !== 'publish';
 
