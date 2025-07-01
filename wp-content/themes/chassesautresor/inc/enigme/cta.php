@@ -256,39 +256,48 @@ function get_cta_enigme(int $enigme_id, ?int $user_id = null): array
  */
 function render_cta_enigme(array $cta, int $enigme_id): void
 {
+    $statut = $cta['statut_utilisateur'] ?? '';
+    $classes_bouton = in_array($statut, ['non_commencee', 'echouee', 'abandonnee'], true)
+        ? 'bouton bouton-cta'
+        : 'bouton bouton-secondaire';
+
     switch ($cta['action']) {
         case 'form':
-?>
+            ?>
             <form method="post" action="<?= esc_url($cta['url']); ?>" class="cta-enigme-form">
                 <input type="hidden" name="enigme_id" value="<?= esc_attr($enigme_id); ?>">
                 <?php wp_nonce_field('engager_enigme_' . $enigme_id, 'engager_enigme_nonce'); ?>
-                <button type="submit" class="bouton bouton-secondaire"><?= esc_html($cta['label']); ?></button>
+                <button type="submit" class="<?= esc_attr($classes_bouton); ?>">
+                    <?= esc_html($cta['label']); ?>
+                </button>
                 <?php if (!empty($cta['sous_label'])): ?>
                     <div class="cta-sous-label"><?= esc_html($cta['sous_label']); ?></div>
                 <?php endif; ?>
             </form>
-        <?php
+            <?php
             break;
 
         case 'link':
-        ?>
-            <a href="<?= esc_url($cta['url']); ?>" class="cta-enigme-lien bouton bouton-secondaire">
+            ?>
+            <a href="<?= esc_url($cta['url']); ?>" class="cta-enigme-lien <?= esc_attr($classes_bouton); ?>">
                 <?= esc_html($cta['label']); ?>
             </a>
             <?php if (!empty($cta['sous_label'])): ?>
                 <div class="cta-sous-label"><?= esc_html($cta['sous_label']); ?></div>
             <?php endif; ?>
-        <?php
+            <?php
             break;
 
         case 'disabled':
         default:
-        ?>
-            <p class="cta-enigme-desactive bouton-secondaire no-click"><?= esc_html($cta['label']); ?></p>
+            ?>
+            <p class="cta-enigme-desactive bouton-secondaire no-click">
+                <?= esc_html($cta['label']); ?>
+            </p>
             <?php if (!empty($cta['sous_label'])): ?>
                 <div class="cta-sous-label"><?= esc_html($cta['sous_label']); ?></div>
             <?php endif; ?>
-<?php
+            <?php
             break;
     }
 }

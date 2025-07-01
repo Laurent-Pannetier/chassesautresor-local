@@ -97,25 +97,23 @@ foreach ($posts as $p) {
                 ?>
               </div>
             <?php endif; ?>
+            <?php if (!in_array($cta['type'], ['bloquee', 'invalide', 'cache_invalide', 'erreur'])) : ?>
+            <div class="carte-enigme-cta">
+              <?php render_cta_enigme($cta, $enigme_id); ?>
+            </div>
+          <?php endif; ?>
           </div>
 
           <?php if ($mapping_visuel['image_reelle']) : ?>
             <h3><?= esc_html($titre); ?></h3>
           <?php endif; ?>
 
-          <?php error_log($mapping_visuel['disponible_le']); 
+          <?php 
           if (!empty($mapping_visuel['disponible_le'])) : ?>
             <div class="infos-dispo">
               <small class="infos-secondaires">Disponible le <?= esc_html($mapping_visuel['disponible_le']); ?></small>
             </div>
           <?php endif; ?>
-
-          <?php if (!in_array($cta['type'], ['bloquee', 'invalide', 'cache_invalide', 'erreur'])) : ?>
-            <div class="carte-enigme-cta">
-              <?php render_cta_enigme($cta, $enigme_id); ?>
-            </div>
-          <?php endif; ?>
-
         </div>
       </article>
     <?php endforeach; ?>

@@ -505,21 +505,19 @@ function compter_joueurs_engages_chasse(int $chasse_id): int
         return 0;
     }
 
-    $enigmes = recuperer_enigmes_associees($chasse_id);
-    if (empty($enigmes)) {
-        return 0;
-    }
-
     global $wpdb;
     $table = $wpdb->prefix . 'engagements';
-    $placeholders = implode(',', array_fill(0, count($enigmes), '%d'));
+
     $query = $wpdb->prepare(
-        "SELECT COUNT(DISTINCT user_id) FROM $table WHERE enigme_id IN ($placeholders)",
-        ...$enigmes
+        "SELECT COUNT(DISTINCT user_id)
+         FROM $table
+         WHERE chasse_id = %d",
+        $chasse_id
     );
 
     return (int) $wpdb->get_var($query);
 }
+
 
 /**
  * Enregistre un engagement à une chasse pour un utilisateur.

@@ -44,8 +44,7 @@
 }
 
 /* ========== 🎴 Cartes d\'énigme et de chasse ========== */
-.carte-enigme,
-.carte-chasse {
+.carte-enigme {
   background: var(--color-text-primary);
   color: var(--color-text-primary);
   border: 1px solid var(--color-secondary);
@@ -128,7 +127,7 @@
 .carte-enigme h3 {
   margin: 0;
   padding: 0.5rem 1rem;
-  flex: 1;
+  flex: 0.5;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -153,6 +152,9 @@
   flex: 1;
 }
 
+.carte-ligne__contenu .cta-div {
+  justify-content: center;
+}
 .carte-ligne__contenu .chasse-intro-extrait {
   margin: 15px 0
 }
