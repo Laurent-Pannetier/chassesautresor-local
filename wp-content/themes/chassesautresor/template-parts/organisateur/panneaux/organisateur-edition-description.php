@@ -1,6 +1,6 @@
 <!-- 🎯 Panneau WYSIWYG ACF -->
 <?php
-defined( 'ABSPATH' ) || exit;
+defined('ABSPATH') || exit;
 $organisateur_id = $args['organisateur_id'] ?? null;
 
 ?>
@@ -26,7 +26,11 @@ $organisateur_id = $args['organisateur_id'] ?? null;
             // automatiquement le panneau principal grâce au paramètre
             // ?edition=open. L'ancre #presentation permet de scroller
             // directement sur la section description.
-            'return'              => add_query_arg('edition', 'open', get_permalink()) . '#presentation',
+            'return' => add_query_arg(
+                ['edition' => 'open'],
+                remove_query_arg(['acf'], get_permalink())
+            ) . '#presentation',
+
             'updated_message'     => false
         ]);
         ?>
