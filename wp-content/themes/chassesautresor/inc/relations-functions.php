@@ -118,17 +118,13 @@ function utilisateur_est_organisateur_associe_a_chasse(int $user_id, int $chasse
   if (!$organisateur_id) return false;
 
   $utilisateurs = get_field('utilisateurs_associes', $organisateur_id);
-
   if (!is_array($utilisateurs)) return false;
 
   foreach ($utilisateurs as $user) {
     $id = is_object($user) ? $user->ID : (int) $user;
-    if ($id === $user_id) {
-      return true;
-    }
+    if ($id === $user_id) return true;
   }
 
-  error_log("❌ [orga_associe] user #$user_id NON lié à l’organisateur #$organisateur_id");
   return false;
 }
 
@@ -732,6 +728,8 @@ function verifier_cache_chasse_enigmes_valides($chasse_id, $retirer_si_invalide 
  */
 function synchroniser_relations_cache_enigmes($chasse_id): bool
 {
+  error_log("🔄 [DEV] synchroniser_relations_cache_enigmes() appelé pour chasse #$chasse_id");
+
   if (get_post_type($chasse_id) !== 'chasse') {
     error_log("❌ [SYNC RELATIONS] Post #$chasse_id n’est pas de type chasse.");
     return false;
@@ -745,19 +743,19 @@ function synchroniser_relations_cache_enigmes($chasse_id): bool
     'fields'         => 'ids',
   ]);
 
+  error_log("🔍 [DEV] $chasse_id : ".count($posts)." énigmes trouvées à analyser.");
+
   $ids_detectes = [];
 
   foreach ($posts as $enigme_id) {
-    $valeur = get_post_meta($enigme_id, 'enigme_chasse_associee', true);
+    $associees = get_field('enigme_chasse_associee', $enigme_id, false);
+    $associees = is_array($associees) ? array_map('intval', $associees) : [(int) $associees];
 
-    if (is_array($valeur)) {
-      $associees = array_map('intval', $valeur);
-    } else {
-      $associees = [(int)$valeur];
-    }
+    error_log("🧩 [DEV] Énigme #$enigme_id associée à : ".implode(',', $associees));
 
     if (in_array((int)$chasse_id, $associees, true)) {
       $ids_detectes[] = $enigme_id;
+      error_log("✅ [DEV] Énigme #$enigme_id retenue pour la chasse #$chasse_id");
     }
   }
 
@@ -769,6 +767,7 @@ function synchroniser_relations_cache_enigmes($chasse_id): bool
   // 🔁 Met à jour chaque ID un par un via ta fonction fiable
   $ok_global = true;
   foreach ($ids_detectes as $enigme_id) {
+    error_log("🔗 [DEV] Ajout de l’énigme #$enigme_id à la chasse #$chasse_id via mettre_a_jour_relation_acf()");
     $ok = mettre_a_jour_relation_acf(
       $chasse_id,
       'chasse_cache_enigmes',
@@ -779,11 +778,15 @@ function synchroniser_relations_cache_enigmes($chasse_id): bool
     if (!$ok) {
       error_log("❌ [SYNC RELATIONS] Échec ajout de l’énigme #$enigme_id à la chasse #$chasse_id");
       $ok_global = false;
+    } else {
+      error_log("✅ [DEV] Ajout réussi de l’énigme #$enigme_id à la chasse #$chasse_id");
     }
   }
 
   if ($ok_global) {
     error_log("✅ [SYNC RELATIONS] Mise à jour complète de la chasse #$chasse_id → " . implode(', ', $ids_detectes));
+  } else {
+    error_log("⚠️ [DEV] Des erreurs sont survenues lors de la mise à jour des relations pour la chasse #$chasse_id");
   }
 
   return $ok_global;

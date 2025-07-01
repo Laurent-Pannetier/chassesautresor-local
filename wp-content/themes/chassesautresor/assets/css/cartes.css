@@ -140,6 +140,7 @@
   object-fit: cover;
   object-position: center;
   display: block;
+  max-height: 350px;
 }
 
 .carte-ligne {
