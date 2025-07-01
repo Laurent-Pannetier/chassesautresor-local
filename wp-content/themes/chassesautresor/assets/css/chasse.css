@@ -110,3 +110,18 @@ body.edition-active-chasse .chasse-enigmes-header  .liens-placeholder {
     font-size: 22px;
 }
 }
+
+
+.infos-dispo {
+  text-align: center;
+  margin-top: 0.25rem;
+}
+.infos-dispo .infos-secondaires {
+  display: inline-block;
+  background-color: #eee;
+  color: #333;
+  padding: 0.25em 0.6em;
+  border-radius: 999px;
+  font-size: 0.8em;
+  font-weight: 500;
+}

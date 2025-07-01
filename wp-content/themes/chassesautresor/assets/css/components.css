@@ -155,6 +155,7 @@ button,
     margin:6px 0;
     display: inline-block;
     text-align: center;
+    line-height: 16px;
 }
 
 .bouton-secondaire:hover {

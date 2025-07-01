@@ -43,7 +43,9 @@ if (empty($infos)) {
 
         <?php echo $infos['extrait_html']; ?>
         <?php echo $infos['lot_html']; ?>
-        <a href="<?php echo esc_url($infos['permalink']); ?>" class="bouton-cta">En savoir plus</a>
+        <div class="flex-row cta-div">
+            <a href="<?php echo esc_url($infos['permalink']); ?>" class="bouton-secondaire">En savoir plus</a>
+        </div>
         <?php echo $infos['footer_html']; ?>
     </div>
 </div>

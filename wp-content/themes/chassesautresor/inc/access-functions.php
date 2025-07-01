@@ -369,9 +369,10 @@ function utilisateur_peut_voir_enigme(int $enigme_id, ?int $user_id = null): boo
         return false;
     }
 
-    $post_status   = get_post_status($enigme_id);
-    $etat_systeme  = get_field('enigme_cache_etat_systeme', $enigme_id);
-    $user_id       = $user_id ?? get_current_user_id();
+    $post_status  = get_post_status($enigme_id);
+    $etat_systeme = get_field('enigme_cache_etat_systeme', $enigme_id);
+    $user_id      = $user_id ?? get_current_user_id();
+    $chasse_id    = recuperer_id_chasse_associee($enigme_id);
 
     error_log("🔎 [voir énigme] #$enigme_id | statut = $post_status | etat = $etat_systeme | user_id = $user_id");
 
@@ -381,22 +382,29 @@ function utilisateur_peut_voir_enigme(int $enigme_id, ?int $user_id = null): boo
         return true;
     }
 
-    // 🔍 Anonyme ou abonné : uniquement publish + accessible
-    if (!is_user_logged_in() || in_array('abonne', wp_get_current_user()->roles, true)) {
-        $autorise = ($post_status === 'publish') && ($etat_systeme === 'accessible');
-        error_log("👤 [voir énigme] visiteur/abonné → accès " . ($autorise ? 'OK' : 'REFUSÉ'));
-        return $autorise;
-    }
-
-    if ($post_status === 'draft') {
-        error_log("❌ [voir énigme] brouillon interdit pour utilisateur #$user_id");
+    // 🎯 Pas de chasse liée = refus
+    if (!$chasse_id) {
+        error_log("❌ [voir énigme] pas de chasse associée");
         return false;
     }
 
-    // 🎯 Chasse liée
-    $chasse_id = recuperer_id_chasse_associee($enigme_id);
-    if (!$chasse_id) {
-        error_log("❌ [voir énigme] pas de chasse associée");
+    // ✅ Abonné engagé dans la chasse → peut voir l’image si énigme accessible
+    if (utilisateur_est_engage_dans_chasse($user_id, $chasse_id)) {
+        $autorise = ($post_status === 'publish') && ($etat_systeme === 'accessible');
+        error_log("✅ [voir énigme] joueur engagé dans chasse #$chasse_id → accès " . ($autorise ? 'OK' : 'REFUSÉ'));
+        return $autorise;
+    }
+
+    // 👤 Visiteur/abonné non engagé → accès uniquement si énigme publique + accessible
+    if (is_user_logged_in() && in_array('abonne', wp_get_current_user()->roles, true)) {
+        $autorise = ($post_status === 'publish') && ($etat_systeme === 'accessible');
+        error_log("👤 [voir énigme] abonné non engagé → accès " . ($autorise ? 'OK' : 'REFUSÉ'));
+        return $autorise;
+    }
+
+    // ❌ Brouillon interdit
+    if ($post_status === 'draft') {
+        error_log("❌ [voir énigme] brouillon interdit pour utilisateur #$user_id");
         return false;
     }
 
@@ -406,8 +414,7 @@ function utilisateur_peut_voir_enigme(int $enigme_id, ?int $user_id = null): boo
         return false;
     }
 
-    // ✅ Exception organisateur : accès si chasse en création, correction
-    //    ou en attente de validation
+    // ✅ Exception organisateur (chasse non publiée)
     $statut_validation = get_field('chasse_cache_statut_validation', $chasse_id);
     error_log("🧪 [voir énigme] chasse #$chasse_id → statut_validation = $statut_validation");
 
@@ -417,11 +424,13 @@ function utilisateur_peut_voir_enigme(int $enigme_id, ?int $user_id = null): boo
         return $autorise;
     }
 
-    // ✅ Cas standard : uniquement publish + accessible
+    // ✅ Cas standard : publish + accessible
     $autorise = ($post_status === 'publish') && ($etat_systeme === 'accessible');
     error_log("🟠 [voir énigme] cas standard → accès " . ($autorise ? 'OK' : 'REFUSÉ'));
     return $autorise;
 }
+
+
 
 
 /**

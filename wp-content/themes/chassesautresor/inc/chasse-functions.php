@@ -55,24 +55,18 @@ function chasse_get_champs($chasse_id)
         // Lecture directe des dates pour éviter un éventuel cache ACF
         'date_debut' => (function () use ($chasse_id) {
             $val = get_field('chasse_infos_date_debut', $chasse_id);
-            error_log("🔍 chasse {$chasse_id} get_field('date_debut') => " . var_export($val, true));
             if (!$val) {
                 $meta = get_post_meta($chasse_id, 'chasse_infos_date_debut', true);
-                error_log("📦 chasse {$chasse_id} get_post_meta('date_debut') => " . var_export($meta, true));
                 $val = $meta;
             }
-            error_log("✅ chasse {$chasse_id} valeur finale date_debut => " . var_export($val, true));
             return $val;
         })(),
         'date_fin' => (function () use ($chasse_id) {
             $val = get_field('chasse_infos_date_fin', $chasse_id);
-            error_log("🔍 chasse {$chasse_id} get_field('date_fin') => " . var_export($val, true));
             if (!$val) {
                 $meta = get_post_meta($chasse_id, 'chasse_infos_date_fin', true);
-                error_log("📦 chasse {$chasse_id} get_post_meta('date_fin') => " . var_export($meta, true));
                 $val = $meta;
             }
-            error_log("✅ chasse {$chasse_id} valeur finale date_fin => " . var_export($val, true));
             return $val;
         })(),
         'illimitee' => get_field('chasse_infos_duree_illimitee', $chasse_id) ?? false,
@@ -131,13 +125,9 @@ function verifier_souscription_chasse($user_id, $enigme_id)
     $meta_key = "total_joueurs_souscription_chasse_{$chasse_id}";
     $total_souscriptions = get_post_meta($chasse_id, $meta_key, true) ?: 0;
     update_post_meta($chasse_id, $meta_key, $total_souscriptions + 1);
-    error_log("✅ Nouvelle valeur souscription chasse {$chasse_id} : " . get_post_meta($chasse_id, $meta_key, true));
-
-
-    error_log("✅ Nouvelle souscription à la chasse ID {$chasse_id} par l'utilisateur ID {$user_id}");
 }
 /**
- * Vérifie si un utilisateur est déjà engagé dans une chasse.
+ * Vérifie si un utilisateur est engagé dans une chasse.
  *
  * @param int $user_id
  * @param int $chasse_id
@@ -145,9 +135,18 @@ function verifier_souscription_chasse($user_id, $enigme_id)
  */
 function utilisateur_est_engage_dans_chasse(int $user_id, int $chasse_id): bool
 {
+    global $wpdb;
     if (!$user_id || !$chasse_id) return false;
-    return (bool) get_user_meta($user_id, "souscription_chasse_{$chasse_id}", true);
+
+    $table = $wpdb->prefix . 'engagements';
+
+    return (bool) $wpdb->get_var($wpdb->prepare(
+        "SELECT 1 FROM $table WHERE user_id = %d AND chasse_id = %d AND enigme_id IS NULL LIMIT 1",
+        $user_id,
+        $chasse_id
+    ));
 }
+
 
 
 /**
@@ -398,36 +397,53 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
     $date_debut = get_field('chasse_infos_date_debut', $chasse_id);
     $date_fin   = get_field('chasse_infos_date_fin', $chasse_id);
 
+    $type = '';
+
     // Priorité : utilisateur non connecté -> bouton d'identification
     if (!$user_id) {
         return [
             'cta_html'    => '<a href="' . esc_url(site_url('/mon-compte')) . '" class="bouton-cta">' .
-                             "S'identifier" . '</a>',
+                "S'identifier" . '</a>',
             'cta_message' => 'Vous devez être identifié pour participer à cette chasse',
+            'type'        => 'connexion',
         ];
     }
 
     $is_admin   = current_user_can('administrator');
     $is_associe = utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
+    $is_engage = utilisateur_est_engage_dans_chasse($user_id, $chasse_id);
+
 
     // 🔒 Aucun bouton d'action pour les administrateurs ou organisateurs associés.
     if ($is_admin || $is_associe) {
         return [
             'cta_html'    => '',
             'cta_message' => '',
+            'type'        => '',
         ];
     }
 
+    if ($is_engage) {
+        return [
+            'cta_html'    => '', // plus de bouton
+            'cta_message' => '', // plus de message
+            'type'        => 'engage',
+        ];
+    }
+
+
     if ($validation !== 'valide') {
-        return ['cta_html' => '', 'cta_message' => ''];
+        return ['cta_html' => '', 'cta_message' => '', 'type' => ''];
     }
 
     $html    = '';
     $message = '';
+    $type    = '';
     $points_utilisateur = $user_id ? get_user_points($user_id) : 0;
 
     if ($statut === 'a_venir') {
         $html = '<button class="bouton-cta" disabled>Indisponible</button>';
+        $type = 'indisponible';
         if ($date_debut) {
             $ts = strtotime($date_debut);
             $message = 'Chasse disponible à partir du ' . date_i18n('d/m/Y \à H:i', $ts);
@@ -437,20 +453,32 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
     } elseif ($statut === 'en_cours' || $statut === 'payante') {
         if ($cout > 0) {
             if ($points_utilisateur >= $cout) {
-                $html    = '<a href="' . esc_url($permalink) . '" class="bouton-cta">Participer (' . $cout . ' points)</a>';
+                $html  = '<form method="post" action="' . esc_url(site_url('/traitement-engagement')) . '" class="cta-chasse-form">';
+                $html .= '<input type="hidden" name="chasse_id" value="' . esc_attr($chasse_id) . '">';
+                $html .= wp_nonce_field('engager_chasse_' . $chasse_id, 'engager_chasse_nonce', true, false);
+                $html .= '<button type="submit" class="bouton-cta">Participer (' . $cout . ' points)</button>';
+                $html .= '</form>';
                 $message = "L'accès à cette chasse coûte <strong>{$cout} points</strong>";
+                $type    = 'engager';
             } else {
                 $html    = '<button class="bouton-cta" disabled>Points insuffisants (' . $cout . ' points)</button>';
                 $manque  = max(0, $cout - $points_utilisateur);
                 $message = 'Il vous manque <strong>' . $manque . ' points</strong> pour participer à cette chasse. ';
                 $message .= '<a href="' . esc_url(home_url('/boutique')) . '">Acheter des points</a>';
+                $type    = 'points_insuffisants';
             }
         } else {
-            $html    = '<a href="' . esc_url($permalink) . '" class="bouton-cta">Participer</a>';
+            $html  = '<form method="post" action="' . esc_url(site_url('/traitement-engagement')) . '" class="cta-chasse-form">';
+            $html .= '<input type="hidden" name="chasse_id" value="' . esc_attr($chasse_id) . '">';
+            $html .= wp_nonce_field('engager_chasse_' . $chasse_id, 'engager_chasse_nonce', true, false);
+            $html .= '<button type="submit" class="bouton-cta">Participer</button>';
+            $html .= '</form>';
             $message = 'Accès gratuit à cette chasse';
+            $type    = 'engager';
         }
     } elseif ($statut === 'termine') {
         $html = '<a href="' . esc_url($permalink) . '" class="bouton-cta">Voir</a>';
+        $type = 'voir';
         if ($date_fin) {
             $message = 'Cette chasse est terminée depuis le ' . date_i18n('d/m/Y', strtotime($date_fin));
         } else {
@@ -461,6 +489,7 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
     return [
         'cta_html'    => $html,
         'cta_message' => $message,
+        'type'        => $type,
     ];
 }
 
@@ -476,20 +505,63 @@ function compter_joueurs_engages_chasse(int $chasse_id): int
         return 0;
     }
 
-    $enigmes = recuperer_enigmes_associees($chasse_id);
-    if (empty($enigmes)) {
-        return 0;
-    }
-
     global $wpdb;
     $table = $wpdb->prefix . 'engagements';
-    $placeholders = implode(',', array_fill(0, count($enigmes), '%d'));
+
     $query = $wpdb->prepare(
-        "SELECT COUNT(DISTINCT user_id) FROM $table WHERE enigme_id IN ($placeholders)",
-        ...$enigmes
+        "SELECT COUNT(DISTINCT user_id)
+         FROM $table
+         WHERE chasse_id = %d",
+        $chasse_id
     );
 
     return (int) $wpdb->get_var($query);
+}
+
+
+/**
+ * Enregistre un engagement à une chasse pour un utilisateur.
+ *
+ * @param int $user_id
+ * @param int $chasse_id
+ * @return bool true si un enregistrement a été effectué, false sinon.
+ */
+function enregistrer_engagement_chasse(int $user_id, int $chasse_id): bool
+{
+    global $wpdb;
+
+    if (!$user_id || !$chasse_id) {
+        return false;
+    }
+
+    if (current_user_can('administrator') || utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
+        return false;
+    }
+
+    $table = $wpdb->prefix . 'engagements';
+
+    $exists = $wpdb->get_var($wpdb->prepare(
+        "SELECT 1 FROM $table WHERE user_id = %d AND chasse_id = %d AND enigme_id IS NULL LIMIT 1",
+        $user_id,
+        $chasse_id
+    ));
+
+    if ($exists) {
+        return false;
+    }
+
+    $inserted = $wpdb->insert(
+        $table,
+        [
+            'user_id'         => $user_id,
+            'chasse_id'       => $chasse_id,
+            'enigme_id'       => null,
+            'date_engagement' => current_time('mysql', 1),
+        ],
+        ['%d', '%d', '%s', '%s']
+    );
+
+    return (bool) $inserted;
 }
 
 /**
@@ -794,6 +866,7 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id): array
         'lot_html'          => $lot_html,
         'cta_html'          => $cta_html,
         'cta_message'       => $cta_message,
+        'cta_type'         => $cta_data['type'] ?? '',
         'footer_html'       => $footer_html,
     ];
 }

@@ -19,6 +19,7 @@ verifier_ou_mettre_a_jour_cache_complet($chasse_id);
 
 $edition_active     = utilisateur_peut_modifier_post($chasse_id);
 $user_id            = get_current_user_id();
+$est_orga_associe   = utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
 $points_utilisateur = get_user_points($user_id);
 
 // Champs principaux
@@ -74,6 +75,7 @@ $statut_validation = get_field('chasse_cache_statut_validation', $chasse_id);
 $nb_joueurs = 0;
 
 get_header();
+error_log("🧪 test organisateur_associe : " . ($est_orga_associe ? 'OUI' : 'NON'));
 
 $can_validate = peut_valider_chasse($chasse_id, $user_id);
 ?>
@@ -144,11 +146,15 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
     <!-- 🎯 Appel à l’action principal -->
     <?php
     $cta_data = generer_cta_chasse($chasse_id, $user_id);
+
+    if (($cta_data['type'] ?? '') !== 'engage') :
     ?>
-    <div class="cta-chasse-row">
-      <div class="cta-action"><?php echo $cta_data['cta_html']; ?></div>
-      <div class="cta-message" aria-live="polite"><?php echo $cta_data['cta_message']; ?></div>
-    </div>
+      <div class="cta-chasse-row">
+        <div class="cta-action"><?= $cta_data['cta_html']; ?></div>
+        <div class="cta-message" aria-live="polite"><?= $cta_data['cta_message']; ?></div>
+      </div>
+    <?php endif; ?>
+
 
     <!-- 🧩 Liste des énigmes -->
     <section class="chasse-enigmes-wrapper" id="chasse-enigmes-wrapper">
@@ -192,7 +198,8 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
       <div class="chasse-enigmes-liste">
         <?php
         get_template_part('template-parts/enigme/chasse-partial-boucle-enigmes', null, [
-          'chasse_id' => $chasse_id
+          'chasse_id'       => $chasse_id,
+          'est_orga_associe'=> $est_orga_associe,
         ]);
         ?>
       </div>
