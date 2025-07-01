@@ -443,7 +443,11 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
     } elseif ($statut === 'en_cours' || $statut === 'payante') {
         if ($cout > 0) {
             if ($points_utilisateur >= $cout) {
-                $html    = '<a href="' . esc_url($permalink) . '" class="bouton-cta">Participer (' . $cout . ' points)</a>';
+                $html  = '<form method="post" action="' . esc_url(site_url('/traitement-engagement')) . '" class="cta-chasse-form">';
+                $html .= '<input type="hidden" name="chasse_id" value="' . esc_attr($chasse_id) . '">';
+                $html .= wp_nonce_field('engager_chasse_' . $chasse_id, 'engager_chasse_nonce', true, false);
+                $html .= '<button type="submit" class="bouton-cta">Participer (' . $cout . ' points)</button>';
+                $html .= '</form>';
                 $message = "L'accès à cette chasse coûte <strong>{$cout} points</strong>";
                 $type    = 'engager';
             } else {
@@ -454,7 +458,11 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
                 $type    = 'points_insuffisants';
             }
         } else {
-            $html    = '<a href="' . esc_url($permalink) . '" class="bouton-cta">Participer</a>';
+            $html  = '<form method="post" action="' . esc_url(site_url('/traitement-engagement')) . '" class="cta-chasse-form">';
+            $html .= '<input type="hidden" name="chasse_id" value="' . esc_attr($chasse_id) . '">';
+            $html .= wp_nonce_field('engager_chasse_' . $chasse_id, 'engager_chasse_nonce', true, false);
+            $html .= '<button type="submit" class="bouton-cta">Participer</button>';
+            $html .= '</form>';
             $message = 'Accès gratuit à cette chasse';
             $type    = 'engager';
         }
