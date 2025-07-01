@@ -223,6 +223,8 @@ span.champ-obligatoire {
 
   --color-gris-3:             #adadad;   /* ⚪ Gris neutre n°3 */
   --color-text-fond-clair:    #1c1c1c;    /* noir clair */
+  --color-gris-carte: #2A2F40;  /* 🧩 Fond de carte énigme : gris bleuté doux */
+
 }
 
 
