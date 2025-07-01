@@ -144,6 +144,9 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
     <!-- 🎯 Appel à l’action principal -->
     <?php
     $cta_data = generer_cta_chasse($chasse_id, $user_id);
+    if (($cta_data['type'] ?? '') === 'engager') {
+      enregistrer_engagement_chasse($user_id, $chasse_id);
+    }
     ?>
     <div class="cta-chasse-row">
       <div class="cta-action"><?php echo $cta_data['cta_html']; ?></div>
