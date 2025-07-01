@@ -156,7 +156,9 @@ a:hover {
     color: unset;
     opacity:0.98;
 }
-
+#content {
+  margin-bottom: 2rem;
+}
 
 /* ========== 🎨 ÉLÉMENTS HTML PERSONNALISES ========== */
 
