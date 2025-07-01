@@ -870,3 +870,62 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id): array
         'footer_html'       => $footer_html,
     ];
 }
+
+/**
+ * Prépare les informations complètes d'affichage pour une chasse.
+ * Cette fonction centralise tous les appels ACF et fonctions métiers
+ * afin d'éviter les appels répétés lors du rendu d'une page.
+ *
+ * @param int      $chasse_id ID de la chasse.
+ * @param int|null $user_id   Utilisateur courant pour le CTA. Par défaut get_current_user_id().
+ * @return array
+ */
+function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): array
+{
+    static $memo = [];
+
+    $user_id = $user_id ?? get_current_user_id();
+    $cache_key = $chasse_id . '-' . $user_id;
+
+    if (isset($memo[$cache_key])) {
+        return $memo[$cache_key];
+    }
+
+    if (get_post_type($chasse_id) !== 'chasse') {
+        return [];
+    }
+
+    $champs = chasse_get_champs($chasse_id);
+
+    $description   = get_field('chasse_principale_description', $chasse_id);
+    $texte_complet = wp_strip_all_tags($description);
+    $extrait       = wp_trim_words($texte_complet, 60, '...');
+
+    $image_raw = get_field('chasse_principale_image', $chasse_id);
+    $image_id  = is_array($image_raw) ? ($image_raw['ID'] ?? null) : $image_raw;
+    $image_url = $image_id ? wp_get_attachment_image_src($image_id, 'large')[0] : null;
+
+    $liens = get_field('chasse_principale_liens', $chasse_id);
+    $liens = is_array($liens) ? $liens : [];
+
+    $enigmes = recuperer_enigmes_associees($chasse_id);
+
+    $memo[$cache_key] = [
+        'champs'            => $champs,
+        'description'       => $description,
+        'texte_complet'     => $texte_complet,
+        'extrait'           => $extrait,
+        'image_raw'         => $image_raw,
+        'image_id'          => $image_id,
+        'image_url'         => $image_url,
+        'liens'             => $liens,
+        'enigmes_associees' => $enigmes,
+        'total_enigmes'     => count($enigmes),
+        'cta_data'          => generer_cta_chasse($chasse_id, $user_id),
+        'nb_joueurs'        => compter_joueurs_engages_chasse($chasse_id),
+        'statut'            => get_field('chasse_cache_statut', $chasse_id) ?: 'revision',
+        'statut_validation' => get_field('chasse_cache_statut_validation', $chasse_id),
+    ];
+
+    return $memo[$cache_key];
+}

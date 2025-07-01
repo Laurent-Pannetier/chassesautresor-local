@@ -10,9 +10,12 @@ $titre = get_the_title($chasse_id);
 $champTitreParDefaut = 'nouvelle chasse';
 $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut);
 
+// Récupération centralisée des informations
+$infos_chasse = $args['infos_chasse'] ?? preparer_infos_affichage_chasse($chasse_id);
+
 
 // Champs principaux (avec fallback direct en meta)
-$champs = chasse_get_champs($chasse_id);
+$champs = $infos_chasse['champs'];
 $lot               = $champs['lot'];
 $titre_recompense  = $champs['titre_recompense'];
 $valeur_recompense = $champs['valeur_recompense'];
@@ -27,19 +30,19 @@ $date_decouverte      = $champs['date_decouverte'];
 $current_stored_statut = $champs['current_stored_statut'];
 
 // Données supplémentaires
-$description = get_field('chasse_principale_description', $chasse_id);
-$texte_complet = wp_strip_all_tags($description);
-$extrait = wp_trim_words($texte_complet, 60, '...');
-$est_tronque = ($extrait !== $texte_complet);
+$description   = $infos_chasse['description'];
+$texte_complet = $infos_chasse['texte_complet'];
+$extrait       = $infos_chasse['extrait'];
+$est_tronque   = ($extrait !== $texte_complet);
 
-$image_raw = get_field('chasse_principale_image', $chasse_id);
-$image_id = is_array($image_raw) ? ($image_raw['ID'] ?? null) : $image_raw;
-$image_url = $image_id ? wp_get_attachment_image_src($image_id, 'large')[0] : null;
+$image_raw = $infos_chasse['image_raw'];
+$image_id  = $infos_chasse['image_id'];
+$image_url = $infos_chasse['image_url'];
 
 // Enigmes
-$enigmes_associees = recuperer_enigmes_associees($chasse_id);
-$total_enigmes = count($enigmes_associees);
-$nb_joueurs = 0;
+$enigmes_associees = $infos_chasse['enigmes_associees'];
+$total_enigmes     = $infos_chasse['total_enigmes'];
+$nb_joueurs        = $infos_chasse['nb_joueurs'];
 
 // Dates
 $date_debut_formatee = formater_date($date_debut);
@@ -79,8 +82,8 @@ if ($edition_active && !$est_complet) {
 
   <div class="chasse-fiche-container flex-row">
     <?php
-    $statut = get_field('chasse_cache_statut', $chasse_id) ?? 'revision';
-    $statut_validation = get_field('chasse_cache_statut_validation', $chasse_id);
+    $statut = $infos_chasse['statut'];
+    $statut_validation = $infos_chasse['statut_validation'];
     $statut_label = ucfirst(str_replace('_', ' ', $statut));
 
     if ($statut === 'revision') {
@@ -224,7 +227,8 @@ if ($edition_active && !$est_complet) {
 // Inclure le panneau si édition active
 if ($edition_active) {
   get_template_part('template-parts/chasse/chasse-edition-main', null, [
-    'chasse_id' => $chasse_id
+    'chasse_id'   => $chasse_id,
+    'infos_chasse' => $infos_chasse
   ]);
 }
 ?>

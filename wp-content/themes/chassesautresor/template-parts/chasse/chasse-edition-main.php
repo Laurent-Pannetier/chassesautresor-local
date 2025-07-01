@@ -15,15 +15,17 @@ if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
 $peut_modifier = utilisateur_peut_voir_panneau($chasse_id);
 $peut_editer   = utilisateur_peut_editer_champs($chasse_id);
 
-$image = get_field('chasse_principale_image', $chasse_id);
-$description = get_field('chasse_principale_description', $chasse_id);
+$infos_chasse = $args['infos_chasse'] ?? preparer_infos_affichage_chasse($chasse_id);
+
+$image = $infos_chasse['image_raw'];
+$description = $infos_chasse['description'];
 $titre = get_the_title($chasse_id);
-$liens = get_field('chasse_principale_liens', $chasse_id);
-$recompense = get_field('chasse_infos_recompense_texte', $chasse_id);
-$valeur     = get_field('chasse_infos_recompense_valeur', $chasse_id);
-$cout       = get_field('chasse_infos_cout_points', $chasse_id);
-$date_debut = get_field('chasse_infos_date_debut', $chasse_id);
-$date_fin   = get_field('chasse_infos_date_fin', $chasse_id);
+$liens = $infos_chasse['liens'];
+$recompense = $infos_chasse['champs']['lot'];
+$valeur     = $infos_chasse['champs']['valeur_recompense'];
+$cout       = $infos_chasse['champs']['cout_points'];
+$date_debut = $infos_chasse['champs']['date_debut'];
+$date_fin   = $infos_chasse['champs']['date_fin'];
 
 // 🎯 Conversion des dates pour les champs <input>
 $date_debut_obj = convertir_en_datetime($date_debut);
@@ -31,8 +33,8 @@ $date_debut_iso = $date_debut_obj ? $date_debut_obj->format('Y-m-d\TH:i') : '';
 
 $date_fin_obj = convertir_en_datetime($date_fin);
 $date_fin_iso = $date_fin_obj ? $date_fin_obj->format('Y-m-d') : '';
-$illimitee  = get_field('chasse_infos_duree_illimitee', $chasse_id);
-$nb_max     = get_field('chasse_infos_nb_max_gagants', $chasse_id) ?: 1;
+$illimitee  = $infos_chasse['champs']['illimitee'];
+$nb_max     = $infos_chasse['champs']['nb_max'] ?: 1;
 
 $champTitreParDefaut = 'nouvelle chasse'; // À adapter si besoin
 $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut);

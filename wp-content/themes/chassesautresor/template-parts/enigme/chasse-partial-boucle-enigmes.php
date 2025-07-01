@@ -10,6 +10,8 @@ defined('ABSPATH') || exit;
 $chasse_id = $args['chasse_id'] ?? null;
 if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') return;
 
+$infos_chasse = $args['infos_chasse'] ?? preparer_infos_affichage_chasse($chasse_id);
+
 $utilisateur_id = get_current_user_id();
 
 // 🔒 Vérification d'accès à la chasse
@@ -130,8 +132,8 @@ foreach ($posts as $p) {
       $highlight_pulse = false;
       if (!$has_enigmes) {
         $wp_status         = get_post_status($chasse_id);
-        $statut_metier     = get_field('chasse_cache_statut', $chasse_id);
-        $statut_validation = get_field('chasse_cache_statut_validation', $chasse_id);
+        $statut_metier     = $infos_chasse['statut'];
+        $statut_validation = $infos_chasse['statut_validation'];
 
         if (
           $wp_status === 'pending' &&

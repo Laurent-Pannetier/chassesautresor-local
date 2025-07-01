@@ -22,8 +22,11 @@ $user_id            = get_current_user_id();
 $est_orga_associe   = utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
 $points_utilisateur = get_user_points($user_id);
 
+// Récupération centralisée des infos
+$infos_chasse = preparer_infos_affichage_chasse($chasse_id, $user_id);
+
 // Champs principaux
-$champs = chasse_get_champs($chasse_id);
+$champs = $infos_chasse['champs'];
 $lot = $champs['lot'];
 $titre_recompense = $champs['titre_recompense'];
 $valeur_recompense = $champs['valeur_recompense'];
@@ -50,15 +53,15 @@ $organisateur_nom = $organisateur_id ? get_the_title($organisateur_id) : get_the
 
 
 // Contenu
-$description = get_field('chasse_principale_description', $chasse_id);
-$extrait = wp_trim_words(wp_strip_all_tags($description), 30, '...');
+$description = $infos_chasse['description'];
+$extrait = wp_trim_words($infos_chasse['texte_complet'], 30, '...');
 
-$image_raw = get_field('chasse_principale_image', $chasse_id);
-$image_id = is_array($image_raw) ? ($image_raw['ID'] ?? null) : $image_raw;
-$image_url = $image_id ? wp_get_attachment_image_src($image_id, 'large')[0] : null;
+$image_raw = $infos_chasse['image_raw'];
+$image_id  = $infos_chasse['image_id'];
+$image_url = $infos_chasse['image_url'];
 
-$enigmes_associees = recuperer_enigmes_associees($chasse_id);
-$total_enigmes = count($enigmes_associees);
+$enigmes_associees = $infos_chasse['enigmes_associees'];
+$total_enigmes     = $infos_chasse['total_enigmes'];
 $enigmes_resolues = compter_enigmes_resolues($chasse_id, $user_id);
 $peut_ajouter_enigme = utilisateur_peut_ajouter_enigme($chasse_id);
 $has_incomplete_enigme = false;
@@ -70,9 +73,9 @@ foreach ($enigmes_associees as $eid) {
   }
 }
 
-$statut = get_field('champs_caches')['chasse_cache_statut'] ?? 'revision';
-$statut_validation = get_field('chasse_cache_statut_validation', $chasse_id);
-$nb_joueurs = 0;
+$statut = $infos_chasse['statut'];
+$statut_validation = $infos_chasse['statut_validation'];
+$nb_joueurs = $infos_chasse['nb_joueurs'];
 
 get_header();
 error_log("🧪 test organisateur_associe : " . ($est_orga_associe ? 'OUI' : 'NON'));
@@ -124,7 +127,8 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
     <!-- 📦 Fiche complète (images + méta + actions) -->
     <?php
     get_template_part('template-parts/chasse/chasse-affichage-complet', null, [
-      'chasse_id' => $chasse_id
+      'chasse_id'   => $chasse_id,
+      'infos_chasse'=> $infos_chasse,
     ]);
     ?>
 
@@ -145,7 +149,7 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
 
     <!-- 🎯 Appel à l’action principal -->
     <?php
-    $cta_data = generer_cta_chasse($chasse_id, $user_id);
+    $cta_data = $infos_chasse['cta_data'];
 
     if (($cta_data['type'] ?? '') !== 'engage') :
     ?>
@@ -168,8 +172,7 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
         <?php endif; ?>
 
         <?php
-        $liens = get_field('chasse_principale_liens', $chasse_id);
-        $liens = is_array($liens) ? $liens : [];
+        $liens = $infos_chasse['liens'];
         $vide  = empty($liens);
         ?>
         <div class="champ-chasse champ-liens champ-fiche-publication <?= $vide ? 'champ-vide' : 'champ-rempli'; ?>"
@@ -200,6 +203,7 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
         get_template_part('template-parts/enigme/chasse-partial-boucle-enigmes', null, [
           'chasse_id'       => $chasse_id,
           'est_orga_associe'=> $est_orga_associe,
+          'infos_chasse'    => $infos_chasse,
         ]);
         ?>
       </div>
