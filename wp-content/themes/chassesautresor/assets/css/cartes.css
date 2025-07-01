@@ -46,7 +46,7 @@
 /* ========== 🎴 Cartes d\'énigme et de chasse ========== */
 .carte-enigme,
 .carte-chasse {
-  background: var(--color-background);
+  background: var(--color-text-primary);
   color: var(--color-text-primary);
   border: 1px solid var(--color-secondary);
   border-radius: 8px;
@@ -54,6 +54,8 @@
   overflow: hidden;
   transition: transform 0.2s, box-shadow 0.2s;
 }
+
+
 
 .carte-enigme:hover,
 .carte-chasse:hover {
@@ -72,6 +74,14 @@
   flex-direction: column;
   padding: 0;
   height: 100%;
+  border: 1px solid var(--color-gris-3);
+}
+.etat-bloquee_chasse .carte-core,
+.etat-bloquee_date .carte-core,
+.etat-bloquee_pre_requis .carte-core,
+.etat-invalidee .carte-core,
+.etat-cache_invalide .carte-core {
+  background-color: var(--color-gris-carte);
 }
 
 .carte-enigme-image {

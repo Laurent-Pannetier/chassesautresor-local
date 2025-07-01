@@ -1,46 +1,29 @@
 <?php
+
+/**
+ * Partial : chasse-partial-boucle-enigmes.php
+ * Affiche la grille des énigmes d'une chasse (carte par carte).
+ */
+
 defined('ABSPATH') || exit;
 
-// error_log("🔍 [BLOC ENIGMES] Début exécution partial chasse-partial-boucle-enigmes.php");
-
 $chasse_id = $args['chasse_id'] ?? null;
-if (!$chasse_id) {
-  // error_log("❌ [BLOC ENIGMES] Aucun ID de chasse fourni.");
-  return;
-}
-
-$post_type = get_post_type($chasse_id);
-// error_log("ℹ️ [BLOC ENIGMES] chasse_id = $chasse_id | post_type = $post_type");
-
-if ($post_type !== 'chasse') {
-  // error_log("❌ [BLOC ENIGMES] Le post n'est pas de type 'chasse'.");
-  return;
-}
+if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') return;
 
 $utilisateur_id = get_current_user_id();
-// error_log("👤 [BLOC ENIGMES] Utilisateur courant ID = $utilisateur_id");
 
-if (!chasse_est_visible_pour_utilisateur($chasse_id, $utilisateur_id)) {
-  // error_log("❌ [BLOC ENIGMES] chasse_est_visible_pour_utilisateur = false → sortie");
-  return;
-}
-// error_log("✅ [BLOC ENIGMES] chasse_est_visible_pour_utilisateur = true");
+// Vérification d'accès global à la page chasse
+if (!chasse_est_visible_pour_utilisateur($chasse_id, $utilisateur_id)) return;
 
-// 🔒 Vérifie autorisation à voir la boucle d'énigmes
+// Autorisation à voir la boucle d'énigmes
 $autorise_boucle = (
   user_can($utilisateur_id, 'manage_options') ||
   utilisateur_est_organisateur_associe_a_chasse($utilisateur_id, $chasse_id) ||
   utilisateur_est_engage_dans_chasse($utilisateur_id, $chasse_id)
 );
-// error_log("🔐 [BLOC ENIGMES] autorisé à voir boucle ? " . ($autorise_boucle ? 'OUI' : 'NON'));
+if (!$autorise_boucle) return;
 
-if (!$autorise_boucle) {
-  // error_log("❌ [BLOC ENIGMES] utilisateur non autorisé à voir la boucle → sortie");
-  return;
-}
-// error_log("✅ [BLOC ENIGMES] utilisateur autorisé à voir la boucle");
-
-// 🔎 Récupération des énigmes associées à la chasse
+// Récupération des énigmes liées
 $posts = get_posts([
   'post_type'      => 'enigme',
   'posts_per_page' => -1,
@@ -54,41 +37,34 @@ $posts = get_posts([
   ]]
 ]);
 
-// error_log("📦 [BLOC ENIGMES] Nombre d'énigmes récupérées : " . count($posts));
-
-// 💡 Optionnel : afficher les ID récupérés
-// foreach ($posts as $post) {
-//     error_log("🧩 [ENIGME] ID = {$post->ID} | statut = " . get_post_status($post));
-// }
-
 $posts_visibles = $posts;
 $has_enigmes = !empty($posts_visibles);
-// error_log("👁️ [BLOC ENIGMES] posts_visibles = " . ($has_enigmes ? 'OUI' : 'NON'));
 
-// 🟠 Détection des énigmes incomplètes
+// Présence d'énigmes incomplètes
 $has_incomplete = false;
 foreach ($posts as $p) {
   verifier_ou_mettre_a_jour_cache_complet($p->ID);
-  $complet = (bool) get_field('enigme_cache_complet', $p->ID);
-  // error_log("📋 [ENIGME #{$p->ID}] complet ? " . ($complet ? 'OUI' : 'NON'));
-  if (!$complet) {
+  if (!get_field('enigme_cache_complet', $p->ID)) {
     $has_incomplete = true;
     break;
   }
 }
-// error_log("✅ [BLOC ENIGMES] has_incomplete = " . ($has_incomplete ? 'OUI' : 'NON'));
-
 ?>
 
 <div class="bloc-enigmes-chasse">
   <div class="grille-3">
-    <?php foreach ($posts_visibles as $post): ?>
-      <?php
+    <?php foreach ($posts_visibles as $post):
       $enigme_id = $post->ID;
       $titre = get_the_title($enigme_id);
-      $etat_systeme = enigme_get_etat_systeme($enigme_id);
-      $statut_utilisateur = enigme_get_statut_utilisateur($enigme_id, $utilisateur_id);
-      $cta = get_cta_enigme($enigme_id);
+      $cta = get_cta_enigme($enigme_id, $utilisateur_id);
+      $etat_systeme = $cta['etat_systeme'] ?? 'invalide';
+      $type_cta = $cta['type'] ?? 'inconnu';
+
+      // Appliquer classes CSS contextuelles
+      $classe_etat = 'etat-' . sanitize_html_class($etat_systeme);
+      $classe_cta = $cta['classe_css'] ?? '';
+      $classes_carte = trim("carte carte-enigme $classe_completion $classe_etat $classe_cta");
+
 
       $est_orga = est_organisateur();
       $statut_chasse = get_post_status($chasse_id);
@@ -97,28 +73,49 @@ foreach ($posts as $p) {
         utilisateur_est_organisateur_associe_a_chasse($utilisateur_id, $chasse_id) &&
         $statut_chasse !== 'publish' &&
         $statut_enigme !== 'publish';
+
       $classe_completion = '';
       if ($voir_bordure) {
         verifier_ou_mettre_a_jour_cache_complet($enigme_id);
         $complet = (bool) get_field('enigme_cache_complet', $enigme_id);
         $classe_completion = $complet ? 'carte-complete' : 'carte-incomplete';
       }
-      ?>
-      <article class="carte carte-enigme <?= esc_attr($classe_completion); ?>">
+    ?>
+      <article class="<?= esc_attr($classes_carte); ?>">
         <div class="carte-core">
           <div class="carte-enigme-image">
-            <?php if (utilisateur_peut_voir_enigme($enigme_id, $utilisateur_id)) : ?>
+            <?php if ($type_cta === 'voir') : ?>
               <?php afficher_picture_vignette_enigme($enigme_id, 'Vignette de l’énigme', ['medium']); ?>
             <?php else : ?>
               <div class="enigme-placeholder">
-                <img src="<?= esc_url(get_stylesheet_directory_uri() . '/assets/images/carte-surchargee.jpg'); ?>" alt="Énigme verrouillée">
+                <?php
+                $svg_map = [
+                  'bloquee'    => 'hourglass.svg',
+                  'invalide'   => 'warning.svg',
+                  'engager'    => 'question.svg',
+                  'soumis'     => 'reply-mail.svg',
+                  'terminee'   => 'lock.svg',
+                  'connexion'  => 'lock.svg',
+                  'erreur'     => 'warning.svg',
+                ];
+                $svg = $svg_map[$type_cta] ?? 'question.svg';
+                $svg_path = get_stylesheet_directory() . '/assets/svg/' . $svg;
+                if (file_exists($svg_path)) {
+                  echo file_get_contents($svg_path);
+                } else {
+                  echo '<div class="svg-manquant">🕳</div>';
+                }
+                ?>
               </div>
             <?php endif; ?>
           </div>
-          <h3><?= esc_html($titre); ?></h3>
+
+          <?php if ($etat_systeme === 'accessible') : ?>
+            <h3><?= esc_html($titre); ?></h3>
+          <?php endif; ?>
         </div>
       </article>
-
+      
     <?php endforeach; ?>
 
     <?php
