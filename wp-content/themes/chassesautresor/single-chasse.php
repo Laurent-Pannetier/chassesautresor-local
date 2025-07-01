@@ -144,11 +144,15 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
     <!-- 🎯 Appel à l’action principal -->
     <?php
     $cta_data = generer_cta_chasse($chasse_id, $user_id);
+
+    if (($cta_data['type'] ?? '') !== 'engage') :
     ?>
-    <div class="cta-chasse-row">
-      <div class="cta-action"><?php echo $cta_data['cta_html']; ?></div>
-      <div class="cta-message" aria-live="polite"><?php echo $cta_data['cta_message']; ?></div>
-    </div>
+      <div class="cta-chasse-row">
+        <div class="cta-action"><?= $cta_data['cta_html']; ?></div>
+        <div class="cta-message" aria-live="polite"><?= $cta_data['cta_message']; ?></div>
+      </div>
+    <?php endif; ?>
+
 
     <!-- 🧩 Liste des énigmes -->
     <section class="chasse-enigmes-wrapper" id="chasse-enigmes-wrapper">

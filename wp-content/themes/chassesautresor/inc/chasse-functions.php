@@ -137,7 +137,7 @@ function verifier_souscription_chasse($user_id, $enigme_id)
     error_log("✅ Nouvelle souscription à la chasse ID {$chasse_id} par l'utilisateur ID {$user_id}");
 }
 /**
- * Vérifie si un utilisateur est déjà engagé dans une chasse.
+ * Vérifie si un utilisateur est engagé dans une chasse.
  *
  * @param int $user_id
  * @param int $chasse_id
@@ -145,9 +145,18 @@ function verifier_souscription_chasse($user_id, $enigme_id)
  */
 function utilisateur_est_engage_dans_chasse(int $user_id, int $chasse_id): bool
 {
+    global $wpdb;
     if (!$user_id || !$chasse_id) return false;
-    return (bool) get_user_meta($user_id, "souscription_chasse_{$chasse_id}", true);
+
+    $table = $wpdb->prefix . 'engagements';
+
+    return (bool) $wpdb->get_var($wpdb->prepare(
+        "SELECT 1 FROM $table WHERE user_id = %d AND chasse_id = %d AND enigme_id IS NULL LIMIT 1",
+        $user_id,
+        $chasse_id
+    ));
 }
+
 
 
 /**
@@ -404,7 +413,7 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
     if (!$user_id) {
         return [
             'cta_html'    => '<a href="' . esc_url(site_url('/mon-compte')) . '" class="bouton-cta">' .
-                             "S'identifier" . '</a>',
+                "S'identifier" . '</a>',
             'cta_message' => 'Vous devez être identifié pour participer à cette chasse',
             'type'        => 'connexion',
         ];
@@ -412,6 +421,8 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
 
     $is_admin   = current_user_can('administrator');
     $is_associe = utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
+    $is_engage = utilisateur_est_engage_dans_chasse($user_id, $chasse_id);
+
 
     // 🔒 Aucun bouton d'action pour les administrateurs ou organisateurs associés.
     if ($is_admin || $is_associe) {
@@ -421,6 +432,15 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
             'type'        => '',
         ];
     }
+
+    if ($is_engage) {
+        return [
+            'cta_html'    => '', // plus de bouton
+            'cta_message' => '', // plus de message
+            'type'        => 'engage',
+        ];
+    }
+
 
     if ($validation !== 'valide') {
         return ['cta_html' => '', 'cta_message' => '', 'type' => ''];
