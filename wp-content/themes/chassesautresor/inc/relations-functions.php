@@ -118,13 +118,17 @@ function utilisateur_est_organisateur_associe_a_chasse(int $user_id, int $chasse
   if (!$organisateur_id) return false;
 
   $utilisateurs = get_field('utilisateurs_associes', $organisateur_id);
+
   if (!is_array($utilisateurs)) return false;
 
   foreach ($utilisateurs as $user) {
     $id = is_object($user) ? $user->ID : (int) $user;
-    if ($id === $user_id) return true;
+    if ($id === $user_id) {
+      return true;
+    }
   }
 
+  error_log("❌ [orga_associe] user #$user_id NON lié à l’organisateur #$organisateur_id");
   return false;
 }
 

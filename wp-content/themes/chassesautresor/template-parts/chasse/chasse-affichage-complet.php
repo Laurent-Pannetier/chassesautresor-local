@@ -26,8 +26,6 @@ $nb_max            = $champs['nb_max'];
 $date_decouverte      = $champs['date_decouverte'];
 $current_stored_statut = $champs['current_stored_statut'];
 
-error_log('[chasse-affichage-complet] brut date_debut=' . var_export($date_debut, true) . ' date_fin=' . var_export($date_fin, true));
-
 // Données supplémentaires
 $description = get_field('chasse_principale_description', $chasse_id);
 $texte_complet = wp_strip_all_tags($description);
@@ -46,7 +44,6 @@ $nb_joueurs = 0;
 // Dates
 $date_debut_formatee = formater_date($date_debut);
 $date_fin_formatee = $illimitee ? 'Illimitée' : ($date_fin ? formater_date($date_fin) : 'Non spécifiée');
-error_log('[chasse-affichage-complet] formate date_debut=' . var_export($date_debut_formatee, true) . ' date_fin=' . var_export($date_fin_formatee, true));
 
 // Edition
 $edition_active = utilisateur_peut_modifier_post($chasse_id);

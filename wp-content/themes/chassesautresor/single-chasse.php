@@ -74,6 +74,7 @@ $statut_validation = get_field('chasse_cache_statut_validation', $chasse_id);
 $nb_joueurs = 0;
 
 get_header();
+error_log("🧪 test organisateur_associe : " . (utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id) ? 'OUI' : 'NON'));
 
 $can_validate = peut_valider_chasse($chasse_id, $user_id);
 ?>

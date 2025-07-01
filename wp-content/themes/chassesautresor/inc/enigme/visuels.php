@@ -205,8 +205,11 @@ function afficher_picture_vignette_enigme(int $enigme_id, string $alt = '', arra
     $image_id = (is_array($images) && !empty($images[0])) ? (int) $images[0] : null;
 
     if (!$image_id) {
-        $image_id = defined('ID_IMAGE_PLACEHOLDER_ENIGME') ? ID_IMAGE_PLACEHOLDER_ENIGME : 3925;
-        error_log("No image found for enigme_id: $enigme_id, using placeholder image_id: $image_id");
+        // Fallback SVG intégré en dur
+        echo '<div class="enigme-placeholder placeholder-svg">';
+        echo file_get_contents(get_stylesheet_directory() . '/assets/svg/creation-enigme.svg');
+        echo '</div>';
+        return;
     } else {
         error_log("Using image_id: $image_id for enigme_id: $enigme_id");
     }
@@ -299,20 +302,21 @@ function get_mapping_visuel_enigme(int $enigme_id): array
     $cta_data     = get_cta_enigme($enigme_id);
     $cta_type     = $cta_data['type'] ?? 'erreur';
 
+
     $cle = match (true) {
-        $cta_type === 'revoir'                        => 'revoir',
-        $cta_type === 'continuer'                     => 'continuer',
-        $cta_type === 'soumis'                        => 'soumis',
-        $cta_type === 'terminee'                      => 'terminee',
-        $cta_type === 'connexion'                     => 'connexion',
-        $etat_systeme === 'accessible' && $cta_type === 'voir'     => 'accessible_voir',
-        $etat_systeme === 'accessible' && $cta_type === 'engager'  => 'accessible_engager',
-        $etat_systeme === 'bloquee_date'              => 'bloquee_date',
-        $etat_systeme === 'bloquee_pre_requis'        => 'bloquee_pre_requis',
-        $etat_systeme === 'bloquee_chasse'            => 'bloquee_chasse',
-        $etat_systeme === 'invalide'                  => 'invalide',
-        $etat_systeme === 'cache_invalide'            => 'cache_invalide',
-        default                                       => 'erreur',
+        $cta_type === 'voir' => 'accessible_voir', // 👈 priorité absolue
+        $cta_type === 'revoir'                      => 'revoir',
+        $cta_type === 'continuer'                   => 'continuer',
+        $cta_type === 'soumis'                      => 'soumis',
+        $cta_type === 'terminee'                    => 'terminee',
+        $cta_type === 'connexion'                   => 'connexion',
+        $etat_systeme === 'accessible' && $cta_type === 'engager' => 'accessible_engager',
+        $etat_systeme === 'bloquee_date'            => 'bloquee_date',
+        $etat_systeme === 'bloquee_pre_requis'      => 'bloquee_pre_requis',
+        $etat_systeme === 'bloquee_chasse'          => 'bloquee_chasse',
+        $etat_systeme === 'invalide'                => 'invalide',
+        $etat_systeme === 'cache_invalide'          => 'cache_invalide',
+        default                                     => 'erreur',
     };
 
 
@@ -398,6 +402,15 @@ function get_mapping_visuel_enigme(int $enigme_id): array
         ],
     ];
 
+    $disponible_le = null;
+
+    if ($cle === 'bloquee_date') {
+        $timestamp = strtotime(get_field('enigme_acces_date', $enigme_id));
+        if ($timestamp) {
+            $disponible_le = date_i18n('d/m/Y', $timestamp);
+        }
+    }
+
     return [
         'cta'           => $cta_type,
         'etat_systeme'  => $etat_systeme,
@@ -405,5 +418,6 @@ function get_mapping_visuel_enigme(int $enigme_id): array
         'fallback_svg'  => $mapping[$cle]['fallback_svg'] ?? 'warning.svg',
         'filtre'        => $mapping[$cle]['filtre'] ?? null,
         'sens'          => $mapping[$cle]['sens'] ?? 'État inconnu',
+        'disponible_le' => $disponible_le,
     ];
 }

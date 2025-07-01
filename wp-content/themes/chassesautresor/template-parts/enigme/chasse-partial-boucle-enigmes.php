@@ -31,7 +31,7 @@ $posts = get_posts([
   'post_status'    => ['publish', 'pending', 'draft'],
   'meta_query'     => [[
     'key'     => 'enigme_chasse_associee',
-    'value'   => '"' . $chasse_id . '"',
+    'value'   => $chasse_id,     // 👈 pas de guillemets !
     'compare' => 'LIKE',
   ]]
 ]);
@@ -56,8 +56,8 @@ foreach ($posts as $p) {
       $enigme_id = $post->ID;
       $titre = get_the_title($enigme_id);
       $cta = get_cta_enigme($enigme_id, $utilisateur_id);
-      $etat_systeme = $cta['etat_systeme'] ?? 'invalide';
       $type_cta = $cta['type'] ?? 'inconnu';
+      $classe_cta = 'cta-' . sanitize_html_class($type_cta);
 
       // 🔍 Vérification bordure admin/orga
       $est_orga = est_organisateur();
@@ -75,10 +75,7 @@ foreach ($posts as $p) {
         $classe_completion = $complet ? 'carte-complete' : 'carte-incomplete';
       }
 
-      $classe_etat = 'etat-' . sanitize_html_class($etat_systeme);
-      $classe_cta = $cta['classe_css'] ?? '';
-      $classes_carte = trim("carte carte-enigme $classe_completion $classe_etat $classe_cta");
-
+      $classes_carte = trim("carte carte-enigme $classe_completion $classe_cta");
       $mapping_visuel = get_mapping_visuel_enigme($enigme_id);
     ?>
       <article class="<?= esc_attr($classes_carte); ?>">
@@ -100,19 +97,25 @@ foreach ($posts as $p) {
                 ?>
               </div>
             <?php endif; ?>
-
           </div>
 
-          <?php if ($etat_systeme === 'accessible') : ?>
+          <?php if ($mapping_visuel['image_reelle']) : ?>
             <h3><?= esc_html($titre); ?></h3>
-            <?php
-            $cta = get_cta_enigme($enigme_id, $utilisateur_id);
-            ?>
+          <?php endif; ?>
+
+          <?php error_log($mapping_visuel['disponible_le']); 
+          if (!empty($mapping_visuel['disponible_le'])) : ?>
+            <div class="infos-dispo">
+              <small class="infos-secondaires">Disponible le <?= esc_html($mapping_visuel['disponible_le']); ?></small>
+            </div>
+          <?php endif; ?>
+
+          <?php if (!in_array($cta['type'], ['bloquee', 'invalide', 'cache_invalide', 'erreur'])) : ?>
             <div class="carte-enigme-cta">
               <?php render_cta_enigme($cta, $enigme_id); ?>
             </div>
-
           <?php endif; ?>
+
         </div>
       </article>
     <?php endforeach; ?>

@@ -77,12 +77,26 @@
   border: 1px solid var(--color-gris-3);
   position: relative
 }
+
 .etat-bloquee_chasse .carte-core,
 .etat-bloquee_date .carte-core,
 .etat-bloquee_pre_requis .carte-core,
 .etat-invalidee .carte-core,
 .etat-cache_invalide .carte-core {
   background-color: var(--color-gris-carte);
+}
+
+.carte-enigme .carte-core svg {
+  color: var(--color-gris-3);
+}
+.carte-enigme .carte-core .enigme-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+.carte-enigme .carte-core .enigme-placeholder svg {
+  width: 60%;
 }
 
 .carte-enigme-image {
@@ -138,9 +152,11 @@
   padding: 1rem 2rem;
   flex: 1;
 }
+
 .carte-ligne__contenu .chasse-intro-extrait {
-  margin : 15px 0
+  margin: 15px 0
 }
+
 .carte-ligne__contenu h3 {
   margin: 0;
 }
@@ -157,11 +173,13 @@
   display: flex;
   gap: 1rem;
 }
-.carte-ligne__footer .footer-icones svg{
+
+.carte-ligne__footer .footer-icones svg {
   color: var(--color-gris-3);
   width: 20px;
   height: 20px;
 }
+
 .carte-ligne__footer .liste-liens-publics {
   gap: 0.5rem;
 }

@@ -31,6 +31,7 @@ function enigme_get_liste_prerequis_possibles(int $enigme_id): array
 {
     $chasse = get_field('enigme_chasse_associee', $enigme_id, false);
     $chasse_id = is_object($chasse) ? $chasse->ID : (int)$chasse;
+    error_log("[DEBUG] Récupération des prérequis possibles pour énigme #$enigme_id (chasse #$chasse_id)");
 
     if (!$chasse_id) {
         error_log("[DEBUG] Aucun chasse associée trouvée pour énigme #$enigme_id");
