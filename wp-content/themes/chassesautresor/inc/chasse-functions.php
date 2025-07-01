@@ -131,10 +131,6 @@ function verifier_souscription_chasse($user_id, $enigme_id)
     $meta_key = "total_joueurs_souscription_chasse_{$chasse_id}";
     $total_souscriptions = get_post_meta($chasse_id, $meta_key, true) ?: 0;
     update_post_meta($chasse_id, $meta_key, $total_souscriptions + 1);
-    error_log("✅ Nouvelle valeur souscription chasse {$chasse_id} : " . get_post_meta($chasse_id, $meta_key, true));
-
-
-    error_log("✅ Nouvelle souscription à la chasse ID {$chasse_id} par l'utilisateur ID {$user_id}");
 }
 /**
  * Vérifie si un utilisateur est engagé dans une chasse.

@@ -105,6 +105,13 @@ foreach ($posts as $p) {
 
           <?php if ($etat_systeme === 'accessible') : ?>
             <h3><?= esc_html($titre); ?></h3>
+            <?php
+            $cta = get_cta_enigme($enigme_id, $utilisateur_id);
+            ?>
+            <div class="carte-enigme-cta">
+              <?php render_cta_enigme($cta, $enigme_id); ?>
+            </div>
+
           <?php endif; ?>
         </div>
       </article>
