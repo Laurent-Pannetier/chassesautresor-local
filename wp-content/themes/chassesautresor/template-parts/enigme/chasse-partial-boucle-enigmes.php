@@ -15,7 +15,7 @@ $utilisateur_id = get_current_user_id();
 // 🔒 Vérification d'accès à la chasse
 if (!chasse_est_visible_pour_utilisateur($chasse_id, $utilisateur_id)) return;
 
-$est_orga_associe = utilisateur_est_organisateur_associe_a_chasse($utilisateur_id, $chasse_id);
+$est_orga_associe = $args['est_orga_associe'] ?? utilisateur_est_organisateur_associe_a_chasse($utilisateur_id, $chasse_id);
 
 $autorise_boucle = (
   user_can($utilisateur_id, 'manage_options') ||
