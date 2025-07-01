@@ -88,12 +88,14 @@
 .carte-enigme .carte-core svg {
   color: var(--color-gris-3);
 }
+
 .carte-enigme .carte-core .enigme-placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 100%;
 }
+
 .carte-enigme .carte-core .enigme-placeholder svg {
   width: 60%;
 }
@@ -156,6 +158,7 @@
 .carte-ligne__contenu .cta-div {
   justify-content: center;
 }
+
 .carte-ligne__contenu .chasse-intro-extrait {
   margin: 15px 0
 }
@@ -170,6 +173,7 @@
   justify-content: space-between;
   align-items: center;
   margin-top: 1rem;
+  padding: 7px 25px;
 }
 
 .carte-ligne__footer .footer-icones {

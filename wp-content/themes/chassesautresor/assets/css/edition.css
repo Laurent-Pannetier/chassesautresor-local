@@ -11,6 +11,7 @@
 /* 💾 Boutons édition : enregistrer / annuler */
 /* ✔️ Animation de confirmation */
 /* 📅 Champs dates — affichage et comportement */
+/* ➕ bouton d'ajout d'énigme et de chasse */
 
 /* 📱 Responsive global */
 
@@ -395,6 +396,15 @@ input[disabled].champ-cout {
   display: inline-block;
   margin-left: 1rem;
 }
+
+
+
+/* ➕ bouton d'ajout d'énigme et de chasse */
+#carte-ajout-enigme .fa-circle-plus {
+  color: var(--color-background-button);  
+}
+
+
 
 /* ========== 📱 RESPONSIVE GLOBAL ========== */
 
