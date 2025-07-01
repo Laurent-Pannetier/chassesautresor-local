@@ -150,16 +150,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 🔑 Ouverture automatique via les paramètres d'URL
   const params = new URLSearchParams(window.location.search);
-  if (params.get('edition') === 'open' && params.get('onglet') === 'revenus') {
-    const toggle = document.getElementById('toggle-mode-edition');
-    const tabBtn = document.querySelector('.edition-tab[data-target="organisateur-tab-revenus"]');
-    toggle?.click();
-    tabBtn?.click();
 
-    if (params.get('highlight') === 'coordonnees') {
-      document
-        .getElementById('ligne-coordonnees')
-        ?.classList.add('champ-vide-obligatoire');
+  if (params.get('edition') === 'open') {
+    const toggle = document.getElementById('toggle-mode-edition');
+    toggle?.click();
+
+    if (params.get('onglet') === 'revenus') {
+      const tabBtn = document.querySelector(
+        '.edition-tab[data-target="organisateur-tab-revenus"]'
+      );
+      tabBtn?.click();
+
+      if (params.get('highlight') === 'coordonnees') {
+        document
+          .getElementById('ligne-coordonnees')
+          ?.classList.add('champ-vide-obligatoire');
+      }
     }
   }
 
