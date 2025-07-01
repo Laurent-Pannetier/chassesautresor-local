@@ -83,9 +83,21 @@ if ($edition_active && !$est_complet) {
   <div class="chasse-fiche-container flex-row">
     <?php
     $statut = get_field('chasse_cache_statut', $chasse_id) ?? 'revision';
+    $statut_validation = get_field('chasse_cache_statut_validation', $chasse_id);
+    $statut_label = ucfirst(str_replace('_', ' ', $statut));
+
+    if ($statut === 'revision') {
+      if ($statut_validation === 'creation') {
+        $statut_label = 'création';
+      } elseif ($statut_validation === 'correction') {
+        $statut_label = 'correction';
+      } elseif ($statut_validation === 'en_attente') {
+        $statut_label = 'en attente';
+      }
+    }
     ?>
       <span class="badge-statut statut-<?= esc_attr($statut); ?>" data-post-id="<?= esc_attr($chasse_id); ?>">
-        <?= ucfirst(str_replace('_', ' ', $statut)); ?>
+        <?= esc_html($statut_label); ?>
       </span>
 
     <!-- 🔧 Bouton panneau édition -->

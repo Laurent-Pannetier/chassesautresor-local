@@ -4,6 +4,7 @@ defined('ABSPATH') || exit;
 
 $organisateur_id = get_organisateur_id_from_context($args ?? []);
 $peut_modifier = utilisateur_peut_modifier_post($organisateur_id);
+$nb_chasses     = organisateur_get_nb_chasses_publiees($organisateur_id);
 
 $description = get_field('description_longue', $organisateur_id);
 $date_inscription = get_the_date('d/m/Y', $organisateur_id);
@@ -39,7 +40,7 @@ if (!empty($liens_publics) && is_array($liens_publics)) {
              data-cpt="organisateur"
              data-post-id="<?= esc_attr($organisateur_id); ?>">
         
-            <div class="champ-affichage champ-affichage-liens bloc-liens-publics header-organisateur__liens <?= count($liens_actifs) >= 3 ? 'liens-compacts' : ''; ?>">
+            <div class="champ-affichage champ-affichage-liens bloc-liens-publics header-organisateur__liens <?= count($liens_actifs) >= 3 ? 'liens-compacts' : ''; ?>" data-no-edit="1">
         
             <?php if (!empty($liens_actifs)) : ?>
               <ul class="liste-liens-publics">
@@ -76,13 +77,6 @@ if (!empty($liens_publics) && is_array($liens_publics)) {
      data-post-id="<?= esc_attr($organisateur_id); ?>">
         <div class="flex-row titre-presentation">
           <h2>Présentation</h2>
-          <?php if ($peut_modifier) : ?>
-            <button type="button"
-                    class="champ-modifier ouvrir-panneau-description"
-                    aria-label="Modifier la présentation">
-                ✏️
-            </button>
-          <?php endif; ?>
         </div>
 
         <div class="separateur-2"></div>
@@ -108,7 +102,7 @@ if (!empty($liens_publics) && is_array($liens_publics)) {
           <div class="meta-etiquette" title="Nombre de chasses publiées">
             <i class="fa-solid fa-compass-drafting"></i>
             <strong>Chasses :</strong>
-            <span data-champ="nb_chasses">—</span>
+            <span data-champ="nb_chasses"><?php echo intval($nb_chasses); ?></span>
           </div>
         
           <div class="meta-etiquette" title="Nombre de joueurs ayant participé à ses chasses">

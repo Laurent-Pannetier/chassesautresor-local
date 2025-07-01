@@ -1,10 +1,16 @@
 <?php
 defined('ABSPATH') || exit;
 
+
 $organisateur_id = $args['organisateur_id'] ?? null;
 if (!$organisateur_id || get_post_type($organisateur_id) !== 'organisateur') {
   return;
 }
+
+$show_header  = $args['show_header'] ?? true;
+$grid_class   = $args['grid_class'] ?? 'grille-liste';
+$before_items = $args['before_items'] ?? '';
+$after_items  = $args['after_items'] ?? '';
 
 $query = get_chasses_de_organisateur($organisateur_id);
 $posts = is_a($query, 'WP_Query') ? $query->posts : (array) $query;
@@ -17,24 +23,31 @@ $posts   = array_values(array_filter($posts, function ($post) use ($user_id) {
 
 ?>
 
+<?php if ($show_header) : ?>
 <h2>Ses chasses</h2>
 <div class="separateur-2"></div>
-<div class="grille-liste">
+<?php endif; ?>
+<div class="<?php echo esc_attr($grid_class); ?>">
+<?php echo $before_items; ?>
   <?php foreach ($posts as $post) : ?>
     <?php
     $chasse_id = $post->ID;
     $est_orga = est_organisateur();
-    $voir_bordure = $est_orga && utilisateur_est_organisateur_associe_a_chasse(get_current_user_id(), $chasse_id);
+    $wp_status = get_post_status($chasse_id);
+    $voir_bordure = $est_orga &&
+      utilisateur_est_organisateur_associe_a_chasse(get_current_user_id(), $chasse_id) &&
+      $wp_status !== 'publish';
     $classe_completion = '';
     if ($voir_bordure) {
       verifier_ou_mettre_a_jour_cache_complet($chasse_id);
       $complet = (bool) get_field('chasse_cache_complet', $chasse_id);
       $classe_completion = $complet ? 'carte-complete' : 'carte-incomplete';
     }
-    get_template_part('template-parts/organisateur/organisateur-partial-chasse-card', null, [
+    get_template_part('template-parts/chasse/chasse-card', null, [
       'chasse_id' => $chasse_id,
       'completion_class' => $classe_completion,
     ]);
     ?>
   <?php endforeach; ?>
+<?php echo $after_items; ?>
 </div>

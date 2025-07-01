@@ -33,16 +33,6 @@ if ($user_id) {
     //$stats_output = ob_get_clean(); // Récupère le contenu affiché et le stocke
 }
 
-//* récupération des trophées
-$trophees = get_user_meta($user_id, 'trophees_utilisateur', true);
-
-// Vérifier si l'utilisateur a des trophées
-if (!empty($trophees)) {
-    ob_start(); // Capture le contenu des trophées
-    echo afficher_trophees_utilisateur_callback(3);
-
-    $trophees_output = ob_get_clean();
-}
 // récupération des commandes
 $commandes_output = afficher_commandes_utilisateur($user_id, 3);
 
@@ -140,7 +130,6 @@ $tableau_contenu = ob_get_clean(); // Récupérer la sortie et l'effacer du buff
         'conversion_autorisee' => $conversion_autorisee,
         'statut_conversion'  => $statut_conversion,
         'commandes_output'   => $commandes_output,
-        'trophees_output'    => $trophees_output,
     ]); ?>
 </div>
 

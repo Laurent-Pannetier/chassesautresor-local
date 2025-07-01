@@ -5,7 +5,7 @@ defined('ABSPATH') || exit;
     // 🧾 ENREGISTREMENT DES ENGAGEMENTS
     // ==================================================
     /**
-     * 🔹 enregistrer_engagement_enigme() → Insère un engagement dans la table SQL `wp_enigme_engagements`.
+     * 🔹 enregistrer_engagement_enigme() → Insère un engagement dans la table SQL `wp_engagements`.
      * 🔹 marquer_enigme_comme_engagee() → Met à jour le statut utilisateur ET enregistre un engagement SQL.
      */
 
@@ -19,7 +19,7 @@ defined('ABSPATH') || exit;
     function enregistrer_engagement_enigme(int $user_id, int $enigme_id): bool
     {
         global $wpdb;
-        $table = $wpdb->prefix . 'enigme_engagements';
+        $table = $wpdb->prefix . 'engagements';
 
         $existe = $wpdb->get_var($wpdb->prepare(
             "SELECT COUNT(*) FROM $table WHERE user_id = %d AND enigme_id = %d",

@@ -790,6 +790,10 @@ body.panneau-ouvert::before {
   padding: 2rem 2rem 2rem 2.5rem;
 }
 
+.panneau-lateral__contenu #bouton-supprimer-recompense{
+  color:var(--color-text-fond-clair)
+}
+
 /* Alignement commun des headers dans les panneaux */
 .panneau-lateral__header {
   display: flex;

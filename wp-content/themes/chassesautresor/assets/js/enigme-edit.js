@@ -7,7 +7,7 @@ let panneauEdition;
 
 
 
-document.addEventListener('DOMContentLoaded', () => {
+function initEnigmeEdit() {
   if (typeof initZonesClicEdition === 'function') initZonesClicEdition();
   boutonToggle = document.getElementById('toggle-mode-edition-enigme');
   panneauEdition = document.querySelector('.edition-panel-enigme');
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==============================
   const explicationValidation = {
     'aucune': "Aucun formulaire de réponse ne sera affiché pour cette énigme.",
-    'manuelle': "Le joueur devra rédiger une réponse libre. Vous recevrez sa proposition par email, et pourrez la valider ou la refuser directement depuis ce message.",
+    'manuelle': "Le joueur devra rédiger une réponse libre. Vous recevrez sa proposition par email, et pourrez la valider ou la refuser à partir de ce message.",
     'automatique': "Le joueur devra saisir une réponse exacte. Celle-ci sera automatiquement vérifiée selon les critères définis (réponse attendue, casse, variantes)."
   };
 
@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==============================
   // 💰 Affichage dynamique tentatives (message coût)
   // ==============================
-  const blocCout = document.querySelector('[data-champ="enigme_tentative_cout_points"]');
+  const blocCout = document.querySelector('[data-champ="enigme_tentative.enigme_tentative_cout_points"]');
   if (blocCout && typeof window.onCoutPointsUpdated === 'function') {
     const champ = blocCout.dataset.champ;
     const valeur = parseInt(blocCout.querySelector('.champ-input')?.value || '0', 10);
@@ -267,10 +267,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     DEBUG && console.log('[INIT GRATUIT] valeur brute =', raw, '| valeur interprétée =', valeur);
 
-  const estGratuit = valeur === 0;
+    const estGratuit = valeur === 0;
 
-  $checkbox.checked = estGratuit;
-  $cout.disabled = estGratuit;
+    $checkbox.checked = estGratuit;
+    $cout.disabled = estGratuit;
+
+    // 🔄 Mettre à jour le message sur les tentatives après init coût
+    if (typeof window.mettreAJourMessageTentatives === 'function') {
+      window.mettreAJourMessageTentatives();
+    }
   })();
 
   const boutonSupprimer = document.getElementById('bouton-supprimer-enigme');
@@ -301,7 +306,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initEnigmeEdit);
+} else {
+  initEnigmeEdit();
+}
 
 // ================================
 // 🖼️ Panneau images galerie (ACF gallery)
@@ -378,7 +389,7 @@ document.querySelector('#panneau-images-enigme .panneau-fermer')?.addEventListen
 // 🔢 Initialisation champ enigme_tentative_max (tentatives/jour)
 // ================================
 function initChampNbTentatives() {
-  const bloc = document.querySelector('[data-champ="enigme_tentative_max"]');
+  const bloc = document.querySelector('[data-champ="enigme_tentative.enigme_tentative_max"]');
   if (!bloc) return;
 
   const input = bloc.querySelector('.champ-input');
@@ -401,7 +412,7 @@ function initChampNbTentatives() {
 
   // 🔄 Fonction centralisée
   function mettreAJourAideTentatives() {
-    const coutInput = document.querySelector('[data-champ="enigme_tentative_cout_points"] .champ-input');
+    const coutInput = document.querySelector('[data-champ="enigme_tentative.enigme_tentative_cout_points"] .champ-input');
     if (!coutInput) return;
 
     const cout = parseInt(coutInput.value.trim(), 10);
@@ -429,7 +440,7 @@ function initChampNbTentatives() {
       input.value = '1';
     }
 
-    const coutInput = document.querySelector('[data-champ="enigme_tentative_cout_points"] .champ-input');
+    const coutInput = document.querySelector('[data-champ="enigme_tentative.enigme_tentative_cout_points"] .champ-input');
     const cout = parseInt(coutInput?.value.trim() || '0', 10);
     const estGratuit = isNaN(cout) || cout === 0;
 
@@ -448,8 +459,8 @@ function initChampNbTentatives() {
   mettreAJourAideTentatives();
 
   // 🔁 Lié aux modifs de coût (input + checkbox)
-  const coutInput = document.querySelector('[data-champ="enigme_tentative_cout_points"] .champ-input');
-  const checkbox = document.querySelector('[data-champ="enigme_tentative_cout_points"] input[type="checkbox"]');
+  const coutInput = document.querySelector('[data-champ="enigme_tentative.enigme_tentative_cout_points"] .champ-input');
+  const checkbox = document.querySelector('[data-champ="enigme_tentative.enigme_tentative_cout_points"] input[type="checkbox"]');
   if (coutInput) coutInput.addEventListener('input', mettreAJourAideTentatives);
   if (checkbox) checkbox.addEventListener('change', mettreAJourAideTentatives);
 
@@ -464,7 +475,7 @@ function initChampNbTentatives() {
 // ================================
 window.onCoutPointsUpdated = function (bloc, champ, valeur, postId, cpt) {
   if (champ === 'enigme_tentative_cout_points') {
-    const champMax = document.querySelector('[data-champ="enigme_tentative_max"] .champ-input');
+    const champMax = document.querySelector('[data-champ="enigme_tentative.enigme_tentative_max"] .champ-input');
     if (champMax) {
       const valeurActuelle = parseInt(champMax.value, 10);
 
@@ -490,7 +501,7 @@ window.onCoutPointsUpdated = function (bloc, champ, valeur, postId, cpt) {
 // ==============================
 // 🔐 Champ bonne réponse – Limite 75 caractères + message d’alerte
 // ==============================
-document.addEventListener('DOMContentLoaded', () => {
+function initChampBonneReponse() {
   const bloc = document.querySelector('[data-champ="enigme_reponse_bonne"]');
   if (!bloc) return;
 
@@ -538,7 +549,13 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 400);
     }
   });
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initChampBonneReponse);
+} else {
+  initChampBonneReponse();
+}
 
 
 // ==============================
@@ -1006,7 +1023,7 @@ document.querySelector('#panneau-solution-enigme .panneau-fermer')?.addEventList
 // ==============================
 // ✅ Enregistrement condition "pré-requis" à la sélection du radio
 // ==============================
-document.addEventListener('DOMContentLoaded', () => {
+function initEnregistrementPreRequis() {
   const radioPreRequis = document.querySelector('input[name="acf[enigme_acces_condition]"][value="pre_requis"]');
   const champBloc = document.querySelector('[data-champ="enigme_acces_pre_requis"]');
   const postId = champBloc?.dataset.postId;
@@ -1042,7 +1059,13 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('❌ Erreur réseau lors de l’enregistrement de la condition pré-requis', err);
       });
   });
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initEnregistrementPreRequis);
+} else {
+  initEnregistrementPreRequis();
+}
 
 function appliquerEtatGratuitEnLive() {
   DEBUG && console.log('✅ enappliquerEtatGratuit() chargé');
@@ -1051,12 +1074,17 @@ function appliquerEtatGratuitEnLive() {
   if (!$cout || !$checkbox) return;
 
   function syncGratuit() {
-    const val = parseInt($cout.value.trim(), 10);
-    const estGratuit = val === 0;
+    const raw = $cout.value;
+    const trimmed = raw.trim();
+    const valeur = trimmed === '' ? 0 : parseInt(trimmed, 10);
+    const estGratuit = valeur === 0;
 
     DEBUG && console.log('[🎯 syncGratuit] coût =', $cout.value, '| gratuit ?', estGratuit);
     $checkbox.checked = estGratuit;
     $cout.disabled = estGratuit;
+    if (typeof window.mettreAJourMessageTentatives === 'function') {
+      window.mettreAJourMessageTentatives();
+    }
   }
 
   $cout.addEventListener('input', syncGratuit);

@@ -25,7 +25,7 @@ if (
   !isset($_POST['engager_enigme_nonce']) ||
   !wp_verify_nonce($_POST['engager_enigme_nonce'], 'engager_enigme_' . $enigme_id)
 ) {
-  wp_die('Échec de vérification de sécurité');
+  wp_die( __( 'Échec de vérification de sécurité', 'chassesautresor-com' ) );
 }
 
 // Chargement des fonctions critiques

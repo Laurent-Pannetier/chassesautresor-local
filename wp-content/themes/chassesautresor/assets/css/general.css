@@ -223,6 +223,8 @@ span.champ-obligatoire {
 
   --color-gris-3:             #adadad;   /* ⚪ Gris neutre n°3 */
   --color-text-fond-clair:    #1c1c1c;    /* noir clair */
+  --color-gris-carte: #c2c2c2;  /* 🧩 Fond de carte énigme : gris bleuté doux */
+
 }
 
 
@@ -276,4 +278,17 @@ span.champ-obligatoire {
 .media-modal-content label,
 .media-modal-content button {
     color: var(--color-text-fond-clair);
+}
+
+/* ========== 🏷️ Titre chasses et bouton ========== */
+.titre-chasses-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.titre-enigmes-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }

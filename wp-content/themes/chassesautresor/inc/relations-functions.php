@@ -235,6 +235,36 @@ function organisateur_a_des_chasses($organisateur_id)
 }
 
 /**
+ * Vérifie si un organisateur possède au moins une chasse en attente (status "pending").
+ *
+ * @param int $organisateur_id ID de l'organisateur.
+ * @return bool True si une chasse en attente existe, False sinon.
+ */
+function organisateur_a_chasse_pending(int $organisateur_id): bool
+{
+  $query = new WP_Query([
+    'post_type'      => 'chasse',
+    'posts_per_page' => 1,
+    'post_status'    => 'pending',
+    'meta_query'     => [
+      'relation' => 'AND',
+      [
+        'key'     => 'chasse_cache_organisateur',
+        'value'   => '"' . $organisateur_id . '"',
+        'compare' => 'LIKE'
+      ],
+      [
+        'key'     => 'chasse_cache_statut_validation',
+        'value'   => 'banni',
+        'compare' => '!='
+      ]
+    ]
+  ]);
+
+  return $query->have_posts();
+}
+
+/**
  * Récupère les chasses associées à un organisateur.
  *
  * @param int $organisateur_id ID de l'organisateur.
@@ -254,6 +284,49 @@ function get_chasses_de_organisateur($organisateur_id)
       ]
     ]
   ]);
+}
+
+/**
+ * Retourne le nombre de chasses publiées pour un organisateur donné.
+ *
+ * Utilise un cache statique pour éviter des requêtes répétées.
+ *
+ * @param int $organisateur_id ID de l'organisateur.
+ * @return int Nombre de chasses publiées.
+ */
+function organisateur_get_nb_chasses_publiees(int $organisateur_id): int
+{
+  static $cache = [];
+
+  if (isset($cache[$organisateur_id])) {
+    return $cache[$organisateur_id];
+  }
+
+  if ($organisateur_id <= 0) {
+    return $cache[$organisateur_id] = 0;
+  }
+
+  $query = new WP_Query([
+    'post_type'              => 'chasse',
+    'posts_per_page'         => 1,
+    'post_status'            => 'publish',
+    'fields'                 => 'ids',
+    'no_found_rows'          => false,
+    'update_post_meta_cache' => false,
+    'update_post_term_cache' => false,
+    'meta_query'             => [
+      [
+        'key'     => 'chasse_cache_organisateur',
+        'value'   => '"' . $organisateur_id . '"',
+        'compare' => 'LIKE',
+      ],
+    ],
+  ]);
+
+  $count = (int) $query->found_posts;
+  $cache[$organisateur_id] = $count;
+
+  return $count;
 }
 
 /**
@@ -365,8 +438,8 @@ function recuperer_enigmes_pour_chasse(int $chasse_id): array
     'meta_query'     => [
       [
         'key'     => 'enigme_chasse_associee',
-        'value'   => '"' . $chasse_id . '"',
-        'compare' => 'LIKE',
+        'value'   => $chasse_id,
+        'compare' => '=', // champ Relationship stocké sous forme d'ID
       ],
     ],
   ]);
@@ -393,8 +466,8 @@ function recuperer_ids_enigmes_pour_chasse(int $chasse_id): array
     'meta_query'     => [
       [
         'key'     => 'enigme_chasse_associee',
-        'value'   => '"' . $chasse_id . '"',
-        'compare' => 'LIKE',
+        'value'   => $chasse_id,
+        'compare' => '=',
       ],
     ],
   ]);

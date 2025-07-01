@@ -320,6 +320,11 @@ function utilisateur_peut_modifier_post($post_id)
         return false;
     }
 
+    // ✅ Les administrateurs peuvent toujours modifier
+    if (current_user_can('manage_options')) {
+        return true;
+    }
+
     $user_id = get_current_user_id();
     $post_type = get_post_type($post_id);
 
@@ -580,8 +585,11 @@ function utilisateur_peut_ajouter_chasse(int $organisateur_id): bool
         return false;
     }
 
-    // Organisateur : aucune limite
+    // Organisateur : une seule chasse en attente à la fois une fois publié
     if (in_array(ROLE_ORGANISATEUR, $roles, true)) {
+        if (get_post_status($organisateur_id) === 'publish' && organisateur_a_chasse_pending($organisateur_id)) {
+            return false;
+        }
         return true;
     }
 
@@ -606,6 +614,11 @@ function utilisateur_peut_voir_panneau(int $post_id): bool
 {
     if (!is_user_logged_in()) {
         return false;
+    }
+
+    // ✅ Les administrateurs ont toujours accès aux panneaux
+    if (current_user_can('manage_options')) {
+        return true;
     }
 
     $user  = wp_get_current_user();
@@ -652,6 +665,11 @@ function utilisateur_peut_editer_champs(int $post_id): bool
 {
     if (!utilisateur_peut_voir_panneau($post_id)) {
         return false;
+    }
+
+    // ✅ Les administrateurs peuvent toujours éditer les champs
+    if (current_user_can('manage_options')) {
+        return true;
     }
 
     $type   = get_post_type($post_id);
@@ -706,6 +724,11 @@ function utilisateur_peut_editer_champs(int $post_id): bool
 function champ_est_editable($champ, $post_id, $user_id = null)
 {
     if (!$post_id || !is_user_logged_in()) return false;
+
+    // ✅ Les administrateurs peuvent éditer tous les champs
+    if (current_user_can('manage_options')) {
+        return true;
+    }
 
     if (!$user_id) {
         $user_id = get_current_user_id();
@@ -1111,13 +1134,15 @@ add_action('wp_ajax_verifier_et_enregistrer_condition_pre_requis', 'verifier_et_
 // 📌 VISIBILITÉ ET AFFICHAGE (RÉSERVÉ FUTUR)
 // ==================================================
 
-/*Préparer un bloc vide commenté pour y ajouter par exemple :
-enigme_est_affichable_pour_joueur() (à venir)
-get_cta_enigme() (à déplacer ici si elle migre du fichier visuel)
-tout helper type est_cliquable, affiche_indice, etc. */
-
 /**
  * Détermine si une chasse doit être visible pour un utilisateur.
+ *
+ * Règles de visibilité :
+ * - Si statut WP = 'publish' ET 'chasse_cache_statut_validation' = 'valide'
+ *     → visible par tous les utilisateurs (y compris anonymes)
+ * - Si statut WP = 'pending'
+ *     → visible uniquement si user est admin OU lié à la chasse
+ * - Tous les autres cas → invisible
  *
  * @param int $chasse_id ID de la chasse.
  * @param int $user_id   ID de l'utilisateur.
@@ -1126,28 +1151,31 @@ tout helper type est_cliquable, affiche_indice, etc. */
 function chasse_est_visible_pour_utilisateur(int $chasse_id, int $user_id): bool
 {
     $status = get_post_status($chasse_id);
-    if (!in_array($status, ['pending', 'publish'], true)) {
+    $validation = get_field('chasse_cache_statut_validation', $chasse_id) ?? '';
+
+    // ✅ Cas 1 : chasse publiée et valide → visible par tous
+    if ($status === 'publish' && $validation === 'valide') {
+        return true;
+    }
+
+    // ✅ Cas 2 : chasse en attente → visible pour admin ou organisateur associé
+    if ($status === 'pending') {
+        if (user_can($user_id, 'manage_options')) {
+            return true;
+        }
+
+        if (utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
+            return true;
+        }
+
         return false;
     }
 
-    $validation = get_field('chasse_cache_statut_validation', $chasse_id) ?? '';
-
-    // Les administrateurs peuvent toujours voir la chasse, sauf si elle est bannie
-    if (user_can($user_id, 'manage_options')) {
-        return $validation !== 'banni';
-    }
-
-    if ($status === 'pending') {
-        $assoc = utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
-
-        return $validation !== 'banni'
-            && $assoc
-            && est_organisateur($user_id);
-    }
-
-    return $validation !== 'banni';
-
+    // ❌ Tous les autres cas : non visible
+    return false;
 }
+
+
 
 /**
  * Autorise la consultation des énigmes non publiées pour les organisateurs

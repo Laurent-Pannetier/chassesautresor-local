@@ -60,6 +60,22 @@ get_header();
             get_current_user_id() === (int) get_post_field('post_author', $organisateur_id) &&
             $statut_organisateur === 'pending' &&
             !organisateur_a_des_chasses($organisateur_id);
+
+        $query       = get_chasses_de_organisateur($organisateur_id);
+        $chasses     = is_a($query, 'WP_Query') ? $query->posts : (array) $query;
+        $user_id     = get_current_user_id();
+        $chasses     = array_values(array_filter(
+            $chasses,
+            static fn($post) => chasse_est_visible_pour_utilisateur($post->ID, $user_id)
+        ));
+        $peut_ajouter   = utilisateur_peut_ajouter_chasse($organisateur_id);
+        $has_chasses    = !empty($chasses);
+        $cache_complet  = (bool) get_field('organisateur_cache_complet', $organisateur_id);
+        $highlight_pulse =
+            !$has_chasses &&
+            $is_owner &&
+            in_array(ROLE_ORGANISATEUR_CREATION, $roles, true) &&
+            $cache_complet;
         ?>
 
         <!-- Section Chasses -->
@@ -67,45 +83,37 @@ get_header();
             <div class="conteneur">
                 <div class="titre-chasses-wrapper">
                     <h2>Chasses au Trésor</h2>
-                    <div class="ligne-chasses"></div>
-                    <div class="liste-chasses">
-                        <div class="grille-3">
-                            <?php
-                            $organisateur_id = get_the_ID();
-                            $query = get_chasses_de_organisateur($organisateur_id);
-                            $chasses = is_a($query, 'WP_Query') ? $query->posts : (array) $query;
-                            $user_id = get_current_user_id();
-                            $chasses = array_values(array_filter($chasses, function ($post) use ($user_id) {
-                                return chasse_est_visible_pour_utilisateur($post->ID, $user_id);
-                            }));
-                            $peut_ajouter = utilisateur_peut_ajouter_chasse($organisateur_id);
-                            $has_chasses = !empty($chasses);
-                            $cache_complet = (bool) get_field('organisateur_cache_complet', $organisateur_id);
-                            $highlight_pulse = !$has_chasses && $is_owner && in_array(ROLE_ORGANISATEUR_CREATION, $roles, true) && $cache_complet;
-
-
-                            foreach ($chasses as $post) :
-                                $chasse_id = $post->ID;
-
-                            ?>
-                                <article class="carte-chasse" data-post-id="<?= esc_attr($chasse_id); ?>">
-                                    <div class="carte-core">
-                                        <?php afficher_picture_vignette_chasse($chasse_id); ?>
-                                        <h2><?= esc_html(get_the_title($chasse_id)); ?></h2>
-                                    </div>
-                                </article>
-                            <?php endforeach; ?>
-
-                            <?php if ($peut_ajouter) :
-                                get_template_part('template-parts/chasse/chasse-partial-ajout-chasse', null, [
-                                    'has_chasses'    => $has_chasses,
-                                    'organisateur_id' => $organisateur_id,
-                                    'highlight_pulse' => $highlight_pulse,
-                                ]);
-                            endif; ?>
-                        </div>
-                    </div>
+                    <?php if ($peut_ajouter && $statut_organisateur === 'publish') :
+                        get_template_part('template-parts/chasse/chasse-partial-ajout-chasse', null, [
+                            'has_chasses'     => $has_chasses,
+                            'organisateur_id' => $organisateur_id,
+                            'highlight_pulse' => $highlight_pulse,
+                            'use_button'      => true,
+                        ]);
+                    endif; ?>
                 </div>
+                <div class="ligne-chasses"></div>
+                <div class="liste-chasses">
+                    <?php
+                    ob_start();
+                    if ($peut_ajouter && $statut_organisateur !== 'publish') {
+                        get_template_part('template-parts/chasse/chasse-partial-ajout-chasse', null, [
+                            'has_chasses'     => $has_chasses,
+                            'organisateur_id' => $organisateur_id,
+                            'highlight_pulse' => $highlight_pulse,
+                        ]);
+                    }
+                    $after_items = ob_get_clean();
+
+                    get_template_part('template-parts/organisateur/organisateur-partial-boucle-chasses', null, [
+                        'organisateur_id' => $organisateur_id,
+                        'show_header'     => false,
+                        'grid_class'      => 'grille-liste',
+                        'after_items'     => $after_items,
+                    ]);
+                    ?>
+                </div>
+            </div>
         </section>
 
     </main>

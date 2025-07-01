@@ -192,6 +192,16 @@ template-parts/
         │   └── images.php
         ...
 
+structure des templates possibles pour les chasses
+template-parts/
+└── chasse/
+    ├── chasse-card.php
+    ├── chasse-affichage-complet.php
+    ├── chasse-partial-ajout-chasse.php
+    ├── chasse-partial-description.php
+    ├── chasse-validation-actions.php
+    └── panneaux/
+
         
 
 
@@ -886,6 +896,7 @@ page enigme
 L’affichage dynamique des boutons, statuts ou badges (sur les énigmes notamment)
 dépend du champ ACF `enigme_cache_etat_systeme` et du suivi individuel stocké
 dans la table `wp_enigme_statuts_utilisateur` :
+Structure détaillée : voir annexe « 🗄️ Tables personnalisées ».
 
 - `enigme_cache_etat_systeme` → état logique global, calculé automatiquement
 - `wp_enigme_statuts_utilisateur` → statut individuel du joueur
@@ -895,6 +906,20 @@ Ces deux champs combines determinent :
 - la visibilite de l enigme
 - les messages d aide ou de verrouillage
 - le badge d etat
+
+### 🔎 Icônes de footer sur les cartes
+
+Chaque carte de chasse peut afficher des pictogrammes dans son pied de carte. Les fichiers SVG sont stockés dans `assets/svg/` du thème.
+
+| Fichier | Condition d’apparition |
+|---------|-----------------------|
+| `coins-points.svg` | Coût en points supérieur à 0 |
+| `reply-mail.svg` | Au moins une énigme en validation manuelle |
+| `reply-auto.svg` | Sinon, au moins une énigme en validation automatique |
+| `trophy.svg` | Récompense renseignée et valeur > 0 € |
+
+La fonction `preparer_infos_affichage_carte_chasse()` prépare ces icônes dans la clé `footer_icones`.
+Cette fonction sert de couche de présentation : elle regroupe toute la logique métier nécessaire avant affichage d’une carte.
 
 ### 🔄 enigme_cache_etat_systeme – statut logique global
 Definit si l enigme est techniquement disponible ou non.
@@ -907,6 +932,8 @@ Definit si l enigme est techniquement disponible ou non.
 | bloquee_chasse     | La chasse liee est bloquee                       |
 | invalide           | Donnees manquantes ou mal configurees            |
 | cache_invalide     | Erreur technique, logique ACF cassee             |
+
+Structure détaillée : voir annexe « 🗄️ Tables personnalisées ».
 
 👤 Statut individuel du joueur (table `wp_enigme_statuts_utilisateur`)
 Definit le niveau de progression du joueur sur une enigme donnee.
@@ -1166,6 +1193,49 @@ Chaque champ ciblé par un module JS (inline, conditionnel, panneau, etc.) doit 
 
 Cas particulier : les boutons déclencheurs de panneau doivent en plus avoir `.champ-modifier` et un `aria-label`.
 
+### 🗄️ Tables personnalisées
+
+Certaines fonctionnalités s'appuient sur trois tables SQL dédiées.
+
+#### `wp_engagements`
+
+| Colonne | Type | Commentaire |
+|---------|------|-------------|
+| id | bigint unsigned AUTO_INCREMENT | clé primaire |
+| user_id | bigint unsigned | identifiant du joueur |
+| enigme_id | bigint unsigned | identifiant de l'énigme |
+| chasse_id | bigint NULL | identifiant de la chasse |
+| date_engagement | datetime NULL DEFAULT CURRENT_TIMESTAMP | date d'engagement |
+
+Index :
+- `PRIMARY(id)`
+- `INDEX(enigme_id, user_id)`
+- `INDEX(chasse_id)`
+
+#### `wp_enigme_statuts_utilisateur`
+
+| Colonne | Type | Commentaire |
+|---------|------|-------------|
+| user_id | bigint unsigned | identifiant du joueur |
+| enigme_id | bigint unsigned | identifiant de l'énigme |
+| statut | enum('non_commencee','en_cours','abandonnee','echouee','resolue','terminee','soumis') DEFAULT 'non_commencee' | progression |
+| date_mise_a_jour | datetime NULL DEFAULT CURRENT_TIMESTAMP | dernière modification |
+
+#### `wp_enigme_tentatives`
+
+| Colonne | Type | Commentaire |
+|---------|------|-------------|
+| id | bigint unsigned AUTO_INCREMENT | clé primaire |
+| tentative_uid | varchar(64) | identifiant unique |
+| user_id | bigint unsigned | identifiant du joueur |
+| enigme_id | bigint unsigned | identifiant de l'énigme |
+| reponse_saisie | text NULL | texte saisi |
+| resultat | enum('bon','variante','faux','attente') DEFAULT 'attente' | résultat |
+| points_utilises | int unsigned NULL DEFAULT 0 | points consommés |
+| date_tentative | datetime NULL DEFAULT CURRENT_TIMESTAMP | date |
+| ip | varchar(45) NULL | adresse IP |
+| user_agent | text NULL | navigateur |
+| traitee | tinyint(1) NULL DEFAULT 0 | état de traitement |
 
 
 ### 📂 Références internes utiles (template-parts/, data-champ, etc.)

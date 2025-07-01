@@ -148,6 +148,21 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   });
 
+  // 🔑 Ouverture automatique via les paramètres d'URL
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('edition') === 'open' && params.get('onglet') === 'revenus') {
+    const toggle = document.getElementById('toggle-mode-edition');
+    const tabBtn = document.querySelector('.edition-tab[data-target="organisateur-tab-revenus"]');
+    toggle?.click();
+    tabBtn?.click();
+
+    if (params.get('highlight') === 'coordonnees') {
+      document
+        .getElementById('ligne-coordonnees')
+        ?.classList.add('champ-vide-obligatoire');
+    }
+  }
+
   if (typeof window.mettreAJourResumeInfos === 'function') {
     window.mettreAJourResumeInfos();
   }
@@ -160,7 +175,7 @@ function initLiensOrganisateur(bloc) {
     initLiensPublics(bloc, {
       panneauId: 'panneau-liens-publics',
       formId: 'formulaire-liens-publics',
-      action: 'modifier_champ_organisateur'
+      action: 'modifier_champ_organisateur',
     });
   }
 }

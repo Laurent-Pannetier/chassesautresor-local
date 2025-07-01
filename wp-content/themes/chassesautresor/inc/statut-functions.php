@@ -929,9 +929,22 @@ function recuperer_statut_chasse()
     }
 
     $statut_str = is_string($statut) ? $statut : '';
+    $statut_label = ucfirst(str_replace('_', ' ', $statut_str));
+
+    if ($statut_str === 'revision') {
+        $validation = get_field('chasse_cache_statut_validation', $post_id);
+        if ($validation === 'creation') {
+            $statut_label = 'création';
+        } elseif ($validation === 'correction') {
+            $statut_label = 'correction';
+        } elseif ($validation === 'en_attente') {
+            $statut_label = 'en attente';
+        }
+    }
+
     wp_send_json_success([
         'statut' => $statut_str,
-        'statut_label' => ucfirst(str_replace('_', ' ', $statut_str))
+        'statut_label' => $statut_label
     ]);
 }
 

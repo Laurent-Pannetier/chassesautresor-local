@@ -110,7 +110,7 @@ function mettreAJourVisuelCPT(cpt, postId, nouvelleUrl) {
  * @param {string} params.formId - ID du formulaire de liens
  * @param {string} params.action - Action AJAX à appeler
  */
-function initLiensPublics(bloc, { panneauId, formId, action }) {
+function initLiensPublics(bloc, { panneauId, formId, action, reload = false }) {
   const champ = bloc.dataset.champ;
   const postId = bloc.dataset.postId;
   const bouton = bloc.querySelector('.champ-modifier');
@@ -153,14 +153,13 @@ function initLiensPublics(bloc, { panneauId, formId, action }) {
     e.preventDefault();
     e.stopPropagation();
 
-    const lignes = formulaire.querySelectorAll('.ligne-lien-formulaire');
     const donnees = [];
+    formulaire.querySelectorAll('.champ-url-lien').forEach((input) => {
+      const ligne = input.closest('[data-type]');
+      const type = ligne?.dataset.type;
+      const url = input.value.trim();
 
-    lignes.forEach((ligne) => {
-      const type = ligne.dataset.type;
-      const input = ligne.querySelector('input[type="url"]');
-      const url = input?.value.trim();
-      if (type && url) {
+      if (type && url !== '') {
         try {
           new URL(url);
           donnees.push({ type_de_lien: type, url_lien: url });
@@ -200,7 +199,7 @@ function initLiensPublics(bloc, { panneauId, formId, action }) {
         if (zoneAffichage && typeof renderLiensPublicsJS === 'function') {
           zoneAffichage.innerHTML = renderLiensPublicsJS(donnees);
 
-          if (!bloc.querySelector('.champ-modifier')) {
+          if (!zoneAffichage.dataset.noEdit && !bloc.querySelector('.champ-modifier')) {
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.className = 'champ-modifier ouvrir-panneau-liens';
@@ -213,6 +212,35 @@ function initLiensPublics(bloc, { panneauId, formId, action }) {
         bloc.classList.toggle('champ-vide', donnees.length === 0);
         bloc.classList.toggle('champ-rempli', donnees.length > 0);
 
+        // ✅ Mise à jour du bloc résumé dans le panneau principal
+        // ✅ Mise à jour de tous les blocs affichant ces liens
+        document
+          .querySelectorAll(`.champ-organisateur[data-champ="${champ}"][data-post-id="${postId}"]`)
+          .forEach((blocCible) => {
+            let zone = blocCible.querySelector('.champ-affichage');
+            if (!zone) {
+              const fiche = document.querySelector(
+                `.champ-chasse.champ-fiche-publication[data-champ="${champ}"][data-post-id="${postId}"]`
+              );
+              zone = fiche?.querySelector('.champ-affichage');
+            }
+
+            if (zone && typeof renderLiensPublicsJS === 'function') {
+              zone.innerHTML = renderLiensPublicsJS(donnees);
+
+              if (!zone.dataset.noEdit && !blocCible.querySelector('.champ-modifier')) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'champ-modifier ouvrir-panneau-liens';
+                btn.setAttribute('aria-label', 'Configurer vos liens');
+                btn.textContent = '✏️';
+                zone.appendChild(btn);
+              }
+            }
+
+            blocCible.classList.toggle('champ-vide', donnees.length === 0);
+            blocCible.classList.toggle('champ-rempli', donnees.length > 0);
+          });
 
         if (typeof window.closePanel === 'function') {
           window.closePanel(panneauId);
@@ -222,11 +250,15 @@ function initLiensPublics(bloc, { panneauId, formId, action }) {
           panneau.setAttribute('aria-hidden', 'true');
         }
 
-
         if (typeof window.mettreAJourResumeInfos === 'function') {
           window.mettreAJourResumeInfos();
         }
+
+        if (reload) {
+          location.reload();
+        }
       })
+
       .catch((err) => {
         console.error('❌ AJAX fail', err.message || err);
         if (feedback) {

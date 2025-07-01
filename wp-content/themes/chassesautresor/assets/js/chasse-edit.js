@@ -9,7 +9,7 @@ let erreurFin;
 let checkboxIllimitee;
 
 
-document.addEventListener('DOMContentLoaded', () => {
+function initChasseEdit() {
   if (typeof initZonesClicEdition === 'function') initZonesClicEdition();
   inputDateDebut = document.getElementById('chasse-date-debut');
   inputDateFin = document.getElementById('chasse-date-fin');
@@ -53,6 +53,16 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.classList.remove('panneau-ouvert');
     document.activeElement?.blur();
   });
+
+  // ==============================
+  // 🧭 Déclencheur automatique
+  // ==============================
+  const params = new URLSearchParams(window.location.search);
+  const doitOuvrir = params.get('edition') === 'open';
+  if (doitOuvrir) {
+    document.getElementById('toggle-mode-edition-chasse')?.click();
+    DEBUG && console.log('🔧 Ouverture auto du panneau édition chasse via ?edition=open');
+  }
 
   // ==============================
   // 📜 Panneau description (wysiwyg)
@@ -215,8 +225,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      if (isNaN(valeur) || valeur <= 0) {
-        alert('Veuillez saisir une valeur en euros strictement supérieure à 0.');
+      if (isNaN(valeur) || valeur <= 0 || valeur > 5000000) {
+        alert('Veuillez saisir une valeur en euros comprise entre 0 et 5\u00a0000\u00a0000.');
         return;
       }
 
@@ -283,7 +293,9 @@ document.addEventListener('DOMContentLoaded', () => {
               document.body.focus(); // 🔥 Correction ultime ici
             }
 
-            location.reload();
+            const url = new URL(window.location.href);
+            url.searchParams.set('edition', 'open');
+            window.location.href = url.toString();
 
           } else {
             console.error('❌ Erreur valeur récompense', res.data);
@@ -294,7 +306,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
   }
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initChasseEdit);
+} else {
+  initChasseEdit();
+}
 
 
 // ==============================

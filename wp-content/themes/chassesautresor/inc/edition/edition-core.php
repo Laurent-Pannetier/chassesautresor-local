@@ -324,7 +324,7 @@ function masquer_admin_interface_pour_non_admins()
     }, 999);
 
     // 🔹 Liste des pages autorisées + AJAX WordPress (ajout de async-upload.php)
-    $pages_autorisees = ['post.php', 'post-new.php', 'edit.php', 'edit.php?post_type=trophee', 'admin-ajax.php', 'async-upload.php'];
+    $pages_autorisees = ['post.php', 'post-new.php', 'edit.php', 'admin-ajax.php', 'async-upload.php'];
 
     // 🔹 Redirige les utilisateurs non-admins s'ils essaient d'aller ailleurs
     add_action('admin_init', function () use ($pages_autorisees) {
@@ -452,7 +452,7 @@ function injection_classe_edition_active(array $classes): array
   // === CHASSE ===
   if (
     $post->post_type === 'chasse' &&
-    in_array(ROLE_ORGANISATEUR_CREATION, $roles, true)
+    (in_array(ROLE_ORGANISATEUR_CREATION, $roles, true) || in_array(ROLE_ORGANISATEUR, $roles, true))
   ) {
     $organisateur_id = get_organisateur_from_chasse($post->ID);
     $associes = get_field('utilisateurs_associes', $organisateur_id, false);
@@ -461,8 +461,12 @@ function injection_classe_edition_active(array $classes): array
     if (in_array((string) $user_id, $associes, true)) {
       verifier_ou_mettre_a_jour_cache_complet($post->ID);
 
+      $validation = get_field('chasse_cache_statut_validation', $post->ID);
+      $statut     = get_field('chasse_cache_statut', $post->ID);
+
       if (
-        get_post_status($post) === 'pending' &&
+        $statut === 'revision' &&
+        in_array($validation, ['creation', 'correction'], true) &&
         !get_field('chasse_cache_complet', $post->ID)
       ) {
         $classes[] = 'edition-active-chasse';
@@ -482,40 +486,34 @@ function injection_classe_edition_active(array $classes): array
  */
 function formater_date($date): string
 {
-  if (empty($date)) {
-    return 'Non spécifiée';
-  }
-
-  if ($date instanceof DateTimeInterface) {
-    return $date->format('d/m/Y');
-  }
-
-  if (is_array($date) && isset($date['date'])) {
-    $date = $date['date'];
-  }
-
-  $date = (string) $date;
-
-  if (preg_match('/^\d{9,10}$/', $date)) {
-    $timestamp = (int) $date;
-    return date_i18n('d/m/Y', $timestamp);
-  }
-
-
-  if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $date)) {
-    return $date;
-  }
-
-  if (preg_match('/^\d{8}$/', $date)) {
-    $dt = DateTime::createFromFormat('Ymd', $date);
-    if ($dt) {
-      return $dt->format('d/m/Y');
+    if (empty($date)) {
+        return 'Non spécifiée';
     }
-  }
 
+    if ($date instanceof DateTimeInterface) {
+        return $date->format('d/m/Y');
+    }
 
-  $timestamp = strtotime($date);
-  return ($timestamp !== false) ? date_i18n('d/m/Y', $timestamp) : 'Non spécifiée';
+    if (is_array($date) && isset($date['date'])) {
+        $date = $date['date'];
+    }
+
+    $date = (string) $date;
+
+    // Déjà formatée ?
+    if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $date)) {
+        return $date;
+    }
+
+    // Format '27/06/2025 1:55 pm'
+    $dt = DateTime::createFromFormat('d/m/Y g:i a', $date);
+    if ($dt instanceof DateTime) {
+        return $dt->format('d/m/Y');
+    }
+
+    // Dernière tentative : strtotime
+    $timestamp = strtotime($date);
+    return ($timestamp !== false) ? date_i18n('d/m/Y', $timestamp) : 'Non spécifiée';
 }
 
 
