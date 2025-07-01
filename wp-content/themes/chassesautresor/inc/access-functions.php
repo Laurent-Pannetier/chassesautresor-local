@@ -424,6 +424,16 @@ function utilisateur_peut_voir_enigme(int $enigme_id, ?int $user_id = null): boo
         return $autorise;
     }
 
+    // ✅ Cas organisateur associé à une chasse publiée mais à venir
+    if (
+        utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id) &&
+        $post_status === 'publish' &&
+        $etat_systeme === 'bloquee_chasse'
+    ) {
+        error_log("🟢 [voir énigme] organisateur associé à une chasse publiée mais à venir → accès OK");
+        return true;
+    }
+
     // ✅ Cas standard : publish + accessible
     $autorise = ($post_status === 'publish') && ($etat_systeme === 'accessible');
     error_log("🟠 [voir énigme] cas standard → accès " . ($autorise ? 'OK' : 'REFUSÉ'));
