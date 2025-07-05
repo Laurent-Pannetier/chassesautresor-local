@@ -173,7 +173,7 @@ function get_cta_enigme(int $enigme_id, ?int $user_id = null): array
         case 'non_commencee':
             return array_merge($cta, [
                 'type'       => 'engager',
-                'label'      => $points > 0 ? "Débloquer pour $points pts" : "Commencer",
+                'label'      => "Commencer",
                 'action'     => 'form',
                 'url'        => site_url('/traitement-engagement'),
                 'classe_css' => 'cta-engager',
@@ -221,7 +221,7 @@ function get_cta_enigme(int $enigme_id, ?int $user_id = null): array
         case 'echouee':
             return array_merge($cta, [
                 'type'       => 'engager',
-                'label'      => $points > 0 ? "Réessayer pour $points pts" : "Réessayer",
+                'label'      => "Réessayer",
                 'action'     => 'form',
                 'url'        => site_url('/traitement-engagement'),
                 'classe_css' => 'cta-echouee',
@@ -231,7 +231,7 @@ function get_cta_enigme(int $enigme_id, ?int $user_id = null): array
         case 'abandonnee':
             return array_merge($cta, [
                 'type'       => 'engager',
-                'label'      => $points > 0 ? "Recommencer pour $points pts" : "Recommencer",
+                'label'      => "Recommencer",
                 'action'     => 'form',
                 'url'        => site_url('/traitement-engagement'),
                 'classe_css' => 'cta-abandonnee',
@@ -263,7 +263,7 @@ function render_cta_enigme(array $cta, int $enigme_id): void
 
     switch ($cta['action']) {
         case 'form':
-            ?>
+?>
             <form method="post" action="<?= esc_url($cta['url']); ?>" class="cta-enigme-form">
                 <input type="hidden" name="enigme_id" value="<?= esc_attr($enigme_id); ?>">
                 <?php wp_nonce_field('engager_enigme_' . $enigme_id, 'engager_enigme_nonce'); ?>
@@ -274,30 +274,30 @@ function render_cta_enigme(array $cta, int $enigme_id): void
                     <div class="cta-sous-label"><?= esc_html($cta['sous_label']); ?></div>
                 <?php endif; ?>
             </form>
-            <?php
+        <?php
             break;
 
         case 'link':
-            ?>
+        ?>
             <a href="<?= esc_url($cta['url']); ?>" class="cta-enigme-lien <?= esc_attr($classes_bouton); ?>">
                 <?= esc_html($cta['label']); ?>
             </a>
             <?php if (!empty($cta['sous_label'])): ?>
                 <div class="cta-sous-label"><?= esc_html($cta['sous_label']); ?></div>
             <?php endif; ?>
-            <?php
+        <?php
             break;
 
         case 'disabled':
         default:
-            ?>
+        ?>
             <p class="cta-enigme-desactive bouton-secondaire no-click">
                 <?= esc_html($cta['label']); ?>
             </p>
             <?php if (!empty($cta['sous_label'])): ?>
                 <div class="cta-sous-label"><?= esc_html($cta['sous_label']); ?></div>
             <?php endif; ?>
-            <?php
+<?php
             break;
     }
 }
