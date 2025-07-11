@@ -213,7 +213,8 @@ function get_cta_enigme(int $enigme_id, ?int $user_id = null): array
             return array_merge($cta, [
                 'type'       => 'soumis',
                 'label'      => 'En attente',
-                'action'     => 'disabled',
+                'action'     => 'link',
+                'url'        => get_permalink($enigme_id),
                 'classe_css' => 'cta-soumis',
                 'badge'      => 'Soumise',
             ]);
@@ -257,7 +258,7 @@ function get_cta_enigme(int $enigme_id, ?int $user_id = null): array
 function render_cta_enigme(array $cta, int $enigme_id): void
 {
     $statut = $cta['statut_utilisateur'] ?? '';
-    $classes_bouton = in_array($statut, ['non_commencee', 'echouee', 'abandonnee'], true)
+    $classes_bouton = in_array($statut, ['non_commencee', 'echouee', 'abandonnee', 'soumis'], true)
         ? 'bouton bouton-cta'
         : 'bouton bouton-secondaire';
 

@@ -351,7 +351,18 @@ function traiter_statut_enigme(int $enigme_id, ?int $user_id = null): array
         ];
     }
 
-    // 🎯 Cas d'accès légitime (en cours, non_souscrite, resolue)
+    // 🎯 Cas d'accès légitime (en cours, non_souscrite, resolue, soumis)
+    if ($statut === 'soumis') {
+        return [
+            'etat' => 'soumis',
+            'rediriger' => false,
+            'url' => null,
+            'afficher_formulaire' => false,
+            'afficher_message' => true,
+            'message_html' => '<p class="message-statut">Votre tentative est en cours de traitement.</p>',
+        ];
+    }
+
     $formulaire = in_array($statut, ['en_cours', 'non_souscrite'], true);
     $message = ($statut === 'resolue');
     $message_html = $message ? '<p class="message-statut">Vous avez déjà résolu cette énigme.</p>' : '';
