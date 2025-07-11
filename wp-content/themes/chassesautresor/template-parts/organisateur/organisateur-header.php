@@ -89,9 +89,11 @@ if ($peut_modifier && !$est_complet) {
         <a href="<?= esc_url($url_contact); ?>" class="lien-contact" aria-label="Contact">
           <i class="fa-solid fa-envelope"></i>
         </a>
-        <button id="toggle-mode-edition" class="bouton-edition-toggle" aria-label="Paramètres organisateur">
-          <i class="fa-solid fa-sliders"></i>
-        </button>
+        <?php if ($peut_modifier) : ?>
+          <button id="toggle-mode-edition" class="bouton-edition-toggle" aria-label="Paramètres organisateur">
+            <i class="fa-solid fa-sliders"></i>
+          </button>
+        <?php endif; ?>
       </div>
     </div>
 
