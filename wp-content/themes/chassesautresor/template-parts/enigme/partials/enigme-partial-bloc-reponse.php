@@ -20,7 +20,11 @@ if (
 }
 
 if (!utilisateur_peut_repondre_manuelle($user_id, $post_id)) {
-  echo '<p class="message-joueur-statut">Vous avez déjà répondu ou résolu cette énigme.</p>';
+  $statut = enigme_get_statut_utilisateur($post_id, $user_id);
+  $texte = $statut === 'soumis'
+    ? 'Votre tentative est en cours de traitement.'
+    : 'Vous avez déjà répondu ou résolu cette énigme.';
+  echo '<p class="message-joueur-statut">' . esc_html($texte) . '</p>';
   return;
 }
 

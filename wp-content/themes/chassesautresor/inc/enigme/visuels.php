@@ -347,9 +347,9 @@ function get_mapping_visuel_enigme(int $enigme_id): array
             'sens'         => "Énigme en cours",
         ],
         'soumis' => [
-            'image_reelle' => false,
-            'fallback_svg' => 'reply-mail.svg',
-            'filtre'       => 'opacity-60',
+            'image_reelle' => true,
+            'fallback_svg' => null,
+            'filtre'       => null,
             'sens'         => "Réponse en attente de validation",
         ],
         'terminee' => [
