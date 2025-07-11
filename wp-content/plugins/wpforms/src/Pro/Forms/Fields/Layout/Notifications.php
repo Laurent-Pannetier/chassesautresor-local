@@ -36,7 +36,7 @@ class Notifications extends \WPForms\Pro\Forms\Fields\Base\Notifications {
 
 		$ignore = (bool) $ignore;
 
-		if ( empty( $field['id'] ) || strpos( $field['id'], '_' ) ) {
+		if ( ( empty( $field['id'] ) && ! is_numeric( $field['id'] ) ) || strpos( $field['id'], '_' ) ) {
 			return $ignore;
 		}
 

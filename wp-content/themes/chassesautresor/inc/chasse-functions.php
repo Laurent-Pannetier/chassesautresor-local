@@ -393,45 +393,29 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
     $permalink  = get_permalink($chasse_id);
     $statut     = get_field('chasse_cache_statut', $chasse_id) ?: 'revision';
     $validation = get_field('chasse_cache_statut_validation', $chasse_id);
-    $cout       = (int) get_field('chasse_infos_cout_points', $chasse_id);
     $date_debut = get_field('chasse_infos_date_debut', $chasse_id);
     $date_fin   = get_field('chasse_infos_date_fin', $chasse_id);
 
-    $type = '';
-
-    // Priorité : utilisateur non connecté -> bouton d'identification
+    // 🧑‍💻 Utilisateur non connecté
     if (!$user_id) {
         return [
-            'cta_html'    => '<a href="' . esc_url(site_url('/mon-compte')) . '" class="bouton-cta">' .
-                "S'identifier" . '</a>',
+            'cta_html'    => '<a href="' . esc_url(site_url('/mon-compte')) . '" class="bouton-cta">S\'identifier</a>',
             'cta_message' => 'Vous devez être identifié pour participer à cette chasse',
             'type'        => 'connexion',
         ];
     }
 
-    $is_admin   = current_user_can('administrator');
-    $is_associe = utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
-    $is_engage = utilisateur_est_engage_dans_chasse($user_id, $chasse_id);
-
-
-    // 🔒 Aucun bouton d'action pour les administrateurs ou organisateurs associés.
-    if ($is_admin || $is_associe) {
-        return [
-            'cta_html'    => '',
-            'cta_message' => '',
-            'type'        => '',
-        ];
+    // 🔐 Admin ou organisateur : pas de bouton
+    if (current_user_can('administrator') || utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
+        return ['cta_html' => '', 'cta_message' => '', 'type' => ''];
     }
 
-    if ($is_engage) {
-        return [
-            'cta_html'    => '', // plus de bouton
-            'cta_message' => '', // plus de message
-            'type'        => 'engage',
-        ];
+    // ✅ Déjà engagé
+    if (utilisateur_est_engage_dans_chasse($user_id, $chasse_id)) {
+        return ['cta_html' => '', 'cta_message' => '', 'type' => 'engage'];
     }
 
-
+    // ❌ Chasse non validée
     if ($validation !== 'valide') {
         return ['cta_html' => '', 'cta_message' => '', 'type' => ''];
     }
@@ -439,51 +423,28 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
     $html    = '';
     $message = '';
     $type    = '';
-    $points_utilisateur = $user_id ? get_user_points($user_id) : 0;
 
     if ($statut === 'a_venir') {
         $html = '<button class="bouton-cta" disabled>Indisponible</button>';
         $type = 'indisponible';
-        if ($date_debut) {
-            $ts = strtotime($date_debut);
-            $message = 'Chasse disponible à partir du ' . date_i18n('d/m/Y \à H:i', $ts);
-        } else {
-            $message = 'Chasse disponible prochainement';
-        }
+        $message = $date_debut
+            ? 'Chasse disponible à partir du ' . date_i18n('d/m/Y \à H:i', strtotime($date_debut))
+            : 'Chasse disponible prochainement';
     } elseif ($statut === 'en_cours' || $statut === 'payante') {
-        if ($cout > 0) {
-            if ($points_utilisateur >= $cout) {
-                $html  = '<form method="post" action="' . esc_url(site_url('/traitement-engagement')) . '" class="cta-chasse-form">';
-                $html .= '<input type="hidden" name="chasse_id" value="' . esc_attr($chasse_id) . '">';
-                $html .= wp_nonce_field('engager_chasse_' . $chasse_id, 'engager_chasse_nonce', true, false);
-                $html .= '<button type="submit" class="bouton-cta">Participer (' . $cout . ' points)</button>';
-                $html .= '</form>';
-                $message = "L'accès à cette chasse coûte <strong>{$cout} points</strong>";
-                $type    = 'engager';
-            } else {
-                $html    = '<button class="bouton-cta" disabled>Points insuffisants (' . $cout . ' points)</button>';
-                $manque  = max(0, $cout - $points_utilisateur);
-                $message = 'Il vous manque <strong>' . $manque . ' points</strong> pour participer à cette chasse. ';
-                $message .= '<a href="' . esc_url(home_url('/boutique')) . '">Acheter des points</a>';
-                $type    = 'points_insuffisants';
-            }
-        } else {
-            $html  = '<form method="post" action="' . esc_url(site_url('/traitement-engagement')) . '" class="cta-chasse-form">';
-            $html .= '<input type="hidden" name="chasse_id" value="' . esc_attr($chasse_id) . '">';
-            $html .= wp_nonce_field('engager_chasse_' . $chasse_id, 'engager_chasse_nonce', true, false);
-            $html .= '<button type="submit" class="bouton-cta">Participer</button>';
-            $html .= '</form>';
-            $message = 'Accès gratuit à cette chasse';
-            $type    = 'engager';
-        }
+        // 🔓 Participation gratuite à ce stade, engagement simple
+        $html  = '<form method="post" action="' . esc_url(site_url('/traitement-engagement')) . '" class="cta-chasse-form">';
+        $html .= '<input type="hidden" name="chasse_id" value="' . esc_attr($chasse_id) . '">';
+        $html .= wp_nonce_field('engager_chasse_' . $chasse_id, 'engager_chasse_nonce', true, false);
+        $html .= '<button type="submit" class="bouton-cta">Participer</button>';
+        $html .= '</form>';
+        $message = 'Accès libre à cette chasse. Les tentatives seront tarifées individuellement.';
+        $type    = 'engager';
     } elseif ($statut === 'termine') {
         $html = '<a href="' . esc_url($permalink) . '" class="bouton-cta">Voir</a>';
         $type = 'voir';
-        if ($date_fin) {
-            $message = 'Cette chasse est terminée depuis le ' . date_i18n('d/m/Y', strtotime($date_fin));
-        } else {
-            $message = 'Cette chasse est terminée';
-        }
+        $message = $date_fin
+            ? 'Cette chasse est terminée depuis le ' . date_i18n('d/m/Y', strtotime($date_fin))
+            : 'Cette chasse est terminée';
     }
 
     return [

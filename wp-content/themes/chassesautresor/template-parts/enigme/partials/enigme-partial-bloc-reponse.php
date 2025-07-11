@@ -1,8 +1,6 @@
 <?php
 defined('ABSPATH') || exit;
 
-defined('ABSPATH') || exit;
-
 $post_id = $args['post_id'] ?? null;
 $user_id = $args['user_id'] ?? get_current_user_id(); // ✅ sécurisation
 
@@ -20,7 +18,6 @@ if (
   echo '<p class="message-organisateur">🛠️ Cette énigme est la vôtre. Aucun formulaire n’est affiché.</p>';
   return;
 }
-
 
 if (!utilisateur_peut_repondre_manuelle($user_id, $post_id)) {
   echo '<p class="message-joueur-statut">Vous avez déjà répondu ou résolu cette énigme.</p>';

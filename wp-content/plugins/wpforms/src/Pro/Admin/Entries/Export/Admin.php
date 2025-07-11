@@ -172,7 +172,7 @@ class Admin {
 					],
 				]
 			),
-			esc_url( wpforms_utm_link( 'https://wpforms.com/docs/entry-automation-addon/', 'Entry Automation Education', 'Entry Automation Documentation' ) )
+			esc_url( wpforms_utm_link( 'https://wpforms.com/docs/entry-automation-addon/', 'Tools - Export', 'Learn More - Entry Automation Documentation' ) )
 		);
 
 		printf(

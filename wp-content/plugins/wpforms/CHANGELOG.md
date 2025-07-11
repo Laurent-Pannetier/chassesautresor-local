@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file and formatted via [this recommendation](https://keepachangelog.com/).
 
+## [1.9.6.2] - 2025-07-08
+### Fixed
+- The Name field was duplicated in email notifications in some cases.
+- "Please enable JavaScript" message was displayed over a form even when JavaScript was enabled.
+
 ## [1.9.6.1] - 2025-06-17
 ### Added
 - Smart Tags support in the Default Value setting for Name field subfields.

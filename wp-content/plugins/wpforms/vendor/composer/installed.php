@@ -38,12 +38,12 @@
             'dev_requirement' => false,
         ),
         'apimatic/unirest-php' => array(
-            'pretty_version' => '4.0.6',
-            'version' => '4.0.6.0',
+            'pretty_version' => '4.0.7',
+            'version' => '4.0.7.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../apimatic/unirest-php',
             'aliases' => array(),
-            'reference' => 'df38c93ffa71e8a1b7a075c2322c28cdfe8fe1f5',
+            'reference' => 'bdfd5f27c105772682c88ed671683f1bd93f4a3c',
             'dev_requirement' => false,
         ),
         'awesomemotive/wpforms' => array(
@@ -108,7 +108,7 @@
             'aliases' => array(
                 0 => '9999999-dev',
             ),
-            'reference' => '0a95bcf39c5b55601cb073bc307d567a16e31dc0',
+            'reference' => 'd4ca0cc4c49ba3437778e201d35844715d9b1bd9',
             'dev_requirement' => true,
         ),
         'square/square' => array(
