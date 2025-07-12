@@ -204,7 +204,7 @@ function recuperer_tentatives_enigme(int $enigme_id, int $limit = 25, int $offse
     global $wpdb;
     $table = $wpdb->prefix . 'enigme_tentatives';
     $query = $wpdb->prepare(
-        "SELECT * FROM $table WHERE enigme_id = %d ORDER BY tentative_uid DESC LIMIT %d OFFSET %d",
+        "SELECT * FROM $table WHERE enigme_id = %d ORDER BY traitee ASC, date_tentative ASC LIMIT %d OFFSET %d",
         $enigme_id,
         $limit,
         $offset
@@ -224,4 +224,21 @@ function compter_tentatives_enigme(int $enigme_id): int
     global $wpdb;
     $table = $wpdb->prefix . 'enigme_tentatives';
     return (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table WHERE enigme_id = %d", $enigme_id));
+}
+
+/**
+ * Compte le nombre de tentatives en attente de traitement pour une énigme.
+ *
+ * @param int $enigme_id ID de l'énigme.
+ * @return int Nombre de tentatives non traitées.
+ */
+function compter_tentatives_en_attente(int $enigme_id): int
+{
+    global $wpdb;
+    $table = $wpdb->prefix . 'enigme_tentatives';
+    $query = $wpdb->prepare(
+        "SELECT COUNT(*) FROM $table WHERE enigme_id = %d AND resultat = 'attente'",
+        $enigme_id
+    );
+    return (int) $wpdb->get_var($query);
 }

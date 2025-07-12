@@ -63,6 +63,19 @@ $has_variantes = ($nb_variantes > 0);
 
 ?>
 
+<?php
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action_traitement'])) {
+    $uid_post = sanitize_text_field($_POST['uid']);
+    check_admin_referer('traiter_tentative_' . $uid_post);
+    $action = sanitize_text_field($_POST['action_traitement']);
+    if (in_array($action, ['valider', 'invalider'], true)) {
+        $resultat = $action === 'valider' ? 'bon' : 'faux';
+        $effectue = traiter_tentative_manuelle($uid_post, $resultat);
+        wp_safe_redirect(add_query_arg('done', $effectue ? '1' : '0'));
+        exit;
+    }
+}
+?>
 <?php if ($peut_modifier) : ?>
   <section class="edition-panel edition-panel-enigme edition-panel-modal" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
     <div id="erreur-global"
@@ -428,24 +441,41 @@ $has_variantes = ($nb_variantes > 0);
   if (empty($tentatives)) : ?>
   <p>Aucune tentative de soumission.</p>
 <?php else : ?>
-  <table class="table-tentatives">
-    <thead>
-      <tr>
-        <th>Utilisateur</th>
-        <th>Réponse</th>
-        <th>Résultat</th>
-      </tr>
-    </thead>
-    <tbody>
-      <?php foreach ($tentatives as $tent) : ?>
+    <table class="table-tentatives">
+      <thead>
         <tr>
-          <td><?= esc_html(get_userdata($tent->user_id)?->display_name ?? 'Inconnu'); ?></td>
-          <td><?= esc_html($tent->reponse_saisie); ?></td>
-          <td><?= esc_html($tent->resultat); ?></td>
+          <th>Date</th>
+          <th>Utilisateur</th>
+          <th>Réponse</th>
+          <th>Actions</th>
         </tr>
-      <?php endforeach; ?>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        <?php foreach ($tentatives as $tent) :
+          $user = get_userdata($tent->user_id);
+          $login = $user?->user_login ?? 'Inconnu';
+          $date = mysql2date('d/m/y H:i', $tent->date_tentative);
+        ?>
+        <tr>
+          <td><?= esc_html($date); ?></td>
+          <td><?= esc_html($login); ?></td>
+          <td><?= esc_html($tent->reponse_saisie); ?></td>
+          <td>
+            <?php if ($tent->resultat === 'attente'): ?>
+              <form method="post" style="display:inline;">
+                <?php wp_nonce_field('traiter_tentative_' . $tent->tentative_uid); ?>
+                <input type="hidden" name="uid" value="<?= esc_attr($tent->tentative_uid); ?>">
+                <button type="submit" name="action_traitement" value="valider">Valider</button>
+                <button type="submit" name="action_traitement" value="invalider">Invalider</button>
+              </form>
+            <?php else: ?>
+              <?= esc_html($tent->resultat); ?>
+            <?php endif; ?>
+          </td>
+        </tr>
+        <?php endforeach; ?>
+      </tbody>
+    </table>
   <div class="pager" style="margin-top:10px;">
     <?php if ($page_tentatives > 1) : ?>
       <a href="<?= esc_url(add_query_arg('page_tentatives', $page_tentatives - 1)); ?>">&laquo; Préc.</a>

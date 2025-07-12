@@ -39,6 +39,17 @@ if (
   exit;
 }
 
+// ✅ Ouvre automatiquement l'onglet Soumission s'il y a des tentatives en attente
+if (
+  $edition_active &&
+  utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id) &&
+  compter_tentatives_en_attente($enigme_id) > 0 &&
+  !isset($_GET['edition'])
+) {
+  wp_redirect(add_query_arg(['edition' => 'open', 'tab' => 'soumission'], get_permalink()));
+  exit;
+}
+
 // 🔹 Statut logique de l’énigme
 $statut_data     = traiter_statut_enigme($enigme_id, $user_id);
 $statut_enigme   = $statut_data['etat'];

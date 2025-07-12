@@ -33,8 +33,13 @@ function initEnigmeEdit() {
   // ==============================
   const params = new URLSearchParams(window.location.search);
   const doitOuvrir = params.get('edition') === 'open';
+  const tab = params.get('tab');
   if (doitOuvrir && boutonToggle) {
     boutonToggle.click();
+    if (tab) {
+      const btn = panneauEdition?.querySelector(`.edition-tab[data-target="enigme-tab-${tab}"]`);
+      btn?.click();
+    }
     DEBUG && console.log('🔧 Ouverture auto du panneau édition énigme via ?edition=open');
   }
 
