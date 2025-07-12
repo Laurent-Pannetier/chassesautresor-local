@@ -1025,3 +1025,39 @@ body.panneau-ouvert::before {
   position: relative;
   z-index: 1;
 }
+
+/* Table des tentatives de réponse */
+.table-tentatives {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.table-tentatives th,
+.table-tentatives td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--color-editor-border);
+  color: var(--color-editor-text);
+}
+
+.table-tentatives th {
+  background-color: var(--color-editor-background);
+  color: var(--color-editor-heading);
+  text-align: left;
+}
+
+.table-tentatives th:nth-child(1),
+.table-tentatives td:nth-child(1),
+.table-tentatives th:nth-child(2),
+.table-tentatives td:nth-child(2) {
+  white-space: nowrap;
+  width: 1%;
+}
+
+.table-tentatives td:nth-child(3) {
+  word-break: break-word;
+}
+
+.table-tentatives button {
+  margin-right: 4px;
+}
