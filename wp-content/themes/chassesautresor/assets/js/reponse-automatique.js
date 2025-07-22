@@ -13,7 +13,18 @@ document.addEventListener('DOMContentLoaded', () => {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: data
     })
-      .then(r => r.json())
+      .then(async r => {
+        const text = await r.text();
+        try {
+          return JSON.parse(text);
+        } catch (e) {
+          if (feedback) {
+            feedback.textContent = 'Erreur serveur';
+            feedback.style.display = 'block';
+          }
+          throw e;
+        }
+      })
       .then(res => {
         if (feedback) feedback.style.display = 'none';
         if (res.success) {

@@ -173,24 +173,46 @@ function soumettre_reponse_automatique()
     if ($resultat === 'faux') {
         $variantes = get_field('enigme_reponse_variantes', $enigme_id) ?: [];
         foreach ($variantes as $cle => $var) {
+            if (!is_array($var)) {
+                continue;
+            }
+
             $i = (int) filter_var($cle, FILTER_SANITIZE_NUMBER_INT);
-            $txt = trim($var["texte_{$i}"] ?? '');
-            $msg = trim($var["message_{$i}"] ?? '');
-            $casse = (int) ($var["respecter_casse_{$i}"] ?? 0) === 1;
-            if ($txt !== '' && $msg !== '') {
-                $cmp_saisie = $casse ? $saisie_brute : mb_strtolower($saisie_brute);
-                $cmp_txt    = $casse ? $txt : mb_strtolower($txt);
-                if ($cmp_saisie === $cmp_txt) {
-                    $resultat = 'variante';
-                    $message  = $msg;
-                    $index    = $i;
-                    break;
+            if (!$i) {
+                foreach ($var as $k => $_) {
+                    if (preg_match('/texte_(\d+)/', $k, $m)) {
+                        $i = (int) $m[1];
+                        break;
+                    }
                 }
+            }
+
+            $txt   = trim($var["texte_{$i}"] ?? '');
+            $msg   = trim($var["message_{$i}"] ?? '');
+            $casse = (int) ($var["respecter_casse_{$i}"] ?? 0) === 1;
+
+            if ($txt === '') {
+                continue;
+            }
+
+            $cmp_saisie = $casse ? $saisie_brute : mb_strtolower($saisie_brute);
+            $cmp_txt    = $casse ? $txt : mb_strtolower($txt);
+
+            if ($cmp_saisie === $cmp_txt) {
+                $resultat = 'variante';
+                $message  = $msg;
+                $index    = $i;
+                break;
             }
         }
     }
 
-    $uid = traiter_tentative($user_id, $enigme_id, $reponse, $resultat, true, false);
+    try {
+        $uid = traiter_tentative($user_id, $enigme_id, $reponse, $resultat, true, false);
+    } catch (Throwable $e) {
+        error_log('Erreur tentative : ' . $e->getMessage());
+        wp_send_json_error('erreur_interne');
+    }
 
     if ($resultat === 'variante') {
         $key = 'enigme_variante_vue_' . $enigme_id;

@@ -1242,8 +1242,9 @@ Index :
 | traitee | tinyint(1) NULL DEFAULT 0 | état de traitement |
 
 
-Meta utilisateur associé : `enigme_variante_vue_<ID>` stocke l’index du message
-de variante déjà affiché pour éviter les répétitions (réinitialisé chaque nuit).
+Meta utilisateur associé : `enigme_variante_vue_<ID>` stocke l’index du message de variante déjà affiché pour éviter les répétitions (réinitialisé chaque nuit).
+
+Les variantes sont comparées en tenant compte de leur option `respecter_casse_n`. Si la saisie correspond, le résultat enregistré est `variante` et le message défini est renvoyé via AJAX.
 
 
 ### 📂 Références internes utiles (template-parts/, data-champ, etc.)
