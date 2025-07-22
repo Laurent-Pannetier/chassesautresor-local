@@ -1171,6 +1171,10 @@ organisateur-edit.js	Edition front organisateur (header + liens)	initLiensOrgani
 | `formulaire-liens-chasse`                | initLiensChasse               | Idem orga, côté chasse            |
 | `champ-recompense-*` (champ libre, chasse)| JS personnalisé (saisie + fetch séquencé) | ⚠️ Validation manuelle + reload |
 
+Nouveaux hooks PHP :
+- `soumettre_reponse_automatique()` (AJAX) – enregistre immédiatement la tentative et déduit les points.
+- `traiter_tentative()` – logique commune d’insertion et de mise à jour de statut.
+
 
 ### 🚫 Champs ACF désactivés ou ignorés
 
@@ -1236,6 +1240,10 @@ Index :
 | ip | varchar(45) NULL | adresse IP |
 | user_agent | text NULL | navigateur |
 | traitee | tinyint(1) NULL DEFAULT 0 | état de traitement |
+
+
+Meta utilisateur associé : `enigme_variante_vue_<ID>` stocke l’index du message
+de variante déjà affiché pour éviter les répétitions (réinitialisé chaque nuit).
 
 
 ### 📂 Références internes utiles (template-parts/, data-champ, etc.)

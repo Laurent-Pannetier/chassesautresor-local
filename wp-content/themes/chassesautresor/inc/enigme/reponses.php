@@ -120,7 +120,93 @@ defined('ABSPATH') || exit;
             });
         }
     }
-    add_action('init', 'soumettre_reponse_manuelle');
+add_action('init', 'soumettre_reponse_manuelle');
+
+/**
+ * Traite la soumission d'une réponse automatique via AJAX.
+ */
+function soumettre_reponse_automatique()
+{
+    if (!is_user_logged_in()) {
+        wp_send_json_error('non_connecte');
+    }
+
+    $user_id = get_current_user_id();
+    $enigme_id = isset($_POST['enigme_id']) ? (int) $_POST['enigme_id'] : 0;
+    $reponse = isset($_POST['reponse']) ? sanitize_text_field($_POST['reponse']) : '';
+    $nonce   = $_POST['nonce'] ?? '';
+
+    if (!$enigme_id || $reponse === '' || !wp_verify_nonce($nonce, 'reponse_auto_nonce')) {
+        wp_send_json_error('invalide');
+    }
+
+    $etat = enigme_get_etat_systeme($enigme_id);
+    $statut = enigme_get_statut_utilisateur($enigme_id, $user_id);
+
+    $autorisations = ['non_commencee', 'en_cours', 'abandonnee', 'echouee'];
+    if ($etat !== 'accessible' || !in_array($statut, $autorisations, true)) {
+        wp_send_json_error('interdit');
+    }
+
+    $max = (int) get_field('enigme_tentative_max', $enigme_id);
+    $deja = compter_tentatives_du_jour($user_id, $enigme_id);
+    if ($max && $deja >= $max) {
+        wp_send_json_error('tentatives_epuisees');
+    }
+
+    $cout = (int) get_field('enigme_tentative_cout_points', $enigme_id);
+    if ($cout > get_user_points($user_id)) {
+        wp_send_json_error('points_insuffisants');
+    }
+
+    $reponse_attendue = trim((string) get_field('enigme_reponse_bonne', $enigme_id));
+    $respecter_casse  = (int) get_field('enigme_reponse_casse', $enigme_id) === 1;
+    $saisie_cmp  = $respecter_casse ? $reponse : mb_strtolower($reponse);
+    $attendue_cmp = $respecter_casse ? $reponse_attendue : mb_strtolower($reponse_attendue);
+
+    $resultat = $saisie_cmp === $attendue_cmp ? 'bon' : 'faux';
+    $message  = '';
+    $index    = 0;
+
+    if ($resultat === 'faux') {
+        $variantes = get_field('enigme_reponse_variantes', $enigme_id) ?: [];
+        foreach ($variantes as $cle => $var) {
+            $i = (int) filter_var($cle, FILTER_SANITIZE_NUMBER_INT);
+            $txt = trim($var["texte_{$i}"] ?? '');
+            $msg = trim($var["message_{$i}"] ?? '');
+            $casse = (int) ($var["respecter_casse_{$i}"] ?? 0) === 1;
+            if ($txt !== '' && $msg !== '') {
+                $cmp = $casse ? $txt : mb_strtolower($txt);
+                if ($saisie_cmp === $cmp) {
+                    $resultat = 'variante';
+                    $message  = $msg;
+                    $index    = $i;
+                    break;
+                }
+            }
+        }
+    }
+
+    $uid = traiter_tentative($user_id, $enigme_id, $reponse, $resultat);
+
+    if ($resultat === 'variante') {
+        $key = 'enigme_variante_vue_' . $enigme_id;
+        $vu = get_user_meta($user_id, $key, true);
+        if ((string) $vu !== (string) $index) {
+            update_user_meta($user_id, $key, $index);
+        } else {
+            $message = '';
+        }
+    }
+
+    wp_send_json_success([
+        'resultat' => $resultat,
+        'message'  => $message,
+        'uid'      => $uid,
+    ]);
+}
+add_action('wp_ajax_soumettre_reponse_automatique', 'soumettre_reponse_automatique');
+add_action('wp_ajax_nopriv_soumettre_reponse_automatique', 'soumettre_reponse_automatique');
 
 
 
@@ -277,8 +363,8 @@ defined('ABSPATH') || exit;
      * @param int $enigme_id
      * @return void
      */
-    function envoyer_mail_accuse_reception_joueur($user_id, $enigme_id, $uid)
-    {
+function envoyer_mail_accuse_reception_joueur($user_id, $enigme_id, $uid)
+{
         $user = get_userdata($user_id);
         if (!$user || !is_email($user->user_email)) return;
 
@@ -318,4 +404,21 @@ defined('ABSPATH') || exit;
         remove_filter('wp_mail_from_name', '__return_false'); // si mis ailleurs
 
     }
+
+/**
+ * Charge le script gérant la soumission automatique des réponses.
+ */
+function charger_script_reponse_automatique() {
+    if (is_singular('enigme')) {
+        $path = '/assets/js/reponse-automatique.js';
+        wp_enqueue_script(
+            'reponse-automatique',
+            get_stylesheet_directory_uri() . $path,
+            [],
+            filemtime(get_stylesheet_directory() . $path),
+            true
+        );
+    }
+}
+add_action('wp_enqueue_scripts', 'charger_script_reponse_automatique');
 
