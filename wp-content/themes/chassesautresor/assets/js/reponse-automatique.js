@@ -17,8 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
       .then(res => {
         if (feedback) feedback.style.display = 'none';
         if (res.success) {
-          if (res.data.resultat === 'variante' && res.data.message) {
-            if (feedback) {
+          if (res.data.resultat === 'variante') {
+            if (res.data.message && feedback) {
               feedback.textContent = res.data.message;
               feedback.style.display = 'block';
             }
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
           } else if (res.data.resultat === 'bon') {
             form.remove();
             if (feedback) {
-              feedback.textContent = 'Bravo, énigme résolue !';
+              feedback.textContent = 'Bonne réponse !';
               feedback.style.display = 'block';
             }
           } else {

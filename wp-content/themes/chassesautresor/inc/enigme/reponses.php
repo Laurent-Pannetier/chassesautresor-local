@@ -161,10 +161,12 @@ function soumettre_reponse_automatique()
 
     $reponse_attendue = trim((string) get_field('enigme_reponse_bonne', $enigme_id));
     $respecter_casse  = (int) get_field('enigme_reponse_casse', $enigme_id) === 1;
-    $saisie_cmp  = $respecter_casse ? $reponse : mb_strtolower($reponse);
+
+    $saisie_brute = trim($reponse);
+    $saisie_cmp_main = $respecter_casse ? $saisie_brute : mb_strtolower($saisie_brute);
     $attendue_cmp = $respecter_casse ? $reponse_attendue : mb_strtolower($reponse_attendue);
 
-    $resultat = $saisie_cmp === $attendue_cmp ? 'bon' : 'faux';
+    $resultat = $saisie_cmp_main === $attendue_cmp ? 'bon' : 'faux';
     $message  = '';
     $index    = 0;
 
@@ -176,8 +178,9 @@ function soumettre_reponse_automatique()
             $msg = trim($var["message_{$i}"] ?? '');
             $casse = (int) ($var["respecter_casse_{$i}"] ?? 0) === 1;
             if ($txt !== '' && $msg !== '') {
-                $cmp = $casse ? $txt : mb_strtolower($txt);
-                if ($saisie_cmp === $cmp) {
+                $cmp_saisie = $casse ? $saisie_brute : mb_strtolower($saisie_brute);
+                $cmp_txt    = $casse ? $txt : mb_strtolower($txt);
+                if ($cmp_saisie === $cmp_txt) {
                     $resultat = 'variante';
                     $message  = $msg;
                     $index    = $i;
