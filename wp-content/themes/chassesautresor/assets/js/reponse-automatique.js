@@ -23,8 +23,17 @@ document.addEventListener('DOMContentLoaded', () => {
               feedback.style.display = 'block';
             }
             form.reset();
+          } else if (res.data.resultat === 'bon') {
+            form.remove();
+            if (feedback) {
+              feedback.textContent = 'Bravo, énigme résolue !';
+              feedback.style.display = 'block';
+            }
           } else {
-            location.reload();
+            if (feedback) {
+              feedback.textContent = 'Mauvaise réponse';
+              feedback.style.display = 'block';
+            }
           }
         } else {
           if (feedback) {

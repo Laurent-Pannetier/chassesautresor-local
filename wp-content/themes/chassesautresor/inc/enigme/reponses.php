@@ -187,7 +187,7 @@ function soumettre_reponse_automatique()
         }
     }
 
-    $uid = traiter_tentative($user_id, $enigme_id, $reponse, $resultat);
+    $uid = traiter_tentative($user_id, $enigme_id, $reponse, $resultat, true, false);
 
     if ($resultat === 'variante') {
         $key = 'enigme_variante_vue_' . $enigme_id;

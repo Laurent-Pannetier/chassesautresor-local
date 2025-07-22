@@ -40,6 +40,12 @@ if ($mode_validation === 'manuelle') {
   return;
 }
 
+$statut_actuel = enigme_get_statut_utilisateur($post_id, $user_id);
+if ($statut_actuel === 'resolue') {
+  echo '<p class="message-joueur-statut">Vous avez déjà résolu cette énigme.</p>';
+  return;
+}
+
 $tentatives_du_jour = compter_tentatives_du_jour($user_id, $post_id);
 $boutique_url = esc_url(home_url('/boutique/'));
 $disabled = '';
