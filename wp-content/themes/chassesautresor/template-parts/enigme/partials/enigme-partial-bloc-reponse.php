@@ -83,15 +83,17 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
   <?php endif; ?>
   <input type="hidden" name="enigme_id" value="<?= esc_attr($post_id); ?>">
   <input type="hidden" name="nonce" value="<?= esc_attr($nonce); ?>">
-  <button type="submit" class="bouton-cta" <?= $disabled; ?>><?= $label_btn; ?></button>
-  <?php if ($cout > 0 && $statut_actuel !== 'resolue') : ?>
-    <span class="badge-cout"><?= esc_html($cout); ?> pts</span>
-    <?php if ($points_manquants > 0) : ?>
-      <a href="<?= esc_url($boutique_url); ?>" class="points-link points-boutique-icon" title="Accéder à la boutique">
-        <span class="points-plus-circle">+</span>
-      </a>
+  <div class="reponse-cta-row">
+    <button type="submit" class="bouton-cta" <?= $disabled; ?>><?= $label_btn; ?></button>
+    <?php if ($cout > 0 && $statut_actuel !== 'resolue') : ?>
+      <span class="badge-cout"><?= esc_html($cout); ?> pts</span>
+      <?php if ($points_manquants > 0) : ?>
+        <a href="<?= esc_url($boutique_url); ?>" class="points-link points-boutique-icon" title="Accéder à la boutique">
+          <span class="points-plus-circle">+</span>
+        </a>
+      <?php endif; ?>
     <?php endif; ?>
-  <?php endif; ?>
+  </div>
 </form>
 <div class="reponse-feedback" style="display:none"></div>
 <?php if ($max > 0) : ?>
