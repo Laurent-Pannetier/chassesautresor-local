@@ -444,9 +444,10 @@ function envoyer_email_confirmation_organisateur(int $user_id, string $token): b
     $message .= '</div>';
 
     $headers = ['Content-Type: text/html; charset=UTF-8'];
-    add_filter('wp_mail_from_name', function () { return 'Chasses au Trésor'; });
+    $from_filter = static function ($name) { return 'Chasses au Trésor'; };
+    add_filter('wp_mail_from_name', $from_filter, 10, 1);
     wp_mail($user->user_email, $subject, $message, $headers);
-    remove_filter('wp_mail_from_name', '__return_false');
+    remove_filter('wp_mail_from_name', $from_filter, 10);
     return true;
 }
 

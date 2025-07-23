@@ -297,12 +297,13 @@ add_action('wp_ajax_nopriv_soumettre_reponse_automatique', 'soumettre_reponse_au
             'Reply-To: ' . $user->display_name . ' <' . $user->user_email . '>',
         ];
 
-        add_filter('wp_mail_from_name', function () use ($user) {
+        $from_filter = static function ($name) use ($user) {
             return $user->display_name;
-        });
+        };
+        add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
         wp_mail($email_organisateur, $subject, $message, $headers);
-        remove_filter('wp_mail_from_name', '__return_false');
+        remove_filter('wp_mail_from_name', $from_filter, 10);
     }
 
 
@@ -365,12 +366,13 @@ add_action('wp_ajax_nopriv_soumettre_reponse_automatique', 'soumettre_reponse_au
 
         $headers[] = 'Reply-To: ' . $email_organisateur;
 
-        add_filter('wp_mail_from_name', function () {
+        $from_filter = static function ($name) {
             return 'Chasses au Trésor';
-        });
+        };
+        add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
         wp_mail($user->user_email, $sujet, $message, $headers);
-        remove_filter('wp_mail_from_name', '__return_false'); // si mis ailleurs
+        remove_filter('wp_mail_from_name', $from_filter, 10); // si mis ailleurs
     }
 
     /**
@@ -413,12 +415,14 @@ function envoyer_mail_accuse_reception_joueur($user_id, $enigme_id, $uid)
             'Reply-To: ' . $email_organisateur
         ];
 
-        add_filter('wp_mail_from_name', function () use ($organisateur_id) {
-            return get_the_title($organisateur_id) ?: 'Chasses au Trésor';
-        });
+        $from_filter = static function ($name) use ($organisateur_id) {
+            $titre = get_the_title($organisateur_id);
+            return $titre ?: 'Chasses au Trésor';
+        };
+        add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
         wp_mail($user->user_email, $sujet, $message, $headers);
-        remove_filter('wp_mail_from_name', '__return_false'); // si mis ailleurs
+        remove_filter('wp_mail_from_name', $from_filter, 10); // si mis ailleurs
 
     }
 
