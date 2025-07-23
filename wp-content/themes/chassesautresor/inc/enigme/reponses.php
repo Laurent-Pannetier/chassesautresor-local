@@ -171,36 +171,37 @@ function soumettre_reponse_automatique()
     $index    = 0;
 
     if ($resultat === 'faux') {
-        $variantes = get_field('enigme_reponse_variantes', $enigme_id) ?: [];
-        foreach ($variantes as $cle => $var) {
-            if (!is_array($var)) {
-                continue;
-            }
-
-            $i = (int) filter_var($cle, FILTER_SANITIZE_NUMBER_INT);
-            if (!$i) {
-                foreach ($var as $k => $_) {
-                    if (preg_match('/texte_(\d+)/', $k, $m)) {
-                        $i = (int) $m[1];
-                        break;
-                    }
+        $raw = get_field('enigme_reponse_variantes', $enigme_id);
+        $variantes = [];
+        if (is_array($raw)) {
+            for ($i = 1; $i <= 4; $i++) {
+                if (isset($raw["variante_{$i}"]) && is_array($raw["variante_{$i}"])) {
+                    $bloc = $raw["variante_{$i}"];
+                    $txt = trim((string) ($bloc["texte_{$i}"] ?? ''));
+                    $msg = trim((string) ($bloc["message_{$i}"] ?? ''));
+                    $casse = (int) ($bloc["respecter_casse_{$i}"] ?? 0) === 1;
+                } else {
+                    $txt = trim((string) ($raw["texte_{$i}"] ?? ''));
+                    $msg = trim((string) ($raw["message_{$i}"] ?? ''));
+                    $casse = (int) ($raw["respecter_casse_{$i}"] ?? 0) === 1;
+                }
+                if ($txt !== '') {
+                    $variantes[$i] = [
+                        'texte' => $txt,
+                        'message' => $msg,
+                        'casse' => $casse,
+                    ];
                 }
             }
+        }
 
-            $txt   = trim($var["texte_{$i}"] ?? '');
-            $msg   = trim($var["message_{$i}"] ?? '');
-            $casse = (int) ($var["respecter_casse_{$i}"] ?? 0) === 1;
-
-            if ($txt === '') {
-                continue;
-            }
-
-            $cmp_saisie = $casse ? $saisie_brute : mb_strtolower($saisie_brute);
-            $cmp_txt    = $casse ? $txt : mb_strtolower($txt);
+        foreach ($variantes as $i => $var) {
+            $cmp_saisie = $var['casse'] ? $saisie_brute : mb_strtolower($saisie_brute);
+            $cmp_txt    = $var['casse'] ? $var['texte'] : mb_strtolower($var['texte']);
 
             if ($cmp_saisie === $cmp_txt) {
                 $resultat = 'variante';
-                $message  = $msg;
+                $message  = $var['message'];
                 $index    = $i;
                 break;
             }
