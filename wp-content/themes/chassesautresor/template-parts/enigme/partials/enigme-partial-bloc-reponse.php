@@ -23,9 +23,8 @@ if (
 $mode_validation = get_field('enigme_mode_validation', $post_id);
 if (!in_array($mode_validation, ['automatique', 'manuelle'])) return;
 
-$tentative = get_field('enigme_tentative', $post_id);
-$cout = (int) ($tentative['enigme_tentative_cout_points'] ?? 0);
-$max = (int) ($tentative['enigme_tentative_max'] ?? 0);
+$cout = (int) get_field('enigme_tentative_cout_points', $post_id);
+$max  = (int) get_field('enigme_tentative_max', $post_id);
 
 if ($mode_validation === 'manuelle') {
   if (!utilisateur_peut_repondre_manuelle($user_id, $post_id)) {
