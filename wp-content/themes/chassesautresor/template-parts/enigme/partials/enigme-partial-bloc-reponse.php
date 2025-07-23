@@ -53,8 +53,15 @@ $message_tentatives = '';
 
 if ($max && $tentatives_du_jour >= $max) {
   $disabled = 'disabled';
-  $label_btn = 'tentatives quotidiennes épuisées';
   $message_tentatives = 'tentatives quotidiennes épuisées';
+
+  $tz = new DateTimeZone('Europe/Paris');
+  $now = new DateTime('now', $tz);
+  $midnight = (clone $now)->modify('tomorrow')->setTime(0, 0);
+  $diff = $midnight->getTimestamp() - $now->getTimestamp();
+  $hours = floor($diff / 3600);
+  $minutes = floor(($diff % 3600) / 60);
+  $label_btn = sprintf('%02d:%02d', $hours, $minutes);
 }
 
 if ($cout > get_user_points($user_id)) {
@@ -74,7 +81,7 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
   <?php endif; ?>
   <input type="hidden" name="enigme_id" value="<?= esc_attr($post_id); ?>">
   <input type="hidden" name="nonce" value="<?= esc_attr($nonce); ?>">
-  <button type="submit" <?= $disabled; ?>><?= $label_btn; ?></button>
+  <button type="submit" class="bouton-cta" <?= $disabled; ?>><?= $label_btn; ?></button>
 </form>
 <div class="reponse-feedback" style="display:none"></div>
 <?php if ($max > 0) : ?>

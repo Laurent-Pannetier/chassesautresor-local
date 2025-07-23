@@ -1,3 +1,13 @@
+function timeUntilMidnight() {
+  const now = new Date();
+  const midnight = new Date();
+  midnight.setHours(24, 0, 0, 0);
+  const diff = midnight - now;
+  const h = Math.floor(diff / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.querySelector('.formulaire-reponse-auto');
   if (!form) return;
@@ -76,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
               const btn = form.querySelector('button[type="submit"]');
               if (btn) {
                 btn.disabled = true;
-                btn.textContent = 'tentatives quotidiennes épuisées';
+                btn.textContent = timeUntilMidnight();
               }
             }
           }
@@ -98,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = form.querySelector('button[type="submit"]');
             if (btn) {
               btn.disabled = true;
-              btn.textContent = 'tentatives quotidiennes épuisées';
+              btn.textContent = timeUntilMidnight();
             }
           }
         }
