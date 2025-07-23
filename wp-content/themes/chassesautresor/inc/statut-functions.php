@@ -328,12 +328,23 @@ function traiter_statut_enigme(int $enigme_id, ?int $user_id = null): array
     }
 
     // 🔁 Cas interdits : accès refusé
-    if (in_array($statut, ['echouee', 'abandonnee'], true)) {
+    if ($statut === 'abandonnee') {
         return [
             'etat' => $statut,
             'rediriger' => true,
             'url' => $chasse_id ? get_permalink($chasse_id) : home_url('/'),
             'afficher_formulaire' => false,
+            'afficher_message' => false,
+            'message_html' => '',
+        ];
+    }
+
+    if ($statut === 'echouee') {
+        return [
+            'etat' => $statut,
+            'rediriger' => false,
+            'url' => null,
+            'afficher_formulaire' => true,
             'afficher_message' => false,
             'message_html' => '',
         ];

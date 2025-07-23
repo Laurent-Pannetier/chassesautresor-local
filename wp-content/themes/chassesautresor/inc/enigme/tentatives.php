@@ -118,7 +118,7 @@ defined('ABSPATH') || exit;
             ['%s']
         );
 
-        traiter_tentative($user_id, $enigme_id, (string) $tentative->reponse_saisie, $resultat, false, true);
+        traiter_tentative($user_id, $enigme_id, (string) $tentative->reponse_saisie, $resultat, false, true, true);
 
         error_log("✅ Tentative UID=$uid traitée comme $resultat");
         return true;
@@ -268,10 +268,19 @@ function compter_tentatives_du_jour(int $user_id, int $enigme_id): int
  * Traite une tentative d'énigme : déduction des points, enregistrement et
  * mise à jour du statut utilisateur.
  *
- * @param bool $email_echec Envoyer un email même en cas d'échec
+ * @param bool $email_echec  Envoyer un email même en cas d'échec
+ * @param bool $envoyer_mail Envoyer les notifications de résultat
  * @return string UID de la tentative enregistrée (vide si $inserer = false)
  */
-function traiter_tentative(int $user_id, int $enigme_id, string $reponse, string $resultat, bool $inserer = true, bool $email_echec = false): string
+function traiter_tentative(
+    int $user_id,
+    int $enigme_id,
+    string $reponse,
+    string $resultat,
+    bool $inserer = true,
+    bool $email_echec = false,
+    bool $envoyer_mail = true
+): string
 {
     $cout = (int) get_field('enigme_tentative_cout_points', $enigme_id);
     if ($cout > 0) {
@@ -292,7 +301,7 @@ function traiter_tentative(int $user_id, int $enigme_id, string $reponse, string
         enigme_mettre_a_jour_statut_utilisateur($enigme_id, $user_id, 'en_cours');
     }
 
-    if ($resultat === 'bon' || ($email_echec && $resultat === 'faux')) {
+    if ($envoyer_mail && ($resultat === 'bon' || ($email_echec && $resultat === 'faux'))) {
         envoyer_mail_resultat_joueur($user_id, $enigme_id, $resultat);
     }
 

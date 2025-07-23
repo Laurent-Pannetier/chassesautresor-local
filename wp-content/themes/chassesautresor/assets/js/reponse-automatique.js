@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const form = document.querySelector('.formulaire-reponse-auto');
   if (!form) return;
   const feedback = document.querySelector('.reponse-feedback');
+  const compteur = document.querySelector('.compteur-tentatives');
+  let hideTimer = null;
 
   form.addEventListener('submit', e => {
     e.preventDefault();
@@ -21,13 +23,17 @@ document.addEventListener('DOMContentLoaded', () => {
           if (feedback) {
             feedback.textContent = 'Erreur serveur';
             feedback.style.display = 'block';
-            setTimeout(() => { feedback.style.display = 'none'; }, 5000);
+            hideTimer = setTimeout(() => { feedback.style.display = 'none'; }, 5000);
           }
           throw e;
         }
       })
       .then(res => {
         if (!feedback) return;
+        if (hideTimer) {
+          clearTimeout(hideTimer);
+          hideTimer = null;
+        }
         feedback.style.display = 'none';
 
         if (res.success) {
@@ -45,12 +51,16 @@ document.addEventListener('DOMContentLoaded', () => {
           } else {
             feedback.textContent = 'Mauvaise réponse';
             feedback.style.display = 'block';
-            setTimeout(() => { feedback.style.display = 'none'; }, 5000);
+            hideTimer = setTimeout(() => { feedback.style.display = 'none'; }, 5000);
+          }
+          if (compteur && typeof res.data.compteur !== 'undefined') {
+            const max = compteur.dataset.max;
+            compteur.textContent = `${res.data.compteur} tentatives / ${max} maximum aujourd'hui`;
           }
         } else {
           feedback.textContent = res.data;
           feedback.style.display = 'block';
-          setTimeout(() => { feedback.style.display = 'none'; }, 5000);
+          hideTimer = setTimeout(() => { feedback.style.display = 'none'; }, 5000);
         }
       });
   });

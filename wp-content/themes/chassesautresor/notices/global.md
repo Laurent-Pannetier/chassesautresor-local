@@ -1164,8 +1164,8 @@ organisateur-edit.js	Edition front organisateur (header + liens)	initLiensOrgani
 | `champ-recompense-*` (champ libre, chasse)| JS personnalisé (saisie + fetch séquencé) | ⚠️ Validation manuelle + reload |
 
 Nouveaux hooks PHP :
-- `soumettre_reponse_automatique()` (AJAX) – enregistre immédiatement la tentative, déduit les points et n'envoie un email qu'en cas de bonne réponse.
-- `traiter_tentative()` – logique commune d’insertion et de mise à jour de statut.
+- `soumettre_reponse_automatique()` (AJAX) – enregistre immédiatement la tentative sans envoyer d'email.
+- `traiter_tentative()` – logique commune d’insertion, mise à jour de statut et option d'envoi d'email.
 
 
 ### 🚫 Champs ACF désactivés ou ignorés
