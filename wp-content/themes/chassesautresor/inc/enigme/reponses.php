@@ -171,9 +171,9 @@ function soumettre_reponse_automatique()
     $index    = 0;
 
     if ($resultat === 'faux') {
-        $raw = get_field('enigme_reponse_variantes', $enigme_id);
         $variantes = [];
-        if (is_array($raw)) {
+        $raw = get_field('enigme_reponse_variantes', $enigme_id);
+        if (is_array($raw) && !empty($raw)) {
             for ($i = 1; $i <= 4; $i++) {
                 if (isset($raw["variante_{$i}"]) && is_array($raw["variante_{$i}"])) {
                     $bloc = $raw["variante_{$i}"];
@@ -190,6 +190,20 @@ function soumettre_reponse_automatique()
                         'texte' => $txt,
                         'message' => $msg,
                         'casse' => $casse,
+                    ];
+                }
+            }
+        } else {
+            // Fallback: variantes stockées en champs individuels
+            for ($i = 1; $i <= 4; $i++) {
+                $txt   = trim((string) get_field("texte_{$i}", $enigme_id));
+                $msg   = trim((string) get_field("message_{$i}", $enigme_id));
+                $casse = (int) get_field("respecter_casse_{$i}", $enigme_id) === 1;
+                if ($txt !== '') {
+                    $variantes[$i] = [
+                        'texte'   => $txt,
+                        'message' => $msg,
+                        'casse'   => $casse,
                     ];
                 }
             }
