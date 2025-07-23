@@ -80,6 +80,9 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
   <?php elseif ($points_manquants > 0) : ?>
     <p class="message-limite" data-points="manquants">
       <?= esc_html(sprintf('%d points manquants', $points_manquants)); ?>
+      <a href="<?= esc_url($boutique_url); ?>" class="points-link points-boutique-icon" title="Accéder à la boutique">
+        <span class="points-plus-circle">+</span>
+      </a>
     </p>
   <?php else : ?>
     <input type="text" name="reponse" id="reponse_auto_<?= esc_attr($post_id); ?>" required>
@@ -90,11 +93,6 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
     <button type="submit" class="bouton-cta" <?= $disabled; ?>><?= $label_btn; ?></button>
     <?php if ($cout > 0 && $statut_actuel !== 'resolue') : ?>
       <span class="badge-cout"><?= esc_html($cout); ?> pts</span>
-      <?php if ($points_manquants > 0) : ?>
-        <a href="<?= esc_url($boutique_url); ?>" class="points-link points-boutique-icon" title="Accéder à la boutique">
-          <span class="points-plus-circle">+</span>
-        </a>
-      <?php endif; ?>
     <?php endif; ?>
   </div>
 </form>
