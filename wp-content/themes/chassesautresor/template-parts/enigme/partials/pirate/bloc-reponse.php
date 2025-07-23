@@ -1,5 +1,6 @@
 <?php
 defined('ABSPATH') || exit;
 
-echo '<div class="test-partial">🏴‍☠️ Bloc réponse (pirate)</div>';
-?>
+get_template_part('template-parts/enigme/partials/enigme-partial-bloc-reponse', null, $args);
+
+

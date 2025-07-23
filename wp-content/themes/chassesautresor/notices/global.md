@@ -408,28 +408,20 @@ Groupe : Paramètres de l’énigme
 
 * enigme\_reponse\_casse (true\_false)
 
-* enigme\_reponse\_variantes (group)
+* variantes de réponse :
 
-  * variante\_1 (group)
-
-    * texte\_1 (text)
-    * message\_1 (text)
-    * respecter\_casse\_1 (true\_false)
-  * variante\_2 (group)
-
-    * texte\_2 (text)
-    * message\_2 (text)
-    * respecter\_casse\_2 (true\_false)
-  * variante\_3 (group)
-
-    * texte\_3 (text)
-    * message\_3 (text)
-    * respecter\_casse\_3 (true\_false)
-  * variante\_4 (group)
-
-    * texte\_4 (text)
-    * message\_4 (text)
-    * respecter\_casse\_4 (true\_false)
+  * texte\_1 (text)
+  * message\_1 (text)
+  * respecter\_casse\_1 (true\_false)
+  * texte\_2 (text)
+  * message\_2 (text)
+  * respecter\_casse\_2 (true\_false)
+  * texte\_3 (text)
+  * message\_3 (text)
+  * respecter\_casse\_3 (true\_false)
+  * texte\_4 (text)
+  * message\_4 (text)
+  * respecter\_casse\_4 (true\_false)
 
 
 * enigme\_acces\_condition (radio)
@@ -481,7 +473,7 @@ $champ_valide = true; // Toujours marquer comme traité, même si update_field r
 ### 📌 À retenir : cas confirmés dans le projet
 
 * `coordonnees_bancaires` (organisateur) : effacé si pas de protection contre le fallback
-* `enigme_reponse_variantes` (énigme) : supprimé si on clique sur "Enregistrer" sans modification réelle
+* `enigme_reponse_variantes` (ancien champ groupe) : retiré du projet pour éviter toute suppression accidentelle
 
 ---
 
@@ -1171,6 +1163,10 @@ organisateur-edit.js	Edition front organisateur (header + liens)	initLiensOrgani
 | `formulaire-liens-chasse`                | initLiensChasse               | Idem orga, côté chasse            |
 | `champ-recompense-*` (champ libre, chasse)| JS personnalisé (saisie + fetch séquencé) | ⚠️ Validation manuelle + reload |
 
+Nouveaux hooks PHP :
+- `soumettre_reponse_automatique()` (AJAX) – enregistre immédiatement la tentative sans envoyer d'email.
+- `traiter_tentative()` – logique commune d’insertion, mise à jour de statut et option d'envoi d'email.
+
 
 ### 🚫 Champs ACF désactivés ou ignorés
 
@@ -1236,6 +1232,9 @@ Index :
 | ip | varchar(45) NULL | adresse IP |
 | user_agent | text NULL | navigateur |
 | traitee | tinyint(1) NULL DEFAULT 0 | état de traitement |
+
+
+Les variantes sont comparées en tenant compte de leur option `respecter_casse_n`. Si la saisie correspond, le résultat enregistré est `variante` et le message défini est renvoyé via AJAX à chaque soumission, même identique.
 
 
 ### 📂 Références internes utiles (template-parts/, data-champ, etc.)

@@ -118,12 +118,9 @@ defined('ABSPATH') || exit;
             ['%s']
         );
 
-        $nouveau_statut = $resultat === 'bon' ? 'resolue' : 'echouee';
-        enigme_mettre_a_jour_statut_utilisateur($enigme_id, $user_id, $nouveau_statut);
-        envoyer_mail_resultat_joueur($user_id, $enigme_id, $resultat);
+        traiter_tentative($user_id, $enigme_id, (string) $tentative->reponse_saisie, $resultat, false, true, true);
 
-
-        error_log("✅ Tentative UID=$uid traitée comme $resultat → statut joueur mis à jour en $nouveau_statut");
+        error_log("✅ Tentative UID=$uid traitée comme $resultat");
         return true;
     }
 
@@ -241,4 +238,72 @@ function compter_tentatives_en_attente(int $enigme_id): int
         $enigme_id
     );
     return (int) $wpdb->get_var($query);
+}
+
+/**
+ * Compte le nombre de tentatives effectuées par un utilisateur pour une énigme
+ * durant la journée courante (heure de Paris).
+ */
+function compter_tentatives_du_jour(int $user_id, int $enigme_id): int
+{
+    global $wpdb;
+    $table = $wpdb->prefix . 'enigme_tentatives';
+
+    $tz = new DateTimeZone('Europe/Paris');
+    $debut = (new DateTime('now', $tz))->setTime(0, 0)->format('Y-m-d H:i:s');
+    $fin   = (new DateTime('now', $tz))->setTime(23, 59, 59)->format('Y-m-d H:i:s');
+
+    $query = $wpdb->prepare(
+        "SELECT COUNT(*) FROM $table WHERE user_id = %d AND enigme_id = %d AND date_tentative BETWEEN %s AND %s",
+        $user_id,
+        $enigme_id,
+        $debut,
+        $fin
+    );
+
+    return (int) $wpdb->get_var($query);
+}
+
+/**
+ * Traite une tentative d'énigme : déduction des points, enregistrement et
+ * mise à jour du statut utilisateur.
+ *
+ * @param bool $email_echec  Envoyer un email même en cas d'échec
+ * @param bool $envoyer_mail Envoyer les notifications de résultat
+ * @return string UID de la tentative enregistrée (vide si $inserer = false)
+ */
+function traiter_tentative(
+    int $user_id,
+    int $enigme_id,
+    string $reponse,
+    string $resultat,
+    bool $inserer = true,
+    bool $email_echec = false,
+    bool $envoyer_mail = true
+): string
+{
+    $cout = (int) get_field('enigme_tentative_cout_points', $enigme_id);
+    if ($cout > 0) {
+        deduire_points_utilisateur($user_id, $cout);
+    }
+
+    $uid = '';
+    if ($inserer) {
+        $uid = inserer_tentative($user_id, $enigme_id, $reponse, $resultat, $cout);
+    }
+
+    if ($resultat === 'bon') {
+        enigme_mettre_a_jour_statut_utilisateur($enigme_id, $user_id, 'resolue');
+        do_action('enigme_resolue', $user_id, $enigme_id);
+    } elseif ($resultat === 'faux') {
+        enigme_mettre_a_jour_statut_utilisateur($enigme_id, $user_id, 'echouee');
+    } else {
+        enigme_mettre_a_jour_statut_utilisateur($enigme_id, $user_id, 'en_cours');
+    }
+
+    if ($envoyer_mail && ($resultat === 'bon' || ($email_echec && $resultat === 'faux'))) {
+        envoyer_mail_resultat_joueur($user_id, $enigme_id, $resultat);
+    }
+
+    return $uid;
 }

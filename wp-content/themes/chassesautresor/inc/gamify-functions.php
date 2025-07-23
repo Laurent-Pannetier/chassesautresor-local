@@ -347,7 +347,7 @@ function verifier_fin_de_chasse($user_id, $enigme_id) {
 }
 add_action('enigme_resolue', function($user_id, $enigme_id) {
     verifier_fin_de_chasse($user_id, $enigme_id); // 🎯 Vérifie et termine la chasse si besoin
-});
+}, 10, 2);
 
 
 

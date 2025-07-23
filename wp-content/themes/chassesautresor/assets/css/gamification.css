@@ -276,6 +276,58 @@
   font-size: 15px;
 }
 
+/* ========== 🧩 POINTS MANQUANTS CTA ========== */
+.points-link.points-manquants,
+.bouton-cta.points-manquants {
+  background-color: var(--color-background-button);
+  color: var(--color-text-primary);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 24px;
+  font-weight: 600;
+}
+.points-manquants .points-plus-circle {
+  display: flex;
+  background: white;
+  color: var(--color-background-button);
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* icône seule pour accéder à la boutique */
+.points-link.icone-seule {
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.points-link.icone-seule .points-value,
+.points-link.icone-seule .points-euro {
+  display: none;
+}
+.points-link.icone-seule .points-plus-circle {
+  display: flex;
+  background: white;
+  color: var(--color-background-button);
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
 /* ========== 🧭 POINTS – TOP BAR ========== */
 
 header .points-link {
