@@ -68,7 +68,7 @@ if ($max && $tentatives_du_jour >= $max) {
 if ($cout > get_user_points($user_id)) {
   $disabled = 'disabled';
   $points_manquants = $cout - get_user_points($user_id);
-  $label_btn = '<span class="points-link points-manquants"><span class="points-plus-circle">+</span><span class="points-value">' . esc_html($points_manquants) . '</span><span class="points-euro">pts manquants</span></span>';
+  $label_btn = sprintf('%d points manquants', $points_manquants);
 }
 
 $nonce = wp_create_nonce('reponse_auto_nonce');
@@ -86,6 +86,11 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
   <button type="submit" class="bouton-cta" <?= $disabled; ?>><?= $label_btn; ?></button>
   <?php if ($cout > 0 && $statut_actuel !== 'resolue') : ?>
     <span class="badge-cout"><?= esc_html($cout); ?> pts</span>
+    <?php if ($points_manquants > 0) : ?>
+      <a href="<?= esc_url($boutique_url); ?>" class="points-link points-boutique-icon" title="Accéder à la boutique">
+        <span class="points-plus-circle">+</span>
+      </a>
+    <?php endif; ?>
   <?php endif; ?>
 </form>
 <div class="reponse-feedback" style="display:none"></div>

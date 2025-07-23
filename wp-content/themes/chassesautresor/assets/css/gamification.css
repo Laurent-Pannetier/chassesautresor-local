@@ -324,6 +324,26 @@ header .points-link:hover {
   transform: scale(1.05);
 }
 
+/* ========== ➕ POINTS – BOUTIQUE ICON ========== */
+.points-link.points-boutique-icon {
+  background-color: var(--color-background-button);
+  padding: 2px 6px;
+  border-radius: 24px;
+}
+.points-boutique-icon .points-plus-circle {
+  display: flex;
+  background: white;
+  color: var(--color-background-button);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 18px;
+  font-weight: bold;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
 
 
 /* 📱 Responsive : ajuste la taille du texte sur mobile/tablette */
