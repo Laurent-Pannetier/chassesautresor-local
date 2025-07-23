@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!form) return;
   const feedback = document.querySelector('.reponse-feedback');
   const compteur = document.querySelector('.compteur-tentatives');
+  const input = form.querySelector('input[name="reponse"]');
+  const limiteMsg = document.querySelector('.message-limite');
   let hideTimer = null;
 
   form.addEventListener('submit', e => {
@@ -48,19 +50,57 @@ document.addEventListener('DOMContentLoaded', () => {
             feedback.textContent = 'Bonne réponse !';
             feedback.style.display = 'block';
             form.remove();
+            if (compteur) {
+              compteur.remove();
+            }
           } else {
             feedback.textContent = 'Mauvaise réponse';
             feedback.style.display = 'block';
             hideTimer = setTimeout(() => { feedback.style.display = 'none'; }, 5000);
           }
+
           if (compteur && typeof res.data.compteur !== 'undefined') {
-            const max = compteur.dataset.max;
+            const max = parseInt(compteur.dataset.max || '0', 10);
             compteur.textContent = `${res.data.compteur} tentatives / ${max} maximum aujourd'hui`;
+            if (max && res.data.compteur >= max) {
+              if (input) input.remove();
+              if (limiteMsg) {
+                limiteMsg.style.display = 'block';
+              } else {
+                const p = document.createElement('p');
+                p.className = 'message-limite';
+                p.dataset.tentatives = 'epuisees';
+                p.textContent = 'tentatives quotidiennes épuisées';
+                form.insertBefore(p, form.querySelector('input[name="enigme_id"]'));
+              }
+              const btn = form.querySelector('button[type="submit"]');
+              if (btn) {
+                btn.disabled = true;
+                btn.textContent = 'tentatives quotidiennes épuisées';
+              }
+            }
           }
         } else {
           feedback.textContent = res.data;
           feedback.style.display = 'block';
           hideTimer = setTimeout(() => { feedback.style.display = 'none'; }, 5000);
+          if (res.data === 'tentatives_epuisees') {
+            if (input) input.remove();
+            if (limiteMsg) {
+              limiteMsg.style.display = 'block';
+            } else {
+              const p = document.createElement('p');
+              p.className = 'message-limite';
+              p.dataset.tentatives = 'epuisees';
+              p.textContent = 'tentatives quotidiennes épuisées';
+              form.insertBefore(p, form.querySelector('input[name="enigme_id"]'));
+            }
+            const btn = form.querySelector('button[type="submit"]');
+            if (btn) {
+              btn.disabled = true;
+              btn.textContent = 'tentatives quotidiennes épuisées';
+            }
+          }
         }
       });
   });

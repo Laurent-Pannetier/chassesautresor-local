@@ -49,10 +49,12 @@ $tentatives_du_jour = compter_tentatives_du_jour($user_id, $post_id);
 $boutique_url = esc_url(home_url('/boutique/'));
 $disabled = '';
 $label_btn = 'Valider';
+$message_tentatives = '';
 
 if ($max && $tentatives_du_jour >= $max) {
   $disabled = 'disabled';
   $label_btn = 'tentatives quotidiennes épuisées';
+  $message_tentatives = 'tentatives quotidiennes épuisées';
 }
 
 if ($cout > get_user_points($user_id)) {
@@ -65,7 +67,11 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
 
 <form class="bloc-reponse formulaire-reponse-auto">
   <label for="reponse_auto_<?= esc_attr($post_id); ?>">Votre réponse :</label>
-  <input type="text" name="reponse" id="reponse_auto_<?= esc_attr($post_id); ?>" required>
+  <?php if ($message_tentatives) : ?>
+    <p class="message-limite" data-tentatives="epuisees"><?= esc_html($message_tentatives); ?></p>
+  <?php else : ?>
+    <input type="text" name="reponse" id="reponse_auto_<?= esc_attr($post_id); ?>" required>
+  <?php endif; ?>
   <input type="hidden" name="enigme_id" value="<?= esc_attr($post_id); ?>">
   <input type="hidden" name="nonce" value="<?= esc_attr($nonce); ?>">
   <button type="submit" <?= $disabled; ?>><?= $label_btn; ?></button>
