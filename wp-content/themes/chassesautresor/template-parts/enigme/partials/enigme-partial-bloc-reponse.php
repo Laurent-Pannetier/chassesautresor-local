@@ -68,7 +68,6 @@ if ($max && $tentatives_du_jour >= $max) {
 if ($cout > get_user_points($user_id)) {
   $disabled = 'disabled';
   $points_manquants = $cout - get_user_points($user_id);
-  $label_btn = sprintf('%d points manquants', $points_manquants);
 }
 
 $nonce = wp_create_nonce('reponse_auto_nonce');
@@ -78,6 +77,10 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
   <label for="reponse_auto_<?= esc_attr($post_id); ?>">Votre réponse :</label>
   <?php if ($message_tentatives) : ?>
     <p class="message-limite" data-tentatives="epuisees"><?= esc_html($message_tentatives); ?></p>
+  <?php elseif ($points_manquants > 0) : ?>
+    <p class="message-limite" data-points="manquants">
+      <?= esc_html(sprintf('%d points manquants', $points_manquants)); ?>
+    </p>
   <?php else : ?>
     <input type="text" name="reponse" id="reponse_auto_<?= esc_attr($post_id); ?>" required>
   <?php endif; ?>
