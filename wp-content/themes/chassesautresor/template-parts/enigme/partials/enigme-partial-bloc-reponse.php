@@ -85,8 +85,9 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
 </form>
 <div class="reponse-feedback" style="display:none"></div>
 <?php if ($max > 0) : ?>
-  <p class="compteur-tentatives txt-small" data-max="<?= esc_attr($max); ?>" style="margin-top:4px;">
-    <?= esc_html($tentatives_du_jour); ?> tentatives / <?= esc_html($max); ?> maximum aujourd'hui
-  </p>
+  <div class="tentatives-counter compteur-tentatives txt-small" data-max="<?= esc_attr($max); ?>" style="margin-top:4px;">
+    <span class="etiquette">Tentatives quotidiennes</span>
+    <span class="valeur"><?= esc_html($tentatives_du_jour); ?>/<?= esc_html($max); ?></span>
+  </div>
 <?php endif; ?>
 

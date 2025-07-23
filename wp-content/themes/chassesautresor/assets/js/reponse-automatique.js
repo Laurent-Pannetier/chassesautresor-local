@@ -12,7 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const form = document.querySelector('.formulaire-reponse-auto');
   if (!form) return;
   const feedback = document.querySelector('.reponse-feedback');
-  const compteur = document.querySelector('.compteur-tentatives');
+  const compteur = document.querySelector('.tentatives-counter');
+  const compteurValeur = compteur ? compteur.querySelector('.valeur') : null;
   const input = form.querySelector('input[name="reponse"]');
   const limiteMsg = document.querySelector('.message-limite');
   let hideTimer = null;
@@ -71,7 +72,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
           if (compteur && typeof res.data.compteur !== 'undefined') {
             const max = parseInt(compteur.dataset.max || '0', 10);
-            compteur.textContent = `${res.data.compteur} tentatives / ${max} maximum aujourd'hui`;
+            if (compteurValeur) {
+              compteurValeur.textContent = `${res.data.compteur}/${max}`;
+            } else {
+              compteur.textContent = `Tentatives quotidiennes ${res.data.compteur}/${max}`;
+            }
             if (max && res.data.compteur >= max) {
               if (input) input.remove();
               if (limiteMsg) {
