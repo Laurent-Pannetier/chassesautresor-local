@@ -206,15 +206,7 @@ function soumettre_reponse_automatique()
         wp_send_json_error('erreur_interne');
     }
 
-    if ($resultat === 'variante') {
-        $key = 'enigme_variante_vue_' . $enigme_id;
-        $vu = get_user_meta($user_id, $key, true);
-        if ((string) $vu !== (string) $index) {
-            update_user_meta($user_id, $key, $index);
-        } else {
-            $message = '';
-        }
-    }
+
 
     $compteur = compter_tentatives_du_jour($user_id, $enigme_id);
 
