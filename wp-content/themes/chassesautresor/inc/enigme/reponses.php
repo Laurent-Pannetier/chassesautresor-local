@@ -209,12 +209,14 @@ function soumettre_reponse_automatique()
 
 
     $compteur = compter_tentatives_du_jour($user_id, $enigme_id);
+    $solde = get_user_points($user_id);
 
     wp_send_json_success([
         'resultat' => $resultat,
         'message'  => $message,
         'uid'      => $uid,
         'compteur' => $compteur,
+        'points'   => $solde,
     ]);
 }
 add_action('wp_ajax_soumettre_reponse_automatique', 'soumettre_reponse_automatique');

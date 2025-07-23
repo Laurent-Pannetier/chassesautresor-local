@@ -16,6 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const compteurValeur = compteur ? compteur.querySelector('.valeur') : null;
   const input = form.querySelector('input[name="reponse"]');
   const limiteMsg = document.querySelector('.message-limite');
+  const badgeCout = form.querySelector('.badge-cout');
+  const headerPoints = document.querySelector('.zone-points .points-value');
   let hideTimer = null;
 
   form.addEventListener('submit', e => {
@@ -51,6 +53,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (res.success) {
           form.reset();
+          if (headerPoints && typeof res.data.points !== 'undefined') {
+            headerPoints.textContent = res.data.points;
+          }
 
           if (res.data.resultat === 'variante') {
             if (res.data.message) {
@@ -61,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
             feedback.textContent = 'Bonne réponse !';
             feedback.style.display = 'block';
             form.remove();
+            if (badgeCout) badgeCout.remove();
             if (compteur) {
               compteur.remove();
             }

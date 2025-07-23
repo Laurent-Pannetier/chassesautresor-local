@@ -49,6 +49,7 @@ $tentatives_du_jour = compter_tentatives_du_jour($user_id, $post_id);
 $boutique_url = esc_url(home_url('/boutique/'));
 $disabled = '';
 $label_btn = 'Valider';
+$points_manquants = 0;
 $message_tentatives = '';
 
 if ($max && $tentatives_du_jour >= $max) {
@@ -66,7 +67,8 @@ if ($max && $tentatives_du_jour >= $max) {
 
 if ($cout > get_user_points($user_id)) {
   $disabled = 'disabled';
-  $label_btn = '<a href="' . $boutique_url . '">points insuffisants</a>';
+  $points_manquants = $cout - get_user_points($user_id);
+  $label_btn = '<span class="points-link points-manquants"><span class="points-plus-circle">+</span><span class="points-value">' . esc_html($points_manquants) . '</span><span class="points-euro">pts manquants</span></span>';
 }
 
 $nonce = wp_create_nonce('reponse_auto_nonce');
@@ -82,6 +84,9 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
   <input type="hidden" name="enigme_id" value="<?= esc_attr($post_id); ?>">
   <input type="hidden" name="nonce" value="<?= esc_attr($nonce); ?>">
   <button type="submit" class="bouton-cta" <?= $disabled; ?>><?= $label_btn; ?></button>
+  <?php if ($cout > 0 && $statut_actuel !== 'resolue') : ?>
+    <span class="badge-cout"><?= esc_html($cout); ?> pts</span>
+  <?php endif; ?>
 </form>
 <div class="reponse-feedback" style="display:none"></div>
 <?php if ($max > 0) : ?>
