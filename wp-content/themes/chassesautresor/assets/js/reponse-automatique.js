@@ -21,36 +21,36 @@ document.addEventListener('DOMContentLoaded', () => {
           if (feedback) {
             feedback.textContent = 'Erreur serveur';
             feedback.style.display = 'block';
+            setTimeout(() => { feedback.style.display = 'none'; }, 5000);
           }
           throw e;
         }
       })
       .then(res => {
-        if (feedback) feedback.style.display = 'none';
+        if (!feedback) return;
+        feedback.style.display = 'none';
+
         if (res.success) {
+          form.reset();
+
           if (res.data.resultat === 'variante') {
-            if (res.data.message && feedback) {
+            if (res.data.message) {
               feedback.textContent = res.data.message;
               feedback.style.display = 'block';
             }
-            form.reset();
           } else if (res.data.resultat === 'bon') {
+            feedback.textContent = 'Bonne réponse !';
+            feedback.style.display = 'block';
             form.remove();
-            if (feedback) {
-              feedback.textContent = 'Bonne réponse !';
-              feedback.style.display = 'block';
-            }
           } else {
-            if (feedback) {
-              feedback.textContent = 'Mauvaise réponse';
-              feedback.style.display = 'block';
-            }
+            feedback.textContent = 'Mauvaise réponse';
+            feedback.style.display = 'block';
+            setTimeout(() => { feedback.style.display = 'none'; }, 5000);
           }
         } else {
-          if (feedback) {
-            feedback.textContent = res.data;
-            feedback.style.display = 'block';
-          }
+          feedback.textContent = res.data;
+          feedback.style.display = 'block';
+          setTimeout(() => { feedback.style.display = 'none'; }, 5000);
         }
       });
   });

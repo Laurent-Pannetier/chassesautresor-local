@@ -72,4 +72,9 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
   <button type="submit" <?= $disabled; ?>><?= $label_btn; ?></button>
 </form>
 <div class="reponse-feedback" style="display:none"></div>
+<?php if ($max > 0) : ?>
+  <p class="compteur-tentatives txt-small" style="margin-top:4px;">
+    <?= esc_html($tentatives_du_jour); ?> tentatives / <?= esc_html($max); ?> maximum aujourd'hui
+  </p>
+<?php endif; ?>
 
