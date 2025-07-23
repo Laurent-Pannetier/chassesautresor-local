@@ -5,7 +5,7 @@ function timeUntilMidnight() {
   const diff = midnight - now;
   const h = Math.floor(diff / 3600000);
   const m = Math.floor((diff % 3600000) / 60000);
-  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+  return `${h}h et ${m}mn avant réactivation`;
 }
 
 document.addEventListener('DOMContentLoaded', () => {

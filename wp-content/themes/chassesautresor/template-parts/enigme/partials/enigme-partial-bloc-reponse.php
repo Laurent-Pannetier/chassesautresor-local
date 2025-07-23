@@ -61,7 +61,7 @@ if ($max && $tentatives_du_jour >= $max) {
   $diff = $midnight->getTimestamp() - $now->getTimestamp();
   $hours = floor($diff / 3600);
   $minutes = floor(($diff % 3600) / 60);
-  $label_btn = sprintf('%02d:%02d', $hours, $minutes);
+  $label_btn = sprintf('%dh et %dmn avant réactivation', $hours, $minutes);
 }
 
 if ($cout > get_user_points($user_id)) {
