@@ -408,28 +408,20 @@ Groupe : Paramètres de l’énigme
 
 * enigme\_reponse\_casse (true\_false)
 
-* enigme\_reponse\_variantes (group)
+* variantes de réponse :
 
-  * variante\_1 (group)
-
-    * texte\_1 (text)
-    * message\_1 (text)
-    * respecter\_casse\_1 (true\_false)
-  * variante\_2 (group)
-
-    * texte\_2 (text)
-    * message\_2 (text)
-    * respecter\_casse\_2 (true\_false)
-  * variante\_3 (group)
-
-    * texte\_3 (text)
-    * message\_3 (text)
-    * respecter\_casse\_3 (true\_false)
-  * variante\_4 (group)
-
-    * texte\_4 (text)
-    * message\_4 (text)
-    * respecter\_casse\_4 (true\_false)
+  * texte\_1 (text)
+  * message\_1 (text)
+  * respecter\_casse\_1 (true\_false)
+  * texte\_2 (text)
+  * message\_2 (text)
+  * respecter\_casse\_2 (true\_false)
+  * texte\_3 (text)
+  * message\_3 (text)
+  * respecter\_casse\_3 (true\_false)
+  * texte\_4 (text)
+  * message\_4 (text)
+  * respecter\_casse\_4 (true\_false)
 
 
 * enigme\_acces\_condition (radio)
@@ -481,7 +473,7 @@ $champ_valide = true; // Toujours marquer comme traité, même si update_field r
 ### 📌 À retenir : cas confirmés dans le projet
 
 * `coordonnees_bancaires` (organisateur) : effacé si pas de protection contre le fallback
-* `enigme_reponse_variantes` (énigme) : supprimé si on clique sur "Enregistrer" sans modification réelle
+* `enigme_reponse_variantes` (ancien champ groupe) : retiré du projet pour éviter toute suppression accidentelle
 
 ---
 

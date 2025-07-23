@@ -41,21 +41,12 @@ $chasse = get_field('enigme_chasse_associee', $enigme_id);
 $chasse_id = is_array($chasse) ? $chasse[0] : null;
 $chasse_title = $chasse_id ? get_the_title($chasse_id) : '';
 
-$variantes = get_field('enigme_reponse_variantes', $enigme_id);
 $nb_variantes = 0;
-
-if (is_array($variantes)) {
-  foreach ($variantes as $key => $variante) {
-    foreach ($variante as $champ => $valeur) {
-      if (strpos($champ, 'texte_') === 0) {
-        $suffixe = substr($champ, 6);
-        $texte = trim($valeur);
-        $message = trim($variante["message_$suffixe"] ?? '');
-        if ($texte && $message) {
-          $nb_variantes++;
-        }
-      }
-    }
+for ($i = 1; $i <= 4; $i++) {
+  $texte   = trim((string) get_field("texte_{$i}", $enigme_id));
+  $message = trim((string) get_field("message_{$i}", $enigme_id));
+  if ($texte && $message) {
+    $nb_variantes++;
   }
 }
 $has_variantes = ($nb_variantes > 0);

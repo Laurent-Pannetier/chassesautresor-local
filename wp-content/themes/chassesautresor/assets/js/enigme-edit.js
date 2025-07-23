@@ -673,26 +673,20 @@ function initPanneauVariantes() {
   formulaire.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    const donnees = {};
     const lignes = wrapper.querySelectorAll('.ligne-variante');
-    let index = 1;
+    const updates = [];
 
-    lignes.forEach((ligne) => {
-      const texte = ligne.querySelector('.input-texte')?.value.trim();
-      const message = ligne.querySelector('.input-message')?.value.trim();
-      const casse = ligne.querySelector('input[type="checkbox"]')?.checked;
+    for (let i = 1; i <= 4; i++) {
+      const ligne = lignes[i - 1];
+      const texte = ligne?.querySelector('.input-texte')?.value.trim() || '';
+      const message = ligne?.querySelector('.input-message')?.value.trim() || '';
+      const casse = ligne?.querySelector('input[type="checkbox"]')?.checked ? 1 : 0;
 
-      if (texte && message) {
-        donnees[`variante_${index}`] = {
-          [`texte_${index}`]: texte,
-          [`message_${index}`]: message,
-          [`respecter_casse_${index}`]: casse ? 1 : 0
-        };
-        index++;
-      }
-    });
+      updates.push(['texte_' + i, texte]);
+      updates.push(['message_' + i, message]);
+      updates.push(['respecter_casse_' + i, casse]);
+    }
 
-    const payload = JSON.stringify(donnees);
     const feedback = formulaire.querySelector('.champ-feedback-variantes');
     if (feedback) {
       feedback.style.display = 'block';
@@ -700,51 +694,44 @@ function initPanneauVariantes() {
       feedback.className = 'champ-feedback champ-loading';
     }
 
-    fetch(ajaxurl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        action: 'modifier_champ_enigme',
-        champ: 'enigme_reponse_variantes',
-        valeur: payload,
-        post_id: postId
-      })
-    })
-      .then(r => r.json())
-      .then(res => {
-        if (res.success) {
-          if (feedback) {
-            feedback.textContent = '✔️ Variantes enregistrées';
-            feedback.className = 'champ-feedback champ-success';
-          }
+    const promises = updates.map(([champ, valeur]) => {
+      return fetch(ajaxurl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          action: 'modifier_champ_enigme',
+          champ,
+          valeur,
+          post_id: postId
+        })
+      }).then(r => r.json());
+    });
 
-          setTimeout(() => {
-            panneau.classList.remove('ouvert');
-            document.body.classList.remove('panneau-ouvert');
-            panneau.setAttribute('aria-hidden', 'true');
-
-            const resume = document.querySelector('[data-champ="enigme_reponse_variantes"] .champ-modifier');
-            if (resume) {
-              let nb = 0;
-              Object.values(donnees).forEach(v => {
-                const texte = (v[Object.keys(v).find(k => k.startsWith('texte_'))] || '').trim();
-                const message = (v[Object.keys(v).find(k => k.startsWith('message_'))] || '').trim();
-                if (texte && message) nb++;
-              });
-
-              resume.textContent = nb === 0
-                ? '➕ Créer des variantes'
-                : (nb === 1 ? '1 variante ✏️' : `${nb} variantes ✏️`);
-            }
-
-            if (feedback) feedback.textContent = '';
-          }, 1000);
-        } else {
-          if (feedback) {
-            feedback.textContent = '❌ Erreur : ' + (res.data || 'inconnue');
-            feedback.className = 'champ-feedback champ-error';
-          }
+    Promise.all(promises)
+      .then(() => {
+        if (feedback) {
+          feedback.textContent = '✔️ Variantes enregistrées';
+          feedback.className = 'champ-feedback champ-success';
         }
+
+        setTimeout(() => {
+          panneau.classList.remove('ouvert');
+          document.body.classList.remove('panneau-ouvert');
+          panneau.setAttribute('aria-hidden', 'true');
+
+          const resume = document.querySelector('[data-champ="enigme_reponse_variantes"] .champ-modifier');
+          if (resume) {
+            let nb = 0;
+            for (let i = 1; i <= 4; i++) {
+              const t = updates.find(u => u[0] === 'texte_' + i)?.[1] || '';
+              const m = updates.find(u => u[0] === 'message_' + i)?.[1] || '';
+              if (t && m) nb++;
+            }
+            resume.textContent = nb === 0 ? '➕ Créer des variantes' : (nb === 1 ? '1 variante ✏️' : `${nb} variantes ✏️`);
+          }
+
+          if (feedback) feedback.textContent = '';
+        }, 1000);
       })
       .catch(() => {
         if (feedback) {

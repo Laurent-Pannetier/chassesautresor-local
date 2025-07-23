@@ -243,25 +243,6 @@ function modifier_champ_enigme()
     if ($ok) $champ_valide = true;
   }
 
-  // 🔹 Variantes
-  if ($champ === 'enigme_reponse_variantes') {
-    $donnees = json_decode(stripslashes($valeur), true);
-    if (!is_array($donnees)) {
-      wp_send_json_error('⚠️ format_invalide_variantes');
-    }
-    $formatees = [];
-    foreach ($donnees as $cle => $sous) {
-      $index = (int) filter_var($cle, FILTER_SANITIZE_NUMBER_INT);
-      $formatees["variante_{$index}"] = [
-        "texte_{$index}" => sanitize_text_field($sous["texte_{$index}"] ?? ''),
-        "message_{$index}" => sanitize_text_field($sous["message_{$index}"] ?? ''),
-        "respecter_casse_{$index}" => (int) ($sous["respecter_casse_{$index}"] ?? 0)
-      ];
-    }
-    delete_field($champ, $post_id);
-    update_field($champ, $formatees, $post_id);
-    $champ_valide = true;
-  }
 
   // 🔹 Tentatives (coût et max)
   if ($champ === 'enigme_tentative.enigme_tentative_cout_points') {
