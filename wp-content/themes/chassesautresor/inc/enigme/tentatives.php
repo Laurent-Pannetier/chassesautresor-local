@@ -204,7 +204,7 @@ function recuperer_tentatives_enigme(int $enigme_id, int $limit = 25, int $offse
     global $wpdb;
     $table = $wpdb->prefix . 'enigme_tentatives';
     $query = $wpdb->prepare(
-        "SELECT * FROM $table WHERE enigme_id = %d ORDER BY date_tentative DESC LIMIT %d OFFSET %d",
+        "SELECT * FROM $table WHERE enigme_id = %d ORDER BY traitee ASC, date_tentative DESC LIMIT %d OFFSET %d",
         $enigme_id,
         $limit,
         $offset
