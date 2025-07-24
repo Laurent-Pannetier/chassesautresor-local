@@ -30,8 +30,8 @@ if ($mode_validation === 'manuelle') {
   if (!utilisateur_peut_repondre_manuelle($user_id, $post_id)) {
     $statut = enigme_get_statut_utilisateur($post_id, $user_id);
     $texte = $statut === 'soumis'
-      ? 'Votre tentative est en cours de traitement.'
-      : 'Vous avez déjà répondu ou résolu cette énigme.';
+      ? __('Votre tentative est en cours de traitement.', 'chassesautresor-com')
+      : __('Énigme résolue', 'chassesautresor-com');
     echo '<p class="message-joueur-statut">' . esc_html($texte) . '</p>';
     return;
   }
