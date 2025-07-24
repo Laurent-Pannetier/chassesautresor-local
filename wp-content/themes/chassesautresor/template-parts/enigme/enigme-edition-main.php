@@ -420,7 +420,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
 <div id="enigme-tab-soumission" class="edition-tab-content" style="display:none;">
   <i class="fa-solid fa-paper-plane tab-watermark" aria-hidden="true"></i>
   <div class="edition-panel-header">
-    <h2><i class="fa-solid fa-paper-plane"></i> Soumission</h2>
+    <h2><i class="fa-solid fa-paper-plane"></i> Soumission <span class="total-tentatives">(<?= intval(compter_tentatives_enigme($enigme_id)); ?>)</span></h2>
   </div>
 <?php
   $page_tentatives = max(1, intval($_GET['page_tentatives'] ?? 1));
@@ -428,53 +428,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
   $offset = ($page_tentatives - 1) * $par_page;
   $tentatives = recuperer_tentatives_enigme($enigme_id, $par_page, $offset);
   $total_tentatives = compter_tentatives_enigme($enigme_id);
-  if (empty($tentatives)) : ?>
-  <p>Aucune tentative de soumission.</p>
-<?php else : ?>
-    <table class="table-tentatives">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Utilisateur</th>
-          <th>Réponse</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <?php foreach ($tentatives as $tent) :
-          $user = get_userdata($tent->user_id);
-          $login = $user?->user_login ?? 'Inconnu';
-          $date = mysql2date('d/m/y H:i', $tent->date_tentative);
-        ?>
-        <tr>
-          <td><?= esc_html($date); ?></td>
-          <td><?= esc_html($login); ?></td>
-          <td><?= esc_html($tent->reponse_saisie); ?></td>
-          <td>
-            <?php if ($tent->resultat === 'attente'): ?>
-              <form method="post" style="display:inline;">
-                <?php wp_nonce_field('traiter_tentative_' . $tent->tentative_uid); ?>
-                <input type="hidden" name="uid" value="<?= esc_attr($tent->tentative_uid); ?>">
-                <button type="submit" name="action_traitement" value="valider">Valider</button>
-                <button type="submit" name="action_traitement" value="invalider">Invalider</button>
-              </form>
-            <?php else: ?>
-              <?= esc_html($tent->resultat); ?>
-            <?php endif; ?>
-          </td>
-        </tr>
-        <?php endforeach; ?>
-      </tbody>
-    </table>
-  <div class="pager" style="margin-top:10px;">
-    <?php if ($page_tentatives > 1) : ?>
-      <a href="<?= esc_url(add_query_arg('page_tentatives', $page_tentatives - 1)); ?>">&laquo; Préc.</a>
-    <?php endif; ?>
-    <?php if ($offset + $par_page < $total_tentatives) : ?>
-      <a href="<?= esc_url(add_query_arg('page_tentatives', $page_tentatives + 1)); ?>" style="margin-left:10px;">Suiv. &raquo;</a>
-    <?php endif; ?>
+  ?>
+  <div class="liste-tentatives" data-page="<?= esc_attr($page_tentatives); ?>" data-total="<?= esc_attr($total_tentatives); ?>">
+    <?php get_template_part('template-parts/enigme/partials/enigme-partial-tentatives', null, [
+      'tentatives' => $tentatives,
+      'page'       => $page_tentatives,
+      'par_page'   => $par_page,
+      'total'      => $total_tentatives,
+    ]); ?>
   </div>
-<?php endif; ?>
 </div>
 
 <div id="enigme-tab-indices" class="edition-tab-content" style="display:none;">

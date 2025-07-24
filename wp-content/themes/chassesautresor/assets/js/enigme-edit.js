@@ -239,6 +239,7 @@ function initEnigmeEdit() {
   }
 
   initPanneauVariantes();
+  initPagerTentatives();
 
   function forcerRecalculStatutEnigme(postId) {
     fetch(ajaxurl, {
@@ -1084,4 +1085,43 @@ function appliquerEtatGratuitEnLive() {
 
   // Appel initial différé de 50ms pour laisser le temps à la valeur d’être injectée
   setTimeout(syncGratuit, 50);
+}
+
+function initPagerTentatives() {
+  const wrapper = document.querySelector('#enigme-tab-soumission .liste-tentatives');
+  const postId = document.querySelector('.edition-panel-enigme')?.dataset.postId;
+  const compteur = document.querySelector('#enigme-tab-soumission .total-tentatives');
+  if (!wrapper || !postId) return;
+
+  wrapper.addEventListener('click', (e) => {
+    if (e.target.classList.contains('pager-prev')) {
+      e.preventDefault();
+      const page = parseInt(wrapper.dataset.page || '1', 10);
+      if (page > 1) charger(page - 1);
+    }
+    if (e.target.classList.contains('pager-next')) {
+      e.preventDefault();
+      const page = parseInt(wrapper.dataset.page || '1', 10);
+      charger(page + 1);
+    }
+  });
+
+  function charger(page) {
+    fetch(ajaxurl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        action: 'lister_tentatives_enigme',
+        enigme_id: postId,
+        page
+      })
+    })
+      .then(r => r.json())
+      .then(res => {
+        if (!res.success) return;
+        wrapper.innerHTML = res.data.html;
+        wrapper.dataset.page = res.data.page;
+        if (compteur) compteur.textContent = '(' + res.data.total + ')';
+      });
+  }
 }

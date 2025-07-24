@@ -201,7 +201,7 @@ function recuperer_tentatives_enigme(int $enigme_id, int $limit = 25, int $offse
     global $wpdb;
     $table = $wpdb->prefix . 'enigme_tentatives';
     $query = $wpdb->prepare(
-        "SELECT * FROM $table WHERE enigme_id = %d ORDER BY traitee ASC, date_tentative ASC LIMIT %d OFFSET %d",
+        "SELECT * FROM $table WHERE enigme_id = %d ORDER BY date_tentative DESC LIMIT %d OFFSET %d",
         $enigme_id,
         $limit,
         $offset
@@ -221,6 +221,51 @@ function compter_tentatives_enigme(int $enigme_id): int
     global $wpdb;
     $table = $wpdb->prefix . 'enigme_tentatives';
     return (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table WHERE enigme_id = %d", $enigme_id));
+}
+
+/**
+ * Retourne la liste HTML des tentatives pour une page donnée via AJAX.
+ *
+ * @hook wp_ajax_lister_tentatives_enigme
+ */
+add_action('wp_ajax_lister_tentatives_enigme', 'ajax_lister_tentatives_enigme');
+
+function ajax_lister_tentatives_enigme()
+{
+    if (!is_user_logged_in()) {
+        wp_send_json_error('non_connecte');
+    }
+
+    $enigme_id = isset($_POST['enigme_id']) ? (int) $_POST['enigme_id'] : 0;
+    $page      = max(1, (int) ($_POST['page'] ?? 1));
+    $par_page  = 25;
+
+    if (!$enigme_id || get_post_type($enigme_id) !== 'enigme') {
+        wp_send_json_error('post_invalide');
+    }
+
+    if (!utilisateur_peut_modifier_post($enigme_id)) {
+        wp_send_json_error('acces_refuse');
+    }
+
+    $offset     = ($page - 1) * $par_page;
+    $tentatives = recuperer_tentatives_enigme($enigme_id, $par_page, $offset);
+    $total      = compter_tentatives_enigme($enigme_id);
+
+    ob_start();
+    get_template_part('template-parts/enigme/partials/enigme-partial-tentatives', null, [
+        'tentatives' => $tentatives,
+        'page'       => $page,
+        'par_page'   => $par_page,
+        'total'      => $total,
+    ]);
+    $html = ob_get_clean();
+
+    wp_send_json_success([
+        'html'  => $html,
+        'total' => $total,
+        'page'  => $page,
+    ]);
 }
 
 /**
