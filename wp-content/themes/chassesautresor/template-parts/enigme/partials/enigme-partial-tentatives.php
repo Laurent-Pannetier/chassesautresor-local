@@ -8,6 +8,12 @@
  * - $total (int)
  */
 defined('ABSPATH') || exit;
+
+$args = $args ?? [];
+$tentatives = $args['tentatives'] ?? $tentatives ?? [];
+$page = $args['page'] ?? $page ?? 1;
+$par_page = $args['par_page'] ?? $par_page ?? 25;
+$total = $args['total'] ?? $total ?? 0;
 ?>
 <?php if (empty($tentatives)) : ?>
 <p>Aucune tentative de soumission.</p>
