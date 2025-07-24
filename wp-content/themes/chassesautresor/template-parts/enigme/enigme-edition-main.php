@@ -423,6 +423,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
     <h2><i class="fa-solid fa-paper-plane"></i> Soumission <span class="total-tentatives">(<?= intval(compter_tentatives_enigme($enigme_id)); ?>)</span></h2>
   </div>
 <?php
+  if (!function_exists('recuperer_tentatives_enigme')) {
+    require_once get_stylesheet_directory() . '/inc/enigme/tentatives.php';
+  }
+
   $page_tentatives = max(1, intval($_GET['page_tentatives'] ?? 1));
   $par_page = 25;
   $offset = ($page_tentatives - 1) * $par_page;
