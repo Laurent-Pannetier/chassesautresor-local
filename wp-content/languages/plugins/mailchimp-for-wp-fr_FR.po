@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - MC4WP: Mailchimp for WordPress - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-04-16 13:44:42+0000\n"
+"PO-Revision-Date: 2025-07-23 11:56:12+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -38,10 +38,6 @@ msgstr "Commande WooCommerce : après les infos de compte"
 #: integrations/woocommerce/admin-after.php:13
 msgid "Checkout for WooCommerce: Before complete order button"
 msgstr "Commande WooCommerce : avant le bouton de validation de la commande"
-
-#: includes/views/parts/admin-sidebar.php:36
-msgid "Privacy-friendly analytics plugin that does not use any external services."
-msgstr "Extension soucieuse de la confidentialité qui n’utilise aucun service externe."
 
 #: integrations/woocommerce/admin-after.php:4
 msgid "After email field"
@@ -543,7 +539,7 @@ msgstr "Ville"
 msgid "Mailchimp for WordPress by ibericode. Adds various highly effective sign-up methods to your site."
 msgstr "MailChimp pour WordPress d'ibericode. Ajoutez de nombreuses méthodes de souscription à votre site"
 
-#: integrations/woocommerce/class-woocommerce.php:252
+#: integrations/woocommerce/class-woocommerce.php:253
 msgid "Order #%d"
 msgstr "Commande #%d"
 
@@ -781,7 +777,7 @@ msgstr "L’adresse de la page"
 msgid "The email address of the current visitor (if known)."
 msgstr "L'adresse email du visiteur actuel (si connue)."
 
-#: includes/forms/class-form-tags.php:41
+#: includes/forms/class-form-tags.php:42
 msgid "Data from the URL or a submitted form."
 msgstr "Données de l'URL ou d'un formulaire envoyé."
 
@@ -861,7 +857,7 @@ msgstr "Texte indicatif"
 msgid "Submit button"
 msgstr "Bouton d'envoi"
 
-#: includes/forms/class-form-tags.php:47
+#: includes/forms/class-form-tags.php:48
 #: includes/integrations/class-integration-tags.php:32
 msgid "Replaced with the number of subscribers on the selected list(s)"
 msgstr "Remplacé par le nombre d'abonnés des listes sélectionnées"
