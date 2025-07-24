@@ -8,3 +8,4 @@ require_once $base . 'visuels.php';
 require_once $base . 'affichage.php';
 require_once $base . 'reponses.php';
 require_once $base . 'tentatives.php';
+require_once $base . 'stats.php';
