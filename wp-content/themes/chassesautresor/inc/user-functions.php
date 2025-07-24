@@ -438,3 +438,13 @@ function ajouter_role_organisateur_creation($post_id, $post, $update) {
 }
 add_action('save_post', 'ajouter_role_organisateur_creation', 10, 3);
 
+
+/**
+ * Retourne la liste des messages importants à afficher dans l'espace utilisateur.
+ *
+ * @return array Liste de messages.
+ */
+function cta_get_important_messages() {
+    $messages = [];
+    return apply_filters('cta_important_messages', $messages);
+}

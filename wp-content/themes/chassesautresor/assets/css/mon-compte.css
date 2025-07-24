@@ -2,12 +2,27 @@
 📌 Styles Généraux - Conteneur & Typographie
 ========================================================== */
 .dashboard-container {
-    max-width: 1200px;
-    margin: 0 auto;
+    width: 100%;
+    margin: 0;
     padding: 20px;
     font-family: var(--font-main);
     background: var(--color-background);
     color: var(--color-text-primary);
+}
+
+/* ==========================================================
+📌 Messages importants
+========================================================== */
+.important-messages {
+    background: rgba(255, 215, 0, 0.1);
+    border: 1px solid rgba(255, 215, 0, 0.4);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.important-message {
+    margin-bottom: 8px;
 }
 
 
