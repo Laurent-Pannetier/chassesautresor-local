@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 🔑 Ouverture automatique via les paramètres d'URL
   const params = new URLSearchParams(window.location.search);
 
-  if (params.get('edition') === 'open') {
+  if (params.get('edition') === 'open' && !params.has('tab')) {
     const toggle = document.getElementById('toggle-mode-edition');
     toggle?.click();
 
