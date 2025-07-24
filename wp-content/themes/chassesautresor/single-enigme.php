@@ -17,6 +17,13 @@ if ($chasse_id) {
   verifier_et_synchroniser_cache_enigmes_si_autorise($chasse_id);
 }
 
+// 🔹 Accès invité : redirection systématique vers la chasse associée
+if (!is_user_logged_in()) {
+  $url = $chasse_id ? get_permalink($chasse_id) : home_url('/');
+  wp_redirect($url);
+  exit;
+}
+
 // 🔹 Redirection si non visible
 if (!enigme_est_visible_pour($user_id, $enigme_id)) {
   $fallback_url = $chasse_id ? get_permalink($chasse_id) : home_url('/');
