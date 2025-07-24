@@ -1091,6 +1091,7 @@ function initPagerTentatives() {
   const wrapper = document.querySelector('#enigme-tab-soumission .liste-tentatives');
   const postId = document.querySelector('.edition-panel-enigme')?.dataset.postId;
   const compteur = document.querySelector('#enigme-tab-soumission .total-tentatives');
+  const info = wrapper?.querySelector('.pager-info');
   if (!wrapper || !postId) return;
 
   wrapper.addEventListener('click', (e) => {
@@ -1116,6 +1117,10 @@ function initPagerTentatives() {
     }
   });
 
+  if (info) {
+    info.textContent = (wrapper.dataset.page || '1') + ' / ' + (wrapper.dataset.pages || '1');
+  }
+
   function charger(page) {
     fetch(ajaxurl, {
       method: 'POST',
@@ -1133,6 +1138,8 @@ function initPagerTentatives() {
         wrapper.dataset.page = res.data.page;
         wrapper.dataset.pages = res.data.pages;
         if (compteur) compteur.textContent = '(' + res.data.total + ')';
+        const span = wrapper.querySelector('.pager-info');
+        if (span) span.textContent = res.data.page + ' / ' + res.data.pages;
       });
   }
 }
