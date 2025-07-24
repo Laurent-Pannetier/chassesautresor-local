@@ -1061,3 +1061,24 @@ body.panneau-ouvert::before {
 .table-tentatives button {
   margin-right: 4px;
 }
+
+.table-tentatives .btn-valider {
+  background-color: var(--color-editor-success);
+  color: white;
+  padding: 2px 6px;
+  border: none;
+  border-radius: 4px;
+}
+
+.table-tentatives .btn-refuser {
+  background-color: var(--color-editor-error);
+  color: white;
+  padding: 2px 6px;
+  border: none;
+  border-radius: 4px;
+}
+
+.table-tentatives tr.tentative-pending {
+  background-color: var(--color-editor-field-hover);
+  font-weight: bold;
+}

@@ -239,6 +239,7 @@ function initEnigmeEdit() {
   }
 
   initPanneauVariantes();
+  initPagerTentatives();
 
   function forcerRecalculStatutEnigme(postId) {
     fetch(ajaxurl, {
@@ -1084,4 +1085,61 @@ function appliquerEtatGratuitEnLive() {
 
   // Appel initial différé de 50ms pour laisser le temps à la valeur d’être injectée
   setTimeout(syncGratuit, 50);
+}
+
+function initPagerTentatives() {
+  const wrapper = document.querySelector('#enigme-tab-soumission .liste-tentatives');
+  const postId = document.querySelector('.edition-panel-enigme')?.dataset.postId;
+  const compteur = document.querySelector('#enigme-tab-soumission .total-tentatives');
+  const info = wrapper?.querySelector('.pager-info');
+  if (!wrapper || !postId) return;
+
+  wrapper.addEventListener('click', (e) => {
+    if (e.target.closest('.pager-first')) {
+      e.preventDefault();
+      charger(1);
+    }
+    if (e.target.closest('.pager-prev')) {
+      e.preventDefault();
+      const page = parseInt(wrapper.dataset.page || '1', 10);
+      if (page > 1) charger(page - 1);
+    }
+    if (e.target.closest('.pager-next')) {
+      e.preventDefault();
+      const page = parseInt(wrapper.dataset.page || '1', 10);
+      const pages = parseInt(wrapper.dataset.pages || '1', 10);
+      if (page < pages) charger(page + 1);
+    }
+    if (e.target.closest('.pager-last')) {
+      e.preventDefault();
+      const pages = parseInt(wrapper.dataset.pages || '1', 10);
+      charger(pages);
+    }
+  });
+
+  if (info) {
+    info.textContent = (wrapper.dataset.page || '1') + ' / ' + (wrapper.dataset.pages || '1');
+  }
+
+  function charger(page) {
+    fetch(ajaxurl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        action: 'lister_tentatives_enigme',
+        enigme_id: postId,
+        page
+      })
+    })
+      .then(r => r.json())
+      .then(res => {
+        if (!res.success) return;
+        wrapper.innerHTML = res.data.html;
+        wrapper.dataset.page = res.data.page;
+        wrapper.dataset.pages = res.data.pages;
+        if (compteur) compteur.textContent = '(' + res.data.total + ')';
+        const span = wrapper.querySelector('.pager-info');
+        if (span) span.textContent = res.data.page + ' / ' + res.data.pages;
+      });
+  }
 }
