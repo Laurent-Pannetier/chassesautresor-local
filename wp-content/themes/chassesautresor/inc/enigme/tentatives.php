@@ -197,14 +197,15 @@ function get_etat_tentative(string $uid): string
  * @param int $enigme_id ID de l'énigme.
  * @param int $limit     Nombre de résultats à retourner.
  * @param int $offset    Décalage pour la pagination.
- * @return array         Liste des tentatives.
+ * @return array         Liste des tentatives triées par priorité manuelle puis
+ *                       par date de soumission décroissante.
  */
 function recuperer_tentatives_enigme(int $enigme_id, int $limit = 10, int $offset = 0): array
 {
     global $wpdb;
     $table = $wpdb->prefix . 'enigme_tentatives';
     $query = $wpdb->prepare(
-        "SELECT * FROM $table WHERE enigme_id = %d ORDER BY traitee ASC, date_tentative DESC LIMIT %d OFFSET %d",
+        "SELECT * FROM $table WHERE enigme_id = %d ORDER BY (resultat = 'attente') DESC, date_tentative DESC LIMIT %d OFFSET %d",
         $enigme_id,
         $limit,
         $offset
