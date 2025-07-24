@@ -9,6 +9,10 @@ function initFormulaireManuel() {
   const cout = badgeCout ? parseInt(badgeCout.textContent, 10) : 0;
   let hideTimer = null;
 
+  const i18n = window.REPONSE_MANUELLE_I18N || {};
+  const txtSuccess = i18n.success || 'Tentative bien reçue.';
+  const txtProcessing = i18n.processing || 'Votre tentative est en cours de traitement.';
+
   form.addEventListener('submit', e => {
     e.preventDefault();
     const data = new URLSearchParams(new FormData(form));
@@ -40,12 +44,21 @@ function initFormulaireManuel() {
             headerPoints.textContent = res.data.points;
           }
 
-          const msg = document.createElement('p');
-          msg.className = 'message-joueur-statut';
-          msg.textContent = 'Votre tentative est en cours de traitement.';
+          const msgProcessing = document.createElement('p');
+          msgProcessing.className = 'message-joueur-statut';
+          msgProcessing.textContent = txtProcessing;
+
+          const msgSuccess = document.createElement('p');
+          msgSuccess.className = 'message-feedback-success';
+          msgSuccess.textContent = txtSuccess;
 
           if (feedback) feedback.remove();
-          form.replaceWith(msg);
+          const parent = form.parentNode;
+          parent.insertBefore(msgSuccess, form);
+          parent.insertBefore(msgProcessing, form);
+          form.remove();
+
+          setTimeout(() => { msgSuccess.remove(); }, 5000);
         } else {
           feedback.textContent = res.data;
           feedback.style.display = 'block';

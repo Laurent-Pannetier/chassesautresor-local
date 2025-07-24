@@ -154,7 +154,6 @@ function soumettre_reponse_manuelle()
     enigme_mettre_a_jour_statut_utilisateur($enigme_id, $user_id, 'soumis', true);
 
     envoyer_mail_reponse_manuelle($user_id, $enigme_id, $reponse, $uid);
-    envoyer_mail_accuse_reception_joueur($user_id, $enigme_id, $uid);
 
     $solde = get_user_points($user_id);
 
@@ -497,6 +496,11 @@ function charger_script_reponse_manuelle() {
             filemtime(get_stylesheet_directory() . $path),
             true
         );
+
+        wp_localize_script('reponse-manuelle', 'REPONSE_MANUELLE_I18N', [
+            'success'    => esc_html__('Tentative bien reçue.', 'chassesautresor-com'),
+            'processing' => esc_html__('Votre tentative est en cours de traitement.', 'chassesautresor-com'),
+        ]);
     }
 }
 add_action('wp_enqueue_scripts', 'charger_script_reponse_manuelle');
