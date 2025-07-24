@@ -148,6 +148,9 @@ defined('ABSPATH') || exit;
         $resultat = $tentative->resultat ?? '';
         $traitee = (int) ($tentative->traitee ?? 0) === 1;
 
+        $user = get_userdata($tentative->user_id);
+        $nom_user = ($user && isset($user->display_name)) ? $user->display_name : 'Utilisateur inconnu';
+
         return [
             'etat_tentative'        => $etat_tentative,
             'statut_initial'        => $resultat ?: 'invalide',
@@ -157,7 +160,7 @@ defined('ABSPATH') || exit;
             'traitee'               => $traitee,
             'vient_d_etre_traitee'  => $traitee && $etat_tentative !== 'attente',
             'tentative'             => $tentative,
-            'nom_user'              => get_userdata($tentative->user_id)?->display_name ?? 'Utilisateur inconnu',
+            'nom_user'              => $nom_user,
             'permalink'             => get_permalink($tentative->enigme_id),
             'statistiques'          => [
                 'total_user'   => 0,

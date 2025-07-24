@@ -23,9 +23,9 @@ defined('ABSPATH') || exit;
   </thead>
   <tbody>
   <?php foreach ($tentatives as $tent) :
-    $user = get_userdata($tent->user_id);
-    $login = $user?->user_login ?? 'Inconnu';
-    $date = mysql2date('d/m/y H:i', $tent->date_tentative);
+    $user  = get_userdata($tent->user_id);
+    $login = ($user && isset($user->user_login)) ? $user->user_login : 'Inconnu';
+    $date  = mysql2date('d/m/y H:i', $tent->date_tentative);
   ?>
     <tr>
       <td><?= esc_html($date); ?></td>
