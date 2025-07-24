@@ -1083,3 +1083,22 @@ body.panneau-ouvert::before {
   background-color: var(--color-editor-field-hover);
   font-weight: bold;
 }
+
+/* ====== Tableaux de statistiques ====== */
+
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 0 transparent;
+}
+
+.stats-table tr,
+.stats-table td {
+  border: 0 solid transparent;
+}
+
+.stats-table td {
+  text-align: left;
+  padding: 8px;
+  font-weight: bold;
+}
