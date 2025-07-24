@@ -30,17 +30,33 @@ defined('ABSPATH') || exit;
             return '<p>Vous ne pouvez plus répondre à cette énigme.</p>';
         }
 
+        $data = calculer_contexte_points($user_id, $enigme_id);
         $nonce = wp_create_nonce('reponse_manuelle_nonce');
         ob_start();
     ?>
-     <form method="post" class="formulaire-reponse-manuelle">
-         <label for="reponse_manuelle">Votre réponse :</label>
-         <textarea name="reponse_manuelle" id="reponse_manuelle" rows="3" required></textarea>
-         <input type="hidden" name="enigme_id" value="<?php echo esc_attr($enigme_id); ?>">
-         <input type="hidden" name="reponse_manuelle_nonce" value="<?php echo esc_attr($nonce); ?>">
-         <button type="submit">Envoyer la réponse</button>
-     </form>
- <?php
+    <form method="post" class="bloc-reponse formulaire-reponse-manuelle">
+        <label for="reponse_manuelle_<?php echo esc_attr($enigme_id); ?>">Votre réponse :</label>
+        <?php if ($data['points_manquants'] > 0) : ?>
+            <p class="message-limite" data-points="manquants">
+                <?php echo esc_html(sprintf(__('Il vous manque %d points pour soumettre votre réponse.', 'chassesautresor-com'), $data['points_manquants'])); ?>
+                <a href="<?php echo esc_url($data['boutique_url']); ?>" class="points-link points-boutique-icon" title="Accéder à la boutique">
+                    <span class="points-plus-circle">+</span>
+                </a>
+            </p>
+        <?php else : ?>
+            <textarea name="reponse_manuelle" id="reponse_manuelle_<?php echo esc_attr($enigme_id); ?>" rows="3" required></textarea>
+        <?php endif; ?>
+        <input type="hidden" name="enigme_id" value="<?php echo esc_attr($enigme_id); ?>">
+        <input type="hidden" name="reponse_manuelle_nonce" value="<?php echo esc_attr($nonce); ?>">
+        <div class="reponse-cta-row">
+            <button type="submit" class="bouton-cta" <?php echo $data['disabled']; ?>>Envoyer</button>
+            <?php if ($data['cout'] > 0) : ?>
+                <span class="badge-cout"><?php echo esc_html($data['cout']); ?> pts</span>
+            <?php endif; ?>
+        </div>
+    </form>
+    <div class="reponse-feedback" style="display:none"></div>
+    <?php
         return ob_get_clean();
     }
 
@@ -56,17 +72,34 @@ defined('ABSPATH') || exit;
      * @param int $enigme_id
      * @return bool
      */
-    function utilisateur_peut_repondre_manuelle(int $user_id, int $enigme_id): bool
-    {
-        if (!$user_id || !$enigme_id) return false;
+function utilisateur_peut_repondre_manuelle(int $user_id, int $enigme_id): bool
+{
+    if (!$user_id || !$enigme_id) return false;
 
         $statut = enigme_get_statut_utilisateur($enigme_id, $user_id);
 
         // Autoriser uniquement les statuts actifs
         $autorisés = ['en_cours', 'echouee', 'abandonnee'];
 
-        return in_array($statut, $autorisés, true);
-    }
+    return in_array($statut, $autorisés, true);
+}
+
+/**
+ * Calcule les informations de coût et de points pour le joueur.
+ */
+function calculer_contexte_points(int $user_id, int $enigme_id): array
+{
+    $cout = (int) get_field('enigme_tentative_cout_points', $enigme_id);
+    $solde = get_user_points($user_id);
+    $points_manquants = max(0, $cout - $solde);
+
+    return [
+        'cout'            => $cout,
+        'boutique_url'    => esc_url(home_url('/boutique/')),
+        'disabled'        => $points_manquants > 0 ? 'disabled' : '',
+        'points_manquants' => $points_manquants,
+    ];
+}
 
 
     /**
@@ -77,50 +110,60 @@ defined('ABSPATH') || exit;
      * - champ réponse + nonce + enigme_id présents
      * - nonce valide
      */
-    function soumettre_reponse_manuelle()
-    {
-        global $wpdb;
+function soumettre_reponse_manuelle()
+{
+    global $wpdb;
 
-        if (
-            isset($_POST['reponse_manuelle_nonce'], $_POST['reponse_manuelle'], $_POST['enigme_id']) &&
-            wp_verify_nonce($_POST['reponse_manuelle_nonce'], 'reponse_manuelle_nonce') &&
-            is_user_logged_in()
-        ) {
-            $user_id   = get_current_user_id();
-            $enigme_id = (int) $_POST['enigme_id'];
-            $reponse   = sanitize_textarea_field($_POST['reponse_manuelle']);
-
-            // Blocage si interdiction de répondre
-            if (!utilisateur_peut_repondre_manuelle($user_id, $enigme_id)) {
-                return;
-            }
-
-            // Vérifie si l'utilisateur a déjà résolu l'énigme
-            $current_statut = $wpdb->get_var($wpdb->prepare(
-                "SELECT statut FROM {$wpdb->prefix}enigme_statuts_utilisateur WHERE user_id = %d AND enigme_id = %d",
-                $user_id,
-                $enigme_id
-            ));
-
-            if (in_array($current_statut, ['resolue', 'terminee'], true)) {
-                error_log("❌ Tentative rejetée car joueur a déjà résolu l’énigme (UID=$user_id / Enigme=$enigme_id).");
-                return;
-            }
-
-            // Insertion tentative + mise à jour statut = "soumis"
-            $uid = inserer_tentative($user_id, $enigme_id, $reponse);
-            enigme_mettre_a_jour_statut_utilisateur($enigme_id, $user_id, 'soumis', true);
-
-            envoyer_mail_reponse_manuelle($user_id, $enigme_id, $reponse, $uid);
-            envoyer_mail_accuse_reception_joueur($user_id, $enigme_id, $uid);
-
-            add_action('template_redirect', function () {
-                wp_redirect(add_query_arg('reponse_envoyee', '1'));
-                exit;
-            });
-        }
+    if (!is_user_logged_in()) {
+        wp_send_json_error('non_connecte');
     }
-add_action('init', 'soumettre_reponse_manuelle');
+
+    $user_id   = get_current_user_id();
+    $enigme_id = isset($_POST['enigme_id']) ? (int) $_POST['enigme_id'] : 0;
+    $reponse   = isset($_POST['reponse_manuelle']) ? sanitize_textarea_field($_POST['reponse_manuelle']) : '';
+    $nonce     = $_POST['reponse_manuelle_nonce'] ?? '';
+
+    if (!$enigme_id || $reponse === '' || !wp_verify_nonce($nonce, 'reponse_manuelle_nonce')) {
+        wp_send_json_error('invalide');
+    }
+
+    if (!utilisateur_peut_repondre_manuelle($user_id, $enigme_id)) {
+        wp_send_json_error('interdit');
+    }
+
+    $current_statut = $wpdb->get_var($wpdb->prepare(
+        "SELECT statut FROM {$wpdb->prefix}enigme_statuts_utilisateur WHERE user_id = %d AND enigme_id = %d",
+        $user_id,
+        $enigme_id
+    ));
+
+    if (in_array($current_statut, ['resolue', 'terminee'], true)) {
+        wp_send_json_error('deja_resolue');
+    }
+
+    $cout = (int) get_field('enigme_tentative_cout_points', $enigme_id);
+    if ($cout > get_user_points($user_id)) {
+        wp_send_json_error('points_insuffisants');
+    }
+
+    if ($cout > 0) {
+        deduire_points_utilisateur($user_id, $cout);
+    }
+
+    $uid = inserer_tentative($user_id, $enigme_id, $reponse);
+    enigme_mettre_a_jour_statut_utilisateur($enigme_id, $user_id, 'soumis', true);
+
+    envoyer_mail_reponse_manuelle($user_id, $enigme_id, $reponse, $uid);
+
+    $solde = get_user_points($user_id);
+
+    wp_send_json_success([
+        'uid'    => $uid,
+        'points' => $solde,
+    ]);
+}
+add_action('wp_ajax_soumettre_reponse_manuelle', 'soumettre_reponse_manuelle');
+add_action('wp_ajax_nopriv_soumettre_reponse_manuelle', 'soumettre_reponse_manuelle');
 
 /**
  * Traite la soumission d'une réponse automatique via AJAX.
@@ -439,4 +482,26 @@ function charger_script_reponse_automatique() {
     }
 }
 add_action('wp_enqueue_scripts', 'charger_script_reponse_automatique');
+
+/**
+ * Charge le script gérant la soumission manuelle des réponses.
+ */
+function charger_script_reponse_manuelle() {
+    if (is_singular('enigme')) {
+        $path = '/assets/js/reponse-manuelle.js';
+        wp_enqueue_script(
+            'reponse-manuelle',
+            get_stylesheet_directory_uri() . $path,
+            [],
+            filemtime(get_stylesheet_directory() . $path),
+            true
+        );
+
+        wp_localize_script('reponse-manuelle', 'REPONSE_MANUELLE_I18N', [
+            'success'    => esc_html__('Tentative bien reçue.', 'chassesautresor-com'),
+            'processing' => esc_html__('Votre tentative est en cours de traitement.', 'chassesautresor-com'),
+        ]);
+    }
+}
+add_action('wp_enqueue_scripts', 'charger_script_reponse_manuelle');
 

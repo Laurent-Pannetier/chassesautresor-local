@@ -35,7 +35,7 @@ if ($mode_validation === 'manuelle') {
     echo '<p class="message-joueur-statut">' . esc_html($texte) . '</p>';
     return;
   }
-  echo '<div class="bloc-reponse">' . do_shortcode('[formulaire_reponse_manuelle id="' . esc_attr($post_id) . '"]') . '</div>';
+  echo do_shortcode('[formulaire_reponse_manuelle id="' . esc_attr($post_id) . '"]');
   return;
 }
 
@@ -79,7 +79,7 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
     <p class="message-limite" data-tentatives="epuisees"><?= esc_html($message_tentatives); ?></p>
   <?php elseif ($points_manquants > 0) : ?>
     <p class="message-limite" data-points="manquants">
-      <?= esc_html(sprintf('%d points manquants', $points_manquants)); ?>
+      <?= esc_html(sprintf(__('Il vous manque %d points pour soumettre votre réponse.', 'chassesautresor-com'), $points_manquants)); ?>
       <a href="<?= esc_url($boutique_url); ?>" class="points-link points-boutique-icon" title="Accéder à la boutique">
         <span class="points-plus-circle">+</span>
       </a>
