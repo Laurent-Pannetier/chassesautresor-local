@@ -369,8 +369,8 @@ function traiter_statut_enigme(int $enigme_id, ?int $user_id = null): array
             'rediriger' => false,
             'url' => null,
             'afficher_formulaire' => false,
-            'afficher_message' => true,
-            'message_html' => '<p class="message-statut">Votre tentative est en cours de traitement.</p>',
+            'afficher_message' => false,
+            'message_html' => '',
         ];
     }
 

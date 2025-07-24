@@ -2,6 +2,9 @@
 use PHPUnit\Framework\TestCase;
 
 define('ABSPATH', __DIR__ . '/../');
+if (!function_exists('add_action')) {
+    function add_action(...$args) {}
+}
 require_once __DIR__.'/../wp-content/themes/chassesautresor/inc/enigme/tentatives.php';
 
 class EnigmeFunctionsTest extends TestCase {
