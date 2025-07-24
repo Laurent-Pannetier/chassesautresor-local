@@ -414,7 +414,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
       <div class="edition-panel-header">
         <h2><i class="fa-solid fa-chart-column"></i> Statistiques</h2>
       </div>
-      <p class="edition-placeholder">La section « Statistiques » sera bientôt disponible.</p>
+      <?php
+      if (!function_exists('enigme_compter_joueurs_engages')) {
+        require_once get_stylesheet_directory() . '/inc/enigme/stats.php';
+      }
+      ?>
+      <table class="stats-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Total</th>
+            <th>Aujourd’hui</th>
+            <th>Semaine</th>
+            <th>Mois</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Nombre de joueurs engagés</td>
+            <td><?= enigme_compter_joueurs_engages($enigme_id, 'total'); ?></td>
+            <td><?= enigme_compter_joueurs_engages($enigme_id, 'jour'); ?></td>
+            <td><?= enigme_compter_joueurs_engages($enigme_id, 'semaine'); ?></td>
+            <td><?= enigme_compter_joueurs_engages($enigme_id, 'mois'); ?></td>
+          </tr>
+          <tr>
+            <td>Nombre de tentatives</td>
+            <td><?= enigme_compter_tentatives($enigme_id, $mode_validation, 'total'); ?></td>
+            <td><?= enigme_compter_tentatives($enigme_id, $mode_validation, 'jour'); ?></td>
+            <td><?= enigme_compter_tentatives($enigme_id, $mode_validation, 'semaine'); ?></td>
+            <td><?= enigme_compter_tentatives($enigme_id, $mode_validation, 'mois'); ?></td>
+          </tr>
+          <tr>
+            <td>Nombre de points dépensés</td>
+            <td><?= enigme_compter_points_depenses($enigme_id, $mode_validation, 'total'); ?></td>
+            <td><?= enigme_compter_points_depenses($enigme_id, $mode_validation, 'jour'); ?></td>
+            <td><?= enigme_compter_points_depenses($enigme_id, $mode_validation, 'semaine'); ?></td>
+            <td><?= enigme_compter_points_depenses($enigme_id, $mode_validation, 'mois'); ?></td>
+          </tr>
+          <tr>
+            <td>Nombre de bonnes solutions</td>
+            <td><?= enigme_compter_bonnes_solutions($enigme_id, $mode_validation, 'total'); ?></td>
+            <td><?= enigme_compter_bonnes_solutions($enigme_id, $mode_validation, 'jour'); ?></td>
+            <td><?= enigme_compter_bonnes_solutions($enigme_id, $mode_validation, 'semaine'); ?></td>
+            <td><?= enigme_compter_bonnes_solutions($enigme_id, $mode_validation, 'mois'); ?></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
 <div id="enigme-tab-soumission" class="edition-tab-content" style="display:none;">
