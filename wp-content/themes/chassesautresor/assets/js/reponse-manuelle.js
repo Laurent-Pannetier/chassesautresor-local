@@ -36,28 +36,16 @@ function initFormulaireManuel() {
         feedback.style.display = 'none';
 
         if (res.success) {
-          form.reset();
           if (headerPoints && typeof res.data.points !== 'undefined') {
             headerPoints.textContent = res.data.points;
           }
-          if (res.data.points < cout) {
-            if (input) input.remove();
-            if (pointsMsg) {
-              pointsMsg.style.display = 'block';
-              pointsMsg.textContent = `${cout - res.data.points} points manquants`;
-            } else {
-              const p = document.createElement('p');
-              p.className = 'message-limite';
-              p.dataset.points = 'manquants';
-              p.textContent = `${cout - res.data.points} points manquants`;
-              form.insertBefore(p, form.querySelector('input[name="enigme_id"]'));
-            }
-            const btn = form.querySelector('button[type="submit"]');
-            if (btn) btn.disabled = true;
-          }
-          feedback.textContent = 'Réponse envoyée !';
-          feedback.style.display = 'block';
-          hideTimer = setTimeout(() => { feedback.style.display = 'none'; }, 5000);
+
+          const msg = document.createElement('p');
+          msg.className = 'message-joueur-statut';
+          msg.textContent = 'Votre tentative est en cours de traitement.';
+
+          if (feedback) feedback.remove();
+          form.replaceWith(msg);
         } else {
           feedback.textContent = res.data;
           feedback.style.display = 'block';
