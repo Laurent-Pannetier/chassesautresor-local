@@ -35,7 +35,7 @@ if ($mode_validation === 'manuelle') {
     echo '<p class="message-joueur-statut">' . esc_html($texte) . '</p>';
     return;
   }
-  echo '<div class="bloc-reponse">' . do_shortcode('[formulaire_reponse_manuelle id="' . esc_attr($post_id) . '"]') . '</div>';
+  echo do_shortcode('[formulaire_reponse_manuelle id="' . esc_attr($post_id) . '"]');
   return;
 }
 
