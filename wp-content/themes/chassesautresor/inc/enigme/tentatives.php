@@ -199,7 +199,7 @@ function get_etat_tentative(string $uid): string
  * @param int $offset    Décalage pour la pagination.
  * @return array         Liste des tentatives.
  */
-function recuperer_tentatives_enigme(int $enigme_id, int $limit = 25, int $offset = 0): array
+function recuperer_tentatives_enigme(int $enigme_id, int $limit = 15, int $offset = 0): array
 {
     global $wpdb;
     $table = $wpdb->prefix . 'enigme_tentatives';
@@ -241,7 +241,7 @@ function ajax_lister_tentatives_enigme()
 
     $enigme_id = isset($_POST['enigme_id']) ? (int) $_POST['enigme_id'] : 0;
     $page      = max(1, (int) ($_POST['page'] ?? 1));
-    $par_page  = 25;
+    $par_page  = 15;
 
     if (!$enigme_id || get_post_type($enigme_id) !== 'enigme') {
         wp_send_json_error('post_invalide');
@@ -254,6 +254,7 @@ function ajax_lister_tentatives_enigme()
     $offset     = ($page - 1) * $par_page;
     $tentatives = recuperer_tentatives_enigme($enigme_id, $par_page, $offset);
     $total      = compter_tentatives_enigme($enigme_id);
+    $pages      = (int) ceil($total / $par_page);
 
     ob_start();
     get_template_part('template-parts/enigme/partials/enigme-partial-tentatives', null, [
@@ -261,6 +262,7 @@ function ajax_lister_tentatives_enigme()
         'page'       => $page,
         'par_page'   => $par_page,
         'total'      => $total,
+        'pages'      => $pages,
     ]);
     $html = ob_get_clean();
 
@@ -268,6 +270,7 @@ function ajax_lister_tentatives_enigme()
         'html'  => $html,
         'total' => $total,
         'page'  => $page,
+        'pages' => $pages,
     ]);
 }
 

@@ -12,8 +12,9 @@ defined('ABSPATH') || exit;
 $args = $args ?? [];
 $tentatives = $args['tentatives'] ?? $tentatives ?? [];
 $page = $args['page'] ?? $page ?? 1;
-$par_page = $args['par_page'] ?? $par_page ?? 25;
+$par_page = $args['par_page'] ?? $par_page ?? 15;
 $total = $args['total'] ?? $total ?? 0;
+$pages = $args['pages'] ?? $pages ?? (int) ceil($total / $par_page);
 ?>
 <?php if (empty($tentatives)) : ?>
 <p>Aucune tentative de soumission.</p>
@@ -55,10 +56,12 @@ $total = $args['total'] ?? $total ?? 0;
 </table>
 <div class="pager" style="margin-top:10px;">
   <?php if ($page > 1) : ?>
-    <button class="pager-prev">&laquo; Préc.</button>
+    <button class="pager-first" aria-label="Première page"><i class="fa-solid fa-angles-left"></i></button>
+    <button class="pager-prev" aria-label="Page précédente" style="margin-left:5px;"><i class="fa-solid fa-angle-left"></i></button>
   <?php endif; ?>
-  <?php if ((($page - 1) * $par_page) + $par_page < $total) : ?>
-    <button class="pager-next" style="margin-left:10px;">Suiv. &raquo;</button>
+  <?php if ($page < $pages) : ?>
+    <button class="pager-next" aria-label="Page suivante" style="margin-left:10px;"><i class="fa-solid fa-angle-right"></i></button>
+    <button class="pager-last" aria-label="Dernière page" style="margin-left:5px;"><i class="fa-solid fa-angles-right"></i></button>
   <?php endif; ?>
 </div>
 <?php endif; ?>

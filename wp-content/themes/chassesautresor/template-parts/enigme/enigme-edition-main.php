@@ -428,17 +428,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
   }
 
   $page_tentatives = max(1, intval($_GET['page_tentatives'] ?? 1));
-  $par_page = 25;
+  $par_page = 15;
   $offset = ($page_tentatives - 1) * $par_page;
   $tentatives = recuperer_tentatives_enigme($enigme_id, $par_page, $offset);
   $total_tentatives = compter_tentatives_enigme($enigme_id);
+  $pages_tentatives = (int) ceil($total_tentatives / $par_page);
   ?>
-  <div class="liste-tentatives" data-page="<?= esc_attr($page_tentatives); ?>" data-total="<?= esc_attr($total_tentatives); ?>">
+  <div class="liste-tentatives" data-page="<?= esc_attr($page_tentatives); ?>" data-total="<?= esc_attr($total_tentatives); ?>" data-pages="<?= esc_attr($pages_tentatives); ?>">
     <?php get_template_part('template-parts/enigme/partials/enigme-partial-tentatives', null, [
       'tentatives' => $tentatives,
       'page'       => $page_tentatives,
       'par_page'   => $par_page,
       'total'      => $total_tentatives,
+      'pages'      => $pages_tentatives,
     ]); ?>
   </div>
 </div>

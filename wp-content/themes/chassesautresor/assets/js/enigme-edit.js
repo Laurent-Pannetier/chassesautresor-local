@@ -1094,15 +1094,25 @@ function initPagerTentatives() {
   if (!wrapper || !postId) return;
 
   wrapper.addEventListener('click', (e) => {
-    if (e.target.classList.contains('pager-prev')) {
+    if (e.target.closest('.pager-first')) {
+      e.preventDefault();
+      charger(1);
+    }
+    if (e.target.closest('.pager-prev')) {
       e.preventDefault();
       const page = parseInt(wrapper.dataset.page || '1', 10);
       if (page > 1) charger(page - 1);
     }
-    if (e.target.classList.contains('pager-next')) {
+    if (e.target.closest('.pager-next')) {
       e.preventDefault();
       const page = parseInt(wrapper.dataset.page || '1', 10);
-      charger(page + 1);
+      const pages = parseInt(wrapper.dataset.pages || '1', 10);
+      if (page < pages) charger(page + 1);
+    }
+    if (e.target.closest('.pager-last')) {
+      e.preventDefault();
+      const pages = parseInt(wrapper.dataset.pages || '1', 10);
+      charger(pages);
     }
   });
 
@@ -1121,6 +1131,7 @@ function initPagerTentatives() {
         if (!res.success) return;
         wrapper.innerHTML = res.data.html;
         wrapper.dataset.page = res.data.page;
+        wrapper.dataset.pages = res.data.pages;
         if (compteur) compteur.textContent = '(' + res.data.total + ')';
       });
   }
