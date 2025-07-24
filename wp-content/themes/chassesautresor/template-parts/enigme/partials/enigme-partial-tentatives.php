@@ -12,7 +12,7 @@ defined('ABSPATH') || exit;
 $args = $args ?? [];
 $tentatives = $args['tentatives'] ?? $tentatives ?? [];
 $page = $args['page'] ?? $page ?? 1;
-$par_page = $args['par_page'] ?? $par_page ?? 15;
+$par_page = $args['par_page'] ?? $par_page ?? 10;
 $total = $args['total'] ?? $total ?? 0;
 $pages = $args['pages'] ?? $pages ?? (int) ceil($total / $par_page);
 ?>
@@ -33,8 +33,9 @@ $pages = $args['pages'] ?? $pages ?? (int) ceil($total / $par_page);
     $user  = get_userdata($tent->user_id);
     $login = ($user && isset($user->user_login)) ? $user->user_login : 'Inconnu';
     $date  = mysql2date('d/m/y H:i', $tent->date_tentative);
+    $pending = ($tent->resultat === 'attente' && (int) $tent->traitee === 0) ? ' tentative-pending' : '';
   ?>
-    <tr>
+    <tr class="<?= $pending ?>">
       <td><?= esc_html($date); ?></td>
       <td><?= esc_html($login); ?></td>
       <td><?= esc_html($tent->reponse_saisie); ?></td>

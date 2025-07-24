@@ -1061,3 +1061,8 @@ body.panneau-ouvert::before {
 .table-tentatives button {
   margin-right: 4px;
 }
+
+.table-tentatives tr.tentative-pending {
+  background-color: var(--color-editor-field-hover);
+  font-weight: bold;
+}

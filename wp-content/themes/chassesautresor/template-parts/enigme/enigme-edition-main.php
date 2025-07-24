@@ -428,7 +428,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
   }
 
   $page_tentatives = max(1, intval($_GET['page_tentatives'] ?? 1));
-  $par_page = 15;
+  $par_page = 10;
   $offset = ($page_tentatives - 1) * $par_page;
   $tentatives = recuperer_tentatives_enigme($enigme_id, $par_page, $offset);
   $total_tentatives = compter_tentatives_enigme($enigme_id);
