@@ -95,13 +95,13 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                     <?php endif; ?>
                   </div>
 
-                  <?php if ($peut_editer_titre) : ?>
-                    <div class="champ-edition" style="display: none;">
-                      <input type="text" class="champ-input" maxlength="70" value="<?= esc_attr($titre); ?>" id="champ-titre-chasse">
+                  <div class="champ-edition" style="display: none;">
+                    <input type="text" class="champ-input" maxlength="70" value="<?= esc_attr($titre); ?>" id="champ-titre-chasse" <?= $peut_editer_titre ? '' : 'disabled'; ?>>
+                    <?php if ($peut_editer_titre) : ?>
                       <button type="button" class="champ-enregistrer">✓</button>
                       <button type="button" class="champ-annuler">✖</button>
-                    </div>
-                  <?php endif; ?>
+                    <?php endif; ?>
+                  </div>
 
                   <div class="champ-feedback"></div>
                 </li>
