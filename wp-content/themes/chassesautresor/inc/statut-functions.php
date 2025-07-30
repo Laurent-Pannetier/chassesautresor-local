@@ -952,6 +952,10 @@ function recuperer_statut_chasse()
 
     $statut_str = is_string($statut) ? $statut : '';
     $statut_label = ucfirst(str_replace('_', ' ', $statut_str));
+    if ($statut_str === 'payante') {
+        $statut_str = 'en_cours';
+        $statut_label = 'en cours';
+    }
 
     if ($statut_str === 'revision') {
         $validation = get_field('chasse_cache_statut_validation', $post_id);
