@@ -14,6 +14,8 @@ if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
 
 $peut_modifier = utilisateur_peut_voir_panneau($chasse_id);
 $peut_editer   = utilisateur_peut_editer_champs($chasse_id);
+$peut_editer_titre = champ_est_editable('post_title', $chasse_id);
+$peut_editer_cout  = champ_est_editable('caracteristiques.chasse_infos_cout_points', $chasse_id);
 
 $infos_chasse = $args['infos_chasse'] ?? preparer_infos_affichage_chasse($chasse_id);
 
@@ -79,14 +81,14 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
               <ul class="resume-infos">
 
                 <!-- Titre -->
-                <li class="champ-chasse champ-titre <?= ($isTitreParDefaut ? 'champ-vide' : 'champ-rempli'); ?><?= $peut_editer ? '' : ' champ-desactive'; ?>"
+                <li class="champ-chasse champ-titre <?= ($isTitreParDefaut ? 'champ-vide' : 'champ-rempli'); ?><?= $peut_editer_titre ? '' : ' champ-desactive'; ?>"
                   data-champ="post_title"
                   data-cpt="chasse"
                   data-post-id="<?= esc_attr($chasse_id); ?>">
 
                   <div class="champ-affichage">
                     <label for="champ-titre-chasse">Titre de la chasse</label>
-                    <?php if ($peut_editer) : ?>
+                    <?php if ($peut_editer_titre) : ?>
                       <button type="button" class="champ-modifier" aria-label="Modifier le titre">
                         ✏️
                       </button>
@@ -94,7 +96,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   </div>
 
                   <div class="champ-edition" style="display: none;">
-                    <input type="text" class="champ-input" maxlength="70" value="<?= esc_attr($titre); ?>" id="champ-titre-chasse" <?= $peut_editer ? '' : 'disabled'; ?>>
+                    <input type="text" class="champ-input" maxlength="70" value="<?= esc_attr($titre); ?>" id="champ-titre-chasse" <?= $peut_editer_titre ? '' : 'disabled'; ?>>
                     <button type="button" class="champ-enregistrer">✓</button>
                     <button type="button" class="champ-annuler">✖</button>
                   </div>
@@ -223,7 +225,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
 
 
                 <!-- Coût -->
-                <li class="champ-chasse champ-cout-points <?= empty($cout) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>"
+                <li class="champ-chasse champ-cout-points <?= empty($cout) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer_cout ? '' : ' champ-desactive'; ?>"
                   data-champ="chasse_infos_cout_points"
                   data-cpt="chasse"
                   data-post-id="<?= esc_attr($chasse_id); ?>">
@@ -238,13 +240,13 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                       min="0"
                       step="1"
                       value="<?= esc_attr($cout); ?>"
-                      placeholder="0" <?= $peut_editer ? '' : 'disabled'; ?> />
+                      placeholder="0" <?= $peut_editer_cout ? '' : 'disabled'; ?> />
 
                     <div class="champ-option-gratuit" style="margin-left: 15px;">
                       <input type="checkbox"
                         id="cout-gratuit"
                         name="cout-gratuit"
-                        <?= ((int)$cout === 0) ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
+                        <?= ((int)$cout === 0) ? 'checked' : ''; ?> <?= $peut_editer_cout ? '' : 'disabled'; ?>>
                       <label for="cout-gratuit">Gratuit</label>
                     </div>
                   </div>
