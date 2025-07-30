@@ -50,6 +50,9 @@ function modifierChampSimple(champ, valeur, postId, cpt = 'enigme') {
 // 📝 initChampTexte
 // ==============================
 function initChampTexte(bloc) {
+  if (bloc.classList.contains('champ-desactive')) {
+    return; // champ non éditable
+  }
   const champ = bloc.dataset.champ;
   const cpt = bloc.dataset.cpt;
   const postId = bloc.dataset.postId;
@@ -263,6 +266,9 @@ initAffichageBoutonsCout();
 // ================================
 function initChampCoutPoints() {
   document.querySelectorAll('.champ-cout-points').forEach(bloc => {
+    if (bloc.classList.contains('champ-desactive')) {
+      return; // champ verrouillé
+    }
     const input = bloc.querySelector('.champ-input.champ-cout[type="number"]');
     const checkbox = bloc.querySelector('input[type="checkbox"]');
     if (!input || !checkbox) return;
