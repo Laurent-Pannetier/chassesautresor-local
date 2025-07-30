@@ -762,9 +762,13 @@ function champ_est_editable($champ, $post_id, $user_id = null)
         return false;
     }
 
-    // 💡 Exemple : titre de chasse non modifiable après publication
-    if ($post_type === 'chasse' && $champ === 'post_title') {
-        return $status !== 'publish';
+    // 💡 Chasse : certains champs ne sont éditables que durant la phase
+    //     de création/correction. On se base sur la même logique que
+    //     `utilisateur_peut_editer_champs()`.
+    if ($post_type === 'chasse') {
+        if (in_array($champ, ['post_title', 'caracteristiques.chasse_infos_cout_points'], true)) {
+            return utilisateur_peut_editer_champs($post_id);
+        }
     }
 
     // 🔒 Le nom d'organisateur est verrouillé sauf pour certaines étapes de création
