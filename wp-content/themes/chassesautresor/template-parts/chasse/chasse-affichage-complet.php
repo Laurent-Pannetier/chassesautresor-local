@@ -85,6 +85,7 @@ if ($edition_active && !$est_complet) {
     $statut = $infos_chasse['statut'];
     $statut_validation = $infos_chasse['statut_validation'];
     $statut_label = ucfirst(str_replace('_', ' ', $statut));
+    $statut_for_class = $statut;
 
     if ($statut === 'revision') {
       if ($statut_validation === 'creation') {
@@ -94,9 +95,12 @@ if ($edition_active && !$est_complet) {
       } elseif ($statut_validation === 'en_attente') {
         $statut_label = 'en attente';
       }
+    } elseif ($statut === 'payante') {
+      $statut_label = 'en cours';
+      $statut_for_class = 'en_cours';
     }
     ?>
-      <span class="badge-statut statut-<?= esc_attr($statut); ?>" data-post-id="<?= esc_attr($chasse_id); ?>">
+      <span class="badge-statut statut-<?= esc_attr($statut_for_class); ?>" data-post-id="<?= esc_attr($chasse_id); ?>">
         <?= esc_html($statut_label); ?>
       </span>
 

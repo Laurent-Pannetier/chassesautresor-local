@@ -714,6 +714,8 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id): array
     $statut            = get_field('chasse_cache_statut', $chasse_id) ?: 'revision';
     $statut_validation = get_field('chasse_cache_statut_validation', $chasse_id);
     $statut_label      = ucfirst(str_replace('_', ' ', $statut));
+    $badge_class       = 'statut-' . $statut;
+
     if ($statut === 'revision') {
         if ($statut_validation === 'creation') {
             $statut_label = 'création';
@@ -722,8 +724,10 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id): array
         } elseif ($statut_validation === 'en_attente') {
             $statut_label = 'en attente';
         }
+    } elseif ($statut === 'payante') {
+        $statut_label = 'en cours';
+        $badge_class   = 'statut-en_cours';
     }
-    $badge_class = 'statut-' . $statut;
 
     $enigmes_associees = recuperer_enigmes_associees($chasse_id);
     $total_enigmes     = count($enigmes_associees);
