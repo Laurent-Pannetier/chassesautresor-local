@@ -87,7 +87,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   data-post-id="<?= esc_attr($chasse_id); ?>">
 
                   <div class="champ-affichage">
-                    <label for="champ-titre-chasse">Titre de la chasse</label>
+                    <label<?= $peut_editer_titre ? ' for="champ-titre-chasse"' : ''; ?>>Titre de la chasse</label>
                     <?php if ($peut_editer_titre) : ?>
                       <button type="button" class="champ-modifier" aria-label="Modifier le titre">
                         ✏️
@@ -95,11 +95,13 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                     <?php endif; ?>
                   </div>
 
-                  <div class="champ-edition" style="display: none;">
-                    <input type="text" class="champ-input" maxlength="70" value="<?= esc_attr($titre); ?>" id="champ-titre-chasse" <?= $peut_editer_titre ? '' : 'disabled'; ?>>
-                    <button type="button" class="champ-enregistrer">✓</button>
-                    <button type="button" class="champ-annuler">✖</button>
-                  </div>
+                  <?php if ($peut_editer_titre) : ?>
+                    <div class="champ-edition" style="display: none;">
+                      <input type="text" class="champ-input" maxlength="70" value="<?= esc_attr($titre); ?>" id="champ-titre-chasse">
+                      <button type="button" class="champ-enregistrer">✓</button>
+                      <button type="button" class="champ-annuler">✖</button>
+                    </div>
+                  <?php endif; ?>
 
                   <div class="champ-feedback"></div>
                 </li>
