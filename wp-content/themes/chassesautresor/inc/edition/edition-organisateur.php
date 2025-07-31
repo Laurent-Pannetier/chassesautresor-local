@@ -171,9 +171,8 @@ function ajax_modifier_champ_organisateur()
     wp_send_json_error('⚠️ organisateur_introuvable');
   }
 
-  // 🔒 Vérifie que l’utilisateur est bien auteur du post
-  $auteur = (int) get_post_field('post_author', $post_id);
-  if ($auteur !== $user_id) {
+  // 🔒 Vérifie que l’utilisateur est autorisé à modifier ce post
+  if (!utilisateur_peut_modifier_post($post_id)) {
     wp_send_json_error('⚠️ acces_refuse');
   }
 

@@ -699,7 +699,9 @@ function utilisateur_peut_editer_champs(int $post_id): bool
 
     switch ($type) {
         case 'organisateur':
-            return in_array(ROLE_ORGANISATEUR_CREATION, $roles, true) && $status === 'pending';
+            // Les organisateurs confirmés peuvent éditer les champs de leur CPT
+            // (sauf restrictions spécifiques gérées ailleurs).
+            return utilisateur_peut_modifier_post($post_id);
 
         case 'chasse':
             $val  = get_field('chasse_cache_statut_validation', $post_id) ?? '';
