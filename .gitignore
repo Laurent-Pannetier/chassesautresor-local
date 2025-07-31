@@ -7,3 +7,4 @@ wp-config.php
 *.sql
 vendor/
 composer.phar
+tests/.phpunit.result.cache
