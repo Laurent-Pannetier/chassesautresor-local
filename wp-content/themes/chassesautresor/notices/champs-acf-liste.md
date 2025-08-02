@@ -155,6 +155,7 @@ Type : radio
 Label : Mode de fin de chasse
 Instructions : Choisissez comment la fin de la chasse est déclenchée.
 Requis : non
+Valeur par défaut : manuelle
 Choices :
   - automatique : Automatique
   - manuelle : Manuelle

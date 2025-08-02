@@ -315,7 +315,7 @@ function verifier_fin_de_chasse($user_id, $enigme_id)
         return;
     }
 
-    $mode_fin = get_field('chasse_mode_fin', $chasse_id) ?: 'automatique';
+    $mode_fin = get_field('chasse_mode_fin', $chasse_id) ?: 'manuelle';
     if ($mode_fin !== 'automatique') {
         return; // 🔁 La complétion se fait manuellement
     }

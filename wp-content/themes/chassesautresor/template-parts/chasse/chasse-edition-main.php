@@ -37,7 +37,7 @@ $date_fin_obj = convertir_en_datetime($date_fin);
 $date_fin_iso = $date_fin_obj ? $date_fin_obj->format('Y-m-d') : '';
 $illimitee  = $infos_chasse['champs']['illimitee'];
 $nb_max     = $infos_chasse['champs']['nb_max'] ?: 1;
-$mode_fin   = $infos_chasse['champs']['mode_fin'] ?? 'automatique';
+$mode_fin   = $infos_chasse['champs']['mode_fin'] ?? 'manuelle';
 $statut_metier = $infos_chasse['statut'] ?? 'revision';
 $aide_mode_fin = $mode_fin === 'manuelle'
   ? __('Vous pourrez arrêter la chasse manuellement depuis l’onglet Progression de ce panneau.', 'chassesautresor-com')
@@ -326,8 +326,6 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
       </div>
       <?php if ($peut_editer && $mode_fin === 'manuelle' && in_array($statut_metier, ['payante', 'en_cours'], true)) : ?>
         <button type="button" class="terminer-chasse-btn" data-post-id="<?= esc_attr($chasse_id); ?>" data-cpt="chasse"><?= esc_html__('✅ Terminer la chasse', 'chassesautresor-com'); ?></button>
-      <?php else : ?>
-        <p class="edition-placeholder"><?= esc_html__('La section « Progression » sera bientôt disponible.', 'chassesautresor-com'); ?></p>
       <?php endif; ?>
     </div>
 
