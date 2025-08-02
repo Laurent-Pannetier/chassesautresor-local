@@ -329,119 +329,78 @@ ACF – Champs personnalisés par CPT
 CPT : organisateur
 Groupe : Paramètres organisateur
 
-* message\_acf\_organisateur (group)
-
-  * (message vide)
-
-* profil\_public (group)
-
-  * logo\_organisateur (image)
-  * description\_courte (text)
-  * email\_contact (email)
-
-* liens\_publics (repeater)
-
-  * type\_de\_lien (select)
-  * url\_lien (url)
-
-* coordonnees\_bancaires (group)
-
-  * iban (text)
-  * bic (text)
-
-* utilisateurs\_associes (select)
-
-* description\_longue (wysiwyg)
+* email_contact (email)
+* logo_organisateur (image)
+* liens_publics (repeater)
+  * type_de_lien (select)
+  * url_lien (url)
+* iban (text)
+* bic (text)
+* utilisateurs_associes (select)
+* description_longue (wysiwyg)
+* organisateur_cache_complet (true_false)
 
 CPT : chasse
 Groupe : paramètre de la chasse
 
-* chasse\_principale\_image (image)
-
-* chasse\_principale\_description (wysiwyg)
-
-* chasse\_principale\_liens (repeater)
-
-  * chasse\_principale\_liens\_type (select)
-  * chasse\_principale\_liens\_url (url)
-
-* caracteristiques (group)
-
-  * chasse\_infos\_recompense\_titre (text)
-  * chasse\_infos\_recompense\_texte (wysiwyg)
-  * chasse\_infos\_recompense\_valeur (number)
-  * chasse\_infos\_cout\_points (number)
-  * chasse\_infos\_date\_debut (date\_picker)
-  * chasse\_infos\_duree\_illimitee (true\_false)
-  * chasse\_infos\_date\_fin (date\_picker)
-  * chasse\_infos\_nb\_max\_gagants (number)
-
-* champs\_caches (group)
-
-  * chasse\_cache\_gagnants (user)
-  * chasse\_cache\_date\_decouverte (date\_picker)
-  * chasse\_cache\_statut (select)
-  * chasse\_cache\_statut\_validation (select)
-  * chasse\_cache\_commentaire (textarea)
-  * chasse\_cache\_enigmes (relationship)
-  * chasse\_cache\_organisateur (relationship)
+* chasse_principale_image (image)
+* chasse_principale_description (wysiwyg)
+* chasse_infos_recompense_titre (text)
+* chasse_infos_recompense_valeur (number)
+* chasse_infos_nb_max_gagants (number)
+* chasse_infos_cout_points (number)
+* chasse_infos_recompense_texte (wysiwyg)
+* chasse_infos_date_debut (date_time_picker)
+* chasse_infos_date_fin (date_picker)
+* chasse_infos_duree_illimitee (true_false)
+* chasse_principale_liens (repeater)
+  * chasse_principale_liens_type (select)
+  * chasse_principale_liens_url (url)
+* chasse_cache_gagnants (user)
+* chasse_cache_date_decouverte (date_picker)
+* chasse_cache_statut (select)
+* chasse_cache_statut_validation (select)
+* chasse_cache_enigmes (relationship)
+* chasse_cache_commentaire (textarea)
+* chasse_cache_organisateur (relationship)
+* chasse_cache_complet (true_false)
+* chasse_mode_fin (radio)
 
 CPT : enigme
 Groupe : Paramètres de l’énigme
 
-* enigme\_visuel\_image (gallery)
-
-* enigme\_visuel\_texte (wysiwyg)
-
-* enigme\_visuel\_legende (text)
-
-* enigme\_mode\_validation (radio)
-
-* enigme\_tentative (group)
-
-  * enigme\_tentative\_cout\_points (number)
-  * enigme\_tentative\_max (number)
-
-* enigme\_reponse\_texte\_manuelle (textarea)  \[a supprimer]
-
-* enigme\_reponse\_bonne (text)
-
-* enigme\_reponse\_casse (true\_false)
-
-* variantes de réponse :
-
-  * texte\_1 (text)
-  * message\_1 (text)
-  * respecter\_casse\_1 (true\_false)
-  * texte\_2 (text)
-  * message\_2 (text)
-  * respecter\_casse\_2 (true\_false)
-  * texte\_3 (text)
-  * message\_3 (text)
-  * respecter\_casse\_3 (true\_false)
-  * texte\_4 (text)
-  * message\_4 (text)
-  * respecter\_casse\_4 (true\_false)
-
-
-* enigme\_acces\_condition (radio)
-* enigme\_acces\_pre\_requis (relationship)
-* enigme\_acces\_date (date\_time\_picker)
-
-* enigme\_style\_affichage (select)
-
-* enigme\_solution (group)
-
-  * enigme\_solution\_mode (radio)
-  * enigme\_solution\_delai (number)
-  * enigme\_solution\_date (date\_time\_picker)
-  * enigme\_solution\_explication (wysiwyg)
-
-* enigme\_chasse\_associee (relationship)
-
-* enigme\_cache\_etat\_systeme (select)
-
-* enigme\_statut\_utilisateur (select)
+* enigme_visuel_image (gallery)
+* enigme_visuel_texte (wysiwyg)
+* enigme_mode_validation (radio)
+* enigme_visuel_legende (text)
+* enigme_style_affichage (select)
+* enigme_tentative_cout_points (number)
+* enigme_tentative_max (number)
+* enigme_reponse_bonne (text)
+* enigme_reponse_casse (true_false)
+* texte_1 (text)
+* message_1 (text)
+* respecter_casse_1 (true_false)
+* texte_2 (text)
+* message_2 (text)
+* respecter_casse_2 (true_false)
+* texte_3 (text)
+* message_3 (text)
+* respecter_casse_3 (text)
+* texte_4 (text)
+* message_4 (text)
+* respecter_casse_4 (text)
+* enigme_acces_condition (radio)
+* enigme_acces_date (date_picker)
+* enigme_acces_pre_requis (relationship)
+* enigme_cache_etat_systeme (select)
+* enigme_chasse_associee (relationship)
+* enigme_solution_mode (radio)
+* enigme_solution_delai (number)
+* enigme_solution_heure (time_picker)
+* enigme_solution_fichier (file)
+* enigme_solution_explication (wysiwyg)
+* enigme_cache_complet (true_false)
 
 liste avec tous les détails des groupes de champs ACF dans champs-acf-liste.md
 

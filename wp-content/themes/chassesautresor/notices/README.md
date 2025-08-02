@@ -5,10 +5,15 @@ Ce dossier centralise les fiches techniques du projet.
 ## Organisation
 
 - **global.md** : vue d'ensemble et règles générales.
+- **champs-acf-liste.md** : export brut des groupes et champs ACF.
 - **chasses/** : notices spécifiques aux chasses.
 - **fields/** : guides d'intégration pour les champs ACF utilisés en édition frontale.
 
 ### Liste des notices
+
+#### global
+- `global.md` : vue d'ensemble et règles générales.
+- `champs-acf-liste.md` : export détaillé des groupes de champs ACF.
 
 #### chasses
 - `statuts-chasses-recalcul.md` : recalcul automatique du statut des chasses.
