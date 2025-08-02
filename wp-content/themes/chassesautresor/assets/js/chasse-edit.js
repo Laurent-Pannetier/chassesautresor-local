@@ -306,6 +306,43 @@ function initChasseEdit() {
         });
     });
   }
+
+  // ==============================
+  // 🧠 Explication dynamique – Mode de fin de chasse
+  // ==============================
+  const explicationModeFin = {
+    automatique: "La chasse sera considérée comme terminée lorsque toutes les énigmes avec validation auront été résolues. Le système prendra également en compte le nombre maximum de gagnants défini.",
+    manuelle: "Vous pourrez arrêter la chasse manuellement depuis l’onglet Progression de ce panneau."
+  };
+  const zoneExplicationModeFin = document.querySelector('.champ-explication-mode-fin');
+  if (zoneExplicationModeFin) {
+    document.querySelectorAll('input[name="acf[chasse_mode_fin]"]').forEach((radio) => {
+      radio.addEventListener('change', () => {
+        zoneExplicationModeFin.textContent = explicationModeFin[radio.value] || '';
+      });
+      if (radio.checked) {
+        zoneExplicationModeFin.textContent = explicationModeFin[radio.value] || '';
+      }
+    });
+  }
+
+  // ==============================
+  // 🏁 Bouton de terminaison manuelle
+  // ==============================
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.terminer-chasse-btn');
+    if (!btn) return;
+    const postId = btn.dataset.postId;
+    btn.disabled = true;
+    modifierChampSimple('champs_caches.chasse_cache_statut', 'termine', postId, 'chasse')
+      .then((ok) => {
+        if (ok) {
+          btn.textContent = 'Chasse terminée';
+        } else {
+          btn.disabled = false;
+        }
+      });
+  });
 }
 
 if (document.readyState === 'loading') {
