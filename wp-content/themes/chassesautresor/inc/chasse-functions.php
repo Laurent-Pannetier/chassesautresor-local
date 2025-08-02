@@ -72,6 +72,7 @@ function chasse_get_champs($chasse_id)
         'illimitee' => get_field('chasse_infos_duree_illimitee', $chasse_id) ?? false,
         'nb_max' => get_field('chasse_infos_nb_max_gagants', $chasse_id) ?? 0,
         'date_decouverte' => get_field('chasse_cache_date_decouverte', $chasse_id),
+        'mode_fin' => get_field('chasse_mode_fin', $chasse_id) ?? 'automatique',
         'current_stored_statut' => get_field('chasse_cache_statut', $chasse_id),
     ];
 }
