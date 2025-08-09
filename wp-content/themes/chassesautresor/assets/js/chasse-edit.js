@@ -329,19 +329,95 @@ function initChasseEdit() {
   // ==============================
   // 🏁 Bouton de terminaison manuelle
   // ==============================
+  function verifierUtilisateur(id) {
+    return fetch(`${ajaxurl}?action=rechercher_utilisateur&term=${encodeURIComponent(id)}`)
+      .then((res) => res.json())
+      .then((data) => data.success && data.data.some((u) => String(u.id) === String(id)))
+      .catch(() => false);
+  }
+
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.terminer-chasse-btn');
     if (!btn) return;
-    const postId = btn.dataset.postId;
-    btn.disabled = true;
-    modifierChampSimple('champs_caches.chasse_cache_statut', 'termine', postId, 'chasse')
-      .then((ok) => {
-        if (ok) {
-          btn.textContent = 'Chasse terminée';
-        } else {
-          btn.disabled = false;
+
+    const confirmMsg = window.wp?.i18n
+      ? window.wp.i18n.__('Êtes-vous sûr de vouloir terminer cette chasse ?', 'chassesautresor-com')
+      : 'Êtes-vous sûr de vouloir terminer cette chasse ?';
+    if (!confirm(confirmMsg)) {
+      return;
+    }
+
+    const wrapper = btn.closest('.terminer-chasse-wrapper');
+    const form = wrapper?.querySelector('.terminer-chasse-form');
+    if (!form) {
+      return;
+    }
+    form.style.display = 'block';
+
+    const maxGagnants = parseInt(btn.dataset.maxGagnants, 10) || 1;
+    const inputs = form.querySelectorAll('.gagnant-input');
+    inputs.forEach((input) => {
+      if (typeof window.initAutocompleteUtilisateurs === 'function') {
+        window.initAutocompleteUtilisateurs(input);
+      }
+    });
+
+    const validerBtn = form.querySelector('.valider-fin-btn');
+    validerBtn?.addEventListener('click', () => {
+      const ids = [];
+      let valid = true;
+      const checks = [];
+      inputs.forEach((input) => {
+        const val = input.value.trim();
+        if (!val) {
+          valid = false;
+          return;
         }
+        ids.push(val);
+        checks.push(verifierUtilisateur(val));
       });
+
+      Promise.all(checks).then((results) => {
+        if (!valid || results.includes(false) || ids.length !== maxGagnants) {
+          alert('Identifiant utilisateur invalide');
+          return;
+        }
+
+        const postId = btn.dataset.postId;
+        const gagnants = ids.join(',');
+        const now = new Date();
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        const dateStr = `${yyyy}-${mm}-${dd}`;
+
+        btn.disabled = true;
+        validerBtn.disabled = true;
+
+        modifierChampSimple('champs_caches.chasse_cache_gagnants', gagnants, postId, 'chasse')
+          .then((ok1) => {
+            if (!ok1) throw new Error('fail');
+            return modifierChampSimple('champs_caches.chasse_cache_date_decouverte', dateStr, postId, 'chasse');
+          })
+          .then((ok2) => {
+            if (!ok2) throw new Error('fail');
+            return modifierChampSimple('champs_caches.chasse_cache_statut', 'termine', postId, 'chasse');
+          })
+          .then((ok3) => {
+            if (ok3) {
+              btn.textContent = 'Chasse terminée';
+            } else {
+              btn.disabled = false;
+              validerBtn.disabled = false;
+            }
+          })
+          .catch(() => {
+            btn.disabled = false;
+            validerBtn.disabled = false;
+          });
+    }, { once: true });
+  });
+
   });
 }
 

@@ -325,7 +325,29 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
         <h2><i class="fa-solid fa-ranking-star"></i> Progression</h2>
       </div>
       <?php if ($mode_fin === 'manuelle' && in_array($statut_metier, ['payante', 'en_cours', 'revision'], true)) : ?>
-        <button type="button" class="terminer-chasse-btn" data-post-id="<?= esc_attr($chasse_id); ?>" data-cpt="chasse" <?= ($statut_metier === 'revision') ? 'disabled' : ''; ?>><?= esc_html__('✅ Terminer la chasse', 'chassesautresor-com'); ?></button>
+        <div class="terminer-chasse-wrapper">
+          <button type="button"
+            class="terminer-chasse-btn"
+            data-post-id="<?= esc_attr($chasse_id); ?>"
+            data-cpt="chasse"
+            data-max-gagnants="<?= esc_attr($nb_max); ?>"
+            <?= ($statut_metier === 'revision') ? 'disabled' : ''; ?>>
+            <?= esc_html__('✅ Terminer la chasse', 'chassesautresor-com'); ?>
+          </button>
+          <div class="terminer-chasse-form" style="display:none;">
+            <label>
+              <?= ($nb_max > 1)
+                ? esc_html__('Nom des gagnants', 'chassesautresor-com')
+                : esc_html__('Nom du gagnant', 'chassesautresor-com'); ?>
+            </label>
+            <?php for ($i = 0; $i < $nb_max; $i++) : ?>
+              <input type="text" class="gagnant-input" />
+            <?php endfor; ?>
+            <button type="button" class="valider-fin-btn">
+              <?= esc_html__('Valider la fin', 'chassesautresor-com'); ?>
+            </button>
+          </div>
+        </div>
       <?php endif; ?>
     </div>
 

@@ -1,89 +1,76 @@
-document.addEventListener("DOMContentLoaded", function () {
-    var DEBUG = window.DEBUG || false;
-    DEBUG && console.log("✅ gestion-points.js chargé");
 
-    setTimeout(function() {
-        const userInput = document.getElementById("utilisateur-points");
+(function () {
+  const DEBUG = window.DEBUG || false;
 
-        if (!userInput) {
-            DEBUG && console.log("❌ Élément introuvable : Vérifie l'ID du champ input.");
-            return;
-        }
+  function initAutocompleteUtilisateurs(input) {
+    if (!input) {
+      DEBUG && console.log('❌ Élément introuvable');
+      return;
+    }
+    DEBUG && console.log('✅ initAutocompleteUtilisateurs', input);
 
-        DEBUG && console.log("✅ Élément trouvé : utilisateur-points");
+    const list = document.createElement('ul');
+    list.className = 'suggestions-list';
+    list.style.position = 'absolute';
+    list.style.background = 'white';
+    list.style.border = '1px solid #ccc';
+    list.style.width = input.offsetWidth + 'px';
+    list.style.maxHeight = '200px';
+    list.style.overflowY = 'auto';
+    list.style.display = 'none';
+    list.style.zIndex = '1000';
+    input.parentNode.insertBefore(list, input.nextSibling);
 
-        // ✅ Vérifier si #suggestions-list existe, sinon le créer dynamiquement
-        let suggestionsList = document.getElementById("suggestions-list");
-        if (!suggestionsList) {
-            suggestionsList = document.createElement("ul");
-            suggestionsList.id = "suggestions-list";
-            suggestionsList.style.position = "absolute";
-            suggestionsList.style.background = "white";
-            suggestionsList.style.border = "1px solid #ccc";
-            suggestionsList.style.width = userInput.offsetWidth + "px";
-            suggestionsList.style.maxHeight = "200px";
-            suggestionsList.style.overflowY = "auto";
-            suggestionsList.style.display = "none";
-            suggestionsList.style.zIndex = "1000";
-            userInput.parentNode.insertBefore(suggestionsList, userInput.nextSibling);
-            DEBUG && console.log("✅ Élément #suggestions-list ajouté au DOM.");
-        }
+    input.addEventListener('input', () => {
+      const term = input.value.trim();
+      if (term.length < 2) {
+        list.innerHTML = '';
+        list.style.display = 'none';
+        return;
+      }
 
-        userInput.addEventListener("input", function () {
-            let searchTerm = userInput.value.trim();
-            if (searchTerm.length < 2) {
-                DEBUG && console.log("❌ Trop court, pas de requête AJAX");
-                suggestionsList.innerHTML = ""; // Effacer la liste si trop court
-                suggestionsList.style.display = "none"; // Cacher la liste
-                return;
-            }
-
-            DEBUG && console.log("🔍 Recherche AJAX envoyée :", searchTerm);
-
-            fetch(ajax_object.ajax_url + "?action=rechercher_utilisateur&term=" + encodeURIComponent(searchTerm))
-                .then(response => response.json())
-                .then(data => {
-                    DEBUG && console.log("✅ Réponse AJAX reçue :", data);
-
-                    suggestionsList.innerHTML = ""; // Réinitialiser la liste
-                    suggestionsList.style.display = "block"; // Afficher la liste
-
-                    if (data.success && data.data.length > 0) {
-                        data.data.forEach(user => {
-                            let listItem = document.createElement("li");
-                            listItem.textContent = user.text;
-                            listItem.dataset.userId = user.id;
-                            listItem.style.padding = "8px";
-                            listItem.style.cursor = "pointer";
-                            listItem.style.listStyle = "none";
-
-                            listItem.addEventListener("click", function () {
-                                userInput.value = user.id; // ✅ Insère l'ID utilisateur directement
-                                suggestionsList.innerHTML = ""; // Effacer la liste
-                                suggestionsList.style.display = "none"; // Cacher la liste
-                            });
-
-                            suggestionsList.appendChild(listItem);
-                        });
-
-                        DEBUG && console.log("✅ Suggestions mises à jour.");
-                    } else {
-                        DEBUG && console.log("❌ Aucune donnée reçue.");
-                        suggestionsList.style.display = "none"; // Cacher la liste si vide
-                    }
-                })
-                .catch(error => {
-                    console.error("❌ Erreur AJAX :", error);
-                    suggestionsList.style.display = "none"; // Cacher la liste en cas d'erreur
-                });
+      fetch(ajaxurl + `?action=rechercher_utilisateur&term=${encodeURIComponent(term)}`)
+        .then((res) => res.json())
+        .then((data) => {
+          list.innerHTML = '';
+          if (data.success && data.data.length > 0) {
+            list.style.display = 'block';
+            data.data.forEach((user) => {
+              const item = document.createElement('li');
+              item.textContent = user.text;
+              item.dataset.userId = user.id;
+              item.style.padding = '8px';
+              item.style.cursor = 'pointer';
+              item.style.listStyle = 'none';
+              item.addEventListener('click', () => {
+                input.value = user.id;
+                list.innerHTML = '';
+                list.style.display = 'none';
+              });
+              list.appendChild(item);
+            });
+          } else {
+            list.style.display = 'none';
+          }
+        })
+        .catch(() => {
+          list.style.display = 'none';
         });
+    });
 
-        // Cacher la liste si on clique ailleurs
-        document.addEventListener("click", function (e) {
-            if (e.target !== userInput && e.target !== suggestionsList) {
-                suggestionsList.style.display = "none";
-            }
-        });
+    document.addEventListener('click', (e) => {
+      if (e.target !== input && e.target.parentNode !== list) {
+        list.style.display = 'none';
+      }
+    });
+  }
 
-    }, 500);
-});
+  window.initAutocompleteUtilisateurs = initAutocompleteUtilisateurs;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const input = document.getElementById('utilisateur-points');
+    if (input) {
+      initAutocompleteUtilisateurs(input);
+    }
+  });
+})();
