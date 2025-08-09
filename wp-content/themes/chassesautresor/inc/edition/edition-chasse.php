@@ -460,6 +460,9 @@ function modifier_champ_chasse()
           planifier_ou_deplacer_pdf_solution_immediatement($enigme_id);
         }
       }
+
+      // 🏁 Mise à jour des statuts joueurs
+      gerer_chasse_terminee($post_id);
     }
   }
 

@@ -345,6 +345,7 @@ function verifier_fin_de_chasse($user_id, $enigme_id)
         $statut_chasse = get_field('chasse_cache_statut', $chasse_id);
         if (in_array($statut_chasse, ['payante', 'en_cours'], true)) {
             update_field('chasse_cache_statut', 'termine', $chasse_id);
+            gerer_chasse_terminee($chasse_id);
         }
     }
 }
