@@ -332,8 +332,12 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
             $date_decouverte = get_field('chasse_cache_date_decouverte', $chasse_id);
             $noms            = [];
             if ($gagnants_raw) {
-                foreach (explode(',', $gagnants_raw) as $uid) {
-                    $user = get_user_by('id', trim($uid));
+                $ids = is_array($gagnants_raw)
+                    ? $gagnants_raw
+                    : explode(',', (string) $gagnants_raw);
+                foreach ($ids as $uid) {
+                    $id   = is_array($uid) ? ($uid['ID'] ?? 0) : (int) trim((string) $uid);
+                    $user = $id ? get_user_by('id', $id) : false;
                     if ($user) {
                         $noms[] = $user->display_name;
                     }
