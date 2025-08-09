@@ -450,8 +450,9 @@ function modifier_champ_chasse()
   if ($champ === 'champs_caches.chasse_cache_statut' && $valeur === 'termine') {
     $ok = update_field('chasse_cache_statut', 'termine', $post_id);
     if ($ok !== false) {
+      // ✅ Marque la chasse comme complète sans déclencher de recalcul automatique
+      update_field('chasse_cache_complet', 1, $post_id);
       $champ_valide = true;
-      $doit_recalculer_statut = true;
 
       $liste_enigmes = recuperer_enigmes_associees($post_id);
       if (!empty($liste_enigmes)) {
