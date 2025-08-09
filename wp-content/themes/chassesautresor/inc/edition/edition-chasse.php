@@ -478,6 +478,26 @@ function modifier_champ_chasse()
     }
   }
 
+  // 🔹 Liste des gagnants
+  if ($champ === 'champs_caches.chasse_cache_gagnants') {
+    $valeur = sanitize_text_field($valeur);
+    $ok = update_field('chasse_cache_gagnants', $valeur, $post_id);
+    if ($ok !== false) {
+      $champ_valide = true;
+    }
+  }
+
+  // 🔹 Date de découverte
+  if ($champ === 'champs_caches.chasse_cache_date_decouverte') {
+    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $valeur)) {
+      wp_send_json_error('⚠️ format_date_invalide');
+    }
+    $ok = update_field('chasse_cache_date_decouverte', $valeur, $post_id);
+    if ($ok !== false) {
+      $champ_valide = true;
+    }
+  }
+
   // 🔹 Nb gagnants
   if ($champ === 'caracteristiques.chasse_infos_nb_max_gagants') {
     $sous_champ = 'chasse_infos_nb_max_gagants';
