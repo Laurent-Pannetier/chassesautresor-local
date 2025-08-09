@@ -22,6 +22,7 @@
     input.parentNode.insertBefore(list, input.nextSibling);
 
     input.addEventListener('input', () => {
+      input.dataset.userId = '';
       const term = input.value.trim();
       if (term.length < 2) {
         list.innerHTML = '';
@@ -43,7 +44,8 @@
               item.style.cursor = 'pointer';
               item.style.listStyle = 'none';
               item.addEventListener('click', () => {
-                input.value = user.id;
+                input.value = user.text;
+                input.dataset.userId = user.id;
                 list.innerHTML = '';
                 list.style.display = 'none';
               });

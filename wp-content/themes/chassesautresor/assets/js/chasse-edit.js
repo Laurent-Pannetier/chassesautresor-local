@@ -368,7 +368,7 @@ function initChasseEdit() {
       let valid = true;
       const checks = [];
       inputs.forEach((input) => {
-        const val = input.value.trim();
+        const val = input.dataset.userId;
         if (!val) {
           valid = false;
           return;
@@ -379,7 +379,10 @@ function initChasseEdit() {
 
       Promise.all(checks).then((results) => {
         if (!valid || results.includes(false) || ids.length !== maxGagnants) {
-          alert('Identifiant utilisateur invalide');
+          const errMsg = window.wp?.i18n
+            ? window.wp.i18n.__('Utilisateur introuvable', 'chassesautresor-com')
+            : 'Utilisateur introuvable';
+          alert(errMsg);
           return;
         }
 
