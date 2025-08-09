@@ -19,27 +19,31 @@ defined('ABSPATH') || exit;
  */
 function enqueue_script_chasse_edit()
 {
-  if (!is_singular('chasse')) {
-    return;
-  }
+    if (!is_singular('chasse')) {
+        return;
+    }
 
-  $chasse_id = get_the_ID();
+    $chasse_id = get_the_ID();
 
-  if (!utilisateur_peut_modifier_post($chasse_id)) {
-    return;
-  }
+    if (!utilisateur_peut_modifier_post($chasse_id)) {
+        return;
+    }
 
-  // Enfile les scripts nécessaires
-  enqueue_core_edit_scripts(['chasse-edit']);
+    // Enfile les scripts nécessaires
+    enqueue_core_edit_scripts(['autocomplete-utilisateurs', 'chasse-edit']);
 
-  // Injecte les valeurs par défaut pour JS
-  wp_localize_script('champ-init', 'CHP_CHASSE_DEFAUT', [
-    'titre' => strtolower(TITRE_DEFAUT_CHASSE),
-    'image_slug' => 'defaut-chasse-2',
-  ]);
+    wp_localize_script('autocomplete-utilisateurs', 'ajax_object', [
+        'ajax_url' => admin_url('admin-ajax.php'),
+    ]);
 
-  // Charge les médias pour les champs image
-  wp_enqueue_media();
+    // Injecte les valeurs par défaut pour JS
+    wp_localize_script('champ-init', 'CHP_CHASSE_DEFAUT', [
+        'titre' => strtolower(TITRE_DEFAUT_CHASSE),
+        'image_slug' => 'defaut-chasse-2',
+    ]);
+
+    // Charge les médias pour les champs image
+    wp_enqueue_media();
 }
 add_action('wp_enqueue_scripts', 'enqueue_script_chasse_edit');
 
