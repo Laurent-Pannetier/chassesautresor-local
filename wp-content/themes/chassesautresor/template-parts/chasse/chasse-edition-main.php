@@ -324,29 +324,58 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
       <div class="edition-panel-header">
         <h2><i class="fa-solid fa-ranking-star"></i> Progression</h2>
       </div>
-      <?php if ($mode_fin === 'manuelle' && in_array($statut_metier, ['payante', 'en_cours', 'revision'], true)) : ?>
+      <?php if ($mode_fin === 'manuelle') : ?>
         <div class="terminer-chasse-wrapper">
-          <button type="button"
-            class="terminer-chasse-btn"
-            data-post-id="<?= esc_attr($chasse_id); ?>"
-            data-cpt="chasse"
-            data-max-gagnants="<?= esc_attr($nb_max); ?>"
-            <?= ($statut_metier === 'revision') ? 'disabled' : ''; ?>>
-            <?= esc_html__('✅ Terminer la chasse', 'chassesautresor-com'); ?>
-          </button>
-          <div class="terminer-chasse-form" style="display:none;">
-            <label>
-              <?= ($nb_max > 1)
-                ? esc_html__('Nom des gagnants', 'chassesautresor-com')
-                : esc_html__('Nom du gagnant', 'chassesautresor-com'); ?>
-            </label>
-            <?php for ($i = 0; $i < $nb_max; $i++) : ?>
-              <input type="text" class="gagnant-input" />
-            <?php endfor; ?>
-            <button type="button" class="valider-fin-btn">
-              <?= esc_html__('Valider la fin', 'chassesautresor-com'); ?>
+          <?php if ($statut_metier === 'termine') : ?>
+            <?php
+            $gagnants_raw    = get_field('chasse_cache_gagnants', $chasse_id);
+            $date_decouverte = get_field('chasse_cache_date_decouverte', $chasse_id);
+            $noms            = [];
+            if ($gagnants_raw) {
+                foreach (explode(',', $gagnants_raw) as $uid) {
+                    $user = get_user_by('id', trim($uid));
+                    if ($user) {
+                        $noms[] = $user->display_name;
+                    }
+                }
+            }
+            $gagnants_str = implode(', ', $noms);
+            ?>
+            <p class="chasse-terminee-msg">
+              <?php
+              printf(
+                  esc_html__(
+                      'Chasse terminée, gagnée par %1$s le %2$s',
+                      'chassesautresor-com'
+                  ),
+                  esc_html($gagnants_str),
+                  esc_html($date_decouverte)
+              );
+              ?>
+            </p>
+          <?php elseif (in_array($statut_metier, ['payante', 'en_cours', 'revision'], true)) : ?>
+            <button type="button"
+              class="terminer-chasse-btn"
+              data-post-id="<?= esc_attr($chasse_id); ?>"
+              data-cpt="chasse"
+              data-max-gagnants="<?= esc_attr($nb_max); ?>"
+              <?= ($statut_metier === 'revision') ? 'disabled' : ''; ?>>
+              <?= esc_html__('✅ Terminer la chasse', 'chassesautresor-com'); ?>
             </button>
-          </div>
+            <div class="terminer-chasse-form" style="display:none;">
+              <label>
+                <?= ($nb_max > 1)
+                  ? esc_html__('Nom des gagnants', 'chassesautresor-com')
+                  : esc_html__('Nom du gagnant', 'chassesautresor-com'); ?>
+              </label>
+              <?php for ($i = 0; $i < $nb_max; $i++) : ?>
+                <input type="text" class="gagnant-input" />
+              <?php endfor; ?>
+              <button type="button" class="valider-fin-btn">
+                <?= esc_html__('Valider la fin', 'chassesautresor-com'); ?>
+              </button>
+            </div>
+          <?php endif; ?>
         </div>
       <?php endif; ?>
     </div>

@@ -412,7 +412,17 @@ function initChasseEdit() {
           })
           .then((ok3) => {
             if (ok3) {
-              btn.textContent = 'Chasse terminée';
+              const names = Array.from(inputs)
+                .map((i) => i.value.trim())
+                .join(', ');
+              const template = window.wp?.i18n?.__(
+                'Chasse terminée, gagnée par %1$s le %2$s',
+                'chassesautresor-com'
+              ) || 'Chasse terminée, gagnée par %1$s le %2$s';
+              const message = window.wp?.i18n?.sprintf
+                ? window.wp.i18n.sprintf(template, names, dateStr)
+                : `Chasse terminée, gagnée par ${names} le ${dateStr}`;
+              wrapper.innerHTML = `<p class="chasse-terminee-msg">${message}</p>`;
             } else {
               btn.disabled = false;
               validerBtn.disabled = false;
