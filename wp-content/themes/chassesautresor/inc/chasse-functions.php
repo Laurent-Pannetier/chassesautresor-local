@@ -72,6 +72,7 @@ function chasse_get_champs($chasse_id)
         'illimitee' => get_field('chasse_infos_duree_illimitee', $chasse_id) ?? false,
         'nb_max' => get_field('chasse_infos_nb_max_gagants', $chasse_id) ?? 0,
         'date_decouverte' => get_field('chasse_cache_date_decouverte', $chasse_id),
+        'mode_fin' => get_field('chasse_mode_fin', $chasse_id) ?? 'manuelle',
         'current_stored_statut' => get_field('chasse_cache_statut', $chasse_id),
     ];
 }
@@ -189,28 +190,59 @@ add_filter('acf/validate_value/name=date_de_fin', function ($valid, $value, $fie
 }, 10, 4);
 
 /**
- * 📌 Déclenche toutes les actions nécessaires lorsqu'une chasse est terminée.
+ * 📌 Déclenche les actions nécessaires lorsqu'une chasse est terminée.
+ *
+ * Met à jour le statut de toutes les énigmes associées pour tous les joueurs
+ * dans la table `wp_enigme_statuts_utilisateur` ainsi que dans les metas
+ * utilisateur correspondantes.
  *
  * @param int $chasse_id ID de la chasse concernée.
  * @return void
  */
 function gerer_chasse_terminee($chasse_id)
 {
-    // ✅ Vérification que la chasse est bien "Terminée"
-    $statut_chasse = get_field('statut_chasse', $chasse_id);
-    if ($statut_chasse !== 'Terminée') {
+    if (!$chasse_id) {
         return;
     }
 
+    $enigmes = recuperer_enigmes_associees($chasse_id);
+    if (empty($enigmes)) {
+        return;
+    }
 
+    global $wpdb;
+    $table = $wpdb->prefix . 'enigme_statuts_utilisateur';
+    $now   = current_time('mysql');
 
-    // 🏆 Gérer l'attribution des récompenses (ex: points, trophées, médailles)
+    foreach ($enigmes as $enigme_id) {
+        // 🗃️ Mise à jour des statuts en base
+        $wpdb->update(
+            $table,
+            [
+                'statut'           => 'terminee',
+                'date_mise_a_jour' => $now,
+            ],
+            [
+                'enigme_id' => $enigme_id,
+            ],
+            ['%s', '%s'],
+            ['%d']
+        );
+
+        // 🔄 Synchronisation des metas utilisateur
+        $user_ids = $wpdb->get_col($wpdb->prepare(
+            "SELECT DISTINCT user_id FROM {$table} WHERE enigme_id = %d",
+            $enigme_id
+        ));
+
+        foreach ($user_ids as $uid) {
+            update_user_meta((int) $uid, "statut_enigme_{$enigme_id}", 'terminee');
+        }
+    }
+
+    // 🏆 Actions futures : récompenses, notifications, etc.
     //attribuer_recompenses_chasse($chasse_id);
-
-    // 📩 Envoyer une notification aux participants
     //notifier_fin_chasse($chasse_id);
-
-    // 🔄 Autres actions futures...
 }
 
 

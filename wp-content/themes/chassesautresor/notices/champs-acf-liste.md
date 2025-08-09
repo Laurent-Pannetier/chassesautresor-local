@@ -152,12 +152,13 @@ Requis : non
 ----------------------------------------
 — chasse_mode_fin —
 Type : radio
-Label : chasse mode fin
-Instructions : (vide)
+Label : Mode de fin de chasse
+Instructions : Choisissez comment la fin de la chasse est déclenchée.
 Requis : non
+Valeur par défaut : manuelle
 Choices :
-  - manuelle : Manuelle
   - automatique : Automatique
+  - manuelle : Manuelle
 ----------------------------------------
 
 🔹 Groupe : Paramètres de l’énigme

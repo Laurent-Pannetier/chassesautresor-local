@@ -37,6 +37,11 @@ $date_fin_obj = convertir_en_datetime($date_fin);
 $date_fin_iso = $date_fin_obj ? $date_fin_obj->format('Y-m-d') : '';
 $illimitee  = $infos_chasse['champs']['illimitee'];
 $nb_max     = $infos_chasse['champs']['nb_max'] ?: 1;
+$mode_fin   = $infos_chasse['champs']['mode_fin'] ?? 'manuelle';
+$statut_metier = $infos_chasse['statut'] ?? 'revision';
+$aide_mode_fin = $mode_fin === 'manuelle'
+  ? __('Vous pourrez arrêter la chasse manuellement depuis l’onglet Progression de ce panneau.', 'chassesautresor-com')
+  : __('La chasse sera considérée comme terminée lorsque toutes les énigmes avec validation auront été résolues. Le système prendra également en compte le nombre maximum de gagnants défini.', 'chassesautresor-com');
 
 $champTitreParDefaut = 'nouvelle chasse'; // À adapter si besoin
 $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut);
@@ -184,6 +189,16 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
               <h3>Caractéristiques</h3>
               <ul class="resume-infos">
 
+                <!-- Mode de fin de chasse -->
+                <li class="champ-chasse champ-mode-fin<?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="chasse_mode_fin" data-cpt="chasse" data-post-id="<?= esc_attr($chasse_id); ?>">
+                  <fieldset>
+                    <legend><?= esc_html__('Mode de fin de chasse', 'chassesautresor-com'); ?></legend>
+                    <label><input type="radio" name="acf[chasse_mode_fin]" value="automatique" <?= $mode_fin === 'automatique' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>> <?= esc_html__('Automatique', 'chassesautresor-com'); ?></label>
+                    <label><input type="radio" name="acf[chasse_mode_fin]" value="manuelle" <?= $mode_fin === 'manuelle' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>> <?= esc_html__('Manuelle', 'chassesautresor-com'); ?></label>
+                    <div class="champ-explication champ-explication-mode-fin" aria-live="polite"><?= esc_html($aide_mode_fin); ?></div>
+                  </fieldset>
+                </li>
+
                 <!-- Date de début (édition inline) -->
                 <li class="champ-chasse champ-date-debut<?= $peut_editer ? '' : ' champ-desactive'; ?>"
                   data-champ="chasse_infos_date_debut"
@@ -309,7 +324,9 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
       <div class="edition-panel-header">
         <h2><i class="fa-solid fa-ranking-star"></i> Progression</h2>
       </div>
-      <p class="edition-placeholder">La section « Classement » sera bientôt disponible.</p>
+      <?php if ($mode_fin === 'manuelle' && in_array($statut_metier, ['payante', 'en_cours', 'revision'], true)) : ?>
+        <button type="button" class="terminer-chasse-btn" data-post-id="<?= esc_attr($chasse_id); ?>" data-cpt="chasse" <?= ($statut_metier === 'revision') ? 'disabled' : ''; ?>><?= esc_html__('✅ Terminer la chasse', 'chassesautresor-com'); ?></button>
+      <?php endif; ?>
     </div>
 
     <div id="chasse-tab-indices" class="edition-tab-content" style="display:none;">

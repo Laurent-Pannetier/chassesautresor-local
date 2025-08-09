@@ -323,7 +323,9 @@ function modifier_champ_chasse()
     wp_send_json_error('⚠️ acces_refuse');
   }
 
-  if (!utilisateur_peut_editer_champs($post_id)) {
+  $demande_terminer = ($champ === 'champs_caches.chasse_cache_statut' && $valeur === 'termine');
+
+  if (!$demande_terminer && !utilisateur_peut_editer_champs($post_id)) {
     wp_send_json_error('⚠️ acces_refuse');
   }
 
@@ -446,14 +448,22 @@ function modifier_champ_chasse()
 
   // 🔹 Déclenchement de la publication différée des solutions
   if ($champ === 'champs_caches.chasse_cache_statut' && $valeur === 'termine') {
-    $champ_valide = true;
+    $ok = update_field('chasse_cache_statut', 'termine', $post_id);
+    if ($ok !== false) {
+      // ✅ Marque la chasse comme complète sans déclencher de recalcul automatique
+      update_field('chasse_cache_complet', 1, $post_id);
+      $champ_valide = true;
 
-    $liste_enigmes = recuperer_enigmes_associees($post_id);
-    if (!empty($liste_enigmes)) {
-      foreach ($liste_enigmes as $enigme_id) {
-        cat_debug("🧩 Planification/déplacement : énigme #$enigme_id");
-        planifier_ou_deplacer_pdf_solution_immediatement($enigme_id);
+      $liste_enigmes = recuperer_enigmes_associees($post_id);
+      if (!empty($liste_enigmes)) {
+        foreach ($liste_enigmes as $enigme_id) {
+          cat_debug("🧩 Planification/déplacement : énigme #$enigme_id");
+          planifier_ou_deplacer_pdf_solution_immediatement($enigme_id);
+        }
       }
+
+      // 🏁 Mise à jour des statuts joueurs
+      gerer_chasse_terminee($post_id);
     }
   }
 

@@ -243,9 +243,16 @@ function ajouter_points_utilisateur(int $user_id, int $montant): void {
  * @param int $user_id ID de l’utilisateur.
  * @return array Nombre d’énigmes résolues et total d’énigmes.
  */
- function enigme_get_chasse_progression(int $chasse_id, int $user_id): array {
+function enigme_get_chasse_progression(int $chasse_id, int $user_id): array
+{
     $enigmes = recuperer_enigmes_associees($chasse_id); // ✅ Retourne directement les IDs
-    $resolues = count(array_filter($enigmes, fn($id) => get_user_meta($user_id, "statut_enigme_{$id}", true) === 'terminée'));
+    $resolues = count(array_filter($enigmes, function ($id) use ($user_id, $chasse_id) {
+        $mode = get_field('enigme_mode_validation', $id);
+        if ($mode === 'aucune') {
+            return utilisateur_est_engage_dans_chasse($user_id, $chasse_id);
+        }
+        return get_user_meta($user_id, "statut_enigme_{$id}", true) === 'terminée';
+    }));
 
     return [
         'resolues' => $resolues,
@@ -260,15 +267,27 @@ function ajouter_points_utilisateur(int $user_id, int $montant): void {
  * @param int $user_id ID de l'utilisateur.
  * @return int Nombre d'énigmes résolues.
  */
-function compter_enigmes_resolues($chasse_id, $user_id): int {
-    if (!$chasse_id || !$user_id) return 0; // 🔒 Vérification des IDs
+function compter_enigmes_resolues($chasse_id, $user_id): int
+{
+    if (!$chasse_id || !$user_id) {
+        return 0; // 🔒 Vérification des IDs
+    }
 
     $enigmes = get_field('enigmes_associees', $chasse_id) ?: [];
-    if (empty($enigmes)) return 0;
+    if (empty($enigmes)) {
+        return 0;
+    }
 
-    return count(array_filter($enigmes, function($enigme) use ($user_id) {
+    return count(array_filter($enigmes, function ($enigme) use ($user_id, $chasse_id) {
         $enigme_id = is_object($enigme) ? $enigme->ID : (int) $enigme;
-        return $enigme_id && get_user_meta($user_id, "statut_enigme_{$enigme_id}", true) === 'terminée';
+        if (!$enigme_id) {
+            return false;
+        }
+        $mode = get_field('enigme_mode_validation', $enigme_id);
+        if ($mode === 'aucune') {
+            return utilisateur_est_engage_dans_chasse($user_id, $chasse_id);
+        }
+        return get_user_meta($user_id, "statut_enigme_{$enigme_id}", true) === 'terminée';
     }));
 }
 
@@ -283,7 +302,8 @@ function compter_enigmes_resolues($chasse_id, $user_id): int {
  * @param int $user_id  ID de l'utilisateur.
  * @param int $enigme_id ID de l'énigme résolue.
  */
-function verifier_fin_de_chasse($user_id, $enigme_id) {
+function verifier_fin_de_chasse($user_id, $enigme_id)
+{
     error_log("🔍 Vérification de fin de chasse pour l'utilisateur {$user_id} (énigme : {$enigme_id})");
 
     // 🧭 Récupération de la chasse associée
@@ -295,6 +315,11 @@ function verifier_fin_de_chasse($user_id, $enigme_id) {
         return;
     }
 
+    $mode_fin = get_field('chasse_mode_fin', $chasse_id) ?: 'manuelle';
+    if ($mode_fin !== 'automatique') {
+        return; // 🔁 La complétion se fait manuellement
+    }
+
     // 📄 Récupération des énigmes associées
     $enigmes_associees = get_field('enigmes_associees', $chasse_id);
     if (empty($enigmes_associees) || !is_array($enigmes_associees)) {
@@ -302,47 +327,26 @@ function verifier_fin_de_chasse($user_id, $enigme_id) {
         return;
     }
 
-    $enigmes_ids = array_filter($enigmes_associees, 'is_numeric');
-    if (empty($enigmes_ids)) {
-        error_log("❌ Aucun ID valide parmi les énigmes.");
+    $enigmes_validables = array_filter($enigmes_associees, function ($eid) {
+        return get_field('enigme_mode_validation', $eid) !== 'aucune';
+    });
+
+    if (empty($enigmes_validables)) {
+        error_log("⚠️ Mode automatique impossible : aucune énigme validable.");
         return;
     }
 
-    // ✅ Vérification des énigmes résolues
-    $enigmes_resolues = array_filter($enigmes_ids, function($associee_id) use ($user_id) {
-        $statut = get_user_meta($user_id, "statut_enigme_{$associee_id}", true);
-        error_log("📄 Énigme (ID: {$associee_id}) - Statut: {$statut}");
-        return $statut === 'terminée';
+    $enigmes_resolues = array_filter($enigmes_validables, function ($associee_id) use ($user_id) {
+        return get_user_meta($user_id, "statut_enigme_{$associee_id}", true) === 'terminée';
     });
 
-    error_log("✅ Résolues : " . count($enigmes_resolues) . " / " . count($enigmes_ids));
-
-    // 🏆 Si toutes les énigmes sont résolues
-    if (count($enigmes_resolues) === count($enigmes_ids)) {
-    error_log("🏁 Toutes les énigmes sont résolues.");
-    
-        $illimitee = get_field('illimitee', $chasse_id); // Récupère le mode de la chasse ("stop" ou "continue")
-        $statut_chasse = get_field('statut_chasse', $chasse_id);
-    
-        // 🏆 Si la chasse est en mode "stop" et non déjà terminée
-        if ($illimitee === 'stop' && mb_strtolower($statut_chasse) !== 'terminé') {
-            $user_info = get_userdata($user_id);
-            $gagnant = $user_info ? $user_info->display_name : 'Utilisateur inconnu';
-    
-            update_field('gagnant', $gagnant, $chasse_id);
-            update_field('date_de_decouverte', current_time('Y-m-d'), $chasse_id);
-            update_field('statut_chasse', 'terminé', $chasse_id);
-    
-            // 🔄 Nettoyage du cache après mise à jour
-            wp_cache_delete($chasse_id, 'post_meta');
-            clean_post_cache($chasse_id);
-    
-            error_log("🏆 Chasse (ID: {$chasse_id}) terminée. Gagnant : {$gagnant}");
-            incrementer_total_chasses_terminees_utilisateur($user_id);
+    if (count($enigmes_resolues) === count($enigmes_validables)) {
+        update_field('chasse_cache_complet', 1, $chasse_id);
+        $statut_chasse = get_field('chasse_cache_statut', $chasse_id);
+        if (in_array($statut_chasse, ['payante', 'en_cours'], true)) {
+            update_field('chasse_cache_statut', 'termine', $chasse_id);
+            gerer_chasse_terminee($chasse_id);
         }
-    
-        // ✅ Active l'effet WOW pour l'utilisateur
-        update_user_meta($user_id, "effet_wow_chasse_{$chasse_id}", 1);
     }
 }
 add_action('enigme_resolue', function($user_id, $enigme_id) {
