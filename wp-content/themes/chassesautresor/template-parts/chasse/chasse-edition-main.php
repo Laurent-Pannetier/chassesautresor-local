@@ -324,8 +324,8 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
       <div class="edition-panel-header">
         <h2><i class="fa-solid fa-ranking-star"></i> Progression</h2>
       </div>
-      <?php if ($peut_modifier && $mode_fin === 'manuelle' && in_array($statut_metier, ['payante', 'en_cours'], true)) : ?>
-        <button type="button" class="terminer-chasse-btn" data-post-id="<?= esc_attr($chasse_id); ?>" data-cpt="chasse"><?= esc_html__('✅ Terminer la chasse', 'chassesautresor-com'); ?></button>
+      <?php if ($mode_fin === 'manuelle' && in_array($statut_metier, ['payante', 'en_cours', 'revision'], true)) : ?>
+        <button type="button" class="terminer-chasse-btn" data-post-id="<?= esc_attr($chasse_id); ?>" data-cpt="chasse" <?= ($statut_metier === 'revision') ? 'disabled' : ''; ?>><?= esc_html__('✅ Terminer la chasse', 'chassesautresor-com'); ?></button>
       <?php endif; ?>
     </div>
 
