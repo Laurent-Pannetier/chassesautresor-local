@@ -327,9 +327,16 @@ function modifier_champ_chasse()
     wp_send_json_error('⚠️ acces_refuse');
   }
 
-  $demande_terminer = ($champ === 'champs_caches.chasse_cache_statut' && $valeur === 'termine');
+  $champs_terminaison = [
+    'champs_caches.chasse_cache_statut',
+    'champs_caches.chasse_cache_gagnants',
+    'champs_caches.chasse_cache_date_decouverte'
+  ];
 
-  if (!$demande_terminer && !utilisateur_peut_editer_champs($post_id)) {
+  $demande_fin = in_array($champ, $champs_terminaison, true)
+    && ($champ !== 'champs_caches.chasse_cache_statut' || $valeur === 'termine');
+
+  if (!$demande_fin && !utilisateur_peut_editer_champs($post_id)) {
     wp_send_json_error('⚠️ acces_refuse');
   }
 
