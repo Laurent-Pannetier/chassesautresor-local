@@ -1,10 +1,16 @@
 
 (function () {
   const DEBUG = window.DEBUG || false;
+  const AJAX_URL =
+    window.ajaxurl || (window.ajax_object ? window.ajax_object.ajax_url : null);
 
   function initAutocompleteUtilisateurs(input) {
     if (!input) {
       DEBUG && console.log('❌ Élément introuvable');
+      return;
+    }
+    if (!AJAX_URL) {
+      DEBUG && console.warn('❌ URL AJAX non définie');
       return;
     }
     DEBUG && console.log('✅ initAutocompleteUtilisateurs', input);
@@ -30,7 +36,11 @@
         return;
       }
 
-      fetch(ajaxurl + `?action=rechercher_utilisateur&term=${encodeURIComponent(term)}`)
+      fetch(
+        `${AJAX_URL}?action=rechercher_utilisateur&term=${encodeURIComponent(
+          term
+        )}`
+      )
         .then((res) => res.json())
         .then((data) => {
           list.innerHTML = '';

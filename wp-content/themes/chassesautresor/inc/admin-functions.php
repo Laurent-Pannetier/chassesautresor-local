@@ -32,8 +32,12 @@ defined( 'ABSPATH' ) || exit;
  * - Retour JSON des résultats.
  */
 function rechercher_utilisateur_ajax() {
-    // ✅ Vérifier que la requête est bien envoyée par un administrateur
-    if (!current_user_can('administrator')) {
+    // ✅ Vérifier que la requête est bien envoyée par un utilisateur autorisé
+    if (
+        !current_user_can('administrator') &&
+        !current_user_can(ROLE_ORGANISATEUR) &&
+        !current_user_can(ROLE_ORGANISATEUR_CREATION)
+    ) {
         wp_send_json_error(['message' => __( '⛔ Accès refusé.', 'chassesautresor-com' )]);
     }
 
