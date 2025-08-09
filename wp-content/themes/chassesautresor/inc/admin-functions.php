@@ -48,6 +48,20 @@ function rechercher_utilisateur_ajax() {
         wp_send_json_error(['message' => __( '❌ Requête vide.', 'chassesautresor-com' )]);
     }
 
+    // ✅ Recherche directe par ID si terme numérique
+    if (is_numeric($search)) {
+        $user = get_user_by('ID', (int) $search);
+        if (!$user) {
+            wp_send_json_error(['message' => __( '❌ Aucun utilisateur trouvé.', 'chassesautresor-com' )]);
+        }
+        wp_send_json_success([
+            [
+                'id'   => $user->ID,
+                'text' => esc_html($user->display_name) . ' (' . esc_html($user->user_login) . ')'
+            ]
+        ]);
+    }
+
     // ✅ Requête pour récupérer tous les utilisateurs sans restriction de rôle
     $users = get_users([
         'search'         => '*' . esc_attr($search) . '*',

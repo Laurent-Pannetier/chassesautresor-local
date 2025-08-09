@@ -330,7 +330,11 @@ function initChasseEdit() {
   // 🏁 Bouton de terminaison manuelle
   // ==============================
   function verifierUtilisateur(id) {
-    return fetch(`${ajaxurl}?action=rechercher_utilisateur&term=${encodeURIComponent(id)}`)
+    const ajaxUrl = window.ajaxurl || (window.ajax_object ? window.ajax_object.ajax_url : null);
+    if (!ajaxUrl) {
+      return Promise.resolve(false);
+    }
+    return fetch(`${ajaxUrl}?action=rechercher_utilisateur&term=${encodeURIComponent(id)}`)
       .then((res) => res.json())
       .then((data) => data.success && data.data.some((u) => String(u.id) === String(id)))
       .catch(() => false);
