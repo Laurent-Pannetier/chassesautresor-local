@@ -196,11 +196,13 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   data-cpt="chasse"
                   data-post-id="<?= esc_attr($chasse_id); ?>"
                   data-no-edit="1"
+                  data-no-icon="1"
                 >
-                  <span class="champ-label"><?= esc_html__('Mode', 'chassesautresor-com'); ?></span>
+                  <label for="chasse_mode_fin"><?= esc_html__('Mode', 'chassesautresor-com'); ?></label>
                   <div class="champ-mode-options">
                     <label>
                       <input
+                        id="chasse_mode_fin"
                         type="radio"
                         name="acf[chasse_mode_fin]"
                         value="automatique"
