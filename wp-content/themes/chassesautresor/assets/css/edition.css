@@ -575,22 +575,28 @@ body.edition-active-enigme .edition-panel-enigme.edition-panel-modal {
   color: var(--color-editor-text-muted);
 }
 
-.edition-panel-section .resume-technique {
+.edition-panel-section .resume-technique,
+.edition-panel-section .resume-reglages {
   width: 100%;
 }
 
-.edition-panel-section .resume-technique label {
+.edition-panel-section .resume-technique label,
+.edition-panel-section .resume-reglages label {
   display: inline-block;
   min-width: 150px;
 }
 
 .edition-panel-section .resume-technique input.inline-date,
 .edition-panel-section .resume-technique input.champ-cout,
-.edition-panel-section .resume-technique input.champ-nb-edit {
+.edition-panel-section .resume-technique input.champ-nb-edit,
+.edition-panel-section .resume-reglages input.inline-date,
+.edition-panel-section .resume-reglages input.champ-cout,
+.edition-panel-section .resume-reglages input.champ-nb-edit {
   width: 180px;
 }
 
-.edition-panel-section .resume-technique .champ-select-heure {
+.edition-panel-section .resume-technique .champ-select-heure,
+.edition-panel-section .resume-reglages .champ-select-heure {
   width: auto;
 }
 
@@ -740,11 +746,13 @@ li.ligne-email .champ-organisateur .champ-affichage {
   margin: 0 1rem;
 }
 
-.edition-panel-section .resume-technique .champ-cout-points .champ-edition {
+.edition-panel-section .resume-technique .champ-cout-points .champ-edition,
+.edition-panel-section .resume-reglages .champ-cout-points .champ-edition {
   gap: 0 5px;
 }
 
-.edition-panel-section .resume-technique li {
+.edition-panel-section .resume-technique li,
+.edition-panel-section .resume-reglages li {
   margin-bottom: 0.9rem;
 }
 
