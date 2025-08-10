@@ -57,7 +57,7 @@ class Debug2 extends Root {
 		if (file_exists(self::$log_path_prefix . 'index.php')) {
 			return;
 		}
-		file::save(self::$log_path_prefix . 'index.php', '<?php // Silence is golden.', true);
+		File::save(self::$log_path_prefix . 'index.php', '<?php // Silence is golden.', true);
 
 		$logs = array( 'debug', 'debug.purge', 'crawler' );
 		foreach ($logs as $log) {
@@ -206,6 +206,8 @@ class Debug2 extends Root {
 	 * @access public
 	 */
 	public function init() {
+		if (defined('LSCWP_LOG')) return;
+
 		$debug = $this->conf(Base::O_DEBUG);
 		if ($debug == Base::VAL_ON2) {
 			if (!$this->cls('Router')->is_admin_ip()) {

@@ -610,7 +610,7 @@ class Crawler extends Root {
 	 */
 	private function _take_over_lane() {
 		self::debug('Take over lane as lane is free: ' . $this->json_local_path() . '.pid');
-		file::save($this->json_local_path() . '.pid', LITESPEED_LANE_HASH);
+		File::save($this->json_local_path() . '.pid', LITESPEED_LANE_HASH);
 	}
 
 	/**
@@ -651,7 +651,7 @@ class Crawler extends Root {
 				return false;
 			}
 		}
-		$pid = file::read($lane_file);
+		$pid = File::read($lane_file);
 		if ($pid && LITESPEED_LANE_HASH != $pid) {
 			// If lane file is older than 1h, ignore
 			if (time() - filemtime($lane_file) > 3600) {
@@ -672,10 +672,11 @@ class Crawler extends Root {
 	 * @return bool true if success and can continue crawling, false if failed and need to stop
 	 */
 	private function _test_port() {
-		if (empty($this->_crawler_conf['cookies']) || empty($this->_crawler_conf['cookies']['litespeed_hash'])) {
-			return true;
-		}
 		if (!$this->_server_ip) {
+			if (empty($this->_crawlers[$this->_summary['curr_crawler']]['uid'])) {
+				self::debug('Bypass test port as Server IP is not set');
+				return true;
+			}
 			self::debug('❌ Server IP not set');
 			return false;
 		}
@@ -887,6 +888,21 @@ class Crawler extends Root {
 	}
 
 	/**
+	 * If need to resolve DNS or not
+	 *
+	 * @since 7.3.0.1
+	 */
+	private function _should_force_resolve_dns() {
+		if ($this->_server_ip) {
+			return true;
+		}
+		if (!empty($this->_crawler_conf['cookies']) && !empty($this->_crawler_conf['cookies']['litespeed_hash'])) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 * Send multi curl requests
 	 * If res=B, bypass request and won't return
 	 *
@@ -921,7 +937,7 @@ class Crawler extends Root {
 			}
 
 			// IP resolve
-			if ((!empty($this->_crawler_conf['cookies']) && !empty($this->_crawler_conf['cookies']['litespeed_hash'])) || $this->_server_ip) {
+			if ($this->_should_force_resolve_dns()) {
 				$parsed_url = parse_url($url);
 				// self::debug('Crawl role simulator, required to use localhost for resolve');
 
@@ -1038,10 +1054,13 @@ class Crawler extends Root {
 			return self::STATUS_NOCACHE; // Blacklist
 		}
 
-		$_cache_headers = array( 'x-qc-cache', 'x-lsadc-cache', 'x-litespeed-cache' );
+		$_cache_headers = array( 'x-litespeed-cache', 'x-qc-cache', 'x-lsadc-cache' );
 
 		foreach ($_cache_headers as $_header) {
 			if (stripos($header, $_header) !== false) {
+				if (stripos($header, $_header . ': bkn') !== false) {
+					return self::STATUS_HIT; // Hit
+				}
 				if (stripos($header, $_header . ': miss') !== false) {
 					return self::STATUS_MISS; // Miss
 				}
@@ -1141,7 +1160,7 @@ class Crawler extends Root {
 
 			if (!empty($parsed_url['host'])) {
 				$dom                                   = $parsed_url['host'];
-				$port                                  = defined('LITESPEED_CRAWLER_LOCAL_PORT') ? LITESPEED_CRAWLER_LOCAL_PORT : '443';
+				$port                                  = defined('LITESPEED_CRAWLER_LOCAL_PORT') ? LITESPEED_CRAWLER_LOCAL_PORT : '443'; // TODO: need to test port?
 				$resolved                              = $dom . ':' . $port . ':' . $this->_server_ip;
 				$options[CURLOPT_RESOLVE]              = array( $resolved );
 				$options[CURLOPT_DNS_USE_GLOBAL_CACHE] = false;
@@ -1403,7 +1422,7 @@ class Crawler extends Root {
 	 *
 	 * @since    1.1.0
 	 * @access protected
-	 * @param  string $error Error info
+	 * @param  string $msg Error info
 	 */
 	protected function output( $msg ) {
 		if (wp_doing_cron()) {

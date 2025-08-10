@@ -4,11 +4,11 @@
  * Plugin Name:       LiteSpeed Cache
  * Plugin URI:        https://www.litespeedtech.com/products/cache-plugins/wordpress-acceleration
  * Description:       High-performance page caching and site optimization from LiteSpeed
- * Version:           7.2
+ * Version:           7.3.0.1
  * Author:            LiteSpeed Technologies
  * Author URI:        https://www.litespeedtech.com
  * License:           GPLv3
- * License URI:       http://www.gnu.org/licenses/gpl.html
+ * License URI:       https://www.gnu.org/licenses/gpl-3.0.html
  * Text Domain:       litespeed-cache
  * Domain Path:       /lang
  *
@@ -27,13 +27,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 defined('WPINC') || exit();
 
-if (defined('LSCWP_V')) {
-	return;
-}
+if (defined('LSCWP_V')) return;
 
-!defined('LSCWP_V') && define('LSCWP_V', '7.2');
+!defined('LSCWP_V') && define('LSCWP_V', '7.3.0.1');
 
 !defined('LSCWP_CONTENT_DIR') && define('LSCWP_CONTENT_DIR', WP_CONTENT_DIR);
 !defined('LSCWP_DIR') && define('LSCWP_DIR', __DIR__ . '/'); // Full absolute path '/var/www/html/***/wp-content/plugins/litespeed-cache/' or MU
@@ -51,6 +50,7 @@ if (substr($WP_CONTENT_URL, 0, 5) == 'http:' && substr($site_url, 0, 5) == 'http
 	$WP_CONTENT_URL = str_replace('http://', 'https://', $WP_CONTENT_URL);
 }
 !defined('LSCWP_CONTENT_FOLDER') && define('LSCWP_CONTENT_FOLDER', str_replace($site_url, '', $WP_CONTENT_URL)); // `wp-content`
+unset($site_url);
 !defined('LSWCP_PLUGIN_URL') && define('LSWCP_PLUGIN_URL', plugin_dir_url(__FILE__)); // Full URL path '//example.com/wp-content/plugins/litespeed-cache/'
 
 /**
@@ -60,6 +60,7 @@ if (substr($WP_CONTENT_URL, 0, 5) == 'http:' && substr($site_url, 0, 5) == 'http
  */
 !defined('LITESPEED_DATA_FOLDER') && define('LITESPEED_DATA_FOLDER', 'litespeed');
 !defined('LITESPEED_STATIC_URL') && define('LITESPEED_STATIC_URL', $WP_CONTENT_URL . '/' . LITESPEED_DATA_FOLDER); // Full static cache folder URL '//example.com/wp-content/litespeed'
+unset($WP_CONTENT_URL);
 !defined('LITESPEED_STATIC_DIR') && define('LITESPEED_STATIC_DIR', LSCWP_CONTENT_DIR . '/' . LITESPEED_DATA_FOLDER); // Full static cache folder path '/var/www/html/***/wp-content/litespeed'
 
 !defined('LITESPEED_TIME_OFFSET') && define('LITESPEED_TIME_OFFSET', get_option('gmt_offset') * 60 * 60);
@@ -83,6 +84,7 @@ if ((defined('WP_CLI') && WP_CLI) || PHP_SAPI == 'cli') {
 		WP_CLI::add_command('litespeed-debug', 'LiteSpeed\CLI\Debug');
 		WP_CLI::add_command('litespeed-presets', 'LiteSpeed\CLI\Presets');
 		WP_CLI::add_command('litespeed-crawler', 'LiteSpeed\CLI\Crawler');
+		WP_CLI::add_command('litespeed-database', 'LiteSpeed\CLI\Database');
 	}
 }
 

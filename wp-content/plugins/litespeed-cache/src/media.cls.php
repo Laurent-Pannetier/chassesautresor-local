@@ -202,7 +202,7 @@ class Media extends Root {
 		 * WP Stateless compatibility #143 https://github.com/litespeedtech/lscache_wp/issues/143
 		 *
 		 * @since 2.9.8
-		 * @return array( 'url', 'md5', 'size' )
+		 * Should return array( 'url', 'md5', 'size' )
 		 */
 		$info = apply_filters('litespeed_media_info', array(), $short_file_path, $post_id);
 		if (!empty($info['url']) && !empty($info['md5']) && !empty($info['size'])) {
@@ -614,7 +614,15 @@ class Media extends Root {
 
 		// Include lazyload lib js and init lazyload
 		if ($cfg_lazy || $cfg_iframe_lazy) {
-			$lazy_lib      = '<script data-no-optimize="1">' . File::read(LSCWP_DIR . self::LIB_FILE_IMG_LAZYLOAD) . '</script>';
+			$lazy_lib      = '<script data-no-optimize="1">window.lazyLoadOptions=Object.assign({},{threshold:' . apply_filters('litespeed_lazyload_threshold', 300) . '},window.lazyLoadOptions||{});' . File::read(LSCWP_DIR . self::LIB_FILE_IMG_LAZYLOAD) . '</script>';
+			if ($cfg_js_delay) {
+				// Load JS delay lib
+				if (!defined('LITESPEED_JS_DELAY_LIB_LOADED')) {
+					define('LITESPEED_JS_DELAY_LIB_LOADED', true);
+					$lazy_lib .= '<script data-no-optimize="1">' . File::read(LSCWP_DIR . Optimize::LIB_FILE_JS_DELAY) . '</script>';
+				}
+			}
+
 			$this->content = str_replace('</body>', $lazy_lib . '</body>', $this->content);
 		}
 	}
