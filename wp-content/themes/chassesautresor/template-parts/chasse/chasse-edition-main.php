@@ -28,6 +28,9 @@ $valeur     = $infos_chasse['champs']['valeur_recompense'];
 $cout       = $infos_chasse['champs']['cout_points'];
 $date_debut = $infos_chasse['champs']['date_debut'];
 $date_fin   = $infos_chasse['champs']['date_fin'];
+$date_decouverte = $infos_chasse['champs']['date_decouverte'];
+$date_decouverte_formatee = $date_decouverte ? formater_date($date_decouverte) : '';
+$gagnants = $infos_chasse['champs']['gagnants'];
 
 // 🎯 Conversion des dates pour les champs <input>
 $date_debut_obj = convertir_en_datetime($date_debut);
@@ -324,9 +327,35 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
       <div class="edition-panel-header">
         <h2><i class="fa-solid fa-ranking-star"></i> Progression</h2>
       </div>
-      <?php if ($mode_fin === 'manuelle' && in_array($statut_metier, ['payante', 'en_cours', 'revision'], true)) : ?>
-        <button type="button" class="terminer-chasse-btn" data-post-id="<?= esc_attr($chasse_id); ?>" data-cpt="chasse" <?= ($statut_metier === 'revision') ? 'disabled' : ''; ?>><?= esc_html__('✅ Terminer la chasse', 'chassesautresor-com'); ?></button>
-      <?php endif; ?>
+      <div class="progression-actions">
+          <?php if (
+            $mode_fin === 'manuelle' &&
+            in_array($statut_metier, ['payante', 'en_cours', 'revision'], true)
+          ) : ?>
+          <button
+            type="button"
+            class="terminer-chasse-btn"
+            data-post-id="<?= esc_attr($chasse_id); ?>"
+            data-cpt="chasse"
+            <?= ($statut_metier === 'revision') ? 'disabled' : ''; ?>
+          ><?= esc_html__('✅ Terminer la chasse', 'chassesautresor-com'); ?></button>
+          <div class="zone-validation-fin" style="display:none;">
+            <label for="chasse-gagnants"><?= esc_html__('Gagnants', 'chassesautresor-com'); ?></label>
+            <textarea id="chasse-gagnants" required></textarea>
+              <button
+                type="button"
+                class="valider-fin-chasse-btn"
+                data-post-id="<?= esc_attr($chasse_id); ?>"
+                data-cpt="chasse"
+                disabled
+              ><?= esc_html__('Valider la fin de chasse', 'chassesautresor-com'); ?></button>
+          </div>
+        <?php elseif ($statut_metier === 'termine') : ?>
+          <p class="message-chasse-terminee">
+            <?= sprintf(__('Chasse gagnée le %s par %s', 'chassesautresor-com'), esc_html($date_decouverte_formatee), esc_html($gagnants)); ?>
+          </p>
+        <?php endif; ?>
+      </div>
     </div>
 
     <div id="chasse-tab-indices" class="edition-tab-content" style="display:none;">

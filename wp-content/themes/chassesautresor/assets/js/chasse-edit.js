@@ -327,21 +327,57 @@ function initChasseEdit() {
   }
 
   // ==============================
-  // 🏁 Bouton de terminaison manuelle
+  // 🏁 Terminaison manuelle
   // ==============================
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.terminer-chasse-btn');
-    if (!btn) return;
-    const postId = btn.dataset.postId;
-    btn.disabled = true;
-    modifierChampSimple('champs_caches.chasse_cache_statut', 'termine', postId, 'chasse')
-      .then((ok) => {
-        if (ok) {
-          btn.textContent = 'Chasse terminée';
-        } else {
-          btn.disabled = false;
-        }
-      });
+    if (btn) {
+      const zone = btn.nextElementSibling;
+      if (zone) {
+        zone.style.display = 'block';
+        const textarea = zone.querySelector('#chasse-gagnants');
+        const valider = zone.querySelector('.valider-fin-chasse-btn');
+        textarea.addEventListener('input', () => {
+          valider.disabled = textarea.value.trim() === '';
+        });
+      }
+      btn.style.display = 'none';
+      return;
+    }
+
+    const valider = e.target.closest('.valider-fin-chasse-btn');
+    if (valider) {
+      const postId = valider.dataset.postId;
+      const zone = valider.closest('.zone-validation-fin');
+      const textarea = zone.querySelector('#chasse-gagnants');
+      const gagnants = textarea.value.trim();
+      if (!gagnants) return;
+      valider.disabled = true;
+      const now = new Date();
+      const dateValue = now.toISOString().split('T')[0];
+      const dateDisplay = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+      const gagnantsEsc = gagnants.replace(/[&<>\"']/g, (c) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;',
+      })[c]);
+
+      modifierChampSimple('champs_caches.chasse_cache_gagnants', gagnants, postId, 'chasse')
+        .then((ok) => ok && modifierChampSimple('champs_caches.chasse_cache_date_decouverte', dateValue, postId, 'chasse'))
+        .then((ok) => ok && modifierChampSimple('champs_caches.chasse_cache_statut', 'termine', postId, 'chasse'))
+        .then((ok) => {
+          if (ok) {
+            const container = document.querySelector('#chasse-tab-classement .progression-actions');
+            if (container) {
+              container.innerHTML = `<p class="message-chasse-terminee">Chasse gagnée le ${dateDisplay} par ${gagnantsEsc}</p>`;
+            }
+          } else {
+            valider.disabled = false;
+          }
+        });
+    }
   });
 }
 
