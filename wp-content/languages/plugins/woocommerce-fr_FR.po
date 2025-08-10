@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - WooCommerce - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-07-21 17:34:12+0000\n"
+"PO-Revision-Date: 2025-08-03 09:17:26+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -168,10 +168,6 @@ msgstr "Expédition de la commande"
 #: src/Internal/EmailEditor/PersonalizationTags/OrderTagsProvider.php:107
 msgid "Order Discount"
 msgstr "Remise sur la commande"
-
-#: src/Internal/EmailEditor/Integration.php:146
-msgid "Search Emails"
-msgstr "Chercher dans les e-mails"
 
 #: src/Internal/EmailEditor/Integration.php:145
 msgid "View Email"
@@ -10002,12 +9998,6 @@ msgctxt "block description"
 msgid "Container with collapsible inner blocks."
 msgstr "Conteneur intégrant des blocs réductibles."
 
-#: assets/client/admin/product-editor/blocks/generic/collapsible/block.json
-#: assets/client/admin/product-editor/blocks/generic/product-collapsible/block.json
-msgctxt "block title"
-msgid "Collapsible"
-msgstr "Réductible"
-
 #: assets/client/admin/product-editor/blocks/product-fields/inventory-sku/block.json
 #: assets/client/admin/product-editor/blocks/product-fields/product-sku-field/block.json
 msgctxt "block description"
@@ -10301,6 +10291,12 @@ msgstr "Images du produit"
 msgctxt "block keyword"
 msgid "sku"
 msgstr "ugs"
+
+#: assets/client/admin/product-editor/blocks/generic/collapsible/block.json
+#: assets/client/admin/product-editor/blocks/generic/product-collapsible/block.json
+msgctxt "block title"
+msgid "Collapsible"
+msgstr "Repliable"
 
 #: src/Admin/Features/PaymentGatewaySuggestions/DefaultPaymentGateways.php:939
 msgid "Give your customers the power to pay later, interest free and watch your sales grow."
@@ -15287,10 +15283,6 @@ msgstr "sur"
 msgid "Step"
 msgstr "Étape"
 
-#: includes/admin/views/html-admin-dashboard-setup.php:24
-msgid "Start selling"
-msgstr "Commencez à vendre"
-
 #: includes/admin/views/html-admin-dashboard-setup.php:23
 msgid "You're almost there! Once you complete store setup you can start receiving orders."
 msgstr "Vous y êtes presque ! Une fois la configuration de la boutique terminée, vous pouvez commencer à recevoir des commandes."
@@ -15350,6 +15342,10 @@ msgstr "Faible quantité de stock pour la variation."
 #: includes/admin/meta-boxes/views/html-variation-admin.php:293
 msgid "When variation stock reaches this amount you will be notified by email. The default value for all variations can be set in the product Inventory tab. The shop default value can be set in Settings > Products > Inventory."
 msgstr "Lorsque le stock de la variation atteindra cette valeur, vous recevrez une notification par e-mail. La valeur par défaut pour toutes les variations peut être définie dans l’onglet Inventaire. La valeur par défaut de la boutique peut être définie dans Réglages > Produits > Inventaire."
+
+#: includes/admin/views/html-admin-dashboard-setup.php:24
+msgid "Start selling"
+msgstr "Commencer à vendre"
 
 #. translators: 1: page name 2: page ID
 #: includes/admin/class-wc-admin-settings.php:692
