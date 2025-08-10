@@ -56,8 +56,8 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
     <div id="erreur-global" style="display:none; background:red; color:white; padding:5px; text-align:center; font-size:0.9em;"></div>
 
     <div class="edition-panel-header">
-      <h2><i class="fa-solid fa-sliders"></i> Paramètres</h2>
-      <button type="button" class="panneau-fermer" aria-label="Fermer les paramètres">✖</button>
+        <h2><i class="fa-solid fa-sliders"></i> <?= esc_html__('Panneau d\'édition chasse', 'chassesautresor-com'); ?></h2>
+        <button type="button" class="panneau-fermer" aria-label="Fermer les paramètres">✖</button>
     </div>
 
     <div class="edition-tabs">
@@ -75,11 +75,6 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
       <div class="edition-panel-body">
 
       <div class="edition-panel-section edition-panel-section-ligne">
-        <h3 class="section-title">
-          <i class="fa-solid fa-gear" aria-hidden="true"></i>
-          Paramètres de la chasse
-        </h3>
-
         <div class="section-content">
           <div class="resume-blocs-grid deux-col-wrapper">
 
