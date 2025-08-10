@@ -670,8 +670,48 @@ function initChampNbGagnants() {
   });
 }
 
+// ================================
+// 🔚 Gestion dynamique du mode de fin
+// ================================
+function initModeFinChasse() {
+  const radios = document.querySelectorAll('input[name="acf[chasse_mode_fin]"]');
+  const template = document.getElementById('template-nb-gagnants');
+  const modeFinLi = document.querySelector('.champ-mode-fin');
+
+  if (!radios.length || !template || !modeFinLi) return;
+
+  const postId = modeFinLi.dataset.postId;
+
+  function update() {
+    const selected = document.querySelector('input[name="acf[chasse_mode_fin]"]:checked')?.value;
+    const existing = document.querySelector('.champ-nb-gagnants');
+
+    if (selected === 'automatique') {
+      if (!existing) {
+        const clone = template.content.firstElementChild.cloneNode(true);
+        modeFinLi.insertAdjacentElement('afterend', clone);
+        initChampNbGagnants();
+      }
+      const inputNb = document.getElementById('chasse-nb-gagnants');
+      if (inputNb) {
+        mettreAJourAffichageNbGagnants(postId, inputNb.value.trim());
+      }
+    } else {
+      if (existing) existing.remove();
+      mettreAJourAffichageNbGagnants(postId, 0);
+    }
+  }
+
+  radios.forEach(radio => {
+    radio.addEventListener('change', update);
+  });
+
+  update();
+}
+
 // À appeler :
 initChampNbGagnants();
+initModeFinChasse();
 
 // ==============================
 // ➕ Mise à jour de la carte d'ajout d'énigme
