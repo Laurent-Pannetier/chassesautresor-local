@@ -310,18 +310,21 @@ function mettreAJourLigneResume(ligne, champ, estRempli, type) {
   // Nettoyer anciennes icônes
   ligne.querySelectorAll(':scope > .icone-check, :scope > .icon-attente').forEach((i) => i.remove());
 
-  // Ajouter nouvelle icône
-  const icone = document.createElement('i');
-  icone.className = estRempli
-    ? 'fa-solid fa-circle-check icone-check'
-    : 'fa-regular fa-circle icon-attente';
-  icone.setAttribute('aria-hidden', 'true');
-  ligne.prepend(icone);
+  // Ajouter nouvelle icône si autorisé
+  if (ligne.dataset.noIcon === undefined) {
+    const icone = document.createElement('i');
+    icone.className = estRempli
+      ? 'fa-solid fa-circle-check icone-check'
+      : 'fa-regular fa-circle icon-attente';
+    icone.setAttribute('aria-hidden', 'true');
+    ligne.prepend(icone);
+  }
 
   // Ajouter bouton édition ✏️ si besoin
   const dejaBouton = ligne.querySelector('.champ-modifier');
+  const pasDEdition = ligne.dataset.noEdit !== undefined;
 
-  if (!dejaBouton) {
+  if (!dejaBouton && !pasDEdition) {
     const bouton = document.createElement('button');
     bouton.type = 'button';
     bouton.className = 'champ-modifier';

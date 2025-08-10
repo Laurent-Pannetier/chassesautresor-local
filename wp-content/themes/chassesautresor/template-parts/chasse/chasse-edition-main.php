@@ -42,9 +42,6 @@ $illimitee  = $infos_chasse['champs']['illimitee'];
 $nb_max     = $infos_chasse['champs']['nb_max'] ?: 1;
 $mode_fin   = $infos_chasse['champs']['mode_fin'] ?? 'automatique';
 $statut_metier = $infos_chasse['statut'] ?? 'revision';
-$aide_mode_fin = $mode_fin === 'manuelle'
-  ? __('Vous pourrez arrêter la chasse manuellement depuis l’onglet Progression de ce panneau.', 'chassesautresor-com')
-  : __('La chasse sera considérée comme terminée lorsque toutes les énigmes avec validation auront été résolues. Le système prendra également en compte le nombre maximum de gagnants défini.', 'chassesautresor-com');
 
 $champTitreParDefaut = 'nouvelle chasse'; // À adapter si besoin
 $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut);
@@ -188,13 +185,54 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
               <ul class="resume-infos">
 
                 <!-- Mode de fin de chasse -->
-                <li class="champ-chasse champ-mode-fin<?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="chasse_mode_fin" data-cpt="chasse" data-post-id="<?= esc_attr($chasse_id); ?>">
-                  <fieldset>
-                    <legend><?= esc_html__('Mode de fin de chasse', 'chassesautresor-com'); ?></legend>
-                    <label><input type="radio" name="acf[chasse_mode_fin]" value="automatique" <?= $mode_fin === 'automatique' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>> <?= esc_html__('Automatique', 'chassesautresor-com'); ?></label>
-                    <label><input type="radio" name="acf[chasse_mode_fin]" value="manuelle" <?= $mode_fin === 'manuelle' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>> <?= esc_html__('Manuelle', 'chassesautresor-com'); ?></label>
-                    <div class="champ-explication champ-explication-mode-fin" aria-live="polite"><?= esc_html($aide_mode_fin); ?></div>
-                  </fieldset>
+                <li
+                  class="champ-chasse champ-mode-fin<?= $peut_editer ? '' : ' champ-desactive'; ?>"
+                  data-champ="chasse_mode_fin"
+                  data-cpt="chasse"
+                  data-post-id="<?= esc_attr($chasse_id); ?>"
+                  data-no-edit="1"
+                  data-no-icon="1"
+                >
+                  <label for="chasse_mode_fin"><?= esc_html__('Mode', 'chassesautresor-com'); ?></label>
+                  <div class="champ-mode-options">
+                    <label>
+                      <input
+                        id="chasse_mode_fin"
+                        type="radio"
+                        name="acf[chasse_mode_fin]"
+                        value="automatique"
+                        <?= $mode_fin === 'automatique' ? 'checked' : ''; ?>
+                        <?= $peut_editer ? '' : 'disabled'; ?>
+                      >
+                      <?= esc_html__('Automatique', 'chassesautresor-com'); ?>
+                      <button
+                        type="button"
+                        class="mode-fin-aide"
+                        data-mode="automatique"
+                        aria-label="<?= esc_attr__('Explication du mode automatique', 'chassesautresor-com'); ?>"
+                      >
+                        <i class="fa-regular fa-circle-question"></i>
+                      </button>
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        name="acf[chasse_mode_fin]"
+                        value="manuelle"
+                        <?= $mode_fin === 'manuelle' ? 'checked' : ''; ?>
+                        <?= $peut_editer ? '' : 'disabled'; ?>
+                      >
+                      <?= esc_html__('Manuelle', 'chassesautresor-com'); ?>
+                      <button
+                        type="button"
+                        class="mode-fin-aide"
+                        data-mode="manuelle"
+                        aria-label="<?= esc_attr__('Explication du mode manuel', 'chassesautresor-com'); ?>"
+                      >
+                        <i class="fa-regular fa-circle-question"></i>
+                      </button>
+                    </label>
+                  </div>
                 </li>
 
                 <!-- Date de début (édition inline) -->

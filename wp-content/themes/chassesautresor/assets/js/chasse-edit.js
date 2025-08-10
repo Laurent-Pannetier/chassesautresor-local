@@ -309,23 +309,28 @@ function initChasseEdit() {
   }
 
   // ==============================
-  // 🧠 Explication dynamique – Mode de fin de chasse
+  // 🧠 Explication – Mode de fin de chasse
   // ==============================
   const explicationModeFin = {
-    automatique: "La chasse sera considérée comme terminée lorsque toutes les énigmes avec validation auront été résolues. Le système prendra également en compte le nombre maximum de gagnants défini.",
-    manuelle: "Vous pourrez arrêter la chasse manuellement depuis l’onglet Progression de ce panneau."
+    automatique: wp.i18n.__(
+      "La chasse sera considérée comme terminée dès que les gagnants ont résolu l'intégralité des énigmes. " +
+        "En mode automatique, vous paramétrez librement le nombre de gagnants.",
+      "chassesautresor-com"
+    ),
+    manuelle: wp.i18n.__(
+      "Vous pourrez arrêter la chasse manuellement depuis l’onglet Progression de ce panneau.",
+      "chassesautresor-com"
+    )
   };
-  const zoneExplicationModeFin = document.querySelector('.champ-explication-mode-fin');
-  if (zoneExplicationModeFin) {
-    document.querySelectorAll('input[name="acf[chasse_mode_fin]"]').forEach((radio) => {
-      radio.addEventListener('change', () => {
-        zoneExplicationModeFin.textContent = explicationModeFin[radio.value] || '';
-      });
-      if (radio.checked) {
-        zoneExplicationModeFin.textContent = explicationModeFin[radio.value] || '';
+  document.querySelectorAll('.mode-fin-aide').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const mode = btn.dataset.mode;
+      const message = explicationModeFin[mode];
+      if (message) {
+        alert(message);
       }
     });
-  }
+  });
 
   // ==============================
   // 🏁 Terminaison manuelle
