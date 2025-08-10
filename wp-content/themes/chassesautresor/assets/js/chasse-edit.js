@@ -312,11 +312,15 @@ function initChasseEdit() {
   // 🧠 Explication – Mode de fin de chasse
   // ==============================
   const explicationModeFin = {
-    automatique:
-      "La chasse sera considérée comme terminée lorsque toutes les énigmes avec validation " +
-      "auront été résolues. Le système prendra également en compte le nombre maximum de gagnants défini.",
-    manuelle:
-      "Vous pourrez arrêter la chasse manuellement depuis l’onglet Progression de ce panneau."
+    automatique: wp.i18n.__(
+      "La chasse sera considérée comme terminée dès que les gagnants ont résolu l'intégralité des énigmes. " +
+        "En mode automatique, vous paramétrez librement le nombre de gagnants.",
+      "chassesautresor-com"
+    ),
+    manuelle: wp.i18n.__(
+      "Vous pourrez arrêter la chasse manuellement depuis l’onglet Progression de ce panneau.",
+      "chassesautresor-com"
+    )
   };
   document.querySelectorAll('.mode-fin-aide').forEach((btn) => {
     btn.addEventListener('click', () => {
