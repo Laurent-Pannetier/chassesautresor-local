@@ -40,7 +40,7 @@ $date_fin_obj = convertir_en_datetime($date_fin);
 $date_fin_iso = $date_fin_obj ? $date_fin_obj->format('Y-m-d') : '';
 $illimitee  = $infos_chasse['champs']['illimitee'];
 $nb_max     = $infos_chasse['champs']['nb_max'] ?: 1;
-$mode_fin   = $infos_chasse['champs']['mode_fin'] ?? 'manuelle';
+$mode_fin   = $infos_chasse['champs']['mode_fin'] ?? 'automatique';
 $statut_metier = $infos_chasse['statut'] ?? 'revision';
 $aide_mode_fin = $mode_fin === 'manuelle'
   ? __('Vous pourrez arrêter la chasse manuellement depuis l’onglet Progression de ce panneau.', 'chassesautresor-com')
