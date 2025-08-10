@@ -73,11 +73,11 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
 
       <div class="edition-panel-section edition-panel-section-ligne">
         <div class="section-content">
-          <div class="resume-blocs-grid deux-col-wrapper">
+          <div class="resume-blocs-grid">
 
-            <!-- SECTION 1 : Champs obligatoires -->
-            <div class="resume-bloc resume-obligatoire deux-col-bloc">
-              <h3>Champs obligatoires</h3>
+            <!-- SECTION 1 : Informations -->
+            <div class="resume-bloc resume-obligatoire">
+              <h3>Informations</h3>
               <ul class="resume-infos">
 
                 <!-- Titre -->
@@ -141,9 +141,9 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
               </ul>
             </div>
 
-            <!-- SECTION 2 : Champs recommandés -->
-            <div class="resume-bloc resume-facultatif deux-col-bloc">
-              <h3>Facultatif mais recommandé</h3>
+            <!-- SECTION 2 : Réglages -->
+            <div class="resume-bloc resume-reglages">
+              <h3>Réglages</h3>
               <ul class="resume-infos">
 
                 <!-- Récompense -->
@@ -176,13 +176,6 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
 
                   <div class="champ-feedback"></div>
                 </li>
-              </ul>
-            </div>
-
-            <!-- SECTION 3 : Caractéristiques -->
-            <div class="resume-bloc resume-technique">
-              <h3>Caractéristiques</h3>
-              <ul class="resume-infos">
 
                 <!-- Mode de fin de chasse -->
                 <li
