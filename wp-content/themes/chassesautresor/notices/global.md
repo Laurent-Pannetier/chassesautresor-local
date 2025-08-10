@@ -356,7 +356,7 @@ Groupe : paramètre de la chasse
 * chasse_principale_liens (repeater)
   * chasse_principale_liens_type (select)
   * chasse_principale_liens_url (url)
-* chasse_cache_gagnants (user)
+* chasse_cache_gagnants (text)
 * chasse_cache_date_decouverte (date_picker)
 * chasse_cache_statut (select)
 * chasse_cache_statut_validation (select)

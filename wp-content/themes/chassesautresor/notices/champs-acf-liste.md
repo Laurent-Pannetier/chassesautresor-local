@@ -91,9 +91,9 @@ Contenu imbriqué :
   ----------------------------------------
 ----------------------------------------
 — chasse_cache_gagnants —
-Type : user
+Type : text
 Label : Gagnants
-Instructions : (vide)
+Instructions : Texte libre listant les gagnants
 Requis : non
 ----------------------------------------
 — chasse_cache_date_decouverte —
