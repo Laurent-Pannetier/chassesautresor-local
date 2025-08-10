@@ -313,12 +313,11 @@ function initChasseEdit() {
   // ==============================
   const explicationModeFin = {
     automatique: wp.i18n.__(
-      "La chasse sera considérée comme terminée dès que les gagnants ont résolu l'intégralité des énigmes. " +
-        "En mode automatique, vous paramétrez librement le nombre de gagnants.",
+      "Un joueur devient gagnant lorsqu’il résout toutes les énigmes. La chasse s’achève dès que le nombre de gagnants prévu est atteint.",
       "chassesautresor-com"
     ),
     manuelle: wp.i18n.__(
-      "Vous pourrez arrêter la chasse manuellement depuis l’onglet Progression de ce panneau.",
+      "Vous arrêtez la chasse manuellement, grâce au bouton situé dans le panneau d'édition chasse.",
       "chassesautresor-com"
     )
   };
