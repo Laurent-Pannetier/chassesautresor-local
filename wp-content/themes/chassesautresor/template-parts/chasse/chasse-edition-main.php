@@ -235,6 +235,44 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   </div>
                 </li>
 
+                <?php ob_start(); ?>
+                <!-- Nombre de gagnants -->
+                <li class="champ-chasse champ-nb-gagnants <?= empty($nb_max) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>"
+                  data-champ="chasse_infos_nb_max_gagants"
+                  data-cpt="chasse"
+                  data-post-id="<?= esc_attr($chasse_id); ?>">
+
+                  <label for="chasse-nb-gagnants">Nb gagnants</label>
+
+                  <input type="number"
+                    id="chasse-nb-gagnants"
+                    name="chasse-nb-gagnants"
+                    value="<?= esc_attr($nb_max); ?>"
+                    min="1"
+                    class="champ-inline-nb champ-nb-edit"
+                    <?= ($peut_editer && $nb_max != 0) ? '' : 'disabled'; ?> />
+
+                  <div class="champ-option-illimitee ">
+                    <input type="checkbox"
+                      id="nb-gagnants-illimite"
+                      name="nb-gagnants-illimite"
+                      <?= ($nb_max == 0 ? 'checked' : ''); ?> <?= $peut_editer ? '' : 'disabled'; ?>
+                      data-champ="chasse_infos_nb_max_gagants">
+                    <label for="nb-gagnants-illimite">Illimité</label>
+                  </div>
+
+                  <div id="erreur-nb-gagnants" class="message-erreur" style="display:none; color:red; font-size:0.9em; margin-top:5px;"></div>
+                </li>
+                <?php $bloc_nb_gagnants = ob_get_clean(); ?>
+
+                <?php if ($mode_fin === 'automatique') : ?>
+                  <?= $bloc_nb_gagnants; ?>
+                <?php endif; ?>
+
+                <template id="template-nb-gagnants">
+                  <?= $bloc_nb_gagnants; ?>
+                </template>
+
                 <!-- Date de début (édition inline) -->
                 <li class="champ-chasse champ-date-debut<?= $peut_editer ? '' : ' champ-desactive'; ?>"
                   data-champ="chasse_infos_date_debut"
@@ -305,35 +343,6 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   </div>
 
                   <div class="champ-feedback"></div>
-                </li>
-
-
-                <!-- Nombre de gagnants -->
-                <li class="champ-chasse champ-nb-gagnants <?= empty($nb_max) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>"
-                  data-champ="chasse_infos_nb_max_gagants"
-                  data-cpt="chasse"
-                  data-post-id="<?= esc_attr($chasse_id); ?>">
-
-                  <label for="chasse-nb-gagnants">Nb gagnants</label>
-
-                  <input type="number"
-                    id="chasse-nb-gagnants"
-                    name="chasse-nb-gagnants"
-                    value="<?= esc_attr($nb_max); ?>"
-                    min="1"
-                    class="champ-inline-nb champ-nb-edit"
-                    <?= ($peut_editer && $nb_max != 0) ? '' : 'disabled'; ?> />
-
-                  <div class="champ-option-illimitee ">
-                    <input type="checkbox"
-                      id="nb-gagnants-illimite"
-                      name="nb-gagnants-illimite"
-                      <?= ($nb_max == 0 ? 'checked' : ''); ?> <?= $peut_editer ? '' : 'disabled'; ?>
-                      data-champ="chasse_infos_nb_max_gagants">
-                    <label for="nb-gagnants-illimite">Illimité</label>
-                  </div>
-
-                  <div id="erreur-nb-gagnants" class="message-erreur" style="display:none; color:red; font-size:0.9em; margin-top:5px;"></div>
                 </li>
 
               </ul>
