@@ -318,26 +318,15 @@ function initChasseEdit() {
     manuelle:
       "Vous pourrez arrêter la chasse manuellement depuis l’onglet Progression de ce panneau."
   };
-  const zoneExplicationModeFin = document.querySelector('.champ-explication-mode-fin');
-  if (zoneExplicationModeFin) {
-    zoneExplicationModeFin.setAttribute('hidden', 'hidden');
-    document.querySelectorAll('.mode-fin-aide').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const mode = btn.dataset.mode;
-        const message = explicationModeFin[mode] || '';
-        const dejaVisible =
-          !zoneExplicationModeFin.hasAttribute('hidden') &&
-          zoneExplicationModeFin.textContent === message;
-        if (dejaVisible) {
-          zoneExplicationModeFin.setAttribute('hidden', 'hidden');
-          zoneExplicationModeFin.textContent = '';
-        } else {
-          zoneExplicationModeFin.textContent = message;
-          zoneExplicationModeFin.removeAttribute('hidden');
-        }
-      });
+  document.querySelectorAll('.mode-fin-aide').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const mode = btn.dataset.mode;
+      const message = explicationModeFin[mode];
+      if (message) {
+        alert(message);
+      }
     });
-  }
+  });
 
   // ==============================
   // 🏁 Terminaison manuelle

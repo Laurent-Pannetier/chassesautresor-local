@@ -1104,6 +1104,18 @@ body.panneau-ouvert::before {
 }
 
 /* ====== Mode de fin ====== */
+.champ-mode-options {
+  margin-left: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.champ-mode-options label {
+  display: flex;
+  align-items: center;
+}
+
 .mode-fin-aide {
   background: none;
   border: none;
@@ -1115,8 +1127,4 @@ body.panneau-ouvert::before {
 
 .mode-fin-aide i {
   pointer-events: none;
-}
-
-.champ-explication-mode-fin[hidden] {
-  display: none;
 }

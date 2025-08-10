@@ -42,9 +42,6 @@ $illimitee  = $infos_chasse['champs']['illimitee'];
 $nb_max     = $infos_chasse['champs']['nb_max'] ?: 1;
 $mode_fin   = $infos_chasse['champs']['mode_fin'] ?? 'automatique';
 $statut_metier = $infos_chasse['statut'] ?? 'revision';
-$aide_mode_fin = $mode_fin === 'manuelle'
-  ? __('Vous pourrez arrêter la chasse manuellement depuis l’onglet Progression de ce panneau.', 'chassesautresor-com')
-  : __('La chasse sera considérée comme terminée lorsque toutes les énigmes avec validation auront été résolues. Le système prendra également en compte le nombre maximum de gagnants défini.', 'chassesautresor-com');
 
 $champTitreParDefaut = 'nouvelle chasse'; // À adapter si besoin
 $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut);
@@ -200,8 +197,8 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   data-post-id="<?= esc_attr($chasse_id); ?>"
                   data-no-edit="1"
                 >
-                  <fieldset>
-                    <legend><?= esc_html__('Mode de fin de chasse', 'chassesautresor-com'); ?></legend>
+                  <span class="champ-label"><?= esc_html__('Mode', 'chassesautresor-com'); ?></span>
+                  <div class="champ-mode-options">
                     <label>
                       <input
                         type="radio"
@@ -238,8 +235,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                         <i class="fa-regular fa-circle-question"></i>
                       </button>
                     </label>
-                    <div class="champ-explication champ-explication-mode-fin" aria-live="polite" hidden></div>
-                  </fieldset>
+                  </div>
                 </li>
 
                 <!-- Date de début (édition inline) -->
