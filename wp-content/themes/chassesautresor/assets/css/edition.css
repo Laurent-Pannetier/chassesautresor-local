@@ -1102,3 +1102,21 @@ body.panneau-ouvert::before {
   padding: 8px;
   font-weight: bold;
 }
+
+/* ====== Mode de fin ====== */
+.mode-fin-aide {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 0.3em;
+  color: inherit;
+  padding: 0;
+}
+
+.mode-fin-aide i {
+  pointer-events: none;
+}
+
+.champ-explication-mode-fin[hidden] {
+  display: none;
+}

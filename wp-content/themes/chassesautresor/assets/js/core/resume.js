@@ -320,8 +320,9 @@ function mettreAJourLigneResume(ligne, champ, estRempli, type) {
 
   // Ajouter bouton édition ✏️ si besoin
   const dejaBouton = ligne.querySelector('.champ-modifier');
+  const pasDEdition = ligne.dataset.noEdit !== undefined;
 
-  if (!dejaBouton) {
+  if (!dejaBouton && !pasDEdition) {
     const bouton = document.createElement('button');
     bouton.type = 'button';
     bouton.className = 'champ-modifier';

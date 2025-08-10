@@ -309,21 +309,33 @@ function initChasseEdit() {
   }
 
   // ==============================
-  // 🧠 Explication dynamique – Mode de fin de chasse
+  // 🧠 Explication – Mode de fin de chasse
   // ==============================
   const explicationModeFin = {
-    automatique: "La chasse sera considérée comme terminée lorsque toutes les énigmes avec validation auront été résolues. Le système prendra également en compte le nombre maximum de gagnants défini.",
-    manuelle: "Vous pourrez arrêter la chasse manuellement depuis l’onglet Progression de ce panneau."
+    automatique:
+      "La chasse sera considérée comme terminée lorsque toutes les énigmes avec validation " +
+      "auront été résolues. Le système prendra également en compte le nombre maximum de gagnants défini.",
+    manuelle:
+      "Vous pourrez arrêter la chasse manuellement depuis l’onglet Progression de ce panneau."
   };
   const zoneExplicationModeFin = document.querySelector('.champ-explication-mode-fin');
   if (zoneExplicationModeFin) {
-    document.querySelectorAll('input[name="acf[chasse_mode_fin]"]').forEach((radio) => {
-      radio.addEventListener('change', () => {
-        zoneExplicationModeFin.textContent = explicationModeFin[radio.value] || '';
+    zoneExplicationModeFin.setAttribute('hidden', 'hidden');
+    document.querySelectorAll('.mode-fin-aide').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const mode = btn.dataset.mode;
+        const message = explicationModeFin[mode] || '';
+        const dejaVisible =
+          !zoneExplicationModeFin.hasAttribute('hidden') &&
+          zoneExplicationModeFin.textContent === message;
+        if (dejaVisible) {
+          zoneExplicationModeFin.setAttribute('hidden', 'hidden');
+          zoneExplicationModeFin.textContent = '';
+        } else {
+          zoneExplicationModeFin.textContent = message;
+          zoneExplicationModeFin.removeAttribute('hidden');
+        }
       });
-      if (radio.checked) {
-        zoneExplicationModeFin.textContent = explicationModeFin[radio.value] || '';
-      }
     });
   }
 
