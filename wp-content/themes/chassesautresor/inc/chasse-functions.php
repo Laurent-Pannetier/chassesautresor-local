@@ -217,16 +217,25 @@ function gerer_chasse_terminee($chasse_id)
 
     $placeholders = implode(',', array_fill(0, count($enigmes), '%d'));
     $sql = "
-        SELECT user_id
+        SELECT user_id, MIN(date_mise_a_jour) AS first_finish
         FROM {$table}
         WHERE statut IN ('resolue', 'terminee')
           AND enigme_id IN ($placeholders)
         GROUP BY user_id
         HAVING COUNT(DISTINCT enigme_id) = %d
+        ORDER BY first_finish ASC
     ";
-    $winner_ids = $wpdb->get_col(
+    $results = $wpdb->get_results(
         $wpdb->prepare($sql, array_merge($enigmes, [count($enigmes)]))
     );
+
+    $winner_ids = wp_list_pluck($results, 'user_id');
+    $winner_total = count($winner_ids);
+    $max_winners = (int) get_field('chasse_infos_nb_max_gagants', $chasse_id);
+    if ($max_winners > 0 && $winner_total > $max_winners) {
+        error_log("⚠️ Plus de gagnants ({$winner_total}) que la limite ({$max_winners}) pour la chasse {$chasse_id}. Seuls les premiers arrivés seront retenus.");
+        $winner_ids = array_slice($winner_ids, 0, $max_winners);
+    }
 
     $winner_names = [];
     foreach ($winner_ids as $uid) {
