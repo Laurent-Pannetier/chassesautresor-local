@@ -115,12 +115,13 @@ function initChasseEdit() {
   // ==============================
   if (inputDateFin) {
     if (checkboxIllimitee) {
-      inputDateFin.disabled = checkboxIllimitee.checked;
-      
+      const initialDisabled = inputDateFin.disabled;
+      inputDateFin.disabled = initialDisabled || checkboxIllimitee.checked;
+
       const postId = inputDateFin.closest('.champ-chasse')?.dataset.postId;
 
       checkboxIllimitee.addEventListener('change', function () {
-        inputDateFin.disabled = this.checked;
+        inputDateFin.disabled = initialDisabled || this.checked;
 
         // Si la case est décochée et les dates incohérentes, corriger la date de fin
         if (!this.checked) {
