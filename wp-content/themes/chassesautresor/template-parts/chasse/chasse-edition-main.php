@@ -349,6 +349,10 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                 data-cpt="chasse"
                 disabled
               ><?= esc_html__('Valider la fin de chasse', 'chassesautresor-com'); ?></button>
+              <button
+                type="button"
+                class="annuler-fin-chasse-btn"
+              ><?= esc_html__('Annuler', 'chassesautresor-com'); ?></button>
           </div>
         <?php elseif ($statut_metier === 'termine') : ?>
           <p class="message-chasse-terminee">
