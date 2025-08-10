@@ -211,6 +211,12 @@ function gerer_chasse_terminee($chasse_id)
         return;
     }
 
+    $date = current_time('Y-m-d');
+    $date_obj = DateTime::createFromFormat('Y-m-d', $date);
+    if ($date_obj && $date_obj->format('Y-m-d') === $date) {
+        update_field('chasse_cache_date_decouverte', $date, $chasse_id);
+    }
+
     global $wpdb;
     $table = $wpdb->prefix . 'enigme_statuts_utilisateur';
     $now   = current_time('mysql');
