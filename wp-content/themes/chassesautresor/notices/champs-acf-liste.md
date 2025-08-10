@@ -1,5 +1,3 @@
-# 📋 Liste des groupes de champs ACF
-
 🔹 Groupe : paramètre de la chasse
 🆔 ID : 27
 🔑 Key : group_67b58c51b9a49
@@ -26,12 +24,6 @@ Requis : non
 — chasse_infos_recompense_valeur —
 Type : number
 Label : valeur en €
-Instructions : (vide)
-Requis : non
-----------------------------------------
-— chasse_infos_nb_max_gagants —
-Type : number
-Label : Nombre maximum de gagants
 Instructions : (vide)
 Requis : non
 ----------------------------------------
@@ -90,8 +82,14 @@ Contenu imbriqué :
   Requis : non
   ----------------------------------------
 ----------------------------------------
+— chasse_infos_nb_max_gagants —
+Type : number
+Label : Nombre maximum de gagants
+Instructions : (vide)
+Requis : non
+----------------------------------------
 — chasse_cache_gagnants —
-Type : user
+Type : text
 Label : Gagnants
 Instructions : (vide)
 Requis : non
@@ -152,13 +150,12 @@ Requis : non
 ----------------------------------------
 — chasse_mode_fin —
 Type : radio
-Label : Mode de fin de chasse
-Instructions : Choisissez comment la fin de la chasse est déclenchée.
+Label : chasse mode fin
+Instructions : (vide)
 Requis : non
-Valeur par défaut : manuelle
 Choices :
-  - automatique : Automatique
   - manuelle : Manuelle
+  - automatique : Automatique
 ----------------------------------------
 
 🔹 Groupe : Paramètres de l’énigme
