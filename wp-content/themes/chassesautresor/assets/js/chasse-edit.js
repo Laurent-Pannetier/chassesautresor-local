@@ -330,6 +330,29 @@ function initChasseEdit() {
   // ==============================
   // 🏁 Terminaison manuelle
   // ==============================
+  let zoneFinChasse;
+  let btnFinChasse;
+
+  function resetFinChasse() {
+    if (zoneFinChasse) {
+      const textarea = zoneFinChasse.querySelector('#chasse-gagnants');
+      const valider = zoneFinChasse.querySelector('.valider-fin-chasse-btn');
+      zoneFinChasse.style.display = 'none';
+      if (textarea) textarea.value = '';
+      if (valider) valider.disabled = true;
+    }
+    if (btnFinChasse) btnFinChasse.style.display = 'inline-block';
+    document.removeEventListener('keydown', onEscapeFinChasse);
+    zoneFinChasse = null;
+    btnFinChasse = null;
+  }
+
+  function onEscapeFinChasse(e) {
+    if (e.key === 'Escape') {
+      resetFinChasse();
+    }
+  }
+
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.terminer-chasse-btn');
     if (btn) {
@@ -341,13 +364,23 @@ function initChasseEdit() {
         textarea.addEventListener('input', () => {
           valider.disabled = textarea.value.trim() === '';
         });
+        zoneFinChasse = zone;
+        btnFinChasse = btn;
+        document.addEventListener('keydown', onEscapeFinChasse);
       }
       btn.style.display = 'none';
       return;
     }
 
+    const annuler = e.target.closest('.annuler-fin-chasse-btn');
+    if (annuler) {
+      resetFinChasse();
+      return;
+    }
+
     const valider = e.target.closest('.valider-fin-chasse-btn');
     if (valider) {
+      document.removeEventListener('keydown', onEscapeFinChasse);
       const postId = valider.dataset.postId;
       const zone = valider.closest('.zone-validation-fin');
       const textarea = zone.querySelector('#chasse-gagnants');
