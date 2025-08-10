@@ -211,15 +211,39 @@ function gerer_chasse_terminee($chasse_id)
         return;
     }
 
+    global $wpdb;
+    $table = $wpdb->prefix . 'enigme_statuts_utilisateur';
+    $now   = current_time('mysql');
+
+    $placeholders = implode(',', array_fill(0, count($enigmes), '%d'));
+    $sql = "
+        SELECT user_id
+        FROM {$table}
+        WHERE statut IN ('resolue', 'terminee')
+          AND enigme_id IN ($placeholders)
+        GROUP BY user_id
+        HAVING COUNT(DISTINCT enigme_id) = %d
+    ";
+    $winner_ids = $wpdb->get_col(
+        $wpdb->prepare($sql, array_merge($enigmes, [count($enigmes)]))
+    );
+
+    $winner_names = [];
+    foreach ($winner_ids as $uid) {
+        $user = get_userdata((int) $uid);
+        if ($user) {
+            $winner_names[] = $user->display_name ?: $user->user_login;
+        }
+    }
+
+    $list = implode(', ', $winner_names);
+    update_field('chasse_cache_gagnants', $list, $chasse_id);
+
     $date = current_time('Y-m-d');
     $date_obj = DateTime::createFromFormat('Y-m-d', $date);
     if ($date_obj && $date_obj->format('Y-m-d') === $date) {
         update_field('chasse_cache_date_decouverte', $date, $chasse_id);
     }
-
-    global $wpdb;
-    $table = $wpdb->prefix . 'enigme_statuts_utilisateur';
-    $now   = current_time('mysql');
 
     foreach ($enigmes as $enigme_id) {
         // 🗃️ Mise à jour des statuts en base
