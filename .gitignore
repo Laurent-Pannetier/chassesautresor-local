@@ -8,3 +8,4 @@ wp-config.php
 vendor/
 composer.phar
 tests/.phpunit.result.cache
+node_modules/
