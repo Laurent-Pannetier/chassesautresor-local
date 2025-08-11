@@ -376,33 +376,35 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
       <?php if (!utilisateur_est_organisateur_associe_a_chasse(get_current_user_id(), $chasse_id)) : ?>
         <p class="edition-placeholder"><?php esc_html_e('Accès refusé.', 'chassesautresor-com'); ?></p>
       <?php else :
-        $periode = isset($_GET['periode']) ? sanitize_text_field($_GET['periode']) : 'semaine';
-        $periode = in_array($periode, ['jour', 'semaine', 'mois', 'total'], true) ? $periode : 'semaine';
+        $periode = isset($_GET['periode']) ? sanitize_text_field($_GET['periode']) : 'total';
+        $periode = in_array($periode, ['jour', 'semaine', 'mois', 'total'], true) ? $periode : 'total';
         $stats = chasse_recuperer_stats($chasse_id, $periode);
         $kpis = $stats['kpis'];
         $details = $stats['detail'];
       ?>
         <div class="edition-panel-body">
-          <div class="stats-filtres">
-            <label for="chasse-periode">Période :</label>
-            <select id="chasse-periode">
-              <option value="semaine" <?php selected($periode, 'semaine'); ?>>7&nbsp;derniers jours</option>
-              <option value="mois" <?php selected($periode, 'mois'); ?>>30&nbsp;derniers jours</option>
-              <option value="total" <?php selected($periode, 'total'); ?>>Depuis le début</option>
-            </select>
-          </div>
-          <div class="stats-kpi">
-            <div class="kpi-card" title="Nombre de joueurs ayant engagé au moins une énigme">
-              <span class="kpi-label">Joueurs engagés</span>
-              <span class="kpi-value"><?= esc_html($kpis['joueurs_engages']); ?></span>
+          <div class="stats-header" style="display:flex;align-items:center;">
+            <div class="stats-kpi">
+              <div class="kpi-card" title="Nombre de joueurs ayant engagé au moins une énigme">
+                <span class="kpi-label">Joueurs engagés</span>
+                <span class="kpi-value"><?= esc_html($kpis['joueurs_engages']); ?></span>
+              </div>
+              <div class="kpi-card" title="Total des points utilisés pour les tentatives et indices">
+                <span class="kpi-label">Points dépensés</span>
+                <span class="kpi-value"><?= esc_html($kpis['points_depenses']); ?></span>
+              </div>
+              <div class="kpi-card" title="Nombre d'indices débloqués sur la chasse">
+                <span class="kpi-label">Indices débloqués</span>
+                <span class="kpi-value"><?= esc_html($kpis['indices_debloques']); ?></span>
+              </div>
             </div>
-            <div class="kpi-card" title="Total des points utilisés pour les tentatives et indices">
-              <span class="kpi-label">Points dépensés</span>
-              <span class="kpi-value"><?= esc_html($kpis['points_depenses']); ?></span>
-            </div>
-            <div class="kpi-card" title="Nombre d'indices débloqués sur la chasse">
-              <span class="kpi-label">Indices débloqués</span>
-              <span class="kpi-value"><?= esc_html($kpis['indices_debloques']); ?></span>
+            <div class="stats-filtres" style="margin-left:auto;">
+              <label for="chasse-periode">Période :</label>
+              <select id="chasse-periode">
+                <option value="total" <?php selected($periode, 'total'); ?>>Depuis le début</option>
+                <option value="semaine" <?php selected($periode, 'semaine'); ?>>7&nbsp;derniers jours</option>
+                <option value="mois" <?php selected($periode, 'mois'); ?>>30&nbsp;derniers jours</option>
+              </select>
             </div>
           </div>
           <div class="stats-table-wrapper">
@@ -419,7 +421,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
               <tbody>
                 <?php foreach ($details as $row) : ?>
                   <tr>
-                    <td><a href="<?= esc_url(get_edit_post_link($row['id'])); ?>"><?= esc_html($row['titre']); ?></a></td>
+                    <td><a href="<?= esc_url($row['edit_url']); ?>"><?= esc_html($row['titre']); ?></a></td>
                     <td><?= esc_html($row['joueurs']); ?></td>
                     <td><?= esc_html($row['tentatives']); ?></td>
                     <td><?= esc_html($row['points']); ?></td>

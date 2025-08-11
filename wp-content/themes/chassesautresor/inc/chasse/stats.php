@@ -48,6 +48,7 @@ function chasse_recuperer_stats(int $chasse_id, string $periode = 'total'): arra
             'tentatives' => $tentatives,
             'points' => $points,
             'resolus' => $resolus,
+            'edit_url' => get_edit_post_link($enigme_id),
         ];
     }
 
@@ -58,3 +59,26 @@ function chasse_recuperer_stats(int $chasse_id, string $periode = 'total'): arra
     set_transient($cache_key, $resultat, 5 * MINUTE_IN_SECONDS);
     return $resultat;
 }
+
+/**
+ * AJAX handler to retrieve hunt stats.
+ *
+ * @return void
+ */
+function ajax_chasse_recuperer_stats()
+{
+    $chasse_id = isset($_POST['chasse_id']) ? (int) $_POST['chasse_id'] : 0;
+    if ($chasse_id <= 0) {
+        wp_send_json_error('missing_chasse', 400);
+    }
+
+    if (!utilisateur_est_organisateur_associe_a_chasse(get_current_user_id(), $chasse_id)) {
+        wp_send_json_error('forbidden', 403);
+    }
+
+    $periode = isset($_POST['periode']) ? sanitize_text_field($_POST['periode']) : 'total';
+    $stats = chasse_recuperer_stats($chasse_id, $periode);
+
+    wp_send_json_success($stats);
+}
+add_action('wp_ajax_chasse_recuperer_stats', 'ajax_chasse_recuperer_stats');

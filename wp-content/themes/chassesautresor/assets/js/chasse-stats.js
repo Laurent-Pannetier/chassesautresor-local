@@ -28,9 +28,37 @@ document.addEventListener('DOMContentLoaded', () => {
   const periodeSelect = document.querySelector('#chasse-periode');
   if (periodeSelect) {
     periodeSelect.addEventListener('change', () => {
-      const url = new URL(window.location.href);
-      url.searchParams.set('periode', periodeSelect.value);
-      window.location.href = url.toString();
+      const data = new FormData();
+      data.append('action', 'chasse_recuperer_stats');
+      data.append('chasse_id', ChasseStats.chasseId);
+      data.append('periode', periodeSelect.value);
+
+      fetch(ChasseStats.ajaxUrl, {
+        method: 'POST',
+        credentials: 'same-origin',
+        body: data,
+      })
+        .then((response) => response.json())
+        .then((res) => {
+          if (!res.success) return;
+          const { kpis, detail } = res.data;
+          const kpiEls = document.querySelectorAll('.kpi-card .kpi-value');
+          kpiEls[0].textContent = kpis.joueurs_engages;
+          kpiEls[1].textContent = kpis.points_depenses;
+          kpiEls[2].textContent = kpis.indices_debloques;
+
+          const tbody = table.querySelector('tbody');
+          tbody.innerHTML = '';
+          detail.forEach((row) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td><a href="${row.edit_url}">${row.titre}</a></td>` +
+              `<td>${row.joueurs}</td>` +
+              `<td>${row.tentatives}</td>` +
+              `<td>${row.points}</td>` +
+              `<td>${row.resolus}</td>`;
+            tbody.appendChild(tr);
+          });
+        });
     });
   }
 });
