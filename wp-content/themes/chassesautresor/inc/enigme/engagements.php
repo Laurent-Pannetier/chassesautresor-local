@@ -50,3 +50,26 @@ defined('ABSPATH') || exit;
         $ok2 = enregistrer_engagement_enigme($user_id, $enigme_id);
         return $ok1 && $ok2;
     }
+
+    /**
+     * Vérifie si un utilisateur est déjà engagé sur une énigme donnée.
+     *
+     * @param int $user_id   ID de l'utilisateur
+     * @param int $enigme_id ID de l'énigme
+     * @return bool True si un engagement existe
+     */
+    function utilisateur_est_engage_dans_enigme(int $user_id, int $enigme_id): bool
+    {
+        global $wpdb;
+        if (!$user_id || !$enigme_id) {
+            return false;
+        }
+
+        $table = $wpdb->prefix . 'engagements';
+
+        return (bool) $wpdb->get_var($wpdb->prepare(
+            "SELECT 1 FROM $table WHERE user_id = %d AND enigme_id = %d LIMIT 1",
+            $user_id,
+            $enigme_id
+        ));
+    }
