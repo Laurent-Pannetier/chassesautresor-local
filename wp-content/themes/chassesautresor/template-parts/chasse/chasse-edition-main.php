@@ -137,29 +137,34 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   <?php endif; ?>
                 </li>
 
-              </ul>
-            </div>
-
-            <!-- SECTION 2 : Réglages -->
-            <div class="resume-bloc resume-reglages">
-              <h3>Réglages</h3>
-              <ul class="resume-infos">
-
                 <!-- Récompense -->
-                <li class="champ-chasse champ-rempli<?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="chasse_infos_recompense_valeur" data-cpt="chasse" data-post-id="<?= esc_attr($chasse_id); ?>">
+                <li class="champ-chasse <?= empty($recompense) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="chasse_infos_recompense_valeur" data-cpt="chasse" data-post-id="<?= esc_attr($chasse_id); ?>">
                   Récompense
                   <?php if ($peut_editer) : ?>
-
-                    <button type="button" class="champ-modifier ouvrir-panneau-recompense" data-champ="chasse_infos_recompense_valeur" data-cpt="chasse" data-post-id="<?= esc_attr($chasse_id); ?>" aria-label="Modifier la récompense">✏️</button>
-
+                    <button
+                      type="button"
+                      class="champ-modifier ouvrir-panneau-recompense"
+                      data-champ="chasse_infos_recompense_valeur"
+                      data-cpt="chasse"
+                      data-post-id="<?= esc_attr($chasse_id); ?>"
+                      aria-label="Modifier la récompense"
+                    >✏️</button>
                   <?php endif; ?>
                 </li>
 
+              </ul>
+            </div>
+
+              <!-- SECTION 2 : Réglages -->
+              <div class="resume-bloc resume-reglages">
+                <h3>Réglages</h3>
+                <ul class="resume-infos">
+
                 <!-- Mode de fin de chasse -->
-                <li
-                  class="champ-chasse champ-mode-fin<?= $peut_editer ? '' : ' champ-desactive'; ?>"
-                  data-champ="chasse_mode_fin"
-                  data-cpt="chasse"
+                  <li
+                    class="champ-chasse champ-mode-fin<?= $peut_editer ? '' : ' champ-desactive'; ?>"
+                    data-champ="chasse_mode_fin"
+                    data-cpt="chasse"
                   data-post-id="<?= esc_attr($chasse_id); ?>"
                   data-no-edit="1"
                   data-no-icon="1"
