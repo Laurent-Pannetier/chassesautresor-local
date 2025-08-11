@@ -512,7 +512,12 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
         $message = 'Accès libre à cette chasse. Les tentatives seront tarifées individuellement.';
         $type    = 'engager';
     } elseif ($statut === 'termine') {
-        $html = '<a href="' . esc_url($permalink) . '" class="bouton-cta">Voir</a>';
+        // ✅ Chasse terminée : engagement gratuit et automatique
+        $html  = '<form method="post" action="' . esc_url(site_url('/traitement-engagement')) . '" class="cta-chasse-form">';
+        $html .= '<input type="hidden" name="chasse_id" value="' . esc_attr($chasse_id) . '">';
+        $html .= wp_nonce_field('engager_chasse_' . $chasse_id, 'engager_chasse_nonce', true, false);
+        $html .= '<button type="submit" class="bouton-cta">Voir</button>';
+        $html .= '</form>';
         $type = 'voir';
         $message = $date_fin
             ? 'Cette chasse est terminée depuis le ' . date_i18n('d/m/Y', strtotime($date_fin))
