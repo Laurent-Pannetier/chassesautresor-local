@@ -690,9 +690,13 @@ function initModeFinChasse() {
 
   const postId = modeFinLi.dataset.postId;
 
-  function update() {
+  function update(save = false) {
     const selected = document.querySelector('input[name="acf[chasse_mode_fin]"]:checked')?.value;
     const existing = document.querySelector('.champ-nb-gagnants');
+
+    if (save && selected) {
+      modifierChampSimple('chasse_mode_fin', selected, postId, 'chasse');
+    }
 
     if (selected === 'automatique') {
       if (!existing) {
@@ -711,7 +715,7 @@ function initModeFinChasse() {
   }
 
   radios.forEach(radio => {
-    radio.addEventListener('change', update);
+    radio.addEventListener('change', () => update(true));
   });
 
   update();
