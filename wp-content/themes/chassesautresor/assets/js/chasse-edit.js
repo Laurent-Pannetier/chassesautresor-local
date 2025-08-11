@@ -61,8 +61,7 @@ function initChasseEdit() {
   const doitOuvrir = params.get('edition') === 'open';
   const tab = params.get('tab');
   if (doitOuvrir) {
-    const toggle = document.getElementById('toggle-mode-edition-chasse');
-    toggle?.click();
+    document.body.classList.add('edition-active-chasse', 'panneau-ouvert');
     if (tab) {
       const btn = document.querySelector(`.edition-tab[data-target="chasse-tab-${tab}"]`);
       btn?.click();
