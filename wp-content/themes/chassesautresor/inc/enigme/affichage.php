@@ -28,11 +28,10 @@ defined('ABSPATH') || exit;
         $etat = get_field('enigme_cache_etat_systeme', $enigme_id) ?? 'accessible';
 
         if ($etat !== 'accessible' && !utilisateur_peut_modifier_enigme($enigme_id)) {
-            echo '<div class="enigme-inaccessible">';
-            echo '<p>🔒 Cette énigme n’est pas accessible actuellement.</p>';
-            echo '<p><a href="' . esc_url(home_url('/')) . '" class="bouton-retour-home">← Retour à l’accueil</a></p>';
-            echo '</div>';
-            return;
+            $chasse_id = recuperer_id_chasse_associee($enigme_id);
+            $url = $chasse_id ? get_permalink($chasse_id) : home_url('/');
+            wp_safe_redirect($url);
+            exit;
         }
 
         if (!empty($statut_data['afficher_message'])) {

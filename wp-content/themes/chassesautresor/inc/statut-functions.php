@@ -327,6 +327,21 @@ function traiter_statut_enigme(int $enigme_id, ?int $user_id = null): array
         ];
     }
 
+    // 🔒 Joueur non engagé dans la chasse ou l'énigme
+    if (
+        !utilisateur_est_engage_dans_chasse($user_id, $chasse_id) ||
+        !utilisateur_est_engage_dans_enigme($user_id, $enigme_id)
+    ) {
+        return [
+            'etat' => $statut,
+            'rediriger' => true,
+            'url' => $chasse_id ? get_permalink($chasse_id) : home_url('/'),
+            'afficher_formulaire' => false,
+            'afficher_message' => false,
+            'message_html' => '',
+        ];
+    }
+
     // 🔁 Cas interdits : accès refusé
     if ($statut === 'abandonnee') {
         return [
