@@ -1147,6 +1147,11 @@ body.panneau-ouvert::before {
   margin-left: 1rem;
 }
 
+.fin-chasse-actions .terminer-chasse-btn:not(:disabled) {
+  color: var(--color-text-primary);
+  opacity: 1;
+}
+
 .zone-validation-fin {
   margin-top: 1rem;
   display: flex;
