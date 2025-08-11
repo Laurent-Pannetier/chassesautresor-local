@@ -416,7 +416,7 @@ function initChasseEdit() {
         .then((ok) => ok && modifierChampSimple('champs_caches.chasse_cache_statut', 'termine', postId, 'chasse'))
         .then((ok) => {
           if (ok) {
-            const container = document.querySelector('#chasse-tab-classement .progression-actions');
+            const container = document.querySelector('.champ-mode-fin .fin-chasse-actions');
             if (container) {
               container.innerHTML = `<p class="message-chasse-terminee">Chasse gagnée le ${dateDisplay} par ${gagnantsEsc}</p>`;
             }
