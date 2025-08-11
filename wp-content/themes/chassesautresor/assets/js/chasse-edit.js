@@ -683,33 +683,49 @@ function initChampNbGagnants() {
 // ================================
 function initModeFinChasse() {
   const radios = document.querySelectorAll('input[name="acf[chasse_mode_fin]"]');
-  const template = document.getElementById('template-nb-gagnants');
+  const templateNb = document.getElementById('template-nb-gagnants');
+  const templateFin = document.getElementById('template-fin-chasse-actions');
   const modeFinLi = document.querySelector('.champ-mode-fin');
+  const finActions = modeFinLi?.querySelector('.fin-chasse-actions');
 
-  if (!radios.length || !template || !modeFinLi) return;
+  if (!radios.length || !templateNb || !modeFinLi || !finActions) return;
 
   const postId = modeFinLi.dataset.postId;
 
   function update(save = false) {
     const selected = document.querySelector('input[name="acf[chasse_mode_fin]"]:checked')?.value;
-    const existing = document.querySelector('.champ-nb-gagnants');
+    const existingNb = document.querySelector('.champ-nb-gagnants');
 
     if (save && selected) {
       modifierChampSimple('chasse_mode_fin', selected, postId, 'chasse');
     }
 
     if (selected === 'automatique') {
-      if (!existing) {
-        const clone = template.content.firstElementChild.cloneNode(true);
+      if (!existingNb) {
+        const clone = templateNb.content.firstElementChild.cloneNode(true);
         modeFinLi.insertAdjacentElement('afterend', clone);
         initChampNbGagnants();
       }
+
+      document.querySelector('.annuler-fin-chasse-btn')?.dispatchEvent(new Event('click', { bubbles: true }));
+      const message = finActions.querySelector('.message-chasse-terminee');
+      finActions.innerHTML = '';
+      if (message) finActions.appendChild(message);
+
       const inputNb = document.getElementById('chasse-nb-gagnants');
       if (inputNb) {
         mettreAJourAffichageNbGagnants(postId, inputNb.value.trim());
       }
-    } else {
-      if (existing) existing.remove();
+    } else if (selected === 'manuelle') {
+      if (existingNb) existingNb.remove();
+
+      if (!finActions.querySelector('.terminer-chasse-btn') && templateFin) {
+        const message = finActions.querySelector('.message-chasse-terminee');
+        finActions.innerHTML = '';
+        if (message) finActions.appendChild(message);
+        finActions.appendChild(templateFin.content.cloneNode(true));
+      }
+
       mettreAJourAffichageNbGagnants(postId, 0);
     }
   }

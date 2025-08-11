@@ -226,39 +226,47 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                       </button>
                     </label>
                   </div>
-                  <div class="fin-chasse-actions">
-                    <?php if (
-                      $mode_fin === 'manuelle' &&
-                      in_array($statut_metier, ['payante', 'en_cours', 'revision'], true)
-                    ) : ?>
+                  <?php ob_start(); ?>
+                  <?php if (in_array($statut_metier, ['payante', 'en_cours', 'revision'], true)) : ?>
+                    <button
+                      type="button"
+                      class="terminer-chasse-btn"
+                      data-post-id="<?= esc_attr($chasse_id); ?>"
+                      data-cpt="chasse"
+                      <?= ($statut_metier === 'revision') ? 'disabled' : ''; ?>
+                    ><?= esc_html__('✅ Terminer la chasse', 'chassesautresor-com'); ?></button>
+                    <div class="zone-validation-fin" style="display:none;">
+                      <label for="chasse-gagnants"><?= esc_html__('Gagnants', 'chassesautresor-com'); ?></label>
+                      <textarea id="chasse-gagnants" required></textarea>
                       <button
                         type="button"
-                        class="terminer-chasse-btn"
+                        class="valider-fin-chasse-btn"
                         data-post-id="<?= esc_attr($chasse_id); ?>"
                         data-cpt="chasse"
-                        <?= ($statut_metier === 'revision') ? 'disabled' : ''; ?>
-                      ><?= esc_html__('✅ Terminer la chasse', 'chassesautresor-com'); ?></button>
-                      <div class="zone-validation-fin" style="display:none;">
-                        <label for="chasse-gagnants"><?= esc_html__('Gagnants', 'chassesautresor-com'); ?></label>
-                        <textarea id="chasse-gagnants" required></textarea>
-                        <button
-                          type="button"
-                          class="valider-fin-chasse-btn"
-                          data-post-id="<?= esc_attr($chasse_id); ?>"
-                          data-cpt="chasse"
-                          disabled
-                        ><?= esc_html__('Valider la fin de chasse', 'chassesautresor-com'); ?></button>
-                        <button
-                          type="button"
-                          class="annuler-fin-chasse-btn"
-                        ><?= esc_html__('Annuler', 'chassesautresor-com'); ?></button>
-                      </div>
+                        disabled
+                      ><?= esc_html__('Valider la fin de chasse', 'chassesautresor-com'); ?></button>
+                      <button
+                        type="button"
+                        class="annuler-fin-chasse-btn"
+                      ><?= esc_html__('Annuler', 'chassesautresor-com'); ?></button>
+                    </div>
+                  <?php endif; ?>
+                  <?php $bloc_fin_chasse = trim(ob_get_clean()); ?>
+
+                  <div class="fin-chasse-actions">
+                    <?php if ($mode_fin === 'manuelle') : ?>
+                      <?= $bloc_fin_chasse; ?>
                     <?php elseif ($statut_metier === 'termine') : ?>
                       <p class="message-chasse-terminee">
                         <?= sprintf(__('Chasse gagnée le %s par %s', 'chassesautresor-com'), esc_html($date_decouverte_formatee), esc_html($gagnants)); ?>
                       </p>
                     <?php endif; ?>
                   </div>
+                  <?php if ($bloc_fin_chasse !== '') : ?>
+                    <template id="template-fin-chasse-actions">
+                      <?= $bloc_fin_chasse; ?>
+                    </template>
+                  <?php endif; ?>
                 </li>
 
                 <?php ob_start(); ?>
