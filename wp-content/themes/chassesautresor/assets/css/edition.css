@@ -1141,18 +1141,24 @@ body.panneau-ouvert::before {
   align-items: center;
 }
 
-.fin-chasse-actions .terminer-chasse-btn {
+.fin-chasse-actions .terminer-chasse-btn,
+.zone-validation-fin .valider-fin-chasse-btn {
   font-size: 1.1rem;
   padding: 12px 20px;
+}
+
+.fin-chasse-actions .terminer-chasse-btn {
   margin-left: 1rem;
 }
 
-.fin-chasse-actions .terminer-chasse-btn:not(:disabled) {
+.fin-chasse-actions .terminer-chasse-btn:not(:disabled),
+.zone-validation-fin .valider-fin-chasse-btn:not(:disabled) {
   color: var(--color-text-primary);
   opacity: 1;
 }
 
-.fin-chasse-actions .terminer-chasse-btn:not(:disabled):hover {
+.fin-chasse-actions .terminer-chasse-btn:not(:disabled):hover,
+.zone-validation-fin .valider-fin-chasse-btn:not(:disabled):hover {
   background-color: var(--color-secondary);
   color: var(--color-background-button);
 }
