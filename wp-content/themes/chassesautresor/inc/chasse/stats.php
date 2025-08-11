@@ -5,6 +5,8 @@
 
 defined('ABSPATH') || exit;
 
+require_once __DIR__ . '/../enigme/stats.php';
+
 /**
  * Récupère les statistiques globales et détaillées d'une chasse.
  *
