@@ -503,14 +503,36 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
             ? 'Chasse disponible à partir du ' . date_i18n('d/m/Y \à H:i', strtotime($date_debut))
             : 'Chasse disponible prochainement';
     } elseif ($statut === 'en_cours' || $statut === 'payante') {
-        // 🔓 Participation gratuite à ce stade, engagement simple
-        $html  = '<form method="post" action="' . esc_url(site_url('/traitement-engagement')) . '" class="cta-chasse-form">';
-        $html .= '<input type="hidden" name="chasse_id" value="' . esc_attr($chasse_id) . '">';
-        $html .= wp_nonce_field('engager_chasse_' . $chasse_id, 'engager_chasse_nonce', true, false);
-        $html .= '<button type="submit" class="bouton-cta">Participer</button>';
-        $html .= '</form>';
-        $message = 'Accès libre à cette chasse. Les tentatives seront tarifées individuellement.';
-        $type    = 'engager';
+        $cout_points        = (int) get_field('chasse_infos_cout_points', $chasse_id);
+        $points_disponibles = get_user_points($user_id);
+
+        if ($statut === 'payante' && $cout_points > 0 && $points_disponibles < $cout_points) {
+            $html = sprintf(
+                '<button class="bouton-cta" disabled>%s</button>',
+                esc_html__( 'Points insuffisants', 'chassesautresor-com' )
+            );
+            $points_manquants = $cout_points - $points_disponibles;
+            $points_lien      = sprintf(
+                '<a href="%s">%s</a>',
+                esc_url( site_url( '/boutique' ) ),
+                esc_html__( 'points', 'chassesautresor-com' )
+            );
+            $message = sprintf(
+                __( 'Il vous manque %1$d %2$s pour participer à cette chasse.', 'chassesautresor-com' ),
+                $points_manquants,
+                $points_lien
+            );
+            $type = 'indisponible';
+        } else {
+            // 🔓 Participation gratuite à ce stade, engagement simple
+            $html  = '<form method="post" action="' . esc_url(site_url('/traitement-engagement')) . '" class="cta-chasse-form">';
+            $html .= '<input type="hidden" name="chasse_id" value="' . esc_attr($chasse_id) . '">';
+            $html .= wp_nonce_field('engager_chasse_' . $chasse_id, 'engager_chasse_nonce', true, false);
+            $html .= '<button type="submit" class="bouton-cta">Participer</button>';
+            $html .= '</form>';
+            $message = 'Accès libre à cette chasse. Les tentatives seront tarifées individuellement.';
+            $type    = 'engager';
+        }
     } elseif ($statut === 'termine') {
         // ✅ Chasse terminée : engagement gratuit et automatique
         $html  = '<form method="post" action="' . esc_url(site_url('/traitement-engagement')) . '" class="cta-chasse-form">';

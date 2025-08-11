@@ -34,7 +34,20 @@ if ($chasse_id) {
 
     require_once get_theme_file_path('inc/chasse-functions.php');
 
+    $cout_points = (int) get_field('chasse_infos_cout_points', $chasse_id);
+
+    if ($cout_points > 0 && !utilisateur_a_assez_de_points($current_user_id, $cout_points)) {
+        wp_safe_redirect(
+            add_query_arg('erreur', 'points_insuffisants', get_permalink($chasse_id))
+        );
+        exit;
+    }
+
     enregistrer_engagement_chasse($current_user_id, $chasse_id);
+
+    if ($cout_points > 0) {
+        deduire_points_utilisateur($current_user_id, $cout_points);
+    }
 
     wp_safe_redirect(get_permalink($chasse_id));
     exit;
