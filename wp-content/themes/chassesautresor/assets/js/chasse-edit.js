@@ -59,8 +59,13 @@ function initChasseEdit() {
   // ==============================
   const params = new URLSearchParams(window.location.search);
   const doitOuvrir = params.get('edition') === 'open';
+  const tab = params.get('tab');
   if (doitOuvrir) {
-    document.getElementById('toggle-mode-edition-chasse')?.click();
+    document.body.classList.add('edition-active-chasse', 'panneau-ouvert');
+    if (tab) {
+      const btn = document.querySelector(`.edition-tab[data-target="chasse-tab-${tab}"]`);
+      btn?.click();
+    }
     DEBUG && console.log('🔧 Ouverture auto du panneau édition chasse via ?edition=open');
   }
 
@@ -197,10 +202,13 @@ function initChasseEdit() {
             })
           });
         })
-      ).then(() => {
-        location.reload();
+        ).then(() => {
+          const url = new URL(window.location.href);
+          url.searchParams.set('edition', 'open');
+          url.searchParams.set('tab', 'param');
+          window.location.href = url.toString();
+        });
       });
-    });
 
   }
 
@@ -296,6 +304,7 @@ function initChasseEdit() {
 
             const url = new URL(window.location.href);
             url.searchParams.set('edition', 'open');
+            url.searchParams.set('tab', 'param');
             window.location.href = url.toString();
 
           } else {
