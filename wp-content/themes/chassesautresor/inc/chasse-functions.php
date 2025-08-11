@@ -507,11 +507,20 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
         $points_disponibles = get_user_points($user_id);
 
         if ($statut === 'payante' && $cout_points > 0 && $points_disponibles < $cout_points) {
-            $html = '<button class="bouton-cta" disabled>Points insuffisants</button>';
+            $html = sprintf(
+                '<button class="bouton-cta" disabled>%s</button>',
+                esc_html__( 'Points insuffisants', 'chassesautresor-com' )
+            );
             $points_manquants = $cout_points - $points_disponibles;
+            $points_lien      = sprintf(
+                '<a href="%s">%s</a>',
+                esc_url( site_url( '/boutique' ) ),
+                esc_html__( 'points', 'chassesautresor-com' )
+            );
             $message = sprintf(
-                'Il vous manque %d points pour participer à cette chasse.',
-                $points_manquants
+                __( 'Il vous manque %1$d %2$s pour participer à cette chasse.', 'chassesautresor-com' ),
+                $points_manquants,
+                $points_lien
             );
             $type = 'indisponible';
         } else {
