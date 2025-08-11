@@ -21,7 +21,7 @@ const html = `
       </div>
     </template>
   </div>
-  <div id="chasse-tab-classement"></div>
+  <div id="chasse-tab-animation"></div>
 `;
 
 describe('chasse-edit UI', () => {
@@ -48,7 +48,7 @@ describe('chasse-edit UI', () => {
     radio.checked = true;
     radio.dispatchEvent(new Event('change', { bubbles: true }));
     expect(document.querySelector('#chasse-tab-param .fin-chasse-actions .terminer-chasse-btn')).not.toBeNull();
-    expect(document.querySelector('#chasse-tab-classement .fin-chasse-actions')).toBeNull();
+    expect(document.querySelector('#chasse-tab-animation .fin-chasse-actions')).toBeNull();
   });
 
   test('changing termination mode saves field', async () => {
