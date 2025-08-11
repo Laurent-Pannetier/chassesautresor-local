@@ -19,16 +19,24 @@ if ($chasse_id) {
 
 // 🔹 Accès invité : redirection systématique vers la chasse associée
 if (!is_user_logged_in()) {
-  $url = $chasse_id ? get_permalink($chasse_id) : home_url('/');
-  wp_redirect($url);
-  exit;
+    $url = $chasse_id ? get_permalink($chasse_id) : home_url('/');
+    wp_redirect($url);
+    exit;
 }
 
 // 🔹 Redirection si non visible
 if (!enigme_est_visible_pour($user_id, $enigme_id)) {
-  $fallback_url = $chasse_id ? get_permalink($chasse_id) : home_url('/');
-  wp_redirect($fallback_url);
-  exit;
+    $fallback_url = $chasse_id ? get_permalink($chasse_id) : home_url('/');
+    wp_redirect($fallback_url);
+    exit;
+}
+
+// 🔒 Énigme inaccessible : redirection vers la chasse liée
+$etat_systeme = get_field('enigme_cache_etat_systeme', $enigme_id) ?? 'accessible';
+if ($etat_systeme !== 'accessible' && !utilisateur_peut_modifier_enigme($enigme_id)) {
+    $url = $chasse_id ? get_permalink($chasse_id) : home_url('/');
+    wp_safe_redirect($url);
+    exit;
 }
 
 // 🔹 Mode édition auto
