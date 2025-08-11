@@ -1118,14 +1118,25 @@ body.panneau-ouvert::before {
 }
 
 /* ====== Mode de fin ====== */
-.champ-mode-options {
-  margin-left: 1.5rem;
+.champ-mode-fin {
   display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
+  align-items: center;
+  gap: 1rem;
+}
+
+.champ-mode-options {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
 }
 
 .champ-mode-options label {
+  display: flex;
+  align-items: center;
+}
+
+.fin-chasse-actions {
+  margin-left: auto;
   display: flex;
   align-items: center;
 }

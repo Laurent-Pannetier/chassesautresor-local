@@ -240,12 +240,12 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                       </p>
                     <?php endif; ?>
                   </div>
-                  <?php if ($bloc_fin_chasse !== '') : ?>
-                    <template id="template-fin-chasse-actions">
-                      <?= $bloc_fin_chasse; ?>
-                    </template>
-                  <?php endif; ?>
                 </li>
+                <?php if ($bloc_fin_chasse !== '') : ?>
+                  <template id="template-fin-chasse-actions">
+                    <?= $bloc_fin_chasse; ?>
+                  </template>
+                <?php endif; ?>
 
                 <?php ob_start(); ?>
                 <!-- Nombre de gagnants -->
