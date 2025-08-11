@@ -68,6 +68,18 @@
   display: none;
 }
 
+/* ========== 🧾 QR CODE CHASSE ========== */
+.resume-visibilite .qr-code-wrapper {
+  margin-top: 0.5rem;
+}
+
+.resume-visibilite .qr-code-wrapper img {
+  max-width: 150px;
+  height: auto;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
 /* ========== 🖊️ CHAMPS ÉDITABLES ========== */
 
 .champ-edition {

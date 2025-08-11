@@ -405,6 +405,31 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                     <?php endif; ?>
                     <div class="champ-feedback"></div>
                   </li>
+                  <?php
+                  if (
+                      est_organisateur()
+                      && ($infos_chasse['statut'] ?? '') !== 'revision'
+                      && ($infos_chasse['statut_validation'] ?? '') === 'valide'
+                  ) :
+                      $format = isset($_GET['format']) ? sanitize_key($_GET['format']) : 'png';
+                      $formats_autorises = ['png', 'svg', 'eps'];
+                      if (!in_array($format, $formats_autorises, true)) {
+                          $format = 'png';
+                      }
+                      $url = get_permalink($chasse_id);
+                      $url_qr_code = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data='
+                          . rawurlencode($url)
+                          . '&format=' . $format;
+                  ?>
+                  <li class="champ-chasse resume-ligne champ-qr-code">
+                    <span class="champ-label">QR code de la chasse</span>
+                    <div class="qr-code-wrapper">
+                      <img src="<?= esc_url($url_qr_code); ?>" alt="QR code de la chasse">
+                      <a href="<?= esc_url($url_qr_code); ?>"
+                        download="<?= esc_attr('qr-chasse-' . $chasse_id . '.' . $format); ?>">Télécharger</a>
+                    </div>
+                  </li>
+                  <?php endif; ?>
                 </ul>
               </div>
 
