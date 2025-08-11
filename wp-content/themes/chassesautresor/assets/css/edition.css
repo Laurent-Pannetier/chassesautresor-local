@@ -1152,6 +1152,11 @@ body.panneau-ouvert::before {
   opacity: 1;
 }
 
+.fin-chasse-actions .terminer-chasse-btn:not(:disabled):hover {
+  background-color: var(--color-secondary);
+  color: var(--color-background-button);
+}
+
 .zone-validation-fin {
   margin-top: 1rem;
   display: flex;
