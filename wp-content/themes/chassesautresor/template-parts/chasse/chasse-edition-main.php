@@ -137,14 +137,6 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   <?php endif; ?>
                 </li>
 
-              </ul>
-            </div>
-
-            <!-- SECTION 2 : Réglages -->
-            <div class="resume-bloc resume-reglages">
-              <h3>Réglages</h3>
-              <ul class="resume-infos">
-
                 <!-- Récompense -->
                 <li class="champ-chasse champ-rempli<?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="chasse_infos_recompense_valeur" data-cpt="chasse" data-post-id="<?= esc_attr($chasse_id); ?>">
                   Récompense
@@ -155,11 +147,19 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   <?php endif; ?>
                 </li>
 
+              </ul>
+            </div>
+
+              <!-- SECTION 2 : Réglages -->
+              <div class="resume-bloc resume-reglages">
+                <h3>Réglages</h3>
+                <ul class="resume-infos">
+
                 <!-- Mode de fin de chasse -->
-                <li
-                  class="champ-chasse champ-mode-fin<?= $peut_editer ? '' : ' champ-desactive'; ?>"
-                  data-champ="chasse_mode_fin"
-                  data-cpt="chasse"
+                  <li
+                    class="champ-chasse champ-mode-fin<?= $peut_editer ? '' : ' champ-desactive'; ?>"
+                    data-champ="chasse_mode_fin"
+                    data-cpt="chasse"
                   data-post-id="<?= esc_attr($chasse_id); ?>"
                   data-no-edit="1"
                   data-no-icon="1"
