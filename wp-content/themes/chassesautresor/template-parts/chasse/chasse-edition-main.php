@@ -60,8 +60,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
     <div class="edition-tabs">
       <button class="edition-tab active" data-target="chasse-tab-param">Paramètres</button>
       <button class="edition-tab" data-target="chasse-tab-stats">Statistiques</button>
-      <button class="edition-tab" data-target="chasse-tab-classement">Progression</button>
-      <button class="edition-tab" data-target="chasse-tab-indices">Indices</button>
+      <button class="edition-tab" data-target="chasse-tab-animation">Animation</button>
     </div>
 
     <div id="chasse-tab-param" class="edition-tab-content active">
@@ -154,27 +153,6 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                     <button type="button" class="champ-modifier ouvrir-panneau-recompense" data-champ="chasse_infos_recompense_valeur" data-cpt="chasse" data-post-id="<?= esc_attr($chasse_id); ?>" aria-label="Modifier la récompense">✏️</button>
 
                   <?php endif; ?>
-                </li>
-
-                <!-- Liens -->
-                <li class="champ-chasse resume-ligne champ-liens <?= empty($liens) ? 'champ-vide' : 'champ-rempli'; ?>"
-                  data-champ="chasse_principale_liens"
-                  data-cpt="chasse"
-                  data-post-id="<?= esc_attr($chasse_id); ?>">
-
-                  <span class="champ-label">Sites et réseaux dédiés à cette chasse</span>
-
-                  <?php if ($peut_modifier) : ?>
-
-                    <button type="button"
-                      class="champ-modifier ouvrir-panneau-liens"
-                      data-champ="chasse_principale_liens"
-                      data-cpt="chasse"
-                      data-post-id="<?= esc_attr($chasse_id); ?>"
-                      aria-label="Configurer les liens publics">✏️</button>
-                  <?php endif; ?>
-
-                  <div class="champ-feedback"></div>
                 </li>
 
                 <!-- Mode de fin de chasse -->
@@ -398,20 +376,56 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
       <p class="edition-placeholder">La section « Statistiques » sera bientôt disponible.</p>
     </div>
 
-    <div id="chasse-tab-classement" class="edition-tab-content" style="display:none;">
-      <i class="fa-solid fa-ranking-star tab-watermark" aria-hidden="true"></i>
+    <div id="chasse-tab-animation" class="edition-tab-content" style="display:none;">
+      <i class="fa-solid fa-bullhorn tab-watermark" aria-hidden="true"></i>
       <div class="edition-panel-header">
-        <h2><i class="fa-solid fa-ranking-star"></i> Progression</h2>
+        <h2><i class="fa-solid fa-bullhorn"></i> Animation</h2>
       </div>
-      <div class="progression-actions"></div>
-    </div>
+      <div class="edition-panel-body">
+        <div class="edition-panel-section edition-panel-section-ligne">
+          <div class="section-content">
+            <div class="resume-blocs-grid">
 
-    <div id="chasse-tab-indices" class="edition-tab-content" style="display:none;">
-      <i class="fa-regular fa-lightbulb tab-watermark" aria-hidden="true"></i>
-      <div class="edition-panel-header">
-        <h2><i class="fa-regular fa-lightbulb"></i> Indices</h2>
+              <div class="resume-bloc resume-visibilite">
+                <h3>Visibilité</h3>
+                <ul class="resume-infos">
+                  <!-- Liens -->
+                  <li class="champ-chasse resume-ligne champ-liens <?= empty($liens) ? 'champ-vide' : 'champ-rempli'; ?>"
+                    data-champ="chasse_principale_liens"
+                    data-cpt="chasse"
+                    data-post-id="<?= esc_attr($chasse_id); ?>">
+                    <span class="champ-label">Sites et réseaux dédiés à cette chasse</span>
+                    <?php if ($peut_modifier) : ?>
+                      <button type="button"
+                        class="champ-modifier ouvrir-panneau-liens"
+                        data-champ="chasse_principale_liens"
+                        data-cpt="chasse"
+                        data-post-id="<?= esc_attr($chasse_id); ?>"
+                        aria-label="Configurer les liens publics">✏️</button>
+                    <?php endif; ?>
+                    <div class="champ-feedback"></div>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="resume-bloc resume-indices">
+                <h3>Indices</h3>
+                <ul class="resume-infos">
+                  <li class="champ-chasse champ-placeholder">Section à venir</li>
+                </ul>
+              </div>
+
+              <div class="resume-bloc resume-news">
+                <h3>News</h3>
+                <ul class="resume-infos">
+                  <li class="champ-chasse champ-placeholder">Section à venir</li>
+                </ul>
+              </div>
+
+            </div>
+          </div>
+        </div>
       </div>
-      <p class="edition-placeholder">La section « Indices » sera bientôt disponible.</p>
     </div>
 
     <div class="edition-panel-footer"></div>
