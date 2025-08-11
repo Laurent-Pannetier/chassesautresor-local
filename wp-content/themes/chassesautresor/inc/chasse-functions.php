@@ -243,6 +243,7 @@ function gerer_chasse_terminee($chasse_id)
         if ($user) {
             $winner_names[] = $user->display_name ?: $user->user_login;
         }
+        incrementer_total_chasses_terminees_utilisateur((int) $uid);
     }
 
     $list = implode(', ', $winner_names);

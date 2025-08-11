@@ -373,7 +373,59 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
       <div class="edition-panel-header">
         <h2><i class="fa-solid fa-chart-column"></i> Statistiques</h2>
       </div>
-      <p class="edition-placeholder">La section « Statistiques » sera bientôt disponible.</p>
+      <?php
+      if (!function_exists('chasse_compter_joueurs_engages')) {
+        require_once get_stylesheet_directory() . '/inc/chasse/stats.php';
+      }
+      ?>
+      <table class="stats-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Total</th>
+            <th>Aujourd’hui</th>
+            <th>Semaine</th>
+            <th>Mois</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Nombre de joueurs engagés</td>
+            <td><?= chasse_compter_joueurs_engages($chasse_id, 'total'); ?></td>
+            <td><?= chasse_compter_joueurs_engages($chasse_id, 'jour'); ?></td>
+            <td><?= chasse_compter_joueurs_engages($chasse_id, 'semaine'); ?></td>
+            <td><?= chasse_compter_joueurs_engages($chasse_id, 'mois'); ?></td>
+          </tr>
+          <tr>
+            <td>Nombre de tentatives</td>
+            <td><?= chasse_compter_tentatives($chasse_id, 'total'); ?></td>
+            <td><?= chasse_compter_tentatives($chasse_id, 'jour'); ?></td>
+            <td><?= chasse_compter_tentatives($chasse_id, 'semaine'); ?></td>
+            <td><?= chasse_compter_tentatives($chasse_id, 'mois'); ?></td>
+          </tr>
+          <tr>
+            <td>Nombre de points dépensés</td>
+            <td><?= chasse_compter_points_depenses($chasse_id, 'total'); ?></td>
+            <td><?= chasse_compter_points_depenses($chasse_id, 'jour'); ?></td>
+            <td><?= chasse_compter_points_depenses($chasse_id, 'semaine'); ?></td>
+            <td><?= chasse_compter_points_depenses($chasse_id, 'mois'); ?></td>
+          </tr>
+          <tr>
+            <td>Nombre d'indices débloqués</td>
+            <td><?= chasse_compter_indices_debloques($chasse_id, 'total'); ?></td>
+            <td><?= chasse_compter_indices_debloques($chasse_id, 'jour'); ?></td>
+            <td><?= chasse_compter_indices_debloques($chasse_id, 'semaine'); ?></td>
+            <td><?= chasse_compter_indices_debloques($chasse_id, 'mois'); ?></td>
+          </tr>
+          <tr>
+            <td>Nombre de joueurs ayant résolu</td>
+            <td><?= chasse_compter_joueurs_resolus($chasse_id, 'total'); ?></td>
+            <td><?= chasse_compter_joueurs_resolus($chasse_id, 'jour'); ?></td>
+            <td><?= chasse_compter_joueurs_resolus($chasse_id, 'semaine'); ?></td>
+            <td><?= chasse_compter_joueurs_resolus($chasse_id, 'mois'); ?></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
     <div id="chasse-tab-animation" class="edition-tab-content" style="display:none;">

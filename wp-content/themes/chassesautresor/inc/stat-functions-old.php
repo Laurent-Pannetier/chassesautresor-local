@@ -410,6 +410,11 @@ function incrementer_indices_debloques_enigme($user_id, $enigme_id) {
     // Vérification après mise à jour
     $indices_apres = get_post_meta($enigme_id, $meta_key, true);
     error_log("✅ Nouvelle valeur forcée de $meta_key : " . $indices_apres);
+
+    $chasse_id = recuperer_id_chasse_associee($enigme_id);
+    if ($chasse_id) {
+        incrementer_indices_debloques_chasse($chasse_id);
+    }
 }
 /**
  * Forcer ACF à récupérer la vraie valeur du champ total_indices_debloques_enigme.
@@ -460,6 +465,11 @@ function incrementer_points_depenses_enigme($enigme_id, $points) {
     // Vérification après mise à jour
     $total_apres = get_post_meta($enigme_id, $meta_key, true);
     error_log("✅ Nouvelle valeur forcée de $meta_key : " . $total_apres);
+
+    $chasse_id = recuperer_id_chasse_associee($enigme_id);
+    if ($chasse_id) {
+        incrementer_points_depenses_chasse($chasse_id, $points);
+    }
 }
 /**
  * Forcer ACF à récupérer la vraie valeur du champ total_points_depenses_enigme.

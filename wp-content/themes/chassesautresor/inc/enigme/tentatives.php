@@ -342,6 +342,13 @@ function traiter_tentative(
     $uid = '';
     if ($inserer) {
         $uid = inserer_tentative($user_id, $enigme_id, $reponse, $resultat, $cout);
+        $chasse_id = recuperer_id_chasse_associee($enigme_id);
+        if ($chasse_id) {
+            incrementer_tentatives_chasse($chasse_id);
+            if ($cout > 0) {
+                incrementer_points_depenses_chasse($chasse_id, $cout);
+            }
+        }
     }
 
     if ($resultat === 'bon') {
