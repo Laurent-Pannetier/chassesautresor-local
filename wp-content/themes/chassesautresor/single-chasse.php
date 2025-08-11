@@ -62,16 +62,17 @@ $image_url = $infos_chasse['image_url'];
 
 $enigmes_associees = $infos_chasse['enigmes_associees'];
 $total_enigmes     = $infos_chasse['total_enigmes'];
-$enigmes_resolues = compter_enigmes_resolues($chasse_id, $user_id);
+$enigmes_resolues  = compter_enigmes_resolues($chasse_id, $user_id);
 $peut_ajouter_enigme = utilisateur_peut_ajouter_enigme($chasse_id);
-$has_incomplete_enigme = false;
+
+$enigmes_incompletes = [];
 foreach ($enigmes_associees as $eid) {
-  verifier_ou_mettre_a_jour_cache_complet($eid);
-  if (!get_field('enigme_cache_complet', $eid)) {
-    $has_incomplete_enigme = true;
-    break;
-  }
+    verifier_ou_mettre_a_jour_cache_complet($eid);
+    if (!get_field('enigme_cache_complet', $eid)) {
+        $enigmes_incompletes[] = $eid;
+    }
 }
+$has_incomplete_enigme = !empty($enigmes_incompletes);
 
 $statut = $infos_chasse['statut'];
 $statut_validation = $infos_chasse['statut_validation'];
@@ -96,14 +97,25 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
     ?>
 
     <?php
-    if ($can_validate) {
-      echo '<div class="cta-chasse">';
-      $msg = ($statut_validation === 'correction')
-        ? 'Lorsque vous aurez terminé vos corrections, demandez sa validation :'
-        : 'Lorsque vous avez finalisé votre chasse, demandez sa validation :';
-      echo '<p>' . $msg . '</p>';
-      echo render_form_validation_chasse($chasse_id);
-      echo '</div>';
+    if ($est_orga_associe && $has_incomplete_enigme) {
+        echo '<div class="cta-chasse">';
+        echo '<p>⚠️ Certaines énigmes doivent être complétées :</p>';
+        echo '<ul class="liste-enigmes-incompletes">';
+        foreach ($enigmes_incompletes as $eid) {
+            $titre = get_the_title($eid);
+            $lien  = add_query_arg('edition', 'open', get_permalink($eid));
+            echo '<li><a href="' . esc_url($lien) . '">' . esc_html($titre) . '</a></li>';
+        }
+        echo '</ul>';
+        echo '</div>';
+    } elseif ($can_validate) {
+        echo '<div class="cta-chasse">';
+        $msg = ($statut_validation === 'correction')
+            ? 'Lorsque vous aurez terminé vos corrections, demandez sa validation :'
+            : 'Lorsque vous avez finalisé votre chasse, demandez sa validation :';
+        echo '<p>' . $msg . '</p>';
+        echo render_form_validation_chasse($chasse_id);
+        echo '</div>';
     }
 
     afficher_message_validation_chasse($chasse_id);
