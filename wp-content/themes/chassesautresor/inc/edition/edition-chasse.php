@@ -30,7 +30,7 @@ function enqueue_script_chasse_edit()
   }
 
   // Enfile les scripts nécessaires
-  enqueue_core_edit_scripts(['chasse-edit']);
+  enqueue_core_edit_scripts(['chasse-edit', 'chasse-stats']);
 
   // Injecte les valeurs par défaut pour JS
   wp_localize_script('champ-init', 'CHP_CHASSE_DEFAUT', [

@@ -80,6 +80,7 @@ require_once $inc_path . 'access-functions.php';
 require_once $inc_path . 'relations-functions.php';
 require_once $inc_path . 'layout-functions.php';
 require_once $inc_path . 'utils/liens.php';
+require_once $inc_path . 'chasse/stats.php';
 
 require_once $inc_path . 'edition/edition-core.php';
 require_once $inc_path . 'edition/edition-organisateur.php';

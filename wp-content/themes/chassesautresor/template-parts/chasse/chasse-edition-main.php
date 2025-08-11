@@ -373,7 +373,64 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
       <div class="edition-panel-header">
         <h2><i class="fa-solid fa-chart-column"></i> Statistiques</h2>
       </div>
-      <p class="edition-placeholder">La section « Statistiques » sera bientôt disponible.</p>
+      <?php if (!utilisateur_est_organisateur_associe_a_chasse(get_current_user_id(), $chasse_id)) : ?>
+        <p class="edition-placeholder"><?php esc_html_e('Accès refusé.', 'chassesautresor-com'); ?></p>
+      <?php else :
+        $periode = isset($_GET['periode']) ? sanitize_text_field($_GET['periode']) : 'semaine';
+        $periode = in_array($periode, ['jour', 'semaine', 'mois', 'total'], true) ? $periode : 'semaine';
+        $stats = chasse_recuperer_stats($chasse_id, $periode);
+        $kpis = $stats['kpis'];
+        $details = $stats['detail'];
+      ?>
+        <div class="edition-panel-body">
+          <div class="stats-filtres">
+            <label for="chasse-periode">Période :</label>
+            <select id="chasse-periode">
+              <option value="semaine" <?php selected($periode, 'semaine'); ?>>7&nbsp;derniers jours</option>
+              <option value="mois" <?php selected($periode, 'mois'); ?>>30&nbsp;derniers jours</option>
+              <option value="total" <?php selected($periode, 'total'); ?>>Depuis le début</option>
+            </select>
+          </div>
+          <div class="stats-kpi">
+            <div class="kpi-card" title="Nombre de joueurs ayant engagé au moins une énigme">
+              <span class="kpi-label">Joueurs engagés</span>
+              <span class="kpi-value"><?= esc_html($kpis['joueurs_engages']); ?></span>
+            </div>
+            <div class="kpi-card" title="Total des points utilisés pour les tentatives et indices">
+              <span class="kpi-label">Points dépensés</span>
+              <span class="kpi-value"><?= esc_html($kpis['points_depenses']); ?></span>
+            </div>
+            <div class="kpi-card" title="Nombre d'indices débloqués sur la chasse">
+              <span class="kpi-label">Indices débloqués</span>
+              <span class="kpi-value"><?= esc_html($kpis['indices_debloques']); ?></span>
+            </div>
+          </div>
+          <div class="stats-table-wrapper">
+            <table id="chasse-stats-table">
+              <thead>
+                <tr>
+                  <th class="sortable">Énigme</th>
+                  <th class="sortable">Joueurs engagés</th>
+                  <th class="sortable">Tentatives</th>
+                  <th class="sortable">Points dépensés</th>
+                  <th class="sortable">Résolutions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php foreach ($details as $row) : ?>
+                  <tr>
+                    <td><a href="<?= esc_url(get_edit_post_link($row['id'])); ?>"><?= esc_html($row['titre']); ?></a></td>
+                    <td><?= esc_html($row['joueurs']); ?></td>
+                    <td><?= esc_html($row['tentatives']); ?></td>
+                    <td><?= esc_html($row['points']); ?></td>
+                    <td><?= esc_html($row['resolus']); ?></td>
+                  </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      <?php endif; ?>
     </div>
 
     <div id="chasse-tab-animation" class="edition-tab-content" style="display:none;">
