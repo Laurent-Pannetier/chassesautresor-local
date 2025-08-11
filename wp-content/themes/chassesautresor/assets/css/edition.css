@@ -61,7 +61,7 @@
 
 /* Alignement des lignes sans icône */
 .resume-infos li[data-no-icon] {
-  padding-left: 1.3rem;
+  /* padding-left: 1.3rem; */
 }
 
 .cache {
