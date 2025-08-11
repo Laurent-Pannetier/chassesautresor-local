@@ -12,12 +12,12 @@ const html = `
       <li class="champ-nb-gagnants"><input id="chasse-nb-gagnants" value="0"></li>
     </template>
     <template id="template-fin-chasse-actions">
-      <button type="button" class="terminer-chasse-btn" data-post-id="1" data-cpt="chasse"></button>
+      <button type="button" class="terminer-chasse-btn bouton-cta" data-post-id="1" data-cpt="chasse">Terminer la chasse</button>
       <div class="zone-validation-fin" style="display:none;">
         <label for="chasse-gagnants">Gagnants</label>
         <textarea id="chasse-gagnants"></textarea>
-        <button type="button" class="valider-fin-chasse-btn" data-post-id="1" data-cpt="chasse" disabled></button>
-        <button type="button" class="annuler-fin-chasse-btn"></button>
+        <button type="button" class="valider-fin-chasse-btn bouton-cta" data-post-id="1" data-cpt="chasse" disabled>Valider la fin de chasse</button>
+        <button type="button" class="annuler-fin-chasse-btn bouton-secondaire">Annuler</button>
       </div>
     </template>
   </div>

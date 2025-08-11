@@ -208,24 +208,24 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   <?php if (in_array($statut_metier, ['payante', 'en_cours', 'revision'], true)) : ?>
                     <button
                       type="button"
-                      class="terminer-chasse-btn"
+                      class="terminer-chasse-btn bouton-cta"
                       data-post-id="<?= esc_attr($chasse_id); ?>"
                       data-cpt="chasse"
                       <?= ($statut_metier === 'revision') ? 'disabled' : ''; ?>
-                    ><?= esc_html__('✅ Terminer la chasse', 'chassesautresor-com'); ?></button>
+                    ><?= esc_html__('Terminer la chasse', 'chassesautresor-com'); ?></button>
                     <div class="zone-validation-fin" style="display:none;">
                       <label for="chasse-gagnants"><?= esc_html__('Gagnants', 'chassesautresor-com'); ?></label>
                       <textarea id="chasse-gagnants" required></textarea>
                       <button
                         type="button"
-                        class="valider-fin-chasse-btn"
+                        class="valider-fin-chasse-btn bouton-cta"
                         data-post-id="<?= esc_attr($chasse_id); ?>"
                         data-cpt="chasse"
                         disabled
                       ><?= esc_html__('Valider la fin de chasse', 'chassesautresor-com'); ?></button>
                       <button
                         type="button"
-                        class="annuler-fin-chasse-btn"
+                        class="annuler-fin-chasse-btn bouton-secondaire"
                       ><?= esc_html__('Annuler', 'chassesautresor-com'); ?></button>
                     </div>
                   <?php endif; ?>

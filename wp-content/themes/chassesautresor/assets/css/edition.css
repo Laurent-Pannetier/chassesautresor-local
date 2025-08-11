@@ -1141,6 +1141,23 @@ body.panneau-ouvert::before {
   align-items: center;
 }
 
+.fin-chasse-actions .terminer-chasse-btn {
+  font-size: 1.1rem;
+  padding: 12px 20px;
+  margin-left: 1rem;
+}
+
+.zone-validation-fin {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.zone-validation-fin .annuler-fin-chasse-btn {
+  margin-left: 0.5rem;
+}
+
 .mode-fin-aide {
   background: none;
   border: none;
