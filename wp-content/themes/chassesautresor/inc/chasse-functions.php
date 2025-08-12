@@ -206,8 +206,16 @@ function gerer_chasse_terminee($chasse_id)
         return;
     }
 
-    $enigmes = recuperer_enigmes_associees($chasse_id);
-    if (empty($enigmes)) {
+    $toutes_enigmes = recuperer_enigmes_associees($chasse_id);
+    if (empty($toutes_enigmes)) {
+        return;
+    }
+
+    $enigmes_validables = array_filter($toutes_enigmes, function ($id) {
+        return get_field('enigme_mode_validation', $id) !== 'aucune';
+    });
+
+    if (empty($enigmes_validables)) {
         return;
     }
 
@@ -215,7 +223,7 @@ function gerer_chasse_terminee($chasse_id)
     $table = $wpdb->prefix . 'enigme_statuts_utilisateur';
     $now   = current_time('mysql');
 
-    $placeholders = implode(',', array_fill(0, count($enigmes), '%d'));
+    $placeholders = implode(',', array_fill(0, count($enigmes_validables), '%d'));
     $sql = "
         SELECT user_id, MIN(date_mise_a_jour) AS first_finish
         FROM {$table}
@@ -226,7 +234,7 @@ function gerer_chasse_terminee($chasse_id)
         ORDER BY first_finish ASC
     ";
     $results = $wpdb->get_results(
-        $wpdb->prepare($sql, array_merge($enigmes, [count($enigmes)]))
+        $wpdb->prepare($sql, array_merge($enigmes_validables, [count($enigmes_validables)]))
     );
 
     $winner_ids = wp_list_pluck($results, 'user_id');
@@ -254,7 +262,7 @@ function gerer_chasse_terminee($chasse_id)
         update_field('chasse_cache_date_decouverte', $date, $chasse_id);
     }
 
-    foreach ($enigmes as $enigme_id) {
+    foreach ($toutes_enigmes as $enigme_id) {
         // 🗃️ Mise à jour des statuts en base
         $wpdb->update(
             $table,
