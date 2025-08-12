@@ -73,6 +73,7 @@ $show_nav         = is_user_logged_in();
             <!-- TODO: header content -->
         </header>
         <main class="myaccount-content">
+            <section class="msg-important"></section>
             <?php
             if ($content_template && file_exists($content_template)) {
                 include $content_template;

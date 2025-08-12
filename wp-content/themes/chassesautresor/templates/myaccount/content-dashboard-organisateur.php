@@ -17,15 +17,7 @@ if ($organizer_id) {
     $organizer_title = __('Organisateur', 'chassesautresor');
 }
 
-$chasse_count = 0;
-if ($organizer_id) {
-    $chasses_query = get_chasses_de_organisateur($organizer_id);
-    $chasse_count  = $chasses_query->found_posts ?? 0;
-}
-
-$orders_output      = afficher_commandes_utilisateur($user_id, 3);
-$conversion_status  = verifier_acces_conversion($user_id);
-$conversion_allowed = ($conversion_status === true);
+$orders_output = afficher_commandes_utilisateur($user_id, 3);
 
 ob_start();
 afficher_tableau_paiements_organisateur($user_id, 'en_attente');
@@ -43,12 +35,9 @@ if ($pending_table !== '') {
 }
 
 $args = array(
-    'organizer_id'       => $organizer_id,
-    'organizer_title'    => $organizer_title,
-    'chasse_count'       => $chasse_count,
-    'orders_output'      => $orders_output,
-    'conversion_allowed' => $conversion_allowed,
-    'conversion_status'  => $conversion_status,
+    'organizer_id'    => $organizer_id,
+    'organizer_title' => $organizer_title,
+    'orders_output'   => $orders_output,
 );
 
 get_template_part('template-parts/myaccount/dashboard-organisateur', null, $args);

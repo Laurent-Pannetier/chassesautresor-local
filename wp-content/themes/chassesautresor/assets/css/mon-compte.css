@@ -87,6 +87,14 @@
     padding: 16px;
 }
 
+.msg-important {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
+    border-radius: 0.5rem;
+}
+
 .myaccount-points {
     margin-bottom: 1rem;
     font-weight: 500;
@@ -485,9 +493,4 @@
     margin-top: 40px;
 }
 
-.dashboard-section-title {
-    font-size: 1.125rem;
-    font-weight: 600;
-    margin-bottom: 16px;
-}
 

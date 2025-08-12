@@ -7,59 +7,51 @@
 
 defined('ABSPATH') || exit;
 
-$organizer_id       = $args['organizer_id'] ?? null;
-$organizer_title    = $args['organizer_title'] ?? '';
-$chasse_count       = $args['chasse_count'] ?? 0;
-$orders_output      = $args['orders_output'] ?? '';
-$conversion_allowed = $args['conversion_allowed'] ?? false;
-$conversion_status  = $args['conversion_status'] ?? '';
+$organizer_id    = $args['organizer_id'] ?? null;
+$organizer_title = $args['organizer_title'] ?? '';
+$orders_output   = $args['orders_output'] ?? '';
 ?>
-<div class="dashboard-section">
-    <h3 class="dashboard-section-title"><?php esc_html_e('Contenu', 'chassesautresor'); ?></h3>
-    <div class="dashboard-grid">
-        <div class="dashboard-card">
-            <div class="dashboard-card-header">
-                <i class="fas fa-landmark"></i>
-                <?php if ($organizer_id) : ?>
-                    <a href="<?php echo esc_url(get_permalink($organizer_id)); ?>"><?php echo esc_html($organizer_title); ?></a>
-                <?php else : ?>
-                    <span><?php echo esc_html($organizer_title); ?></span>
-                <?php endif; ?>
-            </div>
-            <div class="dashboard-card-content">
-                <?php if ($organizer_id) : ?>
-                    <?php
-                    $query          = get_chasses_de_organisateur($organizer_id);
-                    $recent_chasses = $query && $query->have_posts() ? array_slice($query->posts, 0, 3) : array();
-                    if ($recent_chasses) {
-                        echo '<ul>';
-                        foreach ($recent_chasses as $post) {
-                            $validation = get_field('chasse_cache_statut_validation', $post->ID);
-                            $label      = ucfirst(str_replace('_', ' ', $validation));
-                            echo '<li><a href="' . esc_url(get_permalink($post->ID)) . '">' . esc_html(get_the_title($post->ID)) . '</a> (' . esc_html($label) . ')</li>';
-                        }
-                        echo '</ul>';
-                    } else {
-                        echo '<p>' . esc_html__('Aucune chasse trouvée.', 'chassesautresor') . '</p>';
+<div class="dashboard-grid">
+    <div class="dashboard-card">
+        <div class="dashboard-card-header">
+            <i class="fas fa-landmark"></i>
+            <?php if ($organizer_id) : ?>
+                <a href="<?php echo esc_url(get_permalink($organizer_id)); ?>"><?php echo esc_html($organizer_title); ?></a>
+            <?php else : ?>
+                <span><?php echo esc_html($organizer_title); ?></span>
+            <?php endif; ?>
+        </div>
+        <div class="dashboard-card-content">
+            <?php if ($organizer_id) : ?>
+                <?php
+                $query          = get_chasses_de_organisateur($organizer_id);
+                $recent_chasses = $query && $query->have_posts() ? array_slice($query->posts, 0, 3) : array();
+                if ($recent_chasses) {
+                    echo '<ul>';
+                    foreach ($recent_chasses as $post) {
+                        $validation = get_field('chasse_cache_statut_validation', $post->ID);
+                        $label      = ucfirst(str_replace('_', ' ', $validation));
+                        echo '<li><a href="' . esc_url(get_permalink($post->ID)) . '">' . esc_html(get_the_title($post->ID)) . '</a> (' . esc_html($label) . ')</li>';
                     }
-                    ?>
-                <?php else : ?>
-                    <p><?php esc_html_e('Aucun organisateur associé.', 'chassesautresor'); ?></p>
-                <?php endif; ?>
-            </div>
+                    echo '</ul>';
+                } else {
+                    echo '<p>' . esc_html__('Aucune chasse trouvée.', 'chassesautresor') . '</p>';
+                }
+                ?>
+            <?php else : ?>
+                <p><?php esc_html_e('Aucun organisateur associé.', 'chassesautresor'); ?></p>
+            <?php endif; ?>
         </div>
     </div>
 </div>
 
-<div class="dashboard-section">
-    <h3 class="dashboard-section-title"><?php esc_html_e('Chasse', 'chassesautresor'); ?></h3>
-    <div class="dashboard-grid">
-        <div class="dashboard-card">
-            <div class="dashboard-card-header">
-                <i class="fas fa-map"></i>
-                <h4><?php esc_html_e('Chasses', 'chassesautresor'); ?></h4>
-            </div>
-            <div class="dashboard-card-content">
+<div class="dashboard-grid">
+    <div class="dashboard-card">
+        <div class="dashboard-card-header">
+            <i class="fas fa-map"></i>
+            <h4><?php esc_html_e('Chasses', 'chassesautresor'); ?></h4>
+        </div>
+        <div class="dashboard-card-content">
                 <?php
                 if ($organizer_id) {
                     $query_total    = get_chasses_de_organisateur($organizer_id);
@@ -98,18 +90,6 @@ $conversion_status  = $args['conversion_status'] ?? '';
             </div>
         </div>
 
-        <div class="dashboard-card">
-            <div class="dashboard-card-header">
-                <i class="fas fa-question-circle"></i>
-                <h4><?php esc_html_e('Enigmes', 'chassesautresor'); ?></h4>
-            </div>
-            <div class="dashboard-card-content">
-                <p><?php esc_html_e('Placeholder 1', 'chassesautresor'); ?></p>
-                <p><?php esc_html_e('Placeholder 2', 'chassesautresor'); ?></p>
-                <p><?php esc_html_e('tentatives : xx', 'chassesautresor'); ?></p>
-            </div>
-        </div>
-
         <?php if (!empty($orders_output)) : ?>
         <a href="<?php echo esc_url(wc_get_account_endpoint_url('orders')); ?>" class="dashboard-card">
             <div class="dashboard-card-header">
@@ -121,35 +101,6 @@ $conversion_status  = $args['conversion_status'] ?? '';
             </div>
         </a>
         <?php endif; ?>
-    </div>
-</div>
-
-<div class="dashboard-section">
-    <h3 class="dashboard-section-title"><?php esc_html_e('Revenus', 'chassesautresor'); ?></h3>
-    <div class="dashboard-grid">
-        <div class="dashboard-card">
-            <div class="dashboard-card-header">
-                <i class="fa-solid fa-money-bill-transfer"></i>
-                <h4><?php esc_html_e('Convertisseur', 'chassesautresor'); ?></h4>
-            </div>
-            <div class="dashboard-card-content">
-                <?php echo do_shortcode('[demande_paiement]'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-                <?php if (!$conversion_allowed) : ?>
-                    <div class="overlay-taux">
-                        <p class="message-bloque"><?php echo wp_kses_post($conversion_status); ?></p>
-                    </div>
-                <?php endif; ?>
-            </div>
-        </div>
-        <div class="dashboard-card">
-            <div class="dashboard-card-header">
-                <i class="fas fa-wallet"></i>
-                <h4><?php esc_html_e('Mes revenus', 'chassesautresor'); ?></h4>
-            </div>
-            <div class="dashboard-card-content">
-                <p><?php esc_html_e('À venir', 'chassesautresor'); ?></p>
-            </div>
-        </div>
     </div>
 </div>
 
