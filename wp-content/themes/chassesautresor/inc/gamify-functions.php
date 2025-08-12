@@ -315,8 +315,7 @@ function verifier_fin_de_chasse($user_id, $enigme_id)
     error_log("🔍 Vérification de fin de chasse pour l'utilisateur {$user_id} (énigme : {$enigme_id})");
 
     // 🧭 Récupération de la chasse associée
-    $chasse_id = get_field('chasse_associee', $enigme_id, false);
-    $chasse_id = is_array($chasse_id) ? reset($chasse_id) : $chasse_id;
+    $chasse_id = recuperer_id_chasse_associee($enigme_id);
 
     if (!$chasse_id) {
         error_log("❌ Aucune chasse associée trouvée.");
