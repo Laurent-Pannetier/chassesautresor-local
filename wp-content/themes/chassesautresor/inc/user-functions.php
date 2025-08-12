@@ -93,28 +93,29 @@ function charger_template_utilisateur($template) {
         return $template;
     }
     
-    // Liste des chemins d’URL associés à leurs fichiers de template respectifs
+    // Associe chaque URL à un fichier de contenu spécifique
     $mapping_templates = array(
-        'mon-compte/organisateurs'        => 'organisateurs.php',
-        'mon-compte/organisateurs/'       => 'organisateurs.php', // Variante avec /
-        'mon-compte/statistiques'         => 'statistiques.php',
-        'mon-compte/outils'               => 'outils.php',
+        'mon-compte/organisateurs'        => 'content-organisateurs.php',
+        'mon-compte/organisateurs/'       => 'content-organisateurs.php', // Variante avec /
+        'mon-compte/statistiques'         => 'content-statistiques.php',
+        'mon-compte/outils'               => 'content-outils.php',
     );
 
-    // Vérification si l'URL correspond à un template spécifique
+    // Vérifie si l'URL correspond à un contenu personnalisé
     if (array_key_exists($request_uri, $mapping_templates)) {
-        $custom_template = get_stylesheet_directory() . '/templates/admin/' . $mapping_templates[$request_uri];
-        
-        if (!file_exists($custom_template)) {
-            error_log('Fichier de template introuvable : ' . $custom_template);
-        }
-        error_log('Chargement du template : ' . $custom_template);
+        $content_template = get_stylesheet_directory() . '/templates/myaccount/' . $mapping_templates[$request_uri];
 
-        // Vérification de l'existence du fichier avant de le retourner
-        if (file_exists($custom_template)) {
-            return $custom_template;
+        if (!file_exists($content_template)) {
+            error_log('Fichier de contenu introuvable : ' . $content_template);
+        } else {
+            // Stocke le chemin pour l'injection dans le layout
+            $GLOBALS['myaccount_content_template'] = $content_template;
         }
+
+        // Retourne le layout commun pour les pages "Mon Compte"
+        return get_stylesheet_directory() . '/templates/myaccount/layout.php';
     }
+
     // Retourne le template par défaut si aucune correspondance n'est trouvée
     return $template;
 }
