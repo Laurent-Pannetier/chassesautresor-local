@@ -73,22 +73,25 @@ $current_path     = trim($_SERVER['REQUEST_URI'], '/');
             <?php
             $admin_items = array(
                 array(
-                    'label'  => __('Organisateurs', 'chassesautresor'),
-                    'icon'   => 'fas fa-users',
-                    'url'    => home_url('/mon-compte/organisateurs/'),
-                    'active' => $current_path === 'mon-compte/organisateurs',
+                    'label'   => __('Organisateurs', 'chassesautresor'),
+                    'icon'    => 'fas fa-users',
+                    'url'     => home_url('/mon-compte/organisateurs/'),
+                    'section' => 'organisateurs',
+                    'active'  => $current_path === 'mon-compte/organisateurs',
                 ),
                 array(
-                    'label'  => __('Statistiques', 'chassesautresor'),
-                    'icon'   => 'fas fa-chart-line',
-                    'url'    => home_url('/mon-compte/statistiques/'),
-                    'active' => $current_path === 'mon-compte/statistiques',
+                    'label'   => __('Statistiques', 'chassesautresor'),
+                    'icon'    => 'fas fa-chart-line',
+                    'url'     => home_url('/mon-compte/statistiques/'),
+                    'section' => 'statistiques',
+                    'active'  => $current_path === 'mon-compte/statistiques',
                 ),
                 array(
-                    'label'  => __('Outils', 'chassesautresor'),
-                    'icon'   => 'fas fa-wrench',
-                    'url'    => home_url('/mon-compte/outils/'),
-                    'active' => $current_path === 'mon-compte/outils',
+                    'label'   => __('Outils', 'chassesautresor'),
+                    'icon'    => 'fas fa-wrench',
+                    'url'     => home_url('/mon-compte/outils/'),
+                    'section' => 'outils',
+                    'active'  => $current_path === 'mon-compte/outils',
                 ),
             );
 
@@ -98,7 +101,7 @@ $current_path     = trim($_SERVER['REQUEST_URI'], '/');
                     $classes .= ' active';
                 }
 
-                echo '<a href="' . esc_url($item['url']) . '" class="' . esc_attr($classes) . '">';
+                echo '<a href="' . esc_url($item['url']) . '" data-section="' . esc_attr($item['section']) . '" class="' . esc_attr($classes) . '">';
                 echo '<i class="' . esc_attr($item['icon']) . '"></i>';
                 echo '<span>' . esc_html($item['label']) . '</span>';
                 echo '</a>';

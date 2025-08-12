@@ -53,6 +53,20 @@ add_action('wp_enqueue_scripts', function () {
     foreach ($styles as $handle => $file) {
         wp_enqueue_style($handle, $theme_dir . $file, [], filemtime(get_stylesheet_directory() . "/assets/css/{$file}"));
     }
+
+    $script_dir = get_stylesheet_directory_uri() . '/assets/js/';
+    if (is_account_page() && is_user_logged_in()) {
+        wp_enqueue_script(
+            'myaccount',
+            $script_dir . 'myaccount.js',
+            [],
+            filemtime(get_stylesheet_directory() . '/assets/js/myaccount.js'),
+            true
+        );
+        wp_localize_script('myaccount', 'ctaMyAccount', [
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+        ]);
+    }
 });
 
 

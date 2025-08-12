@@ -17,8 +17,9 @@ defined( 'ABSPATH' ) || exit;
 // 4. 📦 ATTRIBUTION DE RÔLE
 //     - Attribution des rôles oragnisateurs (création)
 //
-
-
+// 5. 📡 AJAX ADMIN SECTIONS
+//    - Chargement dynamique des pages d'administration dans "Mon Compte"
+//
 // ==================================================
 // 📦 TEMPLATES UTILISATEURS
 // ==================================================
@@ -216,6 +217,41 @@ function ca_profile_endpoint_title($title)
 }
 add_filter('woocommerce_endpoint_edit-account_title', 'ca_profile_endpoint_title');
 
+// ==================================================
+// 📡 AJAX ADMIN SECTIONS
+// ==================================================
+/**
+ * Load admin My Account sections via AJAX.
+ *
+ * @return void
+ */
+function ca_load_admin_section()
+{
+    if (!current_user_can('administrator')) {
+        wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor')], 403);
+    }
+
+    $section = sanitize_key($_GET['section'] ?? '');
+    $allowed = [
+        'organisateurs' => 'content-organisateurs.php',
+        'statistiques'  => 'content-statistiques.php',
+        'outils'        => 'content-outils.php',
+    ];
+
+    if (!isset($allowed[$section])) {
+        wp_send_json_error(['message' => __('Section not found', 'chassesautresor')], 404);
+    }
+
+    ob_start();
+    $template = get_stylesheet_directory() . '/templates/myaccount/' . $allowed[$section];
+    if (file_exists($template)) {
+        include $template;
+    }
+    $html = ob_get_clean();
+
+    wp_send_json_success(['html' => $html]);
+}
+add_action('wp_ajax_cta_load_admin_section', 'ca_load_admin_section');
 
 // ==================================================
 // 📦 MODIFICATION AVATAR EN FRONT
