@@ -81,10 +81,10 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
     if ( is_cart() ) {
         get_template_part('template-parts/header-panier');
     }
-    elseif ( is_page() ) {
+    elseif ( is_page() && ! is_user_account_area() ) {
         $image_id  = get_post_thumbnail_id();
         $image_url = $image_id ? imagify_get_webp_url( wp_get_attachment_image_url( $image_id, 'full' ) ) : '';
-    
+
         get_header_fallback([
             'titre'       => get_the_title(),
             'sous_titre'  => '',

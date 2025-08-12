@@ -236,10 +236,22 @@ function get_svg_icon($icone) {
 // 🧩 HEADERS
 // ==================================================
 /**
+ * 🔹 is_user_account_area → Vérifie si l’URL courante appartient à l’espace "Mon Compte".
  * 🔹 get_header_fallback → Affiche un header alternatif (style hero) pour les pages hors CPT organisateur.
  * 🔹 ajouter_class_has_hero_si_header_fallback → Ajoute la classe CSS "has-hero" au body si le header fallback est actif.
  * 🔹 filtrer_content_sans_titre → Supprime le <h1> du contenu s’il est identique au titre principal (évite les doublons SEO).
  */
+
+/**
+ * Vérifie si la requête actuelle cible une URL de l’espace utilisateur "Mon Compte".
+ *
+ * @return bool
+ */
+function is_user_account_area(): bool {
+    $request = trim($_SERVER['REQUEST_URI'], '/');
+
+    return strpos($request, 'mon-compte') === 0;
+}
 
 
 /**
@@ -278,10 +290,11 @@ function get_header_fallback($args = []) {
  * @return array
  */
 function ajouter_class_has_hero_si_header_fallback( $classes ) {
-	if ( is_page() ) {
-		$classes[] = 'has-hero';
-	}
-	return $classes;
+    if ( is_page() && ! is_user_account_area() ) {
+        $classes[] = 'has-hero';
+    }
+
+    return $classes;
 }
 add_filter( 'body_class', 'ajouter_class_has_hero_si_header_fallback' );
 
