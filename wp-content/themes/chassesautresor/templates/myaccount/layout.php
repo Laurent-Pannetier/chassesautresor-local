@@ -154,7 +154,36 @@ $current_path     = trim($_SERVER['REQUEST_URI'], '/');
             <!-- TODO: header content -->
         </header>
         <main class="myaccount-content">
-            <section class="msg-important"></section>
+            <section class="msg-important">
+                <?php
+                if (current_user_can('administrator')) {
+                    $pending_chasses = get_posts([
+                        'post_type'   => 'chasse',
+                        'post_status' => 'pending',
+                        'numberposts' => -1,
+                        'meta_key'    => 'chasse_cache_statut_validation',
+                        'meta_value'  => 'en_attente',
+                    ]);
+
+                    if (! empty($pending_chasses)) {
+                        echo '<p>' . esc_html__('Chasse à valider : ', 'chassesautresor');
+
+                        $links = array_map(
+                            function ($chasse) {
+                                $url   = get_permalink($chasse->ID);
+                                $title = get_the_title($chasse->ID);
+
+                                return '<a href="' . esc_url($url) . '">' . esc_html($title) . '</a>';
+                            },
+                            $pending_chasses
+                        );
+
+                        echo implode(', ', $links);
+                        echo '</p>';
+                    }
+                }
+                ?>
+            </section>
             <?php
             if ($content_template && file_exists($content_template)) {
                 include $content_template;
