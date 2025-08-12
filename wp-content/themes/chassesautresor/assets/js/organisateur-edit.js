@@ -151,7 +151,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // 🔑 Ouverture automatique via les paramètres d'URL
   const params = new URLSearchParams(window.location.search);
 
-  if (params.get('edition') === 'open' && !params.has('tab')) {
+  const postType = params.get('post_type');
+  if (
+    params.get('edition') === 'open' &&
+    !params.has('tab') &&
+    (!postType || postType === 'organisateur')
+  ) {
     const toggle = document.getElementById('toggle-mode-edition');
     toggle?.click();
 
