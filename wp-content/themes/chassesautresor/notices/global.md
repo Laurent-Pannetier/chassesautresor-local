@@ -944,6 +944,18 @@ Une enigme est dite « payante » si elle est :
 👉 Dans ce cas, un bouton specifique « Debloquer pour X points » est affiche (CTA conditionnel).
 
 
+### 🏆 Table des gagnants (`wp_chasse_winners`)
+
+Historise chaque utilisateur ayant terminé une chasse.
+
+| Colonne   | Type            | Commentaire               |
+|-----------|-----------------|---------------------------|
+| id        | int unsigned    | Incrément automatique     |
+| user_id   | bigint unsigned | Identifiant utilisateur   |
+| chasse_id | bigint unsigned | Identifiant de la chasse  |
+| date_win  | datetime        | Date de validation        |
+
+
 ## 7. Accès & autorisations
 
 🔐 Création automatique (profil organisateur, chasse, énigme)
