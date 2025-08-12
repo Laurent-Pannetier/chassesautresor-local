@@ -46,8 +46,16 @@ defined('ABSPATH') || exit;
      */
     function marquer_enigme_comme_engagee(int $user_id, int $enigme_id): bool
     {
-        $ok1 = enigme_mettre_a_jour_statut_utilisateur($enigme_id, $user_id, 'en_cours', true);
+        $mode = get_field('enigme_mode_validation', $enigme_id);
+        $statut = ($mode === 'aucune') ? 'resolue' : 'en_cours';
+
+        $ok1 = enigme_mettre_a_jour_statut_utilisateur($enigme_id, $user_id, $statut, true);
         $ok2 = enregistrer_engagement_enigme($user_id, $enigme_id);
+
+        if ($mode === 'aucune' && $ok1 && $ok2) {
+            do_action('enigme_resolue', $user_id, $enigme_id);
+        }
+
         return $ok1 && $ok2;
     }
 

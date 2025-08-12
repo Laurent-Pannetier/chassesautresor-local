@@ -105,6 +105,7 @@ function get_cta_enigme(int $enigme_id, ?int $user_id = null): array
     $etat_systeme = enigme_get_etat_systeme($enigme_id);
     $statut_utilisateur = enigme_get_statut_utilisateur($enigme_id, $user_id);
     $points = intval(get_field('enigme_tentative_cout_points', $enigme_id));
+    $mode_validation = get_field('enigme_mode_validation', $enigme_id);
 
     // Base commune
     $cta = [
@@ -181,6 +182,16 @@ function get_cta_enigme(int $enigme_id, ?int $user_id = null): array
             ]);
 
         case 'en_cours':
+            if ($mode_validation === 'aucune') {
+                return array_merge($cta, [
+                    'type'       => 'voir',
+                    'label'      => 'Voir',
+                    'action'     => 'link',
+                    'url'        => get_permalink($enigme_id),
+                    'classe_css' => 'cta-voir',
+                    'badge'      => 'Engagée',
+                ]);
+            }
             return array_merge($cta, [
                 'type'       => 'continuer',
                 'label'      => 'Continuer',
@@ -191,6 +202,16 @@ function get_cta_enigme(int $enigme_id, ?int $user_id = null): array
             ]);
 
         case 'resolue':
+            if ($mode_validation === 'aucune') {
+                return array_merge($cta, [
+                    'type'       => 'voir',
+                    'label'      => 'Voir',
+                    'action'     => 'link',
+                    'url'        => get_permalink($enigme_id),
+                    'classe_css' => 'cta-voir',
+                    'badge'      => 'Engagée',
+                ]);
+            }
             return array_merge($cta, [
                 'type'       => 'revoir',
                 'label'      => 'Revoir',

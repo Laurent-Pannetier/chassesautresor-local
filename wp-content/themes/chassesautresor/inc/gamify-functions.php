@@ -246,10 +246,10 @@ function ajouter_points_utilisateur(int $user_id, int $montant): void {
 function enigme_get_chasse_progression(int $chasse_id, int $user_id): array
 {
     $enigmes = recuperer_enigmes_associees($chasse_id); // ✅ Retourne directement les IDs
-    $resolues = count(array_filter($enigmes, function ($id) use ($user_id, $chasse_id) {
+    $resolues = count(array_filter($enigmes, function ($id) use ($user_id) {
         $mode = get_field('enigme_mode_validation', $id);
         if ($mode === 'aucune') {
-            return utilisateur_est_engage_dans_chasse($user_id, $chasse_id);
+            return utilisateur_est_engage_dans_enigme($user_id, $id);
         }
         $statut = get_user_meta($user_id, "statut_enigme_{$id}", true);
         return in_array($statut, ['resolue', 'terminee'], true);
@@ -279,14 +279,14 @@ function compter_enigmes_resolues($chasse_id, $user_id): int
         return 0;
     }
 
-    return count(array_filter($enigmes, function ($enigme) use ($user_id, $chasse_id) {
+    return count(array_filter($enigmes, function ($enigme) use ($user_id) {
         $enigme_id = is_object($enigme) ? $enigme->ID : (int) $enigme;
         if (!$enigme_id) {
             return false;
         }
         $mode = get_field('enigme_mode_validation', $enigme_id);
         if ($mode === 'aucune') {
-            return utilisateur_est_engage_dans_chasse($user_id, $chasse_id);
+            return utilisateur_est_engage_dans_enigme($user_id, $enigme_id);
         }
         $statut = get_user_meta($user_id, "statut_enigme_{$enigme_id}", true);
         return in_array($statut, ['resolue', 'terminee'], true);
@@ -323,27 +323,31 @@ function verifier_fin_de_chasse($user_id, $enigme_id)
     }
 
     // 📄 Récupération des énigmes associées
-    $enigmes_associees = get_field('enigmes_associees', $chasse_id);
-    if (empty($enigmes_associees) || !is_array($enigmes_associees)) {
+    $associees = get_field('enigmes_associees', $chasse_id) ?: [];
+    $enigmes_ids = array_map(fn($e) => is_object($e) ? (int) $e->ID : (int) $e, $associees);
+    if (empty($enigmes_ids)) {
         error_log("⚠️ Pas d'énigmes associées à la chasse (ID: {$chasse_id})");
         return;
     }
 
-    $enigmes_validables = array_filter($enigmes_associees, function ($eid) {
+    $enigmes_validables = array_filter($enigmes_ids, function ($eid) {
         return get_field('enigme_mode_validation', $eid) !== 'aucune';
     });
 
     if (empty($enigmes_validables)) {
-        error_log("⚠️ Mode automatique impossible : aucune énigme validable.");
-        return;
+        $enigmes_resolues = array_filter($enigmes_ids, function ($eid) use ($user_id) {
+            return utilisateur_est_engage_dans_enigme($user_id, $eid);
+        });
+        $total_a_resoudre = count($enigmes_ids);
+    } else {
+        $enigmes_resolues = array_filter($enigmes_validables, function ($eid) use ($user_id) {
+            $statut = get_user_meta($user_id, "statut_enigme_{$eid}", true);
+            return in_array($statut, ['resolue', 'terminee'], true);
+        });
+        $total_a_resoudre = count($enigmes_validables);
     }
 
-    $enigmes_resolues = array_filter($enigmes_validables, function ($associee_id) use ($user_id) {
-        $statut = get_user_meta($user_id, "statut_enigme_{$associee_id}", true);
-        return in_array($statut, ['resolue', 'terminee'], true);
-    });
-
-    if (count($enigmes_resolues) === count($enigmes_validables)) {
+    if (count($enigmes_resolues) === $total_a_resoudre) {
         update_field('chasse_cache_complet', 1, $chasse_id);
         $statut_chasse = get_field('chasse_cache_statut', $chasse_id);
         if (in_array($statut_chasse, ['payante', 'en_cours'], true)) {
