@@ -34,7 +34,11 @@ $content_template = $GLOBALS['myaccount_content_template'] ?? null;
             if ($content_template && file_exists($content_template)) {
                 include $content_template;
             } else {
-                echo '<p>' . esc_html__('Content not found.', 'chassesautresor') . '</p>';
+                if (function_exists('woocommerce_account_content')) {
+                    woocommerce_account_content();
+                } else {
+                    echo '<p>' . esc_html__('Content not found.', 'chassesautresor') . '</p>';
+                }
             }
             ?>
         </main>
