@@ -17,7 +17,10 @@ defined( 'ABSPATH' ) || exit;
 // 4. 📦 ATTRIBUTION DE RÔLE
 //     - Attribution des rôles oragnisateurs (création)
 //
-// 5. 📡 AJAX ADMIN SECTIONS
+// 5. 📣 MESSAGES IMPORTANTS
+//    - Affichage centralisé des messages clés de l'espace "Mon Compte"
+
+// 6. 📡 AJAX ADMIN SECTIONS
 //    - Chargement dynamique des pages d'administration dans "Mon Compte"
 //
 // ==================================================
@@ -218,6 +221,58 @@ function ca_profile_endpoint_title($title)
 add_filter('woocommerce_endpoint_edit-account_title', 'ca_profile_endpoint_title');
 
 // ==================================================
+// 📣 IMPORTANT MESSAGES
+// ==================================================
+/**
+ * Get pre-formatted HTML for the important message section in My Account pages.
+ *
+ * @return string
+ */
+function myaccount_get_important_messages(): string
+{
+    $messages = [];
+
+    if (current_user_can('administrator') && function_exists('recuperer_organisateurs_pending')) {
+        $pending = array_filter(
+            recuperer_organisateurs_pending(),
+            function ($entry) {
+                return !empty($entry['chasse_id']) && $entry['validation'] === 'en_attente';
+            }
+        );
+
+        if (!empty($pending)) {
+            $links = array_map(
+                function ($entry) {
+                    $url   = esc_url(get_permalink($entry['chasse_id']));
+                    $title = esc_html(get_the_title($entry['chasse_id']));
+                    return '<a href="' . $url . '">' . $title . '</a>';
+                },
+                $pending
+            );
+
+            $label = count($pending) > 1
+                ? __('Chasses à valider :', 'chassesautresor')
+                : __('Chasse à valider :', 'chassesautresor');
+
+            $messages[] = $label . ' ' . implode(', ', $links);
+        }
+    }
+
+    if (empty($messages)) {
+        return '';
+    }
+
+    $output = array_map(
+        function ($msg) {
+            return '<p>' . $msg . '</p>';
+        },
+        $messages
+    );
+
+    return implode('', $output);
+}
+
+// ==================================================
 // 📡 AJAX ADMIN SECTIONS
 // ==================================================
 /**
@@ -249,7 +304,10 @@ function ca_load_admin_section()
     }
     $html = ob_get_clean();
 
-    wp_send_json_success(['html' => $html]);
+    wp_send_json_success([
+        'html'     => $html,
+        'messages' => myaccount_get_important_messages(),
+    ]);
 }
 add_action('wp_ajax_cta_load_admin_section', 'ca_load_admin_section');
 

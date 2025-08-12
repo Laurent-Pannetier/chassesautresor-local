@@ -35,12 +35,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!data.success) {
         throw new Error('Request failed');
       }
-      content.innerHTML = '<section class="msg-important"></section>' + data.data.html;
+      const messages = data.data.messages || '';
+      content.innerHTML = `<section class="msg-important">${messages}</section>` + data.data.html;
       adminNav.querySelectorAll('.dashboard-nav-link').forEach((a) => a.classList.remove('active'));
       link.classList.add('active');
       window.history.pushState(null, '', link.href);
     } catch (err) {
-      window.location.href = link.href;
+      window.location.assign(link.href);
     }
   });
 });
