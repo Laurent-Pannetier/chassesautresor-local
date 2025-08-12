@@ -250,10 +250,15 @@ function enigme_get_chasse_progression(int $chasse_id, int $user_id): array
         return get_field('enigme_mode_validation', $id) !== 'aucune';
     });
 
-    $resolues = count(array_filter($validables, function ($id) use ($user_id) {
-        $statut = enigme_get_statut_utilisateur($id, $user_id);
-        return in_array($statut, ['resolue', 'terminee'], true);
-    }));
+    if (empty($validables)) {
+        return ['resolues' => 0, 'total' => 0];
+    }
+
+    global $wpdb;
+    $table = $wpdb->prefix . 'enigme_statuts_utilisateur';
+    $placeholders = implode(',', array_fill(0, count($validables), '%d'));
+    $sql = "SELECT COUNT(DISTINCT enigme_id) FROM {$table} WHERE user_id = %d AND statut IN ('resolue','terminee') AND enigme_id IN ($placeholders)";
+    $resolues = (int) $wpdb->get_var($wpdb->prepare($sql, array_merge([$user_id], $validables)));
 
     return [
         'resolues' => $resolues,
@@ -283,10 +288,15 @@ function compter_enigmes_resolues($chasse_id, $user_id): int
         return get_field('enigme_mode_validation', $eid) !== 'aucune';
     });
 
-    return count(array_filter($validables, function (int $eid) use ($user_id) {
-        $statut = enigme_get_statut_utilisateur($eid, $user_id);
-        return in_array($statut, ['resolue', 'terminee'], true);
-    }));
+    if (empty($validables)) {
+        return 0;
+    }
+
+    global $wpdb;
+    $table = $wpdb->prefix . 'enigme_statuts_utilisateur';
+    $placeholders = implode(',', array_fill(0, count($validables), '%d'));
+    $sql = "SELECT COUNT(DISTINCT enigme_id) FROM {$table} WHERE user_id = %d AND statut IN ('resolue','terminee') AND enigme_id IN ($placeholders)";
+    return (int) $wpdb->get_var($wpdb->prepare($sql, array_merge([$user_id], $validables)));
 }
 
 /**
@@ -334,15 +344,15 @@ function verifier_fin_de_chasse($user_id, $enigme_id)
         return;
     }
 
-    $enigmes_resolues = array_filter($enigmes_validables, function (int $eid) use ($user_id) {
-        $statut = enigme_get_statut_utilisateur($eid, $user_id);
-        return in_array($statut, ['resolue', 'terminee'], true);
-    });
+    global $wpdb;
+    $table = $wpdb->prefix . 'enigme_statuts_utilisateur';
+    $placeholders = implode(',', array_fill(0, count($enigmes_validables), '%d'));
+    $sql = "SELECT COUNT(DISTINCT enigme_id) FROM {$table} WHERE user_id = %d AND statut IN ('resolue','terminee') AND enigme_id IN ($placeholders)";
+    $nb_resolues = (int) $wpdb->get_var($wpdb->prepare($sql, array_merge([$user_id], $enigmes_validables)));
 
-    if (count($enigmes_resolues) === count($enigmes_validables)) {
+    if ($nb_resolues === count($enigmes_validables)) {
         update_field('chasse_cache_complet', 1, $chasse_id);
-        $statut_chasse = get_field('chasse_cache_statut', $chasse_id);
-        if (in_array($statut_chasse, ['payante', 'en_cours'], true)) {
+        if (get_field('chasse_cache_statut', $chasse_id) !== 'termine') {
             update_field('chasse_cache_statut', 'termine', $chasse_id);
             gerer_chasse_terminee($chasse_id);
         }
