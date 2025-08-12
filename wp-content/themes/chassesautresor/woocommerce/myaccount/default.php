@@ -4,6 +4,7 @@ defined( 'ABSPATH' ) || exit;
 // Récupération des infos utilisateur
 $current_user = wp_get_current_user();
 $logout_url = wc_get_account_endpoint_url('customer-logout'); // Lien déconnexion
+$points_balance = function_exists('get_user_points') ? get_user_points($current_user->ID) : 0;
 ?>
 
 <!-- 📌 Conteneur Profil + Points -->
@@ -37,29 +38,35 @@ $logout_url = wc_get_account_endpoint_url('customer-logout'); // Lien déconnexi
     <!-- 📌 Barre de navigation Desktop -->
    <nav class="dashboard-nav">
         <ul>
-           <li class="<?php echo is_account_page() && !is_wc_endpoint_url() ? 'active' : ''; ?>">
+            <li class="<?php echo is_account_page() && !is_wc_endpoint_url() ? 'active' : ''; ?>">
                 <a href="<?php echo esc_url(wc_get_account_endpoint_url('dashboard')); ?>">
-                    <i class="fas fa-home"></i> <span>Accueil</span>
+                    <i class="fas fa-home"></i> <span><?php esc_html_e('Accueil', 'chassesautresor-com'); ?></span>
                 </a>
             </li>
-            <li class="<?php echo is_wc_endpoint_url('orders') ? 'active' : ''; ?>">
-                <a href="<?php echo esc_url(wc_get_account_endpoint_url('orders')); ?>">
-                    <i class="fas fa-box"></i> <span>Commandes</span>
-                </a>
-            </li>
-            <li class="<?php echo is_wc_endpoint_url('edit-address') ? 'active' : ''; ?>">
-                <a href="<?php echo esc_url(wc_get_account_endpoint_url('edit-address')); ?>">
-                    <i class="fas fa-map-marker-alt"></i> <span>Adresses</span>
+            <li class="<?php echo is_wc_endpoint_url('chasses') ? 'active' : ''; ?>">
+                <a href="<?php echo esc_url(wc_get_account_endpoint_url('chasses')); ?>">
+                    <i class="fas fa-map"></i> <span><?php esc_html_e('Mes chasses', 'chassesautresor-com'); ?></span>
                 </a>
             </li>
             <li class="<?php echo is_wc_endpoint_url('edit-account') ? 'active' : ''; ?>">
                 <a href="<?php echo esc_url(wc_get_account_endpoint_url('edit-account')); ?>">
-                    <i class="fas fa-cog"></i> <span>Paramètres</span>
+                    <i class="fas fa-user"></i> <span><?php esc_html_e('Profil', 'chassesautresor-com'); ?></span>
+                </a>
+            </li>
+            <li class="<?php echo is_wc_endpoint_url('points') ? 'active' : ''; ?>">
+                <a href="<?php echo esc_url(wc_get_account_endpoint_url('points')); ?>">
+                    <i class="fas fa-star"></i>
+                    <span>
+                        <?php esc_html_e('Points', 'chassesautresor-com'); ?>
+                        <?php if ($points_balance) : ?>
+                            <span class="points-badge"><?php echo esc_html($points_balance); ?></span>
+                        <?php endif; ?>
+                    </span>
                 </a>
             </li>
             <li>
                 <a href="<?php echo esc_url(wc_logout_url()); ?>">
-                    <i class="fas fa-sign-out-alt"></i> <span>Déconnexion</span>
+                    <i class="fas fa-sign-out-alt"></i> <span><?php esc_html_e('Déconnexion', 'chassesautresor-com'); ?></span>
                 </a>
             </li>
         </ul>
