@@ -1,4 +1,89 @@
 /* ==========================================================
+📌 Layout "Mon Compte" (shadcn/ui inspired)
+========================================================== */
+.woocommerce-account .ast-container {
+    max-width: none;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.myaccount-layout {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+}
+
+.myaccount-sidebar {
+    width: 280px;
+    border-right: 1px solid hsl(var(--border));
+    background: hsl(var(--background));
+    display: flex;
+    flex-direction: column;
+}
+
+.myaccount-brand {
+    display: flex;
+    align-items: center;
+    height: 56px;
+    padding: 0 16px;
+    border-bottom: 1px solid hsl(var(--border));
+    font-weight: 600;
+}
+
+.dashboard-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.dashboard-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    color: hsl(var(--muted-foreground));
+    text-decoration: none;
+    transition: color 0.2s ease, background 0.2s ease;
+}
+
+.dashboard-nav-link:hover {
+    color: hsl(var(--primary));
+}
+
+.dashboard-nav-link.active {
+    background: hsl(var(--muted));
+    color: hsl(var(--primary));
+}
+
+.myaccount-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.myaccount-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 56px;
+    padding: 0 16px;
+    border-bottom: 1px solid hsl(var(--border));
+    background: hsl(var(--background));
+}
+
+.myaccount-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+}
+
+/* ==========================================================
 📌 Styles Généraux - Conteneur & Typographie
 ========================================================== */
 .dashboard-container {
@@ -108,69 +193,6 @@
 }
 
 /* ==========================================================
-📌 Menu de Navigation Principal (Desktop & Mobile)
-========================================================== */
-.dashboard-nav {
-    background: transparent;
-    padding: 0;
-    border-radius: 0;
-    margin: 0;
-}
-
-.dashboard-nav ul {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.dashboard-nav ul li {
-    position: relative;
-    margin: 0 15px;
-}
-.dashboard-nav ul li.active a,  .dashboard-nav ul li a:hover {
-    color: var(--color-primary);
-}
-
-.dashboard-nav ul li a {
-    text-decoration: none;
-    color: var(--color-text-primary);
-    font-weight: bold;
-    transition: var(--transition-fast);
-    padding: 10px 15px;
-}
-
-/* 📌 Déconnexion alignée à droite */
-.dashboard-nav ul .logout {
-    margin-left: auto;
-}
-
-/* ✅ Texte en desktop, icônes en mobile */
-@media (min-width: 769px) {
-    .dashboard-nav ul li a span {
-        display: inline;
-    }
-    .dashboard-nav ul li a i {
-        display: none;
-    }
-}
-
-@media (max-width: 768px) {
-    .dashboard-nav ul li {
-        margin:0;
-    }
-    .dashboard-nav ul li a span {
-        display: none;
-    }
-    .dashboard-nav ul li a i {
-        display: inline-block;
-        font-size: 22px;
-    }
-}
-
-/* ==========================================================
 📌 Menu Déroulant WooCommerce
 ========================================================== */
 .menu-deroulant {
@@ -217,10 +239,6 @@
 @media (max-width: 768px) {
     .menu-deroulant .submenu {
         left: -50px;
-    }
-    .dashboard-nav ul li a i {
-        display: inline-block;
-        font-size: 22px;
     }
 }
 
