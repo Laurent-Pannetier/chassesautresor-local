@@ -105,6 +105,11 @@ function get_cta_enigme(int $enigme_id, ?int $user_id = null): array
     $etat_systeme = enigme_get_etat_systeme($enigme_id);
     $statut_utilisateur = enigme_get_statut_utilisateur($enigme_id, $user_id);
     $points = intval(get_field('enigme_tentative_cout_points', $enigme_id));
+    $mode_validation = get_field('enigme_mode_validation', $enigme_id);
+    $chasse_terminee = $chasse_id && get_field('chasse_cache_statut', $chasse_id) === 'termine';
+    if ($chasse_terminee && $etat_systeme !== 'bloquee_pre_requis') {
+        $etat_systeme = 'accessible';
+    }
 
     // Base commune
     $cta = [
@@ -168,6 +173,19 @@ function get_cta_enigme(int $enigme_id, ?int $user_id = null): array
         ]);
     }
 
+    // 🏁 Chasse terminée : accès libre (sauf pré-requis)
+    if ($chasse_terminee && $etat_systeme !== 'bloquee_pre_requis') {
+        return array_merge($cta, [
+            'type'       => 'voir',
+            'label'      => 'Voir',
+            'action'     => 'link',
+            'url'        => get_permalink($enigme_id),
+            'classe_css' => 'cta-voir',
+            'badge'      => 'Terminée',
+            'points'     => 0,
+        ]);
+    }
+
     // ✅ Cas accessible → traitement par statut utilisateur
     switch ($statut_utilisateur) {
         case 'non_commencee':
@@ -181,12 +199,15 @@ function get_cta_enigme(int $enigme_id, ?int $user_id = null): array
             ]);
 
         case 'en_cours':
+            $type_cours  = ($mode_validation === 'aucune') ? 'voir' : 'continuer';
+            $label_cours = ($mode_validation === 'aucune') ? 'Voir' : 'Continuer';
+            $classe_cours= ($mode_validation === 'aucune') ? 'cta-voir' : 'cta-en-cours';
             return array_merge($cta, [
-                'type'       => 'continuer',
-                'label'      => 'Continuer',
+                'type'       => $type_cours,
+                'label'      => $label_cours,
                 'action'     => 'link',
                 'url'        => get_permalink($enigme_id),
-                'classe_css' => 'cta-en-cours',
+                'classe_css' => $classe_cours,
                 'badge'      => 'En cours',
             ]);
 

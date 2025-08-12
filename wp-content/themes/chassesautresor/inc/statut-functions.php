@@ -61,6 +61,10 @@ function enigme_get_statut_utilisateur(int $enigme_id, int $user_id): string
         $enigme_id
     ));
 
+    if ($statut) {
+        $statut = strtolower(remove_accents($statut));
+    }
+
     return $statut ?: 'non_commencee';
 }
 
@@ -79,6 +83,9 @@ function enigme_mettre_a_jour_statut_utilisateur(int $enigme_id, int $user_id, s
     if (!$enigme_id || !$user_id || !$nouveau_statut) {
         return false;
     }
+
+    $nouveau_statut = strtolower(remove_accents($nouveau_statut));
+
     global $wpdb;
     $table = $wpdb->prefix . 'enigme_statuts_utilisateur';
 
@@ -103,6 +110,10 @@ function enigme_mettre_a_jour_statut_utilisateur(int $enigme_id, int $user_id, s
         $enigme_id
     ));
 
+    if ($statut_actuel) {
+        $statut_actuel = strtolower(remove_accents($statut_actuel));
+    }
+
     // Protection : interdiction de rétrograder un joueur ayant déjà résolu l’énigme
     if (!$forcer && in_array($statut_actuel, ['resolue', 'terminee'], true)) {
         cat_debug("🔒 Statut non modifié : $statut_actuel → tentative de mise à jour vers $nouveau_statut bloquée (UID: $user_id / Enigme: $enigme_id)");
@@ -117,8 +128,8 @@ function enigme_mettre_a_jour_statut_utilisateur(int $enigme_id, int $user_id, s
     }
 
     $data = [
-        'statut'            => $nouveau_statut,
-        'date_mise_a_jour'  => current_time('mysql'),
+        'statut'           => $nouveau_statut,
+        'date_mise_a_jour' => current_time('mysql'),
     ];
 
     $where = [
@@ -157,10 +168,8 @@ function enigme_pre_requis_remplis(int $enigme_id, int $user_id): bool
 
         if ($enigme_id_requise) {
             $statut = get_user_meta($user_id, "statut_enigme_{$enigme_id_requise}", true);
-            // Les statuts d'énigme sont stockés sans accent ("terminee")
-            // dans les autres parties du code. Utiliser la même valeur ici
-            // pour éviter un échec de vérification systématique des
-            // prérequis lorsque l'utilisateur a pourtant terminé l'énigme.
+            $statut = $statut ? strtolower(remove_accents($statut)) : '';
+
             if ($statut !== 'terminee') {
                 return false; // ❌ Prérequis non rempli
             }
@@ -1133,6 +1142,10 @@ function get_statut_utilisateur_enigme($user_id, $enigme_id)
         $user_id,
         $enigme_id
     ));
+
+    if ($statut) {
+        $statut = strtolower(remove_accents($statut));
+    }
 
     $cache[$key] = $statut ?: null;
     return $cache[$key];

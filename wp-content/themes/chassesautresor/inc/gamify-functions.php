@@ -245,18 +245,41 @@ function ajouter_points_utilisateur(int $user_id, int $montant): void {
  */
 function enigme_get_chasse_progression(int $chasse_id, int $user_id): array
 {
-    $enigmes = recuperer_enigmes_associees($chasse_id); // ✅ Retourne directement les IDs
-    $resolues = count(array_filter($enigmes, function ($id) use ($user_id, $chasse_id) {
-        $mode = get_field('enigme_mode_validation', $id);
-        if ($mode === 'aucune') {
-            return utilisateur_est_engage_dans_chasse($user_id, $chasse_id);
+    $enigmes = recuperer_enigmes_associees($chasse_id); // ✅ IDs uniquement
+    if (empty($enigmes)) {
+        return ['resolues' => 0, 'total' => 0];
+    }
+
+    $validables      = [];
+    $non_validables  = [];
+    foreach ($enigmes as $id) {
+        if (get_field('enigme_mode_validation', $id) === 'aucune') {
+            $non_validables[] = $id;
+        } else {
+            $validables[] = $id;
         }
-        return get_user_meta($user_id, "statut_enigme_{$id}", true) === 'terminée';
-    }));
+    }
+
+    global $wpdb;
+    $resolues = 0;
+
+    if ($validables) {
+        $table        = $wpdb->prefix . 'enigme_statuts_utilisateur';
+        $placeholders = implode(',', array_fill(0, count($validables), '%d'));
+        $sql = "SELECT COUNT(DISTINCT enigme_id) FROM {$table} WHERE user_id = %d AND statut IN ('resolue','terminee','terminée') AND enigme_id IN ($placeholders)";
+        $resolues = (int) $wpdb->get_var($wpdb->prepare($sql, array_merge([$user_id], $validables)));
+    }
+
+    if ($non_validables) {
+        $table_eng    = $wpdb->prefix . 'engagements';
+        $placeholders = implode(',', array_fill(0, count($non_validables), '%d'));
+        $sql = "SELECT COUNT(DISTINCT enigme_id) FROM {$table_eng} WHERE user_id = %d AND enigme_id IN ($placeholders)";
+        $resolues += (int) $wpdb->get_var($wpdb->prepare($sql, array_merge([$user_id], $non_validables)));
+    }
 
     return [
         'resolues' => $resolues,
-        'total' => count($enigmes),
+        'total'    => count($validables) + count($non_validables),
     ];
 }
 
@@ -273,22 +296,39 @@ function compter_enigmes_resolues($chasse_id, $user_id): int
         return 0; // 🔒 Vérification des IDs
     }
 
-    $enigmes = get_field('enigmes_associees', $chasse_id) ?: [];
+    $enigmes = recuperer_enigmes_associees($chasse_id);
     if (empty($enigmes)) {
         return 0;
     }
 
-    return count(array_filter($enigmes, function ($enigme) use ($user_id, $chasse_id) {
-        $enigme_id = is_object($enigme) ? $enigme->ID : (int) $enigme;
-        if (!$enigme_id) {
-            return false;
+    $validables     = [];
+    $non_validables = [];
+    foreach ($enigmes as $eid) {
+        if (get_field('enigme_mode_validation', $eid) === 'aucune') {
+            $non_validables[] = $eid;
+        } else {
+            $validables[] = $eid;
         }
-        $mode = get_field('enigme_mode_validation', $enigme_id);
-        if ($mode === 'aucune') {
-            return utilisateur_est_engage_dans_chasse($user_id, $chasse_id);
-        }
-        return get_user_meta($user_id, "statut_enigme_{$enigme_id}", true) === 'terminée';
-    }));
+    }
+
+    global $wpdb;
+    $resolues = 0;
+
+    if ($validables) {
+        $table        = $wpdb->prefix . 'enigme_statuts_utilisateur';
+        $placeholders = implode(',', array_fill(0, count($validables), '%d'));
+        $sql = "SELECT COUNT(DISTINCT enigme_id) FROM {$table} WHERE user_id = %d AND statut IN ('resolue','terminee','terminée') AND enigme_id IN ($placeholders)";
+        $resolues = (int) $wpdb->get_var($wpdb->prepare($sql, array_merge([$user_id], $validables)));
+    }
+
+    if ($non_validables) {
+        $table_eng    = $wpdb->prefix . 'engagements';
+        $placeholders = implode(',', array_fill(0, count($non_validables), '%d'));
+        $sql = "SELECT COUNT(DISTINCT enigme_id) FROM {$table_eng} WHERE user_id = %d AND enigme_id IN ($placeholders)";
+        $resolues += (int) $wpdb->get_var($wpdb->prepare($sql, array_merge([$user_id], $non_validables)));
+    }
+
+    return $resolues;
 }
 
 /**
@@ -307,8 +347,7 @@ function verifier_fin_de_chasse($user_id, $enigme_id)
     error_log("🔍 Vérification de fin de chasse pour l'utilisateur {$user_id} (énigme : {$enigme_id})");
 
     // 🧭 Récupération de la chasse associée
-    $chasse_id = get_field('chasse_associee', $enigme_id, false);
-    $chasse_id = is_array($chasse_id) ? reset($chasse_id) : $chasse_id;
+    $chasse_id = recuperer_id_chasse_associee($enigme_id);
 
     if (!$chasse_id) {
         error_log("❌ Aucune chasse associée trouvée.");
@@ -320,33 +359,44 @@ function verifier_fin_de_chasse($user_id, $enigme_id)
         return; // 🔁 La complétion se fait manuellement
     }
 
-    // 📄 Récupération des énigmes associées
-    $enigmes_associees = get_field('enigmes_associees', $chasse_id);
-    if (empty($enigmes_associees) || !is_array($enigmes_associees)) {
+    // 📄 Récupération des énigmes associées (IDs uniquement)
+    $enigmes_associees = recuperer_enigmes_associees($chasse_id);
+    if (empty($enigmes_associees)) {
         error_log("⚠️ Pas d'énigmes associées à la chasse (ID: {$chasse_id})");
         return;
     }
 
-    $enigmes_validables = array_filter($enigmes_associees, function ($eid) {
-        return get_field('enigme_mode_validation', $eid) !== 'aucune';
-    });
-
-    if (empty($enigmes_validables)) {
-        error_log("⚠️ Mode automatique impossible : aucune énigme validable.");
-        return;
+    $validables      = [];
+    $non_validables  = [];
+    foreach ($enigmes_associees as $eid) {
+        if (get_field('enigme_mode_validation', $eid) === 'aucune') {
+            $non_validables[] = $eid;
+        } else {
+            $validables[] = $eid;
+        }
     }
 
-    $enigmes_resolues = array_filter($enigmes_validables, function ($associee_id) use ($user_id) {
-        return get_user_meta($user_id, "statut_enigme_{$associee_id}", true) === 'terminée';
-    });
+    global $wpdb;
+    $nb_resolues = 0;
 
-    if (count($enigmes_resolues) === count($enigmes_validables)) {
-        update_field('chasse_cache_complet', 1, $chasse_id);
-        $statut_chasse = get_field('chasse_cache_statut', $chasse_id);
-        if (in_array($statut_chasse, ['payante', 'en_cours'], true)) {
-            update_field('chasse_cache_statut', 'termine', $chasse_id);
-            gerer_chasse_terminee($chasse_id);
-        }
+    if ($validables) {
+        $table        = $wpdb->prefix . 'enigme_statuts_utilisateur';
+        $placeholders = implode(',', array_fill(0, count($validables), '%d'));
+        $sql = "SELECT COUNT(DISTINCT enigme_id) FROM {$table} WHERE user_id = %d AND statut IN ('resolue','terminee','terminée') AND enigme_id IN ($placeholders)";
+        $nb_resolues  = (int) $wpdb->get_var($wpdb->prepare($sql, array_merge([$user_id], $validables)));
+    }
+
+    $engagements_ok = true;
+    if ($non_validables) {
+        $table_eng    = $wpdb->prefix . 'engagements';
+        $placeholders = implode(',', array_fill(0, count($non_validables), '%d'));
+        $sql = "SELECT COUNT(DISTINCT enigme_id) FROM {$table_eng} WHERE user_id = %d AND enigme_id IN ($placeholders)";
+        $nb_engagees  = (int) $wpdb->get_var($wpdb->prepare($sql, array_merge([$user_id], $non_validables)));
+        $engagements_ok = ($nb_engagees === count($non_validables));
+    }
+
+    if ($nb_resolues === count($validables) && $engagements_ok) {
+        gerer_chasse_terminee($chasse_id);
     }
 }
 add_action('enigme_resolue', function($user_id, $enigme_id) {
