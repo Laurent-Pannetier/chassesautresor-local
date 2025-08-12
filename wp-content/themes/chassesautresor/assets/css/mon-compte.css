@@ -269,51 +269,43 @@
 ========================================================== */
 .dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Desktop : 3 colonnes */
-    gap: 25px;
+    gap: 24px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     margin-top: 20px;
 }
+
 .dashboard-card {
-    background: rgba(139, 0, 0, 0.13);
-    color: var(--color-text-primary);
-    padding: 20px;
-    border-radius: 10px;
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: 8px;
+    padding: 16px;
     text-decoration: none;
-    transition: var(--transition-fast);
-    border: 1px solid rgba(139, 0, 0, 0.5);
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    min-height: 250px; /* Ajuste la hauteur minimale selon ton design */
-    height: 100%; /* Assure que toutes les cartes ont la même hauteur */
+    color: hsl(var(--foreground));
+    transition: background 0.2s ease;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .dashboard-card:hover {
-    background: rgba(225, 169, 95, 0.3);
+    background: hsl(var(--muted));
 }
+
 .dashboard-card-header {
-    position: relative;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
 }
 
 .dashboard-card-header i {
-    position: absolute;
-    font-size: 18px; /* Taille ajustée pour être discrète */
-    left: 0px;
-    top: 4px;
-    width: 28px; /* Diamètre du cercle */
-    height: 28px;
-    line-height: 28px;
-    text-align: center;
-    background-color: var(--color-primary); /* Couleur du cercle */
-    color: var(--color-background); /* Couleur de l'icône */
-    border-radius: 50%; /* Rend le fond circulaire */
-    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3); /* Ombre légère */
+    font-size: 1rem;
 }
-.dashboard-card .icon {
-    font-size: 24px;
-    display: block;
-    margin-bottom: 10px;
-    opacity: 0.8;
+
+.dashboard-card-content {
+    font-size: 0.875rem;
+    color: hsl(var(--muted-foreground));
 }
 /* listes */
 .dashboard-card ul li {
@@ -472,20 +464,7 @@
 
 
 /* Tablette : 2 colonnes */
-@media (max-width: 1024px) {
-    .dashboard-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-
-/* FIN TUILES EN DESKTOP */
-
-/* Mobile : 1 colonne */
 @media (max-width: 768px) {
-    .dashboard-grid {
-        grid-template-columns: repeat(1, 1fr);
-    }
     .image-container {
         height: 260px;
     }
@@ -502,6 +481,13 @@
     font-size: 1.6rem;
 }
 /* Sections for account dashboard */
-.dashboard-section { margin-top: 40px; }
-.dashboard-section-title { font-size: 1.5rem; margin-bottom: 10px; border-bottom: 2px solid rgba(139,0,0,0.3); padding-bottom:5px; }
+.dashboard-section {
+    margin-top: 40px;
+}
+
+.dashboard-section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
 
