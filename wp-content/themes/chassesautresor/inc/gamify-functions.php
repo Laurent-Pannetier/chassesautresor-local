@@ -274,19 +274,17 @@ function compter_enigmes_resolues($chasse_id, $user_id): int
         return 0; // 🔒 Vérification des IDs
     }
 
-    $enigmes = get_field('enigmes_associees', $chasse_id) ?: [];
+    $enigmes = recuperer_enigmes_associees($chasse_id);
     if (empty($enigmes)) {
         return 0;
     }
 
-    $validables = array_filter($enigmes, function ($enigme) {
-        $eid = is_object($enigme) ? $enigme->ID : (int) $enigme;
-        return $eid && get_field('enigme_mode_validation', $eid) !== 'aucune';
+    $validables = array_filter($enigmes, function (int $eid) {
+        return get_field('enigme_mode_validation', $eid) !== 'aucune';
     });
 
-    return count(array_filter($validables, function ($enigme) use ($user_id) {
-        $enigme_id = is_object($enigme) ? $enigme->ID : (int) $enigme;
-        $statut = enigme_get_statut_utilisateur($enigme_id, $user_id);
+    return count(array_filter($validables, function (int $eid) use ($user_id) {
+        $statut = enigme_get_statut_utilisateur($eid, $user_id);
         return in_array($statut, ['resolue', 'terminee'], true);
     }));
 }
@@ -320,14 +318,14 @@ function verifier_fin_de_chasse($user_id, $enigme_id)
         return; // 🔁 La complétion se fait manuellement
     }
 
-    // 📄 Récupération des énigmes associées
-    $enigmes_associees = get_field('enigmes_associees', $chasse_id);
-    if (empty($enigmes_associees) || !is_array($enigmes_associees)) {
+    // 📄 Récupération des énigmes associées (IDs uniquement)
+    $enigmes_associees = recuperer_enigmes_associees($chasse_id);
+    if (empty($enigmes_associees)) {
         error_log("⚠️ Pas d'énigmes associées à la chasse (ID: {$chasse_id})");
         return;
     }
 
-    $enigmes_validables = array_filter($enigmes_associees, function ($eid) {
+    $enigmes_validables = array_filter($enigmes_associees, function (int $eid) {
         return get_field('enigme_mode_validation', $eid) !== 'aucune';
     });
 
@@ -336,8 +334,8 @@ function verifier_fin_de_chasse($user_id, $enigme_id)
         return;
     }
 
-    $enigmes_resolues = array_filter($enigmes_validables, function ($associee_id) use ($user_id) {
-        $statut = enigme_get_statut_utilisateur($associee_id, $user_id);
+    $enigmes_resolues = array_filter($enigmes_validables, function (int $eid) use ($user_id) {
+        $statut = enigme_get_statut_utilisateur($eid, $user_id);
         return in_array($statut, ['resolue', 'terminee'], true);
     });
 
