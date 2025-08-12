@@ -80,8 +80,6 @@ function charger_script_conversion() {
             'mon-compte/outils',
             'mon-compte/statistiques',
             'mon-compte/organisateurs',
-            'mon-compte/organisateurs/paiements',
-            'mon-compte/organisateurs/inscription',
         ];
 
         $inclure = in_array($request_uri, $autorises);

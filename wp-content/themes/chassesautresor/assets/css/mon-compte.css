@@ -83,6 +83,15 @@
     color: hsl(var(--primary));
 }
 
+.dashboard-nav-heading {
+    margin: 16px 0 8px;
+    padding: 0 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: hsl(var(--muted-foreground));
+    text-transform: uppercase;
+}
+
 .myaccount-main {
     flex: 1;
     display: flex;

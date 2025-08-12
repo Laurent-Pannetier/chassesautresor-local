@@ -6,6 +6,11 @@
  */
 
 defined('ABSPATH') || exit;
+
+if (!current_user_can('administrator')) {
+    wp_redirect(home_url('/mon-compte/'));
+    exit;
+}
 ?>
 <section>
     <h1 class="mb-4 text-xl font-semibold"><?php esc_html_e('Outils', 'chassesautresor'); ?></h1>

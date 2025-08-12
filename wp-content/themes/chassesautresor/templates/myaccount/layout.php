@@ -14,6 +14,7 @@ $content_template = $GLOBALS['myaccount_content_template'] ?? null;
 $current_user     = wp_get_current_user();
 $display_name     = $current_user->ID ? $current_user->display_name : get_bloginfo('name');
 $show_nav         = is_user_logged_in();
+$current_path     = trim($_SERVER['REQUEST_URI'], '/');
 ?>
 <div class="myaccount-layout">
     <aside class="myaccount-sidebar">
@@ -66,6 +67,45 @@ $show_nav         = is_user_logged_in();
                 <span><?php esc_html_e('Déconnexion', 'chassesautresor'); ?></span>
             </a>
         </nav>
+        <?php if (current_user_can('administrator')) : ?>
+        <nav class="dashboard-nav admin-nav">
+            <span class="dashboard-nav-heading"><?php esc_html_e('Administration', 'chassesautresor'); ?></span>
+            <?php
+            $admin_items = array(
+                array(
+                    'label'  => __('Organisateurs', 'chassesautresor'),
+                    'icon'   => 'fas fa-users',
+                    'url'    => home_url('/mon-compte/organisateurs/'),
+                    'active' => $current_path === 'mon-compte/organisateurs',
+                ),
+                array(
+                    'label'  => __('Statistiques', 'chassesautresor'),
+                    'icon'   => 'fas fa-chart-line',
+                    'url'    => home_url('/mon-compte/statistiques/'),
+                    'active' => $current_path === 'mon-compte/statistiques',
+                ),
+                array(
+                    'label'  => __('Outils', 'chassesautresor'),
+                    'icon'   => 'fas fa-wrench',
+                    'url'    => home_url('/mon-compte/outils/'),
+                    'active' => $current_path === 'mon-compte/outils',
+                ),
+            );
+
+            foreach ($admin_items as $item) {
+                $classes = 'dashboard-nav-link';
+                if ($item['active']) {
+                    $classes .= ' active';
+                }
+
+                echo '<a href="' . esc_url($item['url']) . '" class="' . esc_attr($classes) . '">';
+                echo '<i class="' . esc_attr($item['icon']) . '"></i>';
+                echo '<span>' . esc_html($item['label']) . '</span>';
+                echo '</a>';
+            }
+            ?>
+        </nav>
+        <?php endif; ?>
         <?php
         $organizer_id = get_organisateur_from_user($current_user->ID);
         if ($organizer_id) {

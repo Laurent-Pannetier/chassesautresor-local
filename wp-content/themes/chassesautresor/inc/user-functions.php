@@ -41,8 +41,6 @@ defined( 'ABSPATH' ) || exit;
  * @return string Le chemin du fichier de template personnalisé ou le template par défaut.
  */
  function ajouter_rewrite_rules() {
-    add_rewrite_rule('^mon-compte/organisateurs/inscription/?$', 'index.php?mon_compte_organisateurs_inscription=1', 'top');
-    add_rewrite_rule('^mon-compte/organisateurs/paiements/?$', 'index.php?mon_compte_organisateurs_paiements=1', 'top');
     add_rewrite_rule('^mon-compte/statistiques/?$', 'index.php?mon_compte_statistiques=1', 'top');
     add_rewrite_rule('^mon-compte/outils/?$', 'index.php?mon_compte_outils=1', 'top');
 }
@@ -60,8 +58,6 @@ add_action('init', 'ajouter_rewrite_rules');
  * @hook query_vars
  */
 function ajouter_query_vars($vars) {
-    $vars[] = 'mon_compte_organisateurs_inscription';
-    $vars[] = 'mon_compte_organisateurs_paiements';
     $vars[] = 'mon_compte_statistiques';
     $vars[] = 'mon_compte_outils';
     return $vars;
@@ -101,8 +97,20 @@ function charger_template_utilisateur($template) {
         'mon-compte/outils'               => 'content-outils.php',
     );
 
+    $admin_paths = array(
+        'mon-compte/organisateurs',
+        'mon-compte/organisateurs/',
+        'mon-compte/statistiques',
+        'mon-compte/outils',
+    );
+
     // Vérifie si l'URL correspond à un contenu personnalisé
     if (array_key_exists($request_uri, $mapping_templates)) {
+        if (in_array($request_uri, $admin_paths, true) && !current_user_can('administrator')) {
+            wp_redirect(home_url('/mon-compte/'));
+            exit;
+        }
+
         $content_template = get_stylesheet_directory() . '/templates/myaccount/' . $mapping_templates[$request_uri];
 
         if (!file_exists($content_template)) {
