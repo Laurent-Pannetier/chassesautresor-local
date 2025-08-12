@@ -1353,14 +1353,15 @@ function afficher_tableau_organisateurs_en_creation() {
  *
  * @return array[] Liste des données des organisateurs en attente.
  */
-function recuperer_organisateurs_pending() {
+function recuperer_organisateurs_pending()
+{
     if (!current_user_can('administrator')) {
         return [];
     }
 
     $query = new WP_Query([
         'post_type'      => 'organisateur',
-        'post_status'    => 'pending',
+        'post_status'    => 'any',
         'posts_per_page' => -1,
         'orderby'        => 'date',
         'order'          => 'DESC',
@@ -1370,13 +1371,11 @@ function recuperer_organisateurs_pending() {
     $resultats = [];
 
     foreach ($query->posts as $organisateur_id) {
-        $date_creation = get_post_field('post_date', $organisateur_id);
-        $titre         = get_the_title($organisateur_id);
-        $permalink     = get_permalink($organisateur_id);
+        $titre     = get_the_title($organisateur_id);
+        $permalink = get_permalink($organisateur_id);
 
-
-        $users = (array) get_field('utilisateurs_associes', $organisateur_id);
-        $user_id = $users ? intval(reset($users)) : null;
+        $users     = (array) get_field('utilisateurs_associes', $organisateur_id);
+        $user_id   = $users ? intval(reset($users)) : null;
         $user_name = '';
         $user_link = '';
         if ($user_id) {
@@ -1387,54 +1386,68 @@ function recuperer_organisateurs_pending() {
             }
         }
 
-
         verifier_ou_mettre_a_jour_cache_complet($organisateur_id);
-        $org_complet = (bool) get_field('organisateur_cache_complet', $organisateur_id);
 
-        $chasses = get_chasses_de_organisateur($organisateur_id);
-        $chasse_id = null;
-        $chasse_titre = '';
-        $chasse_permalink = '';
-        $chasse_complet = false;
-        $nb_enigmes = 0;
-        $validation = '';
+        $chasses = new WP_Query([
+            'post_type'      => 'chasse',
+            'posts_per_page' => -1,
+            'post_status'    => ['publish', 'pending', 'draft'],
+            'meta_query'     => [
+                [
+                    'key'     => 'chasse_cache_organisateur',
+                    'value'   => '"' . strval($organisateur_id) . '"',
+                    'compare' => 'LIKE',
+                ],
+            ],
+            'fields'         => 'ids',
+        ]);
 
-        if ($chasses && $chasses->have_posts()) {
-            $chasse_id = $chasses->posts[0]->ID;
-            $chasse_titre = get_the_title($chasse_id);
-            $chasse_permalink = get_permalink($chasse_id);
-            verifier_ou_mettre_a_jour_cache_complet($chasse_id);
-            $chasse_complet = (bool) get_field('chasse_cache_complet', $chasse_id);
-            $nb_enigmes = count(recuperer_enigmes_associees($chasse_id));
-            $validation = get_field('chasse_cache_statut_validation', $chasse_id);
+        if ($chasses->have_posts()) {
+            foreach ($chasses->posts as $chasse_id) {
+                $date_creation  = get_post_field('post_date', $chasse_id);
+                $chasse_titre   = get_the_title($chasse_id);
+                $chasse_link    = get_permalink($chasse_id);
+                $nb_enigmes     = count(recuperer_enigmes_associees($chasse_id));
+                $statut         = get_field('chasse_cache_statut', $chasse_id);
+                $validation     = get_field('chasse_cache_statut_validation', $chasse_id);
 
+                $resultats[] = [
+                    'organisateur_id'        => $organisateur_id,
+                    'organisateur_titre'     => $titre,
+                    'organisateur_permalink' => $permalink,
+                    'user_id'                => $user_id,
+                    'user_name'              => $user_name,
+                    'user_link'              => $user_link,
+                    'chasse_id'              => $chasse_id,
+                    'chasse_titre'           => $chasse_titre,
+                    'chasse_permalink'       => $chasse_link,
+                    'nb_enigmes'             => $nb_enigmes,
+                    'statut'                 => $statut,
+                    'validation'             => $validation,
+                    'date_creation'          => $date_creation,
+                ];
+            }
+        } else {
+            $date_creation = get_post_field('post_date', $organisateur_id);
+            $resultats[]   = [
+                'organisateur_id'        => $organisateur_id,
+                'organisateur_titre'     => $titre,
+                'organisateur_permalink' => $permalink,
+                'user_id'                => $user_id,
+                'user_name'              => $user_name,
+                'user_link'              => $user_link,
+                'chasse_id'              => null,
+                'chasse_titre'           => '',
+                'chasse_permalink'       => '',
+                'nb_enigmes'             => 0,
+                'statut'                 => '',
+                'validation'             => '',
+                'date_creation'          => $date_creation,
+            ];
         }
-
-        $resultats[] = [
-            'organisateur_id'       => $organisateur_id,
-            'organisateur_titre'    => $titre,
-            'organisateur_permalink'=> $permalink,
-            'organisateur_complet'  => $org_complet,
-            'user_id'               => $user_id,
-            'user_name'             => $user_name,
-            'user_link'             => $user_link,
-
-            'date_creation'         => $date_creation,
-            'chasse_id'             => $chasse_id,
-            'chasse_titre'          => $chasse_titre,
-            'chasse_permalink'      => $chasse_permalink,
-            'chasse_complet'        => $chasse_complet,
-            'nb_enigmes'            => $nb_enigmes,
-            'validation'            => $validation,
-        ];
     }
 
     usort($resultats, function ($a, $b) {
-        $a_valide = ($a['validation'] === 'en_attente');
-        $b_valide = ($b['validation'] === 'en_attente');
-        if ($a_valide !== $b_valide) {
-            return $a_valide ? -1 : 1;
-        }
         $timeA = strtotime($a['date_creation']);
         $timeB = strtotime($b['date_creation']);
         return $timeA === $timeB ? 0 : ($timeA < $timeB ? 1 : -1);
@@ -1444,42 +1457,84 @@ function recuperer_organisateurs_pending() {
 }
 
 /**
- * Affiche la liste des organisateurs en attente dans un tableau.
+ * Affiche la liste des organisateurs et leurs chasses dans un tableau.
+ *
+ * @param array|null $liste Données pré-calculées.
  */
-function afficher_tableau_organisateurs_pending() {
-    $liste = recuperer_organisateurs_pending();
+function afficher_tableau_organisateurs_pending(array $liste = null)
+{
+    if (null === $liste) {
+        $liste = recuperer_organisateurs_pending();
+    }
     if (empty($liste)) {
-        echo '<p>Aucun organisateur en attente.</p>';
+        echo '<p>Aucun organisateur.</p>';
         return;
     }
 
-    echo '<table class="table-organisateurs">';
-    echo '<thead><tr><th>Organisateur</th><th>Chasse</th><th>État</th><th>Utilisateur</th><th>Créé le</th></tr></thead><tbody>';
-
+    $etats = [];
     foreach ($liste as $entry) {
-        $class_org = $entry['organisateur_complet'] ? 'carte-complete' : 'carte-incomplete';
-        $class_chasse = $entry['chasse_id'] ? ($entry['chasse_complet'] ? 'carte-complete' : 'carte-incomplete') : '';
-        $ligne_validation = $entry['validation'] === 'en_attente' ? 'champ-attention' : '';
+        if (!empty($entry['statut'])) {
+            $etats[$entry['statut']] = true;
+        }
+    }
 
-        echo '<tr class="' . esc_attr($ligne_validation) . '">';
-        echo '<td class="' . esc_attr($class_org) . '"><a href="' . esc_url($entry['organisateur_permalink']) . '" target="_blank">' . esc_html($entry['organisateur_titre']) . '</a></td>';
-        if ($entry['chasse_id']) {
-            $titre_chasse = $entry['chasse_titre'];
-            if ($entry['nb_enigmes']) {
-                $titre_chasse .= ' (' . intval($entry['nb_enigmes']) . ')';
+    echo '<label for="filtre-etat">' . esc_html__('Filtrer par état :', 'chassesautresor') . '</label>';
+    echo '<select id="filtre-etat">';
+    echo '<option value="tous">' . esc_html__('Tous', 'chassesautresor') . '</option>';
+    foreach (array_keys($etats) as $etat) {
+        echo '<option value="' . esc_attr($etat) . '">' . esc_html($etat) . '</option>';
+    }
+    echo '</select>';
+
+    $grouped = [];
+    foreach ($liste as $entry) {
+        $oid = $entry['organisateur_id'];
+        if (!isset($grouped[$oid])) {
+            $grouped[$oid] = [
+                'organisateur_titre'     => $entry['organisateur_titre'],
+                'organisateur_permalink' => $entry['organisateur_permalink'],
+                'user_id'                => $entry['user_id'],
+                'user_name'              => $entry['user_name'],
+                'user_link'              => $entry['user_link'],
+                'rows'                   => [],
+            ];
+        }
+        $grouped[$oid]['rows'][] = $entry;
+    }
+
+    echo '<table class="table-organisateurs">';
+    echo '<thead><tr><th>Organisateur</th><th>Chasse</th><th>Nb énigmes</th><th>État</th><th>Utilisateur</th><th data-col="date">Créé le <span class="tri-date">&#9650;&#9660;</span></th></tr></thead><tbody>';
+
+    foreach ($grouped as $org) {
+        $rows    = $org['rows'];
+        $rowspan = count($rows);
+        $first   = true;
+        foreach ($rows as $row) {
+            echo '<tr data-etat="' . esc_attr($row['statut']) . '" data-date="' . esc_attr($row['date_creation']) . '">';
+            if ($first) {
+                echo '<td rowspan="' . intval($rowspan) . '"><a href="' . esc_url($org['organisateur_permalink']) . '" target="_blank">' . esc_html($org['organisateur_titre']) . '</a></td>';
             }
-            echo '<td class="' . esc_attr($class_chasse) . '"><a href="' . esc_url($entry['chasse_permalink']) . '" target="_blank">' . esc_html($titre_chasse) . '</a></td>';
-        } else {
-            echo '<td>-</td>';
+
+            if ($row['chasse_id']) {
+                echo '<td><a href="' . esc_url($row['chasse_permalink']) . '" target="_blank">' . esc_html($row['chasse_titre']) . '</a></td>';
+                echo '<td>' . intval($row['nb_enigmes']) . '</td>';
+                echo '<td data-col="etat">' . esc_html($row['statut']) . '</td>';
+            } else {
+                echo '<td>-</td><td>-</td><td data-col="etat"></td>';
+            }
+
+            if ($first) {
+                if ($org['user_id']) {
+                    echo '<td rowspan="' . intval($rowspan) . '"><a href="' . esc_url($org['user_link']) . '" target="_blank">' . esc_html($org['user_name']) . '</a></td>';
+                } else {
+                    echo '<td rowspan="' . intval($rowspan) . '">-</td>';
+                }
+            }
+
+            echo '<td>' . esc_html(date_i18n('d/m/y', strtotime($row['date_creation']))) . '</td>';
+            echo '</tr>';
+            $first = false;
         }
-        echo '<td>' . esc_html($entry['validation']) . '</td>';
-        if ($entry['user_id']) {
-            echo '<td><a href="' . esc_url($entry['user_link']) . '" target="_blank">' . esc_html($entry['user_name']) . '</a></td>';
-        } else {
-            echo '<td>-</td>';
-        }
-        echo '<td>' . esc_html(date_i18n('d/m/y', strtotime($entry['date_creation']))) . '</td>';
-        echo '</tr>';
     }
 
     echo '</tbody></table>';

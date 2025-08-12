@@ -16,12 +16,11 @@ $organisateurs_liste = recuperer_organisateurs_pending();
 ?>
 <section>
     <h1 class="mb-4 text-xl font-semibold"><?php esc_html_e('Organisateurs', 'chassesautresor'); ?></h1>
-    <h2 class="text-lg font-semibold mb-2"><?php esc_html_e('Organisateurs en attente', 'chassesautresor'); ?></h2>
     <?php if (empty($organisateurs_liste)) : ?>
-        <p><?php esc_html_e('Aucun organisateur en attente.', 'chassesautresor'); ?></p>
+        <p><?php esc_html_e('Aucun organisateur.', 'chassesautresor'); ?></p>
     <?php else : ?>
         <span><?php echo count($organisateurs_liste); ?> <?php esc_html_e('résultat(s) trouvé(s)', 'chassesautresor'); ?></span>
-        <?php afficher_tableau_organisateurs_pending(); ?>
+        <?php afficher_tableau_organisateurs_pending($organisateurs_liste); ?>
     <?php endif; ?>
 
     <h2 class="text-lg font-semibold mt-8 mb-2"><?php esc_html_e('Demandes de paiement', 'chassesautresor'); ?></h2>
