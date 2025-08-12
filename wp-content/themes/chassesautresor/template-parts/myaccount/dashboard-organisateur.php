@@ -11,39 +11,6 @@ $organizer_id    = $args['organizer_id'] ?? null;
 $organizer_title = $args['organizer_title'] ?? '';
 $orders_output   = $args['orders_output'] ?? '';
 ?>
-<div class="dashboard-grid">
-    <div class="dashboard-card">
-        <div class="dashboard-card-header">
-            <i class="fas fa-landmark"></i>
-            <?php if ($organizer_id) : ?>
-                <a href="<?php echo esc_url(get_permalink($organizer_id)); ?>"><?php echo esc_html($organizer_title); ?></a>
-            <?php else : ?>
-                <span><?php echo esc_html($organizer_title); ?></span>
-            <?php endif; ?>
-        </div>
-        <div class="dashboard-card-content">
-            <?php if ($organizer_id) : ?>
-                <?php
-                $query          = get_chasses_de_organisateur($organizer_id);
-                $recent_chasses = $query && $query->have_posts() ? array_slice($query->posts, 0, 3) : array();
-                if ($recent_chasses) {
-                    echo '<ul>';
-                    foreach ($recent_chasses as $post) {
-                        $validation = get_field('chasse_cache_statut_validation', $post->ID);
-                        $label      = ucfirst(str_replace('_', ' ', $validation));
-                        echo '<li><a href="' . esc_url(get_permalink($post->ID)) . '">' . esc_html(get_the_title($post->ID)) . '</a> (' . esc_html($label) . ')</li>';
-                    }
-                    echo '</ul>';
-                } else {
-                    echo '<p>' . esc_html__('Aucune chasse trouvée.', 'chassesautresor') . '</p>';
-                }
-                ?>
-            <?php else : ?>
-                <p><?php esc_html_e('Aucun organisateur associé.', 'chassesautresor'); ?></p>
-            <?php endif; ?>
-        </div>
-    </div>
-</div>
 
 <div class="dashboard-grid">
     <div class="dashboard-card">
