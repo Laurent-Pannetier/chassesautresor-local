@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     const section = link.dataset.section;
     if (!section) {
-      window.location.href = link.href;
+      window.location.assign(link.href);
       return;
     }
 
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
       link.classList.add('active');
       window.history.pushState(null, '', link.href);
     } catch (err) {
-      window.location.href = link.href;
+      window.location.assign(link.href);
     }
   });
 });

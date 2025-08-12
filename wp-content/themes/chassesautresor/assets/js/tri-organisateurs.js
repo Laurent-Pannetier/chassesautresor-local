@@ -5,7 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!table) return;
   const tbody = table.querySelector('tbody');
   const filter = document.getElementById('filtre-etat');
-  const header = table.querySelector('th[data-col="date"]');
+  const btnUp = table.querySelector('.tri-date-up');
+  const btnDown = table.querySelector('.tri-date-down');
 
   if (filter) {
     filter.addEventListener('change', () => {
@@ -17,17 +18,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  if (header) {
-    header.style.cursor = 'pointer';
-    let asc = false;
-    header.addEventListener('click', () => {
-      const rows = Array.from(tbody.querySelectorAll('tr')).sort((a, b) => {
-        const da = new Date(a.dataset.date);
-        const db = new Date(b.dataset.date);
-        return asc ? da - db : db - da;
-      });
-      rows.forEach(r => tbody.appendChild(r));
-      asc = !asc;
+  const sortRows = asc => {
+    const rows = Array.from(tbody.querySelectorAll('tr')).sort((a, b) => {
+      const da = new Date(a.dataset.date);
+      const db = new Date(b.dataset.date);
+      return asc ? da - db : db - da;
     });
+    rows.forEach(r => tbody.appendChild(r));
+  };
+
+  if (btnUp) {
+    btnUp.addEventListener('click', () => sortRows(true));
+  }
+
+  if (btnDown) {
+    btnDown.addEventListener('click', () => sortRows(false));
   }
 });

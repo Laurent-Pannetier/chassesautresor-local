@@ -1448,9 +1448,20 @@ function recuperer_organisateurs_pending()
     }
 
     usort($resultats, function ($a, $b) {
+        $aPending = ('en_attente' === ($a['validation'] ?? ''));
+        $bPending = ('en_attente' === ($b['validation'] ?? ''));
+
+        if ($aPending && !$bPending) {
+            return -1;
+        }
+        if (!$aPending && $bPending) {
+            return 1;
+        }
+
         $timeA = strtotime($a['date_creation']);
         $timeB = strtotime($b['date_creation']);
-        return $timeA === $timeB ? 0 : ($timeA < $timeB ? 1 : -1);
+
+        return $timeB <=> $timeA;
     });
 
     return $resultats;
@@ -1503,7 +1514,17 @@ function afficher_tableau_organisateurs_pending(array $liste = null)
     }
 
     echo '<table class="table-organisateurs">';
-    echo '<thead><tr><th>Organisateur</th><th>Chasse</th><th>Nb énigmes</th><th>État</th><th>Utilisateur</th><th data-col="date">Créé le <span class="tri-date">&#9650;&#9660;</span></th></tr></thead><tbody>';
+    echo '<thead><tr>'
+        . '<th>Organisateur</th>'
+        . '<th>Chasse</th>'
+        . '<th>Nb énigmes</th>'
+        . '<th>État</th>'
+        . '<th data-col="date">Créé le '
+        . '<button class="tri-date-up" aria-label="Trier par date croissante">&#9650;</button>'
+        . '<button class="tri-date-down" aria-label="Trier par date décroissante">&#9660;</button>'
+        . '</th>'
+        . '<th>Utilisateur</th>'
+        . '</tr></thead><tbody>';
 
     foreach ($grouped as $org) {
         $rows    = $org['rows'];
@@ -1516,22 +1537,25 @@ function afficher_tableau_organisateurs_pending(array $liste = null)
             }
 
             if ($row['chasse_id']) {
-                echo '<td><a href="' . esc_url($row['chasse_permalink']) . '" target="_blank">' . esc_html($row['chasse_titre']) . '</a></td>';
+                echo '<td><a href="' . esc_url($row['chasse_permalink']) . '" target="_blank">'
+                    . esc_html($row['chasse_titre']) . '</a></td>';
                 echo '<td>' . intval($row['nb_enigmes']) . '</td>';
                 echo '<td data-col="etat">' . esc_html($row['statut']) . '</td>';
             } else {
                 echo '<td>-</td><td>-</td><td data-col="etat"></td>';
             }
 
+            echo '<td>' . esc_html(date_i18n('d/m/y', strtotime($row['date_creation']))) . '</td>';
+
             if ($first) {
                 if ($org['user_id']) {
-                    echo '<td rowspan="' . intval($rowspan) . '"><a href="' . esc_url($org['user_link']) . '" target="_blank">' . esc_html($org['user_name']) . '</a></td>';
+                    echo '<td rowspan="' . intval($rowspan) . '"><a href="'
+                        . esc_url($org['user_link']) . '" target="_blank">'
+                        . esc_html($org['user_name']) . '</a></td>';
                 } else {
                     echo '<td rowspan="' . intval($rowspan) . '">-</td>';
                 }
             }
-
-            echo '<td>' . esc_html(date_i18n('d/m/y', strtotime($row['date_creation']))) . '</td>';
             echo '</tr>';
             $first = false;
         }

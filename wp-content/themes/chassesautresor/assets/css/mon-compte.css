@@ -471,6 +471,13 @@
     color: #000;
     transform: scale(1.05);
 }
+/* Tri des organisateurs */
+.table-organisateurs .tri-date-up,
+.table-organisateurs .tri-date-down {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
 /* tuile gestion des points */
 /* 📌 Ligne d'entrée utilisateur + action */
 .gestion-points-ligne {
