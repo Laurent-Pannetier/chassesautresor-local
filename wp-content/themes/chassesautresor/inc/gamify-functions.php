@@ -351,11 +351,7 @@ function verifier_fin_de_chasse($user_id, $enigme_id)
     $nb_resolues = (int) $wpdb->get_var($wpdb->prepare($sql, array_merge([$user_id], $enigmes_validables)));
 
     if ($nb_resolues === count($enigmes_validables)) {
-        update_field('chasse_cache_complet', 1, $chasse_id);
-        if (get_field('chasse_cache_statut', $chasse_id) !== 'termine') {
-            update_field('chasse_cache_statut', 'termine', $chasse_id);
-            gerer_chasse_terminee($chasse_id);
-        }
+        gerer_chasse_terminee($chasse_id);
     }
 }
 add_action('enigme_resolue', function($user_id, $enigme_id) {

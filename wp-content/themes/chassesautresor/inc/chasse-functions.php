@@ -206,6 +206,11 @@ function gerer_chasse_terminee($chasse_id)
         return;
     }
 
+    // 🔁 Ne rien faire si la chasse est déjà marquée terminée
+    if (get_field('chasse_cache_statut', $chasse_id) === 'termine') {
+        return;
+    }
+
     $toutes_enigmes = recuperer_enigmes_associees($chasse_id);
     if (empty($toutes_enigmes)) {
         return;
@@ -253,13 +258,21 @@ function gerer_chasse_terminee($chasse_id)
         }
     }
 
+    // Toujours enregistrer la liste des gagnants actuelle
     $list = implode(', ', $winner_names);
     update_field('chasse_cache_gagnants', $list, $chasse_id);
 
-    $date = current_time('Y-m-d');
-    $date_obj = DateTime::createFromFormat('Y-m-d', $date);
-    if ($date_obj && $date_obj->format('Y-m-d') === $date) {
-        update_field('chasse_cache_date_decouverte', $date, $chasse_id);
+    $should_close = ($max_winners === 0 || $winner_total >= $max_winners);
+    if ($should_close) {
+        $date = current_time('Y-m-d');
+        $date_obj = DateTime::createFromFormat('Y-m-d', $date);
+        if ($date_obj && $date_obj->format('Y-m-d') === $date) {
+            update_field('chasse_cache_date_decouverte', $date, $chasse_id);
+        }
+
+        // ✅ Marquer la chasse comme complète et terminée
+        update_field('chasse_cache_complet', 1, $chasse_id);
+        update_field('chasse_cache_statut', 'termine', $chasse_id);
     }
 
     foreach ($toutes_enigmes as $enigme_id) {
@@ -286,6 +299,11 @@ function gerer_chasse_terminee($chasse_id)
         foreach ($user_ids as $uid) {
             update_user_meta((int) $uid, "statut_enigme_{$enigme_id}", 'terminee');
         }
+    }
+
+    // Rafraîchir le statut général de la chasse
+    if (function_exists('mettre_a_jour_statuts_chasse')) {
+        mettre_a_jour_statuts_chasse($chasse_id);
     }
 
     // 🏆 Actions futures : récompenses, notifications, etc.
