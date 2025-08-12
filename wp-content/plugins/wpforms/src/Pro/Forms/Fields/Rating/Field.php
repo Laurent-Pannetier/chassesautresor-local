@@ -38,7 +38,7 @@ class Field extends FieldLite {
 	 * @noinspection PhpMissingParamTypeInspection
 	 * @noinspection PhpUnusedParameterInspection
 	 */
-	public function field_properties( $properties, $field, $form_data ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function field_properties( $properties, $field, $form_data ): array {
 
 		$properties = (array) $properties;
 
@@ -87,7 +87,7 @@ class Field extends FieldLite {
 	 * @noinspection PhpMissingParamTypeInspection
 	 * @noinspection PhpUnusedParameterInspection
 	 */
-	public function html_email_value( $val, $field, $form_data = [], $context = '' ): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function html_email_value( $val, $field, $form_data = [], $context = '' ): string {
 
 		$val = (string) $val;
 

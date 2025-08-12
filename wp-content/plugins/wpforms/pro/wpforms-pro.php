@@ -1025,7 +1025,7 @@ class WPForms_Pro {
 	 *
 	 * @noinspection HtmlUnknownTarget
 	 */
-	public function form_settings_notifications( $settings ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	public function form_settings_notifications( $settings ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		$cc            = wpforms_setting( 'email-carbon-copy' );
 		$form_settings = ! empty( $settings->form_data['settings'] ) ? $settings->form_data['settings'] : [];
@@ -1481,7 +1481,7 @@ class WPForms_Pro {
 	 *
 	 * @param WPForms_Builder_Panel_Settings $settings Builder panel settings.
 	 */
-	public function form_settings_confirmations( $settings ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	public function form_settings_confirmations( $settings ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		wp_enqueue_editor();
 
@@ -1679,22 +1679,6 @@ class WPForms_Pro {
 						]
 					);
 
-					wpforms_conditional_logic()->builder_block(
-						[
-							'form'        => $settings->form_data,
-							'type'        => 'panel',
-							'panel'       => 'confirmations',
-							'parent'      => 'settings',
-							'subsection'  => $field_id,
-							'actions'     => [
-								'go'   => esc_html__( 'Use', 'wpforms' ),
-								'stop' => esc_html__( 'Don\'t use', 'wpforms' ),
-							],
-							'action_desc' => esc_html__( 'this confirmation if', 'wpforms' ),
-							'reference'   => esc_html__( 'Form confirmations', 'wpforms' ),
-						]
-					);
-
 					do_action_deprecated(
 						'wpforms_form_settings_confirmation',
 						[ $settings ],
@@ -1711,6 +1695,22 @@ class WPForms_Pro {
 					 * @param int                            $field_id Field ID.
 					 */
 					do_action( 'wpforms_form_settings_confirmations_single_after', $settings, $field_id );
+
+					wpforms_conditional_logic()->builder_block(
+						[
+							'form'        => $settings->form_data,
+							'type'        => 'panel',
+							'panel'       => 'confirmations',
+							'parent'      => 'settings',
+							'subsection'  => $field_id,
+							'actions'     => [
+								'go'   => esc_html__( 'Use', 'wpforms' ),
+								'stop' => esc_html__( 'Don\'t use', 'wpforms' ),
+							],
+							'action_desc' => esc_html__( 'this confirmation if', 'wpforms' ),
+							'reference'   => esc_html__( 'Form confirmations', 'wpforms' ),
+						]
+					);
 					?>
 
 				</div><!-- /.wpforms-builder-settings-block-content -->

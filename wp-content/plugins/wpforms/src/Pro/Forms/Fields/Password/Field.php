@@ -51,7 +51,7 @@ class Field extends FieldLite {
 	 *
 	 * @return array
 	 */
-	public function field_properties( $properties, $field, $form_data ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function field_properties( $properties, $field, $form_data ): array {
 
 		$properties = (array) $properties;
 
@@ -269,7 +269,7 @@ class Field extends FieldLite {
 	 * @param array|string $field_submit Submitted field value (raw data).
 	 * @param array        $form_data    Form data and settings.
 	 */
-	public function validate( $field_id, $field_submit, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function validate( $field_id, $field_submit, $form_data ) {
 
 		$form_id  = $form_data['id'];
 		$fields   = $form_data['fields'];

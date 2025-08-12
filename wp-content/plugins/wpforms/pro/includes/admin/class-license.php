@@ -136,7 +136,7 @@ class WPForms_License {
 	 *
 	 * @return bool
 	 */
-	public function verify_key( $key = '', $ajax = false ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function verify_key( $key = '', $ajax = false ) {
 
 		if ( empty( $key ) ) {
 			return false;
@@ -278,7 +278,7 @@ class WPForms_License {
 	 *
 	 * @return string|bool
 	 */
-	public function validate_key( $key = '', $forced = false, $ajax = false, $return_status = false ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	public function validate_key( $key = '', $forced = false, $ajax = false, $return_status = false ) {
 
 		if ( $ajax ) {
 			$this->cache_ajax_request( 'validate-key' );
@@ -360,7 +360,7 @@ class WPForms_License {
 	 *
 	 * @param bool $ajax True if this is an ajax request.
 	 */
-	public function deactivate_key( $ajax = false ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function deactivate_key( $ajax = false ) {
 
 		$key = $this->get();
 
@@ -487,7 +487,7 @@ class WPForms_License {
 	 *
 	 * @return string Returns proper info (error) message depending on the state of the license.
 	 */
-	public function get_info_message_escaped() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function get_info_message_escaped() {
 
 		if ( ! $this->get() ) {
 			return sprintf(
@@ -575,7 +575,7 @@ class WPForms_License {
 	 *
 	 * @param bool $below_h2 Whether to display a notice below H2.
 	 */
-	public function notices( $below_h2 = false ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded, Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function notices( $below_h2 = false ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		// Do not display notices if the user does not have permission or is on the settings page.
 		if ( ! wpforms_current_user_can() || wpforms_is_admin_page( 'settings' ) ) {

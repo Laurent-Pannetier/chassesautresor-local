@@ -237,6 +237,7 @@ class Upload {
 				'post_content'   => $this->get_wp_media_file_desc( $file, $field_data ),
 				'post_status'    => 'publish',
 				'post_mime_type' => $file['type'],
+				'guid'           => $this->get_attachment_guid( $upload_file ),
 			],
 			$upload_file
 		);
@@ -260,6 +261,27 @@ class Upload {
 		);
 
 		return $attachment_id;
+	}
+
+	/**
+	 * Get attachment GUID.
+	 *
+	 * @since 1.9.7
+	 *
+	 * @param string $upload_file Data from the side-loaded file.
+	 *
+	 * @return string
+	 */
+	private function get_attachment_guid( string $upload_file ): string {
+
+		$upload_dir = wp_get_upload_dir();
+		$upload_url = trailingslashit( $upload_dir['url'] );
+
+		if ( ! empty( $upload_dir['error'] ) || empty( $upload_dir['url'] ) ) {
+			return '';
+		}
+
+		return $upload_url . wp_basename( $upload_file );
 	}
 
 	/**

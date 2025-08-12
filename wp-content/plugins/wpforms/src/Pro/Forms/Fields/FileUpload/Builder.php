@@ -154,7 +154,7 @@ class Builder {
 
 		$form      = (array) $form;
 		$form_data = json_decode( stripslashes( $form['post_content'] ), true );
-		$fields    = $form_data['fields'];
+		$fields    = $form_data['fields'] ?? [];
 
 		foreach ( $fields as $key => $field ) {
 			if ( $this->is_file_upload_field( $field ) ) {

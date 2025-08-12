@@ -777,7 +777,7 @@ class Field extends FieldLite {
 	 * @noinspection PhpMissingParamTypeInspection
 	 * @noinspection PhpUnusedParameterInspection
 	 */
-	protected function validate_classic( $deprecated_input_name ): void { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	protected function validate_classic( $deprecated_input_name ): void { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		if ( ! isset( get_defined_vars()['deprecated_input_name'] ) ) {
 			_deprecated_argument( __METHOD__, '1.7.2 of the WPForms plugin', 'The `$input_name` argument was deprecated.' );
@@ -1286,7 +1286,7 @@ class Field extends FieldLite {
 	 * @noinspection PhpMissingParamTypeInspection
 	 * @noinspection PhpUnusedParameterInspection
 	 */
-	public function upload_complete( $fields, $entry, $form_data ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function upload_complete( $fields, $entry, $form_data ) {
 
 		if ( ! empty( wpforms()->obj( 'process' )->errors[ $form_data['id'] ] ) ) {
 			return $fields;
@@ -2434,7 +2434,7 @@ class Field extends FieldLite {
 	 *
 	 * @return array
 	 */
-	protected function get_access_restrictions_options_attrs(): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	protected function get_access_restrictions_options_attrs(): array {
 
 		$addons_obj = wpforms()->obj( 'addons' );
 
