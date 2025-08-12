@@ -12,18 +12,19 @@ defined('ABSPATH') || exit;
 
 $content_template = $GLOBALS['myaccount_content_template'] ?? null;
 $current_user     = wp_get_current_user();
-$is_subscriber    = in_array('subscriber', (array) $current_user->roles, true);
+$display_name     = $current_user->ID ? $current_user->display_name : get_bloginfo('name');
+$show_nav         = is_user_logged_in();
 ?>
 <div class="grid min-h-screen w-full lg:grid-cols-[280px_1fr] bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
     <aside class="hidden border-r border-[hsl(var(--border))] bg-[hsl(var(--background))] lg:block">
         <div class="flex h-full flex-col">
             <div class="flex h-14 items-center border-b border-[hsl(var(--border))] px-4">
                 <a href="<?php echo esc_url(home_url('/')); ?>" class="flex items-center gap-2 font-semibold">
-                    <?php bloginfo('name'); ?>
+                    <?php echo esc_html($display_name); ?>
                 </a>
             </div>
             <div class="flex-1 overflow-y-auto">
-                <?php if ($is_subscriber) : ?>
+                <?php if ($show_nav) : ?>
                 <nav class="dashboard-nav grid items-start gap-2 px-2 py-4 text-sm font-medium lg:px-4">
                     <?php
                     $nav_items = array(
