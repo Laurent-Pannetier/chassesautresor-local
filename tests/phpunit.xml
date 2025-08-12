@@ -3,6 +3,7 @@
   <testsuites>
     <testsuite name="theme">
       <directory>./</directory>
+      <directory>../wp-content/themes/chassesautresor/tests</directory>
     </testsuite>
   </testsuites>
 </phpunit>

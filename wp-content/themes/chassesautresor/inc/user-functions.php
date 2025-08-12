@@ -17,8 +17,9 @@ defined( 'ABSPATH' ) || exit;
 // 4. 📦 ATTRIBUTION DE RÔLE
 //     - Attribution des rôles oragnisateurs (création)
 //
-
-
+// 5. 📡 AJAX ADMIN SECTIONS
+//    - Chargement dynamique des pages d'administration dans "Mon Compte"
+//
 // ==================================================
 // 📦 TEMPLATES UTILISATEURS
 // ==================================================
@@ -41,8 +42,6 @@ defined( 'ABSPATH' ) || exit;
  * @return string Le chemin du fichier de template personnalisé ou le template par défaut.
  */
  function ajouter_rewrite_rules() {
-    add_rewrite_rule('^mon-compte/organisateurs/inscription/?$', 'index.php?mon_compte_organisateurs_inscription=1', 'top');
-    add_rewrite_rule('^mon-compte/organisateurs/paiements/?$', 'index.php?mon_compte_organisateurs_paiements=1', 'top');
     add_rewrite_rule('^mon-compte/statistiques/?$', 'index.php?mon_compte_statistiques=1', 'top');
     add_rewrite_rule('^mon-compte/outils/?$', 'index.php?mon_compte_outils=1', 'top');
 }
@@ -60,8 +59,6 @@ add_action('init', 'ajouter_rewrite_rules');
  * @hook query_vars
  */
 function ajouter_query_vars($vars) {
-    $vars[] = 'mon_compte_organisateurs_inscription';
-    $vars[] = 'mon_compte_organisateurs_paiements';
     $vars[] = 'mon_compte_statistiques';
     $vars[] = 'mon_compte_outils';
     return $vars;
@@ -93,28 +90,41 @@ function charger_template_utilisateur($template) {
         return $template;
     }
     
-    // Liste des chemins d’URL associés à leurs fichiers de template respectifs
+    // Associe chaque URL à un fichier de contenu spécifique
     $mapping_templates = array(
-        'mon-compte/organisateurs'        => 'organisateurs.php',
-        'mon-compte/organisateurs/'       => 'organisateurs.php', // Variante avec /
-        'mon-compte/statistiques'         => 'statistiques.php',
-        'mon-compte/outils'               => 'outils.php',
+        'mon-compte/organisateurs'        => 'content-organisateurs.php',
+        'mon-compte/organisateurs/'       => 'content-organisateurs.php', // Variante avec /
+        'mon-compte/statistiques'         => 'content-statistiques.php',
+        'mon-compte/outils'               => 'content-outils.php',
     );
 
-    // Vérification si l'URL correspond à un template spécifique
-    if (array_key_exists($request_uri, $mapping_templates)) {
-        $custom_template = get_stylesheet_directory() . '/templates/admin/' . $mapping_templates[$request_uri];
-        
-        if (!file_exists($custom_template)) {
-            error_log('Fichier de template introuvable : ' . $custom_template);
-        }
-        error_log('Chargement du template : ' . $custom_template);
+    $admin_paths = array(
+        'mon-compte/organisateurs',
+        'mon-compte/organisateurs/',
+        'mon-compte/statistiques',
+        'mon-compte/outils',
+    );
 
-        // Vérification de l'existence du fichier avant de le retourner
-        if (file_exists($custom_template)) {
-            return $custom_template;
+    // Vérifie si l'URL correspond à un contenu personnalisé
+    if (array_key_exists($request_uri, $mapping_templates)) {
+        if (in_array($request_uri, $admin_paths, true) && !current_user_can('administrator')) {
+            wp_redirect(home_url('/mon-compte/'));
+            exit;
         }
+
+        $content_template = get_stylesheet_directory() . '/templates/myaccount/' . $mapping_templates[$request_uri];
+
+        if (!file_exists($content_template)) {
+            error_log('Fichier de contenu introuvable : ' . $content_template);
+        } else {
+            // Stocke le chemin pour l'injection dans le layout
+            $GLOBALS['myaccount_content_template'] = $content_template;
+        }
+
+        // Retourne le layout commun pour les pages "Mon Compte"
+        return get_stylesheet_directory() . '/templates/myaccount/layout.php';
     }
+
     // Retourne le template par défaut si aucune correspondance n'est trouvée
     return $template;
 }
@@ -183,6 +193,65 @@ function is_woocommerce_account_page() {
     return false;
 }
 
+/**
+ * Rename WooCommerce "orders" endpoint title to "Points".
+ *
+ * @param string $title Original title.
+ * @return string Modified title.
+ */
+function ca_points_endpoint_title($title)
+{
+    return __('Points', 'chassesautresor');
+}
+add_filter('woocommerce_endpoint_orders_title', 'ca_points_endpoint_title');
+
+/**
+ * Rename "edit-account" endpoint title to "Profil".
+ *
+ * @param string $title Original title.
+ * @return string Modified title.
+ */
+function ca_profile_endpoint_title($title)
+{
+    return __('Profil', 'chassesautresor');
+}
+add_filter('woocommerce_endpoint_edit-account_title', 'ca_profile_endpoint_title');
+
+// ==================================================
+// 📡 AJAX ADMIN SECTIONS
+// ==================================================
+/**
+ * Load admin My Account sections via AJAX.
+ *
+ * @return void
+ */
+function ca_load_admin_section()
+{
+    if (!current_user_can('administrator')) {
+        wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor')], 403);
+    }
+
+    $section = sanitize_key($_GET['section'] ?? '');
+    $allowed = [
+        'organisateurs' => 'content-organisateurs.php',
+        'statistiques'  => 'content-statistiques.php',
+        'outils'        => 'content-outils.php',
+    ];
+
+    if (!isset($allowed[$section])) {
+        wp_send_json_error(['message' => __('Section not found', 'chassesautresor')], 404);
+    }
+
+    ob_start();
+    $template = get_stylesheet_directory() . '/templates/myaccount/' . $allowed[$section];
+    if (file_exists($template)) {
+        include $template;
+    }
+    $html = ob_get_clean();
+
+    wp_send_json_success(['html' => $html]);
+}
+add_action('wp_ajax_cta_load_admin_section', 'ca_load_admin_section');
 
 // ==================================================
 // 📦 MODIFICATION AVATAR EN FRONT
