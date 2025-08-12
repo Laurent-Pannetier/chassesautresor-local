@@ -15,8 +15,11 @@ defined('ABSPATH') || exit;
  * 🔹 recuperer_infos_chasse → Récupérer les informations essentielles d’une chasse.
  * 🔹 chasse_get_champs → Récupérer les champs principaux et cachés structurés d'une chasse
  * 🔹 verifier_souscription_chasse → Vérifier si un utilisateur souscrit à une chasse pour la première fois en souscrivant à une énigme.
+ * 🔹 chasse_install_winners_table → Créer la table des gagnants lors de l’activation du thème.
+ * 🔹 enregistrer_gagnant_chasse → Enregistrer ou mettre à jour un gagnant de chasse.
  * 🔹 acf/validate_value/name=date_de_fin (function) → Valider les incohérences de dates dans les chasses.
  * 🔹 gerer_chasse_terminee → Déclencher toutes les actions nécessaires lorsqu’une chasse est terminée.
+ * 🔹 compter_chasses_gagnees → Compter les chasses gagnées par un utilisateur.
  */
 
 
@@ -37,7 +40,70 @@ function recuperer_infos_chasse($chasse_id)
     ];
 }
 
+/**
+ * Create the table storing hunt winners on theme activation.
+ *
+ * @return void
+ */
+function chasse_install_winners_table(): void
+{
+    global $wpdb;
+    $table = $wpdb->prefix . 'chasse_winners';
+    $charset_collate = $wpdb->get_charset_collate();
 
+    $sql = "CREATE TABLE {$table} (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id BIGINT NOT NULL,
+        chasse_id BIGINT NOT NULL,
+        date_win DATETIME NOT NULL,
+        UNIQUE KEY user_chasse (user_id, chasse_id),
+        KEY chasse_id (chasse_id)
+    ) {$charset_collate};";
+
+    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+    dbDelta($sql);
+}
+add_action('after_switch_theme', 'chasse_install_winners_table');
+
+/**
+ * Insert or update a hunt winner.
+ *
+ * @param int    $user_id   User ID.
+ * @param int    $chasse_id Hunt ID.
+ * @param string $date_win  Win date in MySQL format.
+ * @return void
+ */
+function enregistrer_gagnant_chasse(int $user_id, int $chasse_id, string $date_win): void
+{
+    global $wpdb;
+    $table = $wpdb->prefix . 'chasse_winners';
+
+    $wpdb->replace(
+        $table,
+        [
+            'user_id'  => $user_id,
+            'chasse_id' => $chasse_id,
+            'date_win' => $date_win,
+        ],
+        ['%d', '%d', '%s']
+    );
+}
+
+/**
+ * Count hunts won by a user.
+ *
+ * @param int $user_id User ID.
+ * @return int
+ */
+function compter_chasses_gagnees(int $user_id): int
+{
+    global $wpdb;
+    $table = $wpdb->prefix . 'chasse_winners';
+
+    return (int) $wpdb->get_var(
+        $wpdb->prepare("SELECT COUNT(*) FROM {$table} WHERE user_id = %d", $user_id)
+    );
+}
 
 /**
  * Récupère les champs principaux et cachés d'une chasse.
@@ -277,17 +343,22 @@ function gerer_chasse_terminee($chasse_id)
         );
     }
 
-    $winner_ids = wp_list_pluck($results, 'user_id');
-    $winner_total = count($winner_ids);
     $max_winners = (int) get_field('chasse_infos_nb_max_gagants', $chasse_id);
-    if ($max_winners > 0 && $winner_total > $max_winners) {
-        error_log("⚠️ Plus de gagnants ({$winner_total}) que la limite ({$max_winners}) pour la chasse {$chasse_id}. Seuls les premiers arrivés seront retenus.");
-        $winner_ids = array_slice($winner_ids, 0, $max_winners);
+    if ($max_winners > 0 && count($results) > $max_winners) {
+        $total_found = count($results);
+        error_log("⚠️ Plus de gagnants ({$total_found}) que la limite ({$max_winners}) pour la chasse {$chasse_id}. Seuls les premiers arrivés seront retenus.");
+        $results = array_slice($results, 0, $max_winners);
     }
 
+    $winner_ids = wp_list_pluck($results, 'user_id');
+    $winner_total = count($winner_ids);
+
     $winner_names = [];
-    foreach ($winner_ids as $uid) {
-        $user = get_userdata((int) $uid);
+    foreach ($results as $row) {
+        $uid = (int) $row->user_id;
+        $date_win = $row->first_finish ?? $now;
+        enregistrer_gagnant_chasse($uid, $chasse_id, $date_win);
+        $user = get_userdata($uid);
         if ($user) {
             $winner_names[] = $user->display_name ?: $user->user_login;
         }
