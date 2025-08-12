@@ -232,7 +232,7 @@ function gerer_chasse_terminee($chasse_id)
     $sql = "
         SELECT user_id, MIN(date_mise_a_jour) AS first_finish
         FROM {$table}
-        WHERE statut IN ('resolue', 'terminee')
+        WHERE statut IN ('resolue', 'terminee', 'terminée')
           AND enigme_id IN ($placeholders)
         GROUP BY user_id
         HAVING COUNT(DISTINCT enigme_id) = %d

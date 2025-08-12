@@ -257,7 +257,7 @@ function enigme_get_chasse_progression(int $chasse_id, int $user_id): array
     global $wpdb;
     $table = $wpdb->prefix . 'enigme_statuts_utilisateur';
     $placeholders = implode(',', array_fill(0, count($validables), '%d'));
-    $sql = "SELECT COUNT(DISTINCT enigme_id) FROM {$table} WHERE user_id = %d AND statut IN ('resolue','terminee') AND enigme_id IN ($placeholders)";
+    $sql = "SELECT COUNT(DISTINCT enigme_id) FROM {$table} WHERE user_id = %d AND statut IN ('resolue','terminee','terminée') AND enigme_id IN ($placeholders)";
     $resolues = (int) $wpdb->get_var($wpdb->prepare($sql, array_merge([$user_id], $validables)));
 
     return [
@@ -295,7 +295,7 @@ function compter_enigmes_resolues($chasse_id, $user_id): int
     global $wpdb;
     $table = $wpdb->prefix . 'enigme_statuts_utilisateur';
     $placeholders = implode(',', array_fill(0, count($validables), '%d'));
-    $sql = "SELECT COUNT(DISTINCT enigme_id) FROM {$table} WHERE user_id = %d AND statut IN ('resolue','terminee') AND enigme_id IN ($placeholders)";
+    $sql = "SELECT COUNT(DISTINCT enigme_id) FROM {$table} WHERE user_id = %d AND statut IN ('resolue','terminee','terminée') AND enigme_id IN ($placeholders)";
     return (int) $wpdb->get_var($wpdb->prepare($sql, array_merge([$user_id], $validables)));
 }
 
@@ -347,7 +347,7 @@ function verifier_fin_de_chasse($user_id, $enigme_id)
     global $wpdb;
     $table = $wpdb->prefix . 'enigme_statuts_utilisateur';
     $placeholders = implode(',', array_fill(0, count($enigmes_validables), '%d'));
-    $sql = "SELECT COUNT(DISTINCT enigme_id) FROM {$table} WHERE user_id = %d AND statut IN ('resolue','terminee') AND enigme_id IN ($placeholders)";
+    $sql = "SELECT COUNT(DISTINCT enigme_id) FROM {$table} WHERE user_id = %d AND statut IN ('resolue','terminee','terminée') AND enigme_id IN ($placeholders)";
     $nb_resolues = (int) $wpdb->get_var($wpdb->prepare($sql, array_merge([$user_id], $enigmes_validables)));
 
     if ($nb_resolues === count($enigmes_validables)) {
