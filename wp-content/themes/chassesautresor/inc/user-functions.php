@@ -184,6 +184,30 @@ function is_woocommerce_account_page() {
     return false;
 }
 
+/**
+ * Rename WooCommerce "orders" endpoint title to "Points".
+ *
+ * @param string $title Original title.
+ * @return string Modified title.
+ */
+function ca_points_endpoint_title($title)
+{
+    return __('Points', 'chassesautresor');
+}
+add_filter('woocommerce_endpoint_orders_title', 'ca_points_endpoint_title');
+
+/**
+ * Rename "edit-account" endpoint title to "Profil".
+ *
+ * @param string $title Original title.
+ * @return string Modified title.
+ */
+function ca_profile_endpoint_title($title)
+{
+    return __('Profil', 'chassesautresor');
+}
+add_filter('woocommerce_endpoint_edit-account_title', 'ca_profile_endpoint_title');
+
 
 // ==================================================
 // 📦 MODIFICATION AVATAR EN FRONT

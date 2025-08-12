@@ -35,22 +35,15 @@ $show_nav         = is_user_logged_in();
                 ),
                 array(
                     'endpoint' => 'orders',
-                    'label'    => __('Commandes', 'chassesautresor'),
-                    'icon'     => 'fas fa-box',
+                    'label'    => __('Points', 'chassesautresor'),
+                    'icon'     => 'fas fa-coins',
                     'url'      => wc_get_account_endpoint_url('orders'),
                     'active'   => is_wc_endpoint_url('orders'),
                 ),
                 array(
-                    'endpoint' => 'edit-address',
-                    'label'    => __('Adresses', 'chassesautresor'),
-                    'icon'     => 'fas fa-map-marker-alt',
-                    'url'      => wc_get_account_endpoint_url('edit-address'),
-                    'active'   => is_wc_endpoint_url('edit-address'),
-                ),
-                array(
                     'endpoint' => 'edit-account',
-                    'label'    => __('Paramètres', 'chassesautresor'),
-                    'icon'     => 'fas fa-cog',
+                    'label'    => __('Profil', 'chassesautresor'),
+                    'icon'     => 'fas fa-user',
                     'url'      => wc_get_account_endpoint_url('edit-account'),
                     'active'   => is_wc_endpoint_url('edit-account'),
                 ),
@@ -68,7 +61,7 @@ $show_nav         = is_user_logged_in();
                 echo '</a>';
             }
             ?>
-            <a href="<?php echo esc_url(wc_logout_url()); ?>" class="dashboard-nav-link">
+            <a href="<?php echo esc_url(wc_logout_url()); ?>" class="dashboard-nav-link logout">
                 <i class="fas fa-sign-out-alt"></i>
                 <span><?php esc_html_e('Déconnexion', 'chassesautresor'); ?></span>
             </a>
