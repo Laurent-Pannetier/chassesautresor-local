@@ -11,6 +11,8 @@
 defined('ABSPATH') || exit;
 
 $content_template = $GLOBALS['myaccount_content_template'] ?? null;
+$current_user     = wp_get_current_user();
+$is_subscriber    = in_array('subscriber', (array) $current_user->roles, true);
 ?>
 <div class="grid min-h-screen w-full lg:grid-cols-[280px_1fr] bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
     <aside class="hidden border-r border-[hsl(var(--border))] bg-[hsl(var(--background))] lg:block">
@@ -20,9 +22,62 @@ $content_template = $GLOBALS['myaccount_content_template'] ?? null;
                     <?php bloginfo('name'); ?>
                 </a>
             </div>
-            <nav class="flex-1 overflow-y-auto py-4">
-                <!-- TODO: navigation items -->
-            </nav>
+            <div class="flex-1 overflow-y-auto">
+                <?php if ($is_subscriber) : ?>
+                <nav class="dashboard-nav grid items-start gap-2 px-2 py-4 text-sm font-medium lg:px-4">
+                    <?php
+                    $nav_items = array(
+                        array(
+                            'endpoint' => 'dashboard',
+                            'label'    => __('Accueil', 'chassesautresor'),
+                            'icon'     => 'fas fa-home',
+                            'url'      => wc_get_account_endpoint_url('dashboard'),
+                            'active'   => is_account_page() && !is_wc_endpoint_url(),
+                        ),
+                        array(
+                            'endpoint' => 'orders',
+                            'label'    => __('Commandes', 'chassesautresor'),
+                            'icon'     => 'fas fa-box',
+                            'url'      => wc_get_account_endpoint_url('orders'),
+                            'active'   => is_wc_endpoint_url('orders'),
+                        ),
+                        array(
+                            'endpoint' => 'edit-address',
+                            'label'    => __('Adresses', 'chassesautresor'),
+                            'icon'     => 'fas fa-map-marker-alt',
+                            'url'      => wc_get_account_endpoint_url('edit-address'),
+                            'active'   => is_wc_endpoint_url('edit-address'),
+                        ),
+                        array(
+                            'endpoint' => 'edit-account',
+                            'label'    => __('Paramètres', 'chassesautresor'),
+                            'icon'     => 'fas fa-cog',
+                            'url'      => wc_get_account_endpoint_url('edit-account'),
+                            'active'   => is_wc_endpoint_url('edit-account'),
+                        ),
+                    );
+
+                    foreach ($nav_items as $item) {
+                        $classes  = 'flex items-center gap-3 rounded-lg px-3 py-2 transition-all ';
+                        $classes .= 'hover:text-[hsl(var(--primary))] ';
+                        $classes .= $item['active']
+                            ? 'bg-[hsl(var(--muted))] text-[hsl(var(--primary))]'
+                            : 'text-[hsl(var(--muted-foreground))]';
+
+                        echo '<a href="' . esc_url($item['url']) . '" class="' . esc_attr($classes) . '">';
+                        echo '<i class="' . esc_attr($item['icon']) . '"></i>';
+                        echo '<span>' . esc_html($item['label']) . '</span>';
+                        echo '</a>';
+                    }
+                    ?>
+                    <a href="<?php echo esc_url(wc_logout_url()); ?>"
+                        class="flex items-center gap-3 rounded-lg px-3 py-2 text-[hsl(var(--muted-foreground))] transition-all hover:text-[hsl(var(--primary))]">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span><?php esc_html_e('Déconnexion', 'chassesautresor'); ?></span>
+                    </a>
+                </nav>
+                <?php endif; ?>
+            </div>
         </div>
     </aside>
     <div class="flex flex-col">
