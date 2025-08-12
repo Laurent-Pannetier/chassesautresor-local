@@ -15,6 +15,8 @@ $current_user     = wp_get_current_user();
 $display_name     = $current_user->ID ? $current_user->display_name : get_bloginfo('name');
 $show_nav         = is_user_logged_in();
 $current_path     = trim($_SERVER['REQUEST_URI'], '/');
+
+get_header();
 ?>
 <div class="myaccount-layout">
     <aside class="myaccount-sidebar">
@@ -169,4 +171,7 @@ $current_path     = trim($_SERVER['REQUEST_URI'], '/');
         </main>
     </div>
 </div>
+
+<?php
+get_footer();
 
