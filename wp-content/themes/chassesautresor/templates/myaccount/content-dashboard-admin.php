@@ -11,6 +11,4 @@ if (function_exists('woocommerce_account_content')) {
     woocommerce_account_content();
 }
 
-get_template_part('template-parts/myaccount/dashboard-admin', null, [
-    'taux_conversion' => get_taux_conversion_actuel(),
-]);
+get_template_part('template-parts/myaccount/dashboard-admin');
