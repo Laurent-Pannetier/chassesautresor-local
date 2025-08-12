@@ -251,7 +251,8 @@ function enigme_get_chasse_progression(int $chasse_id, int $user_id): array
         if ($mode === 'aucune') {
             return utilisateur_est_engage_dans_chasse($user_id, $chasse_id);
         }
-        return get_user_meta($user_id, "statut_enigme_{$id}", true) === 'terminée';
+        $statut = get_user_meta($user_id, "statut_enigme_{$id}", true);
+        return in_array($statut, ['resolue', 'terminee'], true);
     }));
 
     return [
@@ -287,7 +288,8 @@ function compter_enigmes_resolues($chasse_id, $user_id): int
         if ($mode === 'aucune') {
             return utilisateur_est_engage_dans_chasse($user_id, $chasse_id);
         }
-        return get_user_meta($user_id, "statut_enigme_{$enigme_id}", true) === 'terminée';
+        $statut = get_user_meta($user_id, "statut_enigme_{$enigme_id}", true);
+        return in_array($statut, ['resolue', 'terminee'], true);
     }));
 }
 
@@ -337,7 +339,8 @@ function verifier_fin_de_chasse($user_id, $enigme_id)
     }
 
     $enigmes_resolues = array_filter($enigmes_validables, function ($associee_id) use ($user_id) {
-        return get_user_meta($user_id, "statut_enigme_{$associee_id}", true) === 'terminée';
+        $statut = get_user_meta($user_id, "statut_enigme_{$associee_id}", true);
+        return in_array($statut, ['resolue', 'terminee'], true);
     });
 
     if (count($enigmes_resolues) === count($enigmes_validables)) {
