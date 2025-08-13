@@ -69,27 +69,26 @@ function initEnigmeEdit() {
 
 
   // ==============================
-  // 🧠 Explication dynamique – Mode de validation de l’énigme
+  // 🧠 Explication – Mode de validation de l’énigme
   // ==============================
   const explicationValidation = {
-    'aucune': "Aucun formulaire de réponse ne sera affiché pour cette énigme.",
-    'manuelle': "Le joueur devra rédiger une réponse libre. Vous recevrez sa proposition par email, et pourrez la valider ou la refuser à partir de ce message.",
-    'automatique': "Le joueur devra saisir une réponse exacte. Celle-ci sera automatiquement vérifiée selon les critères définis (réponse attendue, casse, variantes)."
+    manuelle:
+      "Le joueur devra rédiger une réponse libre. Vous recevrez sa proposition par email, " +
+      "et pourrez la valider ou la refuser à partir de ce message.",
+    automatique:
+      "Le joueur devra saisir une réponse exacte. Celle-ci sera automatiquement vérifiée " +
+      "selon les critères définis (réponse attendue, casse, variantes)."
   };
 
-  const zoneExplication = document.querySelector('.champ-explication-validation');
-  if (zoneExplication) {
-    document.querySelectorAll('input[name="acf[enigme_mode_validation]"]').forEach((radio) => {
-      radio.addEventListener('change', () => {
-        const val = radio.value;
-        DEBUG && console.log(val)
-        zoneExplication.textContent = explicationValidation[val] || '';
-      });
-      if (radio.checked) {
-        zoneExplication.textContent = explicationValidation[radio.value] || '';
+  document.querySelectorAll('.validation-aide').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const mode = btn.dataset.mode;
+      const message = explicationValidation[mode];
+      if (message) {
+        alert(message);
       }
     });
-  }
+  });
 
 
   // ==============================

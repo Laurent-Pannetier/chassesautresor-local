@@ -209,13 +209,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                 <label>
                   <input type="radio" name="acf[enigme_mode_validation]" value="manuelle" <?= $mode_validation === 'manuelle' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
                   <?= esc_html__('Manuelle', 'chassesautresor-com'); ?>
+                  <button
+                    type="button"
+                    class="mode-fin-aide validation-aide"
+                    data-mode="manuelle"
+                    aria-label="<?= esc_attr__('Explication du mode manuel', 'chassesautresor-com'); ?>"
+                  >
+                    <i class="fa-regular fa-circle-question"></i>
+                  </button>
                 </label>
                 <label>
                   <input type="radio" name="acf[enigme_mode_validation]" value="automatique" <?= $mode_validation === 'automatique' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
                   <?= esc_html__('Automatique', 'chassesautresor-com'); ?>
+                  <button
+                    type="button"
+                    class="mode-fin-aide validation-aide"
+                    data-mode="automatique"
+                    aria-label="<?= esc_attr__('Explication du mode automatique', 'chassesautresor-com'); ?>"
+                  >
+                    <i class="fa-regular fa-circle-question"></i>
+                  </button>
                 </label>
               </div>
-              <div class="champ-explication champ-explication-validation" aria-live="polite"></div>
             </div>
 
             <!-- Accès à l'énigme -->
