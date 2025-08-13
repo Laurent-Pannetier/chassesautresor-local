@@ -368,50 +368,104 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
       </div>
       <?php
       if (!function_exists('enigme_compter_joueurs_engages')) {
-        require_once get_stylesheet_directory() . '/inc/enigme/stats.php';
+          require_once get_stylesheet_directory() . '/inc/enigme/stats.php';
       }
+      $periode = 'total';
       ?>
-      <table class="stats-table">
-        <thead>
-          <tr>
-            <th></th>
-            <th>Total</th>
-            <th>Aujourd’hui</th>
-            <th>Semaine</th>
-            <th>Mois</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Nombre de joueurs engagés</td>
-            <td><?= enigme_compter_joueurs_engages($enigme_id, 'total'); ?></td>
-            <td><?= enigme_compter_joueurs_engages($enigme_id, 'jour'); ?></td>
-            <td><?= enigme_compter_joueurs_engages($enigme_id, 'semaine'); ?></td>
-            <td><?= enigme_compter_joueurs_engages($enigme_id, 'mois'); ?></td>
-          </tr>
-          <tr>
-            <td>Nombre de tentatives</td>
-            <td><?= enigme_compter_tentatives($enigme_id, $mode_validation, 'total'); ?></td>
-            <td><?= enigme_compter_tentatives($enigme_id, $mode_validation, 'jour'); ?></td>
-            <td><?= enigme_compter_tentatives($enigme_id, $mode_validation, 'semaine'); ?></td>
-            <td><?= enigme_compter_tentatives($enigme_id, $mode_validation, 'mois'); ?></td>
-          </tr>
-          <tr>
-            <td>Nombre de points dépensés</td>
-            <td><?= enigme_compter_points_depenses($enigme_id, $mode_validation, 'total'); ?></td>
-            <td><?= enigme_compter_points_depenses($enigme_id, $mode_validation, 'jour'); ?></td>
-            <td><?= enigme_compter_points_depenses($enigme_id, $mode_validation, 'semaine'); ?></td>
-            <td><?= enigme_compter_points_depenses($enigme_id, $mode_validation, 'mois'); ?></td>
-          </tr>
-          <tr>
-            <td>Nombre de bonnes solutions</td>
-            <td><?= enigme_compter_bonnes_solutions($enigme_id, $mode_validation, 'total'); ?></td>
-            <td><?= enigme_compter_bonnes_solutions($enigme_id, $mode_validation, 'jour'); ?></td>
-            <td><?= enigme_compter_bonnes_solutions($enigme_id, $mode_validation, 'semaine'); ?></td>
-            <td><?= enigme_compter_bonnes_solutions($enigme_id, $mode_validation, 'mois'); ?></td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="edition-panel-body">
+        <div class="stats-header" style="display:flex;align-items:center;">
+          <div class="stats-filtres" style="margin-left:auto;">
+            <label for="enigme-periode">Période :</label>
+            <select id="enigme-periode">
+              <option value="total">Depuis le début</option>
+              <option value="jour">Aujourd’hui</option>
+              <option value="semaine">7&nbsp;derniers jours</option>
+              <option value="mois">30&nbsp;derniers jours</option>
+            </select>
+          </div>
+        </div>
+        <?php
+        $nb_joueurs    = enigme_compter_joueurs_engages($enigme_id, $periode);
+        $nb_tentatives = $mode_validation !== 'aucune'
+            ? enigme_compter_tentatives($enigme_id, $mode_validation, $periode)
+            : 0;
+        $nb_points = ($mode_validation !== 'aucune' && (int) $cout > 0)
+            ? enigme_compter_points_depenses($enigme_id, $mode_validation, $periode)
+            : 0;
+        $nb_solutions = $mode_validation !== 'aucune'
+            ? enigme_compter_bonnes_solutions($enigme_id, $mode_validation, $periode)
+            : 0;
+        ?>
+        <div class="dashboard-grid stats-cards" id="enigme-stats">
+          <div class="dashboard-card" data-stat="joueurs">
+            <div class="dashboard-card-header">
+              <i class="fa-solid fa-users"></i>
+              <h3>Nombre de joueurs engagés</h3>
+            </div>
+            <div class="dashboard-card-content">
+              <p class="stat-value"><?= esc_html($nb_joueurs); ?></p>
+            </div>
+          </div>
+          <div class="dashboard-card<?= $mode_validation === 'aucune' ? ' cache' : ''; ?>" data-stat="tentatives">
+            <div class="dashboard-card-header">
+              <i class="fa-solid fa-arrow-rotate-right"></i>
+              <h3>Nombre de tentatives</h3>
+            </div>
+            <div class="dashboard-card-content">
+              <p class="stat-value"><?= esc_html($nb_tentatives); ?></p>
+            </div>
+          </div>
+          <div class="dashboard-card<?= ($mode_validation === 'aucune' || (int) $cout <= 0) ? ' cache' : ''; ?>" data-stat="points">
+            <div class="dashboard-card-header">
+              <i class="fa-solid fa-coins"></i>
+              <h3>Nombre de points dépensés</h3>
+            </div>
+            <div class="dashboard-card-content">
+              <p class="stat-value"><?= esc_html($nb_points); ?></p>
+            </div>
+          </div>
+          <div class="dashboard-card<?= $mode_validation === 'aucune' ? ' cache' : ''; ?>" data-stat="solutions">
+            <div class="dashboard-card-header">
+              <i class="fa-solid fa-check"></i>
+              <h3>Nombre de bonnes solutions</h3>
+            </div>
+            <div class="dashboard-card-content">
+              <p class="stat-value"><?= esc_html($nb_solutions); ?></p>
+            </div>
+          </div>
+        </div>
+        <?php if ($mode_validation !== 'aucune') :
+            $resolveurs = enigme_lister_resolveurs($enigme_id);
+            $nb_resolveurs = count($resolveurs); ?>
+        <h3>Résolue par (<?= esc_html($nb_resolveurs); ?>) joueurs</h3>
+        <?php if ($nb_resolveurs > 0) : ?>
+        <div class="stats-table-wrapper">
+          <table class="stats-table" id="enigme-resolveurs-table">
+            <thead>
+              <tr>
+                <th scope="col">Rang</th>
+                <th scope="col">Joueur</th>
+                <th scope="col">Date</th>
+                <th scope="col">Tentatives</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php $rang = 1; foreach ($resolveurs as $res) : ?>
+              <tr>
+                <td><?= esc_html($rang++); ?></td>
+                <td><?= esc_html($res['username']); ?></td>
+                <td><?= esc_html(mysql2date('d/m/Y H:i', $res['date'])); ?></td>
+                <td><?= esc_html($res['tentatives']); ?></td>
+              </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table>
+        </div>
+        <?php else : ?>
+        <p><?php esc_html_e("Aucun joueur n'a résolu l'énigme", 'chassesautresor-com'); ?></p>
+        <?php endif; ?>
+        <?php endif; ?>
+      </div>
     </div>
 
 <div id="enigme-tab-soumission" class="edition-tab-content" style="display:none;">

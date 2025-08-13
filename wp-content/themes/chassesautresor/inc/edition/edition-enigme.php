@@ -32,7 +32,16 @@ function enqueue_script_enigme_edit()
   if (!utilisateur_peut_modifier_post($enigme_id)) return;
 
   // 📦 Modules JS partagés + scripts spécifiques
-  enqueue_core_edit_scripts(['organisateur-edit', 'enigme-edit']);
+  enqueue_core_edit_scripts(['organisateur-edit', 'enigme-edit', 'enigme-stats']);
+
+  wp_localize_script(
+    'enigme-stats',
+    'EnigmeStats',
+    [
+      'ajaxUrl'   => admin_url('admin-ajax.php'),
+      'enigmeId'  => $enigme_id,
+    ]
+  );
 
   // Localisation JS si besoin (ex : valeurs par défaut)
   wp_localize_script('champ-init', 'CHP_ENIGME_DEFAUT', [
