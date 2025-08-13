@@ -265,6 +265,25 @@ function myaccount_get_important_messages(): string
         }
     }
 
+    if (est_organisateur()) {
+        $organisateur_id = get_organisateur_from_user(get_current_user_id());
+        if ($organisateur_id) {
+            $enigmes = recuperer_enigmes_tentatives_en_attente($organisateur_id);
+            if (!empty($enigmes)) {
+                $links = array_map(
+                    function ($id) {
+                        $url   = esc_url(get_permalink($id));
+                        $title = esc_html(get_the_title($id));
+                        return '<a href="' . $url . '">' . $title . '</a>';
+                    },
+                    $enigmes
+                );
+
+                $messages[] = __('Tentatives à traiter :', 'chassesautresor') . ' ' . implode(', ', $links);
+            }
+        }
+    }
+
     if (empty($messages)) {
         return '';
     }
