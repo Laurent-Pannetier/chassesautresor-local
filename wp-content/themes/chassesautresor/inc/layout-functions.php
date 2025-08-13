@@ -392,12 +392,21 @@ function afficher_bandeau_validation_chasse_global() {
         return;
     }
 
+    if (!is_singular('enigme')) {
+        return;
+    }
+
     $chasse_id = trouver_chasse_a_valider($user_id);
     if (!$chasse_id) {
         return;
     }
 
-    if (is_singular('chasse') && get_the_ID() === $chasse_id) {
+    if (!function_exists('recuperer_id_chasse_associee')) {
+        return;
+    }
+
+    $enigme_chasse_id = recuperer_id_chasse_associee(get_the_ID());
+    if ((int) $enigme_chasse_id !== (int) $chasse_id) {
         return;
     }
 
