@@ -94,6 +94,17 @@ function initEnigmeEdit() {
     });
   });
 
+  const explicationTentatives = wp.i18n.__(
+    "Nombre maximum de tentatives quotidiennes d'un joueur\nMode payant : tentatives illimitées.\nMode gratuit : maximum 24 tentatives par jour.",
+    "chassesautresor-com"
+  );
+
+  document.querySelectorAll('.tentatives-aide').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      alert(explicationTentatives);
+    });
+  });
+
 
   // ==============================
   // 🧰 Déclencheurs de résumé
@@ -443,32 +454,21 @@ function initChampNbTentatives() {
 
   let timerDebounce;
 
-  // ✅ Crée un message d'aide dynamique
-  let aide = bloc.querySelector('.champ-aide-tentatives');
-  if (!aide) {
-    aide = document.createElement('p');
-    aide.className = 'champ-aide champ-aide-tentatives';
-    aide.style.margin = '5px 0 0 10px';
-    aide.style.fontSize = '0.9em';
-    aide.style.color = '#ccc';
-    bloc.appendChild(aide);
-  }
-
-  // 🔄 Fonction centralisée
   function mettreAJourAideTentatives() {
     const coutInput = document.querySelector('[data-champ="enigme_tentative.enigme_tentative_cout_points"] .champ-input');
     if (!coutInput) return;
 
     const cout = parseInt(coutInput.value.trim(), 10);
     const estGratuit = isNaN(cout) || cout === 0;
-    const valeur = parseInt(input.value.trim(), 10); // ✅ ligne manquante
+    const valeur = parseInt(input.value.trim(), 10);
 
-    aide.textContent = estGratuit
-      ? "Mode gratuit : maximum 24 tentatives par jour."
-      : "Mode payant : tentatives illimitées.";
-
-    if (estGratuit && valeur > 24) {
-      input.value = '24';
+    if (estGratuit) {
+      input.max = 24;
+      if (valeur > 24) {
+        input.value = '24';
+      }
+    } else {
+      input.removeAttribute('max');
     }
   }
 

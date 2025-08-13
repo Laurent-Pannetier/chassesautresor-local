@@ -286,12 +286,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
 
             <div class="champ-enigme champ-nb-tentatives <?= empty($max) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_tentative.enigme_tentative_max" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
               <div class="champ-edition" style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
-                <label for="enigme-nb-tentatives">Nb tentatives</label>
+                <label for="enigme-nb-tentatives">Nb tentatives
+                  <button
+                    type="button"
+                    class="mode-fin-aide tentatives-aide"
+                    aria-label="<?= esc_attr__('Explication du nombre de tentatives', 'chassesautresor-com'); ?>"
+                  >
+                    <i class="fa-regular fa-circle-question"></i>
+                  </button>
+                </label>
                 <input type="number" id="enigme-nb-tentatives" class="champ-input champ-nb-tentatives" min="1" step="1" value="<?= esc_attr($max); ?>" placeholder="5" <?= $peut_editer ? '' : 'disabled'; ?> />
                 <span class="txt-small">max par jour</span>
               </div>
-              <p class="message-tentatives txt-small" style="margin-top: 4px;"></p>
-              <p class="champ-aide champ-aide-tentatives" style="margin:5px 0 0 10px; font-size:0.9em; color:#ccc;"></p>
               <div class="champ-feedback"></div>
             </div>
 
