@@ -263,11 +263,36 @@ function initEnigmeEdit() {
       .then(res => {
         if (res.success) {
           DEBUG && console.log('🔄 Statut système de l’énigme recalculé');
+          mettreAJourCTAValidationChasse(postId);
         } else {
           console.warn('⚠️ Échec recalcul statut énigme :', res.data);
         }
       });
   }
+
+  function mettreAJourCTAValidationChasse(postId) {
+    const conteneur = document.getElementById('cta-validation-chasse');
+    if (!conteneur) return;
+
+    fetch(ajaxurl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        action: 'actualiser_cta_validation_chasse',
+        enigme_id: postId
+      })
+    })
+      .then(r => r.json())
+      .then(res => {
+        if (res.success) {
+          conteneur.innerHTML = res.data?.html || '';
+        } else {
+          console.warn('⚠️ CTA validation non mis à jour :', res.data);
+        }
+      })
+      .catch(err => console.error('❌ Erreur réseau CTA validation', err));
+  }
+  window.mettreAJourCTAValidationChasse = mettreAJourCTAValidationChasse;
 
 
   (() => {

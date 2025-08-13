@@ -97,6 +97,7 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
     ?>
 
     <?php
+    echo '<div id="cta-validation-chasse">';
     if ($est_orga_associe && $has_incomplete_enigme) {
         echo '<div class="cta-chasse">';
         echo '<p>⚠️ Certaines énigmes doivent être complétées :</p>';
@@ -117,6 +118,7 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
         echo render_form_validation_chasse($chasse_id);
         echo '</div>';
     }
+    echo '</div>';
 
     afficher_message_validation_chasse($chasse_id);
     ?>
