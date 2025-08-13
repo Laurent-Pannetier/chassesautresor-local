@@ -88,11 +88,6 @@ if ($etat_systeme !== 'accessible' || !in_array($statut_utilisateur, $statuts_en
 // Déduction + enregistrement du statut
 marquer_enigme_comme_engagee($current_user_id, $enigme_id);
 
-// Vérifie la fin de chasse si l'énigme ne nécessite pas de validation
-if (get_field('enigme_mode_validation', $enigme_id) === 'aucune') {
-    verifier_fin_de_chasse($current_user_id, $enigme_id);
-}
-
 // Redirection vers la page de l’énigme
 wp_redirect(get_permalink($enigme_id));
 exit;

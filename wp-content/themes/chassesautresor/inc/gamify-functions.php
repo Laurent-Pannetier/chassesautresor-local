@@ -403,5 +403,9 @@ add_action('enigme_resolue', function($user_id, $enigme_id) {
     verifier_fin_de_chasse($user_id, $enigme_id); // 🎯 Vérifie et termine la chasse si besoin
 }, 10, 2);
 
+add_action('enigme_engagee', function($user_id, $enigme_id) {
+    verifier_fin_de_chasse($user_id, $enigme_id);
+}, 10, 2);
+
 
 
