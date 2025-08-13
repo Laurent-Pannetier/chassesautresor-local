@@ -262,6 +262,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
               <?php endif; ?>
             </div>
 
+            <!-- Tentatives -->
+            <fieldset class="groupe-champ champ-groupe-tentatives">
+              <legend>Gestion des tentatives</legend>
+
+              <div class="champ-enigme champ-cout-points <?= empty($cout) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_tentative.enigme_tentative_cout_points" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
+                <div class="champ-edition" style="display: flex; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                  <label for="enigme-tentative-cout">Coût tentative
+                    <button type="button" class="bouton-aide-points open-points-modal" aria-label="En savoir plus sur les points">
+                      <i class="fa-solid fa-circle-question" aria-hidden="true"></i>
+                    </button>
+                  </label>
+                  <input type="number" id="enigme-tentative-cout" class="champ-input champ-cout" min="0" step="1" value="<?= esc_attr($cout); ?>" placeholder="0" <?= $peut_editer ? '' : 'disabled'; ?> />
+                  <span class="txt-small">points</span>
+                  <div class="champ-option-gratuit" style="margin-left: 5px;">
+                    <?php
+                    $cout_normalise = trim((string)$cout);
+                    $is_gratuit = $cout_normalise === '' || $cout_normalise === '0' || (int)$cout === 0;
+                    ?>
+                    <input type="checkbox" id="cout-gratuit-enigme" name="cout-gratuit-enigme" <?= $is_gratuit ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?> >
+                    <label for="cout-gratuit-enigme">Gratuit</label>
+                  </div>
+                </div>
+                <div class="champ-feedback"></div>
+              </div>
+
+              <div class="champ-enigme champ-nb-tentatives <?= empty($max) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_tentative.enigme_tentative_max" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
+                <div class="champ-edition" style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
+                  <label for="enigme-nb-tentatives">Nb tentatives</label>
+                  <input type="number" id="enigme-nb-tentatives" class="champ-input" min="1" step="1" value="<?= esc_attr($max); ?>" placeholder="5" <?= $peut_editer ? '' : 'disabled'; ?> />
+                  <span class="txt-small">max par jour</span>
+                </div>
+                <p class="message-tentatives txt-small" style="margin-top: 4px;"></p>
+                <p class="champ-aide champ-aide-tentatives" style="margin:5px 0 0 10px; font-size:0.9em; color:#ccc;"></p>
+                <div class="champ-feedback"></div>
+              </div>
+            </fieldset>
+
             <!-- Accès à l'énigme -->
             <fieldset class="groupe-champ champ-groupe-acces">
               <legend>Condition d’accès</legend>
@@ -350,47 +387,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
               </div>
             </fieldset>
 
-            <!-- Tentatives -->
-            <fieldset class="groupe-champ champ-groupe-tentatives">
-              <legend>Gestion des tentatives</legend>
-
-              <div class="champ-enigme champ-cout-points <?= empty($cout) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_tentative.enigme_tentative_cout_points" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
-                <div class="champ-edition" style="display: flex; align-items: flex-end; gap: 1rem; flex-wrap: wrap;">
-
-                  <!-- Coût en points -->
-                  <div style="display: flex; flex-direction: column;">
-                    <label>Coût <span class="txt-small">(points)</span>
-                      <button type="button" class="bouton-aide-points open-points-modal" aria-label="En savoir plus sur les points">
-                        <i class="fa-solid fa-circle-question" aria-hidden="true"></i>
-                      </button>
-                    </label>
-                    <input type="number" class="champ-input champ-cout" min="0" step="1" value="<?= esc_attr($cout); ?>" placeholder="0" <?= $peut_editer ? '' : 'disabled'; ?> />
-                  </div>
-
-                  <!-- Option gratuit -->
-                  <div class="champ-option-gratuit" style="margin-left: 5px;">
-                    <?php
-                    $cout_normalise = trim((string)$cout); // on nettoie
-                    $is_gratuit = $cout_normalise === '' || $cout_normalise === '0' || (int)$cout === 0;
-                    ?>
-                    <input type="checkbox" id="cout-gratuit-enigme" name="cout-gratuit-enigme"
-                      <?= $is_gratuit ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?> >
-
-                    <label for="cout-gratuit-enigme">Gratuit</label>
-                  </div>
-
-                  <!-- Nombre max de tentatives -->
-                  <div class="champ-enigme champ-nb-tentatives <?= empty($max) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_tentative.enigme_tentative_max" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
-                    <label for="enigme-nb-tentatives">Nombre max de tentatives/jour</label>
-                    <input type="number" id="enigme-nb-tentatives" class="champ-input" min="1" step="1" value="<?= esc_attr($max); ?>" placeholder="5" <?= $peut_editer ? '' : 'disabled'; ?> />
-                    <p class="message-tentatives txt-small" style="margin-top: 4px;"></p>
-                    <div class="champ-feedback"></div>
-                  </div>
-
-                </div>
-                <div class="champ-feedback"></div>
-              </div>
-            </fieldset>
 
         </div>
         </div>
