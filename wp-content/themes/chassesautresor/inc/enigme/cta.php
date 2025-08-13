@@ -199,9 +199,11 @@ function get_cta_enigme(int $enigme_id, ?int $user_id = null): array
             ]);
 
         case 'en_cours':
-            $type_cours  = ($mode_validation === 'aucune') ? 'voir' : 'continuer';
-            $label_cours = ($mode_validation === 'aucune') ? 'Voir' : 'Continuer';
-            $classe_cours= ($mode_validation === 'aucune') ? 'cta-voir' : 'cta-en-cours';
+            $type_cours   = ($mode_validation === 'aucune') ? 'voir' : 'continuer';
+            $label_cours  = ($mode_validation === 'aucune')
+                ? __('Voir', 'chassesautresor-com')
+                : __('Continuer', 'chassesautresor-com');
+            $classe_cours = ($mode_validation === 'aucune') ? 'cta-voir' : 'cta-en-cours';
             return array_merge($cta, [
                 'type'       => $type_cours,
                 'label'      => $label_cours,
