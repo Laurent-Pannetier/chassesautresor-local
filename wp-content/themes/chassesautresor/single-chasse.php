@@ -130,7 +130,6 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
         echo render_form_validation_chasse($chasse_id);
         echo '</div>';
     }
-    echo '</div>';
 
     afficher_message_validation_chasse($chasse_id);
     ?>
