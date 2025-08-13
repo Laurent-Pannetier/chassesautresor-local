@@ -89,7 +89,8 @@ function initEnigmeEdit() {
   }
 
   const radioChecked = document.querySelector('input[name="acf[enigme_mode_validation]"]:checked');
-  toggleTentativesTab(radioChecked ? radioChecked.value : 'aucune');
+  const modeInitial = radioChecked ? radioChecked.value : 'aucune';
+  toggleTentativesTab(modeInitial);
 
   radiosValidation.forEach((radio) => {
     radio.addEventListener('change', (e) => {
@@ -1149,6 +1150,7 @@ function mettreAJourCartesStats() {
   const nbSolutions = cardSolutions
     ? parseInt(cardSolutions.querySelector('.stat-value')?.textContent || '0', 10)
     : 0;
+  const resolveursSection = document.getElementById('enigme-resolveurs');
 
   if (cardTentatives) {
     cardTentatives.style.display = mode === 'aucune' ? 'none' : '';
@@ -1158,6 +1160,9 @@ function mettreAJourCartesStats() {
   }
   if (cardSolutions) {
     cardSolutions.style.display = (mode === 'aucune' || nbSolutions <= 0) ? 'none' : '';
+  }
+  if (resolveursSection) {
+    resolveursSection.style.display = mode === 'aucune' ? 'none' : '';
   }
 }
 

@@ -428,37 +428,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
             </div>
           </div>
         </div>
-        <?php if ($mode_validation !== 'aucune') :
-            $resolveurs = enigme_lister_resolveurs($enigme_id);
-            $nb_resolveurs = count($resolveurs); ?>
-        <h3>Résolue par (<?= esc_html($nb_resolveurs); ?>) joueurs</h3>
-        <?php if ($nb_resolveurs > 0) : ?>
-        <div class="stats-table-wrapper">
-          <table class="stats-table" id="enigme-resolveurs-table">
-            <thead>
-              <tr>
-                <th scope="col">Rang</th>
-                <th scope="col">Joueur</th>
-                <th scope="col">Date</th>
-                <th scope="col">Tentatives</th>
-              </tr>
-            </thead>
-            <tbody>
-              <?php $rang = 1; foreach ($resolveurs as $res) : ?>
-              <tr>
-                <td><?= esc_html($rang++); ?></td>
-                <td><?= esc_html($res['username']); ?></td>
-                <td><?= esc_html(mysql2date('d/m/Y H:i', $res['date'])); ?></td>
-                <td><?= esc_html($res['tentatives']); ?></td>
-              </tr>
-              <?php endforeach; ?>
-            </tbody>
-          </table>
+        <?php
+        $resolveurs = $mode_validation === 'aucune' ? [] : enigme_lister_resolveurs($enigme_id);
+        $nb_resolveurs = count($resolveurs);
+        ?>
+        <div id="enigme-resolveurs" style="<?= $mode_validation === 'aucune' ? 'display:none;' : ''; ?>">
+          <h3>Résolue par (<?= esc_html($nb_resolveurs); ?>) joueurs</h3>
+          <?php if ($nb_resolveurs > 0) : ?>
+          <div class="stats-table-wrapper">
+            <table class="stats-table" id="enigme-resolveurs-table">
+              <thead>
+                <tr>
+                  <th scope="col">Rang</th>
+                  <th scope="col">Joueur</th>
+                  <th scope="col">Date</th>
+                  <th scope="col">Tentatives</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php $rang = 1; foreach ($resolveurs as $res) : ?>
+                <tr>
+                  <td><?= esc_html($rang++); ?></td>
+                  <td><?= esc_html($res['username']); ?></td>
+                  <td><?= esc_html(mysql2date('d/m/Y H:i', $res['date'])); ?></td>
+                  <td><?= esc_html($res['tentatives']); ?></td>
+                </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+          </div>
+          <?php else : ?>
+          <p><?php esc_html_e("Aucun joueur n'a résolu l'énigme", 'chassesautresor-com'); ?></p>
+          <?php endif; ?>
         </div>
-        <?php else : ?>
-        <p><?php esc_html_e("Aucun joueur n'a résolu l'énigme", 'chassesautresor-com'); ?></p>
-        <?php endif; ?>
-        <?php endif; ?>
 
         <?php
         $nb_participants = enigme_compter_joueurs_engages($enigme_id);
