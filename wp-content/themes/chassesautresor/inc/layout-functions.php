@@ -392,12 +392,18 @@ function afficher_bandeau_validation_chasse_global() {
         return;
     }
 
+    if (!is_singular('enigme')) {
+        return;
+    }
+
     $chasse_id = trouver_chasse_a_valider($user_id);
     if (!$chasse_id) {
         return;
     }
 
-    if (is_singular('chasse') && get_the_ID() === $chasse_id) {
+    $enigme_chasse = get_field('chasse_associee', get_the_ID(), false);
+    $enigme_chasse = is_array($enigme_chasse) ? reset($enigme_chasse) : $enigme_chasse;
+    if ((int) $enigme_chasse !== (int) $chasse_id) {
         return;
     }
 
