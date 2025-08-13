@@ -52,16 +52,24 @@ require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/gamify-functio
 
 class FinDeChasseAutomatiqueTest extends TestCase
 {
-    public function test_enregistrement_gagnant_et_chasse_terminee(): void
+    public function test_enregistrement_apres_engagement_final(): void
     {
         global $wpdb, $test_fields, $updated_fields, $winner_log, $enigmes_associees;
 
         $wpdb = new class {
             public string $prefix = 'wp_';
             public bool $replace_called = false;
+            public int $resolues = 0;
+            public int $engagees = 0;
             public function get_var($query)
             {
-                return 1;
+                if (str_contains($query, 'enigme_statuts_utilisateur')) {
+                    return $this->resolues;
+                }
+                if (str_contains($query, 'engagements')) {
+                    return $this->engagees;
+                }
+                return 0;
             }
             public function prepare($query, ...$args)
             {
@@ -92,6 +100,14 @@ class FinDeChasseAutomatiqueTest extends TestCase
         $winner_log = [];
         $enigmes_associees = [1001, 1002];
 
+        // Après résolution de l'énigme validable uniquement
+        $wpdb->resolues = 1;
+        $wpdb->engagees = 0;
+        verifier_fin_de_chasse(5, 1001);
+        $this->assertEmpty($winner_log, 'Aucun gagnant tant que toutes les énigmes ne sont pas traitées');
+
+        // Après engagement de l'énigme non validable
+        $wpdb->engagees = 1;
         verifier_fin_de_chasse(5, 1002);
 
         $this->assertTrue($wpdb->replace_called);
