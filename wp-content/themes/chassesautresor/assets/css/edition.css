@@ -1160,10 +1160,24 @@ body.panneau-ouvert::before {
   display: flex;
   flex-direction: row;
   gap: 1rem;
+  align-items: center;
 }
 
 .champ-mode-options label {
   display: flex;
+  align-items: center;
+}
+
+#champ-enigme-date {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+#champ-enigme-pre-requis {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
   align-items: center;
 }
 
