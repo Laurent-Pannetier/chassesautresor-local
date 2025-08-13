@@ -789,6 +789,14 @@ li.ligne-email .champ-organisateur .champ-affichage {
   margin-bottom: 0.9rem;
 }
 
+.edition-panel-section .resume-reglages .resume-infos > .champ-enigme {
+  margin-bottom: 0.9rem;
+}
+
+.edition-panel-section .resume-reglages .resume-infos > .champ-enigme:last-child {
+  margin-bottom: 0;
+}
+
 
 /* ========== 📱 RESPONSIVE PANNEAU EDITION ========== */
 @media (max-width: 768px) {
