@@ -63,33 +63,47 @@ function initEnigmeEdit() {
   // ==============================
   initChampConditionnel('acf[enigme_mode_validation]', {
     'aucune': [],
-    'manuelle': ['.champ-groupe-tentatives'],
-    'automatique': ['.champ-groupe-reponse-automatique', '.champ-groupe-tentatives']
+    'manuelle': ['.champ-cout-points', '.champ-nb-tentatives'],
+    'automatique': ['.champ-groupe-reponse-automatique', '.champ-cout-points', '.champ-nb-tentatives']
   });
 
 
   // ==============================
-  // 🧠 Explication dynamique – Mode de validation de l’énigme
+  // 🧠 Explication – Mode de validation de l’énigme
   // ==============================
   const explicationValidation = {
-    'aucune': "Aucun formulaire de réponse ne sera affiché pour cette énigme.",
-    'manuelle': "Le joueur devra rédiger une réponse libre. Vous recevrez sa proposition par email, et pourrez la valider ou la refuser à partir de ce message.",
-    'automatique': "Le joueur devra saisir une réponse exacte. Celle-ci sera automatiquement vérifiée selon les critères définis (réponse attendue, casse, variantes)."
+    manuelle: wp.i18n.__(
+      "Validation manuelle : Le joueur rédige une réponse libre. Vous validez ou invalidez manuellement " +
+        "sa tentative depuis votre espace personnel. Un email et un message d'alerte vous avertit de chaque nouvelle soumission.",
+      "chassesautresor-com"
+    ),
+    automatique: wp.i18n.__(
+      "Validation automatique : Le joueur devra saisir une réponse exacte. Celle-ci sera automatiquement vérifiée " +
+        "selon les critères définis (réponse attendue, casse, variantes).",
+      "chassesautresor-com"
+    ),
   };
 
-  const zoneExplication = document.querySelector('.champ-explication-validation');
-  if (zoneExplication) {
-    document.querySelectorAll('input[name="acf[enigme_mode_validation]"]').forEach((radio) => {
-      radio.addEventListener('change', () => {
-        const val = radio.value;
-        DEBUG && console.log(val)
-        zoneExplication.textContent = explicationValidation[val] || '';
-      });
-      if (radio.checked) {
-        zoneExplication.textContent = explicationValidation[radio.value] || '';
+  document.querySelectorAll('.validation-aide').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const mode = btn.dataset.mode;
+      const message = explicationValidation[mode];
+      if (message) {
+        alert(message);
       }
     });
-  }
+  });
+
+  const explicationTentatives = wp.i18n.__(
+    "Nombre maximum de tentatives quotidiennes d'un joueur\nMode payant : tentatives illimitées.\nMode gratuit : maximum 24 tentatives par jour.",
+    "chassesautresor-com"
+  );
+
+  document.querySelectorAll('.tentatives-aide').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      alert(explicationTentatives);
+    });
+  });
 
 
   // ==============================
@@ -200,14 +214,16 @@ function initEnigmeEdit() {
         if (champ && postId) {
           clearTimeout(timerSauvegarde);
           timerSauvegarde = setTimeout(() => {
-            modifierChampSimple(champ, input.value.trim(), postId, cptChamp);
+            modifierChampSimple(champ, input.value.trim(), postId, cptChamp)
+              .then(() => {
+                const enigmeId = panneauEdition?.dataset.postId;
+                if (enigmeId) {
+                  forcerRecalculStatutEnigme(enigmeId);
+                }
+              });
           }, 400);
         }
       });
-      const enigmeId = panneauEdition?.dataset.postId;
-      if (enigmeId) {
-        forcerRecalculStatutEnigme(enigmeId);
-      }
     }
   }
 
@@ -218,6 +234,14 @@ function initEnigmeEdit() {
   initChampNbTentatives();
   initChampRadioAjax('acf[enigme_mode_validation]');
   const enigmeId = panneauEdition?.dataset.postId;
+
+  if (enigmeId) {
+    document.querySelectorAll('input[name="acf[enigme_mode_validation]"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        forcerRecalculStatutEnigme(enigmeId);
+      });
+    });
+  }
 
   initChampPreRequis();
   initChampSolution();
@@ -254,11 +278,36 @@ function initEnigmeEdit() {
       .then(res => {
         if (res.success) {
           DEBUG && console.log('🔄 Statut système de l’énigme recalculé');
+          mettreAJourCTAValidationChasse(postId);
         } else {
           console.warn('⚠️ Échec recalcul statut énigme :', res.data);
         }
       });
   }
+
+  function mettreAJourCTAValidationChasse(postId) {
+    const conteneur = document.getElementById('cta-validation-chasse');
+    if (!conteneur) return;
+
+    fetch(ajaxurl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        action: 'actualiser_cta_validation_chasse',
+        enigme_id: postId
+      })
+    })
+      .then(r => r.json())
+      .then(res => {
+        if (res.success) {
+          conteneur.innerHTML = res.data?.html || '';
+        } else {
+          console.warn('⚠️ CTA validation non mis à jour :', res.data);
+        }
+      })
+      .catch(err => console.error('❌ Erreur réseau CTA validation', err));
+  }
+  window.mettreAJourCTAValidationChasse = mettreAJourCTAValidationChasse;
 
 
   (() => {
@@ -405,32 +454,21 @@ function initChampNbTentatives() {
 
   let timerDebounce;
 
-  // ✅ Crée un message d'aide dynamique
-  let aide = bloc.querySelector('.champ-aide-tentatives');
-  if (!aide) {
-    aide = document.createElement('p');
-    aide.className = 'champ-aide champ-aide-tentatives';
-    aide.style.margin = '5px 0 0 10px';
-    aide.style.fontSize = '0.9em';
-    aide.style.color = '#ccc';
-    bloc.appendChild(aide);
-  }
-
-  // 🔄 Fonction centralisée
   function mettreAJourAideTentatives() {
     const coutInput = document.querySelector('[data-champ="enigme_tentative.enigme_tentative_cout_points"] .champ-input');
     if (!coutInput) return;
 
     const cout = parseInt(coutInput.value.trim(), 10);
     const estGratuit = isNaN(cout) || cout === 0;
-    const valeur = parseInt(input.value.trim(), 10); // ✅ ligne manquante
+    const valeur = parseInt(input.value.trim(), 10);
 
-    aide.textContent = estGratuit
-      ? "Mode gratuit : maximum 24 tentatives par jour."
-      : "Mode payant : tentatives illimitées.";
-
-    if (estGratuit && valeur > 24) {
-      input.value = '24';
+    if (estGratuit) {
+      input.max = 24;
+      if (valeur > 24) {
+        input.value = '24';
+      }
+    } else {
+      input.removeAttribute('max');
     }
   }
 

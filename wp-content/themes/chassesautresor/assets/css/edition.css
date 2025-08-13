@@ -253,6 +253,22 @@ body .header-img-modifiable .icone-modif {
   transition: border-color 0.2s, background-color 0.2s;
 }
 
+.champ-groupe-reponse-automatique {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.champ-groupe-reponse-automatique.cache {
+  display: none;
+}
+
+#champ-bonne-reponse {
+  width: auto;
+  flex: 1 0 200px;
+}
+
 .champ-edition input.champ-input::placeholder {
   color: var(--color-editor-placeholder);
 }
@@ -608,6 +624,10 @@ body.edition-active-enigme .edition-panel-enigme.edition-panel-modal {
   width: 180px;
 }
 
+.edition-panel-section .resume-reglages input.champ-nb-tentatives {
+  width: 80px;
+}
+
 .edition-panel-section .resume-technique .champ-select-heure,
 .edition-panel-section .resume-reglages .champ-select-heure {
   width: auto;
@@ -767,6 +787,14 @@ li.ligne-email .champ-organisateur .champ-affichage {
 .edition-panel-section .resume-technique li,
 .edition-panel-section .resume-reglages li {
   margin-bottom: 0.9rem;
+}
+
+.edition-panel-section .resume-reglages .resume-infos > .champ-enigme {
+  margin-bottom: 0.9rem;
+}
+
+.edition-panel-section .resume-reglages .resume-infos > .champ-enigme:last-child {
+  margin-bottom: 0;
 }
 
 
@@ -1140,11 +1168,30 @@ body.panneau-ouvert::before {
   display: flex;
   flex-direction: row;
   gap: 1rem;
+  align-items: center;
 }
 
 .champ-mode-options label {
   display: flex;
   align-items: center;
+}
+
+#champ-enigme-date {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+#champ-enigme-pre-requis {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+#champ-enigme-date.cache,
+#champ-enigme-pre-requis.cache {
+  display: none;
 }
 
 .fin-chasse-actions {

@@ -842,6 +842,82 @@ function afficher_message_validation_chasse(int $chasse_id): void
     }
 }
 
+/**
+ * Retourne le bloc d'incitation à la validation d'une chasse pour mise à jour dynamique.
+ *
+ * @hook wp_ajax_actualiser_cta_validation_chasse
+ * @return void
+ */
+add_action('wp_ajax_actualiser_cta_validation_chasse', 'actualiser_cta_validation_chasse');
+
+function actualiser_cta_validation_chasse(): void
+{
+    if (!is_user_logged_in()) {
+        wp_send_json_error('non_connecte');
+    }
+
+    $enigme_id = isset($_POST['enigme_id']) ? (int) $_POST['enigme_id'] : 0;
+    if (!$enigme_id || get_post_type($enigme_id) !== 'enigme') {
+        wp_send_json_error('post_invalide');
+    }
+
+    $chasse_id = recuperer_id_chasse_associee($enigme_id);
+    if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
+        wp_send_json_error('chasse_invalide');
+    }
+
+    verifier_ou_mettre_a_jour_cache_complet($enigme_id);
+    verifier_ou_mettre_a_jour_cache_complet($chasse_id);
+
+    $posts = get_posts([
+        'post_type'      => 'enigme',
+        'posts_per_page' => -1,
+        'orderby'        => 'menu_order',
+        'order'          => 'ASC',
+        'post_status'    => ['publish', 'pending', 'draft'],
+        'meta_query'     => [[
+            'key'     => 'enigme_chasse_associee',
+            'value'   => $chasse_id,
+            'compare' => 'LIKE',
+        ]],
+    ]);
+
+    $incompletes = [];
+    foreach ($posts as $p) {
+        verifier_ou_mettre_a_jour_cache_complet($p->ID);
+        if (!get_field('enigme_cache_complet', $p->ID)) {
+            $incompletes[] = [
+                'titre' => get_the_title($p->ID),
+                'lien'  => add_query_arg('edition', 'open', get_permalink($p->ID)),
+            ];
+        }
+    }
+
+    ob_start();
+    if (!empty($incompletes)) {
+        echo '<div class="cta-chasse">';
+        echo '<p>⚠️ Certaines énigmes doivent être complétées :</p>';
+        echo '<ul class="liste-enigmes-incompletes">';
+        foreach ($incompletes as $data) {
+            echo '<li><a href="' . esc_url($data['lien']) . '">' . esc_html($data['titre']) . '</a></li>';
+        }
+        echo '</ul>';
+        echo '</div>';
+    } elseif (peut_valider_chasse($chasse_id, get_current_user_id())) {
+        echo '<div class="cta-chasse">';
+        $statut = get_field('chasse_cache_statut_validation', $chasse_id);
+        $msg = ($statut === 'correction')
+            ? 'Lorsque vous aurez terminé vos corrections, demandez sa validation :'
+            : 'Lorsque vous avez finalisé votre chasse, demandez sa validation :';
+        echo '<p>' . $msg . '</p>';
+        echo render_form_validation_chasse($chasse_id);
+        echo '</div>';
+    }
+    $html = ob_get_clean();
+
+    wp_send_json_success(['html' => $html]);
+}
+
 
 /**
  * Vérifie si la solution d'une énigme peut être affichée.
