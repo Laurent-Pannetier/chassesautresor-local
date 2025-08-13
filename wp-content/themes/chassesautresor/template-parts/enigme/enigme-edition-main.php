@@ -199,14 +199,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                 <div class="resume-infos">
 
             <!-- Mode de validation -->
-            <div class="champ-enigme champ-mode-validation<?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_mode_validation" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
-              <fieldset>
-                <legend>Validation de l’énigme</legend>
-                <label><input type="radio" name="acf[enigme_mode_validation]" value="aucune" <?= $mode_validation === 'aucune' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>> Aucune validation</label>
-                <label><input type="radio" name="acf[enigme_mode_validation]" value="manuelle" <?= $mode_validation === 'manuelle' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>> Validation manuelle</label>
-                <label><input type="radio" name="acf[enigme_mode_validation]" value="automatique" <?= $mode_validation === 'automatique' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>> Validation automatique</label>
-                <div class="champ-explication champ-explication-validation" aria-live="polite"></div>
-              </fieldset>
+            <div class="champ-enigme champ-mode-validation champ-mode-fin<?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_mode_validation" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" data-no-edit="1" data-no-icon="1">
+              <label for="enigme_mode_validation"><?= esc_html__('Validation', 'chassesautresor-com'); ?></label>
+              <div class="champ-mode-options">
+                <label>
+                  <input id="enigme_mode_validation" type="radio" name="acf[enigme_mode_validation]" value="aucune" <?= $mode_validation === 'aucune' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
+                  <?= esc_html__('Aucune', 'chassesautresor-com'); ?>
+                </label>
+                <label>
+                  <input type="radio" name="acf[enigme_mode_validation]" value="manuelle" <?= $mode_validation === 'manuelle' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
+                  <?= esc_html__('Manuelle', 'chassesautresor-com'); ?>
+                </label>
+                <label>
+                  <input type="radio" name="acf[enigme_mode_validation]" value="automatique" <?= $mode_validation === 'automatique' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
+                  <?= esc_html__('Automatique', 'chassesautresor-com'); ?>
+                </label>
+              </div>
+              <div class="champ-explication champ-explication-validation" aria-live="polite"></div>
             </div>
 
             <!-- Accès à l'énigme -->
