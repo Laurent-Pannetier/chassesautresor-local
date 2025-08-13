@@ -105,7 +105,7 @@ function get_cta_enigme(int $enigme_id, ?int $user_id = null): array
     $etat_systeme = enigme_get_etat_systeme($enigme_id);
     $statut_utilisateur = enigme_get_statut_utilisateur($enigme_id, $user_id);
     $points = intval(get_field('enigme_tentative_cout_points', $enigme_id));
-    $mode_validation = get_field('enigme_mode_validation', $enigme_id);
+    $mode_validation = strtolower(trim((string) get_field('enigme_mode_validation', $enigme_id)));
     $chasse_terminee = $chasse_id && get_field('chasse_cache_statut', $chasse_id) === 'termine';
     if ($chasse_terminee && $etat_systeme !== 'bloquee_pre_requis') {
         $etat_systeme = 'accessible';
