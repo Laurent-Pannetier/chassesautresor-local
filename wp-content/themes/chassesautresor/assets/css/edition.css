@@ -1181,6 +1181,11 @@ body.panneau-ouvert::before {
   align-items: center;
 }
 
+#champ-enigme-date.cache,
+#champ-enigme-pre-requis.cache {
+  display: none;
+}
+
 .fin-chasse-actions {
   margin-left: auto;
   display: flex;
