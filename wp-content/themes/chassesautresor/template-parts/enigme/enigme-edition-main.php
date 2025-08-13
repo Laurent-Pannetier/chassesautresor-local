@@ -368,50 +368,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
       </div>
       <?php
       if (!function_exists('enigme_compter_joueurs_engages')) {
-        require_once get_stylesheet_directory() . '/inc/enigme/stats.php';
+          require_once get_stylesheet_directory() . '/inc/enigme/stats.php';
       }
+      $periode = 'total';
       ?>
-      <table class="stats-table">
-        <thead>
-          <tr>
-            <th></th>
-            <th>Total</th>
-            <th>Aujourd’hui</th>
-            <th>Semaine</th>
-            <th>Mois</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Nombre de joueurs engagés</td>
-            <td><?= enigme_compter_joueurs_engages($enigme_id, 'total'); ?></td>
-            <td><?= enigme_compter_joueurs_engages($enigme_id, 'jour'); ?></td>
-            <td><?= enigme_compter_joueurs_engages($enigme_id, 'semaine'); ?></td>
-            <td><?= enigme_compter_joueurs_engages($enigme_id, 'mois'); ?></td>
-          </tr>
-          <tr>
-            <td>Nombre de tentatives</td>
-            <td><?= enigme_compter_tentatives($enigme_id, $mode_validation, 'total'); ?></td>
-            <td><?= enigme_compter_tentatives($enigme_id, $mode_validation, 'jour'); ?></td>
-            <td><?= enigme_compter_tentatives($enigme_id, $mode_validation, 'semaine'); ?></td>
-            <td><?= enigme_compter_tentatives($enigme_id, $mode_validation, 'mois'); ?></td>
-          </tr>
-          <tr>
-            <td>Nombre de points dépensés</td>
-            <td><?= enigme_compter_points_depenses($enigme_id, $mode_validation, 'total'); ?></td>
-            <td><?= enigme_compter_points_depenses($enigme_id, $mode_validation, 'jour'); ?></td>
-            <td><?= enigme_compter_points_depenses($enigme_id, $mode_validation, 'semaine'); ?></td>
-            <td><?= enigme_compter_points_depenses($enigme_id, $mode_validation, 'mois'); ?></td>
-          </tr>
-          <tr>
-            <td>Nombre de bonnes solutions</td>
-            <td><?= enigme_compter_bonnes_solutions($enigme_id, $mode_validation, 'total'); ?></td>
-            <td><?= enigme_compter_bonnes_solutions($enigme_id, $mode_validation, 'jour'); ?></td>
-            <td><?= enigme_compter_bonnes_solutions($enigme_id, $mode_validation, 'semaine'); ?></td>
-            <td><?= enigme_compter_bonnes_solutions($enigme_id, $mode_validation, 'mois'); ?></td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="edition-panel-body">
+        <div class="stats-filtres" style="margin-left:auto;">
+          <label for="enigme-periode">Période :</label>
+          <select id="enigme-periode">
+            <option value="total">Depuis le début</option>
+            <option value="jour">Aujourd’hui</option>
+            <option value="semaine">7&nbsp;derniers jours</option>
+            <option value="mois">30&nbsp;derniers jours</option>
+          </select>
+        </div>
+        <div class="stats-table-wrapper">
+          <table class="stats-table" id="enigme-stats-table">
+            <thead>
+              <tr>
+                <th></th>
+                <th class="periode-label">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-stat="joueurs">
+                <td>Nombre de joueurs engagés</td>
+                <td><?= esc_html(enigme_compter_joueurs_engages($enigme_id, $periode)); ?></td>
+              </tr>
+              <?php if ($mode_validation !== 'aucune') : ?>
+              <tr data-stat="tentatives">
+                <td>Nombre de tentatives</td>
+                <td><?= esc_html(enigme_compter_tentatives($enigme_id, $mode_validation, $periode)); ?></td>
+              </tr>
+              <?php endif; ?>
+              <?php if ((int) $cout > 0) : ?>
+              <tr data-stat="points">
+                <td>Nombre de points dépensés</td>
+                <td><?= esc_html(enigme_compter_points_depenses($enigme_id, $mode_validation, $periode)); ?></td>
+              </tr>
+              <?php endif; ?>
+              <?php if ($mode_validation !== 'aucune') : ?>
+              <tr data-stat="solutions">
+                <td>Nombre de bonnes solutions</td>
+                <td><?= esc_html(enigme_compter_bonnes_solutions($enigme_id, $mode_validation, $periode)); ?></td>
+              </tr>
+              <?php endif; ?>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
 <div id="enigme-tab-soumission" class="edition-tab-content" style="display:none;">

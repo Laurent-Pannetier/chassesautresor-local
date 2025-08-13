@@ -84,3 +84,43 @@ function enigme_compter_bonnes_solutions(int $enigme_id, string $mode = 'automat
     $sql = $wpdb->prepare("SELECT COUNT(*) FROM $table WHERE $where", ...$params);
     return (int) $wpdb->get_var($sql);
 }
+
+/**
+ * AJAX handler to retrieve stats for an enigme.
+ *
+ * @return void
+ */
+function ajax_enigme_recuperer_stats()
+{
+    $enigme_id = isset($_POST['enigme_id']) ? (int) $_POST['enigme_id'] : 0;
+    if ($enigme_id <= 0) {
+        wp_send_json_error('missing_enigme', 400);
+    }
+
+    if (!utilisateur_peut_voir_panneau($enigme_id)) {
+        wp_send_json_error('forbidden', 403);
+    }
+
+    $periode = isset($_POST['periode']) ? sanitize_text_field($_POST['periode']) : 'total';
+    $periode = in_array($periode, ['jour', 'semaine', 'mois', 'total'], true) ? $periode : 'total';
+
+    $mode = get_field('enigme_mode_validation', $enigme_id) ?? 'automatique';
+    $cout = (int) get_field('enigme_tentative_cout_points', $enigme_id);
+
+    $stats = [
+        'joueurs' => enigme_compter_joueurs_engages($enigme_id, $periode),
+    ];
+
+    if ($mode !== 'aucune') {
+        $stats['tentatives'] = enigme_compter_tentatives($enigme_id, $mode, $periode);
+        $stats['solutions'] = enigme_compter_bonnes_solutions($enigme_id, $mode, $periode);
+    }
+
+    if ($cout > 0) {
+        $stats['points'] = enigme_compter_points_depenses($enigme_id, $mode, $periode);
+    }
+
+    wp_send_json_success($stats);
+}
+add_action('wp_ajax_enigme_recuperer_stats', 'ajax_enigme_recuperer_stats');
+
