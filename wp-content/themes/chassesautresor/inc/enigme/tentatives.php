@@ -286,10 +286,45 @@ function compter_tentatives_en_attente(int $enigme_id): int
     global $wpdb;
     $table = $wpdb->prefix . 'enigme_tentatives';
     $query = $wpdb->prepare(
-        "SELECT COUNT(*) FROM $table WHERE enigme_id = %d AND resultat = 'attente'",
+        "SELECT COUNT(*) FROM $table WHERE enigme_id = %d AND resultat = 'attente' AND traitee = 0",
         $enigme_id
     );
     return (int) $wpdb->get_var($query);
+}
+
+/**
+ * Récupère les énigmes ayant des tentatives manuelles en attente pour un organisateur.
+ *
+ * @param int $organisateur_id ID du CPT organisateur.
+ * @return array Liste d'IDs d'énigmes.
+ */
+function recuperer_enigmes_tentatives_en_attente(int $organisateur_id): array
+{
+    if ($organisateur_id <= 0) {
+        return [];
+    }
+
+    $query = get_chasses_de_organisateur($organisateur_id);
+    if (empty($query->posts)) {
+        return [];
+    }
+
+    $result = [];
+
+    foreach ($query->posts as $chasse) {
+        $enigmes = recuperer_enigmes_associees($chasse->ID);
+        foreach ($enigmes as $enigme_id) {
+            $mode = enigme_normaliser_mode_validation(
+                get_field('enigme_mode_validation', $enigme_id)
+            );
+
+            if ($mode === 'manuelle' && compter_tentatives_en_attente($enigme_id) > 0) {
+                $result[] = $enigme_id;
+            }
+        }
+    }
+
+    return array_values(array_unique($result));
 }
 
 /**
