@@ -253,6 +253,17 @@ body .header-img-modifiable .icone-modif {
   transition: border-color 0.2s, background-color 0.2s;
 }
 
+.champ-groupe-reponse-automatique {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.champ-groupe-reponse-automatique.cache {
+  display: none;
+}
+
 #champ-bonne-reponse {
   width: auto;
   flex: 1 0 200px;
