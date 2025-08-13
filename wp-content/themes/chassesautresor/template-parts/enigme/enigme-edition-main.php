@@ -387,6 +387,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
         <div class="dashboard-grid stats-cards" id="enigme-stats">
           <div class="dashboard-card" data-stat="joueurs">
             <div class="dashboard-card-header">
+              <i class="fa-solid fa-users"></i>
               <h3>Nombre de joueurs engagés</h3>
             </div>
             <div class="dashboard-card-content">
@@ -396,6 +397,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
           <?php if ($mode_validation !== 'aucune') : ?>
           <div class="dashboard-card" data-stat="tentatives">
             <div class="dashboard-card-header">
+              <i class="fa-solid fa-arrow-rotate-right"></i>
               <h3>Nombre de tentatives</h3>
             </div>
             <div class="dashboard-card-content">
@@ -406,6 +408,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
           <?php if ((int) $cout > 0) : ?>
           <div class="dashboard-card" data-stat="points">
             <div class="dashboard-card-header">
+              <i class="fa-solid fa-coins"></i>
               <h3>Nombre de points dépensés</h3>
             </div>
             <div class="dashboard-card-content">
@@ -416,6 +419,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
           <?php if ($mode_validation !== 'aucune') : ?>
           <div class="dashboard-card" data-stat="solutions">
             <div class="dashboard-card-header">
+              <i class="fa-solid fa-check"></i>
               <h3>Nombre de bonnes solutions</h3>
             </div>
             <div class="dashboard-card-content">
@@ -433,10 +437,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
           <table class="stats-table" id="enigme-resolveurs-table">
             <thead>
               <tr>
-                <th>Rang</th>
-                <th>Joueur</th>
-                <th>Date</th>
-                <th>Tentatives</th>
+                <th scope="col">Rang</th>
+                <th scope="col">Joueur</th>
+                <th scope="col">Date</th>
+                <th scope="col">Tentatives</th>
               </tr>
             </thead>
             <tbody>
