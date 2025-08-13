@@ -1,28 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const table = document.getElementById('enigme-stats-table');
+  const container = document.getElementById('enigme-stats');
   const select = document.getElementById('enigme-periode');
-  if (!table || !select) {
+  if (!container || !select) {
     return;
   }
 
-  const headerLabel = table.querySelector('.periode-label');
-  const rows = {
-    joueurs: table.querySelector('tr[data-stat="joueurs"] td:last-child'),
-    tentatives: table.querySelector('tr[data-stat="tentatives"] td:last-child'),
-    points: table.querySelector('tr[data-stat="points"] td:last-child'),
-    solutions: table.querySelector('tr[data-stat="solutions"] td:last-child'),
-  };
-
-  const labels = {
-    total: 'Total',
-    jour: "Aujourd\u2019hui",
-    semaine: 'Semaine',
-    mois: 'Mois',
+  const cards = {
+    joueurs: container.querySelector('[data-stat="joueurs"] .stat-value'),
+    tentatives: container.querySelector('[data-stat="tentatives"] .stat-value'),
+    points: container.querySelector('[data-stat="points"] .stat-value'),
+    solutions: container.querySelector('[data-stat="solutions"] .stat-value'),
   };
 
   select.addEventListener('change', () => {
     const periode = select.value;
-    headerLabel.textContent = labels[periode] || 'Total';
 
     const data = new FormData();
     data.append('action', 'enigme_recuperer_stats');
@@ -40,17 +31,17 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
         const stats = res.data;
-        if (rows.joueurs && typeof stats.joueurs !== 'undefined') {
-          rows.joueurs.textContent = stats.joueurs;
+        if (cards.joueurs && typeof stats.joueurs !== 'undefined') {
+          cards.joueurs.textContent = stats.joueurs;
         }
-        if (rows.tentatives && typeof stats.tentatives !== 'undefined') {
-          rows.tentatives.textContent = stats.tentatives;
+        if (cards.tentatives && typeof stats.tentatives !== 'undefined') {
+          cards.tentatives.textContent = stats.tentatives;
         }
-        if (rows.points && typeof stats.points !== 'undefined') {
-          rows.points.textContent = stats.points;
+        if (cards.points && typeof stats.points !== 'undefined') {
+          cards.points.textContent = stats.points;
         }
-        if (rows.solutions && typeof stats.solutions !== 'undefined') {
-          rows.solutions.textContent = stats.solutions;
+        if (cards.solutions && typeof stats.solutions !== 'undefined') {
+          cards.solutions.textContent = stats.solutions;
         }
       })
       .catch(() => {});

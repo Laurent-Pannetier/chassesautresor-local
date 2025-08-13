@@ -384,45 +384,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
             </select>
           </div>
         </div>
-        <div class="stats-table-wrapper">
-          <table class="stats-table" id="enigme-stats-table">
-            <thead>
-              <tr>
-                <th></th>
-                <th class="periode-label">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr data-stat="joueurs">
-                <td>Nombre de joueurs engagés</td>
-                <td><?= esc_html(enigme_compter_joueurs_engages($enigme_id, $periode)); ?></td>
-              </tr>
-              <?php if ($mode_validation !== 'aucune') : ?>
-              <tr data-stat="tentatives">
-                <td>Nombre de tentatives</td>
-                <td><?= esc_html(enigme_compter_tentatives($enigme_id, $mode_validation, $periode)); ?></td>
-              </tr>
-              <?php endif; ?>
-              <?php if ((int) $cout > 0) : ?>
-              <tr data-stat="points">
-                <td>Nombre de points dépensés</td>
-                <td><?= esc_html(enigme_compter_points_depenses($enigme_id, $mode_validation, $periode)); ?></td>
-              </tr>
-              <?php endif; ?>
-              <?php if ($mode_validation !== 'aucune') : ?>
-              <tr data-stat="solutions">
-                <td>Nombre de bonnes solutions</td>
-                <td><?= esc_html(enigme_compter_bonnes_solutions($enigme_id, $mode_validation, $periode)); ?></td>
-              </tr>
-              <?php endif; ?>
-            </tbody>
-          </table>
+        <div class="dashboard-grid stats-cards" id="enigme-stats">
+          <div class="dashboard-card" data-stat="joueurs">
+            <div class="dashboard-card-header">
+              <h3>Nombre de joueurs engagés</h3>
+            </div>
+            <div class="dashboard-card-content">
+              <p class="stat-value"><?= esc_html(enigme_compter_joueurs_engages($enigme_id, $periode)); ?></p>
+            </div>
+          </div>
+          <?php if ($mode_validation !== 'aucune') : ?>
+          <div class="dashboard-card" data-stat="tentatives">
+            <div class="dashboard-card-header">
+              <h3>Nombre de tentatives</h3>
+            </div>
+            <div class="dashboard-card-content">
+              <p class="stat-value"><?= esc_html(enigme_compter_tentatives($enigme_id, $mode_validation, $periode)); ?></p>
+            </div>
+          </div>
+          <?php endif; ?>
+          <?php if ((int) $cout > 0) : ?>
+          <div class="dashboard-card" data-stat="points">
+            <div class="dashboard-card-header">
+              <h3>Nombre de points dépensés</h3>
+            </div>
+            <div class="dashboard-card-content">
+              <p class="stat-value"><?= esc_html(enigme_compter_points_depenses($enigme_id, $mode_validation, $periode)); ?></p>
+            </div>
+          </div>
+          <?php endif; ?>
+          <?php if ($mode_validation !== 'aucune') : ?>
+          <div class="dashboard-card" data-stat="solutions">
+            <div class="dashboard-card-header">
+              <h3>Nombre de bonnes solutions</h3>
+            </div>
+            <div class="dashboard-card-content">
+              <p class="stat-value"><?= esc_html(enigme_compter_bonnes_solutions($enigme_id, $mode_validation, $periode)); ?></p>
+            </div>
+          </div>
+          <?php endif; ?>
         </div>
         <?php if ($mode_validation !== 'aucune') :
             $resolveurs = enigme_lister_resolveurs($enigme_id);
-            if (!empty($resolveurs)) :
-                $nb_resolveurs = count($resolveurs); ?>
+            $nb_resolveurs = count($resolveurs); ?>
         <h3>Résolue par (<?= esc_html($nb_resolveurs); ?>) joueurs</h3>
+        <?php if ($nb_resolveurs > 0) : ?>
         <div class="stats-table-wrapper">
           <table class="stats-table" id="enigme-resolveurs-table">
             <thead>
@@ -445,9 +451,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
             </tbody>
           </table>
         </div>
-        <?php
-            endif;
-        endif; ?>
+        <?php else : ?>
+        <p><?php esc_html_e("Aucun joueur n'a résolu l'énigme", 'chassesautresor-com'); ?></p>
+        <?php endif; ?>
+        <?php endif; ?>
       </div>
     </div>
 
