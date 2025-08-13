@@ -203,8 +203,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
               <label for="enigme_mode_validation"><?= esc_html__('Validation', 'chassesautresor-com'); ?></label>
               <div class="champ-mode-options">
                 <label>
-                  <input id="enigme_mode_validation" type="radio" name="acf[enigme_mode_validation]" value="aucune" <?= $mode_validation === 'aucune' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
-                  <?= esc_html__('Aucune', 'chassesautresor-com'); ?>
+                  <input id="enigme_mode_validation" type="radio" name="acf[enigme_mode_validation]" value="automatique" <?= $mode_validation === 'automatique' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
+                  <?= esc_html__('Automatique', 'chassesautresor-com'); ?>
+                  <button
+                    type="button"
+                    class="mode-fin-aide validation-aide"
+                    data-mode="automatique"
+                    aria-label="<?= esc_attr__('Explication du mode automatique', 'chassesautresor-com'); ?>"
+                  >
+                    <i class="fa-regular fa-circle-question"></i>
+                  </button>
                 </label>
                 <label>
                   <input type="radio" name="acf[enigme_mode_validation]" value="manuelle" <?= $mode_validation === 'manuelle' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
@@ -219,16 +227,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                   </button>
                 </label>
                 <label>
-                  <input type="radio" name="acf[enigme_mode_validation]" value="automatique" <?= $mode_validation === 'automatique' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
-                  <?= esc_html__('Automatique', 'chassesautresor-com'); ?>
-                  <button
-                    type="button"
-                    class="mode-fin-aide validation-aide"
-                    data-mode="automatique"
-                    aria-label="<?= esc_attr__('Explication du mode automatique', 'chassesautresor-com'); ?>"
-                  >
-                    <i class="fa-regular fa-circle-question"></i>
-                  </button>
+                  <input type="radio" name="acf[enigme_mode_validation]" value="aucune" <?= $mode_validation === 'aucune' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
+                  <?= esc_html__('Aucune', 'chassesautresor-com'); ?>
                 </label>
               </div>
             </div>
