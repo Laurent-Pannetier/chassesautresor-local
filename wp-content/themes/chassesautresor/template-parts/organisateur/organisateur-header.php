@@ -108,9 +108,6 @@ get_template_part('template-parts/organisateur/organisateur-partial-presentation
   'organisateur_id' => $organisateur_id
 ]);
 ?>
-</div>
-
-
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     document.body.dataset.organisateurId = "<?= esc_attr($organisateur_id); ?>";
