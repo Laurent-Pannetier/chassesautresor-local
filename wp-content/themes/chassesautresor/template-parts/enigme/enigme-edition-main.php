@@ -99,111 +99,104 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
       <div class="edition-panel-header">
         <h2><i class="fa-solid fa-sliders"></i> Paramètres</h2>
       </div>
-      <div class="edition-panel-body edition-panel-section">
-      <div class="resume-blocs-grid deux-col-wrapper">
-        <div class="resume-bloc resume-obligatoire deux-col-bloc">
+      <div class="edition-panel-body">
+        <div class="edition-panel-section edition-panel-section-ligne">
+          <div class="section-content">
+            <div class="resume-blocs-grid">
+              <div class="resume-bloc resume-obligatoire">
 
-          <h3>Champs obligatoires</h3>
-          <ul class="resume-infos">
-            <li class="champ-enigme champ-titre <?= ($isTitreParDefaut ? 'champ-vide' : 'champ-rempli'); ?><?= $peut_editer_titre ? '' : ' champ-desactive'; ?>"
-              data-champ="post_title"
-              data-cpt="enigme"
-              data-post-id="<?= esc_attr($enigme_id); ?>">
+                <h3>Informations</h3>
+                <ul class="resume-infos">
+                  <li class="champ-enigme champ-titre <?= ($isTitreParDefaut ? 'champ-vide' : 'champ-rempli'); ?><?= $peut_editer_titre ? '' : ' champ-desactive'; ?>"
+                    data-champ="post_title"
+                    data-cpt="enigme"
+                    data-post-id="<?= esc_attr($enigme_id); ?>">
 
-              <div class="champ-affichage">
-                <label for="champ-titre-enigme">Titre de l’énigme</label>
-                <?php if ($peut_editer_titre) : ?>
-                  <button type="button"
-                    class="champ-modifier"
-                    aria-label="Modifier le titre">
-                    ✏️
-                  </button>
-                <?php endif; ?>
+                    <div class="champ-affichage">
+                      <label for="champ-titre-enigme">Titre de l’énigme</label>
+                      <?php if ($peut_editer_titre) : ?>
+                        <button type="button"
+                          class="champ-modifier"
+                          aria-label="Modifier le titre">
+                          ✏️
+                        </button>
+                      <?php endif; ?>
+                    </div>
+
+                    <div class="champ-edition" style="display: none;">
+                      <input type="text"
+                        class="champ-input"
+                        maxlength="80"
+                        value="<?= esc_attr($titre); ?>"
+                        id="champ-titre-enigme" <?= $peut_editer_titre ? '' : 'disabled'; ?> >
+                      <button type="button" class="champ-enregistrer">✓</button>
+                      <button type="button" class="champ-annuler">✖</button>
+                    </div>
+
+                    <div class="champ-feedback"></div>
+                  </li>
+
+                  <?php
+                  $has_images_utiles = enigme_a_une_image($enigme_id);
+                  ?>
+                  <li class="champ-enigme champ-img <?= $has_images_utiles ? 'champ-rempli' : 'champ-vide'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>"
+                    data-champ="enigme_visuel_image"
+                    data-cpt="enigme"
+                    data-post-id="<?= esc_attr($enigme_id); ?>"
+                    data-rempli="<?= $has_images_utiles ? '1' : '0'; ?>">
+
+                    Image(s)
+
+                    <?php if ($peut_editer) : ?>
+                      <button
+                        type="button"
+                        class="champ-modifier ouvrir-panneau-images"
+                        data-champ="enigme_visuel_image"
+                        data-cpt="enigme"
+                        data-post-id="<?= esc_attr($enigme_id); ?>">
+                        ✏️
+                        </button>
+                    <?php endif; ?>
+
+                  </li>
+
+                  <li class="champ-enigme champ-wysiwyg<?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_visuel_texte" data-cpt="enigme"
+                    data-post-id="<?= esc_attr($enigme_id); ?>">
+                    Un texte principal
+                    <?php if ($peut_editer) : ?>
+                      <button type="button" class="champ-modifier ouvrir-panneau-description" data-champ="enigme_visuel_texte"
+                        data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
+                        ✏️
+                      </button>
+                    <?php endif; ?>
+                  </li>
+
+                  <li class="champ-enigme champ-texte<?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_visuel_legende" data-cpt="enigme"
+                    data-post-id="<?= esc_attr($enigme_id); ?>">
+
+                    <div class="champ-affichage">
+                      Un sous-titre
+                      <?php if ($peut_editer) : ?>
+                        <button type="button" class="champ-modifier" aria-label="Modifier la légende">✏️</button>
+                      <?php endif; ?>
+                    </div>
+
+                    <div class="champ-edition" style="display: none;">
+                      <input type="text" class="champ-input" maxlength="100" value="<?= esc_attr($legende); ?>"
+                        placeholder="Ajouter une légende (max 100 caractères)" <?= $peut_editer ? '' : 'disabled'; ?>>
+                      <button type="button" class="champ-enregistrer">✓</button>
+                      <button type="button" class="champ-annuler">✖</button>
+                    </div>
+
+                    <div class="champ-feedback"></div>
+                  </li>
+                </ul>
               </div>
 
-              <div class="champ-edition" style="display: none;">
-                <input type="text"
-                  class="champ-input"
-                  maxlength="80"
-                  value="<?= esc_attr($titre); ?>"
-                  id="champ-titre-enigme" <?= $peut_editer_titre ? '' : 'disabled'; ?> >
-                <button type="button" class="champ-enregistrer">✓</button>
-                <button type="button" class="champ-annuler">✖</button>
-              </div>
-
-              <div class="champ-feedback"></div>
-            </li>
-
-            <?php
-            $has_images_utiles = enigme_a_une_image($enigme_id);
-            ?>
-            <li class="champ-enigme champ-img <?= $has_images_utiles ? 'champ-rempli' : 'champ-vide'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>"
-              data-champ="enigme_visuel_image"
-              data-cpt="enigme"
-              data-post-id="<?= esc_attr($enigme_id); ?>"
-              data-rempli="<?= $has_images_utiles ? '1' : '0'; ?>">
-
-              Image(s)
-
-              <?php if ($peut_editer) : ?>
-                <button
-                  type="button"
-                  class="champ-modifier ouvrir-panneau-images"
-                  data-champ="enigme_visuel_image"
-                  data-cpt="enigme"
-                  data-post-id="<?= esc_attr($enigme_id); ?>">
-                  ✏️
-                  </button>
-              <?php endif; ?>
-
-            </li>
-
-
-          </ul>
-        </div>
-
-        <!-- SECTION 2 : Champs recommandés -->
-        <div class="resume-bloc resume-facultatif deux-col-bloc">
-          <h3>Facultatif mais recommandé</h3>
-          <ul class="resume-infos">
-
-            <li class="champ-enigme champ-wysiwyg<?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_visuel_texte" data-cpt="enigme"
-              data-post-id="<?= esc_attr($enigme_id); ?>">
-              Un texte principal
-              <?php if ($peut_editer) : ?>
-                <button type="button" class="champ-modifier ouvrir-panneau-description" data-champ="enigme_visuel_texte"
-                  data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
-                  ✏️
-                </button>
-              <?php endif; ?>
-            </li>
-
-            <li class="champ-enigme champ-texte<?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_visuel_legende" data-cpt="enigme"
-              data-post-id="<?= esc_attr($enigme_id); ?>">
-
-              <div class="champ-affichage">
-                Un sous-titre
-                <?php if ($peut_editer) : ?>
-                  <button type="button" class="champ-modifier" aria-label="Modifier la légende">✏️</button>
-                <?php endif; ?>
-              </div>
-
-              <div class="champ-edition" style="display: none;">
-                <input type="text" class="champ-input" maxlength="100" value="<?= esc_attr($legende); ?>"
-                  placeholder="Ajouter une légende (max 100 caractères)" <?= $peut_editer ? '' : 'disabled'; ?>>
-                <button type="button" class="champ-enregistrer">✓</button>
-                <button type="button" class="champ-annuler">✖</button>
-              </div>
-
-              <div class="champ-feedback"></div>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Caractéristiques -->
-        <div class="resume-bloc resume-technique">
-          <h3>Caractéristiques</h3>
-          <div class="resume-infos">
+              <!-- Règlages -->
+              <div class="resume-bloc resume-reglages">
+                <h3>Réglages</h3>
+                <div class="resume-infos">
 
             <!-- Mode de validation -->
             <div class="champ-enigme champ-mode-validation<?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_mode_validation" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
@@ -398,10 +391,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
             </fieldset>
 
         </div>
+        </div>
       </div>
-    </div>
+      </div>
+      </div>
 
-    </div> <!-- .edition-panel-body -->
+      </div> <!-- .edition-panel-body -->
     <?php if (utilisateur_peut_supprimer_enigme($enigme_id)) : ?>
       <div class="edition-panel-footer">
         <button type="button" id="bouton-supprimer-enigme" class="bouton-texte secondaire">❌ Suppression énigme</button>
