@@ -64,6 +64,25 @@ function enigme_get_liste_prerequis_possibles(int $enigme_id): array
 }
 
 
+/**
+ * Normalise la valeur du mode de validation d'une énigme.
+ */
+function enigme_normaliser_mode_validation($mode): string
+{
+    if (is_array($mode)) {
+        $mode = $mode['value'] ?? '';
+    }
+
+    $mode = strtolower(trim((string) $mode));
+
+    if ($mode === '' || strpos($mode, 'aucune') === 0 || $mode === 'none') {
+        return 'aucune';
+    }
+
+    return $mode;
+}
+
+
 
 /**
  * Retourne les données d’affichage du bouton d’engagement d’une énigme.
@@ -105,7 +124,9 @@ function get_cta_enigme(int $enigme_id, ?int $user_id = null): array
     $etat_systeme = enigme_get_etat_systeme($enigme_id);
     $statut_utilisateur = enigme_get_statut_utilisateur($enigme_id, $user_id);
     $points = intval(get_field('enigme_tentative_cout_points', $enigme_id));
-    $mode_validation = get_field('enigme_mode_validation', $enigme_id);
+    $mode_validation = enigme_normaliser_mode_validation(
+        get_field('enigme_mode_validation', $enigme_id)
+    );
     $chasse_terminee = $chasse_id && get_field('chasse_cache_statut', $chasse_id) === 'termine';
     if ($chasse_terminee && $etat_systeme !== 'bloquee_pre_requis') {
         $etat_systeme = 'accessible';
@@ -199,9 +220,11 @@ function get_cta_enigme(int $enigme_id, ?int $user_id = null): array
             ]);
 
         case 'en_cours':
-            $type_cours  = ($mode_validation === 'aucune') ? 'voir' : 'continuer';
-            $label_cours = ($mode_validation === 'aucune') ? 'Voir' : 'Continuer';
-            $classe_cours= ($mode_validation === 'aucune') ? 'cta-voir' : 'cta-en-cours';
+            $type_cours   = ($mode_validation === 'aucune') ? 'voir' : 'continuer';
+            $label_cours  = ($mode_validation === 'aucune')
+                ? __('Voir', 'chassesautresor-com')
+                : __('Continuer', 'chassesautresor-com');
+            $classe_cours = ($mode_validation === 'aucune') ? 'cta-voir' : 'cta-en-cours';
             return array_merge($cta, [
                 'type'       => $type_cours,
                 'label'      => $label_cours,

@@ -618,19 +618,39 @@ function organisateur_mettre_a_jour_complet(int $organisateur_id): bool
     return $complet;
 }
 
+function chasse_has_validatable_enigme(int $chasse_id): bool
+{
+    $enigme_ids = recuperer_ids_enigmes_pour_chasse($chasse_id);
+
+    foreach ($enigme_ids as $eid) {
+        $mode = get_field('enigme_mode_validation', $eid);
+        if ($mode !== 'aucune') {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 function chasse_est_complet(int $chasse_id): bool
 {
     if (get_post_type($chasse_id) !== 'chasse') {
         return false;
     }
 
+    $mode_fin = get_field('chasse_mode_fin', $chasse_id) ?: 'automatique';
+
+    if ($mode_fin === 'automatique' && !chasse_has_validatable_enigme($chasse_id)) {
+        return false;
+    }
+
     $titre_ok = titre_est_valide($chasse_id);
 
     $desc_field = get_field('chasse_principale_description', $chasse_id);
-    $desc = trim((string) $desc_field);
-    $desc_ok = $desc !== '';
+    $desc       = trim((string) $desc_field);
+    $desc_ok    = $desc !== '';
 
-    $image = get_field('chasse_principale_image', $chasse_id);
+    $image    = get_field('chasse_principale_image', $chasse_id);
     $image_id = is_array($image) ? ($image['ID'] ?? 0) : (int) $image;
     $image_ok = !empty($image_id) && $image_id !== 3902;
 
