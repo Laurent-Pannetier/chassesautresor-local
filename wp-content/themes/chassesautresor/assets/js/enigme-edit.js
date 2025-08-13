@@ -72,12 +72,16 @@ function initEnigmeEdit() {
   // 🧠 Explication – Mode de validation de l’énigme
   // ==============================
   const explicationValidation = {
-    manuelle:
-      "Le joueur devra rédiger une réponse libre. Vous recevrez sa proposition par email, " +
-      "et pourrez la valider ou la refuser à partir de ce message.",
-    automatique:
-      "Le joueur devra saisir une réponse exacte. Celle-ci sera automatiquement vérifiée " +
-      "selon les critères définis (réponse attendue, casse, variantes)."
+    manuelle: wp.i18n.__(
+      "Validation manuelle : Le joueur rédige une réponse libre. Vous validez ou invalidez manuellement " +
+        "sa tentative depuis votre espace personnel. Un email et un message d'alerte vous avertit de chaque nouvelle soumission.",
+      "chassesautresor-com"
+    ),
+    automatique: wp.i18n.__(
+      "Validation automatique : Le joueur devra saisir une réponse exacte. Celle-ci sera automatiquement vérifiée " +
+        "selon les critères définis (réponse attendue, casse, variantes).",
+      "chassesautresor-com"
+    ),
   };
 
   document.querySelectorAll('.validation-aide').forEach((btn) => {
