@@ -85,6 +85,45 @@ function enigme_compter_bonnes_solutions(int $enigme_id, string $mode = 'automat
     return (int) $wpdb->get_var($sql);
 }
 
+function enigme_lister_resolveurs(int $enigme_id): array
+{
+    global $wpdb;
+    $table   = $wpdb->prefix . 'enigme_tentatives';
+    $results = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT user_id, MIN(date_tentative) AS resolution_date
+             FROM $table
+             WHERE enigme_id = %d AND resultat = 'bon'
+             GROUP BY user_id
+             ORDER BY resolution_date ASC",
+            $enigme_id
+        ),
+        ARRAY_A
+    );
+
+    $solvers = [];
+    foreach ($results as $row) {
+        $attempts = $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT COUNT(*) FROM $table
+                 WHERE enigme_id = %d AND user_id = %d AND date_tentative <= %s",
+                $enigme_id,
+                $row['user_id'],
+                $row['resolution_date']
+            )
+        );
+
+        $solvers[] = [
+            'user_id'   => (int) $row['user_id'],
+            'username'  => get_the_author_meta('user_login', (int) $row['user_id']),
+            'date'      => $row['resolution_date'],
+            'tentatives' => (int) $attempts,
+        ];
+    }
+
+    return $solvers;
+}
+
 /**
  * AJAX handler to retrieve stats for an enigme.
  *

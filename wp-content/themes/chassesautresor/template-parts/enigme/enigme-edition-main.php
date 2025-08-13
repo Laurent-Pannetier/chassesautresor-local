@@ -418,6 +418,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
             </tbody>
           </table>
         </div>
+        <?php if ($mode_validation !== 'aucune') :
+            $resolveurs = enigme_lister_resolveurs($enigme_id);
+            if (!empty($resolveurs)) :
+                $nb_resolveurs = count($resolveurs); ?>
+        <h3>Résolue par (<?= esc_html($nb_resolveurs); ?>) joueurs</h3>
+        <div class="stats-table-wrapper">
+          <table class="stats-table" id="enigme-resolveurs-table">
+            <thead>
+              <tr>
+                <th>Rang</th>
+                <th>Joueur</th>
+                <th>Date</th>
+                <th>Tentatives</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php $rang = 1; foreach ($resolveurs as $res) : ?>
+              <tr>
+                <td><?= esc_html($rang++); ?></td>
+                <td><?= esc_html($res['username']); ?></td>
+                <td><?= esc_html(mysql2date('d/m/Y H:i', $res['date'])); ?></td>
+                <td><?= esc_html($res['tentatives']); ?></td>
+              </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table>
+        </div>
+        <?php
+            endif;
+        endif; ?>
       </div>
     </div>
 
