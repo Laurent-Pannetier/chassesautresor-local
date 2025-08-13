@@ -1207,6 +1207,10 @@ body.panneau-ouvert::before {
   background-color: var(--color-editor-field-hover);
 }
 
+.stats-table-wrapper {
+  margin-bottom: 1.5rem;
+}
+
 .stats-table.compact th,
 .stats-table.compact td {
   padding: 4px;
