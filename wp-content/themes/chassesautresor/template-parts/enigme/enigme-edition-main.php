@@ -373,14 +373,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
       $periode = 'total';
       ?>
       <div class="edition-panel-body">
-        <div class="stats-filtres" style="margin-left:auto;">
-          <label for="enigme-periode">Période :</label>
-          <select id="enigme-periode">
-            <option value="total">Depuis le début</option>
-            <option value="jour">Aujourd’hui</option>
-            <option value="semaine">7&nbsp;derniers jours</option>
-            <option value="mois">30&nbsp;derniers jours</option>
-          </select>
+        <div class="stats-header" style="display:flex;align-items:center;">
+          <div class="stats-filtres" style="margin-left:auto;">
+            <label for="enigme-periode">Période :</label>
+            <select id="enigme-periode">
+              <option value="total">Depuis le début</option>
+              <option value="jour">Aujourd’hui</option>
+              <option value="semaine">7&nbsp;derniers jours</option>
+              <option value="mois">30&nbsp;derniers jours</option>
+            </select>
+          </div>
         </div>
         <div class="stats-table-wrapper">
           <table class="stats-table" id="enigme-stats-table">
