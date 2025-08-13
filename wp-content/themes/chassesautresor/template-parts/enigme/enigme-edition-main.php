@@ -369,7 +369,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
       if (!function_exists('enigme_compter_joueurs_engages')) {
           require_once get_stylesheet_directory() . '/inc/enigme/stats.php';
       }
-      $periode = 'total';
+      $periode        = 'total';
+      $nb_joueurs     = enigme_compter_joueurs_engages($enigme_id, $periode);
+      $nb_tentatives  = enigme_compter_tentatives($enigme_id, $mode_validation, $periode);
+      $nb_points      = enigme_compter_points_depenses($enigme_id, $mode_validation, $periode);
+      $nb_solutions   = enigme_compter_bonnes_solutions($enigme_id, $mode_validation, $periode);
       ?>
       <div class="edition-panel-body">
         <div class="stats-header" style="display:flex;align-items:center;">
@@ -390,42 +394,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
               <h3>Nombre de joueurs engagés</h3>
             </div>
             <div class="dashboard-card-content">
-              <p class="stat-value"><?= esc_html(enigme_compter_joueurs_engages($enigme_id, $periode)); ?></p>
+              <p class="stat-value"><?= esc_html($nb_joueurs); ?></p>
             </div>
           </div>
-          <?php if ($mode_validation !== 'aucune') : ?>
-          <div class="dashboard-card" data-stat="tentatives">
+          <div class="dashboard-card" data-stat="tentatives"
+            style="<?= $mode_validation === 'aucune' ? 'display:none;' : ''; ?>">
             <div class="dashboard-card-header">
               <i class="fa-solid fa-arrow-rotate-right"></i>
               <h3>Nombre de tentatives</h3>
             </div>
             <div class="dashboard-card-content">
-              <p class="stat-value"><?= esc_html(enigme_compter_tentatives($enigme_id, $mode_validation, $periode)); ?></p>
+              <p class="stat-value"><?= esc_html($nb_tentatives); ?></p>
             </div>
           </div>
-          <?php endif; ?>
-          <?php if ((int) $cout > 0) : ?>
-          <div class="dashboard-card" data-stat="points">
+          <div class="dashboard-card" data-stat="points"
+            style="<?= ($mode_validation === 'aucune' || (int) $cout <= 0) ? 'display:none;' : ''; ?>">
             <div class="dashboard-card-header">
               <i class="fa-solid fa-coins"></i>
-              <h3>Nombre de points dépensés</h3>
+              <h3>Nombre de points</h3>
             </div>
             <div class="dashboard-card-content">
-              <p class="stat-value"><?= esc_html(enigme_compter_points_depenses($enigme_id, $mode_validation, $periode)); ?></p>
+              <p class="stat-value"><?= esc_html($nb_points); ?></p>
             </div>
           </div>
-          <?php endif; ?>
-          <?php if ($mode_validation !== 'aucune') : ?>
-          <div class="dashboard-card" data-stat="solutions">
+          <div class="dashboard-card" data-stat="solutions"
+            style="<?= ($mode_validation === 'aucune' || $nb_solutions <= 0) ? 'display:none;' : ''; ?>">
             <div class="dashboard-card-header">
               <i class="fa-solid fa-check"></i>
               <h3>Nombre de bonnes solutions</h3>
             </div>
             <div class="dashboard-card-content">
-              <p class="stat-value"><?= esc_html(enigme_compter_bonnes_solutions($enigme_id, $mode_validation, $periode)); ?></p>
+              <p class="stat-value"><?= esc_html($nb_solutions); ?></p>
             </div>
           </div>
-          <?php endif; ?>
         </div>
         <?php if ($mode_validation !== 'aucune') :
             $resolveurs = enigme_lister_resolveurs($enigme_id);

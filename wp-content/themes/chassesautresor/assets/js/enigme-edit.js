@@ -263,14 +263,25 @@ function initEnigmeEdit() {
   });
   initChampNbTentatives();
   initChampRadioAjax('acf[enigme_mode_validation]');
+  mettreAJourCartesStats();
   const enigmeId = panneauEdition?.dataset.postId;
 
-  if (enigmeId) {
-    document.querySelectorAll('input[name="acf[enigme_mode_validation]"]').forEach(radio => {
-      radio.addEventListener('change', () => {
+  document.querySelectorAll('input[name="acf[enigme_mode_validation]"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      if (enigmeId) {
         forcerRecalculStatutEnigme(enigmeId);
-      });
+      }
+      mettreAJourCartesStats();
     });
+  });
+
+  const coutInput = document.querySelector('[data-champ="enigme_tentative.enigme_tentative_cout_points"] .champ-input');
+  const coutCheckbox = document.getElementById('cout-gratuit-enigme');
+  if (coutInput) {
+    ['input', 'change'].forEach(evt => coutInput.addEventListener(evt, mettreAJourCartesStats));
+  }
+  if (coutCheckbox) {
+    coutCheckbox.addEventListener('change', mettreAJourCartesStats);
   }
 
   initChampPreRequis();
@@ -1126,6 +1137,28 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initEnregistrementPreRequis);
 } else {
   initEnregistrementPreRequis();
+}
+
+function mettreAJourCartesStats() {
+  const mode = document.querySelector('input[name="acf[enigme_mode_validation]"]:checked')?.value || 'aucune';
+  const coutInput = document.querySelector('[data-champ="enigme_tentative.enigme_tentative_cout_points"] .champ-input');
+  const cout = coutInput ? parseInt(coutInput.value || '0', 10) : 0;
+  const cardTentatives = document.querySelector('#enigme-stats [data-stat="tentatives"]');
+  const cardPoints = document.querySelector('#enigme-stats [data-stat="points"]');
+  const cardSolutions = document.querySelector('#enigme-stats [data-stat="solutions"]');
+  const nbSolutions = cardSolutions
+    ? parseInt(cardSolutions.querySelector('.stat-value')?.textContent || '0', 10)
+    : 0;
+
+  if (cardTentatives) {
+    cardTentatives.style.display = mode === 'aucune' ? 'none' : '';
+  }
+  if (cardPoints) {
+    cardPoints.style.display = (mode === 'aucune' || cout <= 0) ? 'none' : '';
+  }
+  if (cardSolutions) {
+    cardSolutions.style.display = (mode === 'aucune' || nbSolutions <= 0) ? 'none' : '';
+  }
 }
 
 function appliquerEtatGratuitEnLive() {
