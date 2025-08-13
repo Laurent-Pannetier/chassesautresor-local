@@ -243,16 +243,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                 <div class="champ-feedback"></div>
               </div>
 
-            <div class="champ-enigme champ-variantes-resume champ-groupe-reponse-automatique<?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_reponse_variantes" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
+            <div class="champ-enigme champ-variantes-resume champ-groupe-reponse-automatique<?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_reponse_variantes" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" style="display: flex; align-items: center; gap: 10px;">
+              <label>Variantes :</label>
               <?php
-              $label = $has_variantes
+              $bouton = $has_variantes
                 ? ($nb_variantes === 1 ? '1 variante ✏️' : $nb_variantes . ' variantes ✏️')
                 : '➕ Créer des variantes';
+              $texte = $has_variantes
+                ? ($nb_variantes === 1 ? '1 variante' : $nb_variantes . ' variantes')
+                : '';
               ?>
               <?php if ($peut_editer) : ?>
                 <button type="button" class="champ-modifier ouvrir-panneau-variantes" aria-label="<?= $has_variantes ? 'Éditer les variantes' : 'Créer des variantes'; ?>" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
-                  <?= esc_html($label); ?>
+                  <?= esc_html($bouton); ?>
                 </button>
+              <?php elseif ($has_variantes) : ?>
+                <span><?= esc_html($texte); ?></span>
               <?php endif; ?>
             </div>
 

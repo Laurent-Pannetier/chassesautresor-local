@@ -253,6 +253,11 @@ body .header-img-modifiable .icone-modif {
   transition: border-color 0.2s, background-color 0.2s;
 }
 
+#champ-bonne-reponse {
+  width: auto;
+  flex: 1 0 200px;
+}
+
 .champ-edition input.champ-input::placeholder {
   color: var(--color-editor-placeholder);
 }
