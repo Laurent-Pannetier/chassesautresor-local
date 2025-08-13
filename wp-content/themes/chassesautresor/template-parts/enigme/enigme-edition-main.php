@@ -233,6 +233,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
               </div>
             </div>
 
+            <div class="champ-enigme champ-bonne-reponse champ-groupe-reponse-automatique <?= empty($reponse) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_reponse_bonne" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
+              <label for="champ-bonne-reponse">Réponse</label>
+              <div class="champ-reponse-ligne">
+                <input type="text" id="champ-bonne-reponse" name="champ-bonne-reponse" class="champ-input champ-texte-edit" value="<?= esc_attr($reponse); ?>" placeholder="Ex : soleil" <?= $peut_editer ? '' : 'disabled'; ?> />
+                <div class="champ-enigme champ-casse <?= $casse ? 'champ-rempli' : 'champ-vide'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_reponse_casse" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
+                  <label><input type="checkbox" <?= $casse ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>> Respecter la casse</label>
+                  <div class="champ-feedback"></div>
+                </div>
+              </div>
+              <div class="champ-feedback"></div>
+            </div>
+
+            <div class="champ-enigme champ-variantes-resume champ-groupe-reponse-automatique<?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_reponse_variantes" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
+              <?php
+              $label = $has_variantes
+                ? ($nb_variantes === 1 ? '1 variante ✏️' : $nb_variantes . ' variantes ✏️')
+                : '➕ Créer des variantes';
+              ?>
+              <?php if ($peut_editer) : ?>
+                <button type="button" class="champ-modifier ouvrir-panneau-variantes" aria-label="<?= $has_variantes ? 'Éditer les variantes' : 'Créer des variantes'; ?>" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
+                  <?= esc_html($label); ?>
+                </button>
+              <?php endif; ?>
+            </div>
+
             <!-- Accès à l'énigme -->
             <fieldset class="groupe-champ champ-groupe-acces">
               <legend>Condition d’accès</legend>
@@ -361,57 +386,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                 </div>
                 <div class="champ-feedback"></div>
               </div>
-            </fieldset>
-
-            <!-- Réponse automatique -->
-            <fieldset class="groupe-champ champ-groupe-reponse-automatique">
-              <legend>Réponse attendue</legend>
-              <div class="champ-enigme champ-bonne-reponse <?= empty($reponse) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>"
-                data-champ="enigme_reponse_bonne"
-                data-cpt="enigme"
-                data-post-id="<?= esc_attr($enigme_id); ?>">
-
-                <label for="champ-bonne-reponse">Bonne réponse attendue</label>
-
-                <input type="text"
-                  id="champ-bonne-reponse"
-                  name="champ-bonne-reponse"
-                  class="champ-input champ-texte-edit"
-                  value="<?= esc_attr($reponse); ?>"
-                  placeholder="Ex : soleil" <?= $peut_editer ? '' : 'disabled'; ?> />
-
-                <div class="champ-feedback"></div>
-              </div>
-
-              <div class="champ-enigme champ-casse <?= $casse ? 'champ-rempli' : 'champ-vide'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>"
-                data-champ="enigme_reponse_casse"
-                data-cpt="enigme"
-                data-post-id="<?= esc_attr($enigme_id); ?>">
-                <label><input type="checkbox" <?= $casse ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>> Respecter la casse</label>
-                <div class="champ-feedback"></div>
-              </div>
-
-              <div class="champ-enigme champ-variantes-resume<?= $peut_editer ? '' : ' champ-desactive'; ?>"
-                data-champ="enigme_reponse_variantes"
-                data-cpt="enigme"
-                data-post-id="<?= esc_attr($enigme_id); ?>">
-
-                <?php
-                $label = $has_variantes
-                  ? ($nb_variantes === 1 ? '1 variante ✏️' : $nb_variantes . ' variantes ✏️')
-                  : '➕ Créer des variantes';
-                ?>
-                <?php if ($peut_editer) : ?>
-                  <button type="button"
-                    class="champ-modifier ouvrir-panneau-variantes"
-                    aria-label="<?= $has_variantes ? 'Éditer les variantes' : 'Créer des variantes'; ?>"
-                    data-cpt="enigme"
-                    data-post-id="<?= esc_attr($enigme_id); ?>">
-                    <?= esc_html($label); ?>
-                  </button>
-                <?php endif; ?>
-              </div>
-
             </fieldset>
 
         </div>
