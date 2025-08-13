@@ -624,6 +624,10 @@ body.edition-active-enigme .edition-panel-enigme.edition-panel-modal {
   width: 180px;
 }
 
+.edition-panel-section .resume-reglages input.champ-nb-tentatives {
+  width: 80px;
+}
+
 .edition-panel-section .resume-technique .champ-select-heure,
 .edition-panel-section .resume-reglages .champ-select-heure {
   width: auto;
