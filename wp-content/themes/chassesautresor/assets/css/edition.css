@@ -1207,6 +1207,30 @@ body.panneau-ouvert::before {
   background-color: var(--color-editor-field-hover);
 }
 
+.stats-table-wrapper {
+  margin-bottom: 1.5rem;
+}
+
+.stats-table.compact th,
+.stats-table.compact td {
+  padding: 4px;
+  font-size: 0.85em;
+}
+
+.stats-table th button.sort {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stats-table th button.sort i {
+  margin-left: 4px;
+}
+
 /* ====== Mode de fin ====== */
 .champ-mode-fin {
   display: flex;
