@@ -48,6 +48,17 @@ defined('ABSPATH') || exit;
     {
         $ok1 = enigme_mettre_a_jour_statut_utilisateur($enigme_id, $user_id, 'en_cours', true);
         $ok2 = enregistrer_engagement_enigme($user_id, $enigme_id);
+
+        if ($ok1 && $ok2) {
+            /**
+             * Fires after a user engages an enigme.
+             *
+             * @param int $user_id   User ID.
+             * @param int $enigme_id Enigme ID.
+             */
+            do_action('enigme_engagee', $user_id, $enigme_id);
+        }
+
         return $ok1 && $ok2;
     }
 
