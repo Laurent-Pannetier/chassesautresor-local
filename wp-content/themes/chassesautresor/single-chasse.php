@@ -75,9 +75,11 @@ foreach ($enigmes_associees as $eid) {
 $has_incomplete_enigme = !empty($enigmes_incompletes);
 
 $mode_fin = get_field('chasse_mode_fin', $chasse_id) ?: 'automatique';
-$needs_validatable_message = $mode_fin === 'automatique' && !chasse_has_validatable_enigme($chasse_id);
-
 $statut = $infos_chasse['statut'];
+$needs_validatable_message = $statut === 'revision'
+    && $mode_fin === 'automatique'
+    && !chasse_has_validatable_enigme($chasse_id);
+
 $statut_validation = $infos_chasse['statut_validation'];
 $nb_joueurs = $infos_chasse['nb_joueurs'];
 
