@@ -54,7 +54,7 @@ if (
   exit;
 }
 
-// ✅ Ouvre automatiquement l'onglet Soumission s'il y a des tentatives en attente
+// ✅ Ouvre automatiquement l'onglet Tentatives s'il y a des tentatives en attente
 if (
   $edition_active &&
   utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id) &&

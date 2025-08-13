@@ -67,6 +67,36 @@ function initEnigmeEdit() {
     'automatique': ['.champ-groupe-reponse-automatique', '.champ-cout-points', '.champ-nb-tentatives']
   });
 
+  // ==============================
+  // 📨 Onglet Tentatives – affichage selon mode de validation
+  // ==============================
+  const radiosValidation = document.querySelectorAll('input[name="acf[enigme_mode_validation]"]');
+  const tabTentatives = panneauEdition?.querySelector('.edition-tab[data-target="enigme-tab-soumission"]');
+  const contenuTentatives = document.getElementById('enigme-tab-soumission');
+
+  function toggleTentativesTab(mode) {
+    const afficher = mode !== 'aucune';
+    if (tabTentatives) {
+      tabTentatives.style.display = afficher ? '' : 'none';
+      if (!afficher && tabTentatives.classList.contains('active')) {
+        panneauEdition?.querySelector('.edition-tab[data-target="enigme-tab-param"]')?.click();
+      }
+    }
+    if (!afficher && contenuTentatives) {
+      contenuTentatives.style.display = 'none';
+      contenuTentatives.classList.remove('active');
+    }
+  }
+
+  const radioChecked = document.querySelector('input[name="acf[enigme_mode_validation]"]:checked');
+  toggleTentativesTab(radioChecked ? radioChecked.value : 'aucune');
+
+  radiosValidation.forEach((radio) => {
+    radio.addEventListener('change', (e) => {
+      toggleTentativesTab(e.target.value);
+    });
+  });
+
 
   // ==============================
   // 🧠 Explication – Mode de validation de l’énigme
