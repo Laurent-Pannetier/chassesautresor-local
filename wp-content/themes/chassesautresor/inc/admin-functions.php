@@ -1620,8 +1620,15 @@ function traiter_validation_chasse_admin() {
 
         $message = isset($_POST['validation_admin_message'])
             ? sanitize_textarea_field(wp_unslash($_POST['validation_admin_message']))
-
             : '';
+
+        foreach ($enigmes as $eid) {
+            wp_update_post([
+                'ID'          => $eid,
+                'post_status' => 'pending',
+            ]);
+            update_field('enigme_cache_etat_systeme', 'bloquee_chasse', $eid);
+        }
 
         envoyer_mail_demande_correction($organisateur_id, $chasse_id, $message);
 
