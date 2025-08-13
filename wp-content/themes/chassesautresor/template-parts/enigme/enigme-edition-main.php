@@ -88,7 +88,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
 
     <div class="edition-tabs">
       <button class="edition-tab active" data-target="enigme-tab-param">Paramètres</button>
-      <button class="edition-tab" data-target="enigme-tab-stats">Statistiques</button>
+      <button class="edition-tab"
+        data-target="enigme-tab-stats"
+        <?= $mode_validation === 'aucune' ? 'style="display:none;"' : ''; ?>
+      >Statistiques</button>
       <button class="edition-tab" data-target="enigme-tab-soumission"<?= $mode_validation === 'aucune' ? ' style="display:none;"' : ''; ?>>Tentatives</button>
       <button class="edition-tab" data-target="enigme-tab-solution">Solution</button>
     </div>

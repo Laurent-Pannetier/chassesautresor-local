@@ -73,6 +73,8 @@ function initEnigmeEdit() {
   const radiosValidation = document.querySelectorAll('input[name="acf[enigme_mode_validation]"]');
   const tabTentatives = panneauEdition?.querySelector('.edition-tab[data-target="enigme-tab-soumission"]');
   const contenuTentatives = document.getElementById('enigme-tab-soumission');
+  const tabStats = panneauEdition?.querySelector('.edition-tab[data-target="enigme-tab-stats"]');
+  const contenuStats = document.getElementById('enigme-tab-stats');
 
   function toggleTentativesTab(mode) {
     const afficher = mode !== 'aucune';
@@ -88,12 +90,29 @@ function initEnigmeEdit() {
     }
   }
 
+  function toggleStatsTab(mode) {
+    const afficher = mode !== 'aucune';
+    if (tabStats) {
+      tabStats.style.display = afficher ? '' : 'none';
+      if (!afficher && tabStats.classList.contains('active')) {
+        panneauEdition?.querySelector('.edition-tab[data-target="enigme-tab-param"]')?.click();
+      }
+    }
+    if (!afficher && contenuStats) {
+      contenuStats.style.display = 'none';
+      contenuStats.classList.remove('active');
+    }
+  }
+
   const radioChecked = document.querySelector('input[name="acf[enigme_mode_validation]"]:checked');
-  toggleTentativesTab(radioChecked ? radioChecked.value : 'aucune');
+  const modeInitial = radioChecked ? radioChecked.value : 'aucune';
+  toggleTentativesTab(modeInitial);
+  toggleStatsTab(modeInitial);
 
   radiosValidation.forEach((radio) => {
     radio.addEventListener('change', (e) => {
       toggleTentativesTab(e.target.value);
+      toggleStatsTab(e.target.value);
     });
   });
 
