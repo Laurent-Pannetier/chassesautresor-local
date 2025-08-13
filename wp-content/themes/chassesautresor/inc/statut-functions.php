@@ -618,6 +618,20 @@ function organisateur_mettre_a_jour_complet(int $organisateur_id): bool
     return $complet;
 }
 
+function chasse_has_validatable_enigme(int $chasse_id): bool
+{
+    $enigme_ids = recuperer_ids_enigmes_pour_chasse($chasse_id);
+
+    foreach ($enigme_ids as $eid) {
+        $mode = get_field('enigme_mode_validation', $eid);
+        if ($mode !== 'aucune') {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 function chasse_est_complet(int $chasse_id): bool
 {
     if (get_post_type($chasse_id) !== 'chasse') {
@@ -626,19 +640,8 @@ function chasse_est_complet(int $chasse_id): bool
 
     $mode_fin = get_field('chasse_mode_fin', $chasse_id) ?: 'automatique';
 
-    if ($mode_fin === 'automatique') {
-        $enigme_ids    = recuperer_ids_enigmes_pour_chasse($chasse_id);
-        $enigme_valide = false;
-        foreach ($enigme_ids as $eid) {
-            $mode = get_field('enigme_mode_validation', $eid);
-            if ($mode !== 'aucune') {
-                $enigme_valide = true;
-                break;
-            }
-        }
-        if (!$enigme_valide) {
-            return false;
-        }
+    if ($mode_fin === 'automatique' && !chasse_has_validatable_enigme($chasse_id)) {
+        return false;
     }
 
     $titre_ok = titre_est_valide($chasse_id);

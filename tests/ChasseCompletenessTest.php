@@ -50,6 +50,7 @@ class ChasseCompletenessTest extends TestCase
             202 => ['enigme_mode_validation' => 'aucune'],
         ];
 
+        $this->assertFalse(chasse_has_validatable_enigme($chasse_id));
         $this->assertFalse(chasse_est_complet($chasse_id));
     }
 }
