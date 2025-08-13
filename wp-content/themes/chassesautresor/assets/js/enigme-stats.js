@@ -46,5 +46,69 @@ document.addEventListener('DOMContentLoaded', () => {
       })
       .catch(() => {});
   });
+
+  const participantsWrapper = document.querySelector('#enigme-tab-stats .liste-participants');
+  if (participantsWrapper) {
+    const postId = EnigmeStats.enigmeId;
+
+    function charger(page = 1, orderby = participantsWrapper.dataset.orderby || 'date', order = participantsWrapper.dataset.order || 'asc') {
+      fetch(EnigmeStats.ajaxUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          action: 'enigme_lister_participants',
+          enigme_id: postId,
+          page,
+          orderby,
+          order,
+        }),
+      })
+        .then((r) => r.json())
+        .then((res) => {
+          if (!res.success) return;
+          participantsWrapper.innerHTML = res.data.html;
+          participantsWrapper.dataset.page = res.data.page;
+          participantsWrapper.dataset.pages = res.data.pages;
+          participantsWrapper.dataset.order = order;
+          participantsWrapper.dataset.orderby = orderby;
+        });
+    }
+
+    participantsWrapper.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      if (btn.classList.contains('pager-first')) {
+        e.preventDefault();
+        charger(1);
+      }
+      if (btn.classList.contains('pager-prev')) {
+        e.preventDefault();
+        const page = parseInt(participantsWrapper.dataset.page || '1', 10);
+        if (page > 1) charger(page - 1);
+      }
+      if (btn.classList.contains('pager-next')) {
+        e.preventDefault();
+        const page = parseInt(participantsWrapper.dataset.page || '1', 10);
+        const pages = parseInt(participantsWrapper.dataset.pages || '1', 10);
+        if (page < pages) charger(page + 1);
+      }
+      if (btn.classList.contains('pager-last')) {
+        e.preventDefault();
+        const pages = parseInt(participantsWrapper.dataset.pages || '1', 10);
+        charger(pages);
+      }
+      if (btn.classList.contains('sort')) {
+        e.preventDefault();
+        const orderby = btn.dataset.orderby || 'date';
+        let order = participantsWrapper.dataset.order || 'asc';
+        if (participantsWrapper.dataset.orderby !== orderby) {
+          order = 'asc';
+        } else {
+          order = order === 'asc' ? 'desc' : 'asc';
+        }
+        charger(1, orderby, order);
+      }
+    });
+  }
 });
 

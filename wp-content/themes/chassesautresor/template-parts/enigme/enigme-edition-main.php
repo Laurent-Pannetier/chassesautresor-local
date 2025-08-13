@@ -458,6 +458,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
         <p><?php esc_html_e("Aucun joueur n'a résolu l'énigme", 'chassesautresor-com'); ?></p>
         <?php endif; ?>
         <?php endif; ?>
+
+        <?php
+        $nb_participants = enigme_compter_joueurs_engages($enigme_id);
+        $par_page_participants = 25;
+        $pages_participants = (int) ceil($nb_participants / $par_page_participants);
+        $participants = enigme_lister_participants($enigme_id, $mode_validation, $par_page_participants, 0, 'date', 'ASC');
+        ?>
+        <h3><?= esc_html($nb_participants); ?> participants</h3>
+        <div class="liste-participants" data-page="1" data-pages="<?= esc_attr($pages_participants); ?>" data-order="asc" data-orderby="date">
+          <?php get_template_part('template-parts/enigme/partials/enigme-partial-participants', null, [
+            'participants' => $participants,
+            'page' => 1,
+            'par_page' => $par_page_participants,
+            'total' => $nb_participants,
+            'pages' => $pages_participants,
+            'mode_validation' => $mode_validation,
+            'orderby' => 'date',
+            'order' => 'ASC',
+          ]); ?>
+        </div>
       </div>
     </div>
 
