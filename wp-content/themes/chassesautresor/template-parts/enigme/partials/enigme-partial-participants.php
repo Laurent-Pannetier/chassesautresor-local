@@ -56,7 +56,7 @@ if ($orderby === 'tentatives') {
       <?php if ($mode_validation !== 'aucune') : ?>
       <td><?= esc_html($p['nb_tentatives']); ?></td>
       <?php endif; ?>
-      <td><?= $p['trouve'] ? '<i class="fa-solid fa-xmark"></i>' : ''; ?></td>
+      <td><?= $p['trouve'] && !empty($p['date_resolution']) ? esc_html(mysql2date('d/m/Y H:i', $p['date_resolution'])) : ''; ?></td>
     </tr>
     <?php endforeach; ?>
   </tbody>

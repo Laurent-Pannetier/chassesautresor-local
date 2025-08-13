@@ -144,6 +144,7 @@ function enigme_lister_participants(
     $sql = $wpdb->prepare(
         "SELECT e.user_id, u.user_login AS username, e.date_engagement,
                 COALESCE(t.nb_tentatives, 0) AS nb_tentatives,
+                r.date_resolution,
                 IF(s.statut IN ('resolue','terminee'), 1, 0) AS trouve
          FROM {$table_eng} e
          JOIN {$wpdb->users} u ON e.user_id = u.ID
@@ -153,10 +154,17 @@ function enigme_lister_participants(
              WHERE enigme_id = %d
              GROUP BY user_id
          ) t ON t.user_id = e.user_id
+         LEFT JOIN (
+             SELECT user_id, MIN(date_tentative) AS date_resolution
+             FROM {$table_tent}
+             WHERE enigme_id = %d AND resultat = 'bon'
+             GROUP BY user_id
+         ) r ON r.user_id = e.user_id
          LEFT JOIN {$table_stat} s ON s.user_id = e.user_id AND s.enigme_id = e.enigme_id
          WHERE e.enigme_id = %d
          ORDER BY {$order_by_sql} {$order}
          LIMIT %d OFFSET %d",
+        $enigme_id,
         $enigme_id,
         $enigme_id,
         $limit,
