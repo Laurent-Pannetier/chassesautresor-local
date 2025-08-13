@@ -289,10 +289,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                 <label for="enigme-nb-tentatives">Nb tentatives
                   <button
                     type="button"
-                    class="mode-fin-aide tentatives-aide"
+                    class="bouton-aide-points tentatives-aide"
                     aria-label="<?= esc_attr__('Explication du nombre de tentatives', 'chassesautresor-com'); ?>"
                   >
-                    <i class="fa-regular fa-circle-question"></i>
+                    <i class="fa-solid fa-circle-question" aria-hidden="true"></i>
                   </button>
                 </label>
                 <input type="number" id="enigme-nb-tentatives" class="champ-input champ-nb-tentatives" min="1" step="1" value="<?= esc_attr($max); ?>" placeholder="5" <?= $peut_editer ? '' : 'disabled'; ?> />
@@ -302,92 +302,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
             </div>
 
             <!-- Accès à l'énigme -->
-            <fieldset class="groupe-champ champ-groupe-acces">
-              <legend>Condition d’accès</legend>
-
-              <?php
-              $condition = get_field('enigme_acces_condition', $enigme_id) ?? 'immediat';
-              $enigmes_possibles = enigme_get_liste_prerequis_possibles($enigme_id);
-
-              $options = [
-                'immediat'        => 'Immédiat',
-                'date_programmee' => 'Date programmée',
-              ];
-
-              if (!empty($enigmes_possibles)) {
-                $options['pre_requis'] = 'Pré-requis';
-              }
-              ?>
-              <div class="champ-enigme champ-access<?= $peut_editer ? '' : ' champ-desactive'; ?>"
-                data-champ="enigme_acces_condition"
-                data-cpt="enigme"
-                data-post-id="<?= esc_attr($enigme_id); ?>">
-
-                <?php foreach ($options as $val => $label) : ?>
-                  <label style="display:inline-block; margin-right: 15px;">
-                    <input type="radio" name="acf[enigme_acces_condition]"
-                      value="<?= esc_attr($val); ?>"
-                      <?= $condition === $val ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
-                    <?= esc_html($label); ?>
+            <?php
+            $condition = get_field('enigme_acces_condition', $enigme_id) ?? 'immediat';
+            $enigmes_possibles = enigme_get_liste_prerequis_possibles($enigme_id);
+            $prerequis_actuels = get_field('enigme_acces_pre_requis', $enigme_id, false) ?? [];
+            if (!is_array($prerequis_actuels)) {
+              $prerequis_actuels = [$prerequis_actuels];
+            }
+            ?>
+            <div class="champ-enigme champ-acces champ-mode-fin<?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_acces_condition" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" data-no-edit="1" data-no-icon="1">
+              <label for="enigme_acces_condition"><?= esc_html__('Accès', 'chassesautresor-com'); ?></label>
+              <div class="champ-mode-options">
+                <label>
+                  <input id="enigme_acces_condition" type="radio" name="acf[enigme_acces_condition]" value="immediat" <?= $condition === 'immediat' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
+                  <?= esc_html__('Libre', 'chassesautresor-com'); ?>
+                </label>
+                <label>
+                  <input type="radio" name="acf[enigme_acces_condition]" value="date_programmee" <?= $condition === 'date_programmee' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
+                  <?= esc_html__('Date programmée', 'chassesautresor-com'); ?>
+                </label>
+                <div id="champ-enigme-date" class="champ-enigme champ-date<?= $condition === 'date_programmee' ? '' : ' cache'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_acces_date" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" style="display:flex; align-items:center; gap:4px;">
+                  <input type="datetime-local" id="enigme-date-deblocage" name="enigme-date-deblocage" value="<?= esc_attr($date_deblocage); ?>" class="champ-inline-date champ-date-edit" <?= $peut_editer ? '' : 'disabled'; ?> />
+                  <div class="champ-feedback champ-date-feedback" style="display:none;"></div>
+                </div>
+                <?php if (!empty($enigmes_possibles)) : ?>
+                  <label>
+                    <input type="radio" name="acf[enigme_acces_condition]" value="pre_requis" <?= $condition === 'pre_requis' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
+                    <?= esc_html__('Pré-requis', 'chassesautresor-com'); ?>
                   </label>
-                <?php endforeach; ?>
-
-                <div class="champ-feedback"></div>
+                  <div id="champ-enigme-pre-requis" class="champ-enigme champ-pre-requis<?= $condition === 'pre_requis' ? '' : ' cache'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_acces_pre_requis" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" data-vide="<?= empty($enigmes_possibles) ? '1' : '0'; ?>" style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
+                    <?php if (empty($enigmes_possibles)) : ?>
+                      <em><?= esc_html__('Aucune autre énigme disponible comme prérequis.', 'chassesautresor-com'); ?></em>
+                    <?php else : ?>
+                      <?php foreach ($enigmes_possibles as $id => $titre) :
+                        $checked = in_array($id, $prerequis_actuels); ?>
+                        <label><input type="checkbox" value="<?= esc_attr($id); ?>" <?= $checked ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>> <?= esc_html($titre); ?></label>
+                      <?php endforeach; ?>
+                    <?php endif; ?>
+                    <div class="champ-feedback"></div>
+                  </div>
+                <?php endif; ?>
               </div>
-
-              <div class="champ-enigme champ-date cache<?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_acces_date" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" id="champ-enigme-date">
-                <label for="enigme-date-deblocage">Date et heure de déblocage</label>
-                <input type="datetime-local"
-                  id="enigme-date-deblocage"
-                  name="enigme-date-deblocage"
-                  value="<?= esc_attr($date_deblocage); ?>"
-                  class="champ-inline-date champ-date-edit" <?= $peut_editer ? '' : 'disabled'; ?> />
-                <div class="champ-feedback champ-date-feedback" style="display:none;"></div>
-              </div>
-
-              <div class="champ-enigme champ-pre-requis cache<?= $peut_editer ? '' : ' champ-desactive'; ?>"
-                data-champ="enigme_acces_pre_requis"
-                data-cpt="enigme"
-                data-post-id="<?= esc_attr($enigme_id); ?>"
-                id="champ-enigme-pre-requis"
-                data-vide="<?= empty($enigmes_possibles) ? '1' : '0'; ?>">
-
-                <label>Pré-requis</label>
-
-                <?php
-                $enigmes_possibles = enigme_get_liste_prerequis_possibles($enigme_id);
-                $prerequis_actuels = get_field('enigme_acces_pre_requis', $enigme_id, false) ?? [];
-                if (!is_array($prerequis_actuels)) {
-                  $prerequis_actuels = [$prerequis_actuels];
-                }
-
-                ?>
-                <ul class="liste-pre-requis">
-
-                  <small class="champ-aide">
-                    Seules les autres énigmes de cette chasse, avec une validation manuelle ou automatique, peuvent être sélectionnées.
-                  </small>
-
-                  <?php if (empty($enigmes_possibles)) : ?>
-                    <li><em>Aucune autre énigme disponible comme prérequis.</em></li>
-                  <?php else : ?>
-                    <?php foreach ($enigmes_possibles as $id => $titre) :
-                      $checked = in_array($id, $prerequis_actuels);
-                    ?>
-                      <li>
-                        <label>
-                          <input type="checkbox" value="<?= esc_attr($id); ?>" <?= $checked ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
-                          <?= esc_html($titre); ?>
-                        </label>
-                      </li>
-                    <?php endforeach; ?>
-                  <?php endif; ?>
-                </ul>
-
-
-                <div class="champ-feedback"></div>
-              </div>
-            </fieldset>
+              <div class="champ-feedback"></div>
+            </div>
 
 
         </div>
