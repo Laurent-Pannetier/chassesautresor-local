@@ -34,6 +34,17 @@ class EnigmeEngagementActionTest extends TestCase
             {
                 return 1;
             }
+            public function prepare($query, ...$args)
+            {
+                $params = $args[0] ?? [];
+                if (is_array($params) && count($args) === 1) {
+                    $args = $params;
+                }
+                if (!$args) {
+                    return $query;
+                }
+                return vsprintf($query, $args);
+            }
         };
 
         $this->assertTrue(marquer_enigme_comme_engagee(5, 10));

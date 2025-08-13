@@ -396,7 +396,30 @@ function verifier_fin_de_chasse($user_id, $enigme_id)
     }
 
     if ($nb_resolues === count($validables) && $engagements_ok) {
-        gerer_chasse_terminee($chasse_id);
+        $now = current_time('mysql');
+
+        if (function_exists('enregistrer_gagnant_chasse')) {
+            enregistrer_gagnant_chasse($user_id, $chasse_id, $now);
+        }
+
+        $liste_actuelle = get_field('chasse_cache_gagnants', $chasse_id) ?: '';
+        $noms = array_filter(array_map('trim', explode(',', $liste_actuelle)));
+        $utilisateur = get_userdata($user_id);
+        $nom_utilisateur = $utilisateur ? ($utilisateur->display_name ?: $utilisateur->user_login) : '';
+
+        if ($nom_utilisateur && !in_array($nom_utilisateur, $noms, true)) {
+            $noms[] = $nom_utilisateur;
+            update_field('chasse_cache_gagnants', implode(', ', $noms), $chasse_id);
+        }
+
+        $max_gagnants = (int) get_field('chasse_infos_nb_max_gagants', $chasse_id);
+
+        if ($max_gagnants === 0 || count($noms) >= $max_gagnants) {
+            $date = current_time('Y-m-d');
+            update_field('chasse_cache_date_decouverte', $date, $chasse_id);
+            update_field('chasse_cache_complet', 1, $chasse_id);
+            update_field('chasse_cache_statut', 'termine', $chasse_id);
+        }
     }
 }
 add_action('enigme_resolue', function($user_id, $enigme_id) {
