@@ -11,13 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  adminNav.addEventListener('click', async (e) => {
-    const link = e.target.closest('.dashboard-nav-link');
-    if (!link) {
-      return;
-    }
-
-    e.preventDefault();
+  const loadSection = async (link, push = true) => {
     const section = link.dataset.section;
     if (!section) {
       window.location.href = link.href;
@@ -39,9 +33,32 @@ document.addEventListener('DOMContentLoaded', () => {
       content.innerHTML = `<section class="msg-important">${messages}</section>` + data.data.html;
       adminNav.querySelectorAll('.dashboard-nav-link').forEach((a) => a.classList.remove('active'));
       link.classList.add('active');
-      window.history.pushState(null, '', link.href);
+      if (push) {
+        window.history.pushState(null, '', link.href);
+      } else {
+        window.history.replaceState(null, '', '/mon-compte/');
+      }
     } catch (err) {
       window.location.assign(link.href);
     }
+  };
+
+  adminNav.addEventListener('click', (e) => {
+    const link = e.target.closest('.dashboard-nav-link');
+    if (!link) {
+      return;
+    }
+
+    e.preventDefault();
+    loadSection(link);
   });
+
+  const params = new URLSearchParams(window.location.search);
+  const initialSection = params.get('section');
+  if (initialSection) {
+    const initialLink = adminNav.querySelector(`.dashboard-nav-link[data-section="${initialSection}"]`);
+    if (initialLink) {
+      loadSection(initialLink, false);
+    }
+  }
 });
