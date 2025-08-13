@@ -105,6 +105,7 @@ function creer_enigme_pour_chasse($chasse_id, $user_id = null)
   update_field('enigme_reponse_casse', true, $enigme_id);
   update_field('enigme_acces_condition', 'immediat', $enigme_id);
   update_field('enigme_acces_pre_requis', [], $enigme_id);
+  update_field('enigme_mode_validation', 'automatique', $enigme_id);
 
   $date_deblocage = (new DateTime('+1 month'))->format('Y-m-d H:i:s');
   update_field('enigme_acces_date', $date_deblocage, $enigme_id);
