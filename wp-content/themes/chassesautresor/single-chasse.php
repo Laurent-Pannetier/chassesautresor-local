@@ -74,6 +74,9 @@ foreach ($enigmes_associees as $eid) {
 }
 $has_incomplete_enigme = !empty($enigmes_incompletes);
 
+$mode_fin = get_field('chasse_mode_fin', $chasse_id) ?: 'automatique';
+$needs_validatable_message = $mode_fin === 'automatique' && !chasse_has_validatable_enigme($chasse_id);
+
 $statut = $infos_chasse['statut'];
 $statut_validation = $infos_chasse['statut_validation'];
 $nb_joueurs = $infos_chasse['nb_joueurs'];
@@ -97,16 +100,25 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
     ?>
 
     <?php
-    if ($est_orga_associe && $has_incomplete_enigme) {
+    if ($est_orga_associe && ($has_incomplete_enigme || $needs_validatable_message)) {
         echo '<div class="cta-chasse">';
-        echo '<p>⚠️ Certaines énigmes doivent être complétées :</p>';
-        echo '<ul class="liste-enigmes-incompletes">';
-        foreach ($enigmes_incompletes as $eid) {
-            $titre = get_the_title($eid);
-            $lien  = add_query_arg('edition', 'open', get_permalink($eid));
-            echo '<li><a href="' . esc_url($lien) . '">' . esc_html($titre) . '</a></li>';
+        if ($has_incomplete_enigme) {
+            echo '<p>⚠️ Certaines énigmes doivent être complétées :</p>';
+            echo '<ul class="liste-enigmes-incompletes">';
+            foreach ($enigmes_incompletes as $eid) {
+                $titre = get_the_title($eid);
+                $lien  = add_query_arg('edition', 'open', get_permalink($eid));
+                echo '<li><a href="' . esc_url($lien) . '">' . esc_html($titre) . '</a></li>';
+            }
+            echo '</ul>';
         }
-        echo '</ul>';
+        if ($needs_validatable_message) {
+            $msg = __(
+                'Votre chasse se termine automatiquement ; ajoutez une énigme à validation manuelle ou automatique.',
+                'chassesautresor-com'
+            );
+            echo '<p>⚠️ ' . esc_html($msg) . '</p>';
+        }
         echo '</div>';
     } elseif ($can_validate) {
         echo '<div class="cta-chasse">';
