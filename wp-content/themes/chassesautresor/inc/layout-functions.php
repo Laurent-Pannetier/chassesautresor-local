@@ -401,9 +401,12 @@ function afficher_bandeau_validation_chasse_global() {
         return;
     }
 
-    $enigme_chasse = get_field('chasse_associee', get_the_ID(), false);
-    $enigme_chasse = is_array($enigme_chasse) ? reset($enigme_chasse) : $enigme_chasse;
-    if ((int) $enigme_chasse !== (int) $chasse_id) {
+    if (!function_exists('recuperer_id_chasse_associee')) {
+        return;
+    }
+
+    $enigme_chasse_id = recuperer_id_chasse_associee(get_the_ID());
+    if ((int) $enigme_chasse_id !== (int) $chasse_id) {
         return;
     }
 

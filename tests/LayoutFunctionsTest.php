@@ -43,6 +43,61 @@ if (!function_exists('is_singular')) {
     }
 }
 
+if (!function_exists('get_the_ID')) {
+    function get_the_ID() {
+        global $current_post_id;
+        return $current_post_id;
+    }
+}
+
+if (!function_exists('recuperer_id_chasse_associee')) {
+    function recuperer_id_chasse_associee($post_id = null) {
+        return 123;
+    }
+}
+
+if (!function_exists('get_the_title')) {
+    function get_the_title($post_id) {
+        return 'Chasse Exemple';
+    }
+}
+
+if (!function_exists('get_permalink')) {
+    function get_permalink($post_id) {
+        return 'https://example.com/chasse';
+    }
+}
+
+if (!function_exists('esc_url')) {
+    function esc_url($url) {
+        return $url;
+    }
+}
+
+if (!function_exists('esc_html')) {
+    function esc_html($text) {
+        return $text;
+    }
+}
+
+if (!function_exists('get_organisateur_from_user')) {
+    function get_organisateur_from_user($user_id) {
+        return 42;
+    }
+}
+
+if (!function_exists('get_chasses_de_organisateur')) {
+    function get_chasses_de_organisateur($organisateur_id) {
+        return [(object) ['ID' => 123]];
+    }
+}
+
+if (!function_exists('peut_valider_chasse')) {
+    function peut_valider_chasse($chasse_id, $user_id) {
+        return true;
+    }
+}
+
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/layout-functions.php';
 
 class LayoutFunctionsTest extends TestCase
@@ -76,5 +131,19 @@ class LayoutFunctionsTest extends TestCase
         $current_post_type = 'chasse';
 
         $this->assertSame('', $this->getBannerOutput());
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_banner_displayed_on_enigme_page(): void
+    {
+        global $current_post_type, $current_post_id;
+        $current_post_type = 'enigme';
+        $current_post_id = 456;
+
+        $output = $this->getBannerOutput();
+        $this->assertStringContainsString('bandeau-info-chasse', $output);
     }
 }
