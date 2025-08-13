@@ -433,8 +433,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
         $nb_resolveurs = count($resolveurs);
         ?>
         <div id="enigme-resolveurs" style="<?= $mode_validation === 'aucune' ? 'display:none;' : ''; ?>">
-          <h3>Résolue par (<?= esc_html($nb_resolveurs); ?>) joueurs</h3>
           <?php if ($nb_resolveurs > 0) : ?>
+          <h3>Résolue par (<?= esc_html($nb_resolveurs); ?>) joueurs</h3>
           <div class="stats-table-wrapper">
             <table class="stats-table" id="enigme-resolveurs-table">
               <thead>
