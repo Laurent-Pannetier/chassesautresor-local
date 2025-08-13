@@ -89,8 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
     <div class="edition-tabs">
       <button class="edition-tab active" data-target="enigme-tab-param">Paramètres</button>
       <button class="edition-tab" data-target="enigme-tab-stats">Statistiques</button>
-      <button class="edition-tab" data-target="enigme-tab-soumission">Soumission</button>
-      <button class="edition-tab" data-target="enigme-tab-indices">Indices</button>
+      <button class="edition-tab" data-target="enigme-tab-soumission"<?= $mode_validation === 'aucune' ? ' style="display:none;"' : ''; ?>>Tentatives</button>
       <button class="edition-tab" data-target="enigme-tab-solution">Solution</button>
     </div>
 
@@ -417,7 +416,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
 <div id="enigme-tab-soumission" class="edition-tab-content" style="display:none;">
   <i class="fa-solid fa-paper-plane tab-watermark" aria-hidden="true"></i>
   <div class="edition-panel-header">
-    <h2><i class="fa-solid fa-paper-plane"></i> Soumission <span class="total-tentatives">(<?= intval(compter_tentatives_enigme($enigme_id)); ?>)</span></h2>
+    <h2><i class="fa-solid fa-paper-plane"></i> Tentatives <span class="total-tentatives">(<?= intval(compter_tentatives_enigme($enigme_id)); ?>)</span></h2>
   </div>
 <?php
   if (!function_exists('recuperer_tentatives_enigme')) {
@@ -440,14 +439,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
       'pages'      => $pages_tentatives,
     ]); ?>
   </div>
-</div>
-
-<div id="enigme-tab-indices" class="edition-tab-content" style="display:none;">
-  <i class="fa-regular fa-lightbulb tab-watermark" aria-hidden="true"></i>
-  <div class="edition-panel-header">
-    <h2><i class="fa-regular fa-lightbulb"></i> Indices</h2>
-  </div>
-  <p class="edition-placeholder">La section « Indices » sera bientôt disponible.</p>
 </div>
 
 <div id="enigme-tab-solution" class="edition-tab-content" style="display:none;">
