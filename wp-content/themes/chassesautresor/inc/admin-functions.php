@@ -1618,6 +1618,13 @@ function traiter_validation_chasse_admin() {
         update_field('champs_caches', $cache, $chasse_id);
         update_field('chasse_cache_statut_validation', 'correction', $chasse_id);
 
+        wp_update_post([
+            'ID'          => $chasse_id,
+            'post_status' => 'pending',
+        ]);
+
+        mettre_a_jour_statuts_chasse($chasse_id);
+
         $message = isset($_POST['validation_admin_message'])
             ? sanitize_textarea_field(wp_unslash($_POST['validation_admin_message']))
             : '';
