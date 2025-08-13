@@ -110,8 +110,15 @@ function charger_template_utilisateur($template) {
 
     // Vérifie si l'URL correspond à un contenu personnalisé
     if (array_key_exists($request_uri, $mapping_templates)) {
-        if (in_array($request_uri, $admin_paths, true) && !current_user_can('administrator')) {
-            wp_redirect(home_url('/mon-compte/'));
+        if (in_array($request_uri, $admin_paths, true)) {
+            $section       = str_replace('mon-compte/', '', rtrim($request_uri, '/'));
+            $redirect_path = '/mon-compte/';
+
+            if (current_user_can('administrator')) {
+                $redirect_path .= '?section=' . $section;
+            }
+
+            wp_redirect(home_url($redirect_path));
             exit;
         }
 
