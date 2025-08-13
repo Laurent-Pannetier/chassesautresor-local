@@ -125,7 +125,21 @@ function enigme_lister_resolveurs(int $enigme_id): array
 }
 
 /**
- * AJAX handler to retrieve stats for an enigme.
+ * AJAX handler retrieving statistics for a riddle.
+ *
+ * Expects the following POST parameters:
+ * - `enigme_id` (int, required) The ID of the riddle to inspect.
+ * - `periode` (string, optional) One of `jour`, `semaine`, `mois` or `total`.
+ *   Defaults to `total`.
+ *
+ * Sends a JSON success response containing at least:
+ * - `joueurs` (int) Number of engaged players for the selected period.
+ * - `tentatives` (int) Number of attempts. Present only when the validation
+ *   mode is not `aucune`.
+ * - `solutions` (int) Number of correct answers. Present only when the
+ *   validation mode is not `aucune`.
+ * - `points` (int) Total points spent. Present only when the cost per attempt
+ *   is greater than zero.
  *
  * @return void
  */
