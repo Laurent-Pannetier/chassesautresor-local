@@ -253,6 +253,7 @@ body .header-img-modifiable .icone-modif {
   transition: border-color 0.2s, background-color 0.2s;
 }
 
+
 .champ-groupe-reponse-automatique {
   display: flex;
   align-items: center;
@@ -266,7 +267,6 @@ body .header-img-modifiable .icone-modif {
 
 #champ-bonne-reponse {
   width: auto;
-  flex: 1 0 200px;
 }
 
 .champ-edition input.champ-input::placeholder {
