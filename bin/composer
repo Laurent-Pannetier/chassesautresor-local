@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
+# Use the PHP binary discovered in setup-env.sh if available.
 DIR="$(dirname "$0")"
-exec "$DIR/php" "$DIR/composer.phar" "$@"
+exec "${PHP_BIN:-php}" "$DIR/composer.phar" "$@"
