@@ -199,14 +199,16 @@ function initEnigmeEdit() {
         if (champ && postId) {
           clearTimeout(timerSauvegarde);
           timerSauvegarde = setTimeout(() => {
-            modifierChampSimple(champ, input.value.trim(), postId, cptChamp);
+            modifierChampSimple(champ, input.value.trim(), postId, cptChamp)
+              .then(() => {
+                const enigmeId = panneauEdition?.dataset.postId;
+                if (enigmeId) {
+                  forcerRecalculStatutEnigme(enigmeId);
+                }
+              });
           }, 400);
         }
       });
-      const enigmeId = panneauEdition?.dataset.postId;
-      if (enigmeId) {
-        forcerRecalculStatutEnigme(enigmeId);
-      }
     }
   }
 
@@ -217,6 +219,14 @@ function initEnigmeEdit() {
   initChampNbTentatives();
   initChampRadioAjax('acf[enigme_mode_validation]');
   const enigmeId = panneauEdition?.dataset.postId;
+
+  if (enigmeId) {
+    document.querySelectorAll('input[name="acf[enigme_mode_validation]"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        forcerRecalculStatutEnigme(enigmeId);
+      });
+    });
+  }
 
   initChampPreRequis();
   initChampSolution();
