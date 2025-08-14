@@ -212,18 +212,35 @@ function initLiensPublics(bloc, { panneauId, formId, action, reload = false }) {
         bloc.classList.toggle('champ-vide', donnees.length === 0);
         bloc.classList.toggle('champ-rempli', donnees.length > 0);
 
-        // ✅ Mise à jour du bloc résumé dans le panneau principal
-        // ✅ Mise à jour de tous les blocs affichant ces liens
+        // ✅ Mise à jour des autres blocs chasse (fiche, résumé…)
+        document
+          .querySelectorAll(`.champ-chasse[data-champ="${champ}"][data-post-id="${postId}"]`)
+          .forEach((blocCible) => {
+            if (blocCible === bloc) return;
+
+            const zone = blocCible.querySelector('.champ-affichage');
+            if (zone && typeof renderLiensPublicsJS === 'function') {
+              zone.innerHTML = renderLiensPublicsJS(donnees);
+
+              if (!zone.dataset.noEdit && !blocCible.querySelector('.champ-modifier')) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'champ-modifier ouvrir-panneau-liens';
+                btn.setAttribute('aria-label', 'Configurer vos liens');
+                btn.textContent = '✏️';
+                zone.appendChild(btn);
+              }
+            }
+
+            blocCible.classList.toggle('champ-vide', donnees.length === 0);
+            blocCible.classList.toggle('champ-rempli', donnees.length > 0);
+          });
+
+        // ✅ Mise à jour du bloc résumé dans le panneau principal et des blocs organisateur
         document
           .querySelectorAll(`.champ-organisateur[data-champ="${champ}"][data-post-id="${postId}"]`)
           .forEach((blocCible) => {
-            let zone = blocCible.querySelector('.champ-affichage');
-            if (!zone) {
-              const fiche = document.querySelector(
-                `.champ-chasse.champ-fiche-publication[data-champ="${champ}"][data-post-id="${postId}"]`
-              );
-              zone = fiche?.querySelector('.champ-affichage');
-            }
+            const zone = blocCible.querySelector('.champ-affichage');
 
             if (zone && typeof renderLiensPublicsJS === 'function') {
               zone.innerHTML = renderLiensPublicsJS(donnees);

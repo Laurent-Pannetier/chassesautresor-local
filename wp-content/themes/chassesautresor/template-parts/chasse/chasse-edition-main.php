@@ -544,6 +544,11 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                         <?= empty($liens) ? 'Ajouter' : 'Éditer'; ?>
                       </button>
                     <?php endif; ?>
+                    <div class="champ-donnees"
+                      data-valeurs='<?= json_encode($liens, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>'></div>
+                    <div class="champ-affichage champ-affichage-liens">
+                      <?= render_liens_publics($liens, 'chasse'); ?>
+                    </div>
                     <div class="champ-feedback"></div>
                   </div>
                   <?php
