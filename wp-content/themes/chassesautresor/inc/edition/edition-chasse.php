@@ -333,8 +333,9 @@ function modifier_champ_chasse()
 
     $demande_terminer = ($champ === 'champs_caches.chasse_cache_statut' && $valeur === 'termine');
     $champ_fin = in_array($champ, ['champs_caches.chasse_cache_gagnants', 'champs_caches.chasse_cache_date_decouverte'], true);
+    $champ_libre = ($champ === 'chasse_principale_liens');
 
-    if (!$demande_terminer && !$champ_fin && !utilisateur_peut_editer_champs($post_id)) {
+    if (!$demande_terminer && !$champ_fin && !$champ_libre && !utilisateur_peut_editer_champs($post_id)) {
         wp_send_json_error('⚠️ acces_refuse');
     }
 
