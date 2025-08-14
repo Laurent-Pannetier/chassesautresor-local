@@ -31,27 +31,18 @@ class ChasseParticipantsStatsTest extends TestCase {
         $wpdb = new class {
             public string $prefix = 'wp_';
             public string $users = 'wp_users';
-            private int $call = 0;
             public function prepare($query, ...$args) { return $query; }
             public function get_results($query, $output = ARRAY_A) {
-                $this->call++;
-                if ($this->call === 1) {
-                    return [
-                        ['user_id' => 1, 'username' => 'alice', 'date_inscription' => '2024-01-01 10:00:00'],
-                    ];
-                }
-                if ($this->call === 2) {
-                    return [
-                        ['user_id' => 1, 'enigme_id' => 10],
-                        ['user_id' => 1, 'enigme_id' => 11],
-                    ];
-                }
-                if ($this->call === 3) {
-                    return [
-                        ['user_id' => 1, 'enigme_id' => 10],
-                    ];
-                }
-                return [];
+                return [
+                    [
+                        'user_id' => 1,
+                        'username' => 'alice',
+                        'date_inscription' => '2024-01-01 10:00:00',
+                        'nb_engagees' => 2,
+                        'nb_resolues' => 1,
+                        'enigmes_ids' => '10,11',
+                    ],
+                ];
             }
         };
 
@@ -70,26 +61,46 @@ class ChasseParticipantsStatsTest extends TestCase {
         $wpdb = new class {
             public string $prefix = 'wp_';
             public string $users = 'wp_users';
-            public int $call = 0;
             public function prepare($query, ...$args) { return $query; }
             public function get_results($query, $output = ARRAY_A) {
-                $this->call++;
-                if ($this->call === 1 || $this->call === 4) {
+                if (stripos($query, 'ORDER BY nb_engagees DESC') !== false) {
                     return [
-                        ['user_id' => 1, 'username' => 'alice', 'date_inscription' => '2024-01-01 10:00:00'],
-                        ['user_id' => 2, 'username' => 'bob', 'date_inscription' => '2024-01-02 10:00:00'],
+                        [
+                            'user_id' => 1,
+                            'username' => 'alice',
+                            'date_inscription' => '2024-01-01 10:00:00',
+                            'nb_engagees' => 2,
+                            'nb_resolues' => 1,
+                            'enigmes_ids' => '10,11',
+                        ],
+                        [
+                            'user_id' => 2,
+                            'username' => 'bob',
+                            'date_inscription' => '2024-01-02 10:00:00',
+                            'nb_engagees' => 1,
+                            'nb_resolues' => 0,
+                            'enigmes_ids' => '10',
+                        ],
                     ];
                 }
-                if ($this->call === 2 || $this->call === 5) {
+                if (stripos($query, 'ORDER BY nb_resolues ASC') !== false) {
                     return [
-                        ['user_id' => 1, 'enigme_id' => 10],
-                        ['user_id' => 1, 'enigme_id' => 11],
-                        ['user_id' => 2, 'enigme_id' => 10],
-                    ];
-                }
-                if ($this->call === 3 || $this->call === 6) {
-                    return [
-                        ['user_id' => 1, 'enigme_id' => 10],
+                        [
+                            'user_id' => 2,
+                            'username' => 'bob',
+                            'date_inscription' => '2024-01-02 10:00:00',
+                            'nb_engagees' => 1,
+                            'nb_resolues' => 0,
+                            'enigmes_ids' => '10',
+                        ],
+                        [
+                            'user_id' => 1,
+                            'username' => 'alice',
+                            'date_inscription' => '2024-01-01 10:00:00',
+                            'nb_engagees' => 2,
+                            'nb_resolues' => 1,
+                            'enigmes_ids' => '10,11',
+                        ],
                     ];
                 }
                 return [];
