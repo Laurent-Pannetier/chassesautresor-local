@@ -1525,6 +1525,17 @@ body.panneau-ouvert::before {
   color: var(--color-editor-heading);
 }
 
+.edition-stats-card-link {
+  font-size: 1.1rem;
+  color: var(--color-editor-accent);
+  text-decoration: underline;
+}
+
+.edition-stats-card-link:hover,
+.edition-stats-card-link:focus {
+  text-decoration: none;
+}
+
 /* ========== ⚠️ ADMINISTRATION ACTIONS ========== */
 .edition-panel-footer {
   display: flex;
