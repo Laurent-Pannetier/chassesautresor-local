@@ -390,43 +390,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
         </div>
         <div class="dashboard-grid stats-cards" id="enigme-stats">
           <div class="dashboard-card" data-stat="joueurs">
-            <div class="dashboard-card-header">
-              <i class="fa-solid fa-users"></i>
-              <h3>Nombre de joueurs engagés</h3>
-            </div>
-            <div class="dashboard-card-content">
-              <p class="stat-value"><?= esc_html($nb_joueurs); ?></p>
-            </div>
+            <i class="fa-solid fa-users"></i>
+            <h3>Nombre de joueurs engagés</h3>
+            <p class="stat-value"><?= esc_html($nb_joueurs); ?></p>
           </div>
           <div class="dashboard-card" data-stat="tentatives"
             style="<?= $mode_validation === 'aucune' ? 'display:none;' : ''; ?>">
-            <div class="dashboard-card-header">
-              <i class="fa-solid fa-arrow-rotate-right"></i>
-              <h3>Nombre de tentatives</h3>
-            </div>
-            <div class="dashboard-card-content">
-              <p class="stat-value"><?= esc_html($nb_tentatives); ?></p>
-            </div>
+            <i class="fa-solid fa-arrow-rotate-right"></i>
+            <h3>Nombre de tentatives</h3>
+            <p class="stat-value"><?= esc_html($nb_tentatives); ?></p>
           </div>
           <div class="dashboard-card" data-stat="points"
             style="<?= ($mode_validation === 'aucune' || (int) $cout <= 0) ? 'display:none;' : ''; ?>">
-            <div class="dashboard-card-header">
-              <i class="fa-solid fa-coins"></i>
-              <h3>Nombre de points</h3>
-            </div>
-            <div class="dashboard-card-content">
-              <p class="stat-value"><?= esc_html($nb_points); ?></p>
-            </div>
+            <i class="fa-solid fa-coins"></i>
+            <h3>Nombre de points</h3>
+            <p class="stat-value"><?= esc_html($nb_points); ?></p>
           </div>
           <div class="dashboard-card" data-stat="solutions"
             style="<?= $mode_validation === 'aucune' ? 'display:none;' : ''; ?>">
-            <div class="dashboard-card-header">
-              <i class="fa-solid fa-check"></i>
-              <h3>Nombre de bonnes solutions</h3>
-            </div>
-            <div class="dashboard-card-content">
-              <p class="stat-value"><?= esc_html($nb_solutions); ?></p>
-            </div>
+            <i class="fa-solid fa-check"></i>
+            <h3>Nombre de bonnes solutions</h3>
+            <p class="stat-value"><?= esc_html($nb_solutions); ?></p>
           </div>
         </div>
         <?php
