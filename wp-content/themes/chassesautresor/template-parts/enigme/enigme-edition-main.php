@@ -418,7 +418,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
             </div>
           </div>
           <div class="dashboard-card" data-stat="solutions"
-            style="<?= ($mode_validation === 'aucune' || $nb_solutions <= 0) ? 'display:none;' : ''; ?>">
+            style="<?= $mode_validation === 'aucune' ? 'display:none;' : ''; ?>">
             <div class="dashboard-card-header">
               <i class="fa-solid fa-check"></i>
               <h3>Nombre de bonnes solutions</h3>
@@ -431,9 +431,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
         <?php
         $resolveurs = $mode_validation === 'aucune' ? [] : enigme_lister_resolveurs($enigme_id);
         $nb_resolveurs = count($resolveurs);
+        if ($nb_resolveurs > 0) :
         ?>
-        <div id="enigme-resolveurs" style="<?= $mode_validation === 'aucune' ? 'display:none;' : ''; ?>">
-          <?php if ($nb_resolveurs > 0) : ?>
+        <div id="enigme-resolveurs">
           <h3>Résolue par (<?= esc_html($nb_resolveurs); ?>) joueurs</h3>
           <div class="stats-table-wrapper">
             <table class="stats-table" id="enigme-resolveurs-table">
@@ -457,10 +457,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
               </tbody>
             </table>
           </div>
-          <?php else : ?>
-          <p><?php esc_html_e("Aucun joueur n'a résolu l'énigme", 'chassesautresor-com'); ?></p>
-          <?php endif; ?>
         </div>
+        <?php endif; ?>
 
         <?php
         $nb_participants = enigme_compter_joueurs_engages($enigme_id);
