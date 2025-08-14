@@ -223,7 +223,11 @@ $classe_vide_coordonnees = ($iban_vide || $bic_vide) ? 'champ-vide' : '';
       <div class="edition-panel-header">
         <h2><i class="fa-solid fa-chart-column"></i> Statistiques</h2>
       </div>
-      <p class="edition-placeholder">La section « Statistiques » sera bientôt disponible.</p>
+      <?php get_template_part(
+          'template-parts/organisateur/panneaux/organisateur-edition-statistiques',
+          null,
+          ['organisateur_id' => $organisateur_id]
+      ); ?>
     </div>
 
     <div id="organisateur-tab-revenus" class="edition-tab-content" style="display:none;">
