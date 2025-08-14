@@ -24,7 +24,7 @@ $total   = $args['total'] ?? $total ?? 0;
       <th scope="col" colspan="2">Participants</th>
       <th scope="col" rowspan="2">Tentatives</th>
       <th scope="col" rowspan="2">Points</th>
-        <th scope="col" colspan="2">Bonnes réponses</th>
+      <th scope="col" colspan="2">Bonnes réponses</th>
     </tr>
     <tr>
       <th scope="col">Nombre</th>
@@ -41,8 +41,10 @@ $total   = $args['total'] ?? $total ?? 0;
       <td><?= $total > 0 ? esc_html(number_format((100 * $e['engagements']) / $total, 1, ',', ' ') . '%') : '0%'; ?></td>
       <td><?= $e['tentatives'] ? esc_html($e['tentatives']) : ''; ?></td>
       <td><?= $e['points'] ? esc_html($e['points']) : ''; ?></td>
-      <td><?= esc_html($e['resolutions']); ?></td>
-      <td><?= $e['engagements'] > 0 ? esc_html(number_format((100 * $e['resolutions']) / $e['engagements'], 1, ',', ' ') . '%') : '0%'; ?></td>
+      <td><?= $e['resolutions'] ? esc_html($e['resolutions']) : ''; ?></td>
+      <td><?= $e['resolutions'] && $e['engagements'] > 0
+        ? esc_html(number_format((100 * $e['resolutions']) / $e['engagements'], 1, ',', ' ') . '%')
+        : ''; ?></td>
     </tr>
     <?php endforeach; ?>
   </tbody>
