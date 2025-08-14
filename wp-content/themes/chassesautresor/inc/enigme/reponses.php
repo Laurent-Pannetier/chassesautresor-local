@@ -242,14 +242,20 @@ function soumettre_reponse_automatique()
         }
     }
 
+    $lock_key = "enigme_lock_{$enigme_id}_{$user_id}";
+    if (!wp_cache_add($lock_key, 1, 'enigme', 15)) {
+        wp_send_json_error('doublon');
+    }
+
     try {
         $uid = traiter_tentative($user_id, $enigme_id, $reponse, $resultat, true, false, false);
     } catch (Throwable $e) {
+        wp_cache_delete($lock_key, 'enigme');
         error_log('Erreur tentative : ' . $e->getMessage());
         wp_send_json_error('erreur_interne');
     }
 
-
+    wp_cache_delete($lock_key, 'enigme');
 
     $compteur = compter_tentatives_du_jour($user_id, $enigme_id);
     $solde = get_user_points($user_id);
