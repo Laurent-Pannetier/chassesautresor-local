@@ -122,6 +122,10 @@
     border-radius: 0.5rem;
 }
 
+.msg-important:empty {
+    display: none;
+}
+
 .myaccount-points {
     margin-bottom: 1rem;
     font-weight: 500;
