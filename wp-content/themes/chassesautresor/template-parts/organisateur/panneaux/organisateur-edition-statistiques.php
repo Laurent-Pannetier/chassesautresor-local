@@ -30,11 +30,11 @@ $points  = organisateur_compter_points_collectes($organisateur_id);
   $chasses = get_chasses_de_organisateur($organisateur_id);
   if ($chasses && !empty($chasses->posts)) {
       foreach ($chasses->posts as $chasse) {
-          $chasse_id         = $chasse->ID;
-          $total_engagements = chasse_compter_engagements($chasse_id);
-          $enigmes_stats     = [];
+          $chasse_id     = $chasse->ID;
+          $participants  = chasse_compter_participants($chasse_id);
+          $enigmes_stats = [];
           foreach (recuperer_ids_enigmes_pour_chasse($chasse_id) as $enigme_id) {
-              $engagements    = enigme_compter_joueurs_engages($enigme_id);
+              $engagements     = enigme_compter_joueurs_engages($enigme_id);
               $enigmes_stats[] = [
                   'id'          => $enigme_id,
                   'titre'       => get_the_title($enigme_id),
@@ -48,9 +48,9 @@ $points  = organisateur_compter_points_collectes($organisateur_id);
               'template-parts/chasse/partials/chasse-partial-enigmes',
               null,
               [
-                  'title'   => get_the_title($chasse_id) . ' - Énigmes',
+                  'title'   => sprintf('%s - Énigmes - %d participants', get_the_title($chasse_id), $participants),
                   'enigmes' => $enigmes_stats,
-                  'total'   => $total_engagements,
+                  'total'   => $participants,
               ]
           );
       }

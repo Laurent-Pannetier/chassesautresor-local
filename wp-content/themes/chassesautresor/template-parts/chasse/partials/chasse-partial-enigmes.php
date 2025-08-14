@@ -4,7 +4,7 @@
  *
  * Variables:
  * - $enigmes (array)
- * - $total (int) Total engagements in the hunt.
+ * - $total (int) Total participants in the hunt.
  */
 
 defined('ABSPATH') || exit;
