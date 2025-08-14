@@ -23,15 +23,18 @@ function initChasseStats() {
 
   select.addEventListener('change', () => {
     const periode = select.value;
-    const data = new FormData();
-    data.append('action', 'chasse_recuperer_stats');
-    data.append('chasse_id', ChasseStats.chasseId);
-    data.append('periode', periode);
+
+    const params = new URLSearchParams({
+      action: 'chasse_recuperer_stats',
+      chasse_id: ChasseStats.chasseId,
+      periode,
+    });
 
     fetch(ChasseStats.ajaxUrl, {
       method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       credentials: 'same-origin',
-      body: data,
+      body: params,
     })
       .then((response) => response.json())
       .then((res) => {
