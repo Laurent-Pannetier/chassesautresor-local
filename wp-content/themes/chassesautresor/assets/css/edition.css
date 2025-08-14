@@ -1488,42 +1488,6 @@ body.panneau-ouvert::before {
   font-size: 0.875rem;
 }
 
-/* ========== 📊 EDITION STATISTIQUES ========== */
-.edition-stats-cards {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.edition-stats-card {
-  flex: 1 1 160px;
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  padding: 1rem;
-  background: var(--color-editor-background);
-  border: 1px solid var(--color-editor-border);
-  border-radius: 0.5rem;
-}
-
-.edition-stats-card i {
-  font-size: 1.5rem;
-  color: var(--color-editor-accent);
-}
-
-.edition-stats-card-title {
-  display: block;
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  color: var(--color-editor-text-muted);
-}
-
-.edition-stats-card-number {
-  font-size: 1.4rem;
-  font-weight: bold;
-  color: var(--color-editor-heading);
-}
 
 .edition-stats-card-link {
   display: block;
