@@ -1525,6 +1525,40 @@ body.panneau-ouvert::before {
   color: var(--color-editor-heading);
 }
 
+.edition-stats-card-link {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 1.1rem;
+  color: var(--color-editor-accent);
+  text-decoration: underline;
+}
+
+.edition-stats-card-link:hover,
+.edition-stats-card-link:focus {
+  text-decoration: none;
+}
+
+.edition-stats-card--vertical {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.edition-stats-card--vertical .edition-stats-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.edition-stats-card-info {
+  margin-left: 0.25rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-editor-text-muted);
+  cursor: pointer;
+}
+
 /* ========== ⚠️ ADMINISTRATION ACTIONS ========== */
 .edition-panel-footer {
   display: flex;

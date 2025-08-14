@@ -23,8 +23,6 @@ $description  = get_field('description_longue', $organisateur_id);
 $reseaux      = get_field('reseaux_sociaux', $organisateur_id);
 $site         = get_field('lien_site_web', $organisateur_id);
 $email_contact = get_field('profil_public_email_contact', $organisateur_id);
-$iban         = get_field('coordonnees_bancaires_iban', $organisateur_id);
-$bic          = get_field('coordonnees_bancaires_bic', $organisateur_id);
 
 $liens_publics = get_field('liens_publics', $organisateur_id); // ← manquant !
 $liens_publics = is_array($liens_publics) ? array_filter($liens_publics, function ($entree) {
@@ -44,9 +42,6 @@ $is_complete = (
   !empty($description)
 );
 
-$iban_vide = empty($iban);
-$bic_vide  = empty($bic);
-$classe_vide_coordonnees = ($iban_vide || $bic_vide) ? 'champ-vide' : '';
 ?>
 
 <?php if ($peut_modifier) : ?>
@@ -211,37 +206,32 @@ $classe_vide_coordonnees = ($iban_vide || $bic_vide) ? 'champ-vide' : '';
         <h2><i class="fa-solid fa-coins"></i> Points</h2>
       </div>
       <div class="edition-panel-body">
-        <div class="edition-panel-section edition-panel-section-ligne">
-          <h3 class="section-title">
-            <i class="fa-solid fa-coins" aria-hidden="true"></i>
-            Points
-          </h3>
-
-          <div class="section-content deux-col-wrapper">
-            <div class="resume-bloc resume-facultatif deux-col-bloc">
-              <h3>Information bancaires</h3>
-
-              <ul class="resume-infos">
-                <li id="ligne-coordonnees" class="champ-organisateur champ-coordonnees ligne-coordonnees <?= !empty($iban) ? 'champ-rempli' : ''; ?>" data-champ="coordonnees_bancaires">
-                  Coordonnées bancaires
-                  <button type="button" class="icone-info" aria-label="Informations sur les coordonnées bancaires"
-                    onclick="alert('Ces informations sont nécessaires uniquement pour vous verser les gains issus de la conversion de vos points en euros. Nous ne prélevons jamais d\u2019argent.');">
-                    <i class="fa-solid fa-circle-question" aria-hidden="true"></i>
-                  </button>
-                  <?php if ($peut_editer) : ?>
-                    <button type="button"
-                      id="ouvrir-coordonnees"
-                      class="champ-modifier"
-                      aria-label="Modifier les coordonnées bancaires"
-                      data-champ="coordonnees_bancaires"
-                      data-cpt="organisateur"
-                      data-post-id="<?php echo esc_attr($organisateur_id); ?>">
-                      ✏️
-                    </button>
-
-                  <?php endif; ?>
-                </li>
-              </ul>
+        <div class="edition-stats-cards">
+          <div class="edition-stats-card edition-stats-card--vertical">
+            <i class="fa-solid fa-building-columns" aria-hidden="true"></i>
+            <div class="edition-stats-card-content">
+              <span class="edition-stats-card-title">
+                Coordonnées bancaires
+                <button
+                  type="button"
+                  class="edition-stats-card-info icone-info"
+                  aria-label="Informations sur les coordonnées bancaires"
+                  onclick="alert('Ces informations sont nécessaires uniquement pour vous verser les gains issus de la conversion de vos points en euros. Nous ne prélevons jamais d\u2019argent.');"
+                >
+                  <i class="fa-solid fa-circle-question" aria-hidden="true"></i>
+                </button>
+              </span>
+              <?php if ($peut_editer) : ?>
+                <a
+                  id="ouvrir-coordonnees"
+                  class="edition-stats-card-link"
+                  href="#"
+                  aria-label="Modifier les coordonnées bancaires"
+                  data-champ="coordonnees_bancaires"
+                  data-cpt="organisateur"
+                  data-post-id="<?php echo esc_attr($organisateur_id); ?>"
+                >Éditer</a>
+              <?php endif; ?>
             </div>
           </div>
         </div>
