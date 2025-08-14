@@ -265,14 +265,14 @@ $classe_vide_coordonnees = ($iban_vide || $bic_vide) ? 'champ-vide' : '';
                     data-cpt="organisateur"
                     data-post-id="<?= esc_attr($organisateur_id); ?>">
                     <i class="fa-solid fa-share-nodes" aria-hidden="true"></i>
-                    <h3>Sites et réseaux</h3>
+                    <h3>Sites et réseaux de l'organisation</h3>
                     <?php if ($peut_modifier) : ?>
                       <button type="button"
                         class="stat-value champ-modifier ouvrir-panneau-liens"
                         data-champ="liens_publics"
                         data-cpt="organisateur"
                         data-post-id="<?= esc_attr($organisateur_id); ?>">
-                        Ajouter
+                        <?= empty($liens_publics) ? 'Ajouter' : 'Éditer'; ?>
                       </button>
                     <?php endif; ?>
                     <div class="champ-donnees"
