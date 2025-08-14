@@ -27,7 +27,7 @@ defined('ABSPATH') || exit;
         $table = $wpdb->prefix . 'enigme_tentatives';
         $uid = function_exists('wp_generate_uuid4') ? wp_generate_uuid4() : uniqid('tent_', true);
 
-        $wpdb->insert($table, [
+        $inserted = $wpdb->insert($table, [
             'tentative_uid'   => $uid,
             'user_id'         => $user_id,
             'enigme_id'       => $enigme_id,
@@ -37,6 +37,9 @@ defined('ABSPATH') || exit;
             'ip'              => $_SERVER['REMOTE_ADDR'] ?? null,
             'user_agent'      => $_SERVER['HTTP_USER_AGENT'] ?? null,
         ]);
+        if ($inserted !== false) {
+            do_action('enigme_tentative_created', $enigme_id);
+        }
 
         return $uid;
     }
