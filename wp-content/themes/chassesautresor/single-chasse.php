@@ -76,9 +76,15 @@ $has_incomplete_enigme = !empty($enigmes_incompletes);
 
 $mode_fin = get_field('chasse_mode_fin', $chasse_id) ?: 'automatique';
 $statut = $infos_chasse['statut'];
+$title_filled = trim(get_the_title($chasse_id)) !== '';
+$image_filled = !empty($image_id);
+$description_filled = !empty(trim($description));
+$required_fields_filled = $title_filled && $image_filled && $description_filled;
+
 $needs_validatable_message = $statut === 'revision'
     && $mode_fin === 'automatique'
-    && !chasse_has_validatable_enigme($chasse_id);
+    && !chasse_has_validatable_enigme($chasse_id)
+    && $required_fields_filled;
 
 $statut_validation = $infos_chasse['statut_validation'];
 $nb_joueurs = $infos_chasse['nb_joueurs'];
