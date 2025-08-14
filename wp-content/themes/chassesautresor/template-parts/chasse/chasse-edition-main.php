@@ -391,16 +391,38 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
         $total_engagements     = chasse_compter_engagements($chasse_id);
         $enigme_ids            = recuperer_ids_enigmes_pour_chasse($chasse_id);
         $enigmes_stats         = [];
+        $participation_rates   = [];
+        $resolution_rates      = [];
         foreach ($enigme_ids as $enigme_id) {
+            $engagements = enigme_compter_joueurs_engages($enigme_id, $periode);
+            $resolutions = enigme_compter_bonnes_solutions($enigme_id, 'automatique', $periode);
             $enigmes_stats[] = [
                 'id'          => $enigme_id,
                 'titre'       => get_the_title($enigme_id),
-                'engagements' => enigme_compter_joueurs_engages($enigme_id, $periode),
+                'engagements' => $engagements,
                 'tentatives'  => enigme_compter_tentatives($enigme_id, 'automatique', $periode),
                 'points'      => enigme_compter_points_depenses($enigme_id, 'automatique', $periode),
-                'resolutions' => enigme_compter_bonnes_solutions($enigme_id, 'automatique', $periode),
+                'resolutions' => $resolutions,
+            ];
+            $participation_rates[] = [
+                'title' => get_the_title($enigme_id),
+                'url'   => get_permalink($enigme_id),
+                'value' => $total_engagements > 0 ? (100 * $engagements) / $total_engagements : 0,
+            ];
+            $resolution_rates[]    = [
+                'title' => get_the_title($enigme_id),
+                'url'   => get_permalink($enigme_id),
+                'value' => $engagements > 0 ? (100 * $resolutions) / $engagements : 0,
             ];
         }
+        usort($participation_rates, static function ($a, $b) {
+            return $b['value'] <=> $a['value'];
+        });
+        usort($resolution_rates, static function ($a, $b) {
+            return $b['value'] <=> $a['value'];
+        });
+        $max_participation = !empty($participation_rates) ? max(array_column($participation_rates, 'value')) : 0;
+        $max_resolution   = !empty($resolution_rates) ? max(array_column($resolution_rates, 'value')) : 0;
         $par_page_participants = 25;
         $pages_participants    = (int) ceil($total_engagements / $par_page_participants);
         $participants          = chasse_lister_participants($chasse_id, $par_page_participants, 0, 'chasse', 'ASC');
@@ -437,6 +459,18 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                 'label' => 'Points collectés',
                 'value' => $nb_points,
                 'stat'  => 'points',
+            ]);
+            get_template_part('template-parts/common/stat-histogram-card', null, [
+                'label' => 'Taux de participation',
+                'data'  => $participation_rates,
+                'max'   => $max_participation,
+                'stat'  => 'participation',
+            ]);
+            get_template_part('template-parts/common/stat-histogram-card', null, [
+                'label' => 'Taux de résolution',
+                'data'  => $resolution_rates,
+                'max'   => $max_resolution,
+                'stat'  => 'resolution',
             ]);
             ?>
           </div>
