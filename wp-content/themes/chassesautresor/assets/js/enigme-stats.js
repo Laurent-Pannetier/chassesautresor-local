@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+function initEnigmeStats() {
   const container = document.getElementById('enigme-stats');
   const select = document.getElementById('enigme-periode');
   if (!container || !select) {
@@ -110,5 +110,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-});
+}
+
+document.addEventListener('DOMContentLoaded', initEnigmeStats);
+initEnigmeStats();
 
