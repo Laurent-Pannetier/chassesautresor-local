@@ -205,35 +205,38 @@ $is_complete = (
       <div class="edition-panel-header">
         <h2><i class="fa-solid fa-coins"></i> Points</h2>
       </div>
-      <div class="edition-panel-body">
-        <div class="dashboard-grid stats-cards">
-          <div class="dashboard-card">
-            <i class="fa-solid fa-building-columns" aria-hidden="true"></i>
-            <h3>
-              Coordonnées bancaires
-              <button
-                type="button"
-                class="edition-stats-card-info icone-info"
-                aria-label="Informations sur les coordonnées bancaires"
-                onclick="alert('Ces informations sont nécessaires uniquement pour vous verser les gains issus de la conversion de vos points en euros. Nous ne prélevons jamais d\u2019argent.');"
-              >
-                <i class="fa-solid fa-circle-question" aria-hidden="true"></i>
-              </button>
-            </h3>
-            <?php if ($peut_editer) : ?>
-              <a
-                id="ouvrir-coordonnees"
-                class="stat-value champ-modifier"
-                href="#"
-                aria-label="Modifier les coordonnées bancaires"
-                data-champ="coordonnees_bancaires"
-                data-cpt="organisateur"
-                data-post-id="<?php echo esc_attr($organisateur_id); ?>"
-              >Éditer</a>
-            <?php endif; ?>
+        <div class="edition-panel-body">
+          <div class="dashboard-grid stats-cards">
+            <div class="dashboard-card" data-stat="bank-details">
+              <i class="fa-solid fa-building-columns" aria-hidden="true"></i>
+              <h3>
+                Coordonnées bancaires
+                <button
+                  type="button"
+                  class="mode-fin-aide stat-help"
+                  data-message="<?php echo esc_attr__(
+                      'Ces informations sont nécessaires uniquement pour vous verser les gains issus de la conversion de vos points en euros. Nous ne prélevons jamais d\'argent.',
+                      'chassesautresor-com'
+                  ); ?>"
+                  aria-label="<?php esc_attr_e('Informations sur les coordonnées bancaires', 'chassesautresor-com'); ?>"
+                >
+                  <i class="fa-regular fa-circle-question" aria-hidden="true"></i>
+                </button>
+              </h3>
+              <?php if ($peut_editer) : ?>
+                <a
+                  id="ouvrir-coordonnees"
+                  class="stat-value champ-modifier"
+                  href="#"
+                  aria-label="<?php esc_attr_e('Modifier les coordonnées bancaires', 'chassesautresor-com'); ?>"
+                  data-champ="coordonnees_bancaires"
+                  data-cpt="organisateur"
+                  data-post-id="<?php echo esc_attr($organisateur_id); ?>"
+                ><?php esc_html_e('Éditer', 'chassesautresor-com'); ?></a>
+              <?php endif; ?>
+            </div>
           </div>
-        </div>
-      </div> <!-- .edition-panel-body -->
+        </div> <!-- .edition-panel-body -->
     </div>
 
     <div id="organisateur-tab-animation" class="edition-tab-content" style="display:none;">

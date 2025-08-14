@@ -1488,16 +1488,6 @@ body.panneau-ouvert::before {
   font-size: 0.875rem;
 }
 
-
-.edition-stats-card-info {
-  margin-left: 0.25rem;
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--color-editor-text-muted);
-  cursor: pointer;
-}
-
 /* ========== ⚠️ ADMINISTRATION ACTIONS ========== */
 .edition-panel-footer {
   display: flex;

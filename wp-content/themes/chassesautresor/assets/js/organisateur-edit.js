@@ -5,21 +5,30 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof initZonesClicEdition === 'function') initZonesClicEdition();
 
   // 🟢 Champs inline
-  document.querySelectorAll('.champ-organisateur[data-champ]').forEach((bloc) => {
-    const champ = bloc.dataset.champ;
-    if (bloc.classList.contains('champ-img')) {
-      if (typeof initChampImage === 'function') initChampImage(bloc);
-    } else if (champ === 'liens_publics') {
-      if (typeof initLiensOrganisateur === 'function') initLiensOrganisateur(bloc);
-    } else {
-      if (typeof initChampTexte === 'function') initChampTexte(bloc);
-    }
-  });
+    document.querySelectorAll('.champ-organisateur[data-champ]').forEach((bloc) => {
+      const champ = bloc.dataset.champ;
+      if (bloc.classList.contains('champ-img')) {
+        if (typeof initChampImage === 'function') initChampImage(bloc);
+      } else if (champ === 'liens_publics') {
+        if (typeof initLiensOrganisateur === 'function') initLiensOrganisateur(bloc);
+      } else {
+        if (typeof initChampTexte === 'function') initChampTexte(bloc);
+      }
+    });
 
-  // 🟠 Déclencheurs de résumé
-  document.querySelectorAll('.resume-infos .champ-modifier[data-champ]').forEach((btn) => {
-    if (typeof initChampDeclencheur === 'function') initChampDeclencheur(btn);
-  });
+    document.querySelectorAll('.stat-help').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const message = btn.dataset.message;
+        if (message) {
+          alert(message);
+        }
+      });
+    });
+
+    // 🟠 Déclencheurs de résumé
+    document.querySelectorAll('.resume-infos .champ-modifier[data-champ]').forEach((btn) => {
+      if (typeof initChampDeclencheur === 'function') initChampDeclencheur(btn);
+    });
 
   // 🔗 Panneau liens
   document.addEventListener('click', (e) => {
