@@ -103,7 +103,8 @@ get_header();
                     $classes .= ' active';
                 }
 
-                echo '<a href="' . esc_url($item['url']) . '" data-section="' . esc_attr($item['section']) . '" class="' . esc_attr($classes) . '">';
+                echo '<a href="' . esc_url($item['url']) . '" data-section="' .
+                    esc_attr($item['section']) . '" class="' . esc_attr($classes) . '">';
                 echo '<i class="' . esc_attr($item['icon']) . '"></i>';
                 echo '<span>' . esc_html($item['label']) . '</span>';
                 echo '</a>';
@@ -112,42 +113,10 @@ get_header();
         </nav>
         <?php endif; ?>
         <?php
-        $organizer_id = get_organisateur_from_user($current_user->ID);
-        if ($organizer_id) {
-            $chasses = get_posts([
-                'post_type'   => 'chasse',
-                'post_status' => ['publish', 'pending'],
-                'numberposts' => -1,
-                'meta_query'  => [
-                    'relation' => 'AND',
-                    [
-                        'key'     => 'chasse_cache_organisateur',
-                        'value'   => '"' . $organizer_id . '"',
-                        'compare' => 'LIKE',
-                    ],
-                    [
-                        'key'     => 'chasse_cache_statut_validation',
-                        'value'   => 'banni',
-                        'compare' => '!=',
-                    ],
-                ],
-            ]);
-            ?>
-            <nav class="dashboard-nav organizer-nav">
-                <a href="<?php echo esc_url(get_permalink($organizer_id)); ?>" class="dashboard-nav-link">
-                    <i class="fas fa-landmark"></i>
-                    <span><?php echo esc_html(get_the_title($organizer_id)); ?></span>
-                </a>
-                <?php foreach ($chasses as $chasse) :
-                    $status = get_field('chasse_cache_statut_validation', $chasse->ID);
-                    $label  = $status ? ' (' . esc_html(ucfirst(str_replace('_', ' ', $status))) . ')' : '';
-                    ?>
-                    <a href="<?php echo esc_url(get_permalink($chasse->ID)); ?>" class="dashboard-nav-sublink">
-                        <?php echo esc_html(get_the_title($chasse->ID)) . $label; ?>
-                    </a>
-                <?php endforeach; ?>
-            </nav>
-        <?php }
+        $organizer_nav = myaccount_get_organizer_nav($current_user->ID);
+        if ($organizer_nav) {
+            echo myaccount_render_organizer_nav($organizer_nav);
+        }
         ?>
         <?php endif; ?>
     </aside>
