@@ -404,7 +404,8 @@ input[type=datetime-local].champ-date-edit {
 
 input[disabled].champ-inline-date,
 input[disabled].champ-inline-nb,
-input[disabled].champ-cout {
+input[disabled].champ-cout,
+input[disabled].champ-nb-tentatives {
   background-color: var(--color-editor-background);
   /* Fond gris clair neutre */
   border: 1px solid var(--color-editor-border);
