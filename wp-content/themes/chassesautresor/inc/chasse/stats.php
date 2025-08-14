@@ -105,15 +105,32 @@ function chasse_lister_participants(int $chasse_id, int $limit, int $offset, str
     }
 
     $user_ids     = array_map(static fn($row) => (int) $row['user_id'], $rows);
-    $placeholders = implode(',', array_fill(0, count($user_ids), '%d'));
+    $placeholders_users = implode(',', array_fill(0, count($user_ids), '%d'));
 
-    $engagements_sql = $wpdb->prepare(
-        "SELECT user_id, enigme_id FROM {$table_eng}"
-        . " WHERE chasse_id = %d AND enigme_id IS NOT NULL"
-        . " AND user_id IN ({$placeholders})",
-        array_merge([$chasse_id], $user_ids)
-    );
-    $engagement_rows = $wpdb->get_results($engagements_sql, ARRAY_A);
+    $enigme_ids = recuperer_ids_enigmes_pour_chasse($chasse_id);
+    $placeholders_enigmes = $enigme_ids ? implode(',', array_fill(0, count($enigme_ids), '%d')) : '';
+
+    $engagement_rows = [];
+    $resolution_rows = [];
+
+    if ($enigme_ids) {
+        $engagements_sql = $wpdb->prepare(
+            "SELECT user_id, enigme_id FROM {$table_eng}"
+            . " WHERE enigme_id IN ({$placeholders_enigmes})"
+            . " AND user_id IN ({$placeholders_users})",
+            array_merge($enigme_ids, $user_ids)
+        );
+        $engagement_rows = $wpdb->get_results($engagements_sql, ARRAY_A);
+
+        $resolutions_sql = $wpdb->prepare(
+            "SELECT user_id, enigme_id FROM {$table_stat}"
+            . " WHERE statut IN ('resolue','terminee')"
+            . " AND enigme_id IN ({$placeholders_enigmes})"
+            . " AND user_id IN ({$placeholders_users})",
+            array_merge($enigme_ids, $user_ids)
+        );
+        $resolution_rows = $wpdb->get_results($resolutions_sql, ARRAY_A);
+    }
 
     $enigmes_by_user = [];
     foreach ($engagement_rows as $row) {
@@ -126,16 +143,6 @@ function chasse_lister_participants(int $chasse_id, int $limit, int $offset, str
             $enigmes_by_user[$uid][] = $eid;
         }
     }
-
-    $resolutions_sql = $wpdb->prepare(
-        "SELECT s.user_id, s.enigme_id"
-        . " FROM {$table_stat} s"
-        . " JOIN {$table_eng} e ON e.user_id = s.user_id AND e.enigme_id = s.enigme_id"
-        . " WHERE e.chasse_id = %d AND s.statut IN ('resolue','terminee')"
-        . " AND s.user_id IN ({$placeholders})",
-        array_merge([$chasse_id], $user_ids)
-    );
-    $resolution_rows = $wpdb->get_results($resolutions_sql, ARRAY_A);
 
     $resolues_by_user = [];
     foreach ($resolution_rows as $row) {
