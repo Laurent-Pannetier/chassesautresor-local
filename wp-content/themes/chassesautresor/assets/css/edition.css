@@ -1081,6 +1081,27 @@ body.panneau-ouvert::before {
   z-index: 1;
 }
 
+/* ====== Styles génériques des tableaux d'édition ====== */
+.edition-panel table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.edition-panel th,
+.edition-panel td {
+  padding: 6px 8px;
+  text-align: right;
+}
+
+.edition-panel thead {
+  background-color: var(--color-editor-background);
+  color: var(--color-editor-heading);
+}
+
+.edition-panel tbody tr:nth-child(even) {
+  background-color: var(--color-editor-field-hover);
+}
+
 /* Table des tentatives de réponse */
 .table-tentatives {
   width: 100%;
@@ -1098,7 +1119,7 @@ body.panneau-ouvert::before {
 .table-tentatives th {
   background-color: var(--color-editor-background);
   color: var(--color-editor-heading);
-  text-align: left;
+  text-align: right;
 }
 
 .table-tentatives th:nth-child(1),
@@ -1189,7 +1210,7 @@ body.panneau-ouvert::before {
 
 .stats-table th,
 .stats-table td {
-  text-align: left;
+  text-align: right;
   padding: 8px;
 }
 
