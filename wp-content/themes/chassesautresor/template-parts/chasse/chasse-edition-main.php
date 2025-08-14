@@ -391,7 +391,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
         $total_engagements   = chasse_compter_engagements($chasse_id);
         $par_page_participants = 25;
         $pages_participants  = (int) ceil($total_engagements / $par_page_participants);
-        $participants        = chasse_lister_participants($chasse_id, $par_page_participants, 0, 'date', 'ASC');
+        $participants        = chasse_lister_participants($chasse_id, $par_page_participants, 0, 'chasse', 'ASC');
       ?>
         <div class="edition-panel-body">
           <div class="stats-header" style="display:flex;align-items:center;justify-content:flex-end;gap:1rem;">
@@ -428,14 +428,14 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
             ]);
             ?>
           </div>
-          <div class="liste-participants" data-page="1" data-pages="<?= esc_attr($pages_participants); ?>" data-order="asc" data-orderby="date">
+          <div class="liste-participants" data-page="1" data-pages="<?= esc_attr($pages_participants); ?>" data-order="asc" data-orderby="chasse">
             <?php get_template_part('template-parts/chasse/partials/chasse-partial-participants', null, [
               'participants' => $participants,
               'page' => 1,
               'par_page' => $par_page_participants,
               'total' => $total_engagements,
               'pages' => $pages_participants,
-              'orderby' => 'date',
+              'orderby' => 'chasse',
               'order' => 'ASC',
               'chasse_titre' => $titre,
             ]); ?>

@@ -21,11 +21,11 @@ $page          = $args['page'] ?? $page ?? 1;
 $par_page      = $args['par_page'] ?? $par_page ?? 25;
 $total         = $args['total'] ?? $total ?? 0;
 $pages         = $args['pages'] ?? $pages ?? (int) ceil($total / $par_page);
-$orderby       = $args['orderby'] ?? $orderby ?? 'date';
+$orderby       = $args['orderby'] ?? $orderby ?? 'chasse';
 $order         = $args['order'] ?? $order ?? 'ASC';
 $chasse_titre  = $args['chasse_titre'] ?? $chasse_titre ?? '';
 
-$icon_date = strtoupper($order) === 'ASC' ? 'fa-sort-up' : 'fa-sort-down';
+$icon_chasse = strtoupper($order) === 'ASC' ? 'fa-sort-up' : 'fa-sort-down';
 ?>
 <h3>Participations</h3>
 <p class="participants-count"><?= esc_html($total); ?> participations</p>
@@ -37,7 +37,7 @@ $icon_date = strtoupper($order) === 'ASC' ? 'fa-sort-up' : 'fa-sort-down';
     <tr>
       <th scope="col">Rang</th>
       <th scope="col">Joueur</th>
-      <th scope="col"><button class="sort" data-orderby="date" aria-label="Trier par date">Date <i class="fa-solid <?= esc_attr($icon_date); ?>"></i></button></th>
+      <th scope="col"><button class="sort" data-orderby="chasse" aria-label="Trier par date">Chasse <i class="fa-solid <?= esc_attr($icon_chasse); ?>"></i></button></th>
       <th scope="col">Énigme</th>
     </tr>
   </thead>

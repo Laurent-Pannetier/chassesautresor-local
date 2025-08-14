@@ -139,6 +139,7 @@ function ajax_chasse_lister_participants()
     $chasse_id = isset($_POST['chasse_id']) ? (int) $_POST['chasse_id'] : 0;
     $page = max(1, (int) ($_POST['page'] ?? 1));
     $order = isset($_POST['order']) ? sanitize_text_field($_POST['order']) : 'ASC';
+    $orderby = isset($_POST['orderby']) ? sanitize_text_field($_POST['orderby']) : 'chasse';
 
     if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
         wp_send_json_error('post_invalide');
@@ -150,7 +151,7 @@ function ajax_chasse_lister_participants()
 
     $par_page = 25;
     $offset = ($page - 1) * $par_page;
-    $participants = chasse_lister_participants($chasse_id, $par_page, $offset, 'date', $order);
+    $participants = chasse_lister_participants($chasse_id, $par_page, $offset, $orderby, $order);
     $total = chasse_compter_engagements($chasse_id);
     $pages = (int) ceil($total / $par_page);
 
@@ -161,7 +162,7 @@ function ajax_chasse_lister_participants()
         'par_page' => $par_page,
         'total' => $total,
         'pages' => $pages,
-        'orderby' => 'date',
+        'orderby' => $orderby,
         'order' => $order,
         'chasse_titre' => get_the_title($chasse_id),
     ]);
