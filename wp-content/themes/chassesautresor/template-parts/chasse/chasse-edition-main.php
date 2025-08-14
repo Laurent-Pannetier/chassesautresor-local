@@ -499,6 +499,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
               <?php endif;
           endif;
           get_template_part('template-parts/chasse/partials/chasse-partial-enigmes', null, [
+              'title'   => 'Énigmes',
               'enigmes' => $enigmes_stats,
               'total'   => $total_engagements,
           ]); ?>
