@@ -393,8 +393,10 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
         $enigmes_stats         = [];
         $progress_data         = [];
         $no_validation_enigmas = [];
+        $total_enigme_engagements = 0;
         foreach ($enigme_ids as $enigme_id) {
             $engagements = enigme_compter_joueurs_engages($enigme_id, $periode);
+            $total_enigme_engagements += $engagements;
             $resolutions = enigme_compter_bonnes_solutions($enigme_id, 'automatique', $periode);
             $enigmes_stats[] = [
                 'id'          => $enigme_id,
@@ -426,6 +428,10 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
         $total_participants    = chasse_compter_participants($chasse_id);
         $pages_participants    = (int) ceil($total_participants / $par_page_participants);
         $total_enigmes         = count($enigme_ids);
+        $taux_engagement       = 0;
+        if ($nb_participants > 0 && $total_enigmes > 0) {
+            $taux_engagement = (int) round((100 * $total_enigme_engagements) / ($nb_participants * $total_enigmes));
+        }
         $participants          = chasse_lister_participants($chasse_id, $par_page_participants, 0, 'inscription', 'ASC');
       ?>
         <div class="edition-panel-body">
@@ -460,6 +466,12 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                 'label' => 'Points collectés',
                 'value' => $nb_points,
                 'stat'  => 'points',
+            ]);
+            get_template_part('template-parts/common/stat-card', null, [
+                'icon'  => 'fa-solid fa-percent',
+                'label' => 'Taux d\'engagement',
+                'value' => $taux_engagement . '%',
+                'stat'  => 'engagement-rate',
             ]);
             ?>
           </div>

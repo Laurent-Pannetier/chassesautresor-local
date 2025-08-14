@@ -9,6 +9,7 @@ function initChasseStats() {
     participants: container.querySelector('[data-stat="participants"] .stat-value'),
     tentatives: container.querySelector('[data-stat="tentatives"] .stat-value'),
     points: container.querySelector('[data-stat="points"] .stat-value'),
+    engagementRate: container.querySelector('[data-stat="engagement-rate"] .stat-value'),
   };
 
   select.addEventListener('change', () => {
@@ -37,6 +38,9 @@ function initChasseStats() {
         }
         if (cards.points && typeof stats.points !== 'undefined') {
           cards.points.textContent = stats.points;
+        }
+        if (cards.engagementRate && typeof stats.engagement_rate !== 'undefined') {
+          cards.engagementRate.textContent = `${stats.engagement_rate}%`;
         }
       })
       .catch(() => {});

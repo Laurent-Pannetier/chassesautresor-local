@@ -64,6 +64,24 @@ function chasse_compter_engagements(int $chasse_id): int
 }
 
 /**
+ * Calculate engagement rate for a hunt.
+ */
+function chasse_calculer_taux_engagement(int $chasse_id, string $periode = 'total'): float
+{
+    $participants = chasse_compter_participants($chasse_id, $periode);
+    $enigme_ids   = recuperer_ids_enigmes_pour_chasse($chasse_id);
+    $total_enigmes = count($enigme_ids);
+    if ($participants === 0 || $total_enigmes === 0) {
+        return 0.0;
+    }
+    $total = 0;
+    foreach ($enigme_ids as $eid) {
+        $total += enigme_compter_joueurs_engages($eid, $periode);
+    }
+    return (100 * $total) / ($participants * $total_enigmes);
+}
+
+/**
  * List hunt participants with aggregated statistics.
  *
  * Each participant includes registration date, engaged riddles and counts of
@@ -216,6 +234,7 @@ function ajax_chasse_recuperer_stats()
         'participants' => chasse_compter_participants($chasse_id, $periode),
         'tentatives'   => chasse_compter_tentatives($chasse_id, $periode),
         'points'       => chasse_compter_points_collectes($chasse_id, $periode),
+        'engagement_rate' => (int) round(chasse_calculer_taux_engagement($chasse_id, $periode)),
     ];
 
     wp_send_json_success($stats);
