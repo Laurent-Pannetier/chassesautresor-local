@@ -24,6 +24,11 @@ $reseaux      = get_field('reseaux_sociaux', $organisateur_id);
 $site         = get_field('lien_site_web', $organisateur_id);
 $email_contact = get_field('profil_public_email_contact', $organisateur_id);
 
+$coordonnees = get_field('coordonnees_bancaires', $organisateur_id);
+$iban = is_array($coordonnees) ? ($coordonnees['iban'] ?? '') : '';
+$bic  = is_array($coordonnees) ? ($coordonnees['bic'] ?? '') : '';
+$coordonnees_vides = empty($iban) && empty($bic);
+
 $liens_publics = get_field('liens_publics', $organisateur_id); // ← manquant !
 $liens_publics = is_array($liens_publics) ? array_filter($liens_publics, function ($entree) {
     $type_raw = $entree['type_de_lien'] ?? null;
@@ -224,15 +229,27 @@ $is_complete = (
                 </button>
               </h3>
               <?php if ($peut_editer) : ?>
+                <?php
+                  $bank_label = $coordonnees_vides
+                    ? __('Ajouter', 'chassesautresor-com')
+                    : __('Éditer', 'chassesautresor-com');
+                  $bank_aria = $coordonnees_vides
+                    ? __('Ajouter des coordonnées bancaires', 'chassesautresor-com')
+                    : __('Modifier les coordonnées bancaires', 'chassesautresor-com');
+                ?>
                 <a
                   id="ouvrir-coordonnees"
                   class="stat-value champ-modifier"
                   href="#"
-                  aria-label="<?php esc_attr_e('Modifier les coordonnées bancaires', 'chassesautresor-com'); ?>"
+                  aria-label="<?php echo esc_attr($bank_aria); ?>"
                   data-champ="coordonnees_bancaires"
                   data-cpt="organisateur"
                   data-post-id="<?php echo esc_attr($organisateur_id); ?>"
-                ><?php esc_html_e('Éditer', 'chassesautresor-com'); ?></a>
+                  data-label-add="<?php esc_attr_e('Ajouter', 'chassesautresor-com'); ?>"
+                  data-label-edit="<?php esc_attr_e('Éditer', 'chassesautresor-com'); ?>"
+                  data-aria-add="<?php esc_attr_e('Ajouter des coordonnées bancaires', 'chassesautresor-com'); ?>"
+                  data-aria-edit="<?php esc_attr_e('Modifier les coordonnées bancaires', 'chassesautresor-com'); ?>"
+                ><?php echo esc_html($bank_label); ?></a>
               <?php endif; ?>
             </div>
           </div>

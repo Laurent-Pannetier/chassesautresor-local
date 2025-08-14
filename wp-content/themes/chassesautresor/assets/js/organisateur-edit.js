@@ -61,6 +61,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const panneauCoord = document.getElementById('panneau-coordonnees');
   const formCoord = document.getElementById('formulaire-coordonnees');
   const boutonOuvrirCoord = document.getElementById('ouvrir-coordonnees');
+  const labelAddCoord = boutonOuvrirCoord?.dataset.labelAdd;
+  const labelEditCoord = boutonOuvrirCoord?.dataset.labelEdit;
+  const ariaAddCoord = boutonOuvrirCoord?.dataset.ariaAdd;
+  const ariaEditCoord = boutonOuvrirCoord?.dataset.ariaEdit;
   const boutonFermerCoord = panneauCoord?.querySelector('.panneau-fermer');
   const champIban = document.getElementById('champ-iban');
   const champBic = document.getElementById('champ-bic');
@@ -135,6 +139,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (res.success) {
           feedbackIban.textContent = '✔️ Coordonnées enregistrées.';
           feedbackIban.classList.add('champ-confirmation');
+          if (boutonOuvrirCoord) {
+            const label = iban && bic ? labelEditCoord : labelAddCoord;
+            const aria = iban && bic ? ariaEditCoord : ariaAddCoord;
+            if (label) boutonOuvrirCoord.textContent = label;
+            if (aria) boutonOuvrirCoord.setAttribute('aria-label', aria);
+          }
           setTimeout(() => {
             if (typeof window.closePanel === 'function') {
               window.closePanel('panneau-coordonnees');
