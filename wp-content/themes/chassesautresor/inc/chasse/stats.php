@@ -33,11 +33,29 @@ function chasse_compter_participants(int $chasse_id, string $periode = 'total'):
  */
 function chasse_compter_tentatives(int $chasse_id, string $periode = 'total'): int
 {
-    $total = 0;
-    foreach (recuperer_ids_enigmes_pour_chasse($chasse_id) as $enigme_id) {
-        $total += enigme_compter_tentatives($enigme_id, 'automatique', $periode);
+    $enigme_ids = recuperer_ids_enigmes_pour_chasse($chasse_id);
+    if (!$enigme_ids) {
+        return 0;
     }
-    return $total;
+
+    global $wpdb;
+    $table        = $wpdb->prefix . 'enigme_tentatives';
+    $placeholders = implode(',', array_fill(0, count($enigme_ids), '%d'));
+    $where        = "enigme_id IN ({$placeholders})";
+    $params       = $enigme_ids;
+
+    if ($periode !== 'total') {
+        [$debut, $fin] = enigme_stats_date_range($periode);
+        if ($debut && $fin) {
+            $where   .= ' AND date_tentative BETWEEN %s AND %s';
+            $params[] = $debut;
+            $params[] = $fin;
+        }
+    }
+
+    $sql = $wpdb->prepare("SELECT COUNT(*) FROM {$table} WHERE {$where}", ...$params);
+
+    return (int) $wpdb->get_var($sql);
 }
 
 /**
@@ -45,11 +63,30 @@ function chasse_compter_tentatives(int $chasse_id, string $periode = 'total'): i
  */
 function chasse_compter_points_collectes(int $chasse_id, string $periode = 'total'): int
 {
-    $total = 0;
-    foreach (recuperer_ids_enigmes_pour_chasse($chasse_id) as $enigme_id) {
-        $total += enigme_compter_points_depenses($enigme_id, 'automatique', $periode);
+    $enigme_ids = recuperer_ids_enigmes_pour_chasse($chasse_id);
+    if (!$enigme_ids) {
+        return 0;
     }
-    return $total;
+
+    global $wpdb;
+    $table        = $wpdb->prefix . 'enigme_tentatives';
+    $placeholders = implode(',', array_fill(0, count($enigme_ids), '%d'));
+    $where        = "enigme_id IN ({$placeholders})";
+    $params       = $enigme_ids;
+
+    if ($periode !== 'total') {
+        [$debut, $fin] = enigme_stats_date_range($periode);
+        if ($debut && $fin) {
+            $where   .= ' AND date_tentative BETWEEN %s AND %s';
+            $params[] = $debut;
+            $params[] = $fin;
+        }
+    }
+
+    $sql = $wpdb->prepare("SELECT SUM(points_utilises) FROM {$table} WHERE {$where}", ...$params);
+    $res = $wpdb->get_var($sql);
+
+    return $res ? (int) $res : 0;
 }
 
 /**
@@ -68,16 +105,34 @@ function chasse_compter_engagements(int $chasse_id): int
  */
 function chasse_calculer_taux_engagement(int $chasse_id, string $periode = 'total'): float
 {
-    $participants = chasse_compter_participants($chasse_id, $periode);
-    $enigme_ids   = recuperer_ids_enigmes_pour_chasse($chasse_id);
+    $participants  = chasse_compter_participants($chasse_id, $periode);
+    $enigme_ids    = recuperer_ids_enigmes_pour_chasse($chasse_id);
     $total_enigmes = count($enigme_ids);
     if ($participants === 0 || $total_enigmes === 0) {
         return 0.0;
     }
-    $total = 0;
-    foreach ($enigme_ids as $eid) {
-        $total += enigme_compter_joueurs_engages($eid, $periode);
+
+    global $wpdb;
+    $table        = $wpdb->prefix . 'engagements';
+    $placeholders = implode(',', array_fill(0, count($enigme_ids), '%d'));
+    $where        = "enigme_id IN ({$placeholders})";
+    $params       = $enigme_ids;
+
+    if ($periode !== 'total') {
+        [$debut, $fin] = enigme_stats_date_range($periode);
+        if ($debut && $fin) {
+            $where   .= ' AND date_engagement BETWEEN %s AND %s';
+            $params[] = $debut;
+            $params[] = $fin;
+        }
     }
+
+    $sql = $wpdb->prepare(
+        "SELECT SUM(cnt) FROM (SELECT COUNT(DISTINCT user_id) AS cnt FROM {$table} WHERE {$where} GROUP BY enigme_id) t",
+        ...$params
+    );
+    $total = (int) $wpdb->get_var($sql);
+
     return (100 * $total) / ($participants * $total_enigmes);
 }
 
