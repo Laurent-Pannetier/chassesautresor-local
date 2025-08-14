@@ -28,7 +28,6 @@ $chasse_titre  = $args['chasse_titre'] ?? $chasse_titre ?? '';
 $icon_chasse = strtoupper($order) === 'ASC' ? 'fa-sort-up' : 'fa-sort-down';
 ?>
 <h3>Participations</h3>
-<p class="participants-count"><?= esc_html($total); ?> participations</p>
 <?php if (empty($participants)) : ?>
 <p>Aucune participation.</p>
 <?php else : ?>
