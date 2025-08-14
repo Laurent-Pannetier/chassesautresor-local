@@ -376,14 +376,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
       $nb_solutions   = enigme_compter_bonnes_solutions($enigme_id, $mode_validation, $periode);
       ?>
       <div class="edition-panel-body">
-        <div class="stats-header" style="display:flex;align-items:center;">
+        <div class="stats-header" style="display:flex;align-items:center;justify-content:flex-end;gap:1rem;">
+          <a href="?edition=open&amp;tab=stats" class="stats-reset"><i class="fa-solid fa-rotate-right"></i> Actualiser</a>
           <div class="stats-filtres">
             <label for="enigme-periode">Période&nbsp;:</label>
             <select id="enigme-periode">
-              <option value="total">Depuis le début</option>
+              <option value="total">Total</option>
               <option value="jour">Aujourd’hui</option>
-              <option value="semaine">7&nbsp;derniers jours</option>
-              <option value="mois">30&nbsp;derniers jours</option>
+              <option value="semaine">Semaine</option>
+              <option value="mois">Mois</option>
             </select>
           </div>
         </div>
