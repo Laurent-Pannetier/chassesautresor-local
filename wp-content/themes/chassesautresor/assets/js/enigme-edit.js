@@ -1147,9 +1147,6 @@ function mettreAJourCartesStats() {
   const cardTentatives = document.querySelector('#enigme-stats [data-stat="tentatives"]');
   const cardPoints = document.querySelector('#enigme-stats [data-stat="points"]');
   const cardSolutions = document.querySelector('#enigme-stats [data-stat="solutions"]');
-  const nbSolutions = cardSolutions
-    ? parseInt(cardSolutions.querySelector('.stat-value')?.textContent || '0', 10)
-    : 0;
   const resolveursSection = document.getElementById('enigme-resolveurs');
 
   if (cardTentatives) {
@@ -1159,7 +1156,7 @@ function mettreAJourCartesStats() {
     cardPoints.style.display = (mode === 'aucune' || cout <= 0) ? 'none' : '';
   }
   if (cardSolutions) {
-    cardSolutions.style.display = (mode === 'aucune' || nbSolutions <= 0) ? 'none' : '';
+    cardSolutions.style.display = mode === 'aucune' ? 'none' : '';
   }
   if (resolveursSection) {
     resolveursSection.style.display = mode === 'aucune' ? 'none' : '';
