@@ -53,14 +53,15 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
     <div id="erreur-global" style="display:none; background:red; color:white; padding:5px; text-align:center; font-size:0.9em;"></div>
 
     <div class="edition-panel-header">
-        <h2><i class="fa-solid fa-sliders"></i> <?= esc_html__('Panneau d\'édition chasse', 'chassesautresor-com'); ?></h2>
-        <button type="button" class="panneau-fermer" aria-label="Fermer les paramètres">✖</button>
-    </div>
-
-    <div class="edition-tabs">
-      <button class="edition-tab active" data-target="chasse-tab-param">Paramètres</button>
-      <button class="edition-tab" data-target="chasse-tab-stats">Statistiques</button>
-      <button class="edition-tab" data-target="chasse-tab-animation">Animation</button>
+        <div class="edition-panel-header-top">
+            <h2><i class="fa-solid fa-sliders"></i> <?= esc_html__('Panneau d\'édition chasse', 'chassesautresor-com'); ?></h2>
+            <button type="button" class="panneau-fermer" aria-label="Fermer les paramètres">✖</button>
+        </div>
+        <div class="edition-tabs">
+          <button class="edition-tab active" data-target="chasse-tab-param">Paramètres</button>
+          <button class="edition-tab" data-target="chasse-tab-stats">Statistiques</button>
+          <button class="edition-tab" data-target="chasse-tab-animation">Animation</button>
+        </div>
     </div>
 
     <div id="chasse-tab-param" class="edition-tab-content active">
