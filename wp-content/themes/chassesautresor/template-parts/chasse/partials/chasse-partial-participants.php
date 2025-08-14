@@ -14,25 +14,61 @@
 defined('ABSPATH') || exit;
 
 $args = $args ?? [];
-$participants  = $args['participants'] ?? $participants ?? [];
-$page          = $args['page'] ?? $page ?? 1;
-$par_page      = $args['par_page'] ?? $par_page ?? 25;
-$total         = $args['total'] ?? $total ?? 0;
-$pages         = $args['pages'] ?? $pages ?? (int) ceil($total / $par_page);
-$total_enigmes = $args['total_enigmes'] ?? $total_enigmes ?? 0;
+$participants   = $args['participants'] ?? $participants ?? [];
+$page           = $args['page'] ?? $page ?? 1;
+$par_page       = $args['par_page'] ?? $par_page ?? 25;
+$total          = $args['total'] ?? $total ?? 0;
+$pages          = $args['pages'] ?? $pages ?? (int) ceil($total / $par_page);
+$total_enigmes  = $args['total_enigmes'] ?? $total_enigmes ?? 0;
+$orderby        = $args['orderby'] ?? $orderby ?? 'inscription';
+$order          = $args['order'] ?? $order ?? 'ASC';
+
+$icon_participation = 'fa-sort';
+if ($orderby === 'participation') {
+    $icon_participation = strtoupper($order) === 'ASC' ? 'fa-sort-up' : 'fa-sort-down';
+}
+$icon_resolution = 'fa-sort';
+if ($orderby === 'resolution') {
+    $icon_resolution = strtoupper($order) === 'ASC' ? 'fa-sort-up' : 'fa-sort-down';
+}
 ?>
 <h3><?= esc_html__('Joueurs', 'chassesautresor-com'); ?></h3>
 <?php if (empty($participants)) : ?>
 <p><?= esc_html__('Pas encore de joueur inscrit.', 'chassesautresor-com'); ?></p>
 <?php else : ?>
 <table class="stats-table compact">
+  <colgroup>
+    <col style="width:20%">
+    <col style="width:20%">
+    <col style="width:20%">
+    <col style="width:20%">
+    <col style="width:20%">
+  </colgroup>
   <thead>
     <tr>
       <th scope="col"><?= esc_html__('Joueur', 'chassesautresor-com'); ?></th>
       <th scope="col"><?= esc_html__('Inscription', 'chassesautresor-com'); ?></th>
       <th scope="col"><?= esc_html__('Énigmes', 'chassesautresor-com'); ?></th>
-      <th scope="col"><?= esc_html__('Taux de participation', 'chassesautresor-com'); ?></th>
-      <th scope="col"><?= esc_html__('Taux de résolution', 'chassesautresor-com'); ?></th>
+      <th scope="col">
+        <button
+          class="sort"
+          data-orderby="participation"
+          aria-label="<?= esc_attr__('Trier par taux de participation', 'chassesautresor-com'); ?>"
+        >
+          <?= esc_html__('Tx participation', 'chassesautresor-com'); ?>
+          <i class="fa-solid <?= esc_attr($icon_participation); ?>"></i>
+        </button>
+      </th>
+      <th scope="col">
+        <button
+          class="sort"
+          data-orderby="resolution"
+          aria-label="<?= esc_attr__('Trier par taux de résolution', 'chassesautresor-com'); ?>"
+        >
+          <?= esc_html__('Tx résolution', 'chassesautresor-com'); ?>
+          <i class="fa-solid <?= esc_attr($icon_resolution); ?>"></i>
+        </button>
+      </th>
     </tr>
   </thead>
   <tbody>

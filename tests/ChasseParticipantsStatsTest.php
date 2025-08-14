@@ -64,4 +64,42 @@ class ChasseParticipantsStatsTest extends TestCase {
         $this->assertSame('Enigme 10', $first['enigmes'][0]['title']);
         $this->assertSame('http://example.com/10', $first['enigmes'][0]['url']);
     }
+
+    public function test_chasse_lister_participants_sorts_by_participation_and_resolution(): void {
+        global $wpdb;
+        $wpdb = new class {
+            public string $prefix = 'wp_';
+            public string $users = 'wp_users';
+            public int $call = 0;
+            public function prepare($query, ...$args) { return $query; }
+            public function get_results($query, $output = ARRAY_A) {
+                $this->call++;
+                if ($this->call === 1 || $this->call === 4) {
+                    return [
+                        ['user_id' => 1, 'username' => 'alice', 'date_inscription' => '2024-01-01 10:00:00'],
+                        ['user_id' => 2, 'username' => 'bob', 'date_inscription' => '2024-01-02 10:00:00'],
+                    ];
+                }
+                if ($this->call === 2 || $this->call === 5) {
+                    return [
+                        ['user_id' => 1, 'enigme_id' => 10],
+                        ['user_id' => 1, 'enigme_id' => 11],
+                        ['user_id' => 2, 'enigme_id' => 10],
+                    ];
+                }
+                if ($this->call === 3 || $this->call === 6) {
+                    return [
+                        ['user_id' => 1, 'enigme_id' => 10],
+                    ];
+                }
+                return [];
+            }
+        };
+
+        $res = chasse_lister_participants(5, 25, 0, 'participation', 'DESC');
+        $this->assertSame('alice', $res[0]['username']);
+
+        $res = chasse_lister_participants(5, 25, 0, 'resolution', 'ASC');
+        $this->assertSame('bob', $res[0]['username']);
+    }
 }
