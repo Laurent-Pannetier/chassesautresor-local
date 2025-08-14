@@ -369,6 +369,23 @@ function traiter_tentative(
     bool $envoyer_mail = true
 ): string
 {
+    global $wpdb;
+    $table = $wpdb->prefix . 'enigme_tentatives';
+
+    if ($resultat === 'bon') {
+        $existe = (int) $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT COUNT(*) FROM {$table} WHERE user_id = %d AND enigme_id = %d AND resultat = 'bon'",
+                $user_id,
+                $enigme_id
+            )
+        );
+
+        if ($existe > 0) {
+            return '';
+        }
+    }
+
     $cout = (int) get_field('enigme_tentative_cout_points', $enigme_id);
     if ($cout > 0) {
         deduire_points_utilisateur($user_id, $cout);
