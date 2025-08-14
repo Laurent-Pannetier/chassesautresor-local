@@ -52,8 +52,11 @@
     transition: color 0.2s ease, background 0.2s ease;
 }
 
-.dashboard-nav-link:hover {
+.dashboard-nav-link:hover,
+.dashboard-nav-sublink:hover,
+.dashboard-nav-subitem:hover {
     color: hsl(var(--primary));
+    text-decoration: underline;
 }
 
 .dashboard-nav-link.active {
@@ -79,8 +82,14 @@
     transition: color 0.2s ease, background 0.2s ease;
 }
 
-.dashboard-nav-sublink:hover {
-    color: hsl(var(--primary));
+.dashboard-nav-subitem {
+    display: block;
+    padding: 4px 12px 4px 48px;
+    border-radius: 8px;
+    color: hsl(var(--muted-foreground));
+    text-decoration: none;
+    font-size: 0.75rem;
+    transition: color 0.2s ease, background 0.2s ease;
 }
 
 .dashboard-nav-heading {
@@ -90,6 +99,31 @@
     font-weight: 600;
     color: hsl(var(--muted-foreground));
     text-transform: uppercase;
+}
+
+.dashboard-nav-link.status-important,
+.dashboard-nav-sublink.status-important,
+.dashboard-nav-subitem.status-important {
+    color: hsl(var(--destructive));
+}
+
+.dashboard-nav-link.status-pending,
+.dashboard-nav-sublink.status-pending,
+.dashboard-nav-subitem.status-pending {
+    opacity: 0.7;
+}
+
+.dashboard-nav-link.status-banned,
+.dashboard-nav-sublink.status-banned,
+.dashboard-nav-subitem.status-banned {
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+.dashboard-nav-link.status-muted,
+.dashboard-nav-sublink.status-muted,
+.dashboard-nav-subitem.status-muted {
+    opacity: 0.6;
 }
 
 .myaccount-main {

@@ -103,7 +103,8 @@ get_header();
                     $classes .= ' active';
                 }
 
-                echo '<a href="' . esc_url($item['url']) . '" data-section="' . esc_attr($item['section']) . '" class="' . esc_attr($classes) . '">';
+                echo '<a href="' . esc_url($item['url']) . '" data-section="' .
+                    esc_attr($item['section']) . '" class="' . esc_attr($classes) . '">';
                 echo '<i class="' . esc_attr($item['icon']) . '"></i>';
                 echo '<span>' . esc_html($item['label']) . '</span>';
                 echo '</a>';
@@ -139,12 +140,46 @@ get_header();
                     <span><?php echo esc_html(get_the_title($organizer_id)); ?></span>
                 </a>
                 <?php foreach ($chasses as $chasse) :
-                    $status = get_field('chasse_cache_statut_validation', $chasse->ID);
-                    $label  = $status ? ' (' . esc_html(ucfirst(str_replace('_', ' ', $status))) . ')' : '';
-                    ?>
-                    <a href="<?php echo esc_url(get_permalink($chasse->ID)); ?>" class="dashboard-nav-sublink">
-                        <?php echo esc_html(get_the_title($chasse->ID)) . $label; ?>
-                    </a>
+                    $status_validation = get_field('chasse_cache_statut_validation', $chasse->ID);
+                    $complet           = get_field('chasse_cache_complet', $chasse->ID);
+                    $classes           = 'dashboard-nav-sublink';
+
+                    if (!$complet || in_array($status_validation, ['creation', 'correction'], true)) {
+                        $classes .= ' status-important';
+                    } elseif ($status_validation === 'banni') {
+                        $classes .= ' status-banned';
+                    } elseif ($status_validation === 'en_attente') {
+                        $classes .= ' status-pending';
+                    } else {
+                        $classes .= ' status-normal';
+                    }
+
+                    $tag  = strpos($classes, 'status-banned') !== false ? 'span' : 'a';
+                    $attr = $tag === 'a' ? ' href="' . esc_url(get_permalink($chasse->ID)) . '"' : '';
+                    echo '<' . $tag . $attr . ' class="' . esc_attr($classes) . '">';
+                    echo esc_html(get_the_title($chasse->ID));
+                    if ($status_validation === 'en_attente') {
+                        echo ' <i class="fas fa-hourglass-half"></i>';
+                    }
+                    echo '</' . $tag . '>';
+
+                    $enigme_ids = recuperer_ids_enigmes_pour_chasse($chasse->ID);
+                    foreach ($enigme_ids as $enigme_id) {
+                        $sub_classes = 'dashboard-nav-subitem ' . $classes;
+                        if (strpos($classes, 'status-normal') !== false) {
+                            $etat_enigme = get_field('enigme_cache_etat_systeme', $enigme_id);
+                            if (in_array($etat_enigme, ['bloquee_date', 'bloquee_pre_requis'], true)) {
+                                $sub_classes .= ' status-muted';
+                            } elseif (in_array($etat_enigme, ['cache_invalide', 'invalide'], true)) {
+                                $sub_classes .= ' status-banned';
+                            }
+                        }
+                        $sub_tag  = strpos($sub_classes, 'status-banned') !== false ? 'span' : 'a';
+                        $sub_attr = $sub_tag === 'a' ? ' href="' . esc_url(get_permalink($enigme_id)) . '"' : '';
+                        echo '<' . $sub_tag . $sub_attr . ' class="' . esc_attr($sub_classes) . '">';
+                        echo esc_html(get_the_title($enigme_id));
+                        echo '</' . $sub_tag . '>';
+                    }
                 <?php endforeach; ?>
             </nav>
         <?php }
