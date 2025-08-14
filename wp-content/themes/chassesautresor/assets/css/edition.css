@@ -1159,6 +1159,23 @@ body.panneau-ouvert::before {
   font-weight: bold;
 }
 
+/* ====== Filtres de statistiques ====== */
+
+.stats-filtres {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  background-color: var(--color-editor-background);
+  border: 1px solid var(--color-editor-border);
+  border-radius: 4px;
+}
+
+.stats-filtres i {
+  color: var(--color-editor-heading);
+}
+
 /* ====== Cartes de statistiques ====== */
 
 .stats-cards {
