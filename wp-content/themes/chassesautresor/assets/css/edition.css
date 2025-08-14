@@ -218,6 +218,16 @@ body .header-img-modifiable .icone-modif {
   align-items: center;
 }
 
+.dashboard-card.champ-liens .liste-liens-publics {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.dashboard-card.champ-liens .texte-lien {
+  display: none;
+}
+
 .liens-placeholder {
   text-align: center;
 }
