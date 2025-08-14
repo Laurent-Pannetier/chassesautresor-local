@@ -515,6 +515,13 @@
 .woocommerce h2 {
     font-size: 1.6rem;
 }
+
+/* ==========================================================
+📌 Page modifier compte Woocommerce
+========================================================== */
+.woocommerce-account .edit-account label {
+    color: var(--color-text-secondary);
+}
 /* Sections for account dashboard */
 .dashboard-section {
     margin-top: 40px;
