@@ -1207,6 +1207,11 @@ body.panneau-ouvert::before {
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.1));
 }
 
+.dashboard-card img {
+  width: 2rem;
+  height: 2rem;
+}
+
 .dashboard-card h3 {
   margin: 0;
   font-size: 0.9rem;

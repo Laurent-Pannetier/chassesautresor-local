@@ -527,24 +527,22 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
 
               <div class="resume-bloc resume-visibilite">
                 <h3>Communiquez</h3>
-                <div class="edition-stats-cards">
-                  <div class="edition-stats-card champ-chasse champ-liens <?= empty($liens) ? 'champ-vide' : 'champ-rempli'; ?>"
+                <div class="dashboard-grid stats-cards">
+                  <div class="dashboard-card champ-chasse champ-liens <?= empty($liens) ? 'champ-vide' : 'champ-rempli'; ?>"
                     data-champ="chasse_principale_liens"
                     data-cpt="chasse"
                     data-post-id="<?= esc_attr($chasse_id); ?>">
                     <i class="fa-solid fa-share-nodes" aria-hidden="true"></i>
-                    <div class="edition-stats-card-content">
-                      <span class="edition-stats-card-title">Sites et réseaux</span>
-                      <?php if ($peut_modifier) : ?>
-                        <button type="button"
-                          class="edition-stats-card-number champ-modifier ouvrir-panneau-liens"
-                          data-champ="chasse_principale_liens"
-                          data-cpt="chasse"
-                          data-post-id="<?= esc_attr($chasse_id); ?>">
-                          <?= empty($liens) ? 'Ajouter' : 'Éditer'; ?>
-                        </button>
-                      <?php endif; ?>
-                    </div>
+                    <h3>Sites et réseaux</h3>
+                    <?php if ($peut_modifier) : ?>
+                      <button type="button"
+                        class="stat-value champ-modifier ouvrir-panneau-liens"
+                        data-champ="chasse_principale_liens"
+                        data-cpt="chasse"
+                        data-post-id="<?= esc_attr($chasse_id); ?>">
+                        <?= empty($liens) ? 'Ajouter' : 'Éditer'; ?>
+                      </button>
+                    <?php endif; ?>
                     <div class="champ-feedback"></div>
                   </div>
                   <?php
@@ -563,13 +561,11 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                           . rawurlencode($url)
                           . '&format=' . $format;
                   ?>
-                  <div class="edition-stats-card champ-qr-code">
-                    <img src="<?= esc_url($url_qr_code); ?>" alt="QR code de la chasse">
-                    <div class="edition-stats-card-content">
-                      <span class="edition-stats-card-title">QR code de votre chasse</span>
-                      <a class="edition-stats-card-number" href="<?= esc_url($url_qr_code); ?>"
-                        download="<?= esc_attr('qr-chasse-' . $chasse_id . '.' . $format); ?>">Télécharger</a>
-                    </div>
+                  <div class="dashboard-card champ-qr-code">
+                    <img class="qr-code-icon" src="<?= esc_url($url_qr_code); ?>" alt="QR code de la chasse">
+                    <h3>QR code de votre chasse</h3>
+                    <a class="stat-value" href="<?= esc_url($url_qr_code); ?>"
+                      download="<?= esc_attr('qr-chasse-' . $chasse_id . '.' . $format); ?>">Télécharger</a>
                   </div>
                   <?php endif; ?>
                 </div>
