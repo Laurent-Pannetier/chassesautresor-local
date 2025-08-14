@@ -26,5 +26,36 @@ $points  = organisateur_compter_points_collectes($organisateur_id);
       </div>
     </div>
   </div>
-  <p class="edition-placeholder">Aucune statistique détaillée pour le moment.</p>
+  <?php
+  $chasses = get_chasses_de_organisateur($organisateur_id);
+  if ($chasses && !empty($chasses->posts)) {
+      foreach ($chasses->posts as $chasse) {
+          $chasse_id         = $chasse->ID;
+          $total_engagements = chasse_compter_engagements($chasse_id);
+          $enigmes_stats     = [];
+          foreach (recuperer_ids_enigmes_pour_chasse($chasse_id) as $enigme_id) {
+              $engagements    = enigme_compter_joueurs_engages($enigme_id);
+              $enigmes_stats[] = [
+                  'id'          => $enigme_id,
+                  'titre'       => get_the_title($enigme_id),
+                  'engagements' => $engagements,
+                  'tentatives'  => enigme_compter_tentatives($enigme_id, 'automatique'),
+                  'points'      => enigme_compter_points_depenses($enigme_id, 'automatique'),
+                  'resolutions' => enigme_compter_bonnes_solutions($enigme_id, 'automatique'),
+              ];
+          }
+          get_template_part(
+              'template-parts/chasse/partials/chasse-partial-enigmes',
+              null,
+              [
+                  'title'   => get_the_title($chasse_id) . ' - Énigmes',
+                  'enigmes' => $enigmes_stats,
+                  'total'   => $total_engagements,
+              ]
+          );
+      }
+  } else {
+      echo '<p class="edition-placeholder">Aucune statistique détaillée pour le moment.</p>';
+  }
+  ?>
 </div>

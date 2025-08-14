@@ -12,8 +12,9 @@ defined('ABSPATH') || exit;
 $args    = $args ?? [];
 $enigmes = $args['enigmes'] ?? $enigmes ?? [];
 $total   = $args['total'] ?? $total ?? 0;
+$title   = $args['title'] ?? 'Énigmes';
 ?>
-<h3>Énigmes</h3>
+<h3><?= esc_html($title); ?></h3>
 <?php if (empty($enigmes)) : ?>
 <p>Aucune énigme.</p>
 <?php else : ?>
