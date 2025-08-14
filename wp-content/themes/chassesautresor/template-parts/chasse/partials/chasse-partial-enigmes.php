@@ -17,7 +17,7 @@ $total   = $args['total'] ?? $total ?? 0;
 <?php if (empty($enigmes)) : ?>
 <p>Aucune énigme.</p>
 <?php else : ?>
-<table class="stats-table compact">
+<table class="stats-table compact stats-table-grouped">
   <thead>
     <tr>
       <th scope="col" rowspan="2">Titre</th>
