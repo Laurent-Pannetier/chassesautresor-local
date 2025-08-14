@@ -391,8 +391,8 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
         $total_engagements     = chasse_compter_engagements($chasse_id);
         $enigme_ids            = recuperer_ids_enigmes_pour_chasse($chasse_id);
         $enigmes_stats         = [];
-        $participation_rates   = [];
-        $resolution_rates      = [];
+        $progress_data         = [];
+        $no_validation_enigmas = [];
         foreach ($enigme_ids as $enigme_id) {
             $engagements = enigme_compter_joueurs_engages($enigme_id, $periode);
             $resolutions = enigme_compter_bonnes_solutions($enigme_id, 'automatique', $periode);
@@ -404,25 +404,24 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                 'points'      => enigme_compter_points_depenses($enigme_id, 'automatique', $periode),
                 'resolutions' => $resolutions,
             ];
-            $participation_rates[] = [
+            $mode_validation = get_field('enigme_mode_validation', $enigme_id);
+            if ($mode_validation === 'aucune') {
+                $no_validation_enigmas[] = [
+                    'title' => get_the_title($enigme_id),
+                    'url'   => get_permalink($enigme_id),
+                ];
+                continue;
+            }
+            $progress_data[] = [
                 'title' => get_the_title($enigme_id),
                 'url'   => get_permalink($enigme_id),
-                'value' => $total_engagements > 0 ? (100 * $engagements) / $total_engagements : 0,
-            ];
-            $resolution_rates[]    = [
-                'title' => get_the_title($enigme_id),
-                'url'   => get_permalink($enigme_id),
-                'value' => $engagements > 0 ? (100 * $resolutions) / $engagements : 0,
+                'value' => $resolutions,
             ];
         }
-        usort($participation_rates, static function ($a, $b) {
+        usort($progress_data, static function ($a, $b) {
             return $b['value'] <=> $a['value'];
         });
-        usort($resolution_rates, static function ($a, $b) {
-            return $b['value'] <=> $a['value'];
-        });
-        $max_participation = !empty($participation_rates) ? max(array_column($participation_rates, 'value')) : 0;
-        $max_resolution   = !empty($resolution_rates) ? max(array_column($resolution_rates, 'value')) : 0;
+        $max_progress = !empty($progress_data) ? max(array_column($progress_data, 'value')) : 0;
         $par_page_participants = 25;
         $pages_participants    = (int) ceil($total_engagements / $par_page_participants);
         $participants          = chasse_lister_participants($chasse_id, $par_page_participants, 0, 'chasse', 'ASC');
@@ -460,21 +459,25 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                 'value' => $nb_points,
                 'stat'  => 'points',
             ]);
-            get_template_part('template-parts/common/stat-histogram-card', null, [
-                'label' => 'Taux de participation',
-                'data'  => $participation_rates,
-                'max'   => $max_participation,
-                'stat'  => 'participation',
-            ]);
-            get_template_part('template-parts/common/stat-histogram-card', null, [
-                'label' => 'Taux de résolution',
-                'data'  => $resolution_rates,
-                'max'   => $max_resolution,
-                'stat'  => 'resolution',
-            ]);
             ?>
           </div>
-          <?php get_template_part('template-parts/chasse/partials/chasse-partial-enigmes', null, [
+          <?php if ($max_progress > 0) :
+              get_template_part('template-parts/common/stat-histogram-card', null, [
+                  'label' => 'Progressivomètre',
+                  'data'  => $progress_data,
+                  'max'   => $max_progress,
+                  'stat'  => 'progress',
+              ]);
+              if (!empty($no_validation_enigmas)) : ?>
+                <p class="stats-disabled-list"><?php esc_html_e('Énigmes sans validation', 'chassesautresor-com'); ?> :</p>
+                <ul class="stats-disabled-list">
+                  <?php foreach ($no_validation_enigmas as $e) : ?>
+                    <li><a href="<?= esc_url($e['url']); ?>"><?= esc_html($e['title']); ?></a></li>
+                  <?php endforeach; ?>
+                </ul>
+              <?php endif;
+          endif;
+          get_template_part('template-parts/chasse/partials/chasse-partial-enigmes', null, [
               'enigmes' => $enigmes_stats,
               'total'   => $total_engagements,
           ]); ?>

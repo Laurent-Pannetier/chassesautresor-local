@@ -1185,7 +1185,7 @@ body.panneau-ouvert::before {
   margin: 1rem 0 2.5rem;
 }
 
-.stats-cards .dashboard-card {
+.dashboard-card {
   background-color: var(--color-editor-background);
   border: 1px solid var(--color-editor-border);
   border-radius: 8px;
@@ -1200,34 +1200,35 @@ body.panneau-ouvert::before {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
-.stats-cards .dashboard-card i {
+.dashboard-card i {
   font-size: 2rem;
   color: var(--color-editor-heading);
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.1));
 }
 
-.stats-cards .dashboard-card h3 {
+.dashboard-card h3 {
   margin: 0;
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--color-editor-heading);
 }
 
-.stats-cards .stat-value {
+.stat-value {
   font-size: 1.5rem;
   font-weight: 700;
 }
 
-/* ====== Histogrammes de statistiques ====== */
-
-.stats-cards .graph-card {
+.dashboard-card.graph-card {
   align-items: stretch;
   text-align: left;
+  margin: 1rem 0 2.5rem;
 }
 
-.stats-cards .graph-card h3 {
+.dashboard-card.graph-card h3 {
   text-align: center;
 }
+
+/* ====== Histogrammes de statistiques ====== */
 
 .stats-bar-chart {
   display: flex;
@@ -1266,13 +1267,20 @@ body.panneau-ouvert::before {
   color: var(--color-editor-background);
   font-size: 0.8rem;
   font-weight: 600;
+  background-color: hsl(0 0% 80%);
 }
 
-.stats-bar-chart .bar-row:nth-child(1) .bar-fill { background-color: hsl(var(--chart-1)); }
-.stats-bar-chart .bar-row:nth-child(2) .bar-fill { background-color: hsl(var(--chart-2)); }
-.stats-bar-chart .bar-row:nth-child(3) .bar-fill { background-color: hsl(var(--chart-3)); }
-.stats-bar-chart .bar-row:nth-child(4) .bar-fill { background-color: hsl(var(--chart-4)); }
-.stats-bar-chart .bar-row:nth-child(5) .bar-fill { background-color: hsl(var(--chart-5)); }
+.stats-bar-chart .bar-row:nth-child(2) .bar-fill { background-color: hsl(0 0% 70%); }
+.stats-bar-chart .bar-row:nth-child(3) .bar-fill { background-color: hsl(0 0% 60%); }
+.stats-bar-chart .bar-row:nth-child(4) .bar-fill { background-color: hsl(0 0% 50%); }
+.stats-bar-chart .bar-row:nth-child(5) .bar-fill { background-color: hsl(0 0% 40%); }
+
+.stats-disabled-list {
+  list-style: disc inside;
+  margin: 0.5rem 0 2.5rem;
+  color: var(--color-editor-text-muted);
+  font-size: 0.9rem;
+}
 
 /* ====== Tableaux de statistiques ====== */
 

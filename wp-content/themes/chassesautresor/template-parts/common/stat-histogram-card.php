@@ -28,7 +28,7 @@ $stat  = $args['stat'] ?? $stat ?? '';
           <a href="<?= esc_url($row['url']); ?>" class="bar-label"><?= esc_html($row['title']); ?></a>
           <div class="bar-wrapper">
             <div class="bar-fill" style="width:<?= esc_attr($width); ?>%;">
-              <span class="bar-value"><?= esc_html(number_format($row['value'], 1, ',', ' ')); ?>%</span>
+              <span class="bar-value"><?= esc_html(number_format($row['value'], 0, ',', ' ')); ?></span>
             </div>
           </div>
         </div>
