@@ -118,5 +118,8 @@ function initChasseStats() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', initChasseStats);
-initChasseStats();
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initChasseStats);
+} else {
+  initChasseStats();
+}
