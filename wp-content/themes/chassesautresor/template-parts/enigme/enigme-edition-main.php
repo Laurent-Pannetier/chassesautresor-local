@@ -431,10 +431,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
         <?php
         $resolveurs = $mode_validation === 'aucune' ? [] : enigme_lister_resolveurs($enigme_id);
         $nb_resolveurs = count($resolveurs);
+        if ($nb_resolveurs > 0) :
         ?>
-        <div id="enigme-resolveurs" style="<?= $mode_validation === 'aucune' ? 'display:none;' : ''; ?>">
+        <div id="enigme-resolveurs">
           <h3>Résolue par (<?= esc_html($nb_resolveurs); ?>) joueurs</h3>
-          <?php if ($nb_resolveurs > 0) : ?>
           <div class="stats-table-wrapper">
             <table class="stats-table" id="enigme-resolveurs-table">
               <thead>
@@ -457,8 +457,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
               </tbody>
             </table>
           </div>
-          <?php endif; ?>
         </div>
+        <?php endif; ?>
 
         <?php
         $nb_participants = enigme_compter_joueurs_engages($enigme_id);
