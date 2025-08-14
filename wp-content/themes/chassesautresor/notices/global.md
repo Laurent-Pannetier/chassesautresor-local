@@ -1218,7 +1218,7 @@ Cas particulier : les boutons déclencheurs de panneau doivent en plus avoir `.c
 
 ### 🗄️ Tables personnalisées
 
-Certaines fonctionnalités s'appuient sur trois tables SQL dédiées.
+Certaines fonctionnalités s'appuient sur quatre tables SQL dédiées.
 
 #### `wp_engagements`
 
@@ -1259,6 +1259,22 @@ Index :
 | ip | varchar(45) NULL | adresse IP |
 | user_agent | text NULL | navigateur |
 | traitee | tinyint(1) NULL DEFAULT 0 | état de traitement |
+
+#### `wp_user_points`
+
+| Colonne   | Type         | Commentaire                       |
+|-----------|--------------|-----------------------------------|
+| id        | bigint unsigned AUTO_INCREMENT | clé primaire            |
+| user_id   | bigint unsigned | identifiant du joueur            |
+| balance   | int unsigned    | solde après l'opération          |
+| points    | int             | variation (crédit ou débit)      |
+| reason    | varchar(255)    | motif de l'opération             |
+| created_at | datetime NULL DEFAULT CURRENT_TIMESTAMP | date d'enregistrement |
+
+Index :
+- `PRIMARY(id)`
+- `INDEX(user_id)`
+- `INDEX(created_at)`
 
 
 Les variantes sont comparées en tenant compte de leur option `respecter_casse_n`. Si la saisie correspond, le résultat enregistré est `variante` et le message défini est renvoyé via AJAX à chaque soumission, même identique.

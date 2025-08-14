@@ -38,9 +38,16 @@ defined( 'ABSPATH' ) || exit;
  * @param int|null $user_id ID de l'utilisateur (par défaut : utilisateur courant).
  * @return int Nombre de points (0 si aucun point n'est trouvé).
  */
-function get_user_points($user_id = null) {
+function get_user_points($user_id = null): int {
     $user_id = $user_id ?: get_current_user_id();
-    return ($user_id) ? intval(get_user_meta($user_id, 'points_utilisateur', true)) : 0;
+    if (!$user_id) {
+        return 0;
+    }
+
+    global $wpdb;
+    $repo = new PointsRepository($wpdb);
+
+    return $repo->getBalance((int) $user_id);
 }
 
 /**
@@ -49,15 +56,18 @@ function get_user_points($user_id = null) {
  * - Empêche les points négatifs.
  * - Rafraîchit la session utilisateur si connecté.
  *
- * @param int $user_id ID de l'utilisateur.
- * @param int $points_change Nombre de points à ajouter ou retirer.
+ * @param int    $user_id       ID de l'utilisateur.
+ * @param int    $points_change Nombre de points à ajouter ou retirer.
+ * @param string $reason        Raison de la modification.
  */
-function update_user_points($user_id, $points_change) {
-    if (!$user_id) return;
+function update_user_points(int $user_id, int $points_change, string $reason = ''): void {
+    if (!$user_id) {
+        return;
+    }
 
-    $current_points = get_user_points($user_id);
-    $new_points = max(0, $current_points + $points_change); // Empêche les points négatifs
-    update_user_meta($user_id, 'points_utilisateur', $new_points);
+    global $wpdb;
+    $repo = new PointsRepository($wpdb);
+    $repo->addPoints($user_id, $points_change, $reason);
 
     // 🔄 Rafraîchit la session utilisateur si connecté
     if (is_user_logged_in()) {
@@ -92,7 +102,7 @@ function attribuer_points_apres_achat($order_id) {
         $slug = $product->get_slug();
         if (isset($packs_points[$slug])) {
             $points_to_add = $packs_points[$slug] * $item->get_quantity();
-            update_user_points($user_id, $points_to_add);
+            update_user_points($user_id, $points_to_add, 'purchase');
             $points_ajoutes += $points_to_add;
             $order->add_order_note("✅ {$points_to_add} points ajoutés.");
         }
@@ -202,26 +212,28 @@ function utilisateur_a_assez_de_points(int $user_id, int $montant): bool {
 /**
  * ➖ Déduit un montant de points à un utilisateur.
  *
- * @param int $user_id
- * @param int $montant Nombre de points à retirer (doit être positif).
+ * @param int    $user_id
+ * @param int    $montant Nombre de points à retirer (doit être positif).
+ * @param string $reason  Raison de la déduction.
  * @return void
  */
-function deduire_points_utilisateur(int $user_id, int $montant): void {
+function deduire_points_utilisateur(int $user_id, int $montant, string $reason = ''): void {
     if ($user_id && $montant > 0) {
-        update_user_points($user_id, -$montant);
+        update_user_points($user_id, -$montant, $reason);
     }
 }
 
 /**
  * ➕ Ajoute un montant de points à un utilisateur.
  *
- * @param int $user_id
- * @param int $montant Nombre de points à ajouter (doit être positif).
+ * @param int    $user_id
+ * @param int    $montant Nombre de points à ajouter (doit être positif).
+ * @param string $reason  Raison de l'ajout.
  * @return void
  */
-function ajouter_points_utilisateur(int $user_id, int $montant): void {
+function ajouter_points_utilisateur(int $user_id, int $montant, string $reason = ''): void {
     if ($user_id && $montant > 0) {
-        update_user_points($user_id, $montant);
+        update_user_points($user_id, $montant, $reason);
     }
 }
 
