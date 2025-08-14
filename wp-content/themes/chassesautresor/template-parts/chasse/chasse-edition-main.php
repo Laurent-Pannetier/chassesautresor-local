@@ -534,7 +534,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                     data-cpt="chasse"
                     data-post-id="<?= esc_attr($chasse_id); ?>">
                     <i class="fa-solid fa-share-nodes" aria-hidden="true"></i>
-                    <h3>Sites et réseaux</h3>
+                    <h3>Sites et réseaux de la chasse</h3>
                     <?php if ($peut_modifier) : ?>
                       <button type="button"
                         class="stat-value champ-modifier ouvrir-panneau-liens"
