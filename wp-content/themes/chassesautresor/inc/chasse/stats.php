@@ -64,42 +64,137 @@ function chasse_compter_engagements(int $chasse_id): int
 }
 
 /**
- * List engagements for a hunt with pagination.
+ * List hunt participants with aggregated statistics.
  *
- * @return array<int, array{username:string,date_chasse:?string,date_enigme:?string,enigme_titre:string}>
+ * Each participant includes registration date, engaged riddles and counts of
+ * engaged and solved riddles.
+ *
+ * @return array<int, array{
+ *     username:string,
+ *     date_inscription:string,
+ *     enigmes:array<int, array{id:int,title:string,url:string}>,
+ *     nb_engagees:int,
+ *     nb_resolues:int,
+ * }>
  */
 function chasse_lister_participants(int $chasse_id, int $limit, int $offset, string $orderby, string $order): array
 {
     global $wpdb;
-    $table = $wpdb->prefix . 'engagements';
+    $table_eng  = $wpdb->prefix . 'engagements';
+    $table_stat = $wpdb->prefix . 'enigme_statuts_utilisateur';
 
-    $order = strtoupper($order) === 'DESC' ? 'DESC' : 'ASC';
+    $order   = strtoupper($order) === 'DESC' ? 'DESC' : 'ASC';
+    $orderby = in_array($orderby, ['username', 'inscription', 'participation', 'resolution'], true) ? $orderby : 'inscription';
 
     $sql = $wpdb->prepare(
-        "SELECT user_id, enigme_id, date_engagement
-         FROM $table
-         WHERE chasse_id = %d
-         ORDER BY date_engagement $order
-         LIMIT %d OFFSET %d",
-        $chasse_id,
-        $limit,
-        $offset
+        "SELECT e.user_id, u.user_login AS username, MIN(e.date_engagement) AS date_inscription"
+        . " FROM {$table_eng} e"
+        . " JOIN {$wpdb->users} u ON u.ID = e.user_id"
+        . " WHERE e.chasse_id = %d AND e.enigme_id IS NULL"
+        . " GROUP BY e.user_id",
+        $chasse_id
     );
 
     $rows = $wpdb->get_results($sql, ARRAY_A);
+    if (!$rows) {
+        return [];
+    }
+
+    $user_ids     = array_map(static fn($row) => (int) $row['user_id'], $rows);
+    $placeholders_users = implode(',', array_fill(0, count($user_ids), '%d'));
+
+    $enigme_ids = recuperer_ids_enigmes_pour_chasse($chasse_id);
+    $placeholders_enigmes = $enigme_ids ? implode(',', array_fill(0, count($enigme_ids), '%d')) : '';
+
+    $engagement_rows = [];
+    $resolution_rows = [];
+
+    if ($enigme_ids) {
+        $engagements_sql = $wpdb->prepare(
+            "SELECT user_id, enigme_id FROM {$table_eng}"
+            . " WHERE enigme_id IN ({$placeholders_enigmes})"
+            . " AND user_id IN ({$placeholders_users})",
+            array_merge($enigme_ids, $user_ids)
+        );
+        $engagement_rows = $wpdb->get_results($engagements_sql, ARRAY_A);
+
+        $resolutions_sql = $wpdb->prepare(
+            "SELECT user_id, enigme_id FROM {$table_stat}"
+            . " WHERE statut IN ('resolue','terminee')"
+            . " AND enigme_id IN ({$placeholders_enigmes})"
+            . " AND user_id IN ({$placeholders_users})",
+            array_merge($enigme_ids, $user_ids)
+        );
+        $resolution_rows = $wpdb->get_results($resolutions_sql, ARRAY_A);
+    }
+
+    $enigmes_by_user = [];
+    foreach ($engagement_rows as $row) {
+        $uid = (int) $row['user_id'];
+        $eid = (int) $row['enigme_id'];
+        if (!isset($enigmes_by_user[$uid])) {
+            $enigmes_by_user[$uid] = [];
+        }
+        if (!in_array($eid, $enigmes_by_user[$uid], true)) {
+            $enigmes_by_user[$uid][] = $eid;
+        }
+    }
+
+    $resolues_by_user = [];
+    foreach ($resolution_rows as $row) {
+        $uid = (int) $row['user_id'];
+        $eid = (int) $row['enigme_id'];
+        if (!isset($resolues_by_user[$uid])) {
+            $resolues_by_user[$uid] = [];
+        }
+        if (!in_array($eid, $resolues_by_user[$uid], true)) {
+            $resolues_by_user[$uid][] = $eid;
+        }
+    }
+
     $participants = [];
     foreach ($rows as $row) {
+        $uid         = (int) $row['user_id'];
+        $engaged_ids = $enigmes_by_user[$uid] ?? [];
+        $enigmes     = [];
+        foreach ($engaged_ids as $eid) {
+            $enigmes[] = [
+                'id'    => $eid,
+                'title' => get_the_title($eid),
+                'url'   => get_permalink($eid),
+            ];
+        }
+        $resolus_ids = $resolues_by_user[$uid] ?? [];
         $participants[] = [
-            'username'    => get_the_author_meta('user_login', (int) $row['user_id']),
-            'date_chasse' => $row['enigme_id'] ? null : $row['date_engagement'],
-            'date_enigme' => $row['enigme_id'] ? $row['date_engagement'] : null,
-            'enigme_titre' => $row['enigme_id'] ? get_the_title((int) $row['enigme_id']) : '',
+            'username'         => $row['username'],
+            'date_inscription' => $row['date_inscription'],
+            'enigmes'          => $enigmes,
+            'nb_engagees'      => count($engaged_ids),
+            'nb_resolues'      => count(array_intersect($engaged_ids, $resolus_ids)),
         ];
     }
 
-    return $participants;
-}
+    usort($participants, static function ($a, $b) use ($orderby, $order) {
+        switch ($orderby) {
+            case 'username':
+                $cmp = strcmp($a['username'], $b['username']);
+                break;
+            case 'participation':
+                $cmp = $a['nb_engagees'] <=> $b['nb_engagees'];
+                break;
+            case 'resolution':
+                $cmp = $a['nb_resolues'] <=> $b['nb_resolues'];
+                break;
+            case 'inscription':
+            default:
+                $cmp = strcmp($a['date_inscription'], $b['date_inscription']);
+                break;
+        }
+        return $order === 'ASC' ? $cmp : -$cmp;
+    });
 
+    return array_slice($participants, $offset, $limit);
+}
 /**
  * AJAX handler retrieving hunt statistics.
  */
@@ -137,9 +232,11 @@ function ajax_chasse_lister_participants()
     }
 
     $chasse_id = isset($_POST['chasse_id']) ? (int) $_POST['chasse_id'] : 0;
-    $page = max(1, (int) ($_POST['page'] ?? 1));
-    $order = isset($_POST['order']) ? sanitize_text_field($_POST['order']) : 'ASC';
-    $orderby = isset($_POST['orderby']) ? sanitize_text_field($_POST['orderby']) : 'chasse';
+    $page      = max(1, (int) ($_POST['page'] ?? 1));
+    $order     = isset($_POST['order']) ? sanitize_text_field($_POST['order']) : 'ASC';
+    $orderby   = isset($_POST['orderby']) ? sanitize_text_field($_POST['orderby']) : 'inscription';
+    $order     = strtoupper($order) === 'DESC' ? 'DESC' : 'ASC';
+    $orderby   = in_array($orderby, ['inscription', 'username', 'participation', 'resolution'], true) ? $orderby : 'inscription';
 
     if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
         wp_send_json_error('post_invalide');
@@ -152,7 +249,7 @@ function ajax_chasse_lister_participants()
     $par_page = 25;
     $offset = ($page - 1) * $par_page;
     $participants = chasse_lister_participants($chasse_id, $par_page, $offset, $orderby, $order);
-    $total = chasse_compter_engagements($chasse_id);
+    $total = chasse_compter_participants($chasse_id);
     $pages = (int) ceil($total / $par_page);
 
     ob_start();
@@ -162,9 +259,10 @@ function ajax_chasse_lister_participants()
         'par_page' => $par_page,
         'total' => $total,
         'pages' => $pages,
+        'chasse_titre' => get_the_title($chasse_id),
+        'total_enigmes' => count(recuperer_ids_enigmes_pour_chasse($chasse_id)),
         'orderby' => $orderby,
         'order' => $order,
-        'chasse_titre' => get_the_title($chasse_id),
     ]);
     $html = ob_get_clean();
 
