@@ -1471,21 +1471,6 @@ function afficher_tableau_organisateurs_pending(array $liste = null)
         return;
     }
 
-    $etats = [];
-    foreach ($liste as $entry) {
-        if (!empty($entry['statut'])) {
-            $etats[$entry['statut']] = true;
-        }
-    }
-
-    echo '<label for="filtre-etat">' . esc_html__('Filtrer par état :', 'chassesautresor') . '</label>';
-    echo '<select id="filtre-etat">';
-    echo '<option value="tous">' . esc_html__('Tous', 'chassesautresor') . '</option>';
-    foreach (array_keys($etats) as $etat) {
-        echo '<option value="' . esc_attr($etat) . '">' . esc_html($etat) . '</option>';
-    }
-    echo '</select>';
-
     $grouped = [];
     foreach ($liste as $entry) {
         $oid = $entry['organisateur_id'];
