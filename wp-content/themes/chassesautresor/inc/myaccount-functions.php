@@ -39,6 +39,8 @@ function myaccount_get_organizer_nav(int $user_id): ?array
         ],
     ]);
 
+    $pending_enigmes = recuperer_enigmes_tentatives_en_attente($organizer_id);
+
     $data = [
         'organizer' => [
             'url'   => get_permalink($organizer_id),
@@ -76,12 +78,16 @@ function myaccount_get_organizer_nav(int $user_id): ?array
             $url         = get_permalink($enigme_id);
 
             if (strpos($classes, 'status-normal') !== false) {
-                $etat_enigme = get_field('enigme_cache_etat_systeme', $enigme_id);
-                if (in_array($etat_enigme, ['bloquee_date', 'bloquee_pre_requis'], true)) {
-                    $sub_classes .= ' status-muted';
-                } elseif (in_array($etat_enigme, ['cache_invalide', 'invalide'], true)) {
-                    $sub_classes .= ' status-banned';
-                    $url         = null;
+                if (in_array($enigme_id, $pending_enigmes, true)) {
+                    $sub_classes .= ' status-important';
+                } else {
+                    $etat_enigme = get_field('enigme_cache_etat_systeme', $enigme_id);
+                    if (in_array($etat_enigme, ['bloquee_date', 'bloquee_pre_requis'], true)) {
+                        $sub_classes .= ' status-muted';
+                    } elseif (in_array($etat_enigme, ['cache_invalide', 'invalide'], true)) {
+                        $sub_classes .= ' status-banned';
+                        $url         = null;
+                    }
                 }
             } else {
                 if (strpos($classes, 'status-banned') !== false) {
