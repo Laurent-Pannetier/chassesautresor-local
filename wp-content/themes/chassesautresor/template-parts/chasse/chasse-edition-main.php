@@ -526,24 +526,25 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
             <div class="resume-blocs-grid">
 
               <div class="resume-bloc resume-visibilite">
-                <h3>Visibilité</h3>
-                <ul class="resume-infos">
-                  <!-- Liens -->
-                  <li class="champ-chasse resume-ligne champ-liens <?= empty($liens) ? 'champ-vide' : 'champ-rempli'; ?>"
+                <h3>Communiquez</h3>
+                <div class="dashboard-grid stats-cards">
+                  <div class="dashboard-card champ-chasse champ-liens <?= empty($liens) ? 'champ-vide' : 'champ-rempli'; ?>"
                     data-champ="chasse_principale_liens"
                     data-cpt="chasse"
                     data-post-id="<?= esc_attr($chasse_id); ?>">
-                    <span class="champ-label">Sites et réseaux dédiés à cette chasse</span>
+                    <i class="fa-solid fa-share-nodes" aria-hidden="true"></i>
+                    <h3>Sites et réseaux</h3>
                     <?php if ($peut_modifier) : ?>
                       <button type="button"
-                        class="champ-modifier ouvrir-panneau-liens"
+                        class="stat-value champ-modifier ouvrir-panneau-liens"
                         data-champ="chasse_principale_liens"
                         data-cpt="chasse"
-                        data-post-id="<?= esc_attr($chasse_id); ?>"
-                        aria-label="Configurer les liens publics">✏️</button>
+                        data-post-id="<?= esc_attr($chasse_id); ?>">
+                        <?= empty($liens) ? 'Ajouter' : 'Éditer'; ?>
+                      </button>
                     <?php endif; ?>
                     <div class="champ-feedback"></div>
-                  </li>
+                  </div>
                   <?php
                   if (
                       est_organisateur()
@@ -560,16 +561,14 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                           . rawurlencode($url)
                           . '&format=' . $format;
                   ?>
-                  <li class="champ-chasse resume-ligne champ-qr-code">
-                    <span class="champ-label">QR code de la chasse</span>
-                    <div class="qr-code-wrapper">
-                      <img src="<?= esc_url($url_qr_code); ?>" alt="QR code de la chasse">
-                      <a href="<?= esc_url($url_qr_code); ?>"
-                        download="<?= esc_attr('qr-chasse-' . $chasse_id . '.' . $format); ?>">Télécharger</a>
-                    </div>
-                  </li>
+                  <div class="dashboard-card champ-qr-code">
+                    <img class="qr-code-icon" src="<?= esc_url($url_qr_code); ?>" alt="QR code de la chasse">
+                    <h3>QR code de votre chasse</h3>
+                    <a class="stat-value" href="<?= esc_url($url_qr_code); ?>"
+                      download="<?= esc_attr('qr-chasse-' . $chasse_id . '.' . $format); ?>">Télécharger</a>
+                  </div>
                   <?php endif; ?>
-                </ul>
+                </div>
               </div>
 
               <div class="resume-bloc resume-indices">
