@@ -526,24 +526,27 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
             <div class="resume-blocs-grid">
 
               <div class="resume-bloc resume-visibilite">
-                <h3>Visibilité</h3>
-                <ul class="resume-infos">
-                  <!-- Liens -->
-                  <li class="champ-chasse resume-ligne champ-liens <?= empty($liens) ? 'champ-vide' : 'champ-rempli'; ?>"
+                <h3>Communiquez</h3>
+                <div class="edition-stats-cards">
+                  <div class="edition-stats-card champ-chasse champ-liens <?= empty($liens) ? 'champ-vide' : 'champ-rempli'; ?>"
                     data-champ="chasse_principale_liens"
                     data-cpt="chasse"
                     data-post-id="<?= esc_attr($chasse_id); ?>">
-                    <span class="champ-label">Sites et réseaux dédiés à cette chasse</span>
-                    <?php if ($peut_modifier) : ?>
-                      <button type="button"
-                        class="champ-modifier ouvrir-panneau-liens"
-                        data-champ="chasse_principale_liens"
-                        data-cpt="chasse"
-                        data-post-id="<?= esc_attr($chasse_id); ?>"
-                        aria-label="Configurer les liens publics">✏️</button>
-                    <?php endif; ?>
+                    <i class="fa-solid fa-share-nodes" aria-hidden="true"></i>
+                    <div class="edition-stats-card-content">
+                      <span class="edition-stats-card-title">Sites et réseaux</span>
+                      <?php if ($peut_modifier) : ?>
+                        <button type="button"
+                          class="edition-stats-card-number champ-modifier ouvrir-panneau-liens"
+                          data-champ="chasse_principale_liens"
+                          data-cpt="chasse"
+                          data-post-id="<?= esc_attr($chasse_id); ?>">
+                          <?= empty($liens) ? 'Ajouter' : 'Éditer'; ?>
+                        </button>
+                      <?php endif; ?>
+                    </div>
                     <div class="champ-feedback"></div>
-                  </li>
+                  </div>
                   <?php
                   if (
                       est_organisateur()
@@ -560,16 +563,16 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                           . rawurlencode($url)
                           . '&format=' . $format;
                   ?>
-                  <li class="champ-chasse resume-ligne champ-qr-code">
-                    <span class="champ-label">QR code de la chasse</span>
-                    <div class="qr-code-wrapper">
-                      <img src="<?= esc_url($url_qr_code); ?>" alt="QR code de la chasse">
-                      <a href="<?= esc_url($url_qr_code); ?>"
+                  <div class="edition-stats-card champ-qr-code">
+                    <img src="<?= esc_url($url_qr_code); ?>" alt="QR code de la chasse">
+                    <div class="edition-stats-card-content">
+                      <span class="edition-stats-card-title">QR code de votre chasse</span>
+                      <a class="edition-stats-card-number" href="<?= esc_url($url_qr_code); ?>"
                         download="<?= esc_attr('qr-chasse-' . $chasse_id . '.' . $format); ?>">Télécharger</a>
                     </div>
-                  </li>
+                  </div>
                   <?php endif; ?>
-                </ul>
+                </div>
               </div>
 
               <div class="resume-bloc resume-indices">
