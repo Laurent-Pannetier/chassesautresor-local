@@ -30,25 +30,40 @@ $points          = organisateur_compter_points_collectes($organisateur_id);
   $chasses = get_chasses_de_organisateur($organisateur_id);
   if ($chasses && !empty($chasses->posts)) {
       foreach ($chasses->posts as $chasse) {
-          $chasse_id     = $chasse->ID;
-          $participants  = chasse_compter_participants($chasse_id);
-          $enigmes_stats = [];
+          $chasse_id        = $chasse->ID;
+          $participants     = chasse_compter_participants($chasse_id);
+          $total_tentatives = 0;
+          $total_resolutions = 0;
+          $enigmes_stats    = [];
           foreach (recuperer_ids_enigmes_pour_chasse($chasse_id) as $enigme_id) {
-              $engagements     = enigme_compter_joueurs_engages($enigme_id);
+              $engagements = enigme_compter_joueurs_engages($enigme_id);
+              $tentatives  = enigme_compter_tentatives($enigme_id, 'automatique');
+              $resolutions = enigme_compter_bonnes_solutions($enigme_id, 'automatique');
               $enigmes_stats[] = [
                   'id'          => $enigme_id,
                   'titre'       => get_the_title($enigme_id),
                   'engagements' => $engagements,
-                  'tentatives'  => enigme_compter_tentatives($enigme_id, 'automatique'),
+                  'tentatives'  => $tentatives,
                   'points'      => enigme_compter_points_depenses($enigme_id, 'automatique'),
-                  'resolutions' => enigme_compter_bonnes_solutions($enigme_id, 'automatique'),
+                  'resolutions' => $resolutions,
               ];
+              $total_tentatives += $tentatives;
+              $total_resolutions += $resolutions;
           }
+          ?>
+          <div class="chasse-stats-header">
+            <h3><?php echo esc_html(get_the_title($chasse_id)); ?></h3>
+            <div class="chasse-stats-summary">
+              <span class="stat-badge"><?php echo esc_html($participants . ' participants'); ?></span>
+              <span class="stat-badge"><?php echo esc_html($total_tentatives . ' tentatives'); ?></span>
+              <span class="stat-badge"><?php echo esc_html($total_resolutions . ' bonnes réponses'); ?></span>
+            </div>
+          </div>
+          <?php
           get_template_part(
               'template-parts/chasse/partials/chasse-partial-enigmes',
               null,
               [
-                  'title'   => sprintf('%s - Énigmes - %d participants', get_the_title($chasse_id), $participants),
                   'enigmes' => $enigmes_stats,
                   'total'   => $participants,
               ]

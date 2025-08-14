@@ -1301,6 +1301,31 @@ body.panneau-ouvert::before {
   font-size: 0.9rem;
 }
 
+/* ====== Résumé chasse ====== */
+
+.chasse-stats-header {
+  margin: 2rem 0 1rem;
+}
+
+.chasse-stats-header h3 {
+  margin: 0 0 0.5rem;
+}
+
+.chasse-stats-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.stat-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  background-color: var(--color-editor-background);
+  border: 1px solid var(--color-editor-border);
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
 /* ====== Tableaux de statistiques ====== */
 
 .stats-table {
