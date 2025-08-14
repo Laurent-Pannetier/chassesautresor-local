@@ -12,6 +12,15 @@ function initChasseStats() {
     engagementRate: container.querySelector('[data-stat="engagement-rate"] .stat-value'),
   };
 
+  container.querySelectorAll('.stat-help').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const message = btn.dataset.message;
+      if (message) {
+        alert(message);
+      }
+    });
+  });
+
   select.addEventListener('change', () => {
     const periode = select.value;
     const data = new FormData();

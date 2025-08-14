@@ -472,6 +472,12 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                 'label' => 'Taux d\'engagement',
                 'value' => $taux_engagement . '%',
                 'stat'  => 'engagement-rate',
+                'help'  => __(
+                    'Pourcentage moyen d’énigmes auxquelles chaque participant s’est engagé, '
+                    . 'par rapport à toutes celles proposées.',
+                    'chassesautresor-com'
+                ),
+                'help_label' => __('Explication du taux d’engagement', 'chassesautresor-com'),
             ]);
             ?>
           </div>
