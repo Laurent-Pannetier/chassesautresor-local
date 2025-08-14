@@ -285,16 +285,53 @@ function ajax_chasse_recuperer_stats()
     $periode = isset($_POST['periode']) ? sanitize_text_field($_POST['periode']) : 'total';
     $periode = in_array($periode, ['jour', 'semaine', 'mois', 'total'], true) ? $periode : 'total';
 
-    $stats = [
-        'participants' => chasse_compter_participants($chasse_id, $periode),
-        'tentatives'   => chasse_compter_tentatives($chasse_id, $periode),
-        'points'       => chasse_compter_points_collectes($chasse_id, $periode),
-        'engagement_rate' => (int) round(chasse_calculer_taux_engagement($chasse_id, $periode)),
-    ];
+    $cache_key = chasse_stats_cache_key($chasse_id, $periode);
+    $stats = wp_cache_get($cache_key, 'chasse_stats');
+    if ($stats === false) {
+        $stats = get_transient($cache_key);
+    }
+
+    if ($stats === false) {
+        $stats = [
+            'participants'   => chasse_compter_participants($chasse_id, $periode),
+            'tentatives'     => chasse_compter_tentatives($chasse_id, $periode),
+            'points'         => chasse_compter_points_collectes($chasse_id, $periode),
+            'engagement_rate' => (int) round(chasse_calculer_taux_engagement($chasse_id, $periode)),
+        ];
+        $ttl = HOUR_IN_SECONDS;
+        wp_cache_set($cache_key, $stats, 'chasse_stats', $ttl);
+        set_transient($cache_key, $stats, $ttl);
+    }
 
     wp_send_json_success($stats);
 }
 add_action('wp_ajax_chasse_recuperer_stats', 'ajax_chasse_recuperer_stats');
+
+function chasse_stats_cache_key(int $chasse_id, string $periode): string
+{
+    return "chasse_stats_{$chasse_id}_{$periode}";
+}
+
+function chasse_clear_stats_cache(int $chasse_id): void
+{
+    foreach (['jour', 'semaine', 'mois', 'total'] as $p) {
+        $key = chasse_stats_cache_key($chasse_id, $p);
+        wp_cache_delete($key, 'chasse_stats');
+        delete_transient($key);
+    }
+}
+
+function chasse_invalidate_cache_from_enigme(int $enigme_id): void
+{
+    $chasse_id = recuperer_id_chasse_associee($enigme_id);
+    if ($chasse_id) {
+        chasse_clear_stats_cache((int) $chasse_id);
+    }
+}
+
+add_action('chasse_engagement_created', 'chasse_clear_stats_cache');
+add_action('enigme_engagement_created', 'chasse_invalidate_cache_from_enigme');
+add_action('enigme_tentative_created', 'chasse_invalidate_cache_from_enigme');
 
 /**
  * AJAX handler listing hunt participants.

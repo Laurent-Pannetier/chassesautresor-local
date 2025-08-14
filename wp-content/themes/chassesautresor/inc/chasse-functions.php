@@ -752,6 +752,9 @@ function enregistrer_engagement_chasse(int $user_id, int $chasse_id): bool
         ],
         ['%d', '%d', '%s', '%s']
     );
+    if ($inserted) {
+        do_action('chasse_engagement_created', $chasse_id);
+    }
 
     return (bool) $inserted;
 }

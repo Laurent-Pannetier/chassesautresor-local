@@ -204,25 +204,54 @@ function ajax_enigme_recuperer_stats()
     $periode = isset($_POST['periode']) ? sanitize_text_field($_POST['periode']) : 'total';
     $periode = in_array($periode, ['jour', 'semaine', 'mois', 'total'], true) ? $periode : 'total';
 
-    $mode = get_field('enigme_mode_validation', $enigme_id) ?? 'automatique';
-    $cout = (int) get_field('enigme_tentative_cout_points', $enigme_id);
-
-    $stats = [
-        'participants' => enigme_compter_joueurs_engages($enigme_id, $periode),
-    ];
-
-    if ($mode !== 'aucune') {
-        $stats['tentatives'] = enigme_compter_tentatives($enigme_id, $mode, $periode);
-        $stats['solutions'] = enigme_compter_bonnes_solutions($enigme_id, $mode, $periode);
+    $cache_key = enigme_stats_cache_key($enigme_id, $periode);
+    $stats = wp_cache_get($cache_key, 'enigme_stats');
+    if ($stats === false) {
+        $stats = get_transient($cache_key);
     }
 
-    if ($cout > 0) {
-        $stats['points'] = enigme_compter_points_depenses($enigme_id, $mode, $periode);
+    if ($stats === false) {
+        $mode = get_field('enigme_mode_validation', $enigme_id) ?? 'automatique';
+        $cout = (int) get_field('enigme_tentative_cout_points', $enigme_id);
+
+        $stats = [
+            'participants' => enigme_compter_joueurs_engages($enigme_id, $periode),
+        ];
+
+        if ($mode !== 'aucune') {
+            $stats['tentatives'] = enigme_compter_tentatives($enigme_id, $mode, $periode);
+            $stats['solutions'] = enigme_compter_bonnes_solutions($enigme_id, $mode, $periode);
+        }
+
+        if ($cout > 0) {
+            $stats['points'] = enigme_compter_points_depenses($enigme_id, $mode, $periode);
+        }
+
+        $ttl = HOUR_IN_SECONDS;
+        wp_cache_set($cache_key, $stats, 'enigme_stats', $ttl);
+        set_transient($cache_key, $stats, $ttl);
     }
 
     wp_send_json_success($stats);
 }
 add_action('wp_ajax_enigme_recuperer_stats', 'ajax_enigme_recuperer_stats');
+
+function enigme_stats_cache_key(int $enigme_id, string $periode): string
+{
+    return "enigme_stats_{$enigme_id}_{$periode}";
+}
+
+function enigme_clear_stats_cache(int $enigme_id): void
+{
+    foreach (['jour', 'semaine', 'mois', 'total'] as $p) {
+        $key = enigme_stats_cache_key($enigme_id, $p);
+        wp_cache_delete($key, 'enigme_stats');
+        delete_transient($key);
+    }
+}
+
+add_action('enigme_engagement_created', 'enigme_clear_stats_cache');
+add_action('enigme_tentative_created', 'enigme_clear_stats_cache');
 
 function ajax_enigme_lister_participants() {
     if (!is_user_logged_in()) {

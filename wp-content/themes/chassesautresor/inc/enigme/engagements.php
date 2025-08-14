@@ -34,6 +34,9 @@ defined('ABSPATH') || exit;
             'enigme_id'       => $enigme_id,
             'date_engagement' => current_time('mysql'),
         ], ['%d', '%d', '%s']);
+        if ($result !== false) {
+            do_action('enigme_engagement_created', $enigme_id);
+        }
 
         return $result !== false;
     }
