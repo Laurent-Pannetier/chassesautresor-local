@@ -156,16 +156,33 @@ function chasse_lister_participants(int $chasse_id, int $limit, int $offset, str
     $table_eng  = $wpdb->prefix . 'engagements';
     $table_stat = $wpdb->prefix . 'enigme_statuts_utilisateur';
 
-    $order   = strtoupper($order) === 'DESC' ? 'DESC' : 'ASC';
-    $orderby = in_array($orderby, ['username', 'inscription', 'participation', 'resolution'], true) ? $orderby : 'inscription';
+    $order = strtoupper($order) === 'DESC' ? 'DESC' : 'ASC';
+    $orderby_map = [
+        'username' => 'username',
+        'participation' => 'nb_engagees',
+        'resolution' => 'nb_resolues',
+        'inscription' => 'date_inscription',
+    ];
+    $orderby = $orderby_map[$orderby] ?? 'date_inscription';
 
     $sql = $wpdb->prepare(
-        "SELECT e.user_id, u.user_login AS username, MIN(e.date_engagement) AS date_inscription"
+        "SELECT e.user_id, u.user_login AS username, MIN(e.date_engagement) AS date_inscription,"
+        . " COUNT(DISTINCT e2.enigme_id) AS nb_engagees,"
+        . " COUNT(DISTINCT CASE WHEN s.statut IN ('resolue','terminee') THEN s.enigme_id END) AS nb_resolues,"
+        . " GROUP_CONCAT(DISTINCT e2.enigme_id) AS enigmes_ids"
         . " FROM {$table_eng} e"
         . " JOIN {$wpdb->users} u ON u.ID = e.user_id"
+        . " LEFT JOIN {$table_eng} e2 ON e2.user_id = e.user_id"
+        . " AND e2.chasse_id = e.chasse_id AND e2.enigme_id IS NOT NULL"
+        . " LEFT JOIN {$table_stat} s ON s.user_id = e.user_id"
+        . " AND s.enigme_id = e2.enigme_id AND s.statut IN ('resolue','terminee')"
         . " WHERE e.chasse_id = %d AND e.enigme_id IS NULL"
-        . " GROUP BY e.user_id",
-        $chasse_id
+        . " GROUP BY e.user_id"
+        . " ORDER BY {$orderby} {$order}"
+        . " LIMIT %d OFFSET %d",
+        $chasse_id,
+        $limit,
+        $offset
     );
 
     $rows = $wpdb->get_results($sql, ARRAY_A);
@@ -173,100 +190,30 @@ function chasse_lister_participants(int $chasse_id, int $limit, int $offset, str
         return [];
     }
 
-    $user_ids     = array_map(static fn($row) => (int) $row['user_id'], $rows);
-    $placeholders_users = implode(',', array_fill(0, count($user_ids), '%d'));
-
-    $enigme_ids = recuperer_ids_enigmes_pour_chasse($chasse_id);
-    $placeholders_enigmes = $enigme_ids ? implode(',', array_fill(0, count($enigme_ids), '%d')) : '';
-
-    $engagement_rows = [];
-    $resolution_rows = [];
-
-    if ($enigme_ids) {
-        $engagements_sql = $wpdb->prepare(
-            "SELECT user_id, enigme_id FROM {$table_eng}"
-            . " WHERE enigme_id IN ({$placeholders_enigmes})"
-            . " AND user_id IN ({$placeholders_users})",
-            array_merge($enigme_ids, $user_ids)
-        );
-        $engagement_rows = $wpdb->get_results($engagements_sql, ARRAY_A);
-
-        $resolutions_sql = $wpdb->prepare(
-            "SELECT user_id, enigme_id FROM {$table_stat}"
-            . " WHERE statut IN ('resolue','terminee')"
-            . " AND enigme_id IN ({$placeholders_enigmes})"
-            . " AND user_id IN ({$placeholders_users})",
-            array_merge($enigme_ids, $user_ids)
-        );
-        $resolution_rows = $wpdb->get_results($resolutions_sql, ARRAY_A);
-    }
-
-    $enigmes_by_user = [];
-    foreach ($engagement_rows as $row) {
-        $uid = (int) $row['user_id'];
-        $eid = (int) $row['enigme_id'];
-        if (!isset($enigmes_by_user[$uid])) {
-            $enigmes_by_user[$uid] = [];
-        }
-        if (!in_array($eid, $enigmes_by_user[$uid], true)) {
-            $enigmes_by_user[$uid][] = $eid;
-        }
-    }
-
-    $resolues_by_user = [];
-    foreach ($resolution_rows as $row) {
-        $uid = (int) $row['user_id'];
-        $eid = (int) $row['enigme_id'];
-        if (!isset($resolues_by_user[$uid])) {
-            $resolues_by_user[$uid] = [];
-        }
-        if (!in_array($eid, $resolues_by_user[$uid], true)) {
-            $resolues_by_user[$uid][] = $eid;
-        }
-    }
-
     $participants = [];
     foreach ($rows as $row) {
-        $uid         = (int) $row['user_id'];
-        $engaged_ids = $enigmes_by_user[$uid] ?? [];
-        $enigmes     = [];
-        foreach ($engaged_ids as $eid) {
-            $enigmes[] = [
-                'id'    => $eid,
-                'title' => get_the_title($eid),
-                'url'   => get_permalink($eid),
-            ];
+        $engaged_ids = [];
+        if (!empty($row['enigmes_ids'])) {
+            $engaged_ids = array_map('intval', explode(',', $row['enigmes_ids']));
         }
-        $resolus_ids = $resolues_by_user[$uid] ?? [];
+        $enigmes = array_map(
+            static fn($eid) => [
+                'id' => $eid,
+                'title' => get_the_title($eid),
+                'url' => get_permalink($eid),
+            ],
+            $engaged_ids
+        );
         $participants[] = [
-            'username'         => $row['username'],
+            'username' => $row['username'],
             'date_inscription' => $row['date_inscription'],
-            'enigmes'          => $enigmes,
-            'nb_engagees'      => count($engaged_ids),
-            'nb_resolues'      => count(array_intersect($engaged_ids, $resolus_ids)),
+            'enigmes' => $enigmes,
+            'nb_engagees' => isset($row['nb_engagees']) ? (int) $row['nb_engagees'] : 0,
+            'nb_resolues' => isset($row['nb_resolues']) ? (int) $row['nb_resolues'] : 0,
         ];
     }
 
-    usort($participants, static function ($a, $b) use ($orderby, $order) {
-        switch ($orderby) {
-            case 'username':
-                $cmp = strcmp($a['username'], $b['username']);
-                break;
-            case 'participation':
-                $cmp = $a['nb_engagees'] <=> $b['nb_engagees'];
-                break;
-            case 'resolution':
-                $cmp = $a['nb_resolues'] <=> $b['nb_resolues'];
-                break;
-            case 'inscription':
-            default:
-                $cmp = strcmp($a['date_inscription'], $b['date_inscription']);
-                break;
-        }
-        return $order === 'ASC' ? $cmp : -$cmp;
-    });
-
-    return array_slice($participants, $offset, $limit);
+    return $participants;
 }
 /**
  * AJAX handler retrieving hunt statistics.
