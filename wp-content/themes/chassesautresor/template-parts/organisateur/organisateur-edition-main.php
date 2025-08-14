@@ -55,16 +55,15 @@ $classe_vide_coordonnees = ($iban_vide || $bic_vide) ? 'champ-vide' : '';
   <section class="panneau-organisateur edition-panel edition-panel-organisateur edition-panel-modal<?php echo $edition_active ? ' edition-active' : ''; ?>" aria-hidden="<?php echo $edition_active ? 'false' : 'true'; ?>">
 
     <div class="edition-panel-header">
-      <h2><i class="fa-solid fa-sliders"></i> Paramètres</h2>
-      <button type="button" class="panneau-fermer" aria-label="Fermer les paramètres organisateur">
-        ✖
-      </button>
-    </div>
-
-    <div class="edition-tabs">
-      <button class="edition-tab active" data-target="organisateur-tab-param">Paramètres</button>
-      <button class="edition-tab" data-target="organisateur-tab-stats">Statistiques</button>
-      <button class="edition-tab" data-target="organisateur-tab-revenus">Revenus</button>
+      <div class="edition-panel-header-top">
+        <h2><i class="fa-solid fa-sliders"></i> Paramètres</h2>
+        <button type="button" class="panneau-fermer" aria-label="Fermer les paramètres organisateur">✖</button>
+      </div>
+      <div class="edition-tabs">
+        <button class="edition-tab active" data-target="organisateur-tab-param">Paramètres</button>
+        <button class="edition-tab" data-target="organisateur-tab-stats">Statistiques</button>
+        <button class="edition-tab" data-target="organisateur-tab-revenus">Revenus</button>
+      </div>
     </div>
 
     <div id="organisateur-tab-param" class="edition-tab-content active">

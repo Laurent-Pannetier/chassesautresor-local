@@ -72,25 +72,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
       style="display:none; background:red; color:white; padding:5px; text-align:center; font-size:0.9em;"></div>
 
     <div class="edition-panel-header">
-      <h2><i class="fa-solid fa-sliders"></i> Paramètres</h2>
+      <div class="edition-panel-header-top">
+        <h2><i class="fa-solid fa-sliders"></i> Paramètres</h2>
 
-      <!-- ✅ Ajout du champ Style ici -->
-      <div class="champ-enigme champ-style" data-champ="enigme_style_affichage" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" style="margin-top: 8px;">
-        <label for="select-style-affichage" style="font-weight: normal; font-size: 0.9em;">Style d'affichage :</label>
-        <select id="select-style-affichage" class="champ-input" style="margin-left: 10px;">
-          <option value="defaut" <?= $style === 'defaut' ? 'selected' : ''; ?>>Défaut</option>
-          <option value="pirate" <?= $style === 'pirate' ? 'selected' : ''; ?>>Pirate</option>
-          <option value="vintage" <?= $style === 'vintage' ? 'selected' : ''; ?>>Vintage</option>
-        </select>
+        <!-- ✅ Ajout du champ Style ici -->
+        <div class="champ-enigme champ-style" data-champ="enigme_style_affichage" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" style="margin-top: 8px;">
+          <label for="select-style-affichage" style="font-weight: normal; font-size: 0.9em;">Style d'affichage :</label>
+          <select id="select-style-affichage" class="champ-input" style="margin-left: 10px;">
+            <option value="defaut" <?= $style === 'defaut' ? 'selected' : ''; ?>>Défaut</option>
+            <option value="pirate" <?= $style === 'pirate' ? 'selected' : ''; ?>>Pirate</option>
+            <option value="vintage" <?= $style === 'vintage' ? 'selected' : ''; ?>>Vintage</option>
+          </select>
+        </div>
+        <button type="button" class="panneau-fermer" aria-label="Fermer les paramètres">✖</button>
       </div>
-      <button type="button" class="panneau-fermer" aria-label="Fermer les paramètres">✖</button>
-    </div>
-
-    <div class="edition-tabs">
-      <button class="edition-tab active" data-target="enigme-tab-param">Paramètres</button>
-      <button class="edition-tab" data-target="enigme-tab-stats">Statistiques</button>
-      <button class="edition-tab" data-target="enigme-tab-soumission"<?= $mode_validation === 'aucune' ? ' style="display:none;"' : ''; ?>>Tentatives</button>
-      <button class="edition-tab" data-target="enigme-tab-solution">Solution</button>
+      <div class="edition-tabs">
+        <button class="edition-tab active" data-target="enigme-tab-param">Paramètres</button>
+        <button class="edition-tab" data-target="enigme-tab-stats">Statistiques</button>
+        <button class="edition-tab" data-target="enigme-tab-soumission"<?= $mode_validation === 'aucune' ? ' style="display:none;"' : ''; ?>>Tentatives</button>
+        <button class="edition-tab" data-target="enigme-tab-solution">Solution</button>
+      </div>
     </div>
 
 <div id="enigme-tab-param" class="edition-tab-content active">
