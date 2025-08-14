@@ -272,13 +272,13 @@ $classe_vide_coordonnees = ($iban_vide || $bic_vide) ? 'champ-vide' : '';
                         data-champ="liens_publics"
                         data-cpt="organisateur"
                         data-post-id="<?= esc_attr($organisateur_id); ?>">
-                        <?= empty($liens_publics) ? 'Ajouter' : 'Éditer'; ?>
+                        Ajouter
                       </button>
                     <?php endif; ?>
                     <div class="champ-donnees"
                       data-valeurs='<?= json_encode($liens_publics, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>'></div>
                     <div class="champ-affichage champ-affichage-liens">
-                      <?= render_liens_publics($liens_publics, 'organisateur'); ?>
+                      <?= render_liens_publics($liens_publics, 'organisateur', ['placeholder' => false]); ?>
                     </div>
                     <div class="champ-feedback"></div>
                   </div>

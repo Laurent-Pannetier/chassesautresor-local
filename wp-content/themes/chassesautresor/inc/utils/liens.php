@@ -81,20 +81,25 @@ function get_types_liens_publics(): array {
 /**
  * Génère le HTML d’affichage des liens publics pour un organisateur ou une chasse.
  *
- * @param array $liens         Liste des liens ACF bruts (array d’objets)
- * @param string $contexte     Contexte de l’entité ("organisateur" ou "chasse")
- *                             utilisé pour repérer les clés personnalisées dans ACF
- *                             (ex. "chasse_principale_liens_type")
+ * @param array  $liens     Liste des liens ACF bruts (array d’objets)
+ * @param string $contexte  Contexte de l’entité ("organisateur" ou "chasse")
+ *                          utilisé pour repérer les clés personnalisées dans ACF
+ *                          (ex. "chasse_principale_liens_type")
+ * @param array  $options   Options d’affichage (placeholder, etc.)
  *
  * @return string HTML complet (liste UL ou placeholder)
  */
-function render_liens_publics(array $liens, string $contexte = 'organisateur'): string {
+function render_liens_publics(array $liens, string $contexte = 'organisateur', array $options = []): string {
     $types = get_types_liens_publics();
     $liens_actifs = [];
 
     foreach ($liens as $entree) {
-        $type_raw = $entree[$contexte . '_principale_liens_type'] ?? null;
-        $url = $entree[$contexte . '_principale_liens_url'] ?? null;
+        $type_raw = $entree[$contexte . '_principale_liens_type']
+            ?? $entree['type_de_lien']
+            ?? null;
+        $url = $entree[$contexte . '_principale_liens_url']
+            ?? $entree['url_lien']
+            ?? null;
         $type = is_array($type_raw) ? ($type_raw[0] ?? '') : $type_raw;
 
         if (is_string($type) && trim($type) !== '' && is_string($url) && trim($url) !== '') {
@@ -116,6 +121,10 @@ function render_liens_publics(array $liens, string $contexte = 'organisateur'): 
         }
         $out .= '</ul>';
         return $out;
+    }
+
+    if (($options['placeholder'] ?? true) === false) {
+        return '';
     }
 
     // Placeholder si aucun lien
