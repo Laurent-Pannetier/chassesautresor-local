@@ -6,7 +6,7 @@ function initEnigmeStats() {
   }
 
   const cards = {
-    joueurs: container.querySelector('[data-stat="joueurs"] .stat-value'),
+    participants: container.querySelector('[data-stat="participants"] .stat-value'),
     tentatives: container.querySelector('[data-stat="tentatives"] .stat-value'),
     points: container.querySelector('[data-stat="points"] .stat-value'),
     solutions: container.querySelector('[data-stat="solutions"] .stat-value'),
@@ -31,8 +31,8 @@ function initEnigmeStats() {
           return;
         }
         const stats = res.data;
-        if (cards.joueurs && typeof stats.joueurs !== 'undefined') {
-          cards.joueurs.textContent = stats.joueurs;
+        if (cards.participants && typeof stats.participants !== 'undefined') {
+          cards.participants.textContent = stats.participants;
         }
         if (cards.tentatives && typeof stats.tentatives !== 'undefined') {
           cards.tentatives.textContent = stats.tentatives;

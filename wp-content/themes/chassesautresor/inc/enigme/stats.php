@@ -183,12 +183,12 @@ function enigme_lister_participants(
  *   Defaults to `total`.
  *
  * Sends a JSON success response containing at least:
- * - `joueurs` (int) Number of engaged players for the selected period.
+ * - `participants` (int) Number of engaged players for the selected period.
  * - `tentatives` (int) Number of attempts. Present only when the validation
  *   mode is not `aucune`.
  * - `solutions` (int) Number of correct answers. Present only when the
  *   validation mode is not `aucune`.
- * - `points` (int) Total points spent. Present only when the cost per attempt
+ * - `points` (int) Total points collected. Present only when the cost per attempt
  *   is greater than zero.
  *
  * @return void
@@ -211,7 +211,7 @@ function ajax_enigme_recuperer_stats()
     $cout = (int) get_field('enigme_tentative_cout_points', $enigme_id);
 
     $stats = [
-        'joueurs' => enigme_compter_joueurs_engages($enigme_id, $periode),
+        'participants' => enigme_compter_joueurs_engages($enigme_id, $periode),
     ];
 
     if ($mode !== 'aucune') {

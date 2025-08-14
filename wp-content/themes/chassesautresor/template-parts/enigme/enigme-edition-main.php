@@ -369,11 +369,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
       if (!function_exists('enigme_compter_joueurs_engages')) {
           require_once get_stylesheet_directory() . '/inc/enigme/stats.php';
       }
-      $periode        = 'total';
-      $nb_joueurs     = enigme_compter_joueurs_engages($enigme_id, $periode);
-      $nb_tentatives  = enigme_compter_tentatives($enigme_id, $mode_validation, $periode);
-      $nb_points      = enigme_compter_points_depenses($enigme_id, $mode_validation, $periode);
-      $nb_solutions   = enigme_compter_bonnes_solutions($enigme_id, $mode_validation, $periode);
+        $periode         = 'total';
+        $nb_participants = enigme_compter_joueurs_engages($enigme_id, $periode);
+        $nb_tentatives   = enigme_compter_tentatives($enigme_id, $mode_validation, $periode);
+        $nb_points       = enigme_compter_points_depenses($enigme_id, $mode_validation, $periode);
+        $nb_solutions    = enigme_compter_bonnes_solutions($enigme_id, $mode_validation, $periode);
       ?>
       <div class="edition-panel-body">
         <div class="stats-header" style="display:flex;align-items:center;justify-content:flex-end;gap:1rem;">
@@ -389,29 +389,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
           </div>
         </div>
         <div class="dashboard-grid stats-cards" id="enigme-stats">
-          <div class="dashboard-card" data-stat="joueurs">
-            <i class="fa-solid fa-users"></i>
-              <h3>Participants</h3>
-            <p class="stat-value"><?= esc_html($nb_joueurs); ?></p>
-          </div>
-          <div class="dashboard-card" data-stat="tentatives"
-            style="<?= $mode_validation === 'aucune' ? 'display:none;' : ''; ?>">
-            <i class="fa-solid fa-arrow-rotate-right"></i>
-              <h3>Tentatives</h3>
-            <p class="stat-value"><?= esc_html($nb_tentatives); ?></p>
-          </div>
-          <div class="dashboard-card" data-stat="points"
-            style="<?= ($mode_validation === 'aucune' || (int) $cout <= 0) ? 'display:none;' : ''; ?>">
-            <i class="fa-solid fa-coins"></i>
-              <h3>Points collectés</h3>
-            <p class="stat-value"><?= esc_html($nb_points); ?></p>
-          </div>
-          <div class="dashboard-card" data-stat="solutions"
-            style="<?= $mode_validation === 'aucune' ? 'display:none;' : ''; ?>">
-            <i class="fa-solid fa-check"></i>
-              <h3>Bonnes réponses</h3>
-            <p class="stat-value"><?= esc_html($nb_solutions); ?></p>
-          </div>
+          <?php
+          get_template_part('template-parts/common/stat-card', null, [
+              'icon'  => 'fa-solid fa-users',
+              'label' => 'Participants',
+              'value' => $nb_participants,
+              'stat'  => 'participants',
+          ]);
+          get_template_part('template-parts/common/stat-card', null, [
+              'icon'  => 'fa-solid fa-arrow-rotate-right',
+              'label' => 'Tentatives',
+              'value' => $nb_tentatives,
+              'stat'  => 'tentatives',
+              'style' => $mode_validation === 'aucune' ? 'display:none;' : '',
+          ]);
+          get_template_part('template-parts/common/stat-card', null, [
+              'icon'  => 'fa-solid fa-coins',
+              'label' => 'Points collectés',
+              'value' => $nb_points,
+              'stat'  => 'points',
+              'style' => ($mode_validation === 'aucune' || (int) $cout <= 0) ? 'display:none;' : '',
+          ]);
+          get_template_part('template-parts/common/stat-card', null, [
+              'icon'  => 'fa-solid fa-check',
+              'label' => 'Bonnes réponses',
+              'value' => $nb_solutions,
+              'stat'  => 'solutions',
+              'style' => $mode_validation === 'aucune' ? 'display:none;' : '',
+          ]);
+          ?>
         </div>
         <?php
         $resolveurs = $mode_validation === 'aucune' ? [] : enigme_lister_resolveurs($enigme_id);

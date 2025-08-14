@@ -381,60 +381,63 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
       <?php if (!utilisateur_est_organisateur_associe_a_chasse(get_current_user_id(), $chasse_id)) : ?>
         <p class="edition-placeholder"><?php esc_html_e('Accès refusé.', 'chassesautresor-com'); ?></p>
       <?php else :
-        $periode = isset($_GET['periode']) ? sanitize_text_field($_GET['periode']) : 'total';
-        $periode = in_array($periode, ['jour', 'semaine', 'mois', 'total'], true) ? $periode : 'total';
-        $stats = chasse_recuperer_stats($chasse_id, $periode);
-        $kpis = $stats['kpis'];
-        $details = $stats['detail'];
+        if (!function_exists('chasse_compter_participants')) {
+            require_once get_stylesheet_directory() . '/inc/chasse/stats.php';
+        }
+        $periode             = 'total';
+        $nb_participants     = chasse_compter_participants($chasse_id, $periode);
+        $nb_tentatives       = chasse_compter_tentatives($chasse_id, $periode);
+        $nb_points           = chasse_compter_points_collectes($chasse_id, $periode);
+        $total_engagements   = chasse_compter_engagements($chasse_id);
+        $par_page_participants = 25;
+        $pages_participants  = (int) ceil($total_engagements / $par_page_participants);
+        $participants        = chasse_lister_participants($chasse_id, $par_page_participants, 0, 'date', 'ASC');
       ?>
         <div class="edition-panel-body">
-          <div class="stats-header" style="display:flex;align-items:center;">
-            <div class="stats-kpi">
-              <div class="kpi-card" title="Nombre de joueurs ayant engagé au moins une énigme">
-                <span class="kpi-label">Joueurs engagés</span>
-                <span class="kpi-value"><?= esc_html($kpis['joueurs_engages']); ?></span>
-              </div>
-              <div class="kpi-card" title="Total des points utilisés pour les tentatives et indices">
-                <span class="kpi-label">Points dépensés</span>
-                <span class="kpi-value"><?= esc_html($kpis['points_depenses']); ?></span>
-              </div>
-              <div class="kpi-card" title="Nombre d'indices débloqués sur la chasse">
-                <span class="kpi-label">Indices débloqués</span>
-                <span class="kpi-value"><?= esc_html($kpis['indices_debloques']); ?></span>
-              </div>
-            </div>
-            <div class="stats-filtres" style="margin-left:auto;">
-              <label for="chasse-periode">Période :</label>
+          <div class="stats-header" style="display:flex;align-items:center;justify-content:flex-end;gap:1rem;">
+            <a href="?edition=open&amp;tab=stats" class="stats-reset"><i class="fa-solid fa-rotate-right"></i> Actualiser</a>
+            <div class="stats-filtres">
+              <label for="chasse-periode">Période&nbsp;:</label>
               <select id="chasse-periode">
-                <option value="total" <?php selected($periode, 'total'); ?>>Depuis le début</option>
-                <option value="semaine" <?php selected($periode, 'semaine'); ?>>7&nbsp;derniers jours</option>
-                <option value="mois" <?php selected($periode, 'mois'); ?>>30&nbsp;derniers jours</option>
+                <option value="total">Total</option>
+                <option value="jour">Aujourd’hui</option>
+                <option value="semaine">Semaine</option>
+                <option value="mois">Mois</option>
               </select>
             </div>
           </div>
-          <div class="stats-table-wrapper">
-            <table id="chasse-stats-table">
-              <thead>
-                <tr>
-                  <th class="sortable">Énigme</th>
-                  <th class="sortable">Joueurs engagés</th>
-                  <th class="sortable">Tentatives</th>
-                  <th class="sortable">Points dépensés</th>
-                  <th class="sortable">Résolutions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php foreach ($details as $row) : ?>
-                  <tr>
-                    <td><a href="<?= esc_url($row['edit_url']); ?>"><?= esc_html($row['titre']); ?></a></td>
-                    <td><?= esc_html($row['joueurs']); ?></td>
-                    <td><?= esc_html($row['tentatives']); ?></td>
-                    <td><?= esc_html($row['points']); ?></td>
-                    <td><?= esc_html($row['resolus']); ?></td>
-                  </tr>
-                <?php endforeach; ?>
-              </tbody>
-            </table>
+          <div class="dashboard-grid stats-cards" id="chasse-stats">
+            <?php
+            get_template_part('template-parts/common/stat-card', null, [
+                'icon'  => 'fa-solid fa-users',
+                'label' => 'Participants',
+                'value' => $nb_participants,
+                'stat'  => 'participants',
+            ]);
+            get_template_part('template-parts/common/stat-card', null, [
+                'icon'  => 'fa-solid fa-arrow-rotate-right',
+                'label' => 'Tentatives',
+                'value' => $nb_tentatives,
+                'stat'  => 'tentatives',
+            ]);
+            get_template_part('template-parts/common/stat-card', null, [
+                'icon'  => 'fa-solid fa-coins',
+                'label' => 'Points collectés',
+                'value' => $nb_points,
+                'stat'  => 'points',
+            ]);
+            ?>
+          </div>
+          <div class="liste-participants" data-page="1" data-pages="<?= esc_attr($pages_participants); ?>" data-order="asc" data-orderby="date">
+            <?php get_template_part('template-parts/chasse/partials/chasse-partial-participants', null, [
+              'participants' => $participants,
+              'page' => 1,
+              'par_page' => $par_page_participants,
+              'total' => $total_engagements,
+              'pages' => $pages_participants,
+              'orderby' => 'date',
+              'order' => 'ASC',
+            ]); ?>
           </div>
         </div>
       <?php endif; ?>
