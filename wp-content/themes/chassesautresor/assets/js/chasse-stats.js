@@ -9,7 +9,17 @@ function initChasseStats() {
     participants: container.querySelector('[data-stat="participants"] .stat-value'),
     tentatives: container.querySelector('[data-stat="tentatives"] .stat-value'),
     points: container.querySelector('[data-stat="points"] .stat-value'),
+    engagementRate: container.querySelector('[data-stat="engagement-rate"] .stat-value'),
   };
+
+  container.querySelectorAll('.stat-help').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const message = btn.dataset.message;
+      if (message) {
+        alert(message);
+      }
+    });
+  });
 
   select.addEventListener('change', () => {
     const periode = select.value;
@@ -37,6 +47,9 @@ function initChasseStats() {
         }
         if (cards.points && typeof stats.points !== 'undefined') {
           cards.points.textContent = stats.points;
+        }
+        if (cards.engagementRate && typeof stats.engagement_rate !== 'undefined') {
+          cards.engagementRate.textContent = `${stats.engagement_rate}%`;
         }
       })
       .catch(() => {});
@@ -105,5 +118,8 @@ function initChasseStats() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', initChasseStats);
-initChasseStats();
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initChasseStats);
+} else {
+  initChasseStats();
+}

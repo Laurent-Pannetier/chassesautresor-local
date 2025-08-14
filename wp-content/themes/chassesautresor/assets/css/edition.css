@@ -1432,6 +1432,10 @@ body.panneau-ouvert::before {
   pointer-events: none;
 }
 
+.stat-help i {
+  font-size: 0.8em;
+}
+
 /* 🎯 Pager de tableau */
 .pager {
   display: flex;
