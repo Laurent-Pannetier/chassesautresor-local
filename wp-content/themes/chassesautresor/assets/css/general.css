@@ -135,6 +135,12 @@ p {
 label {
     color: var(--color-text-primary);
 }
+
+.edition-panel label,
+.edit-account label,
+.stats-filtres label {
+    color: var(--color-editor-text-muted);
+}
 .ast-plain-container.ast-no-sidebar #primary {
     margin-top: 0;
 }
