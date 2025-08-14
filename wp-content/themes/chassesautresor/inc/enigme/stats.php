@@ -88,36 +88,33 @@ function enigme_compter_bonnes_solutions(int $enigme_id, string $mode = 'automat
 function enigme_lister_resolveurs(int $enigme_id): array
 {
     global $wpdb;
-    $table   = $wpdb->prefix . 'enigme_tentatives';
-    $results = $wpdb->get_results(
-        $wpdb->prepare(
-            "SELECT user_id, MIN(date_tentative) AS resolution_date
-             FROM $table
+    $table = $wpdb->prefix . 'enigme_tentatives';
+
+    $sql = $wpdb->prepare(
+        "SELECT r.user_id, u.user_login AS username, r.resolution_date, COUNT(*) AS tentatives
+         FROM (
+             SELECT user_id, MIN(date_tentative) AS resolution_date
+             FROM {$table}
              WHERE enigme_id = %d AND resultat = 'bon'
              GROUP BY user_id
-             ORDER BY resolution_date ASC",
-            $enigme_id
-        ),
-        ARRAY_A
+         ) r
+         JOIN {$table} t ON t.enigme_id = %d AND t.user_id = r.user_id AND t.date_tentative <= r.resolution_date
+         JOIN {$wpdb->users} u ON u.ID = r.user_id
+         GROUP BY r.user_id, u.user_login, r.resolution_date
+         ORDER BY r.resolution_date ASC",
+        $enigme_id,
+        $enigme_id
     );
+
+    $results = $wpdb->get_results($sql, ARRAY_A);
 
     $solvers = [];
     foreach ($results as $row) {
-        $attempts = $wpdb->get_var(
-            $wpdb->prepare(
-                "SELECT COUNT(*) FROM $table
-                 WHERE enigme_id = %d AND user_id = %d AND date_tentative <= %s",
-                $enigme_id,
-                $row['user_id'],
-                $row['resolution_date']
-            )
-        );
-
         $solvers[] = [
-            'user_id'   => (int) $row['user_id'],
-            'username'  => get_the_author_meta('user_login', (int) $row['user_id']),
-            'date'      => $row['resolution_date'],
-            'tentatives' => (int) $attempts,
+            'user_id'    => (int) $row['user_id'],
+            'username'   => $row['username'],
+            'date'       => $row['resolution_date'],
+            'tentatives' => (int) $row['tentatives'],
         ];
     }
 
