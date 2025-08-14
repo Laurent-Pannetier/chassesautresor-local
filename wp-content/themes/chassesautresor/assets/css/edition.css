@@ -1270,6 +1270,9 @@ body.panneau-ouvert::before {
   display: flex;
   align-items: center;
   gap: 4px;
+  justify-content: flex-end;
+  width: 100%;
+  text-align: right;
 }
 
 .stats-table th button.sort i {
