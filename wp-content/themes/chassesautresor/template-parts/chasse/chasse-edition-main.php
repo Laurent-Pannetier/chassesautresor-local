@@ -170,7 +170,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   data-no-edit="1"
                   data-no-icon="1"
                 >
-                  <label for="chasse_mode_fin"><?= esc_html__('Mode', 'chassesautresor-com'); ?></label>
+                  <label for="chasse_mode_fin"><?= esc_html__('Mode de fin', 'chassesautresor-com'); ?></label>
                   <div class="champ-mode-options">
                     <label>
                       <input
