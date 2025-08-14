@@ -62,7 +62,7 @@ $classe_vide_coordonnees = ($iban_vide || $bic_vide) ? 'champ-vide' : '';
       <div class="edition-tabs">
         <button class="edition-tab active" data-target="organisateur-tab-param">Paramètres</button>
         <button class="edition-tab" data-target="organisateur-tab-stats">Statistiques</button>
-        <button class="edition-tab" data-target="organisateur-tab-revenus">Revenus</button>
+        <button class="edition-tab" data-target="organisateur-tab-revenus">Points</button>
       </div>
     </div>
 
@@ -232,13 +232,13 @@ $classe_vide_coordonnees = ($iban_vide || $bic_vide) ? 'champ-vide' : '';
     <div id="organisateur-tab-revenus" class="edition-tab-content" style="display:none;">
       <i class="fa-solid fa-coins tab-watermark" aria-hidden="true"></i>
       <div class="edition-panel-header">
-        <h2><i class="fa-solid fa-coins"></i> Revenus</h2>
+        <h2><i class="fa-solid fa-coins"></i> Points</h2>
       </div>
       <div class="edition-panel-body">
         <div class="edition-panel-section edition-panel-section-ligne">
           <h3 class="section-title">
             <i class="fa-solid fa-coins" aria-hidden="true"></i>
-            Revenus
+            Points
           </h3>
 
           <div class="section-content deux-col-wrapper">
