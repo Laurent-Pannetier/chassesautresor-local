@@ -31,9 +31,9 @@ $icon_tentatives = 'fa-sort';
 if ($orderby === 'tentatives') {
     $icon_tentatives = strtoupper($order) === 'ASC' ? 'fa-sort-up' : 'fa-sort-down';
 }
-?>
-<p class="participants-count"><?= esc_html($total); ?> participants</p>
-<?php if (empty($participants)) : ?>
+
+if (empty($participants)) :
+    ?>
 <p>Aucun participant engagé.</p>
 <?php else : ?>
 <table class="stats-table compact">

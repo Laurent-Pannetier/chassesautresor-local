@@ -1,64 +1,109 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const table = document.querySelector('#chasse-stats-table');
-  if (table) {
-    table.querySelectorAll('th.sortable').forEach((th) => {
-      th.addEventListener('click', () => {
-        const index = th.cellIndex;
-        const tbody = table.querySelector('tbody');
-        const rows = Array.from(tbody.querySelectorAll('tr'));
-        const asc = th.classList.toggle('asc');
-        rows.sort((a, b) => {
-          const aText = a.children[index].textContent.trim();
-          const bText = b.children[index].textContent.trim();
-          const aNum = parseInt(aText, 10);
-          const bNum = parseInt(bText, 10);
-          let comp;
-          if (!isNaN(aNum) && !isNaN(bNum)) {
-            comp = aNum - bNum;
-          } else {
-            comp = aText.localeCompare(bText);
-          }
-          return asc ? comp : -comp;
-        });
-        rows.forEach((row) => tbody.appendChild(row));
-      });
-    });
+function initChasseStats() {
+  const container = document.getElementById('chasse-stats');
+  const select = document.getElementById('chasse-periode');
+  if (!container || !select) {
+    return;
   }
 
-  const periodeSelect = document.querySelector('#chasse-periode');
-  if (periodeSelect) {
-    periodeSelect.addEventListener('change', () => {
-      const data = new FormData();
-      data.append('action', 'chasse_recuperer_stats');
-      data.append('chasse_id', ChasseStats.chasseId);
-      data.append('periode', periodeSelect.value);
+  const cards = {
+    participants: container.querySelector('[data-stat="participants"] .stat-value'),
+    tentatives: container.querySelector('[data-stat="tentatives"] .stat-value'),
+    points: container.querySelector('[data-stat="points"] .stat-value'),
+  };
 
+  select.addEventListener('change', () => {
+    const periode = select.value;
+    const data = new FormData();
+    data.append('action', 'chasse_recuperer_stats');
+    data.append('chasse_id', ChasseStats.chasseId);
+    data.append('periode', periode);
+
+    fetch(ChasseStats.ajaxUrl, {
+      method: 'POST',
+      credentials: 'same-origin',
+      body: data,
+    })
+      .then((response) => response.json())
+      .then((res) => {
+        if (!res.success) {
+          return;
+        }
+        const stats = res.data;
+        if (cards.participants && typeof stats.participants !== 'undefined') {
+          cards.participants.textContent = stats.participants;
+        }
+        if (cards.tentatives && typeof stats.tentatives !== 'undefined') {
+          cards.tentatives.textContent = stats.tentatives;
+        }
+        if (cards.points && typeof stats.points !== 'undefined') {
+          cards.points.textContent = stats.points;
+        }
+      })
+      .catch(() => {});
+  });
+
+  const participantsWrapper = document.querySelector('#chasse-tab-stats .liste-participants');
+  if (participantsWrapper) {
+    function charger(page = 1, orderby = participantsWrapper.dataset.orderby || 'chasse', order = participantsWrapper.dataset.order || 'asc') {
       fetch(ChasseStats.ajaxUrl, {
         method: 'POST',
-        credentials: 'same-origin',
-        body: data,
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          action: 'chasse_lister_participants',
+          chasse_id: ChasseStats.chasseId,
+          page,
+          orderby,
+          order,
+        }),
       })
-        .then((response) => response.json())
+        .then((r) => r.json())
         .then((res) => {
           if (!res.success) return;
-          const { kpis, detail } = res.data;
-          const kpiEls = document.querySelectorAll('.kpi-card .kpi-value');
-          kpiEls[0].textContent = kpis.joueurs_engages;
-          kpiEls[1].textContent = kpis.points_depenses;
-          kpiEls[2].textContent = kpis.indices_debloques;
-
-          const tbody = table.querySelector('tbody');
-          tbody.innerHTML = '';
-          detail.forEach((row) => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `<td><a href="${row.edit_url}">${row.titre}</a></td>` +
-              `<td>${row.joueurs}</td>` +
-              `<td>${row.tentatives}</td>` +
-              `<td>${row.points}</td>` +
-              `<td>${row.resolus}</td>`;
-            tbody.appendChild(tr);
-          });
+          participantsWrapper.innerHTML = res.data.html;
+          participantsWrapper.dataset.page = res.data.page;
+          participantsWrapper.dataset.pages = res.data.pages;
+          participantsWrapper.dataset.order = order;
+          participantsWrapper.dataset.orderby = orderby;
         });
+    }
+
+    participantsWrapper.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      if (btn.classList.contains('pager-first')) {
+        e.preventDefault();
+        charger(1);
+      }
+      if (btn.classList.contains('pager-prev')) {
+        e.preventDefault();
+        const page = parseInt(participantsWrapper.dataset.page || '1', 10);
+        if (page > 1) charger(page - 1);
+      }
+      if (btn.classList.contains('pager-next')) {
+        e.preventDefault();
+        const page = parseInt(participantsWrapper.dataset.page || '1', 10);
+        const pages = parseInt(participantsWrapper.dataset.pages || '1', 10);
+        if (page < pages) charger(page + 1);
+      }
+      if (btn.classList.contains('pager-last')) {
+        e.preventDefault();
+        const pages = parseInt(participantsWrapper.dataset.pages || '1', 10);
+        charger(pages);
+      }
+      if (btn.classList.contains('sort')) {
+        e.preventDefault();
+        const orderby = btn.dataset.orderby || 'chasse';
+        let order = participantsWrapper.dataset.order || 'asc';
+        if (participantsWrapper.dataset.orderby !== orderby) {
+          order = 'asc';
+        } else {
+          order = order === 'asc' ? 'desc' : 'asc';
+        }
+        charger(1, orderby, order);
+      }
     });
   }
-});
+}
+
+document.addEventListener('DOMContentLoaded', initChasseStats);
+initChasseStats();

@@ -1220,13 +1220,6 @@ body.panneau-ouvert::before {
 
 /* ====== Tableaux de statistiques ====== */
 
-.liste-participants .participants-count {
-  margin: 0 0 0.5rem;
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: var(--color-editor-heading);
-}
-
 .stats-table {
   width: 100%;
   border-collapse: collapse;
