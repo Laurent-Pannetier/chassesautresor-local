@@ -66,44 +66,37 @@ function chasse_compter_engagements(int $chasse_id): int
 /**
  * List engagements for a hunt with pagination.
  *
- * @return array<int, array{username:string,date_chasse:?string,date_enigme:?string,nb_tentatives:int}>
+ * @return array<int, array{username:string,date_chasse:?string,date_enigme:?string,enigme_titre:string}>
  */
 function chasse_lister_participants(int $chasse_id, int $limit, int $offset, string $orderby, string $order): array
 {
     global $wpdb;
-    $table_eng = $wpdb->prefix . 'engagements';
-    $table_tent = $wpdb->prefix . 'enigme_tentatives';
+    $table = $wpdb->prefix . 'engagements';
 
     $order = strtoupper($order) === 'DESC' ? 'DESC' : 'ASC';
-    $orderby = $orderby === 'tentatives' ? 'tentatives' : 'date';
-    $order_by_sql = $orderby === 'tentatives' ? 'nb_tentatives' : 'e.date_engagement';
 
     $sql = $wpdb->prepare(
-        "SELECT e.user_id, e.enigme_id, e.date_engagement,
-                COALESCE(t.nb_tentatives, 0) AS nb_tentatives
-         FROM $table_eng e
-         LEFT JOIN (
-            SELECT user_id, enigme_id, COUNT(*) AS nb_tentatives
-            FROM $table_tent
-            GROUP BY user_id, enigme_id
-         ) t ON t.user_id = e.user_id AND t.enigme_id = e.enigme_id
-         WHERE e.chasse_id = %d
-         ORDER BY $order_by_sql $order
+        "SELECT user_id, enigme_id, date_engagement
+         FROM $table
+         WHERE chasse_id = %d
+         ORDER BY date_engagement $order
          LIMIT %d OFFSET %d",
         $chasse_id,
         $limit,
         $offset
     );
+
     $rows = $wpdb->get_results($sql, ARRAY_A);
     $participants = [];
     foreach ($rows as $row) {
         $participants[] = [
-            'username'      => get_the_author_meta('user_login', (int) $row['user_id']),
-            'date_chasse'   => $row['enigme_id'] ? null : $row['date_engagement'],
-            'date_enigme'   => $row['enigme_id'] ? $row['date_engagement'] : null,
-            'nb_tentatives' => (int) $row['nb_tentatives'],
+            'username'    => get_the_author_meta('user_login', (int) $row['user_id']),
+            'date_chasse' => $row['enigme_id'] ? null : $row['date_engagement'],
+            'date_enigme' => $row['enigme_id'] ? $row['date_engagement'] : null,
+            'enigme_titre' => $row['enigme_id'] ? get_the_title((int) $row['enigme_id']) : '',
         ];
     }
+
     return $participants;
 }
 
@@ -145,7 +138,6 @@ function ajax_chasse_lister_participants()
 
     $chasse_id = isset($_POST['chasse_id']) ? (int) $_POST['chasse_id'] : 0;
     $page = max(1, (int) ($_POST['page'] ?? 1));
-    $orderby = isset($_POST['orderby']) ? sanitize_text_field($_POST['orderby']) : 'date';
     $order = isset($_POST['order']) ? sanitize_text_field($_POST['order']) : 'ASC';
 
     if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
@@ -158,7 +150,7 @@ function ajax_chasse_lister_participants()
 
     $par_page = 25;
     $offset = ($page - 1) * $par_page;
-    $participants = chasse_lister_participants($chasse_id, $par_page, $offset, $orderby, $order);
+    $participants = chasse_lister_participants($chasse_id, $par_page, $offset, 'date', $order);
     $total = chasse_compter_engagements($chasse_id);
     $pages = (int) ceil($total / $par_page);
 
@@ -169,8 +161,9 @@ function ajax_chasse_lister_participants()
         'par_page' => $par_page,
         'total' => $total,
         'pages' => $pages,
-        'orderby' => $orderby,
+        'orderby' => 'date',
         'order' => $order,
+        'chasse_titre' => get_the_title($chasse_id),
     ]);
     $html = ob_get_clean();
 

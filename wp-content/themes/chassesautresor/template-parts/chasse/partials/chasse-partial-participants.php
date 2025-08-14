@@ -10,40 +10,35 @@
  * - $pages (int)
  * - $orderby (string)
  * - $order (string)
+ * - $chasse_titre (string)
  */
 
 defined('ABSPATH') || exit;
 
 $args = $args ?? [];
-$participants = $args['participants'] ?? $participants ?? [];
-$page = $args['page'] ?? $page ?? 1;
-$par_page = $args['par_page'] ?? $par_page ?? 25;
-$total = $args['total'] ?? $total ?? 0;
-$pages = $args['pages'] ?? $pages ?? (int) ceil($total / $par_page);
-$orderby = $args['orderby'] ?? $orderby ?? 'date';
-$order = $args['order'] ?? $order ?? 'ASC';
+$participants  = $args['participants'] ?? $participants ?? [];
+$page          = $args['page'] ?? $page ?? 1;
+$par_page      = $args['par_page'] ?? $par_page ?? 25;
+$total         = $args['total'] ?? $total ?? 0;
+$pages         = $args['pages'] ?? $pages ?? (int) ceil($total / $par_page);
+$orderby       = $args['orderby'] ?? $orderby ?? 'date';
+$order         = $args['order'] ?? $order ?? 'ASC';
+$chasse_titre  = $args['chasse_titre'] ?? $chasse_titre ?? '';
 
-$icon_date = 'fa-sort';
-if ($orderby === 'date') {
-    $icon_date = strtoupper($order) === 'ASC' ? 'fa-sort-up' : 'fa-sort-down';
-}
-$icon_tentatives = 'fa-sort';
-if ($orderby === 'tentatives') {
-    $icon_tentatives = strtoupper($order) === 'ASC' ? 'fa-sort-up' : 'fa-sort-down';
-}
+$icon_date = strtoupper($order) === 'ASC' ? 'fa-sort-up' : 'fa-sort-down';
 ?>
-<p class="participants-count"><?= esc_html($total); ?> engagements</p>
+<h3>Participations</h3>
+<p class="participants-count"><?= esc_html($total); ?> participations</p>
 <?php if (empty($participants)) : ?>
-<p>Aucun engagement.</p>
+<p>Aucune participation.</p>
 <?php else : ?>
 <table class="stats-table compact">
   <thead>
     <tr>
       <th scope="col">Rang</th>
       <th scope="col">Joueur</th>
-      <th scope="col"><button class="sort" data-orderby="date" aria-label="Trier par date">Chasse <i class="fa-solid <?= esc_attr($icon_date); ?>"></i></button></th>
+      <th scope="col"><button class="sort" data-orderby="date" aria-label="Trier par date">Date <i class="fa-solid <?= esc_attr($icon_date); ?>"></i></button></th>
       <th scope="col">Énigme</th>
-      <th scope="col"><button class="sort" data-orderby="tentatives" aria-label="Trier par nombre d'essais">Nb essais <i class="fa-solid <?= esc_attr($icon_tentatives); ?>"></i></button></th>
     </tr>
   </thead>
   <tbody>
@@ -51,9 +46,8 @@ if ($orderby === 'tentatives') {
     <tr>
       <td><?= esc_html($rang++); ?></td>
       <td><?= esc_html($p['username']); ?></td>
-      <td><?= $p['date_chasse'] ? esc_html(mysql2date('d/m/Y H:i', $p['date_chasse'])) : ''; ?></td>
-      <td><?= $p['date_enigme'] ? esc_html(mysql2date('d/m/Y H:i', $p['date_enigme'])) : ''; ?></td>
-      <td><?= esc_html($p['nb_tentatives']); ?></td>
+      <td><?= $p['date_chasse'] ? esc_html($chasse_titre . ' – ' . mysql2date('d/m/Y H:i', $p['date_chasse'])) : ''; ?></td>
+      <td><?= !$p['date_chasse'] && $p['date_enigme'] ? esc_html($p['enigme_titre'] . ' – ' . mysql2date('d/m/Y H:i', $p['date_enigme'])) : ''; ?></td>
     </tr>
     <?php endforeach; ?>
   </tbody>

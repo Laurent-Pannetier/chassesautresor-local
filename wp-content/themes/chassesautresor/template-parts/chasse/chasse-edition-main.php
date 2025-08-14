@@ -437,6 +437,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
               'pages' => $pages_participants,
               'orderby' => 'date',
               'order' => 'ASC',
+              'chasse_titre' => $titre,
             ]); ?>
           </div>
         </div>
