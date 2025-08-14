@@ -378,7 +378,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
       <div class="edition-panel-body">
         <div class="stats-header" style="display:flex;align-items:center;">
           <div class="stats-filtres">
-            <i class="fa-solid fa-filter" aria-hidden="true"></i>
             <label for="enigme-periode">Période :</label>
             <select id="enigme-periode">
               <option value="total">Depuis le début</option>
