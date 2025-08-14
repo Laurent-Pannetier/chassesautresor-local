@@ -1182,7 +1182,7 @@ body.panneau-ouvert::before {
   display: grid;
   gap: 24px;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  margin: 1rem 0;
+  margin: 1rem 0 2.5rem;
 }
 
 .stats-cards .dashboard-card {
