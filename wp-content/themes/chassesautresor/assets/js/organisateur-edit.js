@@ -5,21 +5,30 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof initZonesClicEdition === 'function') initZonesClicEdition();
 
   // 🟢 Champs inline
-  document.querySelectorAll('.champ-organisateur[data-champ]').forEach((bloc) => {
-    const champ = bloc.dataset.champ;
-    if (bloc.classList.contains('champ-img')) {
-      if (typeof initChampImage === 'function') initChampImage(bloc);
-    } else if (champ === 'liens_publics') {
-      if (typeof initLiensOrganisateur === 'function') initLiensOrganisateur(bloc);
-    } else {
-      if (typeof initChampTexte === 'function') initChampTexte(bloc);
-    }
-  });
+    document.querySelectorAll('.champ-organisateur[data-champ]').forEach((bloc) => {
+      const champ = bloc.dataset.champ;
+      if (bloc.classList.contains('champ-img')) {
+        if (typeof initChampImage === 'function') initChampImage(bloc);
+      } else if (champ === 'liens_publics') {
+        if (typeof initLiensOrganisateur === 'function') initLiensOrganisateur(bloc);
+      } else {
+        if (typeof initChampTexte === 'function') initChampTexte(bloc);
+      }
+    });
 
-  // 🟠 Déclencheurs de résumé
-  document.querySelectorAll('.resume-infos .champ-modifier[data-champ]').forEach((btn) => {
-    if (typeof initChampDeclencheur === 'function') initChampDeclencheur(btn);
-  });
+    document.querySelectorAll('.stat-help').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const message = btn.dataset.message;
+        if (message) {
+          alert(message);
+        }
+      });
+    });
+
+    // 🟠 Déclencheurs de résumé
+    document.querySelectorAll('.resume-infos .champ-modifier[data-champ]').forEach((btn) => {
+      if (typeof initChampDeclencheur === 'function') initChampDeclencheur(btn);
+    });
 
   // 🔗 Panneau liens
   document.addEventListener('click', (e) => {
@@ -52,6 +61,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const panneauCoord = document.getElementById('panneau-coordonnees');
   const formCoord = document.getElementById('formulaire-coordonnees');
   const boutonOuvrirCoord = document.getElementById('ouvrir-coordonnees');
+  const labelAddCoord = boutonOuvrirCoord?.dataset.labelAdd;
+  const labelEditCoord = boutonOuvrirCoord?.dataset.labelEdit;
+  const ariaAddCoord = boutonOuvrirCoord?.dataset.ariaAdd;
+  const ariaEditCoord = boutonOuvrirCoord?.dataset.ariaEdit;
   const boutonFermerCoord = panneauCoord?.querySelector('.panneau-fermer');
   const champIban = document.getElementById('champ-iban');
   const champBic = document.getElementById('champ-bic');
@@ -126,6 +139,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (res.success) {
           feedbackIban.textContent = '✔️ Coordonnées enregistrées.';
           feedbackIban.classList.add('champ-confirmation');
+          if (boutonOuvrirCoord) {
+            const label = iban && bic ? labelEditCoord : labelAddCoord;
+            const aria = iban && bic ? ariaEditCoord : ariaAddCoord;
+            if (label) boutonOuvrirCoord.textContent = label;
+            if (aria) boutonOuvrirCoord.setAttribute('aria-label', aria);
+          }
           setTimeout(() => {
             if (typeof window.closePanel === 'function') {
               window.closePanel('panneau-coordonnees');
