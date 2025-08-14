@@ -44,7 +44,7 @@ function initChasseStats() {
 
   const participantsWrapper = document.querySelector('#chasse-tab-stats .liste-participants');
   if (participantsWrapper) {
-    function charger(page = 1, orderby = participantsWrapper.dataset.orderby || 'chasse', order = participantsWrapper.dataset.order || 'asc') {
+    function charger(page = 1, orderby = participantsWrapper.dataset.orderby || 'inscription', order = participantsWrapper.dataset.order || 'asc') {
       fetch(ChasseStats.ajaxUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -92,7 +92,7 @@ function initChasseStats() {
       }
       if (btn.classList.contains('sort')) {
         e.preventDefault();
-        const orderby = btn.dataset.orderby || 'chasse';
+        const orderby = btn.dataset.orderby || 'inscription';
         let order = participantsWrapper.dataset.order || 'asc';
         if (participantsWrapper.dataset.orderby !== orderby) {
           order = 'asc';

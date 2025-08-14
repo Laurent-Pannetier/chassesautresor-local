@@ -1,6 +1,6 @@
 <?php
 /**
- * Displays hunt engagements (participants) table.
+ * Displays hunt participants table.
  *
  * Variables:
  * - $participants (array)
@@ -8,9 +8,7 @@
  * - $par_page (int)
  * - $total (int)
  * - $pages (int)
- * - $orderby (string)
- * - $order (string)
- * - $chasse_titre (string)
+ * - $total_enigmes (int)
  */
 
 defined('ABSPATH') || exit;
@@ -21,32 +19,37 @@ $page          = $args['page'] ?? $page ?? 1;
 $par_page      = $args['par_page'] ?? $par_page ?? 25;
 $total         = $args['total'] ?? $total ?? 0;
 $pages         = $args['pages'] ?? $pages ?? (int) ceil($total / $par_page);
-$orderby       = $args['orderby'] ?? $orderby ?? 'chasse';
-$order         = $args['order'] ?? $order ?? 'ASC';
-$chasse_titre  = $args['chasse_titre'] ?? $chasse_titre ?? '';
-
-$icon_chasse = strtoupper($order) === 'ASC' ? 'fa-sort-up' : 'fa-sort-down';
+$total_enigmes = $args['total_enigmes'] ?? $total_enigmes ?? 0;
 ?>
-<h3>Participations</h3>
+<h3><?= esc_html__('Joueurs', 'chassesautresor-com'); ?></h3>
 <?php if (empty($participants)) : ?>
-<p>Aucune participation.</p>
+<p><?= esc_html__('Pas encore de joueur inscrit.', 'chassesautresor-com'); ?></p>
 <?php else : ?>
 <table class="stats-table compact">
   <thead>
     <tr>
-      <th scope="col">Rang</th>
-      <th scope="col">Joueur</th>
-      <th scope="col"><button class="sort" data-orderby="chasse" aria-label="Trier par date">Chasse <i class="fa-solid <?= esc_attr($icon_chasse); ?>"></i></button></th>
-      <th scope="col">Énigme</th>
+      <th scope="col"><?= esc_html__('Joueur', 'chassesautresor-com'); ?></th>
+      <th scope="col"><?= esc_html__('Inscription', 'chassesautresor-com'); ?></th>
+      <th scope="col"><?= esc_html__('Énigmes', 'chassesautresor-com'); ?></th>
+      <th scope="col"><?= esc_html__('Taux de participation', 'chassesautresor-com'); ?></th>
+      <th scope="col"><?= esc_html__('Taux de résolution', 'chassesautresor-com'); ?></th>
     </tr>
   </thead>
   <tbody>
-    <?php $rang = ($page - 1) * $par_page + 1; foreach ($participants as $p) : ?>
+    <?php foreach ($participants as $p) :
+        $links = [];
+        foreach ($p['enigmes'] as $e) {
+            $links[] = '<a href="' . esc_url($e['url']) . '">' . esc_html($e['title']) . '</a>';
+        }
+        $taux_participation = $total_enigmes > 0 ? (100 * $p['nb_engagees'] / $total_enigmes) : 0;
+        $taux_resolution    = $total_enigmes > 0 ? (100 * $p['nb_resolues'] / $total_enigmes) : 0;
+    ?>
     <tr>
-      <td><?= esc_html($rang++); ?></td>
       <td><?= esc_html($p['username']); ?></td>
-      <td><?= $p['date_chasse'] ? esc_html($chasse_titre . ' – ' . mysql2date('d/m/Y H:i', $p['date_chasse'])) : ''; ?></td>
-      <td><?= !$p['date_chasse'] && $p['date_enigme'] ? esc_html($p['enigme_titre'] . ' – ' . mysql2date('d/m/Y H:i', $p['date_enigme'])) : ''; ?></td>
+      <td><?= $p['date_inscription'] ? esc_html(mysql2date('d/m/Y H:i', $p['date_inscription'])) : ''; ?></td>
+      <td><?= implode(', ', $links); ?></td>
+      <td><?= esc_html(number_format_i18n($taux_participation, 0)); ?>%</td>
+      <td><?= esc_html(number_format_i18n($taux_resolution, 0)); ?>%</td>
     </tr>
     <?php endforeach; ?>
   </tbody>

@@ -424,8 +424,10 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
         $max_participation = !empty($participation_rates) ? max(array_column($participation_rates, 'value')) : 0;
         $max_resolution   = !empty($resolution_rates) ? max(array_column($resolution_rates, 'value')) : 0;
         $par_page_participants = 25;
-        $pages_participants    = (int) ceil($total_engagements / $par_page_participants);
-        $participants          = chasse_lister_participants($chasse_id, $par_page_participants, 0, 'chasse', 'ASC');
+        $total_participants    = chasse_compter_participants($chasse_id);
+        $pages_participants    = (int) ceil($total_participants / $par_page_participants);
+        $total_enigmes         = count($enigme_ids);
+        $participants          = chasse_lister_participants($chasse_id, $par_page_participants, 0, 'inscription', 'ASC');
       ?>
         <div class="edition-panel-body">
           <div class="stats-header" style="display:flex;align-items:center;justify-content:flex-end;gap:1rem;">
@@ -478,16 +480,14 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
               'enigmes' => $enigmes_stats,
               'total'   => $total_engagements,
           ]); ?>
-          <div class="liste-participants" data-page="1" data-pages="<?= esc_attr($pages_participants); ?>" data-order="asc" data-orderby="chasse">
+          <div class="liste-participants" data-page="1" data-pages="<?= esc_attr($pages_participants); ?>" data-order="asc" data-orderby="inscription">
             <?php get_template_part('template-parts/chasse/partials/chasse-partial-participants', null, [
               'participants' => $participants,
               'page' => 1,
               'par_page' => $par_page_participants,
-              'total' => $total_engagements,
+              'total' => $total_participants,
               'pages' => $pages_participants,
-              'orderby' => 'chasse',
-              'order' => 'ASC',
-              'chasse_titre' => $titre,
+              'total_enigmes' => $total_enigmes,
             ]); ?>
           </div>
         </div>
