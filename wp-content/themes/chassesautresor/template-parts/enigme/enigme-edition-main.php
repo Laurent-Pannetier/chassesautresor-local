@@ -377,14 +377,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
       ?>
       <div class="edition-panel-body">
         <div class="stats-header" style="display:flex;align-items:center;justify-content:flex-end;gap:1rem;">
-          <a href="?edition=open&amp;tab=stats" class="stats-reset"><i class="fa-solid fa-rotate-right"></i> Réinitialiser</a>
+          <a href="?edition=open&amp;tab=stats" class="stats-reset"><i class="fa-solid fa-rotate-right"></i> Actualiser</a>
           <div class="stats-filtres">
             <label for="enigme-periode">Période&nbsp;:</label>
             <select id="enigme-periode">
-              <option value="total">Total (depuis le début)</option>
+              <option value="total">Total</option>
               <option value="jour">Aujourd’hui</option>
-              <option value="semaine">Semaine (7&nbsp;derniers jours)</option>
-              <option value="mois">Mois (30&nbsp;derniers jours)</option>
+              <option value="semaine">Semaine</option>
+              <option value="mois">Mois</option>
             </select>
           </div>
         </div>
