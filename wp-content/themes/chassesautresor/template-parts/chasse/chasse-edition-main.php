@@ -385,13 +385,25 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
             require_once get_stylesheet_directory() . '/inc/chasse/stats.php';
         }
         $periode             = 'total';
-        $nb_participants     = chasse_compter_participants($chasse_id, $periode);
-        $nb_tentatives       = chasse_compter_tentatives($chasse_id, $periode);
-        $nb_points           = chasse_compter_points_collectes($chasse_id, $periode);
-        $total_engagements   = chasse_compter_engagements($chasse_id);
+        $nb_participants       = chasse_compter_participants($chasse_id, $periode);
+        $nb_tentatives         = chasse_compter_tentatives($chasse_id, $periode);
+        $nb_points             = chasse_compter_points_collectes($chasse_id, $periode);
+        $total_engagements     = chasse_compter_engagements($chasse_id);
+        $enigme_ids            = recuperer_ids_enigmes_pour_chasse($chasse_id);
+        $enigmes_stats         = [];
+        foreach ($enigme_ids as $enigme_id) {
+            $enigmes_stats[] = [
+                'id'          => $enigme_id,
+                'titre'       => get_the_title($enigme_id),
+                'engagements' => enigme_compter_joueurs_engages($enigme_id, $periode),
+                'tentatives'  => enigme_compter_tentatives($enigme_id, 'automatique', $periode),
+                'points'      => enigme_compter_points_depenses($enigme_id, 'automatique', $periode),
+                'resolutions' => enigme_compter_bonnes_solutions($enigme_id, 'automatique', $periode),
+            ];
+        }
         $par_page_participants = 25;
-        $pages_participants  = (int) ceil($total_engagements / $par_page_participants);
-        $participants        = chasse_lister_participants($chasse_id, $par_page_participants, 0, 'chasse', 'ASC');
+        $pages_participants    = (int) ceil($total_engagements / $par_page_participants);
+        $participants          = chasse_lister_participants($chasse_id, $par_page_participants, 0, 'chasse', 'ASC');
       ?>
         <div class="edition-panel-body">
           <div class="stats-header" style="display:flex;align-items:center;justify-content:flex-end;gap:1rem;">
@@ -428,6 +440,10 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
             ]);
             ?>
           </div>
+          <?php get_template_part('template-parts/chasse/partials/chasse-partial-enigmes', null, [
+              'enigmes' => $enigmes_stats,
+              'total'   => $total_engagements,
+          ]); ?>
           <div class="liste-participants" data-page="1" data-pages="<?= esc_attr($pages_participants); ?>" data-order="asc" data-orderby="chasse">
             <?php get_template_part('template-parts/chasse/partials/chasse-partial-participants', null, [
               'participants' => $participants,
