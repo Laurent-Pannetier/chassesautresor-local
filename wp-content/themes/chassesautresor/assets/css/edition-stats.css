@@ -24,7 +24,7 @@
   display: grid;
   gap: 32px;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  margin: 1.5rem 0 2rem;
+  margin: 1.5rem 0 3rem;
 }
 
 .stats-cards .dashboard-card {
@@ -63,6 +63,11 @@
 /* ----- Tableaux de statistiques ----- */
 .stats-table-wrapper {
   margin: 2rem 0;
+}
+
+/* Titres des sections de tableaux */
+.stats-section-title {
+  font-size: 1rem;
 }
 
 .stats-table {
