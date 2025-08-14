@@ -28,14 +28,12 @@ $bic          = get_field('coordonnees_bancaires_bic', $organisateur_id);
 
 $liens_publics = get_field('liens_publics', $organisateur_id); // ← manquant !
 $liens_publics = is_array($liens_publics) ? array_filter($liens_publics, function ($entree) {
-  $type_raw = $entree['type_de_lien'] ?? null;
-  $url      = $entree['url_lien'] ?? null;
-  $type = is_array($type_raw) ? ($type_raw[0] ?? '') : $type_raw;
+    $type_raw = $entree['type_de_lien'] ?? null;
+    $url      = $entree['url_lien'] ?? null;
+    $type = is_array($type_raw) ? ($type_raw[0] ?? '') : $type_raw;
 
-  return is_string($type) && trim($type) !== '' && is_string($url) && trim($url) !== '';
+    return is_string($type) && trim($type) !== '' && is_string($url) && trim($url) !== '';
 }) : [];
-
-$nb_liens = count($liens_publics);
 
 
 $peut_editer_titre = champ_est_editable('post_title', $organisateur_id);
@@ -63,6 +61,7 @@ $classe_vide_coordonnees = ($iban_vide || $bic_vide) ? 'champ-vide' : '';
         <button class="edition-tab active" data-target="organisateur-tab-param">Paramètres</button>
         <button class="edition-tab" data-target="organisateur-tab-stats">Statistiques</button>
         <button class="edition-tab" data-target="organisateur-tab-revenus">Points</button>
+        <button class="edition-tab" data-target="organisateur-tab-animation">Animation</button>
       </div>
     </div>
 
@@ -147,29 +146,6 @@ $classe_vide_coordonnees = ($iban_vide || $bic_vide) ? 'champ-vide' : '';
             <div class="resume-bloc resume-facultatif deux-col-bloc">
               <h3>Facultatif (mais recommandé)</h3>
               <ul class="resume-infos">
-
-                <?php
-                $classes = ['champ-organisateur', 'ligne-liens'];
-                $classes[] = count($liens_publics) > 0 ? 'champ-rempli' : 'champ-vide';
-                ?>
-
-                <li class="<?= implode(' ', $classes); ?>"
-                  data-champ="liens_publics"
-                  data-cpt="organisateur"
-                  data-post-id="<?= esc_attr($organisateur_id); ?>">
-
-                  des liens externes (réseau social ou site)
-                  <?php if ($peut_editer) : ?>
-                    <button type="button"
-                      class="champ-modifier ouvrir-panneau-liens"
-                      data-champ="liens_publics"
-                      data-cpt="organisateur"
-                      data-post-id="<?= esc_attr($organisateur_id); ?>"
-                      aria-label="Configurer les liens publics">
-                      ✏️
-                    </button>
-                  <?php endif; ?>
-                </li>
 
                 <li class="ligne-email <?= !empty($email_contact) ? 'champ-rempli' : ''; ?>">
                   <i aria-hidden="true" class="fa-regular fa-solid fa-envelope"></i>
@@ -270,6 +246,65 @@ $classe_vide_coordonnees = ($iban_vide || $bic_vide) ? 'champ-vide' : '';
           </div>
         </div>
       </div> <!-- .edition-panel-body -->
+    </div>
+
+    <div id="organisateur-tab-animation" class="edition-tab-content" style="display:none;">
+      <i class="fa-solid fa-bullhorn tab-watermark" aria-hidden="true"></i>
+      <div class="edition-panel-header">
+        <h2><i class="fa-solid fa-bullhorn"></i> Animation</h2>
+      </div>
+      <div class="edition-panel-body">
+        <div class="edition-panel-section edition-panel-section-ligne">
+          <div class="section-content">
+            <div class="resume-blocs-grid">
+              <div class="resume-bloc resume-visibilite">
+                <h3>Communiquez</h3>
+                <div class="dashboard-grid stats-cards">
+                  <div class="dashboard-card champ-organisateur champ-liens <?= empty($liens_publics) ? 'champ-vide' : 'champ-rempli'; ?>"
+                    data-champ="liens_publics"
+                    data-cpt="organisateur"
+                    data-post-id="<?= esc_attr($organisateur_id); ?>">
+                    <i class="fa-solid fa-share-nodes" aria-hidden="true"></i>
+                    <h3>Sites et réseaux de l'organisation</h3>
+                    <?php if ($peut_modifier) : ?>
+                      <button type="button"
+                        class="stat-value champ-modifier ouvrir-panneau-liens"
+                        data-champ="liens_publics"
+                        data-cpt="organisateur"
+                        data-post-id="<?= esc_attr($organisateur_id); ?>">
+                        <?= empty($liens_publics) ? 'Ajouter' : 'Éditer'; ?>
+                      </button>
+                    <?php endif; ?>
+                    <div class="champ-donnees"
+                      data-valeurs='<?= json_encode($liens_publics, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>'></div>
+                    <div class="champ-affichage champ-affichage-liens">
+                      <?= render_liens_publics($liens_publics, 'organisateur', ['placeholder' => false]); ?>
+                    </div>
+                    <div class="champ-feedback"></div>
+                  </div>
+                  <?php
+                  $format = isset($_GET['format']) ? sanitize_key($_GET['format']) : 'png';
+                  $formats_autorises = ['png', 'svg', 'eps'];
+                  if (!in_array($format, $formats_autorises, true)) {
+                      $format = 'png';
+                  }
+                  $url = get_permalink($organisateur_id);
+                  $url_qr_code = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data='
+                      . rawurlencode($url)
+                      . '&format=' . $format;
+                  ?>
+                  <div class="dashboard-card champ-qr-code">
+                    <img class="qr-code-icon" src="<?= esc_url($url_qr_code); ?>" alt="QR code de l'organisation">
+                    <h3>QR code de votre organisation</h3>
+                    <a class="stat-value" href="<?= esc_url($url_qr_code); ?>"
+                      download="<?= esc_attr('qr-organisateur-' . $organisateur_id . '.' . $format); ?>">Télécharger</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="edition-panel-footer"></div>
