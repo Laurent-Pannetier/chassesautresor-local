@@ -17,26 +17,21 @@ function organisateur_compter_joueurs_uniques(int $organisateur_id): int
         return 0;
     }
 
-    global $wpdb;
-    $table = $wpdb->prefix . 'engagements';
-    $ids   = [];
-
-    foreach ($query->posts as $post) {
-        $sql = $wpdb->prepare(
-            "SELECT DISTINCT user_id FROM {$table} WHERE chasse_id = %d AND enigme_id IS NULL",
-            $post->ID
-        );
-        $rows = $wpdb->get_col($sql);
-        if ($rows) {
-            $ids = array_merge($ids, array_map('intval', $rows));
-        }
+    $ids = array_map('intval', wp_list_pluck($query->posts, 'ID'));
+    if (empty($ids)) {
+        return 0;
     }
 
-    $ids = array_filter(array_unique($ids), static function ($id) {
-        return $id > 0;
-    });
+    global $wpdb;
+    $table        = $wpdb->prefix . 'engagements';
+    $placeholders = implode(',', array_fill(0, count($ids), '%d'));
 
-    return count($ids);
+    $sql = $wpdb->prepare(
+        "SELECT DISTINCT user_id FROM {$table} WHERE enigme_id IS NULL AND chasse_id IN ($placeholders)",
+        $ids
+    );
+
+    return count($wpdb->get_col($sql));
 }
 
 /**
