@@ -1,0 +1,112 @@
+/* ==================================================
+   Statistiques - Panneaux d'édition
+   Structure commune : filtres, cartes puis tableaux
+   ================================================== */
+
+/* ----- Filtres de statistiques ----- */
+.stats-filtres {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  background-color: var(--color-editor-background);
+  border: 1px solid var(--color-editor-border);
+  border-radius: 4px;
+}
+
+.stats-filtres label {
+  white-space: nowrap;
+}
+
+/* ----- Cartes de statistiques ----- */
+.stats-cards {
+  display: grid;
+  gap: 32px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  margin: 1.5rem 0 2rem;
+}
+
+.stats-cards .dashboard-card {
+  background-color: var(--color-editor-background);
+  border: 1px solid var(--color-editor-border);
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  color: var(--color-editor-text);
+}
+
+.stats-cards .dashboard-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-editor-heading);
+}
+
+.stats-cards .dashboard-card-header i {
+  font-size: 1rem;
+}
+
+.stats-cards .stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+/* ----- Tableaux de statistiques ----- */
+.stats-table-wrapper {
+  margin: 2rem 0;
+}
+
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: right;
+}
+
+.stats-table th,
+.stats-table td {
+  padding: 8px;
+}
+
+.stats-table th {
+  font-weight: 600;
+  color: var(--color-editor-heading);
+  border-bottom: 1px solid var(--color-editor-border);
+}
+
+.stats-table td {
+  color: var(--color-editor-text);
+}
+
+.stats-table tbody tr:nth-child(even) {
+  background-color: var(--color-editor-field-hover);
+}
+
+.stats-table.compact th,
+.stats-table.compact td {
+  padding: 4px;
+  font-size: 0.85em;
+}
+
+.stats-table th button.sort {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stats-table th button.sort i {
+  margin-left: 4px;
+}
+

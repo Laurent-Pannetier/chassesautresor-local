@@ -44,6 +44,7 @@ add_action('wp_enqueue_scripts', function () {
         'cartes-style'       => 'cartes.css',
         'organisateurs'      => 'organisateurs.css',
         'edition'            => 'edition.css',
+        'edition-stats'      => 'edition-stats.css',
         'mon compte'         => 'mon-compte.css',
         'commerce-style'     => 'commerce.css',
         'home'               => 'home.css',

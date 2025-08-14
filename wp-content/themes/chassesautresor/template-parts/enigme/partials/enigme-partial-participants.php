@@ -35,15 +35,24 @@ if ($orderby === 'tentatives') {
 <?php if (empty($participants)) : ?>
 <p>Aucun participant engagé.</p>
 <?php else : ?>
-<table class="stats-table compact">
+<div class="stats-table-wrapper">
+  <table class="stats-table compact">
   <thead>
     <tr>
       <th scope="col">Rang</th>
       <th scope="col">Nom</th>
-      <th scope="col"><button class="sort" data-orderby="date" aria-label="Trier par date">Date <i class="fa-solid <?= esc_attr($icon_date); ?>"></i></button></th>
-      <?php if ($mode_validation !== 'aucune') : ?>
-      <th scope="col"><button class="sort" data-orderby="tentatives" aria-label="Trier par nombre d'essais">Nb essais <i class="fa-solid <?= esc_attr($icon_tentatives); ?>"></i></button></th>
-      <?php endif; ?>
+        <th scope="col">
+          <button class="sort" data-orderby="date" aria-label="Trier par date">
+            Date <i class="fa-solid <?= esc_attr($icon_date); ?>"></i>
+          </button>
+        </th>
+        <?php if ($mode_validation !== 'aucune') : ?>
+        <th scope="col">
+          <button class="sort" data-orderby="tentatives" aria-label="Trier par nombre d'essais">
+            Nb essais <i class="fa-solid <?= esc_attr($icon_tentatives); ?>"></i>
+          </button>
+        </th>
+        <?php endif; ?>
       <th scope="col">Trouvé</th>
     </tr>
   </thead>
@@ -56,20 +65,33 @@ if ($orderby === 'tentatives') {
       <?php if ($mode_validation !== 'aucune') : ?>
       <td><?= esc_html($p['nb_tentatives']); ?></td>
       <?php endif; ?>
-      <td><?= $p['trouve'] && !empty($p['date_resolution']) ? esc_html(mysql2date('d/m/Y H:i', $p['date_resolution'])) : ''; ?></td>
+        <td>
+          <?= $p['trouve'] && !empty($p['date_resolution'])
+              ? esc_html(mysql2date('d/m/Y H:i', $p['date_resolution']))
+              : ''; ?>
+        </td>
     </tr>
     <?php endforeach; ?>
   </tbody>
 </table>
-<div class="pager" style="margin-top:10px;">
-  <?php if ($page > 1) : ?>
-    <button class="pager-first" aria-label="Première page"><i class="fa-solid fa-angles-left"></i></button>
-    <button class="pager-prev" aria-label="Page précédente" style="margin-left:5px;"><i class="fa-solid fa-angle-left"></i></button>
-  <?php endif; ?>
+  <div class="pager" style="margin-top:10px;">
+    <?php if ($page > 1) : ?>
+      <button class="pager-first" aria-label="Première page">
+        <i class="fa-solid fa-angles-left"></i>
+      </button>
+      <button class="pager-prev" aria-label="Page précédente" style="margin-left:5px;">
+        <i class="fa-solid fa-angle-left"></i>
+      </button>
+    <?php endif; ?>
   <span class="pager-info" style="margin:0 8px;"><?= esc_html($page); ?> / <?= esc_html($pages); ?></span>
-  <?php if ($page < $pages) : ?>
-    <button class="pager-next" aria-label="Page suivante" style="margin-left:10px;"><i class="fa-solid fa-angle-right"></i></button>
-    <button class="pager-last" aria-label="Dernière page" style="margin-left:5px;"><i class="fa-solid fa-angles-right"></i></button>
-  <?php endif; ?>
+    <?php if ($page < $pages) : ?>
+      <button class="pager-next" aria-label="Page suivante" style="margin-left:10px;">
+        <i class="fa-solid fa-angle-right"></i>
+      </button>
+      <button class="pager-last" aria-label="Dernière page" style="margin-left:5px;">
+        <i class="fa-solid fa-angles-right"></i>
+      </button>
+    <?php endif; ?>
+  </div>
 </div>
 <?php endif; ?>
