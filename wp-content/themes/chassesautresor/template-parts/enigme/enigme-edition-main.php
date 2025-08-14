@@ -466,7 +466,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
         $pages_participants = (int) ceil($nb_participants / $par_page_participants);
         $participants = enigme_lister_participants($enigme_id, $mode_validation, $par_page_participants, 0, 'date', 'ASC');
         ?>
-        <h3><?= esc_html($nb_participants); ?> participants</h3>
         <div class="liste-participants" data-page="1" data-pages="<?= esc_attr($pages_participants); ?>" data-order="asc" data-orderby="date">
           <?php get_template_part('template-parts/enigme/partials/enigme-partial-participants', null, [
             'participants' => $participants,
