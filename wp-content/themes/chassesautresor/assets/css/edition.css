@@ -176,6 +176,14 @@ body.edition-active-enigme .single-enigme-main .champ-img .champ-modifier {
   transform: translateY(0);
 }
 
+.champ-img.champ-vide img {
+  display: none;
+}
+
+.champ-img:not(.champ-vide) .champ-ajout-image {
+  display: none;
+}
+
 .media-modal.wp-core-ui button.media-modal-close:hover {
   color: white !important;
 }

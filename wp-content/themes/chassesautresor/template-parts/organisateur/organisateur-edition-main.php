@@ -20,6 +20,8 @@ $user_points    = function_exists('get_user_points') ? get_user_points((int) $cu
 // Post
 $titre        = get_post_field('post_title', $organisateur_id);
 $logo         = get_field('profil_public_logo_organisateur', $organisateur_id);
+$logo_id      = is_array($logo) ? ($logo['ID'] ?? null) : $logo;
+$logo_url     = $logo_id ? wp_get_attachment_image_src($logo_id, 'thumbnail')[0] : null;
 $description  = get_field('description_longue', $organisateur_id);
 $reseaux      = get_field('reseaux_sociaux', $organisateur_id);
 $site         = get_field('lien_site_web', $organisateur_id);
@@ -116,19 +118,28 @@ $is_complete = (
                   <div class="champ-feedback"></div>
                 </li>
 
-                <li class="champ-organisateur champ-logo ligne-logo <?= !empty($logo) ? 'champ-rempli' : 'champ-vide'; ?>" data-champ="profil_public_logo_organisateur">
-                  Un logo
-                  <?php if ($peut_editer) : ?>
-                    <button type="button"
-                      class="champ-modifier"
-                      aria-label="Modifier le logo"
-                      data-champ="profil_public_logo_organisateur"
-                      data-cpt="organisateur"
-                      data-post-id="<?php echo esc_attr($organisateur_id); ?>">
-                      ✏️
-                    </button>
-
-                  <?php endif; ?>
+                <li class="champ-organisateur champ-img champ-logo ligne-logo <?= empty($logo_id) ? 'champ-vide' : 'champ-rempli'; ?>" data-champ="profil_public_logo_organisateur" data-cpt="organisateur" data-post-id="<?= esc_attr($organisateur_id); ?>">
+                  Logo organisateur
+                  <div class="champ-affichage">
+                    <?php if ($peut_editer) : ?>
+                      <button type="button"
+                        class="champ-modifier"
+                        aria-label="Modifier le logo"
+                        data-champ="profil_public_logo_organisateur"
+                        data-cpt="organisateur"
+                        data-post-id="<?= esc_attr($organisateur_id); ?>">
+                        <img src="<?= esc_url($logo_url ?: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=='); ?>" alt="Logo de l’organisateur" />
+                        <span class="champ-ajout-image">ajouter une image</span>
+                        <span class="icone-modif">✏️</span>
+                      </button>
+                    <?php else : ?>
+                      <?php if ($logo_url) : ?>
+                        <img src="<?= esc_url($logo_url); ?>" alt="Logo de l’organisateur" />
+                      <?php else : ?>
+                        <span class="champ-ajout-image">ajouter une image</span>
+                      <?php endif; ?>
+                    <?php endif; ?>
+                  </div>
                   <input type="hidden" class="champ-input" value="<?= esc_attr($logo_id ?? '') ?>">
                   <div class="champ-feedback"></div>
                 </li>
