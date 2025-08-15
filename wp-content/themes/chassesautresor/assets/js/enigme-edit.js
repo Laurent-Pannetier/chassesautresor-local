@@ -18,12 +18,14 @@ function initEnigmeEdit() {
   boutonToggle?.addEventListener('click', () => {
     document.body.classList.toggle('edition-active-enigme');
     document.body.classList.toggle('panneau-ouvert');
+    document.body.classList.toggle('mode-edition');
   });
 
 
   panneauEdition?.querySelector('.panneau-fermer')?.addEventListener('click', () => {
     document.body.classList.remove('edition-active-enigme');
     document.body.classList.remove('panneau-ouvert');
+    document.body.classList.remove('mode-edition');
     document.activeElement?.blur();
   });
 

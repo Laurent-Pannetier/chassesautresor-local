@@ -243,9 +243,9 @@ span.champ-obligatoire {
 }
 
 
-/* ========== ✏️ COULEURS ÉDITION ========== */
+/* ========== ✏️ COULEURS MODE ÉDITION ========== */
 
-:root {
+.mode-edition {
   /* 📝 Nuancier d’édition */
 
   --color-editor-background:       #F1F3F4;   /* 🎭 Fond général : gris clair neutre */
@@ -268,7 +268,7 @@ span.champ-obligatoire {
 
 
 /* 🔗 Bridge HSL ↔️ nuancier existant (ne remplace rien) */
-:root {
+.mode-edition {
   /* dérivés HSL (triplets) de tes variables existantes */
   --editor-background-hsl:      200 12% 95%; /* = #F1F3F4 → var(--color-editor-background) */
   --editor-border-hsl:          220 09% 87%; /* = #DADCE0 → var(--color-editor-border) */
