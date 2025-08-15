@@ -66,11 +66,16 @@ class PointsRepository
 
     /**
      * Record a conversion request with pending status and return the inserted row ID.
+     *
+     * @param int   $userId    User identifier.
+     * @param int   $points    Point variation (negative for conversions).
+     * @param float $amountEur Equivalent amount in euros.
      */
-    public function logConversionRequest(int $userId, int $points): int
+    public function logConversionRequest(int $userId, int $points, float $amountEur): int
     {
         $current = $this->getBalance($userId);
         $newBalance = max(0, $current + $points);
+        $amountEur = round($amountEur, 2);
 
         $this->wpdb->insert(
             $this->table,
@@ -78,11 +83,12 @@ class PointsRepository
                 'user_id'        => $userId,
                 'balance'        => $newBalance,
                 'points'         => $points,
+                'amount_eur'     => $amountEur,
                 'reason'         => 'conversion',
                 'request_status' => 'pending',
                 'request_date'   => current_time('mysql'),
             ],
-            ['%d', '%d', '%d', '%s', '%s', '%s']
+            ['%d', '%d', '%d', '%f', '%s', '%s', '%s']
         );
 
         return (int) $this->wpdb->insert_id;

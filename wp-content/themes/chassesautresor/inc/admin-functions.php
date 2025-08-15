@@ -581,7 +581,7 @@ function traiter_demande_paiement() {
 
     global $wpdb;
     $repo   = new PointsRepository($wpdb);
-    $log_id = $repo->logConversionRequest($user_id, -$points_a_convertir);
+    $log_id = $repo->logConversionRequest($user_id, -$points_a_convertir, $montant_euros);
 
     $nouvelle_demande = [
         'paiement_date_demande'   => current_time('mysql'),
