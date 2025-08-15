@@ -1126,6 +1126,8 @@ body.panneau-ouvert::before {
 .edition-panel table {
   width: 100%;
   border-collapse: collapse;
+  border-radius: 6px;
+  overflow: hidden;
 }
 
 .edition-panel th,
@@ -1134,13 +1136,18 @@ body.panneau-ouvert::before {
   text-align: right;
 }
 
+.edition-panel th:first-child,
+.edition-panel td:first-child {
+  text-align: left;
+}
+
 .edition-panel thead {
-  background-color: var(--color-editor-background);
+  background-color: rgba(0, 0, 0, 0.04);
   color: var(--color-editor-heading);
 }
 
 .edition-panel tbody tr:nth-child(even) {
-  background-color: var(--color-editor-field-hover);
+  background-color: rgba(0, 0, 0, 0.02);
 }
 
 /* Table des tentatives de réponse */
@@ -1148,6 +1155,8 @@ body.panneau-ouvert::before {
   width: 100%;
   border-collapse: collapse;
   margin-top: 1rem;
+  border-radius: 6px;
+  overflow: hidden;
 }
 
 .table-tentatives th,
@@ -1158,9 +1167,14 @@ body.panneau-ouvert::before {
 }
 
 .table-tentatives th {
-  background-color: var(--color-editor-background);
+  background-color: rgba(0, 0, 0, 0.04);
   color: var(--color-editor-heading);
   text-align: right;
+}
+
+.table-tentatives th:first-child,
+.table-tentatives td:first-child {
+  text-align: left;
 }
 
 .table-tentatives th:nth-child(1),
@@ -1369,6 +1383,8 @@ body.panneau-ouvert::before {
 .stats-table {
   width: 100%;
   border-collapse: collapse;
+  border-radius: 6px;
+  overflow: hidden;
 }
 
 .stats-table th,
@@ -1377,10 +1393,16 @@ body.panneau-ouvert::before {
   padding: 8px 12px;
 }
 
+.stats-table th:first-child,
+.stats-table td:first-child {
+  text-align: left;
+}
+
 .stats-table th {
   font-weight: 600;
   color: var(--color-editor-heading);
   border-bottom: 1px solid var(--color-editor-border);
+  background-color: rgba(0, 0, 0, 0.04);
 }
 
 .stats-table td {
@@ -1388,7 +1410,7 @@ body.panneau-ouvert::before {
 }
 
 .stats-table tbody tr:nth-child(even) {
-  background-color: var(--color-editor-field-hover);
+  background-color: rgba(0, 0, 0, 0.02);
 }
 
 .stats-table-wrapper {
@@ -1422,6 +1444,17 @@ body.panneau-ouvert::before {
 
 .stats-table th button.sort i {
   margin-left: 4px;
+}
+
+/* 🏷️ Aspect étiquette pour les valeurs */
+.etiquette {
+  display: inline-block;
+  padding: 2px 6px;
+  border: 1px solid var(--color-editor-border);
+  border-radius: 4px;
+  background-color: var(--color-editor-background);
+  font-size: 0.85em;
+  white-space: nowrap;
 }
 
 /* ====== Mode de fin ====== */

@@ -432,10 +432,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
             <table class="stats-table" id="enigme-resolveurs-table">
               <thead>
                 <tr>
-                  <th scope="col">Rang</th>
+                  <th scope="col" data-format="etiquette">Rang</th>
                   <th scope="col">Joueur</th>
                   <th scope="col">Date</th>
-                  <th scope="col">Tentatives</th>
+                  <th scope="col" data-format="etiquette">Tentatives</th>
                 </tr>
               </thead>
               <tbody>

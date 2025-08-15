@@ -9,10 +9,11 @@
 
 defined('ABSPATH') || exit;
 
-$args    = $args ?? [];
-$enigmes = $args['enigmes'] ?? $enigmes ?? [];
-$total   = $args['total'] ?? $total ?? 0;
-$title   = $args['title'] ?? '';
+$args          = $args ?? [];
+$enigmes       = $args['enigmes'] ?? $enigmes ?? [];
+$total         = $args['total'] ?? $total ?? 0;
+$title         = $args['title'] ?? '';
+$cols_etiquette = $args['cols_etiquette'] ?? [];
 if ($title !== '') {
     echo '<h3>' . esc_html($title) . '</h3>';
 }
@@ -24,15 +25,15 @@ if (empty($enigmes)) : ?>
     <tr>
       <th scope="col" rowspan="2">Titre</th>
       <th scope="col" colspan="2">Participants</th>
-      <th scope="col" rowspan="2">Tentatives</th>
-      <th scope="col" rowspan="2">Points</th>
+      <th scope="col" rowspan="2"<?= in_array(4, $cols_etiquette, true) ? ' data-format="etiquette" data-col="4"' : ''; ?>>Tentatives</th>
+      <th scope="col" rowspan="2"<?= in_array(5, $cols_etiquette, true) ? ' data-format="etiquette" data-col="5"' : ''; ?>>Points</th>
       <th scope="col" colspan="2">Bonnes réponses</th>
     </tr>
     <tr>
-      <th scope="col">Nombre</th>
-      <th scope="col">Taux</th>
-      <th scope="col">Nombre</th>
-      <th scope="col">Taux</th>
+      <th scope="col"<?= in_array(2, $cols_etiquette, true) ? ' data-format="etiquette" data-col="2"' : ''; ?>>Nombre</th>
+      <th scope="col"<?= in_array(3, $cols_etiquette, true) ? ' data-format="etiquette" data-col="3"' : ''; ?>>Taux</th>
+      <th scope="col"<?= in_array(6, $cols_etiquette, true) ? ' data-format="etiquette" data-col="6"' : ''; ?>>Nombre</th>
+      <th scope="col"<?= in_array(7, $cols_etiquette, true) ? ' data-format="etiquette" data-col="7"' : ''; ?>>Taux</th>
     </tr>
   </thead>
   <tbody>
