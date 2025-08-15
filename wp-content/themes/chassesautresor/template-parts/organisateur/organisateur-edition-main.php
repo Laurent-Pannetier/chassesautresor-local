@@ -75,13 +75,11 @@ $is_complete = (
 
     <div id="organisateur-tab-param" class="edition-tab-content active">
       <i class="fa-solid fa-sliders tab-watermark" aria-hidden="true"></i>
+      <div class="edition-panel-header">
+        <h2><i class="fa-solid fa-sliders"></i> Paramètres</h2>
+      </div>
       <div class="edition-panel-body">
         <div class="edition-panel-section edition-panel-section-ligne">
-          <h3 class="section-title">
-            <i class="fa-solid fa-sliders" aria-hidden="true"></i>
-            Paramètres
-          </h3>
-
           <div class="section-content">
             <div class="resume-blocs-grid">
               <!-- SECTION 1 : Informations -->
