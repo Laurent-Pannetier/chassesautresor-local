@@ -40,9 +40,10 @@ defined('ABSPATH') || exit;
             echo $statut_data['message_html'];
         }
 
-        $user_id   = get_current_user_id();
-        $style     = get_field('enigme_style_affichage', $enigme_id) ?? 'defaut';
-        $chasse_id = recuperer_id_chasse_associee($enigme_id);
+        $user_id       = get_current_user_id();
+        $style         = get_field('enigme_style_affichage', $enigme_id) ?? 'defaut';
+        $chasse_id     = recuperer_id_chasse_associee($enigme_id);
+        $edition_active = utilisateur_peut_modifier_post($enigme_id);
 
         $liste      = $chasse_id ? recuperer_enigmes_pour_chasse($chasse_id) : [];
         $menu_items = [];
@@ -75,6 +76,10 @@ defined('ABSPATH') || exit;
 
         echo '<div class="container container--xl-full enigme-layout">';
         echo '<aside class="enigme-sidebar">';
+
+        if ($edition_active) {
+            echo '<button id="toggle-mode-edition-enigme" type="button" class="bouton-edition-toggle" data-cpt="enigme" aria-label="' . esc_attr__('Activer le mode édition', 'chassesautresor') . '"><i class="fa-solid fa-sliders"></i></button>';
+        }
 
         if ($chasse_id) {
             $logo = get_the_post_thumbnail($chasse_id, 'thumbnail');

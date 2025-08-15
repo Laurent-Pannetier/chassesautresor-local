@@ -91,18 +91,6 @@ if (is_singular('enigme')) {
 
       <?php if (enigme_est_visible_pour($user_id, $enigme_id)) : ?>
         <section class="enigme-wrapper">
-          <!-- 🔧 Bouton pour ouvrir le panneau d’édition -->
-          <?php if ($edition_active) : ?>
-            <div class="header-actions-droite">
-              <button id="toggle-mode-edition-enigme" type="button"
-                      class="bouton-edition-toggle"
-                      data-cpt="enigme"
-                      aria-label="Activer le mode édition">
-                <i class="fa-solid fa-sliders"></i>
-              </button>
-            </div>
-          <?php endif; ?>
-
           <!-- 🧩 Affichage de l'énigme -->
           <?php afficher_enigme_stylisee($enigme_id, $statut_data); ?>
         </section>
