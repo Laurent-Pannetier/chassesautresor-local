@@ -648,9 +648,14 @@ body.edition-active-enigme .edition-panel-enigme.edition-panel-modal {
 }
 
 .edition-panel-section .resume-technique label,
-.edition-panel-section .resume-reglages label {
+.edition-panel-section .resume-reglages label,
+.edition-panel-section .resume-obligatoire label {
   display: inline-block;
   min-width: 150px;
+}
+
+.resume-infos .champ-valeur {
+  display: inline-block;
 }
 
 .edition-panel-section .resume-technique input.inline-date,
