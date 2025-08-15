@@ -1446,7 +1446,8 @@ body.panneau-ouvert::before {
   margin-left: 4px;
 }
 
-#chasse-tab-stats > div.edition-panel-body > table > thead > tr:nth-child(2) > th:nth-child(1) {
+#chasse-tab-stats > div.edition-panel-body > table > thead > tr:nth-child(2) > th:nth-child(1),
+#organisateur-tab-stats > div.edition-panel-body > table > thead > tr:nth-child(2) > th:nth-child(1) {
   text-align: right;
 }
 
