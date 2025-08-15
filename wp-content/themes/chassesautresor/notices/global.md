@@ -431,7 +431,7 @@ $champ_valide = true; // Toujours marquer comme traité, même si update_field r
 
 ### 📌 À retenir : cas confirmés dans le projet
 
-* `coordonnees_bancaires` (organisateur) : effacé si pas de protection contre le fallback
+* `iban` / `bic` (organisateur) : champs actuels pour les coordonnées bancaires
 * `enigme_reponse_variantes` (ancien champ groupe) : retiré du projet pour éviter toute suppression accidentelle
 
 ---

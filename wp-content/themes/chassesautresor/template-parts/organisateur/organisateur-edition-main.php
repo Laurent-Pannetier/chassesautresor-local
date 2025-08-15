@@ -24,9 +24,8 @@ $reseaux      = get_field('reseaux_sociaux', $organisateur_id);
 $site         = get_field('lien_site_web', $organisateur_id);
 $email_contact = get_field('profil_public_email_contact', $organisateur_id);
 
-$coordonnees = get_field('coordonnees_bancaires', $organisateur_id);
-$iban = is_array($coordonnees) ? ($coordonnees['iban'] ?? '') : '';
-$bic  = is_array($coordonnees) ? ($coordonnees['bic'] ?? '') : '';
+$iban = get_field('iban', $organisateur_id);
+$bic  = get_field('bic', $organisateur_id);
 $coordonnees_vides = empty($iban) && empty($bic);
 
 $liens_publics = get_field('liens_publics', $organisateur_id); // ← manquant !

@@ -401,8 +401,8 @@ function afficher_tableau_paiements_admin() {
 
         // Récupérer l'ID du CPT "organisateur" associé à l'utilisateur
         $organisateur_id = get_organisateur_from_user($user->ID);
-        $iban = $organisateur_id ? get_field('coordonnees_bancaires_iban', $organisateur_id) : '';
-        $bic  = $organisateur_id ? get_field('coordonnees_bancaires_bic', $organisateur_id) : '';
+        $iban = $organisateur_id ? get_field('iban', $organisateur_id) : '';
+        $bic  = $organisateur_id ? get_field('bic', $organisateur_id) : '';
         if ($organisateur_id && (empty($iban) || empty($bic))) {
             $iban = get_field('gagnez_de_largent_iban', $organisateur_id);
             $bic  = get_field('gagnez_de_largent_bic', $organisateur_id);

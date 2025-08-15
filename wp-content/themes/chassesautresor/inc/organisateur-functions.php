@@ -177,8 +177,8 @@ function verifier_acces_conversion($user_id) {
     }
 
     // 5️⃣ Vérification IBAN/BIC
-    $iban = get_field('coordonnees_bancaires_iban', $organisateur_id);
-    $bic  = get_field('coordonnees_bancaires_bic', $organisateur_id);
+    $iban = get_field('iban', $organisateur_id);
+    $bic  = get_field('bic', $organisateur_id);
 
     if (empty($iban) || empty($bic)) {
         $iban = get_field('gagnez_de_largent_iban', $organisateur_id);

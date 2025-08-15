@@ -249,14 +249,14 @@ function ajax_modifier_champ_organisateur()
     $donnees = json_decode(stripslashes($valeur), true);
     $iban = sanitize_text_field($donnees['iban'] ?? '');
     $bic  = sanitize_text_field($donnees['bic'] ?? '');
-    $ok1 = update_field('coordonnees_bancaires_iban', $iban, $post_id);
-    $ok2 = update_field('coordonnees_bancaires_bic', $bic, $post_id);
+    $ok1 = update_field('iban', $iban, $post_id);
+    $ok2 = update_field('bic', $bic, $post_id);
     // 🎯 Compatibilité avec anciens champs
     update_field('gagnez_de_largent_iban', $iban, $post_id);
     update_field('gagnez_de_largent_bic', $bic, $post_id);
 
-    $enregistre_iban = get_field('coordonnees_bancaires_iban', $post_id);
-    $enregistre_bic  = get_field('coordonnees_bancaires_bic', $post_id);
+    $enregistre_iban = get_field('iban', $post_id);
+    $enregistre_bic  = get_field('bic', $post_id);
     $sameIban = $enregistre_iban === $iban;
     $sameBic  = $enregistre_bic === $bic;
     if (($ok1 !== false && $ok2 !== false) || ($sameIban && $sameBic)) {
