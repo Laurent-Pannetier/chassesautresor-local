@@ -414,6 +414,41 @@ header .points-link:hover {
     cursor: pointer;
     color: var(--color-editor-text-muted);
 }
+.conversion-rate-badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    background-color: var(--color-editor-accent);
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-bottom: 12px;
+}
+.modal-top-icon {
+    display: block;
+    font-size: 40px;
+    margin: 0 auto 8px;
+    color: var(--color-editor-accent);
+}
+.modal-title,
+.modal-description {
+    text-align: center;
+}
+.conversion-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.conversion-row label {
+    margin: 0;
+}
+.conversion-row input[type="number"] {
+    width: 80px;
+}
+.modal-actions {
+    text-align: right;
+    margin-top: 12px;
+}
 .points-modal-active {
     overflow: hidden;
 }
@@ -486,10 +521,6 @@ header .points-link:hover {
     margin-top: 0.5rem;
     font-size: 0.875rem;
     color: var(--color-editor-text-muted);
-}
-
-.points-modal .conversion-equivalent strong {
-    color: var(--color-editor-heading);
 }
 
 .points-modal .points-feedback {

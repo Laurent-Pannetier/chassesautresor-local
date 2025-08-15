@@ -245,38 +245,46 @@ function render_conversion_modal_content($access_message = null): string
         <?php
     } else {
         ?>
+        <?php
+        $taux_conversion = get_taux_conversion_actuel();
+        $user_points     = get_user_points();
+        ?>
         <span class="close-modal">&times;</span>
-        <h2>💰 Taux de conversion</h2>
-        <p>1 000 points = <?php echo esc_html(get_taux_conversion_actuel()); ?> €</p>
-        <p>
-            La conversion des points en € n'est possible qu'à partir de <?php echo esc_html($points_minimum); ?> points
-            afin d'éviter les mico-paiements qui génèrent des frais fixes
-        </p>
-        <p>
-            Ce taux est fixé par chassesautresor.com et peut être modifié :
-            vous serez toujours prévenu préalablement avant toute éventuelle
-            modification
+        <span class="conversion-rate-badge">
+            <?php printf(esc_html__('1 000 points = %s €', 'chassesautresor-com'), esc_html($taux_conversion)); ?>
+        </span>
+        <i class="fa-solid fa-right-left modal-top-icon" aria-hidden="true"></i>
+        <h2 class="modal-title"><?php esc_html_e('Demande de conversion', 'chassesautresor-com'); ?></h2>
+        <p class="modal-description">
+            <?php printf(esc_html__('Transformez vos %d points en euros.', 'chassesautresor-com'), esc_html($user_points)); ?>
         </p>
         <form action="" method="POST">
-            <label for="points-a-convertir">Points à convertir</label>
-            <input
-                type="number"
-                name="points_a_convertir"
-                id="points-a-convertir"
-                min="<?php echo esc_attr($points_minimum); ?>"
-                max="<?php echo esc_attr(get_user_points()); ?>"
-                step="1"
-                value="<?php echo esc_attr($points_minimum); ?>"
-                data-taux="<?php echo esc_attr(get_taux_conversion_actuel()); ?>"
-            >
+            <div class="conversion-row">
+                <label for="points-a-convertir"><?php esc_html_e('Convertir', 'chassesautresor-com'); ?></label>
+                <input
+                    type="number"
+                    name="points_a_convertir"
+                    id="points-a-convertir"
+                    min="<?php echo esc_attr($points_minimum); ?>"
+                    max="<?php echo esc_attr($user_points); ?>"
+                    step="1"
+                    value="<?php echo esc_attr($points_minimum); ?>"
+                    data-taux="<?php echo esc_attr($taux_conversion); ?>"
+                >
+                <span class="points-unit"><?php esc_html_e('points', 'chassesautresor-com'); ?></span>
+            </div>
             <p class="conversion-equivalent">
-                Soit <strong><span id="montant-equivalent">
-                    <?php echo esc_html(number_format(($points_minimum / 1000) * get_taux_conversion_actuel(), 2, '.', '')); ?>
-                </span> €</strong>
+                <?php esc_html_e('contre-valeur :', 'chassesautresor-com'); ?>
+                <span id="montant-equivalent">
+                    <?php echo esc_html(number_format(($points_minimum / 1000) * $taux_conversion, 2, '.', '')); ?>
+                </span>
+                €
             </p>
             <input type="hidden" name="demander_paiement" value="1">
             <?php wp_nonce_field('demande_paiement_action', 'demande_paiement_nonce'); ?>
-            <button type="submit"><?php esc_html_e('Envoyer', 'chassesautresor-com'); ?></button>
+            <div class="modal-actions">
+                <button type="submit"><?php esc_html_e('Convertir', 'chassesautresor-com'); ?></button>
+            </div>
         </form>
         <?php
     }
