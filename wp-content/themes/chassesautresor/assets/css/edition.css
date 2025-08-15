@@ -1115,6 +1115,8 @@ body.panneau-ouvert::before {
 .edition-panel table {
   width: 100%;
   border-collapse: collapse;
+  border-radius: 6px;
+  overflow: hidden;
 }
 
 .edition-panel th,
@@ -1123,9 +1125,14 @@ body.panneau-ouvert::before {
   text-align: right;
 }
 
+.edition-panel th:first-child,
+.edition-panel td:first-child {
+  font-weight: 700;
+}
+
 .edition-panel thead {
-  background-color: var(--color-editor-background);
-  color: var(--color-editor-heading);
+  background-color: #333;
+  color: #fff;
 }
 
 .edition-panel tbody tr:nth-child(even) {
@@ -1137,6 +1144,8 @@ body.panneau-ouvert::before {
   width: 100%;
   border-collapse: collapse;
   margin-top: 1rem;
+  border-radius: 6px;
+  overflow: hidden;
 }
 
 .table-tentatives th,
@@ -1147,8 +1156,8 @@ body.panneau-ouvert::before {
 }
 
 .table-tentatives th {
-  background-color: var(--color-editor-background);
-  color: var(--color-editor-heading);
+  background-color: #333;
+  color: #fff;
   text-align: right;
 }
 
@@ -1521,8 +1530,8 @@ body.panneau-ouvert::before {
   width: 28px;
   height: 28px;
   padding: 0;
-  border: 1px solid var(--color-editor-border);
-  background: var(--color-editor-background);
+  border: 1px solid #333;
+  background: transparent;
   color: var(--color-editor-text);
   border-radius: 4px;
   cursor: pointer;
