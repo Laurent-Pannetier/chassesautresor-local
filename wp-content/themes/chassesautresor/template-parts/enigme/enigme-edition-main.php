@@ -71,11 +71,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
     <div id="erreur-global"
       style="display:none; background:red; color:white; padding:5px; text-align:center; font-size:0.9em;"></div>
 
-    <div class="edition-panel-header">
-      <div class="edition-panel-header-top">
-        <h2><i class="fa-solid fa-sliders"></i> Paramètres</h2>
+      <div class="edition-panel-header">
+        <div class="edition-panel-header-top">
+          <h2><i class="fa-solid fa-sliders"></i> <?= esc_html__('Panneau d\'édition énigme', 'chassesautresor-com'); ?></h2>
 
-        <!-- ✅ Ajout du champ Style ici -->
+          <!-- ✅ Ajout du champ Style ici -->
         <div class="champ-enigme champ-style" data-champ="enigme_style_affichage" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" style="margin-top: 8px;">
           <label for="select-style-affichage" style="font-weight: normal; font-size: 0.9em;">Style d'affichage :</label>
           <select id="select-style-affichage" class="champ-input" style="margin-left: 10px;">
