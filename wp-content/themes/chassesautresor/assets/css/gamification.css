@@ -482,6 +482,16 @@ header .points-link:hover {
     background-color: var(--color-editor-button-hover);
 }
 
+.points-modal .conversion-equivalent {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--color-editor-text-muted);
+}
+
+.points-modal .conversion-equivalent strong {
+    color: var(--color-editor-heading);
+}
+
 .points-modal-message {
     text-align: center;
 }

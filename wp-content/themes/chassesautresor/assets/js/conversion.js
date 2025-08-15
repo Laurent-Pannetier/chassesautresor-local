@@ -30,13 +30,27 @@ document.addEventListener("DOMContentLoaded", () => {
         const montantEquivalent = document.getElementById("montant-equivalent");
 
         if (inputPoints && montantEquivalent) {
-            inputPoints.addEventListener("input", function () {
-                const tauxConversion = parseFloat(inputPoints.dataset.taux) || 85;
-                const points = parseInt(inputPoints.value) || 0;
-                montantEquivalent.textContent = (
-                    (points / 1000) * tauxConversion
-                ).toFixed(2);
-            });
+            const tauxConversion = parseFloat(inputPoints.dataset.taux) || 85;
+            const min = parseInt(inputPoints.min) || 0;
+            const max = parseInt(inputPoints.max) || Infinity;
+
+            const updateEquivalent = () => {
+                let points = parseInt(inputPoints.value) || 0;
+
+                if (points < min) {
+                    points = min;
+                }
+                if (points > max) {
+                    points = max;
+                }
+
+                inputPoints.value = points;
+                const montant = ((points / 1000) * tauxConversion).toFixed(2);
+                montantEquivalent.textContent = montant;
+            };
+
+            inputPoints.addEventListener("input", updateEquivalent);
+            updateEquivalent();
         }
     };
 
