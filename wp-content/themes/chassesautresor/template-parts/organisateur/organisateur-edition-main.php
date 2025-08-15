@@ -28,6 +28,9 @@ $iban = get_field('iban', $organisateur_id);
 $bic  = get_field('bic', $organisateur_id);
 $coordonnees_vides = empty($iban) && empty($bic);
 
+$conversion_access   = verifier_acces_conversion(get_current_user_id());
+$conversion_disabled = $conversion_access !== true;
+
 $liens_publics = get_field('liens_publics', $organisateur_id); // ← manquant !
 $liens_publics = is_array($liens_publics) ? array_filter($liens_publics, function ($entree) {
     $type_raw = $entree['type_de_lien'] ?? null;
@@ -216,7 +219,7 @@ $is_complete = (
       </div>
         <div class="edition-panel-body">
           <div class="dashboard-grid stats-cards">
-            <div class="dashboard-card" data-stat="conversion">
+            <div class="dashboard-card<?php echo $conversion_disabled ? ' disabled' : ''; ?>" data-stat="conversion">
               <i class="fa-solid fa-right-left" aria-hidden="true"></i>
               <h3>Conversion</h3>
               <button
