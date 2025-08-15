@@ -120,7 +120,8 @@ function initLiensPublics(bloc, { panneauId, formId, action, reload = false }) {
 
   if (!champ || !postId || !bouton || !panneau || !formulaire) return;
 
-  bouton.addEventListener('click', () => {
+  bouton.addEventListener('click', (e) => {
+    e.preventDefault();
     if (typeof window.openPanel === 'function') {
       window.openPanel(panneauId);
     } else {

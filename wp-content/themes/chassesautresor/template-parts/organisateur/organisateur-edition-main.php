@@ -272,22 +272,22 @@ $is_complete = (
                     data-champ="liens_publics"
                     data-cpt="organisateur"
                     data-post-id="<?= esc_attr($organisateur_id); ?>">
-                    <i class="fa-solid fa-share-nodes" aria-hidden="true"></i>
+                    <i class="fa-solid fa-share-nodes icone-defaut" aria-hidden="true"></i>
+                    <div class="champ-affichage champ-affichage-liens">
+                      <?= render_liens_publics($liens_publics, 'organisateur', ['placeholder' => false]); ?>
+                    </div>
                     <h3>Sites et réseaux de l'organisation</h3>
                     <?php if ($peut_modifier) : ?>
-                      <button type="button"
+                      <a href="#"
                         class="stat-value champ-modifier ouvrir-panneau-liens"
                         data-champ="liens_publics"
                         data-cpt="organisateur"
                         data-post-id="<?= esc_attr($organisateur_id); ?>">
                         <?= empty($liens_publics) ? 'Ajouter' : 'Éditer'; ?>
-                      </button>
+                      </a>
                     <?php endif; ?>
                     <div class="champ-donnees"
                       data-valeurs='<?= json_encode($liens_publics, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>'></div>
-                    <div class="champ-affichage champ-affichage-liens">
-                      <?= render_liens_publics($liens_publics, 'organisateur', ['placeholder' => false]); ?>
-                    </div>
                     <div class="champ-feedback"></div>
                   </div>
                   <?php
