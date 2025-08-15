@@ -75,9 +75,6 @@ $is_complete = (
 
     <div id="organisateur-tab-param" class="edition-tab-content active">
       <i class="fa-solid fa-sliders tab-watermark" aria-hidden="true"></i>
-      <div class="edition-panel-header">
-        <h2><i class="fa-solid fa-sliders"></i> Paramètres</h2>
-      </div>
       <div class="edition-panel-body">
         <div class="edition-panel-section edition-panel-section-ligne">
           <h3 class="section-title">
@@ -85,15 +82,16 @@ $is_complete = (
             Paramètres
           </h3>
 
-          <div class="section-content deux-col-wrapper">
-            <!-- 📌 Édition du profil -->
-            <div class="resume-bloc resume-obligatoire deux-col-bloc">
-              <h3>Champs obligatoires</h3>
-              <ul class="resume-infos">
-                <li class="champ-organisateur champ-titre ligne-titre <?= empty($titre) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer_titre ? '' : ' champ-desactive'; ?>"
-                  data-champ="post_title"
-                  data-cpt="organisateur"
-                  data-post-id="<?= esc_attr($organisateur_id); ?>">
+          <div class="section-content">
+            <div class="resume-blocs-grid">
+              <!-- SECTION 1 : Informations -->
+              <div class="resume-bloc resume-obligatoire">
+                <h3>Informations</h3>
+                <ul class="resume-infos">
+                  <li class="champ-organisateur champ-titre ligne-titre <?= empty($titre) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer_titre ? '' : ' champ-desactive'; ?>"
+                    data-champ="post_title"
+                    data-cpt="organisateur"
+                    data-post-id="<?= esc_attr($organisateur_id); ?>">
 
                   <div class="champ-affichage">
                     <label for="champ-titre-organisateur">Nom d’organisateur</label>
@@ -148,12 +146,12 @@ $is_complete = (
                   <?php endif; ?>
                 </li>
               </ul>
-            </div>
+              </div>
 
-            <!-- 🟡 Facultatif -->
-            <div class="resume-bloc resume-facultatif deux-col-bloc">
-              <h3>Facultatif (mais recommandé)</h3>
-              <ul class="resume-infos">
+              <!-- SECTION 2 : Réglages -->
+              <div class="resume-bloc resume-reglages">
+                <h3>Réglages</h3>
+                <ul class="resume-infos">
 
                 <li class="ligne-email <?= !empty($email_contact) ? 'champ-rempli' : ''; ?>">
                   <i aria-hidden="true" class="fa-regular fa-solid fa-envelope"></i>
@@ -194,7 +192,8 @@ $is_complete = (
                   </div>
                 </li>
 
-              </ul>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
