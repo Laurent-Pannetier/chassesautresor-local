@@ -35,11 +35,13 @@ function initChampImage(bloc) {
       const selection = frame.state().get('selection').first();
       const id = selection?.id;
       const fullUrl = selection?.attributes?.url;
-      const thumbUrl = selection?.attributes?.sizes?.thumbnail?.url || fullUrl;
+      const mediumUrl = selection?.attributes?.sizes?.medium?.url || fullUrl;
+      const thumbUrl = selection?.attributes?.sizes?.thumbnail?.url || mediumUrl;
       if (!id || !fullUrl) return;
 
       image.src = thumbUrl;
       image.srcset = thumbUrl;
+      bloc.classList.remove('champ-vide');
       input.value = id;
 
       if (feedback) {
@@ -62,7 +64,6 @@ function initChampImage(bloc) {
         .then(r => r.json())
         .then(res => {
           if (res.success) {
-            bloc.classList.remove('champ-vide');
             if (feedback) {
               feedback.textContent = '';
               feedback.className = 'champ-feedback champ-success';
@@ -71,7 +72,7 @@ function initChampImage(bloc) {
               window.mettreAJourResumeInfos();
             }
             if (typeof window.mettreAJourVisuelCPT === 'function') {
-              mettreAJourVisuelCPT(cpt, postId, fullUrl);
+              mettreAJourVisuelCPT(cpt, postId, mediumUrl);
             }
           } else {
             if (feedback) {

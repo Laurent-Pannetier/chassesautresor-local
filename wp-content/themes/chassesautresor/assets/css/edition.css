@@ -201,7 +201,7 @@ body.edition-active-enigme .single-enigme-main .champ-img .champ-modifier {
   cursor: pointer;
 }
 
-.champ-img img {
+.edition-panel .champ-img img {
   max-width: 80px;
   height: auto;
   border-radius: 0.25rem;
