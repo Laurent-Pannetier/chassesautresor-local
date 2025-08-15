@@ -126,7 +126,7 @@ function enqueue_script_organisateur_edit()
 
   if ($organisateur_id && utilisateur_peut_modifier_post($organisateur_id)) {
     // 📦 Modules JS partagés + script organisateur
-    enqueue_core_edit_scripts(['organisateur-edit']);
+    enqueue_core_edit_scripts(['organisateur-edit', 'table-etiquette']);
 
     // ✅ Injection JavaScript APRÈS le enqueue (très important)
     $author_id = (int) get_post_field('post_author', $organisateur_id);

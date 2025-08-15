@@ -39,19 +39,17 @@ if (empty($participants)) :
 <table class="stats-table compact">
   <thead>
     <tr>
-      <th scope="col">Rang</th>
       <th scope="col">Nom</th>
-      <th scope="col"><button class="sort" data-orderby="date" aria-label="Trier par date">Date <i class="fa-solid <?= esc_attr($icon_date); ?>"></i></button></th>
+      <th scope="col"><button class="sort" data-orderby="date" aria-label="Trier par engagement">Engagement <i class="fa-solid <?= esc_attr($icon_date); ?>"></i></button></th>
       <?php if ($mode_validation !== 'aucune') : ?>
-      <th scope="col"><button class="sort" data-orderby="tentatives" aria-label="Trier par nombre d'essais">Nb essais <i class="fa-solid <?= esc_attr($icon_tentatives); ?>"></i></button></th>
+      <th scope="col" data-format="etiquette"><button class="sort" data-orderby="tentatives" aria-label="Trier par tentatives">Tentatives <i class="fa-solid <?= esc_attr($icon_tentatives); ?>"></i></button></th>
       <?php endif; ?>
       <th scope="col">Trouvé</th>
     </tr>
   </thead>
   <tbody>
-    <?php $rang = ($page - 1) * $par_page + 1; foreach ($participants as $p) : ?>
+    <?php foreach ($participants as $p) : ?>
     <tr>
-      <td><?= esc_html($rang++); ?></td>
       <td><?= esc_html($p['username']); ?></td>
       <td><?= esc_html(mysql2date('d/m/Y H:i', $p['date_engagement'])); ?></td>
       <?php if ($mode_validation !== 'aucune') : ?>

@@ -49,7 +49,7 @@ if ($orderby === 'resolution') {
       <th scope="col"><?= esc_html__('Joueur', 'chassesautresor-com'); ?></th>
       <th scope="col"><?= esc_html__('Inscription', 'chassesautresor-com'); ?></th>
       <th scope="col"><?= esc_html__('Énigmes', 'chassesautresor-com'); ?></th>
-      <th scope="col">
+      <th scope="col" data-format="etiquette">
         <button
           class="sort"
           data-orderby="participation"
@@ -59,7 +59,7 @@ if ($orderby === 'resolution') {
           <i class="fa-solid <?= esc_attr($icon_participation); ?>"></i>
         </button>
       </th>
-      <th scope="col">
+      <th scope="col" data-format="etiquette">
         <button
           class="sort"
           data-orderby="resolution"

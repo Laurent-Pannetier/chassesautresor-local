@@ -1130,7 +1130,7 @@ body.panneau-ouvert::before {
 }
 
 .edition-panel thead {
-  background-color: var(--color-editor-background);
+  background-color: var(--color-editor-field-hover);
   color: var(--color-editor-heading);
 }
 
@@ -1153,7 +1153,7 @@ body.panneau-ouvert::before {
 }
 
 .table-tentatives th {
-  background-color: var(--color-editor-background);
+  background-color: var(--color-editor-field-hover);
   color: var(--color-editor-heading);
   text-align: right;
 }
@@ -1376,6 +1376,7 @@ body.panneau-ouvert::before {
   font-weight: 600;
   color: var(--color-editor-heading);
   border-bottom: 1px solid var(--color-editor-border);
+  background-color: var(--color-editor-field-hover);
 }
 
 .stats-table td {
@@ -1417,6 +1418,17 @@ body.panneau-ouvert::before {
 
 .stats-table th button.sort i {
   margin-left: 4px;
+}
+
+/* 🏷️ Aspect étiquette pour les valeurs */
+.etiquette {
+  display: inline-block;
+  padding: 2px 6px;
+  border: 1px solid var(--color-editor-border);
+  border-radius: 4px;
+  background-color: var(--color-editor-background);
+  font-size: 0.85em;
+  white-space: nowrap;
 }
 
 /* ====== Mode de fin ====== */

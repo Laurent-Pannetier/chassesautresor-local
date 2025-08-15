@@ -64,8 +64,9 @@ $points          = organisateur_compter_points_collectes($organisateur_id);
               'template-parts/chasse/partials/chasse-partial-enigmes',
               null,
               [
-                  'enigmes' => $enigmes_stats,
-                  'total'   => $participants,
+                  'enigmes'       => $enigmes_stats,
+                  'total'         => $participants,
+                  'cols_etiquette' => [2, 3, 6, 7],
               ]
           );
       }
