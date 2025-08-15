@@ -61,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const panneauCoord = document.getElementById('panneau-coordonnees');
   const formCoord = document.getElementById('formulaire-coordonnees');
   const boutonOuvrirCoord = document.getElementById('ouvrir-coordonnees');
+  const boutonOuvrirCoordModal = document.getElementById('ouvrir-coordonnees-modal');
   const labelAddCoord = boutonOuvrirCoord?.dataset.labelAdd;
   const labelEditCoord = boutonOuvrirCoord?.dataset.labelEdit;
   const ariaAddCoord = boutonOuvrirCoord?.dataset.ariaAdd;
@@ -74,15 +75,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const validerIban = (iban) => /^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$/.test(iban.replace(/\s/g, '').toUpperCase());
   const validerBic = (bic) => /^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(bic.toUpperCase());
 
-  boutonOuvrirCoord?.addEventListener('click', (e) => {
-    e.preventDefault();
-    if (typeof window.openPanel === 'function') {
-      window.openPanel('panneau-coordonnees');
-    } else {
-      panneauCoord?.classList.add('ouvert');
-      document.body.classList.add('panneau-ouvert');
-      panneauCoord?.setAttribute('aria-hidden', 'false');
-    }
+  [boutonOuvrirCoord, boutonOuvrirCoordModal].forEach((btn) => {
+    btn?.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (typeof window.openPanel === 'function') {
+        window.openPanel('panneau-coordonnees');
+      } else {
+        panneauCoord?.classList.add('ouvert');
+        document.body.classList.add('panneau-ouvert');
+        panneauCoord?.setAttribute('aria-hidden', 'false');
+      }
+    });
   });
 
   boutonFermerCoord?.addEventListener('click', () => {
