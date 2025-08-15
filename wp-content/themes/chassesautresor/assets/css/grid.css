@@ -20,6 +20,14 @@
   max-width: none;
 }
 
+/* Full width only on very large screens */
+@media (min-width: 1400px) {
+  .container.fullwidth-xl,
+  .container--xl-full {
+    max-width: none;
+  }
+}
+
 .row {
   display: grid;
   gap: var(--grid-gap);

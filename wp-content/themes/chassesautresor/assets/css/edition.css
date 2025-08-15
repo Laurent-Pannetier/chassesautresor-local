@@ -147,6 +147,12 @@ section.enigme-wrapper {
 
 .bouton-edition-toggle {
   border: 1px solid;
+  background: none;
+  color: var(--color-text-primary);
+}
+
+.bouton-edition-toggle--clair {
+  color: var(--color-text-fond-clair);
 }
 
 
