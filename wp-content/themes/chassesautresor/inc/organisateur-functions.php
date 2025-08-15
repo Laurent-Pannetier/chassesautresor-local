@@ -168,8 +168,11 @@ function verifier_acces_conversion($user_id) {
     }
 
     // 4️⃣ Vérification du solde de points (500 points minimum)
-    $points_actuels = get_user_points($user_id);
-    if ($points_actuels < 500) {
+    $points_actuels = function_exists('get_user_points') ? get_user_points($user_id) : 0;
+    if (!$points_actuels) {
+        $points_actuels = (int) get_user_meta($user_id, 'points_utilisateur', true);
+    }
+    if ((int) $points_actuels < 500) {
         return "Points insuffisants";
     }
 
