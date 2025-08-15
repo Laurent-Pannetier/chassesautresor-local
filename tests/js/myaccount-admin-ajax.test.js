@@ -49,11 +49,18 @@ describe('myaccount admin navigation', () => {
 
   test('loads section from query parameter', async () => {
     const originalURLSearchParams = URLSearchParams;
-    global.URLSearchParams = jest.fn(() => ({ get: () => 'organisateurs' }));
+    const params = { section: 'organisateurs' };
+    global.URLSearchParams = jest.fn(() => ({
+      get: (key) => params[key],
+      set: (key, value) => {
+        params[key] = value;
+      },
+      toString: () => Object.entries(params).map(([k, v]) => `${k}=${v}`).join('&')
+    }));
     initModule();
     await Promise.resolve();
     await Promise.resolve();
-    expect(fetch).toHaveBeenCalledWith('/admin-ajax.php?action=cta_load_admin_section&section=organisateurs', expect.any(Object));
+    expect(fetch).toHaveBeenCalledWith('/admin-ajax.php?section=organisateurs&action=cta_load_admin_section', expect.any(Object));
     expect(window.history.replaceState).toHaveBeenCalledWith(null, '', '/mon-compte/');
     expect(document.querySelector('a[data-section="organisateurs"]').classList.contains('active')).toBe(true);
     global.URLSearchParams = originalURLSearchParams;

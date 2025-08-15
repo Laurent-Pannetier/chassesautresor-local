@@ -123,7 +123,15 @@ function traiter_gestion_points() {
     error_log("✅ Points modifiés : $nombre_points $type_modification pour l'utilisateur $utilisateur");
 
     // ✅ Redirection après soumission
-    wp_redirect(add_query_arg('points_modifies', '1', wp_get_referer()));
+    $redirect_url = add_query_arg(
+        [
+            'section'          => 'outils',
+            'points_modifies'  => '1',
+        ],
+        wc_get_account_endpoint_url('dashboard')
+    );
+
+    wp_redirect($redirect_url);
     exit;
 }
 add_action('init', 'traiter_gestion_points');

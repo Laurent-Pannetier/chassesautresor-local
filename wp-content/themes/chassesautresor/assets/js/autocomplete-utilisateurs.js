@@ -4,8 +4,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const init = () => {
         const userInput = document.getElementById("utilisateur-points");
-        if (!userInput) {
-            DEBUG && console.log("❌ Élément introuvable : Vérifie l'ID du champ input.");
+        const hiddenInput = document.getElementById("utilisateur-id");
+        if (!userInput || !hiddenInput) {
+            DEBUG && console.log("❌ Élément introuvable : Vérifie les champs input.");
             return;
         }
         if (userInput.dataset.autocompleteInit) {
@@ -37,6 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         userInput.addEventListener("input", () => {
+            hiddenInput.value = "";
             const searchTerm = userInput.value.trim();
             if (searchTerm.length < 1) {
                 DEBUG && console.log("❌ Trop court, pas de requête AJAX");
@@ -70,7 +72,8 @@ document.addEventListener("DOMContentLoaded", () => {
                             listItem.style.listStyle = "none";
 
                             listItem.addEventListener("click", () => {
-                                userInput.value = user.id;
+                                userInput.value = user.text;
+                                hiddenInput.value = user.id;
                                 suggestionsList.innerHTML = "";
                                 suggestionsList.style.display = "none";
                             });
