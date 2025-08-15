@@ -22,6 +22,12 @@ Le mode édition est actif lorsque la classe `mode-edition` est présente sur la
 - **Grille de cartes** : `.dashboard-grid` organisant les `.dashboard-card` adaptatives.
 - **Cartes et tableaux** : utilisation de bordures `1px` et rayons `8px`.
 
+### Indentation des labels
+
+Les formulaires des panneaux d'édition alignent les zones de saisie grâce à une largeur minimale appliquée aux labels.
+Cette valeur est centralisée dans `assets/css/general.css` via la variable `--editor-label-width` (par défaut : `150px`).
+Modifier cette variable ajuste l'indentation de tous les champs du mode édition.
+
 ## Typographie
 
 Le mode édition utilise la police principale définie par `var(--font-main)`.

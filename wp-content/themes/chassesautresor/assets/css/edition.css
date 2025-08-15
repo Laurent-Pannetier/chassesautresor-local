@@ -651,7 +651,7 @@ body.edition-active-enigme .edition-panel-enigme.edition-panel-modal {
 .edition-panel-section .resume-reglages label,
 .edition-panel-section .resume-obligatoire label {
   display: inline-block;
-  min-width: 150px;
+  min-width: var(--editor-label-width);
 }
 
 .resume-infos .champ-valeur {
