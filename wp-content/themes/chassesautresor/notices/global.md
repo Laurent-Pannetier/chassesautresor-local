@@ -1273,6 +1273,7 @@ Index :
 | user_id   | bigint unsigned | identifiant du joueur            |
 | balance   | int unsigned    | solde après l'opération          |
 | points    | int             | variation (crédit ou débit)      |
+| amount_eur | decimal(10,2) NULL | montant équivalent en euros |
 | reason    | varchar(255)    | motif de l'opération             |
 | request_status | enum('pending','approved','paid','refused') DEFAULT 'pending' | statut de la demande |
 | request_date | datetime DEFAULT CURRENT_TIMESTAMP | date de la demande |
