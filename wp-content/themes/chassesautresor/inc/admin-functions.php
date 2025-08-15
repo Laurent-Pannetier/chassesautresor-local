@@ -123,7 +123,15 @@ function traiter_gestion_points() {
     error_log("✅ Points modifiés : $nombre_points $type_modification pour l'utilisateur $utilisateur");
 
     // ✅ Redirection après soumission
-    wp_redirect(add_query_arg('points_modifies', '1', wp_get_referer()));
+    $redirect_url = add_query_arg(
+        [
+            'section'          => 'outils',
+            'points_modifies'  => '1',
+        ],
+        wc_get_account_endpoint_url('dashboard')
+    );
+
+    wp_redirect($redirect_url);
     exit;
 }
 add_action('init', 'traiter_gestion_points');
@@ -140,8 +148,8 @@ add_action('init', 'traiter_gestion_points');
  * @return void
  */
 function charger_script_autocomplete_utilisateurs() {
-    // Vérifier si l'on est sur la page "Mon Compte" et que l'utilisateur est administrateur
-    if (is_page('mon-compte') && current_user_can('administrator')) {
+    // Vérifier si l'on est sur la page Mon Compte (y compris ses sous-pages) et que l'utilisateur est administrateur
+    if (function_exists('is_account_page') && is_account_page() && current_user_can('administrator')) {
         wp_enqueue_script(
             'autocomplete-utilisateurs', // Nouveau nom du script
             get_stylesheet_directory_uri() . '/assets/js/autocomplete-utilisateurs.js',

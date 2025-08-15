@@ -18,7 +18,10 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const url = `${ctaMyAccount.ajaxUrl}?action=cta_load_admin_section&section=${section}`;
+    const params = new URLSearchParams(window.location.search);
+    params.set('action', 'cta_load_admin_section');
+    params.set('section', section);
+    const url = `${ctaMyAccount.ajaxUrl}?${params.toString()}`;
 
     try {
       const response = await fetch(url, { credentials: 'same-origin' });
@@ -31,8 +34,17 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       const messages = data.data.messages || '';
       content.innerHTML = `<section class="msg-important">${messages}</section>` + data.data.html;
+      const msg = content.querySelector('.msg-important');
+      if (msg && msg.textContent.trim() !== '') {
+        setTimeout(() => {
+          msg.style.display = 'none';
+        }, 3000);
+      }
       adminNav.querySelectorAll('.dashboard-nav-link').forEach((a) => a.classList.remove('active'));
       link.classList.add('active');
+      document.dispatchEvent(
+        new CustomEvent('myaccountSectionLoaded', { detail: { section } })
+      );
       if (push) {
         window.history.pushState(null, '', link.href);
       } else {

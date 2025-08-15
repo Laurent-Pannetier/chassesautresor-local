@@ -28,7 +28,8 @@ $taux_conversion = get_taux_conversion_actuel();
                     <?php wp_nonce_field('gestion_points_action', 'gestion_points_nonce'); ?>
                     <div class="gestion-points-ligne">
                         <label for="utilisateur-points"></label>
-                        <input type="text" id="utilisateur-points" name="utilisateur" placeholder="Rechercher un utilisateur..." required>
+                        <input type="text" id="utilisateur-points" placeholder="Rechercher un utilisateur..." required>
+                        <input type="hidden" id="utilisateur-id" name="utilisateur">
                         <label for="type-modification"></label>
                         <select id="type-modification" name="type_modification" required>
                             <option value="ajouter">➕</option>

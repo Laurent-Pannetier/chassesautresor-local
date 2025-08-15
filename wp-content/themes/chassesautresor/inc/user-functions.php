@@ -239,6 +239,10 @@ function myaccount_get_important_messages(): string
 {
     $messages = [];
 
+    if (isset($_GET['points_modifies']) && $_GET['points_modifies'] === '1') {
+        $messages[] = __('Points mis à jour avec succès.', 'chassesautresor');
+    }
+
     if (current_user_can('administrator') && function_exists('recuperer_organisateurs_pending')) {
         $pending = array_filter(
             recuperer_organisateurs_pending(),
