@@ -168,10 +168,7 @@ function verifier_acces_conversion($user_id) {
     }
 
     // 4️⃣ Vérification du solde de points (seuil minimal)
-    $points_actuels  = function_exists('get_user_points') ? get_user_points($user_id) : 0;
-    if (!$points_actuels) {
-        $points_actuels = (int) get_user_meta($user_id, 'points_utilisateur', true);
-    }
+    $points_actuels = function_exists('get_user_points') ? get_user_points($user_id) : 0;
     $points_minimum = get_points_conversion_min();
     if ((int) $points_actuels < $points_minimum) {
         return 'INSUFFICIENT_POINTS';

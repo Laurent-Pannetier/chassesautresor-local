@@ -171,15 +171,14 @@ Dossier inc/
   ├── chasse-functions.php
   ├── edition-functions.php
   ├── enigme-functions.php
-  ├── gamify-functions.php
-  ├── layout-functions.php
-  ├── organisateur-functions.php
-  ├── relations-functions.php
-  ├── shortcodes-init.php
-  ├── stat-functions-old.php
-  ├── statut-functions.php
-  ├── user-functions.php
-  ├── handlers/
+    ├── gamify-functions.php
+    ├── layout-functions.php
+    ├── organisateur-functions.php
+    ├── relations-functions.php
+    ├── shortcodes-init.php
+    ├── statut-functions.php
+    ├── user-functions.php
+    ├── handlers/
   │   ├── voir-fichier.php
   └── utils/
       ├── liens.php
