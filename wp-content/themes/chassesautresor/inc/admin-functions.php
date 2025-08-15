@@ -238,6 +238,13 @@ function gerer_organisateur() {
  */
 
 /**
+ * 📌 Valeur minimale de points requise pour demander une conversion.
+ */
+function get_points_conversion_min(): int {
+    return (int) apply_filters('points_conversion_min', 500);
+}
+
+/**
  * 📌 Ajout du champ d'administration pour le taux de conversion
  */
 add_action('acf/init', function () {
@@ -512,14 +519,21 @@ function traiter_demande_paiement() {
     }
 
     $user_id = get_current_user_id();
-    $solde_actuel = get_user_points($user_id) ?: 0;
+    $solde_actuel   = get_user_points($user_id) ?: 0;
     $taux_conversion = get_taux_conversion_actuel();
+    $points_minimum  = get_points_conversion_min();
 
     // ✅ Vérification du nombre de points demandés
     $points_a_convertir = isset($_POST['points_a_convertir']) ? intval($_POST['points_a_convertir']) : 0;
 
-    if ($points_a_convertir < 500) {
-        wp_die( __( '❌ Le minimum pour une conversion est de 500 points.', 'chassesautresor-com' ) );
+    if ($points_a_convertir < $points_minimum) {
+        wp_die(
+            sprintf(
+                /* translators: %d: points minimum */
+                __( '❌ Le minimum pour une conversion est de %d points.', 'chassesautresor-com' ),
+                $points_minimum
+            )
+        );
     }
 
     if ($points_a_convertir > $solde_actuel) {

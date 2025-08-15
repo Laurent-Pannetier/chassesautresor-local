@@ -170,6 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
             feedbackIban.textContent = '';
             feedbackIban.className = 'champ-feedback';
             if (typeof window.mettreAJourResumeInfos === 'function') window.mettreAJourResumeInfos();
+            if (typeof window.mettreAJourCarteConversion === 'function') window.mettreAJourCarteConversion();
           }, 800);
         } else {
           feedbackIban.textContent = '❌ La sauvegarde a échoué.';
@@ -280,4 +281,27 @@ window.mettreAJourCarteAjoutChasse = function () {
       <p>Complétez d’abord : ${texte}</p>
     `;
   }
+};
+
+// 🔄 Met à jour l'état (active/désactivée) de la carte de conversion
+window.mettreAJourCarteConversion = function () {
+  const carte = document.querySelector('.dashboard-card[data-stat="conversion"]');
+  if (!carte) return;
+
+  fetch('/wp-admin/admin-ajax.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ action: 'conversion_modal_content' }),
+  })
+    .then(res => res.json())
+    .then(res => {
+      if (!res.success) return;
+      const access = res.data?.access;
+      if (access) {
+        carte.classList.remove('disabled');
+      } else {
+        carte.classList.add('disabled');
+      }
+    })
+    .catch(() => {});
 };

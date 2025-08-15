@@ -167,12 +167,13 @@ function verifier_acces_conversion($user_id) {
         return "Attendez encore $jours_restants jours";
     }
 
-    // 4️⃣ Vérification du solde de points (500 points minimum)
-    $points_actuels = function_exists('get_user_points') ? get_user_points($user_id) : 0;
+    // 4️⃣ Vérification du solde de points (seuil minimal)
+    $points_actuels  = function_exists('get_user_points') ? get_user_points($user_id) : 0;
     if (!$points_actuels) {
         $points_actuels = (int) get_user_meta($user_id, 'points_utilisateur', true);
     }
-    if ((int) $points_actuels < 500) {
+    $points_minimum = get_points_conversion_min();
+    if ((int) $points_actuels < $points_minimum) {
         return 'INSUFFICIENT_POINTS';
     }
 
@@ -195,10 +196,13 @@ function verifier_acces_conversion($user_id) {
 /**
  * Génère le contenu HTML du modal de conversion en fonction des droits d'accès.
  */
-function render_conversion_modal_content(): string
+function render_conversion_modal_content($access_message = null): string
 {
-    $access_message   = verifier_acces_conversion(get_current_user_id());
-    $organisateur_id  = get_organisateur_from_user(get_current_user_id());
+    if ($access_message === null) {
+        $access_message = verifier_acces_conversion(get_current_user_id());
+    }
+    $organisateur_id = get_organisateur_from_user(get_current_user_id());
+    $points_minimum  = get_points_conversion_min();
 
     ob_start();
 
@@ -208,7 +212,7 @@ function render_conversion_modal_content(): string
         <div class="points-modal-message">
             <i class="fa-solid fa-circle-exclamation modal-icon" aria-hidden="true"></i>
             <h2>solde insuffisant</h2>
-            <p>Conversion possible à partir de 500 points</p>
+            <p>Conversion possible à partir de <?php echo esc_html($points_minimum); ?> points</p>
             <button type="button" class="close-modal">Fermer</button>
         </div>
         <?php
@@ -248,7 +252,7 @@ function render_conversion_modal_content(): string
         <h2>💰 Taux de conversion</h2>
         <p>1 000 points = <?php echo esc_html(get_taux_conversion_actuel()); ?> €</p>
         <p>
-            La conversion des points en € n'est possible qu'à partir de 500 points
+            La conversion des points en € n'est possible qu'à partir de <?php echo esc_html($points_minimum); ?> points
             afin d'éviter les mico-paiements qui génèrent des frais fixes
         </p>
         <p>
@@ -262,8 +266,9 @@ function render_conversion_modal_content(): string
                 type="number"
                 name="points_a_convertir"
                 id="points-a-convertir"
-                min="500"
+                min="<?php echo esc_attr($points_minimum); ?>"
                 max="<?php echo esc_attr(get_user_points()); ?>"
+                value="<?php echo esc_attr($points_minimum); ?>"
                 data-taux="<?php echo esc_attr(get_taux_conversion_actuel()); ?>"
             >
             <input type="hidden" name="demander_paiement" value="1">
@@ -281,7 +286,12 @@ function render_conversion_modal_content(): string
  */
 function ajax_conversion_modal_content(): void
 {
-    wp_send_json_success(['html' => render_conversion_modal_content()]);
+    $access_message = verifier_acces_conversion(get_current_user_id());
+    $html           = render_conversion_modal_content($access_message);
+    wp_send_json_success([
+        'html'   => $html,
+        'access' => $access_message === true,
+    ]);
 }
 add_action('wp_ajax_conversion_modal_content', 'ajax_conversion_modal_content');
 
