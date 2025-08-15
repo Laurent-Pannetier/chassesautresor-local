@@ -40,7 +40,7 @@ $liens_publics = is_array($liens_publics) ? array_filter($liens_publics, functio
 
 
 if (function_exists('charger_script_conversion')) {
-    charger_script_conversion();
+    charger_script_conversion(true);
 }
 
 

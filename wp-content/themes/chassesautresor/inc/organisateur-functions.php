@@ -66,29 +66,36 @@ add_action('wp_enqueue_scripts', 'enqueue_script_header_organisateur_ui');
  * 🔎 Le fichier est versionné dynamiquement via `filemtime()` pour éviter le cache.
  *
  * @hook wp_enqueue_scripts
+ *
+ * @param bool $force Forcer l'enfilement du script quel que soit l'URL courante.
  * @return void
  */
-function charger_script_conversion() {
-    // Inclure les pages WooCommerce natives
-    if (is_account_page()) {
-        $inclure = true;
-    } else {
-        // Inclure aussi les pages customisées que tu as créées sous /mon-compte/*
-        $request_uri = trim($_SERVER['REQUEST_URI'], '/');
+function charger_script_conversion(bool $force = false): void
+{
+    if (!$force) {
+        // Inclure les pages WooCommerce natives
+        if (is_account_page()) {
+            $inclure = true;
+        } else {
+            // Inclure aussi les pages customisées que tu as créées sous /mon-compte/*
+            $request_uri = trim($_SERVER['REQUEST_URI'], '/');
 
-        $autorises = [
-            'mon-compte/outils',
-            'mon-compte/statistiques',
-            'mon-compte/organisateurs',
-        ];
+            $autorises = [
+                'mon-compte/outils',
+                'mon-compte/statistiques',
+                'mon-compte/organisateurs',
+            ];
 
-        $inclure = in_array($request_uri, $autorises);
+            $inclure = in_array($request_uri, $autorises, true);
+        }
+
+        if (!$inclure) {
+            return;
+        }
     }
 
-    if (!$inclure) return;
-
     $script_path = get_stylesheet_directory() . '/assets/js/conversion.js';
-    $version = file_exists($script_path) ? filemtime($script_path) : false;
+    $version     = file_exists($script_path) ? filemtime($script_path) : false;
 
     wp_enqueue_script(
         'conversion',

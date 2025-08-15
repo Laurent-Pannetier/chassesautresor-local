@@ -8,7 +8,7 @@
 defined('ABSPATH') || exit;
 
 if (function_exists('charger_script_conversion')) {
-    charger_script_conversion();
+    charger_script_conversion(true);
 }
 
 $current_user = wp_get_current_user();
