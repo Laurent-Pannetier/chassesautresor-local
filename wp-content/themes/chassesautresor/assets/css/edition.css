@@ -68,6 +68,16 @@
   /* padding-left: 1.3rem; */
 }
 
+/* Aligne l'icône de complétion et le contenu sur une seule ligne */
+.resume-infos li {
+  display: flex;
+  align-items: center;
+}
+
+.resume-infos li > .champ-affichage {
+  flex: 1;
+}
+
 .cache {
   display: none;
 }
@@ -178,6 +188,27 @@ body.edition-active-enigme .single-enigme-main .champ-img .champ-modifier {
 
 .media-modal.wp-core-ui button.media-modal-close:hover {
   color: white !important;
+}
+
+/* Positionne le stylo dans le coin de la vignette */
+.resume-infos .champ-img .champ-modifier {
+  position: relative;
+  display: inline-block;
+}
+
+.resume-infos .champ-img .champ-modifier img {
+  display: block;
+}
+
+.resume-infos .champ-img .champ-modifier .icone-modif {
+  position: absolute;
+  top: 0.3rem;
+  right: 0.3rem;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: var(--color-secondary);
+  padding: 0.2rem 0.3rem;
+  border-radius: 0.3rem;
+  pointer-events: none;
 }
 
 /* ========== 🖼 LOGO CLIQUABLE ========== */
