@@ -417,8 +417,9 @@ header .points-link:hover {
 .conversion-rate-badge {
     display: inline-block;
     font-size: 0.75rem;
-    background-color: var(--color-editor-accent);
-    color: #fff;
+    background-color: #fff;
+    color: var(--color-editor-heading);
+    border: 1px solid var(--color-editor-text-muted);
     padding: 2px 6px;
     border-radius: 4px;
     margin-bottom: 12px;
@@ -427,7 +428,7 @@ header .points-link:hover {
     display: block;
     font-size: 40px;
     margin: 0 auto 8px;
-    color: var(--color-editor-accent);
+    color: var(--color-editor-heading);
 }
 .modal-title,
 .modal-description {
@@ -500,7 +501,7 @@ header .points-link:hover {
 }
 
 .points-modal input[type="number"]:focus {
-    outline: 1px solid var(--color-editor-accent);
+    outline: 1px solid var(--color-editor-text-muted);
     background-color: var(--color-editor-field-hover);
 }
 
@@ -538,7 +539,7 @@ header .points-link:hover {
     display: block;
     font-size: 40px;
     margin: 0 auto 12px;
-    color: var(--color-editor-accent);
+    color: var(--color-editor-heading);
 }
 
 .points-modal-message h2 {
