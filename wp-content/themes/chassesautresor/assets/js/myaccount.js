@@ -33,6 +33,9 @@ document.addEventListener('DOMContentLoaded', () => {
       content.innerHTML = `<section class="msg-important">${messages}</section>` + data.data.html;
       adminNav.querySelectorAll('.dashboard-nav-link').forEach((a) => a.classList.remove('active'));
       link.classList.add('active');
+      document.dispatchEvent(
+        new CustomEvent('myaccountSectionLoaded', { detail: { section } })
+      );
       if (push) {
         window.history.pushState(null, '', link.href);
       } else {

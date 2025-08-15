@@ -1,23 +1,23 @@
-document.addEventListener("DOMContentLoaded", function () {
-    var DEBUG = window.DEBUG || false;
-    DEBUG && console.log("✅ gestion-points.js chargé");
+document.addEventListener("DOMContentLoaded", () => {
+    const DEBUG = window.DEBUG || false;
+    DEBUG && console.log("✅ autocomplete-utilisateurs.js chargé");
 
-    setTimeout(function() {
+    const init = () => {
         const userInput = document.getElementById("utilisateur-points");
-
         if (!userInput) {
             DEBUG && console.log("❌ Élément introuvable : Vérifie l'ID du champ input.");
             return;
         }
-
+        if (userInput.dataset.autocompleteInit) {
+            return;
+        }
+        userInput.dataset.autocompleteInit = "1";
         DEBUG && console.log("✅ Élément trouvé : utilisateur-points");
 
-        // ✅ Vérifier si #suggestions-list existe, sinon le créer dynamiquement
         let suggestionsList = document.getElementById("suggestions-list");
         if (!suggestionsList) {
             suggestionsList = document.createElement("ul");
             suggestionsList.id = "suggestions-list";
-            // Positionner la liste juste sous le champ input
             const parent = userInput.parentNode;
             if (parent && parent.style.position === "") {
                 parent.style.position = "relative";
@@ -36,41 +36,43 @@ document.addEventListener("DOMContentLoaded", function () {
             DEBUG && console.log("✅ Élément #suggestions-list ajouté au DOM.");
         }
 
-        userInput.addEventListener("input", function () {
-            let searchTerm = userInput.value.trim();
+        userInput.addEventListener("input", () => {
+            const searchTerm = userInput.value.trim();
             if (searchTerm.length < 1) {
                 DEBUG && console.log("❌ Trop court, pas de requête AJAX");
-                suggestionsList.innerHTML = ""; // Effacer la liste si trop court
-                suggestionsList.style.display = "none"; // Cacher la liste
+                suggestionsList.innerHTML = "";
+                suggestionsList.style.display = "none";
                 return;
             }
 
             DEBUG && console.log("🔍 Recherche AJAX envoyée :", searchTerm);
 
             fetch(
-                ajax_object.ajax_url + "?action=rechercher_utilisateur&term=" + encodeURIComponent(searchTerm),
+                ajax_object.ajax_url +
+                    "?action=rechercher_utilisateur&term=" +
+                    encodeURIComponent(searchTerm),
                 { credentials: "same-origin" }
             )
-                .then(response => response.json())
-                .then(data => {
+                .then((response) => response.json())
+                .then((data) => {
                     DEBUG && console.log("✅ Réponse AJAX reçue :", data);
 
-                    suggestionsList.innerHTML = ""; // Réinitialiser la liste
-                    suggestionsList.style.display = "block"; // Afficher la liste
+                    suggestionsList.innerHTML = "";
+                    suggestionsList.style.display = "block";
 
                     if (data.success && data.data.length > 0) {
-                        data.data.forEach(user => {
-                            let listItem = document.createElement("li");
+                        data.data.forEach((user) => {
+                            const listItem = document.createElement("li");
                             listItem.textContent = user.text;
                             listItem.dataset.userId = user.id;
                             listItem.style.padding = "8px";
                             listItem.style.cursor = "pointer";
                             listItem.style.listStyle = "none";
 
-                            listItem.addEventListener("click", function () {
-                                userInput.value = user.id; // ✅ Insère l'ID utilisateur directement
-                                suggestionsList.innerHTML = ""; // Effacer la liste
-                                suggestionsList.style.display = "none"; // Cacher la liste
+                            listItem.addEventListener("click", () => {
+                                userInput.value = user.id;
+                                suggestionsList.innerHTML = "";
+                                suggestionsList.style.display = "none";
                             });
 
                             suggestionsList.appendChild(listItem);
@@ -79,21 +81,35 @@ document.addEventListener("DOMContentLoaded", function () {
                         DEBUG && console.log("✅ Suggestions mises à jour.");
                     } else {
                         DEBUG && console.log("❌ Aucune donnée reçue.");
-                        suggestionsList.style.display = "none"; // Cacher la liste si vide
+                        suggestionsList.style.display = "none";
                     }
                 })
-                .catch(error => {
+                .catch((error) => {
                     console.error("❌ Erreur AJAX :", error);
-                    suggestionsList.style.display = "none"; // Cacher la liste en cas d'erreur
+                    suggestionsList.style.display = "none";
                 });
         });
+    };
 
-        // Cacher la liste si on clique ailleurs
-        document.addEventListener("click", function (e) {
-            if (e.target !== userInput && e.target !== suggestionsList) {
-                suggestionsList.style.display = "none";
-            }
-        });
+    document.addEventListener("click", (e) => {
+        const suggestionsList = document.getElementById("suggestions-list");
+        const userInput = document.getElementById("utilisateur-points");
+        if (
+            suggestionsList &&
+            userInput &&
+            e.target !== userInput &&
+            !suggestionsList.contains(e.target)
+        ) {
+            suggestionsList.style.display = "none";
+        }
+    });
 
-    }, 500);
+    init();
+
+    document.addEventListener("myaccountSectionLoaded", (e) => {
+        if (e.detail && e.detail.section === "outils") {
+            init();
+        }
+    });
 });
+
