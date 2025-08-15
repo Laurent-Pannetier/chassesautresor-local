@@ -89,13 +89,6 @@ if (is_singular('enigme')) {
 <div id="primary" class="content-area">
     <main id="main" class="site-main single-enigme-main statut-<?= esc_attr($statut_enigme); ?>">
 
-      <?php
-      // 🔧 Header organisateur (s'affiche en haut de page)
-      get_template_part('template-parts/organisateur/organisateur-header', null, [
-        'chasse_id' => $chasse_id,
-      ]);
-      ?>
-
       <?php if (enigme_est_visible_pour($user_id, $enigme_id)) : ?>
         <section class="enigme-wrapper">
           <!-- 🔧 Bouton pour ouvrir le panneau d’édition -->
