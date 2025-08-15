@@ -73,7 +73,7 @@ defined('ABSPATH') || exit;
             );
         }
 
-        echo '<div class="enigme-layout">';
+        echo '<div class="container container--xl-full enigme-layout">';
         echo '<aside class="enigme-sidebar">';
 
         if ($chasse_id) {
