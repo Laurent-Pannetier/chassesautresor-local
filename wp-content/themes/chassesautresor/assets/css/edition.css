@@ -1131,6 +1131,11 @@ body.panneau-ouvert::before {
   text-align: right;
 }
 
+.edition-panel th:first-child,
+.edition-panel td:first-child {
+  text-align: left;
+}
+
 .edition-panel thead {
   background-color: rgba(0, 0, 0, 0.04);
   color: var(--color-editor-heading);
@@ -1160,6 +1165,11 @@ body.panneau-ouvert::before {
   background-color: rgba(0, 0, 0, 0.04);
   color: var(--color-editor-heading);
   text-align: right;
+}
+
+.table-tentatives th:first-child,
+.table-tentatives td:first-child {
+  text-align: left;
 }
 
 .table-tentatives th:nth-child(1),
@@ -1376,6 +1386,11 @@ body.panneau-ouvert::before {
 .stats-table td {
   text-align: right;
   padding: 8px 12px;
+}
+
+.stats-table th:first-child,
+.stats-table td:first-child {
+  text-align: left;
 }
 
 .stats-table th {
