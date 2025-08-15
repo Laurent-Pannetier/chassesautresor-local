@@ -1130,12 +1130,12 @@ body.panneau-ouvert::before {
 }
 
 .edition-panel thead {
-  background-color: var(--color-editor-field-hover);
+  background-color: rgba(0, 0, 0, 0.04);
   color: var(--color-editor-heading);
 }
 
 .edition-panel tbody tr:nth-child(even) {
-  background-color: var(--color-editor-field-hover);
+  background-color: rgba(0, 0, 0, 0.02);
 }
 
 /* Table des tentatives de réponse */
@@ -1153,7 +1153,7 @@ body.panneau-ouvert::before {
 }
 
 .table-tentatives th {
-  background-color: var(--color-editor-field-hover);
+  background-color: rgba(0, 0, 0, 0.04);
   color: var(--color-editor-heading);
   text-align: right;
 }
@@ -1376,7 +1376,7 @@ body.panneau-ouvert::before {
   font-weight: 600;
   color: var(--color-editor-heading);
   border-bottom: 1px solid var(--color-editor-border);
-  background-color: var(--color-editor-field-hover);
+  background-color: rgba(0, 0, 0, 0.04);
 }
 
 .stats-table td {
@@ -1384,7 +1384,7 @@ body.panneau-ouvert::before {
 }
 
 .stats-table tbody tr:nth-child(even) {
-  background-color: var(--color-editor-field-hover);
+  background-color: rgba(0, 0, 0, 0.02);
 }
 
 .stats-table-wrapper {
