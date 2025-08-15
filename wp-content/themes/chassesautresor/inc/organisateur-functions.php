@@ -66,29 +66,36 @@ add_action('wp_enqueue_scripts', 'enqueue_script_header_organisateur_ui');
  * 🔎 Le fichier est versionné dynamiquement via `filemtime()` pour éviter le cache.
  *
  * @hook wp_enqueue_scripts
+ *
+ * @param bool $force Forcer l'enfilement du script quel que soit l'URL courante.
  * @return void
  */
-function charger_script_conversion() {
-    // Inclure les pages WooCommerce natives
-    if (is_account_page()) {
-        $inclure = true;
-    } else {
-        // Inclure aussi les pages customisées que tu as créées sous /mon-compte/*
-        $request_uri = trim($_SERVER['REQUEST_URI'], '/');
+function charger_script_conversion(bool $force = false): void
+{
+    if (!$force) {
+        // Inclure les pages WooCommerce natives
+        if (is_account_page()) {
+            $inclure = true;
+        } else {
+            // Inclure aussi les pages customisées que tu as créées sous /mon-compte/*
+            $request_uri = trim($_SERVER['REQUEST_URI'], '/');
 
-        $autorises = [
-            'mon-compte/outils',
-            'mon-compte/statistiques',
-            'mon-compte/organisateurs',
-        ];
+            $autorises = [
+                'mon-compte/outils',
+                'mon-compte/statistiques',
+                'mon-compte/organisateurs',
+            ];
 
-        $inclure = in_array($request_uri, $autorises);
+            $inclure = in_array($request_uri, $autorises, true);
+        }
+
+        if (!$inclure) {
+            return;
+        }
     }
 
-    if (!$inclure) return;
-
     $script_path = get_stylesheet_directory() . '/assets/js/conversion.js';
-    $version = file_exists($script_path) ? filemtime($script_path) : false;
+    $version     = file_exists($script_path) ? filemtime($script_path) : false;
 
     wp_enqueue_script(
         'conversion',
@@ -160,33 +167,139 @@ function verifier_acces_conversion($user_id) {
         return "Attendez encore $jours_restants jours";
     }
 
-    // 4️⃣ Vérification du solde de points (500 points minimum)
-    $points_actuels = get_user_points($user_id);
-    if ($points_actuels < 500) {
-        return "Points insuffisants";
+    // 4️⃣ Vérification du solde de points (seuil minimal)
+    $points_actuels  = function_exists('get_user_points') ? get_user_points($user_id) : 0;
+    if (!$points_actuels) {
+        $points_actuels = (int) get_user_meta($user_id, 'points_utilisateur', true);
+    }
+    $points_minimum = get_points_conversion_min();
+    if ((int) $points_actuels < $points_minimum) {
+        return 'INSUFFICIENT_POINTS';
     }
 
     // 5️⃣ Vérification IBAN/BIC
-    $iban = get_field('gagnez_de_largent_iban', $organisateur_id);
-    $bic = get_field('gagnez_de_largent_bic', $organisateur_id);
+    $iban = get_field('iban', $organisateur_id);
+    $bic  = get_field('bic', $organisateur_id);
 
     if (empty($iban) || empty($bic)) {
-        $lien_edition = get_permalink($organisateur_id);
-        if ($lien_edition) {
-            $lien_edition = add_query_arg([
-                'edition'  => 'open',
-                'onglet'   => 'revenus',
-                'highlight' => 'coordonnees'
-            ], $lien_edition);
-        } else {
-            $lien_edition = admin_url('post.php?post=' . $organisateur_id . '&action=edit'); // 🔹 Génération manuelle du lien
-        }
+        $iban = get_field('gagnez_de_largent_iban', $organisateur_id);
+        $bic  = get_field('gagnez_de_largent_bic', $organisateur_id);
+    }
 
-        return "IBAN/BIC non remplis - <a href='" . esc_url($lien_edition) . "'>Saisir mes infos</a>";
+    if (empty($iban) || empty($bic)) {
+        return 'MISSING_BANK_DETAILS';
     }
 
     return true; // ✅ Toutes les conditions sont remplies
 }
+
+/**
+ * Génère le contenu HTML du modal de conversion en fonction des droits d'accès.
+ */
+function render_conversion_modal_content($access_message = null): string
+{
+    if ($access_message === null) {
+        $access_message = verifier_acces_conversion(get_current_user_id());
+    }
+    $organisateur_id = get_organisateur_from_user(get_current_user_id());
+    $points_minimum  = get_points_conversion_min();
+
+    ob_start();
+
+    if ($access_message === 'INSUFFICIENT_POINTS') {
+        ?>
+        <span class="close-modal">&times;</span>
+        <div class="points-modal-message">
+            <i class="fa-solid fa-circle-exclamation modal-icon" aria-hidden="true"></i>
+            <h2>solde insuffisant</h2>
+            <p>Conversion possible à partir de <?php echo esc_html($points_minimum); ?> points</p>
+            <button type="button" class="close-modal">Fermer</button>
+        </div>
+        <?php
+    } elseif ($access_message === 'MISSING_BANK_DETAILS') {
+        ?>
+        <span class="close-modal">&times;</span>
+        <div class="points-modal-message">
+            <i class="fa-solid fa-building-columns modal-icon" aria-hidden="true"></i>
+            <h2>Coordonnées bancaires manquantes</h2>
+            <p>nous avons besoin d'enregistrer vos coordonnées bancaires pour vous envoyer un versement</p>
+            <p>
+                <a
+                    id="ouvrir-coordonnees-modal"
+                    class="champ-modifier"
+                    href="#"
+                    aria-label="<?php esc_attr_e('Ajouter des coordonnées bancaires', 'chassesautresor-com'); ?>"
+                    data-champ="coordonnees_bancaires"
+                    data-cpt="organisateur"
+                    data-post-id="<?php echo esc_attr($organisateur_id); ?>"
+                    data-label-add="<?php esc_attr_e('Ajouter', 'chassesautresor-com'); ?>"
+                    data-label-edit="<?php esc_attr_e('Éditer', 'chassesautresor-com'); ?>"
+                    data-aria-add="<?php esc_attr_e('Ajouter des coordonnées bancaires', 'chassesautresor-com'); ?>"
+                    data-aria-edit="<?php esc_attr_e('Modifier les coordonnées bancaires', 'chassesautresor-com'); ?>"
+                >renseigner coordonnées bancaires</a>
+            </p>
+            <button type="button" class="close-modal">Fermer</button>
+        </div>
+        <?php
+    } elseif (is_string($access_message) && $access_message !== '') {
+        ?>
+        <span class="close-modal">&times;</span>
+        <p><?php echo esc_html($access_message); ?></p>
+        <?php
+    } else {
+        ?>
+        <span class="close-modal">&times;</span>
+        <h2>💰 Taux de conversion</h2>
+        <p>1 000 points = <?php echo esc_html(get_taux_conversion_actuel()); ?> €</p>
+        <p>
+            La conversion des points en € n'est possible qu'à partir de <?php echo esc_html($points_minimum); ?> points
+            afin d'éviter les mico-paiements qui génèrent des frais fixes
+        </p>
+        <p>
+            Ce taux est fixé par chassesautresor.com et peut être modifié :
+            vous serez toujours prévenu préalablement avant toute éventuelle
+            modification
+        </p>
+        <form action="" method="POST">
+            <label for="points-a-convertir">Points à convertir</label>
+            <input
+                type="number"
+                name="points_a_convertir"
+                id="points-a-convertir"
+                min="<?php echo esc_attr($points_minimum); ?>"
+                max="<?php echo esc_attr(get_user_points()); ?>"
+                step="1"
+                value="<?php echo esc_attr($points_minimum); ?>"
+                data-taux="<?php echo esc_attr(get_taux_conversion_actuel()); ?>"
+            >
+            <p class="conversion-equivalent">
+                Soit <strong><span id="montant-equivalent">
+                    <?php echo esc_html(number_format(($points_minimum / 1000) * get_taux_conversion_actuel(), 2, '.', '')); ?>
+                </span> €</strong>
+            </p>
+            <input type="hidden" name="demander_paiement" value="1">
+            <?php wp_nonce_field('demande_paiement_action', 'demande_paiement_nonce'); ?>
+            <button type="submit"><?php esc_html_e('Envoyer', 'chassesautresor-com'); ?></button>
+        </form>
+        <?php
+    }
+
+    return ob_get_clean();
+}
+
+/**
+ * AJAX : renvoie le contenu du modal de conversion actualisé.
+ */
+function ajax_conversion_modal_content(): void
+{
+    $access_message = verifier_acces_conversion(get_current_user_id());
+    $html           = render_conversion_modal_content($access_message);
+    wp_send_json_success([
+        'html'   => $html,
+        'access' => $access_message === true,
+    ]);
+}
+add_action('wp_ajax_conversion_modal_content', 'ajax_conversion_modal_content');
 
 /**
  * Affiche le tableau des demandes de paiement d'un organisateur.

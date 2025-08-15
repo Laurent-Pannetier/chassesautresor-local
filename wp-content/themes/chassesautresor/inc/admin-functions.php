@@ -238,6 +238,13 @@ function gerer_organisateur() {
  */
 
 /**
+ * 📌 Valeur minimale de points requise pour demander une conversion.
+ */
+function get_points_conversion_min(): int {
+    return (int) apply_filters('points_conversion_min', 500);
+}
+
+/**
  * 📌 Ajout du champ d'administration pour le taux de conversion
  */
 add_action('acf/init', function () {
@@ -401,8 +408,13 @@ function afficher_tableau_paiements_admin() {
 
         // Récupérer l'ID du CPT "organisateur" associé à l'utilisateur
         $organisateur_id = get_organisateur_from_user($user->ID);
-        $iban = $organisateur_id ? get_field('gagnez_de_largent_iban', $organisateur_id) : 'Non renseigné';
-        $bic = $organisateur_id ? get_field('gagnez_de_largent_bic', $organisateur_id) : '';
+        $iban = $organisateur_id ? get_field('iban', $organisateur_id) : '';
+        $bic  = $organisateur_id ? get_field('bic', $organisateur_id) : '';
+        if ($organisateur_id && (empty($iban) || empty($bic))) {
+            $iban = get_field('gagnez_de_largent_iban', $organisateur_id);
+            $bic  = get_field('gagnez_de_largent_bic', $organisateur_id);
+        }
+        $iban = $iban ?: 'Non renseigné';
 
         foreach ($paiements as $index => $paiement) {
             $statut = $paiement['statut'] === 'reglé' ? '✅ Réglé' : '🟡 En attente';
@@ -507,14 +519,21 @@ function traiter_demande_paiement() {
     }
 
     $user_id = get_current_user_id();
-    $solde_actuel = get_user_points($user_id) ?: 0;
+    $solde_actuel   = get_user_points($user_id) ?: 0;
     $taux_conversion = get_taux_conversion_actuel();
+    $points_minimum  = get_points_conversion_min();
 
     // ✅ Vérification du nombre de points demandés
     $points_a_convertir = isset($_POST['points_a_convertir']) ? intval($_POST['points_a_convertir']) : 0;
 
-    if ($points_a_convertir < 500) {
-        wp_die( __( '❌ Le minimum pour une conversion est de 500 points.', 'chassesautresor-com' ) );
+    if ($points_a_convertir < $points_minimum) {
+        wp_die(
+            sprintf(
+                /* translators: %d: points minimum */
+                __( '❌ Le minimum pour une conversion est de %d points.', 'chassesautresor-com' ),
+                $points_minimum
+            )
+        );
     }
 
     if ($points_a_convertir > $solde_actuel) {

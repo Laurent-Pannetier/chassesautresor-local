@@ -76,14 +76,28 @@ document.addEventListener('DOMContentLoaded', () => {
   const validerIban = (iban) => /^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$/.test(iban.replace(/\s/g, '').toUpperCase());
   const validerBic = (bic) => /^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(bic.toUpperCase());
 
-  boutonOuvrirCoord?.addEventListener('click', (e) => {
+  const ouvrirCoordonnees = (e, fromModal = false) => {
     e.preventDefault();
+    if (fromModal) {
+      const modal = document.getElementById('conversion-modal');
+      if (modal) modal.style.display = 'none';
+      document.querySelectorAll('.modal-overlay').forEach((ov) => {
+        ov.style.display = 'none';
+      });
+    }
     if (typeof window.openPanel === 'function') {
       window.openPanel('panneau-coordonnees');
     } else {
       panneauCoord?.classList.add('ouvert');
       document.body.classList.add('panneau-ouvert');
       panneauCoord?.setAttribute('aria-hidden', 'false');
+    }
+  };
+
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('#ouvrir-coordonnees, #ouvrir-coordonnees-modal');
+    if (btn) {
+      ouvrirCoordonnees(e, btn.id === 'ouvrir-coordonnees-modal');
     }
   });
 
@@ -158,6 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
             feedbackIban.textContent = '';
             feedbackIban.className = 'champ-feedback';
             if (typeof window.mettreAJourResumeInfos === 'function') window.mettreAJourResumeInfos();
+            if (typeof window.mettreAJourCarteConversion === 'function') window.mettreAJourCarteConversion();
           }, 800);
         } else {
           feedbackIban.textContent = '❌ La sauvegarde a échoué.';
@@ -268,4 +283,27 @@ window.mettreAJourCarteAjoutChasse = function () {
       <p>Complétez d’abord : ${texte}</p>
     `;
   }
+};
+
+// 🔄 Met à jour l'état (active/désactivée) de la carte de conversion
+window.mettreAJourCarteConversion = function () {
+  const carte = document.querySelector('.dashboard-card[data-stat="conversion"]');
+  if (!carte) return;
+
+  fetch('/wp-admin/admin-ajax.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ action: 'conversion_modal_content' }),
+  })
+    .then(res => res.json())
+    .then(res => {
+      if (!res.success) return;
+      const access = res.data?.access;
+      if (access) {
+        carte.classList.remove('disabled');
+      } else {
+        carte.classList.add('disabled');
+      }
+    })
+    .catch(() => {});
 };

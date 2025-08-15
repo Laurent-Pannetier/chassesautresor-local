@@ -24,10 +24,12 @@ $reseaux      = get_field('reseaux_sociaux', $organisateur_id);
 $site         = get_field('lien_site_web', $organisateur_id);
 $email_contact = get_field('profil_public_email_contact', $organisateur_id);
 
-$coordonnees = get_field('coordonnees_bancaires', $organisateur_id);
-$iban = is_array($coordonnees) ? ($coordonnees['iban'] ?? '') : '';
-$bic  = is_array($coordonnees) ? ($coordonnees['bic'] ?? '') : '';
+$iban = get_field('iban', $organisateur_id);
+$bic  = get_field('bic', $organisateur_id);
 $coordonnees_vides = empty($iban) && empty($bic);
+
+$conversion_access   = verifier_acces_conversion(get_current_user_id());
+$conversion_disabled = $conversion_access !== true;
 
 $liens_publics = get_field('liens_publics', $organisateur_id); // ← manquant !
 $liens_publics = is_array($liens_publics) ? array_filter($liens_publics, function ($entree) {
@@ -37,6 +39,11 @@ $liens_publics = is_array($liens_publics) ? array_filter($liens_publics, functio
 
     return is_string($type) && trim($type) !== '' && is_string($url) && trim($url) !== '';
 }) : [];
+
+
+if (function_exists('charger_script_conversion')) {
+    charger_script_conversion(true);
+}
 
 
 $peut_editer_titre = champ_est_editable('post_title', $organisateur_id);
@@ -212,6 +219,17 @@ $is_complete = (
       </div>
         <div class="edition-panel-body">
           <div class="dashboard-grid stats-cards">
+            <div class="dashboard-card<?php echo $conversion_disabled ? ' disabled' : ''; ?>" data-stat="conversion">
+              <i class="fa-solid fa-right-left" aria-hidden="true"></i>
+              <h3>Conversion</h3>
+              <button
+                type="button"
+                id="open-conversion-modal"
+                class="stat-value"
+              >
+                <?php esc_html_e('Convertir', 'chassesautresor-com'); ?>
+              </button>
+            </div>
             <div class="dashboard-card" data-stat="bank-details">
               <i class="fa-solid fa-building-columns" aria-hidden="true"></i>
               <h3>
@@ -330,4 +348,6 @@ $is_complete = (
   <?php get_template_part('template-parts/organisateur/panneaux/organisateur-edition-coordonnees', null, [
     'organisateur_id' => $organisateur_id
   ]); ?>
+
+  <?php get_template_part('template-parts/modals/modal-conversion'); ?>
 <?php endif; ?>

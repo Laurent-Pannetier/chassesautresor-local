@@ -30,9 +30,8 @@ $nom_organisateur = get_the_title($organisateur_id);
 $site_internet = get_field('communication_site_internet', $organisateur_id);
 $reseaux_sociaux = get_field('communication_reseaux_sociaux', $organisateur_id);
 $statut_organisateur = get_post_status($organisateur_id);
-$coordonnees = get_field('coordonnees_bancaires', $organisateur_id);
-$iban = $coordonnees['iban'] ?? '';
-$bic  = $coordonnees['bic'] ?? '';
+$iban = get_field('iban', $organisateur_id);
+$bic  = get_field('bic', $organisateur_id);
 
 // Vérification si l'organisateur a une description publique remplie
 $description = get_field('description_longue', $organisateur_id);

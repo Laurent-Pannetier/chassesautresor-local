@@ -1226,6 +1226,17 @@ body.panneau-ouvert::before {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
+.dashboard-card.disabled {
+  opacity: 0.5;
+  filter: grayscale(100%);
+}
+
+.dashboard-card.disabled h3,
+.dashboard-card.disabled i,
+.dashboard-card.disabled .stat-value {
+  color: var(--color-editor-text-muted);
+}
+
 .dashboard-card i {
   font-size: 2rem;
   color: var(--color-editor-heading);
