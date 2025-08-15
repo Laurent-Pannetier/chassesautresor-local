@@ -96,6 +96,7 @@ function mettreAJourVisuelCPT(cpt, postId, nouvelleUrl) {
   document.querySelectorAll(`img.visuel-cpt[data-cpt="${cpt}"][data-post-id="${postId}"]`)
     .forEach(img => {
       img.src = nouvelleUrl;
+      img.srcset = nouvelleUrl;
     });
 }
 

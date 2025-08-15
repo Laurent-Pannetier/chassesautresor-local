@@ -19,7 +19,8 @@ $peut_editer_cout  = champ_est_editable('caracteristiques.chasse_infos_cout_poin
 
 $infos_chasse = $args['infos_chasse'] ?? preparer_infos_affichage_chasse($chasse_id);
 
-$image = $infos_chasse['image_raw'];
+$image_id   = $infos_chasse['image_id'] ?? null;
+$image_url  = $image_id ? wp_get_attachment_image_src($image_id, 'thumbnail')[0] : null;
 $description = $infos_chasse['description'];
 $titre = get_the_title($chasse_id);
 $liens = $infos_chasse['liens'];
@@ -108,19 +109,33 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                 </li>
                 
                 <!-- Image -->
-                <li class="champ-chasse champ-img <?= empty($image) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>"
+                <li class="champ-chasse champ-img <?= empty($image_id) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>"
                   data-champ="chasse_principale_image"
                   data-cpt="chasse"
                   data-post-id="<?= esc_attr($chasse_id); ?>">
-                  Une image principale
-                  <?php if ($peut_editer) : ?>
-                    <button type="button"
-                      class="champ-modifier"
-                      data-champ="chasse_principale_image"
-                      data-cpt="chasse"
-                      data-post-id="<?= esc_attr($chasse_id); ?>"
-                      aria-label="Modifier l’image">✏️</button>
-                  <?php endif; ?>
+                  <div class="champ-affichage">
+                    <label>Image chasse</label>
+                    <?php if ($peut_editer) : ?>
+                      <button type="button"
+                        class="champ-modifier"
+                        data-champ="chasse_principale_image"
+                        data-cpt="chasse"
+                        data-post-id="<?= esc_attr($chasse_id); ?>"
+                        aria-label="Modifier l’image">
+                        <img src="<?= esc_url($image_url ?: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=='); ?>" alt="Image de la chasse" />
+                        <span class="champ-ajout-image">ajouter une image</span>
+                        <span class="icone-modif">✏️</span>
+                      </button>
+                    <?php else : ?>
+                      <?php if ($image_url) : ?>
+                        <img src="<?= esc_url($image_url); ?>" alt="Image de la chasse" />
+                      <?php else : ?>
+                        <span class="champ-ajout-image">ajouter une image</span>
+                      <?php endif; ?>
+                    <?php endif; ?>
+                  </div>
+                  <input type="hidden" class="champ-input" value="<?= esc_attr($image_id ?? '') ?>">
+                  <div class="champ-feedback"></div>
                 </li>
 
                 <!-- Description -->

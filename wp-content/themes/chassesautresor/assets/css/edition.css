@@ -176,6 +176,60 @@ body.edition-active-enigme .single-enigme-main .champ-img .champ-modifier {
   transform: translateY(0);
 }
 
+.champ-img.champ-vide img {
+  display: none;
+}
+
+.champ-img:not(.champ-vide) .champ-ajout-image {
+  display: none;
+}
+
+.champ-img .champ-affichage {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.champ-img .champ-modifier {
+  position: relative;
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.champ-img .champ-modifier img {
+  display: block;
+}
+
+.champ-img .champ-modifier .icone-modif {
+  position: absolute;
+  top: 0.2rem;
+  right: 0.2rem;
+  font-size: 0.9rem;
+  color: var(--color-secondary);
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 0.1rem 0.2rem;
+  border-radius: 0.25rem;
+  transition: transform 0.2s;
+}
+
+.champ-img .champ-modifier:hover .icone-modif {
+  transform: scale(1.1);
+}
+
+.champ-img.champ-vide .champ-modifier .icone-modif {
+  display: none;
+}
+
+.edition-panel .champ-img img {
+  max-width: 80px;
+  height: auto;
+  border-radius: 0.25rem;
+}
+
 .media-modal.wp-core-ui button.media-modal-close:hover {
   color: white !important;
 }
@@ -782,8 +836,7 @@ li.champ-titre {
 }
 
 li.ligne-logo .champ-modifier {
-  margin-top: 0.5rem;
-  margin-left: -0.5rem;
+  margin: 0;
 }
 
 li.ligne-email i.fa-envelope {
