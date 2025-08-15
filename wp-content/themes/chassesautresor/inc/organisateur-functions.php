@@ -193,6 +193,99 @@ function verifier_acces_conversion($user_id) {
 }
 
 /**
+ * Génère le contenu HTML du modal de conversion en fonction des droits d'accès.
+ */
+function render_conversion_modal_content(): string
+{
+    $access_message   = verifier_acces_conversion(get_current_user_id());
+    $organisateur_id  = get_organisateur_from_user(get_current_user_id());
+
+    ob_start();
+
+    if ($access_message === 'INSUFFICIENT_POINTS') {
+        ?>
+        <span class="close-modal">&times;</span>
+        <div class="points-modal-message">
+            <i class="fa-solid fa-circle-exclamation modal-icon" aria-hidden="true"></i>
+            <h2>solde insuffisant</h2>
+            <p>Conversion possible à partir de 500 points</p>
+            <button type="button" class="close-modal">Fermer</button>
+        </div>
+        <?php
+    } elseif ($access_message === 'MISSING_BANK_DETAILS') {
+        ?>
+        <span class="close-modal">&times;</span>
+        <div class="points-modal-message">
+            <i class="fa-solid fa-building-columns modal-icon" aria-hidden="true"></i>
+            <h2>Coordonnées bancaires manquantes</h2>
+            <p>nous avons besoin d'enregistrer vos coordonnées bancaires pour vous envoyer un versement</p>
+            <p>
+                <a
+                    id="ouvrir-coordonnees-modal"
+                    class="champ-modifier"
+                    href="#"
+                    aria-label="<?php esc_attr_e('Ajouter des coordonnées bancaires', 'chassesautresor-com'); ?>"
+                    data-champ="coordonnees_bancaires"
+                    data-cpt="organisateur"
+                    data-post-id="<?php echo esc_attr($organisateur_id); ?>"
+                    data-label-add="<?php esc_attr_e('Ajouter', 'chassesautresor-com'); ?>"
+                    data-label-edit="<?php esc_attr_e('Éditer', 'chassesautresor-com'); ?>"
+                    data-aria-add="<?php esc_attr_e('Ajouter des coordonnées bancaires', 'chassesautresor-com'); ?>"
+                    data-aria-edit="<?php esc_attr_e('Modifier les coordonnées bancaires', 'chassesautresor-com'); ?>"
+                >renseigner coordonnées bancaires</a>
+            </p>
+            <button type="button" class="close-modal">Fermer</button>
+        </div>
+        <?php
+    } elseif (is_string($access_message) && $access_message !== '') {
+        ?>
+        <span class="close-modal">&times;</span>
+        <p><?php echo esc_html($access_message); ?></p>
+        <?php
+    } else {
+        ?>
+        <span class="close-modal">&times;</span>
+        <h2>💰 Taux de conversion</h2>
+        <p>1 000 points = <?php echo esc_html(get_taux_conversion_actuel()); ?> €</p>
+        <p>
+            La conversion des points en € n'est possible qu'à partir de 500 points
+            afin d'éviter les mico-paiements qui génèrent des frais fixes
+        </p>
+        <p>
+            Ce taux est fixé par chassesautresor.com et peut être modifié :
+            vous serez toujours prévenu préalablement avant toute éventuelle
+            modification
+        </p>
+        <form action="" method="POST">
+            <label for="points-a-convertir">Points à convertir</label>
+            <input
+                type="number"
+                name="points_a_convertir"
+                id="points-a-convertir"
+                min="500"
+                max="<?php echo esc_attr(get_user_points()); ?>"
+                data-taux="<?php echo esc_attr(get_taux_conversion_actuel()); ?>"
+            >
+            <input type="hidden" name="demander_paiement" value="1">
+            <?php wp_nonce_field('demande_paiement_action', 'demande_paiement_nonce'); ?>
+            <button type="submit"><?php esc_html_e('Envoyer', 'chassesautresor-com'); ?></button>
+        </form>
+        <?php
+    }
+
+    return ob_get_clean();
+}
+
+/**
+ * AJAX : renvoie le contenu du modal de conversion actualisé.
+ */
+function ajax_conversion_modal_content(): void
+{
+    wp_send_json_success(['html' => render_conversion_modal_content()]);
+}
+add_action('wp_ajax_conversion_modal_content', 'ajax_conversion_modal_content');
+
+/**
  * Affiche le tableau des demandes de paiement d'un organisateur.
  *
  * @param int $user_id L'ID de l'utilisateur organisateur.
