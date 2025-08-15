@@ -63,4 +63,54 @@ class PointsRepository
 
         return $newBalance;
     }
+
+    /**
+     * Record a conversion request with pending status and return the inserted row ID.
+     */
+    public function logConversionRequest(int $userId, int $points): int
+    {
+        $current = $this->getBalance($userId);
+        $newBalance = max(0, $current + $points);
+
+        $this->wpdb->insert(
+            $this->table,
+            [
+                'user_id'        => $userId,
+                'balance'        => $newBalance,
+                'points'         => $points,
+                'reason'         => 'conversion',
+                'request_status' => 'pending',
+                'request_date'   => current_time('mysql'),
+            ],
+            ['%d', '%d', '%d', '%s', '%s', '%s']
+        );
+
+        return (int) $this->wpdb->insert_id;
+    }
+
+    /**
+     * Update status and related dates for a conversion request.
+     */
+    public function updateRequestStatus(int $id, string $status, array $dates = []): void
+    {
+        $data = ['request_status' => $status];
+        $format = ['%s'];
+
+        if (isset($dates['settlement_date'])) {
+            $data['settlement_date'] = $dates['settlement_date'];
+            $format[] = '%s';
+        }
+
+        if (isset($dates['cancelled_date'])) {
+            $data['cancelled_date'] = $dates['cancelled_date'];
+            $format[] = '%s';
+        }
+
+        if (isset($dates['cancellation_reason'])) {
+            $data['cancellation_reason'] = $dates['cancellation_reason'];
+            $format[] = '%s';
+        }
+
+        $this->wpdb->update($this->table, $data, ['id' => $id], $format, ['%d']);
+    }
 }

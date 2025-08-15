@@ -450,45 +450,69 @@ function afficher_tableau_paiements_admin() {
  * 📌 Traite le règlement d'une demande de paiement depuis l'admin.
  */
 function regler_paiement_admin() {
-    // Vérifier que l'utilisateur est administrateur et que les paramètres sont présents
-    if (!current_user_can('administrator') || !isset($_GET['regler_paiement']) || !isset($_GET['user_id'])) {
-        return; // Sécurité : seul un admin peut traiter un paiement
-    }
-
-    $user_id = intval($_GET['user_id']);
-    $index = intval($_GET['regler_paiement']);
-
-    // Récupérer les paiements
-    $paiements = get_user_meta($user_id, 'demande_paiement', true);
-    if (empty($paiements) || !isset($paiements[$index])) {
-        error_log("❌ Erreur : Paiement non trouvé pour user_id=$user_id, index=$index");
+    if (!current_user_can('administrator') || !isset($_GET['user_id'])) {
         return;
     }
 
-    error_log("🛠️ Paiements AVANT mise à jour : " . print_r($paiements, true));
+    $user_id = intval($_GET['user_id']);
+    $action_index = null;
+    $action_type  = null;
 
-    // Mise à jour du statut du paiement
-    $paiements[$index]['statut'] = 'reglé';
-    $paiements[$index]['paiement_date_reglement'] = current_time('mysql');
-
-    // Enregistrement de la mise à jour
-    $update_success = update_user_meta($user_id, 'demande_paiement', $paiements);
-
-    error_log("✅ Paiement réglé pour user_id=$user_id, index=$index");
-
-    // Vérification après mise à jour
-    $paiements_apres = get_user_meta($user_id, 'demande_paiement', true);
-    error_log("🛠️ Paiements APRÈS mise à jour : " . print_r($paiements_apres, true));
-
-    if (!$update_success) {
-        error_log("❌ ERREUR : La mise à jour des paiements a échoué !");
+    if (isset($_GET['regler_paiement'])) {
+        $action_index = intval($_GET['regler_paiement']);
+        $action_type  = 'regler';
+    } elseif (isset($_GET['annuler_paiement'])) {
+        $action_index = intval($_GET['annuler_paiement']);
+        $action_type  = 'annuler';
     }
 
-    // Rediriger pour éviter de re-traiter la requête en cas de rechargement
-    wp_redirect(remove_query_arg(['regler_paiement', 'user_id']));
+    if ($action_type === null) {
+        return;
+    }
+
+    $paiements = get_user_meta($user_id, 'demande_paiement', true);
+    if (empty($paiements) || !isset($paiements[$action_index])) {
+        error_log("❌ Erreur : Paiement non trouvé pour user_id=$user_id, index=$action_index");
+        return;
+    }
+
+    $paiement = $paiements[$action_index];
+
+    global $wpdb;
+    $repo = new PointsRepository($wpdb);
+
+    if ($action_type === 'regler') {
+        $paiements[$action_index]['statut'] = 'reglé';
+        $paiements[$action_index]['paiement_date_reglement'] = current_time('mysql');
+
+        if (!empty($paiement['points_log_id'])) {
+            $repo->updateRequestStatus((int) $paiement['points_log_id'], 'paid', [
+                'settlement_date' => current_time('mysql'),
+            ]);
+        }
+    } else {
+        $paiements[$action_index]['statut'] = 'annule';
+        $paiements[$action_index]['paiement_date_annulation'] = current_time('mysql');
+
+        if (!empty($paiement['points_log_id'])) {
+            $repo->updateRequestStatus((int) $paiement['points_log_id'], 'refused', [
+                'cancelled_date'     => current_time('mysql'),
+                'cancellation_reason' => 'cancelled by admin',
+            ]);
+        }
+
+        $points = intval($paiement['paiement_points_utilises'] ?? 0);
+        if ($points > 0) {
+            update_user_points($user_id, $points, 'refund');
+        }
+    }
+
+    update_user_meta($user_id, 'demande_paiement', $paiements);
+
+    $query_arg = $action_type === 'regler' ? 'regler_paiement' : 'annuler_paiement';
+    wp_redirect(remove_query_arg([$query_arg, 'user_id']));
     exit;
 }
-// Enregistrement de la fonction sur le hook admin
 add_action('template_redirect', 'regler_paiement_admin');
 
 /**
@@ -555,19 +579,23 @@ function traiter_demande_paiement() {
     $paiements = get_user_meta($user_id, 'demande_paiement', true) ?: [];
     $paiements = maybe_unserialize($paiements);
 
+    global $wpdb;
+    $repo   = new PointsRepository($wpdb);
+    $log_id = $repo->logConversionRequest($user_id, -$points_a_convertir);
+
     $nouvelle_demande = [
-        'paiement_date_demande' => current_time('mysql'),
-        'paiement_demande_montant' => $montant_euros,
-        'paiement_points_utilises' => $points_a_convertir, // ✅ AJOUT DU STOCKAGE DES POINTS
+        'paiement_date_demande'   => current_time('mysql'),
+        'paiement_demande_montant'=> $montant_euros,
+        'paiement_points_utilises'=> $points_a_convertir,
         'paiement_date_reglement' => '',
-        'statut' => 'en attente'
+        'statut'                  => 'en attente',
+        'points_log_id'           => $log_id,
     ];
 
     $paiements[] = $nouvelle_demande;
 
-    // ✅ Enregistrement de la demande et mise à jour des points de l'utilisateur
+    // ✅ Enregistrement de la demande
     update_user_meta($user_id, 'demande_paiement', $paiements);
-    update_user_points($user_id, -$points_a_convertir);
 
     error_log("✅ Demande enregistrée : " . json_encode($nouvelle_demande));
 
