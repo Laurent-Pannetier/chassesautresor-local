@@ -92,13 +92,14 @@ $is_complete = (
                     data-post-id="<?= esc_attr($organisateur_id); ?>">
 
                   <div class="champ-affichage">
-                    <label for="champ-titre-organisateur">Nom d’organisateur</label>
+                    <label for="champ-titre-organisateur">Titre :</label>
+                    <span class="champ-valeur">
+                      <?= empty($titre) ? "renseigner le titre de l’organisateur" : esc_html($titre); ?>
+                    </span>
                     <?php if ($peut_editer_titre) : ?>
                       <button type="button"
                         class="champ-modifier"
-                        aria-label="Modifier le nom d’organisateur">
-                        ✏️
-                      </button>
+                        aria-label="Modifier le nom d’organisateur">✏️</button>
                     <?php endif; ?>
                   </div>
 

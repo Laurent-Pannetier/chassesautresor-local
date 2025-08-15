@@ -113,13 +113,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                     data-post-id="<?= esc_attr($enigme_id); ?>">
 
                     <div class="champ-affichage">
-                      <label for="champ-titre-enigme">Titre de l’énigme</label>
+                      <label for="champ-titre-enigme">Titre :</label>
+                      <span class="champ-valeur">
+                        <?= $isTitreParDefaut ? 'renseigner le titre de l’énigme' : esc_html($titre); ?>
+                      </span>
                       <?php if ($peut_editer_titre) : ?>
                         <button type="button"
                           class="champ-modifier"
-                          aria-label="Modifier le titre">
-                          ✏️
-                        </button>
+                          aria-label="Modifier le titre">✏️</button>
                       <?php endif; ?>
                     </div>
 

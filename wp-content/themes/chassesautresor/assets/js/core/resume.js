@@ -215,11 +215,15 @@ window.mettreAJourResumeInfos = function () {
 window.onChampSimpleMisAJour = function (champ, postId, valeur, cpt) {
   cpt = cpt?.toLowerCase?.() || cpt;
 
-  // ✅ ORGANISATEUR : mise à jour titre + image
-  if (cpt === 'organisateur') {
-    if (champ === 'post_title' && typeof window.mettreAJourTitreHeader === 'function') {
+  if (champ === 'post_title') {
+    mettreAJourResumeTitre(cpt, valeur);
+    if (typeof window.mettreAJourTitreHeader === 'function') {
       window.mettreAJourTitreHeader(cpt, valeur);
     }
+  }
+
+  // ✅ ORGANISATEUR : mise à jour image
+  if (cpt === 'organisateur') {
     if (champ === 'logo_organisateur') {
       const bloc = document.querySelector(`.champ-organisateur[data-champ="${champ}"][data-post-id="${postId}"]`);
       if (bloc && typeof bloc.__ouvrirMedia === 'function') bloc.__ouvrirMedia();
@@ -238,11 +242,8 @@ window.onChampSimpleMisAJour = function (champ, postId, valeur, cpt) {
     }
   }
 
-  // ✅ CHASSE : titre + image + statut
+  // ✅ CHASSE : image + statut
   if (cpt === 'chasse') {
-    if (champ === 'post_title' && typeof window.mettreAJourTitreHeader === 'function') {
-      window.mettreAJourTitreHeader(cpt, valeur);
-    }
     if (champ === 'chasse_principale_image') {
       const bloc = document.querySelector(`.champ-chasse[data-champ="${champ}"][data-post-id="${postId}"]`);
       if (bloc && typeof bloc.__ouvrirMedia === 'function') bloc.__ouvrirMedia();
@@ -257,6 +258,10 @@ window.onChampSimpleMisAJour = function (champ, postId, valeur, cpt) {
     ];
     if (champsStatut.includes(champ)) {
       rafraichirStatutChasse(postId);
+    }
+    const champsResume = ['post_title'];
+    if (champsResume.includes(champ) && typeof window.mettreAJourResumeInfos === 'function') {
+      window.mettreAJourResumeInfos();
     }
   }
 
@@ -280,10 +285,6 @@ window.onChampSimpleMisAJour = function (champ, postId, valeur, cpt) {
       'enigme_solution_heure'
     ];
 
-    if (champ === 'post_title' && typeof window.mettreAJourTitreHeader === 'function') {
-      window.mettreAJourTitreHeader(cpt, valeur);
-    }
-
     if (champ === 'enigme_visuel_legende') {
       const legende = document.querySelector('.enigme-soustitre');
       if (legende) legende.textContent = valeur;
@@ -295,6 +296,32 @@ window.onChampSimpleMisAJour = function (champ, postId, valeur, cpt) {
   }
 
 };
+
+function mettreAJourResumeTitre(cpt, valeur) {
+  const span = document.querySelector(`.edition-panel-${cpt} .resume-infos li[data-champ="post_title"] .champ-valeur`);
+  if (!span) return;
+
+  const titre = valeur?.trim() || '';
+  let placeholder = '';
+  let defaut = '';
+
+  switch (cpt) {
+    case 'chasse':
+      placeholder = 'renseigner le titre de la chasse';
+      defaut = window.CHP_CHASSE_DEFAUT?.titre || 'nouvelle chasse';
+      break;
+    case 'enigme':
+      placeholder = 'renseigner le titre de l’énigme';
+      defaut = 'en création';
+      break;
+    default:
+      placeholder = 'renseigner le titre de l’organisateur';
+      defaut = 'votre nom d’organisateur';
+  }
+
+  const estVide = !titre || titre.toLowerCase() === defaut.toLowerCase();
+  span.textContent = estVide ? placeholder : titre;
+}
 
 
 
