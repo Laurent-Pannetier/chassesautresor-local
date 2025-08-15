@@ -376,3 +376,37 @@ span.champ-obligatoire {
   align-items: center;
   gap: 1rem;
 }
+
+/* ====== Tableaux – Mode édition ====== */
+.mode-edition table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  caption-side: bottom;
+  border: 1px solid hsl(var(--border));
+  border-radius: 8px;
+}
+
+.mode-edition table thead {
+  background-color: hsl(var(--muted));
+  color: hsl(var(--foreground));
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.mode-edition table th,
+.mode-edition table td {
+  padding: 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid hsl(var(--border));
+  white-space: nowrap;
+}
+
+.mode-edition table tbody tr:hover {
+  background-color: var(--color-editor-field-hover);
+}
+
+.mode-edition table tbody tr:last-child td {
+  border-bottom: none;
+}

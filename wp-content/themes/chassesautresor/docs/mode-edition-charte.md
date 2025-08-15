@@ -22,6 +22,15 @@ Le mode édition est actif lorsque la classe `mode-edition` est présente sur la
 - **Grille de cartes** : `.dashboard-grid` organisant les `.dashboard-card` adaptatives.
 - **Cartes et tableaux** : utilisation de bordures `1px` et rayons `8px`.
 
+### Tableaux
+
+Les tableaux affichés en mode édition adoptent par défaut un style inspiré de `shadcn/ui` :
+
+- bordure `1px` arrondie (`8px`) ;
+- en‑tête collant avec fond `--muted` ;
+- lignes séparées par une bordure fine et survolées en `--color-editor-field-hover` ;
+- cellules espacées (`0.5rem`) et texte aligné à gauche.
+
 ## Typographie
 
 Le mode édition utilise la police principale définie par `var(--font-main)`.

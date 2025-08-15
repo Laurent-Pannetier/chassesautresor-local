@@ -1110,28 +1110,6 @@ body.panneau-ouvert::before {
   position: relative;
   z-index: 1;
 }
-
-/* ====== Styles génériques des tableaux d'édition ====== */
-.edition-panel table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.edition-panel th,
-.edition-panel td {
-  padding: 6px 12px;
-  text-align: right;
-}
-
-.edition-panel thead {
-  background-color: var(--color-editor-background);
-  color: var(--color-editor-heading);
-}
-
-.edition-panel tbody tr:nth-child(even) {
-  background-color: var(--color-editor-field-hover);
-}
-
 /* Table des tentatives de réponse */
 .table-tentatives {
   width: 100%;

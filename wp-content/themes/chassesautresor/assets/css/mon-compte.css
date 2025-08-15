@@ -389,7 +389,6 @@
 .dashboard-card table {
     width: 100%;
     border-collapse: collapse;
-    border : 0 transparent;
 }
 
 .dashboard-card table tr,  .stats-table tr td{
@@ -399,7 +398,6 @@
 .dashboard-card table td {
     text-align: left;
     padding: 8px;
-    font-weight: bold;
 }
 /* images */
 .image-container {
