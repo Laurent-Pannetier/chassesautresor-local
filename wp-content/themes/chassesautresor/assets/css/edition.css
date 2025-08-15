@@ -1215,14 +1215,14 @@ body.panneau-ouvert::before {
 }
 
 .dashboard-card i {
-  font-size: 2rem;
+  font-size: 1.5rem;
   color: var(--color-editor-heading);
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.1));
 }
 
 .dashboard-card img {
-  width: 2rem;
-  height: 2rem;
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 .dashboard-card h3 {
@@ -1235,6 +1235,13 @@ body.panneau-ouvert::before {
 .stat-value {
   font-size: 1.5rem;
   font-weight: 700;
+}
+
+.dashboard-card .stat-value.champ-modifier {
+  font-size: 1.5rem;
+  color: var(--color-editor-text);
+  opacity: 1;
+  transform: none;
 }
 
 .dashboard-card.graph-card {
