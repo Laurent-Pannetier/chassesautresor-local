@@ -27,8 +27,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const initForm = () => {
         const inputPoints = document.getElementById("points-a-convertir");
         const montantEquivalent = document.getElementById("montant-equivalent");
+        const submitBtn = modal.querySelector(".modal-actions button[type='submit']");
 
-        if (inputPoints && montantEquivalent) {
+        if (inputPoints && montantEquivalent && submitBtn) {
             const tauxConversion = parseFloat(inputPoints.dataset.taux) || 85;
             const min = parseInt(inputPoints.min) || 0;
             const max = parseInt(inputPoints.max) || Infinity;
@@ -58,8 +59,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 montantEquivalent.textContent = montant;
             };
 
+            const toggleButton = () => {
+                submitBtn.disabled = inputPoints.value.trim() === "";
+            };
+
             const validateAndClamp = () => {
-                let points = parseInt(inputPoints.value, 10);
+                const raw = inputPoints.value.trim();
+                if (raw === "") {
+                    updateEquivalent();
+                    toggleButton();
+                    return;
+                }
+                let points = parseInt(raw, 10);
                 if (isNaN(points) || points < min) {
                     points = min;
                     showMessage(`points minimum : ${min} points`);
@@ -69,10 +80,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
                 inputPoints.value = points;
                 updateEquivalent();
+                toggleButton();
             };
 
             inputPoints.addEventListener("input", () => {
                 updateEquivalent();
+                toggleButton();
                 clearTimeout(debounceTimer);
                 debounceTimer = setTimeout(validateAndClamp, 500);
             });
@@ -80,6 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
             inputPoints.addEventListener("blur", validateAndClamp);
 
             updateEquivalent();
+            toggleButton();
         }
     };
 
