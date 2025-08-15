@@ -318,7 +318,7 @@ body .header-img-modifiable .icone-modif {
 /* Boutons d’édition */
 body.edition-active-chasse .page-chasse-wrapper .champ-modifier,
 body.edition-active .header-organisateur-wrapper .champ-modifier,
-body.edition-active .edition-panel-organisateur .champ-modifier,
+body.edition-active #organisateur-tab-param .edition-panel-organisateur .champ-modifier,
 body.edition-active-enigme .single-enigme-main .champ-modifier {
   background: none;
   border: none;
