@@ -1274,7 +1274,12 @@ Index :
 | balance   | int unsigned    | solde après l'opération          |
 | points    | int             | variation (crédit ou débit)      |
 | reason    | varchar(255)    | motif de l'opération             |
-| created_at | datetime NULL DEFAULT CURRENT_TIMESTAMP | date d'enregistrement |
+| request_status | enum('pending','approved','paid','refused') DEFAULT 'pending' | statut de la demande |
+| request_date | datetime DEFAULT CURRENT_TIMESTAMP | date de la demande |
+| settlement_date | datetime NULL | date de règlement |
+| cancelled_date | datetime NULL | date d'annulation/refus |
+| cancellation_reason | varchar(255) NULL | motif du refus/annulation |
+| created_at | datetime DEFAULT CURRENT_TIMESTAMP | date d'enregistrement |
 
 Index :
 - `PRIMARY(id)`
