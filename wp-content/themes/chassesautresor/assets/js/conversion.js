@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const modal = document.getElementById("conversion-modal");
 
     if (!modal) {
-        console.error("❌ ERREUR : Le modal #conversion-modal est introuvable !");
         return;
     }
 

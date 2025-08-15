@@ -37,8 +37,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const closeButtons = modal ? modal.querySelectorAll(".close-modal") : [];
         const overlay = document.querySelector(".modal-overlay");
 
-        if (!modal) {
-            console.error("❌ ERREUR : Le modal #conversion-modal est introuvable !");
+        if (!modal || !overlay) {
             return;
         }
 
