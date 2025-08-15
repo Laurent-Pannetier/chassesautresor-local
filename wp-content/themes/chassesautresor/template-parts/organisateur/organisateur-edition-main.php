@@ -119,8 +119,8 @@ $is_complete = (
                 </li>
 
                 <li class="champ-organisateur champ-img champ-logo ligne-logo <?= empty($logo_id) ? 'champ-vide' : 'champ-rempli'; ?>" data-champ="profil_public_logo_organisateur" data-cpt="organisateur" data-post-id="<?= esc_attr($organisateur_id); ?>">
-                  Logo organisateur
                   <div class="champ-affichage">
+                    <label>Logo organisateur</label>
                     <?php if ($peut_editer) : ?>
                       <button type="button"
                         class="champ-modifier"

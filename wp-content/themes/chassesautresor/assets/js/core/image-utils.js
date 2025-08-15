@@ -34,10 +34,12 @@ function initChampImage(bloc) {
     frame.on('select', () => {
       const selection = frame.state().get('selection').first();
       const id = selection?.id;
-      const url = selection?.attributes?.url;
-      if (!id || !url) return;
+      const fullUrl = selection?.attributes?.url;
+      const thumbUrl = selection?.attributes?.sizes?.thumbnail?.url || fullUrl;
+      if (!id || !fullUrl) return;
 
-      image.src = url;
+      image.src = thumbUrl;
+      image.srcset = thumbUrl;
       input.value = id;
 
       if (feedback) {
@@ -69,7 +71,7 @@ function initChampImage(bloc) {
               window.mettreAJourResumeInfos();
             }
             if (typeof window.mettreAJourVisuelCPT === 'function') {
-              mettreAJourVisuelCPT(cpt, postId, url);
+              mettreAJourVisuelCPT(cpt, postId, fullUrl);
             }
           } else {
             if (feedback) {

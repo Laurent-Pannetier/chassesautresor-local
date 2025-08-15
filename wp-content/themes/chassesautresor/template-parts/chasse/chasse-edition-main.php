@@ -19,9 +19,8 @@ $peut_editer_cout  = champ_est_editable('caracteristiques.chasse_infos_cout_poin
 
 $infos_chasse = $args['infos_chasse'] ?? preparer_infos_affichage_chasse($chasse_id);
 
-$image      = $infos_chasse['image_raw'];
 $image_id   = $infos_chasse['image_id'] ?? null;
-$image_url  = $infos_chasse['image_url'] ?? null;
+$image_url  = $image_id ? wp_get_attachment_image_src($image_id, 'thumbnail')[0] : null;
 $description = $infos_chasse['description'];
 $titre = get_the_title($chasse_id);
 $liens = $infos_chasse['liens'];
@@ -114,8 +113,8 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   data-champ="chasse_principale_image"
                   data-cpt="chasse"
                   data-post-id="<?= esc_attr($chasse_id); ?>">
-                  Image chasse
                   <div class="champ-affichage">
+                    <label>Image chasse</label>
                     <?php if ($peut_editer) : ?>
                       <button type="button"
                         class="champ-modifier"
