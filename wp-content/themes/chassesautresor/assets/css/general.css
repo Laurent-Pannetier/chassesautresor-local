@@ -264,6 +264,8 @@ span.champ-obligatoire {
 
   --color-editor-field-hover:      #E8F0FE;   /* 💠 Fond des champs actifs / survolés */
   --color-editor-placeholder:      #9AA0A6;   /* 💬 Placeholder ou aide contextuelle */
+
+  --editor-label-width:            150px;     /* 📏 Largeur minimale des labels dans les panneaux */
 }
 
 
