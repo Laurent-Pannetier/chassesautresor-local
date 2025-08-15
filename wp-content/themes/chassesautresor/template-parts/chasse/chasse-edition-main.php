@@ -534,7 +534,10 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                     data-champ="chasse_principale_liens"
                     data-cpt="chasse"
                     data-post-id="<?= esc_attr($chasse_id); ?>">
-                    <i class="fa-solid fa-share-nodes" aria-hidden="true"></i>
+                    <i class="fa-solid fa-share-nodes icone-defaut" aria-hidden="true"></i>
+                    <div class="champ-affichage champ-affichage-liens">
+                      <?= render_liens_publics($liens, 'chasse', ['placeholder' => false]); ?>
+                    </div>
                     <h3>Sites et réseaux de la chasse</h3>
                     <?php if ($peut_modifier) : ?>
                       <button type="button"
@@ -547,9 +550,6 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                     <?php endif; ?>
                     <div class="champ-donnees"
                       data-valeurs='<?= json_encode($liens, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>'></div>
-                    <div class="champ-affichage champ-affichage-liens">
-                      <?= render_liens_publics($liens, 'chasse', ['placeholder' => false]); ?>
-                    </div>
                     <div class="champ-feedback"></div>
                   </div>
                   <?php
