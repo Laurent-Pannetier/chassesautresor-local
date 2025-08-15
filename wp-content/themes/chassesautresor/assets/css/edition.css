@@ -311,7 +311,7 @@ body.edition-active-enigme .single-enigme-main .champ-modifier {
   background: none;
   border: none;
   color: var(--color-secondary);
-  font-size: 0.9rem;
+  /*font-size: 0.9rem;*/
   padding: 0;
   cursor: pointer;
   opacity: 0.5;
