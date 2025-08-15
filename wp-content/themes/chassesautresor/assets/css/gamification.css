@@ -394,13 +394,13 @@ header .points-link:hover {
     transform: translate(-50%, -50%); /* Centre le modal */
     width: 90%; /* Largeur responsive */
     max-width: 400px; /* Largeur max */
-    background: hsl(var(--card));
-    color: hsl(var(--foreground));
+    background-color: var(--color-editor-background);
+    color: var(--color-editor-text);
     padding: 16px;
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     text-align: left;
-    border: 1px solid hsl(var(--border));
+    border: 1px solid var(--color-editor-border);
 }
 .points-modal-content {
     position: relative;
@@ -412,7 +412,7 @@ header .points-link:hover {
     right: 15px;
     font-size: 24px;
     cursor: pointer;
-    color: hsl(var(--muted-foreground));
+    color: var(--color-editor-text-muted);
 }
 .points-modal-active {
     overflow: hidden;
@@ -440,12 +440,46 @@ header .points-link:hover {
 .points-modal h2 {
     font-size: 22px;
     margin-bottom: 10px;
-    color: var(--color-primary); /* Jaune or */
+    color: var(--color-editor-heading);
 }
 .points-modal p {
     font-size: 14px;
     margin-bottom: 10px;
-    color: hsl(var(--muted-foreground));
+    color: var(--color-editor-text);
+}
+
+.points-modal label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-weight: 500;
+    color: var(--color-editor-text);
+}
+
+.points-modal input[type="number"] {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--color-editor-border);
+    border-radius: 4px;
+    background-color: var(--color-editor-background);
+    color: var(--color-editor-text);
+}
+
+.points-modal input[type="number"]:focus {
+    outline: 1px solid var(--color-editor-accent);
+    background-color: var(--color-editor-field-hover);
+}
+
+.points-modal button {
+    background-color: var(--color-editor-button);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+}
+
+.points-modal button:hover {
+    background-color: var(--color-editor-button-hover);
 }
 
 .points-modal-message {
@@ -456,11 +490,11 @@ header .points-link:hover {
     display: block;
     font-size: 40px;
     margin: 0 auto 12px;
-    color: var(--color-primary);
+    color: var(--color-editor-accent);
 }
 
 .points-modal-message h2 {
-    color: hsl(var(--foreground));
+    color: var(--color-editor-heading);
     margin-bottom: 8px;
 }
 
