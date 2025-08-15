@@ -107,22 +107,6 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   <div class="champ-feedback"></div>
                 </li>
                 
-                <!-- Description -->
-                <li class="champ-chasse champ-description <?= empty($description) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>"
-                  data-champ="chasse_principale_description"
-                  data-cpt="chasse"
-                  data-post-id="<?= esc_attr($chasse_id); ?>">
-                  Une description
-                  <?php if ($peut_editer) : ?>
-                    <button type="button"
-                      class="champ-modifier ouvrir-panneau-description"
-                      data-cpt="chasse"
-                      data-champ="chasse_principale_description"
-                      data-post-id="<?= esc_attr($chasse_id); ?>"
-                      aria-label="Modifier la description">✏️</button>
-                  <?php endif; ?>
-                </li>
-
                 <!-- Image -->
                 <li class="champ-chasse champ-img <?= empty($image) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>"
                   data-champ="chasse_principale_image"
@@ -136,6 +120,22 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                       data-cpt="chasse"
                       data-post-id="<?= esc_attr($chasse_id); ?>"
                       aria-label="Modifier l’image">✏️</button>
+                  <?php endif; ?>
+                </li>
+
+                <!-- Description -->
+                <li class="champ-chasse champ-description <?= empty($description) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>"
+                  data-champ="chasse_principale_description"
+                  data-cpt="chasse"
+                  data-post-id="<?= esc_attr($chasse_id); ?>">
+                  Une description
+                  <?php if ($peut_editer) : ?>
+                    <button type="button"
+                      class="champ-modifier ouvrir-panneau-description"
+                      data-cpt="chasse"
+                      data-champ="chasse_principale_description"
+                      data-post-id="<?= esc_attr($chasse_id); ?>"
+                      aria-label="Modifier la description">✏️</button>
                   <?php endif; ?>
                 </li>
 
