@@ -17,7 +17,14 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!suggestionsList) {
             suggestionsList = document.createElement("ul");
             suggestionsList.id = "suggestions-list";
+            // Positionner la liste juste sous le champ input
+            const parent = userInput.parentNode;
+            if (parent && parent.style.position === "") {
+                parent.style.position = "relative";
+            }
             suggestionsList.style.position = "absolute";
+            suggestionsList.style.left = "0";
+            suggestionsList.style.top = userInput.offsetHeight + "px";
             suggestionsList.style.background = "white";
             suggestionsList.style.border = "1px solid #ccc";
             suggestionsList.style.width = userInput.offsetWidth + "px";
@@ -25,13 +32,13 @@ document.addEventListener("DOMContentLoaded", function () {
             suggestionsList.style.overflowY = "auto";
             suggestionsList.style.display = "none";
             suggestionsList.style.zIndex = "1000";
-            userInput.parentNode.insertBefore(suggestionsList, userInput.nextSibling);
+            parent.insertBefore(suggestionsList, userInput.nextSibling);
             DEBUG && console.log("✅ Élément #suggestions-list ajouté au DOM.");
         }
 
         userInput.addEventListener("input", function () {
             let searchTerm = userInput.value.trim();
-            if (searchTerm.length < 2) {
+            if (searchTerm.length < 1) {
                 DEBUG && console.log("❌ Trop court, pas de requête AJAX");
                 suggestionsList.innerHTML = ""; // Effacer la liste si trop court
                 suggestionsList.style.display = "none"; // Cacher la liste
@@ -40,7 +47,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
             DEBUG && console.log("🔍 Recherche AJAX envoyée :", searchTerm);
 
-            fetch(ajax_object.ajax_url + "?action=rechercher_utilisateur&term=" + encodeURIComponent(searchTerm))
+            fetch(
+                ajax_object.ajax_url + "?action=rechercher_utilisateur&term=" + encodeURIComponent(searchTerm),
+                { credentials: "same-origin" }
+            )
                 .then(response => response.json())
                 .then(data => {
                     DEBUG && console.log("✅ Réponse AJAX reçue :", data);
