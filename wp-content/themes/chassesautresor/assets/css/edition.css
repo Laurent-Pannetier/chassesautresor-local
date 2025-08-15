@@ -211,6 +211,20 @@ body .header-img-modifiable .icone-modif {
   opacity: 0.7;
 }
 
+.champ-liens .ouvrir-panneau-liens,
+.ligne-liens .ouvrir-panneau-liens {
+  display: inline-block;
+  font-size: 0.95rem;
+  opacity: 1;
+  transform: none;
+  text-decoration: underline;
+}
+
+.champ-liens .ouvrir-panneau-liens:hover,
+.ligne-liens .ouvrir-panneau-liens:hover {
+  text-decoration: none;
+}
+
 
 /* ========== 🖊️ CHAMPS DE SAISIE ========== */
 

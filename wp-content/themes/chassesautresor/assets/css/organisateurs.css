@@ -423,7 +423,7 @@ body:not(.edition-active) #presentation .champ-liens.champ-vide {
 }
 
 .lien-public i {
-  font-size: 1.1em;
+  font-size: 0.9em;
 }
 .lien-public .texte-lien {
     white-space: nowrap;

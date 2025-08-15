@@ -85,7 +85,7 @@ $classe_vide_coordonnees = ($iban_vide || $bic_vide) ? 'champ-vide' : '';
                     <button type="button"
                       class="champ-modifier"
                       aria-label="Modifier le nom d’organisateur">
-                      ✏️
+                      Ajouter/éditer
                     </button>
                   <?php endif; ?>
                 </div>
@@ -112,7 +112,7 @@ $classe_vide_coordonnees = ($iban_vide || $bic_vide) ? 'champ-vide' : '';
                     data-champ="profil_public_logo_organisateur"
                     data-cpt="organisateur"
                     data-post-id="<?php echo esc_attr($organisateur_id); ?>">
-                    ✏️
+                    Ajouter/éditer
                   </button>
 
                 <?php endif; ?>
@@ -126,7 +126,7 @@ $classe_vide_coordonnees = ($iban_vide || $bic_vide) ? 'champ-vide' : '';
                   <button type="button"
                     class="champ-modifier ouvrir-panneau-description"
                     aria-label="Modifier la description longue">
-                    ✏️
+                    Ajouter/éditer
                   </button>
 
                 <?php endif; ?>
@@ -145,7 +145,7 @@ $classe_vide_coordonnees = ($iban_vide || $bic_vide) ? 'champ-vide' : '';
                   <button type="button"
                     class="champ-modifier ouvrir-panneau-liens"
                     aria-label="Configurer les liens publics">
-                    ✏️
+                    Ajouter/éditer
                   </button>
                 <?php endif; ?>
               </li>
@@ -172,7 +172,7 @@ $classe_vide_coordonnees = ($iban_vide || $bic_vide) ? 'champ-vide' : '';
                       <button type="button"
                         class="champ-modifier"
                         aria-label="Modifier l’adresse email de contact">
-                        ✏️
+                        Ajouter/éditer
                       </button>
                     <?php endif; ?>
                   </div>
@@ -236,7 +236,7 @@ $classe_vide_coordonnees = ($iban_vide || $bic_vide) ? 'champ-vide' : '';
                         data-champ="coordonnees_bancaires"
                         data-cpt="organisateur"
                         data-post-id="<?php echo esc_attr($organisateur_id); ?>">
-                        ✏️
+                        Ajouter/éditer
                       </button>
 
                     <?php endif; ?>

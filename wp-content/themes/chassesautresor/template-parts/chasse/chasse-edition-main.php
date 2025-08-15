@@ -165,7 +165,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                       data-champ="chasse_principale_liens"
                       data-cpt="chasse"
                       data-post-id="<?= esc_attr($chasse_id); ?>"
-                      aria-label="Configurer les liens publics">✏️</button>
+                      aria-label="Configurer les liens publics">Ajouter/éditer</button>
                   <?php endif; ?>
 
                   <div class="champ-feedback"></div>
