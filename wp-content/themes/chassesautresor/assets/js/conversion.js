@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     const openModal = document.getElementById("open-conversion-modal");
     const modal = document.getElementById("conversion-modal");
-    const closeModal = document.querySelector(".close-modal");
+    const closeButtons = document.querySelectorAll(".close-modal");
 
     if (!modal) {
         console.error("❌ ERREUR : Le modal #conversion-modal est introuvable !");
@@ -21,11 +21,13 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Fermeture du modal via la croix
-    if (closeModal) {
-        closeModal.addEventListener("click", function () {
-            modal.style.display = "none";
-            overlay.style.display = "none";
+    // Fermeture du modal via les éléments de fermeture
+    if (closeButtons.length > 0) {
+        closeButtons.forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                modal.style.display = "none";
+                overlay.style.display = "none";
+            });
         });
     }
 

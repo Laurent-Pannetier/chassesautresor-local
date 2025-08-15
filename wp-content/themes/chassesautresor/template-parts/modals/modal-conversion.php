@@ -6,37 +6,34 @@ $access_message = verifier_acces_conversion(get_current_user_id());
 <div id="conversion-modal" class="points-modal">
     <div class="points-modal-content">
         <span class="close-modal">&times;</span>
-        <h2>💰 Taux de conversion</h2>
-        <p>1 000 points = <?php echo esc_html(get_taux_conversion_actuel()); ?> €</p>
-        <p>
-            La conversion des points en € n'est possible qu'à partir de 500 points
-            afin d'éviter les mico-paiements qui génèrent des frais fixes
-        </p>
-        <p>
-            Ce taux est fixé par chassesautresor.com et peut être modifié :
-            vous serez toujours prévenu préalablement avant toute éventuelle
-            modification
-        </p>
-        <?php if (is_string($access_message) && $access_message !== '') : ?>
-            <p><?php echo wp_kses(
-                    $access_message,
-                    [
-                        'a' => [
-                            'id'            => [],
-                            'class'         => [],
-                            'href'          => [],
-                            'aria-label'    => [],
-                            'data-champ'    => [],
-                            'data-cpt'      => [],
-                            'data-post-id'  => [],
-                            'data-label-add'    => [],
-                            'data-label-edit'   => [],
-                            'data-aria-add'     => [],
-                            'data-aria-edit'    => [],
-                        ],
-                    ]
-                ); ?></p>
+        <?php if ($access_message === 'INSUFFICIENT_POINTS') : ?>
+            <div class="points-modal-message">
+                <i class="fa-solid fa-circle-exclamation modal-icon" aria-hidden="true"></i>
+                <h2>solde insuffisant</h2>
+                <p>Conversion possible à partir de 500 points</p>
+                <button type="button" class="close-modal">Fermer</button>
+            </div>
+        <?php elseif ($access_message === 'MISSING_BANK_DETAILS') : ?>
+            <div class="points-modal-message">
+                <i class="fa-solid fa-building-columns modal-icon" aria-hidden="true"></i>
+                <h2>Coordonnées bancaires manquantes</h2>
+                <p>nous avons besoin d'enregistrer vos coordonnées bancaires pour vous envoyer un versement</p>
+                <button type="button" class="close-modal">Fermer</button>
+            </div>
+        <?php elseif (is_string($access_message) && $access_message !== '') : ?>
+            <p><?php echo esc_html($access_message); ?></p>
         <?php else : ?>
+            <h2>💰 Taux de conversion</h2>
+            <p>1 000 points = <?php echo esc_html(get_taux_conversion_actuel()); ?> €</p>
+            <p>
+                La conversion des points en € n'est possible qu'à partir de 500 points
+                afin d'éviter les mico-paiements qui génèrent des frais fixes
+            </p>
+            <p>
+                Ce taux est fixé par chassesautresor.com et peut être modifié :
+                vous serez toujours prévenu préalablement avant toute éventuelle
+                modification
+            </p>
             <form action="" method="POST">
                 <label for="points-a-convertir">Points à convertir</label>
                 <input type="number"

@@ -173,7 +173,7 @@ function verifier_acces_conversion($user_id) {
         $points_actuels = (int) get_user_meta($user_id, 'points_utilisateur', true);
     }
     if ((int) $points_actuels < 500) {
-        return "Points insuffisants";
+        return 'INSUFFICIENT_POINTS';
     }
 
     // 5️⃣ Vérification IBAN/BIC
@@ -181,20 +181,7 @@ function verifier_acces_conversion($user_id) {
     $bic = get_field('gagnez_de_largent_bic', $organisateur_id);
 
     if (empty($iban) || empty($bic)) {
-        $link = sprintf(
-            '<a id="ouvrir-coordonnees-modal" class="champ-modifier" href="#" aria-label="%1$s" ' .
-            'data-champ="coordonnees_bancaires" data-cpt="organisateur" data-post-id="%2$d" ' .
-            'data-label-add="%3$s" data-label-edit="%4$s" data-aria-add="%5$s" data-aria-edit="%6$s">%7$s</a>',
-            esc_attr__('Ajouter des coordonnées bancaires', 'chassesautresor-com'),
-            $organisateur_id,
-            esc_attr__('Ajouter', 'chassesautresor-com'),
-            esc_attr__('Éditer', 'chassesautresor-com'),
-            esc_attr__('Ajouter des coordonnées bancaires', 'chassesautresor-com'),
-            esc_attr__('Modifier les coordonnées bancaires', 'chassesautresor-com'),
-            esc_html__('renseigner coordonnées bancaires', 'chassesautresor-com')
-        );
-
-        return 'IBAN/BIC non remplis - ' . $link;
+        return 'MISSING_BANK_DETAILS';
     }
 
     return true; // ✅ Toutes les conditions sont remplies
