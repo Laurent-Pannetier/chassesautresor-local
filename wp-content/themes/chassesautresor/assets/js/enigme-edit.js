@@ -974,7 +974,6 @@ function initSolutionInline() {
   const cpt = bloc.dataset.cpt || 'enigme';
 
   const cards = bloc.querySelectorAll('.solution-option');
-  const boutonTexte = bloc.querySelector('#ouvrir-panneau-solution');
 
   const inputDelai = bloc.querySelector('#solution-delai');
   const selectHeure = bloc.querySelector('#solution-heure');
@@ -1002,9 +1001,7 @@ function initSolutionInline() {
       }
 
       if (mode === 'texte') {
-        setTimeout(() => {
-          boutonTexte?.click();
-        }, 100);
+        setTimeout(ouvrirPanneauSolution, 100);
       }
     });
   });
@@ -1068,10 +1065,7 @@ function initSolutionInline() {
 // ==============================
 // ✏️ Panneau solution (texte)
 // ==============================
-document.addEventListener('click', (e) => {
-  const btn = e.target.closest('#ouvrir-panneau-solution'); // ou '.ouvrir-panneau-solution' si classe
-  if (!btn) return;
-
+function ouvrirPanneauSolution() {
   const panneau = document.getElementById('panneau-solution-enigme');
   if (!panneau) return;
 
@@ -1083,17 +1077,24 @@ document.addEventListener('click', (e) => {
   panneau.classList.add('ouvert');
   document.body.classList.add('panneau-ouvert');
   panneau.setAttribute('aria-hidden', 'false');
-});
+}
 
+document.addEventListener('click', (e) => {
+  if (e.target.closest('#ouvrir-panneau-solution')) {
+    ouvrirPanneauSolution();
+  }
+});
 
 // ==============================
 // ✖️ Fermeture panneau solution (wysiwyg)
 // ==============================
-document.querySelector('#panneau-solution-enigme .panneau-fermer')?.addEventListener('click', () => {
-  const panneau = document.getElementById('panneau-solution-enigme');
-  panneau.classList.remove('ouvert');
-  document.body.classList.remove('panneau-ouvert');
-  panneau.setAttribute('aria-hidden', 'true');
+document.addEventListener('click', (e) => {
+  if (e.target.closest('#panneau-solution-enigme .panneau-fermer')) {
+    const panneau = document.getElementById('panneau-solution-enigme');
+    panneau.classList.remove('ouvert');
+    document.body.classList.remove('panneau-ouvert');
+    panneau.setAttribute('aria-hidden', 'true');
+  }
 });
 
 
