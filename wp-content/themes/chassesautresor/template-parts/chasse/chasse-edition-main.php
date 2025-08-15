@@ -540,13 +540,13 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                     </div>
                     <h3>Sites et réseaux de la chasse</h3>
                     <?php if ($peut_modifier) : ?>
-                      <button type="button"
+                      <a href="#"
                         class="stat-value champ-modifier ouvrir-panneau-liens"
                         data-champ="chasse_principale_liens"
                         data-cpt="chasse"
                         data-post-id="<?= esc_attr($chasse_id); ?>">
                         <?= empty($liens) ? 'Ajouter' : 'Éditer'; ?>
-                      </button>
+                      </a>
                     <?php endif; ?>
                     <div class="champ-donnees"
                       data-valeurs='<?= json_encode($liens, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>'></div>

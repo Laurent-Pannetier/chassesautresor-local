@@ -37,6 +37,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // ✅ Ce bouton existe ET il est contenu dans le panneau organisateur
     if (!btn || !btn.closest('.panneau-organisateur')) return;
 
+    e.preventDefault();
+
     if (typeof window.openPanel === 'function') {
       window.openPanel('panneau-liens-publics');
     }

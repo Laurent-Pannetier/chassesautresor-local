@@ -278,13 +278,13 @@ $is_complete = (
                     </div>
                     <h3>Sites et réseaux de l'organisation</h3>
                     <?php if ($peut_modifier) : ?>
-                      <button type="button"
+                      <a href="#"
                         class="stat-value champ-modifier ouvrir-panneau-liens"
                         data-champ="liens_publics"
                         data-cpt="organisateur"
                         data-post-id="<?= esc_attr($organisateur_id); ?>">
                         <?= empty($liens_publics) ? 'Ajouter' : 'Éditer'; ?>
-                      </button>
+                      </a>
                     <?php endif; ?>
                     <div class="champ-donnees"
                       data-valeurs='<?= json_encode($liens_publics, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>'></div>
