@@ -299,6 +299,10 @@ function initEnigmeEdit() {
   initChampPreRequis();
   initChampSolution();
   initSolutionInline();
+  const paramsMaj = new URLSearchParams(window.location.search);
+  if (paramsMaj.get('maj') === 'solution') {
+    ouvrirPanneauSolution();
+  }
   initChampConditionnel('acf[enigme_acces_condition]', {
     'immediat': [], // pas d'affichage spécifique pour l'accès immédiat
     'date_programmee': ['#champ-enigme-date'],
@@ -1080,9 +1084,25 @@ function ouvrirPanneauSolution() {
 }
 
 document.addEventListener('click', (e) => {
-  if (e.target.closest('#ouvrir-panneau-solution')) {
-    ouvrirPanneauSolution();
+  const trigger = e.target.closest('#ouvrir-panneau-solution');
+  if (!trigger) return;
+
+  const bloc = document.querySelector('.champ-solution-mode');
+  const postId = bloc?.dataset.postId;
+  const cpt = bloc?.dataset.cpt || 'enigme';
+  const radioTexte = bloc?.querySelector('input[name="acf[enigme_solution_mode]"][value="texte"]');
+
+  if (bloc && radioTexte && !radioTexte.checked) {
+    bloc.querySelectorAll('input[name="acf[enigme_solution_mode]"]').forEach(r => { r.checked = false; });
+    radioTexte.checked = true;
+    bloc.querySelectorAll('.solution-option').forEach(c => c.classList.remove('active'));
+    radioTexte.closest('.solution-option')?.classList.add('active');
+    if (postId) {
+      modifierChampSimple('enigme_solution_mode', 'texte', postId, cpt);
+    }
   }
+
+  ouvrirPanneauSolution();
 });
 
 // ==============================
