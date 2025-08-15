@@ -59,6 +59,15 @@ function initEnigmeEdit() {
     }
   });
 
+  document.querySelectorAll('.stat-help').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const message = btn.dataset.message;
+      if (message) {
+        alert(message);
+      }
+    });
+  });
+
 
   // ==============================
   // 🧩 Affichage conditionnel – Champs radio
@@ -290,6 +299,10 @@ function initEnigmeEdit() {
   initChampPreRequis();
   initChampSolution();
   initSolutionInline();
+  const paramsMaj = new URLSearchParams(window.location.search);
+  if (paramsMaj.get('maj') === 'solution') {
+    ouvrirPanneauSolution();
+  }
   initChampConditionnel('acf[enigme_acces_condition]', {
     'immediat': [], // pas d'affichage spécifique pour l'accès immédiat
     'date_programmee': ['#champ-enigme-date'],
@@ -964,50 +977,41 @@ function initSolutionInline() {
   const postId = bloc.dataset.postId;
   const cpt = bloc.dataset.cpt || 'enigme';
 
-  const radios = bloc.querySelectorAll('input[name="acf[enigme_solution_mode]"]');
-  const zoneFichier = bloc.querySelector('.champ-solution-fichier');
-  const zoneTexte = bloc.querySelector('.champ-solution-texte');
-  const boutonTexte = bloc.querySelector('#ouvrir-panneau-solution');
+  const cards = bloc.querySelectorAll('.solution-option');
 
   const inputDelai = bloc.querySelector('#solution-delai');
   const selectHeure = bloc.querySelector('#solution-heure');
   const inputFichier = bloc.querySelector('#solution-pdf-upload');
   const feedbackFichier = bloc.querySelector('.champ-feedback');
 
-  radios.forEach(radio => {
-    radio.addEventListener('change', () => {
-      const val = radio.value;
-      modifierChampSimple('enigme_solution_mode', val, postId, cpt);
+  cards.forEach(card => {
+    card.addEventListener('click', (e) => {
+      e.preventDefault();
+      const mode = card.dataset.mode;
+      bloc.querySelectorAll('input[name="acf[enigme_solution_mode]"]').forEach(r => {
+        r.checked = false;
+      });
+      card.querySelector('input[name="acf[enigme_solution_mode]"]').checked = true;
 
-      if (val === 'pdf') {
-        zoneFichier.style.display = '';
-        zoneTexte.style.display = 'none';
+      cards.forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
 
-        // Déclenche automatiquement la sélection de fichier PDF
+      modifierChampSimple('enigme_solution_mode', mode, postId, cpt);
+
+      if (mode === 'pdf') {
         setTimeout(() => {
           inputFichier?.click();
-        }, 100); // petit délai pour laisser le DOM s'afficher
+        }, 100);
       }
 
-      if (val === 'texte') {
-        zoneFichier.style.display = 'none';
-        zoneTexte.style.display = ''; // on montre l'encart avec le bouton
-        setTimeout(() => {
-          boutonTexte?.click(); // on simule le clic pour ouvrir le panneau latéral
-        }, 100); // petit délai pour laisser le DOM se stabiliser
+      if (mode === 'texte') {
+        setTimeout(ouvrirPanneauSolution, 100);
       }
     });
   });
 
-  // 🔄 Affichage initial selon valeur radio
   const checked = bloc.querySelector('input[name="acf[enigme_solution_mode]"]:checked');
-  if (checked?.value === 'pdf') {
-    zoneFichier.style.display = '';
-    zoneTexte.style.display = 'none';
-  } else if (checked?.value === 'texte') {
-    zoneFichier.style.display = 'none';
-    zoneTexte.style.display = '';
-  }
+  checked?.closest('.solution-option')?.classList.add('active');
 
   // ⏳ Modification du délai (jours)
   inputDelai?.addEventListener('input', () => {
@@ -1065,10 +1069,7 @@ function initSolutionInline() {
 // ==============================
 // ✏️ Panneau solution (texte)
 // ==============================
-document.addEventListener('click', (e) => {
-  const btn = e.target.closest('#ouvrir-panneau-solution'); // ou '.ouvrir-panneau-solution' si classe
-  if (!btn) return;
-
+function ouvrirPanneauSolution() {
   const panneau = document.getElementById('panneau-solution-enigme');
   if (!panneau) return;
 
@@ -1080,17 +1081,40 @@ document.addEventListener('click', (e) => {
   panneau.classList.add('ouvert');
   document.body.classList.add('panneau-ouvert');
   panneau.setAttribute('aria-hidden', 'false');
-});
+}
 
+document.addEventListener('click', (e) => {
+  const trigger = e.target.closest('#ouvrir-panneau-solution');
+  if (!trigger) return;
+
+  const bloc = document.querySelector('.champ-solution-mode');
+  const postId = bloc?.dataset.postId;
+  const cpt = bloc?.dataset.cpt || 'enigme';
+  const radioTexte = bloc?.querySelector('input[name="acf[enigme_solution_mode]"][value="texte"]');
+
+  if (bloc && radioTexte && !radioTexte.checked) {
+    bloc.querySelectorAll('input[name="acf[enigme_solution_mode]"]').forEach(r => { r.checked = false; });
+    radioTexte.checked = true;
+    bloc.querySelectorAll('.solution-option').forEach(c => c.classList.remove('active'));
+    radioTexte.closest('.solution-option')?.classList.add('active');
+    if (postId) {
+      modifierChampSimple('enigme_solution_mode', 'texte', postId, cpt);
+    }
+  }
+
+  ouvrirPanneauSolution();
+});
 
 // ==============================
 // ✖️ Fermeture panneau solution (wysiwyg)
 // ==============================
-document.querySelector('#panneau-solution-enigme .panneau-fermer')?.addEventListener('click', () => {
-  const panneau = document.getElementById('panneau-solution-enigme');
-  panneau.classList.remove('ouvert');
-  document.body.classList.remove('panneau-ouvert');
-  panneau.setAttribute('aria-hidden', 'true');
+document.addEventListener('click', (e) => {
+  if (e.target.closest('#panneau-solution-enigme .panneau-fermer')) {
+    const panneau = document.getElementById('panneau-solution-enigme');
+    panneau.classList.remove('ouvert');
+    document.body.classList.remove('panneau-ouvert');
+    panneau.setAttribute('aria-hidden', 'true');
+  }
 });
 
 

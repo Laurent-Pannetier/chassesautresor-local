@@ -1330,6 +1330,21 @@ body.panneau-ouvert::before {
   height: 2rem;
 }
 
+.dashboard-card.solution-option {
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s, opacity 0.2s;
+}
+
+.dashboard-card.solution-option.active {
+  border-color: var(--color-editor-button);
+  background-color: rgba(26, 115, 232, 0.1);
+  opacity: 1;
+}
+
+.dashboard-card.solution-option:not(.active) {
+  opacity: 0.6;
+}
+
 .dashboard-card h3 {
   margin: 0;
   font-size: 0.9rem;
