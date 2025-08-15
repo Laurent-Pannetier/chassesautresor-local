@@ -47,10 +47,12 @@ function initChasseEdit() {
   document.getElementById('toggle-mode-edition-chasse')?.addEventListener('click', () => {
     document.body.classList.toggle('edition-active-chasse');
     document.body.classList.toggle('panneau-ouvert');
+    document.body.classList.toggle('mode-edition');
   });
   document.querySelector('.edition-panel-chasse .panneau-fermer')?.addEventListener('click', () => {
     document.body.classList.remove('edition-active-chasse');
     document.body.classList.remove('panneau-ouvert');
+    document.body.classList.remove('mode-edition');
     document.activeElement?.blur();
   });
 
@@ -61,7 +63,7 @@ function initChasseEdit() {
   const doitOuvrir = params.get('edition') === 'open';
   const tab = params.get('tab');
   if (doitOuvrir) {
-    document.body.classList.add('edition-active-chasse', 'panneau-ouvert');
+    document.body.classList.add('edition-active-chasse', 'panneau-ouvert', 'mode-edition');
     if (tab) {
       const btn = document.querySelector(`.edition-tab[data-target="chasse-tab-${tab}"]`);
       btn?.click();

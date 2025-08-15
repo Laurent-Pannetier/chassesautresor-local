@@ -426,6 +426,10 @@ function injection_classe_edition_active(array $classes): array
 
   if (!is_user_logged_in()) return $classes;
 
+  if (strpos($_SERVER['REQUEST_URI'] ?? '', '/mon-compte/') === 0) {
+    $classes[] = 'mode-edition';
+  }
+
   global $post;
   if (!$post || !isset($post->post_type)) return $classes;
 
@@ -446,6 +450,7 @@ function injection_classe_edition_active(array $classes): array
       !get_field('organisateur_cache_complet', $post->ID)
     ) {
       $classes[] = 'edition-active';
+      $classes[] = 'mode-edition';
     }
   }
 
@@ -470,6 +475,7 @@ function injection_classe_edition_active(array $classes): array
         !get_field('chasse_cache_complet', $post->ID)
       ) {
         $classes[] = 'edition-active-chasse';
+        $classes[] = 'mode-edition';
       }
     }
   }
