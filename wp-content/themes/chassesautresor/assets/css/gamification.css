@@ -520,8 +520,18 @@ header .points-link:hover {
 
 .points-modal .conversion-equivalent {
     margin-top: 0.5rem;
+}
+
+.points-modal .conversion-equivalent .label {
     font-size: 0.875rem;
     color: var(--color-editor-text-muted);
+}
+
+.points-modal .conversion-equivalent .amount {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-editor-heading);
 }
 
 .points-modal .points-feedback {

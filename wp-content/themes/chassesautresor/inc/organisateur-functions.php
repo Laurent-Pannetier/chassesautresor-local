@@ -268,22 +268,19 @@ function render_conversion_modal_content($access_message = null): string
                     min="<?php echo esc_attr($points_minimum); ?>"
                     max="<?php echo esc_attr($user_points); ?>"
                     step="1"
-                    value="<?php echo esc_attr($points_minimum); ?>"
+                    value=""
                     data-taux="<?php echo esc_attr($taux_conversion); ?>"
                 >
                 <span class="points-unit"><?php esc_html_e('points', 'chassesautresor-com'); ?></span>
             </div>
             <p class="conversion-equivalent">
-                <?php esc_html_e('contre-valeur :', 'chassesautresor-com'); ?>
-                <span id="montant-equivalent">
-                    <?php echo esc_html(number_format(($points_minimum / 1000) * $taux_conversion, 2, '.', '')); ?>
-                </span>
-                €
+                <span class="label"><?php esc_html_e('contre valeur', 'chassesautresor-com'); ?></span>
+                <span class="amount"><span id="montant-equivalent">0.00</span> €</span>
             </p>
             <input type="hidden" name="demander_paiement" value="1">
             <?php wp_nonce_field('demande_paiement_action', 'demande_paiement_nonce'); ?>
             <div class="modal-actions">
-                <button type="submit"><?php esc_html_e('Convertir', 'chassesautresor-com'); ?></button>
+                <button type="submit" disabled><?php esc_html_e('Convertir', 'chassesautresor-com'); ?></button>
             </div>
         </form>
         <?php
