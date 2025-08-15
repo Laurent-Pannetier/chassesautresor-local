@@ -142,7 +142,7 @@ function afficher_points_utilisateur_callback() {
 
     // 🏷️ Récupération des données utilisateur
     $user_id = get_current_user_id();
-    $points = intval(get_user_meta($user_id, 'points_utilisateur', true)) ?: 0;
+    $points = get_user_points($user_id);
     $icone_points_url = esc_url(get_stylesheet_directory_uri() . '/assets/images/points-small.png');
     $boutique_url = esc_url(home_url('/boutique'));
 
