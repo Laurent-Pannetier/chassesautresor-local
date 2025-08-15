@@ -74,8 +74,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const validerIban = (iban) => /^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$/.test(iban.replace(/\s/g, '').toUpperCase());
   const validerBic = (bic) => /^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(bic.toUpperCase());
 
-  const ouvrirCoordonnees = (e) => {
+  const ouvrirCoordonnees = (e, fromModal = false) => {
     e.preventDefault();
+    if (fromModal) {
+      const modal = document.getElementById('conversion-modal');
+      const overlay = document.querySelector('.modal-overlay');
+      if (modal) modal.style.display = 'none';
+      if (overlay) overlay.style.display = 'none';
+    }
     if (typeof window.openPanel === 'function') {
       window.openPanel('panneau-coordonnees');
     } else {
@@ -88,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('#ouvrir-coordonnees, #ouvrir-coordonnees-modal');
     if (btn) {
-      ouvrirCoordonnees(e);
+      ouvrirCoordonnees(e, btn.id === 'ouvrir-coordonnees-modal');
     }
   });
 
