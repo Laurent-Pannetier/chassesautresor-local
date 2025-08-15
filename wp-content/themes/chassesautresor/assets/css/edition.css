@@ -1121,6 +1121,8 @@ body.panneau-ouvert::before {
 .edition-panel table {
   width: 100%;
   border-collapse: collapse;
+  border-radius: 6px;
+  overflow: hidden;
 }
 
 .edition-panel th,
@@ -1143,6 +1145,8 @@ body.panneau-ouvert::before {
   width: 100%;
   border-collapse: collapse;
   margin-top: 1rem;
+  border-radius: 6px;
+  overflow: hidden;
 }
 
 .table-tentatives th,
@@ -1364,6 +1368,8 @@ body.panneau-ouvert::before {
 .stats-table {
   width: 100%;
   border-collapse: collapse;
+  border-radius: 6px;
+  overflow: hidden;
 }
 
 .stats-table th,
