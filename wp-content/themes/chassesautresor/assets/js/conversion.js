@@ -34,22 +34,52 @@ document.addEventListener("DOMContentLoaded", () => {
             const min = parseInt(inputPoints.min) || 0;
             const max = parseInt(inputPoints.max) || Infinity;
 
+            const equivalentContainer = montantEquivalent.closest(".conversion-equivalent");
+            const feedback = document.createElement("p");
+            feedback.className = "points-feedback";
+            equivalentContainer.after(feedback);
+
+            let debounceTimer;
+            let messageTimer;
+
+            const showMessage = (text) => {
+                feedback.textContent = text;
+                feedback.style.display = "block";
+                clearTimeout(messageTimer);
+                messageTimer = setTimeout(() => {
+                    feedback.style.display = "none";
+                }, 3000);
+            };
+
             const updateEquivalent = () => {
-                let points = parseInt(inputPoints.value) || 0;
-
-                if (points < min) {
-                    points = min;
-                }
-                if (points > max) {
-                    points = max;
-                }
-
-                inputPoints.value = points;
-                const montant = ((points / 1000) * tauxConversion).toFixed(2);
+                const points = parseInt(inputPoints.value, 10);
+                const montant = isNaN(points)
+                    ? "0.00"
+                    : ((points / 1000) * tauxConversion).toFixed(2);
                 montantEquivalent.textContent = montant;
             };
 
-            inputPoints.addEventListener("input", updateEquivalent);
+            const validateAndClamp = () => {
+                let points = parseInt(inputPoints.value, 10);
+                if (isNaN(points) || points < min) {
+                    points = min;
+                    showMessage(`points minimum : ${min} points`);
+                } else if (points > max) {
+                    points = max;
+                    showMessage(`points maximum : ${max} points`);
+                }
+                inputPoints.value = points;
+                updateEquivalent();
+            };
+
+            inputPoints.addEventListener("input", () => {
+                updateEquivalent();
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(validateAndClamp, 500);
+            });
+
+            inputPoints.addEventListener("blur", validateAndClamp);
+
             updateEquivalent();
         }
     };

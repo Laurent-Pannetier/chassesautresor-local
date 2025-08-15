@@ -492,6 +492,13 @@ header .points-link:hover {
     color: var(--color-editor-heading);
 }
 
+.points-modal .points-feedback {
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    color: var(--color-editor-error);
+    display: none;
+}
+
 .points-modal-message {
     text-align: center;
 }
