@@ -78,9 +78,10 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     if (fromModal) {
       const modal = document.getElementById('conversion-modal');
-      const overlay = document.querySelector('.modal-overlay');
       if (modal) modal.style.display = 'none';
-      if (overlay) overlay.style.display = 'none';
+      document.querySelectorAll('.modal-overlay').forEach((ov) => {
+        ov.style.display = 'none';
+      });
     }
     if (typeof window.openPanel === 'function') {
       window.openPanel('panneau-coordonnees');

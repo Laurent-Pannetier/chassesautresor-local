@@ -9,9 +9,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const modalContent = modal.querySelector(".points-modal-content");
 
-    const overlay = document.createElement("div");
-    overlay.classList.add("modal-overlay");
-    document.body.appendChild(overlay);
+    let overlay = document.querySelector(".modal-overlay");
+    if (!overlay) {
+        overlay = document.createElement("div");
+        overlay.classList.add("modal-overlay");
+        document.body.appendChild(overlay);
+    }
 
     const attachCloseHandlers = () => {
         modal.querySelectorAll(".close-modal").forEach((btn) => {
