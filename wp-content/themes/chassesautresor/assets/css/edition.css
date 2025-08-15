@@ -1277,6 +1277,14 @@ body.panneau-ouvert::before {
   height: 2rem;
 }
 
+.dashboard-card.solution-option {
+  cursor: pointer;
+}
+
+.dashboard-card.solution-option.active {
+  border-color: var(--color-editor-button);
+}
+
 .dashboard-card h3 {
   margin: 0;
   font-size: 0.9rem;

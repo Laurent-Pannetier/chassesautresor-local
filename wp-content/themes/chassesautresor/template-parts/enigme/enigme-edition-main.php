@@ -511,73 +511,70 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
             <fieldset class="groupe-champ champ-groupe-solution">
               <legend>Publication de la solution</legend>
 
-              <div class="champ-enigme champ-solution champ-solution-mode" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
+              <?php
+              $solution_mode = get_field('enigme_solution_mode', $enigme_id) ?? 'pdf';
+              $fichier      = get_field('enigme_solution_fichier', $enigme_id);
+              $fichier_url  = is_array($fichier) ? $fichier['url'] : '';
+              $delai        = get_field('enigme_solution_delai', $enigme_id) ?? 7;
+              $heure        = get_field('enigme_solution_heure', $enigme_id) ?? '18:00';
+              $aide_delai   = "Les solutions ne peuvent être publiées que si une chasse est déclarée terminée. Elles restent stockées dans un coffre fort numérique jusqu'à ce que vous décidiez de les en sortir.";
+              ?>
 
-                <?php
-                $solution_mode = get_field('enigme_solution_mode', $enigme_id) ?? 'pdf';
-                $fichier = get_field('enigme_solution_fichier', $enigme_id);
-                $fichier_url = is_array($fichier) ? $fichier['url'] : '';
-                $delai = get_field('enigme_solution_delai', $enigme_id) ?? 7;
-                $heure = get_field('enigme_solution_heure', $enigme_id) ?? '18:00';
-                ?>
+              <div class="champ-enigme champ-solution">
+                <div class="champ-solution-mode" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
+                  <div class="dashboard-grid solution-cards">
+                    <div class="dashboard-card solution-option<?= $solution_mode === 'pdf' ? ' active' : ''; ?>" data-mode="pdf">
+                      <i class="fa-solid fa-file-pdf" aria-hidden="true"></i>
+                      <h3>Document PDF</h3>
+                      <a href="#" class="stat-value">Choisir un fichier</a>
+                      <input type="radio" name="acf[enigme_solution_mode]" value="pdf" <?= $solution_mode === 'pdf' ? 'checked' : ''; ?> hidden>
+                    </div>
 
-                <!-- ✅ Ligne groupée : radio + fichier + bouton texte -->
-                <div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 1rem;">
+                    <div class="dashboard-card solution-option<?= $solution_mode === 'texte' ? ' active' : ''; ?>" data-mode="texte">
+                      <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>
+                      <h3>Rédaction libre</h3>
+                      <button type="button" id="ouvrir-panneau-solution" class="stat-value">Rédiger</button>
+                      <input type="radio" name="acf[enigme_solution_mode]" value="texte" <?= $solution_mode === 'texte' ? 'checked' : ''; ?> hidden>
+                    </div>
 
-                  <!-- Radios -->
-                  <div class="champ-solution-mode" style="display: flex; flex-direction: column; min-width: 160px;">
-                    <label>
-                      <input type="radio" name="acf[enigme_solution_mode]" value="pdf" <?= $solution_mode === 'pdf' ? 'checked' : ''; ?>>
-                      Télécharger un PDF
-                    </label>
-
-                    <label style="margin-top: 5px;">
-                      <input type="radio" name="acf[enigme_solution_mode]" value="texte" <?= $solution_mode === 'texte' ? 'checked' : ''; ?>>
-                      Rédiger la solution
-                    </label>
+                    <div class="dashboard-card solution-delai">
+                      <i class="fa-regular fa-clock" aria-hidden="true"></i>
+                      <h3>
+                        Délai
+                        <button
+                          type="button"
+                          class="mode-fin-aide stat-help"
+                          data-message="<?= esc_attr($aide_delai); ?>"
+                          aria-label="<?= esc_attr__('Informations sur la publication de la solution', 'chassesautresor-com'); ?>"
+                        >
+                          <i class="fa-regular fa-circle-question" aria-hidden="true"></i>
+                        </button>
+                      </h3>
+                      <p class="stat-value">
+                        <input
+                          type="number"
+                          min="0"
+                          max="60"
+                          step="1"
+                          value="<?= esc_attr($delai); ?>"
+                          id="solution-delai"
+                          class="champ-input champ-delai-inline"
+                        >
+                        jours à
+                        <select id="solution-heure" class="champ-select-heure">
+                          <?php foreach (range(0, 23) as $h) :
+                            $formatted = str_pad($h, 2, '0', STR_PAD_LEFT) . ':00'; ?>
+                            <option value="<?= $formatted; ?>" <?= $formatted === $heure ? 'selected' : ''; ?>><?= $formatted; ?></option>
+                          <?php endforeach; ?>
+                        </select>
+                        heure
+                      </p>
+                    </div>
                   </div>
 
-                  <!-- Upload fichier PDF -->
-                  <div class="champ-solution-fichier" style="<?= $solution_mode === 'pdf' ? '' : 'display:none;' ?> min-width: 200px;">
-                    <?php if ($fichier_url) : ?>
-                      <p style="margin-bottom: 4px;">Fichier actuel : <a href="<?= esc_url($fichier_url); ?>" target="_blank"><?= basename($fichier_url); ?></a></p>
-                    <?php endif; ?>
-                    <input type="file" id="solution-pdf-upload" accept="application/pdf">
-                    <div class="champ-feedback" style="margin-top: 5px;"></div>
-                  </div>
-
-                  <!-- Bouton WYSIWYG -->
-                  <div class="champ-solution-texte" style="<?= $solution_mode === 'texte' ? '' : 'display:none;' ?>">
-                    <button type="button" id="ouvrir-panneau-solution" class="bouton-ouvrir-wysiwyg">
-                      ✏️ Ouvrir l’éditeur de solution
-                    </button>
-                  </div>
-
+                  <input type="file" id="solution-pdf-upload" accept="application/pdf" style="display:none;">
+                  <div class="champ-feedback" style="margin-top: 5px;"></div>
                 </div>
-
-                <!-- ✅ Ligne publication -->
-                <div class="champ-solution-timing" style="margin-top: 15px;">
-                  <label for="solution-delai" style="margin-right: 8px;">Publication :</label>
-
-                  <input type="number"
-                    min="0"
-                    max="60"
-                    step="1"
-                    value="<?= esc_attr($delai); ?>"
-                    id="solution-delai"
-                    class="champ-input champ-delai-inline">
-
-                  <span>jours après la fin de la chasse, à</span>
-
-                  <select id="solution-heure" class="champ-select-heure">
-                    <?php foreach (range(0, 23) as $h) :
-                      $formatted = str_pad($h, 2, '0', STR_PAD_LEFT) . ':00'; ?>
-                      <option value="<?= $formatted; ?>" <?= $formatted === $heure ? 'selected' : ''; ?>><?= $formatted; ?></option>
-                    <?php endforeach; ?>
-                  </select>
-                  <span>heure.</span>
-                </div>
-
               </div>
             </fieldset>
 

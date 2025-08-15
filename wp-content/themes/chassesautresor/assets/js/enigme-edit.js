@@ -59,6 +59,15 @@ function initEnigmeEdit() {
     }
   });
 
+  document.querySelectorAll('.stat-help').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const message = btn.dataset.message;
+      if (message) {
+        alert(message);
+      }
+    });
+  });
+
 
   // ==============================
   // 🧩 Affichage conditionnel – Champs radio
@@ -964,9 +973,7 @@ function initSolutionInline() {
   const postId = bloc.dataset.postId;
   const cpt = bloc.dataset.cpt || 'enigme';
 
-  const radios = bloc.querySelectorAll('input[name="acf[enigme_solution_mode]"]');
-  const zoneFichier = bloc.querySelector('.champ-solution-fichier');
-  const zoneTexte = bloc.querySelector('.champ-solution-texte');
+  const cards = bloc.querySelectorAll('.solution-option');
   const boutonTexte = bloc.querySelector('#ouvrir-panneau-solution');
 
   const inputDelai = bloc.querySelector('#solution-delai');
@@ -974,40 +981,36 @@ function initSolutionInline() {
   const inputFichier = bloc.querySelector('#solution-pdf-upload');
   const feedbackFichier = bloc.querySelector('.champ-feedback');
 
-  radios.forEach(radio => {
-    radio.addEventListener('change', () => {
-      const val = radio.value;
-      modifierChampSimple('enigme_solution_mode', val, postId, cpt);
+  cards.forEach(card => {
+    card.addEventListener('click', (e) => {
+      e.preventDefault();
+      const mode = card.dataset.mode;
+      bloc.querySelectorAll('input[name="acf[enigme_solution_mode]"]').forEach(r => {
+        r.checked = false;
+      });
+      card.querySelector('input[name="acf[enigme_solution_mode]"]').checked = true;
 
-      if (val === 'pdf') {
-        zoneFichier.style.display = '';
-        zoneTexte.style.display = 'none';
+      cards.forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
 
-        // Déclenche automatiquement la sélection de fichier PDF
+      modifierChampSimple('enigme_solution_mode', mode, postId, cpt);
+
+      if (mode === 'pdf') {
         setTimeout(() => {
           inputFichier?.click();
-        }, 100); // petit délai pour laisser le DOM s'afficher
+        }, 100);
       }
 
-      if (val === 'texte') {
-        zoneFichier.style.display = 'none';
-        zoneTexte.style.display = ''; // on montre l'encart avec le bouton
+      if (mode === 'texte') {
         setTimeout(() => {
-          boutonTexte?.click(); // on simule le clic pour ouvrir le panneau latéral
-        }, 100); // petit délai pour laisser le DOM se stabiliser
+          boutonTexte?.click();
+        }, 100);
       }
     });
   });
 
-  // 🔄 Affichage initial selon valeur radio
   const checked = bloc.querySelector('input[name="acf[enigme_solution_mode]"]:checked');
-  if (checked?.value === 'pdf') {
-    zoneFichier.style.display = '';
-    zoneTexte.style.display = 'none';
-  } else if (checked?.value === 'texte') {
-    zoneFichier.style.display = 'none';
-    zoneTexte.style.display = '';
-  }
+  checked?.closest('.solution-option')?.classList.add('active');
 
   // ⏳ Modification du délai (jours)
   inputDelai?.addEventListener('input', () => {
