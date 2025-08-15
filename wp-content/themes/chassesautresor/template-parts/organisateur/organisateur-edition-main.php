@@ -15,6 +15,7 @@ $profil_expanded = !empty($profil_expanded);
 $infos_expanded = !$profil_expanded;
 $cache_complet  = get_field('organisateur_cache_complet', $organisateur_id);
 $edition_active = in_array(ROLE_ORGANISATEUR_CREATION, $roles) && !$cache_complet;
+$user_points    = function_exists('get_user_points') ? get_user_points((int) $current_user->ID) : 0;
 
 // Post
 $titre        = get_post_field('post_title', $organisateur_id);
@@ -219,6 +220,11 @@ $is_complete = (
       </div>
         <div class="edition-panel-body">
           <div class="dashboard-grid stats-cards">
+            <div class="dashboard-card" data-stat="points">
+              <i class="fa-solid fa-coins" aria-hidden="true"></i>
+              <h3><?php esc_html_e('Points', 'chassesautresor-com'); ?></h3>
+              <p class="stat-value"><?php echo esc_html($user_points); ?></p>
+            </div>
             <div class="dashboard-card<?php echo $conversion_disabled ? ' disabled' : ''; ?>" data-stat="conversion">
               <i class="fa-solid fa-right-left" aria-hidden="true"></i>
               <h3>Conversion</h3>
