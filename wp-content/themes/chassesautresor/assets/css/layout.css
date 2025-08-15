@@ -1,5 +1,14 @@
 /* 📐 Layout – Structure générale des pages */
 
+:root { --bp-xl: 1440px; }
+@media (min-width: var(--bp-xl)) {
+  .layout-fullwidth .ast-container,
+  .layout-fullwidth .myaccount-layout {
+    width: 100vw;
+    max-width: 100%;
+  }
+}
+
   /* 🎯 Header top bar */
   /* 🧭 Hero  */
 

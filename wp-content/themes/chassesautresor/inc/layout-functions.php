@@ -282,6 +282,61 @@ add_filter( 'body_class', 'ajouter_class_has_hero_si_header_fallback' );
 
 
 /**
+ * Ajoute la classe "layout-fullwidth" au body pour les énigmes si l'option ACF est activée.
+ *
+ * @param array $classes Classes actuelles du body.
+ * @return array
+ */
+function ajouter_classe_layout_fullwidth_enigme( $classes ) {
+    if ( is_singular( 'enigme' ) && function_exists( 'get_field' ) && get_field( 'layout_fullwidth_enigme', 'option' ) ) {
+        $classes[] = 'layout-fullwidth';
+    }
+    return $classes;
+}
+add_filter( 'body_class', 'ajouter_classe_layout_fullwidth_enigme' );
+
+/**
+ * Enregistre la page d'options et le champ ACF pour activer l'affichage plein écran des énigmes.
+ */
+function enregistrer_option_layout_fullwidth_enigme() {
+    if ( function_exists( 'acf_add_options_page' ) ) {
+        acf_add_options_page( [
+            'page_title' => 'Options de mise en page',
+            'menu_title' => 'Mise en page',
+            'menu_slug'  => 'layout-options',
+            'capability' => 'manage_options',
+            'redirect'   => false,
+        ] );
+    }
+
+    if ( function_exists( 'acf_add_local_field_group' ) ) {
+        acf_add_local_field_group( [
+            'key'    => 'group_layout_options',
+            'title'  => 'Options de mise en page',
+            'fields' => [
+                [
+                    'key'   => 'field_layout_fullwidth_enigme',
+                    'label' => 'Activer le plein écran pour les énigmes',
+                    'name'  => 'layout_fullwidth_enigme',
+                    'type'  => 'true_false',
+                    'ui'    => 1,
+                ],
+            ],
+            'location' => [
+                [
+                    [
+                        'param'    => 'options_page',
+                        'operator' => '==',
+                        'value'    => 'layout-options',
+                    ],
+                ],
+            ],
+        ] );
+    }
+}
+add_action( 'acf/init', 'enregistrer_option_layout_fullwidth_enigme' );
+
+/**
  * Supprime le premier <h1> du contenu s’il correspond exactement au titre de l’article.
  *
  * @param string $content Contenu brut de the_content().
