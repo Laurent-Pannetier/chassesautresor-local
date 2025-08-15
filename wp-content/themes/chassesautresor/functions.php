@@ -26,6 +26,7 @@ add_action('wp_enqueue_scripts', function () {
 
     // 📂 Liste des fichiers CSS organisés
     $styles = [
+        'responsive'        => 'responsive.css',
         'layout'             => 'layout.css',
         'components'         => 'components.css',
         'modal-bienvenue'    => 'modal-bienvenue.css',

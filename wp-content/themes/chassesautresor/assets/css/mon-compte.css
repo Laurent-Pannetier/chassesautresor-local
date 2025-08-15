@@ -89,7 +89,7 @@
 
 
 /* ✅ Mobile : Les éléments s'empilent */
-@media (max-width: 768px) {
+@media (max-width: var(--bp-md)) {
     .dashboard-profile-wrapper {
         flex-direction: column; /* ✅ Empile les éléments */
         justify-content: center; /* ✅ Centre les éléments verticalement */
@@ -148,7 +148,7 @@
 }
 
 /* ✅ Texte en desktop, icônes en mobile */
-@media (min-width: 769px) {
+@media (min-width: calc(var(--bp-md) + 1px)) {
     .dashboard-nav ul li a span {
         display: inline;
     }
@@ -157,7 +157,7 @@
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: var(--bp-md)) {
     .dashboard-nav ul li {
         margin:0;
     }
@@ -214,7 +214,7 @@
     vertical-align: middle;
 }
 
-@media (max-width: 768px) {
+@media (max-width: var(--bp-md)) {
     .menu-deroulant .submenu {
         left: -50px;
     }
@@ -445,7 +445,7 @@
 
 
 /* Tablette : 2 colonnes */
-@media (max-width: 1024px) {
+@media (max-width: var(--bp-lg)) {
     .dashboard-grid {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -455,7 +455,7 @@
 /* FIN TUILES EN DESKTOP */
 
 /* Mobile : 1 colonne */
-@media (max-width: 768px) {
+@media (max-width: var(--bp-md)) {
     .dashboard-grid {
         grid-template-columns: repeat(1, 1fr);
     }

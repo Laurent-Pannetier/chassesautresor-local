@@ -30,13 +30,13 @@
   gap: 1.5rem;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: var(--bp-lg)) {
   .grille-3 {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: var(--bp-md)) {
   .grille-3 {
     grid-template-columns: 1fr;
   }

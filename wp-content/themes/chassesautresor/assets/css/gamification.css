@@ -302,23 +302,23 @@ header .points-link:hover {
 
 
 /* 📱 Responsive : ajuste la taille du texte sur mobile/tablette */
-@media (max-width: 1024px) {
+@media (max-width: var(--bp-lg)) {
     .points-value {
         font-size: 16px;
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: var(--bp-md)) {
     .points-value {
         font-size: 14px;
     }
 }
-@media (max-width: 480px) {
+@media (max-width: var(--bp-sm)) {
   .points-unite {
     display: none;
   }
 }
-@media (max-width: 374px) {
+@media (max-width: calc(var(--bp-sm) - 106px)) {
   .points-unite {
     display: none;
   }

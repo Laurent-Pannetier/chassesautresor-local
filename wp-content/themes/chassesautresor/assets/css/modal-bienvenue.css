@@ -100,7 +100,7 @@
   margin-top: -0.15em;
 }
 
-@media screen and (max-width: 480px) {
+@media screen and (max-width: var(--bp-sm)) {
   .modal-bienvenue-inner,
   .modal-contenu {
     padding: 1.5rem;

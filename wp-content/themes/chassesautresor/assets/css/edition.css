@@ -399,7 +399,7 @@ input[disabled].champ-cout {
 /* ========== 📱 RESPONSIVE GLOBAL ========== */
 
 /* Empilage à partir de tablette */
-@media (max-width: 768px) {
+@media (max-width: var(--bp-md)) {
   .edition-panel-body {
     flex-direction: column;
   }
@@ -454,7 +454,7 @@ input[disabled].champ-cout {
 /* ========== 📱 RESPONSIVE HEADER ========== */
 
 /* Empilage à partir de tablette */
-@media (max-width: 768px) {
+@media (max-width: var(--bp-md)) {
   .edition-panel-body {
     flex-direction: column;
   }
@@ -734,13 +734,13 @@ li.ligne-email .champ-organisateur .champ-affichage {
 
 
 /* ========== 📱 RESPONSIVE PANNEAU EDITION ========== */
-@media (max-width: 768px) {
+@media (max-width: var(--bp-md)) {
   .edition-panel-body {
     flex-direction: column;
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: var(--bp-sm)) {
   .edition-panel-body {
     flex-direction: column;
   }
