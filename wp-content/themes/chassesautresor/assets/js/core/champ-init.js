@@ -187,7 +187,7 @@ function initChampDeclencheur(bouton) {
   if (!champ || !postId || !cpt) return;
 
   bouton.addEventListener('click', () => {
-    const bloc = document.querySelector(
+    const bloc = bouton.closest(
       `.champ-${cpt}[data-champ="${champ}"][data-post-id="${postId}"]`
     );
 
