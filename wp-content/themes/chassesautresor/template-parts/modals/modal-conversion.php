@@ -18,7 +18,24 @@ $access_message = verifier_acces_conversion(get_current_user_id());
             modification
         </p>
         <?php if (is_string($access_message) && $access_message !== '') : ?>
-            <p><?php echo esc_html($access_message); ?></p>
+            <p><?php echo wp_kses(
+                    $access_message,
+                    [
+                        'a' => [
+                            'id'            => [],
+                            'class'         => [],
+                            'href'          => [],
+                            'aria-label'    => [],
+                            'data-champ'    => [],
+                            'data-cpt'      => [],
+                            'data-post-id'  => [],
+                            'data-label-add'    => [],
+                            'data-label-edit'   => [],
+                            'data-aria-add'     => [],
+                            'data-aria-edit'    => [],
+                        ],
+                    ]
+                ); ?></p>
         <?php else : ?>
             <form action="" method="POST">
                 <label for="points-a-convertir">Points à convertir</label>
