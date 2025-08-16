@@ -290,6 +290,10 @@ window.onChampSimpleMisAJour = function (champ, postId, valeur, cpt) {
       if (legende) legende.textContent = valeur;
     }
 
+    if (champ === 'enigme_reponse_bonne' && typeof window.forcerRecalculStatutEnigme === 'function') {
+      window.forcerRecalculStatutEnigme(postId);
+    }
+
     if (champsResume.includes(champ) && typeof window.mettreAJourResumeInfos === 'function') {
       window.mettreAJourResumeInfos();
     }
@@ -356,7 +360,13 @@ function mettreAJourLigneResume(ligne, champ, estRempli, type) {
   const dejaBouton = ligne.querySelector('.champ-modifier');
   const pasDEdition = ligne.dataset.noEdit !== undefined;
 
-  if (!dejaBouton && !pasDEdition) {
+  if (pasDEdition) {
+    ligne.style.cursor = '';
+    dejaBouton?.remove();
+    return;
+  }
+
+  if (!dejaBouton) {
     const bouton = document.createElement('button');
     bouton.type = 'button';
     bouton.className = 'champ-modifier';

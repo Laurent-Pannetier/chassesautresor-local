@@ -86,26 +86,14 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                 <li class="champ-chasse champ-titre <?= ($isTitreParDefaut ? 'champ-vide' : 'champ-rempli'); ?><?= $peut_editer_titre ? '' : ' champ-desactive'; ?>"
                   data-champ="post_title"
                   data-cpt="chasse"
-                  data-post-id="<?= esc_attr($chasse_id); ?>">
+                  data-post-id="<?= esc_attr($chasse_id); ?>"
+                  data-no-edit="1">
 
-                  <div class="champ-affichage">
-                    <label<?= $peut_editer_titre ? ' for="champ-titre-chasse"' : ''; ?>>Titre <span class="champ-obligatoire">*</span></label>
-                    <span class="champ-valeur">
-                      <?= $isTitreParDefaut ? 'renseigner le titre de la chasse' : esc_html($titre); ?>
-                    </span>
-                    <?php if ($peut_editer_titre) : ?>
-                      <button type="button" class="champ-modifier" aria-label="Modifier le titre">✏️</button>
-                    <?php endif; ?>
-                  </div>
-
-                  <div class="champ-edition" style="display: none;">
-                    <input type="text" class="champ-input" maxlength="70" value="<?= esc_attr($titre); ?>" id="champ-titre-chasse" <?= $peut_editer_titre ? '' : 'disabled'; ?>>
-                    <?php if ($peut_editer_titre) : ?>
-                      <button type="button" class="champ-enregistrer">✓</button>
-                      <button type="button" class="champ-annuler">✖</button>
-                    <?php endif; ?>
-                  </div>
-
+                  <label for="champ-titre-chasse">Titre <span class="champ-obligatoire">*</span></label>
+                  <input type="text" class="champ-input champ-texte-edit" maxlength="70"
+                    value="<?= esc_attr($titre); ?>"
+                    id="champ-titre-chasse" <?= $peut_editer_titre ? '' : 'disabled'; ?>
+                    placeholder="renseigner le titre de la chasse" />
                   <div class="champ-feedback"></div>
                 </li>
                 
@@ -125,7 +113,6 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                         aria-label="Modifier l’image">
                         <img src="<?= esc_url($image_url ?: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=='); ?>" alt="Image de la chasse" />
                         <span class="champ-ajout-image">ajouter une image</span>
-                        <span class="icone-modif">✏️</span>
                       </button>
                     <?php else : ?>
                       <?php if ($image_url) : ?>
@@ -152,19 +139,21 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                                    data-cpt="chasse"
                                    data-champ="chasse_principale_description"
                                    data-post-id="<?= esc_attr($chasse_id); ?>">
-                                    <?= esc_html__('ajouter', 'chassesautresor-com'); ?> <span class="icone-modif">✏️</span>
+                                    <?= esc_html__('ajouter', 'chassesautresor-com'); ?>
                                 </a>
                             <?php endif; ?>
                         <?php else : ?>
                             <span class="champ-texte-contenu">
                                 <?= esc_html(wp_trim_words(wp_strip_all_tags($description), 25)); ?>
                                 <?php if ($peut_editer) : ?>
-                                    <button type="button"
-                                        class="champ-modifier ouvrir-panneau-description"
-                                        data-cpt="chasse"
-                                        data-champ="chasse_principale_description"
-                                        data-post-id="<?= esc_attr($chasse_id); ?>"
-                                        aria-label="<?= esc_attr__('Modifier la description', 'chassesautresor-com'); ?>">✏️</button>
+                                      <button type="button"
+                                          class="champ-modifier ouvrir-panneau-description"
+                                          data-cpt="chasse"
+                                          data-champ="chasse_principale_description"
+                                          data-post-id="<?= esc_attr($chasse_id); ?>"
+                                          aria-label="<?= esc_attr__('Modifier la description', 'chassesautresor-com'); ?>">
+                                          <?= esc_html__('modifier', 'chassesautresor-com'); ?>
+                                      </button>
                                 <?php endif; ?>
                             </span>
                         <?php endif; ?>
@@ -189,7 +178,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                                    data-champ="chasse_infos_recompense_valeur"
                                    data-cpt="chasse"
                                    data-post-id="<?= esc_attr($chasse_id); ?>">
-                                    <?= esc_html__('ajouter', 'chassesautresor-com'); ?> <span class="icone-modif">✏️</span>
+                                    <?= esc_html__('ajouter', 'chassesautresor-com'); ?>
                                 </a>
                             <?php endif; ?>
                         <?php else : ?>
@@ -211,7 +200,9 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                                         data-champ="chasse_infos_recompense_valeur"
                                         data-cpt="chasse"
                                         data-post-id="<?= esc_attr($chasse_id); ?>"
-                                        aria-label="<?= esc_attr__('Modifier la récompense', 'chassesautresor-com'); ?>">✏️</button>
+                                        aria-label="<?= esc_attr__('Modifier la récompense', 'chassesautresor-com'); ?>">
+                                        <?= esc_html__('modifier', 'chassesautresor-com'); ?>
+                                    </button>
                                 <?php endif; ?>
                                 &nbsp;–&nbsp;
                                 <span class="recompense-description"><?= esc_html($desc_court); ?></span>

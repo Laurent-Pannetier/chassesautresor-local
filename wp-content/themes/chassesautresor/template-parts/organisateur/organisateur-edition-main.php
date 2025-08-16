@@ -91,32 +91,18 @@ $is_complete = (
                   <li class="champ-organisateur champ-titre ligne-titre <?= empty($titre) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer_titre ? '' : ' champ-desactive'; ?>"
                     data-champ="post_title"
                     data-cpt="organisateur"
-                    data-post-id="<?= esc_attr($organisateur_id); ?>">
+                    data-post-id="<?= esc_attr($organisateur_id); ?>"
+                    data-no-edit="1">
 
-                  <div class="champ-affichage">
                     <label for="champ-titre-organisateur">Titre <span class="champ-obligatoire">*</span></label>
-                    <span class="champ-valeur">
-                      <?= empty($titre) ? "renseigner le titre de l’organisateur" : esc_html($titre); ?>
-                    </span>
-                    <?php if ($peut_editer_titre) : ?>
-                      <button type="button"
-                        class="champ-modifier"
-                        aria-label="Modifier le nom d’organisateur">✏️</button>
-                    <?php endif; ?>
-                  </div>
-
-                  <div class="champ-edition" style="display: none;">
                     <input type="text"
-                      class="champ-input"
+                      class="champ-input champ-texte-edit"
                       maxlength="50"
                       value="<?= esc_attr($titre); ?>"
-                      id="champ-titre-organisateur" <?= $peut_editer_titre ? '' : 'disabled'; ?>>
-                    <button type="button" class="champ-enregistrer">✓</button>
-                    <button type="button" class="champ-annuler">✖</button>
-                  </div>
-
-                  <div class="champ-feedback"></div>
-                </li>
+                      id="champ-titre-organisateur" <?= $peut_editer_titre ? '' : 'disabled'; ?>
+                      placeholder="renseigner le titre de l’organisateur" />
+                    <div class="champ-feedback"></div>
+                  </li>
 
                 <li class="champ-organisateur champ-img champ-logo ligne-logo <?= empty($logo_id) ? 'champ-vide' : 'champ-rempli'; ?>" data-champ="profil_public_logo_organisateur" data-cpt="organisateur" data-post-id="<?= esc_attr($organisateur_id); ?>">
                   <div class="champ-affichage">
@@ -130,7 +116,6 @@ $is_complete = (
                         data-post-id="<?= esc_attr($organisateur_id); ?>">
                         <img src="<?= esc_url($logo_url ?: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=='); ?>" alt="Logo de l’organisateur" />
                         <span class="champ-ajout-image">ajouter une image</span>
-                        <span class="icone-modif">✏️</span>
                       </button>
                     <?php else : ?>
                       <?php if ($logo_url) : ?>
@@ -153,7 +138,7 @@ $is_complete = (
                                    data-champ="description_longue"
                                    data-cpt="organisateur"
                                    data-post-id="<?= esc_attr($organisateur_id); ?>">
-                                    <?= esc_html__('ajouter', 'chassesautresor-com'); ?> <span class="icone-modif">✏️</span>
+                                    <?= esc_html__('ajouter', 'chassesautresor-com'); ?>
                                 </a>
                             <?php endif; ?>
                         <?php else : ?>
@@ -165,7 +150,7 @@ $is_complete = (
                                         data-champ="description_longue"
                                         data-cpt="organisateur"
                                         data-post-id="<?= esc_attr($organisateur_id); ?>"
-                                        aria-label="<?= esc_attr__('Modifier la présentation', 'chassesautresor-com'); ?>">✏️</button>
+                                          aria-label="<?= esc_attr__('Modifier la présentation', 'chassesautresor-com'); ?>"><?= esc_html__('modifier', 'chassesautresor-com'); ?></button>
                                 <?php endif; ?>
                             </span>
                         <?php endif; ?>
@@ -203,13 +188,13 @@ $is_complete = (
                       <i class="fa-solid fa-circle-question" aria-hidden="true"></i>
                     </button>
                     <?php if ($peut_editer) : ?>
-                      <button
-                        type="button"
-                        class="champ-modifier"
-                        aria-label="Modifier l’adresse email de contact"
-                      >
-                        ✏️
-                      </button>
+                        <button
+                          type="button"
+                          class="champ-modifier"
+                          aria-label="Modifier l’adresse email de contact"
+                        >
+                          <?= esc_html__('modifier', 'chassesautresor-com'); ?>
+                        </button>
                     <?php endif; ?>
                   </div>
 

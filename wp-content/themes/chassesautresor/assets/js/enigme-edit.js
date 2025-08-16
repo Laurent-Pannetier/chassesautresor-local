@@ -233,11 +233,6 @@ function initEnigmeEdit() {
   const bloc = document.querySelector('[data-champ="enigme_reponse_bonne"]');
   if (bloc) {
     const input = bloc.querySelector('.champ-input');
-    const champ = bloc.dataset.champ;
-    const postId = bloc.dataset.postId;
-    const cptChamp = bloc.dataset.cpt || 'enigme';
-    let timerSauvegarde;
-
     if (input) {
       let alerte = bloc.querySelector('.message-limite');
       if (!alerte) {
@@ -263,19 +258,6 @@ function initEnigmeEdit() {
         } else {
           alerte.textContent = '';
           alerte.style.display = 'none';
-        }
-
-        if (champ && postId) {
-          clearTimeout(timerSauvegarde);
-          timerSauvegarde = setTimeout(() => {
-            modifierChampSimple(champ, input.value.trim(), postId, cptChamp)
-              .then(() => {
-                const enigmeId = panneauEdition?.dataset.postId;
-                if (enigmeId) {
-                  forcerRecalculStatutEnigme(enigmeId);
-                }
-              });
-          }, 400);
         }
       });
     }
@@ -376,6 +358,7 @@ function initEnigmeEdit() {
       })
       .catch(err => console.error('❌ Erreur réseau CTA validation', err));
   }
+  window.forcerRecalculStatutEnigme = forcerRecalculStatutEnigme;
   window.mettreAJourCTAValidationChasse = mettreAJourCTAValidationChasse;
 
 
