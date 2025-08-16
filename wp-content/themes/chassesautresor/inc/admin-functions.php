@@ -129,7 +129,7 @@ function traiter_gestion_points() {
         [
             'points_modifies' => '1',
         ],
-        wc_get_account_endpoint_url('orders')
+        home_url('/mon-compte/points/')
     );
 
     wp_redirect($redirect_url);
@@ -623,7 +623,7 @@ function traiter_demande_paiement() {
     error_log("📧 Notification envoyée à l'administrateur.");
 
     // ✅ Redirection après soumission
-    wp_safe_redirect(home_url('/mon-compte/commandes/'));
+    wp_safe_redirect(home_url('/mon-compte/points/'));
     exit;
 }
 add_action('init', 'traiter_demande_paiement');
