@@ -559,25 +559,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
               $solution_mode = get_field('enigme_solution_mode', $enigme_id) ?? 'pdf';
               $fichier      = get_field('enigme_solution_fichier', $enigme_id);
               $fichier_url  = is_array($fichier) ? $fichier['url'] : '';
+              $fichier_nom  = is_array($fichier) && !empty($fichier['filename']) ? $fichier['filename'] : '';
+              $explication  = get_field('enigme_solution_explication', $enigme_id);
+              $explication  = is_string($explication) ? trim(wp_strip_all_tags($explication)) : '';
               $delai        = get_field('enigme_solution_delai', $enigme_id) ?? 7;
               $heure        = get_field('enigme_solution_heure', $enigme_id) ?? '18:00';
               $aide_delai   = "Les solutions ne peuvent être publiées que si une chasse est déclarée terminée. Elles restent stockées dans un coffre fort numérique jusqu'à ce que vous décidiez de les en sortir.";
+
+              $pdf_icon_attr   = $fichier_nom ? ' style="color: var(--color-editor-success);"' : '';
+              $pdf_title       = $fichier_nom ?: 'Document PDF';
+              $pdf_link_text   = $fichier_nom ? 'Modifier' : 'Choisir un fichier';
+              $texte_icon_attr = $explication !== '' ? ' style="color: var(--color-editor-success);"' : '';
+              $texte_link_text = $explication !== '' ? 'éditer' : 'Rédiger';
               ?>
 
               <div class="champ-enigme champ-solution">
                 <div class="champ-solution-mode" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
                   <div class="dashboard-grid solution-cards">
                     <div class="dashboard-card solution-option<?= $solution_mode === 'pdf' ? ' active' : ''; ?>" data-mode="pdf">
-                      <i class="fa-solid fa-file-pdf" aria-hidden="true"></i>
-                      <h3>Document PDF</h3>
-                      <a href="#" class="stat-value">Choisir un fichier</a>
+                      <i class="fa-solid fa-file-pdf" aria-hidden="true"<?= $pdf_icon_attr; ?>></i>
+                      <h3><?= esc_html($pdf_title); ?></h3>
+                      <a href="#" class="stat-value"><?= esc_html($pdf_link_text); ?></a>
                       <input type="radio" name="acf[enigme_solution_mode]" value="pdf" <?= $solution_mode === 'pdf' ? 'checked' : ''; ?> hidden>
                     </div>
 
                     <div class="dashboard-card solution-option<?= $solution_mode === 'texte' ? ' active' : ''; ?>" data-mode="texte">
-                      <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>
+                      <i class="fa-solid fa-pen-to-square" aria-hidden="true"<?= $texte_icon_attr; ?>></i>
                       <h3>Rédaction libre</h3>
-                      <button type="button" id="ouvrir-panneau-solution" class="stat-value">Rédiger</button>
+                      <button type="button" id="ouvrir-panneau-solution" class="stat-value"><?= esc_html($texte_link_text); ?></button>
                       <input type="radio" name="acf[enigme_solution_mode]" value="texte" <?= $solution_mode === 'texte' ? 'checked' : ''; ?> hidden>
                     </div>
 

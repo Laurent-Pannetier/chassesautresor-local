@@ -978,6 +978,8 @@ function initSolutionInline() {
   const cpt = bloc.dataset.cpt || 'enigme';
 
   const cards = bloc.querySelectorAll('.solution-option');
+  const cardPdf = bloc.querySelector('.solution-option[data-mode="pdf"]');
+  const cardTexte = bloc.querySelector('.solution-option[data-mode="texte"]');
 
   const inputDelai = bloc.querySelector('#solution-delai');
   const selectHeure = bloc.querySelector('#solution-heure');
@@ -1053,6 +1055,15 @@ function initSolutionInline() {
         if (res.success) {
           feedbackFichier.textContent = '✅ Fichier enregistré';
           feedbackFichier.className = 'champ-feedback champ-success';
+
+          if (cardPdf) {
+            const icon = cardPdf.querySelector('i');
+            if (icon) icon.style.color = 'var(--color-editor-success)';
+            const titre = cardPdf.querySelector('h3');
+            if (titre) titre.textContent = fichier.name;
+            const lien = cardPdf.querySelector('a.stat-value');
+            if (lien) lien.textContent = 'Modifier';
+          }
         } else {
           feedbackFichier.textContent = '❌ Erreur : ' + (res.data || 'inconnue');
           feedbackFichier.className = 'champ-feedback champ-error';
