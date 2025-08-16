@@ -53,7 +53,17 @@ function get_user_points($user_id = null): int {
 /**
  * Determine if a user has a pending conversion request.
  */
-function user_has_pending_conversion(int $user_id): bool {
+function user_has_pending_conversion(int $user_id): bool
+{
+    $requests = get_user_meta($user_id, 'demande_paiement', true);
+    if (is_array($requests)) {
+        foreach ($requests as $request) {
+            if (!empty($request['statut']) && $request['statut'] === 'en attente') {
+                return true;
+            }
+        }
+    }
+
     global $wpdb;
     $repo = new PointsRepository($wpdb);
 
