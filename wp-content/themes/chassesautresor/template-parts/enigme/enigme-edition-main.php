@@ -592,8 +592,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
 
             if ($solution_mode === 'pdf') {
                 if ($fichier_url !== '') {
-                    $publication_label = 'votre pdf';
-                    $publication_note  = sprintf(', %d jours après la fin de la chasse, à %s', $delai, $heure);
+                    $publication_label = sprintf('votre fichier %s', $fichier_nom);
+                    $publication_note  = sprintf(' %d jours après la fin de la chasse, à %s', $delai, $heure);
                 } else {
                     $publication_note = ' (pdf sélectionné mais pas de fichier chargé)';
                 }
