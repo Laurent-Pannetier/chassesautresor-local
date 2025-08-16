@@ -204,6 +204,12 @@ body.edition-active-enigme .single-enigme-main .champ-img .champ-modifier {
   display: block;
 }
 
+.champ-img .champ-modifier img.vignette-enigme {
+  display: inline-block;
+  max-width: 60px;
+  margin-right: 0.25rem;
+}
+
 .champ-img .champ-modifier .icone-modif {
   position: absolute;
   top: 0.2rem;
