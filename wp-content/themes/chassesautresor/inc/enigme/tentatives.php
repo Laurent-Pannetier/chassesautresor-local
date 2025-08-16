@@ -314,8 +314,8 @@ function recuperer_enigmes_tentatives_en_attente(int $organisateur_id): array
 
     $result = [];
 
-    foreach ($query->posts as $chasse) {
-        $enigmes = recuperer_enigmes_associees($chasse->ID);
+    foreach ($query->posts as $chasse_id) {
+        $enigmes = recuperer_enigmes_associees((int) $chasse_id);
         foreach ($enigmes as $enigme_id) {
             $mode = enigme_normaliser_mode_validation(
                 get_field('enigme_mode_validation', $enigme_id)

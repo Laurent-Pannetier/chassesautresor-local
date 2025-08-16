@@ -323,8 +323,8 @@ function rediriger_selon_etat_organisateur()
   $has_chasse_non_attente = false;
   $query = get_chasses_de_organisateur($organisateur_id);
   if ($query && $query->have_posts()) {
-    foreach ($query->posts as $chasse) {
-      $statut_validation = get_field('chasse_cache_statut_validation', $chasse->ID);
+    foreach ($query->posts as $chasse_id) {
+      $statut_validation = get_field('chasse_cache_statut_validation', (int) $chasse_id);
       if ($statut_validation !== 'en_attente') {
         $has_chasse_non_attente = true;
         break;

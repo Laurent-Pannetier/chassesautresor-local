@@ -418,14 +418,14 @@ function generer_liste_chasses_hierarchique($organisateur_id) {
 
     if ($nombre_chasses > 0) {
         $out .= '<ul>';
-        foreach ($query->posts as $post) {
-            $chasse_id = $post->ID;
+        foreach ($query->posts as $chasse_id) {
+            $chasse_id    = (int) $chasse_id;
             $chasse_titre = get_the_title($chasse_id);
-            $nb_enigmes = count(recuperer_enigmes_associees($chasse_id));
-            $out .= '<li>';
-            $out .= 'Chasse : <a href="' . esc_url(get_permalink($chasse_id)) . '">' . esc_html($chasse_titre) . '</a> ';
-            $out .= '(' . sprintf(_n('%d énigme', '%d énigmes', $nb_enigmes, 'text-domain'), $nb_enigmes) . ')';
-            $out .= '</li>';
+            $nb_enigmes   = count(recuperer_enigmes_associees($chasse_id));
+            $out         .= '<li>';
+            $out         .= 'Chasse : <a href="' . esc_url(get_permalink($chasse_id)) . '">' . esc_html($chasse_titre) . '</a> ';
+            $out         .= '(' . sprintf(_n('%d énigme', '%d énigmes', $nb_enigmes, 'text-domain'), $nb_enigmes) . ')';
+            $out         .= '</li>';
         }
         $out .= '</ul>';
     }
@@ -486,13 +486,13 @@ function get_cta_devenir_organisateur(?int $user_id = null): array
         ];
     }
 
-    $organisateur_id = get_organisateur_from_user($user_id);
+    $organisateur_id   = get_organisateur_from_user($user_id);
     $has_pending_chasse = false;
     if ($organisateur_id) {
         $query = get_chasses_de_organisateur($organisateur_id);
         if ($query && $query->have_posts()) {
-            foreach ($query->posts as $chasse) {
-                $statut_validation = get_field('chasse_cache_statut_validation', $chasse->ID);
+            foreach ($query->posts as $chasse_id) {
+                $statut_validation = get_field('chasse_cache_statut_validation', (int) $chasse_id);
                 if ($statut_validation === 'en_attente') {
                     $has_pending_chasse = true;
                     break;

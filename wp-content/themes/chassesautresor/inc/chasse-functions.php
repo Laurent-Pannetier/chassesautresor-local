@@ -788,12 +788,13 @@ function trouver_chasse_a_valider(int $user_id): ?int
         return null;
     }
 
-    $query = get_chasses_de_organisateur($organisateur_id);
+    $query   = get_chasses_de_organisateur($organisateur_id);
     $chasses = is_a($query, 'WP_Query') ? $query->posts : (array) $query;
 
-    foreach ($chasses as $post) {
-        if (peut_valider_chasse($post->ID, $user_id)) {
-            return $post->ID;
+    foreach ($chasses as $chasse_id) {
+        $chasse_id = (int) $chasse_id;
+        if (peut_valider_chasse($chasse_id, $user_id)) {
+            return $chasse_id;
         }
     }
 

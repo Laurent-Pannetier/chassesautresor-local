@@ -272,18 +272,37 @@ function organisateur_a_chasse_pending(int $organisateur_id): bool
  */
 function get_chasses_de_organisateur($organisateur_id)
 {
-  return new WP_Query([
-    'post_type'      => 'chasse',
-    'posts_per_page' => -1,
-    'post_status'    => ['publish', 'pending'], // Inclure les chasses en attente
-    'meta_query'     => [
-      [
-        'key'     => 'chasse_cache_organisateur', // Champ correct
-        'value'   => '"' . strval($organisateur_id) . '"', // Recherche dans le tableau sérialisé
-        'compare' => 'LIKE'
-      ]
-    ]
-  ]);
+    static $cache = [];
+
+    $organisateur_id = (int) $organisateur_id;
+    if ($organisateur_id <= 0) {
+        return new WP_Query();
+    }
+
+    if (isset($cache[$organisateur_id])) {
+        return $cache[$organisateur_id];
+    }
+
+    $query = new WP_Query([
+        'post_type'              => 'chasse',
+        'posts_per_page'         => -1,
+        'post_status'            => ['publish', 'pending'], // Inclure les chasses en attente
+        'fields'                 => 'ids',
+        'no_found_rows'          => true,
+        'update_post_meta_cache' => false,
+        'update_post_term_cache' => false,
+        'meta_query'             => [
+            [
+                'key'     => 'chasse_cache_organisateur', // Champ correct
+                'value'   => '"' . strval($organisateur_id) . '"', // Recherche dans le tableau sérialisé
+                'compare' => 'LIKE',
+            ],
+        ],
+    ]);
+
+    $cache[$organisateur_id] = $query;
+
+    return $query;
 }
 
 /**
@@ -333,7 +352,7 @@ function organisateur_get_nb_chasses_publiees(int $organisateur_id): int
  * 🔹 get_chasses_en_creation() → Récupère les chasses en création pour un organisateur donné.
  *
  * @param int $organisateur_id
- * @return WP_Post[]
+ * @return int[]
  */
 function get_chasses_en_creation($organisateur_id)
 {
@@ -343,18 +362,18 @@ function get_chasses_en_creation($organisateur_id)
   }
 
   $chasses_query = get_chasses_de_organisateur($organisateur_id);
-  $chasses = is_a($chasses_query, 'WP_Query') ? $chasses_query->posts : (array) $chasses_query;
+  $chasse_ids    = is_a($chasses_query, 'WP_Query') ? $chasses_query->posts : (array) $chasses_query;
 
-  if (empty($chasses)) {
+  if (empty($chasse_ids)) {
     error_log("🔍 Aucune chasse liée à l’organisateur $organisateur_id");
     return [];
   }
 
-  $filtrees = array_filter($chasses, function ($post) {
-    $id = $post->ID;
-    $statut_wp = get_post_status($id);
+  $filtrees = array_filter($chasse_ids, function ($id) {
+    $id               = (int) $id;
+    $statut_wp        = get_post_status($id);
     $statut_validation = get_field('chasse_cache_statut_validation', $id);
-    $statut_metier = get_field('chasse_cache_statut', $id);
+    $statut_metier    = get_field('chasse_cache_statut', $id);
 
     error_log("🧪 #$id | statut=$statut_wp | validation=$statut_validation | metier=$statut_metier");
 

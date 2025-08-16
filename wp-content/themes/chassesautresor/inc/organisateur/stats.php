@@ -17,7 +17,7 @@ function organisateur_compter_joueurs_uniques(int $organisateur_id): int
         return 0;
     }
 
-    $ids = array_map('intval', wp_list_pluck($query->posts, 'ID'));
+    $ids = array_map('intval', $query->posts);
     if (empty($ids)) {
         return 0;
     }
@@ -45,8 +45,8 @@ function organisateur_compter_points_collectes(int $organisateur_id): int
     }
 
     $total = 0;
-    foreach ($query->posts as $post) {
-        $total += chasse_compter_points_collectes($post->ID);
+    foreach ($query->posts as $chasse_id) {
+        $total += chasse_compter_points_collectes((int) $chasse_id);
     }
 
     return $total;
