@@ -88,7 +88,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   data-post-id="<?= esc_attr($chasse_id); ?>">
 
                   <div class="champ-affichage">
-                    <label<?= $peut_editer_titre ? ' for="champ-titre-chasse"' : ''; ?>>Titre</label>
+                    <label<?= $peut_editer_titre ? ' for="champ-titre-chasse"' : ''; ?>>Titre <span class="champ-obligatoire">*</span></label>
                     <span class="champ-valeur">
                       <?= $isTitreParDefaut ? 'renseigner le titre de la chasse' : esc_html($titre); ?>
                     </span>
@@ -114,7 +114,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   data-cpt="chasse"
                   data-post-id="<?= esc_attr($chasse_id); ?>">
                   <div class="champ-affichage">
-                    <label>Image chasse</label>
+                    <label>Image chasse <span class="champ-obligatoire">*</span></label>
                     <?php if ($peut_editer) : ?>
                       <button type="button"
                         class="champ-modifier"
@@ -143,7 +143,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   data-champ="chasse_principale_description"
                   data-cpt="chasse"
                   data-post-id="<?= esc_attr($chasse_id); ?>">
-                    <label><?= esc_html__('Description chasse', 'chassesautresor-com'); ?></label>
+                    <label><?= esc_html__('Description chasse', 'chassesautresor-com'); ?> <span class="champ-obligatoire">*</span></label>
                     <div class="champ-texte">
                         <?php if (empty(trim($description))) : ?>
                             <?php if ($peut_editer) : ?>
