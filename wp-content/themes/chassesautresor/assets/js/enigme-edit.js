@@ -1071,6 +1071,8 @@ function initSolutionInline() {
   const cards = bloc.querySelectorAll('.solution-option');
   const cardPdf = bloc.querySelector('.solution-option[data-mode="pdf"]');
   const cardTexte = bloc.querySelector('.solution-option[data-mode="texte"]');
+  const btnClearPdf = cardPdf?.querySelector('.solution-reset');
+  const btnClearTexte = cardTexte?.querySelector('.solution-reset');
 
   const inputDelai = bloc.querySelector('#solution-delai');
   const selectHeure = bloc.querySelector('#solution-heure');
@@ -1078,6 +1080,11 @@ function initSolutionInline() {
   const feedbackFichier = bloc.querySelector('.champ-feedback');
   const publicationMessage = bloc.querySelector('.solution-publication-message');
   const textareaExplication = document.querySelector('.acf-field[data-name="enigme_solution_explication"] textarea');
+
+  if (textareaExplication) {
+    const valInit = textareaExplication.value.trim();
+    if (btnClearTexte) btnClearTexte.style.display = valInit !== '' ? '' : 'none';
+  }
 
   function majMessageSolution() {
     if (!publicationMessage) return;
@@ -1118,11 +1125,68 @@ function initSolutionInline() {
     if (value !== '') {
       if (iconTexte) iconTexte.style.color = 'var(--color-editor-success)';
       if (boutonTexte) boutonTexte.textContent = 'éditer';
+      if (btnClearTexte) btnClearTexte.style.display = '';
     } else {
       if (iconTexte) iconTexte.style.color = '';
       if (boutonTexte) boutonTexte.textContent = 'Rédiger';
+      if (btnClearTexte) btnClearTexte.style.display = 'none';
     }
     majMessageSolution();
+  });
+
+  btnClearTexte?.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    textareaExplication.value = '';
+    const iconTexte = cardTexte?.querySelector('i');
+    const boutonTexte = cardTexte?.querySelector('button.stat-value');
+    if (iconTexte) iconTexte.style.color = '';
+    if (boutonTexte) boutonTexte.textContent = 'Rédiger';
+    if (btnClearTexte) btnClearTexte.style.display = 'none';
+    modifierChampSimple('enigme_solution_explication', '', postId, cpt);
+    majMessageSolution();
+  });
+
+  btnClearPdf?.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const formData = new FormData();
+    formData.append('action', 'supprimer_fichier_solution_enigme');
+    formData.append('post_id', postId);
+    if (feedbackFichier) {
+      feedbackFichier.textContent = '⏳ Suppression en cours...';
+      feedbackFichier.className = 'champ-feedback champ-loading';
+    }
+    fetch(ajaxurl, { method: 'POST', body: formData })
+      .then(r => r.json())
+      .then(res => {
+        if (res.success) {
+          if (cardPdf) {
+            const icon = cardPdf.querySelector('i');
+            if (icon) icon.style.color = '';
+            const titre = cardPdf.querySelector('h3');
+            if (titre) titre.textContent = 'Document PDF';
+            const lien = cardPdf.querySelector('a.stat-value');
+            if (lien) lien.textContent = 'Choisir un fichier';
+          }
+          if (inputFichier) inputFichier.value = '';
+          if (btnClearPdf) btnClearPdf.style.display = 'none';
+          if (feedbackFichier) {
+            feedbackFichier.textContent = '✅ Fichier supprimé';
+            feedbackFichier.className = 'champ-feedback champ-success';
+          }
+          majMessageSolution();
+        } else if (feedbackFichier) {
+          feedbackFichier.textContent = '❌ Erreur : ' + (res.data || 'inconnue');
+          feedbackFichier.className = 'champ-feedback champ-error';
+        }
+      })
+      .catch(() => {
+        if (feedbackFichier) {
+          feedbackFichier.textContent = '❌ Erreur réseau';
+          feedbackFichier.className = 'champ-feedback champ-error';
+        }
+      });
   });
 
   cards.forEach(card => {
@@ -1206,6 +1270,7 @@ function initSolutionInline() {
             const lien = cardPdf.querySelector('a.stat-value');
             if (lien) lien.textContent = 'Modifier';
           }
+          if (btnClearPdf) btnClearPdf.style.display = '';
           majMessageSolution();
         } else {
           feedbackFichier.textContent = '❌ Erreur : ' + (res.data || 'inconnue');
