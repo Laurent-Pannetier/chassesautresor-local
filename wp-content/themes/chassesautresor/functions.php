@@ -44,7 +44,6 @@ add_action('wp_enqueue_scripts', function () {
         'gamification-style' => 'gamification.css',
         'cartes-style'       => 'cartes.css',
         'organisateurs'      => 'organisateurs.css',
-        'edition'            => 'edition.css',
         'mon compte'         => 'mon-compte.css',
         'commerce-style'     => 'commerce.css',
         'home'               => 'home.css',
@@ -53,6 +52,18 @@ add_action('wp_enqueue_scripts', function () {
     // 🚀 Chargement dynamique des styles avec gestion du cache
     foreach ($styles as $handle => $file) {
         wp_enqueue_style($handle, $theme_dir . $file, [], filemtime(get_stylesheet_directory() . "/assets/css/{$file}"));
+    }
+
+    if (
+        (is_singular() && current_user_can('edit_post', get_queried_object_id())) ||
+        (is_account_page() && is_user_logged_in())
+    ) {
+        wp_enqueue_style(
+            'edition',
+            $theme_dir . 'edition.css',
+            [],
+            filemtime(get_stylesheet_directory() . '/assets/css/edition.css')
+        );
     }
 
     $script_dir = get_stylesheet_directory_uri() . '/assets/js/';
