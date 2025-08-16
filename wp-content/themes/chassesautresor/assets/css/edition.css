@@ -839,6 +839,40 @@ li.ligne-logo .champ-modifier {
   margin: 0;
 }
 
+/* WYSIWYG résumé blocks */
+.resume-infos li.champ-description,
+.resume-infos li.champ-wysiwyg {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.resume-infos li.champ-description label,
+.resume-infos li.champ-wysiwyg label {
+  min-width: var(--editor-label-width);
+}
+
+.resume-infos li.champ-description .champ-texte,
+.resume-infos li.champ-wysiwyg .champ-texte {
+  flex: 1;
+}
+
+.resume-infos li.champ-description .champ-texte-contenu,
+.resume-infos li.champ-wysiwyg .champ-texte-contenu {
+  display: inline;
+}
+
+.resume-infos li.champ-description .champ-texte-contenu .champ-modifier,
+.resume-infos li.champ-wysiwyg .champ-texte-contenu .champ-modifier {
+  transform: none;
+  margin-left: 0.3rem;
+}
+
+.resume-infos li.champ-description.champ-vide .champ-texte,
+.resume-infos li.champ-wysiwyg.champ-vide .champ-texte {
+  color: var(--color-editor-text-muted);
+}
+
 li.ligne-email i.fa-envelope {
   opacity: 0.6;
   margin-top: 6px;

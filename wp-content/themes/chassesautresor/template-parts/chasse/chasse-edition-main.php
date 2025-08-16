@@ -143,15 +143,31 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   data-champ="chasse_principale_description"
                   data-cpt="chasse"
                   data-post-id="<?= esc_attr($chasse_id); ?>">
-                  Une description
-                  <?php if ($peut_editer) : ?>
-                    <button type="button"
-                      class="champ-modifier ouvrir-panneau-description"
-                      data-cpt="chasse"
-                      data-champ="chasse_principale_description"
-                      data-post-id="<?= esc_attr($chasse_id); ?>"
-                      aria-label="Modifier la description">✏️</button>
-                  <?php endif; ?>
+                    <label><?= esc_html__('Description chasse', 'chassesautresor-com'); ?></label>
+                    <div class="champ-texte">
+                        <?php if (empty(trim($description))) : ?>
+                            <?php if ($peut_editer) : ?>
+                                <a href="#" class="champ-ajouter ouvrir-panneau-description"
+                                   data-cpt="chasse"
+                                   data-champ="chasse_principale_description"
+                                   data-post-id="<?= esc_attr($chasse_id); ?>">
+                                    <?= esc_html__('ajouter', 'chassesautresor-com'); ?> <span class="icone-modif">✏️</span>
+                                </a>
+                            <?php endif; ?>
+                        <?php else : ?>
+                            <span class="champ-texte-contenu">
+                                <?= esc_html(wp_trim_words(wp_strip_all_tags($description), 25)); ?>
+                                <?php if ($peut_editer) : ?>
+                                    <button type="button"
+                                        class="champ-modifier ouvrir-panneau-description"
+                                        data-cpt="chasse"
+                                        data-champ="chasse_principale_description"
+                                        data-post-id="<?= esc_attr($chasse_id); ?>"
+                                        aria-label="<?= esc_attr__('Modifier la description', 'chassesautresor-com'); ?>">✏️</button>
+                                <?php endif; ?>
+                            </span>
+                        <?php endif; ?>
+                    </div>
                 </li>
 
                 <!-- Récompense -->
