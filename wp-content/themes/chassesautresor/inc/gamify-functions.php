@@ -58,16 +58,24 @@ function get_user_points($user_id = null): int {
  *
  * @param int    $user_id       ID de l'utilisateur.
  * @param int    $points_change Nombre de points à ajouter ou retirer.
- * @param string $reason        Raison de la modification.
+ * @param string $reason        Motif lisible par l'utilisateur.
+ * @param string $origin_type   Catégorie de l'opération.
+ * @param int|null $origin_id   Identifiant de l'élément lié.
  */
-function update_user_points(int $user_id, int $points_change, string $reason = ''): void {
+function update_user_points(
+    int $user_id,
+    int $points_change,
+    string $reason = '',
+    string $origin_type = 'admin',
+    ?int $origin_id = null
+): void {
     if (!$user_id) {
         return;
     }
 
     global $wpdb;
     $repo = new PointsRepository($wpdb);
-    $repo->addPoints($user_id, $points_change, $reason);
+    $repo->addPoints($user_id, $points_change, $reason, $origin_type, $origin_id);
 
     // 🔄 Rafraîchit la session utilisateur si connecté
     if (is_user_logged_in()) {
@@ -102,7 +110,8 @@ function attribuer_points_apres_achat($order_id) {
         $slug = $product->get_slug();
         if (isset($packs_points[$slug])) {
             $points_to_add = $packs_points[$slug] * $item->get_quantity();
-            update_user_points($user_id, $points_to_add, 'purchase');
+            $reason = sprintf('Achat de %d points (commande #%d)', $points_to_add, $order_id);
+            update_user_points($user_id, $points_to_add, $reason, 'achat', $order_id);
             $points_ajoutes += $points_to_add;
             $order->add_order_note("✅ {$points_to_add} points ajoutés.");
         }
@@ -212,28 +221,44 @@ function utilisateur_a_assez_de_points(int $user_id, int $montant): bool {
 /**
  * ➖ Déduit un montant de points à un utilisateur.
  *
- * @param int    $user_id
- * @param int    $montant Nombre de points à retirer (doit être positif).
- * @param string $reason  Raison de la déduction.
+ * @param int      $user_id
+ * @param int      $montant     Nombre de points à retirer (doit être positif).
+ * @param string   $reason      Motif de la déduction.
+ * @param string   $origin_type Catégorie de l'opération.
+ * @param int|null $origin_id   Identifiant lié.
  * @return void
  */
-function deduire_points_utilisateur(int $user_id, int $montant, string $reason = ''): void {
+function deduire_points_utilisateur(
+    int $user_id,
+    int $montant,
+    string $reason = '',
+    string $origin_type = 'admin',
+    ?int $origin_id = null
+): void {
     if ($user_id && $montant > 0) {
-        update_user_points($user_id, -$montant, $reason);
+        update_user_points($user_id, -$montant, $reason, $origin_type, $origin_id);
     }
 }
 
 /**
  * ➕ Ajoute un montant de points à un utilisateur.
  *
- * @param int    $user_id
- * @param int    $montant Nombre de points à ajouter (doit être positif).
- * @param string $reason  Raison de l'ajout.
+ * @param int      $user_id
+ * @param int      $montant     Nombre de points à ajouter (doit être positif).
+ * @param string   $reason      Motif de l'ajout.
+ * @param string   $origin_type Catégorie de l'opération.
+ * @param int|null $origin_id   Identifiant lié.
  * @return void
  */
-function ajouter_points_utilisateur(int $user_id, int $montant, string $reason = ''): void {
+function ajouter_points_utilisateur(
+    int $user_id,
+    int $montant,
+    string $reason = '',
+    string $origin_type = 'admin',
+    ?int $origin_id = null
+): void {
     if ($user_id && $montant > 0) {
-        update_user_points($user_id, $montant, $reason);
+        update_user_points($user_id, $montant, $reason, $origin_type, $origin_id);
     }
 }
 

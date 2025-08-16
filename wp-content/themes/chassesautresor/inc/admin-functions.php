@@ -107,18 +107,20 @@ function traiter_gestion_points() {
 
     // Modification des points selon l’action choisie
     if ($type_modification === "ajouter") {
-        $nouveau_solde = $solde_actuel + $nombre_points;
+        $delta  = $nombre_points;
+        $reason = sprintf('Ajout manuel de %d points', $nombre_points);
     } elseif ($type_modification === "retirer") {
         if ($nombre_points > $solde_actuel) {
             wp_die( __( '❌ Impossible de retirer plus de points que l’utilisateur en possède.', 'chassesautresor-com' ) );
         }
-        $nouveau_solde = $solde_actuel - $nombre_points;
+        $delta  = -$nombre_points;
+        $reason = sprintf('Retrait manuel de %d points', $nombre_points);
     } else {
         wp_die( __( '❌ Action invalide.', 'chassesautresor-com' ) );
     }
 
     // Mettre à jour les points de l'utilisateur
-    update_user_points($user_id, $nouveau_solde);
+    update_user_points($user_id, $delta, $reason, 'admin');
 
     error_log("✅ Points modifiés : $nombre_points $type_modification pour l'utilisateur $utilisateur");
 
@@ -503,7 +505,9 @@ function regler_paiement_admin() {
 
         $points = intval($paiement['paiement_points_utilises'] ?? 0);
         if ($points > 0) {
-            update_user_points($user_id, $points, 'refund');
+            $logId = intval($paiement['points_log_id'] ?? 0);
+            $reason = sprintf('Remboursement de la demande #%d', $logId);
+            update_user_points($user_id, $points, $reason, 'conversion', $logId);
         }
     }
 

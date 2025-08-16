@@ -11,6 +11,15 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
+  const fadeFlash = () => {
+    const flash = content.querySelector('.msg-important .flash');
+    if (flash) {
+      setTimeout(() => {
+        flash.remove();
+      }, 3000);
+    }
+  };
+
   const loadSection = async (link, push = true) => {
     const section = link.dataset.section;
     if (!section) {
@@ -34,12 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       const messages = data.data.messages || '';
       content.innerHTML = `<section class="msg-important">${messages}</section>` + data.data.html;
-      const msg = content.querySelector('.msg-important');
-      if (msg && msg.textContent.trim() !== '') {
-        setTimeout(() => {
-          msg.style.display = 'none';
-        }, 3000);
-      }
+      fadeFlash();
       adminNav.querySelectorAll('.dashboard-nav-link').forEach((a) => a.classList.remove('active'));
       link.classList.add('active');
       document.dispatchEvent(
@@ -73,4 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
       loadSection(initialLink, false);
     }
   }
+
+  fadeFlash();
 });

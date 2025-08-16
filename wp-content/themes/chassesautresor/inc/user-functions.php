@@ -238,9 +238,10 @@ add_filter('woocommerce_endpoint_edit-account_title', 'ca_profile_endpoint_title
 function myaccount_get_important_messages(): string
 {
     $messages = [];
+    $flash    = '';
 
     if (isset($_GET['points_modifies']) && $_GET['points_modifies'] === '1') {
-        $messages[] = __('Points mis à jour avec succès.', 'chassesautresor');
+        $flash = '<p class="flash">' . __('Points mis à jour avec succès.', 'chassesautresor') . '</p>';
     }
 
     if (current_user_can('administrator')) {
@@ -328,7 +329,7 @@ function myaccount_get_important_messages(): string
         }
     }
 
-    if (empty($messages)) {
+    if (empty($messages) && $flash === '') {
         return '';
     }
 
@@ -339,7 +340,7 @@ function myaccount_get_important_messages(): string
         $messages
     );
 
-    return implode('', $output);
+    return $flash . implode('', $output);
 }
 
 // ==================================================
