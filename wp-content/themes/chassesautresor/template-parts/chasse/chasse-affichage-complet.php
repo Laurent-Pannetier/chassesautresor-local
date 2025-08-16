@@ -111,7 +111,7 @@ if ($edition_active && !$est_complet) {
           class="bouton-edition-toggle"
           data-cpt="chasse"
           aria-label="Activer le mode édition">
-          <i class="fa-solid fa-sliders"></i>
+          <i class="fa-solid fa-gear"></i>
         </button>
       </div>
     <?php endif; ?>

@@ -64,7 +64,7 @@ $is_complete = (
 
     <div class="edition-panel-header">
       <div class="edition-panel-header-top">
-        <h2><i class="fa-solid fa-sliders"></i> <?= esc_html__('Panneau d\'édition organisateur', 'chassesautresor-com'); ?></h2>
+        <h2><i class="fa-solid fa-gear"></i> <?= esc_html__('Panneau d\'édition organisateur', 'chassesautresor-com'); ?></h2>
         <button type="button" class="panneau-fermer" aria-label="Fermer les paramètres organisateur">✖</button>
       </div>
       <div class="edition-tabs">

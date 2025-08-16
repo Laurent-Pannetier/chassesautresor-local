@@ -81,7 +81,7 @@ defined('ABSPATH') || exit;
             echo '<button id="toggle-mode-edition-enigme" type="button" ' .
                 'class="bouton-edition-toggle bouton-edition-toggle--clair" data-cpt="enigme" aria-label="' .
                 esc_attr__('Activer le mode édition', 'chassesautresor') .
-                '"><i class="fa-solid fa-sliders"></i></button>';
+                '"><i class="fa-solid fa-gear"></i></button>';
         }
 
         if ($chasse_id) {
