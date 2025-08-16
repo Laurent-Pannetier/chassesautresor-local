@@ -139,26 +139,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
 
                   <?php
                   $has_images_utiles = enigme_a_une_image($enigme_id);
+                  $images_ids       = get_field('enigme_visuel_image', $enigme_id, false);
                   ?>
                   <li class="champ-enigme champ-img <?= $has_images_utiles ? 'champ-rempli' : 'champ-vide'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>"
                     data-champ="enigme_visuel_image"
                     data-cpt="enigme"
                     data-post-id="<?= esc_attr($enigme_id); ?>"
                     data-rempli="<?= $has_images_utiles ? '1' : '0'; ?>">
-
-                    Image(s) <span class="champ-obligatoire">*</span>
-
-                    <?php if ($peut_editer) : ?>
-                      <button
-                        type="button"
-                        class="champ-modifier ouvrir-panneau-images"
-                        data-champ="enigme_visuel_image"
-                        data-cpt="enigme"
-                        data-post-id="<?= esc_attr($enigme_id); ?>">
-                        ✏️
+                    <div class="champ-affichage">
+                      <label>Illustrations <span class="champ-obligatoire">*</span></label>
+                      <?php if ($peut_editer) : ?>
+                        <button type="button"
+                          class="champ-modifier ouvrir-panneau-images"
+                          data-champ="enigme_visuel_image"
+                          data-cpt="enigme"
+                          data-post-id="<?= esc_attr($enigme_id); ?>">
+                          <?php if ($has_images_utiles && is_array($images_ids)) : ?>
+                            <?php foreach ($images_ids as $img_id) : ?>
+                              <?php $thumb_url = esc_url(add_query_arg([
+                                'id'     => $img_id,
+                                'taille' => 'thumbnail',
+                              ], site_url('/voir-image-enigme'))); ?>
+                              <img src="<?= $thumb_url; ?>" alt="" class="vignette-enigme" />
+                            <?php endforeach; ?>
+                          <?php else : ?>
+                            <span class="champ-ajout-image">ajouter</span>
+                          <?php endif; ?>
+                          <span class="icone-modif">✏️</span>
                         </button>
-                    <?php endif; ?>
-
+                      <?php else : ?>
+                        <?php if ($has_images_utiles && is_array($images_ids)) : ?>
+                          <?php foreach ($images_ids as $img_id) : ?>
+                            <?php $thumb_url = esc_url(add_query_arg([
+                              'id'     => $img_id,
+                              'taille' => 'thumbnail',
+                            ], site_url('/voir-image-enigme'))); ?>
+                            <img src="<?= $thumb_url; ?>" alt="" class="vignette-enigme" />
+                          <?php endforeach; ?>
+                        <?php else : ?>
+                          <span class="champ-ajout-image">ajouter</span>
+                        <?php endif; ?>
+                      <?php endif; ?>
+                    </div>
+                    <div class="champ-feedback"></div>
                   </li>
 
                   <li class="champ-enigme champ-wysiwyg<?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_visuel_texte" data-cpt="enigme"
