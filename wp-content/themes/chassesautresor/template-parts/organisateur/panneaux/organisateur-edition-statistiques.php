@@ -66,7 +66,7 @@ $points          = organisateur_compter_points_collectes($organisateur_id);
               [
                   'enigmes'       => $enigmes_stats,
                   'total'         => $participants,
-                  'cols_etiquette' => [2, 3, 6, 7],
+                  'cols_etiquette' => [2, 3, 4, 5, 6, 7],
               ]
           );
       }

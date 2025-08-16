@@ -1464,6 +1464,7 @@ body.panneau-ouvert::before {
 .stats-table th:first-child,
 .stats-table td:first-child {
   text-align: left;
+  font-weight: 600;
 }
 
 .stats-table th {
