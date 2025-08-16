@@ -251,7 +251,12 @@ body.edition-active-enigme .single-enigme-main .champ-img .champ-modifier {
 }
 
 .champ-img.champ-vide .champ-modifier .icone-modif {
-  display: none;
+  position: static;
+  display: inline;
+  width: auto;
+  height: auto;
+  margin-left: 0.25rem;
+  background: none;
 }
 
 .edition-panel .champ-img img {
