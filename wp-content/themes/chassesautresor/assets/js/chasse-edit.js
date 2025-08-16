@@ -190,6 +190,76 @@ function initChasseEdit() {
   const panneauRecompense = document.getElementById('panneau-recompense-chasse');
   const boutonSupprimerRecompense = document.getElementById('bouton-supprimer-recompense');
 
+  function majAffichageRecompense(titre, texte, valeur) {
+    const ligne = document.querySelector('.champ-chasse[data-champ="chasse_infos_recompense_valeur"]');
+    if (!ligne) return;
+    const champTexte = ligne.querySelector('.champ-texte');
+    if (!champTexte) return;
+    const peutEditer = !ligne.classList.contains('champ-desactive');
+    champTexte.innerHTML = '';
+
+    const complet = titre && texte && valeur && valeur > 0;
+    ligne.classList.toggle('champ-rempli', complet);
+    ligne.classList.toggle('champ-vide', !complet);
+
+    if (!complet) {
+      if (peutEditer) {
+        const lien = document.createElement('a');
+        lien.href = '#';
+        lien.className = 'champ-ajouter ouvrir-panneau-recompense';
+        lien.dataset.champ = 'chasse_infos_recompense_valeur';
+        lien.dataset.cpt = 'chasse';
+        lien.dataset.postId = ligne.dataset.postId || '';
+        lien.innerHTML = 'ajouter <span class="icone-modif">✏️</span>';
+        champTexte.appendChild(lien);
+      }
+      if (typeof window.mettreAJourResumeInfos === 'function') {
+        window.mettreAJourResumeInfos();
+      }
+      return;
+    }
+
+    const span = document.createElement('span');
+    span.className = 'champ-texte-contenu';
+
+    const valeurSpan = document.createElement('span');
+    valeurSpan.className = 'recompense-valeur';
+    valeurSpan.textContent = valeur.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+
+    const titreSpan = document.createElement('span');
+    titreSpan.className = 'recompense-titre';
+    titreSpan.textContent = titre;
+
+    span.appendChild(valeurSpan);
+    span.appendChild(document.createTextNode(' '));
+    span.appendChild(titreSpan);
+
+    if (peutEditer) {
+      span.appendChild(document.createTextNode(' '));
+      const bouton = document.createElement('button');
+      bouton.type = 'button';
+      bouton.className = 'champ-modifier ouvrir-panneau-recompense';
+      bouton.dataset.champ = 'chasse_infos_recompense_valeur';
+      bouton.dataset.cpt = 'chasse';
+      bouton.dataset.postId = ligne.dataset.postId || '';
+      bouton.setAttribute('aria-label', 'Modifier la récompense');
+      bouton.textContent = '✏️';
+      span.appendChild(bouton);
+      if (typeof initZoneClicEdition === 'function') initZoneClicEdition(bouton);
+    }
+
+    span.appendChild(document.createTextNode(' '));
+    const descSpan = document.createElement('span');
+    descSpan.className = 'recompense-description';
+    descSpan.textContent = texte;
+    span.appendChild(descSpan);
+    champTexte.appendChild(span);
+
+    if (typeof window.mettreAJourResumeInfos === 'function') {
+      window.mettreAJourResumeInfos();
+    }
+  }
+
   if (boutonSupprimerRecompense) {
     boutonSupprimerRecompense.addEventListener('click', () => {
       const panneauEdition = document.querySelector('.edition-panel-chasse');
@@ -218,13 +288,16 @@ function initChasseEdit() {
             })
           });
         })
-        ).then(() => {
-          const url = new URL(window.location.href);
-          url.searchParams.set('edition', 'open');
-          url.searchParams.set('tab', 'param');
-          window.location.href = url.toString();
-        });
+      ).then(() => {
+        majAffichageRecompense('', '', 0);
+        inputTitreRecompense.value = '';
+        inputTexteRecompense.value = '';
+        inputValeurRecompense.value = '';
+        if (typeof window.closePanel === 'function') {
+          window.closePanel('panneau-recompense-chasse');
+        }
       });
+    });
 
   }
 
@@ -309,20 +382,14 @@ function initChasseEdit() {
         .then(r => r.json())
         .then(res => {
           if (res.success) {
-            if (typeof window.mettreAJourResumeInfos === 'function') {
-              window.mettreAJourResumeInfos();
-            }
-
+            majAffichageRecompense(titre, texte, valeur);
             if (document.activeElement && panneauRecompense.contains(document.activeElement)) {
               document.activeElement.blur();
-              document.body.focus(); // 🔥 Correction ultime ici
+              document.body.focus();
             }
-
-            const url = new URL(window.location.href);
-            url.searchParams.set('edition', 'open');
-            url.searchParams.set('tab', 'param');
-            window.location.href = url.toString();
-
+            if (typeof window.closePanel === 'function') {
+              window.closePanel('panneau-recompense-chasse');
+            }
           } else {
             console.error('❌ Erreur valeur récompense', res.data);
           }
