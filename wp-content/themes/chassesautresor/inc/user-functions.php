@@ -270,7 +270,8 @@ function myaccount_get_important_messages(): string
     }
 
     if (est_organisateur()) {
-        $organisateur_id = get_organisateur_from_user(get_current_user_id());
+        $current_user_id   = get_current_user_id();
+        $organisateur_id   = get_organisateur_from_user($current_user_id);
         if ($organisateur_id) {
             $enigmes = recuperer_enigmes_tentatives_en_attente($organisateur_id);
             if (!empty($enigmes)) {
@@ -284,6 +285,16 @@ function myaccount_get_important_messages(): string
                 );
 
                 $messages[] = __('Tentatives à traiter :', 'chassesautresor') . ' ' . implode(', ', $links);
+            }
+        }
+
+        $paiements = get_user_meta($current_user_id, 'demande_paiement', true);
+        if (is_array($paiements)) {
+            foreach ($paiements as $paiement) {
+                if (!empty($paiement['statut']) && $paiement['statut'] === 'en attente') {
+                    $messages[] = __('Vous avez une demande de conversion en attente de règlement.', 'chassesautresor');
+                    break;
+                }
             }
         }
     }

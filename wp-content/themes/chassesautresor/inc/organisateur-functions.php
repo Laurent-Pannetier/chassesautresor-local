@@ -130,13 +130,13 @@ function verifier_acces_conversion($user_id) {
     // 1️⃣ Vérification du rôle (bloquant immédiat)
     $user = get_userdata($user_id);
     if (!$user || !in_array(ROLE_ORGANISATEUR, $user->roles)) {
-        return "Inscription en cours";
+        return __('Inscription en cours', 'chassesautresor');
     }
 
     // ✅ Récupération de l'ID du CPT "organisateur"
     $organisateur_id = get_organisateur_from_user($user_id);
     if (!$organisateur_id) {
-        return "Erreur : Organisateur non trouvé.";
+        return __('Erreur : organisateur non trouvé.', 'chassesautresor');
     }
 
     // 2️⃣ Vérification d’une demande en attente
@@ -147,7 +147,7 @@ function verifier_acces_conversion($user_id) {
 
     foreach ($paiements as $paiement) {
         if (!empty($paiement['statut']) && $paiement['statut'] === 'en attente') {
-            return "Demande déjà en cours";
+            return __('Demande déjà en cours', 'chassesautresor');
         }
     }
 
@@ -164,7 +164,7 @@ function verifier_acces_conversion($user_id) {
 
     if ($dernier_paiement && $dernier_paiement > strtotime('-30 days')) {
         $jours_restants = ceil(($dernier_paiement - strtotime('-30 days')) / 86400);
-        return "Attendez encore $jours_restants jours";
+        return sprintf(__('Attendez encore %d jours', 'chassesautresor'), $jours_restants);
     }
 
     // 4️⃣ Vérification du solde de points (seuil minimal)
@@ -333,18 +333,27 @@ function afficher_tableau_paiements_organisateur($user_id, $filtre_statut = 'en_
     }
 
     // Affichage du tableau
-    echo '<table class="widefat fixed">';
-    echo '<thead><tr><th>Montant (€)</th><th>Points utilisés</th><th>Date demande</th><th>Statut</th></tr></thead>';
+    echo '<table class="stats-table">';
+    echo '<thead><tr>';
+    echo '<th>' . esc_html__('Montant (€)', 'chassesautresor') . '</th>';
+    echo '<th>' . esc_html__('Points utilisés', 'chassesautresor') . '</th>';
+    echo '<th>' . esc_html__('Date demande', 'chassesautresor') . '</th>';
+    echo '<th>' . esc_html__('Statut', 'chassesautresor') . '</th>';
+    echo '</tr></thead>';
     echo '<tbody>';
 
     foreach ($paiements_filtres as $paiement) {
-        $statut_affiche = ($paiement['statut'] === 'reglé') ? '✅ Réglé' : '🟡 En attente';
-        $points_utilises = isset($paiement['paiement_points_utilises']) ? esc_html($paiement['paiement_points_utilises']) : 'N/A';
+        $statut_affiche  = ($paiement['statut'] === 'reglé')
+            ? '✅ ' . esc_html__('Réglé', 'chassesautresor')
+            : '🟡 ' . esc_html__('En attente', 'chassesautresor');
+        $points_utilises = isset($paiement['paiement_points_utilises'])
+            ? esc_html($paiement['paiement_points_utilises'])
+            : esc_html__('N/A', 'chassesautresor');
 
         echo '<tr>';
         echo '<td>' . esc_html($paiement['paiement_demande_montant']) . ' €</td>';
         echo '<td>' . $points_utilises . '</td>';
-        echo '<td>' . esc_html(date('Y-m-d H:i', strtotime($paiement['paiement_date_demande']))) . '</td>';
+        echo '<td>' . esc_html(date_i18n('Y-m-d H:i', strtotime($paiement['paiement_date_demande']))) . '</td>';
         echo '<td>' . esc_html($statut_affiche) . '</td>';
         echo '</tr>';
     }
