@@ -84,6 +84,32 @@ function update_user_points(
 }
 
 /**
+ * 📝 Met à jour l'historique global des points achetés.
+ *
+ * Enregistre l'opération via PointsRepository (user_id 0) et
+ * incrémente les compteurs globaux stockés en options.
+ *
+ * @param int $points Nombre de points achetés.
+ */
+function mettre_a_jour_points_achetes(int $points): void
+{
+    if ($points <= 0) {
+        return;
+    }
+
+    global $wpdb;
+    $repo = new PointsRepository($wpdb);
+    $repo->addPoints(0, $points, 'Points achetés', 'achat_total');
+
+    $monthKey = 'total_points_vendus_mensuel_' . date('Y_m');
+    $monthlyTotal = (int) get_option($monthKey, 0);
+    update_option($monthKey, $monthlyTotal + $points);
+
+    $circulationTotal = (int) get_option('total_points_en_circulation', 0);
+    update_option('total_points_en_circulation', $circulationTotal + $points);
+}
+
+/**
  * 🎁 Attribue les points après l’achat d’un pack de points.
  *
  * @param int $order_id ID de la commande.
