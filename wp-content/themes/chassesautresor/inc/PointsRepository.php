@@ -80,6 +80,39 @@ class PointsRepository
     }
 
     /**
+     * Retrieve points operations for a user ordered by newest first.
+     *
+     * @param int $userId User identifier.
+     * @param int $limit  Maximum number of rows to return.
+     * @param int $offset Offset for pagination.
+     * @return array[] List of operations.
+     */
+    public function getHistory(int $userId, int $limit, int $offset = 0): array
+    {
+        $sql = $this->wpdb->prepare(
+            "SELECT id, request_date, origin_type, reason, points, balance FROM {$this->table} WHERE user_id = %d ORDER BY id DESC LIMIT %d OFFSET %d",
+            $userId,
+            $limit,
+            $offset
+        );
+
+        return $this->wpdb->get_results($sql, ARRAY_A);
+    }
+
+    /**
+     * Count total number of operations for a user.
+     */
+    public function countHistory(int $userId): int
+    {
+        $sql = $this->wpdb->prepare(
+            "SELECT COUNT(*) FROM {$this->table} WHERE user_id = %d",
+            $userId
+        );
+
+        return (int) $this->wpdb->get_var($sql);
+    }
+
+    /**
      * Record a conversion request with pending status and return the inserted row ID.
      *
      * @param int   $userId    User identifier.

@@ -313,6 +313,7 @@ $is_complete = (
               <?php endif; ?>
             </div>
           </div>
+          <?php echo render_points_history_table((int) $current_user->ID); ?>
         </div> <!-- .edition-panel-body -->
     </div>
 

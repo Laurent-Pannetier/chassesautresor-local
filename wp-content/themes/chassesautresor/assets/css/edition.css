@@ -1616,6 +1616,22 @@ body.panneau-ouvert::before {
   margin-bottom: 1.5rem;
 }
 
+/* Pagination for stats tables */
+.points-history-pager {
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.points-history-pager .page-link {
+  cursor: pointer;
+}
+
+.points-history-pager .page-link.active {
+  font-weight: 600;
+}
+
 .stats-table.compact th,
 .stats-table.compact td {
   padding: 4px 8px;
@@ -1659,6 +1675,11 @@ body.panneau-ouvert::before {
   background-color: var(--color-editor-background);
   font-size: 0.85em;
   white-space: nowrap;
+}
+
+.etiquette-grande {
+  padding: 4px 8px;
+  font-size: 1rem;
 }
 
 /* ====== Mode de fin ====== */
