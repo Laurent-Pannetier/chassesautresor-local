@@ -91,7 +91,7 @@ if ($peut_modifier && !$est_complet) {
         </a>
         <?php if ($peut_modifier) : ?>
           <button id="toggle-mode-edition" class="bouton-edition-toggle" aria-label="Paramètres organisateur">
-            <i class="fa-solid fa-sliders"></i>
+            <i class="fa-solid fa-gear"></i>
           </button>
         <?php endif; ?>
       </div>
