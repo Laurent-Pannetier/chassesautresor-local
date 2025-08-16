@@ -184,10 +184,11 @@ $is_complete = (
                   data-champ="email_contact"
                   data-cpt="organisateur"
                   data-post-id="<?= esc_attr($organisateur_id); ?>"
+                  data-no-icon
                 >
+                  <i class="fa-regular fa-envelope" aria-hidden="true"></i>
                   <div class="champ-affichage">
                     <label for="champ-email-contact">
-                      <i aria-hidden="true" class="fa-regular fa-envelope"></i>
                       Email de contact
                     </label>
                     <span class="champ-valeur">
