@@ -103,7 +103,7 @@ if ($is_organizer) {
     }
 }
 
-if ($current_user->ID) {
+if ($current_user->ID && !empty($history)) {
     $origin_labels = [
         'admin'      => __('Admin', 'chassesautresor-com'),
         'chasse'     => __('Chasse', 'chassesautresor-com'),
@@ -116,20 +116,15 @@ if ($current_user->ID) {
     <table class="points-history">
         <thead>
             <tr>
-                <th><?php esc_html_e('Id', 'chassesautresor-com'); ?></th>
-                <th><?php esc_html_e('Date', 'chassesautresor-com'); ?></th>
-                <th><?php esc_html_e('Origine', 'chassesautresor-com'); ?></th>
-                <th><?php esc_html_e('Motif', 'chassesautresor-com'); ?></th>
-                <th><?php esc_html_e('Variation', 'chassesautresor-com'); ?></th>
-                <th><?php esc_html_e('Solde', 'chassesautresor-com'); ?></th>
+                <th scope="col"><?php esc_html_e('Id', 'chassesautresor-com'); ?></th>
+                <th scope="col"><?php esc_html_e('Date', 'chassesautresor-com'); ?></th>
+                <th scope="col" data-format="etiquette"><?php esc_html_e('Origine', 'chassesautresor-com'); ?></th>
+                <th scope="col"><?php esc_html_e('Motif', 'chassesautresor-com'); ?></th>
+                <th scope="col" data-format="etiquette"><?php esc_html_e('Variation', 'chassesautresor-com'); ?></th>
+                <th scope="col" data-format="etiquette"><?php esc_html_e('Solde', 'chassesautresor-com'); ?></th>
             </tr>
         </thead>
         <tbody>
-            <?php if (empty($history)) : ?>
-            <tr>
-                <td colspan="6"><?php esc_html_e('Aucune opération', 'chassesautresor-com'); ?></td>
-            </tr>
-            <?php else : ?>
             <?php foreach ($history as $row) : ?>
             <?php
                 $origin = $origin_labels[$row['origin_type']] ?? $row['origin_type'];
@@ -147,7 +142,6 @@ if ($current_user->ID) {
                 <td><span class="etiquette grandes"><?php echo esc_html((int) $row['balance']); ?></span></td>
             </tr>
             <?php endforeach; ?>
-            <?php endif; ?>
         </tbody>
     </table>
     <?php

@@ -17,6 +17,13 @@ $cache_complet  = get_field('organisateur_cache_complet', $organisateur_id);
 $edition_active = in_array(ROLE_ORGANISATEUR_CREATION, $roles) && !$cache_complet;
 $user_points    = function_exists('get_user_points') ? get_user_points((int) $current_user->ID) : 0;
 
+$history        = [];
+if ($current_user->ID) {
+    global $wpdb;
+    $repo    = new PointsRepository($wpdb);
+    $history = $repo->getHistory((int) $current_user->ID);
+}
+
 // Post
 $titre        = get_post_field('post_title', $organisateur_id);
 $logo         = get_field('profil_public_logo_organisateur', $organisateur_id);
@@ -313,6 +320,51 @@ $is_complete = (
               <?php endif; ?>
             </div>
           </div>
+          <?php if (!empty($history)) : ?>
+            <?php
+            $origin_labels = [
+                'admin'      => __('Admin', 'chassesautresor-com'),
+                'chasse'     => __('Chasse', 'chassesautresor-com'),
+                'tentative'  => __('Tentative', 'chassesautresor-com'),
+                'achat'      => __('Achat', 'chassesautresor-com'),
+                'conversion' => __('Conversion', 'chassesautresor-com'),
+            ];
+            ?>
+            <h3><?php esc_html_e('Historique', 'chassesautresor-com'); ?></h3>
+            <div class="stats-table-wrapper">
+              <table class="stats-table points-history">
+                <thead>
+                  <tr>
+                    <th scope="col"><?php esc_html_e('Id', 'chassesautresor-com'); ?></th>
+                    <th scope="col"><?php esc_html_e('Date', 'chassesautresor-com'); ?></th>
+                    <th scope="col" data-format="etiquette"><?php esc_html_e('Origine', 'chassesautresor-com'); ?></th>
+                    <th scope="col"><?php esc_html_e('Motif', 'chassesautresor-com'); ?></th>
+                    <th scope="col" data-format="etiquette"><?php esc_html_e('Variation', 'chassesautresor-com'); ?></th>
+                    <th scope="col" data-format="etiquette"><?php esc_html_e('Solde', 'chassesautresor-com'); ?></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php foreach ($history as $row) : ?>
+                  <?php
+                    $origin = $origin_labels[$row['origin_type']] ?? $row['origin_type'];
+                    $date   = $row['request_date']
+                        ? wp_date(get_option('date_format'), strtotime($row['request_date']))
+                        : '';
+                    $delta  = sprintf('%+d', (int) $row['points']);
+                  ?>
+                  <tr>
+                    <td><?php echo esc_html($row['id']); ?></td>
+                    <td><?php echo esc_html($date); ?></td>
+                    <td><span class="etiquette"><?php echo esc_html($origin); ?></span></td>
+                    <td><?php echo esc_html($row['reason']); ?></td>
+                    <td><span class="etiquette grandes"><?php echo esc_html($delta); ?></span></td>
+                    <td><span class="etiquette grandes"><?php echo esc_html((int) $row['balance']); ?></span></td>
+                  </tr>
+                  <?php endforeach; ?>
+                </tbody>
+              </table>
+            </div>
+          <?php endif; ?>
         </div> <!-- .edition-panel-body -->
     </div>
 
