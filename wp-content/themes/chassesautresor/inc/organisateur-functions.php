@@ -113,8 +113,8 @@ add_action('wp_enqueue_scripts', 'charger_script_conversion');
  * Cette fonction applique plusieurs contrôles d'accès avant qu'un utilisateur puisse demander une conversion :
  * 1. Vérifie que l'utilisateur possède bien le rôle "organisateur".
  * 2. Vérifie qu'il n'a pas déjà une demande en attente.
- * 3. Vérifie que sa dernière demande réglée date de plus de 30 jours.
- * 4. Vérifie qu'il dispose d'au moins 500 points.
+ * 3. Vérifie qu'il dispose d'au moins 500 points.
+ * 4. Vérifie qu'il dispose de coordonnées bancaires valides.
  *
  * @param int $user_id L'ID de l'utilisateur à vérifier.
  * 
@@ -150,30 +150,14 @@ function verifier_acces_conversion($user_id) {
         }
     }
 
-    // 3️⃣ Vérification du dernier règlement (> 30 jours)
-    $dernier_paiement = null;
-    foreach ($paiements as $paiement) {
-        if ($paiement['request_status'] === 'paid') {
-            $date_paiement = strtotime($paiement['settlement_date'] ?? $paiement['request_date']);
-            if (!$dernier_paiement || $date_paiement > $dernier_paiement) {
-                $dernier_paiement = $date_paiement;
-            }
-        }
-    }
-
-    if ($dernier_paiement && $dernier_paiement > strtotime('-30 days')) {
-        $jours_restants = ceil(($dernier_paiement - strtotime('-30 days')) / 86400);
-        return sprintf(__('Attendez encore %d jours', 'chassesautresor'), $jours_restants);
-    }
-
-    // 4️⃣ Vérification du solde de points (seuil minimal)
+    // 3️⃣ Vérification du solde de points (seuil minimal)
     $points_actuels = function_exists('get_user_points') ? get_user_points($user_id) : 0;
     $points_minimum = get_points_conversion_min();
     if ((int) $points_actuels < $points_minimum) {
         return 'INSUFFICIENT_POINTS';
     }
 
-    // 5️⃣ Vérification IBAN/BIC
+    // 4️⃣ Vérification IBAN/BIC
     $iban = get_field('iban', $organisateur_id);
     $bic  = get_field('bic', $organisateur_id);
 
