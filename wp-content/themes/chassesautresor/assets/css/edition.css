@@ -945,20 +945,21 @@ li.ligne-email .champ-affichage {
   flex-wrap: nowrap;
   align-items: center;
   gap: 0.5rem;
+  white-space: nowrap;
+  color: var(--color-editor-text-muted);
 }
 
 .champ-solution-timing .champ-delai-inline {
-  width: 60px;
+  width: 45px;
+  padding: 0.2rem 0.3rem;
+  font-size: 0.9rem;
   text-align: center;
 }
 
 .champ-solution-timing .champ-select-heure {
-  width: auto;
-}
-
-.champ-solution-timing span {
-  white-space: nowrap;
-  color: var(--color-editor-text-muted);
+  width: 60px;
+  padding: 0.2rem 0.3rem;
+  font-size: 0.9rem;
 }
 
 .edition-panel-section .champ-badge-cout {
@@ -1468,6 +1469,22 @@ body.panneau-ouvert::before {
 .stat-value {
   font-size: 1.5rem;
   font-weight: 700;
+}
+
+.dashboard-card.solution-delai .stat-value {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.dashboard-card.solution-delai .stat-value span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
 }
 
 .dashboard-card.graph-card {
