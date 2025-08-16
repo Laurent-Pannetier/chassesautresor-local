@@ -19,6 +19,43 @@ $is_organizer = in_array(ROLE_ORGANISATEUR, $roles, true) || in_array(ROLE_ORGAN
 
 do_action('woocommerce_before_account_orders', $has_orders);
 
+if (current_user_can('administrator')) {
+    $historique = recuperer_historique_paiements_admin();
+    ?>
+    <div class="dashboard-grid admin-points-tools">
+        <div class="dashboard-card">
+            <div class="dashboard-card-header">
+                <i class="fas fa-coins"></i>
+                <h3><?php esc_html_e('Gestion Points', 'chassesautresor'); ?></h3>
+            </div>
+            <div class="stats-content">
+                <form method="POST" class="form-gestion-points">
+                    <?php wp_nonce_field('gestion_points_action', 'gestion_points_nonce'); ?>
+                    <div class="gestion-points-ligne">
+                        <label for="utilisateur-points"></label>
+                        <input type="text" id="utilisateur-points" placeholder="Rechercher un utilisateur..." required>
+                        <input type="hidden" id="utilisateur-id" name="utilisateur">
+                        <label for="type-modification"></label>
+                        <select id="type-modification" name="type_modification" required>
+                            <option value="ajouter">➕</option>
+                            <option value="retirer">➖</option>
+                        </select>
+                    </div>
+                    <div class="gestion-points-ligne">
+                        <label for="nombre-points"></label>
+                        <input type="number" id="nombre-points" name="nombre_points" placeholder="nb de points" min="1" required>
+                        <button type="submit" name="modifier_points" class="bouton-secondaire">✅</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div id="historique-paiements-admin" class="liste-paiements" data-page="<?php echo esc_attr($historique['page']); ?>" data-pages="<?php echo esc_attr($historique['pages']); ?>">
+        <?php echo $historique['html']; ?>
+    </div>
+    <?php
+}
+
 if ($is_organizer) {
     if (function_exists('charger_script_conversion')) {
         charger_script_conversion(true);
