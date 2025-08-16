@@ -146,14 +146,6 @@ $is_complete = (
                 <?php $class_description = empty($description) ? 'champ-vide' : 'champ-rempli'; ?>
                 <li class="champ-organisateur champ-description ligne-description <?= $class_description; ?>" data-champ="description_longue">
                     <label><?= esc_html__('Présentation', 'chassesautresor-com'); ?></label>
-                    <?php if ($peut_editer && !empty(trim($description))) : ?>
-                      <button type="button"
-                        class="champ-modifier ouvrir-panneau-description"
-                        data-champ="description_longue"
-                        data-cpt="organisateur"
-                        data-post-id="<?= esc_attr($organisateur_id); ?>"
-                        aria-label="<?= esc_attr__('Modifier la présentation', 'chassesautresor-com'); ?>">✏️</button>
-                    <?php endif; ?>
                     <div class="champ-texte">
                         <?php if (empty(trim($description))) : ?>
                             <?php if ($peut_editer) : ?>
@@ -166,6 +158,14 @@ $is_complete = (
                             <?php endif; ?>
                         <?php else : ?>
                             <span class="champ-texte-contenu"><?= esc_html(wp_trim_words(wp_strip_all_tags($description), 25)); ?></span>
+                            <?php if ($peut_editer) : ?>
+                              <button type="button"
+                                class="champ-modifier ouvrir-panneau-description"
+                                data-champ="description_longue"
+                                data-cpt="organisateur"
+                                data-post-id="<?= esc_attr($organisateur_id); ?>"
+                                aria-label="<?= esc_attr__('Modifier la présentation', 'chassesautresor-com'); ?>">✏️</button>
+                            <?php endif; ?>
                         <?php endif; ?>
                     </div>
                 </li>

@@ -164,13 +164,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                   <li class="champ-enigme champ-wysiwyg<?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_visuel_texte" data-cpt="enigme"
                     data-post-id="<?= esc_attr($enigme_id); ?>">
                     <label><?= esc_html__('Texte énigme', 'chassesautresor-com'); ?></label>
-                    <?php if ($peut_editer && !empty(trim($texte))) : ?>
-                      <button type="button" class="champ-modifier ouvrir-panneau-description"
-                        data-champ="enigme_visuel_texte"
-                        data-cpt="enigme"
-                        data-post-id="<?= esc_attr($enigme_id); ?>"
-                        aria-label="<?= esc_attr__('Modifier le texte', 'chassesautresor-com'); ?>">✏️</button>
-                    <?php endif; ?>
                     <div class="champ-texte">
                         <?php if (empty(trim($texte))) : ?>
                             <?php if ($peut_editer) : ?>
@@ -183,6 +176,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                             <?php endif; ?>
                         <?php else : ?>
                             <span class="champ-texte-contenu"><?= esc_html(wp_trim_words(wp_strip_all_tags($texte), 25)); ?></span>
+                            <?php if ($peut_editer) : ?>
+                              <button type="button" class="champ-modifier ouvrir-panneau-description"
+                                data-champ="enigme_visuel_texte"
+                                data-cpt="enigme"
+                                data-post-id="<?= esc_attr($enigme_id); ?>"
+                                aria-label="<?= esc_attr__('Modifier le texte', 'chassesautresor-com'); ?>">✏️</button>
+                            <?php endif; ?>
                         <?php endif; ?>
                     </div>
                   </li>
