@@ -40,7 +40,11 @@ defined('ABSPATH') || exit;
 add_action('wp_enqueue_scripts', 'forcer_chargement_acf_scripts_chasse');
 function forcer_chargement_acf_scripts_chasse()
 {
-  if (is_singular('chasse')) {
+  if (!is_singular('chasse') || !function_exists('acf_enqueue_scripts')) {
+    return;
+  }
+
+  if (current_user_can('edit_post', get_the_ID())) {
     acf_enqueue_scripts();
   }
 }
