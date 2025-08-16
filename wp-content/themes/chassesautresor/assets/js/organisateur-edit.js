@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    document.querySelectorAll('.stat-help').forEach((btn) => {
+    document.querySelectorAll('.panneau-organisateur .stat-help').forEach((btn) => {
       btn.addEventListener('click', () => {
         const message = btn.dataset.message;
         if (message) {
