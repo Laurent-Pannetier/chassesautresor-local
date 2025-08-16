@@ -339,9 +339,19 @@ function afficher_tableau_paiements_organisateur($user_id, $filtre_statut = 'en_
     echo '<tbody>';
 
     foreach ($paiements_filtres as $paiement) {
-        $statut_affiche  = ($paiement['request_status'] === 'paid')
-            ? '✅ ' . esc_html__('Réglé', 'chassesautresor')
-            : '🟡 ' . esc_html__('En attente', 'chassesautresor');
+        switch ($paiement['request_status']) {
+            case 'paid':
+                $statut_affiche = '✅ ' . __('Réglé', 'chassesautresor');
+                break;
+            case 'cancelled':
+                $statut_affiche = '❌ ' . __('Annulé', 'chassesautresor');
+                break;
+            case 'refused':
+                $statut_affiche = '🚫 ' . __('Refusé', 'chassesautresor');
+                break;
+            default:
+                $statut_affiche = '🟡 ' . __('En attente', 'chassesautresor');
+        }
         $points_utilises = esc_html(abs((int) $paiement['points']));
 
         echo '<tr>';
