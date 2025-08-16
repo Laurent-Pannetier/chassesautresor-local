@@ -667,7 +667,23 @@ function ajax_update_request_status(): void
     $repo->updateRequestStatus($paiement_id, $repoStatus, $dates);
     error_log("✅ Statut mis à jour pour l'entrée {$paiement_id} : {$repoStatus}");
 
-    if ($repoStatus === 'paid') {
+    if (in_array($repoStatus, ['cancelled', 'refused'], true)) {
+        $request = $repo->getRequestById($paiement_id);
+        if ($request) {
+            $points = abs((int) $request['points']);
+            $reason = sprintf(
+                'Restauration de %d points après annulation/refus',
+                $points
+            );
+            update_user_points(
+                (int) $request['user_id'],
+                $points,
+                $reason,
+                'conversion',
+                $paiement_id
+            );
+        }
+    } elseif ($repoStatus === 'paid') {
         $request = $repo->getRequestById($paiement_id);
         if ($request) {
             $montant_paye = floatval($request['amount_eur']);
