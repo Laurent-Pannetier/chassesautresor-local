@@ -146,4 +146,40 @@ class PointsRepository
 
         $this->wpdb->update($this->table, $data, ['id' => $id], $format, ['%d']);
     }
+
+    /**
+     * Check if the user has a pending conversion request.
+     */
+    public function hasPendingConversion(int $userId): bool
+    {
+        $sql = $this->wpdb->prepare(
+            "SELECT COUNT(*) FROM {$this->table}
+             WHERE user_id = %d
+             AND origin_type = 'conversion'
+             AND request_status = 'pending'",
+            $userId
+        );
+
+        return (int) $this->wpdb->get_var($sql) > 0;
+    }
+
+    /**
+     * Retrieve operation history for a user.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function getHistory(int $userId, int $limit = 50): array
+    {
+        $sql = $this->wpdb->prepare(
+            "SELECT id, request_date, origin_type, reason, points, balance
+             FROM {$this->table}
+             WHERE user_id = %d
+             ORDER BY id DESC
+             LIMIT %d",
+            $userId,
+            $limit
+        );
+
+        return $this->wpdb->get_results($sql, ARRAY_A);
+    }
 }

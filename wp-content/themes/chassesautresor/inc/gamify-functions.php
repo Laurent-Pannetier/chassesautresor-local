@@ -51,6 +51,28 @@ function get_user_points($user_id = null): int {
 }
 
 /**
+ * Determine if a user has a pending conversion request.
+ */
+function user_has_pending_conversion(int $user_id): bool {
+    global $wpdb;
+    $repo = new PointsRepository($wpdb);
+
+    return $repo->hasPendingConversion($user_id);
+}
+
+/**
+ * Retrieve points operation history for a user.
+ *
+ * @return array<int, array<string, mixed>>
+ */
+function get_user_points_history(int $user_id, int $limit = 50): array {
+    global $wpdb;
+    $repo = new PointsRepository($wpdb);
+
+    return $repo->getHistory($user_id, $limit);
+}
+
+/**
  * ➕➖ Met à jour le solde de points de l'utilisateur.
  *
  * - Empêche les points négatifs.

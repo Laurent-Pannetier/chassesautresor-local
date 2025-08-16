@@ -16,6 +16,19 @@ $infos_expanded = !$profil_expanded;
 $cache_complet  = get_field('organisateur_cache_complet', $organisateur_id);
 $edition_active = in_array(ROLE_ORGANISATEUR_CREATION, $roles) && !$cache_complet;
 $user_points    = function_exists('get_user_points') ? get_user_points((int) $current_user->ID) : 0;
+$has_pending_conversion = function_exists('user_has_pending_conversion')
+    ? user_has_pending_conversion((int) $current_user->ID)
+    : false;
+$points_history = function_exists('get_user_points_history')
+    ? get_user_points_history((int) $current_user->ID)
+    : [];
+$origin_labels = [
+    'admin'      => __('Admin', 'chassesautresor-com'),
+    'chasse'     => __('Chasse', 'chassesautresor-com'),
+    'tentative'  => __('Tentative', 'chassesautresor-com'),
+    'achat'      => __('Achat', 'chassesautresor-com'),
+    'conversion' => __('Conversion', 'chassesautresor-com'),
+];
 
 // Post
 $titre        = get_post_field('post_title', $organisateur_id);
@@ -255,6 +268,11 @@ $is_complete = (
         <h2><i class="fa-solid fa-coins"></i> Points</h2>
       </div>
         <div class="edition-panel-body">
+          <?php if ($has_pending_conversion) : ?>
+            <div class="conversion-alert">
+              <?php esc_html_e('Demande de conversion en cours', 'chassesautresor-com'); ?>
+            </div>
+          <?php endif; ?>
           <div class="dashboard-grid stats-cards">
             <div class="dashboard-card" data-stat="points">
               <i class="fa-solid fa-coins" aria-hidden="true"></i>
@@ -313,6 +331,39 @@ $is_complete = (
               <?php endif; ?>
             </div>
           </div>
+          <?php if (!empty($points_history)) : ?>
+            <h3><?php esc_html_e('Historique', 'chassesautresor-com'); ?></h3>
+            <table class="stats-table">
+              <thead>
+                <tr>
+                  <th scope="col"><?php esc_html_e('Id', 'chassesautresor-com'); ?></th>
+                  <th scope="col"><?php esc_html_e('Date', 'chassesautresor-com'); ?></th>
+                  <th scope="col" data-format="etiquette"><?php esc_html_e('Origine', 'chassesautresor-com'); ?></th>
+                  <th scope="col"><?php esc_html_e('Motif', 'chassesautresor-com'); ?></th>
+                  <th scope="col" data-format="etiquette grande"><?php esc_html_e('Variation', 'chassesautresor-com'); ?></th>
+                  <th scope="col" data-format="etiquette grande"><?php esc_html_e('Solde', 'chassesautresor-com'); ?></th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php foreach ($points_history as $row) : ?>
+                  <?php
+                    $date = $row['request_date'] ?: '';
+                    $display_date = $date ? date_i18n(get_option('date_format'), strtotime($date)) : '';
+                    $variation = (int) $row['points'];
+                    $variation_text = $variation > 0 ? '+' . $variation : (string) $variation;
+                  ?>
+                  <tr>
+                    <td><?php echo esc_html($row['id']); ?></td>
+                    <td><?php echo esc_html($display_date); ?></td>
+                    <td><?php echo esc_html($origin_labels[$row['origin_type']] ?? $row['origin_type']); ?></td>
+                    <td><?php echo esc_html($row['reason']); ?></td>
+                    <td><?php echo esc_html($variation_text); ?></td>
+                    <td><?php echo esc_html($row['balance']); ?></td>
+                  </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+          <?php endif; ?>
         </div> <!-- .edition-panel-body -->
     </div>
 

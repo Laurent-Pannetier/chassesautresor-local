@@ -1661,6 +1661,18 @@ body.panneau-ouvert::before {
   white-space: nowrap;
 }
 
+.etiquette.grande {
+  padding: 4px 8px;
+  font-size: 0.95em;
+}
+
+.conversion-alert {
+  margin-bottom: 1rem;
+  padding: 0.5rem 1rem;
+  border-left: 4px solid var(--color-editor-border);
+  background-color: var(--color-editor-background);
+}
+
 /* ====== Mode de fin ====== */
 .champ-mode-fin {
   display: flex;

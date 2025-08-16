@@ -3,7 +3,12 @@
  */
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.stats-table, .table-tentatives').forEach((table) => {
-    table.querySelectorAll('th[data-format="etiquette"]').forEach((th) => {
+    table.querySelectorAll('th[data-format]').forEach((th) => {
+      const formats = th.dataset.format.split(' ');
+      if (!formats.includes('etiquette')) {
+        return;
+      }
+
       const col = th.dataset.col ? parseInt(th.dataset.col, 10) : th.cellIndex + 1;
       table.querySelectorAll(`tbody td:nth-child(${col})`).forEach((td) => {
         if (td.querySelector('.etiquette')) {
@@ -11,7 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         const text = td.textContent.trim();
         if (text !== '') {
-          td.innerHTML = `<span class="etiquette">${text}</span>`;
+          const extra = formats.includes('grande') ? ' grande' : '';
+          td.innerHTML = `<span class="etiquette${extra}">${text}</span>`;
         }
       });
     });
