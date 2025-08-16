@@ -428,7 +428,7 @@ function injection_classe_edition_active( array $classes ): array
     }
 
     $uri = $_SERVER['REQUEST_URI'] ?? '';
-    if ( preg_match( '#^/mon-compte(?:/|$)#', $uri ) ) {
+    if ( preg_match( '#^/mon-compte(?:/|$|\?)#', $uri ) ) {
         $classes[] = 'mode-edition';
     }
 
