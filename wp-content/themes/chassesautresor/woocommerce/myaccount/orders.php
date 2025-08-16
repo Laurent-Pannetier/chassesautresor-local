@@ -21,8 +21,14 @@ do_action('woocommerce_before_account_orders', $has_orders);
 
 if (current_user_can('administrator')) {
     $historique = recuperer_historique_paiements_admin();
+    $points     = function_exists('get_user_points') ? get_user_points((int) $current_user->ID) : 0;
     ?>
-    <div class="dashboard-grid admin-points-tools">
+    <div class="dashboard-grid stats-cards myaccount-points-cards">
+        <div class="dashboard-card" data-stat="points">
+            <i class="fa-solid fa-coins" aria-hidden="true"></i>
+            <h3><?php esc_html_e('Points', 'chassesautresor-com'); ?></h3>
+            <p class="stat-value"><?php echo esc_html($points); ?></p>
+        </div>
         <div class="dashboard-card">
             <div class="dashboard-card-header">
                 <i class="fas fa-coins"></i>
@@ -62,9 +68,7 @@ if (current_user_can('administrator')) {
         </div>
     </div>
     <?php
-}
-
-if ($is_organizer) {
+} elseif ($is_organizer) {
     if (function_exists('charger_script_conversion')) {
         charger_script_conversion(true);
     }
