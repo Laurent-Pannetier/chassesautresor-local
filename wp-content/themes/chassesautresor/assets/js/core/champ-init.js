@@ -88,9 +88,9 @@ function initChampTexte(bloc) {
 
     if (champ === 'email_contact') {
       const fallback = window.organisateurData?.defaultEmail || '…';
-      const affichageTexte = affichage.querySelector('p');
+      const affichageTexte = affichage.querySelector('.champ-valeur');
       if (affichageTexte && input.value.trim() === '') {
-        affichageTexte.innerHTML = '<strong>Email de contact :</strong> <em>' + fallback + '</em>';
+        affichageTexte.innerHTML = '<em>' + fallback + '</em>';
       }
     }
   });
@@ -143,13 +143,13 @@ function initChampTexte(bloc) {
 
     modifierChampSimple(champ, valeur, postId, cpt).then(success => {
       if (success) {
-        const affichageTexte = affichage.querySelector('h1, h2, p, span');
+        const affichageTexte = affichage.querySelector('.champ-valeur, h1, h2, p, span');
 
         if (champ === 'email_contact') {
           const fallbackEmail = window.organisateurData?.defaultEmail || '…';
-          const p = affichage.querySelector('p');
-          if (p) {
-            p.innerHTML = '<strong>Email de contact :</strong> ' + (valeur ? valeur : '<em>' + fallbackEmail + '</em>');
+          const spanValeur = affichage.querySelector('.champ-valeur');
+          if (spanValeur) {
+            spanValeur.innerHTML = valeur ? valeur : '<em>' + fallbackEmail + '</em>';
           }
         } else if (affichageTexte) {
           affichageTexte.textContent = valeur;
