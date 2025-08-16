@@ -1473,7 +1473,7 @@ body.panneau-ouvert::before {
 
 .dashboard-card.solution-delai .stat-value {
   display: flex;
-  flex-direction: column;
+  flex-direction: line;
   gap: 0.25rem;
   font-size: 0.8rem;
   font-weight: 600;
