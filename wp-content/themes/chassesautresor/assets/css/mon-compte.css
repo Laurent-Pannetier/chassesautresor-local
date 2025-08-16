@@ -347,6 +347,10 @@
     margin-top: 20px;
 }
 
+.stats-cards {
+    margin: 1rem 0 2.5rem;
+}
+
 .dashboard-card {
     background: hsl(var(--card));
     border: 1px solid hsl(var(--border));
