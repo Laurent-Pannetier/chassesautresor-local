@@ -187,6 +187,39 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   });
 
+  // 🛡️ Vérifie la longueur minimale de la présentation
+  const descPanel = document.getElementById('panneau-description');
+  const descButton = descPanel?.querySelector('.bouton-enregistrer-description');
+  const descField = typeof acf !== 'undefined'
+    ? acf.getFields({ name: 'description_longue' })[0]
+    : null;
+  const minDescLength = 50;
+
+  const verifyDescription = () => {
+    if (!descButton || !descField) return;
+    const raw = descField.val() || '';
+    const text = raw.replace(/<[^>]*>/g, '').trim();
+    descButton.disabled = text.length < minDescLength;
+  };
+
+  if (descButton && descField) {
+    verifyDescription();
+    if (descField.editor) {
+      descField.editor.on('input keyup', verifyDescription);
+    }
+    const inputEl = descField.$input?.get(0);
+    inputEl?.addEventListener('input', verifyDescription);
+
+    descPanel.querySelector('form')?.addEventListener('submit', (e) => {
+      const raw = descField.val() || '';
+      const text = raw.replace(/<[^>]*>/g, '').trim();
+      if (text.length < minDescLength) {
+        e.preventDefault();
+        alert('La présentation doit contenir au moins 50 caractères.');
+      }
+    });
+  }
+
   // 🔑 Ouverture automatique via les paramètres d'URL
   const params = new URLSearchParams(window.location.search);
 

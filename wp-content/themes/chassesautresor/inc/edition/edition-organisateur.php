@@ -502,3 +502,27 @@ function pre_remplir_utilisateur_associe($post_id)
   }
 }
 add_action('acf/save_post', 'pre_remplir_utilisateur_associe', 20);
+
+/**
+ * Valide la longueur minimale de la présentation d'un organisateur.
+ */
+add_filter('acf/validate_value/name=description_longue', function ($valid, $value, $field, $input) {
+    if (!$valid) {
+        return $valid;
+    }
+
+    if (get_post_type($_POST['post_ID'] ?? 0) !== 'organisateur') {
+        return $valid;
+    }
+
+    $texte = trim(strip_tags((string) $value));
+    if ($texte === '') {
+        return __('La présentation ne peut pas être vide.', 'chassesautresor-com');
+    }
+
+    if (mb_strlen($texte) < 50) {
+        return __('La présentation doit contenir au moins 50 caractères.', 'chassesautresor-com');
+    }
+
+    return $valid;
+}, 10, 4);

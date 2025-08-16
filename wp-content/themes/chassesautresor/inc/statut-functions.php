@@ -605,8 +605,8 @@ function organisateur_est_complet(int $organisateur_id): bool
     $logo_ok = !empty($logo);
 
     $description_field = get_field('description_longue', $organisateur_id);
-    $description = trim((string) $description_field);
-    $desc_ok = $description !== '';
+    $description = trim(strip_tags((string) $description_field));
+    $desc_ok = mb_strlen($description) >= 50;
 
     return $titre_ok && $logo_ok && $desc_ok;
 }
