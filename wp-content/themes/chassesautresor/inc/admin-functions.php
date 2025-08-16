@@ -127,10 +127,9 @@ function traiter_gestion_points() {
     // ✅ Redirection après soumission
     $redirect_url = add_query_arg(
         [
-            'section'          => 'outils',
-            'points_modifies'  => '1',
+            'points_modifies' => '1',
         ],
-        wc_get_account_endpoint_url('dashboard')
+        wc_get_account_endpoint_url('orders')
     );
 
     wp_redirect($redirect_url);
