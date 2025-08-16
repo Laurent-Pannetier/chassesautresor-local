@@ -88,7 +88,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   data-post-id="<?= esc_attr($chasse_id); ?>">
 
                   <div class="champ-affichage">
-                    <label<?= $peut_editer_titre ? ' for="champ-titre-chasse"' : ''; ?>>Titre :</label>
+                    <label<?= $peut_editer_titre ? ' for="champ-titre-chasse"' : ''; ?>>Titre</label>
                     <span class="champ-valeur">
                       <?= $isTitreParDefaut ? 'renseigner le titre de la chasse' : esc_html($titre); ?>
                     </span>

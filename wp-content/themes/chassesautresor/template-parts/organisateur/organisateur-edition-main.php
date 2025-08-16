@@ -94,7 +94,7 @@ $is_complete = (
                     data-post-id="<?= esc_attr($organisateur_id); ?>">
 
                   <div class="champ-affichage">
-                    <label for="champ-titre-organisateur">Titre :</label>
+                    <label for="champ-titre-organisateur">Titre</label>
                     <span class="champ-valeur">
                       <?= empty($titre) ? "renseigner le titre de l’organisateur" : esc_html($titre); ?>
                     </span>
