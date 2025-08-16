@@ -139,14 +139,13 @@ function verifier_acces_conversion($user_id) {
         return __('Erreur : organisateur non trouvé.', 'chassesautresor');
     }
 
-    // 2️⃣ Vérification d’une demande en attente
-    $paiements = get_user_meta($user_id, 'demande_paiement', true);
-    if (!is_array($paiements)) {
-        $paiements = []; // ✅ Force $paiements à être un tableau si vide
-    }
+    // 2️⃣ Vérification des demandes via le registre des points
+    global $wpdb;
+    $repo      = new PointsRepository($wpdb);
+    $paiements = $repo->getConversionRequests($user_id);
 
     foreach ($paiements as $paiement) {
-        if (!empty($paiement['statut']) && $paiement['statut'] === 'en attente') {
+        if ($paiement['request_status'] === 'pending') {
             return __('Demande déjà en cours', 'chassesautresor');
         }
     }
@@ -154,8 +153,8 @@ function verifier_acces_conversion($user_id) {
     // 3️⃣ Vérification du dernier règlement (> 30 jours)
     $dernier_paiement = null;
     foreach ($paiements as $paiement) {
-        if (!empty($paiement['statut']) && $paiement['statut'] === 'reglé') {
-            $date_paiement = strtotime($paiement['paiement_date_demande']);
+        if ($paiement['request_status'] === 'paid') {
+            $date_paiement = strtotime($paiement['settlement_date'] ?? $paiement['request_date']);
             if (!$dernier_paiement || $date_paiement > $dernier_paiement) {
                 $dernier_paiement = $date_paiement;
             }
@@ -310,29 +309,26 @@ add_action('wp_ajax_conversion_modal_content', 'ajax_conversion_modal_content');
  * @param string $filtre_statut Filtrer par statut ('en_attente' pour les demandes en cours, 'toutes' pour l'historique complet).
  */
 function afficher_tableau_paiements_organisateur($user_id, $filtre_statut = 'en_attente') {
-    // Récupérer les demandes de paiement de l'utilisateur
-    $paiements = get_user_meta($user_id, 'demande_paiement', true);
+    global $wpdb;
+    $repo      = new PointsRepository($wpdb);
+    $paiements = $repo->getConversionRequests($user_id);
 
-    // Vérifier si l'utilisateur a des paiements enregistrés
     if (empty($paiements)) {
-        return; // Ne rien afficher si aucune demande
+        return;
     }
 
-    // Filtrer les paiements selon le statut demandé
     $paiements_filtres = [];
     foreach ($paiements as $paiement) {
-        if ($filtre_statut === 'en_attente' && $paiement['statut'] !== 'en attente') {
+        if ($filtre_statut === 'en_attente' && $paiement['request_status'] !== 'pending') {
             continue;
         }
         $paiements_filtres[] = $paiement;
     }
 
-    // Si aucun paiement ne correspond au filtre, ne rien afficher
     if (empty($paiements_filtres)) {
         return;
     }
 
-    // Affichage du tableau
     echo '<table class="stats-table">';
     echo '<thead><tr>';
     echo '<th>' . esc_html__('Montant (€)', 'chassesautresor') . '</th>';
@@ -343,17 +339,15 @@ function afficher_tableau_paiements_organisateur($user_id, $filtre_statut = 'en_
     echo '<tbody>';
 
     foreach ($paiements_filtres as $paiement) {
-        $statut_affiche  = ($paiement['statut'] === 'reglé')
+        $statut_affiche  = ($paiement['request_status'] === 'paid')
             ? '✅ ' . esc_html__('Réglé', 'chassesautresor')
             : '🟡 ' . esc_html__('En attente', 'chassesautresor');
-        $points_utilises = isset($paiement['paiement_points_utilises'])
-            ? esc_html($paiement['paiement_points_utilises'])
-            : esc_html__('N/A', 'chassesautresor');
+        $points_utilises = esc_html(abs((int) $paiement['points']));
 
         echo '<tr>';
-        echo '<td>' . esc_html($paiement['paiement_demande_montant']) . ' €</td>';
+        echo '<td>' . esc_html($paiement['amount_eur']) . ' €</td>';
         echo '<td>' . $points_utilises . '</td>';
-        echo '<td>' . esc_html(date_i18n('Y-m-d H:i', strtotime($paiement['paiement_date_demande']))) . '</td>';
+        echo '<td>' . esc_html(date_i18n('Y-m-d H:i', strtotime($paiement['request_date']))) . '</td>';
         echo '<td>' . esc_html($statut_affiche) . '</td>';
         echo '</tr>';
     }

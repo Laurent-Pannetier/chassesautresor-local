@@ -271,31 +271,18 @@ function myaccount_get_important_messages(): string
             }
         }
 
-        $users = get_users([
-            'meta_query' => [
-                [
-                    'key'     => 'demande_paiement',
-                    'compare' => 'EXISTS',
-                ],
-            ],
-        ]);
+        global $wpdb;
+        $repo            = new PointsRepository($wpdb);
+        $pendingRequests = $repo->getConversionRequests(null, 'pending');
 
-        foreach ($users as $user) {
-            $paiements = get_user_meta($user->ID, 'demande_paiement', true);
-            if (is_array($paiements)) {
-                foreach ($paiements as $paiement) {
-                    if (($paiement['statut'] ?? '') === 'en attente') {
-                        $url = esc_url(home_url('/mon-compte/organisateurs/'));
-                        $messages[] = sprintf(
-                            /* translators: 1: opening anchor tag, 2: closing anchor tag */
-                            __('Vous avez des %1$sdemandes de conversion%2$s en attente.', 'chassesautresor'),
-                            '<a href="' . $url . '">',
-                            '</a>'
-                        );
-                        break 2;
-                    }
-                }
-            }
+        if (!empty($pendingRequests)) {
+            $url = esc_url(home_url('/mon-compte/organisateurs/'));
+            $messages[] = sprintf(
+                /* translators: 1: opening anchor tag, 2: closing anchor tag */
+                __('Vous avez des %1$sdemandes de conversion%2$s en attente.', 'chassesautresor'),
+                '<a href="' . $url . '">',
+                '</a>'
+            );
         }
     }
 
@@ -318,14 +305,11 @@ function myaccount_get_important_messages(): string
             }
         }
 
-        $paiements = get_user_meta($current_user_id, 'demande_paiement', true);
-        if (is_array($paiements)) {
-            foreach ($paiements as $paiement) {
-                if (!empty($paiement['statut']) && $paiement['statut'] === 'en attente') {
-                    $messages[] = __('Vous avez une demande de conversion en attente de règlement.', 'chassesautresor');
-                    break;
-                }
-            }
+        global $wpdb;
+        $repo       = new PointsRepository($wpdb);
+        $pendingOwn = $repo->getConversionRequests($current_user_id, 'pending');
+        if (!empty($pendingOwn)) {
+            $messages[] = __('Vous avez une demande de conversion en attente de règlement.', 'chassesautresor');
         }
     }
 

@@ -400,10 +400,11 @@ function afficher_tableau_paiements_admin() {
         return;
     }
 
-    // Récupérer tous les utilisateurs ayant une demande de paiement
-    $users = get_users(['meta_key' => 'demande_paiement', 'meta_compare' => 'EXISTS']);
+    global $wpdb;
+    $repo      = new PointsRepository($wpdb);
+    $requests  = $repo->getConversionRequests();
 
-    if (empty($users)) {
+    if (empty($requests)) {
         echo '<p>Aucune demande de paiement en attente.</p>';
         return;
     }
@@ -412,12 +413,10 @@ function afficher_tableau_paiements_admin() {
     echo '<thead><tr><th>Organisateur</th><th>Montant / Points</th><th>Date demande</th><th>IBAN / BIC</th><th>Statut</th><th>Action</th></tr></thead>';
     echo '<tbody>';
 
-    foreach ($users as $user) {
-        $paiements = get_user_meta($user->ID, 'demande_paiement', true);
-        $paiements = maybe_unserialize($paiements);
+    foreach ($requests as $request) {
+        $user = get_userdata((int) $request['user_id']);
 
-        // Récupérer l'ID du CPT "organisateur" associé à l'utilisateur
-        $organisateur_id = get_organisateur_from_user($user->ID);
+        $organisateur_id = get_organisateur_from_user($request['user_id']);
         $iban = $organisateur_id ? get_field('iban', $organisateur_id) : '';
         $bic  = $organisateur_id ? get_field('bic', $organisateur_id) : '';
         if ($organisateur_id && (empty($iban) || empty($bic))) {
@@ -426,29 +425,27 @@ function afficher_tableau_paiements_admin() {
         }
         $iban = $iban ?: 'Non renseigné';
 
-        foreach ($paiements as $index => $paiement) {
-            $statut = $paiement['statut'] === 'reglé' ? '✅ Réglé' : '🟡 En attente';
-            $action = $paiement['statut'] === 'en attente'
-                ? '<a href="' . esc_url(add_query_arg(
-                    [
-                        'regler_paiement' => $index,
-                        'user_id'         => $user->ID,
-                    ],
-                    home_url('/mon-compte/organisateurs/')
-                )) . '" class="button">✅ Régler</a>'
-                : '-';
+        $statut = $request['request_status'] === 'paid' ? '✅ Réglé' : '🟡 En attente';
+        $action = $request['request_status'] === 'pending'
+            ? '<a href="' . esc_url(add_query_arg(
+                [
+                    'regler_paiement' => $request['id'],
+                    'user_id'         => $request['user_id'],
+                ],
+                home_url('/mon-compte/organisateurs/')
+            )) . '" class="button">✅ Régler</a>'
+            : '-';
 
-            $points_utilises = isset($paiement['paiement_points_utilises']) ? esc_html($paiement['paiement_points_utilises']) : 'N/A';
+        $points_utilises = esc_html(abs((int) $request['points']));
 
-            echo '<tr>';
-            echo '<td>' . esc_html($user->display_name) . '</td>';
-            echo '<td>' . esc_html($paiement['paiement_demande_montant']) . ' €<br><small>(' . $points_utilises . ' points)</small></td>';
-            echo '<td>' . esc_html(date('Y-m-d H:i', strtotime($paiement['paiement_date_demande']))) . '</td>';
-            echo '<td><strong>' . esc_html($iban) . '</strong><br><small>' . esc_html($bic) . '</small></td>';
-            echo '<td>' . esc_html($statut) . '</td>';
-            echo '<td>' . $action . '</td>';
-            echo '</tr>';
-        }
+        echo '<tr>';
+        echo '<td>' . esc_html($user->display_name ?? '') . '</td>';
+        echo '<td>' . esc_html($request['amount_eur']) . ' €<br><small>(' . $points_utilises . ' points)</small></td>';
+        echo '<td>' . esc_html(date('Y-m-d H:i', strtotime($request['request_date']))) . '</td>';
+        echo '<td><strong>' . esc_html($iban) . '</strong><br><small>' . esc_html($bic) . '</small></td>';
+        echo '<td>' . esc_html($statut) . '</td>';
+        echo '<td>' . $action . '</td>';
+        echo '</tr>';
     }
 
     echo '</tbody></table>';
@@ -462,62 +459,47 @@ function regler_paiement_admin() {
         return;
     }
 
-    $user_id = intval($_GET['user_id']);
-    $action_index = null;
-    $action_type  = null;
+    $user_id    = intval($_GET['user_id']);
+    $action_id  = null;
+    $action_type = null;
 
     if (isset($_GET['regler_paiement'])) {
-        $action_index = intval($_GET['regler_paiement']);
-        $action_type  = 'regler';
+        $action_id  = intval($_GET['regler_paiement']);
+        $action_type = 'regler';
     } elseif (isset($_GET['annuler_paiement'])) {
-        $action_index = intval($_GET['annuler_paiement']);
-        $action_type  = 'annuler';
+        $action_id  = intval($_GET['annuler_paiement']);
+        $action_type = 'annuler';
     }
 
     if ($action_type === null) {
         return;
     }
 
-    $paiements = get_user_meta($user_id, 'demande_paiement', true);
-    if (empty($paiements) || !isset($paiements[$action_index])) {
-        error_log("❌ Erreur : Paiement non trouvé pour user_id=$user_id, index=$action_index");
+    global $wpdb;
+    $repo    = new PointsRepository($wpdb);
+    $request = $repo->getRequestById($action_id);
+
+    if (!$request || (int) $request['user_id'] !== $user_id) {
+        error_log("❌ Erreur : Demande non trouvée pour user_id=$user_id, id=$action_id");
         return;
     }
 
-    $paiement = $paiements[$action_index];
-
-    global $wpdb;
-    $repo = new PointsRepository($wpdb);
-
     if ($action_type === 'regler') {
-        $paiements[$action_index]['statut'] = 'reglé';
-        $paiements[$action_index]['paiement_date_reglement'] = current_time('mysql');
-
-        if (!empty($paiement['points_log_id'])) {
-            $repo->updateRequestStatus((int) $paiement['points_log_id'], 'paid', [
-                'settlement_date' => current_time('mysql'),
-            ]);
-        }
+        $repo->updateRequestStatus($action_id, 'paid', [
+            'settlement_date' => current_time('mysql'),
+        ]);
     } else {
-        $paiements[$action_index]['statut'] = 'annule';
-        $paiements[$action_index]['paiement_date_annulation'] = current_time('mysql');
+        $repo->updateRequestStatus($action_id, 'refused', [
+            'cancelled_date'      => current_time('mysql'),
+            'cancellation_reason' => 'cancelled by admin',
+        ]);
 
-        if (!empty($paiement['points_log_id'])) {
-            $repo->updateRequestStatus((int) $paiement['points_log_id'], 'refused', [
-                'cancelled_date'     => current_time('mysql'),
-                'cancellation_reason' => 'cancelled by admin',
-            ]);
-        }
-
-        $points = intval($paiement['paiement_points_utilises'] ?? 0);
+        $points = abs((int) $request['points']);
         if ($points > 0) {
-            $logId = intval($paiement['points_log_id'] ?? 0);
-            $reason = sprintf('Remboursement de la demande #%d', $logId);
-            update_user_points($user_id, $points, $reason, 'conversion', $logId);
+            $reason = sprintf('Remboursement de la demande #%d', $action_id);
+            update_user_points($user_id, $points, $reason, 'conversion', $action_id);
         }
     }
-
-    update_user_meta($user_id, 'demande_paiement', $paiements);
 
     $query_arg = $action_type === 'regler' ? 'regler_paiement' : 'annuler_paiement';
     wp_redirect(remove_query_arg([$query_arg, 'user_id']));
@@ -533,7 +515,6 @@ add_action('template_redirect', 'regler_paiement_admin');
  * - Vérifier un nonce de sécurité (`demande_paiement_nonce`).
  * - Vérifier qu’il a suffisamment de points pour effectuer la conversion.
  * - Calculer le montant en euros selon le taux de conversion courant.
- * - Enregistrer la demande dans sa méta `demande_paiement`.
  * - Déduire les points convertis de son solde.
  * - Envoyer une notification par email à l’administrateur.
  * - Rediriger l’utilisateur vers la page précédente avec un paramètre de confirmation.
@@ -585,29 +566,10 @@ function traiter_demande_paiement() {
     // ✅ Calcul du montant en euros
     $montant_euros = round(($points_a_convertir / 1000) * $taux_conversion, 2);
 
-    // 📌 Récupération des demandes existantes et ajout de la nouvelle
-    $paiements = get_user_meta($user_id, 'demande_paiement', true) ?: [];
-    $paiements = maybe_unserialize($paiements);
-
     global $wpdb;
     $repo   = new PointsRepository($wpdb);
     $log_id = $repo->logConversionRequest($user_id, -$points_a_convertir, $montant_euros);
-
-    $nouvelle_demande = [
-        'paiement_date_demande'   => current_time('mysql'),
-        'paiement_demande_montant'=> $montant_euros,
-        'paiement_points_utilises'=> $points_a_convertir,
-        'paiement_date_reglement' => '',
-        'statut'                  => 'en attente',
-        'points_log_id'           => $log_id,
-    ];
-
-    $paiements[] = $nouvelle_demande;
-
-    // ✅ Enregistrement de la demande
-    update_user_meta($user_id, 'demande_paiement', $paiements);
-
-    error_log("✅ Demande enregistrée : " . json_encode($nouvelle_demande));
+    error_log("✅ Demande enregistrée : log_id {$log_id}");
 
     // 📧 Notification admin
     $admin_email = get_option('admin_email');
@@ -647,21 +609,32 @@ add_action('init', 'traiter_demande_paiement');
 // 👉 Rechercher "🎛️ Mise à jour du statut des demandes de paiement"
 //
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modifier_statut'], $_POST['paiement_id'], $_POST['statut']) && current_user_can('administrator')) {
-    $user_id = get_current_user_id();
-    $paiements = maybe_unserialize(get_user_meta($user_id, 'demande_paiement', true)) ?: [];
+if (
+    $_SERVER['REQUEST_METHOD'] === 'POST'
+    && isset($_POST['modifier_statut'], $_POST['paiement_id'], $_POST['statut'])
+    && current_user_can('administrator')
+) {
+    global $wpdb;
+    $repo        = new PointsRepository($wpdb);
     $paiement_id = intval($_POST['paiement_id']);
+    $statut      = sanitize_text_field($_POST['statut']);
 
-    if (isset($paiements[$paiement_id])) {
-        $paiements[$paiement_id]['statut'] = sanitize_text_field($_POST['statut']);
-        $paiements[$paiement_id]['paiement_date_reglement'] = ($paiements[$paiement_id]['statut'] === 'regle') ? current_time('mysql') : '';
-        update_user_meta($user_id, 'demande_paiement', $paiements);
-        error_log("✅ Statut mis à jour pour l'entrée $paiement_id : " . $paiements[$paiement_id]['statut']);
-        if ($paiements[$paiement_id]['statut'] === 'regle') {
-        $montant_paye = floatval($paiements[$paiement_id]['paiement_demande_montant']);
-        mettre_a_jour_paiements_organisateurs($montant_paye); // 🔄 Mise à jour des paiements aux organisateurs
-        error_log("✅ Paiement ajouté aux statistiques : {$montant_paye} €.");
-        }   
+    $repoStatus = $statut === 'regle' ? 'paid' : $statut;
+    $dates      = [];
+    if ($repoStatus === 'paid') {
+        $dates['settlement_date'] = current_time('mysql');
+    }
+
+    $repo->updateRequestStatus($paiement_id, $repoStatus, $dates);
+    error_log("✅ Statut mis à jour pour l'entrée {$paiement_id} : {$repoStatus}");
+
+    if ($repoStatus === 'paid') {
+        $request = $repo->getRequestById($paiement_id);
+        if ($request) {
+            $montant_paye = floatval($request['amount_eur']);
+            mettre_a_jour_paiements_organisateurs($montant_paye); // 🔄 Mise à jour des paiements aux organisateurs
+            error_log("✅ Paiement ajouté aux statistiques : {$montant_paye} €.");
+        }
     }
 }
 

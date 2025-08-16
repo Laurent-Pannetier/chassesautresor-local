@@ -146,4 +146,50 @@ class PointsRepository
 
         $this->wpdb->update($this->table, $data, ['id' => $id], $format, ['%d']);
     }
+
+    /**
+     * Retrieve conversion requests.
+     *
+     * @param int|null    $userId Optional user filter.
+     * @param string|null $status Optional request status filter.
+     *
+     * @return array[]
+     */
+    public function getConversionRequests(?int $userId = null, ?string $status = null): array
+    {
+        $where   = "origin_type = 'conversion'";
+        $params  = [];
+
+        if ($userId !== null) {
+            $where   .= ' AND user_id = %d';
+            $params[] = $userId;
+        }
+
+        if ($status !== null) {
+            $where   .= ' AND request_status = %s';
+            $params[] = $status;
+        }
+
+        $sql = "SELECT * FROM {$this->table} WHERE {$where} ORDER BY request_date DESC";
+        if (!empty($params)) {
+            $sql = $this->wpdb->prepare($sql, $params);
+        }
+
+        return $this->wpdb->get_results($sql, ARRAY_A);
+    }
+
+    /**
+     * Retrieve a single conversion request by ID.
+     */
+    public function getRequestById(int $id): ?array
+    {
+        $sql = $this->wpdb->prepare(
+            "SELECT * FROM {$this->table} WHERE id = %d AND origin_type = 'conversion'",
+            $id
+        );
+
+        $row = $this->wpdb->get_row($sql, ARRAY_A);
+
+        return $row ?: null;
+    }
 }
