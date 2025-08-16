@@ -91,7 +91,8 @@ $is_complete = (
                   <li class="champ-organisateur champ-titre ligne-titre <?= empty($titre) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer_titre ? '' : ' champ-desactive'; ?>"
                     data-champ="post_title"
                     data-cpt="organisateur"
-                    data-post-id="<?= esc_attr($organisateur_id); ?>">
+                    data-post-id="<?= esc_attr($organisateur_id); ?>"
+                    data-no-edit="1">
 
                     <label for="champ-titre-organisateur">Titre <span class="champ-obligatoire">*</span></label>
                     <input type="text"

@@ -86,7 +86,8 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                 <li class="champ-chasse champ-titre <?= ($isTitreParDefaut ? 'champ-vide' : 'champ-rempli'); ?><?= $peut_editer_titre ? '' : ' champ-desactive'; ?>"
                   data-champ="post_title"
                   data-cpt="chasse"
-                  data-post-id="<?= esc_attr($chasse_id); ?>">
+                  data-post-id="<?= esc_attr($chasse_id); ?>"
+                  data-no-edit="1">
 
                   <label for="champ-titre-chasse">Titre <span class="champ-obligatoire">*</span></label>
                   <input type="text" class="champ-input champ-texte-edit" maxlength="70"

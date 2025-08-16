@@ -105,7 +105,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                   <li class="champ-enigme champ-titre <?= ($isTitreParDefaut ? 'champ-vide' : 'champ-rempli'); ?><?= $peut_editer_titre ? '' : ' champ-desactive'; ?>"
                     data-champ="post_title"
                     data-cpt="enigme"
-                    data-post-id="<?= esc_attr($enigme_id); ?>">
+                    data-post-id="<?= esc_attr($enigme_id); ?>"
+                    data-no-edit="1">
 
                     <label for="champ-titre-enigme">Titre <span class="champ-obligatoire">*</span></label>
                     <input type="text"
@@ -195,7 +196,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
 
                   <li class="champ-enigme champ-texte champ-soustitre<?= empty(trim($legende)) ? ' champ-vide' : ' champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>"
                     data-champ="enigme_visuel_legende" data-cpt="enigme"
-                    data-post-id="<?= esc_attr($enigme_id); ?>">
+                    data-post-id="<?= esc_attr($enigme_id); ?>"
+                    data-no-edit="1">
 
                     <label for="champ-soustitre-enigme"><?= esc_html__('Sous-titre', 'chassesautresor-com'); ?></label>
                     <input type="text" class="champ-input champ-texte-edit" maxlength="100" value="<?= esc_attr($legende); ?>" id="champ-soustitre-enigme"
