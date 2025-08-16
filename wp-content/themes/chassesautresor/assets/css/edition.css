@@ -1488,27 +1488,38 @@ body.panneau-ouvert::before {
 }
 
 .dashboard-card.solution-reassurance {
-  grid-column: 1 / -1;
+  display: inline-flex;
   flex-direction: row;
-  align-items: flex-start;
+  align-items: center;
   text-align: left;
-  gap: 1rem;
+  gap: 1.5rem;
+  padding: 1.5rem 2rem;
 }
 
-.dashboard-card.solution-reassurance i {
-  font-size: 2.5rem;
+.dashboard-card.solution-reassurance .reassurance-icon {
+  font-size: 4rem;
   color: var(--color-editor-heading);
 }
 
 .dashboard-card.solution-reassurance ul {
   margin: 0;
-  padding-left: 1.2rem;
+  padding: 0;
+  list-style: none;
   text-align: left;
 }
 
 .dashboard-card.solution-reassurance ul li {
   margin-bottom: 0.25rem;
+  font-size: 1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.dashboard-card.solution-reassurance ul li i {
+  color: var(--color-editor-success);
   font-size: 0.9rem;
+  margin-top: 0.2rem;
 }
 
 .dashboard-card.graph-card {
