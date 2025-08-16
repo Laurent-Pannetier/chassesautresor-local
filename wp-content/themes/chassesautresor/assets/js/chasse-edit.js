@@ -62,13 +62,26 @@ function initChasseEdit() {
   const params = new URLSearchParams(window.location.search);
   const doitOuvrir = params.get('edition') === 'open';
   const tab = params.get('tab');
-  if (doitOuvrir) {
+  const skipAuto = document.body.classList.contains('scroll-to-enigmes');
+  if (doitOuvrir && !skipAuto) {
     document.body.classList.add('edition-active-chasse', 'panneau-ouvert', 'mode-edition');
     if (tab) {
       const btn = document.querySelector(`.edition-tab[data-target="chasse-tab-${tab}"]`);
       btn?.click();
     }
     DEBUG && console.log('🔧 Ouverture auto du panneau édition chasse via ?edition=open');
+  } else if (skipAuto && (doitOuvrir || tab)) {
+    params.delete('edition');
+    params.delete('tab');
+    const nouvelleUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}${window.location.hash}`;
+    window.history.replaceState({}, '', nouvelleUrl);
+  }
+
+  if (skipAuto) {
+    const cible = document.getElementById('carte-ajout-enigme');
+    if (cible) {
+      cible.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 
   // ==============================
