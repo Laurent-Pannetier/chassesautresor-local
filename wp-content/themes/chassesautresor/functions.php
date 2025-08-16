@@ -54,10 +54,9 @@ add_action('wp_enqueue_scripts', function () {
         wp_enqueue_style($handle, $theme_dir . $file, [], filemtime(get_stylesheet_directory() . "/assets/css/{$file}"));
     }
 
-    if (
-        (is_singular() && current_user_can('edit_post', get_queried_object_id())) ||
-        (is_account_page() && is_user_logged_in())
-    ) {
+    $body_classes = get_body_class();
+
+    if (in_array('mode-edition', $body_classes, true)) {
         wp_enqueue_style(
             'edition',
             $theme_dir . 'edition.css',
