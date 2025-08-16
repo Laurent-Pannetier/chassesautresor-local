@@ -2,7 +2,7 @@ const html = `
 <div class="myaccount-layout">
   <aside class="myaccount-sidebar">
     <nav class="dashboard-nav">
-      <a href="/mon-compte/points/" class="dashboard-nav-link" data-section="points">Points</a>
+      <a href="/mon-compte/?section=points" class="dashboard-nav-link" data-section="points">Points</a>
     </nav>
     <nav class="dashboard-nav admin-nav">
       <a href="/mon-compte/organisateurs/" class="dashboard-nav-link" data-section="organisateurs">Organisateurs</a>
