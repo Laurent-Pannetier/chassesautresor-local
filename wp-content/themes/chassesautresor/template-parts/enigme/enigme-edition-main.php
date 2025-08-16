@@ -594,7 +594,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                           <i class="fa-regular fa-circle-question" aria-hidden="true"></i>
                         </button>
                       </h3>
-                      <p class="stat-value">
+                      <p class="stat-value champ-solution-timing">
                         <span>
                           <input
                             type="number"
@@ -605,17 +605,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                             id="solution-delai"
                             class="champ-input champ-delai-inline"
                           >
-                          jours après fin de chasse
+                          jours
                         </span>
                         <span>
-                          publication à
+                          publié à
                           <select id="solution-heure" class="champ-select-heure">
                             <?php foreach (range(0, 23) as $h) :
                               $formatted = str_pad($h, 2, '0', STR_PAD_LEFT) . ':00'; ?>
                               <option value="<?= $formatted; ?>" <?= $formatted === $heure ? 'selected' : ''; ?>><?= $formatted; ?></option>
                             <?php endforeach; ?>
                           </select>
-                          heure
+                          H
                         </span>
                       </p>
                     </div>
