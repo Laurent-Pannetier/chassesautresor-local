@@ -1076,6 +1076,54 @@ function initSolutionInline() {
   const selectHeure = bloc.querySelector('#solution-heure');
   const inputFichier = bloc.querySelector('#solution-pdf-upload');
   const feedbackFichier = bloc.querySelector('.champ-feedback');
+  const publicationMessage = bloc.querySelector('.solution-publication-message');
+  const textareaExplication = document.querySelector('.acf-field[data-name="enigme_solution_explication"] textarea');
+
+  function majMessageSolution() {
+    if (!publicationMessage) return;
+
+    const modeActuel = bloc.querySelector('input[name="acf[enigme_solution_mode]"]:checked')?.value;
+    const delaiVal = parseInt(inputDelai?.value.trim(), 10) || 0;
+    const heureVal = selectHeure?.value || '';
+
+    let label = 'aucune solution ne';
+    let note = '';
+
+    if (modeActuel === 'pdf') {
+      const titre = cardPdf?.querySelector('h3')?.textContent.trim();
+      if (titre && titre !== 'Document PDF') {
+        label = `votre fichier ${titre}`;
+        note = ` ${delaiVal} jours après la fin de la chasse, à ${heureVal}`;
+      } else {
+        note = ' (pdf sélectionné mais pas de fichier chargé)';
+      }
+    } else if (modeActuel === 'texte') {
+      const btnTexte = cardTexte?.querySelector('button.stat-value');
+      const explicationRemplie = btnTexte && btnTexte.textContent.trim() !== 'Rédiger';
+      if (explicationRemplie) {
+        label = "votre texte d'explication";
+        note = `, ${delaiVal} jours après la fin de la chasse, à ${heureVal}`;
+      } else {
+        note = ' (rédaction libre sélectionnée mais non remplie)';
+      }
+    }
+
+    publicationMessage.textContent = `${label} sera affiché(e)${note}`;
+  }
+
+  textareaExplication?.addEventListener('input', () => {
+    const value = textareaExplication.value.trim();
+    const iconTexte = cardTexte?.querySelector('i');
+    const boutonTexte = cardTexte?.querySelector('button.stat-value');
+    if (value !== '') {
+      if (iconTexte) iconTexte.style.color = 'var(--color-editor-success)';
+      if (boutonTexte) boutonTexte.textContent = 'éditer';
+    } else {
+      if (iconTexte) iconTexte.style.color = '';
+      if (boutonTexte) boutonTexte.textContent = 'Rédiger';
+    }
+    majMessageSolution();
+  });
 
   cards.forEach(card => {
     card.addEventListener('click', (e) => {
@@ -1090,6 +1138,7 @@ function initSolutionInline() {
       card.classList.add('active');
 
       modifierChampSimple('enigme_solution_mode', mode, postId, cpt);
+      majMessageSolution();
 
       if (mode === 'pdf') {
         setTimeout(() => {
@@ -1111,6 +1160,7 @@ function initSolutionInline() {
     const valeur = parseInt(inputDelai.value.trim(), 10);
     if (!isNaN(valeur)) {
       modifierChampSimple('enigme_solution_delai', valeur, postId, cpt);
+      majMessageSolution();
     }
   });
 
@@ -1118,6 +1168,7 @@ function initSolutionInline() {
   selectHeure?.addEventListener('change', () => {
     const valeur = selectHeure.value;
     modifierChampSimple('enigme_solution_heure', valeur, postId, cpt);
+    majMessageSolution();
   });
 
   // 📎 Upload fichier PDF
@@ -1155,6 +1206,7 @@ function initSolutionInline() {
             const lien = cardPdf.querySelector('a.stat-value');
             if (lien) lien.textContent = 'Modifier';
           }
+          majMessageSolution();
         } else {
           feedbackFichier.textContent = '❌ Erreur : ' + (res.data || 'inconnue');
           feedbackFichier.className = 'champ-feedback champ-error';
@@ -1165,6 +1217,8 @@ function initSolutionInline() {
         feedbackFichier.className = 'champ-feedback champ-error';
       });
   });
+
+  majMessageSolution();
 }
 
 
