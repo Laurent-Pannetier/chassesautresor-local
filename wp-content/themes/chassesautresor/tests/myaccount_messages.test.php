@@ -115,7 +115,7 @@ class MyAccountMessagesTest extends TestCase
         $output = myaccount_get_important_messages();
 
         $this->assertStringContainsString('<a', $output);
-        $this->assertStringContainsString('?edition=open&onglet=revenus', $output);
+        $this->assertStringContainsString('/mon-compte/commandes/', $output);
         $this->assertStringContainsString('demande de conversion', $output);
     }
 
