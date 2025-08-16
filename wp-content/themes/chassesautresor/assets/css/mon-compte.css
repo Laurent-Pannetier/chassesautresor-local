@@ -570,7 +570,9 @@
 .liste-paiements .js-update-request {
     display: flex;
     align-items: center;
+    justify-content: flex-end;
     gap: 4px;
+    width: 100%;
 }
 
 .liste-paiements .js-update-request select {
