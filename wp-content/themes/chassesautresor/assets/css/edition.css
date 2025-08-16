@@ -1691,6 +1691,12 @@ body.panneau-ouvert::before {
   margin-bottom: 1.5rem;
 }
 
+.stats-table-summary {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
 /* Pagination for stats tables */
 .points-history-pager {
   margin-top: 0.5rem;

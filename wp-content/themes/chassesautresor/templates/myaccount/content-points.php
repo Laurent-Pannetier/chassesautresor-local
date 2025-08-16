@@ -150,8 +150,33 @@ if ($is_organizer) {
     afficher_tableau_paiements_organisateur((int) $current_user->ID, 'toutes');
     $conversion_table = trim(ob_get_clean());
     if ($conversion_table !== '') {
+        global $wpdb;
+        $repo            = new PointsRepository($wpdb);
+        $paid_requests   = $repo->getConversionRequests((int) $current_user->ID, 'paid');
+        $total_points    = 0;
+        $total_eur       = 0.0;
+        foreach ($paid_requests as $request) {
+            $total_points += abs((int) $request['points']);
+            $total_eur    += (float) $request['amount_eur'];
+        }
+
+        $total_points_label = sprintf(
+            '%s : %s',
+            esc_html__('Total points', 'chassesautresor'),
+            number_format_i18n($total_points)
+        );
+        $total_eur_label = sprintf(
+            '%s : %s €',
+            esc_html__('Total €', 'chassesautresor'),
+            number_format_i18n($total_eur, 2)
+        );
+
         echo '<div class="stats-table-wrapper">';
         echo '<h3>' . esc_html__('Historique conversion de points', 'chassesautresor') . '</h3>';
+        echo '<div class="stats-table-summary">';
+        echo '<span class="etiquette etiquette-grande">' . esc_html($total_points_label) . '</span>';
+        echo '<span class="etiquette etiquette-grande">' . esc_html($total_eur_label) . '</span>';
+        echo '</div>';
         echo $conversion_table; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
         echo '</div>';
     }
