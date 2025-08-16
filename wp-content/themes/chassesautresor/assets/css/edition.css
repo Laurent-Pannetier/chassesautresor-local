@@ -532,7 +532,10 @@ input[type=datetime-local].champ-date-edit {
 input[disabled].champ-inline-date,
 input[disabled].champ-inline-nb,
 input[disabled].champ-cout,
-input[disabled].champ-nb-tentatives {
+input[disabled].champ-nb-tentatives,
+input[disabled][name="champ-bonne-reponse"],
+input[disabled]#champ-soustitre-enigme,
+input[disabled].champ-texte-edit {
   background-color: var(--color-editor-background);
   /* Fond gris clair neutre */
   border: 1px solid var(--color-editor-border);
