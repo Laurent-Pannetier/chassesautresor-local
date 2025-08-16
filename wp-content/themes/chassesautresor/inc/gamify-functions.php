@@ -118,7 +118,6 @@ function attribuer_points_apres_achat($order_id) {
     }
 
     if ($points_ajoutes > 0) {
-        mettre_a_jour_points_achetes($points_ajoutes); // 🔄 Mise à jour des points acheté
         $order->update_meta_data('_points_deja_attribues', true); // ✅ Marque la commande comme traitée
         $order->save();
     }
