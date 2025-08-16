@@ -855,14 +855,17 @@ li.ligne-logo .champ-modifier {
 .resume-infos li.champ-description .champ-texte,
 .resume-infos li.champ-wysiwyg .champ-texte {
   flex: 1;
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
 }
 
 .resume-infos li.champ-description .champ-texte-contenu,
 .resume-infos li.champ-wysiwyg .champ-texte-contenu {
-  flex: 1;
+  display: inline;
+}
+
+.resume-infos li.champ-description .champ-texte-contenu .champ-modifier,
+.resume-infos li.champ-wysiwyg .champ-texte-contenu .champ-modifier {
+  transform: none;
+  margin-left: 0.3rem;
 }
 
 .resume-infos li.champ-description.champ-vide .champ-texte,

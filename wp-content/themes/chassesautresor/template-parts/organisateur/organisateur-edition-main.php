@@ -157,15 +157,17 @@ $is_complete = (
                                 </a>
                             <?php endif; ?>
                         <?php else : ?>
-                            <span class="champ-texte-contenu"><?= esc_html(wp_trim_words(wp_strip_all_tags($description), 25)); ?></span>
-                            <?php if ($peut_editer) : ?>
-                              <button type="button"
-                                class="champ-modifier ouvrir-panneau-description"
-                                data-champ="description_longue"
-                                data-cpt="organisateur"
-                                data-post-id="<?= esc_attr($organisateur_id); ?>"
-                                aria-label="<?= esc_attr__('Modifier la présentation', 'chassesautresor-com'); ?>">✏️</button>
-                            <?php endif; ?>
+                            <span class="champ-texte-contenu">
+                                <?= esc_html(wp_trim_words(wp_strip_all_tags($description), 25)); ?>
+                                <?php if ($peut_editer) : ?>
+                                    <button type="button"
+                                        class="champ-modifier ouvrir-panneau-description"
+                                        data-champ="description_longue"
+                                        data-cpt="organisateur"
+                                        data-post-id="<?= esc_attr($organisateur_id); ?>"
+                                        aria-label="<?= esc_attr__('Modifier la présentation', 'chassesautresor-com'); ?>">✏️</button>
+                                <?php endif; ?>
+                            </span>
                         <?php endif; ?>
                     </div>
                 </li>

@@ -175,14 +175,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                                 </a>
                             <?php endif; ?>
                         <?php else : ?>
-                            <span class="champ-texte-contenu"><?= esc_html(wp_trim_words(wp_strip_all_tags($texte), 25)); ?></span>
-                            <?php if ($peut_editer) : ?>
-                              <button type="button" class="champ-modifier ouvrir-panneau-description"
-                                data-champ="enigme_visuel_texte"
-                                data-cpt="enigme"
-                                data-post-id="<?= esc_attr($enigme_id); ?>"
-                                aria-label="<?= esc_attr__('Modifier le texte', 'chassesautresor-com'); ?>">✏️</button>
-                            <?php endif; ?>
+                            <span class="champ-texte-contenu">
+                                <?= esc_html(wp_trim_words(wp_strip_all_tags($texte), 25)); ?>
+                                <?php if ($peut_editer) : ?>
+                                    <button type="button" class="champ-modifier ouvrir-panneau-description"
+                                        data-champ="enigme_visuel_texte"
+                                        data-cpt="enigme"
+                                        data-post-id="<?= esc_attr($enigme_id); ?>"
+                                        aria-label="<?= esc_attr__('Modifier le texte', 'chassesautresor-com'); ?>">✏️</button>
+                                <?php endif; ?>
+                            </span>
                         <?php endif; ?>
                     </div>
                   </li>
