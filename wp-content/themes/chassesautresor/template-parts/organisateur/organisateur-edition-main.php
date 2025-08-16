@@ -115,7 +115,6 @@ $is_complete = (
                         data-post-id="<?= esc_attr($organisateur_id); ?>">
                         <img src="<?= esc_url($logo_url ?: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=='); ?>" alt="Logo de l’organisateur" />
                         <span class="champ-ajout-image">ajouter une image</span>
-                        <span class="icone-modif">✏️</span>
                       </button>
                     <?php else : ?>
                       <?php if ($logo_url) : ?>
@@ -138,7 +137,7 @@ $is_complete = (
                                    data-champ="description_longue"
                                    data-cpt="organisateur"
                                    data-post-id="<?= esc_attr($organisateur_id); ?>">
-                                    <?= esc_html__('ajouter', 'chassesautresor-com'); ?> <span class="icone-modif">✏️</span>
+                                    <?= esc_html__('ajouter', 'chassesautresor-com'); ?>
                                 </a>
                             <?php endif; ?>
                         <?php else : ?>
@@ -150,7 +149,7 @@ $is_complete = (
                                         data-champ="description_longue"
                                         data-cpt="organisateur"
                                         data-post-id="<?= esc_attr($organisateur_id); ?>"
-                                        aria-label="<?= esc_attr__('Modifier la présentation', 'chassesautresor-com'); ?>">✏️</button>
+                                          aria-label="<?= esc_attr__('Modifier la présentation', 'chassesautresor-com'); ?>"><?= esc_html__('modifier', 'chassesautresor-com'); ?></button>
                                 <?php endif; ?>
                             </span>
                         <?php endif; ?>
@@ -188,13 +187,13 @@ $is_complete = (
                       <i class="fa-solid fa-circle-question" aria-hidden="true"></i>
                     </button>
                     <?php if ($peut_editer) : ?>
-                      <button
-                        type="button"
-                        class="champ-modifier"
-                        aria-label="Modifier l’adresse email de contact"
-                      >
-                        ✏️
-                      </button>
+                        <button
+                          type="button"
+                          class="champ-modifier"
+                          aria-label="Modifier l’adresse email de contact"
+                        >
+                          <?= esc_html__('modifier', 'chassesautresor-com'); ?>
+                        </button>
                     <?php endif; ?>
                   </div>
 

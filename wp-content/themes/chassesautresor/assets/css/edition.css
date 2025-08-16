@@ -374,6 +374,12 @@ body .header-img-modifiable .icone-modif {
   transition: border-color 0.2s, background-color 0.2s;
 }
 
+@media (min-width: 768px) {
+  .edition-panel-body input.champ-texte-edit {
+    width: 260px;
+  }
+}
+
 
 .champ-groupe-reponse-automatique {
   display: flex;

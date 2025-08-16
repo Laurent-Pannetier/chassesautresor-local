@@ -145,7 +145,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                           <?php else : ?>
                             <span class="champ-ajout-image">ajouter</span>
                           <?php endif; ?>
-                          <span class="icone-modif">✏️</span>
                         </button>
                       <?php else : ?>
                         <?php if ($has_images_utiles && is_array($images_ids)) : ?>
@@ -174,18 +173,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                                    data-champ="enigme_visuel_texte"
                                    data-cpt="enigme"
                                    data-post-id="<?= esc_attr($enigme_id); ?>">
-                                    <?= esc_html__('ajouter', 'chassesautresor-com'); ?> <span class="icone-modif">✏️</span>
+                                    <?= esc_html__('ajouter', 'chassesautresor-com'); ?>
                                 </a>
                             <?php endif; ?>
                         <?php else : ?>
                             <span class="champ-texte-contenu">
                                 <?= esc_html(wp_trim_words(wp_strip_all_tags($texte), 25)); ?>
                                 <?php if ($peut_editer) : ?>
-                                    <button type="button" class="champ-modifier ouvrir-panneau-description"
-                                        data-champ="enigme_visuel_texte"
-                                        data-cpt="enigme"
-                                        data-post-id="<?= esc_attr($enigme_id); ?>"
-                                        aria-label="<?= esc_attr__('Modifier le texte', 'chassesautresor-com'); ?>">✏️</button>
+                                      <button type="button" class="champ-modifier ouvrir-panneau-description"
+                                          data-champ="enigme_visuel_texte"
+                                          data-cpt="enigme"
+                                          data-post-id="<?= esc_attr($enigme_id); ?>"
+                                          aria-label="<?= esc_attr__('Modifier le texte', 'chassesautresor-com'); ?>">
+                                          <?= esc_html__('modifier', 'chassesautresor-com'); ?>
+                                      </button>
                                 <?php endif; ?>
                             </span>
                         <?php endif; ?>
@@ -276,12 +277,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                 </ul>
                 <?php if ($peut_editer) : ?>
                   <button type="button" class="champ-modifier ouvrir-panneau-variantes" aria-label="<?= esc_attr__('Éditer les variantes', 'chassesautresor-com'); ?>" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
-                    <?= esc_html__('éditer', 'chassesautresor-com'); ?> <span class="icone-modif">✏️</span>
+                    <?= esc_html__('éditer', 'chassesautresor-com'); ?>
                   </button>
                 <?php endif; ?>
               <?php elseif ($peut_editer) : ?>
                 <a href="#" class="champ-ajouter ouvrir-panneau-variantes" aria-label="<?= esc_attr__('Ajouter des variantes', 'chassesautresor-com'); ?>" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
-                  <?= esc_html__('ajouter des variantes', 'chassesautresor-com'); ?> <span class="icone-modif">✏️</span>
+                  <?= esc_html__('ajouter des variantes', 'chassesautresor-com'); ?>
                 </a>
               <?php endif; ?>
             </div>
