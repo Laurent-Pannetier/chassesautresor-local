@@ -1277,7 +1277,7 @@ Index :
 | reason    | varchar(255)    | motif de l'opération             |
 | origin_type | enum('admin','chasse','tentative','achat','conversion') NULL DEFAULT 'admin' | catégorie |
 | origin_id | bigint unsigned NULL | identifiant lié (chasse, énigme, commande...) |
-| request_status | enum('pending','approved','paid','refused') DEFAULT 'pending' | statut de la demande |
+| request_status | enum('pending','approved','paid','refused','cancelled') DEFAULT 'pending' | statut de la demande |
 | request_date | datetime DEFAULT CURRENT_TIMESTAMP | date de la demande |
 | settlement_date | datetime NULL | date de règlement |
 | cancelled_date | datetime NULL | date d'annulation/refus |
