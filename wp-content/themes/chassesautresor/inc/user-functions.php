@@ -310,6 +310,7 @@ function myaccount_get_important_messages(): string
         $pendingOwn = $repo->getConversionRequests($current_user_id, 'pending');
         if (!empty($pendingOwn)) {
             $messages[] = __('Vous avez une demande de conversion en attente de règlement.', 'chassesautresor');
+
         }
     }
 
