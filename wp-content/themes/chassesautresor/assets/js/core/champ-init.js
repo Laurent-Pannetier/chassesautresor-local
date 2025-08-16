@@ -143,7 +143,7 @@ function initChampTexte(bloc) {
 
     modifierChampSimple(champ, valeur, postId, cpt).then(success => {
       if (success) {
-        const affichageTexte = affichage.querySelector('.champ-valeur, h1, h2, p, span');
+        const affichageTexte = affichage.querySelector('.champ-valeur, h1, h2, p, span:not(.champ-obligatoire)');
 
         if (champ === 'email_contact') {
           const fallbackEmail = window.organisateurData?.defaultEmail || '…';
