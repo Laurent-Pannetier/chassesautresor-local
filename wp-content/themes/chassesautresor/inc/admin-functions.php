@@ -428,8 +428,14 @@ function afficher_tableau_paiements_admin() {
 
         foreach ($paiements as $index => $paiement) {
             $statut = $paiement['statut'] === 'reglé' ? '✅ Réglé' : '🟡 En attente';
-            $action = $paiement['statut'] === 'en attente' 
-                ? '<a href="' . add_query_arg(['regler_paiement' => $index, 'user_id' => $user->ID]) . '" class="button">✅ Régler</a>' 
+            $action = $paiement['statut'] === 'en attente'
+                ? '<a href="' . esc_url(add_query_arg(
+                    [
+                        'regler_paiement' => $index,
+                        'user_id'         => $user->ID,
+                    ],
+                    home_url('/mon-compte/organisateurs/')
+                )) . '" class="button">✅ Régler</a>'
                 : '-';
 
             $points_utilises = isset($paiement['paiement_points_utilises']) ? esc_html($paiement['paiement_points_utilises']) : 'N/A';
