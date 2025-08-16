@@ -290,7 +290,7 @@ span.champ-obligatoire {
 }
 
 /* 🎨 Tokens shadcn/ui attendus (utilisés comme hsl(var(--token))) */
-:root {
+.mode-edition {
   --background: var(--editor-background-hsl);
   --foreground: var(--editor-text-hsl);
 
