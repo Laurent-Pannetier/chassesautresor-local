@@ -13,13 +13,6 @@ if (function_exists('charger_script_conversion')) {
 
 $current_user = wp_get_current_user();
 $user_id      = $current_user->ID;
-$organizer_id = get_organisateur_from_user($user_id);
-
-if ($organizer_id) {
-    $organizer_title = get_the_title($organizer_id);
-} else {
-    $organizer_title = __('Organisateur', 'chassesautresor');
-}
 
 $orders_output = afficher_commandes_utilisateur($user_id, 3);
 
@@ -49,9 +42,7 @@ if ($pending_table !== '') {
 }
 
 $args = array(
-    'organizer_id'    => $organizer_id,
-    'organizer_title' => $organizer_title,
-    'orders_output'   => $orders_output,
+    'orders_output' => $orders_output,
 );
 
 get_template_part('template-parts/myaccount/dashboard-organisateur', null, $args);
