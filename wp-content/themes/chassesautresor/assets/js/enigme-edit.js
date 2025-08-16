@@ -300,7 +300,7 @@ function initEnigmeEdit() {
   initChampSolution();
   initSolutionInline();
   const paramsMaj = new URLSearchParams(window.location.search);
-  if (paramsMaj.get('maj') === 'solution') {
+  if (paramsMaj.get('maj') === 'solution' && !paramsMaj.has('tab')) {
     ouvrirPanneauSolution();
   }
   initChampConditionnel('acf[enigme_acces_condition]', {
