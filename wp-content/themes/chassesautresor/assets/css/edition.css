@@ -1896,3 +1896,47 @@ body.panneau-ouvert::before {
 .edition-panel-footer .btn-admin-danger:hover {
   opacity: 1;
 }
+
+/* ========== 🧩 PRÉ-REQUIS – LISTE D'ÉNIGMES ========== */
+.champ-pre-requis .liste-pre-requis {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.champ-pre-requis .prerequis-item {
+    display: block;
+    cursor: pointer;
+}
+
+.champ-pre-requis .prerequis-item input {
+    display: none;
+}
+
+.champ-pre-requis .prerequis-mini {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    border: 1px solid var(--color-editor-border);
+    border-radius: 4px;
+    padding: 0.5rem;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.champ-pre-requis .prerequis-mini img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.champ-pre-requis .prerequis-item input:checked + .prerequis-mini {
+    border-color: var(--color-editor-accent);
+    background-color: var(--color-editor-field-hover);
+}
+
+.champ-pre-requis .prerequis-mini:hover {
+    border-color: var(--color-editor-accent);
+}

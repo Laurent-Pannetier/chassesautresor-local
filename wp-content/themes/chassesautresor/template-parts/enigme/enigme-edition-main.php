@@ -387,10 +387,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                     <?php if (empty($enigmes_possibles)) : ?>
                       <em><?= esc_html__('Aucune autre énigme disponible comme prérequis.', 'chassesautresor-com'); ?></em>
                     <?php else : ?>
-                      <?php foreach ($enigmes_possibles as $id => $titre) :
-                        $checked = in_array($id, $prerequis_actuels); ?>
-                        <label><input type="checkbox" value="<?= esc_attr($id); ?>" <?= $checked ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>> <?= esc_html($titre); ?></label>
-                      <?php endforeach; ?>
+                      <div class="liste-pre-requis">
+                        <?php foreach ($enigmes_possibles as $id => $titre) :
+                          $checked = in_array($id, $prerequis_actuels);
+                          $img = get_image_enigme($id, 'thumbnail'); ?>
+                          <label class="prerequis-item">
+                            <input type="checkbox" value="<?= esc_attr($id); ?>" <?= $checked ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
+                            <span class="prerequis-mini">
+                              <?php if ($img) : ?>
+                                <img src="<?= esc_url($img); ?>" alt="" />
+                              <?php endif; ?>
+                              <span class="prerequis-titre"><?= esc_html($titre); ?></span>
+                            </span>
+                          </label>
+                        <?php endforeach; ?>
+                      </div>
                     <?php endif; ?>
                     <div class="champ-feedback"></div>
                   </div>
