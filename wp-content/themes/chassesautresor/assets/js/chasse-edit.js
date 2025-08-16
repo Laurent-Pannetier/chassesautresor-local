@@ -190,6 +190,25 @@ function initChasseEdit() {
   const panneauRecompense = document.getElementById('panneau-recompense-chasse');
   const boutonSupprimerRecompense = document.getElementById('bouton-supprimer-recompense');
 
+  function formaterValeurRecompense() {
+    if (!inputValeurRecompense) return;
+    let brut = inputValeurRecompense.value.replace(/\s+/g, '').replace(',', '.');
+    if (brut === '') return;
+    const nombre = parseFloat(brut);
+    if (!isNaN(nombre)) {
+      const dec = brut.includes('.') ? Math.min(2, brut.split('.')[1].length) : 0;
+      inputValeurRecompense.value = nombre.toLocaleString('fr-FR', {
+        minimumFractionDigits: dec,
+        maximumFractionDigits: 2
+      });
+    }
+  }
+
+  if (inputValeurRecompense) {
+    inputValeurRecompense.addEventListener('input', formaterValeurRecompense);
+    formaterValeurRecompense();
+  }
+
   function majAffichageRecompense(titre, texte, valeur) {
     const ligne = document.querySelector('.champ-chasse[data-champ="chasse_infos_recompense_valeur"]');
     if (!ligne) return;
@@ -224,18 +243,19 @@ function initChasseEdit() {
 
     const valeurSpan = document.createElement('span');
     valeurSpan.className = 'recompense-valeur';
-    valeurSpan.textContent = valeur.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+    const arrondi = Math.round(valeur);
+    valeurSpan.textContent = arrondi.toLocaleString('fr-FR') + ' €';
 
     const titreSpan = document.createElement('span');
     titreSpan.className = 'recompense-titre';
     titreSpan.textContent = titre;
 
     span.appendChild(valeurSpan);
-    span.appendChild(document.createTextNode(' '));
+    span.appendChild(document.createTextNode('\u00A0\u2013\u00A0'));
     span.appendChild(titreSpan);
 
     if (peutEditer) {
-      span.appendChild(document.createTextNode(' '));
+      span.appendChild(document.createTextNode('\u00A0\u2013\u00A0'));
       const bouton = document.createElement('button');
       bouton.type = 'button';
       bouton.className = 'champ-modifier ouvrir-panneau-recompense';
@@ -248,10 +268,11 @@ function initChasseEdit() {
       if (typeof initZoneClicEdition === 'function') initZoneClicEdition(bouton);
     }
 
-    span.appendChild(document.createTextNode(' '));
+    span.appendChild(document.createTextNode('\u00A0\u2013\u00A0'));
     const descSpan = document.createElement('span');
     descSpan.className = 'recompense-description';
-    descSpan.textContent = texte;
+    const texteLimite = texte.length > 200 ? texte.slice(0, 200) + '…' : texte;
+    descSpan.textContent = texteLimite;
     span.appendChild(descSpan);
     champTexte.appendChild(span);
 
@@ -306,7 +327,9 @@ function initChasseEdit() {
     boutonRecompense.addEventListener('click', () => {
       const titre = inputTitreRecompense.value.trim();
       const texte = inputTexteRecompense.value.trim();
-      const valeur = parseFloat(inputValeurRecompense.value);
+      const valeur = parseFloat(
+        inputValeurRecompense.value.replace(/\s+/g, '').replace(',', '.')
+      );
       const panneauEdition = document.querySelector('.edition-panel-chasse');
       if (!panneauEdition) return;
       const postId = panneauEdition.dataset.postId;

@@ -193,10 +193,19 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                                 </a>
                             <?php endif; ?>
                         <?php else : ?>
+                            <?php
+                            $desc_brut = wp_strip_all_tags($recompense);
+                            $desc_court = mb_substr($desc_brut, 0, 200);
+                            if (mb_strlen($desc_brut) > 200) {
+                                $desc_court .= '…';
+                            }
+                            ?>
                             <span class="champ-texte-contenu">
-                                <span class="recompense-valeur"><?= esc_html(number_format_i18n((float) $valeur, 2)); ?> €</span>
+                                <span class="recompense-valeur"><?= esc_html(number_format_i18n(round((float) $valeur), 0)); ?> €</span>
+                                &nbsp;–&nbsp;
                                 <span class="recompense-titre"><?= esc_html($titre_recompense); ?></span>
                                 <?php if ($peut_editer) : ?>
+                                    &nbsp;–&nbsp;
                                     <button type="button"
                                         class="champ-modifier ouvrir-panneau-recompense"
                                         data-champ="chasse_infos_recompense_valeur"
@@ -204,7 +213,8 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                                         data-post-id="<?= esc_attr($chasse_id); ?>"
                                         aria-label="<?= esc_attr__('Modifier la récompense', 'chassesautresor-com'); ?>">✏️</button>
                                 <?php endif; ?>
-                                <span class="recompense-description"><?= esc_html(wp_trim_words(wp_strip_all_tags($recompense), 25)); ?></span>
+                                &nbsp;–&nbsp;
+                                <span class="recompense-description"><?= esc_html($desc_court); ?></span>
                             </span>
                         <?php endif; ?>
                     </div>
