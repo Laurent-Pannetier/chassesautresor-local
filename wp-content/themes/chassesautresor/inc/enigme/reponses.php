@@ -146,6 +146,8 @@ function soumettre_reponse_manuelle()
         wp_send_json_error('points_insuffisants');
     }
 
+    ensure_enigme_engagement($user_id, $enigme_id);
+
     if ($cout > 0) {
         $reason = sprintf("Tentative de réponse pour l'énigme #%d", $enigme_id);
         deduire_points_utilisateur($user_id, $cout, $reason, 'tentative', $enigme_id);
@@ -202,6 +204,8 @@ function soumettre_reponse_automatique()
     if ($cout > get_user_points($user_id)) {
         wp_send_json_error('points_insuffisants');
     }
+
+    ensure_enigme_engagement($user_id, $enigme_id);
 
     $reponse_attendue = trim((string) get_field('enigme_reponse_bonne', $enigme_id));
     $respecter_casse  = (int) get_field('enigme_reponse_casse', $enigme_id) === 1;

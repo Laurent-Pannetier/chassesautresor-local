@@ -76,3 +76,18 @@ defined('ABSPATH') || exit;
             $enigme_id
         ));
     }
+
+    /**
+     * Ensure a user is registered as engaged on a riddle.
+     *
+     * @param int $user_id   User identifier.
+     * @param int $enigme_id Riddle identifier.
+     * @return bool True if an engagement was recorded.
+     */
+    function ensure_enigme_engagement(int $user_id, int $enigme_id): bool
+    {
+        if (!utilisateur_est_engage_dans_enigme($user_id, $enigme_id)) {
+            return marquer_enigme_comme_engagee($user_id, $enigme_id);
+        }
+        return false;
+    }
