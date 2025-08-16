@@ -820,7 +820,7 @@ body.edition-active .edition-panel {
   margin-right: 10px;
 }
 
-li.ligne-email .champ-organisateur.champ-vide,
+li.ligne-email.champ-organisateur.champ-vide,
 li.ligne-coordonnees.champ-organisateur.champ-vide,
 li.ligne-logo.champ-organisateur.champ-vide {
   border: 0;
@@ -830,13 +830,12 @@ li.ligne-logo.champ-organisateur.champ-vide {
   opacity: 1;
 }
 
-li.ligne-email,
 li.ligne-logo,
-li.champ-titre {
+li.champ-titre,
+li.ligne-email {
   display: flex;
-  align-items: start;
+  align-items: center;
   gap: 0.5rem;
-  align-items: center ;
 }
 
 li.ligne-logo .champ-modifier {
@@ -877,13 +876,13 @@ li.ligne-logo .champ-modifier {
   color: var(--color-editor-text-muted);
 }
 
-li.ligne-email i.fa-envelope {
+li.ligne-email > i.fa-envelope {
   opacity: 0.6;
-  margin-top: 6px;
+  margin-right: 0.3rem;
 }
 
-li.ligne-email .champ-organisateur .champ-affichage {
-  justify-content: start;
+li.ligne-email .champ-affichage {
+  justify-content: flex-start;
   text-align: unset;
 }
 

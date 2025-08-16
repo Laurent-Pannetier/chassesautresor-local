@@ -179,43 +179,54 @@ $is_complete = (
                 <h3>Réglages</h3>
                 <ul class="resume-infos">
 
-                <li class="ligne-email <?= !empty($email_contact) ? 'champ-rempli' : ''; ?>">
-                  <i aria-hidden="true" class="fa-regular fa-solid fa-envelope"></i>
-                  <div class="champ-organisateur champ-email-contact"
-                    data-champ="profil_public_email_contact"
-                    data-cpt="organisateur"
-                    data-post-id="<?= esc_attr($organisateur_id); ?>">
-
-                    <div class="champ-affichage">
-
-                      Email de contact :
+                <li
+                  class="champ-organisateur champ-email-contact ligne-email <?= empty($email_contact) ? 'champ-vide' : 'champ-rempli'; ?>"
+                  data-champ="email_contact"
+                  data-cpt="organisateur"
+                  data-post-id="<?= esc_attr($organisateur_id); ?>"
+                  data-no-icon
+                >
+                  <i class="fa-regular fa-envelope" aria-hidden="true"></i>
+                  <div class="champ-affichage">
+                    <label for="champ-email-contact">
+                      Email de contact
+                    </label>
+                    <span class="champ-valeur">
                       <?= esc_html($email_contact ?: get_the_author_meta('user_email', get_post_field('post_author', $organisateur_id))); ?>
-
-                      <button type="button" class="icone-info"
-                        aria-label="Informations sur l’adresse email de contact"
-                        onclick="alert('Quand aucune adresse n est renseignée, votre email utilisateur est utilisé par défaut.');">
-                        <i class="fa-solid fa-circle-question" aria-hidden="true"></i>
+                    </span>
+                    <button
+                      type="button"
+                      class="icone-info"
+                      aria-label="Informations sur l’adresse email de contact"
+                      onclick="alert('Quand aucune adresse n est renseignée, votre email utilisateur est utilisé par défaut.');"
+                    >
+                      <i class="fa-solid fa-circle-question" aria-hidden="true"></i>
+                    </button>
+                    <?php if ($peut_editer) : ?>
+                      <button
+                        type="button"
+                        class="champ-modifier"
+                        aria-label="Modifier l’adresse email de contact"
+                      >
+                        ✏️
                       </button>
-                      <?php if ($peut_editer) : ?>
-                        <button type="button"
-                          class="champ-modifier"
-                          aria-label="Modifier l’adresse email de contact">
-                          ✏️
-                        </button>
-                      <?php endif; ?>
-                    </div>
-
-                    <div class="champ-edition" style="display: none;">
-                      <input type="email" maxlength="255"
-                        value="<?= esc_attr($email_contact); ?>"
-                        class="champ-input"
-                        placeholder="exemple@domaine.com">
-                      <button type="button" class="champ-enregistrer">✓</button>
-                      <button type="button" class="champ-annuler">✖</button>
-                    </div>
-
-                    <div class="champ-feedback"></div>
+                    <?php endif; ?>
                   </div>
+
+                  <div class="champ-edition" style="display: none;">
+                    <input
+                      type="email"
+                      maxlength="255"
+                      value="<?= esc_attr($email_contact); ?>"
+                      class="champ-input"
+                      id="champ-email-contact"
+                      placeholder="exemple@domaine.com"
+                    >
+                    <button type="button" class="champ-enregistrer">✓</button>
+                    <button type="button" class="champ-annuler">✖</button>
+                  </div>
+
+                  <div class="champ-feedback"></div>
                 </li>
 
                 </ul>
