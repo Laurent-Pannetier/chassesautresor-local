@@ -671,16 +671,12 @@ function initPanneauVariantes() {
   const messageLimite = document.querySelector('.message-limite-variantes');
   const resumeBloc = document.querySelector('[data-champ="enigme_reponse_variantes"]');
   let listeResume = resumeBloc?.querySelector('.liste-variantes-resume');
-  const lienAjouterResume = resumeBloc?.querySelector('.champ-ajouter');
-  const boutonEditerResume = resumeBloc?.querySelector('.champ-modifier.ouvrir-panneau-variantes');
-  const boutonOuvrir = resumeBloc?.querySelector('.ouvrir-panneau-variantes');
+  let lienAjouterResume = resumeBloc?.querySelector('.champ-ajouter');
+  let boutonEditerResume = resumeBloc?.querySelector('.champ-modifier.ouvrir-panneau-variantes');
 
-  if (!boutonOuvrir || !panneau || !formulaire || !postId || !wrapper || !boutonAjouter || !messageLimite) return;
+  if (!panneau || !formulaire || !postId || !wrapper || !boutonAjouter || !messageLimite || !resumeBloc) return;
 
-
-
-  // Ouvrir le panneau
-  boutonOuvrir.addEventListener('click', () => {
+  function ouvrirPanneau() {
     document.querySelectorAll('.panneau-lateral.ouvert, .panneau-lateral-liens.ouvert').forEach(p => {
       p.classList.remove('ouvert');
       p.setAttribute('aria-hidden', 'true');
@@ -695,6 +691,13 @@ function initPanneauVariantes() {
     }
 
     mettreAJourEtatBouton();
+  }
+
+  resumeBloc.querySelectorAll('.ouvrir-panneau-variantes').forEach(el => {
+    el.addEventListener('click', e => {
+      e.preventDefault();
+      ouvrirPanneau();
+    });
   });
 
   // Fermer le panneau
@@ -742,10 +745,10 @@ function initPanneauVariantes() {
     const nouvelle = base.cloneNode(true);
 
     nouvelle.querySelector('.input-texte').value = '';
-    nouvelle.querySelector('.input-texte').placeholder = 'réponse déclenchant l\'affichage du message';
+    nouvelle.querySelector('.input-texte').placeholder = wp.i18n.__("réponse déclenchant l'affichage du message", 'chassesautresor-com');
 
     nouvelle.querySelector('.input-message').value = '';
-    nouvelle.querySelector('.input-message').placeholder = 'Message affiché au joueur';
+    nouvelle.querySelector('.input-message').placeholder = wp.i18n.__('Message affiché au joueur', 'chassesautresor-com');
     nouvelle.querySelector('input[type="checkbox"]').checked = false;
 
     wrapper.appendChild(nouvelle);
@@ -794,7 +797,7 @@ function initPanneauVariantes() {
     const feedback = formulaire.querySelector('.champ-feedback-variantes');
     if (feedback) {
       feedback.style.display = 'block';
-      feedback.textContent = 'Enregistrement...';
+      feedback.textContent = wp.i18n.__('Enregistrement...', 'chassesautresor-com');
       feedback.className = 'champ-feedback champ-loading';
     }
 
@@ -814,7 +817,7 @@ function initPanneauVariantes() {
     Promise.all(promises)
       .then(() => {
         if (feedback) {
-          feedback.textContent = '✔️ Variantes enregistrées';
+          feedback.textContent = wp.i18n.__('✔️ Variantes enregistrées', 'chassesautresor-com');
           feedback.className = 'champ-feedback champ-success';
         }
 
@@ -855,13 +858,50 @@ function initPanneauVariantes() {
             if (nb === 0) {
               resumeBloc.classList.add('champ-vide');
               resumeBloc.classList.remove('champ-rempli');
-              lienAjouterResume?.style.setProperty('display', 'inline-block');
               boutonEditerResume?.style.setProperty('display', 'none');
+
+              if (listeResume) {
+                listeResume.remove();
+                listeResume = null;
+              }
+
+              if (!lienAjouterResume) {
+                lienAjouterResume = document.createElement('a');
+                lienAjouterResume.href = '#';
+                lienAjouterResume.className = 'champ-ajouter ouvrir-panneau-variantes';
+                lienAjouterResume.dataset.cpt = 'enigme';
+                lienAjouterResume.dataset.postId = postId;
+                lienAjouterResume.setAttribute('aria-label', wp.i18n.__('Ajouter des variantes', 'chassesautresor-com'));
+                lienAjouterResume.innerHTML = `${wp.i18n.__('ajouter des variantes', 'chassesautresor-com')} <span class="icone-modif">✏️</span>`;
+                resumeBloc.appendChild(lienAjouterResume);
+                lienAjouterResume.addEventListener('click', e => {
+                  e.preventDefault();
+                  ouvrirPanneau();
+                });
+              }
+
+              lienAjouterResume.style.setProperty('display', 'inline-block');
             } else {
               resumeBloc.classList.add('champ-rempli');
               resumeBloc.classList.remove('champ-vide');
               lienAjouterResume?.style.setProperty('display', 'none');
-              boutonEditerResume?.style.setProperty('display', 'inline-block');
+
+              if (!boutonEditerResume) {
+                boutonEditerResume = document.createElement('button');
+                boutonEditerResume.type = 'button';
+                boutonEditerResume.className = 'champ-modifier ouvrir-panneau-variantes';
+                boutonEditerResume.dataset.cpt = 'enigme';
+                boutonEditerResume.dataset.postId = postId;
+                boutonEditerResume.setAttribute('aria-label', wp.i18n.__('Éditer les variantes', 'chassesautresor-com'));
+                boutonEditerResume.innerHTML = `${wp.i18n.__('éditer', 'chassesautresor-com')} <span class="icone-modif">✏️</span>`;
+                resumeBloc.appendChild(boutonEditerResume);
+                boutonEditerResume.addEventListener('click', e => {
+                  e.preventDefault();
+                  ouvrirPanneau();
+                });
+              }
+
+              boutonEditerResume.style.setProperty('display', 'inline-block');
             }
           }
 
@@ -870,7 +910,7 @@ function initPanneauVariantes() {
       })
       .catch(() => {
         if (feedback) {
-          feedback.textContent = '❌ Erreur réseau';
+          feedback.textContent = wp.i18n.__('❌ Erreur réseau', 'chassesautresor-com');
           feedback.className = 'champ-feedback champ-error';
         }
       });
