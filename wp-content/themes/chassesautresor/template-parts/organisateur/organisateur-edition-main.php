@@ -94,7 +94,7 @@ $is_complete = (
                     data-post-id="<?= esc_attr($organisateur_id); ?>">
 
                   <div class="champ-affichage">
-                    <label for="champ-titre-organisateur">Titre</label>
+                    <label for="champ-titre-organisateur">Titre <span class="champ-obligatoire">*</span></label>
                     <span class="champ-valeur">
                       <?= empty($titre) ? "renseigner le titre de l’organisateur" : esc_html($titre); ?>
                     </span>
@@ -120,7 +120,7 @@ $is_complete = (
 
                 <li class="champ-organisateur champ-img champ-logo ligne-logo <?= empty($logo_id) ? 'champ-vide' : 'champ-rempli'; ?>" data-champ="profil_public_logo_organisateur" data-cpt="organisateur" data-post-id="<?= esc_attr($organisateur_id); ?>">
                   <div class="champ-affichage">
-                    <label>Logo organisateur</label>
+                    <label>Logo organisateur <span class="champ-obligatoire">*</span></label>
                     <?php if ($peut_editer) : ?>
                       <button type="button"
                         class="champ-modifier"
@@ -145,7 +145,7 @@ $is_complete = (
                 </li>
                 <?php $class_description = empty($description) ? 'champ-vide' : 'champ-rempli'; ?>
                 <li class="champ-organisateur champ-description ligne-description <?= $class_description; ?>" data-champ="description_longue">
-                    <label><?= esc_html__('Présentation', 'chassesautresor-com'); ?></label>
+                    <label><?= esc_html__('Présentation', 'chassesautresor-com'); ?> <span class="champ-obligatoire">*</span></label>
                     <div class="champ-texte">
                         <?php if (empty(trim($description))) : ?>
                             <?php if ($peut_editer) : ?>
