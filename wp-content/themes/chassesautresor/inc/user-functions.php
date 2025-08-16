@@ -243,34 +243,64 @@ function myaccount_get_important_messages(): string
         $messages[] = __('Points mis à jour avec succès.', 'chassesautresor');
     }
 
-    if (current_user_can('administrator') && function_exists('recuperer_organisateurs_pending')) {
-        $pending = array_filter(
-            recuperer_organisateurs_pending(),
-            function ($entry) {
-                return !empty($entry['chasse_id']) && $entry['validation'] === 'en_attente';
-            }
-        );
-
-        if (!empty($pending)) {
-            $links = array_map(
+    if (current_user_can('administrator')) {
+        if (function_exists('recuperer_organisateurs_pending')) {
+            $pending = array_filter(
+                recuperer_organisateurs_pending(),
                 function ($entry) {
-                    $url   = esc_url(get_permalink($entry['chasse_id']));
-                    $title = esc_html(get_the_title($entry['chasse_id']));
-                    return '<a href="' . $url . '">' . $title . '</a>';
-                },
-                $pending
+                    return !empty($entry['chasse_id']) && $entry['validation'] === 'en_attente';
+                }
             );
 
-            $label = count($pending) > 1
-                ? __('Chasses à valider :', 'chassesautresor')
-                : __('Chasse à valider :', 'chassesautresor');
+            if (!empty($pending)) {
+                $links = array_map(
+                    function ($entry) {
+                        $url   = esc_url(get_permalink($entry['chasse_id']));
+                        $title = esc_html(get_the_title($entry['chasse_id']));
+                        return '<a href="' . $url . '">' . $title . '</a>';
+                    },
+                    $pending
+                );
 
-            $messages[] = $label . ' ' . implode(', ', $links);
+                $label = count($pending) > 1
+                    ? __('Chasses à valider :', 'chassesautresor')
+                    : __('Chasse à valider :', 'chassesautresor');
+
+                $messages[] = $label . ' ' . implode(', ', $links);
+            }
+        }
+
+        $users = get_users([
+            'meta_query' => [
+                [
+                    'key'     => 'demande_paiement',
+                    'compare' => 'EXISTS',
+                ],
+            ],
+        ]);
+
+        foreach ($users as $user) {
+            $paiements = get_user_meta($user->ID, 'demande_paiement', true);
+            if (is_array($paiements)) {
+                foreach ($paiements as $paiement) {
+                    if (($paiement['statut'] ?? '') === 'en attente') {
+                        $url = esc_url(home_url('/mon-compte/organisateurs/'));
+                        $messages[] = sprintf(
+                            /* translators: 1: opening anchor tag, 2: closing anchor tag */
+                            __('Vous avez des %1$sdemandes de conversion%2$s en attente.', 'chassesautresor'),
+                            '<a href="' . $url . '">',
+                            '</a>'
+                        );
+                        break 2;
+                    }
+                }
+            }
         }
     }
 
     if (est_organisateur()) {
-        $organisateur_id = get_organisateur_from_user(get_current_user_id());
+        $current_user_id   = get_current_user_id();
+        $organisateur_id   = get_organisateur_from_user($current_user_id);
         if ($organisateur_id) {
             $enigmes = recuperer_enigmes_tentatives_en_attente($organisateur_id);
             if (!empty($enigmes)) {
@@ -284,6 +314,16 @@ function myaccount_get_important_messages(): string
                 );
 
                 $messages[] = __('Tentatives à traiter :', 'chassesautresor') . ' ' . implode(', ', $links);
+            }
+        }
+
+        $paiements = get_user_meta($current_user_id, 'demande_paiement', true);
+        if (is_array($paiements)) {
+            foreach ($paiements as $paiement) {
+                if (!empty($paiement['statut']) && $paiement['statut'] === 'en attente') {
+                    $messages[] = __('Vous avez une demande de conversion en attente de règlement.', 'chassesautresor');
+                    break;
+                }
             }
         }
     }

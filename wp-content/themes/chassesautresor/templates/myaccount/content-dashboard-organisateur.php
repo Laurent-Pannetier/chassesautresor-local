@@ -38,11 +38,13 @@ if (isset($_GET['paiement_envoye']) && $_GET['paiement_envoye'] === '1') {
 }
 
 if ($pending_table !== '') {
-    echo '<div class="mb-6">';
-    echo '<h2 class="text-lg font-semibold mb-2">' .
-        esc_html__('Demande de conversion en attente', 'chassesautresor') .
-        '</h2>';
+    echo '<div class="dashboard-card mb-6">';
+    echo '<div class="dashboard-card-header">';
+    echo '<h4>' . esc_html__('Demande de conversion en attente', 'chassesautresor') . '</h4>';
+    echo '</div>';
+    echo '<div class="dashboard-card-content">';
     echo $pending_table; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+    echo '</div>';
     echo '</div>';
 }
 
