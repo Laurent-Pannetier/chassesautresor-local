@@ -113,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                     data-post-id="<?= esc_attr($enigme_id); ?>">
 
                     <div class="champ-affichage">
-                      <label for="champ-titre-enigme">Titre <span class="champ-obligatoire">*</span> :</label>
+                        <label for="champ-titre-enigme">Titre <span class="champ-obligatoire">*</span></label>
                       <span class="champ-valeur">
                         <?= $isTitreParDefaut ? 'renseigner le titre de l’énigme' : esc_html($titre); ?>
                       </span>
