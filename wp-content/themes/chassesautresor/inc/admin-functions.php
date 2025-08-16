@@ -623,11 +623,7 @@ function traiter_demande_paiement() {
     error_log("📧 Notification envoyée à l'administrateur.");
 
     // ✅ Redirection après soumission
-    $redirect = wp_get_raw_referer();
-    if (!$redirect || strpos($redirect, 'admin-ajax.php') !== false) {
-        $redirect = home_url('/mon-compte/');
-    }
-    wp_safe_redirect(add_query_arg('paiement_envoye', '1', $redirect));
+    wp_safe_redirect(home_url('/mon-compte/commandes/'));
     exit;
 }
 add_action('init', 'traiter_demande_paiement');
