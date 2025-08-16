@@ -411,21 +411,37 @@ function enregistrer_fichier_solution_enigme()
  */
 function rediriger_upload_fichier_solution($dirs)
 {
-  $custom = WP_CONTENT_DIR . '/protected/solutions';
+    $custom = WP_CONTENT_DIR . '/protected/solutions';
 
-  if (!file_exists($custom)) {
-    wp_mkdir_p($custom);
-  }
+    if (!file_exists($custom)) {
+        wp_mkdir_p($custom);
+    }
 
-  $dirs['path']     = $custom;
-  $dirs['basedir']  = $custom;
-  $dirs['subdir']   = '';
+    $htaccess = $custom . '/.htaccess';
 
-  // 🔐 Empêche WordPress de construire une URL publique
-  $dirs['url']      = '';
-  $dirs['baseurl']  = '';
+    if (!file_exists($htaccess)) {
+        $htaccess_content = <<<HTACCESS
+<IfModule !authz_core_module>
+Order deny,allow
+Deny from all
+</IfModule>
+<IfModule authz_core_module>
+Require all denied
+</IfModule>
 
-  return $dirs;
+HTACCESS;
+        file_put_contents($htaccess, $htaccess_content);
+    }
+
+    $dirs['path']    = $custom;
+    $dirs['basedir'] = $custom;
+    $dirs['subdir']  = '';
+
+    // 🔐 Empêche WordPress de construire une URL publique
+    $dirs['url']     = '';
+    $dirs['baseurl'] = '';
+
+    return $dirs;
 }
 
 
