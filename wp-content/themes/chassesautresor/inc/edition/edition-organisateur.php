@@ -189,6 +189,14 @@ function ajax_modifier_champ_organisateur()
   // 🔁 Corrige le nom du champ si groupé
   $champ_cible = $champ_correspondances[$champ] ?? $champ;
 
+  // 🛑 Validation métier : texte de présentation minimal
+  if ($champ_cible === 'description_longue') {
+    $texte = wp_strip_all_tags($valeur);
+    if (mb_strlen(trim($texte)) < 50) {
+      wp_send_json_error('votre texte doit comporter au moins 50 caractères');
+    }
+  }
+
   // ✏️ Titre natif WordPress
   if ($champ === 'post_title') {
     $ok = wp_update_post([
