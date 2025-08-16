@@ -843,7 +843,7 @@ li.ligne-logo .champ-modifier {
 .resume-infos li.champ-description,
 .resume-infos li.champ-wysiwyg {
   display: flex;
-  align-items: flex-start;
+  align-items: baseline;
   gap: 0.5rem;
 }
 
