@@ -163,13 +163,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
 
                   <li class="champ-enigme champ-wysiwyg<?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_visuel_texte" data-cpt="enigme"
                     data-post-id="<?= esc_attr($enigme_id); ?>">
-                    Un texte principal
-                    <?php if ($peut_editer) : ?>
-                      <button type="button" class="champ-modifier ouvrir-panneau-description" data-champ="enigme_visuel_texte"
-                        data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
-                        ✏️
-                      </button>
-                    <?php endif; ?>
+                    <label><?= esc_html__('Texte énigme', 'chassesautresor-com'); ?></label>
+                    <div class="champ-texte">
+                        <?php if (empty(trim($texte))) : ?>
+                            <?php if ($peut_editer) : ?>
+                                <a href="#" class="champ-ajouter ouvrir-panneau-description"
+                                   data-champ="enigme_visuel_texte"
+                                   data-cpt="enigme"
+                                   data-post-id="<?= esc_attr($enigme_id); ?>">
+                                    <?= esc_html__('ajouter', 'chassesautresor-com'); ?> <span class="icone-modif">✏️</span>
+                                </a>
+                            <?php endif; ?>
+                        <?php else : ?>
+                            <span class="champ-texte-contenu"><?= esc_html(wp_trim_words(wp_strip_all_tags($texte), 25)); ?></span>
+                            <?php if ($peut_editer) : ?>
+                                <button type="button" class="champ-modifier ouvrir-panneau-description"
+                                  data-champ="enigme_visuel_texte"
+                                  data-cpt="enigme"
+                                  data-post-id="<?= esc_attr($enigme_id); ?>"
+                                  aria-label="<?= esc_attr__('Modifier le texte', 'chassesautresor-com'); ?>">✏️</button>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    </div>
                   </li>
 
                   <li class="champ-enigme champ-texte<?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_visuel_legende" data-cpt="enigme"

@@ -145,15 +145,29 @@ $is_complete = (
                 </li>
                 <?php $class_description = empty($description) ? 'champ-vide' : 'champ-rempli'; ?>
                 <li class="champ-organisateur champ-description ligne-description <?= $class_description; ?>" data-champ="description_longue">
-                  Une présentation
-                  <?php if ($peut_editer) : ?>
-                    <button type="button"
-                      class="champ-modifier ouvrir-panneau-description"
-                      aria-label="Modifier la description longue">
-                      ✏️
-                    </button>
-
-                  <?php endif; ?>
+                    <label><?= esc_html__('Présentation', 'chassesautresor-com'); ?></label>
+                    <div class="champ-texte">
+                        <?php if (empty(trim($description))) : ?>
+                            <?php if ($peut_editer) : ?>
+                                <a href="#" class="champ-ajouter ouvrir-panneau-description"
+                                   data-champ="description_longue"
+                                   data-cpt="organisateur"
+                                   data-post-id="<?= esc_attr($organisateur_id); ?>">
+                                    <?= esc_html__('ajouter', 'chassesautresor-com'); ?> <span class="icone-modif">✏️</span>
+                                </a>
+                            <?php endif; ?>
+                        <?php else : ?>
+                            <span class="champ-texte-contenu"><?= esc_html(wp_trim_words(wp_strip_all_tags($description), 25)); ?></span>
+                            <?php if ($peut_editer) : ?>
+                                <button type="button"
+                                  class="champ-modifier ouvrir-panneau-description"
+                                  data-champ="description_longue"
+                                  data-cpt="organisateur"
+                                  data-post-id="<?= esc_attr($organisateur_id); ?>"
+                                  aria-label="<?= esc_attr__('Modifier la présentation', 'chassesautresor-com'); ?>">✏️</button>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    </div>
                 </li>
               </ul>
               </div>
