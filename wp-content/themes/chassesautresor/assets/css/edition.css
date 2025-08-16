@@ -211,8 +211,12 @@ body.edition-active-enigme .single-enigme-main .champ-img .champ-modifier {
   font-size: 0.9rem;
   color: var(--color-secondary);
   background-color: rgba(0, 0, 0, 0.6);
-  padding: 0.1rem 0.2rem;
-  border-radius: 0.25rem;
+  width: 1.4rem;
+  height: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
   transition: transform 0.2s;
 }
 
