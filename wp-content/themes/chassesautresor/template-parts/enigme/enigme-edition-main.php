@@ -570,30 +570,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
     <h2><i class="fa-solid fa-key"></i> Solution</h2>
   </div>
 
-            <fieldset class="groupe-champ champ-groupe-solution">
-              <legend>Publication de la solution</legend>
+            <?php
+            $solution_mode = get_field('enigme_solution_mode', $enigme_id) ?? 'pdf';
+            $fichier      = get_field('enigme_solution_fichier', $enigme_id);
+            $fichier_url  = is_array($fichier) ? $fichier['url'] : '';
+            $fichier_nom  = is_array($fichier) && !empty($fichier['filename']) ? $fichier['filename'] : '';
+            $explication  = get_field('enigme_solution_explication', $enigme_id);
+            $explication  = is_string($explication) ? trim(wp_strip_all_tags($explication)) : '';
+            $delai        = get_field('enigme_solution_delai', $enigme_id) ?? 7;
+            $heure        = get_field('enigme_solution_heure', $enigme_id) ?? '18:00';
+            $aide_delai   = "Les solutions ne peuvent être publiées que si une chasse est déclarée terminée. Elles restent stockées dans un coffre fort numérique jusqu'à ce que vous décidiez de les en sortir.";
 
-              <?php
-              $solution_mode = get_field('enigme_solution_mode', $enigme_id) ?? 'pdf';
-              $fichier      = get_field('enigme_solution_fichier', $enigme_id);
-              $fichier_url  = is_array($fichier) ? $fichier['url'] : '';
-              $fichier_nom  = is_array($fichier) && !empty($fichier['filename']) ? $fichier['filename'] : '';
-              $explication  = get_field('enigme_solution_explication', $enigme_id);
-              $explication  = is_string($explication) ? trim(wp_strip_all_tags($explication)) : '';
-              $delai        = get_field('enigme_solution_delai', $enigme_id) ?? 7;
-              $heure        = get_field('enigme_solution_heure', $enigme_id) ?? '18:00';
-              $aide_delai   = "Les solutions ne peuvent être publiées que si une chasse est déclarée terminée. Elles restent stockées dans un coffre fort numérique jusqu'à ce que vous décidiez de les en sortir.";
+            $pdf_icon_attr   = $fichier_nom ? ' style="color: var(--color-editor-success);"' : '';
+            $pdf_title       = $fichier_nom ?: 'Document PDF';
+            $pdf_link_text   = $fichier_nom ? 'Modifier' : 'Choisir un fichier';
+            $texte_icon_attr = $explication !== '' ? ' style="color: var(--color-editor-success);"' : '';
+            $texte_link_text = $explication !== '' ? 'éditer' : 'Rédiger';
 
-              $pdf_icon_attr   = $fichier_nom ? ' style="color: var(--color-editor-success);"' : '';
-              $pdf_title       = $fichier_nom ?: 'Document PDF';
-              $pdf_link_text   = $fichier_nom ? 'Modifier' : 'Choisir un fichier';
-              $texte_icon_attr = $explication !== '' ? ' style="color: var(--color-editor-success);"' : '';
-              $texte_link_text = $explication !== '' ? 'éditer' : 'Rédiger';
-              ?>
+            $publication_label = 'aucune solution ne';
+            $publication_note  = '';
 
-              <div class="champ-enigme champ-solution">
-                <div class="champ-solution-mode" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
-                  <div class="dashboard-grid solution-cards">
+            if ($solution_mode === 'pdf') {
+                if ($fichier_url !== '') {
+                    $publication_label = sprintf('votre fichier %s', $fichier_nom);
+                    $publication_note  = sprintf(' %d jours après la fin de la chasse, à %s', $delai, $heure);
+                } else {
+                    $publication_note = ' (pdf sélectionné mais pas de fichier chargé)';
+                }
+            } elseif ($solution_mode === 'texte') {
+                if ($explication !== '') {
+                    $publication_label = "votre texte d'explication";
+                    $publication_note  = sprintf(', %d jours après la fin de la chasse, à %s', $delai, $heure);
+                } else {
+                    $publication_note = ' (rédaction libre sélectionnée mais non remplie)';
+                }
+            }
+
+            $publication_message = $publication_label . ' sera affiché(e)' . $publication_note;
+            ?>
+
+            <div class="champ-enigme champ-solution">
+              <div class="champ-solution-mode" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
+                <p class="solution-publication-message"><?= esc_html($publication_message); ?></p>
+                <div class="dashboard-grid solution-cards">
                     <div class="dashboard-card solution-option<?= $solution_mode === 'pdf' ? ' active' : ''; ?>" data-mode="pdf">
                       <i class="fa-solid fa-file-pdf" aria-hidden="true"<?= $pdf_icon_attr; ?>></i>
                       <h3><?= esc_html($pdf_title); ?></h3>
@@ -647,7 +666,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                   <div class="champ-feedback" style="margin-top: 5px;"></div>
                 </div>
               </div>
-            </fieldset>
 
           </div>
         </div>
