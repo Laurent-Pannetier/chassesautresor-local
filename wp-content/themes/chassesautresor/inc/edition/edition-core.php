@@ -44,9 +44,11 @@ function forcer_chargement_acf_scripts_chasse()
     return;
   }
 
-  if (current_user_can('edit_post', get_the_ID())) {
-    acf_enqueue_scripts();
+  if (!current_user_can('edit_post', get_the_ID())) {
+    return;
   }
+
+  acf_enqueue_scripts();
 }
 
 /**
