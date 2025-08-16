@@ -4,10 +4,10 @@
 // ========================================
 
 document.addEventListener('DOMContentLoaded', () => {
-  const adminNav = document.querySelector('.admin-nav');
+  const navs = document.querySelectorAll('.dashboard-nav');
   const content = document.querySelector('.myaccount-content');
 
-  if (!adminNav || !content || typeof ctaMyAccount === 'undefined') {
+  if (!navs.length || !content || typeof ctaMyAccount === 'undefined') {
     return;
   }
 
@@ -44,7 +44,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const messages = data.data.messages || '';
       content.innerHTML = `<section class="msg-important">${messages}</section>` + data.data.html;
       fadeFlash();
-      adminNav.querySelectorAll('.dashboard-nav-link').forEach((a) => a.classList.remove('active'));
+      document
+        .querySelectorAll('.dashboard-nav-link[data-section]')
+        .forEach((a) => a.classList.remove('active'));
       link.classList.add('active');
       document.dispatchEvent(
         new CustomEvent('myaccountSectionLoaded', { detail: { section } })
@@ -59,20 +61,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  adminNav.addEventListener('click', (e) => {
-    const link = e.target.closest('.dashboard-nav-link');
-    if (!link) {
-      return;
-    }
+  navs.forEach((nav) => {
+    nav.addEventListener('click', (e) => {
+      const link = e.target.closest('.dashboard-nav-link');
+      if (!link || !link.dataset.section) {
+        return;
+      }
 
-    e.preventDefault();
-    loadSection(link);
+      e.preventDefault();
+      loadSection(link);
+    });
   });
 
   const params = new URLSearchParams(window.location.search);
   const initialSection = params.get('section');
   if (initialSection) {
-    const initialLink = adminNav.querySelector(`.dashboard-nav-link[data-section="${initialSection}"]`);
+    const initialLink = document.querySelector(`.dashboard-nav-link[data-section="${initialSection}"]`);
     if (initialLink) {
       loadSection(initialLink, false);
     }

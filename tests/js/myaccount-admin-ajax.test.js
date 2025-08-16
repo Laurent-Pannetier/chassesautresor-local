@@ -1,6 +1,9 @@
 const html = `
 <div class="myaccount-layout">
   <aside class="myaccount-sidebar">
+    <nav class="dashboard-nav">
+      <a href="/mon-compte/points/" class="dashboard-nav-link" data-section="points">Points</a>
+    </nav>
     <nav class="dashboard-nav admin-nav">
       <a href="/mon-compte/organisateurs/" class="dashboard-nav-link" data-section="organisateurs">Organisateurs</a>
       <a href="/mon-compte/statistiques/" class="dashboard-nav-link" data-section="statistiques">Statistiques</a>
@@ -13,7 +16,7 @@ const html = `
 </div>
 `;
 
-describe('myaccount admin navigation', () => {
+describe('myaccount ajax navigation', () => {
   let initModule;
 
   beforeEach(() => {
@@ -33,6 +36,7 @@ describe('myaccount admin navigation', () => {
   });
 
   test.each([
+    'points',
     'organisateurs',
     'statistiques',
     'outils'

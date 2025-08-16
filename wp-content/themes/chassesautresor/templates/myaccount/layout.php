@@ -38,10 +38,18 @@ get_header();
                 ),
                 array(
                     'endpoint' => 'orders',
-                    'label'    => __('Points', 'chassesautresor'),
-                    'icon'     => 'fas fa-coins',
+                    'label'    => __('Commandes', 'chassesautresor'),
+                    'icon'     => 'fas fa-shopping-cart',
                     'url'      => wc_get_account_endpoint_url('orders'),
                     'active'   => is_wc_endpoint_url('orders'),
+                ),
+                array(
+                    'endpoint' => 'points',
+                    'label'    => __('Points', 'chassesautresor'),
+                    'icon'     => 'fas fa-coins',
+                    'url'      => home_url('/mon-compte/points/'),
+                    'section'  => 'points',
+                    'active'   => isset($_GET['section']) && $_GET['section'] === 'points',
                 ),
                 array(
                     'endpoint' => 'edit-account',
@@ -58,7 +66,8 @@ get_header();
                     $classes .= ' active';
                 }
 
-                echo '<a href="' . esc_url($item['url']) . '" class="' . esc_attr($classes) . '">';
+                $data_attr = isset($item['section']) ? ' data-section="' . esc_attr($item['section']) . '"' : '';
+                echo '<a href="' . esc_url($item['url']) . '"' . $data_attr . ' class="' . esc_attr($classes) . '">';
                 echo '<i class="' . esc_attr($item['icon']) . '"></i>';
                 echo '<span>' . esc_html($item['label']) . '</span>';
                 echo '</a>';

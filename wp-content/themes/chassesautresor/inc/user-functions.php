@@ -44,9 +44,10 @@ defined( 'ABSPATH' ) || exit;
  * @param string $template Le chemin du template par défaut déterminé par WordPress.
  * @return string Le chemin du fichier de template personnalisé ou le template par défaut.
  */
- function ajouter_rewrite_rules() {
+function ajouter_rewrite_rules() {
     add_rewrite_rule('^mon-compte/statistiques/?$', 'index.php?mon_compte_statistiques=1', 'top');
     add_rewrite_rule('^mon-compte/outils/?$', 'index.php?mon_compte_outils=1', 'top');
+    add_rewrite_rule('^mon-compte/points/?$', 'index.php?mon_compte_points=1', 'top');
 }
 add_action('init', 'ajouter_rewrite_rules');
 
@@ -64,6 +65,7 @@ add_action('init', 'ajouter_rewrite_rules');
 function ajouter_query_vars($vars) {
     $vars[] = 'mon_compte_statistiques';
     $vars[] = 'mon_compte_outils';
+    $vars[] = 'mon_compte_points';
     return $vars;
 }
 add_filter('query_vars', 'ajouter_query_vars');
@@ -91,6 +93,11 @@ function charger_template_utilisateur($template) {
     // Vérification pour éviter les conflits avec WooCommerce
     if (is_wc_endpoint_url()) {
         return $template;
+    }
+
+    if ($request_uri === 'mon-compte/points' || $request_uri === 'mon-compte/points/') {
+        wp_redirect(home_url('/mon-compte/?section=points'));
+        exit;
     }
     
     // Associe chaque URL à un fichier de contenu spécifique
@@ -204,16 +211,16 @@ function is_woocommerce_account_page() {
 }
 
 /**
- * Rename WooCommerce "orders" endpoint title to "Points".
+ * Rename WooCommerce "orders" endpoint title to "Commandes".
  *
  * @param string $title Original title.
  * @return string Modified title.
  */
-function ca_points_endpoint_title($title)
+function ca_orders_endpoint_title($title)
 {
-    return __('Points', 'chassesautresor');
+    return __('Commandes', 'chassesautresor');
 }
-add_filter('woocommerce_endpoint_orders_title', 'ca_points_endpoint_title');
+add_filter('woocommerce_endpoint_orders_title', 'ca_orders_endpoint_title');
 
 /**
  * Rename "edit-account" endpoint title to "Profil".
@@ -312,7 +319,7 @@ function myaccount_get_important_messages(): string
             $messages[] = sprintf(
                 /* translators: 1: opening anchor tag, 2: closing anchor tag */
                 __('Vous avez une %1$sdemande de conversion%2$s en attente de règlement.', 'chassesautresor'),
-                '<a href="' . esc_url(home_url('/mon-compte/commandes/')) . '">',
+                '<a href="' . esc_url(home_url('/mon-compte/points/')) . '">',
                 '</a>'
             );
         }
@@ -360,29 +367,35 @@ function myaccount_get_important_messages(): string
 // 📡 AJAX ADMIN SECTIONS
 // ==================================================
 /**
- * Load admin My Account sections via AJAX.
+ * Load My Account sections via AJAX.
  *
  * @return void
  */
 function ca_load_admin_section()
 {
-    if (!current_user_can('administrator')) {
+    if (!is_user_logged_in()) {
         wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor')], 403);
     }
 
     $section = sanitize_key($_GET['section'] ?? '');
     $allowed = [
-        'organisateurs' => 'content-organisateurs.php',
-        'statistiques'  => 'content-statistiques.php',
-        'outils'        => 'content-outils.php',
+        'points'        => ['template' => 'content-points.php', 'cap' => 'read'],
+        'organisateurs' => ['template' => 'content-organisateurs.php', 'cap' => 'administrator'],
+        'statistiques'  => ['template' => 'content-statistiques.php', 'cap' => 'administrator'],
+        'outils'        => ['template' => 'content-outils.php', 'cap' => 'administrator'],
     ];
 
     if (!isset($allowed[$section])) {
         wp_send_json_error(['message' => __('Section not found', 'chassesautresor')], 404);
     }
 
+    $cap = $allowed[$section]['cap'];
+    if ($cap !== 'read' && !current_user_can($cap)) {
+        wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor')], 403);
+    }
+
     ob_start();
-    $template = get_stylesheet_directory() . '/templates/myaccount/' . $allowed[$section];
+    $template = get_stylesheet_directory() . '/templates/myaccount/' . $allowed[$section]['template'];
     if (file_exists($template)) {
         include $template;
     }
