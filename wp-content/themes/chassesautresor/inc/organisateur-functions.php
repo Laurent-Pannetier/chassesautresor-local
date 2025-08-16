@@ -305,10 +305,10 @@ add_action('wp_ajax_conversion_modal_content', 'ajax_conversion_modal_content');
 /**
  * Affiche le tableau des demandes de paiement d'un organisateur.
  *
- * @param int $user_id L'ID de l'utilisateur organisateur.
- * @param string $filtre_statut Filtrer par statut ('en_attente' pour les demandes en cours, 'toutes' pour l'historique complet).
+ * @param int    $user_id       L'ID de l'utilisateur organisateur.
+ * @param string $filtre_statut Filtre optionnel : 'en_attente' pour les demandes en cours, 'toutes' (par défaut) pour l'historique complet.
  */
-function afficher_tableau_paiements_organisateur($user_id, $filtre_statut = 'en_attente') {
+function afficher_tableau_paiements_organisateur($user_id, $filtre_statut = 'toutes') {
     global $wpdb;
     $repo      = new PointsRepository($wpdb);
     $paiements = $repo->getConversionRequests($user_id);

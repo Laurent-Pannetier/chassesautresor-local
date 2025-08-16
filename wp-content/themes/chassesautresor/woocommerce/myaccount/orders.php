@@ -141,12 +141,12 @@ if ($is_organizer) {
 
 if ($is_organizer) {
     ob_start();
-    afficher_tableau_paiements_organisateur((int) $current_user->ID, 'en_attente');
-    $pending_table = trim(ob_get_clean());
-    if ($pending_table !== '') {
+    afficher_tableau_paiements_organisateur((int) $current_user->ID, 'toutes');
+    $conversion_table = trim(ob_get_clean());
+    if ($conversion_table !== '') {
         echo '<div class="stats-table-wrapper">';
-        echo '<h3>' . esc_html__('Demande de conversion en attente', 'chassesautresor') . '</h3>';
-        echo $pending_table; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+        echo '<h3>' . esc_html__('Historique conversion de points', 'chassesautresor') . '</h3>';
+        echo $conversion_table; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
         echo '</div>';
     }
 }
