@@ -1884,6 +1884,24 @@ body.panneau-ouvert::before {
   font-size: 0.875rem;
 }
 
+/* 📌 Actions de conversion en ligne */
+.liste-paiements .js-update-request {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.liste-paiements .js-update-request select {
+  flex: 0 0 auto;
+  width: auto;
+  font-size: 0.875rem;
+}
+
+.liste-paiements .js-update-request button {
+  flex: 0 0 auto;
+  padding: 2px 6px;
+}
+
 /* ========== ⚠️ ADMINISTRATION ACTIONS ========== */
 .edition-panel-footer {
   display: flex;

@@ -1,6 +1,8 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
+const HISTORIQUE_PAIEMENTS_ADMIN_PER_PAGE = 20;
+
 // ==================================================
 // 📚 SOMMAIRE DU FICHIER
 // ==================================================
@@ -502,11 +504,12 @@ function afficher_tableau_paiements_admin(): void
     echo render_tableau_paiements_admin($requests);
 }
 
-function recuperer_historique_paiements_admin(int $page = 1, int $per_page = 20): array
+function recuperer_historique_paiements_admin(int $page = 1): array
 {
     global $wpdb;
-    $repo   = new PointsRepository($wpdb);
-    $offset = ($page - 1) * $per_page;
+    $per_page = HISTORIQUE_PAIEMENTS_ADMIN_PER_PAGE;
+    $repo     = new PointsRepository($wpdb);
+    $offset   = ($page - 1) * $per_page;
     $requests = $repo->getConversionRequests(null, null, $per_page, $offset);
 
     $table = $wpdb->prefix . 'user_points';
