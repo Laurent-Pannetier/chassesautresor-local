@@ -50,8 +50,16 @@ if (current_user_can('administrator')) {
             </div>
         </div>
     </div>
-    <div id="historique-paiements-admin" class="liste-paiements" data-page="<?php echo esc_attr($historique['page']); ?>" data-pages="<?php echo esc_attr($historique['pages']); ?>">
-        <?php echo $historique['html']; ?>
+    <div class="stats-table-wrapper">
+        <h3><?php esc_html_e('Historique des conversions', 'chassesautresor'); ?></h3>
+        <div
+            id="historique-paiements-admin"
+            class="liste-paiements"
+            data-page="<?php echo esc_attr($historique['page']); ?>"
+            data-pages="<?php echo esc_attr($historique['pages']); ?>"
+        >
+            <?php echo $historique['html']; ?>
+        </div>
     </div>
     <?php
 }
