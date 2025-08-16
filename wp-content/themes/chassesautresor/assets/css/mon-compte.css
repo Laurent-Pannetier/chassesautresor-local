@@ -389,22 +389,6 @@
     list-style: none;
     text-align: left;
 }
-/* tables */
-.dashboard-card table {
-    width: 100%;
-    border-collapse: collapse;
-    border : 0 transparent;
-}
-
-.dashboard-card table tr,  .stats-table tr td{
-    border: 0 solid transparent;
-}
-
-.dashboard-card table td {
-    text-align: left;
-    padding: 8px;
-    font-weight: bold;
-}
 /* images */
 .image-container {
     position: relative; /* Permet de positionner l'overlay */
@@ -597,4 +581,33 @@
     margin-top: 40px;
 }
 
+
+/* ====== Styles génériques des tableaux (mode édition) ====== */
+.myaccount-content table {
+    width: 100%;
+    border-collapse: collapse;
+    border: none;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.myaccount-content th,
+.myaccount-content td {
+    padding: 6px 12px;
+    text-align: right;
+}
+
+.myaccount-content th:first-child,
+.myaccount-content td:first-child {
+    text-align: left;
+}
+
+.myaccount-content thead {
+    background-color: rgba(0, 0, 0, 0.04);
+    color: var(--color-editor-heading);
+}
+
+.myaccount-content tbody tr:nth-child(even) {
+    background-color: rgba(0, 0, 0, 0.02);
+}
 
