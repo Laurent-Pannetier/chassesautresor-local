@@ -29,7 +29,6 @@ $casse = get_field('enigme_reponse_casse', $enigme_id);
 $max = (int) get_field('enigme_tentative_max', $enigme_id);
 $cout = get_field('enigme_tentative_cout_points', $enigme_id);
 $mode_validation = get_field('enigme_mode_validation', $enigme_id) ?? 'aucune';
-$style = get_field('enigme_style_affichage', $enigme_id);
 $solution = get_field('enigme_solution', $enigme_id);
 $date_raw = get_field('enigme_acces_date', $enigme_id);
 $date_obj = convertir_en_datetime($date_raw);
@@ -80,15 +79,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
         <div class="edition-panel-header-top">
           <h2><i class="fa-solid fa-sliders"></i> <?= esc_html__('Panneau d\'édition énigme', 'chassesautresor-com'); ?></h2>
 
-          <!-- ✅ Ajout du champ Style ici -->
-        <div class="champ-enigme champ-style" data-champ="enigme_style_affichage" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" style="margin-top: 8px;">
-          <label for="select-style-affichage" style="font-weight: normal; font-size: 0.9em;">Style d'affichage :</label>
-          <select id="select-style-affichage" class="champ-input" style="margin-left: 10px;">
-            <option value="defaut" <?= $style === 'defaut' ? 'selected' : ''; ?>>Défaut</option>
-            <option value="pirate" <?= $style === 'pirate' ? 'selected' : ''; ?>>Pirate</option>
-            <option value="vintage" <?= $style === 'vintage' ? 'selected' : ''; ?>>Vintage</option>
-          </select>
-        </div>
         <button type="button" class="panneau-fermer" aria-label="Fermer les paramètres">✖</button>
       </div>
       <div class="edition-tabs">
