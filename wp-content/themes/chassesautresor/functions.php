@@ -131,9 +131,11 @@ function forcer_acf_form_head_chasse()
 
     $post_id = get_queried_object_id();
 
-    if (current_user_can('edit_post', $post_id)) {
-        acf_form_head();
+    if (!current_user_can('edit_post', $post_id)) {
+        return;
     }
+
+    acf_form_head();
 }
 
 
