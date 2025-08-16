@@ -123,8 +123,15 @@ require_once $inc_path . 'edition/edition-securite.php';
  * @hook wp_head
  */
 add_action('wp_head', 'forcer_acf_form_head_chasse', 0);
-function forcer_acf_form_head_chasse() {
-    if (is_singular('chasse') && function_exists('acf_form_head')) {
+function forcer_acf_form_head_chasse()
+{
+    if (!is_singular('chasse') || !function_exists('acf_form_head')) {
+        return;
+    }
+
+    $post_id = get_queried_object_id();
+
+    if (current_user_can('edit_post', $post_id)) {
         acf_form_head();
     }
 }
