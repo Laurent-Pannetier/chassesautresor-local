@@ -682,7 +682,7 @@ function ajax_update_request_status(): void
                 (int) $request['user_id'],
                 $points,
                 $reason,
-                'conversion',
+                'admin',
                 $paiement_id
             );
         }
