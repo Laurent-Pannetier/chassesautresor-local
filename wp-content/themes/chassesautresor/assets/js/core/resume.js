@@ -184,6 +184,30 @@ window.mettreAJourResumeInfos = function () {
         const val = document.querySelector('#solution-heure')?.value?.trim();
         estRempli = !!val;
       }
+
+      if (champ === 'enigme_solution_fichier') {
+        const lien = document.querySelector('.champ-solution-fichier p a');
+        const nom = lien?.textContent?.trim();
+        const btn = ligne.querySelector('.champ-modifier');
+        const labelNode = ligne.childNodes[0];
+        estRempli = !!nom;
+        if (labelNode && labelNode.nodeType === 3) {
+          labelNode.textContent = nom || 'Document PDF';
+        }
+        if (btn) {
+          btn.textContent = estRempli ? 'Modifier' : 'Choisir un fichier';
+        }
+      }
+
+      if (champ === 'enigme_solution_explication') {
+        const textarea = document.querySelector('#panneau-solution-enigme textarea');
+        const texte = textarea?.value?.trim();
+        const btn = ligne.querySelector('.champ-modifier');
+        estRempli = !!texte;
+        if (btn) {
+          btn.textContent = estRempli ? 'éditer' : 'Rédiger';
+        }
+      }
       mettreAJourLigneResume(ligne, champ, estRempli, 'enigme');
     });
     // ✅ Marquage spécial si bonne réponse manquante
@@ -274,7 +298,9 @@ window.onChampSimpleMisAJour = function (champ, postId, valeur, cpt) {
       'enigme_style_affichage',
       'enigme_solution_mode',
       'enigme_solution_delai',
-      'enigme_solution_heure'
+      'enigme_solution_heure',
+      'enigme_solution_fichier',
+      'enigme_solution_explication'
     ];
 
     if (champ === 'post_title' && typeof window.mettreAJourTitreHeader === 'function') {

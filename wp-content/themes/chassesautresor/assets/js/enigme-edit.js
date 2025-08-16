@@ -957,6 +957,9 @@ function initSolutionInline() {
         if (res.success) {
           feedbackFichier.textContent = '✅ Fichier enregistré';
           feedbackFichier.className = 'champ-feedback champ-success';
+          if (typeof window.mettreAJourResumeInfos === 'function') {
+            window.mettreAJourResumeInfos();
+          }
         } else {
           feedbackFichier.textContent = '❌ Erreur : ' + (res.data || 'inconnue');
           feedbackFichier.className = 'champ-feedback champ-error';
@@ -973,6 +976,12 @@ function initSolutionInline() {
 // ==============================
 // ✏️ Panneau solution (texte)
 // ==============================
+document.querySelector('#panneau-solution-enigme textarea')?.addEventListener('input', () => {
+  if (typeof window.mettreAJourResumeInfos === 'function') {
+    window.mettreAJourResumeInfos();
+  }
+});
+
 document.addEventListener('click', (e) => {
   const btn = e.target.closest('#ouvrir-panneau-solution'); // ou '.ouvrir-panneau-solution' si classe
   if (!btn) return;
