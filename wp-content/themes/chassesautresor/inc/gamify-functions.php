@@ -493,7 +493,7 @@ function render_points_history_table(int $user_id): string
     ob_start();
     ?>
     <div class="stats-table-wrapper" data-per-page="<?php echo esc_attr($per_page); ?>">
-        <h3><?php esc_html_e('Historique', 'chassesautresor-com'); ?></h3>
+        <h3><?php esc_html_e('Historique de vos points', 'chassesautresor-com'); ?></h3>
         <table class="stats-table">
             <thead>
             <tr>
