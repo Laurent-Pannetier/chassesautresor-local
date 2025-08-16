@@ -191,10 +191,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(window.location.search);
 
   const postType = params.get('post_type');
+  const panel = params.get('panel');
   if (
     params.get('edition') === 'open' &&
     !params.has('tab') &&
-    (!postType || postType === 'organisateur')
+    (panel === 'organisateur' || (!panel && (!postType || postType === 'organisateur')))
   ) {
     const toggle = document.getElementById('toggle-mode-edition');
     toggle?.click();

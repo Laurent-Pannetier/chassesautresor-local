@@ -27,7 +27,10 @@ $organisateur_id = $args['organisateur_id'] ?? null;
             // ?edition=open. L'ancre #presentation permet de scroller
             // directement sur la section description.
             'return' => add_query_arg(
-                ['edition' => 'open'],
+                [
+                    'edition' => 'open',
+                    'panel'   => 'organisateur',
+                ],
                 remove_query_arg(['acf'], get_permalink())
             ) . '#presentation',
 

@@ -60,10 +60,11 @@ function initChasseEdit() {
   // 🧭 Déclencheur automatique
   // ==============================
   const params = new URLSearchParams(window.location.search);
-  const doitOuvrir = params.get('edition') === 'open';
-  const tab = params.get('tab');
-  const skipAuto = document.body.classList.contains('scroll-to-enigmes');
-  if (doitOuvrir && !skipAuto) {
+    const doitOuvrir = params.get('edition') === 'open';
+    const tab = params.get('tab');
+    const panel = params.get('panel');
+    const skipAuto = document.body.classList.contains('scroll-to-enigmes');
+    if (doitOuvrir && !skipAuto && panel !== 'organisateur') {
     document.body.classList.add('edition-active-chasse', 'panneau-ouvert', 'mode-edition');
     if (tab) {
       const btn = document.querySelector(`.edition-tab[data-target="chasse-tab-${tab}"]`);
