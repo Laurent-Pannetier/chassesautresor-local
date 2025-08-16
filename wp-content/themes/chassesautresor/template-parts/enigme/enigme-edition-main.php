@@ -584,7 +584,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                     <div class="dashboard-card solution-delai">
                       <i class="fa-regular fa-clock" aria-hidden="true"></i>
                       <h3>
-                        Délai
+                        Délai après fin de chasse
                         <button
                           type="button"
                           class="mode-fin-aide stat-help"
@@ -595,23 +595,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                         </button>
                       </h3>
                       <p class="stat-value">
-                        <input
-                          type="number"
-                          min="0"
-                          max="60"
-                          step="1"
-                          value="<?= esc_attr($delai); ?>"
-                          id="solution-delai"
-                          class="champ-input champ-delai-inline"
-                        >
-                        jours à
-                        <select id="solution-heure" class="champ-select-heure">
-                          <?php foreach (range(0, 23) as $h) :
-                            $formatted = str_pad($h, 2, '0', STR_PAD_LEFT) . ':00'; ?>
-                            <option value="<?= $formatted; ?>" <?= $formatted === $heure ? 'selected' : ''; ?>><?= $formatted; ?></option>
-                          <?php endforeach; ?>
-                        </select>
-                        heure
+                        <span>
+                          <input
+                            type="number"
+                            min="0"
+                            max="60"
+                            step="1"
+                            value="<?= esc_attr($delai); ?>"
+                            id="solution-delai"
+                            class="champ-input champ-delai-inline"
+                          >
+                          jours après fin de chasse
+                        </span>
+                        <span>
+                          publication à
+                          <select id="solution-heure" class="champ-select-heure">
+                            <?php foreach (range(0, 23) as $h) :
+                              $formatted = str_pad($h, 2, '0', STR_PAD_LEFT) . ':00'; ?>
+                              <option value="<?= $formatted; ?>" <?= $formatted === $heure ? 'selected' : ''; ?>><?= $formatted; ?></option>
+                            <?php endforeach; ?>
+                          </select>
+                          heure
+                        </span>
                       </p>
                     </div>
                   </div>

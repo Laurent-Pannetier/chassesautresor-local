@@ -1447,6 +1447,22 @@ body.panneau-ouvert::before {
   font-weight: 700;
 }
 
+.dashboard-card.solution-delai .stat-value {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.dashboard-card.solution-delai .stat-value span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
 .dashboard-card.graph-card {
   align-items: stretch;
   text-align: left;
