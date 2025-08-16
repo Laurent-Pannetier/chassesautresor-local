@@ -333,8 +333,8 @@ function afficher_tableau_paiements_organisateur($user_id, $filtre_statut = 'en_
     echo '<thead><tr>';
     echo '<th>' . esc_html__('Date demande', 'chassesautresor') . '</th>';
     echo '<th>' . esc_html__('Montant (€)', 'chassesautresor') . '</th>';
-    echo '<th data-format="etiquette">' . esc_html__('Points utilisés', 'chassesautresor') . '</th>';
-    echo '<th data-format="etiquette">' . esc_html__('Statut', 'chassesautresor') . '</th>';
+    echo '<th>' . esc_html__('Points utilisés', 'chassesautresor') . '</th>';
+    echo '<th>' . esc_html__('Statut', 'chassesautresor') . '</th>';
     echo '</tr></thead>';
     echo '<tbody>';
 
@@ -357,8 +357,8 @@ function afficher_tableau_paiements_organisateur($user_id, $filtre_statut = 'en_
         echo '<tr>';
         echo '<td>' . esc_html(date_i18n('d/m/Y à H:i', strtotime($paiement['request_date']))) . '</td>';
         echo '<td>' . esc_html($paiement['amount_eur']) . ' €</td>';
-        echo '<td>' . $points_utilises . '</td>';
-        echo '<td>' . esc_html($statut_affiche) . '</td>';
+        echo '<td><span class="etiquette etiquette-grande">' . $points_utilises . '</span></td>';
+        echo '<td><span class="etiquette">' . esc_html($statut_affiche) . '</span></td>';
         echo '</tr>';
     }
 
