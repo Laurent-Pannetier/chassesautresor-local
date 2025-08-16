@@ -650,6 +650,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                         H
                       </p>
                     </div>
+                    <div class="dashboard-card solution-reassurance">
+                      <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+                      <ul>
+                        <li><strong>Vos solutions sont protégées</strong></li>
+                        <li>Stockées dans un espace privé, hors de portée des joueurs.</li>
+                        <li>Aucun lien ne peut être trouvé ni ouvert.</li>
+                        <li>Débloquées uniquement au moment choisi.</li>
+                      </ul>
+                    </div>
                   </div>
 
                   <input type="file" id="solution-pdf-upload" accept="application/pdf" style="display:none;">
