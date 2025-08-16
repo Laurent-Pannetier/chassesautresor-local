@@ -42,8 +42,9 @@ if (!function_exists('current_time')) {
 if (!function_exists('update_user_points')) {
     function update_user_points($user_id, $points_change, $reason = '', $origin_type = 'admin', $origin_id = null): void
     {
-        global $user_points;
+        global $user_points, $last_origin_type;
         $user_points[$user_id] = ($user_points[$user_id] ?? 0) + $points_change;
+        $last_origin_type     = $origin_type;
     }
 }
 
@@ -84,8 +85,9 @@ class AjaxUpdateRequestStatusTest extends TestCase
      */
     public function test_status_cancel_or_refuse_restores_balance(string $status): void
     {
-        global $request_fixture, $user_points;
-        $user_points = [];
+        global $request_fixture, $user_points, $last_origin_type;
+        $user_points      = [];
+        $last_origin_type = null;
         $request_fixture = [
             'user_id' => 7,
             'points'  => -150,
@@ -97,5 +99,6 @@ class AjaxUpdateRequestStatusTest extends TestCase
         ajax_update_request_status();
 
         $this->assertSame(150, $user_points[7]);
+        $this->assertSame('admin', $last_origin_type);
     }
 }
