@@ -45,20 +45,35 @@ class PointsRepository
     /**
      * Record a points operation and return the new balance.
      */
-    public function addPoints(int $userId, int $delta, string $reason = ''): int
+    public function addPoints(
+        int $userId,
+        int $delta,
+        string $reason = '',
+        string $originType = 'admin',
+        ?int $originId = null
+    ): int
     {
         $current = $this->getBalance($userId);
         $newBalance = max(0, $current + $delta);
 
+        $data = [
+            'user_id'     => $userId,
+            'balance'     => $newBalance,
+            'points'      => $delta,
+            'reason'      => $reason,
+            'origin_type' => $originType,
+        ];
+        $format = ['%d', '%d', '%d', '%s', '%s'];
+
+        if ($originId !== null) {
+            $data['origin_id'] = $originId;
+            $format[] = '%d';
+        }
+
         $this->wpdb->insert(
             $this->table,
-            [
-                'user_id' => $userId,
-                'balance' => $newBalance,
-                'points'  => $delta,
-                'reason'  => $reason,
-            ],
-            ['%d', '%d', '%d', '%s']
+            $data,
+            $format
         );
 
         return $newBalance;
@@ -77,6 +92,8 @@ class PointsRepository
         $newBalance = max(0, $current + $points);
         $amountEur = round($amountEur, 2);
 
+        $reason = sprintf('Demande de conversion de %d points', abs($points));
+
         $this->wpdb->insert(
             $this->table,
             [
@@ -84,14 +101,24 @@ class PointsRepository
                 'balance'        => $newBalance,
                 'points'         => $points,
                 'amount_eur'     => $amountEur,
-                'reason'         => 'conversion',
+                'reason'         => $reason,
+                'origin_type'    => 'conversion',
                 'request_status' => 'pending',
                 'request_date'   => current_time('mysql'),
             ],
-            ['%d', '%d', '%d', '%f', '%s', '%s', '%s']
+            ['%d', '%d', '%d', '%f', '%s', '%s', '%s', '%s']
         );
 
-        return (int) $this->wpdb->insert_id;
+        $id = (int) $this->wpdb->insert_id;
+        $this->wpdb->update(
+            $this->table,
+            ['origin_id' => $id],
+            ['id' => $id],
+            ['%d'],
+            ['%d']
+        );
+
+        return $id;
     }
 
     /**

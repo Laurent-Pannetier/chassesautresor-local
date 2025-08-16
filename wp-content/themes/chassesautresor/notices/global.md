@@ -1275,6 +1275,8 @@ Index :
 | points    | int             | variation (crédit ou débit)      |
 | amount_eur | decimal(10,2) NULL | montant équivalent en euros |
 | reason    | varchar(255)    | motif de l'opération             |
+| origin_type | enum('admin','chasse','tentative','achat','conversion') NULL DEFAULT 'admin' | catégorie |
+| origin_id | bigint unsigned NULL | identifiant lié (chasse, énigme, commande...) |
 | request_status | enum('pending','approved','paid','refused') DEFAULT 'pending' | statut de la demande |
 | request_date | datetime DEFAULT CURRENT_TIMESTAMP | date de la demande |
 | settlement_date | datetime NULL | date de règlement |
@@ -1286,6 +1288,9 @@ Index :
 - `PRIMARY(id)`
 - `INDEX(user_id)`
 - `INDEX(created_at)`
+
+`origin_type` indique la source de la variation de points :
+`admin`, `chasse`, `tentative`, `achat` ou `conversion`.
 
 
 Les variantes sont comparées en tenant compte de leur option `respecter_casse_n`. Si la saisie correspond, le résultat enregistré est `variante` et le message défini est renvoyé via AJAX à chaque soumission, même identique.

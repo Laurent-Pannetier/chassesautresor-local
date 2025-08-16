@@ -147,7 +147,8 @@ function soumettre_reponse_manuelle()
     }
 
     if ($cout > 0) {
-        deduire_points_utilisateur($user_id, $cout);
+        $reason = sprintf("Tentative de réponse pour l'énigme #%d", $enigme_id);
+        deduire_points_utilisateur($user_id, $cout, $reason, 'tentative', $enigme_id);
     }
 
     $uid = inserer_tentative($user_id, $enigme_id, $reponse);

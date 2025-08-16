@@ -46,7 +46,8 @@ if ($chasse_id) {
     enregistrer_engagement_chasse($current_user_id, $chasse_id);
 
     if ($cout_points > 0) {
-        deduire_points_utilisateur($current_user_id, $cout_points);
+        $reason = sprintf('Déblocage de la chasse #%d', $chasse_id);
+        deduire_points_utilisateur($current_user_id, $cout_points, $reason, 'chasse', $chasse_id);
     }
 
     wp_safe_redirect(get_permalink($chasse_id));
