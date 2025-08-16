@@ -899,7 +899,11 @@ function actualiser_cta_validation_chasse(): void
     ob_start();
     if (!empty($incompletes)) {
         echo '<div class="cta-chasse">';
-        echo '<p>⚠️ Certaines énigmes doivent être complétées :</p>';
+        $warning = esc_html__(
+            'Certaines énigmes doivent être complétées :',
+            'chassesautresor-com'
+        );
+        echo '<p>⚠️ ' . $warning . '</p>';
         echo '<ul class="liste-enigmes-incompletes">';
         foreach ($incompletes as $data) {
             echo '<li><a href="' . esc_url($data['lien']) . '">' . esc_html($data['titre']) . '</a></li>';

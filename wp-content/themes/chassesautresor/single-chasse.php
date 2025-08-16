@@ -112,7 +112,11 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
     if ($est_orga_associe && ($has_incomplete_enigme || $needs_validatable_message)) {
         echo '<div class="cta-chasse">';
         if ($has_incomplete_enigme) {
-            echo '<p>⚠️ Certaines énigmes doivent être complétées :</p>';
+            $warning = esc_html__(
+                'Certaines énigmes doivent être complétées :',
+                'chassesautresor-com'
+            );
+            echo '<p>⚠️ ' . $warning . '</p>';
             echo '<ul class="liste-enigmes-incompletes">';
             foreach ($enigmes_incompletes as $eid) {
                 $titre = get_the_title($eid);
@@ -120,6 +124,12 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
                 echo '<li><a href="' . esc_url($lien) . '">' . esc_html($titre) . '</a></li>';
             }
             echo '</ul>';
+            echo '<script>';
+            echo 'document.addEventListener("DOMContentLoaded", function () {';
+            echo 'var t = document.getElementById("liste-enigmes");';
+            echo 'if (t) { t.scrollIntoView({ behavior: "smooth" }); }';
+            echo '});';
+            echo '</script>';
         }
         if ($needs_validatable_message) {
             $msg = __(
@@ -231,7 +241,7 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
           ]);
         endif; ?>
       </div>
-      <div class="chasse-enigmes-liste">
+      <div id="liste-enigmes" class="chasse-enigmes-liste">
         <?php
         get_template_part('template-parts/enigme/chasse-partial-boucle-enigmes', null, [
           'chasse_id'       => $chasse_id,
