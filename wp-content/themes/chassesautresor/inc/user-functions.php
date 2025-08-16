@@ -309,7 +309,12 @@ function myaccount_get_important_messages(): string
         $repo       = new PointsRepository($wpdb);
         $pendingOwn = $repo->getConversionRequests($current_user_id, 'pending');
         if (!empty($pendingOwn)) {
-            $messages[] = __('Vous avez une demande de conversion en attente de règlement.', 'chassesautresor');
+            $messages[] = sprintf(
+                /* translators: 1: opening anchor tag, 2: closing anchor tag */
+                __('Vous avez une %1$sdemande de conversion%2$s en attente de règlement.', 'chassesautresor'),
+                '<a href="' . esc_url(home_url('/mon-compte/commandes/')) . '">',
+                '</a>'
+            );
         }
 
         if ($organisateur_id) {
