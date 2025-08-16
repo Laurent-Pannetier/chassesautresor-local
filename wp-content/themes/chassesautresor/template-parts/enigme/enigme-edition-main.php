@@ -294,7 +294,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
               </div>
 
             <div class="champ-enigme champ-variantes-resume champ-groupe-reponse-automatique cache<?= $has_variantes ? ' champ-rempli' : ' champ-vide'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_reponse_variantes" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
-              <label><?= esc_html__('Variantes', 'chassesautresor-com'); ?> :</label>
+              <label>
+                <?= esc_html__('Variantes', 'chassesautresor-com'); ?>
+                <button
+                  type="button"
+                  class="bouton-aide-points variantes-aide"
+                  aria-label="<?= esc_attr__('Explication des variantes', 'chassesautresor-com'); ?>"
+                >
+                  <i class="fa-solid fa-circle-question" aria-hidden="true"></i>
+                </button>
+              </label>
 
               <?php if ($has_variantes) : ?>
                 <ul class="liste-variantes-resume">

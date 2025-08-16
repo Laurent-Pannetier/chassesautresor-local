@@ -147,6 +147,18 @@ function initEnigmeEdit() {
     });
   });
 
+  const explicationVariantes = wp.i18n.__(
+    "Les variantes sont des réponses alternatives qui ne sont pas considérées comme bonnes, mais affichent un message en retour " +
+      "(libre à vous d'y mettre de l'aide, un lien, un crypto ou ce que vous voulez)",
+    "chassesautresor-com"
+  );
+
+  document.querySelectorAll('.variantes-aide').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      alert(explicationVariantes);
+    });
+  });
+
 
   // ==============================
   // 🧰 Déclencheurs de résumé
