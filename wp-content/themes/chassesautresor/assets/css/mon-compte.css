@@ -566,6 +566,26 @@
     font-size: 0.875rem;
 }
 
+/* 📌 Actions de conversion en ligne */
+.liste-paiements .js-update-request {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+    width: 100%;
+}
+
+.liste-paiements .js-update-request select {
+    flex: 0 0 auto;
+    width: auto;
+    font-size: 0.875rem;
+}
+
+.liste-paiements .js-update-request button {
+    flex: 0 0 auto;
+    padding: 2px 6px;
+}
+
 
 /* Tablette : 2 colonnes */
 @media (max-width: 768px) {
