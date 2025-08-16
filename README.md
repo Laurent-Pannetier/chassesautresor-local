@@ -31,3 +31,9 @@ wp i18n make-pot ./wp-content/themes/chassesautresor ./wp-content/themes/chasses
 
 Ajoutez ensuite vos fichiers `.mo` compilés dans ce même dossier pour charger les traductions en front‑end.
 
+Tâches cron
+-----------
+
+Lors de l'installation, planifiez l'événement `cat_htaccess_check` (toutes les 5 minutes)
+pour réactiver automatiquement les protections `.htaccess` désactivées temporairement.
+

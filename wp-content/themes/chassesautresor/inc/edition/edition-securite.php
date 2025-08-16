@@ -266,8 +266,9 @@ add_action('acf/save_post', 'reactiver_htaccess_protection_enigme_apres_save', 9
 
 
 /**
+ * Vérifie les désactivations temporaires et réactive les protections expirées.
  *
- * @hook template_redirect
+ * @hook cat_htaccess_check
  */
 function verifier_expiration_desactivations_htaccess()
 {
@@ -309,6 +310,8 @@ function verifier_expiration_desactivations_htaccess()
   }
 }
 
+// 🔁 Vérification planifiée des désactivations temporaires
+add_action('cat_htaccess_check', 'verifier_expiration_desactivations_htaccess');
 
 /**
  * Si un fichier .htaccess.tmp est présent mais qu’aucun .htaccess n’existe,
@@ -496,6 +499,19 @@ function purger_htaccess_temp_enigmes()
     }
   }
 }
+
+
+/**
+ * Crée la tâche planifiée `cat_htaccess_check` si elle n’existe pas.
+ * Reliée à la fonction `verifier_expiration_desactivations_htaccess()`.
+ */
+function enregistrer_cron_verification_htaccess()
+{
+  if (!wp_next_scheduled('cat_htaccess_check')) {
+    wp_schedule_event(time(), 'every_5_minutes', 'cat_htaccess_check');
+  }
+}
+add_action('wp', 'enregistrer_cron_verification_htaccess');
 
 
 /**
