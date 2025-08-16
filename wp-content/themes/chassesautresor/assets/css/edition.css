@@ -1661,6 +1661,11 @@ body.panneau-ouvert::before {
   white-space: nowrap;
 }
 
+.etiquette.grandes {
+  padding: 4px 8px;
+  font-size: 0.95em;
+}
+
 /* ====== Mode de fin ====== */
 .champ-mode-fin {
   display: flex;

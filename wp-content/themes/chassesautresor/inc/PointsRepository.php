@@ -80,6 +80,29 @@ class PointsRepository
     }
 
     /**
+     * Retrieve points operations for a user.
+     *
+     * @param int $userId User identifier.
+     * @param int $limit  Maximum number of rows to return.
+     *
+     * @return array[]
+     */
+    public function getHistory(int $userId, int $limit = 50): array
+    {
+        $sql = $this->wpdb->prepare(
+            "SELECT id, request_date, origin_type, reason, points, balance\n" .
+            "FROM {$this->table}\n" .
+            "WHERE user_id = %d\n" .
+            "ORDER BY id DESC\n" .
+            "LIMIT %d",
+            $userId,
+            $limit
+        );
+
+        return $this->wpdb->get_results($sql, ARRAY_A);
+    }
+
+    /**
      * Record a conversion request with pending status and return the inserted row ID.
      *
      * @param int   $userId    User identifier.

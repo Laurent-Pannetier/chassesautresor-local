@@ -17,6 +17,13 @@ $current_user = wp_get_current_user();
 $roles        = (array) $current_user->roles;
 $is_organizer = in_array(ROLE_ORGANISATEUR, $roles, true) || in_array(ROLE_ORGANISATEUR_CREATION, $roles, true);
 
+$history = [];
+if ($current_user->ID) {
+    global $wpdb;
+    $repo    = new PointsRepository($wpdb);
+    $history = $repo->getHistory((int) $current_user->ID);
+}
+
 do_action('woocommerce_before_account_orders', $has_orders);
 
 if ($is_organizer) {
@@ -94,6 +101,56 @@ if ($is_organizer) {
         $shop_url = esc_url(home_url('/boutique'));
         echo '<p class="myaccount-points"><a href="' . $shop_url . '">' . esc_html__('Ajouter des points', 'chassesautresor') . '</a></p>';
     }
+}
+
+if ($current_user->ID) {
+    $origin_labels = [
+        'admin'      => __('Admin', 'chassesautresor-com'),
+        'chasse'     => __('Chasse', 'chassesautresor-com'),
+        'tentative'  => __('Tentative', 'chassesautresor-com'),
+        'achat'      => __('Achat', 'chassesautresor-com'),
+        'conversion' => __('Conversion', 'chassesautresor-com'),
+    ];
+    ?>
+    <h2><?php esc_html_e('Historique', 'chassesautresor-com'); ?></h2>
+    <table class="points-history">
+        <thead>
+            <tr>
+                <th><?php esc_html_e('Id', 'chassesautresor-com'); ?></th>
+                <th><?php esc_html_e('Date', 'chassesautresor-com'); ?></th>
+                <th><?php esc_html_e('Origine', 'chassesautresor-com'); ?></th>
+                <th><?php esc_html_e('Motif', 'chassesautresor-com'); ?></th>
+                <th><?php esc_html_e('Variation', 'chassesautresor-com'); ?></th>
+                <th><?php esc_html_e('Solde', 'chassesautresor-com'); ?></th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if (empty($history)) : ?>
+            <tr>
+                <td colspan="6"><?php esc_html_e('Aucune opération', 'chassesautresor-com'); ?></td>
+            </tr>
+            <?php else : ?>
+            <?php foreach ($history as $row) : ?>
+            <?php
+                $origin = $origin_labels[$row['origin_type']] ?? $row['origin_type'];
+                $date   = $row['request_date']
+                    ? wp_date(get_option('date_format'), strtotime($row['request_date']))
+                    : '';
+                $delta  = sprintf('%+d', (int) $row['points']);
+            ?>
+            <tr>
+                <td><?php echo esc_html($row['id']); ?></td>
+                <td><?php echo esc_html($date); ?></td>
+                <td><span class="etiquette"><?php echo esc_html($origin); ?></span></td>
+                <td><?php echo esc_html($row['reason']); ?></td>
+                <td><span class="etiquette grandes"><?php echo esc_html($delta); ?></span></td>
+                <td><span class="etiquette grandes"><?php echo esc_html((int) $row['balance']); ?></span></td>
+            </tr>
+            <?php endforeach; ?>
+            <?php endif; ?>
+        </tbody>
+    </table>
+    <?php
 }
 
 if ($has_orders) : ?>
