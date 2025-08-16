@@ -113,37 +113,39 @@ if ($current_user->ID && !empty($history)) {
     ];
     ?>
     <h2><?php esc_html_e('Historique', 'chassesautresor-com'); ?></h2>
-    <table class="points-history">
-        <thead>
-            <tr>
-                <th scope="col"><?php esc_html_e('Id', 'chassesautresor-com'); ?></th>
-                <th scope="col"><?php esc_html_e('Date', 'chassesautresor-com'); ?></th>
-                <th scope="col" data-format="etiquette"><?php esc_html_e('Origine', 'chassesautresor-com'); ?></th>
-                <th scope="col"><?php esc_html_e('Motif', 'chassesautresor-com'); ?></th>
-                <th scope="col" data-format="etiquette"><?php esc_html_e('Variation', 'chassesautresor-com'); ?></th>
-                <th scope="col" data-format="etiquette"><?php esc_html_e('Solde', 'chassesautresor-com'); ?></th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($history as $row) : ?>
-            <?php
-                $origin = $origin_labels[$row['origin_type']] ?? $row['origin_type'];
-                $date   = $row['request_date']
-                    ? wp_date(get_option('date_format'), strtotime($row['request_date']))
-                    : '';
-                $delta  = sprintf('%+d', (int) $row['points']);
-            ?>
-            <tr>
-                <td><?php echo esc_html($row['id']); ?></td>
-                <td><?php echo esc_html($date); ?></td>
-                <td><span class="etiquette"><?php echo esc_html($origin); ?></span></td>
-                <td><?php echo esc_html($row['reason']); ?></td>
-                <td><span class="etiquette grandes"><?php echo esc_html($delta); ?></span></td>
-                <td><span class="etiquette grandes"><?php echo esc_html((int) $row['balance']); ?></span></td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+    <div class="stats-table-wrapper">
+        <table class="stats-table points-history">
+            <thead>
+                <tr>
+                    <th scope="col"><?php esc_html_e('Id', 'chassesautresor-com'); ?></th>
+                    <th scope="col"><?php esc_html_e('Date', 'chassesautresor-com'); ?></th>
+                    <th scope="col" data-format="etiquette"><?php esc_html_e('Origine', 'chassesautresor-com'); ?></th>
+                    <th scope="col"><?php esc_html_e('Motif', 'chassesautresor-com'); ?></th>
+                    <th scope="col" data-format="etiquette"><?php esc_html_e('Variation', 'chassesautresor-com'); ?></th>
+                    <th scope="col" data-format="etiquette"><?php esc_html_e('Solde', 'chassesautresor-com'); ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($history as $row) : ?>
+                <?php
+                    $origin = $origin_labels[$row['origin_type']] ?? $row['origin_type'];
+                    $date   = $row['request_date']
+                        ? wp_date(get_option('date_format'), strtotime($row['request_date']))
+                        : '';
+                    $delta  = sprintf('%+d', (int) $row['points']);
+                ?>
+                <tr>
+                    <td><?php echo esc_html($row['id']); ?></td>
+                    <td><?php echo esc_html($date); ?></td>
+                    <td><span class="etiquette"><?php echo esc_html($origin); ?></span></td>
+                    <td><?php echo esc_html($row['reason']); ?></td>
+                    <td><span class="etiquette grandes"><?php echo esc_html($delta); ?></span></td>
+                    <td><span class="etiquette grandes"><?php echo esc_html((int) $row['balance']); ?></span></td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
     <?php
 }
 
