@@ -599,7 +599,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                 }
             } elseif ($solution_mode === 'texte') {
                 if ($explication !== '') {
-                    $publication_label = 'votre texte d'explication';
+                    $publication_label = "votre texte d'explication";
                     $publication_note  = sprintf(', %d jours après la fin de la chasse, à %s', $delai, $heure);
                 } else {
                     $publication_note = ' (rédaction libre sélectionnée mais non remplie)';
