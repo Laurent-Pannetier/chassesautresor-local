@@ -66,6 +66,31 @@ describe('myaccount admin navigation', () => {
     global.URLSearchParams = originalURLSearchParams;
   });
 
+  test('temporary message is removed without hiding container', async () => {
+    jest.useFakeTimers();
+    initModule();
+    global.fetch = jest.fn(() => Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve({
+        success: true,
+        data: {
+          html: '<p>outils</p>',
+          messages: '<p class="flash">Temp</p><p>Persistent</p>'
+        }
+      })
+    }));
+    const link = document.querySelector('a[data-section="outils"]');
+    link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+    await Promise.resolve();
+    await Promise.resolve();
+    const container = document.querySelector('.msg-important');
+    expect(container.innerHTML).toBe('<p class="flash">Temp</p><p>Persistent</p>');
+    jest.advanceTimersByTime(3000);
+    await Promise.resolve();
+    expect(container.innerHTML).toBe('<p>Persistent</p>');
+    jest.useRealTimers();
+  });
+
   test.skip('falls back to full reload on error', async () => {
     fetch.mockImplementationOnce(() => Promise.resolve({ ok: false }));
     initModule();
