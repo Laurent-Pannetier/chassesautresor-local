@@ -195,6 +195,8 @@ document.addEventListener('DOMContentLoaded', () => {
     : null;
   const minDescLength = 50;
 
+  let descTimeout;
+
   const verifyDescription = () => {
     if (!descButton || !descField) return;
     const raw = descField.val() || '';
@@ -202,13 +204,18 @@ document.addEventListener('DOMContentLoaded', () => {
     descButton.disabled = text.length < minDescLength;
   };
 
+  const scheduleVerify = () => {
+    clearTimeout(descTimeout);
+    descTimeout = setTimeout(verifyDescription, 400);
+  };
+
   if (descButton && descField) {
     verifyDescription();
     if (descField.editor) {
-      descField.editor.on('input keyup', verifyDescription);
+      descField.editor.on('input change keyup', scheduleVerify);
     }
     const inputEl = descField.$input?.get(0);
-    inputEl?.addEventListener('input', verifyDescription);
+    inputEl?.addEventListener('input', scheduleVerify);
 
     descPanel.querySelector('form')?.addEventListener('submit', (e) => {
       const raw = descField.val() || '';

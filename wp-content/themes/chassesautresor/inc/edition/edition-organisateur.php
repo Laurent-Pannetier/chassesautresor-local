@@ -270,6 +270,13 @@ function ajax_modifier_champ_organisateur()
   }
 
   // ✅ Autres champs ACF simples
+  if ($champ_cible === 'description_longue') {
+    $texte = trim(strip_tags((string) $valeur));
+    if (mb_strlen($texte) < 50) {
+      wp_send_json_error('⚠️ description_trop_courte');
+    }
+  }
+
   $ok = update_field($champ_cible, is_numeric($valeur) ? (int) $valeur : $valeur, $post_id);
 
   // 🔍 Vérifie via get_post_meta en fallback
