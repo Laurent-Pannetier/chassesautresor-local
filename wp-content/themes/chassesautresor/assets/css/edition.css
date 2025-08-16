@@ -876,6 +876,33 @@ li.ligne-logo .champ-modifier {
   color: var(--color-editor-text-muted);
 }
 
+.resume-infos li.champ-recompense {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.resume-infos li.champ-recompense label {
+  min-width: var(--editor-label-width);
+}
+
+.resume-infos li.champ-recompense .champ-texte {
+  flex: 1;
+}
+
+.resume-infos li.champ-recompense .champ-texte-contenu {
+  display: inline;
+}
+
+.resume-infos li.champ-recompense .champ-texte-contenu .champ-modifier {
+  transform: none;
+  margin-left: 0.3rem;
+}
+
+.resume-infos li.champ-recompense.champ-vide .champ-texte {
+  color: var(--color-editor-text-muted);
+}
+
 li.ligne-email > i.fa-envelope {
   opacity: 0.6;
   margin-right: 0.3rem;

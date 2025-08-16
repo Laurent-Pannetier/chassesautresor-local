@@ -190,6 +190,97 @@ function initChasseEdit() {
   const panneauRecompense = document.getElementById('panneau-recompense-chasse');
   const boutonSupprimerRecompense = document.getElementById('bouton-supprimer-recompense');
 
+  function formaterValeurRecompense() {
+    if (!inputValeurRecompense) return;
+    let brut = inputValeurRecompense.value.replace(/\s+/g, '').replace(',', '.');
+    if (brut === '') return;
+    const nombre = parseFloat(brut);
+    if (!isNaN(nombre)) {
+      const dec = brut.includes('.') ? Math.min(2, brut.split('.')[1].length) : 0;
+      inputValeurRecompense.value = nombre.toLocaleString('fr-FR', {
+        minimumFractionDigits: dec,
+        maximumFractionDigits: 2
+      });
+    }
+  }
+
+  if (inputValeurRecompense) {
+    inputValeurRecompense.addEventListener('input', formaterValeurRecompense);
+    formaterValeurRecompense();
+  }
+
+  function majAffichageRecompense(titre, texte, valeur) {
+    const ligne = document.querySelector('.champ-chasse[data-champ="chasse_infos_recompense_valeur"]');
+    if (!ligne) return;
+    const champTexte = ligne.querySelector('.champ-texte');
+    if (!champTexte) return;
+    const peutEditer = !ligne.classList.contains('champ-desactive');
+    champTexte.innerHTML = '';
+
+    const complet = titre && texte && valeur && valeur > 0;
+    ligne.classList.toggle('champ-rempli', complet);
+    ligne.classList.toggle('champ-vide', !complet);
+
+    if (!complet) {
+      if (peutEditer) {
+        const lien = document.createElement('a');
+        lien.href = '#';
+        lien.className = 'champ-ajouter ouvrir-panneau-recompense';
+        lien.dataset.champ = 'chasse_infos_recompense_valeur';
+        lien.dataset.cpt = 'chasse';
+        lien.dataset.postId = ligne.dataset.postId || '';
+        lien.innerHTML = 'ajouter <span class="icone-modif">✏️</span>';
+        champTexte.appendChild(lien);
+      }
+      if (typeof window.mettreAJourResumeInfos === 'function') {
+        window.mettreAJourResumeInfos();
+      }
+      return;
+    }
+
+    const span = document.createElement('span');
+    span.className = 'champ-texte-contenu';
+
+    const valeurSpan = document.createElement('span');
+    valeurSpan.className = 'recompense-valeur';
+    const arrondi = Math.round(valeur);
+    valeurSpan.textContent = arrondi.toLocaleString('fr-FR') + ' €';
+
+    const titreSpan = document.createElement('span');
+    titreSpan.className = 'recompense-titre';
+    titreSpan.textContent = titre;
+
+    span.appendChild(valeurSpan);
+    span.appendChild(document.createTextNode('\u00A0\u2013\u00A0'));
+    span.appendChild(titreSpan);
+
+    if (peutEditer) {
+      span.appendChild(document.createTextNode('\u00A0\u2013\u00A0'));
+      const bouton = document.createElement('button');
+      bouton.type = 'button';
+      bouton.className = 'champ-modifier ouvrir-panneau-recompense';
+      bouton.dataset.champ = 'chasse_infos_recompense_valeur';
+      bouton.dataset.cpt = 'chasse';
+      bouton.dataset.postId = ligne.dataset.postId || '';
+      bouton.setAttribute('aria-label', 'Modifier la récompense');
+      bouton.textContent = '✏️';
+      span.appendChild(bouton);
+      if (typeof initZoneClicEdition === 'function') initZoneClicEdition(bouton);
+    }
+
+    span.appendChild(document.createTextNode('\u00A0\u2013\u00A0'));
+    const descSpan = document.createElement('span');
+    descSpan.className = 'recompense-description';
+    const texteLimite = texte.length > 200 ? texte.slice(0, 200) + '…' : texte;
+    descSpan.textContent = texteLimite;
+    span.appendChild(descSpan);
+    champTexte.appendChild(span);
+
+    if (typeof window.mettreAJourResumeInfos === 'function') {
+      window.mettreAJourResumeInfos();
+    }
+  }
+
   if (boutonSupprimerRecompense) {
     boutonSupprimerRecompense.addEventListener('click', () => {
       const panneauEdition = document.querySelector('.edition-panel-chasse');
@@ -218,13 +309,16 @@ function initChasseEdit() {
             })
           });
         })
-        ).then(() => {
-          const url = new URL(window.location.href);
-          url.searchParams.set('edition', 'open');
-          url.searchParams.set('tab', 'param');
-          window.location.href = url.toString();
-        });
+      ).then(() => {
+        majAffichageRecompense('', '', 0);
+        inputTitreRecompense.value = '';
+        inputTexteRecompense.value = '';
+        inputValeurRecompense.value = '';
+        if (typeof window.closePanel === 'function') {
+          window.closePanel('panneau-recompense-chasse');
+        }
       });
+    });
 
   }
 
@@ -233,7 +327,9 @@ function initChasseEdit() {
     boutonRecompense.addEventListener('click', () => {
       const titre = inputTitreRecompense.value.trim();
       const texte = inputTexteRecompense.value.trim();
-      const valeur = parseFloat(inputValeurRecompense.value);
+      const valeur = parseFloat(
+        inputValeurRecompense.value.replace(/\s+/g, '').replace(',', '.')
+      );
       const panneauEdition = document.querySelector('.edition-panel-chasse');
       if (!panneauEdition) return;
       const postId = panneauEdition.dataset.postId;
@@ -309,20 +405,14 @@ function initChasseEdit() {
         .then(r => r.json())
         .then(res => {
           if (res.success) {
-            if (typeof window.mettreAJourResumeInfos === 'function') {
-              window.mettreAJourResumeInfos();
-            }
-
+            majAffichageRecompense(titre, texte, valeur);
             if (document.activeElement && panneauRecompense.contains(document.activeElement)) {
               document.activeElement.blur();
-              document.body.focus(); // 🔥 Correction ultime ici
+              document.body.focus();
             }
-
-            const url = new URL(window.location.href);
-            url.searchParams.set('edition', 'open');
-            url.searchParams.set('tab', 'param');
-            window.location.href = url.toString();
-
+            if (typeof window.closePanel === 'function') {
+              window.closePanel('panneau-recompense-chasse');
+            }
           } else {
             console.error('❌ Erreur valeur récompense', res.data);
           }
