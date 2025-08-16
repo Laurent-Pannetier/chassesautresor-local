@@ -148,8 +148,8 @@ window.mettreAJourResumeInfos = function () {
       }
 
       if (champ === 'enigme_reponse_variantes') {
-        const bouton = blocEdition?.querySelector('.champ-modifier');
-        estRempli = bouton && !bouton.textContent.includes('Créer');
+        const nbVar = blocEdition?.querySelectorAll('.liste-variantes-resume .variante-resume')?.length || 0;
+        estRempli = nbVar > 0;
       }
 
       if (champ === 'enigme_acces_condition') {

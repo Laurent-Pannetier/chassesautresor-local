@@ -663,15 +663,34 @@ if (document.readyState === 'loading') {
 // 🧩 Gestion du panneau variantes
 // ==============================
 function initPanneauVariantes() {
-  const boutonOuvrir = document.querySelector('.ouvrir-panneau-variantes');
   const panneau = document.getElementById('panneau-variantes-enigme');
   const formulaire = document.getElementById('formulaire-variantes-enigme');
   const postId = formulaire?.dataset.postId;
   const wrapper = formulaire?.querySelector('.liste-variantes-wrapper');
   const boutonAjouter = document.getElementById('bouton-ajouter-variante');
   const messageLimite = document.querySelector('.message-limite-variantes');
+  const resumeBloc = document.querySelector('[data-champ="enigme_reponse_variantes"]');
+  let listeResume = resumeBloc?.querySelector('.liste-variantes-resume');
+  const lienAjouterResume = resumeBloc?.querySelector('.champ-ajouter');
+  const boutonEditerResume = resumeBloc?.querySelector('.champ-modifier.ouvrir-panneau-variantes');
+  const boutonOuvrir = resumeBloc?.querySelector('.ouvrir-panneau-variantes');
 
   if (!boutonOuvrir || !panneau || !formulaire || !postId || !wrapper || !boutonAjouter || !messageLimite) return;
+
+  function activerToggleMessage(liste) {
+    liste.addEventListener('click', (e) => {
+      const btn = e.target.closest('.variante-texte');
+      if (!btn) return;
+      const msg = btn.nextElementSibling;
+      if (msg) {
+        msg.style.display = msg.style.display === 'none' ? 'block' : 'none';
+      }
+    });
+  }
+
+  if (listeResume) {
+    activerToggleMessage(listeResume);
+  }
 
   // Ouvrir le panneau
   boutonOuvrir.addEventListener('click', () => {
@@ -706,8 +725,9 @@ function initPanneauVariantes() {
 
   // Supprimer une ligne
   formulaire.addEventListener('click', (e) => {
-    if (!e.target.classList.contains('bouton-supprimer-ligne')) return;
-    const ligne = e.target.closest('.ligne-variante');
+    const btnSupprimer = e.target.closest('.bouton-supprimer-ligne');
+    if (!btnSupprimer) return;
+    const ligne = btnSupprimer.closest('.ligne-variante');
     const lignes = wrapper.querySelectorAll('.ligne-variante');
 
     if (!ligne) return;
@@ -735,9 +755,10 @@ function initPanneauVariantes() {
     const nouvelle = base.cloneNode(true);
 
     nouvelle.querySelector('.input-texte').value = '';
-    nouvelle.querySelector('.input-texte').placeholder = 'réponse déclenchante';
+    nouvelle.querySelector('.input-texte').placeholder = 'réponse déclenchant l\'affichage du message';
 
     nouvelle.querySelector('.input-message').value = '';
+    nouvelle.querySelector('.input-message').placeholder = 'Message affiché au joueur';
     nouvelle.querySelector('input[type="checkbox"]').checked = false;
 
     wrapper.appendChild(nouvelle);
@@ -815,15 +836,48 @@ function initPanneauVariantes() {
           document.body.classList.remove('panneau-ouvert');
           panneau.setAttribute('aria-hidden', 'true');
 
-          const resume = document.querySelector('[data-champ="enigme_reponse_variantes"] .champ-modifier');
-          if (resume) {
+          if (resumeBloc) {
+            if (!listeResume) {
+              listeResume = document.createElement('ul');
+              listeResume.className = 'liste-variantes-resume';
+              resumeBloc.insertBefore(listeResume, boutonEditerResume || lienAjouterResume || null);
+              activerToggleMessage(listeResume);
+            }
+
+            listeResume.innerHTML = '';
             let nb = 0;
             for (let i = 1; i <= 4; i++) {
               const t = updates.find(u => u[0] === 'texte_' + i)?.[1] || '';
               const m = updates.find(u => u[0] === 'message_' + i)?.[1] || '';
-              if (t && m) nb++;
+              if (t && m) {
+                nb++;
+                const li = document.createElement('li');
+                li.className = 'variante-resume';
+                const bt = document.createElement('button');
+                bt.type = 'button';
+                bt.className = 'variante-texte';
+                bt.textContent = t;
+                const div = document.createElement('div');
+                div.className = 'variante-message';
+                div.style.display = 'none';
+                div.textContent = m;
+                li.appendChild(bt);
+                li.appendChild(div);
+                listeResume.appendChild(li);
+              }
             }
-            resume.textContent = nb === 0 ? '➕ Créer des variantes' : (nb === 1 ? '1 variante ✏️' : `${nb} variantes ✏️`);
+
+            if (nb === 0) {
+              resumeBloc.classList.add('champ-vide');
+              resumeBloc.classList.remove('champ-rempli');
+              lienAjouterResume?.style.setProperty('display', 'inline-block');
+              boutonEditerResume?.style.setProperty('display', 'none');
+            } else {
+              resumeBloc.classList.add('champ-rempli');
+              resumeBloc.classList.remove('champ-vide');
+              lienAjouterResume?.style.setProperty('display', 'none');
+              boutonEditerResume?.style.setProperty('display', 'inline-block');
+            }
           }
 
           if (feedback) feedback.textContent = '';

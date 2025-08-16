@@ -47,8 +47,8 @@ for ($i = 1; $i <= 4; $i++) {
         ?>
 
           <div class="ligne-variante" data-index="<?= $i; ?>">
-            <input type="text" name="<?= $inputTexte; ?>" class="champ-input input-texte" maxlength="75" placeholder="Texte de la variante" value="<?= esc_attr($texte); ?>">
-            <input type="text" name="<?= $inputMessage; ?>" class="champ-input input-message" maxlength="100" placeholder="Message affiché au joueur" value="<?= esc_attr($message); ?>">
+            <input type="text" name="<?= $inputTexte; ?>" class="champ-input input-texte" maxlength="75" placeholder="<?= esc_attr__('réponse déclenchant l\'affichage du message', 'chassesautresor-com'); ?>" value="<?= esc_attr($texte); ?>">
+            <input type="text" name="<?= $inputMessage; ?>" class="champ-input input-message" maxlength="100" placeholder="<?= esc_attr__('Message affiché au joueur', 'chassesautresor-com'); ?>" value="<?= esc_attr($message); ?>">
 
             <label class="label-casse">
               <input type="checkbox" name="<?= $inputCasse; ?>" <?= $casse ? 'checked' : ''; ?>>
@@ -64,7 +64,7 @@ for ($i = 1; $i <= 4; $i++) {
 
       <div class="ajout-variante-controls" style="margin-top: 20px; display: flex; flex-direction: column; gap: 8px;">
         <button type="button" id="bouton-ajouter-variante" class="bouton-enregistrer-description secondaire" style="align-self: start;">
-          ➕ Ajouter une variante
+          ➕ <?= esc_html__('Ajouter une variante', 'chassesautresor-com'); ?>
         </button>
         <p class="message-limite-variantes txt-small" style="display: none; color: var(--color-editor-error); font-size: 0.9em;">
           4 variantes maximum

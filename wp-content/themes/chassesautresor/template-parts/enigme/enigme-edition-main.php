@@ -40,13 +40,18 @@ $chasse = get_field('enigme_chasse_associee', $enigme_id);
 $chasse_id = is_array($chasse) ? $chasse[0] : null;
 $chasse_title = $chasse_id ? get_the_title($chasse_id) : '';
 
-$nb_variantes = 0;
+$nb_variantes   = 0;
+$variantes_list = [];
 for ($i = 1; $i <= 4; $i++) {
-  $texte   = trim((string) get_field("texte_{$i}", $enigme_id));
-  $message = trim((string) get_field("message_{$i}", $enigme_id));
-  if ($texte && $message) {
-    $nb_variantes++;
-  }
+    $texte   = trim((string) get_field("texte_{$i}", $enigme_id));
+    $message = trim((string) get_field("message_{$i}", $enigme_id));
+    if ($texte && $message) {
+        $nb_variantes++;
+        $variantes_list[] = [
+            'texte'   => $texte,
+            'message' => $message,
+        ];
+    }
 }
 $has_variantes = ($nb_variantes > 0);
 
@@ -288,22 +293,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                 <div class="champ-feedback"></div>
               </div>
 
-            <div class="champ-enigme champ-variantes-resume champ-groupe-reponse-automatique cache<?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_reponse_variantes" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
-              <label>Variantes :</label>
-              <?php
-              $bouton = $has_variantes
-                ? ($nb_variantes === 1 ? '1 variante ✏️' : $nb_variantes . ' variantes ✏️')
-                : '➕ Créer des variantes';
-              $texte = $has_variantes
-                ? ($nb_variantes === 1 ? '1 variante' : $nb_variantes . ' variantes')
-                : '';
-              ?>
-              <?php if ($peut_editer) : ?>
-                <button type="button" class="champ-modifier ouvrir-panneau-variantes" aria-label="<?= $has_variantes ? 'Éditer les variantes' : 'Créer des variantes'; ?>" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
-                  <?= esc_html($bouton); ?>
-                </button>
-              <?php elseif ($has_variantes) : ?>
-                <span><?= esc_html($texte); ?></span>
+            <div class="champ-enigme champ-variantes-resume champ-groupe-reponse-automatique cache<?= $has_variantes ? ' champ-rempli' : ' champ-vide'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_reponse_variantes" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
+              <label><?= esc_html__('Variantes', 'chassesautresor-com'); ?> :</label>
+
+              <?php if ($has_variantes) : ?>
+                <ul class="liste-variantes-resume">
+                  <?php foreach ($variantes_list as $var) : ?>
+                    <li class="variante-resume">
+                      <button type="button" class="variante-texte"><?= esc_html($var['texte']); ?></button>
+                      <div class="variante-message" style="display:none;"><?= esc_html($var['message']); ?></div>
+                    </li>
+                  <?php endforeach; ?>
+                </ul>
+                <?php if ($peut_editer) : ?>
+                  <button type="button" class="champ-modifier ouvrir-panneau-variantes" aria-label="<?= esc_attr__('Éditer les variantes', 'chassesautresor-com'); ?>" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
+                    <?= esc_html__('éditer', 'chassesautresor-com'); ?> <span class="icone-modif">✏️</span>
+                  </button>
+                <?php endif; ?>
+              <?php elseif ($peut_editer) : ?>
+                <a href="#" class="champ-ajouter ouvrir-panneau-variantes" aria-label="<?= esc_attr__('Ajouter des variantes', 'chassesautresor-com'); ?>" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
+                  <?= esc_html__('ajouter des variantes', 'chassesautresor-com'); ?> <span class="icone-modif">✏️</span>
+                </a>
               <?php endif; ?>
             </div>
 

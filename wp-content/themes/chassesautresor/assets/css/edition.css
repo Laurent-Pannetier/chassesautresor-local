@@ -1045,6 +1045,35 @@ body.panneau-ouvert::before {
   color:var(--color-text-fond-clair)
 }
 
+#bouton-ajouter-variante {
+  background-color: var(--color-editor-button);
+  color: #fff;
+}
+
+#bouton-ajouter-variante:hover {
+  background-color: var(--color-editor-button-hover);
+}
+
+.liste-variantes-resume {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.liste-variantes-resume .variante-texte {
+  background: none;
+  border: none;
+  color: var(--color-editor-text);
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+}
+
+.liste-variantes-resume .variante-message {
+  margin-top: 4px;
+  color: var(--color-editor-text-muted);
+}
+
 /* Alignement commun des headers dans les panneaux */
 .panneau-lateral__header {
   display: flex;
