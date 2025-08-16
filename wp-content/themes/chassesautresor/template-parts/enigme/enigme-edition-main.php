@@ -604,6 +604,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                 <p class="solution-publication-message"><?= esc_html($publication_message); ?></p>
                 <div class="dashboard-grid solution-cards">
                     <div class="dashboard-card solution-option<?= $solution_mode === 'pdf' ? ' active' : ''; ?>" data-mode="pdf">
+                      <button type="button" class="solution-reset" aria-label="Vider"<?= $fichier_nom ? '' : ' style="display:none;"'; ?>><i class="fa-solid fa-circle-xmark"></i></button>
                       <i class="fa-solid fa-file-pdf" aria-hidden="true"<?= $pdf_icon_attr; ?>></i>
                       <h3><?= esc_html($pdf_title); ?></h3>
                       <a href="#" class="stat-value"><?= esc_html($pdf_link_text); ?></a>
@@ -611,6 +612,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                     </div>
 
                     <div class="dashboard-card solution-option<?= $solution_mode === 'texte' ? ' active' : ''; ?>" data-mode="texte">
+                      <button type="button" class="solution-reset" aria-label="Vider"<?= $explication !== '' ? '' : ' style="display:none;"'; ?>><i class="fa-solid fa-circle-xmark"></i></button>
                       <i class="fa-solid fa-pen-to-square" aria-hidden="true"<?= $texte_icon_attr; ?>></i>
                       <h3>Rédaction libre</h3>
                       <button type="button" id="ouvrir-panneau-solution" class="stat-value"><?= esc_html($texte_link_text); ?></button>

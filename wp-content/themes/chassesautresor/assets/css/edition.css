@@ -1420,6 +1420,7 @@ body.panneau-ouvert::before {
   text-align: center;
   color: var(--color-editor-text);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  position: relative;
 }
 
 .dashboard-card.disabled {
@@ -1464,6 +1465,23 @@ body.panneau-ouvert::before {
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--color-editor-heading);
+}
+
+.dashboard-card .solution-reset {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  background: none;
+  border: none;
+  color: var(--color-editor-text-muted);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  font-size: 1rem;
+}
+
+.dashboard-card .solution-reset:hover {
+  color: var(--color-editor-text);
 }
 
 .stat-value {

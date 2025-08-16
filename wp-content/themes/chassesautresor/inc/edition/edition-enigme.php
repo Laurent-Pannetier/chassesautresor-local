@@ -401,6 +401,37 @@ function enregistrer_fichier_solution_enigme()
 }
 
 /**
+ * Supprime le fichier PDF de solution via AJAX.
+ *
+ * @return void (JSON)
+ */
+add_action('wp_ajax_supprimer_fichier_solution_enigme', 'supprimer_fichier_solution_enigme');
+function supprimer_fichier_solution_enigme()
+{
+  if (!is_user_logged_in()) {
+    wp_send_json_error("Non autorisé.");
+  }
+
+  $post_id = intval($_POST['post_id'] ?? 0);
+  if (!$post_id || get_post_type($post_id) !== 'enigme') {
+    wp_send_json_error("ID de post invalide.");
+  }
+
+  if (!utilisateur_peut_modifier_post($post_id)) {
+    wp_send_json_error("Non autorisé.");
+  }
+
+  $fichier_id = get_field('enigme_solution_fichier', $post_id, false);
+  if ($fichier_id) {
+    wp_delete_attachment($fichier_id, true);
+  }
+
+  update_field('enigme_solution_fichier', null, $post_id);
+
+  wp_send_json_success();
+}
+
+/**
  * Redirige temporairement les fichiers uploadés vers /wp-content/protected/solutions/
  *
  * Ce filtre est utilisé uniquement lors de l’upload d’un fichier PDF de solution,
