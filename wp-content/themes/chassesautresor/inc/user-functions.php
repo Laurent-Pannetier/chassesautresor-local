@@ -271,8 +271,12 @@ function myaccount_get_important_messages(): string
         }
 
         $users = get_users([
-            'meta_key'     => 'demande_paiement',
-            'meta_compare' => 'EXISTS',
+            'meta_query' => [
+                [
+                    'key'     => 'demande_paiement',
+                    'compare' => 'EXISTS',
+                ],
+            ],
         ]);
 
         foreach ($users as $user) {
