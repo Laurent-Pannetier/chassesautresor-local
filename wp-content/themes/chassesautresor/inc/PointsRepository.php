@@ -155,10 +155,14 @@ class PointsRepository
      *
      * @return array[]
      */
-    public function getConversionRequests(?int $userId = null, ?string $status = null): array
-    {
-        $where   = "origin_type = 'conversion'";
-        $params  = [];
+    public function getConversionRequests(
+        ?int $userId = null,
+        ?string $status = null,
+        ?int $limit = null,
+        int $offset = 0
+    ): array {
+        $where  = "origin_type = 'conversion'";
+        $params = [];
 
         if ($userId !== null) {
             $where   .= ' AND user_id = %d';
@@ -171,6 +175,13 @@ class PointsRepository
         }
 
         $sql = "SELECT * FROM {$this->table} WHERE {$where} ORDER BY request_date DESC";
+
+        if ($limit !== null) {
+            $sql     .= ' LIMIT %d OFFSET %d';
+            $params[] = $limit;
+            $params[] = $offset;
+        }
+
         if (!empty($params)) {
             $sql = $this->wpdb->prepare($sql, $params);
         }

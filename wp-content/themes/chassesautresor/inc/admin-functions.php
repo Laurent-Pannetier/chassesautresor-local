@@ -364,6 +364,15 @@ function charger_script_paiements_admin(): void
         filemtime($script_path),
         true
     );
+
+    $history_path = get_stylesheet_directory() . '/assets/js/paiements-historique.js';
+    wp_enqueue_script(
+        'paiements-historique',
+        get_stylesheet_directory_uri() . '/assets/js/paiements-historique.js',
+        [],
+        filemtime($history_path),
+        true
+    );
 }
 add_action('wp_enqueue_scripts', 'charger_script_paiements_admin');
 
@@ -415,20 +424,9 @@ function traiter_mise_a_jour_taux_conversion() {
 /**
  * 📌 Affiche les demandes de paiement en attente et réglées pour les administrateurs.
  */
-function afficher_tableau_paiements_admin() {
-    if (!current_user_can('administrator')) {
-        return;
-    }
-
-    global $wpdb;
-    $repo     = new PointsRepository($wpdb);
-    $requests = $repo->getConversionRequests();
-
-    if (empty($requests)) {
-        echo '<p>Aucune demande de paiement en attente.</p>';
-        return;
-    }
-
+function render_tableau_paiements_admin(array $requests): string
+{
+    ob_start();
     echo '<table class="widefat fixed">';
     echo '<thead><tr><th>Organisateur</th><th>Montant / Points</th><th>Date demande</th><th>IBAN / BIC</th><th>Statut</th><th>Action</th></tr></thead>';
     echo '<tbody>';
@@ -484,7 +482,69 @@ function afficher_tableau_paiements_admin() {
     }
 
     echo '</tbody></table>';
+    return ob_get_clean();
 }
+
+function afficher_tableau_paiements_admin(): void
+{
+    if (!current_user_can('administrator')) {
+        return;
+    }
+
+    global $wpdb;
+    $repo     = new PointsRepository($wpdb);
+    $requests = $repo->getConversionRequests();
+
+    if (empty($requests)) {
+        echo '<p>Aucune demande de paiement en attente.</p>';
+        return;
+    }
+
+    echo render_tableau_paiements_admin($requests);
+}
+
+function recuperer_historique_paiements_admin(int $page = 1, int $per_page = 20): array
+{
+    global $wpdb;
+    $repo   = new PointsRepository($wpdb);
+    $offset = ($page - 1) * $per_page;
+    $requests = $repo->getConversionRequests(null, null, $per_page, $offset);
+
+    $table = $wpdb->prefix . 'user_points';
+    $total = (int) $wpdb->get_var("SELECT COUNT(*) FROM {$table} WHERE origin_type = 'conversion'");
+    $pages = max(1, (int) ceil($total / $per_page));
+
+    if (empty($requests)) {
+        $html = '<p>Aucune demande de paiement.</p>';
+    } else {
+        $html  = render_tableau_paiements_admin($requests);
+        $html .= '<div class="pager">';
+        $html .= '<button class="pager-first" aria-label="Première page"><i class="fa-solid fa-angles-left"></i></button>';
+        $html .= '<button class="pager-prev" aria-label="Page précédente"><i class="fa-solid fa-angle-left"></i></button>';
+        $html .= '<span class="pager-info">' . $page . ' / ' . $pages . '</span>';
+        $html .= '<button class="pager-next" aria-label="Page suivante"><i class="fa-solid fa-angle-right"></i></button>';
+        $html .= '<button class="pager-last" aria-label="Dernière page"><i class="fa-solid fa-angles-right"></i></button>';
+        $html .= '</div>';
+    }
+
+    return [
+        'html'  => $html,
+        'page'  => $page,
+        'pages' => $pages,
+    ];
+}
+
+function ajax_lister_historique_paiements_admin(): void
+{
+    if (!current_user_can('administrator')) {
+        wp_send_json_error();
+    }
+
+    $page = isset($_POST['page']) ? (int) $_POST['page'] : 1;
+    $data = recuperer_historique_paiements_admin(max(1, $page));
+    wp_send_json_success($data);
+}
+add_action('wp_ajax_lister_historique_paiements', 'ajax_lister_historique_paiements_admin');
 
 /**
  * 💶 Traiter la demande de conversion de points en euros pour un organisateur.
