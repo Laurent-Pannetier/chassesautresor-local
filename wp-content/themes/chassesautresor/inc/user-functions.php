@@ -322,7 +322,24 @@ function myaccount_get_important_messages(): string
         if (is_array($paiements)) {
             foreach ($paiements as $paiement) {
                 if (!empty($paiement['statut']) && $paiement['statut'] === 'en attente') {
-                    $messages[] = __('Vous avez une demande de conversion en attente de règlement.', 'chassesautresor');
+                    $organisateur_url = add_query_arg(
+                        [
+                            'edition' => 'open',
+                            'onglet'  => 'revenus',
+                        ],
+                        get_permalink($organisateur_id)
+                    );
+
+                    $link = sprintf(
+                        '<a href="%s">%s</a>',
+                        esc_url($organisateur_url),
+                        esc_html__('demande de conversion', 'chassesautresor')
+                    );
+
+                    $messages[] = sprintf(
+                        __('Vous avez une %s en attente de règlement.', 'chassesautresor'),
+                        $link
+                    );
                     break;
                 }
             }
