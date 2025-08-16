@@ -474,8 +474,19 @@ function injection_classe_edition_active(array $classes): array
         in_array($validation, ['creation', 'correction'], true) &&
         !get_field('chasse_cache_complet', $post->ID)
       ) {
-        $classes[] = 'edition-active-chasse';
-        $classes[] = 'mode-edition';
+        $mode_fin = get_field('chasse_mode_fin', $post->ID) ?: 'automatique';
+        $titre_ok = trim(get_the_title($post->ID)) !== '';
+        $image_ok = (bool) get_field('chasse_principale_image', $post->ID);
+        $desc_raw = get_field('chasse_principale_description', $post->ID);
+        $desc_ok = !empty(trim((string) $desc_raw));
+        $has_validatable = chasse_has_validatable_enigme($post->ID);
+
+        if ($mode_fin === 'automatique' && $titre_ok && $image_ok && $desc_ok && !$has_validatable) {
+          $classes[] = 'scroll-to-enigmes';
+        } else {
+          $classes[] = 'edition-active-chasse';
+          $classes[] = 'mode-edition';
+        }
       }
     }
   }
