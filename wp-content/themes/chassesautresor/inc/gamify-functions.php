@@ -440,5 +440,74 @@ add_action('enigme_resolue', function($user_id, $enigme_id) {
     verifier_fin_de_chasse($user_id, $enigme_id); // 🎯 Vérifie et termine la chasse si besoin
 }, 10, 2);
 
+/**
+ * Retrieve points history for a user.
+ *
+ * @param int|null $user_id User identifier or current user if null.
+ * @return array[]
+ */
+function get_user_points_history($user_id = null): array
+{
+    $user_id = $user_id ?: get_current_user_id();
+    if (!$user_id) {
+        return [];
+    }
+
+    global $wpdb;
+    $repo = new PointsRepository($wpdb);
+
+    return $repo->getHistory((int) $user_id);
+}
+
+/**
+ * Render points history table for a user.
+ *
+ * @param int $user_id User identifier.
+ * @return string HTML table or empty string.
+ */
+function render_points_history_table(int $user_id): string
+{
+    $operations = get_user_points_history($user_id);
+    if (empty($operations)) {
+        return '';
+    }
+
+    ob_start();
+    ?>
+    <div class="stats-table-wrapper">
+        <h3><?php esc_html_e('Historique', 'chassesautresor-com'); ?></h3>
+        <table class="stats-table">
+            <thead>
+            <tr>
+                <th scope="col"><?php esc_html_e('ID', 'chassesautresor-com'); ?></th>
+                <th scope="col"><?php esc_html_e('Date', 'chassesautresor-com'); ?></th>
+                <th scope="col"><?php esc_html_e('Origine', 'chassesautresor-com'); ?></th>
+                <th scope="col"><?php esc_html_e('Motif', 'chassesautresor-com'); ?></th>
+                <th scope="col"><?php esc_html_e('Variation', 'chassesautresor-com'); ?></th>
+                <th scope="col"><?php esc_html_e('Solde', 'chassesautresor-com'); ?></th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php foreach ($operations as $op) :
+                $variation      = (int) $op['points'];
+                $variation_label = $variation > 0 ? '+' . $variation : (string) $variation;
+                $date = !empty($op['request_date']) ? mysql2date('d/m/Y', $op['request_date']) : '';
+                ?>
+                <tr>
+                    <td><?php echo esc_html($op['id']); ?></td>
+                    <td><?php echo esc_html($date); ?></td>
+                    <td><span class="etiquette"><?php echo esc_html($op['origin_type']); ?></span></td>
+                    <td><?php echo esc_html($op['reason']); ?></td>
+                    <td><span class="etiquette etiquette-grande"><?php echo esc_html($variation_label); ?></span></td>
+                    <td><span class="etiquette etiquette-grande"><?php echo esc_html($op['balance']); ?></span></td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php
+    return ob_get_clean();
+}
+
 
 

@@ -96,6 +96,8 @@ if ($is_organizer) {
     }
 }
 
+echo render_points_history_table((int) $current_user->ID);
+
 if ($has_orders) : ?>
 
 <table class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table">

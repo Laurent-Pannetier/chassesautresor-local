@@ -80,6 +80,22 @@ class PointsRepository
     }
 
     /**
+     * Retrieve points operations for a user ordered by newest first.
+     *
+     * @param int $userId User identifier.
+     * @return array[] List of operations.
+     */
+    public function getHistory(int $userId): array
+    {
+        $sql = $this->wpdb->prepare(
+            "SELECT id, request_date, origin_type, reason, points, balance FROM {$this->table} WHERE user_id = %d ORDER BY id DESC",
+            $userId
+        );
+
+        return $this->wpdb->get_results($sql, ARRAY_A);
+    }
+
+    /**
      * Record a conversion request with pending status and return the inserted row ID.
      *
      * @param int   $userId    User identifier.
