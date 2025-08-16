@@ -595,28 +595,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                         </button>
                       </h3>
                       <p class="stat-value champ-solution-timing">
-                        <span>
-                          <input
-                            type="number"
-                            min="0"
-                            max="60"
-                            step="1"
-                            value="<?= esc_attr($delai); ?>"
-                            id="solution-delai"
-                            class="champ-input champ-delai-inline"
-                          >
-                          jours
-                        </span>
-                        <span>
-                          publié à
-                          <select id="solution-heure" class="champ-select-heure">
-                            <?php foreach (range(0, 23) as $h) :
-                              $formatted = str_pad($h, 2, '0', STR_PAD_LEFT) . ':00'; ?>
-                              <option value="<?= $formatted; ?>" <?= $formatted === $heure ? 'selected' : ''; ?>><?= $formatted; ?></option>
-                            <?php endforeach; ?>
-                          </select>
-                          H
-                        </span>
+                        <input
+                          type="number"
+                          min="0"
+                          max="60"
+                          step="1"
+                          value="<?= esc_attr($delai); ?>"
+                          id="solution-delai"
+                          class="champ-input champ-delai-inline"
+                        >
+                        jours, publié à
+                        <select id="solution-heure" class="champ-select-heure">
+                          <?php foreach (range(0, 23) as $h) :
+                            $formatted = str_pad($h, 2, '0', STR_PAD_LEFT) . ':00'; ?>
+                            <option value="<?= $formatted; ?>" <?= $formatted === $heure ? 'selected' : ''; ?>><?= $formatted; ?></option>
+                          <?php endforeach; ?>
+                        </select>
+                        H
                       </p>
                     </div>
                   </div>
