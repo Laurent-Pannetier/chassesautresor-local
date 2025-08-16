@@ -47,7 +47,6 @@ defined( 'ABSPATH' ) || exit;
 function ajouter_rewrite_rules() {
     add_rewrite_rule('^mon-compte/statistiques/?$', 'index.php?mon_compte_statistiques=1', 'top');
     add_rewrite_rule('^mon-compte/outils/?$', 'index.php?mon_compte_outils=1', 'top');
-    add_rewrite_rule('^mon-compte/points/?$', 'index.php?mon_compte_points=1', 'top');
 }
 add_action('init', 'ajouter_rewrite_rules');
 
@@ -65,7 +64,6 @@ add_action('init', 'ajouter_rewrite_rules');
 function ajouter_query_vars($vars) {
     $vars[] = 'mon_compte_statistiques';
     $vars[] = 'mon_compte_outils';
-    $vars[] = 'mon_compte_points';
     return $vars;
 }
 add_filter('query_vars', 'ajouter_query_vars');
@@ -319,7 +317,7 @@ function myaccount_get_important_messages(): string
             $messages[] = sprintf(
                 /* translators: 1: opening anchor tag, 2: closing anchor tag */
                 __('Vous avez une %1$sdemande de conversion%2$s en attente de règlement.', 'chassesautresor'),
-                '<a href="' . esc_url(home_url('/mon-compte/points/')) . '">',
+                '<a href="' . esc_url(home_url('/mon-compte/?section=points')) . '">',
                 '</a>'
             );
         }

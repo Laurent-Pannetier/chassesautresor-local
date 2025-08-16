@@ -115,7 +115,7 @@ class MyAccountMessagesTest extends TestCase
         $output = myaccount_get_important_messages();
 
         $this->assertStringContainsString('<a', $output);
-        $this->assertStringContainsString('/mon-compte/points/', $output);
+        $this->assertStringContainsString('/mon-compte/?section=points', $output);
         $this->assertStringContainsString('demande de conversion', $output);
     }
 

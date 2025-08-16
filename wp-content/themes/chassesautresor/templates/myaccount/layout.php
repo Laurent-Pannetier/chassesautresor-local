@@ -47,7 +47,7 @@ get_header();
                     'endpoint' => 'points',
                     'label'    => __('Points', 'chassesautresor'),
                     'icon'     => 'fas fa-coins',
-                    'url'      => home_url('/mon-compte/points/'),
+                    'url'      => home_url('/mon-compte/?section=points'),
                     'section'  => 'points',
                     'active'   => isset($_GET['section']) && $_GET['section'] === 'points',
                 ),
