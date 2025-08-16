@@ -398,6 +398,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                                 <img src="<?= esc_url($img); ?>" alt="" />
                               <?php endif; ?>
                               <span class="prerequis-titre"><?= esc_html($titre); ?></span>
+                              <span class="prerequis-check"><i class="fa-solid fa-check" aria-hidden="true"></i></span>
                             </span>
                           </label>
                         <?php endforeach; ?>
