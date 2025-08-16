@@ -420,78 +420,82 @@ add_action('admin_head', 'ajouter_barre_progression_top');
  * @param array $classes Liste actuelle des classes du <body>
  * @return array Liste modifiée avec ou sans "edition-active"
  */
-add_filter('body_class', 'injection_classe_edition_active');
-function injection_classe_edition_active(array $classes): array
+add_filter( 'body_class', 'injection_classe_edition_active' );
+function injection_classe_edition_active( array $classes ): array
 {
+    if ( ! is_user_logged_in() ) {
+        return $classes;
+    }
 
-  if (!is_user_logged_in()) return $classes;
+    $uri = $_SERVER['REQUEST_URI'] ?? '';
+    if ( preg_match( '#^/mon-compte(?:/|$)#', $uri ) ) {
+        $classes[] = 'mode-edition';
+    }
 
-  if (strpos($_SERVER['REQUEST_URI'] ?? '', '/mon-compte/') === 0) {
-    $classes[] = 'mode-edition';
-  }
+    global $post;
+    if ( ! $post || ! isset( $post->post_type ) ) {
+        return $classes;
+    }
 
-  global $post;
-  if (!$post || !isset($post->post_type)) return $classes;
+    $user_id = get_current_user_id();
+    $roles   = wp_get_current_user()->roles;
 
-  $user_id = get_current_user_id();
-  $roles = wp_get_current_user()->roles;
-
-  // === ORGANISATEUR ===
-  if (
-    $post->post_type === 'organisateur' &&
-    (int) get_post_field('post_author', $post->ID) === $user_id &&
-    in_array(ROLE_ORGANISATEUR_CREATION, $roles, true) &&
-    !get_field('organisateur_cache_complet', $post->ID)
-  ) {
-    verifier_ou_mettre_a_jour_cache_complet($post->ID);
-
+    // === ORGANISATEUR ===
     if (
-      get_post_status($post) === 'pending' &&
-      !get_field('organisateur_cache_complet', $post->ID)
+        $post->post_type === 'organisateur' &&
+        (int) get_post_field( 'post_author', $post->ID ) === $user_id &&
+        in_array( ROLE_ORGANISATEUR_CREATION, $roles, true ) &&
+        ! get_field( 'organisateur_cache_complet', $post->ID )
     ) {
-      $classes[] = 'edition-active';
-      $classes[] = 'mode-edition';
-    }
-  }
+        verifier_ou_mettre_a_jour_cache_complet( $post->ID );
 
-  // === CHASSE ===
-  if (
-    $post->post_type === 'chasse' &&
-    (in_array(ROLE_ORGANISATEUR_CREATION, $roles, true) || in_array(ROLE_ORGANISATEUR, $roles, true))
-  ) {
-    $organisateur_id = get_organisateur_from_chasse($post->ID);
-    $associes = get_field('utilisateurs_associes', $organisateur_id, false);
-    $associes = is_array($associes) ? array_map('strval', $associes) : [];
-
-    if (in_array((string) $user_id, $associes, true)) {
-      verifier_ou_mettre_a_jour_cache_complet($post->ID);
-
-      $validation = get_field('chasse_cache_statut_validation', $post->ID);
-      $statut     = get_field('chasse_cache_statut', $post->ID);
-
-      if (
-        $statut === 'revision' &&
-        in_array($validation, ['creation', 'correction'], true) &&
-        !get_field('chasse_cache_complet', $post->ID)
-      ) {
-        $mode_fin = get_field('chasse_mode_fin', $post->ID) ?: 'automatique';
-        $titre_ok = trim(get_the_title($post->ID)) !== '';
-        $image_ok = (bool) get_field('chasse_principale_image', $post->ID);
-        $desc_raw = get_field('chasse_principale_description', $post->ID);
-        $desc_ok = !empty(trim((string) $desc_raw));
-        $has_validatable = chasse_has_validatable_enigme($post->ID);
-
-        if ($mode_fin === 'automatique' && $titre_ok && $image_ok && $desc_ok && !$has_validatable) {
-          $classes[] = 'scroll-to-enigmes';
-        } else {
-          $classes[] = 'edition-active-chasse';
-          $classes[] = 'mode-edition';
+        if (
+            get_post_status( $post ) === 'pending' &&
+            ! get_field( 'organisateur_cache_complet', $post->ID )
+        ) {
+            $classes[] = 'edition-active';
+            $classes[] = 'mode-edition';
         }
-      }
     }
-  }
 
-  return $classes;
+    // === CHASSE ===
+    if (
+        $post->post_type === 'chasse' &&
+        ( in_array( ROLE_ORGANISATEUR_CREATION, $roles, true ) || in_array( ROLE_ORGANISATEUR, $roles, true ) )
+    ) {
+        $organisateur_id = get_organisateur_from_chasse( $post->ID );
+        $associes        = get_field( 'utilisateurs_associes', $organisateur_id, false );
+        $associes        = is_array( $associes ) ? array_map( 'strval', $associes ) : [];
+
+        if ( in_array( (string) $user_id, $associes, true ) ) {
+            verifier_ou_mettre_a_jour_cache_complet( $post->ID );
+
+            $validation = get_field( 'chasse_cache_statut_validation', $post->ID );
+            $statut     = get_field( 'chasse_cache_statut', $post->ID );
+
+            if (
+                $statut === 'revision' &&
+                in_array( $validation, [ 'creation', 'correction' ], true ) &&
+                ! get_field( 'chasse_cache_complet', $post->ID )
+            ) {
+                $mode_fin        = get_field( 'chasse_mode_fin', $post->ID ) ?: 'automatique';
+                $titre_ok        = trim( get_the_title( $post->ID ) ) !== '';
+                $image_ok        = (bool) get_field( 'chasse_principale_image', $post->ID );
+                $desc_raw        = get_field( 'chasse_principale_description', $post->ID );
+                $desc_ok         = ! empty( trim( (string) $desc_raw ) );
+                $has_validatable = chasse_has_validatable_enigme( $post->ID );
+
+                if ( $mode_fin === 'automatique' && $titre_ok && $image_ok && $desc_ok && ! $has_validatable ) {
+                    $classes[] = 'scroll-to-enigmes';
+                } else {
+                    $classes[] = 'edition-active-chasse';
+                    $classes[] = 'mode-edition';
+                }
+            }
+        }
+    }
+
+    return $classes;
 }
 
 
