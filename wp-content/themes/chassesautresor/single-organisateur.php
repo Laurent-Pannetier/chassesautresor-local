@@ -60,15 +60,15 @@ get_header();
             $statut_organisateur === 'pending' &&
             !organisateur_a_des_chasses($organisateur_id);
 
-        $query       = get_chasses_de_organisateur($organisateur_id);
-        $chasses     = is_a($query, 'WP_Query') ? $query->posts : (array) $query;
-        $user_id     = get_current_user_id();
-        $chasses     = array_values(array_filter(
-            $chasses,
-            static fn($post) => chasse_est_visible_pour_utilisateur($post->ID, $user_id)
+        $query        = get_chasses_de_organisateur($organisateur_id);
+        $chasse_ids   = is_a($query, 'WP_Query') ? $query->posts : (array) $query;
+        $user_id      = get_current_user_id();
+        $chasse_ids   = array_values(array_filter(
+            $chasse_ids,
+            static fn($chasse_id) => chasse_est_visible_pour_utilisateur((int) $chasse_id, $user_id)
         ));
-        $peut_ajouter   = utilisateur_peut_ajouter_chasse($organisateur_id);
-        $has_chasses    = !empty($chasses);
+        $peut_ajouter = utilisateur_peut_ajouter_chasse($organisateur_id);
+        $has_chasses  = !empty($chasse_ids);
         $cache_complet  = (bool) get_field('organisateur_cache_complet', $organisateur_id);
         $highlight_pulse =
             !$has_chasses &&

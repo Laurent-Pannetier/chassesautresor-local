@@ -1322,14 +1322,14 @@ function recuperer_organisateurs_en_creation() {
             continue;
         }
 
-        $chasse     = $chasses[0];
-        $nb_enigmes = count(recuperer_enigmes_associees($chasse->ID));
+        $chasse_id  = (int) $chasses[0];
+        $nb_enigmes = count(recuperer_enigmes_associees($chasse_id));
 
         $entries[] = [
             'date_creation'      => $date_creation,
             'organisateur_titre' => get_the_title($organisateur_id),
-            'chasse_id'          => $chasse->ID,
-            'chasse_titre'       => get_the_title($chasse->ID),
+            'chasse_id'          => $chasse_id,
+            'chasse_titre'       => get_the_title($chasse_id),
             'nb_enigmes'         => $nb_enigmes,
         ];
     }

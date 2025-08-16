@@ -29,8 +29,8 @@ $points          = organisateur_compter_points_collectes($organisateur_id);
   <?php
   $chasses = get_chasses_de_organisateur($organisateur_id);
   if ($chasses && !empty($chasses->posts)) {
-      foreach ($chasses->posts as $chasse) {
-          $chasse_id        = $chasse->ID;
+      foreach ($chasses->posts as $chasse_id) {
+          $chasse_id        = (int) $chasse_id;
           $participants     = chasse_compter_participants($chasse_id);
           $total_tentatives = 0;
           $total_resolutions = 0;
