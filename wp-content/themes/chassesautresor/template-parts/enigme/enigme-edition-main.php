@@ -85,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
         <button class="edition-tab active" data-target="enigme-tab-param">Paramètres</button>
         <button class="edition-tab" data-target="enigme-tab-stats">Statistiques</button>
         <button class="edition-tab" data-target="enigme-tab-soumission"<?= $mode_validation === 'aucune' ? ' style="display:none;"' : ''; ?>>Tentatives</button>
-        <button class="edition-tab" data-target="enigme-tab-solution">Solution</button>
+        <button class="edition-tab" data-target="enigme-tab-solution"><?= esc_html__('Solution', 'chassesautresor-com'); ?></button>
       </div>
     </div>
 
@@ -557,7 +557,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
 <div id="enigme-tab-solution" class="edition-tab-content" style="display:none;">
   <i class="fa-solid fa-key tab-watermark" aria-hidden="true"></i>
   <div class="edition-panel-header">
-    <h2><i class="fa-solid fa-key"></i> Solution</h2>
+    <h2><i class="fa-solid fa-key"></i> <?= esc_html__('Solution de cette énigme', 'chassesautresor-com'); ?></h2>
   </div>
 
             <?php
