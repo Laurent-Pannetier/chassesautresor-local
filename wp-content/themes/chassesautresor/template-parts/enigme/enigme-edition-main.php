@@ -189,19 +189,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                     </div>
                   </li>
 
-                  <li class="champ-enigme champ-texte<?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_visuel_legende" data-cpt="enigme"
+                  <li class="champ-enigme champ-texte champ-soustitre<?= empty(trim($legende)) ? ' champ-vide' : ' champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>"
+                    data-champ="enigme_visuel_legende" data-cpt="enigme"
                     data-post-id="<?= esc_attr($enigme_id); ?>">
 
                     <div class="champ-affichage">
-                      Un sous-titre
+                      <label for="champ-soustitre-enigme"><?= esc_html__('Sous-titre', 'chassesautresor-com'); ?></label>
+                      <span class="champ-valeur">
+                        <?= empty(trim($legende)) ? esc_html__('ajouter', 'chassesautresor-com') : esc_html($legende); ?>
+                      </span>
                       <?php if ($peut_editer) : ?>
-                        <button type="button" class="champ-modifier" aria-label="Modifier la légende">✏️</button>
+                        <button type="button" class="champ-modifier" aria-label="<?= esc_attr__('Modifier le sous-titre', 'chassesautresor-com'); ?>">✏️</button>
                       <?php endif; ?>
                     </div>
 
                     <div class="champ-edition" style="display: none;">
-                      <input type="text" class="champ-input" maxlength="100" value="<?= esc_attr($legende); ?>"
-                        placeholder="Ajouter une légende (max 100 caractères)" <?= $peut_editer ? '' : 'disabled'; ?>>
+                      <input type="text" class="champ-input" maxlength="100" value="<?= esc_attr($legende); ?>" id="champ-soustitre-enigme"
+                        placeholder="<?= esc_attr__('Ajouter un sous-titre (max 100 caractères)', 'chassesautresor-com'); ?>" <?= $peut_editer ? '' : 'disabled'; ?>>
                       <button type="button" class="champ-enregistrer">✓</button>
                       <button type="button" class="champ-annuler">✖</button>
                     </div>
