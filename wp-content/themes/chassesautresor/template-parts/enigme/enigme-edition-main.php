@@ -300,8 +300,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                 <ul class="liste-variantes-resume">
                   <?php foreach ($variantes_list as $var) : ?>
                     <li class="variante-resume">
-                      <button type="button" class="variante-texte"><?= esc_html($var['texte']); ?></button>
-                      <div class="variante-message" style="display:none;"><?= esc_html($var['message']); ?></div>
+                      <span class="variante-texte"><?= esc_html($var['texte']); ?></span> => <span class="variante-message"><?= esc_html($var['message']); ?></span>
                     </li>
                   <?php endforeach; ?>
                 </ul>

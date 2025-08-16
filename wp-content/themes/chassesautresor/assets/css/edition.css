@@ -1061,16 +1061,10 @@ body.panneau-ouvert::before {
 }
 
 .liste-variantes-resume .variante-texte {
-  background: none;
-  border: none;
   color: var(--color-editor-text);
-  text-decoration: underline;
-  cursor: pointer;
-  padding: 0;
 }
 
 .liste-variantes-resume .variante-message {
-  margin-top: 4px;
   color: var(--color-editor-text-muted);
 }
 

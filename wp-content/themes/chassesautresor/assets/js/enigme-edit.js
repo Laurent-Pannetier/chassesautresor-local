@@ -677,20 +677,7 @@ function initPanneauVariantes() {
 
   if (!boutonOuvrir || !panneau || !formulaire || !postId || !wrapper || !boutonAjouter || !messageLimite) return;
 
-  function activerToggleMessage(liste) {
-    liste.addEventListener('click', (e) => {
-      const btn = e.target.closest('.variante-texte');
-      if (!btn) return;
-      const msg = btn.nextElementSibling;
-      if (msg) {
-        msg.style.display = msg.style.display === 'none' ? 'block' : 'none';
-      }
-    });
-  }
 
-  if (listeResume) {
-    activerToggleMessage(listeResume);
-  }
 
   // Ouvrir le panneau
   boutonOuvrir.addEventListener('click', () => {
@@ -841,7 +828,6 @@ function initPanneauVariantes() {
               listeResume = document.createElement('ul');
               listeResume.className = 'liste-variantes-resume';
               resumeBloc.insertBefore(listeResume, boutonEditerResume || lienAjouterResume || null);
-              activerToggleMessage(listeResume);
             }
 
             listeResume.innerHTML = '';
@@ -853,16 +839,15 @@ function initPanneauVariantes() {
                 nb++;
                 const li = document.createElement('li');
                 li.className = 'variante-resume';
-                const bt = document.createElement('button');
-                bt.type = 'button';
-                bt.className = 'variante-texte';
-                bt.textContent = t;
-                const div = document.createElement('div');
-                div.className = 'variante-message';
-                div.style.display = 'none';
-                div.textContent = m;
-                li.appendChild(bt);
-                li.appendChild(div);
+                const spanT = document.createElement('span');
+                spanT.className = 'variante-texte';
+                spanT.textContent = t;
+                const spanM = document.createElement('span');
+                spanM.className = 'variante-message';
+                spanM.textContent = m;
+                li.appendChild(spanT);
+                li.appendChild(document.createTextNode(' => '));
+                li.appendChild(spanM);
                 listeResume.appendChild(li);
               }
             }
