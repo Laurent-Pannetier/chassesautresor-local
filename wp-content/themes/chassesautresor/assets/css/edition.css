@@ -68,6 +68,26 @@
   /* padding-left: 1.3rem; */
 }
 
+/* Hauteur et alignement par défaut des lignes de paramètres */
+.resume-infos > li {
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.resume-infos > li > .champ-affichage {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  flex: 1;
+}
+
+.resume-infos > li > .champ-edition,
+.resume-infos > li > .champ-feedback {
+  width: 100%;
+}
+
 .cache {
   display: none;
 }
