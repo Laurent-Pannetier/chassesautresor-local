@@ -424,20 +424,23 @@ add_action('admin_head', 'ajouter_barre_progression_top');
  * @param array $classes Liste actuelle des classes du <body>
  * @return array Liste modifiée avec ou sans "edition-active"
  */
-add_filter( 'body_class', 'injection_classe_edition_active' );
-function injection_classe_edition_active( array $classes ): array
+add_filter('body_class', 'injection_classe_edition_active');
+function injection_classe_edition_active(array $classes): array
 {
-    if ( ! is_user_logged_in() ) {
+    if (!is_user_logged_in()) {
         return $classes;
     }
 
-    $uri = $_SERVER['REQUEST_URI'] ?? '';
-    if ( preg_match( '#^/mon-compte(?:/|$|\?)#', $uri ) ) {
-        $classes[] = 'mode-edition';
-    }
+    $mode_edition = (
+        (isset($_GET['edition']) && $_GET['edition'] === '1') ||
+        (isset($_COOKIE['mode_edition']) && $_COOKIE['mode_edition'] === '1')
+    );
 
     global $post;
-    if ( ! $post || ! isset( $post->post_type ) ) {
+    if (!$post || !isset($post->post_type)) {
+        if ($mode_edition) {
+            $classes[] = 'mode-edition';
+        }
         return $classes;
     }
 
@@ -454,11 +457,10 @@ function injection_classe_edition_active( array $classes ): array
         verifier_ou_mettre_a_jour_cache_complet( $post->ID );
 
         if (
-            get_post_status( $post ) === 'pending' &&
-            ! get_field( 'organisateur_cache_complet', $post->ID )
+            get_post_status($post) === 'pending' &&
+            !get_field('organisateur_cache_complet', $post->ID)
         ) {
             $classes[] = 'edition-active';
-            $classes[] = 'mode-edition';
         }
     }
 
@@ -489,14 +491,17 @@ function injection_classe_edition_active( array $classes ): array
                 $desc_ok         = ! empty( trim( (string) $desc_raw ) );
                 $has_validatable = chasse_has_validatable_enigme( $post->ID );
 
-                if ( $mode_fin === 'automatique' && $titre_ok && $image_ok && $desc_ok && ! $has_validatable ) {
+                if ($mode_fin === 'automatique' && $titre_ok && $image_ok && $desc_ok && !$has_validatable) {
                     $classes[] = 'scroll-to-enigmes';
                 } else {
                     $classes[] = 'edition-active-chasse';
-                    $classes[] = 'mode-edition';
                 }
             }
         }
+    }
+
+    if ($mode_edition) {
+        $classes[] = 'mode-edition';
     }
 
     return $classes;

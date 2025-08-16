@@ -49,14 +49,20 @@ add_action('wp_enqueue_scripts', function () {
         'home'               => 'home.css',
     ];
 
+    $mode_edition = (
+        (isset($_GET['edition']) && $_GET['edition'] === '1') ||
+        (isset($_COOKIE['mode_edition']) && $_COOKIE['mode_edition'] === '1')
+    );
+
     // 🚀 Chargement dynamique des styles avec gestion du cache
     foreach ($styles as $handle => $file) {
         wp_enqueue_style($handle, $theme_dir . $file, [], filemtime(get_stylesheet_directory() . "/assets/css/{$file}"));
     }
 
     if (
-        (is_singular() && current_user_can('edit_post', get_queried_object_id())) ||
-        (is_account_page() && is_user_logged_in())
+        $mode_edition &&
+        ((is_singular() && current_user_can('edit_post', get_queried_object_id())) ||
+            (is_account_page() && is_user_logged_in()))
     ) {
         wp_enqueue_style(
             'edition',
