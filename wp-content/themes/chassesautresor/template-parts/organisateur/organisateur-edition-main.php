@@ -270,7 +270,13 @@ $is_complete = (
         <div class="edition-panel-body">
           <?php if ($has_pending_conversion) : ?>
             <div class="conversion-alert">
-              <?php esc_html_e('Demande de conversion en cours', 'chassesautresor-com'); ?>
+              <?php
+              /* translators: message displayed when a conversion request is pending */
+              esc_html_e(
+                  "Votre demande de conversion est en cours. Dès son traitement, l'opération apparaîtra sur cette page et vous serez automatiquement averti par e-mail.",
+                  'chassesautresor-com'
+              );
+              ?>
             </div>
           <?php endif; ?>
           <div class="dashboard-grid stats-cards">
