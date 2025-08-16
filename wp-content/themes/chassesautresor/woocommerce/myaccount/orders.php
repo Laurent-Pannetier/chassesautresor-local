@@ -123,11 +123,17 @@ if ($is_organizer) {
     <?php
     get_template_part('template-parts/modals/modal-conversion');
 } else {
-    $points = function_exists('get_user_points') ? get_user_points() : 0;
-
-    if ($points > 0) {
-        echo '<p class="myaccount-points">' . sprintf(esc_html__('Vous avez %d points', 'chassesautresor'), $points) . '</p>';
-    } else {
+    $points = function_exists('get_user_points') ? get_user_points((int) $current_user->ID) : 0;
+    ?>
+    <div class="dashboard-grid stats-cards myaccount-points-cards">
+        <div class="dashboard-card" data-stat="points">
+            <i class="fa-solid fa-coins" aria-hidden="true"></i>
+            <h3><?php esc_html_e('Points', 'chassesautresor-com'); ?></h3>
+            <p class="stat-value"><?php echo esc_html($points); ?></p>
+        </div>
+    </div>
+    <?php
+    if ($points === 0) {
         $shop_url = esc_url(home_url('/boutique'));
         echo '<p class="myaccount-points"><a href="' . $shop_url . '">' . esc_html__('Ajouter des points', 'chassesautresor') . '</a></p>';
     }
