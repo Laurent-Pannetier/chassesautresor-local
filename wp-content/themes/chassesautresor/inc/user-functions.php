@@ -310,7 +310,30 @@ function myaccount_get_important_messages(): string
         $pendingOwn = $repo->getConversionRequests($current_user_id, 'pending');
         if (!empty($pendingOwn)) {
             $messages[] = __('Vous avez une demande de conversion en attente de règlement.', 'chassesautresor');
+        }
 
+        if ($organisateur_id) {
+            $pendingChasses = get_posts([
+                'post_type'   => 'chasse',
+                'post_status' => ['publish', 'pending'],
+                'numberposts' => -1,
+                'fields'      => 'ids',
+                'meta_query'  => [
+                    [
+                        'key'     => 'chasse_cache_organisateur',
+                        'value'   => '"' . $organisateur_id . '"',
+                        'compare' => 'LIKE',
+                    ],
+                    [
+                        'key'   => 'chasse_cache_statut_validation',
+                        'value' => 'en_attente',
+                    ],
+                ],
+            ]);
+
+            if (!empty($pendingChasses)) {
+                $messages[] = __('Demande de validation en cours de traitement.', 'chassesautresor');
+            }
         }
     }
 
