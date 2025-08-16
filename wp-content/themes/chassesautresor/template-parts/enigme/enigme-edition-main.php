@@ -107,28 +107,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                     data-cpt="enigme"
                     data-post-id="<?= esc_attr($enigme_id); ?>">
 
-                    <div class="champ-affichage">
-                        <label for="champ-titre-enigme">Titre <span class="champ-obligatoire">*</span></label>
-                      <span class="champ-valeur">
-                        <?= $isTitreParDefaut ? 'renseigner le titre de l’énigme' : esc_html($titre); ?>
-                      </span>
-                      <?php if ($peut_editer_titre) : ?>
-                        <button type="button"
-                          class="champ-modifier"
-                          aria-label="Modifier le titre">✏️</button>
-                      <?php endif; ?>
-                    </div>
-
-                    <div class="champ-edition" style="display: none;">
-                      <input type="text"
-                        class="champ-input"
-                        maxlength="80"
-                        value="<?= esc_attr($titre); ?>"
-                        id="champ-titre-enigme" <?= $peut_editer_titre ? '' : 'disabled'; ?> >
-                      <button type="button" class="champ-enregistrer">✓</button>
-                      <button type="button" class="champ-annuler">✖</button>
-                    </div>
-
+                    <label for="champ-titre-enigme">Titre <span class="champ-obligatoire">*</span></label>
+                    <input type="text"
+                      class="champ-input champ-texte-edit"
+                      maxlength="80"
+                      value="<?= esc_attr($titre); ?>"
+                      id="champ-titre-enigme" <?= $peut_editer_titre ? '' : 'disabled'; ?>
+                      placeholder="renseigner le titre de l’énigme" />
                     <div class="champ-feedback"></div>
                   </li>
 
@@ -211,23 +196,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                     data-champ="enigme_visuel_legende" data-cpt="enigme"
                     data-post-id="<?= esc_attr($enigme_id); ?>">
 
-                    <div class="champ-affichage">
-                      <label for="champ-soustitre-enigme"><?= esc_html__('Sous-titre', 'chassesautresor-com'); ?></label>
-                      <span class="champ-valeur">
-                        <?= empty(trim($legende)) ? esc_html__('ajouter', 'chassesautresor-com') : esc_html($legende); ?>
-                      </span>
-                      <?php if ($peut_editer) : ?>
-                        <button type="button" class="champ-modifier" aria-label="<?= esc_attr__('Modifier le sous-titre', 'chassesautresor-com'); ?>">✏️</button>
-                      <?php endif; ?>
-                    </div>
-
-                    <div class="champ-edition" style="display: none;">
-                      <input type="text" class="champ-input" maxlength="100" value="<?= esc_attr($legende); ?>" id="champ-soustitre-enigme"
-                        placeholder="<?= esc_attr__('Ajouter un sous-titre (max 100 caractères)', 'chassesautresor-com'); ?>" <?= $peut_editer ? '' : 'disabled'; ?>>
-                      <button type="button" class="champ-enregistrer">✓</button>
-                      <button type="button" class="champ-annuler">✖</button>
-                    </div>
-
+                    <label for="champ-soustitre-enigme"><?= esc_html__('Sous-titre', 'chassesautresor-com'); ?></label>
+                    <input type="text" class="champ-input champ-texte-edit" maxlength="100" value="<?= esc_attr($legende); ?>" id="champ-soustitre-enigme"
+                      placeholder="<?= esc_attr__('Ajouter un sous-titre (max 100 caractères)', 'chassesautresor-com'); ?>" <?= $peut_editer ? '' : 'disabled'; ?> />
                     <div class="champ-feedback"></div>
                   </li>
                 </ul>

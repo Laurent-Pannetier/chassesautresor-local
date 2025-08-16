@@ -88,24 +88,11 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   data-cpt="chasse"
                   data-post-id="<?= esc_attr($chasse_id); ?>">
 
-                  <div class="champ-affichage">
-                    <label<?= $peut_editer_titre ? ' for="champ-titre-chasse"' : ''; ?>>Titre <span class="champ-obligatoire">*</span></label>
-                    <span class="champ-valeur">
-                      <?= $isTitreParDefaut ? 'renseigner le titre de la chasse' : esc_html($titre); ?>
-                    </span>
-                    <?php if ($peut_editer_titre) : ?>
-                      <button type="button" class="champ-modifier" aria-label="Modifier le titre">✏️</button>
-                    <?php endif; ?>
-                  </div>
-
-                  <div class="champ-edition" style="display: none;">
-                    <input type="text" class="champ-input" maxlength="70" value="<?= esc_attr($titre); ?>" id="champ-titre-chasse" <?= $peut_editer_titre ? '' : 'disabled'; ?>>
-                    <?php if ($peut_editer_titre) : ?>
-                      <button type="button" class="champ-enregistrer">✓</button>
-                      <button type="button" class="champ-annuler">✖</button>
-                    <?php endif; ?>
-                  </div>
-
+                  <label for="champ-titre-chasse">Titre <span class="champ-obligatoire">*</span></label>
+                  <input type="text" class="champ-input champ-texte-edit" maxlength="70"
+                    value="<?= esc_attr($titre); ?>"
+                    id="champ-titre-chasse" <?= $peut_editer_titre ? '' : 'disabled'; ?>
+                    placeholder="renseigner le titre de la chasse" />
                   <div class="champ-feedback"></div>
                 </li>
                 

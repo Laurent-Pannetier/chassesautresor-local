@@ -93,30 +93,15 @@ $is_complete = (
                     data-cpt="organisateur"
                     data-post-id="<?= esc_attr($organisateur_id); ?>">
 
-                  <div class="champ-affichage">
                     <label for="champ-titre-organisateur">Titre <span class="champ-obligatoire">*</span></label>
-                    <span class="champ-valeur">
-                      <?= empty($titre) ? "renseigner le titre de l’organisateur" : esc_html($titre); ?>
-                    </span>
-                    <?php if ($peut_editer_titre) : ?>
-                      <button type="button"
-                        class="champ-modifier"
-                        aria-label="Modifier le nom d’organisateur">✏️</button>
-                    <?php endif; ?>
-                  </div>
-
-                  <div class="champ-edition" style="display: none;">
                     <input type="text"
-                      class="champ-input"
+                      class="champ-input champ-texte-edit"
                       maxlength="50"
                       value="<?= esc_attr($titre); ?>"
-                      id="champ-titre-organisateur" <?= $peut_editer_titre ? '' : 'disabled'; ?>>
-                    <button type="button" class="champ-enregistrer">✓</button>
-                    <button type="button" class="champ-annuler">✖</button>
-                  </div>
-
-                  <div class="champ-feedback"></div>
-                </li>
+                      id="champ-titre-organisateur" <?= $peut_editer_titre ? '' : 'disabled'; ?>
+                      placeholder="renseigner le titre de l’organisateur" />
+                    <div class="champ-feedback"></div>
+                  </li>
 
                 <li class="champ-organisateur champ-img champ-logo ligne-logo <?= empty($logo_id) ? 'champ-vide' : 'champ-rempli'; ?>" data-champ="profil_public_logo_organisateur" data-cpt="organisateur" data-post-id="<?= esc_attr($organisateur_id); ?>">
                   <div class="champ-affichage">
