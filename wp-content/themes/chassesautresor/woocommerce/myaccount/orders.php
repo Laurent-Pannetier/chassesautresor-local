@@ -143,7 +143,9 @@ echo render_points_history_table((int) $current_user->ID);
 
 if ($has_orders) : ?>
 
-<table class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table">
+<div class="stats-table-wrapper">
+    <h3><?php esc_html_e('Vos achats de points', 'chassesautresor-com'); ?></h3>
+    <table class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table">
 <thead>
 <tr>
 <?php foreach (wc_get_account_orders_columns() as $column_id => $column_name) : ?>
@@ -200,7 +202,8 @@ $is_order_number = 'order-number' === $column_id;
 </tbody>
 </table>
 
-<?php do_action('woocommerce_after_account_orders', $has_orders); ?>
+    <?php do_action('woocommerce_after_account_orders', $has_orders); ?>
+</div>
 
 <?php else : ?>
 <div class="woocommerce-message woocommerce-message--info woocommerce-MyAccount-orders--no-orders">
