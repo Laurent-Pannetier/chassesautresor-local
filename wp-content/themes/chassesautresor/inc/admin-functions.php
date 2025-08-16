@@ -348,6 +348,26 @@ function charger_script_taux_conversion() {
 add_action('wp_enqueue_scripts', 'charger_script_taux_conversion');
 
 /**
+ * Load admin payment management script on account pages.
+ */
+function charger_script_paiements_admin(): void
+{
+    if (!current_user_can('administrator') || !is_account_page()) {
+        return;
+    }
+
+    $script_path = get_stylesheet_directory() . '/assets/js/paiements-admin.js';
+    wp_enqueue_script(
+        'paiements-admin',
+        get_stylesheet_directory_uri() . '/assets/js/paiements-admin.js',
+        [],
+        filemtime($script_path),
+        true
+    );
+}
+add_action('wp_enqueue_scripts', 'charger_script_paiements_admin');
+
+/**
  * 📌 Met à jour le taux de conversion depuis l'administration.
  */
 function traiter_mise_a_jour_taux_conversion() {
@@ -401,8 +421,8 @@ function afficher_tableau_paiements_admin() {
     }
 
     global $wpdb;
-    $repo      = new PointsRepository($wpdb);
-    $requests  = $repo->getConversionRequests();
+    $repo     = new PointsRepository($wpdb);
+    $requests = $repo->getConversionRequests();
 
     if (empty($requests)) {
         echo '<p>Aucune demande de paiement en attente.</p>';
@@ -417,24 +437,39 @@ function afficher_tableau_paiements_admin() {
         $user = get_userdata((int) $request['user_id']);
 
         $organisateur_id = get_organisateur_from_user($request['user_id']);
-        $iban = $organisateur_id ? get_field('iban', $organisateur_id) : '';
-        $bic  = $organisateur_id ? get_field('bic', $organisateur_id) : '';
+        $iban            = $organisateur_id ? get_field('iban', $organisateur_id) : '';
+        $bic             = $organisateur_id ? get_field('bic', $organisateur_id) : '';
         if ($organisateur_id && (empty($iban) || empty($bic))) {
             $iban = get_field('gagnez_de_largent_iban', $organisateur_id);
             $bic  = get_field('gagnez_de_largent_bic', $organisateur_id);
         }
         $iban = $iban ?: 'Non renseigné';
 
-        $statut = $request['request_status'] === 'paid' ? '✅ Réglé' : '🟡 En attente';
-        $action = $request['request_status'] === 'pending'
-            ? '<a href="' . esc_url(add_query_arg(
-                [
-                    'regler_paiement' => $request['id'],
-                    'user_id'         => $request['user_id'],
-                ],
-                home_url('/mon-compte/organisateurs/')
-            )) . '" class="button">✅ Régler</a>'
-            : '-';
+        switch ($request['request_status']) {
+            case 'paid':
+                $statut = '✅ Réglé';
+                break;
+            case 'cancelled':
+                $statut = '❌ Annulé';
+                break;
+            case 'refused':
+                $statut = '🚫 Refusé';
+                break;
+            default:
+                $statut = '🟡 En attente';
+        }
+
+        $action = '-';
+        if ($request['request_status'] === 'pending') {
+            $action  = '<form class="js-update-request" data-id="' . esc_attr($request['id']) . '">';
+            $action .= '<select name="statut">';
+            $action .= '<option value="regle" selected>' . esc_html__('Régler', 'chassesautresor-com') . '</option>';
+            $action .= '<option value="annule">' . esc_html__('Annuler', 'chassesautresor-com') . '</option>';
+            $action .= '<option value="refuse">' . esc_html__('Refuser', 'chassesautresor-com') . '</option>';
+            $action .= '</select>';
+            $action .= '<button type="submit" class="button">OK</button>';
+            $action .= '</form>';
+        }
 
         $points_utilises = esc_html(abs((int) $request['points']));
 
@@ -443,69 +478,13 @@ function afficher_tableau_paiements_admin() {
         echo '<td>' . esc_html($request['amount_eur']) . ' €<br><small>(' . $points_utilises . ' points)</small></td>';
         echo '<td>' . esc_html(date('Y-m-d H:i', strtotime($request['request_date']))) . '</td>';
         echo '<td><strong>' . esc_html($iban) . '</strong><br><small>' . esc_html($bic) . '</small></td>';
-        echo '<td>' . esc_html($statut) . '</td>';
+        echo '<td class="col-status">' . esc_html($statut) . '</td>';
         echo '<td>' . $action . '</td>';
         echo '</tr>';
     }
 
     echo '</tbody></table>';
 }
-
-/**
- * 📌 Traite le règlement d'une demande de paiement depuis l'admin.
- */
-function regler_paiement_admin() {
-    if (!current_user_can('administrator') || !isset($_GET['user_id'])) {
-        return;
-    }
-
-    $user_id    = intval($_GET['user_id']);
-    $action_id  = null;
-    $action_type = null;
-
-    if (isset($_GET['regler_paiement'])) {
-        $action_id  = intval($_GET['regler_paiement']);
-        $action_type = 'regler';
-    } elseif (isset($_GET['annuler_paiement'])) {
-        $action_id  = intval($_GET['annuler_paiement']);
-        $action_type = 'annuler';
-    }
-
-    if ($action_type === null) {
-        return;
-    }
-
-    global $wpdb;
-    $repo    = new PointsRepository($wpdb);
-    $request = $repo->getRequestById($action_id);
-
-    if (!$request || (int) $request['user_id'] !== $user_id) {
-        error_log("❌ Erreur : Demande non trouvée pour user_id=$user_id, id=$action_id");
-        return;
-    }
-
-    if ($action_type === 'regler') {
-        $repo->updateRequestStatus($action_id, 'paid', [
-            'settlement_date' => current_time('mysql'),
-        ]);
-    } else {
-        $repo->updateRequestStatus($action_id, 'refused', [
-            'cancelled_date'      => current_time('mysql'),
-            'cancellation_reason' => 'cancelled by admin',
-        ]);
-
-        $points = abs((int) $request['points']);
-        if ($points > 0) {
-            $reason = sprintf('Remboursement de la demande #%d', $action_id);
-            update_user_points($user_id, $points, $reason, 'conversion', $action_id);
-        }
-    }
-
-    $query_arg = $action_type === 'regler' ? 'regler_paiement' : 'annuler_paiement';
-    wp_redirect(remove_query_arg([$query_arg, 'user_id']));
-    exit;
-}
-add_action('template_redirect', 'regler_paiement_admin');
 
 /**
  * 💶 Traiter la demande de conversion de points en euros pour un organisateur.
@@ -585,7 +564,11 @@ function traiter_demande_paiement() {
     error_log("📧 Notification envoyée à l'administrateur.");
 
     // ✅ Redirection après soumission
-    wp_redirect(add_query_arg('paiement_envoye', '1', wp_get_referer()));
+    $redirect = wp_get_raw_referer();
+    if (!$redirect || strpos($redirect, 'admin-ajax.php') !== false) {
+        $redirect = home_url('/mon-compte/');
+    }
+    wp_safe_redirect(add_query_arg('paiement_envoye', '1', $redirect));
     exit;
 }
 add_action('init', 'traiter_demande_paiement');
@@ -593,36 +576,37 @@ add_action('init', 'traiter_demande_paiement');
 // ----------------------------------------------------------
 // 🎛️ Mise à jour du statut des demandes de paiement (Admin)
 // ----------------------------------------------------------
-//
-// - Cette fonction permet à l'administrateur de modifier le statut d'une demande.
-// - Le statut peut être mis à "En attente" ou "Réglé".
-// - Si le statut passe à "Réglé", la date de règlement est enregistrée.
-// - L'enregistrement se fait après un clic sur le bouton "Enregistrer" du formulaire.
-//
-// 📌 Où est utilisé ce code ?
-/*
-  - Dans le shortcode [demandes_paiement] (affichage du tableau des demandes)
-  - Formulaire avec liste déroulante pour modifier le statut
-*/
-//
-// 🔍 Comment le retrouver rapidement ?
-// 👉 Rechercher "🎛️ Mise à jour du statut des demandes de paiement"
-//
+/**
+ * Handle AJAX status updates for payment requests.
+ */
+function ajax_update_request_status(): void
+{
+    if (!current_user_can('administrator')) {
+        wp_send_json_error();
+    }
 
-if (
-    $_SERVER['REQUEST_METHOD'] === 'POST'
-    && isset($_POST['modifier_statut'], $_POST['paiement_id'], $_POST['statut'])
-    && current_user_can('administrator')
-) {
+    $paiement_id = isset($_POST['paiement_id']) ? intval($_POST['paiement_id']) : 0;
+    $statut      = isset($_POST['statut']) ? sanitize_text_field($_POST['statut']) : '';
+
+    if (!$paiement_id || !in_array($statut, ['regle', 'annule', 'refuse'], true)) {
+        wp_send_json_error();
+    }
+
     global $wpdb;
-    $repo        = new PointsRepository($wpdb);
-    $paiement_id = intval($_POST['paiement_id']);
-    $statut      = sanitize_text_field($_POST['statut']);
+    $repo = new PointsRepository($wpdb);
 
-    $repoStatus = $statut === 'regle' ? 'paid' : $statut;
+    $map = [
+        'regle'  => 'paid',
+        'annule' => 'cancelled',
+        'refuse' => 'refused',
+    ];
+
+    $repoStatus = $map[$statut];
     $dates      = [];
     if ($repoStatus === 'paid') {
         $dates['settlement_date'] = current_time('mysql');
+    } else {
+        $dates['cancelled_date'] = current_time('mysql');
     }
 
     $repo->updateRequestStatus($paiement_id, $repoStatus, $dates);
@@ -632,11 +616,13 @@ if (
         $request = $repo->getRequestById($paiement_id);
         if ($request) {
             $montant_paye = floatval($request['amount_eur']);
-            mettre_a_jour_paiements_organisateurs($montant_paye); // 🔄 Mise à jour des paiements aux organisateurs
-            error_log("✅ Paiement ajouté aux statistiques : {$montant_paye} €.");
+            mettre_a_jour_paiements_organisateurs($montant_paye);
         }
     }
+
+    wp_send_json_success(['status' => $repoStatus]);
 }
+add_action('wp_ajax_update_conversion_status', 'ajax_update_request_status');
 
 
 
