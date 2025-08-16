@@ -266,6 +266,11 @@ span.champ-obligatoire {
   --color-editor-placeholder:      #9AA0A6;   /* 💬 Placeholder ou aide contextuelle */
 
   --editor-label-width:            170px;     /* 📏 Largeur minimale des labels dans les panneaux */
+
+  /* 🎯 Overrides global palette for edition mode */
+  --color-background:              var(--color-editor-background);
+  --color-text-primary:            var(--color-editor-text);
+  --color-text-secondary:          var(--color-editor-text-muted);
 }
 
 

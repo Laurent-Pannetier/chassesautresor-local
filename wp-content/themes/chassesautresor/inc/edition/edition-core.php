@@ -424,14 +424,18 @@ add_filter('body_class', 'injection_classe_edition_active');
 function injection_classe_edition_active(array $classes): array
 {
 
-  if (!is_user_logged_in()) return $classes;
-
   if (strpos($_SERVER['REQUEST_URI'] ?? '', '/mon-compte/') === 0) {
     $classes[] = 'mode-edition';
   }
 
+  if (!is_user_logged_in()) {
+    return $classes;
+  }
+
   global $post;
-  if (!$post || !isset($post->post_type)) return $classes;
+  if (!$post || !isset($post->post_type)) {
+    return $classes;
+  }
 
   $user_id = get_current_user_id();
   $roles = wp_get_current_user()->roles;

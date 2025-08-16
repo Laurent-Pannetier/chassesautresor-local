@@ -30,29 +30,46 @@ add_action('wp_enqueue_scripts', function () {
 
     // 🎨 Chargement des styles du thème parent (Astra) et enfant
     wp_enqueue_style('astra-style', get_template_directory_uri() . '/style.css');
-    wp_enqueue_style('mon-theme-enfant-style', get_stylesheet_directory_uri() . '/style.css', ['astra-style'], filemtime(get_stylesheet_directory() . '/style.css'));
+    wp_enqueue_style(
+        'mon-theme-enfant-style',
+        get_stylesheet_directory_uri() . '/style.css',
+        ['astra-style'],
+        filemtime(get_stylesheet_directory() . '/style.css')
+    );
+
+    $is_myaccount = strpos($_SERVER['REQUEST_URI'] ?? '', '/mon-compte/') === 0;
 
     // 📂 Liste des fichiers CSS organisés
     $styles = [
-        'grid'               => 'grid.css',
-        'layout'             => 'layout.css',
-        'components'         => 'components.css',
-        'modal-bienvenue'    => 'modal-bienvenue.css',
-        'general-style'      => 'general.css',
-        'chasse-style'       => 'chasse.css',
-        'enigme-style'       => 'enigme.css',
-        'gamification-style' => 'gamification.css',
-        'cartes-style'       => 'cartes.css',
-        'organisateurs'      => 'organisateurs.css',
-        'edition'            => 'edition.css',
-        'mon compte'         => 'mon-compte.css',
-        'commerce-style'     => 'commerce.css',
-        'home'               => 'home.css',
+        'general-style' => 'general.css',
+        'edition'       => 'edition.css',
     ];
+
+    if ($is_myaccount) {
+        $styles['mon compte'] = 'mon-compte.css';
+    } else {
+        $styles = array_merge(
+            $styles,
+            [
+                'grid'               => 'grid.css',
+                'layout'             => 'layout.css',
+                'components'         => 'components.css',
+                'modal-bienvenue'    => 'modal-bienvenue.css',
+                'chasse-style'       => 'chasse.css',
+                'enigme-style'       => 'enigme.css',
+                'gamification-style' => 'gamification.css',
+                'cartes-style'       => 'cartes.css',
+                'organisateurs'      => 'organisateurs.css',
+                'commerce-style'     => 'commerce.css',
+                'home'               => 'home.css',
+            ]
+        );
+    }
 
     // 🚀 Chargement dynamique des styles avec gestion du cache
     foreach ($styles as $handle => $file) {
-        wp_enqueue_style($handle, $theme_dir . $file, [], filemtime(get_stylesheet_directory() . "/assets/css/{$file}"));
+        $path = get_stylesheet_directory() . "/assets/css/{$file}";
+        wp_enqueue_style($handle, $theme_dir . $file, [], filemtime($path));
     }
 
     $script_dir = get_stylesheet_directory_uri() . '/assets/js/';
