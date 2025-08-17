@@ -169,7 +169,7 @@ a.bouton-edition-attention {
 .boutons-modal button:hover {
   background-color: var(--color-accent, #ffc400);
   border-color: var(--color-accent, #ffc400);
-  color: #fff;
+  color: var(--color-white);
 }
 
 /* ========== 🟢 MODAL CONFIRMATION VALIDATION CHASSE ========== */
@@ -195,7 +195,7 @@ a.bouton-edition-attention {
   margin-top: 2px;
 }
 .modal-contenu button.header-bouton-edition {
-    color: #ffffff;
+    color: var(--color-white);
     background-color: var(--color-background, #ffc400);;
     border-color: var(--color-background, #ffc400);;
 }
@@ -413,7 +413,7 @@ body:not(.edition-active) #presentation .champ-liens.champ-vide {
   padding: 0.3em 0.8em;
   border-radius: 1.5em;
   background: rgba(255, 255, 255, 0.08);
-  color: #fff;
+  color: var(--color-white);
   font-size: 0.95rem;
   text-decoration: none;
   transition: background 0.2s ease;

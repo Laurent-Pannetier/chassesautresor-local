@@ -5,10 +5,10 @@
 .style-enigme--pirate {
   font-family: 'Pirata One', cursive;
   background-color: #301A0F;
-  color: #FFD700;
+  color: var(--color-primary);
 }
 .style-enigme--vintage {
   font-family: 'IM Fell English SC', serif;
   background-color: #f2e5c4;
-  color: #333;
+  color: var(--color-grey-dark);
 }
