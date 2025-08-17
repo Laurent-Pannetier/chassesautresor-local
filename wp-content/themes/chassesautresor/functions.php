@@ -29,25 +29,30 @@ add_action('wp_enqueue_scripts', function () {
     $theme_uri  = get_stylesheet_directory_uri();
     $theme_path = get_stylesheet_directory();
 
-    // 🎨 Chargement des styles du thème parent (Astra) et enfant
+    // 🎨 Chargement du style du thème parent (Astra)
     wp_enqueue_style('astra-style', get_template_directory_uri() . '/style.css');
+
+    // Détermine l'environnement via WP_ENVIRONMENT_TYPE ou une constante dédiée.
+    $env            = defined('CHASSESAUTRESOR_ENV') ? CHASSESAUTRESOR_ENV : wp_get_environment_type();
+    $is_edition_env = 'edition' === $env;
+
+    if (!$is_edition_env) {
+        $dist_file = '/dist/style.min.css';
+        wp_enqueue_style(
+            'chassesautresor-style',
+            $theme_uri . $dist_file,
+            ['astra-style'],
+            filemtime($theme_path . $dist_file)
+        );
+        return;
+    }
+
     wp_enqueue_style(
         'mon-theme-enfant-style',
         $theme_uri . '/style.css',
         ['astra-style'],
         filemtime($theme_path . '/style.css')
     );
-
-    if ('production' === wp_get_environment_type()) {
-        $dist_file = '/dist/style.min.css';
-        wp_enqueue_style(
-            'chassesautresor-style',
-            $theme_uri . $dist_file,
-            ['mon-theme-enfant-style'],
-            filemtime($theme_path . $dist_file)
-        );
-        return;
-    }
 
     $css_uri  = $theme_uri . '/assets/css/';
     $css_path = $theme_path . '/assets/css/';
