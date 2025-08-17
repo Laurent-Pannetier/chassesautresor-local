@@ -663,10 +663,10 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
           <?php wp_nonce_field('validation_admin_' . $chasse_id, 'validation_admin_nonce'); ?>
           <input type="hidden" name="action" value="traiter_validation_chasse">
           <input type="hidden" name="chasse_id" value="<?php echo esc_attr($chasse_id); ?>">
-          <button type="button" class="btn-admin-danger btn-correction">
+          <button type="button" class="bouton-secondaire btn-correction">
             <i class="fa-solid fa-triangle-exclamation"></i> Correction
           </button>
-          <button type="submit" name="validation_admin_action" value="bannir" class="btn-admin-danger" onclick="return confirm('Bannir cette chasse&nbsp;?');">
+          <button type="submit" name="validation_admin_action" value="bannir" class="bouton-secondaire" onclick="return confirm('Bannir cette chasse&nbsp;?');">
             <i class="fa-solid fa-triangle-exclamation"></i> Bannir
           </button>
         </form>

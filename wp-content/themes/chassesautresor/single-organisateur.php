@@ -129,7 +129,7 @@ if ($afficher_bienvenue) :
             <div class="modal-contenu">
                 <?php echo $contenu_html; ?>
                 <div class="boutons-modal">
-                    <button id="fermer-modal-bienvenue" class="btn-fermer">C'est parti !</button>
+                    <button id="fermer-modal-bienvenue" class="bouton-cta">C'est parti !</button>
                 </div>
             </div>
         </div>
