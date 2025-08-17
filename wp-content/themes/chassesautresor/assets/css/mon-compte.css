@@ -149,8 +149,8 @@
 }
 
 .msg-important {
-    margin-bottom: 1rem;
-    padding: 1rem;
+    margin-bottom: var(--space-md);
+    padding: var(--space-md);
     background: hsl(var(--accent));
     color: hsl(var(--accent-foreground));
     border-radius: 0.5rem;
@@ -161,7 +161,7 @@
 }
 
 .myaccount-points {
-    margin-bottom: 1rem;
+    margin-bottom: var(--space-md);
     font-weight: 500;
 }
 
@@ -349,7 +349,7 @@
 }
 
 .stats-cards {
-    margin: 1rem 0 2.5rem;
+    margin: var(--space-md) 0 var(--space-3xl);
 }
 
 .dashboard-card {

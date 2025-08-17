@@ -71,8 +71,8 @@ h2, .entry-content h2 {
   font-weight: 600;
   color: var(--color-titre-enigme); /* or vieilli */
   line-height: 1.4;
-  margin-top: 2.5rem;
-  margin-bottom: 1rem;
+  margin-top: var(--space-3xl);
+  margin-bottom: var(--space-md);
   font-size: 32px;
 }
 
@@ -97,8 +97,8 @@ h3, .entry-content h3 {
   color: var(--color-accent); /* bronze */
   line-height: 1.4;
   font-size: 24px;
-  margin-top: 2rem;
-  margin-bottom: 0.75rem;
+  margin-top: var(--space-2xl);
+  margin-bottom: var(--space-sm);
 }
 
 @media (max-width: var(--bp-lg)) {
@@ -128,7 +128,7 @@ body {
   background-color: var(--color-background); /* Bleu nuit (fond global) */
 }
 p {
-    margin-bottom: 0;
+    margin-bottom: var(--space-0);
 }
 label {
     color: var(--color-text-primary);
@@ -144,7 +144,7 @@ label {
 }
 ul {
     list-style: none;
-    margin: 0 0 1.5em 0;
+    margin: 0 0 var(--space-xl) 0;
 }
 ul li {
     margin-bottom: 0.3rem;
@@ -152,7 +152,7 @@ ul li {
 figcaption, .figcaption {
   font-size: 0.85rem;
   opacity: 0.7;
-  margin-top: 0.5rem;
+  margin-top: var(--space-xs);
   text-align: center;
   font-style: italic;
 }
@@ -161,7 +161,7 @@ a:hover {
     opacity:0.98;
 }
 #content {
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-2xl);
 }
 
 /* ========== 🎨 ÉLÉMENTS HTML PERSONNALISES ========== */
@@ -177,13 +177,12 @@ a:hover {
     font-size: 89%;
 }
 .info-meta {
-
   opacity: 0.8;
   display: flex;
   align-items: center;
   gap: 0.5em;
-  margin-bottom: 1rem;
-}
+  margin-bottom: var(--space-md);
+ }
 body .w-150 {
     width:150px;
 }
@@ -334,11 +333,11 @@ span.champ-obligatoire {
 .titre-chasses-wrapper {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--space-md);
 }
 
 .titre-enigmes-wrapper {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--space-md);
 }

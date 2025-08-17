@@ -71,7 +71,7 @@
 
 .bloc-elegant li {
   position: relative;
-  padding-left: 1.5rem;
+  padding-left: var(--space-xl);
   margin-bottom: 0.6rem;
 }
 
@@ -305,7 +305,7 @@ a.ajout-link {
   color: var(--color-accent); /* ou var(--color-secondary) */
   padding: 0.2rem 0.6rem;
   border-radius: 4px;
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--space-xs);
   letter-spacing: 0.05em;
   font-style: normal;
 }
@@ -411,10 +411,10 @@ a.ajout-link {
 /* ========== 🎁 BADGE RÉCOMPENSE ========== */
 
 .badge-recompense {
-  margin-left: 1rem;
+  margin-left: var(--space-md);
   font-size: 0.85rem;
   font-weight: 600;
-  padding: 0.25rem 0.5rem;
+  padding: var(--space-xxs) var(--space-xs);
   border-radius: 0.4rem;
   background-color: rgba(255, 255, 255, 0.05);
   color: var(--color-text-primary);
@@ -451,8 +451,8 @@ a.ajout-link {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  margin: 3rem 0;
+  gap: var(--space-md);
+  margin: var(--space-4xl) 0;
   opacity: 0.6;
 }
 .separateur-avec-icone .icone-svg {
@@ -485,7 +485,7 @@ a.ajout-link {
 .separateur-1 {
   border: none;
   border-top: 1px dashed var(--color-accent);
-  margin: 2rem auto;
+  margin: var(--space-2xl) auto;
   max-width: 600px;
   opacity: 0.4;
 }
@@ -496,7 +496,7 @@ a.ajout-link {
   height: 2px;
   width: 40px;
   background-color: var(--color-accent);
-  margin: 0.5rem 0 1.5rem;
+  margin: var(--space-xs) 0 var(--space-xl);
 }
 
 
@@ -525,7 +525,7 @@ a.ajout-link {
 /* ========== 📩 FORMULAIRE DE CONTACT ORGANISATEUR ========== */
 
 .formulaire-contact-wrapper {
-  margin:2rem auto;
+  margin:var(--space-2xl) auto;
   max-width: 600px;
 }
 .titre-contact {
@@ -536,8 +536,8 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
 }
 @media (max-width: var(--bp-sm)) {
   .formulaire-contact-wrapper {
-    padding-left: 1rem;
-    padding-right: 1rem;
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
   }
 }
 #wpforms-8792-field_6-container {

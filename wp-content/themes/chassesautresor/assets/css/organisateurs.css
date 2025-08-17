@@ -66,7 +66,7 @@ a.bouton-edition-attention {
   background: var(--color-text-primary, #fff4d4);
   border-left: 4px solid var(--color-secondary);
   padding: 1.2rem;
-  margin: 2rem auto;
+  margin: var(--space-2xl) auto;
   max-width: 700px;
   text-align: center;
   border-radius: 6px;
@@ -94,7 +94,7 @@ a.bouton-edition-attention {
 .conteneur-organisateur {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: var(--space-2xl);
   flex-wrap: wrap;
 }
 .conteneur-organisateur .colonne-logo {
@@ -111,7 +111,7 @@ a.bouton-edition-attention {
   min-width: 0;
 }
 .conteneur-organisateur .champ-titre .champ-input-wrapper {
-    margin-top:1rem;
+    margin-top:var(--space-md);
 }
 
 /* ========== 📌 ICÔNES D'ACTIONS ========== */
@@ -119,7 +119,7 @@ a.bouton-edition-attention {
   margin-left: auto;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--space-md);
 }
 
 .header-organisateur__actions a,
@@ -152,7 +152,7 @@ a.bouton-edition-attention {
 
 /* ========== 🧭 MODAL BIENVENUE ========== */
 .boutons-modal {
-  margin-top: 2rem;
+  margin-top: var(--space-2xl);
   text-align: center;
 }
 
@@ -187,7 +187,7 @@ a.bouton-edition-attention {
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  margin-top: 1rem;
+  margin-top: var(--space-md);
   color: var(--color-text-fond-clair);
 }
 .modal-confirmation-validation-chasse input[type="checkbox"] {
@@ -200,14 +200,14 @@ a.bouton-edition-attention {
     border-color: var(--color-background, #ffc400);;
 }
 .modal-tips {
-  margin-top: 2rem;
+  margin-top: var(--space-2xl);
   padding-top: 1.2rem;
   border-top: 1px dashed var(--color-text-fond-clair);
   font-size: 0.95rem;
   opacity: 0.67;
 }
 .modal-tips p {
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-md);
 }
 
     
@@ -257,7 +257,7 @@ a.bouton-edition-attention {
     .conteneur-organisateur {
         flex-direction: row;
         align-items: center;
-        gap: 1.5rem;
+        gap: var(--space-xl);
     }
     .colonne-logo {
         width: auto;
@@ -285,7 +285,7 @@ a.bouton-edition-attention {
 
 @media (max-width: var(--bp-600)) {
     .conteneur-organisateur {
-        gap:1rem;
+        gap:var(--space-md);
     }
     .champ-organisateur .champ-affichage {
         justify-content: center;
@@ -310,12 +310,12 @@ a.bouton-edition-attention {
 
   .header-organisateur__logo {
     text-align: center;
-    margin-bottom: 1rem;
+    margin-bottom: var(--space-md);
   }
 
   .header-organisateur__logo .icone-modif {
-    top: 0.5rem;
-    right: 0.5rem;
+    top: var(--space-xs);
+    right: var(--space-xs);
   }
 
   /* 🔹 Titre  */
@@ -337,7 +337,7 @@ a.bouton-edition-attention {
   .header-organisateur__liens {
     justify-content: center;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: var(--space-xs);
     margin-bottom: 0.8rem;
   }
 
@@ -355,7 +355,7 @@ a.bouton-edition-attention {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 0.5rem;
+    gap: var(--space-xs);
     width: 100%;
     max-width: 100%;
   }
@@ -383,20 +383,20 @@ a.bouton-edition-attention {
 
 /* ========== 🌐 LIENS PUBLICS ORGANISATEUR ========== */
 #presentation .champ-liens {
-    margin-bottom: 2rem;
+    margin-bottom: var(--space-2xl);
 }
 body:not(.edition-active) #presentation .champ-liens.champ-vide {
   display: none;
 }
 .bloc-liens-publics {
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-md);
   justify-content: center;margin: 0;
 }
 
 .liste-liens-publics {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: var(--space-sm);
   list-style: none;
   padding: 0;
   margin: 0;
@@ -434,7 +434,7 @@ body:not(.edition-active) #presentation .champ-liens.champ-vide {
 /* ========== 🧾 DESCRIPTION ORGANISATEUR ========== */
 
 section#presentation {
-    margin-top:1rem;
+    margin-top:var(--space-md);
     position: relative;
 }
 section#presentation.masque {
@@ -452,14 +452,14 @@ section#presentation h2 {
 }
 section#presentation .titre-presentation {
   font-size: 1.8rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-xl);
   position: relative;
 }
 
 section#presentation .presentation-fermer {
   position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
+  top: var(--space-xs);
+  right: var(--space-xs);
 }
 
 
@@ -481,7 +481,7 @@ section#presentation .presentation-fermer {
 
 /* ========== 🎯 AXES D’ENGAGEMENT ========== */
 .bloc-axes-engagt .wp-block-column{
-  padding: 2rem;
+  padding: var(--space-2xl);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 8px;
   transition: box-shadow 0.3s ease;
@@ -495,7 +495,7 @@ section#presentation .presentation-fermer {
 
 
 .bloc-intro-fonctionnement {
-  margin: 3rem auto;
+  margin: var(--space-4xl) auto;
   max-width: 800px;
   text-align: center;
   font-size: 1.1rem;
@@ -511,8 +511,8 @@ section#presentation .presentation-fermer {
   background-color: rgba(255, 255, 255, 0.015);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 8px;
-  padding: 2rem;
-  margin-bottom: 3rem;
+  padding: var(--space-2xl);
+  margin-bottom: var(--space-4xl);
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
@@ -531,23 +531,23 @@ section#presentation .presentation-fermer {
     z-index: -10;
 }
 .bloc-etape ul.wp-block-list {
-    padding-left: 1rem;
+    padding-left: var(--space-md);
     margin-top: 0;
 }
 .bloc-bonus {
-  margin-top: 2.5rem;
-  padding-top: 3rem;
+  margin-top: var(--space-3xl);
+  padding-top: var(--space-4xl);
   border-top: 1px dashed rgba(255, 255, 255, 0.08);
   font-size: 0.95rem;
   color: var(--color-text-primary);
 }
 .bloc-bonus h3 {
   font-size: 1.2rem;
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-md);
   color: var(--color-primary);
 }
 .bloc-bonus li {
-  margin-bottom: 0.75rem;
+  margin-bottom: var(--space-sm);
 }
 .bloc-bonus.has-icon-casino {
   position: relative;
@@ -579,7 +579,7 @@ section#presentation .presentation-fermer {
     }
     .bloc-bonus {
         margin-top: 1.7rem;
-        padding-top:2rem;
+        padding-top:var(--space-2xl);
     }
     .bloc-bonus.has-icon-casino::before {
         width: 50px;
@@ -588,13 +588,13 @@ section#presentation .presentation-fermer {
 }
 @media (max-width: var(--bp-sm)) {
     .separateur-avec-icone {
-        margin: 1.5rem 0;
+        margin: var(--space-xl) 0;
     }
     .bloc-intro-fonctionnement {
         font-size: 0.95rem;
     }
     .bloc-bonus {
-        margin-top: 1rem;
+        margin-top: var(--space-md);
         padding-top: 1.2rem;
     }
     .bloc-bonus.has-icon-casino::before {
@@ -616,8 +616,8 @@ section#presentation .presentation-fermer {
 }
 .modal-correction-chasse textarea {
   width: 100%;
-  margin-top: 1rem;
-  padding: 0.5rem;
+  margin-top: var(--space-md);
+  padding: var(--space-xs);
   font-size: 1rem;
   resize: vertical;
 }

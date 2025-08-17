@@ -6,7 +6,7 @@
    ================================================== */
 
 .chasse-fiche-container {
-  margin-top: 2rem;
+  margin-top: var(--space-2xl);
   display: flex;
   gap: 2.6rem;
   align-items: flex-start;
@@ -43,7 +43,7 @@
 .chasse-details-wrapper .meta-row,
 .carte-ligne__contenu .meta-row{
     display: flex;
-    gap: 1.5rem;
+    gap: var(--space-xl);
     align-items: center;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -51,7 +51,7 @@
     color:var(--color-gris-3);
 }
 .chasse-details-wrapper .bloc-metas-inline {
-    margin: 1.5rem 0;
+    margin: var(--space-xl) 0;
     color: white;
 }
 .chasse-prix {
@@ -64,7 +64,7 @@
     display: flex;
     gap: 0.7rem;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: var(--space-md);
     font-size: 20px;
 }
 .page-chasse-wrapper .chasse-lot svg {
@@ -81,7 +81,7 @@
 .chasse-section-intro.champ-vide-obligatoire {
     border: 2px dashed var(--color-editor-error);
     animation: clignoteTitre 1s infinite alternate;
-    padding: 0.5rem;
+    padding: var(--space-xs);
     border-radius: 0.5rem;
 }
 
@@ -114,7 +114,7 @@ body.edition-active-chasse .chasse-enigmes-header  .liens-placeholder {
 
 .infos-dispo {
   text-align: center;
-  margin-top: 0.25rem;
+  margin-top: var(--space-xxs);
 }
 .infos-dispo .infos-secondaires {
   display: inline-block;
