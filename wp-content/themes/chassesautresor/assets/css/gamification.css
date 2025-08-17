@@ -388,6 +388,9 @@ header .points-link:hover {
     text-align: left;
     border: 1px solid var(--color-editor-border);
 }
+.points-modal.is-open {
+    display: block;
+}
 .points-modal-content {
     position: relative;
     padding: 16px;
@@ -448,6 +451,9 @@ header .points-link:hover {
     height: 100%;
     background: rgba(0, 0, 0, 0.5); /* Assombrissement */
     z-index: 10999; /* Derrière le modal */
+}
+.modal-overlay.is-open {
+    display: block;
 }
 .points-modal-active::before {
     content: "";
