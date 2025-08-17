@@ -421,10 +421,10 @@ body .header-img-modifiable .icone-modif {
 
 
 /* Boutons d’édition */
-body.edition-active-chasse .page-chasse-wrapper .champ-modifier,
+body.edition-active-chasse .champ-modifier,
 body.edition-active .header-organisateur-wrapper .champ-modifier,
 body.edition-active #organisateur-tab-param .edition-panel-organisateur .champ-modifier,
-body.edition-active-enigme .single-enigme-main .champ-modifier {
+body.edition-active-enigme .champ-modifier {
   background: none;
   border: none;
   color: var(--color-editor-accent);
@@ -448,17 +448,21 @@ body.edition-active-enigme .single-enigme-main .champ-modifier {
   padding-left: 5px;
 }
 
-body.edition-active-enigme .single-enigme-main .champ-modifier .icone-modif {
+body.edition-active-enigme .champ-modifier .icone-modif {
   display: unset;
 }
 
 body.edition-active-chasse .champ-modifier:hover,
-.edition-active .header-organisateur-wrapper .champ-modifier:hover {
+body.edition-active .header-organisateur-wrapper .champ-modifier:hover,
+body.edition-active #organisateur-tab-param .edition-panel-organisateur .champ-modifier:hover,
+body.edition-active-enigme .champ-modifier:hover {
   opacity: 1;
 }
 
 body.edition-active-chasse .champ-modifier:focus,
-body.edition-active .header-organisateur-wrapper .champ-modifier:focus {
+body.edition-active .header-organisateur-wrapper .champ-modifier:focus,
+body.edition-active #organisateur-tab-param .edition-panel-organisateur .champ-modifier:focus,
+body.edition-active-enigme .champ-modifier:focus {
   outline: 2px solid var(--color-editor-accent);
   outline-offset: 2px;
 }
