@@ -314,10 +314,22 @@ function myaccount_get_important_messages(): string
         $repo       = new PointsRepository($wpdb);
         $pendingOwn = $repo->getConversionRequests($current_user_id, 'pending');
         if (!empty($pendingOwn)) {
+            $conversion_url = $organisateur_id
+                ? esc_url(
+                    add_query_arg(
+                        [
+                            'edition' => 'open',
+                            'onglet'  => 'revenus',
+                        ],
+                        get_permalink($organisateur_id)
+                    )
+                )
+                : esc_url(home_url('/mon-compte/?section=points'));
+
             $messages[] = sprintf(
                 /* translators: 1: opening anchor tag, 2: closing anchor tag */
                 __('Vous avez une %1$sdemande de conversion%2$s en attente de règlement.', 'chassesautresor'),
-                '<a href="' . esc_url(home_url('/mon-compte/?section=points')) . '">',
+                '<a href="' . $conversion_url . '">',
                 '</a>'
             );
         }
