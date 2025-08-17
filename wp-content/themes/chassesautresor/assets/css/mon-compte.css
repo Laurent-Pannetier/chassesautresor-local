@@ -250,8 +250,9 @@
 }
 
 /* 📌 Affichage dynamique */
-.message-avatar-visible {
-    display: block !important;
+.message-size-file-avatar.message-avatar-visible,
+.message-format-file-avatar.message-avatar-visible {
+    display: block;
 }
 
 
@@ -598,8 +599,10 @@
 📌 Page adresse Woocommerce
 ========================================================== */
 
-.woocommerce header, .woocommerce thead, .woocommerce h2 {
-    background-color: transparent !important;
+body.woocommerce header,
+body.woocommerce thead,
+body.woocommerce h2 {
+    background-color: transparent;
 }
 .woocommerce h2 {
     font-size: 1.6rem;

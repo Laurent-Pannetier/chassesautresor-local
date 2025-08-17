@@ -52,7 +52,7 @@
 }
 
 .resume-infos .champ-rempli .icon-attente {
-  display: none !important;
+  display: none;
 }
 
 .resume-infos .icon-attente {
@@ -179,13 +179,13 @@ section.enigme-wrapper {
 /* ========== 🖼️ IMAGE MODIFIABLE ========== */
 body:not(.edition-active-chasse) .chasse-fiche-container .champ-img .champ-modifier .icone-modif,
 body:not(.edition-active) .header-organisateur .champ-img .champ-modifier .icone-modif {
-  display: none !important;
+  display: none;
 }
 
 body:not(.edition-active-chasse) .chasse-fiche-container .champ-img .champ-modifier,
 body:not(.edition-active) .header-organisateur .champ-img .champ-modifier {
-  opacity: 1 !important;
-  filter: none !important;
+  opacity: 1;
+  filter: none;
   pointer-events: none;
   /* empêche les clics accidentels */
 }
@@ -266,7 +266,7 @@ body.edition-active-enigme .single-enigme-main .champ-img .champ-modifier {
 }
 
 .media-modal.wp-core-ui button.media-modal-close:hover {
-  color: white !important;
+  color: white;
 }
 
 /* ========== 🖼 LOGO CLIQUABLE ========== */
@@ -553,8 +553,11 @@ input[disabled].champ-texte-edit {
   font-style: italic;
 }
 
-.champ-desactive .champ-modifier {
-  display: none !important;
+.champ-desactive .champ-modifier,
+body.edition-active-chasse .champ-desactive .champ-modifier,
+body.edition-active .champ-desactive .champ-modifier,
+body.edition-active-enigme .champ-desactive .champ-modifier {
+  display: none;
 }
 
 .edition-panel-section .champ-option-illimitee {
@@ -817,15 +820,15 @@ body.edition-active .edition-panel {
   color: var(--color-editor-text);
 }
 
-.mce-btn.mce-active button,
-.mce-btn.mce-active:hover button,
-.mce-btn.mce-active i,
-.mce-btn.mce-active:hover i,
-.mce-container,
-.mce-container *,
-.mce-widget,
-.mce-widget * {
-  color: var(--color-editor-text) !important;
+.edition-panel .mce-btn.mce-active button,
+.edition-panel .mce-btn.mce-active:hover button,
+.edition-panel .mce-btn.mce-active i,
+.edition-panel .mce-btn.mce-active:hover i,
+.edition-panel .mce-container,
+.edition-panel .mce-container *,
+.edition-panel .mce-widget,
+.edition-panel .mce-widget * {
+  color: var(--color-editor-text);
 }
 
 .edition-panel label {

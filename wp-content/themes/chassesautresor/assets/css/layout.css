@@ -464,12 +464,12 @@ footer .ast-footer-widget a {
   .site-footer-primary-section-2 {
     order: 3;
   }
-  .site-footer-primary-section-3 {
+  footer .site-footer-primary-section-3 {
     order: 1;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     padding-bottom: 15px;
     margin-bottom: 15px;
-    display: block !important;
+    display: block;
   }
   .ast-builder-footer-grid-columns {
     column-gap: 20px;
