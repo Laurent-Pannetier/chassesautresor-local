@@ -635,6 +635,19 @@ add_action('init', 'traiter_demande_paiement');
 // 🎛️ Mise à jour du statut des demandes de paiement (Admin)
 // ----------------------------------------------------------
 /**
+ * Update monthly total of organizer payouts.
+ */
+function mettre_a_jour_paiements_organisateurs(float $amount): void
+{
+    $option = 'total_paiements_effectues_mensuel_' . date('Y_m');
+
+    if (function_exists('get_option') && function_exists('update_option')) {
+        $current = (float) get_option($option, 0);
+        update_option($option, $current + $amount);
+    }
+}
+
+/**
  * Handle AJAX status updates for payment requests.
  */
 function ajax_update_request_status(): void
