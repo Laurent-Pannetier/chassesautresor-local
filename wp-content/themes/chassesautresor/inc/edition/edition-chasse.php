@@ -5,7 +5,7 @@ defined('ABSPATH') || exit;
 // ==================================================
 // 🗺️ CRÉATION & ÉDITION D’UNE CHASSE
 // ==================================================
-// 🔹 enqueue_script_chasse_edit() → Charge JS sur single chasse
+// 🔹 register_script_chasse_edit() → Prépare les scripts pour l’édition de chasse
 // 🔹 register_endpoint_creer_chasse() → Enregistre /creer-chasse
 // 🔹 creer_chasse_et_rediriger_si_appel() → Crée une chasse et redirige
 // 🔹 modifier_champ_chasse() → Mise à jour AJAX (champ ACF ou natif)
@@ -13,11 +13,12 @@ defined('ABSPATH') || exit;
 
 
 /**
- * Charge les scripts JS frontaux pour l’édition d’une chasse (panneau édition).
+ * Enregistre les scripts JS frontaux pour l’édition d’une chasse (panneau édition)
+ * sans les charger immédiatement.
  *
  * @hook wp_enqueue_scripts
  */
-function enqueue_script_chasse_edit()
+function register_script_chasse_edit()
 {
   if (!is_singular('chasse')) {
     return;
@@ -29,8 +30,8 @@ function enqueue_script_chasse_edit()
     return;
   }
 
-  // Enfile les scripts nécessaires
-  enqueue_core_edit_scripts(['chasse-edit', 'chasse-stats', 'table-etiquette']);
+  // Enregistre les scripts nécessaires
+  register_core_edit_scripts(['chasse-edit', 'chasse-stats', 'table-etiquette']);
   wp_localize_script(
     'chasse-stats',
     'ChasseStats',
@@ -46,10 +47,50 @@ function enqueue_script_chasse_edit()
     'image_slug' => 'defaut-chasse-2',
   ]);
 
-  // Charge les médias pour les champs image
-  wp_enqueue_media();
+  // Script de chargement à la demande
+  add_action('wp_footer', function () {
+    ?>
+    <script>
+      document.getElementById('toggle-mode-edition-chasse')?.addEventListener('click', function loadChasseScripts() {
+        this.removeEventListener('click', loadChasseScripts);
+        fetch('<?php echo esc_url(admin_url('admin-ajax.php?action=charger_scripts_chasse_edit')); ?>')
+          .then(r => r.text())
+          .then(html => {
+            document.head.insertAdjacentHTML('beforeend', html);
+          });
+      });
+    </script>
+    <?php
+  });
 }
-add_action('wp_enqueue_scripts', 'enqueue_script_chasse_edit');
+add_action('wp_enqueue_scripts', 'register_script_chasse_edit');
+
+add_action('wp_ajax_charger_scripts_chasse_edit', 'charger_scripts_chasse_edit');
+add_action('wp_ajax_nopriv_charger_scripts_chasse_edit', 'charger_scripts_chasse_edit');
+function charger_scripts_chasse_edit()
+{
+  register_core_edit_scripts(['chasse-edit', 'chasse-stats', 'table-etiquette']);
+  $handles = [
+    'helpers',
+    'ajax',
+    'ui',
+    'resume',
+    'image-utils',
+    'date-fields',
+    'champ-init',
+    'champ-date-hooks',
+    'modal-tabs',
+    'chasse-edit',
+    'chasse-stats',
+    'table-etiquette',
+  ];
+  foreach ($handles as $handle) {
+    wp_enqueue_script($handle);
+  }
+  wp_enqueue_media();
+  wp_print_scripts($handles);
+  wp_die();
+}
 
 
 /**

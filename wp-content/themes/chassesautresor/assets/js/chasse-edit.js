@@ -1,4 +1,9 @@
 // ✅ chasse-edit.js
+if (window.chasseEditLoaded) {
+  console.warn('chasse-edit.js already loaded');
+} else {
+  window.chasseEditLoaded = true;
+}
 var DEBUG = window.DEBUG || false;
 DEBUG && console.log('✅ chasse-edit.js chargé');
 

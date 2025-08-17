@@ -25,7 +25,7 @@ defined('ABSPATH') || exit;
 // ==================================================
 // 🔹 forcer_chargement_acf_scripts_chasse() → Force le chargement ACF en front
 // 🔹 personnaliser_acf_wysiwyg_toolbars() → Barre WYSIWYG personnalisée
-// 🔹 enqueue_core_edit_scripts() → Enfile les JS mutualisés
+// 🔹 register_core_edit_scripts() → Enregistre les JS mutualisés
 
 /**
  * Force le chargement des scripts ACF sur les fiches chasse (is_singular('chasse')).
@@ -75,11 +75,11 @@ add_filter('tiny_mce_before_init', function ($init) {
 
 
 /**
- * Charge les scripts JS partagés pour l’édition frontale (texte, image, liens, etc.).
+ * Enregistre les scripts JS partagés pour l’édition frontale (texte, image, liens, etc.).
  *
  * @return void
  */
-function enqueue_core_edit_scripts(array $additional = [])
+function register_core_edit_scripts(array $additional = [])
 {
   static $versions = [];
 
@@ -109,10 +109,10 @@ function enqueue_core_edit_scripts(array $additional = [])
       $versions[$handle] = file_exists($file) ? filemtime($file) : null;
     }
 
-    wp_enqueue_script(
+    wp_register_script(
       $handle,
       $theme_uri . $path,
-      $previous_handle ? [$previous_handle] : [], // le script dépend du précédent
+      $previous_handle ? [$previous_handle] : [],
       $versions[$handle],
       true
     );
@@ -128,7 +128,7 @@ function enqueue_core_edit_scripts(array $additional = [])
       $versions[$handle] = file_exists($file) ? filemtime($file) : null;
     }
 
-    wp_enqueue_script(
+    wp_register_script(
       $handle,
       $theme_uri . $path,
       ['helpers', 'ajax', 'ui', 'champ-init'],

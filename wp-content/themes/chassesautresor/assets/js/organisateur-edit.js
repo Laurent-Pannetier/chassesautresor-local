@@ -1,3 +1,8 @@
+if (window.organisateurEditLoaded) {
+  console.warn('organisateur-edit.js already loaded');
+} else {
+  window.organisateurEditLoaded = true;
+}
 var DEBUG = window.DEBUG || false;
 DEBUG && console.log('✅ organisateur-edit.js chargé');
 

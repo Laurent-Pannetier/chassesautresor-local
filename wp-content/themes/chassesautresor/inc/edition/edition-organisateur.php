@@ -7,7 +7,7 @@ defined('ABSPATH') || exit;
 // ==================================================
 // 🔹 organisateur_get_liens_actifs() → Retourne les liens publics valides d’un organisateur
 // 🔹 creer_organisateur_pour_utilisateur() → Crée un CPT organisateur lié à un user
-// 🔹 enqueue_script_organisateur_edit() → Charge JS si modif organisateur possible
+// 🔹 register_script_organisateur_edit() → Prépare les scripts pour l’édition organisateur
 // 🔹 modifier_champ_organisateur() (AJAX) → Enregistre champs organisateur
 // 🔹 rediriger_selon_etat_organisateur() → Redirection auto selon statut
 // 🔹 modifier_titre_organisateur() (AJAX) → Modifie post_title via AJAX
@@ -98,13 +98,13 @@ function creer_organisateur_pour_utilisateur($user_id)
 
 
 /**
- * Charge les scripts JS pour l’édition frontale d’un organisateur (header + panneau).
- *
- * Chargé uniquement si l’utilisateur peut modifier l’organisateur lié.
+ * Enregistre les scripts JS pour l’édition frontale d’un organisateur (header + panneau)
+ * sans les charger immédiatement. Exécuté uniquement si l’utilisateur peut modifier
+ * l’organisateur lié.
  *
  * @hook wp_enqueue_scripts
  */
-function enqueue_script_organisateur_edit()
+function register_script_organisateur_edit()
 {
   $cpts = ['organisateur', 'chasse'];
 
@@ -126,9 +126,9 @@ function enqueue_script_organisateur_edit()
 
   if ($organisateur_id && utilisateur_peut_modifier_post($organisateur_id)) {
     // 📦 Modules JS partagés + script organisateur
-    enqueue_core_edit_scripts(['organisateur-edit', 'table-etiquette']);
+    register_core_edit_scripts(['organisateur-edit', 'table-etiquette']);
 
-    // ✅ Injection JavaScript APRÈS le enqueue (très important)
+    // ✅ Injection JavaScript APRÈS l’enregistrement
     $author_id = (int) get_post_field('post_author', $organisateur_id);
     $default_email = get_the_author_meta('user_email', $author_id);
 
@@ -136,10 +136,49 @@ function enqueue_script_organisateur_edit()
       'defaultEmail' => esc_js($default_email)
     ]);
 
-    wp_enqueue_media();
+    add_action('wp_footer', function () {
+      ?>
+      <script>
+        document.getElementById('toggle-mode-edition')?.addEventListener('click', function loadOrganisateurScripts() {
+          this.removeEventListener('click', loadOrganisateurScripts);
+          fetch('<?php echo esc_url(admin_url('admin-ajax.php?action=charger_scripts_organisateur_edit')); ?>')
+            .then(r => r.text())
+            .then(html => {
+              document.head.insertAdjacentHTML('beforeend', html);
+            });
+        });
+      </script>
+      <?php
+    });
   }
 }
-add_action('wp_enqueue_scripts', 'enqueue_script_organisateur_edit');
+add_action('wp_enqueue_scripts', 'register_script_organisateur_edit');
+
+add_action('wp_ajax_charger_scripts_organisateur_edit', 'charger_scripts_organisateur_edit');
+add_action('wp_ajax_nopriv_charger_scripts_organisateur_edit', 'charger_scripts_organisateur_edit');
+function charger_scripts_organisateur_edit()
+{
+  register_core_edit_scripts(['organisateur-edit', 'table-etiquette']);
+  $handles = [
+    'helpers',
+    'ajax',
+    'ui',
+    'resume',
+    'image-utils',
+    'date-fields',
+    'champ-init',
+    'champ-date-hooks',
+    'modal-tabs',
+    'organisateur-edit',
+    'table-etiquette',
+  ];
+  foreach ($handles as $handle) {
+    wp_enqueue_script($handle);
+  }
+  wp_enqueue_media();
+  wp_print_scripts($handles);
+  wp_die();
+}
 
 
 /**

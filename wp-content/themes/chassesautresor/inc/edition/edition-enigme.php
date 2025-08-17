@@ -5,7 +5,7 @@ defined('ABSPATH') || exit;
 // ==================================================
 // 🧩 CRÉATION & ÉDITION D’UNE ÉNIGME
 // ==================================================
-// 🔹 enqueue_script_enigme_edit() → Charge JS sur single énigme
+// 🔹 register_script_enigme_edit() → Prépare les scripts pour l’édition d’énigme
 // 🔹 creer_enigme_pour_chasse() → Crée une énigme liée à une chasse
 // 🔹 register_endpoint_creer_enigme() → Enregistre /creer-enigme
 // 🔹 creer_enigme_et_rediriger_si_appel() → Crée une énigme et redirige
@@ -24,7 +24,7 @@ defined('ABSPATH') || exit;
  * @hook wp_enqueue_scripts
  * @return void
  */
-function enqueue_script_enigme_edit()
+function register_script_enigme_edit()
 {
   if (!is_singular('enigme')) return;
 
@@ -32,7 +32,7 @@ function enqueue_script_enigme_edit()
   if (!utilisateur_peut_modifier_post($enigme_id)) return;
 
   // 📦 Modules JS partagés + scripts spécifiques
-  enqueue_core_edit_scripts(['organisateur-edit', 'enigme-edit', 'enigme-stats', 'table-etiquette']);
+  register_core_edit_scripts(['organisateur-edit', 'enigme-edit', 'enigme-stats', 'table-etiquette']);
 
   wp_localize_script(
     'enigme-stats',
@@ -49,9 +49,50 @@ function enqueue_script_enigme_edit()
     'image_slug' => 'defaut-enigme',
   ]);
 
-  wp_enqueue_media();
+  add_action('wp_footer', function () {
+    ?>
+    <script>
+      document.getElementById('toggle-mode-edition-enigme')?.addEventListener('click', function loadEnigmeScripts() {
+        this.removeEventListener('click', loadEnigmeScripts);
+        fetch('<?php echo esc_url(admin_url('admin-ajax.php?action=charger_scripts_enigme_edit')); ?>')
+          .then(r => r.text())
+          .then(html => {
+            document.head.insertAdjacentHTML('beforeend', html);
+          });
+      });
+    </script>
+    <?php
+  });
 }
-add_action('wp_enqueue_scripts', 'enqueue_script_enigme_edit');
+add_action('wp_enqueue_scripts', 'register_script_enigme_edit');
+
+add_action('wp_ajax_charger_scripts_enigme_edit', 'charger_scripts_enigme_edit');
+add_action('wp_ajax_nopriv_charger_scripts_enigme_edit', 'charger_scripts_enigme_edit');
+function charger_scripts_enigme_edit()
+{
+  register_core_edit_scripts(['organisateur-edit', 'enigme-edit', 'enigme-stats', 'table-etiquette']);
+  $handles = [
+    'helpers',
+    'ajax',
+    'ui',
+    'resume',
+    'image-utils',
+    'date-fields',
+    'champ-init',
+    'champ-date-hooks',
+    'modal-tabs',
+    'organisateur-edit',
+    'enigme-edit',
+    'enigme-stats',
+    'table-etiquette',
+  ];
+  foreach ($handles as $handle) {
+    wp_enqueue_script($handle);
+  }
+  wp_enqueue_media();
+  wp_print_scripts($handles);
+  wp_die();
+}
 
 
 /**

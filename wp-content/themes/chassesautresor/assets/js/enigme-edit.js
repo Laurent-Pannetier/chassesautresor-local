@@ -1,4 +1,9 @@
 // ✅ enigme-edit.js
+if (window.enigmeEditLoaded) {
+  console.warn('enigme-edit.js already loaded');
+} else {
+  window.enigmeEditLoaded = true;
+}
 var DEBUG = window.DEBUG || false;
 DEBUG && console.log('✅ enigme-edit.js chargé');
 
