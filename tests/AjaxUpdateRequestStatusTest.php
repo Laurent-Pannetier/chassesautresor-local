@@ -21,6 +21,8 @@ if (!function_exists('wp_send_json_error')) {
 if (!function_exists('wp_send_json_success')) {
     function wp_send_json_success($data = null)
     {
+        global $json_success_data;
+        $json_success_data = $data;
         return $data;
     }
 }
@@ -100,5 +102,24 @@ class AjaxUpdateRequestStatusTest extends TestCase
 
         $this->assertSame(150, $user_points[7]);
         $this->assertSame('admin', $last_origin_type);
+    }
+
+    public function test_status_regle_returns_success(): void
+    {
+        global $request_fixture, $json_success_data;
+        $request_fixture = [
+            'user_id'    => 7,
+            'points'     => -150,
+            'amount_eur' => 10.0,
+        ];
+
+        $_POST['paiement_id'] = 99;
+        $_POST['statut'] = 'regle';
+        $json_success_data = null;
+
+        ajax_update_request_status();
+
+        $this->assertIsArray($json_success_data);
+        $this->assertSame('paid', $json_success_data['status']);
     }
 }
