@@ -256,7 +256,7 @@
 
 
 /* ✅ Mobile : Les éléments s'empilent */
-@media (max-width: 768px) {
+@media (max-width: var(--bp-md)) {
     .dashboard-profile-wrapper {
         flex-direction: column; /* ✅ Empile les éléments */
         justify-content: center; /* ✅ Centre les éléments verticalement */
@@ -318,7 +318,7 @@
     vertical-align: middle;
 }
 
-@media (max-width: 768px) {
+@media (max-width: var(--bp-md)) {
     .menu-deroulant .submenu {
         left: -50px;
     }
@@ -588,7 +588,7 @@
 
 
 /* Tablette : 2 colonnes */
-@media (max-width: 768px) {
+@media (max-width: var(--bp-md)) {
     .image-container {
         height: 260px;
     }
