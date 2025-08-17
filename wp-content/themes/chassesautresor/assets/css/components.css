@@ -528,8 +528,8 @@ a.ajout-link {
   margin:2rem auto;
   max-width: 600px;
 }
-.formulaire-contact-wrapper h1 {
-    margin-bottom: 0.8rem;
+.titre-contact {
+  margin-bottom: 0.8rem;
 }
 body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
     color: var(--color-text-primary);
