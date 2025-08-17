@@ -520,35 +520,29 @@
 /* 🎯 Pager de tableau */
 .pager {
     display: flex;
+    justify-content: center;
     align-items: center;
     gap: 6px;
     margin-top: 10px;
 }
 
-.pager button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    padding: 0;
-    border: 1px solid hsl(var(--border));
-    background: hsl(var(--muted));
-    color: hsl(var(--foreground));
-    border-radius: 4px;
+.pager button.etiquette {
     cursor: pointer;
-}
-
-.pager button:hover {
-    background: hsl(var(--accent));
-    border-color: hsl(var(--accent));
-    color: hsl(var(--accent-foreground));
+    padding: 4px 8px;
+    font-size: 1rem;
 }
 
 .pager-info {
     margin: 0 8px;
     color: hsl(var(--foreground));
     font-size: 0.875rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.pager-info .pager-select {
+    width: auto;
 }
 
 /* 📌 Actions de conversion en ligne */

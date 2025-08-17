@@ -5,6 +5,7 @@ jQuery(function ($) {
     const toggle = container.find('.conversion-history-toggle');
     const tableWrapper = container.find('.conversion-history-table');
     const loading = container.find('.conversion-history-loading');
+    const pager = container.find('.points-history-pager');
 
     if (toggle.attr('aria-expanded') !== 'true') {
       tableWrapper.hide();
@@ -22,9 +23,7 @@ jQuery(function ($) {
       tableWrapper.slideToggle();
     });
 
-    container.on('click', '.points-history-pager .page-link', function (e) {
-      e.preventDefault();
-      const page = $(this).data('page');
+    function loadPage(page) {
       loading.show();
       $.post(ConversionHistoryAjax.ajax_url, {
         action: 'load_conversion_history',
@@ -34,13 +33,16 @@ jQuery(function ($) {
         .done(function (response) {
           if (response.success) {
             tableWrapper.find('tbody').html(response.data.rows);
-            container.find('.points-history-pager .page-link').removeClass('active');
-            container.find('.points-history-pager .page-link[data-page="' + page + '"]').addClass('active');
           }
         })
         .always(function () {
           loading.hide();
         });
+    }
+
+    pager.on('pager:change', function (e) {
+      const page = e.originalEvent.detail.page;
+      loadPage(page);
     });
   });
 });
