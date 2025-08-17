@@ -47,12 +47,12 @@
 .ast-above-header-bar .ast-builder-layout-element {
     margin-left:10px;
 }
-@media (max-width: 921px) {
+@media (max-width: var(--bp-921)) {
     header.site-header   {
         padding: 0 10px ;
     }
 }
-@media (max-width: 480px) {
+@media (max-width: var(--bp-sm)) {
    header.site-header {
        padding: 0 7px;
    }
@@ -139,7 +139,7 @@
 .has-hero .contenu-hero .sous-titre {
   text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
 }
-@media (max-width: 768px) {
+@media (max-width: var(--bp-md)) {
     .has-hero .contenu-hero h1 {
         font-size:1.8rem;
     }
@@ -154,7 +154,7 @@
       padding-top: 300px;
   }
 }
-@media (max-width: 480px) {
+@media (max-width: var(--bp-sm)) {
     .has-hero .contenu-hero h1 {
         font-size:1.5rem;
     }
@@ -195,7 +195,7 @@ body #primary {
   align-items: flex-start; /* ✅ important : alignement haut */
   flex-wrap: wrap; /* ✅ si l’un est trop large */
 }
-@media (max-width: 921px) {
+@media (max-width: var(--bp-921)) {
     .ast-container, .ast-container-fluid {
         margin-left: auto;
         margin-right: auto;
@@ -277,7 +277,7 @@ body #primary {
   opacity: 0.9;
   line-height: 1.5;
 }
-@media (max-width: 768px) {
+@media (max-width: var(--bp-md)) {
   .bloc-temoignages .temoignage-colonnes {
     flex-direction: column;
     align-items: center;
@@ -455,7 +455,7 @@ footer .ast-footer-widget a {
 }
 
 
-@media (max-width: 540px) {
+@media (max-width: var(--bp-540)) {
   .site-footer-primary-section-1 {
     order: 2;
     margin: 30px 0;

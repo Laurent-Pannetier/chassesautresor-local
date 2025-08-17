@@ -97,7 +97,7 @@ body.edition-active-chasse .chasse-enigmes-header  .liens-placeholder {
 
 
 /* ========== 📱 RESPONSIVE PAGE DE CHASSE ========== */
-@media (max-width: 768px) {
+@media (max-width: var(--bp-md)) {
   .chasse-fiche-container {
     flex-direction: column;
   }

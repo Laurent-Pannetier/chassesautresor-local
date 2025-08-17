@@ -29,7 +29,7 @@
   margin-top: 1rem;
 }
 
-@media (max-width: 768px) {
+@media (max-width: var(--bp-md)) {
   .enigme-layout {
     grid-template-columns: 1fr;
   }
