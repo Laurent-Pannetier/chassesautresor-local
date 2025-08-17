@@ -1,8 +1,8 @@
 /**
- * Génère le HTML des liens publics (ul ou placeholder).
+ * Génère les éléments DOM représentant les liens publics (ul ou placeholder).
  * Utilisable pour organisateur, chasse, etc.
  * @param {Array} liens - Tableau d’objets : [{ type_de_lien: 'facebook', url_lien: 'https://...' }]
- * @returns {string} HTML
+ * @returns {HTMLElement} Elément racine contenant les liens
  */
 function renderLiensPublics(liens = []) {
   const icones = {
@@ -22,31 +22,56 @@ function renderLiensPublics(liens = []) {
   };
 
   if (!Array.isArray(liens) || liens.length === 0) {
-    return `
-      <div class="liens-placeholder">
-        <p class="liens-placeholder-message">Aucun lien ajouté pour le moment.</p>
-        ${Object.entries(icones).map(([type, icone]) =>
-      `<i class="fa ${icone} icone-grisee" title="${labels[type]}"></i>`
-    ).join('')}
-      </div>`;
+    const placeholder = document.createElement('div');
+    placeholder.className = 'liens-placeholder';
+
+    const message = document.createElement('p');
+    message.className = 'liens-placeholder-message';
+    message.textContent = 'Aucun lien ajouté pour le moment.';
+    placeholder.appendChild(message);
+
+    Object.entries(icones).forEach(([type, icone]) => {
+      const i = document.createElement('i');
+      i.className = `fa ${icone} icone-grisee`;
+      i.title = labels[type];
+      placeholder.appendChild(i);
+    });
+
+    return placeholder;
   }
 
-  return `
-    <ul class="liste-liens-publics">
-      ${liens.map(({ type_de_lien, url_lien }) => {
+  const liste = document.createElement('ul');
+  liste.className = 'liste-liens-publics';
+
+  liens.forEach(({ type_de_lien, url_lien }) => {
     const type = Array.isArray(type_de_lien) ? type_de_lien[0] : type_de_lien;
     const icone = icones[type] || 'fa-link';
     const label = labels[type] || type;
     const url = url_lien || '#';
-    return `
-          <li class="item-lien-public">
-            <a href="${url}" class="lien-public lien-${type}" target="_blank" rel="noopener">
-              <i class="fa ${icone}"></i>
-              <span class="texte-lien">${label}</span>
-            </a>
-          </li>`;
-  }).join('')}
-    </ul>`;
+
+    const li = document.createElement('li');
+    li.className = 'item-lien-public';
+
+    const a = document.createElement('a');
+    a.className = `lien-public lien-${type}`;
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener';
+
+    const icon = document.createElement('i');
+    icon.className = `fa ${icone}`;
+    a.appendChild(icon);
+
+    const span = document.createElement('span');
+    span.className = 'texte-lien';
+    span.textContent = label;
+    a.appendChild(span);
+
+    li.appendChild(a);
+    liste.appendChild(li);
+  });
+
+  return liste;
 }
 window.renderLiensPublicsJS = renderLiensPublics;
 
@@ -199,7 +224,7 @@ function initLiensPublics(bloc, { panneauId, formId, action, reload = false }) {
         }
 
         if (zoneAffichage && typeof renderLiensPublicsJS === 'function') {
-          zoneAffichage.innerHTML = renderLiensPublicsJS(donnees);
+          zoneAffichage.replaceChildren(renderLiensPublicsJS(donnees));
 
           if (!zoneAffichage.dataset.noEdit && !bloc.querySelector('.champ-modifier')) {
             const btn = document.createElement('button');
@@ -222,7 +247,7 @@ function initLiensPublics(bloc, { panneauId, formId, action, reload = false }) {
 
             const zone = blocCible.querySelector('.champ-affichage');
             if (zone && typeof renderLiensPublicsJS === 'function') {
-              zone.innerHTML = renderLiensPublicsJS(donnees);
+              zone.replaceChildren(renderLiensPublicsJS(donnees));
 
               if (!zone.dataset.noEdit && !blocCible.querySelector('.champ-modifier')) {
                 const btn = document.createElement('button');
@@ -245,7 +270,7 @@ function initLiensPublics(bloc, { panneauId, formId, action, reload = false }) {
             const zone = blocCible.querySelector('.champ-affichage');
 
             if (zone && typeof renderLiensPublicsJS === 'function') {
-              zone.innerHTML = renderLiensPublicsJS(donnees);
+              zone.replaceChildren(renderLiensPublicsJS(donnees));
 
               if (!zone.dataset.noEdit && !blocCible.querySelector('.champ-modifier')) {
                 const btn = document.createElement('button');
