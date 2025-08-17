@@ -44,6 +44,9 @@ class ChasseParticipantsStatsTest extends TestCase {
                 ];
             }
             public function get_col($query) {
+                if (stripos($query, 'chasse_id') !== false) {
+                    return [];
+                }
                 return [10, 11];
             }
         };
@@ -102,8 +105,11 @@ class ChasseParticipantsStatsTest extends TestCase {
                     ];
                 }
                 return [];
-            }
+                }
             public function get_col($query) {
+                if (stripos($query, 'chasse_id') !== false) {
+                    return [];
+                }
                 if (stripos($query, 'user_id = 1') !== false) {
                     return [10, 11];
                 }
