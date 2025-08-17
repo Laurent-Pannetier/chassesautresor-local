@@ -24,7 +24,7 @@
   position: relative;
   background: #fff;
   color: var(--color-text-fond-clair);
-  padding: 2.5rem 2rem;
+  padding: var(--space-3xl) var(--space-2xl);
   border-radius: 12px;
   max-width: 600px;
   width: 90%;
@@ -66,7 +66,7 @@
   font-size: 1.4rem;
   font-weight: 700;
   color: var(--color-accent, #ffc400);
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--space-xs);
   letter-spacing: 1px;
   text-transform: uppercase;
 }
@@ -81,7 +81,7 @@
 
 .modal-bienvenue-inner p,
 .modal-contenu p {
-  margin: 1rem 0;
+  margin: var(--space-md) 0;
 }
 
 .modal-bienvenue-inner strong,
@@ -101,7 +101,7 @@
 @media screen and (max-width: 480px) {
   .modal-bienvenue-inner,
   .modal-contenu {
-    padding: 1.5rem;
+    padding: var(--space-xl);
     font-size: 0.95rem;
   }
 

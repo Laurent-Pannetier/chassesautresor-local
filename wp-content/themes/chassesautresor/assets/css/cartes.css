@@ -8,7 +8,7 @@
   color: var(--color-text-primary);
   border: 1px solid var(--color-secondary);
   border-radius: 8px;
-  padding: 1rem;
+  padding: var(--space-md);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   transition: transform 0.2s, box-shadow 0.2s;
 }
@@ -22,13 +22,13 @@
 .grille-liste {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.5rem;
+  gap: var(--space-xl);
 }
 
 .grille-3 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
+  gap: var(--space-xl);
 }
 
 @media (max-width: var(--bp-lg)) {
@@ -64,7 +64,7 @@
 }
 
 .carte-core {
-  padding: 1rem;
+  padding: var(--space-md);
   text-align: center;
 }
 
@@ -129,7 +129,7 @@
 
 .carte-enigme h3 {
   margin: 0;
-  padding: 0.5rem 1rem;
+  padding: var(--space-xs) var(--space-md);
   flex: 0.5;
   display: flex;
   align-items: center;
@@ -152,7 +152,7 @@
 }
 
 .carte-ligne__contenu {
-  padding: 1rem 2rem;
+  padding: var(--space-md) var(--space-2xl);
   flex: 1;
 }
 
@@ -173,13 +173,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 1rem;
+  margin-top: var(--space-md);
   padding: 7px 25px;
 }
 
 .carte-ligne__footer .footer-icones {
   display: flex;
-  gap: 1rem;
+  gap: var(--space-md);
 }
 
 .carte-ligne__footer .footer-icones svg {
@@ -189,7 +189,7 @@
 }
 
 .carte-ligne__footer .liste-liens-publics {
-  gap: 0.5rem;
+  gap: var(--space-xs);
 }
 
 .carte-ligne__footer .texte-lien {
@@ -202,8 +202,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 1.5rem;
+  gap: var(--space-xs);
+  padding: var(--space-xl);
   min-height: 140px;
   text-align: center;
   border: 2px dashed var(--color-editor-border);
@@ -220,7 +220,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: var(--space-xs);
 }
 
 .carte-ajout-chasse .icone-ajout i {
@@ -241,8 +241,8 @@
   justify-content: center;
   color: var(--color-text-primary);
   text-align: center;
-  gap: 0.5rem;
-  padding: 0 1rem;
+  gap: var(--space-xs);
+  padding: 0 var(--space-md);
 }
 
 

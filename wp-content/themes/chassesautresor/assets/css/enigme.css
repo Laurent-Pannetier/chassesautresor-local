@@ -2,21 +2,21 @@
 .enigme-layout {
   display: grid;
   grid-template-columns: 260px 1fr;
-  gap: 2rem;
+  gap: var(--space-2xl);
 }
 
 .enigme-sidebar {
   background: var(--ca-color-bg, #f5f5f5);
-  padding: 1rem;
+  padding: var(--space-md);
 }
 
 .enigme-sidebar .bouton-edition-toggle {
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-md);
 }
 
 .enigme-menu {
   list-style: none;
-  margin: 1rem 0;
+  margin: var(--space-md) 0;
   padding: 0;
 }
 
@@ -26,7 +26,7 @@
 
 .bouton-retour-chasse {
   display: inline-block;
-  margin-top: 1rem;
+  margin-top: var(--space-md);
 }
 
 @media (max-width: var(--bp-md)) {

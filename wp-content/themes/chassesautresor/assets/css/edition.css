@@ -94,14 +94,14 @@
 
 /* ========== 🧾 QR CODE CHASSE ========== */
 .resume-visibilite .qr-code-wrapper {
-  margin-top: 0.5rem;
+  margin-top: var(--space-xs);
 }
 
 .resume-visibilite .qr-code-wrapper img {
   max-width: 150px;
   height: auto;
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--space-xs);
 }
 
 /* ========== 🖊️ CHAMPS ÉDITABLES ========== */
@@ -110,14 +110,14 @@
   display: flex;
   align-items: baseline;
   gap: 0.7rem;
-  margin-top: 1rem;
+  margin-top: var(--space-md);
 }
 
 .champ-organisateur.champ-vide {
   border: 1px dashed var(--color-border-header-organisateur);
   background-color: rgba(255, 255, 255, 0.02);
   border-radius: 0.5rem;
-  padding: 0.3rem 0.5rem;
+  padding: 0.3rem var(--space-xs);
   opacity: 0;
   transition: all 0.3s ease;
 }
@@ -207,7 +207,7 @@ body.edition-active-enigme .single-enigme-main .champ-img .champ-modifier {
 .champ-img .champ-affichage {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-xs);
 }
 
 .champ-img .champ-modifier {
@@ -227,7 +227,7 @@ body.edition-active-enigme .single-enigme-main .champ-img .champ-modifier {
 .champ-img .champ-modifier img.vignette-enigme {
   display: inline-block;
   max-width: 60px;
-  margin-right: 0.25rem;
+  margin-right: var(--space-xxs);
 }
 
 .champ-img .champ-modifier .icone-modif {
@@ -255,7 +255,7 @@ body.edition-active-enigme .single-enigme-main .champ-img .champ-modifier {
   display: inline;
   width: auto;
   height: auto;
-  margin-left: 0.25rem;
+  margin-left: var(--space-xxs);
   background: none;
 }
 
@@ -331,7 +331,7 @@ body .header-img-modifiable .icone-modif {
 
 .dashboard-card.champ-liens .liste-liens-publics {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--space-xs);
   justify-content: center;
 }
 
@@ -346,7 +346,7 @@ body .header-img-modifiable .icone-modif {
 .liens-placeholder-message {
   font-size: 0.85rem;
   font-style: italic;
-  margin-top: 0.5rem;
+  margin-top: var(--space-xs);
   opacity: 0.7;
 }
 
@@ -365,7 +365,7 @@ body .header-img-modifiable .icone-modif {
   background-color: white;
   border: 1px solid var(--color-editor-border);
   color: var(--color-editor-text);
-  padding: 0.5rem 0.75rem;
+  padding: var(--space-xs) var(--space-sm);
   border-radius: 4px;
   font-size: 1.1rem;
   width: 100%;
@@ -498,7 +498,7 @@ body.edition-active .header-organisateur-wrapper .champ-modifier:focus {
 .champ-edition .champ-inline-actions {
   transition: opacity 0.3s ease, visibility 0.3s ease;
   display: flex;
-  gap: 0 1rem;
+  gap: 0 var(--space-md);
 }
 
 .champ-edition .champ-inline-actions {
@@ -516,7 +516,7 @@ body.edition-active .header-organisateur-wrapper .champ-modifier:focus {
   opacity: 1;
   transition: opacity 0.5s ease;
   font-size: 1.1rem;
-  margin-left: 0.5rem;
+  margin-left: var(--space-xs);
 }
 
 .champ-feedback.champ-confirmation.fade-out {
@@ -562,7 +562,7 @@ body.edition-active-enigme .champ-desactive .champ-modifier {
 
 .edition-panel-section .champ-option-illimitee {
   display: inline-block;
-  margin-left: 1rem;
+  margin-left: var(--space-md);
 }
 
 
@@ -592,13 +592,13 @@ body.edition-active-enigme .champ-desactive .champ-modifier {
 /* PARAMETRES EN HAUT À DROITE DU HEADER */
 .header-actions-droite {
   top: 1.2rem;
-  right: 0.5rem;
+  right: var(--space-xs);
   position: absolute;
 }
 
 .header-coordonnees.champ-vide {
   border: 1px dashed var(--color-border-header-organisateur);
-  padding: 0.2rem 0.5rem;
+  padding: 0.2rem var(--space-xs);
   border-radius: 0.4rem;
   background-color: rgba(255, 255, 255, 0.03);
   color: var(--color-secondary);
@@ -620,7 +620,7 @@ body.edition-active-enigme .champ-desactive .champ-modifier {
 .champ-txt-editable .champ-affichage {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-xs);
   flex-wrap: wrap;
 }
 
@@ -666,7 +666,7 @@ body.edition-active-enigme .edition-panel-enigme {
   transform: translateY(0);
   background-color: var(--color-editor-background);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-  padding: 1rem;
+  padding: var(--space-md);
   pointer-events: auto;
   border-bottom: 1px solid var(--color-editor-border);
   overflow-y: auto;
@@ -689,9 +689,9 @@ body.edition-active-enigme .edition-panel-enigme.edition-panel-modal {
 
 
 .edition-panel > .edition-panel-header {
-  padding: 0.5rem 0;
+  padding: var(--space-xs) 0;
   border-bottom: 1px solid var(--color-editor-border);
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-md);
   position: sticky;
   top: 0;
   background-color: var(--color-editor-background);
@@ -702,7 +702,7 @@ body.edition-active-enigme .edition-panel-enigme.edition-panel-modal {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--space-xs);
 }
 
 .edition-panel .panneau-fermer {
@@ -711,7 +711,7 @@ body.edition-active-enigme .edition-panel-enigme.edition-panel-modal {
   font-size: 1.25rem;
   color: var(--color-editor-text-muted);
   cursor: pointer;
-  padding: 0.25rem;
+  padding: var(--space-xxs);
   line-height: 1;
   transition: color 0.2s ease;
   opacity: 0.75;
@@ -724,7 +724,7 @@ body.edition-active-enigme .edition-panel-enigme.edition-panel-modal {
 .edition-panel-body {
   flex: 1 1 auto;
   overflow-y: auto;
-  padding: 1rem 2rem;
+  padding: var(--space-md) var(--space-2xl);
   height: auto;
   min-height: 300px;
   box-sizing: border-box;
@@ -735,10 +735,10 @@ body.edition-active-enigme .edition-panel-enigme.edition-panel-modal {
   flex-direction: column;
   /* ✅ affichage en colonne par défaut */
   flex-wrap: wrap;
-  gap: 2rem;
-  margin-bottom: 2rem;
+  gap: var(--space-2xl);
+  margin-bottom: var(--space-2xl);
   border: 1px solid var(--color-editor-border);
-  padding: 1rem;
+  padding: var(--space-md);
   border-radius: 8px;
   color: var(--color-editor-text-muted);
 }
@@ -790,7 +790,7 @@ body.edition-active .edition-panel {
   margin: 0;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-xs);
 }
 
 .edition-panel h3 {
@@ -800,7 +800,7 @@ body.edition-active .edition-panel {
   color: var(--color-editor-heading);
   /* ou une variable spécifique si besoin */
   margin-top: 0;
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-md);
   letter-spacing: 0.02em;
 }
 
@@ -846,7 +846,7 @@ body.edition-active .edition-panel {
 }
 
 .info-a-suivre {
-  margin-top: 0.75rem;
+  margin-top: var(--space-sm);
   font-style: italic;
   color: var(--color-editor-text-muted);
 }
@@ -878,7 +878,7 @@ li.champ-titre,
 li.ligne-email {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-xs);
 }
 
 li.ligne-logo .champ-modifier {
@@ -890,7 +890,7 @@ li.ligne-logo .champ-modifier {
 .resume-infos li.champ-wysiwyg {
   display: flex;
   align-items: baseline;
-  gap: 0.5rem;
+  gap: var(--space-xs);
 }
 
 .resume-infos li.champ-description label,
@@ -922,7 +922,7 @@ li.ligne-logo .champ-modifier {
 .resume-infos li.champ-recompense {
   display: flex;
   align-items: baseline;
-  gap: 0.5rem;
+  gap: var(--space-xs);
 }
 
 .resume-infos li.champ-recompense label {
@@ -961,7 +961,7 @@ li.ligne-email .champ-affichage {
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-xs);
   white-space: nowrap;
   color: var(--color-editor-text-muted);
 }
@@ -980,7 +980,7 @@ li.ligne-email .champ-affichage {
 }
 
 .edition-panel-section .champ-badge-cout {
-  margin: 0 1rem;
+  margin: 0 var(--space-md);
 }
 
 .edition-panel-section .resume-technique .champ-cout-points .champ-edition,
@@ -1056,7 +1056,7 @@ body.panneau-ouvert::before {
 
 
 .panneau-lateral__contenu {
-  padding: 2rem 2rem 2rem 2.5rem;
+  padding: var(--space-2xl) var(--space-2xl) var(--space-2xl) var(--space-3xl);
 }
 
 .panneau-lateral__contenu #bouton-supprimer-recompense{
@@ -1091,7 +1091,7 @@ body.panneau-ouvert::before {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-md);
   border-bottom: 1px solid var(--color-editor-border);
   position: sticky;
   top: 0;
@@ -1106,7 +1106,7 @@ body.panneau-ouvert::before {
   margin: 0;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-xs);
   opacity: 0;
   transform: translateY(-10px);
   transition: opacity 0.5s ease, transform 0.5s ease;
@@ -1124,7 +1124,7 @@ body.panneau-ouvert::before {
   font-size: 1.25rem;
   color: var(--color-editor-text-muted);
   cursor: pointer;
-  padding: 0.25rem;
+  padding: var(--space-xxs);
   line-height: 1;
   transition: color 0.2s ease;
   opacity: 0.75;
@@ -1154,7 +1154,7 @@ body.panneau-ouvert::before {
 .ligne-lien-formulaire label {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-xs);
   font-weight: 500;
   margin-bottom: 0.4rem;
   color: var(--color-editor-text);
@@ -1167,14 +1167,14 @@ body.panneau-ouvert::before {
 
 /* 🧭 Espacement des champs */
 .ligne-lien-formulaire {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-xl);
 }
 
 /* 🧭 Champ input */
 .ligne-lien-formulaire input[type="url"] {
   width: 100%;
   font-size: 1rem;
-  padding: 0.5rem 0.75rem;
+  padding: var(--space-xs) var(--space-sm);
   border-radius: 0.5rem;
   background-color: white;
   color: var(--color-editor-text);
@@ -1183,13 +1183,13 @@ body.panneau-ouvert::before {
 
 /* 🧭 Bouton enregistrer */
 .panneau-lateral__actions {
-  margin-top: 2rem;
+  margin-top: var(--space-2xl);
 }
 
 .bouton-enregistrer-liens {
   background-color: var(--color-editor-success);
   color: white;
-  padding: 0.5rem 1rem;
+  padding: var(--space-xs) var(--space-md);
   border: none;
   font-weight: bold;
   border-radius: 0.5rem;
@@ -1260,13 +1260,13 @@ body.panneau-ouvert::before {
 
 .edition-tabs {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--space-xs);
 }
 
 .edition-tab {
   background: none;
   border: none;
-  padding: 0.5rem 1rem;
+  padding: var(--space-xs) var(--space-md);
   cursor: pointer;
   font-weight: 600;
   color: var(--color-editor-text);
@@ -1280,7 +1280,7 @@ body.panneau-ouvert::before {
 .edition-tab-content {
   display: none;
   min-height: 180px;
-  padding: 1rem;
+  padding: var(--space-md);
   background-color: var(--color-editor-background);
   position: relative;
 }
@@ -1338,7 +1338,7 @@ body.panneau-ouvert::before {
 .table-tentatives {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 1rem;
+  margin-top: var(--space-md);
   border-radius: 6px;
   overflow: hidden;
 }
@@ -1421,7 +1421,7 @@ body.panneau-ouvert::before {
   display: grid;
   gap: 24px;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  margin: 1rem 0 2.5rem;
+  margin: var(--space-md) 0 var(--space-3xl);
 }
 
 .dashboard-card {
@@ -1509,7 +1509,7 @@ body.panneau-ouvert::before {
 .dashboard-card.solution-delai .stat-value {
   display: flex;
   flex-direction: line;
-  gap: 0.25rem;
+  gap: var(--space-xxs);
   font-size: 0.8rem;
   font-weight: 600;
   line-height: 1.2;
@@ -1519,7 +1519,7 @@ body.panneau-ouvert::before {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.25rem;
+  gap: var(--space-xxs);
 }
 
 .dashboard-card.solution-reassurance {
@@ -1527,8 +1527,8 @@ body.panneau-ouvert::before {
   flex-direction: row;
   align-items: center;
   text-align: left;
-  gap: 2rem;
-  padding: 2rem 3rem;
+  gap: var(--space-2xl);
+  padding: var(--space-2xl) var(--space-4xl);
   width: 90%;
   max-width: 900px;
   margin: 4rem auto 0;
@@ -1547,12 +1547,12 @@ body.panneau-ouvert::before {
 }
 
 .dashboard-card.solution-reassurance ul li {
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--space-xs);
   font-size: 1.25rem;
   line-height: 1.5;
   display: flex;
   align-items: flex-start;
-  gap: 0.75rem;
+  gap: var(--space-sm);
 }
 
 .dashboard-card.solution-reassurance ul li i {
@@ -1568,7 +1568,7 @@ body.panneau-ouvert::before {
 .dashboard-card.graph-card {
   align-items: stretch;
   text-align: left;
-  margin: 1rem 0 2.5rem;
+  margin: var(--space-md) 0 var(--space-3xl);
 }
 
 .dashboard-card.graph-card h3 {
@@ -1624,7 +1624,7 @@ body.panneau-ouvert::before {
 
 .stats-disabled-list {
   list-style: disc inside;
-  margin: 0.5rem 0 2.5rem;
+  margin: var(--space-xs) 0 var(--space-3xl);
   color: var(--color-editor-text-muted);
   font-size: 0.9rem;
 }
@@ -1632,11 +1632,11 @@ body.panneau-ouvert::before {
 /* ====== Résumé chasse ====== */
 
 .chasse-stats-header {
-  margin: 2rem 0 1rem;
+  margin: var(--space-2xl) 0 var(--space-md);
 }
 
 .chasse-stats-header h3 {
-  margin: 0 0 0.5rem;
+  margin: 0 0 var(--space-xs);
 }
 
 .chasse-stats-summary {
@@ -1691,21 +1691,21 @@ body.panneau-ouvert::before {
 }
 
 .stats-table-wrapper {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-xl);
 }
 
 .stats-table-summary {
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-xs);
 }
 
 /* Pagination for stats tables */
 .points-history-pager {
-  margin-top: 0.5rem;
+  margin-top: var(--space-xs);
   display: flex;
   justify-content: center;
-  gap: 0.5rem;
+  gap: var(--space-xs);
 }
 
 .points-history-pager .page-link {
@@ -1770,13 +1770,13 @@ body.panneau-ouvert::before {
 .champ-mode-fin {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--space-md);
 }
 
 .champ-mode-options {
   display: flex;
   flex-direction: row;
-  gap: 1rem;
+  gap: var(--space-md);
   align-items: center;
 }
 
@@ -1793,7 +1793,7 @@ body.panneau-ouvert::before {
 
 #champ-enigme-pre-requis {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--space-xs);
   flex-wrap: wrap;
   align-items: center;
 }
@@ -1816,7 +1816,7 @@ body.panneau-ouvert::before {
 }
 
 .fin-chasse-actions .terminer-chasse-btn {
-  margin-left: 1rem;
+  margin-left: var(--space-md);
 }
 
 .fin-chasse-actions .terminer-chasse-btn:not(:disabled),
@@ -1832,14 +1832,14 @@ body.panneau-ouvert::before {
 }
 
 .zone-validation-fin {
-  margin-top: 1rem;
+  margin-top: var(--space-md);
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--space-xs);
 }
 
 .zone-validation-fin .annuler-fin-chasse-btn {
-  margin-left: 0.5rem;
+  margin-left: var(--space-xs);
 }
 
 .mode-fin-aide {
@@ -1917,14 +1917,14 @@ body.panneau-ouvert::before {
 .edition-panel-footer {
   display: flex;
   justify-content: flex-end;
-  gap: 0.5rem;
-  padding: 1rem;
+  gap: var(--space-xs);
+  padding: var(--space-md);
 }
 
 .edition-panel-footer .btn-admin-danger {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: var(--space-xxs);
   background: none;
   border: none;
   cursor: pointer;
@@ -1939,8 +1939,8 @@ body.panneau-ouvert::before {
 .champ-pre-requis .liste-pre-requis {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
+    gap: var(--space-xs);
+    margin-top: var(--space-xs);
 }
 
 .champ-pre-requis .prerequis-item {
@@ -1959,7 +1959,7 @@ body.panneau-ouvert::before {
     gap: 0.4rem;
     border: 1px solid var(--color-editor-border);
     border-radius: 4px;
-    padding: 0.5rem;
+    padding: var(--space-xs);
     transition: background-color 0.2s, border-color 0.2s;
     position: relative;
 }

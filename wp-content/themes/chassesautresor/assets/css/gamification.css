@@ -486,14 +486,14 @@ header .points-link:hover {
 
 .points-modal label {
     display: block;
-    margin-bottom: 0.25rem;
+    margin-bottom: var(--space-xxs);
     font-weight: 500;
     color: var(--color-editor-text);
 }
 
 .points-modal input[type="number"] {
     width: 100%;
-    padding: 0.5rem;
+    padding: var(--space-xs);
     border: 1px solid var(--color-editor-border);
     border-radius: 4px;
     background-color: var(--color-editor-background);
@@ -510,7 +510,7 @@ header .points-link:hover {
     color: #fff;
     border: none;
     border-radius: 4px;
-    padding: 0.5rem 1rem;
+    padding: var(--space-xs) var(--space-md);
     cursor: pointer;
 }
 
@@ -519,7 +519,7 @@ header .points-link:hover {
 }
 
 .points-modal .conversion-equivalent {
-    margin-top: 0.5rem;
+    margin-top: var(--space-xs);
 }
 
 .points-modal .conversion-equivalent .label {
@@ -535,7 +535,7 @@ header .points-link:hover {
 }
 
 .points-modal .points-feedback {
-    margin-top: 0.25rem;
+    margin-top: var(--space-xxs);
     font-size: 0.75rem;
     color: var(--color-editor-error);
     display: none;

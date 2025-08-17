@@ -143,14 +143,14 @@
   text-transform: uppercase;
   color: var(--color-primary);
   letter-spacing: 1px;
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-md);
   text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
 }
 .hero-subtitle {
   font-size: 1.3rem;
   color: var(--color-text-primary);
   opacity: 0.95;
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-2xl);
   max-width: 700px;
   margin-left: auto;
   margin-right: auto;
@@ -177,7 +177,7 @@
   }
   .hero-subtitle {
     font-size: 1rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--space-xs);
   }
   .has-hero .hero-overlay {
     height: 220px;
@@ -207,7 +207,7 @@ body #primary {
 
 .flex-row {
     display: flex;
-  gap: 2rem;
+  gap: var(--space-2xl);
   align-items: flex-start; /* ✅ important : alignement haut */
   flex-wrap: wrap; /* ✅ si l’un est trop large */
 }
@@ -222,8 +222,8 @@ body #primary {
 .deux-col-wrapper {
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem 2rem; /* espace entre les colonnes */
-    margin-bottom: 2rem;
+    gap: var(--space-md) var(--space-2xl); /* espace entre les colonnes */
+    margin-bottom: var(--space-2xl);
 }
 
 .deux-col-wrapper .deux-col-bloc {
@@ -234,7 +234,7 @@ body #primary {
 /* Panneau en pleine largeur en dessous */
 .resume-fullwidth {
     width: 100%;
-    margin-top: 2rem;
+    margin-top: var(--space-2xl);
 }
 
 
@@ -304,7 +304,7 @@ body #primary {
 /* ========== 🎯 BLOC CTA FINAL ========== */
 .bloc-cta-final {
   text-align: center;
-  padding: 4rem 2rem;
+  padding: 4rem var(--space-2xl);
   margin-top: 4rem;
   border-top: 1px solid rgba(255,255,255,0.06);
   
@@ -352,7 +352,7 @@ body #primary {
   color: var(--color-text, #333);
   border-left: 4px solid var(--color-accent);
   padding: 0.8rem 1.2rem;
-  margin: 1rem auto;
+  margin: var(--space-md) auto;
   max-width: 700px;
   border-radius: 4px;
   font-size: 0.95rem;
@@ -496,7 +496,7 @@ footer .ast-footer-widget a {
   background: var(--color-secondary);
   color: var(--color-text-fond-clair);
   text-align: center;
-  padding: 0.25rem 1rem;
+  padding: var(--space-xxs) var(--space-md);
   font-size: 0.9rem;
 }
 .bandeau-info-chasse a {
@@ -506,5 +506,5 @@ footer .ast-footer-widget a {
 }
 .bandeau-info-chasse form {
   display: inline-block;
-  margin-left: 1rem;
+  margin-left: var(--space-md);
 }

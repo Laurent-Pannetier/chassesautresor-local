@@ -333,11 +333,11 @@ span.champ-obligatoire {
 .titre-chasses-wrapper {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--space-md);
 }
 
 .titre-enigmes-wrapper {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--space-md);
 }
