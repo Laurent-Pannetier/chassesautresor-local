@@ -167,46 +167,34 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                 <li class="champ-chasse champ-recompense <?= $recompense_remplie ? 'champ-rempli' : 'champ-vide'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>"
                     data-champ="chasse_infos_recompense_valeur"
                     data-cpt="chasse"
-                    data-post-id="<?= esc_attr($chasse_id); ?>"
-                    data-no-edit="1">
+                    data-post-id="<?= esc_attr($chasse_id); ?>">
                     <label><?= esc_html__('Récompense', 'chassesautresor-com'); ?></label>
                     <div class="champ-texte">
-                        <?php if (!$recompense_remplie) : ?>
-                            <?php if ($peut_editer) : ?>
-                                <a href="#"
-                                   class="champ-ajouter ouvrir-panneau-recompense"
-                                   data-champ="chasse_infos_recompense_valeur"
-                                   data-cpt="chasse"
-                                   data-post-id="<?= esc_attr($chasse_id); ?>">
-                                    <?= esc_html__('ajouter', 'chassesautresor-com'); ?>
-                                </a>
-                            <?php endif; ?>
-                        <?php else : ?>
-                            <?php
-                            $desc_brut = wp_strip_all_tags($recompense);
-                            $desc_court = mb_substr($desc_brut, 0, 200);
-                            if (mb_strlen($desc_brut) > 200) {
-                                $desc_court .= '…';
-                            }
-                            ?>
+                        <?php
+                        $desc_brut  = wp_strip_all_tags($recompense);
+                        $desc_court = mb_substr($desc_brut, 0, 200);
+                        if (mb_strlen($desc_brut) > 200) {
+                            $desc_court .= '…';
+                        }
+                        ?>
+                        <?php if ($recompense_remplie) : ?>
                             <span class="champ-texte-contenu">
                                 <span class="recompense-valeur"><?= esc_html(number_format_i18n(round((float) $valeur), 0)); ?> €</span>
                                 &nbsp;–&nbsp;
                                 <span class="recompense-titre"><?= esc_html($titre_recompense); ?></span>
-                                <?php if ($peut_editer) : ?>
-                                    &nbsp;–&nbsp;
-                                    <button type="button"
-                                        class="champ-modifier ouvrir-panneau-recompense"
-                                        data-champ="chasse_infos_recompense_valeur"
-                                        data-cpt="chasse"
-                                        data-post-id="<?= esc_attr($chasse_id); ?>"
-                                        aria-label="<?= esc_attr__('Modifier la récompense', 'chassesautresor-com'); ?>">
-                                        <?= esc_html__('modifier', 'chassesautresor-com'); ?>
-                                    </button>
-                                <?php endif; ?>
                                 &nbsp;–&nbsp;
                                 <span class="recompense-description"><?= esc_html($desc_court); ?></span>
                             </span>
+                        <?php endif; ?>
+                        <?php if ($peut_editer) : ?>
+                            <button type="button"
+                                class="champ-modifier ouvrir-panneau-recompense"
+                                data-champ="chasse_infos_recompense_valeur"
+                                data-cpt="chasse"
+                                data-post-id="<?= esc_attr($chasse_id); ?>"
+                                aria-label="<?= esc_attr__('Modifier la récompense', 'chassesautresor-com'); ?>">
+                                <?= esc_html__('modifier', 'chassesautresor-com'); ?>
+                            </button>
                         <?php endif; ?>
                     </div>
                 </li>
