@@ -2,21 +2,17 @@ const fs = require('fs');
 const path = require('path');
 const postcss = require('postcss');
 const cssnano = require('cssnano');
+const postcssImport = require('postcss-import');
 
 const themeDir = path.join(__dirname, 'wp-content', 'themes', 'chassesautresor');
 const srcDir = path.join(themeDir, 'assets', 'css');
 const distDir = path.join(themeDir, 'dist');
 
 async function build() {
-    const files = fs.readdirSync(srcDir)
-        .filter((file) => file.endsWith('.css'))
-        .sort();
+    const mainFile = path.join(srcDir, 'main.css');
+    const css = fs.readFileSync(mainFile, 'utf8');
 
-    const css = files
-        .map((file) => fs.readFileSync(path.join(srcDir, file), 'utf8'))
-        .join('\n');
-
-    const result = await postcss([cssnano]).process(css, { from: undefined });
+    const result = await postcss([postcssImport(), cssnano]).process(css, { from: mainFile });
 
     if (!fs.existsSync(distDir)) {
         fs.mkdirSync(distDir, { recursive: true });
