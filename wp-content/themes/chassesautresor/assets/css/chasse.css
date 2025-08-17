@@ -118,8 +118,8 @@ body.edition-active-chasse .chasse-enigmes-header  .liens-placeholder {
 }
 .infos-dispo .infos-secondaires {
   display: inline-block;
-  background-color: #eee;
-  color: #333;
+  background-color: var(--color-grey-light);
+  color: var(--color-grey-dark);
   padding: 0.25em 0.6em;
   border-radius: 999px;
   font-size: 0.8em;

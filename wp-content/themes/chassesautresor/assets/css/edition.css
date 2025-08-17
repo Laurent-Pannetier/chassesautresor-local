@@ -1065,7 +1065,7 @@ body.panneau-ouvert::before {
 
 #bouton-ajouter-variante {
   background-color: var(--color-editor-button);
-  color: #fff;
+  color: var(--color-white);
 }
 
 #bouton-ajouter-variante:hover {

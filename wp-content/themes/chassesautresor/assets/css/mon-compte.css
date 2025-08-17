@@ -482,7 +482,7 @@
 }
 .message-bloque {
     background: rgba(255, 0, 0, 0.8); /* Fond rouge semi-transparent */
-    color: #fff;
+    color: var(--color-white);
     font-size: 14px;
     padding: 8px 12px;
     border-radius: 5px;
