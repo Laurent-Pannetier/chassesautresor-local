@@ -83,40 +83,26 @@ function initChasseStats() {
         });
     }
 
+    participantsWrapper.addEventListener('pager:change', (e) => {
+      const orderby = participantsWrapper.dataset.orderby || 'inscription';
+      const order = participantsWrapper.dataset.order || 'asc';
+      charger(e.detail.page, orderby, order);
+    });
+
     participantsWrapper.addEventListener('click', (e) => {
-      const btn = e.target.closest('button');
-      if (!btn) return;
-      if (btn.classList.contains('pager-first')) {
-        e.preventDefault();
-        charger(1);
+      const btn = e.target.closest('button.sort');
+      if (!btn) {
+        return;
       }
-      if (btn.classList.contains('pager-prev')) {
-        e.preventDefault();
-        const page = parseInt(participantsWrapper.dataset.page || '1', 10);
-        if (page > 1) charger(page - 1);
+      e.preventDefault();
+      const orderby = btn.dataset.orderby || 'inscription';
+      let order = participantsWrapper.dataset.order || 'asc';
+      if (participantsWrapper.dataset.orderby !== orderby) {
+        order = 'asc';
+      } else {
+        order = order === 'asc' ? 'desc' : 'asc';
       }
-      if (btn.classList.contains('pager-next')) {
-        e.preventDefault();
-        const page = parseInt(participantsWrapper.dataset.page || '1', 10);
-        const pages = parseInt(participantsWrapper.dataset.pages || '1', 10);
-        if (page < pages) charger(page + 1);
-      }
-      if (btn.classList.contains('pager-last')) {
-        e.preventDefault();
-        const pages = parseInt(participantsWrapper.dataset.pages || '1', 10);
-        charger(pages);
-      }
-      if (btn.classList.contains('sort')) {
-        e.preventDefault();
-        const orderby = btn.dataset.orderby || 'inscription';
-        let order = participantsWrapper.dataset.order || 'asc';
-        if (participantsWrapper.dataset.orderby !== orderby) {
-          order = 'asc';
-        } else {
-          order = order === 'asc' ? 'desc' : 'asc';
-        }
-        charger(1, orderby, order);
-      }
+      charger(1, orderby, order);
     });
   }
 }
