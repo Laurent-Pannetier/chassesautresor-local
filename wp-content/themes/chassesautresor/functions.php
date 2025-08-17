@@ -26,17 +26,31 @@ add_action( 'after_setup_theme', 'cta_load_textdomain' );
  * Chargement des styles du thème parent et enfant avec prise en charge d'Astra.
  */
 add_action('wp_enqueue_scripts', function () {
-    $theme_dir = get_stylesheet_directory_uri() . '/assets/css/';
-    $theme_path = get_stylesheet_directory() . '/assets/css/';
+    $theme_uri  = get_stylesheet_directory_uri();
+    $theme_path = get_stylesheet_directory();
 
     // 🎨 Chargement des styles du thème parent (Astra) et enfant
     wp_enqueue_style('astra-style', get_template_directory_uri() . '/style.css');
     wp_enqueue_style(
         'mon-theme-enfant-style',
-        get_stylesheet_directory_uri() . '/style.css',
+        $theme_uri . '/style.css',
         ['astra-style'],
-        filemtime(get_stylesheet_directory() . '/style.css')
+        filemtime($theme_path . '/style.css')
     );
+
+    if ('production' === wp_get_environment_type()) {
+        $dist_file = '/dist/style.min.css';
+        wp_enqueue_style(
+            'chassesautresor-style',
+            $theme_uri . $dist_file,
+            ['mon-theme-enfant-style'],
+            filemtime($theme_path . $dist_file)
+        );
+        return;
+    }
+
+    $css_uri  = $theme_uri . '/assets/css/';
+    $css_path = $theme_path . '/assets/css/';
 
     // 📂 Liste des fichiers CSS organisés
     $styles = [
@@ -58,7 +72,7 @@ add_action('wp_enqueue_scripts', function () {
 
     // ✅ Enregistre les styles avec gestion du cache
     foreach ($styles as $handle => $file) {
-        wp_register_style($handle, $theme_dir . $file, [], filemtime($theme_path . $file));
+        wp_register_style($handle, $css_uri . $file, [], filemtime($css_path . $file));
     }
 
     // 🚀 Chargement des styles communs
@@ -90,13 +104,13 @@ add_action('wp_enqueue_scripts', function () {
         wp_enqueue_style('mon-compte');
     }
 
-    $script_dir = get_stylesheet_directory_uri() . '/assets/js/';
+    $script_dir = $theme_uri . '/assets/js/';
     if (is_account_page() && is_user_logged_in()) {
         wp_enqueue_script(
             'myaccount',
             $script_dir . 'myaccount.js',
             [],
-            filemtime(get_stylesheet_directory() . '/assets/js/myaccount.js'),
+            filemtime($theme_path . '/assets/js/myaccount.js'),
             true
         );
         wp_localize_script('myaccount', 'ctaMyAccount', [
