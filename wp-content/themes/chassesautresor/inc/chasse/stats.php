@@ -168,8 +168,7 @@ function chasse_lister_participants(int $chasse_id, int $limit, int $offset, str
     $sql = $wpdb->prepare(
         "SELECT e.user_id, u.user_login AS username, MIN(e.date_engagement) AS date_inscription,"
         . " COUNT(DISTINCT e2.enigme_id) AS nb_engagees,"
-        . " COUNT(DISTINCT CASE WHEN s.statut IN ('resolue','terminee') THEN s.enigme_id END) AS nb_resolues,"
-        . " GROUP_CONCAT(DISTINCT e2.enigme_id) AS enigmes_ids"
+        . " COUNT(DISTINCT CASE WHEN s.statut IN ('resolue','terminee') THEN s.enigme_id END) AS nb_resolues"
         . " FROM {$table_eng} e"
         . " JOIN {$wpdb->users} u ON u.ID = e.user_id"
         . " LEFT JOIN {$table_eng} e2 ON e2.user_id = e.user_id"
@@ -192,24 +191,30 @@ function chasse_lister_participants(int $chasse_id, int $limit, int $offset, str
 
     $participants = [];
     foreach ($rows as $row) {
-        $engaged_ids = [];
-        if (!empty($row['enigmes_ids'])) {
-            $engaged_ids = array_map('intval', explode(',', $row['enigmes_ids']));
-        }
+        $user_id = (int) $row['user_id'];
+        $ids     = $wpdb->get_col(
+            $wpdb->prepare(
+                "SELECT DISTINCT enigme_id FROM {$table_eng}"
+                . " WHERE chasse_id = %d AND user_id = %d AND enigme_id IS NOT NULL",
+                $chasse_id,
+                $user_id
+            )
+        );
+        $engaged_ids = array_map('intval', $ids);
         $enigmes = array_map(
             static fn($eid) => [
-                'id' => $eid,
+                'id'    => $eid,
                 'title' => get_the_title($eid),
-                'url' => get_permalink($eid),
+                'url'   => get_permalink($eid),
             ],
             $engaged_ids
         );
         $participants[] = [
-            'username' => $row['username'],
+            'username'      => $row['username'],
             'date_inscription' => $row['date_inscription'],
-            'enigmes' => $enigmes,
-            'nb_engagees' => isset($row['nb_engagees']) ? (int) $row['nb_engagees'] : 0,
-            'nb_resolues' => isset($row['nb_resolues']) ? (int) $row['nb_resolues'] : 0,
+            'enigmes'       => $enigmes,
+            'nb_engagees'   => isset($row['nb_engagees']) ? (int) $row['nb_engagees'] : 0,
+            'nb_resolues'   => isset($row['nb_resolues']) ? (int) $row['nb_resolues'] : 0,
         ];
     }
 

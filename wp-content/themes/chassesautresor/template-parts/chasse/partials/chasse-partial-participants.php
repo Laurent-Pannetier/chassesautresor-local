@@ -73,9 +73,9 @@ if ($orderby === 'resolution') {
   </thead>
   <tbody>
     <?php foreach ($participants as $p) :
-        $links = [];
+        $titles = [];
         foreach ($p['enigmes'] as $e) {
-            $links[] = '<a href="' . esc_url($e['url']) . '">' . esc_html($e['title']) . '</a>';
+            $titles[] = esc_html($e['title']);
         }
         $taux_participation = $total_enigmes > 0 ? (100 * $p['nb_engagees'] / $total_enigmes) : 0;
         $taux_resolution    = $total_enigmes > 0 ? (100 * $p['nb_resolues'] / $total_enigmes) : 0;
@@ -83,7 +83,7 @@ if ($orderby === 'resolution') {
     <tr>
       <td><?= esc_html($p['username']); ?></td>
       <td><?= $p['date_inscription'] ? esc_html(mysql2date('d/m/Y H:i', $p['date_inscription'])) : ''; ?></td>
-      <td><?= implode(', ', $links); ?></td>
+      <td><?= implode(', ', $titles); ?></td>
       <td><?= esc_html(number_format_i18n($taux_participation, 0)); ?>%</td>
       <td><?= esc_html(number_format_i18n($taux_resolution, 0)); ?>%</td>
     </tr>
