@@ -464,11 +464,7 @@ function render_conversion_history(int $user_id): string
                 </tbody>
             </table>
             <?php if ($total_pages > 1) : ?>
-            <nav class="points-history-pager" data-total="<?php echo esc_attr($total_pages); ?>">
-                <?php for ($i = 1; $i <= $total_pages; $i++) : ?>
-                    <button class="page-link etiquette<?php echo $i === 1 ? ' active' : ''; ?>" data-page="<?php echo esc_attr($i); ?>"><?php echo esc_html($i); ?></button>
-                <?php endfor; ?>
-            </nav>
+            <?php echo cta_render_pager(1, $total_pages, 'points-history-pager'); ?>
             <span class="conversion-history-loading" aria-hidden="true"></span>
             <?php endif; ?>
         </div>

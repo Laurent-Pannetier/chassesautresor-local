@@ -1790,29 +1790,14 @@ body.panneau-ouvert::before {
 /* 🎯 Pager de tableau */
 .pager {
   display: flex;
+  justify-content: center;
   align-items: center;
   gap: 6px;
   margin-top: 10px;
 }
 
-.pager button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  border: 1px solid var(--color-editor-border);
-  background: var(--color-editor-background);
-  color: var(--color-editor-text);
-  border-radius: 4px;
+.pager .etiquette {
   cursor: pointer;
-}
-
-.pager button:hover {
-  background: var(--color-editor-field-hover);
-  border-color: var(--color-editor-accent);
-  color: var(--color-editor-accent);
 }
 
 .pager-info {
