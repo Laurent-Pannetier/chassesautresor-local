@@ -156,6 +156,16 @@ function chasse_lister_participants(int $chasse_id, int $limit, int $offset, str
     $table_eng  = $wpdb->prefix . 'engagements';
     $table_stat = $wpdb->prefix . 'enigme_statuts_utilisateur';
 
+    $enigme_ids = recuperer_ids_enigmes_pour_chasse($chasse_id);
+    if ($enigme_ids) {
+        $placeholders = implode(',', array_fill(0, count($enigme_ids), '%d'));
+        $join_filter  = " AND e2.enigme_id IN ({$placeholders})";
+        $params_join  = $enigme_ids;
+    } else {
+        $join_filter = ' AND 1=0';
+        $params_join = [];
+    }
+
     $order = strtoupper($order) === 'DESC' ? 'DESC' : 'ASC';
     $orderby_map = [
         'username' => 'username',
@@ -165,25 +175,21 @@ function chasse_lister_participants(int $chasse_id, int $limit, int $offset, str
     ];
     $orderby = $orderby_map[$orderby] ?? 'date_inscription';
 
-    $sql = $wpdb->prepare(
-        "SELECT e.user_id, u.user_login AS username, MIN(e.date_engagement) AS date_inscription,"
-        . " COUNT(DISTINCT e2.enigme_id) AS nb_engagees,"
-        . " COUNT(DISTINCT CASE WHEN s.statut IN ('resolue','terminee') THEN s.enigme_id END) AS nb_resolues,"
-        . " GROUP_CONCAT(DISTINCT e2.enigme_id) AS enigmes_ids"
-        . " FROM {$table_eng} e"
-        . " JOIN {$wpdb->users} u ON u.ID = e.user_id"
-        . " LEFT JOIN {$table_eng} e2 ON e2.user_id = e.user_id"
-        . " AND e2.chasse_id = e.chasse_id AND e2.enigme_id IS NOT NULL"
-        . " LEFT JOIN {$table_stat} s ON s.user_id = e.user_id"
-        . " AND s.enigme_id = e2.enigme_id AND s.statut IN ('resolue','terminee')"
-        . " WHERE e.chasse_id = %d AND e.enigme_id IS NULL"
-        . " GROUP BY e.user_id"
-        . " ORDER BY {$orderby} {$order}"
-        . " LIMIT %d OFFSET %d",
-        $chasse_id,
-        $limit,
-        $offset
-    );
+    $query =
+        "SELECT e.user_id, u.user_login AS username, MIN(e.date_engagement) AS date_inscription," .
+        " COUNT(DISTINCT e2.enigme_id) AS nb_engagees," .
+        " COUNT(DISTINCT CASE WHEN s.statut IN ('resolue','terminee') THEN s.enigme_id END) AS nb_resolues" .
+        " FROM {$table_eng} e" .
+        " JOIN {$wpdb->users} u ON u.ID = e.user_id" .
+        " LEFT JOIN {$table_eng} e2 ON e2.user_id = e.user_id{$join_filter}" .
+        " LEFT JOIN {$table_stat} s ON s.user_id = e.user_id" .
+        " AND s.enigme_id = e2.enigme_id AND s.statut IN ('resolue','terminee')" .
+        " WHERE e.chasse_id = %d AND e.enigme_id IS NULL" .
+        " GROUP BY e.user_id" .
+        " ORDER BY {$orderby} {$order}" .
+        " LIMIT %d OFFSET %d";
+    $params = array_merge($params_join, [$chasse_id, $limit, $offset]);
+    $sql    = $wpdb->prepare($query, $params);
 
     $rows = $wpdb->get_results($sql, ARRAY_A);
     if (!$rows) {
@@ -192,24 +198,35 @@ function chasse_lister_participants(int $chasse_id, int $limit, int $offset, str
 
     $participants = [];
     foreach ($rows as $row) {
-        $engaged_ids = [];
-        if (!empty($row['enigmes_ids'])) {
-            $engaged_ids = array_map('intval', explode(',', $row['enigmes_ids']));
+        $user_id = (int) $row['user_id'];
+        if ($enigme_ids) {
+            $placeholders = implode(',', array_fill(0, count($enigme_ids), '%d'));
+            $params_ids   = array_merge([$user_id], $enigme_ids);
+            $ids          = $wpdb->get_col(
+                $wpdb->prepare(
+                    "SELECT DISTINCT enigme_id FROM {$table_eng}" .
+                    " WHERE user_id = %d AND enigme_id IN ({$placeholders})",
+                    $params_ids
+                )
+            );
+        } else {
+            $ids = [];
         }
+        $engaged_ids = array_map('intval', $ids);
         $enigmes = array_map(
             static fn($eid) => [
-                'id' => $eid,
+                'id'    => $eid,
                 'title' => get_the_title($eid),
-                'url' => get_permalink($eid),
+                'url'   => get_permalink($eid),
             ],
             $engaged_ids
         );
         $participants[] = [
-            'username' => $row['username'],
+            'username'      => $row['username'],
             'date_inscription' => $row['date_inscription'],
-            'enigmes' => $enigmes,
-            'nb_engagees' => isset($row['nb_engagees']) ? (int) $row['nb_engagees'] : 0,
-            'nb_resolues' => isset($row['nb_resolues']) ? (int) $row['nb_resolues'] : 0,
+            'enigmes'       => $enigmes,
+            'nb_engagees'   => isset($row['nb_engagees']) ? (int) $row['nb_engagees'] : 0,
+            'nb_resolues'   => isset($row['nb_resolues']) ? (int) $row['nb_resolues'] : 0,
         ];
     }
 

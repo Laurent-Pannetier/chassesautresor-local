@@ -40,9 +40,14 @@ class ChasseParticipantsStatsTest extends TestCase {
                         'date_inscription' => '2024-01-01 10:00:00',
                         'nb_engagees' => 2,
                         'nb_resolues' => 1,
-                        'enigmes_ids' => '10,11',
                     ],
                 ];
+            }
+            public function get_col($query) {
+                if (stripos($query, 'chasse_id') !== false) {
+                    return [];
+                }
+                return [10, 11];
             }
         };
 
@@ -71,7 +76,6 @@ class ChasseParticipantsStatsTest extends TestCase {
                             'date_inscription' => '2024-01-01 10:00:00',
                             'nb_engagees' => 2,
                             'nb_resolues' => 1,
-                            'enigmes_ids' => '10,11',
                         ],
                         [
                             'user_id' => 2,
@@ -79,7 +83,6 @@ class ChasseParticipantsStatsTest extends TestCase {
                             'date_inscription' => '2024-01-02 10:00:00',
                             'nb_engagees' => 1,
                             'nb_resolues' => 0,
-                            'enigmes_ids' => '10',
                         ],
                     ];
                 }
@@ -91,7 +94,6 @@ class ChasseParticipantsStatsTest extends TestCase {
                             'date_inscription' => '2024-01-02 10:00:00',
                             'nb_engagees' => 1,
                             'nb_resolues' => 0,
-                            'enigmes_ids' => '10',
                         ],
                         [
                             'user_id' => 1,
@@ -99,9 +101,20 @@ class ChasseParticipantsStatsTest extends TestCase {
                             'date_inscription' => '2024-01-01 10:00:00',
                             'nb_engagees' => 2,
                             'nb_resolues' => 1,
-                            'enigmes_ids' => '10,11',
                         ],
                     ];
+                }
+                return [];
+                }
+            public function get_col($query) {
+                if (stripos($query, 'chasse_id') !== false) {
+                    return [];
+                }
+                if (stripos($query, 'user_id = 1') !== false) {
+                    return [10, 11];
+                }
+                if (stripos($query, 'user_id = 2') !== false) {
+                    return [10];
                 }
                 return [];
             }
