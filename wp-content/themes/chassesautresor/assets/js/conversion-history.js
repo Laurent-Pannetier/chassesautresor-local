@@ -4,6 +4,7 @@ jQuery(function ($) {
     const container = $(this);
     const toggle = container.find('.conversion-history-toggle');
     const tableWrapper = container.find('.conversion-history-table');
+    const loading = container.find('.conversion-history-loading');
 
     if (toggle.attr('aria-expanded') !== 'true') {
       tableWrapper.hide();
@@ -24,17 +25,22 @@ jQuery(function ($) {
     container.on('click', '.points-history-pager .page-link', function (e) {
       e.preventDefault();
       const page = $(this).data('page');
+      loading.show();
       $.post(ConversionHistoryAjax.ajax_url, {
         action: 'load_conversion_history',
         nonce: ConversionHistoryAjax.nonce,
         page: page,
-      }).done(function (response) {
-        if (response.success) {
-          tableWrapper.find('tbody').html(response.data.rows);
-          container.find('.points-history-pager .page-link').removeClass('active');
-          container.find('.points-history-pager .page-link[data-page="' + page + '"]').addClass('active');
-        }
-      });
+      })
+        .done(function (response) {
+          if (response.success) {
+            tableWrapper.find('tbody').html(response.data.rows);
+            container.find('.points-history-pager .page-link').removeClass('active');
+            container.find('.points-history-pager .page-link[data-page="' + page + '"]').addClass('active');
+          }
+        })
+        .always(function () {
+          loading.hide();
+        });
     });
   });
 });

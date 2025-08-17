@@ -469,6 +469,7 @@ function render_conversion_history(int $user_id): string
                     <button class="page-link etiquette<?php echo $i === 1 ? ' active' : ''; ?>" data-page="<?php echo esc_attr($i); ?>"><?php echo esc_html($i); ?></button>
                 <?php endfor; ?>
             </nav>
+            <span class="conversion-history-loading" aria-hidden="true"></span>
             <?php endif; ?>
         </div>
     </div>

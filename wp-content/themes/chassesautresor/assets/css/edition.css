@@ -2023,3 +2023,21 @@ body.panneau-ouvert::before {
     font-size: 0.875rem;
     line-height: 1;
 }
+
+/* 🔄 Loading spinner for conversion history */
+.conversion-history-loading {
+    display: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--color-editor-border);
+    border-top-color: var(--color-editor-accent);
+    border-radius: 50%;
+    animation: conversion-history-spin 0.6s linear infinite;
+    margin-left: 0.5rem;
+}
+
+@keyframes conversion-history-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
