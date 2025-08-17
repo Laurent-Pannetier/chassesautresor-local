@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+(() => {
     document.querySelectorAll('.conversion-history').forEach((wrapper) => {
         function load(page) {
             const params = new URLSearchParams();
@@ -46,5 +46,5 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
-});
+})();
 
