@@ -3,7 +3,7 @@
 Ce répertoire rassemble des documents complémentaires au thème.
 
 - [Workflow organisateur](organisateur-workflow.md)
-- [Charte mode édition](mode-edition-charte.md)
+- [Charte Orgy](orgy-charte.md)
 
 ## Tests
 

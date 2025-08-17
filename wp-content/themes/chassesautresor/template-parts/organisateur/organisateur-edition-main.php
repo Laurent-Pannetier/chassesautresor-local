@@ -1,5 +1,5 @@
 <?php
-// Panneau organisateur (affiché en mode édition)
+// Panneau organisateur (affiché en Orgy)
 defined('ABSPATH') || exit;
 
 $organisateur_id = get_organisateur_id_from_context($args ?? []);
