@@ -281,7 +281,7 @@ function myaccount_get_important_messages(): string
         $pendingRequests = $repo->getConversionRequests(null, 'pending');
 
         if (!empty($pendingRequests)) {
-            $url = esc_url(home_url('/mon-compte/organisateurs/'));
+            $url = esc_url(home_url('/mon-compte/?section=points'));
             $messages[] = sprintf(
                 /* translators: 1: opening anchor tag, 2: closing anchor tag */
                 __('Vous avez des %1$sdemandes de conversion%2$s en attente.', 'chassesautresor'),
