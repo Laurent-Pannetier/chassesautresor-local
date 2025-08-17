@@ -97,6 +97,7 @@ function enqueue_core_edit_scripts(array $additional = [])
     'champ-init'       => 'champ-init.js',
     'champ-date-hooks' => 'champ-date-hooks.js',
     'modal-tabs'       => 'modal-tabs.js',
+    'pager'            => 'pager.js',
   ];
 
   $previous_handle = null;
