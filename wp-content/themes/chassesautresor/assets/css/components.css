@@ -199,8 +199,8 @@ button,
 
 /* ========== ➕ BOUTON D’AJOUT ========== */
 
-.ajout-link {
-    display: flex !important;
+a.ajout-link {
+    display: flex;
     align-items: center; /* Centre verticalement l'icône et le texte */
     justify-content: center; /* Centre horizontalement */
     gap: 8px; /* Espacement entre l'icône et le texte */
@@ -528,8 +528,8 @@ button,
   margin:2rem auto;
   max-width: 600px;
 }
-.formulaire-contact-wrapper h1 {
-    margin-bottom: 0.8rem;
+.titre-contact {
+  margin-bottom: 0.8rem;
 }
 body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
     color: var(--color-text-primary);
@@ -541,11 +541,12 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
   }
 }
 #wpforms-8792-field_6-container {
+    /* Ce champ appartient au plugin WPForms : utilisation volontaire de !important */
     display:none !important;
 }
 
-.champ-attention {
-  border: 2px dashed var(--color-editor-error) !important;
+.wpforms-form .champ-attention {
+  border: 2px dashed var(--color-editor-error);
   animation: pulse-attention 1.2s ease-in-out infinite;
   background-color: #fff5f5;
   color: var(--color-editor-text);

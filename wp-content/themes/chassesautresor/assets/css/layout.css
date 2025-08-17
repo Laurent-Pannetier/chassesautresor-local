@@ -137,56 +137,53 @@
     transform: translateY(0);
   }
 }
-.has-hero .contenu-hero h1 {
+.hero-title {
   font-size: 2.6rem;
   font-weight: 700;
   text-transform: uppercase;
-  color: var(--color-primary); /* 🟡 Jaune or */
+  color: var(--color-primary);
   letter-spacing: 1px;
   margin-bottom: 1rem;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
 }
-.has-hero .sous-titre {
+.hero-subtitle {
   font-size: 1.3rem;
-  color: var(--color-text-primary); /* 📜 Beige clair */
+  color: var(--color-text-primary);
   opacity: 0.95;
   margin-bottom: 2rem;
   max-width: 700px;
   margin-left: auto;
   margin-right: auto;
-}
-.has-hero .contenu-hero h1,
-.has-hero .contenu-hero .sous-titre {
   text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
 }
 @media (max-width: var(--bp-md)) {
-    .has-hero .contenu-hero h1 {
-        font-size:1.8rem;
-    }
-    .has-hero .sous-titre {
-        font-size: 1.5rem;
-        margin-bottom: 1.1rem ;
-    }
+  .hero-title {
+    font-size: 1.8rem;
+  }
+  .hero-subtitle {
+    font-size: 1.5rem;
+    margin-bottom: 1.1rem;
+  }
   .has-hero .hero-overlay {
     height: 280px;
   }
   .has-hero #content {
-      padding-top: 300px;
+    padding-top: 300px;
   }
 }
 @media (max-width: var(--bp-sm)) {
-    .has-hero .contenu-hero h1 {
-        font-size:1.5rem;
-    }
-    .has-hero .sous-titre {
-        font-size: 1rem;
-        margin-bottom: 0.5rem ;
-    }
+  .hero-title {
+    font-size: 1.5rem;
+  }
+  .hero-subtitle {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
   .has-hero .hero-overlay {
     height: 220px;
   }
-
   .has-hero #content {
-      padding-top: 235px;
+    padding-top: 235px;
   }
 }
 
@@ -483,12 +480,12 @@ footer .ast-footer-widget a {
   .site-footer-primary-section-2 {
     order: 3;
   }
-  .site-footer-primary-section-3 {
+  footer .site-footer-primary-section-3 {
     order: 1;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     padding-bottom: 15px;
     margin-bottom: 15px;
-    display: block !important;
+    display: block;
   }
   .ast-builder-footer-grid-columns {
     column-gap: 20px;

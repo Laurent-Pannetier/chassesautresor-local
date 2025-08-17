@@ -61,8 +61,7 @@
   border-color: var(--color-accent, #ffc400);
 }
 
-.modal-bienvenue-inner h1,
-.modal-contenu h1 {
+.modal-title {
   text-align: center;
   font-size: 1.4rem;
   font-weight: 700;
@@ -72,8 +71,7 @@
   text-transform: uppercase;
 }
 
-.modal-bienvenue-inner h2,
-.modal-contenu h2 {
+.modal-subtitle {
   text-align: center;
   font-size: 1.3rem;
   font-weight: 600;
@@ -107,13 +105,11 @@
     font-size: 0.95rem;
   }
 
-  .modal-bienvenue-inner h1,
-  .modal-contenu h1 {
+  .modal-title {
     font-size: 1.2rem;
   }
 
-  .modal-bienvenue-inner h2,
-  .modal-contenu h2 {
+  .modal-subtitle {
     font-size: 1.1rem;
   }
 }

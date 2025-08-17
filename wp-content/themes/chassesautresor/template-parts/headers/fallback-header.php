@@ -25,11 +25,11 @@ $image_url   = isset( $args['image_fond'] ) ? esc_url( $args['image_fond'] ) : '
   <div class="hero-overlay" <?php if ( $image_url ) : ?>style="background-image: url('<?php echo $image_url; ?>');"<?php endif; ?>>
     <div class="contenu-hero">
       <?php if ( $titre ) : ?>
-        <h1><?php echo $titre; ?></h1>
+        <h1 class="hero-title"><?php echo $titre; ?></h1>
       <?php endif; ?>
 
       <?php if ( $sous_titre ) : ?>
-        <p class="sous-titre"><?php echo $sous_titre; ?></p>
+        <p class="hero-subtitle"><?php echo $sous_titre; ?></p>
       <?php endif; ?>
     </div>
   </div>

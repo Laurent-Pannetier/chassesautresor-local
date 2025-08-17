@@ -47,8 +47,8 @@ get_header(); ?>
 <section class="bandeau-hero">
   <div class="hero-overlay" style="background-image: url('<?php echo esc_url($image_url); ?>');">
     <div class="contenu-hero">
-      <h1><?php the_title(); ?></h1>
-      <p class="sous-titre">Créez, publiez et partagez vos aventures interactives.</p>
+      <h1 class="hero-title"><?php the_title(); ?></h1>
+      <p class="hero-subtitle">Créez, publiez et partagez vos aventures interactives.</p>
       <?php $cta = get_cta_devenir_organisateur(); ?>
       <a href="<?php echo $cta['url'] ? esc_url($cta['url']) : '#'; ?>" class="bouton-cta" id="creer-profil-btn" data-event="clic_creer_profil" <?php echo $cta['disabled'] ? 'style="pointer-events:none;opacity:0.6"' : ''; ?>>
         <?php echo esc_html($cta['label']); ?>

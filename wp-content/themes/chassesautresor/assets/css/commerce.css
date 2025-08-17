@@ -1,21 +1,21 @@
 /* ========== 🛒 AJOUT AU PANIER ========== */
 
-.add_to_cart_button {
-    font-weight: 500 !important;
+.woocommerce a.button.add_to_cart_button {
+    font-weight: 500;
     text-transform: uppercase;
-    color: var(--color-primary) !important;
-    background-color: var(--color-background-button) !important;
-    transition: all 0.8s !important;
+    color: var(--color-primary);
+    background-color: var(--color-background-button);
+    transition: all 0.8s;
 }
-.add_to_cart_button:hover {
-    color: var(--color-background-button) !important;
-    background-color: var(--color-primary) !important;
-    border-color: var(--color-background-button) !important;
+.woocommerce a.button.add_to_cart_button:hover {
+    color: var(--color-background-button);
+    background-color: var(--color-primary);
+    border-color: var(--color-background-button);
 }
 
 .prix-devise {
     font-size: 0.6em;
     vertical-align: super;
     display: inline-block;
-     margin-left: 1px;
+    margin-left: 1px;
 }
