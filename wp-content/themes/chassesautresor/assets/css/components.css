@@ -133,6 +133,11 @@ button,
     opacity: 0.6;
 }
 
+.bouton-cta:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
 /* ========== 🎯 BADGE COÛT ========== */
 .badge-cout {
     display: inline-block;
@@ -196,6 +201,11 @@ button,
     opacity: 0.6;
 }
 
+.bouton-secondaire:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
 /* ========== 🔲 BOUTON TERTIAIRE ========== */
 
 .bouton-tertiaire {
@@ -220,6 +230,11 @@ button,
 .bouton-tertiaire:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+
+.bouton-tertiaire:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
 }
 
 /* ========== ⚠️ BOUTON DANGER ========== */
@@ -247,6 +262,11 @@ button,
     border-color: var(--color-gris-3);
     cursor: not-allowed;
     opacity: 0.6;
+}
+
+.btn-danger:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
 }
 
 /* ========== 🖱️ BOUTON ICÔNE ========== */
@@ -302,6 +322,11 @@ a.ajout-link {
     transform: scale(1.05);
 }
 
+a.ajout-link:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
 
 /* ========== 📖 BOUTON "LIRE PLUS" ========== */
 
@@ -314,6 +339,11 @@ a.ajout-link {
 .btn-lire-plus:hover {
   background-color: var(--color-background-button-inactive);
   color: var(--color-background);
+}
+
+.btn-lire-plus:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 @media (max-width: var(--bp-md)) {
@@ -347,6 +377,11 @@ a.ajout-link {
 .bouton-retour:active {
   transform: translateY(0);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.bouton-retour:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 @media (max-width: var(--bp-sm)) {
