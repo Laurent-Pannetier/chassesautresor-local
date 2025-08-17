@@ -145,8 +145,4 @@ if (current_user_can('administrator')) {
     }
 }
 
-if ($is_organizer) {
-    echo render_conversion_history((int) $current_user->ID);
-}
-
 echo render_points_history_table((int) $current_user->ID);
