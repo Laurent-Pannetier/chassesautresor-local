@@ -56,7 +56,26 @@ function register_script_chasse_edit()
         fetch('<?php echo esc_url(admin_url('admin-ajax.php?action=charger_scripts_chasse_edit')); ?>')
           .then(r => r.text())
           .then(html => {
-            document.head.insertAdjacentHTML('beforeend', html);
+            const frag = document.createRange().createContextualFragment(html);
+            const scripts = Array.from(frag.querySelectorAll('script'));
+            let loaded = 0;
+            const check = () => {
+              loaded++;
+              if (loaded === scripts.length) {
+                this.click();
+              }
+            };
+            scripts.forEach((old) => {
+              const s = document.createElement('script');
+              if (old.src) {
+                s.src = old.src;
+                s.onload = check;
+              } else {
+                s.textContent = old.textContent;
+                check();
+              }
+              document.head.appendChild(s);
+            });
           });
       });
     </script>
