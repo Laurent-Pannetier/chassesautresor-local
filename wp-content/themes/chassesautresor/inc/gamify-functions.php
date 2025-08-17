@@ -517,21 +517,47 @@ function render_points_history_table(int $user_id): string
                         <td><?php echo esc_html($date); ?></td>
                         <td><span class="etiquette"><?php echo esc_html($op['origin_type']); ?></span></td>
                         <td><?php echo esc_html($op['reason']); ?></td>
-                        <td><span class="etiquette etiquette-grande"><?php echo esc_html($variation_label); ?></span></td>
+                        <td>
+                            <span class="etiquette etiquette-grande">
+                                <?php echo esc_html($variation_label); ?>
+                            </span>
+                        </td>
                         <td><span class="etiquette etiquette-grande"><?php echo esc_html($op['balance']); ?></span></td>
                     </tr>
                 <?php endforeach; ?>
                 </tbody>
             </table>
-            <?php if ($total_pages > 1) : ?>
             <div class="pager">
-                <button class="pager-first" aria-label="<?php esc_attr_e('Première page', 'chassesautresor-com'); ?>"><i class="fa-solid fa-angles-left"></i></button>
-                <button class="pager-prev" aria-label="<?php esc_attr_e('Page précédente', 'chassesautresor-com'); ?>"><i class="fa-solid fa-angle-left"></i></button>
+                <button
+                    type="button"
+                    class="pager-first"
+                    aria-label="<?php esc_attr_e('Première page', 'chassesautresor-com'); ?>"
+                >
+                    <i class="fa-solid fa-angles-left"></i>
+                </button>
+                <button
+                    type="button"
+                    class="pager-prev"
+                    aria-label="<?php esc_attr_e('Page précédente', 'chassesautresor-com'); ?>"
+                >
+                    <i class="fa-solid fa-angle-left"></i>
+                </button>
                 <span class="pager-info">1 / <?php echo esc_html($total_pages); ?></span>
-                <button class="pager-next" aria-label="<?php esc_attr_e('Page suivante', 'chassesautresor-com'); ?>"><i class="fa-solid fa-angle-right"></i></button>
-                <button class="pager-last" aria-label="<?php esc_attr_e('Dernière page', 'chassesautresor-com'); ?>"><i class="fa-solid fa-angles-right"></i></button>
+                <button
+                    type="button"
+                    class="pager-next"
+                    aria-label="<?php esc_attr_e('Page suivante', 'chassesautresor-com'); ?>"
+                >
+                    <i class="fa-solid fa-angle-right"></i>
+                </button>
+                <button
+                    type="button"
+                    class="pager-last"
+                    aria-label="<?php esc_attr_e('Dernière page', 'chassesautresor-com'); ?>"
+                >
+                    <i class="fa-solid fa-angles-right"></i>
+                </button>
             </div>
-            <?php endif; ?>
         </div>
     </div>
     <?php

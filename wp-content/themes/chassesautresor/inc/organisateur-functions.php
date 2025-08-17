@@ -355,7 +355,11 @@ function render_conversion_history_table(int $user_id, string $status_filter = '
 
     ob_start();
     ?>
-    <div class="conversion-history" data-page="<?php echo esc_attr($page); ?>" data-pages="<?php echo esc_attr($pages); ?>">
+    <div
+        class="conversion-history"
+        data-page="<?php echo esc_attr($page); ?>"
+        data-pages="<?php echo esc_attr($pages); ?>"
+    >
         <table class="stats-table">
             <thead>
             <tr>
@@ -391,15 +395,37 @@ function render_conversion_history_table(int $user_id, string $status_filter = '
             <?php endforeach; ?>
             </tbody>
         </table>
-        <?php if ($pages > 1) : ?>
         <div class="pager">
-            <button type="button" class="pager-first" aria-label="<?php esc_attr_e('Première page', 'chassesautresor-com'); ?>"><i class="fa-solid fa-angles-left"></i></button>
-            <button type="button" class="pager-prev" aria-label="<?php esc_attr_e('Page précédente', 'chassesautresor-com'); ?>"><i class="fa-solid fa-angle-left"></i></button>
+            <button
+                type="button"
+                class="pager-first"
+                aria-label="<?php esc_attr_e('Première page', 'chassesautresor-com'); ?>"
+            >
+                <i class="fa-solid fa-angles-left"></i>
+            </button>
+            <button
+                type="button"
+                class="pager-prev"
+                aria-label="<?php esc_attr_e('Page précédente', 'chassesautresor-com'); ?>"
+            >
+                <i class="fa-solid fa-angle-left"></i>
+            </button>
             <span class="pager-info"><?php echo esc_html($page . ' / ' . $pages); ?></span>
-            <button type="button" class="pager-next" aria-label="<?php esc_attr_e('Page suivante', 'chassesautresor-com'); ?>"><i class="fa-solid fa-angle-right"></i></button>
-            <button type="button" class="pager-last" aria-label="<?php esc_attr_e('Dernière page', 'chassesautresor-com'); ?>"><i class="fa-solid fa-angles-right"></i></button>
+            <button
+                type="button"
+                class="pager-next"
+                aria-label="<?php esc_attr_e('Page suivante', 'chassesautresor-com'); ?>"
+            >
+                <i class="fa-solid fa-angle-right"></i>
+            </button>
+            <button
+                type="button"
+                class="pager-last"
+                aria-label="<?php esc_attr_e('Dernière page', 'chassesautresor-com'); ?>"
+            >
+                <i class="fa-solid fa-angles-right"></i>
+            </button>
         </div>
-        <?php endif; ?>
     </div>
     <?php
     return ob_get_clean();
