@@ -22,7 +22,7 @@
 .modal-bienvenue-inner,
 .modal-contenu {
   position: relative;
-  background: #fff;
+  background: var(--color-white);
   color: var(--color-text-fond-clair);
   padding: var(--space-3xl) var(--space-2xl);
   border-radius: 12px;
@@ -56,7 +56,7 @@
 }
 
 .modal-close-top:hover {
-  color: #fff;
+  color: var(--color-white);
   background: var(--color-accent, #ffc400);
   border-color: var(--color-accent, #ffc400);
 }

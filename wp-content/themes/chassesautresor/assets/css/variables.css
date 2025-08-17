@@ -25,6 +25,17 @@
   --color-background-button-inactive: #A9A9A9; /* 🔘 Boutons inactifs : gris */
   --color-success: #228B22;                  /* ✅ Barre de progression */
 
+  --color-error: #D93025;                    /* ⚠️ Messages d'erreur */
+
+  --color-white: #FFFFFF;                    /* ⚪ Blanc */
+  --color-black: #000000;                    /* ⚫ Noir */
+  --color-grey-light: #EEEEEE;               /* 🌫️ Gris clair */
+  --color-grey-medium: #CCCCCC;              /* 🌫️ Gris moyen */
+  --color-grey-dark: #333333;                /* 🌫️ Gris foncé */
+
+  --color-primary-dark: #B8860B;             /* 🟡 Or sombre (dégradé) */
+  --color-background-dark: #060A1F;          /* 🎭 Fond sombre profond */
+
   --color-gris-3: #adadad;                  /* ⚪ Gris neutre n°3 */
   --color-text-fond-clair: #1c1c1c;         /* noir clair */
   --color-gris-carte: #c2c2c2;              /* 🧩 Fond de carte énigme : gris bleuté doux */
