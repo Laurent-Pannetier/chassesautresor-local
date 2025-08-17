@@ -21,9 +21,9 @@ $titre_bloc = $org_status === 'pending'
     <input type="hidden" name="chasse_id" value="<?php echo esc_attr($chasse_id); ?>">
     <div class="boutons">
       <button type="submit" name="validation_admin_action" value="valider" class="bouton-cta">✅ Valider la chasse</button>
-      <button type="submit" name="validation_admin_action" value="correction" class="bouton-secondaire btn-correction">✍️ Correction</button>
-      <button type="submit" name="validation_admin_action" value="bannir" class="bouton-secondaire">❌ Bannir</button>
-      <button type="submit" name="validation_admin_action" value="supprimer" class="bouton-secondaire" onclick="return confirm('Supprimer cette chasse ?');">🗑️ Supprimer</button>
+      <button type="submit" name="validation_admin_action" value="correction" class="bouton-tertiaire btn-correction">✍️ Correction</button>
+      <button type="submit" name="validation_admin_action" value="bannir" class="btn-danger">❌ Bannir</button>
+      <button type="submit" name="validation_admin_action" value="supprimer" class="btn-danger" onclick="return confirm('Supprimer cette chasse ?');">🗑️ Supprimer</button>
     </div>
   </form>
 </section>

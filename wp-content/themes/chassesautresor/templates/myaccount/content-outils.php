@@ -48,7 +48,7 @@ $taux_conversion = get_taux_conversion_actuel();
                 <h3>ACF</h3>
             </div>
             <div class="stats-content">
-                <button id="afficher-champs-acf" class="bouton-secondaire"><?php esc_html_e('Afficher les champs ACF', 'chassesautresor'); ?></button>
+                <button id="afficher-champs-acf" class="bouton-tertiaire"><?php esc_html_e('Afficher les champs ACF', 'chassesautresor'); ?></button>
                 <div id="acf-fields-container" style="display:none;margin-top:10px;">
                     <textarea id="acf-fields-output" style="width:100%;height:300px;" readonly></textarea>
                 </div>

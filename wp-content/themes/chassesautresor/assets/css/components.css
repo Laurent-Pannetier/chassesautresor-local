@@ -196,6 +196,76 @@ button,
     opacity: 0.6;
 }
 
+/* ========== 🔲 BOUTON TERTIAIRE ========== */
+
+.bouton-tertiaire {
+    background: transparent;
+    color: var(--color-text-primary);
+    border: 1px solid currentColor;
+    transition: background 0.3s ease, transform 0.2s ease;
+    padding: 10px 15px;
+    border-radius: 3px;
+    margin: 6px 0;
+    display: inline-block;
+    text-align: center;
+    line-height: 16px;
+}
+
+.bouton-tertiaire:hover {
+    background: var(--color-text-primary);
+    color: var(--color-text-fond-clair);
+    transform: scale(1.05);
+}
+
+.bouton-tertiaire:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ========== ⚠️ BOUTON DANGER ========== */
+
+.btn-danger {
+    background: var(--color-editor-error);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-editor-error);
+    transition: background 0.3s ease, transform 0.2s ease;
+    padding: 10px 15px;
+    border-radius: 3px;
+    margin: 6px 0;
+    display: inline-block;
+    text-align: center;
+    line-height: 16px;
+}
+
+.btn-danger:hover {
+    filter: brightness(1.1);
+    transform: scale(1.05);
+}
+
+.btn-danger:disabled {
+    background: var(--color-gris-3);
+    border-color: var(--color-gris-3);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* ========== 🖱️ BOUTON ICÔNE ========== */
+
+.btn-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border-radius: 50%;
+}
+
+.btn-icon:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
 
 /* ========== ➕ BOUTON D’AJOUT ========== */
 

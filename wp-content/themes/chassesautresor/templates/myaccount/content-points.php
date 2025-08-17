@@ -44,7 +44,7 @@ if (current_user_can('administrator')) {
                     <div class="gestion-points-ligne">
                         <label for="nombre-points"></label>
                         <input type="number" id="nombre-points" name="nombre_points" placeholder="nb de points" min="1" required>
-                        <button type="submit" name="modifier_points" class="bouton-secondaire">✅</button>
+                        <button type="submit" name="modifier_points" class="btn-icon bouton-tertiaire">✅</button>
                     </div>
                 </form>
             </div>
