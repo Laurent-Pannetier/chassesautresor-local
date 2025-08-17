@@ -106,7 +106,7 @@ Le dossier `notices/` contient la documentation technique et fonctionnelle du th
 ### Styles d'affichage
 
 - **Style par défaut** : utilisé sur l'ensemble des pages publiques. Il repose sur un système de grille `.container`, `.row`, `.col-*` et accepte l'extension `fullwidth` pour occuper toute la largeur.
-- **Mode édition** : appliqué uniquement aux panneaux d'édition des CPT et aux pages `mon-compte/*`. Il charge des feuilles spécifiques (`edition.css`, `mon-compte.css`) sans la grille globale.
+- **Orgy** : appliqué uniquement aux panneaux d'édition des CPT et aux pages `mon-compte/*`. Il charge des feuilles spécifiques (`edition.css`, `mon-compte.css`) sans la grille globale.
 
 
 
@@ -232,7 +232,7 @@ dans le dossier inc
   - sommaire de fichier, exemple
       //
       //  📦 CHARGEMENT ET CONTROLE DONNÉES
-      //  🧩 APPARENCE EN MODE ÉDITION
+      //  🧩 APPARENCE EN ORGY
       //  🧩 FONCTIONS GLOBALES DE FORMATAGE
       //  🧩 GESTION DE CHAMPS ACF PARTICULIERS
       //  🏗️ CRÉATION & ÉDITION ORGANISATEUR

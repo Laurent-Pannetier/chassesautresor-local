@@ -110,7 +110,7 @@ if ($edition_active && !$est_complet) {
         <button id="toggle-mode-edition-chasse" type="button"
           class="bouton-edition-toggle"
           data-cpt="chasse"
-          aria-label="Activer le mode édition">
+          aria-label="Activer Orgy">
           <i class="fa-solid fa-gear"></i>
         </button>
       </div>
@@ -215,7 +215,7 @@ if ($edition_active && !$est_complet) {
 <?php if ($edition_active) : ?>
   <!-- 
     Templates SVG invisibles pour utilisation dynamique en JavaScript.
-    Affichés uniquement en mode édition pour éviter de surcharger la page publique.
+    Affichés uniquement en Orgy pour éviter de surcharger la page publique.
   -->
   <div id="svg-icons" style="display: none;">
     <template id="icon-free">

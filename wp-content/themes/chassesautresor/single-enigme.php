@@ -39,7 +39,7 @@ if ($etat_systeme !== 'accessible' && !utilisateur_peut_modifier_enigme($enigme_
     exit;
 }
 
-// 🔹 Mode édition auto
+// 🔹 Orgy auto
 $edition_active = utilisateur_peut_modifier_post($enigme_id);
 verifier_ou_mettre_a_jour_cache_complet($enigme_id);
 

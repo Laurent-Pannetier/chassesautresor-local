@@ -80,7 +80,7 @@ defined('ABSPATH') || exit;
         if ($edition_active) {
             echo '<button id="toggle-mode-edition-enigme" type="button" ' .
                 'class="bouton-edition-toggle bouton-edition-toggle--clair" data-cpt="enigme" aria-label="' .
-                esc_attr__('Activer le mode édition', 'chassesautresor') .
+                esc_attr__('Activer Orgy', 'chassesautresor') .
                 '"><i class="fa-solid fa-gear"></i></button>';
         }
 

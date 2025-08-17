@@ -1,10 +1,10 @@
-# Charte graphique – Mode édition
+# Charte graphique – Orgy
 
-Ce document regroupe les styles utilisés pour l'affichage en **mode édition**. Ce mode est appliqué aux panneaux d'édition des CPT et aux pages `mon-compte/*`.
+Ce document regroupe les styles utilisés pour l'affichage en **mode Orgy**. Ce mode est appliqué aux panneaux d'édition des CPT et aux pages `mon-compte/*`.
 
 ## Activation
 
-Le mode édition est actif lorsque la classe `mode-edition` est présente sur la balise `<body>`. Cette classe est ajoutée automatiquement :
+Le mode Orgy est actif lorsque la classe `mode-edition` est présente sur la balise `<body>`. Cette classe est ajoutée automatiquement :
 
 - sur les pages `mon-compte/*` ;
 - lorsque l'utilisateur ouvre un panneau d'édition (`organisateur`, `chasse`, `énigme`).
@@ -13,7 +13,7 @@ Le mode édition est actif lorsque la classe `mode-edition` est présente sur la
 
 - `assets/css/edition.css` : styles des panneaux d'édition frontaux.
 - `assets/css/mon-compte.css` : mise en page du tableau de bord utilisateur.
-- `assets/css/general.css` : variables CSS du mode édition sous la classe `.mode-edition`.
+- `assets/css/general.css` : variables CSS du mode Orgy sous la classe `.mode-edition`.
 
 ## Structure et composants
 
@@ -26,11 +26,11 @@ Le mode édition est actif lorsque la classe `mode-edition` est présente sur la
 
 Les formulaires des panneaux d'édition alignent les zones de saisie grâce à une largeur minimale appliquée aux labels.
 Cette valeur est centralisée dans `assets/css/general.css` via la variable `--editor-label-width` (par défaut : `150px`).
-Modifier cette variable ajuste l'indentation de tous les champs du mode édition.
+Modifier cette variable ajuste l'indentation de tous les champs du mode Orgy.
 
 ## Typographie
 
-Le mode édition utilise la police principale définie par `var(--font-main)`.
+Le mode Orgy utilise la police principale définie par `var(--font-main)`.
 
 ## Palette de couleurs
 
@@ -128,4 +128,4 @@ Pour compatibiliser le nuancier actuel avec des composants basés sur des tokens
 }
 ```
 
-Ces tokens sont utilisés notamment par les `.dashboard-card` pour assurer une cohérence visuelle avec les couleurs du mode édition.
+Ces tokens sont utilisés notamment par les `.dashboard-card` pour assurer une cohérence visuelle avec les couleurs du mode Orgy.
