@@ -410,7 +410,7 @@ body #primary {
   height: 20px;
 }
 .newsletter-group .newsletter-btn:hover {
-  background-color: #a30000;
+  background-color: var(--color-background-button-hover);
 }
 /* Correction du bord entre champ et bouton */
 .newsletter-group input[type="email"] {

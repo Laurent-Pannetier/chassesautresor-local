@@ -78,7 +78,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(to bottom, #0B132B, #060A1F);
+    background: linear-gradient(to bottom, var(--color-background), #060A1F);
     background-blend-mode: overlay;
     z-index: 9999;
     display: flex;
@@ -320,7 +320,7 @@ header .points-plus-circle {
   line-height: 1;
 }
 header .points-link:hover {
-  background-color: #a00000;
+  background-color: var(--color-background-button-hover);
   transform: scale(1.05);
 }
 
