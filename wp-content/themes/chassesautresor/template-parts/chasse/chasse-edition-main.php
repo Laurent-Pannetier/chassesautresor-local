@@ -167,8 +167,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                 <li class="champ-chasse champ-recompense <?= $recompense_remplie ? 'champ-rempli' : 'champ-vide'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>"
                     data-champ="chasse_infos_recompense_valeur"
                     data-cpt="chasse"
-                    data-post-id="<?= esc_attr($chasse_id); ?>"
-                    data-no-edit="1">
+                    data-post-id="<?= esc_attr($chasse_id); ?>">
                     <label><?= esc_html__('Récompense', 'chassesautresor-com'); ?></label>
                     <div class="champ-texte">
                         <?php

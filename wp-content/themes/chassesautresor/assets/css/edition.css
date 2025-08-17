@@ -430,9 +430,9 @@ body[class*="edition-active"] .champ-modifier {
   cursor: pointer;
   opacity: 0.5;
   transition: opacity 0.2s;
-  transform: translateY(-50%);
   pointer-events: auto;
   display: inline-flex;
+  align-items: center;
 }
 
 /* Harmonisation de l'alignement pour le champ sous-titre dans le panneau Énigme */
