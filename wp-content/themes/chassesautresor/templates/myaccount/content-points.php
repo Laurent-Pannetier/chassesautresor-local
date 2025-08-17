@@ -63,21 +63,9 @@ if (current_user_can('administrator')) {
     </div>
     <?php
 } elseif ($is_organizer) {
-    if (function_exists('charger_script_conversion')) {
-        charger_script_conversion(true);
-    }
-
     $user_id         = (int) $current_user->ID;
     $organisateur_id = function_exists('get_organisateur_from_user') ? get_organisateur_from_user($user_id) : null;
     $user_points     = function_exists('get_user_points') ? get_user_points($user_id) : 0;
-    $access_message  = function_exists('verifier_acces_conversion') ? verifier_acces_conversion($user_id) : false;
-    $conversion_disabled = $access_message !== true;
-    $peut_editer     = $organisateur_id && function_exists('utilisateur_peut_editer_champs')
-        ? utilisateur_peut_editer_champs($organisateur_id)
-        : false;
-    $iban = $organisateur_id ? get_field('iban', $organisateur_id) : '';
-    $bic  = $organisateur_id ? get_field('bic', $organisateur_id) : '';
-    $coordonnees_vides = empty($iban) && empty($bic);
     ?>
     <div class="dashboard-grid stats-cards myaccount-points-cards">
         <div class="dashboard-card" data-stat="points">
@@ -85,49 +73,18 @@ if (current_user_can('administrator')) {
             <h3><?php esc_html_e('Points', 'chassesautresor-com'); ?></h3>
             <p class="stat-value"><?php echo esc_html($user_points); ?></p>
         </div>
-        <div class="dashboard-card<?php echo $conversion_disabled ? ' disabled' : ''; ?>" data-stat="conversion">
-            <i class="fa-solid fa-right-left" aria-hidden="true"></i>
-            <h3><?php esc_html_e('Conversion', 'chassesautresor'); ?></h3>
-            <button type="button" id="open-conversion-modal" class="stat-value">
-                <?php esc_html_e('Convertir', 'chassesautresor-com'); ?>
-            </button>
+        <?php if ($organisateur_id) : ?>
+        <div class="dashboard-card" data-stat="organizer-points">
+            <i class="fa-solid fa-landmark" aria-hidden="true"></i>
+            <h3><?php esc_html_e('Points de mon organisation', 'chassesautresor-com'); ?></h3>
+            <a
+                class="stat-value"
+                href="<?php echo esc_url(add_query_arg(['edition' => 'open', 'onglet' => 'revenus'], get_permalink($organisateur_id))); ?>"
+            ><?php esc_html_e('Gérer', 'chassesautresor-com'); ?></a>
         </div>
-        <div class="dashboard-card" data-stat="bank-details">
-            <i class="fa-solid fa-building-columns" aria-hidden="true"></i>
-            <h3>
-                <?php esc_html_e('Coordonnées bancaires', 'chassesautresor-com'); ?>
-                <button
-                    type="button"
-                    class="mode-fin-aide stat-help"
-                    data-message="<?php echo esc_attr__('Ces informations sont nécessaires uniquement pour vous verser les gains issus de la conversion de vos points en euros. Nous ne prélevons jamais d\'argent.', 'chassesautresor-com'); ?>"
-                    aria-label="<?php esc_attr_e('Informations sur les coordonnées bancaires', 'chassesautresor-com'); ?>"
-                >
-                    <i class="fa-regular fa-circle-question" aria-hidden="true"></i>
-                </button>
-            </h3>
-            <?php if ($peut_editer) : ?>
-                <?php
-                $bank_label = $coordonnees_vides ? __('Ajouter', 'chassesautresor-com') : __('Éditer', 'chassesautresor-com');
-                $bank_aria  = $coordonnees_vides ? __('Ajouter des coordonnées bancaires', 'chassesautresor-com') : __('Modifier les coordonnées bancaires', 'chassesautresor-com');
-                ?>
-                <a
-                    id="ouvrir-coordonnees"
-                    class="stat-value champ-modifier"
-                    href="#"
-                    aria-label="<?php echo esc_attr($bank_aria); ?>"
-                    data-champ="coordonnees_bancaires"
-                    data-cpt="organisateur"
-                    data-post-id="<?php echo esc_attr($organisateur_id); ?>"
-                    data-label-add="<?php esc_attr_e('Ajouter', 'chassesautresor-com'); ?>"
-                    data-label-edit="<?php esc_attr_e('Éditer', 'chassesautresor-com'); ?>"
-                    data-aria-add="<?php esc_attr_e('Ajouter des coordonnées bancaires', 'chassesautresor-com'); ?>"
-                    data-aria-edit="<?php esc_attr_e('Modifier les coordonnées bancaires', 'chassesautresor-com'); ?>"
-                ><?php echo esc_html($bank_label); ?></a>
-            <?php endif; ?>
-        </div>
+        <?php endif; ?>
     </div>
     <?php
-    get_template_part('template-parts/modals/modal-conversion');
 } else {
     $points = function_exists('get_user_points') ? get_user_points((int) $current_user->ID) : 0;
     ?>
