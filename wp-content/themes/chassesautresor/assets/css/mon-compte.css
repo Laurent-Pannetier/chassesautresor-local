@@ -598,33 +598,5 @@ body.woocommerce h2 {
 }
 
 
-/* ====== Styles génériques des tableaux (Orgy) ====== */
-.myaccount-content table {
-    width: 100%;
-    border-collapse: collapse;
-    border: none;
-    border-radius: 6px;
-    overflow: hidden;
-}
-
-.myaccount-content th,
-.myaccount-content td {
-    padding: 6px 12px;
-    text-align: right;
-}
-
-.myaccount-content th:first-child,
-.myaccount-content td:first-child {
-    text-align: left;
-}
-
-.myaccount-content thead {
-    background-color: rgba(0, 0, 0, 0.04);
-    color: var(--color-editor-heading);
-}
-
-.myaccount-content tbody tr:nth-child(even) {
-    background-color: rgba(0, 0, 0, 0.02);
-}
 
 

@@ -1306,46 +1306,14 @@ body.panneau-ouvert::before {
   z-index: 1;
 }
 
-/* ====== Styles génériques des tableaux d'édition ====== */
-.edition-panel table {
-  width: 100%;
-  border-collapse: collapse;
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.edition-panel th,
-.edition-panel td {
-  padding: 6px 12px;
-  text-align: right;
-}
-
-.edition-panel th:first-child,
-.edition-panel td:first-child {
-  text-align: left;
-}
-
-.edition-panel thead {
-  background-color: rgba(0, 0, 0, 0.04);
-  color: var(--color-editor-heading);
-}
-
-.edition-panel tbody tr:nth-child(even) {
-  background-color: rgba(0, 0, 0, 0.02);
-}
 
 /* Table des tentatives de réponse */
 .table-tentatives {
-  width: 100%;
-  border-collapse: collapse;
   margin-top: var(--space-md);
-  border-radius: 6px;
-  overflow: hidden;
 }
 
 .table-tentatives th,
 .table-tentatives td {
-  padding: 6px 12px;
   border-bottom: 1px solid var(--color-editor-border);
   color: var(--color-editor-text);
 }
@@ -1353,12 +1321,6 @@ body.panneau-ouvert::before {
 .table-tentatives th {
   background-color: rgba(0, 0, 0, 0.04);
   color: var(--color-editor-heading);
-  text-align: right;
-}
-
-.table-tentatives th:first-child,
-.table-tentatives td:first-child {
-  text-align: left;
 }
 
 .table-tentatives th:nth-child(1),
@@ -1641,27 +1603,12 @@ body.panneau-ouvert::before {
 
 /* ====== Tableaux de statistiques ====== */
 
-.stats-table {
-  width: 100%;
-  border-collapse: collapse;
-  border-radius: 6px;
-  overflow: hidden;
-}
-
 .stats-table th,
 .stats-table td {
-  text-align: right;
   padding: 8px 12px;
 }
 
-.stats-table th:first-child,
-.stats-table td:first-child {
-  text-align: left;
-  font-weight: 600;
-}
-
 .stats-table th {
-  font-weight: 600;
   color: var(--color-editor-heading);
   border-bottom: 1px solid var(--color-editor-border);
   background-color: rgba(0, 0, 0, 0.04);
@@ -1669,10 +1616,6 @@ body.panneau-ouvert::before {
 
 .stats-table td {
   color: var(--color-editor-text);
-}
-
-.stats-table tbody tr:nth-child(even) {
-  background-color: rgba(0, 0, 0, 0.02);
 }
 
 .stats-table-wrapper {
