@@ -164,6 +164,36 @@ a:hover {
   margin-bottom: var(--space-2xl);
 }
 
+/* ====== Tables ====== */
+table {
+  width: 100%;
+  border: none;
+  border-collapse: collapse;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+th,
+td {
+  padding: 6px 12px;
+  text-align: right;
+}
+
+th:first-child,
+td:first-child {
+  text-align: left;
+  font-weight: 600;
+}
+
+thead {
+  background-color: rgba(0, 0, 0, 0.04);
+  color: var(--color-editor-heading);
+}
+
+tbody tr:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
 /* ========== 🎨 ÉLÉMENTS HTML PERSONNALISES ========== */
 
 .text-align-center {
