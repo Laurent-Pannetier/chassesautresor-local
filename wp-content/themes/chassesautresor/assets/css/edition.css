@@ -2000,13 +2000,13 @@ body.panneau-ouvert::before {
 }
 
 /* 📌 Toggle de l'historique de conversion */
+
 .conversion-history .conversion-history-toggle {
-    width: 24px;
-    height: 24px;
-    padding: 0;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
+    gap: 0.25rem;
+    padding: 0 6px;
+    height: 24px;
 }
 
 .conversion-history .conversion-history-toggle::before {
@@ -2017,4 +2017,9 @@ body.panneau-ouvert::before {
 
 .conversion-history .conversion-history-toggle[aria-expanded="true"]::before {
     content: '\25BC'; /* triangle down */
+}
+
+.conversion-history .conversion-history-toggle-text {
+    font-size: 0.875rem;
+    line-height: 1;
 }

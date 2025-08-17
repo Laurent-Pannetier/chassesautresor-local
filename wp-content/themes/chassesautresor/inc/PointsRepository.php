@@ -151,7 +151,7 @@ class PointsRepository
         $newBalance = max(0, $current + $points);
         $amountEur = round($amountEur, 2);
 
-        $reason = sprintf('Demande de conversion de %d points', abs($points));
+        $reason = sprintf(__('Demande de conversion de %d points', 'chassesautresor'), abs($points));
 
         $this->wpdb->insert(
             $this->table,

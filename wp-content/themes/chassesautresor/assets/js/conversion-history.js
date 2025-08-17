@@ -14,7 +14,10 @@ jQuery(function ($) {
       const expanded = $(this).attr('aria-expanded') === 'true';
       $(this)
         .attr('aria-expanded', expanded ? 'false' : 'true')
-        .attr('aria-label', expanded ? $(this).data('label-open') : $(this).data('label-close'));
+        .attr('aria-label', expanded ? $(this).data('label-open') : $(this).data('label-close'))
+        .find('.conversion-history-toggle-text')
+        .text(expanded ? $(this).data('label-open') : $(this).data('label-close'))
+        .end();
       tableWrapper.slideToggle();
     });
 

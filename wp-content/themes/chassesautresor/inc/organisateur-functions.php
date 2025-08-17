@@ -417,10 +417,14 @@ function render_conversion_history(int $user_id): string
                 type="button"
                 class="etiquette etiquette-grande conversion-history-toggle"
                 aria-expanded="<?php echo $expanded ? 'true' : 'false'; ?>"
-                aria-label="<?php echo $expanded ? esc_attr__('Masquer l\'historique', 'chassesautresor') : esc_attr__('Afficher l\'historique', 'chassesautresor'); ?>"
-                data-label-open="<?php esc_attr_e('Afficher l\'historique', 'chassesautresor'); ?>"
-                data-label-close="<?php esc_attr_e('Masquer l\'historique', 'chassesautresor'); ?>"
-            ></button>
+                aria-label="<?php echo $expanded ? esc_attr__('Fermer tableau', 'chassesautresor') : esc_attr__('Voir le tableau', 'chassesautresor'); ?>"
+                data-label-open="<?php esc_attr_e('Voir le tableau', 'chassesautresor'); ?>"
+                data-label-close="<?php esc_attr_e('Fermer tableau', 'chassesautresor'); ?>"
+            >
+                <span class="conversion-history-toggle-text">
+                    <?php echo $expanded ? esc_html__('Fermer tableau', 'chassesautresor') : esc_html__('Voir le tableau', 'chassesautresor'); ?>
+                </span>
+            </button>
         </div>
         <div class="conversion-history-table"<?php echo $expanded ? '' : ' style="display:none;"'; ?>>
             <table class="stats-table">
@@ -447,12 +451,13 @@ function render_conversion_history(int $user_id): string
                         default:
                             $statut_affiche = '🟡 ' . __('En attente', 'chassesautresor');
                     }
-                    $points_utilises = esc_html(abs((int) $paiement['points']));
+                    $montant_eur    = number_format_i18n((float) $paiement['amount_eur'], 2);
+                    $points_utilises = number_format_i18n(abs((int) $paiement['points']));
                     ?>
                     <tr>
                         <td><?php echo esc_html(date_i18n('d/m/Y à H:i', strtotime($paiement['request_date']))); ?></td>
-                        <td><?php echo esc_html($paiement['amount_eur']); ?> €</td>
-                        <td><span class="etiquette etiquette-grande"><?php echo $points_utilises; ?></span></td>
+                        <td><?php echo esc_html($montant_eur); ?> €</td>
+                        <td><span class="etiquette etiquette-grande"><?php echo esc_html($points_utilises); ?></span></td>
                         <td><span class="etiquette"><?php echo esc_html($statut_affiche); ?></span></td>
                     </tr>
                 <?php endforeach; ?>
