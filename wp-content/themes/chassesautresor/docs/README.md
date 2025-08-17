@@ -4,6 +4,9 @@ Ce répertoire rassemble des documents complémentaires au thème.
 
 - [Workflow organisateur](organisateur-workflow.md)
 - [Charte Orgy](orgy-charte.md)
+- [Pager par défaut](pager.md)
+
+Toutes les nouvelles chaînes de texte doivent utiliser les fonctions d'internationalisation de WordPress avec le domaine `chassesautresor-com`.
 
 ## Tests
 

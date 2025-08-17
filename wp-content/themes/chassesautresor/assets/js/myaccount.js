@@ -57,7 +57,18 @@ document.addEventListener('DOMContentLoaded', () => {
         window.history.replaceState(null, '', '/mon-compte/');
       }
     } catch (err) {
-      window.location.assign(link.href);
+      content.innerHTML = `
+        <section class="msg-important">
+          <p>Impossible de charger la section.</p>
+          <p><a href="#" class="reload-section">Recharger</a> ou <a href="${link.href}">ouvrir la page complète</a>.</p>
+        </section>`;
+      const reload = content.querySelector('.reload-section');
+      if (reload) {
+        reload.addEventListener('click', (e) => {
+          e.preventDefault();
+          loadSection(link);
+        });
+      }
     }
   };
 

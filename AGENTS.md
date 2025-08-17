@@ -4,6 +4,7 @@
 - Follow **PSR-12** for PHP files: 4 spaces for indentation, and lines under 120 characters.
 - Keep function and variable names in English when possible.
 - Place opening braces on the same line as declarations.
+- Wrap all user-facing strings in WordPress internationalization functions and use the `chassesautresor-com` text domain.
 
 ## Testing
 - Before committing any change, run the project tests.
