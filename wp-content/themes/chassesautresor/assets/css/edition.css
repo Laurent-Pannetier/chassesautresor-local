@@ -421,10 +421,7 @@ body .header-img-modifiable .icone-modif {
 
 
 /* Boutons d’édition */
-body.edition-active-chasse .champ-modifier,
-body.edition-active .header-organisateur-wrapper .champ-modifier,
-body.edition-active #organisateur-tab-param .edition-panel-organisateur .champ-modifier,
-body.edition-active-enigme .champ-modifier {
+body[class*="edition-active"] .champ-modifier {
   background: none;
   border: none;
   color: var(--color-editor-accent);
@@ -452,17 +449,11 @@ body.edition-active-enigme .champ-modifier .icone-modif {
   display: unset;
 }
 
-body.edition-active-chasse .champ-modifier:hover,
-body.edition-active .header-organisateur-wrapper .champ-modifier:hover,
-body.edition-active #organisateur-tab-param .edition-panel-organisateur .champ-modifier:hover,
-body.edition-active-enigme .champ-modifier:hover {
+body[class*="edition-active"] .champ-modifier:hover {
   opacity: 1;
 }
 
-body.edition-active-chasse .champ-modifier:focus,
-body.edition-active .header-organisateur-wrapper .champ-modifier:focus,
-body.edition-active #organisateur-tab-param .edition-panel-organisateur .champ-modifier:focus,
-body.edition-active-enigme .champ-modifier:focus {
+body[class*="edition-active"] .champ-modifier:focus {
   outline: 2px solid var(--color-editor-accent);
   outline-offset: 2px;
 }
@@ -557,10 +548,8 @@ input[disabled].champ-texte-edit {
   font-style: italic;
 }
 
-.champ-desactive .champ-modifier,
-body.edition-active-chasse .champ-desactive .champ-modifier,
-body.edition-active .champ-desactive .champ-modifier,
-body.edition-active-enigme .champ-desactive .champ-modifier {
+body[class*="edition-active"] .champ-desactive .champ-modifier,
+.champ-desactive .champ-modifier {
   display: none;
 }
 
@@ -941,7 +930,7 @@ li.ligne-logo .champ-modifier {
   display: inline;
 }
 
-.resume-infos li.champ-recompense .champ-texte-contenu .champ-modifier {
+.resume-infos li.champ-recompense .champ-modifier {
   transform: none;
   margin-left: 0.3rem;
 }

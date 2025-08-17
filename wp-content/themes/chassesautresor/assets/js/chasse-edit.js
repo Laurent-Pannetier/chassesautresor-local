@@ -221,41 +221,33 @@ function initChasseEdit() {
     ligne.classList.toggle('champ-rempli', complet);
     ligne.classList.toggle('champ-vide', !complet);
 
-    if (!complet) {
-      if (peutEditer) {
-        const lien = document.createElement('a');
-        lien.href = '#';
-        lien.className = 'champ-ajouter ouvrir-panneau-recompense';
-        lien.dataset.champ = 'chasse_infos_recompense_valeur';
-        lien.dataset.cpt = 'chasse';
-        lien.dataset.postId = ligne.dataset.postId || '';
-        lien.textContent = wp.i18n.__('ajouter', 'chassesautresor-com');
-        champTexte.appendChild(lien);
-      }
-      if (typeof window.mettreAJourResumeInfos === 'function') {
-        window.mettreAJourResumeInfos();
-      }
-      return;
-    }
-
     const span = document.createElement('span');
     span.className = 'champ-texte-contenu';
 
-    const valeurSpan = document.createElement('span');
-    valeurSpan.className = 'recompense-valeur';
-    const arrondi = Math.round(valeur);
-    valeurSpan.textContent = arrondi.toLocaleString('fr-FR') + ' €';
+    if (complet) {
+      const valeurSpan = document.createElement('span');
+      valeurSpan.className = 'recompense-valeur';
+      const arrondi = Math.round(valeur);
+      valeurSpan.textContent = arrondi.toLocaleString('fr-FR') + ' €';
 
-    const titreSpan = document.createElement('span');
-    titreSpan.className = 'recompense-titre';
-    titreSpan.textContent = titre;
+      const titreSpan = document.createElement('span');
+      titreSpan.className = 'recompense-titre';
+      titreSpan.textContent = titre;
 
-    span.appendChild(valeurSpan);
-    span.appendChild(document.createTextNode('\u00A0\u2013\u00A0'));
-    span.appendChild(titreSpan);
+      span.appendChild(valeurSpan);
+      span.appendChild(document.createTextNode('\u00A0\u2013\u00A0'));
+      span.appendChild(titreSpan);
+      span.appendChild(document.createTextNode('\u00A0\u2013\u00A0'));
+      const descSpan = document.createElement('span');
+      descSpan.className = 'recompense-description';
+      const texteLimite = texte.length > 200 ? texte.slice(0, 200) + '…' : texte;
+      descSpan.textContent = texteLimite;
+      span.appendChild(descSpan);
+    }
+
+    champTexte.appendChild(span);
 
     if (peutEditer) {
-      span.appendChild(document.createTextNode('\u00A0\u2013\u00A0'));
       const bouton = document.createElement('button');
       bouton.type = 'button';
       bouton.className = 'champ-modifier txt-small ouvrir-panneau-recompense';
@@ -264,17 +256,9 @@ function initChasseEdit() {
       bouton.dataset.postId = ligne.dataset.postId || '';
       bouton.setAttribute('aria-label', 'Modifier la récompense');
       bouton.textContent = wp.i18n.__('modifier', 'chassesautresor-com');
-      span.appendChild(bouton);
+      champTexte.appendChild(bouton);
       if (typeof initZoneClicEdition === 'function') initZoneClicEdition(bouton);
     }
-
-    span.appendChild(document.createTextNode('\u00A0\u2013\u00A0'));
-    const descSpan = document.createElement('span');
-    descSpan.className = 'recompense-description';
-    const texteLimite = texte.length > 200 ? texte.slice(0, 200) + '…' : texte;
-    descSpan.textContent = texteLimite;
-    span.appendChild(descSpan);
-    champTexte.appendChild(span);
 
     if (typeof window.mettreAJourResumeInfos === 'function') {
       window.mettreAJourResumeInfos();
