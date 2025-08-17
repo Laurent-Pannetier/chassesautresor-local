@@ -100,6 +100,32 @@ class PointsRepository
     }
 
     /**
+     * Count conversion requests for a user.
+     *
+     * @param int      $userId User identifier.
+     * @param string|null $status Optional request status filter.
+     *
+     * @return int Number of requests.
+     */
+    public function countConversionRequests(int $userId, ?string $status = null): int
+    {
+        $where   = "origin_type = 'conversion' AND user_id = %d";
+        $params  = [$userId];
+
+        if ($status !== null) {
+            $where  .= ' AND request_status = %s';
+            $params[] = $status;
+        }
+
+        $sql = $this->wpdb->prepare(
+            "SELECT COUNT(*) FROM {$this->table} WHERE {$where}",
+            $params
+        );
+
+        return (int) $this->wpdb->get_var($sql);
+    }
+
+    /**
      * Count total number of operations for a user.
      */
     public function countHistory(int $userId): int
@@ -125,7 +151,7 @@ class PointsRepository
         $newBalance = max(0, $current + $points);
         $amountEur = round($amountEur, 2);
 
-        $reason = sprintf('Demande de conversion de %d points', abs($points));
+        $reason = sprintf(__('Demande de conversion de %d points', 'chassesautresor'), abs($points));
 
         $this->wpdb->insert(
             $this->table,

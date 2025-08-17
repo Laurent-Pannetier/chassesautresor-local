@@ -101,11 +101,17 @@ add_action('wp_enqueue_scripts', function () {
     }
 
     // 📌 Styles conditionnels
-    if (is_singular(['organisateur', 'chasse', 'enigme'])) {
+    if (
+        is_singular(['organisateur', 'chasse', 'enigme']) ||
+        (
+            (is_account_page() || preg_match('#^/mon-compte(?:/|$|\\?)#', $_SERVER['REQUEST_URI'] ?? '')) &&
+            is_user_logged_in()
+        )
+    ) {
         wp_enqueue_style('edition');
     }
 
-    if (is_account_page() || preg_match('#^/mon-compte(?:/|$|\?)#', $_SERVER['REQUEST_URI'] ?? '')) {
+    if (is_account_page() || preg_match('#^/mon-compte(?:/|$|\\?)#', $_SERVER['REQUEST_URI'] ?? '')) {
         wp_enqueue_style('mon-compte');
     }
 

@@ -1998,3 +1998,46 @@ body.panneau-ouvert::before {
 .champ-pre-requis .prerequis-mini:hover {
     border-color: var(--color-editor-accent);
 }
+
+/* 📌 Toggle de l'historique de conversion */
+
+.conversion-history .conversion-history-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0 6px;
+    height: 24px;
+}
+
+.conversion-history .conversion-history-toggle::before {
+    content: '\25B6'; /* triangle right */
+    font-size: 0.875rem;
+    line-height: 1;
+}
+
+.conversion-history .conversion-history-toggle[aria-expanded="true"]::before {
+    content: '\25BC'; /* triangle down */
+}
+
+.conversion-history .conversion-history-toggle-text {
+    font-size: 0.875rem;
+    line-height: 1;
+}
+
+/* 🔄 Loading spinner for conversion history */
+.conversion-history-loading {
+    display: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--color-editor-border);
+    border-top-color: var(--color-editor-accent);
+    border-radius: 50%;
+    animation: conversion-history-spin 0.6s linear infinite;
+    margin-left: 0.5rem;
+}
+
+@keyframes conversion-history-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
