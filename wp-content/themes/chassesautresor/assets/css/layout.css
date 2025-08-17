@@ -42,6 +42,13 @@
 .site-above-header-wrap .site-branding{
     padding:0;
 }
+.site-above-header-wrap .custom-logo {
+    filter: grayscale(100%);
+    transition: filter 0.3s ease;
+}
+.site-above-header-wrap .custom-logo-link:hover .custom-logo {
+    filter: none;
+}
 .site-above-header-wrap .points-container {
     padding: 0;
 }
