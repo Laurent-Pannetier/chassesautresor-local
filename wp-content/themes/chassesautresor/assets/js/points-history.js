@@ -15,6 +15,7 @@
                 fetch(PointsHistoryAjax.ajax_url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    credentials: 'same-origin',
                     body: params.toString(),
                 })
                     .then((r) => r.json())
@@ -34,26 +35,31 @@
             }
 
             wrapper.addEventListener('click', (e) => {
-                const btn = e.target.closest('button');
-                if (!btn) {
-                    return;
-                }
-                e.preventDefault();
                 const page = parseInt(wrapper.dataset.page || '1', 10);
                 const pages = parseInt(wrapper.dataset.pages || '1', 10);
-                if (btn.classList.contains('pager-first')) {
+
+                if (e.target.closest('.pager-first')) {
+                    e.preventDefault();
                     load(1);
-                } else if (btn.classList.contains('pager-prev')) {
-                    if (page > 1) load(page - 1);
-                } else if (btn.classList.contains('pager-next')) {
-                    if (page < pages) load(page + 1);
-                } else if (btn.classList.contains('pager-last')) {
+                } else if (e.target.closest('.pager-prev')) {
+                    e.preventDefault();
+                    if (page > 1) {
+                        load(page - 1);
+                    }
+                } else if (e.target.closest('.pager-next')) {
+                    e.preventDefault();
+                    if (page < pages) {
+                        load(page + 1);
+                    }
+                } else if (e.target.closest('.pager-last')) {
+                    e.preventDefault();
                     load(pages);
                 }
             });
         });
     }
 
+    document.addEventListener('DOMContentLoaded', () => init());
     document.addEventListener('myaccountSectionLoaded', () => init());
     init();
 })();
