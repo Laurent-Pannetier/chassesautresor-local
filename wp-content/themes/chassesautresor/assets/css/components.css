@@ -236,14 +236,14 @@ button,
 /* ========== 📖 BOUTON "LIRE PLUS" ========== */
 
 .btn-lire-plus {
-  background-color: #880000;
-  color: #F5F5DC;
+  background-color: var(--color-background-button);
+  color: var(--color-text-primary);
   margin-top: 10px;
 }
 
 .btn-lire-plus:hover {
-  background-color: #A9A9A9;
-  color: #0B132B;
+  background-color: var(--color-background-button-inactive);
+  color: var(--color-background);
 }
 
 @media (max-width: 768px) {
@@ -261,15 +261,15 @@ button,
 }
 
 .bouton-retour {
-  background-color: #880000;
-  color: #F5F5DC;
+  background-color: var(--color-background-button);
+  color: var(--color-text-primary);
   padding: 12px 24px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .bouton-retour:hover {
-  background-color: #A9A9A9;
-  color: #0B132B;
+  background-color: var(--color-background-button-inactive);
+  color: var(--color-background);
   transform: translateY(-3px);
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
@@ -545,7 +545,7 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
 }
 
 .champ-attention {
-  border: 2px dashed #D93025 !important;
+  border: 2px dashed var(--color-editor-error) !important;
   animation: pulse-attention 1.2s ease-in-out infinite;
   background-color: #fff5f5;
   color: var(--color-editor-text);
@@ -575,7 +575,7 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
 /* ========== 📊 BARRE DE PROGRESSION ========== */
 
 .progression-container {
-  background-color: #A9A9A9;
+  background-color: var(--color-background-button-inactive);
   border-radius: 10px;
   height: 8px;
   overflow: hidden;
@@ -583,7 +583,7 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
 }
 
 .progression-bar {
-  background-color: #228B22;
+  background-color: var(--color-success);
   height: 100%;
   border-radius: 10px;
   transition: width 0.4s ease;
@@ -603,7 +603,7 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
 /* 📝 Message sous le cadenas */
 .message-deblocage {
     background: rgba(0, 0, 0, 0.6);
-    color: #F5F5DC;
+    color: var(--color-text-primary);
     padding: 12px 20px;
     border-radius: 10px;
     font-size: 1rem;
