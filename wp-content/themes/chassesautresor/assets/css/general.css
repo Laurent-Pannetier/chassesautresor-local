@@ -233,8 +233,6 @@ span.champ-obligatoire {
   --color-editor-heading:          #1F1F1F;   /* 📌 Titres, zones importantes */
 
   --color-editor-accent:           #1A73E8;   /* 🔹 Accent principal : liens, icônes interactives */
-  --color-editor-button:           #1A73E8;   /* 🔘 Boutons */
-  --color-editor-button-hover:     #1558B0;   /*       Hover bouton */
 
   --color-editor-error:            #D93025;   /* ⚠️ Message d’erreur */
   --color-editor-success:          #188038;   /* ✅ Message de validation */
@@ -257,8 +255,6 @@ span.champ-obligatoire {
   --editor-heading-hsl:           0 00% 12%; /* = #1F1F1F → var(--color-editor-heading) */
 
   --editor-accent-hsl:          214 82% 51%; /* = #1A73E8 → var(--color-editor-accent) */
-  --editor-button-hsl:          214 82% 51%; /* = #1A73E8 → var(--color-editor-button) */
-  --editor-button-hover-hsl:    214 79% 39%; /* = #1558B0 → var(--color-editor-button-hover) */
 
   --editor-error-hsl:             4 71% 50%; /* = #D93025 → var(--color-editor-error) */
   --editor-success-hsl:         138 68% 30%; /* = #188038 → var(--color-editor-success) */
