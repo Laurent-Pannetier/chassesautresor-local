@@ -74,31 +74,31 @@ if ($orderby === 'resolution') {
   <tbody>
     <?php foreach ($participants as $p) :
         $titles = [];
-        foreach ($p['enigmes'] as $e) {
-            $titles[] = esc_html($e['title']);
-        }
-        $taux_participation = $total_enigmes > 0 ? (100 * $p['nb_engagees'] / $total_enigmes) : 0;
-        $taux_resolution    = $total_enigmes > 0 ? (100 * $p['nb_resolues'] / $total_enigmes) : 0;
-    ?>
+    foreach ($p['enigmes'] as $e) {
+        $titles[] = esc_html($e['title']);
+    }
+    $taux_participation = $total_enigmes > 0 ? (100 * $p['nb_engagees'] / $total_enigmes) : 0;
+    $taux_resolution    = $total_enigmes > 0 ? (100 * $p['nb_resolues'] / $total_enigmes) : 0;
+?>
     <tr>
       <td><?= esc_html($p['username']); ?></td>
       <td><?= $p['date_inscription'] ? esc_html(mysql2date('d/m/Y H:i', $p['date_inscription'])) : ''; ?></td>
-      <td><?= implode(', ', $titles); ?></td>
+      <td>
+        <?php
+        $etiquettes = array_map(
+            static function ($title) {
+                return '<span class="etiquette">' . $title . '</span>';
+            },
+            $titles
+        );
+        echo implode(' ', $etiquettes);
+        ?>
+      </td>
       <td><?= esc_html(number_format_i18n($taux_participation, 0)); ?>%</td>
       <td><?= esc_html(number_format_i18n($taux_resolution, 0)); ?>%</td>
     </tr>
     <?php endforeach; ?>
   </tbody>
 </table>
-<div class="pager">
-  <?php if ($page > 1) : ?>
-    <button class="pager-first" aria-label="Première page"><i class="fa-solid fa-angles-left"></i></button>
-    <button class="pager-prev" aria-label="Page précédente"><i class="fa-solid fa-angle-left"></i></button>
-  <?php endif; ?>
-  <span class="pager-info"><?= esc_html($page); ?> / <?= esc_html($pages); ?></span>
-  <?php if ($page < $pages) : ?>
-    <button class="pager-next" aria-label="Page suivante"><i class="fa-solid fa-angle-right"></i></button>
-    <button class="pager-last" aria-label="Dernière page"><i class="fa-solid fa-angles-right"></i></button>
-  <?php endif; ?>
-</div>
+<?php echo cta_render_pager($page, $pages, 'chasse-participants-pager'); ?>
 <?php endif; ?>
