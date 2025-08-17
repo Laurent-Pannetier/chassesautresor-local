@@ -1,11 +1,5 @@
 /* \uD83D\uDCC0 Grid system */
 
-:root {
-  --container-max-width: 1200px;
-  --grid-gap: 1rem;
-  --grid-columns: 12;
-}
-
 .container {
   width: 100%;
   max-width: var(--container-max-width);

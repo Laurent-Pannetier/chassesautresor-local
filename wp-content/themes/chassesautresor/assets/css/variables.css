@@ -1,0 +1,46 @@
+/* 🎨 Variables globales */
+:root {
+  /* Typographie et breakpoints */
+  --font-main: 'Poppins', sans-serif; /* Police principale */
+  --bp-xs: 374px;
+  --bp-sm: 480px;
+  --bp-540: 540px;
+  --bp-600: 600px;
+  --bp-md: 768px;
+  --bp-921: 921px;
+  --bp-lg: 1024px;
+
+  /* Couleurs globales */
+  --color-primary: #FFD700;   /* 🟡 Couleur principale : jaune or */
+  --color-secondary: #E1A95F; /* 🟠 Couleur secondaire : lien */
+  --color-accent: #CD7F32;    /* 🟤 Accent : bronze */
+
+  --color-text-primary: #F5F5DC;   /* 📜 Texte principal : beige clair */
+  --color-text-secondary: #555555; /* 🎨 Texte secondaire : gris foncé */
+  --color-titre-enigme: #E5C07B;   /* 🏆 Titre des énigmes : or vieilli */
+
+  --color-background: #0B132B;               /* 🎭 Fond général */
+  --color-background-button: #880000;        /* 🔘 Fond des boutons : rouge profond */
+  --color-background-button-hover: #a00000;  /* 🔘 Survol des boutons : rouge foncé */
+  --color-background-button-inactive: #A9A9A9; /* 🔘 Boutons inactifs : gris */
+  --color-success: #228B22;                  /* ✅ Barre de progression */
+
+  --color-gris-3: #adadad;                  /* ⚪ Gris neutre n°3 */
+  --color-text-fond-clair: #1c1c1c;         /* noir clair */
+  --color-gris-carte: #c2c2c2;              /* 🧩 Fond de carte énigme : gris bleuté doux */
+
+  /* Grille */
+  --container-max-width: 1200px;
+  --grid-gap: 1rem;
+  --grid-columns: 12;
+
+  /* Transitions globales */
+  --transition-fast: 0.15s ease-in-out;
+  --transition-medium: 0.3s ease;
+  --transition-slow: 0.6s ease;
+
+  /* Breakpoints layout */
+  --breakpoint-desktop: 922px;
+  --breakpoint-tablette: 768px;
+  --breakpoint-mobile: 544px;
+}
