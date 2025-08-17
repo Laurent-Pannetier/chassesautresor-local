@@ -1,16 +1,16 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const wrapper = document.querySelector('.points-history');
+    const wrapper = document.querySelector('.conversion-history');
     if (!wrapper) {
         return;
     }
 
     function load(page) {
         const params = new URLSearchParams();
-        params.append('action', 'load_points_history');
-        params.append('nonce', PointsHistoryAjax.nonce);
+        params.append('action', 'load_conversion_history');
+        params.append('nonce', ConversionHistory.nonce);
         params.append('page', page);
 
-        fetch(PointsHistoryAjax.ajax_url, {
+        fetch(ConversionHistory.ajax_url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: params.toString(),

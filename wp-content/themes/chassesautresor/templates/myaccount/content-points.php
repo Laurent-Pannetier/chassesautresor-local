@@ -146,9 +146,7 @@ if (current_user_can('administrator')) {
 }
 
 if ($is_organizer) {
-    ob_start();
-    afficher_tableau_paiements_organisateur((int) $current_user->ID, 'toutes');
-    $conversion_table = trim(ob_get_clean());
+    $conversion_table = render_conversion_history_table((int) $current_user->ID);
     if ($conversion_table !== '') {
         global $wpdb;
         $repo            = new PointsRepository($wpdb);

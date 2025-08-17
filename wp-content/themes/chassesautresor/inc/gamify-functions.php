@@ -492,43 +492,47 @@ function render_points_history_table(int $user_id): string
 
     ob_start();
     ?>
-    <div class="stats-table-wrapper" data-per-page="<?php echo esc_attr($per_page); ?>">
+    <div class="stats-table-wrapper">
         <h3><?php esc_html_e('Historique de vos points', 'chassesautresor-com'); ?></h3>
-        <table class="stats-table">
-            <thead>
-            <tr>
-                <th scope="col"><?php esc_html_e('ID', 'chassesautresor-com'); ?></th>
-                <th scope="col"><?php esc_html_e('Date', 'chassesautresor-com'); ?></th>
-                <th scope="col"><?php esc_html_e('Origine', 'chassesautresor-com'); ?></th>
-                <th scope="col"><?php esc_html_e('Motif', 'chassesautresor-com'); ?></th>
-                <th scope="col"><?php esc_html_e('Variation', 'chassesautresor-com'); ?></th>
-                <th scope="col"><?php esc_html_e('Solde', 'chassesautresor-com'); ?></th>
-            </tr>
-            </thead>
-            <tbody>
-            <?php foreach ($operations as $op) :
-                $variation       = (int) $op['points'];
-                $variation_label = $variation > 0 ? '+' . $variation : (string) $variation;
-                $date            = !empty($op['request_date']) ? mysql2date('d/m/Y', $op['request_date']) : '';
-                ?>
+        <div class="points-history" data-page="1" data-pages="<?php echo esc_attr($total_pages); ?>">
+            <table class="stats-table">
+                <thead>
                 <tr>
-                    <td><?php echo esc_html($op['id']); ?></td>
-                    <td><?php echo esc_html($date); ?></td>
-                    <td><span class="etiquette"><?php echo esc_html($op['origin_type']); ?></span></td>
-                    <td><?php echo esc_html($op['reason']); ?></td>
-                    <td><span class="etiquette etiquette-grande"><?php echo esc_html($variation_label); ?></span></td>
-                    <td><span class="etiquette etiquette-grande"><?php echo esc_html($op['balance']); ?></span></td>
+                    <th scope="col"><?php esc_html_e('ID', 'chassesautresor-com'); ?></th>
+                    <th scope="col"><?php esc_html_e('Date', 'chassesautresor-com'); ?></th>
+                    <th scope="col"><?php esc_html_e('Origine', 'chassesautresor-com'); ?></th>
+                    <th scope="col"><?php esc_html_e('Motif', 'chassesautresor-com'); ?></th>
+                    <th scope="col"><?php esc_html_e('Variation', 'chassesautresor-com'); ?></th>
+                    <th scope="col"><?php esc_html_e('Solde', 'chassesautresor-com'); ?></th>
                 </tr>
-            <?php endforeach; ?>
-            </tbody>
-        </table>
-        <?php if ($total_pages > 1) : ?>
-        <nav class="points-history-pager" data-total="<?php echo esc_attr($total_pages); ?>">
-            <?php for ($i = 1; $i <= $total_pages; $i++) : ?>
-                <button class="page-link etiquette<?php echo $i === 1 ? ' active' : ''; ?>" data-page="<?php echo esc_attr($i); ?>"><?php echo esc_html($i); ?></button>
-            <?php endfor; ?>
-        </nav>
-        <?php endif; ?>
+                </thead>
+                <tbody>
+                <?php foreach ($operations as $op) :
+                    $variation       = (int) $op['points'];
+                    $variation_label = $variation > 0 ? '+' . $variation : (string) $variation;
+                    $date            = !empty($op['request_date']) ? mysql2date('d/m/Y', $op['request_date']) : '';
+                    ?>
+                    <tr>
+                        <td><?php echo esc_html($op['id']); ?></td>
+                        <td><?php echo esc_html($date); ?></td>
+                        <td><span class="etiquette"><?php echo esc_html($op['origin_type']); ?></span></td>
+                        <td><?php echo esc_html($op['reason']); ?></td>
+                        <td><span class="etiquette etiquette-grande"><?php echo esc_html($variation_label); ?></span></td>
+                        <td><span class="etiquette etiquette-grande"><?php echo esc_html($op['balance']); ?></span></td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+            <?php if ($total_pages > 1) : ?>
+            <div class="pager">
+                <button class="pager-first" aria-label="<?php esc_attr_e('Première page', 'chassesautresor-com'); ?>"><i class="fa-solid fa-angles-left"></i></button>
+                <button class="pager-prev" aria-label="<?php esc_attr_e('Page précédente', 'chassesautresor-com'); ?>"><i class="fa-solid fa-angle-left"></i></button>
+                <span class="pager-info">1 / <?php echo esc_html($total_pages); ?></span>
+                <button class="pager-next" aria-label="<?php esc_attr_e('Page suivante', 'chassesautresor-com'); ?>"><i class="fa-solid fa-angle-right"></i></button>
+                <button class="pager-last" aria-label="<?php esc_attr_e('Dernière page', 'chassesautresor-com'); ?>"><i class="fa-solid fa-angles-right"></i></button>
+            </div>
+            <?php endif; ?>
+        </div>
     </div>
     <?php
     return ob_get_clean();
@@ -542,7 +546,7 @@ function enqueue_points_history_script(): void
     wp_enqueue_script(
         'points-history',
         get_stylesheet_directory_uri() . '/assets/js/points-history.js',
-        ['jquery'],
+        [],
         filemtime(get_stylesheet_directory() . '/assets/js/points-history.js'),
         true
     );
@@ -570,9 +574,11 @@ function ajax_load_points_history(): void
 
     $page = isset($_POST['page']) ? (int) $_POST['page'] : 1;
     $page = max(1, $page);
-    $per_page = 20;
-    $user_id = get_current_user_id();
+    $per_page   = 20;
+    $user_id    = get_current_user_id();
     $operations = get_user_points_history($user_id, $page, $per_page);
+    $total      = count_user_points_history($user_id);
+    $total_pages = (int) ceil($total / $per_page);
 
     ob_start();
     foreach ($operations as $op) {
@@ -592,7 +598,11 @@ function ajax_load_points_history(): void
     }
     $rows = ob_get_clean();
 
-    wp_send_json_success(['rows' => $rows]);
+    wp_send_json_success([
+        'rows'  => $rows,
+        'page'  => $page,
+        'pages' => $total_pages,
+    ]);
 }
 add_action('wp_ajax_load_points_history', 'ajax_load_points_history');
 

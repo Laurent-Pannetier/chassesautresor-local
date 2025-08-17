@@ -53,7 +53,7 @@ add_action('wp_enqueue_scripts', 'enqueue_script_header_organisateur_ui');
 /**
  * 🔹 charger_script_conversion → Charger le script `conversion.js` uniquement sur les pages liées à l’espace "Mon Compte".
  * 🔹 verifier_acces_conversion → Vérifier si un utilisateur peut soumettre une demande de conversion.
- * 🔹 afficher_tableau_paiements_organisateur → Afficher le tableau des demandes de paiement d’un organisateur.
+ * 🔹 render_conversion_history_table → Afficher le tableau des demandes de paiement d’un organisateur.
  */
 
 /**
@@ -303,67 +303,165 @@ function ajax_conversion_modal_content(): void
 add_action('wp_ajax_conversion_modal_content', 'ajax_conversion_modal_content');
 
 /**
- * Affiche le tableau des demandes de paiement d'un organisateur.
- *
- * @param int    $user_id       L'ID de l'utilisateur organisateur.
- * @param string $filtre_statut Filtre optionnel : 'en_attente' pour les demandes en cours, 'toutes' (par défaut) pour l'historique complet.
+ * Enqueue script handling AJAX pagination for conversion history.
  */
-function afficher_tableau_paiements_organisateur($user_id, $filtre_statut = 'toutes') {
+function enqueue_conversion_history_script(): void
+{
+    wp_enqueue_script(
+        'conversion-history',
+        get_stylesheet_directory_uri() . '/assets/js/conversion-history.js',
+        [],
+        filemtime(get_stylesheet_directory() . '/assets/js/conversion-history.js'),
+        true
+    );
+
+    wp_localize_script(
+        'conversion-history',
+        'ConversionHistory',
+        [
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce'    => wp_create_nonce('conversion-history-nonce'),
+        ]
+    );
+}
+
+/**
+ * Render conversion requests table for an organizer.
+ *
+ * @param int    $user_id       Organizer user ID.
+ * @param string $status_filter Optional filter: 'en_attente' or 'toutes'.
+ * @param int    $page          Current page number.
+ *
+ * @return string HTML table or empty string.
+ */
+function render_conversion_history_table(int $user_id, string $status_filter = 'toutes', int $page = 1): string
+{
     global $wpdb;
-    $repo      = new PointsRepository($wpdb);
-    $paiements = $repo->getConversionRequests($user_id);
+    $repo     = new PointsRepository($wpdb);
+    $per_page = 10;
+    $offset   = ($page - 1) * $per_page;
 
-    if (empty($paiements)) {
-        return;
+    $status   = $status_filter === 'en_attente' ? 'pending' : null;
+    $requests = $repo->getConversionRequests($user_id, $status, $per_page, $offset);
+    $total    = $repo->countConversionRequests($user_id, $status);
+
+    if ($total === 0) {
+        return '';
     }
 
-    $paiements_filtres = [];
-    foreach ($paiements as $paiement) {
-        if ($filtre_statut === 'en_attente' && $paiement['request_status'] !== 'pending') {
-            continue;
-        }
-        $paiements_filtres[] = $paiement;
+    enqueue_conversion_history_script();
+
+    $pages = (int) ceil($total / $per_page);
+
+    ob_start();
+    ?>
+    <div class="conversion-history" data-page="<?php echo esc_attr($page); ?>" data-pages="<?php echo esc_attr($pages); ?>">
+        <table class="stats-table">
+            <thead>
+            <tr>
+                <th><?php esc_html_e('Date demande', 'chassesautresor'); ?></th>
+                <th><?php esc_html_e('Montant (€)', 'chassesautresor'); ?></th>
+                <th><?php esc_html_e('Points utilisés', 'chassesautresor'); ?></th>
+                <th><?php esc_html_e('Statut', 'chassesautresor'); ?></th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php foreach ($requests as $request) :
+                switch ($request['request_status']) {
+                    case 'paid':
+                        $status_label = '✅ ' . __('Réglé', 'chassesautresor');
+                        break;
+                    case 'cancelled':
+                        $status_label = '❌ ' . __('Annulé', 'chassesautresor');
+                        break;
+                    case 'refused':
+                        $status_label = '🚫 ' . __('Refusé', 'chassesautresor');
+                        break;
+                    default:
+                        $status_label = '🟡 ' . __('En attente', 'chassesautresor');
+                }
+                $points_used = abs((int) $request['points']);
+                ?>
+                <tr>
+                    <td><?php echo esc_html(date_i18n('d/m/Y à H:i', strtotime($request['request_date']))); ?></td>
+                    <td><?php echo esc_html($request['amount_eur']); ?> €</td>
+                    <td><span class="etiquette etiquette-grande"><?php echo esc_html($points_used); ?></span></td>
+                    <td><span class="etiquette"><?php echo esc_html($status_label); ?></span></td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+        <?php if ($pages > 1) : ?>
+        <div class="pager">
+            <button class="pager-first" aria-label="<?php esc_attr_e('Première page', 'chassesautresor-com'); ?>"><i class="fa-solid fa-angles-left"></i></button>
+            <button class="pager-prev" aria-label="<?php esc_attr_e('Page précédente', 'chassesautresor-com'); ?>"><i class="fa-solid fa-angle-left"></i></button>
+            <span class="pager-info"><?php echo esc_html($page . ' / ' . $pages); ?></span>
+            <button class="pager-next" aria-label="<?php esc_attr_e('Page suivante', 'chassesautresor-com'); ?>"><i class="fa-solid fa-angle-right"></i></button>
+            <button class="pager-last" aria-label="<?php esc_attr_e('Dernière page', 'chassesautresor-com'); ?>"><i class="fa-solid fa-angles-right"></i></button>
+        </div>
+        <?php endif; ?>
+    </div>
+    <?php
+    return ob_get_clean();
+}
+
+/**
+ * AJAX handler for loading paginated conversion history.
+ */
+function ajax_load_conversion_history(): void
+{
+    if (!is_user_logged_in()) {
+        wp_send_json_error();
     }
 
-    if (empty($paiements_filtres)) {
-        return;
-    }
+    check_ajax_referer('conversion-history-nonce', 'nonce');
 
-    echo '<table class="stats-table">';
-    echo '<thead><tr>';
-    echo '<th>' . esc_html__('Date demande', 'chassesautresor') . '</th>';
-    echo '<th>' . esc_html__('Montant (€)', 'chassesautresor') . '</th>';
-    echo '<th>' . esc_html__('Points utilisés', 'chassesautresor') . '</th>';
-    echo '<th>' . esc_html__('Statut', 'chassesautresor') . '</th>';
-    echo '</tr></thead>';
-    echo '<tbody>';
+    $page = isset($_POST['page']) ? (int) $_POST['page'] : 1;
+    $page = max(1, $page);
+    $per_page = 10;
+    $user_id  = get_current_user_id();
 
-    foreach ($paiements_filtres as $paiement) {
-        switch ($paiement['request_status']) {
+    global $wpdb;
+    $repo = new PointsRepository($wpdb);
+    $offset = ($page - 1) * $per_page;
+    $requests = $repo->getConversionRequests($user_id, null, $per_page, $offset);
+    $total    = $repo->countConversionRequests($user_id, null);
+    $pages    = (int) ceil($total / $per_page);
+
+    ob_start();
+    foreach ($requests as $request) {
+        switch ($request['request_status']) {
             case 'paid':
-                $statut_affiche = '✅ ' . __('Réglé', 'chassesautresor');
+                $status_label = '✅ ' . __('Réglé', 'chassesautresor');
                 break;
             case 'cancelled':
-                $statut_affiche = '❌ ' . __('Annulé', 'chassesautresor');
+                $status_label = '❌ ' . __('Annulé', 'chassesautresor');
                 break;
             case 'refused':
-                $statut_affiche = '🚫 ' . __('Refusé', 'chassesautresor');
+                $status_label = '🚫 ' . __('Refusé', 'chassesautresor');
                 break;
             default:
-                $statut_affiche = '🟡 ' . __('En attente', 'chassesautresor');
+                $status_label = '🟡 ' . __('En attente', 'chassesautresor');
         }
-        $points_utilises = esc_html(abs((int) $paiement['points']));
-
-        echo '<tr>';
-        echo '<td>' . esc_html(date_i18n('d/m/Y à H:i', strtotime($paiement['request_date']))) . '</td>';
-        echo '<td>' . esc_html($paiement['amount_eur']) . ' €</td>';
-        echo '<td><span class="etiquette etiquette-grande">' . $points_utilises . '</span></td>';
-        echo '<td><span class="etiquette">' . esc_html($statut_affiche) . '</span></td>';
-        echo '</tr>';
+        $points_used = abs((int) $request['points']);
+        ?>
+        <tr>
+            <td><?php echo esc_html(date_i18n('d/m/Y à H:i', strtotime($request['request_date']))); ?></td>
+            <td><?php echo esc_html($request['amount_eur']); ?> €</td>
+            <td><span class="etiquette etiquette-grande"><?php echo esc_html($points_used); ?></span></td>
+            <td><span class="etiquette"><?php echo esc_html($status_label); ?></span></td>
+        </tr>
+        <?php
     }
+    $rows = ob_get_clean();
 
-    echo '</tbody></table>';
+    wp_send_json_success([
+        'rows'  => $rows,
+        'page'  => $page,
+        'pages' => $pages,
+    ]);
 }
+add_action('wp_ajax_load_conversion_history', 'ajax_load_conversion_history');
 
 
 // ==================================================
