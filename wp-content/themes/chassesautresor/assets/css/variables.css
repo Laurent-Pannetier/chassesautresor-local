@@ -68,6 +68,14 @@
   --breakpoint-mobile: 544px;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-fast: 0s;
+    --transition-medium: 0s;
+    --transition-slow: 0s;
+  }
+}
+
 /* 📝 Variables d’édition */
 .mode-edition {
   --color-editor-button:           #1A73E8;   /* 🔘 Boutons */
