@@ -189,6 +189,7 @@ button,
     border-radius: 5px;
     font-size: 1rem;
     cursor: not-allowed;
+    pointer-events: none;
     text-align: center;
     width: fit-content;
     display: flex;
@@ -798,6 +799,13 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
 /* ========== 🚫 NO-CLICK ========== */
 
 .no-click {
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+a.disabled,
+a[aria-disabled="true"] {
+    cursor: not-allowed;
     pointer-events: none;
 }
 
