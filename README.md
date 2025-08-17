@@ -22,6 +22,8 @@ La commande composer test exécute PHPUnit à l’aide de la configuration du pl
 Gestion des traductions du thème
 --------------------------------
 
+Tous les textes visibles par l'utilisateur doivent utiliser les fonctions d'internationalisation de WordPress (`__`, `_e`, `esc_html__`, etc.) avec le domaine `chassesautresor` ou `chassesautresor-com`.
+
 Les fichiers de langues du thème sont placés dans `wp-content/themes/chassesautresor/languages/`.
 Pour générer ou mettre à jour le fichier POT, utilisez WP‑CLI :
 

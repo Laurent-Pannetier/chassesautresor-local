@@ -5,6 +5,10 @@
 - Keep function and variable names in English when possible.
 - Place opening braces on the same line as declarations.
 
+## Internationalization
+- Enclose all user-facing text in WordPress internationalization functions (`__()`, `_e()`, `esc_html__()`, etc.).
+- Use the translation domain `chassesautresor` or `chassesautresor-com` where appropriate.
+
 ## Testing
 - Before committing any change, run the project tests.
 - Use the provided helper script to get the correct PHP and Composer executables:
