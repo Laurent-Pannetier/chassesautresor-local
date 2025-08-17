@@ -21,9 +21,9 @@ get_header();
 ?>
 <div class="conteneur-confirmation">
 <?php if ($success) : ?>
-    <p>Votre inscription est confirmée. Vous pouvez maintenant vous connecter.</p>
+    <p><?php esc_html_e('Votre inscription est confirmée. Vous pouvez maintenant vous connecter.', 'chassesautresor-com'); ?></p>
 <?php else : ?>
-    <p>Token invalide ou expiré.</p>
+    <p><?php esc_html_e('Token invalide ou expiré.', 'chassesautresor-com'); ?></p>
 <?php endif; ?>
 </div>
 <?php get_footer();

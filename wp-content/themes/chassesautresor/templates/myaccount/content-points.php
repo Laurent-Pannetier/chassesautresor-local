@@ -26,14 +26,14 @@ if (current_user_can('administrator')) {
         <div class="dashboard-card">
             <div class="dashboard-card-header">
                 <i class="fas fa-coins"></i>
-                <h3><?php esc_html_e('Gestion Points', 'chassesautresor'); ?></h3>
+              <h3><?php esc_html_e('Gestion Points', 'chassesautresor-com'); ?></h3>
             </div>
             <div class="stats-content">
                 <form method="POST" class="form-gestion-points">
                     <?php wp_nonce_field('gestion_points_action', 'gestion_points_nonce'); ?>
                     <div class="gestion-points-ligne">
                         <label for="utilisateur-points"></label>
-                        <input type="text" id="utilisateur-points" placeholder="Rechercher un utilisateur..." required>
+                          <input type="text" id="utilisateur-points" placeholder="<?php esc_attr_e('Rechercher un utilisateur...', 'chassesautresor-com'); ?>" required>
                         <input type="hidden" id="utilisateur-id" name="utilisateur">
                         <label for="type-modification"></label>
                         <select id="type-modification" name="type_modification" required>
@@ -43,7 +43,7 @@ if (current_user_can('administrator')) {
                     </div>
                     <div class="gestion-points-ligne">
                         <label for="nombre-points"></label>
-                        <input type="number" id="nombre-points" name="nombre_points" placeholder="nb de points" min="1" required>
+                          <input type="number" id="nombre-points" name="nombre_points" placeholder="<?php esc_attr_e('nb de points', 'chassesautresor-com'); ?>" min="1" required>
                         <button type="submit" name="modifier_points" class="btn-icon bouton-tertiaire">✅</button>
                     </div>
                 </form>
@@ -51,7 +51,7 @@ if (current_user_can('administrator')) {
         </div>
     </div>
     <div class="stats-table-wrapper">
-        <h3><?php esc_html_e('Historique des conversions', 'chassesautresor'); ?></h3>
+          <h3><?php esc_html_e('Historique des conversions', 'chassesautresor-com'); ?></h3>
         <div
             id="historique-paiements-admin"
             class="liste-paiements"
@@ -98,7 +98,7 @@ if (current_user_can('administrator')) {
     <?php
     if ($points === 0) {
         $shop_url = esc_url(home_url('/boutique'));
-        echo '<p class="myaccount-points"><a href="' . $shop_url . '">' . esc_html__('Ajouter des points', 'chassesautresor') . '</a></p>';
+          echo '<p class="myaccount-points"><a href="' . $shop_url . '">' . esc_html__('Ajouter des points', 'chassesautresor-com') . '</a></p>';
     }
 }
 

@@ -499,14 +499,14 @@ function afficher_chasse_associee_callback()
 
     ob_start(); ?>
     <section class="chasse-associee">
-        <h3>Chasse au Trésor</h3>
+        <h3><?php esc_html_e('Chasse au Trésor', 'chassesautresor-com'); ?></h3>
         <h2><strong><a href="<?= $url; ?>" class="lien-chasse-associee"><?= $titre; ?></a></strong></h2>
-        <p>🏆 <strong>Lot :</strong> <?= esc_html($infos_chasse['lot']); ?></p>
-        <p>📅 <strong>Durée :</strong> <?= esc_html($infos_chasse['date_de_debut']); ?> au <?= esc_html($infos_chasse['date_de_fin']); ?></p>
+        <p>🏆 <strong><?php esc_html_e('Lot :', 'chassesautresor-com'); ?></strong> <?= esc_html($infos_chasse['lot']); ?></p>
+        <p>📅 <strong><?php esc_html_e('Durée :', 'chassesautresor-com'); ?></strong> <?= esc_html($infos_chasse['date_de_debut']); ?> <?php esc_html_e('au', 'chassesautresor-com'); ?> <?= esc_html($infos_chasse['date_de_fin']); ?></p>
 
         <?php if (!empty($lien_discord)) : ?>
             <p>
-                <a href="<?= esc_url($lien_discord); ?>" target="_blank" rel="noopener noreferrer" aria-label="Rejoindre le Discord">
+                <a href="<?= esc_url($lien_discord); ?>" target="_blank" rel="noopener noreferrer" aria-label="<?php esc_attr_e('Rejoindre le Discord', 'chassesautresor-com'); ?>">
                     <img src="<?= $icone_discord; ?>" alt="Discord" class="discord-icon">
                 </a>
             </p>
@@ -603,8 +603,8 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
     // 🧑‍💻 Utilisateur non connecté
     if (!$user_id) {
         return [
-            'cta_html'    => '<a href="' . esc_url(site_url('/mon-compte')) . '" class="bouton-cta">S\'identifier</a>',
-            'cta_message' => 'Vous devez être identifié pour participer à cette chasse',
+            'cta_html'    => '<a href="' . esc_url(site_url('/mon-compte')) . '" class="bouton-cta">' . esc_html__("S'identifier", 'chassesautresor-com') . '</a>',
+            'cta_message' => esc_html__( 'Vous devez être identifié pour participer à cette chasse', 'chassesautresor-com' ),
             'type'        => 'connexion',
         ];
     }
@@ -629,11 +629,15 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
     $type    = '';
 
     if ($statut === 'a_venir') {
-        $html = '<button class="bouton-cta" disabled>Indisponible</button>';
+        $html = '<button class="bouton-cta" disabled>' . esc_html__( 'Indisponible', 'chassesautresor-com' ) . '</button>';
         $type = 'indisponible';
         $message = $date_debut
-            ? 'Chasse disponible à partir du ' . date_i18n('d/m/Y \à H:i', strtotime($date_debut))
-            : 'Chasse disponible prochainement';
+            ? sprintf(
+                /* translators: %s: formatted start date */
+                esc_html__( 'Chasse disponible à partir du %s', 'chassesautresor-com' ),
+                date_i18n( 'd/m/Y \à H:i', strtotime( $date_debut ) )
+            )
+            : esc_html__( 'Chasse disponible prochainement', 'chassesautresor-com' );
     } elseif ($statut === 'en_cours' || $statut === 'payante') {
         $cout_points        = (int) get_field('chasse_infos_cout_points', $chasse_id);
         $points_disponibles = get_user_points($user_id);
@@ -660,9 +664,9 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
             $html  = '<form method="post" action="' . esc_url(site_url('/traitement-engagement')) . '" class="cta-chasse-form">';
             $html .= '<input type="hidden" name="chasse_id" value="' . esc_attr($chasse_id) . '">';
             $html .= wp_nonce_field('engager_chasse_' . $chasse_id, 'engager_chasse_nonce', true, false);
-            $html .= '<button type="submit" class="bouton-cta">Participer</button>';
+            $html .= '<button type="submit" class="bouton-cta">' . esc_html__( 'Participer', 'chassesautresor-com' ) . '</button>';
             $html .= '</form>';
-            $message = 'Accès libre à cette chasse. Les tentatives seront tarifées individuellement.';
+            $message = esc_html__( 'Accès libre à cette chasse. Les tentatives seront tarifées individuellement.', 'chassesautresor-com' );
             $type    = 'engager';
         }
     } elseif ($statut === 'termine') {
@@ -670,12 +674,16 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
         $html  = '<form method="post" action="' . esc_url(site_url('/traitement-engagement')) . '" class="cta-chasse-form">';
         $html .= '<input type="hidden" name="chasse_id" value="' . esc_attr($chasse_id) . '">';
         $html .= wp_nonce_field('engager_chasse_' . $chasse_id, 'engager_chasse_nonce', true, false);
-        $html .= '<button type="submit" class="bouton-cta">Voir</button>';
+        $html .= '<button type="submit" class="bouton-cta">' . esc_html__( 'Voir', 'chassesautresor-com' ) . '</button>';
         $html .= '</form>';
         $type = 'voir';
         $message = $date_fin
-            ? 'Cette chasse est terminée depuis le ' . date_i18n('d/m/Y', strtotime($date_fin))
-            : 'Cette chasse est terminée';
+            ? sprintf(
+                /* translators: %s: formatted end date */
+                esc_html__( 'Cette chasse est terminée depuis le %s', 'chassesautresor-com' ),
+                date_i18n( 'd/m/Y', strtotime( $date_fin ) )
+            )
+            : esc_html__( 'Cette chasse est terminée', 'chassesautresor-com' );
     }
 
     return [

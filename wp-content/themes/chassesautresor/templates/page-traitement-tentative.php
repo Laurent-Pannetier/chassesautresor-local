@@ -31,26 +31,26 @@ if (
 
 // 💚 Réinitialisations
 if (isset($_GET['reset_tentatives'])) {
-  global $wpdb;
-  $reset = $wpdb->delete($wpdb->prefix . 'enigme_tentatives', ['enigme_id' => $enigme_id], ['%d']);
-  echo '<p style="text-align:center;">🧹 ' . $reset . ' tentative(s) supprimée(s).</p>';
-  return;
-}
+    global $wpdb;
+    $reset = $wpdb->delete($wpdb->prefix . 'enigme_tentatives', ['enigme_id' => $enigme_id], ['%d']);
+    printf('<p style="text-align:center;">%s</p>', sprintf( esc_html__( '🧹 %d tentative(s) supprimée(s).', 'chassesautresor-com' ), $reset ));
+    return;
+  }
 
 if (isset($_GET['reset_statuts'])) {
-  global $wpdb;
-  $reset = $wpdb->delete($wpdb->prefix . 'enigme_statuts_utilisateur', ['enigme_id' => $enigme_id], ['%d']);
-  echo '<p style="text-align:center;">🗑️ ' . $reset . ' statut(s) utilisateur supprimé(s).</p>';
-  return;
-}
+    global $wpdb;
+    $reset = $wpdb->delete($wpdb->prefix . 'enigme_statuts_utilisateur', ['enigme_id' => $enigme_id], ['%d']);
+    printf('<p style="text-align:center;">%s</p>', sprintf( esc_html__( '🗑️ %d statut(s) utilisateur supprimé(s).', 'chassesautresor-com' ), $reset ));
+    return;
+  }
 
 if (isset($_GET['reset_all'])) {
-  global $wpdb;
-  $reset1 = $wpdb->delete($wpdb->prefix . 'enigme_tentatives', ['enigme_id' => $enigme_id], ['%d']);
-  $reset2 = $wpdb->delete($wpdb->prefix . 'enigme_statuts_utilisateur', ['enigme_id' => $enigme_id], ['%d']);
-  echo '<p style="text-align:center;">🔥 ' . $reset1 . ' tentative(s) & ' . $reset2 . ' statut(s) supprimés.</p>';
-  return;
-}
+    global $wpdb;
+    $reset1 = $wpdb->delete($wpdb->prefix . 'enigme_tentatives', ['enigme_id' => $enigme_id], ['%d']);
+    $reset2 = $wpdb->delete($wpdb->prefix . 'enigme_statuts_utilisateur', ['enigme_id' => $enigme_id], ['%d']);
+    printf('<p style="text-align:center;">%s</p>', sprintf( esc_html__( '🔥 %1$d tentative(s) & %2$d statut(s) supprimés.', 'chassesautresor-com' ), $reset1, $reset2 ));
+    return;
+  }
 
 // ✅ Traitement si POST (validation ou refus)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action_traitement'], $_POST['uid'])) {
@@ -72,14 +72,19 @@ get_header();
 <main class="page-traitement-tentative">
   <div class="container">
     <section class="bloc-infos">
-      <h2>
-        Tentative de <strong><?= esc_html($infos['nom_user'] ?? 'Inconnu'); ?></strong>
-        pour l’énigme <strong><?= esc_html(get_the_title($enigme_id)); ?></strong>
-      </h2>
+        <h2>
+          <?php
+          printf(
+            esc_html__( 'Tentative de %1$s pour l’énigme %2$s', 'chassesautresor-com' ),
+            '<strong>' . esc_html( $infos['nom_user'] ?? esc_html__( 'Inconnu', 'chassesautresor-com' ) ) . '</strong>',
+            '<strong>' . esc_html( get_the_title( $enigme_id ) ) . '</strong>'
+          );
+          ?>
+        </h2>
 
-      <p><strong>Identifiant unique de tentative :</strong> <?= esc_html($uid); ?></p>
-      <p><strong>Statut :</strong> <?= ucfirst(esc_html($etat)); ?></p>
-      <p><a href="<?= esc_url($permalink); ?>" class="lien-enigme">🔍 Voir l’énigme</a></p>
+        <p><strong><?php esc_html_e('Identifiant unique de tentative :', 'chassesautresor-com'); ?></strong> <?= esc_html($uid); ?></p>
+        <p><strong><?php esc_html_e('Statut :', 'chassesautresor-com'); ?></strong> <?= esc_html( ucfirst( $etat ) ); ?></p>
+        <p><a href="<?= esc_url($permalink); ?>" class="lien-enigme"><?php esc_html_e('🔍 Voir l’énigme', 'chassesautresor-com'); ?></a></p>
     </section>
 
     <?php if ($etat === 'attente'): ?>
@@ -87,36 +92,39 @@ get_header();
         <?php wp_nonce_field('traiter_tentative_' . $uid); ?>
         <input type="hidden" name="uid" value="<?= esc_attr($uid); ?>">
 
-        <div class="boutons">
-          <button type="submit" name="action_traitement" value="valider" class="bouton-cta">✅ Valider</button>
-          <button type="submit" name="action_traitement" value="invalider" class="btn-danger">❌ Refuser</button>
-        </div>
+          <div class="boutons">
+            <button type="submit" name="action_traitement" value="valider" class="bouton-cta"><?php esc_html_e('✅ Valider', 'chassesautresor-com'); ?></button>
+            <button type="submit" name="action_traitement" value="invalider" class="btn-danger"><?php esc_html_e('❌ Refuser', 'chassesautresor-com'); ?></button>
+          </div>
       </form>
     <?php else: ?>
-      <div class="bloc-deja-traitee">
-        Cette tentative a été <strong><?= esc_html($etat === 'validee' ? 'validée' : 'refusée'); ?></strong>.
-      </div>
+        <div class="bloc-deja-traitee">
+          <?php
+          $etat_label = $etat === 'validee' ? esc_html__( 'validée', 'chassesautresor-com' ) : esc_html__( 'refusée', 'chassesautresor-com' );
+          printf( esc_html__( 'Cette tentative a été %s.', 'chassesautresor-com' ), '<strong>' . esc_html( $etat_label ) . '</strong>' );
+          ?>
+        </div>
     <?php endif; ?>
   </div>
 
   <div class="traitement-actions">
-    <a href="<?= esc_url(add_query_arg('reset_statuts', '1')); ?>"
-      onclick="return confirm('Supprimer tous les statuts utilisateurs pour cette énigme ?');"
-      class="btn-danger">
-      🧹 Réinitialiser les statuts
-    </a>
+      <a href="<?= esc_url(add_query_arg('reset_statuts', '1')); ?>"
+        onclick="return confirm('<?php echo esc_js( __( 'Supprimer tous les statuts utilisateurs pour cette énigme ?', 'chassesautresor-com' ) ); ?>');"
+        class="btn-danger">
+        <?php esc_html_e('🧹 Réinitialiser les statuts', 'chassesautresor-com'); ?>
+      </a>
 
-    <a href="<?= esc_url(add_query_arg('reset_tentatives', '1')); ?>"
-      onclick="return confirm('Supprimer toutes les tentatives pour cette énigme ?');"
-      class="btn-danger">
-      ❌ Supprimer les tentatives
-    </a>
+      <a href="<?= esc_url(add_query_arg('reset_tentatives', '1')); ?>"
+        onclick="return confirm('<?php echo esc_js( __( 'Supprimer toutes les tentatives pour cette énigme ?', 'chassesautresor-com' ) ); ?>');"
+        class="btn-danger">
+        <?php esc_html_e('❌ Supprimer les tentatives', 'chassesautresor-com'); ?>
+      </a>
 
-    <a href="<?= esc_url(add_query_arg('reset_all', '1')); ?>"
-      onclick="return confirm('Supprimer TOUT (statuts + tentatives) ?');"
-      class="btn-danger">
-      🔥 Tout supprimer
-    </a>
+      <a href="<?= esc_url(add_query_arg('reset_all', '1')); ?>"
+        onclick="return confirm('<?php echo esc_js( __( 'Supprimer TOUT (statuts + tentatives) ?', 'chassesautresor-com' ) ); ?>');"
+        class="btn-danger">
+        <?php esc_html_e('🔥 Tout supprimer', 'chassesautresor-com'); ?>
+      </a>
   </div>
 </main>
 

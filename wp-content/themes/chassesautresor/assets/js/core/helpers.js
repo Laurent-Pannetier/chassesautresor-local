@@ -5,6 +5,7 @@
  * @returns {string} HTML
  */
 function renderLiensPublics(liens = []) {
+  const { __ } = wp.i18n;
   const icones = {
     site_web: 'fa-solid fa-globe',
     discord: 'fa-brands fa-discord',
@@ -14,21 +15,21 @@ function renderLiensPublics(liens = []) {
   };
 
   const labels = {
-    site_web: 'Site Web',
-    discord: 'Discord',
-    facebook: 'Facebook',
-    twitter: 'Twitter/X',
-    instagram: 'Instagram'
+    site_web: __('Site Web', 'chassesautresor-com'),
+    discord: __('Discord', 'chassesautresor-com'),
+    facebook: __('Facebook', 'chassesautresor-com'),
+    twitter: __('Twitter/X', 'chassesautresor-com'),
+    instagram: __('Instagram', 'chassesautresor-com')
   };
 
   if (!Array.isArray(liens) || liens.length === 0) {
-    return `
-      <div class="liens-placeholder">
-        <p class="liens-placeholder-message">Aucun lien ajouté pour le moment.</p>
-        ${Object.entries(icones).map(([type, icone]) =>
-      `<i class="fa ${icone} icone-grisee" title="${labels[type]}"></i>`
-    ).join('')}
-      </div>`;
+      return `
+        <div class="liens-placeholder">
+          <p class="liens-placeholder-message">${__('Aucun lien ajouté pour le moment.', 'chassesautresor-com')}</p>
+          ${Object.entries(icones).map(([type, icone]) =>
+        `<i class="fa ${icone} icone-grisee" title="${labels[type]}"></i>`
+      ).join('')}
+        </div>`;
   }
 
   return `
@@ -205,7 +206,7 @@ function initLiensPublics(bloc, { panneauId, formId, action, reload = false }) {
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.className = 'champ-modifier ouvrir-panneau-liens';
-            btn.setAttribute('aria-label', 'Configurer vos liens');
+              btn.setAttribute('aria-label', __('Configurer vos liens', 'chassesautresor-com'));
             btn.textContent = '✏️';
             zoneAffichage.appendChild(btn);
           }
@@ -228,7 +229,7 @@ function initLiensPublics(bloc, { panneauId, formId, action, reload = false }) {
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.className = 'champ-modifier ouvrir-panneau-liens';
-                btn.setAttribute('aria-label', 'Configurer vos liens');
+                btn.setAttribute('aria-label', __('Configurer vos liens', 'chassesautresor-com'));
                 btn.textContent = '✏️';
                 zone.appendChild(btn);
               }
@@ -251,7 +252,7 @@ function initLiensPublics(bloc, { panneauId, formId, action, reload = false }) {
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.className = 'champ-modifier ouvrir-panneau-liens';
-                btn.setAttribute('aria-label', 'Configurer vos liens');
+                btn.setAttribute('aria-label', __('Configurer vos liens', 'chassesautresor-com'));
                 btn.textContent = '✏️';
                 zone.appendChild(btn);
               }

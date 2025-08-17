@@ -2,7 +2,7 @@
 defined('ABSPATH') || exit;
 ?>
 <div class="dashboard-section">
-    <h3 class="dashboard-section-title">Chasse</h3>
+    <h3 class="dashboard-section-title"><?php esc_html_e('Chasse', 'chassesautresor-com'); ?></h3>
     <div class="dashboard-grid">
         <?php
         $creations = array_filter(
@@ -15,7 +15,7 @@ defined('ABSPATH') || exit;
         <div class="dashboard-card creation-card">
             <div class="dashboard-card-header">
                 <i class="fas fa-user-plus"></i>
-                <h3>à valider</h3>
+                  <h3><?php esc_html_e('à valider', 'chassesautresor-com'); ?></h3>
             </div>
             <div class="stats-content">
                 <ul>
@@ -52,7 +52,7 @@ defined('ABSPATH') || exit;
         <div class="dashboard-card">
             <div class="dashboard-card-header">
                 <i class="fas fa-hammer"></i>
-                <h3>en édition</h3>
+                  <h3><?php esc_html_e('en édition', 'chassesautresor-com'); ?></h3>
             </div>
             <div class="stats-content">
                 <ul>

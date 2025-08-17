@@ -400,7 +400,7 @@ function traiter_statut_enigme(int $enigme_id, ?int $user_id = null): array
 
     $formulaire = in_array($statut, ['en_cours', 'non_souscrite'], true);
     $message = ($statut === 'resolue');
-    $message_html = $message ? '<p class="message-statut">Vous avez déjà résolu cette énigme.</p>' : '';
+        $message_html = $message ? '<p class="message-statut">' . esc_html__( 'Vous avez déjà résolu cette énigme.', 'chassesautresor-com' ) . '</p>' : '';
 
     return [
         'etat' => $statut,

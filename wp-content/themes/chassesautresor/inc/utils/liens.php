@@ -129,7 +129,7 @@ function render_liens_publics(array $liens, string $contexte = 'organisateur', a
 
     // Placeholder si aucun lien
     $out = '<div class="liens-placeholder">';
-    $out .= '<p class="liens-placeholder-message">Aucun lien ajouté pour le moment.</p>';
+    $out .= '<p class="liens-placeholder-message">' . esc_html__( 'Aucun lien ajouté pour le moment.', 'chassesautresor-com' ) . '</p>';
     foreach ($types as $type => $infos) {
         $out .= '<i class="fa ' . esc_attr($infos['icone']) . ' icone-grisee" title="' . esc_attr($infos['label']) . '"></i>';
     }

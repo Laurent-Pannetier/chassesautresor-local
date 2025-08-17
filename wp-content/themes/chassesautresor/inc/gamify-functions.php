@@ -161,10 +161,11 @@ function afficher_points_utilisateur_callback() {
 
         // ✅ Sécurité : On s'assure que les points gagnés sont un entier valide et positif
         if ($points_gagnes > 0) {
-            $points_gagnes_html = "
-                <div class='points-gagnes'>
-                    +<strong>{$points_gagnes}</strong> points gagnés !
-                </div>";
+            $points_gagnes_html = sprintf(
+                "<div class='points-gagnes'>+<strong>%d</strong> %s</div>",
+                $points_gagnes,
+                esc_html__( 'points gagnés !', 'chassesautresor-com' )
+            );
         }
     }
 
@@ -172,7 +173,7 @@ function afficher_points_utilisateur_callback() {
     return "
     <div class='zone-points'>
         {$points_gagnes_html}
-        <a href='{$boutique_url}' class='points-link' title='Accéder à la boutique'>
+        <a href='{$boutique_url}' class='points-link' title='" . esc_attr__( 'Accéder à la boutique', 'chassesautresor-com' ) . "'>
             <span class='points-plus-circle'>+</span>
             <span class='points-value'>{$points}</span>
             <span class='points-euro'>pts</span>

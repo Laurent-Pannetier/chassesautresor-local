@@ -429,7 +429,7 @@ function render_tableau_paiements_admin(array $requests): string
 {
     ob_start();
     echo '<table class="widefat fixed">';
-    echo '<thead><tr><th>Organisateur</th><th>Montant / Points</th><th>Date demande</th><th>IBAN / BIC</th><th>Statut</th><th>Action</th></tr></thead>';
+    echo '<thead><tr><th>' . esc_html__( 'Organisateur', 'chassesautresor-com' ) . '</th><th>' . esc_html__( 'Montant / Points', 'chassesautresor-com' ) . '</th><th>' . esc_html__( 'Date demande', 'chassesautresor-com' ) . '</th><th>' . esc_html__( 'IBAN / BIC', 'chassesautresor-com' ) . '</th><th>' . esc_html__( 'Statut', 'chassesautresor-com' ) . '</th><th>' . esc_html__( 'Action', 'chassesautresor-com' ) . '</th></tr></thead>';
     echo '<tbody>';
 
     foreach ($requests as $request) {
@@ -442,20 +442,20 @@ function render_tableau_paiements_admin(array $requests): string
             $iban = get_field('gagnez_de_largent_iban', $organisateur_id);
             $bic  = get_field('gagnez_de_largent_bic', $organisateur_id);
         }
-        $iban = $iban ?: 'Non renseigné';
+        $iban = $iban ?: esc_html__( 'Non renseigné', 'chassesautresor-com' );
 
         switch ($request['request_status']) {
             case 'paid':
-                $statut = '✅ Réglé';
+                $statut = esc_html__( '✅ Réglé', 'chassesautresor-com' );
                 break;
             case 'cancelled':
-                $statut = '❌ Annulé';
+                $statut = esc_html__( '❌ Annulé', 'chassesautresor-com' );
                 break;
             case 'refused':
-                $statut = '🚫 Refusé';
+                $statut = esc_html__( '🚫 Refusé', 'chassesautresor-com' );
                 break;
             default:
-                $statut = '🟡 En attente';
+                $statut = esc_html__( '🟡 En attente', 'chassesautresor-com' );
         }
 
         $action = '-';
@@ -466,7 +466,7 @@ function render_tableau_paiements_admin(array $requests): string
             $action .= '<option value="annule">' . esc_html__('Annuler', 'chassesautresor-com') . '</option>';
             $action .= '<option value="refuse">' . esc_html__('Refuser', 'chassesautresor-com') . '</option>';
             $action .= '</select>';
-            $action .= '<button type="submit" class="button">OK</button>';
+            $action .= '<button type="submit" class="button">' . esc_html__( 'OK', 'chassesautresor-com' ) . '</button>';
             $action .= '</form>';
         }
 
@@ -497,7 +497,7 @@ function afficher_tableau_paiements_admin(): void
     $requests = $repo->getConversionRequests();
 
     if (empty($requests)) {
-        echo '<p>Aucune demande de paiement en attente.</p>';
+        echo '<p>' . esc_html__( 'Aucune demande de paiement en attente.', 'chassesautresor-com' ) . '</p>';
         return;
     }
 
@@ -517,7 +517,7 @@ function recuperer_historique_paiements_admin(int $page = 1): array
     $pages = max(1, (int) ceil($total / $per_page));
 
     if (empty($requests)) {
-        $html = '<p>Aucune demande de paiement.</p>';
+        $html = '<p>' . esc_html__( 'Aucune demande de paiement.', 'chassesautresor-com' ) . '</p>';
     } else {
         $html  = render_tableau_paiements_admin($requests);
         $html .= '<div class="pager">';

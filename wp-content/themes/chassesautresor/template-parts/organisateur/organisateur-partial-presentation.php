@@ -60,7 +60,7 @@ if (!empty($liens_publics) && is_array($liens_publics)) {
               </ul>
             <?php else : ?>
               <div class="liens-placeholder">
-                <p class="liens-placeholder-message">Aucun lien ajouté pour le moment.</p>
+                <p class="liens-placeholder-message"><?php esc_html_e('Aucun lien ajouté pour le moment.', 'chassesautresor-com'); ?></p>
                 <?php foreach ($types_disponibles as $type => $infos) : ?>
                   <i class="fa <?= esc_attr($infos['icone']); ?> icone-grisee" title="<?= esc_attr($infos['label']); ?>"></i>
                 <?php endforeach; ?>

@@ -161,10 +161,10 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
     ?>
 
     <?php if (!empty($_GET['erreur']) && $_GET['erreur'] === 'points_insuffisants') : ?>
-      <div class="message-erreur" role="alert" style="color:red; margin-bottom:1em;">
-        ❌ Vous n’avez pas assez de points pour engager cette énigme.
-        <a href="<?= esc_url(home_url('/boutique')); ?>">Accéder à la boutique</a>
-      </div>
+        <div class="message-erreur" role="alert" style="color:red; margin-bottom:1em;">
+          <?php esc_html_e('❌ Vous n’avez pas assez de points pour engager cette énigme.', 'chassesautresor-com'); ?>
+          <a href="<?= esc_url(home_url('/boutique')); ?>"><?php esc_html_e('Accéder à la boutique', 'chassesautresor-com'); ?></a>
+        </div>
     <?php endif; ?>
 
     <!-- 📦 Fiche complète (images + méta + actions) -->
@@ -231,8 +231,8 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
         </div>
       </header>
 
-      <div class="titre-enigmes-wrapper">
-        <h2>Énigmes</h2>
+        <div class="titre-enigmes-wrapper">
+          <h2><?php esc_html_e('Énigmes', 'chassesautresor-com'); ?></h2>
         <?php if ($peut_ajouter_enigme && $total_enigmes > 0 && !$has_incomplete_enigme) :
           get_template_part('template-parts/enigme/chasse-partial-ajout-enigme', null, [
             'has_enigmes' => true,
