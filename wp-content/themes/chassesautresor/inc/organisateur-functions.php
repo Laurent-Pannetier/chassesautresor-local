@@ -417,9 +417,10 @@ function render_conversion_history(int $user_id): string
                 type="button"
                 class="etiquette etiquette-grande conversion-history-toggle"
                 aria-expanded="<?php echo $expanded ? 'true' : 'false'; ?>"
-                data-label-open="<?php esc_attr_e('Afficher', 'chassesautresor'); ?>"
-                data-label-close="<?php esc_attr_e('Masquer', 'chassesautresor'); ?>"
-            ><?php echo $expanded ? esc_html__('Masquer', 'chassesautresor') : esc_html__('Afficher', 'chassesautresor'); ?></button>
+                aria-label="<?php echo $expanded ? esc_attr__('Masquer l\'historique', 'chassesautresor') : esc_attr__('Afficher l\'historique', 'chassesautresor'); ?>"
+                data-label-open="<?php esc_attr_e('Afficher l\'historique', 'chassesautresor'); ?>"
+                data-label-close="<?php esc_attr_e('Masquer l\'historique', 'chassesautresor'); ?>"
+            ></button>
         </div>
         <div class="conversion-history-table"<?php echo $expanded ? '' : ' style="display:none;"'; ?>>
             <table class="stats-table">

@@ -643,3 +643,23 @@ body.woocommerce h2 {
     background-color: rgba(0, 0, 0, 0.02);
 }
 
+/* 📌 Toggle de l'historique de conversion */
+.conversion-history .conversion-history-toggle {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.conversion-history .conversion-history-toggle::before {
+    content: '\25B6'; /* triangle right */
+    font-size: 0.875rem;
+    line-height: 1;
+}
+
+.conversion-history .conversion-history-toggle[aria-expanded="true"]::before {
+    content: '\25BC'; /* triangle down */
+}
+

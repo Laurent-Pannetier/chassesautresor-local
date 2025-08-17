@@ -9,10 +9,12 @@ jQuery(function ($) {
       tableWrapper.hide();
     }
 
-    toggle.on('click', function () {
+    toggle.on('click', function (e) {
+      e.preventDefault();
       const expanded = $(this).attr('aria-expanded') === 'true';
-      $(this).attr('aria-expanded', expanded ? 'false' : 'true');
-      $(this).text(expanded ? toggle.data('label-open') : toggle.data('label-close'));
+      $(this)
+        .attr('aria-expanded', expanded ? 'false' : 'true')
+        .attr('aria-label', expanded ? $(this).data('label-open') : $(this).data('label-close'));
       tableWrapper.slideToggle();
     });
 
