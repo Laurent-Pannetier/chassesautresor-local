@@ -110,7 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
     init();
 
     document.addEventListener("myaccountSectionLoaded", (e) => {
-        if (e.detail && e.detail.section === "outils") {
+        if (e.detail && e.detail.section === "points") {
             init();
         }
     });
