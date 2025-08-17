@@ -462,12 +462,12 @@ a.ajout-link:focus-visible {
 /* ========== 🟢 BADGE ROND ========== */
 
 .badge-rond {
-    margin: 0px 0px 0px 0px;
+    margin: 0;
     padding: 2px 0;
     background-color: var(--color-primary); /* Jaune or */
     transition: background 0.5s;
-    border-radius: 200px 200px 200px 200px;
-    font-size : 12px;
+    border-radius: 200px;
+    font-size: 12px;
 }
 
 
