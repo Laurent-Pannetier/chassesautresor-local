@@ -27,10 +27,16 @@ add_action( 'after_setup_theme', 'cta_load_textdomain' );
  */
 add_action('wp_enqueue_scripts', function () {
     $theme_dir = get_stylesheet_directory_uri() . '/assets/css/';
+    $theme_path = get_stylesheet_directory() . '/assets/css/';
 
     // 🎨 Chargement des styles du thème parent (Astra) et enfant
     wp_enqueue_style('astra-style', get_template_directory_uri() . '/style.css');
-    wp_enqueue_style('mon-theme-enfant-style', get_stylesheet_directory_uri() . '/style.css', ['astra-style'], filemtime(get_stylesheet_directory() . '/style.css'));
+    wp_enqueue_style(
+        'mon-theme-enfant-style',
+        get_stylesheet_directory_uri() . '/style.css',
+        ['astra-style'],
+        filemtime(get_stylesheet_directory() . '/style.css')
+    );
 
     // 📂 Liste des fichiers CSS organisés
     $styles = [
@@ -45,14 +51,43 @@ add_action('wp_enqueue_scripts', function () {
         'cartes-style'       => 'cartes.css',
         'organisateurs'      => 'organisateurs.css',
         'edition'            => 'edition.css',
-        'mon compte'         => 'mon-compte.css',
+        'mon-compte'         => 'mon-compte.css',
         'commerce-style'     => 'commerce.css',
         'home'               => 'home.css',
     ];
 
-    // 🚀 Chargement dynamique des styles avec gestion du cache
+    // ✅ Enregistre les styles avec gestion du cache
     foreach ($styles as $handle => $file) {
-        wp_enqueue_style($handle, $theme_dir . $file, [], filemtime(get_stylesheet_directory() . "/assets/css/{$file}"));
+        wp_register_style($handle, $theme_dir . $file, [], filemtime($theme_path . $file));
+    }
+
+    // 🚀 Chargement des styles communs
+    $common_styles = [
+        'grid',
+        'layout',
+        'components',
+        'modal-bienvenue',
+        'general-style',
+        'chasse-style',
+        'enigme-style',
+        'gamification-style',
+        'cartes-style',
+        'organisateurs',
+        'commerce-style',
+        'home',
+    ];
+
+    foreach ($common_styles as $handle) {
+        wp_enqueue_style($handle);
+    }
+
+    // 📌 Styles conditionnels
+    if (is_singular(['organisateur', 'chasse', 'enigme'])) {
+        wp_enqueue_style('edition');
+    }
+
+    if (is_account_page() || preg_match('#^/mon-compte(?:/|$|\?)#', $_SERVER['REQUEST_URI'] ?? '')) {
+        wp_enqueue_style('mon-compte');
     }
 
     $script_dir = get_stylesheet_directory_uri() . '/assets/js/';
