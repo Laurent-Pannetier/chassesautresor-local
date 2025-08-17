@@ -44,8 +44,8 @@ $pages = $args['pages'] ?? $pages ?? (int) ceil($total / $par_page);
           <form method="post" style="display:inline;">
             <?php wp_nonce_field('traiter_tentative_' . $tent->tentative_uid); ?>
             <input type="hidden" name="uid" value="<?= esc_attr($tent->tentative_uid); ?>">
-            <button type="submit" name="action_traitement" value="valider" class="btn-valider">Valider</button>
-            <button type="submit" name="action_traitement" value="invalider" class="btn-refuser">Invalider</button>
+            <button type="submit" name="action_traitement" value="valider" class="bouton-cta">Valider</button>
+            <button type="submit" name="action_traitement" value="invalider" class="bouton-secondaire">Invalider</button>
           </form>
         <?php else: ?>
           <?= esc_html($tent->resultat); ?>

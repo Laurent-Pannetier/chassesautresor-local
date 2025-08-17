@@ -88,8 +88,8 @@ get_header();
         <input type="hidden" name="uid" value="<?= esc_attr($uid); ?>">
 
         <div class="boutons">
-          <button type="submit" name="action_traitement" value="valider" class="btn btn-valider">✅ Valider</button>
-          <button type="submit" name="action_traitement" value="invalider" class="btn btn-refuser">❌ Refuser</button>
+          <button type="submit" name="action_traitement" value="valider" class="bouton-cta">✅ Valider</button>
+          <button type="submit" name="action_traitement" value="invalider" class="bouton-secondaire">❌ Refuser</button>
         </div>
       </form>
     <?php else: ?>
@@ -102,19 +102,19 @@ get_header();
   <div class="traitement-actions">
     <a href="<?= esc_url(add_query_arg('reset_statuts', '1')); ?>"
       onclick="return confirm('Supprimer tous les statuts utilisateurs pour cette énigme ?');"
-      class="btn btn-red">
+      class="bouton-secondaire">
       🧹 Réinitialiser les statuts
     </a>
 
     <a href="<?= esc_url(add_query_arg('reset_tentatives', '1')); ?>"
       onclick="return confirm('Supprimer toutes les tentatives pour cette énigme ?');"
-      class="btn btn-dark">
+      class="bouton-secondaire">
       ❌ Supprimer les tentatives
     </a>
 
     <a href="<?= esc_url(add_query_arg('reset_all', '1')); ?>"
       onclick="return confirm('Supprimer TOUT (statuts + tentatives) ?');"
-      class="btn btn-warning">
+      class="bouton-secondaire">
       🔥 Tout supprimer
     </a>
   </div>

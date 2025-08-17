@@ -1377,21 +1377,6 @@ body.panneau-ouvert::before {
   margin-right: 4px;
 }
 
-.table-tentatives .btn-valider {
-  background-color: var(--color-editor-success);
-  color: white;
-  padding: 2px 6px;
-  border: none;
-  border-radius: 4px;
-}
-
-.table-tentatives .btn-refuser {
-  background-color: var(--color-editor-error);
-  color: white;
-  padding: 2px 6px;
-  border: none;
-  border-radius: 4px;
-}
 
 .table-tentatives tr.tentative-pending {
   background-color: var(--color-editor-field-hover);
@@ -1921,19 +1906,6 @@ body.panneau-ouvert::before {
   padding: var(--space-md);
 }
 
-.edition-panel-footer .btn-admin-danger {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-xxs);
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--color-editor-text);
-}
-
-.edition-panel-footer .btn-admin-danger:hover {
-  opacity: 1;
-}
 
 /* ========== 🧩 PRÉ-REQUIS – LISTE D'ÉNIGMES ========== */
 .champ-pre-requis .liste-pre-requis {
