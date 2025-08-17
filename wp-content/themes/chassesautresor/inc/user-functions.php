@@ -157,10 +157,15 @@ function modifier_titre_onglet($title) {
 
     // Définition des titres pour chaque page
     $page_titles = [
-        'mon-compte/statistiques'              => 'Statistiques - Chasses au Trésor',
-        'mon-compte/outils'                    => 'Outils - Chasses au Trésor',
-        'mon-compte/organisateurs'             => 'Organisateur - Chasses au Trésor',
+        'mon-compte/statistiques'  => __('Statistiques - Chasses au Trésor', 'chassesautresor-com'),
+        'mon-compte/outils'        => __('Outils - Chasses au Trésor', 'chassesautresor-com'),
+        'mon-compte/organisateurs' => __('Organisateur - Chasses au Trésor', 'chassesautresor-com'),
     ];
+
+    // Titre spécifique pour /mon-compte/?section=points
+    if ($current_url === 'mon-compte' && (($_GET['section'] ?? '') === 'points')) {
+        return __('Points - Chasses au Trésor', 'chassesautresor-com');
+    }
 
     // Si l’URL correspond à une page définie, modifier le titre
     if (isset($page_titles[$current_url])) {
