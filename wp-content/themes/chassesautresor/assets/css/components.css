@@ -188,7 +188,7 @@ button,
     padding: 12px 20px;
     border-radius: 5px;
     font-size: 1rem;
-    cursor: pointer;
+    cursor: not-allowed;
     text-align: center;
     width: fit-content;
     display: flex;
