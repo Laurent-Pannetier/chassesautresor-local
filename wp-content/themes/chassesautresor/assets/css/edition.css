@@ -1796,14 +1796,24 @@ body.panneau-ouvert::before {
   margin-top: 10px;
 }
 
-.pager .etiquette {
+
+.pager button.etiquette {
   cursor: pointer;
+  padding: 4px 8px;
+  font-size: 1rem;
 }
 
 .pager-info {
   margin: 0 8px;
   color: var(--color-editor-text);
   font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pager-info .pager-select {
+  width: auto;
 }
 
 /* 📌 Actions de conversion en ligne */
