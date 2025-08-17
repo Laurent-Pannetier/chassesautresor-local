@@ -178,7 +178,7 @@ button,
 
 .bouton-secondaire:hover {
     background: var(--color-primary);
-    color: #000;
+    color: var(--color-text-fond-clair);
     transform: scale(1.05);
 }
 .bouton-secondaire.no-click {
@@ -481,7 +481,7 @@ a.ajout-link:focus-visible {
   font-size: 0.75rem;
   font-weight: bold;
   border-radius: 999px;
-  color: #fff;
+  color: var(--color-text-primary);
   text-transform: uppercase;
   letter-spacing: 0.03em;
   line-height: 1;
@@ -807,7 +807,7 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
 .message-succes {
     text-align: center;
     font-weight: bold;
-    color: green;
+    color: var(--color-success);
     font-size: 16px;
     margin-top: 15px;
 }
@@ -816,7 +816,7 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
 .message-info {
     text-align: center;
     font-weight: bold;
-    color: #333;
+    color: var(--color-text-fond-clair);
     font-size: 16px;
     margin-top: 15px;
 }
