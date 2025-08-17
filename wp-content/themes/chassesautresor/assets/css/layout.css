@@ -46,7 +46,7 @@
     filter: grayscale(100%);
     transition: filter 0.3s ease;
 }
-.site-above-header-wrap .custom-logo-link:hover .custom-logo {
+.site-above-header-wrap:hover .custom-logo {
     filter: none;
 }
 .site-above-header-wrap .points-container {
