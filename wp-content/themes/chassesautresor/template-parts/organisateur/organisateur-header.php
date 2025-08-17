@@ -76,25 +76,25 @@ if ($peut_modifier && !$est_complet) {
       </div>
 
       <div class="champ-edition" style="display: none;">
-        <button type="button" class="champ-enregistrer">✓</button>
-        <button type="button" class="champ-annuler">✖</button>
+        <button type="button" class="champ-enregistrer btn-icon bouton-tertiaire">✓</button>
+        <button type="button" class="champ-annuler btn-icon btn-danger">✖</button>
       </div>
 
       <div class="champ-feedback"></div>
 
-      <div class="header-organisateur__actions">
-        <button type="button" class="bouton-toggle-description" aria-label="Voir la description">
-          <i class="fa-solid fa-circle-info"></i>
-        </button>
-        <a href="<?= esc_url($url_contact); ?>" class="lien-contact" aria-label="Contact">
-          <i class="fa-solid fa-envelope"></i>
-        </a>
-        <?php if ($peut_modifier) : ?>
-          <button id="toggle-mode-edition" class="bouton-edition-toggle" aria-label="Paramètres organisateur">
-            <i class="fa-solid fa-gear"></i>
+        <div class="header-organisateur__actions">
+          <button type="button" class="bouton-toggle-description btn-icon bouton-tertiaire" aria-label="Voir la description">
+            <i class="fa-solid fa-circle-info"></i>
           </button>
-        <?php endif; ?>
-      </div>
+          <a href="<?= esc_url($url_contact); ?>" class="lien-contact btn-icon bouton-tertiaire" aria-label="Contact">
+            <i class="fa-solid fa-envelope"></i>
+          </a>
+          <?php if ($peut_modifier) : ?>
+            <button id="toggle-mode-edition" class="bouton-edition-toggle btn-icon bouton-tertiaire" aria-label="Paramètres organisateur">
+              <i class="fa-solid fa-gear"></i>
+            </button>
+          <?php endif; ?>
+        </div>
     </div>
 
   </header>
