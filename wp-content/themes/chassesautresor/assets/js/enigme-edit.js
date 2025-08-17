@@ -867,7 +867,7 @@ function initPanneauVariantes() {
                 lienAjouterResume.dataset.cpt = 'enigme';
                 lienAjouterResume.dataset.postId = postId;
                 lienAjouterResume.setAttribute('aria-label', wp.i18n.__('Ajouter des variantes', 'chassesautresor-com'));
-                lienAjouterResume.innerHTML = `${wp.i18n.__('ajouter des variantes', 'chassesautresor-com')} <span class="icone-modif">✏️</span>`;
+                lienAjouterResume.textContent = wp.i18n.__('ajouter des variantes', 'chassesautresor-com');
                 resumeBloc.appendChild(lienAjouterResume);
                 lienAjouterResume.addEventListener('click', e => {
                   e.preventDefault();
@@ -884,11 +884,11 @@ function initPanneauVariantes() {
               if (!boutonEditerResume) {
                 boutonEditerResume = document.createElement('button');
                 boutonEditerResume.type = 'button';
-                boutonEditerResume.className = 'champ-modifier ouvrir-panneau-variantes';
+                boutonEditerResume.className = 'champ-modifier txt-small ouvrir-panneau-variantes';
                 boutonEditerResume.dataset.cpt = 'enigme';
                 boutonEditerResume.dataset.postId = postId;
-                boutonEditerResume.setAttribute('aria-label', wp.i18n.__('Éditer les variantes', 'chassesautresor-com'));
-                boutonEditerResume.innerHTML = `${wp.i18n.__('éditer', 'chassesautresor-com')} <span class="icone-modif">✏️</span>`;
+                boutonEditerResume.setAttribute('aria-label', wp.i18n.__('Modifier les variantes', 'chassesautresor-com'));
+                boutonEditerResume.textContent = wp.i18n.__('modifier', 'chassesautresor-com');
                 resumeBloc.appendChild(boutonEditerResume);
                 boutonEditerResume.addEventListener('click', e => {
                   e.preventDefault();

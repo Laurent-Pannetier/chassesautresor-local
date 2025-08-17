@@ -369,8 +369,8 @@ function mettreAJourLigneResume(ligne, champ, estRempli, type) {
   if (!dejaBouton) {
     const bouton = document.createElement('button');
     bouton.type = 'button';
-    bouton.className = 'champ-modifier';
-    bouton.textContent = '✏️';
+    bouton.className = 'champ-modifier txt-small';
+    bouton.textContent = wp.i18n.__('modifier', 'chassesautresor-com');
     bouton.setAttribute('aria-label', 'Modifier le champ ' + champ);
 
     bouton.addEventListener('click', () => {

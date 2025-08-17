@@ -229,7 +229,7 @@ function initChasseEdit() {
         lien.dataset.champ = 'chasse_infos_recompense_valeur';
         lien.dataset.cpt = 'chasse';
         lien.dataset.postId = ligne.dataset.postId || '';
-        lien.innerHTML = 'ajouter <span class="icone-modif">✏️</span>';
+        lien.textContent = wp.i18n.__('ajouter', 'chassesautresor-com');
         champTexte.appendChild(lien);
       }
       if (typeof window.mettreAJourResumeInfos === 'function') {
@@ -258,12 +258,12 @@ function initChasseEdit() {
       span.appendChild(document.createTextNode('\u00A0\u2013\u00A0'));
       const bouton = document.createElement('button');
       bouton.type = 'button';
-      bouton.className = 'champ-modifier ouvrir-panneau-recompense';
+      bouton.className = 'champ-modifier txt-small ouvrir-panneau-recompense';
       bouton.dataset.champ = 'chasse_infos_recompense_valeur';
       bouton.dataset.cpt = 'chasse';
       bouton.dataset.postId = ligne.dataset.postId || '';
       bouton.setAttribute('aria-label', 'Modifier la récompense');
-      bouton.textContent = '✏️';
+      bouton.textContent = wp.i18n.__('modifier', 'chassesautresor-com');
       span.appendChild(bouton);
       if (typeof initZoneClicEdition === 'function') initZoneClicEdition(bouton);
     }
