@@ -49,7 +49,7 @@
   --color-gris-carte: #c2c2c2;              /* 🧩 Fond de carte énigme : gris bleuté doux */
 
   /* Asides */
-  --aside-bg-rgb: 255, 255, 255;            /* 🎨 Couleur de fond des asides */
+  --aside-bg-rgb: 238, 238, 238;            /* 🎨 Couleur de fond des asides : gris clair du nuancier (var(--color-grey-light)) */
   --aside-border-color: var(--color-grey-medium); /* 🖊 Couleur de bordure des asides */
   --aside-opacity: 0.4;                     /* ⚙️ Opacité standard des fonds d'aside */
 
