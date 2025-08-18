@@ -12,6 +12,17 @@
   height: fit-content;
 }
 
+.menu-lateral ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.menu-lateral .sub-menu {
+  margin-left: var(--space-md);
+  padding-left: 0;
+}
+
 @media (min-width: var(--breakpoint-desktop)) {
   .menu-lateral {
     position: sticky;

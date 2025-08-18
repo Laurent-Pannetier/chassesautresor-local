@@ -11,8 +11,30 @@
   color: var(--color-text-fond-clair);
 }
 
-.page-enigme .enigme-chasse-titre {
-  color: var(--color-text-fond-clair);
+/* Menu status styles */
+.enigme-menu > li.chasse > a {
+  font-weight: 600;
+}
+
+.enigme-menu .sub-menu li a {
+  font-weight: 400;
+}
+
+.enigme-menu li.bloquee > a {
+  color: var(--color-gris-3);
+  cursor: default;
+}
+
+.enigme-menu li.succes > a {
+  color: var(--color-success);
+}
+
+.enigme-menu li.non-engagee > a {
+  font-weight: 600;
+}
+
+.enigme-menu li.active > a {
+  text-decoration: underline;
 }
 
 .page-enigme {
