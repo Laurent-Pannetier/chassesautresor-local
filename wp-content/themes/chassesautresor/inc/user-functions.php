@@ -97,6 +97,11 @@ function charger_template_utilisateur($template) {
         wp_redirect(home_url('/mon-compte/?section=points'));
         exit;
     }
+
+    if ($request_uri === 'mon-compte/chasses' || $request_uri === 'mon-compte/chasses/') {
+        wp_redirect(home_url('/mon-compte/?section=chasses'));
+        exit;
+    }
     
     // Associe chaque URL à un fichier de contenu spécifique
     $mapping_templates = array(
@@ -165,6 +170,10 @@ function modifier_titre_onglet($title) {
     // Titre spécifique pour /mon-compte/?section=points
     if ($current_url === 'mon-compte' && (($_GET['section'] ?? '') === 'points')) {
         return __('Points - Chasses au Trésor', 'chassesautresor-com');
+    }
+
+    if ($current_url === 'mon-compte' && (($_GET['section'] ?? '') === 'chasses')) {
+        return __('Chasses - Chasses au Trésor', 'chassesautresor-com');
     }
 
     // Si l’URL correspond à une page définie, modifier le titre
@@ -550,6 +559,7 @@ function ca_load_admin_section()
     $section = sanitize_key($_GET['section'] ?? '');
     $allowed = [
         'points'        => ['template' => 'content-points.php', 'cap' => 'read'],
+        'chasses'       => ['template' => 'content-chasses.php', 'cap' => 'read'],
         'organisateurs' => ['template' => 'content-organisateurs.php', 'cap' => 'administrator'],
         'statistiques'  => ['template' => 'content-statistiques.php', 'cap' => 'administrator'],
         'outils'        => ['template' => 'content-outils.php', 'cap' => 'administrator'],
