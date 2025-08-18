@@ -11,6 +11,22 @@
   color: var(--color-text-fond-clair);
 }
 
+.menu-lateral .stats-bar-chart .bar-value,
+.menu-lateral .stats-bar-chart .bar-value--outside {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-fond-clair);
+}
+
+.menu-lateral .stats-bar-chart .bar-row + .bar-row {
+  margin-top: 0;
+}
+
+.menu-lateral .stats-bar-chart .bar-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
 /* Menu status styles */
 
 .enigme-menu {
@@ -25,6 +41,8 @@
   position: relative;
   margin-bottom: var(--space-xxs);
   padding-left: var(--space-md);
+  --bullet-fill: var(--color-grey-dark);
+  --bullet-outline: var(--color-grey-dark);
 }
 
 .enigme-menu li::before {
@@ -34,10 +52,10 @@
   left: 0;
   width: 8px;
   height: 8px;
-  background-color: transparent;
-  box-shadow: 0 0 0 1px var(--color-grey-dark);
-  transform: translateY(-50%) rotate(45deg);
-  border-radius: 2px;
+  background-color: var(--bullet-fill);
+  box-shadow: 0 0 0 1px var(--bullet-outline);
+  transform: translateY(-50%);
+  border-radius: 50%;
 }
 
 .enigme-menu li a {
@@ -49,27 +67,38 @@
 }
 
 .enigme-menu li.bloquee > a {
-  color: var(--color-gris-3);
+  color: var(--color-grey-medium);
   cursor: default;
+}
+
+.enigme-menu li.bloquee {
+  --bullet-fill: var(--color-grey-medium);
+  --bullet-outline: var(--color-grey-medium);
 }
 
 .enigme-menu li.succes > a {
   color: var(--color-success);
 }
 
+.enigme-menu li.succes {
+  --bullet-fill: var(--color-success);
+  --bullet-outline: var(--color-success);
+}
+
 .enigme-menu li.non-engagee > a {
   font-weight: 600;
 }
 
+.enigme-menu li.non-engagee {
+  --bullet-fill: transparent;
+}
+
 .enigme-menu li.active > a {
-  background-color: var(--color-grey-light);
+  background-color: rgba(255, 215, 0, 0.2);
   font-weight: 600;
 }
 
-.enigme-menu li.active::before {
-  background-color: var(--color-primary);
-  box-shadow: 0 0 0 1px var(--color-primary);
-}
+
 
 .page-enigme {
   display: flex;

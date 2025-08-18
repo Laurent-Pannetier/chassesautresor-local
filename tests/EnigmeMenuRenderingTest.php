@@ -180,6 +180,7 @@ if (!function_exists('get_the_post_thumbnail')) {
     }
 }
 
+
 if (!function_exists('esc_attr__')) {
     function esc_attr__($text, $domain)
     {
@@ -269,6 +270,7 @@ if (!function_exists('cat_debug')) {
     }
 }
 
+require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/layout-functions.php';
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/enigme/affichage.php';
 
 /**
