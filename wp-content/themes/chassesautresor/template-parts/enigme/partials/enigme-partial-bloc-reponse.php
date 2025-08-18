@@ -15,9 +15,6 @@ if (
   current_user_can('manage_options') ||
   utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)
   ) {
-    echo '<p class="message-organisateur">'
-        . esc_html__('🛠️ Cette énigme est la vôtre. Aucun formulaire n’est affiché.', 'chassesautresor-com')
-        . '</p>';
     return;
   }
 
