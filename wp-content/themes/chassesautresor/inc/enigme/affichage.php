@@ -169,7 +169,7 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
         $cache_key = 'enigme_sidebar_engagement_' . $chasse_id . '_' . $user_id;
         $data      = wp_cache_get($cache_key, 'chassesautresor');
 
-        if ($data === false) {
+        if (!is_array($data)) {
             $enigme_ids    = recuperer_ids_enigmes_pour_chasse($chasse_id);
             $total_enigmes = count($enigme_ids);
             $user_rate     = 0;
@@ -221,7 +221,7 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
         $cache_key = 'enigme_sidebar_progression_' . $chasse_id . '_' . $user_id;
         $data      = wp_cache_get($cache_key, 'chassesautresor');
 
-        if ($data === false) {
+        if (!is_array($data)) {
             $enigme_ids = recuperer_ids_enigmes_pour_chasse($chasse_id);
 
             if (!$enigme_ids) {
