@@ -1377,9 +1377,20 @@ function cta_toggle_css_compiler() {
     update_option('cta_css_compilation_active', $new_state);
 
     if ('1' === $new_state) {
+        $project_dir = ABSPATH;
+        $script      = $project_dir . 'build-css.js';
+
+        if (!is_dir($project_dir . 'node_modules')) {
+            $install_output = [];
+            $install_code   = 0;
+            exec('cd ' . escapeshellarg($project_dir) . ' && npm ci 2>&1', $install_output, $install_code);
+            if (0 !== $install_code) {
+                wp_send_json_error(__('Dependencies installation failed', 'chassesautresor-com'));
+            }
+        }
+
         $output = [];
         $code   = 0;
-        $script = ABSPATH . 'build-css.js';
         exec('node ' . escapeshellarg($script) . ' 2>&1', $output, $code);
         if (0 !== $code) {
             wp_send_json_error(__('Compilation failed', 'chassesautresor-com'));
