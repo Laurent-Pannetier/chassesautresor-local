@@ -9,7 +9,7 @@
 .menu-lateral .stats-bar-chart .bar-value--outside {
   font-size: 1rem;
   font-weight: 700;
-  color: var(--color-text-fond-clair);
+  color: rgba(var(--color-text-fond-clair-rgb, 28, 28, 28), 0.5);
 }
 
 .menu-lateral .stats-bar-chart .bar-row + .bar-row {
@@ -35,8 +35,8 @@
   position: relative;
   margin-bottom: var(--space-xxs);
   padding-left: var(--space-md);
-  --bullet-fill: var(--color-grey-dark);
-  --bullet-outline: var(--color-grey-dark);
+  --bullet-fill: currentColor;
+  --bullet-outline: currentColor;
 }
 
 .enigme-menu li::before {

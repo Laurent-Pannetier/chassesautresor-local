@@ -10,7 +10,8 @@
   border-radius: 6px;
   align-self: start;
   height: fit-content;
-  color: var(--color-text-fond-clair);
+  color: rgba(var(--color-text-fond-clair-rgb, 28, 28, 28), 0.5);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .menu-lateral__header {

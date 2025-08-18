@@ -46,6 +46,7 @@
 
   --color-gris-3: #adadad;                  /* ⚪ Gris neutre n°3 */
   --color-text-fond-clair: #1c1c1c;         /* noir clair */
+  --color-text-fond-clair-rgb: 28, 28, 28;  /* noir clair en RGB */
   --color-gris-carte: #c2c2c2;              /* 🧩 Fond de carte énigme : gris bleuté doux */
 
   /* Asides */

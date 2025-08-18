@@ -1544,7 +1544,7 @@ body.panneau-ouvert::before {
   background-color: var(--color-editor-background);
   border: 1px solid var(--color-editor-border);
   border-radius: 4px;
-  height: 16px;
+  min-height: 25px;
   overflow: hidden;
   position: relative;
 }
