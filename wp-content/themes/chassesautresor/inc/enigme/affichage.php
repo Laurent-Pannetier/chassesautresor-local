@@ -104,6 +104,21 @@ defined('ABSPATH') || exit;
         return (string) ob_get_clean();
     }
 
+    function enigme_render_bar_subsection(string $title, int $user_rate, int $avg_rate, string $section_class): string
+    {
+        ob_start();
+        ?>
+        <div class="<?= esc_attr($section_class); ?>">
+          <p class="aside-subsection-title"><?= esc_html($title); ?></p>
+          <div class="stats-bar-chart">
+            <?= enigme_render_bar_row(esc_html__('Vous', 'chassesautresor-com'), $user_rate, 'background-color:var(--color-primary)'); ?>
+            <?= enigme_render_bar_row(esc_html__('Moyenne', 'chassesautresor-com'), $avg_rate); ?>
+          </div>
+        </div>
+        <?php
+        return (string) ob_get_clean();
+    }
+
     /**
      * Build engagement histogram HTML for the sidebar.
      *
@@ -148,7 +163,7 @@ defined('ABSPATH') || exit;
             wp_cache_set($cache_key, $data, 'chassesautresor', HOUR_IN_SECONDS);
         }
 
-        return enigme_render_bar_section(
+        return enigme_render_bar_subsection(
             esc_html__('Engagements', 'chassesautresor-com'),
             $data['user'],
             $data['avg'],
@@ -211,7 +226,7 @@ defined('ABSPATH') || exit;
             return '';
         }
 
-        return enigme_render_bar_section(
+        return enigme_render_bar_subsection(
             esc_html__('Progression', 'chassesautresor-com'),
             $data['user'],
             $data['avg'],
@@ -244,6 +259,9 @@ defined('ABSPATH') || exit;
             }
 
             if ($chasse_id) {
+                $url_chasse = get_permalink($chasse_id);
+                $titre      = get_the_title($chasse_id);
+                echo '<h2 class="menu-lateral__title"><a href="' . esc_url($url_chasse) . '">' . esc_html($titre) . '</a></h2>';
                 $logo = get_the_post_thumbnail($chasse_id, 'thumbnail');
                 if ($logo) {
                     echo '<div class="enigme-chasse-logo">' . $logo . '</div>';
@@ -251,7 +269,10 @@ defined('ABSPATH') || exit;
             }
 
             if (!empty($menu_items)) {
+                echo '<section class="enigme-navigation">';
+                echo '<h3>' . esc_html__('Navigation', 'chassesautresor-com') . '</h3>';
                 echo '<ul class="enigme-menu">' . implode('', $menu_items) . '</ul>';
+                echo '</section>';
             }
 
             if ($chasse_id) {
@@ -262,7 +283,9 @@ defined('ABSPATH') || exit;
                 echo '</a>';
             }
 
-            echo '<div class="stats">%STATS%</div>';
+            echo '<section class="enigme-progressivometre"><h3>' .
+                esc_html__('Progressivomètre', 'chassesautresor-com') .
+                '</h3>%STATS%</section>';
             echo '</aside>';
             $html = ob_get_clean();
             wp_cache_set($cache_key, $html, 'chassesautresor', HOUR_IN_SECONDS);
@@ -500,12 +523,7 @@ defined('ABSPATH') || exit;
         }
 
         if ($show_menu && !empty($submenu_items)) {
-            $menu_items[] = sprintf(
-                '<li class="chasse"><a href="%s">%s</a><ul class="sub-menu">%s</ul></li>',
-                esc_url(get_permalink($chasse_id)),
-                esc_html(get_the_title($chasse_id)),
-                implode('', $submenu_items)
-            );
+            $menu_items = $submenu_items;
         }
 
         echo '<div class="container container--xl-full enigme-layout">';
