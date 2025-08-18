@@ -5,9 +5,14 @@
   gap: var(--space-xl);
 }
 
-.menu-lateral {
-  background: var(--ca-color-bg, #f5f5f5);
-  padding: var(--space-md);
+.page-enigme .menu-lateral {
+  --aside-bg-rgb: 255, 255, 255;
+  --aside-border-color: var(--color-grey-medium);
+  color: var(--color-text-fond-clair);
+}
+
+.page-enigme .enigme-chasse-titre {
+  color: var(--color-text-fond-clair);
 }
 
 .page-enigme {
