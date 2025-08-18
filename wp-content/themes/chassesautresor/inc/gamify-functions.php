@@ -473,6 +473,30 @@ function count_user_points_history(int $user_id = null): int
 }
 
 /**
+ * Format a points operation reason by replacing identifiers with linked titles.
+ *
+ * @param array $op Single operation data.
+ * @return string Formatted reason.
+ */
+function format_points_history_reason(array $op): string
+{
+    $reason      = $op['reason'] ?? '';
+    $origin_id   = isset($op['origin_id']) ? (int) $op['origin_id'] : 0;
+    $origin_type = $op['origin_type'] ?? '';
+
+    if ($origin_id > 0 && in_array($origin_type, ['chasse', 'tentative', 'indice', 'enigme'], true)) {
+        $title = get_the_title($origin_id);
+        $link  = get_permalink($origin_id);
+        if ($title && $link) {
+            $replacement = sprintf('<a href="%s">%s</a>', esc_url($link), esc_html($title));
+            $reason      = str_replace('#' . $origin_id, $replacement, $reason);
+        }
+    }
+
+    return $reason;
+}
+
+/**
  * Render points history table for a user.
  *
  * @param int $user_id User identifier.
@@ -510,25 +534,20 @@ function render_points_history_table(int $user_id): string
                 $variation       = (int) $op['points'];
                 $variation_label = $variation > 0 ? '+' . $variation : (string) $variation;
                 $date            = !empty($op['request_date']) ? mysql2date('d/m/Y', $op['request_date']) : '';
+                $reason          = format_points_history_reason($op);
                 ?>
                 <tr>
                     <td><?php echo esc_html($op['id']); ?></td>
                     <td><?php echo esc_html($date); ?></td>
                     <td><span class="etiquette"><?php echo esc_html($op['origin_type']); ?></span></td>
-                    <td><?php echo esc_html($op['reason']); ?></td>
+                    <td><?php echo wp_kses_post($reason); ?></td>
                     <td><span class="etiquette etiquette-grande"><?php echo esc_html($variation_label); ?></span></td>
                     <td><span class="etiquette etiquette-grande"><?php echo esc_html($op['balance']); ?></span></td>
                 </tr>
             <?php endforeach; ?>
             </tbody>
         </table>
-        <?php if ($total_pages > 1) : ?>
-        <nav class="points-history-pager" data-total="<?php echo esc_attr($total_pages); ?>">
-            <?php for ($i = 1; $i <= $total_pages; $i++) : ?>
-                <button class="page-link etiquette<?php echo $i === 1 ? ' active' : ''; ?>" data-page="<?php echo esc_attr($i); ?>"><?php echo esc_html($i); ?></button>
-            <?php endfor; ?>
-        </nav>
-        <?php endif; ?>
+        <?php echo cta_render_pager(1, $total_pages, 'points-history-pager'); ?>
     </div>
     <?php
     return ob_get_clean();
@@ -539,11 +558,22 @@ function render_points_history_table(int $user_id): string
  */
 function enqueue_points_history_script(): void
 {
+    $dir = get_stylesheet_directory();
+    $uri = get_stylesheet_directory_uri();
+
+    wp_enqueue_script(
+        'pager',
+        $uri . '/assets/js/core/pager.js',
+        [],
+        filemtime($dir . '/assets/js/core/pager.js'),
+        true
+    );
+
     wp_enqueue_script(
         'points-history',
-        get_stylesheet_directory_uri() . '/assets/js/points-history.js',
-        ['jquery'],
-        filemtime(get_stylesheet_directory() . '/assets/js/points-history.js'),
+        $uri . '/assets/js/points-history.js',
+        ['pager'],
+        filemtime($dir . '/assets/js/points-history.js'),
         true
     );
 
@@ -579,12 +609,13 @@ function ajax_load_points_history(): void
         $variation       = (int) $op['points'];
         $variation_label = $variation > 0 ? '+' . $variation : (string) $variation;
         $date            = !empty($op['request_date']) ? mysql2date('d/m/Y', $op['request_date']) : '';
+        $reason          = format_points_history_reason($op);
         ?>
         <tr>
             <td><?php echo esc_html($op['id']); ?></td>
             <td><?php echo esc_html($date); ?></td>
             <td><span class="etiquette"><?php echo esc_html($op['origin_type']); ?></span></td>
-            <td><?php echo esc_html($op['reason']); ?></td>
+            <td><?php echo wp_kses_post($reason); ?></td>
             <td><span class="etiquette etiquette-grande"><?php echo esc_html($variation_label); ?></span></td>
             <td><span class="etiquette etiquette-grande"><?php echo esc_html($op['balance']); ?></span></td>
         </tr>
