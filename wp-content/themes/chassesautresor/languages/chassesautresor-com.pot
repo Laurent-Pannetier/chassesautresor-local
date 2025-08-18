@@ -804,8 +804,9 @@ msgstr ""
 msgid "%dh et %dmn avant réactivation"
 msgstr ""
 
-#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:86
-msgid "Votre réponse :"
+#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:82
+#: inc/enigme/reponses.php:38
+msgid "Votre réponse"
 msgstr ""
 
 #: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:93
