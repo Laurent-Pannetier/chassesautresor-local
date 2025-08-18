@@ -33,10 +33,11 @@ add_action('wp_enqueue_scripts', function () {
     wp_enqueue_style('astra-style', get_template_directory_uri() . '/style.css');
 
     // Détermine l'environnement via WP_ENVIRONMENT_TYPE ou une constante dédiée.
-    $env            = defined('CHASSESAUTRESOR_ENV') ? CHASSESAUTRESOR_ENV : wp_get_environment_type();
-    $is_edition_env = 'edition' === $env || current_user_can('administrator');
+    $env                  = defined('CHASSESAUTRESOR_ENV') ? CHASSESAUTRESOR_ENV : wp_get_environment_type();
+    $is_compil_active     = get_option('cta_css_compilation_active', '1') === '1';
+    $is_edition_env       = 'edition' === $env;
 
-    if ($is_edition_env) {
+    if (!$is_compil_active || $is_edition_env) {
         wp_enqueue_style(
             'mon-theme-enfant-style',
             $theme_uri . '/style.css',
@@ -52,6 +53,7 @@ add_action('wp_enqueue_scripts', function () {
             'grid'               => 'grid.css',
             'layout'             => 'layout.css',
             'components'         => 'components.css',
+            'aside'              => 'aside.css',
             'modal-bienvenue'    => 'modal-bienvenue.css',
             'general-style'      => 'general.css',
             'chasse-style'       => 'chasse.css',
@@ -75,6 +77,7 @@ add_action('wp_enqueue_scripts', function () {
             'grid',
             'layout',
             'components',
+            'aside',
             'modal-bienvenue',
             'general-style',
             'chasse-style',
@@ -91,13 +94,21 @@ add_action('wp_enqueue_scripts', function () {
         }
 
         // 📌 Styles conditionnels
-        if (
-            is_singular(['organisateur', 'chasse', 'enigme']) ||
-            (
-                (is_account_page() || preg_match('#^/mon-compte(?:/|$|\\?)#', $_SERVER['REQUEST_URI'] ?? '')) &&
-                is_user_logged_in()
-            )
+        $should_load_edition = false;
+
+        if (is_singular(['organisateur', 'chasse', 'enigme'])) {
+            $post_id = get_queried_object_id();
+            if (current_user_can('edit_post', $post_id)) {
+                $should_load_edition = true;
+            }
+        } elseif (
+            (is_account_page() || preg_match('#^/mon-compte(?:/|$|\\?)#', $_SERVER['REQUEST_URI'] ?? '')) &&
+            is_user_logged_in()
         ) {
+            $should_load_edition = true;
+        }
+
+        if ($should_load_edition) {
             wp_enqueue_style('edition');
         }
 

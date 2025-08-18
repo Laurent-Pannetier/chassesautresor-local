@@ -12,7 +12,8 @@ if (!current_user_can('administrator')) {
     exit;
 }
 
-$taux_conversion = get_taux_conversion_actuel();
+$taux_conversion    = get_taux_conversion_actuel();
+$css_compil_active = get_option('cta_css_compilation_active', '1') === '1';
 ?>
 <section>
     <h1 class="mb-4 text-xl font-semibold"><?php esc_html_e('Outils', 'chassesautresor-com'); ?></h1>
@@ -53,6 +54,16 @@ $taux_conversion = get_taux_conversion_actuel();
                     <textarea id="acf-fields-output" style="width:100%;height:300px;" readonly></textarea>
                 </div>
             </div>
+        </div>
+
+        <div class="dashboard-card">
+            <i class="fas fa-code"></i>
+            <h3><?php esc_html_e('Compil CSS', 'chassesautresor-com'); ?></h3>
+            <p class="stat-value">
+                <button id="toggle-css-compiler" class="bouton-primaire" data-nonce="<?php echo esc_attr(wp_create_nonce('cta_toggle_css_compiler')); ?>">
+                    <?php echo $css_compil_active ? esc_html__('Désactiver', 'chassesautresor-com') : esc_html__('Activer', 'chassesautresor-com'); ?>
+                </button>
+            </p>
         </div>
     </div>
 </section>

@@ -1362,6 +1362,34 @@ function recuperer_details_acf() {
 }
 add_action('wp_ajax_recuperer_details_acf', 'recuperer_details_acf');
 
+// =============================================
+// AJAX : activer/désactiver la compilation CSS
+// =============================================
+function cta_toggle_css_compiler() {
+    if (!current_user_can('administrator')) {
+        wp_send_json_error(__('Non autorisé', 'chassesautresor-com'));
+    }
+
+    check_ajax_referer('cta_toggle_css_compiler', 'nonce');
+
+    $active    = get_option('cta_css_compilation_active', '1') === '1';
+    $new_state = $active ? '0' : '1';
+    update_option('cta_css_compilation_active', $new_state);
+
+    if ('1' === $new_state) {
+        $output = [];
+        $code   = 0;
+        $script = ABSPATH . 'build-css.js';
+        exec('node ' . escapeshellarg($script) . ' 2>&1', $output, $code);
+        if (0 !== $code) {
+            wp_send_json_error(__('Compilation failed', 'chassesautresor-com'));
+        }
+    }
+
+    wp_send_json_success(['active' => '1' === $new_state]);
+}
+add_action('wp_ajax_cta_toggle_css_compiler', 'cta_toggle_css_compiler');
+
 
 /**
  * Charge le script de la carte Développement sur les pages Mon Compte.
@@ -1381,6 +1409,25 @@ function charger_script_developpement_card() {
     }
 }
 add_action('wp_enqueue_scripts', 'charger_script_developpement_card');
+
+function charger_script_compil_css_card() {
+    if (preg_match('#^/mon-compte(?:/|$|\\?)#', $_SERVER['REQUEST_URI'] ?? '')) {
+        wp_enqueue_script(
+            'compil-css-card',
+            get_stylesheet_directory_uri() . '/assets/js/compil-css-card.js',
+            [],
+            filemtime(get_stylesheet_directory() . '/assets/js/compil-css-card.js'),
+            true
+        );
+        wp_localize_script('compil-css-card', 'compilCssCard', [
+            'ajax_url'      => admin_url('admin-ajax.php'),
+            'nonce'         => wp_create_nonce('cta_toggle_css_compiler'),
+            'text_activate' => __('Activer', 'chassesautresor-com'),
+            'text_deactivate' => __('Désactiver', 'chassesautresor-com'),
+        ]);
+    }
+}
+add_action('wp_enqueue_scripts', 'charger_script_compil_css_card');
 
 // ==================================================
 // 📦 TABLEAU ORGANISATEURS EN CRÉATION
