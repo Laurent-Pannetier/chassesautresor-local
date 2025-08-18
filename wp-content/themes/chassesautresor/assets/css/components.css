@@ -218,7 +218,7 @@ button,
 
 .bouton-tertiaire {
     background: transparent;
-    color: var(--color-text-primary);
+    color: var(--color-text-fond-clair);
     border: 1px solid currentColor;
     transition: background 0.3s ease, transform 0.2s ease;
     padding: 10px 15px;
@@ -230,8 +230,8 @@ button,
 }
 
 .bouton-tertiaire:hover {
-    background: var(--color-text-primary);
-    color: var(--color-text-fond-clair);
+    background: var(--color-text-fond-clair);
+    color: var(--color-text-primary);
     transform: scale(1.05);
 }
 
