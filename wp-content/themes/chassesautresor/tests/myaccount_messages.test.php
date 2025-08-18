@@ -71,6 +71,13 @@ if (!function_exists('esc_url')) {
     }
 }
 
+if (!function_exists('home_url')) {
+    function home_url($path = '')
+    {
+        return 'https://example.com' . $path;
+    }
+}
+
 if (!function_exists('esc_html__')) {
     function esc_html__($text, $domain = 'default')
     {
@@ -120,6 +127,15 @@ class MyAccountMessagesTest extends TestCase
             $output
         );
         $this->assertStringContainsString('demande de conversion', $output);
+    }
+
+    public function test_admin_conversion_request_link_points_to_points_tab(): void
+    {
+        $output = myaccount_get_important_messages();
+        $this->assertStringContainsString(
+            'https://example.com/mon-compte/?section=points',
+            $output
+        );
     }
 
     public function test_pending_validation_message_is_displayed(): void
