@@ -24,6 +24,19 @@ if (!is_user_logged_in()) {
     exit;
 }
 
+// 🔹 Engagement automatique si autorisé
+if (
+    utilisateur_est_engage_dans_chasse($user_id, $chasse_id) &&
+    !utilisateur_est_engage_dans_enigme($user_id, $enigme_id) &&
+    utilisateur_peut_engager_enigme($enigme_id, $user_id)
+) {
+    marquer_enigme_comme_engagee($user_id, $enigme_id);
+
+    if (get_field('enigme_mode_validation', $enigme_id) === 'aucune') {
+        verifier_fin_de_chasse($user_id, $enigme_id);
+    }
+}
+
 // 🔹 Redirection si non visible
 if (!enigme_est_visible_pour($user_id, $enigme_id)) {
     $fallback_url = $chasse_id ? get_permalink($chasse_id) : home_url('/');

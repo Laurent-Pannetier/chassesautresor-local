@@ -212,11 +212,11 @@ function get_cta_enigme(int $enigme_id, ?int $user_id = null): array
         case 'non_commencee':
             return array_merge($cta, [
                 'type'       => 'engager',
-                'label'      => "Commencer",
-                'action'     => 'form',
-                'url'        => site_url('/traitement-engagement'),
+                'label'      => __('Commencer', 'chassesautresor-com'),
+                'action'     => 'link',
+                'url'        => get_permalink($enigme_id),
                 'classe_css' => 'cta-engager',
-                'badge'      => 'À tenter',
+                'badge'      => __('À tenter', 'chassesautresor-com'),
             ]);
 
         case 'en_cours':
@@ -266,21 +266,21 @@ function get_cta_enigme(int $enigme_id, ?int $user_id = null): array
         case 'echouee':
             return array_merge($cta, [
                 'type'       => 'engager',
-                'label'      => "Réessayer",
-                'action'     => 'form',
-                'url'        => site_url('/traitement-engagement'),
+                'label'      => __('Réessayer', 'chassesautresor-com'),
+                'action'     => 'link',
+                'url'        => get_permalink($enigme_id),
                 'classe_css' => 'cta-echouee',
-                'badge'      => 'Échouée',
+                'badge'      => __('Échouée', 'chassesautresor-com'),
             ]);
 
         case 'abandonnee':
             return array_merge($cta, [
                 'type'       => 'engager',
-                'label'      => "Recommencer",
-                'action'     => 'form',
-                'url'        => site_url('/traitement-engagement'),
+                'label'      => __('Recommencer', 'chassesautresor-com'),
+                'action'     => 'link',
+                'url'        => get_permalink($enigme_id),
                 'classe_css' => 'cta-abandonnee',
-                'badge'      => 'Abandonnée',
+                'badge'      => __('Abandonnée', 'chassesautresor-com'),
             ]);
 
         default:
