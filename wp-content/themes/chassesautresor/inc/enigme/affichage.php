@@ -280,17 +280,22 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
             ob_start();
             echo '<aside class="menu-lateral">';
 
-            if ($edition_active) {
-                echo '<button id="toggle-mode-edition-enigme" type="button" ' .
-                    'class="bouton-edition-toggle bouton-edition-toggle--clair" data-cpt="enigme" aria-label="' .
-                    esc_attr__('Activer Orgy', 'chassesautresor-com') .
-                    '"><i class="fa-solid fa-gear"></i></button>';
-            }
-
+            echo '<div class="menu-lateral__header">';
             if ($chasse_id) {
                 $url_chasse = get_permalink($chasse_id);
                 $titre      = get_the_title($chasse_id);
                 echo '<h2 class="menu-lateral__title"><a href="' . esc_url($url_chasse) . '">' . esc_html($titre) . '</a></h2>';
+            }
+
+            if ($edition_active) {
+                echo '<button id="toggle-mode-edition-enigme" type="button" ' .
+                    'class="bouton-edition-toggle bouton-edition-toggle--clair menu-lateral__edition-toggle" data-cpt="enigme" aria-label="' .
+                    esc_attr__('Activer Orgy', 'chassesautresor-com') .
+                    '"><i class="fa-solid fa-gear"></i></button>';
+            }
+            echo '</div>';
+
+            if ($chasse_id) {
                 $logo = get_the_post_thumbnail($chasse_id, 'thumbnail');
                 if ($logo) {
                     echo '<div class="enigme-chasse-logo">' . $logo . '</div>';

@@ -12,12 +12,23 @@
   height: fit-content;
 }
 
-.menu-lateral__title {
+.menu-lateral__header {
   background-color: var(--color-primary-dark);
   color: var(--color-white);
-  font-size: 1.25rem;
   margin: calc(-1 * var(--space-md)) calc(-1 * var(--space-md)) var(--space-md);
   padding: var(--space-sm) var(--space-md);
+  position: relative;
+}
+
+.menu-lateral__title {
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.menu-lateral__edition-toggle {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
 }
 
 .menu-lateral__title a {
