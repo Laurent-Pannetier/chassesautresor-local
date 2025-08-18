@@ -317,7 +317,7 @@ defined('ABSPATH') || exit;
 
         if ($show_menu && !empty($submenu_items)) {
             $menu_items[] = sprintf(
-                '<li><a href="%s">%s</a><ul class="sub-menu">%s</ul></li>',
+                '<li class="chasse"><a href="%s">%s</a><ul class="sub-menu">%s</ul></li>',
                 esc_url(get_permalink($chasse_id)),
                 esc_html(get_the_title($chasse_id)),
                 implode('', $submenu_items)
