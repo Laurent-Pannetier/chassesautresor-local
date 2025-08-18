@@ -16,10 +16,36 @@
 .enigme-menu {
   margin-top: var(--space-lg);
   margin-bottom: var(--space-lg);
+  list-style: none;
+  padding: 0;
+}
+
+/* Stylised bullets and indentation */
+.enigme-menu li {
+  position: relative;
+  margin-bottom: var(--space-xxs);
+  padding-left: var(--space-md);
+}
+
+.enigme-menu li::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  background-color: transparent;
+  box-shadow: 0 0 0 1px var(--color-grey-dark);
+  transform: translateY(-50%) rotate(45deg);
+  border-radius: 2px;
 }
 
 .enigme-menu li a {
+  display: block;
+  padding: var(--space-xxs) var(--space-sm);
   font-weight: 400;
+  text-decoration: none;
+  border-radius: 4px;
 }
 
 .enigme-menu li.bloquee > a {
@@ -36,7 +62,13 @@
 }
 
 .enigme-menu li.active > a {
-  text-decoration: underline;
+  background-color: var(--color-grey-light);
+  font-weight: 600;
+}
+
+.enigme-menu li.active::before {
+  background-color: var(--color-primary);
+  box-shadow: 0 0 0 1px var(--color-primary);
 }
 
 .page-enigme {
