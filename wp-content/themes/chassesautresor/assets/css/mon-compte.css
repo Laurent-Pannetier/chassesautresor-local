@@ -151,8 +151,8 @@
 .msg-important {
     margin-bottom: var(--space-md);
     padding: var(--space-md);
-    background: hsl(var(--destructive));
-    color: hsl(var(--destructive-foreground));
+    background: hsl(var(--muted));
+    color: hsl(var(--muted-foreground));
     border-radius: 0.5rem;
 }
 
