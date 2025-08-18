@@ -331,11 +331,7 @@ header .points-link:hover {
 }
 
 /* ========== ✅ BLOC RÉPONSE CTA ROW ========== */
-.reponse-cta-row {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-}
+
 
 .points-link.points-boutique-icon {
   margin-left: 8px;
