@@ -399,16 +399,14 @@ function traiter_statut_enigme(int $enigme_id, ?int $user_id = null): array
     }
 
     $formulaire = in_array($statut, ['en_cours', 'non_souscrite'], true);
-    $message = ($statut === 'resolue');
-    $message_html = $message ? '<p class="message-statut">Vous avez déjà résolu cette énigme.</p>' : '';
 
     return [
         'etat' => $statut,
         'rediriger' => false,
         'url' => null,
         'afficher_formulaire' => $formulaire,
-        'afficher_message' => $message,
-        'message_html' => $message_html,
+        'afficher_message' => false,
+        'message_html' => '',
     ];
 }
 
