@@ -22,6 +22,7 @@ $pages = $args['pages'] ?? $pages ?? (int) ceil($total / $par_page);
 $mode_validation = $args['mode_validation'] ?? $mode_validation ?? 'aucune';
 $orderby = $args['orderby'] ?? $orderby ?? 'date';
 $order = $args['order'] ?? $order ?? 'ASC';
+$stats_locked = $args['stats_locked'] ?? $stats_locked ?? false;
 
 $icon_date = 'fa-sort';
 if ($orderby === 'date') {
@@ -33,9 +34,16 @@ if ($orderby === 'tentatives') {
 }
 
 if (empty($participants)) :
-    ?>
-<p><?= esc_html__('Aucun participant engagé.', 'chassesautresor-com'); ?></p>
-<?php else : ?>
+    if ($stats_locked) :
+        ?>
+        <p class="edition-placeholder" style="text-align:center;"><?php esc_html_e('Les statistiques seront disponibles une fois la chasse activée.', 'chassesautresor-com'); ?></p>
+        <?php
+    else :
+        ?>
+        <p><?= esc_html__('Aucun participant engagé.', 'chassesautresor-com'); ?></p>
+        <?php
+    endif;
+else : ?>
 <table class="stats-table compact">
   <thead>
       <tr>
