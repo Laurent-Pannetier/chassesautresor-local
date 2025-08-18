@@ -52,8 +52,8 @@
   height: 8px;
   background-color: transparent;
   box-shadow: 0 0 0 1px var(--color-grey-dark);
-  transform: translateY(-50%) rotate(45deg);
-  border-radius: 2px;
+  transform: translateY(-50%);
+  border-radius: 50%;
 }
 
 .enigme-menu li a {
@@ -65,7 +65,7 @@
 }
 
 .enigme-menu li.bloquee > a {
-  color: var(--color-gris-3);
+  color: var(--color-grey-medium);
   cursor: default;
 }
 
@@ -82,14 +82,11 @@
   font-weight: 600;
 }
 
-.enigme-menu li.non-engagee::before {
-  background-color: var(--color-grey-dark);
-  box-shadow: 0 0 0 1px var(--color-grey-dark);
-}
+
 
 .enigme-menu li.bloquee::before {
-  background-color: var(--color-error);
-  box-shadow: 0 0 0 1px var(--color-error);
+  background-color: var(--color-grey-medium);
+  box-shadow: 0 0 0 1px var(--color-grey-medium);
 }
 
 .enigme-menu li.active > a {
@@ -97,10 +94,7 @@
   font-weight: 600;
 }
 
-.enigme-menu li.active::before {
-  background-color: var(--color-primary);
-  box-shadow: 0 0 0 1px var(--color-primary);
-}
+
 
 .page-enigme {
   display: flex;

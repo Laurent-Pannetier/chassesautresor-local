@@ -288,10 +288,7 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
             if ($chasse_id) {
                 $url_chasse = get_permalink($chasse_id);
                 $titre      = get_the_title($chasse_id);
-                echo '<h2 class="menu-lateral__title">'
-                    . get_svg_icon('trophee')
-                    . '<a href="' . esc_url($url_chasse) . '">' . esc_html($titre) . '</a>'
-                    . '</h2>';
+                echo '<h2 class="menu-lateral__title"><a href="' . esc_url($url_chasse) . '">' . esc_html($titre) . '</a></h2>';
             }
 
             if ($edition_active) {
