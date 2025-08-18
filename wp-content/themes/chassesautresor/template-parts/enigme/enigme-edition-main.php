@@ -219,26 +219,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                 <label>
                   <input id="enigme_mode_validation" type="radio" name="acf[enigme_mode_validation]" value="automatique" <?= $mode_validation === 'automatique' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
                   <?= esc_html__('Automatique', 'chassesautresor-com'); ?>
-                  <button
-                    type="button"
-                    class="mode-fin-aide validation-aide"
-                    data-mode="automatique"
-                    aria-label="<?= esc_attr__('Explication du mode automatique', 'chassesautresor-com'); ?>"
-                  >
-                    <i class="fa-regular fa-circle-question"></i>
-                  </button>
+                  <?php
+                  get_template_part(
+                      'template-parts/common/help-icon',
+                      null,
+                      [
+                          'aria_label' => __('Explication du mode automatique', 'chassesautresor-com'),
+                          'classes'    => 'mode-fin-aide validation-aide',
+                          'attributes' => [
+                              'data-mode' => 'automatique',
+                          ],
+                      ]
+                  );
+                  ?>
                 </label>
                 <label>
                   <input type="radio" name="acf[enigme_mode_validation]" value="manuelle" <?= $mode_validation === 'manuelle' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
                   <?= esc_html__('Manuelle', 'chassesautresor-com'); ?>
-                  <button
-                    type="button"
-                    class="mode-fin-aide validation-aide"
-                    data-mode="manuelle"
-                    aria-label="<?= esc_attr__('Explication du mode manuel', 'chassesautresor-com'); ?>"
-                  >
-                    <i class="fa-regular fa-circle-question"></i>
-                  </button>
+                  <?php
+                  get_template_part(
+                      'template-parts/common/help-icon',
+                      null,
+                      [
+                          'aria_label' => __('Explication du mode manuel', 'chassesautresor-com'),
+                          'classes'    => 'mode-fin-aide validation-aide',
+                          'attributes' => [
+                              'data-mode' => 'manuelle',
+                          ],
+                      ]
+                  );
+                  ?>
                 </label>
                 <label>
                   <input type="radio" name="acf[enigme_mode_validation]" value="aucune" <?= $mode_validation === 'aucune' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
@@ -260,13 +270,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
             <div class="champ-enigme champ-variantes-resume champ-groupe-reponse-automatique cache<?= $has_variantes ? ' champ-rempli' : ' champ-vide'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_reponse_variantes" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
               <label>
                 <?= esc_html__('Variantes', 'chassesautresor-com'); ?>
-                <button
-                  type="button"
-                  class="bouton-aide-points variantes-aide"
-                  aria-label="<?= esc_attr__('Explication des variantes', 'chassesautresor-com'); ?>"
-                >
-                  <i class="fa-solid fa-circle-question" aria-hidden="true"></i>
-                </button>
+                <?php
+                get_template_part(
+                    'template-parts/common/help-icon',
+                    null,
+                    [
+                        'aria_label' => __('Explication des variantes', 'chassesautresor-com'),
+                        'classes'    => 'bouton-aide-points variantes-aide',
+                    ]
+                );
+                ?>
               </label>
 
               <?php if ($has_variantes) : ?>
@@ -293,9 +306,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
             <div class="champ-enigme champ-cout-points <?= empty($cout) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_tentative.enigme_tentative_cout_points" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
               <div class="champ-edition" style="display: flex; align-items: center; flex-wrap: wrap; gap: 1rem;">
                 <label for="enigme-tentative-cout">Coût tentative
-                  <button type="button" class="bouton-aide-points open-points-modal" aria-label="En savoir plus sur les points">
-                    <i class="fa-solid fa-circle-question" aria-hidden="true"></i>
-                  </button>
+                  <?php
+                  get_template_part(
+                      'template-parts/common/help-icon',
+                      null,
+                      [
+                          'aria_label' => __('En savoir plus sur les points', 'chassesautresor-com'),
+                          'classes'    => 'bouton-aide-points open-points-modal',
+                      ]
+                  );
+                  ?>
                 </label>
                 <input type="number" id="enigme-tentative-cout" class="champ-input champ-cout" min="0" step="1" value="<?= esc_attr($cout); ?>" placeholder="0" <?= $peut_editer ? '' : 'disabled'; ?> />
                 <span class="txt-small">points</span>
@@ -314,13 +334,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
             <div class="champ-enigme champ-nb-tentatives <?= empty($max) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_tentative.enigme_tentative_max" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
               <div class="champ-edition" style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
                 <label for="enigme-nb-tentatives">Nb tentatives
-                  <button
-                    type="button"
-                    class="bouton-aide-points tentatives-aide"
-                    aria-label="<?= esc_attr__('Explication du nombre de tentatives', 'chassesautresor-com'); ?>"
-                  >
-                    <i class="fa-solid fa-circle-question" aria-hidden="true"></i>
-                  </button>
+                  <?php
+                  get_template_part(
+                      'template-parts/common/help-icon',
+                      null,
+                      [
+                          'aria_label' => __('Explication du nombre de tentatives', 'chassesautresor-com'),
+                          'classes'    => 'bouton-aide-points tentatives-aide',
+                      ]
+                  );
+                  ?>
                 </label>
                 <input type="number" id="enigme-nb-tentatives" class="champ-input champ-nb-tentatives" min="1" step="1" value="<?= esc_attr($max); ?>" placeholder="5" <?= $peut_editer ? '' : 'disabled'; ?> />
                 <span class="txt-small">max par jour</span>
@@ -609,14 +632,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                       <i class="fa-regular fa-clock" aria-hidden="true"></i>
                       <h3>
                         Délai après fin de chasse
-                        <button
-                          type="button"
-                          class="mode-fin-aide stat-help"
-                          data-message="<?= esc_attr($aide_delai); ?>"
-                          aria-label="<?= esc_attr__('Informations sur la publication de la solution', 'chassesautresor-com'); ?>"
-                        >
-                          <i class="fa-regular fa-circle-question" aria-hidden="true"></i>
-                        </button>
+                        <?php
+                        get_template_part(
+                            'template-parts/common/help-icon',
+                            null,
+                            [
+                                'aria_label' => __('Informations sur la publication de la solution', 'chassesautresor-com'),
+                                'classes'    => 'mode-fin-aide stat-help',
+                                'message'    => $aide_delai,
+                            ]
+                        );
+                        ?>
                       </h3>
                       <p class="stat-value champ-solution-timing">
                         <input
