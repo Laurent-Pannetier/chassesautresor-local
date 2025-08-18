@@ -299,17 +299,9 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
 
             if (!empty($menu_items)) {
                 echo '<section class="enigme-navigation">';
-                echo '<h3>' . esc_html__('Navigation', 'chassesautresor-com') . '</h3>';
+                echo '<h3>' . esc_html__('Énigmes', 'chassesautresor-com') . '</h3>';
                 echo '<ul class="enigme-menu">' . implode('', $menu_items) . '</ul>';
                 echo '</section>';
-            }
-
-            if ($chasse_id) {
-                $url_retour = get_permalink($chasse_id);
-                echo '<a href="' . esc_url($url_retour) . '" class="bouton-retour bouton-retour-chasse">';
-                echo '<i class="fa-solid fa-arrow-left"></i>';
-                echo '<span class="screen-reader-text">' . esc_html__('Retour à la chasse', 'chassesautresor-com') . '</span>';
-                echo '</a>';
             }
 
             echo '<section class="enigme-progressivometre"><h3>' .
