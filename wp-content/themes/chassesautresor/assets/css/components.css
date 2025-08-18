@@ -294,6 +294,16 @@ button,
     outline-offset: 2px;
 }
 
+/* ========== 🔙 BOUTON RETOUR AUX CHASSES ========== */
+
+.bouton-retour-chasse {
+    margin-top: var(--space-lg);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+}
+
 
 /* ========== ➕ BOUTON D’AJOUT ========== */
 

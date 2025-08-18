@@ -92,7 +92,7 @@ defined('ABSPATH') || exit;
 
             if ($chasse_id) {
                 $url_retour = get_permalink($chasse_id);
-                echo '<a href="' . esc_url($url_retour) . '" class="bouton-retour bouton-retour-chasse">';
+                echo '<a href="' . esc_url($url_retour) . '" class="bouton-retour bouton-retour-chasse bouton-secondaire">';
                 echo '<i class="fa-solid fa-arrow-left"></i>';
                 echo '<span class="screen-reader-text">' . esc_html__('Retour à la chasse', 'chassesautresor-com') . '</span>';
                 echo '</a>';
