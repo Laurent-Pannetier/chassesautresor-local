@@ -15,13 +15,26 @@ $is_organizer = in_array(ROLE_ORGANISATEUR, $roles, true) || in_array(ROLE_ORGAN
 
 if (current_user_can('administrator')) {
     $historique = recuperer_historique_paiements_admin();
-    $points     = function_exists('get_user_points') ? get_user_points((int) $current_user->ID) : 0;
+    global $wpdb;
+    $repo              = new PointsRepository($wpdb);
+    $used_points       = $repo->getTotalPointsUsed();
+    $circulation_points = $repo->getTotalPointsInCirculation();
     ?>
     <div class="dashboard-grid stats-cards myaccount-points-cards">
-        <div class="dashboard-card" data-stat="points">
-            <i class="fa-solid fa-coins" aria-hidden="true"></i>
-            <h3><?php esc_html_e('Points', 'chassesautresor-com'); ?></h3>
-            <p class="stat-value"><?php echo esc_html($points); ?></p>
+        <div class="dashboard-card" data-stat="points-used">
+            <i class="fa-solid fa-hand-holding-dollar" aria-hidden="true"></i>
+            <h3><?php esc_html_e('Points utilisés', 'chassesautresor-com'); ?></h3>
+            <p class="stat-value"><?php echo esc_html($used_points); ?></p>
+        </div>
+        <div class="dashboard-card" data-stat="points-bought">
+            <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+            <h3><?php esc_html_e('Points achetés', 'chassesautresor-com'); ?></h3>
+            <p class="stat-value"><?php esc_html_e('À implémenter', 'chassesautresor-com'); ?></p>
+        </div>
+        <div class="dashboard-card" data-stat="points-circulation">
+            <i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i>
+            <h3><?php esc_html_e('Points en circulation', 'chassesautresor-com'); ?></h3>
+            <p class="stat-value"><?php echo esc_html($circulation_points); ?></p>
         </div>
         <div class="dashboard-card">
             <div class="dashboard-card-header">
