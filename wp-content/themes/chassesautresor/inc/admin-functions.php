@@ -1390,6 +1390,31 @@ function cta_toggle_css_compiler() {
 }
 add_action('wp_ajax_cta_toggle_css_compiler', 'cta_toggle_css_compiler');
 
+function cta_reset_stats() {
+    if (!current_user_can('administrator')) {
+        wp_send_json_error(__('Non autorisé', 'chassesautresor-com'));
+    }
+
+    check_ajax_referer('cta_reset_stats', 'nonce');
+
+    global $wpdb;
+    $tables = [
+        $wpdb->prefix . 'chasse_winners',
+        $wpdb->prefix . 'engagements',
+        $wpdb->prefix . 'enigme_statuts_utilisateur',
+        $wpdb->prefix . 'enigme_tentatives',
+        $wpdb->prefix . 'user_points',
+        $wpdb->prefix . 'indices_deblocages',
+    ];
+
+    foreach ($tables as $table) {
+        $wpdb->query("TRUNCATE TABLE {$table}");
+    }
+
+    wp_send_json_success();
+}
+add_action('wp_ajax_cta_reset_stats', 'cta_reset_stats');
+
 
 /**
  * Charge le script de la carte Développement sur les pages Mon Compte.
@@ -1428,6 +1453,25 @@ function charger_script_compil_css_card() {
     }
 }
 add_action('wp_enqueue_scripts', 'charger_script_compil_css_card');
+
+function charger_script_reset_stats_card() {
+    if (preg_match('#^/mon-compte(?:/|$|\\?)#', $_SERVER['REQUEST_URI'] ?? '')) {
+        wp_enqueue_script(
+            'reset-stats-card',
+            get_stylesheet_directory_uri() . '/assets/js/reset-stats-card.js',
+            [],
+            filemtime(get_stylesheet_directory() . '/assets/js/reset-stats-card.js'),
+            true
+        );
+        wp_localize_script('reset-stats-card', 'resetStatsCard', [
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce'    => wp_create_nonce('cta_reset_stats'),
+            'confirm'  => __('Confirmez-vous la réinitialisation des statistiques ?', 'chassesautresor-com'),
+            'success'  => __('Statistiques effacées.', 'chassesautresor-com'),
+        ]);
+    }
+}
+add_action('wp_enqueue_scripts', 'charger_script_reset_stats_card');
 
 // ==================================================
 // 📦 TABLEAU ORGANISATEURS EN CRÉATION

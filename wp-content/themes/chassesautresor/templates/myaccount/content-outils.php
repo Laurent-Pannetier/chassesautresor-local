@@ -65,5 +65,17 @@ $css_compil_active = get_option('cta_css_compilation_active', '1') === '1';
                 </button>
             </p>
         </div>
+
+        <div class="dashboard-card">
+            <div class="dashboard-card-header">
+                <i class="fas fa-undo"></i>
+                <h3><?php esc_html_e('Reset stats', 'chassesautresor-com'); ?></h3>
+            </div>
+            <div class="stats-content">
+                <button id="reset-stats-btn" class="btn-danger">
+                    <?php esc_html_e('Effacer', 'chassesautresor-com'); ?>
+                </button>
+            </div>
+        </div>
     </div>
 </section>
