@@ -53,6 +53,7 @@ add_action('wp_enqueue_scripts', function () {
             'grid'               => 'grid.css',
             'layout'             => 'layout.css',
             'components'         => 'components.css',
+            'aside'              => 'aside.css',
             'modal-bienvenue'    => 'modal-bienvenue.css',
             'general-style'      => 'general.css',
             'chasse-style'       => 'chasse.css',
@@ -76,6 +77,7 @@ add_action('wp_enqueue_scripts', function () {
             'grid',
             'layout',
             'components',
+            'aside',
             'modal-bienvenue',
             'general-style',
             'chasse-style',
@@ -92,13 +94,21 @@ add_action('wp_enqueue_scripts', function () {
         }
 
         // 📌 Styles conditionnels
-        if (
-            is_singular(['organisateur', 'chasse', 'enigme']) ||
-            (
-                (is_account_page() || preg_match('#^/mon-compte(?:/|$|\\?)#', $_SERVER['REQUEST_URI'] ?? '')) &&
-                is_user_logged_in()
-            )
+        $should_load_edition = false;
+
+        if (is_singular(['organisateur', 'chasse', 'enigme'])) {
+            $post_id = get_queried_object_id();
+            if (current_user_can('edit_post', $post_id)) {
+                $should_load_edition = true;
+            }
+        } elseif (
+            (is_account_page() || preg_match('#^/mon-compte(?:/|$|\\?)#', $_SERVER['REQUEST_URI'] ?? '')) &&
+            is_user_logged_in()
         ) {
+            $should_load_edition = true;
+        }
+
+        if ($should_load_edition) {
             wp_enqueue_style('edition');
         }
 
