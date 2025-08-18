@@ -495,6 +495,27 @@ function recuperer_ids_enigmes_pour_chasse(int $chasse_id): array
 }
 
 
+/**
+ * Clear the cached enigme list for a chasse when an enigme is saved.
+ *
+ * @param int $post_id Post ID of the enigme being saved.
+ */
+function clear_enigmes_chasse_cache(int $post_id): void
+{
+    if (get_post_type($post_id) !== 'enigme') {
+        return;
+    }
+
+    $chasse_id = (int) get_field('enigme_chasse_associee', $post_id);
+    if (!$chasse_id) {
+        return;
+    }
+
+    wp_cache_delete('enigmes_chasse_' . $chasse_id, 'chassesautresor');
+}
+add_action('save_post_enigme', 'clear_enigmes_chasse_cache', 20, 1);
+
+
 // ==================================================
 // 📦 ASSIGNATION AUTOMATIQUES
 // ==================================================

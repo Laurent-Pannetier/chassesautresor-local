@@ -171,12 +171,20 @@ defined('ABSPATH') || exit;
             echo $statut_data['message_html'];
         }
 
-        $user_id       = get_current_user_id();
-        $style         = get_field('enigme_style_affichage', $enigme_id) ?? 'defaut';
-        $chasse_id     = recuperer_id_chasse_associee($enigme_id);
+        $user_id        = get_current_user_id();
+        $style          = get_field('enigme_style_affichage', $enigme_id) ?? 'defaut';
+        $chasse_id      = recuperer_id_chasse_associee($enigme_id);
         $edition_active = utilisateur_peut_modifier_post($enigme_id);
 
-        $liste      = $chasse_id ? recuperer_enigmes_pour_chasse($chasse_id) : [];
+        $liste = [];
+        if ($chasse_id) {
+            $cache_key = 'enigmes_chasse_' . $chasse_id;
+            $liste     = wp_cache_get($cache_key, 'chassesautresor');
+            if ($liste === false) {
+                $liste = recuperer_enigmes_pour_chasse($chasse_id);
+                wp_cache_set($cache_key, $liste, 'chassesautresor', HOUR_IN_SECONDS);
+            }
+        }
         $menu_items = [];
 
         foreach ($liste as $post) {
