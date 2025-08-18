@@ -311,7 +311,7 @@ function myaccount_get_important_messages(): string
                     $enigmes
                 );
 
-                $messages[] = __('Tentatives à traiter :', 'chassesautresor') . ' ' . implode(', ', $links);
+                $messages[] = '⚠️ ' . __('Important ! Des tentatives attendent votre action :', 'chassesautresor-com') . ' ' . implode(', ', $links);
             }
         }
 
