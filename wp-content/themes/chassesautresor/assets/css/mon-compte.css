@@ -150,10 +150,7 @@
 
 .msg-important {
     margin-bottom: var(--space-md);
-    padding: var(--space-md);
-    background: hsl(var(--destructive));
-    color: hsl(var(--destructive-foreground));
-    border-radius: 0.5rem;
+    padding: 0;
 }
 
 .msg-important:empty {

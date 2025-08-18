@@ -154,6 +154,10 @@ function soumettre_reponse_manuelle()
     $uid = inserer_tentative($user_id, $enigme_id, $reponse);
     enigme_mettre_a_jour_statut_utilisateur($enigme_id, $user_id, 'soumis', true);
 
+    $titre_enigme = get_the_title($enigme_id);
+    $link        = '<a href="' . esc_url(get_permalink($enigme_id)) . '">' . esc_html($titre_enigme) . '</a>';
+    myaccount_add_persistent_message($user_id, 'tentative_' . $uid, $link);
+
     envoyer_mail_reponse_manuelle($user_id, $enigme_id, $reponse, $uid);
 
     $solde = get_user_points($user_id);

@@ -134,7 +134,13 @@ get_header();
             <!-- TODO: header content -->
         </header>
         <main class="myaccount-content">
-            <section class="msg-important"><?php echo trim(myaccount_get_important_messages()); ?></section>
+            <?php
+            $messages = '';
+            if (empty($_GET['section'])) {
+                $messages = trim(myaccount_get_important_messages());
+            }
+            ?>
+            <section class="msg-important"><?php echo $messages; ?></section>
             <?php
             if ($content_template && file_exists($content_template)) {
                 include $content_template;

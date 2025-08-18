@@ -123,6 +123,24 @@ defined('ABSPATH') || exit;
 
         traiter_tentative($user_id, $enigme_id, (string) $tentative->reponse_saisie, $resultat, false, true, true);
 
+        $titre_enigme = get_the_title($enigme_id);
+        $message      = sprintf(
+            $resultat === 'bon'
+                ? __(
+                    'Votre demande de résolution de l\'énigme %1$s%2$s%3$s a été validée. Félicitations !',
+                    'chassesautresor-com'
+                )
+                : __(
+                    'Votre demande de résolution de l\'énigme %1$s%2$s%3$s a été invalidée.',
+                    'chassesautresor-com'
+                ),
+            '<a href="' . esc_url(get_permalink($enigme_id)) . '">',
+            esc_html($titre_enigme),
+            '</a>'
+        );
+        myaccount_remove_persistent_message($user_id, 'tentative_' . $uid);
+        myaccount_add_flash_message($user_id, $message);
+
         cat_debug("✅ Tentative UID=$uid traitée comme $resultat");
         return true;
     }

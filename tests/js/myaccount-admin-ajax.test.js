@@ -88,10 +88,10 @@ describe('myaccount ajax navigation', () => {
     await Promise.resolve();
     await Promise.resolve();
     const container = document.querySelector('.msg-important');
-    expect(container.innerHTML).toBe('<p class="flash">Temp</p><p>Persistent</p>');
+    expect(container.innerHTML).toBe('<p class="flash">Temp</p><p class="alerte-discret">Persistent</p>');
     jest.advanceTimersByTime(3000);
     await Promise.resolve();
-    expect(container.innerHTML).toBe('<p>Persistent</p>');
+    expect(container.innerHTML).toBe('<p class="alerte-discret">Persistent</p>');
     jest.useRealTimers();
   });
 
