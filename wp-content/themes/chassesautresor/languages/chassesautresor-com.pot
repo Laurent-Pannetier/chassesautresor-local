@@ -277,7 +277,7 @@ msgstr ""
 
 #: inc/enigme/reponses.php:509
 #: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:35
-msgid "Votre tentative est en cours de traitement."
+msgid "⏳ Votre tentative est en cours de traitement."
 msgstr ""
 
 #: inc/enigme/visuels.php:129
