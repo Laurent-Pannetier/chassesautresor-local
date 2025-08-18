@@ -3,8 +3,8 @@ defined('ABSPATH') || exit;
 
 $post_id = $args['post_id'] ?? null;
 if (!$post_id) {
-  cat_debug("[images] ❌ post_id manquant dans partial");
-  return;
+    cat_debug("[images] ❌ post_id manquant dans partial");
+    return;
 }
 
 // Récupération standard des images (format tableau ACF avec clés 'ID', etc.)
@@ -13,25 +13,34 @@ cat_debug("[images] 🔍 Énigme #$post_id → images récupérées : " . print_
 
 // Test : au moins une image != placeholder
 $has_valid_images = is_array($images) && array_filter($images, function ($img) {
-  return isset($img['ID']) && (int) $img['ID'] !== ID_IMAGE_PLACEHOLDER_ENIGME;
+    return isset($img['ID']) && (int) $img['ID'] !== ID_IMAGE_PLACEHOLDER_ENIGME;
 });
 
 if ($has_valid_images && function_exists('afficher_visuels_enigme')) {
-  cat_debug("[images] ✅ Galerie active pour #$post_id");
-?>
-  <div class="galerie-enigme-wrapper">
-    <?php afficher_visuels_enigme($post_id); ?>
-  </div>
-<?php
-} else {
-  cat_debug("[images] 🟡 Aucune image valide → fallback picture");
-?>
-    <div class="image-principale">
-      <?php afficher_picture_vignette_enigme(
-          $post_id,
-          __('Image par défaut de l’énigme', 'chassesautresor-com'),
-          ['large']
-      ); ?>
+    cat_debug("[images] ✅ Galerie active pour #$post_id");
+    ?>
+    <div class="galerie-enigme-wrapper">
+        <?php afficher_visuels_enigme($post_id); ?>
     </div>
-<?php
+    <?php
+} else {
+    cat_debug("[images] 🟡 Aucune image valide → fallback picture");
+    ?>
+    <div class="image-principale">
+        <?php
+        echo wp_get_attachment_image(
+            ID_IMAGE_PLACEHOLDER_ENIGME,
+            'large',
+            false,
+            [
+                'srcset' => wp_get_attachment_image_srcset(ID_IMAGE_PLACEHOLDER_ENIGME, 'large'),
+                'sizes' => wp_get_attachment_image_sizes(ID_IMAGE_PLACEHOLDER_ENIGME, 'large'),
+                'loading' => 'lazy',
+                'alt' => esc_attr__('Image par défaut de l’énigme', 'chassesautresor-com'),
+            ]
+        );
+        ?>
+    </div>
+    <?php
 }
+
