@@ -422,7 +422,7 @@ function get_mapping_visuel_enigme(int $enigme_id): array
             'image_reelle' => false,
             'fallback_svg' => 'question.svg',
             'filtre'       => 'blur-xs',
-            'sens'         => "Pré-requis non remplis",
+            'sens'         => esc_html__('Pré-requis non remplis', 'chassesautresor-com'),
         ],
         'bloquee_chasse' => [
             'image_reelle' => false,
