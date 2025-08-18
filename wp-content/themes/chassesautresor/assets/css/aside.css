@@ -128,13 +128,11 @@
 .stats-bar-chart .bar-row:nth-child(5) .bar-fill { background-color: hsl(0 0% 40%); }
 
 /* ===== Accordéons ===== */
-.menu-lateral__separator {
-  margin: var(--space-md) 0;
-  text-align: center;
-  color: var(--color-grey-light);
+.menu-lateral__accordeons {
 }
 
-.menu-lateral__accordeons {
+/* Premier bloc après le contenu principal */
+.accordeon-bloc {
   margin-top: var(--space-md);
 }
 
@@ -147,12 +145,37 @@
   background: none;
   border: none;
   color: inherit;
-  font-size: 1rem;
   padding: var(--space-sm) 0;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   cursor: pointer;
+  position: relative;
+}
+
+.accordeon-toggle i {
+  transition: transform 0.3s ease;
+}
+
+.accordeon-toggle[aria-expanded="true"] i {
+  transform: rotate(180deg);
+}
+
+.accordeon-toggle::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 50%;
+  height: 1px;
+  background-color: currentColor;
+  transform: translateX(-50%) scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.accordeon-toggle.is-hovered::after {
+  transform: translateX(-50%) scaleX(1);
 }
 
 .accordeon-contenu {

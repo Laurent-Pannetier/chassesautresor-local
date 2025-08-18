@@ -28,4 +28,12 @@ document.querySelectorAll('.accordeon-bloc').forEach(bloc => {
       contenu.classList.remove('accordeon-ferme');
     }
   });
+
+  toggle.addEventListener('mouseenter', () => {
+    toggle.classList.add('is-hovered');
+  });
+
+  toggle.addEventListener('mouseleave', () => {
+    toggle.classList.remove('is-hovered');
+  });
 });
