@@ -242,6 +242,25 @@ class MyAccountMessagesTest extends TestCase
         delete_user_meta(1, '_myaccount_messages');
     }
 
+    public function test_pending_request_with_full_message_is_not_duplicated(): void
+    {
+        $stored = "Votre demande de résolution de l'énigme <a href=\"https://example.com/enigme\">Énigme</a> est en cours de traitement. Vous recevrez une notification dès que votre demande sera traitée.";
+        update_user_meta(
+            1,
+            '_myaccount_messages',
+            [
+                'tentative_456' => $stored,
+            ]
+        );
+
+        $output = myaccount_get_important_messages();
+
+        $this->assertSame(1, substr_count($output, "Votre demande de résolution de l'énigme"));
+        $this->assertStringContainsString('<a href="https://example.com/enigme">Énigme</a>', $output);
+
+        delete_user_meta(1, '_myaccount_messages');
+    }
+
     public function test_flash_message_is_displayed_once(): void
     {
         update_user_meta(1, '_myaccount_flash_messages', ['Message unique']);

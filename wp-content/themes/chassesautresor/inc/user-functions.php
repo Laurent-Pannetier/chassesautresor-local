@@ -309,7 +309,11 @@ function myaccount_get_persistent_messages(int $user_id): array
     $tentatives = [];
     foreach ($messages as $key => $msg) {
         if (strpos($key, 'tentative_') === 0 && is_string($msg)) {
-            $tentatives[] = $msg;
+            if (preg_match('/<a[^>]*>.*?<\/a>/', $msg, $matches)) {
+                $tentatives[] = $matches[0];
+            } else {
+                $tentatives[] = $msg;
+            }
             unset($messages[$key]);
         }
     }
