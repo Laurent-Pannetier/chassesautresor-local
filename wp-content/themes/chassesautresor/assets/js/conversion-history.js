@@ -63,13 +63,48 @@
     toggleTable(button);
   });
 
-  document.addEventListener('pager:change', function (e) {
-    var pager = e.target.closest('.conversion-history .points-history-pager');
-    if (!pager) {
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest(
+      '.conversion-history .points-history-pager .pager-first, .conversion-history .points-history-pager .pager-prev, .conversion-history .points-history-pager .pager-next, .conversion-history .points-history-pager .pager-last'
+    );
+    if (!btn) {
       return;
     }
+    e.preventDefault();
+    var pager = btn.closest('.points-history-pager');
+    var total = parseInt(pager.getAttribute('data-total') || '1', 10);
+    var current = parseInt(pager.getAttribute('data-current') || '1', 10);
+    if (btn.classList.contains('pager-first')) {
+      current = 1;
+    } else if (btn.classList.contains('pager-prev')) {
+      if (current > 1) {
+        current -= 1;
+      }
+    } else if (btn.classList.contains('pager-next')) {
+      if (current < total) {
+        current += 1;
+      }
+    } else if (btn.classList.contains('pager-last')) {
+      current = total;
+    }
+    pager.setAttribute('data-current', String(current));
+    var select = pager.querySelector('.pager-select');
+    if (select) {
+      select.value = String(current);
+    }
     var container = pager.closest('.conversion-history');
-    var page = e.detail.page;
+    loadPage(container, current);
+  });
+
+  document.addEventListener('change', function (e) {
+    var select = e.target.closest('.conversion-history .points-history-pager .pager-select');
+    if (!select) {
+      return;
+    }
+    var pager = select.closest('.points-history-pager');
+    var page = parseInt(select.value, 10);
+    pager.setAttribute('data-current', String(page));
+    var container = pager.closest('.conversion-history');
     loadPage(container, page);
   });
 })();
