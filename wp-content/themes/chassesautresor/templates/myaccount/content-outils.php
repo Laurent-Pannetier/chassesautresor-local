@@ -43,10 +43,8 @@ $taux_conversion = get_taux_conversion_actuel();
         </div>
 
         <div class="dashboard-card">
-            <div class="dashboard-card-header">
-                <i class="fas fa-tools"></i>
-                <h3><?php esc_html_e('ACF', 'chassesautresor-com'); ?></h3>
-            </div>
+            <i class="fas fa-tools"></i>
+            <h3><?php esc_html_e('ACF', 'chassesautresor-com'); ?></h3>
             <p class="stat-value">
                 <button id="afficher-champs-acf" class="bouton-tertiaire"><?php esc_html_e('Afficher les champs ACF', 'chassesautresor-com'); ?></button>
             </p>
