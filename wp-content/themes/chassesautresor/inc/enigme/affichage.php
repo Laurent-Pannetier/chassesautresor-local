@@ -399,8 +399,6 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
      */
     function render_enigme_participation(int $enigme_id, string $style, int $user_id): void
     {
-        echo '<section class="participation">';
-
         ob_start();
         enigme_get_partial(
             'bloc-reponse',
@@ -412,15 +410,20 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
         );
         $bloc_reponse = trim(ob_get_clean());
 
+        $content = '';
+
         if ($bloc_reponse !== '') {
-            echo '<div class="zone-reponse">' . $bloc_reponse . '</div>';
+            $content .= '<div class="zone-reponse">' . $bloc_reponse . '</div>';
         }
 
         $hints = get_field('indices', $enigme_id);
         if (!empty($hints)) {
-            echo '<div class="zone-indices"><h3>' . esc_html__('Indices', 'chassesautresor-com') . '</h3></div>';
+            $content .= '<div class="zone-indices"><h3>' . esc_html__('Indices', 'chassesautresor-com') . '</h3></div>';
         }
-        echo '</section>';
+
+        if ($content !== '') {
+            echo '<section class="participation">' . $content . '</section>';
+        }
     }
 
     /**
