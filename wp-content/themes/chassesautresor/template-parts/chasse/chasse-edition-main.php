@@ -636,7 +636,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
 
                   $peut_ajouter_indice = $est_admin || ($est_organisateur && $est_publie && $statut_valide);
                   ?>
-                  <div class="dashboard-card champ-chasse champ-indices<?= $peut_ajouter_indice ? '' : ' champ-desactive'; ?>">
+                  <div class="dashboard-card champ-chasse champ-indices<?= $peut_ajouter_indice ? '' : ' disabled'; ?>">
                     <i class="fa-regular fa-circle-question icone-defaut" aria-hidden="true"></i>
                     <h3><?= esc_html__('Indices', 'chassesautresor-com'); ?></h3>
                     <?php if ($peut_ajouter_indice) : ?>

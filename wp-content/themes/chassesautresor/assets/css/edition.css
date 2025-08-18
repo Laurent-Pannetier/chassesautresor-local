@@ -1383,6 +1383,8 @@ body.panneau-ouvert::before {
 .dashboard-card.disabled {
   opacity: 0.5;
   filter: grayscale(100%);
+  pointer-events: none;
+  cursor: not-allowed;
 }
 
 .dashboard-card.disabled h3,
