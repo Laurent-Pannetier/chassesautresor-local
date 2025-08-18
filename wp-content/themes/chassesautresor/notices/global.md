@@ -352,7 +352,6 @@ Groupe : paramètre de la chasse
 * chasse_principale_description (wysiwyg)
 * chasse_infos_recompense_titre (text)
 * chasse_infos_recompense_valeur (number)
-* chasse_infos_nb_max_gagants (number)
 * chasse_infos_cout_points (number)
 * chasse_infos_recompense_texte (wysiwyg)
 * chasse_infos_date_debut (date_time_picker)
@@ -361,6 +360,8 @@ Groupe : paramètre de la chasse
 * chasse_principale_liens (repeater)
   * chasse_principale_liens_type (select)
   * chasse_principale_liens_url (url)
+* chasse_mode_fin (radio)
+* chasse_infos_nb_max_gagants (number)
 * chasse_cache_gagnants (text)
 * chasse_cache_date_decouverte (date_picker)
 * chasse_cache_statut (select)
@@ -369,7 +370,6 @@ Groupe : paramètre de la chasse
 * chasse_cache_commentaire (textarea)
 * chasse_cache_organisateur (relationship)
 * chasse_cache_complet (true_false)
-* chasse_mode_fin (radio)
 
 CPT : enigme
 Groupe : Paramètres de l’énigme
@@ -406,6 +406,17 @@ Groupe : Paramètres de l’énigme
 * enigme_solution_fichier (file)
 * enigme_solution_explication (wysiwyg)
 * enigme_cache_complet (true_false)
+
+CPT : indice
+Groupe : paramètres indices
+
+* indice_image (image)
+* indice_contenu (wysiwyg)
+* indice_cible (radio)
+* indice_cible_objet (relationship)
+* indice_disponibilite (radio)
+* indice_date_disponibilite (date_time_picker)
+* indice_cout_points (number)
 
 liste avec tous les détails des groupes de champs ACF dans champs-acf-liste.md
 
