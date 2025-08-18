@@ -26,8 +26,12 @@ if ($has_valid_images && function_exists('afficher_visuels_enigme')) {
 } else {
   error_log("[images] 🟡 Aucune image valide → fallback picture");
 ?>
-  <div class="image-principale">
-    <?php afficher_picture_vignette_enigme($post_id, 'Image par défaut de l’énigme', ['large']); ?>
-  </div>
+    <div class="image-principale">
+      <?php afficher_picture_vignette_enigme(
+          $post_id,
+          __('Image par défaut de l’énigme', 'chassesautresor-com'),
+          ['large']
+      ); ?>
+    </div>
 <?php
 }

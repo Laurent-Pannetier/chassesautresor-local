@@ -22,16 +22,20 @@ if ($mode === 'pdf' && !$fichier_url) return;
 if ($mode === 'texte' && !$texte) return;
 
 echo '<div class="bloc-solution">';
-echo '<h2>🧠 Solution de l’énigme</h2>';
+echo '<h2>' . esc_html__('🧠 Solution de l’énigme', 'chassesautresor-com') . '</h2>';
 
 if ($mode === 'pdf' && $fichier_url) {
-  echo '<p><a href="' . esc_url($fichier_url) . '" target="_blank" class="lien-solution-pdf">📄 Télécharger la solution (PDF)</a></p>';
+    echo '<p><a href="' . esc_url($fichier_url) . '" target="_blank" class="lien-solution-pdf">'
+        . esc_html__('📄 Télécharger la solution (PDF)', 'chassesautresor-com')
+        . '</a></p>';
 } elseif ($mode === 'texte' && $texte) {
   echo '<div class="contenu-solution">';
   echo wp_kses_post($texte);
   echo '</div>';
 } else {
-  echo '<p class="placeholder-solution">❌ Aucune solution disponible pour cette énigme.</p>';
+    echo '<p class="placeholder-solution">'
+        . esc_html__('❌ Aucune solution disponible pour cette énigme.', 'chassesautresor-com')
+        . '</p>';
 }
 
 echo '</div>';
