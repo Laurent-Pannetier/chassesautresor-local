@@ -14,7 +14,6 @@ if (!$current_user_id) {
 }
 
 $chasse_id = isset($_POST['chasse_id']) ? intval($_POST['chasse_id']) : 0;
-$enigme_id = isset($_POST['enigme_id']) ? intval($_POST['enigme_id']) : 0;
 
 // --------------------------------------------------
 // 🎯 Traitement engagement chasse
@@ -46,54 +45,22 @@ if ($chasse_id) {
     enregistrer_engagement_chasse($current_user_id, $chasse_id);
 
     if ($cout_points > 0) {
-        $reason = sprintf('Déblocage de la chasse #%d', $chasse_id);
-        deduire_points_utilisateur($current_user_id, $cout_points, $reason, 'chasse', $chasse_id);
+        $reason = sprintf(
+            __('Déblocage de la chasse #%d', 'chassesautresor-com'),
+            $chasse_id
+        );
+        deduire_points_utilisateur(
+            $current_user_id,
+            $cout_points,
+            $reason,
+            'chasse',
+            $chasse_id
+        );
     }
 
     wp_safe_redirect(get_permalink($chasse_id));
     exit;
 }
 
-// --------------------------------------------------
-// 🧩 Traitement engagement énigme
-// --------------------------------------------------
-
-if (!$enigme_id || get_post_type($enigme_id) !== 'enigme') {
-    wp_redirect(home_url());
-    exit;
-}
-
-// Vérification du nonce
-if (
-    !isset($_POST['engager_enigme_nonce']) ||
-    !wp_verify_nonce($_POST['engager_enigme_nonce'], 'engager_enigme_' . $enigme_id)
-) {
-    wp_die(__('Échec de vérification de sécurité', 'chassesautresor-com'));
-}
-
-// Chargement des fonctions critiques
-require_once get_theme_file_path('inc/statut-functions.php');
-
-// Vérifier si l’énigme est engageable
-$etat_systeme = enigme_get_etat_systeme($enigme_id);
-$statut_utilisateur = enigme_get_statut_utilisateur($enigme_id, $current_user_id);
-
-$statuts_engageables = ['non_commencee', 'abandonnee', 'echouee'];
-
-if ($etat_systeme !== 'accessible' || !in_array($statut_utilisateur, $statuts_engageables, true)) {
-    wp_redirect(get_permalink($enigme_id)); // Redirection silencieuse
-    exit;
-}
-
-
-// Déduction + enregistrement du statut
-marquer_enigme_comme_engagee($current_user_id, $enigme_id);
-
-// Vérifie la fin de chasse si l'énigme ne nécessite pas de validation
-if (get_field('enigme_mode_validation', $enigme_id) === 'aucune') {
-    verifier_fin_de_chasse($current_user_id, $enigme_id);
-}
-
-// Redirection vers la page de l’énigme
-wp_redirect(get_permalink($enigme_id));
+wp_redirect(home_url());
 exit;
