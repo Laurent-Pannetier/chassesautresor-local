@@ -11,6 +11,22 @@
   color: var(--color-text-fond-clair);
 }
 
+.menu-lateral .stats-bar-chart .bar-value,
+.menu-lateral .stats-bar-chart .bar-value--outside {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-fond-clair);
+}
+
+.menu-lateral .stats-bar-chart .bar-row + .bar-row {
+  margin-top: var(--space-sm);
+}
+
+.menu-lateral .stats-bar-chart .bar-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
 /* Menu status styles */
 
 .enigme-menu {
@@ -23,7 +39,7 @@
 /* Stylised bullets and indentation */
 .enigme-menu li {
   position: relative;
-  margin-bottom: var(--space-xxs);
+  margin-bottom: var(--space-xs);
   padding-left: var(--space-md);
 }
 
@@ -57,12 +73,27 @@
   color: var(--color-success);
 }
 
+.enigme-menu li.succes::before {
+  background-color: var(--color-success);
+  box-shadow: 0 0 0 1px var(--color-success);
+}
+
 .enigme-menu li.non-engagee > a {
   font-weight: 600;
 }
 
+.enigme-menu li.non-engagee::before {
+  background-color: var(--color-grey-dark);
+  box-shadow: 0 0 0 1px var(--color-grey-dark);
+}
+
+.enigme-menu li.bloquee::before {
+  background-color: var(--color-error);
+  box-shadow: 0 0 0 1px var(--color-error);
+}
+
 .enigme-menu li.active > a {
-  background-color: var(--color-grey-light);
+  background-color: rgba(255, 215, 0, 0.2);
   font-weight: 600;
 }
 
