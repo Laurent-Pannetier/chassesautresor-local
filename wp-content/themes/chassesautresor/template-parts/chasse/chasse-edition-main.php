@@ -629,11 +629,12 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                 <h3><?= esc_html__('Indices', 'chassesautresor-com'); ?></h3>
                 <div class="dashboard-grid stats-cards">
                   <?php
-                  $peut_ajouter_indice = current_user_can('administrator') || (
-                    utilisateur_est_organisateur_associe_a_chasse(get_current_user_id(), $chasse_id) &&
-                    get_post_status($chasse_id) === 'publish' &&
-                    ($infos_chasse['statut_validation'] ?? '') === 'valide'
-                  );
+                  $est_admin        = current_user_can('administrator');
+                  $est_organisateur = utilisateur_est_organisateur_associe_a_chasse(get_current_user_id(), $chasse_id);
+                  $est_publie       = get_post_status($chasse_id) === 'publish';
+                  $statut_valide    = get_field('chasse_cache_statut_validation', $chasse_id) === 'valide';
+
+                  $peut_ajouter_indice = $est_admin || ($est_organisateur && $est_publie && $statut_valide);
                   ?>
                   <div class="dashboard-card champ-chasse champ-indices<?= $peut_ajouter_indice ? '' : ' champ-desactive'; ?>">
                     <i class="fa-regular fa-circle-question icone-defaut" aria-hidden="true"></i>
