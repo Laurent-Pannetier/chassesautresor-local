@@ -5,6 +5,11 @@
   gap: var(--space-xl);
 }
 
+.enigme-layout .menu-lateral {
+  position: sticky;
+  top: var(--space-md);
+}
+
 .menu-lateral .stats-bar-chart .bar-value,
 .menu-lateral .stats-bar-chart .bar-value--outside {
   font-size: 1rem;
