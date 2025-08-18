@@ -549,6 +549,16 @@
     width: auto;
 }
 
+.conversion-history .points-history-pager .etiquette,
+.conversion-history .points-history-pager .pager-info {
+    color: var(--color-text-fond-clair);
+}
+
+/* 📌 Toggle d'historique de conversion */
+.conversion-history .conversion-history-toggle {
+    color: var(--color-text-fond-clair);
+}
+
 /* 📌 Actions de conversion en ligne */
 .liste-paiements .js-update-request {
     display: flex;
