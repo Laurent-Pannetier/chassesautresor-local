@@ -97,6 +97,27 @@ if (!function_exists('home_url')) {
     }
 }
 
+if (!function_exists('recuperer_ids_enigmes_pour_chasse')) {
+    function recuperer_ids_enigmes_pour_chasse($chasse_id)
+    {
+        return [101];
+    }
+}
+
+if (!function_exists('chasse_calculer_taux_engagement')) {
+    function chasse_calculer_taux_engagement($chasse_id)
+    {
+        return 0;
+    }
+}
+
+if (!function_exists('chasse_calculer_taux_progression')) {
+    function chasse_calculer_taux_progression($chasse_id)
+    {
+        return 0;
+    }
+}
+
 if (!function_exists('wp_safe_redirect')) {
     function wp_safe_redirect($url)
     {
@@ -237,6 +258,11 @@ class EnigmeMenuRenderingTest extends TestCase
 {
     protected function setUp(): void
     {
+        $GLOBALS['wpdb'] = new class {
+            public string $prefix = 'wp_';
+            public function prepare($query, ...$args) { return $query; }
+            public function get_var($query) { return 0; }
+        };
         $GLOBALS['fields'] = [
             2 => [
                 'chasse_cache_statut' => 'revision',
