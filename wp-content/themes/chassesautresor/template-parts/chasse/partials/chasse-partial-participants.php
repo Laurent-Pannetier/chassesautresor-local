@@ -22,6 +22,7 @@ $pages          = $args['pages'] ?? $pages ?? (int) ceil($total / $par_page);
 $total_enigmes  = $args['total_enigmes'] ?? $total_enigmes ?? 0;
 $orderby        = $args['orderby'] ?? $orderby ?? 'inscription';
 $order          = $args['order'] ?? $order ?? 'ASC';
+$stats_locked   = $args['stats_locked'] ?? $stats_locked ?? false;
 
 $icon_participation = 'fa-sort';
 if ($orderby === 'participation') {
@@ -34,7 +35,13 @@ if ($orderby === 'resolution') {
 ?>
 <h3><?= esc_html__('Joueurs', 'chassesautresor-com'); ?></h3>
 <?php if (empty($participants)) : ?>
-<p><?= esc_html__('Pas encore de joueur inscrit.', 'chassesautresor-com'); ?></p>
+    <?php if ($stats_locked) : ?>
+        <p class="edition-placeholder" style="text-align:center;">
+            <?php esc_html_e('Les statistiques seront disponibles une fois la chasse activée.', 'chassesautresor-com'); ?>
+        </p>
+    <?php else : ?>
+        <p><?= esc_html__('Pas encore de joueur inscrit.', 'chassesautresor-com'); ?></p>
+    <?php endif; ?>
 <?php else : ?>
 <table class="stats-table compact">
   <colgroup>

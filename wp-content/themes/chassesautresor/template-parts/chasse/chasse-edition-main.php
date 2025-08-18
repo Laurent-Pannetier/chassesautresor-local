@@ -450,55 +450,81 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
         if (!function_exists('chasse_compter_participants')) {
             require_once get_stylesheet_directory() . '/inc/chasse/stats.php';
         }
-        $periode             = 'total';
-        $nb_participants       = chasse_compter_participants($chasse_id, $periode);
-        $nb_tentatives         = chasse_compter_tentatives($chasse_id, $periode);
-        $nb_points             = chasse_compter_points_collectes($chasse_id, $periode);
-        $total_engagements     = chasse_compter_engagements($chasse_id);
-        $enigme_ids            = recuperer_ids_enigmes_pour_chasse($chasse_id);
-        $enigmes_stats         = [];
-        $progress_data         = [];
-        $no_validation_enigmas = [];
-        $total_enigme_engagements = 0;
-        foreach ($enigme_ids as $enigme_id) {
-            $engagements = enigme_compter_joueurs_engages($enigme_id, $periode);
-            $total_enigme_engagements += $engagements;
-            $resolutions = enigme_compter_bonnes_solutions($enigme_id, 'automatique', $periode);
-            $enigmes_stats[] = [
-                'id'          => $enigme_id,
-                'titre'       => get_the_title($enigme_id),
-                'engagements' => $engagements,
-                'tentatives'  => enigme_compter_tentatives($enigme_id, 'automatique', $periode),
-                'points'      => enigme_compter_points_depenses($enigme_id, 'automatique', $periode),
-                'resolutions' => $resolutions,
-            ];
-            $mode_validation = get_field('enigme_mode_validation', $enigme_id);
-            if ($mode_validation === 'aucune') {
-                $no_validation_enigmas[] = [
+        $validation = get_field('chasse_cache_statut_validation', $chasse_id);
+        $stats_locked = in_array($validation, ['creation', 'en_attente', 'correction'], true);
+        $periode = 'total';
+        if ($stats_locked) {
+            $nb_participants = $nb_tentatives = $nb_points = 0;
+            $total_engagements = 0;
+            $enigmes_stats = [];
+            $progress_data = [];
+            $no_validation_enigmas = [];
+            $total_enigme_engagements = 0;
+            $max_progress = 0;
+            $par_page_participants = 25;
+            $total_participants = 0;
+            $pages_participants = 0;
+            $total_enigmes = 0;
+            $taux_engagement = 0;
+            $participants = [];
+        } else {
+            $nb_participants = chasse_compter_participants($chasse_id, $periode);
+            $nb_tentatives = chasse_compter_tentatives($chasse_id, $periode);
+            $nb_points = chasse_compter_points_collectes($chasse_id, $periode);
+            $total_engagements = chasse_compter_engagements($chasse_id);
+            $enigme_ids = recuperer_ids_enigmes_pour_chasse($chasse_id);
+            $enigmes_stats = [];
+            $progress_data = [];
+            $no_validation_enigmas = [];
+            $total_enigme_engagements = 0;
+            foreach ($enigme_ids as $enigme_id) {
+                $engagements = enigme_compter_joueurs_engages($enigme_id, $periode);
+                $total_enigme_engagements += $engagements;
+                $resolutions = enigme_compter_bonnes_solutions($enigme_id, 'automatique', $periode);
+                $enigmes_stats[] = [
+                    'id'          => $enigme_id,
+                    'titre'       => get_the_title($enigme_id),
+                    'engagements' => $engagements,
+                    'tentatives'  => enigme_compter_tentatives($enigme_id, 'automatique', $periode),
+                    'points'      => enigme_compter_points_depenses($enigme_id, 'automatique', $periode),
+                    'resolutions' => $resolutions,
+                ];
+                $mode_validation = get_field('enigme_mode_validation', $enigme_id);
+                if ($mode_validation === 'aucune') {
+                    $no_validation_enigmas[] = [
+                        'title' => get_the_title($enigme_id),
+                        'url'   => get_permalink($enigme_id),
+                    ];
+                    continue;
+                }
+                $progress_data[] = [
                     'title' => get_the_title($enigme_id),
                     'url'   => get_permalink($enigme_id),
+                    'value' => $resolutions,
                 ];
-                continue;
             }
-            $progress_data[] = [
-                'title' => get_the_title($enigme_id),
-                'url'   => get_permalink($enigme_id),
-                'value' => $resolutions,
-            ];
+            usort($progress_data, static function ($a, $b) {
+                return $b['value'] <=> $a['value'];
+            });
+            $max_progress = !empty($progress_data) ? max(array_column($progress_data, 'value')) : 0;
+            $par_page_participants = 25;
+            $total_participants = chasse_compter_participants($chasse_id);
+            $pages_participants = (int) ceil($total_participants / $par_page_participants);
+            $total_enigmes = count($enigme_ids);
+            $taux_engagement = 0;
+            if ($nb_participants > 0 && $total_enigmes > 0) {
+                $taux_engagement = (int) round(
+                    (100 * $total_enigme_engagements) / ($nb_participants * $total_enigmes)
+                );
+            }
+            $participants = chasse_lister_participants(
+                $chasse_id,
+                $par_page_participants,
+                0,
+                'inscription',
+                'ASC'
+            );
         }
-        usort($progress_data, static function ($a, $b) {
-            return $b['value'] <=> $a['value'];
-        });
-        $max_progress = !empty($progress_data) ? max(array_column($progress_data, 'value')) : 0;
-        $par_page_participants = 25;
-        $total_participants    = chasse_compter_participants($chasse_id);
-        $pages_participants    = (int) ceil($total_participants / $par_page_participants);
-        $total_enigmes         = count($enigme_ids);
-        $taux_engagement       = 0;
-        if ($nb_participants > 0 && $total_enigmes > 0) {
-            $taux_engagement = (int) round((100 * $total_enigme_engagements) / ($nb_participants * $total_enigmes));
-        }
-        $participants          = chasse_lister_participants($chasse_id, $par_page_participants, 0, 'inscription', 'ASC');
       ?>
         <div class="edition-panel-body">
           <div class="stats-header" style="display:flex;align-items:center;justify-content:flex-end;gap:1rem;">
@@ -515,23 +541,27 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
           </div>
           <div class="dashboard-grid stats-cards" id="chasse-stats">
             <?php
+            $card_class = $stats_locked ? 'disabled' : '';
             get_template_part('template-parts/common/stat-card', null, [
                 'icon'  => 'fa-solid fa-users',
                 'label' => 'Participants',
                 'value' => $nb_participants,
                 'stat'  => 'participants',
+                'class' => $card_class,
             ]);
             get_template_part('template-parts/common/stat-card', null, [
                 'icon'  => 'fa-solid fa-arrow-rotate-right',
                 'label' => 'Tentatives',
                 'value' => $nb_tentatives,
                 'stat'  => 'tentatives',
+                'class' => $card_class,
             ]);
             get_template_part('template-parts/common/stat-card', null, [
                 'icon'  => 'fa-solid fa-coins',
                 'label' => 'Points collectés',
                 'value' => $nb_points,
                 'stat'  => 'points',
+                'class' => $card_class,
             ]);
             get_template_part('template-parts/common/stat-card', null, [
                 'icon'  => 'fa-solid fa-percent',
@@ -544,6 +574,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                     'chassesautresor-com'
                 ),
                 'help_label' => __('Explication du taux d’engagement', 'chassesautresor-com'),
+                'class' => $card_class,
             ]);
             ?>
           </div>
@@ -571,12 +602,13 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
           ]); ?>
           <div class="liste-participants" data-page="1" data-pages="<?= esc_attr($pages_participants); ?>" data-order="asc" data-orderby="inscription">
             <?php get_template_part('template-parts/chasse/partials/chasse-partial-participants', null, [
-              'participants' => $participants,
-              'page' => 1,
-              'par_page' => $par_page_participants,
-              'total' => $total_participants,
-              'pages' => $pages_participants,
-              'total_enigmes' => $total_enigmes,
+              'participants'   => $participants,
+              'page'           => 1,
+              'par_page'       => $par_page_participants,
+              'total'          => $total_participants,
+              'pages'          => $pages_participants,
+              'total_enigmes'  => $total_enigmes,
+              'stats_locked'   => $stats_locked,
             ]); ?>
           </div>
         </div>

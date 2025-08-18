@@ -626,35 +626,35 @@ msgstr ""
 msgid "Description mise à jour."
 msgstr ""
 
-#: template-parts/chasse/partials/chasse-partial-participants.php:35
+#: template-parts/chasse/partials/chasse-partial-participants.php:36
 msgid "Joueurs"
 msgstr ""
 
-#: template-parts/chasse/partials/chasse-partial-participants.php:37
+#: template-parts/chasse/partials/chasse-partial-participants.php:43
 msgid "Pas encore de joueur inscrit."
 msgstr ""
 
-#: template-parts/chasse/partials/chasse-partial-participants.php:49
+#: template-parts/chasse/partials/chasse-partial-participants.php:56
 msgid "Joueur"
 msgstr ""
 
-#: template-parts/chasse/partials/chasse-partial-participants.php:50
+#: template-parts/chasse/partials/chasse-partial-participants.php:57
 msgid "Inscription"
 msgstr ""
 
-#: template-parts/chasse/partials/chasse-partial-participants.php:56
+#: template-parts/chasse/partials/chasse-partial-participants.php:63
 msgid "Trier par taux de participation"
 msgstr ""
 
-#: template-parts/chasse/partials/chasse-partial-participants.php:58
+#: template-parts/chasse/partials/chasse-partial-participants.php:65
 msgid "Tx participation"
 msgstr ""
 
-#: template-parts/chasse/partials/chasse-partial-participants.php:66
+#: template-parts/chasse/partials/chasse-partial-participants.php:73
 msgid "Trier par taux de résolution"
 msgstr ""
 
-#: template-parts/chasse/partials/chasse-partial-participants.php:68
+#: template-parts/chasse/partials/chasse-partial-participants.php:75
 msgid "Tx résolution"
 msgstr ""
 
@@ -828,6 +828,7 @@ msgstr ""
 msgid "Image par défaut de l’énigme"
 msgstr ""
 
+#: template-parts/chasse/partials/chasse-partial-participants.php:40
 #: template-parts/enigme/partials/enigme-partial-participants.php:39
 msgid "Les statistiques seront disponibles une fois la chasse activée."
 msgstr ""

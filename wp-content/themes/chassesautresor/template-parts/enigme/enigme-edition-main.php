@@ -38,9 +38,10 @@ $date_deblocage = $date_obj ? $date_obj->format('Y-m-d\TH:i') : '';
 $chasse = get_field('enigme_chasse_associee', $enigme_id);
 $chasse_id = is_array($chasse) ? $chasse[0] : null;
 $chasse_title = $chasse_id ? get_the_title($chasse_id) : '';
-$chasse_status = $chasse_id ? get_post_status($chasse_id) : '';
 $enigme_status = get_post_status($enigme_id);
-$stats_locked  = ($chasse_status !== 'publish') || ($enigme_status !== 'publish');
+$chasse_validation = $chasse_id ? get_field('chasse_cache_statut_validation', $chasse_id) : '';
+$stats_locked = in_array($chasse_validation, ['creation', 'en_attente', 'correction'], true)
+    || $enigme_status !== 'publish';
 
 $nb_variantes   = 0;
 $variantes_list = [];
