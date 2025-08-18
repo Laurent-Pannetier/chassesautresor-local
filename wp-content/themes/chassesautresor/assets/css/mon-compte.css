@@ -549,6 +549,11 @@
     width: auto;
 }
 
+/* 📌 Toggle d'historique de conversion */
+.conversion-history .conversion-history-toggle {
+    color: var(--color-text-fond-clair);
+}
+
 /* 📌 Actions de conversion en ligne */
 .liste-paiements .js-update-request {
     display: flex;
