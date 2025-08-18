@@ -129,15 +129,15 @@ defined('ABSPATH') || exit;
     }
 
     /**
-     * Render the main content section of the enigma.
+     * Render the title and subtitle section of the enigma.
      *
      * @param int    $enigme_id Enigma identifier.
      * @param string $style     Display style.
      * @param int    $user_id   Current user ID.
      */
-    function render_enigme_content(int $enigme_id, string $style, int $user_id): void
+    function render_enigme_title(int $enigme_id, string $style, int $user_id): void
     {
-        echo '<article class="contenu-principal">';
+        echo '<section class="bloc-titre">';
         enigme_get_partial(
             'titre',
             $style,
@@ -146,6 +146,19 @@ defined('ABSPATH') || exit;
                 'user_id' => $user_id,
             ]
         );
+        echo '</section>';
+    }
+
+    /**
+     * Render the textual content section of the enigma.
+     *
+     * @param int    $enigme_id Enigma identifier.
+     * @param string $style     Display style.
+     * @param int    $user_id   Current user ID.
+     */
+    function render_enigme_content(int $enigme_id, string $style, int $user_id): void
+    {
+        echo '<article class="contenu-principal">';
         enigme_get_partial(
             'texte',
             $style,
@@ -331,6 +344,7 @@ defined('ABSPATH') || exit;
         echo '<div class="container container--xl-full enigme-layout">';
         render_enigme_sidebar($enigme_id, $edition_active, $chasse_id, $menu_items);
         echo '<main class="page-enigme enigme-style-' . esc_attr($style) . '">';
+        render_enigme_title($enigme_id, $style, $user_id);
         render_enigme_hero($enigme_id, $style, $user_id);
         render_enigme_content($enigme_id, $style, $user_id);
         render_enigme_participation($enigme_id, $style, $user_id);
