@@ -488,7 +488,7 @@ function format_points_history_reason(array $op): string
         $title = get_the_title($origin_id);
         $link  = get_permalink($origin_id);
         if ($title && $link) {
-            $replacement = sprintf('[<a href="%s">%s</a>]', esc_url($link), esc_html($title));
+            $replacement = sprintf('<a href="%s">%s</a>', esc_url($link), esc_html($title));
             $reason      = str_replace('#' . $origin_id, $replacement, $reason);
         }
     }
