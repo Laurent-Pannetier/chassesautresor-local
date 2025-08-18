@@ -506,7 +506,7 @@ function charger_script_reponse_manuelle() {
 
         wp_localize_script('reponse-manuelle', 'REPONSE_MANUELLE_I18N', [
             'success'    => esc_html__('Tentative bien reçue.', 'chassesautresor-com'),
-            'processing' => esc_html__('Votre tentative est en cours de traitement.', 'chassesautresor-com'),
+            'processing' => esc_html__('⏳ Votre tentative est en cours de traitement.', 'chassesautresor-com'),
         ]);
     }
 }

@@ -11,7 +11,7 @@ function initFormulaireManuel() {
 
   const i18n = window.REPONSE_MANUELLE_I18N || {};
   const txtSuccess = i18n.success || 'Tentative bien reçue.';
-  const txtProcessing = i18n.processing || 'Votre tentative est en cours de traitement.';
+  const txtProcessing = i18n.processing || '⏳ Votre tentative est en cours de traitement.';
 
   form.addEventListener('submit', e => {
     e.preventDefault();
