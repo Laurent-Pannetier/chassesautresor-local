@@ -306,7 +306,46 @@ function myaccount_get_persistent_messages(int $user_id): array
         return [];
     }
 
-    return array_values(array_filter($messages, 'is_string'));
+    $tentatives = [];
+    foreach ($messages as $key => $msg) {
+        if (strpos($key, 'tentative_') === 0 && is_string($msg)) {
+            $tentatives[] = $msg;
+            unset($messages[$key]);
+        }
+    }
+
+    $output = array_values(array_filter($messages, 'is_string'));
+
+    if (!empty($tentatives)) {
+        if (count($tentatives) === 1) {
+            $output[] = sprintf(
+                __(
+                    'Votre demande de résolution de l\'énigme %s est en cours de traitement. '
+                    . 'Vous recevrez une notification dès que votre demande sera traitée.',
+                    'chassesautresor-com'
+                ),
+                $tentatives[0]
+            );
+        } else {
+            $links = array_map(
+                function ($anchor) {
+                    return str_replace('<a ', '<a class="etiquette" ', $anchor);
+                },
+                $tentatives
+            );
+
+            $output[] = sprintf(
+                __(
+                    'Vos demandes de résolution d\'énigmes sont en cours de traitement : %s. '
+                    . 'Vous recevrez une notification dès que vos demandes seront traitées.',
+                    'chassesautresor-com'
+                ),
+                implode(' ', $links)
+            );
+        }
+    }
+
+    return $output;
 }
 
 /**

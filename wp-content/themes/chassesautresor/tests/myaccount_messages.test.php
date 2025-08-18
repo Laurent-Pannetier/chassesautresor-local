@@ -210,20 +210,34 @@ class MyAccountMessagesTest extends TestCase
             1,
             '_myaccount_messages',
             [
-                'tentative_123' => sprintf(
-                    'Votre demande de résolution de l\'énigme %s est en cours de traitement. '
-                    . 'Vous recevrez une notification dès que votre demande sera traitée.',
-                    '<a href="https://example.com/enigme">Énigme</a>'
-                ),
+                'tentative_123' => '<a href="https://example.com/enigme">Énigme</a>',
             ]
         );
 
         $output = myaccount_get_important_messages();
 
-        $this->assertStringContainsString(
-            '<a href="https://example.com/enigme">Énigme</a>',
-            $output
+        $this->assertStringContainsString('Votre demande de résolution de l\'énigme', $output);
+        $this->assertStringContainsString('<a href="https://example.com/enigme">Énigme</a>', $output);
+
+        delete_user_meta(1, '_myaccount_messages');
+    }
+
+    public function test_multiple_pending_requests_are_grouped(): void
+    {
+        update_user_meta(
+            1,
+            '_myaccount_messages',
+            [
+                'tentative_1' => '<a href="https://example.com/e1">E1</a>',
+                'tentative_2' => '<a href="https://example.com/e2">E2</a>',
+            ]
         );
+
+        $output = myaccount_get_important_messages();
+
+        $this->assertStringContainsString('Vos demandes de résolution d\'énigmes sont en cours de traitement', $output);
+        $this->assertStringContainsString('<a class="etiquette" href="https://example.com/e1">E1</a>', $output);
+        $this->assertStringContainsString('<a class="etiquette" href="https://example.com/e2">E2</a>', $output);
 
         delete_user_meta(1, '_myaccount_messages');
     }

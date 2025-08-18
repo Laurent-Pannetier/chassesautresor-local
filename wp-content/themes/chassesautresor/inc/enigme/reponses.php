@@ -155,19 +155,8 @@ function soumettre_reponse_manuelle()
     enigme_mettre_a_jour_statut_utilisateur($enigme_id, $user_id, 'soumis', true);
 
     $titre_enigme = get_the_title($enigme_id);
-    myaccount_add_persistent_message(
-        $user_id,
-        'tentative_' . $uid,
-        sprintf(
-            /* translators: %s: riddle title with link */
-            __(
-                'Votre demande de résolution de l\'énigme %s est en cours de traitement. '
-                . 'Vous recevrez une notification dès que votre demande sera traitée.',
-                'chassesautresor-com'
-            ),
-            '<a href="' . esc_url(get_permalink($enigme_id)) . '">' . esc_html($titre_enigme) . '</a>'
-        )
-    );
+    $link        = '<a href="' . esc_url(get_permalink($enigme_id)) . '">' . esc_html($titre_enigme) . '</a>';
+    myaccount_add_persistent_message($user_id, 'tentative_' . $uid, $link);
 
     envoyer_mail_reponse_manuelle($user_id, $enigme_id, $reponse, $uid);
 
