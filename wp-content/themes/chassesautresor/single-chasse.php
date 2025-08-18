@@ -90,7 +90,7 @@ $statut_validation = $infos_chasse['statut_validation'];
 $nb_joueurs = $infos_chasse['nb_joueurs'];
 
 get_header();
-error_log("🧪 test organisateur_associe : " . ($est_orga_associe ? 'OUI' : 'NON'));
+cat_debug("🧪 test organisateur_associe : " . ($est_orga_associe ? 'OUI' : 'NON'));
 
 $can_validate = peut_valider_chasse($chasse_id, $user_id);
 ?>

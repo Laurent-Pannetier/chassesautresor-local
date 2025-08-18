@@ -4,7 +4,7 @@ defined('ABSPATH') || exit;
 $post_id = $args['post_id'] ?? null;
 $user_id = $args['user_id'] ?? get_current_user_id(); // ✅ sécurisation
 
-error_log("👤 STATUT ACTUEL : " . enigme_get_statut_utilisateur($post_id, $user_id));
+cat_debug("👤 STATUT ACTUEL : " . enigme_get_statut_utilisateur($post_id, $user_id));
 
 
 if (!$post_id || !$user_id) return;
