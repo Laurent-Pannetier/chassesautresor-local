@@ -41,7 +41,4 @@ $organisateurs_liste = recuperer_organisateurs_pending();
         </div>
         <?php afficher_tableau_organisateurs_pending($organisateurs_liste); ?>
     <?php endif; ?>
-
-    <h2 class="text-lg font-semibold mt-8 mb-2"><?php esc_html_e('Demandes de paiement', 'chassesautresor'); ?></h2>
-    <?php afficher_tableau_paiements_admin(); ?>
 </section>
