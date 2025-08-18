@@ -454,7 +454,7 @@ Requis : non
 🔹 Groupe : paramètres indices
 🆔 ID : 9568
 🔑 Key : group_68a1fb240748a
-📦 Champs trouvés : 8
+📦 Champs trouvés : 9
 
 — indice_image —
 Type : image
@@ -515,4 +515,10 @@ Choices :
   - programme : programmé
   - expire : expiré
   - desactive : désactivé
+----------------------------------------
+— indice_cache_complet —
+Type : true_false
+Label : complétion de l'indice
+Instructions : (vide)
+Requis : non
 ----------------------------------------

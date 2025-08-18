@@ -418,6 +418,7 @@ Groupe : paramètres indices
 * indice_date_disponibilite (date_time_picker, retour d/m/Y g:i a)
 * indice_cout_points (number)
 * indice_cache_etat_systeme (select, accessible/programme/expire/desactive)
+* indice_cache_complet (true_false)
 
 liste avec tous les détails des groupes de champs ACF dans champs-acf-liste.md
 
