@@ -12,7 +12,7 @@ defined('ABSPATH') || exit;
 $args = $args ?? [];
 $tentatives = $args['tentatives'] ?? $tentatives ?? [];
 $page = $args['page'] ?? $page ?? 1;
-$par_page = $args['par_page'] ?? $par_page ?? 5;
+$par_page = $args['par_page'] ?? $par_page ?? 20;
 $total = $args['total'] ?? $total ?? 0;
 $pages = $args['pages'] ?? $pages ?? (int) ceil($total / $par_page);
 ?>
