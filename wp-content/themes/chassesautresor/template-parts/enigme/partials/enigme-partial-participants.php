@@ -34,18 +34,36 @@ if ($orderby === 'tentatives') {
 
 if (empty($participants)) :
     ?>
-<p>Aucun participant engagé.</p>
+<p><?= esc_html__('Aucun participant engagé.', 'chassesautresor-com'); ?></p>
 <?php else : ?>
 <table class="stats-table compact">
   <thead>
-    <tr>
-      <th scope="col">Nom</th>
-      <th scope="col"><button class="sort" data-orderby="date" aria-label="Trier par engagement">Engagement <i class="fa-solid <?= esc_attr($icon_date); ?>"></i></button></th>
-      <?php if ($mode_validation !== 'aucune') : ?>
-      <th scope="col" data-format="etiquette"><button class="sort" data-orderby="tentatives" aria-label="Trier par tentatives">Tentatives <i class="fa-solid <?= esc_attr($icon_tentatives); ?>"></i></button></th>
-      <?php endif; ?>
-      <th scope="col">Trouvé</th>
-    </tr>
+      <tr>
+        <th scope="col"><?= esc_html__('Nom', 'chassesautresor-com'); ?></th>
+        <th scope="col">
+          <button
+            class="sort"
+            data-orderby="date"
+            aria-label="<?= esc_attr__('Trier par engagement', 'chassesautresor-com'); ?>"
+          >
+            <?= esc_html__('Engagement', 'chassesautresor-com'); ?>
+            <i class="fa-solid <?= esc_attr($icon_date); ?>"></i>
+          </button>
+        </th>
+        <?php if ($mode_validation !== 'aucune') : ?>
+        <th scope="col" data-format="etiquette">
+          <button
+            class="sort"
+            data-orderby="tentatives"
+            aria-label="<?= esc_attr__('Trier par tentatives', 'chassesautresor-com'); ?>"
+          >
+            <?= esc_html__('Tentatives', 'chassesautresor-com'); ?>
+            <i class="fa-solid <?= esc_attr($icon_tentatives); ?>"></i>
+          </button>
+        </th>
+        <?php endif; ?>
+        <th scope="col"><?= esc_html__('Trouvé', 'chassesautresor-com'); ?></th>
+      </tr>
   </thead>
   <tbody>
     <?php foreach ($participants as $p) : ?>
@@ -61,14 +79,22 @@ if (empty($participants)) :
   </tbody>
 </table>
 <div class="pager">
-  <?php if ($page > 1) : ?>
-    <button class="pager-first" aria-label="Première page"><i class="fa-solid fa-angles-left"></i></button>
-    <button class="pager-prev" aria-label="Page précédente"><i class="fa-solid fa-angle-left"></i></button>
-  <?php endif; ?>
+    <?php if ($page > 1) : ?>
+      <button class="pager-first" aria-label="<?= esc_attr__('Première page', 'chassesautresor-com'); ?>">
+        <i class="fa-solid fa-angles-left"></i>
+      </button>
+      <button class="pager-prev" aria-label="<?= esc_attr__('Page précédente', 'chassesautresor-com'); ?>">
+        <i class="fa-solid fa-angle-left"></i>
+      </button>
+    <?php endif; ?>
   <span class="pager-info"><?= esc_html($page); ?> / <?= esc_html($pages); ?></span>
-  <?php if ($page < $pages) : ?>
-    <button class="pager-next" aria-label="Page suivante"><i class="fa-solid fa-angle-right"></i></button>
-    <button class="pager-last" aria-label="Dernière page"><i class="fa-solid fa-angles-right"></i></button>
-  <?php endif; ?>
+    <?php if ($page < $pages) : ?>
+      <button class="pager-next" aria-label="<?= esc_attr__('Page suivante', 'chassesautresor-com'); ?>">
+        <i class="fa-solid fa-angle-right"></i>
+      </button>
+      <button class="pager-last" aria-label="<?= esc_attr__('Dernière page', 'chassesautresor-com'); ?>">
+        <i class="fa-solid fa-angles-right"></i>
+      </button>
+    <?php endif; ?>
 </div>
 <?php endif; ?>
