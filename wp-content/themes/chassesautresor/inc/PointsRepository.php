@@ -262,4 +262,28 @@ class PointsRepository
 
         return $row ?: null;
     }
+
+    /**
+     * Sum of all points used by players excluding conversion requests.
+     */
+    public function getTotalPointsUsed(): int
+    {
+        $sql = $this->wpdb->prepare(
+            "SELECT COALESCE(SUM(-points), 0) FROM {$this->table} WHERE points < 0 AND origin_type <> %s",
+            'conversion'
+        );
+
+        return (int) $this->wpdb->get_var($sql);
+    }
+
+    /**
+     * Sum of all points currently held by users.
+     */
+    public function getTotalPointsInCirculation(): int
+    {
+        $subquery = "SELECT MAX(id) AS id FROM {$this->table} GROUP BY user_id";
+        $sql      = "SELECT COALESCE(SUM(balance), 0) FROM {$this->table} WHERE id IN ($subquery)";
+
+        return (int) $this->wpdb->get_var($sql);
+    }
 }
