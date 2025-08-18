@@ -304,6 +304,9 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
         $chasse_stat = $chasse_id ? get_field('chasse_cache_statut', $chasse_id) : '';
         $show_menu   = enigme_user_can_see_menu($user_id, $chasse_id, $chasse_stat);
         $skip_checks = $chasse_stat === 'termine';
+        $is_privileged = current_user_can('administrator')
+            || (est_organisateur($user_id)
+            && utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id));
 
         if ($show_menu) {
             $cache_key = 'enigmes_chasse_' . $chasse_id;
@@ -317,11 +320,13 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
         $submenu_items = [];
 
         foreach ($liste as $post) {
-            if (get_post_status($post->ID) !== 'publish') {
-                continue;
-            }
-            if (!get_field('enigme_cache_complet', $post->ID)) {
-                continue;
+            if (!$is_privileged) {
+                if (get_post_status($post->ID) !== 'publish') {
+                    continue;
+                }
+                if (!get_field('enigme_cache_complet', $post->ID)) {
+                    continue;
+                }
             }
 
             $classes = [];
