@@ -10,6 +10,7 @@ if (!function_exists('recuperer_ids_enigmes_pour_chasse')) {
     }
 }
 
+
 class ChasseStatsAggregateTest extends TestCase {
     public function test_chasse_compter_tentatives_aggregates_with_single_query(): void {
         global $wpdb;
@@ -62,6 +63,29 @@ class ChasseStatsAggregateTest extends TestCase {
 
         $res = chasse_calculer_taux_engagement(1);
         $this->assertSame(150.0, $res);
+        $this->assertSame(2, $wpdb->get_var_calls);
+    }
+
+    public function test_chasse_calculer_taux_progression_aggregates_once_for_enigmes(): void {
+        global $wpdb, $post_fields;
+        $wpdb = new class {
+            public string $prefix = 'wp_';
+            public int $get_var_calls = 0;
+            public function prepare($query, ...$args) { return $query; }
+            public function get_var($query) {
+                $this->get_var_calls++;
+                if ($this->get_var_calls === 1) {
+                    return 2; // participants
+                }
+                return 4; // total solved per riddle sum
+            }
+        };
+        $post_fields = [
+            10 => ['enigme_mode_validation' => 'manuelle'],
+            11 => ['enigme_mode_validation' => 'manuelle'],
+        ];
+        $res = chasse_calculer_taux_progression(1);
+        $this->assertSame(100.0, $res);
         $this->assertSame(2, $wpdb->get_var_calls);
     }
 }

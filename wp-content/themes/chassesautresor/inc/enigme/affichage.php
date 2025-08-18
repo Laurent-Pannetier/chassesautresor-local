@@ -56,6 +56,45 @@ defined('ABSPATH') || exit;
     add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
 
     /**
+     * Render a bar chart section used for stats.
+     *
+     * @param string $title         Section title.
+     * @param int    $user_rate     Percentage for the current user.
+     * @param int    $avg_rate      Average percentage among players.
+     * @param string $section_class Additional CSS class for the section.
+     *
+     * @return string
+     */
+    function enigme_render_bar_section(string $title, int $user_rate, int $avg_rate, string $section_class): string
+    {
+        ob_start();
+        ?>
+        <section class="<?= esc_attr($section_class); ?>">
+          <h3><?= esc_html($title); ?></h3>
+          <div class="stats-bar-chart">
+            <div class="bar-row">
+              <span class="bar-label"><?= esc_html__('Vous', 'chassesautresor-com'); ?></span>
+              <div class="bar-wrapper">
+                <div class="bar-fill" style="background-color:var(--color-primary);width:<?= esc_attr($user_rate); ?>%;">
+                  <span class="bar-value"><?= esc_html($user_rate); ?>%</span>
+                </div>
+              </div>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label"><?= esc_html__('Moyenne', 'chassesautresor-com'); ?></span>
+              <div class="bar-wrapper">
+                <div class="bar-fill" style="width:<?= esc_attr($avg_rate); ?>%;">
+                  <span class="bar-value"><?= esc_html($avg_rate); ?>%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <?php
+        return (string) ob_get_clean();
+    }
+
+    /**
      * Build engagement histogram HTML for the sidebar.
      *
      * @param int|null $chasse_id Hunt identifier.
@@ -99,31 +138,75 @@ defined('ABSPATH') || exit;
             wp_cache_set($cache_key, $data, 'chassesautresor', HOUR_IN_SECONDS);
         }
 
-        ob_start();
-        ?>
-        <section class="enigme-engagement">
-          <h3><?= esc_html__('Engagements', 'chassesautresor-com'); ?></h3>
-          <div class="stats-bar-chart">
-            <div class="bar-row">
-              <span class="bar-label"><?= esc_html__('Vous', 'chassesautresor-com'); ?></span>
-              <div class="bar-wrapper">
-                <div class="bar-fill" style="background-color:var(--color-primary);width:<?= esc_attr($data['user']); ?>%;">
-                  <span class="bar-value"><?= esc_html($data['user']); ?>%</span>
-                </div>
-              </div>
-            </div>
-            <div class="bar-row">
-              <span class="bar-label"><?= esc_html__('Moyenne', 'chassesautresor-com'); ?></span>
-              <div class="bar-wrapper">
-                <div class="bar-fill" style="width:<?= esc_attr($data['avg']); ?>%;">
-                  <span class="bar-value"><?= esc_html($data['avg']); ?>%</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-        <?php
-        return (string) ob_get_clean();
+        return enigme_render_bar_section(
+            esc_html__('Engagements', 'chassesautresor-com'),
+            $data['user'],
+            $data['avg'],
+            'enigme-engagement'
+        );
+    }
+
+    /**
+     * Build progression histogram HTML for the sidebar.
+     *
+     * @param int|null $chasse_id Hunt identifier.
+     * @param int      $user_id   Current user identifier.
+     *
+     * @return string
+     */
+    function enigme_sidebar_progression_html(?int $chasse_id, int $user_id): string
+    {
+        if (!$chasse_id || !$user_id) {
+            return '';
+        }
+
+        $cache_key = 'enigme_sidebar_progression_' . $chasse_id . '_' . $user_id;
+        $data      = wp_cache_get($cache_key, 'chassesautresor');
+
+        if ($data === false) {
+            $enigme_ids = recuperer_ids_enigmes_pour_chasse($chasse_id);
+            if (!$enigme_ids) {
+                $data = null;
+            } else {
+                $validables = array_filter($enigme_ids, function ($id) {
+                    return get_field('enigme_mode_validation', $id) !== 'aucune';
+                });
+                $total_validables = count($validables);
+                if ($total_validables === 0) {
+                    $data = null;
+                } else {
+                    global $wpdb;
+                    $table        = $wpdb->prefix . 'enigme_statuts_utilisateur';
+                    $placeholders = implode(',', array_fill(0, $total_validables, '%d'));
+                    $sql          = $wpdb->prepare(
+                        "SELECT COUNT(DISTINCT enigme_id) FROM {$table} WHERE user_id = %d AND statut IN ('resolue','terminee','terminée') AND enigme_id IN ($placeholders)",
+                        $user_id,
+                        ...$validables
+                    );
+                    $solved    = (int) $wpdb->get_var($sql);
+                    $user_rate = (100 * $solved) / $total_validables;
+
+                    $avg_rate = chasse_calculer_taux_progression($chasse_id);
+                    $data     = [
+                        'user' => (int) round($user_rate),
+                        'avg'  => (int) round($avg_rate),
+                    ];
+                }
+            }
+
+            wp_cache_set($cache_key, $data, 'chassesautresor', HOUR_IN_SECONDS);
+        }
+
+        if ($data === null) {
+            return '';
+        }
+
+        return enigme_render_bar_section(
+            esc_html__('Progression', 'chassesautresor-com'),
+            $data['user'],
+            $data['avg'],
+            'enigme-progression'
+        );
     }
 
     /**
@@ -175,8 +258,9 @@ defined('ABSPATH') || exit;
             wp_cache_set($cache_key, $html, 'chassesautresor', HOUR_IN_SECONDS);
         }
 
-        $user_id   = get_current_user_id();
-        $stats_html = enigme_sidebar_engagement_html($chasse_id, $user_id);
+        $user_id    = get_current_user_id();
+        $stats_html = enigme_sidebar_engagement_html($chasse_id, $user_id)
+            . enigme_sidebar_progression_html($chasse_id, $user_id);
         echo str_replace('%STATS%', $stats_html, $html);
     }
 
