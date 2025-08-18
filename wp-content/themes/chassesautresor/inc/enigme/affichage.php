@@ -357,7 +357,7 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
      */
     function render_enigme_title(int $enigme_id, string $style, int $user_id): void
     {
-        echo '<section class="bloc-titre">';
+        echo '<header class="bloc-titre enigme-header">';
         enigme_get_partial(
             'titre',
             $style,
@@ -366,7 +366,7 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
                 'user_id' => $user_id,
             ]
         );
-        echo '</section>';
+        echo '</header>';
     }
 
     /**
