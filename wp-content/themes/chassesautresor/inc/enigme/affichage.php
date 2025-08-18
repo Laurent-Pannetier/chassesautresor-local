@@ -65,6 +65,30 @@ defined('ABSPATH') || exit;
      *
      * @return string
      */
+    function enigme_render_bar_row(string $label, int $rate, string $fill_style = ''): string
+    {
+        $inside = $rate >= 50;
+        $style  = $fill_style === '' ? '' : $fill_style . ';';
+
+        ob_start();
+        ?>
+        <div class="bar-row">
+          <span class="bar-label"><?= esc_html($label); ?></span>
+          <div class="bar-wrapper">
+            <div class="bar-fill" style="<?= esc_attr($style); ?>width:<?= esc_attr($rate); ?>%;">
+              <?php if ($inside) : ?>
+                <span class="bar-value"><?= esc_html($rate); ?>%</span>
+              <?php endif; ?>
+            </div>
+          </div>
+          <?php if (!$inside) : ?>
+            <span class="bar-value bar-value--outside"><?= esc_html($rate); ?>%</span>
+          <?php endif; ?>
+        </div>
+        <?php
+        return (string) ob_get_clean();
+    }
+
     function enigme_render_bar_section(string $title, int $user_rate, int $avg_rate, string $section_class): string
     {
         ob_start();
@@ -72,22 +96,8 @@ defined('ABSPATH') || exit;
         <section class="<?= esc_attr($section_class); ?>">
           <h3><?= esc_html($title); ?></h3>
           <div class="stats-bar-chart">
-            <div class="bar-row">
-              <span class="bar-label"><?= esc_html__('Vous', 'chassesautresor-com'); ?></span>
-              <div class="bar-wrapper">
-                <div class="bar-fill" style="background-color:var(--color-primary);width:<?= esc_attr($user_rate); ?>%;">
-                  <span class="bar-value"><?= esc_html($user_rate); ?>%</span>
-                </div>
-              </div>
-            </div>
-            <div class="bar-row">
-              <span class="bar-label"><?= esc_html__('Moyenne', 'chassesautresor-com'); ?></span>
-              <div class="bar-wrapper">
-                <div class="bar-fill" style="width:<?= esc_attr($avg_rate); ?>%;">
-                  <span class="bar-value"><?= esc_html($avg_rate); ?>%</span>
-                </div>
-              </div>
-            </div>
+            <?= enigme_render_bar_row(esc_html__('Vous', 'chassesautresor-com'), $user_rate, 'background-color:var(--color-primary)'); ?>
+            <?= enigme_render_bar_row(esc_html__('Moyenne', 'chassesautresor-com'), $avg_rate); ?>
           </div>
         </section>
         <?php
