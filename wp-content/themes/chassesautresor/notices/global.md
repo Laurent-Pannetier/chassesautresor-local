@@ -415,8 +415,9 @@ Groupe : paramètres indices
 * indice_cible (radio)
 * indice_cible_objet (relationship)
 * indice_disponibilite (radio)
-* indice_date_disponibilite (date_time_picker)
+* indice_date_disponibilite (date_time_picker, retour d/m/Y g:i a)
 * indice_cout_points (number)
+* indice_cache_etat_systeme (select, accessible/programme/expire/desactive)
 
 liste avec tous les détails des groupes de champs ACF dans champs-acf-liste.md
 
@@ -1234,7 +1235,7 @@ Cas particulier : les boutons déclencheurs de panneau doivent en plus avoir `.c
 
 ### 🗄️ Tables personnalisées
 
-Certaines fonctionnalités s'appuient sur quatre tables SQL dédiées.
+Certaines fonctionnalités s'appuient sur cinq tables SQL dédiées.
 
 #### `wp_engagements`
 
@@ -1244,12 +1245,34 @@ Certaines fonctionnalités s'appuient sur quatre tables SQL dédiées.
 | user_id | bigint unsigned | identifiant du joueur |
 | enigme_id | bigint unsigned | identifiant de l'énigme |
 | chasse_id | bigint NULL | identifiant de la chasse |
+| indice_id | bigint unsigned NULL | identifiant de l'indice |
 | date_engagement | datetime NULL DEFAULT CURRENT_TIMESTAMP | date d'engagement |
 
 Index :
 - `PRIMARY(id)`
 - `INDEX(enigme_id, user_id)`
 - `INDEX(chasse_id)`
+- `UNIQUE(user_id, indice_id)`
+- `INDEX(indice_id)`
+
+#### `wp_indices_deblocages`
+
+| Colonne | Type | Commentaire |
+|---------|------|-------------|
+| id | bigint unsigned AUTO_INCREMENT | clé primaire |
+| user_id | bigint unsigned | identifiant du joueur |
+| indice_id | bigint unsigned | identifiant de l'indice |
+| chasse_id | bigint unsigned NULL | chasse associée |
+| enigme_id | bigint unsigned NULL | énigme associée |
+| points_depenses | int unsigned | coût en points lors du déblocage |
+| date_deblocage | datetime | date de déblocage |
+
+Index :
+- `PRIMARY(id)`
+- `UNIQUE(user_id, indice_id)`
+- `INDEX(indice_id)`
+- `INDEX(chasse_id)`
+- `INDEX(enigme_id)`
 
 #### `wp_enigme_statuts_utilisateur`
 
@@ -1286,7 +1309,7 @@ Index :
 | points    | int             | variation (crédit ou débit)      |
 | amount_eur | decimal(10,2) NULL | montant équivalent en euros |
 | reason    | varchar(255)    | motif de l'opération             |
-| origin_type | enum('admin','chasse','tentative','achat','conversion') NULL DEFAULT 'admin' | catégorie |
+| origin_type | enum('admin','chasse','enigme','indice','tentative','achat','conversion') NULL DEFAULT 'admin' | catégorie |
 | origin_id | bigint unsigned NULL | identifiant lié (chasse, énigme, commande...) |
 | request_status | enum('pending','approved','paid','refused','cancelled') DEFAULT 'pending' | statut de la demande |
 | request_date | datetime DEFAULT CURRENT_TIMESTAMP | date de la demande |
@@ -1301,7 +1324,7 @@ Index :
 - `INDEX(created_at)`
 
 `origin_type` indique la source de la variation de points :
-`admin`, `chasse`, `tentative`, `achat` ou `conversion`.
+`admin`, `chasse`, `enigme`, `indice`, `tentative`, `achat` ou `conversion`.
 
 
 Les variantes sont comparées en tenant compte de leur option `respecter_casse_n`. Si la saisie correspond, le résultat enregistré est `variante` et le message défini est renvoyé via AJAX à chaque soumission, même identique.

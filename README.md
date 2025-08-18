@@ -32,3 +32,11 @@ wp i18n make-pot ./wp-content/themes/chassesautresor ./wp-content/themes/chasses
 
 Ajoutez ensuite vos fichiers `.mo` compilés dans ce même dossier pour charger les traductions en front‑end.
 
+## Tables personnalisées
+
+Le projet utilise plusieurs tables SQL dédiées pour suivre l'activité des joueurs :
+
+- `wp_engagements` enregistre les engagements liés aux énigmes, chasses ou indices (`indice_id`).
+- `wp_indices_deblocages` trace le déblocage des indices et les points dépensés.
+- `wp_user_points` inclut la valeur `indice` dans le champ `origin_type` pour comptabiliser ces dépenses.
+
