@@ -10,7 +10,7 @@
   border-radius: 6px;
   align-self: start;
   height: fit-content;
-  color: rgba(var(--color-text-fond-clair-rgb, 28, 28, 28), 0.5);
+  color: rgba(var(--color-text-fond-clair-rgb, 28, 28, 28), 0.7);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
@@ -96,7 +96,7 @@
   background-color: var(--color-editor-background);
   border: 1px solid var(--color-editor-border);
   border-radius: 4px;
-  height: 16px;
+  height: 22px;
   overflow: hidden;
   position: relative;
 }
