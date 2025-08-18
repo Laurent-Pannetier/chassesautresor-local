@@ -495,7 +495,7 @@ function enqueue_conversion_history_script(): void
     wp_enqueue_script(
         'conversion-history',
         get_stylesheet_directory_uri() . $path,
-        ['jquery'],
+        [],
         filemtime(get_stylesheet_directory() . $path),
         true
     );

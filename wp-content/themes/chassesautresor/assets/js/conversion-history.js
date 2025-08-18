@@ -1,42 +1,71 @@
-jQuery(function ($) {
-  function toggleTable(e) {
-    e.preventDefault();
-    const button = $(this);
-    const container = button.closest('.conversion-history');
-    const tableWrapper = container.find('.conversion-history-table');
-    const expanded = button.attr('aria-expanded') === 'true';
-    button
-      .attr('aria-expanded', expanded ? 'false' : 'true')
-      .attr('aria-label', expanded ? button.data('label-open') : button.data('label-close'))
-      .find('.conversion-history-toggle-text')
-      .text(expanded ? button.data('label-open') : button.data('label-close'));
-    tableWrapper.slideToggle();
+/* global ConversionHistoryAjax */
+(function () {
+  function toggleTable(button) {
+    var container = button.closest('.conversion-history');
+    var tableWrapper = container.querySelector('.conversion-history-table');
+    var expanded = button.getAttribute('aria-expanded') === 'true';
+
+    button.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+    button.setAttribute(
+      'aria-label',
+      expanded ? button.getAttribute('data-label-open') : button.getAttribute('data-label-close')
+    );
+
+    var textSpan = button.querySelector('.conversion-history-toggle-text');
+    if (textSpan) {
+      textSpan.textContent = expanded ? button.getAttribute('data-label-open') : button.getAttribute('data-label-close');
+    }
+
+    tableWrapper.style.display = expanded ? 'none' : '';
   }
 
   function loadPage(container, page) {
-    const loading = container.find('.conversion-history-loading');
-    const tableWrapper = container.find('.conversion-history-table');
-    loading.show();
-    $.post(ConversionHistoryAjax.ajax_url, {
-      action: 'load_conversion_history',
-      nonce: ConversionHistoryAjax.nonce,
-      page: page,
+    var loading = container.querySelector('.conversion-history-loading');
+    var tableWrapper = container.querySelector('.conversion-history-table');
+    if (loading) {
+      loading.style.display = 'inline-block';
+    }
+
+    var formData = new FormData();
+    formData.append('action', 'load_conversion_history');
+    formData.append('nonce', ConversionHistoryAjax.nonce);
+    formData.append('page', page);
+
+    fetch(ConversionHistoryAjax.ajax_url, {
+      method: 'POST',
+      body: formData,
     })
-      .done(function (response) {
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (response) {
         if (response.success) {
-          tableWrapper.find('tbody').html(response.data.rows);
+          tableWrapper.querySelector('tbody').innerHTML = response.data.rows;
         }
       })
-      .always(function () {
-        loading.hide();
+      .finally(function () {
+        if (loading) {
+          loading.style.display = 'none';
+        }
       });
   }
 
-  $(document).on('click', '.conversion-history-toggle', toggleTable);
+  document.addEventListener('click', function (e) {
+    var button = e.target.closest('.conversion-history-toggle');
+    if (!button) {
+      return;
+    }
+    e.preventDefault();
+    toggleTable(button);
+  });
 
-  $(document).on('pager:change', '.conversion-history .points-history-pager', function (e) {
-    const container = $(this).closest('.conversion-history');
-    const page = e.originalEvent.detail.page;
+  document.addEventListener('pager:change', function (e) {
+    var pager = e.target.closest('.conversion-history .points-history-pager');
+    if (!pager) {
+      return;
+    }
+    var container = pager.closest('.conversion-history');
+    var page = e.detail.page;
     loadPage(container, page);
   });
-});
+})();
