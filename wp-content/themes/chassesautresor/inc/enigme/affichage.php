@@ -97,6 +97,10 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
         $inside = $rate >= 50;
         $style  = $fill_style === '' ? '' : $fill_style . ';';
 
+        $outside_style = $rate === 0
+            ? 'left:4px;'
+            : 'left:calc(' . $rate . '% + 4px);';
+
         ob_start();
         ?>
         <div class="bar-row">
@@ -108,7 +112,7 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
               <?php endif; ?>
             </div>
             <?php if (!$inside) : ?>
-              <span class="bar-value bar-value--outside" style="left:calc(<?= esc_attr($rate); ?>% + 4px);">
+              <span class="bar-value bar-value--outside" style="<?= esc_attr($outside_style); ?>">
                 <?= esc_html($rate); ?>%
               </span>
             <?php endif; ?>

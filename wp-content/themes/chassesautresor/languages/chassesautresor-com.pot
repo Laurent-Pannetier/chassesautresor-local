@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-08-18T11:39:27+00:00\n"
+"POT-Creation-Date: 2025-08-18T11:49:05+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: chassesautresor-com\n"
@@ -192,44 +192,44 @@ msgstr ""
 msgid "Chasse non spécifiée ou invalide."
 msgstr ""
 
-#: inc/enigme/affichage.php:128
-#: inc/enigme/affichage.php:143
+#: inc/enigme/affichage.php:132
+#: inc/enigme/affichage.php:147
 msgid "Vous"
 msgstr ""
 
-#: inc/enigme/affichage.php:129
-#: inc/enigme/affichage.php:144
+#: inc/enigme/affichage.php:133
+#: inc/enigme/affichage.php:148
 msgid "Moyenne"
 msgstr ""
 
-#: inc/enigme/affichage.php:196
+#: inc/enigme/affichage.php:200
 msgid "Engagements"
 msgstr ""
 
-#: inc/enigme/affichage.php:259
+#: inc/enigme/affichage.php:263
 msgid "Résolution"
 msgstr ""
 
-#: inc/enigme/affichage.php:293
+#: inc/enigme/affichage.php:297
 msgid "Activer Orgy"
 msgstr ""
 
-#: inc/enigme/affichage.php:307
+#: inc/enigme/affichage.php:311
 #: template-parts/chasse/partials/chasse-partial-participants.php:51
 msgid "Énigmes"
 msgstr ""
 
-#: inc/enigme/affichage.php:313
+#: inc/enigme/affichage.php:317
 msgid "Progression"
 msgstr ""
 
-#: inc/enigme/affichage.php:412
+#: inc/enigme/affichage.php:416
 #: template-parts/chasse/chasse-edition-main.php:650
 #: template-parts/chasse/chasse-edition-main.php:662
 msgid "Indices"
 msgstr ""
 
-#: inc/enigme/affichage.php:443
+#: inc/enigme/affichage.php:447
 msgid "Voir la solution"
 msgstr ""
 
