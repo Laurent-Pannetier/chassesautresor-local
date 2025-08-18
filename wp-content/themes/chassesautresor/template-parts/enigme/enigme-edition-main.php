@@ -22,8 +22,8 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($titre_defaut);
 
 $visuel = get_field('enigme_visuel_image', $enigme_id); // champ "gallery" → tableau d’IDs
 $has_images = is_array($visuel) && count($visuel) > 0;
-$legende = get_field('enigme_visuel_legende', $enigme_id);
-$texte = get_field('enigme_visuel_texte', $enigme_id);
+$legende = (string) get_field('enigme_visuel_legende', $enigme_id);
+$texte = (string) get_field('enigme_visuel_texte', $enigme_id);
 $reponse = get_field('enigme_reponse_bonne', $enigme_id);
 $casse = get_field('enigme_reponse_casse', $enigme_id);
 $max = (int) get_field('enigme_tentative_max', $enigme_id);
