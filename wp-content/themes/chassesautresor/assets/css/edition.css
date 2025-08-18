@@ -1332,6 +1332,26 @@ body.panneau-ouvert::before {
   margin-right: 4px;
 }
 
+.table-tentatives .bouton-cta {
+  background-color: var(--color-editor-success);
+  color: var(--color-text-fond-clair);
+}
+
+.table-tentatives .bouton-cta:hover {
+  background-color: var(--color-editor-success-hover);
+}
+
+.table-tentatives .bouton-secondaire {
+  background-color: var(--color-editor-error);
+  color: var(--color-text-fond-clair);
+  border-color: var(--color-editor-error);
+}
+
+.table-tentatives .bouton-secondaire:hover {
+  background-color: var(--color-editor-error);
+  filter: brightness(0.9);
+}
+
 
 .table-tentatives tr.tentative-pending {
   background-color: var(--color-editor-field-hover);
