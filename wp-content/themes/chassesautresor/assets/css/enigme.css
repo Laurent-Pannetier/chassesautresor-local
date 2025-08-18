@@ -67,17 +67,12 @@
 }
 
 .enigme-menu li.bloquee > a {
-  color: var(--color-grey-medium);
   cursor: default;
 }
 
 .enigme-menu li.bloquee {
   --bullet-fill: var(--color-grey-medium);
   --bullet-outline: var(--color-grey-medium);
-}
-
-.enigme-menu li.succes > a {
-  color: var(--color-success);
 }
 
 .enigme-menu li.succes {
