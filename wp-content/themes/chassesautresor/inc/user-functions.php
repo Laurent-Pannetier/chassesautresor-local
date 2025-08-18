@@ -482,7 +482,7 @@ function myaccount_get_important_messages(): string
 
     $output = array_map(
         function ($msg) {
-            return '<p>' . $msg . '</p>';
+            return '<p class="alerte-discret">' . $msg . '</p>';
         },
         $messages
     );

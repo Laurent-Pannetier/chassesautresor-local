@@ -230,6 +230,13 @@ class MyAccountMessagesTest extends TestCase
         $this->assertStringNotContainsString('Persiste', $third);
     }
 
+    public function test_messages_are_styled(): void
+    {
+        update_user_meta(1, '_myaccount_flash_messages', ['Stylé']);
+        $output = myaccount_get_important_messages();
+        $this->assertStringContainsString('<p class="alerte-discret">Stylé</p>', $output);
+    }
+
     public function test_ajax_section_returns_flash_message(): void
     {
         update_user_meta(1, '_myaccount_flash_messages', ['Via AJAX']);
