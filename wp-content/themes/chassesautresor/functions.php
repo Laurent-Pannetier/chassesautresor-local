@@ -34,7 +34,7 @@ add_action('wp_enqueue_scripts', function () {
 
     // Détermine l'environnement via WP_ENVIRONMENT_TYPE ou une constante dédiée.
     $env            = defined('CHASSESAUTRESOR_ENV') ? CHASSESAUTRESOR_ENV : wp_get_environment_type();
-    $is_edition_env = 'edition' === $env;
+    $is_edition_env = 'edition' === $env || current_user_can('administrator');
 
     if ($is_edition_env) {
         wp_enqueue_style(

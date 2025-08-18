@@ -1364,10 +1364,10 @@ add_action('wp_ajax_recuperer_details_acf', 'recuperer_details_acf');
 
 
 /**
- * Charge le script de la carte Développement sur la page Mon Compte
+ * Charge le script de la carte Développement sur les pages Mon Compte.
  */
 function charger_script_developpement_card() {
-    if (is_page('mon-compte') && current_user_can('administrator')) {
+    if (preg_match('#^/mon-compte(?:/|$|\\?)#', $_SERVER['REQUEST_URI'] ?? '')) {
         wp_enqueue_script(
             'developpement-card',
             get_stylesheet_directory_uri() . '/assets/js/developpement-card.js',
@@ -1376,7 +1376,7 @@ function charger_script_developpement_card() {
             true
         );
         wp_localize_script('developpement-card', 'ajax_object', [
-            'ajax_url' => admin_url('admin-ajax.php')
+            'ajax_url' => admin_url('admin-ajax.php'),
         ]);
     }
 }
