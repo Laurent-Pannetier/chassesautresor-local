@@ -168,6 +168,37 @@ button,
     }
 }
 
+/* ========== ⭐ BOUTON PRIMAIRE ========== */
+
+.bouton-primaire {
+    background: var(--color-primary);
+    color: var(--color-text-fond-clair);
+    border: 1px solid var(--color-primary);
+    transition: background 0.3s ease, transform 0.2s ease;
+    padding: 10px 15px;
+    border-radius: 3px;
+    margin: 6px 0;
+    display: inline-block;
+    text-align: center;
+    line-height: 16px;
+}
+
+.bouton-primaire:hover {
+    background: var(--color-secondary);
+    transform: scale(1.05);
+}
+
+.bouton-primaire:disabled {
+    background: var(--color-gris-3);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.bouton-primaire:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
 /* ========== 🎯 BOUTON SECONDAIRE ========== */
 
 .bouton-secondaire {
