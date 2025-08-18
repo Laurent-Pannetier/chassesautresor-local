@@ -98,7 +98,7 @@ add_action('wp_enqueue_scripts', function () {
 
         if (is_singular(['organisateur', 'chasse', 'enigme'])) {
             $post_id = get_queried_object_id();
-            if (current_user_can('edit_post', $post_id)) {
+            if (utilisateur_peut_modifier_post($post_id)) {
                 $should_load_edition = true;
             }
         } elseif (
