@@ -201,7 +201,7 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
     }
 
     /**
-     * Build progression histogram HTML for the sidebar.
+     * Build resolution histogram HTML for the sidebar.
      *
      * @param int|null $chasse_id Hunt identifier.
      * @param int      $user_id   Current user identifier.
@@ -219,15 +219,19 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
 
         if ($data === false) {
             $enigme_ids = recuperer_ids_enigmes_pour_chasse($chasse_id);
+
             if (!$enigme_ids) {
-                $data = null;
+                $user_rate = 0;
+                $avg_rate  = 0;
             } else {
                 $validables = array_filter($enigme_ids, function ($id) {
                     return get_field('enigme_mode_validation', $id) !== 'aucune';
                 });
                 $total_validables = count($validables);
+
                 if ($total_validables === 0) {
-                    $data = null;
+                    $user_rate = 0;
+                    $avg_rate  = 0;
                 } else {
                     global $wpdb;
                     $table        = $wpdb->prefix . 'enigme_statuts_utilisateur';
@@ -239,27 +243,23 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
                     );
                     $solved    = (int) $wpdb->get_var($sql);
                     $user_rate = (100 * $solved) / $total_validables;
-
-                    $avg_rate = chasse_calculer_taux_progression($chasse_id);
-                    $data     = [
-                        'user' => (int) round($user_rate),
-                        'avg'  => (int) round($avg_rate),
-                    ];
+                    $avg_rate  = chasse_calculer_taux_progression($chasse_id);
                 }
             }
+
+            $data = [
+                'user' => (int) round($user_rate),
+                'avg'  => (int) round($avg_rate),
+            ];
 
             wp_cache_set($cache_key, $data, 'chassesautresor', HOUR_IN_SECONDS);
         }
 
-        if ($data === null) {
-            return '';
-        }
-
         return enigme_render_bar_subsection(
-            esc_html__('Progression', 'chassesautresor-com'),
+            esc_html__('Résolution', 'chassesautresor-com'),
             $data['user'],
             $data['avg'],
-            'enigme-progression'
+            'enigme-resolution'
         );
     }
 
@@ -309,8 +309,8 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
                 echo '</section>';
             }
 
-            echo '<section class="enigme-progressivometre"><h3>' .
-                esc_html__('Progressivomètre', 'chassesautresor-com') .
+            echo '<section class="enigme-progression"><h3>' .
+                esc_html__('Progression', 'chassesautresor-com') .
                 '</h3>%STATS%</section>';
             echo '</aside>';
             $html = ob_get_clean();
