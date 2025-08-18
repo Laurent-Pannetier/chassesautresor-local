@@ -97,6 +97,10 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
         $inside = $rate >= 50;
         $style  = $fill_style === '' ? '' : $fill_style . ';';
 
+        $outside_style = $rate === 0
+            ? 'left:4px;'
+            : 'left:calc(' . $rate . '% + 4px);';
+
         ob_start();
         ?>
         <div class="bar-row">
@@ -108,7 +112,7 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
               <?php endif; ?>
             </div>
             <?php if (!$inside) : ?>
-              <span class="bar-value bar-value--outside" style="left:calc(<?= esc_attr($rate); ?>% + 4px);">
+              <span class="bar-value bar-value--outside" style="<?= esc_attr($outside_style); ?>">
                 <?= esc_html($rate); ?>%
               </span>
             <?php endif; ?>
@@ -165,7 +169,7 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
         $cache_key = 'enigme_sidebar_engagement_' . $chasse_id . '_' . $user_id;
         $data      = wp_cache_get($cache_key, 'chassesautresor');
 
-        if ($data === false) {
+        if (!is_array($data)) {
             $enigme_ids    = recuperer_ids_enigmes_pour_chasse($chasse_id);
             $total_enigmes = count($enigme_ids);
             $user_rate     = 0;
@@ -201,7 +205,7 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
     }
 
     /**
-     * Build progression histogram HTML for the sidebar.
+     * Build resolution histogram HTML for the sidebar.
      *
      * @param int|null $chasse_id Hunt identifier.
      * @param int      $user_id   Current user identifier.
@@ -217,17 +221,21 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
         $cache_key = 'enigme_sidebar_progression_' . $chasse_id . '_' . $user_id;
         $data      = wp_cache_get($cache_key, 'chassesautresor');
 
-        if ($data === false) {
+        if (!is_array($data)) {
             $enigme_ids = recuperer_ids_enigmes_pour_chasse($chasse_id);
+
             if (!$enigme_ids) {
-                $data = null;
+                $user_rate = 0;
+                $avg_rate  = 0;
             } else {
                 $validables = array_filter($enigme_ids, function ($id) {
                     return get_field('enigme_mode_validation', $id) !== 'aucune';
                 });
                 $total_validables = count($validables);
+
                 if ($total_validables === 0) {
-                    $data = null;
+                    $user_rate = 0;
+                    $avg_rate  = 0;
                 } else {
                     global $wpdb;
                     $table        = $wpdb->prefix . 'enigme_statuts_utilisateur';
@@ -239,27 +247,23 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
                     );
                     $solved    = (int) $wpdb->get_var($sql);
                     $user_rate = (100 * $solved) / $total_validables;
-
-                    $avg_rate = chasse_calculer_taux_progression($chasse_id);
-                    $data     = [
-                        'user' => (int) round($user_rate),
-                        'avg'  => (int) round($avg_rate),
-                    ];
+                    $avg_rate  = chasse_calculer_taux_progression($chasse_id);
                 }
             }
+
+            $data = [
+                'user' => (int) round($user_rate),
+                'avg'  => (int) round($avg_rate),
+            ];
 
             wp_cache_set($cache_key, $data, 'chassesautresor', HOUR_IN_SECONDS);
         }
 
-        if ($data === null) {
-            return '';
-        }
-
         return enigme_render_bar_subsection(
-            esc_html__('Progression', 'chassesautresor-com'),
+            esc_html__('Résolution', 'chassesautresor-com'),
             $data['user'],
             $data['avg'],
-            'enigme-progression'
+            'enigme-resolution'
         );
     }
 
@@ -309,8 +313,8 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
                 echo '</section>';
             }
 
-            echo '<section class="enigme-progressivometre"><h3>' .
-                esc_html__('Progressivomètre', 'chassesautresor-com') .
+            echo '<section class="enigme-progression"><h3>' .
+                esc_html__('Progression', 'chassesautresor-com') .
                 '</h3>%STATS%</section>';
             echo '</aside>';
             $html = ob_get_clean();
