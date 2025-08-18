@@ -578,6 +578,11 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
             ]);
             ?>
           </div>
+          <?php if ($stats_locked) : ?>
+            <p class="edition-placeholder" style="text-align:center;">
+              <?php esc_html_e('Les statistiques seront disponibles une fois la chasse activée.', 'chassesautresor-com'); ?>
+            </p>
+          <?php endif; ?>
           <?php if ($max_progress > 0) :
               get_template_part('template-parts/common/stat-histogram-card', null, [
                   'label' => 'Progressivomètre',
