@@ -70,7 +70,7 @@ defined('ABSPATH') || exit;
 
         if ($html === false) {
             ob_start();
-            echo '<aside class="enigme-sidebar">';
+            echo '<aside class="menu-lateral">';
 
             if ($edition_active) {
                 echo '<button id="toggle-mode-edition-enigme" type="button" ' .
@@ -100,6 +100,7 @@ defined('ABSPATH') || exit;
                 echo '</a>';
             }
 
+            echo '<div class="stats"></div>';
             echo '</aside>';
             $html = ob_get_clean();
             wp_cache_set($cache_key, $html, 'chassesautresor', HOUR_IN_SECONDS);
@@ -117,21 +118,16 @@ defined('ABSPATH') || exit;
      */
     function render_enigme_hero(int $enigme_id, string $style, int $user_id): void
     {
-        foreach ([
-            'titre',
+        echo '<section class="hero-visuel">';
+        enigme_get_partial(
             'images',
-        ] as $slug) {
-            echo '<div class="enigme-section enigme-section-' . esc_attr($slug) . '">';
-            enigme_get_partial(
-                $slug,
-                $style,
-                [
-                    'post_id' => $enigme_id,
-                    'user_id' => $user_id,
-                ]
-            );
-            echo '</div>';
-        }
+            $style,
+            [
+                'post_id' => $enigme_id,
+                'user_id' => $user_id,
+            ]
+        );
+        echo '</section>';
     }
 
     /**
@@ -143,7 +139,15 @@ defined('ABSPATH') || exit;
      */
     function render_enigme_content(int $enigme_id, string $style, int $user_id): void
     {
-        echo '<div class="enigme-section enigme-section-texte">';
+        echo '<article class="contenu-principal">';
+        enigme_get_partial(
+            'titre',
+            $style,
+            [
+                'post_id' => $enigme_id,
+                'user_id' => $user_id,
+            ]
+        );
         enigme_get_partial(
             'texte',
             $style,
@@ -152,7 +156,7 @@ defined('ABSPATH') || exit;
                 'user_id' => $user_id,
             ]
         );
-        echo '</div>';
+        echo '</article>';
     }
 
     /**
@@ -164,7 +168,8 @@ defined('ABSPATH') || exit;
      */
     function render_enigme_participation(int $enigme_id, string $style, int $user_id): void
     {
-        echo '<div class="enigme-section enigme-section-bloc-reponse">';
+        echo '<section class="participation">';
+        echo '<div class="zone-reponse">';
         enigme_get_partial(
             'bloc-reponse',
             $style,
@@ -174,6 +179,8 @@ defined('ABSPATH') || exit;
             ]
         );
         echo '</div>';
+        echo '<div class="zone-indices"><h3>' . esc_html__('Indices', 'chassesautresor-com') . '</h3></div>';
+        echo '</section>';
     }
 
     /**
@@ -190,7 +197,7 @@ defined('ABSPATH') || exit;
 
         if ($html === false) {
             ob_start();
-            echo '<div class="enigme-section enigme-section-solution">';
+            ob_start();
             enigme_get_partial(
                 'solution',
                 $style,
@@ -199,7 +206,14 @@ defined('ABSPATH') || exit;
                     'user_id' => $user_id,
                 ]
             );
-            echo '</div>';
+            $content = trim(ob_get_clean());
+            if ($content !== '') {
+                echo '<section class="solution">';
+                echo '<details><summary>' . esc_html__('Voir la solution', 'chassesautresor-com') . '</summary>';
+                echo '<div class="solution-content">' . $content . '</div>';
+                echo '</details>';
+                echo '</section>';
+            }
             $html = ob_get_clean();
             wp_cache_set($cache_key, $html, 'chassesautresor', HOUR_IN_SECONDS);
         }
@@ -281,14 +295,12 @@ defined('ABSPATH') || exit;
         }
         echo '<div class="container container--xl-full enigme-layout">';
         render_enigme_sidebar($enigme_id, $edition_active, $chasse_id, $menu_items);
-        echo '<div class="enigme-main">';
-        echo '<main class="enigme-content enigme-style-' . esc_attr($style) . '">';
+        echo '<main class="page-enigme enigme-style-' . esc_attr($style) . '">';
         render_enigme_hero($enigme_id, $style, $user_id);
         render_enigme_content($enigme_id, $style, $user_id);
         render_enigme_participation($enigme_id, $style, $user_id);
         render_enigme_solution($enigme_id, $style, $user_id);
         echo '</main>';
-        echo '</div>';
         echo '</div>';
     }
 

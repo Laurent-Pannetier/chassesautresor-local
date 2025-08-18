@@ -1,42 +1,55 @@
-/* Layout for enigme pages */
+/* Layout for enigma pages */
 .enigme-layout {
   display: grid;
-  grid-template-columns: 260px 1fr;
-  gap: var(--space-2xl);
+  grid-template-columns: 280px 1fr;
+  gap: var(--space-xl);
 }
 
-.enigme-sidebar {
+.menu-lateral {
   background: var(--ca-color-bg, #f5f5f5);
   padding: var(--space-md);
 }
 
-.enigme-sidebar .bouton-edition-toggle {
-  margin-bottom: var(--space-md);
+.page-enigme {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xl);
 }
 
-.enigme-menu {
-  list-style: none;
-  margin: var(--space-md) 0;
-  padding: 0;
+.hero-visuel img {
+  width: 100%;
+  object-fit: cover;
+  max-height: 300px;
 }
 
-.enigme-menu li.non-engagee {
-  opacity: 0.6;
+.participation {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  background: var(--bg-participation, var(--ca-color-bg, #f5f5f5));
+  padding: var(--space-xl) var(--space-md);
+  border-radius: 6px;
 }
 
-.bouton-retour-chasse {
-  display: inline-block;
-  margin-top: var(--space-md);
+.zone-reponse form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.solution details {
+  background: var(--bg-solution, var(--ca-color-bg, #f5f5f5));
+  padding: var(--space-md);
+  border-radius: 6px;
+}
+
+.solution summary {
+  cursor: pointer;
+  font-weight: 600;
 }
 
 @media (max-width: var(--bp-md)) {
   .enigme-layout {
     grid-template-columns: 1fr;
-  }
-  .enigme-sidebar {
-    display: none;
-  }
-  .enigme-sidebar.is-open {
-    display: block;
   }
 }

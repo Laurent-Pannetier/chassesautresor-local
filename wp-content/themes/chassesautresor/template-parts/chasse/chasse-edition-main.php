@@ -575,24 +575,26 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
             <div class="resume-blocs-grid">
 
               <div class="resume-bloc resume-visibilite">
-                <h3>Communiquez</h3>
+                <h3><?= esc_html__('Communiquez', 'chassesautresor-com'); ?></h3>
                 <div class="dashboard-grid stats-cards">
                   <div class="dashboard-card champ-chasse champ-liens <?= empty($liens) ? 'champ-vide' : 'champ-rempli'; ?>"
                     data-champ="chasse_principale_liens"
                     data-cpt="chasse"
                     data-post-id="<?= esc_attr($chasse_id); ?>">
                     <i class="fa-solid fa-share-nodes icone-defaut" aria-hidden="true"></i>
+                    <h3><?= esc_html__('Sites et réseaux de la chasse', 'chassesautresor-com'); ?></h3>
                     <div class="champ-affichage champ-affichage-liens">
                       <?= render_liens_publics($liens, 'chasse', ['placeholder' => false]); ?>
                     </div>
-                    <h3>Sites et réseaux de la chasse</h3>
                     <?php if ($peut_modifier) : ?>
                       <a href="#"
                         class="stat-value champ-modifier ouvrir-panneau-liens"
                         data-champ="chasse_principale_liens"
                         data-cpt="chasse"
                         data-post-id="<?= esc_attr($chasse_id); ?>">
-                        <?= empty($liens) ? 'Ajouter' : 'Éditer'; ?>
+                        <?= empty($liens)
+                          ? esc_html__('Ajouter', 'chassesautresor-com')
+                          : esc_html__('Éditer', 'chassesautresor-com'); ?>
                       </a>
                     <?php endif; ?>
                     <div class="champ-donnees"
