@@ -228,14 +228,19 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                         <?= $peut_editer ? '' : 'disabled'; ?>
                       >
                       <?= esc_html__('Automatique', 'chassesautresor-com'); ?>
-                      <button
-                        type="button"
-                        class="mode-fin-aide"
-                        data-mode="automatique"
-                        aria-label="<?= esc_attr__('Explication du mode automatique', 'chassesautresor-com'); ?>"
-                      >
-                        <i class="fa-regular fa-circle-question"></i>
-                      </button>
+                      <?php
+                      get_template_part(
+                          'template-parts/common/help-icon',
+                          null,
+                          [
+                              'aria_label' => __('Explication du mode automatique', 'chassesautresor-com'),
+                              'classes'    => 'mode-fin-aide',
+                              'attributes' => [
+                                  'data-mode' => 'automatique',
+                              ],
+                          ]
+                      );
+                      ?>
                     </label>
                     <label>
                       <input
@@ -246,14 +251,19 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                         <?= $peut_editer ? '' : 'disabled'; ?>
                       >
                       <?= esc_html__('Manuelle', 'chassesautresor-com'); ?>
-                      <button
-                        type="button"
-                        class="mode-fin-aide"
-                        data-mode="manuelle"
-                        aria-label="<?= esc_attr__('Explication du mode manuel', 'chassesautresor-com'); ?>"
-                      >
-                        <i class="fa-regular fa-circle-question"></i>
-                      </button>
+                      <?php
+                      get_template_part(
+                          'template-parts/common/help-icon',
+                          null,
+                          [
+                              'aria_label' => __('Explication du mode manuel', 'chassesautresor-com'),
+                              'classes'    => 'mode-fin-aide',
+                              'attributes' => [
+                                  'data-mode' => 'manuelle',
+                              ],
+                          ]
+                      );
+                      ?>
                     </label>
                   </div>
                   <?php ob_start(); ?>
@@ -387,7 +397,16 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
 
                   <div class="champ-edition" style="display: flex; align-items: center;">
                     <label>Coût <span class="txt-small">(points)</span>
-                      <button type="button" class="bouton-aide-points open-points-modal" aria-label="En savoir plus sur les points"><i class="fa-solid fa-circle-question" aria-hidden="true"></i></button>
+                      <?php
+                      get_template_part(
+                          'template-parts/common/help-icon',
+                          null,
+                          [
+                              'aria_label' => __('En savoir plus sur les points', 'chassesautresor-com'),
+                              'classes'    => 'bouton-aide-points open-points-modal',
+                          ]
+                      );
+                      ?>
                     </label>
 
                     <input type="number"
