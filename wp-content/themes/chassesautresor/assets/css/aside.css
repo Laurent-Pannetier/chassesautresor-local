@@ -1,7 +1,7 @@
 /* Core styles for reusable asides */
 .menu-lateral {
   background-color: rgba(
-    var(--aside-bg-rgb, 255, 255, 255),
+    var(--aside-bg-rgb, 238, 238, 238),
     var(--aside-opacity, 0.4)
   );
   padding: var(--space-md);
@@ -10,6 +10,8 @@
   border-radius: 6px;
   align-self: start;
   height: fit-content;
+  color: rgba(var(--color-text-fond-clair-rgb, 28, 28, 28), 0.5);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .menu-lateral__header {
