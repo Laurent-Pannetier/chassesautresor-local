@@ -511,6 +511,17 @@ function enqueue_conversion_history_script(): void
 }
 
 /**
+ * Ensure conversion history script loads on pages where content may be injected via AJAX.
+ */
+function maybe_enqueue_conversion_history_script(): void
+{
+    if (is_account_page() || is_singular('organisateur')) {
+        enqueue_conversion_history_script();
+    }
+}
+add_action('wp_enqueue_scripts', 'maybe_enqueue_conversion_history_script');
+
+/**
  * AJAX handler for loading paginated conversion history.
  */
 function ajax_load_conversion_history(): void
