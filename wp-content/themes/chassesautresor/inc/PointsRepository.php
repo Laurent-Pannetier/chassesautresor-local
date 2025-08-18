@@ -107,20 +107,25 @@ class PointsRepository
      *
      * @return int Number of requests.
      */
-    public function countConversionRequests(int $userId, ?string $status = null): int
+    public function countConversionRequests(?int $userId = null, ?string $status = null): int
     {
-        $where   = "origin_type = 'conversion' AND user_id = %d";
-        $params  = [$userId];
+        $where  = "origin_type = 'conversion'";
+        $params = [];
+
+        if ($userId !== null) {
+            $where   .= ' AND user_id = %d';
+            $params[] = $userId;
+        }
 
         if ($status !== null) {
-            $where  .= ' AND request_status = %s';
+            $where   .= ' AND request_status = %s';
             $params[] = $status;
         }
 
-        $sql = $this->wpdb->prepare(
-            "SELECT COUNT(*) FROM {$this->table} WHERE {$where}",
-            $params
-        );
+        $sql = "SELECT COUNT(*) FROM {$this->table} WHERE {$where}";
+        if (!empty($params)) {
+            $sql = $this->wpdb->prepare($sql, $params);
+        }
 
         return (int) $this->wpdb->get_var($sql);
     }

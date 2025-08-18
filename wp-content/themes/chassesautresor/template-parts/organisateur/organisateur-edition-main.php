@@ -179,14 +179,19 @@ $is_complete = (
                     <span class="champ-valeur">
                       <?= esc_html($email_contact ?: get_the_author_meta('user_email', get_post_field('post_author', $organisateur_id))); ?>
                     </span>
-                    <button
-                      type="button"
-                      class="icone-info"
-                      aria-label="Informations sur l’adresse email de contact"
-                      onclick="alert('Quand aucune adresse n est renseignée, votre email utilisateur est utilisé par défaut.');"
-                    >
-                      <i class="fa-solid fa-circle-question" aria-hidden="true"></i>
-                    </button>
+                    <?php
+                    get_template_part(
+                        'template-parts/common/help-icon',
+                        null,
+                        [
+                            'aria_label' => __('Informations sur l’adresse email de contact', 'chassesautresor-com'),
+                            'classes'    => 'icone-info',
+                            'attributes' => [
+                                'onclick' => "alert('Quand aucune adresse n est renseignée, votre email utilisateur est utilisé par défaut.');",
+                            ],
+                        ]
+                    );
+                    ?>
                     <?php if ($peut_editer) : ?>
                         <button
                           type="button"
@@ -261,17 +266,20 @@ $is_complete = (
               <i class="fa-solid fa-building-columns" aria-hidden="true"></i>
               <h3>
                 Coordonnées bancaires
-                <button
-                  type="button"
-                  class="mode-fin-aide stat-help"
-                  data-message="<?php echo esc_attr__(
-                      'Ces informations sont nécessaires uniquement pour vous verser les gains issus de la conversion de vos points en euros. Nous ne prélevons jamais d\'argent.',
-                      'chassesautresor-com'
-                  ); ?>"
-                  aria-label="<?php esc_attr_e('Informations sur les coordonnées bancaires', 'chassesautresor-com'); ?>"
-                >
-                  <i class="fa-regular fa-circle-question" aria-hidden="true"></i>
-                </button>
+                <?php
+                get_template_part(
+                    'template-parts/common/help-icon',
+                    null,
+                    [
+                        'aria_label' => __('Informations sur les coordonnées bancaires', 'chassesautresor-com'),
+                        'classes'    => 'mode-fin-aide stat-help',
+                        'message'    => __(
+                            "Ces informations sont nécessaires uniquement pour vous verser les gains issus de la conversion de vos points en euros. Nous ne prélevons jamais d'argent.",
+                            'chassesautresor-com'
+                        ),
+                    ]
+                );
+                ?>
               </h3>
               <?php if ($peut_editer) : ?>
                 <?php
