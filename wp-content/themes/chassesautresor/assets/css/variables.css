@@ -40,6 +40,9 @@
   --color-text-fond-clair: #1c1c1c;         /* noir clair */
   --color-gris-carte: #c2c2c2;              /* 🧩 Fond de carte énigme : gris bleuté doux */
 
+  /* Asides */
+  --aside-opacity: 0.4;                     /* ⚙️ Opacité standard des fonds d'aside */
+
   /* Grille */
   --container-max-width: 1200px;
   --grid-gap: 1rem;

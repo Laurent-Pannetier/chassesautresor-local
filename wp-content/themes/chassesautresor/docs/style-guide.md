@@ -21,3 +21,10 @@ Exemple d'utilisation :
   /* styles pour les tablettes */
 }
 ```
+
+## Asides
+
+Les blocs `aside` utilisent un style commun défini dans `assets/css/aside.css`.
+L'opacité de leur fond est centralisée par la variable globale
+`--aside-opacity` (valeur par défaut `0.4` dans `assets/css/variables.css`).
+Cette variable facilite l'harmonisation des asides sur l'ensemble du site.
