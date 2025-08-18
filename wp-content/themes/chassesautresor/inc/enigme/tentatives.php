@@ -86,7 +86,7 @@ defined('ABSPATH') || exit;
         $user_id = (int) $tentative->user_id;
         $enigme_id = (int) $tentative->enigme_id;
 
-        // 🔐 Sécurité : si déjà "résolue", on refuse toute tentative de traitement
+        // 🔐 Sécurité : si déjà "resolue", on refuse toute tentative de traitement
         $statut_user = $wpdb->get_var($wpdb->prepare(
             "SELECT statut FROM {$wpdb->prefix}enigme_statuts_utilisateur WHERE user_id = %d AND enigme_id = %d",
             $user_id,

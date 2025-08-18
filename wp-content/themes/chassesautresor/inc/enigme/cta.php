@@ -92,7 +92,7 @@ function enigme_normaliser_mode_validation($mode): string
  * - connexion   → utilisateur non connecté
  * - engager     → première tentative ou ré-engagement possible
  * - continuer   → énigme en cours
- * - revoir      → énigme résolue
+ * - revoir      → énigme resolue
  * - terminee    → énigme finalisée (lecture seule)
  * - soumis      → réponse en attente de validation
  * - bloquee     → bloquée par la chasse, une date ou un prérequis

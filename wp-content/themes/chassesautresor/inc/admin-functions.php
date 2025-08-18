@@ -1170,7 +1170,7 @@ function bouton_reinitialiser_enigme_callback() {
     $enigme_id = get_the_ID();
     $statut = enigme_get_statut($enigme_id, $user_id); // 🔄 Utilisation du statut centralisé
 
-    // ✅ Affiche le bouton uniquement si l'énigme est résolue ou terminée-résolue
+    // ✅ Affiche le bouton uniquement si l'énigme est resolue ou terminee_resolue
     if (!in_array($statut, ['resolue', 'terminee_resolue'])) return '';
 
     return "
