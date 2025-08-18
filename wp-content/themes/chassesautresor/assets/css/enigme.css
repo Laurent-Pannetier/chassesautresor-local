@@ -6,8 +6,24 @@
 }
 
 .menu-lateral {
-  background: var(--ca-color-bg, #f5f5f5);
+  background: transparent;
   padding: var(--space-md);
+  padding-bottom: var(--space-4xl);
+  border: 1px solid var(--color-grey-medium);
+  border-radius: 6px;
+  align-self: start;
+  height: fit-content;
+}
+
+.enigme-chasse-titre {
+  color: var(--color-text-primary);
+}
+
+@media (min-width: var(--breakpoint-desktop)) {
+  .menu-lateral {
+    position: sticky;
+    top: var(--space-md);
+  }
 }
 
 .page-enigme {
