@@ -252,7 +252,7 @@ function soumettre_reponse_automatique()
         $uid = traiter_tentative($user_id, $enigme_id, $reponse, $resultat, true, false, false);
     } catch (Throwable $e) {
         wp_cache_delete($lock_key, 'enigme');
-        error_log('Erreur tentative : ' . $e->getMessage());
+        cat_debug('Erreur tentative : ' . $e->getMessage());
         wp_send_json_error('erreur_interne');
     }
 

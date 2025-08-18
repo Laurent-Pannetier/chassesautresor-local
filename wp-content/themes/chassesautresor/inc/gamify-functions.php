@@ -380,13 +380,13 @@ function compter_enigmes_resolues($chasse_id, $user_id): int
  */
 function verifier_fin_de_chasse($user_id, $enigme_id)
 {
-    error_log("🔍 Vérification de fin de chasse pour l'utilisateur {$user_id} (énigme : {$enigme_id})");
+    cat_debug("🔍 Vérification de fin de chasse pour l'utilisateur {$user_id} (énigme : {$enigme_id})");
 
     // 🧭 Récupération de la chasse associée
     $chasse_id = recuperer_id_chasse_associee($enigme_id);
 
     if (!$chasse_id) {
-        error_log("❌ Aucune chasse associée trouvée.");
+        cat_debug("❌ Aucune chasse associée trouvée.");
         return;
     }
 
@@ -398,7 +398,7 @@ function verifier_fin_de_chasse($user_id, $enigme_id)
     // 📄 Récupération des énigmes associées (IDs uniquement)
     $enigmes_associees = recuperer_enigmes_associees($chasse_id);
     if (empty($enigmes_associees)) {
-        error_log("⚠️ Pas d'énigmes associées à la chasse (ID: {$chasse_id})");
+        cat_debug("⚠️ Pas d'énigmes associées à la chasse (ID: {$chasse_id})");
         return;
     }
 
