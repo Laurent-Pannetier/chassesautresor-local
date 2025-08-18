@@ -379,6 +379,10 @@
     color: hsl(var(--foreground));
 }
 
+.dashboard-card > i {
+    font-size: 2rem;
+}
+
 .dashboard-card-header {
     display: flex;
     align-items: center;
