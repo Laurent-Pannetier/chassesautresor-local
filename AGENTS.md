@@ -21,3 +21,7 @@
 - Provide a bullet list of notable changes.
 - Add a **Testing** section summarizing the commands executed and their results.
 
+## Notes métier
+- Un CPT `indices` gère les indices associés à une chasse ou une énigme.
+- Les tables personnalisées incluent `wp_indices_deblocages` et la colonne `indice_id` dans `wp_engagements`.
+- Le champ `origin_type` de `wp_user_points` accepte désormais la valeur `indice`.

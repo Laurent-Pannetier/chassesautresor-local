@@ -454,7 +454,7 @@ Requis : non
 🔹 Groupe : paramètres indices
 🆔 ID : 9568
 🔑 Key : group_68a1fb240748a
-📦 Champs trouvés : 7
+📦 Champs trouvés : 8
 
 — indice_image —
 Type : image
@@ -501,6 +501,12 @@ Requis : non
 — indice_cout_points —
 Type : number
 Label : coût en points
+Instructions : (vide)
+Requis : non
+----------------------------------------
+— indice_cache_etat_systeme —
+Type : select
+Label : état système de l'indice
 Instructions : (vide)
 Requis : non
 ----------------------------------------
