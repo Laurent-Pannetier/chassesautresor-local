@@ -204,6 +204,30 @@ class MyAccountMessagesTest extends TestCase
         $this->assertStringContainsString('Demande de validation en cours de traitement', $output);
     }
 
+    public function test_pending_request_message_contains_riddle_link(): void
+    {
+        update_user_meta(
+            1,
+            '_myaccount_messages',
+            [
+                'tentative_123' => sprintf(
+                    'Votre demande de résolution de l\'énigme %s est en cours de traitement. '
+                    . 'Vous recevrez une notification dès que votre demande sera traitée.',
+                    '<a href="https://example.com/enigme">Énigme</a>'
+                ),
+            ]
+        );
+
+        $output = myaccount_get_important_messages();
+
+        $this->assertStringContainsString(
+            '<a href="https://example.com/enigme">Énigme</a>',
+            $output
+        );
+
+        delete_user_meta(1, '_myaccount_messages');
+    }
+
     public function test_flash_message_is_displayed_once(): void
     {
         update_user_meta(1, '_myaccount_flash_messages', ['Message unique']);

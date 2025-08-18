@@ -159,14 +159,13 @@ function soumettre_reponse_manuelle()
         $user_id,
         'tentative_' . $uid,
         sprintf(
-            /* translators: 1: opening anchor tag, 2: riddle title, 3: closing anchor tag */
+            /* translators: %s: riddle title with link */
             __(
-                'Votre demande de résolution de l\'énigme %1$s%2$s%3$s est en cours de traitement. Vous recevrez une notification dès que votre demande sera traitée.',
+                'Votre demande de résolution de l\'énigme %s est en cours de traitement. '
+                . 'Vous recevrez une notification dès que votre demande sera traitée.',
                 'chassesautresor-com'
             ),
-            '<a href="' . esc_url(get_permalink($enigme_id)) . '">',
-            esc_html($titre_enigme),
-            '</a>'
+            '<a href="' . esc_url(get_permalink($enigme_id)) . '">' . esc_html($titre_enigme) . '</a>'
         )
     );
 
