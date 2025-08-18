@@ -12,8 +12,9 @@ defined('ABSPATH') || exit;
 $current_user = wp_get_current_user();
 $user_id      = (int) $current_user->ID;
 
-// Retrieve last 4 engaged hunts
-$chasse_ids = [];
+// Retrieve last 4 engaged hunts and their latest enigme
+$chasse_ids  = [];
+$enigme_map = [];
 if ($user_id) {
     global $wpdb;
     $table      = $wpdb->prefix . 'engagements';
@@ -22,12 +23,28 @@ if ($user_id) {
         $user_id
     );
     $chasse_ids = $wpdb->get_col($prepared);
+
+    foreach ($chasse_ids as $cid) {
+        $enigme_map[$cid] = (int) $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT enigme_id FROM {$table} WHERE user_id = %d AND chasse_id = %d AND enigme_id IS NOT NULL ORDER BY date_engagement DESC LIMIT 1",
+                $user_id,
+                $cid
+            )
+        );
+    }
 }
 ?>
 <div class="dashboard-grid stats-cards myaccount-chasses-cards">
     <?php foreach ($chasse_ids as $chasse_id) : ?>
+    <?php $enigme_id = $enigme_map[$chasse_id] ?? 0; ?>
     <div class="dashboard-card">
         <?php echo get_the_post_thumbnail($chasse_id, 'thumbnail', ['loading' => 'lazy']); ?>
+        <?php if ($enigme_id) : ?>
+        <div class="enigme-thumbnail">
+            <?php afficher_picture_vignette_enigme($enigme_id, get_the_title($enigme_id), ['thumbnail']); ?>
+        </div>
+        <?php endif; ?>
         <h3><?php echo esc_html(get_the_title($chasse_id)); ?></h3>
         <a class="stat-value" href="<?php echo esc_url(get_permalink($chasse_id)); ?>">
             <?php esc_html_e('Voir', 'chassesautresor-com'); ?>
