@@ -111,6 +111,13 @@ defined('ABSPATH') || exit;
         echo '</aside>';
         echo '<div class="enigme-main">';
 
+        echo '<article class="enigme-content enigme-style-' . esc_attr($style) . ' enigme-header">';
+        enigme_get_partial('titre', $style, [
+            'post_id' => $enigme_id,
+            'user_id' => $user_id,
+        ]);
+        echo '</article>';
+
         echo '<section class="enigme-hero">';
         enigme_get_partial('images', $style, [
             'post_id' => $enigme_id,
@@ -119,10 +126,6 @@ defined('ABSPATH') || exit;
         echo '</section>';
 
         echo '<article class="enigme-content enigme-style-' . esc_attr($style) . '">';
-        enigme_get_partial('titre', $style, [
-            'post_id' => $enigme_id,
-            'user_id' => $user_id,
-        ]);
         enigme_get_partial('texte', $style, [
             'post_id' => $enigme_id,
             'user_id' => $user_id,

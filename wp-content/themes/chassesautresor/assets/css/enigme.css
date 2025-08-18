@@ -29,6 +29,10 @@
   padding: var(--space-xl) var(--space-md);
 }
 
+.enigme-header {
+  padding-bottom: var(--space-md);
+}
+
 .enigme-content .enigme-soustitre {
   margin-top: calc(-1 * var(--space-xs));
   margin-bottom: var(--space-md);
