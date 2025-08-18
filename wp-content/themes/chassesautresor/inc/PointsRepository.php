@@ -90,7 +90,7 @@ class PointsRepository
     public function getHistory(int $userId, int $limit, int $offset = 0): array
     {
         $sql = $this->wpdb->prepare(
-            "SELECT id, request_date, origin_type, reason, points, balance FROM {$this->table} WHERE user_id = %d ORDER BY id DESC LIMIT %d OFFSET %d",
+            "SELECT id, request_date, origin_type, origin_id, reason, points, balance FROM {$this->table} WHERE user_id = %d ORDER BY id DESC LIMIT %d OFFSET %d",
             $userId,
             $limit,
             $offset

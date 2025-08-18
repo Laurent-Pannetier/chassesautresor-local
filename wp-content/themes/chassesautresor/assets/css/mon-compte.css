@@ -161,6 +161,21 @@
     margin-right: var(--space-sm);
 }
 
+.msg-important .enigme-link {
+    display: inline-block;
+    margin-right: var(--space-xs);
+    padding: 0 var(--space-xs);
+    background: hsl(var(--destructive-foreground));
+    color: hsl(var(--destructive));
+    border-radius: 0.25rem;
+    text-decoration: none;
+}
+
+.msg-important .enigme-link:hover,
+.msg-important .enigme-link:focus {
+    text-decoration: underline;
+}
+
 .myaccount-points {
     margin-bottom: var(--space-md);
     font-weight: 500;

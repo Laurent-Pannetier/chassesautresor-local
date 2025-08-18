@@ -1424,35 +1424,18 @@ function initPagerTentatives() {
   const wrapper = document.querySelector('#enigme-tab-soumission .liste-tentatives');
   const postId = document.querySelector('.edition-panel-enigme')?.dataset.postId;
   const compteur = document.querySelector('#enigme-tab-soumission .total-tentatives');
-  const info = wrapper?.querySelector('.pager-info');
   if (!wrapper || !postId) return;
 
-  wrapper.addEventListener('click', (e) => {
-    if (e.target.closest('.pager-first')) {
-      e.preventDefault();
-      charger(1);
-    }
-    if (e.target.closest('.pager-prev')) {
-      e.preventDefault();
-      const page = parseInt(wrapper.dataset.page || '1', 10);
-      if (page > 1) charger(page - 1);
-    }
-    if (e.target.closest('.pager-next')) {
-      e.preventDefault();
-      const page = parseInt(wrapper.dataset.page || '1', 10);
-      const pages = parseInt(wrapper.dataset.pages || '1', 10);
-      if (page < pages) charger(page + 1);
-    }
-    if (e.target.closest('.pager-last')) {
-      e.preventDefault();
-      const pages = parseInt(wrapper.dataset.pages || '1', 10);
-      charger(pages);
-    }
-  });
-
-  if (info) {
-    info.textContent = (wrapper.dataset.page || '1') + ' / ' + (wrapper.dataset.pages || '1');
+  function attachPager() {
+    const pager = wrapper.querySelector('.pager');
+    if (!pager) return;
+    pager.addEventListener('pager:change', (e) => {
+      const page = e.detail?.page || 1;
+      charger(page);
+    });
   }
+
+  attachPager();
 
   function charger(page) {
     fetch(ajaxurl, {
@@ -1470,9 +1453,9 @@ function initPagerTentatives() {
         wrapper.innerHTML = res.data.html;
         wrapper.dataset.page = res.data.page;
         wrapper.dataset.pages = res.data.pages;
+        wrapper.dataset.total = res.data.total;
         if (compteur) compteur.textContent = '(' + res.data.total + ')';
-        const span = wrapper.querySelector('.pager-info');
-        if (span) span.textContent = res.data.page + ' / ' + res.data.pages;
+        attachPager();
       });
   }
 }

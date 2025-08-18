@@ -359,39 +359,82 @@ add_action('wp_ajax_nopriv_soumettre_reponse_automatique', 'soumettre_reponse_au
 
 
     /**
-     * Envoie un email de notification au joueur concernant le résultat de sa réponse à une énigme.
+     * Envoie un email de notification au joueur concernant le résultat de sa
+     * réponse à une énigme.
      *
-     * @param int    $user_id    L'identifiant de l'utilisateur à notifier.
-     * @param int    $enigme_id  L'identifiant de l'énigme concernée.
-     * @param string $resultat   Le résultat de la réponse ('bon' pour validée, autre pour refusée).
+     * @param int    $user_id   L'identifiant de l'utilisateur à notifier.
+     * @param int    $enigme_id L'identifiant de l'énigme concernée.
+     * @param string $resultat  Le résultat de la réponse ('bon' ou 'faux').
      *
      * @return void
      */
     function envoyer_mail_resultat_joueur($user_id, $enigme_id, $resultat)
     {
         $user = get_userdata($user_id);
-        if (!$user || !is_email($user->user_email)) return;
+        if (!$user || !is_email($user->user_email)) {
+            return;
+        }
 
-        $titre_enigme = get_the_title($enigme_id);
-        if (!is_string($titre_enigme)) $titre_enigme = '';
+        $enigme_title = get_the_title($enigme_id);
+        if (!is_string($enigme_title)) {
+            $enigme_title = '';
+        }
 
-        $resultat_txt = $resultat === 'bon' ? 'validée ✅' : 'refusée ❌';
-        $sujet = '[Chasses au Trésor] Votre réponse a été ' . $resultat_txt;
+        $badge_bg = $resultat === 'bon' ? '#59ffa5' : '#ffd24a';
+        $result_label = $resultat === 'bon'
+            ? esc_html__('Réponse acceptée', 'chassesautresor-com')
+            : esc_html__('Réponse refusée', 'chassesautresor-com');
+        $message_retour = $resultat === 'bon'
+            ? esc_html__('Félicitations ! Votre réponse est correcte.', 'chassesautresor-com')
+            : esc_html__('Votre réponse est incorrecte.', 'chassesautresor-com');
+        $cta_label = $resultat === 'bon'
+            ? esc_html__('Retour à l’énigme', 'chassesautresor-com')
+            : esc_html__('Réessayer l’énigme', 'chassesautresor-com');
 
-        $message  = '<div style="font-family:Arial,sans-serif; font-size:14px;">';
-        $message .= '<p>Bonjour <strong>' . esc_html($user->display_name) . '</strong>,</p>';
-        $message .= '<p>Votre réponse à l’énigme <strong>« ' . esc_html($titre_enigme) . ' »</strong> a été <strong>' . $resultat_txt . '</strong>.</p>';
-        $message .= '<p>Merci pour votre participation !</p>';
-        $message .= '<hr>';
-        $message .= '<p>🔗 <a href="https://chassesautresor.com/mon-compte" target="_blank">Voir mes réponses</a></p>';
-        $message .= '<p style="margin-top:2em;">L’équipe chassesautresor.com</p>';
-        $message .= '</div>';
+        $url_enigme = get_permalink($enigme_id);
+        $tentatives_utilisees = compter_tentatives_du_jour($user_id, $enigme_id);
+        $tentatives_max = (int) get_field('enigme_tentative_max', $enigme_id);
+
+        $subject = sprintf(
+            __('[Chasses au Trésor] %1$s — %2$s', 'chassesautresor-com'),
+            $enigme_title,
+            $result_label
+        );
+
+        $message  = '<!doctype html><html lang="fr"><head><meta charset="utf-8">';
+        $message .= '<title>' . esc_html($enigme_title) . ' — ';
+        $message .= esc_html($result_label) . '</title></head>';
+        $message .= '<body style="margin:0; padding:0; background:#0d1a2b; ';
+        $message .= 'font-family:Arial, sans-serif; color:#e6ebf2;">';
+        $message .= '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" ';
+        $message .= 'style="background:#0d1a2b; padding:24px;"><tr><td align="center">';
+        $message .= '<table role="presentation" width="600" cellpadding="0" cellspacing="0" ';
+        $message .= 'style="background:#101e33; border-radius:12px; padding:24px;">';
+        $message .= '<tr><td style="color:#ffd24a; font-size:20px; font-weight:bold; ';
+        $message .= 'padding-bottom:8px;">' . esc_html($enigme_title) . '</td></tr>';
+        $message .= '<tr><td style="padding-bottom:16px;"><span style="display:inline-block; ';
+        $message .= 'background:' . esc_attr($badge_bg) . '; color:#0b1626; font-weight:bold; ';
+        $message .= 'padding:6px 10px; border-radius:6px;">' . esc_html($result_label) . '</span>';
+        $message .= '</td></tr>';
+        $message .= '<tr><td style="font-size:15px; line-height:1.5; padding-bottom:16px;">';
+        $message .= esc_html($message_retour) . '</td></tr>';
+        $message .= '<tr><td align="center" style="padding-bottom:16px;">';
+        $message .= '<a href="' . esc_url($url_enigme) . '" style="background:#d7263d; color:#fff; ';
+        $message .= 'text-decoration:none; font-weight:bold; font-size:15px; padding:12px 18px; ';
+        $message .= 'border-radius:6px; display:inline-block;">' . esc_html($cta_label) . '</a>';
+        $message .= '</td></tr>';
+        $message .= '<tr><td style="font-size:13px; color:#9fb3c8; text-align:center;">';
+        $message .= sprintf(
+            esc_html__('Tentatives quotidiennes : %1$d / %2$s', 'chassesautresor-com'),
+            $tentatives_utilisees,
+            $tentatives_max > 0 ? $tentatives_max : '∞'
+        );
+        $message .= '</td></tr></table></td></tr></table></body></html>';
 
         $headers = [
-            'Content-Type: text/html; charset=UTF-8'
+            'Content-Type: text/html; charset=UTF-8',
         ];
 
-        // Sécurisation du champ ACF enigme_chasse_associee
         $chasse_raw = get_field('enigme_chasse_associee', $enigme_id, false);
         if (is_array($chasse_raw)) {
             $first = reset($chasse_raw);
@@ -422,8 +465,8 @@ add_action('wp_ajax_nopriv_soumettre_reponse_automatique', 'soumettre_reponse_au
         };
         add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
-        wp_mail($user->user_email, $sujet, $message, $headers);
-        remove_filter('wp_mail_from_name', $from_filter, 10); // si mis ailleurs
+        wp_mail($user->user_email, $subject, $message, $headers);
+        remove_filter('wp_mail_from_name', $from_filter, 10);
     }
 
     /**
