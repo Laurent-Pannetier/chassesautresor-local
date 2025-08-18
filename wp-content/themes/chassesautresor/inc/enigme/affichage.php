@@ -53,7 +53,34 @@ defined('ABSPATH') || exit;
     add_action('deleted_user', 'enigme_bump_permissions_cache_version', 10, 1);
     add_action('added_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
     add_action('updated_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
-    add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
+add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
+
+    /**
+     * Determine if the enigma menu should be displayed for a user.
+     *
+     * @param int    $user_id     User identifier.
+     * @param int    $chasse_id   Associated hunt ID.
+     * @param string $chasse_stat Current hunt status.
+     *
+     * @return bool
+     */
+    function enigme_user_can_see_menu(int $user_id, int $chasse_id, string $chasse_stat): bool
+    {
+        if (!$chasse_id) {
+            return false;
+        }
+
+        $validation_status = get_field('chasse_cache_statut_validation', $chasse_id) ?? '';
+        $is_admin          = current_user_can('administrator');
+        $is_associated     = utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
+        $is_organizer      = est_organisateur($user_id);
+
+        if (($is_admin || ($is_organizer && $is_associated)) && $validation_status !== 'banni') {
+            return true;
+        }
+
+        return !in_array($chasse_stat, ['revision', 'a_venir'], true);
+    }
 
     /**
      * Renders the sidebar of the enigma layout.
@@ -272,11 +299,11 @@ defined('ABSPATH') || exit;
         $chasse_id      = recuperer_id_chasse_associee($enigme_id);
         $edition_active = utilisateur_peut_modifier_post($enigme_id);
 
-        $menu_items   = [];
-        $liste        = [];
-        $chasse_stat  = $chasse_id ? get_field('chasse_cache_statut', $chasse_id) : '';
-        $show_menu    = $chasse_id && !in_array($chasse_stat, ['revision', 'a_venir'], true);
-        $skip_checks  = $chasse_stat === 'termine';
+        $menu_items  = [];
+        $liste       = [];
+        $chasse_stat = $chasse_id ? get_field('chasse_cache_statut', $chasse_id) : '';
+        $show_menu   = enigme_user_can_see_menu($user_id, $chasse_id, $chasse_stat);
+        $skip_checks = $chasse_stat === 'termine';
 
         if ($show_menu) {
             $cache_key = 'enigmes_chasse_' . $chasse_id;
