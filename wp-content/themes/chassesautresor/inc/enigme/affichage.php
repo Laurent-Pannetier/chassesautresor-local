@@ -10,45 +10,102 @@ defined('ABSPATH') || exit;
      */
 
     /**
+     * Build a cache key for rendered enigma blocks.
+     *
+     * @param string $block    Block identifier.
+     * @param int    $post_id  Enigma identifier.
+     *
+     * @return string
+     */
+    function enigme_get_render_cache_key(string $block, int $post_id): string
+    {
+        $version = (int) get_option('enigme_permissions_cache_version', 1);
+
+        return $block . '_' . $post_id . '_' . $version;
+    }
+
+    /**
+     * Clear cached rendering for a given enigma.
+     *
+     * @param int $post_id Enigma identifier.
+     */
+    function enigme_clear_render_cache(int $post_id): void
+    {
+        wp_cache_delete(enigme_get_render_cache_key('enigme_sidebar', $post_id), 'chassesautresor');
+        wp_cache_delete(enigme_get_render_cache_key('enigme_solution', $post_id), 'chassesautresor');
+    }
+
+    /**
+     * Bump cache version when user permissions change.
+     *
+     * @param mixed ...$args Unused.
+     */
+    function enigme_bump_permissions_cache_version(...$args): void
+    {
+        $version = (int) get_option('enigme_permissions_cache_version', 1);
+        update_option('enigme_permissions_cache_version', $version + 1);
+    }
+
+    add_action('save_post_enigme', 'enigme_clear_render_cache', 10, 1);
+    add_action('set_user_role', 'enigme_bump_permissions_cache_version', 10, 3);
+    add_action('profile_update', 'enigme_bump_permissions_cache_version', 10, 2);
+    add_action('user_register', 'enigme_bump_permissions_cache_version', 10, 1);
+    add_action('deleted_user', 'enigme_bump_permissions_cache_version', 10, 1);
+    add_action('added_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
+    add_action('updated_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
+    add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
+
+    /**
      * Renders the sidebar of the enigma layout.
      *
+     * @param int      $enigme_id      Enigma identifier.
      * @param bool     $edition_active Whether the edition mode is active.
      * @param int|null $chasse_id      Associated hunt ID.
      * @param array    $menu_items     Menu items to display.
      */
-    function render_enigme_sidebar(bool $edition_active, ?int $chasse_id, array $menu_items): void
+    function render_enigme_sidebar(int $enigme_id, bool $edition_active, ?int $chasse_id, array $menu_items): void
     {
-        echo '<aside class="enigme-sidebar">';
+        $cache_key = enigme_get_render_cache_key('enigme_sidebar', $enigme_id);
+        $html      = wp_cache_get($cache_key, 'chassesautresor');
 
-        if ($edition_active) {
-            echo '<button id="toggle-mode-edition-enigme" type="button" ' .
-                'class="bouton-edition-toggle bouton-edition-toggle--clair" data-cpt="enigme" aria-label="' .
-                esc_attr__('Activer Orgy', 'chassesautresor-com') .
-                '"><i class="fa-solid fa-gear"></i></button>';
-        }
+        if ($html === false) {
+            ob_start();
+            echo '<aside class="enigme-sidebar">';
 
-        if ($chasse_id) {
-            $logo = get_the_post_thumbnail($chasse_id, 'thumbnail');
-            if ($logo) {
-                echo '<div class="enigme-chasse-logo">' . $logo . '</div>';
+            if ($edition_active) {
+                echo '<button id="toggle-mode-edition-enigme" type="button" ' .
+                    'class="bouton-edition-toggle bouton-edition-toggle--clair" data-cpt="enigme" aria-label="' .
+                    esc_attr__('Activer Orgy', 'chassesautresor-com') .
+                    '"><i class="fa-solid fa-gear"></i></button>';
             }
-            $titre_chasse = get_the_title($chasse_id);
-            echo '<div class="enigme-chasse-titre">' . esc_html($titre_chasse) . '</div>';
+
+            if ($chasse_id) {
+                $logo = get_the_post_thumbnail($chasse_id, 'thumbnail');
+                if ($logo) {
+                    echo '<div class="enigme-chasse-logo">' . $logo . '</div>';
+                }
+                $titre_chasse = get_the_title($chasse_id);
+                echo '<div class="enigme-chasse-titre">' . esc_html($titre_chasse) . '</div>';
+            }
+
+            if (!empty($menu_items)) {
+                echo '<ul class="enigme-menu">' . implode('', $menu_items) . '</ul>';
+            }
+
+            if ($chasse_id) {
+                $url_retour = get_permalink($chasse_id);
+                echo '<a href="' . esc_url($url_retour) . '" class="bouton-retour bouton-retour-chasse">';
+                echo '<i class="fa-solid fa-arrow-left"></i>';
+                echo '<span class="screen-reader-text">' . esc_html__('Retour à la chasse', 'chassesautresor-com') . '</span>';
+                echo '</a>';
+            }
+
+            echo '</aside>';
+            $html = ob_get_clean();
+            wp_cache_set($cache_key, $html, 'chassesautresor', HOUR_IN_SECONDS);
         }
 
-        if (!empty($menu_items)) {
-            echo '<ul class="enigme-menu">' . implode('', $menu_items) . '</ul>';
-        }
-
-        if ($chasse_id) {
-            $url_retour = get_permalink($chasse_id);
-            echo '<a href="' . esc_url($url_retour) . '" class="bouton-retour bouton-retour-chasse">';
-            echo '<i class="fa-solid fa-arrow-left"></i>';
-            echo '<span class="screen-reader-text">' . esc_html__('Retour à la chasse', 'chassesautresor-com') . '</span>';
-            echo '</a>';
-        }
-
-        echo '</aside>';
+        echo $html;
     }
 
     /**
@@ -128,16 +185,26 @@ defined('ABSPATH') || exit;
      */
     function render_enigme_solution(int $enigme_id, string $style, int $user_id): void
     {
-        echo '<div class="enigme-section enigme-section-solution">';
-        enigme_get_partial(
-            'solution',
-            $style,
-            [
-                'post_id' => $enigme_id,
-                'user_id' => $user_id,
-            ]
-        );
-        echo '</div>';
+        $cache_key = enigme_get_render_cache_key('enigme_solution', $enigme_id);
+        $html      = wp_cache_get($cache_key, 'chassesautresor');
+
+        if ($html === false) {
+            ob_start();
+            echo '<div class="enigme-section enigme-section-solution">';
+            enigme_get_partial(
+                'solution',
+                $style,
+                [
+                    'post_id' => $enigme_id,
+                    'user_id' => $user_id,
+                ]
+            );
+            echo '</div>';
+            $html = ob_get_clean();
+            wp_cache_set($cache_key, $html, 'chassesautresor', HOUR_IN_SECONDS);
+        }
+
+        echo $html;
     }
 
     /**     
@@ -213,7 +280,7 @@ defined('ABSPATH') || exit;
             );
         }
         echo '<div class="container container--xl-full enigme-layout">';
-        render_enigme_sidebar($edition_active, $chasse_id, $menu_items);
+        render_enigme_sidebar($enigme_id, $edition_active, $chasse_id, $menu_items);
         echo '<div class="enigme-main">';
         echo '<main class="enigme-content enigme-style-' . esc_attr($style) . '">';
         render_enigme_hero($enigme_id, $style, $user_id);
