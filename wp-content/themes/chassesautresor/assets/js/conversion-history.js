@@ -51,7 +51,11 @@
   }
 
   document.addEventListener('click', function (e) {
-    var button = e.target.closest('.conversion-history-toggle');
+    var target = e.target;
+    if (target.nodeType !== Node.ELEMENT_NODE) {
+      target = target.parentElement;
+    }
+    var button = target ? target.closest('.conversion-history-toggle') : null;
     if (!button) {
       return;
     }
