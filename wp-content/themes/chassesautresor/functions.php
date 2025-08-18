@@ -33,10 +33,11 @@ add_action('wp_enqueue_scripts', function () {
     wp_enqueue_style('astra-style', get_template_directory_uri() . '/style.css');
 
     // Détermine l'environnement via WP_ENVIRONMENT_TYPE ou une constante dédiée.
-    $env            = defined('CHASSESAUTRESOR_ENV') ? CHASSESAUTRESOR_ENV : wp_get_environment_type();
-    $is_edition_env = 'edition' === $env || current_user_can('administrator');
+    $env                  = defined('CHASSESAUTRESOR_ENV') ? CHASSESAUTRESOR_ENV : wp_get_environment_type();
+    $is_compil_active     = get_option('cta_css_compilation_active', '1') === '1';
+    $is_edition_env       = 'edition' === $env;
 
-    if ($is_edition_env) {
+    if (!$is_compil_active || $is_edition_env) {
         wp_enqueue_style(
             'mon-theme-enfant-style',
             $theme_uri . '/style.css',
