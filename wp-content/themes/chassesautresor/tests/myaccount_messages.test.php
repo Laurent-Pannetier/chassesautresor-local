@@ -40,11 +40,37 @@ if (!function_exists('recuperer_enigmes_tentatives_en_attente')) {
 if (!function_exists('get_user_meta')) {
     function get_user_meta($user_id, $key, $single)
     {
+        if ($key === '_myaccount_flash_messages') {
+            return $GLOBALS['test_myaccount_flash_meta'] ?? [];
+        }
+
         return [
             [
                 'statut' => 'en attente',
             ],
         ];
+    }
+}
+
+if (!function_exists('update_user_meta')) {
+    function update_user_meta($user_id, $key, $value)
+    {
+        if ($key === '_myaccount_flash_messages') {
+            $GLOBALS['test_myaccount_flash_meta'] = $value;
+        }
+
+        return true;
+    }
+}
+
+if (!function_exists('delete_user_meta')) {
+    function delete_user_meta($user_id, $key)
+    {
+        if ($key === '_myaccount_flash_messages') {
+            unset($GLOBALS['test_myaccount_flash_meta']);
+        }
+
+        return true;
     }
 }
 
@@ -143,5 +169,16 @@ class MyAccountMessagesTest extends TestCase
         $output = myaccount_get_important_messages();
 
         $this->assertStringContainsString('Demande de validation en cours de traitement', $output);
+    }
+
+    public function test_flash_message_is_displayed_once(): void
+    {
+        update_user_meta(1, '_myaccount_flash_messages', ['Message unique']);
+
+        $first = myaccount_get_important_messages();
+        $this->assertStringContainsString('Message unique', $first);
+
+        $second = myaccount_get_important_messages();
+        $this->assertStringNotContainsString('Message unique', $second);
     }
 }

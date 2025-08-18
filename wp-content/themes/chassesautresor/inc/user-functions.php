@@ -241,13 +241,53 @@ add_filter('woocommerce_endpoint_edit-account_title', 'ca_profile_endpoint_title
 // 📣 IMPORTANT MESSAGES
 // ==================================================
 /**
+ * Store a flash message for the given user.
+ *
+ * @param int    $user_id User identifier.
+ * @param string $message Message to store.
+ *
+ * @return void
+ */
+function myaccount_add_flash_message(int $user_id, string $message): void
+{
+    $messages = get_user_meta($user_id, '_myaccount_flash_messages', true);
+    if (!is_array($messages)) {
+        $messages = [];
+    }
+
+    $messages[] = $message;
+    update_user_meta($user_id, '_myaccount_flash_messages', $messages);
+}
+
+/**
+ * Retrieve and clear flash messages for the given user.
+ *
+ * @param int $user_id User identifier.
+ *
+ * @return array<string>
+ */
+function myaccount_get_flash_messages(int $user_id): array
+{
+    $messages = get_user_meta($user_id, '_myaccount_flash_messages', true);
+    if (!is_array($messages)) {
+        return [];
+    }
+
+    $messages = array_filter($messages, 'is_string');
+    delete_user_meta($user_id, '_myaccount_flash_messages');
+
+    return $messages;
+}
+
+/**
  * Get pre-formatted HTML for the important message section in My Account pages.
  *
  * @return string
  */
 function myaccount_get_important_messages(): string
 {
-    $messages = [];
+    $current_user_id = get_current_user_id();
+    $messages        = myaccount_get_flash_messages($current_user_id);
     $flash    = '';
 
     if (isset($_GET['points_modifies']) && $_GET['points_modifies'] === '1') {

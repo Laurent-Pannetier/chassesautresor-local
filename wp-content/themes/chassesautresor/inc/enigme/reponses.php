@@ -154,6 +154,11 @@ function soumettre_reponse_manuelle()
     $uid = inserer_tentative($user_id, $enigme_id, $reponse);
     enigme_mettre_a_jour_statut_utilisateur($enigme_id, $user_id, 'soumis', true);
 
+    myaccount_add_flash_message(
+        $user_id,
+        __('Votre demande de résolution d\'énigme est en cours de traitement. Vous recevrez une notification dès que votre demande sera traitée.', 'chassesautresor-com')
+    );
+
     envoyer_mail_reponse_manuelle($user_id, $enigme_id, $reponse, $uid);
 
     $solde = get_user_points($user_id);
