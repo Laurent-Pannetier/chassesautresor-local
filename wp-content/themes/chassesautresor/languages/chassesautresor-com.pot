@@ -790,33 +790,32 @@ msgstr ""
 msgid "Vous avez déjà résolu cette énigme."
 msgstr ""
 
-#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:55
-#: template-parts/enigme/partials/enigme-partial-tentatives.php:48
+#: inc/enigme/reponses.php:55 template-parts/enigme/partials/enigme-partial-bloc-reponse.php:52 template-parts/enigme/partials/enigme-partial-tentatives.php:48
 msgid "Valider"
 msgstr ""
 
-#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:61
+#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:58
 msgid "tentatives quotidiennes épuisées"
 msgstr ""
 
-#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:70
+#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:67
 #, php-format
 msgid "%dh et %dmn avant réactivation"
 msgstr ""
 
-#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:86
-msgid "Votre réponse :"
+#: inc/enigme/reponses.php:38 template-parts/enigme/partials/enigme-partial-bloc-reponse.php:83
+msgid "Votre réponse"
 msgstr ""
 
-#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:93
+#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:90
 msgid "Accéder à la boutique"
 msgstr ""
 
-#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:105
+#: inc/enigme/reponses.php:53 template-parts/enigme/partials/enigme-partial-bloc-reponse.php:101
 msgid "pts"
 msgstr ""
 
-#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:112
+#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:109
 msgid "Tentatives quotidiennes"
 msgstr ""
 

@@ -35,7 +35,7 @@ defined('ABSPATH') || exit;
         ob_start();
     ?>
     <form method="post" class="bloc-reponse formulaire-reponse-manuelle">
-        <label for="reponse_manuelle_<?php echo esc_attr($enigme_id); ?>">Votre réponse :</label>
+        <label for="reponse_manuelle_<?php echo esc_attr($enigme_id); ?>"><?php esc_html_e('Votre réponse', 'chassesautresor-com'); ?></label>
         <?php if ($data['points_manquants'] > 0) : ?>
             <p class="message-limite" data-points="manquants">
                 <?php echo esc_html(sprintf(__('Il vous manque %d points pour soumettre votre réponse.', 'chassesautresor-com'), $data['points_manquants'])); ?>
@@ -49,10 +49,10 @@ defined('ABSPATH') || exit;
         <input type="hidden" name="enigme_id" value="<?php echo esc_attr($enigme_id); ?>">
         <input type="hidden" name="reponse_manuelle_nonce" value="<?php echo esc_attr($nonce); ?>">
         <div class="reponse-cta-row">
-            <button type="submit" class="bouton-cta" <?php echo $data['disabled']; ?>>Envoyer</button>
             <?php if ($data['cout'] > 0) : ?>
-                <span class="badge-cout"><?php echo esc_html($data['cout']); ?> pts</span>
+                <span class="badge-cout"><?php echo esc_html($data['cout']); ?> <?php esc_html_e('pts', 'chassesautresor-com'); ?></span>
             <?php endif; ?>
+            <button type="submit" class="bouton-cta" <?php echo $data['disabled']; ?>><?php esc_html_e('Valider', 'chassesautresor-com'); ?></button>
         </div>
     </form>
     <div class="reponse-feedback" style="display:none"></div>

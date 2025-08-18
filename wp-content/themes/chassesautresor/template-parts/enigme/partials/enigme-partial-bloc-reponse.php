@@ -80,7 +80,7 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
 
 <form class="bloc-reponse formulaire-reponse-auto">
     <label for="reponse_auto_<?= esc_attr($post_id); ?>">
-      <?= esc_html__('Votre réponse :', 'chassesautresor-com'); ?>
+      <?= esc_html__('Votre réponse', 'chassesautresor-com'); ?>
     </label>
   <?php if ($message_tentatives) : ?>
     <p class="message-limite" data-tentatives="epuisees"><?= esc_html($message_tentatives); ?></p>
@@ -97,10 +97,10 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
   <input type="hidden" name="enigme_id" value="<?= esc_attr($post_id); ?>">
   <input type="hidden" name="nonce" value="<?= esc_attr($nonce); ?>">
   <div class="reponse-cta-row">
-      <button type="submit" class="bouton-cta" <?= $disabled; ?>><?= $label_btn; ?></button>
-      <?php if ($cout > 0 && $statut_actuel !== 'resolue') : ?>
-        <span class="badge-cout"><?= esc_html($cout); ?> <?= esc_html__('pts', 'chassesautresor-com'); ?></span>
-      <?php endif; ?>
+    <?php if ($cout > 0 && $statut_actuel !== 'resolue') : ?>
+      <span class="badge-cout"><?= esc_html($cout); ?> <?= esc_html__('pts', 'chassesautresor-com'); ?></span>
+    <?php endif; ?>
+    <button type="submit" class="bouton-cta" <?= $disabled; ?>><?= $label_btn; ?></button>
   </div>
 </form>
 <div class="reponse-feedback" style="display:none"></div>
