@@ -415,9 +415,9 @@ Groupe : paramètres indices
 * indice_cible (radio)
 * indice_cible_objet (relationship)
 * indice_disponibilite (radio)
-* indice_date_disponibilite (date_time_picker)
+* indice_date_disponibilite (date_time_picker, retour d/m/Y g:i a)
 * indice_cout_points (number)
-* indice_cache_etat_systeme (select)
+* indice_cache_etat_systeme (select, accessible/programme/expire/desactive)
 
 liste avec tous les détails des groupes de champs ACF dans champs-acf-liste.md
 

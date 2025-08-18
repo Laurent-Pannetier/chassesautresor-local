@@ -497,6 +497,7 @@ Type : date_time_picker
 Label : date de disponibilité
 Instructions : (vide)
 Requis : non
+Format de retour : d/m/Y g:i a
 ----------------------------------------
 — indice_cout_points —
 Type : number
@@ -509,4 +510,9 @@ Type : select
 Label : état système de l'indice
 Instructions : (vide)
 Requis : non
+Choices :
+  - accessible : accessible
+  - programme : programmé
+  - expire : expiré
+  - desactive : désactivé
 ----------------------------------------
