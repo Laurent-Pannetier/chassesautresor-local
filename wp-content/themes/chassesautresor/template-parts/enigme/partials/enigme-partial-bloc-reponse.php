@@ -79,9 +79,7 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
 ?>
 
 <form class="bloc-reponse formulaire-reponse-auto">
-    <label for="reponse_auto_<?= esc_attr($post_id); ?>">
-      <?= esc_html__('Votre réponse :', 'chassesautresor-com'); ?>
-    </label>
+    <h3><?= esc_html__('Votre réponse', 'chassesautresor-com'); ?></h3>
   <?php if ($message_tentatives) : ?>
     <p class="message-limite" data-tentatives="epuisees"><?= esc_html($message_tentatives); ?></p>
   <?php elseif ($points_manquants > 0) : ?>
