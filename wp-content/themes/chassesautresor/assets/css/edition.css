@@ -1545,6 +1545,7 @@ body.panneau-ouvert::before {
   border: 1px solid var(--color-editor-border);
   border-radius: 4px;
   overflow: hidden;
+  position: relative;
 }
 
 .stats-bar-chart .bar-fill {
@@ -1560,9 +1561,13 @@ body.panneau-ouvert::before {
 }
 
 .stats-bar-chart .bar-value--outside {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--color-editor-heading);
+  white-space: nowrap;
 }
 
 .stats-bar-chart .bar-row:nth-child(2) .bar-fill { background-color: hsl(0 0% 70%); }

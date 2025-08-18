@@ -25,7 +25,7 @@ class EnigmeBarSectionTest extends TestCase
     public function test_rates_under_threshold_display_outside(): void
     {
         $html = enigme_render_bar_section('Test', 0, 10, 'test-section');
-        $this->assertStringContainsString('<span class="bar-value bar-value--outside">0%</span>', $html);
+        $this->assertMatchesRegularExpression('/<span class="bar-value bar-value--outside" style="left:calc\(0% \+ 4px\);">\s*0%\s*<\/span>/', $html);
     }
 
     public function test_rates_over_threshold_display_inside(): void
