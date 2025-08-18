@@ -127,6 +127,17 @@
   gap: var(--space-md);
 }
 
+.bloc-reponse {
+  background-color: rgba(
+    var(--aside-bg-rgb, 238, 238, 238),
+    var(--aside-opacity, 0.4)
+  );
+  padding: var(--space-md);
+  border: 1px solid var(--aside-border-color, transparent);
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
 .solution details {
   background: var(--bg-solution, var(--ca-color-bg, #f5f5f5));
   padding: var(--space-md);
