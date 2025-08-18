@@ -5,12 +5,19 @@ use PHPUnit\Framework\TestCase;
 if (!function_exists('current_user_can')) {
     function current_user_can($cap)
     {
-        return $cap === 'administrator';
+        return true;
     }
 }
 
 if (!function_exists('est_organisateur')) {
     function est_organisateur()
+    {
+        return true;
+    }
+}
+
+if (!function_exists('is_user_logged_in')) {
+    function is_user_logged_in()
     {
         return true;
     }
@@ -71,6 +78,20 @@ if (!function_exists('delete_user_meta')) {
         }
 
         return true;
+    }
+}
+
+if (!function_exists('get_stylesheet_directory')) {
+    function get_stylesheet_directory()
+    {
+        return __DIR__;
+    }
+}
+
+if (!function_exists('wp_send_json_success')) {
+    function wp_send_json_success($data)
+    {
+        echo json_encode(['success' => true, 'data' => $data]);
     }
 }
 
@@ -180,5 +201,22 @@ class MyAccountMessagesTest extends TestCase
 
         $second = myaccount_get_important_messages();
         $this->assertStringNotContainsString('Message unique', $second);
+    }
+
+    public function test_ajax_section_returns_flash_message(): void
+    {
+        update_user_meta(1, '_myaccount_flash_messages', ['Via AJAX']);
+        $_GET['section'] = 'organisateurs';
+
+        ob_start();
+        ca_load_admin_section();
+        $json = ob_get_clean();
+        $data = json_decode($json, true);
+
+        $this->assertTrue($data['success']);
+        $this->assertStringContainsString('Via AJAX', $data['data']['messages']);
+        $this->assertSame([], get_user_meta(1, '_myaccount_flash_messages', true));
+
+        unset($_GET['section']);
     }
 }
