@@ -74,13 +74,14 @@ defined('ABSPATH') || exit;
             );
         }
 
-        echo '<div class="container container--xl-full enigme-layout">';
+        echo '<div class="container container--xl-full">';
+        echo '<div class="row enigme-layout">';
         echo '<aside class="enigme-sidebar">';
 
         if ($edition_active) {
             echo '<button id="toggle-mode-edition-enigme" type="button" ' .
                 'class="bouton-edition-toggle bouton-edition-toggle--clair" data-cpt="enigme" aria-label="' .
-                esc_attr__('Activer Orgy', 'chassesautresor') .
+                esc_attr__('Activer Orgy', 'chassesautresor-com') .
                 '"><i class="fa-solid fa-gear"></i></button>';
         }
 
@@ -101,24 +102,52 @@ defined('ABSPATH') || exit;
             $url_retour = get_permalink($chasse_id);
             echo '<a href="' . esc_url($url_retour) . '" class="bouton-retour bouton-retour-chasse">';
             echo '<i class="fa-solid fa-arrow-left"></i>';
-            echo '<span class="screen-reader-text">' . esc_html__('Retour à la chasse', 'chassesautresor') . '</span>';
+            echo '<span class="screen-reader-text">' . esc_html__('Retour à la chasse', 'chassesautresor-com') . '</span>';
             echo '</a>';
         }
 
+        echo '<div class="enigme-stats"></div>';
+
         echo '</aside>';
         echo '<div class="enigme-main">';
-        echo '<main class="enigme-content enigme-style-' . esc_attr($style) . '">';
 
-        foreach (['titre', 'images', 'texte', 'bloc-reponse'] as $slug) {
-            echo '<div class="enigme-section enigme-section-' . esc_attr($slug) . '">';
-            enigme_get_partial($slug, $style, [
-                'post_id' => $enigme_id,
-                'user_id' => $user_id,
-            ]);
-            echo '</div>';
+        echo '<section class="enigme-hero">';
+        enigme_get_partial('images', $style, [
+            'post_id' => $enigme_id,
+            'user_id' => $user_id,
+        ]);
+        echo '</section>';
+
+        echo '<article class="enigme-content enigme-style-' . esc_attr($style) . '">';
+        enigme_get_partial('titre', $style, [
+            'post_id' => $enigme_id,
+            'user_id' => $user_id,
+        ]);
+        enigme_get_partial('texte', $style, [
+            'post_id' => $enigme_id,
+            'user_id' => $user_id,
+        ]);
+        echo '</article>';
+
+        echo '<section class="enigme-participation">';
+        enigme_get_partial('bloc-reponse', $style, [
+            'post_id' => $enigme_id,
+            'user_id' => $user_id,
+        ]);
+        echo '<div class="enigme-indices"></div>';
+        echo '</section>';
+
+        ob_start();
+        enigme_get_partial('solution', $style, [
+            'post_id' => $enigme_id,
+            'user_id' => $user_id,
+        ]);
+        $solution_html = trim(ob_get_clean());
+        if ($solution_html !== '') {
+            echo '<section class="enigme-solution">' . $solution_html . '</section>';
         }
 
-        echo '</main>';
+        echo '</div>';
         echo '</div>';
         echo '</div>';
     }
