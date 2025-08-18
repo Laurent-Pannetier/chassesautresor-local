@@ -80,10 +80,12 @@ defined('ABSPATH') || exit;
                 <span class="bar-value"><?= esc_html($rate); ?>%</span>
               <?php endif; ?>
             </div>
+            <?php if (!$inside) : ?>
+              <span class="bar-value bar-value--outside" style="left:calc(<?= esc_attr($rate); ?>% + 4px);">
+                <?= esc_html($rate); ?>%
+              </span>
+            <?php endif; ?>
           </div>
-          <?php if (!$inside) : ?>
-            <span class="bar-value bar-value--outside"><?= esc_html($rate); ?>%</span>
-          <?php endif; ?>
         </div>
         <?php
         return (string) ob_get_clean();
