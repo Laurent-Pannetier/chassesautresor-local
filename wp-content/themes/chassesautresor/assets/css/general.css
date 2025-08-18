@@ -45,7 +45,7 @@ h1.h1-diff {/* variation couleur bronze, plus petite, centrée */
   letter-spacing: 1px;
   color: var(--color-accent);
 }
-@media (max-width: var(--bp-lg)) {
+@media (--bp-lg) {
   h1, .entry-content h1 {
     font-size: 36px;
   }
@@ -53,7 +53,7 @@ h1.h1-diff {/* variation couleur bronze, plus petite, centrée */
       font-size:30px;
   }
 }
-@media (max-width: var(--bp-md)) {
+@media (--bp-md) {
   h1, .entry-content h1 {
     font-size: 30px;
   }
@@ -76,13 +76,13 @@ h2, .entry-content h2 {
   font-size: 32px;
 }
 
-@media (max-width: var(--bp-lg)) {
+@media (--bp-lg) {
   h2, .entry-content h2 {
     font-size: 28px;
   }
 }
 
-@media (max-width: var(--bp-md)) {
+@media (--bp-md) {
   h2, .entry-content h2 {
     font-size: 24px;
   }
@@ -101,7 +101,7 @@ h3, .entry-content h3 {
   margin-bottom: var(--space-sm);
 }
 
-@media (max-width: var(--bp-lg)) {
+@media (--bp-lg) {
   .page header.entry-header .entry-title {
     font-size: 36px;
   }
@@ -110,7 +110,7 @@ h3, .entry-content h3 {
   }
 }
 
-@media (max-width: var(--bp-md)) {
+@media (--bp-md) {
   .page header.entry-header .entry-title {
     font-size: 30px;
   }
@@ -232,12 +232,12 @@ span.champ-obligatoire {
 
 /* ========== 📱 RESPONSIVE ========== */
 
-@media (max-width: var(--bp-md)) {
+@media (--bp-md) {
     address, blockquote, body, dd, dl, dt, fieldset, figure, h1, h2, h3, h4, h5, h6, hr, html, iframe, legend, li, ol, p, pre, textarea, ul  {
         font-size:96%;
     }
 }
-@media (max-width: var(--bp-sm)) {
+@media (--bp-sm) {
     address, blockquote, body, dd, dl, dt, fieldset, figure, h1, h2, h3, h4, h5, h6, hr, html, iframe, legend, li, ol, p, pre, textarea, ul {
         font-size:93%;
     }

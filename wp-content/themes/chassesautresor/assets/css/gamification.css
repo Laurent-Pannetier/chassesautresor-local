@@ -344,23 +344,23 @@ header .points-link:hover {
 
 
 /* 📱 Responsive : ajuste la taille du texte sur mobile/tablette */
-@media (max-width: var(--bp-lg)) {
+@media (--bp-lg) {
     .points-value {
         font-size: 16px;
     }
 }
 
-@media (max-width: var(--bp-md)) {
+@media (--bp-md) {
     .points-value {
         font-size: 14px;
     }
 }
-@media (max-width: var(--bp-sm)) {
+@media (--bp-sm) {
   .points-unite {
     display: none;
   }
 }
-@media (max-width: var(--bp-xs)) {
+@media (--bp-xs) {
   .points-unite {
     display: none;
   }
