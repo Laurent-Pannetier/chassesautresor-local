@@ -35,7 +35,7 @@ defined('ABSPATH') || exit;
         ob_start();
     ?>
     <form method="post" class="bloc-reponse formulaire-reponse-manuelle">
-        <label for="reponse_manuelle_<?php echo esc_attr($enigme_id); ?>">Votre réponse :</label>
+        <h3><?php echo esc_html__('Votre réponse', 'chassesautresor-com'); ?></h3>
         <?php if ($data['points_manquants'] > 0) : ?>
             <p class="message-limite" data-points="manquants">
                 <?php echo esc_html(sprintf(__('Il vous manque %d points pour soumettre votre réponse.', 'chassesautresor-com'), $data['points_manquants'])); ?>
