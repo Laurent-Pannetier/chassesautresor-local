@@ -248,6 +248,75 @@ add_filter('woocommerce_endpoint_edit-account_title', 'ca_profile_endpoint_title
  *
  * @return void
  */
+/**
+ * Store a persistent important message for the given user.
+ *
+ * @param int    $user_id User identifier.
+ * @param string $key     Unique message key.
+ * @param string $message Message to store.
+ *
+ * @return void
+ */
+function myaccount_add_persistent_message(int $user_id, string $key, string $message): void
+{
+    $messages = get_user_meta($user_id, '_myaccount_messages', true);
+    if (!is_array($messages)) {
+        $messages = [];
+    }
+
+    $messages[$key] = $message;
+    update_user_meta($user_id, '_myaccount_messages', $messages);
+}
+
+/**
+ * Remove a persistent message for the given user.
+ *
+ * @param int    $user_id User identifier.
+ * @param string $key     Message key.
+ *
+ * @return void
+ */
+function myaccount_remove_persistent_message(int $user_id, string $key): void
+{
+    $messages = get_user_meta($user_id, '_myaccount_messages', true);
+    if (!is_array($messages) || !isset($messages[$key])) {
+        return;
+    }
+
+    unset($messages[$key]);
+
+    if (!empty($messages)) {
+        update_user_meta($user_id, '_myaccount_messages', $messages);
+    } else {
+        delete_user_meta($user_id, '_myaccount_messages');
+    }
+}
+
+/**
+ * Retrieve persistent important messages for the given user.
+ *
+ * @param int $user_id User identifier.
+ *
+ * @return array<string>
+ */
+function myaccount_get_persistent_messages(int $user_id): array
+{
+    $messages = get_user_meta($user_id, '_myaccount_messages', true);
+    if (!is_array($messages)) {
+        return [];
+    }
+
+    return array_values(array_filter($messages, 'is_string'));
+}
+
+/**
+ * Store a flash message for the given user.
+ *
+ * @param int    $user_id User identifier.
+ * @param string $message Message to store.
+ *
+ * @return void
+ */
 function myaccount_add_flash_message(int $user_id, string $message): void
 {
     $messages = get_user_meta($user_id, '_myaccount_flash_messages', true);
@@ -287,8 +356,11 @@ function myaccount_get_flash_messages(int $user_id): array
 function myaccount_get_important_messages(): string
 {
     $current_user_id = get_current_user_id();
-    $messages        = myaccount_get_flash_messages($current_user_id);
-    $flash    = '';
+    $messages        = array_merge(
+        myaccount_get_persistent_messages($current_user_id),
+        myaccount_get_flash_messages($current_user_id)
+    );
+    $flash           = '';
 
     if (isset($_GET['points_modifies']) && $_GET['points_modifies'] === '1') {
         $flash = '<p class="flash">' . __('Points mis à jour avec succès.', 'chassesautresor') . '</p>';

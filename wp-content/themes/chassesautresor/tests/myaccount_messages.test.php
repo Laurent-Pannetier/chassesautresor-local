@@ -51,6 +51,10 @@ if (!function_exists('get_user_meta')) {
             return $GLOBALS['test_myaccount_flash_meta'] ?? [];
         }
 
+        if ($key === '_myaccount_messages') {
+            return $GLOBALS['test_myaccount_persistent_meta'] ?? [];
+        }
+
         return [
             [
                 'statut' => 'en attente',
@@ -66,6 +70,10 @@ if (!function_exists('update_user_meta')) {
             $GLOBALS['test_myaccount_flash_meta'] = $value;
         }
 
+        if ($key === '_myaccount_messages') {
+            $GLOBALS['test_myaccount_persistent_meta'] = $value;
+        }
+
         return true;
     }
 }
@@ -75,6 +83,10 @@ if (!function_exists('delete_user_meta')) {
     {
         if ($key === '_myaccount_flash_messages') {
             unset($GLOBALS['test_myaccount_flash_meta']);
+        }
+
+        if ($key === '_myaccount_messages') {
+            unset($GLOBALS['test_myaccount_persistent_meta']);
         }
 
         return true;
@@ -201,6 +213,21 @@ class MyAccountMessagesTest extends TestCase
 
         $second = myaccount_get_important_messages();
         $this->assertStringNotContainsString('Message unique', $second);
+    }
+
+    public function test_persistent_message_persists_until_removed(): void
+    {
+        update_user_meta(1, '_myaccount_messages', ['foo' => 'Persiste']);
+
+        $first = myaccount_get_important_messages();
+        $this->assertStringContainsString('Persiste', $first);
+
+        $second = myaccount_get_important_messages();
+        $this->assertStringContainsString('Persiste', $second);
+
+        myaccount_remove_persistent_message(1, 'foo');
+        $third = myaccount_get_important_messages();
+        $this->assertStringNotContainsString('Persiste', $third);
     }
 
     public function test_ajax_section_returns_flash_message(): void

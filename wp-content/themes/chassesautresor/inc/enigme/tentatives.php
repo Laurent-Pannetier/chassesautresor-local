@@ -126,10 +126,11 @@ defined('ABSPATH') || exit;
         $titre_enigme = get_the_title($enigme_id);
         $message      = sprintf(
             $resultat === 'bon'
-                ? __('Votre demande de résolution de l\'énigme %s a été validée. Félicitations !', 'chassesautresor-com')
-                : __('Votre demande de résolution de l\'énigme %s a été invalidée.', 'chassesautresor-com'),
+                ? __('Votre tentative de résolution de %s a été validée. Félicitations !', 'chassesautresor-com')
+                : __('Votre tentative de résolution de %s a été invalidée.', 'chassesautresor-com'),
             esc_html($titre_enigme)
         );
+        myaccount_remove_persistent_message($user_id, 'tentative_' . $uid);
         myaccount_add_flash_message($user_id, $message);
 
         cat_debug("✅ Tentative UID=$uid traitée comme $resultat");
