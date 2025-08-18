@@ -177,7 +177,11 @@ defined('ABSPATH') || exit;
             ]
         );
         echo '</div>';
-        echo '<div class="zone-indices"><h3>' . esc_html__('Indices', 'chassesautresor-com') . '</h3></div>';
+
+        $hints = get_field('indices', $enigme_id);
+        if (!empty($hints)) {
+            echo '<div class="zone-indices"><h3>' . esc_html__('Indices', 'chassesautresor-com') . '</h3></div>';
+        }
         echo '</section>';
     }
 
