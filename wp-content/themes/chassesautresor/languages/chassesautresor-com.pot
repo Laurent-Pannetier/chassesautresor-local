@@ -626,35 +626,31 @@ msgstr ""
 msgid "Description mise à jour."
 msgstr ""
 
-#: template-parts/chasse/partials/chasse-partial-participants.php:35
+#: template-parts/chasse/partials/chasse-partial-participants.php:40
 msgid "Joueurs"
 msgstr ""
 
-#: template-parts/chasse/partials/chasse-partial-participants.php:37
-msgid "Pas encore de joueur inscrit."
-msgstr ""
-
-#: template-parts/chasse/partials/chasse-partial-participants.php:49
+#: template-parts/chasse/partials/chasse-partial-participants.php:51
 msgid "Joueur"
 msgstr ""
 
-#: template-parts/chasse/partials/chasse-partial-participants.php:50
+#: template-parts/chasse/partials/chasse-partial-participants.php:52
 msgid "Inscription"
 msgstr ""
 
-#: template-parts/chasse/partials/chasse-partial-participants.php:56
+#: template-parts/chasse/partials/chasse-partial-participants.php:58
 msgid "Trier par taux de participation"
 msgstr ""
 
-#: template-parts/chasse/partials/chasse-partial-participants.php:58
+#: template-parts/chasse/partials/chasse-partial-participants.php:60
 msgid "Tx participation"
 msgstr ""
 
-#: template-parts/chasse/partials/chasse-partial-participants.php:66
+#: template-parts/chasse/partials/chasse-partial-participants.php:67
 msgid "Trier par taux de résolution"
 msgstr ""
 
-#: template-parts/chasse/partials/chasse-partial-participants.php:68
+#: template-parts/chasse/partials/chasse-partial-participants.php:70
 msgid "Tx résolution"
 msgstr ""
 
@@ -828,50 +824,54 @@ msgstr ""
 msgid "Image par défaut de l’énigme"
 msgstr ""
 
-#: template-parts/enigme/partials/enigme-partial-participants.php:37
+#: template-parts/enigme/partials/enigme-partial-participants.php:39
+msgid "Les statistiques seront disponibles une fois la chasse activée."
+msgstr ""
+
+#: template-parts/enigme/partials/enigme-partial-participants.php:43
 msgid "Aucun participant engagé."
 msgstr ""
 
-#: template-parts/enigme/partials/enigme-partial-participants.php:42
+#: template-parts/enigme/partials/enigme-partial-participants.php:50
 msgid "Nom"
 msgstr ""
 
-#: template-parts/enigme/partials/enigme-partial-participants.php:47
+#: template-parts/enigme/partials/enigme-partial-participants.php:55
 msgid "Trier par engagement"
 msgstr ""
 
-#: template-parts/enigme/partials/enigme-partial-participants.php:49
+#: template-parts/enigme/partials/enigme-partial-participants.php:57
 msgid "Engagement"
 msgstr ""
 
-#: template-parts/enigme/partials/enigme-partial-participants.php:58
+#: template-parts/enigme/partials/enigme-partial-participants.php:66
 msgid "Trier par tentatives"
 msgstr ""
 
-#: template-parts/enigme/partials/enigme-partial-participants.php:60
+#: template-parts/enigme/partials/enigme-partial-participants.php:68
 msgid "Tentatives"
 msgstr ""
 
-#: template-parts/enigme/partials/enigme-partial-participants.php:65
+#: template-parts/enigme/partials/enigme-partial-participants.php:73
 msgid "Trouvé"
 msgstr ""
 
-#: template-parts/enigme/partials/enigme-partial-participants.php:83
+#: template-parts/enigme/partials/enigme-partial-participants.php:91
 #: template-parts/enigme/partials/enigme-partial-tentatives.php:64
 msgid "Première page"
 msgstr ""
 
-#: template-parts/enigme/partials/enigme-partial-participants.php:86
+#: template-parts/enigme/partials/enigme-partial-participants.php:94
 #: template-parts/enigme/partials/enigme-partial-tentatives.php:67
 msgid "Page précédente"
 msgstr ""
 
-#: template-parts/enigme/partials/enigme-partial-participants.php:92
+#: template-parts/enigme/partials/enigme-partial-participants.php:100
 #: template-parts/enigme/partials/enigme-partial-tentatives.php:73
 msgid "Page suivante"
 msgstr ""
 
-#: template-parts/enigme/partials/enigme-partial-participants.php:95
+#: template-parts/enigme/partials/enigme-partial-participants.php:103
 #: template-parts/enigme/partials/enigme-partial-tentatives.php:76
 msgid "Dernière page"
 msgstr ""

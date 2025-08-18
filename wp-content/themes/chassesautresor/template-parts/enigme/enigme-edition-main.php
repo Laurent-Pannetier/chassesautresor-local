@@ -38,6 +38,10 @@ $date_deblocage = $date_obj ? $date_obj->format('Y-m-d\TH:i') : '';
 $chasse = get_field('enigme_chasse_associee', $enigme_id);
 $chasse_id = is_array($chasse) ? $chasse[0] : null;
 $chasse_title = $chasse_id ? get_the_title($chasse_id) : '';
+$enigme_status = get_post_status($enigme_id);
+$chasse_validation = $chasse_id ? get_field('chasse_cache_statut_validation', $chasse_id) : '';
+$stats_locked = in_array($chasse_validation, ['creation', 'en_attente', 'correction'], true)
+    || $enigme_status !== 'publish';
 
 $nb_variantes   = 0;
 $variantes_list = [];
@@ -432,11 +436,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
       if (!function_exists('enigme_compter_joueurs_engages')) {
           require_once get_stylesheet_directory() . '/inc/enigme/stats.php';
       }
-        $periode         = 'total';
-        $nb_participants = enigme_compter_joueurs_engages($enigme_id, $periode);
-        $nb_tentatives   = enigme_compter_tentatives($enigme_id, $mode_validation, $periode);
-        $nb_points       = enigme_compter_points_depenses($enigme_id, $mode_validation, $periode);
-        $nb_solutions    = enigme_compter_bonnes_solutions($enigme_id, $mode_validation, $periode);
+        $periode = 'total';
+        if ($stats_locked) {
+            $nb_participants = $nb_tentatives = $nb_points = $nb_solutions = 0;
+        } else {
+            $nb_participants = enigme_compter_joueurs_engages($enigme_id, $periode);
+            $nb_tentatives   = enigme_compter_tentatives($enigme_id, $mode_validation, $periode);
+            $nb_points       = enigme_compter_points_depenses($enigme_id, $mode_validation, $periode);
+            $nb_solutions    = enigme_compter_bonnes_solutions($enigme_id, $mode_validation, $periode);
+        }
       ?>
       <div class="edition-panel-body">
         <div class="stats-header" style="display:flex;align-items:center;justify-content:flex-end;gap:1rem;">
@@ -453,11 +461,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
         </div>
         <div class="dashboard-grid stats-cards" id="enigme-stats">
           <?php
+          $card_class = $stats_locked ? 'disabled' : '';
           get_template_part('template-parts/common/stat-card', null, [
               'icon'  => 'fa-solid fa-users',
               'label' => 'Participants',
               'value' => $nb_participants,
               'stat'  => 'participants',
+              'class' => $card_class,
           ]);
           get_template_part('template-parts/common/stat-card', null, [
               'icon'  => 'fa-solid fa-arrow-rotate-right',
@@ -465,6 +475,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
               'value' => $nb_tentatives,
               'stat'  => 'tentatives',
               'style' => $mode_validation === 'aucune' ? 'display:none;' : '',
+              'class' => $card_class,
           ]);
           get_template_part('template-parts/common/stat-card', null, [
               'icon'  => 'fa-solid fa-coins',
@@ -472,6 +483,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
               'value' => $nb_points,
               'stat'  => 'points',
               'style' => ($mode_validation === 'aucune' || (int) $cout <= 0) ? 'display:none;' : '',
+              'class' => $card_class,
           ]);
           get_template_part('template-parts/common/stat-card', null, [
               'icon'  => 'fa-solid fa-check',
@@ -479,11 +491,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
               'value' => $nb_solutions,
               'stat'  => 'solutions',
               'style' => $mode_validation === 'aucune' ? 'display:none;' : '',
+              'class' => $card_class,
           ]);
           ?>
         </div>
         <?php
-        $resolveurs = $mode_validation === 'aucune' ? [] : enigme_lister_resolveurs($enigme_id);
+        $resolveurs    = ($stats_locked || $mode_validation === 'aucune') ? [] : enigme_lister_resolveurs($enigme_id);
         $nb_resolveurs = count($resolveurs);
         if ($nb_resolveurs > 0) :
         ?>
@@ -515,21 +528,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
         <?php endif; ?>
 
         <?php
-        $nb_participants = enigme_compter_joueurs_engages($enigme_id);
         $par_page_participants = 25;
-        $pages_participants = (int) ceil($nb_participants / $par_page_participants);
-        $participants = enigme_lister_participants($enigme_id, $mode_validation, $par_page_participants, 0, 'date', 'ASC');
+        $pages_participants    = $stats_locked ? 0 : (int) ceil($nb_participants / $par_page_participants);
+        $participants         = $stats_locked ? [] : enigme_lister_participants(
+            $enigme_id,
+            $mode_validation,
+            $par_page_participants,
+            0,
+            'date',
+            'ASC'
+        );
         ?>
         <div class="liste-participants" data-page="1" data-pages="<?= esc_attr($pages_participants); ?>" data-order="asc" data-orderby="date">
           <?php get_template_part('template-parts/enigme/partials/enigme-partial-participants', null, [
-            'participants' => $participants,
-            'page' => 1,
-            'par_page' => $par_page_participants,
-            'total' => $nb_participants,
-            'pages' => $pages_participants,
-            'mode_validation' => $mode_validation,
-            'orderby' => 'date',
-            'order' => 'ASC',
+              'participants'  => $participants,
+              'page'          => 1,
+              'par_page'      => $par_page_participants,
+              'total'         => $nb_participants,
+              'pages'         => $pages_participants,
+              'mode_validation' => $mode_validation,
+              'orderby'       => 'date',
+              'order'         => 'ASC',
+              'stats_locked'  => $stats_locked,
           ]); ?>
         </div>
       </div>

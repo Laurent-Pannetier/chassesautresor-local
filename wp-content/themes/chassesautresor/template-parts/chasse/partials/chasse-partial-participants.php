@@ -32,10 +32,12 @@ if ($orderby === 'resolution') {
     $icon_resolution = strtoupper($order) === 'ASC' ? 'fa-sort-up' : 'fa-sort-down';
 }
 ?>
+<?php
+if (empty($participants)) {
+    return;
+}
+?>
 <h3><?= esc_html__('Joueurs', 'chassesautresor-com'); ?></h3>
-<?php if (empty($participants)) : ?>
-<p><?= esc_html__('Pas encore de joueur inscrit.', 'chassesautresor-com'); ?></p>
-<?php else : ?>
 <table class="stats-table compact">
   <colgroup>
     <col style="width:20%">
@@ -99,6 +101,5 @@ if ($orderby === 'resolution') {
     </tr>
     <?php endforeach; ?>
   </tbody>
-</table>
-<?php echo cta_render_pager($page, $pages, 'chasse-participants-pager'); ?>
-<?php endif; ?>
+  </table>
+  <?php echo cta_render_pager($page, $pages, 'chasse-participants-pager'); ?>

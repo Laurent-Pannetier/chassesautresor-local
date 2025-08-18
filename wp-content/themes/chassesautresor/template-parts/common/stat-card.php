@@ -8,6 +8,7 @@
  * - $value (int|string) Value to display.
  * - $stat  (string) Data attribute identifier.
  * - $style (string, optional) Inline style attribute.
+ * - $class (string, optional) Additional CSS classes.
  */
 
 defined('ABSPATH') || exit;
@@ -20,8 +21,9 @@ $stat       = $args['stat'] ?? $stat ?? '';
 $style      = $args['style'] ?? $style ?? '';
 $help       = $args['help'] ?? $help ?? '';
 $help_label = $args['help_label'] ?? $help_label ?? '';
+$class      = $args['class'] ?? $class ?? '';
 ?>
-<div class="dashboard-card" data-stat="<?= esc_attr($stat); ?>"<?php echo $style ? ' style="' . esc_attr($style) . '"' : ''; ?>>
+<div class="dashboard-card<?= $class ? ' ' . esc_attr($class) : ''; ?>" data-stat="<?= esc_attr($stat); ?>"<?php echo $style ? ' style="' . esc_attr($style) . '"' : ''; ?>>
   <i class="<?= esc_attr($icon); ?>"></i>
   <h3>
     <?= esc_html($label); ?>
