@@ -626,10 +626,25 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
               </div>
 
               <div class="resume-bloc resume-indices">
-                <h3>Indices</h3>
-                <ul class="resume-infos">
-                  <li class="champ-chasse champ-placeholder">Section à venir</li>
-                </ul>
+                <h3><?= esc_html__('Indices', 'chassesautresor-com'); ?></h3>
+                <div class="dashboard-grid stats-cards">
+                  <?php
+                  $peut_ajouter_indice = current_user_can('administrator') || (
+                    utilisateur_est_organisateur_associe_a_chasse(get_current_user_id(), $chasse_id) &&
+                    get_post_status($chasse_id) === 'publish' &&
+                    ($infos_chasse['statut_validation'] ?? '') === 'valide'
+                  );
+                  ?>
+                  <div class="dashboard-card champ-chasse champ-indices<?= $peut_ajouter_indice ? '' : ' champ-desactive'; ?>">
+                    <i class="fa-regular fa-circle-question icone-defaut" aria-hidden="true"></i>
+                    <h3><?= esc_html__('Indices', 'chassesautresor-com'); ?></h3>
+                    <?php if ($peut_ajouter_indice) : ?>
+                      <a href="#" class="stat-value"><?= esc_html__('Ajouter', 'chassesautresor-com'); ?></a>
+                    <?php else : ?>
+                      <span class="stat-value"><?= esc_html__('Ajouter', 'chassesautresor-com'); ?></span>
+                    <?php endif; ?>
+                  </div>
+                </div>
               </div>
 
               <div class="resume-bloc resume-news">
