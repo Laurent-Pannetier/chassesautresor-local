@@ -558,11 +558,22 @@ function render_points_history_table(int $user_id): string
  */
 function enqueue_points_history_script(): void
 {
+    $dir = get_stylesheet_directory();
+    $uri = get_stylesheet_directory_uri();
+
+    wp_enqueue_script(
+        'pager',
+        $uri . '/assets/js/core/pager.js',
+        [],
+        filemtime($dir . '/assets/js/core/pager.js'),
+        true
+    );
+
     wp_enqueue_script(
         'points-history',
-        get_stylesheet_directory_uri() . '/assets/js/points-history.js',
-        [],
-        filemtime(get_stylesheet_directory() . '/assets/js/points-history.js'),
+        $uri . '/assets/js/points-history.js',
+        ['pager'],
+        filemtime($dir . '/assets/js/points-history.js'),
         true
     );
 
