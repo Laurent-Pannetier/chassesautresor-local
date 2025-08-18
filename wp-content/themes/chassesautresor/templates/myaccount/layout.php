@@ -44,6 +44,14 @@ get_header();
                     'active'   => is_wc_endpoint_url('orders'),
                 ),
                 array(
+                    'endpoint' => 'chasses',
+                    'label'    => __('Chasses', 'chassesautresor-com'),
+                    'icon'     => 'fas fa-map',
+                    'url'      => home_url('/mon-compte/?section=chasses'),
+                    'section'  => 'chasses',
+                    'active'   => isset($_GET['section']) && $_GET['section'] === 'chasses',
+                ),
+                array(
                     'endpoint' => 'points',
                     'label'    => __('Points', 'chassesautresor'),
                     'icon'     => 'fas fa-coins',

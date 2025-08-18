@@ -1,0 +1,122 @@
+<?php
+/**
+ * Chasses section for "Mon Compte".
+ *
+ * Displays recent hunts and attempt statistics for the current user.
+ *
+ * @package chassesautresor
+ */
+
+defined('ABSPATH') || exit;
+
+$current_user = wp_get_current_user();
+$user_id      = (int) $current_user->ID;
+
+// Retrieve last 4 engaged hunts
+$chasse_ids = [];
+if ($user_id) {
+    global $wpdb;
+    $table      = $wpdb->prefix . 'engagements';
+    $prepared   = $wpdb->prepare(
+        "SELECT DISTINCT chasse_id FROM {$table} WHERE user_id = %d AND chasse_id IS NOT NULL ORDER BY date_engagement DESC LIMIT 4",
+        $user_id
+    );
+    $chasse_ids = $wpdb->get_col($prepared);
+}
+?>
+<div class="dashboard-grid stats-cards myaccount-chasses-cards">
+    <?php foreach ($chasse_ids as $chasse_id) : ?>
+    <div class="dashboard-card">
+        <?php echo get_the_post_thumbnail($chasse_id, 'thumbnail', ['loading' => 'lazy']); ?>
+        <h3><?php echo esc_html(get_the_title($chasse_id)); ?></h3>
+        <a class="stat-value" href="<?php echo esc_url(get_permalink($chasse_id)); ?>">
+            <?php esc_html_e('Voir', 'chassesautresor-com'); ?>
+        </a>
+    </div>
+    <?php endforeach; ?>
+</div>
+<?php
+// Tentative statistics for user
+$pending = $total = $success = 0;
+$tentatives = [];
+$per_page   = 10;
+$page       = max(1, (int) ($_GET['page'] ?? 1));
+$offset     = ($page - 1) * $per_page;
+if ($user_id) {
+    $table = $wpdb->prefix . 'enigme_tentatives';
+    $pending = (int) $wpdb->get_var($wpdb->prepare(
+        "SELECT COUNT(*) FROM {$table} WHERE user_id = %d AND resultat = 'attente' AND traitee = 0",
+        $user_id
+    ));
+    $total = (int) $wpdb->get_var($wpdb->prepare(
+        "SELECT COUNT(*) FROM {$table} WHERE user_id = %d",
+        $user_id
+    ));
+    $success = (int) $wpdb->get_var($wpdb->prepare(
+        "SELECT COUNT(*) FROM {$table} WHERE user_id = %d AND resultat = 'bon'",
+        $user_id
+    ));
+    if ($total > 0) {
+        $tentatives = $wpdb->get_results($wpdb->prepare(
+            "SELECT t.*, p.post_title FROM {$table} t JOIN {$wpdb->posts} p ON t.enigme_id = p.ID WHERE t.user_id = %d ORDER BY t.date_tentative DESC LIMIT %d OFFSET %d",
+            $user_id,
+            $per_page,
+            $offset
+        ));
+    }
+}
+$pages = (int) ceil($total / $per_page);
+?>
+<h3><?php esc_html_e('Tentatives', 'chassesautresor-com'); ?></h3>
+<div class="table-header">
+    <?php if ($pending > 0) : ?>
+    <span class="stat-badge"><?php printf(esc_html__('%d tentatives en attente', 'chassesautresor-com'), $pending); ?></span>
+    <?php endif; ?>
+    <?php if ($total > 0) : ?>
+    <span class="stat-badge"><?php printf(esc_html__('%d tentatives', 'chassesautresor-com'), $total); ?></span>
+    <?php endif; ?>
+    <?php if ($success > 0) : ?>
+    <span class="stat-badge" style="color:var(--color-success);">
+        <?php printf(esc_html__('%d bonne réponse', 'chassesautresor-com'), $success); ?>
+    </span>
+    <?php endif; ?>
+</div>
+<?php if ($total > 0) : ?>
+<table class="stats-table">
+    <thead>
+        <tr>
+            <th><?php esc_html_e('Date', 'chassesautresor-com'); ?></th>
+            <th><?php esc_html_e('Énigme', 'chassesautresor-com'); ?></th>
+            <th><?php esc_html_e('Résultat', 'chassesautresor-com'); ?></th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach ($tentatives as $tent) : ?>
+        <tr>
+            <td><?php echo esc_html(mysql2date('d/m/Y H:i', $tent->date_tentative)); ?></td>
+            <td><?php echo esc_html($tent->post_title); ?></td>
+            <td><?php echo esc_html($tent->resultat); ?></td>
+        </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
+<div class="pager">
+    <?php if ($page > 1) : ?>
+    <button class="pager-first" aria-label="<?php esc_attr_e('Première page', 'chassesautresor-com'); ?>">
+        <i class="fa-solid fa-angles-left"></i>
+    </button>
+    <button class="pager-prev" aria-label="<?php esc_attr_e('Page précédente', 'chassesautresor-com'); ?>">
+        <i class="fa-solid fa-angle-left"></i>
+    </button>
+    <?php endif; ?>
+    <span class="pager-info"><?php echo esc_html($page); ?> / <?php echo esc_html($pages); ?></span>
+    <?php if ($page < $pages) : ?>
+    <button class="pager-next" aria-label="<?php esc_attr_e('Page suivante', 'chassesautresor-com'); ?>">
+        <i class="fa-solid fa-angle-right"></i>
+    </button>
+    <button class="pager-last" aria-label="<?php esc_attr_e('Dernière page', 'chassesautresor-com'); ?>">
+        <i class="fa-solid fa-angles-right"></i>
+    </button>
+    <?php endif; ?>
+</div>
+<?php endif; ?>
