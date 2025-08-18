@@ -82,6 +82,15 @@ Contenu imbriqué :
   Requis : non
   ----------------------------------------
 ----------------------------------------
+— chasse_mode_fin —
+Type : radio
+Label : chasse mode fin
+Instructions : (vide)
+Requis : non
+Choices :
+  - manuelle : Manuelle
+  - automatique : Automatique
+----------------------------------------
 — chasse_infos_nb_max_gagants —
 Type : number
 Label : Nombre maximum de gagants
@@ -91,7 +100,7 @@ Requis : non
 — chasse_cache_gagnants —
 Type : text
 Label : Gagnants
-Instructions : Texte libre listant les gagnants
+Instructions : (vide)
 Requis : non
 ----------------------------------------
 — chasse_cache_date_decouverte —
@@ -147,15 +156,6 @@ Type : true_false
 Label : chasse_cache_complet
 Instructions : (vide)
 Requis : non
-----------------------------------------
-— chasse_mode_fin —
-Type : radio
-Label : chasse mode fin
-Instructions : (vide)
-Requis : non
-Choices :
-  - manuelle : Manuelle
-  - automatique : Automatique
 ----------------------------------------
 
 🔹 Groupe : Paramètres de l’énigme
@@ -440,13 +440,67 @@ Requis : non
 ----------------------------------------
 — description_longue —
 Type : wysiwyg
-Label : 
+Label : Description
 Instructions : (vide)
-Requis : non
+Requis : oui
 ----------------------------------------
 — organisateur_cache_complet —
 Type : true_false
 Label : organisateur_cache_complet
+Instructions : (vide)
+Requis : non
+----------------------------------------
+
+🔹 Groupe : paramètres indices
+🆔 ID : 9568
+🔑 Key : group_68a1fb240748a
+📦 Champs trouvés : 7
+
+— indice_image —
+Type : image
+Label : image de l indice
+Instructions : (vide)
+Requis : non
+----------------------------------------
+— indice_contenu —
+Type : wysiwyg
+Label : texte de l indice
+Instructions : (vide)
+Requis : non
+----------------------------------------
+— indice_cible —
+Type : radio
+Label : contenu ciblé
+Instructions : (vide)
+Requis : non
+Choices :
+  - chasse : chasse
+  - enigme : énigme
+----------------------------------------
+— indice_cible_objet —
+Type : relationship
+Label : cible
+Instructions : (vide)
+Requis : non
+----------------------------------------
+— indice_disponibilite —
+Type : radio
+Label : disponibilité
+Instructions : (vide)
+Requis : non
+Choices :
+  - immediate : immédiate
+  - differe : différé
+----------------------------------------
+— indice_date_disponibilite —
+Type : date_time_picker
+Label : date de disponibilité
+Instructions : (vide)
+Requis : non
+----------------------------------------
+— indice_cout_points —
+Type : number
+Label : coût en points
 Instructions : (vide)
 Requis : non
 ----------------------------------------
