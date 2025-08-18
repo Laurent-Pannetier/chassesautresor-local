@@ -12,8 +12,23 @@
 }
 
 /* Menu status styles */
+
+.enigme-menu {
+  margin-top: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
 .enigme-menu > li.chasse > a {
   font-weight: 600;
+  font-size: 1.125rem;
+  text-transform: uppercase;
+  display: block;
+  padding-bottom: var(--space-xs);
+  border-bottom: 1px solid var(--color-grey-light);
+}
+
+.enigme-menu > li.chasse > .sub-menu {
+  margin-top: var(--space-sm);
 }
 
 .enigme-menu .sub-menu li a {
@@ -75,7 +90,7 @@
   font-weight: 600;
 }
 
-@media (max-width: var(--bp-md)) {
+@media (max-width: 768px) {
   .enigme-layout {
     grid-template-columns: 1fr;
   }

@@ -294,6 +294,16 @@ button,
     outline-offset: 2px;
 }
 
+/* ========== 🔙 BOUTON RETOUR AUX CHASSES ========== */
+
+.bouton-retour-chasse {
+    margin-top: var(--space-lg);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+}
+
 
 /* ========== ➕ BOUTON D’AJOUT ========== */
 
@@ -369,22 +379,24 @@ a.ajout-link:focus-visible {
 }
 
 .bouton-retour {
-  background-color: var(--color-background-button);
-  color: var(--color-text-primary);
-  padding: 12px 24px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  background: none;
+  color: var(--color-gris-3);
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  font-size: 1.5rem;
+  line-height: 1;
 }
 
 .bouton-retour:hover {
-  background-color: var(--color-background-button-inactive);
-  color: var(--color-background);
-  transform: translateY(-3px);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  color: var(--color-primary);
+  background: none;
+  transform: none;
+  box-shadow: none;
 }
 
 .bouton-retour:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transform: none;
 }
 
 .bouton-retour:focus-visible {
@@ -394,9 +406,7 @@ a.ajout-link:focus-visible {
 
 @media (max-width: var(--bp-sm)) {
   .bouton-retour {
-    width: 100%;
-    font-size: 14px;
-    padding: 10px;
+    font-size: 1.25rem;
   }
 }
 
