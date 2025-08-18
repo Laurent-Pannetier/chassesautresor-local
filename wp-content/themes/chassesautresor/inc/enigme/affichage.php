@@ -99,20 +99,13 @@ defined('ABSPATH') || exit;
             wp_cache_set($cache_key, $data, 'chassesautresor', HOUR_IN_SECONDS);
         }
 
-        $info = __('Proportion d\'énigmes de cette chasse auxquelles vous participez.', 'chassesautresor-com');
-
         ob_start();
         ?>
         <section class="enigme-engagement">
-          <h3>
-            <?= esc_html__('Engagements', 'chassesautresor-com'); ?> : <?= esc_html($data['user']); ?>%
-            <button type="button" class="btn-icon bouton-tertiaire" title="<?= esc_attr($info); ?>">
-              <i class="fa-solid fa-circle-info"></i>
-            </button>
-          </h3>
+          <h3><?= esc_html__('Engagements', 'chassesautresor-com'); ?></h3>
           <div class="stats-bar-chart">
             <div class="bar-row">
-              <span class="bar-label"><?= esc_html__('Votre engagement', 'chassesautresor-com'); ?></span>
+              <span class="bar-label"><?= esc_html__('Vous', 'chassesautresor-com'); ?></span>
               <div class="bar-wrapper">
                 <div class="bar-fill" style="background-color:var(--color-primary);width:<?= esc_attr($data['user']); ?>%;">
                   <span class="bar-value"><?= esc_html($data['user']); ?>%</span>
@@ -120,7 +113,7 @@ defined('ABSPATH') || exit;
               </div>
             </div>
             <div class="bar-row">
-              <span class="bar-label"><?= esc_html__('Moyenne joueurs', 'chassesautresor-com'); ?></span>
+              <span class="bar-label"><?= esc_html__('Moyenne', 'chassesautresor-com'); ?></span>
               <div class="bar-wrapper">
                 <div class="bar-fill" style="width:<?= esc_attr($data['avg']); ?>%;">
                   <span class="bar-value"><?= esc_html($data['avg']); ?>%</span>
