@@ -14,10 +14,9 @@ $roles        = (array) $current_user->roles;
 $is_organizer = in_array(ROLE_ORGANISATEUR, $roles, true) || in_array(ROLE_ORGANISATEUR_CREATION, $roles, true);
 
 if (current_user_can('administrator')) {
-    $historique = recuperer_historique_paiements_admin();
     global $wpdb;
-    $repo              = new PointsRepository($wpdb);
-    $used_points       = $repo->getTotalPointsUsed();
+    $repo               = new PointsRepository($wpdb);
+    $used_points        = $repo->getTotalPointsUsed();
     $circulation_points = $repo->getTotalPointsInCirculation();
     ?>
     <div class="dashboard-grid stats-cards myaccount-points-cards">
@@ -63,17 +62,7 @@ if (current_user_can('administrator')) {
             </div>
         </div>
     </div>
-    <div class="stats-table-wrapper">
-        <h3><?php esc_html_e('Historique des conversions', 'chassesautresor'); ?></h3>
-        <div
-            id="historique-paiements-admin"
-            class="liste-paiements"
-            data-page="<?php echo esc_attr($historique['page']); ?>"
-            data-pages="<?php echo esc_attr($historique['pages']); ?>"
-        >
-            <?php echo $historique['html']; ?>
-        </div>
-    </div>
+    <?php echo render_admin_conversion_history(); ?>
     <?php
 } elseif ($is_organizer) {
     $user_id         = (int) $current_user->ID;

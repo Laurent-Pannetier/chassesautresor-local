@@ -2,6 +2,7 @@ jQuery(function ($) {
   const wrapper = $('.conversion-history');
   wrapper.each(function () {
     const container = $(this);
+    const action = container.data('action') || 'load_conversion_history';
     const toggle = container.find('.conversion-history-toggle');
     const tableWrapper = container.find('.conversion-history-table');
     const loading = container.find('.conversion-history-loading');
@@ -26,7 +27,7 @@ jQuery(function ($) {
     function loadPage(page) {
       loading.show();
       $.post(ConversionHistoryAjax.ajax_url, {
-        action: 'load_conversion_history',
+        action: action,
         nonce: ConversionHistoryAjax.nonce,
         page: page,
       })

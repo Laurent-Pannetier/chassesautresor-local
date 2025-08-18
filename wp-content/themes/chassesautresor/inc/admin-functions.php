@@ -365,15 +365,6 @@ function charger_script_paiements_admin(): void
         filemtime($script_path),
         true
     );
-
-    $history_path = get_stylesheet_directory() . '/assets/js/paiements-historique.js';
-    wp_enqueue_script(
-        'paiements-historique',
-        get_stylesheet_directory_uri() . '/assets/js/paiements-historique.js',
-        [],
-        filemtime($history_path),
-        true
-    );
 }
 add_action('wp_enqueue_scripts', 'charger_script_paiements_admin');
 
@@ -504,49 +495,185 @@ function afficher_tableau_paiements_admin(): void
     echo render_tableau_paiements_admin($requests);
 }
 
-function recuperer_historique_paiements_admin(int $page = 1): array
+function render_admin_conversion_history_rows(array $requests): string
 {
-    global $wpdb;
-    $per_page = HISTORIQUE_PAIEMENTS_ADMIN_PER_PAGE;
-    $repo     = new PointsRepository($wpdb);
-    $offset   = ($page - 1) * $per_page;
-    $requests = $repo->getConversionRequests(null, null, $per_page, $offset);
+    ob_start();
+    foreach ($requests as $request) {
+        $user = get_userdata((int) $request['user_id']);
 
-    $table = $wpdb->prefix . 'user_points';
-    $total = (int) $wpdb->get_var("SELECT COUNT(*) FROM {$table} WHERE origin_type = 'conversion'");
-    $pages = max(1, (int) ceil($total / $per_page));
+        $organisateur_id = get_organisateur_from_user($request['user_id']);
+        $iban            = $organisateur_id ? get_field('iban', $organisateur_id) : '';
+        $bic             = $organisateur_id ? get_field('bic', $organisateur_id) : '';
+        if ($organisateur_id && (empty($iban) || empty($bic))) {
+            $iban = get_field('gagnez_de_largent_iban', $organisateur_id);
+            $bic  = get_field('gagnez_de_largent_bic', $organisateur_id);
+        }
+        $iban = $iban ?: esc_html__('Non renseigné', 'chassesautresor-com');
 
-    if (empty($requests)) {
-        $html = '<p>Aucune demande de paiement.</p>';
-    } else {
-        $html  = render_tableau_paiements_admin($requests);
-        $html .= '<div class="pager">';
-        $html .= '<button class="pager-first" aria-label="Première page"><i class="fa-solid fa-angles-left"></i></button>';
-        $html .= '<button class="pager-prev" aria-label="Page précédente"><i class="fa-solid fa-angle-left"></i></button>';
-        $html .= '<span class="pager-info">' . $page . ' / ' . $pages . '</span>';
-        $html .= '<button class="pager-next" aria-label="Page suivante"><i class="fa-solid fa-angle-right"></i></button>';
-        $html .= '<button class="pager-last" aria-label="Dernière page"><i class="fa-solid fa-angles-right"></i></button>';
-        $html .= '</div>';
+        switch ($request['request_status']) {
+            case 'paid':
+                $statut = '✅ ' . __('Réglé', 'chassesautresor-com');
+                break;
+            case 'cancelled':
+                $statut = '❌ ' . __('Annulé', 'chassesautresor-com');
+                break;
+            case 'refused':
+                $statut = '🚫 ' . __('Refusé', 'chassesautresor-com');
+                break;
+            default:
+                $statut = '🟡 ' . __('En attente', 'chassesautresor-com');
+        }
+
+        $action = '-';
+        if ($request['request_status'] === 'pending') {
+            $action  = '<form class="js-update-request" data-id="' . esc_attr($request['id']) . '">';
+            $action .= '<select name="statut">';
+            $action .= '<option value="regle" selected>' . esc_html__('Régler', 'chassesautresor-com') . '</option>';
+            $action .= '<option value="annule">' . esc_html__('Annuler', 'chassesautresor-com') . '</option>';
+            $action .= '<option value="refuse">' . esc_html__('Refuser', 'chassesautresor-com') . '</option>';
+            $action .= '</select>';
+            $action .= '<button type="submit" class="button">OK</button>';
+            $action .= '</form>';
+        }
+
+        $points_utilises = number_format_i18n(abs((int) $request['points']));
+        $montant_eur    = number_format_i18n((float) $request['amount_eur'], 2);
+
+        echo '<tr>';
+        echo '<td>' . esc_html($user->display_name ?? '') . '</td>';
+        echo '<td>'
+            . esc_html($montant_eur)
+            . ' €<br><small>(' . esc_html($points_utilises)
+            . ' '
+            . esc_html__('points', 'chassesautresor-com')
+            . ')</small></td>';
+        echo '<td>' . esc_html(date_i18n('d/m/Y à H:i', strtotime($request['request_date']))) . '</td>';
+        echo '<td><strong>' . esc_html($iban) . '</strong><br><small>' . esc_html($bic) . '</small></td>';
+        echo '<td><span class="etiquette">' . esc_html($statut) . '</span></td>';
+        echo '<td>' . $action . '</td>';
+        echo '</tr>';
     }
 
-    return [
-        'html'  => $html,
-        'page'  => $page,
-        'pages' => $pages,
-    ];
+    return ob_get_clean();
 }
 
-function ajax_lister_historique_paiements_admin(): void
+function render_admin_conversion_history(): string
+{
+    if (!current_user_can('administrator')) {
+        return '';
+    }
+
+    global $wpdb;
+    $repo = new PointsRepository($wpdb);
+
+    $per_page = HISTORIQUE_PAIEMENTS_ADMIN_PER_PAGE;
+    $total    = $repo->countConversionRequests();
+    if ($total === 0) {
+        return '';
+    }
+
+    $requests      = $repo->getConversionRequests(null, null, $per_page);
+    $paid_requests = $repo->getConversionRequests(null, 'paid');
+    $pending_count = $repo->countConversionRequests(null, 'pending');
+
+    $total_points = 0;
+    $total_eur    = 0.0;
+    foreach ($paid_requests as $request) {
+        $total_points += abs((int) $request['points']);
+        $total_eur    += (float) $request['amount_eur'];
+    }
+
+    $total_points_label = sprintf(
+        '%s : %s',
+        esc_html__('Total points', 'chassesautresor-com'),
+        number_format_i18n($total_points)
+    );
+    $total_eur_label = sprintf(
+        '%s : %s €',
+        esc_html__('Total €', 'chassesautresor-com'),
+        number_format_i18n($total_eur, 2)
+    );
+
+    $total_pages = (int) ceil($total / $per_page);
+    $expanded    = $pending_count > 0;
+
+    enqueue_conversion_history_script();
+
+    ob_start();
+    ?>
+    <div
+        class="stats-table-wrapper conversion-history"
+        data-per-page="<?php echo esc_attr($per_page); ?>"
+        data-action="load_admin_conversion_history"
+    >
+        <h3><?php esc_html_e('Historique des conversions', 'chassesautresor-com'); ?></h3>
+        <div class="stats-table-summary">
+            <span class="etiquette etiquette-grande"><?php echo esc_html($total_points_label); ?></span>
+            <span class="etiquette etiquette-grande"><?php echo esc_html($total_eur_label); ?></span>
+            <button
+                type="button"
+                class="etiquette etiquette-grande conversion-history-toggle"
+                aria-expanded="<?php echo $expanded ? 'true' : 'false'; ?>"
+                aria-label="<?php echo $expanded
+                    ? esc_attr__('Fermer le tableau', 'chassesautresor-com')
+                    : esc_attr__('Voir le tableau', 'chassesautresor-com');
+                ?>"
+                data-label-open="<?php esc_attr_e('Voir le tableau', 'chassesautresor-com'); ?>"
+                data-label-close="<?php esc_attr_e('Fermer le tableau', 'chassesautresor-com'); ?>"
+            >
+                <span class="conversion-history-toggle-text">
+                    <?php echo $expanded ? esc_html__('Fermer le tableau', 'chassesautresor-com') : esc_html__('Voir le tableau', 'chassesautresor-com'); ?>
+                </span>
+            </button>
+        </div>
+        <div class="conversion-history-table"<?php echo $expanded ? '' : ' style="display:none;"'; ?>>
+            <table class="stats-table">
+                <thead>
+                    <tr>
+                        <th><?php esc_html_e('Organisateur', 'chassesautresor-com'); ?></th>
+                        <th><?php esc_html_e('Montant / Points', 'chassesautresor-com'); ?></th>
+                        <th><?php esc_html_e('Date demande', 'chassesautresor-com'); ?></th>
+                        <th><?php esc_html_e('IBAN / BIC', 'chassesautresor-com'); ?></th>
+                        <th><?php esc_html_e('Statut', 'chassesautresor-com'); ?></th>
+                        <th><?php esc_html_e('Action', 'chassesautresor-com'); ?></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php echo render_admin_conversion_history_rows($requests); ?>
+                </tbody>
+            </table>
+            <?php if ($total_pages > 1) : ?>
+                <?php echo cta_render_pager(1, $total_pages, 'points-history-pager'); ?>
+                <span class="conversion-history-loading" aria-hidden="true"></span>
+            <?php endif; ?>
+        </div>
+    </div>
+    <?php
+    return ob_get_clean();
+}
+
+function ajax_load_admin_conversion_history(): void
 {
     if (!current_user_can('administrator')) {
         wp_send_json_error();
     }
 
-    $page = isset($_POST['page']) ? (int) $_POST['page'] : 1;
-    $data = recuperer_historique_paiements_admin(max(1, $page));
-    wp_send_json_success($data);
+    check_ajax_referer('conversion-history-nonce', 'nonce');
+
+    $page     = isset($_POST['page']) ? (int) $_POST['page'] : 1;
+    $page     = max(1, $page);
+    $per_page = HISTORIQUE_PAIEMENTS_ADMIN_PER_PAGE;
+    $offset   = ($page - 1) * $per_page;
+
+    global $wpdb;
+    $repo     = new PointsRepository($wpdb);
+    $requests = $repo->getConversionRequests(null, null, $per_page, $offset);
+
+    $rows = render_admin_conversion_history_rows($requests);
+
+    wp_send_json_success(['rows' => $rows]);
 }
-add_action('wp_ajax_lister_historique_paiements', 'ajax_lister_historique_paiements_admin');
+add_action('wp_ajax_load_admin_conversion_history', 'ajax_load_admin_conversion_history');
 
 /**
  * 💶 Traiter la demande de conversion de points en euros pour un organisateur.
