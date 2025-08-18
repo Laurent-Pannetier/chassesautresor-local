@@ -48,6 +48,12 @@
   font-weight: 600;
 }
 
+.enigme-menu li.active > a,
+.enigme-menu li > a:hover {
+  background-color: rgba(var(--aside-bg-rgb, 255, 255, 255), 0.8);
+  border-radius: 6px;
+}
+
 .enigme-menu li.active > a {
   text-decoration: underline;
 }
