@@ -5,12 +5,16 @@
     var(--aside-opacity, 0.4)
   );
   padding: var(--space-md);
-  padding-bottom: var(--space-4xl);
+  padding-bottom: 0;
   border-radius: 6px;
   align-self: start;
   height: fit-content;
   color: rgba(var(--color-white-rgb, 255, 255, 255), 0.4);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.menu-lateral.has-open-accordeon {
+  padding-bottom: var(--space-4xl);
 }
 
 .menu-lateral__header {
@@ -151,6 +155,7 @@
   align-items: center;
   cursor: pointer;
   position: relative;
+  transition: background-color 0.3s ease;
 }
 
 .accordeon-toggle i {
@@ -176,6 +181,12 @@
 
 .accordeon-toggle.is-hovered::after {
   transform: translateX(-50%) scaleX(1);
+}
+
+.accordeon-toggle:hover,
+.accordeon-toggle:focus,
+.accordeon-toggle:active {
+  background-color: rgba(var(--color-white-rgb, 255, 255, 255), 0.15);
 }
 
 .accordeon-contenu {
