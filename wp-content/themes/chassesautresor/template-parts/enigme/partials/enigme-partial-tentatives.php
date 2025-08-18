@@ -12,7 +12,7 @@ defined('ABSPATH') || exit;
 $args = $args ?? [];
 $tentatives = $args['tentatives'] ?? $tentatives ?? [];
 $page = $args['page'] ?? $page ?? 1;
-$par_page = $args['par_page'] ?? $par_page ?? 10;
+$par_page = $args['par_page'] ?? $par_page ?? 5;
 $total = $args['total'] ?? $total ?? 0;
 $pages = $args['pages'] ?? $pages ?? (int) ceil($total / $par_page);
 ?>
@@ -59,23 +59,5 @@ $pages = $args['pages'] ?? $pages ?? (int) ceil($total / $par_page);
   <?php endforeach; ?>
   </tbody>
 </table>
-<div class="pager">
-    <?php if ($page > 1) : ?>
-      <button class="pager-first" aria-label="<?= esc_attr__('Première page', 'chassesautresor-com'); ?>">
-        <i class="fa-solid fa-angles-left"></i>
-      </button>
-      <button class="pager-prev" aria-label="<?= esc_attr__('Page précédente', 'chassesautresor-com'); ?>">
-        <i class="fa-solid fa-angle-left"></i>
-      </button>
-    <?php endif; ?>
-  <span class="pager-info"><?= esc_html($page); ?> / <?= esc_html($pages); ?></span>
-    <?php if ($page < $pages) : ?>
-      <button class="pager-next" aria-label="<?= esc_attr__('Page suivante', 'chassesautresor-com'); ?>">
-        <i class="fa-solid fa-angle-right"></i>
-      </button>
-      <button class="pager-last" aria-label="<?= esc_attr__('Dernière page', 'chassesautresor-com'); ?>">
-        <i class="fa-solid fa-angles-right"></i>
-      </button>
-    <?php endif; ?>
-</div>
+<?php echo cta_render_pager($page, $pages, 'enigme-tentatives-pager'); ?>
 <?php endif; ?>
