@@ -608,7 +608,6 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
               'total'          => $total_participants,
               'pages'          => $pages_participants,
               'total_enigmes'  => $total_enigmes,
-              'stats_locked'   => $stats_locked,
             ]); ?>
           </div>
         </div>

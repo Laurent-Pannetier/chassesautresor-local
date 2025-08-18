@@ -22,7 +22,6 @@ $pages          = $args['pages'] ?? $pages ?? (int) ceil($total / $par_page);
 $total_enigmes  = $args['total_enigmes'] ?? $total_enigmes ?? 0;
 $orderby        = $args['orderby'] ?? $orderby ?? 'inscription';
 $order          = $args['order'] ?? $order ?? 'ASC';
-$stats_locked   = $args['stats_locked'] ?? $stats_locked ?? false;
 
 $icon_participation = 'fa-sort';
 if ($orderby === 'participation') {
@@ -33,16 +32,12 @@ if ($orderby === 'resolution') {
     $icon_resolution = strtoupper($order) === 'ASC' ? 'fa-sort-up' : 'fa-sort-down';
 }
 ?>
+<?php
+if (empty($participants)) {
+    return;
+}
+?>
 <h3><?= esc_html__('Joueurs', 'chassesautresor-com'); ?></h3>
-<?php if (empty($participants)) : ?>
-    <?php if ($stats_locked) : ?>
-        <p class="edition-placeholder" style="text-align:center;">
-            <?php esc_html_e('Les statistiques seront disponibles une fois la chasse activée.', 'chassesautresor-com'); ?>
-        </p>
-    <?php else : ?>
-        <p><?= esc_html__('Pas encore de joueur inscrit.', 'chassesautresor-com'); ?></p>
-    <?php endif; ?>
-<?php else : ?>
 <table class="stats-table compact">
   <colgroup>
     <col style="width:20%">
@@ -106,6 +101,5 @@ if ($orderby === 'resolution') {
     </tr>
     <?php endforeach; ?>
   </tbody>
-</table>
-<?php echo cta_render_pager($page, $pages, 'chasse-participants-pager'); ?>
-<?php endif; ?>
+  </table>
+  <?php echo cta_render_pager($page, $pages, 'chasse-participants-pager'); ?>
