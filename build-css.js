@@ -4,6 +4,7 @@ const postcss = require('postcss');
 const cssnano = require('cssnano');
 const postcssImport = require('postcss-import');
 const autoprefixer = require('autoprefixer');
+const customMedia = require('postcss-custom-media');
 
 const themeDir = path.join(__dirname, 'wp-content', 'themes', 'chassesautresor');
 const srcDir = path.join(themeDir, 'assets', 'css');
@@ -13,7 +14,12 @@ async function build() {
     const mainFile = path.join(srcDir, 'main.css');
     const css = fs.readFileSync(mainFile, 'utf8');
 
-    const result = await postcss([postcssImport(), autoprefixer(), cssnano]).process(css, { from: mainFile });
+    const result = await postcss([
+        postcssImport(),
+        customMedia(),
+        autoprefixer(),
+        cssnano,
+    ]).process(css, { from: mainFile });
 
     if (!fs.existsSync(distDir)) {
         fs.mkdirSync(distDir, { recursive: true });

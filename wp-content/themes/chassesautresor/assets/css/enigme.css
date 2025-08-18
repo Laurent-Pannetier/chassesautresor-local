@@ -77,7 +77,7 @@
   font-weight: 600;
 }
 
-@media (max-width: 768px) {
+@media (--bp-md) {
   .enigme-layout {
     grid-template-columns: 1fr;
   }

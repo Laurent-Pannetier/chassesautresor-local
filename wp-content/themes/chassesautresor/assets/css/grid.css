@@ -46,14 +46,14 @@
 .col-11 { --col-span: 11; }
 .col-12 { --col-span: 12; }
 
-@media (max-width: var(--bp-lg)) {
+@media (--bp-lg) {
   .row { --grid-columns: 8; }
 }
 
-@media (max-width: var(--bp-md)) {
+@media (--bp-md) {
   .row { --grid-columns: 6; }
 }
 
-@media (max-width: var(--bp-sm)) {
+@media (--bp-sm) {
   .row { --grid-columns: 4; }
 }
