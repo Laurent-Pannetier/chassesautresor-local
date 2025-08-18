@@ -108,9 +108,9 @@
 }
 
 .hero-visuel img {
-  width: 100%;
+  /*width: 100%;*/
   object-fit: cover;
-  max-height: 300px;
+  /*max-height: 300px;*/
 }
 
 .participation {
