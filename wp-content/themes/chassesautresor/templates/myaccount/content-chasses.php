@@ -12,6 +12,25 @@ defined('ABSPATH') || exit;
 $current_user = wp_get_current_user();
 $user_id      = (int) $current_user->ID;
 
+$dir = get_stylesheet_directory();
+$uri = get_stylesheet_directory_uri();
+
+wp_enqueue_script(
+    'pager',
+    $uri . '/assets/js/core/pager.js',
+    [],
+    filemtime($dir . '/assets/js/core/pager.js'),
+    true
+);
+
+wp_enqueue_script(
+    'tentatives-pager',
+    $uri . '/assets/js/tentatives-pager.js',
+    ['pager'],
+    filemtime($dir . '/assets/js/tentatives-pager.js'),
+    true
+);
+
 // Retrieve last 4 engaged hunts and their latest enigme
 $chasse_ids  = [];
 $enigme_map = [];
@@ -99,41 +118,25 @@ $pages = (int) ceil($total / $per_page);
     <?php endif; ?>
 </div>
 <?php if ($total > 0) : ?>
-<table class="stats-table">
-    <thead>
-        <tr>
-            <th><?php esc_html_e('Date', 'chassesautresor-com'); ?></th>
-            <th><?php esc_html_e('Énigme', 'chassesautresor-com'); ?></th>
-            <th><?php esc_html_e('Résultat', 'chassesautresor-com'); ?></th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php foreach ($tentatives as $tent) : ?>
-        <tr>
-            <td><?php echo esc_html(mysql2date('d/m/Y H:i', $tent->date_tentative)); ?></td>
-            <td><?php echo esc_html($tent->post_title); ?></td>
-            <td><?php echo esc_html($tent->resultat); ?></td>
-        </tr>
-        <?php endforeach; ?>
-    </tbody>
-</table>
-<div class="pager">
-    <?php if ($page > 1) : ?>
-    <button class="pager-first" aria-label="<?php esc_attr_e('Première page', 'chassesautresor-com'); ?>">
-        <i class="fa-solid fa-angles-left"></i>
-    </button>
-    <button class="pager-prev" aria-label="<?php esc_attr_e('Page précédente', 'chassesautresor-com'); ?>">
-        <i class="fa-solid fa-angle-left"></i>
-    </button>
-    <?php endif; ?>
-    <span class="pager-info"><?php echo esc_html($page); ?> / <?php echo esc_html($pages); ?></span>
-    <?php if ($page < $pages) : ?>
-    <button class="pager-next" aria-label="<?php esc_attr_e('Page suivante', 'chassesautresor-com'); ?>">
-        <i class="fa-solid fa-angle-right"></i>
-    </button>
-    <button class="pager-last" aria-label="<?php esc_attr_e('Dernière page', 'chassesautresor-com'); ?>">
-        <i class="fa-solid fa-angles-right"></i>
-    </button>
-    <?php endif; ?>
+<div class="stats-table-wrapper" data-per-page="<?php echo esc_attr($per_page); ?>">
+    <table class="stats-table">
+        <thead>
+            <tr>
+                <th><?php esc_html_e('Date', 'chassesautresor-com'); ?></th>
+                <th><?php esc_html_e('Énigme', 'chassesautresor-com'); ?></th>
+                <th><?php esc_html_e('Résultat', 'chassesautresor-com'); ?></th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($tentatives as $tent) : ?>
+            <tr>
+                <td><?php echo esc_html(mysql2date('d/m/Y H:i', $tent->date_tentative)); ?></td>
+                <td><?php echo esc_html($tent->post_title); ?></td>
+                <td><?php echo esc_html($tent->resultat); ?></td>
+            </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+    <?php echo cta_render_pager($page, $pages, 'tentatives-pager'); ?>
 </div>
 <?php endif; ?>
