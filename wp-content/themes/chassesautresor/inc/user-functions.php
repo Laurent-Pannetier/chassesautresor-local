@@ -306,12 +306,12 @@ function myaccount_get_important_messages(): string
                     function ($id) {
                         $url   = esc_url(get_permalink($id));
                         $title = esc_html(get_the_title($id));
-                        return '<a href="' . $url . '">' . $title . '</a>';
+                        return '<a class="enigme-link" href="' . $url . '">' . $title . '</a>';
                     },
                     $enigmes
                 );
 
-                $messages[] = '⚠️ ' . __('Important ! Des tentatives attendent votre action :', 'chassesautresor-com') . ' ' . implode(', ', $links);
+                $messages[] = '⚠️ ' . __('Important ! Des tentatives attendent votre action :', 'chassesautresor-com') . ' ' . implode('', $links);
             }
         }
 
