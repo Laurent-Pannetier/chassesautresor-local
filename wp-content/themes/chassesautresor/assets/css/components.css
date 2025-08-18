@@ -157,12 +157,12 @@ button,
     font-weight: 600;
     vertical-align: middle;
 }
-@media (max-width: var(--bp-md)) {
+@media (--bp-md) {
     .bouton-cta {
         padding: 8px 13px;
     }
 }
-@media (max-width: var(--bp-sm)) {
+@media (--bp-sm) {
     .bouton-cta {
         padding: 6px 10px;
     }
@@ -364,7 +364,7 @@ a.ajout-link:focus-visible {
   outline-offset: 2px;
 }
 
-@media (max-width: var(--bp-md)) {
+@media (--bp-md) {
   .btn-lire-plus {
     width: 100%;
   }
@@ -404,7 +404,7 @@ a.ajout-link:focus-visible {
   outline-offset: 2px;
 }
 
-@media (max-width: var(--bp-sm)) {
+@media (--bp-sm) {
   .bouton-retour {
     font-size: 1.25rem;
   }
@@ -461,7 +461,7 @@ a.ajout-link:focus-visible {
 .meta-etiquette strong {
   font-weight: 600;
 }
-@media (max-width: var(--bp-sm)) {
+@media (--bp-sm) {
     .bloc-metas-inline {
         gap:0.8rem;
     }
@@ -633,7 +633,7 @@ a.ajout-link:focus-visible {
 }
 
 /* ========== 📱 RESPONSIVE ========== */
-@media (max-width: var(--bp-sm)) {
+@media (--bp-sm) {
     .separateur-2 {
         margin: 0 auto;
     }
@@ -657,7 +657,7 @@ a.ajout-link:focus-visible {
 body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
     color: var(--color-text-primary);
 }
-@media (max-width: var(--bp-sm)) {
+@media (--bp-sm) {
   .formulaire-contact-wrapper {
     padding-left: var(--space-md);
     padding-right: var(--space-md);
@@ -745,7 +745,7 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
     text-align: center;
 }
 
-@media (max-width: var(--bp-md)) {
+@media (--bp-md) {
     .countdown-container { font-size: 1rem; }
 }
 

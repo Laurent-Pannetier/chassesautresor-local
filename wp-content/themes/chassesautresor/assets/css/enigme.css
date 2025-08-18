@@ -90,7 +90,7 @@
   font-weight: 600;
 }
 
-@media (max-width: var(--bp-md)) {
+@media (--bp-md) {
   .enigme-layout {
     grid-template-columns: 1fr;
   }

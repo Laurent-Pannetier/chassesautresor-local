@@ -215,7 +215,7 @@ a.bouton-edition-attention {
 
 /* ========== 📱 RESPONSIVE – TABLETTES (≤ 768PX) ========== */
 
-@media (max-width: var(--bp-md)) {
+@media (--bp-md) {
     .conteneur-organisateur {
         flex-direction: column;
         align-items: center;
@@ -253,7 +253,7 @@ a.bouton-edition-attention {
 
 /* ========== 📱 RESPONSIVE – TABLETTES (600PX À 768PX) ========== */
 
-@media (min-width: 600px) and (max-width: var(--bp-md)) {
+@media (min-width: 600px) and (--bp-md) {
     .conteneur-organisateur {
         flex-direction: row;
         align-items: center;
@@ -283,7 +283,7 @@ a.bouton-edition-attention {
 
 /* ========== 📱 BASCULE EN COLONNE (≤ 600PX) ========== */
 
-@media (max-width: var(--bp-600)) {
+@media (--bp-600) {
     .conteneur-organisateur {
         gap:var(--space-md);
     }
@@ -297,7 +297,7 @@ a.bouton-edition-attention {
 
 /* ========== 📱 RESPONSIVE – MOBILE (≤ 480PX) ========== */
 
-@media (max-width: var(--bp-sm)) {
+@media (--bp-sm) {
   .conteneur-organisateur {
     gap: 0.2rem;
   }
@@ -464,7 +464,7 @@ section#presentation .presentation-fermer {
 
 
 /* ========== 📱 RESPONSIVE ========== */
-@media (max-width: var(--bp-sm)) {
+@media (--bp-sm) {
     .lien-public .texte-lien {
         display: none;
     }
@@ -570,7 +570,7 @@ section#presentation .presentation-fermer {
 
 /* ========== 📱 RESPONSIVE ========== */
 
-@media (max-width: var(--bp-md)) {
+@media (--bp-md) {
     .separateur-avec-icone {
         margin: 2.1rem 0;
     }
@@ -586,7 +586,7 @@ section#presentation .presentation-fermer {
         height: 50px;
     }
 }
-@media (max-width: var(--bp-sm)) {
+@media (--bp-sm) {
     .separateur-avec-icone {
         margin: var(--space-xl) 0;
     }
