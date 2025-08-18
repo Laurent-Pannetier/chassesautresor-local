@@ -273,7 +273,11 @@ class PointsRepository
             'conversion'
         );
 
-        return (int) $this->wpdb->get_var($sql);
+        $suppress = $this->wpdb->suppress_errors();
+        $value    = (int) $this->wpdb->get_var($sql);
+        $this->wpdb->suppress_errors($suppress);
+
+        return $value;
     }
 
     /**
@@ -284,6 +288,10 @@ class PointsRepository
         $subquery = "SELECT MAX(id) AS id FROM {$this->table} GROUP BY user_id";
         $sql      = "SELECT COALESCE(SUM(balance), 0) FROM {$this->table} WHERE id IN ($subquery)";
 
-        return (int) $this->wpdb->get_var($sql);
+        $suppress = $this->wpdb->suppress_errors();
+        $value    = (int) $this->wpdb->get_var($sql);
+        $this->wpdb->suppress_errors($suppress);
+
+        return $value;
     }
 }

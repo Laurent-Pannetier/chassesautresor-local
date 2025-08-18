@@ -427,9 +427,10 @@ function render_tableau_paiements_admin(array $requests): string
         $user = get_userdata((int) $request['user_id']);
 
         $organisateur_id = get_organisateur_from_user($request['user_id']);
-        $iban            = $organisateur_id ? get_field('iban', $organisateur_id) : '';
-        $bic             = $organisateur_id ? get_field('bic', $organisateur_id) : '';
-        if ($organisateur_id && (empty($iban) || empty($bic))) {
+        $has_acf         = function_exists('get_field');
+        $iban            = $organisateur_id && $has_acf ? get_field('iban', $organisateur_id) : '';
+        $bic             = $organisateur_id && $has_acf ? get_field('bic', $organisateur_id) : '';
+        if ($organisateur_id && $has_acf && (empty($iban) || empty($bic))) {
             $iban = get_field('gagnez_de_largent_iban', $organisateur_id);
             $bic  = get_field('gagnez_de_largent_bic', $organisateur_id);
         }
@@ -502,9 +503,10 @@ function render_admin_conversion_history_rows(array $requests): string
         $user = get_userdata((int) $request['user_id']);
 
         $organisateur_id = get_organisateur_from_user($request['user_id']);
-        $iban            = $organisateur_id ? get_field('iban', $organisateur_id) : '';
-        $bic             = $organisateur_id ? get_field('bic', $organisateur_id) : '';
-        if ($organisateur_id && (empty($iban) || empty($bic))) {
+        $has_acf         = function_exists('get_field');
+        $iban            = $organisateur_id && $has_acf ? get_field('iban', $organisateur_id) : '';
+        $bic             = $organisateur_id && $has_acf ? get_field('bic', $organisateur_id) : '';
+        if ($organisateur_id && $has_acf && (empty($iban) || empty($bic))) {
             $iban = get_field('gagnez_de_largent_iban', $organisateur_id);
             $bic  = get_field('gagnez_de_largent_bic', $organisateur_id);
         }
@@ -1700,7 +1702,7 @@ function recuperer_organisateurs_pending()
  *
  * @param array|null $liste Données pré-calculées.
  */
-function afficher_tableau_organisateurs_pending(array $liste = null)
+function afficher_tableau_organisateurs_pending(?array $liste = null)
 {
     if (null === $liste) {
         $liste = recuperer_organisateurs_pending();

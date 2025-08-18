@@ -16,8 +16,8 @@ $is_organizer = in_array(ROLE_ORGANISATEUR, $roles, true) || in_array(ROLE_ORGAN
 if (current_user_can('administrator')) {
     global $wpdb;
     $repo               = new PointsRepository($wpdb);
-    $used_points        = $repo->getTotalPointsUsed();
-    $circulation_points = $repo->getTotalPointsInCirculation();
+    $used_points        = (int) $repo->getTotalPointsUsed();
+    $circulation_points = (int) $repo->getTotalPointsInCirculation();
     ?>
     <div class="dashboard-grid stats-cards myaccount-points-cards">
         <div class="dashboard-card" data-stat="points-used">
@@ -38,7 +38,7 @@ if (current_user_can('administrator')) {
         <div class="dashboard-card">
             <div class="dashboard-card-header">
                 <i class="fas fa-coins"></i>
-                <h3><?php esc_html_e('Gestion Points', 'chassesautresor'); ?></h3>
+                <h3><?php esc_html_e('Gestion Points', 'chassesautresor-com'); ?></h3>
             </div>
             <div class="stats-content">
                 <form method="POST" class="form-gestion-points">
