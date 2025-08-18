@@ -5,12 +5,14 @@
 
 .enigme-sidebar {
   --col-span: 3;
+  grid-column: span var(--col-span);
   padding: var(--space-md);
   background: var(--color-bg-alt, #f5f5f5);
 }
 
 .enigme-main {
   --col-span: 9;
+  grid-column: span var(--col-span);
   display: flex;
   flex-direction: column;
   gap: var(--space-xl);
