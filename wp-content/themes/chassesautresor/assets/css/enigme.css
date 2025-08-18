@@ -5,25 +5,14 @@
   gap: var(--space-xl);
 }
 
-.menu-lateral {
-  background: transparent;
-  padding: var(--space-md);
-  padding-bottom: var(--space-4xl);
-  border: 1px solid var(--color-grey-medium);
-  border-radius: 6px;
-  align-self: start;
-  height: fit-content;
+.page-enigme .menu-lateral {
+  --aside-bg-rgb: 255, 255, 255;
+  --aside-border-color: var(--color-grey-medium);
+  color: var(--color-text-fond-clair);
 }
 
-.enigme-chasse-titre {
-  color: var(--color-text-primary);
-}
-
-@media (min-width: var(--breakpoint-desktop)) {
-  .menu-lateral {
-    position: sticky;
-    top: var(--space-md);
-  }
+.page-enigme .enigme-chasse-titre {
+  color: var(--color-text-fond-clair);
 }
 
 .page-enigme {

@@ -1,0 +1,17 @@
+/* Core styles for reusable asides */
+.menu-lateral {
+  background-color: rgba(var(--aside-bg-rgb, 255, 255, 255), 0.9);
+  padding: var(--space-md);
+  padding-bottom: var(--space-4xl);
+  border: 1px solid var(--aside-border-color, transparent);
+  border-radius: 6px;
+  align-self: start;
+  height: fit-content;
+}
+
+@media (min-width: var(--breakpoint-desktop)) {
+  .menu-lateral {
+    position: sticky;
+    top: var(--space-md);
+  }
+}
