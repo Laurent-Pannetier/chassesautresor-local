@@ -284,7 +284,6 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
             ob_start();
             echo '<aside class="menu-lateral">';
 
-            echo '<div class="menu-lateral__core">';
             echo '<div class="menu-lateral__header">';
             if ($chasse_id) {
                 $url_chasse = get_permalink($chasse_id);
@@ -300,6 +299,7 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
             }
             echo '</div>';
 
+            echo '<div class="menu-lateral__content">';
             if ($chasse_id) {
                 $logo = get_the_post_thumbnail($chasse_id, 'thumbnail');
                 if ($logo) {
@@ -317,17 +317,17 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
 
             echo '<div class="menu-lateral__accordeons">';
             echo '<div class="accordeon-bloc">';
-            echo '<button class="accordeon-toggle" type="button" aria-expanded="false">'
-                . '<i class="fa-solid fa-chevron-down" aria-hidden="true"></i>'
-                . '<span class="screen-reader-text">'
-                . esc_html__('Afficher la progression', 'chassesautresor-com')
-                . '</span></button>';
             echo '<div class="accordeon-contenu accordeon-ferme">';
             echo '<section class="enigme-progression">';
             echo '<h3>' . esc_html__('Progression', 'chassesautresor-com') . '</h3>';
             echo '%STATS%';
             echo '</section>';
             echo '</div>';
+            echo '<button class="accordeon-toggle" type="button" aria-expanded="false">'
+                . '<i class="fa-solid fa-chevron-down" aria-hidden="true"></i>'
+                . '<span class="screen-reader-text">'
+                . esc_html__('Afficher la progression', 'chassesautresor-com')
+                . '</span></button>';
             echo '</div>';
             echo '</div>';
             echo '</aside>';

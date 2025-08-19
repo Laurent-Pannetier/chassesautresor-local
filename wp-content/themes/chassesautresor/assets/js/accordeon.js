@@ -1,5 +1,3 @@
-const menuLateral = document.querySelector('.menu-lateral');
-
 document.querySelectorAll('.accordeon-bloc').forEach(bloc => {
   const toggle = bloc.querySelector('.accordeon-toggle');
   const contenu = bloc.querySelector('.accordeon-contenu');
@@ -9,9 +7,6 @@ document.querySelectorAll('.accordeon-bloc').forEach(bloc => {
   // Synchronise l’état initial
   const estOuvert = toggle.getAttribute('aria-expanded') === 'true';
   contenu.classList.toggle('accordeon-ferme', !estOuvert);
-  if (estOuvert) {
-    menuLateral?.classList.add('has-open-accordeon');
-  }
 
   toggle.addEventListener('click', () => {
     const estActuellementOuvert = toggle.getAttribute('aria-expanded') === 'true';
@@ -31,9 +26,6 @@ document.querySelectorAll('.accordeon-bloc').forEach(bloc => {
     if (!estActuellementOuvert) {
       toggle.setAttribute('aria-expanded', 'true');
       contenu.classList.remove('accordeon-ferme');
-      menuLateral?.classList.add('has-open-accordeon');
-    } else {
-      menuLateral?.classList.remove('has-open-accordeon');
     }
   });
 
