@@ -107,12 +107,12 @@ $pages = (int) ceil($total / $per_page);
     <h3><?php esc_html_e('Tentatives', 'chassesautresor-com'); ?></h3>
     <div class="table-header">
         <?php if ($pending > 0) : ?>
-        <span class="stat-badge"><?php printf(esc_html__('%d tentatives en attente', 'chassesautresor-com'), $pending); ?></span>
+        <span class="stat-badge"><?php printf(esc_html(_n('%d tentative en attente', '%d tentatives en attente', $pending, 'chassesautresor-com')), $pending); ?></span>
         <?php endif; ?>
-        <span class="stat-badge"><?php printf(esc_html__('%d tentatives', 'chassesautresor-com'), $total); ?></span>
+        <span class="stat-badge"><?php printf(esc_html(_n('%d tentative', '%d tentatives', $total, 'chassesautresor-com')), $total); ?></span>
         <?php if ($success > 0) : ?>
         <span class="stat-badge" style="color:var(--color-success);">
-            <?php printf(esc_html__('%d bonne réponse', 'chassesautresor-com'), $success); ?>
+            <?php printf(esc_html(_n('%d bonne réponse', '%d bonnes réponses', $success, 'chassesautresor-com')), $success); ?>
         </span>
         <?php endif; ?>
     </div>
@@ -130,7 +130,20 @@ $pages = (int) ceil($total / $per_page);
                 <tr>
                     <td><?php echo esc_html(mysql2date('d/m/Y H:i', $tent->date_tentative)); ?></td>
                     <td><?php echo esc_html($tent->post_title); ?></td>
-                    <td><?php echo esc_html($tent->resultat); ?></td>
+                    <?php
+                    $result = $tent->resultat;
+                    $class  = 'etiquette-error';
+                    if ($result === 'bon') {
+                        $class = 'etiquette-success';
+                    } elseif ($result === 'attente') {
+                        $class = 'etiquette-pending';
+                    }
+                    ?>
+                    <td>
+                        <span class="etiquette <?php echo esc_attr($class); ?>">
+                            <?php echo esc_html($result); ?>
+                        </span>
+                    </td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
