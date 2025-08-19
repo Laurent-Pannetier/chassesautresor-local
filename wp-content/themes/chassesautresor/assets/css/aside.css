@@ -19,7 +19,7 @@
   flex: 1 1 auto;
   overflow-y: auto;
   overflow-x: hidden;
-  background-color: inherit;
+  /*background-color: inherit;*/
 }
 
 .menu-lateral__accordeons {
@@ -27,7 +27,7 @@
   flex-shrink: 0;
   position: sticky;
   bottom: 0;
-  background-color: inherit;
+  /*background-color: inherit;*/
   width: calc(100% + 2 * var(--space-md));
   margin-left: calc(-1 * var(--space-md));
   margin-right: calc(-1 * var(--space-md));
