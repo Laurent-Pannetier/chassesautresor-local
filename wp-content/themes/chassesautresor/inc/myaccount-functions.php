@@ -92,9 +92,6 @@ function myaccount_get_organizer_nav(int $user_id): ?array
             }
         }
 
-        if (strpos($classes, 'status-published') === false) {
-            $classes .= ' status-muted';
-        }
 
         $chasse_item = [
             'title'        => get_the_title($chasse->ID),
@@ -135,10 +132,6 @@ function myaccount_get_organizer_nav(int $user_id): ?array
 
             if (in_array($enigme_id, $pending_enigmes, true)) {
                 $sub_classes .= ' status-important';
-            }
-
-            if (strpos($classes, 'status-published') === false) {
-                $sub_classes .= ' status-muted';
             }
 
             $chasse_item['enigmes'][] = [
