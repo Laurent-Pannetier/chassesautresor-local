@@ -55,6 +55,7 @@
   --etat-enigme-menu-en-attente: var(--color-grey-medium); /* tentative manuelle en cours */
   --etat-enigme-menu-succes: var(--color-success);
   --etat-enigme-menu-non-engagee: transparent;
+  --etat-enigme-menu-incomplete: hsl(var(--destructive));
 
   /* Asides */
   --aside-bg-rgb: 238, 238, 238;            /* 🎨 Couleur de fond des asides : gris clair du nuancier (var(--color-grey-light)) */
