@@ -40,9 +40,12 @@
   position: relative;
   margin-bottom: var(--space-xxs);
   padding-left: calc(var(--space-md) + 16px);
-  cursor: grab;
   --bullet-fill: var(--etat-enigme-menu-en-cours);
   --bullet-outline: var(--etat-enigme-menu-en-cours);
+}
+
+.enigme-menu--editable li {
+  cursor: grab;
 }
 
 .enigme-menu li::before {
@@ -58,7 +61,7 @@
   border-radius: 50%;
 }
 
-.enigme-menu li .enigme-menu__handle {
+.enigme-menu--editable li .enigme-menu__handle {
   position: absolute;
   top: 50%;
   left: 0;
@@ -72,7 +75,7 @@
   transition: opacity 0.2s;
 }
 
-.enigme-menu li:hover .enigme-menu__handle {
+.enigme-menu--editable li:hover .enigme-menu__handle {
   opacity: 1;
 }
 
@@ -84,6 +87,9 @@
   color: inherit;
   text-decoration: none;
   border-radius: 4px;
+}
+
+.enigme-menu--editable li a {
   cursor: inherit;
 }
 
@@ -95,7 +101,7 @@
   cursor: default;
 }
 
-.enigme-menu li.dragging {
+.enigme-menu--editable li.dragging {
   cursor: grabbing;
 }
 
