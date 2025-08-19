@@ -83,19 +83,35 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
               <ul class="resume-infos">
 
                 <!-- Titre -->
-                <li class="champ-chasse champ-titre <?= ($isTitreParDefaut ? 'champ-vide' : 'champ-rempli'); ?><?= $peut_editer_titre ? '' : ' champ-desactive'; ?>"
-                  data-champ="post_title"
-                  data-cpt="chasse"
-                  data-post-id="<?= esc_attr($chasse_id); ?>"
-                  data-no-edit="1">
-
-                  <label for="champ-titre-chasse">Titre <span class="champ-obligatoire">*</span></label>
-                  <input type="text" class="champ-input champ-texte-edit" maxlength="70"
-                    value="<?= esc_attr($titre); ?>"
-                    id="champ-titre-chasse" <?= $peut_editer_titre ? '' : 'disabled'; ?>
-                    placeholder="renseigner le titre de la chasse" />
-                  <div class="champ-feedback"></div>
-                </li>
+                <?php
+                get_template_part(
+                    'template-parts/common/edition-row',
+                    null,
+                    [
+                        'class' => 'champ-chasse champ-titre ' . ($isTitreParDefaut ? 'champ-vide' : 'champ-rempli') . ($peut_editer_titre ? '' : ' champ-desactive'),
+                        'attributes' => [
+                            'data-champ'   => 'post_title',
+                            'data-cpt'     => 'chasse',
+                            'data-post-id' => $chasse_id,
+                            'data-no-edit' => '1',
+                        ],
+                        'label' => function () {
+                            ?>
+                            <label for="champ-titre-chasse">Titre <span class="champ-obligatoire">*</span></label>
+                            <?php
+                        },
+                        'content' => function () use ($titre, $peut_editer_titre) {
+                            ?>
+                            <input type="text" class="champ-input champ-texte-edit" maxlength="70"
+                                value="<?= esc_attr($titre); ?>"
+                                id="champ-titre-chasse" <?= $peut_editer_titre ? '' : 'disabled'; ?>
+                                placeholder="renseigner le titre de la chasse" />
+                            <div class="champ-feedback"></div>
+                            <?php
+                        },
+                    ]
+                );
+                ?>
                 
                 <!-- Image -->
                 <li class="champ-chasse champ-img <?= empty($image_id) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>"

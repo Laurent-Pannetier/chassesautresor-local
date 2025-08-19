@@ -88,21 +88,37 @@ $is_complete = (
               <div class="resume-bloc resume-obligatoire">
                 <h3>Informations</h3>
                 <ul class="resume-infos">
-                  <li class="champ-organisateur champ-titre ligne-titre <?= empty($titre) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer_titre ? '' : ' champ-desactive'; ?>"
-                    data-champ="post_title"
-                    data-cpt="organisateur"
-                    data-post-id="<?= esc_attr($organisateur_id); ?>"
-                    data-no-edit="1">
-
-                    <label for="champ-titre-organisateur">Titre <span class="champ-obligatoire">*</span></label>
-                    <input type="text"
-                      class="champ-input champ-texte-edit"
-                      maxlength="50"
-                      value="<?= esc_attr($titre); ?>"
-                      id="champ-titre-organisateur" <?= $peut_editer_titre ? '' : 'disabled'; ?>
-                      placeholder="renseigner le titre de l’organisateur" />
-                    <div class="champ-feedback"></div>
-                  </li>
+                  <?php
+                  get_template_part(
+                      'template-parts/common/edition-row',
+                      null,
+                      [
+                          'class' => 'champ-organisateur champ-titre ligne-titre ' . (empty($titre) ? 'champ-vide' : 'champ-rempli') . ($peut_editer_titre ? '' : ' champ-desactive'),
+                          'attributes' => [
+                              'data-champ'   => 'post_title',
+                              'data-cpt'     => 'organisateur',
+                              'data-post-id' => $organisateur_id,
+                              'data-no-edit' => '1',
+                          ],
+                          'label' => function () {
+                              ?>
+                              <label for="champ-titre-organisateur">Titre <span class="champ-obligatoire">*</span></label>
+                              <?php
+                          },
+                          'content' => function () use ($titre, $peut_editer_titre) {
+                              ?>
+                              <input type="text"
+                                class="champ-input champ-texte-edit"
+                                maxlength="50"
+                                value="<?= esc_attr($titre); ?>"
+                                id="champ-titre-organisateur" <?= $peut_editer_titre ? '' : 'disabled'; ?>
+                                placeholder="renseigner le titre de l’organisateur" />
+                              <div class="champ-feedback"></div>
+                              <?php
+                          },
+                      ]
+                  );
+                  ?>
 
                 <li class="champ-organisateur champ-img champ-logo ligne-logo <?= empty($logo_id) ? 'champ-vide' : 'champ-rempli'; ?>" data-champ="profil_public_logo_organisateur" data-cpt="organisateur" data-post-id="<?= esc_attr($organisateur_id); ?>">
                   <div class="champ-affichage">

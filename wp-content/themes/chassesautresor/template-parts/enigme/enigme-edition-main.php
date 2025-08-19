@@ -106,21 +106,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
 
                 <h3>Informations</h3>
                 <ul class="resume-infos">
-                  <li class="champ-enigme champ-titre <?= ($isTitreParDefaut ? 'champ-vide' : 'champ-rempli'); ?><?= $peut_editer_titre ? '' : ' champ-desactive'; ?>"
-                    data-champ="post_title"
-                    data-cpt="enigme"
-                    data-post-id="<?= esc_attr($enigme_id); ?>"
-                    data-no-edit="1">
-
-                    <label for="champ-titre-enigme">Titre <span class="champ-obligatoire">*</span></label>
-                    <input type="text"
-                      class="champ-input champ-texte-edit"
-                      maxlength="80"
-                      value="<?= esc_attr($titre); ?>"
-                      id="champ-titre-enigme" <?= $peut_editer_titre ? '' : 'disabled'; ?>
-                      placeholder="renseigner le titre de l’énigme" />
-                    <div class="champ-feedback"></div>
-                  </li>
+                  <?php
+                  get_template_part(
+                      'template-parts/common/edition-row',
+                      null,
+                      [
+                          'class' => 'champ-enigme champ-titre ' . ($isTitreParDefaut ? 'champ-vide' : 'champ-rempli') . ($peut_editer_titre ? '' : ' champ-desactive'),
+                          'attributes' => [
+                              'data-champ'   => 'post_title',
+                              'data-cpt'     => 'enigme',
+                              'data-post-id' => $enigme_id,
+                              'data-no-edit' => '1',
+                          ],
+                          'label' => function () {
+                              ?>
+                              <label for="champ-titre-enigme">Titre <span class="champ-obligatoire">*</span></label>
+                              <?php
+                          },
+                          'content' => function () use ($titre, $peut_editer_titre) {
+                              ?>
+                              <input type="text"
+                                class="champ-input champ-texte-edit"
+                                maxlength="80"
+                                value="<?= esc_attr($titre); ?>"
+                                id="champ-titre-enigme" <?= $peut_editer_titre ? '' : 'disabled'; ?>
+                                placeholder="renseigner le titre de l’énigme" />
+                              <div class="champ-feedback"></div>
+                              <?php
+                          },
+                      ]
+                  );
+                  ?>
 
                   <?php
                   $has_images_utiles = enigme_a_une_image($enigme_id);
