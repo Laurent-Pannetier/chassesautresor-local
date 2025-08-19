@@ -605,7 +605,7 @@ function initChampBonneReponse() {
   if (!input) return;
 
   const mettreAJourClasse = () => {
-    bloc.classList.toggle('champ-vide-obligatoire', input.value.trim() === '');
+    input.classList.toggle('champ-vide-obligatoire', input.value.trim() === '');
   };
 
   // Crée ou récupère l’alerte si déjà existante
