@@ -106,21 +106,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
 
                 <h3>Informations</h3>
                 <ul class="resume-infos">
-                  <li class="champ-enigme champ-titre <?= ($isTitreParDefaut ? 'champ-vide' : 'champ-rempli'); ?><?= $peut_editer_titre ? '' : ' champ-desactive'; ?>"
-                    data-champ="post_title"
-                    data-cpt="enigme"
-                    data-post-id="<?= esc_attr($enigme_id); ?>"
-                    data-no-edit="1">
-
-                    <label for="champ-titre-enigme">Titre <span class="champ-obligatoire">*</span></label>
-                    <input type="text"
-                      class="champ-input champ-texte-edit"
-                      maxlength="80"
-                      value="<?= esc_attr($titre); ?>"
-                      id="champ-titre-enigme" <?= $peut_editer_titre ? '' : 'disabled'; ?>
-                      placeholder="renseigner le titre de l’énigme" />
-                    <div class="champ-feedback"></div>
-                  </li>
+                  <?php
+                  get_template_part(
+                      'template-parts/common/edition-row',
+                      null,
+                      [
+                          'class' => 'champ-enigme champ-titre ' . ($isTitreParDefaut ? 'champ-vide' : 'champ-rempli') . ($peut_editer_titre ? '' : ' champ-desactive'),
+                          'attributes' => [
+                              'data-champ'   => 'post_title',
+                              'data-cpt'     => 'enigme',
+                              'data-post-id' => $enigme_id,
+                              'data-no-edit' => '1',
+                          ],
+                          'label' => function () {
+                              ?>
+                              <label for="champ-titre-enigme">Titre <span class="champ-obligatoire">*</span></label>
+                              <?php
+                          },
+                          'content' => function () use ($titre, $peut_editer_titre) {
+                              ?>
+                              <input type="text"
+                                class="champ-input champ-texte-edit"
+                                maxlength="80"
+                                value="<?= esc_attr($titre); ?>"
+                                id="champ-titre-enigme" <?= $peut_editer_titre ? '' : 'disabled'; ?>
+                                placeholder="renseigner le titre de l’énigme" />
+                              <div class="champ-feedback"></div>
+                              <?php
+                          },
+                      ]
+                  );
+                  ?>
 
                   <?php
                   $has_images_utiles = enigme_a_une_image($enigme_id);
@@ -215,10 +231,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
               <!-- Règlages -->
               <div class="resume-bloc resume-reglages">
                 <h3>Réglages</h3>
-                <div class="resume-infos">
+                <ul class="resume-infos">
 
             <!-- Mode de validation -->
-            <div class="champ-enigme champ-mode-validation champ-mode-fin<?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_mode_validation" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" data-no-edit="1" data-no-icon="1">
+            <li class="champ-enigme champ-mode-validation champ-mode-fin<?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_mode_validation" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" data-no-edit="1" data-no-icon="1">
               <label for="enigme_mode_validation"><?= esc_html__('Validation', 'chassesautresor-com'); ?></label>
               <div class="champ-mode-options">
                 <label>
@@ -260,9 +276,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                   <?= esc_html__('Aucune', 'chassesautresor-com'); ?>
                 </label>
               </div>
-            </div>
+            </li>
 
-            <div class="champ-enigme champ-bonne-reponse champ-groupe-reponse-automatique cache<?= empty($reponse) ? ' champ-vide' : ' champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_reponse_bonne" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
+            <li class="champ-enigme champ-bonne-reponse champ-groupe-reponse-automatique cache<?= empty($reponse) ? ' champ-vide' : ' champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_reponse_bonne" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
                 <label for="champ-bonne-reponse"><?= esc_html__('Réponse', 'chassesautresor-com'); ?> <span class="champ-obligatoire">*</span></label>
                 <input type="text" id="champ-bonne-reponse" name="champ-bonne-reponse" class="champ-input champ-texte-edit<?= empty($reponse) ? ' champ-vide-obligatoire' : ''; ?>" value="<?= esc_attr($reponse); ?>" placeholder="<?= esc_attr__('Ex : soleil', 'chassesautresor-com'); ?>" <?= $peut_editer ? '' : 'disabled'; ?> />
                 <div class="champ-enigme champ-casse <?= $casse ? 'champ-rempli' : 'champ-vide'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_reponse_casse" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" style="display: inline-flex; align-items: center;">
@@ -270,9 +286,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                   <div class="champ-feedback"></div>
                 </div>
                 <div class="champ-feedback"></div>
-              </div>
+              </li>
 
-            <div class="champ-enigme champ-variantes-resume champ-groupe-reponse-automatique cache<?= $has_variantes ? ' champ-rempli' : ' champ-vide'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_reponse_variantes" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
+            <li class="champ-enigme champ-variantes-resume champ-groupe-reponse-automatique cache<?= $has_variantes ? ' champ-rempli' : ' champ-vide'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_reponse_variantes" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
               <label>
                 <?= esc_html__('Variantes', 'chassesautresor-com'); ?>
                 <?php
@@ -309,15 +325,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                     <?= esc_html__('éditer', 'chassesautresor-com'); ?>
                   </button>
                 <?php endif; ?>
-              <?php elseif ($peut_editer) : ?>
-                <a href="#" class="champ-ajouter ouvrir-panneau-variantes" aria-label="<?= esc_attr__('Ajouter des variantes', 'chassesautresor-com'); ?>" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
-                  <?= esc_html__('ajouter des variantes', 'chassesautresor-com'); ?>
-                </a>
-              <?php endif; ?>
-            </div>
+                <?php elseif ($peut_editer) : ?>
+                  <a href="#" class="champ-ajouter ouvrir-panneau-variantes" aria-label="<?= esc_attr__('Ajouter des variantes', 'chassesautresor-com'); ?>" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
+                    <?= esc_html__('ajouter des variantes', 'chassesautresor-com'); ?>
+                  </a>
+                <?php endif; ?>
+            </li>
 
             <!-- Tentatives -->
-            <div class="champ-enigme champ-cout-points <?= empty($cout) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_tentative.enigme_tentative_cout_points" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
+            <li class="champ-enigme champ-cout-points <?= empty($cout) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_tentative.enigme_tentative_cout_points" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
               <div class="champ-edition" style="display: flex; align-items: center; flex-wrap: wrap; gap: 1rem;">
                 <label for="enigme-tentative-cout">Coût tentative
                   <?php
@@ -343,9 +359,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                 </div>
               </div>
               <div class="champ-feedback"></div>
-            </div>
+            </li>
 
-            <div class="champ-enigme champ-nb-tentatives <?= empty($max) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_tentative.enigme_tentative_max" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
+            <li class="champ-enigme champ-nb-tentatives <?= empty($max) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_tentative.enigme_tentative_max" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
               <div class="champ-edition" style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
                 <label for="enigme-nb-tentatives">Nb tentatives
                   <?php
@@ -363,7 +379,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                 <span class="txt-small">max par jour</span>
               </div>
               <div class="champ-feedback"></div>
-            </div>
+            </li>
 
             <!-- Accès à l'énigme -->
             <?php
@@ -374,7 +390,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
               $prerequis_actuels = [$prerequis_actuels];
             }
             ?>
-            <div class="champ-enigme champ-acces champ-mode-fin<?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_acces_condition" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" data-no-edit="1" data-no-icon="1">
+            <li class="champ-enigme champ-acces champ-mode-fin<?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_acces_condition" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" data-no-edit="1" data-no-icon="1">
               <label for="enigme_acces_condition"><?= esc_html__('Accès', 'chassesautresor-com'); ?></label>
               <div class="champ-mode-options">
                 <label>
@@ -420,10 +436,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                 <?php endif; ?>
               </div>
               <div class="champ-feedback"></div>
-            </div>
+            </li>
 
 
-        </div>
+        </ul>
         </div>
       </div>
       </div>
