@@ -1481,13 +1481,7 @@ window.mettreAJourBoutonAjoutEnigme = function () {
   const nav = document.querySelector('.enigme-navigation');
   if (!nav) return;
 
-  const existing = nav.querySelectorAll('#carte-ajout-enigme');
-  if (existing.length > 0) {
-    existing.forEach((btn, idx) => {
-      if (idx > 0) btn.remove();
-    });
-    return;
-  }
+  nav.querySelectorAll('#carte-ajout-enigme').forEach((btn) => btn.remove());
 
   const chasseId = nav.dataset.chasseId;
   if (!chasseId) return;
