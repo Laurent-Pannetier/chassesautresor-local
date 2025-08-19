@@ -90,6 +90,28 @@
   width: 100%;
 }
 
+/* 🧩 Lignes d'édition réutilisables */
+.edition-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  min-height: 40px;
+}
+
+.edition-row-icon {
+  width: var(--editor-icon-width);
+  margin-right: 0.3rem;
+  text-align: center;
+}
+
+.edition-row-label {
+  width: var(--editor-label-width);
+}
+
+.edition-row-content {
+  flex: 1;
+}
+
 .cache {
   display: none;
 }
