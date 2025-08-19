@@ -1504,47 +1504,44 @@ function initPagerTentatives() {
 // ==============================
 // ➕ Affichage dynamique du bouton d'ajout d'énigme
 // ==============================
-window.mettreAJourBoutonAjoutEnigme = function () {
-  const nav = document.querySelector('.enigme-navigation');
-  if (!nav) return;
+  window.mettreAJourBoutonAjoutEnigme = function () {
+    const nav = document.querySelector('.enigme-navigation');
+    if (!nav) return;
+    const menu = nav.querySelector('.enigme-menu');
+    if (!menu || !menu.classList.contains('enigme-menu--editable')) return;
 
-  nav.querySelectorAll('#carte-ajout-enigme').forEach((btn) => btn.remove());
+    nav.querySelectorAll('#carte-ajout-enigme').forEach((btn) => btn.remove());
 
-  const chasseId = nav.dataset.chasseId;
-  if (!chasseId) return;
+    const chasseId = nav.dataset.chasseId;
+    if (!chasseId) return;
 
-  const data = new FormData();
-  data.append('action', 'verifier_enigmes_completes');
-  data.append('chasse_id', chasseId);
+    const data = new FormData();
+    data.append('action', 'verifier_enigmes_completes');
+    data.append('chasse_id', chasseId);
 
-  fetch(window.ajaxurl, {
-    method: 'POST',
-    credentials: 'same-origin',
-    body: data
-  })
-    .then(r => r.json())
-    .then(res => {
-      if (
-        !res.success ||
-        res.data.has_incomplete ||
-        !res.data.can_add ||
-        nav.querySelector('#carte-ajout-enigme')
-      ) {
-        return;
-      }
 
-      const link = document.createElement('a');
-      link.id = 'carte-ajout-enigme';
-      link.dataset.postId = '0';
-      link.href = `${window.location.origin}/creer-enigme/?chasse_id=${chasseId}`;
-      link.innerHTML =
-        '<i class="fa-solid fa-circle-plus fa-lg" aria-hidden="true"></i>' +
-        `<span>${wp.i18n.__('Ajouter une énigme', 'chassesautresor-com')}</span>`;
-      const menu = nav.querySelector('.enigme-menu');
-      nav.insertBefore(link, menu);
+    fetch(window.ajaxurl, {
+      method: 'POST',
+      credentials: 'same-origin',
+      body: data
     })
-    .catch(() => {});
-};
+      .then((r) => r.json())
+      .then((res) => {
+        if (!res.success || res.data.has_incomplete || nav.querySelector('#carte-ajout-enigme')) {
+          return;
+        }
+
+        const link = document.createElement('a');
+        link.id = 'carte-ajout-enigme';
+        link.dataset.postId = '0';
+        link.href = `${window.location.origin}/creer-enigme/?chasse_id=${chasseId}`;
+        link.innerHTML =
+          '<i class="fa-solid fa-circle-plus fa-lg" aria-hidden="true"></i>' +
+          `<span>${wp.i18n.__('Ajouter une énigme', 'chassesautresor-com')}</span>`;
+        nav.insertBefore(link, menu);
+      })
+      .catch(() => {});
+  };
 
 // ==============================
 // 🔀 Réordonnancement des énigmes
@@ -1552,7 +1549,7 @@ window.mettreAJourBoutonAjoutEnigme = function () {
 function initEnigmeReorder() {
   const nav = document.querySelector('.enigme-navigation');
   const menu = nav?.querySelector('.enigme-menu');
-  if (!nav || !menu) return;
+  if (!nav || !menu || !menu.classList.contains('enigme-menu--editable')) return;
 
   menu.querySelectorAll('li').forEach((li) => {
     li.draggable = true;

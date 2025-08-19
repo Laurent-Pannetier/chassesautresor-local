@@ -581,6 +581,9 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
         $liste             = [];
         $chasse_stat       = $chasse_id ? get_field('chasse_cache_statut', $chasse_id) : '';
         $validation_status = $chasse_id ? get_field('chasse_cache_statut_validation', $chasse_id) : '';
+        if ($edition_active && !in_array($validation_status, ['creation', 'correction'], true)) {
+            $edition_active = false;
+        }
         $show_menu         = enigme_user_can_see_menu($user_id, $chasse_id, $chasse_stat);
         $skip_checks       = $chasse_stat === 'termine';
         $is_privileged = current_user_can('administrator')
