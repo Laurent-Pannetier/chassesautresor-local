@@ -1476,8 +1476,7 @@ window.mettreAJourBoutonAjoutEnigme = function () {
   const nav = document.querySelector('.enigme-navigation');
   if (!nav) return;
 
-  const existing = document.getElementById('carte-ajout-enigme');
-  if (existing) return;
+  nav.querySelectorAll('#carte-ajout-enigme').forEach((btn) => btn.remove());
 
   const chasseId = nav.dataset.chasseId;
   if (!chasseId) return;
@@ -1493,7 +1492,7 @@ window.mettreAJourBoutonAjoutEnigme = function () {
   })
     .then(r => r.json())
     .then(res => {
-      if (!res.success || res.data.has_incomplete) {
+      if (!res.success || res.data.has_incomplete || nav.querySelector('#carte-ajout-enigme')) {
         return;
       }
 
