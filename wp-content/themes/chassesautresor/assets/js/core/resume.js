@@ -364,7 +364,7 @@ function mettreAJourLigneResume(ligne, champ, estRempli, type) {
 
   // Ajouter bouton édition ✏️ si besoin
   const dejaBouton = ligne.querySelector('.champ-modifier');
-  const pasDEdition = ligne.dataset.noEdit !== undefined;
+  const pasDEdition = ligne.dataset.noEdit !== undefined || champ === 'enigme_visuel_texte';
 
   if (pasDEdition) {
     ligne.style.cursor = '';
@@ -385,7 +385,12 @@ function mettreAJourLigneResume(ligne, champ, estRempli, type) {
       boutonInterne?.click();
     });
 
-    ligne.appendChild(bouton);
+    const champTexte = ligne.querySelector('.champ-texte');
+    if (champTexte) {
+      champTexte.after(bouton);
+    } else {
+      ligne.appendChild(bouton);
+    }
     if (typeof initZoneClicEdition === 'function') initZoneClicEdition(bouton);
   }
 }
