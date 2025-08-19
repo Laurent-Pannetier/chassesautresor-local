@@ -648,7 +648,43 @@ function verifier_enigmes_completes_ajax()
 }
 add_action('wp_ajax_verifier_enigmes_completes', 'verifier_enigmes_completes_ajax');
 
+/**
+ * Réordonne les énigmes d'une chasse via menu_order.
+ *
+ * @hook wp_ajax_reordonner_enigmes
+ * @return void
+ */
+function reordonner_enigmes_ajax()
+{
+    if (!is_user_logged_in()) {
+        wp_send_json_error('non_connecte');
+    }
 
+    $chasse_id = isset($_POST['chasse_id']) ? (int) $_POST['chasse_id'] : 0;
+    $ordre     = isset($_POST['ordre']) ? array_map('intval', (array) $_POST['ordre']) : [];
+
+    if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
+        wp_send_json_error('id_invalide');
+    }
+
+    if (!utilisateur_est_organisateur_associe_a_chasse(get_current_user_id(), $chasse_id)) {
+        wp_send_json_error('non_autorise');
+    }
+
+    foreach ($ordre as $index => $enigme_id) {
+        wp_update_post([
+            'ID'         => $enigme_id,
+            'menu_order' => $index,
+        ]);
+    }
+
+    if (function_exists('synchroniser_cache_enigmes_chasse')) {
+        synchroniser_cache_enigmes_chasse($chasse_id, true, true);
+    }
+
+    wp_send_json_success();
+}
+add_action('wp_ajax_reordonner_enigmes', 'reordonner_enigmes_ajax');
 
 // ==================================================
 // 🧩 PRÉREMPLISSAGE & FILTRES ACF (ÉNIGME)

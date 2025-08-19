@@ -413,6 +413,8 @@ function initEnigmeEdit() {
     });
   }
 
+  initEnigmeReorder();
+
 }
 
 if (document.readyState === 'loading') {
@@ -1508,3 +1510,78 @@ window.mettreAJourBoutonAjoutEnigme = function () {
     })
     .catch(() => {});
 };
+
+// ==============================
+// 🔀 Réordonnancement des énigmes
+// ==============================
+function initEnigmeReorder() {
+  const nav = document.querySelector('.enigme-navigation');
+  const menu = nav?.querySelector('.enigme-menu');
+  if (!nav || !menu) return;
+
+  menu.querySelectorAll('li').forEach((li) => {
+    li.draggable = true;
+  });
+
+  let dragged = null;
+
+  menu.addEventListener('dragstart', (e) => {
+    dragged = e.target.closest('li');
+    if (dragged) {
+      e.dataTransfer.effectAllowed = 'move';
+    }
+  });
+
+  menu.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    const target = e.target.closest('li');
+    if (!dragged || !target || dragged === target) return;
+    const rect = target.getBoundingClientRect();
+    const next = e.clientY > rect.top + rect.height / 2;
+    menu.insertBefore(dragged, next ? target.nextSibling : target);
+  });
+
+  const saveOrder = () => {
+    const order = Array.from(menu.querySelectorAll('li')).map((li) => li.dataset.enigmeId);
+    if (!order.length) return;
+
+    const onError = () => {
+      alert(wp.i18n.__("Erreur lors de l'enregistrement de l'ordre", 'chassesautresor-com'));
+    };
+
+    if (window.wp?.ajax?.post) {
+      window.wp.ajax
+        .post('reordonner_enigmes', {
+          chasse_id: nav.dataset.chasseId,
+          ordre: order,
+        })
+        .catch(onError);
+    } else {
+      const fd = new FormData();
+      fd.append('action', 'reordonner_enigmes');
+      fd.append('chasse_id', nav.dataset.chasseId);
+      order.forEach((id) => fd.append('ordre[]', id));
+      fetch(window.ajaxurl, {
+        method: 'POST',
+        credentials: 'same-origin',
+        body: fd,
+      })
+        .then((r) => r.json())
+        .then((res) => {
+          if (!res.success) onError();
+        })
+        .catch(onError);
+    }
+  };
+
+  menu.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dragged = null;
+    saveOrder();
+  });
+
+  menu.addEventListener('dragend', () => {
+    dragged = null;
+    saveOrder();
+  });
+}
