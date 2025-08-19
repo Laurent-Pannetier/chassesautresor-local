@@ -49,6 +49,13 @@
   --color-text-fond-clair-rgb: 28, 28, 28;  /* noir clair en RGB */
   --color-gris-carte: #c2c2c2;              /* 🧩 Fond de carte énigme : gris bleuté doux */
 
+  /* Groupe d'état : etat-enigme-menu */
+  --etat-enigme-menu-en-cours: currentColor;             /* état par défaut */
+  --etat-enigme-menu-bloquee: var(--color-grey-medium);
+  --etat-enigme-menu-en-attente: var(--color-grey-medium); /* tentative manuelle en cours */
+  --etat-enigme-menu-succes: var(--color-success);
+  --etat-enigme-menu-non-engagee: transparent;
+
   /* Asides */
   --aside-bg-rgb: 238, 238, 238;            /* 🎨 Couleur de fond des asides : gris clair du nuancier (var(--color-grey-light)) */
   --aside-border-color: var(--color-grey-medium); /* 🖊 Couleur de bordure des asides */

@@ -593,6 +593,8 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
                     $statut_user = enigme_get_statut_utilisateur($post->ID, $user_id);
                     if (in_array($statut_user, ['resolue', 'terminee'], true)) {
                         $classes[] = 'succes';
+                    } elseif ($statut_user === 'soumis') {
+                        $classes[] = 'en-attente';
                     } elseif (
                         $statut_user === 'non_commencee'
                         && !utilisateur_est_engage_dans_enigme($user_id, $post->ID)

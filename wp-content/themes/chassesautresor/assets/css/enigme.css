@@ -40,8 +40,8 @@
   position: relative;
   margin-bottom: var(--space-xxs);
   padding-left: var(--space-md);
-  --bullet-fill: currentColor;
-  --bullet-outline: currentColor;
+  --bullet-fill: var(--etat-enigme-menu-en-cours);
+  --bullet-outline: var(--etat-enigme-menu-en-cours);
 }
 
 .enigme-menu li::before {
@@ -76,13 +76,18 @@
 }
 
 .enigme-menu li.bloquee {
-  --bullet-fill: var(--color-grey-medium);
-  --bullet-outline: var(--color-grey-medium);
+  --bullet-fill: var(--etat-enigme-menu-bloquee);
+  --bullet-outline: var(--etat-enigme-menu-bloquee);
+}
+
+.enigme-menu li.en-attente {
+  --bullet-fill: var(--etat-enigme-menu-en-attente);
+  --bullet-outline: var(--etat-enigme-menu-en-attente);
 }
 
 .enigme-menu li.succes {
-  --bullet-fill: var(--color-success);
-  --bullet-outline: var(--color-success);
+  --bullet-fill: var(--etat-enigme-menu-succes);
+  --bullet-outline: var(--etat-enigme-menu-succes);
 }
 
 .enigme-menu li.non-engagee > a {
@@ -90,7 +95,7 @@
 }
 
 .enigme-menu li.non-engagee {
-  --bullet-fill: transparent;
+  --bullet-fill: var(--etat-enigme-menu-non-engagee);
 }
 
 .enigme-menu li.active > a {
