@@ -104,40 +104,38 @@ if ($user_id) {
 }
 $pages = (int) ceil($total / $per_page);
 ?>
-<h3><?php esc_html_e('Tentatives', 'chassesautresor-com'); ?></h3>
-<div class="table-header">
-    <?php if ($pending > 0) : ?>
-    <span class="stat-badge"><?php printf(esc_html__('%d tentatives en attente', 'chassesautresor-com'), $pending); ?></span>
-    <?php endif; ?>
-    <?php if ($total > 0) : ?>
-    <span class="stat-badge"><?php printf(esc_html__('%d tentatives', 'chassesautresor-com'), $total); ?></span>
-    <?php endif; ?>
-    <?php if ($success > 0) : ?>
-    <span class="stat-badge" style="color:var(--color-success);">
-        <?php printf(esc_html__('%d bonne réponse', 'chassesautresor-com'), $success); ?>
-    </span>
-    <?php endif; ?>
-</div>
 <?php if ($total > 0) : ?>
-<div class="stats-table-wrapper" data-per-page="<?php echo esc_attr($per_page); ?>">
-    <table class="stats-table">
-        <thead>
-            <tr>
-                <th><?php esc_html_e('Date', 'chassesautresor-com'); ?></th>
-                <th><?php esc_html_e('Énigme', 'chassesautresor-com'); ?></th>
-                <th><?php esc_html_e('Résultat', 'chassesautresor-com'); ?></th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($tentatives as $tent) : ?>
-            <tr>
-                <td><?php echo esc_html(mysql2date('d/m/Y H:i', $tent->date_tentative)); ?></td>
-                <td><?php echo esc_html($tent->post_title); ?></td>
-                <td><?php echo esc_html($tent->resultat); ?></td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-    <?php echo cta_render_pager($page, $pages, 'tentatives-pager'); ?>
-</div>
+    <h3><?php esc_html_e('Tentatives', 'chassesautresor-com'); ?></h3>
+    <div class="table-header">
+        <?php if ($pending > 0) : ?>
+        <span class="stat-badge"><?php printf(esc_html__('%d tentatives en attente', 'chassesautresor-com'), $pending); ?></span>
+        <?php endif; ?>
+        <span class="stat-badge"><?php printf(esc_html__('%d tentatives', 'chassesautresor-com'), $total); ?></span>
+        <?php if ($success > 0) : ?>
+        <span class="stat-badge" style="color:var(--color-success);">
+            <?php printf(esc_html__('%d bonne réponse', 'chassesautresor-com'), $success); ?>
+        </span>
+        <?php endif; ?>
+    </div>
+    <div class="stats-table-wrapper" data-per-page="<?php echo esc_attr($per_page); ?>">
+        <table class="stats-table">
+            <thead>
+                <tr>
+                    <th><?php esc_html_e('Date', 'chassesautresor-com'); ?></th>
+                    <th><?php esc_html_e('Énigme', 'chassesautresor-com'); ?></th>
+                    <th><?php esc_html_e('Résultat', 'chassesautresor-com'); ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($tentatives as $tent) : ?>
+                <tr>
+                    <td><?php echo esc_html(mysql2date('d/m/Y H:i', $tent->date_tentative)); ?></td>
+                    <td><?php echo esc_html($tent->post_title); ?></td>
+                    <td><?php echo esc_html($tent->resultat); ?></td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+        <?php echo cta_render_pager($page, $pages, 'tentatives-pager'); ?>
+    </div>
 <?php endif; ?>
