@@ -19,6 +19,7 @@
   flex: 1 1 auto;
   overflow-y: auto;
   overflow-x: hidden;
+  background-color: inherit;
 }
 
 .menu-lateral__accordeons {
@@ -172,6 +173,7 @@
   cursor: pointer;
   position: relative;
   transition: background-color 0.3s ease;
+  border-radius: 0 0 6px 6px;
 }
 
 .accordeon-toggle i {
@@ -202,7 +204,7 @@
 .accordeon-toggle:hover,
 .accordeon-toggle:focus,
 .accordeon-toggle:active {
-  background-color: rgba(var(--color-white-rgb, 255, 255, 255), 0.15);
+  background: none;
 }
 
 .accordeon-contenu {
@@ -211,10 +213,12 @@
   max-height: 0;
   transition: max-height 0.3s ease;
   padding: 0 var(--space-md);
+  background-color: inherit;
 }
 
 .accordeon-contenu:not(.accordeon-ferme) {
   max-height: 1000px;
+  padding-bottom: var(--space-sm);
 }
 
 @media (min-width: var(--breakpoint-desktop)) {
