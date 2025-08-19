@@ -138,6 +138,11 @@
   --bullet-fill: var(--etat-enigme-menu-non-engagee);
 }
 
+.enigme-menu li.incomplete {
+  --bullet-fill: var(--etat-enigme-menu-incomplete);
+  --bullet-outline: var(--etat-enigme-menu-incomplete);
+}
+
 .enigme-menu li.active > a {
   background-color: rgba(255, 215, 0, 0.2);
   font-weight: 600;

@@ -579,11 +579,12 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
         $chasse_id      = recuperer_id_chasse_associee($enigme_id);
         $edition_active = utilisateur_peut_modifier_post($enigme_id);
 
-        $menu_items  = [];
-        $liste       = [];
-        $chasse_stat = $chasse_id ? get_field('chasse_cache_statut', $chasse_id) : '';
-        $show_menu   = enigme_user_can_see_menu($user_id, $chasse_id, $chasse_stat);
-        $skip_checks = $chasse_stat === 'termine';
+        $menu_items        = [];
+        $liste             = [];
+        $chasse_stat       = $chasse_id ? get_field('chasse_cache_statut', $chasse_id) : '';
+        $validation_status = $chasse_id ? get_field('chasse_cache_statut_validation', $chasse_id) : '';
+        $show_menu         = enigme_user_can_see_menu($user_id, $chasse_id, $chasse_stat);
+        $skip_checks       = $chasse_stat === 'termine';
         $is_privileged = current_user_can('administrator')
             || (est_organisateur($user_id)
             && utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id));
@@ -633,7 +634,13 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
                     continue;
                 }
 
-                if (in_array($etat_sys, ['bloquee_date', 'bloquee_chasse', 'bloquee_pre_requis'], true)) {
+                if ($etat_sys === 'bloquee_chasse' && in_array($validation_status, ['creation', 'correction'], true)) {
+                    if (!get_field('enigme_cache_complet', $post->ID)) {
+                        $classes[] = 'incomplete';
+                    } else {
+                        $classes[] = 'bloquee';
+                    }
+                } elseif (in_array($etat_sys, ['bloquee_date', 'bloquee_chasse', 'bloquee_pre_requis'], true)) {
                     $classes[] = 'bloquee';
                 } else {
                     $statut_user = enigme_get_statut_utilisateur($post->ID, $user_id);

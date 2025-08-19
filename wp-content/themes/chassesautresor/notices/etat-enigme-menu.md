@@ -9,7 +9,7 @@ Référence centralisée des états utilisés pour les pastilles du menu des én
 | succes | `.succes` | énigme résolue ou terminée | `--etat-enigme-menu-succes` |
 | bloquee | `.bloquee` | verrouillée (date, chasse ou prérequis) | `--etat-enigme-menu-bloquee` |
 | en-attente | `.en-attente` | tentative manuelle en cours de traitement | `--etat-enigme-menu-en-attente` |
-| active | `.active` | élément correspondant à l’énigme ouverte | *(fond doré)* |
+| incomplete | `.incomplete` | énigme incomplète (chasse en création) | `--etat-enigme-menu-incomplete` |
 
 🔁 **Extensibilité**
 
