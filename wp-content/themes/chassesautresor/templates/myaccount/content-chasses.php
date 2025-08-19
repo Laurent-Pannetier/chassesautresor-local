@@ -54,6 +54,7 @@ if ($user_id) {
     }
 }
 ?>
+<h3><?php esc_html_e('Vos chasses', 'chassesautresor-com'); ?></h3>
 <div class="dashboard-grid stats-cards myaccount-chasses-cards">
     <?php foreach ($chasse_ids as $chasse_id) : ?>
     <?php $enigme_id = $enigme_map[$chasse_id] ?? 0; ?>
