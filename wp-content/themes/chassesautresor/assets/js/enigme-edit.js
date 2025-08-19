@@ -1524,7 +1524,12 @@ window.mettreAJourBoutonAjoutEnigme = function () {
   })
     .then(r => r.json())
     .then(res => {
-      if (!res.success || res.data.has_incomplete || nav.querySelector('#carte-ajout-enigme')) {
+      if (
+        !res.success ||
+        res.data.has_incomplete ||
+        !res.data.can_add ||
+        nav.querySelector('#carte-ajout-enigme')
+      ) {
         return;
       }
 

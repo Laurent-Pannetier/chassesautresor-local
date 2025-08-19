@@ -476,6 +476,12 @@ function utilisateur_peut_ajouter_enigme(int $chasse_id, ?int $user_id = null): 
     $statut_validation = get_field('chasse_cache_statut_validation', $chasse_id);
     $statut_metier     = get_field('chasse_cache_statut', $chasse_id);
 
+    $wp_status = get_post_status($chasse_id);
+    if ($wp_status === 'publish') {
+        cat_debug("❌ [ajout énigme] chasse #$chasse_id post status : $wp_status");
+        return false;
+    }
+
     if ($statut_metier !== 'revision') {
         cat_debug("❌ [ajout énigme] chasse #$chasse_id statut metier : $statut_metier");
         return false;

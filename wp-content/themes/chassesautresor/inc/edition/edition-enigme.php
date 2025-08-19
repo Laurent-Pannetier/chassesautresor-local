@@ -644,7 +644,14 @@ function verifier_enigmes_completes_ajax()
         }
     }
 
-    wp_send_json_success(['has_incomplete' => $has_incomplete]);
+    $can_add = function_exists('utilisateur_peut_ajouter_enigme')
+        ? utilisateur_peut_ajouter_enigme($chasse_id)
+        : false;
+
+    wp_send_json_success([
+        'has_incomplete' => $has_incomplete,
+        'can_add'       => $can_add,
+    ]);
 }
 add_action('wp_ajax_verifier_enigmes_completes', 'verifier_enigmes_completes_ajax');
 
