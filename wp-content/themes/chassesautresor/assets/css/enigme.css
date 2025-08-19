@@ -124,6 +124,10 @@
   outline-offset: -2px;
 }
 
+.enigme-menu li.drag-over > a {
+  background-color: rgba(255, 215, 0, 0.2);
+}
+
 @keyframes enigme-menu-spin {
   from {
     transform: translateY(-50%) rotate(0deg);
