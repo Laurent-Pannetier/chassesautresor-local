@@ -288,13 +288,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
               </label>
 
               <?php if ($has_variantes) : ?>
-                <ul class="liste-variantes-resume">
-                  <?php foreach ($variantes_list as $var) : ?>
-                    <li class="variante-resume">
-                      <span class="variante-texte"><?= esc_html($var['texte']); ?></span> => <span class="variante-message"><?= esc_html($var['message']); ?></span>
-                    </li>
-                  <?php endforeach; ?>
-                </ul>
+                <table class="variantes-table">
+                  <thead>
+                    <tr>
+                      <th scope="col"><?= esc_html__('Variante', 'chassesautresor-com'); ?></th>
+                      <th scope="col"><?= esc_html__('Message', 'chassesautresor-com'); ?></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php foreach ($variantes_list as $var) : ?>
+                      <tr class="variante-resume">
+                        <td class="variante-texte"><?= esc_html($var['texte']); ?></td>
+                        <td class="variante-message"><?= esc_html($var['message']); ?></td>
+                      </tr>
+                    <?php endforeach; ?>
+                  </tbody>
+                </table>
                 <?php if ($peut_editer) : ?>
                   <button type="button" class="champ-modifier ouvrir-panneau-variantes" aria-label="<?= esc_attr__('Éditer les variantes', 'chassesautresor-com'); ?>" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
                     <?= esc_html__('éditer', 'chassesautresor-com'); ?>

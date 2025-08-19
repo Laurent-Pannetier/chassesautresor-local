@@ -148,7 +148,7 @@ window.mettreAJourResumeInfos = function () {
       }
 
       if (champ === 'enigme_reponse_variantes') {
-        const nbVar = blocEdition?.querySelectorAll('.liste-variantes-resume .variante-resume')?.length || 0;
+        const nbVar = blocEdition?.querySelectorAll('.variantes-table .variante-resume')?.length || 0;
         estRempli = nbVar > 0;
       }
 

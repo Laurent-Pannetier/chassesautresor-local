@@ -1065,17 +1065,36 @@ body.panneau-ouvert::before {
   background-color: var(--color-editor-button-hover);
 }
 
-.liste-variantes-resume {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.champ-variantes-resume {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
 }
 
-.liste-variantes-resume .variante-texte {
+.champ-variantes-resume .variantes-table {
+  margin: 0;
+  width: auto;
+  display: inline-table;
+  border-collapse: collapse;
+  font-size: 0.85em;
+}
+
+.champ-variantes-resume .variantes-table th,
+.champ-variantes-resume .variantes-table td {
+  padding: 0 4px 0 0;
+  font-weight: normal;
+  border: none;
+}
+
+.champ-variantes-resume .variantes-table th {
+  color: var(--color-editor-text-muted);
+}
+
+.champ-variantes-resume .variantes-table .variante-texte {
   color: var(--color-editor-text);
 }
 
-.liste-variantes-resume .variante-message {
+.champ-variantes-resume .variantes-table .variante-message {
   color: var(--color-editor-text-muted);
 }
 
