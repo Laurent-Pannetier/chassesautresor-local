@@ -47,10 +47,13 @@
 
 .resume-infos .icon-attente,
 .resume-infos .icone-check {
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: var(--editor-icon-width);
+  flex: 0 0 var(--editor-icon-width);
   margin-right: 0.3rem;
-  text-align: center;
+  overflow: hidden;
 }
 
 .resume-infos .champ-rempli .icon-attente {
@@ -63,6 +66,10 @@
 
 .resume-infos .icone-check {
   color: var(--color-editor-success);
+}
+
+.resume-infos .edition-row-icon {
+  display: none;
 }
 
 /* Alignement des lignes sans icône */
