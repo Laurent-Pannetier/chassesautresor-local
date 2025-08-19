@@ -658,9 +658,13 @@ function initLibelleBoutonGalerie() {
   if (!window.acf) return;
 
   const mettreAJour = (field) => {
-    const bouton = field.querySelector('.acf-gallery-add');
+    const el = field && field.nodeType ? field : field?.[0];
+    if (!el) return;
+
+    const bouton = el.querySelector('.acf-gallery-add');
     if (bouton) {
-      bouton.textContent = wp.i18n.__('Ajouter une illustration', 'chassesautresor-com');
+      const label = window.wp?.i18n?.__('Ajouter une illustration', 'chassesautresor-com') ?? 'Ajouter une illustration';
+      bouton.textContent = label;
     }
   };
 
