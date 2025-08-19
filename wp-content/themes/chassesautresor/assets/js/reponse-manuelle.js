@@ -58,6 +58,12 @@ function initFormulaireManuel() {
           parent.insertBefore(msgProcessing, form);
           form.remove();
 
+          const currentMenuItem = document.querySelector('.enigme-menu li.active');
+          if (currentMenuItem) {
+            currentMenuItem.classList.remove('non-engagee', 'bloquee', 'succes');
+            currentMenuItem.classList.add('en-attente');
+          }
+
           setTimeout(() => { msgSuccess.remove(); }, 5000);
         } else {
           feedback.textContent = res.data;
