@@ -168,7 +168,7 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
         $nb_joueurs = enigme_compter_joueurs_engages($enigme_id);
         $mode       = get_field('enigme_mode_validation', $enigme_id);
 
-        $html  = '<div class="bloc-metas-inline">';
+        $html  = '<div class="bloc-metas-inline bloc-metas-inline--compact">';
         $html .= '<div class="meta-etiquette"><span>'
             . esc_html__('Nb joueurs :', 'chassesautresor-com')
             . '</span><strong>' . esc_html($nb_joueurs) . '</strong></div>';

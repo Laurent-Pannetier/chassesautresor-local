@@ -493,12 +493,26 @@ a.ajout-link:focus-visible {
 .meta-etiquette strong {
   font-weight: 600;
 }
+.bloc-metas-inline--compact {
+  gap: 0.5rem;
+  font-size: 0.75rem;
+}
+
+.bloc-metas-inline--compact .meta-etiquette {
+  padding: 0.2em 0.6em;
+}
 @media (--bp-sm) {
     .bloc-metas-inline {
         gap:0.8rem;
     }
     .meta-etiquette {
         font-size:85%;
+    }
+    .bloc-metas-inline--compact {
+        gap:0.4rem;
+    }
+    .bloc-metas-inline--compact .meta-etiquette {
+        font-size:100%;
     }
 }
 
