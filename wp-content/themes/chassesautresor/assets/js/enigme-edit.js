@@ -665,7 +665,7 @@ function initPanneauVariantes() {
   const boutonAjouter = document.getElementById('bouton-ajouter-variante');
   const messageLimite = document.querySelector('.message-limite-variantes');
   const resumeBloc = document.querySelector('[data-champ="enigme_reponse_variantes"]');
-  let listeResume = resumeBloc?.querySelector('.liste-variantes-resume');
+  let listeResume = resumeBloc?.querySelector('.variantes-table');
   let lienAjouterResume = resumeBloc?.querySelector('.champ-ajouter');
   let boutonEditerResume = resumeBloc?.querySelector('.champ-modifier.ouvrir-panneau-variantes');
 
@@ -823,30 +823,44 @@ function initPanneauVariantes() {
 
           if (resumeBloc) {
             if (!listeResume) {
-              listeResume = document.createElement('ul');
-              listeResume.className = 'liste-variantes-resume';
+              listeResume = document.createElement('table');
+              listeResume.className = 'variantes-table stats-table compact';
+              const thead = document.createElement('thead');
+              const trHead = document.createElement('tr');
+              const thTexte = document.createElement('th');
+              thTexte.scope = 'col';
+              thTexte.textContent = wp.i18n.__('Réponse', 'chassesautresor-com');
+              const thMessage = document.createElement('th');
+              thMessage.scope = 'col';
+              thMessage.textContent = wp.i18n.__('Message', 'chassesautresor-com');
+              trHead.appendChild(thTexte);
+              trHead.appendChild(thMessage);
+              thead.appendChild(trHead);
+              listeResume.appendChild(thead);
+              const tbodyEl = document.createElement('tbody');
+              listeResume.appendChild(tbodyEl);
               resumeBloc.insertBefore(listeResume, boutonEditerResume || lienAjouterResume || null);
             }
 
-            listeResume.innerHTML = '';
+            const tbody = listeResume.querySelector('tbody');
+            tbody.innerHTML = '';
             let nb = 0;
             for (let i = 1; i <= 4; i++) {
               const t = updates.find(u => u[0] === 'texte_' + i)?.[1] || '';
               const m = updates.find(u => u[0] === 'message_' + i)?.[1] || '';
               if (t && m) {
                 nb++;
-                const li = document.createElement('li');
-                li.className = 'variante-resume';
-                const spanT = document.createElement('span');
-                spanT.className = 'variante-texte';
-                spanT.textContent = t;
-                const spanM = document.createElement('span');
-                spanM.className = 'variante-message';
-                spanM.textContent = m;
-                li.appendChild(spanT);
-                li.appendChild(document.createTextNode(' => '));
-                li.appendChild(spanM);
-                listeResume.appendChild(li);
+                const tr = document.createElement('tr');
+                tr.className = 'variante-resume';
+                const tdT = document.createElement('td');
+                tdT.className = 'variante-texte';
+                tdT.textContent = t;
+                const tdM = document.createElement('td');
+                tdM.className = 'variante-message';
+                tdM.textContent = m;
+                tr.appendChild(tdT);
+                tr.appendChild(tdM);
+                tbody.appendChild(tr);
               }
             }
 

@@ -1065,17 +1065,15 @@ body.panneau-ouvert::before {
   background-color: var(--color-editor-button-hover);
 }
 
-.liste-variantes-resume {
-  list-style: none;
+.variantes-table {
   margin: 0;
-  padding: 0;
 }
 
-.liste-variantes-resume .variante-texte {
+.variantes-table .variante-texte {
   color: var(--color-editor-text);
 }
 
-.liste-variantes-resume .variante-message {
+.variantes-table .variante-message {
   color: var(--color-editor-text-muted);
 }
 
