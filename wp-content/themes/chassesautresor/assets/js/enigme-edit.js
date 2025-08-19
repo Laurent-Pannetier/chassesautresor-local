@@ -696,6 +696,10 @@ function initPanneauVariantes() {
   let lienAjouterResume = resumeBloc?.querySelector('.champ-ajouter');
   let boutonEditerResume = resumeBloc?.querySelector('.champ-modifier.ouvrir-panneau-variantes');
 
+  if (boutonEditerResume) {
+    boutonEditerResume.style.display = 'inline-block';
+  }
+
   if (!panneau || !formulaire || !postId || !wrapper || !boutonAjouter || !messageLimite || !resumeBloc) return;
 
   function ouvrirPanneau() {
