@@ -48,7 +48,9 @@
 .resume-infos .icon-attente,
 .resume-infos .icone-check {
   display: inline-block;
+  width: var(--editor-icon-width);
   margin-right: 0.3rem;
+  text-align: center;
 }
 
 .resume-infos .champ-rempli .icon-attente {
@@ -65,7 +67,7 @@
 
 /* Alignement des lignes sans icône */
 .resume-infos li[data-no-icon] {
-  /* padding-left: 1.3rem; */
+  padding-left: calc(var(--editor-icon-width) + 0.3rem);
 }
 
 /* Hauteur et alignement par défaut des lignes de paramètres */
