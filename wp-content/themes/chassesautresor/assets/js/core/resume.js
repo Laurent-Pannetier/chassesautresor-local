@@ -223,6 +223,9 @@ window.onChampSimpleMisAJour = function (champ, postId, valeur, cpt) {
     if (typeof window.mettreAJourTitreHeader === 'function') {
       window.mettreAJourTitreHeader(cpt, valeur);
     }
+    if (cpt === 'enigme' && typeof window.mettreAJourTitreMenuEnigme === 'function') {
+      window.mettreAJourTitreMenuEnigme(valeur);
+    }
   }
 
   // ✅ ORGANISATEUR : mise à jour image
