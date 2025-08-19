@@ -126,7 +126,7 @@
 
 .enigme-menu__edit {
   position: absolute;
-  top: 30%;
+  top: 40%;
   right: var(--space-sm);
   transform: translateY(-50%);
   font-size: 0.7em;
