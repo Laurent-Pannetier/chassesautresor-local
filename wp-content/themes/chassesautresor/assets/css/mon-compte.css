@@ -382,6 +382,12 @@
     gap: 8px;
 }
 
+.dashboard-grid > .dashboard-card:only-child {
+    max-width: var(--dashboard-card-max-width);
+    width: 100%;
+    justify-self: center;
+}
+
 .dashboard-card:hover {
     background: hsl(var(--muted));
 }
