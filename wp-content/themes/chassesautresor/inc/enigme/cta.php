@@ -177,9 +177,14 @@ function get_cta_enigme(int $enigme_id, ?int $user_id = null): array
     if ($etat_systeme === 'bloquee_pre_requis') {
         if (enigme_pre_requis_remplis($enigme_id, $user_id)) {
             $etat_systeme = 'accessible';
-            $cta['etat_systeme'] = $etat_systeme;
+        }
+    } else {
+        $condition_acces = get_field('enigme_acces_condition', $enigme_id);
+        if ($condition_acces === 'pre_requis' && !enigme_pre_requis_remplis($enigme_id, $user_id)) {
+            $etat_systeme = 'bloquee_pre_requis';
         }
     }
+    $cta['etat_systeme'] = $etat_systeme;
 
     // 🚫 Énigme bloquée ou mal configurée
     if (!in_array($etat_systeme, ['accessible'], true)) {

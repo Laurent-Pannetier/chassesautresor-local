@@ -164,13 +164,12 @@ function enigme_pre_requis_remplis(int $enigme_id, int $user_id): bool
     }
 
     foreach ($pre_requis as $enigme_requise) {
-        $enigme_id_requise = is_object($enigme_requise) ? $enigme_requise->ID : (is_numeric($enigme_requise) ? (int)$enigme_requise : null);
+        $enigme_id_requise = is_object($enigme_requise) ? $enigme_requise->ID : (is_numeric($enigme_requise) ? (int) $enigme_requise : null);
 
         if ($enigme_id_requise) {
-            $statut = get_user_meta($user_id, "statut_enigme_{$enigme_id_requise}", true);
-            $statut = $statut ? strtolower(remove_accents($statut)) : '';
+            $statut = enigme_get_statut_utilisateur($enigme_id_requise, $user_id);
 
-            if ($statut !== 'terminee') {
+            if (!in_array($statut, ['resolue', 'terminee'], true)) {
                 return false; // ❌ Prérequis non rempli
             }
         }
