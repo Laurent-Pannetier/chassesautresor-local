@@ -39,12 +39,12 @@ if ($mode_validation === 'manuelle') {
 }
 
 $statut_actuel = enigme_get_statut_utilisateur($post_id, $user_id);
-  if ($statut_actuel === 'resolue') {
-    echo '<p class="message-joueur-statut">'
+if ($statut_actuel === 'resolue') {
+    echo '<p class="message-joueur-statut">✅ '
         . esc_html__('Vous avez déjà résolu cette énigme.', 'chassesautresor-com')
         . '</p>';
     return;
-  }
+}
 
 $tentatives_du_jour = compter_tentatives_du_jour($user_id, $post_id);
   $boutique_url = esc_url(home_url('/boutique/'));
