@@ -263,7 +263,7 @@ function ajax_lister_tentatives_enigme()
 
     $enigme_id = isset($_POST['enigme_id']) ? (int) $_POST['enigme_id'] : 0;
     $page      = max(1, (int) ($_POST['page'] ?? 1));
-    $par_page  = 5;
+    $par_page  = 20;
 
     if (!$enigme_id || get_post_type($enigme_id) !== 'enigme') {
         wp_send_json_error('post_invalide');

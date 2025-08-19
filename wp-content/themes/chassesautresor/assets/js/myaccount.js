@@ -20,6 +20,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  const decorateMessages = () => {
+    const container = content.querySelector('.msg-important');
+    if (container) {
+      container
+        .querySelectorAll('p:not(.flash)')
+        .forEach((p) => p.classList.add('alerte-discret'));
+    }
+  };
+
   const loadSection = async (link, push = true) => {
     const section = link.dataset.section;
     if (!section) {
@@ -43,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       const messages = data.data.messages || '';
       content.innerHTML = `<section class="msg-important">${messages}</section>` + data.data.html;
+      decorateMessages();
       fadeFlash();
       document
         .querySelectorAll('.dashboard-nav-link[data-section]')
@@ -93,5 +103,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  decorateMessages();
   fadeFlash();
 });
