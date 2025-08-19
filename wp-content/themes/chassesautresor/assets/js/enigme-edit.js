@@ -1529,7 +1529,19 @@ function initEnigmeReorder() {
     dragged = e.target.closest('li');
     if (dragged) {
       e.dataTransfer.effectAllowed = 'move';
+      dragged.classList.add('dragging');
     }
+  });
+
+  menu.addEventListener('dragenter', (e) => {
+    const target = e.target.closest('li');
+    if (!dragged || !target || dragged === target) return;
+    target.classList.add('drag-over');
+  });
+
+  menu.addEventListener('dragleave', (e) => {
+    const target = e.target.closest('li');
+    if (target) target.classList.remove('drag-over');
   });
 
   menu.addEventListener('dragover', (e) => {
@@ -1574,13 +1586,20 @@ function initEnigmeReorder() {
     }
   };
 
+  const cleanClasses = () => {
+    menu.querySelectorAll('.drag-over').forEach((li) => li.classList.remove('drag-over'));
+    dragged?.classList.remove('dragging');
+  };
+
   menu.addEventListener('drop', (e) => {
     e.preventDefault();
+    cleanClasses();
     dragged = null;
     saveOrder();
   });
 
   menu.addEventListener('dragend', () => {
+    cleanClasses();
     dragged = null;
     saveOrder();
   });

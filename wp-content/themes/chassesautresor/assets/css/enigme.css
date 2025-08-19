@@ -115,6 +115,15 @@
   font-weight: 600;
 }
 
+.enigme-menu li.dragging {
+  opacity: 0.5;
+}
+
+.enigme-menu li.drag-over {
+  outline: 2px dashed var(--color-accent);
+  outline-offset: -2px;
+}
+
 @keyframes enigme-menu-spin {
   from {
     transform: translateY(-50%) rotate(0deg);
