@@ -102,39 +102,38 @@ function myaccount_get_organizer_nav(int $user_id): ?array
 
         $enigme_ids = recuperer_ids_enigmes_pour_chasse($chasse->ID);
         foreach ($enigme_ids as $enigme_id) {
-            $sub_classes = 'dashboard-nav-subitem ' . $classes;
-            $url         = get_permalink($enigme_id);
+            $sub_classes      = 'dashboard-nav-subitem';
+            $url              = get_permalink($enigme_id);
+            $enigme_complete  = get_field('enigme_cache_complet', $enigme_id);
+            $post_status      = get_post_status($enigme_id);
+            $etat_enigme      = get_field('enigme_cache_etat_systeme', $enigme_id);
 
-            if (strpos($classes, 'status-published') !== false) {
-                $enigme_complete = get_field('enigme_cache_complet', $enigme_id);
-                if (!$enigme_complete) {
-                    $sub_classes .= ' status-important';
-                } else {
-                    $post_status_enigme = get_post_status($enigme_id);
-                    $etat_enigme        = get_field('enigme_cache_etat_systeme', $enigme_id);
-
-                    if ($post_status_enigme === 'pending') {
-                        if (in_array($etat_enigme, ['invalide', 'cache_invalide'], true)) {
-                            continue;
-                        }
+            if (!$enigme_complete) {
+                $sub_classes .= ' status-important';
+            } else {
+                if ($post_status === 'pending') {
+                    if (in_array($etat_enigme, ['invalide', 'cache_invalide'], true)) {
+                        continue;
+                    }
+                    $sub_classes .= ' status-pending';
+                } elseif ($post_status === 'publish') {
+                    if ($etat_enigme === 'accessible') {
+                        $sub_classes .= ' status-published';
+                    } elseif (in_array($etat_enigme, ['bloquee_date', 'bloquee_chasse', 'bloquee_pre_requis'], true)) {
                         $sub_classes .= ' status-pending';
-                    } elseif ($post_status_enigme === 'publish') {
-                        if ($etat_enigme === 'accessible') {
-                            $sub_classes .= ' status-published';
-                        } elseif (in_array($etat_enigme, ['bloquee_date', 'bloquee_chasse', 'bloquee_pre_requis'], true)) {
-                            $sub_classes .= ' status-pending';
-                        } else {
-                            $sub_classes .= ' status-pending';
-                        }
                     } else {
                         $sub_classes .= ' status-pending';
                     }
+                } else {
+                    $sub_classes .= ' status-pending';
                 }
+            }
 
-                if (in_array($enigme_id, $pending_enigmes, true)) {
-                    $sub_classes .= ' status-important';
-                }
-            } else {
+            if (in_array($enigme_id, $pending_enigmes, true)) {
+                $sub_classes .= ' status-important';
+            }
+
+            if (strpos($classes, 'status-published') === false) {
                 $url = null;
             }
 
