@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const currentMenuItem = document.querySelector('.enigme-menu li.active');
             if (currentMenuItem) {
-              currentMenuItem.classList.remove('non-engagee', 'bloquee');
+              currentMenuItem.classList.remove('non-engagee', 'bloquee', 'en-attente');
               currentMenuItem.classList.add('succes');
             }
           } else {
