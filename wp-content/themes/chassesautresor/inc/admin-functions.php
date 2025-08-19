@@ -1411,6 +1411,8 @@ function cta_reset_stats() {
         $wpdb->query("TRUNCATE TABLE {$table}");
     }
 
+    delete_metadata('user', 0, '_myaccount_messages', '', true);
+
     wp_send_json_success();
 }
 add_action('wp_ajax_cta_reset_stats', 'cta_reset_stats');
