@@ -652,6 +652,32 @@ if (document.readyState === 'loading') {
 
 
 // ==============================
+// 🖼️ Libellé du bouton galerie ACF
+// ==============================
+function initLibelleBoutonGalerie() {
+  if (!window.acf) return;
+
+  const mettreAJour = (field) => {
+    const bouton = field.querySelector('.acf-gallery-add');
+    if (bouton) {
+      bouton.textContent = wp.i18n.__('Ajouter une illustration', 'chassesautresor-com');
+    }
+  };
+
+  window.acf.add_action('ready_field/type=gallery', mettreAJour);
+  window.acf.add_action('append_field/type=gallery', mettreAJour);
+
+  document.querySelectorAll('.acf-field[data-type="gallery"]').forEach(mettreAJour);
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initLibelleBoutonGalerie);
+} else {
+  initLibelleBoutonGalerie();
+}
+
+
+// ==============================
 // 🧩 Gestion du panneau variantes
 // ==============================
 function initPanneauVariantes() {
