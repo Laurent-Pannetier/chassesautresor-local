@@ -350,6 +350,18 @@ function traiter_statut_enigme(int $enigme_id, ?int $user_id = null): array
         ];
     }
 
+    $condition_acces = get_field('enigme_acces_condition', $enigme_id) ?? 'immediat';
+    if ($condition_acces === 'pre_requis' && !enigme_pre_requis_remplis($enigme_id, $user_id)) {
+        return [
+            'etat' => 'bloquee_pre_requis',
+            'rediriger' => true,
+            'url' => $chasse_id ? get_permalink($chasse_id) : home_url('/'),
+            'afficher_formulaire' => false,
+            'afficher_message' => false,
+            'message_html' => '',
+        ];
+    }
+
     // 🔁 Cas interdits : accès refusé
     if ($statut === 'abandonnee') {
         return [
@@ -584,6 +596,14 @@ function utilisateur_peut_engager_enigme(int $enigme_id, ?int $user_id = null): 
     $user_id = $user_id ?? get_current_user_id();
 
     $etat_systeme = enigme_get_etat_systeme($enigme_id);
+    if (
+        $etat_systeme === 'bloquee_pre_requis'
+        && function_exists('enigme_pre_requis_remplis')
+        && enigme_pre_requis_remplis($enigme_id, $user_id)
+    ) {
+        $etat_systeme = 'accessible';
+    }
+
     $statut = enigme_get_statut_utilisateur($enigme_id, $user_id);
 
     $statuts_autorises = ['non_commencee', 'abandonnee', 'echouee'];

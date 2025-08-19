@@ -630,13 +630,15 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
             $classes = [];
 
             if (!$skip_checks) {
-                $etat_sys = get_field('enigme_cache_etat_systeme', $post->ID) ?? 'accessible';
+                $etat_sys       = get_field('enigme_cache_etat_systeme', $post->ID) ?? 'accessible';
+                $condition_acces = get_field('enigme_acces_condition', $post->ID) ?? 'immediat';
+
                 if (in_array($etat_sys, ['invalide', 'cache_invalide'], true)) {
                     continue;
                 }
 
                 if (
-                    $etat_sys === 'bloquee_pre_requis'
+                    $condition_acces === 'pre_requis'
                     && !$is_privileged
                     && (!function_exists('enigme_pre_requis_remplis')
                         || !enigme_pre_requis_remplis($post->ID, $user_id))
@@ -644,7 +646,10 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
                     continue;
                 }
 
-                if ($etat_sys === 'bloquee_pre_requis') {
+                if (
+                    $condition_acces === 'pre_requis'
+                    && $etat_sys === 'bloquee_pre_requis'
+                ) {
                     $etat_sys = 'accessible';
                 }
 
