@@ -15,10 +15,6 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.menu-lateral.has-open-accordeon {
-  min-height: calc(100vh - var(--space-md));
-}
-
 .menu-lateral__content {
   flex: 1 1 auto;
   overflow-y: auto;
