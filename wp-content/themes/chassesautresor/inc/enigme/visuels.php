@@ -152,7 +152,7 @@ function afficher_visuels_enigme(int $enigme_id): void
             $class = 'vignette' . ($index === 0 ? ' active' : '');
 
             echo '<img src="' . $src_thumb . '" class="' . esc_attr($class) . '" alt="" data-image-id="' . esc_attr($img_id) . '">';
-            echo '<a href="' . $src_full . '" rel="lightbox-enigme" class="hidden-lightbox-link" style="display:none;"></a>';
+            echo '<a href="' . $src_full . '" rel="lightbox-enigme" class="fancybox hidden-lightbox-link" style="display:none;"></a>';
         }
         echo '</div>';
     }
