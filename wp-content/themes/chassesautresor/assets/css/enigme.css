@@ -130,7 +130,7 @@
   right: var(--space-sm);
   transform: translateY(-50%);
   font-size: 0.7em;
-  color: currentColor;
+  color: var(--color-accent);
   opacity: 0;
   transition: opacity 0.2s, font-size 0.2s;
   background: none;
