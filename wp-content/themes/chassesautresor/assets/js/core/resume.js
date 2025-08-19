@@ -204,6 +204,9 @@ window.mettreAJourResumeInfos = function () {
   if (typeof window.mettreAJourCarteAjoutEnigme === 'function') {
     window.mettreAJourCarteAjoutEnigme();
   }
+  if (typeof window.mettreAJourBoutonAjoutEnigme === 'function') {
+    window.mettreAJourBoutonAjoutEnigme();
+  }
   if (typeof window.mettreAJourEtatIntroChasse === 'function') {
     window.mettreAJourEtatIntroChasse();
   }

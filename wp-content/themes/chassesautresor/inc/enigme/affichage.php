@@ -348,7 +348,8 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
             }
 
             if (!empty($menu_items)) {
-                echo '<section class="enigme-navigation">';
+                $data_chasse = $chasse_id ? ' data-chasse-id="' . intval($chasse_id) . '"' : '';
+                echo '<section class="enigme-navigation"' . $data_chasse . '>';
                 echo '<h3>' . esc_html__('Énigmes', 'chassesautresor-com') . '</h3>';
                 echo '%AJOUT%';
                 echo '<ul class="enigme-menu">' . implode('', $menu_items) . '</ul>';

@@ -617,6 +617,37 @@ function supprimer_enigme_ajax()
 }
 add_action('wp_ajax_supprimer_enigme', 'supprimer_enigme_ajax');
 
+/**
+ * Vérifie s'il reste des énigmes incomplètes pour une chasse.
+ *
+ * @hook wp_ajax_verifier_enigmes_completes
+ * @return void
+ */
+function verifier_enigmes_completes_ajax()
+{
+    if (!is_user_logged_in()) {
+        wp_send_json_error('non_connecte');
+    }
+
+    $chasse_id = isset($_POST['chasse_id']) ? (int) $_POST['chasse_id'] : 0;
+    if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
+        wp_send_json_error('id_invalide');
+    }
+
+    $ids            = recuperer_enigmes_associees($chasse_id);
+    $has_incomplete = false;
+    foreach ($ids as $eid) {
+        verifier_ou_mettre_a_jour_cache_complet($eid);
+        if (!get_field('enigme_cache_complet', $eid)) {
+            $has_incomplete = true;
+            break;
+        }
+    }
+
+    wp_send_json_success(['has_incomplete' => $has_incomplete]);
+}
+add_action('wp_ajax_verifier_enigmes_completes', 'verifier_enigmes_completes_ajax');
+
 
 
 // ==================================================
