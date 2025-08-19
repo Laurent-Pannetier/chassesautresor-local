@@ -382,8 +382,12 @@ function mettreAJourLigneResume(ligne, champ, estRempli, type) {
       boutonInterne?.click();
     });
 
-    const cible = ligne.querySelector('.champ-texte') || ligne;
-    cible.appendChild(bouton);
+    const champTexte = ligne.querySelector('.champ-texte');
+    if (champTexte) {
+      champTexte.after(bouton);
+    } else {
+      ligne.appendChild(bouton);
+    }
     if (typeof initZoneClicEdition === 'function') initZoneClicEdition(bouton);
   }
 }
