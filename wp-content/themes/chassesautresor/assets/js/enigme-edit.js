@@ -604,10 +604,9 @@ function initChampBonneReponse() {
   const input = bloc.querySelector('.champ-input');
   if (!input) return;
 
-  const champ = bloc.dataset.champ;
-  const postId = bloc.dataset.postId;
-  const cptChamp = bloc.dataset.cpt || 'enigme';
-  let timerSauvegarde;
+  const mettreAJourClasse = () => {
+    input.classList.toggle('champ-vide-obligatoire', input.value.trim() === '');
+  };
 
   // Crée ou récupère l’alerte si déjà existante
   let alerte = bloc.querySelector('.message-limite');
@@ -622,6 +621,7 @@ function initChampBonneReponse() {
   }
 
   input.setAttribute('maxlength', '75');
+  mettreAJourClasse();
 
   input.addEventListener('input', () => {
     const longueur = input.value.length;
@@ -638,12 +638,7 @@ function initChampBonneReponse() {
       alerte.style.display = 'none';
     }
 
-    if (champ && postId) {
-      clearTimeout(timerSauvegarde);
-      timerSauvegarde = setTimeout(() => {
-        modifierChampSimple(champ, input.value.trim(), postId, cptChamp);
-      }, 400);
-    }
+    mettreAJourClasse();
   });
 }
 
