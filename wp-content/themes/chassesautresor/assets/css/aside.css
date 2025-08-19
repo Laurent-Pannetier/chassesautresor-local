@@ -10,10 +10,13 @@
   align-self: start;
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - var(--space-md));
   max-height: calc(100vh - var(--space-md));
   color: rgba(var(--color-white-rgb, 255, 255, 255), 0.4);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.menu-lateral.has-open-accordeon {
+  min-height: calc(100vh - var(--space-md));
 }
 
 .menu-lateral__content {
@@ -27,8 +30,10 @@
   flex-shrink: 0;
   position: sticky;
   bottom: 0;
-  width: 100%;
   background-color: inherit;
+  width: calc(100% + 2 * var(--space-md));
+  margin-left: calc(-1 * var(--space-md));
+  margin-right: calc(-1 * var(--space-md));
 }
 
 .menu-lateral__header {
@@ -146,14 +151,12 @@
 .stats-bar-chart .bar-row:nth-child(5) .bar-fill { background-color: hsl(0 0% 40%); }
 
 /* ===== Accordéons ===== */
-.menu-lateral__accordeons {
-}
-
 /* Premier bloc après le contenu principal */
 .accordeon-bloc {
   margin-top: var(--space-md);
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 .accordeon-bloc + .accordeon-bloc {
@@ -210,6 +213,7 @@
   width: 100%;
   max-height: 0;
   transition: max-height 0.3s ease;
+  padding: 0 var(--space-md);
 }
 
 .accordeon-contenu:not(.accordeon-ferme) {
