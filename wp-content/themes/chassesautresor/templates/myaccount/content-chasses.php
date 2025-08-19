@@ -58,7 +58,7 @@ if ($user_id) {
     <?php foreach ($chasse_ids as $chasse_id) : ?>
     <?php $enigme_id = $enigme_map[$chasse_id] ?? 0; ?>
     <div class="dashboard-card">
-        <?php echo get_the_post_thumbnail($chasse_id, 'thumbnail', ['loading' => 'lazy']); ?>
+        <?php afficher_picture_vignette_chasse($chasse_id); ?>
         <?php if ($enigme_id) : ?>
         <div class="enigme-thumbnail">
             <?php afficher_picture_vignette_enigme($enigme_id, get_the_title($enigme_id), ['thumbnail']); ?>
