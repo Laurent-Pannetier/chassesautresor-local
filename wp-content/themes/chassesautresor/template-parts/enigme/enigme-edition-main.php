@@ -23,7 +23,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($titre_defaut);
 $visuel = get_field('enigme_visuel_image', $enigme_id); // champ "gallery" → tableau d’IDs
 $has_images = is_array($visuel) && count($visuel) > 0;
 $legende = (string) get_field('enigme_visuel_legende', $enigme_id);
-$texte = (string) get_field('enigme_visuel_texte', $enigme_id);
+$texte_enigme = (string) get_field('enigme_visuel_texte', $enigme_id);
 $reponse = get_field('enigme_reponse_bonne', $enigme_id);
 $casse = get_field('enigme_reponse_casse', $enigme_id);
 $max = (int) get_field('enigme_tentative_max', $enigme_id);
@@ -46,13 +46,13 @@ $stats_locked = in_array($chasse_validation, ['creation', 'en_attente', 'correct
 $nb_variantes   = 0;
 $variantes_list = [];
 for ($i = 1; $i <= 4; $i++) {
-    $texte   = trim((string) get_field("texte_{$i}", $enigme_id));
-    $message = trim((string) get_field("message_{$i}", $enigme_id));
-    if ($texte && $message) {
+    $texte_variante   = trim((string) get_field("texte_{$i}", $enigme_id));
+    $message_variante = trim((string) get_field("message_{$i}", $enigme_id));
+    if ($texte_variante && $message_variante) {
         $nb_variantes++;
         $variantes_list[] = [
-            'texte'   => $texte,
-            'message' => $message,
+            'texte'   => $texte_variante,
+            'message' => $message_variante,
         ];
     }
 }
@@ -168,11 +168,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                     <div class="champ-feedback"></div>
                   </li>
 
-                  <li class="champ-enigme champ-wysiwyg<?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_visuel_texte" data-cpt="enigme"
+                  <li class="champ-enigme champ-wysiwyg<?= empty(trim($texte_enigme)) ? ' champ-vide' : ' champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_visuel_texte" data-cpt="enigme"
                     data-post-id="<?= esc_attr($enigme_id); ?>">
                     <label><?= esc_html__('Texte énigme', 'chassesautresor-com'); ?></label>
                     <div class="champ-texte">
-                        <?php if (empty(trim($texte))) : ?>
+                        <?php if (empty(trim($texte_enigme))) : ?>
                             <?php if ($peut_editer) : ?>
                                 <a href="#" class="champ-ajouter ouvrir-panneau-description"
                                    data-champ="enigme_visuel_texte"
@@ -183,19 +183,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                             <?php endif; ?>
                         <?php else : ?>
                             <span class="champ-texte-contenu">
-                                <?= esc_html(wp_trim_words(wp_strip_all_tags($texte), 25)); ?>
+                                <?= esc_html(wp_trim_words(wp_strip_all_tags($texte_enigme), 25)); ?>
                                 <?php if ($peut_editer) : ?>
                                       <button type="button" class="champ-modifier ouvrir-panneau-description"
                                           data-champ="enigme_visuel_texte"
                                           data-cpt="enigme"
                                           data-post-id="<?= esc_attr($enigme_id); ?>"
-                                          aria-label="<?= esc_attr__('Modifier le texte', 'chassesautresor-com'); ?>">
-                                          <?= esc_html__('modifier', 'chassesautresor-com'); ?>
+                                          aria-label="<?= esc_attr__('Éditer le texte', 'chassesautresor-com'); ?>">
+                                          <?= esc_html__('éditer', 'chassesautresor-com'); ?>
                                       </button>
                                 <?php endif; ?>
                             </span>
                         <?php endif; ?>
                     </div>
+                    <div class="champ-feedback"></div>
                   </li>
 
                   <li class="champ-enigme champ-texte champ-soustitre<?= empty(trim($legende)) ? ' champ-vide' : ' champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>"
