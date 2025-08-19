@@ -655,7 +655,7 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
             }
 
             $submenu_items[] = sprintf(
-                '<li class="%s" data-enigme-id="%d"><a href="%s">%s</a></li>',
+                '<li class="%s" data-enigme-id="%d"><span class="enigme-menu__handle" aria-hidden="true"></span><a href="%s">%s</a></li>',
                 esc_attr(implode(' ', $classes)),
                 $post->ID,
                 esc_url(get_permalink($post->ID)),
