@@ -92,6 +92,10 @@ function myaccount_get_organizer_nav(int $user_id): ?array
             }
         }
 
+        if (strpos($classes, 'status-published') === false) {
+            $classes .= ' status-muted';
+        }
+
         $chasse_item = [
             'title'        => get_the_title($chasse->ID),
             'url'          => get_permalink($chasse->ID),
