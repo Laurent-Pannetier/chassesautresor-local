@@ -331,12 +331,6 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
                 echo '<h2 class="menu-lateral__title"><a href="' . esc_url($url_chasse) . '">' . esc_html($titre) . '</a></h2>';
             }
 
-            if ($edition_active) {
-                echo '<button id="toggle-mode-edition-enigme" type="button" '
-                    . 'class="bouton-edition-toggle bouton-edition-toggle--clair menu-lateral__edition-toggle" data-cpt="enigme" aria-label="'
-                    . esc_attr__('Activer Orgy', 'chassesautresor-com')
-                    . '"><i class="fa-solid fa-gear"></i></button>';
-            }
             echo '</div>';
 
             echo '<div class="menu-lateral__content">';
@@ -670,13 +664,35 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
                 $handle = '<span class="enigme-menu__handle" aria-hidden="true"></span>';
             }
 
+            $edit = '';
+            if (function_exists('utilisateur_peut_modifier_enigme') && utilisateur_peut_modifier_enigme($post->ID)) {
+                if ($post->ID === $enigme_id) {
+                    $edit = '<button id="toggle-mode-edition-enigme" type="button"'
+                        . ' class="enigme-menu__edit" aria-label="'
+                        . esc_attr__('Paramètres', 'chassesautresor-com')
+                        . '"><i class="fa-solid fa-gear"></i></button>';
+                } else {
+                    $tab     = (get_post_status($post->ID) === 'publish' && get_field('enigme_cache_complet', $post->ID))
+                        ? 'stats'
+                        : 'param';
+                    $edit_url = add_query_arg(
+                        ['edition' => 'open', 'tab' => $tab],
+                        get_permalink($post->ID)
+                    );
+                    $edit     = '<a class="enigme-menu__edit" href="' . esc_url($edit_url) . '" aria-label="'
+                        . esc_attr__('Paramètres', 'chassesautresor-com')
+                        . '"><i class="fa-solid fa-gear"></i></a>';
+                }
+            }
+
             $submenu_items[] = sprintf(
-                '<li class="%s" data-enigme-id="%d">%s<a href="%s">%s</a></li>',
+                '<li class="%s" data-enigme-id="%d">%s<a href="%s">%s</a>%s</li>',
                 esc_attr(implode(' ', $classes)),
                 $post->ID,
                 $handle,
                 esc_url(get_permalink($post->ID)),
-                esc_html(get_the_title($post->ID))
+                esc_html(get_the_title($post->ID)),
+                $edit
             );
         }
 

@@ -38,6 +38,9 @@
 /* Stylised bullets and indentation */
 .enigme-menu li {
   position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
   margin-bottom: var(--space-xxs);
   padding-left: calc(var(--space-md) + 16px);
   --bullet-fill: var(--etat-enigme-menu-en-cours);
@@ -81,7 +84,8 @@
 
 .enigme-menu li a {
   display: block;
-  padding: var(--space-xxs) var(--space-sm);
+  flex: 1;
+  padding: var(--space-xxs) calc(var(--space-sm) + 1.5em);
   font-weight: 600;
   font-size: 0.9rem;
   color: inherit;
@@ -117,6 +121,45 @@
 .enigme-menu li.bloquee {
   --bullet-fill: var(--etat-enigme-menu-bloquee);
   --bullet-outline: var(--etat-enigme-menu-bloquee);
+}
+
+
+.enigme-menu__edit {
+  position: absolute;
+  top: 50%;
+  right: var(--space-sm);
+  transform: translateY(-50%);
+  font-size: 0.7em;
+  color: var(--color-accent);
+  opacity: 0;
+  transition: opacity 0.2s, font-size 0.2s;
+  background: none;
+  border: 0;
+  padding: 0;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.enigme-menu li:hover .enigme-menu__edit {
+  opacity: 1;
+}
+
+.enigme-menu li.active .enigme-menu__edit {
+  opacity: 1;
+  font-size: 0.9em;
+  animation: enigme-menu-pulse 2s ease-in-out infinite;
+}
+
+@keyframes enigme-menu-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
 }
 
 .enigme-menu li.en-attente {
