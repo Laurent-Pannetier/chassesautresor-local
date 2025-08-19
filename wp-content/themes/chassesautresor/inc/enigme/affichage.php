@@ -349,10 +349,14 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
 
             if (!empty($menu_items)) {
                 $data_chasse = $chasse_id ? ' data-chasse-id="' . intval($chasse_id) . '"' : '';
+                $menu_class  = 'enigme-menu';
+                if ($edition_active) {
+                    $menu_class .= ' enigme-menu--editable';
+                }
                 echo '<section class="enigme-navigation"' . $data_chasse . '>';
                 echo '<h3>' . esc_html__('Énigmes', 'chassesautresor-com') . '</h3>';
                 echo '%AJOUT%';
-                echo '<ul class="enigme-menu">' . implode('', $menu_items) . '</ul>';
+                echo '<ul class="' . esc_attr($menu_class) . '">' . implode('', $menu_items) . '</ul>';
                 echo '</section>';
             }
             echo '</div>';
@@ -661,10 +665,16 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
                 $classes[] = 'active';
             }
 
+            $handle = '';
+            if ($edition_active) {
+                $handle = '<span class="enigme-menu__handle" aria-hidden="true"></span>';
+            }
+
             $submenu_items[] = sprintf(
-                '<li class="%s" data-enigme-id="%d"><span class="enigme-menu__handle" aria-hidden="true"></span><a href="%s">%s</a></li>',
+                '<li class="%s" data-enigme-id="%d">%s<a href="%s">%s</a></li>',
                 esc_attr(implode(' ', $classes)),
                 $post->ID,
+                $handle,
                 esc_url(get_permalink($post->ID)),
                 esc_html(get_the_title($post->ID))
             );
