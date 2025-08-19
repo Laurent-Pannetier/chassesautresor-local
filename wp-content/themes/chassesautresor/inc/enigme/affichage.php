@@ -153,6 +153,39 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
     }
 
     /**
+     * Build meta labels HTML for the sidebar.
+     *
+     * @param int $enigme_id Enigma identifier.
+     *
+     * @return string
+     */
+    function enigme_sidebar_metas_html(int $enigme_id): string
+    {
+        if (!function_exists('enigme_compter_joueurs_engages')) {
+            require_once __DIR__ . '/stats.php';
+        }
+
+        $nb_joueurs = enigme_compter_joueurs_engages($enigme_id);
+        $mode       = get_field('enigme_mode_validation', $enigme_id);
+
+        $html  = '<div class="bloc-metas-inline">';
+        $html .= '<div class="meta-etiquette"><span>'
+            . esc_html__('Nb joueurs :', 'chassesautresor-com')
+            . '</span><strong>' . esc_html($nb_joueurs) . '</strong></div>';
+
+        if ($mode !== 'aucune') {
+            $tentatives = enigme_compter_tentatives($enigme_id);
+            $html      .= '<div class="meta-etiquette"><span>'
+                . esc_html__('Nb tentatives :', 'chassesautresor-com')
+                . '</span><strong>' . esc_html($tentatives) . '</strong></div>';
+        }
+
+        $html .= '</div>';
+
+        return $html;
+    }
+
+    /**
      * Build engagement histogram HTML for the sidebar.
      *
      * @param int|null $chasse_id Hunt identifier.
@@ -318,6 +351,7 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
             echo '<div class="menu-lateral__accordeons">';
             echo '<div class="accordeon-bloc">';
             echo '<div class="accordeon-contenu accordeon-ferme">';
+            echo '%METAS%';
             echo '<section class="enigme-progression">';
             echo '<h3>' . esc_html__('Progression', 'chassesautresor-com') . '</h3>';
             echo '%STATS%';
@@ -338,7 +372,8 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
         $user_id    = get_current_user_id();
         $stats_html = enigme_sidebar_engagement_html($chasse_id, $user_id)
             . enigme_sidebar_progression_html($chasse_id, $user_id);
-        echo str_replace('%STATS%', $stats_html, $html);
+        $meta_html  = enigme_sidebar_metas_html($enigme_id);
+        echo str_replace(['%METAS%', '%STATS%'], [$meta_html, $stats_html], $html);
     }
 
     /**
