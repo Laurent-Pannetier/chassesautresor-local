@@ -46,6 +46,7 @@ get_header();
                 array(
                     'endpoint' => 'chasses',
                     'label'    => __('Chasses', 'chassesautresor-com'),
+                    'title'    => __('Vos chasses', 'chassesautresor-com'),
                     'icon'     => 'fas fa-map',
                     'url'      => home_url('/mon-compte/?section=chasses'),
                     'section'  => 'chasses',
@@ -54,6 +55,7 @@ get_header();
                 array(
                     'endpoint' => 'points',
                     'label'    => __('Points', 'chassesautresor'),
+                    'title'    => __('Points', 'chassesautresor-com'),
                     'icon'     => 'fas fa-coins',
                     'url'      => home_url('/mon-compte/?section=points'),
                     'section'  => 'points',
@@ -74,7 +76,14 @@ get_header();
                     $classes .= ' active';
                 }
 
-                $data_attr = isset($item['section']) ? ' data-section="' . esc_attr($item['section']) . '"' : '';
+                $data_attr = '';
+                if (isset($item['section'])) {
+                    $data_attr .= ' data-section="' . esc_attr($item['section']) . '"';
+                }
+                if (isset($item['title'])) {
+                    $data_attr .= ' data-title="' . esc_attr($item['title']) . '"';
+                }
+
                 echo '<a href="' . esc_url($item['url']) . '"' . $data_attr . ' class="' . esc_attr($classes) . '">';
                 echo '<i class="' . esc_attr($item['icon']) . '"></i>';
                 echo '<span>' . esc_html($item['label']) . '</span>';

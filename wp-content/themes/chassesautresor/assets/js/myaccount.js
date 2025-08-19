@@ -6,6 +6,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const navs = document.querySelectorAll('.dashboard-nav');
   const content = document.querySelector('.myaccount-content');
+  const header = document.querySelector('.myaccount-title');
 
   if (!navs.length || !content || typeof ctaMyAccount === 'undefined') {
     return;
@@ -58,6 +59,12 @@ document.addEventListener('DOMContentLoaded', () => {
         .querySelectorAll('.dashboard-nav-link[data-section]')
         .forEach((a) => a.classList.remove('active'));
       link.classList.add('active');
+      if (header) {
+        const newTitle = link.dataset.title || link.textContent.trim();
+        if (newTitle) {
+          header.textContent = newTitle;
+        }
+      }
       document.dispatchEvent(
         new CustomEvent('myaccountSectionLoaded', { detail: { section } })
       );
