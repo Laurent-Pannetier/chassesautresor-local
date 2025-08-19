@@ -1246,6 +1246,11 @@ body.panneau-ouvert::before {
   pointer-events: none;
 }
 
+/* 🖼️ Masquer l'option de tri dans la galerie d'images de l’énigme */
+#panneau-images-enigme .acf-gallery-sort {
+  display: none;
+}
+
 
 
 
