@@ -1519,6 +1519,7 @@ function initPagerTentatives() {
     data.append('action', 'verifier_enigmes_completes');
     data.append('chasse_id', chasseId);
 
+
     fetch(window.ajaxurl, {
       method: 'POST',
       credentials: 'same-origin',
