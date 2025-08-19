@@ -377,6 +377,67 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
     }
 
     /**
+     * Render the mobile navigation for the enigma layout.
+     *
+     * @param int      $enigme_id  Enigma identifier.
+     * @param int|null $chasse_id  Associated hunt ID.
+     * @param array    $menu_items Menu items to display.
+     */
+    function render_enigme_mobile_nav(int $enigme_id, ?int $chasse_id, array $menu_items): void
+    {
+        $cache_key = enigme_get_render_cache_key('enigme_mobile_nav', $enigme_id);
+        $html      = wp_cache_get($cache_key, 'chassesautresor');
+
+        if ($html === false) {
+            ob_start();
+            echo '<div class="enigme-mobile-nav">';
+
+            if ($chasse_id) {
+                $url_chasse = get_permalink($chasse_id);
+                $logo       = get_the_post_thumbnail($chasse_id, 'thumbnail');
+                echo '<a href="' . esc_url($url_chasse) . '" class="mobile-btn mobile-btn--chasse">';
+                if ($logo) {
+                    echo $logo;
+                } else {
+                    echo '<i class="fa-solid fa-map"></i>';
+                }
+                echo '<span class="screen-reader-text">'
+                    . esc_html__('Chasse', 'chassesautresor-com')
+                    . '</span></a>';
+            }
+
+            if (!empty($menu_items)) {
+                echo '<details class="mobile-menu mobile-menu--enigmes">';
+                echo '<summary class="mobile-btn mobile-btn--enigmes">'
+                    . '<i class="fa-solid fa-puzzle-piece"></i>'
+                    . '<span class="screen-reader-text">'
+                    . esc_html__('Énigmes', 'chassesautresor-com')
+                    . '</span></summary>';
+                echo '<ul class="enigme-menu">' . implode('', $menu_items) . '</ul>';
+                echo '</details>';
+            }
+
+            echo '<details class="mobile-menu mobile-menu--stats">';
+            echo '<summary class="mobile-btn mobile-btn--stats">'
+                . '<i class="fa-solid fa-chart-simple"></i>'
+                . '<span class="screen-reader-text">'
+                . esc_html__('Statistiques', 'chassesautresor-com')
+                . '</span></summary>';
+            echo '<div class="enigme-stats">%STATS%</div>';
+            echo '</details>';
+
+            echo '</div>';
+            $html = ob_get_clean();
+            wp_cache_set($cache_key, $html, 'chassesautresor', HOUR_IN_SECONDS);
+        }
+
+        $user_id    = get_current_user_id();
+        $stats_html = enigme_sidebar_engagement_html($chasse_id, $user_id)
+            . enigme_sidebar_progression_html($chasse_id, $user_id);
+        echo str_replace('%STATS%', $stats_html, $html);
+    }
+
+    /**
      * Render the hero section for the enigma.
      *
      * @param int    $enigme_id Enigma identifier.
@@ -622,6 +683,7 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
 
         echo '<div class="container container--xl-full enigme-layout">';
         render_enigme_sidebar($enigme_id, $edition_active, $chasse_id, $menu_items);
+        render_enigme_mobile_nav($enigme_id, $chasse_id, $menu_items);
         echo '<main class="page-enigme enigme-style-' . esc_attr($style) . '">';
         render_enigme_title($enigme_id, $style, $user_id);
         render_enigme_hero($enigme_id, $style, $user_id);

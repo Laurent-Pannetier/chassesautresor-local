@@ -240,8 +240,66 @@
   margin-inline: auto;
 }
 
+/* 📱 Navigation mobile */
+.enigme-mobile-nav {
+  position: fixed;
+  top: var(--space-md);
+  right: var(--space-md);
+  display: none;
+  flex-direction: column;
+  gap: var(--space-sm);
+  z-index: 1000;
+}
+
+.enigme-mobile-nav .mobile-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  border: none;
+  padding: 0;
+}
+
+.enigme-mobile-nav .mobile-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.enigme-mobile-nav details {
+  position: relative;
+}
+
+.enigme-mobile-nav details ul,
+.enigme-mobile-nav details .enigme-stats {
+  position: absolute;
+  top: 60px;
+  right: 0;
+  background-color: var(--color-primary-dark);
+  color: var(--color-white);
+  padding: var(--space-md);
+  border-radius: 6px;
+  width: max-content;
+  max-width: 80vw;
+  z-index: 1000;
+}
+
 @media (--bp-md) {
   .enigme-layout {
-    grid-template-columns: 1fr;
+    display: block;
+  }
+
+  .menu-lateral {
+    display: none;
+  }
+
+  .enigme-mobile-nav {
+    display: flex;
   }
 }
