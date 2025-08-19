@@ -1529,6 +1529,7 @@ function initEnigmeReorder() {
     dragged = e.target.closest('li');
     if (dragged) {
       e.dataTransfer.effectAllowed = 'move';
+      menu.classList.add('dragging');
       dragged.classList.add('dragging');
     }
   });
@@ -1580,6 +1581,7 @@ function initEnigmeReorder() {
   };
 
   const cleanClasses = () => {
+    menu.classList.remove('dragging');
     menu.querySelectorAll('.drag-over').forEach((li) => li.classList.remove('drag-over'));
     dragged?.classList.remove('dragging');
   };
