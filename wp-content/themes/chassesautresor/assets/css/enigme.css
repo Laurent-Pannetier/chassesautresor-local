@@ -40,6 +40,7 @@
   position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
   margin-bottom: var(--space-xxs);
   padding-left: calc(var(--space-md) + 16px);
   --bullet-fill: var(--etat-enigme-menu-en-cours);
@@ -84,7 +85,7 @@
 .enigme-menu li a {
   display: block;
   flex: 1;
-  padding: var(--space-xxs) var(--space-sm);
+  padding: var(--space-xxs) calc(var(--space-sm) + 1.5em);
   font-weight: 600;
   font-size: 0.9rem;
   color: inherit;
@@ -122,12 +123,24 @@
   --bullet-outline: var(--etat-enigme-menu-bloquee);
 }
 
+
 .enigme-menu__edit {
-  margin-left: var(--space-xs);
-  font-size: 0.9em;
+  position: absolute;
+  top: 50%;
+  right: var(--space-sm);
+  transform: translateY(-50%);
+  font-size: 0.7em;
   color: currentColor;
   opacity: 0;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s, font-size 0.2s;
+  background: none;
+  border: 0;
+  padding: 0;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
 }
 
 .enigme-menu li:hover .enigme-menu__edit {
@@ -136,6 +149,7 @@
 
 .enigme-menu li.active .enigme-menu__edit {
   opacity: 1;
+  font-size: 0.9em;
   animation: enigme-menu-pulse 2s ease-in-out infinite;
 }
 
