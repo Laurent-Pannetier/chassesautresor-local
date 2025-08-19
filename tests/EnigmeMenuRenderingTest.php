@@ -237,6 +237,13 @@ if (!function_exists('enigme_get_statut_utilisateur')) {
     }
 }
 
+if (!function_exists('enigme_pre_requis_remplis')) {
+    function enigme_pre_requis_remplis($enigme_id, $user_id)
+    {
+        return $GLOBALS['prereq_ok'] ?? true;
+    }
+}
+
 if (!function_exists('locate_template')) {
     function locate_template($template)
     {
@@ -326,5 +333,63 @@ class EnigmeMenuRenderingTest extends TestCase
         afficher_enigme_stylisee(101);
         $output = ob_get_clean();
         $this->assertStringContainsString('enigme-menu', $output);
+    }
+
+    public function test_menu_excludes_prerequisite_locked_enigme_for_user(): void
+    {
+        $GLOBALS['is_admin']      = false;
+        $GLOBALS['is_associated'] = false;
+        $GLOBALS['is_organizer']  = false;
+        $GLOBALS['fields'][2]['chasse_cache_statut'] = 'ouverte';
+
+        $GLOBALS['fields'][101]['enigme_cache_complet']       = true;
+        $GLOBALS['fields'][101]['enigme_cache_etat_systeme']  = 'accessible';
+        $GLOBALS['post_status'][101] = 'publish';
+
+        $GLOBALS['fields'][102] = [
+            'enigme_cache_complet' => true,
+            'enigme_cache_etat_systeme' => 'bloquee_pre_requis',
+        ];
+        $GLOBALS['post_types'][102]  = 'enigme';
+        $GLOBALS['post_status'][102] = 'publish';
+        $GLOBALS['titles'][102]      = 'Enigme Bloquee';
+        $GLOBALS['enigma_list']      = [(object) ['ID' => 101], (object) ['ID' => 102]];
+        $GLOBALS['prereq_ok']        = false;
+
+        ob_start();
+        afficher_enigme_stylisee(101);
+        $output = ob_get_clean();
+        $this->assertStringNotContainsString('data-enigme-id="102"', $output);
+    }
+
+    public function test_menu_disables_link_for_date_locked_enigme(): void
+    {
+        $GLOBALS['is_admin']      = false;
+        $GLOBALS['is_associated'] = false;
+        $GLOBALS['is_organizer']  = false;
+        $GLOBALS['fields'][2]['chasse_cache_statut'] = 'ouverte';
+
+        $GLOBALS['fields'][101] = [
+            'enigme_cache_complet' => true,
+            'enigme_cache_etat_systeme' => 'accessible',
+        ];
+        $GLOBALS['post_types'][101]  = 'enigme';
+        $GLOBALS['post_status'][101] = 'publish';
+        $GLOBALS['titles'][101]      = 'Enigme Accessible';
+
+        $GLOBALS['fields'][102] = [
+            'enigme_cache_complet' => true,
+            'enigme_cache_etat_systeme' => 'bloquee_date',
+        ];
+        $GLOBALS['post_types'][102]  = 'enigme';
+        $GLOBALS['post_status'][102] = 'publish';
+        $GLOBALS['titles'][102]      = 'Enigme Future';
+        $GLOBALS['enigma_list']      = [(object) ['ID' => 101], (object) ['ID' => 102]];
+
+        ob_start();
+        afficher_enigme_stylisee(101);
+        $output = ob_get_clean();
+        $this->assertStringContainsString('data-enigme-id="102"><a', $output);
+        $this->assertStringNotContainsString('data-enigme-id="102"><a href', $output);
     }
 }
