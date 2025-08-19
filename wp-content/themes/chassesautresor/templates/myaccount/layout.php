@@ -139,8 +139,15 @@ get_header();
     </aside>
     <div class="myaccount-main">
         <header class="myaccount-header">
-            <?php if (is_wc_endpoint_url('edit-account')) : ?>
-            <h1 class="myaccount-title"><?php esc_html_e('Votre profil', 'chassesautresor-com'); ?></h1>
+            <?php
+            $page_title = '';
+            if (is_wc_endpoint_url('edit-account')) {
+                $page_title = __('Votre profil', 'chassesautresor-com');
+            } elseif (is_wc_endpoint_url('orders')) {
+                $page_title = __('Vos commandes', 'chassesautresor-com');
+            }
+            if ($page_title) : ?>
+            <h1 class="myaccount-title"><?php echo esc_html($page_title); ?></h1>
             <?php endif; ?>
             <!-- TODO: header content -->
         </header>
