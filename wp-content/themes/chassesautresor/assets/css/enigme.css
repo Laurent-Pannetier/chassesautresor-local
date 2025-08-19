@@ -85,6 +85,18 @@
   --bullet-outline: var(--etat-enigme-menu-en-attente);
 }
 
+.enigme-menu li.en-attente::before {
+  box-sizing: border-box;
+  width: 8px;
+  height: 8px;
+  border: 2px solid var(--etat-enigme-menu-en-attente);
+  border-top-color: transparent;
+  border-radius: 50%;
+  background-color: transparent;
+  box-shadow: none;
+  animation: enigme-menu-spin 0.6s linear infinite;
+}
+
 .enigme-menu li.succes {
   --bullet-fill: var(--etat-enigme-menu-succes);
   --bullet-outline: var(--etat-enigme-menu-succes);
@@ -101,6 +113,15 @@
 .enigme-menu li.active > a {
   background-color: rgba(255, 215, 0, 0.2);
   font-weight: 600;
+}
+
+@keyframes enigme-menu-spin {
+  from {
+    transform: translateY(-50%) rotate(0deg);
+  }
+  to {
+    transform: translateY(-50%) rotate(360deg);
+  }
 }
 
 
