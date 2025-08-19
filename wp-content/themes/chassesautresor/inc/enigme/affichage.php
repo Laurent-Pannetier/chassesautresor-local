@@ -630,9 +630,27 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
             $classes = [];
 
             if (!$skip_checks) {
-                $etat_sys = get_field('enigme_cache_etat_systeme', $post->ID) ?? 'accessible';
+                $etat_sys       = get_field('enigme_cache_etat_systeme', $post->ID) ?? 'accessible';
+                $condition_acces = get_field('enigme_acces_condition', $post->ID) ?? 'immediat';
+
                 if (in_array($etat_sys, ['invalide', 'cache_invalide'], true)) {
                     continue;
+                }
+
+                if (
+                    $condition_acces === 'pre_requis'
+                    && !$is_privileged
+                    && (!function_exists('enigme_pre_requis_remplis')
+                        || !enigme_pre_requis_remplis($post->ID, $user_id))
+                ) {
+                    continue;
+                }
+
+                if (
+                    $condition_acces === 'pre_requis'
+                    && $etat_sys === 'bloquee_pre_requis'
+                ) {
+                    $etat_sys = 'accessible';
                 }
 
                 if ($etat_sys === 'bloquee_chasse' && in_array($validation_status, ['creation', 'correction'], true)) {
@@ -641,7 +659,7 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
                     } else {
                         $classes[] = 'bloquee';
                     }
-                } elseif (in_array($etat_sys, ['bloquee_date', 'bloquee_chasse', 'bloquee_pre_requis'], true)) {
+                } elseif (in_array($etat_sys, ['bloquee_date', 'bloquee_chasse'], true)) {
                     $classes[] = 'bloquee';
                 } else {
                     $statut_user = enigme_get_statut_utilisateur($post->ID, $user_id);
@@ -688,13 +706,19 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
                 }
             }
 
+            $title = esc_html(get_the_title($post->ID));
+            if (!$is_privileged && $etat_sys === 'bloquee_date') {
+                $link = '<a class="no-link" tabindex="-1">' . $title . '</a>';
+            } else {
+                $link = '<a href="' . esc_url(get_permalink($post->ID)) . '">' . $title . '</a>';
+            }
+
             $submenu_items[] = sprintf(
-                '<li class="%s" data-enigme-id="%d">%s<a href="%s">%s</a>%s</li>',
+                '<li class="%s" data-enigme-id="%d">%s%s%s</li>',
                 esc_attr(implode(' ', $classes)),
                 $post->ID,
                 $handle,
-                esc_url(get_permalink($post->ID)),
-                esc_html(get_the_title($post->ID)),
+                $link,
                 $edit
             );
         }
