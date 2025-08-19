@@ -139,6 +139,9 @@ get_header();
     </aside>
     <div class="myaccount-main">
         <header class="myaccount-header">
+            <?php if (is_wc_endpoint_url('edit-account')) : ?>
+            <h1 class="myaccount-title"><?php esc_html_e('Votre profil', 'chassesautresor-com'); ?></h1>
+            <?php endif; ?>
             <!-- TODO: header content -->
         </header>
         <main class="myaccount-content">
