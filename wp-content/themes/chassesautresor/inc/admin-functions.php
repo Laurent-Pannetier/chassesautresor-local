@@ -1,6 +1,8 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
+const HISTORIQUE_PAIEMENTS_ADMIN_PER_PAGE = 20;
+
 // ==================================================
 // 📚 SOMMAIRE DU FICHIER
 // ==================================================
@@ -34,14 +36,14 @@ defined( 'ABSPATH' ) || exit;
 function rechercher_utilisateur_ajax() {
     // ✅ Vérifier que la requête est bien envoyée par un administrateur
     if (!current_user_can('administrator')) {
-        wp_send_json_error(['message' => '⛔ Accès refusé.']);
+        wp_send_json_error(['message' => __( '⛔ Accès refusé.', 'chassesautresor-com' )]);
     }
 
     // ✅ Vérifier la présence du paramètre de recherche
     $search = isset($_GET['term']) ? sanitize_text_field($_GET['term']) : '';
 
     if (empty($search)) {
-        wp_send_json_error(['message' => '❌ Requête vide.']);
+        wp_send_json_error(['message' => __( '❌ Requête vide.', 'chassesautresor-com' )]);
     }
 
     // ✅ Requête pour récupérer tous les utilisateurs sans restriction de rôle
@@ -52,7 +54,7 @@ function rechercher_utilisateur_ajax() {
 
     // ✅ Vérifier que des utilisateurs sont trouvés
     if (empty($users)) {
-        wp_send_json_error(['message' => '❌ Aucun utilisateur trouvé.']);
+        wp_send_json_error(['message' => __( '❌ Aucun utilisateur trouvé.', 'chassesautresor-com' )]);
     }
 
     // ✅ Formatage des résultats en JSON
@@ -79,12 +81,12 @@ function traiter_gestion_points() {
     
     // ✅ Vérification du nonce pour la sécurité
     if (!isset($_POST['gestion_points_nonce']) || !wp_verify_nonce($_POST['gestion_points_nonce'], 'gestion_points_action')) {
-        wp_die('❌ Vérification du nonce échouée.');
+        wp_die( __( '❌ Vérification du nonce échouée.', 'chassesautresor-com' ) );
     }
 
     // ✅ Vérification que l'utilisateur est administrateur
     if (!current_user_can('administrator')) {
-        wp_die('❌ Accès refusé.');
+        wp_die( __( '❌ Accès refusé.', 'chassesautresor-com' ) );
     }
 
     // ✅ Vérification et assainissement des données
@@ -93,13 +95,13 @@ function traiter_gestion_points() {
     $nombre_points = intval($_POST['nombre_points']);
 
     if (!$utilisateur || !$type_modification || $nombre_points <= 0) {
-        wp_die('❌ Données invalides.');
+        wp_die( __( '❌ Données invalides.', 'chassesautresor-com' ) );
     }
 
     // Récupérer l'ID de l'utilisateur
     $user = get_user_by('ID', intval($utilisateur));
     if (!$user) {
-        wp_die('❌ Utilisateur introuvable.');
+        wp_die( __( '❌ Utilisateur introuvable.', 'chassesautresor-com' ) );
     }
 
     $user_id = $user->ID;
@@ -107,23 +109,32 @@ function traiter_gestion_points() {
 
     // Modification des points selon l’action choisie
     if ($type_modification === "ajouter") {
-        $nouveau_solde = $solde_actuel + $nombre_points;
+        $delta  = $nombre_points;
+        $reason = sprintf('Ajout manuel de %d points', $nombre_points);
     } elseif ($type_modification === "retirer") {
         if ($nombre_points > $solde_actuel) {
-            wp_die('❌ Impossible de retirer plus de points que l’utilisateur en possède.');
+            wp_die( __( '❌ Impossible de retirer plus de points que l’utilisateur en possède.', 'chassesautresor-com' ) );
         }
-        $nouveau_solde = $solde_actuel - $nombre_points;
+        $delta  = -$nombre_points;
+        $reason = sprintf('Retrait manuel de %d points', $nombre_points);
     } else {
-        wp_die('❌ Action invalide.');
+        wp_die( __( '❌ Action invalide.', 'chassesautresor-com' ) );
     }
 
     // Mettre à jour les points de l'utilisateur
-    update_user_points($user_id, $nouveau_solde);
+    update_user_points($user_id, $delta, $reason, 'admin');
 
     error_log("✅ Points modifiés : $nombre_points $type_modification pour l'utilisateur $utilisateur");
 
     // ✅ Redirection après soumission
-    wp_redirect(add_query_arg('points_modifies', '1', wp_get_referer()));
+    $redirect_url = add_query_arg(
+        [
+            'points_modifies' => '1',
+        ],
+        home_url('/mon-compte/?section=points')
+    );
+
+    wp_redirect($redirect_url);
     exit;
 }
 add_action('init', 'traiter_gestion_points');
@@ -140,8 +151,8 @@ add_action('init', 'traiter_gestion_points');
  * @return void
  */
 function charger_script_autocomplete_utilisateurs() {
-    // Vérifier si l'on est sur la page "Mon Compte" et que l'utilisateur est administrateur
-    if (is_page('mon-compte') && current_user_can('administrator')) {
+    // Vérifier si l'on est sur la page Mon Compte (y compris ses sous-pages) et que l'utilisateur est administrateur
+    if (function_exists('is_account_page') && is_account_page() && current_user_can('administrator')) {
         wp_enqueue_script(
             'autocomplete-utilisateurs', // Nouveau nom du script
             get_stylesheet_directory_uri() . '/assets/js/autocomplete-utilisateurs.js',
@@ -166,7 +177,7 @@ function gerer_organisateur() {
     
 
     if (!current_user_can('manage_options')) {
-        wp_send_json_error(array("message" => "Permission refusée."));
+        wp_send_json_error( array( 'message' => __( 'Permission refusée.', 'chassesautresor-com' ) ) );
         exit;
     }
 
@@ -174,7 +185,7 @@ function gerer_organisateur() {
     $type = sanitize_text_field($_POST['type']);
 
     if (!$post_id || empty($type)) {
-        wp_send_json_error(array("message" => "Requête invalide."));
+        wp_send_json_error( array( 'message' => __( 'Requête invalide.', 'chassesautresor-com' ) ) );
         exit;
     }
 
@@ -216,7 +227,7 @@ function gerer_organisateur() {
         wp_send_json_success(array("message" => "Demande refusée et supprimée."));
     }
 
-    wp_send_json_error(array("message" => "Action inconnue."));
+    wp_send_json_error( array( 'message' => __( 'Action inconnue.', 'chassesautresor-com' ) ) );
 }
 
 
@@ -236,6 +247,13 @@ function gerer_organisateur() {
  * 🔹 traiter_demande_paiement → Traiter la demande de conversion de points en euros pour un organisateur.
  * 🔹 $_SERVER['REQUEST_METHOD'] === 'POST' && isset(...) → Mettre à jour le statut des demandes de paiement (admin).
  */
+
+/**
+ * 📌 Valeur minimale de points requise pour demander une conversion.
+ */
+function get_points_conversion_min(): int {
+    return (int) apply_filters('points_conversion_min', 500);
+}
 
 /**
  * 📌 Ajout du champ d'administration pour le taux de conversion
@@ -331,6 +349,35 @@ function charger_script_taux_conversion() {
 add_action('wp_enqueue_scripts', 'charger_script_taux_conversion');
 
 /**
+ * Load admin payment management script on account pages.
+ */
+function charger_script_paiements_admin(): void
+{
+    if (!current_user_can('administrator') || !is_account_page()) {
+        return;
+    }
+
+    $script_path = get_stylesheet_directory() . '/assets/js/paiements-admin.js';
+    wp_enqueue_script(
+        'paiements-admin',
+        get_stylesheet_directory_uri() . '/assets/js/paiements-admin.js',
+        [],
+        filemtime($script_path),
+        true
+    );
+
+    $history_path = get_stylesheet_directory() . '/assets/js/paiements-historique.js';
+    wp_enqueue_script(
+        'paiements-historique',
+        get_stylesheet_directory_uri() . '/assets/js/paiements-historique.js',
+        [],
+        filemtime($history_path),
+        true
+    );
+}
+add_action('wp_enqueue_scripts', 'charger_script_paiements_admin');
+
+/**
  * 📌 Met à jour le taux de conversion depuis l'administration.
  */
 function traiter_mise_a_jour_taux_conversion() {
@@ -338,18 +385,18 @@ function traiter_mise_a_jour_taux_conversion() {
         
         // Vérifier le nonce pour la sécurité
         if (!isset($_POST['modifier_taux_conversion_nonce']) || !wp_verify_nonce($_POST['modifier_taux_conversion_nonce'], 'modifier_taux_conversion_action')) {
-            wp_die('❌ Vérification du nonce échouée.');
+            wp_die( __( '❌ Vérification du nonce échouée.', 'chassesautresor-com' ) );
         }
 
         // Vérifier que l'utilisateur est bien un administrateur
         if (!current_user_can('administrator')) {
-            wp_die('❌ Accès refusé.');
+            wp_die( __( '❌ Accès refusé.', 'chassesautresor-com' ) );
         }
 
         // Vérifier et assainir la valeur entrée
         $nouveau_taux = isset($_POST['nouveau_taux']) ? floatval($_POST['nouveau_taux']) : null;
         if ($nouveau_taux === null || $nouveau_taux <= 0) {
-            wp_die('❌ Veuillez entrer un taux de conversion valide.');
+            wp_die( __( '❌ Veuillez entrer un taux de conversion valide.', 'chassesautresor-com' ) );
         }
 
         // Mettre à jour le taux dans les options WordPress
@@ -378,98 +425,128 @@ function traiter_mise_a_jour_taux_conversion() {
 /**
  * 📌 Affiche les demandes de paiement en attente et réglées pour les administrateurs.
  */
-function afficher_tableau_paiements_admin() {
-    if (!current_user_can('administrator')) {
-        return;
-    }
-
-    // Récupérer tous les utilisateurs ayant une demande de paiement
-    $users = get_users(['meta_key' => 'demande_paiement', 'meta_compare' => 'EXISTS']);
-
-    if (empty($users)) {
-        echo '<p>Aucune demande de paiement en attente.</p>';
-        return;
-    }
-
+function render_tableau_paiements_admin(array $requests): string
+{
+    ob_start();
     echo '<table class="widefat fixed">';
     echo '<thead><tr><th>Organisateur</th><th>Montant / Points</th><th>Date demande</th><th>IBAN / BIC</th><th>Statut</th><th>Action</th></tr></thead>';
     echo '<tbody>';
 
-    foreach ($users as $user) {
-        $paiements = get_user_meta($user->ID, 'demande_paiement', true);
-        $paiements = maybe_unserialize($paiements);
+    foreach ($requests as $request) {
+        $user = get_userdata((int) $request['user_id']);
 
-        // Récupérer l'ID du CPT "organisateur" associé à l'utilisateur
-        $organisateur_id = get_organisateur_from_user($user->ID);
-        $iban = $organisateur_id ? get_field('gagnez_de_largent_iban', $organisateur_id) : 'Non renseigné';
-        $bic = $organisateur_id ? get_field('gagnez_de_largent_bic', $organisateur_id) : '';
-
-        foreach ($paiements as $index => $paiement) {
-            $statut = $paiement['statut'] === 'reglé' ? '✅ Réglé' : '🟡 En attente';
-            $action = $paiement['statut'] === 'en attente' 
-                ? '<a href="' . add_query_arg(['regler_paiement' => $index, 'user_id' => $user->ID]) . '" class="button">✅ Régler</a>' 
-                : '-';
-
-            $points_utilises = isset($paiement['paiement_points_utilises']) ? esc_html($paiement['paiement_points_utilises']) : 'N/A';
-
-            echo '<tr>';
-            echo '<td>' . esc_html($user->display_name) . '</td>';
-            echo '<td>' . esc_html($paiement['paiement_demande_montant']) . ' €<br><small>(' . $points_utilises . ' points)</small></td>';
-            echo '<td>' . esc_html(date('Y-m-d H:i', strtotime($paiement['paiement_date_demande']))) . '</td>';
-            echo '<td><strong>' . esc_html($iban) . '</strong><br><small>' . esc_html($bic) . '</small></td>';
-            echo '<td>' . esc_html($statut) . '</td>';
-            echo '<td>' . $action . '</td>';
-            echo '</tr>';
+        $organisateur_id = get_organisateur_from_user($request['user_id']);
+        $iban            = $organisateur_id ? get_field('iban', $organisateur_id) : '';
+        $bic             = $organisateur_id ? get_field('bic', $organisateur_id) : '';
+        if ($organisateur_id && (empty($iban) || empty($bic))) {
+            $iban = get_field('gagnez_de_largent_iban', $organisateur_id);
+            $bic  = get_field('gagnez_de_largent_bic', $organisateur_id);
         }
+        $iban = $iban ?: 'Non renseigné';
+
+        switch ($request['request_status']) {
+            case 'paid':
+                $statut = '✅ Réglé';
+                break;
+            case 'cancelled':
+                $statut = '❌ Annulé';
+                break;
+            case 'refused':
+                $statut = '🚫 Refusé';
+                break;
+            default:
+                $statut = '🟡 En attente';
+        }
+
+        $action = '-';
+        if ($request['request_status'] === 'pending') {
+            $action  = '<form class="js-update-request" data-id="' . esc_attr($request['id']) . '">';
+            $action .= '<select name="statut">';
+            $action .= '<option value="regle" selected>' . esc_html__('Régler', 'chassesautresor-com') . '</option>';
+            $action .= '<option value="annule">' . esc_html__('Annuler', 'chassesautresor-com') . '</option>';
+            $action .= '<option value="refuse">' . esc_html__('Refuser', 'chassesautresor-com') . '</option>';
+            $action .= '</select>';
+            $action .= '<button type="submit" class="button">OK</button>';
+            $action .= '</form>';
+        }
+
+        $points_utilises = esc_html(abs((int) $request['points']));
+
+        echo '<tr>';
+        echo '<td>' . esc_html($user->display_name ?? '') . '</td>';
+        echo '<td>' . esc_html($request['amount_eur']) . ' €<br><small>(' . $points_utilises . ' points)</small></td>';
+        echo '<td>' . esc_html(date('Y-m-d H:i', strtotime($request['request_date']))) . '</td>';
+        echo '<td><strong>' . esc_html($iban) . '</strong><br><small>' . esc_html($bic) . '</small></td>';
+        echo '<td class="col-status">' . esc_html($statut) . '</td>';
+        echo '<td>' . $action . '</td>';
+        echo '</tr>';
     }
 
     echo '</tbody></table>';
+    return ob_get_clean();
 }
 
-/**
- * 📌 Traite le règlement d'une demande de paiement depuis l'admin.
- */
-function regler_paiement_admin() {
-    // Vérifier que l'utilisateur est administrateur et que les paramètres sont présents
-    if (!current_user_can('administrator') || !isset($_GET['regler_paiement']) || !isset($_GET['user_id'])) {
-        return; // Sécurité : seul un admin peut traiter un paiement
-    }
-
-    $user_id = intval($_GET['user_id']);
-    $index = intval($_GET['regler_paiement']);
-
-    // Récupérer les paiements
-    $paiements = get_user_meta($user_id, 'demande_paiement', true);
-    if (empty($paiements) || !isset($paiements[$index])) {
-        error_log("❌ Erreur : Paiement non trouvé pour user_id=$user_id, index=$index");
+function afficher_tableau_paiements_admin(): void
+{
+    if (!current_user_can('administrator')) {
         return;
     }
 
-    error_log("🛠️ Paiements AVANT mise à jour : " . print_r($paiements, true));
+    global $wpdb;
+    $repo     = new PointsRepository($wpdb);
+    $requests = $repo->getConversionRequests();
 
-    // Mise à jour du statut du paiement
-    $paiements[$index]['statut'] = 'reglé';
-    $paiements[$index]['paiement_date_reglement'] = current_time('mysql');
-
-    // Enregistrement de la mise à jour
-    $update_success = update_user_meta($user_id, 'demande_paiement', $paiements);
-
-    error_log("✅ Paiement réglé pour user_id=$user_id, index=$index");
-
-    // Vérification après mise à jour
-    $paiements_apres = get_user_meta($user_id, 'demande_paiement', true);
-    error_log("🛠️ Paiements APRÈS mise à jour : " . print_r($paiements_apres, true));
-
-    if (!$update_success) {
-        error_log("❌ ERREUR : La mise à jour des paiements a échoué !");
+    if (empty($requests)) {
+        echo '<p>Aucune demande de paiement en attente.</p>';
+        return;
     }
 
-    // Rediriger pour éviter de re-traiter la requête en cas de rechargement
-    wp_redirect(remove_query_arg(['regler_paiement', 'user_id']));
-    exit;
+    echo render_tableau_paiements_admin($requests);
 }
-// Enregistrement de la fonction sur le hook admin
-add_action('template_redirect', 'regler_paiement_admin');
+
+function recuperer_historique_paiements_admin(int $page = 1): array
+{
+    global $wpdb;
+    $per_page = HISTORIQUE_PAIEMENTS_ADMIN_PER_PAGE;
+    $repo     = new PointsRepository($wpdb);
+    $offset   = ($page - 1) * $per_page;
+    $requests = $repo->getConversionRequests(null, null, $per_page, $offset);
+
+    $table = $wpdb->prefix . 'user_points';
+    $total = (int) $wpdb->get_var("SELECT COUNT(*) FROM {$table} WHERE origin_type = 'conversion'");
+    $pages = max(1, (int) ceil($total / $per_page));
+
+    if (empty($requests)) {
+        $html = '<p>Aucune demande de paiement.</p>';
+    } else {
+        $html  = render_tableau_paiements_admin($requests);
+        $html .= '<div class="pager">';
+        $html .= '<button class="pager-first" aria-label="Première page"><i class="fa-solid fa-angles-left"></i></button>';
+        $html .= '<button class="pager-prev" aria-label="Page précédente"><i class="fa-solid fa-angle-left"></i></button>';
+        $html .= '<span class="pager-info">' . $page . ' / ' . $pages . '</span>';
+        $html .= '<button class="pager-next" aria-label="Page suivante"><i class="fa-solid fa-angle-right"></i></button>';
+        $html .= '<button class="pager-last" aria-label="Dernière page"><i class="fa-solid fa-angles-right"></i></button>';
+        $html .= '</div>';
+    }
+
+    return [
+        'html'  => $html,
+        'page'  => $page,
+        'pages' => $pages,
+    ];
+}
+
+function ajax_lister_historique_paiements_admin(): void
+{
+    if (!current_user_can('administrator')) {
+        wp_send_json_error();
+    }
+
+    $page = isset($_POST['page']) ? (int) $_POST['page'] : 1;
+    $data = recuperer_historique_paiements_admin(max(1, $page));
+    wp_send_json_success($data);
+}
+add_action('wp_ajax_lister_historique_paiements', 'ajax_lister_historique_paiements_admin');
 
 /**
  * 💶 Traiter la demande de conversion de points en euros pour un organisateur.
@@ -479,7 +556,6 @@ add_action('template_redirect', 'regler_paiement_admin');
  * - Vérifier un nonce de sécurité (`demande_paiement_nonce`).
  * - Vérifier qu’il a suffisamment de points pour effectuer la conversion.
  * - Calculer le montant en euros selon le taux de conversion courant.
- * - Enregistrer la demande dans sa méta `demande_paiement`.
  * - Déduire les points convertis de son solde.
  * - Envoyer une notification par email à l’administrateur.
  * - Rediriger l’utilisateur vers la page précédente avec un paramètre de confirmation.
@@ -498,51 +574,43 @@ function traiter_demande_paiement() {
 
     // ✅ Vérification du nonce pour la sécurité
     if (!isset($_POST['demande_paiement_nonce']) || !wp_verify_nonce($_POST['demande_paiement_nonce'], 'demande_paiement_action')) {
-        wp_die('❌ Vérification du nonce échouée.');
+        wp_die( __( '❌ Vérification du nonce échouée.', 'chassesautresor-com' ) );
     }
 
     // ✅ Vérification de l'utilisateur connecté
     if (!is_user_logged_in()) {
-        wp_die('❌ Vous devez être connecté pour effectuer cette action.');
+        wp_die( __( '❌ Vous devez être connecté pour effectuer cette action.', 'chassesautresor-com' ) );
     }
 
     $user_id = get_current_user_id();
-    $solde_actuel = get_user_points($user_id) ?: 0;
+    $solde_actuel   = get_user_points($user_id) ?: 0;
     $taux_conversion = get_taux_conversion_actuel();
+    $points_minimum  = get_points_conversion_min();
 
     // ✅ Vérification du nombre de points demandés
     $points_a_convertir = isset($_POST['points_a_convertir']) ? intval($_POST['points_a_convertir']) : 0;
 
-    if ($points_a_convertir < 500) {
-        wp_die('❌ Le minimum pour une conversion est de 500 points.');
+    if ($points_a_convertir < $points_minimum) {
+        wp_die(
+            sprintf(
+                /* translators: %d: points minimum */
+                __( '❌ Le minimum pour une conversion est de %d points.', 'chassesautresor-com' ),
+                $points_minimum
+            )
+        );
     }
 
     if ($points_a_convertir > $solde_actuel) {
-        wp_die('❌ Vous n\'avez pas assez de points pour effectuer cette conversion.');
+        wp_die( __( '❌ Vous n\'avez pas assez de points pour effectuer cette conversion.', 'chassesautresor-com' ) );
     }
 
     // ✅ Calcul du montant en euros
     $montant_euros = round(($points_a_convertir / 1000) * $taux_conversion, 2);
 
-    // 📌 Récupération des demandes existantes et ajout de la nouvelle
-    $paiements = get_user_meta($user_id, 'demande_paiement', true) ?: [];
-    $paiements = maybe_unserialize($paiements);
-
-    $nouvelle_demande = [
-        'paiement_date_demande' => current_time('mysql'),
-        'paiement_demande_montant' => $montant_euros,
-        'paiement_points_utilises' => $points_a_convertir, // ✅ AJOUT DU STOCKAGE DES POINTS
-        'paiement_date_reglement' => '',
-        'statut' => 'en attente'
-    ];
-
-    $paiements[] = $nouvelle_demande;
-
-    // ✅ Enregistrement de la demande et mise à jour des points de l'utilisateur
-    update_user_meta($user_id, 'demande_paiement', $paiements);
-    update_user_points($user_id, -$points_a_convertir);
-
-    error_log("✅ Demande enregistrée : " . json_encode($nouvelle_demande));
+    global $wpdb;
+    $repo   = new PointsRepository($wpdb);
+    $log_id = $repo->logConversionRequest($user_id, -$points_a_convertir, $montant_euros);
+    error_log("✅ Demande enregistrée : log_id {$log_id}");
 
     // 📧 Notification admin
     $admin_email = get_option('admin_email');
@@ -558,7 +626,7 @@ function traiter_demande_paiement() {
     error_log("📧 Notification envoyée à l'administrateur.");
 
     // ✅ Redirection après soumission
-    wp_redirect(add_query_arg('paiement_envoye', '1', wp_get_referer()));
+    wp_safe_redirect(home_url('/mon-compte/?section=points'));
     exit;
 }
 add_action('init', 'traiter_demande_paiement');
@@ -566,39 +634,82 @@ add_action('init', 'traiter_demande_paiement');
 // ----------------------------------------------------------
 // 🎛️ Mise à jour du statut des demandes de paiement (Admin)
 // ----------------------------------------------------------
-//
-// - Cette fonction permet à l'administrateur de modifier le statut d'une demande.
-// - Le statut peut être mis à "En attente" ou "Réglé".
-// - Si le statut passe à "Réglé", la date de règlement est enregistrée.
-// - L'enregistrement se fait après un clic sur le bouton "Enregistrer" du formulaire.
-//
-// 📌 Où est utilisé ce code ?
-/*
-  - Dans le shortcode [demandes_paiement] (affichage du tableau des demandes)
-  - Formulaire avec liste déroulante pour modifier le statut
-*/
-//
-// 🔍 Comment le retrouver rapidement ?
-// 👉 Rechercher "🎛️ Mise à jour du statut des demandes de paiement"
-//
+/**
+ * Update monthly total of organizer payouts.
+ */
+function mettre_a_jour_paiements_organisateurs(float $amount): void
+{
+    $option = 'total_paiements_effectues_mensuel_' . date('Y_m');
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modifier_statut'], $_POST['paiement_id'], $_POST['statut']) && current_user_can('administrator')) {
-    $user_id = get_current_user_id();
-    $paiements = maybe_unserialize(get_user_meta($user_id, 'demande_paiement', true)) ?: [];
-    $paiement_id = intval($_POST['paiement_id']);
-
-    if (isset($paiements[$paiement_id])) {
-        $paiements[$paiement_id]['statut'] = sanitize_text_field($_POST['statut']);
-        $paiements[$paiement_id]['paiement_date_reglement'] = ($paiements[$paiement_id]['statut'] === 'regle') ? current_time('mysql') : '';
-        update_user_meta($user_id, 'demande_paiement', $paiements);
-        error_log("✅ Statut mis à jour pour l'entrée $paiement_id : " . $paiements[$paiement_id]['statut']);
-        if ($paiements[$paiement_id]['statut'] === 'regle') {
-        $montant_paye = floatval($paiements[$paiement_id]['paiement_demande_montant']);
-        mettre_a_jour_paiements_organisateurs($montant_paye); // 🔄 Mise à jour des paiements aux organisateurs
-        error_log("✅ Paiement ajouté aux statistiques : {$montant_paye} €.");
-        }   
+    if (function_exists('get_option') && function_exists('update_option')) {
+        $current = (float) get_option($option, 0);
+        update_option($option, $current + $amount);
     }
 }
+
+/**
+ * Handle AJAX status updates for payment requests.
+ */
+function ajax_update_request_status(): void
+{
+    if (!current_user_can('administrator')) {
+        wp_send_json_error();
+    }
+
+    $paiement_id = isset($_POST['paiement_id']) ? intval($_POST['paiement_id']) : 0;
+    $statut      = isset($_POST['statut']) ? sanitize_text_field($_POST['statut']) : '';
+
+    if (!$paiement_id || !in_array($statut, ['regle', 'annule', 'refuse'], true)) {
+        wp_send_json_error();
+    }
+
+    global $wpdb;
+    $repo = new PointsRepository($wpdb);
+
+    $map = [
+        'regle'  => 'paid',
+        'annule' => 'cancelled',
+        'refuse' => 'refused',
+    ];
+
+    $repoStatus = $map[$statut];
+    $dates      = [];
+    if ($repoStatus === 'paid') {
+        $dates['settlement_date'] = current_time('mysql');
+    } else {
+        $dates['cancelled_date'] = current_time('mysql');
+    }
+
+    $repo->updateRequestStatus($paiement_id, $repoStatus, $dates);
+    error_log("✅ Statut mis à jour pour l'entrée {$paiement_id} : {$repoStatus}");
+
+    if (in_array($repoStatus, ['cancelled', 'refused'], true)) {
+        $request = $repo->getRequestById($paiement_id);
+        if ($request) {
+            $points = abs((int) $request['points']);
+            $reason = sprintf(
+                'Restauration de %d points après annulation/refus',
+                $points
+            );
+            update_user_points(
+                (int) $request['user_id'],
+                $points,
+                $reason,
+                'admin',
+                $paiement_id
+            );
+        }
+    } elseif ($repoStatus === 'paid') {
+        $request = $repo->getRequestById($paiement_id);
+        if ($request) {
+            $montant_paye = floatval($request['amount_eur']);
+            mettre_a_jour_paiements_organisateurs($montant_paye);
+        }
+    }
+
+    wp_send_json_success(['status' => $repoStatus]);
+}
+add_action('wp_ajax_update_conversion_status', 'ajax_update_request_status');
 
 
 
@@ -780,14 +891,14 @@ function gerer_activation_reinitialisation_stats() {
     // ✅ Vérification des permissions administrateur
     if (!current_user_can('manage_options')) {
         error_log("⛔ Problème de permission : utilisateur non autorisé.");
-        wp_die(__('⛔ Accès refusé. Vous n’avez pas la permission d’effectuer cette action.', 'textdomain'));
+        wp_die( __( '⛔ Accès refusé. Vous n’avez pas la permission d’effectuer cette action.', 'chassesautresor-com' ) );
     }
     error_log("🔎 Permission OK");
 
     // ✅ Vérification de la requête POST et de la sécurité
     if (!isset($_POST['enregistrer_reinit']) || !check_admin_referer('toggle_reinit_stats_action', 'toggle_reinit_stats_nonce')) {
         error_log("⛔ Problème de nonce ou bouton non soumis.");
-        wp_die(__('⛔ Erreur de sécurité. Veuillez réessayer.', 'textdomain'));
+        wp_die( __( '⛔ Erreur de sécurité. Veuillez réessayer.', 'chassesautresor-com' ) );
     }
     error_log("🔎 Nonce OK");
 
@@ -971,7 +1082,6 @@ function supprimer_souscriptions_utilisateur() {
  * 🔄 Réinitialise l’état d’une énigme pour un utilisateur donné :
  * - Supprime le statut et la date de résolution.
  * - Réinitialise les indices débloqués.
- * - Supprime les trophées liés à l’énigme et à la chasse associée.
  * - Réinitialise le statut de la chasse si nécessaire.
  * - Nettoie les caches liés à l’utilisateur et à l’énigme.
  *
@@ -1000,36 +1110,11 @@ function reinitialiser_enigme($user_id, $enigme_id) {
         error_log("🧹 Indices débloqués réinitialisés pour l'énigme (ID: {$enigme_id})");
     }
 
-    // 🏆 3. Suppression du trophée associé à l’énigme
-    $trophees_utilisateur = get_user_meta($user_id, 'trophees_utilisateur', true);
-    $trophees_utilisateur = is_array($trophees_utilisateur) ? $trophees_utilisateur : [];
-
-    $trophee_enigme = get_field('trophee_associe', $enigme_id);
-    if ($trophee_enigme) {
-        $trophee_enigme_id = is_array($trophee_enigme) ? reset($trophee_enigme) : $trophee_enigme;
-        if (($key = array_search($trophee_enigme_id, $trophees_utilisateur)) !== false) {
-            unset($trophees_utilisateur[$key]);
-            update_user_meta($user_id, 'trophees_utilisateur', array_values($trophees_utilisateur));
-            error_log("🏆 Trophée de l'énigme (ID: {$trophee_enigme_id}) supprimé pour l'utilisateur (ID: {$user_id})");
-        }
-    }
-
-    // 🏴‍☠️ 4. Gestion de la chasse associée
+    // 🏴‍☠️ 3. Gestion de la chasse associée
     $chasse_id = get_field('chasse_associee', $enigme_id, false);
     $chasse_id = is_array($chasse_id) ? reset($chasse_id) : $chasse_id;
 
     if ($chasse_id && is_numeric($chasse_id)) {
-        // 🏆 Suppression du trophée associé à la chasse
-        $trophee_chasse = get_field('trophee_associe', $chasse_id);
-        if ($trophee_chasse) {
-            $trophee_chasse_id = is_array($trophee_chasse) ? reset($trophee_chasse) : $trophee_chasse;
-            if (($key = array_search($trophee_chasse_id, $trophees_utilisateur)) !== false) {
-                unset($trophees_utilisateur[$key]);
-                update_user_meta($user_id, 'trophees_utilisateur', array_values($trophees_utilisateur));
-                error_log("🏆 Trophée de chasse (ID: {$trophee_chasse_id}) supprimé pour l'utilisateur (ID: {$user_id})");
-            }
-        }
-
         // 🔄 Si la chasse est en mode "stop" et terminée, la remettre en cours
         $illimitee = get_field('illimitee', $chasse_id); // Récupère le mode de la chasse (stop / continue)
         $statut_chasse = get_field('statut_chasse', $chasse_id);
@@ -1254,7 +1339,7 @@ add_action('admin_notices', function() {
 // =============================================
 function recuperer_details_acf() {
     if (!current_user_can('administrator')) {
-        wp_send_json_error('Non autorisé');
+        wp_send_json_error( __( 'Non autorisé', 'chassesautresor-com' ) );
     }
 
     // Utilisation des "keys" ACF directement car les IDs ne sont pas fiables
@@ -1324,14 +1409,14 @@ function recuperer_organisateurs_en_creation() {
             continue;
         }
 
-        $chasse     = $chasses[0];
-        $nb_enigmes = count(recuperer_enigmes_associees($chasse->ID));
+        $chasse_id  = (int) $chasses[0];
+        $nb_enigmes = count(recuperer_enigmes_associees($chasse_id));
 
         $entries[] = [
             'date_creation'      => $date_creation,
             'organisateur_titre' => get_the_title($organisateur_id),
-            'chasse_id'          => $chasse->ID,
-            'chasse_titre'       => get_the_title($chasse->ID),
+            'chasse_id'          => $chasse_id,
+            'chasse_titre'       => get_the_title($chasse_id),
             'nb_enigmes'         => $nb_enigmes,
         ];
     }
@@ -1379,14 +1464,15 @@ function afficher_tableau_organisateurs_en_creation() {
  *
  * @return array[] Liste des données des organisateurs en attente.
  */
-function recuperer_organisateurs_pending() {
+function recuperer_organisateurs_pending()
+{
     if (!current_user_can('administrator')) {
         return [];
     }
 
     $query = new WP_Query([
         'post_type'      => 'organisateur',
-        'post_status'    => 'pending',
+        'post_status'    => 'any',
         'posts_per_page' => -1,
         'orderby'        => 'date',
         'order'          => 'DESC',
@@ -1396,13 +1482,11 @@ function recuperer_organisateurs_pending() {
     $resultats = [];
 
     foreach ($query->posts as $organisateur_id) {
-        $date_creation = get_post_field('post_date', $organisateur_id);
-        $titre         = get_the_title($organisateur_id);
-        $permalink     = get_permalink($organisateur_id);
+        $titre     = get_the_title($organisateur_id);
+        $permalink = get_permalink($organisateur_id);
 
-
-        $users = (array) get_field('utilisateurs_associes', $organisateur_id);
-        $user_id = $users ? intval(reset($users)) : null;
+        $users     = (array) get_field('utilisateurs_associes', $organisateur_id);
+        $user_id   = $users ? intval(reset($users)) : null;
         $user_name = '';
         $user_link = '';
         if ($user_id) {
@@ -1413,54 +1497,68 @@ function recuperer_organisateurs_pending() {
             }
         }
 
-
         verifier_ou_mettre_a_jour_cache_complet($organisateur_id);
-        $org_complet = (bool) get_field('organisateur_cache_complet', $organisateur_id);
 
-        $chasses = get_chasses_de_organisateur($organisateur_id);
-        $chasse_id = null;
-        $chasse_titre = '';
-        $chasse_permalink = '';
-        $chasse_complet = false;
-        $nb_enigmes = 0;
-        $validation = '';
+        $chasses = new WP_Query([
+            'post_type'      => 'chasse',
+            'posts_per_page' => -1,
+            'post_status'    => ['publish', 'pending', 'draft'],
+            'meta_query'     => [
+                [
+                    'key'     => 'chasse_cache_organisateur',
+                    'value'   => '"' . strval($organisateur_id) . '"',
+                    'compare' => 'LIKE',
+                ],
+            ],
+            'fields'         => 'ids',
+        ]);
 
-        if ($chasses && $chasses->have_posts()) {
-            $chasse_id = $chasses->posts[0]->ID;
-            $chasse_titre = get_the_title($chasse_id);
-            $chasse_permalink = get_permalink($chasse_id);
-            verifier_ou_mettre_a_jour_cache_complet($chasse_id);
-            $chasse_complet = (bool) get_field('chasse_cache_complet', $chasse_id);
-            $nb_enigmes = count(recuperer_enigmes_associees($chasse_id));
-            $validation = get_field('chasse_cache_statut_validation', $chasse_id);
+        if ($chasses->have_posts()) {
+            foreach ($chasses->posts as $chasse_id) {
+                $date_creation  = get_post_field('post_date', $chasse_id);
+                $chasse_titre   = get_the_title($chasse_id);
+                $chasse_link    = get_permalink($chasse_id);
+                $nb_enigmes     = count(recuperer_enigmes_associees($chasse_id));
+                $statut         = get_field('chasse_cache_statut', $chasse_id);
+                $validation     = get_field('chasse_cache_statut_validation', $chasse_id);
 
+                $resultats[] = [
+                    'organisateur_id'        => $organisateur_id,
+                    'organisateur_titre'     => $titre,
+                    'organisateur_permalink' => $permalink,
+                    'user_id'                => $user_id,
+                    'user_name'              => $user_name,
+                    'user_link'              => $user_link,
+                    'chasse_id'              => $chasse_id,
+                    'chasse_titre'           => $chasse_titre,
+                    'chasse_permalink'       => $chasse_link,
+                    'nb_enigmes'             => $nb_enigmes,
+                    'statut'                 => $statut,
+                    'validation'             => $validation,
+                    'date_creation'          => $date_creation,
+                ];
+            }
+        } else {
+            $date_creation = get_post_field('post_date', $organisateur_id);
+            $resultats[]   = [
+                'organisateur_id'        => $organisateur_id,
+                'organisateur_titre'     => $titre,
+                'organisateur_permalink' => $permalink,
+                'user_id'                => $user_id,
+                'user_name'              => $user_name,
+                'user_link'              => $user_link,
+                'chasse_id'              => null,
+                'chasse_titre'           => '',
+                'chasse_permalink'       => '',
+                'nb_enigmes'             => 0,
+                'statut'                 => '',
+                'validation'             => '',
+                'date_creation'          => $date_creation,
+            ];
         }
-
-        $resultats[] = [
-            'organisateur_id'       => $organisateur_id,
-            'organisateur_titre'    => $titre,
-            'organisateur_permalink'=> $permalink,
-            'organisateur_complet'  => $org_complet,
-            'user_id'               => $user_id,
-            'user_name'             => $user_name,
-            'user_link'             => $user_link,
-
-            'date_creation'         => $date_creation,
-            'chasse_id'             => $chasse_id,
-            'chasse_titre'          => $chasse_titre,
-            'chasse_permalink'      => $chasse_permalink,
-            'chasse_complet'        => $chasse_complet,
-            'nb_enigmes'            => $nb_enigmes,
-            'validation'            => $validation,
-        ];
     }
 
     usort($resultats, function ($a, $b) {
-        $a_valide = ($a['validation'] === 'en_attente');
-        $b_valide = ($b['validation'] === 'en_attente');
-        if ($a_valide !== $b_valide) {
-            return $a_valide ? -1 : 1;
-        }
         $timeA = strtotime($a['date_creation']);
         $timeB = strtotime($b['date_creation']);
         return $timeA === $timeB ? 0 : ($timeA < $timeB ? 1 : -1);
@@ -1470,42 +1568,69 @@ function recuperer_organisateurs_pending() {
 }
 
 /**
- * Affiche la liste des organisateurs en attente dans un tableau.
+ * Affiche la liste des organisateurs et leurs chasses dans un tableau.
+ *
+ * @param array|null $liste Données pré-calculées.
  */
-function afficher_tableau_organisateurs_pending() {
-    $liste = recuperer_organisateurs_pending();
+function afficher_tableau_organisateurs_pending(array $liste = null)
+{
+    if (null === $liste) {
+        $liste = recuperer_organisateurs_pending();
+    }
     if (empty($liste)) {
-        echo '<p>Aucun organisateur en attente.</p>';
+        echo '<p>Aucun organisateur.</p>';
         return;
     }
 
-    echo '<table class="table-organisateurs">';
-    echo '<thead><tr><th>Organisateur</th><th>Chasse</th><th>État</th><th>Utilisateur</th><th>Créé le</th></tr></thead><tbody>';
-
+    $grouped = [];
     foreach ($liste as $entry) {
-        $class_org = $entry['organisateur_complet'] ? 'carte-complete' : 'carte-incomplete';
-        $class_chasse = $entry['chasse_id'] ? ($entry['chasse_complet'] ? 'carte-complete' : 'carte-incomplete') : '';
-        $ligne_validation = $entry['validation'] === 'en_attente' ? 'champ-attention' : '';
+        $oid = $entry['organisateur_id'];
+        if (!isset($grouped[$oid])) {
+            $grouped[$oid] = [
+                'organisateur_titre'     => $entry['organisateur_titre'],
+                'organisateur_permalink' => $entry['organisateur_permalink'],
+                'user_id'                => $entry['user_id'],
+                'user_name'              => $entry['user_name'],
+                'user_link'              => $entry['user_link'],
+                'rows'                   => [],
+            ];
+        }
+        $grouped[$oid]['rows'][] = $entry;
+    }
 
-        echo '<tr class="' . esc_attr($ligne_validation) . '">';
-        echo '<td class="' . esc_attr($class_org) . '"><a href="' . esc_url($entry['organisateur_permalink']) . '" target="_blank">' . esc_html($entry['organisateur_titre']) . '</a></td>';
-        if ($entry['chasse_id']) {
-            $titre_chasse = $entry['chasse_titre'];
-            if ($entry['nb_enigmes']) {
-                $titre_chasse .= ' (' . intval($entry['nb_enigmes']) . ')';
+    echo '<table class="table-organisateurs">';
+    echo '<thead><tr><th>Organisateur</th><th>Chasse</th><th>Nb énigmes</th><th>État</th><th>Utilisateur</th><th data-col="date">Créé le <span class="tri-date">&#9650;&#9660;</span></th></tr></thead><tbody>';
+
+    foreach ($grouped as $org) {
+        $rows    = $org['rows'];
+        $rowspan = count($rows);
+        $first   = true;
+        foreach ($rows as $row) {
+            echo '<tr data-etat="' . esc_attr($row['statut']) . '" data-date="' . esc_attr($row['date_creation']) . '">';
+            if ($first) {
+                echo '<td rowspan="' . intval($rowspan) . '"><a href="' . esc_url($org['organisateur_permalink']) . '" target="_blank">' . esc_html($org['organisateur_titre']) . '</a></td>';
             }
-            echo '<td class="' . esc_attr($class_chasse) . '"><a href="' . esc_url($entry['chasse_permalink']) . '" target="_blank">' . esc_html($titre_chasse) . '</a></td>';
-        } else {
-            echo '<td>-</td>';
+
+            if ($row['chasse_id']) {
+                echo '<td><a href="' . esc_url($row['chasse_permalink']) . '" target="_blank">' . esc_html($row['chasse_titre']) . '</a></td>';
+                echo '<td>' . intval($row['nb_enigmes']) . '</td>';
+                echo '<td data-col="etat">' . esc_html($row['statut']) . '</td>';
+            } else {
+                echo '<td>-</td><td>-</td><td data-col="etat"></td>';
+            }
+
+            if ($first) {
+                if ($org['user_id']) {
+                    echo '<td rowspan="' . intval($rowspan) . '"><a href="' . esc_url($org['user_link']) . '" target="_blank">' . esc_html($org['user_name']) . '</a></td>';
+                } else {
+                    echo '<td rowspan="' . intval($rowspan) . '">-</td>';
+                }
+            }
+
+            echo '<td>' . esc_html(date_i18n('d/m/y', strtotime($row['date_creation']))) . '</td>';
+            echo '</tr>';
+            $first = false;
         }
-        echo '<td>' . esc_html($entry['validation']) . '</td>';
-        if ($entry['user_id']) {
-            echo '<td><a href="' . esc_url($entry['user_link']) . '" target="_blank">' . esc_html($entry['user_name']) . '</a></td>';
-        } else {
-            echo '<td>-</td>';
-        }
-        echo '<td>' . esc_html(date_i18n('d/m/y', strtotime($entry['date_creation']))) . '</td>';
-        echo '</tr>';
     }
 
     echo '</tbody></table>';
@@ -1530,18 +1655,18 @@ function traiter_validation_chasse_admin() {
     }
 
     if (!current_user_can('administrator')) {
-        wp_die('Accès refusé.');
+        wp_die( __( 'Accès refusé.', 'chassesautresor-com' ) );
     }
 
     $chasse_id = isset($_POST['chasse_id']) ? intval($_POST['chasse_id']) : 0;
     $action    = sanitize_text_field($_POST['validation_admin_action']);
 
     if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
-        wp_die('ID de chasse invalide.');
+        wp_die( __( 'ID de chasse invalide.', 'chassesautresor-com' ) );
     }
 
     if (!isset($_POST['validation_admin_nonce']) || !wp_verify_nonce($_POST['validation_admin_nonce'], 'validation_admin_' . $chasse_id)) {
-        wp_die('Nonce invalide.');
+        wp_die( __( 'Nonce invalide.', 'chassesautresor-com' ) );
     }
 
     $enigmes = recuperer_enigmes_associees($chasse_id);
@@ -1581,16 +1706,32 @@ function traiter_validation_chasse_admin() {
             }
         }
 
+        envoyer_mail_chasse_validee($organisateur_id, $chasse_id);
+
     } elseif ($action === 'correction') {
         $cache = get_field('champs_caches', $chasse_id) ?: [];
         $cache['chasse_cache_statut_validation'] = 'correction';
         update_field('champs_caches', $cache, $chasse_id);
         update_field('chasse_cache_statut_validation', 'correction', $chasse_id);
 
+        wp_update_post([
+            'ID'          => $chasse_id,
+            'post_status' => 'pending',
+        ]);
+
+        mettre_a_jour_statuts_chasse($chasse_id);
+
         $message = isset($_POST['validation_admin_message'])
             ? sanitize_textarea_field(wp_unslash($_POST['validation_admin_message']))
-
             : '';
+
+        foreach ($enigmes as $eid) {
+            wp_update_post([
+                'ID'          => $eid,
+                'post_status' => 'pending',
+            ]);
+            update_field('enigme_cache_etat_systeme', 'bloquee_chasse', $eid);
+        }
 
         envoyer_mail_demande_correction($organisateur_id, $chasse_id, $message);
 
@@ -1688,7 +1829,7 @@ function envoyer_mail_demande_correction(int $organisateur_id, int $chasse_id, s
     };
     add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
-    wp_mail($email, $subject, $body, $headers);
+    wp_mail($emails, $subject, $body, $headers);
     remove_filter('wp_mail_from_name', $from_filter, 10);
 
 }
@@ -1738,7 +1879,7 @@ function envoyer_mail_chasse_bannie(int $organisateur_id, int $chasse_id)
     };
     add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
-    wp_mail($email, $subject, $body, $headers);
+    wp_mail($emails, $subject, $body, $headers);
     remove_filter('wp_mail_from_name', $from_filter, 10);
 }
 
@@ -1787,7 +1928,86 @@ function envoyer_mail_chasse_supprimee(int $organisateur_id, int $chasse_id)
     };
     add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
-    wp_mail($email, $subject, $body, $headers);
+    wp_mail($emails, $subject, $body, $headers);
+    remove_filter('wp_mail_from_name', $from_filter, 10);
+}
+
+/**
+ * Envoie un email informant l'organisateur que sa chasse est validée.
+ *
+ * @param int $organisateur_id ID du CPT organisateur.
+ * @param int $chasse_id       ID de la chasse concernée.
+ *
+ * @return void
+ */
+function envoyer_mail_chasse_validee(int $organisateur_id, int $chasse_id)
+{
+    if (!$organisateur_id || !$chasse_id) {
+        return;
+    }
+
+    $emails = [];
+
+    $acf_email = get_field('email_organisateur', $organisateur_id);
+    if (is_array($acf_email)) {
+        $acf_email = reset($acf_email);
+    }
+    if (is_string($acf_email) && is_email($acf_email)) {
+        $emails[] = sanitize_email($acf_email);
+    }
+
+    $users = (array) get_field('utilisateurs_associes', $organisateur_id);
+    foreach ($users as $uid) {
+        $user_id = is_object($uid) ? $uid->ID : intval($uid);
+        if ($user_id) {
+            $user = get_user_by('ID', $user_id);
+            if ($user && is_email($user->user_email)) {
+                $emails[] = sanitize_email($user->user_email);
+            }
+        }
+    }
+
+    if (!$emails) {
+        $emails[] = get_option('admin_email');
+    }
+
+    $emails = array_unique($emails);
+
+    $admin_email = get_option('admin_email');
+    $titre_chasse = get_the_title($chasse_id);
+    $url_chasse   = get_permalink($chasse_id);
+    $url_qr_code  = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=' . rawurlencode($url_chasse);
+
+    $subject_raw = '✅ Votre chasse est maintenant validée !';
+    $subject = function_exists('wp_encode_mime_header')
+        ? wp_encode_mime_header($subject_raw)
+        : mb_encode_mimeheader($subject_raw, 'UTF-8', 'B', "\r\n");
+
+    $body  = '<p>Bonjour,</p>';
+    $body .= '<p>Votre chasse <strong>&laquo;' . esc_html($titre_chasse) . '&raquo;</strong> a été <strong>validée avec succès</strong> par notre équipe 🎉<br>';
+    $body .= 'Elle est désormais <strong>accessible aux joueurs</strong>.</p>';
+    $body .= '<hr>';
+    $body .= '<p>🔗 <strong>Lien vers votre chasse :</strong><br>';
+    $body .= '<a href="' . esc_url($url_chasse) . '" target="_blank">' . esc_html($url_chasse) . '</a></p>';
+    $body .= '<p>📲 <strong>QR code à partager :</strong><br>';
+    $body .= '<img src="' . esc_url($url_qr_code) . '" alt="QR code vers la chasse" style="max-width:200px; height:auto; display:block; margin-top:1em;">';
+    $body .= '<br><a href="' . esc_url($url_qr_code) . '" download>Télécharger le QR code</a></p>';
+    $body .= '<hr>';
+    $body .= '<p>Nous vous souhaitons une belle aventure, et restons à votre écoute si besoin.<br>';
+    $body .= 'À très bientôt,<br>L’équipe <strong>Chasses au Trésor</strong></p>';
+
+    $headers = [
+        'Content-Type: text/html; charset=UTF-8',
+        'Bcc: ' . $admin_email,
+    ];
+
+    $from_filter = function ($name) use ($organisateur_id) {
+        $titre = get_the_title($organisateur_id);
+        return $titre ?: $name;
+    };
+    add_filter('wp_mail_from_name', $from_filter, 10, 1);
+
+    wp_mail($emails, $subject, $body, $headers);
     remove_filter('wp_mail_from_name', $from_filter, 10);
 }
 

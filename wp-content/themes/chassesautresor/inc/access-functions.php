@@ -320,6 +320,11 @@ function utilisateur_peut_modifier_post($post_id)
         return false;
     }
 
+    // ✅ Les administrateurs peuvent toujours modifier
+    if (current_user_can('manage_options')) {
+        return true;
+    }
+
     $user_id = get_current_user_id();
     $post_type = get_post_type($post_id);
 
@@ -364,9 +369,10 @@ function utilisateur_peut_voir_enigme(int $enigme_id, ?int $user_id = null): boo
         return false;
     }
 
-    $post_status   = get_post_status($enigme_id);
-    $etat_systeme  = get_field('enigme_cache_etat_systeme', $enigme_id);
-    $user_id       = $user_id ?? get_current_user_id();
+    $post_status  = get_post_status($enigme_id);
+    $etat_systeme = get_field('enigme_cache_etat_systeme', $enigme_id);
+    $user_id      = $user_id ?? get_current_user_id();
+    $chasse_id    = recuperer_id_chasse_associee($enigme_id);
 
     error_log("🔎 [voir énigme] #$enigme_id | statut = $post_status | etat = $etat_systeme | user_id = $user_id");
 
@@ -376,22 +382,29 @@ function utilisateur_peut_voir_enigme(int $enigme_id, ?int $user_id = null): boo
         return true;
     }
 
-    // 🔍 Anonyme ou abonné : uniquement publish + accessible
-    if (!is_user_logged_in() || in_array('abonne', wp_get_current_user()->roles, true)) {
-        $autorise = ($post_status === 'publish') && ($etat_systeme === 'accessible');
-        error_log("👤 [voir énigme] visiteur/abonné → accès " . ($autorise ? 'OK' : 'REFUSÉ'));
-        return $autorise;
-    }
-
-    if ($post_status === 'draft') {
-        error_log("❌ [voir énigme] brouillon interdit pour utilisateur #$user_id");
+    // 🎯 Pas de chasse liée = refus
+    if (!$chasse_id) {
+        error_log("❌ [voir énigme] pas de chasse associée");
         return false;
     }
 
-    // 🎯 Chasse liée
-    $chasse_id = recuperer_id_chasse_associee($enigme_id);
-    if (!$chasse_id) {
-        error_log("❌ [voir énigme] pas de chasse associée");
+    // ✅ Abonné engagé dans la chasse → peut voir l’image si énigme accessible
+    if (utilisateur_est_engage_dans_chasse($user_id, $chasse_id)) {
+        $autorise = ($post_status === 'publish') && ($etat_systeme === 'accessible');
+        error_log("✅ [voir énigme] joueur engagé dans chasse #$chasse_id → accès " . ($autorise ? 'OK' : 'REFUSÉ'));
+        return $autorise;
+    }
+
+    // 👤 Visiteur/abonné non engagé → accès uniquement si énigme publique + accessible
+    if (is_user_logged_in() && in_array('abonne', wp_get_current_user()->roles, true)) {
+        $autorise = ($post_status === 'publish') && ($etat_systeme === 'accessible');
+        error_log("👤 [voir énigme] abonné non engagé → accès " . ($autorise ? 'OK' : 'REFUSÉ'));
+        return $autorise;
+    }
+
+    // ❌ Brouillon interdit
+    if ($post_status === 'draft') {
+        error_log("❌ [voir énigme] brouillon interdit pour utilisateur #$user_id");
         return false;
     }
 
@@ -401,8 +414,7 @@ function utilisateur_peut_voir_enigme(int $enigme_id, ?int $user_id = null): boo
         return false;
     }
 
-    // ✅ Exception organisateur : accès si chasse en création, correction
-    //    ou en attente de validation
+    // ✅ Exception organisateur (chasse non publiée)
     $statut_validation = get_field('chasse_cache_statut_validation', $chasse_id);
     error_log("🧪 [voir énigme] chasse #$chasse_id → statut_validation = $statut_validation");
 
@@ -412,11 +424,23 @@ function utilisateur_peut_voir_enigme(int $enigme_id, ?int $user_id = null): boo
         return $autorise;
     }
 
-    // ✅ Cas standard : uniquement publish + accessible
+    // ✅ Cas organisateur associé à une chasse publiée mais à venir
+    if (
+        utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id) &&
+        $post_status === 'publish' &&
+        $etat_systeme === 'bloquee_chasse'
+    ) {
+        error_log("🟢 [voir énigme] organisateur associé à une chasse publiée mais à venir → accès OK");
+        return true;
+    }
+
+    // ✅ Cas standard : publish + accessible
     $autorise = ($post_status === 'publish') && ($etat_systeme === 'accessible');
     error_log("🟠 [voir énigme] cas standard → accès " . ($autorise ? 'OK' : 'REFUSÉ'));
     return $autorise;
 }
+
+
 
 
 /**
@@ -580,8 +604,11 @@ function utilisateur_peut_ajouter_chasse(int $organisateur_id): bool
         return false;
     }
 
-    // Organisateur : aucune limite
+    // Organisateur : une seule chasse en attente à la fois une fois publié
     if (in_array(ROLE_ORGANISATEUR, $roles, true)) {
+        if (get_post_status($organisateur_id) === 'publish' && organisateur_a_chasse_pending($organisateur_id)) {
+            return false;
+        }
         return true;
     }
 
@@ -606,6 +633,11 @@ function utilisateur_peut_voir_panneau(int $post_id): bool
 {
     if (!is_user_logged_in()) {
         return false;
+    }
+
+    // ✅ Les administrateurs ont toujours accès aux panneaux
+    if (current_user_can('manage_options')) {
+        return true;
     }
 
     $user  = wp_get_current_user();
@@ -654,6 +686,11 @@ function utilisateur_peut_editer_champs(int $post_id): bool
         return false;
     }
 
+    // ✅ Les administrateurs peuvent toujours éditer les champs
+    if (current_user_can('manage_options')) {
+        return true;
+    }
+
     $type   = get_post_type($post_id);
     $status = get_post_status($post_id);
 
@@ -662,7 +699,9 @@ function utilisateur_peut_editer_champs(int $post_id): bool
 
     switch ($type) {
         case 'organisateur':
-            return in_array(ROLE_ORGANISATEUR_CREATION, $roles, true) && $status === 'pending';
+            // Les organisateurs confirmés peuvent éditer les champs de leur CPT
+            // (sauf restrictions spécifiques gérées ailleurs).
+            return utilisateur_peut_modifier_post($post_id);
 
         case 'chasse':
             $val  = get_field('chasse_cache_statut_validation', $post_id) ?? '';
@@ -707,6 +746,11 @@ function champ_est_editable($champ, $post_id, $user_id = null)
 {
     if (!$post_id || !is_user_logged_in()) return false;
 
+    // ✅ Les administrateurs peuvent éditer tous les champs
+    if (current_user_can('manage_options')) {
+        return true;
+    }
+
     if (!$user_id) {
         $user_id = get_current_user_id();
     }
@@ -720,9 +764,13 @@ function champ_est_editable($champ, $post_id, $user_id = null)
         return false;
     }
 
-    // 💡 Exemple : titre de chasse non modifiable après publication
-    if ($post_type === 'chasse' && $champ === 'post_title') {
-        return $status !== 'publish';
+    // 💡 Chasse : certains champs ne sont éditables que durant la phase
+    //     de création/correction. On se base sur la même logique que
+    //     `utilisateur_peut_editer_champs()`.
+    if ($post_type === 'chasse') {
+        if (in_array($champ, ['post_title', 'caracteristiques.chasse_infos_cout_points'], true)) {
+            return utilisateur_peut_editer_champs($post_id);
+        }
     }
 
     // 🔒 Le nom d'organisateur est verrouillé sauf pour certaines étapes de création
@@ -1111,13 +1159,15 @@ add_action('wp_ajax_verifier_et_enregistrer_condition_pre_requis', 'verifier_et_
 // 📌 VISIBILITÉ ET AFFICHAGE (RÉSERVÉ FUTUR)
 // ==================================================
 
-/*Préparer un bloc vide commenté pour y ajouter par exemple :
-enigme_est_affichable_pour_joueur() (à venir)
-get_cta_enigme() (à déplacer ici si elle migre du fichier visuel)
-tout helper type est_cliquable, affiche_indice, etc. */
-
 /**
  * Détermine si une chasse doit être visible pour un utilisateur.
+ *
+ * Règles de visibilité :
+ * - Si statut WP = 'publish' ET 'chasse_cache_statut_validation' = 'valide'
+ *     → visible par tous les utilisateurs (y compris anonymes)
+ * - Si statut WP = 'pending'
+ *     → visible uniquement si user est admin OU lié à la chasse
+ * - Tous les autres cas → invisible
  *
  * @param int $chasse_id ID de la chasse.
  * @param int $user_id   ID de l'utilisateur.
@@ -1126,28 +1176,31 @@ tout helper type est_cliquable, affiche_indice, etc. */
 function chasse_est_visible_pour_utilisateur(int $chasse_id, int $user_id): bool
 {
     $status = get_post_status($chasse_id);
-    if (!in_array($status, ['pending', 'publish'], true)) {
+    $validation = get_field('chasse_cache_statut_validation', $chasse_id) ?? '';
+
+    // ✅ Cas 1 : chasse publiée et valide → visible par tous
+    if ($status === 'publish' && $validation === 'valide') {
+        return true;
+    }
+
+    // ✅ Cas 2 : chasse en attente → visible pour admin ou organisateur associé
+    if ($status === 'pending') {
+        if (user_can($user_id, 'manage_options')) {
+            return true;
+        }
+
+        if (utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
+            return true;
+        }
+
         return false;
     }
 
-    $validation = get_field('chasse_cache_statut_validation', $chasse_id) ?? '';
-
-    // Les administrateurs peuvent toujours voir la chasse, sauf si elle est bannie
-    if (user_can($user_id, 'manage_options')) {
-        return $validation !== 'banni';
-    }
-
-    if ($status === 'pending') {
-        $assoc = utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
-
-        return $validation !== 'banni'
-            && $assoc
-            && est_organisateur($user_id);
-    }
-
-    return $validation !== 'banni';
-
+    // ❌ Tous les autres cas : non visible
+    return false;
 }
+
+
 
 /**
  * Autorise la consultation des énigmes non publiées pour les organisateurs

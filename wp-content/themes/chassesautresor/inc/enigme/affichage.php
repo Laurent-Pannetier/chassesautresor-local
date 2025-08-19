@@ -17,7 +17,9 @@ defined('ABSPATH') || exit;
      */
     function afficher_enigme_stylisee(int $enigme_id, array $statut_data = []): void
     {
-        if (get_post_type($enigme_id) !== 'enigme') return;
+        if (get_post_type($enigme_id) !== 'enigme') {
+            return;
+        }
 
         if (!empty($statut_data)) {
             // statut_data transmis
@@ -28,29 +30,96 @@ defined('ABSPATH') || exit;
         $etat = get_field('enigme_cache_etat_systeme', $enigme_id) ?? 'accessible';
 
         if ($etat !== 'accessible' && !utilisateur_peut_modifier_enigme($enigme_id)) {
-            echo '<div class="enigme-inaccessible">';
-            echo '<p>🔒 Cette énigme n’est pas accessible actuellement.</p>';
-            echo '<p><a href="' . esc_url(home_url('/')) . '" class="bouton-retour-home">← Retour à l’accueil</a></p>';
-            echo '</div>';
-            return;
+            $chasse_id = recuperer_id_chasse_associee($enigme_id);
+            $url       = $chasse_id ? get_permalink($chasse_id) : home_url('/');
+            wp_safe_redirect($url);
+            exit;
         }
 
         if (!empty($statut_data['afficher_message'])) {
             echo $statut_data['message_html'];
         }
 
-        $user_id = get_current_user_id();
-        $style = get_field('enigme_style_affichage', $enigme_id) ?? 'defaut';
+        $user_id       = get_current_user_id();
+        $style         = get_field('enigme_style_affichage', $enigme_id) ?? 'defaut';
+        $chasse_id     = recuperer_id_chasse_associee($enigme_id);
+        $edition_active = utilisateur_peut_modifier_post($enigme_id);
 
-        echo '<div class="enigme-affichage enigme-style-' . esc_attr($style) . '">';
+        $liste      = $chasse_id ? recuperer_enigmes_pour_chasse($chasse_id) : [];
+        $menu_items = [];
 
-        foreach (['titre', 'images', 'texte', 'bloc-reponse', 'solution', 'retour-chasse'] as $slug) {
+        foreach ($liste as $post) {
+            if (get_post_status($post->ID) !== 'publish') {
+                continue;
+            }
+            if (!get_field('enigme_cache_complet', $post->ID)) {
+                continue;
+            }
+            $etat_sys = get_field('enigme_cache_etat_systeme', $post->ID) ?? 'accessible';
+            if ($etat_sys !== 'accessible') {
+                continue;
+            }
+            $classes = [];
+            if ($post->ID === $enigme_id) {
+                $classes[] = 'active';
+            }
+            if (!utilisateur_est_engage_dans_enigme($user_id, $post->ID)) {
+                $classes[] = 'non-engagee';
+            }
+            $menu_items[] = sprintf(
+                '<li class="%s"><a href="%s">%s</a></li>',
+                esc_attr(implode(' ', $classes)),
+                esc_url(get_permalink($post->ID)),
+                esc_html(get_the_title($post->ID))
+            );
+        }
+
+        echo '<div class="container container--xl-full enigme-layout">';
+        echo '<aside class="enigme-sidebar">';
+
+        if ($edition_active) {
+            echo '<button id="toggle-mode-edition-enigme" type="button" ' .
+                'class="bouton-edition-toggle bouton-edition-toggle--clair" data-cpt="enigme" aria-label="' .
+                esc_attr__('Activer Orgy', 'chassesautresor') .
+                '"><i class="fa-solid fa-gear"></i></button>';
+        }
+
+        if ($chasse_id) {
+            $logo = get_the_post_thumbnail($chasse_id, 'thumbnail');
+            if ($logo) {
+                echo '<div class="enigme-chasse-logo">' . $logo . '</div>';
+            }
+            $titre_chasse = get_the_title($chasse_id);
+            echo '<div class="enigme-chasse-titre">' . esc_html($titre_chasse) . '</div>';
+        }
+
+        if (!empty($menu_items)) {
+            echo '<ul class="enigme-menu">' . implode('', $menu_items) . '</ul>';
+        }
+
+        if ($chasse_id) {
+            $url_retour = get_permalink($chasse_id);
+            echo '<a href="' . esc_url($url_retour) . '" class="bouton-retour bouton-retour-chasse">';
+            echo '<i class="fa-solid fa-arrow-left"></i>';
+            echo '<span class="screen-reader-text">' . esc_html__('Retour à la chasse', 'chassesautresor') . '</span>';
+            echo '</a>';
+        }
+
+        echo '</aside>';
+        echo '<div class="enigme-main">';
+        echo '<main class="enigme-content enigme-style-' . esc_attr($style) . '">';
+
+        foreach (['titre', 'images', 'texte', 'bloc-reponse'] as $slug) {
+            echo '<div class="enigme-section enigme-section-' . esc_attr($slug) . '">';
             enigme_get_partial($slug, $style, [
                 'post_id' => $enigme_id,
                 'user_id' => $user_id,
             ]);
+            echo '</div>';
         }
 
+        echo '</main>';
+        echo '</div>';
         echo '</div>';
     }
 

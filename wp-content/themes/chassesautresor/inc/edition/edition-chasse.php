@@ -30,7 +30,15 @@ function enqueue_script_chasse_edit()
   }
 
   // Enfile les scripts nécessaires
-  enqueue_core_edit_scripts(['chasse-edit']);
+  enqueue_core_edit_scripts(['chasse-edit', 'chasse-stats', 'table-etiquette']);
+  wp_localize_script(
+    'chasse-stats',
+    'ChasseStats',
+    [
+      'ajaxUrl' => admin_url('admin-ajax.php'),
+      'chasseId' => $chasse_id,
+    ]
+  );
 
   // Injecte les valeurs par défaut pour JS
   wp_localize_script('champ-init', 'CHP_CHASSE_DEFAUT', [
@@ -95,7 +103,7 @@ function creer_chasse_et_rediriger_si_appel()
   $organisateur_id = get_organisateur_from_user($user_id);
   if (!$organisateur_id) {
     cat_debug("🛑 Aucun organisateur trouvé pour l'utilisateur {$user_id}");
-    wp_die('Aucun organisateur associé.');
+    wp_die( __( 'Aucun organisateur associé.', 'chassesautresor-com' ) );
   }
   cat_debug("✅ Organisateur trouvé : {$organisateur_id}");
 
@@ -103,11 +111,20 @@ function creer_chasse_et_rediriger_si_appel()
   if (!current_user_can('administrator') && !current_user_can(ROLE_ORGANISATEUR)) {
     if (in_array(ROLE_ORGANISATEUR_CREATION, $roles, true)) {
       if (organisateur_a_des_chasses($organisateur_id)) {
-        wp_die('Limite atteinte');
+        wp_die( __( 'Limite atteinte', 'chassesautresor-com' ) );
       }
     } else {
-      wp_die('Accès refusé');
+      wp_die( __( 'Accès refusé', 'chassesautresor-com' ) );
     }
+  }
+
+  // 🔒 Organisateur publié : une seule chasse en attente à la fois
+  if (
+    !current_user_can('manage_options') &&
+    get_post_status($organisateur_id) === 'publish' &&
+    organisateur_a_chasse_pending($organisateur_id)
+  ) {
+    wp_die( __( 'Une chasse est déjà en attente de validation.', 'chassesautresor-com' ) );
   }
 
   // 📝 Création du post "chasse"
@@ -120,7 +137,7 @@ function creer_chasse_et_rediriger_si_appel()
 
   if (is_wp_error($post_id)) {
     cat_debug("🛑 Erreur création post : " . $post_id->get_error_message());
-    wp_die('Erreur lors de la création de la chasse.');
+    wp_die( __( 'Erreur lors de la création de la chasse.', 'chassesautresor-com' ) );
   }
 
   cat_debug("✅ Chasse créée avec l’ID : {$post_id}");
@@ -143,8 +160,8 @@ function creer_chasse_et_rediriger_si_appel()
   update_field('chasse_cache_statut_validation', 'creation', $post_id);
   update_field('chasse_cache_organisateur', [$organisateur_id], $post_id);
 
-  // 🚀 Redirection vers la prévisualisation frontale avec panneau ouvert
-  $preview_url = add_query_arg('edition', 'open', get_preview_post_link($post_id));
+  // 🚀 Redirection vers la prévisualisation frontale
+  $preview_url = get_preview_post_link($post_id);
   cat_debug("➡️ Redirection vers : {$preview_url}");
   wp_redirect($preview_url);
   exit;
@@ -186,8 +203,7 @@ function modifier_dates_chasse()
     wp_send_json_error('post_invalide');
   }
 
-  $auteur = (int) get_post_field('post_author', $post_id);
-  if ($auteur !== get_current_user_id()) {
+  if (!utilisateur_peut_modifier_post($post_id)) {
     wp_send_json_error('acces_refuse');
   }
 
@@ -311,18 +327,21 @@ function modifier_champ_chasse()
     wp_send_json_error('⚠️ post_invalide');
   }
 
-  $auteur = (int) get_post_field('post_author', $post_id);
-  if ($auteur !== $user_id) {
+  if (!utilisateur_peut_modifier_post($post_id)) {
     wp_send_json_error('⚠️ acces_refuse');
   }
 
-  if (!utilisateur_peut_editer_champs($post_id)) {
-    wp_send_json_error('⚠️ acces_refuse');
-  }
+    $demande_terminer = ($champ === 'champs_caches.chasse_cache_statut' && $valeur === 'termine');
+    $champ_fin = in_array($champ, ['champs_caches.chasse_cache_gagnants', 'champs_caches.chasse_cache_date_decouverte'], true);
+    $champ_libre = ($champ === 'chasse_principale_liens');
 
-  $doit_recalculer_statut = false;
-  $champ_valide = false;
-  $reponse = ['champ' => $champ, 'valeur' => $valeur];
+    if (!$demande_terminer && !$champ_fin && !$champ_libre && !utilisateur_peut_editer_champs($post_id)) {
+        wp_send_json_error('⚠️ acces_refuse');
+    }
+
+    $doit_recalculer_statut = false;
+    $champ_valide = false;
+    $reponse = ['champ' => $champ, 'valeur' => $valeur];
   // 🛡️ Initialisation sécurisée (champ simple)
 
 
@@ -341,17 +360,25 @@ function modifier_champ_chasse()
     if (!is_array($tableau)) {
       wp_send_json_error('⚠️ format_invalide');
     }
-    $repetitions = array_values(array_filter(array_map(function ($ligne) {
+    $repetitions = [];
+    foreach ($tableau as $ligne) {
       $type = sanitize_text_field($ligne['type_de_lien'] ?? '');
       $url  = sanitize_text_field($ligne['url_lien'] ?? '');
-      return ($type && $url) ? [
-        'chasse_principale_liens_type' => [$type],
-        'chasse_principale_liens_url'  => $url
-      ] : null;
-    }, $tableau)));
+      if ($type && $url) {
+        $repetitions[] = [
+          'chasse_principale_liens_type' => $type,
+          'chasse_principale_liens_url'  => $url
+        ];
+      }
+    }
 
     $ok = update_field('chasse_principale_liens', $repetitions, $post_id);
-    if ($ok) wp_send_json_success($reponse);
+
+    $enregistre = get_field('chasse_principale_liens', $post_id);
+    $enregistre = is_array($enregistre) ? array_values($enregistre) : [];
+    $equiv = json_encode($enregistre) === json_encode($repetitions);
+
+    if ($ok || $equiv) wp_send_json_success($reponse);
     wp_send_json_error('⚠️ echec_mise_a_jour_liens');
   }
 
@@ -404,6 +431,14 @@ function modifier_champ_chasse()
   ];
   if (in_array($champ, $champs_recompense, true)) {
     $sous_champ = str_replace('caracteristiques.', '', $champ);
+
+    // Validation spécifique pour la valeur monétaire
+    if ($sous_champ === 'chasse_infos_recompense_valeur') {
+      if (!is_numeric($valeur) || $valeur <= 0 || $valeur > 5000000) {
+        wp_send_json_error('valeur_invalide');
+      }
+    }
+
     $ok = update_field($sous_champ, $valeur, $post_id);
     if ($ok !== false) $champ_valide = true;
     $doit_recalculer_statut = true;
@@ -423,16 +458,44 @@ function modifier_champ_chasse()
 
   // 🔹 Déclenchement de la publication différée des solutions
   if ($champ === 'champs_caches.chasse_cache_statut' && $valeur === 'termine') {
-    $champ_valide = true;
+    $ok = update_field('chasse_cache_statut', 'termine', $post_id);
+    if ($ok !== false) {
+      // ✅ Marque la chasse comme complète sans déclencher de recalcul automatique
+      update_field('chasse_cache_complet', 1, $post_id);
+      $champ_valide = true;
 
-    $liste_enigmes = recuperer_enigmes_associees($post_id);
-    if (!empty($liste_enigmes)) {
-      foreach ($liste_enigmes as $enigme_id) {
-        cat_debug("🧩 Planification/déplacement : énigme #$enigme_id");
-        planifier_ou_deplacer_pdf_solution_immediatement($enigme_id);
+      $liste_enigmes = recuperer_enigmes_associees($post_id);
+      if (!empty($liste_enigmes)) {
+        foreach ($liste_enigmes as $enigme_id) {
+          cat_debug("🧩 Planification/déplacement : énigme #$enigme_id");
+          planifier_ou_deplacer_pdf_solution_immediatement($enigme_id);
+        }
       }
+
+      // 🏁 Mise à jour des statuts joueurs
+      gerer_chasse_terminee($post_id);
     }
   }
+
+    // 🔹 Gagnants (texte libre)
+    if ($champ === 'champs_caches.chasse_cache_gagnants') {
+        $ok = update_field('chasse_cache_gagnants', $valeur, $post_id);
+        if ($ok !== false) {
+            $champ_valide = true;
+        }
+    }
+
+    // 🔹 Date de découverte
+    if ($champ === 'champs_caches.chasse_cache_date_decouverte') {
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $valeur)) {
+            wp_send_json_error('⚠️ format_date_invalide');
+        }
+        $ok = update_field('chasse_cache_date_decouverte', $valeur, $post_id);
+        if ($ok !== false) {
+            $champ_valide = true;
+            $doit_recalculer_statut = true;
+        }
+    }
 
   // 🔹 Nb gagnants
   if ($champ === 'caracteristiques.chasse_infos_nb_max_gagants') {

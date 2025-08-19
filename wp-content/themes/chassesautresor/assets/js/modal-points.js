@@ -2,11 +2,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const openModalButtons = document.querySelectorAll(".open-points-modal");
     const closeModal = document.querySelector(".close-modal");
     const modal = document.getElementById("points-modal");
-    const overlay = document.createElement("div");
-    overlay.classList.add("modal-overlay");
-
-    // Ajouter l'overlay au body (caché par défaut)
-    document.body.appendChild(overlay);
+    let overlay = document.querySelector(".modal-overlay");
+    if (!overlay) {
+        overlay = document.createElement("div");
+        overlay.classList.add("modal-overlay");
+        document.body.appendChild(overlay);
+    }
 
     if (modal) {
         openModalButtons.forEach(button => {

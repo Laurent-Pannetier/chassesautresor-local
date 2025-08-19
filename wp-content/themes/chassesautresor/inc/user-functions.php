@@ -17,8 +17,12 @@ defined( 'ABSPATH' ) || exit;
 // 4. 📦 ATTRIBUTION DE RÔLE
 //     - Attribution des rôles oragnisateurs (création)
 //
+// 5. 📣 MESSAGES IMPORTANTS
+//    - Affichage centralisé des messages clés de l'espace "Mon Compte"
 
-
+// 6. 📡 AJAX ADMIN SECTIONS
+//    - Chargement dynamique des pages d'administration dans "Mon Compte"
+//
 // ==================================================
 // 📦 TEMPLATES UTILISATEURS
 // ==================================================
@@ -40,9 +44,7 @@ defined( 'ABSPATH' ) || exit;
  * @param string $template Le chemin du template par défaut déterminé par WordPress.
  * @return string Le chemin du fichier de template personnalisé ou le template par défaut.
  */
- function ajouter_rewrite_rules() {
-    add_rewrite_rule('^mon-compte/organisateurs/inscription/?$', 'index.php?mon_compte_organisateurs_inscription=1', 'top');
-    add_rewrite_rule('^mon-compte/organisateurs/paiements/?$', 'index.php?mon_compte_organisateurs_paiements=1', 'top');
+function ajouter_rewrite_rules() {
     add_rewrite_rule('^mon-compte/statistiques/?$', 'index.php?mon_compte_statistiques=1', 'top');
     add_rewrite_rule('^mon-compte/outils/?$', 'index.php?mon_compte_outils=1', 'top');
 }
@@ -60,8 +62,6 @@ add_action('init', 'ajouter_rewrite_rules');
  * @hook query_vars
  */
 function ajouter_query_vars($vars) {
-    $vars[] = 'mon_compte_organisateurs_inscription';
-    $vars[] = 'mon_compte_organisateurs_paiements';
     $vars[] = 'mon_compte_statistiques';
     $vars[] = 'mon_compte_outils';
     return $vars;
@@ -92,29 +92,54 @@ function charger_template_utilisateur($template) {
     if (is_wc_endpoint_url()) {
         return $template;
     }
+
+    if ($request_uri === 'mon-compte/points' || $request_uri === 'mon-compte/points/') {
+        wp_redirect(home_url('/mon-compte/?section=points'));
+        exit;
+    }
     
-    // Liste des chemins d’URL associés à leurs fichiers de template respectifs
+    // Associe chaque URL à un fichier de contenu spécifique
     $mapping_templates = array(
-        'mon-compte/organisateurs'        => 'organisateurs.php',
-        'mon-compte/organisateurs/'       => 'organisateurs.php', // Variante avec /
-        'mon-compte/statistiques'         => 'statistiques.php',
-        'mon-compte/outils'               => 'outils.php',
+        'mon-compte/organisateurs'        => 'content-organisateurs.php',
+        'mon-compte/organisateurs/'       => 'content-organisateurs.php', // Variante avec /
+        'mon-compte/statistiques'         => 'content-statistiques.php',
+        'mon-compte/outils'               => 'content-outils.php',
     );
 
-    // Vérification si l'URL correspond à un template spécifique
-    if (array_key_exists($request_uri, $mapping_templates)) {
-        $custom_template = get_stylesheet_directory() . '/templates/admin/' . $mapping_templates[$request_uri];
-        
-        if (!file_exists($custom_template)) {
-            error_log('Fichier de template introuvable : ' . $custom_template);
-        }
-        error_log('Chargement du template : ' . $custom_template);
+    $admin_paths = array(
+        'mon-compte/organisateurs',
+        'mon-compte/organisateurs/',
+        'mon-compte/statistiques',
+        'mon-compte/outils',
+    );
 
-        // Vérification de l'existence du fichier avant de le retourner
-        if (file_exists($custom_template)) {
-            return $custom_template;
+    // Vérifie si l'URL correspond à un contenu personnalisé
+    if (array_key_exists($request_uri, $mapping_templates)) {
+        if (in_array($request_uri, $admin_paths, true)) {
+            $section       = str_replace('mon-compte/', '', rtrim($request_uri, '/'));
+            $redirect_path = '/mon-compte/';
+
+            if (current_user_can('administrator')) {
+                $redirect_path .= '?section=' . $section;
+            }
+
+            wp_redirect(home_url($redirect_path));
+            exit;
         }
+
+        $content_template = get_stylesheet_directory() . '/templates/myaccount/' . $mapping_templates[$request_uri];
+
+        if (!file_exists($content_template)) {
+            error_log('Fichier de contenu introuvable : ' . $content_template);
+        } else {
+            // Stocke le chemin pour l'injection dans le layout
+            $GLOBALS['myaccount_content_template'] = $content_template;
+        }
+
+        // Retourne le layout commun pour les pages "Mon Compte"
+        return get_stylesheet_directory() . '/templates/myaccount/layout.php';
     }
+
     // Retourne le template par défaut si aucune correspondance n'est trouvée
     return $template;
 }
@@ -183,6 +208,203 @@ function is_woocommerce_account_page() {
     return false;
 }
 
+/**
+ * Rename WooCommerce "orders" endpoint title to "Commandes".
+ *
+ * @param string $title Original title.
+ * @return string Modified title.
+ */
+function ca_orders_endpoint_title($title)
+{
+    return __('Commandes', 'chassesautresor');
+}
+add_filter('woocommerce_endpoint_orders_title', 'ca_orders_endpoint_title');
+
+/**
+ * Rename "edit-account" endpoint title to "Profil".
+ *
+ * @param string $title Original title.
+ * @return string Modified title.
+ */
+function ca_profile_endpoint_title($title)
+{
+    return __('Profil', 'chassesautresor');
+}
+add_filter('woocommerce_endpoint_edit-account_title', 'ca_profile_endpoint_title');
+
+// ==================================================
+// 📣 IMPORTANT MESSAGES
+// ==================================================
+/**
+ * Get pre-formatted HTML for the important message section in My Account pages.
+ *
+ * @return string
+ */
+function myaccount_get_important_messages(): string
+{
+    $messages = [];
+    $flash    = '';
+
+    if (isset($_GET['points_modifies']) && $_GET['points_modifies'] === '1') {
+        $flash = '<p class="flash">' . __('Points mis à jour avec succès.', 'chassesautresor') . '</p>';
+    }
+
+    if (current_user_can('administrator')) {
+        if (function_exists('recuperer_organisateurs_pending')) {
+            $pending = array_filter(
+                recuperer_organisateurs_pending(),
+                function ($entry) {
+                    return !empty($entry['chasse_id']) && $entry['validation'] === 'en_attente';
+                }
+            );
+
+            if (!empty($pending)) {
+                $links = array_map(
+                    function ($entry) {
+                        $url   = esc_url(get_permalink($entry['chasse_id']));
+                        $title = esc_html(get_the_title($entry['chasse_id']));
+                        return '<a href="' . $url . '">' . $title . '</a>';
+                    },
+                    $pending
+                );
+
+                $label = count($pending) > 1
+                    ? __('Chasses à valider :', 'chassesautresor')
+                    : __('Chasse à valider :', 'chassesautresor');
+
+                $messages[] = $label . ' ' . implode(', ', $links);
+            }
+        }
+
+        global $wpdb;
+        $repo            = new PointsRepository($wpdb);
+        $pendingRequests = $repo->getConversionRequests(null, 'pending');
+
+        if (!empty($pendingRequests)) {
+            $url = esc_url(home_url('/mon-compte/?section=points'));
+            $messages[] = sprintf(
+                /* translators: 1: opening anchor tag, 2: closing anchor tag */
+                __('Vous avez des %1$sdemandes de conversion%2$s en attente.', 'chassesautresor'),
+                '<a href="' . $url . '">',
+                '</a>'
+            );
+        }
+    }
+
+    if (est_organisateur()) {
+        $current_user_id   = get_current_user_id();
+        $organisateur_id   = get_organisateur_from_user($current_user_id);
+        if ($organisateur_id) {
+            $enigmes = recuperer_enigmes_tentatives_en_attente($organisateur_id);
+            if (!empty($enigmes)) {
+                $links = array_map(
+                    function ($id) {
+                        $url   = esc_url(get_permalink($id));
+                        $title = esc_html(get_the_title($id));
+                        return '<a href="' . $url . '">' . $title . '</a>';
+                    },
+                    $enigmes
+                );
+
+                $messages[] = __('Tentatives à traiter :', 'chassesautresor') . ' ' . implode(', ', $links);
+            }
+        }
+
+        global $wpdb;
+        $repo       = new PointsRepository($wpdb);
+        $pendingOwn = $repo->getConversionRequests($current_user_id, 'pending');
+        if (!empty($pendingOwn)) {
+            $messages[] = sprintf(
+                /* translators: 1: opening anchor tag, 2: closing anchor tag */
+                __('Vous avez une %1$sdemande de conversion%2$s en attente de règlement.', 'chassesautresor'),
+                '<a href="' . esc_url(home_url('/mon-compte/?section=points')) . '">',
+                '</a>'
+            );
+        }
+
+        if ($organisateur_id) {
+            $pendingChasses = get_posts([
+                'post_type'   => 'chasse',
+                'post_status' => ['publish', 'pending'],
+                'numberposts' => -1,
+                'fields'      => 'ids',
+                'meta_query'  => [
+                    [
+                        'key'     => 'chasse_cache_organisateur',
+                        'value'   => '"' . $organisateur_id . '"',
+                        'compare' => 'LIKE',
+                    ],
+                    [
+                        'key'   => 'chasse_cache_statut_validation',
+                        'value' => 'en_attente',
+                    ],
+                ],
+            ]);
+
+            if (!empty($pendingChasses)) {
+                $messages[] = __('Demande de validation en cours de traitement.', 'chassesautresor');
+            }
+        }
+    }
+
+    if (empty($messages) && $flash === '') {
+        return '';
+    }
+
+    $output = array_map(
+        function ($msg) {
+            return '<p>' . $msg . '</p>';
+        },
+        $messages
+    );
+
+    return $flash . implode('', $output);
+}
+
+// ==================================================
+// 📡 AJAX ADMIN SECTIONS
+// ==================================================
+/**
+ * Load My Account sections via AJAX.
+ *
+ * @return void
+ */
+function ca_load_admin_section()
+{
+    if (!is_user_logged_in()) {
+        wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor')], 403);
+    }
+
+    $section = sanitize_key($_GET['section'] ?? '');
+    $allowed = [
+        'points'        => ['template' => 'content-points.php', 'cap' => 'read'],
+        'organisateurs' => ['template' => 'content-organisateurs.php', 'cap' => 'administrator'],
+        'statistiques'  => ['template' => 'content-statistiques.php', 'cap' => 'administrator'],
+        'outils'        => ['template' => 'content-outils.php', 'cap' => 'administrator'],
+    ];
+
+    if (!isset($allowed[$section])) {
+        wp_send_json_error(['message' => __('Section not found', 'chassesautresor')], 404);
+    }
+
+    $cap = $allowed[$section]['cap'];
+    if ($cap !== 'read' && !current_user_can($cap)) {
+        wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor')], 403);
+    }
+
+    ob_start();
+    $template = get_stylesheet_directory() . '/templates/myaccount/' . $allowed[$section]['template'];
+    if (file_exists($template)) {
+        include $template;
+    }
+    $html = ob_get_clean();
+
+    wp_send_json_success([
+        'html'     => $html,
+        'messages' => myaccount_get_important_messages(),
+    ]);
+}
+add_action('wp_ajax_cta_load_admin_section', 'ca_load_admin_section');
 
 // ==================================================
 // 📦 MODIFICATION AVATAR EN FRONT

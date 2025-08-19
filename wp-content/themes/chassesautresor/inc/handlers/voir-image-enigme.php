@@ -1,5 +1,5 @@
 <?php
-// 🔒 Sécurité minimale
+// 🔒 Vérification minimale
 if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
   http_response_code(400);
   exit('ID manquant ou invalide');
@@ -8,12 +8,28 @@ if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
 $image_id = (int) $_GET['id'];
 $taille = $_GET['taille'] ?? 'full';
 
-// 🔁 Chargement de la fonction centralisée
+// 🔁 Chargement des fonctions
 if (!function_exists('trouver_chemin_image')) {
   require_once get_stylesheet_directory() . '/inc/enigme-functions.php';
 }
+if (!function_exists('utilisateur_peut_voir_enigme')) {
+  require_once get_stylesheet_directory() . '/inc/statut-functions.php';
+}
 
-// 🔎 Essai avec la taille demandée
+// 🧩 Récupération de l'énigme associée à cette image
+$parent_id = wp_get_post_parent_id($image_id);
+if (!$parent_id || get_post_type($parent_id) !== 'enigme') {
+  http_response_code(403);
+  exit('Image non autorisée');
+}
+
+// 🔐 Vérification d'accès
+if (!utilisateur_peut_voir_enigme($parent_id)) {
+  http_response_code(403);
+  exit('Accès refusé');
+}
+
+// 📦 Récupération du chemin de l'image
 $info = trouver_chemin_image($image_id, $taille);
 $path = $info['path'] ?? null;
 $mime = $info['mime'] ?? 'application/octet-stream';

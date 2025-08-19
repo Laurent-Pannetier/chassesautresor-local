@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Template Name: Traitement Engagement Énigme
+ * Template Name: Traitement Engagement
  * Route d’engagement – appelée uniquement via POST
  */
 
@@ -9,23 +9,66 @@ defined('ABSPATH') || exit;
 
 $current_user_id = get_current_user_id();
 if (!$current_user_id) {
-  wp_redirect(home_url());
-  exit;
+    wp_redirect(home_url());
+    exit;
 }
 
+$chasse_id = isset($_POST['chasse_id']) ? intval($_POST['chasse_id']) : 0;
 $enigme_id = isset($_POST['enigme_id']) ? intval($_POST['enigme_id']) : 0;
 
+// --------------------------------------------------
+// 🎯 Traitement engagement chasse
+// --------------------------------------------------
+if ($chasse_id) {
+    if (get_post_type($chasse_id) !== 'chasse') {
+        wp_redirect(home_url());
+        exit;
+    }
+
+    if (
+        !isset($_POST['engager_chasse_nonce']) ||
+        !wp_verify_nonce($_POST['engager_chasse_nonce'], 'engager_chasse_' . $chasse_id)
+    ) {
+        wp_die(__('Échec de vérification de sécurité', 'chassesautresor-com'));
+    }
+
+    require_once get_theme_file_path('inc/chasse-functions.php');
+
+    $cout_points = (int) get_field('chasse_infos_cout_points', $chasse_id);
+
+    if ($cout_points > 0 && !utilisateur_a_assez_de_points($current_user_id, $cout_points)) {
+        wp_safe_redirect(
+            add_query_arg('erreur', 'points_insuffisants', get_permalink($chasse_id))
+        );
+        exit;
+    }
+
+    enregistrer_engagement_chasse($current_user_id, $chasse_id);
+
+    if ($cout_points > 0) {
+        $reason = sprintf('Déblocage de la chasse #%d', $chasse_id);
+        deduire_points_utilisateur($current_user_id, $cout_points, $reason, 'chasse', $chasse_id);
+    }
+
+    wp_safe_redirect(get_permalink($chasse_id));
+    exit;
+}
+
+// --------------------------------------------------
+// 🧩 Traitement engagement énigme
+// --------------------------------------------------
+
 if (!$enigme_id || get_post_type($enigme_id) !== 'enigme') {
-  wp_redirect(home_url());
-  exit;
+    wp_redirect(home_url());
+    exit;
 }
 
 // Vérification du nonce
 if (
-  !isset($_POST['engager_enigme_nonce']) ||
-  !wp_verify_nonce($_POST['engager_enigme_nonce'], 'engager_enigme_' . $enigme_id)
+    !isset($_POST['engager_enigme_nonce']) ||
+    !wp_verify_nonce($_POST['engager_enigme_nonce'], 'engager_enigme_' . $enigme_id)
 ) {
-  wp_die('Échec de vérification de sécurité');
+    wp_die(__('Échec de vérification de sécurité', 'chassesautresor-com'));
 }
 
 // Chargement des fonctions critiques
@@ -38,27 +81,18 @@ $statut_utilisateur = enigme_get_statut_utilisateur($enigme_id, $current_user_id
 $statuts_engageables = ['non_commencee', 'abandonnee', 'echouee'];
 
 if ($etat_systeme !== 'accessible' || !in_array($statut_utilisateur, $statuts_engageables, true)) {
-  wp_redirect(get_permalink($enigme_id)); // Redirection silencieuse
-  exit;
-}
-
-// Lecture du coût
-$groupe_tentative = get_field('enigme_tentative', $enigme_id);
-$cout_points = intval($groupe_tentative['enigme_tentative_cout_points'] ?? 0);
-
-// Vérification des points
-if (!utilisateur_a_assez_de_points($current_user_id, $cout_points)) {
-  $chasse_id = recuperer_id_chasse_associee($enigme_id);
-  $url = $chasse_id ? get_permalink($chasse_id) : home_url('/');
-  $url = add_query_arg('erreur', 'points_insuffisants', $url);
-  wp_redirect($url);
-  exit;
+    wp_redirect(get_permalink($enigme_id)); // Redirection silencieuse
+    exit;
 }
 
 
 // Déduction + enregistrement du statut
-deduire_points_utilisateur($current_user_id, $cout_points);
 marquer_enigme_comme_engagee($current_user_id, $enigme_id);
+
+// Vérifie la fin de chasse si l'énigme ne nécessite pas de validation
+if (get_field('enigme_mode_validation', $enigme_id) === 'aucune') {
+    verifier_fin_de_chasse($current_user_id, $enigme_id);
+}
 
 // Redirection vers la page de l’énigme
 wp_redirect(get_permalink($enigme_id));

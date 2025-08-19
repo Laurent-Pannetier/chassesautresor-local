@@ -28,8 +28,10 @@ function organisateur_get_liens_actifs(int $organisateur_id): array
 
   if (!empty($liens_publics) && is_array($liens_publics)) {
     foreach ($liens_publics as $entree) {
-      $type = $entree['type_de_lien'] ?? null;
-      $url  = $entree['url_lien'] ?? null;
+      $type_raw = $entree['type_de_lien'] ?? null;
+      $url      = $entree['url_lien'] ?? null;
+
+      $type = is_array($type_raw) ? ($type_raw[0] ?? '') : $type_raw;
 
       if (is_string($type) && trim($type) !== '' && is_string($url) && trim($url) !== '') {
         $liens_actifs[$type] = esc_url($url);
@@ -124,7 +126,7 @@ function enqueue_script_organisateur_edit()
 
   if ($organisateur_id && utilisateur_peut_modifier_post($organisateur_id)) {
     // 📦 Modules JS partagés + script organisateur
-    enqueue_core_edit_scripts(['organisateur-edit']);
+    enqueue_core_edit_scripts(['organisateur-edit', 'table-etiquette']);
 
     // ✅ Injection JavaScript APRÈS le enqueue (très important)
     $author_id = (int) get_post_field('post_author', $organisateur_id);
@@ -169,9 +171,8 @@ function ajax_modifier_champ_organisateur()
     wp_send_json_error('⚠️ organisateur_introuvable');
   }
 
-  // 🔒 Vérifie que l’utilisateur est bien auteur du post
-  $auteur = (int) get_post_field('post_author', $post_id);
-  if ($auteur !== $user_id) {
+  // 🔒 Vérifie que l’utilisateur est autorisé à modifier ce post
+  if (!utilisateur_peut_modifier_post($post_id)) {
     wp_send_json_error('⚠️ acces_refuse');
   }
 
@@ -187,6 +188,14 @@ function ajax_modifier_champ_organisateur()
 
   // 🔁 Corrige le nom du champ si groupé
   $champ_cible = $champ_correspondances[$champ] ?? $champ;
+
+  // 🛑 Validation métier : texte de présentation minimal
+  if ($champ_cible === 'description_longue') {
+    $texte = wp_strip_all_tags($valeur);
+    if (mb_strlen(trim($texte)) < 50) {
+      wp_send_json_error('votre texte doit comporter au moins 50 caractères');
+    }
+  }
 
   // ✏️ Titre natif WordPress
   if ($champ === 'post_title') {
@@ -213,22 +222,24 @@ function ajax_modifier_champ_organisateur()
       wp_send_json_error('⚠️ format_invalide');
     }
 
-    $repetitions = array_values(array_filter(array_map(function ($ligne) {
+    $repetitions = [];
+    foreach ($tableau as $ligne) {
       $type = sanitize_text_field($ligne['type_de_lien'] ?? '');
       $url  = esc_url_raw($ligne['url_lien'] ?? '');
 
-      if (!$type || !$url) return null;
-
-      return [
-        'type_de_lien' => [$type], // 🔁 forcé array (select multiple)
-        'url_lien'     => $url
-      ];
-    }, $tableau)));
+      if ($type && $url) {
+        $repetitions[] = [
+          'type_de_lien' => $type,
+          'url_lien'     => $url
+        ];
+      }
+    }
 
     $ok = update_field('liens_publics', $repetitions, $post_id);
 
     // ✅ ASTUCE MAJEURE : ACF retourne false si même valeur que l’existant → comparer aussi
     $enregistre = get_field('liens_publics', $post_id);
+    $enregistre = is_array($enregistre) ? array_values($enregistre) : [];
     $equivalent = json_encode($enregistre) === json_encode($repetitions);
 
     if ($ok || $equivalent) {
@@ -246,12 +257,14 @@ function ajax_modifier_champ_organisateur()
     $donnees = json_decode(stripslashes($valeur), true);
     $iban = sanitize_text_field($donnees['iban'] ?? '');
     $bic  = sanitize_text_field($donnees['bic'] ?? '');
+    $ok1 = update_field('iban', $iban, $post_id);
+    $ok2 = update_field('bic', $bic, $post_id);
+    // 🎯 Compatibilité avec anciens champs
+    update_field('gagnez_de_largent_iban', $iban, $post_id);
+    update_field('gagnez_de_largent_bic', $bic, $post_id);
 
-    $ok1 = update_field('gagnez_de_largent_iban', $iban, $post_id);
-    $ok2 = update_field('gagnez_de_largent_bic', $bic, $post_id);
-
-    $enregistre_iban = get_field('gagnez_de_largent_iban', $post_id);
-    $enregistre_bic  = get_field('gagnez_de_largent_bic', $post_id);
+    $enregistre_iban = get_field('iban', $post_id);
+    $enregistre_bic  = get_field('bic', $post_id);
     $sameIban = $enregistre_iban === $iban;
     $sameBic  = $enregistre_bic === $bic;
     if (($ok1 !== false && $ok2 !== false) || ($sameIban && $sameBic)) {
@@ -310,8 +323,8 @@ function rediriger_selon_etat_organisateur()
   $has_chasse_non_attente = false;
   $query = get_chasses_de_organisateur($organisateur_id);
   if ($query && $query->have_posts()) {
-    foreach ($query->posts as $chasse) {
-      $statut_validation = get_field('chasse_cache_statut_validation', $chasse->ID);
+    foreach ($query->posts as $chasse_id) {
+      $statut_validation = get_field('chasse_cache_statut_validation', (int) $chasse_id);
       if ($statut_validation !== 'en_attente') {
         $has_chasse_non_attente = true;
         break;

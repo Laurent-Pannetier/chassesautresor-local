@@ -11,8 +11,6 @@ defined( 'ABSPATH' ) || exit;
 //
 
 
-
-
 // ==================================================
 // 📦 CHARGEMENT DES DONNEES
 // ==================================================
@@ -68,31 +66,36 @@ add_action('wp_enqueue_scripts', 'enqueue_script_header_organisateur_ui');
  * 🔎 Le fichier est versionné dynamiquement via `filemtime()` pour éviter le cache.
  *
  * @hook wp_enqueue_scripts
+ *
+ * @param bool $force Forcer l'enfilement du script quel que soit l'URL courante.
  * @return void
  */
-function charger_script_conversion() {
-    // Inclure les pages WooCommerce natives
-    if (is_account_page()) {
-        $inclure = true;
-    } else {
-        // Inclure aussi les pages customisées que tu as créées sous /mon-compte/*
-        $request_uri = trim($_SERVER['REQUEST_URI'], '/');
+function charger_script_conversion(bool $force = false): void
+{
+    if (!$force) {
+        // Inclure les pages WooCommerce natives
+        if (is_account_page()) {
+            $inclure = true;
+        } else {
+            // Inclure aussi les pages customisées que tu as créées sous /mon-compte/*
+            $request_uri = trim($_SERVER['REQUEST_URI'], '/');
 
-        $autorises = [
-            'mon-compte/outils',
-            'mon-compte/statistiques',
-            'mon-compte/organisateurs',
-            'mon-compte/organisateurs/paiements',
-            'mon-compte/organisateurs/inscription',
-        ];
+            $autorises = [
+                'mon-compte/outils',
+                'mon-compte/statistiques',
+                'mon-compte/organisateurs',
+            ];
 
-        $inclure = in_array($request_uri, $autorises);
+            $inclure = in_array($request_uri, $autorises, true);
+        }
+
+        if (!$inclure) {
+            return;
+        }
     }
 
-    if (!$inclure) return;
-
     $script_path = get_stylesheet_directory() . '/assets/js/conversion.js';
-    $version = file_exists($script_path) ? filemtime($script_path) : false;
+    $version     = file_exists($script_path) ? filemtime($script_path) : false;
 
     wp_enqueue_script(
         'conversion',
@@ -127,32 +130,31 @@ function verifier_acces_conversion($user_id) {
     // 1️⃣ Vérification du rôle (bloquant immédiat)
     $user = get_userdata($user_id);
     if (!$user || !in_array(ROLE_ORGANISATEUR, $user->roles)) {
-        return "Inscription en cours";
+        return __('Inscription en cours', 'chassesautresor');
     }
 
     // ✅ Récupération de l'ID du CPT "organisateur"
     $organisateur_id = get_organisateur_from_user($user_id);
     if (!$organisateur_id) {
-        return "Erreur : Organisateur non trouvé.";
+        return __('Erreur : organisateur non trouvé.', 'chassesautresor');
     }
 
-    // 2️⃣ Vérification d’une demande en attente
-    $paiements = get_user_meta($user_id, 'demande_paiement', true);
-    if (!is_array($paiements)) {
-        $paiements = []; // ✅ Force $paiements à être un tableau si vide
-    }
+    // 2️⃣ Vérification des demandes via le registre des points
+    global $wpdb;
+    $repo      = new PointsRepository($wpdb);
+    $paiements = $repo->getConversionRequests($user_id);
 
     foreach ($paiements as $paiement) {
-        if (!empty($paiement['statut']) && $paiement['statut'] === 'en attente') {
-            return "Demande déjà en cours";
+        if ($paiement['request_status'] === 'pending') {
+            return __('Demande déjà en cours', 'chassesautresor');
         }
     }
 
     // 3️⃣ Vérification du dernier règlement (> 30 jours)
     $dernier_paiement = null;
     foreach ($paiements as $paiement) {
-        if (!empty($paiement['statut']) && $paiement['statut'] === 'reglé') {
-            $date_paiement = strtotime($paiement['paiement_date_demande']);
+        if ($paiement['request_status'] === 'paid') {
+            $date_paiement = strtotime($paiement['settlement_date'] ?? $paiement['request_date']);
             if (!$dernier_paiement || $date_paiement > $dernier_paiement) {
                 $dernier_paiement = $date_paiement;
             }
@@ -161,74 +163,202 @@ function verifier_acces_conversion($user_id) {
 
     if ($dernier_paiement && $dernier_paiement > strtotime('-30 days')) {
         $jours_restants = ceil(($dernier_paiement - strtotime('-30 days')) / 86400);
-        return "Attendez encore $jours_restants jours";
+        return sprintf(__('Attendez encore %d jours', 'chassesautresor'), $jours_restants);
     }
 
-    // 4️⃣ Vérification du solde de points (500 points minimum)
-    $points_actuels = get_user_points($user_id);
-    if ($points_actuels < 500) {
-        return "Points insuffisants";
+    // 4️⃣ Vérification du solde de points (seuil minimal)
+    $points_actuels = function_exists('get_user_points') ? get_user_points($user_id) : 0;
+    $points_minimum = get_points_conversion_min();
+    if ((int) $points_actuels < $points_minimum) {
+        return 'INSUFFICIENT_POINTS';
     }
 
     // 5️⃣ Vérification IBAN/BIC
-    $iban = get_field('gagnez_de_largent_iban', $organisateur_id);
-    $bic = get_field('gagnez_de_largent_bic', $organisateur_id);
+    $iban = get_field('iban', $organisateur_id);
+    $bic  = get_field('bic', $organisateur_id);
 
     if (empty($iban) || empty($bic)) {
-        $lien_edition = get_edit_post_link($organisateur_id);
-        if (!$lien_edition) {
-            $lien_edition = admin_url('post.php?post=' . $organisateur_id . '&action=edit'); // 🔹 Génération manuelle du lien
-        }
+        $iban = get_field('gagnez_de_largent_iban', $organisateur_id);
+        $bic  = get_field('gagnez_de_largent_bic', $organisateur_id);
+    }
 
-        return "IBAN/BIC non remplis - <a href='" . esc_url($lien_edition) . "'>Saisir mes infos</a>";
+    if (empty($iban) || empty($bic)) {
+        return 'MISSING_BANK_DETAILS';
     }
 
     return true; // ✅ Toutes les conditions sont remplies
 }
 
 /**
- * Affiche le tableau des demandes de paiement d'un organisateur.
- *
- * @param int $user_id L'ID de l'utilisateur organisateur.
- * @param string $filtre_statut Filtrer par statut ('en_attente' pour les demandes en cours, 'toutes' pour l'historique complet).
+ * Génère le contenu HTML du modal de conversion en fonction des droits d'accès.
  */
-function afficher_tableau_paiements_organisateur($user_id, $filtre_statut = 'en_attente') {
-    // Récupérer les demandes de paiement de l'utilisateur
-    $paiements = get_user_meta($user_id, 'demande_paiement', true);
+function render_conversion_modal_content($access_message = null): string
+{
+    if ($access_message === null) {
+        $access_message = verifier_acces_conversion(get_current_user_id());
+    }
+    $organisateur_id = get_organisateur_from_user(get_current_user_id());
+    $points_minimum  = get_points_conversion_min();
 
-    // Vérifier si l'utilisateur a des paiements enregistrés
-    if (empty($paiements)) {
-        return; // Ne rien afficher si aucune demande
+    ob_start();
+
+    if ($access_message === 'INSUFFICIENT_POINTS') {
+        ?>
+        <span class="close-modal">&times;</span>
+        <div class="points-modal-message">
+            <i class="fa-solid fa-circle-exclamation modal-icon" aria-hidden="true"></i>
+            <h2>solde insuffisant</h2>
+            <p>Conversion possible à partir de <?php echo esc_html($points_minimum); ?> points</p>
+            <button type="button" class="close-modal">Fermer</button>
+        </div>
+        <?php
+    } elseif ($access_message === 'MISSING_BANK_DETAILS') {
+        ?>
+        <span class="close-modal">&times;</span>
+        <div class="points-modal-message">
+            <i class="fa-solid fa-building-columns modal-icon" aria-hidden="true"></i>
+            <h2>Coordonnées bancaires manquantes</h2>
+            <p>nous avons besoin d'enregistrer vos coordonnées bancaires pour vous envoyer un versement</p>
+            <p>
+                <a
+                    id="ouvrir-coordonnees-modal"
+                    class="champ-modifier"
+                    href="#"
+                    aria-label="<?php esc_attr_e('Ajouter des coordonnées bancaires', 'chassesautresor-com'); ?>"
+                    data-champ="coordonnees_bancaires"
+                    data-cpt="organisateur"
+                    data-post-id="<?php echo esc_attr($organisateur_id); ?>"
+                    data-label-add="<?php esc_attr_e('Ajouter', 'chassesautresor-com'); ?>"
+                    data-label-edit="<?php esc_attr_e('Éditer', 'chassesautresor-com'); ?>"
+                    data-aria-add="<?php esc_attr_e('Ajouter des coordonnées bancaires', 'chassesautresor-com'); ?>"
+                    data-aria-edit="<?php esc_attr_e('Modifier les coordonnées bancaires', 'chassesautresor-com'); ?>"
+                >renseigner coordonnées bancaires</a>
+            </p>
+            <button type="button" class="close-modal">Fermer</button>
+        </div>
+        <?php
+    } elseif (is_string($access_message) && $access_message !== '') {
+        ?>
+        <span class="close-modal">&times;</span>
+        <p><?php echo esc_html($access_message); ?></p>
+        <?php
+    } else {
+        ?>
+        <?php
+        $taux_conversion = get_taux_conversion_actuel();
+        $user_points     = get_user_points();
+        ?>
+        <span class="close-modal">&times;</span>
+        <span class="conversion-rate-badge">
+            <?php printf(esc_html__('1 000 points = %s €', 'chassesautresor-com'), esc_html($taux_conversion)); ?>
+        </span>
+        <i class="fa-solid fa-right-left modal-top-icon" aria-hidden="true"></i>
+        <h2 class="modal-title"><?php esc_html_e('Demande de conversion', 'chassesautresor-com'); ?></h2>
+        <p class="modal-description">
+            <?php printf(esc_html__('Transformez vos %d points en euros.', 'chassesautresor-com'), esc_html($user_points)); ?>
+        </p>
+        <form action="" method="POST">
+            <div class="conversion-row">
+                <label for="points-a-convertir"><?php esc_html_e('Convertir', 'chassesautresor-com'); ?></label>
+                <input
+                    type="number"
+                    name="points_a_convertir"
+                    id="points-a-convertir"
+                    min="<?php echo esc_attr($points_minimum); ?>"
+                    max="<?php echo esc_attr($user_points); ?>"
+                    step="1"
+                    value=""
+                    data-taux="<?php echo esc_attr($taux_conversion); ?>"
+                >
+                <span class="points-unit"><?php esc_html_e('points', 'chassesautresor-com'); ?></span>
+            </div>
+            <p class="conversion-equivalent">
+                <span class="label"><?php esc_html_e('contre valeur', 'chassesautresor-com'); ?></span>
+                <span class="amount"><span id="montant-equivalent">0.00</span> €</span>
+            </p>
+            <input type="hidden" name="demander_paiement" value="1">
+            <?php wp_nonce_field('demande_paiement_action', 'demande_paiement_nonce'); ?>
+            <div class="modal-actions">
+                <button type="submit" disabled><?php esc_html_e('Convertir', 'chassesautresor-com'); ?></button>
+            </div>
+        </form>
+        <?php
     }
 
-    // Filtrer les paiements selon le statut demandé
+    return ob_get_clean();
+}
+
+/**
+ * AJAX : renvoie le contenu du modal de conversion actualisé.
+ */
+function ajax_conversion_modal_content(): void
+{
+    $access_message = verifier_acces_conversion(get_current_user_id());
+    $html           = render_conversion_modal_content($access_message);
+    wp_send_json_success([
+        'html'   => $html,
+        'access' => $access_message === true,
+    ]);
+}
+add_action('wp_ajax_conversion_modal_content', 'ajax_conversion_modal_content');
+
+/**
+ * Affiche le tableau des demandes de paiement d'un organisateur.
+ *
+ * @param int    $user_id       L'ID de l'utilisateur organisateur.
+ * @param string $filtre_statut Filtre optionnel : 'en_attente' pour les demandes en cours, 'toutes' (par défaut) pour l'historique complet.
+ */
+function afficher_tableau_paiements_organisateur($user_id, $filtre_statut = 'toutes') {
+    global $wpdb;
+    $repo      = new PointsRepository($wpdb);
+    $paiements = $repo->getConversionRequests($user_id);
+
+    if (empty($paiements)) {
+        return;
+    }
+
     $paiements_filtres = [];
     foreach ($paiements as $paiement) {
-        if ($filtre_statut === 'en_attente' && $paiement['statut'] !== 'en attente') {
+        if ($filtre_statut === 'en_attente' && $paiement['request_status'] !== 'pending') {
             continue;
         }
         $paiements_filtres[] = $paiement;
     }
 
-    // Si aucun paiement ne correspond au filtre, ne rien afficher
     if (empty($paiements_filtres)) {
         return;
     }
 
-    // Affichage du tableau
-    echo '<table class="widefat fixed">';
-    echo '<thead><tr><th>Montant (€)</th><th>Points utilisés</th><th>Date demande</th><th>Statut</th></tr></thead>';
+    echo '<table class="stats-table">';
+    echo '<thead><tr>';
+    echo '<th>' . esc_html__('Date demande', 'chassesautresor') . '</th>';
+    echo '<th>' . esc_html__('Montant (€)', 'chassesautresor') . '</th>';
+    echo '<th>' . esc_html__('Points utilisés', 'chassesautresor') . '</th>';
+    echo '<th>' . esc_html__('Statut', 'chassesautresor') . '</th>';
+    echo '</tr></thead>';
     echo '<tbody>';
 
     foreach ($paiements_filtres as $paiement) {
-        $statut_affiche = ($paiement['statut'] === 'reglé') ? '✅ Réglé' : '🟡 En attente';
-        $points_utilises = isset($paiement['paiement_points_utilises']) ? esc_html($paiement['paiement_points_utilises']) : 'N/A';
+        switch ($paiement['request_status']) {
+            case 'paid':
+                $statut_affiche = '✅ ' . __('Réglé', 'chassesautresor');
+                break;
+            case 'cancelled':
+                $statut_affiche = '❌ ' . __('Annulé', 'chassesautresor');
+                break;
+            case 'refused':
+                $statut_affiche = '🚫 ' . __('Refusé', 'chassesautresor');
+                break;
+            default:
+                $statut_affiche = '🟡 ' . __('En attente', 'chassesautresor');
+        }
+        $points_utilises = esc_html(abs((int) $paiement['points']));
 
         echo '<tr>';
-        echo '<td>' . esc_html($paiement['paiement_demande_montant']) . ' €</td>';
-        echo '<td>' . $points_utilises . '</td>';
-        echo '<td>' . esc_html(date('Y-m-d H:i', strtotime($paiement['paiement_date_demande']))) . '</td>';
-        echo '<td>' . esc_html($statut_affiche) . '</td>';
+        echo '<td>' . esc_html(date_i18n('d/m/Y à H:i', strtotime($paiement['request_date']))) . '</td>';
+        echo '<td>' . esc_html($paiement['amount_eur']) . ' €</td>';
+        echo '<td><span class="etiquette etiquette-grande">' . $points_utilises . '</span></td>';
+        echo '<td><span class="etiquette">' . esc_html($statut_affiche) . '</span></td>';
         echo '</tr>';
     }
 
@@ -298,14 +428,14 @@ function generer_liste_chasses_hierarchique($organisateur_id) {
 
     if ($nombre_chasses > 0) {
         $out .= '<ul>';
-        foreach ($query->posts as $post) {
-            $chasse_id = $post->ID;
+        foreach ($query->posts as $chasse_id) {
+            $chasse_id    = (int) $chasse_id;
             $chasse_titre = get_the_title($chasse_id);
-            $nb_enigmes = count(recuperer_enigmes_associees($chasse_id));
-            $out .= '<li>';
-            $out .= 'Chasse : <a href="' . esc_url(get_permalink($chasse_id)) . '">' . esc_html($chasse_titre) . '</a> ';
-            $out .= '(' . sprintf(_n('%d énigme', '%d énigmes', $nb_enigmes, 'text-domain'), $nb_enigmes) . ')';
-            $out .= '</li>';
+            $nb_enigmes   = count(recuperer_enigmes_associees($chasse_id));
+            $out         .= '<li>';
+            $out         .= 'Chasse : <a href="' . esc_url(get_permalink($chasse_id)) . '">' . esc_html($chasse_titre) . '</a> ';
+            $out         .= '(' . sprintf(_n('%d énigme', '%d énigmes', $nb_enigmes, 'text-domain'), $nb_enigmes) . ')';
+            $out         .= '</li>';
         }
         $out .= '</ul>';
     }
@@ -366,13 +496,13 @@ function get_cta_devenir_organisateur(?int $user_id = null): array
         ];
     }
 
-    $organisateur_id = get_organisateur_from_user($user_id);
+    $organisateur_id   = get_organisateur_from_user($user_id);
     $has_pending_chasse = false;
     if ($organisateur_id) {
         $query = get_chasses_de_organisateur($organisateur_id);
         if ($query && $query->have_posts()) {
-            foreach ($query->posts as $chasse) {
-                $statut_validation = get_field('chasse_cache_statut_validation', $chasse->ID);
+            foreach ($query->posts as $chasse_id) {
+                $statut_validation = get_field('chasse_cache_statut_validation', (int) $chasse_id);
                 if ($statut_validation === 'en_attente') {
                     $has_pending_chasse = true;
                     break;
@@ -440,9 +570,10 @@ function envoyer_email_confirmation_organisateur(int $user_id, string $token): b
     $message .= '</div>';
 
     $headers = ['Content-Type: text/html; charset=UTF-8'];
-    add_filter('wp_mail_from_name', function () { return 'Chasses au Trésor'; });
+    $from_filter = static function ($name) { return 'Chasses au Trésor'; };
+    add_filter('wp_mail_from_name', $from_filter, 10, 1);
     wp_mail($user->user_email, $subject, $message, $headers);
-    remove_filter('wp_mail_from_name', '__return_false');
+    remove_filter('wp_mail_from_name', $from_filter, 10);
     return true;
 }
 

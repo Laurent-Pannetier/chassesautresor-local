@@ -3341,6 +3341,10 @@
   border-top: none;
 }
 
+.et-db #et-boc .et-l .et_pb_module div.wpforms-container-full .wpforms-form .wpforms-field-divider-hide_line {
+  border-top: none;
+}
+
 .et-db #et-boc .et-l .et_pb_module div.wpforms-container-full .wpforms-form .wpforms-field-divider h3 {
   color: var(--wpforms-label-color);
   padding-top: var(--wpforms-field-size-input-spacing);
@@ -4028,11 +4032,11 @@
 
 .et-db #et-boc .et-l .et_pb_module .wpforms-container .wpforms-datepicker-wrap .wpforms-datepicker-clear {
   position: absolute;
-  background-image: url("../../../images/times-solid-white.svg");
-  background-position: 50% 50%;
-  background-repeat: no-repeat;
-  background-color: rgba(0, 0, 0, 0.35);
-  background-size: 8px;
+  background-image: url("../../../images/times-solid-white.svg") !important;
+  background-position: 50% 50% !important;
+  background-repeat: no-repeat !important;
+  background-color: rgba(0, 0, 0, 0.35) !important;
+  background-size: 8px !important;
   width: 16px;
   height: 16px;
   cursor: pointer;
@@ -4044,8 +4048,8 @@
   transition: all 0.25s;
 }
 
-.et-db #et-boc .et-l .et_pb_module .wpforms-container .wpforms-datepicker-wrap .wpforms-datepicker-clear:hover {
-  background-color: #D63637;
+.et-db #et-boc .et-l .et_pb_module .wpforms-container .wpforms-datepicker-wrap .wpforms-datepicker-clear:hover, .et-db #et-boc .et-l .et_pb_module .wpforms-container .wpforms-datepicker-wrap .wpforms-datepicker-clear:focus {
+  background-color: #D63637 !important;
 }
 
 .et-db #et-boc .et-l .et_pb_module .wpforms-container .wpforms-datepicker-wrap .wpforms-field-small + .wpforms-datepicker-clear {

@@ -26,8 +26,11 @@ window.mettreAJourResumeInfos = function () {
 
       if (champ === 'liens_publics') {
         const ul = bloc?.querySelector('.liste-liens-publics');
-        estRempli = ul && ul.children.length > 0;
+        // ➕ Ajout d'une condition fallback sur le dataset ou la classe
+        const aDesLiens = bloc?.classList.contains('champ-rempli') || bloc?.dataset.valeurs?.length > 0;
+        estRempli = (ul && ul.children.length > 0) || aDesLiens;
       }
+
 
       // Mise à jour visuelle + marquage obligatoire
       mettreAJourLigneResume(ligne, champ, estRempli, 'organisateur');
@@ -145,8 +148,8 @@ window.mettreAJourResumeInfos = function () {
       }
 
       if (champ === 'enigme_reponse_variantes') {
-        const bouton = blocEdition?.querySelector('.champ-modifier');
-        estRempli = bouton && !bouton.textContent.includes('Créer');
+        const nbVar = blocEdition?.querySelectorAll('.liste-variantes-resume .variante-resume')?.length || 0;
+        estRempli = nbVar > 0;
       }
 
       if (champ === 'enigme_acces_condition') {
@@ -212,11 +215,15 @@ window.mettreAJourResumeInfos = function () {
 window.onChampSimpleMisAJour = function (champ, postId, valeur, cpt) {
   cpt = cpt?.toLowerCase?.() || cpt;
 
-  // ✅ ORGANISATEUR : mise à jour titre + image
-  if (cpt === 'organisateur') {
-    if (champ === 'post_title' && typeof window.mettreAJourTitreHeader === 'function') {
+  if (champ === 'post_title') {
+    mettreAJourResumeTitre(cpt, valeur);
+    if (typeof window.mettreAJourTitreHeader === 'function') {
       window.mettreAJourTitreHeader(cpt, valeur);
     }
+  }
+
+  // ✅ ORGANISATEUR : mise à jour image
+  if (cpt === 'organisateur') {
     if (champ === 'logo_organisateur') {
       const bloc = document.querySelector(`.champ-organisateur[data-champ="${champ}"][data-post-id="${postId}"]`);
       if (bloc && typeof bloc.__ouvrirMedia === 'function') bloc.__ouvrirMedia();
@@ -235,11 +242,8 @@ window.onChampSimpleMisAJour = function (champ, postId, valeur, cpt) {
     }
   }
 
-  // ✅ CHASSE : titre + image + statut
+  // ✅ CHASSE : image + statut
   if (cpt === 'chasse') {
-    if (champ === 'post_title' && typeof window.mettreAJourTitreHeader === 'function') {
-      window.mettreAJourTitreHeader(cpt, valeur);
-    }
     if (champ === 'chasse_principale_image') {
       const bloc = document.querySelector(`.champ-chasse[data-champ="${champ}"][data-post-id="${postId}"]`);
       if (bloc && typeof bloc.__ouvrirMedia === 'function') bloc.__ouvrirMedia();
@@ -254,6 +258,10 @@ window.onChampSimpleMisAJour = function (champ, postId, valeur, cpt) {
     ];
     if (champsStatut.includes(champ)) {
       rafraichirStatutChasse(postId);
+    }
+    const champsResume = ['post_title'];
+    if (champsResume.includes(champ) && typeof window.mettreAJourResumeInfos === 'function') {
+      window.mettreAJourResumeInfos();
     }
   }
 
@@ -277,13 +285,13 @@ window.onChampSimpleMisAJour = function (champ, postId, valeur, cpt) {
       'enigme_solution_heure'
     ];
 
-    if (champ === 'post_title' && typeof window.mettreAJourTitreHeader === 'function') {
-      window.mettreAJourTitreHeader(cpt, valeur);
-    }
-
     if (champ === 'enigme_visuel_legende') {
       const legende = document.querySelector('.enigme-soustitre');
       if (legende) legende.textContent = valeur;
+    }
+
+    if (champ === 'enigme_reponse_bonne' && typeof window.forcerRecalculStatutEnigme === 'function') {
+      window.forcerRecalculStatutEnigme(postId);
     }
 
     if (champsResume.includes(champ) && typeof window.mettreAJourResumeInfos === 'function') {
@@ -293,6 +301,32 @@ window.onChampSimpleMisAJour = function (champ, postId, valeur, cpt) {
 
 };
 
+function mettreAJourResumeTitre(cpt, valeur) {
+  const span = document.querySelector(`.edition-panel-${cpt} .resume-infos li[data-champ="post_title"] .champ-valeur`);
+  if (!span) return;
+
+  const titre = valeur?.trim() || '';
+  let placeholder = '';
+  let defaut = '';
+
+  switch (cpt) {
+    case 'chasse':
+      placeholder = 'renseigner le titre de la chasse';
+      defaut = window.CHP_CHASSE_DEFAUT?.titre || 'nouvelle chasse';
+      break;
+    case 'enigme':
+      placeholder = 'renseigner le titre de l’énigme';
+      defaut = 'en création';
+      break;
+    default:
+      placeholder = 'renseigner le titre de l’organisateur';
+      defaut = 'votre nom d’organisateur';
+  }
+
+  const estVide = !titre || titre.toLowerCase() === defaut.toLowerCase();
+  span.textContent = estVide ? placeholder : titre;
+}
+
 
 
 // ================================
@@ -301,22 +335,36 @@ window.onChampSimpleMisAJour = function (champ, postId, valeur, cpt) {
 function mettreAJourLigneResume(ligne, champ, estRempli, type) {
   ligne.classList.toggle('champ-rempli', estRempli);
   ligne.classList.toggle('champ-vide', !estRempli);
-  const estObligatoire = ligne.closest('.resume-bloc')?.classList.contains('resume-obligatoire');
+  const estObligatoire =
+    ligne.closest('.resume-bloc')?.classList.contains('resume-obligatoire') &&
+    !(
+      (type === 'chasse' && champ === 'chasse_infos_recompense_valeur') ||
+      (type === 'enigme' && ['enigme_visuel_legende', 'enigme_visuel_texte'].includes(champ))
+    );
   ligne.classList.toggle('champ-attention', estObligatoire && !estRempli);
 
   // Nettoyer anciennes icônes
   ligne.querySelectorAll(':scope > .icone-check, :scope > .icon-attente').forEach((i) => i.remove());
 
-  // Ajouter nouvelle icône
-  const icone = document.createElement('i');
-  icone.className = estRempli
-    ? 'fa-solid fa-circle-check icone-check'
-    : 'fa-regular fa-circle icon-attente';
-  icone.setAttribute('aria-hidden', 'true');
-  ligne.prepend(icone);
+  // Ajouter nouvelle icône si autorisé
+  if (ligne.dataset.noIcon === undefined) {
+    const icone = document.createElement('i');
+    icone.className = estRempli
+      ? 'fa-solid fa-circle-check icone-check'
+      : 'fa-regular fa-circle icon-attente';
+    icone.setAttribute('aria-hidden', 'true');
+    ligne.prepend(icone);
+  }
 
   // Ajouter bouton édition ✏️ si besoin
   const dejaBouton = ligne.querySelector('.champ-modifier');
+  const pasDEdition = ligne.dataset.noEdit !== undefined;
+
+  if (pasDEdition) {
+    ligne.style.cursor = '';
+    dejaBouton?.remove();
+    return;
+  }
 
   if (!dejaBouton) {
     const bouton = document.createElement('button');

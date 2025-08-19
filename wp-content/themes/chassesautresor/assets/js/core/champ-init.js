@@ -50,6 +50,9 @@ function modifierChampSimple(champ, valeur, postId, cpt = 'enigme') {
 // 📝 initChampTexte
 // ==============================
 function initChampTexte(bloc) {
+  if (bloc.classList.contains('champ-desactive')) {
+    return; // champ non éditable
+  }
   const champ = bloc.dataset.champ;
   const cpt = bloc.dataset.cpt;
   const postId = bloc.dataset.postId;
@@ -74,6 +77,60 @@ function initChampTexte(bloc) {
     bloc.appendChild(feedback);
   }
 
+  // ✍️ Édition directe : aucun bouton d'édition/sauvegarde
+  if (!boutonSave && !boutonEdit) {
+    let timer;
+    input.addEventListener('input', () => {
+      clearTimeout(timer);
+      const valeur = input.value.trim();
+
+      timer = setTimeout(() => {
+        if (champ === 'email_contact') {
+          const isValide = valeur === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valeur);
+          if (!isValide) {
+            feedback.textContent = '⛔ Adresse email invalide';
+            feedback.className = 'champ-feedback champ-error';
+            return;
+          }
+        }
+
+        if (champ === 'post_title' && !valeur) {
+          feedback.textContent = '❌ Le titre est obligatoire.';
+          feedback.className = 'champ-feedback champ-error';
+          return;
+        }
+
+        if (champ === 'enigme_visuel_legende') {
+          const legendeDOM =
+            document.querySelector('.enigme-soustitre') ||
+            document.querySelector('.enigme-legende');
+          if (legendeDOM) {
+            legendeDOM.textContent = valeur;
+            legendeDOM.classList.add('modifiee');
+          }
+        }
+
+        feedback.textContent = 'Enregistrement en cours...';
+        feedback.className = 'champ-feedback champ-loading';
+
+        modifierChampSimple(champ, valeur, postId, cpt).then(success => {
+          if (success) {
+            bloc.classList.toggle('champ-vide', !valeur);
+            feedback.textContent = '';
+            feedback.className = 'champ-feedback champ-success';
+            if (typeof window.mettreAJourResumeInfos === 'function') {
+              window.mettreAJourResumeInfos();
+            }
+          } else {
+            feedback.textContent = 'Erreur lors de l’enregistrement.';
+            feedback.className = 'champ-feedback champ-error';
+          }
+        });
+      }, 400);
+    });
+    return;
+  }
+
   // ✏️ Ouverture édition
   boutonEdit?.addEventListener('click', () => {
     if (affichage?.style) affichage.style.display = 'none';
@@ -85,9 +142,9 @@ function initChampTexte(bloc) {
 
     if (champ === 'email_contact') {
       const fallback = window.organisateurData?.defaultEmail || '…';
-      const affichageTexte = affichage.querySelector('p');
+      const affichageTexte = affichage.querySelector('.champ-valeur');
       if (affichageTexte && input.value.trim() === '') {
-        affichageTexte.innerHTML = '<strong>Email de contact :</strong> <em>' + fallback + '</em>';
+        affichageTexte.innerHTML = '<em>' + fallback + '</em>';
       }
     }
   });
@@ -115,7 +172,12 @@ function initChampTexte(bloc) {
     }
 
     if (champ === 'enigme_visuel_legende') {
-      const legendeDOM = document.querySelector('.enigme-legende');
+      // Mise à jour dynamique du sous-titre affiché sous le titre de l'énigme.
+      // ​​Supporte à la fois l'ancien sélecteur `.enigme-legende` et
+      // le nouveau `.enigme-soustitre` utilisé dans les templates.
+      const legendeDOM =
+        document.querySelector('.enigme-soustitre') ||
+        document.querySelector('.enigme-legende');
       if (legendeDOM) {
         legendeDOM.textContent = valeur;
         legendeDOM.classList.add('modifiee');
@@ -135,13 +197,13 @@ function initChampTexte(bloc) {
 
     modifierChampSimple(champ, valeur, postId, cpt).then(success => {
       if (success) {
-        const affichageTexte = affichage.querySelector('h1, h2, p, span');
+        const affichageTexte = affichage.querySelector('.champ-valeur, h1, h2, p, span:not(.champ-obligatoire)');
 
         if (champ === 'email_contact') {
           const fallbackEmail = window.organisateurData?.defaultEmail || '…';
-          const p = affichage.querySelector('p');
-          if (p) {
-            p.innerHTML = '<strong>Email de contact :</strong> ' + (valeur ? valeur : '<em>' + fallbackEmail + '</em>');
+          const spanValeur = affichage.querySelector('.champ-valeur');
+          if (spanValeur) {
+            spanValeur.innerHTML = valeur ? valeur : '<em>' + fallbackEmail + '</em>';
           }
         } else if (affichageTexte) {
           affichageTexte.textContent = valeur;
@@ -179,7 +241,7 @@ function initChampDeclencheur(bouton) {
   if (!champ || !postId || !cpt) return;
 
   bouton.addEventListener('click', () => {
-    const bloc = document.querySelector(
+    const bloc = bouton.closest(
       `.champ-${cpt}[data-champ="${champ}"][data-post-id="${postId}"]`
     );
 
@@ -258,6 +320,9 @@ initAffichageBoutonsCout();
 // ================================
 function initChampCoutPoints() {
   document.querySelectorAll('.champ-cout-points').forEach(bloc => {
+    if (bloc.classList.contains('champ-desactive')) {
+      return; // champ verrouillé
+    }
     const input = bloc.querySelector('.champ-input.champ-cout[type="number"]');
     const checkbox = bloc.querySelector('input[type="checkbox"]');
     if (!input || !checkbox) return;

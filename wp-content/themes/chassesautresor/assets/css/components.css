@@ -132,6 +132,19 @@ button,
     cursor: not-allowed;
     opacity: 0.6;
 }
+
+/* ========== 🎯 BADGE COÛT ========== */
+.badge-cout {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 6px;
+    background: var(--color-secondary);
+    color: var(--color-text-primary);
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    vertical-align: middle;
+}
 @media (max-width: 768px) {
     .bouton-cta {
         padding: 8px 13px;
@@ -155,6 +168,7 @@ button,
     margin:6px 0;
     display: inline-block;
     text-align: center;
+    line-height: 16px;
 }
 
 .bouton-secondaire:hover {
@@ -534,8 +548,13 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
   border: 2px dashed #D93025 !important;
   animation: pulse-attention 1.2s ease-in-out infinite;
   background-color: #fff5f5;
+  color: var(--color-editor-text);
   border-radius: 8px;
   padding-left: 5px;
+}
+.champ-attention a {
+  color: var(--color-editor-text);
+  text-decoration: underline;
 }
 
 @keyframes pulse-attention {

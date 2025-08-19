@@ -17,25 +17,51 @@ if ($chasse_id) {
   verifier_et_synchroniser_cache_enigmes_si_autorise($chasse_id);
 }
 
-// 🔹 Redirection si non visible
-if (!enigme_est_visible_pour($user_id, $enigme_id)) {
-  $fallback_url = $chasse_id ? get_permalink($chasse_id) : home_url('/');
-  wp_redirect($fallback_url);
-  exit;
+// 🔹 Accès invité : redirection systématique vers la chasse associée
+if (!is_user_logged_in()) {
+    $url = $chasse_id ? get_permalink($chasse_id) : home_url('/');
+    wp_redirect($url);
+    exit;
 }
 
-// 🔹 Mode édition auto
+// 🔹 Redirection si non visible
+if (!enigme_est_visible_pour($user_id, $enigme_id)) {
+    $fallback_url = $chasse_id ? get_permalink($chasse_id) : home_url('/');
+    wp_redirect($fallback_url);
+    exit;
+}
+
+// 🔒 Énigme inaccessible : redirection vers la chasse liée
+$etat_systeme = get_field('enigme_cache_etat_systeme', $enigme_id) ?? 'accessible';
+if ($etat_systeme !== 'accessible' && !utilisateur_peut_modifier_enigme($enigme_id)) {
+    $url = $chasse_id ? get_permalink($chasse_id) : home_url('/');
+    wp_safe_redirect($url);
+    exit;
+}
+
+// 🔹 Orgy auto
 $edition_active = utilisateur_peut_modifier_post($enigme_id);
 verifier_ou_mettre_a_jour_cache_complet($enigme_id);
 
 $enigme_complete = (bool) get_field('enigme_cache_complet', $enigme_id);
 if (
   $edition_active &&
-  current_user_can(ROLE_ORGANISATEUR_CREATION) &&
+  utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id) &&
   !$enigme_complete &&
   !isset($_GET['edition'])
 ) {
   wp_redirect(add_query_arg('edition', 'open', get_permalink()));
+  exit;
+}
+
+// ✅ Ouvre automatiquement l'onglet Tentatives s'il y a des tentatives en attente
+if (
+  $edition_active &&
+  utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id) &&
+  compter_tentatives_en_attente($enigme_id) > 0 &&
+  !isset($_GET['edition'])
+) {
+  wp_redirect(add_query_arg(['edition' => 'open', 'tab' => 'soumission'], get_permalink()));
   exit;
 }
 
@@ -63,27 +89,8 @@ if (is_singular('enigme')) {
 <div id="primary" class="content-area">
     <main id="main" class="site-main single-enigme-main statut-<?= esc_attr($statut_enigme); ?>">
 
-      <?php
-      // 🔧 Header organisateur (s'affiche en haut de page)
-      get_template_part('template-parts/organisateur/organisateur-header', null, [
-        'chasse_id' => $chasse_id,
-      ]);
-      ?>
-
       <?php if (enigme_est_visible_pour($user_id, $enigme_id)) : ?>
         <section class="enigme-wrapper">
-          <!-- 🔧 Bouton pour ouvrir le panneau d’édition -->
-          <?php if ($edition_active) : ?>
-            <div class="header-actions-droite">
-              <button id="toggle-mode-edition-enigme" type="button"
-                      class="bouton-edition-toggle"
-                      data-cpt="enigme"
-                      aria-label="Activer le mode édition">
-                <i class="fa-solid fa-sliders"></i>
-              </button>
-            </div>
-          <?php endif; ?>
-
           <!-- 🧩 Affichage de l'énigme -->
           <?php afficher_enigme_stylisee($enigme_id, $statut_data); ?>
         </section>

@@ -7,7 +7,7 @@ let panneauEdition;
 
 
 
-document.addEventListener('DOMContentLoaded', () => {
+function initEnigmeEdit() {
   if (typeof initZonesClicEdition === 'function') initZonesClicEdition();
   boutonToggle = document.getElementById('toggle-mode-edition-enigme');
   panneauEdition = document.querySelector('.edition-panel-enigme');
@@ -18,12 +18,14 @@ document.addEventListener('DOMContentLoaded', () => {
   boutonToggle?.addEventListener('click', () => {
     document.body.classList.toggle('edition-active-enigme');
     document.body.classList.toggle('panneau-ouvert');
+    document.body.classList.toggle('mode-edition');
   });
 
 
   panneauEdition?.querySelector('.panneau-fermer')?.addEventListener('click', () => {
     document.body.classList.remove('edition-active-enigme');
     document.body.classList.remove('panneau-ouvert');
+    document.body.classList.remove('mode-edition');
     document.activeElement?.blur();
   });
 
@@ -33,8 +35,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==============================
   const params = new URLSearchParams(window.location.search);
   const doitOuvrir = params.get('edition') === 'open';
+  const tab = params.get('tab');
   if (doitOuvrir && boutonToggle) {
     boutonToggle.click();
+    if (tab) {
+      const btn = panneauEdition?.querySelector(`.edition-tab[data-target="enigme-tab-${tab}"]`);
+      btn?.click();
+    }
     DEBUG && console.log('🔧 Ouverture auto du panneau édition énigme via ?edition=open');
   }
 
@@ -52,39 +59,105 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  document.querySelectorAll('.stat-help').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const message = btn.dataset.message;
+      if (message) {
+        alert(message);
+      }
+    });
+  });
+
 
   // ==============================
   // 🧩 Affichage conditionnel – Champs radio
   // ==============================
   initChampConditionnel('acf[enigme_mode_validation]', {
     'aucune': [],
-    'manuelle': ['.champ-groupe-tentatives'],
-    'automatique': ['.champ-groupe-reponse-automatique', '.champ-groupe-tentatives']
+    'manuelle': ['.champ-cout-points', '.champ-nb-tentatives'],
+    'automatique': ['.champ-groupe-reponse-automatique', '.champ-cout-points', '.champ-nb-tentatives']
+  });
+
+  // ==============================
+  // 📨 Onglet Tentatives – affichage selon mode de validation
+  // ==============================
+  const radiosValidation = document.querySelectorAll('input[name="acf[enigme_mode_validation]"]');
+  const tabTentatives = panneauEdition?.querySelector('.edition-tab[data-target="enigme-tab-soumission"]');
+  const contenuTentatives = document.getElementById('enigme-tab-soumission');
+
+  function toggleTentativesTab(mode) {
+    const afficher = mode !== 'aucune';
+    if (tabTentatives) {
+      tabTentatives.style.display = afficher ? '' : 'none';
+      if (!afficher && tabTentatives.classList.contains('active')) {
+        panneauEdition?.querySelector('.edition-tab[data-target="enigme-tab-param"]')?.click();
+      }
+    }
+    if (!afficher && contenuTentatives) {
+      contenuTentatives.style.display = 'none';
+      contenuTentatives.classList.remove('active');
+    }
+  }
+
+  const radioChecked = document.querySelector('input[name="acf[enigme_mode_validation]"]:checked');
+  const modeInitial = radioChecked ? radioChecked.value : 'aucune';
+  toggleTentativesTab(modeInitial);
+
+  radiosValidation.forEach((radio) => {
+    radio.addEventListener('change', (e) => {
+      toggleTentativesTab(e.target.value);
+    });
   });
 
 
   // ==============================
-  // 🧠 Explication dynamique – Mode de validation de l’énigme
+  // 🧠 Explication – Mode de validation de l’énigme
   // ==============================
   const explicationValidation = {
-    'aucune': "Aucun formulaire de réponse ne sera affiché pour cette énigme.",
-    'manuelle': "Le joueur devra rédiger une réponse libre. Vous recevrez sa proposition par email, et pourrez la valider ou la refuser directement depuis ce message.",
-    'automatique': "Le joueur devra saisir une réponse exacte. Celle-ci sera automatiquement vérifiée selon les critères définis (réponse attendue, casse, variantes)."
+    manuelle: wp.i18n.__(
+      "Validation manuelle : Le joueur rédige une réponse libre. Vous validez ou invalidez manuellement " +
+        "sa tentative depuis votre espace personnel. Un email et un message d'alerte vous avertit de chaque nouvelle soumission.",
+      "chassesautresor-com"
+    ),
+    automatique: wp.i18n.__(
+      "Validation automatique : Le joueur devra saisir une réponse exacte. Celle-ci sera automatiquement vérifiée " +
+        "selon les critères définis (réponse attendue, casse, variantes).",
+      "chassesautresor-com"
+    ),
   };
 
-  const zoneExplication = document.querySelector('.champ-explication-validation');
-  if (zoneExplication) {
-    document.querySelectorAll('input[name="acf[enigme_mode_validation]"]').forEach((radio) => {
-      radio.addEventListener('change', () => {
-        const val = radio.value;
-        DEBUG && console.log(val)
-        zoneExplication.textContent = explicationValidation[val] || '';
-      });
-      if (radio.checked) {
-        zoneExplication.textContent = explicationValidation[radio.value] || '';
+  document.querySelectorAll('.validation-aide').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const mode = btn.dataset.mode;
+      const message = explicationValidation[mode];
+      if (message) {
+        alert(message);
       }
     });
-  }
+  });
+
+  const explicationTentatives = wp.i18n.__(
+    "Nombre maximum de tentatives quotidiennes d'un joueur\nMode payant : tentatives illimitées.\nMode gratuit : maximum 24 tentatives par jour.",
+    "chassesautresor-com"
+  );
+
+  document.querySelectorAll('.tentatives-aide').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      alert(explicationTentatives);
+    });
+  });
+
+  const explicationVariantes = wp.i18n.__(
+    "Les variantes sont des réponses alternatives qui ne sont pas considérées comme bonnes, mais affichent un message en retour " +
+      "(libre à vous d'y mettre de l'aide, un lien, un crypto ou ce que vous voulez)",
+    "chassesautresor-com"
+  );
+
+  document.querySelectorAll('.variantes-aide').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      alert(explicationVariantes);
+    });
+  });
 
 
   // ==============================
@@ -143,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==============================
   // 💰 Affichage dynamique tentatives (message coût)
   // ==============================
-  const blocCout = document.querySelector('[data-champ="enigme_tentative_cout_points"]');
+  const blocCout = document.querySelector('[data-champ="enigme_tentative.enigme_tentative_cout_points"]');
   if (blocCout && typeof window.onCoutPointsUpdated === 'function') {
     const champ = blocCout.dataset.champ;
     const valeur = parseInt(blocCout.querySelector('.champ-input')?.value || '0', 10);
@@ -160,11 +233,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const bloc = document.querySelector('[data-champ="enigme_reponse_bonne"]');
   if (bloc) {
     const input = bloc.querySelector('.champ-input');
-    const champ = bloc.dataset.champ;
-    const postId = bloc.dataset.postId;
-    const cptChamp = bloc.dataset.cpt || 'enigme';
-    let timerSauvegarde;
-
     if (input) {
       let alerte = bloc.querySelector('.message-limite');
       if (!alerte) {
@@ -191,18 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
           alerte.textContent = '';
           alerte.style.display = 'none';
         }
-
-        if (champ && postId) {
-          clearTimeout(timerSauvegarde);
-          timerSauvegarde = setTimeout(() => {
-            modifierChampSimple(champ, input.value.trim(), postId, cptChamp);
-          }, 400);
-        }
       });
-      const enigmeId = panneauEdition?.dataset.postId;
-      if (enigmeId) {
-        forcerRecalculStatutEnigme(enigmeId);
-      }
     }
   }
 
@@ -212,11 +269,34 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   initChampNbTentatives();
   initChampRadioAjax('acf[enigme_mode_validation]');
+  mettreAJourCartesStats();
   const enigmeId = panneauEdition?.dataset.postId;
+
+  document.querySelectorAll('input[name="acf[enigme_mode_validation]"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      if (enigmeId) {
+        forcerRecalculStatutEnigme(enigmeId);
+      }
+      mettreAJourCartesStats();
+    });
+  });
+
+  const coutInput = document.querySelector('[data-champ="enigme_tentative.enigme_tentative_cout_points"] .champ-input');
+  const coutCheckbox = document.getElementById('cout-gratuit-enigme');
+  if (coutInput) {
+    ['input', 'change'].forEach(evt => coutInput.addEventListener(evt, mettreAJourCartesStats));
+  }
+  if (coutCheckbox) {
+    coutCheckbox.addEventListener('change', mettreAJourCartesStats);
+  }
 
   initChampPreRequis();
   initChampSolution();
   initSolutionInline();
+  const paramsMaj = new URLSearchParams(window.location.search);
+  if (paramsMaj.get('maj') === 'solution' && !paramsMaj.has('tab')) {
+    ouvrirPanneauSolution();
+  }
   initChampConditionnel('acf[enigme_acces_condition]', {
     'immediat': [], // pas d'affichage spécifique pour l'accès immédiat
     'date_programmee': ['#champ-enigme-date'],
@@ -234,6 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   initPanneauVariantes();
+  initPagerTentatives();
 
   function forcerRecalculStatutEnigme(postId) {
     fetch(ajaxurl, {
@@ -248,11 +329,37 @@ document.addEventListener('DOMContentLoaded', () => {
       .then(res => {
         if (res.success) {
           DEBUG && console.log('🔄 Statut système de l’énigme recalculé');
+          mettreAJourCTAValidationChasse(postId);
         } else {
           console.warn('⚠️ Échec recalcul statut énigme :', res.data);
         }
       });
   }
+
+  function mettreAJourCTAValidationChasse(postId) {
+    const conteneur = document.getElementById('cta-validation-chasse');
+    if (!conteneur) return;
+
+    fetch(ajaxurl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        action: 'actualiser_cta_validation_chasse',
+        enigme_id: postId
+      })
+    })
+      .then(r => r.json())
+      .then(res => {
+        if (res.success) {
+          conteneur.innerHTML = res.data?.html || '';
+        } else {
+          console.warn('⚠️ CTA validation non mis à jour :', res.data);
+        }
+      })
+      .catch(err => console.error('❌ Erreur réseau CTA validation', err));
+  }
+  window.forcerRecalculStatutEnigme = forcerRecalculStatutEnigme;
+  window.mettreAJourCTAValidationChasse = mettreAJourCTAValidationChasse;
 
 
   (() => {
@@ -267,10 +374,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     DEBUG && console.log('[INIT GRATUIT] valeur brute =', raw, '| valeur interprétée =', valeur);
 
-  const estGratuit = valeur === 0;
+    const estGratuit = valeur === 0;
 
-  $checkbox.checked = estGratuit;
-  $cout.disabled = estGratuit;
+    $checkbox.checked = estGratuit;
+    $cout.disabled = estGratuit;
+
+    // 🔄 Mettre à jour le message sur les tentatives après init coût
+    if (typeof window.mettreAJourMessageTentatives === 'function') {
+      window.mettreAJourMessageTentatives();
+    }
   })();
 
   const boutonSupprimer = document.getElementById('bouton-supprimer-enigme');
@@ -301,7 +413,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initEnigmeEdit);
+} else {
+  initEnigmeEdit();
+}
 
 // ================================
 // 🖼️ Panneau images galerie (ACF gallery)
@@ -378,7 +496,7 @@ document.querySelector('#panneau-images-enigme .panneau-fermer')?.addEventListen
 // 🔢 Initialisation champ enigme_tentative_max (tentatives/jour)
 // ================================
 function initChampNbTentatives() {
-  const bloc = document.querySelector('[data-champ="enigme_tentative_max"]');
+  const bloc = document.querySelector('[data-champ="enigme_tentative.enigme_tentative_max"]');
   if (!bloc) return;
 
   const input = bloc.querySelector('.champ-input');
@@ -388,32 +506,21 @@ function initChampNbTentatives() {
 
   let timerDebounce;
 
-  // ✅ Crée un message d'aide dynamique
-  let aide = bloc.querySelector('.champ-aide-tentatives');
-  if (!aide) {
-    aide = document.createElement('p');
-    aide.className = 'champ-aide champ-aide-tentatives';
-    aide.style.margin = '5px 0 0 10px';
-    aide.style.fontSize = '0.9em';
-    aide.style.color = '#ccc';
-    bloc.appendChild(aide);
-  }
-
-  // 🔄 Fonction centralisée
   function mettreAJourAideTentatives() {
-    const coutInput = document.querySelector('[data-champ="enigme_tentative_cout_points"] .champ-input');
+    const coutInput = document.querySelector('[data-champ="enigme_tentative.enigme_tentative_cout_points"] .champ-input');
     if (!coutInput) return;
 
     const cout = parseInt(coutInput.value.trim(), 10);
     const estGratuit = isNaN(cout) || cout === 0;
-    const valeur = parseInt(input.value.trim(), 10); // ✅ ligne manquante
+    const valeur = parseInt(input.value.trim(), 10);
 
-    aide.textContent = estGratuit
-      ? "Mode gratuit : maximum 24 tentatives par jour."
-      : "Mode payant : tentatives illimitées.";
-
-    if (estGratuit && valeur > 24) {
-      input.value = '24';
+    if (estGratuit) {
+      input.max = 24;
+      if (valeur > 24) {
+        input.value = '24';
+      }
+    } else {
+      input.removeAttribute('max');
     }
   }
 
@@ -429,7 +536,7 @@ function initChampNbTentatives() {
       input.value = '1';
     }
 
-    const coutInput = document.querySelector('[data-champ="enigme_tentative_cout_points"] .champ-input');
+    const coutInput = document.querySelector('[data-champ="enigme_tentative.enigme_tentative_cout_points"] .champ-input');
     const cout = parseInt(coutInput?.value.trim() || '0', 10);
     const estGratuit = isNaN(cout) || cout === 0;
 
@@ -448,8 +555,8 @@ function initChampNbTentatives() {
   mettreAJourAideTentatives();
 
   // 🔁 Lié aux modifs de coût (input + checkbox)
-  const coutInput = document.querySelector('[data-champ="enigme_tentative_cout_points"] .champ-input');
-  const checkbox = document.querySelector('[data-champ="enigme_tentative_cout_points"] input[type="checkbox"]');
+  const coutInput = document.querySelector('[data-champ="enigme_tentative.enigme_tentative_cout_points"] .champ-input');
+  const checkbox = document.querySelector('[data-champ="enigme_tentative.enigme_tentative_cout_points"] input[type="checkbox"]');
   if (coutInput) coutInput.addEventListener('input', mettreAJourAideTentatives);
   if (checkbox) checkbox.addEventListener('change', mettreAJourAideTentatives);
 
@@ -464,7 +571,7 @@ function initChampNbTentatives() {
 // ================================
 window.onCoutPointsUpdated = function (bloc, champ, valeur, postId, cpt) {
   if (champ === 'enigme_tentative_cout_points') {
-    const champMax = document.querySelector('[data-champ="enigme_tentative_max"] .champ-input');
+    const champMax = document.querySelector('[data-champ="enigme_tentative.enigme_tentative_max"] .champ-input');
     if (champMax) {
       const valeurActuelle = parseInt(champMax.value, 10);
 
@@ -490,7 +597,7 @@ window.onCoutPointsUpdated = function (bloc, champ, valeur, postId, cpt) {
 // ==============================
 // 🔐 Champ bonne réponse – Limite 75 caractères + message d’alerte
 // ==============================
-document.addEventListener('DOMContentLoaded', () => {
+function initChampBonneReponse() {
   const bloc = document.querySelector('[data-champ="enigme_reponse_bonne"]');
   if (!bloc) return;
 
@@ -538,25 +645,33 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 400);
     }
   });
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initChampBonneReponse);
+} else {
+  initChampBonneReponse();
+}
 
 
 // ==============================
 // 🧩 Gestion du panneau variantes
 // ==============================
 function initPanneauVariantes() {
-  const boutonOuvrir = document.querySelector('.ouvrir-panneau-variantes');
   const panneau = document.getElementById('panneau-variantes-enigme');
   const formulaire = document.getElementById('formulaire-variantes-enigme');
   const postId = formulaire?.dataset.postId;
   const wrapper = formulaire?.querySelector('.liste-variantes-wrapper');
   const boutonAjouter = document.getElementById('bouton-ajouter-variante');
   const messageLimite = document.querySelector('.message-limite-variantes');
+  const resumeBloc = document.querySelector('[data-champ="enigme_reponse_variantes"]');
+  let listeResume = resumeBloc?.querySelector('.liste-variantes-resume');
+  let lienAjouterResume = resumeBloc?.querySelector('.champ-ajouter');
+  let boutonEditerResume = resumeBloc?.querySelector('.champ-modifier.ouvrir-panneau-variantes');
 
-  if (!boutonOuvrir || !panneau || !formulaire || !postId || !wrapper || !boutonAjouter || !messageLimite) return;
+  if (!panneau || !formulaire || !postId || !wrapper || !boutonAjouter || !messageLimite || !resumeBloc) return;
 
-  // Ouvrir le panneau
-  boutonOuvrir.addEventListener('click', () => {
+  function ouvrirPanneau() {
     document.querySelectorAll('.panneau-lateral.ouvert, .panneau-lateral-liens.ouvert').forEach(p => {
       p.classList.remove('ouvert');
       p.setAttribute('aria-hidden', 'true');
@@ -571,6 +686,13 @@ function initPanneauVariantes() {
     }
 
     mettreAJourEtatBouton();
+  }
+
+  resumeBloc.querySelectorAll('.ouvrir-panneau-variantes').forEach(el => {
+    el.addEventListener('click', e => {
+      e.preventDefault();
+      ouvrirPanneau();
+    });
   });
 
   // Fermer le panneau
@@ -588,8 +710,9 @@ function initPanneauVariantes() {
 
   // Supprimer une ligne
   formulaire.addEventListener('click', (e) => {
-    if (!e.target.classList.contains('bouton-supprimer-ligne')) return;
-    const ligne = e.target.closest('.ligne-variante');
+    const btnSupprimer = e.target.closest('.bouton-supprimer-ligne');
+    if (!btnSupprimer) return;
+    const ligne = btnSupprimer.closest('.ligne-variante');
     const lignes = wrapper.querySelectorAll('.ligne-variante');
 
     if (!ligne) return;
@@ -617,9 +740,10 @@ function initPanneauVariantes() {
     const nouvelle = base.cloneNode(true);
 
     nouvelle.querySelector('.input-texte').value = '';
-    nouvelle.querySelector('.input-texte').placeholder = 'réponse déclenchante';
+    nouvelle.querySelector('.input-texte').placeholder = wp.i18n.__("réponse déclenchant l'affichage du message", 'chassesautresor-com');
 
     nouvelle.querySelector('.input-message').value = '';
+    nouvelle.querySelector('.input-message').placeholder = wp.i18n.__('Message affiché au joueur', 'chassesautresor-com');
     nouvelle.querySelector('input[type="checkbox"]').checked = false;
 
     wrapper.appendChild(nouvelle);
@@ -651,82 +775,137 @@ function initPanneauVariantes() {
   formulaire.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    const donnees = {};
     const lignes = wrapper.querySelectorAll('.ligne-variante');
-    let index = 1;
+    const updates = [];
 
-    lignes.forEach((ligne) => {
-      const texte = ligne.querySelector('.input-texte')?.value.trim();
-      const message = ligne.querySelector('.input-message')?.value.trim();
-      const casse = ligne.querySelector('input[type="checkbox"]')?.checked;
+    for (let i = 1; i <= 4; i++) {
+      const ligne = lignes[i - 1];
+      const texte = ligne?.querySelector('.input-texte')?.value.trim() || '';
+      const message = ligne?.querySelector('.input-message')?.value.trim() || '';
+      const casse = ligne?.querySelector('input[type="checkbox"]')?.checked ? 1 : 0;
 
-      if (texte && message) {
-        donnees[`variante_${index}`] = {
-          [`texte_${index}`]: texte,
-          [`message_${index}`]: message,
-          [`respecter_casse_${index}`]: casse ? 1 : 0
-        };
-        index++;
-      }
-    });
+      updates.push(['texte_' + i, texte]);
+      updates.push(['message_' + i, message]);
+      updates.push(['respecter_casse_' + i, casse]);
+    }
 
-    const payload = JSON.stringify(donnees);
     const feedback = formulaire.querySelector('.champ-feedback-variantes');
     if (feedback) {
       feedback.style.display = 'block';
-      feedback.textContent = 'Enregistrement...';
+      feedback.textContent = wp.i18n.__('Enregistrement...', 'chassesautresor-com');
       feedback.className = 'champ-feedback champ-loading';
     }
 
-    fetch(ajaxurl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        action: 'modifier_champ_enigme',
-        champ: 'enigme_reponse_variantes',
-        valeur: payload,
-        post_id: postId
-      })
-    })
-      .then(r => r.json())
-      .then(res => {
-        if (res.success) {
-          if (feedback) {
-            feedback.textContent = '✔️ Variantes enregistrées';
-            feedback.className = 'champ-feedback champ-success';
-          }
+    const promises = updates.map(([champ, valeur]) => {
+      return fetch(ajaxurl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          action: 'modifier_champ_enigme',
+          champ,
+          valeur,
+          post_id: postId
+        })
+      }).then(r => r.json());
+    });
 
-          setTimeout(() => {
-            panneau.classList.remove('ouvert');
-            document.body.classList.remove('panneau-ouvert');
-            panneau.setAttribute('aria-hidden', 'true');
+    Promise.all(promises)
+      .then(() => {
+        if (feedback) {
+          feedback.textContent = wp.i18n.__('✔️ Variantes enregistrées', 'chassesautresor-com');
+          feedback.className = 'champ-feedback champ-success';
+        }
 
-            const resume = document.querySelector('[data-champ="enigme_reponse_variantes"] .champ-modifier');
-            if (resume) {
-              let nb = 0;
-              Object.values(donnees).forEach(v => {
-                const texte = (v[Object.keys(v).find(k => k.startsWith('texte_'))] || '').trim();
-                const message = (v[Object.keys(v).find(k => k.startsWith('message_'))] || '').trim();
-                if (texte && message) nb++;
-              });
+        setTimeout(() => {
+          panneau.classList.remove('ouvert');
+          document.body.classList.remove('panneau-ouvert');
+          panneau.setAttribute('aria-hidden', 'true');
 
-              resume.textContent = nb === 0
-                ? '➕ Créer des variantes'
-                : (nb === 1 ? '1 variante ✏️' : `${nb} variantes ✏️`);
+          if (resumeBloc) {
+            if (!listeResume) {
+              listeResume = document.createElement('ul');
+              listeResume.className = 'liste-variantes-resume';
+              resumeBloc.insertBefore(listeResume, boutonEditerResume || lienAjouterResume || null);
             }
 
-            if (feedback) feedback.textContent = '';
-          }, 1000);
-        } else {
-          if (feedback) {
-            feedback.textContent = '❌ Erreur : ' + (res.data || 'inconnue');
-            feedback.className = 'champ-feedback champ-error';
+            listeResume.innerHTML = '';
+            let nb = 0;
+            for (let i = 1; i <= 4; i++) {
+              const t = updates.find(u => u[0] === 'texte_' + i)?.[1] || '';
+              const m = updates.find(u => u[0] === 'message_' + i)?.[1] || '';
+              if (t && m) {
+                nb++;
+                const li = document.createElement('li');
+                li.className = 'variante-resume';
+                const spanT = document.createElement('span');
+                spanT.className = 'variante-texte';
+                spanT.textContent = t;
+                const spanM = document.createElement('span');
+                spanM.className = 'variante-message';
+                spanM.textContent = m;
+                li.appendChild(spanT);
+                li.appendChild(document.createTextNode(' => '));
+                li.appendChild(spanM);
+                listeResume.appendChild(li);
+              }
+            }
+
+            if (nb === 0) {
+              resumeBloc.classList.add('champ-vide');
+              resumeBloc.classList.remove('champ-rempli');
+              boutonEditerResume?.style.setProperty('display', 'none');
+
+              if (listeResume) {
+                listeResume.remove();
+                listeResume = null;
+              }
+
+              if (!lienAjouterResume) {
+                lienAjouterResume = document.createElement('a');
+                lienAjouterResume.href = '#';
+                lienAjouterResume.className = 'champ-ajouter ouvrir-panneau-variantes';
+                lienAjouterResume.dataset.cpt = 'enigme';
+                lienAjouterResume.dataset.postId = postId;
+                lienAjouterResume.setAttribute('aria-label', wp.i18n.__('Ajouter des variantes', 'chassesautresor-com'));
+                lienAjouterResume.innerHTML = `${wp.i18n.__('ajouter des variantes', 'chassesautresor-com')} <span class="icone-modif">✏️</span>`;
+                resumeBloc.appendChild(lienAjouterResume);
+                lienAjouterResume.addEventListener('click', e => {
+                  e.preventDefault();
+                  ouvrirPanneau();
+                });
+              }
+
+              lienAjouterResume.style.setProperty('display', 'inline-block');
+            } else {
+              resumeBloc.classList.add('champ-rempli');
+              resumeBloc.classList.remove('champ-vide');
+              lienAjouterResume?.style.setProperty('display', 'none');
+
+              if (!boutonEditerResume) {
+                boutonEditerResume = document.createElement('button');
+                boutonEditerResume.type = 'button';
+                boutonEditerResume.className = 'champ-modifier ouvrir-panneau-variantes';
+                boutonEditerResume.dataset.cpt = 'enigme';
+                boutonEditerResume.dataset.postId = postId;
+                boutonEditerResume.setAttribute('aria-label', wp.i18n.__('Éditer les variantes', 'chassesautresor-com'));
+                boutonEditerResume.innerHTML = `${wp.i18n.__('éditer', 'chassesautresor-com')} <span class="icone-modif">✏️</span>`;
+                resumeBloc.appendChild(boutonEditerResume);
+                boutonEditerResume.addEventListener('click', e => {
+                  e.preventDefault();
+                  ouvrirPanneau();
+                });
+              }
+
+              boutonEditerResume.style.setProperty('display', 'inline-block');
+            }
           }
-        }
+
+          if (feedback) feedback.textContent = '';
+        }, 1000);
       })
       .catch(() => {
         if (feedback) {
-          feedback.textContent = '❌ Erreur réseau';
+          feedback.textContent = wp.i18n.__('❌ Erreur réseau', 'chassesautresor-com');
           feedback.className = 'champ-feedback champ-error';
         }
       });
@@ -872,56 +1051,163 @@ function initSolutionInline() {
   const postId = bloc.dataset.postId;
   const cpt = bloc.dataset.cpt || 'enigme';
 
-  const radios = bloc.querySelectorAll('input[name="acf[enigme_solution_mode]"]');
-  const zoneFichier = bloc.querySelector('.champ-solution-fichier');
-  const zoneTexte = bloc.querySelector('.champ-solution-texte');
-  const boutonTexte = bloc.querySelector('#ouvrir-panneau-solution');
+  const cards = bloc.querySelectorAll('.solution-option');
+  const cardPdf = bloc.querySelector('.solution-option[data-mode="pdf"]');
+  const cardTexte = bloc.querySelector('.solution-option[data-mode="texte"]');
+  const btnClearPdf = cardPdf?.querySelector('.solution-reset');
+  const btnClearTexte = cardTexte?.querySelector('.solution-reset');
 
   const inputDelai = bloc.querySelector('#solution-delai');
   const selectHeure = bloc.querySelector('#solution-heure');
   const inputFichier = bloc.querySelector('#solution-pdf-upload');
   const feedbackFichier = bloc.querySelector('.champ-feedback');
+  const publicationMessage = bloc.querySelector('.solution-publication-message');
+  const textareaExplication = document.querySelector('.acf-field[data-name="enigme_solution_explication"] textarea');
 
-  radios.forEach(radio => {
-    radio.addEventListener('change', () => {
-      const val = radio.value;
-      modifierChampSimple('enigme_solution_mode', val, postId, cpt);
+  if (textareaExplication) {
+    const valInit = textareaExplication.value.trim();
+    if (btnClearTexte) btnClearTexte.style.display = valInit !== '' ? '' : 'none';
+  }
 
-      if (val === 'pdf') {
-        zoneFichier.style.display = '';
-        zoneTexte.style.display = 'none';
+  function majMessageSolution() {
+    if (!publicationMessage) return;
 
-        // Déclenche automatiquement la sélection de fichier PDF
+    const modeActuel = bloc.querySelector('input[name="acf[enigme_solution_mode]"]:checked')?.value;
+    const delaiVal = parseInt(inputDelai?.value.trim(), 10) || 0;
+    const heureVal = selectHeure?.value || '';
+
+    let label = 'aucune solution ne';
+    let note = '';
+
+    if (modeActuel === 'pdf') {
+      const titre = cardPdf?.querySelector('h3')?.textContent.trim();
+      if (titre && titre !== 'Document PDF') {
+        label = `votre fichier ${titre}`;
+        note = ` ${delaiVal} jours après la fin de la chasse, à ${heureVal}`;
+      } else {
+        note = ' (pdf sélectionné mais pas de fichier chargé)';
+      }
+    } else if (modeActuel === 'texte') {
+      const btnTexte = cardTexte?.querySelector('button.stat-value');
+      const explicationRemplie = btnTexte && btnTexte.textContent.trim() !== 'Rédiger';
+      if (explicationRemplie) {
+        label = "votre texte d'explication";
+        note = `, ${delaiVal} jours après la fin de la chasse, à ${heureVal}`;
+      } else {
+        note = ' (rédaction libre sélectionnée mais non remplie)';
+      }
+    }
+
+    publicationMessage.textContent = `${label} sera affiché(e)${note}`;
+  }
+
+  textareaExplication?.addEventListener('input', () => {
+    const value = textareaExplication.value.trim();
+    const iconTexte = cardTexte?.querySelector('i');
+    const boutonTexte = cardTexte?.querySelector('button.stat-value');
+    if (value !== '') {
+      if (iconTexte) iconTexte.style.color = 'var(--color-editor-success)';
+      if (boutonTexte) boutonTexte.textContent = 'éditer';
+      if (btnClearTexte) btnClearTexte.style.display = '';
+    } else {
+      if (iconTexte) iconTexte.style.color = '';
+      if (boutonTexte) boutonTexte.textContent = 'Rédiger';
+      if (btnClearTexte) btnClearTexte.style.display = 'none';
+    }
+    majMessageSolution();
+  });
+
+  btnClearTexte?.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    textareaExplication.value = '';
+    const iconTexte = cardTexte?.querySelector('i');
+    const boutonTexte = cardTexte?.querySelector('button.stat-value');
+    if (iconTexte) iconTexte.style.color = '';
+    if (boutonTexte) boutonTexte.textContent = 'Rédiger';
+    if (btnClearTexte) btnClearTexte.style.display = 'none';
+    modifierChampSimple('enigme_solution_explication', '', postId, cpt);
+    majMessageSolution();
+  });
+
+  btnClearPdf?.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const formData = new FormData();
+    formData.append('action', 'supprimer_fichier_solution_enigme');
+    formData.append('post_id', postId);
+    if (feedbackFichier) {
+      feedbackFichier.textContent = '⏳ Suppression en cours...';
+      feedbackFichier.className = 'champ-feedback champ-loading';
+    }
+    fetch(ajaxurl, { method: 'POST', body: formData })
+      .then(r => r.json())
+      .then(res => {
+        if (res.success) {
+          if (cardPdf) {
+            const icon = cardPdf.querySelector('i');
+            if (icon) icon.style.color = '';
+            const titre = cardPdf.querySelector('h3');
+            if (titre) titre.textContent = 'Document PDF';
+            const lien = cardPdf.querySelector('a.stat-value');
+            if (lien) lien.textContent = 'Choisir un fichier';
+          }
+          if (inputFichier) inputFichier.value = '';
+          if (btnClearPdf) btnClearPdf.style.display = 'none';
+          if (feedbackFichier) {
+            feedbackFichier.textContent = '✅ Fichier supprimé';
+            feedbackFichier.className = 'champ-feedback champ-success';
+          }
+          majMessageSolution();
+        } else if (feedbackFichier) {
+          feedbackFichier.textContent = '❌ Erreur : ' + (res.data || 'inconnue');
+          feedbackFichier.className = 'champ-feedback champ-error';
+        }
+      })
+      .catch(() => {
+        if (feedbackFichier) {
+          feedbackFichier.textContent = '❌ Erreur réseau';
+          feedbackFichier.className = 'champ-feedback champ-error';
+        }
+      });
+  });
+
+  cards.forEach(card => {
+    card.addEventListener('click', (e) => {
+      e.preventDefault();
+      const mode = card.dataset.mode;
+      bloc.querySelectorAll('input[name="acf[enigme_solution_mode]"]').forEach(r => {
+        r.checked = false;
+      });
+      card.querySelector('input[name="acf[enigme_solution_mode]"]').checked = true;
+
+      cards.forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+
+      modifierChampSimple('enigme_solution_mode', mode, postId, cpt);
+      majMessageSolution();
+
+      if (mode === 'pdf') {
         setTimeout(() => {
           inputFichier?.click();
-        }, 100); // petit délai pour laisser le DOM s'afficher
+        }, 100);
       }
 
-      if (val === 'texte') {
-        zoneFichier.style.display = 'none';
-        zoneTexte.style.display = ''; // on montre l'encart avec le bouton
-        setTimeout(() => {
-          boutonTexte?.click(); // on simule le clic pour ouvrir le panneau latéral
-        }, 100); // petit délai pour laisser le DOM se stabiliser
+      if (mode === 'texte') {
+        setTimeout(ouvrirPanneauSolution, 100);
       }
     });
   });
 
-  // 🔄 Affichage initial selon valeur radio
   const checked = bloc.querySelector('input[name="acf[enigme_solution_mode]"]:checked');
-  if (checked?.value === 'pdf') {
-    zoneFichier.style.display = '';
-    zoneTexte.style.display = 'none';
-  } else if (checked?.value === 'texte') {
-    zoneFichier.style.display = 'none';
-    zoneTexte.style.display = '';
-  }
+  checked?.closest('.solution-option')?.classList.add('active');
 
   // ⏳ Modification du délai (jours)
   inputDelai?.addEventListener('input', () => {
     const valeur = parseInt(inputDelai.value.trim(), 10);
     if (!isNaN(valeur)) {
       modifierChampSimple('enigme_solution_delai', valeur, postId, cpt);
+      majMessageSolution();
     }
   });
 
@@ -929,6 +1215,7 @@ function initSolutionInline() {
   selectHeure?.addEventListener('change', () => {
     const valeur = selectHeure.value;
     modifierChampSimple('enigme_solution_heure', valeur, postId, cpt);
+    majMessageSolution();
   });
 
   // 📎 Upload fichier PDF
@@ -957,6 +1244,17 @@ function initSolutionInline() {
         if (res.success) {
           feedbackFichier.textContent = '✅ Fichier enregistré';
           feedbackFichier.className = 'champ-feedback champ-success';
+
+          if (cardPdf) {
+            const icon = cardPdf.querySelector('i');
+            if (icon) icon.style.color = 'var(--color-editor-success)';
+            const titre = cardPdf.querySelector('h3');
+            if (titre) titre.textContent = fichier.name;
+            const lien = cardPdf.querySelector('a.stat-value');
+            if (lien) lien.textContent = 'Modifier';
+          }
+          if (btnClearPdf) btnClearPdf.style.display = '';
+          majMessageSolution();
         } else {
           feedbackFichier.textContent = '❌ Erreur : ' + (res.data || 'inconnue');
           feedbackFichier.className = 'champ-feedback champ-error';
@@ -967,16 +1265,15 @@ function initSolutionInline() {
         feedbackFichier.className = 'champ-feedback champ-error';
       });
   });
+
+  majMessageSolution();
 }
 
 
 // ==============================
 // ✏️ Panneau solution (texte)
 // ==============================
-document.addEventListener('click', (e) => {
-  const btn = e.target.closest('#ouvrir-panneau-solution'); // ou '.ouvrir-panneau-solution' si classe
-  if (!btn) return;
-
+function ouvrirPanneauSolution() {
   const panneau = document.getElementById('panneau-solution-enigme');
   if (!panneau) return;
 
@@ -988,17 +1285,40 @@ document.addEventListener('click', (e) => {
   panneau.classList.add('ouvert');
   document.body.classList.add('panneau-ouvert');
   panneau.setAttribute('aria-hidden', 'false');
-});
+}
 
+document.addEventListener('click', (e) => {
+  const trigger = e.target.closest('#ouvrir-panneau-solution');
+  if (!trigger) return;
+
+  const bloc = document.querySelector('.champ-solution-mode');
+  const postId = bloc?.dataset.postId;
+  const cpt = bloc?.dataset.cpt || 'enigme';
+  const radioTexte = bloc?.querySelector('input[name="acf[enigme_solution_mode]"][value="texte"]');
+
+  if (bloc && radioTexte && !radioTexte.checked) {
+    bloc.querySelectorAll('input[name="acf[enigme_solution_mode]"]').forEach(r => { r.checked = false; });
+    radioTexte.checked = true;
+    bloc.querySelectorAll('.solution-option').forEach(c => c.classList.remove('active'));
+    radioTexte.closest('.solution-option')?.classList.add('active');
+    if (postId) {
+      modifierChampSimple('enigme_solution_mode', 'texte', postId, cpt);
+    }
+  }
+
+  ouvrirPanneauSolution();
+});
 
 // ==============================
 // ✖️ Fermeture panneau solution (wysiwyg)
 // ==============================
-document.querySelector('#panneau-solution-enigme .panneau-fermer')?.addEventListener('click', () => {
-  const panneau = document.getElementById('panneau-solution-enigme');
-  panneau.classList.remove('ouvert');
-  document.body.classList.remove('panneau-ouvert');
-  panneau.setAttribute('aria-hidden', 'true');
+document.addEventListener('click', (e) => {
+  if (e.target.closest('#panneau-solution-enigme .panneau-fermer')) {
+    const panneau = document.getElementById('panneau-solution-enigme');
+    panneau.classList.remove('ouvert');
+    document.body.classList.remove('panneau-ouvert');
+    panneau.setAttribute('aria-hidden', 'true');
+  }
 });
 
 
@@ -1006,7 +1326,7 @@ document.querySelector('#panneau-solution-enigme .panneau-fermer')?.addEventList
 // ==============================
 // ✅ Enregistrement condition "pré-requis" à la sélection du radio
 // ==============================
-document.addEventListener('DOMContentLoaded', () => {
+function initEnregistrementPreRequis() {
   const radioPreRequis = document.querySelector('input[name="acf[enigme_acces_condition]"][value="pre_requis"]');
   const champBloc = document.querySelector('[data-champ="enigme_acces_pre_requis"]');
   const postId = champBloc?.dataset.postId;
@@ -1042,7 +1362,36 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('❌ Erreur réseau lors de l’enregistrement de la condition pré-requis', err);
       });
   });
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initEnregistrementPreRequis);
+} else {
+  initEnregistrementPreRequis();
+}
+
+function mettreAJourCartesStats() {
+  const mode = document.querySelector('input[name="acf[enigme_mode_validation]"]:checked')?.value || 'aucune';
+  const coutInput = document.querySelector('[data-champ="enigme_tentative.enigme_tentative_cout_points"] .champ-input');
+  const cout = coutInput ? parseInt(coutInput.value || '0', 10) : 0;
+  const cardTentatives = document.querySelector('#enigme-stats [data-stat="tentatives"]');
+  const cardPoints = document.querySelector('#enigme-stats [data-stat="points"]');
+  const cardSolutions = document.querySelector('#enigme-stats [data-stat="solutions"]');
+  const resolveursSection = document.getElementById('enigme-resolveurs');
+
+  if (cardTentatives) {
+    cardTentatives.style.display = mode === 'aucune' ? 'none' : '';
+  }
+  if (cardPoints) {
+    cardPoints.style.display = (mode === 'aucune' || cout <= 0) ? 'none' : '';
+  }
+  if (cardSolutions) {
+    cardSolutions.style.display = mode === 'aucune' ? 'none' : '';
+  }
+  if (resolveursSection) {
+    resolveursSection.style.display = mode === 'aucune' ? 'none' : '';
+  }
+}
 
 function appliquerEtatGratuitEnLive() {
   DEBUG && console.log('✅ enappliquerEtatGratuit() chargé');
@@ -1051,12 +1400,17 @@ function appliquerEtatGratuitEnLive() {
   if (!$cout || !$checkbox) return;
 
   function syncGratuit() {
-    const val = parseInt($cout.value.trim(), 10);
-    const estGratuit = val === 0;
+    const raw = $cout.value;
+    const trimmed = raw.trim();
+    const valeur = trimmed === '' ? 0 : parseInt(trimmed, 10);
+    const estGratuit = valeur === 0;
 
     DEBUG && console.log('[🎯 syncGratuit] coût =', $cout.value, '| gratuit ?', estGratuit);
     $checkbox.checked = estGratuit;
     $cout.disabled = estGratuit;
+    if (typeof window.mettreAJourMessageTentatives === 'function') {
+      window.mettreAJourMessageTentatives();
+    }
   }
 
   $cout.addEventListener('input', syncGratuit);
@@ -1064,4 +1418,61 @@ function appliquerEtatGratuitEnLive() {
 
   // Appel initial différé de 50ms pour laisser le temps à la valeur d’être injectée
   setTimeout(syncGratuit, 50);
+}
+
+function initPagerTentatives() {
+  const wrapper = document.querySelector('#enigme-tab-soumission .liste-tentatives');
+  const postId = document.querySelector('.edition-panel-enigme')?.dataset.postId;
+  const compteur = document.querySelector('#enigme-tab-soumission .total-tentatives');
+  const info = wrapper?.querySelector('.pager-info');
+  if (!wrapper || !postId) return;
+
+  wrapper.addEventListener('click', (e) => {
+    if (e.target.closest('.pager-first')) {
+      e.preventDefault();
+      charger(1);
+    }
+    if (e.target.closest('.pager-prev')) {
+      e.preventDefault();
+      const page = parseInt(wrapper.dataset.page || '1', 10);
+      if (page > 1) charger(page - 1);
+    }
+    if (e.target.closest('.pager-next')) {
+      e.preventDefault();
+      const page = parseInt(wrapper.dataset.page || '1', 10);
+      const pages = parseInt(wrapper.dataset.pages || '1', 10);
+      if (page < pages) charger(page + 1);
+    }
+    if (e.target.closest('.pager-last')) {
+      e.preventDefault();
+      const pages = parseInt(wrapper.dataset.pages || '1', 10);
+      charger(pages);
+    }
+  });
+
+  if (info) {
+    info.textContent = (wrapper.dataset.page || '1') + ' / ' + (wrapper.dataset.pages || '1');
+  }
+
+  function charger(page) {
+    fetch(ajaxurl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        action: 'lister_tentatives_enigme',
+        enigme_id: postId,
+        page
+      })
+    })
+      .then(r => r.json())
+      .then(res => {
+        if (!res.success) return;
+        wrapper.innerHTML = res.data.html;
+        wrapper.dataset.page = res.data.page;
+        wrapper.dataset.pages = res.data.pages;
+        if (compteur) compteur.textContent = '(' + res.data.total + ')';
+        const span = wrapper.querySelector('.pager-info');
+        if (span) span.textContent = res.data.page + ' / ' + res.data.pages;
+      });
+  }
 }

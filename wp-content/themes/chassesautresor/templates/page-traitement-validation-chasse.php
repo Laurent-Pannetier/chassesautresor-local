@@ -25,11 +25,11 @@ if (
     !isset($_POST['validation_chasse_nonce']) ||
     !wp_verify_nonce($_POST['validation_chasse_nonce'], 'validation_chasse_' . $chasse_id)
 ) {
-    wp_die('Vérification de sécurité échouée.');
+    wp_die( __( 'Vérification de sécurité échouée.', 'chassesautresor-com' ) );
 }
 
 if (!peut_valider_chasse($chasse_id, $user_id)) {
-    wp_die('Conditions non remplies.');
+    wp_die( __( 'Conditions non remplies.', 'chassesautresor-com' ) );
 }
 
 forcer_statut_apres_acf($chasse_id, 'en_attente');

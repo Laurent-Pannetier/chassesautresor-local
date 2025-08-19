@@ -8,8 +8,8 @@ if (!$enigme_id || get_post_type($enigme_id) !== 'enigme') return;
 <div id="panneau-images-enigme" class="panneau-lateral-liens panneau-lateral-large" aria-hidden="true" role="dialog">
   <div class="panneau-lateral__contenu">
     <header class="panneau-lateral__header">
-      <h2>Modifier les images de l’énigme</h2>
-      <button type="button" class="panneau-fermer" aria-label="Fermer le panneau">✖</button>
+      <h2><?php echo esc_html__( 'Modifier les images de l’énigme', 'chassesautresor-com' ); ?></h2>
+      <button type="button" class="panneau-fermer" aria-label="<?php echo esc_attr__( 'Fermer le panneau', 'chassesautresor-com' ); ?>">✖</button>
     </header>
 
     <?php
@@ -17,12 +17,16 @@ if (!$enigme_id || get_post_type($enigme_id) !== 'enigme') return;
       'post_id'             => $enigme_id,
       'fields'              => ['enigme_visuel_image'],
       'form'                => true,
-      'submit_value'        => '💾 Enregistrer',
+      'submit_value'        => __( '💾 Enregistrer', 'chassesautresor-com' ),
       'html_submit_button'  => '<div class="panneau-lateral__actions"><button type="submit" class="bouton-enregistrer-description bouton-enregistrer-liens">%s</button></div>',
       'html_before_fields'  => '<div class="champ-wrapper">',
       'html_after_fields'   => '</div>',
-      'return'              => get_permalink() . '#images-enigme',
-      'updated_message'     => __('Images mises à jour.', 'chassesautresor')
+      // Après sauvegarde, on revient sur la même page en ouvrant
+      // automatiquement le panneau principal grâce au paramètre
+      // ?edition=open. L'ancre #images-enigme permet de scroller
+      // directement sur le panneau images.
+      'return'              => add_query_arg('edition', 'open', get_permalink()) . '#images-enigme',
+      'updated_message'     => __( 'Images mises à jour.', 'chassesautresor-com' )
     ]);
     ?>
   </div>

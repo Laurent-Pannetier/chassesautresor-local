@@ -216,7 +216,7 @@ class Edit {
 	 *
 	 * @since 1.6.0
 	 */
-	public function enqueues() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function enqueues() {
 
 		if ( ! empty( $this->abort ) ) {
 			return;
@@ -426,7 +426,7 @@ class Edit {
 	 *
 	 * @since 1.6.0
 	 */
-	public function setup() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function setup() {
 
 		// Find the entry.
 		// phpcs:ignore WordPress.Security.NonceVerification, WordPress.Security.ValidatedSanitizedInput.MissingUnslash,
@@ -940,7 +940,7 @@ class Edit {
 	 * @param array $form_data    Form data and settings.
 	 * @param bool  $hide_empty   Flag to hide empty fields.
 	 */
-	private function display_edit_form_field( $field_id, $field, $entry_fields, $form_data, $hide_empty ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	private function display_edit_form_field( $field_id, $field, $entry_fields, $form_data, $hide_empty ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		$field_type = ! empty( $field['type'] ) ? $field['type'] : '';
 
@@ -1095,7 +1095,7 @@ class Edit {
 	 *
 	 * @since 1.6.0
 	 */
-	public function ajax_submit() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function ajax_submit() {
 
 		$this->form_id  = ! empty( $_POST['wpforms']['id'] ) ? (int) $_POST['wpforms']['id'] : 0;
 		$this->entry_id = ! empty( $_POST['wpforms']['entry_id'] ) ? (int) $_POST['wpforms']['entry_id'] : 0;
@@ -1231,7 +1231,7 @@ class Edit {
 	 * @param array  $entry  Submitted entry data.
 	 * @param string $action Action to perform: `validate` or `format`.
 	 */
-	private function process_fields( $entry, $action = 'validate' ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	private function process_fields( $entry, $action = 'validate' ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		if ( empty( $this->form_data['fields'] ) ) {
 			return;
@@ -1318,7 +1318,7 @@ class Edit {
 	 *
 	 * @return array Updated fields data.
 	 */
-	private function process_update_fields_data() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function process_update_fields_data() {
 
 		$updated_fields = [];
 
@@ -1627,7 +1627,7 @@ class Edit {
 	 *
 	 * @return boolean
 	 */
-	public function is_admin_entry_editing_ajax() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function is_admin_entry_editing_ajax() {
 
 		if ( ! wp_doing_ajax() ) {
 			return false;

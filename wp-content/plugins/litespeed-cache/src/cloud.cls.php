@@ -158,10 +158,7 @@ class Cloud extends Base {
 		$ref = $this->_get_ref_url();
 
 		// WPAPI REST echo dryrun
-		$req_data = array(
-			'wp_pk_b64' => $this->_summary['pk_b64'],
-		);
-		$echobox  = self::post(self::API_REST_ECHO, $req_data);
+		$echobox  = self::post(self::API_REST_ECHO);
 		if ($echobox === false) {
 			self::debugErr('REST Echo Failed!');
 			$msg = __("QUIC.cloud's access to your WP REST API seems to be blocked.", 'litespeed-cache');
@@ -241,10 +238,7 @@ class Cloud extends Base {
 		}
 
 		// WPAPI REST echo dryrun
-		$req_data = array(
-			'wp_pk_b64' => $this->_summary['pk_b64'],
-		);
-		$echobox  = self::post(self::API_REST_ECHO, $req_data);
+		$echobox  = self::post(self::API_REST_ECHO);
 		if ($echobox === false) {
 			self::debugErr('REST Echo Failed!');
 			$msg = __("QUIC.cloud's access to your WP REST API seems to be blocked.", 'litespeed-cache');
@@ -1156,7 +1150,7 @@ class Cloud extends Base {
 		self::debug('getting from : ' . $url);
 
 		self::save_summary(array( 'curr_request.' . $service_tag => time() ));
-		file_put_contents(LITESPEED_STATIC_DIR . '/qc_curr_request' . md5($service_tag), time());
+		File::save(LITESPEED_STATIC_DIR . '/qc_curr_request' . md5($service_tag), time(), true);
 
 		$response = wp_safe_remote_get($url, array(
 			'timeout' => 15,
@@ -1367,7 +1361,7 @@ class Cloud extends Base {
 		);
 
 		self::save_summary(array( 'curr_request.' . $service_tag => time() ));
-		file_put_contents(LITESPEED_STATIC_DIR . '/qc_curr_request' . md5($service_tag), time());
+		File::save(LITESPEED_STATIC_DIR . '/qc_curr_request' . md5($service_tag), time(), true);
 
 		$response = wp_safe_remote_post($url, array(
 			'body' => $param,
@@ -1503,8 +1497,8 @@ class Cloud extends Base {
 			'last_request.' . $service_tag => $curr_request,
 			'curr_request.' . $service_tag => 0,
 		));
-		file_put_contents(LITESPEED_STATIC_DIR . '/qc_last_request' . md5($service_tag), $curr_request);
-		file_put_contents(LITESPEED_STATIC_DIR . '/qc_curr_request' . md5($service_tag), 0);
+		File::save(LITESPEED_STATIC_DIR . '/qc_last_request' . md5($service_tag), $curr_request, true);
+		File::save(LITESPEED_STATIC_DIR . '/qc_curr_request' . md5($service_tag), 0, true);
 
 		if ($json) {
 			self::debug2('response ok', $json);
@@ -1907,6 +1901,7 @@ class Cloud extends Base {
 	public function ping() {
 		$resp = array(
 			'v_lscwp' => Core::VER,
+			'v_lscwp_db' => $this->conf(self::_VER),
 			'v_php' => PHP_VERSION,
 			'v_wp' => $GLOBALS['wp_version'],
 			'home_url' => home_url(),

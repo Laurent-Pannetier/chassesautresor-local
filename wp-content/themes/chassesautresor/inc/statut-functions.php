@@ -61,6 +61,10 @@ function enigme_get_statut_utilisateur(int $enigme_id, int $user_id): string
         $enigme_id
     ));
 
+    if ($statut) {
+        $statut = strtolower(remove_accents($statut));
+    }
+
     return $statut ?: 'non_commencee';
 }
 
@@ -79,6 +83,9 @@ function enigme_mettre_a_jour_statut_utilisateur(int $enigme_id, int $user_id, s
     if (!$enigme_id || !$user_id || !$nouveau_statut) {
         return false;
     }
+
+    $nouveau_statut = strtolower(remove_accents($nouveau_statut));
+
     global $wpdb;
     $table = $wpdb->prefix . 'enigme_statuts_utilisateur';
 
@@ -103,6 +110,10 @@ function enigme_mettre_a_jour_statut_utilisateur(int $enigme_id, int $user_id, s
         $enigme_id
     ));
 
+    if ($statut_actuel) {
+        $statut_actuel = strtolower(remove_accents($statut_actuel));
+    }
+
     // Protection : interdiction de rétrograder un joueur ayant déjà résolu l’énigme
     if (!$forcer && in_array($statut_actuel, ['resolue', 'terminee'], true)) {
         cat_debug("🔒 Statut non modifié : $statut_actuel → tentative de mise à jour vers $nouveau_statut bloquée (UID: $user_id / Enigme: $enigme_id)");
@@ -117,8 +128,8 @@ function enigme_mettre_a_jour_statut_utilisateur(int $enigme_id, int $user_id, s
     }
 
     $data = [
-        'statut'            => $nouveau_statut,
-        'date_mise_a_jour'  => current_time('mysql'),
+        'statut'           => $nouveau_statut,
+        'date_mise_a_jour' => current_time('mysql'),
     ];
 
     $where = [
@@ -157,10 +168,8 @@ function enigme_pre_requis_remplis(int $enigme_id, int $user_id): bool
 
         if ($enigme_id_requise) {
             $statut = get_user_meta($user_id, "statut_enigme_{$enigme_id_requise}", true);
-            // Les statuts d'énigme sont stockés sans accent ("terminee")
-            // dans les autres parties du code. Utiliser la même valeur ici
-            // pour éviter un échec de vérification systématique des
-            // prérequis lorsque l'utilisateur a pourtant terminé l'énigme.
+            $statut = $statut ? strtolower(remove_accents($statut)) : '';
+
             if ($statut !== 'terminee') {
                 return false; // ❌ Prérequis non rempli
             }
@@ -327,13 +336,39 @@ function traiter_statut_enigme(int $enigme_id, ?int $user_id = null): array
         ];
     }
 
-    // 🔁 Cas interdits : accès refusé
-    if (in_array($statut, ['echouee', 'abandonnee'], true)) {
+    // 🔒 Joueur non engagé dans la chasse ou l'énigme
+    if (
+        !utilisateur_est_engage_dans_chasse($user_id, $chasse_id) ||
+        !utilisateur_est_engage_dans_enigme($user_id, $enigme_id)
+    ) {
         return [
             'etat' => $statut,
             'rediriger' => true,
             'url' => $chasse_id ? get_permalink($chasse_id) : home_url('/'),
             'afficher_formulaire' => false,
+            'afficher_message' => false,
+            'message_html' => '',
+        ];
+    }
+
+    // 🔁 Cas interdits : accès refusé
+    if ($statut === 'abandonnee') {
+        return [
+            'etat' => $statut,
+            'rediriger' => true,
+            'url' => $chasse_id ? get_permalink($chasse_id) : home_url('/'),
+            'afficher_formulaire' => false,
+            'afficher_message' => false,
+            'message_html' => '',
+        ];
+    }
+
+    if ($statut === 'echouee') {
+        return [
+            'etat' => $statut,
+            'rediriger' => false,
+            'url' => null,
+            'afficher_formulaire' => true,
             'afficher_message' => false,
             'message_html' => '',
         ];
@@ -351,7 +386,18 @@ function traiter_statut_enigme(int $enigme_id, ?int $user_id = null): array
         ];
     }
 
-    // 🎯 Cas d'accès légitime (en cours, non_souscrite, resolue)
+    // 🎯 Cas d'accès légitime (en cours, non_souscrite, resolue, soumis)
+    if ($statut === 'soumis') {
+        return [
+            'etat' => 'soumis',
+            'rediriger' => false,
+            'url' => null,
+            'afficher_formulaire' => false,
+            'afficher_message' => false,
+            'message_html' => '',
+        ];
+    }
+
     $formulaire = in_array($statut, ['en_cours', 'non_souscrite'], true);
     $message = ($statut === 'resolue');
     $message_html = $message ? '<p class="message-statut">Vous avez déjà résolu cette énigme.</p>' : '';
@@ -572,19 +618,39 @@ function organisateur_mettre_a_jour_complet(int $organisateur_id): bool
     return $complet;
 }
 
+function chasse_has_validatable_enigme(int $chasse_id): bool
+{
+    $enigme_ids = recuperer_ids_enigmes_pour_chasse($chasse_id);
+
+    foreach ($enigme_ids as $eid) {
+        $mode = get_field('enigme_mode_validation', $eid);
+        if ($mode !== 'aucune') {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 function chasse_est_complet(int $chasse_id): bool
 {
     if (get_post_type($chasse_id) !== 'chasse') {
         return false;
     }
 
+    $mode_fin = get_field('chasse_mode_fin', $chasse_id) ?: 'automatique';
+
+    if ($mode_fin === 'automatique' && !chasse_has_validatable_enigme($chasse_id)) {
+        return false;
+    }
+
     $titre_ok = titre_est_valide($chasse_id);
 
     $desc_field = get_field('chasse_principale_description', $chasse_id);
-    $desc = trim((string) $desc_field);
-    $desc_ok = $desc !== '';
+    $desc       = trim((string) $desc_field);
+    $desc_ok    = $desc !== '';
 
-    $image = get_field('chasse_principale_image', $chasse_id);
+    $image    = get_field('chasse_principale_image', $chasse_id);
     $image_id = is_array($image) ? ($image['ID'] ?? 0) : (int) $image;
     $image_ok = !empty($image_id) && $image_id !== 3902;
 
@@ -929,9 +995,26 @@ function recuperer_statut_chasse()
     }
 
     $statut_str = is_string($statut) ? $statut : '';
+    $statut_label = ucfirst(str_replace('_', ' ', $statut_str));
+    if ($statut_str === 'payante') {
+        $statut_str = 'en_cours';
+        $statut_label = 'en cours';
+    }
+
+    if ($statut_str === 'revision') {
+        $validation = get_field('chasse_cache_statut_validation', $post_id);
+        if ($validation === 'creation') {
+            $statut_label = 'création';
+        } elseif ($validation === 'correction') {
+            $statut_label = 'correction';
+        } elseif ($validation === 'en_attente') {
+            $statut_label = 'en attente';
+        }
+    }
+
     wp_send_json_success([
         'statut' => $statut_str,
-        'statut_label' => ucfirst(str_replace('_', ' ', $statut_str))
+        'statut_label' => $statut_label
     ]);
 }
 
@@ -1079,6 +1162,10 @@ function get_statut_utilisateur_enigme($user_id, $enigme_id)
         $user_id,
         $enigme_id
     ));
+
+    if ($statut) {
+        $statut = strtolower(remove_accents($statut));
+    }
 
     $cache[$key] = $statut ?: null;
     return $cache[$key];

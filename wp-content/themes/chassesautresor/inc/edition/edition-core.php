@@ -40,9 +40,15 @@ defined('ABSPATH') || exit;
 add_action('wp_enqueue_scripts', 'forcer_chargement_acf_scripts_chasse');
 function forcer_chargement_acf_scripts_chasse()
 {
-  if (is_singular('chasse')) {
-    acf_enqueue_scripts();
+  if (!is_singular('chasse') || !function_exists('acf_enqueue_scripts')) {
+    return;
   }
+
+  if (!current_user_can('edit_post', get_the_ID())) {
+    return;
+  }
+
+  acf_enqueue_scripts();
 }
 
 /**
@@ -324,7 +330,7 @@ function masquer_admin_interface_pour_non_admins()
     }, 999);
 
     // 🔹 Liste des pages autorisées + AJAX WordPress (ajout de async-upload.php)
-    $pages_autorisees = ['post.php', 'post-new.php', 'edit.php', 'edit.php?post_type=trophee', 'admin-ajax.php', 'async-upload.php'];
+    $pages_autorisees = ['post.php', 'post-new.php', 'edit.php', 'admin-ajax.php', 'async-upload.php'];
 
     // 🔹 Redirige les utilisateurs non-admins s'ils essaient d'aller ailleurs
     add_action('admin_init', function () use ($pages_autorisees) {
@@ -420,57 +426,82 @@ add_action('admin_head', 'ajouter_barre_progression_top');
  * @param array $classes Liste actuelle des classes du <body>
  * @return array Liste modifiée avec ou sans "edition-active"
  */
-add_filter('body_class', 'injection_classe_edition_active');
-function injection_classe_edition_active(array $classes): array
+add_filter( 'body_class', 'injection_classe_edition_active' );
+function injection_classe_edition_active( array $classes ): array
 {
+    if ( ! is_user_logged_in() ) {
+        return $classes;
+    }
 
-  if (!is_user_logged_in()) return $classes;
+    $uri = $_SERVER['REQUEST_URI'] ?? '';
+    if ( preg_match( '#^/mon-compte(?:/|$|\?)#', $uri ) ) {
+        $classes[] = 'mode-edition';
+    }
 
-  global $post;
-  if (!$post || !isset($post->post_type)) return $classes;
+    global $post;
+    if ( ! $post || ! isset( $post->post_type ) ) {
+        return $classes;
+    }
 
-  $user_id = get_current_user_id();
-  $roles = wp_get_current_user()->roles;
+    $user_id = get_current_user_id();
+    $roles   = wp_get_current_user()->roles;
 
-  // === ORGANISATEUR ===
-  if (
-    $post->post_type === 'organisateur' &&
-    (int) get_post_field('post_author', $post->ID) === $user_id &&
-    in_array(ROLE_ORGANISATEUR_CREATION, $roles, true) &&
-    !get_field('organisateur_cache_complet', $post->ID)
-  ) {
-    verifier_ou_mettre_a_jour_cache_complet($post->ID);
-
+    // === ORGANISATEUR ===
     if (
-      get_post_status($post) === 'pending' &&
-      !get_field('organisateur_cache_complet', $post->ID)
+        $post->post_type === 'organisateur' &&
+        (int) get_post_field( 'post_author', $post->ID ) === $user_id &&
+        in_array( ROLE_ORGANISATEUR_CREATION, $roles, true ) &&
+        ! get_field( 'organisateur_cache_complet', $post->ID )
     ) {
-      $classes[] = 'edition-active';
+        verifier_ou_mettre_a_jour_cache_complet( $post->ID );
+
+        if (
+            get_post_status( $post ) === 'pending' &&
+            ! get_field( 'organisateur_cache_complet', $post->ID )
+        ) {
+            $classes[] = 'edition-active';
+            $classes[] = 'mode-edition';
+        }
     }
-  }
 
-  // === CHASSE ===
-  if (
-    $post->post_type === 'chasse' &&
-    in_array(ROLE_ORGANISATEUR_CREATION, $roles, true)
-  ) {
-    $organisateur_id = get_organisateur_from_chasse($post->ID);
-    $associes = get_field('utilisateurs_associes', $organisateur_id, false);
-    $associes = is_array($associes) ? array_map('strval', $associes) : [];
+    // === CHASSE ===
+    if (
+        $post->post_type === 'chasse' &&
+        ( in_array( ROLE_ORGANISATEUR_CREATION, $roles, true ) || in_array( ROLE_ORGANISATEUR, $roles, true ) )
+    ) {
+        $organisateur_id = get_organisateur_from_chasse( $post->ID );
+        $associes        = get_field( 'utilisateurs_associes', $organisateur_id, false );
+        $associes        = is_array( $associes ) ? array_map( 'strval', $associes ) : [];
 
-    if (in_array((string) $user_id, $associes, true)) {
-      verifier_ou_mettre_a_jour_cache_complet($post->ID);
+        if ( in_array( (string) $user_id, $associes, true ) ) {
+            verifier_ou_mettre_a_jour_cache_complet( $post->ID );
 
-      if (
-        get_post_status($post) === 'pending' &&
-        !get_field('chasse_cache_complet', $post->ID)
-      ) {
-        $classes[] = 'edition-active-chasse';
-      }
+            $validation = get_field( 'chasse_cache_statut_validation', $post->ID );
+            $statut     = get_field( 'chasse_cache_statut', $post->ID );
+
+            if (
+                $statut === 'revision' &&
+                in_array( $validation, [ 'creation', 'correction' ], true ) &&
+                ! get_field( 'chasse_cache_complet', $post->ID )
+            ) {
+                $mode_fin        = get_field( 'chasse_mode_fin', $post->ID ) ?: 'automatique';
+                $titre_ok        = trim( get_the_title( $post->ID ) ) !== '';
+                $image_ok        = (bool) get_field( 'chasse_principale_image', $post->ID );
+                $desc_raw        = get_field( 'chasse_principale_description', $post->ID );
+                $desc_ok         = ! empty( trim( (string) $desc_raw ) );
+                $has_validatable = chasse_has_validatable_enigme( $post->ID );
+
+                if ( $mode_fin === 'automatique' && $titre_ok && $image_ok && $desc_ok && ! $has_validatable ) {
+                    $classes[] = 'scroll-to-enigmes';
+                } else {
+                    $classes[] = 'edition-active-chasse';
+                    $classes[] = 'mode-edition';
+                }
+            }
+        }
     }
-  }
 
-  return $classes;
+    return $classes;
 }
 
 
@@ -482,27 +513,36 @@ function injection_classe_edition_active(array $classes): array
  */
 function formater_date($date): string
 {
-  if (empty($date)) {
-    return 'Non spécifiée';
-  }
+    if (empty($date)) {
+        return 'Non spécifiée';
+    }
 
-  if ($date instanceof DateTimeInterface) {
-    return $date->format('d/m/Y');
-  }
+    if ($date instanceof DateTimeInterface) {
+        return $date->format('d/m/Y');
+    }
 
-  if (is_array($date) && isset($date['date'])) {
-    $date = $date['date'];
-  }
+    if (is_array($date) && isset($date['date'])) {
+        $date = $date['date'];
+    }
 
-  $date = (string) $date;
+    $date = (string) $date;
 
-  if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $date)) {
-    return $date; // Déjà formatée
-  }
+    // Déjà formatée ?
+    if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $date)) {
+        return $date;
+    }
 
-  $timestamp = strtotime($date);
-  return ($timestamp !== false) ? date_i18n('d/m/Y', $timestamp) : 'Non spécifiée';
+    // Format '27/06/2025 1:55 pm'
+    $dt = DateTime::createFromFormat('d/m/Y g:i a', $date);
+    if ($dt instanceof DateTime) {
+        return $dt->format('d/m/Y');
+    }
+
+    // Dernière tentative : strtotime
+    $timestamp = strtotime($date);
+    return ($timestamp !== false) ? date_i18n('d/m/Y', $timestamp) : 'Non spécifiée';
 }
+
 
 /**
  * 🗓️ Convertit une date string en objet DateTime en testant plusieurs formats.
@@ -518,12 +558,21 @@ function convertir_en_datetime(?string $date_string, array $formats = [
   'd/m/Y',
   'Y-m-d H:i:s',
   'Y-m-d\TH:i',
-  'Y-m-d'
+  'Y-m-d',
+  'Ymd',
+  'YmdHis'
 ]): ?DateTime
 {
   if (empty($date_string)) {
     cat_debug("🚫 Date vide ou non fournie.");
     return null;
+  }
+
+  if (preg_match('/^\d{9,10}$/', $date_string)) {
+    $timezone = function_exists('wp_timezone') ? wp_timezone() : new DateTimeZone('UTC');
+    $dt = new DateTime('@' . $date_string);
+    $dt->setTimezone($timezone);
+    return $dt;
   }
 
   $timezone = function_exists('wp_timezone') ? wp_timezone() : new DateTimeZone('UTC');
@@ -549,7 +598,24 @@ function convertir_en_datetime(?string $date_string, array $formats = [
  */
 function convertir_en_timestamp(?string $date)
 {
-  return $date ? strtotime(str_replace('/', '-', $date)) : false;
+  if (!$date) {
+    return false;
+  }
+
+  $date = (string) $date;
+
+  if (preg_match('/^\d{9,10}$/', $date)) {
+    return (int) $date;
+  }
+
+  if (preg_match('/^\d{8}$/', $date)) {
+    $dt = DateTime::createFromFormat('Ymd', $date);
+    if ($dt) {
+      return $dt->getTimestamp();
+    }
+  }
+
+  return strtotime(str_replace('/', '-', $date));
 }
 
 /**
@@ -745,7 +811,7 @@ function mettre_a_jour_sous_champ_group(int $post_id, string $group_key_or_name,
   }
 
   $champ_a_enregistrer = [];
-  
+
   $sub_field_type = null;
 
   foreach ($group_object['sub_fields'] as $sub_field) {
@@ -842,8 +908,6 @@ function mettre_a_jour_sous_champ_group(int $post_id, string $group_key_or_name,
         return $result;
       }
       cat_debug('[DEBUG] Impossible de convertir les dates pour comparaison');
-
-
     }
 
     $str_new  = is_array($new_value) ? implode(',', $new_value) : (string) $new_value;
@@ -859,4 +923,3 @@ function mettre_a_jour_sous_champ_group(int $post_id, string $group_key_or_name,
   error_log('[mettre_a_jour_sous_champ_group] verification failed for ' . $subfield_name);
   return false;
 }
-

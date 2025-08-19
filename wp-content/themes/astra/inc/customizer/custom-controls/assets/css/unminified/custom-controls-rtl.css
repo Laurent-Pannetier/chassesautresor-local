@@ -1996,6 +1996,11 @@ textarea {
 	transform: translateY( 0 );
 }
 
+/* Specific fix: align tooltip for Force Reload toggle */
+#customize-control-astra-settings-color-switcher-force-reload.ast-top-dotted-divider .ast-control-tooltip {
+	transform: translateY( -50% );
+}
+
 .customize-control-ast-selector.customize-control .ast-control-tooltip {
 	top: -3px;
 }
@@ -2037,9 +2042,47 @@ textarea {
 	left: 58px;
 }
 
+
+
+#customize-control-ast-dynamic-single-page-article-featured-image-position-layout-1 .ast-tooltip {
+    top: 9px;
+}
+
+#customize-control-ast-dynamic-single-post-article-featured-image-position-layout-1 .ast-tooltip {
+    top: 83px;
+}
+
+#customize-control-ast-dynamic-single-post-article-featured-image-position-layout-1 .dashicons-editor-help[data-title]+.ast-tooltip[data-title]::before, #customize-control-ast-dynamic-single-post-article-featured-image-position-layout-1 .dashicons-editor-help[data-title]+.ast-tooltip[data-title]::before  {
+	left: 4px;
+	transform: rotate(-180deg);
+	top: -66px;
+}
+
+#customize-control-ast-dynamic-single-product-remove-featured-padding .ast-control-tooltip, #customize-control-ast-dynamic-single-page-remove-featured-padding .ast-control-tooltip, #customize-control-ast-dynamic-single-post-remove-featured-padding .ast-control-tooltip {
+    left: 38px;
+}
+
+#customize-control-ast-dynamic-single-product-article-featured-image-position-layout-1 .ast-tooltip {
+    top: 100px;
+}
+
+
+#customize-control-ast-dynamic-single-product-article-featured-image-position-layout-1 .dashicons-editor-help[data-title]+.ast-tooltip[data-title]::before{
+	left: 4px;
+	transform: rotate(-180deg);
+	top: -83px;
+}
+
 #customize-control-astra-settings-single-post-sidebar-layout .ast-control-tooltip,
 #customize-control-astra-settings-single-page-sidebar-layout .ast-control-tooltip {
 	top: 15px;
+}
+
+/* Alignment fix for WooCommerce sidebar layout control */
+#customize-control-astra-settings-woocommerce-sidebar-layout .ast-control-tooltip,
+#customize-control-astra-settings-single-product-sidebar-layout .ast-control-tooltip,
+#customize-control-astra-settings-archive-product-sidebar-layout .ast-control-tooltip {
+        top: 15px;
 }
 
 #customize-control-astra-settings-product-sale-notification .ast-control-tooltip {
@@ -2633,6 +2676,27 @@ li[ID*="accordion-section-ast-sub-section-"].control-section-ast_section {
 .customize-control-ast-description .ast-description.ast-customizer-notice p {
 	padding: 0;
 	margin: 0;
+}
+
+.ast-description-text {
+	cursor: initial;
+	font-size: 11px;
+	line-height: 16px;
+	font-weight: 400;
+	margin-bottom: 5px;
+    margin-top: 0;
+}
+
+.ast-description.ast-customizer-notice{
+    background: var(--ast-customizer-notice-background);
+    border: 1px solid var(--ast-customizer-border-color);
+    padding: 14px;
+    border-radius: 4px;
+}
+
+#customize-control-astra-settings-ast-callback-notice-header-transparent-meta-enabled-with-link a.customizer-link.ast-description-text {
+    margin-right: 30px;
+	cursor: pointer;
 }
 
 .customize-control-ast-divider hr {
@@ -3495,6 +3559,43 @@ li#customize-control-astra-settings-header-preset-style .customizer-text {
 
 .ast-logo-svg-icon-btn-wrapper .ast-logo-svg-icon-btn .components-button:not( .is-primary ):hover {
 	color: var( --ast-customizer-color-5 ) !important;
+}
+
+
+.ast-social-icon-type-selection {
+	display: flex;
+}
+
+.ast-social-icon-type-selection .ast-social-icon-type-btn {
+	border-radius: unset;
+	color: var( --ast-customizer-color-5 );
+	width: 100%;
+	justify-content: center;
+	transition: none;
+	box-shadow: none;
+	border: 1px solid var( --ast-customizer-color-7 );
+	height: 27px;
+}
+
+.ast-social-icon-type-selection .ast-social-icon-type-btn.is-primary {
+	color: var( --ast-customizer-color-10 );
+	border-color: var(--ast-customizer-color-3);
+	background: var(--ast-customizer-color-1);
+}
+.ast-social-icon-type-selection .ast-social-icon-type-btn:focus, .ast-social-icon-type-selection .ast-social-icon-type-btn.is-secondary:focus {
+	box-shadow: none !important;
+}
+.ast-social-icon-type-selection .ast-social-icon-type-btn:not( .is-primary ):hover {
+	background: none;
+    box-shadow: none;
+}
+.ast-social-icon-type-selection .ast-social-icon-type-btn:last-child {
+	border-radius: 3px 0 0 3px;
+}
+
+.ast-social-icon-type-selection .ast-social-icon-type-btn:not( .is-primary ):hover {
+	color: var( --ast-customizer-color-5 ) !important;
+	background: var( --ast-customizer-color-13 );
 }
 
 /* Modal stylings starts */
@@ -5893,6 +5994,11 @@ li#customize-control-astra-settings-header-preset-style .customizer-text {
 	margin-right: 12px;
 }
 
+.customize-control-ast-sortable .sortable .ast-sortable-item > i.remove-sortable-item svg {
+	position: relative;
+	top: 1px;
+}
+
 .customize-control-ast-sortable .sortable .ast-sortable-item > i.icon {
 	float: left;
 	position: relative;
@@ -5943,7 +6049,7 @@ li#customize-control-astra-settings-header-preset-style .customizer-text {
 
 .ast-sortable-item .dashicons-arrow-down-alt2,
 .ast-sortable-item .dashicons-remove {
-	margin-left: -6px;
+	margin: 0;
 }
 
 .ast-sortable-item .dashicons-admin-page,
@@ -6150,6 +6256,15 @@ li#customize-control-astra-settings-header-preset-style .customizer-text {
 
 .ast-sortable-item .customize-control-ast-color .color-button-wrap {
 	top: 8px;
+}
+
+#customize-control-ast-dynamic-single-post-banner-featured-overlay .color-button-wrap {
+	top: 0;
+	left: 5px;
+}
+
+#customize-control-ast-dynamic-single-post-banner-featured-overlay .ast-control-wrap {
+	display: block;
 }
 
 .ast-sortable-item .customize-control-ast-color .astra-color-picker-wrap {
@@ -6431,6 +6546,15 @@ li#customize-control-astra-settings-header-preset-style .customizer-text {
 
 #customize-control-astra-settings-header-logo-color .dashicons-editor-help[data-title]+.ast-tooltip[data-title]::before {
 	left: 58px;
+}
+#customize-control-ast-dynamic-single-post-article-featured-image-position-layout-2 .dashicons-editor-help[data-title]+.ast-tooltip[data-title]::before, #customize-control-ast-dynamic-single-page-article-featured-image-position-layout-1 .dashicons-editor-help[data-title]+.ast-tooltip[data-title]::before {
+	left: 4px;
+	transform: rotate(-180deg);
+	top: 7px;
+}
+
+#customize-control-ast-dynamic-single-post-article-featured-image-position-layout-2 .ast-tooltip[data-title]::after, #customize-control-ast-dynamic-single-page-article-featured-image-position-layout-1 .ast-tooltip[data-title]::after {
+	bottom: calc(-55% + 10px);
 }
 span.select2-container {
 	width: 100% !important;

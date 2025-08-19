@@ -6,7 +6,7 @@
    ================================================== */
 
 .chasse-fiche-container {
-  margin-top: 3.5rem;
+  margin-top: 2rem;
   display: flex;
   gap: 2.6rem;
   align-items: flex-start;
@@ -40,7 +40,8 @@
     text-decoration: underline;
 }
 
-.chasse-details-wrapper .meta-row {
+.chasse-details-wrapper .meta-row,
+.carte-ligne__contenu .meta-row{
     display: flex;
     gap: 1.5rem;
     align-items: center;
@@ -108,4 +109,19 @@ body.edition-active-chasse .chasse-enigmes-header  .liens-placeholder {
   .chasse-details-wrapper h1 {
     font-size: 22px;
 }
+}
+
+
+.infos-dispo {
+  text-align: center;
+  margin-top: 0.25rem;
+}
+.infos-dispo .infos-secondaires {
+  display: inline-block;
+  background-color: #eee;
+  color: #333;
+  padding: 0.25em 0.6em;
+  border-radius: 999px;
+  font-size: 0.8em;
+  font-weight: 500;
 }

@@ -3,7 +3,7 @@ Tags: hostinger, tools, maintenance, security, redirects, https, xml-rpc, llms
 Requires at least: 5.5
 Tested up to: 6.8
 Requires PHP: 8.0
-Stable tag: 3.0.41
+Stable tag: 3.0.47
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -536,3 +536,24 @@ Automatic updates should work smoothly, but we still recommend you back up your 
 
 3.0.41 (2025-06-19)
 - Update translations for ES, MX and CO
+
+3.0.42 (2025-07-03)
+- Menu translations
+
+3.0.43 (2025-07-22)
+- Add Web2MCP feature
+- Fix Settings state on failure
+- Bump dependencies version
+
+3.0.44 (2025-07-23)
+- Update translations
+
+3.0.45 (2025-07-28)
+- Update WP helper package
+
+3.0.46 (2025-08-05)
+- Fixed empty lines in llms.txt
+
+3.0.47 (2025-08-08)
+- Add MCP choice
+- Updated translations

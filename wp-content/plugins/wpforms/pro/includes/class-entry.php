@@ -615,7 +615,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 	 *
 	 * @return array Updated WHERE. An array needed to perform the main get_entries() query.
 	 */
-	protected function second_query_update_where( array $args, array $where ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	protected function second_query_update_where( array $args, array $where ): array {
 
 		$second_where = $this->second_query_where( $args );
 
@@ -695,7 +695,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 	 *
 	 * @return array Updated WHERE array.
 	 */
-	protected function second_query_where( array $args ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	protected function second_query_where( array $args ): array {
 
 		$fields_table = wpforms()->obj( 'entry_fields' )->table_name;
 
@@ -825,7 +825,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 	 *
 	 * @return string
 	 */
-	private function second_query_where_arg_value_advanced_search( $args, $condition_value ): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function second_query_where_arg_value_advanced_search( $args, $condition_value ): string {
 
 		if ( empty( $args['advanced_search'] ) ) {
 			return '';
@@ -929,7 +929,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 	 *
 	 * @return string Comma separated list of entry ids.
 	 */
-	private function second_query_where_entry_notes_result_ids( $args, $form_ids ): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	private function second_query_where_entry_notes_result_ids( $args, $form_ids ): string {
 
 		$meta_table     = wpforms()->obj( 'entry_meta' )->table_name;
 		$escaped_value  = strtolower( esc_sql( $args['value'] ) );
@@ -1164,7 +1164,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 	 * @param object $entry        Entry.
 	 * @param array  $payment_meta Payment meta.
 	 */
-	private function insert_legacy_payment( $entry, $payment_meta ) {  // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	private function insert_legacy_payment( $entry, $payment_meta ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		$required_keys = [ 'payment_total', 'payment_currency', 'payment_type' ];
 
@@ -1439,7 +1439,7 @@ class WPForms_Entry_Handler extends WPForms_DB {
 	 *
 	 * @return array
 	 */
-	private function prepare_where( array $args ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
+	private function prepare_where( array $args ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		$where = [
 			'default' => '1=1',

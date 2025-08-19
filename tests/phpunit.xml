@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<phpunit bootstrap="bootstrap.php">
+  <testsuites>
+    <testsuite name="theme">
+      <directory>./</directory>
+      <directory>../wp-content/themes/chassesautresor/tests</directory>
+    </testsuite>
+  </testsuites>
+</phpunit>

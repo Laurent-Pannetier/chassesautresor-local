@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Themes - Astra package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-06-18 08:45:00+0000\n"
+"PO-Revision-Date: 2025-08-11 05:54:19+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -20,20 +20,19 @@ msgstr "Le thème WordPress Astra est ultra-rapide et hautement personnalisable.
 #. Theme Name of the theme
 #: style.css admin/includes/class-astra-menu.php:162
 #: inc/lib/class-astra-nps-notice.php:108
-#: admin/assets/build/dashboard-app.js:15
 #, gp-priority: high
 msgid "Astra"
 msgstr "Astra"
 
-#: inc/metabox/class-astra-elementor-editor-settings.php:516
+#: inc/lib/class-astra-nps-notice.php:113
+msgid "Thanks for using Astra! Got feedback or suggestions to make it even better? We’d love to hear from you."
+msgstr "Merci d’utiliser Astra ! Vous avez des commentaires ou des suggestions pour l’améliorer ? N’hésitez pas à nous contacter."
+
+#: inc/metabox/class-astra-elementor-editor-settings.php:535
 msgid "Preview Changes"
 msgstr "Aperçu des changements"
 
-#: inc/metabox/class-astra-elementor-editor-settings.php:476
-msgid "Sticky Header Rows"
-msgstr "Lignes d’en-tête collantes"
-
-#: inc/metabox/class-astra-elementor-editor-settings.php:326
+#: inc/metabox/class-astra-elementor-editor-settings.php:345
 msgid "Container style will apply only when layout is set to either Normal or Narrow."
 msgstr "Le style de conteneur ne s’applique que lorsque la mise en page est définie sur Normal ou Proche."
 
@@ -42,13 +41,13 @@ msgstr "Le style de conteneur ne s’applique que lorsque la mise en page est d�
 msgid "Note: A subtle shadow is added in this preview so white logos remain visible."
 msgstr "Note : Une ombre subtile est ajoutée dans cet aperçu afin que les logos blancs restent visibles."
 
-#: admin/includes/class-astra-menu.php:914
-msgid "Boost sales with WooCommerce analytics."
-msgstr "Augmentez vos ventes grâce aux statistiques de WooCommerce."
-
 #: admin/includes/class-astra-menu.php:438
 msgid "Create professional designed pixel perfect websites in minutes. Get access to 300+ pre-made full website templates for your favorite page builder."
 msgstr "Créez des sites web professionnels au pixel près en quelques minutes. Accédez à plus de 300 modèles de sites complets pour votre constructeur de pages préféré."
+
+#: inc/metabox/class-astra-elementor-editor-settings.php:495
+msgid "Sticky Header Rows"
+msgstr "Lignes d’en-tête collantes"
 
 #: admin/includes/class-astra-menu.php:850
 msgid "Say goodbye to slow checkouts – boost sales with a smooth, hassle-free experience."
@@ -58,10 +57,6 @@ msgstr "Dites adieu aux commandes trop lentes - stimulez vos ventes grâce à un
 msgid "Modern Cart: A smarter way to sell"
 msgstr "Panier moderne : Une façon plus intelligente de vendre"
 
-#: inc/lib/bsf-analytics/class-bsf-analytics.php:238
-msgid "Help us improve %1$s and our other products!<br><br>With your permission, we'd like to collect <strong>non-sensitive information</strong> from your website — like your PHP version and which features you use — so we can fix bugs faster, make smarter decisions, and build features that actually matter to you. <em>No personal info. Ever.</em>"
-msgstr "Aidez-nous à améliorer %1$s et nos autres produits !<br><br>Avec votre permission, nous aimerions collecter des <strong>informations non sensibles</strong> de votre site - comme votre version de PHP et les fonctionnalités que vous utilisez - afin que nous puissions corriger les bogues plus rapidement, prendre des décisions plus intelligentes et développer des fonctionnalités qui vous intéressent vraiment. <em>Aucune information personnelle. Jamais.</em>"
-
 #: inc/customizer/class-astra-customizer.php:707
 msgid "This request is only allowed in the Customizer screen."
 msgstr "Cette requête n’est autorisée que dans l’écran de la personnalisation."
@@ -70,13 +65,17 @@ msgstr "Cette requête n’est autorisée que dans l’écran de la personnalisa
 msgid "You are not allowed to access this resource."
 msgstr "Désolé, vous n’avez pas l’autorisation d’accéder à cette ressource."
 
-#: admin/includes/class-astra-menu.php:1021
+#: admin/includes/class-astra-menu.php:1006
 msgid "Extend Elementor with premium widgets."
 msgstr "Étendez Elementor avec des widgets premium."
 
-#: admin/includes/class-astra-menu.php:960
+#: admin/includes/class-astra-menu.php:945
 msgid "Sell products, services, subscriptions & more."
 msgstr "Vendez des produits, des services, des abonnements et plus encore."
+
+#: inc/lib/bsf-analytics/class-bsf-analytics.php:238
+msgid "Help us improve %1$s and our other products!<br><br>With your permission, we'd like to collect <strong>non-sensitive information</strong> from your website — like your PHP version and which features you use — so we can fix bugs faster, make smarter decisions, and build features that actually matter to you. <em>No personal info. Ever.</em>"
+msgstr "Aidez-nous à améliorer %1$s et nos autres produits !<br><br>Avec votre permission, nous aimerions collecter des <strong>informations non sensibles</strong> de votre site - comme votre version de PHP et les fonctionnalités que vous utilisez - afin que nous puissions corriger les bogues plus rapidement, prendre des décisions plus intelligentes et développer des fonctionnalités qui vous intéressent vraiment. <em>Aucune information personnelle. Jamais.</em>"
 
 #: inc/markup-extras.php:875
 msgid "Search button"
@@ -105,14 +104,6 @@ msgstr "Taille personnalisée de l’image"
 #: inc/customizer/configurations/typography/class-astra-archive-typo-configs.php:56
 msgid "Extended Meta Options"
 msgstr "Options méta étendues"
-
-#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:644
-msgid "This page uses the Transparent Header. Click below to customize it."
-msgstr "Cette page utilise l’en-tête transparent. Cliquez ci-dessous pour le personnaliser."
-
-#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:641
-msgid "Logo is set in the Transparent Header Section. Click below to customize it."
-msgstr "Le logo est placé dans la section de l’en-tête transparent. Cliquez ci-dessous pour le personnaliser."
 
 #: inc/customizer/configurations/builder/header/configs/header-builder.php:712
 msgid "Clone, Delete options"
@@ -187,10 +178,6 @@ msgstr "Archive ?"
 msgid "Search?"
 msgstr "Recherche ?"
 
-#: inc/addons/breadcrumbs/customizer/class-astra-breadcrumbs-configs.php:191
-msgid "Blog / Posts Page?"
-msgstr "Page de blog / articles ?"
-
 #: inc/addons/breadcrumbs/customizer/class-astra-breadcrumbs-configs.php:175
 msgid "Home Page?"
 msgstr "Page d’accueil ?"
@@ -198,6 +185,18 @@ msgstr "Page d’accueil ?"
 #: inc/addons/breadcrumbs/customizer/class-astra-breadcrumbs-configs.php:148
 msgid "Enable on"
 msgstr "Activer sur"
+
+#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:632
+msgid "This page uses the Transparent Header. Click below to customize."
+msgstr "Cette page utilise l’en-tête transparent. Cliquez ci-dessous pour le personnaliser."
+
+#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:629
+msgid "Logo is set in the Transparent Header Section. Click below to customize it."
+msgstr "Le logo est placé dans la section de l’en-tête transparent. Cliquez ci-dessous pour le personnaliser."
+
+#: inc/addons/breadcrumbs/customizer/class-astra-breadcrumbs-configs.php:191
+msgid "Blog / Posts Page?"
+msgstr "Page de blog / articles ?"
 
 #: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:298
 msgid "Could you please specify which plugin?"
@@ -232,17 +231,13 @@ msgstr "Si vous avez un moment, veuillez partager pourquoi vous désactivez l’
 msgid "Quick Feedback"
 msgstr "Commentaire rapide"
 
-#: inc/lib/bsf-analytics/classes/class-bsf-analytics-helper.php:28
-msgid "Oops! Something went wrong. Please refresh the page and try again."
-msgstr "Oups ! Une erreur s’est produite. Veuillez rafraîchir la page et réessayer."
-
 #. translators: %s Product title
 #: inc/lib/bsf-analytics/class-bsf-analytics.php:459
 msgid "Allow %s products to track non-sensitive usage tracking data."
 msgstr "Autoriser les produits %s à suivre les données de suivi d’utilisation non sensibles."
 
-#: inc/core/builder/class-astra-builder-helper.php:771
-#: inc/core/builder/class-astra-builder-helper.php:940
+#: inc/core/builder/class-astra-builder-helper.php:777
+#: inc/core/builder/class-astra-builder-helper.php:951
 msgid "Color Switcher"
 msgstr "Sélecteur de couleur"
 
@@ -299,6 +294,10 @@ msgstr "Comment pouvons-nous vous aider ?"
 msgid "This is a temporary deactivation for testing."
 msgstr "Il s’agit d’une désactivation temporaire à des fins de test."
 
+#: inc/lib/bsf-analytics/classes/class-bsf-analytics-helper.php:28
+msgid "Oops! Something went wrong. Please refresh the page and try again."
+msgstr "Oups ! Une erreur s’est produite. Veuillez actualiser la page et réessayer."
+
 #: inc/markup-extras.php:2009
 msgid "Read: %s"
 msgstr "Lire : %s"
@@ -327,10 +326,6 @@ msgstr "Slug de l’extension manquant."
 msgctxt "Blogs: Author Prefix Label"
 msgid "%astra%"
 msgstr "%astra%"
-
-#: inc/customizer/configurations/builder/header/configs/off-canvas.php:97
-msgid "Note: This is not applicable on Transparent and Sticky Headers!"
-msgstr "Note : Ceci n’est pas applicable aux en-têtes transparents et fixes !"
 
 #: inc/customizer/configurations/builder/header/configs/off-canvas.php:79
 msgid "Enable to shift the body content when the off-canvas menu opens."
@@ -364,6 +359,10 @@ msgstr "Arrière-plan secondaire"
 msgid "Primary Background"
 msgstr "Arrière-plan principal"
 
+#: inc/customizer/configurations/builder/header/configs/off-canvas.php:97
+msgid "Note: This is not applicable on Transparent and Sticky Headers!"
+msgstr "Note : Ceci n’est pas applicable aux en-têtes transparents et fixes !"
+
 #: inc/class-astra-global-palette.php:297
 msgid "Alternate Brand"
 msgstr "Marque alternative"
@@ -372,58 +371,60 @@ msgstr "Marque alternative"
 msgid "Copyright [copyright] [current_year] [site_title] | Powered by [theme_author]"
 msgstr "Copyright [copyright] [current_year] [site_title] | Propulsé par [theme_author]"
 
-#: inc/core/builder/class-astra-builder-helper.php:895
-msgid "Divider 1"
-msgstr "Diviseur 1"
-
-#: inc/core/builder/class-astra-builder-helper.php:824
+#: inc/core/builder/class-astra-builder-helper.php:835
 msgid "Button 1"
 msgstr "Bouton 1"
 
-#: inc/core/builder/class-astra-builder-helper.php:819
+#: inc/core/builder/class-astra-builder-helper.php:830
 msgid "Widget 6"
 msgstr "Widget 6"
 
-#: inc/core/builder/class-astra-builder-helper.php:814
+#: inc/core/builder/class-astra-builder-helper.php:825
 msgid "Widget 5"
 msgstr "Widget 5"
 
-#: inc/core/builder/class-astra-builder-helper.php:759
-#: inc/core/builder/class-astra-builder-helper.php:930
+#: inc/core/builder/class-astra-builder-helper.php:765
+#: inc/core/builder/class-astra-builder-helper.php:941
 msgid "Widget 4"
 msgstr "Widget 4"
 
-#: inc/core/builder/class-astra-builder-helper.php:753
-#: inc/core/builder/class-astra-builder-helper.php:925
+#: inc/core/builder/class-astra-builder-helper.php:759
+#: inc/core/builder/class-astra-builder-helper.php:936
 msgid "Widget 3"
 msgstr "Widget 3"
 
-#: inc/core/builder/class-astra-builder-helper.php:747
-#: inc/core/builder/class-astra-builder-helper.php:920
+#: inc/core/builder/class-astra-builder-helper.php:753
+#: inc/core/builder/class-astra-builder-helper.php:931
 msgid "HTML 3"
 msgstr "HTML 3"
 
-#: inc/core/builder/class-astra-builder-helper.php:741
-#: inc/core/builder/class-astra-builder-helper.php:829
-#: inc/core/builder/class-astra-builder-helper.php:915
+#: inc/core/builder/class-astra-builder-helper.php:747
+#: inc/core/builder/class-astra-builder-helper.php:840
+#: inc/core/builder/class-astra-builder-helper.php:926
 msgid "Button 2"
 msgstr "Bouton 2"
 
-#: inc/core/builder/class-astra-builder-helper.php:723
-#: inc/core/builder/class-astra-builder-helper.php:910
+#: inc/core/builder/class-astra-builder-helper.php:729
+#: inc/core/builder/class-astra-builder-helper.php:921
 #: inc/customizer/configurations/builder/header/configs/header-builder.php:706
 msgid "Language Switcher"
 msgstr "Sélecteur de langue"
 
-#: inc/core/builder/class-astra-builder-helper.php:717
-#: inc/core/builder/class-astra-builder-helper.php:809
-#: inc/core/builder/class-astra-builder-helper.php:905
+#: inc/core/builder/class-astra-builder-helper.php:711
+#: inc/core/builder/class-astra-builder-helper.php:810
+#: inc/core/builder/class-astra-builder-helper.php:906
+msgid "Divider 1"
+msgstr "Diviseur 1"
+
+#: inc/core/builder/class-astra-builder-helper.php:723
+#: inc/core/builder/class-astra-builder-helper.php:820
+#: inc/core/builder/class-astra-builder-helper.php:916
 msgid "Divider 3"
 msgstr "Diviseur 3"
 
-#: inc/core/builder/class-astra-builder-helper.php:711
-#: inc/core/builder/class-astra-builder-helper.php:804
-#: inc/core/builder/class-astra-builder-helper.php:900
+#: inc/core/builder/class-astra-builder-helper.php:717
+#: inc/core/builder/class-astra-builder-helper.php:815
+#: inc/core/builder/class-astra-builder-helper.php:911
 msgid "Divider 2"
 msgstr "Diviseur 2"
 
@@ -431,12 +432,12 @@ msgstr "Diviseur 2"
 msgid "Rate the Theme"
 msgstr "Évaluer ce thème"
 
-#: inc/lib/nps-survey/classes/nps-survey-script.php:248
+#: inc/lib/nps-survey/classes/nps-survey-script.php:254
 msgid "Sorry, you are not allowed to do that."
 msgstr "Désolé, vous n’êtes pas autorisé à faire cela."
 
-#: inc/lib/nps-survey/classes/nps-survey-script.php:270
-#: inc/lib/nps-survey/classes/nps-survey-script.php:376
+#: inc/lib/nps-survey/classes/nps-survey-script.php:276
+#: inc/lib/nps-survey/classes/nps-survey-script.php:382
 msgid "Nonce verification failed."
 msgstr "Erreur de vérification du nonce."
 
@@ -447,10 +448,6 @@ msgstr "Votre avis nous intéresse. Comment pouvons-nous améliorer votre expér
 #: inc/lib/class-astra-nps-notice.php:118
 msgid "Thank you for your feedback"
 msgstr "Merci pour votre retour"
-
-#: inc/lib/class-astra-nps-notice.php:113
-msgid "Could you please do us a favor and give us a 5-star rating on WordPress? It would help others choose Astra with confidence. Thank you!"
-msgstr "Pourriez-vous, s’il vous plait, nous rendre service et nous donner une note de 5 étoiles sur WordPress ? Cela aiderait les autres à choisir Astra en toute confiance. Merci !"
 
 #: inc/lib/class-astra-nps-notice.php:112
 msgid "Thanks a lot for your feedback! 😍"
@@ -511,132 +508,132 @@ msgctxt "Search Page Title: Heading - Text"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1422
+#: inc/core/builder/class-astra-builder-helper.php:1433
 msgctxt "Button text for last item in Primary Menu"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1418
+#: inc/core/builder/class-astra-builder-helper.php:1429
 msgctxt "Builder: Footer HTML 10"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1417
+#: inc/core/builder/class-astra-builder-helper.php:1428
 msgctxt "Builder: Footer HTML 9"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1416
+#: inc/core/builder/class-astra-builder-helper.php:1427
 msgctxt "Builder: Footer HTML 8"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1415
+#: inc/core/builder/class-astra-builder-helper.php:1426
 msgctxt "Builder: Footer HTML 7"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1414
+#: inc/core/builder/class-astra-builder-helper.php:1425
 msgctxt "Builder: Footer HTML 6"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1413
+#: inc/core/builder/class-astra-builder-helper.php:1424
 msgctxt "Builder: Footer HTML 5"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1412
+#: inc/core/builder/class-astra-builder-helper.php:1423
 msgctxt "Builder: Footer HTML 4"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1411
+#: inc/core/builder/class-astra-builder-helper.php:1422
 msgctxt "Builder: Footer HTML 3"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1410
+#: inc/core/builder/class-astra-builder-helper.php:1421
 msgctxt "Builder: Footer HTML 2"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1409
+#: inc/core/builder/class-astra-builder-helper.php:1420
 msgctxt "Builder: Footer HTML 1"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1391
+#: inc/core/builder/class-astra-builder-helper.php:1402
 msgctxt "Builder: Footer Button 5 Text"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1390
+#: inc/core/builder/class-astra-builder-helper.php:1401
 msgctxt "Builder: Footer Button 4 Text"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1389
+#: inc/core/builder/class-astra-builder-helper.php:1400
 msgctxt "Builder: Footer Button 3 Text"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1388
+#: inc/core/builder/class-astra-builder-helper.php:1399
 msgctxt "Builder: Footer Button 2 Text"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1387
+#: inc/core/builder/class-astra-builder-helper.php:1398
 msgctxt "Builder: Footer Button 1 Text"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1385
+#: inc/core/builder/class-astra-builder-helper.php:1396
 msgctxt "Builder: Header Button 10 Text"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1384
+#: inc/core/builder/class-astra-builder-helper.php:1395
 msgctxt "Builder: Header Button 9 Text"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1383
+#: inc/core/builder/class-astra-builder-helper.php:1394
 msgctxt "Builder: Header Button 8 Text"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1382
+#: inc/core/builder/class-astra-builder-helper.php:1393
 msgctxt "Builder: Header Button 7 Text"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1381
+#: inc/core/builder/class-astra-builder-helper.php:1392
 msgctxt "Builder: Header Button 6 Text"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1380
+#: inc/core/builder/class-astra-builder-helper.php:1391
 msgctxt "Builder: Header Button 5 Text"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1379
+#: inc/core/builder/class-astra-builder-helper.php:1390
 msgctxt "Builder: Header Button 4 Text"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1378
+#: inc/core/builder/class-astra-builder-helper.php:1389
 msgctxt "Builder: Header Button 3 Text"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1377
+#: inc/core/builder/class-astra-builder-helper.php:1388
 msgctxt "Builder: Header Button 2 Text"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1376
+#: inc/core/builder/class-astra-builder-helper.php:1387
 msgctxt "Builder: Header Button 1 Text"
 msgid "%astra%"
 msgstr "%astra%"
@@ -651,22 +648,22 @@ msgctxt "Search Page Title: Subheading - When Results Found"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1407
+#: inc/core/builder/class-astra-builder-helper.php:1418
 msgctxt "Builder: Header HTML 10"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1406
+#: inc/core/builder/class-astra-builder-helper.php:1417
 msgctxt "Builder: Header HTML 9"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1405
+#: inc/core/builder/class-astra-builder-helper.php:1416
 msgctxt "Builder: Header HTML 8"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1404
+#: inc/core/builder/class-astra-builder-helper.php:1415
 msgctxt "Builder: Header HTML 7"
 msgid "%astra%"
 msgstr "%astra%"
@@ -685,64 +682,60 @@ msgid_plural "<span class=\"count\">%1$s</span>"
 msgstr[0] "<span class=\"count\">%1$s</span>"
 msgstr[1] "<span class=\"count\">%1$s</span>"
 
-#: inc/core/builder/class-astra-builder-helper.php:1396
+#: inc/core/builder/class-astra-builder-helper.php:1407
 msgctxt "Builder: Footer Button 10 Text"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1392
+#: inc/core/builder/class-astra-builder-helper.php:1403
 msgctxt "Builder: Footer Button 6 Text"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1393
+#: inc/core/builder/class-astra-builder-helper.php:1404
 msgctxt "Builder: Footer Button 7 Text"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1394
+#: inc/core/builder/class-astra-builder-helper.php:1405
 msgctxt "Builder: Footer Button 8 Text"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1395
+#: inc/core/builder/class-astra-builder-helper.php:1406
 msgctxt "Builder: Footer Button 9 Text"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1398
+#: inc/core/builder/class-astra-builder-helper.php:1409
 msgctxt "Builder: Header HTML 1"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1399
+#: inc/core/builder/class-astra-builder-helper.php:1410
 msgctxt "Builder: Header HTML 2"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1400
+#: inc/core/builder/class-astra-builder-helper.php:1411
 msgctxt "Builder: Header HTML 3"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1401
+#: inc/core/builder/class-astra-builder-helper.php:1412
 msgctxt "Builder: Header HTML 4"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1402
+#: inc/core/builder/class-astra-builder-helper.php:1413
 msgctxt "Builder: Header HTML 5"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/core/builder/class-astra-builder-helper.php:1403
+#: inc/core/builder/class-astra-builder-helper.php:1414
 msgctxt "Builder: Header HTML 6"
 msgid "%astra%"
 msgstr "%astra%"
-
-#: inc/compatibility/woocommerce/customizer/sections/layout/class-astra-woo-shop-layout-configs.php:356
-msgid "Count + Text"
-msgstr "Compte + Texte"
 
 #: inc/compatibility/edd/edd-common-functions.php:323
 msgctxt "EDD Product Archive: Cart Button Text"
@@ -759,12 +752,12 @@ msgctxt "Footer Builder: Copyright Editor Text"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/builder/controllers/class-astra-builder-ui-controller.php:381
+#: inc/builder/controllers/class-astra-builder-ui-controller.php:389
 msgctxt "Header Builder: Account Widget - Logged In View Text"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/builder/controllers/class-astra-builder-ui-controller.php:460
+#: inc/builder/controllers/class-astra-builder-ui-controller.php:469
 msgctxt "Header Builder: Account Widget - Logged Out View Text"
 msgid "%astra%"
 msgstr "%astra%"
@@ -774,21 +767,17 @@ msgctxt "Header Builder: Cart Widget - Cart Label"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/builder/controllers/class-astra-builder-ui-controller.php:219
+#: inc/builder/controllers/class-astra-builder-ui-controller.php:227
 msgctxt "Primary Menu: Menu Label (Mobile Menu)"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/compatibility/woocommerce/customizer/sections/layout/class-astra-woo-shop-layout-configs.php:353
-msgid "Review Count"
-msgstr "Compte d’avis"
-
-#: inc/compatibility/woocommerce/class-astra-woocommerce.php:3546
+#: inc/compatibility/woocommerce/class-astra-woocommerce.php:3547
 msgctxt "WooCommerce Cart: Cart Button Text"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/compatibility/woocommerce/class-astra-woocommerce.php:3651
+#: inc/compatibility/woocommerce/class-astra-woocommerce.php:3652
 msgctxt "WooCommerce Single Product: Payments - Payment Title."
 msgid "%astra%"
 msgstr "%astra%"
@@ -798,6 +787,14 @@ msgctxt "WooCommerce Single Product: Shipping Text"
 msgid "%astra%"
 msgstr "%astra%"
 
+#: inc/compatibility/woocommerce/customizer/sections/layout/class-astra-woo-shop-layout-configs.php:356
+msgid "Count + Text"
+msgstr "Compte + Texte"
+
+#: inc/compatibility/woocommerce/customizer/sections/layout/class-astra-woo-shop-layout-configs.php:353
+msgid "Review Count"
+msgstr "Compte d’avis"
+
 #: admin/includes/class-astra-menu.php:356
 msgid "Configuring"
 msgstr "Configuration"
@@ -806,61 +803,61 @@ msgstr "Configuration"
 msgid "Connect your WordPress plugins, WooCommerce sites, apps, and websites for powerful automations."
 msgstr "Connectez vos extensions WordPress, sites WooCommerce, applications et sites pour des automatisations puissantes."
 
-#: inc/customizer/class-astra-customizer.php:1769
+#: inc/customizer/class-astra-customizer.php:1777
 msgid "List Item 3"
 msgstr "Élément de liste 3"
 
-#: inc/customizer/class-astra-customizer.php:1768
+#: inc/customizer/class-astra-customizer.php:1776
 msgid "List Item 2"
 msgstr "Élément de liste 2"
 
-#: inc/customizer/class-astra-customizer.php:1767
+#: inc/customizer/class-astra-customizer.php:1775
 msgid "List Item 1"
 msgstr "Élément de liste 1"
 
-#: inc/customizer/class-astra-customizer.php:1765
+#: inc/customizer/class-astra-customizer.php:1773
 msgid "Unordered List"
 msgstr "Liste non-ordonnée"
 
-#: inc/customizer/class-astra-customizer.php:1759
+#: inc/customizer/class-astra-customizer.php:1767
 msgid "The future will belongs to those who believe in the beauty of their dreams."
 msgstr "L’avenir appartient à ceux qui croient en la beauté de leurs rêves."
 
-#: inc/customizer/class-astra-customizer.php:1757
+#: inc/customizer/class-astra-customizer.php:1765
 msgid "Quote"
 msgstr "Citation"
 
-#: inc/customizer/class-astra-customizer.php:1755
+#: inc/customizer/class-astra-customizer.php:1763
 msgid "Explore different font families, sizes, weights, and styles to find the perfect combination that encapsulates the essence of your brand. With each adjustment, see how your message transforms, becoming a powerful reflection of your identity and vision."
 msgstr "Explorez différentes familles de polices, tailles, graisses et styles pour trouver la combinaison parfaite qui incarne l’essence de votre marque. À chaque ajustement, vous verrez comment votre message se transforme, devenant un reflet puissant de votre identité et de votre vision."
 
-#: inc/customizer/class-astra-customizer.php:1712
+#: inc/customizer/class-astra-customizer.php:1720
 msgid "Here's how the body text will look like on your website. You can customize the typography to match your brand personality. Whether you aim for a modern and sleek appearance or a more traditional and elegant feel, the right typography sets the tone for your content."
 msgstr "Voici à quoi ressemblera le corps du texte sur votre site. Vous pouvez personnaliser la typographie pour qu’elle corresponde à l’image de votre marque. Que vous recherchiez un aspect moderne et épuré ou un aspect plus traditionnel et élégant, la bonne typographie donne le ton à votre contenu."
 
-#: inc/customizer/class-astra-customizer.php:1637
+#: inc/customizer/class-astra-customizer.php:1645
 msgid "Extra"
 msgstr "Extra"
 
-#: inc/customizer/class-astra-customizer.php:1625
-#: inc/customizer/class-astra-customizer.php:1678
+#: inc/customizer/class-astra-customizer.php:1633
+#: inc/customizer/class-astra-customizer.php:1686
 msgid "Secondary"
 msgstr "Secondaire"
 
 #: inc/class-astra-global-palette.php:296
-#: inc/customizer/class-astra-customizer.php:1605
+#: inc/customizer/class-astra-customizer.php:1613
 msgid "Brand"
 msgstr "Marque"
 
-#: inc/customizer/class-astra-customizer.php:1633
+#: inc/customizer/class-astra-customizer.php:1641
 msgid "Subtle BG"
 msgstr "Arrière-plan subtil"
 
-#: inc/customizer/class-astra-customizer.php:1609
+#: inc/customizer/class-astra-customizer.php:1617
 msgid "Alt Brand"
 msgstr "Marque alternative"
 
-#: inc/customizer/class-astra-customizer.php:1488
+#: inc/customizer/class-astra-customizer.php:1496
 msgid "Style Guide"
 msgstr "Guide de style"
 
@@ -919,24 +916,20 @@ msgstr "Action de clic du panier responsive"
 msgid "Vimeo"
 msgstr "Vimeo"
 
-#: inc/customizer/configurations/builder/header/configs/above-header.php:76
-#: inc/customizer/configurations/builder/header/configs/below-header.php:76
-#: inc/customizer/configurations/builder/header/configs/primary-header.php:93
-msgid "It would not be effective if transparent header is enabled."
-msgstr "Ceci ne fonctionnera pas si vous avez activé l'arrière plan d'en-tête transparent"
-
 #: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:1542
 msgid "Disable on Front Page?"
 msgstr "Désactiver sur la page d’accueil"
 
-#: inc/customizer/class-astra-customizer.php:1647
+#: inc/customizer/configurations/builder/header/configs/above-header.php:76
+#: inc/customizer/configurations/builder/header/configs/below-header.php:76
+#: inc/customizer/configurations/builder/header/configs/primary-header.php:93
+msgid "It would not be effective if transparent header is enabled."
+msgstr "Ceci ne fonctionnera pas si vous avez activé l’arrière plan d’en-tête transparent."
+
+#: inc/customizer/class-astra-customizer.php:1655
 #: inc/customizer/extend-custom-controls/build/index.js:1
 msgid "Close"
 msgstr "Fermer"
-
-#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:421
-msgid "Logo SVG Icon Color"
-msgstr "Couleur de l'icône de logo SVG"
 
 #: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:278
 msgid "Logo SVG Gap"
@@ -945,10 +938,6 @@ msgstr "Ecart du logo SVG"
 #: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:242
 msgid "Logo SVG Icon"
 msgstr "Icône de logo SVG"
-
-#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:240
-msgid "When using Custom SVG code, do not include few attributes such as \"width\", \"height\", and \"fill\" in your custom svg code to utilize existing customizer controls."
-msgstr "Lorsque vous insérez votre code SVG personnalisé, n'incluez pas des attributs tels que \"width\", \"height\" et \"fill\" dans celui-ci afin de pouvoir utiliser les contrôles de personnalisation existants."
 
 #: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:211
 msgid "Use Logo SVG Icon"
@@ -961,10 +950,6 @@ msgstr "Inscription"
 #: inc/customizer/configurations/builder/header/configs/header-builder.php:427
 msgid "Log in"
 msgstr "Connexion"
-
-#: inc/customizer/configurations/builder/header/configs/header-builder.php:286
-msgid "Header Presets"
-msgstr "Présélections d’en-tête"
 
 #: assets/svg/logo-svg-icons/icons-v6-3.php:6426
 msgid "Travel"
@@ -1749,6 +1734,18 @@ msgstr "Bataillon de meute de loups"
 #: assets/svg/logo-svg-icons/icons-v6-3.php:5955
 msgid "Won Sign"
 msgstr "Signe gagné"
+
+#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:421
+msgid "Logo SVG Icon Color"
+msgstr "Couleur de l’icône de logo SVG"
+
+#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:240
+msgid "When using Custom SVG code, do not include few attributes such as \"width\", \"height\", and \"fill\" in your custom svg code to utilize existing customizer controls."
+msgstr "Lorsque vous insérez votre code SVG personnalisé, n’incluez pas des attributs tels que « width », « height » et « fill » dans celui-ci afin de pouvoir utiliser les contrôles de personnalisation existants."
+
+#: inc/customizer/configurations/builder/header/configs/header-builder.php:286
+msgid "Header Presets"
+msgstr "Présélections d’en-tête"
 
 #: assets/svg/logo-svg-icons/icons-v6-2.php:4611
 msgid "Alternate Pied Piper Logo (Old)"
@@ -5110,7 +5107,7 @@ msgstr "42.groupe"
 msgid "500px"
 msgstr "500 px"
 
-#: admin/includes/class-astra-menu.php:997
+#: admin/includes/class-astra-menu.php:982
 msgid "A versatile form builder plugin."
 msgstr "Une extension de construction de formulaires polyvalente."
 
@@ -8039,10 +8036,6 @@ msgstr "Carte bancaire JCB"
 msgid "MasterCard Credit Card"
 msgstr "Carte bancaire MasterCard"
 
-#: assets/svg/logo-svg-icons/icons-v6-0.php:4097
-msgid "Paypal Credit Card"
-msgstr "Carte bancaire Paypal"
-
 #: assets/svg/logo-svg-icons/icons-v6-0.php:4113
 msgid "Stripe Credit Card"
 msgstr "Carte bancaire Stripe"
@@ -8058,6 +8051,10 @@ msgstr "Gemme"
 #: assets/svg/logo-svg-icons/icons-v6-0.php:3143
 msgid "Building Circle Arrow Right"
 msgstr "Flèche de droite de cercle de construction"
+
+#: assets/svg/logo-svg-icons/icons-v6-0.php:4097
+msgid "Paypal Credit Card"
+msgstr "Carte bancaire Paypal"
 
 #: inc/customizer/configurations/builder/header/configs/account.php:167
 msgid "Choose if you want to display Icon or Avatar with the Text selected Profile Type."
@@ -8178,7 +8175,7 @@ msgid "Previous"
 msgstr "Précédent"
 
 #: assets/svg/logo-svg-icons/icons-v6-1.php:5530
-#: inc/customizer/class-astra-customizer.php:1613
+#: inc/customizer/class-astra-customizer.php:1621
 #: inc/modules/posts-structures/customizer/class-astra-posts-special-archive-structures-configs.php:64
 msgid "Heading"
 msgstr "Titre"
@@ -8410,16 +8407,17 @@ msgid " Certain Checkout page options may not work smoothly on the block editor 
 msgstr " Certaines options de la page de commande peuvent ne pas fonctionner correctement sur la page de commande basée sur l’éditeur de blocs. Pour obtenir les meilleurs résultats avec ces fonctionnalités, préférez l’utilisation d’une page de commande basée sur un code court."
 
 #: inc/compatibility/woocommerce/customizer/sections/layout/class-astra-woo-shop-cart-layout-configs.php:90
-msgid " Certain Cart page options may not work smoothly on the block editor based Cart page. For best results with these features, prefer using a shortcode based Cart page."
-msgstr " Certaines options de la page de panier peuvent ne pas fonctionner correctement sur la page de panier basée sur l’éditeur de blocs. Pour obtenir les meilleurs résultats avec ces fonctionnalités, préférez l’utilisation d’une page de panier basée sur un code court."
-
-#: inc/compatibility/woocommerce/customizer/sections/layout/class-astra-woo-shop-cart-layout-configs.php:90
 #: inc/compatibility/woocommerce/customizer/sections/layout/class-astra-woo-shop-cart-layout-configs.php:100
 msgid "Note:"
 msgstr "Note :"
 
+#: inc/compatibility/woocommerce/customizer/sections/layout/class-astra-woo-shop-cart-layout-configs.php:90
+msgid " Certain Cart page options may not work smoothly on the block editor based Cart page. For best results with these features, prefer using a shortcode based Cart page."
+msgstr " Certaines options de la page de panier peuvent ne pas fonctionner correctement sur la page de panier basée sur l’éditeur de blocs. Pour obtenir les meilleurs résultats avec ces fonctionnalités, préférez l’utilisation d’une page de panier basée sur un code court."
+
 #: inc/addons/transparent-header/classes/sections/class-astra-customizer-transparent-header-configs.php:98
-#: admin/assets/theme-builder/build/index.js:1
+#: admin/assets/theme-builder/build/index.js:61093
+#: admin/assets/theme-builder/build/index.js:61223
 msgid "404 Page"
 msgstr "Page 404"
 
@@ -8435,15 +8433,15 @@ msgstr "Grand"
 msgid "Full Size"
 msgstr "Taille réelle"
 
-#: inc/metabox/class-astra-meta-boxes.php:614
+#: inc/metabox/class-astra-meta-boxes.php:630
 msgid "Page Background"
 msgstr "Arrière-plan de la page"
 
-#: inc/metabox/class-astra-meta-boxes.php:744
+#: inc/metabox/class-astra-meta-boxes.php:760
 msgid "Surface Colors"
 msgstr "Couleurs de surface"
 
-#: inc/metabox/class-astra-meta-boxes.php:746
+#: inc/metabox/class-astra-meta-boxes.php:762
 msgid "Enabling this option will override global > colors > surface color options"
 msgstr "L’activation de cette option surchargera les options dans Global > Couleurs > Couleurs de surface"
 
@@ -8549,7 +8547,7 @@ msgstr "Aucun résultat"
 msgid "Search..."
 msgstr "Recherche…"
 
-#: inc/core/common-functions.php:1408
+#: inc/core/common-functions.php:1417
 msgctxt "placeholder"
 msgid "Search..."
 msgstr "Rechercher…"
@@ -8558,7 +8556,7 @@ msgstr "Rechercher…"
 msgid "Customizing ▸ %s"
 msgstr "Personnalisation ▸ %s"
 
-#: inc/customizer/class-astra-customizer.php:1819
+#: inc/customizer/class-astra-customizer.php:1827
 msgid "Other System Fonts"
 msgstr "Autres polices système"
 
@@ -8612,7 +8610,7 @@ msgstr "Activer la couleur de marque au survol"
 #: admin/includes/class-astra-theme-builder-free.php:151
 #: admin/includes/class-astra-theme-builder-free.php:152
 #: admin/assets/build/dashboard-app.js:15
-#: admin/assets/theme-builder/build/index.js:1
+#: admin/assets/theme-builder/build/index.js:60268
 msgid "Site Builder"
 msgstr "Constructeur de site"
 
@@ -8630,6 +8628,20 @@ msgstr "Couleur du logo"
 msgid "Use it with transparent images for optimal results."
 msgstr "Utilisez-le avec des images transparentes pour un résultat optimal."
 
+#: inc/compatibility/edd/customizer/sections/class-astra-edd-container-configs.php:72
+#: inc/compatibility/learndash/customizer/sections/class-astra-learndash-container-configs.php:71
+#: inc/compatibility/lifterlms/customizer/sections/class-astra-lifter-container-configs.php:79
+#: inc/compatibility/woocommerce/customizer/sections/class-astra-woo-shop-container-configs.php:71
+#: inc/customizer/configurations/layout/class-astra-site-container-layout-configs.php:79
+#: inc/metabox/class-astra-elementor-editor-settings.php:341
+#: inc/metabox/class-astra-meta-boxes.php:305
+#: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:128
+#: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:108
+#: inc/modules/posts-structures/customizer/class-astra-posts-special-archive-structures-configs.php:672
+#: inc/metabox/extend-metabox/build/index.js:1
+msgid "Container Style"
+msgstr "Style de conteneur"
+
 #: inc/compatibility/lifterlms/customizer/sections/class-astra-lifter-sidebar-configs.php:48
 msgid "Global Sidebar Style"
 msgstr "Style global de colonne latérale"
@@ -8640,28 +8652,14 @@ msgstr "Style de colonne latérale pour les cours/leçons"
 
 #: inc/customizer/configurations/comments/class-astra-comments-configs.php:92
 #: inc/customizer/configurations/layout/class-astra-site-container-layout-configs.php:57
-#: inc/metabox/class-astra-meta-boxes.php:291
-#: inc/metabox/class-astra-meta-boxes.php:807
+#: inc/metabox/class-astra-meta-boxes.php:293
+#: inc/metabox/class-astra-meta-boxes.php:823
 #: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:45
 #: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:45
 #: inc/modules/posts-structures/customizer/class-astra-posts-special-archive-structures-configs.php:654
 #: inc/modules/related-posts/customizer/class-astra-related-posts-configs.php:766
 msgid "Narrow"
 msgstr "Étroit"
-
-#: inc/compatibility/edd/customizer/sections/class-astra-edd-container-configs.php:72
-#: inc/compatibility/learndash/customizer/sections/class-astra-learndash-container-configs.php:71
-#: inc/compatibility/lifterlms/customizer/sections/class-astra-lifter-container-configs.php:79
-#: inc/compatibility/woocommerce/customizer/sections/class-astra-woo-shop-container-configs.php:71
-#: inc/customizer/configurations/layout/class-astra-site-container-layout-configs.php:79
-#: inc/metabox/class-astra-elementor-editor-settings.php:322
-#: inc/metabox/class-astra-meta-boxes.php:303
-#: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:128
-#: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:108
-#: inc/modules/posts-structures/customizer/class-astra-posts-special-archive-structures-configs.php:672
-#: inc/metabox/extend-metabox/build/index.js:1
-msgid "Container Style"
-msgstr "Style de conteneur"
 
 #: inc/compatibility/edd/customizer/sections/class-astra-edd-container-configs.php:70
 #: inc/compatibility/learndash/customizer/sections/class-astra-learndash-container-configs.php:72
@@ -8681,7 +8679,7 @@ msgstr "Le style de conteneur ne s’appliquera que lorsque la mise en page est 
 #: inc/compatibility/lifterlms/customizer/sections/class-astra-lifter-sidebar-configs.php:139
 #: inc/compatibility/woocommerce/customizer/sections/class-astra-woo-shop-sidebar-configs.php:62
 #: inc/customizer/configurations/layout/class-astra-sidebar-layout-configs.php:43
-#: inc/metabox/class-astra-elementor-editor-settings.php:360
+#: inc/metabox/class-astra-elementor-editor-settings.php:379
 #: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:152
 #: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:130
 #: inc/modules/posts-structures/customizer/class-astra-posts-special-archive-structures-configs.php:691
@@ -8694,8 +8692,8 @@ msgstr "La colonne latérale ne s’appliquera que lorsque le conteneur sera dé
 #: inc/compatibility/lifterlms/customizer/sections/class-astra-lifter-sidebar-configs.php:31
 #: inc/compatibility/woocommerce/customizer/sections/class-astra-woo-shop-sidebar-configs.php:76
 #: inc/customizer/configurations/layout/class-astra-sidebar-layout-configs.php:71
-#: inc/metabox/class-astra-elementor-editor-settings.php:369
-#: inc/metabox/class-astra-meta-boxes.php:334
+#: inc/metabox/class-astra-elementor-editor-settings.php:388
+#: inc/metabox/class-astra-meta-boxes.php:336
 #: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:184
 #: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:164
 #: inc/modules/posts-structures/customizer/class-astra-posts-special-archive-structures-configs.php:722
@@ -8714,10 +8712,10 @@ msgstr "Style de colonne latérale"
 #: inc/compatibility/woocommerce/customizer/sections/class-astra-woo-shop-sidebar-configs.php:79
 #: inc/customizer/configurations/layout/class-astra-sidebar-layout-configs.php:73
 #: inc/customizer/configurations/layout/class-astra-site-container-layout-configs.php:81
-#: inc/metabox/class-astra-meta-boxes.php:307
-#: inc/metabox/class-astra-meta-boxes.php:338
-#: inc/metabox/class-astra-meta-boxes.php:819
-#: inc/metabox/class-astra-meta-boxes.php:831
+#: inc/metabox/class-astra-meta-boxes.php:309
+#: inc/metabox/class-astra-meta-boxes.php:340
+#: inc/metabox/class-astra-meta-boxes.php:835
+#: inc/metabox/class-astra-meta-boxes.php:847
 #: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:131
 #: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:187
 #: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:112
@@ -8727,17 +8725,17 @@ msgstr "Style de colonne latérale"
 msgid "Unboxed"
 msgstr "Ouvert"
 
-#: admin/includes/class-astra-menu.php:1102
+#: admin/includes/class-astra-menu.php:1087
 msgid "Thank you for using"
 msgstr "Merci d’utiliser"
 
 #. translators: 1: Astra, 2: Theme rating link
-#: admin/includes/class-astra-menu.php:1106
+#: admin/includes/class-astra-menu.php:1091
 msgid "Enjoyed %1$s? Please leave us a %2$s rating. We really appreciate your support!"
 msgstr "Vous aimez %1$s ? Veuillez nous laisser une note %2$s. Nous apprécions vraiment votre soutien !"
 
-#: inc/metabox/class-astra-meta-boxes.php:436
-#: inc/metabox/class-astra-meta-boxes.php:903
+#: inc/metabox/class-astra-meta-boxes.php:438
+#: inc/metabox/class-astra-meta-boxes.php:919
 msgid "Disable Banner Area"
 msgstr "Désactiver la zone de bannière"
 
@@ -8777,10 +8775,6 @@ msgstr "Redirection vers la page Commande"
 #: inc/compatibility/woocommerce/customizer/sections/layout/class-astra-woo-shop-layout-configs.php:324
 msgid "Add To Cart Action"
 msgstr "Action d’ajout au panier"
-
-#: inc/compatibility/woocommerce/customizer/sections/layout/class-astra-woo-shop-layout-configs.php:375
-msgid "Please publish the changes and see result on the frontend.<br />[Slide in cart requires Cart added inside Header Builder]"
-msgstr "Veuillez publier les modifications et consulter les résultats sur l’interface publique.<br />[Le panier glissant nécessite d’ajouter le panier dans le constructeur d’en-tête]"
 
 #: inc/customizer/class-astra-customizer-register-sections-panels.php:265
 msgid "Accessibility"
@@ -8833,6 +8827,10 @@ msgstr "Options de partage social"
 msgid "Paypal"
 msgstr "PayPal"
 
+#: inc/compatibility/woocommerce/customizer/sections/layout/class-astra-woo-shop-layout-configs.php:375
+msgid "Please publish the changes and see result on the frontend.<br />[Slide in cart requires Cart added inside Header Builder]"
+msgstr "Veuillez publier les modifications et consulter les résultats sur l’interface publique.<br />[Le panier glissant nécessite d’ajouter le panier dans le constructeur d’en-tête]"
+
 #: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:340
 msgid "Read Time"
 msgstr "Temps de lecture"
@@ -8852,6 +8850,25 @@ msgstr "Échec de la purge, veuillez réessayer ultérieurement."
 #: inc/customizer/class-astra-customizer.php:277
 msgid "Local font files not present."
 msgstr "Fichiers locaux de polices non présents."
+
+#: inc/customizer/configurations/builder/base/class-astra-button-component-configs.php:435
+#: inc/customizer/configurations/builder/header/configs/menu.php:607
+#: inc/customizer/configurations/builder/header/configs/mobile-menu.php:396
+#: inc/customizer/configurations/typography/class-astra-body-typo-configs.php:175
+#: inc/customizer/configurations/typography/class-astra-body-typo-configs.php:278
+#: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:802
+#: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:887
+#: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:1268
+#: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:1353
+#: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:1458
+#: inc/modules/posts-structures/customizer/class-astra-posts-special-archive-structures-configs.php:521
+#: inc/modules/posts-structures/customizer/class-astra-posts-special-archive-structures-configs.php:589
+#: inc/modules/related-posts/customizer/class-astra-related-posts-configs.php:1140
+#: inc/modules/related-posts/customizer/class-astra-related-posts-configs.php:1225
+#: inc/modules/related-posts/customizer/class-astra-related-posts-configs.php:1310
+#: inc/modules/related-posts/customizer/class-astra-related-posts-configs.php:1397
+msgid "Font Extras"
+msgstr "Options supp. de polices"
 
 #: inc/customizer/configurations/builder/header/configs/account.php:525
 msgid "Text Options"
@@ -8877,25 +8894,6 @@ msgstr "Description de l’archive"
 #: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:476
 msgid "Note: This description appear on %1$s archive for banner Layout 2."
 msgstr "Note : cette description apparaît sur les archives d’/de %1$s pour la mise en page 2 de la bannière."
-
-#: inc/customizer/configurations/builder/base/class-astra-button-component-configs.php:435
-#: inc/customizer/configurations/builder/header/configs/menu.php:607
-#: inc/customizer/configurations/builder/header/configs/mobile-menu.php:396
-#: inc/customizer/configurations/typography/class-astra-body-typo-configs.php:175
-#: inc/customizer/configurations/typography/class-astra-body-typo-configs.php:278
-#: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:802
-#: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:887
-#: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:1268
-#: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:1353
-#: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:1458
-#: inc/modules/posts-structures/customizer/class-astra-posts-special-archive-structures-configs.php:521
-#: inc/modules/posts-structures/customizer/class-astra-posts-special-archive-structures-configs.php:589
-#: inc/modules/related-posts/customizer/class-astra-related-posts-configs.php:1140
-#: inc/modules/related-posts/customizer/class-astra-related-posts-configs.php:1225
-#: inc/modules/related-posts/customizer/class-astra-related-posts-configs.php:1310
-#: inc/modules/related-posts/customizer/class-astra-related-posts-configs.php:1397
-msgid "Font Extras"
-msgstr "Options supp. de polices"
 
 #: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:489
 #: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:969
@@ -8943,22 +8941,20 @@ msgid "Custom Post Types"
 msgstr "Types de publication personnalisée"
 
 #: inc/modules/posts-structures/customizer/class-astra-posts-structures-configs.php:113
-#: admin/assets/theme-builder/build/index.js:1
+#: admin/assets/theme-builder/build/index.js:61030
+#: admin/assets/theme-builder/build/index.js:61216
 msgid "Archive"
 msgstr "Archives"
 
 #: inc/modules/posts-structures/customizer/class-astra-posts-structures-configs.php:122
-#: admin/assets/theme-builder/build/index.js:1
+#: admin/assets/theme-builder/build/index.js:60977
+#: admin/assets/theme-builder/build/index.js:61209
 msgid "Single"
 msgstr "Publication"
 
 #: template-parts/scroll-to-top.php:24 admin/assets/build/dashboard-app.js:10
 msgid "Scroll to Top"
 msgstr "Retour en haut"
-
-#: admin/includes/class-astra-menu.php:378
-msgid "Header Settings"
-msgstr "Réglages d’en-tête"
 
 #: admin/includes/class-astra-menu.php:398
 msgid "Blog Options"
@@ -9045,7 +9041,7 @@ msgid "Sorry, you cannot list resources."
 msgstr "Désolé, vous ne pouvez pas lister les ressources."
 
 #: admin/includes/class-astra-menu.php:226
-#: admin/assets/theme-builder/build/index.js:1
+#: admin/assets/theme-builder/build/index.js:60264
 msgid "Dashboard"
 msgstr "Tableau de bord"
 
@@ -9058,6 +9054,18 @@ msgstr "Installé"
 #: admin/includes/class-astra-theme-builder-free.php:104
 msgid "Activated"
 msgstr "Activé"
+
+#: admin/includes/class-astra-menu.php:882
+msgid "Recover lost revenue automatically."
+msgstr "Récupérez des ventes automatiquement."
+
+#: admin/includes/class-astra-menu.php:969
+msgid "Automate your WordPress setup."
+msgstr "Automatisez votre configuration WordPress."
+
+#: inc/compatibility/surecart/customizer/class-astra-customizer-register-surecart-section.php:36
+msgid "SureCart"
+msgstr "SureCart"
 
 #: admin/includes/class-astra-menu.php:563
 #: admin/includes/class-astra-menu.php:576
@@ -9080,24 +9088,12 @@ msgstr "Activé"
 msgid "Documentation"
 msgstr "Documentation"
 
-#: admin/includes/class-astra-menu.php:882
-msgid "Recover lost revenue automatically."
-msgstr "Récupérez des ventes automatiquement."
-
-#: admin/includes/class-astra-menu.php:984
-msgid "Automate your WordPress setup."
-msgstr "Automatisez votre configuration WordPress."
-
-#: inc/compatibility/surecart/customizer/class-astra-customizer-register-surecart-section.php:36
-msgid "SureCart"
-msgstr "SureCart"
-
-#: admin/includes/class-astra-menu.php:1009
+#: admin/includes/class-astra-menu.php:994
 msgid "Ultimate Video Player For WordPress."
 msgstr "Le lecteur vidéo ultime pour WordPress."
 
 #: admin/includes/class-astra-menu.php:835
-#: admin/includes/class-astra-menu.php:972
+#: admin/includes/class-astra-menu.php:957
 msgid "Free WordPress Page Builder."
 msgstr "Constructeur de page gratuit."
 
@@ -9124,8 +9120,8 @@ msgstr "Logo"
 
 #: inc/compatibility/class-astra-starter-content.php:261
 #: inc/compatibility/class-astra-starter-content.php:265
-#: inc/customizer/class-astra-customizer.php:1621
-#: inc/customizer/class-astra-customizer.php:1674
+#: inc/customizer/class-astra-customizer.php:1629
+#: inc/customizer/class-astra-customizer.php:1682
 msgid "Primary"
 msgstr "Principal"
 
@@ -9146,6 +9142,10 @@ msgstr "Constructeur de tunnels de vente n°1."
 #: admin/includes/class-astra-theme-builder-free.php:101
 msgid "Installing"
 msgstr "Installation…"
+
+#: admin/includes/class-astra-menu.php:378
+msgid "Header Settings"
+msgstr "Réglages d’en-tête"
 
 #: inc/customizer/configurations/layout/class-astra-site-container-layout-configs.php:163
 msgid "Fluid layout"
@@ -9170,10 +9170,6 @@ msgstr "Options de couleur de la colonne latérale"
 #: inc/customizer/configurations/layout/class-astra-sidebar-layout-configs.php:138
 msgid "Sidebar spacing"
 msgstr "Espacement de la colonne latérale"
-
-#: inc/customizer/configurations/builder/header/configs/header-builder.php:700
-msgid "Sticky header"
-msgstr "En-tête épinglé"
 
 #: inc/customizer/configurations/layout/class-astra-site-container-layout-configs.php:160
 msgid "Padded layout"
@@ -9256,17 +9252,13 @@ msgid "Extended typography options"
 msgstr "Options de typographie étendues"
 
 #: inc/core/class-astra-admin-settings.php:289
-#: inc/metabox/class-astra-elementor-editor-settings.php:536
+#: inc/metabox/class-astra-elementor-editor-settings.php:555
 #: admin/assets/build/dashboard-app.js:1 admin/assets/build/dashboard-app.js:15
-#: admin/assets/theme-builder/build/index.js:1
+#: admin/assets/theme-builder/build/index.js:1483
 #: admin/assets/utils/helpers.js:107
 #: inc/metabox/extend-metabox/build/index.js:1
 msgid "Upgrade Now"
 msgstr "Mettre à niveau"
-
-#: inc/customizer/configurations/builder/header/configs/header-builder.php:722
-msgid "Make an instant connection with amazing site headers"
-msgstr "Accrochez le regard avec des en-têtes incroyables"
 
 #: inc/compatibility/woocommerce/customizer/sections/layout/class-astra-woo-shop-single-layout-configs.php:619
 msgid "Sticky product summary"
@@ -9463,7 +9455,7 @@ msgstr "Chargement automatique des publications précédentes"
 msgid "Single post navigation control"
 msgstr "Contrôle de la navigation dans les publications"
 
-#: inc/metabox/class-astra-elementor-editor-settings.php:534
+#: inc/metabox/class-astra-elementor-editor-settings.php:553
 #: inc/metabox/extend-metabox/build/index.js:1
 msgid "Unlock your full design potential and build a website to be proud of with Astra Pro."
 msgstr "Débloquez votre plein potentiel de design et concevez un site dont vous serez fiers avec Astra Pro."
@@ -9475,6 +9467,14 @@ msgstr "Arsenal d’outils pour aider les pages de blog à sortir du lot."
 #: inc/customizer/configurations/typography/class-astra-archive-typo-configs.php:81
 msgid "Take your blog to the next level with powerful design features."
 msgstr "Passez votre blog au niveau supérieur avec des fonctionnalités puissantes de design."
+
+#: inc/customizer/configurations/builder/header/configs/header-builder.php:700
+msgid "Sticky header"
+msgstr "En-tête épinglé"
+
+#: inc/customizer/configurations/builder/header/configs/header-builder.php:722
+msgid "Make an instant connection with amazing site headers"
+msgstr "Accrochez le regard avec des en-têtes incroyables"
 
 #: assets/svg/logo-svg-icons/icons-v6-2.php:4699
 msgid "Pinterest"
@@ -9521,22 +9521,6 @@ msgstr "VK"
 msgid "Behance"
 msgstr "Behance"
 
-#: assets/svg/logo-svg-icons/icons-v6-1.php:4190
-msgid "GitHub"
-msgstr "GitHub"
-
-#: assets/svg/logo-svg-icons/icons-v6-2.php:3528
-msgid "Patreon"
-msgstr "Patreon"
-
-#: assets/svg/logo-svg-icons/icons-v6-2.php:1943 inc/extras.php:1201
-msgid "Medium"
-msgstr "Moyen"
-
-#: inc/customizer/configurations/builder/header/configs/woo-cart.php:392
-msgid "Count Color"
-msgstr "Couleur du compteur"
-
 #: assets/svg/logo-svg-icons/icons-v6-1.php:952
 #: assets/svg/logo-svg-icons/icons-v6-1.php:2486
 #: assets/svg/logo-svg-icons/icons-v6-1.php:4179
@@ -9564,6 +9548,22 @@ msgstr "Couleur du compteur"
 #: assets/svg/logo-svg-icons/icons-v6-3.php:6356
 msgid "Dribbble"
 msgstr "Dribbble"
+
+#: assets/svg/logo-svg-icons/icons-v6-1.php:4190
+msgid "GitHub"
+msgstr "GitHub"
+
+#: assets/svg/logo-svg-icons/icons-v6-2.php:3528
+msgid "Patreon"
+msgstr "Patreon"
+
+#: assets/svg/logo-svg-icons/icons-v6-2.php:1943 inc/extras.php:1201
+msgid "Medium"
+msgstr "Moyen"
+
+#: inc/customizer/configurations/builder/header/configs/woo-cart.php:392
+msgid "Count Color"
+msgstr "Couleur du compteur"
 
 #: inc/customizer/configurations/builder/header/configs/woo-cart.php:157
 msgid "Hide cart total label if cart is empty"
@@ -9698,6 +9698,20 @@ msgstr "Voir les fonctionnalités d’Astra Pro"
 msgid "Heading (H1-H6)"
 msgstr "Titres (H1-H6)"
 
+#: inc/compatibility/edd/customizer/sections/class-astra-edd-container-configs.php:43
+#: inc/compatibility/learndash/customizer/sections/class-astra-learndash-container-configs.php:43
+#: inc/compatibility/lifterlms/customizer/sections/class-astra-lifter-container-configs.php:51
+#: inc/compatibility/woocommerce/customizer/sections/class-astra-woo-shop-container-configs.php:43
+#: inc/customizer/configurations/layout/class-astra-site-container-layout-configs.php:49
+#: inc/metabox/class-astra-elementor-editor-settings.php:328
+#: inc/metabox/class-astra-meta-boxes.php:287
+#: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:112
+#: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:93
+#: inc/modules/posts-structures/customizer/class-astra-posts-special-archive-structures-configs.php:643
+#: inc/metabox/extend-metabox/build/index.js:1
+msgid "Container Layout"
+msgstr "Mise en page du conteneur"
+
 #: inc/compatibility/lifterlms/customizer/sections/class-astra-lifter-sidebar-configs.php:46
 msgid "Global Sidebar Layout"
 msgstr "Mise en page globale de colonne latérale"
@@ -9734,20 +9748,6 @@ msgstr "Position de la notification"
 #: inc/compatibility/woocommerce/customizer/sections/layout/class-astra-woo-shop-cart-layout-configs.php:39
 msgid "Change Cart Button Text"
 msgstr "Modifier le texte du bouton de panier"
-
-#: inc/compatibility/edd/customizer/sections/class-astra-edd-container-configs.php:43
-#: inc/compatibility/learndash/customizer/sections/class-astra-learndash-container-configs.php:43
-#: inc/compatibility/lifterlms/customizer/sections/class-astra-lifter-container-configs.php:51
-#: inc/compatibility/woocommerce/customizer/sections/class-astra-woo-shop-container-configs.php:43
-#: inc/customizer/configurations/layout/class-astra-site-container-layout-configs.php:49
-#: inc/metabox/class-astra-elementor-editor-settings.php:309
-#: inc/metabox/class-astra-meta-boxes.php:285
-#: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:112
-#: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:93
-#: inc/modules/posts-structures/customizer/class-astra-posts-special-archive-structures-configs.php:643
-#: inc/metabox/extend-metabox/build/index.js:1
-msgid "Container Layout"
-msgstr "Mise en page du conteneur"
 
 #: inc/compatibility/woocommerce/customizer/sections/layout/class-astra-woo-shop-cart-layout-configs.php:40
 msgid "Add custom text for cart button"
@@ -9803,11 +9803,11 @@ msgstr "Texte de livraison"
 msgid "Button Width"
 msgstr "Largeur de bouton"
 
-#: inc/compatibility/woocommerce/class-astra-woocommerce.php:3507
+#: inc/compatibility/woocommerce/class-astra-woocommerce.php:3508
 msgid "No products in the cart."
 msgstr "Aucun article dans le panier."
 
-#: inc/compatibility/woocommerce/class-astra-woocommerce.php:3511
+#: inc/compatibility/woocommerce/class-astra-woocommerce.php:3512
 msgid "Continue Shopping"
 msgstr "Continuer les achats"
 
@@ -9815,8 +9815,8 @@ msgstr "Continuer les achats"
 msgid "Menu 2"
 msgstr "Menu 2"
 
-#: inc/core/builder/class-astra-builder-helper.php:765
-#: inc/core/builder/class-astra-builder-helper.php:935
+#: inc/core/builder/class-astra-builder-helper.php:771
+#: inc/core/builder/class-astra-builder-helper.php:946
 #: inc/customizer/configurations/builder/header/configs/mobile-trigger.php:70
 msgid "Menu 3"
 msgstr "Menu 3"
@@ -9840,10 +9840,6 @@ msgstr "Symbole de la devise"
 #: inc/customizer/configurations/builder/header/configs/woo-cart.php:113
 msgid "Total + Currency symbol"
 msgstr "Total + symbole monétaire"
-
-#: inc/customizer/configurations/builder/header/configs/woo-cart.php:129
-msgid "Note: The Cart Label on the header will be displayed by using shortcodes. Type any custom string in it or click on the plus icon above to add your desired shortcode."
-msgstr "Note : Le libellé de panier dans l’en-tête sera affiché à l’aide de codes courts. Saisissez une chaîne personnalisée ou cliquez sur l’icône « plus » ci-dessus pour ajouter le code court de votre choix."
 
 #: inc/customizer/configurations/builder/header/configs/woo-cart.php:140
 msgid "Display Cart Count"
@@ -9910,13 +9906,17 @@ msgstr "Police de titre"
 msgid "Surface Color"
 msgstr "Couleurs de surface"
 
-#: inc/addons/breadcrumbs/customizer/class-astra-breadcrumbs-configs.php:113
-msgid "Note: To get design settings in action make sure to select Header Position other than None."
-msgstr "Note : Pour que les réglages de design fonctionnent, assurez-vous de sélectionner une position d’en-tête différente de « Aucune »."
+#: inc/customizer/configurations/builder/header/configs/woo-cart.php:129
+msgid "Note: The Cart Label on the header will be displayed by using shortcodes. Type any custom string in it or click on the plus icon above to add your desired shortcode."
+msgstr "Note : Le libellé de panier dans l’entête sera affiché à l’aide de codes courts. Saisissez une chaine personnalisée ou cliquez sur l’icône « plus » ci-dessus pour ajouter le code court de votre choix."
 
 #: inc/addons/breadcrumbs/customizer/class-astra-breadcrumbs-configs.php:131
 msgid "Display Settings"
 msgstr "Réglages d’affichage"
+
+#: inc/addons/breadcrumbs/customizer/class-astra-breadcrumbs-configs.php:113
+msgid "Note: To get design settings in action make sure to select Header Position other than None."
+msgstr "Note : Pour que les réglages de conception fonctionnent, assurez-vous de sélectionner une position d’en-tête différente de « Aucune »."
 
 #: inc/core/common-functions.php:1184
 msgid "Author name: "
@@ -9936,7 +9936,7 @@ msgstr "Confortable"
 msgid "Related post link"
 msgstr "Lien de publication similaire"
 
-#: inc/metabox/class-astra-elementor-editor-settings.php:414
+#: inc/metabox/class-astra-elementor-editor-settings.php:433
 #: inc/metabox/extend-metabox/build/index.js:1
 msgid "Advanced Settings"
 msgstr "Réglages avancés"
@@ -9985,25 +9985,12 @@ msgstr "Police H5"
 msgid "H6 Font"
 msgstr "Police H6"
 
-#: inc/metabox/class-astra-meta-boxes.php:889
-msgid "Disable Header"
-msgstr "Désactiver l’en-tête"
-
-#: inc/metabox/class-astra-meta-boxes.php:960
-msgid "Stick Primary Header"
-msgstr "Épingler l’en-tête principal"
-
-#: inc/metabox/class-astra-elementor-editor-settings.php:392
+#: inc/metabox/class-astra-elementor-editor-settings.php:411
 #: inc/metabox/extend-metabox/build/index.js:1
 msgid "Disable Elements"
 msgstr "Désactiver les éléments"
 
-#: inc/metabox/class-astra-elementor-editor-settings.php:425
-#: inc/metabox/extend-metabox/build/index.js:1
-msgid "Header Rows"
-msgstr "Rangées d’en-têtes"
-
-#: inc/metabox/class-astra-elementor-editor-settings.php:506
+#: inc/metabox/class-astra-elementor-editor-settings.php:525
 #: inc/metabox/extend-metabox/build/index.js:1
 msgid "Make sure to update your post for changes to take effect."
 msgstr "Assurez-vous de mettre à jour votre publication pour que les modifications soient prises en compte."
@@ -10078,6 +10065,19 @@ msgstr "Police des titres"
 msgid "Legacy"
 msgstr "Ancien"
 
+#: inc/metabox/class-astra-meta-boxes.php:905
+msgid "Disable Header"
+msgstr "Désactiver l’en-tête"
+
+#: inc/metabox/class-astra-meta-boxes.php:976
+msgid "Stick Primary Header"
+msgstr "Épingler l’en-tête principal"
+
+#: inc/metabox/class-astra-elementor-editor-settings.php:444
+#: inc/metabox/extend-metabox/build/index.js:1
+msgid "Header Rows"
+msgstr "Rangées d’en-têtes"
+
 #: inc/addons/breadcrumbs/customizer/class-astra-breadcrumbs-configs.php:384
 msgid "Type 1"
 msgstr "Type 1"
@@ -10094,7 +10094,7 @@ msgstr "Type 3"
 msgid "Unicode"
 msgstr "Unicode"
 
-#: inc/builder/controllers/class-astra-builder-ui-controller.php:314
+#: inc/builder/controllers/class-astra-builder-ui-controller.php:322
 msgid "Close Cart Drawer"
 msgstr "Fermer le tiroir du panier"
 
@@ -10102,21 +10102,21 @@ msgstr "Fermer le tiroir du panier"
 msgid "Text / Icon"
 msgstr "Texte/Icône"
 
-#: inc/metabox/class-astra-meta-boxes.php:639
-msgid "Page Header"
-msgstr "En-tête de page"
-
-#: inc/metabox/class-astra-meta-boxes.php:953
-msgid "Stick Above Header"
-msgstr "Épingler au-dessus de l’en-tête"
-
-#: inc/metabox/class-astra-meta-boxes.php:967
-msgid "Stick Below Header"
-msgstr "Épingler sous l’en-tête"
-
-#: inc/metabox/class-astra-meta-boxes.php:1038
+#: inc/metabox/class-astra-meta-boxes.php:1054
 msgid "No Page Headers Found"
-msgstr "Aucun en-tête de page trouvé"
+msgstr "Aucun entête de page trouvé"
+
+#: inc/metabox/class-astra-meta-boxes.php:983
+msgid "Stick Below Header"
+msgstr "Épingler sous l’entête"
+
+#: inc/metabox/class-astra-meta-boxes.php:969
+msgid "Stick Above Header"
+msgstr "Épingler au-dessus de l’entête"
+
+#: inc/metabox/class-astra-meta-boxes.php:655
+msgid "Page Header"
+msgstr "Entête de page"
 
 #: inc/customizer/configurations/buttons/class-astra-customizer-button-configs.php:47
 msgid "Button Presets"
@@ -10225,8 +10225,8 @@ msgid "Color 9"
 msgstr "Couleur 9"
 
 #: inc/core/builder/class-astra-builder-helper.php:687
-#: inc/core/builder/class-astra-builder-helper.php:864
-#: inc/customizer/class-astra-customizer.php:1654
+#: inc/core/builder/class-astra-builder-helper.php:875
+#: inc/customizer/class-astra-customizer.php:1662
 msgid "Site Title & Logo"
 msgstr "Titre du site & logo"
 
@@ -10273,7 +10273,7 @@ msgstr "Envoi de la recherche"
 msgid "Title Alignment"
 msgstr "Alignement de titre"
 
-#: inc/builder/controllers/class-astra-builder-ui-controller.php:319
+#: inc/builder/controllers/class-astra-builder-ui-controller.php:327
 msgid "Shopping Cart"
 msgstr "Panier"
 
@@ -10407,8 +10407,8 @@ msgid "Post Order"
 msgstr "Ordre des publications"
 
 #: inc/admin-functions.php:42
-#: inc/core/builder/class-astra-builder-helper.php:735
-#: inc/core/builder/class-astra-builder-helper.php:879
+#: inc/core/builder/class-astra-builder-helper.php:741
+#: inc/core/builder/class-astra-builder-helper.php:890
 #: inc/customizer/configurations/builder/header/configs/mobile-menu.php:41
 msgid "Off-Canvas Menu"
 msgstr "Menu hors-champ"
@@ -10472,7 +10472,7 @@ msgstr "À l’intérieur"
 msgid "Content Link Color"
 msgstr "Couleur des liens dans le contenu"
 
-#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:604
+#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:592
 msgid "Tagline Font"
 msgstr "Police du slogan"
 
@@ -10496,7 +10496,7 @@ msgstr "Police"
 msgid "Label Color"
 msgstr "Couleur de libellé"
 
-#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:464
+#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:465
 msgid "Icon Radius"
 msgstr "Rayon des icônes"
 
@@ -10510,7 +10510,7 @@ msgstr "Taille de la police du contenu"
 msgid "Content Font"
 msgstr "Police du contenu"
 
-#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:588
+#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:576
 #: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:702
 #: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:1168
 #: inc/modules/posts-structures/customizer/class-astra-posts-special-archive-structures-configs.php:437
@@ -10574,16 +10574,10 @@ msgid "Title Font Size"
 msgstr "Taille de la police de titre"
 
 #: inc/compatibility/lifterlms/class-astra-lifterlms.php:802
-#: inc/metabox/class-astra-meta-boxes.php:466
-#: inc/metabox/class-astra-meta-boxes.php:893
+#: inc/metabox/class-astra-meta-boxes.php:468
+#: inc/metabox/class-astra-meta-boxes.php:909
 msgid "Disable Footer"
 msgstr "Désactiver le pied de page"
-
-#: inc/compatibility/lifterlms/class-astra-lifterlms.php:776
-#: inc/metabox/class-astra-meta-boxes.php:396
-#: inc/metabox/class-astra-meta-boxes.php:872
-msgid "Disable Mobile Header"
-msgstr "Désactiver l’en-tête mobile"
 
 #: inc/customizer/configurations/builder/footer/configs/menu-footer.php:305
 #: inc/customizer/configurations/builder/header/configs/menu.php:515
@@ -10613,22 +10607,6 @@ msgstr "Espacement intérieur des éléments"
 msgid "Cart Tray"
 msgstr "Panier"
 
-#: inc/addons/transparent-header/classes/sections/class-astra-customizer-transparent-header-configs.php:993
-msgid "Text / Placeholder"
-msgstr "Texte / Texte indicatif"
-
-#: inc/compatibility/lifterlms/class-astra-lifterlms.php:766
-#: inc/metabox/class-astra-meta-boxes.php:385
-#: inc/metabox/class-astra-meta-boxes.php:861
-msgid "Disable Below Header"
-msgstr "Désactiver l’en-tête du dessous"
-
-#: inc/compatibility/lifterlms/class-astra-lifterlms.php:756
-#: inc/metabox/class-astra-meta-boxes.php:361
-#: inc/metabox/class-astra-meta-boxes.php:847
-msgid "Disable Above Header"
-msgstr "Désactiver l’en-tête supérieur"
-
 #: inc/addons/transparent-header/classes/sections/class-astra-customizer-transparent-header-configs.php:899
 msgid "Toggle Color"
 msgstr "Couleur de permutation"
@@ -10636,6 +10614,28 @@ msgstr "Couleur de permutation"
 #: inc/addons/breadcrumbs/customizer/class-astra-breadcrumbs-configs.php:90
 msgid "Header Position"
 msgstr "Position de l’entête"
+
+#: inc/addons/transparent-header/classes/sections/class-astra-customizer-transparent-header-configs.php:993
+msgid "Text / Placeholder"
+msgstr "Texte/Texte indicatif"
+
+#: inc/compatibility/lifterlms/class-astra-lifterlms.php:776
+#: inc/metabox/class-astra-meta-boxes.php:398
+#: inc/metabox/class-astra-meta-boxes.php:888
+msgid "Disable Mobile Header"
+msgstr "Désactiver l’en-tête mobile"
+
+#: inc/compatibility/lifterlms/class-astra-lifterlms.php:766
+#: inc/metabox/class-astra-meta-boxes.php:387
+#: inc/metabox/class-astra-meta-boxes.php:877
+msgid "Disable Below Header"
+msgstr "Désactiver l’en-tête du dessous"
+
+#: inc/compatibility/lifterlms/class-astra-lifterlms.php:756
+#: inc/metabox/class-astra-meta-boxes.php:363
+#: inc/metabox/class-astra-meta-boxes.php:863
+msgid "Disable Above Header"
+msgstr "Désactiver l’en-tête supérieur"
 
 #: inc/core/builder/class-astra-builder-helper.php:556
 msgid "Center Heavy 25/50/25"
@@ -10665,7 +10665,7 @@ msgstr "Très à droite 33/66"
 msgid "Single Row"
 msgstr "Une seule ligne"
 
-#: inc/core/builder/class-astra-builder-helper.php:841
+#: inc/core/builder/class-astra-builder-helper.php:852
 msgid "Woo Cart"
 msgstr "Panier Woo"
 
@@ -10707,7 +10707,7 @@ msgstr "Couleur de contenu"
 
 #: inc/addons/transparent-header/classes/sections/class-astra-customizer-transparent-header-configs.php:826
 #: inc/core/builder/class-astra-builder-helper.php:699
-#: inc/core/builder/class-astra-builder-helper.php:884
+#: inc/core/builder/class-astra-builder-helper.php:895
 #: inc/customizer/configurations/builder/header/configs/account.php:95
 msgid "Account"
 msgstr "Compte"
@@ -10733,10 +10733,10 @@ msgstr "Séparateur"
 msgid "Active"
 msgstr "Actif"
 
-#: inc/builder/controllers/class-astra-builder-ui-controller.php:169
-#: inc/builder/controllers/class-astra-builder-ui-controller.php:170
-#: inc/builder/controllers/class-astra-builder-ui-controller.php:189
-#: inc/builder/controllers/class-astra-builder-ui-controller.php:204
+#: inc/builder/controllers/class-astra-builder-ui-controller.php:177
+#: inc/builder/controllers/class-astra-builder-ui-controller.php:178
+#: inc/builder/controllers/class-astra-builder-ui-controller.php:197
+#: inc/builder/controllers/class-astra-builder-ui-controller.php:212
 msgid "Click to edit this element."
 msgstr "Cliquez pour modifier cet élément."
 
@@ -10744,13 +10744,13 @@ msgstr "Cliquez pour modifier cet élément."
 msgid "Add widgets here:"
 msgstr "Ajoutez des widgets ici :"
 
-#: inc/builder/controllers/class-astra-builder-ui-controller.php:189
-#: inc/builder/controllers/class-astra-builder-ui-controller.php:204
+#: inc/builder/controllers/class-astra-builder-ui-controller.php:197
+#: inc/builder/controllers/class-astra-builder-ui-controller.php:212
 msgid "Click to edit this Row."
 msgstr "Cliquez pour modifier cette ligne."
 
-#: inc/builder/controllers/class-astra-builder-ui-controller.php:429
-#: inc/builder/controllers/class-astra-builder-ui-controller.php:499
+#: inc/builder/controllers/class-astra-builder-ui-controller.php:438
+#: inc/builder/controllers/class-astra-builder-ui-controller.php:508
 msgid "Account icon link"
 msgstr "Lien de l’icône de compte"
 
@@ -10785,15 +10785,6 @@ msgstr "Colonne"
 msgid "Vertical Alignment"
 msgstr "Alignement vertical"
 
-#: inc/customizer/configurations/builder/footer/configs/above-footer.php:151
-#: inc/customizer/configurations/builder/footer/configs/below-footer.php:151
-#: inc/customizer/configurations/builder/footer/configs/primary-footer.php:150
-#: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:513
-#: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:993
-#: inc/modules/posts-structures/customizer/class-astra-posts-special-archive-structures-configs.php:278
-msgid "Middle"
-msgstr "Milieu"
-
 #: inc/customizer/configurations/builder/footer/configs/above-footer.php:125
 #: inc/customizer/configurations/builder/footer/configs/below-footer.php:125
 #: inc/customizer/configurations/builder/footer/configs/primary-footer.php:124
@@ -10805,6 +10796,15 @@ msgstr "Milieu"
 #: inc/modules/related-posts/customizer/class-astra-related-posts-configs.php:344
 msgid "Height"
 msgstr "Hauteur"
+
+#: inc/customizer/configurations/builder/footer/configs/above-footer.php:151
+#: inc/customizer/configurations/builder/footer/configs/below-footer.php:151
+#: inc/customizer/configurations/builder/footer/configs/primary-footer.php:150
+#: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:513
+#: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:993
+#: inc/modules/posts-structures/customizer/class-astra-posts-special-archive-structures-configs.php:278
+msgid "Middle"
+msgstr "Milieu"
 
 #: inc/customizer/configurations/builder/footer/configs/above-footer.php:167
 #: inc/customizer/configurations/builder/footer/configs/below-footer.php:167
@@ -10838,20 +10838,20 @@ msgstr "Icônes de réseaux sociaux"
 msgid "Social Icons %s"
 msgstr "%s des réseaux sociaux"
 
-#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:374
+#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:375
 msgid "Show Label"
 msgstr "Afficher le libellé"
 
-#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:394
+#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:395
 msgid "Icon Spacing"
 msgstr "Espacement des icônes"
 
-#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:417
+#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:418
 msgid "Icon Background Space"
 msgstr "Espacement d’arrière-plan des icônes"
 
 #: inc/addons/scroll-to-top/classes/customizer/class-astra-scroll-to-top-configs.php:120
-#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:440
+#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:441
 #: inc/customizer/configurations/builder/header/configs/account.php:449
 #: inc/customizer/configurations/builder/header/configs/mobile-trigger.php:159
 #: inc/customizer/configurations/builder/header/configs/search.php:75
@@ -10920,18 +10920,9 @@ msgstr "Décalage supérieur"
 msgid "Item Divider"
 msgstr "Séparateur d’élément"
 
-#: inc/addons/transparent-header/classes/sections/class-astra-customizer-colors-transparent-header-configs.php:72
-#: inc/customizer/configurations/builder/header/configs/above-header.php:29
-msgid "Above Header"
-msgstr "Au dessus de l’en-tête"
-
 #: inc/customizer/configurations/builder/header/configs/off-canvas.php:29
 msgid "Off-Canvas"
 msgstr "Hors-champ"
-
-#: inc/customizer/configurations/builder/header/configs/off-canvas.php:56
-msgid "Header Type"
-msgstr "Type d’en-tête"
 
 #: inc/customizer/configurations/builder/header/configs/off-canvas.php:58
 msgid "Flyout"
@@ -10979,11 +10970,6 @@ msgstr "Prévisualisation"
 msgid "Login URL"
 msgstr "URL de connexion"
 
-#: inc/addons/transparent-header/classes/sections/class-astra-customizer-colors-transparent-header-configs.php:110
-#: inc/customizer/configurations/builder/header/configs/below-header.php:29
-msgid "Below Header"
-msgstr "Sous l’en-tête"
-
 #: inc/core/builder/class-astra-builder-options.php:1262
 msgid "My Account"
 msgstr "Mon compte"
@@ -11001,7 +10987,7 @@ msgstr "Insérez le texte HTML ici."
 msgid "Tagline"
 msgstr "Slogan"
 
-#: inc/core/builder/class-astra-builder-helper.php:851
+#: inc/core/builder/class-astra-builder-helper.php:862
 #: inc/customizer/configurations/builder/header/configs/edd-cart.php:36
 msgid "EDD Cart"
 msgstr "Panier EDD"
@@ -11011,15 +10997,11 @@ msgstr "Panier EDD"
 msgid "Icons"
 msgstr "Icônes"
 
-#: inc/core/builder/class-astra-builder-helper.php:729
-#: inc/core/builder/class-astra-builder-helper.php:874
+#: inc/core/builder/class-astra-builder-helper.php:735
+#: inc/core/builder/class-astra-builder-helper.php:885
 #: inc/customizer/configurations/builder/header/configs/mobile-trigger.php:32
 msgid "Toggle Button"
 msgstr "Bouton ouvrir/fermer"
-
-#: inc/customizer/configurations/builder/header/configs/woo-cart.php:582
-msgid "Header Cart Icon"
-msgstr "Icône du panier d’en-tête"
 
 #: inc/core/builder/class-astra-builder-helper.php:510
 #: inc/core/builder/class-astra-builder-helper.php:520
@@ -11039,10 +11021,6 @@ msgstr "Panier WooCommerce"
 msgid "Display Cart Total"
 msgstr "Afficher le total du panier"
 
-#: inc/customizer/configurations/builder/header/configs/header-builder.php:613
-msgid "Header Types"
-msgstr "Types d’en-tête"
-
 #: inc/customizer/configurations/builder/header/configs/edd-cart.php:70
 msgid "Display Cart Title"
 msgstr "Afficher le titre du panier"
@@ -11056,6 +11034,10 @@ msgstr "Afficher le titre du panier"
 msgid "Border Width"
 msgstr "Largeur de bordure"
 
+#: inc/core/builder/class-astra-builder-helper.php:534
+msgid "Two Column Grid"
+msgstr "Grille sur deux colonnes"
+
 #: inc/customizer/configurations/builder/header/configs/edd-cart.php:90
 #: inc/customizer/configurations/builder/header/configs/woo-cart.php:316
 #: inc/customizer/configurations/layout/class-astra-blog-layout-configs.php:553
@@ -11068,10 +11050,6 @@ msgstr "Largeur de bordure"
 #: inc/modules/related-posts/customizer/class-astra-related-posts-configs.php:490
 msgid "Style"
 msgstr "Style"
-
-#: inc/core/builder/class-astra-builder-helper.php:534
-msgid "Two Column Grid"
-msgstr "Grille sur deux colonnes"
 
 #: inc/core/builder/class-astra-builder-helper.php:548
 msgid "Left Heavy 50/25/25"
@@ -11108,16 +11086,9 @@ msgstr "Couleur - image d’arrière-plan"
 msgid "Footer Builder"
 msgstr "Pied de page"
 
-#: inc/builder/class-astra-builder-loader.php:99
-#: inc/customizer/configurations/builder/header/configs/header-builder.php:168
-#: inc/customizer/configurations/builder/header/configs/header-builder.php:231
-#: inc/customizer/configurations/builder/header/configs/header-builder.php:523
-msgid "Header Builder"
-msgstr "En-tête"
-
 #: inc/customizer/class-astra-extended-base-configuration.php:105
 #: inc/customizer/configurations/builder/base/class-astra-html-component-configs.php:194
-#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:506
+#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:507
 #: inc/customizer/configurations/builder/class-astra-builder-base-configuration.php:248
 #: inc/customizer/configurations/builder/footer/configs/copyright.php:136
 #: inc/customizer/configurations/builder/footer/configs/menu-footer.php:280
@@ -11139,10 +11110,39 @@ msgstr "Marge externe"
 msgid "Dropdown"
 msgstr "Liste déroulante"
 
+#: inc/customizer/configurations/builder/header/configs/woo-cart.php:582
+msgid "Header Cart Icon"
+msgstr "Icône du panier d’entête"
+
+#: inc/customizer/configurations/builder/header/configs/off-canvas.php:56
+msgid "Header Type"
+msgstr "Type d’entête"
+
+#: inc/addons/transparent-header/classes/sections/class-astra-customizer-colors-transparent-header-configs.php:72
+#: inc/customizer/configurations/builder/header/configs/above-header.php:29
+msgid "Above Header"
+msgstr "Au dessus de l’entête"
+
+#: inc/addons/transparent-header/classes/sections/class-astra-customizer-colors-transparent-header-configs.php:110
+#: inc/customizer/configurations/builder/header/configs/below-header.php:29
+msgid "Below Header"
+msgstr "Sous l’en-tête"
+
+#: inc/customizer/configurations/builder/header/configs/header-builder.php:613
+msgid "Header Types"
+msgstr "Types d’en-tête"
+
+#: inc/builder/class-astra-builder-loader.php:99
+#: inc/customizer/configurations/builder/header/configs/header-builder.php:168
+#: inc/customizer/configurations/builder/header/configs/header-builder.php:231
+#: inc/customizer/configurations/builder/header/configs/header-builder.php:523
+msgid "Header Builder"
+msgstr "Configurateur d’en-tête"
+
 #: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:73
-#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:553
+#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:542
 msgid "Customize Transparent Header"
-msgstr "Personnaliser l’en-tête transparent."
+msgstr "Personnaliser l’en-tête transparent"
 
 #: inc/compatibility/woocommerce/customizer/sections/layout/class-astra-woo-shop-cart-layout-configs.php:77
 msgid "Enable Cross-sells"
@@ -11160,11 +11160,6 @@ msgstr[1] "%1$s produits"
 msgid "This will be applicable for all sites from the network."
 msgstr "Ce sera applicable pour tous les sites de ce réseau."
 
-#. translators: %s usage doc link
-#: inc/lib/bsf-analytics/class-bsf-analytics.php:269
-msgid " Know More."
-msgstr "En savoir plus. "
-
 #: inc/lib/bsf-analytics/class-bsf-analytics.php:279
 msgid "Yes! Allow it"
 msgstr "Oui ! Je l’autorise"
@@ -11180,6 +11175,11 @@ msgstr "Suivi d’utilisation"
 #: inc/lib/bsf-analytics/class-bsf-analytics.php:462
 msgid " This will be applicable for all sites from the network."
 msgstr " Ce sera applicable pour tous les sites de ce réseau."
+
+#. translators: %s usage doc link
+#: inc/lib/bsf-analytics/class-bsf-analytics.php:269
+msgid " Know More."
+msgstr "En savoir plus."
 
 #. translators: %1$s: Theme Name, %2$s: Minimum Required version of the addon
 #: inc/core/class-astra-admin-settings.php:317
@@ -11199,7 +11199,7 @@ msgstr "Détails »"
 #: admin/includes/class-astra-menu.php:437
 #: admin/assets/build/dashboard-app.js:15
 msgid "Starter Templates"
-msgstr "Modèles de démarrage"
+msgstr "Starter Templates"
 
 #: inc/lib/astra-notices/class-astra-notices.php:146
 msgid "WordPress Nonce not validated."
@@ -11225,7 +11225,7 @@ msgstr "Personnaliser le style des boutons."
 #: inc/addons/breadcrumbs/customizer/class-astra-breadcrumbs-configs.php:289
 #: inc/customizer/configurations/builder/base/class-astra-button-component-configs.php:449
 #: inc/customizer/configurations/builder/base/class-astra-html-component-configs.php:216
-#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:529
+#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:530
 #: inc/customizer/configurations/builder/class-astra-builder-base-configuration.php:270
 #: inc/customizer/configurations/builder/footer/configs/copyright.php:80
 #: inc/customizer/configurations/builder/footer/configs/menu-footer.php:99
@@ -11246,27 +11246,27 @@ msgstr "Position"
 msgid "Global"
 msgstr "Global"
 
-#: inc/customizer/class-astra-customizer.php:1749
+#: inc/customizer/class-astra-customizer.php:1757
 msgid "Heading 6"
 msgstr "Titre 6"
 
-#: inc/customizer/class-astra-customizer.php:1743
+#: inc/customizer/class-astra-customizer.php:1751
 msgid "Heading 5"
 msgstr "Titre 5"
 
-#: inc/customizer/class-astra-customizer.php:1737
+#: inc/customizer/class-astra-customizer.php:1745
 msgid "Heading 4"
 msgstr "Titre 4"
 
-#: inc/customizer/class-astra-customizer.php:1731
+#: inc/customizer/class-astra-customizer.php:1739
 msgid "Heading 3"
 msgstr "Titre 3"
 
-#: inc/customizer/class-astra-customizer.php:1725
+#: inc/customizer/class-astra-customizer.php:1733
 msgid "Heading 2"
 msgstr "Titre 2"
 
-#: inc/customizer/class-astra-customizer.php:1719
+#: inc/customizer/class-astra-customizer.php:1727
 msgid "Heading 1"
 msgstr "Titre 1"
 
@@ -11290,7 +11290,7 @@ msgstr "Couleur au survol"
 #: inc/addons/breadcrumbs/customizer/class-astra-breadcrumbs-color-configs.php:49
 #: inc/addons/breadcrumbs/customizer/class-astra-breadcrumbs-color-configs.php:197
 #: inc/customizer/class-astra-customizer-register-sections-panels.php:276
-#: inc/customizer/class-astra-customizer.php:1686
+#: inc/customizer/class-astra-customizer.php:1694
 #: inc/customizer/configurations/buttons/class-astra-customizer-button-configs.php:659
 #: inc/customizer/configurations/buttons/class-astra-existing-button-configs.php:72
 #: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:393
@@ -11298,12 +11298,18 @@ msgid "Colors"
 msgstr "Couleurs"
 
 #: inc/addons/transparent-header/classes/sections/class-astra-customizer-transparent-header-configs.php:926
-#: inc/customizer/class-astra-customizer.php:1629
+#: inc/customizer/class-astra-customizer.php:1637
 #: inc/customizer/class-astra-extended-base-configuration.php:136
 #: inc/customizer/configurations/buttons/class-astra-customizer-button-configs.php:680
 #: inc/customizer/configurations/buttons/class-astra-existing-button-configs.php:98
 msgid "Border"
 msgstr "Bordure"
+
+#: inc/customizer/class-astra-customizer.php:1420
+#: inc/customizer/class-astra-customizer.php:1670
+#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:557
+msgid "Site Icon"
+msgstr "Favicon"
 
 #: inc/addons/breadcrumbs/customizer/class-astra-breadcrumbs-color-configs.php:176
 #: inc/addons/breadcrumbs/customizer/class-astra-breadcrumbs-color-configs.php:178
@@ -11466,9 +11472,9 @@ msgstr "Au survol"
 #: inc/customizer/configurations/layout/class-astra-site-container-layout-configs.php:53
 #: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:411
 #: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:450
-#: inc/metabox/class-astra-meta-boxes.php:289
-#: inc/metabox/class-astra-meta-boxes.php:800
-#: inc/metabox/class-astra-meta-boxes.php:806
+#: inc/metabox/class-astra-meta-boxes.php:291
+#: inc/metabox/class-astra-meta-boxes.php:816
+#: inc/metabox/class-astra-meta-boxes.php:822
 #: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:41
 #: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:60
 #: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:41
@@ -11483,12 +11489,6 @@ msgstr "Normale"
 #: inc/customizer/configurations/layout/class-astra-blog-layout-configs.php:149
 msgid "Post Content"
 msgstr "Contenu de l’article"
-
-#: inc/customizer/class-astra-customizer.php:1412
-#: inc/customizer/class-astra-customizer.php:1662
-#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:569
-msgid "Site Icon"
-msgstr "Favicon"
 
 #: inc/customizer/configurations/colors-background/class-astra-advanced-footer-colors-configs.php:110
 #: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:393
@@ -11524,14 +11524,6 @@ msgstr "Couleurs"
 msgid "Padding"
 msgstr "Marge interne"
 
-#: inc/compatibility/woocommerce/customizer/sections/layout/class-astra-woo-shop-single-layout-configs.php:120
-#: inc/customizer/configurations/layout/class-astra-blog-layout-configs.php:690
-#: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:349
-#: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:823
-#: inc/modules/related-posts/customizer/class-astra-related-posts-configs.php:258
-msgid "Meta"
-msgstr "Méta"
-
 #: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:405
 #: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:527
 #: inc/modules/posts-structures/customizer/class-astra-posts-special-archive-structures-configs.php:204
@@ -11566,7 +11558,7 @@ msgstr "Taille de la bordure supérieure"
 #: inc/addons/transparent-header/classes/sections/class-astra-customizer-transparent-header-configs.php:949
 #: inc/class-astra-global-palette.php:299
 #: inc/compatibility/woocommerce/customizer/sections/class-astra-woo-store-notice-configs.php:63
-#: inc/customizer/class-astra-customizer.php:1617
+#: inc/customizer/class-astra-customizer.php:1625
 #: inc/customizer/configurations/builder/base/class-astra-button-component-configs.php:93
 #: inc/customizer/configurations/builder/header/configs/account.php:143
 #: inc/customizer/configurations/builder/header/configs/account.php:201
@@ -11611,6 +11603,14 @@ msgstr "Sous-menu"
 #: inc/customizer/configurations/layout/class-astra-header-layout-configs.php:466
 msgid "Take Last Item Outside Menu"
 msgstr "Sortir le dernier élément du menu"
+
+#: inc/compatibility/woocommerce/customizer/sections/layout/class-astra-woo-shop-single-layout-configs.php:120
+#: inc/customizer/configurations/layout/class-astra-blog-layout-configs.php:690
+#: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:349
+#: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:823
+#: inc/modules/related-posts/customizer/class-astra-related-posts-configs.php:258
+msgid "Meta"
+msgstr "Méta"
 
 #: inc/customizer/configurations/builder/footer/configs/above-footer.php:105
 #: inc/customizer/configurations/builder/footer/configs/below-footer.php:105
@@ -11687,20 +11687,20 @@ msgstr "g a"
 #: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:952
 #: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:980
 #: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:1007
-#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:1343
+#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:1348
 msgctxt "yearly archives date format"
 msgid "Y"
 msgstr "Y"
 
 #: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:924
 #: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:981
-#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:1347
+#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:1352
 msgctxt "monthly archives date format"
 msgid "F"
 msgstr "F"
 
 #: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:925
-#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:1351
+#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:1356
 msgctxt "daily archives date format"
 msgid "j"
 msgstr "j"
@@ -11765,9 +11765,9 @@ msgstr "La page des derniers articles est la page d’accueil de votre site lors
 msgid "Blog Page is when Latest Posts are selected to be displayed on a particular page."
 msgstr "La page des articles correspond au cas où les derniers articles sont affichés sur une page en particulier."
 
-#: inc/class-astra-mobile-header.php:110
-#: inc/core/class-astra-walker-page.php:86
-#: inc/core/class-astra-walker-page.php:96 inc/extras.php:545
+#: inc/class-astra-mobile-header.php:111
+#: inc/core/class-astra-walker-page.php:88
+#: inc/core/class-astra-walker-page.php:100 inc/extras.php:545
 msgid "Menu Toggle"
 msgstr "Permutateur de Menu"
 
@@ -11784,7 +11784,6 @@ msgstr "Désactivation"
 #: admin/includes/class-astra-menu.php:338
 #: admin/includes/class-astra-theme-builder-free.php:105
 #: inc/core/class-astra-admin-settings.php:146
-#: admin/assets/build/dashboard-app.js:12
 msgid "Activate"
 msgstr "Activer"
 
@@ -11839,17 +11838,6 @@ msgstr "Sous-menu"
 msgid "Theme Button"
 msgstr "Bouton du thème"
 
-#: inc/customizer/class-astra-customizer-register-sections-panels.php:372
-#: inc/customizer/configurations/buttons/class-astra-customizer-button-configs.php:639
-#: inc/customizer/configurations/buttons/class-astra-existing-button-configs.php:46
-#: inc/customizer/configurations/layout/class-astra-header-layout-configs.php:225
-msgid "Header Button"
-msgstr "Bouton d’en-tête"
-
-#: inc/customizer/class-astra-customizer-register-sections-panels.php:394
-msgid "Transparent Header Button"
-msgstr "Bouton d’en-tête transparent"
-
 #: inc/customizer/configurations/layout/class-astra-header-layout-configs.php:227
 msgid "Button Style"
 msgstr "Style de bouton"
@@ -11857,16 +11845,6 @@ msgstr "Style de bouton"
 #: inc/customizer/configurations/layout/class-astra-footer-layout-configs.php:219
 msgid "Border Size"
 msgstr "Taille de bordure"
-
-#: inc/compatibility/woocommerce/customizer/sections/layout/class-astra-woo-shop-single-layout-configs.php:360
-#: inc/customizer/configurations/builder/header/configs/edd-cart.php:274
-#: inc/customizer/configurations/layout/class-astra-header-layout-configs.php:183
-msgid "Button Text"
-msgstr "Texte du bouton"
-
-#: inc/customizer/configurations/layout/class-astra-header-layout-configs.php:203
-msgid "Button Link"
-msgstr "Lien du bouton"
 
 #: inc/addons/transparent-header/classes/sections/class-astra-customizer-transparent-header-configs.php:707
 #: inc/customizer/configurations/builder/base/class-astra-button-component-configs.php:235
@@ -11881,9 +11859,19 @@ msgstr "Lien du bouton"
 msgid "Border Color"
 msgstr "Couleur de bordure"
 
+#: inc/compatibility/woocommerce/customizer/sections/layout/class-astra-woo-shop-single-layout-configs.php:360
+#: inc/customizer/configurations/builder/header/configs/edd-cart.php:274
+#: inc/customizer/configurations/layout/class-astra-header-layout-configs.php:183
+msgid "Button Text"
+msgstr "Texte du bouton"
+
+#: inc/customizer/configurations/layout/class-astra-header-layout-configs.php:203
+msgid "Button Link"
+msgstr "Lien du bouton"
+
 #: inc/addons/transparent-header/classes/class-astra-ext-transparent-header-markup.php:339
-#: inc/metabox/class-astra-meta-boxes.php:982
-#: inc/metabox/class-astra-meta-boxes.php:995
+#: inc/metabox/class-astra-meta-boxes.php:998
+#: inc/metabox/class-astra-meta-boxes.php:1011
 msgid "Enabled"
 msgstr "Activé"
 
@@ -11894,6 +11882,17 @@ msgstr "Lien/Couleur de texte"
 #: inc/addons/transparent-header/classes/sections/class-astra-customizer-transparent-header-configs.php:59
 msgid "Enable on Complete Website"
 msgstr "Activer sur tout le site"
+
+#: inc/customizer/class-astra-customizer-register-sections-panels.php:372
+#: inc/customizer/configurations/buttons/class-astra-customizer-button-configs.php:639
+#: inc/customizer/configurations/buttons/class-astra-existing-button-configs.php:46
+#: inc/customizer/configurations/layout/class-astra-header-layout-configs.php:225
+msgid "Header Button"
+msgstr "Bouton d’en-tête"
+
+#: inc/customizer/class-astra-customizer-register-sections-panels.php:394
+msgid "Transparent Header Button"
+msgstr "Bouton d’en-tête transparent"
 
 #: inc/compatibility/edd/customizer/sections/layout/class-astra-edd-single-product-layout-configs.php:41
 msgid "Disable Product Navigation"
@@ -11975,8 +11974,8 @@ msgstr "Colonne latérale de produits seuls EDD"
 
 #. Translators: %s is the theme name.
 #. translators: %s is the Astra theme name.
-#: inc/metabox/class-astra-meta-boxes.php:147
-#: inc/metabox/class-astra-meta-boxes.php:580
+#: inc/metabox/class-astra-meta-boxes.php:149
+#: inc/metabox/class-astra-meta-boxes.php:596
 #: inc/metabox/extend-metabox/build/elementor.js:3
 msgid "%s Settings"
 msgstr "Réglages d’%s"
@@ -12039,19 +12038,6 @@ msgstr "Italique 100"
 msgid "Overline"
 msgstr "Surligner"
 
-#: assets/svg/logo-svg-icons/icons-v6-3.php:4206
-#: inc/customizer/configurations/builder/header/configs/menu.php:97
-#: inc/customizer/configurations/layout/class-astra-blog-layout-configs.php:563
-#: inc/customizer/configurations/layout/class-astra-blog-layout-configs.php:586
-#: inc/customizer/configurations/layout/class-astra-blog-layout-configs.php:633
-#: inc/customizer/configurations/layout/class-astra-blog-layout-configs.php:655
-#: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:799
-#: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:1602
-#: inc/modules/related-posts/customizer/class-astra-related-posts-configs.php:475
-#: inc/modules/related-posts/customizer/class-astra-related-posts-configs.php:494
-msgid "Underline"
-msgstr "Souligner"
-
 #: inc/customizer/configurations/builder/header/configs/menu.php:159
 #: inc/customizer/configurations/layout/class-astra-header-layout-configs.php:317
 msgid "Fade"
@@ -12071,6 +12057,19 @@ msgstr "Glisser vers le bas"
 msgid "Nav Menu"
 msgstr "Menu de navigation"
 
+#: assets/svg/logo-svg-icons/icons-v6-3.php:4206
+#: inc/customizer/configurations/builder/header/configs/menu.php:97
+#: inc/customizer/configurations/layout/class-astra-blog-layout-configs.php:563
+#: inc/customizer/configurations/layout/class-astra-blog-layout-configs.php:586
+#: inc/customizer/configurations/layout/class-astra-blog-layout-configs.php:633
+#: inc/customizer/configurations/layout/class-astra-blog-layout-configs.php:655
+#: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:799
+#: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:1602
+#: inc/modules/related-posts/customizer/class-astra-related-posts-configs.php:475
+#: inc/modules/related-posts/customizer/class-astra-related-posts-configs.php:494
+msgid "Underline"
+msgstr "Souligner"
+
 #: inc/addons/breadcrumbs/customizer/class-astra-breadcrumbs-configs.php:325
 #: inc/addons/scroll-to-top/classes/customizer/class-astra-scroll-to-top-configs.php:200
 #: inc/compatibility/woocommerce/customizer/sections/class-astra-woo-store-notice-configs.php:94
@@ -12083,8 +12082,8 @@ msgstr "Menu de navigation"
 #: inc/customizer/configurations/builder/base/class-astra-button-component-configs.php:295
 #: inc/customizer/configurations/builder/base/class-astra-button-component-configs.php:318
 #: inc/customizer/configurations/builder/base/class-astra-html-component-configs.php:199
-#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:469
-#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:510
+#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:470
+#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:511
 #: inc/customizer/configurations/builder/class-astra-builder-base-configuration.php:252
 #: inc/customizer/configurations/builder/footer/configs/above-footer.php:150
 #: inc/customizer/configurations/builder/footer/configs/below-footer.php:150
@@ -12141,8 +12140,8 @@ msgstr "En haut"
 #: inc/customizer/configurations/builder/base/class-astra-button-component-configs.php:296
 #: inc/customizer/configurations/builder/base/class-astra-button-component-configs.php:319
 #: inc/customizer/configurations/builder/base/class-astra-html-component-configs.php:200
-#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:470
-#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:511
+#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:471
+#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:512
 #: inc/customizer/configurations/builder/class-astra-builder-base-configuration.php:253
 #: inc/customizer/configurations/builder/footer/configs/copyright.php:141
 #: inc/customizer/configurations/builder/footer/configs/menu-footer.php:261
@@ -12198,8 +12197,8 @@ msgstr "À droite"
 #: inc/customizer/configurations/builder/base/class-astra-button-component-configs.php:297
 #: inc/customizer/configurations/builder/base/class-astra-button-component-configs.php:320
 #: inc/customizer/configurations/builder/base/class-astra-html-component-configs.php:201
-#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:471
-#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:512
+#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:472
+#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:513
 #: inc/customizer/configurations/builder/class-astra-builder-base-configuration.php:254
 #: inc/customizer/configurations/builder/footer/configs/above-footer.php:152
 #: inc/customizer/configurations/builder/footer/configs/below-footer.php:152
@@ -12257,8 +12256,8 @@ msgstr "En bas"
 #: inc/customizer/configurations/builder/base/class-astra-button-component-configs.php:298
 #: inc/customizer/configurations/builder/base/class-astra-button-component-configs.php:321
 #: inc/customizer/configurations/builder/base/class-astra-html-component-configs.php:202
-#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:472
-#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:513
+#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:473
+#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:514
 #: inc/customizer/configurations/builder/class-astra-builder-base-configuration.php:255
 #: inc/customizer/configurations/builder/footer/configs/copyright.php:143
 #: inc/customizer/configurations/builder/footer/configs/menu-footer.php:263
@@ -12319,10 +12318,6 @@ msgstr "Aperçu de la colonne latérale"
 msgid "Footer Bar Overview"
 msgstr "Aperçu de la barre de pied de page"
 
-#: inc/customizer/class-astra-customizer-register-sections-panels.php:127
-msgid "Primary Header Overview"
-msgstr "Aperçu de l’en-tête principal"
-
 #: inc/customizer/class-astra-customizer-register-sections-panels.php:100
 msgid "Site Identity Overview"
 msgstr "Aperçu de l’identité du site"
@@ -12349,6 +12344,10 @@ msgstr "Informations utiles"
 #: inc/customizer/class-astra-customizer-register-sections-panels.php:283
 msgid "Colors & Background Overview"
 msgstr "Aperçu des couleurs et de l’arrière-plan"
+
+#: inc/customizer/class-astra-customizer-register-sections-panels.php:127
+msgid "Primary Header Overview"
+msgstr "Aperçu de l’en-tête principal"
 
 #: assets/svg/logo-svg-icons/icons-v6-2.php:1103
 #: inc/addons/transparent-header/classes/sections/class-astra-customizer-transparent-header-configs.php:572
@@ -12388,6 +12387,24 @@ msgstr "Logo différent pour les écrans Retina ?"
 msgid "Mobile Logo (optional)"
 msgstr "Logo mobile (facultatif)"
 
+#: inc/customizer/configurations/layout/class-astra-header-layout-configs.php:601
+msgid "Toggle Button Color"
+msgstr "Couleur du bouton de permutation"
+
+#: inc/customizer/configurations/builder/header/configs/mobile-trigger.php:99
+#: inc/customizer/configurations/layout/class-astra-header-layout-configs.php:581
+msgid "Minimal"
+msgstr "Minimal"
+
+#: inc/customizer/configurations/builder/header/configs/mobile-trigger.php:92
+#: inc/customizer/configurations/layout/class-astra-header-layout-configs.php:567
+msgid "Toggle Button Style"
+msgstr "Style du bouton de permutation"
+
+#: inc/customizer/configurations/layout/class-astra-header-layout-configs.php:492
+msgid "Menu Breakpoint"
+msgstr "Point de rupture du menu"
+
 #: inc/addons/scroll-to-top/classes/customizer/class-astra-scroll-to-top-configs.php:184
 #: inc/customizer/class-astra-extended-base-configuration.php:182
 #: inc/customizer/configurations/builder/base/class-astra-button-component-configs.php:313
@@ -12403,39 +12420,12 @@ msgstr "Logo mobile (facultatif)"
 msgid "Border Radius"
 msgstr "Rayon de bordure"
 
-#: inc/customizer/configurations/layout/class-astra-header-layout-configs.php:601
-msgid "Toggle Button Color"
-msgstr "Couleur du bouton de permutation"
-
-#: inc/customizer/configurations/builder/header/configs/mobile-trigger.php:99
-#: inc/customizer/configurations/layout/class-astra-header-layout-configs.php:581
-msgid "Minimal"
-msgstr "Minimal"
-
-#: inc/customizer/configurations/builder/header/configs/mobile-trigger.php:92
-#: inc/customizer/configurations/layout/class-astra-header-layout-configs.php:567
-msgid "Toggle Button Style"
-msgstr "Style du bouton de permutation"
-
-#: inc/customizer/configurations/builder/header/configs/header-builder.php:179
-msgid "Header Layout"
-msgstr "Mise en page d’en-tête"
-
-#: inc/customizer/configurations/layout/class-astra-header-layout-configs.php:492
-msgid "Menu Breakpoint"
-msgstr "Point de rupture du menu"
-
 #: admin/includes/class-astra-menu.php:374
 #: inc/customizer/class-astra-customizer-register-sections-panels.php:92
 #: inc/customizer/class-astra-customizer.php:224
 #: inc/customizer/class-astra-customizer.php:236
 msgid "Site Identity"
 msgstr "Identité du site"
-
-#: admin/includes/class-astra-menu.php:608
-#: inc/customizer/configurations/layout/class-astra-header-layout-configs.php:394
-msgid "Mobile Header"
-msgstr "En-tête mobile"
 
 #: inc/customizer/configurations/layout/class-astra-header-layout-configs.php:142
 msgid "Last Item in Menu"
@@ -12464,40 +12454,19 @@ msgstr "Contours uniquement"
 msgid "Different Logo For Mobile Devices?"
 msgstr "Logo différent pour les appareils mobiles ?"
 
+#: inc/customizer/configurations/builder/header/configs/header-builder.php:179
+msgid "Header Layout"
+msgstr "Mise en page d’en-tête"
+
+#: admin/includes/class-astra-menu.php:608
+#: inc/customizer/configurations/layout/class-astra-header-layout-configs.php:394
+msgid "Mobile Header"
+msgstr "En-tête mobile"
+
 #: inc/compatibility/learndash/customizer/class-astra-customizer-register-learndash-section.php:37
 #: admin/assets/build/dashboard-app.js:10
 msgid "LearnDash"
 msgstr "LearnDash"
-
-#: inc/addons/transparent-header/classes/sections/class-astra-customizer-colors-transparent-header-configs.php:182
-#: inc/addons/transparent-header/classes/sections/class-astra-customizer-colors-transparent-header-configs.php:236
-#: inc/addons/transparent-header/classes/sections/class-astra-customizer-transparent-header-configs.php:480
-#: inc/addons/transparent-header/classes/sections/class-astra-customizer-transparent-header-configs.php:696
-#: inc/addons/transparent-header/classes/sections/class-astra-customizer-transparent-header-configs.php:911
-#: inc/compatibility/woocommerce/customizer/sections/class-astra-woo-store-notice-configs.php:77
-#: inc/customizer/configurations/builder/footer/configs/above-footer.php:227
-#: inc/customizer/configurations/builder/footer/configs/below-footer.php:227
-#: inc/customizer/configurations/builder/footer/configs/menu-footer.php:127
-#: inc/customizer/configurations/builder/footer/configs/primary-footer.php:230
-#: inc/customizer/configurations/builder/header/configs/above-header.php:75
-#: inc/customizer/configurations/builder/header/configs/below-header.php:75
-#: inc/customizer/configurations/builder/header/configs/menu.php:387
-#: inc/customizer/configurations/builder/header/configs/mobile-menu.php:166
-#: inc/customizer/configurations/builder/header/configs/off-canvas.php:188
-#: inc/customizer/configurations/builder/header/configs/off-canvas.php:247
-#: inc/customizer/configurations/builder/header/configs/primary-header.php:92
-#: inc/customizer/configurations/builder/header/configs/woo-cart.php:813
-#: inc/customizer/configurations/builder/header/configs/woo-cart.php:920
-#: inc/customizer/configurations/colors-background/class-astra-advanced-footer-colors-configs.php:163
-#: inc/customizer/configurations/colors-background/class-astra-footer-colors-configs.php:86
-#: inc/metabox/class-astra-meta-boxes.php:612
-#: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:611
-#: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:1073
-#: inc/modules/posts-structures/customizer/class-astra-posts-special-archive-structures-configs.php:363
-#: inc/customizer/extend-custom-controls/build/index.js:1
-#: inc/metabox/extend-metabox/build/index.js:1
-msgid "Background"
-msgstr "Arrière-plan"
 
 #: assets/svg/logo-svg-icons/icons-v6-3.php:259
 #: inc/customizer/extend-custom-controls/build/index.js:1
@@ -12520,6 +12489,36 @@ msgstr "Auto"
 #: inc/metabox/extend-metabox/build/index.js:1
 msgid "Cover"
 msgstr "Couvrir"
+
+#: inc/addons/transparent-header/classes/sections/class-astra-customizer-colors-transparent-header-configs.php:182
+#: inc/addons/transparent-header/classes/sections/class-astra-customizer-colors-transparent-header-configs.php:236
+#: inc/addons/transparent-header/classes/sections/class-astra-customizer-transparent-header-configs.php:480
+#: inc/addons/transparent-header/classes/sections/class-astra-customizer-transparent-header-configs.php:696
+#: inc/addons/transparent-header/classes/sections/class-astra-customizer-transparent-header-configs.php:911
+#: inc/compatibility/woocommerce/customizer/sections/class-astra-woo-store-notice-configs.php:77
+#: inc/customizer/configurations/builder/footer/configs/above-footer.php:227
+#: inc/customizer/configurations/builder/footer/configs/below-footer.php:227
+#: inc/customizer/configurations/builder/footer/configs/menu-footer.php:127
+#: inc/customizer/configurations/builder/footer/configs/primary-footer.php:230
+#: inc/customizer/configurations/builder/header/configs/above-header.php:75
+#: inc/customizer/configurations/builder/header/configs/below-header.php:75
+#: inc/customizer/configurations/builder/header/configs/menu.php:387
+#: inc/customizer/configurations/builder/header/configs/mobile-menu.php:166
+#: inc/customizer/configurations/builder/header/configs/off-canvas.php:188
+#: inc/customizer/configurations/builder/header/configs/off-canvas.php:247
+#: inc/customizer/configurations/builder/header/configs/primary-header.php:92
+#: inc/customizer/configurations/builder/header/configs/woo-cart.php:813
+#: inc/customizer/configurations/builder/header/configs/woo-cart.php:920
+#: inc/customizer/configurations/colors-background/class-astra-advanced-footer-colors-configs.php:163
+#: inc/customizer/configurations/colors-background/class-astra-footer-colors-configs.php:86
+#: inc/metabox/class-astra-meta-boxes.php:628
+#: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:611
+#: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:1073
+#: inc/modules/posts-structures/customizer/class-astra-posts-special-archive-structures-configs.php:363
+#: inc/customizer/extend-custom-controls/build/index.js:1
+#: inc/metabox/extend-metabox/build/index.js:1
+msgid "Background"
+msgstr "Arrière-plan"
 
 #: inc/compatibility/learndash/customizer/sections/layout/class-astra-learndash-general-configs.php:58
 msgid "Differentiate Rows"
@@ -12573,39 +12572,15 @@ msgstr "Mises en page du site"
 msgid "Custom Layouts"
 msgstr "Mises en page personnalisées"
 
-#: admin/includes/class-astra-menu.php:702
-msgid "Make your header layouts look more appealing and sexy!"
-msgstr "Rendez vos mises en page d’en-tête plus attrayantes et sexy !"
-
-#: admin/includes/class-astra-menu.php:701
-msgid "Page Headers"
-msgstr "En-têtes de page"
-
-#: inc/addons/transparent-header/classes/class-astra-ext-transparent-header-markup.php:335
-#: inc/addons/transparent-header/classes/class-astra-transparent-header-panels-and-sections.php:45
-#: inc/customizer/configurations/builder/header/configs/header-builder.php:630
-#: inc/metabox/class-astra-elementor-editor-settings.php:450
-#: inc/metabox/class-astra-meta-boxes.php:638
-msgid "Transparent Header"
-msgstr "En-tête transparent"
-
-#: admin/includes/class-astra-menu.php:621
-msgid "Header Sections"
-msgstr "Sections d’en-tête"
-
 #: admin/includes/class-astra-menu.php:595
 msgid "Blog Pro"
 msgstr "Blog Pro"
-
-#: admin/includes/class-astra-menu.php:382
-msgid "Footer Settings"
-msgstr "Réglages de pied de page"
 
 #: admin/includes/class-astra-menu.php:582
 #: inc/addons/breadcrumbs/customizer/class-astra-breadcrumbs-configs.php:321
 #: inc/customizer/class-astra-extended-base-configuration.php:59
 #: inc/customizer/configurations/builder/base/class-astra-html-component-configs.php:173
-#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:485
+#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:486
 #: inc/customizer/configurations/builder/footer/configs/copyright.php:115
 #: inc/customizer/configurations/builder/footer/configs/menu-footer.php:236
 #: inc/customizer/configurations/builder/header/configs/account.php:584
@@ -12618,6 +12593,10 @@ msgstr "Réglages de pied de page"
 msgid "Spacing"
 msgstr "Espacement"
 
+#: admin/includes/class-astra-menu.php:382
+msgid "Footer Settings"
+msgstr "Réglages de pied de page"
+
 #: admin/includes/class-astra-menu.php:687
 msgid "Add content conditionally in the various hook areas of the theme."
 msgstr "Ajoutez du contenu de manière conditionnelle grâces aux points d’accroche du thème."
@@ -12627,13 +12606,6 @@ msgstr "Ajoutez du contenu de manière conditionnelle grâces aux points d’acc
 #: admin/assets/build/dashboard-app.js:11
 msgid "Learn More"
 msgstr "En savoir plus"
-
-#: admin/includes/class-astra-menu.php:634
-#: inc/customizer/configurations/builder/header/configs/header-builder.php:740
-#: inc/metabox/class-astra-elementor-editor-settings.php:463
-#: inc/metabox/class-astra-meta-boxes.php:636
-msgid "Sticky Header"
-msgstr "En-tête fixe"
 
 #: inc/customizer/configurations/colors-background/class-astra-body-colors-configs.php:66
 msgid "Theme Color"
@@ -12651,7 +12623,34 @@ msgstr "Mise en page du blog"
 msgid "Learn More."
 msgstr "En savoir plus."
 
-#: inc/customizer/class-astra-customizer.php:1817
+#: admin/includes/class-astra-menu.php:702
+msgid "Make your header layouts look more appealing and sexy!"
+msgstr "Rendez vos mises en page d’en-tête plus attrayantes et sexy !"
+
+#: admin/includes/class-astra-menu.php:701
+msgid "Page Headers"
+msgstr "En-têtes de page"
+
+#: inc/addons/transparent-header/classes/class-astra-ext-transparent-header-markup.php:335
+#: inc/addons/transparent-header/classes/class-astra-transparent-header-panels-and-sections.php:45
+#: inc/customizer/configurations/builder/header/configs/header-builder.php:630
+#: inc/metabox/class-astra-elementor-editor-settings.php:469
+#: inc/metabox/class-astra-meta-boxes.php:654
+msgid "Transparent Header"
+msgstr "En-tête transparent"
+
+#: admin/includes/class-astra-menu.php:621
+msgid "Header Sections"
+msgstr "Sections d’en-tête"
+
+#: admin/includes/class-astra-menu.php:634
+#: inc/customizer/configurations/builder/header/configs/header-builder.php:740
+#: inc/metabox/class-astra-elementor-editor-settings.php:482
+#: inc/metabox/class-astra-meta-boxes.php:652
+msgid "Sticky Header"
+msgstr "En-tête fixe"
+
+#: inc/customizer/class-astra-customizer.php:1825
 #: inc/customizer/configurations/typography/class-astra-body-typo-configs.php:72
 msgid "Default System Font"
 msgstr "Police système par défaut"
@@ -12779,6 +12778,10 @@ msgstr "Ajouter au panier"
 msgid "Out of stock"
 msgstr "En rupture de stock"
 
+#: inc/compatibility/woocommerce/woocommerce-common-functions.php:134
+msgid "Availability:"
+msgstr "Disponibilité :"
+
 #: inc/compatibility/edd/customizer/sections/layout/class-astra-edd-archive-layout-configs.php:95
 #: inc/compatibility/woocommerce/customizer/sections/layout/class-astra-woo-shop-layout-configs.php:176
 #: inc/compatibility/woocommerce/customizer/sections/layout/class-astra-woo-shop-single-layout-configs.php:113
@@ -12789,16 +12792,6 @@ msgstr "En rupture de stock"
 #: inc/modules/related-posts/customizer/class-astra-related-posts-configs.php:672
 msgid "Title"
 msgstr "Titre"
-
-#: inc/compatibility/woocommerce/woocommerce-common-functions.php:134
-msgid "Availability:"
-msgstr "Disponibilité :"
-
-#: inc/addons/transparent-header/classes/sections/class-astra-customizer-colors-transparent-header-configs.php:93
-#: inc/customizer/class-astra-customizer-register-sections-panels.php:119
-#: inc/customizer/configurations/builder/header/configs/primary-header.php:41
-msgid "Primary Header"
-msgstr "En-tête principal"
 
 #: assets/svg/logo-svg-icons/icons-v6-0.php:2310
 #: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:1000
@@ -12811,8 +12804,8 @@ msgstr "Blog"
 msgid "Single Product"
 msgstr "Produit seul"
 
-#: inc/metabox/class-astra-meta-boxes.php:415
-#: inc/metabox/class-astra-meta-boxes.php:911
+#: inc/metabox/class-astra-meta-boxes.php:417
+#: inc/metabox/class-astra-meta-boxes.php:927
 msgid "Disable Breadcrumb"
 msgstr "Désactiver le fil d’Ariane"
 
@@ -12825,11 +12818,17 @@ msgstr "Description courte"
 #: inc/compatibility/edd/class-astra-edd.php:101
 #: inc/compatibility/woocommerce/class-astra-woocommerce.php:557
 #: inc/compatibility/woocommerce/customizer/class-astra-customizer-register-woo-section.php:52
-#: inc/core/builder/class-astra-builder-helper.php:841
-#: inc/core/builder/class-astra-builder-helper.php:851
+#: inc/core/builder/class-astra-builder-helper.php:852
+#: inc/core/builder/class-astra-builder-helper.php:862
 #: inc/customizer/configurations/builder/header/configs/woo-cart.php:66
 msgid "Cart"
 msgstr "Panier"
+
+#: inc/addons/transparent-header/classes/sections/class-astra-customizer-colors-transparent-header-configs.php:93
+#: inc/customizer/class-astra-customizer-register-sections-panels.php:119
+#: inc/customizer/configurations/builder/header/configs/primary-header.php:41
+msgid "Primary Header"
+msgstr "En-tête principal"
 
 #: inc/compatibility/woocommerce/class-astra-woocommerce.php:358
 #: inc/compatibility/woocommerce/class-astra-woocommerce.php:1194
@@ -12873,7 +12872,7 @@ msgstr "Logo Rétina"
 msgid "Logo Width"
 msgstr "Largeur du logo"
 
-#: inc/metabox/class-astra-meta-boxes.php:423
+#: inc/metabox/class-astra-meta-boxes.php:425
 msgid "Disable Featured Image"
 msgstr "Désactiver l’image mise en avant"
 
@@ -12884,7 +12883,7 @@ msgid "Featured Image"
 msgstr "Image mise en avant"
 
 #: inc/compatibility/lifterlms/class-astra-lifterlms.php:793
-#: inc/metabox/class-astra-meta-boxes.php:454
+#: inc/metabox/class-astra-meta-boxes.php:456
 msgid "Disable Footer Widgets"
 msgstr "Désactiver les widgets de pied de page"
 
@@ -12948,13 +12947,13 @@ msgstr "Cliquez ici pour assigner un widget pour cette zone."
 #: inc/addons/transparent-header/classes/class-astra-ext-transparent-header-markup.php:338
 #: inc/compatibility/lifterlms/class-astra-lifterlms.php:822
 #: inc/compatibility/lifterlms/class-astra-lifterlms.php:834
-#: inc/metabox/class-astra-meta-boxes.php:288
-#: inc/metabox/class-astra-meta-boxes.php:306
-#: inc/metabox/class-astra-meta-boxes.php:321
-#: inc/metabox/class-astra-meta-boxes.php:337
-#: inc/metabox/class-astra-meta-boxes.php:763
-#: inc/metabox/class-astra-meta-boxes.php:799
-#: inc/metabox/class-astra-meta-boxes.php:805
+#: inc/metabox/class-astra-meta-boxes.php:290
+#: inc/metabox/class-astra-meta-boxes.php:308
+#: inc/metabox/class-astra-meta-boxes.php:323
+#: inc/metabox/class-astra-meta-boxes.php:339
+#: inc/metabox/class-astra-meta-boxes.php:779
+#: inc/metabox/class-astra-meta-boxes.php:815
+#: inc/metabox/class-astra-meta-boxes.php:821
 msgid "Customizer Setting"
 msgstr "Réglage de l’outil de personnalisation"
 
@@ -12993,7 +12992,7 @@ msgstr "Continuer la lecture %s"
 
 #: inc/class-astra-global-palette.php:298
 #: inc/customizer/class-astra-customizer-register-sections-panels.php:348
-#: inc/customizer/class-astra-customizer.php:1707
+#: inc/customizer/class-astra-customizer.php:1715
 msgid "Headings"
 msgstr "Titres"
 
@@ -13089,7 +13088,7 @@ msgstr "Ultra Gras 900"
 
 #: admin/includes/class-astra-menu.php:180
 #: admin/includes/class-astra-menu.php:181
-#: inc/compatibility/woocommerce/class-astra-woocommerce.php:3591
+#: inc/compatibility/woocommerce/class-astra-woocommerce.php:3592
 #: admin/assets/build/dashboard-app.js:1
 msgid "Customize"
 msgstr "Personnaliser"
@@ -13132,15 +13131,6 @@ msgstr "Ping :"
 #: inc/blog/single-blog.php:163
 msgid "%1$s at %2$s"
 msgstr "%1$s à %2$s"
-
-#: inc/compatibility/class-astra-beaver-themer.php:354
-msgid "Before Header"
-msgstr "Avant l’en-tête"
-
-#: inc/addons/breadcrumbs/customizer/class-astra-breadcrumbs-configs.php:43
-#: inc/compatibility/class-astra-beaver-themer.php:355
-msgid "After Header"
-msgstr "Après l’en-tête"
 
 #: inc/compatibility/class-astra-beaver-themer.php:361
 msgid "Before Content"
@@ -13212,8 +13202,8 @@ msgstr "Fin de boucle"
 #: inc/customizer/configurations/typography/class-astra-body-typo-configs.php:92
 #: inc/customizer/configurations/typography/class-astra-body-typo-configs.php:119
 #: inc/customizer/configurations/typography/class-astra-body-typo-configs.php:253
-#: inc/metabox/class-astra-meta-boxes.php:818
-#: inc/metabox/class-astra-meta-boxes.php:830
+#: inc/metabox/class-astra-meta-boxes.php:834
+#: inc/metabox/class-astra-meta-boxes.php:846
 #: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:37
 #: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:56
 #: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:130
@@ -13246,8 +13236,8 @@ msgstr "Par défaut"
 #: inc/compatibility/lifterlms/customizer/sections/class-astra-lifter-sidebar-configs.php:127
 #: inc/compatibility/woocommerce/customizer/sections/class-astra-woo-shop-sidebar-configs.php:50
 #: inc/customizer/configurations/layout/class-astra-sidebar-layout-configs.php:47
-#: inc/metabox/class-astra-meta-boxes.php:324
-#: inc/metabox/class-astra-meta-boxes.php:764
+#: inc/metabox/class-astra-meta-boxes.php:326
+#: inc/metabox/class-astra-meta-boxes.php:780
 #: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:160
 #: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:140
 #: inc/modules/posts-structures/customizer/class-astra-posts-special-archive-structures-configs.php:701
@@ -13261,8 +13251,8 @@ msgstr "Aucune colonne latérale"
 #: inc/compatibility/lifterlms/customizer/sections/class-astra-lifter-sidebar-configs.php:131
 #: inc/compatibility/woocommerce/customizer/sections/class-astra-woo-shop-sidebar-configs.php:54
 #: inc/customizer/configurations/layout/class-astra-sidebar-layout-configs.php:51
-#: inc/metabox/class-astra-meta-boxes.php:322
-#: inc/metabox/class-astra-meta-boxes.php:765
+#: inc/metabox/class-astra-meta-boxes.php:324
+#: inc/metabox/class-astra-meta-boxes.php:781
 #: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:164
 #: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:144
 #: inc/modules/posts-structures/customizer/class-astra-posts-special-archive-structures-configs.php:705
@@ -13276,8 +13266,8 @@ msgstr "Colonne latérale gauche"
 #: inc/compatibility/lifterlms/customizer/sections/class-astra-lifter-sidebar-configs.php:135
 #: inc/compatibility/woocommerce/customizer/sections/class-astra-woo-shop-sidebar-configs.php:58
 #: inc/customizer/configurations/layout/class-astra-sidebar-layout-configs.php:55
-#: inc/metabox/class-astra-meta-boxes.php:323
-#: inc/metabox/class-astra-meta-boxes.php:766
+#: inc/metabox/class-astra-meta-boxes.php:325
+#: inc/metabox/class-astra-meta-boxes.php:782
 #: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:168
 #: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:148
 #: inc/modules/posts-structures/customizer/class-astra-posts-special-archive-structures-configs.php:709
@@ -13354,14 +13344,14 @@ msgstr "1 commentaire"
 msgid "% Comments"
 msgstr "% commentaires"
 
-#: inc/customizer/class-astra-customizer-sanitizes.php:467
+#: inc/customizer/class-astra-customizer-sanitizes.php:511
 msgid "Enter valid email address!"
 msgstr "Saisissez une adresse de messagerie valide !"
 
 #: inc/customizer/configurations/buttons/class-astra-existing-button-configs.php:297
 #: inc/customizer/custom-controls/typography/class-astra-control-typography.php:108
-#: inc/metabox/class-astra-meta-boxes.php:981
-#: inc/metabox/class-astra-meta-boxes.php:994
+#: inc/metabox/class-astra-meta-boxes.php:997
+#: inc/metabox/class-astra-meta-boxes.php:1010
 #: inc/customizer/extend-custom-controls/build/index.js:1
 msgid "Inherit"
 msgstr "Hériter"
@@ -13380,7 +13370,7 @@ msgid "Layout"
 msgstr "Mise en page"
 
 #: inc/customizer/class-astra-customizer-register-sections-panels.php:47
-#: inc/metabox/class-astra-elementor-editor-settings.php:299
+#: inc/metabox/class-astra-elementor-editor-settings.php:318
 #: inc/metabox/extend-metabox/build/index.js:1
 msgid "Container"
 msgstr "Conteneur"
@@ -13389,7 +13379,8 @@ msgstr "Conteneur"
 #: inc/customizer/configurations/builder/footer/configs/footer-builder.php:138
 #: inc/customizer/configurations/builder/footer/configs/footer-builder.php:171
 #: admin/assets/build/dashboard-app.js:10
-#: admin/assets/theme-builder/build/index.js:1
+#: admin/assets/theme-builder/build/index.js:60795
+#: admin/assets/theme-builder/build/index.js:61188
 msgid "Footer"
 msgstr "Pied de page"
 
@@ -13401,8 +13392,8 @@ msgstr "Widgets de pied de page"
 
 #: inc/compatibility/lifterlms/class-astra-lifterlms.php:819
 #: inc/customizer/class-astra-customizer-register-sections-panels.php:238
-#: inc/metabox/class-astra-elementor-editor-settings.php:346
-#: inc/metabox/class-astra-meta-boxes.php:628
+#: inc/metabox/class-astra-elementor-editor-settings.php:365
+#: inc/metabox/class-astra-meta-boxes.php:644
 #: inc/metabox/extend-metabox/build/index.js:1
 msgid "Sidebar"
 msgstr "Colonne latérale"
@@ -13415,11 +13406,11 @@ msgstr "Couleurs & arrière-plan"
 #: admin/includes/class-astra-menu.php:390
 #: admin/includes/class-astra-menu.php:569
 #: inc/customizer/class-astra-customizer-register-sections-panels.php:317
-#: inc/customizer/class-astra-customizer.php:1703
+#: inc/customizer/class-astra-customizer.php:1711
 #: inc/customizer/configurations/builder/header/configs/mobile-trigger.php:335
 #: inc/customizer/configurations/buttons/class-astra-existing-button-configs.php:194
-#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:588
-#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:604
+#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:576
+#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:592
 #: admin/assets/build/dashboard-app.js:10
 msgid "Typography"
 msgstr "Typographie"
@@ -13430,7 +13421,7 @@ msgstr "Contenu"
 
 #: inc/compatibility/edd/customizer/sections/layout/class-astra-edd-archive-layout-configs.php:108
 #: inc/customizer/class-astra-customizer-register-sections-panels.php:361
-#: inc/customizer/class-astra-customizer.php:1670
+#: inc/customizer/class-astra-customizer.php:1678
 msgid "Buttons"
 msgstr "Boutons"
 
@@ -13471,6 +13462,21 @@ msgstr "Couleur de lien au survol"
 msgid "Comments"
 msgstr "Commentaires"
 
+#: assets/svg/logo-svg-icons/icons-v6-3.php:2678
+#: inc/modules/related-posts/customizer/class-astra-related-posts-configs.php:76
+msgid "Tag"
+msgstr "Étiquette"
+
+#: inc/customizer/configurations/layout/class-astra-blog-layout-configs.php:156
+msgid "Full Content"
+msgstr "Contenu intégral"
+
+#: inc/customizer/configurations/layout/class-astra-blog-layout-configs.php:157
+#: inc/customizer/configurations/layout/class-astra-blog-layout-configs.php:277
+#: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:533
+msgid "Excerpt"
+msgstr "Extrait"
+
 #: inc/addons/breadcrumbs/customizer/class-astra-breadcrumbs-color-configs.php:75
 #: inc/addons/scroll-to-top/classes/customizer/class-astra-scroll-to-top-configs.php:159
 #: inc/addons/transparent-header/classes/sections/class-astra-customizer-transparent-header-configs.php:1072
@@ -13491,27 +13497,6 @@ msgstr "Commentaires"
 #: inc/customizer/configurations/layout/class-astra-footer-layout-configs.php:266
 msgid "Background Color"
 msgstr "Couleur d’arrière-plan"
-
-#: inc/customizer/configurations/layout/class-astra-blog-layout-configs.php:694
-#: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:334
-#: inc/modules/related-posts/customizer/class-astra-related-posts-configs.php:62
-msgid "Author"
-msgstr "Auteur"
-
-#: assets/svg/logo-svg-icons/icons-v6-3.php:2678
-#: inc/modules/related-posts/customizer/class-astra-related-posts-configs.php:76
-msgid "Tag"
-msgstr "Étiquette"
-
-#: inc/customizer/configurations/layout/class-astra-blog-layout-configs.php:156
-msgid "Full Content"
-msgstr "Contenu intégral"
-
-#: inc/customizer/configurations/layout/class-astra-blog-layout-configs.php:157
-#: inc/customizer/configurations/layout/class-astra-blog-layout-configs.php:277
-#: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:533
-msgid "Excerpt"
-msgstr "Extrait"
 
 #: inc/customizer/configurations/layout/class-astra-footer-layout-configs.php:83
 msgid "Section 1"
@@ -13544,9 +13529,9 @@ msgstr "Section 2"
 #: inc/customizer/configurations/layout/class-astra-footer-layout-configs.php:357
 #: inc/customizer/configurations/layout/class-astra-header-layout-configs.php:73
 #: inc/customizer/configurations/layout/class-astra-site-container-layout-configs.php:61
-#: inc/metabox/class-astra-meta-boxes.php:293
-#: inc/metabox/class-astra-meta-boxes.php:801
-#: inc/metabox/class-astra-meta-boxes.php:808
+#: inc/metabox/class-astra-meta-boxes.php:295
+#: inc/metabox/class-astra-meta-boxes.php:817
+#: inc/metabox/class-astra-meta-boxes.php:824
 #: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:49
 #: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:64
 #: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:342
@@ -13561,7 +13546,7 @@ msgid "Full Width"
 msgstr "Pleine largeur"
 
 #: inc/core/builder/class-astra-builder-helper.php:693
-#: inc/core/builder/class-astra-builder-helper.php:869
+#: inc/core/builder/class-astra-builder-helper.php:880
 #: inc/customizer/configurations/builder/header/configs/search.php:32
 #: inc/customizer/configurations/layout/class-astra-header-layout-configs.php:147
 #: inc/markup-extras.php:876 searchform.php:31 searchform.php:37
@@ -13569,18 +13554,6 @@ msgstr "Pleine largeur"
 #: inc/customizer/extend-custom-controls/build/index.js:1
 msgid "Search"
 msgstr "Rechercher"
-
-#: inc/customizer/configurations/builder/footer/configs/above-footer.php:108
-#: inc/customizer/configurations/builder/footer/configs/below-footer.php:108
-#: inc/customizer/configurations/builder/footer/configs/primary-footer.php:108
-#: inc/customizer/configurations/builder/header/configs/header-builder.php:648
-#: inc/customizer/configurations/layout/class-astra-blog-layout-configs.php:103
-#: inc/customizer/configurations/layout/class-astra-blog-single-layout-configs.php:45
-#: inc/customizer/configurations/layout/class-astra-footer-layout-configs.php:358
-#: inc/customizer/configurations/layout/class-astra-header-layout-configs.php:74
-#: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:184
-msgid "Content Width"
-msgstr "Largeur du contenu"
 
 #: inc/customizer/configurations/layout/class-astra-header-layout-configs.php:149
 msgid "Text / HTML"
@@ -13605,6 +13578,18 @@ msgstr "Désactiver le menu"
 #: inc/customizer/configurations/layout/class-astra-header-layout-configs.php:281
 msgid "Custom Menu Text / HTML"
 msgstr "Texte/HTML de menu personnalisé"
+
+#: inc/customizer/configurations/builder/footer/configs/above-footer.php:108
+#: inc/customizer/configurations/builder/footer/configs/below-footer.php:108
+#: inc/customizer/configurations/builder/footer/configs/primary-footer.php:108
+#: inc/customizer/configurations/builder/header/configs/header-builder.php:648
+#: inc/customizer/configurations/layout/class-astra-blog-layout-configs.php:103
+#: inc/customizer/configurations/layout/class-astra-blog-single-layout-configs.php:45
+#: inc/customizer/configurations/layout/class-astra-footer-layout-configs.php:358
+#: inc/customizer/configurations/layout/class-astra-header-layout-configs.php:74
+#: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:184
+msgid "Content Width"
+msgstr "Largeur du contenu"
 
 #: inc/addons/transparent-header/classes/sections/class-astra-customizer-transparent-header-configs.php:344
 #: inc/customizer/configurations/builder/header/configs/above-header.php:110
@@ -13662,6 +13647,31 @@ msgstr "Capitaliser"
 #: inc/customizer/configurations/buttons/class-astra-existing-button-configs.php:300
 msgid "Uppercase"
 msgstr "Majuscules"
+
+#: inc/customizer/configurations/buttons/class-astra-existing-button-configs.php:301
+msgid "Lowercase"
+msgstr "Minuscule"
+
+#: inc/addons/breadcrumbs/customizer/class-astra-breadcrumbs-typo-configs.php:154
+#: inc/customizer/configurations/buttons/class-astra-existing-button-configs.php:317
+msgid "Line Height"
+msgstr "Hauteur de ligne"
+
+#: inc/addons/transparent-header/classes/sections/class-astra-customizer-transparent-header-configs.php:398
+msgid "Site Title"
+msgstr "Titre du site"
+
+#: inc/markup-extras.php:908
+msgid "Add Custom HTML"
+msgstr "Ajouter du HTML personnalisé"
+
+#: assets/svg/logo-svg-icons/icons-v6-3.php:6181
+msgid "Y"
+msgstr "Y"
+
+#: inc/markup-extras.php:1813
+msgid "Add Widget"
+msgstr "Ajouter un widget"
 
 #: inc/addons/breadcrumbs/customizer/class-astra-breadcrumbs-typo-configs.php:79
 #: inc/addons/heading-colors/customizer/class-astra-heading-colors-configs.php:94
@@ -13721,49 +13731,18 @@ msgstr "Famille de police"
 msgid "Font Weight"
 msgstr "Graisse de la police"
 
-#: inc/customizer/configurations/buttons/class-astra-existing-button-configs.php:301
-msgid "Lowercase"
-msgstr "Minuscule"
-
-#: inc/addons/breadcrumbs/customizer/class-astra-breadcrumbs-typo-configs.php:154
-#: inc/customizer/configurations/buttons/class-astra-existing-button-configs.php:317
-msgid "Line Height"
-msgstr "Hauteur de ligne"
-
-#: inc/addons/transparent-header/classes/sections/class-astra-customizer-transparent-header-configs.php:398
-msgid "Site Title"
-msgstr "Titre du site"
-
-#: inc/markup-extras.php:908
-msgid "Add Custom HTML"
-msgstr "Ajouter du HTML personnalisé"
-
-#: assets/svg/logo-svg-icons/icons-v6-3.php:6181
-msgid "Y"
-msgstr "Y"
-
-#: inc/markup-extras.php:1813
-msgid "Add Widget"
-msgstr "Ajouter un widget"
-
 #: inc/compatibility/lifterlms/class-astra-lifterlms.php:831
-#: inc/metabox/class-astra-meta-boxes.php:632
+#: inc/metabox/class-astra-meta-boxes.php:648
 msgid "Content Layout"
 msgstr "Mise en page du contenu"
 
-#: inc/metabox/class-astra-meta-boxes.php:349
-#: inc/metabox/class-astra-meta-boxes.php:633
+#: inc/metabox/class-astra-meta-boxes.php:351
+#: inc/metabox/class-astra-meta-boxes.php:649
 msgid "Disable Sections"
 msgstr "Désactiver les sections"
 
-#: inc/compatibility/lifterlms/class-astra-lifterlms.php:746
-#: inc/metabox/class-astra-meta-boxes.php:373
-#: inc/metabox/class-astra-meta-boxes.php:854
-msgid "Disable Primary Header"
-msgstr "Désactiver l’en-tête principal"
-
 #: inc/compatibility/lifterlms/class-astra-lifterlms.php:784
-#: inc/metabox/class-astra-meta-boxes.php:405
+#: inc/metabox/class-astra-meta-boxes.php:407
 msgid "Disable Title"
 msgstr "Désactiver le titre"
 
@@ -13776,14 +13755,6 @@ msgstr "Modifier %s"
 #: inc/widgets.php:93
 msgid "Main Sidebar"
 msgstr "Colonne latérale principale"
-
-#: inc/addons/transparent-header/classes/class-astra-transparent-header-panels-and-sections.php:54
-#: inc/customizer/class-astra-customizer-register-sections-panels.php:80
-#: inc/customizer/configurations/builder/header/configs/primary-header.php:34
-#: inc/widgets.php:107 admin/assets/build/dashboard-app.js:10
-#: admin/assets/theme-builder/build/index.js:1
-msgid "Header"
-msgstr "En-tête"
 
 #: comments.php:71 comments.php:94
 msgid "Comments Navigation"
@@ -13813,17 +13784,9 @@ msgstr "Commencez à saisir du texte et appuyez sur Entrée pour rechercher"
 msgid "Type here.."
 msgstr "Écrivez ici…"
 
-#: inc/core/class-theme-strings.php:58
-msgid "Website"
-msgstr "Site Internet"
-
 #: inc/core/class-theme-strings.php:83
 msgid "It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps searching can help."
 msgstr "Il semble que nous ne pouvons pas trouver le contenu demandé. Peut-être qu’une recherche peut vous aider."
-
-#: inc/customizer/class-astra-customizer-register-sections-panels.php:209
-msgid "Blog / Archive"
-msgstr "Blog / Archive"
 
 #: inc/customizer/class-astra-customizer-register-sections-panels.php:216
 msgid "Single Post"
@@ -13880,9 +13843,30 @@ msgstr "Après la publication"
 
 #: inc/addons/transparent-header/classes/class-astra-ext-transparent-header-markup.php:340
 #: inc/customizer/configurations/layout/class-astra-footer-layout-configs.php:47
-#: inc/metabox/class-astra-meta-boxes.php:983
+#: inc/metabox/class-astra-meta-boxes.php:999
 msgid "Disabled"
 msgstr "Désactivé(e)"
+
+#: inc/customizer/configurations/layout/class-astra-footer-layout-configs.php:188
+msgid "Section 2 Custom Text"
+msgstr "Texte personnalisé de section 2"
+
+#: inc/customizer/configurations/layout/class-astra-footer-layout-configs.php:122
+msgid "Section 1 Custom Text"
+msgstr "Texte personnalisé de section 1"
+
+#: inc/core/class-theme-strings.php:51
+msgid "Your comment is awaiting moderation."
+msgstr "Votre commentaire est en attente de modération."
+
+#: inc/markup-extras.php:1115
+msgid "Assign Footer Menu"
+msgstr "Assigner un menu au pied de page"
+
+#: inc/compatibility/lifterlms/class-astra-lifterlms.php:810
+#: inc/metabox/class-astra-elementor-editor-settings.php:301
+msgid "Astra Settings"
+msgstr "Réglages d’Astra"
 
 #: inc/addons/breadcrumbs/customizer/class-astra-breadcrumbs-configs.php:41
 #: inc/addons/breadcrumbs/customizer/class-astra-breadcrumbs-configs.php:49
@@ -13909,31 +13893,14 @@ msgstr "Désactivé(e)"
 msgid "None"
 msgstr "Aucun(e)"
 
-#: inc/customizer/configurations/layout/class-astra-footer-layout-configs.php:188
-msgid "Section 2 Custom Text"
-msgstr "Texte personnalisé de section 2"
-
-#: inc/customizer/configurations/layout/class-astra-footer-layout-configs.php:122
-msgid "Section 1 Custom Text"
-msgstr "Texte personnalisé de section 1"
-
-#: inc/core/class-theme-strings.php:51
-msgid "Your comment is awaiting moderation."
-msgstr "Votre commentaire est en attente de modération."
-
-#: inc/markup-extras.php:1115
-msgid "Assign Footer Menu"
-msgstr "Assigner un menu au pied de page"
-
-#: inc/compatibility/lifterlms/class-astra-lifterlms.php:810
-#: inc/metabox/class-astra-elementor-editor-settings.php:282
-msgid "Astra Settings"
-msgstr "Réglages d’Astra"
-
 #. translators: 1: link to new post
 #: template-parts/content-none.php:23
 msgid "Ready to publish your first post? <a href=\"%1$s\">Get started here</a>."
 msgstr "Prêt à publier votre première publication ? <a href=\"%1$s\">Commencez ici</a>."
+
+#: inc/compatibility/lifterlms/class-astra-lifterlms.php:836
+msgid "Content Boxed"
+msgstr "Encadré - Contenu seulement"
 
 #: inc/compatibility/edd/customizer/sections/class-astra-edd-container-configs.php:76
 #: inc/compatibility/edd/customizer/sections/class-astra-edd-sidebar-configs.php:81
@@ -13947,10 +13914,10 @@ msgstr "Prêt à publier votre première publication ? <a href=\"%1$s\">Commenc
 #: inc/compatibility/woocommerce/customizer/sections/class-astra-woo-shop-sidebar-configs.php:80
 #: inc/customizer/configurations/layout/class-astra-sidebar-layout-configs.php:74
 #: inc/customizer/configurations/layout/class-astra-site-container-layout-configs.php:82
-#: inc/metabox/class-astra-meta-boxes.php:308
-#: inc/metabox/class-astra-meta-boxes.php:339
-#: inc/metabox/class-astra-meta-boxes.php:820
-#: inc/metabox/class-astra-meta-boxes.php:832
+#: inc/metabox/class-astra-meta-boxes.php:310
+#: inc/metabox/class-astra-meta-boxes.php:341
+#: inc/metabox/class-astra-meta-boxes.php:836
+#: inc/metabox/class-astra-meta-boxes.php:848
 #: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:132
 #: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:188
 #: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:113
@@ -13959,10 +13926,6 @@ msgstr "Prêt à publier votre première publication ? <a href=\"%1$s\">Commenc
 #: inc/modules/posts-structures/customizer/class-astra-posts-special-archive-structures-configs.php:726
 msgid "Boxed"
 msgstr "Encadré - Tout"
-
-#: inc/compatibility/lifterlms/class-astra-lifterlms.php:836
-msgid "Content Boxed"
-msgstr "Encadré - Contenu seulement"
 
 #: inc/customizer/configurations/builder/footer/configs/footer-builder.php:148
 msgid "Footer Layout"
@@ -13984,8 +13947,8 @@ msgstr "Pied de page supérieur"
 #: inc/compatibility/learndash/customizer/sections/class-astra-learndash-sidebar-configs.php:44
 #: inc/compatibility/lifterlms/customizer/sections/class-astra-lifter-sidebar-configs.php:29
 #: inc/compatibility/woocommerce/customizer/sections/class-astra-woo-shop-sidebar-configs.php:43
-#: inc/metabox/class-astra-elementor-editor-settings.php:356
-#: inc/metabox/class-astra-meta-boxes.php:318
+#: inc/metabox/class-astra-elementor-editor-settings.php:375
+#: inc/metabox/class-astra-meta-boxes.php:320
 #: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:151
 #: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:132
 #: inc/modules/posts-structures/customizer/class-astra-posts-special-archive-structures-configs.php:693
@@ -14045,6 +14008,44 @@ msgstr "Page"
 #: inc/core/class-theme-strings.php:57
 msgid "Email"
 msgstr "E-mail"
+
+#: inc/compatibility/class-astra-beaver-themer.php:354
+msgid "Before Header"
+msgstr "Avant l’en-tête"
+
+#: inc/addons/breadcrumbs/customizer/class-astra-breadcrumbs-configs.php:43
+#: inc/compatibility/class-astra-beaver-themer.php:355
+msgid "After Header"
+msgstr "Après l’en-tête"
+
+#: inc/customizer/configurations/layout/class-astra-blog-layout-configs.php:694
+#: inc/modules/posts-structures/customizer/class-astra-posts-single-structures-configs.php:334
+#: inc/modules/related-posts/customizer/class-astra-related-posts-configs.php:62
+msgid "Author"
+msgstr "Auteur"
+
+#: inc/compatibility/lifterlms/class-astra-lifterlms.php:746
+#: inc/metabox/class-astra-meta-boxes.php:375
+#: inc/metabox/class-astra-meta-boxes.php:870
+msgid "Disable Primary Header"
+msgstr "Désactiver l’en-tête principal"
+
+#: inc/addons/transparent-header/classes/class-astra-transparent-header-panels-and-sections.php:54
+#: inc/customizer/class-astra-customizer-register-sections-panels.php:80
+#: inc/customizer/configurations/builder/header/configs/primary-header.php:34
+#: inc/widgets.php:107 admin/assets/build/dashboard-app.js:10
+#: admin/assets/theme-builder/build/index.js:60752
+#: admin/assets/theme-builder/build/index.js:61181
+msgid "Header"
+msgstr "En-tête"
+
+#: inc/customizer/class-astra-customizer-register-sections-panels.php:209
+msgid "Blog / Archive"
+msgstr "Blog / Archive"
+
+#: inc/core/class-theme-strings.php:58
+msgid "Website"
+msgstr "Site"
 
 #. Author URI of the theme
 #: style.css

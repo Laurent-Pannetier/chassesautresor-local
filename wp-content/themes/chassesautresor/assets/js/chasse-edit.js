@@ -9,7 +9,7 @@ let erreurFin;
 let checkboxIllimitee;
 
 
-document.addEventListener('DOMContentLoaded', () => {
+function initChasseEdit() {
   if (typeof initZonesClicEdition === 'function') initZonesClicEdition();
   inputDateDebut = document.getElementById('chasse-date-debut');
   inputDateFin = document.getElementById('chasse-date-fin');
@@ -47,12 +47,43 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('toggle-mode-edition-chasse')?.addEventListener('click', () => {
     document.body.classList.toggle('edition-active-chasse');
     document.body.classList.toggle('panneau-ouvert');
+    document.body.classList.toggle('mode-edition');
   });
   document.querySelector('.edition-panel-chasse .panneau-fermer')?.addEventListener('click', () => {
     document.body.classList.remove('edition-active-chasse');
     document.body.classList.remove('panneau-ouvert');
+    document.body.classList.remove('mode-edition');
     document.activeElement?.blur();
   });
+
+  // ==============================
+  // 🧭 Déclencheur automatique
+  // ==============================
+  const params = new URLSearchParams(window.location.search);
+    const doitOuvrir = params.get('edition') === 'open';
+    const tab = params.get('tab');
+    const panel = params.get('panel');
+    const skipAuto = document.body.classList.contains('scroll-to-enigmes');
+    if (doitOuvrir && !skipAuto && panel !== 'organisateur') {
+    document.body.classList.add('edition-active-chasse', 'panneau-ouvert', 'mode-edition');
+    if (tab) {
+      const btn = document.querySelector(`.edition-tab[data-target="chasse-tab-${tab}"]`);
+      btn?.click();
+    }
+    DEBUG && console.log('🔧 Ouverture auto du panneau édition chasse via ?edition=open');
+  } else if (skipAuto && (doitOuvrir || tab)) {
+    params.delete('edition');
+    params.delete('tab');
+    const nouvelleUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}${window.location.hash}`;
+    window.history.replaceState({}, '', nouvelleUrl);
+  }
+
+  if (skipAuto) {
+    const cible = document.getElementById('carte-ajout-enigme');
+    if (cible) {
+      cible.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
 
   // ==============================
   // 📜 Panneau description (wysiwyg)
@@ -105,12 +136,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==============================
   if (inputDateFin) {
     if (checkboxIllimitee) {
-      inputDateFin.disabled = checkboxIllimitee.checked;
-      
+      const initialDisabled = inputDateFin.disabled;
+      inputDateFin.disabled = initialDisabled || checkboxIllimitee.checked;
+
       const postId = inputDateFin.closest('.champ-chasse')?.dataset.postId;
 
       checkboxIllimitee.addEventListener('change', function () {
-        inputDateFin.disabled = this.checked;
+        inputDateFin.disabled = initialDisabled || this.checked;
 
         // Si la case est décochée et les dates incohérentes, corriger la date de fin
         if (!this.checked) {
@@ -158,6 +190,97 @@ document.addEventListener('DOMContentLoaded', () => {
   const panneauRecompense = document.getElementById('panneau-recompense-chasse');
   const boutonSupprimerRecompense = document.getElementById('bouton-supprimer-recompense');
 
+  function formaterValeurRecompense() {
+    if (!inputValeurRecompense) return;
+    let brut = inputValeurRecompense.value.replace(/\s+/g, '').replace(',', '.');
+    if (brut === '') return;
+    const nombre = parseFloat(brut);
+    if (!isNaN(nombre)) {
+      const dec = brut.includes('.') ? Math.min(2, brut.split('.')[1].length) : 0;
+      inputValeurRecompense.value = nombre.toLocaleString('fr-FR', {
+        minimumFractionDigits: dec,
+        maximumFractionDigits: 2
+      });
+    }
+  }
+
+  if (inputValeurRecompense) {
+    inputValeurRecompense.addEventListener('input', formaterValeurRecompense);
+    formaterValeurRecompense();
+  }
+
+  function majAffichageRecompense(titre, texte, valeur) {
+    const ligne = document.querySelector('.champ-chasse[data-champ="chasse_infos_recompense_valeur"]');
+    if (!ligne) return;
+    const champTexte = ligne.querySelector('.champ-texte');
+    if (!champTexte) return;
+    const peutEditer = !ligne.classList.contains('champ-desactive');
+    champTexte.innerHTML = '';
+
+    const complet = titre && texte && valeur && valeur > 0;
+    ligne.classList.toggle('champ-rempli', complet);
+    ligne.classList.toggle('champ-vide', !complet);
+
+    if (!complet) {
+      if (peutEditer) {
+        const lien = document.createElement('a');
+        lien.href = '#';
+        lien.className = 'champ-ajouter ouvrir-panneau-recompense';
+        lien.dataset.champ = 'chasse_infos_recompense_valeur';
+        lien.dataset.cpt = 'chasse';
+        lien.dataset.postId = ligne.dataset.postId || '';
+        lien.innerHTML = 'ajouter <span class="icone-modif">✏️</span>';
+        champTexte.appendChild(lien);
+      }
+      if (typeof window.mettreAJourResumeInfos === 'function') {
+        window.mettreAJourResumeInfos();
+      }
+      return;
+    }
+
+    const span = document.createElement('span');
+    span.className = 'champ-texte-contenu';
+
+    const valeurSpan = document.createElement('span');
+    valeurSpan.className = 'recompense-valeur';
+    const arrondi = Math.round(valeur);
+    valeurSpan.textContent = arrondi.toLocaleString('fr-FR') + ' €';
+
+    const titreSpan = document.createElement('span');
+    titreSpan.className = 'recompense-titre';
+    titreSpan.textContent = titre;
+
+    span.appendChild(valeurSpan);
+    span.appendChild(document.createTextNode('\u00A0\u2013\u00A0'));
+    span.appendChild(titreSpan);
+
+    if (peutEditer) {
+      span.appendChild(document.createTextNode('\u00A0\u2013\u00A0'));
+      const bouton = document.createElement('button');
+      bouton.type = 'button';
+      bouton.className = 'champ-modifier ouvrir-panneau-recompense';
+      bouton.dataset.champ = 'chasse_infos_recompense_valeur';
+      bouton.dataset.cpt = 'chasse';
+      bouton.dataset.postId = ligne.dataset.postId || '';
+      bouton.setAttribute('aria-label', 'Modifier la récompense');
+      bouton.textContent = '✏️';
+      span.appendChild(bouton);
+      if (typeof initZoneClicEdition === 'function') initZoneClicEdition(bouton);
+    }
+
+    span.appendChild(document.createTextNode('\u00A0\u2013\u00A0'));
+    const descSpan = document.createElement('span');
+    descSpan.className = 'recompense-description';
+    const texteLimite = texte.length > 200 ? texte.slice(0, 200) + '…' : texte;
+    descSpan.textContent = texteLimite;
+    span.appendChild(descSpan);
+    champTexte.appendChild(span);
+
+    if (typeof window.mettreAJourResumeInfos === 'function') {
+      window.mettreAJourResumeInfos();
+    }
+  }
+
   if (boutonSupprimerRecompense) {
     boutonSupprimerRecompense.addEventListener('click', () => {
       const panneauEdition = document.querySelector('.edition-panel-chasse');
@@ -187,7 +310,13 @@ document.addEventListener('DOMContentLoaded', () => {
           });
         })
       ).then(() => {
-        location.reload();
+        majAffichageRecompense('', '', 0);
+        inputTitreRecompense.value = '';
+        inputTexteRecompense.value = '';
+        inputValeurRecompense.value = '';
+        if (typeof window.closePanel === 'function') {
+          window.closePanel('panneau-recompense-chasse');
+        }
       });
     });
 
@@ -198,7 +327,9 @@ document.addEventListener('DOMContentLoaded', () => {
     boutonRecompense.addEventListener('click', () => {
       const titre = inputTitreRecompense.value.trim();
       const texte = inputTexteRecompense.value.trim();
-      const valeur = parseFloat(inputValeurRecompense.value);
+      const valeur = parseFloat(
+        inputValeurRecompense.value.replace(/\s+/g, '').replace(',', '.')
+      );
       const panneauEdition = document.querySelector('.edition-panel-chasse');
       if (!panneauEdition) return;
       const postId = panneauEdition.dataset.postId;
@@ -215,8 +346,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      if (isNaN(valeur) || valeur <= 0) {
-        alert('Veuillez saisir une valeur en euros strictement supérieure à 0.');
+      if (isNaN(valeur) || valeur <= 0 || valeur > 5000000) {
+        alert('Veuillez saisir une valeur en euros comprise entre 0 et 5\u00a0000\u00a0000.');
         return;
       }
 
@@ -274,17 +405,14 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(r => r.json())
         .then(res => {
           if (res.success) {
-            if (typeof window.mettreAJourResumeInfos === 'function') {
-              window.mettreAJourResumeInfos();
-            }
-
+            majAffichageRecompense(titre, texte, valeur);
             if (document.activeElement && panneauRecompense.contains(document.activeElement)) {
               document.activeElement.blur();
-              document.body.focus(); // 🔥 Correction ultime ici
+              document.body.focus();
             }
-
-            location.reload();
-
+            if (typeof window.closePanel === 'function') {
+              window.closePanel('panneau-recompense-chasse');
+            }
           } else {
             console.error('❌ Erreur valeur récompense', res.data);
           }
@@ -294,7 +422,123 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
   }
-});
+
+  // ==============================
+  // 🧠 Explication – Mode de fin de chasse
+  // ==============================
+  const explicationModeFin = {
+    automatique: wp.i18n.__(
+      "Un joueur devient gagnant lorsqu’il résout toutes les énigmes. La chasse s’achève dès que le nombre de gagnants prévu est atteint.",
+      "chassesautresor-com"
+    ),
+    manuelle: wp.i18n.__(
+      "Vous arrêtez la chasse manuellement, grâce au bouton situé dans le panneau d'édition chasse.",
+      "chassesautresor-com"
+    )
+  };
+  document.querySelectorAll('.mode-fin-aide').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const mode = btn.dataset.mode;
+      const message = explicationModeFin[mode];
+      if (message) {
+        alert(message);
+      }
+    });
+  });
+
+  // ==============================
+  // 🏁 Terminaison manuelle
+  // ==============================
+  let zoneFinChasse;
+  let btnFinChasse;
+
+  function resetFinChasse() {
+    if (zoneFinChasse) {
+      const textarea = zoneFinChasse.querySelector('#chasse-gagnants');
+      const valider = zoneFinChasse.querySelector('.valider-fin-chasse-btn');
+      zoneFinChasse.style.display = 'none';
+      if (textarea) textarea.value = '';
+      if (valider) valider.disabled = true;
+    }
+    if (btnFinChasse) btnFinChasse.style.display = 'inline-block';
+    document.removeEventListener('keydown', onEscapeFinChasse);
+    zoneFinChasse = null;
+    btnFinChasse = null;
+  }
+
+  function onEscapeFinChasse(e) {
+    if (e.key === 'Escape') {
+      resetFinChasse();
+    }
+  }
+
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.terminer-chasse-btn');
+    if (btn) {
+      const zone = btn.nextElementSibling;
+      if (zone) {
+        zone.style.display = 'block';
+        const textarea = zone.querySelector('#chasse-gagnants');
+        const valider = zone.querySelector('.valider-fin-chasse-btn');
+        textarea.addEventListener('input', () => {
+          valider.disabled = textarea.value.trim() === '';
+        });
+        zoneFinChasse = zone;
+        btnFinChasse = btn;
+        document.addEventListener('keydown', onEscapeFinChasse);
+      }
+      btn.style.display = 'none';
+      return;
+    }
+
+    const annuler = e.target.closest('.annuler-fin-chasse-btn');
+    if (annuler) {
+      resetFinChasse();
+      return;
+    }
+
+    const valider = e.target.closest('.valider-fin-chasse-btn');
+    if (valider) {
+      document.removeEventListener('keydown', onEscapeFinChasse);
+      const postId = valider.dataset.postId;
+      const zone = valider.closest('.zone-validation-fin');
+      const textarea = zone.querySelector('#chasse-gagnants');
+      const gagnants = textarea.value.trim();
+      if (!gagnants) return;
+      valider.disabled = true;
+      const now = new Date();
+      const dateValue = now.toISOString().split('T')[0];
+      const dateDisplay = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+      const gagnantsEsc = gagnants.replace(/[&<>\"']/g, (c) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;',
+      })[c]);
+
+      modifierChampSimple('champs_caches.chasse_cache_gagnants', gagnants, postId, 'chasse')
+        .then((ok) => ok && modifierChampSimple('champs_caches.chasse_cache_date_decouverte', dateValue, postId, 'chasse'))
+        .then((ok) => ok && modifierChampSimple('champs_caches.chasse_cache_statut', 'termine', postId, 'chasse'))
+        .then((ok) => {
+          if (ok) {
+            const container = document.querySelector('.champ-mode-fin .fin-chasse-actions');
+            if (container) {
+              container.innerHTML = `<p class="message-chasse-terminee">Chasse gagnée le ${dateDisplay} par ${gagnantsEsc}</p>`;
+            }
+          } else {
+            valider.disabled = false;
+          }
+        });
+    }
+  });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initChasseEdit);
+} else {
+  initChasseEdit();
+}
 
 
 // ==============================
@@ -540,8 +784,68 @@ function initChampNbGagnants() {
   });
 }
 
+// ================================
+// 🔚 Gestion dynamique du mode de fin
+// ================================
+function initModeFinChasse() {
+  const radios = document.querySelectorAll('input[name="acf[chasse_mode_fin]"]');
+  const templateNb = document.getElementById('template-nb-gagnants');
+  const templateFin = document.getElementById('template-fin-chasse-actions');
+  const modeFinLi = document.querySelector('.champ-mode-fin');
+  const finActions = modeFinLi?.querySelector('.fin-chasse-actions');
+
+  if (!radios.length || !templateNb || !modeFinLi || !finActions) return;
+
+  const postId = modeFinLi.dataset.postId;
+
+  function update(save = false) {
+    const selected = document.querySelector('input[name="acf[chasse_mode_fin]"]:checked')?.value;
+    const existingNb = document.querySelector('.champ-nb-gagnants');
+
+    if (save && selected) {
+      modifierChampSimple('chasse_mode_fin', selected, postId, 'chasse');
+    }
+
+    if (selected === 'automatique') {
+      if (!existingNb) {
+        const clone = templateNb.content.firstElementChild.cloneNode(true);
+        modeFinLi.insertAdjacentElement('afterend', clone);
+        initChampNbGagnants();
+      }
+
+      document.querySelector('.annuler-fin-chasse-btn')?.dispatchEvent(new Event('click', { bubbles: true }));
+      const message = finActions.querySelector('.message-chasse-terminee');
+      finActions.innerHTML = '';
+      if (message) finActions.appendChild(message);
+
+      const inputNb = document.getElementById('chasse-nb-gagnants');
+      if (inputNb) {
+        mettreAJourAffichageNbGagnants(postId, inputNb.value.trim());
+      }
+    } else if (selected === 'manuelle') {
+      if (existingNb) existingNb.remove();
+
+      if (!finActions.querySelector('.terminer-chasse-btn') && templateFin) {
+        const message = finActions.querySelector('.message-chasse-terminee');
+        finActions.innerHTML = '';
+        if (message) finActions.appendChild(message);
+        finActions.appendChild(templateFin.content.cloneNode(true));
+      }
+
+      mettreAJourAffichageNbGagnants(postId, 0);
+    }
+  }
+
+  radios.forEach(radio => {
+    radio.addEventListener('change', () => update(true));
+  });
+
+  update();
+}
+
 // À appeler :
 initChampNbGagnants();
+initModeFinChasse();
 
 // ==============================
 // ➕ Mise à jour de la carte d'ajout d'énigme

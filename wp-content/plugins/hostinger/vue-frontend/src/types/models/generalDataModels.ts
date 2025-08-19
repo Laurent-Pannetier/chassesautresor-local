@@ -6,6 +6,7 @@ export type ToggleableSettingsData = {
   isEligibleWwwRedirect: boolean;
   disableAuthenticationPassword: boolean;
   enableLlmsTxt: boolean;
+  optinMcp: boolean;
 };
 
 export type NonToggleableSettingsData = {
@@ -28,6 +29,8 @@ export type HostingerToolsData = {
   phpVersion: string;
   llmstxtFileUrl: string
   llmstxtFileUserGenerated: boolean
+  mcpChoice: boolean
+  aiPluginCompatibility: boolean
 };
 
 export type SettingsData = NonToggleableSettingsData & ToggleableSettingsData;

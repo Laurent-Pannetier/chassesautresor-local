@@ -13,6 +13,14 @@ defined( 'ABSPATH' ) || exit;
  */
 define( 'CHILD_THEME_CHASSESAUTRESOR_COM_VERSION', '1.0.0' );
 
+/**
+ * Charge le domaine de traduction du thème enfant.
+ */
+function cta_load_textdomain() {
+    load_child_theme_textdomain( 'chassesautresor-com', get_stylesheet_directory() . '/languages' );
+}
+add_action( 'after_setup_theme', 'cta_load_textdomain' );
+
 
 /**
  * Chargement des styles du thème parent et enfant avec prise en charge d'Astra.
@@ -26,6 +34,7 @@ add_action('wp_enqueue_scripts', function () {
 
     // 📂 Liste des fichiers CSS organisés
     $styles = [
+        'grid'               => 'grid.css',
         'layout'             => 'layout.css',
         'components'         => 'components.css',
         'modal-bienvenue'    => 'modal-bienvenue.css',
@@ -45,6 +54,20 @@ add_action('wp_enqueue_scripts', function () {
     foreach ($styles as $handle => $file) {
         wp_enqueue_style($handle, $theme_dir . $file, [], filemtime(get_stylesheet_directory() . "/assets/css/{$file}"));
     }
+
+    $script_dir = get_stylesheet_directory_uri() . '/assets/js/';
+    if (is_account_page() && is_user_logged_in()) {
+        wp_enqueue_script(
+            'myaccount',
+            $script_dir . 'myaccount.js',
+            [],
+            filemtime(get_stylesheet_directory() . '/assets/js/myaccount.js'),
+            true
+        );
+        wp_localize_script('myaccount', 'ctaMyAccount', [
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+        ]);
+    }
 });
 
 
@@ -57,6 +80,7 @@ $inc_path = get_stylesheet_directory() . '/inc/';
 
 require_once $inc_path . 'constants.php';
 require_once $inc_path . 'utils.php';
+require_once $inc_path . 'PointsRepository.php';
 
 require_once $inc_path . 'shortcodes-init.php';
 require_once $inc_path . 'enigme-functions.php';
@@ -71,7 +95,10 @@ require_once $inc_path . 'organisateur-functions.php';
 require_once $inc_path . 'access-functions.php';
 require_once $inc_path . 'relations-functions.php';
 require_once $inc_path . 'layout-functions.php';
+require_once $inc_path . 'myaccount-functions.php';
 require_once $inc_path . 'utils/liens.php';
+require_once $inc_path . 'chasse/stats.php';
+require_once $inc_path . 'organisateur/stats.php';
 
 require_once $inc_path . 'edition/edition-core.php';
 require_once $inc_path . 'edition/edition-organisateur.php';
@@ -96,10 +123,19 @@ require_once $inc_path . 'edition/edition-securite.php';
  * @hook wp_head
  */
 add_action('wp_head', 'forcer_acf_form_head_chasse', 0);
-function forcer_acf_form_head_chasse() {
-    if (is_singular('chasse') && function_exists('acf_form_head')) {
-        acf_form_head();
+function forcer_acf_form_head_chasse()
+{
+    if (!is_singular('chasse') || !function_exists('acf_form_head')) {
+        return;
     }
+
+    $post_id = get_queried_object_id();
+
+    if (!current_user_can('edit_post', $post_id)) {
+        return;
+    }
+
+    acf_form_head();
 }
 
 

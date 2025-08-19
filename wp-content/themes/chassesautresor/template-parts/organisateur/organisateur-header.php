@@ -14,8 +14,8 @@ if (!is_numeric($organisateur_id)) return;
 $liens_actifs = organisateur_get_liens_actifs($organisateur_id);
 $types_disponibles = organisateur_get_liste_liens_publics(); // à garder si nécessaire
 
-$iban  = get_field('coordonnees_bancaires_iban', $organisateur_id);
-$bic   = get_field('coordonnees_bancaires_bic', $organisateur_id);
+$iban  = get_field('iban', $organisateur_id);
+$bic   = get_field('bic', $organisateur_id);
 $iban_vide = empty($iban);
 $bic_vide  = empty($bic);
 $classe_vide_coordonnees = ($iban_vide || $bic_vide) ? 'champ-vide' : '';
@@ -89,9 +89,11 @@ if ($peut_modifier && !$est_complet) {
         <a href="<?= esc_url($url_contact); ?>" class="lien-contact" aria-label="Contact">
           <i class="fa-solid fa-envelope"></i>
         </a>
-        <button id="toggle-mode-edition" class="bouton-edition-toggle" aria-label="Paramètres organisateur">
-          <i class="fa-solid fa-sliders"></i>
-        </button>
+        <?php if ($peut_modifier) : ?>
+          <button id="toggle-mode-edition" class="bouton-edition-toggle" aria-label="Paramètres organisateur">
+            <i class="fa-solid fa-gear"></i>
+          </button>
+        <?php endif; ?>
       </div>
     </div>
 
@@ -106,9 +108,6 @@ get_template_part('template-parts/organisateur/organisateur-partial-presentation
   'organisateur_id' => $organisateur_id
 ]);
 ?>
-</div>
-
-
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     document.body.dataset.organisateurId = "<?= esc_attr($organisateur_id); ?>";

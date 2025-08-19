@@ -220,6 +220,11 @@ function get_svg_icon($icone) {
             ';
 
         default:
+            $icone = preg_replace('/\.svg$/', '', $icone);
+            $path = get_stylesheet_directory() . '/assets/svg/' . $icone . '.svg';
+            if (file_exists($path)) {
+                return file_get_contents($path);
+            }
             return '';
     }
 }
@@ -231,10 +236,22 @@ function get_svg_icon($icone) {
 // 🧩 HEADERS
 // ==================================================
 /**
+ * 🔹 is_user_account_area → Vérifie si l’URL courante appartient à l’espace "Mon Compte".
  * 🔹 get_header_fallback → Affiche un header alternatif (style hero) pour les pages hors CPT organisateur.
  * 🔹 ajouter_class_has_hero_si_header_fallback → Ajoute la classe CSS "has-hero" au body si le header fallback est actif.
  * 🔹 filtrer_content_sans_titre → Supprime le <h1> du contenu s’il est identique au titre principal (évite les doublons SEO).
  */
+
+/**
+ * Vérifie si la requête actuelle cible une URL de l’espace utilisateur "Mon Compte".
+ *
+ * @return bool
+ */
+function is_user_account_area(): bool {
+    $request = trim($_SERVER['REQUEST_URI'], '/');
+
+    return strpos($request, 'mon-compte') === 0;
+}
 
 
 /**
@@ -273,10 +290,11 @@ function get_header_fallback($args = []) {
  * @return array
  */
 function ajouter_class_has_hero_si_header_fallback( $classes ) {
-	if ( is_page() ) {
-		$classes[] = 'has-hero';
-	}
-	return $classes;
+    if ( is_page() && ! is_user_account_area() ) {
+        $classes[] = 'has-hero';
+    }
+
+    return $classes;
 }
 add_filter( 'body_class', 'ajouter_class_has_hero_si_header_fallback' );
 
@@ -429,12 +447,21 @@ function afficher_bandeau_validation_chasse_global() {
         return;
     }
 
+    if (!is_singular('enigme')) {
+        return;
+    }
+
     $chasse_id = trouver_chasse_a_valider($user_id);
     if (!$chasse_id) {
         return;
     }
 
-    if (is_singular('chasse') && get_the_ID() === $chasse_id) {
+    if (!function_exists('recuperer_id_chasse_associee')) {
+        return;
+    }
+
+    $enigme_chasse_id = recuperer_id_chasse_associee(get_the_ID());
+    if ((int) $enigme_chasse_id !== (int) $chasse_id) {
         return;
     }
 

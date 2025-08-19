@@ -9,12 +9,13 @@
   border: 1px solid var(--color-secondary);
   border-radius: 8px;
   padding: 1rem;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   transition: transform 0.2s, box-shadow 0.2s;
 }
+
 .carte:hover {
   transform: translateY(-4px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
 /* ========== 🗂️ Grilles utilitaires ========== */
@@ -43,16 +44,18 @@
 }
 
 /* ========== 🎴 Cartes d\'énigme et de chasse ========== */
-.carte-enigme,
-.carte-chasse {
-  background: var(--color-background);
+.carte-enigme {
+  background: var(--color-text-primary);
   color: var(--color-text-primary);
   border: 1px solid var(--color-secondary);
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   transition: transform 0.2s, box-shadow 0.2s;
+  min-height: 350px;
 }
+
+
 
 .carte-enigme:hover,
 .carte-chasse:hover {
@@ -71,23 +74,53 @@
   flex-direction: column;
   padding: 0;
   height: 100%;
+  border: 1px solid var(--color-gris-3);
+  position: relative
 }
 
-.carte-enigme-image,
-.carte-ligne__image {
-  width: 100%;
-  height: 180px;
-  overflow: hidden;
+.etat-bloquee_chasse .carte-core,
+.etat-bloquee_date .carte-core,
+.etat-bloquee_pre_requis .carte-core,
+.etat-invalidee .carte-core,
+.etat-cache_invalide .carte-core {
+  background-color: var(--color-gris-carte);
+}
+
+.carte-enigme .carte-core svg {
+  color: var(--color-gris-3);
+}
+
+.carte-enigme .carte-core .enigme-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.carte-enigme .carte-core .enigme-placeholder svg {
+  width: 60%;
 }
 
 .carte-enigme-image {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
   position: relative;
   flex: 2;
 }
 
+.carte-ligne__image {
+  width: 300px;
+  height: auto;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+}
+
+
 .carte-enigme-cta {
   position: absolute;
-  bottom: 10px;
+  top:150px;
   left: 0;
   right: 0;
   display: flex;
@@ -97,7 +130,7 @@
 .carte-enigme h3 {
   margin: 0;
   padding: 0.5rem 1rem;
-  flex: 1;
+  flex: 0.5;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -108,7 +141,9 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   display: block;
+  max-height: 350px;
 }
 
 .carte-ligne {
@@ -117,8 +152,48 @@
 }
 
 .carte-ligne__contenu {
-  padding: 1rem;
+  padding: 1rem 2rem;
   flex: 1;
+}
+
+.carte-ligne__contenu .cta-div {
+  justify-content: center;
+}
+
+.carte-ligne__contenu .chasse-intro-extrait {
+  margin: 15px 0
+}
+
+.carte-ligne__contenu h3 {
+  margin: 0;
+}
+
+
+.carte-ligne__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  padding: 7px 25px;
+}
+
+.carte-ligne__footer .footer-icones {
+  display: flex;
+  gap: 1rem;
+}
+
+.carte-ligne__footer .footer-icones svg {
+  color: var(--color-gris-3);
+  width: 20px;
+  height: 20px;
+}
+
+.carte-ligne__footer .liste-liens-publics {
+  gap: 0.5rem;
+}
+
+.carte-ligne__footer .texte-lien {
+  display: none;
 }
 
 /* ========== ➕ Cartes d'ajout d'énigme et de chasse ========== */
@@ -138,11 +213,13 @@
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
-.carte-ajout-chasse .carte-chasse-contenu,
+.carte-ajout-chasse .carte-ligne__image,
+.carte-ajout-chasse .carte-ligne__contenu,
 .carte-ajout-enigme .contenu-carte {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
 }
 
@@ -167,6 +244,7 @@
   gap: 0.5rem;
   padding: 0 1rem;
 }
+
 
 /* ========== ✅ Indicateurs de complétion ========== */
 .carte-complete {
