@@ -24,8 +24,8 @@ $ajout_url = esc_url(add_query_arg('chasse_id', $chasse_id, home_url('/creer-eni
     id="carte-ajout-enigme"
     data-post-id="0"
   >
-    <i class="fa-solid fa-circle-plus fa-lg"></i>
-    <span class="screen-reader-text">Ajouter une énigme</span>
+    <i class="fa-solid fa-circle-plus fa-lg" aria-hidden="true"></i>
+    <span><?php echo esc_html__('Ajouter une énigme', 'chassesautresor-com'); ?></span>
   </a>
 <?php else : ?>
   <a

@@ -670,8 +670,8 @@ msgstr ""
 msgid "Texte énigme"
 msgstr ""
 
-#: template-parts/enigme/enigme-edition-main.php:188
-msgid "Modifier le texte"
+#: template-parts/enigme/enigme-edition-main.php:192
+msgid "Éditer le texte"
 msgstr ""
 
 #: template-parts/enigme/enigme-edition-main.php:202
