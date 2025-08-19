@@ -90,14 +90,15 @@
 }
 
 .enigme-menu--editable li a {
-  cursor: inherit;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 .enigme-menu li a:visited {
   color: inherit;
 }
 
-.enigme-menu li.bloquee > a {
+.enigme-menu:not(.enigme-menu--editable) li.bloquee > a {
   cursor: default;
 }
 
@@ -107,6 +108,10 @@
 
 .enigme-menu li:not(.active):hover > a {
   background-color: rgba(255, 215, 0, 0.1);
+}
+
+.enigme-menu--editable li:not(.active):hover > a {
+  background-color: rgba(255, 215, 0, 0.2);
 }
 
 .enigme-menu li.bloquee {
