@@ -2,8 +2,8 @@ const html = `
 <div class="myaccount-layout">
   <aside class="myaccount-sidebar">
     <nav class="dashboard-nav">
-      <a href="/mon-compte/?section=chasses" class="dashboard-nav-link" data-section="chasses">Chasses</a>
-      <a href="/mon-compte/?section=points" class="dashboard-nav-link" data-section="points">Points</a>
+      <a href="/mon-compte/?section=chasses" class="dashboard-nav-link" data-section="chasses" data-title="Vos chasses">Chasses</a>
+      <a href="/mon-compte/?section=points" class="dashboard-nav-link" data-section="points" data-title="Points">Points</a>
     </nav>
     <nav class="dashboard-nav admin-nav">
       <a href="/mon-compte/organisateurs/" class="dashboard-nav-link" data-section="organisateurs">Organisateurs</a>
@@ -12,6 +12,7 @@ const html = `
     </nav>
   </aside>
   <div class="myaccount-main">
+    <header class="myaccount-header"><h1 class="myaccount-title">Init</h1></header>
     <main class="myaccount-content">init</main>
   </div>
 </div>
@@ -51,6 +52,8 @@ describe('myaccount ajax navigation', () => {
     expect(fetch).toHaveBeenCalledWith(`/admin-ajax.php?action=cta_load_admin_section&section=${section}`, expect.any(Object));
     expect(document.querySelector('.myaccount-content').innerHTML).toContain('<section class="msg-important"></section>');
     expect(window.history.pushState).toHaveBeenCalled();
+    const expectedTitle = link.dataset.title || link.textContent;
+    expect(document.querySelector('.myaccount-title').textContent).toBe(expectedTitle);
   });
 
   test('loads section from query parameter', async () => {
@@ -69,6 +72,7 @@ describe('myaccount ajax navigation', () => {
     expect(fetch).toHaveBeenCalledWith('/admin-ajax.php?section=organisateurs&action=cta_load_admin_section', expect.any(Object));
     expect(window.history.replaceState).toHaveBeenCalledWith(null, '', '/mon-compte/');
     expect(document.querySelector('a[data-section="organisateurs"]').classList.contains('active')).toBe(true);
+    expect(document.querySelector('.myaccount-title').textContent).toBe('Organisateurs');
     global.URLSearchParams = originalURLSearchParams;
   });
 
