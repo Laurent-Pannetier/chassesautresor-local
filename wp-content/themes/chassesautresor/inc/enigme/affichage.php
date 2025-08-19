@@ -284,6 +284,7 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
             ob_start();
             echo '<aside class="menu-lateral">';
 
+            echo '<div class="menu-lateral__core">';
             echo '<div class="menu-lateral__header">';
             if ($chasse_id) {
                 $url_chasse = get_permalink($chasse_id);
@@ -292,10 +293,10 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
             }
 
             if ($edition_active) {
-                echo '<button id="toggle-mode-edition-enigme" type="button" ' .
-                    'class="bouton-edition-toggle bouton-edition-toggle--clair menu-lateral__edition-toggle" data-cpt="enigme" aria-label="' .
-                    esc_attr__('Activer Orgy', 'chassesautresor-com') .
-                    '"><i class="fa-solid fa-gear"></i></button>';
+                echo '<button id="toggle-mode-edition-enigme" type="button" '
+                    . 'class="bouton-edition-toggle bouton-edition-toggle--clair menu-lateral__edition-toggle" data-cpt="enigme" aria-label="'
+                    . esc_attr__('Activer Orgy', 'chassesautresor-com')
+                    . '"><i class="fa-solid fa-gear"></i></button>';
             }
             echo '</div>';
 
@@ -312,10 +313,23 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
                 echo '<ul class="enigme-menu">' . implode('', $menu_items) . '</ul>';
                 echo '</section>';
             }
+            echo '</div>';
 
-            echo '<section class="enigme-progression"><h3>' .
-                esc_html__('Progression', 'chassesautresor-com') .
-                '</h3>%STATS%</section>';
+            echo '<div class="menu-lateral__accordeons">';
+            echo '<div class="accordeon-bloc">';
+            echo '<button class="accordeon-toggle" type="button" aria-expanded="false">'
+                . '<i class="fa-solid fa-chevron-down" aria-hidden="true"></i>'
+                . '<span class="screen-reader-text">'
+                . esc_html__('Afficher la progression', 'chassesautresor-com')
+                . '</span></button>';
+            echo '<div class="accordeon-contenu accordeon-ferme">';
+            echo '<section class="enigme-progression">';
+            echo '<h3>' . esc_html__('Progression', 'chassesautresor-com') . '</h3>';
+            echo '%STATS%';
+            echo '</section>';
+            echo '</div>';
+            echo '</div>';
+            echo '</div>';
             echo '</aside>';
             $html = ob_get_clean();
             wp_cache_set($cache_key, $html, 'chassesautresor', HOUR_IN_SECONDS);

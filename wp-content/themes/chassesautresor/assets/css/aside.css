@@ -5,12 +5,16 @@
     var(--aside-opacity, 0.4)
   );
   padding: var(--space-md);
-  padding-bottom: var(--space-4xl);
+  padding-bottom: 0;
   border-radius: 6px;
   align-self: start;
   height: fit-content;
   color: rgba(var(--color-white-rgb, 255, 255, 255), 0.4);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.menu-lateral.has-open-accordeon {
+  padding-bottom: var(--space-4xl);
 }
 
 .menu-lateral__header {
@@ -126,6 +130,74 @@
 .stats-bar-chart .bar-row:nth-child(3) .bar-fill { background-color: hsl(0 0% 60%); }
 .stats-bar-chart .bar-row:nth-child(4) .bar-fill { background-color: hsl(0 0% 50%); }
 .stats-bar-chart .bar-row:nth-child(5) .bar-fill { background-color: hsl(0 0% 40%); }
+
+/* ===== Accordéons ===== */
+.menu-lateral__accordeons {
+}
+
+/* Premier bloc après le contenu principal */
+.accordeon-bloc {
+  margin-top: var(--space-md);
+}
+
+.accordeon-bloc + .accordeon-bloc {
+  margin-top: var(--space-sm);
+}
+
+.accordeon-toggle {
+  width: 100%;
+  background: none;
+  border: none;
+  color: inherit;
+  padding: var(--space-sm) 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.3s ease;
+}
+
+.accordeon-toggle i {
+  transition: transform 0.3s ease;
+}
+
+.accordeon-toggle[aria-expanded="true"] i {
+  transform: rotate(180deg);
+}
+
+.accordeon-toggle::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 50%;
+  height: 1px;
+  background-color: currentColor;
+  transform: translateX(-50%) scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.accordeon-toggle.is-hovered::after {
+  transform: translateX(-50%) scaleX(1);
+}
+
+.accordeon-toggle:hover,
+.accordeon-toggle:focus,
+.accordeon-toggle:active {
+  background-color: rgba(var(--color-white-rgb, 255, 255, 255), 0.15);
+}
+
+.accordeon-contenu {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.3s ease;
+}
+
+.accordeon-contenu:not(.accordeon-ferme) {
+  max-height: 1000px;
+}
 
 @media (min-width: var(--breakpoint-desktop)) {
   .menu-lateral {

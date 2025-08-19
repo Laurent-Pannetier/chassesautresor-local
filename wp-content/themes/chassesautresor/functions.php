@@ -138,6 +138,16 @@ add_action('wp_enqueue_scripts', function () {
             'ajaxUrl' => admin_url('admin-ajax.php'),
         ]);
     }
+
+    if (is_singular('enigme')) {
+        wp_enqueue_script(
+            'accordeon',
+            $script_dir . 'accordeon.js',
+            [],
+            filemtime($theme_path . '/assets/js/accordeon.js'),
+            true
+        );
+    }
 });
 
 
