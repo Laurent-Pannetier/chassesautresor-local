@@ -133,10 +133,6 @@ function myaccount_get_organizer_nav(int $user_id): ?array
                 $sub_classes .= ' status-important';
             }
 
-            if (strpos($classes, 'status-published') === false) {
-                $url = null;
-            }
-
             $chasse_item['enigmes'][] = [
                 'title'   => get_the_title($enigme_id),
                 'url'     => $url,
