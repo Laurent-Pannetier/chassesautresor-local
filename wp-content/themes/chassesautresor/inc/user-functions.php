@@ -223,14 +223,14 @@ function is_woocommerce_account_page() {
 }
 
 /**
- * Rename WooCommerce "orders" endpoint title to "Commandes".
+ * Rename WooCommerce "orders" endpoint title to "Vos commandes".
  *
  * @param string $title Original title.
  * @return string Modified title.
  */
 function ca_orders_endpoint_title($title)
 {
-    return __('Commandes', 'chassesautresor');
+    return __('Vos commandes', 'chassesautresor-com');
 }
 add_filter('woocommerce_endpoint_orders_title', 'ca_orders_endpoint_title');
 
