@@ -16,11 +16,22 @@ $has_valid_images = is_array($images) && array_filter($images, function ($img) {
     return isset($img['ID']) && (int) $img['ID'] !== ID_IMAGE_PLACEHOLDER_ENIGME;
 });
 
-if ($has_valid_images && function_exists('afficher_visuels_enigme')) {
-    cat_debug("[images] ✅ Galerie active pour #$post_id");
+if ($has_valid_images) {
+    cat_debug("[images] ✅ Affichage empilé pour #$post_id");
     ?>
-    <div class="galerie-enigme-wrapper">
-        <?php afficher_visuels_enigme($post_id); ?>
+    <div class="enigme-images">
+        <?php
+        foreach ($images as $img) {
+            $id = $img['ID'] ?? null;
+            if (!$id || (int) $id === ID_IMAGE_PLACEHOLDER_ENIGME) {
+                continue;
+            }
+
+            echo '<figure class="enigme-image">';
+            echo build_picture_enigme($id, __('Visuel énigme', 'chassesautresor-com'), ['thumbnail', 'medium', 'large', 'full']);
+            echo '</figure>';
+        }
+        ?>
     </div>
     <?php
 } else {
