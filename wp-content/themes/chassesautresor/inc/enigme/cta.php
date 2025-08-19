@@ -173,21 +173,33 @@ function get_cta_enigme(int $enigme_id, ?int $user_id = null): array
         ]);
     }
 
+    // 🔒 Pré-requis : l'utilisateur doit les remplir
+    if ($etat_systeme === 'bloquee_pre_requis') {
+        if (enigme_pre_requis_remplis($enigme_id, $user_id)) {
+            $etat_systeme = 'accessible';
+            $cta['etat_systeme'] = $etat_systeme;
+        }
+    }
+
     // 🚫 Énigme bloquée ou mal configurée
     if (!in_array($etat_systeme, ['accessible'], true)) {
-        $type = in_array($etat_systeme, ['bloquee_date', 'bloquee_chasse']) ? 'bloquee' : 'invalide';
+        $type = in_array($etat_systeme, ['bloquee_date', 'bloquee_chasse', 'bloquee_pre_requis']) ? 'bloquee' : 'invalide';
         $badge = [
-            'bloquee_date'       => 'À venir',
-            'bloquee_chasse'     => 'Chasse verrouillée',
-            'bloquee_pre_requis' => 'Pré-requis',
-            'invalide'           => 'Invalide',
-            'cache_invalide'     => 'Erreur config'
-        ][$etat_systeme] ?? 'Bloquée';
+            'bloquee_date'       => esc_html__('À venir', 'chassesautresor-com'),
+            'bloquee_chasse'     => esc_html__('Chasse verrouillée', 'chassesautresor-com'),
+            'bloquee_pre_requis' => esc_html__('Pré-requis', 'chassesautresor-com'),
+            'invalide'           => esc_html__('Invalide', 'chassesautresor-com'),
+            'cache_invalide'     => esc_html__('Erreur config', 'chassesautresor-com'),
+        ][$etat_systeme] ?? esc_html__('Bloquée', 'chassesautresor-com');
+
+        $sous_label = $etat_systeme === 'bloquee_pre_requis'
+            ? esc_html__('Résolvez d\'abord les énigmes prérequises.', 'chassesautresor-com')
+            : esc_html__('Cette énigme est bloquée ou mal configurée.', 'chassesautresor-com');
 
         return array_merge($cta, [
             'type'       => $type,
-            'label'      => 'Indisponible',
-            'sous_label' => 'Cette énigme est bloquée ou mal configurée.',
+            'label'      => esc_html__('Indisponible', 'chassesautresor-com'),
+            'sous_label' => $sous_label,
             'action'     => 'disabled',
             'classe_css' => 'cta-' . $type,
             'badge'      => $badge,

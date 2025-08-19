@@ -346,9 +346,9 @@ function trouver_chemin_image(int $image_id, string $taille = 'full'): ?array
  */
 function get_mapping_visuel_enigme(int $enigme_id): array
 {
-    $etat_systeme = get_field('enigme_cache_etat_systeme', $enigme_id);
     $cta_data     = get_cta_enigme($enigme_id);
     $cta_type     = $cta_data['type'] ?? 'erreur';
+    $etat_systeme = $cta_data['etat_systeme'] ?? get_field('enigme_cache_etat_systeme', $enigme_id);
 
 
     $cle = match (true) {

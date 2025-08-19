@@ -485,12 +485,17 @@ function enigme_mettre_a_jour_etat_systeme(int $enigme_id, bool $mettre_a_jour =
     // 🔐 Accès programmé / prérequis
     $condition = get_field('enigme_acces_condition', $enigme_id) ?? 'immediat';
 
-    if ($etat === 'accessible' && $condition === 'date_programmee') {
-        $date = get_field('enigme_acces_date', $enigme_id);
-        $date_obj = convertir_en_datetime($date);
-        if (!$date_obj || $date_obj->getTimestamp() > time()) {
-            $etat = 'bloquee_date';
-            cat_debug("🧩 #$enigme_id → bloquee_date (accès programmé futur ou vide)");
+    if ($etat === 'accessible') {
+        if ($condition === 'date_programmee') {
+            $date = get_field('enigme_acces_date', $enigme_id);
+            $date_obj = convertir_en_datetime($date);
+            if (!$date_obj || $date_obj->getTimestamp() > time()) {
+                $etat = 'bloquee_date';
+                cat_debug("🧩 #$enigme_id → bloquee_date (accès programmé futur ou vide)");
+            }
+        } elseif ($condition === 'pre_requis') {
+            $etat = 'bloquee_pre_requis';
+            cat_debug("🧩 #$enigme_id → bloquee_pre_requis (pré-requis exigés)");
         }
     }
 
