@@ -1533,21 +1533,14 @@ function initEnigmeReorder() {
     }
   });
 
-  menu.addEventListener('dragenter', (e) => {
-    const target = e.target.closest('li');
-    if (!dragged || !target || dragged === target) return;
-    target.classList.add('drag-over');
-  });
-
-  menu.addEventListener('dragleave', (e) => {
-    const target = e.target.closest('li');
-    if (target) target.classList.remove('drag-over');
-  });
-
   menu.addEventListener('dragover', (e) => {
     e.preventDefault();
     const target = e.target.closest('li');
     if (!dragged || !target || dragged === target) return;
+
+    menu.querySelectorAll('.drag-over').forEach((li) => li.classList.remove('drag-over'));
+    target.classList.add('drag-over');
+
     const rect = target.getBoundingClientRect();
     const next = e.clientY > rect.top + rect.height / 2;
     menu.insertBefore(dragged, next ? target.nextSibling : target);
