@@ -146,7 +146,8 @@ button,
 }
 
 /* ========== 🎯 BADGE COÛT ========== */
-.badge-cout {
+.badge-cout,
+.cout-points-badge {
     display: inline-block;
     margin-left: 8px;
     padding: 2px 6px;
@@ -156,6 +157,16 @@ button,
     font-size: 0.75rem;
     font-weight: 600;
     vertical-align: middle;
+}
+
+.cout-points-solde {
+    display: block;
+    margin-top: var(--space-xs);
+    font-size: 0.75rem;
+}
+
+.cout-points-regle {
+    margin-top: var(--space-xs);
 }
 @media (--bp-md) {
     .bouton-cta {

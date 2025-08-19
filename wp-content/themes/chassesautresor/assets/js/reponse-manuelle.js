@@ -4,9 +4,12 @@ function initFormulaireManuel() {
   const feedback = form.nextElementSibling;
   const input = form.querySelector('textarea[name="reponse_manuelle"]');
   const pointsMsg = form.querySelector('.message-limite');
-  const badgeCout = form.querySelector('.badge-cout');
+  const badgeCout = form.querySelector('.cout-points-badge');
+  const soldeInfo = form.querySelector('.cout-points-solde');
   const headerPoints = document.querySelector('.zone-points .points-value');
-  const cout = badgeCout ? parseInt(badgeCout.textContent, 10) : 0;
+  const cout = parseInt(form.dataset.cout || '0', 10);
+  const SEUIL_CONFIRM_PTS = 200;
+  const SEUIL_CONFIRM_PCT = 50;
   let hideTimer = null;
 
   const i18n = window.REPONSE_MANUELLE_I18N || {};
@@ -15,6 +18,14 @@ function initFormulaireManuel() {
 
   form.addEventListener('submit', e => {
     e.preventDefault();
+    const soldeActuel = parseInt(headerPoints ? headerPoints.textContent : form.dataset.solde || '0', 10);
+    if (cout >= SEUIL_CONFIRM_PTS || (soldeActuel > 0 && (cout * 100) / soldeActuel > SEUIL_CONFIRM_PCT)) {
+      const soldeApres = soldeActuel - cout;
+      if (!window.confirm(`Confirmer l’envoi ? Cette tentative coûtera ${cout} pts. Solde après : ${soldeApres} pts.`)) {
+        return;
+      }
+    }
+
     const data = new URLSearchParams(new FormData(form));
     data.append('action', 'soumettre_reponse_manuelle');
 
@@ -43,6 +54,9 @@ function initFormulaireManuel() {
           if (headerPoints && typeof res.data.points !== 'undefined') {
             headerPoints.textContent = res.data.points;
           }
+          if (soldeInfo && typeof res.data.points !== 'undefined') {
+            soldeInfo.textContent = `Solde : ${res.data.points} → ${res.data.points - cout} pts`;
+          }
 
           const msgProcessing = document.createElement('p');
           msgProcessing.className = 'message-joueur-statut';
@@ -50,7 +64,8 @@ function initFormulaireManuel() {
 
           const msgSuccess = document.createElement('p');
           msgSuccess.className = 'message-feedback-success';
-          msgSuccess.textContent = txtSuccess;
+          const txt = `-${cout} pts débités • Solde : ${res.data.points} pts`;
+          msgSuccess.textContent = txtSuccess ? `${txtSuccess} — ${txt}` : txt;
 
           if (feedback) feedback.remove();
           const parent = form.parentNode;

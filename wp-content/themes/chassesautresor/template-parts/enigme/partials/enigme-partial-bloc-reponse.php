@@ -24,6 +24,8 @@ if (!in_array($mode_validation, ['automatique', 'manuelle'])) return;
 
 $cout = (int) get_field('enigme_tentative_cout_points', $post_id);
 $max  = (int) get_field('enigme_tentative_max', $post_id);
+$solde_avant = get_user_points($user_id);
+$solde_apres = max(0, $solde_avant - $cout);
 
 if ($mode_validation === 'manuelle') {
   if (!utilisateur_peut_repondre_manuelle($user_id, $post_id)) {
@@ -50,7 +52,7 @@ $tentatives_du_jour = compter_tentatives_du_jour($user_id, $post_id);
   $boutique_url = esc_url(home_url('/boutique/'));
   $disabled = '';
   $label_btn = esc_html__('Valider', 'chassesautresor-com');
-  $points_manquants = 0;
+  $points_manquants = max(0, $cout - $solde_avant);
   $message_tentatives = '';
 
   if ($max && $tentatives_du_jour >= $max) {
@@ -70,23 +72,22 @@ $tentatives_du_jour = compter_tentatives_du_jour($user_id, $post_id);
     );
   }
 
-if ($cout > get_user_points($user_id)) {
+if ($points_manquants > 0) {
   $disabled = 'disabled';
-  $points_manquants = $cout - get_user_points($user_id);
 }
 
 $nonce = wp_create_nonce('reponse_auto_nonce');
 ?>
 
-<form class="bloc-reponse formulaire-reponse-auto">
+<form class="bloc-reponse formulaire-reponse-auto" data-cout="<?= esc_attr($cout); ?>" data-solde="<?= esc_attr($solde_avant); ?>">
     <h3><?= esc_html__('Votre réponse', 'chassesautresor-com'); ?></h3>
   <?php if ($message_tentatives) : ?>
     <p class="message-limite" data-tentatives="epuisees"><?= esc_html($message_tentatives); ?></p>
   <?php elseif ($points_manquants > 0) : ?>
     <p class="message-limite" data-points="manquants">
-      <?= esc_html(sprintf(__('Il vous manque %d points pour soumettre votre réponse.', 'chassesautresor-com'), $points_manquants)); ?>
-        <a href="<?= esc_url($boutique_url); ?>" class="points-link points-boutique-icon" title="<?= esc_attr__('Accéder à la boutique', 'chassesautresor-com'); ?>">
-        <span class="points-plus-circle">+</span>
+      <?= esc_html(sprintf(__('Il vous manque %d&nbsp;pts', 'chassesautresor-com'), $points_manquants)); ?>
+      <a href="<?= esc_url($boutique_url); ?>" class="points-link points-boutique-icon" title="<?= esc_attr__('Acheter des points', 'chassesautresor-com'); ?>">
+        <?= esc_html__('Acheter des points', 'chassesautresor-com'); ?>
       </a>
     </p>
   <?php else : ?>
@@ -97,9 +98,13 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
   <div class="reponse-cta-row">
       <button type="submit" class="bouton-cta" <?= $disabled; ?>><?= $label_btn; ?></button>
       <?php if ($cout > 0 && $statut_actuel !== 'resolue') : ?>
-        <span class="badge-cout"><?= esc_html($cout); ?> <?= esc_html__('pts', 'chassesautresor-com'); ?></span>
+        <span class="cout-points-badge"><?= esc_html(sprintf(__('Coût : %d pts', 'chassesautresor-com'), $cout)); ?></span>
       <?php endif; ?>
   </div>
+  <?php if ($cout > 0 && $points_manquants === 0) : ?>
+    <p class="cout-points-solde"><?= esc_html(sprintf(__('Solde : %d → %d pts', 'chassesautresor-com'), $solde_avant, $solde_apres)); ?></p>
+    <p class="cout-points-regle txt-small"><?= esc_html__('Les points sont débités à l’envoi.', 'chassesautresor-com'); ?></p>
+  <?php endif; ?>
 </form>
 <div class="reponse-feedback" style="display:none"></div>
 <?php if ($max > 0) : ?>

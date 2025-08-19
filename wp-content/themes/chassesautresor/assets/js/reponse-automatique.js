@@ -16,12 +16,24 @@ document.addEventListener('DOMContentLoaded', () => {
   const compteurValeur = compteur ? compteur.querySelector('.valeur') : null;
   const input = form.querySelector('input[name="reponse"]');
   const limiteMsg = document.querySelector('.message-limite');
-  const badgeCout = form.querySelector('.badge-cout');
+  const badgeCout = form.querySelector('.cout-points-badge');
+  const soldeInfo = form.querySelector('.cout-points-solde');
   const headerPoints = document.querySelector('.zone-points .points-value');
+  const cout = parseInt(form.dataset.cout || '0', 10);
+  const SEUIL_CONFIRM_PTS = 200;
+  const SEUIL_CONFIRM_PCT = 50;
   let hideTimer = null;
 
   form.addEventListener('submit', e => {
     e.preventDefault();
+    const soldeActuel = parseInt(headerPoints ? headerPoints.textContent : form.dataset.solde || '0', 10);
+    if (cout >= SEUIL_CONFIRM_PTS || (soldeActuel > 0 && (cout * 100) / soldeActuel > SEUIL_CONFIRM_PCT)) {
+      const soldeApres = soldeActuel - cout;
+      if (!window.confirm(`Confirmer l’envoi ? Cette tentative coûtera ${cout} pts. Solde après : ${soldeApres} pts.`)) {
+        return;
+      }
+    }
+
     const data = new URLSearchParams(new FormData(form));
     data.append('action', 'soumettre_reponse_automatique');
 
@@ -55,6 +67,12 @@ document.addEventListener('DOMContentLoaded', () => {
           form.reset();
           if (headerPoints && typeof res.data.points !== 'undefined') {
             headerPoints.textContent = res.data.points;
+            form.dataset.solde = res.data.points;
+          }
+
+          if (soldeInfo && typeof res.data.points !== 'undefined') {
+            const soldeApres = res.data.points - cout;
+            soldeInfo.textContent = `Solde : ${res.data.points} → ${soldeApres} pts`;
           }
 
           if (res.data.resultat === 'variante') {
@@ -105,6 +123,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.textContent = timeUntilMidnight();
               }
             }
+          }
+
+          if (badgeCout && typeof res.data.points !== 'undefined' && cout > 0) {
+            let txt = `-${cout} pts débités • Solde : ${res.data.points} pts`;
+            if (compteur && typeof res.data.compteur !== 'undefined') {
+              const max = parseInt(compteur.dataset.max || '0', 10);
+              txt += ` • Tentatives : ${res.data.compteur}/${max}`;
+            }
+            feedback.textContent = feedback.textContent ? `${feedback.textContent} — ${txt}` : txt;
+            feedback.style.display = 'block';
           }
         } else {
           feedback.textContent = res.data;

@@ -30,17 +30,17 @@ defined('ABSPATH') || exit;
             return '<p>Vous ne pouvez plus répondre à cette énigme.</p>';
         }
 
-        $data = calculer_contexte_points($user_id, $enigme_id);
+        $data  = calculer_contexte_points($user_id, $enigme_id);
         $nonce = wp_create_nonce('reponse_manuelle_nonce');
         ob_start();
     ?>
-    <form method="post" class="bloc-reponse formulaire-reponse-manuelle">
+    <form method="post" class="bloc-reponse formulaire-reponse-manuelle" data-cout="<?php echo esc_attr($data['cout']); ?>" data-solde="<?php echo esc_attr($data['solde_avant']); ?>">
         <h3><?php echo esc_html__('Votre réponse', 'chassesautresor-com'); ?></h3>
         <?php if ($data['points_manquants'] > 0) : ?>
             <p class="message-limite" data-points="manquants">
-                <?php echo esc_html(sprintf(__('Il vous manque %d points pour soumettre votre réponse.', 'chassesautresor-com'), $data['points_manquants'])); ?>
-                <a href="<?php echo esc_url($data['boutique_url']); ?>" class="points-link points-boutique-icon" title="Accéder à la boutique">
-                    <span class="points-plus-circle">+</span>
+                <?php echo esc_html(sprintf(__('Il vous manque %d pts', 'chassesautresor-com'), $data['points_manquants'])); ?>
+                <a href="<?php echo esc_url($data['boutique_url']); ?>" class="points-link points-boutique-icon" title="<?php echo esc_attr__('Acheter des points', 'chassesautresor-com'); ?>">
+                    <?php echo esc_html__('Acheter des points', 'chassesautresor-com'); ?>
                 </a>
             </p>
         <?php else : ?>
@@ -49,11 +49,15 @@ defined('ABSPATH') || exit;
         <input type="hidden" name="enigme_id" value="<?php echo esc_attr($enigme_id); ?>">
         <input type="hidden" name="reponse_manuelle_nonce" value="<?php echo esc_attr($nonce); ?>">
         <div class="reponse-cta-row">
-            <button type="submit" class="bouton-cta" <?php echo $data['disabled']; ?>>Envoyer</button>
+            <button type="submit" class="bouton-cta" <?php echo $data['disabled']; ?>><?php echo esc_html__('Envoyer', 'chassesautresor-com'); ?></button>
             <?php if ($data['cout'] > 0) : ?>
-                <span class="badge-cout"><?php echo esc_html($data['cout']); ?> pts</span>
+                <span class="cout-points-badge"><?php echo esc_html(sprintf(__('Coût : %d pts', 'chassesautresor-com'), $data['cout'])); ?></span>
             <?php endif; ?>
         </div>
+        <?php if ($data['cout'] > 0 && $data['points_manquants'] === 0) : ?>
+            <p class="cout-points-solde"><?php echo esc_html(sprintf(__('Solde : %d → %d pts', 'chassesautresor-com'), $data['solde_avant'], $data['solde_apres'])); ?></p>
+            <p class="cout-points-regle txt-small"><?php echo esc_html__('Les points sont débités à l’envoi.', 'chassesautresor-com'); ?></p>
+        <?php endif; ?>
     </form>
     <div class="reponse-feedback" style="display:none"></div>
     <?php
@@ -90,13 +94,15 @@ function utilisateur_peut_repondre_manuelle(int $user_id, int $enigme_id): bool
 function calculer_contexte_points(int $user_id, int $enigme_id): array
 {
     $cout = (int) get_field('enigme_tentative_cout_points', $enigme_id);
-    $solde = get_user_points($user_id);
-    $points_manquants = max(0, $cout - $solde);
+    $solde_avant = get_user_points($user_id);
+    $points_manquants = max(0, $cout - $solde_avant);
 
     return [
-        'cout'            => $cout,
-        'boutique_url'    => esc_url(home_url('/boutique/')),
-        'disabled'        => $points_manquants > 0 ? 'disabled' : '',
+        'cout'             => $cout,
+        'solde_avant'      => $solde_avant,
+        'solde_apres'      => max(0, $solde_avant - $cout),
+        'boutique_url'     => esc_url(home_url('/boutique/')),
+        'disabled'         => $points_manquants > 0 ? 'disabled' : '',
         'points_manquants' => $points_manquants,
     ];
 }
