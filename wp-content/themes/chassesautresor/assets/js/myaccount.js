@@ -20,6 +20,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  const decorateMessages = () => {
+    const container = content.querySelector('.msg-important');
+    if (container) {
+      container
+        .querySelectorAll('p:not(.flash)')
+        .forEach((p) => p.classList.add('alerte-discret'));
+    }
+  };
+
   const loadSection = async (link, push = true) => {
     const section = link.dataset.section;
     if (!section) {
@@ -43,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       const messages = data.data.messages || '';
       content.innerHTML = `<section class="msg-important">${messages}</section>` + data.data.html;
+      decorateMessages();
       fadeFlash();
       document
         .querySelectorAll('.dashboard-nav-link[data-section]')
@@ -57,7 +67,18 @@ document.addEventListener('DOMContentLoaded', () => {
         window.history.replaceState(null, '', '/mon-compte/');
       }
     } catch (err) {
-      window.location.assign(link.href);
+      content.innerHTML = `
+        <section class="msg-important">
+          <p>Impossible de charger la section.</p>
+          <p><a href="#" class="reload-section">Recharger</a> ou <a href="${link.href}">ouvrir la page complète</a>.</p>
+        </section>`;
+      const reload = content.querySelector('.reload-section');
+      if (reload) {
+        reload.addEventListener('click', (e) => {
+          e.preventDefault();
+          loadSection(link);
+        });
+      }
     }
   };
 
@@ -82,5 +103,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  decorateMessages();
   fadeFlash();
 });

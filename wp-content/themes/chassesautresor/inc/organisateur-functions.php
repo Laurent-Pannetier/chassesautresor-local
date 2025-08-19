@@ -365,6 +365,223 @@ function afficher_tableau_paiements_organisateur($user_id, $filtre_statut = 'tou
     echo '</tbody></table>';
 }
 
+/**
+ * Render conversion history table with AJAX pagination.
+ */
+function render_conversion_history(?int $user_id = null): string
+{
+    global $wpdb;
+    $repo = new PointsRepository($wpdb);
+
+    $per_page      = 10;
+    $total         = $repo->countConversionRequests($user_id);
+    if ($total === 0) {
+        return '';
+    }
+
+    $requests      = $repo->getConversionRequests($user_id, null, $per_page);
+    $paid_requests = $repo->getConversionRequests($user_id, 'paid');
+    $pending_count = $repo->countConversionRequests($user_id, 'pending');
+
+    $is_admin_view = $user_id === null;
+
+    $total_points = 0;
+    $total_eur    = 0.0;
+    foreach ($paid_requests as $request) {
+        $total_points += abs((int) $request['points']);
+        $total_eur    += (float) $request['amount_eur'];
+    }
+
+    $total_points_label = sprintf(
+        '%s : %s',
+        esc_html__('Total points', 'chassesautresor-com'),
+        number_format_i18n($total_points)
+    );
+    $total_eur_label = sprintf(
+        '%s : %s €',
+        esc_html__('Total €', 'chassesautresor-com'),
+        number_format_i18n($total_eur, 2)
+    );
+
+    $total_pages = (int) ceil($total / $per_page);
+    $expanded    = $pending_count > 0;
+
+    enqueue_conversion_history_script();
+
+    ob_start();
+    ?>
+    <div class="stats-table-wrapper conversion-history" data-per-page="<?php echo esc_attr($per_page); ?>">
+        <h3><?php esc_html_e('Historique conversion de points', 'chassesautresor-com'); ?></h3>
+        <div class="stats-table-summary">
+            <span class="etiquette etiquette-grande"><?php echo esc_html($total_points_label); ?></span>
+            <span class="etiquette etiquette-grande"><?php echo esc_html($total_eur_label); ?></span>
+            <button
+                type="button"
+                class="etiquette etiquette-grande conversion-history-toggle"
+                aria-expanded="<?php echo $expanded ? 'true' : 'false'; ?>"
+                aria-label="<?php echo $expanded ? esc_attr__('Fermer tableau', 'chassesautresor-com') : esc_attr__('Voir le tableau', 'chassesautresor-com'); ?>"
+                data-label-open="<?php esc_attr_e('Voir le tableau', 'chassesautresor-com'); ?>"
+                data-label-close="<?php esc_attr_e('Fermer tableau', 'chassesautresor-com'); ?>"
+            >
+                <span class="conversion-history-toggle-text">
+                    <?php echo $expanded ? esc_html__('Fermer tableau', 'chassesautresor-com') : esc_html__('Voir le tableau', 'chassesautresor-com'); ?>
+                </span>
+            </button>
+        </div>
+        <div class="conversion-history-table"<?php echo $expanded ? '' : ' style="display:none;"'; ?>>
+            <table class="stats-table">
+                <thead>
+                <tr>
+                    <th><?php esc_html_e('Date demande', 'chassesautresor-com'); ?></th>
+                    <?php if ($is_admin_view) : ?>
+                    <th><?php esc_html_e('Utilisateur', 'chassesautresor-com'); ?></th>
+                    <?php endif; ?>
+                    <th><?php esc_html_e('Montant (€)', 'chassesautresor-com'); ?></th>
+                    <th><?php esc_html_e('Points utilisés', 'chassesautresor-com'); ?></th>
+                    <th><?php esc_html_e('Statut', 'chassesautresor-com'); ?></th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($requests as $paiement) :
+                    switch ($paiement['request_status']) {
+                        case 'paid':
+                            $statut_affiche = '✅ ' . __('Réglé', 'chassesautresor-com');
+                            break;
+                        case 'cancelled':
+                            $statut_affiche = '❌ ' . __('Annulé', 'chassesautresor-com');
+                            break;
+                        case 'refused':
+                            $statut_affiche = '🚫 ' . __('Refusé', 'chassesautresor-com');
+                            break;
+                        default:
+                            $statut_affiche = '🟡 ' . __('En attente', 'chassesautresor-com');
+                    }
+                    $montant_eur     = number_format_i18n((float) $paiement['amount_eur'], 2);
+                    $points_utilises = number_format_i18n(abs((int) $paiement['points']));
+                    $user_name       = '';
+                    if ($is_admin_view) {
+                        $user      = get_userdata((int) $paiement['user_id']);
+                        $user_name = $user ? $user->display_name : sprintf(__('ID %d', 'chassesautresor-com'), (int) $paiement['user_id']);
+                    }
+                    ?>
+                    <tr>
+                        <td><?php echo esc_html(date_i18n('d/m/Y à H:i', strtotime($paiement['request_date']))); ?></td>
+                        <?php if ($is_admin_view) : ?>
+                        <td><?php echo esc_html($user_name); ?></td>
+                        <?php endif; ?>
+                        <td><?php echo esc_html($montant_eur); ?> €</td>
+                        <td><span class="etiquette etiquette-grande"><?php echo esc_html($points_utilises); ?></span></td>
+                        <td><span class="etiquette"><?php echo esc_html($statut_affiche); ?></span></td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+            <?php if ($total_pages > 1) : ?>
+            <?php echo cta_render_pager(1, $total_pages, 'points-history-pager'); ?>
+            <span class="conversion-history-loading" aria-hidden="true"></span>
+            <?php endif; ?>
+        </div>
+    </div>
+    <?php
+    return ob_get_clean();
+}
+
+/**
+ * Enqueue script for conversion history table.
+ */
+function enqueue_conversion_history_script(): void
+{
+    $path = '/assets/js/conversion-history.js';
+    wp_enqueue_script(
+        'conversion-history',
+        get_stylesheet_directory_uri() . $path,
+        [],
+        filemtime(get_stylesheet_directory() . $path),
+        true
+    );
+
+    wp_localize_script(
+        'conversion-history',
+        'ConversionHistoryAjax',
+        [
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce'    => wp_create_nonce('conversion-history-nonce'),
+        ]
+    );
+}
+
+/**
+ * Ensure conversion history script loads on pages where content may be injected via AJAX.
+ */
+function maybe_enqueue_conversion_history_script(): void
+{
+    if (is_account_page() || is_singular('organisateur')) {
+        enqueue_conversion_history_script();
+    }
+}
+add_action('wp_enqueue_scripts', 'maybe_enqueue_conversion_history_script');
+
+/**
+ * AJAX handler for loading paginated conversion history.
+ */
+function ajax_load_conversion_history(): void
+{
+    if (!is_user_logged_in()) {
+        wp_send_json_error();
+    }
+
+    check_ajax_referer('conversion-history-nonce', 'nonce');
+
+    $page     = isset($_POST['page']) ? (int) $_POST['page'] : 1;
+    $page     = max(1, $page);
+    $per_page = 10;
+    $offset   = ($page - 1) * $per_page;
+    $user_id  = current_user_can('administrator') ? null : get_current_user_id();
+    $is_admin = $user_id === null;
+
+    global $wpdb;
+    $repo     = new PointsRepository($wpdb);
+    $requests = $repo->getConversionRequests($user_id, null, $per_page, $offset);
+
+    ob_start();
+    foreach ($requests as $paiement) {
+        switch ($paiement['request_status']) {
+            case 'paid':
+                $statut_affiche = '✅ ' . __('Réglé', 'chassesautresor-com');
+                break;
+            case 'cancelled':
+                $statut_affiche = '❌ ' . __('Annulé', 'chassesautresor-com');
+                break;
+            case 'refused':
+                $statut_affiche = '🚫 ' . __('Refusé', 'chassesautresor-com');
+                break;
+            default:
+                $statut_affiche = '🟡 ' . __('En attente', 'chassesautresor-com');
+        }
+        $points_utilises = esc_html(abs((int) $paiement['points']));
+        $user_name       = '';
+        if ($is_admin) {
+            $user      = get_userdata((int) $paiement['user_id']);
+            $user_name = $user ? $user->display_name : sprintf(__('ID %d', 'chassesautresor-com'), (int) $paiement['user_id']);
+        }
+        ?>
+        <tr>
+            <td><?php echo esc_html(date_i18n('d/m/Y à H:i', strtotime($paiement['request_date']))); ?></td>
+            <?php if ($is_admin) : ?>
+            <td><?php echo esc_html($user_name); ?></td>
+            <?php endif; ?>
+            <td><?php echo esc_html($paiement['amount_eur']); ?> €</td>
+            <td><span class="etiquette etiquette-grande"><?php echo $points_utilises; ?></span></td>
+            <td><span class="etiquette"><?php echo esc_html($statut_affiche); ?></span></td>
+        </tr>
+        <?php
+    }
+    $rows = ob_get_clean();
+
+    wp_send_json_success(['rows' => $rows]);
+}
+add_action('wp_ajax_load_conversion_history', 'ajax_load_conversion_history');
+
 
 // ==================================================
 // 📩 FORMULAIRE DE CONTACT ORGANISATEUR (WPForms)

@@ -867,7 +867,7 @@ function initPanneauVariantes() {
                 lienAjouterResume.dataset.cpt = 'enigme';
                 lienAjouterResume.dataset.postId = postId;
                 lienAjouterResume.setAttribute('aria-label', wp.i18n.__('Ajouter des variantes', 'chassesautresor-com'));
-                lienAjouterResume.innerHTML = `${wp.i18n.__('ajouter des variantes', 'chassesautresor-com')} <span class="icone-modif">✏️</span>`;
+                lienAjouterResume.textContent = wp.i18n.__('ajouter des variantes', 'chassesautresor-com');
                 resumeBloc.appendChild(lienAjouterResume);
                 lienAjouterResume.addEventListener('click', e => {
                   e.preventDefault();
@@ -884,11 +884,11 @@ function initPanneauVariantes() {
               if (!boutonEditerResume) {
                 boutonEditerResume = document.createElement('button');
                 boutonEditerResume.type = 'button';
-                boutonEditerResume.className = 'champ-modifier ouvrir-panneau-variantes';
+                boutonEditerResume.className = 'champ-modifier txt-small ouvrir-panneau-variantes';
                 boutonEditerResume.dataset.cpt = 'enigme';
                 boutonEditerResume.dataset.postId = postId;
-                boutonEditerResume.setAttribute('aria-label', wp.i18n.__('Éditer les variantes', 'chassesautresor-com'));
-                boutonEditerResume.innerHTML = `${wp.i18n.__('éditer', 'chassesautresor-com')} <span class="icone-modif">✏️</span>`;
+                boutonEditerResume.setAttribute('aria-label', wp.i18n.__('Modifier les variantes', 'chassesautresor-com'));
+                boutonEditerResume.textContent = wp.i18n.__('modifier', 'chassesautresor-com');
                 resumeBloc.appendChild(boutonEditerResume);
                 boutonEditerResume.addEventListener('click', e => {
                   e.preventDefault();
@@ -1424,35 +1424,18 @@ function initPagerTentatives() {
   const wrapper = document.querySelector('#enigme-tab-soumission .liste-tentatives');
   const postId = document.querySelector('.edition-panel-enigme')?.dataset.postId;
   const compteur = document.querySelector('#enigme-tab-soumission .total-tentatives');
-  const info = wrapper?.querySelector('.pager-info');
   if (!wrapper || !postId) return;
 
-  wrapper.addEventListener('click', (e) => {
-    if (e.target.closest('.pager-first')) {
-      e.preventDefault();
-      charger(1);
-    }
-    if (e.target.closest('.pager-prev')) {
-      e.preventDefault();
-      const page = parseInt(wrapper.dataset.page || '1', 10);
-      if (page > 1) charger(page - 1);
-    }
-    if (e.target.closest('.pager-next')) {
-      e.preventDefault();
-      const page = parseInt(wrapper.dataset.page || '1', 10);
-      const pages = parseInt(wrapper.dataset.pages || '1', 10);
-      if (page < pages) charger(page + 1);
-    }
-    if (e.target.closest('.pager-last')) {
-      e.preventDefault();
-      const pages = parseInt(wrapper.dataset.pages || '1', 10);
-      charger(pages);
-    }
-  });
-
-  if (info) {
-    info.textContent = (wrapper.dataset.page || '1') + ' / ' + (wrapper.dataset.pages || '1');
+  function attachPager() {
+    const pager = wrapper.querySelector('.pager');
+    if (!pager) return;
+    pager.addEventListener('pager:change', (e) => {
+      const page = e.detail?.page || 1;
+      charger(page);
+    });
   }
+
+  attachPager();
 
   function charger(page) {
     fetch(ajaxurl, {
@@ -1470,9 +1453,9 @@ function initPagerTentatives() {
         wrapper.innerHTML = res.data.html;
         wrapper.dataset.page = res.data.page;
         wrapper.dataset.pages = res.data.pages;
+        wrapper.dataset.total = res.data.total;
         if (compteur) compteur.textContent = '(' + res.data.total + ')';
-        const span = wrapper.querySelector('.pager-info');
-        if (span) span.textContent = res.data.page + ' / ' + res.data.pages;
+        attachPager();
       });
   }
 }

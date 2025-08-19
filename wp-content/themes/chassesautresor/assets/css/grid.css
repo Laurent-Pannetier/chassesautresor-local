@@ -1,18 +1,12 @@
 /* \uD83D\uDCC0 Grid system */
 
-:root {
-  --container-max-width: 1200px;
-  --grid-gap: 1rem;
-  --grid-columns: 12;
-}
-
 .container {
   width: 100%;
   max-width: var(--container-max-width);
   margin-left: auto;
   margin-right: auto;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
 }
 
 .container.fullwidth,
@@ -52,14 +46,14 @@
 .col-11 { --col-span: 11; }
 .col-12 { --col-span: 12; }
 
-@media (max-width: 1024px) {
+@media (--bp-lg) {
   .row { --grid-columns: 8; }
 }
 
-@media (max-width: 768px) {
+@media (--bp-md) {
   .row { --grid-columns: 6; }
 }
 
-@media (max-width: 480px) {
+@media (--bp-sm) {
   .row { --grid-columns: 4; }
 }

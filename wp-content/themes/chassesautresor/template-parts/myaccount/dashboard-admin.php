@@ -32,37 +32,6 @@ defined('ABSPATH') || exit;
         </div>
         <?php endif; ?>
 
-        <?php
-        $chasses_creation = new WP_Query([
-            'post_type'      => 'chasse',
-            'post_status'    => 'pending',
-            'meta_query'     => [
-                [
-                    'key'     => 'chasse_cache_statut_validation',
-                    'value'   => ['creation', 'correction'],
-                    'compare' => 'IN'
-                ]
-            ],
-            'orderby'        => 'date',
-            'order'          => 'DESC',
-            'posts_per_page' => 5,
-            'fields'        => 'ids'
-        ]);
-        if ($chasses_creation->have_posts()) : ?>
-        <div class="dashboard-card">
-            <div class="dashboard-card-header">
-                <i class="fas fa-hammer"></i>
-                <h3>en édition</h3>
-            </div>
-            <div class="stats-content">
-                <ul>
-                    <?php foreach ($chasses_creation->posts as $cid) : ?>
-                        <li><a href="<?php echo esc_url(get_permalink($cid)); ?>"><?php echo esc_html(get_the_title($cid)); ?></a></li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
-        </div>
-        <?php endif; ?>
     </div>
 </div>
 

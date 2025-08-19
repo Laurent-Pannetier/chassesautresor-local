@@ -1,4 +1,11 @@
 
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
 /* 📋 Blocs */
 
   /* ✨ Bloc élgégant */
@@ -71,7 +78,7 @@
 
 .bloc-elegant li {
   position: relative;
-  padding-left: 1.5rem;
+  padding-left: var(--space-xl);
   margin-bottom: 0.6rem;
 }
 
@@ -133,6 +140,11 @@ button,
     opacity: 0.6;
 }
 
+.bouton-cta:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
 /* ========== 🎯 BADGE COÛT ========== */
 .badge-cout {
     display: inline-block;
@@ -145,15 +157,46 @@ button,
     font-weight: 600;
     vertical-align: middle;
 }
-@media (max-width: 768px) {
+@media (--bp-md) {
     .bouton-cta {
         padding: 8px 13px;
     }
 }
-@media (max-width: 480px) {
+@media (--bp-sm) {
     .bouton-cta {
         padding: 6px 10px;
     }
+}
+
+/* ========== ⭐ BOUTON PRIMAIRE ========== */
+
+.bouton-primaire {
+    background: var(--color-primary);
+    color: var(--color-text-fond-clair);
+    border: 1px solid var(--color-primary);
+    transition: background 0.3s ease, transform 0.2s ease;
+    padding: 10px 15px;
+    border-radius: 3px;
+    margin: 6px 0;
+    display: inline-block;
+    text-align: center;
+    line-height: 16px;
+}
+
+.bouton-primaire:hover {
+    background: var(--color-secondary);
+    transform: scale(1.05);
+}
+
+.bouton-primaire:disabled {
+    background: var(--color-gris-3);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.bouton-primaire:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
 }
 
 /* ========== 🎯 BOUTON SECONDAIRE ========== */
@@ -173,7 +216,7 @@ button,
 
 .bouton-secondaire:hover {
     background: var(--color-primary);
-    color: #000;
+    color: var(--color-text-fond-clair);
     transform: scale(1.05);
 }
 .bouton-secondaire.no-click {
@@ -183,7 +226,8 @@ button,
     padding: 12px 20px;
     border-radius: 5px;
     font-size: 1rem;
-    cursor: pointer;
+    cursor: not-allowed;
+    pointer-events: none;
     text-align: center;
     width: fit-content;
     display: flex;
@@ -196,11 +240,107 @@ button,
     opacity: 0.6;
 }
 
+.bouton-secondaire:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* ========== 🔲 BOUTON TERTIAIRE ========== */
+
+.bouton-tertiaire {
+    background: transparent;
+    color: var(--color-text-fond-clair);
+    border: 1px solid currentColor;
+    transition: background 0.3s ease, transform 0.2s ease;
+    padding: 10px 15px;
+    border-radius: 3px;
+    margin: 6px 0;
+    display: inline-block;
+    text-align: center;
+    line-height: 16px;
+}
+
+.bouton-tertiaire:hover {
+    background: var(--color-text-fond-clair);
+    color: var(--color-text-primary);
+    transform: scale(1.05);
+}
+
+.bouton-tertiaire:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.bouton-tertiaire:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* ========== ⚠️ BOUTON DANGER ========== */
+
+.btn-danger {
+    background: var(--color-editor-error);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-editor-error);
+    transition: background 0.3s ease, transform 0.2s ease;
+    padding: 10px 15px;
+    border-radius: 3px;
+    margin: 6px 0;
+    display: inline-block;
+    text-align: center;
+    line-height: 16px;
+}
+
+.btn-danger:hover {
+    filter: brightness(1.1);
+    transform: scale(1.05);
+}
+
+.btn-danger:disabled {
+    background: var(--color-gris-3);
+    border-color: var(--color-gris-3);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.btn-danger:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* ========== 🖱️ BOUTON ICÔNE ========== */
+
+.btn-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border-radius: 50%;
+}
+
+.btn-icon:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* ========== 🔙 BOUTON RETOUR AUX CHASSES ========== */
+
+.bouton-retour-chasse {
+    margin-top: var(--space-lg);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    font-size: 1rem;
+}
+
 
 /* ========== ➕ BOUTON D’AJOUT ========== */
 
-.ajout-link {
-    display: flex !important;
+a.ajout-link {
+    display: flex;
     align-items: center; /* Centre verticalement l'icône et le texte */
     justify-content: center; /* Centre horizontalement */
     gap: 8px; /* Espacement entre l'icône et le texte */
@@ -232,21 +372,31 @@ button,
     transform: scale(1.05);
 }
 
+a.ajout-link:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
 
 /* ========== 📖 BOUTON "LIRE PLUS" ========== */
 
 .btn-lire-plus {
-  background-color: #880000;
-  color: #F5F5DC;
+  background-color: var(--color-background-button);
+  color: var(--color-text-primary);
   margin-top: 10px;
 }
 
 .btn-lire-plus:hover {
-  background-color: #A9A9A9;
-  color: #0B132B;
+  background-color: var(--color-background-button-inactive);
+  color: var(--color-background);
 }
 
-@media (max-width: 768px) {
+.btn-lire-plus:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+@media (--bp-md) {
   .btn-lire-plus {
     width: 100%;
   }
@@ -261,29 +411,34 @@ button,
 }
 
 .bouton-retour {
-  background-color: #880000;
-  color: #F5F5DC;
-  padding: 12px 24px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  background: none;
+  color: var(--color-gris-3);
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  font-size: 1.5rem;
+  line-height: 1;
 }
 
 .bouton-retour:hover {
-  background-color: #A9A9A9;
-  color: #0B132B;
-  transform: translateY(-3px);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  color: var(--color-primary);
+  background: none;
+  transform: none;
+  box-shadow: none;
 }
 
 .bouton-retour:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transform: none;
 }
 
-@media (max-width: 480px) {
+.bouton-retour:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+@media (--bp-sm) {
   .bouton-retour {
-    width: 100%;
-    font-size: 14px;
-    padding: 10px;
+    font-size: 1.25rem;
   }
 }
 
@@ -305,7 +460,7 @@ button,
   color: var(--color-accent); /* ou var(--color-secondary) */
   padding: 0.2rem 0.6rem;
   border-radius: 4px;
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--space-xs);
   letter-spacing: 0.05em;
   font-style: normal;
 }
@@ -338,7 +493,7 @@ button,
 .meta-etiquette strong {
   font-weight: 600;
 }
-@media (max-width: 480px) {
+@media (--bp-sm) {
     .bloc-metas-inline {
         gap:0.8rem;
     }
@@ -357,12 +512,12 @@ button,
 /* ========== 🟢 BADGE ROND ========== */
 
 .badge-rond {
-    margin: 0px 0px 0px 0px;
+    margin: 0;
     padding: 2px 0;
     background-color: var(--color-primary); /* Jaune or */
     transition: background 0.5s;
-    border-radius: 200px 200px 200px 200px;
-    font-size : 12px;
+    border-radius: 200px;
+    font-size: 12px;
 }
 
 
@@ -376,7 +531,7 @@ button,
   font-size: 0.75rem;
   font-weight: bold;
   border-radius: 999px;
-  color: #fff;
+  color: var(--color-text-primary);
   text-transform: uppercase;
   letter-spacing: 0.03em;
   line-height: 1;
@@ -411,10 +566,10 @@ button,
 /* ========== 🎁 BADGE RÉCOMPENSE ========== */
 
 .badge-recompense {
-  margin-left: 1rem;
+  margin-left: var(--space-md);
   font-size: 0.85rem;
   font-weight: 600;
-  padding: 0.25rem 0.5rem;
+  padding: var(--space-xxs) var(--space-xs);
   border-radius: 0.4rem;
   background-color: rgba(255, 255, 255, 0.05);
   color: var(--color-text-primary);
@@ -451,8 +606,8 @@ button,
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  margin: 3rem 0;
+  gap: var(--space-md);
+  margin: var(--space-4xl) 0;
   opacity: 0.6;
 }
 .separateur-avec-icone .icone-svg {
@@ -485,7 +640,7 @@ button,
 .separateur-1 {
   border: none;
   border-top: 1px dashed var(--color-accent);
-  margin: 2rem auto;
+  margin: var(--space-2xl) auto;
   max-width: 600px;
   opacity: 0.4;
 }
@@ -496,7 +651,7 @@ button,
   height: 2px;
   width: 40px;
   background-color: var(--color-accent);
-  margin: 0.5rem 0 1.5rem;
+  margin: var(--space-xs) 0 var(--space-xl);
 }
 
 
@@ -510,7 +665,7 @@ button,
 }
 
 /* ========== 📱 RESPONSIVE ========== */
-@media (max-width: 480px) {
+@media (--bp-sm) {
     .separateur-2 {
         margin: 0 auto;
     }
@@ -525,27 +680,28 @@ button,
 /* ========== 📩 FORMULAIRE DE CONTACT ORGANISATEUR ========== */
 
 .formulaire-contact-wrapper {
-  margin:2rem auto;
+  margin:var(--space-2xl) auto;
   max-width: 600px;
 }
-.formulaire-contact-wrapper h1 {
-    margin-bottom: 0.8rem;
+.titre-contact {
+  margin-bottom: 0.8rem;
 }
 body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
     color: var(--color-text-primary);
 }
-@media (max-width: 480px) {
+@media (--bp-sm) {
   .formulaire-contact-wrapper {
-    padding-left: 1rem;
-    padding-right: 1rem;
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
   }
 }
 #wpforms-8792-field_6-container {
+    /* Ce champ appartient au plugin WPForms : utilisation volontaire de !important */
     display:none !important;
 }
 
-.champ-attention {
-  border: 2px dashed #D93025 !important;
+.wpforms-form .champ-attention {
+  border: 2px dashed var(--color-editor-error);
   animation: pulse-attention 1.2s ease-in-out infinite;
   background-color: #fff5f5;
   color: var(--color-editor-text);
@@ -575,7 +731,7 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
 /* ========== 📊 BARRE DE PROGRESSION ========== */
 
 .progression-container {
-  background-color: #A9A9A9;
+  background-color: var(--color-background-button-inactive);
   border-radius: 10px;
   height: 8px;
   overflow: hidden;
@@ -583,7 +739,7 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
 }
 
 .progression-bar {
-  background-color: #228B22;
+  background-color: var(--color-success);
   height: 100%;
   border-radius: 10px;
   transition: width 0.4s ease;
@@ -603,7 +759,7 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
 /* 📝 Message sous le cadenas */
 .message-deblocage {
     background: rgba(0, 0, 0, 0.6);
-    color: #F5F5DC;
+    color: var(--color-text-primary);
     padding: 12px 20px;
     border-radius: 10px;
     font-size: 1rem;
@@ -612,7 +768,7 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
 /* ⏳ Bloc du compte à rebours */
 .countdown-container {
     background: rgba(0, 0, 0, 0.7);
-    color: #FFD700;
+    color: var(--color-primary);
     font-weight: bold;
     font-size: 1.2rem;
     padding: 10px 20px;
@@ -621,7 +777,7 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
     text-align: center;
 }
 
-@media (max-width: 768px) {
+@media (--bp-md) {
     .countdown-container { font-size: 1rem; }
 }
 
@@ -692,6 +848,13 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
 /* ========== 🚫 NO-CLICK ========== */
 
 .no-click {
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+a.disabled,
+a[aria-disabled="true"] {
+    cursor: not-allowed;
     pointer-events: none;
 }
 
@@ -701,7 +864,7 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
 .message-succes {
     text-align: center;
     font-weight: bold;
-    color: green;
+    color: var(--color-success);
     font-size: 16px;
     margin-top: 15px;
 }
@@ -710,7 +873,7 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
 .message-info {
     text-align: center;
     font-weight: bold;
-    color: #333;
+    color: var(--color-text-fond-clair);
     font-size: 16px;
     margin-top: 15px;
 }

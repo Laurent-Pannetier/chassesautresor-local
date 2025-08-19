@@ -90,7 +90,7 @@ $statut_validation = $infos_chasse['statut_validation'];
 $nb_joueurs = $infos_chasse['nb_joueurs'];
 
 get_header();
-error_log("🧪 test organisateur_associe : " . ($est_orga_associe ? 'OUI' : 'NON'));
+cat_debug("🧪 test organisateur_associe : " . ($est_orga_associe ? 'OUI' : 'NON'));
 
 $can_validate = peut_valider_chasse($chasse_id, $user_id);
 ?>
@@ -268,6 +268,23 @@ if (!$modal_deja_vue) :
   if ($post_bienvenue && $post_bienvenue->post_status === 'publish') :
     update_post_meta($chasse_id, 'chasse_modal_bienvenue_vue', '1');
     $contenu = apply_filters('the_content', $post_bienvenue->post_content);
+    $dom = new DOMDocument();
+    libxml_use_internal_errors(true);
+    $dom->loadHTML('<?xml encoding="utf-8" ?>' . $contenu);
+    libxml_clear_errors();
+
+    foreach ($dom->getElementsByTagName('h1') as $node) {
+        $node->setAttribute('class', trim('modal-title ' . $node->getAttribute('class')));
+    }
+    foreach ($dom->getElementsByTagName('h2') as $node) {
+        $node->setAttribute('class', trim('modal-subtitle ' . $node->getAttribute('class')));
+    }
+
+    $body = $dom->getElementsByTagName('body')->item(0);
+    $contenu = '';
+    foreach ($body->childNodes as $child) {
+        $contenu .= $dom->saveHTML($child);
+    }
 ?>
     <div class="modal-bienvenue-wrapper" role="dialog" aria-modal="true" aria-labelledby="modal-titre">
       <div class="modal-bienvenue-inner">

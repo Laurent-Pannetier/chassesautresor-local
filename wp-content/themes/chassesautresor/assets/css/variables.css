@@ -1,0 +1,99 @@
+/* 🎨 Variables globales */
+@custom-media --bp-xs (max-width: 374px);
+@custom-media --bp-sm (max-width: 480px);
+@custom-media --bp-540 (max-width: 540px);
+@custom-media --bp-600 (max-width: 600px);
+@custom-media --bp-md (max-width: 768px);
+@custom-media --bp-921 (max-width: 921px);
+@custom-media --bp-lg (max-width: 1024px);
+
+:root {
+  /* Typographie et breakpoints */
+  --font-main: 'Poppins', sans-serif; /* Police principale */
+  --bp-xs: 374px;
+  --bp-sm: 480px;
+  --bp-540: 540px;
+  --bp-600: 600px;
+  --bp-md: 768px;
+  --bp-921: 921px;
+  --bp-lg: 1024px;
+
+  /* Couleurs globales */
+  --color-primary: #FFD700;   /* 🟡 Couleur principale : jaune or */
+  --color-secondary: #E1A95F; /* 🟠 Couleur secondaire : lien */
+  --color-accent: #CD7F32;    /* 🟤 Accent : bronze */
+
+  --color-text-primary: #F5F5DC;   /* 📜 Texte principal : beige clair */
+  --color-text-secondary: #555555; /* 🎨 Texte secondaire : gris foncé */
+  --color-titre-enigme: #E5C07B;   /* 🏆 Titre des énigmes : or vieilli */
+
+  --color-background: #0B132B;               /* 🎭 Fond général */
+  --color-background-button: #880000;        /* 🔘 Fond des boutons : rouge profond */
+  --color-background-button-hover: #a00000;  /* 🔘 Survol des boutons : rouge foncé */
+  --color-background-button-inactive: #A9A9A9; /* 🔘 Boutons inactifs : gris */
+  --color-success: #228B22;                  /* ✅ Barre de progression */
+
+  --color-error: #D93025;                    /* ⚠️ Messages d'erreur */
+
+  --color-white: #FFFFFF;                    /* ⚪ Blanc */
+  --color-black: #000000;                    /* ⚫ Noir */
+  --color-grey-light: #EEEEEE;               /* 🌫️ Gris clair */
+  --color-grey-medium: #CCCCCC;              /* 🌫️ Gris moyen */
+  --color-grey-dark: #333333;                /* 🌫️ Gris foncé */
+
+  --color-primary-dark: #B8860B;             /* 🟡 Or sombre (dégradé) */
+  --color-background-dark: #060A1F;          /* 🎭 Fond sombre profond */
+
+  --color-gris-3: #adadad;                  /* ⚪ Gris neutre n°3 */
+  --color-text-fond-clair: #1c1c1c;         /* noir clair */
+  --color-text-fond-clair-rgb: 28, 28, 28;  /* noir clair en RGB */
+  --color-gris-carte: #c2c2c2;              /* 🧩 Fond de carte énigme : gris bleuté doux */
+
+  /* Asides */
+  --aside-bg-rgb: 238, 238, 238;            /* 🎨 Couleur de fond des asides : gris clair du nuancier (var(--color-grey-light)) */
+  --aside-border-color: var(--color-grey-medium); /* 🖊 Couleur de bordure des asides */
+  --aside-opacity: 0.15;                     /* ⚙️ Opacité standard des fonds d'aside */
+
+  /* Grille */
+  --container-max-width: 1200px;
+  --grid-gap: 1rem;
+  --grid-columns: 12;
+
+  /* Espacements */
+  --space-0: 0;
+  --space-xxs: 0.25rem; /* 4px */
+  --space-xs: 0.5rem;   /* 8px */
+  --space-sm: 0.75rem;  /* 12px */
+  --space-md: 1rem;     /* 16px */
+  --space-lg: 1.25rem;  /* 20px */
+  --space-xl: 1.5rem;   /* 24px */
+  --space-2xl: 2rem;    /* 32px */
+  --space-3xl: 2.5rem;  /* 40px */
+  --space-4xl: 3rem;    /* 48px */
+
+  /* Transitions globales */
+  --transition-fast: 0.15s ease-in-out;
+  --transition-medium: 0.3s ease;
+  --transition-slow: 0.6s ease;
+
+  /* Breakpoints layout */
+  --breakpoint-desktop: 922px;
+  --breakpoint-tablette: 768px;
+  --breakpoint-mobile: 544px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-fast: 0s;
+    --transition-medium: 0s;
+    --transition-slow: 0s;
+  }
+}
+
+/* 📝 Variables d’édition */
+.mode-edition {
+  --color-editor-button:           #1A73E8;   /* 🔘 Boutons */
+  --color-editor-button-hover:     #1558B0;   /*       Hover bouton */
+  --editor-button-hsl:          214 82% 51%; /* = #1A73E8 → var(--color-editor-button) */
+  --editor-button-hover-hsl:    214 79% 39%; /* = #1558B0 → var(--color-editor-button-hover) */
+}

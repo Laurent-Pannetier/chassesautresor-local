@@ -2,6 +2,7 @@ const html = `
 <div class="myaccount-layout">
   <aside class="myaccount-sidebar">
     <nav class="dashboard-nav">
+      <a href="/mon-compte/?section=chasses" class="dashboard-nav-link" data-section="chasses">Chasses</a>
       <a href="/mon-compte/?section=points" class="dashboard-nav-link" data-section="points">Points</a>
     </nav>
     <nav class="dashboard-nav admin-nav">
@@ -36,6 +37,7 @@ describe('myaccount ajax navigation', () => {
   });
 
   test.each([
+    'chasses',
     'points',
     'organisateurs',
     'statistiques',
@@ -88,10 +90,10 @@ describe('myaccount ajax navigation', () => {
     await Promise.resolve();
     await Promise.resolve();
     const container = document.querySelector('.msg-important');
-    expect(container.innerHTML).toBe('<p class="flash">Temp</p><p>Persistent</p>');
+    expect(container.innerHTML).toBe('<p class="flash">Temp</p><p class="alerte-discret">Persistent</p>');
     jest.advanceTimersByTime(3000);
     await Promise.resolve();
-    expect(container.innerHTML).toBe('<p>Persistent</p>');
+    expect(container.innerHTML).toBe('<p class="alerte-discret">Persistent</p>');
     jest.useRealTimers();
   });
 

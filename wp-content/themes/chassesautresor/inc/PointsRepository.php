@@ -90,13 +90,44 @@ class PointsRepository
     public function getHistory(int $userId, int $limit, int $offset = 0): array
     {
         $sql = $this->wpdb->prepare(
-            "SELECT id, request_date, origin_type, reason, points, balance FROM {$this->table} WHERE user_id = %d ORDER BY id DESC LIMIT %d OFFSET %d",
+            "SELECT id, request_date, origin_type, origin_id, reason, points, balance FROM {$this->table} WHERE user_id = %d ORDER BY id DESC LIMIT %d OFFSET %d",
             $userId,
             $limit,
             $offset
         );
 
         return $this->wpdb->get_results($sql, ARRAY_A);
+    }
+
+    /**
+     * Count conversion requests for a user.
+     *
+     * @param int      $userId User identifier.
+     * @param string|null $status Optional request status filter.
+     *
+     * @return int Number of requests.
+     */
+    public function countConversionRequests(?int $userId = null, ?string $status = null): int
+    {
+        $where  = "origin_type = 'conversion'";
+        $params = [];
+
+        if ($userId !== null) {
+            $where   .= ' AND user_id = %d';
+            $params[] = $userId;
+        }
+
+        if ($status !== null) {
+            $where   .= ' AND request_status = %s';
+            $params[] = $status;
+        }
+
+        $sql = "SELECT COUNT(*) FROM {$this->table} WHERE {$where}";
+        if (!empty($params)) {
+            $sql = $this->wpdb->prepare($sql, $params);
+        }
+
+        return (int) $this->wpdb->get_var($sql);
     }
 
     /**
@@ -125,7 +156,7 @@ class PointsRepository
         $newBalance = max(0, $current + $points);
         $amountEur = round($amountEur, 2);
 
-        $reason = sprintf('Demande de conversion de %d points', abs($points));
+        $reason = sprintf(__('Demande de conversion de %d points', 'chassesautresor'), abs($points));
 
         $this->wpdb->insert(
             $this->table,
@@ -235,5 +266,29 @@ class PointsRepository
         $row = $this->wpdb->get_row($sql, ARRAY_A);
 
         return $row ?: null;
+    }
+
+    /**
+     * Sum of all points used by players excluding conversion requests.
+     */
+    public function getTotalPointsUsed(): int
+    {
+        $sql = $this->wpdb->prepare(
+            "SELECT COALESCE(SUM(-points), 0) FROM {$this->table} WHERE points < 0 AND origin_type <> %s",
+            'conversion'
+        );
+
+        return (int) $this->wpdb->get_var($sql);
+    }
+
+    /**
+     * Sum of all points currently held by users.
+     */
+    public function getTotalPointsInCirculation(): int
+    {
+        $subquery = "SELECT MAX(id) AS id FROM {$this->table} GROUP BY user_id";
+        $sql      = "SELECT COALESCE(SUM(balance), 0) FROM {$this->table} WHERE id IN ($subquery)";
+
+        return (int) $this->wpdb->get_var($sql);
     }
 }

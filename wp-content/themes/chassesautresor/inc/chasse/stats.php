@@ -137,6 +137,49 @@ function chasse_calculer_taux_engagement(int $chasse_id, string $periode = 'tota
 }
 
 /**
+ * Calculate resolution rate for a hunt.
+ */
+function chasse_calculer_taux_progression(int $chasse_id, string $periode = 'total'): float
+{
+    $participants = chasse_compter_participants($chasse_id, $periode);
+    $enigme_ids   = recuperer_ids_enigmes_pour_chasse($chasse_id);
+    if ($participants === 0 || !$enigme_ids) {
+        return 0.0;
+    }
+
+    $validables = array_filter($enigme_ids, function ($id) {
+        return get_field('enigme_mode_validation', $id) !== 'aucune';
+    });
+    $total_validables = count($validables);
+    if ($total_validables === 0) {
+        return 0.0;
+    }
+
+    global $wpdb;
+    $table        = $wpdb->prefix . 'enigme_statuts_utilisateur';
+    $placeholders = implode(',', array_fill(0, $total_validables, '%d'));
+    $where        = "enigme_id IN ({$placeholders}) AND statut IN ('resolue','terminee','terminée')";
+    $params       = $validables;
+
+    if ($periode !== 'total') {
+        [$debut, $fin] = enigme_stats_date_range($periode);
+        if ($debut && $fin) {
+            $where   .= ' AND date_mise_a_jour BETWEEN %s AND %s';
+            $params[] = $debut;
+            $params[] = $fin;
+        }
+    }
+
+    $sql = $wpdb->prepare(
+        "SELECT SUM(cnt) FROM (SELECT COUNT(DISTINCT user_id) AS cnt FROM {$table} WHERE {$where} GROUP BY enigme_id) t",
+        ...$params
+    );
+    $total = (int) $wpdb->get_var($sql);
+
+    return (100 * $total) / ($participants * $total_validables);
+}
+
+/**
  * List hunt participants with aggregated statistics.
  *
  * Each participant includes registration date, engaged riddles and counts of

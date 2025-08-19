@@ -7,14 +7,20 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build:css": "node build-css.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "cssnano": "^6.1.2",
     "jest": "^29.7.0",
-    "jest-environment-jsdom": "^30.0.5"
+    "jest-environment-jsdom": "^30.0.5",
+    "postcss": "^8.4.38",
+    "postcss-custom-media": "^11.0.6",
+    "postcss-import": "^16.1.1"
   }
 }

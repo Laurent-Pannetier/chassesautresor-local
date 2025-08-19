@@ -31,16 +31,16 @@ function enigme_get_liste_prerequis_possibles(int $enigme_id): array
 {
     $chasse = get_field('enigme_chasse_associee', $enigme_id, false);
     $chasse_id = is_object($chasse) ? $chasse->ID : (int)$chasse;
-    error_log("[DEBUG] Récupération des prérequis possibles pour énigme #$enigme_id (chasse #$chasse_id)");
+    cat_debug("[DEBUG] Récupération des prérequis possibles pour énigme #$enigme_id (chasse #$chasse_id)");
 
     if (!$chasse_id) {
-        error_log("[DEBUG] Aucun chasse associée trouvée pour énigme #$enigme_id");
+        cat_debug("[DEBUG] Aucun chasse associée trouvée pour énigme #$enigme_id");
         return [];
     }
 
     $ids = recuperer_enigmes_associees($chasse_id);
     if (empty($ids)) {
-        error_log("[DEBUG] Aucune énigme associée à la chasse #$chasse_id");
+        cat_debug("[DEBUG] Aucune énigme associée à la chasse #$chasse_id");
         return [];
     }
 
@@ -92,7 +92,7 @@ function enigme_normaliser_mode_validation($mode): string
  * - connexion   → utilisateur non connecté
  * - engager     → première tentative ou ré-engagement possible
  * - continuer   → énigme en cours
- * - revoir      → énigme résolue
+ * - revoir      → énigme resolue
  * - terminee    → énigme finalisée (lecture seule)
  * - soumis      → réponse en attente de validation
  * - bloquee     → bloquée par la chasse, une date ou un prérequis
@@ -212,11 +212,11 @@ function get_cta_enigme(int $enigme_id, ?int $user_id = null): array
         case 'non_commencee':
             return array_merge($cta, [
                 'type'       => 'engager',
-                'label'      => "Commencer",
-                'action'     => 'form',
-                'url'        => site_url('/traitement-engagement'),
+                'label'      => __('Commencer', 'chassesautresor-com'),
+                'action'     => 'link',
+                'url'        => get_permalink($enigme_id),
                 'classe_css' => 'cta-engager',
-                'badge'      => 'À tenter',
+                'badge'      => __('À tenter', 'chassesautresor-com'),
             ]);
 
         case 'en_cours':
@@ -266,21 +266,21 @@ function get_cta_enigme(int $enigme_id, ?int $user_id = null): array
         case 'echouee':
             return array_merge($cta, [
                 'type'       => 'engager',
-                'label'      => "Réessayer",
-                'action'     => 'form',
-                'url'        => site_url('/traitement-engagement'),
+                'label'      => __('Réessayer', 'chassesautresor-com'),
+                'action'     => 'link',
+                'url'        => get_permalink($enigme_id),
                 'classe_css' => 'cta-echouee',
-                'badge'      => 'Échouée',
+                'badge'      => __('Échouée', 'chassesautresor-com'),
             ]);
 
         case 'abandonnee':
             return array_merge($cta, [
                 'type'       => 'engager',
-                'label'      => "Recommencer",
-                'action'     => 'form',
-                'url'        => site_url('/traitement-engagement'),
+                'label'      => __('Recommencer', 'chassesautresor-com'),
+                'action'     => 'link',
+                'url'        => get_permalink($enigme_id),
                 'classe_css' => 'cta-abandonnee',
-                'badge'      => 'Abandonnée',
+                'badge'      => __('Abandonnée', 'chassesautresor-com'),
             ]);
 
         default:

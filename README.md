@@ -22,6 +22,7 @@ La commande composer test exécute PHPUnit à l’aide de la configuration du pl
 Gestion des traductions du thème
 --------------------------------
 
+Toutes les chaînes visibles par les utilisateurs doivent être encapsulées dans les fonctions de traduction WordPress (`__`, `_e`, `esc_html__`, etc.) en utilisant le domaine `chassesautresor-com`.
 Les fichiers de langues du thème sont placés dans `wp-content/themes/chassesautresor/languages/`.
 Pour générer ou mettre à jour le fichier POT, utilisez WP‑CLI :
 
@@ -30,4 +31,12 @@ wp i18n make-pot ./wp-content/themes/chassesautresor ./wp-content/themes/chasses
 ```
 
 Ajoutez ensuite vos fichiers `.mo` compilés dans ce même dossier pour charger les traductions en front‑end.
+
+## Tables personnalisées
+
+Le projet utilise plusieurs tables SQL dédiées pour suivre l'activité des joueurs :
+
+- `wp_engagements` enregistre les engagements liés aux énigmes, chasses ou indices (`indice_id`).
+- `wp_indices_deblocages` trace le déblocage des indices et les points dépensés.
+- `wp_user_points` inclut la valeur `indice` dans le champ `origin_type` pour comptabiliser ces dépenses.
 

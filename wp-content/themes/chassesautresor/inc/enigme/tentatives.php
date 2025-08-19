@@ -69,16 +69,16 @@ defined('ABSPATH') || exit;
         $table = $wpdb->prefix . 'enigme_tentatives';
 
 
-        error_log("👣 Tentative traitement UID=$uid par IP=" . ($_SERVER['REMOTE_ADDR'] ?? 'inconnue'));
+        cat_debug("👣 Tentative traitement UID=$uid par IP=" . ($_SERVER['REMOTE_ADDR'] ?? 'inconnue'));
 
         $tentative = get_tentative_by_uid($uid);
         if (!$tentative) {
-            error_log("❌ Tentative introuvable");
+            cat_debug("❌ Tentative introuvable");
             return false;
         }
 
         if ($tentative->resultat !== 'attente') {
-            error_log("⛔ Tentative déjà traitée → statut actuel = " . $tentative->resultat);
+            cat_debug("⛔ Tentative déjà traitée → statut actuel = " . $tentative->resultat);
             return false;
         }
 
@@ -86,7 +86,7 @@ defined('ABSPATH') || exit;
         $user_id = (int) $tentative->user_id;
         $enigme_id = (int) $tentative->enigme_id;
 
-        // 🔐 Sécurité : si déjà "résolue", on refuse toute tentative de traitement
+        // 🔐 Sécurité : si déjà "resolue", on refuse toute tentative de traitement
         $statut_user = $wpdb->get_var($wpdb->prepare(
             "SELECT statut FROM {$wpdb->prefix}enigme_statuts_utilisateur WHERE user_id = %d AND enigme_id = %d",
             $user_id,
@@ -94,7 +94,7 @@ defined('ABSPATH') || exit;
         ));
 
         if ($statut_user === 'resolue') {
-            error_log("⛔ Statut utilisateur déjà 'resolue' → refus de traitement UID=$uid");
+            cat_debug("⛔ Statut utilisateur déjà 'resolue' → refus de traitement UID=$uid");
             return false;
         }
 
@@ -108,7 +108,7 @@ defined('ABSPATH') || exit;
             !current_user_can('manage_options') &&
             !in_array($current_user_id, array_map('intval', $organisateur_user_ids), true)
         ) {
-            error_log("⛔ Accès interdit au traitement pour UID=$uid");
+            cat_debug("⛔ Accès interdit au traitement pour UID=$uid");
             return false;
         }
 
@@ -123,7 +123,25 @@ defined('ABSPATH') || exit;
 
         traiter_tentative($user_id, $enigme_id, (string) $tentative->reponse_saisie, $resultat, false, true, true);
 
-        error_log("✅ Tentative UID=$uid traitée comme $resultat");
+        $titre_enigme = get_the_title($enigme_id);
+        $message      = sprintf(
+            $resultat === 'bon'
+                ? __(
+                    'Votre demande de résolution de l\'énigme %1$s%2$s%3$s a été validée. Félicitations !',
+                    'chassesautresor-com'
+                )
+                : __(
+                    'Votre demande de résolution de l\'énigme %1$s%2$s%3$s a été invalidée.',
+                    'chassesautresor-com'
+                ),
+            '<a href="' . esc_url(get_permalink($enigme_id)) . '">',
+            esc_html($titre_enigme),
+            '</a>'
+        );
+        myaccount_remove_persistent_message($user_id, 'tentative_' . $uid);
+        myaccount_add_flash_message($user_id, $message);
+
+        cat_debug("✅ Tentative UID=$uid traitée comme $resultat");
         return true;
     }
 
@@ -203,7 +221,7 @@ function get_etat_tentative(string $uid): string
  * @return array         Liste des tentatives triées par priorité manuelle puis
  *                       par date de soumission décroissante.
  */
-function recuperer_tentatives_enigme(int $enigme_id, int $limit = 10, int $offset = 0): array
+function recuperer_tentatives_enigme(int $enigme_id, int $limit = 5, int $offset = 0): array
 {
     global $wpdb;
     $table = $wpdb->prefix . 'enigme_tentatives';
@@ -245,7 +263,7 @@ function ajax_lister_tentatives_enigme()
 
     $enigme_id = isset($_POST['enigme_id']) ? (int) $_POST['enigme_id'] : 0;
     $page      = max(1, (int) ($_POST['page'] ?? 1));
-    $par_page  = 10;
+    $par_page  = 20;
 
     if (!$enigme_id || get_post_type($enigme_id) !== 'enigme') {
         wp_send_json_error('post_invalide');

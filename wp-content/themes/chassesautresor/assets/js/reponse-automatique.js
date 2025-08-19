@@ -70,6 +70,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (compteur) {
               compteur.remove();
             }
+            const currentMenuItem = document.querySelector('.enigme-menu li.active');
+            if (currentMenuItem) {
+              currentMenuItem.classList.remove('non-engagee', 'bloquee');
+              currentMenuItem.classList.add('succes');
+            }
           } else {
             feedback.textContent = 'Mauvaise réponse';
             feedback.style.display = 'block';

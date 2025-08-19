@@ -357,7 +357,7 @@ function organisateur_get_nb_chasses_publiees(int $organisateur_id): int
 function get_chasses_en_creation($organisateur_id)
 {
   if (!is_numeric($organisateur_id)) {
-    error_log("⛔ get_chasses_en_creation : ID non numérique : " . print_r($organisateur_id, true));
+    cat_debug("⛔ get_chasses_en_creation : ID non numérique : " . print_r($organisateur_id, true));
     return [];
   }
 
@@ -365,7 +365,7 @@ function get_chasses_en_creation($organisateur_id)
   $chasse_ids    = is_a($chasses_query, 'WP_Query') ? $chasses_query->posts : (array) $chasses_query;
 
   if (empty($chasse_ids)) {
-    error_log("🔍 Aucune chasse liée à l’organisateur $organisateur_id");
+    cat_debug("🔍 Aucune chasse liée à l’organisateur $organisateur_id");
     return [];
   }
 
@@ -375,14 +375,14 @@ function get_chasses_en_creation($organisateur_id)
     $statut_validation = get_field('chasse_cache_statut_validation', $id);
     $statut_metier    = get_field('chasse_cache_statut', $id);
 
-    error_log("🧪 #$id | statut=$statut_wp | validation=$statut_validation | metier=$statut_metier");
+    cat_debug("🧪 #$id | statut=$statut_wp | validation=$statut_validation | metier=$statut_metier");
 
     return $statut_wp === 'pending'
       && $statut_validation === 'creation'
       && $statut_metier === 'revision';
   });
 
-  error_log("📦 Chasses en création retrouvées : " . count($filtrees));
+  cat_debug("📦 Chasses en création retrouvées : " . count($filtrees));
 
   return array_values($filtrees);
 }
@@ -409,7 +409,7 @@ function get_chasses_en_creation($organisateur_id)
 function recuperer_enigmes_associees(int $chasse_id): array
 {
   if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
-    error_log("❌ [recuperer_enigmes_associees] Appel invalide pour ID $chasse_id");
+    cat_debug("❌ [recuperer_enigmes_associees] Appel invalide pour ID $chasse_id");
     return [];
   }
 
@@ -425,7 +425,7 @@ function recuperer_enigmes_associees(int $chasse_id): array
   // Détection et log des doublons
   $doublons = array_diff_key($ids, array_unique($ids));
   if (!empty($doublons)) {
-    error_log("⚠️ [recuperer_enigmes_associees] Doublons détectés pour la chasse #$chasse_id : " . implode(', ', $doublons));
+    cat_debug("⚠️ [recuperer_enigmes_associees] Doublons détectés pour la chasse #$chasse_id : " . implode(', ', $doublons));
   }
 
   $ids_valides = array_filter(array_unique($ids), function ($id) {
@@ -495,6 +495,27 @@ function recuperer_ids_enigmes_pour_chasse(int $chasse_id): array
 }
 
 
+/**
+ * Clear the cached enigme list for a chasse when an enigme is saved.
+ *
+ * @param int $post_id Post ID of the enigme being saved.
+ */
+function clear_enigmes_chasse_cache(int $post_id): void
+{
+    if (get_post_type($post_id) !== 'enigme') {
+        return;
+    }
+
+    $chasse_id = (int) get_field('enigme_chasse_associee', $post_id);
+    if (!$chasse_id) {
+        return;
+    }
+
+    wp_cache_delete('enigmes_chasse_' . $chasse_id, 'chassesautresor');
+}
+add_action('save_post_enigme', 'clear_enigmes_chasse_cache', 20, 1);
+
+
 // ==================================================
 // 📦 ASSIGNATION AUTOMATIQUES
 // ==================================================
@@ -523,7 +544,7 @@ function assigner_organisateur_automatiquement($post_id, $post)
   if (est_organisateur($auteur_id)) {
     update_field('organisateur_id', $auteur_id, $post_id);
   } else {
-    error_log("⚠️ Avertissement : L'auteur {$auteur_id} n'a pas un rôle valide (organisateur ou organisateur_creation).");
+    cat_debug("⚠️ Avertissement : L'auteur {$auteur_id} n'a pas un rôle valide (organisateur ou organisateur_creation).");
   }
 }
 add_action('save_post', 'assigner_organisateur_automatiquement', 10, 2);
@@ -555,7 +576,7 @@ add_action('save_post', 'assigner_organisateur_automatiquement', 10, 2);
  */
 function synchroniser_cache_enigmes_chasse($chasse_id, $forcer_recalcul = false, $nettoyer_cache = false)
 {
-  error_log("🌀 [SYNC] Début de synchronisation pour chasse #$chasse_id");
+  cat_debug("🌀 [SYNC] Début de synchronisation pour chasse #$chasse_id");
 
   $resultat1 = verifier_chasse_cache_enigmes($chasse_id, $forcer_recalcul);
   $resultat2 = verifier_cache_chasse_enigmes_valides($chasse_id, $nettoyer_cache);
@@ -570,31 +591,31 @@ function synchroniser_cache_enigmes_chasse($chasse_id, $forcer_recalcul = false,
   $cache       = $resultat1['cache']      ?? [];
   $invalides   = $resultat2['invalides']  ?? [];
 
-  error_log("📥 [ATTENDU] Énigmes réellement liées à la chasse : " . implode(', ', $attendu));
-  error_log("📦 [CACHE AVANT] Contenu actuel de chasse_cache_enigmes : " . implode(', ', $cache));
-  error_log("🗑️ [INVALIDES] Énigmes invalides détectées dans le cache : " . implode(', ', $invalides));
+  cat_debug("📥 [ATTENDU] Énigmes réellement liées à la chasse : " . implode(', ', $attendu));
+  cat_debug("📦 [CACHE AVANT] Contenu actuel de chasse_cache_enigmes : " . implode(', ', $cache));
+  cat_debug("🗑️ [INVALIDES] Énigmes invalides détectées dans le cache : " . implode(', ', $invalides));
 
   if (!isset($resultat1['synchro'])) {
-    error_log("⚠️ [INCOHÉRENCE] Clé 'synchro' manquante dans resultat1 (verifier_chasse_cache_enigmes)");
+    cat_debug("⚠️ [INCOHÉRENCE] Clé 'synchro' manquante dans resultat1 (verifier_chasse_cache_enigmes)");
   }
   if (!isset($resultat2['synchro'])) {
-    error_log("⚠️ [INCOHÉRENCE] Clé 'synchro' manquante dans resultat2 (verifier_cache_chasse_enigmes_valides)");
+    cat_debug("⚠️ [INCOHÉRENCE] Clé 'synchro' manquante dans resultat2 (verifier_cache_chasse_enigmes_valides)");
   }
 
   $ok = null;
   if ($correction1 || $correction2) {
-    error_log("🔧 [ACTION] Mise à jour de chasse_cache_enigmes nécessaire");
+    cat_debug("🔧 [ACTION] Mise à jour de chasse_cache_enigmes nécessaire");
 
     $ok = synchroniser_relations_cache_enigmes($chasse_id);
 
     if ($ok) {
-      error_log("✅ [RÉSULTAT] Relations mises à jour proprement via synchroniser_relations_cache_enigmes()");
+      cat_debug("✅ [RÉSULTAT] Relations mises à jour proprement via synchroniser_relations_cache_enigmes()");
     } else {
-      error_log("❌ [ÉCHEC] La synchronisation ACF relation a échoué pour la chasse #$chasse_id");
+      cat_debug("❌ [ÉCHEC] La synchronisation ACF relation a échoué pour la chasse #$chasse_id");
     }
   }
 
-  error_log("🌀 [SYNC] Fin de synchronisation pour chasse #$chasse_id");
+  cat_debug("🌀 [SYNC] Fin de synchronisation pour chasse #$chasse_id");
 
   return [
     'valide'                    => $valide1 && $valide2,
@@ -747,10 +768,10 @@ function verifier_cache_chasse_enigmes_valides($chasse_id, $retirer_si_invalide 
  */
 function synchroniser_relations_cache_enigmes(int $chasse_id): bool
 {
-    error_log("🔄 [SYNC] Début de synchronisation pour chasse #$chasse_id");
+    cat_debug("🔄 [SYNC] Début de synchronisation pour chasse #$chasse_id");
 
     if (get_post_type($chasse_id) !== 'chasse') {
-        error_log("❌ [SYNC] ID $chasse_id n’est pas une chasse");
+        cat_debug("❌ [SYNC] ID $chasse_id n’est pas une chasse");
         return false;
     }
 
@@ -786,20 +807,20 @@ function synchroniser_relations_cache_enigmes(int $chasse_id): bool
     $diff_cache    = array_diff($cache_ids, $ids_detectes);
 
     if (empty($diff_detectes) && empty($diff_cache)) {
-        error_log("✅ [SYNC] Aucune mise à jour nécessaire pour chasse #$chasse_id");
+        cat_debug("✅ [SYNC] Aucune mise à jour nécessaire pour chasse #$chasse_id");
         return true;
     }
 
-    error_log("🔧 [SYNC] Cache obsolète → écrasement nécessaire pour chasse #$chasse_id");
-    error_log("🗑️ Ancien cache : " . implode(', ', $cache_ids));
-    error_log("🆕 Nouvel ensemble : " . implode(', ', $ids_detectes));
+    cat_debug("🔧 [SYNC] Cache obsolète → écrasement nécessaire pour chasse #$chasse_id");
+    cat_debug("🗑️ Ancien cache : " . implode(', ', $cache_ids));
+    cat_debug("🆕 Nouvel ensemble : " . implode(', ', $ids_detectes));
 
     $success = update_field('chasse_cache_enigmes', $ids_detectes, $chasse_id);
 
     if ($success) {
-        error_log("✅ [SYNC] Mise à jour réussie de chasse_cache_enigmes pour chasse #$chasse_id");
+        cat_debug("✅ [SYNC] Mise à jour réussie de chasse_cache_enigmes pour chasse #$chasse_id");
     } else {
-        error_log("❌ [SYNC] Échec de la mise à jour pour chasse #$chasse_id");
+        cat_debug("❌ [SYNC] Échec de la mise à jour pour chasse #$chasse_id");
     }
 
     return (bool) $success;
@@ -829,7 +850,7 @@ function forcer_relation_enigme_dans_chasse_si_absente(int $enigme_id): void
   $chasse_id = is_object($chasse) ? $chasse->ID : (int)$chasse;
 
   if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
-    error_log("❌ [RELATION AUTO] Chasse non valide pour énigme #$enigme_id");
+    cat_debug("❌ [RELATION AUTO] Chasse non valide pour énigme #$enigme_id");
     return;
   }
 
@@ -845,9 +866,9 @@ function forcer_relation_enigme_dans_chasse_si_absente(int $enigme_id): void
     );
 
     if ($ok) {
-      error_log("✅ [RELATION AUTO] Énigme #$enigme_id ajoutée à la chasse #$chasse_id (groupe champs_caches)");
+      cat_debug("✅ [RELATION AUTO] Énigme #$enigme_id ajoutée à la chasse #$chasse_id (groupe champs_caches)");
     } else {
-      error_log("❌ [RELATION AUTO] Échec ajout énigme #$enigme_id → chasse #$chasse_id");
+      cat_debug("❌ [RELATION AUTO] Échec ajout énigme #$enigme_id → chasse #$chasse_id");
     }
   }
 }

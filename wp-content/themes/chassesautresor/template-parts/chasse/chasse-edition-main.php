@@ -167,46 +167,34 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                 <li class="champ-chasse champ-recompense <?= $recompense_remplie ? 'champ-rempli' : 'champ-vide'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>"
                     data-champ="chasse_infos_recompense_valeur"
                     data-cpt="chasse"
-                    data-post-id="<?= esc_attr($chasse_id); ?>"
-                    data-no-edit="1">
+                    data-post-id="<?= esc_attr($chasse_id); ?>">
                     <label><?= esc_html__('Récompense', 'chassesautresor-com'); ?></label>
                     <div class="champ-texte">
-                        <?php if (!$recompense_remplie) : ?>
-                            <?php if ($peut_editer) : ?>
-                                <a href="#"
-                                   class="champ-ajouter ouvrir-panneau-recompense"
-                                   data-champ="chasse_infos_recompense_valeur"
-                                   data-cpt="chasse"
-                                   data-post-id="<?= esc_attr($chasse_id); ?>">
-                                    <?= esc_html__('ajouter', 'chassesautresor-com'); ?>
-                                </a>
-                            <?php endif; ?>
-                        <?php else : ?>
-                            <?php
-                            $desc_brut = wp_strip_all_tags($recompense);
-                            $desc_court = mb_substr($desc_brut, 0, 200);
-                            if (mb_strlen($desc_brut) > 200) {
-                                $desc_court .= '…';
-                            }
-                            ?>
+                        <?php
+                        $desc_brut  = wp_strip_all_tags($recompense);
+                        $desc_court = mb_substr($desc_brut, 0, 200);
+                        if (mb_strlen($desc_brut) > 200) {
+                            $desc_court .= '…';
+                        }
+                        ?>
+                        <?php if ($recompense_remplie) : ?>
                             <span class="champ-texte-contenu">
                                 <span class="recompense-valeur"><?= esc_html(number_format_i18n(round((float) $valeur), 0)); ?> €</span>
                                 &nbsp;–&nbsp;
                                 <span class="recompense-titre"><?= esc_html($titre_recompense); ?></span>
-                                <?php if ($peut_editer) : ?>
-                                    &nbsp;–&nbsp;
-                                    <button type="button"
-                                        class="champ-modifier ouvrir-panneau-recompense"
-                                        data-champ="chasse_infos_recompense_valeur"
-                                        data-cpt="chasse"
-                                        data-post-id="<?= esc_attr($chasse_id); ?>"
-                                        aria-label="<?= esc_attr__('Modifier la récompense', 'chassesautresor-com'); ?>">
-                                        <?= esc_html__('modifier', 'chassesautresor-com'); ?>
-                                    </button>
-                                <?php endif; ?>
                                 &nbsp;–&nbsp;
                                 <span class="recompense-description"><?= esc_html($desc_court); ?></span>
                             </span>
+                        <?php endif; ?>
+                        <?php if ($peut_editer) : ?>
+                            <button type="button"
+                                class="champ-modifier ouvrir-panneau-recompense"
+                                data-champ="chasse_infos_recompense_valeur"
+                                data-cpt="chasse"
+                                data-post-id="<?= esc_attr($chasse_id); ?>"
+                                aria-label="<?= esc_attr__('Modifier la récompense', 'chassesautresor-com'); ?>">
+                                <?= esc_html__('modifier', 'chassesautresor-com'); ?>
+                            </button>
                         <?php endif; ?>
                     </div>
                 </li>
@@ -240,14 +228,19 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                         <?= $peut_editer ? '' : 'disabled'; ?>
                       >
                       <?= esc_html__('Automatique', 'chassesautresor-com'); ?>
-                      <button
-                        type="button"
-                        class="mode-fin-aide"
-                        data-mode="automatique"
-                        aria-label="<?= esc_attr__('Explication du mode automatique', 'chassesautresor-com'); ?>"
-                      >
-                        <i class="fa-regular fa-circle-question"></i>
-                      </button>
+                      <?php
+                      get_template_part(
+                          'template-parts/common/help-icon',
+                          null,
+                          [
+                              'aria_label' => __('Explication du mode automatique', 'chassesautresor-com'),
+                              'classes'    => 'mode-fin-aide',
+                              'attributes' => [
+                                  'data-mode' => 'automatique',
+                              ],
+                          ]
+                      );
+                      ?>
                     </label>
                     <label>
                       <input
@@ -258,14 +251,19 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                         <?= $peut_editer ? '' : 'disabled'; ?>
                       >
                       <?= esc_html__('Manuelle', 'chassesautresor-com'); ?>
-                      <button
-                        type="button"
-                        class="mode-fin-aide"
-                        data-mode="manuelle"
-                        aria-label="<?= esc_attr__('Explication du mode manuel', 'chassesautresor-com'); ?>"
-                      >
-                        <i class="fa-regular fa-circle-question"></i>
-                      </button>
+                      <?php
+                      get_template_part(
+                          'template-parts/common/help-icon',
+                          null,
+                          [
+                              'aria_label' => __('Explication du mode manuel', 'chassesautresor-com'),
+                              'classes'    => 'mode-fin-aide',
+                              'attributes' => [
+                                  'data-mode' => 'manuelle',
+                              ],
+                          ]
+                      );
+                      ?>
                     </label>
                   </div>
                   <?php ob_start(); ?>
@@ -399,7 +397,16 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
 
                   <div class="champ-edition" style="display: flex; align-items: center;">
                     <label>Coût <span class="txt-small">(points)</span>
-                      <button type="button" class="bouton-aide-points open-points-modal" aria-label="En savoir plus sur les points"><i class="fa-solid fa-circle-question" aria-hidden="true"></i></button>
+                      <?php
+                      get_template_part(
+                          'template-parts/common/help-icon',
+                          null,
+                          [
+                              'aria_label' => __('En savoir plus sur les points', 'chassesautresor-com'),
+                              'classes'    => 'bouton-aide-points open-points-modal',
+                          ]
+                      );
+                      ?>
                     </label>
 
                     <input type="number"
@@ -443,55 +450,81 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
         if (!function_exists('chasse_compter_participants')) {
             require_once get_stylesheet_directory() . '/inc/chasse/stats.php';
         }
-        $periode             = 'total';
-        $nb_participants       = chasse_compter_participants($chasse_id, $periode);
-        $nb_tentatives         = chasse_compter_tentatives($chasse_id, $periode);
-        $nb_points             = chasse_compter_points_collectes($chasse_id, $periode);
-        $total_engagements     = chasse_compter_engagements($chasse_id);
-        $enigme_ids            = recuperer_ids_enigmes_pour_chasse($chasse_id);
-        $enigmes_stats         = [];
-        $progress_data         = [];
-        $no_validation_enigmas = [];
-        $total_enigme_engagements = 0;
-        foreach ($enigme_ids as $enigme_id) {
-            $engagements = enigme_compter_joueurs_engages($enigme_id, $periode);
-            $total_enigme_engagements += $engagements;
-            $resolutions = enigme_compter_bonnes_solutions($enigme_id, 'automatique', $periode);
-            $enigmes_stats[] = [
-                'id'          => $enigme_id,
-                'titre'       => get_the_title($enigme_id),
-                'engagements' => $engagements,
-                'tentatives'  => enigme_compter_tentatives($enigme_id, 'automatique', $periode),
-                'points'      => enigme_compter_points_depenses($enigme_id, 'automatique', $periode),
-                'resolutions' => $resolutions,
-            ];
-            $mode_validation = get_field('enigme_mode_validation', $enigme_id);
-            if ($mode_validation === 'aucune') {
-                $no_validation_enigmas[] = [
+        $validation = get_field('chasse_cache_statut_validation', $chasse_id);
+        $stats_locked = in_array($validation, ['creation', 'en_attente', 'correction'], true);
+        $periode = 'total';
+        if ($stats_locked) {
+            $nb_participants = $nb_tentatives = $nb_points = 0;
+            $total_engagements = 0;
+            $enigmes_stats = [];
+            $progress_data = [];
+            $no_validation_enigmas = [];
+            $total_enigme_engagements = 0;
+            $max_progress = 0;
+            $par_page_participants = 25;
+            $total_participants = 0;
+            $pages_participants = 0;
+            $total_enigmes = 0;
+            $taux_engagement = 0;
+            $participants = [];
+        } else {
+            $nb_participants = chasse_compter_participants($chasse_id, $periode);
+            $nb_tentatives = chasse_compter_tentatives($chasse_id, $periode);
+            $nb_points = chasse_compter_points_collectes($chasse_id, $periode);
+            $total_engagements = chasse_compter_engagements($chasse_id);
+            $enigme_ids = recuperer_ids_enigmes_pour_chasse($chasse_id);
+            $enigmes_stats = [];
+            $progress_data = [];
+            $no_validation_enigmas = [];
+            $total_enigme_engagements = 0;
+            foreach ($enigme_ids as $enigme_id) {
+                $engagements = enigme_compter_joueurs_engages($enigme_id, $periode);
+                $total_enigme_engagements += $engagements;
+                $resolutions = enigme_compter_bonnes_solutions($enigme_id, 'automatique', $periode);
+                $enigmes_stats[] = [
+                    'id'          => $enigme_id,
+                    'titre'       => get_the_title($enigme_id),
+                    'engagements' => $engagements,
+                    'tentatives'  => enigme_compter_tentatives($enigme_id, 'automatique', $periode),
+                    'points'      => enigme_compter_points_depenses($enigme_id, 'automatique', $periode),
+                    'resolutions' => $resolutions,
+                ];
+                $mode_validation = get_field('enigme_mode_validation', $enigme_id);
+                if ($mode_validation === 'aucune') {
+                    $no_validation_enigmas[] = [
+                        'title' => get_the_title($enigme_id),
+                        'url'   => get_permalink($enigme_id),
+                    ];
+                    continue;
+                }
+                $progress_data[] = [
                     'title' => get_the_title($enigme_id),
                     'url'   => get_permalink($enigme_id),
+                    'value' => $resolutions,
                 ];
-                continue;
             }
-            $progress_data[] = [
-                'title' => get_the_title($enigme_id),
-                'url'   => get_permalink($enigme_id),
-                'value' => $resolutions,
-            ];
+            usort($progress_data, static function ($a, $b) {
+                return $b['value'] <=> $a['value'];
+            });
+            $max_progress = !empty($progress_data) ? max(array_column($progress_data, 'value')) : 0;
+            $par_page_participants = 25;
+            $total_participants = chasse_compter_participants($chasse_id);
+            $pages_participants = (int) ceil($total_participants / $par_page_participants);
+            $total_enigmes = count($enigme_ids);
+            $taux_engagement = 0;
+            if ($nb_participants > 0 && $total_enigmes > 0) {
+                $taux_engagement = (int) round(
+                    (100 * $total_enigme_engagements) / ($nb_participants * $total_enigmes)
+                );
+            }
+            $participants = chasse_lister_participants(
+                $chasse_id,
+                $par_page_participants,
+                0,
+                'inscription',
+                'ASC'
+            );
         }
-        usort($progress_data, static function ($a, $b) {
-            return $b['value'] <=> $a['value'];
-        });
-        $max_progress = !empty($progress_data) ? max(array_column($progress_data, 'value')) : 0;
-        $par_page_participants = 25;
-        $total_participants    = chasse_compter_participants($chasse_id);
-        $pages_participants    = (int) ceil($total_participants / $par_page_participants);
-        $total_enigmes         = count($enigme_ids);
-        $taux_engagement       = 0;
-        if ($nb_participants > 0 && $total_enigmes > 0) {
-            $taux_engagement = (int) round((100 * $total_enigme_engagements) / ($nb_participants * $total_enigmes));
-        }
-        $participants          = chasse_lister_participants($chasse_id, $par_page_participants, 0, 'inscription', 'ASC');
       ?>
         <div class="edition-panel-body">
           <div class="stats-header" style="display:flex;align-items:center;justify-content:flex-end;gap:1rem;">
@@ -508,23 +541,27 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
           </div>
           <div class="dashboard-grid stats-cards" id="chasse-stats">
             <?php
+            $card_class = $stats_locked ? 'disabled' : '';
             get_template_part('template-parts/common/stat-card', null, [
                 'icon'  => 'fa-solid fa-users',
                 'label' => 'Participants',
                 'value' => $nb_participants,
                 'stat'  => 'participants',
+                'class' => $card_class,
             ]);
             get_template_part('template-parts/common/stat-card', null, [
                 'icon'  => 'fa-solid fa-arrow-rotate-right',
                 'label' => 'Tentatives',
                 'value' => $nb_tentatives,
                 'stat'  => 'tentatives',
+                'class' => $card_class,
             ]);
             get_template_part('template-parts/common/stat-card', null, [
                 'icon'  => 'fa-solid fa-coins',
                 'label' => 'Points collectés',
                 'value' => $nb_points,
                 'stat'  => 'points',
+                'class' => $card_class,
             ]);
             get_template_part('template-parts/common/stat-card', null, [
                 'icon'  => 'fa-solid fa-percent',
@@ -537,9 +574,15 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                     'chassesautresor-com'
                 ),
                 'help_label' => __('Explication du taux d’engagement', 'chassesautresor-com'),
+                'class' => $card_class,
             ]);
             ?>
           </div>
+          <?php if ($stats_locked) : ?>
+            <p class="edition-placeholder" style="text-align:center;">
+              <?php esc_html_e('Les statistiques seront disponibles une fois la chasse activée.', 'chassesautresor-com'); ?>
+            </p>
+          <?php endif; ?>
           <?php if ($max_progress > 0) :
               get_template_part('template-parts/common/stat-histogram-card', null, [
                   'label' => 'Progressivomètre',
@@ -564,12 +607,12 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
           ]); ?>
           <div class="liste-participants" data-page="1" data-pages="<?= esc_attr($pages_participants); ?>" data-order="asc" data-orderby="inscription">
             <?php get_template_part('template-parts/chasse/partials/chasse-partial-participants', null, [
-              'participants' => $participants,
-              'page' => 1,
-              'par_page' => $par_page_participants,
-              'total' => $total_participants,
-              'pages' => $pages_participants,
-              'total_enigmes' => $total_enigmes,
+              'participants'   => $participants,
+              'page'           => 1,
+              'par_page'       => $par_page_participants,
+              'total'          => $total_participants,
+              'pages'          => $pages_participants,
+              'total_enigmes'  => $total_enigmes,
             ]); ?>
           </div>
         </div>
@@ -587,24 +630,26 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
             <div class="resume-blocs-grid">
 
               <div class="resume-bloc resume-visibilite">
-                <h3>Communiquez</h3>
+                <h3><?= esc_html__('Communiquez', 'chassesautresor-com'); ?></h3>
                 <div class="dashboard-grid stats-cards">
                   <div class="dashboard-card champ-chasse champ-liens <?= empty($liens) ? 'champ-vide' : 'champ-rempli'; ?>"
                     data-champ="chasse_principale_liens"
                     data-cpt="chasse"
                     data-post-id="<?= esc_attr($chasse_id); ?>">
                     <i class="fa-solid fa-share-nodes icone-defaut" aria-hidden="true"></i>
+                    <h3><?= esc_html__('Sites et réseaux de la chasse', 'chassesautresor-com'); ?></h3>
                     <div class="champ-affichage champ-affichage-liens">
                       <?= render_liens_publics($liens, 'chasse', ['placeholder' => false]); ?>
                     </div>
-                    <h3>Sites et réseaux de la chasse</h3>
                     <?php if ($peut_modifier) : ?>
                       <a href="#"
                         class="stat-value champ-modifier ouvrir-panneau-liens"
                         data-champ="chasse_principale_liens"
                         data-cpt="chasse"
                         data-post-id="<?= esc_attr($chasse_id); ?>">
-                        <?= empty($liens) ? 'Ajouter' : 'Éditer'; ?>
+                        <?= empty($liens)
+                          ? esc_html__('Ajouter', 'chassesautresor-com')
+                          : esc_html__('Éditer', 'chassesautresor-com'); ?>
                       </a>
                     <?php endif; ?>
                     <div class="champ-donnees"
@@ -638,10 +683,26 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
               </div>
 
               <div class="resume-bloc resume-indices">
-                <h3>Indices</h3>
-                <ul class="resume-infos">
-                  <li class="champ-chasse champ-placeholder">Section à venir</li>
-                </ul>
+                <h3><?= esc_html__('Indices', 'chassesautresor-com'); ?></h3>
+                <div class="dashboard-grid stats-cards">
+                  <?php
+                  $est_admin        = current_user_can('administrator');
+                  $est_organisateur = utilisateur_est_organisateur_associe_a_chasse(get_current_user_id(), $chasse_id);
+                  $est_publie       = get_post_status($chasse_id) === 'publish';
+                  $statut_valide    = get_field('chasse_cache_statut_validation', $chasse_id) === 'valide';
+
+                  $peut_ajouter_indice = $est_admin || ($est_organisateur && $est_publie && $statut_valide);
+                  ?>
+                  <div class="dashboard-card champ-chasse champ-indices<?= $peut_ajouter_indice ? '' : ' disabled'; ?>">
+                    <i class="fa-regular fa-circle-question icone-defaut" aria-hidden="true"></i>
+                    <h3><?= esc_html__('Indices', 'chassesautresor-com'); ?></h3>
+                    <?php if ($peut_ajouter_indice) : ?>
+                      <a href="#" class="stat-value"><?= esc_html__('Ajouter', 'chassesautresor-com'); ?></a>
+                    <?php else : ?>
+                      <span class="stat-value"><?= esc_html__('Ajouter', 'chassesautresor-com'); ?></span>
+                    <?php endif; ?>
+                  </div>
+                </div>
               </div>
 
               <div class="resume-bloc resume-news">
@@ -663,10 +724,10 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
           <?php wp_nonce_field('validation_admin_' . $chasse_id, 'validation_admin_nonce'); ?>
           <input type="hidden" name="action" value="traiter_validation_chasse">
           <input type="hidden" name="chasse_id" value="<?php echo esc_attr($chasse_id); ?>">
-          <button type="button" class="btn-admin-danger btn-correction">
+          <button type="button" class="bouton-secondaire btn-correction">
             <i class="fa-solid fa-triangle-exclamation"></i> Correction
           </button>
-          <button type="submit" name="validation_admin_action" value="bannir" class="btn-admin-danger" onclick="return confirm('Bannir cette chasse&nbsp;?');">
+          <button type="submit" name="validation_admin_action" value="bannir" class="bouton-secondaire" onclick="return confirm('Bannir cette chasse&nbsp;?');">
             <i class="fa-solid fa-triangle-exclamation"></i> Bannir
           </button>
         </form>

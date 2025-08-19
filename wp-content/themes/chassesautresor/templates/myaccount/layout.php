@@ -44,6 +44,14 @@ get_header();
                     'active'   => is_wc_endpoint_url('orders'),
                 ),
                 array(
+                    'endpoint' => 'chasses',
+                    'label'    => __('Chasses', 'chassesautresor-com'),
+                    'icon'     => 'fas fa-map',
+                    'url'      => home_url('/mon-compte/?section=chasses'),
+                    'section'  => 'chasses',
+                    'active'   => isset($_GET['section']) && $_GET['section'] === 'chasses',
+                ),
+                array(
                     'endpoint' => 'points',
                     'label'    => __('Points', 'chassesautresor'),
                     'icon'     => 'fas fa-coins',
@@ -134,7 +142,13 @@ get_header();
             <!-- TODO: header content -->
         </header>
         <main class="myaccount-content">
-            <section class="msg-important"><?php echo trim(myaccount_get_important_messages()); ?></section>
+            <?php
+            $messages = '';
+            if (empty($_GET['section'])) {
+                $messages = trim(myaccount_get_important_messages());
+            }
+            ?>
+            <section class="msg-important"><?php echo $messages; ?></section>
             <?php
             if ($content_template && file_exists($content_template)) {
                 include $content_template;

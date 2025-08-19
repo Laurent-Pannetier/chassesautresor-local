@@ -2,6 +2,8 @@
 
 Ce dossier centralise les fiches techniques du projet.
 
+Toutes les notices doivent respecter l'internationalisation WordPress : les chaînes destinées aux utilisateurs doivent être fournies avec le domaine `chassesautresor-com`.
+
 ## Organisation
 
 - **global.md** : vue d'ensemble et règles générales.

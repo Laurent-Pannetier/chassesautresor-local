@@ -6,7 +6,7 @@
    ================================================== */
 
 .chasse-fiche-container {
-  margin-top: 2rem;
+  margin-top: var(--space-2xl);
   display: flex;
   gap: 2.6rem;
   align-items: flex-start;
@@ -30,8 +30,8 @@
   flex: 1;
   min-width: 240px;
 }
-.chasse-details-wrapper h1 {
-    font-size: 30px;
+.header-chasse {
+  font-size: 30px;
 }
 .chasse-details-wrapper .auteur-organisateur a {
     color:var(--color-text-primary);
@@ -43,7 +43,7 @@
 .chasse-details-wrapper .meta-row,
 .carte-ligne__contenu .meta-row{
     display: flex;
-    gap: 1.5rem;
+    gap: var(--space-xl);
     align-items: center;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -51,7 +51,7 @@
     color:var(--color-gris-3);
 }
 .chasse-details-wrapper .bloc-metas-inline {
-    margin: 1.5rem 0;
+    margin: var(--space-xl) 0;
     color: white;
 }
 .chasse-prix {
@@ -64,7 +64,7 @@
     display: flex;
     gap: 0.7rem;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: var(--space-md);
     font-size: 20px;
 }
 .page-chasse-wrapper .chasse-lot svg {
@@ -81,7 +81,7 @@
 .chasse-section-intro.champ-vide-obligatoire {
     border: 2px dashed var(--color-editor-error);
     animation: clignoteTitre 1s infinite alternate;
-    padding: 0.5rem;
+    padding: var(--space-xs);
     border-radius: 0.5rem;
 }
 
@@ -97,7 +97,7 @@ body.edition-active-chasse .chasse-enigmes-header  .liens-placeholder {
 
 
 /* ========== 📱 RESPONSIVE PAGE DE CHASSE ========== */
-@media (max-width: 768px) {
+@media (--bp-md) {
   .chasse-fiche-container {
     flex-direction: column;
   }
@@ -106,20 +106,20 @@ body.edition-active-chasse .chasse-enigmes-header  .liens-placeholder {
   .chasse-details-wrapper {
     width: 100%;
   }
-  .chasse-details-wrapper h1 {
+  .header-chasse {
     font-size: 22px;
-}
+  }
 }
 
 
 .infos-dispo {
   text-align: center;
-  margin-top: 0.25rem;
+  margin-top: var(--space-xxs);
 }
 .infos-dispo .infos-secondaires {
   display: inline-block;
-  background-color: #eee;
-  color: #333;
+  background-color: var(--color-grey-light);
+  color: var(--color-grey-dark);
   padding: 0.25em 0.6em;
   border-radius: 999px;
   font-size: 0.8em;

@@ -36,7 +36,7 @@
     align-items: center;
     border-radius: 50%;
     overflow: hidden; /* S'assure que tout reste bien arrondi */
-    background: linear-gradient(145deg, #ffd700, #b8860b); /* Effet or */
+    background: linear-gradient(145deg, var(--color-primary), var(--color-primary-dark)); /* Effet or */
     padding: 10px; /* Ajuste selon l'effet souhaité */
 }
 .trophee-container::after {
@@ -70,7 +70,7 @@
     opacity: 0;
     transform: scale(0);
     transition: opacity 0.5s ease-out, transform 0.5s ease-out;
-    color: red;
+    color: var(--color-error);
 }
 .effet-suspense-overlay {
     position: fixed;
@@ -78,7 +78,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(to bottom, #0B132B, #060A1F);
+    background: linear-gradient(to bottom, var(--color-background), var(--color-background-dark));
     background-blend-mode: overlay;
     z-index: 9999;
     display: flex;
@@ -184,20 +184,6 @@
     color: var(--color-text);
     margin-top: 10px;
     animation: fadeInUp 1s ease-out forwards;
-}
-.btn-fermer-wow {
-    background: var(--color-background-button);
-    color: var(--color-text);
-    border: none;
-    padding: 10px 20px;
-    font-size: 1.2rem;
-    border-radius: 5px;
-    margin-top: 20px;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-.btn-fermer-wow:hover {
-    background: darkred;
 }
 @keyframes zoomIn {
     from {
@@ -320,7 +306,7 @@ header .points-plus-circle {
   line-height: 1;
 }
 header .points-link:hover {
-  background-color: #a00000;
+  background-color: var(--color-background-button-hover);
   transform: scale(1.05);
 }
 
@@ -345,11 +331,7 @@ header .points-link:hover {
 }
 
 /* ========== ✅ BLOC RÉPONSE CTA ROW ========== */
-.reponse-cta-row {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-}
+
 
 .points-link.points-boutique-icon {
   margin-left: 8px;
@@ -358,23 +340,23 @@ header .points-link:hover {
 
 
 /* 📱 Responsive : ajuste la taille du texte sur mobile/tablette */
-@media (max-width: 1024px) {
+@media (--bp-lg) {
     .points-value {
         font-size: 16px;
     }
 }
 
-@media (max-width: 768px) {
+@media (--bp-md) {
     .points-value {
         font-size: 14px;
     }
 }
-@media (max-width: 480px) {
+@media (--bp-sm) {
   .points-unite {
     display: none;
   }
 }
-@media (max-width: 374px) {
+@media (--bp-xs) {
   .points-unite {
     display: none;
   }
@@ -402,6 +384,9 @@ header .points-link:hover {
     text-align: left;
     border: 1px solid var(--color-editor-border);
 }
+.points-modal.is-open {
+    display: block;
+}
 .points-modal-content {
     position: relative;
     padding: 16px;
@@ -417,7 +402,7 @@ header .points-link:hover {
 .conversion-rate-badge {
     display: inline-block;
     font-size: 0.75rem;
-    background-color: #fff;
+    background-color: var(--color-white);
     color: var(--color-editor-heading);
     border: 1px solid var(--color-editor-text-muted);
     padding: 2px 6px;
@@ -463,6 +448,9 @@ header .points-link:hover {
     background: rgba(0, 0, 0, 0.5); /* Assombrissement */
     z-index: 10999; /* Derrière le modal */
 }
+.modal-overlay.is-open {
+    display: block;
+}
 .points-modal-active::before {
     content: "";
     position: fixed;
@@ -486,14 +474,14 @@ header .points-link:hover {
 
 .points-modal label {
     display: block;
-    margin-bottom: 0.25rem;
+    margin-bottom: var(--space-xxs);
     font-weight: 500;
     color: var(--color-editor-text);
 }
 
 .points-modal input[type="number"] {
     width: 100%;
-    padding: 0.5rem;
+    padding: var(--space-xs);
     border: 1px solid var(--color-editor-border);
     border-radius: 4px;
     background-color: var(--color-editor-background);
@@ -507,10 +495,10 @@ header .points-link:hover {
 
 .points-modal button {
     background-color: var(--color-editor-button);
-    color: #fff;
+    color: var(--color-white);
     border: none;
     border-radius: 4px;
-    padding: 0.5rem 1rem;
+    padding: var(--space-xs) var(--space-md);
     cursor: pointer;
 }
 
@@ -519,7 +507,7 @@ header .points-link:hover {
 }
 
 .points-modal .conversion-equivalent {
-    margin-top: 0.5rem;
+    margin-top: var(--space-xs);
 }
 
 .points-modal .conversion-equivalent .label {
@@ -535,7 +523,7 @@ header .points-link:hover {
 }
 
 .points-modal .points-feedback {
-    margin-top: 0.25rem;
+    margin-top: var(--space-xxs);
     font-size: 0.75rem;
     color: var(--color-editor-error);
     display: none;
@@ -574,7 +562,7 @@ header .points-link:hover {
 .points-info-text {
     font-size: 14px;
     font-style: italic;
-    color: #ccc;
+    color: var(--color-grey-medium);
 }
 #montant-equivalent {
     color:var(--color-primary);

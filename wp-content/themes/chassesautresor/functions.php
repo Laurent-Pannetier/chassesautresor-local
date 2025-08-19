@@ -26,47 +26,127 @@ add_action( 'after_setup_theme', 'cta_load_textdomain' );
  * Chargement des styles du thème parent et enfant avec prise en charge d'Astra.
  */
 add_action('wp_enqueue_scripts', function () {
-    $theme_dir = get_stylesheet_directory_uri() . '/assets/css/';
+    $theme_uri  = get_stylesheet_directory_uri();
+    $theme_path = get_stylesheet_directory();
 
-    // 🎨 Chargement des styles du thème parent (Astra) et enfant
+    // 🎨 Chargement du style du thème parent (Astra)
     wp_enqueue_style('astra-style', get_template_directory_uri() . '/style.css');
-    wp_enqueue_style('mon-theme-enfant-style', get_stylesheet_directory_uri() . '/style.css', ['astra-style'], filemtime(get_stylesheet_directory() . '/style.css'));
 
-    // 📂 Liste des fichiers CSS organisés
-    $styles = [
-        'grid'               => 'grid.css',
-        'layout'             => 'layout.css',
-        'components'         => 'components.css',
-        'modal-bienvenue'    => 'modal-bienvenue.css',
-        'general-style'      => 'general.css',
-        'chasse-style'       => 'chasse.css',
-        'enigme-style'       => 'enigme.css',
-        'gamification-style' => 'gamification.css',
-        'cartes-style'       => 'cartes.css',
-        'organisateurs'      => 'organisateurs.css',
-        'edition'            => 'edition.css',
-        'mon compte'         => 'mon-compte.css',
-        'commerce-style'     => 'commerce.css',
-        'home'               => 'home.css',
-    ];
+    // Détermine l'environnement via WP_ENVIRONMENT_TYPE ou une constante dédiée.
+    $env                  = defined('CHASSESAUTRESOR_ENV') ? CHASSESAUTRESOR_ENV : wp_get_environment_type();
+    $is_compil_active     = get_option('cta_css_compilation_active', '1') === '1';
+    $is_edition_env       = 'edition' === $env;
 
-    // 🚀 Chargement dynamique des styles avec gestion du cache
-    foreach ($styles as $handle => $file) {
-        wp_enqueue_style($handle, $theme_dir . $file, [], filemtime(get_stylesheet_directory() . "/assets/css/{$file}"));
+    if (!$is_compil_active || $is_edition_env) {
+        wp_enqueue_style(
+            'mon-theme-enfant-style',
+            $theme_uri . '/style.css',
+            ['astra-style'],
+            filemtime($theme_path . '/style.css')
+        );
+
+        $css_uri  = $theme_uri . '/assets/css/';
+        $css_path = $theme_path . '/assets/css/';
+
+        // 📂 Liste des fichiers CSS organisés
+        $styles = [
+            'grid'               => 'grid.css',
+            'layout'             => 'layout.css',
+            'components'         => 'components.css',
+            'aside'              => 'aside.css',
+            'modal-bienvenue'    => 'modal-bienvenue.css',
+            'general-style'      => 'general.css',
+            'chasse-style'       => 'chasse.css',
+            'enigme-style'       => 'enigme.css',
+            'gamification-style' => 'gamification.css',
+            'cartes-style'       => 'cartes.css',
+            'organisateurs'      => 'organisateurs.css',
+            'edition'            => 'edition.css',
+            'mon-compte'         => 'mon-compte.css',
+            'commerce-style'     => 'commerce.css',
+            'home'               => 'home.css',
+        ];
+
+        // ✅ Enregistre les styles avec gestion du cache
+        foreach ($styles as $handle => $file) {
+            wp_register_style($handle, $css_uri . $file, [], filemtime($css_path . $file));
+        }
+
+        // 🚀 Chargement des styles communs
+        $common_styles = [
+            'grid',
+            'layout',
+            'components',
+            'aside',
+            'modal-bienvenue',
+            'general-style',
+            'chasse-style',
+            'enigme-style',
+            'gamification-style',
+            'cartes-style',
+            'organisateurs',
+            'commerce-style',
+            'home',
+        ];
+
+        foreach ($common_styles as $handle) {
+            wp_enqueue_style($handle);
+        }
+
+        // 📌 Styles conditionnels
+        $should_load_edition = false;
+
+        if (is_singular(['organisateur', 'chasse', 'enigme'])) {
+            $post_id = get_queried_object_id();
+            if (utilisateur_peut_modifier_post($post_id)) {
+                $should_load_edition = true;
+            }
+        } elseif (
+            (is_account_page() || preg_match('#^/mon-compte(?:/|$|\\?)#', $_SERVER['REQUEST_URI'] ?? '')) &&
+            is_user_logged_in()
+        ) {
+            $should_load_edition = true;
+        }
+
+        if ($should_load_edition) {
+            wp_enqueue_style('edition');
+        }
+
+        if (is_account_page() || preg_match('#^/mon-compte(?:/|$|\\?)#', $_SERVER['REQUEST_URI'] ?? '')) {
+            wp_enqueue_style('mon-compte');
+        }
+    } else {
+        $dist_file = '/dist/style.min.css';
+        wp_enqueue_style(
+            'chassesautresor-style',
+            $theme_uri . $dist_file,
+            ['astra-style'],
+            filemtime($theme_path . $dist_file)
+        );
     }
 
-    $script_dir = get_stylesheet_directory_uri() . '/assets/js/';
+    $script_dir = $theme_uri . '/assets/js/';
     if (is_account_page() && is_user_logged_in()) {
         wp_enqueue_script(
             'myaccount',
             $script_dir . 'myaccount.js',
             [],
-            filemtime(get_stylesheet_directory() . '/assets/js/myaccount.js'),
+            filemtime($theme_path . '/assets/js/myaccount.js'),
             true
         );
         wp_localize_script('myaccount', 'ctaMyAccount', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
         ]);
+    }
+
+    if (is_singular('enigme')) {
+        wp_enqueue_script(
+            'accordeon',
+            $script_dir . 'accordeon.js',
+            [],
+            filemtime($theme_path . '/assets/js/accordeon.js'),
+            true
+        );
     }
 });
 
@@ -99,6 +179,7 @@ require_once $inc_path . 'myaccount-functions.php';
 require_once $inc_path . 'utils/liens.php';
 require_once $inc_path . 'chasse/stats.php';
 require_once $inc_path . 'organisateur/stats.php';
+require_once $inc_path . 'pager.php';
 
 require_once $inc_path . 'edition/edition-core.php';
 require_once $inc_path . 'edition/edition-organisateur.php';

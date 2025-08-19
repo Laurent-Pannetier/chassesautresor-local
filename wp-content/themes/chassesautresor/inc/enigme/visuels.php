@@ -26,6 +26,76 @@ define('ID_IMAGE_PLACEHOLDER_ENIGME', 3925);
 
 
 /**
+ * Retourne le mapping des tailles d'image vers les requêtes media.
+ *
+ * @return array<string, string>
+ */
+function get_enigme_picture_breakpoints(): array
+{
+    return [
+        'full'      => '(min-width: 1025px)',
+        'large'     => '(min-width: 769px)',
+        'medium'    => '(min-width: 481px)',
+        'thumbnail' => '',
+    ];
+}
+
+/**
+ * Génère le HTML d'un bloc <picture> pour un ID d'image donné.
+ *
+ * @param int   $image_id     ID de l'image.
+ * @param string $alt         Texte alternatif.
+ * @param array $sizes        Tailles WordPress à utiliser (la plus grande en dernier).
+ * @param array $img_attrs    Attributs supplémentaires pour la balise <img> finale.
+ * @return string
+ */
+function build_picture_enigme(int $image_id, string $alt, array $sizes, array $img_attrs = []): string
+{
+    $breakpoints = get_enigme_picture_breakpoints();
+    $order = ['thumbnail', 'medium', 'large', 'full'];
+
+    $max_index = 0;
+    foreach ($sizes as $s) {
+        $idx = array_search($s, $order, true);
+        if ($idx !== false && $idx > $max_index) {
+            $max_index = $idx;
+        }
+    }
+
+    $used_sizes = array_slice($order, 0, $max_index + 1);
+
+    $base_url = site_url('/voir-image-enigme');
+
+    $html = "<picture>\n";
+    for ($i = count($used_sizes) - 1; $i > 0; $i--) {
+        $size = $used_sizes[$i];
+        $src = esc_url(add_query_arg([
+            'id'     => $image_id,
+            'taille' => $size,
+        ], $base_url));
+        $media = $breakpoints[$size];
+        $media_attr = $media ? ' media="' . $media . '"' : '';
+        $html .= '  <source srcset="' . $src . '"' . $media_attr . ">\n";
+    }
+
+    $fallback_size = $used_sizes[0];
+    $src_fallback = esc_url(add_query_arg([
+        'id'     => $image_id,
+        'taille' => $fallback_size,
+    ], $base_url));
+
+    $attr_str = '';
+    foreach ($img_attrs as $key => $value) {
+        $attr_str .= ' ' . $key . '="' . esc_attr($value) . '"';
+    }
+
+    $html .= '  <img src="' . $src_fallback . '" alt="' . esc_attr($alt) . '" loading="lazy"' . $attr_str . ">\n";
+    $html .= "</picture>\n";
+
+    return $html;
+}
+
+/**
  * Affiche une galerie d’images d’une énigme si l’utilisateur y a droit.
  *
  * Compatible Fancybox 3 (ancien Firelight/Easy Fancybox) via `rel="lightbox-enigme"`.
@@ -49,10 +119,17 @@ function afficher_visuels_enigme(int $enigme_id): void
     // 📸 Image principale
     $image_id_active = $images[0]['ID'] ?? null;
     if ($image_id_active) {
-        $src_main = add_query_arg('id', $image_id_active, site_url('/voir-image-enigme'));
+        $href_full = add_query_arg([
+            'id'     => $image_id_active,
+            'taille' => 'full',
+        ], site_url('/voir-image-enigme'));
+
         echo '<div class="image-principale">';
-        echo '<a href="' . esc_url($src_main) . '" class="fancybox image" rel="lightbox-enigme">';
-        echo '<img src="' . esc_url($src_main) . '" id="image-enigme-active" class="image-active" alt="Visuel énigme">';
+        echo '<a href="' . esc_url($href_full) . '" class="fancybox image" rel="lightbox-enigme">';
+        echo build_picture_enigme($image_id_active, __('Visuel énigme', 'chassesautresor-com'), ['full'], [
+            'id'    => 'image-enigme-active',
+            'class' => 'image-active',
+        ]);
         echo '</a>';
         echo '</div>';
     }
@@ -198,46 +275,17 @@ function get_url_vignette_enigme(int $enigme_id, string $taille = 'thumbnail'): 
  */
 function afficher_picture_vignette_enigme(int $enigme_id, string $alt = '', array $sizes = ['thumbnail', 'medium']): void
 {
-    error_log("afficher_picture_vignette_enigme called with enigme_id: $enigme_id, alt: $alt, sizes: " . json_encode($sizes));
-
-
     $images = get_field('enigme_visuel_image', $enigme_id, false);
     $image_id = (is_array($images) && !empty($images[0])) ? (int) $images[0] : null;
 
     if (!$image_id) {
-        // Fallback SVG intégré en dur
         echo '<div class="enigme-placeholder placeholder-svg">';
         echo file_get_contents(get_stylesheet_directory() . '/assets/svg/creation-enigme.svg');
         echo '</div>';
         return;
-    } else {
-        error_log("Using image_id: $image_id for enigme_id: $enigme_id");
     }
 
-    echo '<picture>' . "\n";
-
-    foreach ($sizes as $taille) {
-        $base_url = site_url('/voir-image-enigme');
-        $src = esc_url(add_query_arg([
-            'id'     => $image_id,
-            'taille' => $taille,
-        ], $base_url));
-
-        error_log("Adding <source> for taille: $taille, src: $src");
-
-        echo '  <source srcset="' . $src . '" type="image/webp">' . "\n";
-        echo '  <source srcset="' . $src . '" type="image/png">' . "\n";
-    }
-
-    $src_default = esc_url(add_query_arg([
-        'id'     => $image_id,
-        'taille' => end($sizes),
-    ], site_url('/voir-image-enigme')));
-
-    error_log("Default <img> src: $src_default");
-
-    echo '  <img src="' . $src_default . '" alt="' . esc_attr($alt) . '" loading="lazy">' . "\n";
-    echo '</picture>' . "\n";
+    echo build_picture_enigme($image_id, $alt, $sizes);
 }
 
 
@@ -374,7 +422,7 @@ function get_mapping_visuel_enigme(int $enigme_id): array
             'image_reelle' => false,
             'fallback_svg' => 'question.svg',
             'filtre'       => 'blur-xs',
-            'sens'         => "Pré-requis non remplis",
+            'sens'         => esc_html__('Pré-requis non remplis', 'chassesautresor-com'),
         ],
         'bloquee_chasse' => [
             'image_reelle' => false,

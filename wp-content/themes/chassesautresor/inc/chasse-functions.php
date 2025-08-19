@@ -156,21 +156,21 @@ function verifier_souscription_chasse($user_id, $enigme_id)
 {
 
     if (!$user_id || !$enigme_id) {
-        error_log("🚨 ERREUR : ID utilisateur ou énigme manquant.");
+        cat_debug("🚨 ERREUR : ID utilisateur ou énigme manquant.");
         return;
     }
 
     // 🏴‍☠️ Récupération de la chasse associée à l’énigme
     $chasse_id = get_field('chasse_associee', $enigme_id);
     if (!$chasse_id) {
-        error_log("⚠️ Aucune chasse associée à l'énigme ID {$enigme_id}");
+        cat_debug("⚠️ Aucune chasse associée à l'énigme ID {$enigme_id}");
         return;
     }
 
     // 🔍 Vérification si l'utilisateur a déjà joué une énigme de cette chasse
     $enigmes_associees = get_field('enigmes_associees', $chasse_id);
     if (!$enigmes_associees || !is_array($enigmes_associees)) {
-        error_log("⚠️ Pas d'énigmes associées à la chasse ID {$chasse_id}");
+        cat_debug("⚠️ Pas d'énigmes associées à la chasse ID {$chasse_id}");
         return;
     }
 
@@ -179,12 +179,12 @@ function verifier_souscription_chasse($user_id, $enigme_id)
 
         // 🚫 Si une énigme a déjà été souscrite, tentée ou trouvée, la chasse est déjà souscrite
         if ($statut && $statut !== 'non_souscrit') {
-            error_log("🔄 L'utilisateur ID {$user_id} a déjà interagi avec l'énigme ID {$eid}. Chasse ID {$chasse_id} déjà souscrite.");
+            cat_debug("🔄 L'utilisateur ID {$user_id} a déjà interagi avec l'énigme ID {$eid}. Chasse ID {$chasse_id} déjà souscrite.");
             return;
         }
     }
 
-    error_log("🔍 Vérification avant mise à jour souscription chasse ID {$chasse_id} : Utilisateur ID {$user_id}");
+    cat_debug("🔍 Vérification avant mise à jour souscription chasse ID {$chasse_id} : Utilisateur ID {$user_id}");
 
     // ✅ Première souscription à une énigme de cette chasse => Marquer la chasse comme souscrite
     update_user_meta($user_id, "souscription_chasse_{$chasse_id}", true);
@@ -346,7 +346,7 @@ function gerer_chasse_terminee($chasse_id)
     $max_winners = (int) get_field('chasse_infos_nb_max_gagants', $chasse_id);
     if ($max_winners > 0 && count($results) > $max_winners) {
         $total_found = count($results);
-        error_log("⚠️ Plus de gagnants ({$total_found}) que la limite ({$max_winners}) pour la chasse {$chasse_id}. Seuls les premiers arrivés seront retenus.");
+        cat_debug("⚠️ Plus de gagnants ({$total_found}) que la limite ({$max_winners}) pour la chasse {$chasse_id}. Seuls les premiers arrivés seront retenus.");
         $results = array_slice($results, 0, $max_winners);
     }
 

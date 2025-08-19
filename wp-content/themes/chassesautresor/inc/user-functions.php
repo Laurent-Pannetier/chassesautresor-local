@@ -97,6 +97,11 @@ function charger_template_utilisateur($template) {
         wp_redirect(home_url('/mon-compte/?section=points'));
         exit;
     }
+
+    if ($request_uri === 'mon-compte/chasses' || $request_uri === 'mon-compte/chasses/') {
+        wp_redirect(home_url('/mon-compte/?section=chasses'));
+        exit;
+    }
     
     // Associe chaque URL à un fichier de contenu spécifique
     $mapping_templates = array(
@@ -130,7 +135,7 @@ function charger_template_utilisateur($template) {
         $content_template = get_stylesheet_directory() . '/templates/myaccount/' . $mapping_templates[$request_uri];
 
         if (!file_exists($content_template)) {
-            error_log('Fichier de contenu introuvable : ' . $content_template);
+            cat_debug('Fichier de contenu introuvable : ' . $content_template);
         } else {
             // Stocke le chemin pour l'injection dans le layout
             $GLOBALS['myaccount_content_template'] = $content_template;
@@ -157,10 +162,19 @@ function modifier_titre_onglet($title) {
 
     // Définition des titres pour chaque page
     $page_titles = [
-        'mon-compte/statistiques'              => 'Statistiques - Chasses au Trésor',
-        'mon-compte/outils'                    => 'Outils - Chasses au Trésor',
-        'mon-compte/organisateurs'             => 'Organisateur - Chasses au Trésor',
+        'mon-compte/statistiques'  => __('Statistiques - Chasses au Trésor', 'chassesautresor-com'),
+        'mon-compte/outils'        => __('Outils - Chasses au Trésor', 'chassesautresor-com'),
+        'mon-compte/organisateurs' => __('Organisateur - Chasses au Trésor', 'chassesautresor-com'),
     ];
+
+    // Titre spécifique pour /mon-compte/?section=points
+    if ($current_url === 'mon-compte' && (($_GET['section'] ?? '') === 'points')) {
+        return __('Points - Chasses au Trésor', 'chassesautresor-com');
+    }
+
+    if ($current_url === 'mon-compte' && (($_GET['section'] ?? '') === 'chasses')) {
+        return __('Chasses - Chasses au Trésor', 'chassesautresor-com');
+    }
 
     // Si l’URL correspond à une page définie, modifier le titre
     if (isset($page_titles[$current_url])) {
@@ -236,14 +250,169 @@ add_filter('woocommerce_endpoint_edit-account_title', 'ca_profile_endpoint_title
 // 📣 IMPORTANT MESSAGES
 // ==================================================
 /**
+ * Store a flash message for the given user.
+ *
+ * @param int    $user_id User identifier.
+ * @param string $message Message to store.
+ *
+ * @return void
+ */
+/**
+ * Store a persistent important message for the given user.
+ *
+ * @param int    $user_id User identifier.
+ * @param string $key     Unique message key.
+ * @param string $message Message to store.
+ *
+ * @return void
+ */
+function myaccount_add_persistent_message(int $user_id, string $key, string $message): void
+{
+    $messages = get_user_meta($user_id, '_myaccount_messages', true);
+    if (!is_array($messages)) {
+        $messages = [];
+    }
+
+    $messages[$key] = $message;
+    update_user_meta($user_id, '_myaccount_messages', $messages);
+}
+
+/**
+ * Remove a persistent message for the given user.
+ *
+ * @param int    $user_id User identifier.
+ * @param string $key     Message key.
+ *
+ * @return void
+ */
+function myaccount_remove_persistent_message(int $user_id, string $key): void
+{
+    $messages = get_user_meta($user_id, '_myaccount_messages', true);
+    if (!is_array($messages) || !isset($messages[$key])) {
+        return;
+    }
+
+    unset($messages[$key]);
+
+    if (!empty($messages)) {
+        update_user_meta($user_id, '_myaccount_messages', $messages);
+    } else {
+        delete_user_meta($user_id, '_myaccount_messages');
+    }
+}
+
+/**
+ * Retrieve persistent important messages for the given user.
+ *
+ * @param int $user_id User identifier.
+ *
+ * @return array<string>
+ */
+function myaccount_get_persistent_messages(int $user_id): array
+{
+    $messages = get_user_meta($user_id, '_myaccount_messages', true);
+    if (!is_array($messages)) {
+        return [];
+    }
+
+    $tentatives = [];
+    foreach ($messages as $key => $msg) {
+        if (strpos($key, 'tentative_') === 0 && is_string($msg)) {
+            if (preg_match('/<a[^>]*>.*?<\/a>/', $msg, $matches)) {
+                $tentatives[] = $matches[0];
+            } else {
+                $tentatives[] = $msg;
+            }
+            unset($messages[$key]);
+        }
+    }
+
+    $output = array_values(array_filter($messages, 'is_string'));
+
+    if (!empty($tentatives)) {
+        if (count($tentatives) === 1) {
+            $output[] = sprintf(
+                __(
+                    'Votre demande de résolution de l\'énigme %s est en cours de traitement. '
+                    . 'Vous recevrez une notification dès que votre demande sera traitée.',
+                    'chassesautresor-com'
+                ),
+                $tentatives[0]
+            );
+        } else {
+            $links = array_map(
+                function ($anchor) {
+                    return str_replace('<a ', '<a class="etiquette" ', $anchor);
+                },
+                $tentatives
+            );
+
+            $output[] = sprintf(
+                __(
+                    'Vos demandes de résolution d\'énigmes sont en cours de traitement : %s. '
+                    . 'Vous recevrez une notification dès que vos demandes seront traitées.',
+                    'chassesautresor-com'
+                ),
+                implode(' ', $links)
+            );
+        }
+    }
+
+    return $output;
+}
+
+/**
+ * Store a flash message for the given user.
+ *
+ * @param int    $user_id User identifier.
+ * @param string $message Message to store.
+ *
+ * @return void
+ */
+function myaccount_add_flash_message(int $user_id, string $message): void
+{
+    $messages = get_user_meta($user_id, '_myaccount_flash_messages', true);
+    if (!is_array($messages)) {
+        $messages = [];
+    }
+
+    $messages[] = $message;
+    update_user_meta($user_id, '_myaccount_flash_messages', $messages);
+}
+
+/**
+ * Retrieve and clear flash messages for the given user.
+ *
+ * @param int $user_id User identifier.
+ *
+ * @return array<string>
+ */
+function myaccount_get_flash_messages(int $user_id): array
+{
+    $messages = get_user_meta($user_id, '_myaccount_flash_messages', true);
+    if (!is_array($messages)) {
+        return [];
+    }
+
+    $messages = array_filter($messages, 'is_string');
+    delete_user_meta($user_id, '_myaccount_flash_messages');
+
+    return $messages;
+}
+
+/**
  * Get pre-formatted HTML for the important message section in My Account pages.
  *
  * @return string
  */
 function myaccount_get_important_messages(): string
 {
-    $messages = [];
-    $flash    = '';
+    $current_user_id = get_current_user_id();
+    $messages        = array_merge(
+        myaccount_get_persistent_messages($current_user_id),
+        myaccount_get_flash_messages($current_user_id)
+    );
+    $flash           = '';
 
     if (isset($_GET['points_modifies']) && $_GET['points_modifies'] === '1') {
         $flash = '<p class="flash">' . __('Points mis à jour avec succès.', 'chassesautresor') . '</p>';
@@ -281,10 +450,10 @@ function myaccount_get_important_messages(): string
         $pendingRequests = $repo->getConversionRequests(null, 'pending');
 
         if (!empty($pendingRequests)) {
-            $url = esc_url(home_url('/mon-compte/?section=points'));
+            $url = esc_url(add_query_arg('section', 'points', home_url('/mon-compte/')));
             $messages[] = sprintf(
                 /* translators: 1: opening anchor tag, 2: closing anchor tag */
-                __('Vous avez des %1$sdemandes de conversion%2$s en attente.', 'chassesautresor'),
+                __('Vous avez des %1$sdemandes de conversion%2$s en attente.', 'chassesautresor-com'),
                 '<a href="' . $url . '">',
                 '</a>'
             );
@@ -301,12 +470,12 @@ function myaccount_get_important_messages(): string
                     function ($id) {
                         $url   = esc_url(get_permalink($id));
                         $title = esc_html(get_the_title($id));
-                        return '<a href="' . $url . '">' . $title . '</a>';
+                        return '<a class="enigme-link" href="' . $url . '">' . $title . '</a>';
                     },
                     $enigmes
                 );
 
-                $messages[] = __('Tentatives à traiter :', 'chassesautresor') . ' ' . implode(', ', $links);
+                $messages[] = '⚠️ ' . __('Important ! Des tentatives attendent votre action :', 'chassesautresor-com') . ' ' . implode('', $links);
             }
         }
 
@@ -314,10 +483,22 @@ function myaccount_get_important_messages(): string
         $repo       = new PointsRepository($wpdb);
         $pendingOwn = $repo->getConversionRequests($current_user_id, 'pending');
         if (!empty($pendingOwn)) {
+            $conversion_url = $organisateur_id
+                ? esc_url(
+                    add_query_arg(
+                        [
+                            'edition' => 'open',
+                            'onglet'  => 'revenus',
+                        ],
+                        get_permalink($organisateur_id)
+                    )
+                )
+                : esc_url(home_url('/mon-compte/?section=points'));
+
             $messages[] = sprintf(
                 /* translators: 1: opening anchor tag, 2: closing anchor tag */
                 __('Vous avez une %1$sdemande de conversion%2$s en attente de règlement.', 'chassesautresor'),
-                '<a href="' . esc_url(home_url('/mon-compte/?section=points')) . '">',
+                '<a href="' . $conversion_url . '">',
                 '</a>'
             );
         }
@@ -353,7 +534,7 @@ function myaccount_get_important_messages(): string
 
     $output = array_map(
         function ($msg) {
-            return '<p>' . $msg . '</p>';
+            return '<p class="alerte-discret">' . $msg . '</p>';
         },
         $messages
     );
@@ -378,6 +559,7 @@ function ca_load_admin_section()
     $section = sanitize_key($_GET['section'] ?? '');
     $allowed = [
         'points'        => ['template' => 'content-points.php', 'cap' => 'read'],
+        'chasses'       => ['template' => 'content-chasses.php', 'cap' => 'read'],
         'organisateurs' => ['template' => 'content-organisateurs.php', 'cap' => 'administrator'],
         'statistiques'  => ['template' => 'content-statistiques.php', 'cap' => 'administrator'],
         'outils'        => ['template' => 'content-outils.php', 'cap' => 'administrator'],
@@ -655,7 +837,7 @@ function ajouter_role_organisateur_creation($post_id, $post, $update) {
     // 🔹 Vérifie si l'utilisateur est "subscriber" avant de lui attribuer "organisateur_creation"
     if (in_array('subscriber', $user->roles, true)) {
         $user->add_role(ROLE_ORGANISATEUR_CREATION); // ✅ Ajoute le rôle sans retirer "subscriber"
-        error_log("✅ L'utilisateur $user_id a maintenant aussi le rôle 'organisateur_creation'.");
+        cat_debug("✅ L'utilisateur $user_id a maintenant aussi le rôle 'organisateur_creation'.");
     }
 }
 add_action('save_post', 'ajouter_role_organisateur_creation', 10, 3);

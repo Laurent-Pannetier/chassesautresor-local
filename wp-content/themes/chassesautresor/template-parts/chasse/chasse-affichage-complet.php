@@ -59,14 +59,14 @@ $organisateur_nom = $organisateur_id ? get_the_title($organisateur_id) : get_the
 if (current_user_can('administrator')) {
   $chasse_id = get_the_ID();
 
-  error_log("📦 [TEST] Statut stocké (admin) : " . get_field('chasse_cache_statut', $chasse_id));
+  cat_debug("📦 [TEST] Statut stocké (admin) : " . get_field('chasse_cache_statut', $chasse_id));
 
   verifier_ou_recalculer_statut_chasse($chasse_id);
 
 
   mettre_a_jour_statuts_chasse($chasse_id);
 
-  error_log("✅ [TEST] Recalcul exécuté via mettre_a_jour_statuts_chasse($chasse_id)");
+  cat_debug("✅ [TEST] Recalcul exécuté via mettre_a_jour_statuts_chasse($chasse_id)");
 }
 
 
