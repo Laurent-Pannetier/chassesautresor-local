@@ -824,12 +824,12 @@ function initPanneauVariantes() {
           if (resumeBloc) {
             if (!listeResume) {
               listeResume = document.createElement('table');
-              listeResume.className = 'variantes-table stats-table compact';
+              listeResume.className = 'variantes-table';
               const thead = document.createElement('thead');
               const trHead = document.createElement('tr');
               const thTexte = document.createElement('th');
               thTexte.scope = 'col';
-              thTexte.textContent = wp.i18n.__('Réponse', 'chassesautresor-com');
+              thTexte.textContent = wp.i18n.__('Variante', 'chassesautresor-com');
               const thMessage = document.createElement('th');
               thMessage.scope = 'col';
               thMessage.textContent = wp.i18n.__('Message', 'chassesautresor-com');

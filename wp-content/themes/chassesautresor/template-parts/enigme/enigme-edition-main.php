@@ -287,10 +287,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
               </label>
 
               <?php if ($has_variantes) : ?>
-                <table class="variantes-table stats-table compact">
+                <table class="variantes-table">
                   <thead>
                     <tr>
-                      <th scope="col"><?= esc_html__('Réponse', 'chassesautresor-com'); ?></th>
+                      <th scope="col"><?= esc_html__('Variante', 'chassesautresor-com'); ?></th>
                       <th scope="col"><?= esc_html__('Message', 'chassesautresor-com'); ?></th>
                     </tr>
                   </thead>

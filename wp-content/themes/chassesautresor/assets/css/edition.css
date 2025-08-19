@@ -1075,13 +1075,26 @@ body.panneau-ouvert::before {
   margin: 0;
   width: auto;
   display: inline-table;
+  border-collapse: collapse;
+  font-size: 0.85em;
 }
 
-.variantes-table .variante-texte {
+.champ-variantes-resume .variantes-table th,
+.champ-variantes-resume .variantes-table td {
+  padding: 0 4px 0 0;
+  font-weight: normal;
+  border: none;
+}
+
+.champ-variantes-resume .variantes-table th {
+  color: var(--color-editor-text-muted);
+}
+
+.champ-variantes-resume .variantes-table .variante-texte {
   color: var(--color-editor-text);
 }
 
-.variantes-table .variante-message {
+.champ-variantes-resume .variantes-table .variante-message {
   color: var(--color-editor-text-muted);
 }
 
