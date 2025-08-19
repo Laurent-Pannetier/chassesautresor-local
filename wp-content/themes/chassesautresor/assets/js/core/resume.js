@@ -361,7 +361,7 @@ function mettreAJourLigneResume(ligne, champ, estRempli, type) {
 
   // Ajouter bouton édition ✏️ si besoin
   const dejaBouton = ligne.querySelector('.champ-modifier');
-  const pasDEdition = ligne.dataset.noEdit !== undefined;
+  const pasDEdition = ligne.dataset.noEdit !== undefined || champ === 'enigme_visuel_texte';
 
   if (pasDEdition) {
     ligne.style.cursor = '';

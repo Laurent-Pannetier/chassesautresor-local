@@ -903,9 +903,7 @@ li.ligne-logo .champ-modifier {
 
 
 .resume-infos li.champ-description .champ-texte-contenu .champ-modifier,
-.resume-infos li.champ-wysiwyg .champ-texte-contenu .champ-modifier,
-.resume-infos li.champ-description > .champ-modifier,
-.resume-infos li.champ-wysiwyg > .champ-modifier {
+.resume-infos li.champ-wysiwyg .champ-texte-contenu .champ-modifier {
   transform: none;
   margin-left: 0.3rem;
 }
