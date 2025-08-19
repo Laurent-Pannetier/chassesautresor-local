@@ -145,10 +145,19 @@ get_header();
                 $page_title = __('Votre profil', 'chassesautresor-com');
             } elseif (is_wc_endpoint_url('orders')) {
                 $page_title = __('Vos commandes', 'chassesautresor-com');
+            } elseif (isset($_GET['section']) && $_GET['section'] === 'chasses') {
+                $page_title = __('Vos chasses', 'chassesautresor-com');
+            } elseif (isset($_GET['section']) && $_GET['section'] === 'points') {
+                $page_title = __('Points', 'chassesautresor-com');
+            } elseif (is_account_page() && empty($_GET['section'])) {
+                $page_title = sprintf(__('Bienvenue %s', 'chassesautresor-com'), $display_name);
             }
-            if ($page_title) : ?>
-            <h1 class="myaccount-title"><?php echo esc_html($page_title); ?></h1>
-            <?php endif; ?>
+            if ($page_title) :
+                ?>
+                <h1 class="myaccount-title"><?php echo esc_html($page_title); ?></h1>
+                <?php
+            endif;
+            ?>
             <!-- TODO: header content -->
         </header>
         <main class="myaccount-content">
