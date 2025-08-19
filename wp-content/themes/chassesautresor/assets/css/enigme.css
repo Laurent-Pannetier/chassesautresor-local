@@ -82,7 +82,7 @@
   opacity: 1;
 }
 
-.enigme-menu li a {
+.enigme-menu li > a:not(.enigme-menu__edit) {
   display: block;
   flex: 1;
   padding: var(--space-xxs) calc(var(--space-sm) + 1.5em);
@@ -93,16 +93,16 @@
   border-radius: 4px;
 }
 
-.enigme-menu--editable li a {
+.enigme-menu--editable li > a:not(.enigme-menu__edit) {
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
-.enigme-menu li a:visited {
+.enigme-menu li > a:not(.enigme-menu__edit):visited {
   color: inherit;
 }
 
-.enigme-menu:not(.enigme-menu--editable) li.bloquee > a {
+.enigme-menu:not(.enigme-menu--editable) li.bloquee > a:not(.enigme-menu__edit) {
   cursor: default;
 }
 
@@ -110,11 +110,11 @@
   cursor: grabbing;
 }
 
-.enigme-menu li:not(.active):hover > a {
+.enigme-menu li:not(.active):hover > a:not(.enigme-menu__edit) {
   background-color: rgba(255, 215, 0, 0.1);
 }
 
-.enigme-menu--editable li:not(.active):hover > a {
+.enigme-menu--editable li:not(.active):hover > a:not(.enigme-menu__edit) {
   background-color: rgba(255, 215, 0, 0.2);
 }
 
@@ -184,7 +184,8 @@
   --bullet-outline: var(--etat-enigme-menu-succes);
 }
 
-.enigme-menu li.non-engagee > a {
+
+.enigme-menu li.non-engagee > a:not(.enigme-menu__edit) {
   font-weight: 600;
 }
 
@@ -197,7 +198,8 @@
   --bullet-outline: var(--etat-enigme-menu-incomplete);
 }
 
-.enigme-menu li.active > a {
+
+.enigme-menu li.active > a:not(.enigme-menu__edit) {
   background-color: rgba(255, 215, 0, 0.2);
   font-weight: 600;
 }
@@ -217,7 +219,8 @@
   outline-offset: -2px;
 }
 
-.enigme-menu li.drag-over > a {
+
+.enigme-menu li.drag-over > a:not(.enigme-menu__edit) {
   background-color: rgba(255, 215, 0, 0.2);
 }
 
