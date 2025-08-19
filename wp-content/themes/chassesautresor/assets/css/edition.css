@@ -1065,8 +1065,16 @@ body.panneau-ouvert::before {
   background-color: var(--color-editor-button-hover);
 }
 
-.variantes-table {
+.champ-variantes-resume {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.champ-variantes-resume .variantes-table {
   margin: 0;
+  width: auto;
+  display: inline-table;
 }
 
 .variantes-table .variante-texte {
