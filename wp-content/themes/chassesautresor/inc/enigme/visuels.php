@@ -174,6 +174,7 @@ function afficher_visuels_enigme(int $enigme_id): void
 
                     const base = '/voir-image-enigme?id=' + id;
 
+                    const offsetBefore = container ? container.getBoundingClientRect().top : 0;
                     if (container) {
                         container.style.minHeight = container.offsetHeight + 'px';
                     }
@@ -190,6 +191,8 @@ function afficher_visuels_enigme(int $enigme_id): void
 
                         if (container) {
                             container.style.minHeight = '';
+                            const offsetAfter = container.getBoundingClientRect().top;
+                            window.scrollBy(0, offsetBefore - offsetAfter);
                         }
 
                         vignettes.forEach(x => x.classList.remove('active'));
