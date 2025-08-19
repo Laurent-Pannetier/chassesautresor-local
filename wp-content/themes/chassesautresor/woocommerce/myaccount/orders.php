@@ -15,9 +15,9 @@ defined('ABSPATH') || exit;
 
 do_action('woocommerce_before_account_orders', $has_orders);
 
-if ($has_orders) : ?>
-
+?>
 <h1 class="myaccount-page-title"><?php esc_html_e('Vos commandes', 'chassesautresor-com'); ?></h1>
+<?php if ($has_orders) : ?>
 <div class="stats-table-wrapper">
     <table class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table">
 <thead>
