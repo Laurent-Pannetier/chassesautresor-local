@@ -75,7 +75,7 @@ function build_picture_enigme(int $image_id, string $alt, array $sizes, array $i
         ], $base_url));
         $media = $breakpoints[$size];
         $media_attr = $media ? ' media="' . $media . '"' : '';
-        $html .= '  <source srcset="' . $src . '"' . $media_attr . ">\n";
+        $html .= '  <source srcset="' . $src . '" data-size="' . $size . '"' . $media_attr . ">\n";
     }
 
     $fallback_size = $used_sizes[0];
@@ -165,13 +165,14 @@ function afficher_visuels_enigme(int $enigme_id): void
             const principale = document.getElementById('image-enigme-active');
             const lien = principale?.closest('a');
             const container = principale?.closest('.image-principale');
+            const picture = principale?.parentElement;
 
             vignettes.forEach(v => {
                 v.addEventListener('click', () => {
                     const id = v.getAttribute('data-image-id');
-                    if (!id || !principale || !lien) return;
+                    if (!id || !principale || !lien || !picture) return;
 
-                    const url = '/voir-image-enigme?id=' + id;
+                    const base = '/voir-image-enigme?id=' + id;
 
                     if (container) {
                         container.style.minHeight = container.offsetHeight + 'px';
@@ -179,8 +180,13 @@ function afficher_visuels_enigme(int $enigme_id): void
 
                     const preload = new Image();
                     preload.onload = () => {
-                        principale.src = preload.src;
-                        lien.href = preload.src;
+                        picture.querySelectorAll('source').forEach(source => {
+                            const size = source.getAttribute('data-size');
+                            source.srcset = base + '&taille=' + size;
+                        });
+
+                        principale.src = base + '&taille=thumbnail';
+                        lien.href = base + '&taille=full';
 
                         if (container) {
                             container.style.minHeight = '';
@@ -190,7 +196,7 @@ function afficher_visuels_enigme(int $enigme_id): void
                         v.classList.add('active');
                     };
 
-                    preload.src = url;
+                    preload.src = base + '&taille=thumbnail';
                 });
             });
         });
