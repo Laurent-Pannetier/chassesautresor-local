@@ -696,6 +696,25 @@ function initPanneauVariantes() {
   let lienAjouterResume = resumeBloc?.querySelector('.champ-ajouter');
   let boutonEditerResume = resumeBloc?.querySelector('.champ-modifier.ouvrir-panneau-variantes');
 
+  if (listeResume && !boutonEditerResume) {
+    boutonEditerResume = document.createElement('button');
+    boutonEditerResume.type = 'button';
+    boutonEditerResume.className = 'champ-modifier txt-small ouvrir-panneau-variantes';
+    boutonEditerResume.dataset.cpt = 'enigme';
+    boutonEditerResume.dataset.postId = postId;
+    boutonEditerResume.setAttribute('aria-label', wp.i18n.__('Modifier les variantes', 'chassesautresor-com'));
+    boutonEditerResume.textContent = wp.i18n.__('modifier', 'chassesautresor-com');
+    resumeBloc.appendChild(boutonEditerResume);
+  }
+
+  if (boutonEditerResume) {
+    boutonEditerResume.style.display = 'inline-block';
+    boutonEditerResume.addEventListener('click', e => {
+      e.preventDefault();
+      ouvrirPanneau();
+    });
+  }
+
   if (!panneau || !formulaire || !postId || !wrapper || !boutonAjouter || !messageLimite || !resumeBloc) return;
 
   function ouvrirPanneau() {
