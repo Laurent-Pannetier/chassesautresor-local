@@ -1407,6 +1407,12 @@ body.panneau-ouvert::before {
   position: relative;
 }
 
+.dashboard-grid > .dashboard-card:only-child {
+  max-width: var(--dashboard-card-max-width);
+  width: 100%;
+  justify-self: center;
+}
+
 .dashboard-card.disabled {
   opacity: 0.5;
   filter: grayscale(100%);
