@@ -78,8 +78,6 @@ function myaccount_get_organizer_nav(int $user_id): ?array
                 } elseif ($status_validation === 'en_attente') {
                     $classes     .= ' status-pending';
                     $pending_icon = true;
-                } elseif (in_array($status_validation, ['creation', 'correction'], true)) {
-                    $classes .= ' status-important';
                 } else {
                     $classes .= ' status-pending';
                 }
