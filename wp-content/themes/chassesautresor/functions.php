@@ -153,10 +153,11 @@ add_action('wp_enqueue_scripts', function () {
         wp_enqueue_script(
             'accordeon',
             $script_dir . 'accordeon.js',
-            [],
+            ['wp-i18n'],
             filemtime($theme_path . '/assets/js/accordeon.js'),
             true
         );
+        wp_set_script_translations('accordeon', 'chassesautresor-com');
         wp_enqueue_script(
             'enigme-gallery',
             $script_dir . 'enigme-gallery.js',

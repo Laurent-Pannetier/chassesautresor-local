@@ -59,16 +59,6 @@ function initEnigmeEdit() {
     }
   });
 
-  document.querySelectorAll('.stat-help').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const message = btn.dataset.message;
-      if (message) {
-        alert(message);
-      }
-    });
-  });
-
-
   // ==============================
   // 🧩 Affichage conditionnel – Champs radio
   // ==============================
