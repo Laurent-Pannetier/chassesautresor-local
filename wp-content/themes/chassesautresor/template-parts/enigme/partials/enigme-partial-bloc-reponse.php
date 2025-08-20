@@ -96,6 +96,7 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
     data-seuil="<?= esc_attr($seuil_cout_eleve); ?>"
 >
     <h3><?= esc_html__('Votre réponse', 'chassesautresor-com'); ?></h3>
+
     <?php if ($cout > 0) : ?>
         <span
             class="badge-cout"
