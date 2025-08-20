@@ -1778,6 +1778,12 @@ body.panneau-ouvert::before {
   align-items: center;
 }
 
+#champ-enigme-pre-requis.champ-vide {
+  border: 2px dashed var(--color-editor-error);
+  padding: var(--space-xs);
+  border-radius: 4px;
+}
+
 #champ-enigme-date.cache,
 #champ-enigme-pre-requis.cache {
   display: none;

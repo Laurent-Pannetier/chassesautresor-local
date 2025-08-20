@@ -1024,10 +1024,24 @@ function initChampPreRequis() {
 
     const radioPre = document.querySelector('input[name="acf[enigme_acces_condition]"][value="pre_requis"]');
     const radioImmediat = document.querySelector('input[name="acf[enigme_acces_condition]"][value="immediat"]');
+    const radiosCondition = document.querySelectorAll('input[name="acf[enigme_acces_condition]"]');
+    const checkboxes = [...bloc.querySelectorAll('input[type="checkbox"]')];
 
-    bloc.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+    const majClasse = () => {
+      const cochés = checkboxes.filter(el => el.checked);
+      if (radioPre?.checked && cochés.length === 0) {
+        bloc.classList.add('champ-vide');
+      } else {
+        bloc.classList.remove('champ-vide');
+      }
+    };
+
+    // État initial et écoute sur changement de condition
+    majClasse();
+    radiosCondition.forEach(r => r.addEventListener('change', majClasse));
+
+    checkboxes.forEach(checkbox => {
       checkbox.addEventListener('change', () => {
-        const checkboxes = [...bloc.querySelectorAll('input[type="checkbox"]')];
         const cochés = checkboxes.filter(el => el.checked).map(el => el.value);
 
         // ✅ 1. Mise à jour des prérequis cochés
@@ -1059,6 +1073,12 @@ function initChampPreRequis() {
             if (radioImmediat) radioImmediat.checked = true;
             modifierChampSimple('enigme_acces_condition', 'immediat', postId, cpt);
           }
+
+          if (typeof window.forcerRecalculStatutEnigme === 'function') {
+            window.forcerRecalculStatutEnigme(postId);
+          }
+
+          majClasse();
         });
       });
     });

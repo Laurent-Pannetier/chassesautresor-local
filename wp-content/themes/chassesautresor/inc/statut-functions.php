@@ -704,7 +704,12 @@ function enigme_est_complet(int $enigme_id): bool
     $reponse = trim((string) get_field('enigme_reponse_bonne', $enigme_id));
     $reponse_ok = $mode !== 'automatique' || $reponse !== '';
 
-    return $titre_ok && $image_ok && $reponse_ok;
+    // ✅ Ensure prerequisite list is filled when required
+    $condition_acces = get_field('enigme_acces_condition', $enigme_id) ?? 'immediat';
+    $pre_requis = get_field('enigme_acces_pre_requis', $enigme_id);
+    $pre_requis_ok = $condition_acces !== 'pre_requis' || (is_array($pre_requis) && !empty($pre_requis));
+
+    return $titre_ok && $image_ok && $reponse_ok && $pre_requis_ok;
 }
 
 function enigme_mettre_a_jour_complet(int $enigme_id): bool
