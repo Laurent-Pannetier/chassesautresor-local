@@ -1740,37 +1740,28 @@ function afficher_tableau_organisateurs_pending(?array $liste = null, int $page 
 
             if ($row['chasse_id']) {
                 $statut      = $row['statut'];
-                $badge_class = 'statut-' . $statut;
+                $badge_class = 'statut-revision';
 
                 switch ($statut) {
-                    case 'en_cours':
-                        $statut_label = __('en cours', 'chassesautresor-com');
-                        break;
-                    case 'a_venir':
-                        $statut_label = __('à venir', 'chassesautresor-com');
-                        break;
-                    case 'termine':
-                        $statut_label = __('terminée', 'chassesautresor-com');
-                        break;
-                    case 'payante':
-                        $statut_label = __('en cours', 'chassesautresor-com');
+                    case 'valide':
                         $badge_class  = 'statut-en_cours';
-                        break;
-                    case 'creation':
-                        $badge_class  = 'statut-revision';
-                        $statut_label = __('création', 'chassesautresor-com');
+                        $statut_label = __('valide', 'chassesautresor-com');
                         break;
                     case 'correction':
-                        $badge_class  = 'statut-revision';
                         $statut_label = __('correction', 'chassesautresor-com');
                         break;
                     case 'en_attente':
-                        $badge_class  = 'statut-revision';
                         $statut_label = __('en attente', 'chassesautresor-com');
                         break;
+                    case 'creation':
+                        $statut_label = __('création', 'chassesautresor-com');
+                        break;
+                    case 'banni':
+                        $badge_class  = 'statut-termine';
+                        $statut_label = __('banni', 'chassesautresor-com');
+                        break;
                     default:
-                        $badge_class  = 'statut-revision';
-                        $statut_label = __('révision', 'chassesautresor-com');
+                        $statut_label = $statut;
                         break;
                 }
 
