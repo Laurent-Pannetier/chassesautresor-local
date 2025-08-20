@@ -408,7 +408,7 @@ class EnigmeMenuRenderingTest extends TestCase
         $this->assertStringNotContainsString('data-enigme-id="102"', $output);
     }
 
-    public function test_menu_disables_link_for_date_locked_enigme(): void
+    public function test_menu_excludes_date_locked_enigme_for_user(): void
     {
         $GLOBALS['is_admin']      = false;
         $GLOBALS['is_associated'] = false;
@@ -437,8 +437,7 @@ class EnigmeMenuRenderingTest extends TestCase
         ob_start();
         afficher_enigme_stylisee(101);
         $output = ob_get_clean();
-        $this->assertStringContainsString('data-enigme-id="102"><a', $output);
-        $this->assertStringNotContainsString('data-enigme-id="102"><a href', $output);
+        $this->assertStringNotContainsString('data-enigme-id="102"', $output);
     }
 
     public function test_traiter_statut_enigme_blocks_access_without_prerequisites(): void
