@@ -48,7 +48,7 @@ if ($mode_validation === 'manuelle') {
                 $account_url = home_url('/mon-compte/?section=chasses');
                 $message = sprintf(
                     __(
-                        '⏳ Votre tentative %1$s a été soumise le %2$s à %3$s. ' .
+                        '⏳ Votre tentative %1$s a été soumise le %2$s à %3$s.<br>' .
                         'Vous serez immédiatement averti de son traitement par l\'organisateur par email ' .
                         'et sur votre <a href="%4$s">espace personnel</a>.',
                         'chassesautresor-com'
