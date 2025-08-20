@@ -968,7 +968,12 @@ defined('ABSPATH') || exit;
         render_enigme_title($enigme_id, $style, $user_id);
         render_enigme_hero($enigme_id, $style, $user_id);
         render_enigme_content($enigme_id, $style, $user_id);
-        render_enigme_participation($enigme_id, $style, $user_id);
+        if (!(
+            est_organisateur($user_id)
+            && utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)
+        )) {
+            render_enigme_participation($enigme_id, $style, $user_id);
+        }
         render_enigme_solution($enigme_id, $style, $user_id);
         echo '</main>';
         echo '</div>';

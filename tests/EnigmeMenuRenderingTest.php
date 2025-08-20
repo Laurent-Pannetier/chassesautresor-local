@@ -228,6 +228,34 @@ if (!function_exists('esc_html')) {
     }
 }
 
+if (!function_exists('remove_accents')) {
+    function remove_accents($string)
+    {
+        return $string;
+    }
+}
+
+if (!function_exists('wp_date')) {
+    function wp_date($format, $timestamp)
+    {
+        return date($format, $timestamp);
+    }
+}
+
+if (!function_exists('compter_tentatives_du_jour')) {
+    function compter_tentatives_du_jour($uid, $enigme_id)
+    {
+        return 0;
+    }
+}
+
+if (!function_exists('get_user_points')) {
+    function get_user_points($user_id)
+    {
+        return 100;
+    }
+}
+
 if (!function_exists('get_the_title')) {
     function get_the_title($id)
     {
@@ -460,5 +488,39 @@ class EnigmeMenuRenderingTest extends TestCase
         $result = traiter_statut_enigme(102, 1);
         $this->assertTrue($result['rediriger']);
         $this->assertSame('bloquee_pre_requis', $result['etat']);
+    }
+
+    public function test_participation_section_shown_for_regular_user(): void
+    {
+        $GLOBALS['is_admin']      = false;
+        $GLOBALS['is_associated'] = false;
+        $GLOBALS['is_organizer']  = false;
+        $GLOBALS['fields'][101]['enigme_cache_complet']       = true;
+        $GLOBALS['fields'][101]['indices']                    = ['hint'];
+        $GLOBALS['fields'][101]['enigme_mode_validation']     = 'automatique';
+        $GLOBALS['fields'][101]['enigme_tentative_cout_points'] = 0;
+        $GLOBALS['fields'][101]['enigme_tentative_max']       = 5;
+
+        ob_start();
+        afficher_enigme_stylisee(101);
+        $output = ob_get_clean();
+        $this->assertStringContainsString('<section class="participation">', $output);
+    }
+
+    public function test_participation_section_hidden_for_associated_organizer(): void
+    {
+        $GLOBALS['is_admin']      = false;
+        $GLOBALS['is_associated'] = true;
+        $GLOBALS['is_organizer']  = true;
+        $GLOBALS['fields'][101]['enigme_cache_complet']       = true;
+        $GLOBALS['fields'][101]['indices']                    = ['hint'];
+        $GLOBALS['fields'][101]['enigme_mode_validation']     = 'automatique';
+        $GLOBALS['fields'][101]['enigme_tentative_cout_points'] = 0;
+        $GLOBALS['fields'][101]['enigme_tentative_max']       = 5;
+
+        ob_start();
+        afficher_enigme_stylisee(101);
+        $output = ob_get_clean();
+        $this->assertStringNotContainsString('<section class="participation">', $output);
     }
 }
