@@ -106,6 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
           } else if (res.data.resultat === 'bon') {
             feedback.innerHTML = `<i class="fa-solid fa-circle-check" style="color:var(--color-success);"></i> ${__('Bonne réponse', 'chassesautresor-com')}`;
             feedback.style.display = 'block';
+            const enigmeId = form.querySelector('input[name="enigme_id"]')?.value;
             const titre = form.querySelector('h3');
             form.replaceChildren(titre, feedback);
             if (compteur) {
@@ -118,7 +119,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const sectionGagnants = document.querySelector('.enigme-gagnants');
             const sectionProgression = document.querySelector('.enigme-progression');
-            const enigmeIdInput = form.querySelector('input[name="enigme_id"]');
             const navigation = document.querySelector('.enigme-navigation');
             const chasseId = navigation ? navigation.dataset.chasseId : null;
             const bloc = document.querySelector('.menu-lateral__accordeons .accordeon-bloc');
@@ -126,10 +126,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const contenu = bloc ? bloc.querySelector('.accordeon-contenu') : null;
             const requests = [];
 
-            if (sectionGagnants && enigmeIdInput) {
+            if (sectionGagnants && enigmeId) {
               const dataW = new URLSearchParams();
               dataW.append('action', 'enigme_recuperer_gagnants');
-              dataW.append('enigme_id', enigmeIdInput.value);
+              dataW.append('enigme_id', enigmeId);
               const req = fetch('/wp-admin/admin-ajax.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
