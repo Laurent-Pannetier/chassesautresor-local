@@ -347,6 +347,24 @@ li.active .enigme-menu__edit {
   text-align: center;
 }
 
+.participation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.participation .badge-validation {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--color-grey-light);
+  color: var(--color-text-fond-clair);
+  font-size: 0.75rem;
+}
+
 .zone-reponse form {
   display: flex;
   flex-direction: column;

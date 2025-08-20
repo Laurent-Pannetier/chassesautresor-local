@@ -611,12 +611,32 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
 
         $mode_validation = get_field('enigme_mode_validation', $enigme_id);
         $cout            = (int) get_field('enigme_tentative_cout_points', $enigme_id);
-        $solde_actuel    = function_exists('get_user_points')
-            ? get_user_points($user_id)
-            : 0;
 
-        $afficher_tentatives = $mode_validation === 'automatique';
-        $afficher_infos = $cout > 0 || $afficher_tentatives;
+        $badge_html      = '';
+        if ($mode_validation !== 'aucune') {
+            $chasse_id = recuperer_id_chasse_associee($enigme_id);
+            if (!current_user_can('manage_options')
+                && !utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)
+            ) {
+                $icon       = $mode_validation === 'automatique' ? 'fa-bolt' : 'fa-envelope';
+                $mode_label = $mode_validation === 'automatique'
+                    ? esc_html__('automatique', 'chassesautresor-com')
+                    : esc_html__('manuelle', 'chassesautresor-com');
+                $title = sprintf(
+                    esc_html__("Mode de validation de l'énigme : %s", 'chassesautresor-com'),
+                    $mode_label
+                );
+                $badge_html = '<span class="badge-validation" title="'
+                    . esc_attr($title)
+                    . '"><i class="fa-solid '
+                    . esc_attr($icon)
+                    . '"></i></span>';
+            }
+
+            if (!function_exists('compter_tentatives_du_jour')) {
+                require_once __DIR__ . '/tentatives.php';
+            }
+
 
         if ($afficher_tentatives && !function_exists('compter_tentatives_du_jour')) {
             require_once __DIR__ . '/tentatives.php';
@@ -626,7 +646,11 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
             $tentatives_utilisees = compter_tentatives_du_jour($user_id, $enigme_id);
             $tentatives_max       = (int) get_field('enigme_tentative_max', $enigme_id);
             $tentatives_max_aff   = $tentatives_max > 0 ? $tentatives_max : '∞';
-        }
+
+            $solde_actuel         = function_exists('get_user_points')
+                ? get_user_points($user_id)
+                : 0;
+
 
         if ($afficher_infos) {
             $content .= '<div class="participation-infos txt-small" ';
@@ -655,8 +679,24 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
             $content .= '</div>';
         }
 
+        $cout_badge = '';
+        if ($cout > 0) {
+            $cout_badge = '<span class="badge-cout" aria-label="'
+                . esc_attr(sprintf(
+                    esc_html__('Coût par tentative : %d points.', 'chassesautresor-com'),
+                    $cout
+                ))
+                . '">' . esc_html($cout) . ' '
+                . esc_html__('pts', 'chassesautresor-com') . '</span>';
+        }
+
+        $header = '<div class="participation-header">'
+            . ($badge_html !== '' ? $badge_html : '<span></span>')
+            . $cout_badge
+            . '</div>';
+
         if ($content !== '') {
-            echo '<section class="participation">' . $content . '</section>';
+            echo '<section class="participation">' . $header . $content . '</section>';
         }
     }
 

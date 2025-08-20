@@ -43,14 +43,6 @@ defined('ABSPATH') || exit;
         data-seuil="<?php echo esc_attr($data['seuil']); ?>"
     >
         <h3><?php echo esc_html__('Votre réponse', 'chassesautresor-com'); ?></h3>
-        <?php if ($data['cout'] > 0) : ?>
-            <span
-                class="badge-cout"
-                aria-label="<?php echo esc_attr(sprintf(__('Coût par tentative : %d points.', 'chassesautresor-com'), $data['cout'])); ?>"
-            >
-                <?php echo esc_html($data['cout']); ?> <?php echo esc_html__('pts', 'chassesautresor-com'); ?>
-            </span>
-        <?php endif; ?>
         <?php if ($data['points_manquants'] > 0) : ?>
             <p class="message-limite" data-points="manquants">
                 <?php echo esc_html(sprintf(__('Il vous manque %d points pour soumettre votre réponse.', 'chassesautresor-com'), $data['points_manquants'])); ?>
