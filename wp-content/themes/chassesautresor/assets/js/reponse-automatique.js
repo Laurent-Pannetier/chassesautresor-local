@@ -106,7 +106,10 @@ document.addEventListener('DOMContentLoaded', () => {
           } else if (res.data.resultat === 'bon') {
             feedback.innerHTML = `<i class="fa-solid fa-circle-check" style="color:var(--color-success);"></i> ${__('Bonne réponse', 'chassesautresor-com')}`;
             feedback.style.display = 'block';
+            const enigmeId = form.querySelector('input[name="enigme_id"]')?.value;
             const titre = form.querySelector('h3');
+            const enigmeIdInput = form.querySelector('input[name="enigme_id"]');
+            const enigmeId = enigmeIdInput ? enigmeIdInput.value : null;
             form.replaceChildren(titre, feedback);
             if (compteur) {
               compteur.remove();
@@ -117,8 +120,8 @@ document.addEventListener('DOMContentLoaded', () => {
               currentMenuItem.classList.add('succes');
             }
             const sectionGagnants = document.querySelector('.enigme-gagnants');
-            const sectionProgression = document.querySelector('.enigme-progression');
-            const enigmeIdInput = form.querySelector('input[name="enigme_id"]');
+            const sectionStats = document.querySelector('.enigme-statistiques');
+
             const navigation = document.querySelector('.enigme-navigation');
             const chasseId = navigation ? navigation.dataset.chasseId : null;
             const bloc = document.querySelector('.menu-lateral__accordeons .accordeon-bloc');
@@ -126,10 +129,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const contenu = bloc ? bloc.querySelector('.accordeon-contenu') : null;
             const requests = [];
 
-            if (sectionGagnants && enigmeIdInput) {
+            if (sectionGagnants && enigmeId) {
               const dataW = new URLSearchParams();
               dataW.append('action', 'enigme_recuperer_gagnants');
-              dataW.append('enigme_id', enigmeIdInput.value);
+              dataW.append('enigme_id', enigmeId);
               const req = fetch('/wp-admin/admin-ajax.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -144,10 +147,11 @@ document.addEventListener('DOMContentLoaded', () => {
               requests.push(req);
             }
 
-            if (sectionProgression && chasseId) {
+            if (sectionStats && chasseId && enigmeId) {
               const dataP = new URLSearchParams();
               dataP.append('action', 'enigme_recuperer_progression');
               dataP.append('chasse_id', chasseId);
+              dataP.append('enigme_id', enigmeId);
               const req = fetch('/wp-admin/admin-ajax.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -156,13 +160,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 .then(r => r.json())
                 .then(r => {
                   if (r.success) {
-                    sectionProgression.innerHTML = r.data.html;
+                    sectionStats.innerHTML = r.data.html;
                   }
                 });
               requests.push(req);
             }
 
-            Promise.all(requests).finally(() => {
+            Promise.allSettled(requests).then(() => {
               if (toggle && contenu) {
                 toggle.setAttribute('aria-expanded', 'true');
                 contenu.classList.remove('accordeon-ferme');
