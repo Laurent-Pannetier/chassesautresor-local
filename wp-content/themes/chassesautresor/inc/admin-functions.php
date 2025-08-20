@@ -1610,12 +1610,13 @@ function recuperer_organisateurs_pending()
 
         if ($chasses->have_posts()) {
             foreach ($chasses->posts as $chasse_id) {
-                $date_creation  = get_post_field('post_date', $chasse_id);
-                $chasse_titre   = get_the_title($chasse_id);
-                $chasse_link    = get_permalink($chasse_id);
-                $nb_enigmes     = count(recuperer_enigmes_associees($chasse_id));
-                $statut         = get_field('chasse_cache_statut', $chasse_id);
-                $validation     = get_field('chasse_cache_statut_validation', $chasse_id);
+                verifier_ou_mettre_a_jour_cache_complet($chasse_id);
+
+                $date_creation = get_post_field('post_date', $chasse_id);
+                $chasse_titre  = get_the_title($chasse_id);
+                $chasse_link   = get_permalink($chasse_id);
+                $nb_enigmes    = count(recuperer_enigmes_associees($chasse_id));
+                $statut        = get_field('chasse_cache_statut_validation', $chasse_id);
 
                 $resultats[] = [
                     'organisateur_id'        => $organisateur_id,
@@ -1629,7 +1630,7 @@ function recuperer_organisateurs_pending()
                     'chasse_permalink'       => $chasse_link,
                     'nb_enigmes'             => $nb_enigmes,
                     'statut'                 => $statut,
-                    'validation'             => $validation,
+                    'validation'             => $statut,
                     'date_creation'          => $date_creation,
                 ];
             }
@@ -1723,8 +1724,7 @@ function afficher_tableau_organisateurs_pending(?array $liste = null, int $page 
             }
 
             if ($row['chasse_id']) {
-                $statut     = $row['statut'];
-                $validation = $row['validation'];
+                $statut      = $row['statut'];
                 $badge_class = 'statut-' . $statut;
 
                 switch ($statut) {
@@ -1741,18 +1741,21 @@ function afficher_tableau_organisateurs_pending(?array $liste = null, int $page 
                         $statut_label = __('en cours', 'chassesautresor-com');
                         $badge_class  = 'statut-en_cours';
                         break;
-                    case 'revision':
+                    case 'creation':
+                        $badge_class  = 'statut-revision';
+                        $statut_label = __('création', 'chassesautresor-com');
+                        break;
+                    case 'correction':
+                        $badge_class  = 'statut-revision';
+                        $statut_label = __('correction', 'chassesautresor-com');
+                        break;
+                    case 'en_attente':
+                        $badge_class  = 'statut-revision';
+                        $statut_label = __('en attente', 'chassesautresor-com');
+                        break;
                     default:
                         $badge_class  = 'statut-revision';
-                        if ($validation === 'creation') {
-                            $statut_label = __('création', 'chassesautresor-com');
-                        } elseif ($validation === 'correction') {
-                            $statut_label = __('correction', 'chassesautresor-com');
-                        } elseif ($validation === 'en_attente') {
-                            $statut_label = __('en attente', 'chassesautresor-com');
-                        } else {
-                            $statut_label = __('révision', 'chassesautresor-com');
-                        }
+                        $statut_label = __('révision', 'chassesautresor-com');
                         break;
                 }
 
