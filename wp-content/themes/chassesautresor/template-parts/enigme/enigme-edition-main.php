@@ -337,7 +337,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
             </li>
 
             <!-- Tentatives -->
-            <li class="champ-enigme champ-cout-points <?= empty($cout) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_tentative.enigme_tentative_cout_points" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" data-no-edit="1" data-no-icon="1">
+            <li
+              class="champ-enigme champ-cout-points <?= empty($cout) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?><?= $mode_validation === 'aucune' ? ' cache' : ''; ?>"
+              data-champ="enigme_tentative.enigme_tentative_cout_points"
+              data-cpt="enigme"
+              data-post-id="<?= esc_attr($enigme_id); ?>"
+              data-no-edit="1"
+              data-no-icon="1"
+              <?= $mode_validation === 'aucune' ? 'style="display:none;"' : ''; ?>
+            >
               <div class="champ-edition">
                 <label for="enigme-tentative-cout">Coût tentative
                   <?php
