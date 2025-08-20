@@ -379,6 +379,35 @@ class EnigmeMenuRenderingTest extends TestCase
         $this->assertStringNotContainsString('data-enigme-id="102"', $output);
     }
 
+    public function test_menu_excludes_enigme_with_empty_prerequisites(): void
+    {
+        $GLOBALS['is_admin']      = false;
+        $GLOBALS['is_associated'] = false;
+        $GLOBALS['is_organizer']  = false;
+        $GLOBALS['fields'][2]['chasse_cache_statut'] = 'ouverte';
+
+        $GLOBALS['fields'][101]['enigme_cache_complet']       = true;
+        $GLOBALS['fields'][101]['enigme_cache_etat_systeme']  = 'accessible';
+        $GLOBALS['fields'][101]['enigme_acces_condition']     = 'immediat';
+        $GLOBALS['post_status'][101] = 'publish';
+
+        $GLOBALS['fields'][102] = [
+            'enigme_cache_complet'       => true,
+            'enigme_cache_etat_systeme'  => 'bloquee_pre_requis',
+            'enigme_acces_condition'     => 'pre_requis',
+            'enigme_acces_pre_requis'    => [],
+        ];
+        $GLOBALS['post_types'][102]  = 'enigme';
+        $GLOBALS['post_status'][102] = 'publish';
+        $GLOBALS['titles'][102]      = 'Enigme Mal Config';
+        $GLOBALS['enigma_list']      = [(object) ['ID' => 101], (object) ['ID' => 102]];
+
+        ob_start();
+        afficher_enigme_stylisee(101);
+        $output = ob_get_clean();
+        $this->assertStringNotContainsString('data-enigme-id="102"', $output);
+    }
+
     public function test_menu_disables_link_for_date_locked_enigme(): void
     {
         $GLOBALS['is_admin']      = false;
