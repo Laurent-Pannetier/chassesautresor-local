@@ -646,6 +646,40 @@
     color: var(--color-text-fond-clair);
 }
 
+.stats-header {
+    display: flex;
+    align-items: center;
+}
+
+.stats-header .stats-filtres {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    background-color: var(--color-editor-background);
+    border: 1px solid var(--color-editor-border);
+    border-radius: 4px;
+}
+
+.table-organisateurs td.col-chasse,
+.table-organisateurs td.col-enigmes {
+    text-align: right;
+}
+
+/* 🏷️ Badges d'état dans le tableau des organisateurs */
+.table-organisateurs td[data-col="etat"] .badge-statut {
+    position: static;
+    top: auto;
+    left: auto;
+    display: inline-block;
+    margin: 0;
+}
+
+.table-organisateurs td[data-col="etat"] .required {
+    margin-left: var(--space-xxs);
+}
+
 /* 📌 Toggle d'historique de conversion */
 .conversion-history .conversion-history-toggle {
     color: var(--color-text-fond-clair);

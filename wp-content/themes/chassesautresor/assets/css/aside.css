@@ -248,6 +248,10 @@
   }
 }
 
+/* ===== Gagnants ===== */
+.enigme-gagnants tr.current-user {
+  font-weight: 700;
+  
 /* ====== Modal d'aide ====== */
 .help-modal-overlay {
   position: fixed;
@@ -294,4 +298,5 @@
 
 .help-modal-content p.help-definition {
   margin-bottom: var(--space-md);
+
 }

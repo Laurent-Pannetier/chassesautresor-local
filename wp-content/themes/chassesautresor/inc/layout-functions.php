@@ -162,6 +162,21 @@ function charger_scripts_personnalises() {
       filemtime(get_stylesheet_directory() . '/assets/js/tri-organisateurs.js'),
       true
     );
+
+    wp_enqueue_script(
+      'pager',
+      $theme_dir . 'core/pager.js',
+      [],
+      filemtime(get_stylesheet_directory() . '/assets/js/core/pager.js'),
+      true
+    );
+    wp_enqueue_script(
+      'organisateurs-pager',
+      $theme_dir . 'organisateurs-pager.js',
+      ['pager'],
+      filemtime(get_stylesheet_directory() . '/assets/js/organisateurs-pager.js'),
+      true
+    );
 }
 // ✅ Ajout des scripts au chargement de WordPress
 add_action('wp_enqueue_scripts', 'charger_scripts_personnalises');
