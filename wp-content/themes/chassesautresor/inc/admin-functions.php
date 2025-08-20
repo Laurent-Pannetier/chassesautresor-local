@@ -1777,6 +1777,7 @@ function traiter_validation_chasse_admin() {
         )
     );
     $titre_chasse     = get_the_title($chasse_id);
+    $url_chasse       = get_permalink($chasse_id);
 
     if ($action === 'valider') {
         wp_update_post([
@@ -1850,7 +1851,7 @@ function traiter_validation_chasse_admin() {
 
         $flash = sprintf(
             __('Votre demande de validation pour la chasse « %s » nécessite des corrections.', 'chassesautresor-com'),
-            esc_html($titre_chasse)
+            '<a href="' . esc_url($url_chasse) . '">' . esc_html($titre_chasse) . '</a>'
         );
         if ($message !== '') {
             $flash .= '<br>' . sprintf(
