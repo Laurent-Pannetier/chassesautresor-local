@@ -169,6 +169,8 @@ button,
 .bloc-reponse .points-sousligne {
     text-align: center;
     margin-top: var(--space-xxs);
+    font-size: 0.75rem;
+    opacity: 0.7;
 }
 
 @media (--bp-sm) {
