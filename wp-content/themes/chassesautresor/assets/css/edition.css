@@ -1706,6 +1706,11 @@ body.panneau-ouvert::before {
   font-size: 0.85em;
 }
 
+.stats-table.borderless th,
+.stats-table.borderless td {
+  border: none;
+}
+
 .stats-table thead tr:first-child th[colspan] {
   text-align: center;
   vertical-align: middle;
