@@ -11,8 +11,10 @@ function initFormulaireManuel() {
   let hideTimer = null;
 
   const i18n = window.REPONSE_MANUELLE_I18N || {};
+  const sprintf = window.wp?.i18n?.sprintf;
   const txtSuccess = i18n.success || 'Tentative bien reçue.';
-  const txtProcessing = i18n.processing || '⏳ Votre tentative est en cours de traitement.';
+  const txtProcessing = i18n.processing;
+  const accountUrl = i18n.accountUrl || '/mon-compte/?section=chasses';
 
   form.addEventListener('submit', e => {
     e.preventDefault();
@@ -51,7 +53,13 @@ function initFormulaireManuel() {
 
           const msgProcessing = document.createElement('p');
           msgProcessing.className = 'message-joueur-statut';
-          msgProcessing.textContent = txtProcessing;
+          msgProcessing.innerHTML = sprintf
+            ? sprintf(txtProcessing, `#${res.data.id}`, res.data.date, res.data.time, accountUrl)
+            : txtProcessing
+                .replace('%1$s', `#${res.data.id}`)
+                .replace('%2$s', res.data.date)
+                .replace('%3$s', res.data.time)
+                .replace('%4$s', accountUrl);
 
           const msgSuccess = document.createElement('p');
           msgSuccess.className = 'message-feedback-success';
