@@ -81,7 +81,6 @@ add_action('wp_enqueue_scripts', function () {
             'modal-bienvenue',
             'general-style',
             'chasse-style',
-            'enigme-style',
             'gamification-style',
             'cartes-style',
             'organisateurs',
@@ -91,6 +90,10 @@ add_action('wp_enqueue_scripts', function () {
 
         foreach ($common_styles as $handle) {
             wp_enqueue_style($handle);
+        }
+
+        if (is_singular('enigme')) {
+            wp_enqueue_style('enigme-style');
         }
 
         // 📌 Styles conditionnels
