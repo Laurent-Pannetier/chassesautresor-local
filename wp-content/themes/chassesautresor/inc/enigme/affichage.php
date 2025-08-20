@@ -653,6 +653,10 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
                     $etat_sys = 'accessible';
                 }
 
+                if (!$is_privileged && $etat_sys === 'bloquee_date') {
+                    continue;
+                }
+
                 if ($etat_sys === 'bloquee_chasse' && in_array($validation_status, ['creation', 'correction'], true)) {
                     if (!get_field('enigme_cache_complet', $post->ID)) {
                         $classes[] = 'incomplete';
@@ -707,11 +711,7 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
             }
 
             $title = esc_html(get_the_title($post->ID));
-            if (!$is_privileged && $etat_sys === 'bloquee_date') {
-                $link = '<a class="no-link" tabindex="-1">' . $title . '</a>';
-            } else {
-                $link = '<a href="' . esc_url(get_permalink($post->ID)) . '">' . $title . '</a>';
-            }
+            $link  = '<a href="' . esc_url(get_permalink($post->ID)) . '">' . $title . '</a>';
 
             $submenu_items[] = sprintf(
                 '<li class="%s" data-enigme-id="%d">%s%s%s</li>',
