@@ -63,8 +63,25 @@ if ($mode_validation === 'manuelle') {
                 echo '<p class="message-joueur-statut">' . esc_html__('⏳ Votre tentative est en cours de traitement.', 'chassesautresor-com') . '</p>';
             }
         } else {
-            $texte = __('Énigme résolue', 'chassesautresor-com');
-            echo '<p class="message-joueur-statut">' . esc_html($texte) . '</p>';
+            global $wpdb;
+            $table = $wpdb->prefix . 'enigme_statuts_utilisateur';
+            $resolution_date = $wpdb->get_var(
+                $wpdb->prepare(
+                    "SELECT date_mise_a_jour FROM $table WHERE user_id = %d AND enigme_id = %d",
+                    $user_id,
+                    $post_id
+                )
+            );
+            if ($resolution_date) {
+                $formatted_date = wp_date('d/m/y \\à H:i', strtotime($resolution_date));
+                $message = sprintf(
+                    __('Vous avez résolu cette énigme le %s.', 'chassesautresor-com'),
+                    $formatted_date
+                );
+            } else {
+                $message = __('Énigme résolue', 'chassesautresor-com');
+            }
+            echo '<p class="message-joueur-statut">✅ ' . esc_html($message) . '</p>';
         }
         return;
     }
