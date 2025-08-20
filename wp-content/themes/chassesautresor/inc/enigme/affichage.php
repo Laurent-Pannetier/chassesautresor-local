@@ -260,7 +260,12 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
             $data['avg'],
             'enigme-engagement',
             esc_html__(
-                'S\'engager, c\'est commencer cette énigme pour de vrai.',
+                'Part moyenne des énigmes sur lesquelles chaque participant s’est engagé, '
+                . 'rapportée au total d’énigmes de la chasse.' . "\n"
+                . 'Formule : moyenne, pour chaque joueur, de' . "\n"
+                . '(nb d’énigmes engagées) / (nb total d’énigmes proposées).' . "\n\n"
+                . 'Vous : part d’énigmes sur lesquelles vous vous êtes engagé.' . "\n"
+                . 'Moyenne : moyenne sur l’ensemble des joueurs.',
                 'chassesautresor-com'
             ),
             esc_attr__(
@@ -331,7 +336,10 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
             $data['avg'],
             'enigme-resolution',
             esc_html__(
-                'La résolution indique que tu as trouvé la bonne réponse.',
+                'Pourcentage de joueurs engagés ayant validé la bonne réponse sur cette énigme.' . "\n"
+                . 'Formule : (nb de joueurs avec réponse validée) / (nb de joueurs engagés sur l’énigme).' . "\n\n"
+                . 'Vous : part d’énigmes que vous avez résolues / total de la chasse.' . "\n"
+                . 'Moyenne : moyenne des parts d’énigmes résolues par joueur.',
                 'chassesautresor-com'
             ),
             esc_attr__(

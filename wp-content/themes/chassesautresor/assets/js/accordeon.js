@@ -38,11 +38,35 @@ document.querySelectorAll('.accordeon-bloc').forEach(bloc => {
   });
 });
 
+function openHelpModal(message) {
+  const overlay = document.createElement('div');
+  overlay.className = 'help-modal-overlay';
+  overlay.innerHTML = `
+    <div class="help-modal" role="dialog" aria-modal="true">
+      <button type="button" class="help-modal-close" aria-label="${wp.i18n.__('Fermer', 'chassesautresor-com')}">&times;</button>
+      <div class="help-modal-content"></div>
+    </div>`;
+  document.body.appendChild(overlay);
+
+  const content = overlay.querySelector('.help-modal-content');
+  message.split('\n').forEach((line) => {
+    const p = document.createElement('p');
+    p.textContent = line;
+    content.appendChild(p);
+  });
+
+  const close = () => overlay.remove();
+  overlay.querySelector('.help-modal-close').addEventListener('click', close);
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) close();
+  });
+}
+
 document.querySelectorAll('.stat-help').forEach((btn) => {
   btn.addEventListener('click', () => {
     const message = btn.dataset.message;
     if (message) {
-      alert(message);
+      openHelpModal(message);
     }
   });
 });
