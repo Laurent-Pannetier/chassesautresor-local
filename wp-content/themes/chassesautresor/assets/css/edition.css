@@ -1706,6 +1706,20 @@ body.panneau-ouvert::before {
   font-size: 0.85em;
 }
 
+.stats-table.borderless th,
+.stats-table.borderless td {
+  border: none !important;
+  font-size: 0.8em;
+}
+
+.stats-table.borderless thead th {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+.stats-table.borderless tbody tr:nth-child(odd) {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
 .stats-table thead tr:first-child th[colspan] {
   text-align: center;
   vertical-align: middle;

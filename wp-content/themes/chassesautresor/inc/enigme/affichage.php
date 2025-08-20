@@ -406,14 +406,6 @@ defined('ABSPATH') || exit;
         $offset   = ($page - 1) * $per_page;
         $slice    = array_slice($solvers, $offset, $per_page);
 
-        $user_rank = null;
-        foreach ($solvers as $i => $solver) {
-            if ((int) $solver['user_id'] === $user_id) {
-                $user_rank = $i + 1;
-                break;
-            }
-        }
-
         ob_start();
         get_template_part(
             'template-parts/enigme/partials/enigme-partial-gagnants',
@@ -423,7 +415,7 @@ defined('ABSPATH') || exit;
                 'page'      => $page,
                 'pages'     => $pages,
                 'user_id'   => $user_id,
-                'user_rank' => $user_rank,
+                'total'     => $total,
             ]
         );
         return (string) ob_get_clean();
