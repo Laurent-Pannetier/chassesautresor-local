@@ -20,11 +20,12 @@ $total   = $args['total'] ?? $total ?? 0;
 <h3>
   <?php esc_html_e('Gagnants', 'chassesautresor-com'); ?>
 </h3>
-<p>
-  <span class="etiquette">
-    <?php printf(esc_html__('gagnants : %d', 'chassesautresor-com'), $total); ?>
-  </span>
-</p>
+<div class="bloc-metas-inline bloc-metas-inline--compact">
+  <div class="meta-etiquette">
+    <span><?php esc_html_e('Gagnants :', 'chassesautresor-com'); ?></span>
+    <strong><?php echo esc_html($total); ?></strong>
+  </div>
+</div>
 <?php if (!empty($gagnants)) : ?>
 <table class="stats-table compact borderless">
   <thead>
