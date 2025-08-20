@@ -68,7 +68,7 @@ defined('ABSPATH') || exit;
         </div>
         <?php if ($data['points_manquants'] <= 0 && $data['cout'] > 0) : ?>
             <p class="points-sousligne txt-small">
-                <?php echo esc_html(sprintf(__('Solde : %1$d → %2$d pts • Les points sont débités à l’envoi', 'chassesautresor-com'), $data['solde_avant'], $data['solde_apres'])); ?>
+                <?php echo esc_html(sprintf(__('Solde : %1$d → %2$d pts', 'chassesautresor-com'), $data['solde_avant'], $data['solde_apres'])); ?>
             </p>
         <?php endif; ?>
     </form>

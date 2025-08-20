@@ -134,7 +134,7 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
     <p class="points-sousligne txt-small">
       <?= esc_html(
           sprintf(
-              __('Solde : %1$d → %2$d pts • Les points sont débités à l’envoi', 'chassesautresor-com'),
+              __('Solde : %1$d → %2$d pts', 'chassesautresor-com'),
               $solde_avant,
               $solde_apres
           )
@@ -143,10 +143,4 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
   <?php endif; ?>
 </form>
 <div class="reponse-feedback" style="display:none"></div>
-<?php if ($max > 0) : ?>
-  <div class="tentatives-counter compteur-tentatives txt-small" data-max="<?= esc_attr($max); ?>" style="margin-top:4px;">
-      <span class="etiquette"><?= esc_html__('Tentatives quotidiennes', 'chassesautresor-com'); ?></span>
-    <span class="valeur"><?= esc_html($tentatives_du_jour); ?>/<?= esc_html($max); ?></span>
-  </div>
-<?php endif; ?>
 
