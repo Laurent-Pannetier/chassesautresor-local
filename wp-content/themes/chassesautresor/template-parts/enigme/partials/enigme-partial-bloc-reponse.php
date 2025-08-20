@@ -104,6 +104,7 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
             <?= esc_html($cout); ?> <?= esc_html__('pts', 'chassesautresor-com'); ?>
         </span>
     <?php endif; ?>
+    <div class="reponse-feedback" style="display:none"></div>
   <?php if ($message_tentatives) : ?>
     <p class="message-limite" data-tentatives="epuisees"><?= esc_html($message_tentatives); ?></p>
   <?php elseif ($points_manquants > 0) : ?>
@@ -142,5 +143,4 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
     </p>
   <?php endif; ?>
 </form>
-<div class="reponse-feedback" style="display:none"></div>
 
