@@ -76,6 +76,13 @@ if (!function_exists('remove_accents')) {
     }
 }
 
+if (!function_exists('wp_date')) {
+    function wp_date($format, $timestamp)
+    {
+        return date($format, $timestamp);
+    }
+}
+
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/enigme/affichage.php';
 
 class EnigmeParticipationInfosTest extends TestCase
