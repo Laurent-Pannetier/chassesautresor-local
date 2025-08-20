@@ -145,17 +145,46 @@ button,
     outline-offset: 2px;
 }
 
-/* ========== 🎯 BADGE COÛT ========== */
-.badge-cout {
+/* ========== 🎯 BLOCS RÉPONSE ========== */
+.bloc-reponse {
+    position: relative;
+}
+
+.bloc-reponse .badge-cout {
+    position: absolute;
+    top: var(--space-xs);
+    right: var(--space-xs);
     display: inline-block;
-    margin-left: 8px;
-    padding: 2px 6px;
+    padding: var(--space-xxs) var(--space-xs);
     background: var(--color-secondary);
     color: var(--color-text-primary);
     border-radius: 12px;
     font-size: 0.75rem;
     font-weight: 600;
-    vertical-align: middle;
+}
+
+.bloc-reponse .reponse-cta-row {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-sm);
+}
+
+.bloc-reponse .points-sousligne {
+    text-align: center;
+    margin-top: var(--space-xxs);
+}
+
+@media (--bp-sm) {
+    .bloc-reponse .reponse-cta-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .bloc-reponse .reponse-cta-row .bouton-cta {
+        width: 100%;
+    }
+    .bloc-reponse .points-sousligne {
+        margin-top: var(--space-xs);
+    }
 }
 @media (--bp-md) {
     .bouton-cta {
