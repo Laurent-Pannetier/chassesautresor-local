@@ -733,7 +733,8 @@ body.woocommerce h2 {
     border: none;
     cursor: pointer;
     padding: 0;
-    color: var(--color-text-primary);
+    color: var(--color-text-fond-clair);
+    font-size: 1rem;
 }
 
 .proposition-cell .toggle-proposition .fa-solid {

@@ -137,6 +137,13 @@ add_action('wp_enqueue_scripts', function () {
         wp_localize_script('myaccount', 'ctaMyAccount', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
         ]);
+        wp_enqueue_script(
+            'tentatives-toggle',
+            $script_dir . 'tentatives-toggle.js',
+            [],
+            filemtime($theme_path . '/assets/js/tentatives-toggle.js'),
+            true
+        );
     }
 
     if (is_singular('enigme')) {

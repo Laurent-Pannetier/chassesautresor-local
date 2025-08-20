@@ -31,13 +31,6 @@ wp_enqueue_script(
     true
 );
 
-wp_enqueue_script(
-    'tentatives-toggle',
-    $uri . '/assets/js/tentatives-toggle.js',
-    [],
-    filemtime($dir . '/assets/js/tentatives-toggle.js'),
-    true
-);
 
 // Retrieve last 4 engaged hunts and their latest enigme
 $chasse_ids  = [];
