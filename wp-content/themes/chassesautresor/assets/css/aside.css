@@ -233,3 +233,8 @@
     top: var(--space-md);
   }
 }
+
+/* ===== Gagnants ===== */
+.enigme-gagnants tr.current-user {
+  font-weight: 700;
+}

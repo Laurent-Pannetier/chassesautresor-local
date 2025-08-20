@@ -144,7 +144,7 @@
 
 .enigme-menu__edit {
   position: absolute;
-  top: 40%;
+  top: 50%;
   right: var(--space-sm);
   transform: translateY(-50%);
   font-size: 0.7em;
@@ -159,6 +159,10 @@
   align-items: center;
   justify-content: center;
   z-index: 1;
+}
+
+li.active .enigme-menu__edit {
+  top: 30%;
 }
 
 .enigme-menu li:hover .enigme-menu__edit {

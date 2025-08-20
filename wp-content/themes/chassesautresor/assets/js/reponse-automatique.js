@@ -75,6 +75,31 @@ document.addEventListener('DOMContentLoaded', () => {
               currentMenuItem.classList.remove('non-engagee', 'bloquee', 'en-attente');
               currentMenuItem.classList.add('succes');
             }
+            const sectionGagnants = document.querySelector('.enigme-gagnants');
+            const enigmeIdInput = form.querySelector('input[name="enigme_id"]');
+            if (sectionGagnants && enigmeIdInput) {
+              const dataW = new URLSearchParams();
+              dataW.append('action', 'enigme_recuperer_gagnants');
+              dataW.append('enigme_id', enigmeIdInput.value);
+              fetch('/wp-admin/admin-ajax.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: dataW
+              })
+                .then(r => r.json())
+                .then(r => {
+                  if (r.success) {
+                    sectionGagnants.innerHTML = r.data.html;
+                    const bloc = document.querySelector('.menu-lateral__accordeons .accordeon-bloc');
+                    const toggle = bloc ? bloc.querySelector('.accordeon-toggle') : null;
+                    const contenu = bloc ? bloc.querySelector('.accordeon-contenu') : null;
+                    if (toggle && contenu) {
+                      toggle.setAttribute('aria-expanded', 'true');
+                      contenu.classList.remove('accordeon-ferme');
+                    }
+                  }
+                });
+            }
           } else {
             feedback.textContent = 'Mauvaise réponse';
             feedback.style.display = 'block';
