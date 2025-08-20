@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
               requests.push(req);
             }
 
-            Promise.all(requests).finally(() => {
+            Promise.allSettled(requests).then(() => {
               if (toggle && contenu) {
                 toggle.setAttribute('aria-expanded', 'true');
                 contenu.classList.remove('accordeon-ferme');
