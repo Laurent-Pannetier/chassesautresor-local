@@ -132,9 +132,9 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
   <input type="hidden" name="nonce" value="<?= esc_attr($nonce); ?>">
   <div class="reponse-cta-row">
     <?php if ($points_manquants > 0) : ?>
-      <a href="<?= esc_url($boutique_url); ?>" class="bouton-cta points-manquants">
+      <a href="<?= esc_url($boutique_url); ?>" class="bouton-cta points-manquants" title="<?= esc_attr__('Accéder à la boutique', 'chassesautresor-com'); ?>">
         <span class="points-plus-circle">+</span>
-        <?= esc_html__('Acheter des points', 'chassesautresor-com'); ?>
+        <?= esc_html__('Ajouter des points', 'chassesautresor-com'); ?>
       </a>
     <?php else : ?>
       <button type="submit" class="bouton-cta" <?= $disabled; ?>><?= $label_btn; ?></button>
