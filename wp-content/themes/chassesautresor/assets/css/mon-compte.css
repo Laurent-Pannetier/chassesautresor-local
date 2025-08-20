@@ -728,13 +728,28 @@ body.woocommerce h2 {
     gap: 4px;
 }
 
+.proposition-cell.expanded {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
 .proposition-cell .toggle-proposition {
     background: none;
-    border: none;
+    border: 1px solid currentColor;
+    border-radius: 50%;
     cursor: pointer;
-    padding: 0;
+    padding: 2px;
+    width: 1.5em;
+    height: 1.5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: var(--color-text-fond-clair);
     font-size: 1rem;
+}
+
+.proposition-cell.expanded .toggle-proposition {
+    margin-top: 4px;
 }
 
 .proposition-cell .toggle-proposition .fa-solid {
