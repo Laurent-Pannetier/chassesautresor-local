@@ -137,14 +137,39 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
         return (string) ob_get_clean();
     }
 
-    function enigme_render_bar_subsection(string $title, int $user_rate, int $avg_rate, string $section_class): string
-    {
+    function enigme_render_bar_subsection(
+        string $title,
+        int $user_rate,
+        int $avg_rate,
+        string $section_class,
+        string $help_message = '',
+        string $help_label = ''
+    ): string {
         ob_start();
         ?>
         <div class="<?= esc_attr($section_class); ?>">
-          <p class="aside-subsection-title"><?= esc_html($title); ?></p>
+          <p class="aside-subsection-title">
+            <?= esc_html($title); ?>
+            <?php if ($help_message !== '') : ?>
+              <?php
+              get_template_part(
+                  'template-parts/common/help-icon',
+                  null,
+                  [
+                      'aria_label' => $help_label,
+                      'message'    => $help_message,
+                      'classes'    => 'mode-fin-aide stat-help',
+                  ]
+              );
+              ?>
+            <?php endif; ?>
+          </p>
           <div class="stats-bar-chart">
-            <?= enigme_render_bar_row(esc_html__('Vous', 'chassesautresor-com'), $user_rate, 'background-color:var(--color-primary)'); ?>
+            <?= enigme_render_bar_row(
+                esc_html__('Vous', 'chassesautresor-com'),
+                $user_rate,
+                'background-color:var(--color-primary)'
+            ); ?>
             <?= enigme_render_bar_row(esc_html__('Moyenne', 'chassesautresor-com'), $avg_rate); ?>
           </div>
         </div>
@@ -233,7 +258,15 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
             esc_html__('Engagements', 'chassesautresor-com'),
             $data['user'],
             $data['avg'],
-            'enigme-engagement'
+            'enigme-engagement',
+            esc_html__(
+                'S\'engager, c\'est commencer cette énigme pour de vrai.',
+                'chassesautresor-com'
+            ),
+            esc_attr__(
+                'Aide sur l\'engagement',
+                'chassesautresor-com'
+            )
         );
     }
 
@@ -296,7 +329,15 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
             esc_html__('Résolution', 'chassesautresor-com'),
             $data['user'],
             $data['avg'],
-            'enigme-resolution'
+            'enigme-resolution',
+            esc_html__(
+                'La résolution indique que tu as trouvé la bonne réponse.',
+                'chassesautresor-com'
+            ),
+            esc_attr__(
+                'Aide sur la résolution',
+                'chassesautresor-com'
+            )
         );
     }
 

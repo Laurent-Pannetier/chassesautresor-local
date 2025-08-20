@@ -84,6 +84,20 @@
   margin: var(--space-md) 0 var(--space-xs);
 }
 
+.aside-subsection-title .mode-fin-aide {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 0.3em;
+  color: inherit;
+  padding: 0;
+}
+
+.aside-subsection-title .stat-help i {
+  pointer-events: none;
+  font-size: 0.8em;
+}
+
 .menu-lateral ul {
   list-style: none;
   margin: 0;
