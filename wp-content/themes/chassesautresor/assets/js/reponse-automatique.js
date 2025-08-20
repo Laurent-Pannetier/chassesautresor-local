@@ -117,12 +117,20 @@ document.addEventListener('DOMContentLoaded', () => {
               currentMenuItem.classList.add('succes');
             }
             const sectionGagnants = document.querySelector('.enigme-gagnants');
+            const sectionProgression = document.querySelector('.enigme-progression');
             const enigmeIdInput = form.querySelector('input[name="enigme_id"]');
+            const navigation = document.querySelector('.enigme-navigation');
+            const chasseId = navigation ? navigation.dataset.chasseId : null;
+            const bloc = document.querySelector('.menu-lateral__accordeons .accordeon-bloc');
+            const toggle = bloc ? bloc.querySelector('.accordeon-toggle') : null;
+            const contenu = bloc ? bloc.querySelector('.accordeon-contenu') : null;
+            const requests = [];
+
             if (sectionGagnants && enigmeIdInput) {
               const dataW = new URLSearchParams();
               dataW.append('action', 'enigme_recuperer_gagnants');
               dataW.append('enigme_id', enigmeIdInput.value);
-              fetch('/wp-admin/admin-ajax.php', {
+              const req = fetch('/wp-admin/admin-ajax.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: dataW
@@ -131,16 +139,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 .then(r => {
                   if (r.success) {
                     sectionGagnants.innerHTML = r.data.html;
-                    const bloc = document.querySelector('.menu-lateral__accordeons .accordeon-bloc');
-                    const toggle = bloc ? bloc.querySelector('.accordeon-toggle') : null;
-                    const contenu = bloc ? bloc.querySelector('.accordeon-contenu') : null;
-                    if (toggle && contenu) {
-                      toggle.setAttribute('aria-expanded', 'true');
-                      contenu.classList.remove('accordeon-ferme');
-                    }
                   }
                 });
+              requests.push(req);
             }
+
+            if (sectionProgression && chasseId) {
+              const dataP = new URLSearchParams();
+              dataP.append('action', 'enigme_recuperer_progression');
+              dataP.append('chasse_id', chasseId);
+              const req = fetch('/wp-admin/admin-ajax.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: dataP
+              })
+                .then(r => r.json())
+                .then(r => {
+                  if (r.success) {
+                    sectionProgression.innerHTML = r.data.html;
+                  }
+                });
+              requests.push(req);
+            }
+
+            Promise.all(requests).finally(() => {
+              if (toggle && contenu) {
+                toggle.setAttribute('aria-expanded', 'true');
+                contenu.classList.remove('accordeon-ferme');
+              }
+            });
           } else {
             feedback.innerHTML = `<i class="fa-solid fa-circle-xmark" style="color:var(--color-gris-3);"></i> ${__('Mauvaise réponse', 'chassesautresor-com')}`;
             feedback.style.display = 'block';
