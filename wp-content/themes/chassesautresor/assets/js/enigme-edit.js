@@ -84,6 +84,7 @@ function initEnigmeEdit() {
   const radiosValidation = document.querySelectorAll('input[name="acf[enigme_mode_validation]"]');
   const tabTentatives = panneauEdition?.querySelector('.edition-tab[data-target="enigme-tab-soumission"]');
   const contenuTentatives = document.getElementById('enigme-tab-soumission');
+  const blocCout = document.querySelector('.champ-cout-points');
 
   function toggleTentativesTab(mode) {
     const afficher = mode !== 'aucune';
@@ -99,13 +100,21 @@ function initEnigmeEdit() {
     }
   }
 
+  function toggleCoutBloc(mode) {
+    if (blocCout) {
+      blocCout.style.display = mode === 'aucune' ? 'none' : '';
+    }
+  }
+
   const radioChecked = document.querySelector('input[name="acf[enigme_mode_validation]"]:checked');
   const modeInitial = radioChecked ? radioChecked.value : 'aucune';
   toggleTentativesTab(modeInitial);
+  toggleCoutBloc(modeInitial);
 
   radiosValidation.forEach((radio) => {
     radio.addEventListener('change', (e) => {
       toggleTentativesTab(e.target.value);
+      toggleCoutBloc(e.target.value);
     });
   });
 
