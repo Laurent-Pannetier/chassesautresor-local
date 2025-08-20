@@ -84,10 +84,12 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
     <p class="message-limite" data-tentatives="epuisees"><?= esc_html($message_tentatives); ?></p>
   <?php elseif ($points_manquants > 0) : ?>
     <p class="message-limite" data-points="manquants">
-      <?= esc_html(sprintf(__('Il vous manque %d points pour soumettre votre réponse.', 'chassesautresor-com'), $points_manquants)); ?>
-        <a href="<?= esc_url($boutique_url); ?>" class="points-link points-boutique-icon" title="<?= esc_attr__('Accéder à la boutique', 'chassesautresor-com'); ?>">
-        <span class="points-plus-circle">+</span>
-      </a>
+      <?= esc_html(
+          sprintf(
+              __('Il vous manque %d points pour soumettre votre réponse.', 'chassesautresor-com'),
+              $points_manquants
+          )
+      ); ?>
     </p>
   <?php else : ?>
     <input type="text" name="reponse" id="reponse_auto_<?= esc_attr($post_id); ?>" required>
@@ -95,10 +97,17 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
   <input type="hidden" name="enigme_id" value="<?= esc_attr($post_id); ?>">
   <input type="hidden" name="nonce" value="<?= esc_attr($nonce); ?>">
   <div class="reponse-cta-row">
+    <?php if ($points_manquants > 0) : ?>
+      <a href="<?= esc_url($boutique_url); ?>" class="bouton-cta points-manquants">
+        <span class="points-plus-circle">+</span>
+        <?= esc_html__('Acheter des points', 'chassesautresor-com'); ?>
+      </a>
+    <?php else : ?>
       <button type="submit" class="bouton-cta" <?= $disabled; ?>><?= $label_btn; ?></button>
-      <?php if ($cout > 0 && $statut_actuel !== 'resolue') : ?>
-        <span class="badge-cout"><?= esc_html($cout); ?> <?= esc_html__('pts', 'chassesautresor-com'); ?></span>
-      <?php endif; ?>
+    <?php endif; ?>
+    <?php if ($cout > 0 && $statut_actuel !== 'resolue') : ?>
+      <span class="badge-cout"><?= esc_html($cout); ?> <?= esc_html__('pts', 'chassesautresor-com'); ?></span>
+    <?php endif; ?>
   </div>
 </form>
 <div class="reponse-feedback" style="display:none"></div>
