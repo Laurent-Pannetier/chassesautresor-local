@@ -1069,6 +1069,11 @@ defined('ABSPATH') || exit;
         }
 
         $user_id = get_current_user_id();
+
+        // Ensure stats are recalculated with up-to-date engagement data.
+        enigme_clear_sidebar_cache($chasse_id, $user_id);
+        wp_cache_delete('enigme_sidebar_resolution_' . $enigme_id, 'chassesautresor');
+
         $html    = '<h3>' . esc_html__('Statistiques', 'chassesautresor-com') . '</h3>';
         $html   .= enigme_sidebar_metas_html($enigme_id);
         $html   .= enigme_sidebar_progression_html($chasse_id, $user_id);
