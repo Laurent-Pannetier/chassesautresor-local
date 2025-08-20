@@ -303,6 +303,12 @@
   /*max-height: 300px;*/
 }
 
+/* Ensure small images keep their natural width */
+.enigme-image--limited {
+  width: auto;
+  max-width: 100%;
+}
+
 .participation {
   display: flex;
   flex-direction: column;
