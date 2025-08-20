@@ -29,7 +29,11 @@ if ($has_valid_images && function_exists('afficher_visuels_enigme')) {
     afficher_visuels_enigme($post_id);
     $html = ob_get_clean();
 
-    if ($width && $width < $threshold_full) {
+    if ($width && $width <= $threshold_full) {
+        $html = preg_replace('/<img([^>]*?)style="([^"]*)"/i', '<img$1style="$2width:auto;max-width:100%;"', $html, 1, $c);
+        if (0 === $c) {
+            $html = preg_replace('/<img/i', '<img style="width:auto;max-width:100%;"', $html, 1);
+        }
         $html = preg_replace('/<img([^>]*?)class="([^"]*)"/i', '<img$1class="$2 enigme-image--limited"', $html, 1, $c);
         if (0 === $c) {
             $html = preg_replace('/<img/i', '<img class="enigme-image--limited"', $html, 1);
@@ -51,8 +55,9 @@ if ($has_valid_images && function_exists('afficher_visuels_enigme')) {
         'alt'     => esc_attr__('Image par défaut de l’énigme', 'chassesautresor-com'),
     ];
 
-    if ($width && $width < $threshold_full) {
+    if ($width && $width <= $threshold_full) {
         $attrs['class'] = 'enigme-image--limited';
+        $attrs['style'] = 'width:auto;max-width:100%;';
     } elseif ($width) {
         $attrs['style'] = 'width:100%;';
     }
