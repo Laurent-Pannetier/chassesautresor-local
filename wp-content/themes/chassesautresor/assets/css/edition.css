@@ -438,6 +438,10 @@ body .header-img-modifiable .icone-modif {
   display: none;
 }
 
+.champ-nb-tentatives.cache {
+  display: none;
+}
+
 #champ-bonne-reponse {
   width: auto;
 }

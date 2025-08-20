@@ -611,6 +611,7 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
 
         $mode_validation = get_field('enigme_mode_validation', $enigme_id);
         $cout            = (int) get_field('enigme_tentative_cout_points', $enigme_id);
+
         $badge_html      = '';
         if ($mode_validation !== 'aucune') {
             $chasse_id = recuperer_id_chasse_associee($enigme_id);
@@ -636,13 +637,22 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
                 require_once __DIR__ . '/tentatives.php';
             }
 
+
+        if ($afficher_tentatives && !function_exists('compter_tentatives_du_jour')) {
+            require_once __DIR__ . '/tentatives.php';
+        }
+
+        if ($afficher_tentatives) {
             $tentatives_utilisees = compter_tentatives_du_jour($user_id, $enigme_id);
             $tentatives_max       = (int) get_field('enigme_tentative_max', $enigme_id);
             $tentatives_max_aff   = $tentatives_max > 0 ? $tentatives_max : '∞';
+
             $solde_actuel         = function_exists('get_user_points')
                 ? get_user_points($user_id)
                 : 0;
 
+
+        if ($afficher_infos) {
             $content .= '<div class="participation-infos txt-small" ';
             $content .= 'style="color:var(--color-text-primary);display:flex;justify-content:space-between;">';
 
@@ -654,13 +664,19 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
                 $content .= '<span></span>';
             }
 
-            $content .= '<span class="tentatives">'
-                . sprintf(
-                    esc_html__('Tentatives quotidiennes : %1$d/%2$s', 'chassesautresor-com'),
-                    $tentatives_utilisees,
-                    $tentatives_max_aff
-                )
-                . '</span></div>';
+            if ($afficher_tentatives) {
+                $content .= '<span class="tentatives">'
+                    . sprintf(
+                        esc_html__('Tentatives quotidiennes : %1$d/%2$s', 'chassesautresor-com'),
+                        $tentatives_utilisees,
+                        $tentatives_max_aff
+                    )
+                    . '</span>';
+            } elseif ($cout > 0) {
+                $content .= '<span></span>';
+            }
+
+            $content .= '</div>';
         }
 
         $cout_badge = '';
