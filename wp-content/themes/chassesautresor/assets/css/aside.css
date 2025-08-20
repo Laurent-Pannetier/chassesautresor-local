@@ -84,6 +84,20 @@
   margin: var(--space-md) 0 var(--space-xs);
 }
 
+.aside-subsection-title .mode-fin-aide {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 0.3em;
+  color: inherit;
+  padding: 0;
+}
+
+.aside-subsection-title .stat-help i {
+  pointer-events: none;
+  font-size: 0.8em;
+}
+
 .menu-lateral ul {
   list-style: none;
   margin: 0;
@@ -237,4 +251,52 @@
 /* ===== Gagnants ===== */
 .enigme-gagnants tr.current-user {
   font-weight: 700;
+  
+/* ====== Modal d'aide ====== */
+.help-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.help-modal {
+  background: var(--color-white, #fff);
+  color: var(--color-editor-heading, #000);
+  padding: var(--space-md);
+  border-radius: 8px;
+  max-width: 400px;
+  width: 90%;
+  position: relative;
+}
+
+.help-modal-title {
+  margin: 0 0 var(--space-sm);
+  font-size: 1.25rem;
+}
+
+.help-modal-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: inherit;
+}
+
+.help-modal-content p {
+  margin: 0 0 var(--space-sm);
+}
+
+.help-modal-content p.help-definition {
+  margin-bottom: var(--space-md);
+
 }
