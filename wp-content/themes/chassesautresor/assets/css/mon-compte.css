@@ -667,6 +667,15 @@
     text-align: right;
 }
 
+/* 🏷️ Badges d'état dans le tableau des organisateurs */
+.table-organisateurs td[data-col="etat"] .badge-statut {
+    position: static;
+    top: auto;
+    left: auto;
+    display: inline-block;
+    margin: 0;
+}
+
 /* 📌 Toggle d'historique de conversion */
 .conversion-history .conversion-history-toggle {
     color: var(--color-text-fond-clair);
