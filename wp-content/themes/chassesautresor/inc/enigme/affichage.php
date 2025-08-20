@@ -611,8 +611,11 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
 
         $mode_validation = get_field('enigme_mode_validation', $enigme_id);
         $cout            = (int) get_field('enigme_tentative_cout_points', $enigme_id);
+        $solde_actuel    = function_exists('get_user_points')
+            ? get_user_points($user_id)
+            : 0;
 
-        $badge_html      = '';
+        $badge_html = '';
         if ($mode_validation !== 'aucune') {
             $chasse_id = recuperer_id_chasse_associee($enigme_id);
             if (!current_user_can('manage_options')
@@ -632,11 +635,10 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
                     . esc_attr($icon)
                     . '"></i></span>';
             }
+        }
 
-            if (!function_exists('compter_tentatives_du_jour')) {
-                require_once __DIR__ . '/tentatives.php';
-            }
-
+        $afficher_tentatives = $mode_validation === 'automatique';
+        $afficher_infos      = $cout > 0 || $afficher_tentatives;
 
         if ($afficher_tentatives && !function_exists('compter_tentatives_du_jour')) {
             require_once __DIR__ . '/tentatives.php';
@@ -646,11 +648,7 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
             $tentatives_utilisees = compter_tentatives_du_jour($user_id, $enigme_id);
             $tentatives_max       = (int) get_field('enigme_tentative_max', $enigme_id);
             $tentatives_max_aff   = $tentatives_max > 0 ? $tentatives_max : '∞';
-
-            $solde_actuel         = function_exists('get_user_points')
-                ? get_user_points($user_id)
-                : 0;
-
+        }
 
         if ($afficher_infos) {
             $content .= '<div class="participation-infos txt-small" ';
