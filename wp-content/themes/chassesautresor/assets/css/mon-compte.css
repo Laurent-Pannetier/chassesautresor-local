@@ -646,6 +646,11 @@
     color: var(--color-text-fond-clair);
 }
 
+.table-organisateurs td.col-chasse,
+.table-organisateurs td.col-enigmes {
+    text-align: right;
+}
+
 /* 📌 Toggle d'historique de conversion */
 .conversion-history .conversion-history-toggle {
     color: var(--color-text-fond-clair);
