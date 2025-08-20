@@ -112,20 +112,33 @@ function get_organisateur_id_from_context(array $args = []): ?int
  */
 function utilisateur_est_organisateur_associe_a_chasse(int $user_id, int $chasse_id): bool
 {
-  if (!$user_id || !$chasse_id) return false;
+    if (!$user_id || !$chasse_id) {
+        return false;
+    }
 
-  $organisateur_id = get_organisateur_from_chasse($chasse_id);
-  if (!$organisateur_id) return false;
+    $organisateur_id = get_organisateur_from_chasse($chasse_id);
+    if (!$organisateur_id) {
+        return false;
+    }
 
-  $utilisateurs = get_field('utilisateurs_associes', $organisateur_id);
-  if (!is_array($utilisateurs)) return false;
+    $post = get_post($organisateur_id);
+    if ($post && (int) $post->post_author === $user_id) {
+        return true;
+    }
 
-  foreach ($utilisateurs as $user) {
-    $id = is_object($user) ? $user->ID : (int) $user;
-    if ($id === $user_id) return true;
-  }
+    $utilisateurs = get_field('utilisateurs_associes', $organisateur_id);
+    if (!is_array($utilisateurs)) {
+        return false;
+    }
 
-  return false;
+    foreach ($utilisateurs as $user) {
+        $id = is_object($user) ? $user->ID : (int) $user;
+        if ($id === $user_id) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 

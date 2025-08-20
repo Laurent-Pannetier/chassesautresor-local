@@ -64,6 +64,13 @@ if (!function_exists('cat_debug')) {
     function cat_debug(...$args): void {}
 }
 
+if (!function_exists('get_post')) {
+    function get_post($post_id) {
+        global $posts;
+        return $posts[$post_id] ?? null;
+    }
+}
+
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/access-functions.php';
 
 class AccessFunctionsTest extends TestCase {
@@ -93,5 +100,32 @@ class AccessFunctionsTest extends TestCase {
         $statuses   = [$chasse_id => 'pending'];
         $enigme_ids = [1];
         $this->assertTrue(utilisateur_peut_ajouter_enigme($chasse_id));
+    }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function test_utilisateur_est_auteur_du_organisateur_associe(): void {
+        global $fields, $posts;
+        $user_id = 10;
+        $chasse_id = 102;
+        $organisateur_id = 202;
+        $fields = [
+            $chasse_id => [
+                'chasse_cache_organisateur' => $organisateur_id,
+            ],
+            $organisateur_id => [
+                'utilisateurs_associes' => [],
+            ],
+        ];
+        $posts = [
+            $organisateur_id => (object) ['ID' => $organisateur_id, 'post_author' => $user_id],
+        ];
+
+        $code = file_get_contents(__DIR__ . '/../wp-content/themes/chassesautresor/inc/relations-functions.php');
+        $code = preg_replace('/^<\?php/', '', $code);
+        eval('namespace RelationsReal {' . $code . '}');
+
+        $this->assertTrue(\RelationsReal\utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id));
     }
 }
