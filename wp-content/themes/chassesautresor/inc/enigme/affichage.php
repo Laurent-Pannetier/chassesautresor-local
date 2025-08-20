@@ -610,6 +610,7 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
         }
 
         $mode_validation = get_field('enigme_mode_validation', $enigme_id);
+        $cout            = (int) get_field('enigme_tentative_cout_points', $enigme_id);
         $badge_html      = '';
         if ($mode_validation !== 'aucune') {
             $chasse_id = recuperer_id_chasse_associee($enigme_id);
@@ -638,7 +639,6 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
             $tentatives_utilisees = compter_tentatives_du_jour($user_id, $enigme_id);
             $tentatives_max       = (int) get_field('enigme_tentative_max', $enigme_id);
             $tentatives_max_aff   = $tentatives_max > 0 ? $tentatives_max : '∞';
-            $cout                 = (int) get_field('enigme_tentative_cout_points', $enigme_id);
             $solde_actuel         = function_exists('get_user_points')
                 ? get_user_points($user_id)
                 : 0;
@@ -663,8 +663,24 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
                 . '</span></div>';
         }
 
+        $cout_badge = '';
+        if ($cout > 0) {
+            $cout_badge = '<span class="badge-cout" aria-label="'
+                . esc_attr(sprintf(
+                    esc_html__('Coût par tentative : %d points.', 'chassesautresor-com'),
+                    $cout
+                ))
+                . '">' . esc_html($cout) . ' '
+                . esc_html__('pts', 'chassesautresor-com') . '</span>';
+        }
+
+        $header = '<div class="participation-header">'
+            . ($badge_html !== '' ? $badge_html : '<span></span>')
+            . $cout_badge
+            . '</div>';
+
         if ($content !== '') {
-            echo '<section class="participation">' . $badge_html . $content . '</section>';
+            echo '<section class="participation">' . $header . $content . '</section>';
         }
     }
 

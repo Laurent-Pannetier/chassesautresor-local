@@ -150,10 +150,7 @@ button,
     position: relative;
 }
 
-.bloc-reponse .badge-cout {
-    position: absolute;
-    top: var(--space-xs);
-    right: var(--space-xs);
+.badge-cout {
     display: inline-block;
     padding: var(--space-xxs) var(--space-xs);
     background: var(--color-secondary);
