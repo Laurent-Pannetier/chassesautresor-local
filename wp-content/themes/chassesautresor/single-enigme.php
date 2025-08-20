@@ -141,4 +141,4 @@ if (is_singular('enigme')) {
     </main>
   </div>
 
-<?php get_footer(); ?>
+<?php get_footer('enigme'); ?>
