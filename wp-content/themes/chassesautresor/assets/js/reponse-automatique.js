@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
               currentMenuItem.classList.add('succes');
             }
             const sectionGagnants = document.querySelector('.enigme-gagnants');
-            const sectionProgression = document.querySelector('.enigme-progression');
+            const sectionStats = document.querySelector('.enigme-statistiques');
             const enigmeIdInput = form.querySelector('input[name="enigme_id"]');
             const navigation = document.querySelector('.enigme-navigation');
             const chasseId = navigation ? navigation.dataset.chasseId : null;
@@ -144,10 +144,11 @@ document.addEventListener('DOMContentLoaded', () => {
               requests.push(req);
             }
 
-            if (sectionProgression && chasseId) {
+            if (sectionStats && chasseId && enigmeIdInput) {
               const dataP = new URLSearchParams();
               dataP.append('action', 'enigme_recuperer_progression');
               dataP.append('chasse_id', chasseId);
+              dataP.append('enigme_id', enigmeIdInput.value);
               const req = fetch('/wp-admin/admin-ajax.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -156,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 .then(r => r.json())
                 .then(r => {
                   if (r.success) {
-                    sectionProgression.innerHTML = r.data.html;
+                    sectionStats.innerHTML = r.data.html;
                   }
                 });
               requests.push(req);

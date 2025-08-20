@@ -203,7 +203,7 @@ msgid "Moyenne"
 msgstr ""
 
 #: inc/enigme/affichage.php:200
-msgid "Engagements"
+msgid "Progression"
 msgstr ""
 
 #: inc/enigme/affichage.php:263
@@ -211,10 +211,18 @@ msgid "Résolution"
 msgstr ""
 
 #: inc/enigme/affichage.php:297
-msgid "Activer Orgy"
+msgid "Statistiques"
 msgstr ""
 
 #: inc/enigme/affichage.php:311
+msgid "Afficher les statistiques"
+msgstr ""
+
+#: inc/enigme/affichage.php:317
+msgid "Activer Orgy"
+msgstr ""
+
+#: inc/enigme/affichage.php:325
 #: template-parts/chasse/partials/chasse-partial-participants.php:51
 msgid "Énigmes"
 msgstr ""
