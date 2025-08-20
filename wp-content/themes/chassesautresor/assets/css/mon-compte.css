@@ -721,5 +721,20 @@ body.woocommerce h2 {
 }
 
 
+/* Tentatives - Proposition toggle */
+.proposition-cell {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.proposition-cell .toggle-proposition {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+
 
 

@@ -31,6 +31,14 @@ wp_enqueue_script(
     true
 );
 
+wp_enqueue_script(
+    'tentatives-toggle',
+    $uri . '/assets/js/tentatives-toggle.js',
+    [],
+    filemtime($dir . '/assets/js/tentatives-toggle.js'),
+    true
+);
+
 // Retrieve last 4 engaged hunts and their latest enigme
 $chasse_ids  = [];
 $enigme_map = [];
@@ -122,6 +130,7 @@ $pages = (int) ceil($total / $per_page);
                 <tr>
                     <th><?php esc_html_e('Date', 'chassesautresor-com'); ?></th>
                     <th><?php esc_html_e('Énigme', 'chassesautresor-com'); ?></th>
+                    <th><?php esc_html_e('Proposition', 'chassesautresor-com'); ?></th>
                     <th><?php esc_html_e('Résultat', 'chassesautresor-com'); ?></th>
                 </tr>
             </thead>
@@ -130,6 +139,27 @@ $pages = (int) ceil($total / $per_page);
                 <tr>
                     <td><?php echo esc_html(mysql2date('d/m/Y H:i', $tent->date_tentative)); ?></td>
                     <td><?php echo esc_html($tent->post_title); ?></td>
+                    <?php
+                    $proposition   = $tent->reponse_saisie ?? '';
+                    $excerpt_limit = 30;
+                    $needs_toggle  = mb_strlen($proposition) > $excerpt_limit;
+                    $excerpt       = $needs_toggle ? mb_substr($proposition, 0, $excerpt_limit) . '…' : $proposition;
+                    ?>
+                    <td class="proposition-cell">
+                        <span class="proposition-excerpt"><?php echo esc_html($excerpt); ?></span>
+                        <?php if ($needs_toggle) : ?>
+                        <span class="proposition-full" hidden><?php echo esc_html($proposition); ?></span>
+                        <button
+                            class="toggle-proposition"
+                            aria-expanded="false"
+                            aria-label="<?php esc_attr_e('Voir plus', 'chassesautresor-com'); ?>"
+                            data-more="<?php esc_attr_e('Voir plus', 'chassesautresor-com'); ?>"
+                            data-less="<?php esc_attr_e('Voir moins', 'chassesautresor-com'); ?>"
+                        >
+                            <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
+                        </button>
+                        <?php endif; ?>
+                    </td>
                     <?php
                     $result = $tent->resultat;
                     $class  = 'etiquette-error';
