@@ -610,7 +610,27 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
         }
 
         $mode_validation = get_field('enigme_mode_validation', $enigme_id);
+        $badge_html      = '';
         if ($mode_validation !== 'aucune') {
+            $chasse_id = recuperer_id_chasse_associee($enigme_id);
+            if (!current_user_can('manage_options')
+                && !utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)
+            ) {
+                $icon       = $mode_validation === 'automatique' ? 'fa-bolt' : 'fa-envelope';
+                $mode_label = $mode_validation === 'automatique'
+                    ? esc_html__('automatique', 'chassesautresor-com')
+                    : esc_html__('manuelle', 'chassesautresor-com');
+                $title = sprintf(
+                    esc_html__("Mode de validation de l'énigme : %s", 'chassesautresor-com'),
+                    $mode_label
+                );
+                $badge_html = '<span class="badge-validation" title="'
+                    . esc_attr($title)
+                    . '"><i class="fa-solid '
+                    . esc_attr($icon)
+                    . '"></i></span>';
+            }
+
             if (!function_exists('compter_tentatives_du_jour')) {
                 require_once __DIR__ . '/tentatives.php';
             }
@@ -644,7 +664,7 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
         }
 
         if ($content !== '') {
-            echo '<section class="participation">' . $content . '</section>';
+            echo '<section class="participation">' . $badge_html . $content . '</section>';
         }
     }
 
