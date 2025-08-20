@@ -13,11 +13,12 @@ if (!current_user_can('administrator')) {
 }
 
 $organisateurs_liste = recuperer_organisateurs_pending();
+$page                 = max(1, (int) ($_GET['page'] ?? 1));
 ?>
 <section>
-    <h1 class="mb-4 text-xl font-semibold"><?php esc_html_e('Organisateurs', 'chassesautresor'); ?></h1>
+    <h2><?php esc_html_e('Organisateurs', 'chassesautresor-com'); ?></h2>
     <?php if (empty($organisateurs_liste)) : ?>
-        <p><?php esc_html_e('Aucun organisateur.', 'chassesautresor'); ?></p>
+        <p><?php esc_html_e('Aucun organisateur.', 'chassesautresor-com'); ?></p>
     <?php else : ?>
         <?php
         $etats = [];
@@ -27,18 +28,28 @@ $organisateurs_liste = recuperer_organisateurs_pending();
             }
         }
         ?>
-        <div class="stats-header" style="display:flex;align-items:center;">
-            <span><?php echo count($organisateurs_liste); ?> <?php esc_html_e('organisateur', 'chassesautresor'); ?></span>
-            <div class="stats-filtres" style="margin-left:auto;">
-                <label for="filtre-etat"><?php esc_html_e('Filtrer par état :', 'chassesautresor'); ?></label>
+        <div class="stats-header">
+            <span class="etiquette">
+                <?php
+                $count = count($organisateurs_liste);
+                printf(
+                    esc_html(
+                        _n('%d organisateur', '%d organisateurs', $count, 'chassesautresor-com')
+                    ),
+                    $count
+                );
+                ?>
+            </span>
+            <div class="stats-filtres">
+                <label for="filtre-etat"><?php esc_html_e('Filtrer par état :', 'chassesautresor-com'); ?></label>
                 <select id="filtre-etat">
-                    <option value="tous"><?php esc_html_e('Tous', 'chassesautresor'); ?></option>
+                    <option value="tous"><?php esc_html_e('Tous', 'chassesautresor-com'); ?></option>
                     <?php foreach (array_keys($etats) as $etat) : ?>
                         <option value="<?php echo esc_attr($etat); ?>"><?php echo esc_html($etat); ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
         </div>
-        <?php afficher_tableau_organisateurs_pending($organisateurs_liste); ?>
+        <?php afficher_tableau_organisateurs_pending($organisateurs_liste, $page); ?>
     <?php endif; ?>
 </section>
