@@ -97,14 +97,6 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
 >
     <h3><?= esc_html__('Votre réponse', 'chassesautresor-com'); ?></h3>
 
-    <?php if ($cout > 0) : ?>
-        <span
-            class="badge-cout"
-            aria-label="<?= esc_attr(sprintf(__('Coût par tentative : %d points.', 'chassesautresor-com'), $cout)); ?>"
-        >
-            <?= esc_html($cout); ?> <?= esc_html__('pts', 'chassesautresor-com'); ?>
-        </span>
-    <?php endif; ?>
     <div class="reponse-feedback" style="display:none"></div>
   <?php if ($message_tentatives) : ?>
     <p class="message-limite" data-tentatives="epuisees"><?= esc_html($message_tentatives); ?></p>
