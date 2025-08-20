@@ -29,17 +29,10 @@ if (!utilisateur_peut_voir_enigme($parent_id)) {
     exit('Accès refusé');
 }
 
-// 📦 Récupération du chemin de l'image
+// 📦 Récupération du chemin de l'image (gère le fallback vers l'original)
 $info = trouver_chemin_image($image_id, $taille);
 $path = $info['path'] ?? null;
 $mime = $info['mime'] ?? 'application/octet-stream';
-
-// 🔁 Fallback automatique vers full si fichier manquant
-if (!$path && $taille !== 'full') {
-    $info = trouver_chemin_image($image_id, 'full');
-    $path = $info['path'] ?? null;
-    $mime = $info['mime'] ?? 'application/octet-stream';
-}
 
 if (!$path) {
     http_response_code(404);

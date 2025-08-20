@@ -303,18 +303,27 @@ function afficher_picture_vignette_enigme(int $enigme_id, string $alt = '', arra
  * Retourne le chemin absolu (serveur) et le type MIME d’une image à une taille donnée.
  * Si une version WebP existe pour cette taille, elle est priorisée.
  *
- * @param int $image_id ID de l’image WordPress
- * @param string $taille Taille WordPress demandée (ex: 'thumbnail', 'medium', 'full')
- * @return array|null Tableau ['path' => string, 'mime' => string] ou null si introuvable
+ * @param int    $image_id ID de l’image WordPress
+ * @param string $taille   Taille WordPress demandée (ex: 'thumbnail', 'medium', 'full')
+ * @return array|null      Tableau ['path' => string, 'mime' => string] ou null si introuvable
  */
 function trouver_chemin_image(int $image_id, string $taille = 'full'): ?array
 {
-    $src = wp_get_attachment_image_src($image_id, $taille);
-    $url = $src[0] ?? null;
-    if (!$url) return null;
-
+    $src       = wp_get_attachment_image_src($image_id, $taille);
+    $url       = $src[0] ?? null;
     $upload_dir = wp_get_upload_dir();
-    $path = str_replace($upload_dir['baseurl'], $upload_dir['basedir'], $url);
+    $path      = $url ? str_replace($upload_dir['baseurl'], $upload_dir['basedir'], $url) : null;
+
+    if (!$url || !$path || !file_exists($path)) {
+        if ($taille !== 'full') {
+            return trouver_chemin_image($image_id, 'full');
+        }
+
+        $path = get_attached_file($image_id);
+        if (!$path || !file_exists($path)) {
+            return null;
+        }
+    }
 
     // 🔁 Si une version .webp existe, on la préfère
     $webp_path = preg_replace('/\.(jpe?g|png|gif)$/i', '.webp', $path);
@@ -322,20 +331,16 @@ function trouver_chemin_image(int $image_id, string $taille = 'full'): ?array
         return ['path' => $webp_path, 'mime' => 'image/webp'];
     }
 
-    // 🔁 Sinon, on vérifie le fichier d’origine
-    if (file_exists($path)) {
-        $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
-        $mime = match ($ext) {
-            'jpg', 'jpeg' => 'image/jpeg',
-            'png'         => 'image/png',
-            'gif'         => 'image/gif',
-            'webp'        => 'image/webp',
-            default       => 'application/octet-stream',
-        };
-        return ['path' => $path, 'mime' => $mime];
-    }
+    $ext  = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+    $mime = match ($ext) {
+        'jpg', 'jpeg' => 'image/jpeg',
+        'png'         => 'image/png',
+        'gif'         => 'image/gif',
+        'webp'        => 'image/webp',
+        default       => 'application/octet-stream',
+    };
 
-    return null;
+    return ['path' => $path, 'mime' => $mime];
 }
 
 
