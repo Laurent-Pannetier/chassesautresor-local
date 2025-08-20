@@ -10,6 +10,24 @@
   top: var(--space-md);
 }
 
+/* Display images stacked with full width */
+.enigme-images {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.enigme-images .enigme-image {
+  width: 100%;
+}
+
+.enigme-images picture,
+.enigme-images img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 .menu-lateral .stats-bar-chart .bar-value,
 .menu-lateral .stats-bar-chart .bar-value--outside {
   font-size: 1rem;

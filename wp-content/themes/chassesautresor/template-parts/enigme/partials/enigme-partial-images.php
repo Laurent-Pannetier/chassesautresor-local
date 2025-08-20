@@ -46,6 +46,7 @@ if ($has_valid_images && function_exists('afficher_visuels_enigme')) {
     }
 
     echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+
 } else {
     cat_debug('[images] 🟡 Aucune image valide → fallback picture');
     $attrs = [
