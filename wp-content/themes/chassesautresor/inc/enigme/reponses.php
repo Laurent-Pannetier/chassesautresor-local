@@ -176,10 +176,14 @@ function soumettre_reponse_manuelle()
     }
 
     $uid = inserer_tentative($user_id, $enigme_id, $reponse);
+    $tentative_id = (int) $wpdb->insert_id;
+    $timestamp = current_time('timestamp');
+    $date = wp_date('d/m/Y', $timestamp);
+    $time = wp_date('H:i', $timestamp);
     enigme_mettre_a_jour_statut_utilisateur($enigme_id, $user_id, 'soumis', true);
 
     $titre_enigme = get_the_title($enigme_id);
-    $link        = '<a href="' . esc_url(get_permalink($enigme_id)) . '">' . esc_html($titre_enigme) . '</a>';
+    $link = '<a href="' . esc_url(get_permalink($enigme_id)) . '">' . esc_html($titre_enigme) . '</a>';
     myaccount_add_persistent_message($user_id, 'tentative_' . $uid, $link);
 
     envoyer_mail_reponse_manuelle($user_id, $enigme_id, $reponse, $uid);
@@ -188,6 +192,9 @@ function soumettre_reponse_manuelle()
 
     wp_send_json_success([
         'uid'    => $uid,
+        'id'     => $tentative_id,
+        'date'   => $date,
+        'time'   => $time,
         'points' => $solde,
     ]);
 }
@@ -577,7 +584,13 @@ function charger_script_reponse_manuelle() {
 
         wp_localize_script('reponse-manuelle', 'REPONSE_MANUELLE_I18N', [
             'success'    => esc_html__('Tentative bien reçue.', 'chassesautresor-com'),
-            'processing' => esc_html__('⏳ Votre tentative est en cours de traitement.', 'chassesautresor-com'),
+            'processing' => __(
+                '⏳ Votre tentative %1$s a été soumise le %2$s à %3$s. ' .
+                'Vous serez immédiatement averti de son traitement par l\'organisateur par email ' .
+                'et sur votre <a href="%4$s">espace personnel</a>.',
+                'chassesautresor-com'
+            ),
+            'accountUrl' => esc_url(home_url('/mon-compte/?section=chasses')),
         ]);
     }
 }

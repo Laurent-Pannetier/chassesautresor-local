@@ -29,16 +29,47 @@ $solde_apres = $solde_avant - $cout;
 $seuil_cout_eleve = (int) get_option('enigme_cout_eleve', 300);
 
 if ($mode_validation === 'manuelle') {
-  if (!utilisateur_peut_repondre_manuelle($user_id, $post_id)) {
-    $statut = enigme_get_statut_utilisateur($post_id, $user_id);
-    $texte = $statut === 'soumis'
-      ? __('⏳ Votre tentative est en cours de traitement.', 'chassesautresor-com')
-      : __('Énigme résolue', 'chassesautresor-com');
-    echo '<p class="message-joueur-statut">' . esc_html($texte) . '</p>';
+    if (!utilisateur_peut_repondre_manuelle($user_id, $post_id)) {
+        $statut = enigme_get_statut_utilisateur($post_id, $user_id);
+        if ($statut === 'soumis') {
+            global $wpdb;
+            $table = $wpdb->prefix . 'enigme_tentatives';
+            $tentative = $wpdb->get_row(
+                $wpdb->prepare(
+                    "SELECT id, date_tentative FROM $table WHERE user_id = %d AND enigme_id = %d AND traitee = 0 ORDER BY date_tentative DESC LIMIT 1",
+                    $user_id,
+                    $post_id
+                )
+            );
+            if ($tentative) {
+                $timestamp = strtotime($tentative->date_tentative);
+                $date = wp_date('d/m/Y', $timestamp);
+                $time = wp_date('H:i', $timestamp);
+                $account_url = home_url('/mon-compte/?section=chasses');
+                $message = sprintf(
+                    __(
+                        '⏳ Votre tentative %1$s a été soumise le %2$s à %3$s. ' .
+                        'Vous serez immédiatement averti de son traitement par l\'organisateur par email ' .
+                        'et sur votre <a href="%4$s">espace personnel</a>.',
+                        'chassesautresor-com'
+                    ),
+                    '#' . $tentative->id,
+                    $date,
+                    $time,
+                    $account_url
+                );
+                echo '<p class="message-joueur-statut">' . wp_kses_post($message) . '</p>';
+            } else {
+                echo '<p class="message-joueur-statut">' . esc_html__('⏳ Votre tentative est en cours de traitement.', 'chassesautresor-com') . '</p>';
+            }
+        } else {
+            $texte = __('Énigme résolue', 'chassesautresor-com');
+            echo '<p class="message-joueur-statut">' . esc_html($texte) . '</p>';
+        }
+        return;
+    }
+    echo do_shortcode('[formulaire_reponse_manuelle id="' . esc_attr($post_id) . '"]');
     return;
-  }
-  echo do_shortcode('[formulaire_reponse_manuelle id="' . esc_attr($post_id) . '"]');
-  return;
 }
 
 $statut_actuel = enigme_get_statut_utilisateur($post_id, $user_id);

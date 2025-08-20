@@ -275,9 +275,9 @@ msgstr ""
 msgid "Tentative bien reçue."
 msgstr ""
 
-#: inc/enigme/reponses.php:509
-#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:35
-msgid "⏳ Votre tentative est en cours de traitement."
+#: inc/enigme/reponses.php:588
+#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:51
+msgid "⏳ Votre tentative %1$s a été soumise le %2$s à %3$s. Vous serez immédiatement averti de son traitement par l'organisateur par email et sur votre <a href=\"%4$s\">espace personnel</a>."
 msgstr ""
 
 #: inc/enigme/visuels.php:129
