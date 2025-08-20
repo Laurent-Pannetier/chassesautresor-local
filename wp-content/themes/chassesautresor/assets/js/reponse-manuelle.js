@@ -4,9 +4,10 @@ function initFormulaireManuel() {
   const feedback = form.nextElementSibling;
   const input = form.querySelector('textarea[name="reponse_manuelle"]');
   const pointsMsg = form.querySelector('.message-limite');
-  const badgeCout = form.querySelector('.badge-cout');
   const headerPoints = document.querySelector('.zone-points .points-value');
-  const cout = badgeCout ? parseInt(badgeCout.textContent, 10) : 0;
+  const cout = parseInt(form.dataset.cout || '0', 10);
+  const soldeApres = parseInt(form.dataset.soldeApres || '0', 10);
+  const seuil = parseInt(form.dataset.seuil || '300', 10);
   let hideTimer = null;
 
   const i18n = window.REPONSE_MANUELLE_I18N || {};
@@ -15,6 +16,10 @@ function initFormulaireManuel() {
 
   form.addEventListener('submit', e => {
     e.preventDefault();
+    if (cout >= seuil) {
+      const ok = confirm(`Confirmer l'envoi ? Cette tentative coûtera ${cout} pts. Solde après : ${soldeApres} pts.`);
+      if (!ok) return;
+    }
     const data = new URLSearchParams(new FormData(form));
     data.append('action', 'soumettre_reponse_manuelle');
 

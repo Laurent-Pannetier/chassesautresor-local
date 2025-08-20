@@ -16,12 +16,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const compteurValeur = compteur ? compteur.querySelector('.valeur') : null;
   const input = form.querySelector('input[name="reponse"]');
   const limiteMsg = document.querySelector('.message-limite');
-  const badgeCout = form.querySelector('.badge-cout');
   const headerPoints = document.querySelector('.zone-points .points-value');
+  const cout = parseInt(form.dataset.cout || '0', 10);
+  const soldeApres = parseInt(form.dataset.soldeApres || '0', 10);
+  const seuil = parseInt(form.dataset.seuil || '300', 10);
   let hideTimer = null;
 
   form.addEventListener('submit', e => {
     e.preventDefault();
+    if (cout >= seuil) {
+      const ok = confirm(`Confirmer l'envoi ? Cette tentative coûtera ${cout} pts. Solde après : ${soldeApres} pts.`);
+      if (!ok) return;
+    }
     const data = new URLSearchParams(new FormData(form));
     data.append('action', 'soumettre_reponse_automatique');
 
@@ -66,9 +72,8 @@ document.addEventListener('DOMContentLoaded', () => {
             feedback.textContent = 'Bonne réponse !';
             feedback.style.display = 'block';
             form.remove();
-            if (badgeCout) badgeCout.remove();
             if (compteur) {
-              compteur.remove();
+                compteur.remove();
             }
             const currentMenuItem = document.querySelector('.enigme-menu li.active');
             if (currentMenuItem) {

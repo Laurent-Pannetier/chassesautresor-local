@@ -23,7 +23,10 @@ $mode_validation = get_field('enigme_mode_validation', $post_id);
 if (!in_array($mode_validation, ['automatique', 'manuelle'])) return;
 
 $cout = (int) get_field('enigme_tentative_cout_points', $post_id);
-$max  = (int) get_field('enigme_tentative_max', $post_id);
+$max = (int) get_field('enigme_tentative_max', $post_id);
+$solde_avant = get_user_points($user_id);
+$solde_apres = $solde_avant - $cout;
+$seuil_cout_eleve = (int) get_option('enigme_cout_eleve', 300);
 
 if ($mode_validation === 'manuelle') {
   if (!utilisateur_peut_repondre_manuelle($user_id, $post_id)) {
@@ -70,16 +73,37 @@ $tentatives_du_jour = compter_tentatives_du_jour($user_id, $post_id);
     );
   }
 
-if ($cout > get_user_points($user_id)) {
-  $disabled = 'disabled';
-  $points_manquants = $cout - get_user_points($user_id);
+if ($cout > $solde_avant) {
+    $disabled = 'disabled';
+    $points_manquants = $cout - $solde_avant;
+}
+
+if ($points_manquants <= 0 && !$message_tentatives && $cout > 0) {
+    $label_btn = sprintf(
+        esc_html__('Valider — %d pts', 'chassesautresor-com'),
+        $cout
+    );
 }
 
 $nonce = wp_create_nonce('reponse_auto_nonce');
 ?>
 
-<form class="bloc-reponse formulaire-reponse-auto">
+<form
+    class="bloc-reponse formulaire-reponse-auto"
+    data-cout="<?= esc_attr($cout); ?>"
+    data-solde-avant="<?= esc_attr($solde_avant); ?>"
+    data-solde-apres="<?= esc_attr($solde_apres); ?>"
+    data-seuil="<?= esc_attr($seuil_cout_eleve); ?>"
+>
     <h3><?= esc_html__('Votre réponse', 'chassesautresor-com'); ?></h3>
+    <?php if ($cout > 0) : ?>
+        <span
+            class="badge-cout"
+            aria-label="<?= esc_attr(sprintf(__('Coût par tentative : %d points.', 'chassesautresor-com'), $cout)); ?>"
+        >
+            <?= esc_html($cout); ?> <?= esc_html__('pts', 'chassesautresor-com'); ?>
+        </span>
+    <?php endif; ?>
   <?php if ($message_tentatives) : ?>
     <p class="message-limite" data-tentatives="epuisees"><?= esc_html($message_tentatives); ?></p>
   <?php elseif ($points_manquants > 0) : ?>
@@ -105,10 +129,18 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
     <?php else : ?>
       <button type="submit" class="bouton-cta" <?= $disabled; ?>><?= $label_btn; ?></button>
     <?php endif; ?>
-    <?php if ($cout > 0 && $statut_actuel !== 'resolue') : ?>
-      <span class="badge-cout"><?= esc_html($cout); ?> <?= esc_html__('pts', 'chassesautresor-com'); ?></span>
-    <?php endif; ?>
   </div>
+  <?php if ($points_manquants <= 0 && $cout > 0) : ?>
+    <p class="points-sousligne txt-small">
+      <?= esc_html(
+          sprintf(
+              __('Solde : %1$d → %2$d pts • Les points sont débités à l’envoi', 'chassesautresor-com'),
+              $solde_avant,
+              $solde_apres
+          )
+      ); ?>
+    </p>
+  <?php endif; ?>
 </form>
 <div class="reponse-feedback" style="display:none"></div>
 <?php if ($max > 0) : ?>
