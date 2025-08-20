@@ -272,6 +272,11 @@
   position: relative;
 }
 
+.help-modal-title {
+  margin: 0 0 var(--space-sm);
+  font-size: 1.25rem;
+}
+
 .help-modal-close {
   position: absolute;
   top: 8px;

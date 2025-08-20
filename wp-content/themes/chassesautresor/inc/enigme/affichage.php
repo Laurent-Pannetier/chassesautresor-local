@@ -152,14 +152,22 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
             <?= esc_html($title); ?>
             <?php if ($help_message !== '') : ?>
               <?php
+              $icon_args = [
+                  'aria_label' => $help_label,
+                  'message'    => $help_message,
+                  'classes'    => 'mode-fin-aide stat-help',
+              ];
+
+              if ($help_label !== '') {
+                  $icon_args['attributes'] = [
+                      'data-title' => $help_label,
+                  ];
+              }
+
               get_template_part(
                   'template-parts/common/help-icon',
                   null,
-                  [
-                      'aria_label' => $help_label,
-                      'message'    => $help_message,
-                      'classes'    => 'mode-fin-aide stat-help',
-                  ]
+                  $icon_args
               );
               ?>
             <?php endif; ?>
@@ -260,12 +268,10 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
             $data['avg'],
             'enigme-engagement',
             esc_html__(
-                'Part moyenne des énigmes sur lesquelles chaque participant s’est engagé, '
-                . 'rapportée au total d’énigmes de la chasse.' . "\n"
-                . 'Formule : moyenne, pour chaque joueur, de' . "\n"
-                . '(nb d’énigmes engagées) / (nb total d’énigmes proposées).' . "\n\n"
-                . 'Vous : part d’énigmes sur lesquelles vous vous êtes engagé.' . "\n"
-                . 'Moyenne : moyenne sur l’ensemble des joueurs.',
+                "Définition : Part moyenne des énigmes sur lesquelles chaque participant s’est engagé, "
+                . "rapportée au total d’énigmes de la chasse.\n\n"
+                . "Vous : part d’énigmes sur lesquelles vous vous êtes engagé.\n"
+                . "Moyenne : moyenne sur l’ensemble des joueurs.",
                 'chassesautresor-com'
             ),
             esc_attr__(
@@ -336,10 +342,10 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
             $data['avg'],
             'enigme-resolution',
             esc_html__(
-                'Pourcentage de joueurs engagés ayant validé la bonne réponse sur cette énigme.' . "\n"
-                . 'Formule : (nb de joueurs avec réponse validée) / (nb de joueurs engagés sur l’énigme).' . "\n\n"
-                . 'Vous : part d’énigmes que vous avez résolues / total de la chasse.' . "\n"
-                . 'Moyenne : moyenne des parts d’énigmes résolues par joueur.',
+                "Définition : % d'énigmes résolues par rapport au total d’énigmes* de la chasse.\n\n"
+                . "Vous : part d’énigmes* que vous avez résolues / total de la chasse.\n"
+                . "Moyenne : moyenne des parts d’énigmes résolues par joueur.\n\n"
+                . "*énigmes avec système de validation en ligne",
                 'chassesautresor-com'
             ),
             esc_attr__(

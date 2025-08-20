@@ -38,12 +38,13 @@ document.querySelectorAll('.accordeon-bloc').forEach(bloc => {
   });
 });
 
-function openHelpModal(message) {
+function openHelpModal(title, message) {
   const overlay = document.createElement('div');
   overlay.className = 'help-modal-overlay';
   overlay.innerHTML = `
     <div class="help-modal" role="dialog" aria-modal="true">
       <button type="button" class="help-modal-close" aria-label="${wp.i18n.__('Fermer', 'chassesautresor-com')}">&times;</button>
+      <h2 class="help-modal-title">${title}</h2>
       <div class="help-modal-content"></div>
     </div>`;
   document.body.appendChild(overlay);
@@ -65,8 +66,9 @@ function openHelpModal(message) {
 document.querySelectorAll('.stat-help').forEach((btn) => {
   btn.addEventListener('click', () => {
     const message = btn.dataset.message;
+    const title = btn.dataset.title || '';
     if (message) {
-      openHelpModal(message);
+      openHelpModal(title, message);
     }
   });
 });
