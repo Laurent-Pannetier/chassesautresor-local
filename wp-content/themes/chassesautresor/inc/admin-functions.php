@@ -1763,8 +1763,21 @@ function traiter_validation_chasse_admin() {
         wp_die( __( 'Nonce invalide.', 'chassesautresor-com' ) );
     }
 
-    $enigmes = recuperer_enigmes_associees($chasse_id);
-    $organisateur_id = get_organisateur_from_chasse($chasse_id);
+    $enigmes          = recuperer_enigmes_associees($chasse_id);
+    $organisateur_id  = get_organisateur_from_chasse($chasse_id);
+    $users            = $organisateur_id ? (array) get_field('utilisateurs_associes', $organisateur_id) : [];
+    $user_ids         = array_values(
+        array_filter(
+            array_map(
+                function ($uid) {
+                    return is_object($uid) ? intval($uid->ID) : intval($uid);
+                },
+                $users
+            )
+        )
+    );
+    $titre_chasse     = get_the_title($chasse_id);
+    $url_chasse       = get_permalink($chasse_id);
 
     if ($action === 'valider') {
         wp_update_post([
@@ -1791,13 +1804,20 @@ function traiter_validation_chasse_admin() {
                 ]);
             }
 
-            $users = (array) get_field('utilisateurs_associes', $organisateur_id);
-            $user_id = $users ? intval(reset($users)) : 0;
+            $user_id = $user_ids ? $user_ids[0] : 0;
             if ($user_id) {
                 $user = new WP_User($user_id);
                 $user->add_role(ROLE_ORGANISATEUR);
                 $user->remove_role(ROLE_ORGANISATEUR_CREATION);
             }
+        }
+
+        $flash = sprintf(
+            __('Votre demande de validation pour la chasse « %s » a été acceptée.', 'chassesautresor-com'),
+            esc_html($titre_chasse)
+        );
+        foreach ($user_ids as $uid) {
+            myaccount_add_flash_message($uid, $flash);
         }
 
         envoyer_mail_chasse_validee($organisateur_id, $chasse_id);
@@ -1829,6 +1849,21 @@ function traiter_validation_chasse_admin() {
 
         envoyer_mail_demande_correction($organisateur_id, $chasse_id, $message);
 
+        $flash = sprintf(
+            __('Votre demande de validation pour la chasse « %s » nécessite des corrections.', 'chassesautresor-com'),
+            '<a href="' . esc_url($url_chasse) . '">' . esc_html($titre_chasse) . '</a>'
+        );
+        if ($message !== '') {
+            $flash .= '<br>' . sprintf(
+                __('Message de l’administrateur : %s', 'chassesautresor-com'),
+                nl2br(esc_html($message))
+            );
+        }
+        $flash .= '<br>' . __('Une copie de ce message vous a été envoyée par email.', 'chassesautresor-com');
+        foreach ($user_ids as $uid) {
+            myaccount_add_flash_message($uid, $flash);
+        }
+
     } elseif ($action === 'bannir') {
         wp_update_post([
             'ID'          => $chasse_id,
@@ -1846,6 +1881,14 @@ function traiter_validation_chasse_admin() {
 
         envoyer_mail_chasse_bannie($organisateur_id, $chasse_id);
 
+        $flash = sprintf(
+            __('Votre chasse « %s » a été bannie.', 'chassesautresor-com'),
+            esc_html($titre_chasse)
+        );
+        foreach ($user_ids as $uid) {
+            myaccount_add_flash_message($uid, $flash);
+        }
+
     } elseif ($action === 'supprimer') {
         foreach ($enigmes as $eid) {
             wp_delete_post($eid, true);
@@ -1859,6 +1902,14 @@ function traiter_validation_chasse_admin() {
         wp_trash_post($chasse_id);
 
         envoyer_mail_chasse_supprimee($organisateur_id, $chasse_id);
+
+        $flash = sprintf(
+            __('Votre chasse « %s » a été supprimée.', 'chassesautresor-com'),
+            esc_html($titre_chasse)
+        );
+        foreach ($user_ids as $uid) {
+            myaccount_add_flash_message($uid, $flash);
+        }
     }
 
     // Après le traitement, rediriger systématiquement vers la liste des
@@ -1883,17 +1934,32 @@ function envoyer_mail_demande_correction(int $organisateur_id, int $chasse_id, s
         return;
     }
 
-    $email = get_field('email_organisateur', $organisateur_id);
-    if (is_array($email)) {
-        $email = reset($email);
-    }
-
-    if (!is_string($email) || !is_email($email)) {
-        $email = get_option('admin_email');
-
-    }
-
     $admin_email = get_option('admin_email');
+    $emails      = [];
+
+    $acf_email = get_field('email_organisateur', $organisateur_id);
+    if (is_array($acf_email)) {
+        $acf_email = reset($acf_email);
+    }
+    if (is_string($acf_email) && is_email($acf_email)) {
+        $emails[] = sanitize_email($acf_email);
+    }
+
+    $users = (array) get_field('utilisateurs_associes', $organisateur_id);
+    foreach ($users as $uid) {
+        $user_id = is_object($uid) ? $uid->ID : intval($uid);
+        if ($user_id) {
+            $user = get_user_by('ID', $user_id);
+            if ($user && is_email($user->user_email)) {
+                $emails[] = sanitize_email($user->user_email);
+            }
+        }
+    }
+
+    if (!$emails) {
+        $emails[] = $admin_email;
+    }
+
     $titre_chasse = get_the_title($chasse_id);
     $url_chasse   = get_permalink($chasse_id);
 
@@ -1914,7 +1980,6 @@ function envoyer_mail_demande_correction(int $organisateur_id, int $chasse_id, s
 
     $headers = [
         'Content-Type: text/html; charset=UTF-8',
-        'Bcc: ' . $admin_email,
     ];
 
     $from_filter = function ($name) use ($organisateur_id) {
@@ -1924,6 +1989,7 @@ function envoyer_mail_demande_correction(int $organisateur_id, int $chasse_id, s
     add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
     wp_mail($emails, $subject, $body, $headers);
+    wp_mail($admin_email, $subject, $body, $headers);
     remove_filter('wp_mail_from_name', $from_filter, 10);
 
 }
@@ -1973,7 +2039,7 @@ function envoyer_mail_chasse_bannie(int $organisateur_id, int $chasse_id)
     };
     add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
-    wp_mail($emails, $subject, $body, $headers);
+    wp_mail($email, $subject, $body, $headers);
     remove_filter('wp_mail_from_name', $from_filter, 10);
 }
 
@@ -2022,7 +2088,7 @@ function envoyer_mail_chasse_supprimee(int $organisateur_id, int $chasse_id)
     };
     add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
-    wp_mail($emails, $subject, $body, $headers);
+    wp_mail($email, $subject, $body, $headers);
     remove_filter('wp_mail_from_name', $from_filter, 10);
 }
 
