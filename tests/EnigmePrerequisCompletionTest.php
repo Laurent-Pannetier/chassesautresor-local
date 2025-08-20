@@ -42,4 +42,17 @@ class EnigmePrerequisCompletionTest extends TestCase
 
         $this->assertFalse(enigme_est_complet(1));
     }
+
+    public function test_prerequis_not_fulfilled_when_list_empty(): void
+    {
+        global $fields;
+        $fields = [
+            1 => [
+                'enigme_acces_condition'  => 'pre_requis',
+                'enigme_acces_pre_requis' => [],
+            ],
+        ];
+
+        $this->assertFalse(enigme_pre_requis_remplis(1, 1));
+    }
 }

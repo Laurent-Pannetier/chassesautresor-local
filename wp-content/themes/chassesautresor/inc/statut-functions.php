@@ -159,8 +159,10 @@ function enigme_pre_requis_remplis(int $enigme_id, int $user_id): bool
 {
     $pre_requis = get_field('enigme_acces_pre_requis', $enigme_id);
 
+    $condition = get_field('enigme_acces_condition', $enigme_id) ?? 'immediat';
+
     if (empty($pre_requis) || !is_array($pre_requis)) {
-        return true; // ✅ Aucun prérequis → considéré comme rempli
+        return $condition !== 'pre_requis'; // ❌ Pré-requis exigés mais liste vide
     }
 
     foreach ($pre_requis as $enigme_requise) {
