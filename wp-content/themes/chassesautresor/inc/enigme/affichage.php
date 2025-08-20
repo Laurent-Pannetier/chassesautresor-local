@@ -53,7 +53,34 @@ defined('ABSPATH') || exit;
     add_action('deleted_user', 'enigme_bump_permissions_cache_version', 10, 1);
     add_action('added_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
     add_action('updated_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
-add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
+    add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
+    /**
+     * Clear sidebar caches for a given hunt and user.
+     *
+     * @param int $chasse_id Hunt identifier.
+     * @param int $user_id   User identifier.
+     */
+    function enigme_clear_sidebar_cache(int $chasse_id, int $user_id): void
+    {
+        wp_cache_delete('enigme_sidebar_engagement_' . $chasse_id . '_' . $user_id, 'chassesautresor');
+        wp_cache_delete('enigme_sidebar_progression_' . $chasse_id . '_' . $user_id, 'chassesautresor');
+    }
+
+    /**
+     * Clear sidebar caches when an enigma is solved.
+     *
+     * @param int $user_id   User identifier.
+     * @param int $enigme_id Enigma identifier.
+     */
+    function enigme_clear_sidebar_cache_on_solve(int $user_id, int $enigme_id): void
+    {
+        $chasse_id = recuperer_id_chasse_associee($enigme_id);
+        if ($chasse_id) {
+            enigme_clear_sidebar_cache($chasse_id, $user_id);
+        }
+    }
+
+    add_action('enigme_resolue', 'enigme_clear_sidebar_cache_on_solve', 10, 2);
 
     /**
      * Determine if the enigma menu should be displayed for a user.
@@ -992,6 +1019,31 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
 
     add_action('wp_ajax_enigme_recuperer_gagnants', 'ajax_enigme_recuperer_gagnants');
     add_action('wp_ajax_nopriv_enigme_recuperer_gagnants', 'ajax_enigme_recuperer_gagnants');
+
+    /**
+     * AJAX handler to refresh the progression section.
+     */
+    function ajax_enigme_recuperer_progression(): void
+    {
+        if (!is_user_logged_in()) {
+            wp_send_json_error('non_connecte', 403);
+        }
+
+        $chasse_id = isset($_POST['chasse_id']) ? (int) $_POST['chasse_id'] : 0;
+        if ($chasse_id <= 0) {
+            wp_send_json_error('missing_chasse', 400);
+        }
+
+        $user_id = get_current_user_id();
+        $html    = '<h3>' . esc_html__('Progression', 'chassesautresor-com') . '</h3>';
+        $html   .= enigme_sidebar_engagement_html($chasse_id, $user_id);
+        $html   .= enigme_sidebar_progression_html($chasse_id, $user_id);
+
+        wp_send_json_success(['html' => $html]);
+    }
+
+    add_action('wp_ajax_enigme_recuperer_progression', 'ajax_enigme_recuperer_progression');
+    add_action('wp_ajax_nopriv_enigme_recuperer_progression', 'ajax_enigme_recuperer_progression');
 
     /**
      * Enqueue scripts for the winners pager.
