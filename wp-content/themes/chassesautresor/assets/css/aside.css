@@ -291,3 +291,7 @@
 .help-modal-content p {
   margin: 0 0 var(--space-sm);
 }
+
+.help-modal-content p.help-definition {
+  margin-bottom: var(--space-md);
+}

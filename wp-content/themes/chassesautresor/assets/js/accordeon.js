@@ -50,9 +50,21 @@ function openHelpModal(title, message) {
   document.body.appendChild(overlay);
 
   const content = overlay.querySelector('.help-modal-content');
-  message.split('\n').forEach((line) => {
+  message.split('\n\n').forEach((block, index) => {
+    const lines = block.split('\n');
     const p = document.createElement('p');
-    p.textContent = line;
+    if (lines.length > 1) {
+      const strong = document.createElement('strong');
+      strong.textContent = lines[0];
+      p.appendChild(strong);
+      p.appendChild(document.createElement('br'));
+      p.appendChild(document.createTextNode(lines.slice(1).join(' ')));
+    } else {
+      p.textContent = block;
+    }
+    if (index === 0) {
+      p.classList.add('help-definition');
+    }
     content.appendChild(p);
   });
 
