@@ -106,6 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
           } else if (res.data.resultat === 'bon') {
             feedback.innerHTML = `<i class="fa-solid fa-circle-check" style="color:var(--color-success);"></i> ${__('Bonne réponse', 'chassesautresor-com')}`;
             feedback.style.display = 'block';
+            const enigmeId = form.querySelector('input[name="enigme_id"]')?.value;
             const titre = form.querySelector('h3');
             const enigmeIdInput = form.querySelector('input[name="enigme_id"]');
             const enigmeId = enigmeIdInput ? enigmeIdInput.value : null;
@@ -120,6 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const sectionGagnants = document.querySelector('.enigme-gagnants');
             const sectionStats = document.querySelector('.enigme-statistiques');
+
             const navigation = document.querySelector('.enigme-navigation');
             const chasseId = navigation ? navigation.dataset.chasseId : null;
             const bloc = document.querySelector('.menu-lateral__accordeons .accordeon-bloc');

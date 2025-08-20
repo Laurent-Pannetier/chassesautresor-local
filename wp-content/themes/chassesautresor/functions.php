@@ -150,6 +150,13 @@ add_action('wp_enqueue_scripts', function () {
             filemtime($theme_path . '/assets/js/accordeon.js'),
             true
         );
+        wp_enqueue_script(
+            'enigme-gallery',
+            $script_dir . 'enigme-gallery.js',
+            [],
+            filemtime($theme_path . '/assets/js/enigme-gallery.js'),
+            true
+        );
     }
 });
 
