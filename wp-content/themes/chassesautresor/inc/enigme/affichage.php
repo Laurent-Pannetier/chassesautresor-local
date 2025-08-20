@@ -62,7 +62,6 @@ defined('ABSPATH') || exit;
      */
     function enigme_clear_sidebar_cache(int $chasse_id, int $user_id): void
     {
-        wp_cache_delete('enigme_sidebar_engagement_' . $chasse_id . '_' . $user_id, 'chassesautresor');
         wp_cache_delete('enigme_sidebar_progression_' . $chasse_id . '_' . $user_id, 'chassesautresor');
     }
 
@@ -78,6 +77,7 @@ defined('ABSPATH') || exit;
         if ($chasse_id) {
             enigme_clear_sidebar_cache($chasse_id, $user_id);
         }
+        wp_cache_delete('enigme_sidebar_resolution_' . $enigme_id, 'chassesautresor');
     }
 
     add_action('enigme_resolue', 'enigme_clear_sidebar_cache_on_solve', 10, 2);
@@ -212,6 +212,48 @@ defined('ABSPATH') || exit;
         return (string) ob_get_clean();
     }
 
+    function enigme_render_single_bar_subsection(
+        string $title,
+        int $rate,
+        string $section_class,
+        string $help_message = '',
+        string $help_label = ''
+    ): string {
+        ob_start();
+        ?>
+        <div class="<?= esc_attr($section_class); ?>">
+          <p class="aside-subsection-title">
+            <?= esc_html($title); ?>
+            <?php if ($help_message !== '') : ?>
+              <?php
+              $icon_args = [
+                  'aria_label' => $help_label,
+                  'message'    => $help_message,
+                  'classes'    => 'mode-fin-aide stat-help',
+              ];
+
+              if ($help_label !== '') {
+                  $icon_args['attributes'] = [
+                      'data-title' => $help_label,
+                  ];
+              }
+
+              get_template_part(
+                  'template-parts/common/help-icon',
+                  null,
+                  $icon_args
+              );
+              ?>
+            <?php endif; ?>
+          </p>
+          <div class="stats-bar-chart">
+            <?= enigme_render_bar_row($title, $rate); ?>
+          </div>
+        </div>
+        <?php
+        return (string) ob_get_clean();
+    }
+
     /**
      * Build meta labels HTML for the sidebar.
      *
@@ -246,20 +288,20 @@ defined('ABSPATH') || exit;
     }
 
     /**
-     * Build engagement histogram HTML for the sidebar.
+     * Build progression histogram HTML for the sidebar.
      *
      * @param int|null $chasse_id Hunt identifier.
      * @param int      $user_id   Current user identifier.
      *
      * @return string
      */
-    function enigme_sidebar_engagement_html(?int $chasse_id, int $user_id): string
+    function enigme_sidebar_progression_html(?int $chasse_id, int $user_id): string
     {
         if (!$chasse_id || !$user_id) {
             return '';
         }
 
-        $cache_key = 'enigme_sidebar_engagement_' . $chasse_id . '_' . $user_id;
+        $cache_key = 'enigme_sidebar_progression_' . $chasse_id . '_' . $user_id;
         $data      = wp_cache_get($cache_key, 'chassesautresor');
 
         if (!is_array($data)) {
@@ -290,19 +332,18 @@ defined('ABSPATH') || exit;
         }
 
         return enigme_render_bar_subsection(
-            esc_html__('Engagements', 'chassesautresor-com'),
+            esc_html__('Progression', 'chassesautresor-com'),
             $data['user'],
             $data['avg'],
-            'enigme-engagement',
+            'enigme-progression',
             esc_html__(
-                "Définition\nPart moyenne des énigmes sur lesquelles chaque participant s’est engagé, "
-                . "rapportée au total d’énigmes de la chasse.\n\n"
-                . "Vous\nPart d’énigmes sur lesquelles vous vous êtes engagé.\n\n"
+                "Définition\nPart moyenne des énigmes auxquelles chaque joueur a accédé, rapportée au total d’énigmes de la chasse.\n\n"
+                . "Vous\nPart des énigmes auxquelles vous avez accédé.\n\n"
                 . "Moyenne\nMoyenne sur l’ensemble des joueurs.",
                 'chassesautresor-com'
             ),
             esc_attr__(
-                'Aide sur l\'engagement',
+                'Aide sur la progression',
                 'chassesautresor-com'
             )
         );
@@ -311,68 +352,50 @@ defined('ABSPATH') || exit;
     /**
      * Build resolution histogram HTML for the sidebar.
      *
-     * @param int|null $chasse_id Hunt identifier.
-     * @param int      $user_id   Current user identifier.
+     * @param int $enigme_id Enigma identifier.
      *
      * @return string
      */
-    function enigme_sidebar_progression_html(?int $chasse_id, int $user_id): string
+    function enigme_sidebar_resolution_html(int $enigme_id): string
     {
-        if (!$chasse_id || !$user_id) {
+        if ($enigme_id <= 0) {
             return '';
         }
 
-        $cache_key = 'enigme_sidebar_progression_' . $chasse_id . '_' . $user_id;
-        $data      = wp_cache_get($cache_key, 'chassesautresor');
+        $cache_key = 'enigme_sidebar_resolution_' . $enigme_id;
+        $rate      = wp_cache_get($cache_key, 'chassesautresor');
 
-        if (!is_array($data)) {
-            $enigme_ids = recuperer_ids_enigmes_pour_chasse($chasse_id);
+        if (!is_int($rate)) {
+            global $wpdb;
+            $table_engagements = $wpdb->prefix . 'engagements';
+            $table_statuts     = $wpdb->prefix . 'enigme_statuts_utilisateur';
 
-            if (!$enigme_ids) {
-                $user_rate = 0;
-                $avg_rate  = 0;
+            $access_sql = $wpdb->prepare(
+                "SELECT COUNT(DISTINCT user_id) FROM {$table_engagements} WHERE enigme_id = %d",
+                $enigme_id
+            );
+            $accessed = (int) $wpdb->get_var($access_sql);
+
+            if ($accessed > 0) {
+                $solve_sql = $wpdb->prepare(
+                    "SELECT COUNT(DISTINCT user_id) FROM {$table_statuts} WHERE enigme_id = %d AND statut IN ('resolue','terminee','terminée')",
+                    $enigme_id
+                );
+                $solved = (int) $wpdb->get_var($solve_sql);
+                $rate   = (int) round((100 * $solved) / $accessed);
             } else {
-                $validables = array_filter($enigme_ids, function ($id) {
-                    return get_field('enigme_mode_validation', $id) !== 'aucune';
-                });
-                $total_validables = count($validables);
-
-                if ($total_validables === 0) {
-                    $user_rate = 0;
-                    $avg_rate  = 0;
-                } else {
-                    global $wpdb;
-                    $table        = $wpdb->prefix . 'enigme_statuts_utilisateur';
-                    $placeholders = implode(',', array_fill(0, $total_validables, '%d'));
-                    $sql          = $wpdb->prepare(
-                        "SELECT COUNT(DISTINCT enigme_id) FROM {$table} WHERE user_id = %d AND statut IN ('resolue','terminee','terminée') AND enigme_id IN ($placeholders)",
-                        $user_id,
-                        ...$validables
-                    );
-                    $solved    = (int) $wpdb->get_var($sql);
-                    $user_rate = (100 * $solved) / $total_validables;
-                    $avg_rate  = chasse_calculer_taux_progression($chasse_id);
-                }
+                $rate = 0;
             }
 
-            $data = [
-                'user' => (int) round($user_rate),
-                'avg'  => (int) round($avg_rate),
-            ];
-
-            wp_cache_set($cache_key, $data, 'chassesautresor', HOUR_IN_SECONDS);
+            wp_cache_set($cache_key, $rate, 'chassesautresor', HOUR_IN_SECONDS);
         }
 
-        return enigme_render_bar_subsection(
+        return enigme_render_single_bar_subsection(
             esc_html__('Résolution', 'chassesautresor-com'),
-            $data['user'],
-            $data['avg'],
+            $rate,
             'enigme-resolution',
             esc_html__(
-                "Définition\n% d'énigmes résolues par rapport au total d’énigmes* de la chasse.\n\n"
-                . "Vous\nPart d’énigmes* que vous avez résolues / total de la chasse.\n\n"
-                . "Moyenne\nMoyenne des parts d’énigmes résolues par joueur.\n\n"
-                . "*énigmes avec système de validation en ligne",
+                "Définition\nNombre de joueurs ayant résolu l’énigme, rapporté au nombre total de joueurs ayant accédé à l’énigme.",
                 'chassesautresor-com'
             ),
             esc_attr__(
@@ -480,9 +503,9 @@ defined('ABSPATH') || exit;
             echo '<div class="menu-lateral__accordeons">';
             echo '<div class="accordeon-bloc">';
             echo '<div class="accordeon-contenu accordeon-ferme">';
+            echo '<section class="enigme-statistiques">';
+            echo '<h3>' . esc_html__('Statistiques', 'chassesautresor-com') . '</h3>';
             echo '%METAS%';
-            echo '<section class="enigme-progression">';
-            echo '<h3>' . esc_html__('Progression', 'chassesautresor-com') . '</h3>';
             echo '%STATS%';
             echo '</section>';
             if ($mode !== 'aucune') {
@@ -494,7 +517,7 @@ defined('ABSPATH') || exit;
             echo '<button class="accordeon-toggle" type="button" aria-expanded="false">'
                 . '<i class="fa-solid fa-chevron-down" aria-hidden="true"></i>'
                 . '<span class="screen-reader-text">'
-                . esc_html__('Afficher la progression', 'chassesautresor-com')
+                . esc_html__('Afficher les statistiques', 'chassesautresor-com')
                 . '</span></button>';
             echo '</div>';
             echo '</div>';
@@ -504,8 +527,8 @@ defined('ABSPATH') || exit;
         }
 
         $user_id    = get_current_user_id();
-        $stats_html = enigme_sidebar_engagement_html($chasse_id, $user_id)
-            . enigme_sidebar_progression_html($chasse_id, $user_id);
+        $stats_html = enigme_sidebar_progression_html($chasse_id, $user_id)
+            . enigme_sidebar_resolution_html($enigme_id);
         $meta_html   = enigme_sidebar_metas_html($enigme_id);
         $winners_html = $mode === 'aucune'
             ? ''
@@ -1031,7 +1054,7 @@ defined('ABSPATH') || exit;
     add_action('wp_ajax_nopriv_enigme_recuperer_gagnants', 'ajax_enigme_recuperer_gagnants');
 
     /**
-     * AJAX handler to refresh the progression section.
+     * AJAX handler to refresh the statistics section.
      */
     function ajax_enigme_recuperer_progression(): void
     {
@@ -1040,14 +1063,21 @@ defined('ABSPATH') || exit;
         }
 
         $chasse_id = isset($_POST['chasse_id']) ? (int) $_POST['chasse_id'] : 0;
-        if ($chasse_id <= 0) {
+        $enigme_id = isset($_POST['enigme_id']) ? (int) $_POST['enigme_id'] : 0;
+        if ($chasse_id <= 0 || $enigme_id <= 0) {
             wp_send_json_error('missing_chasse', 400);
         }
 
         $user_id = get_current_user_id();
-        $html    = '<h3>' . esc_html__('Progression', 'chassesautresor-com') . '</h3>';
-        $html   .= enigme_sidebar_engagement_html($chasse_id, $user_id);
+
+        // Ensure stats are recalculated with up-to-date engagement data.
+        enigme_clear_sidebar_cache($chasse_id, $user_id);
+        wp_cache_delete('enigme_sidebar_resolution_' . $enigme_id, 'chassesautresor');
+
+        $html    = '<h3>' . esc_html__('Statistiques', 'chassesautresor-com') . '</h3>';
+        $html   .= enigme_sidebar_metas_html($enigme_id);
         $html   .= enigme_sidebar_progression_html($chasse_id, $user_id);
+        $html   .= enigme_sidebar_resolution_html($enigme_id);
 
         wp_send_json_success(['html' => $html]);
     }
