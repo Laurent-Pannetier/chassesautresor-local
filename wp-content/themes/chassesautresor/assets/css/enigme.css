@@ -334,7 +334,7 @@ li.active .enigme-menu__edit {
 .participation {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xl);
+  gap: var(--space-xs);
   background-color: rgba(
     var(--aside-bg-rgb, 238, 238, 238),
     var(--aside-opacity, 0.4)
