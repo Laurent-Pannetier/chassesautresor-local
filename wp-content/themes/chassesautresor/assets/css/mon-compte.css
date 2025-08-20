@@ -599,17 +599,6 @@
 }
 
 /* 🏷️ Étiquettes de résultat */
-.etiquette {
-    display: inline-block;
-    padding: 2px 6px;
-    border: 1px solid var(--color-grey-medium);
-    border-radius: 4px;
-    background-color: var(--color-grey-light);
-    color: var(--color-text-fond-clair);
-    font-size: 0.85rem;
-    white-space: nowrap;
-}
-
 .etiquette-success {
     background-color: var(--color-success);
     border-color: var(--color-success);
