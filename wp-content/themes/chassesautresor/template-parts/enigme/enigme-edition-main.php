@@ -383,12 +383,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
 
             <!-- Accès à l'énigme -->
             <?php
-            $condition = get_field('enigme_acces_condition', $enigme_id) ?? 'immediat';
-            $enigmes_possibles = enigme_get_liste_prerequis_possibles($enigme_id);
-            $prerequis_actuels = get_field('enigme_acces_pre_requis', $enigme_id, false) ?? [];
+            $condition          = get_field('enigme_acces_condition', $enigme_id) ?? 'immediat';
+            $enigmes_possibles  = enigme_get_liste_prerequis_possibles($enigme_id);
+            $prerequis_actuels  = get_field('enigme_acces_pre_requis', $enigme_id, false) ?? [];
             if (!is_array($prerequis_actuels)) {
               $prerequis_actuels = [$prerequis_actuels];
             }
+            $pre_requis_vide = ($condition === 'pre_requis' && empty($prerequis_actuels));
             ?>
             <li class="champ-enigme champ-acces champ-mode-fin<?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_acces_condition" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" data-no-edit="1" data-no-icon="1">
               <label for="enigme_acces_condition"><?= esc_html__('Accès', 'chassesautresor-com'); ?></label>
@@ -410,7 +411,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                     <input type="radio" name="acf[enigme_acces_condition]" value="pre_requis" <?= $condition === 'pre_requis' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
                     <?= esc_html__('Pré-requis', 'chassesautresor-com'); ?>
                   </label>
-                  <div id="champ-enigme-pre-requis" class="champ-enigme champ-pre-requis<?= $condition === 'pre_requis' ? '' : ' cache'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_acces_pre_requis" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" data-no-edit="1" data-vide="<?= empty($enigmes_possibles) ? '1' : '0'; ?>">
+                  <div id="champ-enigme-pre-requis" class="champ-enigme champ-pre-requis<?= $condition === 'pre_requis' ? '' : ' cache'; ?><?= $pre_requis_vide ? ' champ-vide' : ''; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_acces_pre_requis" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" data-no-edit="1" data-vide="<?= empty($enigmes_possibles) ? '1' : '0'; ?>">
                     <?php if (empty($enigmes_possibles)) : ?>
                       <em><?= esc_html__('Aucune autre énigme disponible comme prérequis.', 'chassesautresor-com'); ?></em>
                     <?php else : ?>
