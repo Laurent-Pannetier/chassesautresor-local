@@ -786,8 +786,8 @@ msgstr ""
 msgid "Énigme résolue"
 msgstr ""
 
-#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:47
-msgid "Vous avez déjà résolu cette énigme."
+#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:58
+msgid "Vous avez résolu cette énigme le %s."
 msgstr ""
 
 #: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:55

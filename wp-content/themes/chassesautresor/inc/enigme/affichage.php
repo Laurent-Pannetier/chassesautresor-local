@@ -635,6 +635,12 @@ defined('ABSPATH') || exit;
             $cout = 0;
         }
 
+        if (!function_exists('est_enigme_resolue_par_utilisateur')) {
+            require_once __DIR__ . '/../statut-functions.php';
+        }
+
+        $deja_resolue = est_enigme_resolue_par_utilisateur($user_id, $enigme_id);
+
         $solde_actuel = ($cout > 0 && function_exists('get_user_points'))
             ? get_user_points($user_id)
             : 0;
@@ -661,8 +667,10 @@ defined('ABSPATH') || exit;
             }
         }
 
-        $afficher_tentatives = $mode_validation === 'automatique';
-        $afficher_infos      = $mode_validation !== 'aucune' && ($cout > 0 || $afficher_tentatives);
+        $afficher_tentatives = $mode_validation === 'automatique' && !$deja_resolue;
+        $afficher_infos      = $mode_validation !== 'aucune'
+            && !$deja_resolue
+            && ($cout > 0 || $afficher_tentatives);
 
         if ($afficher_tentatives && !function_exists('compter_tentatives_du_jour')) {
             require_once __DIR__ . '/tentatives.php';
