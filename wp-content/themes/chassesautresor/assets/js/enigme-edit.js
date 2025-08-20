@@ -84,7 +84,7 @@ function initEnigmeEdit() {
   const radiosValidation = document.querySelectorAll('input[name="acf[enigme_mode_validation]"]');
   const tabTentatives = panneauEdition?.querySelector('.edition-tab[data-target="enigme-tab-soumission"]');
   const contenuTentatives = document.getElementById('enigme-tab-soumission');
-  const blocCout = document.querySelector('.champ-cout-points');
+  const blocCoutValidation = document.querySelector('.champ-cout-points');
 
   function toggleTentativesTab(mode) {
     const afficher = mode !== 'aucune';
@@ -101,8 +101,8 @@ function initEnigmeEdit() {
   }
 
   function toggleCoutBloc(mode) {
-    if (blocCout) {
-      blocCout.style.display = mode === 'aucune' ? 'none' : '';
+    if (blocCoutValidation) {
+      blocCoutValidation.style.display = mode === 'aucune' ? 'none' : '';
     }
   }
 
@@ -225,14 +225,14 @@ function initEnigmeEdit() {
   // ==============================
   // 💰 Affichage dynamique tentatives (message coût)
   // ==============================
-  const blocCout = document.querySelector('[data-champ="enigme_tentative.enigme_tentative_cout_points"]');
-  if (blocCout && typeof window.onCoutPointsUpdated === 'function') {
-    const champ = blocCout.dataset.champ;
-    const valeur = parseInt(blocCout.querySelector('.champ-input')?.value || '0', 10);
-    const postId = blocCout.dataset.postId;
-    const cpt = blocCout.dataset.cpt;
+  const blocCoutTentative = document.querySelector('[data-champ="enigme_tentative.enigme_tentative_cout_points"]');
+  if (blocCoutTentative && typeof window.onCoutPointsUpdated === 'function') {
+    const champ = blocCoutTentative.dataset.champ;
+    const valeur = parseInt(blocCoutTentative.querySelector('.champ-input')?.value || '0', 10);
+    const postId = blocCoutTentative.dataset.postId;
+    const cpt = blocCoutTentative.dataset.cpt;
 
-    window.onCoutPointsUpdated(blocCout, champ, valeur, postId, cpt);
+    window.onCoutPointsUpdated(blocCoutTentative, champ, valeur, postId, cpt);
   }
 
 
