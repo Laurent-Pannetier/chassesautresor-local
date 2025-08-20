@@ -1723,9 +1723,42 @@ function afficher_tableau_organisateurs_pending(?array $liste = null, int $page 
             }
 
             if ($row['chasse_id']) {
+                $statut     = $row['statut'];
+                $validation = $row['validation'];
+                $badge_class = 'statut-' . $statut;
+
+                switch ($statut) {
+                    case 'en_cours':
+                        $statut_label = __('en cours', 'chassesautresor-com');
+                        break;
+                    case 'a_venir':
+                        $statut_label = __('à venir', 'chassesautresor-com');
+                        break;
+                    case 'termine':
+                        $statut_label = __('terminée', 'chassesautresor-com');
+                        break;
+                    case 'payante':
+                        $statut_label = __('en cours', 'chassesautresor-com');
+                        $badge_class  = 'statut-en_cours';
+                        break;
+                    case 'revision':
+                    default:
+                        $badge_class  = 'statut-revision';
+                        if ($validation === 'creation') {
+                            $statut_label = __('création', 'chassesautresor-com');
+                        } elseif ($validation === 'correction') {
+                            $statut_label = __('correction', 'chassesautresor-com');
+                        } elseif ($validation === 'en_attente') {
+                            $statut_label = __('en attente', 'chassesautresor-com');
+                        } else {
+                            $statut_label = __('révision', 'chassesautresor-com');
+                        }
+                        break;
+                }
+
                 echo '<td class="col-chasse"><a href="' . esc_url($row['chasse_permalink']) . '" target="_blank">' . esc_html($row['chasse_titre']) . '</a></td>';
                 echo '<td class="col-enigmes"><span class="etiquette">' . intval($row['nb_enigmes']) . '</span></td>';
-                echo '<td data-col="etat">' . esc_html($row['statut']) . '</td>';
+                echo '<td data-col="etat"><span class="badge-statut ' . esc_attr($badge_class) . '">' . esc_html($statut_label) . '</span></td>';
             } else {
                 echo '<td class="col-chasse">-</td><td class="col-enigmes"><span class="etiquette">-</span></td><td data-col="etat"></td>';
             }
