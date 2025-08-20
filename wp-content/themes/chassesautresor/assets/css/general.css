@@ -209,7 +209,7 @@ tbody tr:nth-child(even) {
 .stats-table td {
   padding: 8px 12px;
   border: none;
-  color: var(--color-text-fond-clair);
+  color: var(--color-text-primary);
 }
 
 .stats-table th {
@@ -267,6 +267,7 @@ tbody tr:nth-child(even) {
   align-items: center;
   gap: 4px;
   justify-content: flex-end;
+  color: inherit;
   width: 100%;
   text-align: right;
 }
