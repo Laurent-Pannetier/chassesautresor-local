@@ -5,11 +5,15 @@
  */
 
 defined('ABSPATH') || exit;
-acf_form_head();
-
 // 🔹 Données de base
-$enigme_id = get_the_ID();
-$user_id   = get_current_user_id();
+$enigme_id      = get_the_ID();
+$edition_active = utilisateur_peut_modifier_post($enigme_id);
+
+if ($edition_active) {
+    acf_form_head();
+}
+
+$user_id = get_current_user_id();
 
 // 🔹 Chasse associée
 $chasse_id = recuperer_id_chasse_associee($enigme_id);
@@ -66,7 +70,6 @@ if ($etat_systeme !== 'accessible' && $etat_systeme !== 'bloquee_pre_requis' && 
 }
 
 // 🔹 Orgy auto
-$edition_active = utilisateur_peut_modifier_post($enigme_id);
 verifier_ou_mettre_a_jour_cache_complet($enigme_id);
 
 $enigme_complete = (bool) get_field('enigme_cache_complet', $enigme_id);
