@@ -609,6 +609,40 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
             $content .= '<div class="zone-indices"><h3>' . esc_html__('Indices', 'chassesautresor-com') . '</h3></div>';
         }
 
+        $mode_validation = get_field('enigme_mode_validation', $enigme_id);
+        if ($mode_validation !== 'aucune') {
+            if (!function_exists('compter_tentatives_du_jour')) {
+                require_once __DIR__ . '/tentatives.php';
+            }
+
+            $tentatives_utilisees = compter_tentatives_du_jour($user_id, $enigme_id);
+            $tentatives_max       = (int) get_field('enigme_tentative_max', $enigme_id);
+            $tentatives_max_aff   = $tentatives_max > 0 ? $tentatives_max : '∞';
+            $cout                 = (int) get_field('enigme_tentative_cout_points', $enigme_id);
+            $solde_actuel         = function_exists('get_user_points')
+                ? get_user_points($user_id)
+                : 0;
+
+            $content .= '<div class="participation-infos txt-small" ';
+            $content .= 'style="color:var(--color-text-primary);display:flex;justify-content:space-between;">';
+
+            if ($cout > 0) {
+                $content .= '<span class="solde">'
+                    . sprintf(esc_html__('Solde : %d pts', 'chassesautresor-com'), $solde_actuel)
+                    . '</span>';
+            } else {
+                $content .= '<span></span>';
+            }
+
+            $content .= '<span class="tentatives">'
+                . sprintf(
+                    esc_html__('Tentatives quotidiennes : %1$d/%2$s', 'chassesautresor-com'),
+                    $tentatives_utilisees,
+                    $tentatives_max_aff
+                )
+                . '</span></div>';
+        }
+
         if ($content !== '') {
             echo '<section class="participation">' . $content . '</section>';
         }
