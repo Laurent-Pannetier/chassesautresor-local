@@ -370,7 +370,10 @@ function mettreAJourLigneResume(ligne, champ, estRempli, type) {
 
   if (pasDEdition) {
     ligne.style.cursor = '';
-    dejaBouton?.remove();
+    // Ne supprimer le bouton existant que s'il a été ajouté automatiquement
+    if (ligne.dataset.noEdit === undefined) {
+      dejaBouton?.remove();
+    }
     return;
   }
 
