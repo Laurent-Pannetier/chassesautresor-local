@@ -676,6 +676,10 @@
     margin: 0;
 }
 
+.table-organisateurs td[data-col="etat"] .required {
+    margin-left: var(--space-xxs);
+}
+
 /* 📌 Toggle d'historique de conversion */
 .conversion-history .conversion-history-toggle {
     color: var(--color-text-fond-clair);

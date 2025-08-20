@@ -1615,8 +1615,19 @@ function recuperer_organisateurs_pending()
                 $date_creation = get_post_field('post_date', $chasse_id);
                 $chasse_titre  = get_the_title($chasse_id);
                 $chasse_link   = get_permalink($chasse_id);
-                $nb_enigmes    = count(recuperer_enigmes_associees($chasse_id));
+                $enigmes       = recuperer_enigmes_associees($chasse_id);
+                $nb_enigmes    = count($enigmes);
                 $statut        = get_field('chasse_cache_statut_validation', $chasse_id);
+
+                $pending_validation = ($statut === 'en_attente');
+                $pending_attempts   = false;
+                foreach ($enigmes as $enigme_id) {
+                    $mode = enigme_normaliser_mode_validation(get_field('enigme_mode_validation', $enigme_id));
+                    if ($mode === 'manuelle' && compter_tentatives_en_attente($enigme_id) > 0) {
+                        $pending_attempts = true;
+                        break;
+                    }
+                }
 
                 $resultats[] = [
                     'organisateur_id'        => $organisateur_id,
@@ -1631,6 +1642,8 @@ function recuperer_organisateurs_pending()
                     'nb_enigmes'             => $nb_enigmes,
                     'statut'                 => $statut,
                     'validation'             => $statut,
+                    'pending_validation'     => $pending_validation,
+                    'pending_attempts'       => $pending_attempts,
                     'date_creation'          => $date_creation,
                 ];
             }
@@ -1649,6 +1662,8 @@ function recuperer_organisateurs_pending()
                 'nb_enigmes'             => 0,
                 'statut'                 => '',
                 'validation'             => '',
+                'pending_validation'     => false,
+                'pending_attempts'       => false,
                 'date_creation'          => $date_creation,
             ];
         }
@@ -1761,7 +1776,24 @@ function afficher_tableau_organisateurs_pending(?array $liste = null, int $page 
 
                 echo '<td class="col-chasse"><a href="' . esc_url($row['chasse_permalink']) . '" target="_blank">' . esc_html($row['chasse_titre']) . '</a></td>';
                 echo '<td class="col-enigmes"><span class="etiquette">' . intval($row['nb_enigmes']) . '</span></td>';
-                echo '<td data-col="etat"><span class="badge-statut ' . esc_attr($badge_class) . '">' . esc_html($statut_label) . '</span></td>';
+
+                $warning   = $row['pending_validation'] || $row['pending_attempts'];
+                $tooltip   = '';
+                if ($warning) {
+                    if ($row['pending_validation'] && $row['pending_attempts']) {
+                        $tooltip = __('Demande de validation et tentatives manuelles en attente', 'chassesautresor-com');
+                    } elseif ($row['pending_validation']) {
+                        $tooltip = __('Demande de validation en attente', 'chassesautresor-com');
+                    } else {
+                        $tooltip = __('Tentatives manuelles en attente de réponse', 'chassesautresor-com');
+                    }
+                }
+
+                echo '<td data-col="etat"><span class="badge-statut ' . esc_attr($badge_class) . '">' . esc_html($statut_label) . '</span>';
+                if ($warning) {
+                    echo '<span class="required" aria-hidden="true" title="' . esc_attr($tooltip) . '">*</span>';
+                }
+                echo '</td>';
             } else {
                 echo '<td class="col-chasse">-</td><td class="col-enigmes"><span class="etiquette">-</span></td><td data-col="etat"></td>';
             }
