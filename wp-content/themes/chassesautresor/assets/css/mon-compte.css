@@ -733,6 +733,11 @@ body.woocommerce h2 {
     border: none;
     cursor: pointer;
     padding: 0;
+    color: var(--color-text-primary);
+}
+
+.proposition-cell .toggle-proposition .fa-solid {
+    color: inherit;
 }
 
 

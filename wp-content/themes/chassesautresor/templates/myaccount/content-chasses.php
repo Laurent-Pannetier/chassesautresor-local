@@ -141,7 +141,7 @@ $pages = (int) ceil($total / $per_page);
                     <td><?php echo esc_html($tent->post_title); ?></td>
                     <?php
                     $proposition   = $tent->reponse_saisie ?? '';
-                    $excerpt_limit = 30;
+                    $excerpt_limit = 39;
                     $needs_toggle  = mb_strlen($proposition) > $excerpt_limit;
                     $excerpt       = $needs_toggle ? mb_substr($proposition, 0, $excerpt_limit) . '…' : $proposition;
                     ?>
@@ -150,6 +150,7 @@ $pages = (int) ceil($total / $per_page);
                         <?php if ($needs_toggle) : ?>
                         <span class="proposition-full" hidden><?php echo esc_html($proposition); ?></span>
                         <button
+                            type="button"
                             class="toggle-proposition"
                             aria-expanded="false"
                             aria-label="<?php esc_attr_e('Voir plus', 'chassesautresor-com'); ?>"

@@ -4,6 +4,7 @@
     if (!btn) {
       return;
     }
+    e.preventDefault();
     var cell = btn.closest('.proposition-cell');
     if (!cell) {
       return;
