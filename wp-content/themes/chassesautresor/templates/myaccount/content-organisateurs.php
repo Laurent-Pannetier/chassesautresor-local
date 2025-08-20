@@ -28,9 +28,19 @@ $page                 = max(1, (int) ($_GET['page'] ?? 1));
             }
         }
         ?>
-        <div class="stats-header" style="display:flex;align-items:center;">
-            <span><?php echo count($organisateurs_liste); ?> <?php esc_html_e('organisateur', 'chassesautresor-com'); ?></span>
-            <div class="stats-filtres" style="margin-left:auto;">
+        <div class="stats-header">
+            <span class="etiquette">
+                <?php
+                $count = count($organisateurs_liste);
+                printf(
+                    esc_html(
+                        _n('%d organisateur', '%d organisateurs', $count, 'chassesautresor-com')
+                    ),
+                    $count
+                );
+                ?>
+            </span>
+            <div class="stats-filtres">
                 <label for="filtre-etat"><?php esc_html_e('Filtrer par état :', 'chassesautresor-com'); ?></label>
                 <select id="filtre-etat">
                     <option value="tous"><?php esc_html_e('Tous', 'chassesautresor-com'); ?></option>

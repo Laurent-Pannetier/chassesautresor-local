@@ -1706,7 +1706,7 @@ function afficher_tableau_organisateurs_pending(?array $liste = null, int $page 
     echo '<thead><tr>';
     echo '<th scope="col">' . esc_html__('Organisateur', 'chassesautresor-com') . '</th>';
     echo '<th scope="col">' . esc_html__('Chasse', 'chassesautresor-com') . '</th>';
-    echo '<th scope="col" data-format="etiquette">' . esc_html__('Nb énigmes', 'chassesautresor-com') . '</th>';
+    echo '<th scope="col" data-format="etiquette"><span class="etiquette">' . esc_html__('Nb énigmes', 'chassesautresor-com') . '</span></th>';
     echo '<th scope="col">' . esc_html__('État', 'chassesautresor-com') . '</th>';
     echo '<th scope="col">' . esc_html__('Utilisateur', 'chassesautresor-com') . '</th>';
     echo '<th scope="col" data-col="date">' . esc_html__('Créé le', 'chassesautresor-com') . ' <span class="tri-date">&#9650;&#9660;</span></th>';

@@ -646,6 +646,22 @@
     color: var(--color-text-fond-clair);
 }
 
+.stats-header {
+    display: flex;
+    align-items: center;
+}
+
+.stats-header .stats-filtres {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    background-color: var(--color-editor-background);
+    border: 1px solid var(--color-editor-border);
+    border-radius: 4px;
+}
+
 .table-organisateurs td.col-chasse,
 .table-organisateurs td.col-enigmes {
     text-align: right;
