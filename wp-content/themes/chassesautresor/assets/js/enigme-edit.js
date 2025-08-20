@@ -74,7 +74,7 @@ function initEnigmeEdit() {
   // ==============================
   initChampConditionnel('acf[enigme_mode_validation]', {
     'aucune': [],
-    'manuelle': ['.champ-cout-points', '.champ-nb-tentatives'],
+    'manuelle': ['.champ-cout-points'],
     'automatique': ['.champ-groupe-reponse-automatique', '.champ-cout-points', '.champ-nb-tentatives']
   });
 
