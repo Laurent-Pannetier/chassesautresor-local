@@ -1662,16 +1662,20 @@ body.panneau-ouvert::before {
 .stats-table th,
 .stats-table td {
   padding: 8px 12px;
+  border: none;
 }
 
 .stats-table th {
   color: var(--color-editor-heading);
-  border-bottom: 1px solid var(--color-editor-border);
-  background-color: rgba(0, 0, 0, 0.04);
+  background-color: rgba(0, 0, 0, 0.08);
 }
 
 .stats-table td {
   color: var(--color-editor-text);
+}
+
+.stats-table tbody tr:nth-child(odd) {
+  background-color: rgba(0, 0, 0, 0.02);
 }
 
 .stats-table-wrapper {
@@ -1704,20 +1708,6 @@ body.panneau-ouvert::before {
 .stats-table.compact td {
   padding: 4px 8px;
   font-size: 0.85em;
-}
-
-.stats-table.borderless th,
-.stats-table.borderless td {
-  border: none !important;
-  font-size: 0.8em;
-}
-
-.stats-table.borderless thead th {
-  background-color: rgba(0, 0, 0, 0.08);
-}
-
-.stats-table.borderless tbody tr:nth-child(odd) {
-  background-color: rgba(0, 0, 0, 0.02);
 }
 
 .stats-table thead tr:first-child th[colspan] {
