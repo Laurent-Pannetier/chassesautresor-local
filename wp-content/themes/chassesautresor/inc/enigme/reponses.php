@@ -47,20 +47,20 @@ defined('ABSPATH') || exit;
             <p class="message-limite" data-points="manquants">
                 <?php echo esc_html(sprintf(__('Il vous manque %d points pour soumettre votre réponse.', 'chassesautresor-com'), $data['points_manquants'])); ?>
             </p>
-            <div class="zone-points">
-                <a href="<?php echo esc_url($data['boutique_url']); ?>" class="points-link" title="<?php echo esc_attr__('Accéder à la boutique', 'chassesautresor-com'); ?>">
-                    <span class="points-plus-circle">+</span>
-                    <span class="points-value"><?php echo esc_html($data['points_manquants']); ?></span>
-                    <span class="points-euro">pts</span>
-                </a>
-            </div>
         <?php else : ?>
             <textarea name="reponse_manuelle" id="reponse_manuelle_<?php echo esc_attr($enigme_id); ?>" rows="3" required></textarea>
         <?php endif; ?>
         <input type="hidden" name="enigme_id" value="<?php echo esc_attr($enigme_id); ?>">
         <input type="hidden" name="reponse_manuelle_nonce" value="<?php echo esc_attr($nonce); ?>">
         <div class="reponse-cta-row">
-            <button type="submit" class="bouton-cta" <?php echo $data['disabled']; ?>><?php echo esc_html($data['label_btn']); ?></button>
+            <?php if ($data['points_manquants'] > 0) : ?>
+                <a href="<?php echo esc_url($data['boutique_url']); ?>" class="bouton-cta points-manquants" title="<?php echo esc_attr__('Accéder à la boutique', 'chassesautresor-com'); ?>">
+                    <span class="points-plus-circle">+</span>
+                    <?php echo esc_html__('Ajouter des points', 'chassesautresor-com'); ?>
+                </a>
+            <?php else : ?>
+                <button type="submit" class="bouton-cta"><?php echo esc_html($data['label_btn']); ?></button>
+            <?php endif; ?>
         </div>
         <?php if ($data['points_manquants'] <= 0 && $data['cout'] > 0) : ?>
             <p class="points-sousligne txt-small">

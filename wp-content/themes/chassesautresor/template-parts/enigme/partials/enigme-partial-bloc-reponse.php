@@ -125,13 +125,6 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
           )
       ); ?>
     </p>
-    <div class="zone-points">
-      <a href="<?= esc_url($boutique_url); ?>" class="points-link" title="<?= esc_attr__('Accéder à la boutique', 'chassesautresor-com'); ?>">
-        <span class="points-plus-circle">+</span>
-        <span class="points-value"><?= esc_html($points_manquants); ?></span>
-        <span class="points-euro">pts</span>
-      </a>
-    </div>
   <?php else : ?>
     <input type="text" name="reponse" id="reponse_auto_<?= esc_attr($post_id); ?>" required>
   <?php endif; ?>
@@ -139,9 +132,9 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
   <input type="hidden" name="nonce" value="<?= esc_attr($nonce); ?>">
   <div class="reponse-cta-row">
     <?php if ($points_manquants > 0) : ?>
-      <a href="<?= esc_url($boutique_url); ?>" class="bouton-cta points-manquants">
+      <a href="<?= esc_url($boutique_url); ?>" class="bouton-cta points-manquants" title="<?= esc_attr__('Accéder à la boutique', 'chassesautresor-com'); ?>">
         <span class="points-plus-circle">+</span>
-        <?= esc_html__('Acheter des points', 'chassesautresor-com'); ?>
+        <?= esc_html__('Ajouter des points', 'chassesautresor-com'); ?>
       </a>
     <?php else : ?>
       <button type="submit" class="bouton-cta" <?= $disabled; ?>><?= $label_btn; ?></button>
