@@ -83,14 +83,19 @@ window.renderLiensPublicsJS = renderLiensPublics;
  */
 window.mettreAJourTitreHeader = function (cpt, valeur) {
   const selecteurs = {
-    organisateur: '.header-organisateur__nom',
-    chasse: '.titre-objet[data-cpt="chasse"]',
-    enigme: '.titre-objet[data-cpt="enigme"]'
+    organisateur: ['.header-organisateur__nom', '.titre-objet[data-cpt="organisateur"]'],
+    chasse: ['.titre-objet[data-cpt="chasse"]'],
+    enigme: ['.titre-objet[data-cpt="enigme"]']
   };
 
-  const cible = document.querySelector(selecteurs[cpt]);
-  if (cible) {
-    cible.textContent = valeur;
+  const cibles = selecteurs[cpt]
+    ? selecteurs[cpt].flatMap((sel) => Array.from(document.querySelectorAll(sel)))
+    : [];
+
+  if (cibles.length > 0) {
+    cibles.forEach((el) => {
+      el.textContent = valeur;
+    });
   } else {
     console.warn('❌ Impossible de trouver le header pour le CPT :', cpt);
   }
