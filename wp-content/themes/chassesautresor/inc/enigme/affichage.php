@@ -638,7 +638,12 @@ defined('ABSPATH') || exit;
 
         $mode_validation = get_field('enigme_mode_validation', $enigme_id);
         $cout            = (int) get_field('enigme_tentative_cout_points', $enigme_id);
-        $solde_actuel    = function_exists('get_user_points')
+
+        if ($mode_validation === 'aucune') {
+            $cout = 0;
+        }
+
+        $solde_actuel = ($cout > 0 && function_exists('get_user_points'))
             ? get_user_points($user_id)
             : 0;
 
@@ -665,7 +670,7 @@ defined('ABSPATH') || exit;
         }
 
         $afficher_tentatives = $mode_validation === 'automatique';
-        $afficher_infos      = $cout > 0 || $afficher_tentatives;
+        $afficher_infos      = $mode_validation !== 'aucune' && ($cout > 0 || $afficher_tentatives);
 
         if ($afficher_tentatives && !function_exists('compter_tentatives_du_jour')) {
             require_once __DIR__ . '/tentatives.php';
@@ -705,7 +710,7 @@ defined('ABSPATH') || exit;
         }
 
         $cout_badge = '';
-        if ($cout > 0) {
+        if ($mode_validation !== 'aucune' && $cout > 0) {
             $cout_badge = '<span class="badge-cout" aria-label="'
                 . esc_attr(sprintf(
                     esc_html__('Coût par tentative : %d points.', 'chassesautresor-com'),
