@@ -250,10 +250,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                       null,
                       [
                           'aria_label' => __('Explication du mode automatique', 'chassesautresor-com'),
-                          'classes'    => 'mode-fin-aide validation-aide',
-                          'attributes' => [
-                              'data-mode' => 'automatique',
-                          ],
+                          'classes'    => 'validation-aide',
+                          'variant'    => 'aide',
+                          'title'      => __('Validation automatique', 'chassesautresor-com'),
+                          'message'    => __('Le joueur soumet une tentative de réponse. Celle-ci est automatiquement vérifiée selon les critères définis (réponse attendue, respect de la casse, variantes), et le résultat est immédiatement communiqué au joueur.', 'chassesautresor-com'),
                       ]
                   );
                   ?>
@@ -267,10 +267,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                       null,
                       [
                           'aria_label' => __('Explication du mode manuel', 'chassesautresor-com'),
-                          'classes'    => 'mode-fin-aide validation-aide',
-                          'attributes' => [
-                              'data-mode' => 'manuelle',
-                          ],
+                          'classes'    => 'validation-aide',
+                          'variant'    => 'aide',
+                          'title'      => __('Validation manuelle', 'chassesautresor-com'),
+                          'message'    => __('Le joueur rédige une réponse libre. Vous validez ou refusez ensuite sa tentative depuis votre espace personnel. À chaque nouvelle soumission, vous recevez une notification par email ainsi qu’un message d’alerte.', 'chassesautresor-com'),
                       ]
                   );
                   ?>
@@ -301,7 +301,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                     null,
                     [
                         'aria_label' => __('Explication des variantes', 'chassesautresor-com'),
-                        'classes'    => 'bouton-aide-points variantes-aide',
+                        'classes'    => 'variantes-aide',
+                        'variant'    => 'info',
+                        'title'      => __('Système de variantes', 'chassesautresor-com'),
+                        'message'    => __('Les variantes sont des réponses alternatives qui ne sont pas validées comme correctes, mais qui déclenchent un message personnalisé en retour (par exemple une aide, un indice, un lien ou tout autre contenu de votre choix).', 'chassesautresor-com'),
                     ]
                 );
                 ?>
@@ -353,8 +356,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                       'template-parts/common/help-icon',
                       null,
                       [
-                          'aria_label' => __('En savoir plus sur les points', 'chassesautresor-com'),
-                          'classes'    => 'bouton-aide-points open-points-modal',
+                          'aria_label' => __('Informations sur le coût des tentatives', 'chassesautresor-com'),
+                          'classes'    => 'open-points-modal',
+                          'variant'    => 'info',
+                          'title'      => __('Tentative gratuite ou payante ?', 'chassesautresor-com'),
+                          'message'    => __('Vous êtes libre de définir le coût d’une tentative pour votre énigme : gratuite ou payante en points. Lorsqu’un joueur dépense des points pour soumettre une réponse, ceux-ci sont immédiatement crédités sur votre compte.', 'chassesautresor-com'),
                       ]
                   );
                   ?>
@@ -382,7 +388,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                       null,
                       [
                           'aria_label' => __('Explication du nombre de tentatives', 'chassesautresor-com'),
-                          'classes'    => 'bouton-aide-points tentatives-aide',
+                          'classes'    => 'tentatives-aide',
+                          'variant'    => 'info',
+                          'title'      => __('Plafond nb de tentatives quotidiennes', 'chassesautresor-com'),
+                          'message'    => __("Nombre maximal de tentatives quotidiennes par joueur:\n\nMode payant : illimitées\n\nMode gratuit : 24 tentatives par jour", 'chassesautresor-com'),
                       ]
                   );
                   ?>
@@ -637,7 +646,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
             $explication  = is_string($explication) ? trim(wp_strip_all_tags($explication)) : '';
             $delai        = get_field('enigme_solution_delai', $enigme_id) ?? 7;
             $heure        = get_field('enigme_solution_heure', $enigme_id) ?? '18:00';
-            $aide_delai   = esc_html__('Les solutions ne peuvent être publiées que si une chasse est déclarée terminée. Elles restent stockées dans un coffre fort numérique jusqu\'à ce que vous décidiez de les en sortir.', 'chassesautresor-com');
+            $aide_delai   = esc_html__('Les solutions ne peuvent être publiées que lorsqu’une chasse est déclarée terminée. Une fois celle-ci achevée, elles restent conservées dans un coffre-fort numérique pendant le délai que vous définissez ici.', 'chassesautresor-com');
 
             $pdf_icon_attr   = $fichier_nom ? ' style="color: var(--color-editor-success);"' : '';
             $pdf_title       = $fichier_nom ?: esc_html__('Document PDF', 'chassesautresor-com');
@@ -697,7 +706,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                             null,
                             [
                                 'aria_label' => __('Informations sur la publication de la solution', 'chassesautresor-com'),
-                                'classes'    => 'mode-fin-aide stat-help',
+                                'classes'    => 'stat-help',
+                                'variant'    => 'aide-small',
+                                'title'      => __('Délai de parution des solutions', 'chassesautresor-com'),
                                 'message'    => $aide_delai,
                             ]
                         );

@@ -415,28 +415,6 @@ function initChasseEdit() {
   }
 
   // ==============================
-  // 🧠 Explication – Mode de fin de chasse
-  // ==============================
-  const explicationModeFin = {
-    automatique: wp.i18n.__(
-      "Un joueur devient gagnant lorsqu’il résout toutes les énigmes. La chasse s’achève dès que le nombre de gagnants prévu est atteint.",
-      "chassesautresor-com"
-    ),
-    manuelle: wp.i18n.__(
-      "Vous arrêtez la chasse manuellement, grâce au bouton situé dans le panneau d'édition chasse.",
-      "chassesautresor-com"
-    )
-  };
-  document.querySelectorAll('.mode-fin-aide').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const mode = btn.dataset.mode;
-      const message = explicationModeFin[mode];
-      if (message) {
-        alert(message);
-      }
-    });
-  });
-
   // ==============================
   // 🏁 Terminaison manuelle
   // ==============================
