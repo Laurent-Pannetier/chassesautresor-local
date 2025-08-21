@@ -503,7 +503,7 @@ msgstr "Hunting description"
 #: template-parts/enigme/enigme-edition-main.php:177
 #: template-parts/organisateur/organisateur-edition-main.php:141
 msgid "ajouter"
-msgstr "add "
+msgstr "Add"
 
 #: template-parts/chasse/chasse-edition-main.php:154
 msgid "Modifier la description"
@@ -1100,3 +1100,167 @@ msgstr "English"
 
 msgid "Change language"
 msgstr "Change language"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Fermer les paramètres"
+msgstr "Close settings"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Paramètres"
+msgstr "Settings"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Informations"
+msgstr "Information"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Titre"
+msgstr "Title"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "renseigner le titre de l’énigme"
+msgstr "enter the riddle title"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Illustrations"
+msgstr "Illustrations"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Réglages"
+msgstr "Options"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Respecter la casse"
+msgstr "Case sensitive"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Coût tentative"
+msgstr "Attempt cost"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Gratuit"
+msgstr "Free"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Nb tentatives"
+msgstr "Attempts"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "max par jour"
+msgstr "max per day"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "❌ Suppression énigme"
+msgstr "❌ Delete riddle"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Actualiser"
+msgstr "Refresh"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Période :"
+msgstr "Period:"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Total"
+msgstr "Total"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Aujourd’hui"
+msgstr "Today"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Semaine"
+msgstr "Week"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Mois"
+msgstr "Month"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Participants"
+msgstr "Participants"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Points collectés"
+msgstr "Points collected"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Bonnes réponses"
+msgstr "Correct answers"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Résolue par (%s) joueurs"
+msgstr "Solved by (%s) players"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Rang"
+msgstr "Rank"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Document PDF"
+msgstr "PDF document"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Choisir un fichier"
+msgstr "Choose a file"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Rédiger"
+msgstr "Write"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "aucune solution ne"
+msgstr "no solution"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid " %d jours après la fin de la chasse, à %s"
+msgstr " %d days after the end of the hunt, at %s"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid " (pdf sélectionné mais pas de fichier chargé)"
+msgstr " (pdf selected but no file uploaded)"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "votre texte d'explication"
+msgstr "your explanation text"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid ", %d jours après la fin de la chasse, à %s"
+msgstr ", %d days after the end of the hunt, at %s"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid " (rédaction libre sélectionnée mais non remplie)"
+msgstr " (free writing selected but not filled)"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Vider"
+msgstr "Clear"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Rédaction libre"
+msgstr "Free writing"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Délai après fin de chasse"
+msgstr "Delay after hunt end"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "jours, publié à"
+msgstr "days, published at"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Vos solutions sont protégées"
+msgstr "Your solutions are protected"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Stockées dans un espace privé, hors de portée des joueurs."
+msgstr "Stored in a private area, out of players' reach."
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Aucun lien ne peut être trouvé ni ouvert."
+msgstr "No link can be found or opened."
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Débloquées uniquement au moment choisi."
+msgstr "Unlocked only at the chosen time."
