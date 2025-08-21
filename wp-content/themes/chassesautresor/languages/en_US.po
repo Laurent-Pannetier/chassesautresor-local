@@ -1601,8 +1601,14 @@ msgid "Gagnants :"
 msgstr "Winners:"
 
 #: inc/enigme/affichage.php:339
-msgid "Part moyenne des énigmes auxquelles chaque joueur a participé, rapportée au nombre total d’énigmes de la chasse.\n\nVous\nPart des énigmes auxquelles vous avez accédé.\n\nMoyenne\nMoyenne sur l’ensemble des joueurs."
-msgstr "Average share of puzzles each player has participated in, relative to the total number of puzzles in the hunt.\n\nYou\nShare of puzzles you have accessed.\n\nAverage\nAverage across all players."
+msgid ""
+"Part moyenne des énigmes auxquelles chaque joueur a participé, rapportée au "
+"nombre total d’énigmes de la chasse. Vous : Part des énigmes auxquelles vous "
+"avez accédé Moyenne : Moyenne sur l’ensemble des joueurs."
+msgstr ""
+"Average share of puzzles each player has participated in, relative to the "
+"total number of puzzles in the hunt. You: Share of puzzles you have accessed "
+"Average: Average across all players."
 
 #: inc/enigme/affichage.php:347
 msgid "Définition de la progression"
