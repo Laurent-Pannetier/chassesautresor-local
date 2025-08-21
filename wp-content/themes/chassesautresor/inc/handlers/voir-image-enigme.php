@@ -53,11 +53,11 @@ remove_all_actions('shutdown');
 remove_all_actions('template_redirect');
 
 // ✅ Envoi du fichier
-// 📅 Cache
+// 📅 Cache (compatible CDN)
 $mtime = filemtime($path);
 $etag  = '"' . md5($mtime . filesize($path)) . '"';
 
-header('Cache-Control: private, max-age=86400');
+header('Cache-Control: public, max-age=604800, immutable');
 header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $mtime) . ' GMT');
 header('ETag: ' . $etag);
 

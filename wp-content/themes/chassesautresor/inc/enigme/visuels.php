@@ -84,12 +84,14 @@ function build_picture_enigme(int $image_id, string $alt, array $sizes, array $i
         'taille' => $fallback_size,
     ], $base_url));
 
+    $img_attrs['loading'] = 'lazy';
+
     $attr_str = '';
     foreach ($img_attrs as $key => $value) {
         $attr_str .= ' ' . $key . '="' . esc_attr($value) . '"';
     }
 
-    $html .= '  <img src="' . $src_fallback . '" alt="' . esc_attr($alt) . '" loading="lazy"' . $attr_str . ">\n";
+    $html .= '  <img src="' . $src_fallback . '" alt="' . esc_attr($alt) . '"' . $attr_str . ">\n";
     $html .= "</picture>\n";
 
     return $html;
@@ -230,7 +232,8 @@ function afficher_picture_vignette_enigme(int $enigme_id, string $alt = '', arra
  */
 function trouver_chemin_image(int $image_id, string $taille = 'full'): ?array
 {
-    $src = wp_get_attachment_image_src($image_id, $taille);
+    $wp_size = $taille === 'full' ? [1920, 1920] : $taille;
+    $src     = wp_get_attachment_image_src($image_id, $wp_size);
     $url = $src[0] ?? null;
     if (!$url) return null;
 
