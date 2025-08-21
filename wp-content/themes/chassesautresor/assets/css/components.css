@@ -929,13 +929,17 @@ a[aria-disabled="true"] {
 }
 
 /* 🌐 Language switcher */
+
 .lang-switcher {
     position: relative;
     display: inline-block;
+    padding: 0;
+    margin: 0;
 }
 
 .lang-switcher[open] {
     display: inline-block;
+    padding: 0;
 }
 
 .lang-switcher summary {
@@ -944,6 +948,7 @@ a[aria-disabled="true"] {
     display: flex;
     align-items: center;
     padding: 0.25rem 0.5rem;
+    margin: 0;
 }
 
 .lang-switcher summary::marker {
