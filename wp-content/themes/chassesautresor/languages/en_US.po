@@ -1616,3 +1616,35 @@ msgstr "Average share of puzzles each player has participated in, relative to th
 msgid "Définition du taux de résolution"
 msgstr "Definition of the resolution rate"
 
+#: templates/myaccount/layout.php:34
+msgid "Accueil"
+msgstr "Dashboard"
+
+#: templates/myaccount/layout.php:41
+msgid "Commandes"
+msgstr "Orders"
+
+#: templates/myaccount/layout.php:48
+msgid "Chasses"
+msgstr "Hunts"
+
+#: templates/myaccount/layout.php:49
+msgid "Vos chasses"
+msgstr "Your hunts"
+
+#: templates/myaccount/layout.php:66
+msgid "Profil"
+msgstr "Profile"
+
+#: templates/myaccount/layout.php:95
+msgid "Déconnexion"
+msgstr "Log out"
+
+#: templates/myaccount/layout.php:100
+msgid "Administration"
+msgstr "Administration"
+
+#: templates/myaccount/layout.php:104
+msgid "Organisateurs"
+msgstr "Organizers"
+
