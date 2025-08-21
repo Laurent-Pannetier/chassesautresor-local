@@ -442,8 +442,10 @@ li.active .enigme-menu__edit {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
     padding-top: calc(var(--space-sm) + env(safe-area-inset-top));
     padding-bottom: var(--space-sm);
     padding-left: calc(var(--space-md) + env(safe-area-inset-left));
