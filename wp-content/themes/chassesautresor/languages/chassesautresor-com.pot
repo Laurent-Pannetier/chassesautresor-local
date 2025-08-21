@@ -1094,3 +1094,43 @@ msgstr ""
 #: assets/js/enigme-edit.js:908
 msgid "❌ Erreur réseau"
 msgstr ""
+
+#: inc/enigme/affichage.php:678
+msgid "Mode de validation de l'énigme : %s"
+msgstr ""
+
+#: inc/enigme/affichage.php:675
+msgid "automatique"
+msgstr ""
+
+#: inc/enigme/affichage.php:676
+msgid "manuelle"
+msgstr ""
+
+#: inc/enigme/affichage.php:710
+msgid "Solde : %d pts"
+msgstr ""
+
+#: inc/enigme/reponses.php:67 assets/js/reponse-automatique.js:95
+msgid "Solde : %1$d → %2$d pts"
+msgstr ""
+
+#: inc/enigme/affichage.php:719
+msgid "Tentatives quotidiennes : %1$d/%2$s"
+msgstr ""
+
+#: inc/enigme/reponses.php:459
+msgid "Tentatives quotidiennes : %1$d / %2$s"
+msgstr ""
+
+#: assets/js/reponse-automatique.js:85
+msgid "Tentatives quotidiennes : %1$s/%2$s"
+msgstr ""
+
+#: assets/js/reponse-automatique.js:88
+msgid "Tentatives quotidiennes :"
+msgstr ""
+
+#: templates/myaccount/content-points.php:103 inc/enigme/reponses.php:59 template-parts/enigme/partials/enigme-partial-bloc-reponse.php:185
+msgid "Ajouter des points"
+msgstr ""
