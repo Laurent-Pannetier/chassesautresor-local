@@ -456,12 +456,14 @@ li.active .enigme-menu__edit {
     justify-content: center;
     width: var(--space-2xl);
     height: var(--space-2xl);
-    font-size: 1.5rem;
+    box-sizing: border-box;
+    padding: var(--space-xxs);
+    font-size: 1.25rem;
     line-height: 1;
     color: var(--color-primary);
     text-decoration: none;
     background: none;
-    border: 1px solid currentColor;
+    border: 1px solid rgba(var(--color-primary-rgb, 255, 215, 0), 0.5);
     border-radius: 50%;
   }
 
