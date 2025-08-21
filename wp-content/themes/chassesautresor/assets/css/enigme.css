@@ -452,7 +452,8 @@ li.active .enigme-menu__edit {
   .enigme-mobile-header a,
   .enigme-mobile-header button {
     padding: var(--space-xs) var(--space-sm);
-    font-size: 1rem;
+    font-size: 1.5rem;
+    line-height: 1;
     color: var(--color-primary);
     text-decoration: none;
     background: none;

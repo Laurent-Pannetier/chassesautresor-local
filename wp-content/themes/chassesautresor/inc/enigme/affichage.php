@@ -986,13 +986,13 @@ defined('ABSPATH') || exit;
 
         $retour_url = $chasse_id ? get_permalink($chasse_id) : home_url('/');
         echo '<header class="enigme-mobile-header">';
-        echo '<a class="enigme-mobile-back" href="' . esc_url($retour_url) . '">' . esc_html__('Retour', 'chassesautresor-com') . '</a>';
-        echo '<button type="button" class="enigme-mobile-panel-toggle" aria-controls="enigme-mobile-panel" aria-expanded="false" aria-label="' . esc_attr__('Ouvrir le panneau', 'chassesautresor-com') . '">' . esc_html__('Panneau', 'chassesautresor-com') . '</button>';
+        echo '<a class="enigme-mobile-back" href="' . esc_url($retour_url) . '" aria-label="' . esc_attr__('Retour', 'chassesautresor-com') . '"><span aria-hidden="true">&#8592;</span></a>';
+        echo '<button type="button" class="enigme-mobile-panel-toggle" aria-controls="enigme-mobile-panel" aria-expanded="false" aria-label="' . esc_attr__('Ouvrir le menu énigme', 'chassesautresor-com') . '"><span aria-hidden="true">&#9776;</span></button>';
         echo '</header>';
 
         echo '<div id="enigme-mobile-panel" class="enigme-mobile-panel" hidden>';
         echo '<div class="enigme-mobile-panel__overlay" tabindex="-1"></div>';
-        echo '<div class="enigme-mobile-panel__sheet" role="dialog" aria-modal="true">';
+        echo '<div class="enigme-mobile-panel__sheet" role="dialog" aria-modal="true" aria-label="' . esc_attr__('Menu énigme', 'chassesautresor-com') . '">';
         echo '<nav class="enigme-mobile-panel__tabs" role="tablist">';
         echo '<button type="button" role="tab" aria-selected="true" class="panel-tab panel-tab--active" data-target="panel-enigmes">' . esc_html__('Énigmes', 'chassesautresor-com') . '</button>';
         echo '<button type="button" role="tab" aria-selected="false" class="panel-tab" data-target="panel-stats">' . esc_html__('Statistiques', 'chassesautresor-com') . '</button>';
