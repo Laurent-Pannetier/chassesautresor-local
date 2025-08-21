@@ -986,8 +986,14 @@ defined('ABSPATH') || exit;
 
         $retour_url = $chasse_id ? get_permalink($chasse_id) : home_url('/');
         echo '<header class="enigme-mobile-header">';
-        echo '<a class="enigme-mobile-back" href="' . esc_url($retour_url) . '">' . esc_html__('Retour', 'chassesautresor-com') . '</a>';
-        echo '<button type="button" class="enigme-mobile-panel-toggle" aria-controls="enigme-mobile-panel" aria-expanded="false" aria-label="' . esc_attr__('Ouvrir le panneau', 'chassesautresor-com') . '">' . esc_html__('Panneau', 'chassesautresor-com') . '</button>';
+        echo '<a class="enigme-mobile-back" href="' . esc_url($retour_url) . '">';
+        echo '<span class="screen-reader-text">' . esc_html__('Retour', 'chassesautresor-com') . '</span>';
+        echo '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>';
+        echo '</a>';
+        echo '<button type="button" class="enigme-mobile-panel-toggle" aria-controls="enigme-mobile-panel" aria-expanded="false" aria-label="' . esc_attr__('Menu énigme', 'chassesautresor-com') . '">';
+        echo '<span class="screen-reader-text">' . esc_html__('Menu énigme', 'chassesautresor-com') . '</span>';
+        echo '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';
+        echo '</button>';
         echo '</header>';
 
         echo '<div id="enigme-mobile-panel" class="enigme-mobile-panel" hidden>';
