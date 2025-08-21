@@ -444,7 +444,10 @@ li.active .enigme-menu__edit {
     align-items: center;
     position: sticky;
     top: 0;
-    padding: var(--space-sm) var(--space-md);
+    padding-top: calc(var(--space-sm) + env(safe-area-inset-top));
+    padding-bottom: var(--space-sm);
+    padding-left: calc(var(--space-md) + env(safe-area-inset-left));
+    padding-right: calc(var(--space-md) + env(safe-area-inset-right));
     background-color: var(--color-background);
     z-index: 10;
   }
@@ -482,15 +485,29 @@ li.active .enigme-menu__edit {
     bottom: 0;
     background-color: var(--color-background);
     border-radius: var(--space-sm) var(--space-sm) 0 0;
-    padding: var(--space-md);
+    padding-top: var(--space-md);
+    padding-bottom: calc(var(--space-md) + env(safe-area-inset-bottom));
+    padding-left: calc(var(--space-md) + env(safe-area-inset-left));
+    padding-right: calc(var(--space-md) + env(safe-area-inset-right));
     max-height: 80vh;
     overflow-y: auto;
+  }
+
+  .enigme-mobile-panel.full .enigme-mobile-panel__sheet {
+    top: 0;
+    bottom: 0;
+    border-radius: 0;
+    max-height: 100vh;
   }
 
   .enigme-mobile-panel__tabs {
     display: flex;
     gap: var(--space-xs);
     margin-bottom: var(--space-md);
+    position: sticky;
+    top: 0;
+    background-color: var(--color-background);
+    z-index: 1;
   }
 
   .panel-tab {
@@ -513,6 +530,10 @@ li.active .enigme-menu__edit {
   .enigme-mobile-panel__content {
     max-height: calc(80vh - var(--space-xl));
     overflow-y: auto;
+  }
+
+  .enigme-mobile-panel.full .enigme-mobile-panel__content {
+    max-height: calc(100vh - var(--space-xl));
   }
 
   .enigme-mobile-header + .page-enigme {

@@ -8,6 +8,12 @@
     const tabs = panel.querySelectorAll('.panel-tab');
     const tabContents = panel.querySelectorAll('.panel-tab-content');
     let lastFocused = null;
+    let startY = null;
+
+    function updateMode() {
+      const full = sheet.scrollHeight > window.innerHeight * 0.75;
+      panel.classList.toggle('full', full);
+    }
 
     function openPanel() {
       lastFocused = document.activeElement;
@@ -15,6 +21,7 @@
       panel.classList.add('open');
       toggle.setAttribute('aria-expanded', 'true');
       document.body.classList.add('no-scroll');
+      updateMode();
       const focusable = sheet.querySelectorAll('a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])');
       if (focusable.length) {
         focusable[0].focus();
@@ -60,6 +67,30 @@
         closePanel();
       } else if (e.key === 'Tab' && !panel.hidden) {
         trapFocus(e);
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (!panel.hidden) {
+        updateMode();
+      }
+    });
+
+    sheet.addEventListener('touchstart', (e) => {
+      if (sheet.scrollTop === 0) {
+        startY = e.touches[0].clientY;
+      } else {
+        startY = null;
+      }
+    });
+
+    sheet.addEventListener('touchmove', (e) => {
+      if (startY !== null) {
+        const diff = e.touches[0].clientY - startY;
+        if (diff > 50) {
+          closePanel();
+          startY = null;
+        }
       }
     });
 
