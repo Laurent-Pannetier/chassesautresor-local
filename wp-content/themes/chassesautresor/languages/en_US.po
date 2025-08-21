@@ -573,13 +573,13 @@ msgstr "Hunting won on %s by %s"
 msgid "En savoir plus sur les points"
 msgstr "Learn more about loyalty points"
 
-#: template-parts/chasse/chasse-edition-main.php:541
+#: template-parts/chasse/chasse-edition-main.php:593
 msgid ""
-"Pourcentage moyen d’énigmes auxquelles chaque participant s’est engagé, par "
-"rapport à toutes celles proposées."
+"Pourcentage moyen d’énigmes auxquelles chaque joueur a participé, par "
+"rapport à l’ensemble des énigmes proposées."
 msgstr ""
-"Average percentage of puzzles that each participant committed to, compared "
-"to all those offered."
+"Average percentage of puzzles each player has participated in compared to "
+"all the puzzles offered."
 
 #: template-parts/chasse/chasse-edition-main.php:546
 msgid "Explication du taux d’engagement"
@@ -1451,3 +1451,139 @@ msgid "%d bonne réponse"
 msgid_plural "%d bonnes réponses"
 msgstr[0] "%d correct answer"
 msgstr[1] "%d correct answers"
+
+#: template-parts/enigme/enigme-edition-main.php:255
+msgid "Validation automatique"
+msgstr "Automatic validation"
+
+#: template-parts/enigme/enigme-edition-main.php:256
+msgid ""
+"Le joueur soumet une tentative de réponse. Celle-ci est automatiquement "
+"vérifiée selon les critères définis (réponse attendue, respect de la casse, "
+"variantes), et le résultat est immédiatement communiqué au joueur."
+msgstr ""
+"The player submits an answer attempt. It is automatically checked against "
+"the defined criteria (expected answer, case sensitivity, variants), and the "
+"result is immediately communicated to the player."
+
+#: template-parts/enigme/enigme-edition-main.php:272
+msgid "Validation manuelle"
+msgstr "Manual validation"
+
+#: template-parts/enigme/enigme-edition-main.php:273
+msgid ""
+"Le joueur rédige une réponse libre. Vous validez ou refusez ensuite sa "
+"tentative depuis votre espace personnel. À chaque nouvelle soumission, vous "
+"recevez une notification par email ainsi qu’un message d’alerte."
+msgstr ""
+"The player writes a free-form answer. You then approve or reject their "
+"attempt from your personal area. Each new submission triggers an email "
+"notification and an alert message."
+
+#: template-parts/enigme/enigme-edition-main.php:306
+msgid "Système de variantes"
+msgstr "Variants system"
+
+#: template-parts/enigme/enigme-edition-main.php:307
+msgid ""
+"Les variantes sont des réponses alternatives qui ne sont pas validées comme "
+"correctes, mais qui déclenchent un message personnalisé en retour (par "
+"exemple une aide, un indice, un lien ou tout autre contenu de votre choix)."
+msgstr ""
+"Variants are alternative answers that are not validated as correct but "
+"trigger a personalized message in return (for example a help message, a "
+"hint, a link or any other content of your choice)."
+
+#: template-parts/enigme/enigme-edition-main.php:362
+msgid "Tentative gratuite ou payante ?"
+msgstr "Free or paid attempt?"
+
+#: template-parts/enigme/enigme-edition-main.php:363
+msgid ""
+"Vous êtes libre de définir le coût d’une tentative pour votre énigme : "
+"gratuite ou payante en points. Lorsqu’un joueur dépense des points pour "
+"soumettre une réponse, ceux-ci sont immédiatement crédités sur votre compte."
+msgstr ""
+"You are free to set the cost of an attempt for your riddle: free or paid in "
+"points. When a player spends points to submit an answer, those points are "
+"immediately credited to your account."
+
+#: template-parts/enigme/enigme-edition-main.php:393
+msgid "Plafond nb de tentatives quotidiennes"
+msgstr "Daily attempt limit"
+
+#: template-parts/enigme/enigme-edition-main.php:394
+msgid ""
+"Nombre maximal de tentatives quotidiennes par joueur:\\n\\nMode payant : "
+"illimitées\\n\\nMode gratuit : 24 tentatives par jour"
+msgstr ""
+"Maximum number of daily attempts per player:\\n\\nPaid mode: "
+"unlimited\\n\\nFree mode: 24 attempts per day"
+
+#: template-parts/enigme/enigme-edition-main.php:711
+msgid "Délai de parution des solutions"
+msgstr "Solutions release delay"
+
+#: template-parts/enigme/enigme-edition-main.php:649
+msgid ""
+"Les solutions ne peuvent être publiées que lorsqu’une chasse est déclarée "
+"terminée. Une fois celle-ci achevée, elles restent conservées dans un "
+"coffre-fort numérique pendant le délai que vous définissez ici."
+msgstr ""
+"Solutions can only be published once a hunt is declared over. After that, "
+"they are stored in a digital safe for the delay you set here."
+
+#: template-parts/chasse/chasse-edition-main.php:258
+msgid "Fin de chasse automatique"
+msgstr "Automatic hunt end"
+
+#: template-parts/chasse/chasse-edition-main.php:259
+msgid ""
+"Un joueur est déclaré gagnant lorsqu’il a résolu toutes les énigmes. En mode "
+"automatique, la chasse se termine dès que le nombre de gagnants prévu est "
+"atteint."
+msgstr ""
+"A player is declared the winner when they have solved all the riddles. In "
+"automatic mode, the hunt ends as soon as the planned number of winners is "
+"reached."
+
+#: template-parts/chasse/chasse-edition-main.php:280
+msgid "Fin de chasse manuelle"
+msgstr "Manual hunt end"
+
+#: template-parts/chasse/chasse-edition-main.php:281
+msgid ""
+"Vous pouvez arrêter la chasse à tout moment grâce au bouton disponible dans "
+"le panneau d’édition de la chasse, onglet Paramètres."
+msgstr ""
+"You can stop the hunt at any time using the button available in the hunt "
+"editing panel, Settings tab."
+
+#: template-parts/chasse/chasse-edition-main.php:426
+msgid "Coût d’accès à une chasse"
+msgstr "Hunt access cost"
+
+#: template-parts/chasse/chasse-edition-main.php:427
+msgid ""
+"Vous êtes libre de définir le coût d’accès à votre chasse : gratuit ou "
+"payant. Cet accès est indispensable pour consulter les énigmes, qui restent "
+"invisibles tant qu’il n’a pas été débloqué."
+msgstr ""
+"You are free to set the access cost to your hunt: free or paid. This access "
+"is necessary to view the riddles, which remain hidden until it has been "
+"unlocked."
+
+#: template-parts/organisateur/organisateur-edition-main.php:209
+msgid "Email de contact organisateur"
+msgstr "Organizer contact email"
+
+#: template-parts/organisateur/organisateur-edition-main.php:210
+msgid ""
+"Si aucune adresse n’est renseignée, votre adresse email utilisateur est "
+"utilisée par défaut."
+msgstr ""
+"If no address is provided, your user email is used by default."
+
+#: template-parts/organisateur/organisateur-edition-main.php:296
+msgid "Coordonnées bancaires"
+msgstr "Bank details"
