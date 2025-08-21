@@ -16,3 +16,6 @@ msgstr "French"
 msgid "English"
 msgstr "English"
 
+msgid "Change language"
+msgstr "Change language"
+

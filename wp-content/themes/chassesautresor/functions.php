@@ -112,36 +112,35 @@ function cta_render_lang_switcher( $row, $column ) {
     $current_url = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     $current_url = remove_query_arg( 'lang', $current_url );
     ?>
-    <div class="ast-builder-layout-element site-header-focus-item">
-        <details class="lang-switcher">
-            <summary>
-                <span class="lang-switcher__flag">
-                    <?php echo esc_html( $available_langs[ $active_locale ]['flag'] ?? '🇫🇷' ); ?>
-                </span>
-            </summary>
-            <ul class="lang-switcher__options">
-                <?php foreach ( $available_langs as $locale => $data ) : ?>
-                    <?php $url = add_query_arg( 'lang', $data['code'], $current_url ); ?>
-                    <li class="<?php echo $locale === $active_locale ? 'active' : ''; ?>">
-                        <?php if ( $locale === $active_locale ) : ?>
-                            <span>
-                                <span class="lang-switcher__flag"><?php echo esc_html( $data['flag'] ); ?></span>
-                                <span class="lang-switcher__label"><?php echo esc_html( $data['label'] ); ?></span>
-                            </span>
-                        <?php else : ?>
-                            <a href="<?php echo esc_url( $url ); ?>">
-                                <span class="lang-switcher__flag"><?php echo esc_html( $data['flag'] ); ?></span>
-                                <span class="lang-switcher__label"><?php echo esc_html( $data['label'] ); ?></span>
-                            </a>
-                        <?php endif; ?>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-        </details>
+    <div class="lang-switcher ast-builder-layout-element site-header-focus-item">
+        <button class="lang-switcher__toggle" aria-haspopup="true" aria-expanded="false" aria-label="<?php esc_attr_e( 'Change language', 'chassesautresor-com' ); ?>">
+            <span class="lang-switcher__flag">
+                <?php echo esc_html( $available_langs[ $active_locale ]['flag'] ?? '🇫🇷' ); ?>
+            </span>
+            <span class="lang-switcher__icon">▼</span>
+        </button>
+        <ul class="lang-switcher__options">
+            <?php foreach ( $available_langs as $locale => $data ) : ?>
+                <?php $url = add_query_arg( 'lang', $data['code'], $current_url ); ?>
+                <li class="<?php echo $locale === $active_locale ? 'active' : ''; ?>">
+                    <?php if ( $locale === $active_locale ) : ?>
+                        <span>
+                            <span class="lang-switcher__flag"><?php echo esc_html( $data['flag'] ); ?></span>
+                            <span class="lang-switcher__label"><?php echo esc_html( $data['label'] ); ?></span>
+                        </span>
+                    <?php else : ?>
+                        <a href="<?php echo esc_url( $url ); ?>">
+                            <span class="lang-switcher__flag"><?php echo esc_html( $data['flag'] ); ?></span>
+                            <span class="lang-switcher__label"><?php echo esc_html( $data['label'] ); ?></span>
+                        </a>
+                    <?php endif; ?>
+                </li>
+            <?php endforeach; ?>
+        </ul>
     </div>
     <?php
 }
-add_action( 'astra_render_header_column', 'cta_render_lang_switcher', 99, 2 );
+add_action( 'astra_render_header_column', 'cta_render_lang_switcher', 999, 2 );
 
 /**
  * Chargement des styles du thème parent et enfant avec prise en charge d'Astra.
