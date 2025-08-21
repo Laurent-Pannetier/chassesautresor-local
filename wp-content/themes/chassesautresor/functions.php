@@ -23,6 +23,42 @@ add_action( 'after_setup_theme', 'cta_load_textdomain' );
 
 
 /**
+ * Retrieves the locale from the cookie.
+ *
+ * @return string
+ */
+function cta_get_locale_from_cookie() {
+    $locale = isset( $_COOKIE['cta_lang'] ) ? sanitize_text_field( wp_unslash( $_COOKIE['cta_lang'] ) ) : '';
+
+    return apply_filters( 'locale', $locale );
+}
+
+/**
+ * Handles language switching via query parameter and cookie.
+ *
+ * @return void
+ */
+function cta_handle_language() {
+    $locale = '';
+
+    if ( isset( $_GET['lang'] ) ) {
+        $lang   = sanitize_text_field( wp_unslash( $_GET['lang'] ) );
+        $locale = 'fr' === $lang ? 'fr_FR' : ( 'en' === $lang ? 'en_US' : '' );
+
+        if ( $locale ) {
+            setcookie( 'cta_lang', $locale, time() + MONTH_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+        }
+    } else {
+        $locale = cta_get_locale_from_cookie();
+    }
+
+    if ( $locale ) {
+        switch_to_locale( $locale );
+    }
+}
+add_action( 'init', 'cta_handle_language' );
+
+/**
  * Chargement des styles du thème parent et enfant avec prise en charge d'Astra.
  */
 add_action('wp_enqueue_scripts', function () {

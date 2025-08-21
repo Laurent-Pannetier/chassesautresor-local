@@ -53,10 +53,29 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
 		<?php echo esc_html( astra_default_strings( 'string-header-skip-link', false ) ); ?>
 </a>
 
+<?php
+$active_locale = cta_get_locale_from_cookie();
+if ( ! $active_locale ) {
+    $active_locale = get_locale();
+}
+?>
+<ul class="lang-switcher">
+    <li class="<?php echo 'fr_FR' === $active_locale ? 'active' : ''; ?>">
+        <a href="<?php echo esc_url( home_url( '?lang=fr' ) ); ?>">
+            <?php echo esc_html__( 'Français', 'chassesautresor-com' ); ?>
+        </a>
+    </li>
+    <li class="<?php echo 'en_US' === $active_locale ? 'active' : ''; ?>">
+        <a href="<?php echo esc_url( home_url( '?lang=en' ) ); ?>">
+            <?php echo esc_html__( 'English', 'chassesautresor-com' ); ?>
+        </a>
+    </li>
+</ul>
+
 <div
 <?php
-	echo wp_kses_post(
-		astra_attr(
+        echo wp_kses_post(
+                astra_attr(
 			'site',
 			array(
 				'id'    => 'page',

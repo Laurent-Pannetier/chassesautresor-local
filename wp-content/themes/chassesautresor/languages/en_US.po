@@ -1,0 +1,18 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: chassesautresor.com\n"
+"POT-Creation-Date: 2024-01-01 00:00+0000\n"
+"PO-Revision-Date: 2024-01-01 00:00+0000\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Domain: chassesautresor-com\n"
+
+msgid "Français"
+msgstr "French"
+
+msgid "English"
+msgstr "English"
+
