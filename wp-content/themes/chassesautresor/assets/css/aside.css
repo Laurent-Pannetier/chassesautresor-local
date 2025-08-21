@@ -292,7 +292,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 12000;
+  /* S'assure que l'overlay est au-dessus des panneaux d'édition */
+  z-index: 20000;
 }
 
 .help-modal {
@@ -303,6 +304,7 @@
   max-width: 400px;
   width: 90%;
   position: relative;
+  z-index: 20001;
 }
 
 .help-modal-header {
