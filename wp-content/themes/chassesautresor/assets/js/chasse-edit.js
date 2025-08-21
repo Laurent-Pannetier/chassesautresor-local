@@ -60,25 +60,30 @@ function initChasseEdit() {
   // 🧭 Déclencheur automatique
   // ==============================
   const params = new URLSearchParams(window.location.search);
-    const doitOuvrir = params.get('edition') === 'open';
-    const tab = params.get('tab');
-    const panel = params.get('panel');
-    const skipAuto = document.body.classList.contains('scroll-to-enigmes');
-    if (doitOuvrir && !skipAuto && panel !== 'organisateur') {
+  const doitOuvrir = params.get('edition') === 'open';
+  const tab = params.get('tab');
+  const panel = params.get('panel');
+  const skipAuto = document.body.classList.contains('scroll-to-enigmes');
+  const forceDescription =
+    doitOuvrir && tab === 'param' && window.location.hash === '#chasse-description';
+
+  if (doitOuvrir && panel !== 'organisateur' && (!skipAuto || forceDescription)) {
     document.body.classList.add('edition-active-chasse', 'panneau-ouvert', 'mode-edition');
     if (tab) {
       const btn = document.querySelector(`.edition-tab[data-target="chasse-tab-${tab}"]`);
       btn?.click();
     }
     DEBUG && console.log('🔧 Ouverture auto du panneau édition chasse via ?edition=open');
-  } else if (skipAuto && (doitOuvrir || tab)) {
+  } else if (skipAuto && !forceDescription && (doitOuvrir || tab)) {
     params.delete('edition');
     params.delete('tab');
-    const nouvelleUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}${window.location.hash}`;
+    const nouvelleUrl = `${window.location.pathname}${
+      params.toString() ? `?${params.toString()}` : ''
+    }${window.location.hash}`;
     window.history.replaceState({}, '', nouvelleUrl);
   }
 
-  if (skipAuto) {
+  if (skipAuto && !forceDescription) {
     const cible = document.getElementById('carte-ajout-enigme');
     if (cible) {
       cible.scrollIntoView({ behavior: 'smooth', block: 'start' });
