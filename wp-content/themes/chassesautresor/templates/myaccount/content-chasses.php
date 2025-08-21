@@ -118,7 +118,7 @@ $pages = (int) ceil($total / $per_page);
         <?php endif; ?>
     </div>
     <div class="stats-table-wrapper" data-per-page="<?php echo esc_attr($per_page); ?>">
-        <table class="stats-table">
+        <table class="stats-table tentatives-table">
             <thead>
                 <tr>
                     <th><?php esc_html_e('Date', 'chassesautresor-com'); ?></th>

@@ -720,6 +720,13 @@ body.woocommerce h2 {
     margin-top: 40px;
 }
 
+/* Tentatives table alignment */
+.tentatives-table th:nth-child(2),
+.tentatives-table td:nth-child(2),
+.tentatives-table th:nth-child(3),
+.tentatives-table td:nth-child(3) {
+    text-align: left;
+}
 
 /* Tentatives - Proposition toggle */
 .proposition-cell {
