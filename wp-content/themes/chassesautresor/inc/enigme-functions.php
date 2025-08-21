@@ -9,3 +9,4 @@ require_once $base . 'affichage.php';
 require_once $base . 'reponses.php';
 require_once $base . 'tentatives.php';
 require_once $base . 'utils.php';
+require_once $base . 'access.php';
