@@ -19,6 +19,8 @@ composer test
 
 La commande composer test exécute PHPUnit à l’aide de la configuration du plugin hostinger.
 
+Avant tout déploiement, exécutez `npm run build:css` pour générer les feuilles de style.
+
 Gestion des traductions du thème
 --------------------------------
 

@@ -152,101 +152,13 @@ add_action('wp_enqueue_scripts', function () {
     // 🎨 Chargement du style du thème parent (Astra)
     wp_enqueue_style('astra-style', get_template_directory_uri() . '/style.css');
 
-    // Détermine l'environnement via WP_ENVIRONMENT_TYPE ou une constante dédiée.
-    $env                  = defined('CHASSESAUTRESOR_ENV') ? CHASSESAUTRESOR_ENV : wp_get_environment_type();
-    $is_compil_active     = get_option('cta_css_compilation_active', '1') === '1';
-    $is_edition_env       = 'edition' === $env;
-
-    if (!$is_compil_active || $is_edition_env) {
-        wp_enqueue_style(
-            'mon-theme-enfant-style',
-            $theme_uri . '/style.css',
-            ['astra-style'],
-            filemtime($theme_path . '/style.css')
-        );
-
-        $css_uri  = $theme_uri . '/assets/css/';
-        $css_path = $theme_path . '/assets/css/';
-
-        // 📂 Liste des fichiers CSS organisés
-        $styles = [
-            'grid'               => 'grid.css',
-            'layout'             => 'layout.css',
-            'components'         => 'components.css',
-            'aside'              => 'aside.css',
-            'modal-bienvenue'    => 'modal-bienvenue.css',
-            'general-style'      => 'general.css',
-            'chasse-style'       => 'chasse.css',
-            'enigme-style'       => 'enigme.css',
-            'gamification-style' => 'gamification.css',
-            'cartes-style'       => 'cartes.css',
-            'organisateurs'      => 'organisateurs.css',
-            'edition'            => 'edition.css',
-            'mon-compte'         => 'mon-compte.css',
-            'commerce-style'     => 'commerce.css',
-            'home'               => 'home.css',
-        ];
-
-        // ✅ Enregistre les styles avec gestion du cache
-        foreach ($styles as $handle => $file) {
-            wp_register_style($handle, $css_uri . $file, [], filemtime($css_path . $file));
-        }
-
-        // 🚀 Chargement des styles communs
-        $common_styles = [
-            'grid',
-            'layout',
-            'components',
-            'aside',
-            'modal-bienvenue',
-            'general-style',
-            'chasse-style',
-            'gamification-style',
-            'cartes-style',
-            'organisateurs',
-            'commerce-style',
-            'home',
-        ];
-
-        foreach ($common_styles as $handle) {
-            wp_enqueue_style($handle);
-        }
-
-        if (is_singular('enigme')) {
-            wp_enqueue_style('enigme-style');
-        }
-
-        // 📌 Styles conditionnels
-        $should_load_edition = false;
-
-        if (is_singular(['organisateur', 'chasse', 'enigme'])) {
-            $post_id = get_queried_object_id();
-            if (utilisateur_peut_modifier_post($post_id)) {
-                $should_load_edition = true;
-            }
-        } elseif (
-            (is_account_page() || preg_match('#^/mon-compte(?:/|$|\\?)#', $_SERVER['REQUEST_URI'] ?? '')) &&
-            is_user_logged_in()
-        ) {
-            $should_load_edition = true;
-        }
-
-        if ($should_load_edition) {
-            wp_enqueue_style('edition');
-        }
-
-        if (is_account_page() || preg_match('#^/mon-compte(?:/|$|\\?)#', $_SERVER['REQUEST_URI'] ?? '')) {
-            wp_enqueue_style('mon-compte');
-        }
-    } else {
-        $dist_file = '/dist/style.min.css';
-        wp_enqueue_style(
-            'chassesautresor-style',
-            $theme_uri . $dist_file,
-            ['astra-style'],
-            filemtime($theme_path . $dist_file)
-        );
-    }
+    $dist_file = '/dist/style.min.css';
+    wp_enqueue_style(
+        'chassesautresor-style',
+        $theme_uri . $dist_file,
+        ['astra-style'],
+        filemtime($theme_path . $dist_file)
+    );
 
     $script_dir = $theme_uri . '/assets/js/';
 
