@@ -18,35 +18,65 @@ $has_valid_images = is_array($images) && array_filter($images, function ($img) {
 
 // ID de l'image principale (réelle ou placeholder)
 $image_id = $has_valid_images ? (int) ($images[0]['ID'] ?? 0) : ID_IMAGE_PLACEHOLDER_ENIGME;
-$meta = wp_get_attachment_metadata($image_id);
-$width = (int) ($meta['width'] ?? 0);
+$meta      = wp_get_attachment_metadata($image_id);
+$width     = (int) ($meta['width'] ?? 0);
 $threshold_full = 1024;
 
-if ($has_valid_images && function_exists('afficher_visuels_enigme')) {
+if (function_exists('utilisateur_peut_voir_enigme') && !utilisateur_peut_voir_enigme($post_id)) {
+    echo '<div class="visuels-proteges">🔒 Les visuels de cette énigme sont protégés.</div>';
+    return;
+}
+
+if ($has_valid_images) {
     cat_debug('[images] ✅ Galerie active pour #' . $post_id);
 
-    ob_start();
-    afficher_visuels_enigme($post_id);
-    $html = ob_get_clean();
+    echo '<div class="galerie-enigme-wrapper">';
 
+    // Image principale
+    $img_attrs = [
+        'id'      => 'image-enigme-active',
+        'class'   => 'image-active',
+        'loading' => 'lazy',
+        'srcset'  => wp_get_attachment_image_srcset($image_id, 'large'),
+        'sizes'   => wp_get_attachment_image_sizes($image_id, 'large'),
+    ];
     if ($width && $width <= $threshold_full) {
-        $html = preg_replace('/<img([^>]*?)style="([^"]*)"/i', '<img$1style="$2width:auto;max-width:100%;"', $html, 1, $c);
-        if (0 === $c) {
-            $html = preg_replace('/<img/i', '<img style="width:auto;max-width:100%;"', $html, 1);
-        }
-        $html = preg_replace('/<img([^>]*?)class="([^"]*)"/i', '<img$1class="$2 enigme-image--limited"', $html, 1, $c);
-        if (0 === $c) {
-            $html = preg_replace('/<img/i', '<img class="enigme-image--limited"', $html, 1);
-        }
+        $img_attrs['class'] .= ' enigme-image--limited';
+        $img_attrs['style']  = 'width:auto;max-width:100%;';
     } elseif ($width) {
-        $html = preg_replace('/<img([^>]*?)style="([^"]*)"/i', '<img$1style="$2width:100%;"', $html, 1, $c);
-        if (0 === $c) {
-            $html = preg_replace('/<img/i', '<img style="width:100%;"', $html, 1);
-        }
+        $img_attrs['style'] = 'width:100%;';
     }
 
-    echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+    $img_html = wp_get_attachment_image($image_id, 'large', false, $img_attrs);
+    $href_full = wp_get_attachment_image_url($image_id, 'full');
+    echo '<div class="image-principale">';
+    echo '<a href="' . esc_url($href_full) . '" class="fancybox image" rel="lightbox-enigme">' . $img_html . '</a>';
+    echo '</div>';
 
+    // Vignettes
+    if (count($images) > 1) {
+        echo '<div class="galerie-vignettes">';
+        foreach ($images as $index => $img) {
+            $img_id = $img['ID'] ?? null;
+            if (!$img_id) {
+                continue;
+            }
+
+            $class = 'vignette' . ($index === 0 ? ' active' : '');
+            echo wp_get_attachment_image($img_id, 'thumbnail', false, [
+                'class'          => $class,
+                'alt'            => '',
+                'data-image-id'  => $img_id,
+                'loading'        => 'lazy',
+            ]);
+
+            $full_url = wp_get_attachment_image_url($img_id, 'full');
+            echo '<a href="' . esc_url($full_url) . '" rel="lightbox-enigme" class="fancybox hidden-lightbox-link" style="display:none;"></a>';
+        }
+        echo '</div>';
+    }
+
+    echo '</div>';
 } else {
     cat_debug('[images] 🟡 Aucune image valide → fallback picture');
     $attrs = [
