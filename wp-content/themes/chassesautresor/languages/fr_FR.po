@@ -1103,3 +1103,32 @@ msgstr "Anglais"
 
 msgid "Change language"
 msgstr "Changer de langue"
+
+#: inc/enigme/affichage.php:275
+msgid "Nb joueurs :"
+msgstr "Nb joueurs :"
+
+#: inc/enigme/affichage.php:281
+msgid "Nb tentatives :"
+msgstr "Nb tentatives :"
+
+#: template-parts/enigme/partials/enigme-partial-gagnants.php:25
+msgid "Gagnants :"
+msgstr "Gagnants :"
+
+#: inc/enigme/affichage.php:339
+msgid "Part moyenne des énigmes auxquelles chaque joueur a participé, rapportée au nombre total d’énigmes de la chasse.\n\nVous\nPart des énigmes auxquelles vous avez accédé.\n\nMoyenne\nMoyenne sur l’ensemble des joueurs."
+msgstr "Part moyenne des énigmes auxquelles chaque joueur a participé, rapportée au nombre total d’énigmes de la chasse.\n\nVous\nPart des énigmes auxquelles vous avez accédé.\n\nMoyenne\nMoyenne sur l’ensemble des joueurs."
+
+#: inc/enigme/affichage.php:347
+msgid "Définition de la progression"
+msgstr "Définition de la progression"
+
+#: inc/enigme/affichage.php:398
+msgid "Part moyenne des énigmes auxquelles chaque joueur a participé, rapportée au nombre total d’énigmes de la chasse."
+msgstr "Part moyenne des énigmes auxquelles chaque joueur a participé, rapportée au nombre total d’énigmes de la chasse."
+
+#: inc/enigme/affichage.php:404
+msgid "Définition du taux de résolution"
+msgstr "Définition du taux de résolution"
+

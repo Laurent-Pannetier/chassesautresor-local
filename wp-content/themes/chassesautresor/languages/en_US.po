@@ -1587,3 +1587,32 @@ msgstr ""
 #: template-parts/organisateur/organisateur-edition-main.php:296
 msgid "Coordonnées bancaires"
 msgstr "Bank details"
+
+#: inc/enigme/affichage.php:275
+msgid "Nb joueurs :"
+msgstr "Players:"
+
+#: inc/enigme/affichage.php:281
+msgid "Nb tentatives :"
+msgstr "Attempts:"
+
+#: template-parts/enigme/partials/enigme-partial-gagnants.php:25
+msgid "Gagnants :"
+msgstr "Winners:"
+
+#: inc/enigme/affichage.php:339
+msgid "Part moyenne des énigmes auxquelles chaque joueur a participé, rapportée au nombre total d’énigmes de la chasse.\n\nVous\nPart des énigmes auxquelles vous avez accédé.\n\nMoyenne\nMoyenne sur l’ensemble des joueurs."
+msgstr "Average share of puzzles each player has participated in, relative to the total number of puzzles in the hunt.\n\nYou\nShare of puzzles you have accessed.\n\nAverage\nAverage across all players."
+
+#: inc/enigme/affichage.php:347
+msgid "Définition de la progression"
+msgstr "Definition of progression"
+
+#: inc/enigme/affichage.php:398
+msgid "Part moyenne des énigmes auxquelles chaque joueur a participé, rapportée au nombre total d’énigmes de la chasse."
+msgstr "Average share of puzzles each player has participated in, relative to the total number of puzzles in the hunt."
+
+#: inc/enigme/affichage.php:404
+msgid "Définition du taux de résolution"
+msgstr "Definition of the resolution rate"
+
