@@ -48,33 +48,9 @@ if ($has_valid_images) {
     }
 
     $img_html = wp_get_attachment_image($image_id, 'large', false, $img_attrs);
-    $href_full = wp_get_attachment_image_url($image_id, 'full');
     echo '<div class="image-principale">';
-    echo '<a href="' . esc_url($href_full) . '" class="fancybox image" rel="lightbox-enigme">' . $img_html . '</a>';
+    echo $img_html;
     echo '</div>';
-
-    // Vignettes
-    if (count($images) > 1) {
-        echo '<div class="galerie-vignettes">';
-        foreach ($images as $index => $img) {
-            $img_id = $img['ID'] ?? null;
-            if (!$img_id) {
-                continue;
-            }
-
-            $class = 'vignette' . ($index === 0 ? ' active' : '');
-            echo wp_get_attachment_image($img_id, 'thumbnail', false, [
-                'class'          => $class,
-                'alt'            => '',
-                'data-image-id'  => $img_id,
-                'loading'        => 'lazy',
-            ]);
-
-            $full_url = wp_get_attachment_image_url($img_id, 'full');
-            echo '<a href="' . esc_url($full_url) . '" rel="lightbox-enigme" class="fancybox hidden-lightbox-link" style="display:none;"></a>';
-        }
-        echo '</div>';
-    }
 
     echo '</div>';
 } else {
