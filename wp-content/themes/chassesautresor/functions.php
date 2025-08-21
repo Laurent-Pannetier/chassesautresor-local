@@ -50,6 +50,16 @@ function cta_handle_language() {
         }
     } else {
         $locale = cta_get_locale_from_cookie();
+
+        if ( ! $locale ) {
+            $accept       = sanitize_text_field( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '' );
+            $browser_lang = substr( $accept, 0, 2 );
+            $locale       = 'fr' === $browser_lang ? 'fr_FR' : ( 'en' === $browser_lang ? 'en_US' : '' );
+
+            if ( $locale ) {
+                setcookie( 'cta_lang', $locale, time() + MONTH_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+            }
+        }
     }
 
     if ( $locale ) {

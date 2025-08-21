@@ -928,3 +928,66 @@ a[aria-disabled="true"] {
   display: inline-block;
 }
 
+/* 🌐 Language switcher */
+.lang-switcher {
+    position: absolute;
+    right: 1rem;
+    top: 0.5rem;
+}
+
+.lang-switcher summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+}
+
+.lang-switcher summary::-webkit-details-marker {
+    display: none;
+}
+
+.lang-switcher__flag {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.lang-switcher__icon {
+    margin-left: 0.25rem;
+    font-size: 0.75rem;
+}
+
+.lang-switcher__options {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background: var(--color-background);
+    list-style: none;
+    margin: 0;
+    padding: 0.25rem 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: none;
+    z-index: 10;
+}
+
+.lang-switcher[open] .lang-switcher__options {
+    display: block;
+}
+
+.lang-switcher__options li a,
+.lang-switcher__options li span {
+    display: flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    color: var(--color-text-primary);
+    text-decoration: none;
+}
+
+.lang-switcher__options .lang-switcher__flag {
+    margin-right: 0.25rem;
+}
+
+.lang-switcher__options li.active span {
+    font-weight: 600;
+}
+

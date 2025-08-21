@@ -58,19 +58,49 @@ $active_locale = cta_get_locale_from_cookie();
 if ( ! $active_locale ) {
     $active_locale = get_locale();
 }
+
+$available_langs = [
+    'fr_FR' => [
+        'code'  => 'fr',
+        'label' => __( 'Français', 'chassesautresor-com' ),
+        'flag'  => '🇫🇷',
+    ],
+    'en_US' => [
+        'code'  => 'en',
+        'label' => __( 'English', 'chassesautresor-com' ),
+        'flag'  => '🇬🇧',
+    ],
+];
+
+$current_url = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+$current_url = remove_query_arg( 'lang', $current_url );
 ?>
-<ul class="lang-switcher">
-    <li class="<?php echo 'fr_FR' === $active_locale ? 'active' : ''; ?>">
-        <a href="<?php echo esc_url( home_url( '?lang=fr' ) ); ?>">
-            <?php echo esc_html__( 'Français', 'chassesautresor-com' ); ?>
-        </a>
-    </li>
-    <li class="<?php echo 'en_US' === $active_locale ? 'active' : ''; ?>">
-        <a href="<?php echo esc_url( home_url( '?lang=en' ) ); ?>">
-            <?php echo esc_html__( 'English', 'chassesautresor-com' ); ?>
-        </a>
-    </li>
-</ul>
+<details class="lang-switcher">
+    <summary>
+        <span class="lang-switcher__flag">
+            <?php echo esc_html( $available_langs[ $active_locale ]['flag'] ?? '🇫🇷' ); ?>
+        </span>
+        <span class="lang-switcher__icon">▼</span>
+    </summary>
+    <ul class="lang-switcher__options">
+        <?php foreach ( $available_langs as $locale => $data ) : ?>
+            <?php $url = add_query_arg( 'lang', $data['code'], $current_url ); ?>
+            <li class="<?php echo $locale === $active_locale ? 'active' : ''; ?>">
+                <?php if ( $locale === $active_locale ) : ?>
+                    <span>
+                        <span class="lang-switcher__flag"><?php echo esc_html( $data['flag'] ); ?></span>
+                        <span class="lang-switcher__label"><?php echo esc_html( $data['label'] ); ?></span>
+                    </span>
+                <?php else : ?>
+                    <a href="<?php echo esc_url( $url ); ?>">
+                        <span class="lang-switcher__flag"><?php echo esc_html( $data['flag'] ); ?></span>
+                        <span class="lang-switcher__label"><?php echo esc_html( $data['label'] ); ?></span>
+                    </a>
+                <?php endif; ?>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+</details>
 
 <div
 <?php
