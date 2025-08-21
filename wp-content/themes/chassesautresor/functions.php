@@ -249,6 +249,15 @@ add_action('wp_enqueue_scripts', function () {
     }
 
     $script_dir = $theme_uri . '/assets/js/';
+
+    wp_enqueue_script(
+        'lang-switcher',
+        $script_dir . 'lang-switcher.js',
+        [],
+        filemtime($theme_path . '/assets/js/lang-switcher.js'),
+        true
+    );
+
     if (is_account_page() && is_user_logged_in()) {
         wp_enqueue_script(
             'myaccount',

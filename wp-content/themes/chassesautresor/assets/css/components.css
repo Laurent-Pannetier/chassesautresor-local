@@ -970,8 +970,7 @@ a[aria-disabled="true"] {
     z-index: 10;
 }
 
-.lang-switcher:hover .lang-switcher__options,
-.lang-switcher:focus-within .lang-switcher__options {
+.lang-switcher.is-open .lang-switcher__options {
     display: block;
 }
 
