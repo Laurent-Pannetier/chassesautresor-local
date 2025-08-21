@@ -9,3 +9,6 @@ vendor/
 composer.phar
 tests/.phpunit.result.cache
 node_modules/
+
+# Ignore compiled theme translation files
+wp-content/themes/chassesautresor/languages/*.mo
