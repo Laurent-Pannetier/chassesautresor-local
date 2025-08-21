@@ -101,7 +101,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                         ],
                         'label' => function () {
                             ?>
-                            <label for="champ-titre-chasse">Titre <span class="champ-obligatoire">*</span></label>
+                            <label for="champ-titre-chasse"><?php esc_html_e('Titre', 'chassesautresor-com'); ?> <span class="champ-obligatoire">*</span></label>
                             <?php
                         },
                         'content' => function () use ($titre, $peut_editer_titre) {
@@ -212,8 +212,8 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                                 data-champ="chasse_infos_recompense_valeur"
                                 data-cpt="chasse"
                                 data-post-id="<?= esc_attr($chasse_id); ?>"
-                                aria-label="<?= esc_attr__('Modifier la récompense', 'chassesautresor-com'); ?>">
-                                <?= esc_html__('modifier', 'chassesautresor-com'); ?>
+                                aria-label="<?= esc_attr__($recompense_remplie ? 'Modifier la récompense' : 'Ajouter la récompense', 'chassesautresor-com'); ?>">
+                                <?= esc_html__($recompense_remplie ? 'modifier' : 'ajouter', 'chassesautresor-com'); ?>
                             </button>
                         <?php endif; ?>
                     </div>

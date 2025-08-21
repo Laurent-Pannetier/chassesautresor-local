@@ -144,7 +144,7 @@ $pages = (int) ceil($total / $per_page);
                     ?>
                     <td>
                         <span class="etiquette <?php echo esc_attr($class); ?>">
-                            <?php echo esc_html($result); ?>
+                            <?php echo esc_html__($result, 'chassesautresor-com'); ?>
                         </span>
                     </td>
                 </tr>
