@@ -1,5 +1,5 @@
 (function () {
-  document.addEventListener('DOMContentLoaded', () => {
+  function initTopbar() {
     if (!document.body.classList.contains('single-enigme')) {
       return;
     }
@@ -48,5 +48,11 @@
     if (mobileHeader) {
       mobileHeader.addEventListener('click', triggerMobile);
     }
-  });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTopbar);
+  } else {
+    initTopbar();
+  }
 })();
