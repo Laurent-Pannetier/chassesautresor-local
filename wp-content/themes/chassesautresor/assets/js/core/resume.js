@@ -377,7 +377,7 @@ function mettreAJourLigneResume(ligne, champ, estRempli, type) {
     return;
   }
 
-  if (!dejaBouton) {
+  if (!dejaBouton && !ligne.querySelector('.champ-ajouter')) {
     const bouton = document.createElement('button');
     bouton.type = 'button';
     bouton.className = 'champ-modifier txt-small';
