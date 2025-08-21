@@ -259,8 +259,10 @@ function initChasseEdit() {
       bouton.dataset.champ = 'chasse_infos_recompense_valeur';
       bouton.dataset.cpt = 'chasse';
       bouton.dataset.postId = ligne.dataset.postId || '';
-      bouton.setAttribute('aria-label', 'Modifier la récompense');
-      bouton.textContent = wp.i18n.__('modifier', 'chassesautresor-com');
+      const action = complet ? 'modifier' : 'ajouter';
+      const aria = complet ? 'Modifier la récompense' : 'Ajouter la récompense';
+      bouton.setAttribute('aria-label', wp.i18n.__(aria, 'chassesautresor-com'));
+      bouton.textContent = wp.i18n.__(action, 'chassesautresor-com');
       champTexte.appendChild(bouton);
       if (typeof initZoneClicEdition === 'function') initZoneClicEdition(bouton);
     }
