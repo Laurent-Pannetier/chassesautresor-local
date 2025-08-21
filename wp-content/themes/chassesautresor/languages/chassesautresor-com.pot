@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-08-18T12:04:58+00:00\n"
+"POT-Creation-Date: 2025-08-21T20:09:12+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: chassesautresor-com\n"
@@ -734,6 +734,16 @@ msgstr ""
 
 #: template-parts/enigme/enigme-edition-main.php:342
 msgid "Explication du nombre de tentatives"
+msgstr ""
+
+#: template-parts/enigme/enigme-edition-main.php:393
+msgid "Plafond nb de tentatives quotidiennes"
+msgstr ""
+
+#: template-parts/enigme/enigme-edition-main.php:394
+msgid ""
+"Nombre maximal de tentatives quotidiennes par joueur:\\n\\nMode payant : "
+"illimitées\\n\\nMode gratuit : 24 tentatives par jour"
 msgstr ""
 
 #: template-parts/enigme/enigme-edition-main.php:364
