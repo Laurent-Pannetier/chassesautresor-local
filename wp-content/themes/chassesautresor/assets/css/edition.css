@@ -72,11 +72,6 @@
   display: none;
 }
 
-/* Alignement des lignes sans icône */
-.resume-infos li[data-no-icon] {
-  padding-left: calc(var(--editor-icon-width) + 0.3rem);
-}
-
 /* Hauteur et alignement par défaut des lignes de paramètres */
 .resume-infos > li {
   min-height: 40px;
