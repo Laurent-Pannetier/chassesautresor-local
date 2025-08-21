@@ -338,9 +338,9 @@ defined('ABSPATH') || exit;
             'enigme-progression',
             esc_html__(
                 'Part moyenne des énigmes auxquelles chaque joueur a participé, '
-                . 'rapportée au nombre total d’énigmes de la chasse.\n\n'
-                . 'Vous\nPart des énigmes auxquelles vous avez accédé.\n\n'
-                . 'Moyenne\nMoyenne sur l’ensemble des joueurs.',
+                . 'rapportée au nombre total d’énigmes de la chasse. '
+                . 'Vous : Part des énigmes auxquelles vous avez accédé '
+                . 'Moyenne : Moyenne sur l’ensemble des joueurs.',
                 'chassesautresor-com'
             ),
             esc_attr__(
