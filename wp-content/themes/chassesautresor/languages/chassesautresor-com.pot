@@ -20,6 +20,14 @@ msgstr ""
 msgid "chassesautresor.com"
 msgstr ""
 
+#: template-parts/enigme/partials/enigme-sidebar-section.php:42
+msgid "Aucune énigme disponible"
+msgstr ""
+
+#: template-parts/enigme/partials/enigme-partial-gagnants.php:53
+msgid "Aucun gagnant pour le moment."
+msgstr ""
+
 #. Description of the theme
 #: style.css
 msgid "sites dédiés aux amoureux de chasses au trésor chassesautresor.com"

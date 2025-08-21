@@ -1654,3 +1654,11 @@ msgstr "Administration"
 msgid "Organisateurs"
 msgstr "Organizers"
 
+#: template-parts/enigme/partials/enigme-sidebar-section.php:42
+msgid "Aucune énigme disponible"
+msgstr "No puzzles available"
+
+#: template-parts/enigme/partials/enigme-partial-gagnants.php:53
+msgid "Aucun gagnant pour le moment."
+msgstr "No winners yet."
+
