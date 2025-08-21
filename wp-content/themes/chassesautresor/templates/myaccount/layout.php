@@ -31,14 +31,14 @@ get_header();
             $nav_items = array(
                 array(
                     'endpoint' => 'dashboard',
-                    'label'    => __('Accueil', 'chassesautresor'),
+                    'label'    => __('Accueil', 'chassesautresor-com'),
                     'icon'     => 'fas fa-home',
                     'url'      => wc_get_account_endpoint_url('dashboard'),
                     'active'   => is_account_page() && !is_wc_endpoint_url(),
                 ),
                 array(
                     'endpoint' => 'orders',
-                    'label'    => __('Commandes', 'chassesautresor'),
+                    'label'    => __('Commandes', 'chassesautresor-com'),
                     'icon'     => 'fas fa-shopping-cart',
                     'url'      => wc_get_account_endpoint_url('orders'),
                     'active'   => is_wc_endpoint_url('orders'),
@@ -54,7 +54,7 @@ get_header();
                 ),
                 array(
                     'endpoint' => 'points',
-                    'label'    => __('Points', 'chassesautresor'),
+                    'label'    => __('Points', 'chassesautresor-com'),
                     'title'    => __('Points', 'chassesautresor-com'),
                     'icon'     => 'fas fa-coins',
                     'url'      => home_url('/mon-compte/?section=points'),
@@ -63,7 +63,7 @@ get_header();
                 ),
                 array(
                     'endpoint' => 'edit-account',
-                    'label'    => __('Profil', 'chassesautresor'),
+                    'label'    => __('Profil', 'chassesautresor-com'),
                     'icon'     => 'fas fa-user',
                     'url'      => wc_get_account_endpoint_url('edit-account'),
                     'active'   => is_wc_endpoint_url('edit-account'),
@@ -92,30 +92,30 @@ get_header();
             ?>
             <a href="<?php echo esc_url(wc_logout_url()); ?>" class="dashboard-nav-link logout">
                 <i class="fas fa-sign-out-alt"></i>
-                <span><?php esc_html_e('Déconnexion', 'chassesautresor'); ?></span>
+                <span><?php esc_html_e('Déconnexion', 'chassesautresor-com'); ?></span>
             </a>
         </nav>
         <?php if (current_user_can('administrator')) : ?>
         <nav class="dashboard-nav admin-nav">
-            <span class="dashboard-nav-heading"><?php esc_html_e('Administration', 'chassesautresor'); ?></span>
+            <span class="dashboard-nav-heading"><?php esc_html_e('Administration', 'chassesautresor-com'); ?></span>
             <?php
             $admin_items = array(
                 array(
-                    'label'   => __('Organisateurs', 'chassesautresor'),
+                    'label'   => __('Organisateurs', 'chassesautresor-com'),
                     'icon'    => 'fas fa-users',
                     'url'     => home_url('/mon-compte/organisateurs/'),
                     'section' => 'organisateurs',
                     'active'  => $current_path === 'mon-compte/organisateurs',
                 ),
                 array(
-                    'label'   => __('Statistiques', 'chassesautresor'),
+                    'label'   => __('Statistiques', 'chassesautresor-com'),
                     'icon'    => 'fas fa-chart-line',
                     'url'     => home_url('/mon-compte/statistiques/'),
                     'section' => 'statistiques',
                     'active'  => $current_path === 'mon-compte/statistiques',
                 ),
                 array(
-                    'label'   => __('Outils', 'chassesautresor'),
+                    'label'   => __('Outils', 'chassesautresor-com'),
                     'icon'    => 'fas fa-wrench',
                     'url'     => home_url('/mon-compte/outils/'),
                     'section' => 'outils',
@@ -184,7 +184,7 @@ get_header();
                 if (function_exists('woocommerce_account_content')) {
                     woocommerce_account_content();
                 } else {
-                    echo '<p>' . esc_html__('Content not found.', 'chassesautresor') . '</p>';
+                    echo '<p>' . esc_html__('Content not found.', 'chassesautresor-com') . '</p>';
                 }
             }
             ?>

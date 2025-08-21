@@ -1642,6 +1642,10 @@ msgstr "Your hunts"
 msgid "Profil"
 msgstr "Profile"
 
+#: templates/myaccount/layout.php:154
+msgid "Votre profil"
+msgstr "Your profile"
+
 #: templates/myaccount/layout.php:95
 msgid "Déconnexion"
 msgstr "Log out"
