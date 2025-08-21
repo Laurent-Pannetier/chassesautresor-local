@@ -595,7 +595,7 @@ msgstr "Make contact"
 
 #: template-parts/chasse/chasse-edition-main.php:604
 msgid "Sites et réseaux de la chasse"
-msgstr "Hunting sites and networks"
+msgstr "website and social networks"
 
 #: template-parts/chasse/panneaux/chasse-edition-description.php:19
 msgid "Modifier la description de la chasse"
