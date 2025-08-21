@@ -6,6 +6,9 @@
 - Place opening braces on the same line as declarations.
 - Wrap all user-facing strings in WordPress internationalization functions and use the `chassesautresor-com` text domain.
 
+## Translations
+- Provide `.po` source files only; do not commit compiled `.mo` binaries. Users compile translations locally.
+
 ## Testing
 - Before committing any change, run the project tests.
 - Use the provided helper script to get the correct PHP and Composer executables:

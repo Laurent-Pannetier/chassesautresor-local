@@ -9,3 +9,4 @@ vendor/
 composer.phar
 tests/.phpunit.result.cache
 node_modules/
+wp-content/themes/chassesautresor/languages/*.mo

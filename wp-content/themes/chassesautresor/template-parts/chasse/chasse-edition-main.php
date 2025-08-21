@@ -101,7 +101,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                         ],
                         'label' => function () {
                             ?>
-                            <label for="champ-titre-chasse">Titre <span class="champ-obligatoire">*</span></label>
+                            <label for="champ-titre-chasse"><?= esc_html__('Titre', 'chassesautresor-com'); ?> <span class="champ-obligatoire">*</span></label>
                             <?php
                         },
                         'content' => function () use ($titre, $peut_editer_titre) {
