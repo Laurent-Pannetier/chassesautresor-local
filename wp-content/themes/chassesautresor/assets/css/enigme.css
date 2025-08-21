@@ -342,9 +342,16 @@ li.active .enigme-menu__edit {
   padding: var(--space-xl);
   border-radius: 6px;
   justify-content: center;
-  width: 70%;
+  width: 100%;
+  max-width: 700px;
   margin: auto;
   text-align: center;
+}
+
+@media (min-width: 768px) {
+  .participation {
+    width: 70%;
+  }
 }
 
 .participation-header {
