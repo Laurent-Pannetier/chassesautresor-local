@@ -259,8 +259,10 @@ function initChasseEdit() {
       bouton.dataset.champ = 'chasse_infos_recompense_valeur';
       bouton.dataset.cpt = 'chasse';
       bouton.dataset.postId = ligne.dataset.postId || '';
-      bouton.setAttribute('aria-label', 'Modifier la récompense');
-      bouton.textContent = wp.i18n.__('modifier', 'chassesautresor-com');
+      const action = complet ? 'modifier' : 'ajouter';
+      const aria = complet ? 'Modifier la récompense' : 'Ajouter la récompense';
+      bouton.setAttribute('aria-label', wp.i18n.__(aria, 'chassesautresor-com'));
+      bouton.textContent = wp.i18n.__(action, 'chassesautresor-com');
       champTexte.appendChild(bouton);
       if (typeof initZoneClicEdition === 'function') initZoneClicEdition(bouton);
     }
@@ -413,28 +415,6 @@ function initChasseEdit() {
   }
 
   // ==============================
-  // 🧠 Explication – Mode de fin de chasse
-  // ==============================
-  const explicationModeFin = {
-    automatique: wp.i18n.__(
-      "Un joueur devient gagnant lorsqu’il résout toutes les énigmes. La chasse s’achève dès que le nombre de gagnants prévu est atteint.",
-      "chassesautresor-com"
-    ),
-    manuelle: wp.i18n.__(
-      "Vous arrêtez la chasse manuellement, grâce au bouton situé dans le panneau d'édition chasse.",
-      "chassesautresor-com"
-    )
-  };
-  document.querySelectorAll('.mode-fin-aide').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const mode = btn.dataset.mode;
-      const message = explicationModeFin[mode];
-      if (message) {
-        alert(message);
-      }
-    });
-  });
-
   // ==============================
   // 🏁 Terminaison manuelle
   // ==============================

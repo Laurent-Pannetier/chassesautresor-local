@@ -170,6 +170,15 @@ add_action('wp_enqueue_scripts', function () {
         true
     );
 
+    wp_enqueue_script(
+        'help-modal',
+        $script_dir . 'help-modal.js',
+        ['wp-i18n'],
+        filemtime($theme_path . '/assets/js/help-modal.js'),
+        true
+    );
+    wp_set_script_translations('help-modal', 'chassesautresor-com');
+
     if (is_account_page() && is_user_logged_in()) {
         wp_enqueue_script(
             'myaccount',

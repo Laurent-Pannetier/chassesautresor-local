@@ -224,7 +224,7 @@ msgstr "Riddles"
 #: template-parts/chasse/chasse-edition-main.php:650
 #: template-parts/chasse/chasse-edition-main.php:662
 msgid "Indices"
-msgstr "Indices"
+msgstr "Hints"
 
 #: inc/enigme/affichage.php:447
 msgid "Voir la solution"
@@ -518,7 +518,7 @@ msgstr "Modifying the description"
 #: assets/js/core/helpers.js:240 assets/js/core/helpers.js:262
 #: assets/js/core/resume.js:373 assets/js/enigme-edit.js:891
 msgid "modifier"
-msgstr "modify"
+msgstr "edit"
 
 #: template-parts/chasse/chasse-edition-main.php:171
 msgid "Récompense"
@@ -610,7 +610,7 @@ msgstr "Close the panel."
 #: template-parts/chasse/panneaux/chasse-edition-description.php:28
 #: template-parts/enigme/panneaux/enigme-edition-description.php:27
 #: template-parts/enigme/panneaux/enigme-edition-images.php:20
-msgid "💾 Enregistrer"
+msgid "Enregistrer"
 msgstr "Save"
 
 #: template-parts/chasse/panneaux/chasse-edition-description.php:33
@@ -1191,7 +1191,7 @@ msgstr "Month"
 
 #: template-parts/enigme/enigme-edition-main.php
 msgid "Participants"
-msgstr "Participants"
+msgstr "Players"
 
 #: template-parts/enigme/enigme-edition-main.php
 msgid "Points collectés"
@@ -1421,3 +1421,33 @@ msgstr "Daily Attempts:"
 #: templates/myaccount/content-points.php:103 inc/enigme/reponses.php:59 template-parts/enigme/partials/enigme-partial-bloc-reponse.php:185
 msgid "Ajouter des points"
 msgstr "Add points"
+
+#: inc/user-functions.php:233 templates/myaccount/layout.php:156
+msgid "Vos commandes"
+msgstr "Your orders"
+
+#: templates/myaccount/content-chasses.php:119
+msgid "Énigme"
+msgstr "Riddle"
+
+#: template-parts/chasse/chasse-edition-main.php:217 assets/js/chasse-edit.js:264
+msgid "Ajouter la récompense"
+msgstr "Add reward"
+
+#: templates/myaccount/content-chasses.php:112
+msgid "%d tentative en attente"
+msgid_plural "%d tentatives en attente"
+msgstr[0] "%d pending attempt"
+msgstr[1] "%d pending attempts"
+
+#: templates/myaccount/content-chasses.php:114
+msgid "%d tentative"
+msgid_plural "%d tentatives"
+msgstr[0] "%d attempt"
+msgstr[1] "%d attempts"
+
+#: templates/myaccount/content-chasses.php:116
+msgid "%d bonne réponse"
+msgid_plural "%d bonnes réponses"
+msgstr[0] "%d correct answer"
+msgstr[1] "%d correct answers"

@@ -16,15 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    document.querySelectorAll('.panneau-organisateur .stat-help').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const message = btn.dataset.message;
-        if (message) {
-          alert(message);
-        }
-      });
-    });
-
     // 🟠 Déclencheurs de résumé
     document.querySelectorAll('.resume-infos .champ-modifier[data-champ]').forEach((btn) => {
       if (typeof initChampDeclencheur === 'function') initChampDeclencheur(btn);
