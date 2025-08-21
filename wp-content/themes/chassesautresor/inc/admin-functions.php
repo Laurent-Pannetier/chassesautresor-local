@@ -1718,7 +1718,9 @@ function afficher_tableau_organisateurs_pending(?array $liste = null, int $page 
                         break;
                 }
 
-                echo '<td class="col-chasse"><a href="' . esc_url($row['chasse_permalink']) . '" target="_blank">' . esc_html($row['chasse_titre']) . '</a></td>';
+                echo '<td class="col-chasse"><a href="' . esc_url($row['chasse_permalink']) . '">'
+                    . esc_html($row['chasse_titre'])
+                    . '</a></td>';
                 echo '<td class="col-enigmes"><span class="etiquette">' . intval($row['nb_enigmes']) . '</span></td>';
 
                 $warning   = $row['pending_validation'] || $row['pending_attempts'];
