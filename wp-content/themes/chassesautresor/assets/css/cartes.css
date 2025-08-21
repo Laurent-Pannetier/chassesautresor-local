@@ -31,13 +31,13 @@
   gap: var(--space-xl);
 }
 
-@media (--bp-lg) {
+@media not all and (--bp-lg) {
   .grille-3 {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (--bp-md) {
+@media not all and (--bp-md) {
   .grille-3 {
     grid-template-columns: 1fr;
   }

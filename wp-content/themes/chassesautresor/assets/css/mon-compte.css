@@ -313,7 +313,7 @@
 
 
 /* ✅ Mobile : Les éléments s'empilent */
-@media (--bp-md) {
+@media not all and (--bp-md) {
     .dashboard-profile-wrapper {
         flex-direction: column; /* ✅ Empile les éléments */
         justify-content: center; /* ✅ Centre les éléments verticalement */
@@ -375,7 +375,7 @@
     vertical-align: middle;
 }
 
-@media (--bp-md) {
+@media not all and (--bp-md) {
     .menu-deroulant .submenu {
         left: -50px;
     }
@@ -696,7 +696,7 @@
 
 
 /* Tablette : 2 colonnes */
-@media (--bp-md) {
+@media not all and (--bp-md) {
     .image-container {
         height: 260px;
     }
