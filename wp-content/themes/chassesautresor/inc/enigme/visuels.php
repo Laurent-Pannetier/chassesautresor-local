@@ -113,20 +113,42 @@ function afficher_visuels_enigme(int $enigme_id): void
     }
 
     $images = get_field('enigme_visuel_image', $enigme_id);
-    if (!$images || !is_array($images)) return;
-
-    echo '<div class="galerie-enigme-wrapper">';
-
-    $image_id_active = $images[0]['ID'] ?? null;
-    if ($image_id_active) {
-        echo '<div class="image-principale">';
-        echo build_picture_enigme($image_id_active, __('Visuel énigme', 'chassesautresor-com'), ['full'], [
-            'id'    => 'image-enigme-active',
-            'class' => 'image-active',
-        ]);
-        echo '</div>';
+    $valid_images = [];
+    if (is_array($images)) {
+        foreach ($images as $img) {
+            $id = (int) ($img['ID'] ?? 0);
+            if ($id && $id !== ID_IMAGE_PLACEHOLDER_ENIGME) {
+                $valid_images[] = $id;
+            }
+        }
     }
 
+    if (!$valid_images) {
+        $valid_images[] = ID_IMAGE_PLACEHOLDER_ENIGME;
+    }
+
+    $caption = (string) get_field('enigme_visuel_legende', $enigme_id);
+
+    echo '<div class="galerie-enigme-wrapper">';
+    foreach ($valid_images as $index => $image_id) {
+        $alt = trim((string) get_post_meta($image_id, '_wp_attachment_image_alt', true));
+        if (!$alt) {
+            $alt = $image_id === ID_IMAGE_PLACEHOLDER_ENIGME
+                ? __('Image par défaut de l’énigme', 'chassesautresor-com')
+                : ($caption ?: __('Visuel énigme', 'chassesautresor-com'));
+        }
+
+        $attrs = [
+            'class' => $index === 0 ? 'image-active' : '',
+        ];
+
+        echo '<figure class="image-principale">';
+        echo build_picture_enigme($image_id, $alt, ['full'], $attrs);
+        if ($caption) {
+            echo '<figcaption>' . esc_html($caption) . '</figcaption>';
+        }
+        echo '</figure>';
+    }
     echo '</div>';
 }
 
