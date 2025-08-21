@@ -23,6 +23,126 @@ add_action( 'after_setup_theme', 'cta_load_textdomain' );
 
 
 /**
+ * Retrieves the locale from the cookie.
+ *
+ * @return string
+ */
+function cta_get_locale_from_cookie() {
+    $locale = isset( $_COOKIE['cta_lang'] ) ? sanitize_text_field( wp_unslash( $_COOKIE['cta_lang'] ) ) : '';
+
+    return apply_filters( 'locale', $locale );
+}
+
+/**
+ * Handles language switching via query parameter and cookie.
+ *
+ * @return void
+ */
+function cta_handle_language() {
+    $locale = '';
+
+    if ( isset( $_GET['lang'] ) ) {
+        $lang   = sanitize_text_field( wp_unslash( $_GET['lang'] ) );
+        $locale = 'fr' === $lang ? 'fr_FR' : ( 'en' === $lang ? 'en_US' : '' );
+
+        if ( $locale ) {
+            setcookie( 'cta_lang', $locale, time() + MONTH_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+        }
+    } else {
+        $locale = cta_get_locale_from_cookie();
+
+        if ( ! $locale ) {
+            $accept       = sanitize_text_field( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '' );
+            $browser_lang = substr( $accept, 0, 2 );
+            $locale       = 'fr' === $browser_lang ? 'fr_FR' : ( 'en' === $browser_lang ? 'en_US' : '' );
+
+            if ( $locale ) {
+                setcookie( 'cta_lang', $locale, time() + MONTH_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+            }
+        }
+    }
+
+    if ( $locale ) {
+        switch_to_locale( $locale );
+    }
+}
+add_action( 'init', 'cta_handle_language' );
+
+/**
+ * Renders the language switcher in the header.
+ *
+ * @param string $row    Header builder row.
+ * @param string $column Header builder column.
+ *
+ * @return void
+ */
+function cta_render_lang_switcher( $row, $column ) {
+    if ( 'above' !== $row || 'right' !== $column ) {
+        return;
+    }
+
+    $active_locale = '';
+
+    if ( isset( $_GET['lang'] ) ) {
+        $lang         = sanitize_text_field( wp_unslash( $_GET['lang'] ) );
+        $active_locale = 'fr' === $lang ? 'fr_FR' : ( 'en' === $lang ? 'en_US' : '' );
+    }
+
+    if ( ! $active_locale ) {
+        $active_locale = cta_get_locale_from_cookie();
+    }
+
+    if ( ! $active_locale ) {
+        $active_locale = get_locale();
+    }
+
+    $available_langs = [
+        'fr_FR' => [
+            'code'  => 'fr',
+            'label' => __( 'Français', 'chassesautresor-com' ),
+            'flag'  => '🇫🇷',
+        ],
+        'en_US' => [
+            'code'  => 'en',
+            'label' => __( 'English', 'chassesautresor-com' ),
+            'flag'  => '🇬🇧',
+        ],
+    ];
+
+    $current_url = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    $current_url = remove_query_arg( 'lang', $current_url );
+    ?>
+    <div class="lang-switcher ast-builder-layout-element site-header-focus-item">
+        <button class="lang-switcher__toggle" aria-haspopup="true" aria-expanded="false" aria-label="<?php esc_attr_e( 'Change language', 'chassesautresor-com' ); ?>">
+            <span class="lang-switcher__flag">
+                <?php echo esc_html( $available_langs[ $active_locale ]['flag'] ?? '🇫🇷' ); ?>
+            </span>
+            <span class="lang-switcher__icon">▼</span>
+        </button>
+        <ul class="lang-switcher__options">
+            <?php foreach ( $available_langs as $locale => $data ) : ?>
+                <?php $url = add_query_arg( 'lang', $data['code'], $current_url ); ?>
+                <li class="<?php echo $locale === $active_locale ? 'active' : ''; ?>">
+                    <?php if ( $locale === $active_locale ) : ?>
+                        <span>
+                            <span class="lang-switcher__flag"><?php echo esc_html( $data['flag'] ); ?></span>
+                            <span class="lang-switcher__label"><?php echo esc_html( $data['label'] ); ?></span>
+                        </span>
+                    <?php else : ?>
+                        <a href="<?php echo esc_url( $url ); ?>">
+                            <span class="lang-switcher__flag"><?php echo esc_html( $data['flag'] ); ?></span>
+                            <span class="lang-switcher__label"><?php echo esc_html( $data['label'] ); ?></span>
+                        </a>
+                    <?php endif; ?>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+    <?php
+}
+add_action( 'astra_render_header_column', 'cta_render_lang_switcher', 999, 2 );
+
+/**
  * Chargement des styles du thème parent et enfant avec prise en charge d'Astra.
  */
 add_action('wp_enqueue_scripts', function () {
@@ -129,6 +249,15 @@ add_action('wp_enqueue_scripts', function () {
     }
 
     $script_dir = $theme_uri . '/assets/js/';
+
+    wp_enqueue_script(
+        'lang-switcher',
+        $script_dir . 'lang-switcher.js',
+        [],
+        filemtime($theme_path . '/assets/js/lang-switcher.js'),
+        true
+    );
+
     if (is_account_page() && is_user_logged_in()) {
         wp_enqueue_script(
             'myaccount',
