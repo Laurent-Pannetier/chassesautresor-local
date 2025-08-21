@@ -212,7 +212,7 @@ add_action('wp_enqueue_scripts', function () {
             wp_enqueue_style($handle);
         }
 
-        if (is_singular('enigme')) {
+        if (is_singular('enigme') && !wp_is_mobile()) {
             wp_enqueue_style('enigme-style');
         }
 
