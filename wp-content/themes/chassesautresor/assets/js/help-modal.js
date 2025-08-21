@@ -1,17 +1,31 @@
 // Global help modal handler
 
-document.addEventListener('click', (e) => {
-  const btn = e.target.closest('[data-message]');
-  if (!btn) return;
-  const title = btn.dataset.title || '';
-  const message = btn.dataset.message || '';
-  const icon = btn.dataset.icon || 'fa-regular fa-circle-question';
-  const variant = btn.dataset.variant || '';
-  const closeLabel = btn.dataset.close || wp.i18n.__('Fermer', 'chassesautresor-com');
-  openHelpModal({ title, message, icon, variant, closeLabel });
-});
+document.addEventListener(
+  'click',
+  (e) => {
+    const btn = e.target.closest('[data-message]');
+    if (!btn) return;
+
+    // Empêche les anciens gestionnaires de cliquer et les liens de s'exécuter
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+
+    const title = btn.dataset.title || '';
+    const message = btn.dataset.message || '';
+    const icon = btn.dataset.icon || 'fa-regular fa-circle-question';
+    const variant = btn.dataset.variant || '';
+    const closeLabel =
+      btn.dataset.close || wp.i18n.__('Fermer', 'chassesautresor-com');
+    openHelpModal({ title, message, icon, variant, closeLabel });
+  },
+  true
+);
 
 function openHelpModal({ title, message, icon, variant, closeLabel }) {
+  // Ferme toute modale existante avant d'en ouvrir une nouvelle
+  document.querySelector('.help-modal-overlay')?.remove();
+
   const overlay = document.createElement('div');
   overlay.className = 'help-modal-overlay';
   const modalClass = variant ? ` help-modal--${variant}` : '';
