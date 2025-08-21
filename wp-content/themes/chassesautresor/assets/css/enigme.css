@@ -451,12 +451,22 @@ li.active .enigme-menu__edit {
 
   .enigme-mobile-header a,
   .enigme-mobile-header button {
-    padding: var(--space-xs) var(--space-sm);
-    font-size: 1rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: var(--space-xs);
     color: var(--color-primary);
     text-decoration: none;
     background: none;
-    border: none;
+    border: 1px solid rgba(255, 215, 0, 0.5);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .enigme-mobile-header svg {
+    width: 1rem;
+    height: 1rem;
   }
 
   .enigme-mobile-panel {
