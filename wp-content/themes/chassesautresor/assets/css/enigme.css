@@ -588,7 +588,7 @@ body.single-enigme.topbar-visible header.site-header {
   transform: translateY(0);
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 1023px), (hover: none) {
   body.single-enigme header.site-header {
     display: none;
   }

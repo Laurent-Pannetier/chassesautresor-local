@@ -4,7 +4,7 @@
       return;
     }
 
-    if (window.matchMedia('(max-width: 1023px)').matches) {
+    if (window.matchMedia('(max-width: 1023px), (hover: none)').matches) {
       return;
     }
 
