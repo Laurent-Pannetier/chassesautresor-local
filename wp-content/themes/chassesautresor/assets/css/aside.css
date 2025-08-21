@@ -84,18 +84,46 @@
   margin: var(--space-md) 0 var(--space-xs);
 }
 
-.aside-subsection-title .mode-fin-aide {
+.aside-subsection-title .mode-fin-aide,
+.aside-subsection-title .help-icon-button {
   background: none;
   border: none;
   cursor: pointer;
   margin-left: 0.3em;
   color: inherit;
   padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.aside-subsection-title .stat-help i {
+.aside-subsection-title .mode-fin-aide i,
+.aside-subsection-title .help-icon-button i {
   pointer-events: none;
   font-size: 0.8em;
+}
+
+.help-icon--aide,
+.help-icon--info,
+.help-icon--aide-small {
+  border-radius: 50%;
+  background-color: var(--color-gray-100, #eee);
+  width: 1.4em;
+  height: 1.4em;
+}
+
+.help-icon--info {
+  background-color: var(--color-white, #fff);
+  border: 1px solid var(--color-gray-300, #ccc);
+}
+
+.help-icon--aide-small {
+  width: 1em;
+  height: 1em;
+}
+
+.help-icon--aide-small i {
+  font-size: 0.7em;
 }
 
 .menu-lateral ul {
@@ -275,6 +303,16 @@
   max-width: 400px;
   width: 90%;
   position: relative;
+}
+
+.help-modal-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.help-modal-header i {
+  font-size: 1.5rem;
 }
 
 .help-modal-title {

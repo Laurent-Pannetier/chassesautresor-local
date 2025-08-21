@@ -254,10 +254,9 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                           null,
                           [
                               'aria_label' => __('Explication du mode automatique', 'chassesautresor-com'),
-                              'classes'    => 'mode-fin-aide',
-                              'attributes' => [
-                                  'data-mode' => 'automatique',
-                              ],
+                              'variant'    => 'aide',
+                              'title'      => __('Fin de chasse automatique', 'chassesautresor-com'),
+                              'message'    => __('Un joueur est déclaré gagnant lorsqu’il a résolu toutes les énigmes. En mode automatique, la chasse se termine dès que le nombre de gagnants prévu est atteint.', 'chassesautresor-com'),
                           ]
                       );
                       ?>
@@ -277,10 +276,9 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                           null,
                           [
                               'aria_label' => __('Explication du mode manuel', 'chassesautresor-com'),
-                              'classes'    => 'mode-fin-aide',
-                              'attributes' => [
-                                  'data-mode' => 'manuelle',
-                              ],
+                              'variant'    => 'aide',
+                              'title'      => __('Fin de chasse manuelle', 'chassesautresor-com'),
+                              'message'    => __('Vous pouvez arrêter la chasse à tout moment grâce au bouton disponible dans le panneau d’édition de la chasse, onglet Paramètres.', 'chassesautresor-com'),
                           ]
                       );
                       ?>
@@ -423,7 +421,10 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                           null,
                           [
                               'aria_label' => __('En savoir plus sur les points', 'chassesautresor-com'),
-                              'classes'    => 'bouton-aide-points open-points-modal',
+                              'classes'    => 'open-points-modal',
+                              'variant'    => 'info',
+                              'title'      => __('Coût d’accès à une chasse', 'chassesautresor-com'),
+                              'message'    => __('Vous êtes libre de définir le coût d’accès à votre chasse : gratuit ou payant. Cet accès est indispensable pour consulter les énigmes, qui restent invisibles tant qu’il n’a pas été débloqué.', 'chassesautresor-com'),
                           ]
                       );
                       ?>
@@ -588,13 +589,14 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                 'label' => esc_html__('Taux d\'engagement', 'chassesautresor-com'),
                 'value' => $taux_engagement . '%',
                 'stat'  => 'engagement-rate',
-                'help'  => __(
-                    'Pourcentage moyen d’énigmes auxquelles chaque participant s’est engagé, '
-                    . 'par rapport à toutes celles proposées.',
+                'help'        => __(
+                    'Pourcentage moyen d’énigmes auxquelles chaque joueur a participé, par rapport à l’ensemble des énigmes proposées.',
                     'chassesautresor-com'
                 ),
-                'help_label' => __('Explication du taux d’engagement', 'chassesautresor-com'),
-                'class' => $card_class,
+                'help_label'  => __('Explication du taux d’engagement', 'chassesautresor-com'),
+                'help_title'  => __('Taux d\'engagement', 'chassesautresor-com'),
+                'help_variant'=> 'aide-small',
+                'class'       => $card_class,
             ]);
             ?>
           </div>
