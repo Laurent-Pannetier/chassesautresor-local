@@ -126,6 +126,15 @@ add_action('wp_enqueue_scripts', function () {
             ['astra-style'],
             filemtime($theme_path . $dist_file)
         );
+
+        if (is_singular('enigme')) {
+            wp_enqueue_style(
+                'enigme-style',
+                $theme_uri . '/assets/css/enigme.css',
+                ['chassesautresor-style'],
+                filemtime($theme_path . '/assets/css/enigme.css')
+            );
+        }
     }
 
     $script_dir = $theme_uri . '/assets/js/';
