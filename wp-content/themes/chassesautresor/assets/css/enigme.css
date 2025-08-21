@@ -514,12 +514,28 @@ body.single-enigme.topbar-visible .page-enigme {
     bottom: 0;
     background-color: var(--color-background);
     border-radius: var(--space-sm) var(--space-sm) 0 0;
-    padding-top: var(--space-md);
+    padding-top: calc(var(--space-lg) + var(--space-md));
     padding-bottom: calc(var(--space-md) + env(safe-area-inset-bottom));
     padding-left: calc(var(--space-md) + env(safe-area-inset-left));
     padding-right: calc(var(--space-md) + env(safe-area-inset-right));
     max-height: 80vh;
     overflow-y: auto;
+    border: 1px solid var(--color-grey-dark);
+    box-shadow: 0 calc(-1 * var(--space-xxs)) var(--space-lg) rgba(var(--color-black-rgb), 0.4);
+    transition: box-shadow var(--transition-medium);
+  }
+
+  .enigme-mobile-panel__sheet::before {
+    content: "";
+    position: absolute;
+    top: var(--space-sm);
+    left: 50%;
+    transform: translateX(-50%);
+    width: var(--space-4xl);
+    height: var(--space-xxs);
+    background-color: var(--color-grey-light);
+    border-radius: var(--space-xxs);
+    pointer-events: none;
   }
 
   .enigme-mobile-panel.full .enigme-mobile-panel__sheet {
