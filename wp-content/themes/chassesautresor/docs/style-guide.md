@@ -31,3 +31,4 @@ Les blocs `aside` utilisent un style commun défini dans `assets/css/aside.css`.
 L'opacité de leur fond est centralisée par la variable globale
 `--aside-opacity` (valeur par défaut `0.4` dans `assets/css/variables.css`).
 Cette variable facilite l'harmonisation des asides sur l'ensemble du site.
+En dessous de `1024px` (`--bp-lg`), les asides sont masqués au profit d'un panneau mobile.
