@@ -327,12 +327,12 @@ span.champ-obligatoire {
 /* ========== 📱 RESPONSIVE ========== */
 
 @media not all and (--bp-md) {
-    address, blockquote, body, dd, dl, dt, fieldset, figure, h1, h2, h3, h4, h5, h6, hr, html, iframe, legend, li, ol, p, pre, textarea, ul  {
+    address, blockquote, body, dd, dl, dt, fieldset, figure, html, iframe, legend, li, ol, p, pre, textarea, ul  {
         font-size:96%;
     }
 }
 @media not all and (--bp-sm) {
-    address, blockquote, body, dd, dl, dt, fieldset, figure, h1, h2, h3, h4, h5, h6, hr, html, iframe, legend, li, ol, p, pre, textarea, ul {
+    address, blockquote, body, dd, dl, dt, fieldset, figure, html, iframe, legend, li, ol, p, pre, textarea, ul {
         font-size:93%;
     }
 }
