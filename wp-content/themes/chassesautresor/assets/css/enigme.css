@@ -101,7 +101,8 @@
 }
 
 .enigme-menu li > a:not(.enigme-menu__edit) {
-  display: block;
+  display: flex;
+  align-items: center;
   flex: 1;
   padding: var(--space-xxs) calc(var(--space-sm) + 1.5em);
   font-weight: 600;
@@ -109,6 +110,13 @@
   color: inherit;
   text-decoration: none;
   border-radius: 4px;
+  min-height: 44px;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.enigme-menu li > a:not(.enigme-menu__edit):focus-visible {
+  outline-color: var(--color-accent);
 }
 
 .enigme-menu--editable li > a:not(.enigme-menu__edit) {
@@ -442,8 +450,10 @@ li.active .enigme-menu__edit {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
     padding-top: calc(var(--space-sm) + env(safe-area-inset-top));
     padding-bottom: var(--space-sm);
     padding-left: calc(var(--space-md) + env(safe-area-inset-left));
@@ -527,10 +537,18 @@ li.active .enigme-menu__edit {
     padding: var(--space-sm);
     color: var(--color-text-primary);
     cursor: pointer;
+    outline: 2px solid transparent;
+    outline-offset: 2px;
   }
 
-  .panel-tab--active {
-    border-bottom: 2px solid var(--color-primary);
+  .panel-tab[aria-selected="true"] {
+    background-color: var(--color-primary);
+    color: var(--color-background);
+    font-weight: 600;
+  }
+
+  .panel-tab:focus-visible {
+    outline-color: var(--color-accent);
   }
 
   .panel-tab-content[hidden] {
@@ -553,4 +571,25 @@ li.active .enigme-menu__edit {
 
 body.no-scroll {
   overflow: hidden;
+}
+
+/* Topbar visibility on enigma pages */
+body.single-enigme header.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  transform: translateY(-100%);
+  transition: transform var(--transition-medium);
+}
+
+body.single-enigme.topbar-visible header.site-header {
+  transform: translateY(0);
+}
+
+@media (max-width: 1023px) {
+  body.single-enigme header.site-header {
+    display: none;
+  }
 }

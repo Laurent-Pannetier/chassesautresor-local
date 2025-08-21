@@ -301,6 +301,13 @@ add_action('wp_enqueue_scripts', function () {
             filemtime($theme_path . '/assets/js/enigme-panel.js'),
             true
         );
+        wp_enqueue_script(
+            'enigme-topbar',
+            $script_dir . 'enigme-topbar.js',
+            [],
+            filemtime($theme_path . '/assets/js/enigme-topbar.js'),
+            true
+        );
     }
 });
 
@@ -334,6 +341,7 @@ require_once $inc_path . 'utils/liens.php';
 require_once $inc_path . 'chasse/stats.php';
 require_once $inc_path . 'organisateur/stats.php';
 require_once $inc_path . 'pager.php';
+require_once $inc_path . 'table.php';
 
 require_once $inc_path . 'edition/edition-core.php';
 require_once $inc_path . 'edition/edition-organisateur.php';
