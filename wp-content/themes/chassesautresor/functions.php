@@ -212,7 +212,7 @@ add_action('wp_enqueue_scripts', function () {
             wp_enqueue_style($handle);
         }
 
-        if (is_singular('enigme') && !wp_is_mobile()) {
+        if (is_singular('enigme')) {
             wp_enqueue_style('enigme-style');
         }
 
@@ -246,6 +246,15 @@ add_action('wp_enqueue_scripts', function () {
             ['astra-style'],
             filemtime($theme_path . $dist_file)
         );
+
+        if (is_singular('enigme')) {
+            wp_enqueue_style(
+                'enigme-style',
+                $theme_uri . '/assets/css/enigme.css',
+                [],
+                filemtime($theme_path . '/assets/css/enigme.css')
+            );
+        }
     }
 
     $script_dir = $theme_uri . '/assets/js/';
@@ -301,15 +310,13 @@ add_action('wp_enqueue_scripts', function () {
             filemtime($theme_path . '/assets/js/enigme-panel.js'),
             true
         );
-        if (!wp_is_mobile()) {
-            wp_enqueue_script(
-                'enigme-topbar',
-                $script_dir . 'enigme-topbar.js',
-                [],
-                filemtime($theme_path . '/assets/js/enigme-topbar.js'),
-                true
-            );
-        }
+        wp_enqueue_script(
+            'enigme-topbar',
+            $script_dir . 'enigme-topbar.js',
+            [],
+            filemtime($theme_path . '/assets/js/enigme-topbar.js'),
+            true
+        );
     }
 });
 
