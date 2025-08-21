@@ -38,7 +38,11 @@ if ($section === 'navigation') {
     if (!empty($args['ajout_html'])) {
         echo $args['ajout_html'];
     }
-    echo '<ul class="' . esc_attr($menu_class) . '">' . implode('', $args['menu_items'] ?? []) . '</ul>';
+    if (empty($args['menu_items'])) {
+        echo '<p class="enigme-navigation__empty">' . esc_html__('Aucune énigme disponible', 'chassesautresor-com') . '</p>';
+    } else {
+        echo '<ul class="' . esc_attr($menu_class) . '">' . implode('', $args['menu_items']) . '</ul>';
+    }
     echo '</section>';
     return;
 }
