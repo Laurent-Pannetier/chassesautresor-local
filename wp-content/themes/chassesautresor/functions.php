@@ -165,6 +165,13 @@ add_action('wp_enqueue_scripts', function () {
             filemtime($theme_path . '/assets/js/enigme-gallery.js'),
             true
         );
+        wp_enqueue_script(
+            'enigme-panel',
+            $script_dir . 'enigme-panel.js',
+            [],
+            filemtime($theme_path . '/assets/js/enigme-panel.js'),
+            true
+        );
     }
 });
 
