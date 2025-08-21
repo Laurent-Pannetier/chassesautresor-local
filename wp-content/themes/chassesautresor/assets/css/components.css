@@ -968,6 +968,8 @@ a[aria-disabled="true"] {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     display: none;
     z-index: 10;
+    min-width: 6rem;
+    width: max-content;
 }
 
 .lang-switcher.is-open .lang-switcher__options {
@@ -981,6 +983,7 @@ a[aria-disabled="true"] {
     padding: 0.25rem 0.5rem;
     color: var(--color-text-primary);
     text-decoration: none;
+    white-space: nowrap;
 }
 
 .lang-switcher__options .lang-switcher__flag {
