@@ -87,12 +87,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
             <span class="titre-objet" data-cpt="enigme"><?= esc_html($titre); ?></span>
           </h2>
 
-        <button type="button" class="panneau-fermer" aria-label="Fermer les paramètres">✖</button>
+        <button type="button" class="panneau-fermer" aria-label="<?= esc_attr__('Fermer les paramètres', 'chassesautresor-com'); ?>">✖</button>
       </div>
       <div class="edition-tabs">
-        <button class="edition-tab active" data-target="enigme-tab-param">Paramètres</button>
-        <button class="edition-tab" data-target="enigme-tab-stats">Statistiques</button>
-        <button class="edition-tab" data-target="enigme-tab-soumission"<?= $mode_validation === 'aucune' ? ' style="display:none;"' : ''; ?>>Tentatives</button>
+        <button class="edition-tab active" data-target="enigme-tab-param"><?= esc_html__('Paramètres', 'chassesautresor-com'); ?></button>
+        <button class="edition-tab" data-target="enigme-tab-stats"><?= esc_html__('Statistiques', 'chassesautresor-com'); ?></button>
+        <button class="edition-tab" data-target="enigme-tab-soumission"<?= $mode_validation === 'aucune' ? ' style="display:none;"' : ''; ?>><?= esc_html__('Tentatives', 'chassesautresor-com'); ?></button>
         <button class="edition-tab" data-target="enigme-tab-solution"><?= esc_html__('Solution', 'chassesautresor-com'); ?></button>
       </div>
     </div>
@@ -100,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
 <div id="enigme-tab-param" class="edition-tab-content active">
       <i class="fa-solid fa-sliders tab-watermark" aria-hidden="true"></i>
       <div class="edition-panel-header">
-        <h2><i class="fa-solid fa-sliders"></i> Paramètres</h2>
+        <h2><i class="fa-solid fa-sliders"></i> <?= esc_html__('Paramètres', 'chassesautresor-com'); ?></h2>
       </div>
       <div class="edition-panel-body">
         <div class="edition-panel-section edition-panel-section-ligne">
@@ -108,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
             <div class="resume-blocs-grid">
               <div class="resume-bloc resume-obligatoire">
 
-                <h3>Informations</h3>
+                <h3><?= esc_html__('Informations', 'chassesautresor-com'); ?></h3>
                 <ul class="resume-infos">
                   <?php
                   get_template_part(
@@ -124,7 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                           ],
                           'label' => function () {
                               ?>
-                              <label for="champ-titre-enigme">Titre <span class="champ-obligatoire">*</span></label>
+                              <label for="champ-titre-enigme"><?= esc_html__('Titre', 'chassesautresor-com'); ?> <span class="champ-obligatoire">*</span></label>
                               <?php
                           },
                           'content' => function () use ($titre, $peut_editer_titre) {
@@ -134,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                                 maxlength="80"
                                 value="<?= esc_attr($titre); ?>"
                                 id="champ-titre-enigme" <?= $peut_editer_titre ? '' : 'disabled'; ?>
-                                placeholder="renseigner le titre de l’énigme" />
+                                placeholder="<?= esc_attr__('renseigner le titre de l’énigme', 'chassesautresor-com'); ?>" />
                               <div class="champ-feedback"></div>
                               <?php
                           },
@@ -152,7 +152,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                     data-post-id="<?= esc_attr($enigme_id); ?>"
                     data-rempli="<?= $has_images_utiles ? '1' : '0'; ?>">
                     <div class="champ-affichage">
-                      <label>Illustrations <span class="champ-obligatoire">*</span></label>
+                      <label><?= esc_html__('Illustrations', 'chassesautresor-com'); ?> <span class="champ-obligatoire">*</span></label>
                       <?php if ($peut_editer) : ?>
                         <button type="button"
                           class="champ-modifier ouvrir-panneau-images"
@@ -168,7 +168,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                               <img src="<?= $thumb_url; ?>" alt="" class="vignette-enigme" />
                             <?php endforeach; ?>
                           <?php else : ?>
-                            <span class="champ-ajout-image">ajouter</span>
+                            <span class="champ-ajout-image"><?= esc_html__('ajouter', 'chassesautresor-com'); ?></span>
                           <?php endif; ?>
                         </button>
                       <?php else : ?>
@@ -181,7 +181,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                             <img src="<?= $thumb_url; ?>" alt="" class="vignette-enigme" />
                           <?php endforeach; ?>
                         <?php else : ?>
-                          <span class="champ-ajout-image">ajouter</span>
+                          <span class="champ-ajout-image"><?= esc_html__('ajouter', 'chassesautresor-com'); ?></span>
                         <?php endif; ?>
                       <?php endif; ?>
                     </div>
@@ -234,7 +234,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
 
               <!-- Règlages -->
               <div class="resume-bloc resume-reglages">
-                <h3>Réglages</h3>
+                <h3><?= esc_html__('Réglages', 'chassesautresor-com'); ?></h3>
                 <ul class="resume-infos">
 
             <!-- Mode de validation -->
@@ -286,7 +286,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                 <label for="champ-bonne-reponse"><?= esc_html__('Réponse', 'chassesautresor-com'); ?> <span class="champ-obligatoire">*</span></label>
                 <input type="text" id="champ-bonne-reponse" name="champ-bonne-reponse" class="champ-input champ-texte-edit<?= empty($reponse) ? ' champ-vide-obligatoire' : ''; ?>" value="<?= esc_attr($reponse); ?>" placeholder="<?= esc_attr__('Ex : soleil', 'chassesautresor-com'); ?>" <?= $peut_editer ? '' : 'disabled'; ?> />
                 <div class="champ-enigme champ-casse <?= $casse ? 'champ-rempli' : 'champ-vide'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_reponse_casse" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" data-no-edit="1" style="display: inline-flex; align-items: center;">
-                  <label style="display: flex; align-items: center; gap: 4px;"><input type="checkbox" <?= $casse ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>> Respecter la casse</label>
+                  <label style="display: flex; align-items: center; gap: 4px;"><input type="checkbox" <?= $casse ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>> <?= esc_html__('Respecter la casse', 'chassesautresor-com'); ?></label>
                   <div class="champ-feedback"></div>
                 </div>
                 <div class="champ-feedback"></div>
@@ -347,7 +347,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
               <?= $mode_validation === 'aucune' ? 'style="display:none;"' : ''; ?>
             >
               <div class="champ-edition">
-                <label for="enigme-tentative-cout">Coût tentative
+                <label for="enigme-tentative-cout"><?= esc_html__('Coût tentative', 'chassesautresor-com'); ?>
                   <?php
                   get_template_part(
                       'template-parts/common/help-icon',
@@ -360,14 +360,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                   ?>
                 </label>
                 <input type="number" id="enigme-tentative-cout" class="champ-input champ-cout" min="0" step="1" value="<?= esc_attr($cout); ?>" placeholder="0" <?= $peut_editer ? '' : 'disabled'; ?> />
-                <span class="txt-small">points</span>
+                <span class="txt-small"><?= esc_html__('points', 'chassesautresor-com'); ?></span>
                 <div class="champ-option-gratuit" style="margin-left: 5px;">
                   <?php
                   $cout_normalise = trim((string)$cout);
                   $is_gratuit = $cout_normalise === '' || $cout_normalise === '0' || (int)$cout === 0;
                   ?>
                   <input type="checkbox" id="cout-gratuit-enigme" name="cout-gratuit-enigme" <?= $is_gratuit ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?> >
-                  <label for="cout-gratuit-enigme">Gratuit</label>
+                  <label for="cout-gratuit-enigme"><?= esc_html__('Gratuit', 'chassesautresor-com'); ?></label>
                 </div>
               </div>
               <div class="champ-feedback"></div>
@@ -375,7 +375,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
 
             <li class="champ-enigme champ-nb-tentatives <?= empty($max) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?><?= $mode_validation === 'automatique' ? '' : ' cache'; ?>" data-champ="enigme_tentative.enigme_tentative_max" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" data-no-edit="1" data-no-icon="1">
               <div class="champ-edition">
-                <label for="enigme-nb-tentatives">Nb tentatives
+                <label for="enigme-nb-tentatives"><?= esc_html__('Nb tentatives', 'chassesautresor-com'); ?>
                   <?php
                   get_template_part(
                       'template-parts/common/help-icon',
@@ -388,7 +388,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                   ?>
                 </label>
                 <input type="number" id="enigme-nb-tentatives" class="champ-input champ-nb-tentatives" min="1" step="1" value="<?= esc_attr($max); ?>" placeholder="5" <?= $peut_editer ? '' : 'disabled'; ?> />
-                <span class="txt-small">max par jour</span>
+                <span class="txt-small"><?= esc_html__('max par jour', 'chassesautresor-com'); ?></span>
               </div>
               <div class="champ-feedback"></div>
             </li>
@@ -461,7 +461,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
       </div> <!-- .edition-panel-body -->
     <?php if (utilisateur_peut_supprimer_enigme($enigme_id)) : ?>
       <div class="edition-panel-footer">
-        <button type="button" id="bouton-supprimer-enigme" class="bouton-texte secondaire">❌ Suppression énigme</button>
+        <button type="button" id="bouton-supprimer-enigme" class="bouton-texte secondaire"><?= esc_html__('❌ Suppression énigme', 'chassesautresor-com'); ?></button>
       </div>
     <?php endif; ?>
     </div> <!-- #enigme-tab-param -->
@@ -469,7 +469,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
     <div id="enigme-tab-stats" class="edition-tab-content" style="display:none;">
       <i class="fa-solid fa-chart-column tab-watermark" aria-hidden="true"></i>
       <div class="edition-panel-header">
-        <h2><i class="fa-solid fa-chart-column"></i> Statistiques</h2>
+        <h2><i class="fa-solid fa-chart-column"></i> <?= esc_html__('Statistiques', 'chassesautresor-com'); ?></h2>
       </div>
       <?php
       if (!function_exists('enigme_compter_joueurs_engages')) {
@@ -487,14 +487,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
       ?>
       <div class="edition-panel-body">
         <div class="stats-header" style="display:flex;align-items:center;justify-content:flex-end;gap:1rem;">
-          <a href="?edition=open&amp;tab=stats" class="stats-reset"><i class="fa-solid fa-rotate-right"></i> Actualiser</a>
+            <a href="?edition=open&amp;tab=stats" class="stats-reset"><i class="fa-solid fa-rotate-right"></i> <?= esc_html__('Actualiser', 'chassesautresor-com'); ?></a>
           <div class="stats-filtres">
-            <label for="enigme-periode">Période&nbsp;:</label>
+            <label for="enigme-periode"><?= esc_html__('Période :', 'chassesautresor-com'); ?></label>
             <select id="enigme-periode">
-              <option value="total">Total</option>
-              <option value="jour">Aujourd’hui</option>
-              <option value="semaine">Semaine</option>
-              <option value="mois">Mois</option>
+              <option value="total"><?= esc_html__('Total', 'chassesautresor-com'); ?></option>
+              <option value="jour"><?= esc_html__('Aujourd’hui', 'chassesautresor-com'); ?></option>
+              <option value="semaine"><?= esc_html__('Semaine', 'chassesautresor-com'); ?></option>
+              <option value="mois"><?= esc_html__('Mois', 'chassesautresor-com'); ?></option>
             </select>
           </div>
         </div>
@@ -503,14 +503,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
           $card_class = $stats_locked ? 'disabled' : '';
           get_template_part('template-parts/common/stat-card', null, [
               'icon'  => 'fa-solid fa-users',
-              'label' => 'Participants',
+                'label' => esc_html__('Participants', 'chassesautresor-com'),
               'value' => $nb_participants,
               'stat'  => 'participants',
               'class' => $card_class,
           ]);
           get_template_part('template-parts/common/stat-card', null, [
               'icon'  => 'fa-solid fa-arrow-rotate-right',
-              'label' => 'Tentatives',
+                'label' => esc_html__('Tentatives', 'chassesautresor-com'),
               'value' => $nb_tentatives,
               'stat'  => 'tentatives',
               'style' => $mode_validation === 'aucune' ? 'display:none;' : '',
@@ -518,7 +518,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
           ]);
           get_template_part('template-parts/common/stat-card', null, [
               'icon'  => 'fa-solid fa-coins',
-              'label' => 'Points collectés',
+                'label' => esc_html__('Points collectés', 'chassesautresor-com'),
               'value' => $nb_points,
               'stat'  => 'points',
               'style' => ($mode_validation === 'aucune' || (int) $cout <= 0) ? 'display:none;' : '',
@@ -526,7 +526,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
           ]);
           get_template_part('template-parts/common/stat-card', null, [
               'icon'  => 'fa-solid fa-check',
-              'label' => 'Bonnes réponses',
+                'label' => esc_html__('Bonnes réponses', 'chassesautresor-com'),
               'value' => $nb_solutions,
               'stat'  => 'solutions',
               'style' => $mode_validation === 'aucune' ? 'display:none;' : '',
@@ -540,16 +540,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
         if ($nb_resolveurs > 0) :
         ?>
         <div id="enigme-resolveurs">
-          <h3>Résolue par (<?= esc_html($nb_resolveurs); ?>) joueurs</h3>
+            <h3><?= sprintf(esc_html__('Résolue par (%s) joueurs', 'chassesautresor-com'), esc_html($nb_resolveurs)); ?></h3>
           <div class="stats-table-wrapper">
             <table class="stats-table" id="enigme-resolveurs-table">
               <thead>
-                <tr>
-                  <th scope="col" data-format="etiquette">Rang</th>
-                  <th scope="col">Joueur</th>
-                  <th scope="col">Date</th>
-                  <th scope="col" data-format="etiquette">Tentatives</th>
-                </tr>
+                  <tr>
+                    <th scope="col" data-format="etiquette"><?= esc_html__('Rang', 'chassesautresor-com'); ?></th>
+                    <th scope="col"><?= esc_html__('Joueur', 'chassesautresor-com'); ?></th>
+                    <th scope="col"><?= esc_html__('Date', 'chassesautresor-com'); ?></th>
+                    <th scope="col" data-format="etiquette"><?= esc_html__('Tentatives', 'chassesautresor-com'); ?></th>
+                  </tr>
               </thead>
               <tbody>
                 <?php $rang = 1; foreach ($resolveurs as $res) : ?>
@@ -597,7 +597,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
 <div id="enigme-tab-soumission" class="edition-tab-content" style="display:none;">
   <i class="fa-solid fa-paper-plane tab-watermark" aria-hidden="true"></i>
   <div class="edition-panel-header">
-    <h2><i class="fa-solid fa-paper-plane"></i> Tentatives <span class="total-tentatives">(<?= intval(compter_tentatives_enigme($enigme_id)); ?>)</span></h2>
+      <h2><i class="fa-solid fa-paper-plane"></i> <?= esc_html__('Tentatives', 'chassesautresor-com'); ?> <span class="total-tentatives">(<?= intval(compter_tentatives_enigme($enigme_id)); ?>)</span></h2>
   </div>
 <?php
   if (!function_exists('recuperer_tentatives_enigme')) {
@@ -637,30 +637,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
             $explication  = is_string($explication) ? trim(wp_strip_all_tags($explication)) : '';
             $delai        = get_field('enigme_solution_delai', $enigme_id) ?? 7;
             $heure        = get_field('enigme_solution_heure', $enigme_id) ?? '18:00';
-            $aide_delai   = "Les solutions ne peuvent être publiées que si une chasse est déclarée terminée. Elles restent stockées dans un coffre fort numérique jusqu'à ce que vous décidiez de les en sortir.";
+            $aide_delai   = esc_html__('Les solutions ne peuvent être publiées que si une chasse est déclarée terminée. Elles restent stockées dans un coffre fort numérique jusqu\'à ce que vous décidiez de les en sortir.', 'chassesautresor-com');
 
             $pdf_icon_attr   = $fichier_nom ? ' style="color: var(--color-editor-success);"' : '';
-            $pdf_title       = $fichier_nom ?: 'Document PDF';
-            $pdf_link_text   = $fichier_nom ? 'Modifier' : 'Choisir un fichier';
+            $pdf_title       = $fichier_nom ?: esc_html__('Document PDF', 'chassesautresor-com');
+            $pdf_link_text   = $fichier_nom ? esc_html__('Modifier', 'chassesautresor-com') : esc_html__('Choisir un fichier', 'chassesautresor-com');
             $texte_icon_attr = $explication !== '' ? ' style="color: var(--color-editor-success);"' : '';
-            $texte_link_text = $explication !== '' ? 'éditer' : 'Rédiger';
+            $texte_link_text = $explication !== '' ? esc_html__('éditer', 'chassesautresor-com') : esc_html__('Rédiger', 'chassesautresor-com');
 
-            $publication_label = 'aucune solution ne';
+            $publication_label = esc_html__('aucune solution ne', 'chassesautresor-com');
             $publication_note  = '';
 
             if ($solution_mode === 'pdf') {
                 if ($fichier_url !== '') {
-                    $publication_label = sprintf('votre fichier %s', $fichier_nom);
-                    $publication_note  = sprintf(' %d jours après la fin de la chasse, à %s', $delai, $heure);
+                    $publication_label = sprintf(esc_html__('votre fichier %s', 'chassesautresor-com'), $fichier_nom);
+                    $publication_note  = sprintf(esc_html__(' %d jours après la fin de la chasse, à %s', 'chassesautresor-com'), $delai, $heure);
                 } else {
-                    $publication_note = ' (pdf sélectionné mais pas de fichier chargé)';
+                    $publication_note = esc_html__(' (pdf sélectionné mais pas de fichier chargé)', 'chassesautresor-com');
                 }
             } elseif ($solution_mode === 'texte') {
                 if ($explication !== '') {
-                    $publication_label = "votre texte d'explication";
-                    $publication_note  = sprintf(', %d jours après la fin de la chasse, à %s', $delai, $heure);
+                    $publication_label = esc_html__("votre texte d'explication", 'chassesautresor-com');
+                    $publication_note  = sprintf(esc_html__(', %d jours après la fin de la chasse, à %s', 'chassesautresor-com'), $delai, $heure);
                 } else {
-                    $publication_note = ' (rédaction libre sélectionnée mais non remplie)';
+                    $publication_note = esc_html__(' (rédaction libre sélectionnée mais non remplie)', 'chassesautresor-com');
                 }
             }
 
@@ -672,7 +672,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                 <p class="solution-publication-message"><?= esc_html($publication_message); ?></p>
                 <div class="dashboard-grid solution-cards">
                     <div class="dashboard-card solution-option<?= $solution_mode === 'pdf' ? ' active' : ''; ?>" data-mode="pdf">
-                      <button type="button" class="solution-reset" aria-label="Vider"<?= $fichier_nom ? '' : ' style="display:none;"'; ?>><i class="fa-solid fa-circle-xmark"></i></button>
+                      <button type="button" class="solution-reset" aria-label="<?= esc_attr__('Vider', 'chassesautresor-com'); ?>"<?= $fichier_nom ? '' : ' style="display:none;"'; ?>><i class="fa-solid fa-circle-xmark"></i></button>
                       <i class="fa-solid fa-file-pdf" aria-hidden="true"<?= $pdf_icon_attr; ?>></i>
                       <h3><?= esc_html($pdf_title); ?></h3>
                       <a href="#" class="stat-value"><?= esc_html($pdf_link_text); ?></a>
@@ -680,9 +680,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                     </div>
 
                     <div class="dashboard-card solution-option<?= $solution_mode === 'texte' ? ' active' : ''; ?>" data-mode="texte">
-                      <button type="button" class="solution-reset" aria-label="Vider"<?= $explication !== '' ? '' : ' style="display:none;"'; ?>><i class="fa-solid fa-circle-xmark"></i></button>
+                      <button type="button" class="solution-reset" aria-label="<?= esc_attr__('Vider', 'chassesautresor-com'); ?>"<?= $explication !== '' ? '' : ' style="display:none;"'; ?>><i class="fa-solid fa-circle-xmark"></i></button>
                       <i class="fa-solid fa-pen-to-square" aria-hidden="true"<?= $texte_icon_attr; ?>></i>
-                      <h3>Rédaction libre</h3>
+                      <h3><?= esc_html__('Rédaction libre', 'chassesautresor-com'); ?></h3>
                       <button type="button" id="ouvrir-panneau-solution" class="stat-value"><?= esc_html($texte_link_text); ?></button>
                       <input type="radio" name="acf[enigme_solution_mode]" value="texte" <?= $solution_mode === 'texte' ? 'checked' : ''; ?> hidden>
                     </div>
@@ -690,7 +690,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                     <div class="dashboard-card solution-delai">
                       <i class="fa-regular fa-clock" aria-hidden="true"></i>
                       <h3>
-                        Délai après fin de chasse
+                        <?= esc_html__('Délai après fin de chasse', 'chassesautresor-com'); ?>
                         <?php
                         get_template_part(
                             'template-parts/common/help-icon',
@@ -713,7 +713,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                           id="solution-delai"
                           class="champ-input champ-delai-inline"
                         >
-                        jours, publié à
+                        <?= esc_html__('jours, publié à', 'chassesautresor-com'); ?>
                         <select id="solution-heure" class="champ-select-heure">
                           <?php foreach (range(0, 23) as $h) :
                             $formatted = str_pad($h, 2, '0', STR_PAD_LEFT) . ':00'; ?>
@@ -728,10 +728,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                     <div class="dashboard-card solution-reassurance">
                       <i class="fa-solid fa-shield-halved reassurance-icon" aria-hidden="true"></i>
                       <ul>
-                        <li><i class="fa-solid fa-check" aria-hidden="true"></i> <strong>Vos solutions sont protégées</strong></li>
-                        <li><i class="fa-solid fa-check" aria-hidden="true"></i> Stockées dans un espace privé, hors de portée des joueurs.</li>
-                        <li><i class="fa-solid fa-check" aria-hidden="true"></i> Aucun lien ne peut être trouvé ni ouvert.</li>
-                        <li><i class="fa-solid fa-check" aria-hidden="true"></i> Débloquées uniquement au moment choisi.</li>
+                        <li><i class="fa-solid fa-check" aria-hidden="true"></i> <strong><?= esc_html__('Vos solutions sont protégées', 'chassesautresor-com'); ?></strong></li>
+                        <li><i class="fa-solid fa-check" aria-hidden="true"></i> <?= esc_html__('Stockées dans un espace privé, hors de portée des joueurs.', 'chassesautresor-com'); ?></li>
+                        <li><i class="fa-solid fa-check" aria-hidden="true"></i> <?= esc_html__('Aucun lien ne peut être trouvé ni ouvert.', 'chassesautresor-com'); ?></li>
+                        <li><i class="fa-solid fa-check" aria-hidden="true"></i> <?= esc_html__('Débloquées uniquement au moment choisi.', 'chassesautresor-com'); ?></li>
                       </ul>
                     </div>
                   </div>
