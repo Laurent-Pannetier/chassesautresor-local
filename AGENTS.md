@@ -16,6 +16,9 @@
   ```
 - Ensure the test suite passes.
 
+## Internationalisation
+- Ne jamais committer les fichiers compilés `.mo` (seuls les fichiers `.po` doivent être versionnés).
+
 ## Pull Request Messages
 - Begin the PR body with a short summary in French.
 - Provide a bullet list of notable changes.

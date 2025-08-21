@@ -5,6 +5,7 @@ wp-config.php
 .env
 *.log
 *.sql
+*.mo
 vendor/
 composer.phar
 tests/.phpunit.result.cache
