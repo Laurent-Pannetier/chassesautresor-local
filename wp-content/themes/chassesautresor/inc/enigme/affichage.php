@@ -992,7 +992,8 @@ defined('ABSPATH') || exit;
 
         echo '<div id="enigme-mobile-panel" class="enigme-mobile-panel" hidden>';
         echo '<div class="enigme-mobile-panel__overlay" tabindex="-1"></div>';
-        echo '<div class="enigme-mobile-panel__sheet" role="dialog" aria-modal="true">';
+        echo '<div class="enigme-mobile-panel__sheet" role="dialog" aria-modal="true" aria-labelledby="enigme-mobile-panel-title">';
+        echo '<h2 id="enigme-mobile-panel-title" class="screen-reader-text">' . esc_html__('Panneau d\'énigme', 'chassesautresor-com') . '</h2>';
         echo '<nav class="enigme-mobile-panel__tabs" role="tablist">';
         echo '<button type="button" role="tab" aria-selected="true" class="panel-tab panel-tab--active" data-target="panel-enigmes">' . esc_html__('Énigmes', 'chassesautresor-com') . '</button>';
         echo '<button type="button" role="tab" aria-selected="false" class="panel-tab" data-target="panel-stats">' . esc_html__('Statistiques', 'chassesautresor-com') . '</button>';
