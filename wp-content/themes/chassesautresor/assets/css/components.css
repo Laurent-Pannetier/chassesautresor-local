@@ -930,9 +930,12 @@ a[aria-disabled="true"] {
 
 /* 🌐 Language switcher */
 .lang-switcher {
-    position: absolute;
-    right: 1rem;
-    top: 0.5rem;
+    position: relative;
+    display: inline-block;
+}
+
+.lang-switcher[open] {
+    display: inline-block;
 }
 
 .lang-switcher summary {
@@ -943,18 +946,13 @@ a[aria-disabled="true"] {
     padding: 0.25rem 0.5rem;
 }
 
-.lang-switcher summary::-webkit-details-marker {
-    display: none;
+.lang-switcher summary::marker {
+    font-size: 0.75rem;
 }
 
 .lang-switcher__flag {
     font-size: 1rem;
     line-height: 1;
-}
-
-.lang-switcher__icon {
-    margin-left: 0.25rem;
-    font-size: 0.75rem;
 }
 
 .lang-switcher__options {

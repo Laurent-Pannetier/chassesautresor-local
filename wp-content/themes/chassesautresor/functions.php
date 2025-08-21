@@ -118,7 +118,6 @@ function cta_render_lang_switcher( $row, $column ) {
                 <span class="lang-switcher__flag">
                     <?php echo esc_html( $available_langs[ $active_locale ]['flag'] ?? '🇫🇷' ); ?>
                 </span>
-                <span class="lang-switcher__icon">▼</span>
             </summary>
             <ul class="lang-switcher__options">
                 <?php foreach ( $available_langs as $locale => $data ) : ?>
