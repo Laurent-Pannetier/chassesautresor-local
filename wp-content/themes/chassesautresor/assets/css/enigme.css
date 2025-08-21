@@ -505,6 +505,12 @@ body.single-enigme.topbar-visible .page-enigme {
     position: absolute;
     inset: 0;
     background-color: rgba(var(--color-black-rgb, 0, 0, 0), 0.5);
+    opacity: 0;
+    transition: opacity var(--transition-medium);
+  }
+
+  .enigme-mobile-panel.open .enigme-mobile-panel__overlay {
+    opacity: 1;
   }
 
   .enigme-mobile-panel__sheet {
@@ -513,13 +519,33 @@ body.single-enigme.topbar-visible .page-enigme {
     right: 0;
     bottom: 0;
     background-color: var(--color-background);
+    border-top: 2px solid var(--color-primary);
     border-radius: var(--space-sm) var(--space-sm) 0 0;
-    padding-top: var(--space-md);
-    padding-bottom: calc(var(--space-md) + env(safe-area-inset-bottom));
-    padding-left: calc(var(--space-md) + env(safe-area-inset-left));
-    padding-right: calc(var(--space-md) + env(safe-area-inset-right));
+    padding-top: var(--space-lg);
+    padding-bottom: calc(var(--space-xl) + env(safe-area-inset-bottom));
+    padding-left: calc(var(--space-lg) + env(safe-area-inset-left));
+    padding-right: calc(var(--space-lg) + env(safe-area-inset-right));
     max-height: 80vh;
     overflow-y: auto;
+    box-shadow: 0 -4px 16px rgba(var(--color-black-rgb), 0.25);
+    transform: translateY(100%);
+    transition: transform var(--transition-medium);
+  }
+
+  .enigme-mobile-panel__sheet::before {
+    content: "";
+    position: absolute;
+    top: var(--space-sm);
+    left: 50%;
+    width: 3rem;
+    height: 0.25rem;
+    background-color: var(--color-grey-medium);
+    border-radius: var(--space-xxs);
+    transform: translateX(-50%);
+  }
+
+  .enigme-mobile-panel.open .enigme-mobile-panel__sheet {
+    transform: translateY(0);
   }
 
   .enigme-mobile-panel.full .enigme-mobile-panel__sheet {
@@ -541,19 +567,26 @@ body.single-enigme.topbar-visible .page-enigme {
 
   .panel-tab {
     flex: 1;
-    background: none;
-    border: none;
+    background-color: var(--color-background-dark);
+    border: 1px solid var(--color-primary);
+    border-radius: var(--space-xs);
     padding: var(--space-sm);
     color: var(--color-text-primary);
     cursor: pointer;
     outline: 2px solid transparent;
     outline-offset: 2px;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
   }
 
   .panel-tab[aria-selected="true"] {
     background-color: var(--color-primary);
     color: var(--color-background);
     font-weight: 600;
+  }
+
+  .panel-tab:not([aria-selected="true"]):hover {
+    background-color: var(--color-primary-dark);
+    color: var(--color-background);
   }
 
   .panel-tab:focus-visible {
