@@ -172,6 +172,13 @@ add_action('wp_enqueue_scripts', function () {
             filemtime($theme_path . '/assets/js/enigme-panel.js'),
             true
         );
+        wp_enqueue_script(
+            'enigme-topbar',
+            $script_dir . 'enigme-topbar.js',
+            [],
+            filemtime($theme_path . '/assets/js/enigme-topbar.js'),
+            true
+        );
     }
 });
 

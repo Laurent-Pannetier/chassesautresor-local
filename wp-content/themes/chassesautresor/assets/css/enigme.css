@@ -554,3 +554,15 @@ li.active .enigme-menu__edit {
 body.no-scroll {
   overflow: hidden;
 }
+
+/* Topbar visibility on enigma pages */
+body.single-enigme header.site-header,
+body.single-enigme .enigme-mobile-header {
+  transform: translateY(-100%);
+  transition: transform var(--transition-medium);
+}
+
+body.single-enigme.topbar-visible header.site-header,
+body.single-enigme.topbar-visible .enigme-mobile-header {
+  transform: translateY(0);
+}
