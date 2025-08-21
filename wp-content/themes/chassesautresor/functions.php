@@ -209,13 +209,6 @@ add_action('wp_enqueue_scripts', function () {
         );
         wp_set_script_translations('accordeon', 'chassesautresor-com');
         wp_enqueue_script(
-            'enigme-gallery',
-            $script_dir . 'enigme-gallery.js',
-            [],
-            filemtime($theme_path . '/assets/js/enigme-gallery.js'),
-            true
-        );
-        wp_enqueue_script(
             'enigme-panel',
             $script_dir . 'enigme-panel.js',
             [],
@@ -231,6 +224,15 @@ add_action('wp_enqueue_scripts', function () {
         );
     }
 });
+
+add_action('wp_enqueue_scripts', function () {
+    wp_dequeue_script('jquery-fancybox');
+    wp_dequeue_script('jquery-metadata');
+    wp_dequeue_script('jquery-easing');
+    wp_dequeue_script('jquery-mousewheel');
+    wp_dequeue_style('fancybox');
+    wp_dequeue_style('fancybox-ie');
+}, 20);
 
 
 
