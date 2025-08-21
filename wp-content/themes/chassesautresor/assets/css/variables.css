@@ -37,6 +37,7 @@
 
   --color-white: #FFFFFF;                    /* ⚪ Blanc */
   --color-black: #000000;                    /* ⚫ Noir */
+  --color-black-rgb: 0, 0, 0;                /* ⚫ Noir en RGB */
   --color-grey-light: #EEEEEE;               /* 🌫️ Gris clair */
   --color-grey-medium: #CCCCCC;              /* 🌫️ Gris moyen */
   --color-grey-dark: #333333;                /* 🌫️ Gris foncé */
