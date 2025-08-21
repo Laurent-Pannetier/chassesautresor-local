@@ -45,7 +45,7 @@ h1.h1-diff {/* variation couleur bronze, plus petite, centrée */
   letter-spacing: 1px;
   color: var(--color-accent);
 }
-@media (--bp-lg) {
+@media not all and (--bp-lg) {
   h1, .entry-content h1 {
     font-size: 36px;
   }
@@ -53,7 +53,7 @@ h1.h1-diff {/* variation couleur bronze, plus petite, centrée */
       font-size:30px;
   }
 }
-@media (--bp-md) {
+@media not all and (--bp-md) {
   h1, .entry-content h1 {
     font-size: 30px;
   }
@@ -76,13 +76,13 @@ h2, .entry-content h2 {
   font-size: 32px;
 }
 
-@media (--bp-lg) {
+@media not all and (--bp-lg) {
   h2, .entry-content h2 {
     font-size: 28px;
   }
 }
 
-@media (--bp-md) {
+@media not all and (--bp-md) {
   h2, .entry-content h2 {
     font-size: 24px;
   }
@@ -101,7 +101,7 @@ h3, .entry-content h3 {
   margin-bottom: var(--space-sm);
 }
 
-@media (--bp-lg) {
+@media not all and (--bp-lg) {
   .page header.entry-header .entry-title {
     font-size: 36px;
   }
@@ -110,7 +110,7 @@ h3, .entry-content h3 {
   }
 }
 
-@media (--bp-md) {
+@media not all and (--bp-md) {
   .page header.entry-header .entry-title {
     font-size: 30px;
   }
@@ -194,6 +194,100 @@ tbody tr:nth-child(even) {
   background-color: rgba(0, 0, 0, 0.02);
 }
 
+/* ====== Stat tables ====== */
+.stat-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border: 1px solid var(--color-grey-medium);
+  border-radius: 4px;
+  background-color: var(--color-grey-light);
+  color: var(--color-text-fond-clair);
+  font-size: 0.85rem;
+}
+
+.stats-table th,
+.stats-table td {
+  padding: 8px 12px;
+  border: none;
+  /*color: var(--color-text-primary);*/
+}
+
+.stats-table th {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+.stats-table tbody tr:nth-child(odd) {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.stats-table-wrapper {
+  margin-bottom: var(--space-xl);
+}
+
+.stats-table-summary {
+  display: flex;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-xs);
+}
+
+/* Pagination for stats tables */
+.points-history-pager {
+  margin-top: var(--space-xs);
+  display: flex;
+  justify-content: center;
+  gap: var(--space-xs);
+}
+
+.points-history-pager .page-link {
+  cursor: pointer;
+}
+
+.points-history-pager .page-link.active {
+  font-weight: 600;
+}
+
+.stats-table.compact th,
+.stats-table.compact td {
+  padding: 4px 8px;
+  font-size: 0.85em;
+}
+
+.stats-table thead tr:first-child th[colspan] {
+  text-align: center;
+  vertical-align: middle;
+  border-bottom: none;
+}
+
+.stats-table th button.sort {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: flex-end;
+  color: inherit;
+  width: 100%;
+  text-align: right;
+}
+
+.stats-table th button.sort i {
+  margin-left: 4px;
+}
+
+/* Labels */
+.etiquette {
+  display: inline-block;
+  padding: 2px 6px;
+  border: 1px solid var(--color-grey-medium);
+  border-radius: 4px;
+  background-color: var(--color-grey-light);
+  color: var(--color-text-fond-clair);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
 /* ========== 🎨 ÉLÉMENTS HTML PERSONNALISES ========== */
 
 .text-align-center {
@@ -232,12 +326,12 @@ span.champ-obligatoire {
 
 /* ========== 📱 RESPONSIVE ========== */
 
-@media (--bp-md) {
+@media not all and (--bp-md) {
     address, blockquote, body, dd, dl, dt, fieldset, figure, h1, h2, h3, h4, h5, h6, hr, html, iframe, legend, li, ol, p, pre, textarea, ul  {
         font-size:96%;
     }
 }
-@media (--bp-sm) {
+@media not all and (--bp-sm) {
     address, blockquote, body, dd, dl, dt, fieldset, figure, h1, h2, h3, h4, h5, h6, hr, html, iframe, legend, li, ol, p, pre, textarea, ul {
         font-size:93%;
     }
@@ -271,7 +365,8 @@ span.champ-obligatoire {
   --color-editor-field-hover:      #E8F0FE;   /* 💠 Fond des champs actifs / survolés */
   --color-editor-placeholder:      #9AA0A6;   /* 💬 Placeholder ou aide contextuelle */
 
-  --editor-label-width:            170px;     /* 📏 Largeur minimale des labels dans les panneaux */
+  --editor-label-width:            221px;     /* 📏 Largeur minimale des labels dans les panneaux */
+  --editor-icon-width:            1rem;      /* 📏 Largeur des icônes dans les panneaux */
 }
 
 

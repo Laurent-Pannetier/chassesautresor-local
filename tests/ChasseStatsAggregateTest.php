@@ -75,9 +75,9 @@ class ChasseStatsAggregateTest extends TestCase {
             public function get_var($query) {
                 $this->get_var_calls++;
                 if ($this->get_var_calls === 1) {
-                    return 2; // participants
+                    return 4; // total engaged per riddle sum
                 }
-                return 4; // total solved per riddle sum
+                return 2; // total solved per riddle sum
             }
         };
         $post_fields = [
@@ -85,7 +85,7 @@ class ChasseStatsAggregateTest extends TestCase {
             11 => ['enigme_mode_validation' => 'manuelle'],
         ];
         $res = chasse_calculer_taux_progression(1);
-        $this->assertSame(100.0, $res);
+        $this->assertSame(50.0, $res);
         $this->assertSame(2, $wpdb->get_var_calls);
     }
 }

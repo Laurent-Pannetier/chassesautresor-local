@@ -4,17 +4,24 @@ function initFormulaireManuel() {
   const feedback = form.nextElementSibling;
   const input = form.querySelector('textarea[name="reponse_manuelle"]');
   const pointsMsg = form.querySelector('.message-limite');
-  const badgeCout = form.querySelector('.badge-cout');
   const headerPoints = document.querySelector('.zone-points .points-value');
-  const cout = badgeCout ? parseInt(badgeCout.textContent, 10) : 0;
+  const cout = parseInt(form.dataset.cout || '0', 10);
+  const soldeApres = parseInt(form.dataset.soldeApres || '0', 10);
+  const seuil = parseInt(form.dataset.seuil || '300', 10);
   let hideTimer = null;
 
   const i18n = window.REPONSE_MANUELLE_I18N || {};
+  const sprintf = window.wp?.i18n?.sprintf;
   const txtSuccess = i18n.success || 'Tentative bien reçue.';
-  const txtProcessing = i18n.processing || '⏳ Votre tentative est en cours de traitement.';
+  const txtProcessing = i18n.processing;
+  const accountUrl = i18n.accountUrl || '/mon-compte/?section=chasses';
 
   form.addEventListener('submit', e => {
     e.preventDefault();
+    if (cout >= seuil) {
+      const ok = confirm(`Confirmer l'envoi ? Cette tentative coûtera ${cout} pts. Solde après : ${soldeApres} pts.`);
+      if (!ok) return;
+    }
     const data = new URLSearchParams(new FormData(form));
     data.append('action', 'soumettre_reponse_manuelle');
 
@@ -46,7 +53,13 @@ function initFormulaireManuel() {
 
           const msgProcessing = document.createElement('p');
           msgProcessing.className = 'message-joueur-statut';
-          msgProcessing.textContent = txtProcessing;
+          msgProcessing.innerHTML = sprintf
+            ? sprintf(txtProcessing, `#${res.data.id}`, res.data.date, res.data.time, accountUrl)
+            : txtProcessing
+                .replace('%1$s', `#${res.data.id}`)
+                .replace('%2$s', res.data.date)
+                .replace('%3$s', res.data.time)
+                .replace('%4$s', accountUrl);
 
           const msgSuccess = document.createElement('p');
           msgSuccess.className = 'message-feedback-success';
@@ -57,6 +70,12 @@ function initFormulaireManuel() {
           parent.insertBefore(msgSuccess, form);
           parent.insertBefore(msgProcessing, form);
           form.remove();
+
+          const currentMenuItem = document.querySelector('.enigme-menu li.active');
+          if (currentMenuItem) {
+            currentMenuItem.classList.remove('non-engagee', 'bloquee', 'succes');
+            currentMenuItem.classList.add('en-attente');
+          }
 
           setTimeout(() => { msgSuccess.remove(); }, 5000);
         } else {

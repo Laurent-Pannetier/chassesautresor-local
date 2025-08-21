@@ -617,7 +617,81 @@ function supprimer_enigme_ajax()
 }
 add_action('wp_ajax_supprimer_enigme', 'supprimer_enigme_ajax');
 
+/**
+ * Vérifie s'il reste des énigmes incomplètes pour une chasse.
+ *
+ * @hook wp_ajax_verifier_enigmes_completes
+ * @return void
+ */
+function verifier_enigmes_completes_ajax()
+{
+    if (!is_user_logged_in()) {
+        wp_send_json_error('non_connecte');
+    }
 
+    $chasse_id = isset($_POST['chasse_id']) ? (int) $_POST['chasse_id'] : 0;
+    if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
+        wp_send_json_error('id_invalide');
+    }
+
+    $ids            = recuperer_enigmes_associees($chasse_id);
+    $has_incomplete = false;
+    foreach ($ids as $eid) {
+        verifier_ou_mettre_a_jour_cache_complet($eid);
+        if (!get_field('enigme_cache_complet', $eid)) {
+            $has_incomplete = true;
+            break;
+        }
+    }
+
+    $can_add = function_exists('utilisateur_peut_ajouter_enigme')
+        ? utilisateur_peut_ajouter_enigme($chasse_id)
+        : false;
+
+    wp_send_json_success([
+        'has_incomplete' => $has_incomplete,
+        'can_add'       => $can_add,
+    ]);
+}
+add_action('wp_ajax_verifier_enigmes_completes', 'verifier_enigmes_completes_ajax');
+
+/**
+ * Réordonne les énigmes d'une chasse via menu_order.
+ *
+ * @hook wp_ajax_reordonner_enigmes
+ * @return void
+ */
+function reordonner_enigmes_ajax()
+{
+    if (!is_user_logged_in()) {
+        wp_send_json_error('non_connecte');
+    }
+
+    $chasse_id = isset($_POST['chasse_id']) ? (int) $_POST['chasse_id'] : 0;
+    $ordre     = isset($_POST['ordre']) ? array_map('intval', (array) $_POST['ordre']) : [];
+
+    if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
+        wp_send_json_error('id_invalide');
+    }
+
+    if (!utilisateur_est_organisateur_associe_a_chasse(get_current_user_id(), $chasse_id)) {
+        wp_send_json_error('non_autorise');
+    }
+
+    foreach ($ordre as $index => $enigme_id) {
+        wp_update_post([
+            'ID'         => $enigme_id,
+            'menu_order' => $index,
+        ]);
+    }
+
+    if (function_exists('synchroniser_cache_enigmes_chasse')) {
+        synchroniser_cache_enigmes_chasse($chasse_id, true, true);
+    }
+
+    wp_send_json_success();
+}
+add_action('wp_ajax_reordonner_enigmes', 'reordonner_enigmes_ajax');
 
 // ==================================================
 // 🧩 PRÉREMPLISSAGE & FILTRES ACF (ÉNIGME)

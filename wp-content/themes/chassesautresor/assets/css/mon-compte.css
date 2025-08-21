@@ -101,21 +101,44 @@
     text-transform: uppercase;
 }
 
+.dashboard-nav-link .nav-title,
+.dashboard-nav-sublink .nav-title,
+.dashboard-nav-subitem .nav-title {
+    position: relative;
+    padding-left: 16px;
+}
+
+.dashboard-nav-link .nav-title::before,
+.dashboard-nav-sublink .nav-title::before,
+.dashboard-nav-subitem .nav-title::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 8px;
+    height: 8px;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    background-color: var(--status-bullet, transparent);
+    box-shadow: 0 0 0 1px var(--status-bullet, transparent);
+}
+
 .dashboard-nav-link.status-important,
 .dashboard-nav-sublink.status-important,
 .dashboard-nav-subitem.status-important {
-    color: hsl(var(--destructive));
+    --status-bullet: hsl(var(--destructive));
 }
 
 .dashboard-nav-link.status-pending,
 .dashboard-nav-sublink.status-pending,
 .dashboard-nav-subitem.status-pending {
-    opacity: 0.7;
+    --status-bullet: var(--etat-enigme-menu-en-attente);
 }
 
 .dashboard-nav-link.status-banned,
 .dashboard-nav-sublink.status-banned,
 .dashboard-nav-subitem.status-banned {
+    --status-bullet: var(--etat-enigme-menu-bloquee);
     opacity: 0.3;
     pointer-events: none;
 }
@@ -123,7 +146,13 @@
 .dashboard-nav-link.status-muted,
 .dashboard-nav-sublink.status-muted,
 .dashboard-nav-subitem.status-muted {
-    opacity: 0.6;
+    --status-bullet: var(--etat-enigme-menu-bloquee);
+}
+
+.dashboard-nav-link.status-published,
+.dashboard-nav-sublink.status-published,
+.dashboard-nav-subitem.status-published {
+    --status-bullet: var(--etat-enigme-menu-succes);
 }
 
 .myaccount-main {
@@ -146,6 +175,17 @@
     flex: 1;
     overflow-y: auto;
     padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xl);
+}
+
+@media (min-width: 1025px) {
+    .myaccount-content {
+        width: 70%;
+        margin-left: auto;
+        margin-right: auto;
+    }
 }
 
 .msg-important {
@@ -273,7 +313,7 @@
 
 
 /* ✅ Mobile : Les éléments s'empilent */
-@media (--bp-md) {
+@media not all and (--bp-md) {
     .dashboard-profile-wrapper {
         flex-direction: column; /* ✅ Empile les éléments */
         justify-content: center; /* ✅ Centre les éléments verticalement */
@@ -335,7 +375,7 @@
     vertical-align: middle;
 }
 
-@media (--bp-md) {
+@media not all and (--bp-md) {
     .menu-deroulant .submenu {
         left: -50px;
     }
@@ -380,6 +420,12 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+}
+
+.dashboard-grid > .dashboard-card:only-child {
+    max-width: var(--dashboard-card-max-width);
+    width: 100%;
+    justify-self: center;
 }
 
 .dashboard-card:hover {
@@ -552,6 +598,25 @@
     font-size: 1rem;
 }
 
+/* 🏷️ Étiquettes de résultat */
+.etiquette-success {
+    background-color: var(--color-success);
+    border-color: var(--color-success);
+    color: var(--color-white);
+}
+
+.etiquette-error {
+    background-color: var(--color-error);
+    border-color: var(--color-error);
+    color: var(--color-white);
+}
+
+.etiquette-pending {
+    background-color: var(--color-grey-medium);
+    border-color: var(--color-grey-medium);
+    color: var(--color-white);
+}
+
 .pager-info {
     margin: 0 8px;
     color: hsl(var(--foreground));
@@ -568,6 +633,40 @@
 .conversion-history .points-history-pager .etiquette,
 .conversion-history .points-history-pager .pager-info {
     color: var(--color-text-fond-clair);
+}
+
+.stats-header {
+    display: flex;
+    align-items: center;
+}
+
+.stats-header .stats-filtres {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    background-color: var(--color-editor-background);
+    border: 1px solid var(--color-editor-border);
+    border-radius: 4px;
+}
+
+.table-organisateurs td.col-chasse,
+.table-organisateurs td.col-enigmes {
+    text-align: right;
+}
+
+/* 🏷️ Badges d'état dans le tableau des organisateurs */
+.table-organisateurs td[data-col="etat"] .badge-statut {
+    position: static;
+    top: auto;
+    left: auto;
+    display: inline-block;
+    margin: 0;
+}
+
+.table-organisateurs td[data-col="etat"] .required {
+    margin-left: var(--space-xxs);
 }
 
 /* 📌 Toggle d'historique de conversion */
@@ -597,7 +696,7 @@
 
 
 /* Tablette : 2 colonnes */
-@media (--bp-md) {
+@media not all and (--bp-md) {
     .image-container {
         height: 260px;
     }
@@ -619,6 +718,49 @@ body.woocommerce h2 {
 /* Sections for account dashboard */
 .dashboard-section {
     margin-top: 40px;
+}
+
+/* Tentatives table alignment */
+.tentatives-table th:nth-child(2),
+.tentatives-table td:nth-child(2),
+.tentatives-table th:nth-child(3),
+.tentatives-table td:nth-child(3) {
+    text-align: left;
+}
+
+/* Tentatives - Proposition toggle */
+.proposition-cell {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.proposition-cell.expanded {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.proposition-cell .toggle-proposition {
+    background: none;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    cursor: pointer;
+    padding: 2px;
+    width: 1.5em;
+    height: 1.5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-fond-clair);
+    font-size: 1rem;
+}
+
+.proposition-cell.expanded .toggle-proposition {
+    margin-top: 4px;
+}
+
+.proposition-cell .toggle-proposition .fa-solid {
+    color: inherit;
 }
 
 

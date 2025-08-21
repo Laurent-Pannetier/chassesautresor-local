@@ -145,24 +145,52 @@ button,
     outline-offset: 2px;
 }
 
-/* ========== 🎯 BADGE COÛT ========== */
+/* ========== 🎯 BLOCS RÉPONSE ========== */
+.bloc-reponse {
+    position: relative;
+}
+
 .badge-cout {
     display: inline-block;
-    margin-left: 8px;
-    padding: 2px 6px;
+    padding: var(--space-xxs) var(--space-xs);
     background: var(--color-secondary);
     color: var(--color-text-primary);
     border-radius: 12px;
     font-size: 0.75rem;
     font-weight: 600;
-    vertical-align: middle;
 }
-@media (--bp-md) {
+
+.bloc-reponse .reponse-cta-row {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-sm);
+}
+
+.bloc-reponse .points-sousligne {
+    text-align: center;
+    margin-top: var(--space-xxs);
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
+@media not all and (--bp-sm) {
+    .bloc-reponse .reponse-cta-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .bloc-reponse .reponse-cta-row .bouton-cta {
+        width: 100%;
+    }
+    .bloc-reponse .points-sousligne {
+        margin-top: var(--space-xs);
+    }
+}
+@media not all and (--bp-md) {
     .bouton-cta {
         padding: 8px 13px;
     }
 }
-@media (--bp-sm) {
+@media not all and (--bp-sm) {
     .bouton-cta {
         padding: 6px 10px;
     }
@@ -172,7 +200,7 @@ button,
 
 .bouton-primaire {
     background: var(--color-primary);
-    color: var(--color-text-fond-clair);
+    color: var(--color-text-primary);
     border: 1px solid var(--color-primary);
     transition: background 0.3s ease, transform 0.2s ease;
     padding: 10px 15px;
@@ -216,7 +244,7 @@ button,
 
 .bouton-secondaire:hover {
     background: var(--color-primary);
-    color: var(--color-text-fond-clair);
+    color: var(--color-text-primary);
     transform: scale(1.05);
 }
 .bouton-secondaire.no-click {
@@ -249,7 +277,7 @@ button,
 
 .bouton-tertiaire {
     background: transparent;
-    color: var(--color-text-fond-clair);
+    color: var(--color-text-primary);
     border: 1px solid currentColor;
     transition: background 0.3s ease, transform 0.2s ease;
     padding: 10px 15px;
@@ -396,7 +424,7 @@ a.ajout-link:focus-visible {
   outline-offset: 2px;
 }
 
-@media (--bp-md) {
+@media not all and (--bp-md) {
   .btn-lire-plus {
     width: 100%;
   }
@@ -436,7 +464,7 @@ a.ajout-link:focus-visible {
   outline-offset: 2px;
 }
 
-@media (--bp-sm) {
+@media not all and (--bp-sm) {
   .bouton-retour {
     font-size: 1.25rem;
   }
@@ -493,12 +521,26 @@ a.ajout-link:focus-visible {
 .meta-etiquette strong {
   font-weight: 600;
 }
-@media (--bp-sm) {
+.bloc-metas-inline--compact {
+  gap: 0.5rem;
+  font-size: 0.75rem;
+}
+
+.bloc-metas-inline--compact .meta-etiquette {
+  padding: 0.2em 0.6em;
+}
+@media not all and (--bp-sm) {
     .bloc-metas-inline {
         gap:0.8rem;
     }
     .meta-etiquette {
         font-size:85%;
+    }
+    .bloc-metas-inline--compact {
+        gap:0.4rem;
+    }
+    .bloc-metas-inline--compact .meta-etiquette {
+        font-size:100%;
     }
 }
 
@@ -545,7 +587,7 @@ a.ajout-link:focus-visible {
 
 .badge-statut.statut-payante {
   background-color: var(--color-primary);
-  color: var(--color-text-fond-clair);
+  color: var(--color-text-primary);
 }
 
 .badge-statut.statut-a_venir {
@@ -665,7 +707,7 @@ a.ajout-link:focus-visible {
 }
 
 /* ========== 📱 RESPONSIVE ========== */
-@media (--bp-sm) {
+@media not all and (--bp-sm) {
     .separateur-2 {
         margin: 0 auto;
     }
@@ -689,7 +731,7 @@ a.ajout-link:focus-visible {
 body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
     color: var(--color-text-primary);
 }
-@media (--bp-sm) {
+@media not all and (--bp-sm) {
   .formulaire-contact-wrapper {
     padding-left: var(--space-md);
     padding-right: var(--space-md);
@@ -777,7 +819,7 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
     text-align: center;
 }
 
-@media (--bp-md) {
+@media not all and (--bp-md) {
     .countdown-container { font-size: 1rem; }
 }
 
@@ -873,7 +915,7 @@ a[aria-disabled="true"] {
 .message-info {
     text-align: center;
     font-weight: bold;
-    color: var(--color-text-fond-clair);
+    color: var(--color-text-primary);
     font-size: 16px;
     margin-top: 15px;
 }

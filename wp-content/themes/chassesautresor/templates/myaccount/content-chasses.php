@@ -31,6 +31,7 @@ wp_enqueue_script(
     true
 );
 
+
 // Retrieve last 4 engaged hunts and their latest enigme
 $chasse_ids  = [];
 $enigme_map = [];
@@ -58,7 +59,7 @@ if ($user_id) {
     <?php foreach ($chasse_ids as $chasse_id) : ?>
     <?php $enigme_id = $enigme_map[$chasse_id] ?? 0; ?>
     <div class="dashboard-card">
-        <?php echo get_the_post_thumbnail($chasse_id, 'thumbnail', ['loading' => 'lazy']); ?>
+        <?php afficher_picture_vignette_chasse($chasse_id); ?>
         <?php if ($enigme_id) : ?>
         <div class="enigme-thumbnail">
             <?php afficher_picture_vignette_enigme($enigme_id, get_the_title($enigme_id), ['thumbnail']); ?>
@@ -103,40 +104,74 @@ if ($user_id) {
 }
 $pages = (int) ceil($total / $per_page);
 ?>
-<h3><?php esc_html_e('Tentatives', 'chassesautresor-com'); ?></h3>
-<div class="table-header">
-    <?php if ($pending > 0) : ?>
-    <span class="stat-badge"><?php printf(esc_html__('%d tentatives en attente', 'chassesautresor-com'), $pending); ?></span>
-    <?php endif; ?>
-    <?php if ($total > 0) : ?>
-    <span class="stat-badge"><?php printf(esc_html__('%d tentatives', 'chassesautresor-com'), $total); ?></span>
-    <?php endif; ?>
-    <?php if ($success > 0) : ?>
-    <span class="stat-badge" style="color:var(--color-success);">
-        <?php printf(esc_html__('%d bonne réponse', 'chassesautresor-com'), $success); ?>
-    </span>
-    <?php endif; ?>
-</div>
 <?php if ($total > 0) : ?>
-<div class="stats-table-wrapper" data-per-page="<?php echo esc_attr($per_page); ?>">
-    <table class="stats-table">
-        <thead>
-            <tr>
-                <th><?php esc_html_e('Date', 'chassesautresor-com'); ?></th>
-                <th><?php esc_html_e('Énigme', 'chassesautresor-com'); ?></th>
-                <th><?php esc_html_e('Résultat', 'chassesautresor-com'); ?></th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($tentatives as $tent) : ?>
-            <tr>
-                <td><?php echo esc_html(mysql2date('d/m/Y H:i', $tent->date_tentative)); ?></td>
-                <td><?php echo esc_html($tent->post_title); ?></td>
-                <td><?php echo esc_html($tent->resultat); ?></td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-    <?php echo cta_render_pager($page, $pages, 'tentatives-pager'); ?>
-</div>
+    <h3><?php esc_html_e('Tentatives', 'chassesautresor-com'); ?></h3>
+    <div class="table-header">
+        <?php if ($pending > 0) : ?>
+        <span class="stat-badge"><?php printf(esc_html(_n('%d tentative en attente', '%d tentatives en attente', $pending, 'chassesautresor-com')), $pending); ?></span>
+        <?php endif; ?>
+        <span class="stat-badge"><?php printf(esc_html(_n('%d tentative', '%d tentatives', $total, 'chassesautresor-com')), $total); ?></span>
+        <?php if ($success > 0) : ?>
+        <span class="stat-badge" style="color:var(--color-success);">
+            <?php printf(esc_html(_n('%d bonne réponse', '%d bonnes réponses', $success, 'chassesautresor-com')), $success); ?>
+        </span>
+        <?php endif; ?>
+    </div>
+    <div class="stats-table-wrapper" data-per-page="<?php echo esc_attr($per_page); ?>">
+        <table class="stats-table tentatives-table">
+            <thead>
+                <tr>
+                    <th><?php esc_html_e('Date', 'chassesautresor-com'); ?></th>
+                    <th><?php esc_html_e('Énigme', 'chassesautresor-com'); ?></th>
+                    <th><?php esc_html_e('Proposition', 'chassesautresor-com'); ?></th>
+                    <th><?php esc_html_e('Résultat', 'chassesautresor-com'); ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($tentatives as $tent) : ?>
+                <tr>
+                    <td><?php echo esc_html(mysql2date('d/m/Y H:i', $tent->date_tentative)); ?></td>
+                    <td><?php echo esc_html($tent->post_title); ?></td>
+                    <?php
+                    $proposition   = $tent->reponse_saisie ?? '';
+                    $excerpt_limit = 39;
+                    $needs_toggle  = mb_strlen($proposition) > $excerpt_limit;
+                    $excerpt       = $needs_toggle ? mb_substr($proposition, 0, $excerpt_limit) . '…' : $proposition;
+                    ?>
+                    <td class="proposition-cell">
+                        <span class="proposition-excerpt"><?php echo esc_html($excerpt); ?></span>
+                        <?php if ($needs_toggle) : ?>
+                        <span class="proposition-full" hidden><?php echo esc_html($proposition); ?></span>
+                        <button
+                            type="button"
+                            class="toggle-proposition"
+                            aria-expanded="false"
+                            aria-label="<?php esc_attr_e('Voir plus', 'chassesautresor-com'); ?>"
+                            data-more="<?php esc_attr_e('Voir plus', 'chassesautresor-com'); ?>"
+                            data-less="<?php esc_attr_e('Voir moins', 'chassesautresor-com'); ?>"
+                        >
+                            <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
+                        </button>
+                        <?php endif; ?>
+                    </td>
+                    <?php
+                    $result = $tent->resultat;
+                    $class  = 'etiquette-error';
+                    if ($result === 'bon') {
+                        $class = 'etiquette-success';
+                    } elseif ($result === 'attente') {
+                        $class = 'etiquette-pending';
+                    }
+                    ?>
+                    <td>
+                        <span class="etiquette <?php echo esc_attr($class); ?>">
+                            <?php echo esc_html($result); ?>
+                        </span>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+        <?php echo cta_render_pager($page, $pages, 'tentatives-pager'); ?>
+    </div>
 <?php endif; ?>

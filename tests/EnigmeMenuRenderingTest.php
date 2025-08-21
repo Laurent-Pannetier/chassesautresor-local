@@ -41,6 +41,18 @@ if (!function_exists('get_field')) {
     }
 }
 
+if (!function_exists('update_field')) {
+    function update_field($key, $value, $post_id = null)
+    {
+        if ($post_id !== null) {
+            $GLOBALS['fields'][$post_id][$key] = $value;
+        } else {
+            $GLOBALS['fields'][$key] = $value;
+        }
+        return true;
+    }
+}
+
 if (!function_exists('current_user_can')) {
     function current_user_can($role)
     {
@@ -216,6 +228,34 @@ if (!function_exists('esc_html')) {
     }
 }
 
+if (!function_exists('remove_accents')) {
+    function remove_accents($string)
+    {
+        return $string;
+    }
+}
+
+if (!function_exists('wp_date')) {
+    function wp_date($format, $timestamp)
+    {
+        return date($format, $timestamp);
+    }
+}
+
+if (!function_exists('compter_tentatives_du_jour')) {
+    function compter_tentatives_du_jour($uid, $enigme_id)
+    {
+        return 0;
+    }
+}
+
+if (!function_exists('get_user_points')) {
+    function get_user_points($user_id)
+    {
+        return 100;
+    }
+}
+
 if (!function_exists('get_the_title')) {
     function get_the_title($id)
     {
@@ -223,17 +263,24 @@ if (!function_exists('get_the_title')) {
     }
 }
 
-if (!function_exists('utilisateur_est_engage_dans_enigme')) {
-    function utilisateur_est_engage_dans_enigme($user_id, $post_id)
+if (!function_exists('titre_est_valide')) {
+    function titre_est_valide($id)
     {
-        return false;
+        return true;
     }
 }
 
-if (!function_exists('enigme_get_statut_utilisateur')) {
-    function enigme_get_statut_utilisateur($post_id, $user_id)
+if (!function_exists('utilisateur_est_engage_dans_chasse')) {
+    function utilisateur_est_engage_dans_chasse($user_id, $chasse_id)
     {
-        return 'non_commencee';
+        return $GLOBALS['engage_chasse'] ?? true;
+    }
+}
+
+if (!function_exists('utilisateur_est_engage_dans_enigme')) {
+    function utilisateur_est_engage_dans_enigme($user_id, $post_id)
+    {
+        return $GLOBALS['engage_enigme'] ?? false;
     }
 }
 
@@ -271,6 +318,7 @@ if (!function_exists('cat_debug')) {
 }
 
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/layout-functions.php';
+require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/statut-functions.php';
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/enigme/affichage.php';
 
 /**
@@ -303,6 +351,8 @@ class EnigmeMenuRenderingTest extends TestCase
         $GLOBALS['is_admin'] = false;
         $GLOBALS['is_associated'] = true;
         $GLOBALS['is_organizer'] = true;
+        $GLOBALS['engage_chasse'] = true;
+        $GLOBALS['engage_enigme'] = false;
 
         global $wpdb;
         $wpdb = new class {
@@ -326,5 +376,151 @@ class EnigmeMenuRenderingTest extends TestCase
         afficher_enigme_stylisee(101);
         $output = ob_get_clean();
         $this->assertStringContainsString('enigme-menu', $output);
+    }
+
+    public function test_menu_excludes_prerequisite_locked_enigme_for_user(): void
+    {
+        $GLOBALS['is_admin']      = false;
+        $GLOBALS['is_associated'] = false;
+        $GLOBALS['is_organizer']  = false;
+        $GLOBALS['fields'][2]['chasse_cache_statut'] = 'ouverte';
+
+        $GLOBALS['fields'][101]['enigme_cache_complet']       = true;
+        $GLOBALS['fields'][101]['enigme_cache_etat_systeme']  = 'accessible';
+        $GLOBALS['fields'][101]['enigme_acces_condition']     = 'immediat';
+        $GLOBALS['post_status'][101] = 'publish';
+
+        $GLOBALS['fields'][102] = [
+            'enigme_cache_complet'       => true,
+            'enigme_cache_etat_systeme'  => 'bloquee_pre_requis',
+            'enigme_acces_condition'     => 'pre_requis',
+            'enigme_acces_pre_requis'    => [201],
+        ];
+        $GLOBALS['post_types'][102]  = 'enigme';
+        $GLOBALS['post_status'][102] = 'publish';
+        $GLOBALS['titles'][102]      = 'Enigme Bloquee';
+        $GLOBALS['enigma_list']      = [(object) ['ID' => 101], (object) ['ID' => 102]];
+
+        ob_start();
+        afficher_enigme_stylisee(101);
+        $output = ob_get_clean();
+        $this->assertStringNotContainsString('data-enigme-id="102"', $output);
+    }
+
+    public function test_menu_excludes_enigme_with_empty_prerequisites(): void
+    {
+        $GLOBALS['is_admin']      = false;
+        $GLOBALS['is_associated'] = false;
+        $GLOBALS['is_organizer']  = false;
+        $GLOBALS['fields'][2]['chasse_cache_statut'] = 'ouverte';
+
+        $GLOBALS['fields'][101]['enigme_cache_complet']       = true;
+        $GLOBALS['fields'][101]['enigme_cache_etat_systeme']  = 'accessible';
+        $GLOBALS['fields'][101]['enigme_acces_condition']     = 'immediat';
+        $GLOBALS['post_status'][101] = 'publish';
+
+        $GLOBALS['fields'][102] = [
+            'enigme_cache_complet'       => true,
+            'enigme_cache_etat_systeme'  => 'bloquee_pre_requis',
+            'enigme_acces_condition'     => 'pre_requis',
+            'enigme_acces_pre_requis'    => [],
+        ];
+        $GLOBALS['post_types'][102]  = 'enigme';
+        $GLOBALS['post_status'][102] = 'publish';
+        $GLOBALS['titles'][102]      = 'Enigme Mal Config';
+        $GLOBALS['enigma_list']      = [(object) ['ID' => 101], (object) ['ID' => 102]];
+
+        ob_start();
+        afficher_enigme_stylisee(101);
+        $output = ob_get_clean();
+        $this->assertStringNotContainsString('data-enigme-id="102"', $output);
+    }
+
+    public function test_menu_excludes_date_locked_enigme_for_user(): void
+    {
+        $GLOBALS['is_admin']      = false;
+        $GLOBALS['is_associated'] = false;
+        $GLOBALS['is_organizer']  = false;
+        $GLOBALS['fields'][2]['chasse_cache_statut'] = 'ouverte';
+
+        $GLOBALS['fields'][101] = [
+            'enigme_cache_complet'       => true,
+            'enigme_cache_etat_systeme'  => 'accessible',
+            'enigme_acces_condition'     => 'immediat',
+        ];
+        $GLOBALS['post_types'][101]  = 'enigme';
+        $GLOBALS['post_status'][101] = 'publish';
+        $GLOBALS['titles'][101]      = 'Enigme Accessible';
+
+        $GLOBALS['fields'][102] = [
+            'enigme_cache_complet'       => true,
+            'enigme_cache_etat_systeme'  => 'bloquee_date',
+            'enigme_acces_condition'     => 'date_programmee',
+        ];
+        $GLOBALS['post_types'][102]  = 'enigme';
+        $GLOBALS['post_status'][102] = 'publish';
+        $GLOBALS['titles'][102]      = 'Enigme Future';
+        $GLOBALS['enigma_list']      = [(object) ['ID' => 101], (object) ['ID' => 102]];
+
+        ob_start();
+        afficher_enigme_stylisee(101);
+        $output = ob_get_clean();
+        $this->assertStringNotContainsString('data-enigme-id="102"', $output);
+    }
+
+    public function test_traiter_statut_enigme_blocks_access_without_prerequisites(): void
+    {
+        $GLOBALS['is_admin']      = false;
+        $GLOBALS['is_associated'] = false;
+        $GLOBALS['is_organizer']  = false;
+        $GLOBALS['fields'][2]['chasse_cache_statut'] = 'ouverte';
+        $GLOBALS['fields'][102] = [
+            'enigme_cache_complet'       => true,
+            'enigme_cache_etat_systeme'  => 'bloquee_pre_requis',
+            'enigme_acces_condition'     => 'pre_requis',
+            'enigme_acces_pre_requis'    => [201],
+        ];
+        $GLOBALS['post_types'][102]  = 'enigme';
+        $GLOBALS['post_status'][102] = 'publish';
+        $GLOBALS['engage_chasse']    = true;
+        $GLOBALS['engage_enigme']    = true;
+
+        $result = traiter_statut_enigme(102, 1);
+        $this->assertTrue($result['rediriger']);
+        $this->assertSame('bloquee_pre_requis', $result['etat']);
+    }
+
+    public function test_participation_section_shown_for_regular_user(): void
+    {
+        $GLOBALS['is_admin']      = false;
+        $GLOBALS['is_associated'] = false;
+        $GLOBALS['is_organizer']  = false;
+        $GLOBALS['fields'][101]['enigme_cache_complet']       = true;
+        $GLOBALS['fields'][101]['indices']                    = ['hint'];
+        $GLOBALS['fields'][101]['enigme_mode_validation']     = 'automatique';
+        $GLOBALS['fields'][101]['enigme_tentative_cout_points'] = 0;
+        $GLOBALS['fields'][101]['enigme_tentative_max']       = 5;
+
+        ob_start();
+        afficher_enigme_stylisee(101);
+        $output = ob_get_clean();
+        $this->assertStringContainsString('<section class="participation">', $output);
+    }
+
+    public function test_participation_section_hidden_for_associated_organizer(): void
+    {
+        $GLOBALS['is_admin']      = false;
+        $GLOBALS['is_associated'] = true;
+        $GLOBALS['is_organizer']  = true;
+        $GLOBALS['fields'][101]['enigme_cache_complet']       = true;
+        $GLOBALS['fields'][101]['indices']                    = ['hint'];
+        $GLOBALS['fields'][101]['enigme_mode_validation']     = 'automatique';
+        $GLOBALS['fields'][101]['enigme_tentative_cout_points'] = 0;
+        $GLOBALS['fields'][101]['enigme_tentative_max']       = 5;
+
+        ob_start();
+        afficher_enigme_stylisee(101);
+        $output = ob_get_clean();
+        $this->assertStringNotContainsString('<section class="participation">', $output);
     }
 }

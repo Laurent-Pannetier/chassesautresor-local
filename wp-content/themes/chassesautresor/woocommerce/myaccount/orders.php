@@ -15,10 +15,10 @@ defined('ABSPATH') || exit;
 
 do_action('woocommerce_before_account_orders', $has_orders);
 
-if ($has_orders) : ?>
-
+?>
+<?php /* Title moved to layout header for consistency */ ?>
+<?php if ($has_orders) : ?>
 <div class="stats-table-wrapper">
-    <h3><?php esc_html_e('Vos commandes', 'chassesautresor'); ?></h3>
     <table class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive my_account_orders account-orders-table">
 <thead>
 <tr>

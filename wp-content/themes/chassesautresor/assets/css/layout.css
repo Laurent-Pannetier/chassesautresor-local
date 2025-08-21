@@ -67,7 +67,7 @@
 .site-above-header-wrap .ast-builder-layout-element {
     margin-left:10px;
 }
- @media (--bp-921) {
+ @media not all and (--bp-921) {
      header.site-header   {
          padding: 0 10px ;
      }
@@ -76,7 +76,7 @@
          padding-right: 10px;
      }
  }
- @media (--bp-sm) {
+ @media not all and (--bp-sm) {
     header.site-header {
         padding: 0 7px;
     }
@@ -165,7 +165,7 @@
   margin-right: auto;
   text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
 }
-@media (--bp-md) {
+@media not all and (--bp-md) {
   .hero-title {
     font-size: 1.8rem;
   }
@@ -180,7 +180,7 @@
     padding-top: 300px;
   }
 }
-@media (--bp-sm) {
+@media not all and (--bp-sm) {
   .hero-title {
     font-size: 1.5rem;
   }
@@ -220,7 +220,7 @@ body #primary {
   align-items: flex-start; /* ✅ important : alignement haut */
   flex-wrap: wrap; /* ✅ si l’un est trop large */
 }
-@media (--bp-921) {
+@media not all and (--bp-921) {
     .ast-container, .ast-container-fluid {
         margin-left: auto;
         margin-right: auto;
@@ -302,7 +302,7 @@ body #primary {
   opacity: 0.9;
   line-height: 1.5;
 }
-@media (--bp-md) {
+@media not all and (--bp-md) {
   .bloc-temoignages .temoignage-colonnes {
     flex-direction: column;
     align-items: center;
@@ -480,7 +480,7 @@ footer .ast-footer-widget a {
 }
 
 
-@media (--bp-540) {
+@media not all and (--bp-540) {
   .site-footer-primary-section-1 {
     order: 2;
     margin: 30px 0;

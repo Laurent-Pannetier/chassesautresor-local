@@ -83,14 +83,19 @@ window.renderLiensPublicsJS = renderLiensPublics;
  */
 window.mettreAJourTitreHeader = function (cpt, valeur) {
   const selecteurs = {
-    organisateur: '.header-organisateur__nom',
-    chasse: '.titre-objet[data-cpt="chasse"]',
-    enigme: '.titre-objet[data-cpt="enigme"]'
+    organisateur: ['.header-organisateur__nom', '.titre-objet[data-cpt="organisateur"]'],
+    chasse: ['.titre-objet[data-cpt="chasse"]'],
+    enigme: ['.titre-objet[data-cpt="enigme"]']
   };
 
-  const cible = document.querySelector(selecteurs[cpt]);
-  if (cible) {
-    cible.textContent = valeur;
+  const cibles = selecteurs[cpt]
+    ? selecteurs[cpt].flatMap((sel) => Array.from(document.querySelectorAll(sel)))
+    : [];
+
+  if (cibles.length > 0) {
+    cibles.forEach((el) => {
+      el.textContent = valeur;
+    });
   } else {
     console.warn('❌ Impossible de trouver le header pour le CPT :', cpt);
   }
@@ -104,6 +109,17 @@ window.mettreAJourLegendeEnigme = function (valeur) {
   const legende = document.querySelector('.enigme-soustitre');
   if (legende) {
     legende.textContent = valeur;
+  }
+};
+
+/**
+ * 🔁 Met à jour dynamiquement le titre de l’énigme dans le menu latéral.
+ * @param {string} valeur - Le nouveau titre à afficher
+ */
+window.mettreAJourTitreMenuEnigme = function (valeur) {
+  const item = document.querySelector('.enigme-menu li.active a');
+  if (item) {
+    item.textContent = valeur;
   }
 };
 

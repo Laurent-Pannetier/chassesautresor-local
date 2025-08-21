@@ -44,6 +44,7 @@ if (empty($participants)) :
         <?php
     endif;
 else : ?>
+<h3><?= esc_html__('Liste participants', 'chassesautresor-com'); ?></h3>
 <table class="stats-table compact">
   <thead>
       <tr>
@@ -81,7 +82,11 @@ else : ?>
       <?php if ($mode_validation !== 'aucune') : ?>
       <td><?= esc_html($p['nb_tentatives']); ?></td>
       <?php endif; ?>
-      <td><?= $p['trouve'] && !empty($p['date_resolution']) ? esc_html(mysql2date('d/m/Y H:i', $p['date_resolution'])) : ''; ?></td>
+      <td>
+        <?php if ($p['trouve']) : ?>
+          <i class="fa-solid fa-check fa-xl"></i>
+        <?php endif; ?>
+      </td>
     </tr>
     <?php endforeach; ?>
   </tbody>

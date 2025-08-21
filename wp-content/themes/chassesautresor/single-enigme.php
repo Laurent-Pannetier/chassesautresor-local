@@ -5,84 +5,18 @@
  */
 
 defined('ABSPATH') || exit;
-acf_form_head();
-
 // 🔹 Données de base
-$enigme_id = get_the_ID();
-$user_id   = get_current_user_id();
-
-// 🔹 Chasse associée
-$chasse_id = recuperer_id_chasse_associee($enigme_id);
-if ($chasse_id) {
-  verifier_et_synchroniser_cache_enigmes_si_autorise($chasse_id);
-}
-
-// 🔹 Accès invité : redirection systématique vers la chasse associée
-if (!is_user_logged_in()) {
-    $url = $chasse_id ? get_permalink($chasse_id) : home_url('/');
-    wp_redirect($url);
-    exit;
-}
-
-// 🔹 Engagement automatique si autorisé
-if (
-    utilisateur_est_engage_dans_chasse($user_id, $chasse_id) &&
-    !utilisateur_est_engage_dans_enigme($user_id, $enigme_id) &&
-    utilisateur_peut_engager_enigme($enigme_id, $user_id)
-) {
-    marquer_enigme_comme_engagee($user_id, $enigme_id);
-
-    if (get_field('enigme_mode_validation', $enigme_id) === 'aucune') {
-        verifier_fin_de_chasse($user_id, $enigme_id);
-    }
-}
-
-// 🔹 Redirection si non visible
-if (!enigme_est_visible_pour($user_id, $enigme_id)) {
-    $fallback_url = $chasse_id ? get_permalink($chasse_id) : home_url('/');
-    wp_redirect($fallback_url);
-    exit;
-}
-
-// 🔒 Énigme inaccessible : redirection vers la chasse liée
-$etat_systeme = get_field('enigme_cache_etat_systeme', $enigme_id) ?? 'accessible';
-if ($etat_systeme !== 'accessible' && !utilisateur_peut_modifier_enigme($enigme_id)) {
-    $url = $chasse_id ? get_permalink($chasse_id) : home_url('/');
-    wp_safe_redirect($url);
-    exit;
-}
-
-// 🔹 Orgy auto
+$enigme_id      = get_the_ID();
 $edition_active = utilisateur_peut_modifier_post($enigme_id);
-verifier_ou_mettre_a_jour_cache_complet($enigme_id);
 
-$enigme_complete = (bool) get_field('enigme_cache_complet', $enigme_id);
-if (
-  $edition_active &&
-  utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id) &&
-  !$enigme_complete &&
-  !isset($_GET['edition'])
-) {
-  wp_redirect(add_query_arg('edition', 'open', get_permalink()));
-  exit;
+if ($edition_active) {
+    acf_form_head();
 }
 
-// ✅ Ouvre automatiquement l'onglet Tentatives s'il y a des tentatives en attente
-if (
-  $edition_active &&
-  utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id) &&
-  compter_tentatives_en_attente($enigme_id) > 0 &&
-  !isset($_GET['edition'])
-) {
-  wp_redirect(add_query_arg(['edition' => 'open', 'tab' => 'soumission'], get_permalink()));
-  exit;
-}
-
+$user_id = get_current_user_id();
 // 🔹 Statut logique de l’énigme
-$statut_data     = traiter_statut_enigme($enigme_id, $user_id);
-$statut_enigme   = $statut_data['etat'];
-$verrouillage    = enigme_verifier_verrouillage($enigme_id, $user_id);
-$pre_requis_ok   = enigme_pre_requis_remplis($enigme_id, $user_id);
+$statut_data   = traiter_statut_enigme($enigme_id, $user_id);
+$statut_enigme = $statut_data['etat'];
 
 // 🔹 Données affichables
 $titre              = get_the_title($enigme_id);
@@ -128,4 +62,4 @@ if (is_singular('enigme')) {
     </main>
   </div>
 
-<?php get_footer(); ?>
+<?php get_footer('enigme'); ?>

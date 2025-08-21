@@ -47,8 +47,13 @@
 
 .resume-infos .icon-attente,
 .resume-infos .icone-check {
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--editor-icon-width);
+  flex: 0 0 var(--editor-icon-width);
   margin-right: 0.3rem;
+  overflow: hidden;
 }
 
 .resume-infos .champ-rempli .icon-attente {
@@ -63,9 +68,13 @@
   color: var(--color-editor-success);
 }
 
+.resume-infos .edition-row-icon {
+  display: none;
+}
+
 /* Alignement des lignes sans icône */
 .resume-infos li[data-no-icon] {
-  /* padding-left: 1.3rem; */
+  padding-left: calc(var(--editor-icon-width) + 0.3rem);
 }
 
 /* Hauteur et alignement par défaut des lignes de paramètres */
@@ -74,6 +83,13 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.resume-infos > li > label,
+.resume-infos > li > .champ-edition > label {
+  width: var(--editor-label-width);
+  flex-shrink: 0;
 }
 
 .resume-infos > li > .champ-affichage {
@@ -83,9 +99,39 @@
   flex: 1;
 }
 
-.resume-infos > li > .champ-edition,
+.resume-infos > li > .champ-edition {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  width: 100%;
+  margin-top: 0;
+}
+
 .resume-infos > li > .champ-feedback {
   width: 100%;
+}
+
+/* 🧩 Lignes d'édition réutilisables */
+.edition-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  min-height: 40px;
+}
+
+.edition-row-icon {
+  width: var(--editor-icon-width);
+  margin-right: 0.3rem;
+  text-align: center;
+}
+
+.edition-row-label {
+  width: var(--editor-label-width);
+}
+
+.edition-row-content {
+  flex: 1;
 }
 
 .cache {
@@ -392,6 +438,10 @@ body .header-img-modifiable .icone-modif {
   display: none;
 }
 
+.champ-nb-tentatives.cache {
+  display: none;
+}
+
 #champ-bonne-reponse {
   width: auto;
 }
@@ -570,7 +620,7 @@ body[class*="edition-active"] .champ-desactive .champ-modifier,
 /* ========== 📱 RESPONSIVE GLOBAL ========== */
 
 /* Empilage à partir de tablette */
-@media (--bp-md) {
+@media not all and (--bp-md) {
   .edition-panel-body {
     flex-direction: column;
   }
@@ -625,7 +675,7 @@ body[class*="edition-active"] .champ-desactive .champ-modifier,
 /* ========== 📱 RESPONSIVE HEADER ========== */
 
 /* Empilage à partir de tablette */
-@media (--bp-md) {
+@media not all and (--bp-md) {
   .edition-panel-body {
     flex-direction: column;
   }
@@ -901,6 +951,7 @@ li.ligne-logo .champ-modifier {
   display: inline;
 }
 
+
 .resume-infos li.champ-description .champ-texte-contenu .champ-modifier,
 .resume-infos li.champ-wysiwyg .champ-texte-contenu .champ-modifier {
   transform: none;
@@ -996,13 +1047,13 @@ li.ligne-email .champ-affichage {
 
 
 /* ========== 📱 RESPONSIVE PANNEAU EDITION ========== */
-@media (--bp-md) {
+@media not all and (--bp-md) {
   .edition-panel-body {
     flex-direction: column;
   }
 }
 
-@media (--bp-sm) {
+@media not all and (--bp-sm) {
   .edition-panel-body {
     flex-direction: column;
   }
@@ -1065,17 +1116,36 @@ body.panneau-ouvert::before {
   background-color: var(--color-editor-button-hover);
 }
 
-.liste-variantes-resume {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.champ-variantes-resume {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
 }
 
-.liste-variantes-resume .variante-texte {
+.champ-variantes-resume .variantes-table {
+  margin: 0;
+  width: auto;
+  display: inline-table;
+  border-collapse: collapse;
+  font-size: 0.85em;
+}
+
+.champ-variantes-resume .variantes-table th,
+.champ-variantes-resume .variantes-table td {
+  padding: 0 4px 0 0;
+  font-weight: normal;
+  border: none;
+}
+
+.champ-variantes-resume .variantes-table th {
+  color: var(--color-editor-text-muted);
+}
+
+.champ-variantes-resume .variantes-table .variante-texte {
   color: var(--color-editor-text);
 }
 
-.liste-variantes-resume .variante-message {
+.champ-variantes-resume .variantes-table .variante-message {
   color: var(--color-editor-text-muted);
 }
 
@@ -1225,6 +1295,11 @@ body.panneau-ouvert::before {
   opacity: 0;
   max-height: 0;
   pointer-events: none;
+}
+
+/* 🖼️ Masquer l'option de tri dans la galerie d'images de l’énigme */
+#panneau-images-enigme .acf-gallery-sort {
+  display: none;
 }
 
 
@@ -1407,6 +1482,12 @@ body.panneau-ouvert::before {
   position: relative;
 }
 
+.dashboard-grid > .dashboard-card:only-child {
+  max-width: var(--dashboard-card-max-width);
+  width: 100%;
+  justify-self: center;
+}
+
 .dashboard-card.disabled {
   opacity: 0.5;
   filter: grayscale(100%);
@@ -1567,87 +1648,6 @@ body.panneau-ouvert::before {
   gap: 8px;
 }
 
-.stat-badge {
-  display: inline-block;
-  padding: 2px 8px;
-  background-color: var(--color-editor-background);
-  border: 1px solid var(--color-editor-border);
-  border-radius: 4px;
-  font-size: 0.85rem;
-}
-
-/* ====== Tableaux de statistiques ====== */
-
-.stats-table th,
-.stats-table td {
-  padding: 8px 12px;
-}
-
-.stats-table th {
-  color: var(--color-editor-heading);
-  border-bottom: 1px solid var(--color-editor-border);
-  background-color: rgba(0, 0, 0, 0.04);
-}
-
-.stats-table td {
-  color: var(--color-editor-text);
-}
-
-.stats-table-wrapper {
-  margin-bottom: var(--space-xl);
-}
-
-.stats-table-summary {
-  display: flex;
-  gap: var(--space-xs);
-  margin-bottom: var(--space-xs);
-}
-
-/* Pagination for stats tables */
-.points-history-pager {
-  margin-top: var(--space-xs);
-  display: flex;
-  justify-content: center;
-  gap: var(--space-xs);
-}
-
-.points-history-pager .page-link {
-  cursor: pointer;
-}
-
-.points-history-pager .page-link.active {
-  font-weight: 600;
-}
-
-.stats-table.compact th,
-.stats-table.compact td {
-  padding: 4px 8px;
-  font-size: 0.85em;
-}
-
-.stats-table thead tr:first-child th[colspan] {
-  text-align: center;
-  vertical-align: middle;
-  border-bottom: none;
-}
-
-.stats-table th button.sort {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font: inherit;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  justify-content: flex-end;
-  width: 100%;
-  text-align: right;
-}
-
-.stats-table th button.sort i {
-  margin-left: 4px;
-}
-
 #chasse-tab-stats > div.edition-panel-body > table > thead > tr:nth-child(2) > th:nth-child(1),
 #organisateur-tab-stats > div.edition-panel-body > table > thead > tr:nth-child(2) > th:nth-child(1) {
   text-align: right;
@@ -1699,6 +1699,12 @@ body.panneau-ouvert::before {
   gap: var(--space-xs);
   flex-wrap: wrap;
   align-items: center;
+}
+
+#champ-enigme-pre-requis.champ-vide {
+  border: 2px dashed var(--color-editor-error);
+  padding: var(--space-xs);
+  border-radius: 4px;
 }
 
 #champ-enigme-date.cache,

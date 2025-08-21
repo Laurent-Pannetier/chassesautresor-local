@@ -203,7 +203,7 @@ msgid "Moyenne"
 msgstr ""
 
 #: inc/enigme/affichage.php:200
-msgid "Engagements"
+msgid "Progression"
 msgstr ""
 
 #: inc/enigme/affichage.php:263
@@ -211,10 +211,18 @@ msgid "Résolution"
 msgstr ""
 
 #: inc/enigme/affichage.php:297
-msgid "Activer Orgy"
+msgid "Statistiques"
 msgstr ""
 
 #: inc/enigme/affichage.php:311
+msgid "Afficher les statistiques"
+msgstr ""
+
+#: inc/enigme/affichage.php:317
+msgid "Activer Orgy"
+msgstr ""
+
+#: inc/enigme/affichage.php:325
 #: template-parts/chasse/partials/chasse-partial-participants.php:51
 msgid "Énigmes"
 msgstr ""
@@ -275,9 +283,9 @@ msgstr ""
 msgid "Tentative bien reçue."
 msgstr ""
 
-#: inc/enigme/reponses.php:509
-#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:35
-msgid "⏳ Votre tentative est en cours de traitement."
+#: inc/enigme/reponses.php:588
+#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:51
+msgid "⏳ Votre tentative %1$s a été soumise le %2$s à %3$s.<br>Vous serez immédiatement averti de son traitement par l'organisateur par email et sur votre <a href=\"%4$s\">espace personnel</a>."
 msgstr ""
 
 #: inc/enigme/visuels.php:129
@@ -670,8 +678,8 @@ msgstr ""
 msgid "Texte énigme"
 msgstr ""
 
-#: template-parts/enigme/enigme-edition-main.php:188
-msgid "Modifier le texte"
+#: template-parts/enigme/enigme-edition-main.php:192
+msgid "Éditer le texte"
 msgstr ""
 
 #: template-parts/enigme/enigme-edition-main.php:202
@@ -786,8 +794,8 @@ msgstr ""
 msgid "Énigme résolue"
 msgstr ""
 
-#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:47
-msgid "Vous avez déjà résolu cette énigme."
+#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:58
+msgid "Vous avez résolu cette énigme le %s."
 msgstr ""
 
 #: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:55

@@ -34,14 +34,18 @@ defined('ABSPATH') || exit;
         $nonce = wp_create_nonce('reponse_manuelle_nonce');
         ob_start();
     ?>
-    <form method="post" class="bloc-reponse formulaire-reponse-manuelle">
+    <form
+        method="post"
+        class="bloc-reponse formulaire-reponse-manuelle"
+        data-cout="<?php echo esc_attr($data['cout']); ?>"
+        data-solde-avant="<?php echo esc_attr($data['solde_avant']); ?>"
+        data-solde-apres="<?php echo esc_attr($data['solde_apres']); ?>"
+        data-seuil="<?php echo esc_attr($data['seuil']); ?>"
+    >
         <h3><?php echo esc_html__('Votre réponse', 'chassesautresor-com'); ?></h3>
         <?php if ($data['points_manquants'] > 0) : ?>
             <p class="message-limite" data-points="manquants">
                 <?php echo esc_html(sprintf(__('Il vous manque %d points pour soumettre votre réponse.', 'chassesautresor-com'), $data['points_manquants'])); ?>
-                <a href="<?php echo esc_url($data['boutique_url']); ?>" class="points-link points-boutique-icon" title="Accéder à la boutique">
-                    <span class="points-plus-circle">+</span>
-                </a>
             </p>
         <?php else : ?>
             <textarea name="reponse_manuelle" id="reponse_manuelle_<?php echo esc_attr($enigme_id); ?>" rows="3" required></textarea>
@@ -49,11 +53,20 @@ defined('ABSPATH') || exit;
         <input type="hidden" name="enigme_id" value="<?php echo esc_attr($enigme_id); ?>">
         <input type="hidden" name="reponse_manuelle_nonce" value="<?php echo esc_attr($nonce); ?>">
         <div class="reponse-cta-row">
-            <button type="submit" class="bouton-cta" <?php echo $data['disabled']; ?>>Envoyer</button>
-            <?php if ($data['cout'] > 0) : ?>
-                <span class="badge-cout"><?php echo esc_html($data['cout']); ?> pts</span>
+            <?php if ($data['points_manquants'] > 0) : ?>
+                <a href="<?php echo esc_url($data['boutique_url']); ?>" class="bouton-cta points-manquants" title="<?php echo esc_attr__('Accéder à la boutique', 'chassesautresor-com'); ?>">
+                    <span class="points-plus-circle">+</span>
+                    <?php echo esc_html__('Ajouter des points', 'chassesautresor-com'); ?>
+                </a>
+            <?php else : ?>
+                <button type="submit" class="bouton-cta"><?php echo esc_html($data['label_btn']); ?></button>
             <?php endif; ?>
         </div>
+        <?php if ($data['points_manquants'] <= 0 && $data['cout'] > 0) : ?>
+            <p class="points-sousligne txt-small">
+                <?php echo esc_html(sprintf(__('Solde : %1$d → %2$d pts', 'chassesautresor-com'), $data['solde_avant'], $data['solde_apres'])); ?>
+            </p>
+        <?php endif; ?>
     </form>
     <div class="reponse-feedback" style="display:none"></div>
     <?php
@@ -92,12 +105,23 @@ function calculer_contexte_points(int $user_id, int $enigme_id): array
     $cout = (int) get_field('enigme_tentative_cout_points', $enigme_id);
     $solde = get_user_points($user_id);
     $points_manquants = max(0, $cout - $solde);
+    $label_btn = esc_html__('Valider', 'chassesautresor-com');
+    if ($points_manquants <= 0 && $cout > 0) {
+        $label_btn = sprintf(
+            esc_html__('Valider — %d pts', 'chassesautresor-com'),
+            $cout
+        );
+    }
 
     return [
-        'cout'            => $cout,
-        'boutique_url'    => esc_url(home_url('/boutique/')),
-        'disabled'        => $points_manquants > 0 ? 'disabled' : '',
+        'cout' => $cout,
+        'boutique_url' => esc_url(home_url('/boutique/')),
+        'disabled' => $points_manquants > 0 ? 'disabled' : '',
         'points_manquants' => $points_manquants,
+        'solde_avant' => $solde,
+        'solde_apres' => $solde - $cout,
+        'seuil' => (int) get_option('enigme_cout_eleve', 300),
+        'label_btn' => $label_btn,
     ];
 }
 
@@ -152,10 +176,14 @@ function soumettre_reponse_manuelle()
     }
 
     $uid = inserer_tentative($user_id, $enigme_id, $reponse);
+    $tentative_id = (int) $wpdb->insert_id;
+    $timestamp = current_time('timestamp');
+    $date = wp_date('d/m/Y', $timestamp);
+    $time = wp_date('H:i', $timestamp);
     enigme_mettre_a_jour_statut_utilisateur($enigme_id, $user_id, 'soumis', true);
 
     $titre_enigme = get_the_title($enigme_id);
-    $link        = '<a href="' . esc_url(get_permalink($enigme_id)) . '">' . esc_html($titre_enigme) . '</a>';
+    $link = '<a href="' . esc_url(get_permalink($enigme_id)) . '">' . esc_html($titre_enigme) . '</a>';
     myaccount_add_persistent_message($user_id, 'tentative_' . $uid, $link);
 
     envoyer_mail_reponse_manuelle($user_id, $enigme_id, $reponse, $uid);
@@ -164,6 +192,9 @@ function soumettre_reponse_manuelle()
 
     wp_send_json_success([
         'uid'    => $uid,
+        'id'     => $tentative_id,
+        'date'   => $date,
+        'time'   => $time,
         'points' => $solde,
     ]);
 }
@@ -553,7 +584,13 @@ function charger_script_reponse_manuelle() {
 
         wp_localize_script('reponse-manuelle', 'REPONSE_MANUELLE_I18N', [
             'success'    => esc_html__('Tentative bien reçue.', 'chassesautresor-com'),
-            'processing' => esc_html__('⏳ Votre tentative est en cours de traitement.', 'chassesautresor-com'),
+            'processing' => __(
+                '⏳ Votre tentative %1$s a été soumise le %2$s à %3$s.<br>' .
+                'Vous serez immédiatement averti de son traitement par l\'organisateur par email ' .
+                'et sur votre <a href="%4$s">espace personnel</a>.',
+                'chassesautresor-com'
+            ),
+            'accountUrl' => esc_url(home_url('/mon-compte/?section=chasses')),
         ]);
     }
 }

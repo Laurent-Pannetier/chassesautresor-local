@@ -59,23 +59,13 @@ function initEnigmeEdit() {
     }
   });
 
-  document.querySelectorAll('.stat-help').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const message = btn.dataset.message;
-      if (message) {
-        alert(message);
-      }
-    });
-  });
-
-
   // ==============================
   // 🧩 Affichage conditionnel – Champs radio
   // ==============================
   initChampConditionnel('acf[enigme_mode_validation]', {
     'aucune': [],
-    'manuelle': ['.champ-cout-points', '.champ-nb-tentatives'],
-    'automatique': ['.champ-groupe-reponse-automatique', '.champ-cout-points', '.champ-nb-tentatives']
+    'manuelle': ['.champ-cout-points'],
+    'automatique': ['.champ-groupe-reponse-automatique', '.champ-cout-points', '.champ-enigme.champ-nb-tentatives']
   });
 
   // ==============================
@@ -84,6 +74,7 @@ function initEnigmeEdit() {
   const radiosValidation = document.querySelectorAll('input[name="acf[enigme_mode_validation]"]');
   const tabTentatives = panneauEdition?.querySelector('.edition-tab[data-target="enigme-tab-soumission"]');
   const contenuTentatives = document.getElementById('enigme-tab-soumission');
+  const blocCoutValidation = document.querySelector('.champ-cout-points');
 
   function toggleTentativesTab(mode) {
     const afficher = mode !== 'aucune';
@@ -99,13 +90,21 @@ function initEnigmeEdit() {
     }
   }
 
+  function toggleCoutBloc(mode) {
+    if (blocCoutValidation) {
+      blocCoutValidation.style.display = mode === 'aucune' ? 'none' : '';
+    }
+  }
+
   const radioChecked = document.querySelector('input[name="acf[enigme_mode_validation]"]:checked');
   const modeInitial = radioChecked ? radioChecked.value : 'aucune';
   toggleTentativesTab(modeInitial);
+  toggleCoutBloc(modeInitial);
 
   radiosValidation.forEach((radio) => {
     radio.addEventListener('change', (e) => {
       toggleTentativesTab(e.target.value);
+      toggleCoutBloc(e.target.value);
     });
   });
 
@@ -216,14 +215,14 @@ function initEnigmeEdit() {
   // ==============================
   // 💰 Affichage dynamique tentatives (message coût)
   // ==============================
-  const blocCout = document.querySelector('[data-champ="enigme_tentative.enigme_tentative_cout_points"]');
-  if (blocCout && typeof window.onCoutPointsUpdated === 'function') {
-    const champ = blocCout.dataset.champ;
-    const valeur = parseInt(blocCout.querySelector('.champ-input')?.value || '0', 10);
-    const postId = blocCout.dataset.postId;
-    const cpt = blocCout.dataset.cpt;
+  const blocCoutTentative = document.querySelector('[data-champ="enigme_tentative.enigme_tentative_cout_points"]');
+  if (blocCoutTentative && typeof window.onCoutPointsUpdated === 'function') {
+    const champ = blocCoutTentative.dataset.champ;
+    const valeur = parseInt(blocCoutTentative.querySelector('.champ-input')?.value || '0', 10);
+    const postId = blocCoutTentative.dataset.postId;
+    const cpt = blocCoutTentative.dataset.cpt;
 
-    window.onCoutPointsUpdated(blocCout, champ, valeur, postId, cpt);
+    window.onCoutPointsUpdated(blocCoutTentative, champ, valeur, postId, cpt);
   }
 
 
@@ -412,6 +411,8 @@ function initEnigmeEdit() {
         .catch(() => alert('Erreur réseau'));
     });
   }
+
+  initEnigmeReorder();
 
 }
 
@@ -604,10 +605,9 @@ function initChampBonneReponse() {
   const input = bloc.querySelector('.champ-input');
   if (!input) return;
 
-  const champ = bloc.dataset.champ;
-  const postId = bloc.dataset.postId;
-  const cptChamp = bloc.dataset.cpt || 'enigme';
-  let timerSauvegarde;
+  const mettreAJourClasse = () => {
+    input.classList.toggle('champ-vide-obligatoire', input.value.trim() === '');
+  };
 
   // Crée ou récupère l’alerte si déjà existante
   let alerte = bloc.querySelector('.message-limite');
@@ -622,6 +622,7 @@ function initChampBonneReponse() {
   }
 
   input.setAttribute('maxlength', '75');
+  mettreAJourClasse();
 
   input.addEventListener('input', () => {
     const longueur = input.value.length;
@@ -638,12 +639,7 @@ function initChampBonneReponse() {
       alerte.style.display = 'none';
     }
 
-    if (champ && postId) {
-      clearTimeout(timerSauvegarde);
-      timerSauvegarde = setTimeout(() => {
-        modifierChampSimple(champ, input.value.trim(), postId, cptChamp);
-      }, 400);
-    }
+    mettreAJourClasse();
   });
 }
 
@@ -651,6 +647,36 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initChampBonneReponse);
 } else {
   initChampBonneReponse();
+}
+
+
+// ==============================
+// 🖼️ Libellé du bouton galerie ACF
+// ==============================
+function initLibelleBoutonGalerie() {
+  if (!window.acf) return;
+
+  const mettreAJour = (field) => {
+    const el = field && field.nodeType ? field : field?.[0];
+    if (!el) return;
+
+    const bouton = el.querySelector('.acf-gallery-add');
+    if (bouton) {
+      const label = window.wp?.i18n?.__('Ajouter une illustration', 'chassesautresor-com') ?? 'Ajouter une illustration';
+      bouton.textContent = label;
+    }
+  };
+
+  window.acf.add_action('ready_field/type=gallery', mettreAJour);
+  window.acf.add_action('append_field/type=gallery', mettreAJour);
+
+  document.querySelectorAll('.acf-field[data-type="gallery"]').forEach(mettreAJour);
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initLibelleBoutonGalerie);
+} else {
+  initLibelleBoutonGalerie();
 }
 
 
@@ -665,9 +691,28 @@ function initPanneauVariantes() {
   const boutonAjouter = document.getElementById('bouton-ajouter-variante');
   const messageLimite = document.querySelector('.message-limite-variantes');
   const resumeBloc = document.querySelector('[data-champ="enigme_reponse_variantes"]');
-  let listeResume = resumeBloc?.querySelector('.liste-variantes-resume');
+  let listeResume = resumeBloc?.querySelector('.variantes-table');
   let lienAjouterResume = resumeBloc?.querySelector('.champ-ajouter');
   let boutonEditerResume = resumeBloc?.querySelector('.champ-modifier.ouvrir-panneau-variantes');
+
+  if (listeResume && !boutonEditerResume) {
+    boutonEditerResume = document.createElement('button');
+    boutonEditerResume.type = 'button';
+    boutonEditerResume.className = 'champ-modifier txt-small ouvrir-panneau-variantes';
+    boutonEditerResume.dataset.cpt = 'enigme';
+    boutonEditerResume.dataset.postId = postId;
+    boutonEditerResume.setAttribute('aria-label', wp.i18n.__('Modifier les variantes', 'chassesautresor-com'));
+    boutonEditerResume.textContent = wp.i18n.__('modifier', 'chassesautresor-com');
+    resumeBloc.appendChild(boutonEditerResume);
+  }
+
+  if (boutonEditerResume) {
+    boutonEditerResume.style.display = 'inline-block';
+    boutonEditerResume.addEventListener('click', e => {
+      e.preventDefault();
+      ouvrirPanneau();
+    });
+  }
 
   if (!panneau || !formulaire || !postId || !wrapper || !boutonAjouter || !messageLimite || !resumeBloc) return;
 
@@ -823,30 +868,44 @@ function initPanneauVariantes() {
 
           if (resumeBloc) {
             if (!listeResume) {
-              listeResume = document.createElement('ul');
-              listeResume.className = 'liste-variantes-resume';
+              listeResume = document.createElement('table');
+              listeResume.className = 'variantes-table';
+              const thead = document.createElement('thead');
+              const trHead = document.createElement('tr');
+              const thTexte = document.createElement('th');
+              thTexte.scope = 'col';
+              thTexte.textContent = wp.i18n.__('Variante', 'chassesautresor-com');
+              const thMessage = document.createElement('th');
+              thMessage.scope = 'col';
+              thMessage.textContent = wp.i18n.__('Message', 'chassesautresor-com');
+              trHead.appendChild(thTexte);
+              trHead.appendChild(thMessage);
+              thead.appendChild(trHead);
+              listeResume.appendChild(thead);
+              const tbodyEl = document.createElement('tbody');
+              listeResume.appendChild(tbodyEl);
               resumeBloc.insertBefore(listeResume, boutonEditerResume || lienAjouterResume || null);
             }
 
-            listeResume.innerHTML = '';
+            const tbody = listeResume.querySelector('tbody');
+            tbody.innerHTML = '';
             let nb = 0;
             for (let i = 1; i <= 4; i++) {
               const t = updates.find(u => u[0] === 'texte_' + i)?.[1] || '';
               const m = updates.find(u => u[0] === 'message_' + i)?.[1] || '';
               if (t && m) {
                 nb++;
-                const li = document.createElement('li');
-                li.className = 'variante-resume';
-                const spanT = document.createElement('span');
-                spanT.className = 'variante-texte';
-                spanT.textContent = t;
-                const spanM = document.createElement('span');
-                spanM.className = 'variante-message';
-                spanM.textContent = m;
-                li.appendChild(spanT);
-                li.appendChild(document.createTextNode(' => '));
-                li.appendChild(spanM);
-                listeResume.appendChild(li);
+                const tr = document.createElement('tr');
+                tr.className = 'variante-resume';
+                const tdT = document.createElement('td');
+                tdT.className = 'variante-texte';
+                tdT.textContent = t;
+                const tdM = document.createElement('td');
+                tdM.className = 'variante-message';
+                tdM.textContent = m;
+                tr.appendChild(tdT);
+                tr.appendChild(tdM);
+                tbody.appendChild(tr);
               }
             }
 
@@ -964,10 +1023,24 @@ function initChampPreRequis() {
 
     const radioPre = document.querySelector('input[name="acf[enigme_acces_condition]"][value="pre_requis"]');
     const radioImmediat = document.querySelector('input[name="acf[enigme_acces_condition]"][value="immediat"]');
+    const radiosCondition = document.querySelectorAll('input[name="acf[enigme_acces_condition]"]');
+    const checkboxes = [...bloc.querySelectorAll('input[type="checkbox"]')];
 
-    bloc.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+    const majClasse = () => {
+      const cochés = checkboxes.filter(el => el.checked);
+      if (radioPre?.checked && cochés.length === 0) {
+        bloc.classList.add('champ-vide');
+      } else {
+        bloc.classList.remove('champ-vide');
+      }
+    };
+
+    // État initial et écoute sur changement de condition
+    majClasse();
+    radiosCondition.forEach(r => r.addEventListener('change', majClasse));
+
+    checkboxes.forEach(checkbox => {
       checkbox.addEventListener('change', () => {
-        const checkboxes = [...bloc.querySelectorAll('input[type="checkbox"]')];
         const cochés = checkboxes.filter(el => el.checked).map(el => el.value);
 
         // ✅ 1. Mise à jour des prérequis cochés
@@ -999,6 +1072,12 @@ function initChampPreRequis() {
             if (radioImmediat) radioImmediat.checked = true;
             modifierChampSimple('enigme_acces_condition', 'immediat', postId, cpt);
           }
+
+          if (typeof window.forcerRecalculStatutEnigme === 'function') {
+            window.forcerRecalculStatutEnigme(postId);
+          }
+
+          majClasse();
         });
       });
     });
@@ -1458,4 +1537,135 @@ function initPagerTentatives() {
         attachPager();
       });
   }
+}
+
+// ==============================
+// ➕ Affichage dynamique du bouton d'ajout d'énigme
+// ==============================
+  window.mettreAJourBoutonAjoutEnigme = function () {
+    const nav = document.querySelector('.enigme-navigation');
+    if (!nav) return;
+    const menu = nav.querySelector('.enigme-menu');
+    if (!menu || !menu.classList.contains('enigme-menu--editable')) return;
+
+    nav.querySelectorAll('#carte-ajout-enigme').forEach((btn) => btn.remove());
+
+    const chasseId = nav.dataset.chasseId;
+    if (!chasseId) return;
+
+    const data = new FormData();
+    data.append('action', 'verifier_enigmes_completes');
+    data.append('chasse_id', chasseId);
+
+
+    fetch(window.ajaxurl, {
+      method: 'POST',
+      credentials: 'same-origin',
+      body: data
+    })
+      .then((r) => r.json())
+      .then((res) => {
+        if (!res.success || res.data.has_incomplete || nav.querySelector('#carte-ajout-enigme')) {
+          return;
+        }
+
+        const link = document.createElement('a');
+        link.id = 'carte-ajout-enigme';
+        link.dataset.postId = '0';
+        link.href = `${window.location.origin}/creer-enigme/?chasse_id=${chasseId}`;
+        link.innerHTML =
+          '<i class="fa-solid fa-circle-plus fa-lg" aria-hidden="true"></i>' +
+          `<span>${wp.i18n.__('Ajouter une énigme', 'chassesautresor-com')}</span>`;
+        nav.insertBefore(link, menu);
+      })
+      .catch(() => {});
+  };
+
+// ==============================
+// 🔀 Réordonnancement des énigmes
+// ==============================
+function initEnigmeReorder() {
+  const nav = document.querySelector('.enigme-navigation');
+  const menu = nav?.querySelector('.enigme-menu');
+  if (!nav || !menu || !menu.classList.contains('enigme-menu--editable')) return;
+
+  menu.querySelectorAll('li').forEach((li) => {
+    li.draggable = true;
+  });
+
+  let dragged = null;
+
+  menu.addEventListener('dragstart', (e) => {
+    dragged = e.target.closest('li');
+    if (dragged) {
+      e.dataTransfer.effectAllowed = 'move';
+      menu.classList.add('dragging');
+      dragged.classList.add('dragging');
+    }
+  });
+
+  menu.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    const target = e.target.closest('li');
+    if (!dragged || !target || dragged === target) return;
+
+    menu.querySelectorAll('.drag-over').forEach((li) => li.classList.remove('drag-over'));
+    target.classList.add('drag-over');
+
+    const rect = target.getBoundingClientRect();
+    const next = e.clientY > rect.top + rect.height / 2;
+    menu.insertBefore(dragged, next ? target.nextSibling : target);
+  });
+
+  const saveOrder = () => {
+    const order = Array.from(menu.querySelectorAll('li')).map((li) => li.dataset.enigmeId);
+    if (!order.length) return;
+
+    const onError = () => {
+      alert(wp.i18n.__("Erreur lors de l'enregistrement de l'ordre", 'chassesautresor-com'));
+    };
+
+    if (window.wp?.ajax?.post) {
+      window.wp.ajax
+        .post('reordonner_enigmes', {
+          chasse_id: nav.dataset.chasseId,
+          ordre: order,
+        })
+        .catch(onError);
+    } else {
+      const fd = new FormData();
+      fd.append('action', 'reordonner_enigmes');
+      fd.append('chasse_id', nav.dataset.chasseId);
+      order.forEach((id) => fd.append('ordre[]', id));
+      fetch(window.ajaxurl, {
+        method: 'POST',
+        credentials: 'same-origin',
+        body: fd,
+      })
+        .then((r) => r.json())
+        .then((res) => {
+          if (!res.success) onError();
+        })
+        .catch(onError);
+    }
+  };
+
+  const cleanClasses = () => {
+    menu.classList.remove('dragging');
+    menu.querySelectorAll('.drag-over').forEach((li) => li.classList.remove('drag-over'));
+    dragged?.classList.remove('dragging');
+  };
+
+  menu.addEventListener('drop', (e) => {
+    e.preventDefault();
+    cleanClasses();
+    dragged = null;
+    saveOrder();
+  });
+
+  menu.addEventListener('dragend', () => {
+    cleanClasses();
+    dragged = null;
+    saveOrder();
+  });
 }

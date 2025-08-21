@@ -137,13 +137,12 @@ class LayoutFunctionsTest extends TestCase
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      */
-    public function test_banner_displayed_on_enigme_page(): void
+    public function test_banner_not_displayed_on_enigme_page(): void
     {
         global $current_post_type, $current_post_id;
         $current_post_type = 'enigme';
         $current_post_id = 456;
 
-        $output = $this->getBannerOutput();
-        $this->assertStringContainsString('bandeau-info-chasse', $output);
+        $this->assertSame('', $this->getBannerOutput());
     }
 }

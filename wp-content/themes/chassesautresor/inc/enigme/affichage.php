@@ -53,7 +53,34 @@ defined('ABSPATH') || exit;
     add_action('deleted_user', 'enigme_bump_permissions_cache_version', 10, 1);
     add_action('added_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
     add_action('updated_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
-add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
+    add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
+    /**
+     * Clear sidebar caches for a given hunt and user.
+     *
+     * @param int $chasse_id Hunt identifier.
+     * @param int $user_id   User identifier.
+     */
+    function enigme_clear_sidebar_cache(int $chasse_id, int $user_id): void
+    {
+        wp_cache_delete('enigme_sidebar_progression_' . $chasse_id . '_' . $user_id, 'chassesautresor');
+    }
+
+    /**
+     * Clear sidebar caches when an enigma is solved.
+     *
+     * @param int $user_id   User identifier.
+     * @param int $enigme_id Enigma identifier.
+     */
+    function enigme_clear_sidebar_cache_on_solve(int $user_id, int $enigme_id): void
+    {
+        $chasse_id = recuperer_id_chasse_associee($enigme_id);
+        if ($chasse_id) {
+            enigme_clear_sidebar_cache($chasse_id, $user_id);
+        }
+        wp_cache_delete('enigme_sidebar_resolution_' . $enigme_id, 'chassesautresor');
+    }
+
+    add_action('enigme_resolue', 'enigme_clear_sidebar_cache_on_solve', 10, 2);
 
     /**
      * Determine if the enigma menu should be displayed for a user.
@@ -137,14 +164,47 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
         return (string) ob_get_clean();
     }
 
-    function enigme_render_bar_subsection(string $title, int $user_rate, int $avg_rate, string $section_class): string
-    {
+    function enigme_render_bar_subsection(
+        string $title,
+        int $user_rate,
+        int $avg_rate,
+        string $section_class,
+        string $help_message = '',
+        string $help_label = ''
+    ): string {
         ob_start();
         ?>
         <div class="<?= esc_attr($section_class); ?>">
-          <p class="aside-subsection-title"><?= esc_html($title); ?></p>
+          <p class="aside-subsection-title">
+            <?= esc_html($title); ?>
+            <?php if ($help_message !== '') : ?>
+              <?php
+              $icon_args = [
+                  'aria_label' => $help_label,
+                  'message'    => $help_message,
+                  'classes'    => 'mode-fin-aide stat-help',
+              ];
+
+              if ($help_label !== '') {
+                  $icon_args['attributes'] = [
+                      'data-title' => $help_label,
+                  ];
+              }
+
+              get_template_part(
+                  'template-parts/common/help-icon',
+                  null,
+                  $icon_args
+              );
+              ?>
+            <?php endif; ?>
+          </p>
           <div class="stats-bar-chart">
-            <?= enigme_render_bar_row(esc_html__('Vous', 'chassesautresor-com'), $user_rate, 'background-color:var(--color-primary)'); ?>
+            <?= enigme_render_bar_row(
+                esc_html__('Vous', 'chassesautresor-com'),
+                $user_rate,
+                'background-color:var(--color-primary)'
+            ); ?>
             <?= enigme_render_bar_row(esc_html__('Moyenne', 'chassesautresor-com'), $avg_rate); ?>
           </div>
         </div>
@@ -152,21 +212,96 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
         return (string) ob_get_clean();
     }
 
+    function enigme_render_single_bar_subsection(
+        string $title,
+        int $rate,
+        string $section_class,
+        string $help_message = '',
+        string $help_label = ''
+    ): string {
+        ob_start();
+        ?>
+        <div class="<?= esc_attr($section_class); ?>">
+          <p class="aside-subsection-title">
+            <?= esc_html($title); ?>
+            <?php if ($help_message !== '') : ?>
+              <?php
+              $icon_args = [
+                  'aria_label' => $help_label,
+                  'message'    => $help_message,
+                  'classes'    => 'mode-fin-aide stat-help',
+              ];
+
+              if ($help_label !== '') {
+                  $icon_args['attributes'] = [
+                      'data-title' => $help_label,
+                  ];
+              }
+
+              get_template_part(
+                  'template-parts/common/help-icon',
+                  null,
+                  $icon_args
+              );
+              ?>
+            <?php endif; ?>
+          </p>
+          <div class="stats-bar-chart">
+            <?= enigme_render_bar_row($title, $rate); ?>
+          </div>
+        </div>
+        <?php
+        return (string) ob_get_clean();
+    }
+
     /**
-     * Build engagement histogram HTML for the sidebar.
+     * Build meta labels HTML for the sidebar.
+     *
+     * @param int $enigme_id Enigma identifier.
+     *
+     * @return string
+     */
+    function enigme_sidebar_metas_html(int $enigme_id): string
+    {
+        if (!function_exists('enigme_compter_joueurs_engages')) {
+            require_once __DIR__ . '/stats.php';
+        }
+
+        $nb_joueurs = enigme_compter_joueurs_engages($enigme_id);
+        $mode       = get_field('enigme_mode_validation', $enigme_id);
+
+        $html  = '<div class="bloc-metas-inline bloc-metas-inline--compact">';
+        $html .= '<div class="meta-etiquette"><span>'
+            . esc_html__('Nb joueurs :', 'chassesautresor-com')
+            . '</span><strong>' . esc_html($nb_joueurs) . '</strong></div>';
+
+        if ($mode !== 'aucune') {
+            $tentatives = enigme_compter_tentatives($enigme_id);
+            $html      .= '<div class="meta-etiquette"><span>'
+                . esc_html__('Nb tentatives :', 'chassesautresor-com')
+                . '</span><strong>' . esc_html($tentatives) . '</strong></div>';
+        }
+
+        $html .= '</div>';
+
+        return $html;
+    }
+
+    /**
+     * Build progression histogram HTML for the sidebar.
      *
      * @param int|null $chasse_id Hunt identifier.
      * @param int      $user_id   Current user identifier.
      *
      * @return string
      */
-    function enigme_sidebar_engagement_html(?int $chasse_id, int $user_id): string
+    function enigme_sidebar_progression_html(?int $chasse_id, int $user_id): string
     {
         if (!$chasse_id || !$user_id) {
             return '';
         }
 
-        $cache_key = 'enigme_sidebar_engagement_' . $chasse_id . '_' . $user_id;
+        $cache_key = 'enigme_sidebar_progression_' . $chasse_id . '_' . $user_id;
         $data      = wp_cache_get($cache_key, 'chassesautresor');
 
         if (!is_array($data)) {
@@ -197,74 +332,116 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
         }
 
         return enigme_render_bar_subsection(
-            esc_html__('Engagements', 'chassesautresor-com'),
+            esc_html__('Progression', 'chassesautresor-com'),
             $data['user'],
             $data['avg'],
-            'enigme-engagement'
+            'enigme-progression',
+            esc_html__(
+                "Définition\nPart moyenne des énigmes auxquelles chaque joueur a accédé, rapportée au total d’énigmes de la chasse.\n\n"
+                . "Vous\nPart des énigmes auxquelles vous avez accédé.\n\n"
+                . "Moyenne\nMoyenne sur l’ensemble des joueurs.",
+                'chassesautresor-com'
+            ),
+            esc_attr__(
+                'Aide sur la progression',
+                'chassesautresor-com'
+            )
         );
     }
 
     /**
      * Build resolution histogram HTML for the sidebar.
      *
-     * @param int|null $chasse_id Hunt identifier.
-     * @param int      $user_id   Current user identifier.
+     * @param int $enigme_id Enigma identifier.
      *
      * @return string
      */
-    function enigme_sidebar_progression_html(?int $chasse_id, int $user_id): string
+    function enigme_sidebar_resolution_html(int $enigme_id): string
     {
-        if (!$chasse_id || !$user_id) {
+        if ($enigme_id <= 0) {
             return '';
         }
 
-        $cache_key = 'enigme_sidebar_progression_' . $chasse_id . '_' . $user_id;
-        $data      = wp_cache_get($cache_key, 'chassesautresor');
+        $cache_key = 'enigme_sidebar_resolution_' . $enigme_id;
+        $rate      = wp_cache_get($cache_key, 'chassesautresor');
 
-        if (!is_array($data)) {
-            $enigme_ids = recuperer_ids_enigmes_pour_chasse($chasse_id);
+        if (!is_int($rate)) {
+            global $wpdb;
+            $table_engagements = $wpdb->prefix . 'engagements';
+            $table_statuts     = $wpdb->prefix . 'enigme_statuts_utilisateur';
 
-            if (!$enigme_ids) {
-                $user_rate = 0;
-                $avg_rate  = 0;
+            $access_sql = $wpdb->prepare(
+                "SELECT COUNT(DISTINCT user_id) FROM {$table_engagements} WHERE enigme_id = %d",
+                $enigme_id
+            );
+            $accessed = (int) $wpdb->get_var($access_sql);
+
+            if ($accessed > 0) {
+                $solve_sql = $wpdb->prepare(
+                    "SELECT COUNT(DISTINCT user_id) FROM {$table_statuts} WHERE enigme_id = %d AND statut IN ('resolue','terminee','terminée')",
+                    $enigme_id
+                );
+                $solved = (int) $wpdb->get_var($solve_sql);
+                $rate   = (int) round((100 * $solved) / $accessed);
             } else {
-                $validables = array_filter($enigme_ids, function ($id) {
-                    return get_field('enigme_mode_validation', $id) !== 'aucune';
-                });
-                $total_validables = count($validables);
-
-                if ($total_validables === 0) {
-                    $user_rate = 0;
-                    $avg_rate  = 0;
-                } else {
-                    global $wpdb;
-                    $table        = $wpdb->prefix . 'enigme_statuts_utilisateur';
-                    $placeholders = implode(',', array_fill(0, $total_validables, '%d'));
-                    $sql          = $wpdb->prepare(
-                        "SELECT COUNT(DISTINCT enigme_id) FROM {$table} WHERE user_id = %d AND statut IN ('resolue','terminee','terminée') AND enigme_id IN ($placeholders)",
-                        $user_id,
-                        ...$validables
-                    );
-                    $solved    = (int) $wpdb->get_var($sql);
-                    $user_rate = (100 * $solved) / $total_validables;
-                    $avg_rate  = chasse_calculer_taux_progression($chasse_id);
-                }
+                $rate = 0;
             }
 
-            $data = [
-                'user' => (int) round($user_rate),
-                'avg'  => (int) round($avg_rate),
-            ];
-
-            wp_cache_set($cache_key, $data, 'chassesautresor', HOUR_IN_SECONDS);
+            wp_cache_set($cache_key, $rate, 'chassesautresor', HOUR_IN_SECONDS);
         }
 
-        return enigme_render_bar_subsection(
+        return enigme_render_single_bar_subsection(
             esc_html__('Résolution', 'chassesautresor-com'),
-            $data['user'],
-            $data['avg'],
-            'enigme-resolution'
+            $rate,
+            'enigme-resolution',
+            esc_html__(
+                "Définition\nNombre de joueurs ayant résolu l’énigme, rapporté au nombre total de joueurs ayant accédé à l’énigme.",
+                'chassesautresor-com'
+            ),
+            esc_attr__(
+                'Aide sur la résolution',
+                'chassesautresor-com'
+            )
         );
+    }
+
+    /**
+     * Build winners table HTML for the sidebar.
+     *
+     * @param int $enigme_id Enigma identifier.
+     * @param int $user_id   Current user identifier.
+     * @param int $page      Page number.
+     *
+     * @return string
+     */
+    function enigme_sidebar_gagnants_html(int $enigme_id, int $user_id, int $page = 1): string
+    {
+        if (!function_exists('enigme_lister_resolveurs')) {
+            require_once __DIR__ . '/stats.php';
+        }
+
+        global $wpdb;
+        $per_page = 10;
+        $solvers  = property_exists($wpdb, 'users') ? enigme_lister_resolveurs($enigme_id) : [];
+        $total    = count($solvers);
+        $pages    = max(1, (int) ceil($total / $per_page));
+        $page     = max(1, min($page, $pages));
+        $offset   = ($page - 1) * $per_page;
+        $slice    = array_slice($solvers, $offset, $per_page);
+
+        ob_start();
+        get_template_part(
+            'template-parts/enigme/partials/enigme-partial-gagnants',
+            null,
+            [
+                'gagnants'  => $slice,
+                'page'      => $page,
+                'pages'     => $pages,
+                'user_id'   => $user_id,
+                'total'     => $total,
+            ]
+        );
+        return (string) ob_get_clean();
     }
 
     /**
@@ -275,16 +452,23 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
      * @param int|null $chasse_id      Associated hunt ID.
      * @param array    $menu_items     Menu items to display.
      */
-    function render_enigme_sidebar(int $enigme_id, bool $edition_active, ?int $chasse_id, array $menu_items): void
-    {
+    function render_enigme_sidebar(
+        int $enigme_id,
+        bool $edition_active,
+        ?int $chasse_id,
+        array $menu_items,
+        bool $peut_ajouter_enigme = false,
+        int $total_enigmes = 0,
+        bool $has_incomplete_enigme = false
+    ): void {
         $cache_key = enigme_get_render_cache_key('enigme_sidebar', $enigme_id);
         $html      = wp_cache_get($cache_key, 'chassesautresor');
+        $mode      = get_field('enigme_mode_validation', $enigme_id);
 
         if ($html === false) {
             ob_start();
             echo '<aside class="menu-lateral">';
 
-            echo '<div class="menu-lateral__core">';
             echo '<div class="menu-lateral__header">';
             if ($chasse_id) {
                 $url_chasse = get_permalink($chasse_id);
@@ -292,14 +476,9 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
                 echo '<h2 class="menu-lateral__title"><a href="' . esc_url($url_chasse) . '">' . esc_html($titre) . '</a></h2>';
             }
 
-            if ($edition_active) {
-                echo '<button id="toggle-mode-edition-enigme" type="button" '
-                    . 'class="bouton-edition-toggle bouton-edition-toggle--clair menu-lateral__edition-toggle" data-cpt="enigme" aria-label="'
-                    . esc_attr__('Activer Orgy', 'chassesautresor-com')
-                    . '"><i class="fa-solid fa-gear"></i></button>';
-            }
             echo '</div>';
 
+            echo '<div class="menu-lateral__content">';
             if ($chasse_id) {
                 $logo = get_the_post_thumbnail($chasse_id, 'thumbnail');
                 if ($logo) {
@@ -308,26 +487,38 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
             }
 
             if (!empty($menu_items)) {
-                echo '<section class="enigme-navigation">';
+                $data_chasse = $chasse_id ? ' data-chasse-id="' . intval($chasse_id) . '"' : '';
+                $menu_class  = 'enigme-menu';
+                if ($edition_active) {
+                    $menu_class .= ' enigme-menu--editable';
+                }
+                echo '<section class="enigme-navigation"' . $data_chasse . '>';
                 echo '<h3>' . esc_html__('Énigmes', 'chassesautresor-com') . '</h3>';
-                echo '<ul class="enigme-menu">' . implode('', $menu_items) . '</ul>';
+                echo '%AJOUT%';
+                echo '<ul class="' . esc_attr($menu_class) . '">' . implode('', $menu_items) . '</ul>';
                 echo '</section>';
             }
             echo '</div>';
 
             echo '<div class="menu-lateral__accordeons">';
             echo '<div class="accordeon-bloc">';
+            echo '<div class="accordeon-contenu accordeon-ferme">';
+            echo '<section class="enigme-statistiques">';
+            echo '<h3>' . esc_html__('Statistiques', 'chassesautresor-com') . '</h3>';
+            echo '%METAS%';
+            echo '%STATS%';
+            echo '</section>';
+            if ($mode !== 'aucune') {
+                echo '<section class="enigme-gagnants" data-enigme-id="' . intval($enigme_id) . '">';
+                echo '%WINNERS%';
+                echo '</section>';
+            }
+            echo '</div>';
             echo '<button class="accordeon-toggle" type="button" aria-expanded="false">'
                 . '<i class="fa-solid fa-chevron-down" aria-hidden="true"></i>'
                 . '<span class="screen-reader-text">'
-                . esc_html__('Afficher la progression', 'chassesautresor-com')
+                . esc_html__('Afficher les statistiques', 'chassesautresor-com')
                 . '</span></button>';
-            echo '<div class="accordeon-contenu accordeon-ferme">';
-            echo '<section class="enigme-progression">';
-            echo '<h3>' . esc_html__('Progression', 'chassesautresor-com') . '</h3>';
-            echo '%STATS%';
-            echo '</section>';
-            echo '</div>';
             echo '</div>';
             echo '</div>';
             echo '</aside>';
@@ -336,9 +527,34 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
         }
 
         $user_id    = get_current_user_id();
-        $stats_html = enigme_sidebar_engagement_html($chasse_id, $user_id)
-            . enigme_sidebar_progression_html($chasse_id, $user_id);
-        echo str_replace('%STATS%', $stats_html, $html);
+        $stats_html = enigme_sidebar_progression_html($chasse_id, $user_id)
+            . enigme_sidebar_resolution_html($enigme_id);
+        $meta_html   = enigme_sidebar_metas_html($enigme_id);
+        $winners_html = $mode === 'aucune'
+            ? ''
+            : enigme_sidebar_gagnants_html($enigme_id, $user_id);
+
+        $ajout_html = '';
+        if (
+            $chasse_id
+            && $peut_ajouter_enigme
+            && $total_enigmes > 0
+            && !$has_incomplete_enigme
+        ) {
+            ob_start();
+            get_template_part('template-parts/enigme/chasse-partial-ajout-enigme', null, [
+                'has_enigmes' => true,
+                'chasse_id'   => $chasse_id,
+                'use_button'  => true,
+            ]);
+            $ajout_html = ob_get_clean();
+        }
+
+        echo str_replace(
+            ['%AJOUT%', '%METAS%', '%STATS%', '%WINNERS%'],
+            [$ajout_html, $meta_html, $stats_html, $winners_html],
+            $html
+        );
     }
 
     /**
@@ -435,8 +651,105 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
             $content .= '<div class="zone-indices"><h3>' . esc_html__('Indices', 'chassesautresor-com') . '</h3></div>';
         }
 
+        $mode_validation = get_field('enigme_mode_validation', $enigme_id);
+        $cout            = (int) get_field('enigme_tentative_cout_points', $enigme_id);
+
+        if ($mode_validation === 'aucune') {
+            $cout = 0;
+        }
+
+        if (!function_exists('est_enigme_resolue_par_utilisateur')) {
+            require_once __DIR__ . '/../statut-functions.php';
+        }
+
+        $deja_resolue = est_enigme_resolue_par_utilisateur($user_id, $enigme_id);
+
+        $solde_actuel = ($cout > 0 && function_exists('get_user_points'))
+            ? get_user_points($user_id)
+            : 0;
+
+        $badge_html = '';
+        if ($mode_validation !== 'aucune') {
+            $chasse_id = recuperer_id_chasse_associee($enigme_id);
+            if (!current_user_can('manage_options')
+                && !utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)
+            ) {
+                $icon       = $mode_validation === 'automatique' ? 'fa-bolt' : 'fa-envelope';
+                $mode_label = $mode_validation === 'automatique'
+                    ? esc_html__('automatique', 'chassesautresor-com')
+                    : esc_html__('manuelle', 'chassesautresor-com');
+                $title = sprintf(
+                    esc_html__("Mode de validation de l'énigme : %s", 'chassesautresor-com'),
+                    $mode_label
+                );
+                $badge_html = '<span class="badge-validation" title="'
+                    . esc_attr($title)
+                    . '"><i class="fa-solid '
+                    . esc_attr($icon)
+                    . '"></i></span>';
+            }
+        }
+
+        $afficher_tentatives = $mode_validation === 'automatique' && !$deja_resolue;
+        $afficher_infos      = $mode_validation !== 'aucune'
+            && !$deja_resolue
+            && ($cout > 0 || $afficher_tentatives);
+
+        if ($afficher_tentatives && !function_exists('compter_tentatives_du_jour')) {
+            require_once __DIR__ . '/tentatives.php';
+        }
+
+        if ($afficher_tentatives) {
+            $tentatives_utilisees = compter_tentatives_du_jour($user_id, $enigme_id);
+            $tentatives_max       = (int) get_field('enigme_tentative_max', $enigme_id);
+            $tentatives_max_aff   = $tentatives_max > 0 ? $tentatives_max : '∞';
+        }
+
+        if ($afficher_infos) {
+            $content .= '<div class="participation-infos txt-small" ';
+            $content .= 'style="color:var(--color-text-primary);display:flex;justify-content:space-between;">';
+
+            if ($cout > 0) {
+                $content .= '<span class="solde">'
+                    . sprintf(esc_html__('Solde : %d pts', 'chassesautresor-com'), $solde_actuel)
+                    . '</span>';
+            } else {
+                $content .= '<span></span>';
+            }
+
+            if ($afficher_tentatives) {
+                $content .= '<span class="tentatives">'
+                    . sprintf(
+                        esc_html__('Tentatives quotidiennes : %1$d/%2$s', 'chassesautresor-com'),
+                        $tentatives_utilisees,
+                        $tentatives_max_aff
+                    )
+                    . '</span>';
+            } elseif ($cout > 0) {
+                $content .= '<span></span>';
+            }
+
+            $content .= '</div>';
+        }
+
+        $cout_badge = '';
+        if ($mode_validation !== 'aucune' && $cout > 0) {
+            $cout_badge = '<span class="badge-cout" aria-label="'
+                . esc_attr(sprintf(
+                    esc_html__('Coût par tentative : %d points.', 'chassesautresor-com'),
+                    $cout
+                ))
+                . '">' . esc_html($cout) . ' '
+                . esc_html__('pts', 'chassesautresor-com') . '</span>';
+        }
+
+        $header = '<div class="participation-header">'
+            . ($badge_html !== '' ? $badge_html : '<span></span>')
+            . $cout_badge
+            . '</div>';
+
         if ($content !== '') {
-            echo '<section class="participation">' . $content . '</section>';
+            echo '<section class="participation">' . $header . $content . '</section>';
         }
     }
 
@@ -514,11 +827,15 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
         $chasse_id      = recuperer_id_chasse_associee($enigme_id);
         $edition_active = utilisateur_peut_modifier_post($enigme_id);
 
-        $menu_items  = [];
-        $liste       = [];
-        $chasse_stat = $chasse_id ? get_field('chasse_cache_statut', $chasse_id) : '';
-        $show_menu   = enigme_user_can_see_menu($user_id, $chasse_id, $chasse_stat);
-        $skip_checks = $chasse_stat === 'termine';
+        $menu_items        = [];
+        $liste             = [];
+        $chasse_stat       = $chasse_id ? get_field('chasse_cache_statut', $chasse_id) : '';
+        $validation_status = $chasse_id ? get_field('chasse_cache_statut_validation', $chasse_id) : '';
+        if ($edition_active && !in_array($validation_status, ['creation', 'correction'], true)) {
+            $edition_active = false;
+        }
+        $show_menu         = enigme_user_can_see_menu($user_id, $chasse_id, $chasse_stat);
+        $skip_checks       = $chasse_stat === 'termine';
         $is_privileged = current_user_can('administrator')
             || (est_organisateur($user_id)
             && utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id));
@@ -534,6 +851,22 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
 
         $submenu_items = [];
 
+        $total_enigmes       = count($liste);
+        $has_incomplete_enigme = false;
+        foreach ($liste as $post_check) {
+            if (function_exists('verifier_ou_mettre_a_jour_cache_complet')) {
+                verifier_ou_mettre_a_jour_cache_complet($post_check->ID);
+            }
+            if (!get_field('enigme_cache_complet', $post_check->ID)) {
+                $has_incomplete_enigme = true;
+                break;
+            }
+        }
+        $peut_ajouter_enigme = false;
+        if ($chasse_id && function_exists('utilisateur_peut_ajouter_enigme')) {
+            $peut_ajouter_enigme = utilisateur_peut_ajouter_enigme($chasse_id);
+        }
+
         foreach ($liste as $post) {
             if (!$is_privileged) {
                 if (get_post_status($post->ID) !== 'publish') {
@@ -547,17 +880,47 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
             $classes = [];
 
             if (!$skip_checks) {
-                $etat_sys = get_field('enigme_cache_etat_systeme', $post->ID) ?? 'accessible';
+                $etat_sys       = get_field('enigme_cache_etat_systeme', $post->ID) ?? 'accessible';
+                $condition_acces = get_field('enigme_acces_condition', $post->ID) ?? 'immediat';
+
                 if (in_array($etat_sys, ['invalide', 'cache_invalide'], true)) {
                     continue;
                 }
 
-                if (in_array($etat_sys, ['bloquee_date', 'bloquee_chasse', 'bloquee_pre_requis'], true)) {
+                if (
+                    $condition_acces === 'pre_requis'
+                    && !$is_privileged
+                    && (!function_exists('enigme_pre_requis_remplis')
+                        || !enigme_pre_requis_remplis($post->ID, $user_id))
+                ) {
+                    continue;
+                }
+
+                if (
+                    $condition_acces === 'pre_requis'
+                    && $etat_sys === 'bloquee_pre_requis'
+                ) {
+                    $etat_sys = 'accessible';
+                }
+
+                if (!$is_privileged && $etat_sys === 'bloquee_date') {
+                    continue;
+                }
+
+                if ($etat_sys === 'bloquee_chasse' && in_array($validation_status, ['creation', 'correction'], true)) {
+                    if (!get_field('enigme_cache_complet', $post->ID)) {
+                        $classes[] = 'incomplete';
+                    } else {
+                        $classes[] = 'bloquee';
+                    }
+                } elseif (in_array($etat_sys, ['bloquee_date', 'bloquee_chasse'], true)) {
                     $classes[] = 'bloquee';
                 } else {
                     $statut_user = enigme_get_statut_utilisateur($post->ID, $user_id);
                     if (in_array($statut_user, ['resolue', 'terminee'], true)) {
                         $classes[] = 'succes';
+                    } elseif ($statut_user === 'soumis') {
+                        $classes[] = 'en-attente';
                     } elseif (
                         $statut_user === 'non_commencee'
                         && !utilisateur_est_engage_dans_enigme($user_id, $post->ID)
@@ -571,11 +934,42 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
                 $classes[] = 'active';
             }
 
+            $handle = '';
+            if ($edition_active) {
+                $handle = '<span class="enigme-menu__handle" aria-hidden="true"></span>';
+            }
+
+            $edit = '';
+            if (function_exists('utilisateur_peut_modifier_enigme') && utilisateur_peut_modifier_enigme($post->ID)) {
+                if ($post->ID === $enigme_id) {
+                    $edit = '<button id="toggle-mode-edition-enigme" type="button"'
+                        . ' class="enigme-menu__edit" aria-label="'
+                        . esc_attr__('Paramètres', 'chassesautresor-com')
+                        . '"><i class="fa-solid fa-gear"></i></button>';
+                } else {
+                    $tab     = (get_post_status($post->ID) === 'publish' && get_field('enigme_cache_complet', $post->ID))
+                        ? 'stats'
+                        : 'param';
+                    $edit_url = add_query_arg(
+                        ['edition' => 'open', 'tab' => $tab],
+                        get_permalink($post->ID)
+                    );
+                    $edit     = '<a class="enigme-menu__edit" href="' . esc_url($edit_url) . '" aria-label="'
+                        . esc_attr__('Paramètres', 'chassesautresor-com')
+                        . '"><i class="fa-solid fa-gear"></i></a>';
+                }
+            }
+
+            $title = esc_html(get_the_title($post->ID));
+            $link  = '<a href="' . esc_url(get_permalink($post->ID)) . '">' . $title . '</a>';
+
             $submenu_items[] = sprintf(
-                '<li class="%s"><a href="%s">%s</a></li>',
+                '<li class="%s" data-enigme-id="%d">%s%s%s</li>',
                 esc_attr(implode(' ', $classes)),
-                esc_url(get_permalink($post->ID)),
-                esc_html(get_the_title($post->ID))
+                $post->ID,
+                $handle,
+                $link,
+                $edit
             );
         }
 
@@ -584,12 +978,25 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
         }
 
         echo '<div class="container container--xl-full enigme-layout">';
-        render_enigme_sidebar($enigme_id, $edition_active, $chasse_id, $menu_items);
+        render_enigme_sidebar(
+            $enigme_id,
+            $edition_active,
+            $chasse_id,
+            $menu_items,
+            $peut_ajouter_enigme,
+            $total_enigmes,
+            $has_incomplete_enigme
+        );
         echo '<main class="page-enigme enigme-style-' . esc_attr($style) . '">';
         render_enigme_title($enigme_id, $style, $user_id);
         render_enigme_hero($enigme_id, $style, $user_id);
         render_enigme_content($enigme_id, $style, $user_id);
-        render_enigme_participation($enigme_id, $style, $user_id);
+        if (!(
+            est_organisateur($user_id)
+            && utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)
+        )) {
+            render_enigme_participation($enigme_id, $style, $user_id);
+        }
         render_enigme_solution($enigme_id, $style, $user_id);
         echo '</main>';
         echo '</div>';
@@ -621,5 +1028,97 @@ add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
             cat_debug("❌ Aucun partial trouvé pour $slug (style: $style)");
         }
     }
+
+    /**
+     * AJAX handler to fetch winners table.
+     */
+    function ajax_enigme_recuperer_gagnants(): void
+    {
+        $enigme_id = isset($_POST['enigme_id']) ? (int) $_POST['enigme_id'] : 0;
+        $page      = isset($_POST['page']) ? (int) $_POST['page'] : 1;
+
+        if ($enigme_id <= 0) {
+            wp_send_json_error('missing_enigme', 400);
+        }
+
+        if (get_field('enigme_mode_validation', $enigme_id) === 'aucune') {
+            wp_send_json_error('disabled', 400);
+        }
+
+        $user_id = get_current_user_id();
+        $html    = enigme_sidebar_gagnants_html($enigme_id, $user_id, $page);
+        wp_send_json_success(['html' => $html]);
+    }
+
+    add_action('wp_ajax_enigme_recuperer_gagnants', 'ajax_enigme_recuperer_gagnants');
+    add_action('wp_ajax_nopriv_enigme_recuperer_gagnants', 'ajax_enigme_recuperer_gagnants');
+
+    /**
+     * AJAX handler to refresh the statistics section.
+     */
+    function ajax_enigme_recuperer_progression(): void
+    {
+        if (!is_user_logged_in()) {
+            wp_send_json_error('non_connecte', 403);
+        }
+
+        $chasse_id = isset($_POST['chasse_id']) ? (int) $_POST['chasse_id'] : 0;
+        $enigme_id = isset($_POST['enigme_id']) ? (int) $_POST['enigme_id'] : 0;
+        if ($chasse_id <= 0 || $enigme_id <= 0) {
+            wp_send_json_error('missing_chasse', 400);
+        }
+
+        $user_id = get_current_user_id();
+
+        // Ensure stats are recalculated with up-to-date engagement data.
+        enigme_clear_sidebar_cache($chasse_id, $user_id);
+        wp_cache_delete('enigme_sidebar_resolution_' . $enigme_id, 'chassesautresor');
+
+        $html    = '<h3>' . esc_html__('Statistiques', 'chassesautresor-com') . '</h3>';
+        $html   .= enigme_sidebar_metas_html($enigme_id);
+        $html   .= enigme_sidebar_progression_html($chasse_id, $user_id);
+        $html   .= enigme_sidebar_resolution_html($enigme_id);
+
+        wp_send_json_success(['html' => $html]);
+    }
+
+    add_action('wp_ajax_enigme_recuperer_progression', 'ajax_enigme_recuperer_progression');
+    add_action('wp_ajax_nopriv_enigme_recuperer_progression', 'ajax_enigme_recuperer_progression');
+
+    /**
+     * Enqueue scripts for the winners pager.
+     */
+    function enigme_enqueue_gagnants_scripts(): void
+    {
+        if (!is_singular('enigme')) {
+            return;
+        }
+
+        $enigme_id = get_queried_object_id();
+        if (get_field('enigme_mode_validation', $enigme_id) === 'aucune') {
+            return;
+        }
+
+        $dir = get_stylesheet_directory();
+        $uri = get_stylesheet_directory_uri();
+
+        wp_enqueue_script(
+            'pager',
+            $uri . '/assets/js/core/pager.js',
+            [],
+            filemtime($dir . '/assets/js/core/pager.js'),
+            true
+        );
+
+        $path = '/assets/js/enigme-gagnants.js';
+        wp_enqueue_script(
+            'enigme-gagnants',
+            $uri . $path,
+            ['pager'],
+            filemtime($dir . $path),
+            true
+        );
+    }
+    add_action('wp_enqueue_scripts', 'enigme_enqueue_gagnants_scripts');
 
 

@@ -44,6 +44,10 @@ function initChampImage(bloc) {
       bloc.classList.remove('champ-vide');
       input.value = id;
 
+      if (typeof window.mettreAJourResumeInfos === 'function') {
+        window.mettreAJourResumeInfos();
+      }
+
       if (feedback) {
         feedback.textContent = 'Enregistrement...';
         feedback.className = 'champ-feedback champ-loading';

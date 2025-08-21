@@ -393,7 +393,7 @@ function traiter_tentative(
     global $wpdb;
     $table = $wpdb->prefix . 'enigme_tentatives';
 
-    if ($resultat === 'bon') {
+    if ($resultat === 'bon' && $inserer) {
         $existe = (int) $wpdb->get_var(
             $wpdb->prepare(
                 "SELECT COUNT(*) FROM {$table} WHERE user_id = %d AND enigme_id = %d AND resultat = 'bon'",
@@ -408,7 +408,7 @@ function traiter_tentative(
     }
 
     $cout = (int) get_field('enigme_tentative_cout_points', $enigme_id);
-    if ($cout > 0) {
+    if ($cout > 0 && $inserer) {
         $reason = sprintf("Tentative de réponse pour l'énigme #%d", $enigme_id);
         deduire_points_utilisateur($user_id, $cout, $reason, 'tentative', $enigme_id);
     }

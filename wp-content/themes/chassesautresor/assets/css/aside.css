@@ -8,13 +8,29 @@
   padding-bottom: 0;
   border-radius: 6px;
   align-self: start;
-  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - var(--space-md));
   color: rgba(var(--color-white-rgb, 255, 255, 255), 0.4);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.menu-lateral.has-open-accordeon {
-  padding-bottom: var(--space-4xl);
+.menu-lateral__content {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /*background-color: inherit;*/
+}
+
+.menu-lateral__accordeons {
+  margin-top: auto;
+  flex-shrink: 0;
+  position: sticky;
+  bottom: 0;
+  /*background-color: inherit;*/
+  width: calc(100% + 2 * var(--space-md));
+  margin-left: calc(-1 * var(--space-md));
+  margin-right: calc(-1 * var(--space-md));
 }
 
 .menu-lateral__header {
@@ -23,6 +39,7 @@
   margin: calc(-1 * var(--space-md)) calc(-1 * var(--space-md)) var(--space-md);
   padding: var(--space-sm) var(--space-md);
   position: relative;
+  border-radius: 8px 8px 0 0;
 }
 
 .menu-lateral__title {
@@ -40,6 +57,12 @@
 .menu-lateral__title a {
   color: inherit;
   text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+
+.menu-lateral__title a:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
 }
 
 .menu-lateral h3 {
@@ -49,7 +72,7 @@
   border-bottom: 1px solid rgba(var(--color-grey-light-rgb, 220, 220, 220), 0.15);
 }
 
-.menu-lateral section + section:not(.enigme-progression) {
+.menu-lateral section + section:not(.enigme-statistiques) {
   margin-top: var(--space-lg);
   padding-top: var(--space-lg);
   border-top: 1px solid var(--color-grey-light);
@@ -59,6 +82,20 @@
   font-weight: 600;
   font-size: 1.125rem;
   margin: var(--space-md) 0 var(--space-xs);
+}
+
+.aside-subsection-title .mode-fin-aide {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 0.3em;
+  color: inherit;
+  padding: 0;
+}
+
+.aside-subsection-title .stat-help i {
+  pointer-events: none;
+  font-size: 0.8em;
 }
 
 .menu-lateral ul {
@@ -132,12 +169,12 @@
 .stats-bar-chart .bar-row:nth-child(5) .bar-fill { background-color: hsl(0 0% 40%); }
 
 /* ===== Accordéons ===== */
-.menu-lateral__accordeons {
-}
-
 /* Premier bloc après le contenu principal */
 .accordeon-bloc {
   margin-top: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
 .accordeon-bloc + .accordeon-bloc {
@@ -156,6 +193,7 @@
   cursor: pointer;
   position: relative;
   transition: background-color 0.3s ease;
+  border-radius: 0 0 6px 6px;
 }
 
 .accordeon-toggle i {
@@ -186,17 +224,21 @@
 .accordeon-toggle:hover,
 .accordeon-toggle:focus,
 .accordeon-toggle:active {
-  background-color: rgba(var(--color-white-rgb, 255, 255, 255), 0.15);
+  background: none;
 }
 
 .accordeon-contenu {
   overflow: hidden;
+  width: 100%;
   max-height: 0;
   transition: max-height 0.3s ease;
+  padding: 0 var(--space-md);
+  background-color: inherit;
 }
 
 .accordeon-contenu:not(.accordeon-ferme) {
   max-height: 1000px;
+  padding-bottom: var(--space-sm);
 }
 
 @media (min-width: var(--breakpoint-desktop)) {
@@ -204,4 +246,58 @@
     position: sticky;
     top: var(--space-md);
   }
+}
+
+/* ===== Gagnants ===== */
+.enigme-gagnants tr.current-user {
+  font-weight: 700;
+}
+
+/* ====== Modal d'aide ====== */
+.help-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.help-modal {
+  background: var(--color-white, #fff);
+  color: var(--color-editor-heading, #000);
+  padding: var(--space-md);
+  border-radius: 8px;
+  max-width: 400px;
+  width: 90%;
+  position: relative;
+}
+
+.help-modal-title {
+  margin: 0 0 var(--space-sm);
+  font-size: 1.25rem;
+}
+
+.help-modal-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: inherit;
+}
+
+.help-modal-content p {
+  margin: 0 0 var(--space-sm);
+}
+
+.help-modal-content p.help-definition {
+  margin-bottom: var(--space-md);
+
 }

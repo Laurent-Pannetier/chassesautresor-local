@@ -75,7 +75,7 @@ function build_picture_enigme(int $image_id, string $alt, array $sizes, array $i
         ], $base_url));
         $media = $breakpoints[$size];
         $media_attr = $media ? ' media="' . $media . '"' : '';
-        $html .= '  <source srcset="' . $src . '"' . $media_attr . ">\n";
+        $html .= '  <source srcset="' . $src . '" data-size="' . $size . '"' . $media_attr . ">\n";
     }
 
     $fallback_size = $used_sizes[0];
@@ -151,51 +151,11 @@ function afficher_visuels_enigme(int $enigme_id): void
 
             $class = 'vignette' . ($index === 0 ? ' active' : '');
 
-            echo '<img src="' . $src_thumb . '" class="' . esc_attr($class) . '" alt="" data-image-id="' . esc_attr($img_id) . '">';
-            echo '<a href="' . $src_full . '" rel="lightbox-enigme" class="hidden-lightbox-link" style="display:none;"></a>';
+            echo '<img src="' . $src_thumb . '" class="' . esc_attr($class) . '" alt="" data-image-id="' . esc_attr($img_id) . '" loading="lazy">';
+            echo '<a href="' . $src_full . '" rel="lightbox-enigme" class="fancybox hidden-lightbox-link" style="display:none;"></a>';
         }
         echo '</div>';
     }
-
-    // 🔁 JS interaction
-?>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const vignettes = document.querySelectorAll('.vignette');
-            const principale = document.getElementById('image-enigme-active');
-            const lien = principale?.closest('a');
-            const container = principale?.closest('.image-principale');
-
-            vignettes.forEach(v => {
-                v.addEventListener('click', () => {
-                    const id = v.getAttribute('data-image-id');
-                    if (!id || !principale || !lien) return;
-
-                    const url = '/voir-image-enigme?id=' + id;
-
-                    if (container) {
-                        container.style.minHeight = container.offsetHeight + 'px';
-                    }
-
-                    const preload = new Image();
-                    preload.onload = () => {
-                        principale.src = preload.src;
-                        lien.href = preload.src;
-
-                        if (container) {
-                            container.style.minHeight = '';
-                        }
-
-                        vignettes.forEach(x => x.classList.remove('active'));
-                        v.classList.add('active');
-                    };
-
-                    preload.src = url;
-                });
-            });
-        });
-    </script>
-<?php
 }
 
 
@@ -346,9 +306,9 @@ function trouver_chemin_image(int $image_id, string $taille = 'full'): ?array
  */
 function get_mapping_visuel_enigme(int $enigme_id): array
 {
-    $etat_systeme = get_field('enigme_cache_etat_systeme', $enigme_id);
     $cta_data     = get_cta_enigme($enigme_id);
     $cta_type     = $cta_data['type'] ?? 'erreur';
+    $etat_systeme = $cta_data['etat_systeme'] ?? get_field('enigme_cache_etat_systeme', $enigme_id);
 
 
     $cle = match (true) {

@@ -20,6 +20,18 @@ function myaccount_get_organizer_nav(int $user_id): ?array
         return null;
     }
 
+    $organizer_post_status = get_post_status($organizer_id);
+    $organizer_complete    = (bool) get_field('organisateur_cache_complet', $organizer_id);
+    $organizer_classes     = 'dashboard-nav-link';
+
+    if (!$organizer_complete) {
+        $organizer_classes .= ' status-important';
+    } elseif ($organizer_post_status === 'pending') {
+        $organizer_classes .= ' status-pending';
+    } else {
+        $organizer_classes .= ' status-published';
+    }
+
     $chasses = get_posts([
         'post_type'   => 'chasse',
         'post_status' => ['publish', 'pending'],
@@ -43,8 +55,9 @@ function myaccount_get_organizer_nav(int $user_id): ?array
 
     $data = [
         'organizer' => [
-            'url'   => get_permalink($organizer_id),
-            'title' => get_the_title($organizer_id),
+            'url'     => get_permalink($organizer_id),
+            'title'   => get_the_title($organizer_id),
+            'classes' => $organizer_classes,
         ],
         'chasses' => [],
     ];
@@ -52,47 +65,72 @@ function myaccount_get_organizer_nav(int $user_id): ?array
     foreach ($chasses as $chasse) {
         $status_validation = get_field('chasse_cache_statut_validation', $chasse->ID);
         $complet           = get_field('chasse_cache_complet', $chasse->ID);
+        $post_status       = get_post_status($chasse->ID);
         $classes           = 'dashboard-nav-sublink';
+        $pending_icon      = false;
 
-        if (!$complet || in_array($status_validation, ['creation', 'correction'], true)) {
+        if (!$complet) {
             $classes .= ' status-important';
-        } elseif ($status_validation === 'banni') {
-            $classes .= ' status-banned';
-        } elseif ($status_validation === 'en_attente') {
-            $classes .= ' status-pending';
         } else {
-            $classes .= ' status-normal';
+            if ($post_status === 'pending') {
+                if ($status_validation === 'banni') {
+                    continue;
+                } elseif ($status_validation === 'en_attente') {
+                    $classes     .= ' status-pending';
+                    $pending_icon = true;
+                } else {
+                    $classes .= ' status-pending';
+                }
+            } elseif ($post_status === 'publish') {
+                if ($status_validation === 'valide') {
+                    $classes .= ' status-published';
+                } else {
+                    $classes .= ' status-pending';
+                }
+            } else {
+                $classes .= ' status-pending';
+            }
         }
 
         $chasse_item = [
             'title'        => get_the_title($chasse->ID),
-            'url'          => $status_validation === 'banni' ? null : get_permalink($chasse->ID),
+            'url'          => get_permalink($chasse->ID),
             'classes'      => $classes,
-            'pending_icon' => $status_validation === 'en_attente',
+            'pending_icon' => $pending_icon,
             'enigmes'      => [],
         ];
 
         $enigme_ids = recuperer_ids_enigmes_pour_chasse($chasse->ID);
         foreach ($enigme_ids as $enigme_id) {
-            $sub_classes = 'dashboard-nav-subitem ' . $classes;
-            $url         = get_permalink($enigme_id);
+            $sub_classes      = 'dashboard-nav-subitem';
+            $url              = get_permalink($enigme_id);
+            $enigme_complete  = get_field('enigme_cache_complet', $enigme_id);
+            $post_status      = get_post_status($enigme_id);
+            $etat_enigme      = get_field('enigme_cache_etat_systeme', $enigme_id);
 
-            if (strpos($classes, 'status-normal') !== false) {
-                if (in_array($enigme_id, $pending_enigmes, true)) {
-                    $sub_classes .= ' status-important';
-                } else {
-                    $etat_enigme = get_field('enigme_cache_etat_systeme', $enigme_id);
-                    if (in_array($etat_enigme, ['bloquee_date', 'bloquee_pre_requis'], true)) {
-                        $sub_classes .= ' status-muted';
-                    } elseif (in_array($etat_enigme, ['cache_invalide', 'invalide'], true)) {
-                        $sub_classes .= ' status-banned';
-                        $url         = null;
-                    }
-                }
+            if (!$enigme_complete) {
+                $sub_classes .= ' status-important';
             } else {
-                if (strpos($classes, 'status-banned') !== false) {
-                    $url = null;
+                if ($post_status === 'pending') {
+                    if (in_array($etat_enigme, ['invalide', 'cache_invalide'], true)) {
+                        continue;
+                    }
+                    $sub_classes .= ' status-pending';
+                } elseif ($post_status === 'publish') {
+                    if ($etat_enigme === 'accessible') {
+                        $sub_classes .= ' status-published';
+                    } elseif (in_array($etat_enigme, ['bloquee_date', 'bloquee_chasse', 'bloquee_pre_requis'], true)) {
+                        $sub_classes .= ' status-pending';
+                    } else {
+                        $sub_classes .= ' status-pending';
+                    }
+                } else {
+                    $sub_classes .= ' status-pending';
                 }
+            }
+
+            if (in_array($enigme_id, $pending_enigmes, true)) {
+                $sub_classes .= ' status-important';
             }
 
             $chasse_item['enigmes'][] = [
@@ -119,9 +157,9 @@ function myaccount_render_organizer_nav(array $data): string
     ob_start();
     ?>
     <nav class="dashboard-nav organizer-nav">
-        <a href="<?php echo esc_url($data['organizer']['url']); ?>" class="dashboard-nav-link">
+        <a href="<?php echo esc_url($data['organizer']['url']); ?>" class="<?php echo esc_attr($data['organizer']['classes']); ?>">
             <i class="fas fa-landmark"></i>
-            <span><?php echo esc_html($data['organizer']['title']); ?></span>
+            <span class="nav-title"><?php echo esc_html($data['organizer']['title']); ?></span>
         </a>
         <?php foreach ($data['chasses'] as $chasse) : ?>
             <?php
@@ -129,7 +167,7 @@ function myaccount_render_organizer_nav(array $data): string
             $attr = $chasse['url'] ? ' href="' . esc_url($chasse['url']) . '"' : '';
             ?>
             <<?php echo $tag . $attr; ?> class="<?php echo esc_attr($chasse['classes']); ?>">
-                <?php echo esc_html($chasse['title']); ?>
+                <span class="nav-title"><?php echo esc_html($chasse['title']); ?></span>
                 <?php if ($chasse['pending_icon']) : ?>
                     <i class="fas fa-hourglass-half"></i>
                 <?php endif; ?>
@@ -140,7 +178,7 @@ function myaccount_render_organizer_nav(array $data): string
                 $sub_attr = $enigme['url'] ? ' href="' . esc_url($enigme['url']) . '"' : '';
                 ?>
                 <<?php echo $sub_tag . $sub_attr; ?> class="<?php echo esc_attr($enigme['classes']); ?>">
-                    <?php echo esc_html($enigme['title']); ?>
+                    <span class="nav-title"><?php echo esc_html($enigme['title']); ?></span>
                 </<?php echo $sub_tag; ?>>
             <?php endforeach; ?>
         <?php endforeach; ?>

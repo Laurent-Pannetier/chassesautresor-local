@@ -2,6 +2,7 @@
 defined( 'ABSPATH' ) || exit;
 
 const HISTORIQUE_PAIEMENTS_ADMIN_PER_PAGE = 20;
+const ORGANISATEURS_PENDING_PER_PAGE     = 20;
 
 // ==================================================
 // 📚 SOMMAIRE DU FICHIER
@@ -1411,6 +1412,8 @@ function cta_reset_stats() {
         $wpdb->query("TRUNCATE TABLE {$table}");
     }
 
+    delete_metadata('user', 0, '_myaccount_messages', '', true);
+
     wp_send_json_success();
 }
 add_action('wp_ajax_cta_reset_stats', 'cta_reset_stats');
@@ -1607,12 +1610,24 @@ function recuperer_organisateurs_pending()
 
         if ($chasses->have_posts()) {
             foreach ($chasses->posts as $chasse_id) {
-                $date_creation  = get_post_field('post_date', $chasse_id);
-                $chasse_titre   = get_the_title($chasse_id);
-                $chasse_link    = get_permalink($chasse_id);
-                $nb_enigmes     = count(recuperer_enigmes_associees($chasse_id));
-                $statut         = get_field('chasse_cache_statut', $chasse_id);
-                $validation     = get_field('chasse_cache_statut_validation', $chasse_id);
+                verifier_ou_mettre_a_jour_cache_complet($chasse_id);
+
+                $date_creation = get_post_field('post_date', $chasse_id);
+                $chasse_titre  = get_the_title($chasse_id);
+                $chasse_link   = get_permalink($chasse_id);
+                $enigmes       = recuperer_enigmes_associees($chasse_id);
+                $nb_enigmes    = count($enigmes);
+                $statut        = get_field('chasse_cache_statut_validation', $chasse_id);
+
+                $pending_validation = ($statut === 'en_attente');
+                $pending_attempts   = false;
+                foreach ($enigmes as $enigme_id) {
+                    $mode = enigme_normaliser_mode_validation(get_field('enigme_mode_validation', $enigme_id));
+                    if ($mode === 'manuelle' && compter_tentatives_en_attente($enigme_id) > 0) {
+                        $pending_attempts = true;
+                        break;
+                    }
+                }
 
                 $resultats[] = [
                     'organisateur_id'        => $organisateur_id,
@@ -1626,7 +1641,9 @@ function recuperer_organisateurs_pending()
                     'chasse_permalink'       => $chasse_link,
                     'nb_enigmes'             => $nb_enigmes,
                     'statut'                 => $statut,
-                    'validation'             => $validation,
+                    'validation'             => $statut,
+                    'pending_validation'     => $pending_validation,
+                    'pending_attempts'       => $pending_attempts,
                     'date_creation'          => $date_creation,
                 ];
             }
@@ -1645,6 +1662,8 @@ function recuperer_organisateurs_pending()
                 'nb_enigmes'             => 0,
                 'statut'                 => '',
                 'validation'             => '',
+                'pending_validation'     => false,
+                'pending_attempts'       => false,
                 'date_creation'          => $date_creation,
             ];
         }
@@ -1663,14 +1682,16 @@ function recuperer_organisateurs_pending()
  * Affiche la liste des organisateurs et leurs chasses dans un tableau.
  *
  * @param array|null $liste Données pré-calculées.
+ * @param int        $page  Page courante.
+ * @param int        $per_page Nombre d'organisateurs par page.
  */
-function afficher_tableau_organisateurs_pending(array $liste = null)
+function afficher_tableau_organisateurs_pending(?array $liste = null, int $page = 1, int $per_page = ORGANISATEURS_PENDING_PER_PAGE): void
 {
     if (null === $liste) {
         $liste = recuperer_organisateurs_pending();
     }
     if (empty($liste)) {
-        echo '<p>Aucun organisateur.</p>';
+        echo '<p>' . esc_html__('Aucun organisateur.', 'chassesautresor-com') . '</p>';
         return;
     }
 
@@ -1690,8 +1711,22 @@ function afficher_tableau_organisateurs_pending(array $liste = null)
         $grouped[$oid]['rows'][] = $entry;
     }
 
-    echo '<table class="table-organisateurs">';
-    echo '<thead><tr><th>Organisateur</th><th>Chasse</th><th>Nb énigmes</th><th>État</th><th>Utilisateur</th><th data-col="date">Créé le <span class="tri-date">&#9650;&#9660;</span></th></tr></thead><tbody>';
+    $total  = count($grouped);
+    $pages  = max(1, (int) ceil($total / $per_page));
+    $page   = max(1, min($page, $pages));
+    $offset = ($page - 1) * $per_page;
+    $grouped = array_slice($grouped, $offset, $per_page, true);
+
+    echo '<div class="stats-table-wrapper" data-per-page="' . intval($per_page) . '">';
+    echo '<table class="stats-table table-organisateurs">';
+    echo '<thead><tr>';
+    echo '<th scope="col">' . esc_html__('Organisateur', 'chassesautresor-com') . '</th>';
+    echo '<th scope="col">' . esc_html__('Chasse', 'chassesautresor-com') . '</th>';
+    echo '<th scope="col" data-format="etiquette"><span class="etiquette">' . esc_html__('Nb énigmes', 'chassesautresor-com') . '</span></th>';
+    echo '<th scope="col">' . esc_html__('État', 'chassesautresor-com') . '</th>';
+    echo '<th scope="col">' . esc_html__('Utilisateur', 'chassesautresor-com') . '</th>';
+    echo '<th scope="col" data-col="date">' . esc_html__('Créé le', 'chassesautresor-com') . ' <span class="tri-date">&#9650;&#9660;</span></th>';
+    echo '</tr></thead><tbody>';
 
     foreach ($grouped as $org) {
         $rows    = $org['rows'];
@@ -1704,11 +1739,54 @@ function afficher_tableau_organisateurs_pending(array $liste = null)
             }
 
             if ($row['chasse_id']) {
-                echo '<td><a href="' . esc_url($row['chasse_permalink']) . '" target="_blank">' . esc_html($row['chasse_titre']) . '</a></td>';
-                echo '<td>' . intval($row['nb_enigmes']) . '</td>';
-                echo '<td data-col="etat">' . esc_html($row['statut']) . '</td>';
+                $statut      = $row['statut'];
+                $badge_class = 'statut-revision';
+
+                switch ($statut) {
+                    case 'valide':
+                        $badge_class  = 'statut-en_cours';
+                        $statut_label = __('valide', 'chassesautresor-com');
+                        break;
+                    case 'correction':
+                        $statut_label = __('correction', 'chassesautresor-com');
+                        break;
+                    case 'en_attente':
+                        $statut_label = __('en attente', 'chassesautresor-com');
+                        break;
+                    case 'creation':
+                        $statut_label = __('création', 'chassesautresor-com');
+                        break;
+                    case 'banni':
+                        $badge_class  = 'statut-termine';
+                        $statut_label = __('banni', 'chassesautresor-com');
+                        break;
+                    default:
+                        $statut_label = $statut;
+                        break;
+                }
+
+                echo '<td class="col-chasse"><a href="' . esc_url($row['chasse_permalink']) . '" target="_blank">' . esc_html($row['chasse_titre']) . '</a></td>';
+                echo '<td class="col-enigmes"><span class="etiquette">' . intval($row['nb_enigmes']) . '</span></td>';
+
+                $warning   = $row['pending_validation'] || $row['pending_attempts'];
+                $tooltip   = '';
+                if ($warning) {
+                    if ($row['pending_validation'] && $row['pending_attempts']) {
+                        $tooltip = __('Demande de validation et tentatives manuelles en attente', 'chassesautresor-com');
+                    } elseif ($row['pending_validation']) {
+                        $tooltip = __('Demande de validation en attente', 'chassesautresor-com');
+                    } else {
+                        $tooltip = __('Tentatives manuelles en attente de réponse', 'chassesautresor-com');
+                    }
+                }
+
+                echo '<td data-col="etat"><span class="badge-statut ' . esc_attr($badge_class) . '">' . esc_html($statut_label) . '</span>';
+                if ($warning) {
+                    echo '<span class="required" aria-hidden="true" title="' . esc_attr($tooltip) . '">*</span>';
+                }
+                echo '</td>';
             } else {
-                echo '<td>-</td><td>-</td><td data-col="etat"></td>';
+                echo '<td class="col-chasse">-</td><td class="col-enigmes"><span class="etiquette">-</span></td><td data-col="etat"></td>';
             }
 
             if ($first) {
@@ -1726,6 +1804,8 @@ function afficher_tableau_organisateurs_pending(array $liste = null)
     }
 
     echo '</tbody></table>';
+    echo cta_render_pager($page, $pages, 'organisateurs-pager');
+    echo '</div>';
 }
 
 /**
@@ -1761,8 +1841,21 @@ function traiter_validation_chasse_admin() {
         wp_die( __( 'Nonce invalide.', 'chassesautresor-com' ) );
     }
 
-    $enigmes = recuperer_enigmes_associees($chasse_id);
-    $organisateur_id = get_organisateur_from_chasse($chasse_id);
+    $enigmes          = recuperer_enigmes_associees($chasse_id);
+    $organisateur_id  = get_organisateur_from_chasse($chasse_id);
+    $users            = $organisateur_id ? (array) get_field('utilisateurs_associes', $organisateur_id) : [];
+    $user_ids         = array_values(
+        array_filter(
+            array_map(
+                function ($uid) {
+                    return is_object($uid) ? intval($uid->ID) : intval($uid);
+                },
+                $users
+            )
+        )
+    );
+    $titre_chasse     = get_the_title($chasse_id);
+    $url_chasse       = get_permalink($chasse_id);
 
     if ($action === 'valider') {
         wp_update_post([
@@ -1789,13 +1882,20 @@ function traiter_validation_chasse_admin() {
                 ]);
             }
 
-            $users = (array) get_field('utilisateurs_associes', $organisateur_id);
-            $user_id = $users ? intval(reset($users)) : 0;
+            $user_id = $user_ids ? $user_ids[0] : 0;
             if ($user_id) {
                 $user = new WP_User($user_id);
                 $user->add_role(ROLE_ORGANISATEUR);
                 $user->remove_role(ROLE_ORGANISATEUR_CREATION);
             }
+        }
+
+        $flash = sprintf(
+            __('Votre demande de validation pour la chasse « %s » a été acceptée.', 'chassesautresor-com'),
+            esc_html($titre_chasse)
+        );
+        foreach ($user_ids as $uid) {
+            myaccount_add_flash_message($uid, $flash);
         }
 
         envoyer_mail_chasse_validee($organisateur_id, $chasse_id);
@@ -1827,6 +1927,21 @@ function traiter_validation_chasse_admin() {
 
         envoyer_mail_demande_correction($organisateur_id, $chasse_id, $message);
 
+        $flash = sprintf(
+            __('Votre demande de validation pour la chasse « %s » nécessite des corrections.', 'chassesautresor-com'),
+            '<a href="' . esc_url($url_chasse) . '">' . esc_html($titre_chasse) . '</a>'
+        );
+        if ($message !== '') {
+            $flash .= '<br>' . sprintf(
+                __('Message de l’administrateur : %s', 'chassesautresor-com'),
+                nl2br(esc_html($message))
+            );
+        }
+        $flash .= '<br>' . __('Une copie de ce message vous a été envoyée par email.', 'chassesautresor-com');
+        foreach ($user_ids as $uid) {
+            myaccount_add_flash_message($uid, $flash);
+        }
+
     } elseif ($action === 'bannir') {
         wp_update_post([
             'ID'          => $chasse_id,
@@ -1844,6 +1959,14 @@ function traiter_validation_chasse_admin() {
 
         envoyer_mail_chasse_bannie($organisateur_id, $chasse_id);
 
+        $flash = sprintf(
+            __('Votre chasse « %s » a été bannie.', 'chassesautresor-com'),
+            esc_html($titre_chasse)
+        );
+        foreach ($user_ids as $uid) {
+            myaccount_add_flash_message($uid, $flash);
+        }
+
     } elseif ($action === 'supprimer') {
         foreach ($enigmes as $eid) {
             wp_delete_post($eid, true);
@@ -1857,6 +1980,14 @@ function traiter_validation_chasse_admin() {
         wp_trash_post($chasse_id);
 
         envoyer_mail_chasse_supprimee($organisateur_id, $chasse_id);
+
+        $flash = sprintf(
+            __('Votre chasse « %s » a été supprimée.', 'chassesautresor-com'),
+            esc_html($titre_chasse)
+        );
+        foreach ($user_ids as $uid) {
+            myaccount_add_flash_message($uid, $flash);
+        }
     }
 
     // Après le traitement, rediriger systématiquement vers la liste des
@@ -1881,17 +2012,32 @@ function envoyer_mail_demande_correction(int $organisateur_id, int $chasse_id, s
         return;
     }
 
-    $email = get_field('email_organisateur', $organisateur_id);
-    if (is_array($email)) {
-        $email = reset($email);
-    }
-
-    if (!is_string($email) || !is_email($email)) {
-        $email = get_option('admin_email');
-
-    }
-
     $admin_email = get_option('admin_email');
+    $emails      = [];
+
+    $acf_email = get_field('email_organisateur', $organisateur_id);
+    if (is_array($acf_email)) {
+        $acf_email = reset($acf_email);
+    }
+    if (is_string($acf_email) && is_email($acf_email)) {
+        $emails[] = sanitize_email($acf_email);
+    }
+
+    $users = (array) get_field('utilisateurs_associes', $organisateur_id);
+    foreach ($users as $uid) {
+        $user_id = is_object($uid) ? $uid->ID : intval($uid);
+        if ($user_id) {
+            $user = get_user_by('ID', $user_id);
+            if ($user && is_email($user->user_email)) {
+                $emails[] = sanitize_email($user->user_email);
+            }
+        }
+    }
+
+    if (!$emails) {
+        $emails[] = $admin_email;
+    }
+
     $titre_chasse = get_the_title($chasse_id);
     $url_chasse   = get_permalink($chasse_id);
 
@@ -1912,7 +2058,6 @@ function envoyer_mail_demande_correction(int $organisateur_id, int $chasse_id, s
 
     $headers = [
         'Content-Type: text/html; charset=UTF-8',
-        'Bcc: ' . $admin_email,
     ];
 
     $from_filter = function ($name) use ($organisateur_id) {
@@ -1922,6 +2067,7 @@ function envoyer_mail_demande_correction(int $organisateur_id, int $chasse_id, s
     add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
     wp_mail($emails, $subject, $body, $headers);
+    wp_mail($admin_email, $subject, $body, $headers);
     remove_filter('wp_mail_from_name', $from_filter, 10);
 
 }
@@ -1971,7 +2117,7 @@ function envoyer_mail_chasse_bannie(int $organisateur_id, int $chasse_id)
     };
     add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
-    wp_mail($emails, $subject, $body, $headers);
+    wp_mail($email, $subject, $body, $headers);
     remove_filter('wp_mail_from_name', $from_filter, 10);
 }
 
@@ -2020,7 +2166,7 @@ function envoyer_mail_chasse_supprimee(int $organisateur_id, int $chasse_id)
     };
     add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
-    wp_mail($emails, $subject, $body, $headers);
+    wp_mail($email, $subject, $body, $headers);
     remove_filter('wp_mail_from_name', $from_filter, 10);
 }
 

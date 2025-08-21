@@ -148,7 +148,7 @@ window.mettreAJourResumeInfos = function () {
       }
 
       if (champ === 'enigme_reponse_variantes') {
-        const nbVar = blocEdition?.querySelectorAll('.liste-variantes-resume .variante-resume')?.length || 0;
+        const nbVar = blocEdition?.querySelectorAll('.variantes-table .variante-resume')?.length || 0;
         estRempli = nbVar > 0;
       }
 
@@ -204,6 +204,9 @@ window.mettreAJourResumeInfos = function () {
   if (typeof window.mettreAJourCarteAjoutEnigme === 'function') {
     window.mettreAJourCarteAjoutEnigme();
   }
+  if (typeof window.mettreAJourBoutonAjoutEnigme === 'function') {
+    window.mettreAJourBoutonAjoutEnigme();
+  }
   if (typeof window.mettreAJourEtatIntroChasse === 'function') {
     window.mettreAJourEtatIntroChasse();
   }
@@ -219,6 +222,9 @@ window.onChampSimpleMisAJour = function (champ, postId, valeur, cpt) {
     mettreAJourResumeTitre(cpt, valeur);
     if (typeof window.mettreAJourTitreHeader === 'function') {
       window.mettreAJourTitreHeader(cpt, valeur);
+    }
+    if (cpt === 'enigme' && typeof window.mettreAJourTitreMenuEnigme === 'function') {
+      window.mettreAJourTitreMenuEnigme(valeur);
     }
   }
 
@@ -358,11 +364,16 @@ function mettreAJourLigneResume(ligne, champ, estRempli, type) {
 
   // Ajouter bouton édition ✏️ si besoin
   const dejaBouton = ligne.querySelector('.champ-modifier');
-  const pasDEdition = ligne.dataset.noEdit !== undefined;
+  const pasDEdition =
+    ligne.dataset.noEdit !== undefined ||
+    (champ === 'enigme_visuel_texte' && !estRempli);
 
   if (pasDEdition) {
     ligne.style.cursor = '';
-    dejaBouton?.remove();
+    // Ne supprimer le bouton existant que s'il a été ajouté automatiquement
+    if (ligne.dataset.noEdit === undefined) {
+      dejaBouton?.remove();
+    }
     return;
   }
 
@@ -379,7 +390,12 @@ function mettreAJourLigneResume(ligne, champ, estRempli, type) {
       boutonInterne?.click();
     });
 
-    ligne.appendChild(bouton);
+    const champTexte = ligne.querySelector('.champ-texte');
+    if (champTexte) {
+      champTexte.after(bouton);
+    } else {
+      ligne.appendChild(bouton);
+    }
     if (typeof initZoneClicEdition === 'function') initZoneClicEdition(bouton);
   }
 }

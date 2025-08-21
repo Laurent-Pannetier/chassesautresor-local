@@ -162,6 +162,21 @@ function charger_scripts_personnalises() {
       filemtime(get_stylesheet_directory() . '/assets/js/tri-organisateurs.js'),
       true
     );
+
+    wp_enqueue_script(
+      'pager',
+      $theme_dir . 'core/pager.js',
+      [],
+      filemtime(get_stylesheet_directory() . '/assets/js/core/pager.js'),
+      true
+    );
+    wp_enqueue_script(
+      'organisateurs-pager',
+      $theme_dir . 'organisateurs-pager.js',
+      ['pager'],
+      filemtime(get_stylesheet_directory() . '/assets/js/organisateurs-pager.js'),
+      true
+    );
 }
 // ✅ Ajout des scripts au chargement de WordPress
 add_action('wp_enqueue_scripts', 'charger_scripts_personnalises');
@@ -428,51 +443,10 @@ function limiter_texte_avec_toggle($texte, $limite = 200, $label_plus = 'Lire la
     return ob_get_clean();
 }
 /**
- * Affiche un bandeau d'information global invitant l'organisateur
- * à valider sa chasse lorsque toutes les conditions sont réunies.
- *
- * @hook astra_header_after
+ * Previously displayed a banner encouraging organizers to validate their hunt.
+ * This feature has been removed and the function now performs no action.
  */
-function afficher_bandeau_validation_chasse_global() {
-    if (!is_user_logged_in()) {
-        return;
-    }
-
-    $user_id = get_current_user_id();
-    if (!$user_id) {
-        return;
-    }
-
-    if (!function_exists('trouver_chasse_a_valider')) {
-        return;
-    }
-
-    if (!is_singular('enigme')) {
-        return;
-    }
-
-    $chasse_id = trouver_chasse_a_valider($user_id);
-    if (!$chasse_id) {
-        return;
-    }
-
-    if (!function_exists('recuperer_id_chasse_associee')) {
-        return;
-    }
-
-    $enigme_chasse_id = recuperer_id_chasse_associee(get_the_ID());
-    if ((int) $enigme_chasse_id !== (int) $chasse_id) {
-        return;
-    }
-
-    $titre = get_the_title($chasse_id);
-    $lien  = get_permalink($chasse_id);
-    echo '<div class="bandeau-info-chasse">';
-    printf(
-        '<span>Votre chasse : <a href="%s">%s</a> est en cours d\'édition</span>',
-        esc_url($lien),
-        esc_html($titre)
-    );
-    echo '</div>';
+function afficher_bandeau_validation_chasse_global()
+{
+    // Intentionally left blank.
 }
-add_action('astra_header_after', 'afficher_bandeau_validation_chasse_global');

@@ -159,18 +159,19 @@ function enigme_pre_requis_remplis(int $enigme_id, int $user_id): bool
 {
     $pre_requis = get_field('enigme_acces_pre_requis', $enigme_id);
 
+    $condition = get_field('enigme_acces_condition', $enigme_id) ?? 'immediat';
+
     if (empty($pre_requis) || !is_array($pre_requis)) {
-        return true; // ✅ Aucun prérequis → considéré comme rempli
+        return $condition !== 'pre_requis'; // ❌ Pré-requis exigés mais liste vide
     }
 
     foreach ($pre_requis as $enigme_requise) {
-        $enigme_id_requise = is_object($enigme_requise) ? $enigme_requise->ID : (is_numeric($enigme_requise) ? (int)$enigme_requise : null);
+        $enigme_id_requise = is_object($enigme_requise) ? $enigme_requise->ID : (is_numeric($enigme_requise) ? (int) $enigme_requise : null);
 
         if ($enigme_id_requise) {
-            $statut = get_user_meta($user_id, "statut_enigme_{$enigme_id_requise}", true);
-            $statut = $statut ? strtolower(remove_accents($statut)) : '';
+            $statut = enigme_get_statut_utilisateur($enigme_id_requise, $user_id);
 
-            if ($statut !== 'terminee') {
+            if (!in_array($statut, ['resolue', 'terminee'], true)) {
                 return false; // ❌ Prérequis non rempli
             }
         }
@@ -351,6 +352,18 @@ function traiter_statut_enigme(int $enigme_id, ?int $user_id = null): array
         ];
     }
 
+    $condition_acces = get_field('enigme_acces_condition', $enigme_id) ?? 'immediat';
+    if ($condition_acces === 'pre_requis' && !enigme_pre_requis_remplis($enigme_id, $user_id)) {
+        return [
+            'etat' => 'bloquee_pre_requis',
+            'rediriger' => true,
+            'url' => $chasse_id ? get_permalink($chasse_id) : home_url('/'),
+            'afficher_formulaire' => false,
+            'afficher_message' => false,
+            'message_html' => '',
+        ];
+    }
+
     // 🔁 Cas interdits : accès refusé
     if ($statut === 'abandonnee') {
         return [
@@ -485,12 +498,17 @@ function enigme_mettre_a_jour_etat_systeme(int $enigme_id, bool $mettre_a_jour =
     // 🔐 Accès programmé / prérequis
     $condition = get_field('enigme_acces_condition', $enigme_id) ?? 'immediat';
 
-    if ($etat === 'accessible' && $condition === 'date_programmee') {
-        $date = get_field('enigme_acces_date', $enigme_id);
-        $date_obj = convertir_en_datetime($date);
-        if (!$date_obj || $date_obj->getTimestamp() > time()) {
-            $etat = 'bloquee_date';
-            cat_debug("🧩 #$enigme_id → bloquee_date (accès programmé futur ou vide)");
+    if ($etat === 'accessible') {
+        if ($condition === 'date_programmee') {
+            $date = get_field('enigme_acces_date', $enigme_id);
+            $date_obj = convertir_en_datetime($date);
+            if (!$date_obj || $date_obj->getTimestamp() > time()) {
+                $etat = 'bloquee_date';
+                cat_debug("🧩 #$enigme_id → bloquee_date (accès programmé futur ou vide)");
+            }
+        } elseif ($condition === 'pre_requis') {
+            $etat = 'bloquee_pre_requis';
+            cat_debug("🧩 #$enigme_id → bloquee_pre_requis (pré-requis exigés)");
         }
     }
 
@@ -580,6 +598,14 @@ function utilisateur_peut_engager_enigme(int $enigme_id, ?int $user_id = null): 
     $user_id = $user_id ?? get_current_user_id();
 
     $etat_systeme = enigme_get_etat_systeme($enigme_id);
+    if (
+        $etat_systeme === 'bloquee_pre_requis'
+        && function_exists('enigme_pre_requis_remplis')
+        && enigme_pre_requis_remplis($enigme_id, $user_id)
+    ) {
+        $etat_systeme = 'accessible';
+    }
+
     $statut = enigme_get_statut_utilisateur($enigme_id, $user_id);
 
     $statuts_autorises = ['non_commencee', 'abandonnee', 'echouee'];
@@ -680,7 +706,12 @@ function enigme_est_complet(int $enigme_id): bool
     $reponse = trim((string) get_field('enigme_reponse_bonne', $enigme_id));
     $reponse_ok = $mode !== 'automatique' || $reponse !== '';
 
-    return $titre_ok && $image_ok && $reponse_ok;
+    // ✅ Ensure prerequisite list is filled when required
+    $condition_acces = get_field('enigme_acces_condition', $enigme_id) ?? 'immediat';
+    $pre_requis = get_field('enigme_acces_pre_requis', $enigme_id);
+    $pre_requis_ok = $condition_acces !== 'pre_requis' || (is_array($pre_requis) && !empty($pre_requis));
+
+    return $titre_ok && $image_ok && $reponse_ok && $pre_requis_ok;
 }
 
 function enigme_mettre_a_jour_complet(int $enigme_id): bool
