@@ -1139,7 +1139,7 @@ msgstr "Illustrations"
 
 #: template-parts/enigme/enigme-edition-main.php
 msgid "Réglages"
-msgstr "Options"
+msgstr "Settings"
 
 #: template-parts/enigme/enigme-edition-main.php
 msgid "Respecter la casse"
@@ -1324,3 +1324,60 @@ msgstr "pending"
 #: template-parts/enigme/enigme-edition-main.php
 msgid "votre fichier %s"
 msgstr "your %s file"
+
+msgid "Image chasse"
+msgstr "Hunt image"
+
+msgid "Modifier l’image"
+msgstr "Edit image"
+
+msgid "ajouter une image"
+msgstr "add an image"
+
+msgid "Configurer la récompense"
+msgstr "Configure the reward"
+
+msgid "Titre de la récompense"
+msgstr "Reward title"
+
+msgid "Ex : Un papillon en cristal..."
+msgstr "E.g.: A crystal butterfly..."
+
+msgid "Descripton de la récompense"
+msgstr "Reward description"
+
+msgid "Ex : Un coffret cadeau comprenant..."
+msgstr "E.g.: A gift box including..."
+
+msgid "Valeur en euros (€)"
+msgstr "Value in euros (€)"
+
+msgid "Ex : 50"
+msgstr "E.g.: 50"
+
+msgid "Supprimer la récompense"
+msgstr "Delete the reward"
+
+msgid "Nb gagnants"
+msgstr "Number of winners"
+
+msgid "Illimité"
+msgstr "Unlimited"
+
+msgid "Début"
+msgstr "Start"
+
+msgid "Date de fin"
+msgstr "End date"
+
+msgid "Durée illimitée"
+msgstr "Unlimited duration"
+
+msgid "Coût"
+msgstr "Cost"
+
+msgid "Animation"
+msgstr "Animation"
+
+msgid "Taux d'engagement"
+msgstr "Engagement rate"

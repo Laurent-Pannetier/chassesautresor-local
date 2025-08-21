@@ -64,16 +64,16 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
             <button type="button" class="panneau-fermer" aria-label="Fermer les paramètres">✖</button>
         </div>
         <div class="edition-tabs">
-          <button class="edition-tab active" data-target="chasse-tab-param">Paramètres</button>
-          <button class="edition-tab" data-target="chasse-tab-stats">Statistiques</button>
-          <button class="edition-tab" data-target="chasse-tab-animation">Animation</button>
+          <button class="edition-tab active" data-target="chasse-tab-param"><?= esc_html__('Paramètres', 'chassesautresor-com'); ?></button>
+          <button class="edition-tab" data-target="chasse-tab-stats"><?= esc_html__('Statistiques', 'chassesautresor-com'); ?></button>
+          <button class="edition-tab" data-target="chasse-tab-animation"><?= esc_html__('Animation', 'chassesautresor-com'); ?></button>
         </div>
     </div>
 
     <div id="chasse-tab-param" class="edition-tab-content active">
       <i class="fa-solid fa-sliders tab-watermark" aria-hidden="true"></i>
       <div class="edition-panel-header">
-        <h2><i class="fa-solid fa-sliders"></i> Paramètres</h2>
+        <h2><i class="fa-solid fa-sliders"></i> <?= esc_html__('Paramètres', 'chassesautresor-com'); ?></h2>
       </div>
       <div class="edition-panel-body">
 
@@ -123,22 +123,22 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   data-cpt="chasse"
                   data-post-id="<?= esc_attr($chasse_id); ?>">
                   <div class="champ-affichage">
-                    <label>Image chasse <span class="champ-obligatoire">*</span></label>
+                    <label><?= esc_html__('Image chasse', 'chassesautresor-com'); ?> <span class="champ-obligatoire">*</span></label>
                     <?php if ($peut_editer) : ?>
                       <button type="button"
                         class="champ-modifier"
                         data-champ="chasse_principale_image"
                         data-cpt="chasse"
                         data-post-id="<?= esc_attr($chasse_id); ?>"
-                        aria-label="Modifier l’image">
+                        aria-label="<?= esc_attr__('Modifier l’image', 'chassesautresor-com'); ?>">
                         <img src="<?= esc_url($image_url ?: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=='); ?>" alt="Image de la chasse" />
-                        <span class="champ-ajout-image">ajouter une image</span>
+                        <span class="champ-ajout-image"><?= esc_html__('ajouter une image', 'chassesautresor-com'); ?></span>
                       </button>
                     <?php else : ?>
                       <?php if ($image_url) : ?>
                         <img src="<?= esc_url($image_url); ?>" alt="Image de la chasse" />
                       <?php else : ?>
-                        <span class="champ-ajout-image">ajouter une image</span>
+                        <span class="champ-ajout-image"><?= esc_html__('ajouter une image', 'chassesautresor-com'); ?></span>
                       <?php endif; ?>
                     <?php endif; ?>
                   </div>
@@ -224,7 +224,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
 
               <!-- SECTION 2 : Réglages -->
               <div class="resume-bloc resume-reglages">
-                <h3>Réglages</h3>
+                <h3><?= esc_html__('Réglages', 'chassesautresor-com'); ?></h3>
                 <ul class="resume-infos">
 
                 <!-- Mode de fin de chasse -->
@@ -336,7 +336,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   data-cpt="chasse"
                   data-post-id="<?= esc_attr($chasse_id); ?>">
 
-                  <label for="chasse-nb-gagnants">Nb gagnants</label>
+                  <label for="chasse-nb-gagnants"><?= esc_html__('Nb gagnants', 'chassesautresor-com'); ?></label>
 
                   <input type="number"
                     id="chasse-nb-gagnants"
@@ -352,7 +352,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                       name="nb-gagnants-illimite"
                       <?= ($nb_max == 0 ? 'checked' : ''); ?> <?= $peut_editer ? '' : 'disabled'; ?>
                       data-champ="chasse_infos_nb_max_gagants">
-                    <label for="nb-gagnants-illimite">Illimité</label>
+                    <label for="nb-gagnants-illimite"><?= esc_html__('Illimité', 'chassesautresor-com'); ?></label>
                   </div>
 
                   <div id="erreur-nb-gagnants" class="message-erreur" style="display:none; color:red; font-size:0.9em; margin-top:5px;"></div>
@@ -373,7 +373,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   data-cpt="chasse"
                   data-post-id="<?= esc_attr($chasse_id); ?>">
 
-                  <label for="chasse-date-debut">Début</label>
+                  <label for="chasse-date-debut"><?= esc_html__('Début', 'chassesautresor-com'); ?></label>
                   <input type="datetime-local"
                     id="chasse-date-debut"
                     name="chasse-date-debut"
@@ -389,7 +389,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   data-cpt="chasse"
                   data-post-id="<?= esc_attr($chasse_id); ?>">
 
-                  <label for="chasse-date-fin">Date de fin</label>
+                  <label for="chasse-date-fin"><?= esc_html__('Date de fin', 'chassesautresor-com'); ?></label>
                   <input type="date"
                     id="chasse-date-fin"
                     name="chasse-date-fin"
@@ -403,7 +403,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                       name="duree-illimitee"
                       data-champ="chasse_infos_duree_illimitee"
                       <?= ($illimitee ? 'checked' : ''); ?> <?= $peut_editer ? '' : 'disabled'; ?>>
-                    <label for="duree-illimitee">Durée illimitée</label>
+                    <label for="duree-illimitee"><?= esc_html__('Durée illimitée', 'chassesautresor-com'); ?></label>
                   </div>
 
                 </li>
@@ -416,7 +416,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   data-post-id="<?= esc_attr($chasse_id); ?>">
 
                   <div class="champ-edition" style="display: flex; align-items: center;">
-                    <label>Coût <span class="txt-small">(points)</span>
+                    <label><?= esc_html__('Coût', 'chassesautresor-com'); ?> <span class="txt-small">(<?= esc_html__('points', 'chassesautresor-com'); ?>)</span>
                       <?php
                       get_template_part(
                           'template-parts/common/help-icon',
@@ -441,7 +441,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                         id="cout-gratuit"
                         name="cout-gratuit"
                         <?= ((int)$cout === 0) ? 'checked' : ''; ?> <?= $peut_editer_cout ? '' : 'disabled'; ?>>
-                      <label for="cout-gratuit">Gratuit</label>
+                      <label for="cout-gratuit"><?= esc_html__('Gratuit', 'chassesautresor-com'); ?></label>
                     </div>
                   </div>
 
@@ -548,9 +548,9 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
       ?>
         <div class="edition-panel-body">
           <div class="stats-header" style="display:flex;align-items:center;justify-content:flex-end;gap:1rem;">
-            <a href="?edition=open&amp;tab=stats" class="stats-reset"><i class="fa-solid fa-rotate-right"></i> Actualiser</a>
+            <a href="?edition=open&amp;tab=stats" class="stats-reset"><i class="fa-solid fa-rotate-right"></i> <?= esc_html__('Actualiser', 'chassesautresor-com'); ?></a>
             <div class="stats-filtres">
-              <label for="chasse-periode">Période&nbsp;:</label>
+              <label for="chasse-periode"><?= esc_html__('Période :', 'chassesautresor-com'); ?></label>
               <select id="chasse-periode">
                 <option value="total">Total</option>
                 <option value="jour">Aujourd’hui</option>
@@ -571,21 +571,21 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
             ]);
             get_template_part('template-parts/common/stat-card', null, [
                 'icon'  => 'fa-solid fa-arrow-rotate-right',
-                'label' => 'Tentatives',
+                'label' => esc_html__('Tentatives', 'chassesautresor-com'),
                 'value' => $nb_tentatives,
                 'stat'  => 'tentatives',
                 'class' => $card_class,
             ]);
             get_template_part('template-parts/common/stat-card', null, [
                 'icon'  => 'fa-solid fa-coins',
-                'label' => 'Points collectés',
+                'label' => esc_html__('Points collectés', 'chassesautresor-com'),
                 'value' => $nb_points,
                 'stat'  => 'points',
                 'class' => $card_class,
             ]);
             get_template_part('template-parts/common/stat-card', null, [
                 'icon'  => 'fa-solid fa-percent',
-                'label' => 'Taux d\'engagement',
+                'label' => esc_html__('Taux d\'engagement', 'chassesautresor-com'),
                 'value' => $taux_engagement . '%',
                 'stat'  => 'engagement-rate',
                 'help'  => __(
