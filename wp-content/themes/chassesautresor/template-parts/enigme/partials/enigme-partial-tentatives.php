@@ -49,8 +49,17 @@ $pages = $args['pages'] ?? $pages ?? (int) ceil($total / $par_page);
         } elseif ($result === 'attente') {
             $class = 'etiquette-pending';
         }
+
+        $result_label = $result;
+        if ($result === 'bon') {
+            $result_label = esc_html__('bon', 'chassesautresor-com');
+        } elseif ($result === 'faux') {
+            $result_label = esc_html__('faux', 'chassesautresor-com');
+        } elseif ($result === 'attente') {
+            $result_label = esc_html__('attente', 'chassesautresor-com');
+        }
         ?>
-        <span class="etiquette <?= esc_attr($class); ?>"><?= esc_html($result); ?></span>
+        <span class="etiquette <?= esc_attr($class); ?>"><?= esc_html($result_label); ?></span>
         <?php if ($is_pending) : ?>
           <form method="post" style="display:inline;">
             <?php wp_nonce_field('traiter_tentative_' . $tent->tentative_uid); ?>

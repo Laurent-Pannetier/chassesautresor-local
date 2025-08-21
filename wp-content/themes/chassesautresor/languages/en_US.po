@@ -667,7 +667,7 @@ msgstr "Edit simple text"
 
 #: template-parts/enigme/enigme-edition-main.php:202
 msgid "Sous-titre"
-msgstr "Sous-titre"
+msgstr "Subtitle"
 
 #: template-parts/enigme/enigme-edition-main.php:204
 msgid "Ajouter un sous-titre (max 100 caractères)"
@@ -823,6 +823,10 @@ msgstr "Statistics will be available once hunting is enabled."
 msgid "Aucun participant engagé."
 msgstr "No participants engaged."
 
+#: template-parts/enigme/partials/enigme-partial-participants.php:47
+msgid "Liste participants"
+msgstr "Participants list"
+
 #: template-parts/enigme/partials/enigme-partial-participants.php:50
 msgid "Nom"
 msgstr "Name"
@@ -845,7 +849,7 @@ msgstr "Attempts"
 
 #: template-parts/enigme/partials/enigme-partial-participants.php:73
 msgid "Trouvé"
-msgstr "trouvé"
+msgstr "Found"
 
 #: template-parts/enigme/partials/enigme-partial-participants.php:91
 #: template-parts/enigme/partials/enigme-partial-tentatives.php:64
@@ -872,8 +876,16 @@ msgid "Aucune tentative de soumission."
 msgstr "No attempt to submit."
 
 #: template-parts/enigme/partials/enigme-partial-tentatives.php:27
+msgid "Proposition"
+msgstr "Answer"
+
+#: template-parts/enigme/partials/enigme-partial-tentatives.php:27
+msgid "Résultat"
+msgstr "Result"
+
+#: template-parts/enigme/partials/enigme-partial-tentatives.php:27
 msgid "Réponse"
-msgstr "Immediate"
+msgstr "Answer"
 
 #: template-parts/enigme/partials/enigme-partial-tentatives.php:28
 msgid "Actions"
@@ -1264,3 +1276,51 @@ msgstr "No link can be found or opened."
 #: template-parts/enigme/enigme-edition-main.php
 msgid "Débloquées uniquement au moment choisi."
 msgstr "Unlocked only at the chosen time."
+
+#: assets/js/enigme-edit.js
+msgid "Validation automatique : Le joueur devra saisir une réponse exacte. Celle-ci sera automatiquement vérifiée selon les critères définis (réponse attendue, casse, variantes)."
+msgstr "Automatic validation: The player must enter an exact answer. It will be automatically checked based on the defined criteria (expected answer, case, variants)."
+
+#: assets/js/enigme-edit.js
+msgid "Validation manuelle : Le joueur rédige une réponse libre. Vous validez ou invalidez manuellement sa tentative depuis votre espace personnel. Un email et un message d'alerte vous avertit de chaque nouvelle soumission."
+msgstr "Manual validation: The player enters a free-form answer. You approve or reject their attempt manually from your personal area. An email and alert message notify you of each new submission."
+
+#: template-parts/modals/modal-points.php
+msgid "À quoi servent les points ?"
+msgstr "What are points used for?"
+
+#: template-parts/modals/modal-points.php
+msgid "Les points vous permettent de débloquer :"
+msgstr "Points allow you to unlock:"
+
+#: template-parts/modals/modal-points.php
+msgid "🎯 Des chasses au trésor"
+msgstr "🎯 Treasure hunts"
+
+#: template-parts/modals/modal-points.php
+msgid "❓ Des tentatives de réponse"
+msgstr "❓ Answer attempts"
+
+#: template-parts/modals/modal-points.php
+msgid "💡 Des indices"
+msgstr "💡 Hints"
+
+#: template-parts/modals/modal-points.php
+msgid "La gratuité ou l'accès par points est choisi librement par chaque organisateur."
+msgstr "Free access or point access is chosen freely by each organizer."
+
+#: template-parts/enigme/partials/enigme-partial-tentatives.php
+msgid "bon"
+msgstr "correct"
+
+#: template-parts/enigme/partials/enigme-partial-tentatives.php
+msgid "faux"
+msgstr "wrong"
+
+#: template-parts/enigme/partials/enigme-partial-tentatives.php
+msgid "attente"
+msgstr "pending"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "votre fichier %s"
+msgstr "your %s file"

@@ -564,7 +564,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
             $card_class = $stats_locked ? 'disabled' : '';
             get_template_part('template-parts/common/stat-card', null, [
                 'icon'  => 'fa-solid fa-users',
-                'label' => 'Participants',
+                'label' => esc_html__('Participants', 'chassesautresor-com'),
                 'value' => $nb_participants,
                 'stat'  => 'participants',
                 'class' => $card_class,
