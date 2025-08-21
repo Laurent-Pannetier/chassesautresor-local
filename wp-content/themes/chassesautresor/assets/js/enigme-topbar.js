@@ -4,45 +4,39 @@
       return;
     }
 
+    if (window.matchMedia('(max-width: 1023px)').matches) {
+      return;
+    }
+
     const body = document.body;
     const desktopHeader = document.querySelector('header.site-header');
     let hideTimer;
 
     function showTopbar() {
+      clearTimeout(hideTimer);
       body.classList.add('topbar-visible');
     }
 
-    function hideTopbar() {
-      body.classList.remove('topbar-visible');
+    function scheduleHide() {
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(() => {
+        body.classList.remove('topbar-visible');
+      }, 1000);
     }
 
     // Desktop behaviour: show on hover near the top
     window.addEventListener('mousemove', (e) => {
-      if (window.matchMedia('(min-width: 1024px)').matches) {
-        if (e.clientY <= 50) {
-          showTopbar();
-        } else if (!desktopHeader || !desktopHeader.matches(':hover')) {
-          hideTopbar();
-        }
+      if (e.clientY <= 50) {
+        showTopbar();
+      } else if (!desktopHeader || !desktopHeader.matches(':hover')) {
+        scheduleHide();
       }
     });
 
     if (desktopHeader) {
-      desktopHeader.addEventListener('mouseleave', hideTopbar);
+      desktopHeader.addEventListener('mouseenter', showTopbar);
+      desktopHeader.addEventListener('mouseleave', scheduleHide);
     }
-
-    // Mobile behaviour: show after interaction then hide after 3.5s
-    function triggerMobile() {
-      if (window.matchMedia('(max-width: 1023px)').matches) {
-        showTopbar();
-        clearTimeout(hideTimer);
-        hideTimer = setTimeout(hideTopbar, 3500);
-      }
-    }
-
-    ['scroll', 'touchstart', 'click'].forEach((evt) => {
-      window.addEventListener(evt, triggerMobile, { passive: true });
-    });
   }
 
   if (document.readyState === 'loading') {
