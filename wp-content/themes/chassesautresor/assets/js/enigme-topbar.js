@@ -4,13 +4,15 @@
       return;
     }
 
-    if (window.matchMedia('(max-width: 1023px)').matches) {
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
       return;
     }
 
     const body = document.body;
     const desktopHeader = document.querySelector('header.site-header');
     let hideTimer;
+
+    body.classList.remove('topbar-visible');
 
     function showTopbar() {
       clearTimeout(hideTimer);
