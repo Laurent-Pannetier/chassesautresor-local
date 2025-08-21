@@ -270,6 +270,7 @@ li.active .enigme-menu__edit {
   flex-direction: column;
   gap: var(--space-2xl);
   text-align: center;
+  margin-top: var(--space-md);
 }
 
 /* Titre + sous-titre */
@@ -564,8 +565,8 @@ li.active .enigme-menu__edit {
     max-height: calc(100vh - var(--space-xl));
   }
 
-  .enigme-mobile-header + .page-enigme {
-    margin-top: var(--space-md);
+  .page-enigme {
+    margin-top: calc(var(--space-3xl) + var(--space-lg) + env(safe-area-inset-top));
   }
 }
 
