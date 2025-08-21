@@ -495,6 +495,7 @@ body.single-enigme.topbar-visible .page-enigme {
     position: fixed;
     inset: 0;
     display: none;
+    z-index: 1000;
   }
 
   .enigme-mobile-panel.open {
