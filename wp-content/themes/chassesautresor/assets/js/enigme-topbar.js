@@ -6,7 +6,6 @@
 
     const body = document.body;
     const desktopHeader = document.querySelector('header.site-header');
-    const mobileHeader = document.querySelector('.enigme-mobile-header');
     let hideTimer;
 
     function showTopbar() {
@@ -44,10 +43,6 @@
     ['scroll', 'touchstart', 'click'].forEach((evt) => {
       window.addEventListener(evt, triggerMobile, { passive: true });
     });
-
-    if (mobileHeader) {
-      mobileHeader.addEventListener('click', triggerMobile);
-    }
   }
 
   if (document.readyState === 'loading') {
