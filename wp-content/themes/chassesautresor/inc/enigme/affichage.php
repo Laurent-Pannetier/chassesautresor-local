@@ -337,13 +337,14 @@ defined('ABSPATH') || exit;
             $data['avg'],
             'enigme-progression',
             esc_html__(
-                "Définition\nPart moyenne des énigmes auxquelles chaque joueur a accédé, rapportée au total d’énigmes de la chasse.\n\n"
-                . "Vous\nPart des énigmes auxquelles vous avez accédé.\n\n"
-                . "Moyenne\nMoyenne sur l’ensemble des joueurs.",
+                'Part moyenne des énigmes auxquelles chaque joueur a participé, '
+                . 'rapportée au nombre total d’énigmes de la chasse.\n\n'
+                . 'Vous\nPart des énigmes auxquelles vous avez accédé.\n\n'
+                . 'Moyenne\nMoyenne sur l’ensemble des joueurs.',
                 'chassesautresor-com'
             ),
             esc_attr__(
-                'Aide sur la progression',
+                'Définition de la progression',
                 'chassesautresor-com'
             )
         );
@@ -395,11 +396,12 @@ defined('ABSPATH') || exit;
             $rate,
             'enigme-resolution',
             esc_html__(
-                "Définition\nNombre de joueurs ayant résolu l’énigme, rapporté au nombre total de joueurs ayant accédé à l’énigme.",
+                'Part moyenne des énigmes auxquelles chaque joueur a participé, '
+                . 'rapportée au nombre total d’énigmes de la chasse.',
                 'chassesautresor-com'
             ),
             esc_attr__(
-                'Aide sur la résolution',
+                'Définition du taux de résolution',
                 'chassesautresor-com'
             )
         );

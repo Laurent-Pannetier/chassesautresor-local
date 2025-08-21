@@ -1134,3 +1134,32 @@ msgstr ""
 #: templates/myaccount/content-points.php:103 inc/enigme/reponses.php:59 template-parts/enigme/partials/enigme-partial-bloc-reponse.php:185
 msgid "Ajouter des points"
 msgstr ""
+
+#: inc/enigme/affichage.php:275
+msgid "Nb joueurs :"
+msgstr ""
+
+#: inc/enigme/affichage.php:281
+msgid "Nb tentatives :"
+msgstr ""
+
+#: template-parts/enigme/partials/enigme-partial-gagnants.php:25
+msgid "Gagnants :"
+msgstr ""
+
+#: inc/enigme/affichage.php:339
+msgid "Part moyenne des énigmes auxquelles chaque joueur a participé, rapportée au nombre total d’énigmes de la chasse.\n\nVous\nPart des énigmes auxquelles vous avez accédé.\n\nMoyenne\nMoyenne sur l’ensemble des joueurs."
+msgstr ""
+
+#: inc/enigme/affichage.php:347
+msgid "Définition de la progression"
+msgstr ""
+
+#: inc/enigme/affichage.php:398
+msgid "Part moyenne des énigmes auxquelles chaque joueur a participé, rapportée au nombre total d’énigmes de la chasse."
+msgstr ""
+
+#: inc/enigme/affichage.php:404
+msgid "Définition du taux de résolution"
+msgstr ""
+
