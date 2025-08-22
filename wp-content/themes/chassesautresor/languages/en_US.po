@@ -608,10 +608,14 @@ msgstr "Edit Hunt Description"
 msgid "Fermer le panneau"
 msgstr "Close the panel."
 
-#: template-parts/chasse/panneaux/chasse-edition-description.php:28
-#: template-parts/enigme/panneaux/enigme-edition-description.php:27
-#: template-parts/enigme/panneaux/enigme-edition-images.php:20
+#: template-parts/chasse/panneaux/chasse-edition-recompense.php:37
 msgid "Enregistrer"
+msgstr "Save"
+
+#: template-parts/chasse/panneaux/chasse-edition-description.php:41
+#: template-parts/enigme/panneaux/enigme-edition-description.php:27
+#: template-parts/enigme/panneaux/enigme-edition-images.php:31
+msgid "💾 Enregistrer"
 msgstr "Save"
 
 #: template-parts/chasse/panneaux/chasse-edition-description.php:33
