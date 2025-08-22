@@ -66,9 +66,6 @@ foreach ($valid_images as $index => $image_id) {
 
     echo '<figure class="image-principale">';
     echo wp_get_attachment_image($image_id, 'large', false, $attrs);
-    if ($caption) {
-        echo '<figcaption>' . esc_html($caption) . '</figcaption>';
-    }
     echo '</figure>';
 }
 echo '</div>';

@@ -144,9 +144,6 @@ function afficher_visuels_enigme(int $enigme_id): void
 
         echo '<figure class="image-principale">';
         echo build_picture_enigme($image_id, $alt, ['full'], $attrs);
-        if ($caption) {
-            echo '<figcaption>' . esc_html($caption) . '</figcaption>';
-        }
         echo '</figure>';
     }
     echo '</div>';
