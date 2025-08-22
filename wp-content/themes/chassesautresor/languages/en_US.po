@@ -887,6 +887,9 @@ msgstr "Result"
 msgid "Réponse"
 msgstr "Answer"
 
+msgid "Bonne(s) réponse(s)"
+msgstr "Correct answer(s)"
+
 #: template-parts/enigme/partials/enigme-partial-tentatives.php:28
 msgid "Actions"
 msgstr "Actions"
@@ -1665,4 +1668,20 @@ msgstr "No puzzles available"
 #: template-parts/enigme/partials/enigme-partial-gagnants.php:53
 msgid "Aucun gagnant pour le moment."
 msgstr "No winners yet."
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "La ou les bonnes réponses"
+msgstr "The correct answer(s)"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Vous pouvez saisir de 1 à 5 bonnes réponses. Tout joueur qui en soumet une — selon votre réglage de respect de la casse — résout l’énigme."
+msgstr "You may enter between 1 and 5 correct answers. Any player submitting one—depending on your case sensitivity setting—solves the puzzle."
+
+#: assets/js/enigme-edit.js
+msgid "Supprimer"
+msgstr "Remove"
+
+#: assets/js/enigme-edit.js
+msgid "Ex : soleil"
+msgstr "E.g. sun"
 

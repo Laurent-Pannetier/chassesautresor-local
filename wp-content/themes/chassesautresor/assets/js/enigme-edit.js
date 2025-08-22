@@ -59,6 +59,9 @@ function initEnigmeEdit() {
   // ==============================
   document.querySelectorAll('.champ-enigme[data-champ]').forEach((bloc) => {
     const champ = bloc.dataset.champ;
+    if (champ === 'enigme_reponse_bonne') {
+      return;
+    }
 
     if (bloc.classList.contains('champ-img') && champ !== 'enigme_visuel_image') {
       if (typeof initChampImage === 'function') initChampImage(bloc);
@@ -557,55 +560,131 @@ window.onCoutPointsUpdated = function (bloc, champ, valeur, postId, cpt) {
 // ==============================
 // 🔐 Champ bonne réponse – Limite 75 caractères + message d’alerte
 // ==============================
-function initChampBonneReponse() {
+function initChampBonnesReponses() {
   const bloc = document.querySelector('[data-champ="enigme_reponse_bonne"]');
   if (!bloc) return;
 
-  const input = bloc.querySelector('.champ-input');
-  if (!input) return;
+  const wrapper = bloc.querySelector('.bonnes-reponses-wrapper');
+  const postId = bloc.dataset.postId;
+  const cpt = bloc.dataset.cpt || 'enigme';
+  const max = 5;
+  let reponses = [];
 
-  const mettreAJourClasse = () => {
-    input.classList.toggle('champ-vide-obligatoire', input.value.trim() === '');
-  };
-
-  // Crée ou récupère l’alerte si déjà existante
-  let alerte = bloc.querySelector('.message-limite');
-  if (!alerte) {
-    alerte = document.createElement('p');
-    alerte.className = 'message-limite';
-    alerte.style.color = 'var(--color-editor-error)';
-    alerte.style.fontSize = '0.85em';
-    alerte.style.margin = '4px 0 0 5px';
-    alerte.style.display = 'none';
-    input.insertAdjacentElement('afterend', alerte);
+  try {
+    reponses = JSON.parse(bloc.dataset.reponses || '[]');
+  } catch (e) {
+    reponses = [];
   }
 
-  input.setAttribute('maxlength', '75');
-  mettreAJourClasse();
+  const sauvegarder = () => {
+    return modifierChampSimple(
+      'enigme_reponse_bonne',
+      JSON.stringify(reponses),
+      postId,
+      cpt
+    );
+  };
 
-  input.addEventListener('input', () => {
-    const longueur = input.value.length;
+  const render = () => {
+    wrapper.innerHTML = '';
+    const estVide = reponses.length === 0;
+    wrapper.classList.toggle('champ-vide-obligatoire', estVide);
+    bloc.classList.toggle('champ-vide', estVide);
+    bloc.classList.toggle('champ-rempli', !estVide);
 
-    if (longueur > 75) {
-      input.value = input.value.slice(0, 75);
+    if (reponses.length === 0) {
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'champ-input champ-texte-edit';
+      input.setAttribute('maxlength', '75');
+      input.placeholder = wp.i18n.__('Ex : soleil', 'chassesautresor-com');
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'champ-modifier bonne-reponse-valider btn-obligatoire';
+      btn.textContent = wp.i18n.__('valider', 'chassesautresor-com');
+
+      btn.addEventListener('click', () => {
+        const val = input.value.trim();
+        if (!val) return;
+        reponses.push(val);
+        sauvegarder().then((ok) => {
+          if (ok) render();
+        });
+      });
+
+      wrapper.appendChild(input);
+      wrapper.appendChild(btn);
+      return;
     }
 
-    if (longueur >= 75) {
-      alerte.textContent = '75 caractères maximum atteints.';
-      alerte.style.display = '';
-    } else {
-      alerte.textContent = '';
-      alerte.style.display = 'none';
+    reponses.forEach((rep, index) => {
+      const tag = document.createElement('span');
+      tag.className = 'etiquette bonne-reponse-etiquette';
+      tag.textContent = rep;
+
+      const rm = document.createElement('button');
+      rm.type = 'button';
+      rm.className = 'bonne-reponse-supprimer';
+      rm.setAttribute('aria-label', wp.i18n.__('Supprimer', 'chassesautresor-com'));
+      rm.textContent = '×';
+      rm.addEventListener('click', () => {
+        reponses.splice(index, 1);
+        sauvegarder().then((ok) => {
+          if (ok) render();
+        });
+      });
+      tag.appendChild(rm);
+      wrapper.appendChild(tag);
+    });
+
+    if (reponses.length < max) {
+      const btnAjout = document.createElement('button');
+      btnAjout.type = 'button';
+      btnAjout.className = 'champ-modifier bonne-reponse-ajouter';
+      btnAjout.textContent = wp.i18n.__('ajouter', 'chassesautresor-com');
+
+      btnAjout.addEventListener('click', () => {
+        btnAjout.remove();
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'champ-input champ-texte-edit';
+        input.setAttribute('maxlength', '75');
+
+        const valider = document.createElement('button');
+        valider.type = 'button';
+        valider.className = 'champ-modifier bonne-reponse-valider';
+        valider.textContent = wp.i18n.__('valider', 'chassesautresor-com');
+
+        valider.addEventListener('click', () => {
+          const val = input.value.trim();
+          if (!val) return;
+          reponses.push(val);
+          sauvegarder().then((ok) => {
+            if (ok) render();
+          });
+        });
+
+        wrapper.appendChild(input);
+        wrapper.appendChild(valider);
+        input.focus();
+      });
+
+      wrapper.appendChild(btnAjout);
     }
 
-    mettreAJourClasse();
-  });
+    if (typeof window.mettreAJourResumeInfos === 'function') {
+      window.mettreAJourResumeInfos();
+    }
+  };
+
+  render();
 }
 
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initChampBonneReponse);
+  document.addEventListener('DOMContentLoaded', initChampBonnesReponses);
 } else {
-  initChampBonneReponse();
+  initChampBonnesReponses();
 }
 
 

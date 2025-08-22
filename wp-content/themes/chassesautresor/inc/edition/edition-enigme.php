@@ -198,7 +198,7 @@ function modifier_champ_enigme()
 
   $user_id = get_current_user_id();
   $champ = sanitize_text_field($_POST['champ'] ?? '');
-  $valeur = wp_kses_post($_POST['valeur'] ?? '');
+  $valeur = $_POST['valeur'] ?? '';
   $post_id = isset($_POST['post_id']) ? (int) $_POST['post_id'] : 0;
 
   if (!$champ || !$post_id || get_post_type($post_id) !== 'enigme') {
@@ -223,7 +223,7 @@ function modifier_champ_enigme()
 
   // 🔹 Titre natif
   if ($champ === 'post_title') {
-    $ok = wp_update_post(['ID' => $post_id, 'post_title' => $valeur], true);
+    $ok = wp_update_post(['ID' => $post_id, 'post_title' => sanitize_text_field($valeur)], true);
     if (is_wp_error($ok)) {
       wp_send_json_error('⚠️ echec_update_post_title');
     }
@@ -237,13 +237,32 @@ function modifier_champ_enigme()
     enigme_mettre_a_jour_etat_systeme($post_id);
   }
 
-  // 🔹 Réponse attendue
+  // 🔹 Réponse attendue (liste JSON)
   if ($champ === 'enigme_reponse_bonne') {
-    if (strlen($valeur) > 75) {
-      wp_send_json_error('⚠️ La réponse ne peut dépasser 75 caractères.');
+    $liste = json_decode(wp_unslash($valeur), true);
+    if (!is_array($liste)) {
+      wp_send_json_error('⚠️ format_invalide');
     }
-    $ok = update_field($champ, sanitize_text_field($valeur), $post_id);
-    if ($ok) $champ_valide = true;
+
+    $liste = array_values(array_filter(array_map(function ($r) {
+      $clean = sanitize_text_field($r);
+      return $clean !== '' ? $clean : null;
+    }, $liste)));
+
+    if (count($liste) > 5) {
+      wp_send_json_error('⚠️ trop_de_reponses');
+    }
+
+    foreach ($liste as $r) {
+      if (mb_strlen($r) > 75) {
+        wp_send_json_error('⚠️ longueur_max');
+      }
+    }
+
+    $ok = update_field($champ, wp_json_encode($liste), $post_id);
+    if ($ok) {
+      $champ_valide = true;
+    }
     enigme_mettre_a_jour_etat_systeme($post_id);
   }
 
@@ -264,14 +283,14 @@ function modifier_champ_enigme()
   }
 
   // 🔹 Accès : condition (immédiat, date_programmee uniquement)
-  if ($champ === 'enigme_acces_condition' && in_array($valeur, ['immediat', 'date_programmee'])) {
-    $ok = update_field($champ, $valeur, $post_id);
+  if ($champ === 'enigme_acces_condition' && in_array(sanitize_text_field($valeur), ['immediat', 'date_programmee'])) {
+    $ok = update_field($champ, sanitize_text_field($valeur), $post_id);
     if ($ok) $champ_valide = true;
   }
 
   // 🔹 Accès : date
   if ($champ === 'enigme_acces_date') {
-    $dt = convertir_en_datetime($valeur, [
+    $dt = convertir_en_datetime(sanitize_text_field($valeur), [
       'Y-m-d\TH:i',
       'Y-m-d H:i:s',
       'Y-m-d H:i'
@@ -305,9 +324,10 @@ function modifier_champ_enigme()
 
   // 🔹 Fallback
   if (!$champ_valide) {
-    $ok = update_field($champ, is_numeric($valeur) ? (int) $valeur : $valeur, $post_id);
+    $valeur_saine = is_numeric($valeur) ? (int) $valeur : sanitize_text_field($valeur);
+    $ok = update_field($champ, $valeur_saine, $post_id);
     $valeur_meta = get_post_meta($post_id, $champ, true);
-    if ($ok || trim((string) $valeur_meta) === trim((string) $valeur)) {
+    if ($ok || trim((string) $valeur_meta) === trim((string) $valeur_saine)) {
       $champ_valide = true;
     } else {
       wp_send_json_error('⚠️ echec_mise_a_jour_final');
