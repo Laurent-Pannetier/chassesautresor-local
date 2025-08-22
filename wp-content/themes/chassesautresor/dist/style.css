@@ -1768,6 +1768,14 @@ a[aria-disabled=true] {
   display: none;
 }
 
+/* Placeholder pour les lignes sans icône afin d'aligner le contenu */
+.resume-infos > li[data-no-icon]::before {
+  content: "";
+  display: block;
+  flex: 0 0 var(--editor-icon-width);
+  margin-right: 0.3rem;
+}
+
 /* Hauteur et alignement par défaut des lignes de paramètres */
 .resume-infos > li {
   min-height: 40px;
