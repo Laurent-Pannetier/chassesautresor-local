@@ -1347,11 +1347,11 @@ a[aria-disabled=true] {
   max-height: calc(100vh - var(--space-md));
   color: rgba(var(--color-white-rgb, 255, 255, 255), 0.4);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  overflow-y: auto;
 }
 
 .menu-lateral__content {
   flex: 1 1 auto;
-  overflow-y: auto;
   overflow-x: hidden;
   /*background-color: inherit;*/
 }
@@ -1359,8 +1359,6 @@ a[aria-disabled=true] {
 .menu-lateral__accordeons {
   margin-top: auto;
   flex-shrink: 0;
-  position: sticky;
-  bottom: 0;
   /*background-color: inherit;*/
   width: calc(100% + 2 * var(--space-md));
   margin-left: calc(-1 * var(--space-md));
@@ -1617,18 +1615,20 @@ a[aria-disabled=true] {
   .menu-lateral {
     position: fixed;
     top: 50%;
-    left: 0;
+    left: var(--space-md);
+    width: 320px;
     transform: translateY(-50%);
-    transition: transform var(--transition-medium);
+    transition: transform var(--transition-slow);
   }
   .menu-lateral.is-hidden {
-    transform: translate(calc(-100% - 1rem), -50%);
+    transform: translate(calc(-100% - var(--space-2xl) - var(--space-md)), -50%);
     box-shadow: none;
+    pointer-events: none;
   }
   .menu-lateral__reveal {
     position: fixed;
     top: 50%;
-    left: 0;
+    left: var(--space-md);
     transform: translateY(-50%);
     background-color: var(--color-primary-dark);
     color: var(--color-white);
@@ -3591,18 +3591,47 @@ body.panneau-ouvert::before {
 /* Layout for enigma pages */
 .enigme-layout {
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 320px 1fr;
   gap: var(--space-xl);
+  transition: grid-template-columns var(--transition-slow);
 }
 
-.enigme-layout .menu-lateral {
-  position: sticky;
-  top: var(--space-md);
+.enigme-layout > .menu-lateral {
+  grid-column: 1;
 }
 
-@media (min-width: 1024px) and (hover: hover) {
-  body.single-enigme .enigme-layout .menu-lateral {
-    top: calc(var(--space-4xl) + var(--space-md));
+.enigme-layout > .page-enigme {
+  grid-column: 2;
+  transition: margin-left var(--transition-slow);
+}
+
+.enigme-layout--aside-hidden > .page-enigme {
+  grid-column: 1;
+}
+
+@media not all and (min-width: 1024px) {
+  .enigme-layout .menu-lateral {
+    position: sticky;
+    top: var(--space-md);
+  }
+  .enigme-layout > .page-enigme {
+    grid-column: 1;
+  }
+}
+.enigme-layout--aside-hidden {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 1280px) {
+  .enigme-layout {
+    display: block;
+    gap: 0;
+  }
+  .enigme-layout > .page-enigme {
+    margin-left: calc(320px + 2 * var(--space-md));
+  }
+  .enigme-layout--aside-hidden > .page-enigme {
+    margin-left: 0;
   }
 }
 /* Display images stacked with full width */

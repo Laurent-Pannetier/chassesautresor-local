@@ -1,18 +1,48 @@
 /* Layout for enigma pages */
 .enigme-layout {
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 320px 1fr;
   gap: var(--space-xl);
+  transition: grid-template-columns var(--transition-slow);
 }
 
-.enigme-layout .menu-lateral {
-  position: sticky;
-  top: var(--space-md);
+.enigme-layout > .menu-lateral {
+  grid-column: 1;
 }
 
-@media (--bp-lg) and (hover: hover) {
-  body.single-enigme .enigme-layout .menu-lateral {
-    top: calc(var(--space-4xl) + var(--space-md));
+.enigme-layout > .page-enigme {
+  grid-column: 2;
+  transition: margin-left var(--transition-slow);
+}
+
+.enigme-layout--aside-hidden > .page-enigme {
+  grid-column: 1;
+}
+
+@media not all and (--bp-lg) {
+  .enigme-layout .menu-lateral {
+    position: sticky;
+    top: var(--space-md);
+  }
+  .enigme-layout > .page-enigme {
+    grid-column: 1;
+  }
+}
+
+.enigme-layout--aside-hidden {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 1280px) {
+  .enigme-layout {
+    display: block;
+    gap: 0;
+  }
+  .enigme-layout > .page-enigme {
+    margin-left: calc(320px + 2 * var(--space-md));
+  }
+  .enigme-layout--aside-hidden > .page-enigme {
+    margin-left: 0;
   }
 }
 
