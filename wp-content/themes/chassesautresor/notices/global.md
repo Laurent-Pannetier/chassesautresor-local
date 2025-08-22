@@ -416,6 +416,7 @@ Groupe : paramètres indices
 * indice_contenu (wysiwyg)
 * indice_cible (radio)
 * indice_cible_objet (relationship)
+* indice_organisateur_linked (relationship)
 * indice_disponibilite (radio)
 * indice_date_disponibilite (date_time_picker, retour d/m/Y g:i a)
 * indice_cout_points (number)

@@ -454,7 +454,7 @@ Requis : non
 🔹 Groupe : paramètres indices
 🆔 ID : 9568
 🔑 Key : group_68a1fb240748a
-📦 Champs trouvés : 9
+📦 Champs trouvés : 10
 
 — indice_image —
 Type : image
@@ -480,6 +480,12 @@ Choices :
 — indice_cible_objet —
 Type : relationship
 Label : cible
+Instructions : (vide)
+Requis : non
+----------------------------------------
+— indice_organisateur_linked —
+Type : relationship
+Label : organisateur lié
 Instructions : (vide)
 Requis : non
 ----------------------------------------

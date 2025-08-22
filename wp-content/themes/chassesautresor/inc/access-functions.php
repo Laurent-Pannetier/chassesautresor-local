@@ -349,6 +349,34 @@ function utilisateur_peut_modifier_post($post_id)
             $organisateur_id = $chasse_id ? get_organisateur_from_chasse($chasse_id) : null;
             return $organisateur_id ? utilisateur_peut_modifier_post($organisateur_id) : false;
 
+        case 'indice':
+            $organisateur_id = get_field('indice_organisateur_linked', $post_id);
+            if (is_array($organisateur_id)) {
+                $organisateur_id = $organisateur_id['ID'] ?? $organisateur_id[0] ?? null;
+            }
+
+            if (!$organisateur_id) {
+                $cible = get_field('indice_cible_objet', $post_id);
+                if (is_array($cible)) {
+                    $first    = $cible[0] ?? null;
+                    $cible_id = is_array($first) ? ($first['ID'] ?? null) : $first;
+                } else {
+                    $cible_id = $cible;
+                }
+
+                if ($cible_id) {
+                    $cible_type = get_post_type($cible_id);
+                    if ($cible_type === 'chasse') {
+                        $organisateur_id = get_organisateur_from_chasse($cible_id);
+                    } elseif ($cible_type === 'enigme') {
+                        $chasse_id       = recuperer_id_chasse_associee($cible_id);
+                        $organisateur_id = $chasse_id ? get_organisateur_from_chasse($chasse_id) : null;
+                    }
+                }
+            }
+
+            return $organisateur_id ? utilisateur_peut_modifier_post($organisateur_id) : false;
+
         default:
             cat_debug("❌ utilisateur_peut_modifier_post: post_type inconnu ($post_type)");
             return false;
@@ -670,8 +698,10 @@ function utilisateur_peut_voir_panneau(int $post_id): bool
 
         case 'enigme':
             $etat = get_field('enigme_cache_etat_systeme', $post_id);
-
             return in_array($status, ['publish', 'pending'], true) && $etat !== 'cache_invalide';
+
+        case 'indice':
+            return in_array($status, ['publish', 'pending'], true);
     }
 
     return false;
@@ -734,6 +764,12 @@ function utilisateur_peut_editer_champs(int $post_id): bool
                 && $stat === 'revision'
                 && in_array($val, ['creation', 'correction'], true)
                 && $etat === 'bloquee_chasse';
+
+        case 'indice':
+            $etat = get_field('indice_cache_etat_systeme', $post_id);
+
+            return $status === 'pending'
+                && $etat === 'desactive';
     }
 
     return false;
@@ -777,6 +813,10 @@ function champ_est_editable($champ, $post_id, $user_id = null)
         if (in_array($champ, ['post_title', 'caracteristiques.chasse_infos_cout_points'], true)) {
             return utilisateur_peut_editer_champs($post_id);
         }
+    }
+
+    if ($post_type === 'indice') {
+        return utilisateur_peut_editer_champs($post_id);
     }
 
     // 🔒 Le nom d'organisateur est verrouillé sauf pour certaines étapes de création

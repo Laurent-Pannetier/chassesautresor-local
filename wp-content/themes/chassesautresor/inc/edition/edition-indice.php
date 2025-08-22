@@ -56,6 +56,18 @@ function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_i
         return new WP_Error('permission_refusee', __('Droits insuffisants.', 'chassesautresor-com'));
     }
 
+    $organisateur_id = null;
+    if ($objet_type === 'chasse') {
+        $organisateur_id = get_organisateur_from_chasse($objet_id);
+    } else {
+        $chasse_id       = recuperer_id_chasse_associee($objet_id);
+        $organisateur_id = $chasse_id ? get_organisateur_from_chasse($chasse_id) : null;
+    }
+
+    if (!$organisateur_id || !utilisateur_peut_modifier_post($organisateur_id)) {
+        return new WP_Error('permission_refusee', __('Droits insuffisants.', 'chassesautresor-com'));
+    }
+
     $user_id = $user_id ?? get_current_user_id();
 
     $indice_id = wp_insert_post([
@@ -69,7 +81,7 @@ function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_i
         return $indice_id;
     }
 
-    $titre_objet = get_the_title($objet_id);
+    $titre_objet   = get_the_title($objet_id);
     $nouveau_titre = sprintf(__('Indice #%d - %s', 'chassesautresor-com'), $indice_id, $titre_objet);
     wp_update_post([
         'ID'         => $indice_id,
@@ -78,6 +90,7 @@ function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_i
 
     update_field('indice_cible', $objet_type, $indice_id);
     update_field('indice_cible_objet', $objet_id, $indice_id);
+    update_field('indice_organisateur_linked', $organisateur_id, $indice_id);
     update_field('indice_disponibilite', 'immediate', $indice_id);
 
     $date_disponibilite = wp_date('Y-m-d H:i:s', (int) current_time('timestamp') + DAY_IN_SECONDS);
