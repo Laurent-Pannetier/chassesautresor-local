@@ -25,8 +25,7 @@ if (!$valid_images) {
     $valid_images[] = ID_IMAGE_PLACEHOLDER_ENIGME;
 }
 
-$threshold_full = 1024;
-$caption        = (string) get_field('enigme_visuel_legende', $post_id);
+$caption = (string) get_field('enigme_visuel_legende', $post_id);
 
 if (function_exists('utilisateur_peut_voir_enigme') && !utilisateur_peut_voir_enigme($post_id)) {
     echo '<div class="visuels-proteges">🔒 Les visuels de cette énigme sont protégés.</div>';
@@ -37,9 +36,6 @@ cat_debug('[images] ✅ Galerie active pour #' . $post_id);
 
 echo '<div class="galerie-enigme-wrapper">';
 foreach ($valid_images as $index => $image_id) {
-    $meta  = wp_get_attachment_metadata($image_id);
-    $width = (int) ($meta['width'] ?? 0);
-
     $attrs = [
         'loading' => 'lazy',
         'srcset'  => wp_get_attachment_image_srcset($image_id, 'large'),
@@ -49,12 +45,8 @@ foreach ($valid_images as $index => $image_id) {
         $attrs['id']    = 'image-enigme-active';
         $attrs['class'] = 'image-active';
     }
-    if ($width && $width <= $threshold_full) {
-        $attrs['class'] = ($attrs['class'] ?? '') . ' enigme-image--limited';
-        $attrs['style'] = 'width:auto;max-width:100%;';
-    } elseif ($width) {
-        $attrs['style'] = 'width:100%;';
-    }
+    $attrs['class'] = trim(($attrs['class'] ?? '') . ' enigme-image--limited');
+    $attrs['style'] = 'width:auto;max-width:100%;';
 
     $alt = trim((string) get_post_meta($image_id, '_wp_attachment_image_alt', true));
     if (!$alt) {
