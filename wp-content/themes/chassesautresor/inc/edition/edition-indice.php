@@ -97,10 +97,33 @@ function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_i
  */
 function register_endpoint_creer_indice(): void
 {
-    add_rewrite_rule('^creer-indice/?', 'index.php?creer_indice=1', 'top');
+    add_rewrite_rule('^creer-indice/?$', 'index.php?creer_indice=1', 'top');
     add_rewrite_tag('%creer_indice%', '1');
 }
 add_action('init', 'register_endpoint_creer_indice');
+
+/**
+ * S'assure que les règles de réécriture prennent en compte /creer-indice/.
+ *
+ * Cette fonction est exécutée lors de l'activation du thème ou
+ * automatiquement une fois si les règles n'ont pas encore été mises à jour.
+ *
+ * @return void
+ */
+function flush_rewrite_rules_creer_indice(): void
+{
+    register_endpoint_creer_indice();
+    flush_rewrite_rules();
+    update_option('creer_indice_rewrite_flushed', 1);
+}
+
+add_action('after_switch_theme', 'flush_rewrite_rules_creer_indice');
+
+add_action('init', function (): void {
+    if (!get_option('creer_indice_rewrite_flushed')) {
+        flush_rewrite_rules_creer_indice();
+    }
+}, 20);
 
 /**
  * Détecte l’appel à /creer-indice/ et redirige vers l’indice créé.
