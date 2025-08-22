@@ -2393,7 +2393,8 @@ body[class*=edition-active] .champ-desactive .champ-modifier,
 
 body.edition-active .panneau-organisateur,
 body.edition-active-chasse .edition-panel-chasse,
-body.edition-active-enigme .edition-panel-enigme {
+body.edition-active-enigme .edition-panel-enigme,
+body.edition-active-indice .edition-panel-indice {
   height: 90vh;
   max-height: 90vh;
   opacity: 1;
@@ -2409,7 +2410,8 @@ body.edition-active-enigme .edition-panel-enigme {
 
 body.edition-active .panneau-organisateur.edition-panel-modal,
 body.edition-active-chasse .edition-panel-chasse.edition-panel-modal,
-body.edition-active-enigme .edition-panel-enigme.edition-panel-modal {
+body.edition-active-enigme .edition-panel-enigme.edition-panel-modal,
+body.edition-active-indice .edition-panel-indice.edition-panel-modal {
   position: fixed;
   top: 50%;
   left: 50%;
