@@ -80,7 +80,15 @@
   gap: var(--space-xs);
 }
 
-.resume-infos > li > label {
+.resume-infos > li > .icon-attente,
+.resume-infos > li > .icone-check {
+  grid-column: 1;
+}
+
+.resume-infos > li > label,
+.resume-infos > li > .edition-row-label,
+.resume-infos > li > .champ-affichage > label {
+  grid-column: 2;
   width: 100%;
 }
 
@@ -88,12 +96,17 @@
   display: contents;
 }
 
+.resume-infos > li > .champ-affichage > :not(label),
+.resume-infos > li > .edition-row-content,
+.resume-infos > li > :not(.icon-attente):not(.icone-check):not(label):not(.champ-feedback):not(.edition-row-label):not(.champ-affichage) {
+  grid-column: 3;
+  width: 100%;
+}
+
 .resume-infos > li > .champ-edition {
   display: flex;
   align-items: start;
   gap: var(--space-xs);
-  grid-column: 3;
-  width: 100%;
   margin-top: 0;
 }
 
