@@ -1521,7 +1521,7 @@ msgid ""
 "illimitées\\n\\nMode gratuit : 24 tentatives par jour"
 msgstr ""
 "Maximum number of daily attempts per player:\\n\\nPaid mode: "
-"unlimited\\n\\nFree mode: 24 attempts per day"
+"unlimited attempts\n\nFree mode: 24 attempts per day"
 
 #: template-parts/enigme/enigme-edition-main.php:711
 msgid "Délai de parution des solutions"
