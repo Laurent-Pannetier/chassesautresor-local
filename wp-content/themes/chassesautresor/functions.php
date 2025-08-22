@@ -152,12 +152,11 @@ add_action('wp_enqueue_scripts', function () {
     // 🎨 Chargement du style du thème parent (Astra)
     wp_enqueue_style('astra-style', get_template_directory_uri() . '/style.css');
 
-    $dist_file = '/dist/style.min.css';
     wp_enqueue_style(
         'chassesautresor-style',
-        $theme_uri . $dist_file,
+        $theme_uri . '/dist/style.css',
         ['astra-style'],
-        filemtime($theme_path . $dist_file)
+        filemtime($theme_path . '/dist/style.css')
     );
 
     $script_dir = $theme_uri . '/assets/js/';
