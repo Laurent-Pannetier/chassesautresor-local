@@ -1169,3 +1169,14 @@ msgstr "Respecter la casse"
 msgid "Enregistrer les variantes"
 msgstr "Enregistrer les variantes"
 
+#: inc/edition/edition-indice.php:73
+msgid "Indice #%d - %s"
+msgstr "Indice #%d - %s"
+
+#: template-parts/indice/indice-edition-main.php:26
+msgid "Panneau d'édition indice"
+msgstr "Panneau d'édition indice"
+
+#: template-parts/indice/indice-edition-main.php:33
+msgid "Contenu d'édition à venir..."
+msgstr "Contenu d'édition à venir..."
