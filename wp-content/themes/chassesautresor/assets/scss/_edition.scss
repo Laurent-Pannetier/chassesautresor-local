@@ -51,8 +51,6 @@
   align-items: center;
   justify-content: center;
   width: var(--editor-icon-width);
-  flex: 0 0 var(--editor-icon-width);
-  margin-right: 0.3rem;
   overflow: hidden;
 }
 
@@ -77,54 +75,42 @@
 .resume-infos > li {
   min-height: 40px;
   display: grid;
-  grid-template-columns: var(--editor-label-width) 1fr;
+  grid-template-columns: var(--editor-icon-width) var(--editor-label-width) 1fr;
   align-items: start;
   gap: var(--space-xs);
 }
 
-.resume-infos > li > label,
-.resume-infos > li > .champ-edition > label {
-  width: var(--editor-label-width);
+.resume-infos > li > label {
+  width: 100%;
 }
 
 .resume-infos > li > .champ-affichage {
-  display: flex;
-  align-items: start;
-  min-height: 40px;
+  display: contents;
 }
 
 .resume-infos > li > .champ-edition {
   display: flex;
   align-items: start;
   gap: var(--space-xs);
+  grid-column: 3;
   width: 100%;
   margin-top: 0;
 }
 
 .resume-infos > li > .champ-feedback {
+  grid-column: 3;
   width: 100%;
 }
 
 /* 🧩 Lignes d'édition réutilisables */
-.edition-row {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  min-height: 40px;
-}
-
 .edition-row-icon {
   width: var(--editor-icon-width);
-  margin-right: 0.3rem;
   text-align: center;
 }
 
-.edition-row-label {
-  width: var(--editor-label-width);
-}
-
+.edition-row-label,
 .edition-row-content {
-  flex: 1;
+  width: 100%;
 }
 
 .cache {
