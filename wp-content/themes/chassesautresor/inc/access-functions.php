@@ -350,12 +350,12 @@ function utilisateur_peut_modifier_post($post_id)
             return $organisateur_id ? utilisateur_peut_modifier_post($organisateur_id) : false;
 
         case 'indice':
-            $organisateur_id = get_field('indice_organisateur_linked', $post_id);
-            if (is_array($organisateur_id)) {
-                $organisateur_id = $organisateur_id['ID'] ?? $organisateur_id[0] ?? null;
+            $chasse_id = get_field('indice_chasse_linked', $post_id);
+            if (is_array($chasse_id)) {
+                $chasse_id = $chasse_id['ID'] ?? $chasse_id[0] ?? null;
             }
 
-            if (!$organisateur_id) {
+            if (!$chasse_id) {
                 $cible = get_field('indice_cible_objet', $post_id);
                 if (is_array($cible)) {
                     $first    = $cible[0] ?? null;
@@ -367,15 +367,14 @@ function utilisateur_peut_modifier_post($post_id)
                 if ($cible_id) {
                     $cible_type = get_post_type($cible_id);
                     if ($cible_type === 'chasse') {
-                        $organisateur_id = get_organisateur_from_chasse($cible_id);
+                        $chasse_id = $cible_id;
                     } elseif ($cible_type === 'enigme') {
-                        $chasse_id       = recuperer_id_chasse_associee($cible_id);
-                        $organisateur_id = $chasse_id ? get_organisateur_from_chasse($chasse_id) : null;
+                        $chasse_id = recuperer_id_chasse_associee($cible_id);
                     }
                 }
             }
 
-            return $organisateur_id ? utilisateur_peut_modifier_post($organisateur_id) : false;
+            return $chasse_id ? utilisateur_peut_modifier_post($chasse_id) : false;
 
         default:
             cat_debug("❌ utilisateur_peut_modifier_post: post_type inconnu ($post_type)");

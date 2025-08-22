@@ -18,19 +18,16 @@ namespace {
         function update_field($field, $value, $post_id) {
             global $updated_fields; $updated_fields[$field] = $value; }
     }
-    if (!function_exists('get_organisateur_from_chasse')) {
-        function get_organisateur_from_chasse($chasse_id) { return 10; }
-    }
     if (!function_exists('recuperer_id_chasse_associee')) {
         function recuperer_id_chasse_associee($id) { return 99; }
     }
     require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
 }
 
-namespace IndiceOrganisateur {
+namespace IndiceChasse {
     use PHPUnit\Framework\TestCase;
 
-    class IndiceOrganisateurAutoFillTest extends TestCase
+    class IndiceChasseAutoFillTest extends TestCase
     {
         protected function setUp(): void
         {
@@ -44,16 +41,16 @@ namespace IndiceOrganisateur {
          * @runInSeparateProcess
          * @preserveGlobalState disabled
          */
-        public function test_sets_organisateur_on_save(): void
+        public function test_sets_chasse_on_save(): void
         {
             global $fields, $updated_fields;
             $fields = [
-                'indice_organisateur_linked' => null,
+                'indice_chasse_linked' => null,
                 'indice_cible' => 'chasse',
                 'indice_cible_objet' => 42,
             ];
-            \sauvegarder_indice_organisateur_si_manquant(123);
-            $this->assertSame(10, $updated_fields['indice_organisateur_linked']);
+            \sauvegarder_indice_chasse_si_manquant(123);
+            $this->assertSame(42, $updated_fields['indice_chasse_linked']);
         }
     }
 }
