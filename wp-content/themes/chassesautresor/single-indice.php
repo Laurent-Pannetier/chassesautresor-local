@@ -19,10 +19,18 @@ get_header();
 <div id="primary" class="content-area">
     <main id="main" class="site-main">
         <?php
-        get_template_part('template-parts/indice/indice-edition-main', null, [
+        get_template_part('template-parts/indice/indice-affichage', null, [
             'indice_id' => $indice_id,
         ]);
         ?>
+
+        <?php if ($edition_active) : ?>
+            <?php
+            get_template_part('template-parts/indice/indice-edition-main', null, [
+                'indice_id' => $indice_id,
+            ]);
+            ?>
+        <?php endif; ?>
     </main>
 </div>
 

@@ -25,7 +25,7 @@ function enqueue_script_indice_edit(): void
         return;
     }
 
-    enqueue_core_edit_scripts(['organisateur-edit']);
+    enqueue_core_edit_scripts(['organisateur-edit', 'indice-edit']);
     wp_enqueue_media();
 }
 add_action('wp_enqueue_scripts', 'enqueue_script_indice_edit');
