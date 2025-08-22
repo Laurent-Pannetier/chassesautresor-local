@@ -329,12 +329,13 @@ li.active .enigme-menu__edit {
 .page-enigme .enigme-header .enigme-titre {
   word-break: break-word;
   overflow-wrap: anywhere;
+  font-size: 64px;
 }
 
 .page-enigme .enigme-header .enigme-soustitre {
   margin-top: var(--space-xs);
   color: var(--color-text-secondary);
-  font-size: 1.25rem;
+  font-size: 32px;
 }
 
 @media not all and (--bp-md) {
@@ -343,7 +344,7 @@ li.active .enigme-menu__edit {
   }
 
   .page-enigme .enigme-header {
-    text-align: left;
+    text-align: center;
     padding-bottom: var(--space-sm);
   }
 
