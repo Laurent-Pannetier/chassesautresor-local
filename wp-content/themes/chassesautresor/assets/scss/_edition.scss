@@ -73,31 +73,29 @@
 }
 
 /* Hauteur et alignement par défaut des lignes de paramètres */
+
 .resume-infos > li {
   min-height: 40px;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: var(--editor-label-width) 1fr;
+  align-items: start;
   gap: var(--space-xs);
 }
 
 .resume-infos > li > label,
 .resume-infos > li > .champ-edition > label {
   width: var(--editor-label-width);
-  flex-shrink: 0;
 }
 
 .resume-infos > li > .champ-affichage {
   display: flex;
-  align-items: center;
+  align-items: start;
   min-height: 40px;
-  flex: 1;
 }
 
 .resume-infos > li > .champ-edition {
   display: flex;
-  align-items: center;
-  flex-wrap: wrap;
+  align-items: start;
   gap: var(--space-xs);
   width: 100%;
   margin-top: 0;
