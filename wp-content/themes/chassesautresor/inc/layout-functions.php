@@ -85,7 +85,7 @@ add_action('wp_head', 'ajouter_ajaxurl_script');
  * Charge FontAwesome pour les icônes réseaux sociaux.
  */
 function charger_fontawesome() {
-    wp_enqueue_style('fontawesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css', [], null);
+    wp_enqueue_style('fontawesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.css', [], null);
 }
 add_action('wp_enqueue_scripts', 'charger_fontawesome');
 
