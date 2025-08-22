@@ -24,6 +24,10 @@ namespace {
         function utilisateur_peut_modifier_post($id) { global $can_edit; return $can_edit; }
     }
 
+    if (!function_exists('get_organisateur_chasse')) {
+        function get_organisateur_chasse($chasse_id) { return 10; }
+    }
+
     if (!function_exists('get_organisateur_from_chasse')) {
         function get_organisateur_from_chasse($chasse_id) { return 7; }
     }

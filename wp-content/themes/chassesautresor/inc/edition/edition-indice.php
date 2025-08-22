@@ -57,11 +57,20 @@ function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_i
     }
 
     $organisateur_id = null;
+
     if ($objet_type === 'chasse') {
-        $organisateur_id = get_organisateur_from_chasse($objet_id);
+        $organisateur_id = get_organisateur_chasse($objet_id);
+        if (!$organisateur_id) {
+            $organisateur_id = get_organisateur_from_chasse($objet_id);
+        }
     } else {
-        $chasse_id       = recuperer_id_chasse_associee($objet_id);
-        $organisateur_id = $chasse_id ? get_organisateur_from_chasse($chasse_id) : null;
+        $chasse_id = recuperer_id_chasse_associee($objet_id);
+        if ($chasse_id) {
+            $organisateur_id = get_organisateur_chasse($chasse_id);
+            if (!$organisateur_id) {
+                $organisateur_id = get_organisateur_from_chasse($chasse_id);
+            }
+        }
     }
 
     if (!$organisateur_id || !utilisateur_peut_modifier_post($organisateur_id)) {
