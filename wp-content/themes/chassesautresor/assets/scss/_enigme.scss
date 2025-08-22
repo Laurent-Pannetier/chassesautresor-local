@@ -398,6 +398,10 @@ li.active .enigme-menu__edit {
   max-width: 700px;
   margin: auto;
   text-align: center;
+
+  h3 {
+    margin-top: 0;
+  }
 }
 
 @media (min-width: 768px) {
