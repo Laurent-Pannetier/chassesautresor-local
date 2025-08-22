@@ -273,6 +273,26 @@
   .menu-lateral {
     position: sticky;
     top: var(--space-md);
+    transition: transform var(--transition-medium);
+  }
+  .menu-lateral.is-hidden {
+    transform: translateX(-100%);
+  }
+  .menu-lateral__reveal {
+    position: fixed;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    background-color: var(--color-primary-dark);
+    color: var(--color-white);
+    border: none;
+    padding: var(--space-sm);
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+    display: none;
+  }
+  .menu-lateral__reveal i {
+    pointer-events: none;
   }
 }
 
