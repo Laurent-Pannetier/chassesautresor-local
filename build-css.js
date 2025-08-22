@@ -1,23 +1,22 @@
 const fs = require('fs');
 const path = require('path');
+const sass = require('sass');
 const postcss = require('postcss');
-const postcssImport = require('postcss-import');
 const autoprefixer = require('autoprefixer');
 const customMedia = require('postcss-custom-media');
 
 const themeDir = path.join(__dirname, 'wp-content', 'themes', 'chassesautresor');
-const srcDir = path.join(themeDir, 'assets', 'css');
+const srcDir = path.join(themeDir, 'assets', 'scss');
 const distDir = path.join(themeDir, 'dist');
 
 async function build() {
-    const mainFile = path.join(srcDir, 'main.css');
-    const css = fs.readFileSync(mainFile, 'utf8');
+    const mainFile = path.join(srcDir, 'main.scss');
+    const sassResult = sass.compile(mainFile, { style: 'expanded' });
 
     const result = await postcss([
-        postcssImport(),
         customMedia(),
         autoprefixer(),
-    ]).process(css, { from: mainFile });
+    ]).process(sassResult.css, { from: mainFile });
 
     if (!fs.existsSync(distDir)) {
         fs.mkdirSync(distDir, { recursive: true });
