@@ -1622,7 +1622,7 @@ a[aria-disabled=true] {
     transition: transform var(--transition-medium);
   }
   .menu-lateral.is-hidden {
-    transform: translate(calc(-100% - 1rem), -50%);
+    transform: translate(calc(-100% - var(--space-2xl)), -50%);
     box-shadow: none;
   }
   .menu-lateral__reveal {
@@ -3593,18 +3593,19 @@ body.panneau-ouvert::before {
   display: grid;
   grid-template-columns: 280px 1fr;
   gap: var(--space-xl);
+  transition: grid-template-columns var(--transition-medium);
 }
 
-.enigme-layout .menu-lateral {
-  position: sticky;
-  top: var(--space-md);
-}
-
-@media (min-width: 1024px) and (hover: hover) {
-  body.single-enigme .enigme-layout .menu-lateral {
-    top: calc(var(--space-4xl) + var(--space-md));
+@media not all and (min-width: 1024px) {
+  .enigme-layout .menu-lateral {
+    position: sticky;
+    top: var(--space-md);
   }
 }
+.enigme-layout--aside-hidden {
+  grid-template-columns: 1fr;
+}
+
 /* Display images stacked with full width */
 .enigme-images {
   display: flex;

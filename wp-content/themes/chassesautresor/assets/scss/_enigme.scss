@@ -3,17 +3,18 @@
   display: grid;
   grid-template-columns: 280px 1fr;
   gap: var(--space-xl);
+  transition: grid-template-columns var(--transition-medium);
 }
 
-.enigme-layout .menu-lateral {
-  position: sticky;
-  top: var(--space-md);
-}
-
-@media (--bp-lg) and (hover: hover) {
-  body.single-enigme .enigme-layout .menu-lateral {
-    top: calc(var(--space-4xl) + var(--space-md));
+@media not all and (--bp-lg) {
+  .enigme-layout .menu-lateral {
+    position: sticky;
+    top: var(--space-md);
   }
+}
+
+.enigme-layout--aside-hidden {
+  grid-template-columns: 1fr;
 }
 
 /* Display images stacked with full width */
