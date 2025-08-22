@@ -9,10 +9,15 @@ if (!function_exists('enigme_get_bonnes_reponses')) {
     function enigme_get_bonnes_reponses(int $enigme_id): array
     {
         $raw = function_exists('get_field') ? get_field('enigme_reponse_bonne', $enigme_id) : '';
+
         if (is_string($raw) && $raw !== '') {
             $decoded = json_decode($raw, true);
             if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
                 return array_values(array_filter(array_map('strval', $decoded)));
+            }
+
+            if (function_exists('update_field')) {
+                update_field('enigme_reponse_bonne', wp_json_encode([$raw]), $enigme_id);
             }
 
             return [$raw];
