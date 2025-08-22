@@ -25,8 +25,6 @@ if (!$valid_images) {
     $valid_images[] = ID_IMAGE_PLACEHOLDER_ENIGME;
 }
 
-$caption = (string) get_field('enigme_visuel_legende', $post_id);
-
 if (function_exists('utilisateur_peut_voir_enigme') && !utilisateur_peut_voir_enigme($post_id)) {
     echo '<div class="visuels-proteges">🔒 Les visuels de cette énigme sont protégés.</div>';
     return;
@@ -52,7 +50,7 @@ foreach ($valid_images as $index => $image_id) {
     if (!$alt) {
         $alt = $image_id === ID_IMAGE_PLACEHOLDER_ENIGME
             ? __('Image par défaut de l’énigme', 'chassesautresor-com')
-            : ($caption ?: __('Image de l’énigme', 'chassesautresor-com'));
+            : __('Image de l’énigme', 'chassesautresor-com');
     }
     $attrs['alt'] = esc_attr($alt);
 
