@@ -80,6 +80,23 @@
   margin-right: 0.3rem;
 }
 
+/* Correction spécifique pour les champs de tentatives */
+.resume-infos .champ-cout-points[data-no-icon],
+.resume-infos .champ-nb-tentatives[data-no-icon] {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.resume-infos .champ-cout-points[data-no-icon]::before,
+.resume-infos .champ-nb-tentatives[data-no-icon]::before {
+  content: '';
+  display: block;
+  flex: 0 0 var(--editor-icon-width);
+  margin-right: 0.3rem;
+}
+
 /* Hauteur et alignement par défaut des lignes de paramètres */
 .resume-infos > li {
   min-height: 40px;
