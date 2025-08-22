@@ -383,7 +383,7 @@ Groupe : Paramètres de l’énigme
 * enigme_style_affichage (select)
 * enigme_tentative_cout_points (number)
 * enigme_tentative_max (number)
-* enigme_reponse_bonne (text)
+* enigme_reponse_bonne (textarea) — réponses multiples encodées en JSON
 * enigme_reponse_casse (true_false)
 * texte_1 (text)
 * message_1 (text)

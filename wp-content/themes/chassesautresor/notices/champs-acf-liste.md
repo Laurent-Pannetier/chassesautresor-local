@@ -214,9 +214,9 @@ Instructions : Nb max de tentatives quotidiennes
 Requis : non
 ----------------------------------------
 — enigme_reponse_bonne —
-Type : text
-Label : bonne réponse
-Instructions : (vide)
+Type : textarea
+Label : bonne(s) réponse(s)
+Instructions : Tableau de réponses attendues au format JSON.
 Requis : non
 ----------------------------------------
 — enigme_reponse_casse —
