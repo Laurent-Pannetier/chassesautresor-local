@@ -280,6 +280,7 @@
   .menu-lateral.is-hidden {
     transform: translate(calc(-100% - var(--space-2xl)), -50%);
     box-shadow: none;
+    display: none;
   }
   .menu-lateral__reveal {
     position: fixed;

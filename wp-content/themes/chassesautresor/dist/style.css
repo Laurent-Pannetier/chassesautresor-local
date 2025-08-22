@@ -1624,6 +1624,7 @@ a[aria-disabled=true] {
   .menu-lateral.is-hidden {
     transform: translate(calc(-100% - var(--space-2xl)), -50%);
     box-shadow: none;
+    display: none;
   }
   .menu-lateral__reveal {
     position: fixed;
@@ -3596,10 +3597,25 @@ body.panneau-ouvert::before {
   transition: grid-template-columns var(--transition-medium);
 }
 
+.enigme-layout > .menu-lateral {
+  grid-column: 1;
+}
+
+.enigme-layout > .page-enigme {
+  grid-column: 2;
+}
+
+.enigme-layout--aside-hidden > .page-enigme {
+  grid-column: 1;
+}
+
 @media not all and (min-width: 1024px) {
   .enigme-layout .menu-lateral {
     position: sticky;
     top: var(--space-md);
+  }
+  .enigme-layout > .page-enigme {
+    grid-column: 1;
   }
 }
 .enigme-layout--aside-hidden {

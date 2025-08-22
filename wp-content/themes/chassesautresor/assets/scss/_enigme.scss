@@ -6,10 +6,25 @@
   transition: grid-template-columns var(--transition-medium);
 }
 
+.enigme-layout > .menu-lateral {
+  grid-column: 1;
+}
+
+.enigme-layout > .page-enigme {
+  grid-column: 2;
+}
+
+.enigme-layout--aside-hidden > .page-enigme {
+  grid-column: 1;
+}
+
 @media not all and (--bp-lg) {
   .enigme-layout .menu-lateral {
     position: sticky;
     top: var(--space-md);
+  }
+  .enigme-layout > .page-enigme {
+    grid-column: 1;
   }
 }
 
