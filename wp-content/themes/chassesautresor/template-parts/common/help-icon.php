@@ -2,10 +2,13 @@
 /**
  * Reusable help icon button component.
  *
- * @param string $aria_label  ARIA label for the button.
- * @param string $message     Optional help message (added as data-message attribute).
- * @param string $classes     CSS classes to apply on the button.
- * @param array  $attributes  Additional HTML attributes for the button.
+ * @param string $aria_label ARIA label for the button.
+ * @param string $title      Optional title shown in the modal.
+ * @param string $message    Optional help message.
+ * @param string $classes    CSS classes to apply on the button.
+ * @param string $variant    Visual variant (aide, info, aide-small).
+ * @param string $icon       Font Awesome classes for the icon.
+ * @param array  $attributes Additional HTML attributes for the button.
  */
 
 defined('ABSPATH') || exit;
@@ -14,19 +17,41 @@ $args = wp_parse_args(
     $args ?? [],
     [
         'aria_label' => '',
+        'title'      => '',
         'message'    => '',
         'classes'    => '',
+        'variant'    => 'aide',
+        'icon'       => '',
         'attributes' => [],
     ]
 );
 
 $aria_label = $args['aria_label'];
+$title      = $args['title'];
 $message    = $args['message'];
 $classes    = $args['classes'];
+$variant    = $args['variant'];
+$icon       = $args['icon'];
 $attributes = $args['attributes'];
+
+if ($icon === '') {
+    $icon = ($variant === 'info') ? 'fa-solid fa-circle-info' : 'fa-regular fa-circle-question';
+}
 
 if ($message !== '') {
     $attributes['data-message'] = $message;
+}
+if ($title !== '') {
+    $attributes['data-title'] = $title;
+}
+if ($variant !== '') {
+    $attributes['data-variant'] = $variant;
+    $classes = trim('help-icon-button help-icon--' . $variant . ' ' . $classes);
+} else {
+    $classes = trim('help-icon-button ' . $classes);
+}
+if ($icon !== '') {
+    $attributes['data-icon'] = $icon;
 }
 
 $attr_string = '';
@@ -38,5 +63,5 @@ foreach ($attributes as $attr => $value) {
 }
 ?>
 <button type="button" class="<?= esc_attr($classes); ?>"<?= $attr_string; ?>>
-    <i class="fa-regular fa-circle-question" aria-hidden="true"></i>
+    <i class="<?= esc_attr($icon); ?>" aria-hidden="true"></i>
 </button>

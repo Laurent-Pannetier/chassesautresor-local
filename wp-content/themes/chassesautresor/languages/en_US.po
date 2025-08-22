@@ -1,0 +1,1668 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: chassesautresor.com 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/theme/chassesautresor\n"
+"POT-Creation-Date: 2025-08-21T20:09:12+00:00\n"
+"PO-Revision-Date: 2025-08-21 20:09+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Domain: chassesautresor-com\n"
+"X-Generator: WP-CLI 2.12.0\n"
+
+#: style.css
+msgid "chassesautresor.com"
+msgstr "chassesautresor.com"
+
+#: style.css
+msgid "sites dédiés aux amoureux de chasses au trésor chassesautresor.com"
+msgstr "sites dedicated to treasure hunt lovers chassesautresor.com"
+
+#: style.css
+msgid "https://chassesautresor.com/"
+msgstr "https://chassesautresor.com/"
+
+msgid "Accueil Plein Ecran"
+msgstr "Full Screen Home"
+
+#: inc/admin-functions.php:39
+msgid "⛔ Accès refusé."
+msgstr "Access denied."
+
+#: inc/admin-functions.php:46
+msgid "❌ Requête vide."
+msgstr "Empty query."
+
+#: inc/admin-functions.php:57
+msgid "❌ Aucun utilisateur trouvé."
+msgstr "No users found."
+
+#: inc/admin-functions.php:84 inc/admin-functions.php:388
+#: inc/admin-functions.php:577
+msgid "❌ Vérification du nonce échouée."
+msgstr "❌ Nonce check failed."
+
+#: inc/admin-functions.php:89 inc/admin-functions.php:393
+msgid "❌ Accès refusé."
+msgstr "Access denied."
+
+#: inc/admin-functions.php:98
+msgid "❌ Données invalides."
+msgstr "Invalid data."
+
+#: inc/admin-functions.php:104
+msgid "❌ Utilisateur introuvable."
+msgstr "User not found"
+
+#: inc/admin-functions.php:116
+msgid "❌ Impossible de retirer plus de points que l’utilisateur en possède."
+msgstr "❌ Cannot remove more points than the user has."
+
+#: inc/admin-functions.php:121
+msgid "❌ Action invalide."
+msgstr "Invalid action."
+
+#: inc/admin-functions.php:180
+msgid "Permission refusée."
+msgstr "Permission denied."
+
+#: inc/admin-functions.php:188
+msgid "Requête invalide."
+msgstr "Invalid request."
+
+#: inc/admin-functions.php:230
+msgid "Action inconnue."
+msgstr "Unknown action"
+
+#: inc/admin-functions.php:399
+msgid "❌ Veuillez entrer un taux de conversion valide."
+msgstr "❌ Please enter a valid conversion rate."
+
+#: inc/admin-functions.php:465
+msgid "Régler"
+msgstr "Set"
+
+#: inc/admin-functions.php:466
+#: template-parts/chasse/chasse-edition-main.php:291
+msgid "Annuler"
+msgstr "Cancel"
+
+#: inc/admin-functions.php:467
+msgid "Refuser"
+msgstr "Decline"
+
+#: inc/admin-functions.php:582
+msgid "❌ Vous devez être connecté pour effectuer cette action."
+msgstr "You must be logged in to perform this action."
+
+#: inc/admin-functions.php:597
+msgid "❌ Le minimum pour une conversion est de %d points."
+msgstr "❌ The minimum for a conversion is %d points."
+
+#: inc/admin-functions.php:604
+msgid "❌ Vous n'avez pas assez de points pour effectuer cette conversion."
+msgstr "❌ You don't have enough points to complete this conversion."
+
+#: inc/admin-functions.php:894
+msgid ""
+"⛔ Accès refusé. Vous n’avez pas la permission d’effectuer cette action."
+msgstr "⛔ Access denied. You do not have permission to perform this action."
+
+#: inc/admin-functions.php:901
+msgid "⛔ Erreur de sécurité. Veuillez réessayer."
+msgstr "Security ⛔ error. Please try again."
+
+#: inc/admin-functions.php:1342
+msgid "Non autorisé"
+msgstr "Not allowed"
+
+#: inc/admin-functions.php:1659
+#: template-parts/chasse/chasse-edition-main.php:448
+msgid "Accès refusé."
+msgstr "Access denied."
+
+#: inc/admin-functions.php:1666
+msgid "ID de chasse invalide."
+msgstr "Invalid hunt ID."
+
+#: inc/admin-functions.php:1670
+msgid "Nonce invalide."
+msgstr "Invalid nonce."
+
+#: inc/chasse-functions.php:245
+msgid ""
+"⚠️ Erreur : La date de fin ne peut pas être antérieure à la date de début."
+msgstr "End Date cannot be set before             Start Date."
+
+#: inc/chasse-functions.php:253
+msgid ""
+"⚠️ Erreur : La date de fin ne peut pas être antérieure à la date du jour si "
+"la chasse commence maintenant."
+msgstr ""
+"⚠️ Error: The end date cannot be earlier than today's date if the hunt starts "
+"now."
+
+#: inc/chasse-functions.php:644
+msgid "Points insuffisants"
+msgstr "Insufficient Points"
+
+#: inc/chasse-functions.php:650 inc/organisateur-functions.php:273
+msgid "points"
+msgstr "points"
+
+#: inc/chasse-functions.php:653
+msgid "Il vous manque %1$d %2$s pour participer à cette chasse."
+msgstr "You are %1$d %2$s short to participate in this hunt."
+
+#: inc/chasse-functions.php:903 single-chasse.php:115
+msgid "Certaines énigmes doivent être complétées :"
+msgstr "Some puzzles need to be completed:"
+
+#: inc/edition/edition-chasse.php:106
+msgid "Aucun organisateur associé."
+msgstr "No associated organizers."
+
+#: inc/edition/edition-chasse.php:114
+msgid "Limite atteinte"
+msgstr "Limit reached"
+
+#: inc/edition/edition-chasse.php:117
+msgid "Accès refusé"
+msgstr "Access denied"
+
+#: inc/edition/edition-chasse.php:127
+msgid "Une chasse est déjà en attente de validation."
+msgstr "A hunt is already awaiting validation."
+
+#: inc/edition/edition-chasse.php:140
+msgid "Erreur lors de la création de la chasse."
+msgstr "Error creating hunt."
+
+#: inc/edition/edition-enigme.php:166
+msgid "Chasse non spécifiée ou invalide."
+msgstr "Hunting unspecified or invalid."
+
+#: inc/enigme/affichage.php:132 inc/enigme/affichage.php:147
+msgid "Vous"
+msgstr "You"
+
+#: inc/enigme/affichage.php:133 inc/enigme/affichage.php:148
+msgid "Moyenne"
+msgstr "Average"
+
+#: inc/enigme/affichage.php:200 inc/enigme/affichage.php:317
+msgid "Progression"
+msgstr "Progress (%)"
+
+#: inc/enigme/affichage.php:263
+msgid "Résolution"
+msgstr "Solution"
+
+#: inc/enigme/affichage.php:297
+msgid "Statistiques"
+msgstr "Statistics"
+
+#: inc/enigme/affichage.php:311
+msgid "Afficher les statistiques"
+msgstr "View Stats"
+
+#: inc/enigme/affichage.php:317
+msgid "Activer Orgy"
+msgstr "Enable Orgy"
+
+#: inc/enigme/affichage.php:325
+#: template-parts/chasse/partials/chasse-partial-participants.php:51
+msgid "Énigmes"
+msgstr "Riddles"
+
+#: inc/enigme/affichage.php:416
+#: template-parts/chasse/chasse-edition-main.php:650
+#: template-parts/chasse/chasse-edition-main.php:662
+msgid "Indices"
+msgstr "Hints"
+
+#: inc/enigme/affichage.php:447
+msgid "Voir la solution"
+msgstr "View solution"
+
+#: inc/enigme/cta.php:215
+msgid "Commencer"
+msgstr "Get started"
+
+#: inc/enigme/cta.php:219
+msgid "À tenter"
+msgstr "To try"
+
+#: inc/enigme/cta.php:225
+msgid "Voir"
+msgstr "See"
+
+#: inc/enigme/cta.php:226
+msgid "Continuer"
+msgstr "Continue"
+
+#: inc/enigme/cta.php:269
+msgid "Réessayer"
+msgstr "Try again"
+
+#: inc/enigme/cta.php:273
+msgid "Échouée"
+msgstr "Failed"
+
+#: inc/enigme/cta.php:279
+msgid "Recommencer"
+msgstr "Try again"
+
+#: inc/enigme/cta.php:283
+msgid "Abandonnée"
+msgstr "Aborted"
+
+#: inc/enigme/reponses.php:41
+#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:92
+msgid "Il vous manque %d points pour soumettre votre réponse."
+msgstr "You are %d points short of submitting your answer."
+
+#: inc/enigme/reponses.php:508
+msgid "Tentative bien reçue."
+msgstr "Attempt received."
+
+#: inc/enigme/reponses.php:588
+#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:51
+msgid ""
+"⏳ Votre tentative %1$s a été soumise le %2$s à %3$s.<br>Vous serez "
+"immédiatement averti de son traitement par l'organisateur par email et sur "
+"votre <a href=\"%4$s\">espace personnel</a>."
+msgstr ""
+"Your %1$s attempt was submitted on %2$s at %3$s.<br>You will be immediately "
+"notified of its processing by the organizer by email and on your <a "
+"href=\"%4$s\">personal space</a>."
+
+#: inc/enigme/visuels.php:129
+msgid "Visuel énigme"
+msgstr "Visual enigma"
+
+#: inc/enigme/visuels.php:425
+msgid "Pré-requis non remplis"
+msgstr "Prerequisites not met"
+
+#: inc/gamify-functions.php:496
+msgid "Historique de vos points"
+msgstr "History of your points"
+
+#: inc/gamify-functions.php:500
+msgid "ID"
+msgstr "ID"
+
+#: inc/gamify-functions.php:501
+#: template-parts/enigme/partials/enigme-partial-tentatives.php:25
+msgid "Date"
+msgstr "Date"
+
+#: inc/gamify-functions.php:502
+msgid "Origine"
+msgstr "Origin"
+
+#: inc/gamify-functions.php:503
+msgid "Motif"
+msgstr "Reason"
+
+#: inc/gamify-functions.php:504
+msgid "Variation"
+msgstr "Variation"
+
+#: inc/gamify-functions.php:505
+msgid "Solde"
+msgstr "Balance"
+
+#: inc/organisateur-functions.php:227 inc/organisateur-functions.php:233
+#: template-parts/organisateur/organisateur-edition-main.php:290
+#: template-parts/organisateur/organisateur-edition-main.php:303
+msgid "Ajouter des coordonnées bancaires"
+msgstr "Add bank details"
+
+#: inc/organisateur-functions.php:231
+#: template-parts/chasse/chasse-edition-main.php:615
+#: template-parts/chasse/chasse-edition-main.php:664
+#: template-parts/chasse/chasse-edition-main.php:666
+#: template-parts/organisateur/organisateur-edition-main.php:287
+#: template-parts/organisateur/organisateur-edition-main.php:301
+msgid "Ajouter"
+msgstr "Add"
+
+#: inc/organisateur-functions.php:232
+#: template-parts/chasse/chasse-edition-main.php:616
+#: template-parts/organisateur/organisateur-edition-main.php:288
+#: template-parts/organisateur/organisateur-edition-main.php:302
+msgid "Éditer"
+msgstr "Edit"
+
+#: inc/organisateur-functions.php:234
+#: template-parts/organisateur/organisateur-edition-main.php:291
+#: template-parts/organisateur/organisateur-edition-main.php:304
+msgid "Modifier les coordonnées bancaires"
+msgstr "Edit Bank Details"
+
+#: inc/organisateur-functions.php:253
+msgid "1 000 points = %s €"
+msgstr "1,000 points = € %s"
+
+#: inc/organisateur-functions.php:256
+msgid "Demande de conversion"
+msgstr "Conversion Request"
+
+#: inc/organisateur-functions.php:258
+msgid "Transformez vos %d points en euros."
+msgstr "Turn your %d points into euros."
+
+#: inc/organisateur-functions.php:262 inc/organisateur-functions.php:282
+#: template-parts/organisateur/organisateur-edition-main.php:262
+msgid "Convertir"
+msgstr "Convert"
+
+#: inc/organisateur-functions.php:276
+msgid "contre valeur"
+msgstr "cons-value"
+
+#: inc/organisateur-functions.php:397
+msgid "Total points"
+msgstr "Total points"
+
+#: inc/organisateur-functions.php:402
+msgid "Total €"
+msgstr "Total €"
+
+#: inc/organisateur-functions.php:414
+msgid "Historique conversion de points"
+msgstr "Point Conversion History"
+
+#: inc/organisateur-functions.php:422 inc/organisateur-functions.php:424
+#: inc/organisateur-functions.php:427
+msgid "Fermer tableau"
+msgstr "<g x=1 id=\"40\">Close Chart</g>"
+
+#: inc/organisateur-functions.php:422 inc/organisateur-functions.php:423
+#: inc/organisateur-functions.php:427
+msgid "Voir le tableau"
+msgstr "View Table"
+
+#: inc/organisateur-functions.php:435
+msgid "Date demande"
+msgstr "Request date"
+
+#: inc/organisateur-functions.php:437
+#: template-parts/enigme/partials/enigme-partial-tentatives.php:26
+msgid "Utilisateur"
+msgstr "User"
+
+#: inc/organisateur-functions.php:439
+msgid "Montant (€)"
+msgstr "Amount (€)"
+
+#: inc/organisateur-functions.php:440 templates/myaccount/content-points.php:25
+msgid "Points utilisés"
+msgstr "Points Applied"
+
+#: inc/organisateur-functions.php:441
+msgid "Statut"
+msgstr "Status"
+
+#: inc/organisateur-functions.php:448 inc/organisateur-functions.php:550
+msgid "Réglé"
+msgstr "Paid"
+
+#: inc/organisateur-functions.php:451 inc/organisateur-functions.php:553
+msgid "Annulé"
+msgstr "Canceled"
+
+#: inc/organisateur-functions.php:454 inc/organisateur-functions.php:556
+msgid "Refusé"
+msgstr "Denied"
+
+#: inc/organisateur-functions.php:457 inc/organisateur-functions.php:559
+msgid "En attente"
+msgstr "Pending"
+
+#: inc/organisateur-functions.php:464 inc/organisateur-functions.php:565
+msgid "ID %d"
+msgstr "ID %d"
+
+#: inc/pager.php:29
+msgid "First page"
+msgstr "Première page"
+
+#: inc/pager.php:30
+msgid "Previous page"
+msgstr "Page précédente"
+
+#: inc/pager.php:32
+msgid "Go to page"
+msgstr "Aller à la page"
+
+#: inc/pager.php:39
+msgid "Next page"
+msgstr "Page suivante"
+
+#: inc/pager.php:40
+msgid "Last page"
+msgstr "Dernière page"
+
+#: inc/user-functions.php:160
+msgid "Statistiques - Chasses au Trésor"
+msgstr "Statistics - Scavenger Hunt"
+
+#: inc/user-functions.php:161
+msgid "Outils - Chasses au Trésor"
+msgstr "Tools - Scavenger Hunt"
+
+#: inc/user-functions.php:162
+msgid "Organisateur - Chasses au Trésor"
+msgstr "Organizer - Scavenger Hunt"
+
+#: inc/user-functions.php:167
+msgid "Points - Chasses au Trésor"
+msgstr "Points - Scavenger Hunt"
+
+#: inc/user-functions.php:292
+msgid "Vous avez des %1$sdemandes de conversion%2$s en attente."
+msgstr "You have %1$ sconversion requests %2$s pending."
+
+#: single-chasse.php:13
+msgid "Chasse introuvable."
+msgstr "Hunting not found."
+
+#: single-chasse.php:135
+msgid ""
+"Votre chasse se termine automatiquement ; ajoutez une énigme à validation "
+"manuelle ou automatique."
+msgstr ""
+"Your hunt ends automatically; add a manually or automatically validated "
+"puzzle."
+
+#: single-organisateur.php:84
+msgid "Chasses au Trésor"
+msgstr "Treasure hunts"
+
+#: single-organisateur.php:132
+msgid "C'est parti !"
+msgstr "Here we go!"
+
+#: template-parts/chasse/chasse-edition-main.php:59
+msgid "Panneau d'édition chasse"
+msgstr "Hunt Edit Panel"
+
+#: template-parts/chasse/chasse-edition-main.php:134
+msgid "Description chasse"
+msgstr "Hunting description"
+
+#: template-parts/chasse/chasse-edition-main.php:142
+#: template-parts/enigme/enigme-edition-main.php:177
+#: template-parts/organisateur/organisateur-edition-main.php:141
+msgid "ajouter"
+msgstr "Add"
+
+#: template-parts/chasse/chasse-edition-main.php:154
+msgid "Modifier la description"
+msgstr "Modifying the description"
+
+#: template-parts/chasse/chasse-edition-main.php:155
+#: template-parts/chasse/chasse-edition-main.php:196
+#: template-parts/enigme/enigme-edition-main.php:189
+#: template-parts/organisateur/organisateur-edition-main.php:153
+#: template-parts/organisateur/organisateur-edition-main.php:201
+#: assets/js/chasse-edit.js:258 assets/js/core/helpers.js:218
+#: assets/js/core/helpers.js:240 assets/js/core/helpers.js:262
+#: assets/js/core/resume.js:373 assets/js/enigme-edit.js:891
+msgid "modifier"
+msgstr "edit"
+
+#: template-parts/chasse/chasse-edition-main.php:171
+msgid "Récompense"
+msgstr "Award"
+
+#: template-parts/chasse/chasse-edition-main.php:195
+msgid "Modifier la récompense"
+msgstr "Edit Reward"
+
+#: template-parts/chasse/chasse-edition-main.php:219
+msgid "Mode de fin"
+msgstr "End Mode"
+
+#: template-parts/chasse/chasse-edition-main.php:230
+#: template-parts/enigme/enigme-edition-main.php:221
+msgid "Automatique"
+msgstr "Automatic"
+
+#: template-parts/chasse/chasse-edition-main.php:236
+#: template-parts/enigme/enigme-edition-main.php:227
+msgid "Explication du mode automatique"
+msgstr "Explanation of automatic mode"
+
+#: template-parts/chasse/chasse-edition-main.php:253
+#: template-parts/enigme/enigme-edition-main.php:238
+msgid "Manuelle"
+msgstr "Manual"
+
+#: template-parts/chasse/chasse-edition-main.php:259
+#: template-parts/enigme/enigme-edition-main.php:244
+msgid "Explication du mode manuel"
+msgstr "Explanation of manual mode"
+
+#: template-parts/chasse/chasse-edition-main.php:277
+msgid "Terminer la chasse"
+msgstr "End Hunt"
+
+#: template-parts/chasse/chasse-edition-main.php:279
+msgid "Gagnants"
+msgstr "Winners"
+
+#: template-parts/chasse/chasse-edition-main.php:287
+msgid "Valider la fin de chasse"
+msgstr "Validate the end of hunting"
+
+#: template-parts/chasse/chasse-edition-main.php:301
+msgid "Chasse gagnée le %s par %s"
+msgstr "Hunting won on %s by %s"
+
+#: template-parts/chasse/chasse-edition-main.php:405
+#: template-parts/enigme/enigme-edition-main.php:314
+msgid "En savoir plus sur les points"
+msgstr "Learn more about loyalty points"
+
+#: template-parts/chasse/chasse-edition-main.php:593
+msgid ""
+"Pourcentage moyen d’énigmes auxquelles chaque joueur a participé, par "
+"rapport à l’ensemble des énigmes proposées."
+msgstr ""
+"Average percentage of puzzles each player has participated in compared to "
+"all the puzzles offered."
+
+#: template-parts/chasse/chasse-edition-main.php:546
+msgid "Explication du taux d’engagement"
+msgstr "Engagement Rate Explanation"
+
+#: template-parts/chasse/chasse-edition-main.php:558
+msgid "Énigmes sans validation"
+msgstr "Puzzles without validation"
+
+#: template-parts/chasse/chasse-edition-main.php:597
+msgid "Communiquez"
+msgstr "Make contact"
+
+#: template-parts/chasse/chasse-edition-main.php:604
+msgid "Sites et réseaux de la chasse"
+msgstr "website and social networks"
+
+#: template-parts/chasse/panneaux/chasse-edition-description.php:19
+msgid "Modifier la description de la chasse"
+msgstr "Edit Hunt Description"
+
+#: template-parts/chasse/panneaux/chasse-edition-description.php:20
+#: template-parts/enigme/panneaux/enigme-edition-description.php:19
+#: template-parts/enigme/panneaux/enigme-edition-images.php:12
+msgid "Fermer le panneau"
+msgstr "Close the panel."
+
+#: template-parts/chasse/panneaux/chasse-edition-description.php:28
+#: template-parts/enigme/panneaux/enigme-edition-description.php:27
+#: template-parts/enigme/panneaux/enigme-edition-images.php:20
+msgid "Enregistrer"
+msgstr "Save"
+
+#: template-parts/chasse/panneaux/chasse-edition-description.php:33
+msgid "Description mise à jour."
+msgstr "Updated description"
+
+#: template-parts/chasse/partials/chasse-partial-participants.php:40
+msgid "Joueurs"
+msgstr "Players"
+
+#: template-parts/chasse/partials/chasse-partial-participants.php:51
+msgid "Joueur"
+msgstr "Player"
+
+#: template-parts/chasse/partials/chasse-partial-participants.php:52
+msgid "Inscription"
+msgstr "Registration"
+
+#: template-parts/chasse/partials/chasse-partial-participants.php:58
+msgid "Trier par taux de participation"
+msgstr "Sort by participation rate"
+
+#: template-parts/chasse/partials/chasse-partial-participants.php:60
+msgid "Tx participation"
+msgstr "Tx participation"
+
+#: template-parts/chasse/partials/chasse-partial-participants.php:67
+msgid "Trier par taux de résolution"
+msgstr "Sort by resolution rate"
+
+#: template-parts/chasse/partials/chasse-partial-participants.php:70
+msgid "Tx résolution"
+msgstr "Tx resolution"
+
+#: template-parts/common/stat-histogram-card.php:38
+msgid "Aucune donnée."
+msgstr "No data."
+
+#: template-parts/enigme/enigme-edition-main.php:80
+msgid "Panneau d'édition énigme"
+msgstr "Riddle Editing Panel"
+
+#: template-parts/enigme/enigme-edition-main.php:88
+msgid "Solution"
+msgstr "Solution"
+
+#: template-parts/enigme/enigme-edition-main.php:169
+msgid "Texte énigme"
+msgstr "Riddle text"
+
+#: template-parts/enigme/enigme-edition-main.php:192
+msgid "Éditer le texte"
+msgstr "Edit simple text"
+
+#: template-parts/enigme/enigme-edition-main.php:202
+msgid "Sous-titre"
+msgstr "Subtitle"
+
+#: template-parts/enigme/enigme-edition-main.php:204
+msgid "Ajouter un sous-titre (max 100 caractères)"
+msgstr "Add a subtitle (max 100 characters)"
+
+#: template-parts/enigme/enigme-edition-main.php:217
+msgid "Validation"
+msgstr "Validation"
+
+#: template-parts/enigme/enigme-edition-main.php:255
+msgid "Aucune"
+msgstr "None"
+
+#: template-parts/enigme/enigme-edition-main.php:272
+msgid "Variantes"
+msgstr "Variants"
+
+#: template-parts/enigme/enigme-edition-main.php:278
+msgid "Explication des variantes"
+msgstr "Explanation of variants"
+
+#: template-parts/enigme/enigme-edition-main.php:294
+msgid "Éditer les variantes"
+msgstr "Edit Variants"
+
+#: template-parts/enigme/enigme-edition-main.php:295
+msgid "éditer"
+msgstr "edit"
+
+#: template-parts/enigme/enigme-edition-main.php:299
+#: assets/js/enigme-edit.js:869
+msgid "Ajouter des variantes"
+msgstr "Add variations"
+
+#: template-parts/enigme/enigme-edition-main.php:300
+#: assets/js/enigme-edit.js:870
+msgid "ajouter des variantes"
+msgstr "Add variations"
+
+#: template-parts/enigme/enigme-edition-main.php:342
+msgid "Explication du nombre de tentatives"
+msgstr "Explanation of the number of attempts"
+
+#: template-parts/enigme/enigme-edition-main.php:364
+msgid "Accès"
+msgstr "Access"
+
+#: template-parts/enigme/enigme-edition-main.php:368
+msgid "Libre"
+msgstr "Free"
+
+#: template-parts/enigme/enigme-edition-main.php:372
+msgid "Date programmée"
+msgstr "Schedule Date "
+
+#: template-parts/enigme/enigme-edition-main.php:381
+msgid "Pré-requis"
+msgstr "Requirements"
+
+#: template-parts/enigme/enigme-edition-main.php:385
+msgid "Aucune autre énigme disponible comme prérequis."
+msgstr "No other puzzles available as prerequisites."
+
+#: template-parts/enigme/enigme-edition-main.php:569
+msgid "Solution de cette énigme"
+msgstr "Solving this riddle"
+
+#: template-parts/enigme/enigme-edition-main.php:640
+msgid "Informations sur la publication de la solution"
+msgstr "Solution Release Information"
+
+#: template-parts/enigme/panneaux/enigme-edition-description.php:18
+msgid "Modifier le texte de l’énigme"
+msgstr "Edit Riddle Text"
+
+#: template-parts/enigme/panneaux/enigme-edition-description.php:32
+msgid "Texte de l’énigme mis à jour."
+msgstr "Enigma text updated."
+
+#: template-parts/enigme/panneaux/enigme-edition-images.php:11
+msgid "Modifier les images de l’énigme"
+msgstr "Edit Puzzle Images"
+
+#: template-parts/enigme/panneaux/enigme-edition-images.php:29
+msgid "Images mises à jour."
+msgstr "Images updated."
+
+#: template-parts/enigme/panneaux/enigme-edition-variantes.php:50
+#: assets/js/enigme-edit.js:743
+msgid "réponse déclenchant l'affichage du message"
+msgstr "response triggering the display of the message"
+
+#: template-parts/enigme/panneaux/enigme-edition-variantes.php:51
+#: assets/js/enigme-edit.js:746
+msgid "Message affiché au joueur"
+msgstr "Message displayed to player"
+
+#: template-parts/enigme/panneaux/enigme-edition-variantes.php:67
+msgid "Ajouter une variante"
+msgstr "Add variation"
+
+#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:19
+msgid "🛠️ Cette énigme est la vôtre. Aucun formulaire n’est affiché."
+msgstr "🛠️ This riddle is yours. No forms are displayed."
+
+#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:36
+msgid "Énigme résolue"
+msgstr "Puzzle solved!"
+
+#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:58
+msgid "Vous avez résolu cette énigme le %s."
+msgstr "You solved this puzzle on %s."
+
+#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:55
+#: template-parts/enigme/partials/enigme-partial-tentatives.php:48
+msgid "Valider"
+msgstr "Validate"
+
+#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:61
+msgid "tentatives quotidiennes épuisées"
+msgstr "exhausted daily attempts"
+
+#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:70
+msgid "%dh et %dmn avant réactivation"
+msgstr "%dh and %dmn before reactivation"
+
+#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:82
+#: inc/enigme/reponses.php:38
+msgid "Votre réponse"
+msgstr "Your answer"
+
+#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:93
+msgid "Accéder à la boutique"
+msgstr "Truy cập cửa hàng"
+
+#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:105
+msgid "pts"
+msgstr "pts"
+
+#: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:112
+msgid "Tentatives quotidiennes"
+msgstr "Daily Attempts"
+
+#: template-parts/enigme/partials/enigme-partial-images.php:39
+msgid "Image par défaut de l’énigme"
+msgstr "Default riddle image"
+
+#: template-parts/enigme/partials/enigme-partial-participants.php:39
+msgid "Les statistiques seront disponibles une fois la chasse activée."
+msgstr "Statistics will be available once hunting is enabled."
+
+#: template-parts/enigme/partials/enigme-partial-participants.php:43
+msgid "Aucun participant engagé."
+msgstr "No participants engaged."
+
+#: template-parts/enigme/partials/enigme-partial-participants.php:47
+msgid "Liste participants"
+msgstr "Participants list"
+
+#: template-parts/enigme/partials/enigme-partial-participants.php:50
+msgid "Nom"
+msgstr "Name"
+
+#: template-parts/enigme/partials/enigme-partial-participants.php:55
+msgid "Trier par engagement"
+msgstr "Sort by commitment"
+
+#: template-parts/enigme/partials/enigme-partial-participants.php:57
+msgid "Engagement"
+msgstr "Commitment"
+
+#: template-parts/enigme/partials/enigme-partial-participants.php:66
+msgid "Trier par tentatives"
+msgstr "Sort by Attempts"
+
+#: template-parts/enigme/partials/enigme-partial-participants.php:68
+msgid "Tentatives"
+msgstr "Attempts"
+
+#: template-parts/enigme/partials/enigme-partial-participants.php:73
+msgid "Trouvé"
+msgstr "Found"
+
+#: template-parts/enigme/partials/enigme-partial-participants.php:91
+#: template-parts/enigme/partials/enigme-partial-tentatives.php:64
+msgid "Première page"
+msgstr "First page"
+
+#: template-parts/enigme/partials/enigme-partial-participants.php:94
+#: template-parts/enigme/partials/enigme-partial-tentatives.php:67
+msgid "Page précédente"
+msgstr "Previous page"
+
+#: template-parts/enigme/partials/enigme-partial-participants.php:100
+#: template-parts/enigme/partials/enigme-partial-tentatives.php:73
+msgid "Page suivante"
+msgstr "Next page"
+
+#: template-parts/enigme/partials/enigme-partial-participants.php:103
+#: template-parts/enigme/partials/enigme-partial-tentatives.php:76
+msgid "Dernière page"
+msgstr "Last page"
+
+#: template-parts/enigme/partials/enigme-partial-tentatives.php:20
+msgid "Aucune tentative de soumission."
+msgstr "No attempt to submit."
+
+#: template-parts/enigme/partials/enigme-partial-tentatives.php:27
+msgid "Proposition"
+msgstr "Answer"
+
+#: template-parts/enigme/partials/enigme-partial-tentatives.php:27
+msgid "Résultat"
+msgstr "Result"
+
+#: template-parts/enigme/partials/enigme-partial-tentatives.php:27
+msgid "Réponse"
+msgstr "Answer"
+
+#: template-parts/enigme/partials/enigme-partial-tentatives.php:28
+msgid "Actions"
+msgstr "Actions"
+
+#: template-parts/enigme/partials/enigme-partial-tentatives.php:34
+msgid "Inconnu"
+msgstr "Unknown"
+
+#: template-parts/enigme/partials/enigme-partial-tentatives.php:51
+msgid "Invalider"
+msgstr "Invalidate"
+
+#: template-parts/enigme/partials/pirate/enigme-partial-images.php:9
+msgid ""
+"🏴‍☠️ Ceci est <strong>images.php</strong> depuis le thème <code>pirate</code>."
+msgstr ""
+"🏴‍☠️ This is <strong>images.php</strong> from the <code>pirate</code> theme."
+
+#: template-parts/enigme/partials/pirate/enigme-partial-retour-chasse.php:5
+msgid "🏴‍☠️ Retour à la chasse (pirate)"
+msgstr "🏴‍☠️ Back to hunting (pirate)"
+
+#: template-parts/enigme/partials/pirate/enigme-partial-solution.php:5
+msgid "🏴‍☠️ Solution (pirate)"
+msgstr "🏴‍☠️ Solution (pirate)"
+
+#: template-parts/enigme/partials/pirate/enigme-partial-texte.php:5
+msgid "🏴‍☠️ Texte (pirate)"
+msgstr "🏴‍☠️ Text (pirate)"
+
+#: template-parts/enigme/partials/pirate/enigme-partial-titre.php:5
+msgid "🏴‍☠️ Titre (pirate)"
+msgstr "🏴‍☠️ Title (pirate)"
+
+#: template-parts/organisateur/organisateur-edition-main.php:67
+msgid "Panneau d'édition organisateur"
+msgstr "Organizer Edit Panel"
+
+#: template-parts/organisateur/organisateur-edition-main.php:133
+msgid "Présentation"
+msgstr "Presentation"
+
+#: template-parts/organisateur/organisateur-edition-main.php:153
+msgid "Modifier la présentation"
+msgstr "Edit showcase"
+
+#: template-parts/organisateur/organisateur-edition-main.php:187
+msgid "Informations sur l’adresse email de contact"
+msgstr "Contact Email Address Information"
+
+#: template-parts/organisateur/organisateur-edition-main.php:251
+#: templates/myaccount/content-points.php:75
+#: templates/myaccount/content-points.php:96
+msgid "Points"
+msgstr "Points"
+
+#: template-parts/organisateur/organisateur-edition-main.php:274
+msgid "Informations sur les coordonnées bancaires"
+msgstr "Bank details information"
+
+#: template-parts/organisateur/organisateur-edition-main.php:276
+msgid ""
+"Ces informations sont nécessaires uniquement pour vous verser les gains "
+"issus de la conversion de vos points en euros. Nous ne prélevons jamais "
+"d'argent."
+msgstr ""
+"This information is only necessary to pay you the winnings from the "
+"conversion of your points into euros. We never take money."
+
+#: templates/myaccount/content-dashboard-organisateur.php:25
+msgid "Votre demande de conversion a bien été envoyée."
+msgstr "Your conversion request has been sent."
+
+#: templates/myaccount/content-outils.php:18
+msgid "Outils"
+msgstr "Tools"
+
+#: templates/myaccount/content-outils.php:23
+msgid "Taux Conversion"
+msgstr "Currency Exchange"
+
+#: templates/myaccount/content-outils.php:33
+msgid "Modifier"
+msgstr "Edit"
+
+#: templates/myaccount/content-outils.php:37
+msgid "Définir un nouveau taux :"
+msgstr "Defining New"
+
+#: templates/myaccount/content-outils.php:39
+msgid "Mettre à jour"
+msgstr "Update"
+
+#: templates/myaccount/content-outils.php:47
+msgid "ACF"
+msgstr "ACF"
+
+#: templates/myaccount/content-outils.php:49
+msgid "Afficher les champs ACF"
+msgstr "Show Fields"
+
+#: templates/myaccount/content-points.php:30
+msgid "Points achetés"
+msgstr "Points Purchased"
+
+#: templates/myaccount/content-points.php:31
+msgid "À implémenter"
+msgstr "To be implemented"
+
+#: templates/myaccount/content-points.php:35
+msgid "Points en circulation"
+msgstr "Points in circulation"
+
+#: templates/myaccount/content-points.php:81
+msgid "Points de mon organisation"
+msgstr "Points in my organization"
+
+#: templates/myaccount/content-points.php:85
+msgid "Gérer"
+msgstr "Manage"
+
+msgid "Confirmation Organisateur"
+msgstr "Organizer Confirmation"
+
+msgid "Créer mon profil"
+msgstr "Create my profile"
+
+msgid "Devenir Organisateur"
+msgstr "Become an Organizer"
+
+msgid "Traitement Engagement"
+msgstr "Engagement Processing"
+
+#: templates/page-traitement-engagement.php:31
+msgid "Échec de vérification de sécurité"
+msgstr "Security check failure"
+
+#: templates/page-traitement-engagement.php:49
+msgid "Déblocage de la chasse #%d"
+msgstr "Unlocking Hunt #%d"
+
+msgid "Traitement Tentative (Confirmation explicite)"
+msgstr "Attempt Treatment (Explicit Confirmation)"
+
+#: templates/page-traitement-tentative.php:9
+msgid "Paramètre UID manquant."
+msgstr "Missing UID parameter."
+
+#: templates/page-traitement-tentative.php:12
+msgid "Tentative introuvable."
+msgstr "Attemp not found"
+
+#: templates/page-traitement-tentative.php:29
+msgid "⛔️ Accès refusé."
+msgstr "Access denied."
+
+msgid "Traitement Validation Chasse"
+msgstr "Hunting Validation Processing"
+
+#: templates/page-traitement-validation-chasse.php:28
+msgid "Vérification de sécurité échouée."
+msgstr "survey_failed"
+
+#: templates/page-traitement-validation-chasse.php:32
+msgid "Conditions non remplies."
+msgstr "Requirements not met"
+
+#: woocommerce/myaccount/my-account.php:9
+msgid ""
+"✉️ Un email de vérification vous a été envoyé. Veuillez cliquer sur le lien "
+"pour confirmer votre demande."
+msgstr ""
+"✉️ A verification email has been sent to you. Please click on the link to "
+"confirm your request."
+
+#: assets/js/chasse-edit.js:414
+msgid ""
+"Un joueur devient gagnant lorsqu’il résout toutes les énigmes. La chasse "
+"s’achève dès que le nombre de gagnants prévu est atteint."
+msgstr ""
+"A player becomes a winner when they solve all the puzzles. The hunt ends as "
+"soon as the expected number of winners is reached."
+
+#: assets/js/chasse-edit.js:418
+msgid ""
+"Vous arrêtez la chasse manuellement, grâce au bouton situé dans le panneau "
+"d'édition chasse."
+msgstr ""
+"You stop the hunt manually, thanks to the button located in the hunt edit "
+"panel."
+
+#: assets/js/enigme-edit.js:139
+msgid ""
+"Nombre maximum de tentatives quotidiennes d'un joueur\n"
+"Mode payant : tentatives illimitées.\n"
+"Mode gratuit : maximum 24 tentatives par jour."
+msgstr ""
+"Maximum number of daily attempts by a player\n"
+"Paid mode: unlimited attempts.\n"
+"Free mode: maximum 24 attempts per day."
+
+#: assets/js/enigme-edit.js:795
+msgid "Enregistrement..."
+msgstr "Registration"
+
+#: assets/js/enigme-edit.js:815
+msgid "✔️ Variantes enregistrées"
+msgstr "Saved ✔️ Variants"
+
+#: assets/js/enigme-edit.js:890
+msgid "Modifier les variantes"
+msgstr "Change Variants"
+
+#: assets/js/enigme-edit.js:908
+msgid "❌ Erreur réseau"
+msgstr "Network error"
+
+msgid "Français"
+msgstr "French"
+
+msgid "English"
+msgstr "English"
+
+msgid "Change language"
+msgstr "Change language"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Fermer les paramètres"
+msgstr "Close settings"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Paramètres"
+msgstr "Settings"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Informations"
+msgstr "Information"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Titre"
+msgstr "Title"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "renseigner le titre de l’énigme"
+msgstr "enter the riddle title"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Illustrations"
+msgstr "Illustrations"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Réglages"
+msgstr "Settings"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Respecter la casse"
+msgstr "Case sensitive"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Coût tentative"
+msgstr "Attempt cost"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Gratuit"
+msgstr "Free"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Nb tentatives"
+msgstr "Attempts"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "max par jour"
+msgstr "max per day"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "❌ Suppression énigme"
+msgstr "❌ Delete riddle"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Actualiser"
+msgstr "Refresh"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Période :"
+msgstr "Period:"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Total"
+msgstr "Total"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Aujourd’hui"
+msgstr "Today"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Semaine"
+msgstr "Week"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Mois"
+msgstr "Month"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Participants"
+msgstr "Players"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Points collectés"
+msgstr "Points collected"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Bonnes réponses"
+msgstr "Correct answers"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Résolue par (%s) joueurs"
+msgstr "Solved by (%s) players"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Rang"
+msgstr "Rank"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Document PDF"
+msgstr "PDF document"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Choisir un fichier"
+msgstr "Choose a file"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Rédiger"
+msgstr "Write"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "aucune solution ne"
+msgstr "no solution"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid " %d jours après la fin de la chasse, à %s"
+msgstr " %d days after the end of the hunt, at %s"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid " (pdf sélectionné mais pas de fichier chargé)"
+msgstr " (pdf selected but no file uploaded)"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "votre texte d'explication"
+msgstr "your explanation text"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid ", %d jours après la fin de la chasse, à %s"
+msgstr ", %d days after the end of the hunt, at %s"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid " (rédaction libre sélectionnée mais non remplie)"
+msgstr " (free writing selected but not filled)"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Vider"
+msgstr "Clear"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Rédaction libre"
+msgstr "Free writing"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Délai après fin de chasse"
+msgstr "Delay after hunt end"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "jours, publié à"
+msgstr "days, published at"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Vos solutions sont protégées"
+msgstr "Your solutions are protected"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Stockées dans un espace privé, hors de portée des joueurs."
+msgstr "Stored in a private area, out of players' reach."
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Aucun lien ne peut être trouvé ni ouvert."
+msgstr "No link can be found or opened."
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Débloquées uniquement au moment choisi."
+msgstr "Unlocked only at the chosen time."
+
+#: assets/js/enigme-edit.js
+msgid "Validation automatique : Le joueur devra saisir une réponse exacte. Celle-ci sera automatiquement vérifiée selon les critères définis (réponse attendue, casse, variantes)."
+msgstr "Automatic validation: The player must enter an exact answer. It will be automatically checked based on the defined criteria (expected answer, case, variants)."
+
+#: assets/js/enigme-edit.js
+msgid "Validation manuelle : Le joueur rédige une réponse libre. Vous validez ou invalidez manuellement sa tentative depuis votre espace personnel. Un email et un message d'alerte vous avertit de chaque nouvelle soumission."
+msgstr "Manual validation: The player enters a free-form answer. You approve or reject their attempt manually from your personal area. An email and alert message notify you of each new submission."
+
+#: template-parts/modals/modal-points.php
+msgid "À quoi servent les points ?"
+msgstr "What are points used for?"
+
+#: template-parts/modals/modal-points.php
+msgid "Les points vous permettent de débloquer :"
+msgstr "Points allow you to unlock:"
+
+#: template-parts/modals/modal-points.php
+msgid "🎯 Des chasses au trésor"
+msgstr "🎯 Treasure hunts"
+
+#: template-parts/modals/modal-points.php
+msgid "❓ Des tentatives de réponse"
+msgstr "❓ Answer attempts"
+
+#: template-parts/modals/modal-points.php
+msgid "💡 Des indices"
+msgstr "💡 Hints"
+
+#: template-parts/modals/modal-points.php
+msgid "La gratuité ou l'accès par points est choisi librement par chaque organisateur."
+msgstr "Free access or point access is chosen freely by each organizer."
+
+#: template-parts/enigme/partials/enigme-partial-tentatives.php
+msgid "bon"
+msgstr "correct"
+
+#: template-parts/enigme/partials/enigme-partial-tentatives.php
+msgid "faux"
+msgstr "wrong"
+
+#: template-parts/enigme/partials/enigme-partial-tentatives.php
+msgid "attente"
+msgstr "pending"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "votre fichier %s"
+msgstr "your %s file"
+
+msgid "Image chasse"
+msgstr "Hunt image"
+
+msgid "Modifier l’image"
+msgstr "Edit image"
+
+msgid "ajouter une image"
+msgstr "add an image"
+
+msgid "Configurer la récompense"
+msgstr "Configure the reward"
+
+msgid "Titre de la récompense"
+msgstr "Reward title"
+
+msgid "Ex : Un papillon en cristal..."
+msgstr "E.g.: A crystal butterfly..."
+
+msgid "Descripton de la récompense"
+msgstr "Reward description"
+
+msgid "Ex : Un coffret cadeau comprenant..."
+msgstr "E.g.: A gift box including..."
+
+msgid "Valeur en euros (€)"
+msgstr "Value in euros (€)"
+
+msgid "Ex : 50"
+msgstr "E.g.: 50"
+
+msgid "Supprimer la récompense"
+msgstr "Delete the reward"
+
+msgid "Nb gagnants"
+msgstr "Number of winners"
+
+msgid "Illimité"
+msgstr "Unlimited"
+
+msgid "Début"
+msgstr "Start"
+
+msgid "Date de fin"
+msgstr "End date"
+
+msgid "Durée illimitée"
+msgstr "Unlimited duration"
+
+msgid "Coût"
+msgstr "Cost"
+
+msgid "Animation"
+msgstr "Animation"
+
+msgid "Taux d'engagement"
+msgstr "Engagement rate"
+
+#: inc/enigme/affichage.php:678
+msgid "Mode de validation de l'énigme : %s"
+msgstr "Riddle validation mode: %s"
+
+#: inc/enigme/affichage.php:675
+msgid "automatique"
+msgstr "automatic"
+
+#: inc/enigme/affichage.php:676
+msgid "manuelle"
+msgstr "manual"
+
+#: inc/enigme/affichage.php:710
+msgid "Solde : %d pts"
+msgstr "Balance: %d pts"
+
+#: inc/enigme/reponses.php:67 assets/js/reponse-automatique.js:95
+msgid "Solde : %1$d → %2$d pts"
+msgstr "Balance: %1$d → %2$d pts"
+
+#: inc/enigme/affichage.php:719
+msgid "Tentatives quotidiennes : %1$d/%2$s"
+msgstr "Daily Attempts: %1$d/%2$s"
+
+#: inc/enigme/reponses.php:459
+msgid "Tentatives quotidiennes : %1$d / %2$s"
+msgstr "Daily Attempts: %1$d / %2$s"
+
+#: assets/js/reponse-automatique.js:85
+msgid "Tentatives quotidiennes : %1$s/%2$s"
+msgstr "Daily Attempts: %1$s/%2$s"
+
+#: assets/js/reponse-automatique.js:88
+msgid "Tentatives quotidiennes :"
+msgstr "Daily Attempts:"
+
+#: templates/myaccount/content-points.php:103 inc/enigme/reponses.php:59 template-parts/enigme/partials/enigme-partial-bloc-reponse.php:185
+msgid "Ajouter des points"
+msgstr "Add points"
+
+#: inc/user-functions.php:233 templates/myaccount/layout.php:156
+msgid "Vos commandes"
+msgstr "Your orders"
+
+#: templates/myaccount/content-chasses.php:119
+msgid "Énigme"
+msgstr "Riddle"
+
+#: template-parts/chasse/chasse-edition-main.php:217 assets/js/chasse-edit.js:264
+msgid "Ajouter la récompense"
+msgstr "Add reward"
+
+#: templates/myaccount/content-chasses.php:112
+msgid "%d tentative en attente"
+msgid_plural "%d tentatives en attente"
+msgstr[0] "%d pending attempt"
+msgstr[1] "%d pending attempts"
+
+#: templates/myaccount/content-chasses.php:114
+msgid "%d tentative"
+msgid_plural "%d tentatives"
+msgstr[0] "%d attempt"
+msgstr[1] "%d attempts"
+
+#: templates/myaccount/content-chasses.php:116
+msgid "%d bonne réponse"
+msgid_plural "%d bonnes réponses"
+msgstr[0] "%d correct answer"
+msgstr[1] "%d correct answers"
+
+#: template-parts/enigme/enigme-edition-main.php:255
+msgid "Validation automatique"
+msgstr "Automatic validation"
+
+#: template-parts/enigme/enigme-edition-main.php:256
+msgid ""
+"Le joueur soumet une tentative de réponse. Celle-ci est automatiquement "
+"vérifiée selon les critères définis (réponse attendue, respect de la casse, "
+"variantes), et le résultat est immédiatement communiqué au joueur."
+msgstr ""
+"The player submits an answer attempt. It is automatically checked against "
+"the defined criteria (expected answer, case sensitivity, variants), and the "
+"result is immediately communicated to the player."
+
+#: template-parts/enigme/enigme-edition-main.php:272
+msgid "Validation manuelle"
+msgstr "Manual validation"
+
+#: template-parts/enigme/enigme-edition-main.php:273
+msgid ""
+"Le joueur rédige une réponse libre. Vous validez ou refusez ensuite sa "
+"tentative depuis votre espace personnel. À chaque nouvelle soumission, vous "
+"recevez une notification par email ainsi qu’un message d’alerte."
+msgstr ""
+"The player writes a free-form answer. You then approve or reject their "
+"attempt from your personal area. Each new submission triggers an email "
+"notification and an alert message."
+
+#: template-parts/enigme/enigme-edition-main.php:306
+msgid "Système de variantes"
+msgstr "Variants system"
+
+#: template-parts/enigme/enigme-edition-main.php:307
+msgid ""
+"Les variantes sont des réponses alternatives qui ne sont pas validées comme "
+"correctes, mais qui déclenchent un message personnalisé en retour (par "
+"exemple une aide, un indice, un lien ou tout autre contenu de votre choix)."
+msgstr ""
+"Variants are alternative answers that are not validated as correct but "
+"trigger a personalized message in return (for example a help message, a "
+"hint, a link or any other content of your choice)."
+
+#: template-parts/enigme/enigme-edition-main.php:362
+msgid "Tentative gratuite ou payante ?"
+msgstr "Free or paid attempt?"
+
+#: template-parts/enigme/enigme-edition-main.php:363
+msgid ""
+"Vous êtes libre de définir le coût d’une tentative pour votre énigme : "
+"gratuite ou payante en points. Lorsqu’un joueur dépense des points pour "
+"soumettre une réponse, ceux-ci sont immédiatement crédités sur votre compte."
+msgstr ""
+"You are free to set the cost of an attempt for your riddle: free or paid in "
+"points. When a player spends points to submit an answer, those points are "
+"immediately credited to your account."
+
+#: template-parts/enigme/enigme-edition-main.php:393
+msgid "Plafond nb de tentatives quotidiennes"
+msgstr "Daily attempt limit"
+
+#: template-parts/enigme/enigme-edition-main.php:394
+msgid ""
+"Nombre maximal de tentatives quotidiennes par joueur:\\n\\nMode payant : "
+"illimitées\\n\\nMode gratuit : 24 tentatives par jour"
+msgstr ""
+"Maximum number of daily attempts per player:\\n\\nPaid mode: "
+"unlimited\\n\\nFree mode: 24 attempts per day"
+
+#: template-parts/enigme/enigme-edition-main.php:711
+msgid "Délai de parution des solutions"
+msgstr "Solutions release delay"
+
+#: template-parts/enigme/enigme-edition-main.php:649
+msgid ""
+"Les solutions ne peuvent être publiées que lorsqu’une chasse est déclarée "
+"terminée. Une fois celle-ci achevée, elles restent conservées dans un "
+"coffre-fort numérique pendant le délai que vous définissez ici."
+msgstr ""
+"Solutions can only be published once a hunt is declared over. After that, "
+"they are stored in a digital safe for the delay you set here."
+
+#: template-parts/chasse/chasse-edition-main.php:258
+msgid "Fin de chasse automatique"
+msgstr "Automatic hunt end"
+
+#: template-parts/chasse/chasse-edition-main.php:259
+msgid ""
+"Un joueur est déclaré gagnant lorsqu’il a résolu toutes les énigmes. En mode "
+"automatique, la chasse se termine dès que le nombre de gagnants prévu est "
+"atteint."
+msgstr ""
+"A player is declared the winner when they have solved all the riddles. In "
+"automatic mode, the hunt ends as soon as the planned number of winners is "
+"reached."
+
+#: template-parts/chasse/chasse-edition-main.php:280
+msgid "Fin de chasse manuelle"
+msgstr "Manual hunt end"
+
+#: template-parts/chasse/chasse-edition-main.php:281
+msgid ""
+"Vous pouvez arrêter la chasse à tout moment grâce au bouton disponible dans "
+"le panneau d’édition de la chasse, onglet Paramètres."
+msgstr ""
+"You can stop the hunt at any time using the button available in the hunt "
+"editing panel, Settings tab."
+
+#: template-parts/chasse/chasse-edition-main.php:426
+msgid "Coût d’accès à une chasse"
+msgstr "Hunt access cost"
+
+#: template-parts/chasse/chasse-edition-main.php:427
+msgid ""
+"Vous êtes libre de définir le coût d’accès à votre chasse : gratuit ou "
+"payant. Cet accès est indispensable pour consulter les énigmes, qui restent "
+"invisibles tant qu’il n’a pas été débloqué."
+msgstr ""
+"You are free to set the access cost to your hunt: free or paid. This access "
+"is necessary to view the riddles, which remain hidden until it has been "
+"unlocked."
+
+#: template-parts/organisateur/organisateur-edition-main.php:209
+msgid "Email de contact organisateur"
+msgstr "Organizer contact email"
+
+#: template-parts/organisateur/organisateur-edition-main.php:210
+msgid ""
+"Si aucune adresse n’est renseignée, votre adresse email utilisateur est "
+"utilisée par défaut."
+msgstr ""
+"If no address is provided, your user email is used by default."
+
+#: template-parts/organisateur/organisateur-edition-main.php:296
+msgid "Coordonnées bancaires"
+msgstr "Bank details"
+
+#: inc/enigme/affichage.php:275
+msgid "Nb joueurs :"
+msgstr "Players:"
+
+#: inc/enigme/affichage.php:281
+msgid "Nb tentatives :"
+msgstr "Attempts:"
+
+#: template-parts/enigme/partials/enigme-partial-gagnants.php:25
+msgid "Gagnants :"
+msgstr "Winners:"
+
+#: inc/enigme/affichage.php:339
+msgid ""
+"Part moyenne des énigmes auxquelles chaque joueur a participé, rapportée au "
+"nombre total d’énigmes de la chasse. Vous : Part des énigmes auxquelles vous "
+"avez accédé Moyenne : Moyenne sur l’ensemble des joueurs."
+msgstr ""
+"Average share of puzzles each player has participated in, relative to the "
+"total number of puzzles in the hunt. You: Share of puzzles you have accessed "
+"Average: Average across all players."
+
+#: inc/enigme/affichage.php:347
+msgid "Définition de la progression"
+msgstr "Definition of progression"
+
+#: inc/enigme/affichage.php:398
+msgid "Part moyenne des énigmes auxquelles chaque joueur a participé, rapportée au nombre total d’énigmes de la chasse."
+msgstr "Average share of puzzles each player has participated in, relative to the total number of puzzles in the hunt."
+
+#: inc/enigme/affichage.php:404
+msgid "Définition du taux de résolution"
+msgstr "Definition of the resolution rate"
+
+#: templates/myaccount/layout.php:34
+msgid "Accueil"
+msgstr "Dashboard"
+
+#: templates/myaccount/layout.php:41
+msgid "Commandes"
+msgstr "Orders"
+
+#: templates/myaccount/layout.php:48
+msgid "Chasses"
+msgstr "Hunts"
+
+#: templates/myaccount/layout.php:49
+msgid "Vos chasses"
+msgstr "Your hunts"
+
+#: templates/myaccount/layout.php:66
+msgid "Profil"
+msgstr "Profile"
+
+#: templates/myaccount/layout.php:154
+msgid "Votre profil"
+msgstr "Your profile"
+
+#: templates/myaccount/layout.php:95
+msgid "Déconnexion"
+msgstr "Log out"
+
+#: templates/myaccount/layout.php:100
+msgid "Administration"
+msgstr "Administration"
+
+#: templates/myaccount/layout.php:104
+msgid "Organisateurs"
+msgstr "Organizers"
+
+#: template-parts/enigme/partials/enigme-sidebar-section.php:42
+msgid "Aucune énigme disponible"
+msgstr "No puzzles available"
+
+#: template-parts/enigme/partials/enigme-partial-gagnants.php:53
+msgid "Aucun gagnant pour le moment."
+msgstr "No winners yet."
+

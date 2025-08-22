@@ -109,55 +109,6 @@ function initEnigmeEdit() {
   });
 
 
-  // ==============================
-  // 🧠 Explication – Mode de validation de l’énigme
-  // ==============================
-  const explicationValidation = {
-    manuelle: wp.i18n.__(
-      "Validation manuelle : Le joueur rédige une réponse libre. Vous validez ou invalidez manuellement " +
-        "sa tentative depuis votre espace personnel. Un email et un message d'alerte vous avertit de chaque nouvelle soumission.",
-      "chassesautresor-com"
-    ),
-    automatique: wp.i18n.__(
-      "Validation automatique : Le joueur devra saisir une réponse exacte. Celle-ci sera automatiquement vérifiée " +
-        "selon les critères définis (réponse attendue, casse, variantes).",
-      "chassesautresor-com"
-    ),
-  };
-
-  document.querySelectorAll('.validation-aide').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const mode = btn.dataset.mode;
-      const message = explicationValidation[mode];
-      if (message) {
-        alert(message);
-      }
-    });
-  });
-
-  const explicationTentatives = wp.i18n.__(
-    "Nombre maximum de tentatives quotidiennes d'un joueur\nMode payant : tentatives illimitées.\nMode gratuit : maximum 24 tentatives par jour.",
-    "chassesautresor-com"
-  );
-
-  document.querySelectorAll('.tentatives-aide').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      alert(explicationTentatives);
-    });
-  });
-
-  const explicationVariantes = wp.i18n.__(
-    "Les variantes sont des réponses alternatives qui ne sont pas considérées comme bonnes, mais affichent un message en retour " +
-      "(libre à vous d'y mettre de l'aide, un lien, un crypto ou ce que vous voulez)",
-    "chassesautresor-com"
-  );
-
-  document.querySelectorAll('.variantes-aide').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      alert(explicationVariantes);
-    });
-  });
-
 
   // ==============================
   // 🧰 Déclencheurs de résumé

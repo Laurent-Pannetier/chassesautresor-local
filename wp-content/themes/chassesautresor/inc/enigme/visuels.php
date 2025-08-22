@@ -5,7 +5,7 @@ defined('ABSPATH') || exit;
 // 🖼️ AFFICHAGE DES VISUELS D’ÉNIGMES
 /**
  * 🔹 define('ID_IMAGE_PLACEHOLDER_ENIGME', 3925) → Définit l’identifiant de l’image placeholder utilisée pour les énigmes.
- * 🔹 afficher_visuels_enigme() → Affiche la galerie visuelle de l’énigme si l’utilisateur y a droit (image principale + vignettes).
+ * 🔹 afficher_visuels_enigme() → Affiche l’image principale de l’énigme si l’utilisateur y a droit.
  * 🔹 get_image_enigme() → Renvoie l’URL de l’image principale d’une énigme ou un placeholder.
  * 🔹 enigme_a_une_image() → Vérifie si l’énigme a une image définie.
  * 🔹 get_url_vignette_enigme() → Retourne l’URL proxy de la première vignette d’une énigme.
@@ -84,12 +84,14 @@ function build_picture_enigme(int $image_id, string $alt, array $sizes, array $i
         'taille' => $fallback_size,
     ], $base_url));
 
+    $img_attrs['loading'] = 'lazy';
+
     $attr_str = '';
     foreach ($img_attrs as $key => $value) {
         $attr_str .= ' ' . $key . '="' . esc_attr($value) . '"';
     }
 
-    $html .= '  <img src="' . $src_fallback . '" alt="' . esc_attr($alt) . '" loading="lazy"' . $attr_str . ">\n";
+    $html .= '  <img src="' . $src_fallback . '" alt="' . esc_attr($alt) . '"' . $attr_str . ">\n";
     $html .= "</picture>\n";
 
     return $html;
@@ -98,7 +100,6 @@ function build_picture_enigme(int $image_id, string $alt, array $sizes, array $i
 /**
  * Affiche une galerie d’images d’une énigme si l’utilisateur y a droit.
  *
- * Compatible Fancybox 3 (ancien Firelight/Easy Fancybox) via `rel="lightbox-enigme"`.
  * Les images sont servies via proxy (/voir-image-enigme) avec tailles adaptées.
  *
  * @param int $enigme_id ID du post de type énigme
@@ -112,50 +113,40 @@ function afficher_visuels_enigme(int $enigme_id): void
     }
 
     $images = get_field('enigme_visuel_image', $enigme_id);
-    if (!$images || !is_array($images)) return;
+    $valid_images = [];
+    if (is_array($images)) {
+        foreach ($images as $img) {
+            $id = (int) ($img['ID'] ?? 0);
+            if ($id && $id !== ID_IMAGE_PLACEHOLDER_ENIGME) {
+                $valid_images[] = $id;
+            }
+        }
+    }
+
+    if (!$valid_images) {
+        $valid_images[] = ID_IMAGE_PLACEHOLDER_ENIGME;
+    }
+
+    $caption = (string) get_field('enigme_visuel_legende', $enigme_id);
 
     echo '<div class="galerie-enigme-wrapper">';
-
-    // 📸 Image principale
-    $image_id_active = $images[0]['ID'] ?? null;
-    if ($image_id_active) {
-        $href_full = add_query_arg([
-            'id'     => $image_id_active,
-            'taille' => 'full',
-        ], site_url('/voir-image-enigme'));
-
-        echo '<div class="image-principale">';
-        echo '<a href="' . esc_url($href_full) . '" class="fancybox image" rel="lightbox-enigme">';
-        echo build_picture_enigme($image_id_active, __('Visuel énigme', 'chassesautresor-com'), ['full'], [
-            'id'    => 'image-enigme-active',
-            'class' => 'image-active',
-        ]);
-        echo '</a>';
-        echo '</div>';
-    }
-
-
-    // 🖼️ Vignettes + liens lightbox
-    if (count($images) > 1) {
-        echo '<div class="galerie-vignettes">';
-        foreach ($images as $index => $image) {
-            $img_id = $image['ID'] ?? null;
-            if (!$img_id) continue;
-
-            $src_thumb = esc_url(add_query_arg([
-                'id' => $img_id,
-                'taille' => 'thumbnail',
-            ], site_url('/voir-image-enigme')));
-
-            $src_full = esc_url(add_query_arg('id', $img_id, site_url('/voir-image-enigme')));
-
-            $class = 'vignette' . ($index === 0 ? ' active' : '');
-
-            echo '<img src="' . $src_thumb . '" class="' . esc_attr($class) . '" alt="" data-image-id="' . esc_attr($img_id) . '" loading="lazy">';
-            echo '<a href="' . $src_full . '" rel="lightbox-enigme" class="fancybox hidden-lightbox-link" style="display:none;"></a>';
+    foreach ($valid_images as $index => $image_id) {
+        $alt = trim((string) get_post_meta($image_id, '_wp_attachment_image_alt', true));
+        if (!$alt) {
+            $alt = $image_id === ID_IMAGE_PLACEHOLDER_ENIGME
+                ? __('Image par défaut de l’énigme', 'chassesautresor-com')
+                : ($caption ?: __('Visuel énigme', 'chassesautresor-com'));
         }
-        echo '</div>';
+
+        $attrs = [
+            'class' => $index === 0 ? 'image-active' : '',
+        ];
+
+        echo '<figure class="image-principale">';
+        echo build_picture_enigme($image_id, $alt, ['full'], $attrs);
+        echo '</figure>';
     }
+    echo '</div>';
 }
 
 
@@ -260,7 +251,8 @@ function afficher_picture_vignette_enigme(int $enigme_id, string $alt = '', arra
  */
 function trouver_chemin_image(int $image_id, string $taille = 'full'): ?array
 {
-    $src = wp_get_attachment_image_src($image_id, $taille);
+    $wp_size = $taille === 'full' ? [1920, 1920] : $taille;
+    $src     = wp_get_attachment_image_src($image_id, $wp_size);
     $url = $src[0] ?? null;
     if (!$url) return null;
 

@@ -337,13 +337,14 @@ defined('ABSPATH') || exit;
             $data['avg'],
             'enigme-progression',
             esc_html__(
-                "Définition\nPart moyenne des énigmes auxquelles chaque joueur a accédé, rapportée au total d’énigmes de la chasse.\n\n"
-                . "Vous\nPart des énigmes auxquelles vous avez accédé.\n\n"
-                . "Moyenne\nMoyenne sur l’ensemble des joueurs.",
+                'Part moyenne des énigmes auxquelles chaque joueur a participé, '
+                . 'rapportée au nombre total d’énigmes de la chasse. '
+                . 'Vous : Part des énigmes auxquelles vous avez accédé '
+                . 'Moyenne : Moyenne sur l’ensemble des joueurs.',
                 'chassesautresor-com'
             ),
             esc_attr__(
-                'Aide sur la progression',
+                'Définition de la progression',
                 'chassesautresor-com'
             )
         );
@@ -395,11 +396,12 @@ defined('ABSPATH') || exit;
             $rate,
             'enigme-resolution',
             esc_html__(
-                "Définition\nNombre de joueurs ayant résolu l’énigme, rapporté au nombre total de joueurs ayant accédé à l’énigme.",
+                'Part moyenne des énigmes auxquelles chaque joueur a participé, '
+                . 'rapportée au nombre total d’énigmes de la chasse.',
                 'chassesautresor-com'
             ),
             esc_attr__(
-                'Aide sur la résolution',
+                'Définition du taux de résolution',
                 'chassesautresor-com'
             )
         );
@@ -445,12 +447,30 @@ defined('ABSPATH') || exit;
     }
 
     /**
-     * Renders the sidebar of the enigma layout.
+     * Retrieve HTML for a sidebar section.
+     *
+     * @param string $section Section identifier.
+     * @param array  $args    Data passed to the template.
+     *
+     * @return string
+     */
+    function enigme_get_sidebar_section_html(string $section, array $args): string
+    {
+        $args['section'] = $section;
+        ob_start();
+        get_template_part('template-parts/enigme/partials/enigme-sidebar-section', null, $args);
+        return (string) ob_get_clean();
+    }
+
+    /**
+     * Renders the sidebar of the enigma layout and returns its sections.
      *
      * @param int      $enigme_id      Enigma identifier.
      * @param bool     $edition_active Whether the edition mode is active.
      * @param int|null $chasse_id      Associated hunt ID.
      * @param array    $menu_items     Menu items to display.
+     *
+     * @return array{navigation:string,stats:string} HTML for navigation and statistics sections.
      */
     function render_enigme_sidebar(
         int $enigme_id,
@@ -460,73 +480,10 @@ defined('ABSPATH') || exit;
         bool $peut_ajouter_enigme = false,
         int $total_enigmes = 0,
         bool $has_incomplete_enigme = false
-    ): void {
-        $cache_key = enigme_get_render_cache_key('enigme_sidebar', $enigme_id);
-        $html      = wp_cache_get($cache_key, 'chassesautresor');
-        $mode      = get_field('enigme_mode_validation', $enigme_id);
+    ): array {
+        $mode    = get_field('enigme_mode_validation', $enigme_id);
+        $user_id = get_current_user_id();
 
-        if ($html === false) {
-            ob_start();
-            echo '<aside class="menu-lateral">';
-
-            echo '<div class="menu-lateral__header">';
-            if ($chasse_id) {
-                $url_chasse = get_permalink($chasse_id);
-                $titre      = get_the_title($chasse_id);
-                echo '<h2 class="menu-lateral__title"><a href="' . esc_url($url_chasse) . '">' . esc_html($titre) . '</a></h2>';
-            }
-
-            echo '</div>';
-
-            echo '<div class="menu-lateral__content">';
-            if ($chasse_id) {
-                $logo = get_the_post_thumbnail($chasse_id, 'thumbnail');
-                if ($logo) {
-                    echo '<div class="enigme-chasse-logo">' . $logo . '</div>';
-                }
-            }
-
-            if (!empty($menu_items)) {
-                $data_chasse = $chasse_id ? ' data-chasse-id="' . intval($chasse_id) . '"' : '';
-                $menu_class  = 'enigme-menu';
-                if ($edition_active) {
-                    $menu_class .= ' enigme-menu--editable';
-                }
-                echo '<section class="enigme-navigation"' . $data_chasse . '>';
-                echo '<h3>' . esc_html__('Énigmes', 'chassesautresor-com') . '</h3>';
-                echo '%AJOUT%';
-                echo '<ul class="' . esc_attr($menu_class) . '">' . implode('', $menu_items) . '</ul>';
-                echo '</section>';
-            }
-            echo '</div>';
-
-            echo '<div class="menu-lateral__accordeons">';
-            echo '<div class="accordeon-bloc">';
-            echo '<div class="accordeon-contenu accordeon-ferme">';
-            echo '<section class="enigme-statistiques">';
-            echo '<h3>' . esc_html__('Statistiques', 'chassesautresor-com') . '</h3>';
-            echo '%METAS%';
-            echo '%STATS%';
-            echo '</section>';
-            if ($mode !== 'aucune') {
-                echo '<section class="enigme-gagnants" data-enigme-id="' . intval($enigme_id) . '">';
-                echo '%WINNERS%';
-                echo '</section>';
-            }
-            echo '</div>';
-            echo '<button class="accordeon-toggle" type="button" aria-expanded="false">'
-                . '<i class="fa-solid fa-chevron-down" aria-hidden="true"></i>'
-                . '<span class="screen-reader-text">'
-                . esc_html__('Afficher les statistiques', 'chassesautresor-com')
-                . '</span></button>';
-            echo '</div>';
-            echo '</div>';
-            echo '</aside>';
-            $html = ob_get_clean();
-            wp_cache_set($cache_key, $html, 'chassesautresor', HOUR_IN_SECONDS);
-        }
-
-        $user_id    = get_current_user_id();
         $stats_html = enigme_sidebar_progression_html($chasse_id, $user_id)
             . enigme_sidebar_resolution_html($enigme_id);
         $meta_html   = enigme_sidebar_metas_html($enigme_id);
@@ -550,11 +507,52 @@ defined('ABSPATH') || exit;
             $ajout_html = ob_get_clean();
         }
 
-        echo str_replace(
-            ['%AJOUT%', '%METAS%', '%STATS%', '%WINNERS%'],
-            [$ajout_html, $meta_html, $stats_html, $winners_html],
-            $html
-        );
+        $navigation_html = enigme_get_sidebar_section_html('navigation', [
+            'menu_items'    => $menu_items,
+            'edition_active'=> $edition_active,
+            'chasse_id'     => $chasse_id,
+            'ajout_html'    => $ajout_html,
+        ]);
+        if ($navigation_html === '') {
+            $navigation_html = '<section class="enigme-navigation"><h3>'
+                . esc_html__('Énigmes', 'chassesautresor-com')
+                . '</h3><ul class="enigme-menu"></ul></section>';
+        }
+
+        $stats_section_html = enigme_get_sidebar_section_html('stats', [
+            'meta_html'    => $meta_html,
+            'stats_html'   => $stats_html,
+            'winners_html' => $winners_html,
+            'enigme_id'    => $enigme_id,
+        ]);
+
+        echo '<aside class="menu-lateral">';
+
+        echo '<div class="menu-lateral__header">';
+        if ($chasse_id) {
+            $url_chasse = get_permalink($chasse_id);
+            $titre      = get_the_title($chasse_id);
+            echo '<h2 class="menu-lateral__title"><a href="' . esc_url($url_chasse) . '">' . esc_html($titre) . '</a></h2>';
+        }
+        echo '</div>';
+
+        echo '<div class="menu-lateral__content">' . $navigation_html . '</div>';
+        echo '<div class="menu-lateral__accordeons">';
+        echo '<div class="accordeon-bloc">';
+        echo '<div class="accordeon-contenu accordeon-ferme">' . $stats_section_html . '</div>';
+        echo '<button class="accordeon-toggle" type="button" aria-expanded="false">'
+            . '<i class="fa-solid fa-chevron-down" aria-hidden="true"></i>'
+            . '<span class="screen-reader-text">'
+            . esc_html__('Afficher les statistiques', 'chassesautresor-com')
+            . '</span></button>';
+        echo '</div>';
+        echo '</div>';
+        echo '</aside>';
+
+        return [
+            'navigation' => $navigation_html,
+            'stats'      => $stats_section_html,
+        ];
     }
 
     /**
@@ -978,7 +976,7 @@ defined('ABSPATH') || exit;
         }
 
         echo '<div class="container container--xl-full enigme-layout">';
-        render_enigme_sidebar(
+        $sidebar_sections = render_enigme_sidebar(
             $enigme_id,
             $edition_active,
             $chasse_id,
@@ -987,6 +985,35 @@ defined('ABSPATH') || exit;
             $total_enigmes,
             $has_incomplete_enigme
         );
+
+        $retour_url = $chasse_id ? get_permalink($chasse_id) : home_url('/');
+        echo '<header class="enigme-mobile-header">';
+        echo '<a class="enigme-mobile-back" href="' . esc_url($retour_url) . '">';
+        echo '<span class="screen-reader-text">' . esc_html__('Retour', 'chassesautresor-com') . '</span>';
+        echo '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>';
+        echo '</a>';
+        echo '<button type="button" class="enigme-mobile-panel-toggle" aria-controls="enigme-mobile-panel" aria-expanded="false" aria-label="' . esc_attr__('Menu énigme', 'chassesautresor-com') . '">';
+        echo '<span class="screen-reader-text">' . esc_html__('Menu énigme', 'chassesautresor-com') . '</span>';
+        echo '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';
+        echo '</button>';
+        echo '</header>';
+
+        echo '<div id="enigme-mobile-panel" class="enigme-mobile-panel" hidden>';
+        echo '<div class="enigme-mobile-panel__overlay" tabindex="-1"></div>';
+        echo '<div class="enigme-mobile-panel__sheet" role="dialog" aria-modal="true" aria-labelledby="enigme-mobile-panel-title">';
+        echo '<h2 id="enigme-mobile-panel-title" class="screen-reader-text">' . esc_html__('Panneau d\'énigme', 'chassesautresor-com') . '</h2>';
+        echo '<nav class="enigme-mobile-panel__tabs" role="tablist">';
+        echo '<button type="button" role="tab" aria-selected="true" class="panel-tab" data-target="panel-enigmes">' . esc_html__('Énigmes', 'chassesautresor-com') . '</button>';
+        echo '<button type="button" role="tab" aria-selected="false" class="panel-tab" data-target="panel-stats">' . esc_html__('Statistiques', 'chassesautresor-com') . '</button>';
+        echo '</nav>';
+        echo '<div class="enigme-mobile-panel__content">';
+        echo '<div id="panel-enigmes" class="panel-tab-content">' . ($sidebar_sections['navigation'] ?? '') . '</div>';
+        $ajax_url = function_exists('admin_url') ? admin_url('admin-ajax.php') : '';
+        echo '<div id="panel-stats" class="panel-tab-content" hidden aria-live="polite" data-ajax-url="' . esc_url($ajax_url) . '" data-enigme-id="' . intval($enigme_id) . '">' . ($sidebar_sections['stats'] ?? '') . '</div>';
+        echo '</div>';
+        echo '</div>';
+        echo '</div>';
+
         echo '<main class="page-enigme enigme-style-' . esc_attr($style) . '">';
         render_enigme_title($enigme_id, $style, $user_id);
         render_enigme_hero($enigme_id, $style, $user_id);

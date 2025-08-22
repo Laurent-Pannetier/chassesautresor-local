@@ -205,10 +205,9 @@ $is_complete = (
                         null,
                         [
                             'aria_label' => __('Informations sur l’adresse email de contact', 'chassesautresor-com'),
-                            'classes'    => 'icone-info',
-                            'attributes' => [
-                                'onclick' => "alert('Quand aucune adresse n est renseignée, votre email utilisateur est utilisé par défaut.');",
-                            ],
+                            'variant'    => 'aide',
+                            'title'      => __('Email de contact organisateur', 'chassesautresor-com'),
+                            'message'    => __('Si aucune adresse n’est renseignée, votre adresse email utilisateur est utilisée par défaut.', 'chassesautresor-com'),
                         ]
                     );
                     ?>
@@ -292,11 +291,10 @@ $is_complete = (
                     null,
                     [
                         'aria_label' => __('Informations sur les coordonnées bancaires', 'chassesautresor-com'),
-                        'classes'    => 'mode-fin-aide stat-help',
-                        'message'    => __(
-                            "Ces informations sont nécessaires uniquement pour vous verser les gains issus de la conversion de vos points en euros. Nous ne prélevons jamais d'argent.",
-                            'chassesautresor-com'
-                        ),
+                        'classes'    => 'stat-help',
+                        'variant'    => 'aide-small',
+                        'title'      => __('Coordonnées bancaires', 'chassesautresor-com'),
+                        'message'    => __('Ces informations sont nécessaires uniquement pour vous verser les gains issus de la conversion de vos points en euros. Nous ne prélevons jamais d\'argent.', 'chassesautresor-com'),
                     ]
                 );
                 ?>

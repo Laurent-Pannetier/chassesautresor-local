@@ -53,6 +53,8 @@ extensions actives :
 - Réponses courtes et fonctionnelles : éviter les formules, les paraphrases, les répétitions.
 - Historique de développement : le développement initial a largement été modifié. Quasiment tout a été revu, mais il se peut qu’on rencontre des résidus dans le code, il faut en avoir conscience.
 
+- Traductions : ne jamais fournir les fichiers `.mo` (binaires). Seuls les fichiers `.po` doivent être versionnés.
+
 ### 🚫 Suppressions obligatoires
 Toute évolution ou migration de logique (ex. déplacement d’un champ vers champ-init.js) doit impérativement inclure l’identification et la suppression des doublons ou fonctions redondantes (dans les fichiers JS ou PHP concernés).
 Le code ancien ne doit jamais rester actif ou latent, même s’il n’est “plus appelé”.

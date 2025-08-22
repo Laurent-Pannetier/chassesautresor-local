@@ -60,25 +60,30 @@ function initChasseEdit() {
   // 🧭 Déclencheur automatique
   // ==============================
   const params = new URLSearchParams(window.location.search);
-    const doitOuvrir = params.get('edition') === 'open';
-    const tab = params.get('tab');
-    const panel = params.get('panel');
-    const skipAuto = document.body.classList.contains('scroll-to-enigmes');
-    if (doitOuvrir && !skipAuto && panel !== 'organisateur') {
+  const doitOuvrir = params.get('edition') === 'open';
+  const tab = params.get('tab');
+  const panel = params.get('panel');
+  const skipAuto = document.body.classList.contains('scroll-to-enigmes');
+  const forceDescription =
+    doitOuvrir && tab === 'param' && window.location.hash === '#chasse-description';
+
+  if (doitOuvrir && panel !== 'organisateur' && (!skipAuto || forceDescription)) {
     document.body.classList.add('edition-active-chasse', 'panneau-ouvert', 'mode-edition');
     if (tab) {
       const btn = document.querySelector(`.edition-tab[data-target="chasse-tab-${tab}"]`);
       btn?.click();
     }
     DEBUG && console.log('🔧 Ouverture auto du panneau édition chasse via ?edition=open');
-  } else if (skipAuto && (doitOuvrir || tab)) {
+  } else if (skipAuto && !forceDescription && (doitOuvrir || tab)) {
     params.delete('edition');
     params.delete('tab');
-    const nouvelleUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}${window.location.hash}`;
+    const nouvelleUrl = `${window.location.pathname}${
+      params.toString() ? `?${params.toString()}` : ''
+    }${window.location.hash}`;
     window.history.replaceState({}, '', nouvelleUrl);
   }
 
-  if (skipAuto) {
+  if (skipAuto && !forceDescription) {
     const cible = document.getElementById('carte-ajout-enigme');
     if (cible) {
       cible.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -254,8 +259,10 @@ function initChasseEdit() {
       bouton.dataset.champ = 'chasse_infos_recompense_valeur';
       bouton.dataset.cpt = 'chasse';
       bouton.dataset.postId = ligne.dataset.postId || '';
-      bouton.setAttribute('aria-label', 'Modifier la récompense');
-      bouton.textContent = wp.i18n.__('modifier', 'chassesautresor-com');
+      const action = complet ? 'modifier' : 'ajouter';
+      const aria = complet ? 'Modifier la récompense' : 'Ajouter la récompense';
+      bouton.setAttribute('aria-label', wp.i18n.__(aria, 'chassesautresor-com'));
+      bouton.textContent = wp.i18n.__(action, 'chassesautresor-com');
       champTexte.appendChild(bouton);
       if (typeof initZoneClicEdition === 'function') initZoneClicEdition(bouton);
     }
@@ -408,28 +415,6 @@ function initChasseEdit() {
   }
 
   // ==============================
-  // 🧠 Explication – Mode de fin de chasse
-  // ==============================
-  const explicationModeFin = {
-    automatique: wp.i18n.__(
-      "Un joueur devient gagnant lorsqu’il résout toutes les énigmes. La chasse s’achève dès que le nombre de gagnants prévu est atteint.",
-      "chassesautresor-com"
-    ),
-    manuelle: wp.i18n.__(
-      "Vous arrêtez la chasse manuellement, grâce au bouton situé dans le panneau d'édition chasse.",
-      "chassesautresor-com"
-    )
-  };
-  document.querySelectorAll('.mode-fin-aide').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const mode = btn.dataset.mode;
-      const message = explicationModeFin[mode];
-      if (message) {
-        alert(message);
-      }
-    });
-  });
-
   // ==============================
   // 🏁 Terminaison manuelle
   // ==============================

@@ -47,16 +47,16 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
 <?php wp_body_open(); ?>
 
 <a
-	class="skip-link screen-reader-text"
-	href="#content"
-	title="<?php echo esc_attr( astra_default_strings( 'string-header-skip-link', false ) ); ?>">
-		<?php echo esc_html( astra_default_strings( 'string-header-skip-link', false ) ); ?>
+        class="skip-link screen-reader-text"
+        href="#content"
+        title="<?php echo esc_attr( astra_default_strings( 'string-header-skip-link', false ) ); ?>">
+                <?php echo esc_html( astra_default_strings( 'string-header-skip-link', false ) ); ?>
 </a>
 
 <div
 <?php
-	echo wp_kses_post(
-		astra_attr(
+        echo wp_kses_post(
+                astra_attr(
 			'site',
 			array(
 				'id'    => 'page',

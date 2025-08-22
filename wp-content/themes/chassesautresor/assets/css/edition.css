@@ -72,11 +72,6 @@
   display: none;
 }
 
-/* Alignement des lignes sans icône */
-.resume-infos li[data-no-icon] {
-  padding-left: calc(var(--editor-icon-width) + 0.3rem);
-}
-
 /* Hauteur et alignement par défaut des lignes de paramètres */
 .resume-infos > li {
   min-height: 40px;
@@ -1751,6 +1746,7 @@ body.panneau-ouvert::before {
   margin-left: var(--space-xs);
 }
 
+.help-icon-button,
 .mode-fin-aide {
   background: none;
   border: none;
@@ -1758,14 +1754,37 @@ body.panneau-ouvert::before {
   margin-left: 0.3em;
   color: inherit;
   padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
+.help-icon-button i,
 .mode-fin-aide i {
   pointer-events: none;
 }
 
-.stat-help i {
-  font-size: 0.8em;
+.help-icon--aide,
+.help-icon--info,
+.help-icon--aide-small {
+  border-radius: 50%;
+  background-color: var(--color-gray-100, #eee);
+  width: 1.4em;
+  height: 1.4em;
+}
+
+.help-icon--info {
+  background-color: var(--color-white, #fff);
+  border: 1px solid var(--color-gray-300, #ccc);
+}
+
+.help-icon--aide-small {
+  width: 1em;
+  height: 1em;
+}
+
+.help-icon--aide-small i {
+  font-size: 0.7em;
 }
 
 /* 🎯 Pager de tableau */

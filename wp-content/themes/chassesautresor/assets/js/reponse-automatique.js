@@ -108,8 +108,6 @@ document.addEventListener('DOMContentLoaded', () => {
             feedback.style.display = 'block';
             const enigmeId = form.querySelector('input[name="enigme_id"]')?.value;
             const titre = form.querySelector('h3');
-            const enigmeIdInput = form.querySelector('input[name="enigme_id"]');
-            const enigmeId = enigmeIdInput ? enigmeIdInput.value : null;
             form.replaceChildren(titre, feedback);
             if (compteur) {
               compteur.remove();
@@ -167,6 +165,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             Promise.allSettled(requests).then(() => {
+              if (window.enigmeAside?.show) {
+                window.enigmeAside.show();
+              }
               if (toggle && contenu) {
                 toggle.setAttribute('aria-expanded', 'true');
                 contenu.classList.remove('accordeon-ferme');

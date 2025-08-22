@@ -23,6 +23,126 @@ add_action( 'after_setup_theme', 'cta_load_textdomain' );
 
 
 /**
+ * Retrieves the locale from the cookie.
+ *
+ * @return string
+ */
+function cta_get_locale_from_cookie() {
+    $locale = isset( $_COOKIE['cta_lang'] ) ? sanitize_text_field( wp_unslash( $_COOKIE['cta_lang'] ) ) : '';
+
+    return apply_filters( 'locale', $locale );
+}
+
+/**
+ * Handles language switching via query parameter and cookie.
+ *
+ * @return void
+ */
+function cta_handle_language() {
+    $locale = '';
+
+    if ( isset( $_GET['lang'] ) ) {
+        $lang   = sanitize_text_field( wp_unslash( $_GET['lang'] ) );
+        $locale = 'fr' === $lang ? 'fr_FR' : ( 'en' === $lang ? 'en_US' : '' );
+
+        if ( $locale ) {
+            setcookie( 'cta_lang', $locale, time() + MONTH_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+        }
+    } else {
+        $locale = cta_get_locale_from_cookie();
+
+        if ( ! $locale ) {
+            $accept       = sanitize_text_field( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '' );
+            $browser_lang = substr( $accept, 0, 2 );
+            $locale       = 'fr' === $browser_lang ? 'fr_FR' : ( 'en' === $browser_lang ? 'en_US' : '' );
+
+            if ( $locale ) {
+                setcookie( 'cta_lang', $locale, time() + MONTH_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+            }
+        }
+    }
+
+    if ( $locale ) {
+        switch_to_locale( $locale );
+    }
+}
+add_action( 'init', 'cta_handle_language' );
+
+/**
+ * Renders the language switcher in the header.
+ *
+ * @param string $row    Header builder row.
+ * @param string $column Header builder column.
+ *
+ * @return void
+ */
+function cta_render_lang_switcher( $row, $column ) {
+    if ( 'above' !== $row || 'right' !== $column ) {
+        return;
+    }
+
+    $active_locale = '';
+
+    if ( isset( $_GET['lang'] ) ) {
+        $lang         = sanitize_text_field( wp_unslash( $_GET['lang'] ) );
+        $active_locale = 'fr' === $lang ? 'fr_FR' : ( 'en' === $lang ? 'en_US' : '' );
+    }
+
+    if ( ! $active_locale ) {
+        $active_locale = cta_get_locale_from_cookie();
+    }
+
+    if ( ! $active_locale ) {
+        $active_locale = get_locale();
+    }
+
+    $available_langs = [
+        'fr_FR' => [
+            'code'  => 'fr',
+            'label' => __( 'Français', 'chassesautresor-com' ),
+            'flag'  => '🇫🇷',
+        ],
+        'en_US' => [
+            'code'  => 'en',
+            'label' => __( 'English', 'chassesautresor-com' ),
+            'flag'  => '🇬🇧',
+        ],
+    ];
+
+    $current_url = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    $current_url = remove_query_arg( 'lang', $current_url );
+    ?>
+    <div class="lang-switcher ast-builder-layout-element site-header-focus-item">
+        <button class="lang-switcher__toggle" aria-haspopup="true" aria-expanded="false" aria-label="<?php esc_attr_e( 'Change language', 'chassesautresor-com' ); ?>">
+            <span class="lang-switcher__flag">
+                <?php echo esc_html( $available_langs[ $active_locale ]['flag'] ?? '🇫🇷' ); ?>
+            </span>
+            <span class="lang-switcher__icon">▼</span>
+        </button>
+        <ul class="lang-switcher__options">
+            <?php foreach ( $available_langs as $locale => $data ) : ?>
+                <?php $url = add_query_arg( 'lang', $data['code'], $current_url ); ?>
+                <li class="<?php echo $locale === $active_locale ? 'active' : ''; ?>">
+                    <?php if ( $locale === $active_locale ) : ?>
+                        <span>
+                            <span class="lang-switcher__flag"><?php echo esc_html( $data['flag'] ); ?></span>
+                            <span class="lang-switcher__label"><?php echo esc_html( $data['label'] ); ?></span>
+                        </span>
+                    <?php else : ?>
+                        <a href="<?php echo esc_url( $url ); ?>">
+                            <span class="lang-switcher__flag"><?php echo esc_html( $data['flag'] ); ?></span>
+                            <span class="lang-switcher__label"><?php echo esc_html( $data['label'] ); ?></span>
+                        </a>
+                    <?php endif; ?>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+    <?php
+}
+add_action( 'astra_render_header_column', 'cta_render_lang_switcher', 999, 2 );
+
+/**
  * Chargement des styles du thème parent et enfant avec prise en charge d'Astra.
  */
 add_action('wp_enqueue_scripts', function () {
@@ -32,103 +152,32 @@ add_action('wp_enqueue_scripts', function () {
     // 🎨 Chargement du style du thème parent (Astra)
     wp_enqueue_style('astra-style', get_template_directory_uri() . '/style.css');
 
-    // Détermine l'environnement via WP_ENVIRONMENT_TYPE ou une constante dédiée.
-    $env                  = defined('CHASSESAUTRESOR_ENV') ? CHASSESAUTRESOR_ENV : wp_get_environment_type();
-    $is_compil_active     = get_option('cta_css_compilation_active', '1') === '1';
-    $is_edition_env       = 'edition' === $env;
-
-    if (!$is_compil_active || $is_edition_env) {
-        wp_enqueue_style(
-            'mon-theme-enfant-style',
-            $theme_uri . '/style.css',
-            ['astra-style'],
-            filemtime($theme_path . '/style.css')
-        );
-
-        $css_uri  = $theme_uri . '/assets/css/';
-        $css_path = $theme_path . '/assets/css/';
-
-        // 📂 Liste des fichiers CSS organisés
-        $styles = [
-            'grid'               => 'grid.css',
-            'layout'             => 'layout.css',
-            'components'         => 'components.css',
-            'aside'              => 'aside.css',
-            'modal-bienvenue'    => 'modal-bienvenue.css',
-            'general-style'      => 'general.css',
-            'chasse-style'       => 'chasse.css',
-            'enigme-style'       => 'enigme.css',
-            'gamification-style' => 'gamification.css',
-            'cartes-style'       => 'cartes.css',
-            'organisateurs'      => 'organisateurs.css',
-            'edition'            => 'edition.css',
-            'mon-compte'         => 'mon-compte.css',
-            'commerce-style'     => 'commerce.css',
-            'home'               => 'home.css',
-        ];
-
-        // ✅ Enregistre les styles avec gestion du cache
-        foreach ($styles as $handle => $file) {
-            wp_register_style($handle, $css_uri . $file, [], filemtime($css_path . $file));
-        }
-
-        // 🚀 Chargement des styles communs
-        $common_styles = [
-            'grid',
-            'layout',
-            'components',
-            'aside',
-            'modal-bienvenue',
-            'general-style',
-            'chasse-style',
-            'gamification-style',
-            'cartes-style',
-            'organisateurs',
-            'commerce-style',
-            'home',
-        ];
-
-        foreach ($common_styles as $handle) {
-            wp_enqueue_style($handle);
-        }
-
-        if (is_singular('enigme')) {
-            wp_enqueue_style('enigme-style');
-        }
-
-        // 📌 Styles conditionnels
-        $should_load_edition = false;
-
-        if (is_singular(['organisateur', 'chasse', 'enigme'])) {
-            $post_id = get_queried_object_id();
-            if (utilisateur_peut_modifier_post($post_id)) {
-                $should_load_edition = true;
-            }
-        } elseif (
-            (is_account_page() || preg_match('#^/mon-compte(?:/|$|\\?)#', $_SERVER['REQUEST_URI'] ?? '')) &&
-            is_user_logged_in()
-        ) {
-            $should_load_edition = true;
-        }
-
-        if ($should_load_edition) {
-            wp_enqueue_style('edition');
-        }
-
-        if (is_account_page() || preg_match('#^/mon-compte(?:/|$|\\?)#', $_SERVER['REQUEST_URI'] ?? '')) {
-            wp_enqueue_style('mon-compte');
-        }
-    } else {
-        $dist_file = '/dist/style.min.css';
-        wp_enqueue_style(
-            'chassesautresor-style',
-            $theme_uri . $dist_file,
-            ['astra-style'],
-            filemtime($theme_path . $dist_file)
-        );
-    }
+    wp_enqueue_style(
+        'chassesautresor-style',
+        $theme_uri . '/dist/style.css',
+        ['astra-style'],
+        filemtime($theme_path . '/dist/style.css')
+    );
 
     $script_dir = $theme_uri . '/assets/js/';
+
+    wp_enqueue_script(
+        'lang-switcher',
+        $script_dir . 'lang-switcher.js',
+        [],
+        filemtime($theme_path . '/assets/js/lang-switcher.js'),
+        true
+    );
+
+    wp_enqueue_script(
+        'help-modal',
+        $script_dir . 'help-modal.js',
+        ['wp-i18n'],
+        filemtime($theme_path . '/assets/js/help-modal.js'),
+        true
+    );
+    wp_set_script_translations('help-modal', 'chassesautresor-com');
+
     if (is_account_page() && is_user_logged_in()) {
         wp_enqueue_script(
             'myaccount',
@@ -159,14 +208,37 @@ add_action('wp_enqueue_scripts', function () {
         );
         wp_set_script_translations('accordeon', 'chassesautresor-com');
         wp_enqueue_script(
-            'enigme-gallery',
-            $script_dir . 'enigme-gallery.js',
+            'enigme-panel',
+            $script_dir . 'enigme-panel.js',
             [],
-            filemtime($theme_path . '/assets/js/enigme-gallery.js'),
+            filemtime($theme_path . '/assets/js/enigme-panel.js'),
+            true
+        );
+        wp_enqueue_script(
+            'enigme-aside',
+            $script_dir . 'enigme-aside.js',
+            [],
+            filemtime($theme_path . '/assets/js/enigme-aside.js'),
+            true
+        );
+        wp_enqueue_script(
+            'enigme-topbar',
+            $script_dir . 'enigme-topbar.js',
+            [],
+            filemtime($theme_path . '/assets/js/enigme-topbar.js'),
             true
         );
     }
 });
+
+add_action('wp_enqueue_scripts', function () {
+    wp_dequeue_script('jquery-fancybox');
+    wp_dequeue_script('jquery-metadata');
+    wp_dequeue_script('jquery-easing');
+    wp_dequeue_script('jquery-mousewheel');
+    wp_dequeue_style('fancybox');
+    wp_dequeue_style('fancybox-ie');
+}, 20);
 
 
 
@@ -198,6 +270,7 @@ require_once $inc_path . 'utils/liens.php';
 require_once $inc_path . 'chasse/stats.php';
 require_once $inc_path . 'organisateur/stats.php';
 require_once $inc_path . 'pager.php';
+require_once $inc_path . 'table.php';
 
 require_once $inc_path . 'edition/edition-core.php';
 require_once $inc_path . 'edition/edition-organisateur.php';

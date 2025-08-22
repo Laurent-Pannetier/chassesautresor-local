@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const postcss = require('postcss');
-const cssnano = require('cssnano');
 const postcssImport = require('postcss-import');
 const autoprefixer = require('autoprefixer');
 const customMedia = require('postcss-custom-media');
@@ -18,14 +17,13 @@ async function build() {
         postcssImport(),
         customMedia(),
         autoprefixer(),
-        cssnano,
     ]).process(css, { from: mainFile });
 
     if (!fs.existsSync(distDir)) {
         fs.mkdirSync(distDir, { recursive: true });
     }
 
-    fs.writeFileSync(path.join(distDir, 'style.min.css'), result.css);
+    fs.writeFileSync(path.join(distDir, 'style.css'), result.css);
 }
 
 build().catch((error) => {
