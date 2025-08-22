@@ -349,6 +349,10 @@ function utilisateur_peut_modifier_post($post_id)
             $organisateur_id = $chasse_id ? get_organisateur_from_chasse($chasse_id) : null;
             return $organisateur_id ? utilisateur_peut_modifier_post($organisateur_id) : false;
 
+        case 'indice':
+            $cible_id = (int) get_field('indice_cible_objet', $post_id);
+            return $cible_id ? utilisateur_peut_modifier_post($cible_id) : false;
+
         default:
             cat_debug("❌ utilisateur_peut_modifier_post: post_type inconnu ($post_type)");
             return false;

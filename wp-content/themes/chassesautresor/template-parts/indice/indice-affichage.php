@@ -19,7 +19,7 @@ $edition_active = utilisateur_peut_modifier_post($indice_id);
 
 <section class="indice-affichage" data-post-id="<?= esc_attr($indice_id); ?>">
     <?php if ($edition_active) : ?>
-        <button id="toggle-mode-edition-indice" type="button" class="bouton-edition-toggle" data-cpt="indice" aria-label="<?= esc_attr__('Activer Orgy', 'chassesautresor-com'); ?>">
+        <button id="toggle-mode-edition-indice" type="button" class="bouton-edition-toggle" data-cpt="indice" aria-label="<?= esc_attr__('Activer l\'édition', 'chassesautresor-com'); ?>">
             <i class="fa-solid fa-gear"></i>
         </button>
     <?php endif; ?>
