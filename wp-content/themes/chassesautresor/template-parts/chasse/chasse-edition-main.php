@@ -719,7 +719,8 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                     <i class="fa-regular fa-circle-question icone-defaut" aria-hidden="true"></i>
                     <h3><?= esc_html__('Indices', 'chassesautresor-com'); ?></h3>
                     <?php if ($peut_ajouter_indice) : ?>
-                      <a href="#" class="stat-value"><?= esc_html__('Ajouter', 'chassesautresor-com'); ?></a>
+                      <?php $ajout_indice_url = wp_nonce_url(add_query_arg('chasse_id', $chasse_id, home_url('/creer-indice/')), 'creer_indice', 'nonce'); ?>
+                      <a href="<?= esc_url($ajout_indice_url); ?>" class="stat-value"><?= esc_html__('Ajouter', 'chassesautresor-com'); ?></a>
                     <?php else : ?>
                       <span class="stat-value"><?= esc_html__('Ajouter', 'chassesautresor-com'); ?></span>
                     <?php endif; ?>
