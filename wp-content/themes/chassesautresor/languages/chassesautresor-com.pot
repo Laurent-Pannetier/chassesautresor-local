@@ -1184,3 +1184,23 @@ msgstr ""
 msgid "Définition du taux de résolution"
 msgstr ""
 
+#: inc/admin-functions.php:1849
+msgid "Votre demande de validation pour la chasse « %s » a été acceptée."
+msgstr ""
+
+#: inc/admin-functions.php:1886
+msgid "Votre demande de validation pour la chasse « %s » nécessite des corrections."
+msgstr ""
+
+#: inc/admin-functions.php:1895
+msgid "Une copie de ce message vous a été envoyée par email."
+msgstr ""
+
+#: inc/admin-functions.php:1891
+msgid "Message de l’administrateur : %s"
+msgstr ""
+
+#: inc/admin-functions.php:1918
+msgid "Votre chasse « %s » a été bannie."
+msgstr ""
+
