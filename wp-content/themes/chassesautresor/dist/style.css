@@ -3966,7 +3966,7 @@ li.active .enigme-menu__edit {
 .page-enigme .enigme-header .enigme-titre {
   word-break: break-word;
   overflow-wrap: anywhere;
-  font-size: 64px;
+  font-size: clamp(26px, 8vw, 64px);
 }
 
 .page-enigme .enigme-header .enigme-soustitre {
@@ -3993,9 +3993,6 @@ li.active .enigme-menu__edit {
   }
   .page-enigme .enigme-header {
     padding-bottom: var(--space-xs);
-  }
-  .page-enigme .enigme-header .enigme-titre {
-    font-size: 26px;
   }
   .page-enigme .enigme-header .enigme-soustitre {
     font-size: 0.9rem;
