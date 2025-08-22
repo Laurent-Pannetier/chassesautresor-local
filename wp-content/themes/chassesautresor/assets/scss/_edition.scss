@@ -441,6 +441,38 @@ body .header-img-modifiable .icone-modif {
   width: auto;
 }
 
+.bonnes-reponses-wrapper {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.bonne-reponse-etiquette {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.bonne-reponse-etiquette button {
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.bonne-reponse-valider.btn-obligatoire {
+  background-color: var(--color-editor-error);
+  color: #fff;
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.3rem;
+}
+
+.bonne-reponse-valider,
+.bonne-reponse-ajouter {
+  font-size: 0.85rem;
+}
+
 .champ-edition input.champ-input::placeholder {
   color: var(--color-editor-placeholder);
 }

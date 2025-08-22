@@ -1141,3 +1141,19 @@ msgstr "Part moyenne des énigmes auxquelles chaque joueur a participé, rapport
 msgid "Définition du taux de résolution"
 msgstr "Définition du taux de résolution"
 
+#: template-parts/enigme/enigme-edition-main.php
+msgid "La ou les bonnes réponses"
+msgstr "La ou les bonnes réponses"
+
+#: template-parts/enigme/enigme-edition-main.php
+msgid "Vous pouvez saisir de 1 à 5 bonnes réponses. Tout joueur qui en soumet une — selon votre réglage de respect de la casse — résout l’énigme."
+msgstr "Vous pouvez saisir de 1 à 5 bonnes réponses. Tout joueur qui en soumet une — selon votre réglage de respect de la casse — résout l’énigme."
+
+#: assets/js/enigme-edit.js
+msgid "Supprimer"
+msgstr "Supprimer"
+
+#: assets/js/enigme-edit.js
+msgid "Ex : soleil"
+msgstr "Ex : soleil"
+

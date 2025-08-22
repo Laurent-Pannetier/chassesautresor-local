@@ -283,9 +283,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
               </div>
             </li>
 
-            <li class="champ-enigme champ-bonne-reponse champ-groupe-reponse-automatique cache<?= empty($reponse) ? ' champ-vide' : ' champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_reponse_bonne" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" data-no-edit="1" data-no-icon="1">
-                <label for="champ-bonne-reponse"><?= esc_html__('Bonne(s) réponse(s)', 'chassesautresor-com'); ?> <span class="champ-obligatoire">*</span></label>
-                <input type="text" id="champ-bonne-reponse" name="champ-bonne-reponse" class="champ-input champ-texte-edit<?= empty($reponse) ? ' champ-vide-obligatoire' : ''; ?>" value="<?= esc_attr($reponse); ?>" placeholder="<?= esc_attr__('Ex : soleil', 'chassesautresor-com'); ?>" <?= $peut_editer ? '' : 'disabled'; ?> />
+            <li class="champ-enigme champ-bonne-reponse champ-groupe-reponse-automatique cache<?= empty($reponses) ? ' champ-vide' : ' champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_reponse_bonne" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" data-reponses='<?= esc_attr(wp_json_encode($reponses)); ?>' data-no-edit="1" data-no-icon="1">
+                <label for="champ-bonne-reponse">
+                    <?= esc_html__('Bonne(s) réponse(s)', 'chassesautresor-com'); ?> <span class="champ-obligatoire">*</span>
+                    <?php
+                    get_template_part(
+                        'template-parts/common/help-icon',
+                        null,
+                        [
+                            'title'   => __('La ou les bonnes réponses', 'chassesautresor-com'),
+                            'message' => __(
+                                'Vous pouvez saisir de 1 à 5 bonnes réponses. Tout joueur qui en soumet une — selon votre réglage de respect de la casse — résout l’énigme.',
+                                'chassesautresor-com'
+                            ),
+                            'variant' => 'info',
+                            'classes' => 'bonne-reponse-aide',
+                        ]
+                    );
+                    ?>
+                </label>
+                <div class="bonnes-reponses-wrapper<?= empty($reponses) ? ' champ-vide-obligatoire' : ''; ?>"></div>
                 <div class="champ-enigme champ-casse <?= $casse ? 'champ-rempli' : 'champ-vide'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_reponse_casse" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" data-no-edit="1" style="display: inline-flex; align-items: center;">
                   <label style="display: flex; align-items: center; gap: 4px;"><input type="checkbox" <?= $casse ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>> <?= esc_html__('Respecter la casse', 'chassesautresor-com'); ?></label>
                   <div class="champ-feedback"></div>
