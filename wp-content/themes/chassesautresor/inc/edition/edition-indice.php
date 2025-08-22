@@ -95,6 +95,7 @@ function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_i
 
     update_field('indice_cout_points', 0, $indice_id);
     update_field('indice_cache_complet', false, $indice_id);
+    update_field('indice_cache_etat_systeme', 'desactive', $indice_id);
 
     return $indice_id;
 }
