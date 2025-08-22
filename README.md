@@ -19,6 +19,12 @@ composer test
 
 La commande composer test exécute PHPUnit à l’aide de la configuration du plugin hostinger.
 
+Avant chaque commit, lancez la suite de tests :
+
+```bash
+vendor/bin/phpunit -c tests/phpunit.xml
+```
+
 Avant tout déploiement, exécutez `npm run build:css` pour générer les feuilles de style.
 
 Gestion des traductions du thème
@@ -42,3 +48,11 @@ Le projet utilise plusieurs tables SQL dédiées pour suivre l'activité des jou
 - `wp_indices_deblocages` trace le déblocage des indices et les points dépensés.
 - `wp_user_points` inclut la valeur `indice` dans le champ `origin_type` pour comptabiliser ces dépenses.
 
+## Création d’indice
+
+Un endpoint dédié permet de créer rapidement un indice :
+
+- **URL :** `/creer-indice/`
+- **Paramètres :** `chasse_id`, `enigme_id` (optionnel) et `nonce`.
+- **Champs ACF initialisés :** `indice_cible`, `indice_cible_objet`, `indice_organisateur_linked`, `indice_disponibilite`, `indice_date_disponibilite`, `indice_cout_points` et `indice_cache_complet`.
+- **Comportement :** après création, l’utilisateur est redirigé vers l’indice et le panneau d’édition s’ouvre automatiquement.
