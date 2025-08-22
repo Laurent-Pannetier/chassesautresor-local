@@ -502,6 +502,7 @@ msgstr "Hunting description"
 #: template-parts/chasse/chasse-edition-main.php:142
 #: template-parts/enigme/enigme-edition-main.php:177
 #: template-parts/organisateur/organisateur-edition-main.php:141
+#: assets/js/enigme-edit.js:645
 msgid "ajouter"
 msgstr "Add"
 
@@ -784,6 +785,11 @@ msgstr "You solved this puzzle on %s."
 #: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:55
 #: template-parts/enigme/partials/enigme-partial-tentatives.php:48
 msgid "Valider"
+msgstr "Validate"
+
+#: assets/js/enigme-edit.js:605
+#: assets/js/enigme-edit.js:657
+msgid "valider"
 msgstr "Validate"
 
 #: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:61
