@@ -10,8 +10,10 @@
   top: var(--space-md);
 }
 
-body.single-enigme.topbar-visible .enigme-layout .menu-lateral {
-  top: calc(var(--space-4xl) + var(--space-md));
+@media (--bp-lg) and (hover: hover) {
+  body.single-enigme .enigme-layout .menu-lateral {
+    top: calc(var(--space-4xl) + var(--space-md));
+  }
 }
 
 /* Display images stacked with full width */
@@ -277,8 +279,10 @@ li.active .enigme-menu__edit {
   margin-top: var(--space-md);
 }
 
-body.single-enigme.topbar-visible .page-enigme {
-  margin-top: calc(var(--space-4xl) + var(--space-md));
+@media (--bp-lg) and (hover: hover) {
+  body.single-enigme .page-enigme {
+    margin-top: calc(var(--space-4xl) + var(--space-md));
+  }
 }
 
 /* Titre + sous-titre */
