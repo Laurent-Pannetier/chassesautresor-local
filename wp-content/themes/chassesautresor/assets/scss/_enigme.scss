@@ -12,6 +12,7 @@
 
 .enigme-layout > .page-enigme {
   grid-column: 2;
+  transition: margin-left var(--transition-slow);
 }
 
 .enigme-layout--aside-hidden > .page-enigme {
@@ -30,6 +31,19 @@
 
 .enigme-layout--aside-hidden {
   grid-template-columns: 1fr;
+}
+
+@media (min-width: 1280px) {
+  .enigme-layout {
+    display: block;
+    gap: 0;
+  }
+  .enigme-layout > .page-enigme {
+    margin-left: calc(280px + var(--space-md));
+  }
+  .enigme-layout--aside-hidden > .page-enigme {
+    margin-left: 0;
+  }
 }
 
 /* Display images stacked with full width */
