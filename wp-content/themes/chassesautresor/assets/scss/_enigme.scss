@@ -1,7 +1,7 @@
 /* Layout for enigma pages */
 .enigme-layout {
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 320px 1fr;
   gap: var(--space-xl);
   transition: grid-template-columns var(--transition-slow);
 }
@@ -39,7 +39,7 @@
     gap: 0;
   }
   .enigme-layout > .page-enigme {
-    margin-left: calc(280px + var(--space-md));
+    margin-left: calc(320px + 2 * var(--space-md));
   }
   .enigme-layout--aside-hidden > .page-enigme {
     margin-left: 0;
