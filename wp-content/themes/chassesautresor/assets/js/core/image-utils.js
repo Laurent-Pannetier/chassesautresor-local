@@ -59,7 +59,8 @@ function initChampImage(bloc) {
         body: new URLSearchParams({
           action: (cpt === 'chasse') ? 'modifier_champ_chasse' :
             (cpt === 'enigme') ? 'modifier_champ_enigme' :
-              'modifier_champ_organisateur',
+              (cpt === 'indice') ? 'modifier_champ_indice' :
+                'modifier_champ_organisateur',
           champ,
           valeur: id,
           post_id: postId
