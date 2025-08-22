@@ -341,12 +341,23 @@ function utilisateur_peut_modifier_post($post_id)
             return $match || $auteur === $user_id;
 
         case 'chasse':
-            $organisateur_id = get_organisateur_from_chasse($post_id);
+            $organisateur_id = get_organisateur_chasse($post_id);
+            if (!$organisateur_id) {
+                $organisateur_id = get_organisateur_from_chasse($post_id);
+            }
+
             return $organisateur_id ? utilisateur_peut_modifier_post($organisateur_id) : false;
 
         case 'enigme':
             $chasse_id = recuperer_id_chasse_associee($post_id);
-            $organisateur_id = $chasse_id ? get_organisateur_from_chasse($chasse_id) : null;
+            $organisateur_id = null;
+            if ($chasse_id) {
+                $organisateur_id = get_organisateur_chasse($chasse_id);
+                if (!$organisateur_id) {
+                    $organisateur_id = get_organisateur_from_chasse($chasse_id);
+                }
+            }
+
             return $organisateur_id ? utilisateur_peut_modifier_post($organisateur_id) : false;
 
         case 'indice':
@@ -367,10 +378,18 @@ function utilisateur_peut_modifier_post($post_id)
                 if ($cible_id) {
                     $cible_type = get_post_type($cible_id);
                     if ($cible_type === 'chasse') {
-                        $organisateur_id = get_organisateur_from_chasse($cible_id);
+                        $organisateur_id = get_organisateur_chasse($cible_id);
+                        if (!$organisateur_id) {
+                            $organisateur_id = get_organisateur_from_chasse($cible_id);
+                        }
                     } elseif ($cible_type === 'enigme') {
-                        $chasse_id       = recuperer_id_chasse_associee($cible_id);
-                        $organisateur_id = $chasse_id ? get_organisateur_from_chasse($chasse_id) : null;
+                        $chasse_id = recuperer_id_chasse_associee($cible_id);
+                        if ($chasse_id) {
+                            $organisateur_id = get_organisateur_chasse($chasse_id);
+                            if (!$organisateur_id) {
+                                $organisateur_id = get_organisateur_from_chasse($chasse_id);
+                            }
+                        }
                     }
                 }
             }
