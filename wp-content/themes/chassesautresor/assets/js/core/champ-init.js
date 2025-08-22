@@ -82,11 +82,11 @@ function initChampTexte(bloc) {
     let timer;
     input.addEventListener('input', () => {
       clearTimeout(timer);
-      const valeur = input.value.trim();
+      const brute = input.value.trim();
 
       timer = setTimeout(() => {
         if (champ === 'email_contact') {
-          const isValide = valeur === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valeur);
+          const isValide = brute === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(brute);
           if (!isValide) {
             feedback.textContent = '⛔ Adresse email invalide';
             feedback.className = 'champ-feedback champ-error';
@@ -94,7 +94,7 @@ function initChampTexte(bloc) {
           }
         }
 
-        if (champ === 'post_title' && !valeur) {
+        if (champ === 'post_title' && !brute) {
           feedback.textContent = '❌ Le titre est obligatoire.';
           feedback.className = 'champ-feedback champ-error';
           return;
@@ -105,7 +105,7 @@ function initChampTexte(bloc) {
             document.querySelector('.enigme-soustitre') ||
             document.querySelector('.enigme-legende');
           if (legendeDOM) {
-            legendeDOM.textContent = valeur;
+            legendeDOM.textContent = brute;
             legendeDOM.classList.add('modifiee');
           }
         }
@@ -113,9 +113,18 @@ function initChampTexte(bloc) {
         feedback.textContent = 'Enregistrement en cours...';
         feedback.className = 'champ-feedback champ-loading';
 
-        modifierChampSimple(champ, valeur, postId, cpt).then(success => {
+        let valeurEnvoyee = brute;
+        let estVide = !brute;
+
+        if (champ === 'enigme_reponse_bonne') {
+          const parts = brute.split(',').map(v => v.trim()).filter(v => v);
+          valeurEnvoyee = JSON.stringify(parts);
+          estVide = parts.length === 0;
+        }
+
+        modifierChampSimple(champ, valeurEnvoyee, postId, cpt).then(success => {
           if (success) {
-            bloc.classList.toggle('champ-vide', !valeur);
+            bloc.classList.toggle('champ-vide', estVide);
             feedback.textContent = '';
             feedback.className = 'champ-feedback champ-success';
             if (typeof window.mettreAJourResumeInfos === 'function') {

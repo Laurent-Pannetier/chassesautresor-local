@@ -877,6 +877,9 @@ msgstr "Aucune tentative de soumission."
 msgid "Réponse"
 msgstr "Réponse"
 
+msgid "Bonne(s) réponse(s)"
+msgstr "Bonne(s) réponse(s)"
+
 #: template-parts/enigme/partials/enigme-partial-tentatives.php:28
 msgid "Actions"
 msgstr "Actions"

@@ -887,6 +887,9 @@ msgstr "Result"
 msgid "Réponse"
 msgstr "Answer"
 
+msgid "Bonne(s) réponse(s)"
+msgstr "Correct answer(s)"
+
 #: template-parts/enigme/partials/enigme-partial-tentatives.php:28
 msgid "Actions"
 msgstr "Actions"

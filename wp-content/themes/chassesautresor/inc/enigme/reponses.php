@@ -1,6 +1,35 @@
 <?php
 defined('ABSPATH') || exit;
 
+/**
+ * Retrieve the expected answers for an enigma, migrating old formats.
+ *
+ * @param int $enigme_id Enigma post ID.
+ * @return array<string>
+ */
+function enigme_get_bonnes_reponses(int $enigme_id): array
+{
+    $raw = get_field('enigme_reponse_bonne', $enigme_id);
+
+    if (is_string($raw) && $raw !== '') {
+        $decoded = json_decode($raw, true);
+        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+            return array_values(array_filter(array_map('strval', $decoded)));
+        }
+
+        if (function_exists('update_field')) {
+            update_field('enigme_reponse_bonne', wp_json_encode([$raw]), $enigme_id);
+        }
+        return [$raw];
+    }
+
+    if (is_array($raw)) {
+        return array_values(array_filter(array_map('strval', $raw)));
+    }
+
+    return [];
+}
+
 
     // ==================================================
     // 📬 GESTION DES RÉPONSES MANUELLES (FRONTEND)
@@ -238,14 +267,17 @@ function soumettre_reponse_automatique()
         wp_send_json_error('points_insuffisants');
     }
 
-    $reponse_attendue = trim((string) get_field('enigme_reponse_bonne', $enigme_id));
+    $bonnes_reponses = enigme_get_bonnes_reponses($enigme_id);
     $respecter_casse  = (int) get_field('enigme_reponse_casse', $enigme_id) === 1;
 
     $saisie_brute = trim($reponse);
     $saisie_cmp_main = $respecter_casse ? $saisie_brute : mb_strtolower($saisie_brute);
-    $attendue_cmp = $respecter_casse ? $reponse_attendue : mb_strtolower($reponse_attendue);
+    $attendues_cmp = array_map(
+        fn($r) => $respecter_casse ? $r : mb_strtolower($r),
+        $bonnes_reponses
+    );
 
-    $resultat = $saisie_cmp_main === $attendue_cmp ? 'bon' : 'faux';
+    $resultat = in_array($saisie_cmp_main, $attendues_cmp, true) ? 'bon' : 'faux';
     $message  = '';
     $index    = 0;
 
