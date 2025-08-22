@@ -34,6 +34,58 @@ function initIndiceEdit() {
     boutonsToggle[0].click();
     DEBUG && console.log('🔧 Ouverture auto du panneau édition indice via ?edition=open');
   }
+
+  // ==============================
+  // 🟢 Initialisation des champs
+  // ==============================
+  document.querySelectorAll('.champ-indice[data-champ]').forEach((bloc) => {
+    if (bloc.classList.contains('champ-img')) {
+      if (typeof initChampImage === 'function') initChampImage(bloc);
+    } else {
+      if (typeof initChampTexte === 'function') initChampTexte(bloc);
+    }
+  });
+
+  initChampConditionnel('acf[indice_cible]', {
+    chasse: [],
+    enigme: ['#champ-indice-cible-enigmes']
+  });
+  initChampRadioAjax('acf[indice_cible]', 'indice');
+
+  initChampConditionnel('acf[indice_disponibilite]', {
+    immediate: [],
+    differe: ['#champ-indice-date']
+  });
+  initChampRadioAjax('acf[indice_disponibilite]', 'indice');
+
+  document
+    .querySelectorAll('#champ-indice-cible-enigmes input[type="checkbox"]')
+    .forEach((checkbox) => {
+      checkbox.addEventListener('change', () => {
+        const bloc = document.getElementById('champ-indice-cible-enigmes');
+        const champ = bloc.dataset.champ;
+        const postId = bloc.dataset.postId;
+        const valeurs = [...bloc.querySelectorAll('input[type="checkbox"]')]
+          .filter((el) => el.checked)
+          .map((el) => el.value);
+        modifierChampSimple(champ, valeurs, postId, 'indice');
+      });
+    });
+
+  document
+    .querySelectorAll('input[name="acf[indice_cible]"]')
+    .forEach((radio) => {
+      radio.addEventListener('change', () => {
+        if (radio.value === 'chasse') {
+          const bloc = document.getElementById('champ-indice-cible-enigmes');
+          const chasseId = bloc?.dataset.chasseId;
+          const postId = bloc?.dataset.postId;
+          if (chasseId && postId) {
+            modifierChampSimple('indice_cible_objet', [chasseId], postId, 'indice');
+          }
+        }
+      });
+    });
 }
 
 document.addEventListener('DOMContentLoaded', initIndiceEdit);
