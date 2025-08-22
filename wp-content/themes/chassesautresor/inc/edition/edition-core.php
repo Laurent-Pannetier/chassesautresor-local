@@ -136,6 +136,7 @@ function enqueue_core_edit_scripts(array $additional = [])
       $versions[$handle],
       true
     );
+    wp_set_script_translations($handle, 'chassesautresor-com');
   }
 }
 
