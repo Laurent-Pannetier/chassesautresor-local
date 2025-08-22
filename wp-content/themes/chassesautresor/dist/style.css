@@ -1778,7 +1778,8 @@ a[aria-disabled=true] {
 }
 
 .resume-infos > li > label,
-.resume-infos > li > .champ-edition > label {
+.resume-infos > li > .champ-edition > label,
+.resume-infos > li > .champ-affichage > label {
   width: var(--editor-label-width);
   flex-shrink: 0;
 }
@@ -2585,10 +2586,7 @@ body.edition-active .edition-panel {
 .champ-enigme.champ-texte[data-champ=enigme_visuel_legende] {
   display: flex;
   align-items: center;
-}
-
-.champ-enigme.champ-texte[data-champ=enigme_visuel_legende] i.fa-circle {
-  margin-right: 10px;
+  gap: var(--space-xs);
 }
 
 li.ligne-email.champ-organisateur.champ-vide,
@@ -2617,7 +2615,7 @@ li.ligne-logo .champ-modifier {
 .resume-infos li.champ-description,
 .resume-infos li.champ-wysiwyg {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: var(--space-xs);
 }
 
@@ -2629,11 +2627,21 @@ li.ligne-logo .champ-modifier {
 .resume-infos li.champ-description .champ-texte,
 .resume-infos li.champ-wysiwyg .champ-texte {
   flex: 1;
+  display: flex;
+  align-items: center;
+  min-height: 40px;
 }
 
 .resume-infos li.champ-description .champ-texte-contenu,
 .resume-infos li.champ-wysiwyg .champ-texte-contenu {
   display: inline;
+}
+
+.resume-infos li.champ-description .champ-ajouter,
+.resume-infos li.champ-wysiwyg .champ-ajouter {
+  display: flex;
+  align-items: center;
+  height: 40px;
 }
 
 .resume-infos li.champ-description .champ-texte-contenu .champ-modifier,
@@ -2645,6 +2653,12 @@ li.ligne-logo .champ-modifier {
 .resume-infos li.champ-description.champ-vide .champ-texte,
 .resume-infos li.champ-wysiwyg.champ-vide .champ-texte {
   color: var(--color-editor-text-muted);
+}
+
+.champ-img.champ-vide .champ-modifier {
+  display: flex;
+  align-items: center;
+  height: 40px;
 }
 
 .resume-infos li.champ-recompense {
