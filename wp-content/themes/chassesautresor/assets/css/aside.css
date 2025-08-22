@@ -269,7 +269,7 @@
   padding-bottom: var(--space-sm);
 }
 
-@media (min-width: var(--breakpoint-desktop)) {
+@media (min-width: 1280px) {
   .menu-lateral {
     position: sticky;
     top: var(--space-md);
