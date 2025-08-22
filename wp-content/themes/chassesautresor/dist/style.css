@@ -2586,10 +2586,7 @@ body.edition-active .edition-panel {
 .champ-enigme.champ-texte[data-champ=enigme_visuel_legende] {
   display: flex;
   align-items: center;
-}
-
-.champ-enigme.champ-texte[data-champ=enigme_visuel_legende] i.fa-circle {
-  margin-right: 10px;
+  gap: var(--space-xs);
 }
 
 li.ligne-email.champ-organisateur.champ-vide,
