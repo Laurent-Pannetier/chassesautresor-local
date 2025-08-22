@@ -271,12 +271,15 @@
 
 @media (min-width: 1280px) {
   .menu-lateral {
-    position: sticky;
-    top: var(--space-md);
+    position: fixed;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
     transition: transform var(--transition-medium);
   }
   .menu-lateral.is-hidden {
-    transform: translateX(-100%);
+    transform: translate(calc(-100% - 1rem), -50%);
+    box-shadow: none;
   }
   .menu-lateral__reveal {
     position: fixed;
@@ -290,9 +293,13 @@
     border-radius: 0 4px 4px 0;
     cursor: pointer;
     display: none;
+    height: 8rem;
+    align-items: center;
+    justify-content: center;
   }
   .menu-lateral__reveal i {
     pointer-events: none;
+    font-size: 1.25rem;
   }
 }
 

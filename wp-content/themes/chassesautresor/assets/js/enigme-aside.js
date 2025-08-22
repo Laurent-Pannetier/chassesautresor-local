@@ -16,7 +16,7 @@
     let timer = null;
     function hideAside() {
       aside.classList.add('is-hidden');
-      opener.style.display = 'block';
+      opener.style.display = 'flex';
       if (timer) {
         clearTimeout(timer);
         timer = null;
@@ -29,6 +29,7 @@
       timer = setTimeout(hideAside, 5000);
     }
     opener.addEventListener('click', showAside);
+    opener.addEventListener('mouseenter', showAside);
     aside.addEventListener('mouseenter', () => {
       if (timer) clearTimeout(timer);
     });
@@ -36,7 +37,7 @@
       if (timer) clearTimeout(timer);
       timer = setTimeout(hideAside, 5000);
     });
-    hideAside();
+    showAside();
     window.enigmeAside = { show: showAside };
   }
   if (document.readyState === 'loading') {
