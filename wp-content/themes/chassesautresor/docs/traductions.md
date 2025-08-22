@@ -20,6 +20,7 @@ Compiler un fichier unique :
 
 ```bash
 msgfmt languages/fr_FR.po -o languages/fr_FR.mo
+msgfmt languages/en_US.po -o languages/en_US.po
 ```
 
 Compiler toutes les traductions :
