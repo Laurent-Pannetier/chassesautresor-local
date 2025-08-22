@@ -2,23 +2,29 @@
 var DEBUG = window.DEBUG || false;
 DEBUG && console.log('✅ enigme-edit.js chargé');
 
-let boutonToggle;
+let boutonsToggle;
 let panneauEdition;
 
 
 
 function initEnigmeEdit() {
   if (typeof initZonesClicEdition === 'function') initZonesClicEdition();
-  boutonToggle = document.getElementById('toggle-mode-edition-enigme');
+  boutonsToggle = document.querySelectorAll(
+    '#toggle-mode-edition-enigme, .toggle-mode-edition-enigme'
+  );
   panneauEdition = document.querySelector('.edition-panel-enigme');
 
   // ==============================
   // 🛠️ Contrôles panneau principal
   // ==============================
-  boutonToggle?.addEventListener('click', () => {
+  const toggleEdition = () => {
     document.body.classList.toggle('edition-active-enigme');
     document.body.classList.toggle('panneau-ouvert');
     document.body.classList.toggle('mode-edition');
+  };
+
+  boutonsToggle.forEach((btn) => {
+    btn.addEventListener('click', toggleEdition);
   });
 
 
@@ -36,10 +42,12 @@ function initEnigmeEdit() {
   const params = new URLSearchParams(window.location.search);
   const doitOuvrir = params.get('edition') === 'open';
   const tab = params.get('tab');
-  if (doitOuvrir && boutonToggle) {
-    boutonToggle.click();
+  if (doitOuvrir && boutonsToggle.length > 0) {
+    boutonsToggle[0].click();
     if (tab) {
-      const btn = panneauEdition?.querySelector(`.edition-tab[data-target="enigme-tab-${tab}"]`);
+      const btn = panneauEdition?.querySelector(
+        `.edition-tab[data-target="enigme-tab-${tab}"]`
+      );
       btn?.click();
     }
     DEBUG && console.log('🔧 Ouverture auto du panneau édition énigme via ?edition=open');
