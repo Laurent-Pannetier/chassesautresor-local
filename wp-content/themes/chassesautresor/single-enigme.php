@@ -36,28 +36,35 @@ if (is_singular('enigme')) {
 <div id="primary" class="content-area">
     <main id="main" class="site-main single-enigme-main statut-<?= esc_attr($statut_enigme); ?>">
 
-      <?php if (enigme_est_visible_pour($user_id, $enigme_id)) : ?>
-        <section class="enigme-wrapper">
-          <!-- 🧩 Affichage de l'énigme -->
-          <?php afficher_enigme_stylisee($enigme_id, $statut_data); ?>
-        </section>
-      <?php endif; ?>
+        <?php if (!empty($_GET['erreur'])) : ?>
+            <?php $error_message = sanitize_text_field(wp_unslash($_GET['erreur'])); ?>
+            <div class="message-erreur" role="alert" style="color:red; margin-bottom:1em;">
+                <?= esc_html($error_message); ?>
+            </div>
+        <?php endif; ?>
 
-      <!-- 🛠 Panneau principal d’édition -->
-      <?php get_template_part('template-parts/enigme/enigme-edition-main', null, [
-        'enigme_id' => $enigme_id,
-        'user_id'   => $user_id,
-      ]); ?>
+        <?php if (enigme_est_visible_pour($user_id, $enigme_id)) : ?>
+            <section class="enigme-wrapper">
+                <!-- 🧩 Affichage de l'énigme -->
+                <?php afficher_enigme_stylisee($enigme_id, $statut_data); ?>
+            </section>
+        <?php endif; ?>
 
-      <?php if ($edition_active) : ?>
-        <!-- ✏️ Panneaux complémentaires -->
-        <?php
-        get_template_part('template-parts/enigme/panneaux/enigme-edition-description', null, ['enigme_id' => $enigme_id]);
-        get_template_part('template-parts/enigme/panneaux/enigme-edition-images', null, ['enigme_id' => $enigme_id]);
-        get_template_part('template-parts/enigme/panneaux/enigme-edition-variantes', null, ['enigme_id' => $enigme_id]);
-        get_template_part('template-parts/enigme/panneaux/enigme-edition-solution', null, ['enigme_id' => $enigme_id]);
-        ?>
-      <?php endif; ?>
+        <!-- 🛠 Panneau principal d’édition -->
+        <?php get_template_part('template-parts/enigme/enigme-edition-main', null, [
+            'enigme_id' => $enigme_id,
+            'user_id'   => $user_id,
+        ]); ?>
+
+        <?php if ($edition_active) : ?>
+            <!-- ✏️ Panneaux complémentaires -->
+            <?php
+            get_template_part('template-parts/enigme/panneaux/enigme-edition-description', null, ['enigme_id' => $enigme_id]);
+            get_template_part('template-parts/enigme/panneaux/enigme-edition-images', null, ['enigme_id' => $enigme_id]);
+            get_template_part('template-parts/enigme/panneaux/enigme-edition-variantes', null, ['enigme_id' => $enigme_id]);
+            get_template_part('template-parts/enigme/panneaux/enigme-edition-solution', null, ['enigme_id' => $enigme_id]);
+            ?>
+        <?php endif; ?>
 
     </main>
   </div>

@@ -171,7 +171,11 @@ function creer_indice_et_rediriger_si_appel(): void
 
     $indice_id = creer_indice_pour_objet($cible_id, $cible_type);
     if (is_wp_error($indice_id)) {
-        wp_die($indice_id->get_error_message(), 'Erreur', ['response' => 400]);
+        $error_message = sanitize_text_field($indice_id->get_error_message());
+        $referer       = wp_get_referer() ?: get_permalink($cible_id);
+        $redirect_url  = add_query_arg('erreur', $error_message, $referer);
+        wp_safe_redirect($redirect_url);
+        exit;
     }
 
     $preview_url = add_query_arg('edition', 'open', get_preview_post_link($indice_id));
