@@ -17,6 +17,10 @@
     function hideAside() {
       aside.classList.add('is-hidden');
       opener.style.display = 'block';
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+      }
     }
     function showAside() {
       aside.classList.remove('is-hidden');
@@ -32,7 +36,7 @@
       if (timer) clearTimeout(timer);
       timer = setTimeout(hideAside, 5000);
     });
-    timer = setTimeout(hideAside, 5000);
+    hideAside();
     window.enigmeAside = { show: showAside };
   }
   if (document.readyState === 'loading') {
