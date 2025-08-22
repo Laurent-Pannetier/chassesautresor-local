@@ -1151,6 +1151,7 @@ msgid "Réglages"
 msgstr "Settings"
 
 #: template-parts/enigme/enigme-edition-main.php
+#: template-parts/enigme/panneaux/enigme-edition-variantes.php:55
 msgid "Respecter la casse"
 msgstr "Case sensitive"
 
@@ -1694,10 +1695,6 @@ msgstr "E.g. sun"
 #: template-parts/enigme/panneaux/enigme-edition-variantes.php:21
 msgid "Configurer les variantes de réponse"
 msgstr "Configure answer variants"
-
-#: template-parts/enigme/panneaux/enigme-edition-variantes.php:55
-msgid "Respecter la casse"
-msgstr "Match case"
 
 #: template-parts/enigme/panneaux/enigme-edition-variantes.php:77
 msgid "Enregistrer les variantes"
