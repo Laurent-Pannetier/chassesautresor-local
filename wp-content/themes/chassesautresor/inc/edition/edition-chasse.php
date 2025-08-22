@@ -39,6 +39,15 @@ function enqueue_script_chasse_edit()
       'chasseId' => $chasse_id,
     ]
   );
+  wp_localize_script(
+    'chasse-edit',
+    'ChasseIndices',
+    [
+      'ajaxUrl'   => admin_url('admin-ajax.php'),
+      'chasseId'  => $chasse_id,
+      'errorText' => __('Erreur lors du chargement des indices.', 'chassesautresor-com'),
+    ]
+  );
 
   // Injecte les valeurs par défaut pour JS
   wp_localize_script('champ-init', 'CHP_CHASSE_DEFAUT', [

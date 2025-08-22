@@ -185,6 +185,62 @@ function creer_indice_et_rediriger_si_appel(): void
 add_action('template_redirect', 'creer_indice_et_rediriger_si_appel');
 
 /**
+ * AJAX handler returning indices card HTML for a hunt.
+ *
+ * @return void
+ */
+function ajax_chasse_lister_indices(): void
+{
+    if (!is_user_logged_in()) {
+        wp_send_json_error('non_connecte');
+    }
+
+    $chasse_id = isset($_POST['chasse_id']) ? (int) $_POST['chasse_id'] : 0;
+
+    if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
+        wp_send_json_error('post_invalide');
+    }
+
+    if (!current_user_can('administrator')
+        && !utilisateur_est_organisateur_associe_a_chasse(get_current_user_id(), $chasse_id)
+    ) {
+        wp_send_json_error('acces_refuse');
+    }
+
+    $indices = get_posts([
+        'post_type'      => 'indice',
+        'posts_per_page' => -1,
+        'post_status'    => ['publish', 'pending', 'draft'],
+        'orderby'        => 'ID',
+        'order'          => 'ASC',
+        'meta_query'     => [
+            [
+                'key'   => 'indice_cible',
+                'value' => 'chasse',
+            ],
+            [
+                'key'   => 'indice_cible_objet',
+                'value' => $chasse_id,
+            ],
+        ],
+    ]);
+
+    ob_start();
+    get_template_part(
+        'template-parts/chasse/partials/chasse-partial-indices',
+        null,
+        [
+            'chasse_id' => $chasse_id,
+            'indices'   => $indices,
+        ]
+    );
+    $html = ob_get_clean();
+
+    wp_send_json_success(['html' => $html]);
+}
+add_action('wp_ajax_chasse_lister_indices', 'ajax_chasse_lister_indices');
+
+/**
  * Pré-remplit automatiquement le champ organisateur d'un indice lors de sa création.
  *
  * @param array $field Paramètres du champ ACF.

@@ -706,26 +706,31 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
 
               <div class="resume-bloc resume-indices">
                 <h3><?= esc_html__('Indices', 'chassesautresor-com'); ?></h3>
-                <div class="dashboard-grid stats-cards">
-                  <?php
-                  $est_admin        = current_user_can('administrator');
-                  $est_organisateur = utilisateur_est_organisateur_associe_a_chasse(get_current_user_id(), $chasse_id);
-                  $est_publie       = get_post_status($chasse_id) === 'publish';
-                  $statut_valide    = get_field('chasse_cache_statut_validation', $chasse_id) === 'valide';
-
-                  $peut_ajouter_indice = $est_admin || ($est_organisateur && $est_publie && $statut_valide);
-                  ?>
-                  <div class="dashboard-card champ-chasse champ-indices<?= $peut_ajouter_indice ? '' : ' disabled'; ?>">
-                    <i class="fa-regular fa-circle-question icone-defaut" aria-hidden="true"></i>
-                    <h3><?= esc_html__('Indices', 'chassesautresor-com'); ?></h3>
-                    <?php if ($peut_ajouter_indice) : ?>
-                      <?php $ajout_indice_url = wp_nonce_url(add_query_arg('chasse_id', $chasse_id, home_url('/creer-indice/')), 'creer_indice', 'nonce'); ?>
-                      <a href="<?= esc_url($ajout_indice_url); ?>" class="stat-value"><?= esc_html__('Ajouter', 'chassesautresor-com'); ?></a>
-                    <?php else : ?>
-                      <span class="stat-value"><?= esc_html__('Ajouter', 'chassesautresor-com'); ?></span>
-                    <?php endif; ?>
+                  <div class="dashboard-grid stats-cards">
+                    <?php
+                    $indices = get_posts([
+                      'post_type'      => 'indice',
+                      'posts_per_page' => -1,
+                      'post_status'    => ['publish', 'pending', 'draft'],
+                      'orderby'        => 'ID',
+                      'order'          => 'ASC',
+                      'meta_query'     => [
+                        [
+                          'key'   => 'indice_cible',
+                          'value' => 'chasse',
+                        ],
+                        [
+                          'key'   => 'indice_cible_objet',
+                          'value' => $chasse_id,
+                        ],
+                      ],
+                    ]);
+                    get_template_part('template-parts/chasse/partials/chasse-partial-indices', null, [
+                      'chasse_id' => $chasse_id,
+                      'indices'   => $indices,
+                    ]);
+                    ?>
                   </div>
-                </div>
               </div>
 
               <div class="resume-bloc resume-news">
