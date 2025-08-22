@@ -483,9 +483,9 @@ Label : cible
 Instructions : (vide)
 Requis : non
 ----------------------------------------
-— indice_organisateur_linked —
+— indice_chasse_linked —
 Type : relationship
-Label : organisateur lié
+Label : chasse liée
 Instructions : (vide)
 Requis : non
 ----------------------------------------

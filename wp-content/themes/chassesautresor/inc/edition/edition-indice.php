@@ -56,15 +56,11 @@ function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_i
         return new WP_Error('permission_refusee', __('Droits insuffisants.', 'chassesautresor-com'));
     }
 
-    $organisateur_id = null;
-    if ($objet_type === 'chasse') {
-        $organisateur_id = get_organisateur_from_chasse($objet_id);
-    } else {
-        $chasse_id       = recuperer_id_chasse_associee($objet_id);
-        $organisateur_id = $chasse_id ? get_organisateur_from_chasse($chasse_id) : null;
-    }
+    $chasse_id = $objet_type === 'chasse'
+        ? $objet_id
+        : recuperer_id_chasse_associee($objet_id);
 
-    if (!$organisateur_id || !utilisateur_peut_modifier_post($organisateur_id)) {
+    if (!$chasse_id || !utilisateur_peut_modifier_post($chasse_id)) {
         return new WP_Error('permission_refusee', __('Droits insuffisants.', 'chassesautresor-com'));
     }
 
@@ -90,7 +86,7 @@ function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_i
 
     update_field('indice_cible', $objet_type, $indice_id);
     update_field('indice_cible_objet', $objet_id, $indice_id);
-    update_field('indice_organisateur_linked', $organisateur_id, $indice_id);
+    update_field('indice_chasse_linked', $chasse_id, $indice_id);
     update_field('indice_disponibilite', 'immediate', $indice_id);
 
     $date_disponibilite = wp_date('Y-m-d H:i:s', (int) current_time('timestamp') + DAY_IN_SECONDS);
@@ -241,12 +237,12 @@ function ajax_chasse_lister_indices(): void
 add_action('wp_ajax_chasse_lister_indices', 'ajax_chasse_lister_indices');
 
 /**
- * Pré-remplit automatiquement le champ organisateur d'un indice lors de sa création.
+ * Pré-remplit automatiquement la chasse liée d'un indice lors de sa création.
  *
  * @param array $field Paramètres du champ ACF.
  * @return array Champ modifié.
  */
-function pre_remplir_indice_organisateur_linked(array $field): array
+function pre_remplir_indice_chasse_linked(array $field): array
 {
     global $post;
 
@@ -254,7 +250,7 @@ function pre_remplir_indice_organisateur_linked(array $field): array
         return $field;
     }
 
-    $existing = get_post_meta($post->ID, 'indice_organisateur_linked', true);
+    $existing = get_post_meta($post->ID, 'indice_chasse_linked', true);
     if (!empty($existing)) {
         return $field;
     }
@@ -272,25 +268,22 @@ function pre_remplir_indice_organisateur_linked(array $field): array
     }
 
     if ($chasse_id) {
-        $organisateur_id = get_organisateur_from_chasse($chasse_id);
-        if ($organisateur_id) {
-            $field['value'] = $organisateur_id;
-        }
+        $field['value'] = $chasse_id;
     }
 
     return $field;
 }
-add_filter('acf/load_field/name=indice_organisateur_linked', 'pre_remplir_indice_organisateur_linked');
+add_filter('acf/load_field/name=indice_chasse_linked', 'pre_remplir_indice_chasse_linked');
 
 /**
- * Sauvegarde l'organisateur lié si le champ est vide lors de l'enregistrement.
+ * Sauvegarde la chasse liée si le champ est vide lors de l'enregistrement.
  *
  * @hook acf/save_post
  *
  * @param int|string $post_id ID du post ACF.
  * @return void
  */
-function sauvegarder_indice_organisateur_si_manquant($post_id): void
+function sauvegarder_indice_chasse_si_manquant($post_id): void
 {
     if (!is_numeric($post_id) || get_post_type((int) $post_id) !== 'indice') {
         return;
@@ -300,8 +293,8 @@ function sauvegarder_indice_organisateur_si_manquant($post_id): void
         return;
     }
 
-    $organisateur = get_field('indice_organisateur_linked', $post_id);
-    if ($organisateur) {
+    $chasse = get_field('indice_chasse_linked', $post_id);
+    if ($chasse) {
         return;
     }
 
@@ -318,10 +311,7 @@ function sauvegarder_indice_organisateur_si_manquant($post_id): void
     }
 
     if ($chasse_id) {
-        $organisateur_id = get_organisateur_from_chasse($chasse_id);
-        if ($organisateur_id) {
-            update_field('indice_organisateur_linked', $organisateur_id, $post_id);
-        }
+        update_field('indice_chasse_linked', $chasse_id, $post_id);
     }
 }
-add_action('acf/save_post', 'sauvegarder_indice_organisateur_si_manquant', 20);
+add_action('acf/save_post', 'sauvegarder_indice_chasse_si_manquant', 20);

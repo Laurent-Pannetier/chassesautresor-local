@@ -24,9 +24,6 @@ namespace {
         function utilisateur_peut_modifier_post($id) { global $can_edit; return $can_edit; }
     }
 
-    if (!function_exists('get_organisateur_from_chasse')) {
-        function get_organisateur_from_chasse($chasse_id) { return 7; }
-    }
 
     if (!function_exists('wp_insert_post')) {
         function wp_insert_post($args) { return 123; }
@@ -105,7 +102,7 @@ class CreerIndicePermissionsTest extends TestCase
         $this->assertSame(123, $result);
         $this->assertSame('chasse', $updated_fields['indice_cible']);
         $this->assertSame(42, $updated_fields['indice_cible_objet']);
-        $this->assertSame(10, $updated_fields['indice_organisateur_linked']);
+        $this->assertSame(42, $updated_fields['indice_chasse_linked']);
         $expected_date = wp_date('Y-m-d H:i:s', (int) current_time('timestamp') + DAY_IN_SECONDS);
         $this->assertSame($expected_date, $updated_fields['indice_date_disponibilite']);
         $this->assertArrayNotHasKey('indice_cache_etat_systeme', $updated_fields);
