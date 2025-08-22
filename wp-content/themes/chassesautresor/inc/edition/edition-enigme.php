@@ -249,10 +249,6 @@ function modifier_champ_enigme()
       return $clean !== '' ? $clean : null;
     }, $liste)));
 
-    if (empty($liste)) {
-      wp_send_json_error('⚠️ reponse_vide');
-    }
-
     if (count($liste) > 5) {
       wp_send_json_error('⚠️ trop_de_reponses');
     }

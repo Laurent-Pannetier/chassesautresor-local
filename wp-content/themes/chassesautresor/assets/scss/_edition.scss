@@ -444,7 +444,7 @@ body .header-img-modifiable .icone-modif {
 .bonnes-reponses-wrapper {
   display: inline-flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: var(--space-sm);
   align-items: center;
 }
 
@@ -464,13 +464,13 @@ body .header-img-modifiable .icone-modif {
 .bonne-reponse-valider.btn-obligatoire {
   background-color: var(--color-editor-error);
   color: #fff;
-  padding: 0.1rem 0.3rem;
   border-radius: 0.3rem;
 }
 
 .bonne-reponse-valider,
 .bonne-reponse-ajouter {
   font-size: 0.85rem;
+  padding: 0.1rem var(--space-xs);
 }
 
 .champ-edition input.champ-input::placeholder {

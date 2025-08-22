@@ -587,7 +587,10 @@ function initChampBonnesReponses() {
 
   const render = () => {
     wrapper.innerHTML = '';
-    wrapper.classList.toggle('champ-vide-obligatoire', reponses.length === 0);
+    const estVide = reponses.length === 0;
+    wrapper.classList.toggle('champ-vide-obligatoire', estVide);
+    bloc.classList.toggle('champ-vide', estVide);
+    bloc.classList.toggle('champ-rempli', !estVide);
 
     if (reponses.length === 0) {
       const input = document.createElement('input');
@@ -668,6 +671,10 @@ function initChampBonnesReponses() {
       });
 
       wrapper.appendChild(btnAjout);
+    }
+
+    if (typeof window.mettreAJourResumeInfos === 'function') {
+      window.mettreAJourResumeInfos();
     }
   };
 
