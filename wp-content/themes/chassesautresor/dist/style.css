@@ -2488,6 +2488,15 @@ body.edition-active-enigme .edition-panel-enigme.edition-panel-modal {
   min-width: var(--editor-label-width);
 }
 
+/* Les lignes de réglages n'ont pas d'icône de complétion.
+   On élargit donc leurs labels pour compenser l'absence de marge
+   laissée par cette icône et aligner le contenu avec la section
+   « Informations ». */
+.resume-reglages .resume-infos > li > label,
+.resume-reglages .resume-infos > li > .champ-edition > label {
+  width: calc(var(--editor-label-width) + var(--editor-icon-width) + var(--space-xs) + 0.3rem);
+}
+
 .resume-infos .champ-valeur {
   display: inline-block;
 }
