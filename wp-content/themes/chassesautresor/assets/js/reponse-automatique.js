@@ -165,6 +165,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             Promise.allSettled(requests).then(() => {
+              if (window.enigmeAside?.show) {
+                window.enigmeAside.show();
+              }
               if (toggle && contenu) {
                 toggle.setAttribute('aria-expanded', 'true');
                 contenu.classList.remove('accordeon-ferme');

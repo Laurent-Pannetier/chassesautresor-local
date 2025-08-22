@@ -216,6 +216,13 @@ add_action('wp_enqueue_scripts', function () {
             true
         );
         wp_enqueue_script(
+            'enigme-aside',
+            $script_dir . 'enigme-aside.js',
+            [],
+            filemtime($theme_path . '/assets/js/enigme-aside.js'),
+            true
+        );
+        wp_enqueue_script(
             'enigme-topbar',
             $script_dir . 'enigme-topbar.js',
             [],
