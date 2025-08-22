@@ -1,5 +1,5 @@
 (function() {
-  document.addEventListener('DOMContentLoaded', () => {
+  function init() {
     const aside = document.querySelector('.menu-lateral');
     if (!aside) return;
     const bp = getComputedStyle(document.documentElement)
@@ -34,5 +34,10 @@
     });
     timer = setTimeout(hideAside, 5000);
     window.enigmeAside = { show: showAside };
-  });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 })();
