@@ -1241,6 +1241,10 @@ body.panneau-ouvert::before {
   color: var(--color-editor-text-muted);
 }
 
+.acf-hide-label > .acf-label {
+  display: none;
+}
+
 .ligne-lien-formulaire label {
   display: flex;
   align-items: center;
