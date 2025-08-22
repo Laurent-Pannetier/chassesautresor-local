@@ -8,6 +8,41 @@ let erreurDebut;
 let erreurFin;
 let checkboxIllimitee;
 
+function rafraichirCarteIndices() {
+  const card = document.querySelector('.dashboard-card.champ-indices');
+  if (!card || !window.ChasseIndices) return;
+
+  card.classList.add('loading');
+  card.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+  const formData = new FormData();
+  formData.append('action', 'chasse_lister_indices');
+  formData.append('chasse_id', ChasseIndices.chasseId);
+
+  fetch(ChasseIndices.ajaxUrl, {
+    method: 'POST',
+    credentials: 'same-origin',
+    body: formData
+  })
+    .then(r => r.json())
+    .then(res => {
+      if (res.success && res.data?.html) {
+        const tmp = document.createElement('div');
+        tmp.innerHTML = res.data.html;
+        const nouvelleCarte = tmp.firstElementChild;
+        if (nouvelleCarte) {
+          card.replaceWith(nouvelleCarte);
+        }
+      } else {
+        throw new Error('invalid');
+      }
+    })
+    .catch(() => {
+      card.classList.remove('loading');
+      card.innerHTML = `<p class="error">${ChasseIndices.errorText}</p>`;
+    });
+}
+
 
 function initChasseEdit() {
   if (typeof initZonesClicEdition === 'function') initZonesClicEdition();
@@ -500,14 +535,21 @@ function initChasseEdit() {
           }
         });
     }
-  });
-}
+    });
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initChasseEdit);
-} else {
-  initChasseEdit();
-}
+    window.addEventListener('message', (e) => {
+      if (e.data && (e.data.type === 'indice-created' || e.data === 'indice-created')) {
+        rafraichirCarteIndices();
+      }
+    });
+    window.addEventListener('indice-created', rafraichirCarteIndices);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initChasseEdit);
+  } else {
+    initChasseEdit();
+  }
 
 
 // ==============================
