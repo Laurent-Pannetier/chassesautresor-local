@@ -986,17 +986,48 @@ defined('ABSPATH') || exit;
             $has_incomplete_enigme
         );
 
-        $retour_url = $chasse_id ? get_permalink($chasse_id) : home_url('/');
+        $retour_url   = $chasse_id ? get_permalink($chasse_id) : home_url('/');
+        $settings_icon = '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none"'
+            . ' stroke="currentColor" stroke-width="2" stroke-linecap="round"'
+            . ' stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path'
+            . ' d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83'
+            . ' 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1'
+            . ' 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65'
+            . ' 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65'
+            . ' 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09'
+            . ' a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2'
+            . ' 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65'
+            . ' 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1'
+            . ' 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06'
+            . ' a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2'
+            . ' 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>';
         echo '<header class="enigme-mobile-header">';
         echo '<a class="enigme-mobile-back" href="' . esc_url($retour_url) . '">';
         echo '<span class="screen-reader-text">' . esc_html__('Retour', 'chassesautresor-com') . '</span>';
         echo '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>';
         echo '</a>';
+        echo '<div class="enigme-mobile-actions">';
+        if (function_exists('utilisateur_peut_modifier_enigme') && utilisateur_peut_modifier_enigme($enigme_id)) {
+            echo '<button type="button" class="toggle-mode-edition-enigme enigme-mobile-edit" aria-label="'
+                . esc_attr__('Paramètres', 'chassesautresor-com') . '">';
+            echo '<span class="screen-reader-text">' . esc_html__('Paramètres', 'chassesautresor-com') . '</span>';
+            echo $settings_icon;
+            echo '</button>';
+        }
         echo '<button type="button" class="enigme-mobile-panel-toggle" aria-controls="enigme-mobile-panel" aria-expanded="false" aria-label="' . esc_attr__('Menu énigme', 'chassesautresor-com') . '">';
         echo '<span class="screen-reader-text">' . esc_html__('Menu énigme', 'chassesautresor-com') . '</span>';
         echo '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';
         echo '</button>';
+        echo '</div>';
         echo '</header>';
+
+        if (function_exists('utilisateur_peut_modifier_enigme') && utilisateur_peut_modifier_enigme($enigme_id)) {
+            echo '<button type="button" class="enigme-edit-toggle--desktop toggle-mode-edition-enigme" aria-label="'
+                . esc_attr__('Paramètres', 'chassesautresor-com') . '">';
+            echo '<span class="screen-reader-text">' . esc_html__('Paramètres', 'chassesautresor-com') . '</span>';
+            echo $settings_icon;
+            echo '</button>';
+        }
 
         echo '<div id="enigme-mobile-panel" class="enigme-mobile-panel" hidden>';
         echo '<div class="enigme-mobile-panel__overlay" tabindex="-1"></div>';

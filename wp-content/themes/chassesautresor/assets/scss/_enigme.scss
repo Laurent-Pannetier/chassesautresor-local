@@ -484,6 +484,32 @@ li.active .enigme-menu__edit {
   display: none;
 }
 
+.enigme-edit-toggle--desktop {
+  position: fixed;
+  top: var(--space-md);
+  right: var(--space-md);
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: var(--space-xs);
+  color: var(--color-primary);
+  background: none;
+  border: 1px solid rgba(255, 215, 0, 0.5);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.enigme-edit-toggle--desktop svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+body.topbar-visible .enigme-edit-toggle--desktop {
+  top: calc(var(--space-md) + var(--space-4xl));
+}
+
 @media not all and (--bp-lg) {
   .enigme-layout .menu-lateral {
     display: none;
@@ -505,6 +531,11 @@ li.active .enigme-menu__edit {
     z-index: 10;
   }
 
+  .enigme-mobile-actions {
+    display: flex;
+    gap: var(--space-md);
+  }
+
   .enigme-mobile-header a,
   .enigme-mobile-header button {
     width: 2.5rem;
@@ -523,6 +554,10 @@ li.active .enigme-menu__edit {
   .enigme-mobile-header svg {
     width: 1rem;
     height: 1rem;
+  }
+
+  .enigme-edit-toggle--desktop {
+    display: none;
   }
 
   .enigme-mobile-panel {
