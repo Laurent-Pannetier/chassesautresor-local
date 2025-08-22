@@ -765,10 +765,10 @@ function utilisateur_peut_editer_champs(int $post_id): bool
                 && $etat === 'bloquee_chasse';
 
         case 'indice':
-            $etat = get_field('indice_cache_etat_systeme', $post_id);
+            $etat = get_field('indice_cache_etat_systeme', $post_id) ?: '';
 
             return $status === 'pending'
-                && $etat === 'desactive';
+                && ($etat === 'desactive' || $etat === '');
     }
 
     return false;

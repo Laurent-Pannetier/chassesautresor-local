@@ -8,6 +8,7 @@ defined('ABSPATH') || exit;
 // 🔹 register_endpoint_creer_indice() → Enregistre /creer-indice
 // 🔹 creer_indice_pour_objet() → Crée un indice lié à une chasse ou une énigme
 // 🔹 creer_indice_et_rediriger_si_appel() → Crée un indice et redirige
+// 🔹 modifier_champ_indice() → Mise à jour AJAX (champ ACF ou natif)
 
 /**
  * Charge les scripts nécessaires à l’édition d’un indice.
@@ -94,6 +95,7 @@ function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_i
 
     update_field('indice_cout_points', 0, $indice_id);
     update_field('indice_cache_complet', false, $indice_id);
+    update_field('indice_cache_etat_systeme', 'desactive', $indice_id);
 
     return $indice_id;
 }
@@ -235,6 +237,82 @@ function ajax_chasse_lister_indices(): void
     wp_send_json_success(['html' => $html]);
 }
 add_action('wp_ajax_chasse_lister_indices', 'ajax_chasse_lister_indices');
+
+/**
+ * Gère l’enregistrement AJAX des champs ACF ou natifs du CPT indice.
+ *
+ * @hook wp_ajax_modifier_champ_indice
+ * @return void
+ */
+function modifier_champ_indice(): void
+{
+    if (!is_user_logged_in()) {
+        wp_send_json_error('non_connecte');
+    }
+
+    $champ   = sanitize_text_field($_POST['champ'] ?? '');
+    $valeur  = $_POST['valeur'] ?? '';
+    $post_id = isset($_POST['post_id']) ? (int) $_POST['post_id'] : 0;
+
+    if (!$champ || !$post_id || get_post_type($post_id) !== 'indice') {
+        wp_send_json_error('⚠️ donnees_invalides');
+    }
+
+    if (!utilisateur_peut_modifier_post($post_id) || !utilisateur_peut_editer_champs($post_id)) {
+        wp_send_json_error('⚠️ acces_refuse');
+    }
+
+    $champ_valide = false;
+    $reponse      = ['champ' => $champ, 'valeur' => $valeur];
+
+    if ($champ === 'post_title') {
+        $ok = wp_update_post(['ID' => $post_id, 'post_title' => sanitize_text_field($valeur)], true);
+        if (is_wp_error($ok)) {
+            wp_send_json_error('⚠️ echec_update_post_title');
+        }
+        wp_send_json_success($reponse);
+    }
+
+    switch ($champ) {
+        case 'indice_image':
+            $champ_valide = update_field('indice_image', (int) $valeur, $post_id) !== false;
+            break;
+        case 'indice_contenu':
+            $champ_valide = update_field('indice_contenu', wp_kses_post($valeur), $post_id) !== false;
+            break;
+        case 'indice_cible':
+            $val = $valeur === 'enigme' ? 'enigme' : 'chasse';
+            $champ_valide = update_field('indice_cible', $val, $post_id) !== false;
+            break;
+        case 'indice_cible_objet':
+            $ids = array_filter(array_map('intval', explode(',', (string) $valeur)));
+            $champ_valide = update_field('indice_cible_objet', $ids, $post_id) !== false;
+            break;
+        case 'indice_disponibilite':
+            $val = $valeur === 'differe' ? 'differe' : 'immediate';
+            $champ_valide = update_field('indice_disponibilite', $val, $post_id) !== false;
+            break;
+        case 'indice_date_disponibilite':
+            $dt = convertir_en_datetime(sanitize_text_field($valeur), ['Y-m-d\TH:i', 'Y-m-d H:i:s', 'Y-m-d H:i']);
+            if (!$dt) {
+                wp_send_json_error('⚠️ format_date_invalide');
+            }
+            $champ_valide = update_field('indice_date_disponibilite', $dt->format('Y-m-d H:i:s'), $post_id) !== false;
+            break;
+        case 'indice_cout_points':
+            $champ_valide = update_field('indice_cout_points', (int) $valeur, $post_id) !== false;
+            break;
+        default:
+            wp_send_json_error('⚠️ champ_inconnu');
+    }
+
+    if ($champ_valide) {
+        wp_send_json_success($reponse);
+    }
+
+    wp_send_json_error('⚠️ echec_mise_a_jour');
+}
+add_action('wp_ajax_modifier_champ_indice', 'modifier_champ_indice');
 
 /**
  * Pré-remplit automatiquement la chasse liée d'un indice lors de sa création.

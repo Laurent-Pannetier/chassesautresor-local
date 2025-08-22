@@ -12,7 +12,8 @@ function modifierChampSimple(champ, valeur, postId, cpt = 'enigme') {
 
   const action = (cpt === 'enigme') ? 'modifier_champ_enigme' :
     (cpt === 'organisateur') ? 'modifier_champ_organisateur' :
-      'modifier_champ_chasse';
+      (cpt === 'indice') ? 'modifier_champ_indice' :
+        'modifier_champ_chasse';
 
   return fetch(ajaxurl, {
     method: 'POST',
@@ -66,7 +67,8 @@ function initChampTexte(bloc) {
 
   const action = (cpt === 'chasse') ? 'modifier_champ_chasse'
     : (cpt === 'enigme') ? 'modifier_champ_enigme'
-      : 'modifier_champ_organisateur';
+      : (cpt === 'indice') ? 'modifier_champ_indice'
+        : 'modifier_champ_organisateur';
 
   if (!champ || !cpt || !postId || !input) return;
 

@@ -1736,3 +1736,55 @@ msgstr "Clue edit panel"
 #: template-parts/indice/indice-edition-main.php:33
 msgid "Contenu d'édition à venir..."
 msgstr "Editing content coming soon..."
+
+#: template-parts/indice/indice-edition-main.php:104
+msgid "Image"
+msgstr "Image"
+
+#: template-parts/indice/indice-edition-main.php:123
+msgid "Texte"
+msgstr "Text"
+
+#: template-parts/indice/indice-edition-main.php:134
+msgid "Aide pour"
+msgstr "Help for"
+
+#: template-parts/indice/indice-edition-main.php:136
+msgid "Chasse"
+msgstr "Hunt"
+
+#: template-parts/indice/indice-edition-main.php:141
+msgid "Aucune énigme disponible."
+msgstr "No puzzle available."
+
+#: template-parts/indice/indice-edition-main.php:167
+msgid "Publication"
+msgstr "Publishing"
+
+#: template-parts/indice/indice-edition-main.php:169
+msgid "Immédiate"
+msgstr "Immediate"
+
+#: template-parts/indice/indice-edition-main.php:170
+msgid "Différée"
+msgstr "Delayed"
+
+#: template-parts/indice/indice-edition-main.php:181
+msgid "(points)"
+msgstr "(points)"
+
+#: template-parts/indice/indice-edition-main.php:94
+msgid "renseigner le titre de l’indice"
+msgstr "enter the clue title"
+
+#: template-parts/indice/indice-edition-main.php:124
+msgid "renseigner le texte de l’indice"
+msgstr "enter the clue text"
+
+#: template-parts/indice/panneaux/indice-edition-description.php:17
+msgid "Modifier le texte de l’indice"
+msgstr "Edit the clue text"
+
+#: template-parts/indice/panneaux/indice-edition-description.php:28
+msgid "Texte de l’indice mis à jour."
+msgstr "Clue text updated."
