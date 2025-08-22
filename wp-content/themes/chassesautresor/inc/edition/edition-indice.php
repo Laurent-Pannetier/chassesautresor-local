@@ -1,0 +1,114 @@
+<?php
+defined('ABSPATH') || exit;
+
+// ==================================================
+// 💡 CRÉATION & ÉDITION D’UN INDICE
+// ==================================================
+// 🔹 register_endpoint_creer_indice() → Enregistre /creer-indice
+// 🔹 creer_indice_pour_objet() → Crée un indice lié à une chasse ou une énigme
+// 🔹 creer_indice_et_rediriger_si_appel() → Crée un indice et redirige
+
+/**
+ * Crée un indice lié à une chasse ou une énigme.
+ *
+ * @param int      $objet_id   ID de la chasse ou de l’énigme.
+ * @param string   $objet_type Type de cible ('chasse' ou 'enigme').
+ * @param int|null $user_id    ID utilisateur (null = courant).
+ * @return int|WP_Error
+ */
+function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_id = null)
+{
+    if (!in_array($objet_type, ['chasse', 'enigme'], true)) {
+        return new WP_Error('type_invalide', __('Type de cible invalide.', 'chassesautresor-com'));
+    }
+
+    if (get_post_type($objet_id) !== $objet_type) {
+        return new WP_Error('cible_invalide', __('ID cible invalide.', 'chassesautresor-com'));
+    }
+
+    if (!is_user_logged_in()) {
+        return new WP_Error('non_connecte', __('Utilisateur non connecté.', 'chassesautresor-com'));
+    }
+
+    if (!utilisateur_peut_modifier_post($objet_id)) {
+        return new WP_Error('permission_refusee', __('Droits insuffisants.', 'chassesautresor-com'));
+    }
+
+    $user_id = $user_id ?? get_current_user_id();
+
+    $indice_id = wp_insert_post([
+        'post_type'   => 'indice',
+        'post_status' => 'pending',
+        'post_title'  => TITRE_DEFAUT_INDICE,
+        'post_author' => $user_id,
+    ]);
+
+    if (is_wp_error($indice_id)) {
+        return $indice_id;
+    }
+
+    update_field('indice_cible', $objet_type, $indice_id);
+    update_field('indice_cible_objet', $objet_id, $indice_id);
+    update_field('indice_disponibilite', 'immediate', $indice_id);
+    update_field('indice_date_disponibilite', current_time('Y-m-d H:i:s'), $indice_id);
+    update_field('indice_cout_points', 0, $indice_id);
+    update_field('indice_cache_etat_systeme', 'accessible', $indice_id);
+    update_field('indice_cache_complet', false, $indice_id);
+
+    return $indice_id;
+}
+
+/**
+ * Enregistre l’URL personnalisée /creer-indice/
+ *
+ * @return void
+ */
+function register_endpoint_creer_indice(): void
+{
+    add_rewrite_rule('^creer-indice/?', 'index.php?creer_indice=1', 'top');
+    add_rewrite_tag('%creer_indice%', '1');
+}
+add_action('init', 'register_endpoint_creer_indice');
+
+/**
+ * Détecte l’appel à /creer-indice/ et redirige vers l’indice créé.
+ *
+ * @return void
+ */
+function creer_indice_et_rediriger_si_appel(): void
+{
+    if (get_query_var('creer_indice') !== '1') {
+        return;
+    }
+
+    $nonce = $_GET['nonce'] ?? '';
+    if (!wp_verify_nonce($nonce, 'creer_indice')) {
+        wp_die(__('Action non autorisée.', 'chassesautresor-com'), 'Erreur', ['response' => 403]);
+    }
+
+    if (!is_user_logged_in()) {
+        wp_redirect(wp_login_url());
+        exit;
+    }
+
+    $cible_id = isset($_GET['chasse_id']) ? absint($_GET['chasse_id']) : 0;
+    $cible_type = 'chasse';
+    if (!$cible_id) {
+        $cible_id = isset($_GET['enigme_id']) ? absint($_GET['enigme_id']) : 0;
+        $cible_type = 'enigme';
+    }
+
+    if (!$cible_id) {
+        wp_die(__('ID cible manquant.', 'chassesautresor-com'), 'Erreur', ['response' => 400]);
+    }
+
+    $indice_id = creer_indice_pour_objet($cible_id, $cible_type);
+    if (is_wp_error($indice_id)) {
+        wp_die($indice_id->get_error_message(), 'Erreur', ['response' => 400]);
+    }
+
+    $preview_url = add_query_arg('edition', 'open', get_preview_post_link($indice_id));
+    wp_redirect($preview_url);
+    exit;
+}
+add_action('template_redirect', 'creer_indice_et_rediriger_si_appel');
