@@ -1347,11 +1347,11 @@ a[aria-disabled=true] {
   max-height: calc(100vh - var(--space-md));
   color: rgba(var(--color-white-rgb, 255, 255, 255), 0.4);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  overflow-y: auto;
 }
 
 .menu-lateral__content {
   flex: 1 1 auto;
-  overflow-y: auto;
   overflow-x: hidden;
   /*background-color: inherit;*/
 }
@@ -1359,8 +1359,6 @@ a[aria-disabled=true] {
 .menu-lateral__accordeons {
   margin-top: auto;
   flex-shrink: 0;
-  position: sticky;
-  bottom: 0;
   /*background-color: inherit;*/
   width: calc(100% + 2 * var(--space-md));
   margin-left: calc(-1 * var(--space-md));
@@ -1619,12 +1617,12 @@ a[aria-disabled=true] {
     top: 50%;
     left: 0;
     transform: translateY(-50%);
-    transition: transform var(--transition-medium);
+    transition: transform var(--transition-slow);
   }
   .menu-lateral.is-hidden {
     transform: translate(calc(-100% - var(--space-2xl)), -50%);
     box-shadow: none;
-    display: none;
+    pointer-events: none;
   }
   .menu-lateral__reveal {
     position: fixed;
@@ -3594,7 +3592,7 @@ body.panneau-ouvert::before {
   display: grid;
   grid-template-columns: 280px 1fr;
   gap: var(--space-xl);
-  transition: grid-template-columns var(--transition-medium);
+  transition: grid-template-columns var(--transition-slow);
 }
 
 .enigme-layout > .menu-lateral {

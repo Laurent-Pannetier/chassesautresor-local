@@ -3,7 +3,7 @@
   display: grid;
   grid-template-columns: 280px 1fr;
   gap: var(--space-xl);
-  transition: grid-template-columns var(--transition-medium);
+  transition: grid-template-columns var(--transition-slow);
 }
 
 .enigme-layout > .menu-lateral {
