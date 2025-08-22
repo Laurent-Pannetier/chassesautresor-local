@@ -180,3 +180,89 @@ function creer_indice_et_rediriger_si_appel(): void
     exit;
 }
 add_action('template_redirect', 'creer_indice_et_rediriger_si_appel');
+
+/**
+ * Pré-remplit automatiquement le champ organisateur d'un indice lors de sa création.
+ *
+ * @param array $field Paramètres du champ ACF.
+ * @return array Champ modifié.
+ */
+function pre_remplir_indice_organisateur_linked(array $field): array
+{
+    global $post;
+
+    if (!$post || get_post_type($post->ID) !== 'indice') {
+        return $field;
+    }
+
+    $existing = get_post_meta($post->ID, 'indice_organisateur_linked', true);
+    if (!empty($existing)) {
+        return $field;
+    }
+
+    $chasse_id   = null;
+    $cible_type  = get_field('indice_cible', $post->ID);
+    $cible_objet = get_field('indice_cible_objet', $post->ID);
+
+    if ($cible_type === 'chasse') {
+        $chasse_id = (int) $cible_objet;
+    } elseif ($cible_type === 'enigme') {
+        $chasse_id = recuperer_id_chasse_associee((int) $cible_objet);
+    } elseif (isset($_GET['chasse_id'])) {
+        $chasse_id = (int) $_GET['chasse_id'];
+    }
+
+    if ($chasse_id) {
+        $organisateur_id = get_organisateur_from_chasse($chasse_id);
+        if ($organisateur_id) {
+            $field['value'] = $organisateur_id;
+        }
+    }
+
+    return $field;
+}
+add_filter('acf/load_field/name=indice_organisateur_linked', 'pre_remplir_indice_organisateur_linked');
+
+/**
+ * Sauvegarde l'organisateur lié si le champ est vide lors de l'enregistrement.
+ *
+ * @hook acf/save_post
+ *
+ * @param int|string $post_id ID du post ACF.
+ * @return void
+ */
+function sauvegarder_indice_organisateur_si_manquant($post_id): void
+{
+    if (!is_numeric($post_id) || get_post_type((int) $post_id) !== 'indice') {
+        return;
+    }
+
+    if (wp_is_post_revision($post_id) || wp_is_post_autosave($post_id)) {
+        return;
+    }
+
+    $organisateur = get_field('indice_organisateur_linked', $post_id);
+    if ($organisateur) {
+        return;
+    }
+
+    $chasse_id   = null;
+    $cible_type  = get_field('indice_cible', $post_id);
+    $cible_objet = get_field('indice_cible_objet', $post_id);
+
+    if ($cible_type === 'chasse') {
+        $chasse_id = (int) $cible_objet;
+    } elseif ($cible_type === 'enigme') {
+        $chasse_id = recuperer_id_chasse_associee((int) $cible_objet);
+    } elseif (isset($_GET['chasse_id'])) {
+        $chasse_id = (int) $_GET['chasse_id'];
+    }
+
+    if ($chasse_id) {
+        $organisateur_id = get_organisateur_from_chasse($chasse_id);
+        if ($organisateur_id) {
+            update_field('indice_organisateur_linked', $organisateur_id, $post_id);
+        }
+    }
+}
+add_action('acf/save_post', 'sauvegarder_indice_organisateur_si_manquant', 20);
