@@ -86,6 +86,24 @@ function initIndiceEdit() {
         }
       });
     });
+
+  // ==============================
+  // 📜 Panneau description (wysiwyg)
+  // ==============================
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.ouvrir-panneau-description');
+    if (!btn || btn.dataset.cpt !== 'indice') return;
+    if (typeof window.openPanel === 'function') {
+      window.openPanel('panneau-description-indice');
+    }
+  });
+  document
+    .querySelector('#panneau-description-indice .panneau-fermer')
+    ?.addEventListener('click', () => {
+      if (typeof window.closePanel === 'function') {
+        window.closePanel('panneau-description-indice');
+      }
+    });
 }
 
 document.addEventListener('DOMContentLoaded', initIndiceEdit);

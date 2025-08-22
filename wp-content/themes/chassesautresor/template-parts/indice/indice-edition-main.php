@@ -119,10 +119,26 @@ $selection = array_map('intval', $cible_objet);
                                     <div class="champ-feedback"></div>
                                 </li>
 
-                                <li class="champ-indice champ-texte <?= empty($texte) ? 'champ-vide' : 'champ-rempli'; ?>" data-champ="indice_contenu" data-cpt="indice" data-post-id="<?= esc_attr($indice_id); ?>">
+                                <li class="champ-indice champ-description <?= empty($texte) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_modifier ? '' : ' champ-desactive'; ?>" data-champ="indice_contenu" data-cpt="indice" data-post-id="<?= esc_attr($indice_id); ?>">
                                     <label><?= esc_html__('Texte', 'chassesautresor-com'); ?> <span class="champ-obligatoire">*</span></label>
-                                    <textarea class="champ-input champ-texte-edit" maxlength="1000" placeholder="<?= esc_attr__('renseigner le texte de l’indice', 'chassesautresor-com'); ?>"><?= esc_textarea($texte); ?></textarea>
-                                    <div class="champ-feedback"></div>
+                                    <div class="champ-texte">
+                                        <?php if (empty(trim($texte))) : ?>
+                                            <?php if ($peut_modifier) : ?>
+                                                <a href="#" class="champ-ajouter ouvrir-panneau-description" data-cpt="indice" data-champ="indice_contenu" data-post-id="<?= esc_attr($indice_id); ?>">
+                                                    <?= esc_html__('ajouter', 'chassesautresor-com'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                        <?php else : ?>
+                                            <span class="champ-texte-contenu">
+                                                <?= esc_html(wp_trim_words(wp_strip_all_tags($texte), 25)); ?>
+                                                <?php if ($peut_modifier) : ?>
+                                                    <button type="button" class="champ-modifier ouvrir-panneau-description" data-cpt="indice" data-champ="indice_contenu" data-post-id="<?= esc_attr($indice_id); ?>" aria-label="<?= esc_attr__('Modifier le texte de l’indice', 'chassesautresor-com'); ?>">
+                                                        <?= esc_html__('modifier', 'chassesautresor-com'); ?>
+                                                    </button>
+                                                <?php endif; ?>
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
                                 </li>
                             </ul>
                         </div>
@@ -195,3 +211,10 @@ $selection = array_map('intval', $cible_objet);
         </div>
     </div>
 </section>
+
+<?php
+// 📎 Panneau latéral d'édition du texte
+get_template_part('template-parts/indice/panneaux/indice-edition-description', null, [
+    'indice_id' => $indice_id,
+]);
+?>
