@@ -1190,6 +1190,17 @@ msgstr ""
 msgid "Définition du taux de résolution"
 msgstr ""
 
+#: template-parts/enigme/panneaux/enigme-edition-variantes.php:21
+msgid "Configurer les variantes de réponse"
+msgstr ""
+
+#: template-parts/enigme/panneaux/enigme-edition-variantes.php:55
+msgid "Respecter la casse"
+msgstr ""
+
+#: template-parts/enigme/panneaux/enigme-edition-variantes.php:77
+msgid "Enregistrer les variantes"
+
 #: inc/admin-functions.php:1849
 msgid "Votre demande de validation pour la chasse « %s » a été acceptée."
 msgstr ""
@@ -1208,5 +1219,6 @@ msgstr ""
 
 #: inc/admin-functions.php:1918
 msgid "Votre chasse « %s » a été bannie."
+
 msgstr ""
 

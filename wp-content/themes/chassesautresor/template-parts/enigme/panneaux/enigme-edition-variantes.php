@@ -18,7 +18,7 @@ for ($i = 1; $i <= 4; $i++) {
   <div class="panneau-lateral__contenu">
 
     <header class="panneau-lateral__header">
-      <h2>Configurer les variantes de réponse</h2>
+      <h2><?= esc_html__('Configurer les variantes de réponse', 'chassesautresor-com'); ?></h2>
       <button type="button" class="panneau-fermer" aria-label="Fermer les variantes">✖</button>
     </header>
 
@@ -52,7 +52,7 @@ for ($i = 1; $i <= 4; $i++) {
 
             <label class="label-casse">
               <input type="checkbox" name="<?= $inputCasse; ?>" <?= $casse ? 'checked' : ''; ?>>
-              Respecter la casse
+              <?= esc_html__('Respecter la casse', 'chassesautresor-com'); ?>
             </label>
 
             <button type="button" class="bouton-supprimer-ligne" aria-label="Supprimer cette variante">❌</button>
@@ -73,7 +73,9 @@ for ($i = 1; $i <= 4; $i++) {
 
 
       <div class="panneau-lateral__actions">
-        <button type="submit" class="bouton-enregistrer-description bouton-enregistrer-liens">💾 Enregistrer les variantes</button>
+        <button type="submit" class="bouton-enregistrer-description bouton-enregistrer-liens">
+          💾 <?= esc_html__('Enregistrer les variantes', 'chassesautresor-com'); ?>
+        </button>
       </div>
 
       <div class="champ-feedback champ-feedback-variantes" style="display:none;"></div>

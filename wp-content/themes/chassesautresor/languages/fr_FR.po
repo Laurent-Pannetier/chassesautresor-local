@@ -1157,3 +1157,15 @@ msgstr "Supprimer"
 msgid "Ex : soleil"
 msgstr "Ex : soleil"
 
+#: template-parts/enigme/panneaux/enigme-edition-variantes.php:21
+msgid "Configurer les variantes de réponse"
+msgstr "Configurer les variantes de réponse"
+
+#: template-parts/enigme/panneaux/enigme-edition-variantes.php:55
+msgid "Respecter la casse"
+msgstr "Respecter la casse"
+
+#: template-parts/enigme/panneaux/enigme-edition-variantes.php:77
+msgid "Enregistrer les variantes"
+msgstr "Enregistrer les variantes"
+

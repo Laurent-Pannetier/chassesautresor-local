@@ -1691,6 +1691,18 @@ msgstr "Remove"
 msgid "Ex : soleil"
 msgstr "E.g. sun"
 
+#: template-parts/enigme/panneaux/enigme-edition-variantes.php:21
+msgid "Configurer les variantes de réponse"
+msgstr "Configure answer variants"
+
+#: template-parts/enigme/panneaux/enigme-edition-variantes.php:55
+msgid "Respecter la casse"
+msgstr "Match case"
+
+#: template-parts/enigme/panneaux/enigme-edition-variantes.php:77
+msgid "Enregistrer les variantes"
+msgstr "Save variants"
+
 #: inc/admin-functions.php:1849
 msgid "Votre demande de validation pour la chasse « %s » a été acceptée."
 msgstr "Your validation request for the hunt “%s” was accepted."
@@ -1710,4 +1722,5 @@ msgstr "Administrator's message: %s"
 #: inc/admin-functions.php:1918
 msgid "Votre chasse « %s » a été bannie."
 msgstr "Your hunt “%s” was banned."
+
 
