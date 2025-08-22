@@ -4,9 +4,31 @@ defined('ABSPATH') || exit;
 // ==================================================
 // 💡 CRÉATION & ÉDITION D’UN INDICE
 // ==================================================
+// 🔹 enqueue_script_indice_edit() → Charge JS sur single indice
 // 🔹 register_endpoint_creer_indice() → Enregistre /creer-indice
 // 🔹 creer_indice_pour_objet() → Crée un indice lié à une chasse ou une énigme
 // 🔹 creer_indice_et_rediriger_si_appel() → Crée un indice et redirige
+
+/**
+ * Charge les scripts nécessaires à l’édition d’un indice.
+ *
+ * @return void
+ */
+function enqueue_script_indice_edit(): void
+{
+    if (!is_singular('indice')) {
+        return;
+    }
+
+    $indice_id = get_the_ID();
+    if (!utilisateur_peut_modifier_post($indice_id)) {
+        return;
+    }
+
+    enqueue_core_edit_scripts(['organisateur-edit']);
+    wp_enqueue_media();
+}
+add_action('wp_enqueue_scripts', 'enqueue_script_indice_edit');
 
 /**
  * Crée un indice lié à une chasse ou une énigme.
@@ -47,10 +69,20 @@ function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_i
         return $indice_id;
     }
 
+    $titre_objet = get_the_title($objet_id);
+    $nouveau_titre = sprintf(__('Indice #%d - %s', 'chassesautresor-com'), $indice_id, $titre_objet);
+    wp_update_post([
+        'ID'         => $indice_id,
+        'post_title' => $nouveau_titre,
+    ]);
+
     update_field('indice_cible', $objet_type, $indice_id);
     update_field('indice_cible_objet', $objet_id, $indice_id);
     update_field('indice_disponibilite', 'immediate', $indice_id);
-    update_field('indice_date_disponibilite', current_time('Y-m-d H:i:s'), $indice_id);
+
+    $date_disponibilite = wp_date('Y-m-d H:i:s', (int) current_time('timestamp') + DAY_IN_SECONDS);
+    update_field('indice_date_disponibilite', $date_disponibilite, $indice_id);
+
     update_field('indice_cout_points', 0, $indice_id);
     update_field('indice_cache_etat_systeme', 'accessible', $indice_id);
     update_field('indice_cache_complet', false, $indice_id);
