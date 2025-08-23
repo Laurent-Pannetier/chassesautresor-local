@@ -12,6 +12,26 @@ function initChampImage(bloc) {
 
   if (!champ || !cpt || !postId || !input || !image) return;
 
+  // 🔄 Charge l'image existante si un ID est déjà présent
+  const idInitial = parseInt(input.value, 10);
+  if (idInitial) {
+    const attachment = wp.media.attachment(idInitial);
+    attachment
+      .fetch()
+      .then(() => {
+        const data = attachment.attributes || {};
+        const thumb =
+          (data.sizes && (data.sizes.thumbnail || data.sizes.medium)?.url) ||
+          data.url;
+        if (thumb) {
+          image.src = thumb;
+          image.srcset = thumb;
+          bloc.classList.remove('champ-vide');
+        }
+      })
+      .catch(() => {});
+  }
+
   // ✅ Création du frame à la volée quand appelé
   const ouvrirMedia = () => {
     // ✅ Empêcher double ouverture : reuse si déjà initialisé
@@ -98,4 +118,8 @@ function initChampImage(bloc) {
 
   // ✅ On expose la fonction pour la déclencher manuellement
   bloc.__ouvrirMedia = ouvrirMedia;
+}
+
+if (typeof module !== 'undefined') {
+  module.exports = initChampImage;
 }
