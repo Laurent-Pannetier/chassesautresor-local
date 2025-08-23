@@ -41,5 +41,7 @@ function cta_render_proposition_cell(string $text, bool $expanded = false, int $
         $class .= ' expanded';
     }
 
-    return '<td class="' . $class . '">' . $excerpt_html . $full_html . $button_html . '</td>';
+    $content_html = '<div class="proposition-content">' . $excerpt_html . $full_html . $button_html . '</div>';
+
+    return '<td class="' . $class . '">' . $content_html . '</td>';
 }

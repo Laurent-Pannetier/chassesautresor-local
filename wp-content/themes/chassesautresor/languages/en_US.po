@@ -2404,3 +2404,20 @@ msgstr "Date and time required"
 msgid "Date invalide"
 msgstr "Invalid date"
 
+#: template-parts/common/indices-table.php:69
+msgid "accessible"
+msgstr "accessible"
+
+#: template-parts/common/indices-table.php:69
+msgid "programme"
+msgstr "scheduled"
+
+#: template-parts/common/indices-table.php:83
+msgid "programmé"
+msgstr "scheduled"
+
+#: template-parts/common/indices-table.php:75
+#, php-format
+msgid "programmé le %s"
+msgstr "scheduled for %s"
+

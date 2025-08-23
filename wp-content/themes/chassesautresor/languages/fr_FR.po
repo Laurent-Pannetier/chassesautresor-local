@@ -2352,3 +2352,19 @@ msgstr "Veuillez saisir une valeur en euros comprise entre 0 et 5 000 000."
 msgid "Voulez-vous vraiment supprimer la récompense ?"
 msgstr "Voulez-vous vraiment supprimer la récompense ?"
 
+#: template-parts/common/indices-table.php:69
+msgid "accessible"
+msgstr "accessible"
+
+#: template-parts/common/indices-table.php:69
+msgid "programme"
+msgstr "programmé"
+
+#: template-parts/common/indices-table.php:83
+msgid "programmé"
+msgstr "programmé"
+
+#: template-parts/common/indices-table.php:75
+msgid "programmé le %s"
+msgstr "programmé le %s"
+
