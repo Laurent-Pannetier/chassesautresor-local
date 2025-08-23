@@ -2388,6 +2388,22 @@ msgstr "Please enter a value in euros between 0 and 5,000,000."
 msgid "Voulez-vous vraiment supprimer la récompense ?"
 msgstr "Do you really want to delete the reward?"
 
+#: inc/edition/edition-core.php
+msgid "Choisir une image"
+msgstr "Choose an image"
+
+#: inc/edition/edition-core.php
+msgid "Au moins une image ou un texte nécessaire"
+msgstr "At least one image or text required"
+
+#: inc/edition/edition-core.php
+msgid "Date et heure requises"
+msgstr "Date and time required"
+
+#: inc/edition/edition-core.php
+msgid "Date invalide"
+msgstr "Invalid date"
+
 #: template-parts/common/indices-table.php:69
 msgid "accessible"
 msgstr "accessible"

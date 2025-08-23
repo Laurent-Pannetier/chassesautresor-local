@@ -3725,6 +3725,23 @@ body.panneau-ouvert::before {
   background: var(--color-editor-button-hover);
 }
 
+.indice-modal-form .indice-modal-validate:disabled {
+  cursor: not-allowed;
+}
+
+.indice-modal-form .indice-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+}
+
+.indice-modal-form .indice-state-message {
+  color: var(--color-editor-text-muted);
+  font-size: 0.875rem;
+}
+
 .indice-modal-form .date-wrapper input {
   width: 100%;
   background: var(--color-editor-background);
