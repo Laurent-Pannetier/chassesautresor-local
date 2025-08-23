@@ -45,17 +45,6 @@
 
 /* ========== ✅ AFFICHAGE DYNAMIQUE DE COMPLÉTION ========== */
 
-.resume-infos .icon-attente,
-.resume-infos .icone-check {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--editor-icon-width);
-  flex: 0 0 var(--editor-icon-width);
-  margin-right: 0.3rem;
-  overflow: hidden;
-}
-
 .resume-infos .champ-rempli .icon-attente {
   display: none;
 }
@@ -66,10 +55,6 @@
 
 .resume-infos .icone-check {
   color: var(--color-editor-success);
-}
-
-.resume-infos .edition-row-icon {
-  display: none;
 }
 
 /* Hauteur et alignement par défaut des lignes de paramètres */
@@ -116,14 +101,19 @@
   min-height: 40px;
 }
 
-.edition-row-icon {
-  width: var(--editor-icon-width);
-  margin-right: 0.3rem;
-  text-align: center;
-}
-
 .edition-row-label {
   width: var(--editor-label-width);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.edition-row-icon {
+  width: var(--editor-icon-width);
+  flex: 0 0 var(--editor-icon-width);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .edition-row-content {
@@ -834,7 +824,7 @@ body.edition-active-indice .edition-panel-indice.edition-panel-modal {
    « Informations ». */
 .resume-reglages .resume-infos > li > label,
 .resume-reglages .resume-infos > li > .champ-edition > label {
-  width: calc(var(--editor-label-width) + var(--editor-icon-width) + var(--space-xs) + 0.3rem);
+  width: calc(var(--editor-label-width) + var(--editor-icon-width) + var(--space-xs));
 }
 
 .resume-infos .champ-valeur {

@@ -349,8 +349,16 @@ function mettreAJourLigneResume(ligne, champ, estRempli, type) {
     );
   ligne.classList.toggle('champ-attention', estObligatoire && !estRempli);
 
+  const container = ligne.querySelector('.edition-row-label .edition-row-icon');
+
   // Nettoyer anciennes icônes
-  ligne.querySelectorAll(':scope > .icone-check, :scope > .icon-attente').forEach((i) => i.remove());
+  if (container) {
+    container.innerHTML = '';
+  } else {
+    ligne
+      .querySelectorAll(':scope > .icone-check, :scope > .icon-attente')
+      .forEach((i) => i.remove());
+  }
 
   // Ajouter nouvelle icône si autorisé
   if (ligne.dataset.noIcon === undefined) {
@@ -359,7 +367,11 @@ function mettreAJourLigneResume(ligne, champ, estRempli, type) {
       ? 'fa-solid fa-circle-check icone-check'
       : 'fa-regular fa-circle icon-attente';
     icone.setAttribute('aria-hidden', 'true');
-    ligne.prepend(icone);
+    if (container) {
+      container.appendChild(icone);
+    } else {
+      ligne.prepend(icone);
+    }
   }
 
   // Ajouter bouton édition ✏️ si besoin
