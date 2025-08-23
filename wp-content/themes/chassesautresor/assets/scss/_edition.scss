@@ -125,6 +125,14 @@
   flex: 1;
 }
 
+.edition-row.champ-attention .edition-row-label label {
+  color: var(--color-editor-error);
+}
+
+.resume-blocs-grid > .resume-bloc + .resume-bloc {
+  margin-top: var(--space-xl);
+}
+
 .cache {
   display: none;
 }

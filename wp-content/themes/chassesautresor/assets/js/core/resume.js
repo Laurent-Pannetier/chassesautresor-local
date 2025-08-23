@@ -351,6 +351,11 @@ function mettreAJourLigneResume(ligne, champ, estRempli, type) {
     );
   ligne.classList.toggle('champ-attention', estObligatoire && !estRempli);
 
+  const input = ligne.querySelector('input, textarea, select');
+  if (input) {
+    input.classList.toggle('champ-vide-obligatoire', estObligatoire && !estRempli);
+  }
+
   const container = ligne.querySelector('.edition-row-label .edition-row-icon');
 
   // Nettoyer anciennes icônes
