@@ -157,17 +157,41 @@ function reordonner_indices_pour_indice(int $indice_id): void
     $cible_type = get_field('indice_cible_type', $indice_id);
 
     if ($cible_type === 'chasse') {
-        $cible_id = (int) get_field('indice_chasse_linked', $indice_id);
+        $linked   = get_field('indice_chasse_linked', $indice_id);
     } elseif ($cible_type === 'enigme') {
-        $cible_id = (int) get_field('indice_enigme_linked', $indice_id);
+        $linked   = get_field('indice_enigme_linked', $indice_id);
     } else {
         return;
+    }
+
+    if (is_array($linked)) {
+        $first    = $linked[0] ?? null;
+        $cible_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
+    } else {
+        $cible_id = (int) $linked;
     }
 
     if ($cible_id) {
         reordonner_indices($cible_id, $cible_type);
     }
 }
+
+/**
+ * Réordonne les indices après sauvegarde d'un indice.
+ *
+ * @param int $post_id ID de l'indice.
+ * @return void
+ */
+function reordonner_indices_apres_enregistrement(int $post_id): void
+{
+    if (wp_is_post_revision($post_id) || wp_is_post_autosave($post_id)) {
+        return;
+    }
+
+    reordonner_indices_pour_indice($post_id);
+}
+
+add_action('save_post_indice', 'reordonner_indices_apres_enregistrement', 20, 1);
 
 /**
  * Crée un indice lié à une chasse ou une énigme.
@@ -653,6 +677,8 @@ function supprimer_indice_ajax(): void
     if (!$deleted) {
         wp_send_json_error('echec_suppression');
     }
+
+    reordonner_indices($objet_id, $cible_type);
 
     wp_send_json_success();
 }

@@ -23,6 +23,31 @@ namespace {
             return $text;
         }
     }
+    if (!function_exists('get_field')) {
+        function get_field($key, $post_id)
+        {
+            if ($key === 'indice_cible_type') {
+                return 'chasse';
+            }
+            if ($key === 'indice_chasse_linked') {
+                return 5;
+            }
+
+            return null;
+        }
+    }
+    if (!function_exists('wp_is_post_revision')) {
+        function wp_is_post_revision($post_id)
+        {
+            return false;
+        }
+    }
+    if (!function_exists('wp_is_post_autosave')) {
+        function wp_is_post_autosave($post_id)
+        {
+            return false;
+        }
+    }
 }
 
 namespace ReordonnerIndicesTest {
@@ -83,6 +108,23 @@ namespace ReordonnerIndicesTest {
             require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
 
             \reordonner_indices(5, 'chasse');
+
+            $this->assertCount(3, $updated_posts);
+            $this->assertSame(['ID' => 10, 'post_title' => 'Indice #1'], $updated_posts[0]);
+            $this->assertSame(['ID' => 20, 'post_title' => 'Indice #2'], $updated_posts[1]);
+            $this->assertSame(['ID' => 30, 'post_title' => 'Indice #3'], $updated_posts[2]);
+        }
+
+        /**
+         * @runInSeparateProcess
+         * @preserveGlobalState disabled
+         */
+        public function test_reorders_after_save_post(): void
+        {
+            global $updated_posts;
+            require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
+
+            \reordonner_indices_apres_enregistrement(99);
 
             $this->assertCount(3, $updated_posts);
             $this->assertSame(['ID' => 10, 'post_title' => 'Indice #1'], $updated_posts[0]);
