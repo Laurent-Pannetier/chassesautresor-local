@@ -225,37 +225,17 @@ function ajax_chasse_lister_indices(): void
         wp_send_json_error('post_invalide');
     }
 
-    if (!current_user_can('administrator')
-        && !utilisateur_est_organisateur_associe_a_chasse(get_current_user_id(), $chasse_id)
-    ) {
+    if (!indice_action_autorisee('edit', 'chasse', $chasse_id)) {
         wp_send_json_error('acces_refuse');
     }
-
-    $indices = get_posts([
-        'post_type'      => 'indice',
-        'posts_per_page' => -1,
-        'post_status'    => ['publish', 'pending', 'draft'],
-        'orderby'        => 'ID',
-        'order'          => 'ASC',
-        'meta_query'     => [
-            [
-                'key'   => 'indice_cible_type',
-                'value' => 'chasse',
-            ],
-            [
-                'key'   => 'indice_chasse_linked',
-                'value' => $chasse_id,
-            ],
-        ],
-    ]);
 
     ob_start();
     get_template_part(
         'template-parts/chasse/partials/chasse-partial-indices',
         null,
         [
-            'chasse_id' => $chasse_id,
-            'indices'   => $indices,
+            'objet_id'   => $chasse_id,
+            'objet_type' => 'chasse',
         ]
     );
     $html = ob_get_clean();
@@ -263,6 +243,78 @@ function ajax_chasse_lister_indices(): void
     wp_send_json_success(['html' => $html]);
 }
 add_action('wp_ajax_chasse_lister_indices', 'ajax_chasse_lister_indices');
+
+/**
+ * AJAX handler returning indices table HTML.
+ *
+ * @return void
+ */
+function ajax_indices_lister_table(): void
+{
+    if (!is_user_logged_in()) {
+        wp_send_json_error('non_connecte');
+    }
+
+    $objet_id   = isset($_POST['objet_id']) ? (int) $_POST['objet_id'] : 0;
+    $objet_type = sanitize_key($_POST['objet_type'] ?? '');
+    $page       = isset($_POST['page']) ? (int) $_POST['page'] : 1;
+
+    if (!$objet_id || !in_array($objet_type, ['chasse', 'enigme'], true)
+        || get_post_type($objet_id) !== $objet_type
+    ) {
+        wp_send_json_error('post_invalide');
+    }
+
+    if (!indice_action_autorisee('edit', $objet_type, $objet_id)) {
+        wp_send_json_error('acces_refuse');
+    }
+
+    $per_page = 10;
+    $meta     = [
+        [
+            'key'   => 'indice_cible_type',
+            'value' => $objet_type,
+        ],
+    ];
+    if ($objet_type === 'chasse') {
+        $meta[] = [
+            'key'   => 'indice_chasse_linked',
+            'value' => $objet_id,
+        ];
+    } else {
+        $meta[] = [
+            'key'   => 'indice_enigme_linked',
+            'value' => $objet_id,
+        ];
+    }
+
+    $query = new WP_Query([
+        'post_type'      => 'indice',
+        'post_status'    => ['publish', 'pending', 'draft'],
+        'orderby'        => 'date',
+        'order'          => 'DESC',
+        'posts_per_page' => $per_page,
+        'paged'          => max(1, $page),
+        'meta_query'     => $meta,
+    ]);
+
+    ob_start();
+    get_template_part('template-parts/common/indices-table', null, [
+        'indices'    => $query->posts,
+        'page'       => max(1, $page),
+        'pages'      => (int) $query->max_num_pages,
+        'objet_type' => $objet_type,
+        'objet_id'   => $objet_id,
+    ]);
+    $html = ob_get_clean();
+
+    wp_send_json_success([
+        'html'  => $html,
+        'page'  => max(1, $page),
+        'pages' => (int) $query->max_num_pages,
+    ]);
+}
+add_action('wp_ajax_indices_lister_table', 'ajax_indices_lister_table');
 
 /**
  * Gère l’enregistrement AJAX des champs ACF ou natifs du CPT indice.
