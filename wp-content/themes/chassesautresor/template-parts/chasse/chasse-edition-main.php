@@ -860,10 +860,10 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                           . '&format=' . $format;
                   ?>
                   <div class="dashboard-card champ-qr-code">
-                    <img class="qr-code-icon" src="<?= esc_url($url_qr_code); ?>" alt="QR code de la chasse">
-                    <h3>QR code de votre chasse</h3>
+                    <img class="qr-code-icon" src="<?= esc_url($url_qr_code); ?>" alt="<?= esc_attr__('QR code de la chasse', 'chassesautresor-com'); ?>">
+                    <h3><?= esc_html__('QR code de votre chasse', 'chassesautresor-com'); ?></h3>
                     <a class="stat-value" href="<?= esc_url($url_qr_code); ?>"
-                      download="<?= esc_attr('qr-chasse-' . $chasse_id . '.' . $format); ?>">Télécharger</a>
+                      download="<?= esc_attr('qr-chasse-' . $chasse_id . '.' . $format); ?>"><?= esc_html__('Télécharger', 'chassesautresor-com'); ?></a>
                   </div>
                   <?php endif; ?>
                 </div>
