@@ -100,9 +100,9 @@ class CreerIndicePermissionsTest extends TestCase
 
         $result = \creer_indice_pour_objet(42, 'chasse');
         $this->assertSame(123, $result);
-        $this->assertSame('chasse', $updated_fields['indice_cible']);
-        $this->assertSame(42, $updated_fields['indice_cible_objet']);
+        $this->assertSame('chasse', $updated_fields['indice_cible_type']);
         $this->assertSame(42, $updated_fields['indice_chasse_linked']);
+        $this->assertArrayNotHasKey('indice_enigme_linked', $updated_fields);
         $expected_date = wp_date('Y-m-d H:i:s', (int) current_time('timestamp') + DAY_IN_SECONDS);
         $this->assertSame($expected_date, $updated_fields['indice_date_disponibilite']);
         $this->assertSame('desactive', $updated_fields['indice_cache_etat_systeme']);

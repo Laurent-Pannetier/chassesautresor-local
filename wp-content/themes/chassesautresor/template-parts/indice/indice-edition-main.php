@@ -20,8 +20,8 @@ $titre          = get_the_title($indice_id);
 $image_id       = get_field('indice_image', $indice_id);
 $image_url      = $image_id ? wp_get_attachment_image_url($image_id, 'thumbnail') : '';
 $texte          = get_field('indice_contenu', $indice_id);
-$cible          = get_field('indice_cible', $indice_id) ?: 'chasse';
-$cible_objet    = (array) get_field('indice_cible_objet', $indice_id, false);
+$cible          = get_field('indice_cible_type', $indice_id) ?: 'chasse';
+$enigmes_liees  = (array) get_field('indice_enigme_linked', $indice_id, false);
 $chasse_liee    = get_field('indice_chasse_linked', $indice_id, false);
 $disponibilite  = get_field('indice_disponibilite', $indice_id) ?: 'immediate';
 $date_dispo     = get_field('indice_date_disponibilite', $indice_id);
@@ -42,7 +42,7 @@ foreach ($enigmes_posts as $enigma) {
         $enigmes_eligibles[$enigma->ID] = get_the_title($enigma->ID);
     }
 }
-$selection = array_map('intval', $cible_objet);
+$selection = array_map('intval', $enigmes_liees);
 ?>
 
 <section class="edition-panel edition-panel-indice edition-panel-modal" data-cpt="indice" data-post-id="<?= esc_attr($indice_id); ?>">
@@ -147,13 +147,13 @@ $selection = array_map('intval', $cible_objet);
                         <div class="resume-bloc resume-reglages">
                             <h3><?= esc_html__('Réglages', 'chassesautresor-com'); ?></h3>
                             <ul class="resume-infos">
-                                <li class="champ-indice champ-cible <?= ($cible === 'enigme' && empty($selection)) ? 'champ-vide' : 'champ-rempli'; ?>" data-champ="indice_cible" data-cpt="indice" data-post-id="<?= esc_attr($indice_id); ?>">
+                                <li class="champ-indice champ-cible <?= ($cible === 'enigme' && empty($selection)) ? 'champ-vide' : 'champ-rempli'; ?>" data-champ="indice_cible_type" data-cpt="indice" data-post-id="<?= esc_attr($indice_id); ?>">
                                     <label><?= esc_html__('Aide pour', 'chassesautresor-com'); ?></label>
                                     <div class="champ-radio">
-                                        <label><input type="radio" name="acf[indice_cible]" value="chasse" <?= $cible === 'chasse' ? 'checked' : ''; ?>> <?= esc_html__('Chasse', 'chassesautresor-com'); ?></label>
-                                        <label><input type="radio" name="acf[indice_cible]" value="enigme" <?= $cible === 'enigme' ? 'checked' : ''; ?>> <?= esc_html__('Énigmes', 'chassesautresor-com'); ?></label>
+                                        <label><input type="radio" name="acf[indice_cible_type]" value="chasse" <?= $cible === 'chasse' ? 'checked' : ''; ?>> <?= esc_html__('Chasse', 'chassesautresor-com'); ?></label>
+                                        <label><input type="radio" name="acf[indice_cible_type]" value="enigme" <?= $cible === 'enigme' ? 'checked' : ''; ?>> <?= esc_html__('Énigmes', 'chassesautresor-com'); ?></label>
                                     </div>
-                                    <div id="champ-indice-cible-enigmes" class="champ-indice champ-pre-requis<?= $cible === 'enigme' ? '' : ' cache'; ?><?= empty($enigmes_eligibles) ? ' champ-vide' : ''; ?>" data-champ="indice_cible_objet" data-cpt="indice" data-post-id="<?= esc_attr($indice_id); ?>" data-no-edit="1" data-chasse-id="<?= esc_attr($chasse_liee); ?>">
+                                    <div id="champ-indice-cible-enigmes" class="champ-indice champ-pre-requis<?= $cible === 'enigme' ? '' : ' cache'; ?><?= empty($enigmes_eligibles) ? ' champ-vide' : ''; ?>" data-champ="indice_enigme_linked" data-cpt="indice" data-post-id="<?= esc_attr($indice_id); ?>" data-no-edit="1" data-chasse-id="<?= esc_attr($chasse_liee); ?>">
                                         <?php if (empty($enigmes_eligibles)) : ?>
                                             <em><?= esc_html__('Aucune énigme disponible.', 'chassesautresor-com'); ?></em>
                                         <?php else : ?>

@@ -468,18 +468,18 @@ Label : texte de l indice
 Instructions : (vide)
 Requis : non
 ----------------------------------------
-— indice_cible —
+— indice_cible_type —
 Type : radio
-Label : contenu ciblé
+Label : type de contenu ciblé
 Instructions : (vide)
 Requis : non
 Choices :
   - chasse : chasse
   - enigme : énigme
 ----------------------------------------
-— indice_cible_objet —
+— indice_enigme_linked —
 Type : relationship
-Label : cible
+Label : énigme liée
 Instructions : (vide)
 Requis : non
 ----------------------------------------
