@@ -870,11 +870,6 @@ add_action('before_delete_post', 'memoriser_cible_indice_avant_suppression');
 function reordonner_indices_apres_suppression(int $post_id): void
 {
     global $indice_delete_context;
-
-    if (get_post_type($post_id) !== 'indice') {
-        return;
-    }
-
     if ($indice_delete_context) {
         reordonner_indices($indice_delete_context['id'], $indice_delete_context['type']);
         $indice_delete_context = null;

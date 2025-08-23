@@ -49,5 +49,23 @@ namespace ReordonnerIndicesTest {
             $this->assertSame(['ID' => 20, 'post_title' => 'Indice #2'], $updated_posts[1]);
             $this->assertSame(['ID' => 30, 'post_title' => 'Indice #3'], $updated_posts[2]);
         }
+
+        /**
+         * @runInSeparateProcess
+         * @preserveGlobalState disabled
+         */
+        public function test_reorders_after_permanent_deletion(): void
+        {
+            global $updated_posts, $indice_delete_context;
+            require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
+
+            $indice_delete_context = ['id' => 5, 'type' => 'chasse'];
+            \reordonner_indices_apres_suppression(99);
+
+            $this->assertCount(3, $updated_posts);
+            $this->assertSame(['ID' => 10, 'post_title' => 'Indice #1'], $updated_posts[0]);
+            $this->assertSame(['ID' => 20, 'post_title' => 'Indice #2'], $updated_posts[1]);
+            $this->assertSame(['ID' => 30, 'post_title' => 'Indice #3'], $updated_posts[2]);
+        }
     }
 }
