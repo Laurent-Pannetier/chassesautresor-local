@@ -2272,6 +2272,18 @@ msgstr "Your answer"
 msgid "Tentatives quotidiennes"
 msgstr "Daily Attempts"
 
+#: template-parts/common/indices-table.php:29
+msgid "Vous n'avez publié aucun indice attaché à %s"
+msgstr "You haven't published any clue attached to %s"
+
+#: template-parts/common/indices-table.php:25
+msgid "en création"
+msgstr "in creation"
+
+#: template-parts/common/indices-table.php:27
+msgid "Nouvelle chasse"
+msgstr "New hunt"
+
 #~ msgid "Activer Orgy"
 #~ msgstr "Enable Orgy"
 

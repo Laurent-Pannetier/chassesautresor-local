@@ -21,6 +21,11 @@ $objet_id   = $args['objet_id'] ?? $objet_id ?? 0;
 
 if (empty($indices)) {
     $titre = get_the_title($objet_id);
+    if ($titre === TITRE_DEFAUT_ENIGME) {
+        $titre = __('en création', 'chassesautresor-com');
+    } elseif ($titre === TITRE_DEFAUT_CHASSE) {
+        $titre = __('Nouvelle chasse', 'chassesautresor-com');
+    }
     echo '<p>' . esc_html(sprintf(__('Vous n\'avez publié aucun indice attaché à %s', 'chassesautresor-com'), $titre)) . '</p>';
     return;
 }
