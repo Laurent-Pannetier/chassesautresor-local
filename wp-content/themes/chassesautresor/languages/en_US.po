@@ -425,6 +425,12 @@ msgstr "View Stats"
 msgid "Indices"
 msgstr "Hints"
 
+#: template-parts/chasse/chasse-edition-main.php:708
+#: template-parts/enigme/enigme-edition-main.php:774
+#, php-format
+msgid "Indices pour %s"
+msgstr "Hints for %s"
+
 #: inc/enigme/affichage.php:677
 msgid "automatique"
 msgstr "automatic"
