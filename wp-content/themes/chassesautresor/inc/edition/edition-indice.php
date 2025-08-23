@@ -386,6 +386,8 @@ function ajax_creer_indice_modal(): void
         update_field('indice_date_disponibilite', $date, $indice_id);
     }
 
+    mettre_a_jour_cache_indice($indice_id);
+
     wp_send_json_success(['indice_id' => $indice_id]);
 }
 add_action('wp_ajax_creer_indice_modal', 'ajax_creer_indice_modal');
@@ -430,6 +432,8 @@ function ajax_modifier_indice_modal(): void
     } else {
         update_field('indice_date_disponibilite', '', $indice_id);
     }
+
+    mettre_a_jour_cache_indice($indice_id);
 
     wp_send_json_success(['indice_id' => $indice_id]);
 }
@@ -680,6 +684,15 @@ function mettre_a_jour_cache_indice($post_id): void
     }
 
     update_field('indice_cache_etat_systeme', $state, $post_id);
+
+    $status = get_post_status($post_id);
+    if ($complete && $state === 'accessible') {
+        if ($status !== 'publish') {
+            wp_update_post(['ID' => $post_id, 'post_status' => 'publish']);
+        }
+    } elseif ($status === 'publish') {
+        wp_update_post(['ID' => $post_id, 'post_status' => 'pending']);
+    }
 }
 
 add_action('acf/save_post', 'mettre_a_jour_cache_indice', 30);
