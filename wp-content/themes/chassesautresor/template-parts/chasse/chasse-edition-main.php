@@ -458,7 +458,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                                 name="chasse-nb-gagnants"
                                 value="<?= esc_attr($nb_max); ?>"
                                 min="1"
-                                class="champ-inline-nb champ-nb-edit champ-input"
+                                class="champ-inline-nb champ-nb-edit champ-input champ-number"
                                 <?= ($peut_editer && $nb_max != 0) ? '' : 'disabled'; ?> />
 
                             <div class="champ-option-illimitee ">
@@ -592,7 +592,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                             ?>
                             <div style="display: flex; align-items: center;">
                                 <input type="number"
-                                    class="champ-input champ-cout"
+                                    class="champ-input champ-cout champ-number"
                                     min="0"
                                     step="1"
                                     value="<?= esc_attr($cout); ?>"

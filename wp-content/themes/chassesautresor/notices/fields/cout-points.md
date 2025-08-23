@@ -21,7 +21,7 @@ Actuellement utilisé pour :
     <label>Coût <span class="txt-small">(points)</span></label>
 
     <input type="number"
-           class="champ-input champ-cout"
+           class="champ-input champ-cout champ-number"
            min="0"
            step="1"
            value="<?= esc_attr($cout); ?>"

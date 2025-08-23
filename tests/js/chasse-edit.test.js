@@ -17,7 +17,7 @@ const html = `
       <li class="edition-row champ-nb-gagnants" data-post-id="1">
         <div class="edition-row-label"><label for="chasse-nb-gagnants">Nb gagnants</label></div>
         <div class="edition-row-content">
-          <input id="chasse-nb-gagnants" value="0" class="champ-input">
+          <input type="number" id="chasse-nb-gagnants" value="0" class="champ-input champ-number">
           <input type="checkbox" id="nb-gagnants-illimite">
         </div>
       </li>

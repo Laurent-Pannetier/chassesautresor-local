@@ -2105,7 +2105,7 @@ body .header-img-modifiable .icone-modif {
 }
 
 .edition-panel-body input.champ-number {
-  max-width: 8ch;
+  width: 75px;
 }
 
 @media (min-width: 768px) {

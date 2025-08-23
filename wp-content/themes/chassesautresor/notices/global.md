@@ -563,7 +563,7 @@ En revanche, les champs obligatoires ou facultatifs sont masqués derrière un r
           name="chasse-nb-gagnants"
           value="<?= esc_attr($nb_max); ?>"
           min="1"
-          class="champ-inline-nb champ-nb-edit" 
+          class="champ-inline-nb champ-nb-edit champ-number"
           <?= ($nb_max == 0 ? 'disabled' : ''); ?> />
 
   <div class="champ-option-illimitee ">
