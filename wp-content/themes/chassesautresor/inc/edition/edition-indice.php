@@ -286,7 +286,7 @@ function ajax_indices_lister_table(): void
             ],
             [
                 'key'     => 'indice_chasse_linked',
-                'value'   => 'i:' . $objet_id . ';',
+                'value'   => '"' . $objet_id . '"',
                 'compare' => 'LIKE',
             ],
         ];
@@ -300,7 +300,7 @@ function ajax_indices_lister_table(): void
             ],
             [
                 'key'     => 'indice_enigme_linked',
-                'value'   => 'i:' . $objet_id . ';',
+                'value'   => '"' . $objet_id . '"',
                 'compare' => 'LIKE',
             ],
         ];
