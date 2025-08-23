@@ -1711,6 +1711,86 @@ a[aria-disabled=true] {
   margin-bottom: var(--space-md);
 }
 
+.indice-create-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(var(--color-black-rgb), 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20000;
+}
+
+.indice-create-modal {
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  padding: var(--space-lg);
+  border: 1px solid var(--color-secondary);
+  border-radius: 8px;
+  max-width: 500px;
+  width: 90%;
+  box-sizing: border-box;
+  position: relative;
+  font-family: var(--font-main);
+  z-index: 20001;
+}
+
+.indice-create-close {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: var(--color-text-primary);
+}
+
+.indice-create-form label {
+  display: block;
+  margin-bottom: var(--space-sm);
+}
+
+.indice-create-form textarea {
+  width: 100%;
+  min-height: 100px;
+  background: var(--color-background-dark);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-secondary);
+  border-radius: 4px;
+  padding: var(--space-sm);
+  box-sizing: border-box;
+}
+
+.indice-create-form .select-image,
+.indice-create-form .indice-create-validate {
+  background: var(--color-background-button);
+  color: var(--color-text-primary);
+  border: none;
+  border-radius: 4px;
+  padding: var(--space-sm) var(--space-md);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.indice-create-form .select-image:hover,
+.indice-create-form .indice-create-validate:hover {
+  background: var(--color-background-button-hover);
+}
+
+.indice-create-form .date-wrapper input {
+  width: 100%;
+  background: var(--color-background-dark);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-secondary);
+  border-radius: 4px;
+  padding: var(--space-sm);
+  box-sizing: border-box;
+}
+
 /* ==========================================================
 📌 Orgy – Panneaux d'édition frontaux
 ========================================================== */

@@ -2,16 +2,6 @@
   function openModal(btn) {
     var overlay = document.createElement('div');
     overlay.className = 'indice-create-overlay';
-    overlay.style.position = 'fixed';
-    overlay.style.top = '0';
-    overlay.style.left = '0';
-    overlay.style.right = '0';
-    overlay.style.bottom = '0';
-    overlay.style.background = 'rgba(0,0,0,.5)';
-    overlay.style.display = 'flex';
-    overlay.style.alignItems = 'center';
-    overlay.style.justifyContent = 'center';
-    overlay.style.zIndex = '1000';
     overlay.innerHTML = `
       <div class="indice-create-modal">
         <button type="button" class="indice-create-close" aria-label="${indicesCreate.texts.close}">×</button>
@@ -25,17 +15,10 @@
           <p><label><input type="radio" name="indice_disponibilite" value="immediate" checked /> ${indicesCreate.texts.immediate}</label>
              <label><input type="radio" name="indice_disponibilite" value="differe" /> ${indicesCreate.texts.differe}</label></p>
           <p class="date-wrapper" style="display:none;"><input type="datetime-local" name="indice_date_disponibilite" /></p>
-          <p><button type="submit">${indicesCreate.texts.valider}</button></p>
+          <p><button type="submit" class="indice-create-validate">${indicesCreate.texts.valider}</button></p>
         </form>
       </div>`;
     document.body.appendChild(overlay);
-
-    var modal = overlay.querySelector('.indice-create-modal');
-    modal.style.background = '#fff';
-    modal.style.padding = '20px';
-    modal.style.maxWidth = '500px';
-    modal.style.width = '90%';
-    modal.style.boxSizing = 'border-box';
 
     function close() {
       overlay.remove();
