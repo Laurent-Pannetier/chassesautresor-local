@@ -1666,3 +1666,11 @@ msgstr "No puzzles available"
 msgid "Aucun gagnant pour le moment."
 msgstr "No winners yet."
 
+#: assets/js/table-etiquette.js:1
+msgid "Accessible"
+msgstr "Accessible"
+
+#: assets/js/table-etiquette.js:1
+msgid "Programmed on"
+msgstr "Programmed on"
+

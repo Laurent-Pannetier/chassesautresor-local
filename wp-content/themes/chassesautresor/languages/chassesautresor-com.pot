@@ -1184,3 +1184,11 @@ msgstr ""
 msgid "Définition du taux de résolution"
 msgstr ""
 
+#: assets/js/table-etiquette.js:1
+msgid "Accessible"
+msgstr ""
+
+#: assets/js/table-etiquette.js:1
+msgid "Programmed on"
+msgstr ""
+

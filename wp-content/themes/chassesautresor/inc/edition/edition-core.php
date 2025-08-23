@@ -136,6 +136,17 @@ function enqueue_core_edit_scripts(array $additional = [])
       $versions[$handle],
       true
     );
+
+    if ($handle === 'table-etiquette') {
+      wp_localize_script(
+        'table-etiquette',
+        'TableEtiquetteI18N',
+        [
+          'programmedOn' => __('Programmed on', 'chassesautresor-com'),
+          'accessible'   => __('Accessible', 'chassesautresor-com'),
+        ]
+      );
+    }
   }
 }
 

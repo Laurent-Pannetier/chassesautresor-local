@@ -1138,3 +1138,11 @@ msgstr "Part moyenne des énigmes auxquelles chaque joueur a participé, rapport
 msgid "Définition du taux de résolution"
 msgstr "Définition du taux de résolution"
 
+#: assets/js/table-etiquette.js:1
+msgid "Accessible"
+msgstr "Accessible"
+
+#: assets/js/table-etiquette.js:1
+msgid "Programmed on"
+msgstr "Programmé le"
+
