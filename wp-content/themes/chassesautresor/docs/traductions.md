@@ -32,3 +32,27 @@ done
 ```
 
 Ne pas versionner les fichiers `.mo` compilés.
+
+## Mise à jour du catalogue de chaînes
+
+À la racine du thème, regénérer le fichier modèle avant toute session de traduction :
+
+```bash
+wp i18n make-pot . languages/chassesautresor-com.pot
+```
+
+## Traductions JavaScript
+
+Après avoir mis à jour les fichiers `.po`, créer les fichiers `json` nécessaires aux scripts :
+
+```bash
+wp i18n make-json languages
+```
+
+## Conseils pratiques
+
+- Encapsuler toutes les chaînes destinées aux utilisateurs avec `__()` ou une fonction équivalente et le domaine `chassesautresor-com`.
+- Ajouter des commentaires `/* translators: ... */` pour expliquer les placeholders complexes.
+- Utiliser l’interface anglaise pendant le développement pour repérer immédiatement les textes non traduits.
+- Utiliser `rg` pour repérer les chaînes non internationalisées dans le code.
+- Poedit ou Loco Translate peuvent générer des rapports de couverture de traduction.
