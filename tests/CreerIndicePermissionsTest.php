@@ -79,7 +79,7 @@ namespace {
     }
 
     if (!function_exists('wp_update_post')) {
-        function wp_update_post($args) { global $updated_post; $updated_post = $args; return 123; }
+        function wp_update_post($args) { global $updated_posts; $updated_posts[] = $args; return $args['ID'] ?? 123; }
     }
 
     if (!function_exists('update_field')) {
@@ -147,10 +147,10 @@ class CreerIndicePermissionsTest extends TestCase
 
     public function test_creates_indice_when_authorised(): void
     {
-        global $can_edit, $updated_fields, $updated_post, $mocked_existing_indices;
+        global $can_edit, $updated_fields, $updated_posts, $mocked_existing_indices;
         $can_edit = true;
         $updated_fields = [];
-        $updated_post = [];
+        $updated_posts = [];
         $mocked_existing_indices = [10, 11];
 
         $result = \creer_indice_pour_objet(42, 'chasse');
@@ -162,7 +162,7 @@ class CreerIndicePermissionsTest extends TestCase
         $this->assertSame($expected_date, $updated_fields['indice_date_disponibilite']);
         $this->assertSame('desactive', $updated_fields['indice_cache_etat_systeme']);
         $this->assertFalse($updated_fields['indice_cache_complet']);
-        $this->assertSame('Indice #3', $updated_post['post_title']);
+        $this->assertSame('Indice #3', $updated_posts[0]['post_title']);
     }
 
     public function test_utilisateur_peut_editer_indice_desactive(): void

@@ -87,6 +87,84 @@ function prochain_rang_indice(int $objet_id, string $objet_type): int
 }
 
 /**
+ * Renomme les indices d'une chasse ou d'une énigme en séquence.
+ *
+ * @param int    $objet_id   ID de la chasse ou de l'énigme.
+ * @param string $objet_type Type de cible ('chasse' ou 'enigme').
+ * @return void
+ */
+function reordonner_indices(int $objet_id, string $objet_type): void
+{
+    if (!in_array($objet_type, ['chasse', 'enigme'], true)) {
+        return;
+    }
+
+    $meta_key = $objet_type === 'chasse'
+        ? 'indice_chasse_linked'
+        : 'indice_enigme_linked';
+
+    $indices = get_posts([
+        'post_type'      => 'indice',
+        'post_status'    => ['publish', 'pending', 'draft', 'private', 'future'],
+        'meta_query'     => [
+            [
+                'key'     => 'indice_cible_type',
+                'value'   => $objet_type,
+                'compare' => '=',
+            ],
+            [
+                'key'     => $meta_key,
+                'value'   => $objet_id,
+                'compare' => '=',
+            ],
+            [
+                'key'     => 'indice_cache_etat_systeme',
+                'value'   => ['programme', 'accessible'],
+                'compare' => 'IN',
+            ],
+        ],
+        'orderby'        => 'date',
+        'order'          => 'ASC',
+        'fields'         => 'ids',
+        'no_found_rows'  => true,
+        'posts_per_page' => -1,
+    ]);
+
+    $i = 1;
+    foreach ($indices as $indice_id) {
+        $title = sprintf(__('Indice #%d', 'chassesautresor-com'), $i);
+        wp_update_post([
+            'ID'         => $indice_id,
+            'post_title' => $title,
+        ]);
+        $i++;
+    }
+}
+
+/**
+ * Renomme les indices liés à l'indice donné.
+ *
+ * @param int $indice_id ID de l'indice.
+ * @return void
+ */
+function reordonner_indices_pour_indice(int $indice_id): void
+{
+    $cible_type = get_field('indice_cible_type', $indice_id);
+
+    if ($cible_type === 'chasse') {
+        $cible_id = (int) get_field('indice_chasse_linked', $indice_id);
+    } elseif ($cible_type === 'enigme') {
+        $cible_id = (int) get_field('indice_enigme_linked', $indice_id);
+    } else {
+        return;
+    }
+
+    if ($cible_id) {
+        reordonner_indices($cible_id, $cible_type);
+    }
+}
+
+/**
  * Crée un indice lié à une chasse ou une énigme.
  *
  * @param int      $objet_id   ID de la chasse ou de l’énigme.
@@ -153,6 +231,8 @@ function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_i
     update_field('indice_cout_points', 0, $indice_id);
     update_field('indice_cache_complet', false, $indice_id);
     update_field('indice_cache_etat_systeme', 'desactive', $indice_id);
+
+    reordonner_indices($objet_id, $objet_type);
 
     return $indice_id;
 }
@@ -701,6 +781,8 @@ function mettre_a_jour_cache_indice($post_id): void
     } elseif ($status === 'publish') {
         wp_update_post(['ID' => $post_id, 'post_status' => 'pending']);
     }
+
+    reordonner_indices_pour_indice((int) $post_id);
 }
 
 add_action('acf/save_post', 'mettre_a_jour_cache_indice', 30);
@@ -750,3 +832,53 @@ function planifier_tache_basculer_indices_programmes(): void
     }
 }
 add_action('after_switch_theme', 'planifier_tache_basculer_indices_programmes');
+
+/**
+ * Enregistre la cible d'un indice avant suppression définitive.
+ *
+ * @param int $post_id ID du post.
+ * @return void
+ */
+function memoriser_cible_indice_avant_suppression(int $post_id): void
+{
+    global $indice_delete_context;
+
+    if (get_post_type($post_id) !== 'indice') {
+        return;
+    }
+
+    $cible_type = get_field('indice_cible_type', $post_id);
+
+    if ($cible_type === 'chasse') {
+        $cible_id = (int) get_field('indice_chasse_linked', $post_id);
+    } elseif ($cible_type === 'enigme') {
+        $cible_id = (int) get_field('indice_enigme_linked', $post_id);
+    } else {
+        return;
+    }
+
+    $indice_delete_context = ['id' => $cible_id, 'type' => $cible_type];
+}
+add_action('before_delete_post', 'memoriser_cible_indice_avant_suppression');
+
+/**
+ * Réordonne les indices après suppression définitive.
+ *
+ * @param int $post_id ID du post.
+ * @return void
+ */
+function reordonner_indices_apres_suppression(int $post_id): void
+{
+    global $indice_delete_context;
+
+    if (get_post_type($post_id) !== 'indice') {
+        return;
+    }
+
+    if ($indice_delete_context) {
+        reordonner_indices($indice_delete_context['id'], $indice_delete_context['type']);
+        $indice_delete_context = null;
+    }
+}
+add_action('deleted_post', 'reordonner_indices_apres_suppression');
+add_action('trashed_post', 'reordonner_indices_pour_indice');
