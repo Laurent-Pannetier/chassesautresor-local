@@ -25,6 +25,13 @@
       </div>`;
     document.body.appendChild(overlay);
 
+    var dateInput = overlay.querySelector('input[name="indice_date_disponibilite"]');
+    var defaultDate = (function () {
+      var d = new Date();
+      d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+      return d.toISOString().slice(0, 16);
+    })();
+
     var isEdit = !!btn.dataset.indiceId;
     if (isEdit) {
       overlay.querySelector('input[name="action"]').value = 'modifier_indice_modal';
@@ -47,11 +54,14 @@
         radio.checked = radio.value === dispo;
       });
       if (dispo === 'differe') {
-        var dateInput = overlay.querySelector('input[name="indice_date_disponibilite"]');
-        dateInput.value = btn.dataset.indiceDate || '';
+        dateInput.value = btn.dataset.indiceDate || defaultDate;
         overlay.querySelector('.date-wrapper').style.display = '';
       }
+    } else {
+      dateInput.value = defaultDate;
     }
+    var lastDateValue = dateInput.value;
+    var validateBtn = overlay.querySelector('.indice-modal-validate');
 
     function close() {
       overlay.remove();
@@ -66,6 +76,7 @@
       var preview = overlay.querySelector('.image-preview');
       if (!url) {
         preview.innerHTML = '';
+        refreshState();
         return;
       }
       preview.innerHTML = '<img src="' + url + '" alt="" />' +
@@ -82,6 +93,7 @@
         overlay.querySelector('input[name="indice_image"]').value = '';
         renderPreview('');
       });
+      refreshState();
     }
 
     function openMedia() {
@@ -104,6 +116,7 @@
         } else {
           dateWrap.style.display = 'none';
         }
+        refreshState();
       });
     });
 
@@ -111,6 +124,47 @@
       e.preventDefault();
       openMedia();
     });
+
+    overlay.querySelector('textarea[name="indice_contenu"]').addEventListener('input', refreshState);
+
+    dateInput.addEventListener('input', function (e) {
+      if (e.target.value) {
+        lastDateValue = e.target.value;
+      }
+      refreshState();
+    });
+
+    dateInput.addEventListener('blur', function (e) {
+      if (!e.target.value) {
+        e.target.value = lastDateValue || defaultDate;
+      }
+      refreshState();
+    });
+
+    function refreshState() {
+      var content = overlay.querySelector('textarea[name="indice_contenu"]').value.trim();
+      var image = overlay.querySelector('input[name="indice_image"]').value.trim();
+      var complete = content !== '' || image !== '';
+      var dispo = overlay.querySelector('input[name="indice_disponibilite"]:checked').value;
+      var state = 'desactive';
+      if (complete) {
+        state = 'accessible';
+        if (dispo === 'differe') {
+          var dateVal = dateInput.value;
+          if (!dateVal) {
+            state = 'desactive';
+          } else {
+            var ts = Date.parse(dateVal);
+            if (isNaN(ts)) {
+              state = 'desactive';
+            } else if (ts > Date.now()) {
+              state = 'programme';
+            }
+          }
+        }
+      }
+      validateBtn.disabled = !(state === 'accessible' || state === 'programme');
+    }
 
     overlay.querySelector('.indice-modal-form').addEventListener('submit', function (e) {
       e.preventDefault();
@@ -132,6 +186,8 @@
           }
         });
     });
+
+    refreshState();
   }
 
   function handleClick(e) {
