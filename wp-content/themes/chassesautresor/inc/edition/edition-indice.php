@@ -504,6 +504,10 @@ function modifier_champ_indice(): void
     }
 
     if ($champ_valide) {
+        if (in_array($champ, ['indice_image', 'indice_contenu', 'indice_disponibilite', 'indice_date_disponibilite'], true)) {
+            mettre_a_jour_cache_indice($post_id);
+        }
+
         wp_send_json_success($reponse);
     }
 
@@ -637,3 +641,45 @@ function sauvegarder_indice_chasse_si_manquant($post_id): void
     }
 }
 add_action('acf/save_post', 'sauvegarder_indice_chasse_si_manquant', 20);
+
+/**
+ * Met à jour les champs de cache d'un indice.
+ *
+ * @param int|string $post_id ID du post ACF.
+ * @return void
+ */
+function mettre_a_jour_cache_indice($post_id): void
+{
+    if (!is_numeric($post_id) || get_post_type((int) $post_id) !== 'indice') {
+        return;
+    }
+
+    if (wp_is_post_revision($post_id) || wp_is_post_autosave($post_id)) {
+        return;
+    }
+
+    $content  = trim((string) get_field('indice_contenu', $post_id));
+    $image_id = get_field('indice_image', $post_id);
+
+    $complete = $content !== '' || !empty($image_id);
+    update_field('indice_cache_complet', $complete ? 1 : 0, $post_id);
+
+    $state = 'desactive';
+    if ($complete) {
+        $availability = get_field('indice_disponibilite', $post_id) ?: 'immediate';
+        $state        = 'accessible';
+
+        if ($availability === 'differe') {
+            $date_raw = get_field('indice_date_disponibilite', $post_id);
+            $date     = $date_raw ? convertir_en_datetime($date_raw) : null;
+
+            if (!$date || $date->getTimestamp() > time()) {
+                $state = 'programme';
+            }
+        }
+    }
+
+    update_field('indice_cache_etat_systeme', $state, $post_id);
+}
+
+add_action('acf/save_post', 'mettre_a_jour_cache_indice', 30);
