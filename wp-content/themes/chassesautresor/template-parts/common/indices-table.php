@@ -25,7 +25,7 @@ if (empty($indices)) {
     return;
 }
 ?>
-<table class="stats-table">
+<table class="stats-table indices-table">
   <thead>
     <tr>
       <th><?= esc_html__('Date', 'chassesautresor-com'); ?></th>
@@ -43,7 +43,7 @@ if (empty($indices)) {
         $date    = mysql2date('d/m/y', $indice->post_date);
         $img_id  = get_field('indice_image', $indice->ID);
         $img_html = $img_id ? wp_get_attachment_image($img_id, 'thumbnail') : '';
-        $contenu = get_field('indice_contenu', $indice->ID) ?: '';
+        $contenu = wp_strip_all_tags(get_field('indice_contenu', $indice->ID) ?: '');
         $etat    = get_field('indice_cache_etat_systeme', $indice->ID) ?: '';
         $etat_class = 'etiquette-error';
         if ($etat === 'accessible') {

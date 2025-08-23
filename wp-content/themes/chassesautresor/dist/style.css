@@ -5165,6 +5165,19 @@ tbody tr:nth-child(even) {
   margin-left: 4px;
 }
 
+/* Indices table */
+.indices-table th,
+.indices-table td {
+  text-align: left;
+}
+
+.indices-table td img {
+  width: 120px;
+  height: 120px;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
 /* Labels */
 .etiquette {
   display: inline-block;
