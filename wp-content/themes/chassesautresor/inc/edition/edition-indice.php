@@ -259,9 +259,7 @@ function ajax_indices_lister_table(): void
     $objet_type = sanitize_key($_POST['objet_type'] ?? '');
     $page       = isset($_POST['page']) ? (int) $_POST['page'] : 1;
 
-    if (!$objet_id || !in_array($objet_type, ['chasse', 'enigme'], true)
-        || get_post_type($objet_id) !== $objet_type
-    ) {
+    if (!$objet_id || !in_array($objet_type, ['chasse', 'enigme'], true)) {
         wp_send_json_error('post_invalide');
     }
 
@@ -270,12 +268,7 @@ function ajax_indices_lister_table(): void
     }
 
     $per_page = 10;
-    $meta     = [
-        [
-            'key'   => 'indice_cible_type',
-            'value' => $objet_type,
-        ],
-    ];
+    $meta     = [];
     if ($objet_type === 'chasse') {
         $meta[] = [
             'relation' => 'OR',
