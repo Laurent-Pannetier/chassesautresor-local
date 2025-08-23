@@ -67,6 +67,30 @@ function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_i
 
     $user_id = $user_id ?? get_current_user_id();
 
+    $existing_indices = function_exists('get_posts')
+        ? get_posts([
+            'post_type'      => 'indice',
+            'post_status'    => ['publish', 'pending', 'draft', 'private', 'future'],
+            'meta_query'     => [
+                [
+                    'key'     => 'indice_chasse_linked',
+                    'value'   => '"' . $chasse_id . '"',
+                    'compare' => 'LIKE',
+                ],
+                [
+                    'key'     => 'indice_cache_etat_systeme',
+                    'value'   => ['programme', 'accessible'],
+                    'compare' => 'IN',
+                ],
+            ],
+            'fields'         => 'ids',
+            'no_found_rows'  => true,
+            'posts_per_page' => -1,
+        ])
+        : [];
+
+    $indice_rank = count($existing_indices) + 1;
+
     $indice_id = wp_insert_post([
         'post_type'   => 'indice',
         'post_status' => 'pending',
@@ -79,7 +103,7 @@ function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_i
     }
 
     $titre_objet   = get_the_title($objet_id);
-    $nouveau_titre = sprintf(__('Indice #%d - %s', 'chassesautresor-com'), $indice_id, $titre_objet);
+    $nouveau_titre = sprintf(__('indice #%d - %s', 'chassesautresor-com'), $indice_rank, $titre_objet);
     wp_update_post([
         'ID'         => $indice_id,
         'post_title' => $nouveau_titre,

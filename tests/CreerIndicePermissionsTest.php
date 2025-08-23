@@ -24,6 +24,9 @@ namespace {
         function utilisateur_peut_modifier_post($id) { global $can_edit; return $can_edit; }
     }
 
+    if (!function_exists('get_posts')) {
+        function get_posts($args) { global $mocked_existing_indices; return $mocked_existing_indices ?? []; }
+    }
 
     if (!function_exists('wp_insert_post')) {
         function wp_insert_post($args) { return 123; }
@@ -79,24 +82,27 @@ class CreerIndicePermissionsTest extends TestCase
 {
     protected function setUp(): void
     {
-        global $is_logged_in, $can_edit;
+        global $is_logged_in, $can_edit, $mocked_existing_indices;
         $is_logged_in = true;
         $can_edit = false;
+        $mocked_existing_indices = [];
     }
 
     protected function tearDown(): void
     {
-        global $is_logged_in, $can_edit;
+        global $is_logged_in, $can_edit, $mocked_existing_indices;
         $is_logged_in = true;
         $can_edit = false;
+        $mocked_existing_indices = [];
     }
 
     public function test_creates_indice_when_authorised(): void
     {
-        global $can_edit, $updated_fields, $updated_post;
+        global $can_edit, $updated_fields, $updated_post, $mocked_existing_indices;
         $can_edit = true;
         $updated_fields = [];
         $updated_post = [];
+        $mocked_existing_indices = [10, 11];
 
         $result = \creer_indice_pour_objet(42, 'chasse');
         $this->assertSame(123, $result);
@@ -108,7 +114,7 @@ class CreerIndicePermissionsTest extends TestCase
         $this->assertSame('desactive', $updated_fields['indice_cache_etat_systeme']);
         $this->assertFalse($updated_fields['indice_cache_complet']);
         $titre_objet = get_the_title(42);
-        $this->assertSame("Indice #123 - {$titre_objet}", $updated_post['post_title']);
+        $this->assertSame("indice #3 - {$titre_objet}", $updated_post['post_title']);
     }
 }
 }
