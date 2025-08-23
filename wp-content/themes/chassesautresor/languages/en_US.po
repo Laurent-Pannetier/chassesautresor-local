@@ -1666,3 +1666,10 @@ msgstr "No puzzles available"
 msgid "Aucun gagnant pour le moment."
 msgstr "No winners yet."
 
+#: assets/js/core/image-utils.js:26
+msgid "Choisir une image"
+msgstr "Choose an image"
+
+#: assets/js/core/image-utils.js:29
+msgid "Utiliser cette image"
+msgstr "Use this image"

@@ -1,6 +1,8 @@
 // ==============================
 // initChampImage (édition uniquement via panneau)
 // ==============================
+const { __ } = wp.i18n;
+
 function initChampImage(bloc) {
   const champ = bloc.dataset.champ;
   const cpt = bloc.dataset.cpt;
@@ -23,10 +25,10 @@ function initChampImage(bloc) {
     wp.media.view.settings.post.id = postId;
 
     const frame = wp.media({
-      title: 'Choisir une image',
+      title: __('Choisir une image', 'chassesautresor-com'),
       multiple: false,
       library: { type: 'image' },
-      button: { text: 'Utiliser cette image' }
+      button: { text: __('Utiliser cette image', 'chassesautresor-com') }
     });
 
     bloc.__mediaFrame = frame; // 💾 stocké pour usage unique
