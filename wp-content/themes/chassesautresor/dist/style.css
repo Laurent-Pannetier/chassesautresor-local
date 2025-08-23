@@ -6983,12 +6983,16 @@ body.woocommerce h2 {
 
 /* Tentatives - Proposition toggle */
 .proposition-cell {
+  vertical-align: middle;
+}
+
+.proposition-cell .proposition-content {
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
-.proposition-cell.expanded {
+.proposition-cell.expanded .proposition-content {
   flex-direction: column;
   align-items: flex-start;
 }
