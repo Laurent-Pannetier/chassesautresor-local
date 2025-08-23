@@ -393,6 +393,41 @@ function modifier_champ_indice(): void
 add_action('wp_ajax_modifier_champ_indice', 'modifier_champ_indice');
 
 /**
+ * Supprime un indice via requête AJAX.
+ *
+ * @hook wp_ajax_supprimer_indice
+ * @return void
+ */
+function supprimer_indice_ajax(): void
+{
+    if (!is_user_logged_in()) {
+        wp_send_json_error('non_connecte');
+    }
+
+    $indice_id = isset($_POST['indice_id']) ? (int) $_POST['indice_id'] : 0;
+    if (!$indice_id || get_post_type($indice_id) !== 'indice') {
+        wp_send_json_error('id_invalide');
+    }
+
+    $cible_type = get_field('indice_cible_type', $indice_id) === 'enigme' ? 'enigme' : 'chasse';
+    $objet_id   = $cible_type === 'enigme'
+        ? (int) (get_field('indice_enigme_linked', $indice_id) ?: 0)
+        : (int) (get_field('indice_chasse_linked', $indice_id) ?: 0);
+
+    if (!$objet_id || !indice_action_autorisee('delete', $cible_type, $objet_id)) {
+        wp_send_json_error('acces_refuse');
+    }
+
+    $deleted = wp_delete_post($indice_id, true);
+    if (!$deleted) {
+        wp_send_json_error('echec_suppression');
+    }
+
+    wp_send_json_success();
+}
+add_action('wp_ajax_supprimer_indice', 'supprimer_indice_ajax');
+
+/**
  * Pré-remplit automatiquement la chasse liée d'un indice lors de sa création.
  *
  * @param array $field Paramètres du champ ACF.
