@@ -20,8 +20,13 @@ get_header();
 <div id="primary" class="content-area">
     <main id="main" class="site-main">
         <?php if ($edition_active) : ?>
-            <button id="toggle-mode-edition-indice" type="button" class="toggle-mode-edition-indice">
-                <?= esc_html__('Paramètres', 'chassesautresor-com'); ?>
+            <button
+                id="toggle-mode-edition-indice"
+                type="button"
+                class="toggle-mode-edition-indice bouton-edition-toggle btn-icon bouton-tertiaire"
+                aria-label="<?= esc_attr__('Paramètres', 'chassesautresor-com'); ?>"
+            >
+                <i class="fa-solid fa-gear"></i>
             </button>
         <?php endif; ?>
 
