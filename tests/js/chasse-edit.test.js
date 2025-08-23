@@ -2,14 +2,20 @@ const flush = () => new Promise(resolve =>  setTimeout(resolve, 0));
 const html = `
   <div id="chasse-tab-param">
     <ul>
-      <li class="champ-chasse champ-mode-fin" data-post-id="1">
-        <input type="radio" name="acf[chasse_mode_fin]" value="automatique" checked>
-        <input type="radio" name="acf[chasse_mode_fin]" value="manuelle">
-        <div class="fin-chasse-actions"></div>
+      <li class="edition-row champ-chasse champ-mode-fin" data-post-id="1">
+        <div class="edition-row-label"><label>Mode</label></div>
+        <div class="edition-row-content">
+          <input type="radio" name="acf[chasse_mode_fin]" value="automatique" checked>
+          <input type="radio" name="acf[chasse_mode_fin]" value="manuelle">
+          <div class="fin-chasse-actions"></div>
+        </div>
       </li>
     </ul>
     <template id="template-nb-gagnants">
-      <li class="champ-nb-gagnants"><input id="chasse-nb-gagnants" value="0"></li>
+      <li class="edition-row champ-nb-gagnants" data-post-id="1">
+        <div class="edition-row-label"><label for="chasse-nb-gagnants">Nb gagnants</label></div>
+        <div class="edition-row-content"><input id="chasse-nb-gagnants" value="0"></div>
+      </li>
     </template>
     <template id="template-fin-chasse-actions">
       <button type="button" class="terminer-chasse-btn bouton-cta" data-post-id="1" data-cpt="chasse">Terminer la chasse</button>
