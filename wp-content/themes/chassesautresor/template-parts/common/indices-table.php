@@ -60,6 +60,7 @@ if (empty($indices)) {
         $dispo   = get_field('indice_disponibilite', $indice->ID) ?: 'immediate';
 
         $date_raw   = get_field('indice_date_disponibilite', $indice->ID) ?: '';
+        $dt         = null;
         $date_dispo = '';
         if ($date_raw) {
             $dt = convertir_en_datetime($date_raw);
@@ -68,12 +69,24 @@ if (empty($indices)) {
             }
         }
 
-        $etat = get_field('indice_cache_etat_systeme', $indice->ID) ?: '';
+        $etat       = get_field('indice_cache_etat_systeme', $indice->ID) ?: '';
         $etat_class = 'etiquette-error';
+        $etat_label = __($etat, 'chassesautresor-com');
         if ($etat === 'accessible') {
             $etat_class = 'etiquette-success';
         } elseif ($etat === 'programme' || $etat === 'programmé') {
             $etat_class = 'etiquette-pending';
+            if ($dt instanceof DateTimeInterface) {
+                $format     = get_option('date_format') . ' ' . get_option('time_format');
+                $date_label = wp_date($format, $dt->getTimestamp());
+                $etat_label = sprintf(
+                    /* translators: %s: scheduled date */
+                    __('programmé le %s', 'chassesautresor-com'),
+                    $date_label
+                );
+            } else {
+                $etat_label = __('programmé', 'chassesautresor-com');
+            }
         }
 
         $cible_type  = get_field('indice_cible_type', $indice->ID) === 'enigme' ? 'enigme' : 'chasse';
@@ -105,7 +118,7 @@ if (empty($indices)) {
       <?php echo cta_render_proposition_cell($contenu); ?>
       <td><span class="etiquette"><?= esc_html($cible_label); ?></span></td>
       <td><?= $linked_html; ?></td>
-      <td><span class="etiquette <?= esc_attr($etat_class); ?>"><?= esc_html($etat); ?></span></td>
+      <td><span class="etiquette <?= esc_attr($etat_class); ?>"><?= esc_html($etat_label); ?></span></td>
       <td class="indice-actions">
         <button
           type="button"

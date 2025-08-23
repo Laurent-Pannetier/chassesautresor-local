@@ -2388,3 +2388,20 @@ msgstr "Please enter a value in euros between 0 and 5,000,000."
 msgid "Voulez-vous vraiment supprimer la récompense ?"
 msgstr "Do you really want to delete the reward?"
 
+#: template-parts/common/indices-table.php:69
+msgid "accessible"
+msgstr "accessible"
+
+#: template-parts/common/indices-table.php:69
+msgid "programme"
+msgstr "scheduled"
+
+#: template-parts/common/indices-table.php:83
+msgid "programmé"
+msgstr "scheduled"
+
+#: template-parts/common/indices-table.php:75
+#, php-format
+msgid "programmé le %s"
+msgstr "scheduled for %s"
+
