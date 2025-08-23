@@ -5,16 +5,21 @@ const html = `
       <li class="edition-row champ-chasse champ-mode-fin" data-post-id="1">
         <div class="edition-row-label"><label>Mode</label></div>
         <div class="edition-row-content">
-          <input type="radio" name="acf[chasse_mode_fin]" value="automatique" checked>
-          <input type="radio" name="acf[chasse_mode_fin]" value="manuelle">
-          <div class="fin-chasse-actions"></div>
+          <div class="champ-mode-options">
+            <input type="radio" name="acf[chasse_mode_fin]" value="automatique" checked>
+            <input type="radio" name="acf[chasse_mode_fin]" value="manuelle">
+            <div class="fin-chasse-actions"></div>
+          </div>
         </div>
       </li>
     </ul>
     <template id="template-nb-gagnants">
       <li class="edition-row champ-nb-gagnants" data-post-id="1">
         <div class="edition-row-label"><label for="chasse-nb-gagnants">Nb gagnants</label></div>
-        <div class="edition-row-content"><input id="chasse-nb-gagnants" value="0"></div>
+        <div class="edition-row-content">
+          <input id="chasse-nb-gagnants" value="0" class="champ-input">
+          <input type="checkbox" id="nb-gagnants-illimite">
+        </div>
       </li>
     </template>
     <template id="template-fin-chasse-actions">

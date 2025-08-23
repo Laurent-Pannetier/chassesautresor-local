@@ -359,7 +359,6 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                             'data-post-id' => $chasse_id,
                             'data-no-edit' => '1',
                         ],
-                        'no_icon'  => true,
                         'label'    => function () {
                             ?>
                             <label for="chasse_mode_fin"><?= esc_html__('Mode de fin', 'chassesautresor-com'); ?></label>
@@ -413,15 +412,15 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                                     );
                                     ?>
                                 </label>
-                            </div>
-                            <div class="fin-chasse-actions">
-                                <?php if ($mode_fin === 'manuelle') : ?>
-                                    <?= $bloc_fin_chasse; ?>
-                                <?php elseif ($statut_metier === 'termine') : ?>
-                                    <p class="message-chasse-terminee">
-                                        <?= sprintf(__('Chasse gagnée le %s par %s', 'chassesautresor-com'), esc_html($date_decouverte_formatee), esc_html($gagnants)); ?>
-                                    </p>
-                                <?php endif; ?>
+                                <div class="fin-chasse-actions">
+                                    <?php if ($mode_fin === 'manuelle') : ?>
+                                        <?= $bloc_fin_chasse; ?>
+                                    <?php elseif ($statut_metier === 'termine') : ?>
+                                        <p class="message-chasse-terminee">
+                                            <?= sprintf(__('Chasse gagnée le %s par %s', 'chassesautresor-com'), esc_html($date_decouverte_formatee), esc_html($gagnants)); ?>
+                                        </p>
+                                    <?php endif; ?>
+                                </div>
                             </div>
                             <?php
                         },
@@ -459,15 +458,14 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                                 name="chasse-nb-gagnants"
                                 value="<?= esc_attr($nb_max); ?>"
                                 min="1"
-                                class="champ-inline-nb champ-nb-edit"
+                                class="champ-inline-nb champ-nb-edit champ-input"
                                 <?= ($peut_editer && $nb_max != 0) ? '' : 'disabled'; ?> />
 
                             <div class="champ-option-illimitee ">
                                 <input type="checkbox"
                                     id="nb-gagnants-illimite"
                                     name="nb-gagnants-illimite"
-                                    <?= ($nb_max == 0 ? 'checked' : ''); ?> <?= $peut_editer ? '' : 'disabled'; ?>
-                                    data-champ="chasse_infos_nb_max_gagants">
+                                    <?= ($nb_max == 0 ? 'checked' : ''); ?> <?= $peut_editer ? '' : 'disabled'; ?>>
                                 <label for="nb-gagnants-illimite"><?= esc_html__('Illimité', 'chassesautresor-com'); ?></label>
                             </div>
 
