@@ -343,10 +343,14 @@ msgstr ""
 msgid "Droits insuffisants."
 msgstr "Insufficient Points"
 
-#: inc/edition/edition-indice.php:82
+#: inc/edition/edition-indice.php:83
 #, php-format
-msgid "Indice #%d - %s"
-msgstr "Clue #%d - %s"
+msgid "Indice #%d"
+msgstr "Clue #%d"
+
+#: inc/edition/edition-core.php:155
+msgid "lié à"
+msgstr "linked to"
 
 #: inc/edition/edition-indice.php:151
 #, fuzzy

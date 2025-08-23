@@ -344,10 +344,14 @@ msgstr ""
 msgid "Droits insuffisants."
 msgstr "Points insuffisants"
 
-#: inc/edition/edition-indice.php:82
+#: inc/edition/edition-indice.php:83
 #, php-format
-msgid "Indice #%d - %s"
-msgstr "Indice #%d - %s"
+msgid "Indice #%d"
+msgstr "Indice #%d"
+
+#: inc/edition/edition-core.php:155
+msgid "lié à"
+msgstr "lié à"
 
 #: inc/edition/edition-indice.php:151
 #, fuzzy

@@ -151,6 +151,8 @@ function enqueue_core_edit_scripts(array $additional = [])
             'differe'   => __('Différée', 'chassesautresor-com'),
             'valider'   => __('Valider', 'chassesautresor-com'),
             'mediaTitle'=> __('Sélectionner une image', 'chassesautresor-com'),
+            'indiceTitre' => __('Indice #%d', 'chassesautresor-com'),
+            'lieA'        => __('lié à', 'chassesautresor-com'),
           ],
         ]
       );

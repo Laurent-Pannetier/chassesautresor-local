@@ -32,6 +32,48 @@ function enqueue_script_indice_edit(): void
 add_action('wp_enqueue_scripts', 'enqueue_script_indice_edit');
 
 /**
+ * Calcule le rang du prochain indice pour une chasse ou une énigme.
+ *
+ * @param int    $objet_id   ID de la chasse ou de l’énigme.
+ * @param string $objet_type Type de cible ('chasse' ou 'enigme').
+ * @return int
+ */
+function prochain_rang_indice(int $objet_id, string $objet_type): int
+{
+    $chasse_id = $objet_type === 'chasse'
+        ? $objet_id
+        : recuperer_id_chasse_associee($objet_id);
+
+    if (!$chasse_id) {
+        return 1;
+    }
+
+    $existing_indices = function_exists('get_posts')
+        ? get_posts([
+            'post_type'      => 'indice',
+            'post_status'    => ['publish', 'pending', 'draft', 'private', 'future'],
+            'meta_query'     => [
+                [
+                    'key'     => 'indice_chasse_linked',
+                    'value'   => '"' . $chasse_id . '"',
+                    'compare' => 'LIKE',
+                ],
+                [
+                    'key'     => 'indice_cache_etat_systeme',
+                    'value'   => ['programme', 'accessible'],
+                    'compare' => 'IN',
+                ],
+            ],
+            'fields'         => 'ids',
+            'no_found_rows'  => true,
+            'posts_per_page' => -1,
+        ])
+        : [];
+
+    return count($existing_indices) + 1;
+}
+
+/**
  * Crée un indice lié à une chasse ou une énigme.
  *
  * @param int      $objet_id   ID de la chasse ou de l’énigme.
@@ -66,30 +108,7 @@ function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_i
     }
 
     $user_id = $user_id ?? get_current_user_id();
-
-    $existing_indices = function_exists('get_posts')
-        ? get_posts([
-            'post_type'      => 'indice',
-            'post_status'    => ['publish', 'pending', 'draft', 'private', 'future'],
-            'meta_query'     => [
-                [
-                    'key'     => 'indice_chasse_linked',
-                    'value'   => '"' . $chasse_id . '"',
-                    'compare' => 'LIKE',
-                ],
-                [
-                    'key'     => 'indice_cache_etat_systeme',
-                    'value'   => ['programme', 'accessible'],
-                    'compare' => 'IN',
-                ],
-            ],
-            'fields'         => 'ids',
-            'no_found_rows'  => true,
-            'posts_per_page' => -1,
-        ])
-        : [];
-
-    $indice_rank = count($existing_indices) + 1;
+    $indice_rank = prochain_rang_indice($objet_id, $objet_type);
 
     $indice_id = wp_insert_post([
         'post_type'   => 'indice',
@@ -102,8 +121,7 @@ function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_i
         return $indice_id;
     }
 
-    $titre_objet   = get_the_title($objet_id);
-    $nouveau_titre = sprintf(__('indice #%d - %s', 'chassesautresor-com'), $indice_rank, $titre_objet);
+    $nouveau_titre = sprintf(__('Indice #%d', 'chassesautresor-com'), $indice_rank);
     wp_update_post([
         'ID'         => $indice_id,
         'post_title' => $nouveau_titre,

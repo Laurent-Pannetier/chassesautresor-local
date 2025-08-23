@@ -2,8 +2,13 @@
   function openModal(btn) {
     var overlay = document.createElement('div');
     overlay.className = 'indice-create-overlay';
+    var titre = indicesCreate.texts.indiceTitre.replace('%d', btn.dataset.indiceRang || '');
     overlay.innerHTML = `
       <div class="indice-create-modal">
+        <div class="indice-create-header">
+          <h2>${titre}</h2>
+          <p>${indicesCreate.texts.lieA} - ${btn.dataset.objetTitre || ''}</p>
+        </div>
         <button type="button" class="indice-create-close" aria-label="${indicesCreate.texts.close}">×</button>
         <form class="indice-create-form">
           <input type="hidden" name="action" value="creer_indice_modal" />
@@ -65,6 +70,9 @@
           if (wrapper && window.reloadIndicesTable) {
             wrapper.dataset.page = '1';
             window.reloadIndicesTable(wrapper);
+          }
+          if (btn.dataset.indiceRang) {
+            btn.dataset.indiceRang = parseInt(btn.dataset.indiceRang, 10) + 1;
           }
         });
     });

@@ -113,8 +113,7 @@ class CreerIndicePermissionsTest extends TestCase
         $this->assertSame($expected_date, $updated_fields['indice_date_disponibilite']);
         $this->assertSame('desactive', $updated_fields['indice_cache_etat_systeme']);
         $this->assertFalse($updated_fields['indice_cache_complet']);
-        $titre_objet = get_the_title(42);
-        $this->assertSame("indice #3 - {$titre_objet}", $updated_post['post_title']);
+        $this->assertSame('Indice #3', $updated_post['post_title']);
     }
 }
 }
