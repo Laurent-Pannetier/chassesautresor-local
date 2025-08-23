@@ -356,7 +356,7 @@ function utilisateur_peut_modifier_post($post_id)
             }
 
             if (!$chasse_id) {
-                $cible = get_field('indice_cible_objet', $post_id);
+                $cible = get_field('indice_enigme_linked', $post_id);
                 if (is_array($cible)) {
                     $first    = $cible[0] ?? null;
                     $cible_id = is_array($first) ? ($first['ID'] ?? null) : $first;
@@ -365,12 +365,7 @@ function utilisateur_peut_modifier_post($post_id)
                 }
 
                 if ($cible_id) {
-                    $cible_type = get_post_type($cible_id);
-                    if ($cible_type === 'chasse') {
-                        $chasse_id = $cible_id;
-                    } elseif ($cible_type === 'enigme') {
-                        $chasse_id = recuperer_id_chasse_associee($cible_id);
-                    }
+                    $chasse_id = recuperer_id_chasse_associee($cible_id);
                 }
             }
 

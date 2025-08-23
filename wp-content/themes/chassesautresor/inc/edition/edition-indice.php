@@ -85,9 +85,11 @@ function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_i
         'post_title' => $nouveau_titre,
     ]);
 
-    update_field('indice_cible', $objet_type, $indice_id);
-    update_field('indice_cible_objet', $objet_id, $indice_id);
+    update_field('indice_cible_type', $objet_type, $indice_id);
     update_field('indice_chasse_linked', $chasse_id, $indice_id);
+    if ($objet_type === 'enigme') {
+        update_field('indice_enigme_linked', $objet_id, $indice_id);
+    }
     update_field('indice_disponibilite', 'immediate', $indice_id);
 
     $date_disponibilite = wp_date('Y-m-d H:i:s', (int) current_time('timestamp') + DAY_IN_SECONDS);
@@ -213,11 +215,11 @@ function ajax_chasse_lister_indices(): void
         'order'          => 'ASC',
         'meta_query'     => [
             [
-                'key'   => 'indice_cible',
+                'key'   => 'indice_cible_type',
                 'value' => 'chasse',
             ],
             [
-                'key'   => 'indice_cible_objet',
+                'key'   => 'indice_chasse_linked',
                 'value' => $chasse_id,
             ],
         ],
@@ -280,13 +282,13 @@ function modifier_champ_indice(): void
         case 'indice_contenu':
             $champ_valide = update_field('indice_contenu', wp_kses_post($valeur), $post_id) !== false;
             break;
-        case 'indice_cible':
+        case 'indice_cible_type':
             $val = $valeur === 'enigme' ? 'enigme' : 'chasse';
-            $champ_valide = update_field('indice_cible', $val, $post_id) !== false;
+            $champ_valide = update_field('indice_cible_type', $val, $post_id) !== false;
             break;
-        case 'indice_cible_objet':
+        case 'indice_enigme_linked':
             $ids = array_filter(array_map('intval', explode(',', (string) $valeur)));
-            $champ_valide = update_field('indice_cible_objet', $ids, $post_id) !== false;
+            $champ_valide = update_field('indice_enigme_linked', $ids, $post_id) !== false;
             break;
         case 'indice_disponibilite':
             $val = $valeur === 'differe' ? 'differe' : 'immediate';
@@ -333,14 +335,12 @@ function pre_remplir_indice_chasse_linked(array $field): array
         return $field;
     }
 
-    $chasse_id   = null;
-    $cible_type  = get_field('indice_cible', $post->ID);
-    $cible_objet = get_field('indice_cible_objet', $post->ID);
+    $chasse_id = null;
+    $cible_type = get_field('indice_cible_type', $post->ID);
+    $enigme_id  = get_field('indice_enigme_linked', $post->ID);
 
-    if ($cible_type === 'chasse') {
-        $chasse_id = (int) $cible_objet;
-    } elseif ($cible_type === 'enigme') {
-        $chasse_id = recuperer_id_chasse_associee((int) $cible_objet);
+    if ($cible_type === 'enigme' && $enigme_id) {
+        $chasse_id = recuperer_id_chasse_associee((int) $enigme_id);
     } elseif (isset($_GET['chasse_id'])) {
         $chasse_id = (int) $_GET['chasse_id'];
     }
@@ -376,14 +376,14 @@ function sauvegarder_indice_chasse_si_manquant($post_id): void
         return;
     }
 
-    $chasse_id   = null;
-    $cible_type  = get_field('indice_cible', $post_id);
-    $cible_objet = get_field('indice_cible_objet', $post_id);
+    $chasse_id  = null;
+    $cible_type = get_field('indice_cible_type', $post_id);
+    $enigme_id  = get_field('indice_enigme_linked', $post_id);
 
-    if ($cible_type === 'chasse') {
-        $chasse_id = (int) $cible_objet;
-    } elseif ($cible_type === 'enigme') {
-        $chasse_id = recuperer_id_chasse_associee((int) $cible_objet);
+    if ($cible_type === 'enigme' && $enigme_id) {
+        $chasse_id = recuperer_id_chasse_associee((int) $enigme_id);
+    } elseif ($cible_type === 'chasse' && isset($_GET['chasse_id'])) {
+        $chasse_id = (int) $_GET['chasse_id'];
     } elseif (isset($_GET['chasse_id'])) {
         $chasse_id = (int) $_GET['chasse_id'];
     }

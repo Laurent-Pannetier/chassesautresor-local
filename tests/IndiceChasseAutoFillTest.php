@@ -46,11 +46,11 @@ namespace IndiceChasse {
             global $fields, $updated_fields;
             $fields = [
                 'indice_chasse_linked' => null,
-                'indice_cible' => 'chasse',
-                'indice_cible_objet' => 42,
+                'indice_cible_type' => 'enigme',
+                'indice_enigme_linked' => 42,
             ];
             \sauvegarder_indice_chasse_si_manquant(123);
-            $this->assertSame(42, $updated_fields['indice_chasse_linked']);
+            $this->assertSame(99, $updated_fields['indice_chasse_linked']);
         }
     }
 }

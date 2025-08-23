@@ -716,11 +716,11 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                       'order'          => 'ASC',
                       'meta_query'     => [
                         [
-                          'key'   => 'indice_cible',
+                          'key'   => 'indice_cible_type',
                           'value' => 'chasse',
                         ],
                         [
-                          'key'   => 'indice_cible_objet',
+                          'key'   => 'indice_chasse_linked',
                           'value' => $chasse_id,
                         ],
                       ],

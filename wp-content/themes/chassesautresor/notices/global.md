@@ -414,8 +414,8 @@ Groupe : paramètres indices
 
 * indice_image (image)
 * indice_contenu (wysiwyg)
-* indice_cible (radio)
-* indice_cible_objet (relationship)
+* indice_cible_type (radio)
+* indice_enigme_linked (relationship)
 * indice_chasse_linked (relationship)
 * indice_disponibilite (radio)
 * indice_date_disponibilite (date_time_picker, retour d/m/Y g:i a)

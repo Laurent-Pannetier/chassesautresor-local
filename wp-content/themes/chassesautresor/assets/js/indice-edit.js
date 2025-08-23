@@ -46,11 +46,11 @@ function initIndiceEdit() {
     }
   });
 
-  initChampConditionnel('acf[indice_cible]', {
+  initChampConditionnel('acf[indice_cible_type]', {
     chasse: [],
     enigme: ['#champ-indice-cible-enigmes']
   });
-  initChampRadioAjax('acf[indice_cible]', 'indice');
+  initChampRadioAjax('acf[indice_cible_type]', 'indice');
 
   initChampConditionnel('acf[indice_disponibilite]', {
     immediate: [],
@@ -73,7 +73,7 @@ function initIndiceEdit() {
     });
 
   document
-    .querySelectorAll('input[name="acf[indice_cible]"]')
+    .querySelectorAll('input[name="acf[indice_cible_type]"]')
     .forEach((radio) => {
       radio.addEventListener('change', () => {
         if (radio.value === 'chasse') {
@@ -81,7 +81,7 @@ function initIndiceEdit() {
           const chasseId = bloc?.dataset.chasseId;
           const postId = bloc?.dataset.postId;
           if (chasseId && postId) {
-            modifierChampSimple('indice_cible_objet', [chasseId], postId, 'indice');
+            modifierChampSimple('indice_chasse_linked', [chasseId], postId, 'indice');
           }
         }
       });
