@@ -47,9 +47,9 @@ if (empty($indices)) {
   <tbody>
     <?php foreach ($indices as $indice) :
         $date    = mysql2date('d/m/y', $indice->post_date);
-        $img_id   = get_field('indice_image', $indice->ID);
-        $img_html = $img_id ? wp_get_attachment_image($img_id, 'thumbnail') : '';
-        $img_url  = $img_id ? wp_get_attachment_image_url($img_id, 'thumbnail') : '';
+        $img_id     = get_field('indice_image', $indice->ID);
+        $img_html   = $img_id ? wp_get_attachment_image($img_id, [80, 80]) : '';
+
         $contenu    = wp_strip_all_tags(get_field('indice_contenu', $indice->ID) ?: '');
         $dispo      = get_field('indice_disponibilite', $indice->ID) ?: 'immediate';
         $date_dispo = get_field('indice_date_disponibilite', $indice->ID) ?: '';
