@@ -39,7 +39,7 @@ Lorsqu'un champ obligatoire est vide, la classe `champ-attention` colore son lab
 
 ## Saisie des nombres
 
-Les champs numériques « Coût » et « Nb tentatives » sont limités à six chiffres (`max="999999"`) et leur largeur visuelle est restreinte à huit caractères (`max-width: 8ch`).
+Les champs numériques « Coût » et « Nb tentatives » sont limités à six chiffres (`max="999999"`) et leur largeur est fixée à 100px (classe `champ-number`).
 
 ## Variantes de réponse
 

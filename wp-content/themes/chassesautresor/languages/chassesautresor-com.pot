@@ -2168,3 +2168,12 @@ msgstr ""
 #: assets/js/reponse-automatique.js:187
 msgid "Tentatives quotidiennes"
 msgstr ""
+
+#: assets/js/chasse-edit.js:376
+msgid "Veuillez saisir une valeur en euros comprise entre 0 et 5 000 000."
+msgstr ""
+
+#: assets/js/chasse-edit.js:318
+msgid "Voulez-vous vraiment supprimer la récompense ?"
+msgstr ""
+

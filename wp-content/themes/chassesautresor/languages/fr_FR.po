@@ -2356,3 +2356,12 @@ msgstr "Valider"
 #: inc/edition/edition-core.php:***
 msgid "Sélectionner une image"
 msgstr "Sélectionner une image"
+
+#: assets/js/chasse-edit.js:376
+msgid "Veuillez saisir une valeur en euros comprise entre 0 et 5 000 000."
+msgstr "Veuillez saisir une valeur en euros comprise entre 0 et 5 000 000."
+
+#: assets/js/chasse-edit.js:318
+msgid "Voulez-vous vraiment supprimer la récompense ?"
+msgstr "Voulez-vous vraiment supprimer la récompense ?"
+

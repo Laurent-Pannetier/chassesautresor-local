@@ -2204,7 +2204,7 @@ body .header-img-modifiable .icone-modif {
 }
 
 .edition-panel-body input.champ-number {
-  max-width: 8ch;
+  width: 100px;
 }
 
 @media (min-width: 768px) {
@@ -2603,11 +2603,7 @@ body.edition-active-indice .edition-panel-indice.edition-panel-modal {
 }
 
 .edition-panel-section .resume-technique input.inline-date,
-.edition-panel-section .resume-technique input.champ-cout,
-.edition-panel-section .resume-technique input.champ-nb-edit,
-.edition-panel-section .resume-reglages input.inline-date,
-.edition-panel-section .resume-reglages input.champ-cout,
-.edition-panel-section .resume-reglages input.champ-nb-edit {
+.edition-panel-section .resume-reglages input.inline-date {
   width: 180px;
 }
 

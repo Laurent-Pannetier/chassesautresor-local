@@ -64,11 +64,6 @@ window.mettreAJourResumeInfos = function () {
         estRempli = valeurTitre && valeurTitre !== titreParDefaut;
       }
 
-      if (champ === 'chasse_principale_description') {
-        const texte = document.querySelector('#panneau-description-chasse textarea')?.value?.trim();
-        estRempli = !!texte;
-      }
-
       if (champ === 'chasse_principale_image') {
         const image = blocEdition?.querySelector('img');
         estRempli = image && !image.src.includes('defaut-chasse');
@@ -116,11 +111,6 @@ window.mettreAJourResumeInfos = function () {
       if (champ === 'enigme_visuel_legende') {
         const val = blocEdition?.querySelector('.champ-input')?.value.trim();
         estRempli = !!val;
-      }
-
-      if (champ === 'enigme_visuel_texte') {
-        const textarea = document.querySelector('#panneau-description-enigme textarea');
-        estRempli = textarea && textarea.value.trim().length > 0;
       }
 
       if (champ === 'enigme_mode_validation') {
