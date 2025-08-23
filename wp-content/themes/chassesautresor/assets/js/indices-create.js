@@ -71,7 +71,11 @@
   }
 
   document.addEventListener('click', function (e) {
-    var btn = e.target.closest('.cta-creer-indice');
+    var target = e.target;
+    if (target && target.nodeType !== 1) {
+      target = target.parentElement;
+    }
+    var btn = target && target.closest ? target.closest('.cta-creer-indice') : null;
     if (!btn) return;
     e.preventDefault();
     openModal(btn);

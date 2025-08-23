@@ -19,14 +19,14 @@ $peut_ajouter = indice_action_autorisee('create', $objet_type, $objet_id);
   <i class="fa-regular fa-circle-question icone-defaut" aria-hidden="true"></i>
   <h3><?= esc_html__('Indices', 'chassesautresor-com'); ?></h3>
   <?php if ($peut_ajouter) : ?>
-    <button
-      type="button"
+    <a
+      href="#"
       class="stat-value cta-creer-indice"
       data-objet-type="<?= esc_attr($objet_type); ?>"
       data-objet-id="<?= esc_attr($objet_id); ?>"
     >
       <?= esc_html__('Ajouter', 'chassesautresor-com'); ?>
-    </button>
+    </a>
   <?php else : ?>
     <span class="stat-value">
       <?= esc_html__('Ajouter', 'chassesautresor-com'); ?>
