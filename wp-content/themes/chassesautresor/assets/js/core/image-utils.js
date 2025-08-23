@@ -12,6 +12,21 @@ function initChampImage(bloc) {
 
   if (!champ || !cpt || !postId || !input || !image) return;
 
+  // 🔄 Display existing image if an ID is set but no source is defined.
+  const currentId = parseInt(input.value, 10);
+  if (currentId && (!image.getAttribute('src') || image.getAttribute('src') === '')) {
+    const attachment = wp.media.attachment(currentId);
+    attachment.fetch().then(() => {
+      const fullUrl = attachment.get('url');
+      const thumbUrl = attachment.get('sizes')?.thumbnail?.url || fullUrl;
+      if (thumbUrl) {
+        image.src = thumbUrl;
+        image.srcset = thumbUrl;
+        bloc.classList.remove('champ-vide');
+      }
+    });
+  }
+
   // ✅ Création du frame à la volée quand appelé
   const ouvrirMedia = () => {
     // ✅ Empêcher double ouverture : reuse si déjà initialisé
