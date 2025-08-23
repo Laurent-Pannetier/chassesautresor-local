@@ -73,9 +73,22 @@ function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_i
             'post_status'    => ['publish', 'pending', 'draft', 'private', 'future'],
             'meta_query'     => [
                 [
-                    'key'     => 'indice_chasse_linked',
-                    'value'   => '"' . $chasse_id . '"',
-                    'compare' => 'LIKE',
+                    'relation' => 'OR',
+                    [
+                        'key'     => 'indice_chasse_linked',
+                        'value'   => $chasse_id,
+                        'compare' => '=',
+                    ],
+                    [
+                        'key'     => 'indice_chasse_linked',
+                        'value'   => 'i:' . $chasse_id . ';',
+                        'compare' => 'LIKE',
+                    ],
+                    [
+                        'key'     => 'indice_chasse_linked',
+                        'value'   => '"' . $chasse_id . '"',
+                        'compare' => 'LIKE',
+                    ],
                 ],
                 [
                     'key'     => 'indice_cache_etat_systeme',
@@ -279,6 +292,11 @@ function ajax_indices_lister_table(): void
             ],
             [
                 'key'     => 'indice_chasse_linked',
+                'value'   => 'i:' . $objet_id . ';',
+                'compare' => 'LIKE',
+            ],
+            [
+                'key'     => 'indice_chasse_linked',
                 'value'   => '"' . $objet_id . '"',
                 'compare' => 'LIKE',
             ],
@@ -290,6 +308,11 @@ function ajax_indices_lister_table(): void
                 'key'     => 'indice_enigme_linked',
                 'value'   => $objet_id,
                 'compare' => '=',
+            ],
+            [
+                'key'     => 'indice_enigme_linked',
+                'value'   => 'i:' . $objet_id . ';',
+                'compare' => 'LIKE',
             ],
             [
                 'key'     => 'indice_enigme_linked',
