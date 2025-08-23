@@ -382,9 +382,12 @@ function ajax_creer_indice_modal(): void
 
     $dispo = $dispo === 'differe' ? 'differe' : 'immediate';
     update_field('indice_disponibilite', $dispo, $indice_id);
-    if ($dispo === 'differe' && $date) {
-        update_field('indice_date_disponibilite', $date, $indice_id);
+
+    $date_to_save = $date ?: get_field('indice_date_disponibilite', $indice_id);
+    if (!$date_to_save) {
+        $date_to_save = wp_date('Y-m-d H:i:s', (int) current_time('timestamp'));
     }
+    update_field('indice_date_disponibilite', $date_to_save, $indice_id);
 
     mettre_a_jour_cache_indice($indice_id);
 
@@ -427,11 +430,12 @@ function ajax_modifier_indice_modal(): void
 
     $dispo = $dispo === 'differe' ? 'differe' : 'immediate';
     update_field('indice_disponibilite', $dispo, $indice_id);
-    if ($dispo === 'differe') {
-        update_field('indice_date_disponibilite', $date, $indice_id);
-    } else {
-        update_field('indice_date_disponibilite', '', $indice_id);
+
+    $date_to_save = $date ?: get_field('indice_date_disponibilite', $indice_id);
+    if (!$date_to_save) {
+        $date_to_save = wp_date('Y-m-d H:i:s', (int) current_time('timestamp'));
     }
+    update_field('indice_date_disponibilite', $date_to_save, $indice_id);
 
     mettre_a_jour_cache_indice($indice_id);
 
