@@ -877,7 +877,7 @@ function initPanneauVariantes() {
     const feedback = formulaire.querySelector('.champ-feedback-variantes');
     if (feedback) {
       feedback.style.display = 'block';
-      feedback.textContent = wp.i18n.__('Enregistrement...', 'chassesautresor-com');
+      feedback.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>';
       feedback.className = 'champ-feedback champ-loading';
     }
 
@@ -897,8 +897,9 @@ function initPanneauVariantes() {
     Promise.all(promises)
       .then(() => {
         if (feedback) {
-          feedback.textContent = wp.i18n.__('✔️ Variantes enregistrées', 'chassesautresor-com');
+          feedback.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i>';
           feedback.className = 'champ-feedback champ-success';
+          setTimeout(() => { feedback.innerHTML = ''; feedback.className = 'champ-feedback'; }, 1000);
         }
 
         setTimeout(() => {
@@ -1256,7 +1257,7 @@ function initSolutionInline() {
     formData.append('action', 'supprimer_fichier_solution_enigme');
     formData.append('post_id', postId);
     if (feedbackFichier) {
-      feedbackFichier.textContent = '⏳ Suppression en cours...';
+      feedbackFichier.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>';
       feedbackFichier.className = 'champ-feedback champ-loading';
     }
     fetch(ajaxurl, { method: 'POST', body: formData })
@@ -1274,8 +1275,9 @@ function initSolutionInline() {
           if (inputFichier) inputFichier.value = '';
           if (btnClearPdf) btnClearPdf.style.display = 'none';
           if (feedbackFichier) {
-            feedbackFichier.textContent = '✅ Fichier supprimé';
+            feedbackFichier.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i>';
             feedbackFichier.className = 'champ-feedback champ-success';
+            setTimeout(() => { feedbackFichier.innerHTML = ''; feedbackFichier.className = 'champ-feedback'; }, 1000);
           }
           majMessageSolution();
         } else if (feedbackFichier) {
@@ -1285,6 +1287,7 @@ function initSolutionInline() {
       })
       .catch(() => {
         if (feedbackFichier) {
+          feedbackFichier.innerHTML = '';
           feedbackFichier.textContent = '❌ Erreur réseau';
           feedbackFichier.className = 'champ-feedback champ-error';
         }
@@ -1351,7 +1354,7 @@ function initSolutionInline() {
     formData.append('post_id', postId);
     formData.append('fichier_pdf', fichier);
 
-    feedbackFichier.textContent = '⏳ Enregistrement en cours...';
+    feedbackFichier.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>';
     feedbackFichier.className = 'champ-feedback champ-loading';
 
     fetch(ajaxurl, {
@@ -1361,8 +1364,9 @@ function initSolutionInline() {
       .then(r => r.json())
       .then(res => {
         if (res.success) {
-          feedbackFichier.textContent = '✅ Fichier enregistré';
+          feedbackFichier.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i>';
           feedbackFichier.className = 'champ-feedback champ-success';
+          setTimeout(() => { feedbackFichier.innerHTML = ''; feedbackFichier.className = 'champ-feedback'; }, 1000);
 
           if (cardPdf) {
             const icon = cardPdf.querySelector('i');
@@ -1375,11 +1379,13 @@ function initSolutionInline() {
           if (btnClearPdf) btnClearPdf.style.display = '';
           majMessageSolution();
         } else {
+          feedbackFichier.innerHTML = '';
           feedbackFichier.textContent = '❌ Erreur : ' + (res.data || 'inconnue');
           feedbackFichier.className = 'champ-feedback champ-error';
         }
       })
       .catch(() => {
+        feedbackFichier.innerHTML = '';
         feedbackFichier.textContent = '❌ Erreur réseau';
         feedbackFichier.className = 'champ-feedback champ-error';
       });

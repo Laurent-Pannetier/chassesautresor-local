@@ -511,7 +511,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                     'content' => function () use ($cout, $peut_editer) {
                         ?>
                         <div class="champ-edition">
-                            <input type="number" id="enigme-tentative-cout" class="champ-input champ-cout" min="0" step="1" value="<?= esc_attr($cout); ?>" placeholder="0" <?= $peut_editer ? '' : 'disabled'; ?> />
+                            <input type="number" id="enigme-tentative-cout" class="champ-input champ-cout champ-number" min="0" max="999999" step="1" value="<?= esc_attr($cout); ?>" placeholder="0" <?= $peut_editer ? '' : 'disabled'; ?> />
+                            <span class="champ-status"></span>
                             <span class="txt-small"><?= esc_html__('points', 'chassesautresor-com'); ?></span>
                             <div class="champ-option-gratuit" style="margin-left: 5px;">
                                 <?php
@@ -564,7 +565,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                     'content' => function () use ($max, $peut_editer) {
                         ?>
                         <div class="champ-edition">
-                            <input type="number" id="enigme-nb-tentatives" class="champ-input champ-nb-tentatives" min="1" step="1" value="<?= esc_attr($max); ?>" placeholder="5" <?= $peut_editer ? '' : 'disabled'; ?> />
+                            <input type="number" id="enigme-nb-tentatives" class="champ-input champ-nb-tentatives champ-number" min="1" max="999999" step="1" value="<?= esc_attr($max); ?>" placeholder="5" <?= $peut_editer ? '' : 'disabled'; ?> />
+                            <span class="champ-status"></span>
                             <span class="txt-small"><?= esc_html__('max par jour', 'chassesautresor-com'); ?></span>
                         </div>
                         <div class="champ-feedback"></div>
@@ -615,6 +617,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                             </label>
                             <div id="champ-enigme-date" class="champ-enigme champ-date<?= $condition === 'date_programmee' ? '' : ' cache'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_acces_date" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" data-no-edit="1">
                                 <input type="datetime-local" id="enigme-date-deblocage" name="enigme-date-deblocage" value="<?= esc_attr($date_deblocage); ?>" class="champ-inline-date champ-date-edit" <?= $peut_editer ? '' : 'disabled'; ?> />
+                                <span class="champ-status"></span>
                                 <div class="champ-feedback champ-date-feedback" style="display:none;"></div>
                             </div>
                             <?php if (!empty($enigmes_possibles)) : ?>

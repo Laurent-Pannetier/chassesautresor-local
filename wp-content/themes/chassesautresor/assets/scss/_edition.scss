@@ -418,6 +418,10 @@ body .header-img-modifiable .icone-modif {
   transition: border-color 0.2s, background-color 0.2s;
 }
 
+.edition-panel-body input.champ-number {
+  max-width: 8ch;
+}
+
 @media (min-width: 768px) {
   .edition-panel-body input.champ-texte-edit {
     width: 260px;
@@ -484,6 +488,16 @@ body .header-img-modifiable .icone-modif {
   outline: none;
   border-color: var(--color-editor-accent);
   background-color: var(--color-editor-field-hover);
+}
+
+.champ-status {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
+}
+
+.champ-status .fa-check {
+  color: var(--color-editor-success);
 }
 
 /* ========== 🎯 COMPTEUR DE CARACTÈRES – POSITION FIXE SOUS INPUT ========== */
