@@ -1873,7 +1873,6 @@ body.edition-active .champ-organisateur.champ-vide:hover {
 }
 
 .champ-vide-obligatoire {
-  border: 2px dashed var(--color-editor-error);
   animation: clignoteTitre 1s infinite alternate;
 }
 
