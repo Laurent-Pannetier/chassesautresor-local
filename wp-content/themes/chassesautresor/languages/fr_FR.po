@@ -2324,3 +2324,8 @@ msgstr "Tentatives quotidiennes"
 #: assets/js/core/resume.js:322
 msgid "renseigner le titre de la chasse"
 msgstr "renseigner le titre de la chasse"
+
+#: assets/js/chasse-edit.js:376
+msgid "Veuillez saisir une valeur en euros comprise entre 0 et 5 000 000."
+msgstr "Veuillez saisir une valeur en euros comprise entre 0 et 5 000 000."
+
