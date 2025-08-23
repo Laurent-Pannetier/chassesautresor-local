@@ -2392,3 +2392,15 @@ msgstr "Do you really want to delete the reward?"
 msgid "Choisir une image"
 msgstr "Choose an image"
 
+#: inc/edition/edition-core.php
+msgid "Au moins une image ou un texte nécessaire"
+msgstr "At least one image or text required"
+
+#: inc/edition/edition-core.php
+msgid "Date et heure requises"
+msgstr "Date and time required"
+
+#: inc/edition/edition-core.php
+msgid "Date invalide"
+msgstr "Invalid date"
+

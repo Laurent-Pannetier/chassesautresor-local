@@ -155,6 +155,9 @@ function enqueue_core_edit_scripts(array $additional = [])
             'mediaTitle'=> __('Sélectionner une image', 'chassesautresor-com'),
             'indiceTitre' => __('Indice #%d', 'chassesautresor-com'),
             'lieA'        => __('lié à', 'chassesautresor-com'),
+            'needContent' => __('Au moins une image ou un texte nécessaire', 'chassesautresor-com'),
+            'needDate'    => __('Date et heure requises', 'chassesautresor-com'),
+            'invalidDate' => __('Date invalide', 'chassesautresor-com'),
           ],
         ]
       );

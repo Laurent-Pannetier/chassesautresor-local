@@ -20,7 +20,7 @@
           <p><label><input type="radio" name="indice_disponibilite" value="immediate" checked /> ${indicesCreate.texts.immediate}</label>
              <label><input type="radio" name="indice_disponibilite" value="differe" /> ${indicesCreate.texts.differe}</label></p>
           <p class="date-wrapper" style="display:none;"><input type="datetime-local" name="indice_date_disponibilite" /></p>
-          <p><button type="submit" class="indice-modal-validate bouton-cta">${indicesCreate.texts.valider}</button></p>
+          <div class="indice-modal-footer"><span class="indice-state-message"></span><button type="submit" class="indice-modal-validate bouton-cta">${indicesCreate.texts.valider}</button></div>
         </form>
       </div>`;
     document.body.appendChild(overlay);
@@ -62,6 +62,7 @@
     }
     var lastDateValue = dateInput.value;
     var validateBtn = overlay.querySelector('.indice-modal-validate');
+    var stateMessage = overlay.querySelector('.indice-state-message');
 
     function close() {
       overlay.remove();
@@ -144,26 +145,34 @@
     function refreshState() {
       var content = overlay.querySelector('textarea[name="indice_contenu"]').value.trim();
       var image = overlay.querySelector('input[name="indice_image"]').value.trim();
-      var complete = content !== '' || image !== '';
       var dispo = overlay.querySelector('input[name="indice_disponibilite"]:checked').value;
       var state = 'desactive';
-      if (complete) {
+      var message = '';
+      var complete = content !== '' || image !== '';
+
+      if (!complete) {
+        message = indicesCreate.texts.needContent;
+      } else {
         state = 'accessible';
         if (dispo === 'differe') {
           var dateVal = dateInput.value;
           if (!dateVal) {
             state = 'desactive';
+            message = indicesCreate.texts.needDate;
           } else {
             var ts = Date.parse(dateVal);
             if (isNaN(ts)) {
               state = 'desactive';
+              message = indicesCreate.texts.invalidDate;
             } else if (ts > Date.now()) {
               state = 'programme';
             }
           }
         }
       }
+
       validateBtn.disabled = !(state === 'accessible' || state === 'programme');
+      stateMessage.textContent = message;
     }
 
     overlay.querySelector('.indice-modal-form').addEventListener('submit', function (e) {
