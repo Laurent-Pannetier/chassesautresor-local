@@ -1771,6 +1771,7 @@ a[aria-disabled=true] {
 .indice-create-form label {
   display: block;
   margin-bottom: var(--space-sm);
+  color: var(--color-editor-text);
 }
 
 .indice-create-form textarea {

@@ -56,3 +56,7 @@ Un endpoint dédié permet de créer rapidement un indice :
 - **Paramètres :** `chasse_id`, `enigme_id` (optionnel) et `nonce`.
 - **Champs ACF initialisés :** `indice_cible_type`, `indice_enigme_linked`, `indice_chasse_linked`, `indice_disponibilite`, `indice_date_disponibilite`, `indice_cout_points` et `indice_cache_complet`.
 - **Comportement :** après création, l’utilisateur est redirigé vers l’indice et le panneau d’édition s’ouvre automatiquement.
+
+### Accessibilité
+
+Les libellés du formulaire utilisent `color: var(--color-editor-text)` afin de rester lisibles sur fond clair. Évitez d'appliquer `--color-text-primary` dans ce contexte pour garantir un contraste suffisant.
