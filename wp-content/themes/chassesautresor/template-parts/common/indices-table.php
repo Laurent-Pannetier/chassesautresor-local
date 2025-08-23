@@ -18,6 +18,7 @@ $page       = $args['page'] ?? $page ?? 1;
 $pages      = $args['pages'] ?? $pages ?? 1;
 $objet_type = $args['objet_type'] ?? $objet_type ?? 'chasse';
 $objet_id   = $args['objet_id'] ?? $objet_id ?? 0;
+$objet_titre = get_the_title($objet_id);
 
 if (empty($indices)) {
     $titre = get_the_title($objet_id);
@@ -46,9 +47,11 @@ if (empty($indices)) {
   <tbody>
     <?php foreach ($indices as $indice) :
         $date    = mysql2date('d/m/y', $indice->post_date);
-        $img_id  = get_field('indice_image', $indice->ID);
-        $img_html = $img_id ? wp_get_attachment_image($img_id, 'thumbnail') : '';
-        $contenu = wp_strip_all_tags(get_field('indice_contenu', $indice->ID) ?: '');
+        $img_id     = get_field('indice_image', $indice->ID);
+        $img_html   = $img_id ? wp_get_attachment_image($img_id, 'thumbnail') : '';
+        $contenu    = wp_strip_all_tags(get_field('indice_contenu', $indice->ID) ?: '');
+        $dispo      = get_field('indice_disponibilite', $indice->ID) ?: 'immediate';
+        $date_dispo = get_field('indice_date_disponibilite', $indice->ID) ?: '';
 
         $etat    = get_field('indice_cache_etat_systeme', $indice->ID) ?: '';
         $etat_class = 'etiquette-error';
@@ -89,13 +92,21 @@ if (empty($indices)) {
       <td><?= $linked_html; ?></td>
       <td><span class="etiquette <?= esc_attr($etat_class); ?>"><?= esc_html($etat); ?></span></td>
       <td class="indice-actions">
-        <a
-          href="<?= esc_url(add_query_arg('edition', 'open', get_permalink($indice))); ?>"
+        <button
+          type="button"
           class="badge-action edit"
+          data-objet-type="<?= esc_attr($objet_type); ?>"
+          data-objet-id="<?= esc_attr($objet_id); ?>"
+          data-objet-titre="<?= esc_attr($objet_titre); ?>"
+          data-indice-id="<?= esc_attr($indice->ID); ?>"
+          data-indice-image="<?= esc_attr($img_id); ?>"
+          data-indice-contenu="<?= esc_attr($contenu); ?>"
+          data-indice-disponibilite="<?= esc_attr($dispo); ?>"
+          data-indice-date="<?= esc_attr($date_dispo); ?>"
           title="<?= esc_attr__('Éditer', 'chassesautresor-com'); ?>"
         >
           <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>
-        </a>
+        </button>
         <button
           type="button"
           class="badge-action delete"
