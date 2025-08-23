@@ -411,6 +411,7 @@ msgstr "Definition of the resolution rate"
 #: template-parts/chasse/partials/chasse-partial-participants.php:53
 #: template-parts/enigme/partials/enigme-sidebar-section.php:37
 #: template-parts/indice/indice-edition-main.php:154
+#: template-parts/chasse/chasse-edition-main.php:625
 msgid "Énigmes"
 msgstr "Riddles"
 
@@ -956,6 +957,7 @@ msgstr "Animation"
 #: template-parts/chasse/chasse-edition-main.php:104
 #: template-parts/enigme/enigme-edition-main.php:128
 #: template-parts/indice/indice-edition-main.php:90
+#: template-parts/chasse/partials/chasse-partial-enigmes.php:29
 msgid "Titre"
 msgstr "Title"
 
@@ -1142,6 +1144,7 @@ msgstr "Period:"
 
 #: template-parts/chasse/chasse-edition-main.php:568
 #: template-parts/enigme/enigme-edition-main.php:533
+#: template-parts/chasse/partials/chasse-partial-enigmes.php:30
 msgid "Participants"
 msgstr "Players"
 
@@ -1152,6 +1155,7 @@ msgstr "Players"
 #: template-parts/enigme/enigme-edition-main.php:627
 #: template-parts/enigme/partials/enigme-partial-participants.php:69
 #: templates/myaccount/content-chasses.php:108
+#: template-parts/chasse/partials/chasse-partial-enigmes.php:31
 msgid "Tentatives"
 msgstr "Attempts"
 
@@ -1274,7 +1278,7 @@ msgstr "Sort by participation rate"
 
 #: template-parts/chasse/partials/chasse-partial-participants.php:60
 msgid "Tx participation"
-msgstr "Tx participation"
+msgstr "Participation rate"
 
 #: template-parts/chasse/partials/chasse-partial-participants.php:68
 msgid "Trier par taux de résolution"
@@ -1282,7 +1286,17 @@ msgstr "Sort by resolution rate"
 
 #: template-parts/chasse/partials/chasse-partial-participants.php:70
 msgid "Tx résolution"
-msgstr "Tx resolution"
+msgstr "Resolution rate"
+
+#: template-parts/chasse/partials/chasse-partial-enigmes.php:36
+#: template-parts/chasse/partials/chasse-partial-enigmes.php:38
+msgid "Nombre"
+msgstr "Count"
+
+#: template-parts/chasse/partials/chasse-partial-enigmes.php:37
+#: template-parts/chasse/partials/chasse-partial-enigmes.php:39
+msgid "Taux"
+msgstr "Rate"
 
 #: template-parts/common/stat-histogram-card.php:38
 msgid "Aucune donnée."
@@ -1530,6 +1544,7 @@ msgid "Mois"
 msgstr "Month"
 
 #: template-parts/enigme/enigme-edition-main.php:556
+#: template-parts/chasse/partials/chasse-partial-enigmes.php:33
 msgid "Bonnes réponses"
 msgstr "Correct answers"
 
@@ -1914,6 +1929,7 @@ msgstr "Organizer Edit Panel"
 #: templates/myaccount/content-points.php:75
 #: templates/myaccount/content-points.php:96 templates/myaccount/layout.php:57
 #: templates/myaccount/layout.php:58 templates/myaccount/layout.php:160
+#: template-parts/chasse/partials/chasse-partial-enigmes.php:32
 msgid "Points"
 msgstr "Points"
 

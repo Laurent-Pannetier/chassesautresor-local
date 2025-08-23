@@ -26,17 +26,17 @@ if ($title !== '') {
 <table class="stats-table compact">
   <thead>
     <tr>
-      <th scope="col" rowspan="2">Titre</th>
-      <th scope="col" colspan="2">Participants</th>
-      <th scope="col" rowspan="2"<?= in_array(4, $cols_etiquette, true) ? ' data-format="etiquette" data-col="4"' : ''; ?>>Tentatives</th>
-      <th scope="col" rowspan="2"<?= in_array(5, $cols_etiquette, true) ? ' data-format="etiquette" data-col="5"' : ''; ?>>Points</th>
-      <th scope="col" colspan="2">Bonnes réponses</th>
+      <th scope="col" rowspan="2"><?= esc_html__('Titre', 'chassesautresor-com'); ?></th>
+      <th scope="col" colspan="2"><?= esc_html__('Participants', 'chassesautresor-com'); ?></th>
+      <th scope="col" rowspan="2"<?= in_array(4, $cols_etiquette, true) ? ' data-format="etiquette" data-col="4"' : ''; ?>><?= esc_html__('Tentatives', 'chassesautresor-com'); ?></th>
+      <th scope="col" rowspan="2"<?= in_array(5, $cols_etiquette, true) ? ' data-format="etiquette" data-col="5"' : ''; ?>><?= esc_html__('Points', 'chassesautresor-com'); ?></th>
+      <th scope="col" colspan="2"><?= esc_html__('Bonnes réponses', 'chassesautresor-com'); ?></th>
     </tr>
     <tr>
-      <th scope="col"<?= in_array(2, $cols_etiquette, true) ? ' data-format="etiquette" data-col="2"' : ''; ?>>Nombre</th>
-      <th scope="col"<?= in_array(3, $cols_etiquette, true) ? ' data-format="etiquette" data-col="3"' : ''; ?>>Taux</th>
-      <th scope="col"<?= in_array(6, $cols_etiquette, true) ? ' data-format="etiquette" data-col="6"' : ''; ?>>Nombre</th>
-      <th scope="col"<?= in_array(7, $cols_etiquette, true) ? ' data-format="etiquette" data-col="7"' : ''; ?>>Taux</th>
+      <th scope="col"<?= in_array(2, $cols_etiquette, true) ? ' data-format="etiquette" data-col="2"' : ''; ?>><?= esc_html__('Nombre', 'chassesautresor-com'); ?></th>
+      <th scope="col"<?= in_array(3, $cols_etiquette, true) ? ' data-format="etiquette" data-col="3"' : ''; ?>><?= esc_html__('Taux', 'chassesautresor-com'); ?></th>
+      <th scope="col"<?= in_array(6, $cols_etiquette, true) ? ' data-format="etiquette" data-col="6"' : ''; ?>><?= esc_html__('Nombre', 'chassesautresor-com'); ?></th>
+      <th scope="col"<?= in_array(7, $cols_etiquette, true) ? ' data-format="etiquette" data-col="7"' : ''; ?>><?= esc_html__('Taux', 'chassesautresor-com'); ?></th>
     </tr>
   </thead>
   <tbody>
