@@ -2290,6 +2290,14 @@ msgstr "in creation"
 msgid "Nouvelle chasse"
 msgstr "New hunt"
 
+#: template-parts/common/indices-table.php:40
+msgid "Indice pour"
+msgstr "Clue for"
+
+#: template-parts/common/indices-table.php:41
+msgid "Titre contenu"
+msgstr "Content title"
+
 #: template-parts/common/indices-table.php:44
 msgid "Action"
 msgstr "Action"
