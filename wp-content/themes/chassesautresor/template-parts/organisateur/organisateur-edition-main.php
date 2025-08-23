@@ -72,17 +72,17 @@ $is_complete = (
         <button type="button" class="panneau-fermer" aria-label="Fermer les paramètres organisateur">✖</button>
       </div>
       <div class="edition-tabs">
-        <button class="edition-tab active" data-target="organisateur-tab-param">Paramètres</button>
-        <button class="edition-tab" data-target="organisateur-tab-stats">Statistiques</button>
-        <button class="edition-tab" data-target="organisateur-tab-animation">Animation</button>
-        <button class="edition-tab" data-target="organisateur-tab-revenus">Points</button>
+        <button class="edition-tab active" data-target="organisateur-tab-param"><?= esc_html__('Paramètres', 'chassesautresor-com'); ?></button>
+        <button class="edition-tab" data-target="organisateur-tab-stats"><?= esc_html__('Statistiques', 'chassesautresor-com'); ?></button>
+        <button class="edition-tab" data-target="organisateur-tab-animation"><?= esc_html__('Animation', 'chassesautresor-com'); ?></button>
+        <button class="edition-tab" data-target="organisateur-tab-revenus"><?= esc_html__('Points', 'chassesautresor-com'); ?></button>
       </div>
     </div>
 
     <div id="organisateur-tab-param" class="edition-tab-content active">
       <i class="fa-solid fa-sliders tab-watermark" aria-hidden="true"></i>
       <div class="edition-panel-header">
-        <h2><i class="fa-solid fa-sliders"></i> Paramètres</h2>
+        <h2><i class="fa-solid fa-sliders"></i> <?= esc_html__('Paramètres', 'chassesautresor-com'); ?></h2>
       </div>
       <div class="edition-panel-body">
         <div class="edition-panel-section edition-panel-section-ligne">
@@ -249,7 +249,7 @@ $is_complete = (
     <div id="organisateur-tab-stats" class="edition-tab-content" style="display:none;">
       <i class="fa-solid fa-chart-column tab-watermark" aria-hidden="true"></i>
       <div class="edition-panel-header">
-        <h2><i class="fa-solid fa-chart-column"></i> Statistiques</h2>
+        <h2><i class="fa-solid fa-chart-column"></i> <?= esc_html__('Statistiques', 'chassesautresor-com'); ?></h2>
       </div>
       <?php get_template_part(
           'template-parts/organisateur/panneaux/organisateur-edition-statistiques',
@@ -261,7 +261,7 @@ $is_complete = (
     <div id="organisateur-tab-revenus" class="edition-tab-content" style="display:none;">
       <i class="fa-solid fa-coins tab-watermark" aria-hidden="true"></i>
       <div class="edition-panel-header">
-        <h2><i class="fa-solid fa-coins"></i> Points</h2>
+        <h2><i class="fa-solid fa-coins"></i> <?= esc_html__('Points', 'chassesautresor-com'); ?></h2>
       </div>
         <div class="edition-panel-body">
           <div class="dashboard-grid stats-cards">
@@ -332,14 +332,14 @@ $is_complete = (
     <div id="organisateur-tab-animation" class="edition-tab-content" style="display:none;">
       <i class="fa-solid fa-bullhorn tab-watermark" aria-hidden="true"></i>
       <div class="edition-panel-header">
-        <h2><i class="fa-solid fa-bullhorn"></i> Animation</h2>
+        <h2><i class="fa-solid fa-bullhorn"></i> <?= esc_html__('Animation', 'chassesautresor-com'); ?></h2>
       </div>
       <div class="edition-panel-body">
         <div class="edition-panel-section edition-panel-section-ligne">
           <div class="section-content">
             <div class="resume-blocs-grid">
               <div class="resume-bloc resume-visibilite">
-                <h3>Communiquez</h3>
+                <h3><?= esc_html__('Communiquez', 'chassesautresor-com'); ?></h3>
                 <div class="dashboard-grid stats-cards">
                   <div class="dashboard-card champ-organisateur champ-liens <?= empty($liens_publics) ? 'champ-vide' : 'champ-rempli'; ?>"
                     data-champ="liens_publics"
@@ -349,14 +349,16 @@ $is_complete = (
                     <div class="champ-affichage champ-affichage-liens">
                       <?= render_liens_publics($liens_publics, 'organisateur', ['placeholder' => false]); ?>
                     </div>
-                    <h3>Sites et réseaux de l'organisation</h3>
+                    <h3><?= esc_html__('Sites et réseaux de l\'organisation', 'chassesautresor-com'); ?></h3>
                     <?php if ($peut_modifier) : ?>
                       <a href="#"
                         class="stat-value champ-modifier ouvrir-panneau-liens"
                         data-champ="liens_publics"
                         data-cpt="organisateur"
                         data-post-id="<?= esc_attr($organisateur_id); ?>">
-                        <?= empty($liens_publics) ? 'Ajouter' : 'Éditer'; ?>
+                        <?= empty($liens_publics)
+                          ? esc_html__('Ajouter', 'chassesautresor-com')
+                          : esc_html__('Éditer', 'chassesautresor-com'); ?>
                       </a>
                     <?php endif; ?>
                     <div class="champ-donnees"
@@ -375,10 +377,10 @@ $is_complete = (
                       . '&format=' . $format;
                   ?>
                   <div class="dashboard-card champ-qr-code">
-                    <img class="qr-code-icon" src="<?= esc_url($url_qr_code); ?>" alt="QR code de l'organisation">
-                    <h3>QR code de votre organisation</h3>
+                    <img class="qr-code-icon" src="<?= esc_url($url_qr_code); ?>" alt="<?= esc_attr__('QR code de l\'organisation', 'chassesautresor-com'); ?>">
+                    <h3><?= esc_html__('QR code de votre organisation', 'chassesautresor-com'); ?></h3>
                     <a class="stat-value" href="<?= esc_url($url_qr_code); ?>"
-                      download="<?= esc_attr('qr-organisateur-' . $organisateur_id . '.' . $format); ?>">Télécharger</a>
+                      download="<?= esc_attr('qr-organisateur-' . $organisateur_id . '.' . $format); ?>"><?= esc_html__('Télécharger', 'chassesautresor-com'); ?></a>
                   </div>
                 </div>
               </div>

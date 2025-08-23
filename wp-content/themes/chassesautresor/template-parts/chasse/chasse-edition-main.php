@@ -644,7 +644,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
     <div id="chasse-tab-animation" class="edition-tab-content" style="display:none;">
       <i class="fa-solid fa-bullhorn tab-watermark" aria-hidden="true"></i>
       <div class="edition-panel-header">
-        <h2><i class="fa-solid fa-bullhorn"></i> Animation</h2>
+        <h2><i class="fa-solid fa-bullhorn"></i> <?= esc_html__('Animation', 'chassesautresor-com'); ?></h2>
       </div>
       <div class="edition-panel-body">
         <div class="edition-panel-section edition-panel-section-ligne">
