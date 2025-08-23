@@ -179,8 +179,6 @@ function initChasseEdit() {
       const initialDisabled = inputDateFin.disabled;
       inputDateFin.disabled = initialDisabled || checkboxIllimitee.checked;
 
-      const postId = inputDateFin.closest('.champ-chasse')?.dataset.postId;
-
       checkboxIllimitee.addEventListener('change', function () {
         inputDateFin.disabled = initialDisabled || this.checked;
 
@@ -199,12 +197,24 @@ function initChasseEdit() {
 
             const nouvelleValeur = `${yyyy}-${mm}-${dd}`;
             inputDateFin.value = nouvelleValeur;
+          }
         }
-      }
 
-        enregistrerDatesChasse();
+        const li = inputDateFin.closest('li');
+        const status = li?.querySelector('.champ-status');
+        if (status) {
+          status.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>';
+        }
 
-        mettreAJourAffichageDateFin();
+        enregistrerDatesChasse().then((ok) => {
+          if (status) {
+            status.innerHTML = ok
+              ? '<i class="fa-solid fa-check" aria-hidden="true"></i>'
+              : '<i class="fa-solid fa-xmark" aria-hidden="true"></i>';
+            setTimeout(() => { status.innerHTML = ''; }, 1500);
+          }
+          mettreAJourAffichageDateFin();
+        });
       });
     }
       // La logique d'enregistrement de la date de fin est gérée
@@ -769,15 +779,14 @@ function initChampNbGagnants() {
     if (checkboxIllimite.checked) {
       inputNb.disabled = true;
       inputNb.value = '0';
-      modifierChampSimple('chasse_infos_nb_max_gagants', 0, postId, 'chasse');
     } else {
       inputNb.disabled = false;
       if (parseInt(inputNb.value.trim(), 10) === 0 || inputNb.value.trim() === '') {
         inputNb.value = '1';
-        modifierChampSimple('chasse_infos_nb_max_gagants', 1, postId, 'chasse');
       }
     }
-    // 🔥 Mise à jour dynamique après changement illimité
+
+    inputNb.dispatchEvent(new Event('input', { bubbles: true }));
     mettreAJourAffichageNbGagnants(postId, inputNb.value.trim());
   });
 
@@ -792,8 +801,7 @@ function initChampNbGagnants() {
         valeur = 1;
         inputNb.value = '1';
       }
-      modifierChampSimple('chasse_infos_nb_max_gagants', valeur, postId, 'chasse');
-      mettreAJourAffichageNbGagnants(postId, valeur); // ✅ ici, APRES avoir défini valeur
+      mettreAJourAffichageNbGagnants(postId, valeur);
     }, 500);
   });
 }
@@ -825,6 +833,7 @@ function initModeFinChasse() {
         const clone = templateNb.content.firstElementChild.cloneNode(true);
         modeFinLi.insertAdjacentElement('afterend', clone);
         initChampNbGagnants();
+        if (typeof initChampTexte === 'function') initChampTexte(clone);
       }
 
       document.querySelector('.annuler-fin-chasse-btn')?.dispatchEvent(new Event('click', { bubbles: true }));
