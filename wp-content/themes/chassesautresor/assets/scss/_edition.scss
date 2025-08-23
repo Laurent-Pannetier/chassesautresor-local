@@ -45,17 +45,6 @@
 
 /* ========== ✅ AFFICHAGE DYNAMIQUE DE COMPLÉTION ========== */
 
-.resume-infos .icon-attente,
-.resume-infos .icone-check {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--editor-icon-width);
-  flex: 0 0 var(--editor-icon-width);
-  margin-right: 0.3rem;
-  overflow: hidden;
-}
-
 .resume-infos .champ-rempli .icon-attente {
   display: none;
 }
@@ -68,10 +57,6 @@
   color: var(--color-editor-success);
 }
 
-.resume-infos .edition-row-icon {
-  display: none;
-}
-
 /* Hauteur et alignement par défaut des lignes de paramètres */
 .resume-infos > li {
   min-height: 40px;
@@ -79,6 +64,11 @@
   align-items: center;
   flex-wrap: wrap;
   gap: var(--space-xs);
+  margin-bottom: var(--space-md);
+}
+
+.resume-infos > li:last-child {
+  margin-bottom: 0;
 }
 
 .resume-infos > li > label,
@@ -116,18 +106,31 @@
   min-height: 40px;
 }
 
-.edition-row-icon {
-  width: var(--editor-icon-width);
-  margin-right: 0.3rem;
-  text-align: center;
-}
-
 .edition-row-label {
   width: var(--editor-label-width);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.edition-row-icon {
+  width: var(--editor-icon-width);
+  flex: 0 0 var(--editor-icon-width);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .edition-row-content {
   flex: 1;
+}
+
+.edition-row.champ-attention .edition-row-label label {
+  color: var(--color-editor-error);
+}
+
+.resume-blocs-grid > .resume-bloc + .resume-bloc {
+  margin-top: var(--space-xl);
 }
 
 .cache {
@@ -175,7 +178,6 @@ body.edition-active .champ-organisateur.champ-vide:hover {
 }
 
 .champ-vide-obligatoire {
-  border: 2px dashed var(--color-editor-error);
   animation: clignoteTitre 1s infinite alternate;
 }
 
@@ -416,6 +418,10 @@ body .header-img-modifiable .icone-modif {
   transition: border-color 0.2s, background-color 0.2s;
 }
 
+.edition-panel-body input.champ-number {
+  max-width: 8ch;
+}
+
 @media (min-width: 768px) {
   .edition-panel-body input.champ-texte-edit {
     width: 260px;
@@ -482,6 +488,16 @@ body .header-img-modifiable .icone-modif {
   outline: none;
   border-color: var(--color-editor-accent);
   background-color: var(--color-editor-field-hover);
+}
+
+.champ-status {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
+}
+
+.champ-status .fa-check {
+  color: var(--color-editor-success);
 }
 
 /* ========== 🎯 COMPTEUR DE CARACTÈRES – POSITION FIXE SOUS INPUT ========== */
@@ -821,21 +837,6 @@ body.edition-active-indice .edition-panel-indice.edition-panel-modal {
   width: 100%;
 }
 
-.edition-panel-section .resume-technique label,
-.edition-panel-section .resume-reglages label,
-.edition-panel-section .resume-obligatoire label {
-  display: inline-block;
-  min-width: var(--editor-label-width);
-}
-
-/* Les lignes de réglages n'ont pas d'icône de complétion.
-   On élargit donc leurs labels pour compenser l'absence de marge
-   laissée par cette icône et aligner le contenu avec la section
-   « Informations ». */
-.resume-reglages .resume-infos > li > label,
-.resume-reglages .resume-infos > li > .champ-edition > label {
-  width: calc(var(--editor-label-width) + var(--editor-icon-width) + var(--space-xs) + 0.3rem);
-}
 
 .resume-infos .champ-valeur {
   display: inline-block;
@@ -1086,18 +1087,6 @@ li.ligne-email .champ-affichage {
   gap: 0 5px;
 }
 
-.edition-panel-section .resume-technique li,
-.edition-panel-section .resume-reglages li {
-  margin-bottom: 0.9rem;
-}
-
-.edition-panel-section .resume-reglages .resume-infos > .champ-enigme {
-  margin-bottom: 0.9rem;
-}
-
-.edition-panel-section .resume-reglages .resume-infos > .champ-enigme:last-child {
-  margin-bottom: 0;
-}
 
 
 /* ========== 📱 RESPONSIVE PANNEAU EDITION ========== */
@@ -1741,9 +1730,11 @@ body.panneau-ouvert::before {
   align-items: center;
 }
 
-.champ-mode-options label {
+.champ-mode-options label,
+.champ-mode-fin label {
   display: flex;
   align-items: center;
+  gap: var(--space-xxs);
 }
 
 #champ-enigme-date {

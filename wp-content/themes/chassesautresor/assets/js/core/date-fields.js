@@ -62,6 +62,13 @@ function initChampDate(input) {
 
   if (!champ || !postId) return;
 
+  let status = bloc?.querySelector('.champ-status');
+  if (!status) {
+    status = document.createElement('span');
+    status.className = 'champ-status';
+    input.insertAdjacentElement('afterend', status);
+  }
+
   // 🕒 Pré-remplissage si vide
   if (!input.value && bloc.dataset.date) {
     const dateInit = bloc.dataset.date;
@@ -100,35 +107,36 @@ function initChampDate(input) {
       }
     }
 
+    if (status) {
+      status.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>';
+    }
+
+    const afterSave = success => {
+      saving = false;
+      if (success) {
+        if (status) {
+          status.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i>';
+          setTimeout(() => { status.innerHTML = ''; }, 1000);
+        }
+        input.dataset.previous = valeurBrute;
+        if (typeof window.onDateFieldUpdated === 'function') {
+          window.onDateFieldUpdated(input, valeurBrute);
+        }
+      } else {
+        if (status) status.innerHTML = '';
+        input.value = input.dataset.previous || '';
+      }
+    };
+
     if (
       cpt === 'chasse' &&
       typeof window.enregistrerDatesChasse === 'function' &&
       (champ.endsWith('_date_debut') || champ.endsWith('_date_fin'))
     ) {
       console.log('[initChampDate] appel enregistrerDatesChasse pour', champ);
-      window.enregistrerDatesChasse().then(success => {
-        saving = false;
-        if (success) {
-          input.dataset.previous = valeurBrute;
-          if (typeof window.onDateFieldUpdated === 'function') {
-            window.onDateFieldUpdated(input, valeurBrute);
-          }
-        } else {
-          input.value = input.dataset.previous || '';
-        }
-      });
+      window.enregistrerDatesChasse().then(afterSave);
     } else {
-      modifierChampSimple(champ, valeur, postId, cpt).then(success => {
-        saving = false;
-        if (success) {
-          input.dataset.previous = valeurBrute;
-          if (typeof window.onDateFieldUpdated === 'function') {
-            window.onDateFieldUpdated(input, valeurBrute);
-          }
-        } else {
-          input.value = input.dataset.previous || '';
-        }
-      });
+      modifierChampSimple(champ, valeur, postId, cpt).then(afterSave);
     }
   };
 

@@ -79,6 +79,13 @@ function initChampTexte(bloc) {
     bloc.appendChild(feedback);
   }
 
+  let status = bloc.querySelector('.champ-status');
+  if (!status && input) {
+    status = document.createElement('span');
+    status.className = 'champ-status';
+    input.insertAdjacentElement('afterend', status);
+  }
+
   // ✍️ Édition directe : aucun bouton d'édition/sauvegarde
   if (!boutonSave && !boutonEdit) {
     let timer;
@@ -112,8 +119,11 @@ function initChampTexte(bloc) {
           }
         }
 
-        feedback.textContent = 'Enregistrement en cours...';
-        feedback.className = 'champ-feedback champ-loading';
+        if (status) {
+          status.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>';
+        }
+        feedback.textContent = '';
+        feedback.className = 'champ-feedback';
 
         let valeurEnvoyee = brute;
         let estVide = !brute;
@@ -127,12 +137,17 @@ function initChampTexte(bloc) {
         modifierChampSimple(champ, valeurEnvoyee, postId, cpt).then(success => {
           if (success) {
             bloc.classList.toggle('champ-vide', estVide);
+            if (status) {
+              status.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i>';
+              setTimeout(() => { status.innerHTML = ''; }, 1000);
+            }
             feedback.textContent = '';
-            feedback.className = 'champ-feedback champ-success';
+            feedback.className = 'champ-feedback';
             if (typeof window.mettreAJourResumeInfos === 'function') {
               window.mettreAJourResumeInfos();
             }
           } else {
+            if (status) status.innerHTML = '';
             feedback.textContent = 'Erreur lors de l’enregistrement.';
             feedback.className = 'champ-feedback champ-error';
           }
@@ -203,8 +218,11 @@ function initChampTexte(bloc) {
       }
     }
 
-    feedback.textContent = 'Enregistrement en cours...';
-    feedback.className = 'champ-feedback champ-loading';
+    if (status) {
+      status.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>';
+    }
+    feedback.textContent = '';
+    feedback.className = 'champ-feedback';
 
     modifierChampSimple(champ, valeur, postId, cpt).then(success => {
       if (success) {
@@ -224,13 +242,18 @@ function initChampTexte(bloc) {
         if (affichage?.style) affichage.style.display = '';
         bloc.classList.toggle('champ-vide', !valeur);
 
+        if (status) {
+          status.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i>';
+          setTimeout(() => { status.innerHTML = ''; }, 1000);
+        }
         feedback.textContent = '';
-        feedback.className = 'champ-feedback champ-success';
+        feedback.className = 'champ-feedback';
 
         if (typeof window.mettreAJourResumeInfos === 'function') {
           window.mettreAJourResumeInfos();
         }
       } else {
+        if (status) status.innerHTML = '';
         feedback.textContent = 'Erreur lors de l’enregistrement.';
         feedback.className = 'champ-feedback champ-error';
       }

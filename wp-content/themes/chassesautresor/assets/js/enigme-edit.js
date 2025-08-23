@@ -591,11 +591,12 @@ function initChampBonnesReponses() {
     wrapper.classList.toggle('champ-vide-obligatoire', estVide);
     bloc.classList.toggle('champ-vide', estVide);
     bloc.classList.toggle('champ-rempli', !estVide);
+    bloc.classList.toggle('champ-attention', estVide);
 
     if (reponses.length === 0) {
       const input = document.createElement('input');
       input.type = 'text';
-      input.className = 'champ-input champ-texte-edit';
+      input.className = 'champ-input champ-texte-edit champ-vide-obligatoire';
       input.setAttribute('maxlength', '75');
       input.placeholder = wp.i18n.__('Ex : soleil', 'chassesautresor-com');
 
@@ -729,9 +730,10 @@ function initPanneauVariantes() {
   const boutonAjouter = document.getElementById('bouton-ajouter-variante');
   const messageLimite = document.querySelector('.message-limite-variantes');
   const resumeBloc = document.querySelector('[data-champ="enigme_reponse_variantes"]');
-  let listeResume = resumeBloc?.querySelector('.variantes-table');
-  let lienAjouterResume = resumeBloc?.querySelector('.champ-ajouter');
-  let boutonEditerResume = resumeBloc?.querySelector('.champ-modifier.ouvrir-panneau-variantes');
+  const resumeContent = resumeBloc?.querySelector('.edition-row-content') || resumeBloc;
+  let listeResume = resumeContent?.querySelector('.variantes-table');
+  let lienAjouterResume = resumeContent?.querySelector('.champ-ajouter');
+  let boutonEditerResume = resumeContent?.querySelector('.champ-modifier.ouvrir-panneau-variantes');
 
   if (listeResume && !boutonEditerResume) {
     boutonEditerResume = document.createElement('button');
@@ -741,7 +743,7 @@ function initPanneauVariantes() {
     boutonEditerResume.dataset.postId = postId;
     boutonEditerResume.setAttribute('aria-label', wp.i18n.__('Modifier les variantes', 'chassesautresor-com'));
     boutonEditerResume.textContent = wp.i18n.__('modifier', 'chassesautresor-com');
-    resumeBloc.appendChild(boutonEditerResume);
+    resumeContent.appendChild(boutonEditerResume);
   }
 
   if (boutonEditerResume) {
@@ -875,7 +877,7 @@ function initPanneauVariantes() {
     const feedback = formulaire.querySelector('.champ-feedback-variantes');
     if (feedback) {
       feedback.style.display = 'block';
-      feedback.textContent = wp.i18n.__('Enregistrement...', 'chassesautresor-com');
+      feedback.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>';
       feedback.className = 'champ-feedback champ-loading';
     }
 
@@ -895,8 +897,9 @@ function initPanneauVariantes() {
     Promise.all(promises)
       .then(() => {
         if (feedback) {
-          feedback.textContent = wp.i18n.__('✔️ Variantes enregistrées', 'chassesautresor-com');
+          feedback.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i>';
           feedback.className = 'champ-feedback champ-success';
+          setTimeout(() => { feedback.innerHTML = ''; feedback.className = 'champ-feedback'; }, 1000);
         }
 
         setTimeout(() => {
@@ -922,7 +925,7 @@ function initPanneauVariantes() {
               listeResume.appendChild(thead);
               const tbodyEl = document.createElement('tbody');
               listeResume.appendChild(tbodyEl);
-              resumeBloc.insertBefore(listeResume, boutonEditerResume || lienAjouterResume || null);
+              resumeContent.insertBefore(listeResume, boutonEditerResume || lienAjouterResume || null);
             }
 
             const tbody = listeResume.querySelector('tbody');
@@ -965,7 +968,7 @@ function initPanneauVariantes() {
                 lienAjouterResume.dataset.postId = postId;
                 lienAjouterResume.setAttribute('aria-label', wp.i18n.__('Ajouter des variantes', 'chassesautresor-com'));
                 lienAjouterResume.textContent = wp.i18n.__('ajouter des variantes', 'chassesautresor-com');
-                resumeBloc.appendChild(lienAjouterResume);
+                resumeContent.appendChild(lienAjouterResume);
                 lienAjouterResume.addEventListener('click', e => {
                   e.preventDefault();
                   ouvrirPanneau();
@@ -986,7 +989,7 @@ function initPanneauVariantes() {
                 boutonEditerResume.dataset.postId = postId;
                 boutonEditerResume.setAttribute('aria-label', wp.i18n.__('Modifier les variantes', 'chassesautresor-com'));
                 boutonEditerResume.textContent = wp.i18n.__('modifier', 'chassesautresor-com');
-                resumeBloc.appendChild(boutonEditerResume);
+                resumeContent.appendChild(boutonEditerResume);
                 boutonEditerResume.addEventListener('click', e => {
                   e.preventDefault();
                   ouvrirPanneau();
@@ -1254,7 +1257,7 @@ function initSolutionInline() {
     formData.append('action', 'supprimer_fichier_solution_enigme');
     formData.append('post_id', postId);
     if (feedbackFichier) {
-      feedbackFichier.textContent = '⏳ Suppression en cours...';
+      feedbackFichier.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>';
       feedbackFichier.className = 'champ-feedback champ-loading';
     }
     fetch(ajaxurl, { method: 'POST', body: formData })
@@ -1272,8 +1275,9 @@ function initSolutionInline() {
           if (inputFichier) inputFichier.value = '';
           if (btnClearPdf) btnClearPdf.style.display = 'none';
           if (feedbackFichier) {
-            feedbackFichier.textContent = '✅ Fichier supprimé';
+            feedbackFichier.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i>';
             feedbackFichier.className = 'champ-feedback champ-success';
+            setTimeout(() => { feedbackFichier.innerHTML = ''; feedbackFichier.className = 'champ-feedback'; }, 1000);
           }
           majMessageSolution();
         } else if (feedbackFichier) {
@@ -1283,6 +1287,7 @@ function initSolutionInline() {
       })
       .catch(() => {
         if (feedbackFichier) {
+          feedbackFichier.innerHTML = '';
           feedbackFichier.textContent = '❌ Erreur réseau';
           feedbackFichier.className = 'champ-feedback champ-error';
         }
@@ -1349,7 +1354,7 @@ function initSolutionInline() {
     formData.append('post_id', postId);
     formData.append('fichier_pdf', fichier);
 
-    feedbackFichier.textContent = '⏳ Enregistrement en cours...';
+    feedbackFichier.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>';
     feedbackFichier.className = 'champ-feedback champ-loading';
 
     fetch(ajaxurl, {
@@ -1359,8 +1364,9 @@ function initSolutionInline() {
       .then(r => r.json())
       .then(res => {
         if (res.success) {
-          feedbackFichier.textContent = '✅ Fichier enregistré';
+          feedbackFichier.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i>';
           feedbackFichier.className = 'champ-feedback champ-success';
+          setTimeout(() => { feedbackFichier.innerHTML = ''; feedbackFichier.className = 'champ-feedback'; }, 1000);
 
           if (cardPdf) {
             const icon = cardPdf.querySelector('i');
@@ -1373,11 +1379,13 @@ function initSolutionInline() {
           if (btnClearPdf) btnClearPdf.style.display = '';
           majMessageSolution();
         } else {
+          feedbackFichier.innerHTML = '';
           feedbackFichier.textContent = '❌ Erreur : ' + (res.data || 'inconnue');
           feedbackFichier.className = 'champ-feedback champ-error';
         }
       })
       .catch(() => {
+        feedbackFichier.innerHTML = '';
         feedbackFichier.textContent = '❌ Erreur réseau';
         feedbackFichier.className = 'champ-feedback champ-error';
       });
