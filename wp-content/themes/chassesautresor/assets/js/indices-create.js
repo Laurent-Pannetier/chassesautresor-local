@@ -59,8 +59,8 @@
 
     overlay.querySelector('.select-image').addEventListener('click', function (e) {
       e.preventDefault();
-      if (!wp || !wp.media) return;
-      var frame = wp.media({ title: indicesCreate.texts.mediaTitle, multiple: false });
+      if (!window.wp || !window.wp.media) return;
+      var frame = window.wp.media({ title: indicesCreate.texts.mediaTitle, multiple: false });
       frame.on('select', function () {
         var attachment = frame.state().get('selection').first().toJSON();
         overlay.querySelector('input[name="indice_image"]').value = attachment.id;
@@ -87,7 +87,7 @@
     });
   }
 
-  document.addEventListener('click', function (e) {
+  function handleClick(e) {
     var target = e.target;
     if (target && target.nodeType !== 1) {
       target = target.parentElement;
@@ -96,5 +96,11 @@
     if (!btn) return;
     e.preventDefault();
     openModal(btn);
-  }, true);
+  }
+
+  window.addEventListener('DOMContentLoaded', function () {
+    document.body.addEventListener('click', handleClick, true);
+  });
+
+  window.openIndiceCreateModal = openModal;
 })();
