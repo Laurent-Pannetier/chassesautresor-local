@@ -64,6 +64,11 @@
   align-items: center;
   flex-wrap: wrap;
   gap: var(--space-xs);
+  margin-bottom: var(--space-md);
+}
+
+.resume-infos > li:last-child {
+  margin-bottom: 0;
 }
 
 .resume-infos > li > label,
@@ -1061,18 +1066,6 @@ li.ligne-email .champ-affichage {
   gap: 0 5px;
 }
 
-.edition-panel-section .resume-technique li,
-.edition-panel-section .resume-reglages li {
-  margin-bottom: 0.9rem;
-}
-
-.edition-panel-section .resume-reglages .resume-infos > .champ-enigme {
-  margin-bottom: 0.9rem;
-}
-
-.edition-panel-section .resume-reglages .resume-infos > .champ-enigme:last-child {
-  margin-bottom: 0;
-}
 
 
 /* ========== 📱 RESPONSIVE PANNEAU EDITION ========== */
@@ -1716,9 +1709,11 @@ body.panneau-ouvert::before {
   align-items: center;
 }
 
-.champ-mode-options label {
+.champ-mode-options label,
+.champ-mode-fin label {
   display: flex;
   align-items: center;
+  gap: var(--space-xxs);
 }
 
 #champ-enigme-date {
