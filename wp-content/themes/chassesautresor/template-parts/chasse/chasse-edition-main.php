@@ -463,7 +463,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
     <div id="chasse-tab-stats" class="edition-tab-content" style="display:none;">
       <i class="fa-solid fa-chart-column tab-watermark" aria-hidden="true"></i>
       <div class="edition-panel-header">
-        <h2><i class="fa-solid fa-chart-column"></i> Statistiques</h2>
+        <h2><i class="fa-solid fa-chart-column"></i> <?= esc_html__('Statistiques', 'chassesautresor-com'); ?></h2>
       </div>
       <?php if (!utilisateur_est_organisateur_associe_a_chasse(get_current_user_id(), $chasse_id)) : ?>
         <p class="edition-placeholder"><?php esc_html_e('Accès refusé.', 'chassesautresor-com'); ?></p>
@@ -622,7 +622,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
               <?php endif;
           endif;
           get_template_part('template-parts/chasse/partials/chasse-partial-enigmes', null, [
-              'title'         => 'Énigmes',
+              'title'         => esc_html__('Énigmes', 'chassesautresor-com'),
               'enigmes'       => $enigmes_stats,
               'total'         => $total_engagements,
               'cols_etiquette' => [2, 3, 4, 5, 6, 7],
