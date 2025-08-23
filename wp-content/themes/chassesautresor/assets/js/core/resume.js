@@ -128,12 +128,12 @@ window.mettreAJourResumeInfos = function () {
         estRempli = !!checked;
       }
 
-      if (champ === 'enigme_tentative_cout_points') {
+      if (champ.endsWith('enigme_tentative_cout_points')) {
         const val = parseInt(blocEdition?.querySelector('input')?.value || '', 10);
         estRempli = !isNaN(val);
       }
 
-      if (champ === 'enigme_tentative_max') {
+      if (champ.endsWith('enigme_tentative_max')) {
         const val = parseInt(blocEdition?.querySelector('input')?.value || '', 10);
         estRempli = !isNaN(val) && val > 0;
       }
@@ -279,7 +279,9 @@ window.onChampSimpleMisAJour = function (champ, postId, valeur, cpt) {
       'enigme_visuel_texte',
       'enigme_mode_validation',
       'enigme_tentative_cout_points',
+      'enigme_tentative.enigme_tentative_cout_points',
       'enigme_tentative_max',
+      'enigme_tentative.enigme_tentative_max',
       'enigme_reponse_bonne',
       'enigme_reponse_casse',
       'enigme_acces_condition',
