@@ -32,7 +32,7 @@ function enqueue_script_enigme_edit()
   if (!utilisateur_peut_modifier_post($enigme_id)) return;
 
   // 📦 Modules JS partagés + scripts spécifiques
-  enqueue_core_edit_scripts(['organisateur-edit', 'enigme-edit', 'enigme-stats', 'table-etiquette', 'tentatives-toggle', 'indices-pager']);
+  enqueue_core_edit_scripts(['organisateur-edit', 'enigme-edit', 'enigme-stats', 'table-etiquette', 'tentatives-toggle', 'indices-pager', 'indices-create']);
 
   wp_localize_script(
     'enigme-stats',

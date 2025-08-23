@@ -137,6 +137,24 @@ function enqueue_core_edit_scripts(array $additional = [])
       true
     );
     wp_set_script_translations($handle, 'chassesautresor-com');
+    if ($handle === 'indices-create') {
+      wp_localize_script(
+        'indices-create',
+        'indicesCreate',
+        [
+          'ajaxUrl' => admin_url('admin-ajax.php'),
+          'texts'   => [
+            'close'     => __('Fermer', 'chassesautresor-com'),
+            'image'     => __('Choisir une image', 'chassesautresor-com'),
+            'contenu'   => __('Texte de l’indice', 'chassesautresor-com'),
+            'immediate' => __('Immédiate', 'chassesautresor-com'),
+            'differe'   => __('Différée', 'chassesautresor-com'),
+            'valider'   => __('Valider', 'chassesautresor-com'),
+            'mediaTitle'=> __('Sélectionner une image', 'chassesautresor-com'),
+          ],
+        ]
+      );
+    }
   }
 }
 

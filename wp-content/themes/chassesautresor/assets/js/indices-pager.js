@@ -21,6 +21,8 @@
       });
   }
 
+  window.reloadIndicesTable = reloadTable;
+
   document.addEventListener('pager:change', function (e) {
     var pager = e.target;
     if (!pager.classList.contains('indices-pager')) {

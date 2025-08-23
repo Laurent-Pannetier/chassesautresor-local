@@ -317,6 +317,55 @@ function ajax_indices_lister_table(): void
 add_action('wp_ajax_indices_lister_table', 'ajax_indices_lister_table');
 
 /**
+ * Crée un indice via une requête AJAX depuis une modale.
+ *
+ * @return void
+ */
+function ajax_creer_indice_modal(): void
+{
+    if (!is_user_logged_in()) {
+        wp_send_json_error('non_connecte');
+    }
+
+    $objet_id   = isset($_POST['objet_id']) ? (int) $_POST['objet_id'] : 0;
+    $objet_type = sanitize_key($_POST['objet_type'] ?? '');
+
+    if (!$objet_id || !in_array($objet_type, ['chasse', 'enigme'], true) || get_post_type($objet_id) !== $objet_type) {
+        wp_send_json_error('post_invalide');
+    }
+
+    if (!indice_action_autorisee('create', $objet_type, $objet_id)) {
+        wp_send_json_error('acces_refuse');
+    }
+
+    $indice_id = creer_indice_pour_objet($objet_id, $objet_type);
+    if (is_wp_error($indice_id)) {
+        wp_send_json_error($indice_id->get_error_message());
+    }
+
+    $image   = isset($_POST['indice_image']) ? (int) $_POST['indice_image'] : 0;
+    $contenu = wp_kses_post($_POST['indice_contenu'] ?? '');
+    $dispo   = sanitize_key($_POST['indice_disponibilite'] ?? 'immediate');
+    $date    = sanitize_text_field($_POST['indice_date_disponibilite'] ?? '');
+
+    if ($image) {
+        update_field('indice_image', $image, $indice_id);
+    }
+    if ($contenu !== '') {
+        update_field('indice_contenu', $contenu, $indice_id);
+    }
+
+    $dispo = $dispo === 'differe' ? 'differe' : 'immediate';
+    update_field('indice_disponibilite', $dispo, $indice_id);
+    if ($dispo === 'differe' && $date) {
+        update_field('indice_date_disponibilite', $date, $indice_id);
+    }
+
+    wp_send_json_success(['indice_id' => $indice_id]);
+}
+add_action('wp_ajax_creer_indice_modal', 'ajax_creer_indice_modal');
+
+/**
  * Gère l’enregistrement AJAX des champs ACF ou natifs du CPT indice.
  *
  * @hook wp_ajax_modifier_champ_indice

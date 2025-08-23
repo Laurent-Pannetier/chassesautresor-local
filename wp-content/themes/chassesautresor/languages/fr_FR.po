@@ -2324,3 +2324,31 @@ msgstr "Tentatives quotidiennes"
 #: assets/js/core/resume.js:322
 msgid "renseigner le titre de la chasse"
 msgstr "renseigner le titre de la chasse"
+
+#: inc/edition/edition-core.php:***
+msgid "Fermer"
+msgstr "Fermer"
+
+#: inc/edition/edition-core.php:***
+msgid "Choisir une image"
+msgstr "Choisir une image"
+
+#: inc/edition/edition-core.php:***
+msgid "Texte de l’indice"
+msgstr "Texte de l’indice"
+
+#: inc/edition/edition-core.php:***
+msgid "Immédiate"
+msgstr "Immédiate"
+
+#: inc/edition/edition-core.php:***
+msgid "Différée"
+msgstr "Différée"
+
+#: inc/edition/edition-core.php:***
+msgid "Valider"
+msgstr "Valider"
+
+#: inc/edition/edition-core.php:***
+msgid "Sélectionner une image"
+msgstr "Sélectionner une image"
