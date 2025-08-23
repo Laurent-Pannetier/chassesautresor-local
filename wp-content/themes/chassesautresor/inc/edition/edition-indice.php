@@ -2,34 +2,42 @@
 defined('ABSPATH') || exit;
 
 // ==================================================
-// 💡 CRÉATION & ÉDITION D’UN INDICE
+// 💡 GESTION DES INDICES
 // ==================================================
-// 🔹 enqueue_script_indice_edit() → Charge JS sur single indice
 // 🔹 register_endpoint_creer_indice() → Enregistre /creer-indice
 // 🔹 creer_indice_pour_objet() → Crée un indice lié à une chasse ou une énigme
 // 🔹 creer_indice_et_rediriger_si_appel() → Crée un indice et redirige
+// 🔹 rediriger_si_affichage_indice() → Redirige toute page indice vers sa cible
 // 🔹 modifier_champ_indice() → Mise à jour AJAX (champ ACF ou natif)
 
 /**
- * Charge les scripts nécessaires à l’édition d’un indice.
+ * Redirige l’affichage d’un indice vers sa chasse ou son énigme liée.
  *
  * @return void
  */
-function enqueue_script_indice_edit(): void
+function rediriger_si_affichage_indice(): void
 {
     if (!is_singular('indice')) {
         return;
     }
 
-    $indice_id = get_the_ID();
-    if (!utilisateur_peut_modifier_post($indice_id)) {
-        return;
+    $indice_id   = get_the_ID();
+    $cible_type  = get_field('indice_cible_type', $indice_id);
+    $redirect_id = 0;
+
+    if ($cible_type === 'chasse') {
+        $redirect_id = (int) get_field('indice_chasse_linked', $indice_id);
+    } elseif ($cible_type === 'enigme') {
+        $redirect_id = (int) get_field('indice_enigme_linked', $indice_id);
     }
 
-    enqueue_core_edit_scripts(['organisateur-edit', 'indice-edit']);
-    wp_enqueue_media();
+    if ($redirect_id) {
+        wp_safe_redirect(get_permalink($redirect_id));
+        exit;
+    }
 }
-add_action('wp_enqueue_scripts', 'enqueue_script_indice_edit');
+add_action('template_redirect', 'rediriger_si_affichage_indice');
+
 
 /**
  * Calcule le rang du prochain indice pour une chasse ou une énigme.
@@ -220,8 +228,7 @@ function creer_indice_et_rediriger_si_appel(): void
         exit;
     }
 
-    $preview_url = add_query_arg('edition', 'open', get_preview_post_link($indice_id));
-    wp_redirect($preview_url);
+    wp_safe_redirect(get_permalink($cible_id));
     exit;
 }
 add_action('template_redirect', 'creer_indice_et_rediriger_si_appel');

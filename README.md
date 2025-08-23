@@ -55,7 +55,7 @@ Un endpoint dédié permet de créer rapidement un indice :
 - **URL :** `/creer-indice/`
 - **Paramètres :** `chasse_id`, `enigme_id` (optionnel) et `nonce`.
 - **Champs ACF initialisés :** `indice_cible_type`, `indice_enigme_linked`, `indice_chasse_linked`, `indice_disponibilite`, `indice_date_disponibilite`, `indice_cout_points` et `indice_cache_complet`.
-- **Comportement :** après création, l’utilisateur est redirigé vers l’indice et le panneau d’édition s’ouvre automatiquement.
+- **Comportement :** après création, l’utilisateur est redirigé vers la chasse ou l’énigme associée.
 
 ### Accessibilité
 
