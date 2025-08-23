@@ -5379,6 +5379,7 @@ tbody tr:nth-child(even) {
   padding: 8px 12px;
   border: none;
   /*color: var(--color-text-primary);*/
+  vertical-align: middle;
 }
 
 .stats-table th {
@@ -5741,6 +5742,16 @@ body.accueil-fullscreen {
 }
 
 /* 📐 Layout – Structure générale des pages */
+
+:root { --bp-xl: 1440px; }
+
+@media (min-width: var(--bp-xl)) {
+  .layout-fullwidth .ast-container,
+  .layout-fullwidth .myaccount-layout {
+    width: 100vw;
+    max-width: 100%;
+  }
+}
 
 /* 🎯 Header top bar */
 
