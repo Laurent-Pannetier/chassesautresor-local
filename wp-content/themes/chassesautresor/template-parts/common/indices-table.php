@@ -49,7 +49,12 @@ if (empty($indices)) {
         $indice_rank = $index + 1;
         $date        = mysql2date('d/m/y', $indice->post_date);
         $img_id      = get_field('indice_image', $indice->ID);
-        $img_html    = $img_id ? wp_get_attachment_image($img_id, [80, 80]) : '';
+        $img_html    = '';
+        $img_url     = '';
+        if ($img_id) {
+            $img_html = wp_get_attachment_image($img_id, [80, 80]);
+            $img_url  = wp_get_attachment_image_url($img_id, 'thumbnail') ?: '';
+        }
 
         $contenu = wp_strip_all_tags(get_field('indice_contenu', $indice->ID) ?: '');
         $dispo   = get_field('indice_disponibilite', $indice->ID) ?: 'immediate';
