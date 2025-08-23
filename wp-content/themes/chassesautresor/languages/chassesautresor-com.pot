@@ -334,9 +334,13 @@ msgstr ""
 msgid "Droits insuffisants."
 msgstr ""
 
-#: inc/edition/edition-indice.php:82
+#: inc/edition/edition-indice.php:83
 #, php-format
-msgid "Indice #%d - %s"
+msgid "Indice #%d"
+msgstr ""
+
+#: inc/edition/edition-core.php:155
+msgid "lié à"
 msgstr ""
 
 #: inc/edition/edition-indice.php:151

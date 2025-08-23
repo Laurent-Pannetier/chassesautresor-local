@@ -344,10 +344,14 @@ msgstr ""
 msgid "Droits insuffisants."
 msgstr "Points insuffisants"
 
-#: inc/edition/edition-indice.php:82
+#: inc/edition/edition-indice.php:83
 #, php-format
-msgid "Indice #%d - %s"
-msgstr "Indice #%d - %s"
+msgid "Indice #%d"
+msgstr "Indice #%d"
+
+#: inc/edition/edition-core.php:155
+msgid "lié à"
+msgstr "lié à"
 
 #: inc/edition/edition-indice.php:151
 #, fuzzy
@@ -2324,6 +2328,34 @@ msgstr "Tentatives quotidiennes"
 #: assets/js/core/resume.js:322
 msgid "renseigner le titre de la chasse"
 msgstr "renseigner le titre de la chasse"
+
+#: inc/edition/edition-core.php:***
+msgid "Fermer"
+msgstr "Fermer"
+
+#: inc/edition/edition-core.php:***
+msgid "Choisir une image"
+msgstr "Choisir une image"
+
+#: inc/edition/edition-core.php:***
+msgid "Texte de l’indice"
+msgstr "Texte de l’indice"
+
+#: inc/edition/edition-core.php:***
+msgid "Immédiate"
+msgstr "Immédiate"
+
+#: inc/edition/edition-core.php:***
+msgid "Différée"
+msgstr "Différée"
+
+#: inc/edition/edition-core.php:***
+msgid "Valider"
+msgstr "Valider"
+
+#: inc/edition/edition-core.php:***
+msgid "Sélectionner une image"
+msgstr "Sélectionner une image"
 
 #: assets/js/chasse-edit.js:376
 msgid "Veuillez saisir une valeur en euros comprise entre 0 et 5 000 000."
