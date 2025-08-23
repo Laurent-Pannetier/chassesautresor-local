@@ -49,6 +49,7 @@ if (empty($indices)) {
         $date    = mysql2date('d/m/y', $indice->post_date);
         $img_id     = get_field('indice_image', $indice->ID);
         $img_html   = $img_id ? wp_get_attachment_image($img_id, [80, 80]) : '';
+
         $contenu    = wp_strip_all_tags(get_field('indice_contenu', $indice->ID) ?: '');
         $dispo      = get_field('indice_disponibilite', $indice->ID) ?: 'immediate';
         $date_dispo = get_field('indice_date_disponibilite', $indice->ID) ?: '';
@@ -100,6 +101,7 @@ if (empty($indices)) {
           data-objet-titre="<?= esc_attr($objet_titre); ?>"
           data-indice-id="<?= esc_attr($indice->ID); ?>"
           data-indice-image="<?= esc_attr($img_id); ?>"
+          data-indice-image-url="<?= esc_attr($img_url); ?>"
           data-indice-contenu="<?= esc_attr($contenu); ?>"
           data-indice-disponibilite="<?= esc_attr($dispo); ?>"
           data-indice-date="<?= esc_attr($date_dispo); ?>"

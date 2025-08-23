@@ -2139,6 +2139,10 @@ msgstr ""
 msgid "Fermer"
 msgstr ""
 
+#: inc/edition/edition-core.php:149
+msgid "Texte de l’indice"
+msgstr ""
+
 #: assets/js/reponse-automatique.js:35
 #, js-format
 msgid "Confirmer l'envoi ? Cette tentative coûtera %1$d pts. Solde après : %2$d pts."
