@@ -1903,6 +1903,10 @@ msgstr "Statistics"
 msgid "Texte de l’indice mis à jour."
 msgstr "Clue text updated."
 
+#: inc/edition/edition-core.php:149
+msgid "Texte de l’indice"
+msgstr "Clue text"
+
 #: template-parts/modals/modal-points.php:9
 msgid "À quoi servent les points ?"
 msgstr "What are points used for?"
