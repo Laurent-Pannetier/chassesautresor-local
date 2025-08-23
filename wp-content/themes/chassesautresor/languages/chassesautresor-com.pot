@@ -2181,3 +2181,20 @@ msgstr ""
 msgid "Voulez-vous vraiment supprimer la récompense ?"
 msgstr ""
 
+#: template-parts/common/indices-table.php:69
+msgid "accessible"
+msgstr ""
+
+#: template-parts/common/indices-table.php:69
+msgid "programme"
+msgstr ""
+
+#: template-parts/common/indices-table.php:83
+msgid "programmé"
+msgstr ""
+
+#: template-parts/common/indices-table.php:75
+#, php-format
+msgid "programmé le %s"
+msgstr ""
+
