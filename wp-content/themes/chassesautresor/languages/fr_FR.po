@@ -617,6 +617,7 @@ msgstr ""
 #: inc/enigme/reponses.php:137
 #: template-parts/enigme/partials/enigme-partial-bloc-reponse.php:119
 #: template-parts/enigme/partials/enigme-partial-tentatives.php:68
+#: inc/edition/edition-core.php:***
 msgid "Valider"
 msgstr "Valider"
 
@@ -1896,10 +1897,12 @@ msgid "Publication"
 msgstr "Publication"
 
 #: template-parts/indice/indice-edition-main.php:186
+#: inc/edition/edition-core.php:***
 msgid "Immédiate"
 msgstr "Immédiate"
 
 #: template-parts/indice/indice-edition-main.php:187
+#: inc/edition/edition-core.php:***
 msgid "Différée"
 msgstr "Différée"
 
@@ -2267,11 +2270,6 @@ msgstr "❌ Erreur réseau"
 msgid "Erreur lors de l'enregistrement de l'ordre"
 msgstr "Erreur lors de la création de la chasse."
 
-#: assets/js/help-modal.js:19
-#, fuzzy
-msgid "Fermer"
-msgstr "Fermer tableau"
-
 #: assets/js/reponse-automatique.js:35
 msgid ""
 "Confirmer l'envoi ? Cette tentative coûtera %1$d pts. Solde après : %2$d pts."
@@ -2329,6 +2327,7 @@ msgstr "Tentatives quotidiennes"
 msgid "renseigner le titre de la chasse"
 msgstr "renseigner le titre de la chasse"
 
+#: assets/js/help-modal.js:19
 #: inc/edition/edition-core.php:***
 msgid "Fermer"
 msgstr "Fermer"
@@ -2340,18 +2339,6 @@ msgstr "Choisir une image"
 #: inc/edition/edition-core.php:***
 msgid "Texte de l’indice"
 msgstr "Texte de l’indice"
-
-#: inc/edition/edition-core.php:***
-msgid "Immédiate"
-msgstr "Immédiate"
-
-#: inc/edition/edition-core.php:***
-msgid "Différée"
-msgstr "Différée"
-
-#: inc/edition/edition-core.php:***
-msgid "Valider"
-msgstr "Valider"
 
 #: inc/edition/edition-core.php:***
 msgid "Sélectionner une image"
