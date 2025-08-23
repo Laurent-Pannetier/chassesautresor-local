@@ -48,13 +48,13 @@ add_action('template_redirect', 'rediriger_si_affichage_indice');
  */
 function prochain_rang_indice(int $objet_id, string $objet_type): int
 {
-    $chasse_id = $objet_type === 'chasse'
-        ? $objet_id
-        : recuperer_id_chasse_associee($objet_id);
-
-    if (!$chasse_id) {
+    if (!in_array($objet_type, ['chasse', 'enigme'], true)) {
         return 1;
     }
+
+    $meta_key = $objet_type === 'chasse'
+        ? 'indice_chasse_linked'
+        : 'indice_enigme_linked';
 
     $existing_indices = function_exists('get_posts')
         ? get_posts([
@@ -62,9 +62,14 @@ function prochain_rang_indice(int $objet_id, string $objet_type): int
             'post_status'    => ['publish', 'pending', 'draft', 'private', 'future'],
             'meta_query'     => [
                 [
-                    'key'     => 'indice_chasse_linked',
-                    'value'   => '"' . $chasse_id . '"',
-                    'compare' => 'LIKE',
+                    'key'     => 'indice_cible_type',
+                    'value'   => $objet_type,
+                    'compare' => '=',
+                ],
+                [
+                    'key'     => $meta_key,
+                    'value'   => $objet_id,
+                    'compare' => '=',
                 ],
                 [
                     'key'     => 'indice_cache_etat_systeme',
