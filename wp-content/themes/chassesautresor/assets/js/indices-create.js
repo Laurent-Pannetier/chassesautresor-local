@@ -36,7 +36,7 @@
       if (btn.dataset.indiceImage) {
         overlay.querySelector('input[name="indice_image"]').value = btn.dataset.indiceImage;
         if (btn.dataset.indiceImageUrl) {
-          overlay.querySelector('.image-preview').innerHTML = '<img src="' + btn.dataset.indiceImageUrl + '" alt="" />';
+          renderPreview(btn.dataset.indiceImageUrl);
         }
       }
       if (btn.dataset.indiceContenu) {
@@ -62,6 +62,40 @@
       if (e.target === overlay) close();
     });
 
+    function renderPreview(url) {
+      var preview = overlay.querySelector('.image-preview');
+      if (!url) {
+        preview.innerHTML = '';
+        return;
+      }
+      preview.innerHTML = '<img src="' + url + '" alt="" />' +
+        '<span class="image-actions">' +
+        '<button type="button" class="image-edit" aria-label="' + indicesCreate.texts.edit + '"><span class="dashicons dashicons-edit"></span></button>' +
+        '<button type="button" class="image-remove" aria-label="' + indicesCreate.texts.remove + '"><span class="dashicons dashicons-no"></span></button>' +
+        '</span>';
+      preview.querySelector('.image-edit').addEventListener('click', function (e) {
+        e.preventDefault();
+        openMedia();
+      });
+      preview.querySelector('.image-remove').addEventListener('click', function (e) {
+        e.preventDefault();
+        overlay.querySelector('input[name="indice_image"]').value = '';
+        renderPreview('');
+      });
+    }
+
+    function openMedia() {
+      if (!window.wp || !window.wp.media) return;
+      var frame = window.wp.media({ title: indicesCreate.texts.mediaTitle, multiple: false });
+      frame.on('select', function () {
+        var attachment = frame.state().get('selection').first().toJSON();
+        overlay.querySelector('input[name="indice_image"]').value = attachment.id;
+        var url = attachment.sizes && attachment.sizes.thumbnail ? attachment.sizes.thumbnail.url : attachment.url;
+        renderPreview(url);
+      });
+      frame.open();
+    }
+
     overlay.querySelectorAll('input[name="indice_disponibilite"]').forEach(function (radio) {
       radio.addEventListener('change', function () {
         var dateWrap = overlay.querySelector('.date-wrapper');
@@ -75,15 +109,7 @@
 
     overlay.querySelector('.select-image').addEventListener('click', function (e) {
       e.preventDefault();
-      if (!window.wp || !window.wp.media) return;
-      var frame = window.wp.media({ title: indicesCreate.texts.mediaTitle, multiple: false });
-      frame.on('select', function () {
-        var attachment = frame.state().get('selection').first().toJSON();
-        overlay.querySelector('input[name="indice_image"]').value = attachment.id;
-        var url = attachment.sizes && attachment.sizes.thumbnail ? attachment.sizes.thumbnail.url : attachment.url;
-        overlay.querySelector('.image-preview').innerHTML = '<img src="' + url + '" alt="" />';
-      });
-      frame.open();
+      openMedia();
     });
 
     overlay.querySelector('.indice-modal-form').addEventListener('submit', function (e) {
