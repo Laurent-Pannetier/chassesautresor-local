@@ -109,7 +109,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                             <input type="text" class="champ-input champ-texte-edit" maxlength="70"
                                 value="<?= esc_attr($titre); ?>"
                                 id="champ-titre-chasse" <?= $peut_editer_titre ? '' : 'disabled'; ?>
-                                placeholder="renseigner le titre de la chasse" />
+                                placeholder="<?= esc_attr__('renseigner le titre de la chasse', 'chassesautresor-com'); ?>" />
                             <div class="champ-feedback"></div>
                             <?php
                         },

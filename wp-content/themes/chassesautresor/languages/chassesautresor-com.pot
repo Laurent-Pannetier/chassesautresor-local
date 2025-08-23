@@ -38,6 +38,11 @@ msgstr ""
 msgid "Français"
 msgstr ""
 
+#: template-parts/chasse/chasse-edition-main.php:112
+#: assets/js/core/resume.js:322
+msgid "renseigner le titre de la chasse"
+msgstr ""
+
 #: functions.php:107
 msgid "English"
 msgstr ""

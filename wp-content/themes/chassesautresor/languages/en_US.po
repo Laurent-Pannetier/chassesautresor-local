@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: chassesautresor.com 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/chassesautresor\n"
 "POT-Creation-Date: 2025-08-23T01:54:31+00:00\n"
-"PO-Revision-Date: 2025-08-21 20:09+0000\n"
+"PO-Revision-Date: 2025-08-23 08:28+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: en_US\n"
@@ -2358,3 +2358,8 @@ msgstr "Action"
 
 #~ msgid "renseigner le texte de l’indice"
 #~ msgstr "enter the clue text"
+
+#: template-parts/chasse/chasse-edition-main.php:112
+#: assets/js/core/resume.js:322
+msgid "renseigner le titre de la chasse"
+msgstr "enter the hunt title"

@@ -319,7 +319,7 @@ function mettreAJourResumeTitre(cpt, valeur) {
 
   switch (cpt) {
     case 'chasse':
-      placeholder = 'renseigner le titre de la chasse';
+      placeholder = wp.i18n.__('renseigner le titre de la chasse', 'chassesautresor-com');
       defaut = window.CHP_CHASSE_DEFAUT?.titre || 'nouvelle chasse';
       break;
     case 'enigme':
