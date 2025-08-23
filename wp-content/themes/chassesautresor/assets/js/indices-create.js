@@ -2,22 +2,22 @@
   function openModal(btn) {
     var overlay = document.createElement('div');
     overlay.className = 'indice-create-overlay';
-    overlay.innerHTML = '
+    overlay.innerHTML = `
       <div class="indice-create-modal">
-        <button type="button" class="indice-create-close" aria-label="' + indicesCreate.texts.close + '">×</button>
+        <button type="button" class="indice-create-close" aria-label="${indicesCreate.texts.close}">×</button>
         <form class="indice-create-form">
           <input type="hidden" name="action" value="creer_indice_modal" />
-          <input type="hidden" name="objet_type" value="' + btn.dataset.objetType + '" />
-          <input type="hidden" name="objet_id" value="' + btn.dataset.objetId + '" />
+          <input type="hidden" name="objet_type" value="${btn.dataset.objetType}" />
+          <input type="hidden" name="objet_id" value="${btn.dataset.objetId}" />
           <input type="hidden" name="indice_image" value="" />
-          <p><button type="button" class="select-image">' + indicesCreate.texts.image + '</button></p>
-          <p><label>' + indicesCreate.texts.contenu + '<br><textarea name="indice_contenu"></textarea></label></p>
-          <p><label><input type="radio" name="indice_disponibilite" value="immediate" checked /> ' + indicesCreate.texts.immediate + '</label>
-             <label><input type="radio" name="indice_disponibilite" value="differe" /> ' + indicesCreate.texts.differe + '</label></p>
+          <p><button type="button" class="select-image">${indicesCreate.texts.image}</button></p>
+          <p><label>${indicesCreate.texts.contenu}<br><textarea name="indice_contenu"></textarea></label></p>
+          <p><label><input type="radio" name="indice_disponibilite" value="immediate" checked /> ${indicesCreate.texts.immediate}</label>
+             <label><input type="radio" name="indice_disponibilite" value="differe" /> ${indicesCreate.texts.differe}</label></p>
           <p class="date-wrapper" style="display:none;"><input type="datetime-local" name="indice_date_disponibilite" /></p>
-          <p><button type="submit">' + indicesCreate.texts.valider + '</button></p>
+          <p><button type="submit">${indicesCreate.texts.valider}</button></p>
         </form>
-      </div>';
+      </div>`;
     document.body.appendChild(overlay);
 
     function close() {
