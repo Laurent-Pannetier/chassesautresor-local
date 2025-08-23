@@ -2329,3 +2329,7 @@ msgstr "renseigner le titre de la chasse"
 msgid "Veuillez saisir une valeur en euros comprise entre 0 et 5 000 000."
 msgstr "Veuillez saisir une valeur en euros comprise entre 0 et 5 000 000."
 
+#: assets/js/chasse-edit.js:318
+msgid "Voulez-vous vraiment supprimer la récompense ?"
+msgstr "Voulez-vous vraiment supprimer la récompense ?"
+

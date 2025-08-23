@@ -314,7 +314,10 @@ function initChasseEdit() {
       const postId = panneauEdition.dataset.postId;
       if (!postId) return;
 
-      if (!confirm('Voulez-vous vraiment supprimer la récompense ?')) return;
+      if (!confirm(wp.i18n.__(
+        'Voulez-vous vraiment supprimer la récompense ?',
+        'chassesautresor-com'
+      ))) return;
 
       const champsASupprimer = [
         'chasse_infos_recompense_titre',
