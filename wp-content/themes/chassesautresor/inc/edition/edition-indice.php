@@ -419,7 +419,13 @@ function supprimer_indice_ajax(): void
             $objet_id = (int) $linked;
         }
     } else {
-        $objet_id = (int) (get_field('indice_chasse_linked', $indice_id) ?: 0);
+        $linked = get_field('indice_chasse_linked', $indice_id);
+        if (is_array($linked)) {
+            $first    = $linked[0] ?? null;
+            $objet_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
+        } else {
+            $objet_id = (int) $linked;
+        }
     }
 
     if (!$objet_id || !indice_action_autorisee('delete', $cible_type, $objet_id)) {
