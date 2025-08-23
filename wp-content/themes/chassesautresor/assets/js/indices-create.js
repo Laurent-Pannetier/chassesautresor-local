@@ -20,7 +20,7 @@
           <p><label><input type="radio" name="indice_disponibilite" value="immediate" checked /> ${indicesCreate.texts.immediate}</label>
              <label><input type="radio" name="indice_disponibilite" value="differe" /> ${indicesCreate.texts.differe}</label></p>
           <p class="date-wrapper" style="display:none;"><input type="datetime-local" name="indice_date_disponibilite" /></p>
-          <p><button type="submit" class="indice-modal-validate">${indicesCreate.texts.valider}</button></p>
+          <p><button type="submit" class="indice-modal-validate bouton-cta">${indicesCreate.texts.valider}</button></p>
         </form>
       </div>`;
     document.body.appendChild(overlay);
