@@ -50,11 +50,11 @@
         overlay.querySelector('textarea[name="indice_contenu"]').value = btn.dataset.indiceContenu;
       }
       var dispo = btn.dataset.indiceDisponibilite || 'immediate';
+      dateInput.value = btn.dataset.indiceDate || defaultDate;
       overlay.querySelectorAll('input[name="indice_disponibilite"]').forEach(function (radio) {
         radio.checked = radio.value === dispo;
       });
       if (dispo === 'differe') {
-        dateInput.value = btn.dataset.indiceDate || defaultDate;
         overlay.querySelector('.date-wrapper').style.display = '';
       }
     } else {
@@ -114,6 +114,9 @@
         var dateWrap = overlay.querySelector('.date-wrapper');
         if (radio.value === 'differe' && radio.checked) {
           dateWrap.style.display = '';
+          if (!dateInput.value) {
+            dateInput.value = lastDateValue || defaultDate;
+          }
         } else {
           dateWrap.style.display = 'none';
         }
