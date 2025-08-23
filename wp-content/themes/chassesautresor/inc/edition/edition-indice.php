@@ -410,9 +410,17 @@ function supprimer_indice_ajax(): void
     }
 
     $cible_type = get_field('indice_cible_type', $indice_id) === 'enigme' ? 'enigme' : 'chasse';
-    $objet_id   = $cible_type === 'enigme'
-        ? (int) (get_field('indice_enigme_linked', $indice_id) ?: 0)
-        : (int) (get_field('indice_chasse_linked', $indice_id) ?: 0);
+    if ($cible_type === 'enigme') {
+        $linked = get_field('indice_enigme_linked', $indice_id);
+        if (is_array($linked)) {
+            $first    = $linked[0] ?? null;
+            $objet_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
+        } else {
+            $objet_id = (int) $linked;
+        }
+    } else {
+        $objet_id = (int) (get_field('indice_chasse_linked', $indice_id) ?: 0);
+    }
 
     if (!$objet_id || !indice_action_autorisee('delete', $cible_type, $objet_id)) {
         wp_send_json_error('acces_refuse');
