@@ -9,8 +9,11 @@ namespace {
     if (!function_exists('wp_update_post')) {
         function wp_update_post($args)
         {
-            global $updated_posts;
+            global $updated_posts, $simulate_recursion;
             $updated_posts[] = $args;
+            if (!empty($simulate_recursion)) {
+                \reordonner_indices(5, 'chasse');
+            }
             return true;
         }
     }
@@ -29,8 +32,9 @@ namespace ReordonnerIndicesTest {
     {
         protected function setUp(): void
         {
-            global $updated_posts;
-            $updated_posts = [];
+            global $updated_posts, $simulate_recursion;
+            $updated_posts      = [];
+            $simulate_recursion = 0;
         }
 
         /**
@@ -61,6 +65,24 @@ namespace ReordonnerIndicesTest {
 
             $indice_delete_context = ['id' => 5, 'type' => 'chasse'];
             \reordonner_indices_apres_suppression(99);
+
+            $this->assertCount(3, $updated_posts);
+            $this->assertSame(['ID' => 10, 'post_title' => 'Indice #1'], $updated_posts[0]);
+            $this->assertSame(['ID' => 20, 'post_title' => 'Indice #2'], $updated_posts[1]);
+            $this->assertSame(['ID' => 30, 'post_title' => 'Indice #3'], $updated_posts[2]);
+        }
+
+        /**
+         * @runInSeparateProcess
+         * @preserveGlobalState disabled
+         */
+        public function test_prevents_recursive_reordering(): void
+        {
+            global $updated_posts, $simulate_recursion;
+            $simulate_recursion = 1;
+            require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
+
+            \reordonner_indices(5, 'chasse');
 
             $this->assertCount(3, $updated_posts);
             $this->assertSame(['ID' => 10, 'post_title' => 'Indice #1'], $updated_posts[0]);

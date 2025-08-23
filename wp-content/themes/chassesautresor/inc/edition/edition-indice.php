@@ -95,9 +95,12 @@ function prochain_rang_indice(int $objet_id, string $objet_type): int
  */
 function reordonner_indices(int $objet_id, string $objet_type): void
 {
-    if (!in_array($objet_type, ['chasse', 'enigme'], true)) {
+    static $processing = false;
+    if (!in_array($objet_type, ['chasse', 'enigme'], true) || $processing) {
         return;
     }
+
+    $processing = true;
 
     $meta_key = $objet_type === 'chasse'
         ? 'indice_chasse_linked'
@@ -139,6 +142,8 @@ function reordonner_indices(int $objet_id, string $objet_type): void
         ]);
         $i++;
     }
+
+    $processing = false;
 }
 
 /**
