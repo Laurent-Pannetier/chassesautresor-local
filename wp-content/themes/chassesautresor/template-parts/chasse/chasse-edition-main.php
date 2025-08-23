@@ -814,115 +814,97 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
       <div class="edition-panel-body">
         <div class="edition-panel-section edition-panel-section-ligne">
           <div class="section-content">
-            <div class="resume-blocs-grid">
-
-              <div class="resume-bloc resume-visibilite">
-                <h3><?= esc_html__('Communiquez', 'chassesautresor-com'); ?></h3>
-                <div class="dashboard-grid stats-cards">
-                  <div class="dashboard-card champ-chasse champ-liens <?= empty($liens) ? 'champ-vide' : 'champ-rempli'; ?>"
+            <div class="dashboard-grid stats-cards">
+              <?php
+              get_template_part('template-parts/chasse/partials/chasse-partial-indices', null, [
+                'objet_id'   => $chasse_id,
+                'objet_type' => 'chasse',
+              ]);
+              ?>
+              <div class="dashboard-card champ-chasse champ-liens <?= empty($liens) ? 'champ-vide' : 'champ-rempli'; ?>"
+                data-champ="chasse_principale_liens"
+                data-cpt="chasse"
+                data-post-id="<?= esc_attr($chasse_id); ?>">
+                <i class="fa-solid fa-share-nodes icone-defaut" aria-hidden="true"></i>
+                <h3><?= esc_html__('Sites et réseaux de la chasse', 'chassesautresor-com'); ?></h3>
+                <div class="champ-affichage champ-affichage-liens">
+                  <?= render_liens_publics($liens, 'chasse', ['placeholder' => false]); ?>
+                </div>
+                <?php if ($peut_modifier) : ?>
+                  <a href="#"
+                    class="stat-value champ-modifier ouvrir-panneau-liens"
                     data-champ="chasse_principale_liens"
                     data-cpt="chasse"
                     data-post-id="<?= esc_attr($chasse_id); ?>">
-                    <i class="fa-solid fa-share-nodes icone-defaut" aria-hidden="true"></i>
-                    <h3><?= esc_html__('Sites et réseaux de la chasse', 'chassesautresor-com'); ?></h3>
-                    <div class="champ-affichage champ-affichage-liens">
-                      <?= render_liens_publics($liens, 'chasse', ['placeholder' => false]); ?>
-                    </div>
-                    <?php if ($peut_modifier) : ?>
-                      <a href="#"
-                        class="stat-value champ-modifier ouvrir-panneau-liens"
-                        data-champ="chasse_principale_liens"
-                        data-cpt="chasse"
-                        data-post-id="<?= esc_attr($chasse_id); ?>">
-                        <?= empty($liens)
-                          ? esc_html__('Ajouter', 'chassesautresor-com')
-                          : esc_html__('Éditer', 'chassesautresor-com'); ?>
-                      </a>
-                    <?php endif; ?>
-                    <div class="champ-donnees"
-                      data-valeurs='<?= json_encode($liens, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>'></div>
-                    <div class="champ-feedback"></div>
-                  </div>
-                  <?php
-                  if (
-                      est_organisateur()
-                      && ($infos_chasse['statut'] ?? '') !== 'revision'
-                      && ($infos_chasse['statut_validation'] ?? '') === 'valide'
-                  ) :
-                      $format = isset($_GET['format']) ? sanitize_key($_GET['format']) : 'png';
-                      $formats_autorises = ['png', 'svg', 'eps'];
-                      if (!in_array($format, $formats_autorises, true)) {
-                          $format = 'png';
-                      }
-                      $url = get_permalink($chasse_id);
-                      $url_qr_code = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data='
-                          . rawurlencode($url)
-                          . '&format=' . $format;
-                  ?>
-                  <div class="dashboard-card champ-qr-code">
-                    <img class="qr-code-icon" src="<?= esc_url($url_qr_code); ?>" alt="<?= esc_attr__('QR code de la chasse', 'chassesautresor-com'); ?>">
-                    <h3><?= esc_html__('QR code de votre chasse', 'chassesautresor-com'); ?></h3>
-                    <a class="stat-value" href="<?= esc_url($url_qr_code); ?>"
-                      download="<?= esc_attr('qr-chasse-' . $chasse_id . '.' . $format); ?>"><?= esc_html__('Télécharger', 'chassesautresor-com'); ?></a>
-                  </div>
-                  <?php endif; ?>
-                </div>
+                    <?= empty($liens)
+                      ? esc_html__('Ajouter', 'chassesautresor-com')
+                      : esc_html__('Éditer', 'chassesautresor-com'); ?>
+                  </a>
+                <?php endif; ?>
+                <div class="champ-donnees"
+                  data-valeurs='<?= json_encode($liens, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>'></div>
+                <div class="champ-feedback"></div>
               </div>
-
-              <div class="resume-bloc resume-indices">
-                <h3><?= sprintf(esc_html__('Indices pour %s', 'chassesautresor-com'), get_the_title($chasse_id)); ?></h3>
-                <div class="dashboard-grid stats-cards">
-                  <?php
-                  get_template_part('template-parts/chasse/partials/chasse-partial-indices', null, [
-                    'objet_id'   => $chasse_id,
-                    'objet_type' => 'chasse',
-                  ]);
-                  ?>
-                </div>
-                <?php
-                $par_page_indices = 10;
-                $page_indices     = 1;
-                $indices_query    = new WP_Query([
-                  'post_type'      => 'indice',
-                  'post_status'    => ['publish', 'pending', 'draft'],
-                  'orderby'        => 'date',
-                  'order'          => 'DESC',
-                  'posts_per_page' => $par_page_indices,
-                  'paged'          => $page_indices,
-                  'meta_query'     => [
-                    [
-                      'key'   => 'indice_cible_type',
-                      'value' => 'chasse',
-                    ],
-                    [
-                      'key'   => 'indice_chasse_linked',
-                      'value' => $chasse_id,
-                    ],
-                  ],
-                ]);
-                $indices_list  = $indices_query->posts;
-                $pages_indices = (int) $indices_query->max_num_pages;
-                ?>
-                <div class="liste-indices" data-page="1" data-pages="<?= esc_attr($pages_indices); ?>" data-objet-type="chasse" data-objet-id="<?= esc_attr($chasse_id); ?>" data-ajax-url="<?= esc_url(admin_url('admin-ajax.php')); ?>">
-                  <?php
-                  get_template_part('template-parts/common/indices-table', null, [
-                    'indices'    => $indices_list,
-                    'page'       => 1,
-                    'pages'      => $pages_indices,
-                    'objet_type' => 'chasse',
-                    'objet_id'   => $chasse_id,
-                  ]);
-                  ?>
-                </div>
+              <?php
+              if (
+                  est_organisateur()
+                  && ($infos_chasse['statut'] ?? '') !== 'revision'
+                  && ($infos_chasse['statut_validation'] ?? '') === 'valide'
+              ) :
+                  $format = isset($_GET['format']) ? sanitize_key($_GET['format']) : 'png';
+                  $formats_autorises = ['png', 'svg', 'eps'];
+                  if (!in_array($format, $formats_autorises, true)) {
+                      $format = 'png';
+                  }
+                  $url = get_permalink($chasse_id);
+                  $url_qr_code = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data='
+                      . rawurlencode($url)
+                      . '&format=' . $format;
+              ?>
+              <div class="dashboard-card champ-qr-code">
+                <img class="qr-code-icon" src="<?= esc_url($url_qr_code); ?>" alt="<?= esc_attr__('QR code de la chasse', 'chassesautresor-com'); ?>">
+                <h3><?= esc_html__('QR code de votre chasse', 'chassesautresor-com'); ?></h3>
+                <a class="stat-value" href="<?= esc_url($url_qr_code); ?>"
+                  download="<?= esc_attr('qr-chasse-' . $chasse_id . '.' . $format); ?>"><?= esc_html__('Télécharger', 'chassesautresor-com'); ?></a>
               </div>
+              <?php endif; ?>
+            </div>
 
-              <div class="resume-bloc resume-news">
-                <h3>News</h3>
-                <ul class="resume-infos">
-                  <li class="champ-chasse champ-placeholder">Section à venir</li>
-                </ul>
-              </div>
-
+            <?php
+            $par_page_indices = 10;
+            $page_indices     = 1;
+            $indices_query    = new WP_Query([
+              'post_type'      => 'indice',
+              'post_status'    => ['publish', 'pending', 'draft'],
+              'orderby'        => 'date',
+              'order'          => 'DESC',
+              'posts_per_page' => $par_page_indices,
+              'paged'          => $page_indices,
+              'meta_query'     => [
+                [
+                  'key'   => 'indice_cible_type',
+                  'value' => 'chasse',
+                ],
+                [
+                  'key'   => 'indice_chasse_linked',
+                  'value' => $chasse_id,
+                ],
+              ],
+            ]);
+            $indices_list  = $indices_query->posts;
+            $pages_indices = (int) $indices_query->max_num_pages;
+            ?>
+            <h3><?= esc_html__('Indices', 'chassesautresor-com'); ?></h3>
+            <div class="liste-indices" data-page="1" data-pages="<?= esc_attr($pages_indices); ?>" data-objet-type="chasse" data-objet-id="<?= esc_attr($chasse_id); ?>" data-ajax-url="<?= esc_url(admin_url('admin-ajax.php')); ?>">
+              <?php
+              get_template_part('template-parts/common/indices-table', null, [
+                'indices'    => $indices_list,
+                'page'       => 1,
+                'pages'      => $pages_indices,
+                'objet_type' => 'chasse',
+                'objet_id'   => $chasse_id,
+              ]);
+              ?>
             </div>
           </div>
         </div>
