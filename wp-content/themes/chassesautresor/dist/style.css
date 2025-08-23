@@ -3741,8 +3741,39 @@ body.panneau-ouvert::before {
   gap: var(--space-sm);
 }
 
+.indice-modal-form .image-preview {
+  position: relative;
+  display: inline-block;
+}
+
 .indice-modal-form .image-preview img {
   max-height: 80px;
+  display: block;
+}
+
+.indice-modal-form .image-preview .image-actions {
+  position: absolute;
+  top: var(--space-xxs);
+  left: var(--space-xxs);
+  display: flex;
+  gap: var(--space-xxs);
+}
+
+.indice-modal-form .image-preview .image-actions button {
+  background-color: rgba(var(--color-black-rgb), 0.6);
+  border: none;
+  color: var(--color-white);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.indice-modal-form .image-preview .image-actions button:hover {
+  background-color: rgba(var(--color-black-rgb), 0.8);
 }
 
 /* Layout for enigma pages */
