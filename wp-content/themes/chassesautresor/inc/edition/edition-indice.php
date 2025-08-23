@@ -278,13 +278,15 @@ function ajax_indices_lister_table(): void
     ];
     if ($objet_type === 'chasse') {
         $meta[] = [
-            'key'   => 'indice_chasse_linked',
-            'value' => $objet_id,
+            'key'     => 'indice_chasse_linked',
+            'value'   => '"' . $objet_id . '"',
+            'compare' => 'LIKE',
         ];
     } else {
         $meta[] = [
-            'key'   => 'indice_enigme_linked',
-            'value' => $objet_id,
+            'key'     => 'indice_enigme_linked',
+            'value'   => '"' . $objet_id . '"',
+            'compare' => 'LIKE',
         ];
     }
 
