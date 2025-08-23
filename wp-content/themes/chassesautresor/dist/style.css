@@ -5257,8 +5257,8 @@ tbody tr:nth-child(even) {
 }
 
 .indices-table td img {
-  width: 120px;
-  height: 120px;
+  width: 80px;
+  height: 80px;
   -o-object-fit: cover;
      object-fit: cover;
 }
