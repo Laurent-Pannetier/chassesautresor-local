@@ -591,11 +591,12 @@ function initChampBonnesReponses() {
     wrapper.classList.toggle('champ-vide-obligatoire', estVide);
     bloc.classList.toggle('champ-vide', estVide);
     bloc.classList.toggle('champ-rempli', !estVide);
+    bloc.classList.toggle('champ-attention', estVide);
 
     if (reponses.length === 0) {
       const input = document.createElement('input');
       input.type = 'text';
-      input.className = 'champ-input champ-texte-edit';
+      input.className = 'champ-input champ-texte-edit champ-vide-obligatoire';
       input.setAttribute('maxlength', '75');
       input.placeholder = wp.i18n.__('Ex : soleil', 'chassesautresor-com');
 
