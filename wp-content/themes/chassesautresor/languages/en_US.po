@@ -1009,7 +1009,7 @@ msgstr "Modifying the description"
 #: assets/js/core/helpers.js:278 assets/js/core/resume.js:384
 #: assets/js/enigme-edit.js:743 assets/js/enigme-edit.js:988
 msgid "modifier"
-msgstr "edit"
+msgstr "Edit"
 
 #: template-parts/chasse/chasse-edition-main.php:191
 msgid "Récompense"
@@ -2305,8 +2305,8 @@ msgstr "Action"
 #~ msgid "Activer Orgy"
 #~ msgstr "Enable Orgy"
 
-#~ msgid "Modifier la récompense"
-#~ msgstr "Edit Reward"
+msgid "Modifier la récompense"
+msgstr "Edit the reward"
 
 #~ msgid "Solution"
 #~ msgstr "Solution"
@@ -2358,8 +2358,8 @@ msgstr "Action"
 #~ "reject their attempt manually from your personal area. An email and alert "
 #~ "message notify you of each new submission."
 
-#~ msgid "Ajouter la récompense"
-#~ msgstr "Add reward"
+msgid "Ajouter la récompense"
+msgstr "Add the reward"
 
 #~ msgid "Contenu d'édition à venir..."
 #~ msgstr "Editing content coming soon..."
