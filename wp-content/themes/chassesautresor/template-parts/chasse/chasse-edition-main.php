@@ -359,6 +359,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                             'data-post-id' => $chasse_id,
                             'data-no-edit' => '1',
                         ],
+                        'no_icon'   => true,
                         'label'    => function () {
                             ?>
                             <label for="chasse_mode_fin"><?= esc_html__('Mode de fin', 'chassesautresor-com'); ?></label>
