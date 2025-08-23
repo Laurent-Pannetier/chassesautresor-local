@@ -5167,6 +5167,32 @@ tbody tr:nth-child(even) {
      object-fit: cover;
 }
 
+.indices-table .badge-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  font-size: 0.875rem;
+  border: 0;
+  cursor: pointer;
+  color: var(--color-text-primary);
+  text-decoration: none;
+}
+
+.indices-table .badge-action.edit {
+  background: var(--color-secondary);
+}
+
+.indices-table .badge-action.delete {
+  background: var(--color-error);
+}
+
+.indices-table .badge-action + .badge-action {
+  margin-left: 0.25rem;
+}
+
 /* Labels */
 .etiquette {
   display: inline-block;

@@ -41,6 +41,7 @@ if (empty($indices)) {
       <th><?= esc_html__('Énigme', 'chassesautresor-com'); ?></th>
       <?php endif; ?>
       <th><?= esc_html__('Statut', 'chassesautresor-com'); ?></th>
+      <th><?= esc_html__('Action', 'chassesautresor-com'); ?></th>
     </tr>
   </thead>
   <tbody>
@@ -56,7 +57,7 @@ if (empty($indices)) {
         } elseif ($etat === 'programme' || $etat === 'programmé') {
             $etat_class = 'etiquette-pending';
         }
-        $enigme_titre = '';
+        $enigme_html = '';
         if ($objet_type === 'chasse') {
             $linked = get_field('indice_enigme_linked', $indice->ID);
             if ($linked) {
@@ -68,6 +69,8 @@ if (empty($indices)) {
                 }
                 if (!empty($enigme_id)) {
                     $enigme_titre = get_the_title($enigme_id);
+                    $enigme_html = '<a href="' . esc_url(get_permalink($enigme_id)) . '">'
+                        . esc_html($enigme_titre) . '</a>';
                 }
             }
         }
@@ -78,9 +81,27 @@ if (empty($indices)) {
       <td><a href="<?= esc_url(get_permalink($indice)); ?>"><?= esc_html(get_the_title($indice)); ?></a></td>
       <?php echo cta_render_proposition_cell($contenu); ?>
       <?php if ($objet_type === 'chasse') : ?>
-      <td><?= esc_html($enigme_titre); ?></td>
+      <td><?= $enigme_html; ?></td>
       <?php endif; ?>
       <td><span class="etiquette <?= esc_attr($etat_class); ?>"><?= esc_html($etat); ?></span></td>
+      <td class="indice-actions">
+        <a
+          href="<?= esc_url(add_query_arg('edition', 'open', get_permalink($indice))); ?>"
+          class="badge-action edit"
+          title="<?= esc_attr__('Éditer', 'chassesautresor-com'); ?>"
+        >
+          <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>
+        </a>
+        <button
+          type="button"
+          class="badge-action delete"
+          data-indice-id="<?= esc_attr($indice->ID); ?>"
+          data-confirm="<?= esc_attr__('Supprimer cet indice ?', 'chassesautresor-com'); ?>"
+          title="<?= esc_attr__('Supprimer', 'chassesautresor-com'); ?>"
+        >
+          <i class="fa-solid fa-trash" aria-hidden="true"></i>
+        </button>
+      </td>
     </tr>
     <?php endforeach; ?>
   </tbody>
