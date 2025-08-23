@@ -74,8 +74,8 @@ $is_complete = (
       <div class="edition-tabs">
         <button class="edition-tab active" data-target="organisateur-tab-param">Paramètres</button>
         <button class="edition-tab" data-target="organisateur-tab-stats">Statistiques</button>
-        <button class="edition-tab" data-target="organisateur-tab-revenus">Points</button>
         <button class="edition-tab" data-target="organisateur-tab-animation">Animation</button>
+        <button class="edition-tab" data-target="organisateur-tab-revenus">Points</button>
       </div>
     </div>
 

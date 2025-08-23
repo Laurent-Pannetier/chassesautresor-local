@@ -93,8 +93,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
       <div class="edition-tabs">
         <button class="edition-tab active" data-target="enigme-tab-param"><?= esc_html__('Paramètres', 'chassesautresor-com'); ?></button>
         <button class="edition-tab" data-target="enigme-tab-stats"><?= esc_html__('Statistiques', 'chassesautresor-com'); ?></button>
+        <button class="edition-tab" data-target="enigme-tab-animation"><?= esc_html__('Animation', 'chassesautresor-com'); ?></button>
         <button class="edition-tab" data-target="enigme-tab-soumission"<?= $mode_validation === 'aucune' ? ' style="display:none;"' : ''; ?>><?= esc_html__('Tentatives', 'chassesautresor-com'); ?></button>
-        <button class="edition-tab" data-target="enigme-tab-solution"><?= esc_html__('Solution', 'chassesautresor-com'); ?></button>
       </div>
     </div>
 
@@ -649,10 +649,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
   </div>
 </div>
 
-<div id="enigme-tab-solution" class="edition-tab-content" style="display:none;">
-  <i class="fa-solid fa-key tab-watermark" aria-hidden="true"></i>
+<div id="enigme-tab-animation" class="edition-tab-content" style="display:none;">
+  <i class="fa-solid fa-bullhorn tab-watermark" aria-hidden="true"></i>
   <div class="edition-panel-header">
-    <h2><i class="fa-solid fa-key"></i> <?= esc_html__('Solution de cette énigme', 'chassesautresor-com'); ?></h2>
+    <h2><i class="fa-solid fa-bullhorn"></i> <?= esc_html__('Animation de cette énigme', 'chassesautresor-com'); ?></h2>
   </div>
 
             <?php
@@ -774,6 +774,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
         </div>
       </div>
     </div>
-    </div> <!-- #enigme-tab-solution -->
+    </div> <!-- #enigme-tab-animation -->
   </section>
 <?php endif; ?>

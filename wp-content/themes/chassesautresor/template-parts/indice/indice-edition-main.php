@@ -57,6 +57,7 @@ $selection = array_map('intval', $cible_objet);
         </div>
         <div class="edition-tabs">
             <button class="edition-tab active" data-target="indice-tab-param"><?= esc_html__('Paramètres', 'chassesautresor-com'); ?></button>
+            <button class="edition-tab" data-target="indice-tab-stats"><?= esc_html__('Statistiques', 'chassesautresor-com'); ?></button>
         </div>
     </div>
 
@@ -208,6 +209,16 @@ $selection = array_map('intval', $cible_objet);
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div id="indice-tab-stats" class="edition-tab-content" style="display:none;">
+        <i class="fa-solid fa-chart-column tab-watermark" aria-hidden="true"></i>
+        <div class="edition-panel-header">
+            <h2><i class="fa-solid fa-chart-column"></i> <?= esc_html__('Statistiques', 'chassesautresor-com'); ?></h2>
+        </div>
+        <div class="edition-panel-body">
+            <p><?= esc_html__('Statistiques à venir', 'chassesautresor-com'); ?></p>
         </div>
     </div>
 </section>
