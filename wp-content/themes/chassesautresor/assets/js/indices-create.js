@@ -1,16 +1,16 @@
 (function () {
   function openModal(btn) {
     var overlay = document.createElement('div');
-    overlay.className = 'indice-create-overlay';
+    overlay.className = 'indice-modal-overlay';
     var titre = indicesCreate.texts.indiceTitre.replace('%d', btn.dataset.indiceRang || '');
     overlay.innerHTML = `
-      <div class="indice-create-modal">
-        <div class="indice-create-header">
+      <div class="indice-modal">
+        <div class="indice-modal-header">
           <h2>${titre}</h2>
           <p>${indicesCreate.texts.lieA} - ${btn.dataset.objetTitre || ''}</p>
         </div>
-        <button type="button" class="indice-create-close" aria-label="${indicesCreate.texts.close}">×</button>
-        <form class="indice-create-form">
+        <button type="button" class="indice-modal-close" aria-label="${indicesCreate.texts.close}">×</button>
+        <form class="indice-modal-form">
           <input type="hidden" name="action" value="creer_indice_modal" />
           <input type="hidden" name="objet_type" value="${btn.dataset.objetType}" />
           <input type="hidden" name="objet_id" value="${btn.dataset.objetId}" />
@@ -20,15 +20,40 @@
           <p><label><input type="radio" name="indice_disponibilite" value="immediate" checked /> ${indicesCreate.texts.immediate}</label>
              <label><input type="radio" name="indice_disponibilite" value="differe" /> ${indicesCreate.texts.differe}</label></p>
           <p class="date-wrapper" style="display:none;"><input type="datetime-local" name="indice_date_disponibilite" /></p>
-          <p><button type="submit" class="indice-create-validate">${indicesCreate.texts.valider}</button></p>
+          <p><button type="submit" class="indice-modal-validate">${indicesCreate.texts.valider}</button></p>
         </form>
       </div>`;
     document.body.appendChild(overlay);
 
+    var isEdit = !!btn.dataset.indiceId;
+    if (isEdit) {
+      overlay.querySelector('input[name="action"]').value = 'modifier_indice_modal';
+      var idInput = document.createElement('input');
+      idInput.type = 'hidden';
+      idInput.name = 'indice_id';
+      idInput.value = btn.dataset.indiceId;
+      overlay.querySelector('.indice-modal-form').appendChild(idInput);
+      if (btn.dataset.indiceImage) {
+        overlay.querySelector('input[name="indice_image"]').value = btn.dataset.indiceImage;
+      }
+      if (btn.dataset.indiceContenu) {
+        overlay.querySelector('textarea[name="indice_contenu"]').value = btn.dataset.indiceContenu;
+      }
+      var dispo = btn.dataset.indiceDisponibilite || 'immediate';
+      overlay.querySelectorAll('input[name="indice_disponibilite"]').forEach(function (radio) {
+        radio.checked = radio.value === dispo;
+      });
+      if (dispo === 'differe') {
+        var dateInput = overlay.querySelector('input[name="indice_date_disponibilite"]');
+        dateInput.value = btn.dataset.indiceDate || '';
+        overlay.querySelector('.date-wrapper').style.display = '';
+      }
+    }
+
     function close() {
       overlay.remove();
     }
-    overlay.querySelector('.indice-create-close').addEventListener('click', close);
+    overlay.querySelector('.indice-modal-close').addEventListener('click', close);
 
     overlay.addEventListener('click', function (e) {
       if (e.target === overlay) close();
@@ -56,7 +81,7 @@
       frame.open();
     });
 
-    overlay.querySelector('.indice-create-form').addEventListener('submit', function (e) {
+    overlay.querySelector('.indice-modal-form').addEventListener('submit', function (e) {
       e.preventDefault();
       var form = e.target;
       var data = new FormData(form);
@@ -71,7 +96,7 @@
             wrapper.dataset.page = '1';
             window.reloadIndicesTable(wrapper);
           }
-          if (btn.dataset.indiceRang) {
+          if (!btn.dataset.indiceId && btn.dataset.indiceRang) {
             btn.dataset.indiceRang = parseInt(btn.dataset.indiceRang, 10) + 1;
           }
         });
@@ -83,7 +108,7 @@
     if (target && target.nodeType !== 1) {
       target = target.parentElement;
     }
-    var btn = target && target.closest ? target.closest('.cta-creer-indice') : null;
+    var btn = target && target.closest ? target.closest('.cta-creer-indice, .badge-action.edit') : null;
     if (!btn) return;
     e.preventDefault();
     openModal(btn);
@@ -93,5 +118,5 @@
     document.body.addEventListener('click', handleClick, true);
   });
 
-  window.openIndiceCreateModal = openModal;
+  window.openIndiceModal = openModal;
 })();

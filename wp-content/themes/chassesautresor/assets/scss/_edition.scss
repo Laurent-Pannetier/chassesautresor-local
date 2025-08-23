@@ -2002,8 +2002,8 @@ body.panneau-ouvert::before {
   }
 }
 
-/* Overlay création d'indice */
-.indice-create-form label {
+/* Overlay indice */
+.indice-modal-form label {
     display: block;
     margin-bottom: var(--space-sm);
     color: var(--color-editor-text);
