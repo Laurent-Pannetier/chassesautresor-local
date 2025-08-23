@@ -402,6 +402,12 @@ msgstr ""
 msgid "Indices"
 msgstr ""
 
+#: template-parts/chasse/chasse-edition-main.php:708
+#: template-parts/enigme/enigme-edition-main.php:774
+#, php-format
+msgid "Indices pour %s"
+msgstr ""
+
 #: inc/enigme/affichage.php:677
 msgid "automatique"
 msgstr ""

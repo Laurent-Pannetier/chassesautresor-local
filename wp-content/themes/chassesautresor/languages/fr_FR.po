@@ -425,6 +425,12 @@ msgstr "Afficher les statistiques"
 msgid "Indices"
 msgstr "Indices"
 
+#: template-parts/chasse/chasse-edition-main.php:708
+#: template-parts/enigme/enigme-edition-main.php:774
+#, php-format
+msgid "Indices pour %s"
+msgstr "Indices pour %s"
+
 #: inc/enigme/affichage.php:677
 #, fuzzy
 msgid "automatique"
