@@ -73,8 +73,9 @@ function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_i
             'post_status'    => ['publish', 'pending', 'draft', 'private', 'future'],
             'meta_query'     => [
                 [
-                    'key'   => 'indice_chasse_linked',
-                    'value' => $chasse_id,
+                    'key'     => 'indice_chasse_linked',
+                    'value'   => '"' . $chasse_id . '"',
+                    'compare' => 'LIKE',
                 ],
                 [
                     'key'     => 'indice_cache_etat_systeme',
