@@ -11,6 +11,25 @@ defined('ABSPATH') || exit;
 // 🔹 modifier_champ_indice() → Mise à jour AJAX (champ ACF ou natif)
 
 /**
+ * Log debug messages to the WordPress debug log when WP_DEBUG is enabled.
+ *
+ * @param string $message Message to log.
+ * @return void
+ */
+function ca_debug_log(string $message): void
+{
+    if (!defined('WP_DEBUG') || !WP_DEBUG) {
+        return;
+    }
+
+    $destination = defined('WP_DEBUG_LOG') && is_string(WP_DEBUG_LOG)
+        ? WP_DEBUG_LOG
+        : (defined('WP_CONTENT_DIR') ? WP_CONTENT_DIR . '/debug.log' : sys_get_temp_dir() . '/debug.log');
+
+    error_log($message . PHP_EOL, 3, $destination);
+}
+
+/**
  * Charge les scripts nécessaires à l’édition d’un indice.
  *
  * @return void
@@ -41,19 +60,24 @@ add_action('wp_enqueue_scripts', 'enqueue_script_indice_edit');
  */
 function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_id = null)
 {
+    ca_debug_log('[creer_indice_pour_objet] objet_id=' . $objet_id . ' type=' . $objet_type);
     if (!in_array($objet_type, ['chasse', 'enigme'], true)) {
+        ca_debug_log('[creer_indice_pour_objet] type invalide');
         return new WP_Error('type_invalide', __('Type de cible invalide.', 'chassesautresor-com'));
     }
 
     if (get_post_type($objet_id) !== $objet_type) {
+        ca_debug_log('[creer_indice_pour_objet] cible invalide');
         return new WP_Error('cible_invalide', __('ID cible invalide.', 'chassesautresor-com'));
     }
 
     if (!is_user_logged_in()) {
+        ca_debug_log('[creer_indice_pour_objet] utilisateur non connecte');
         return new WP_Error('non_connecte', __('Utilisateur non connecté.', 'chassesautresor-com'));
     }
 
     if (!utilisateur_peut_modifier_post($objet_id)) {
+        ca_debug_log('[creer_indice_pour_objet] droits insuffisants pour objet');
         return new WP_Error('permission_refusee', __('Droits insuffisants.', 'chassesautresor-com'));
     }
 
@@ -62,45 +86,52 @@ function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_i
         : recuperer_id_chasse_associee($objet_id);
 
     if (!$chasse_id || !utilisateur_peut_modifier_post($chasse_id)) {
+        ca_debug_log('[creer_indice_pour_objet] droits insuffisants pour chasse');
         return new WP_Error('permission_refusee', __('Droits insuffisants.', 'chassesautresor-com'));
     }
 
     $user_id = $user_id ?? get_current_user_id();
+    ca_debug_log('[creer_indice_pour_objet] user_id=' . $user_id . ' chasse_id=' . $chasse_id);
+
+    $meta_query = [
+        [
+            'relation' => 'OR',
+            [
+                'key'     => 'indice_chasse_linked',
+                'value'   => $chasse_id,
+                'compare' => '=',
+            ],
+            [
+                'key'     => 'indice_chasse_linked',
+                'value'   => 'i:' . $chasse_id . ';',
+                'compare' => 'LIKE',
+            ],
+            [
+                'key'     => 'indice_chasse_linked',
+                'value'   => '"' . $chasse_id . '"',
+                'compare' => 'LIKE',
+            ],
+        ],
+        [
+            'key'     => 'indice_cache_etat_systeme',
+            'value'   => ['programme', 'accessible'],
+            'compare' => 'IN',
+        ],
+    ];
+    $encode = function_exists('wp_json_encode') ? 'wp_json_encode' : 'json_encode';
+    ca_debug_log('[creer_indice_pour_objet] meta_query=' . $encode($meta_query));
 
     $existing_indices = function_exists('get_posts')
         ? get_posts([
             'post_type'      => 'indice',
             'post_status'    => ['publish', 'pending', 'draft', 'private', 'future'],
-            'meta_query'     => [
-                [
-                    'relation' => 'OR',
-                    [
-                        'key'     => 'indice_chasse_linked',
-                        'value'   => $chasse_id,
-                        'compare' => '=',
-                    ],
-                    [
-                        'key'     => 'indice_chasse_linked',
-                        'value'   => 'i:' . $chasse_id . ';',
-                        'compare' => 'LIKE',
-                    ],
-                    [
-                        'key'     => 'indice_chasse_linked',
-                        'value'   => '"' . $chasse_id . '"',
-                        'compare' => 'LIKE',
-                    ],
-                ],
-                [
-                    'key'     => 'indice_cache_etat_systeme',
-                    'value'   => ['programme', 'accessible'],
-                    'compare' => 'IN',
-                ],
-            ],
+            'meta_query'     => $meta_query,
             'fields'         => 'ids',
             'no_found_rows'  => true,
             'posts_per_page' => -1,
         ])
         : [];
+    ca_debug_log('[creer_indice_pour_objet] indices existants=' . count($existing_indices));
 
     $indice_rank = count($existing_indices) + 1;
 
@@ -112,8 +143,10 @@ function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_i
     ]);
 
     if (is_wp_error($indice_id)) {
+        ca_debug_log('[creer_indice_pour_objet] erreur insertion');
         return $indice_id;
     }
+    ca_debug_log('[creer_indice_pour_objet] indice cree ID=' . $indice_id . ' rang=' . $indice_rank);
 
     $titre_objet   = get_the_title($objet_id);
     $nouveau_titre = sprintf(__('indice #%d - %s', 'chassesautresor-com'), $indice_rank, $titre_objet);
@@ -264,19 +297,24 @@ add_action('wp_ajax_chasse_lister_indices', 'ajax_chasse_lister_indices');
  */
 function ajax_indices_lister_table(): void
 {
+    ca_debug_log('[ajax_indices_lister_table] start');
     if (!is_user_logged_in()) {
+        ca_debug_log('[ajax_indices_lister_table] non connecte');
         wp_send_json_error('non_connecte');
     }
 
     $objet_id   = isset($_POST['objet_id']) ? (int) $_POST['objet_id'] : 0;
     $objet_type = sanitize_key($_POST['objet_type'] ?? '');
     $page       = isset($_POST['page']) ? (int) $_POST['page'] : 1;
+    ca_debug_log('[ajax_indices_lister_table] params id=' . $objet_id . ' type=' . $objet_type . ' page=' . $page);
 
     if (!$objet_id || !in_array($objet_type, ['chasse', 'enigme'], true)) {
+        ca_debug_log('[ajax_indices_lister_table] parametres invalides');
         wp_send_json_error('post_invalide');
     }
 
     if (!indice_action_autorisee('edit', $objet_type, $objet_id)) {
+        ca_debug_log('[ajax_indices_lister_table] acces refuse');
         wp_send_json_error('acces_refuse');
     }
 
@@ -321,6 +359,8 @@ function ajax_indices_lister_table(): void
             ],
         ];
     }
+    $encode = function_exists('wp_json_encode') ? 'wp_json_encode' : 'json_encode';
+    ca_debug_log('[ajax_indices_lister_table] meta_query=' . $encode($meta));
 
     $query = new WP_Query([
         'post_type'      => 'indice',
@@ -331,6 +371,7 @@ function ajax_indices_lister_table(): void
         'paged'          => max(1, $page),
         'meta_query'     => $meta,
     ]);
+    ca_debug_log('[ajax_indices_lister_table] found_posts=' . $query->found_posts);
 
     ob_start();
     get_template_part('template-parts/common/indices-table', null, [
@@ -341,6 +382,7 @@ function ajax_indices_lister_table(): void
         'objet_id'   => $objet_id,
     ]);
     $html = ob_get_clean();
+    ca_debug_log('[ajax_indices_lister_table] html_length=' . strlen($html));
 
     wp_send_json_success([
         'html'  => $html,
