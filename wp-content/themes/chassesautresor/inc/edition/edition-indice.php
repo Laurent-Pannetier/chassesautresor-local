@@ -699,3 +699,49 @@ function mettre_a_jour_cache_indice($post_id): void
 }
 
 add_action('acf/save_post', 'mettre_a_jour_cache_indice', 30);
+
+/**
+ * Met à jour les indices programmés dont la date est passée.
+ *
+ * @return void
+ */
+function basculer_indices_programmes(): void
+{
+    $indices = get_posts([
+        'post_type'      => 'indice',
+        'post_status'    => ['publish', 'pending', 'draft', 'private', 'future'],
+        'meta_query'     => [
+            [
+                'key'   => 'indice_cache_etat_systeme',
+                'value' => 'programme',
+            ],
+            [
+                'key'     => 'indice_date_disponibilite',
+                'value'   => current_time('mysql'),
+                'compare' => '<=',
+                'type'    => 'DATETIME',
+            ],
+        ],
+        'fields'         => 'ids',
+        'no_found_rows'  => true,
+        'posts_per_page' => -1,
+    ]);
+
+    foreach ($indices as $indice_id) {
+        mettre_a_jour_cache_indice($indice_id);
+    }
+}
+add_action('basculer_indices_programmes', 'basculer_indices_programmes');
+
+/**
+ * Planifie l'exécution régulière de la tâche de basculement des indices.
+ *
+ * @return void
+ */
+function planifier_tache_basculer_indices_programmes(): void
+{
+    if (!wp_next_scheduled('basculer_indices_programmes')) {
+        wp_schedule_event(time(), 'hourly', 'basculer_indices_programmes');
+    }
+}
+add_action('after_switch_theme', 'planifier_tache_basculer_indices_programmes');
