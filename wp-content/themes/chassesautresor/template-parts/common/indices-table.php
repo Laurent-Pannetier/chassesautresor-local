@@ -37,9 +37,8 @@ if (empty($indices)) {
       <th><?= esc_html__('Image', 'chassesautresor-com'); ?></th>
       <th><?= esc_html__('Titre', 'chassesautresor-com'); ?></th>
       <th><?= esc_html__('Texte', 'chassesautresor-com'); ?></th>
-      <?php if ($objet_type === 'chasse') : ?>
-      <th><?= esc_html__('Énigme', 'chassesautresor-com'); ?></th>
-      <?php endif; ?>
+      <th><?= esc_html__('Indice pour', 'chassesautresor-com'); ?></th>
+      <th><?= esc_html__('Titre contenu', 'chassesautresor-com'); ?></th>
       <th><?= esc_html__('Statut', 'chassesautresor-com'); ?></th>
       <th><?= esc_html__('Action', 'chassesautresor-com'); ?></th>
     </tr>
@@ -50,6 +49,7 @@ if (empty($indices)) {
         $img_id  = get_field('indice_image', $indice->ID);
         $img_html = $img_id ? wp_get_attachment_image($img_id, 'thumbnail') : '';
         $contenu = wp_strip_all_tags(get_field('indice_contenu', $indice->ID) ?: '');
+
         $etat    = get_field('indice_cache_etat_systeme', $indice->ID) ?: '';
         $etat_class = 'etiquette-error';
         if ($etat === 'accessible') {
@@ -57,21 +57,26 @@ if (empty($indices)) {
         } elseif ($etat === 'programme' || $etat === 'programmé') {
             $etat_class = 'etiquette-pending';
         }
-        $enigme_html = '';
-        if ($objet_type === 'chasse') {
-            $linked = get_field('indice_enigme_linked', $indice->ID);
-            if ($linked) {
-                if (is_array($linked)) {
-                    $first = $linked[0] ?? null;
-                    $enigme_id = is_array($first) ? ($first['ID'] ?? 0) : $first;
-                } else {
-                    $enigme_id = $linked;
-                }
-                if (!empty($enigme_id)) {
-                    $enigme_titre = get_the_title($enigme_id);
-                    $enigme_html = '<a href="' . esc_url(get_permalink($enigme_id)) . '">'
-                        . esc_html($enigme_titre) . '</a>';
-                }
+
+        $cible_type  = get_field('indice_cible_type', $indice->ID) === 'enigme' ? 'enigme' : 'chasse';
+        $cible_label = $cible_type === 'enigme'
+            ? __('Énigme', 'chassesautresor-com')
+            : __('Chasse', 'chassesautresor-com');
+        $linked_html = '';
+        $linked      = $cible_type === 'enigme'
+            ? get_field('indice_enigme_linked', $indice->ID)
+            : get_field('indice_chasse_linked', $indice->ID);
+        if ($linked) {
+            if (is_array($linked)) {
+                $first     = $linked[0] ?? null;
+                $linked_id = is_array($first) ? ($first['ID'] ?? 0) : $first;
+            } else {
+                $linked_id = $linked;
+            }
+            if (!empty($linked_id)) {
+                $linked_title = get_the_title($linked_id);
+                $linked_html  = '<a href="' . esc_url(get_permalink($linked_id)) . '">' .
+                    esc_html($linked_title) . '</a>';
             }
         }
     ?>
@@ -80,9 +85,8 @@ if (empty($indices)) {
       <td><?= $img_html; ?></td>
       <td><a href="<?= esc_url(get_permalink($indice)); ?>"><?= esc_html(get_the_title($indice)); ?></a></td>
       <?php echo cta_render_proposition_cell($contenu); ?>
-      <?php if ($objet_type === 'chasse') : ?>
-      <td><?= $enigme_html; ?></td>
-      <?php endif; ?>
+      <td><span class="etiquette"><?= esc_html($cible_label); ?></span></td>
+      <td><?= $linked_html; ?></td>
       <td><span class="etiquette <?= esc_attr($etat_class); ?>"><?= esc_html($etat); ?></span></td>
       <td class="indice-actions">
         <a
