@@ -146,90 +146,141 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                   <?php
                   $has_images_utiles = enigme_a_une_image($enigme_id);
                   $images_ids       = get_field('enigme_visuel_image', $enigme_id, false);
-                  ?>
-                  <li class="champ-enigme champ-img <?= $has_images_utiles ? 'champ-rempli' : 'champ-vide'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>"
-                    data-champ="enigme_visuel_image"
-                    data-cpt="enigme"
-                    data-post-id="<?= esc_attr($enigme_id); ?>"
-                    data-rempli="<?= $has_images_utiles ? '1' : '0'; ?>">
-                    <div class="champ-affichage">
-                      <label><?= esc_html__('Illustrations', 'chassesautresor-com'); ?> <span class="champ-obligatoire">*</span></label>
-                      <?php if ($peut_editer) : ?>
-                        <button type="button"
-                          class="champ-modifier ouvrir-panneau-images"
-                          data-champ="enigme_visuel_image"
-                          data-cpt="enigme"
-                          data-post-id="<?= esc_attr($enigme_id); ?>">
-                          <?php if ($has_images_utiles && is_array($images_ids)) : ?>
-                            <?php foreach ($images_ids as $img_id) : ?>
-                              <?php $thumb_url = esc_url(add_query_arg([
-                                'id'     => $img_id,
-                                'taille' => 'thumbnail',
-                              ], site_url('/voir-image-enigme'))); ?>
-                              <img src="<?= $thumb_url; ?>" alt="" class="vignette-enigme" />
-                            <?php endforeach; ?>
-                          <?php else : ?>
-                            <span class="champ-ajout-image"><?= esc_html__('ajouter', 'chassesautresor-com'); ?></span>
-                          <?php endif; ?>
-                        </button>
-                      <?php else : ?>
-                        <?php if ($has_images_utiles && is_array($images_ids)) : ?>
-                          <?php foreach ($images_ids as $img_id) : ?>
-                            <?php $thumb_url = esc_url(add_query_arg([
-                              'id'     => $img_id,
-                              'taille' => 'thumbnail',
-                            ], site_url('/voir-image-enigme'))); ?>
-                            <img src="<?= $thumb_url; ?>" alt="" class="vignette-enigme" />
-                          <?php endforeach; ?>
-                        <?php else : ?>
-                          <span class="champ-ajout-image"><?= esc_html__('ajouter', 'chassesautresor-com'); ?></span>
-                        <?php endif; ?>
-                      <?php endif; ?>
-                    </div>
-                    <div class="champ-feedback"></div>
-                  </li>
-
-                  <li class="champ-enigme champ-wysiwyg<?= empty(trim($texte_enigme)) ? ' champ-vide' : ' champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_visuel_texte" data-cpt="enigme"
-                    data-post-id="<?= esc_attr($enigme_id); ?>">
-                    <label><?= esc_html__('Texte énigme', 'chassesautresor-com'); ?></label>
-                    <div class="champ-texte">
-                        <?php if (empty(trim($texte_enigme))) : ?>
-                            <?php if ($peut_editer) : ?>
-                                <a href="#" class="champ-ajouter ouvrir-panneau-description"
-                                   data-champ="enigme_visuel_texte"
-                                   data-cpt="enigme"
-                                   data-post-id="<?= esc_attr($enigme_id); ?>">
-                                    <?= esc_html__('ajouter', 'chassesautresor-com'); ?>
-                                </a>
-                            <?php endif; ?>
-                        <?php else : ?>
-                            <span class="champ-texte-contenu">
-                                <?= esc_html(wp_trim_words(wp_strip_all_tags($texte_enigme), 25)); ?>
+                  get_template_part(
+                      'template-parts/common/edition-row',
+                      null,
+                      [
+                          'class'      => 'champ-enigme champ-img ' . ($has_images_utiles ? 'champ-rempli' : 'champ-vide') . ($peut_editer ? '' : ' champ-desactive'),
+                          'attributes' => [
+                              'data-champ'   => 'enigme_visuel_image',
+                              'data-cpt'     => 'enigme',
+                              'data-post-id' => $enigme_id,
+                              'data-rempli'  => $has_images_utiles ? '1' : '0',
+                          ],
+                          'label' => function () {
+                              ?>
+                              <label><?= esc_html__('Illustrations', 'chassesautresor-com'); ?> <span class="champ-obligatoire">*</span></label>
+                              <?php
+                          },
+                          'content' => function () use ($has_images_utiles, $images_ids, $peut_editer, $enigme_id) {
+                              ?>
+                              <div class="champ-affichage">
                                 <?php if ($peut_editer) : ?>
-                                      <button type="button" class="champ-modifier ouvrir-panneau-description"
-                                          data-champ="enigme_visuel_texte"
-                                          data-cpt="enigme"
-                                          data-post-id="<?= esc_attr($enigme_id); ?>"
-                                          aria-label="<?= esc_attr__('Éditer le texte', 'chassesautresor-com'); ?>">
-                                          <?= esc_html__('éditer', 'chassesautresor-com'); ?>
-                                      </button>
+                                  <button type="button"
+                                    class="champ-modifier ouvrir-panneau-images"
+                                    data-champ="enigme_visuel_image"
+                                    data-cpt="enigme"
+                                    data-post-id="<?= esc_attr($enigme_id); ?>">
+                                    <?php if ($has_images_utiles && is_array($images_ids)) : ?>
+                                      <?php foreach ($images_ids as $img_id) : ?>
+                                        <?php $thumb_url = esc_url(add_query_arg([
+                                          'id'     => $img_id,
+                                          'taille' => 'thumbnail',
+                                        ], site_url('/voir-image-enigme'))); ?>
+                                        <img src="<?= $thumb_url; ?>" alt="" class="vignette-enigme" />
+                                      <?php endforeach; ?>
+                                    <?php else : ?>
+                                      <span class="champ-ajout-image"><?= esc_html__('ajouter', 'chassesautresor-com'); ?></span>
+                                    <?php endif; ?>
+                                  </button>
+                                <?php else : ?>
+                                  <?php if ($has_images_utiles && is_array($images_ids)) : ?>
+                                    <?php foreach ($images_ids as $img_id) : ?>
+                                      <?php $thumb_url = esc_url(add_query_arg([
+                                        'id'     => $img_id,
+                                        'taille' => 'thumbnail',
+                                      ], site_url('/voir-image-enigme'))); ?>
+                                      <img src="<?= $thumb_url; ?>" alt="" class="vignette-enigme" />
+                                    <?php endforeach; ?>
+                                  <?php else : ?>
+                                    <span class="champ-ajout-image"><?= esc_html__('ajouter', 'chassesautresor-com'); ?></span>
+                                  <?php endif; ?>
                                 <?php endif; ?>
-                            </span>
-                        <?php endif; ?>
-                    </div>
-                    <div class="champ-feedback"></div>
-                  </li>
+                              </div>
+                              <div class="champ-feedback"></div>
+                              <?php
+                          },
+                      ]
+                  );
+                  ?>
 
-                  <li class="champ-enigme champ-texte champ-soustitre<?= empty(trim($legende)) ? ' champ-vide' : ' champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>"
-                    data-champ="enigme_visuel_legende" data-cpt="enigme"
-                    data-post-id="<?= esc_attr($enigme_id); ?>"
-                    data-no-edit="1">
+                  <?php
+                  get_template_part(
+                      'template-parts/common/edition-row',
+                      null,
+                      [
+                          'class'      => 'champ-enigme champ-wysiwyg' . (empty(trim($texte_enigme)) ? ' champ-vide' : ' champ-rempli') . ($peut_editer ? '' : ' champ-desactive'),
+                          'attributes' => [
+                              'data-champ'   => 'enigme_visuel_texte',
+                              'data-cpt'     => 'enigme',
+                              'data-post-id' => $enigme_id,
+                          ],
+                          'label' => function () {
+                              ?>
+                              <label><?= esc_html__('Texte énigme', 'chassesautresor-com'); ?></label>
+                              <?php
+                          },
+                          'content' => function () use ($texte_enigme, $peut_editer, $enigme_id) {
+                              ?>
+                              <div class="champ-texte">
+                                <?php if (empty(trim($texte_enigme))) : ?>
+                                  <?php if ($peut_editer) : ?>
+                                    <a href="#" class="champ-ajouter ouvrir-panneau-description"
+                                      data-champ="enigme_visuel_texte"
+                                      data-cpt="enigme"
+                                      data-post-id="<?= esc_attr($enigme_id); ?>">
+                                      <?= esc_html__('ajouter', 'chassesautresor-com'); ?>
+                                    </a>
+                                  <?php endif; ?>
+                                <?php else : ?>
+                                  <span class="champ-texte-contenu">
+                                    <?= esc_html(wp_trim_words(wp_strip_all_tags($texte_enigme), 25)); ?>
+                                    <?php if ($peut_editer) : ?>
+                                      <button type="button" class="champ-modifier ouvrir-panneau-description"
+                                        data-champ="enigme_visuel_texte"
+                                        data-cpt="enigme"
+                                        data-post-id="<?= esc_attr($enigme_id); ?>"
+                                        aria-label="<?= esc_attr__('Éditer le texte', 'chassesautresor-com'); ?>">
+                                        <?= esc_html__('éditer', 'chassesautresor-com'); ?>
+                                      </button>
+                                    <?php endif; ?>
+                                  </span>
+                                <?php endif; ?>
+                              </div>
+                              <div class="champ-feedback"></div>
+                              <?php
+                          },
+                      ]
+                  );
+                  ?>
 
-                    <label for="champ-soustitre-enigme"><?= esc_html__('Sous-titre', 'chassesautresor-com'); ?></label>
-                    <input type="text" class="champ-input champ-texte-edit" maxlength="100" value="<?= esc_attr($legende); ?>" id="champ-soustitre-enigme"
-                      placeholder="<?= esc_attr__('Ajouter un sous-titre (max 100 caractères)', 'chassesautresor-com'); ?>" <?= $peut_editer ? '' : 'disabled'; ?> />
-                    <div class="champ-feedback"></div>
-                  </li>
+                  <?php
+                  get_template_part(
+                      'template-parts/common/edition-row',
+                      null,
+                      [
+                          'class'      => 'champ-enigme champ-texte champ-soustitre' . (empty(trim($legende)) ? ' champ-vide' : ' champ-rempli') . ($peut_editer ? '' : ' champ-desactive'),
+                          'attributes' => [
+                              'data-champ'   => 'enigme_visuel_legende',
+                              'data-cpt'     => 'enigme',
+                              'data-post-id' => $enigme_id,
+                              'data-no-edit' => '1',
+                          ],
+                          'label' => function () {
+                              ?>
+                              <label for="champ-soustitre-enigme"><?= esc_html__('Sous-titre', 'chassesautresor-com'); ?></label>
+                              <?php
+                          },
+                          'content' => function () use ($legende, $peut_editer) {
+                              ?>
+                              <input type="text" class="champ-input champ-texte-edit" maxlength="100" value="<?= esc_attr($legende); ?>" id="champ-soustitre-enigme"
+                                placeholder="<?= esc_attr__('Ajouter un sous-titre (max 100 caractères)', 'chassesautresor-com'); ?>" <?= $peut_editer ? '' : 'disabled'; ?> />
+                              <div class="champ-feedback"></div>
+                              <?php
+                          },
+                      ]
+                  );
+                  ?>
                 </ul>
               </div>
 
