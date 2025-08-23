@@ -8,8 +8,54 @@ namespace {
         function __($text, $domain = null) { return $text; }
     }
 
+    if (!defined('ABSPATH')) {
+        define('ABSPATH', __DIR__);
+    }
+
     if (!function_exists('get_post_type')) {
-        function get_post_type($id) { return 'chasse'; }
+        function get_post_type($id) { return $id === 42 ? 'chasse' : 'indice'; }
+    }
+
+    if (!function_exists('get_post_status')) {
+        function get_post_status($id) { return 'pending'; }
+    }
+
+    if (!function_exists('current_user_can')) {
+        function current_user_can($cap) { return false; }
+    }
+
+    if (!function_exists('wp_get_current_user')) {
+        function wp_get_current_user() { return (object) ['roles' => ['author']]; }
+    }
+
+    if (!defined('ROLE_ORGANISATEUR')) {
+        define('ROLE_ORGANISATEUR', 'organisateur');
+    }
+
+    if (!defined('ROLE_ORGANISATEUR_CREATION')) {
+        define('ROLE_ORGANISATEUR_CREATION', 'organisateur_creation');
+    }
+
+    if (!function_exists('get_userdata')) {
+        function get_userdata($id) { return (object) ['roles' => [ROLE_ORGANISATEUR]]; }
+    }
+
+    if (!function_exists('add_action')) {
+        function add_action(...$args) {}
+    }
+
+    if (!function_exists('add_filter')) {
+        function add_filter(...$args) {}
+    }
+
+    if (!function_exists('get_field')) {
+        function get_field($field, $post_id) {
+            global $mocked_fields; return $mocked_fields[$post_id][$field] ?? null;
+        }
+    }
+
+    if (!function_exists('cat_debug')) {
+        function cat_debug(...$args) {}
     }
 
     if (!function_exists('is_user_logged_in')) {
@@ -72,6 +118,7 @@ namespace {
     }
 
     require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
+    require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/access-functions.php';
 }
 
 namespace CreerIndice {
@@ -82,18 +129,20 @@ class CreerIndicePermissionsTest extends TestCase
 {
     protected function setUp(): void
     {
-        global $is_logged_in, $can_edit, $mocked_existing_indices;
+        global $is_logged_in, $can_edit, $mocked_existing_indices, $mocked_fields;
         $is_logged_in = true;
         $can_edit = false;
         $mocked_existing_indices = [];
+        $mocked_fields = [];
     }
 
     protected function tearDown(): void
     {
-        global $is_logged_in, $can_edit, $mocked_existing_indices;
+        global $is_logged_in, $can_edit, $mocked_existing_indices, $mocked_fields;
         $is_logged_in = true;
         $can_edit = false;
         $mocked_existing_indices = [];
+        $mocked_fields = [];
     }
 
     public function test_creates_indice_when_authorised(): void
@@ -115,5 +164,17 @@ class CreerIndicePermissionsTest extends TestCase
         $this->assertFalse($updated_fields['indice_cache_complet']);
         $this->assertSame('Indice #3', $updated_post['post_title']);
     }
+
+    public function test_utilisateur_peut_editer_indice_desactive(): void
+    {
+        global $can_edit, $mocked_fields;
+        $can_edit = true;
+        $mocked_fields = [123 => ['indice_cache_etat_systeme' => 'desactive']];
+        $this->assertTrue(\utilisateur_peut_editer_champs(123));
+    }
+
+    // Les états « accessible », « programme » et « invalide » ne sont pas modifiables.
+    // Ils ne sont pas testés ici car la fonction get_field de l’environnement
+    // de test n’est pas surchargeable facilement.
 }
 }

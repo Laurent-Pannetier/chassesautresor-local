@@ -420,8 +420,17 @@ Groupe : paramètres indices
 * indice_disponibilite (radio)
 * indice_date_disponibilite (date_time_picker, retour d/m/Y g:i a)
 * indice_cout_points (number)
-* indice_cache_etat_systeme (select, accessible/programme/expire/desactive)
+* indice_cache_etat_systeme (select, accessible/programme/invalide/desactive)
 * indice_cache_complet (true_false)
+
+États possibles pour `indice_cache_etat_systeme` :
+
+| Valeur    | Description                                   |
+|-----------|-----------------------------------------------|
+| accessible| Indice visible immédiatement                  |
+| programme | Disponible à une date ultérieure              |
+| invalide  | Indice marqué comme invalide                  |
+| desactive | Indice incomplet ou désactivé                 |
 
 liste avec tous les détails des groupes de champs ACF dans champs-acf-liste.md
 

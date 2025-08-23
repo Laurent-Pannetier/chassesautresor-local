@@ -519,7 +519,7 @@ Requis : non
 Choices :
   - accessible : accessible
   - programme : programmé
-  - expire : expiré
+  - invalide : invalide
   - desactive : désactivé
 ----------------------------------------
 — indice_cache_complet —

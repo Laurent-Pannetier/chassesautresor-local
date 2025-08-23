@@ -837,7 +837,7 @@ function utilisateur_peut_editer_champs(int $post_id): bool
             $etat = get_field('indice_cache_etat_systeme', $post_id) ?: '';
 
             return $status === 'pending'
-                && ($etat === 'desactive' || $etat === '');
+                && in_array($etat, ['desactive', ''], true);
     }
 
     return false;
