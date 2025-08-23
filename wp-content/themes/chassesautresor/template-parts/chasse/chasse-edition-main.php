@@ -705,32 +705,50 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
               </div>
 
               <div class="resume-bloc resume-indices">
-                <h3><?= esc_html__('Indices', 'chassesautresor-com'); ?></h3>
-                  <div class="dashboard-grid stats-cards">
-                    <?php
-                    $indices = get_posts([
-                      'post_type'      => 'indice',
-                      'posts_per_page' => -1,
-                      'post_status'    => ['publish', 'pending', 'draft'],
-                      'orderby'        => 'ID',
-                      'order'          => 'ASC',
-                      'meta_query'     => [
-                        [
-                          'key'   => 'indice_cible_type',
-                          'value' => 'chasse',
-                        ],
-                        [
-                          'key'   => 'indice_chasse_linked',
-                          'value' => $chasse_id,
-                        ],
-                      ],
-                    ]);
-                    get_template_part('template-parts/chasse/partials/chasse-partial-indices', null, [
-                      'chasse_id' => $chasse_id,
-                      'indices'   => $indices,
-                    ]);
-                    ?>
-                  </div>
+                <h3><?= sprintf(esc_html__('Indices pour %s', 'chassesautresor-com'), get_the_title($chasse_id)); ?></h3>
+                <div class="dashboard-grid stats-cards">
+                  <?php
+                  get_template_part('template-parts/chasse/partials/chasse-partial-indices', null, [
+                    'objet_id'   => $chasse_id,
+                    'objet_type' => 'chasse',
+                  ]);
+                  ?>
+                </div>
+                <?php
+                $par_page_indices = 10;
+                $page_indices     = 1;
+                $indices_query    = new WP_Query([
+                  'post_type'      => 'indice',
+                  'post_status'    => ['publish', 'pending', 'draft'],
+                  'orderby'        => 'date',
+                  'order'          => 'DESC',
+                  'posts_per_page' => $par_page_indices,
+                  'paged'          => $page_indices,
+                  'meta_query'     => [
+                    [
+                      'key'   => 'indice_cible_type',
+                      'value' => 'chasse',
+                    ],
+                    [
+                      'key'   => 'indice_chasse_linked',
+                      'value' => $chasse_id,
+                    ],
+                  ],
+                ]);
+                $indices_list  = $indices_query->posts;
+                $pages_indices = (int) $indices_query->max_num_pages;
+                ?>
+                <div class="liste-indices" data-page="1" data-pages="<?= esc_attr($pages_indices); ?>" data-objet-type="chasse" data-objet-id="<?= esc_attr($chasse_id); ?>" data-ajax-url="<?= esc_url(admin_url('admin-ajax.php')); ?>">
+                  <?php
+                  get_template_part('template-parts/common/indices-table', null, [
+                    'indices'    => $indices_list,
+                    'page'       => 1,
+                    'pages'      => $pages_indices,
+                    'objet_type' => 'chasse',
+                    'objet_id'   => $chasse_id,
+                  ]);
+                  ?>
+                </div>
               </div>
 
               <div class="resume-bloc resume-news">

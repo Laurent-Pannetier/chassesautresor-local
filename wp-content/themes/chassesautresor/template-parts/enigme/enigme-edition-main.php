@@ -765,15 +765,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                     </div>
                   </div>
 
-                  <input type="file" id="solution-pdf-upload" accept="application/pdf" style="display:none;">
-                  <div class="champ-feedback" style="margin-top: 5px;"></div>
+                    <input type="file" id="solution-pdf-upload" accept="application/pdf" style="display:none;">
+                    <div class="champ-feedback" style="margin-top: 5px;"></div>
+                  </div>
                 </div>
-              </div>
 
+                <div class="resume-bloc resume-indices">
+                  <h3><?= sprintf(esc_html__('Indices pour %s', 'chassesautresor-com'), get_the_title($enigme_id)); ?></h3>
+                  <div class="dashboard-grid stats-cards">
+                    <?php
+                    get_template_part('template-parts/chasse/partials/chasse-partial-indices', null, [
+                      'objet_id'   => $enigme_id,
+                      'objet_type' => 'enigme',
+                    ]);
+                    ?>
+                  </div>
+                  <?php
+                  $par_page_indices = 10;
+                  $page_indices     = 1;
+                  $indices_query    = new WP_Query([
+                    'post_type'      => 'indice',
+                    'post_status'    => ['publish', 'pending', 'draft'],
+                    'orderby'        => 'date',
+                    'order'          => 'DESC',
+                    'posts_per_page' => $par_page_indices,
+                    'paged'          => $page_indices,
+                    'meta_query'     => [
+                      [
+                        'key'   => 'indice_cible_type',
+                        'value' => 'enigme',
+                      ],
+                      [
+                        'key'   => 'indice_enigme_linked',
+                        'value' => $enigme_id,
+                      ],
+                    ],
+                  ]);
+                  $indices_list  = $indices_query->posts;
+                  $pages_indices = (int) $indices_query->max_num_pages;
+                  ?>
+                  <div class="liste-indices" data-page="1" data-pages="<?= esc_attr($pages_indices); ?>" data-objet-type="enigme" data-objet-id="<?= esc_attr($enigme_id); ?>" data-ajax-url="<?= esc_url(admin_url('admin-ajax.php')); ?>">
+                    <?php
+                    get_template_part('template-parts/common/indices-table', null, [
+                      'indices'    => $indices_list,
+                      'page'       => 1,
+                      'pages'      => $pages_indices,
+                      'objet_type' => 'enigme',
+                      'objet_id'   => $enigme_id,
+                    ]);
+                    ?>
+                  </div>
+                </div>
+
+            </div>
           </div>
         </div>
       </div>
-    </div>
     </div> <!-- #enigme-tab-animation -->
   </section>
 <?php endif; ?>
