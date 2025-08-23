@@ -1711,106 +1711,6 @@ a[aria-disabled=true] {
   margin-bottom: var(--space-md);
 }
 
-.indice-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(var(--color-black-rgb), 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 20000;
-}
-
-.indice-modal {
-  background: var(--color-editor-background);
-  color: var(--color-editor-text);
-  padding: var(--space-lg);
-  border: 1px solid var(--color-editor-border);
-  border-radius: 8px;
-  max-width: 500px;
-  width: 90%;
-  box-sizing: border-box;
-  position: relative;
-  font-family: var(--font-main);
-  z-index: 20001;
-}
-
-.indice-modal-header {
-  border-bottom: 1px solid var(--color-editor-border);
-  margin-bottom: var(--space-md);
-  padding-bottom: var(--space-sm);
-}
-
-.indice-modal-header h2 {
-  margin: 0;
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--color-editor-heading);
-}
-
-.indice-modal-header p {
-  margin: var(--space-xs) 0 0;
-  color: var(--color-editor-text-muted);
-  font-size: 0.875rem;
-}
-
-.indice-modal-close {
-  position: absolute;
-  top: var(--space-sm);
-  right: var(--space-sm);
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1.5rem;
-  color: var(--color-editor-heading);
-}
-
-.indice-modal-form label {
-  display: block;
-  margin-bottom: var(--space-sm);
-  color: var(--color-editor-text);
-}
-
-.indice-modal-form textarea {
-  width: 100%;
-  min-height: 100px;
-  background: var(--color-editor-background);
-  color: var(--color-editor-text);
-  border: 1px solid var(--color-editor-border);
-  border-radius: 4px;
-  padding: var(--space-sm);
-  box-sizing: border-box;
-}
-
-.indice-modal-form .select-image,
-.indice-modal-form .indice-modal-validate {
-  background: var(--color-editor-button);
-  color: var(--color-white);
-  border: none;
-  border-radius: 4px;
-  padding: var(--space-sm) var(--space-md);
-  cursor: pointer;
-  transition: background var(--transition-fast);
-}
-
-.indice-modal-form .select-image:hover,
-.indice-modal-form .indice-modal-validate:hover {
-  background: var(--color-editor-button-hover);
-}
-
-.indice-modal-form .date-wrapper input {
-  width: 100%;
-  background: var(--color-editor-background);
-  color: var(--color-editor-text);
-  border: 1px solid var(--color-editor-border);
-  border-radius: 4px;
-  padding: var(--space-sm);
-  box-sizing: border-box;
-}
-
 /* ==========================================================
 📌 Orgy – Panneaux d'édition frontaux
 ========================================================== */
@@ -3734,6 +3634,23 @@ body.panneau-ouvert::before {
     transform: rotate(360deg);
   }
 }
+/* Overlay indice */
+.indice-modal-form label {
+  display: block;
+  margin-bottom: var(--space-sm);
+  color: var(--color-editor-text);
+}
+
+.indice-modal-form .image-field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.indice-modal-form .image-preview img {
+  max-height: 80px;
+}
+
 /* Layout for enigma pages */
 .enigme-layout {
   display: grid;

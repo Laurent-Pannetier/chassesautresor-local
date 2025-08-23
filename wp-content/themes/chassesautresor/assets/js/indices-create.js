@@ -15,7 +15,7 @@
           <input type="hidden" name="objet_type" value="${btn.dataset.objetType}" />
           <input type="hidden" name="objet_id" value="${btn.dataset.objetId}" />
           <input type="hidden" name="indice_image" value="" />
-          <p><button type="button" class="select-image">${indicesCreate.texts.image}</button></p>
+          <p class="image-field"><button type="button" class="select-image">${indicesCreate.texts.image}</button><span class="image-preview"></span></p>
           <p><label>${indicesCreate.texts.contenu}<br><textarea name="indice_contenu"></textarea></label></p>
           <p><label><input type="radio" name="indice_disponibilite" value="immediate" checked /> ${indicesCreate.texts.immediate}</label>
              <label><input type="radio" name="indice_disponibilite" value="differe" /> ${indicesCreate.texts.differe}</label></p>
@@ -35,6 +35,9 @@
       overlay.querySelector('.indice-modal-form').appendChild(idInput);
       if (btn.dataset.indiceImage) {
         overlay.querySelector('input[name="indice_image"]').value = btn.dataset.indiceImage;
+        if (btn.dataset.indiceImageUrl) {
+          overlay.querySelector('.image-preview').innerHTML = '<img src="' + btn.dataset.indiceImageUrl + '" alt="" />';
+        }
       }
       if (btn.dataset.indiceContenu) {
         overlay.querySelector('textarea[name="indice_contenu"]').value = btn.dataset.indiceContenu;
@@ -77,6 +80,8 @@
       frame.on('select', function () {
         var attachment = frame.state().get('selection').first().toJSON();
         overlay.querySelector('input[name="indice_image"]').value = attachment.id;
+        var url = attachment.sizes && attachment.sizes.thumbnail ? attachment.sizes.thumbnail.url : attachment.url;
+        overlay.querySelector('.image-preview').innerHTML = '<img src="' + url + '" alt="" />';
       });
       frame.open();
     });

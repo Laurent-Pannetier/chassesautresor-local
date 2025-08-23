@@ -2008,3 +2008,13 @@ body.panneau-ouvert::before {
     margin-bottom: var(--space-sm);
     color: var(--color-editor-text);
 }
+
+.indice-modal-form .image-field {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.indice-modal-form .image-preview img {
+    max-height: 80px;
+}
