@@ -1999,6 +1999,15 @@ msgstr "Organization QR code"
 msgid "QR code de votre organisation"
 msgstr "Your organization's QR code"
 
+#: template-parts/chasse/chasse-edition-main.php:863
+msgid "QR code de la chasse"
+msgstr "Hunt QR code"
+
+#: template-parts/chasse/chasse-edition-main.php:864
+msgid "QR code de votre chasse"
+msgstr "Your hunt's QR code"
+
+#: template-parts/chasse/chasse-edition-main.php:866
 #: template-parts/organisateur/organisateur-edition-main.php:383
 msgid "Télécharger"
 msgstr "Download"

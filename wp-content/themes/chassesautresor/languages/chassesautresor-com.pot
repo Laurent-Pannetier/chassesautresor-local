@@ -1888,6 +1888,15 @@ msgstr ""
 msgid "QR code de votre organisation"
 msgstr ""
 
+#: template-parts/chasse/chasse-edition-main.php:863
+msgid "QR code de la chasse"
+msgstr ""
+
+#: template-parts/chasse/chasse-edition-main.php:864
+msgid "QR code de votre chasse"
+msgstr ""
+
+#: template-parts/chasse/chasse-edition-main.php:866
 #: template-parts/organisateur/organisateur-edition-main.php:383
 msgid "Télécharger"
 msgstr ""

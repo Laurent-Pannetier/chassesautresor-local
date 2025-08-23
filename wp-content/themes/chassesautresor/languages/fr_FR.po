@@ -2014,6 +2014,15 @@ msgstr "QR code de l'organisation"
 msgid "QR code de votre organisation"
 msgstr "QR code de votre organisation"
 
+#: template-parts/chasse/chasse-edition-main.php:863
+msgid "QR code de la chasse"
+msgstr "QR code de la chasse"
+
+#: template-parts/chasse/chasse-edition-main.php:864
+msgid "QR code de votre chasse"
+msgstr "QR code de votre chasse"
+
+#: template-parts/chasse/chasse-edition-main.php:866
 #: template-parts/organisateur/organisateur-edition-main.php:383
 msgid "Télécharger"
 msgstr "Télécharger"
