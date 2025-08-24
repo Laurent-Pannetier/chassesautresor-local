@@ -3,10 +3,10 @@
     var overlay = document.createElement('div');
     overlay.className = 'indice-modal-overlay';
     var titre = indicesCreate.texts.indiceTitre.replace('%d', btn.dataset.indiceRang || '');
-    var needRiddle = btn.dataset.objetType === 'enigme' && !btn.dataset.objetId;
+    var needRiddle = btn.dataset.objetType === 'enigme' && !btn.dataset.indiceId;
     var riddleField = needRiddle
-      ? `<p><label>${indicesCreate.texts.riddle}<br><select name="objet_id"><option value="">${indicesCreate.texts.loading}</option></select></label></p>`
-      : `<input type="hidden" name="objet_id" value="${btn.dataset.objetId || ''}" />`;
+      ? `<p><label>${indicesCreate.texts.riddle}<br><select name="indice_enigme_linked"><option value="">${indicesCreate.texts.loading}</option></select></label></p>`
+      : '';
     overlay.innerHTML = `
       <div class="indice-modal">
         <div class="indice-modal-header">
@@ -18,6 +18,7 @@
           <input type="hidden" name="action" value="creer_indice_modal" />
           <input type="hidden" name="objet_type" value="${btn.dataset.objetType}" />
           ${riddleField}
+          <input type="hidden" name="objet_id" value="${btn.dataset.objetId || ''}" />
           <input type="hidden" name="indice_image" value="" />
           <p class="image-field"><button type="button" class="select-image">${indicesCreate.texts.image}</button><span class="image-preview"></span></p>
           <p><label>${indicesCreate.texts.contenu}<br><textarea name="indice_contenu"></textarea></label></p>
@@ -151,7 +152,7 @@
       var content = overlay.querySelector('textarea[name="indice_contenu"]').value.trim();
       var image = overlay.querySelector('input[name="indice_image"]').value.trim();
       var dispo = overlay.querySelector('input[name="indice_disponibilite"]:checked').value;
-      var select = overlay.querySelector('select[name="objet_id"]');
+      var select = overlay.querySelector('select[name="indice_enigme_linked"]');
       var riddleSelected = !select || select.value !== '';
       var state = 'desactive';
       var message = '';
@@ -206,7 +207,8 @@
     });
 
     if (needRiddle) {
-      var select = overlay.querySelector('select[name="objet_id"]');
+      var select = overlay.querySelector('select[name="indice_enigme_linked"]');
+      var hidden = overlay.querySelector('input[name="objet_id"]');
       var titleSpan = overlay.querySelector('.objet-titre');
       var fd = new FormData();
       fd.append('action', 'chasse_lister_enigmes');
@@ -220,6 +222,8 @@
             opt.value = '';
             opt.textContent = indicesCreate.texts.chooseRiddle;
             select.appendChild(opt);
+            btn.dataset.objetId = '';
+            hidden.value = '';
             btn.dataset.indiceRang = '';
             titleEl.textContent = indicesCreate.texts.indiceTitre.replace('%d', '');
             refreshState();
@@ -234,11 +238,12 @@
             }
             select.appendChild(opt);
           });
-          var def = btn.dataset.defaultEnigme;
+          var def = btn.dataset.defaultEnigme || btn.dataset.objetId;
           if (def) select.value = def;
           if (!select.value) select.value = select.options[0].value;
           var selected = select.options[select.selectedIndex];
           btn.dataset.objetId = select.value;
+          hidden.value = select.value;
           btn.dataset.indiceRang = selected && selected.dataset.indiceRang ? selected.dataset.indiceRang : '';
           titleSpan.textContent = selected ? selected.text : '';
           titleEl.textContent = indicesCreate.texts.indiceTitre.replace('%d', btn.dataset.indiceRang || '');
@@ -247,6 +252,7 @@
       select.addEventListener('change', function () {
         var opt = select.options[select.selectedIndex];
         btn.dataset.objetId = select.value;
+        hidden.value = select.value;
         btn.dataset.indiceRang = opt && opt.dataset.indiceRang ? opt.dataset.indiceRang : '';
         titleSpan.textContent = opt ? opt.text : '';
         titleEl.textContent = indicesCreate.texts.indiceTitre.replace('%d', btn.dataset.indiceRang || '');
