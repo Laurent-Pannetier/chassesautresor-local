@@ -229,7 +229,7 @@ function updateTargetBlocks(bloc, champ, postId, donnees) {
     if (!zoneAffichage.dataset.noEdit && !bloc.querySelector('.champ-modifier')) {
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'champ-modifier txt-small ouvrir-panneau-liens';
+      btn.className = 'bouton-cta champ-modifier ouvrir-panneau-liens';
       btn.setAttribute('aria-label', 'Configurer vos liens');
       btn.textContent = wp.i18n.__('modifier', 'chassesautresor-com');
       zoneAffichage.appendChild(btn);
@@ -251,7 +251,7 @@ function updateTargetBlocks(bloc, champ, postId, donnees) {
         if (!zone.dataset.noEdit && !blocCible.querySelector('.champ-modifier')) {
           const btn = document.createElement('button');
           btn.type = 'button';
-          btn.className = 'champ-modifier txt-small ouvrir-panneau-liens';
+          btn.className = 'bouton-cta champ-modifier ouvrir-panneau-liens';
           btn.setAttribute('aria-label', 'Configurer vos liens');
           btn.textContent = wp.i18n.__('modifier', 'chassesautresor-com');
           zone.appendChild(btn);
@@ -273,7 +273,7 @@ function updateTargetBlocks(bloc, champ, postId, donnees) {
         if (!zone.dataset.noEdit && !blocCible.querySelector('.champ-modifier')) {
           const btn = document.createElement('button');
           btn.type = 'button';
-          btn.className = 'champ-modifier txt-small ouvrir-panneau-liens';
+          btn.className = 'bouton-cta champ-modifier ouvrir-panneau-liens';
           btn.setAttribute('aria-label', 'Configurer vos liens');
           btn.textContent = wp.i18n.__('modifier', 'chassesautresor-com');
           zone.appendChild(btn);
