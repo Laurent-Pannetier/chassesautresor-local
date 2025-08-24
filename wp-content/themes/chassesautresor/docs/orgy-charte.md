@@ -22,6 +22,7 @@ Le mode Orgy est actif lorsque la classe `mode-edition` est présente sur la bal
 - **Grille de cartes** : `.dashboard-grid` organisant les `.dashboard-card` adaptatives.
 - **Cartes et tableaux** : utilisation de bordures `1px` et rayons `8px`. Utiliser la classe `.carte-orgy` (alias de `.dashboard-card`) pour appliquer ce style.
 - **Boutons CTA** : `.bouton-cta` neutre en niveaux de gris ; ajouter `.bouton-cta--color` pour activer les couleurs définies.
+  - `:hover` : pas de soulignement ; utilise `var(--color-gris-carte)` (ou `var(--color-background-button-hover)` avec `.bouton-cta--color`).
 
 ### Indentation des labels
 
