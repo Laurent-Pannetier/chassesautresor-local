@@ -914,6 +914,40 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
             ]);
             $indices_list  = $indices_query->posts;
             $pages_indices = (int) $indices_query->max_num_pages;
+              $count_chasse  = function_exists('get_posts') ? count(get_posts([
+                'post_type'      => 'indice',
+                'post_status'    => ['publish', 'pending', 'draft'],
+                'fields'         => 'ids',
+                'nopaging'       => true,
+                'meta_query'     => [
+                  [
+                    'key'   => 'indice_cible_type',
+                    'value' => 'chasse',
+                  ],
+                  [
+                    'key'   => 'indice_chasse_linked',
+                    'value' => $chasse_id,
+                  ],
+                ],
+              ])) : 0;
+              $count_enigme = !empty($enigme_ids) && function_exists('get_posts') ? count(get_posts([
+                'post_type'      => 'indice',
+                'post_status'    => ['publish', 'pending', 'draft'],
+                'fields'         => 'ids',
+                'nopaging'       => true,
+                'meta_query'     => [
+                  [
+                    'key'   => 'indice_cible_type',
+                    'value' => 'enigme',
+                  ],
+                  [
+                    'key'     => 'indice_enigme_linked',
+                    'value'   => $enigme_ids,
+                    'compare' => 'IN',
+                  ],
+                ],
+              ])) : 0;
+            $count_total  = $count_chasse + $count_enigme;
             ?>
             <h3><?= esc_html__('Indices', 'chassesautresor-com'); ?></h3>
             <div class="liste-indices" data-page="1" data-pages="<?= esc_attr($pages_indices); ?>" data-objet-type="chasse" data-objet-id="<?= esc_attr($chasse_id); ?>" data-ajax-url="<?= esc_url(admin_url('admin-ajax.php')); ?>">
@@ -924,6 +958,9 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                 'pages'      => $pages_indices,
                 'objet_type' => 'chasse',
                 'objet_id'   => $chasse_id,
+                'count_total'  => $count_total,
+                'count_chasse' => $count_chasse,
+                'count_enigme' => $count_enigme,
               ]);
               ?>
             </div>

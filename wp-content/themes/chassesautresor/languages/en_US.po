@@ -2471,3 +2471,33 @@ msgstr "scheduled"
 msgid "programmé le %s"
 msgstr "scheduled for %s"
 
+#: template-parts/common/indices-table.php:41
+#, php-format
+msgid "%d indice au total"
+msgid_plural "%d indices au total"
+msgstr[0] "%d total hint"
+msgstr[1] "%d total hints"
+
+#: template-parts/common/indices-table.php:44
+#, php-format
+msgid "%d indice chasse"
+msgid_plural "%d indices chasse"
+msgstr[0] "%d hunt hint"
+msgstr[1] "%d hunt hints"
+
+#: template-parts/common/indices-table.php:47
+#, php-format
+msgid "%d indice énigme"
+msgid_plural "%d indices énigme"
+msgstr[0] "%d riddle hint"
+msgstr[1] "%d riddle hints"
+
+#: template-parts/common/indices-table.php:55
+msgid "Indice"
+msgstr "Hint"
+
+#: template-parts/common/indices-table.php:136
+#, php-format
+msgid "à %s"
+msgstr "at %s"
+
