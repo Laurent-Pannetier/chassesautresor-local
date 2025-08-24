@@ -377,11 +377,12 @@ $is_complete = (
                       . rawurlencode($url)
                       . '&format=' . $format;
                   ?>
-                  <div class="dashboard-card champ-qr-code">
+                  <div class="dashboard-card carte-orgy champ-qr-code">
                     <img class="qr-code-icon" src="<?= esc_url($url_qr_code); ?>" alt="<?= esc_attr__('QR code de l\'organisation', 'chassesautresor-com'); ?>">
                     <h3><?= esc_html__('QR code de votre organisation', 'chassesautresor-com'); ?></h3>
-                    <a class="stat-value" href="<?= esc_url($url_qr_code); ?>"
-                      download="<?= esc_attr('qr-organisateur-' . $organisateur_id . '.' . $format); ?>"><?= esc_html__('Télécharger', 'chassesautresor-com'); ?></a>
+                    <a class="bouton-cta" href="<?= esc_url($url_qr_code); ?>" download="<?= esc_attr('qr-organisateur-' . $organisateur_id . '.' . $format); ?>">
+                      <?= esc_html__('Télécharger', 'chassesautresor-com'); ?>
+                    </a>
                   </div>
                 </div>
               </div>

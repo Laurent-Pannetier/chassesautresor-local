@@ -515,7 +515,7 @@ body .header-img-modifiable .icone-modif {
 
 
 /* Boutons d’édition */
-body[class*="edition-active"] .champ-modifier {
+body[class*="edition-active"] .champ-modifier:not(.bouton-cta) {
   background: none;
   border: none;
   color: var(--color-editor-accent);
@@ -543,11 +543,11 @@ body.edition-active-enigme .champ-modifier .icone-modif {
   display: unset;
 }
 
-body[class*="edition-active"] .champ-modifier:hover {
+body[class*="edition-active"] .champ-modifier:not(.bouton-cta):hover {
   opacity: 1;
 }
 
-body[class*="edition-active"] .champ-modifier:focus {
+body[class*="edition-active"] .champ-modifier:not(.bouton-cta):focus {
   outline: 2px solid var(--color-editor-accent);
   outline-offset: 2px;
 }
