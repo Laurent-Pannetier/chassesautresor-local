@@ -204,6 +204,11 @@
     if (target && target.nodeType !== 1) {
       target = target.parentElement;
     }
+    var placeholder = target && target.closest ? target.closest('.cta-indice-enigme') : null;
+    if (placeholder) {
+      e.preventDefault();
+      return;
+    }
     var btn = target && target.closest ? target.closest('.cta-creer-indice, .badge-action.edit') : null;
     if (!btn) return;
     e.preventDefault();
