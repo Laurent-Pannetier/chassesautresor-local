@@ -611,19 +611,17 @@ window.rafraichirCarteIndices = rafraichirCarteIndices;
   // ==============================
   // 📋 Copie visuels
   // ==============================
-  document.querySelectorAll('.copy-message').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const target = btn.dataset.target;
-      if (!target) {
-        return;
-      }
-      copyToClipboard(target).then(() => {
-        const original = btn.innerHTML;
-        btn.innerHTML = wp.i18n.__('Copié !', 'chassesautresor-com');
-        setTimeout(() => {
-          btn.innerHTML = original;
-        }, 2000);
-      });
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.copy-message');
+    if (!btn) return;
+    const target = btn.dataset.target;
+    if (!target) return;
+    copyToClipboard(target).then(() => {
+      const original = btn.innerHTML;
+      btn.innerHTML = wp.i18n.__('Copié !', 'chassesautresor-com');
+      setTimeout(() => {
+        btn.innerHTML = original;
+      }, 2000);
     });
   });
 

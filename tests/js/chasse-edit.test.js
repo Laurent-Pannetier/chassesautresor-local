@@ -123,4 +123,14 @@ describe('chasse-edit UI', () => {
     btn.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(global.navigator.clipboard.writeText).toHaveBeenCalledWith('Texte à copier');
   });
+
+  test('copy works for dynamically added button', () => {
+    const newBtn = document.createElement('button');
+    newBtn.type = 'button';
+    newBtn.className = 'copy-message';
+    newBtn.dataset.target = '#visuels-texte';
+    document.querySelector('#chasse-tab-animation .champ-visuels').appendChild(newBtn);
+    newBtn.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(global.navigator.clipboard.writeText).toHaveBeenCalledWith('Texte à copier');
+  });
 });
