@@ -31,10 +31,7 @@ namespace {
         function delete_field($field, $post_id) { global $deleted_fields; $deleted_fields[] = $field; }
     }
     if (!function_exists('get_field')) {
-        function get_field($field, $post_id) {
-            global $existing_fields, $updated_fields;
-            return $updated_fields[$field] ?? ($existing_fields[$field] ?? null);
-        }
+        function get_field($field, $post_id) { return null; }
     }
     if (!function_exists('current_time')) {
         function current_time($type) { return $type === 'timestamp' ? 1704067200 : '2024-01-01 00:00:00'; }
@@ -60,20 +57,20 @@ namespace {
     require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
 }
 
-namespace ModifierIndiceImmediateDateTest {
+namespace ModifierIndiceImageRemovalTest {
     use PHPUnit\Framework\TestCase;
 
-    class ModifierIndiceImmediateDateTest extends TestCase
+    class ModifierIndiceImageRemovalTest extends TestCase
     {
         /**
          * @runInSeparateProcess
          * @preserveGlobalState disabled
          */
-        public function test_keeps_existing_date_when_immediate(): void
+        public function test_deletes_image_when_none_provided(): void
         {
-            global $existing_fields, $updated_fields;
-            $existing_fields = ['indice_date_disponibilite' => '2024-03-10 00:00:00'];
-            $updated_fields  = [];
+            global $updated_fields, $deleted_fields;
+            $updated_fields = [];
+            $deleted_fields = [];
 
             $_POST = [
                 'indice_id' => 123,
@@ -86,31 +83,9 @@ namespace ModifierIndiceImmediateDateTest {
 
             \ajax_modifier_indice_modal();
 
-            $this->assertSame('2024-03-10 00:00:00', $updated_fields['indice_date_disponibilite']);
-        }
-
-        /**
-         * @runInSeparateProcess
-         * @preserveGlobalState disabled
-         */
-        public function test_sets_today_when_no_existing_date(): void
-        {
-            global $existing_fields, $updated_fields;
-            $existing_fields = [];
-            $updated_fields  = [];
-
-            $_POST = [
-                'indice_id' => 123,
-                'objet_id' => 10,
-                'objet_type' => 'chasse',
-                'indice_image' => 0,
-                'indice_contenu' => 'foo',
-                'indice_disponibilite' => 'immediate',
-            ];
-
-            \ajax_modifier_indice_modal();
-
-            $this->assertSame('2024-01-01 00:00:00', $updated_fields['indice_date_disponibilite']);
+            $this->assertArrayHasKey('indice_contenu', $updated_fields);
+            $this->assertArrayNotHasKey('indice_image', $updated_fields);
+            $this->assertSame(['indice_image'], $deleted_fields);
         }
     }
 }
