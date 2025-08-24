@@ -8,6 +8,15 @@ let erreurDebut;
 let erreurFin;
 let checkboxIllimitee;
 
+function copyToClipboard(selector) {
+  const element = document.querySelector(selector);
+  if (!element || !navigator.clipboard) {
+    return Promise.reject();
+  }
+  const text = element.value || element.textContent || '';
+  return navigator.clipboard.writeText(text);
+}
+
 function rafraichirCarteIndices() {
   const card = document.querySelector('.dashboard-card.champ-indices');
   if (!card || !window.ChasseIndices) return;
@@ -602,20 +611,21 @@ window.rafraichirCarteIndices = rafraichirCarteIndices;
   // ==============================
   // 📋 Copie visuels
   // ==============================
-  const blocVisuels = document.querySelector('.champ-visuels');
-  if (blocVisuels) {
-    blocVisuels.querySelectorAll('button[data-copy-target]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const sel = btn.getAttribute('data-copy-target');
-        const cible = sel ? blocVisuels.querySelector(sel) : null;
-        if (!cible) return;
-        const texte = cible.textContent || cible.value || '';
-        if (navigator.clipboard) {
-          navigator.clipboard.writeText(texte);
-        }
+  document.querySelectorAll('.copy-message').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.target;
+      if (!target) {
+        return;
+      }
+      copyToClipboard(target).then(() => {
+        const original = btn.innerHTML;
+        btn.innerHTML = wp.i18n.__('Copié !', 'chassesautresor-com');
+        setTimeout(() => {
+          btn.innerHTML = original;
+        }, 2000);
       });
     });
-  }
+  });
 
   window.addEventListener('message', (e) => {
     if (e.data && (e.data.type === 'indice-created' || e.data === 'indice-created')) {
