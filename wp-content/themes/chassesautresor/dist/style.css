@@ -3238,7 +3238,6 @@ body.panneau-ouvert::before {
 .dashboard-card.champ-indices .stat-value, .champ-indices.carte-orgy .stat-value {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
 }
 
 .dashboard-card.champ-indices .stat-value .bouton-cta, .champ-indices.carte-orgy .stat-value .bouton-cta {
@@ -3251,6 +3250,7 @@ body.panneau-ouvert::before {
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
+  margin-top: var(--space-xs);
   opacity: 0;
   max-height: 0;
   overflow: hidden;
