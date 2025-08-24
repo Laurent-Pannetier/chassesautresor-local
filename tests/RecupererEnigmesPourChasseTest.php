@@ -45,9 +45,10 @@ namespace RelationsFunctions {
             $this->assertSame(['publish', 'pending'], $last_query_args['post_status']);
             $meta = $last_query_args['meta_query'];
             $this->assertSame('enigme_chasse_associee', $meta[0]['key']);
-            $this->assertSame('enigme_cache_statut_validation', $meta[1]['key']);
-            $this->assertSame('banni', $meta[1]['value']);
-            $this->assertSame('!=', $meta[1]['compare']);
+            $this->assertSame('OR', $meta[1]['relation']);
+            $this->assertSame('NOT EXISTS', $meta[1][0]['compare']);
+            $this->assertSame('banni', $meta[1][1]['value']);
+            $this->assertSame('!=', $meta[1][1]['compare']);
         }
     }
 }

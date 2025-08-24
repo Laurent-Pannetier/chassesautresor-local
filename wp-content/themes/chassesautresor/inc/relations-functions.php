@@ -461,9 +461,16 @@ function recuperer_enigmes_pour_chasse(int $chasse_id): array
         'compare' => '=',
       ],
       [
-        'key'     => 'enigme_cache_statut_validation',
-        'value'   => 'banni',
-        'compare' => '!=',
+        'relation' => 'OR',
+        [
+          'key'     => 'enigme_cache_statut_validation',
+          'compare' => 'NOT EXISTS',
+        ],
+        [
+          'key'     => 'enigme_cache_statut_validation',
+          'value'   => 'banni',
+          'compare' => '!=',
+        ],
       ],
     ],
   ]);
