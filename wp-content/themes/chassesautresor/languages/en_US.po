@@ -447,6 +447,22 @@ msgstr "Hints"
 msgid "Indices pour %s"
 msgstr "Hints for %s"
 
+#: template-parts/chasse/partials/chasse-partial-indices.php:26
+msgid "Ajouter un indice"
+msgstr "Add a hint"
+
+#: template-parts/chasse/partials/chasse-partial-indices.php:33
+msgid "Pour…"
+msgstr "For…"
+
+#: template-parts/chasse/partials/chasse-partial-indices.php:44
+msgid "La chasse entière"
+msgstr "The entire hunt"
+
+#: template-parts/chasse/partials/chasse-partial-indices.php:56
+msgid "Une énigme de la chasse"
+msgstr "A riddle from the hunt"
+
 #: inc/enigme/affichage.php:677
 msgid "automatique"
 msgstr "automatic"
