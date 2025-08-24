@@ -102,11 +102,11 @@ foreach ($posts as $p) {
                 ?>
               </div>
             <?php endif; ?>
-            <?php if (!in_array($cta['type'], ['bloquee', 'invalide', 'cache_invalide', 'erreur'])) : ?>
-            <div class="carte-enigme-cta">
-              <?php render_cta_enigme($cta, $enigme_id); ?>
-            </div>
-          <?php endif; ?>
+            <?php if (!in_array($cta['type'], ['bloquee', 'invalide', 'cache_invalide', 'erreur'], true)) { ?>
+              <div class="carte-enigme-cta">
+                <?php render_cta_enigme($cta, $enigme_id); ?>
+              </div>
+            <?php } ?>
           </div>
 
           <?php if ($mapping_visuel['image_reelle']) : ?>

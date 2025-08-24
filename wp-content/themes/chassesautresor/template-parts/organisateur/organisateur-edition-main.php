@@ -18,10 +18,11 @@ $edition_active = in_array(ROLE_ORGANISATEUR_CREATION, $roles) && !$cache_comple
 $user_points    = function_exists('get_user_points') ? get_user_points((int) $current_user->ID) : 0;
 
 // Post
-$titre        = get_post_field('post_title', $organisateur_id);
-$logo         = get_field('profil_public_logo_organisateur', $organisateur_id);
-$logo_id      = is_array($logo) ? ($logo['ID'] ?? null) : $logo;
-$logo_url     = $logo_id ? wp_get_attachment_image_src($logo_id, 'thumbnail')[0] : null;
+$titre       = get_post_field('post_title', $organisateur_id);
+$logo        = get_field('profil_public_logo_organisateur', $organisateur_id);
+$logo_id     = is_array($logo) ? ($logo['ID'] ?? null) : $logo;
+$logo_src    = $logo_id ? wp_get_attachment_image_src($logo_id, 'thumbnail') : false;
+$logo_url    = is_array($logo_src) ? $logo_src[0] : null;
 $description  = get_field('description_longue', $organisateur_id);
 $reseaux      = get_field('reseaux_sociaux', $organisateur_id);
 $site         = get_field('lien_site_web', $organisateur_id);
