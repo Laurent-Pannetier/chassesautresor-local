@@ -516,61 +516,28 @@ function ajax_indices_lister_table(): void
         'meta_query'     => $meta,
     ]);
 
+    $ids = [];
+    if (function_exists('get_posts')) {
+        $ids = get_posts([
+            'post_type'   => 'indice',
+            'post_status' => ['publish', 'pending', 'draft'],
+            'fields'      => 'ids',
+            'nopaging'    => true,
+            'meta_query'  => $meta,
+        ]);
+    }
+
     $count_chasse = 0;
     $count_enigme = 0;
-    if ($objet_type === 'chasse') {
-        $count_chasse = function_exists('get_posts') ? count(get_posts([
-            'post_type'      => 'indice',
-            'post_status'    => ['publish', 'pending', 'draft'],
-            'fields'         => 'ids',
-            'nopaging'       => true,
-            'meta_query'     => [
-                [
-                    'key'   => 'indice_cible_type',
-                    'value' => 'chasse',
-                ],
-                [
-                    'key'   => 'indice_chasse_linked',
-                    'value' => $objet_id,
-                ],
-            ],
-        ])) : 0;
-        if (!empty($enigme_ids)) {
-            $count_enigme = function_exists('get_posts') ? count(get_posts([
-                'post_type'      => 'indice',
-                'post_status'    => ['publish', 'pending', 'draft'],
-                'fields'         => 'ids',
-                'nopaging'       => true,
-                'meta_query'     => [
-                    [
-                        'key'   => 'indice_cible_type',
-                        'value' => 'enigme',
-                    ],
-                    [
-                        'key'     => 'indice_enigme_linked',
-                        'value'   => $enigme_ids,
-                        'compare' => 'IN',
-                    ],
-                ],
-            ])) : 0;
+    if (function_exists('get_post_meta')) {
+        foreach ($ids as $indice_id) {
+            $type = get_post_meta($indice_id, 'indice_cible_type', true);
+            if ($type === 'chasse') {
+                ++$count_chasse;
+            } elseif ($type === 'enigme') {
+                ++$count_enigme;
+            }
         }
-    } else {
-        $count_enigme = function_exists('get_posts') ? count(get_posts([
-            'post_type'      => 'indice',
-            'post_status'    => ['publish', 'pending', 'draft'],
-            'fields'         => 'ids',
-            'nopaging'       => true,
-            'meta_query'     => [
-                [
-                    'key'   => 'indice_cible_type',
-                    'value' => 'enigme',
-                ],
-                [
-                    'key'   => 'indice_enigme_linked',
-                    'value' => $objet_id,
-                ],
-            ],
-        ])) : 0;
     }
     $count_total = $count_chasse + $count_enigme;
 
