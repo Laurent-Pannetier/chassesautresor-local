@@ -12,6 +12,7 @@ defined('ABSPATH') || exit;
 // 📦 FONCTIONS LIÉES À UNE CHASSE
 // ==================================================
 /**
+ * 🔹 get_qr_code_url → Build a QR code URL for a post.
  * 🔹 recuperer_infos_chasse → Récupérer les informations essentielles d’une chasse.
  * 🔹 chasse_get_champs → Récupérer les champs principaux et cachés structurés d'une chasse
  * 🔹 verifier_souscription_chasse → Vérifier si un utilisateur souscrit à une chasse pour la première fois en souscrivant à une énigme.
@@ -23,6 +24,25 @@ defined('ABSPATH') || exit;
  */
 
 
+/**
+ * Build a QR code URL for a post.
+ *
+ * @param int    $post_id Post ID.
+ * @param string $format  Output format.
+ *
+ * @return string
+ */
+function get_qr_code_url(int $post_id, string $format = 'png'): string
+{
+    $allowed = ['png', 'svg', 'eps'];
+    if (!in_array($format, $allowed, true)) {
+        $format = 'png';
+    }
+
+    $target = get_permalink($post_id);
+
+    return cat_get_qr_code_url($target, $format);
+}
 
 /**
  * Récupère les informations essentielles d'une chasse.
