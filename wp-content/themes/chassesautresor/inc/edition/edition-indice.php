@@ -509,6 +509,13 @@ function ajax_creer_indice_modal(): void
         wp_send_json_error('post_invalide');
     }
 
+    if ($objet_type === 'enigme') {
+        $linked = isset($_POST['indice_enigme_linked']) ? (int) $_POST['indice_enigme_linked'] : 0;
+        if (!$linked || $linked !== $objet_id) {
+            wp_send_json_error('post_invalide');
+        }
+    }
+
     if (!indice_action_autorisee('create', $objet_type, $objet_id)) {
         wp_send_json_error('acces_refuse');
     }
