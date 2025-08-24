@@ -44,6 +44,19 @@ namespace {
             return false;
         }
     }
+    if (!function_exists('get_post_type')) {
+        function get_post_type($post_id)
+        {
+            return 'indice';
+        }
+    }
+    if (!function_exists('recuperer_id_chasse_associee')) {
+        function recuperer_id_chasse_associee($id)
+        {
+            global $recuperer_chasse_override;
+            return $recuperer_chasse_override[$id] ?? null;
+        }
+    }
 }
 
 namespace ReordonnerIndicesTest {
@@ -53,7 +66,7 @@ namespace ReordonnerIndicesTest {
     {
         protected function setUp(): void
         {
-            global $updated_posts, $simulate_recursion, $get_field_overrides, $captured_args;
+            global $updated_posts, $simulate_recursion, $get_field_overrides, $captured_args, $recuperer_chasse_override;
             $updated_posts      = [];
             $simulate_recursion = 0;
             $captured_args      = [];
@@ -61,6 +74,7 @@ namespace ReordonnerIndicesTest {
                 'indice_cible_type'   => 'chasse',
                 'indice_chasse_linked' => 5,
             ];
+            $recuperer_chasse_override = [];
         }
 
         /**
@@ -152,6 +166,47 @@ namespace ReordonnerIndicesTest {
             $this->assertCount(3, $updated_posts);
             $this->assertSame(['ID' => 10, 'post_title' => 'Indice #1'], $updated_posts[0]);
             $this->assertSame('indice_chasse_linked', $captured_args['meta_query'][0]['key']);
+        }
+
+        /**
+         * @runInSeparateProcess
+         * @preserveGlobalState disabled
+         */
+        public function test_reorders_enigme_indices_when_chasse_missing(): void
+        {
+            global $updated_posts, $get_field_overrides, $recuperer_chasse_override, $captured_args;
+            $get_field_overrides['indice_cible_type']    = 'enigme';
+            $get_field_overrides['indice_chasse_linked'] = null;
+            $get_field_overrides['indice_enigme_linked'] = 7;
+            $recuperer_chasse_override                   = [7 => 5];
+
+            require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
+
+            \reordonner_indices_pour_indice(99);
+
+            $this->assertCount(6, $updated_posts);
+            $this->assertSame(['ID' => 10, 'post_title' => 'Indice #1'], $updated_posts[0]);
+            $this->assertSame(['ID' => 10, 'post_title' => 'Indice #1'], $updated_posts[3]);
+            $this->assertSame(5, $captured_args['meta_query'][0]['value']);
+        }
+
+        /**
+         * @runInSeparateProcess
+         * @preserveGlobalState disabled
+         */
+        public function test_memorises_chasse_for_enigme_deletion(): void
+        {
+            global $indice_delete_context, $get_field_overrides, $recuperer_chasse_override;
+            $get_field_overrides['indice_cible_type']    = 'enigme';
+            $get_field_overrides['indice_chasse_linked'] = null;
+            $get_field_overrides['indice_enigme_linked'] = 7;
+            $recuperer_chasse_override                   = [7 => 5];
+
+            require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
+
+            \memoriser_cible_indice_avant_suppression(99);
+
+            $this->assertSame(['id' => 5, 'type' => 'chasse'], $indice_delete_context);
         }
     }
 }

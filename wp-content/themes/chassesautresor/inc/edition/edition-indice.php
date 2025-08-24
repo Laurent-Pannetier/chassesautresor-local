@@ -180,13 +180,25 @@ function reordonner_indices(int $objet_id, string $objet_type): void
  */
 function reordonner_indices_pour_indice(int $indice_id): void
 {
-    $linked = get_field('indice_chasse_linked', $indice_id);
+    $linked    = get_field('indice_chasse_linked', $indice_id);
+    $chasse_id = 0;
 
     if (is_array($linked)) {
         $first     = $linked[0] ?? null;
         $chasse_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
     } else {
         $chasse_id = (int) $linked;
+    }
+
+    if (!$chasse_id) {
+        $cible_type = get_field('indice_cible_type', $indice_id);
+        if ($cible_type === 'enigme') {
+            $enigme_id = (int) get_field('indice_enigme_linked', $indice_id);
+            if ($enigme_id) {
+                $chasse_id = recuperer_id_chasse_associee($enigme_id) ?: 0;
+                reordonner_indices($enigme_id, 'enigme');
+            }
+        }
     }
 
     if ($chasse_id) {
@@ -990,6 +1002,17 @@ function memoriser_cible_indice_avant_suppression(int $post_id): void
     }
 
     $chasse_id = (int) get_field('indice_chasse_linked', $post_id);
+
+    if (!$chasse_id) {
+        $cible_type = get_field('indice_cible_type', $post_id);
+        if ($cible_type === 'enigme') {
+            $enigme_id = (int) get_field('indice_enigme_linked', $post_id);
+            if ($enigme_id) {
+                $chasse_id = recuperer_id_chasse_associee($enigme_id) ?: 0;
+            }
+        }
+    }
+
     if ($chasse_id) {
         $indice_delete_context = ['id' => $chasse_id, 'type' => 'chasse'];
     }
