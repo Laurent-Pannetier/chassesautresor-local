@@ -417,6 +417,22 @@ msgstr ""
 msgid "Indices pour %s"
 msgstr ""
 
+#: template-parts/chasse/partials/chasse-partial-indices.php:26
+msgid "Ajouter un indice"
+msgstr ""
+
+#: template-parts/chasse/partials/chasse-partial-indices.php:33
+msgid "Pour…"
+msgstr ""
+
+#: template-parts/chasse/partials/chasse-partial-indices.php:44
+msgid "La chasse entière"
+msgstr ""
+
+#: template-parts/chasse/partials/chasse-partial-indices.php:56
+msgid "Une énigme de la chasse"
+msgstr ""
+
 #: inc/enigme/affichage.php:677
 msgid "automatique"
 msgstr ""
