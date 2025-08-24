@@ -28,7 +28,7 @@ $has_enigmes = !empty($enigmes_disponibles);
     <div class="stat-value">
       <a
         href="#"
-        class="bouton-cta cta-creer-indice cta-indice-chasse"
+        class="bouton-cta bouton-cta--color cta-creer-indice cta-indice-chasse"
         data-objet-type="<?= esc_attr($objet_type); ?>"
         data-objet-id="<?= esc_attr($objet_id); ?>"
         data-objet-titre="<?= esc_attr($objet_titre); ?>"
@@ -39,7 +39,7 @@ $has_enigmes = !empty($enigmes_disponibles);
       <?php if ($has_enigmes) : ?>
         <a
           href="#"
-          class="bouton-cta cta-indice-enigme"
+          class="bouton-cta bouton-cta--color cta-indice-enigme"
           data-objet-type="enigme"
           data-chasse-id="<?= esc_attr($objet_id); ?>"
           <?php if ($default_enigme) : ?>

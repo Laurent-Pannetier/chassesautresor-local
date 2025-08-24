@@ -3230,6 +3230,12 @@ body.panneau-ouvert::before {
   gap: var(--space-xs);
 }
 
+.dashboard-card.champ-indices .stat-value .bouton-cta, .champ-indices.carte-orgy .stat-value .bouton-cta {
+  display: block;
+  width: 100%;
+  margin-top: 0;
+}
+
 .dashboard-card.champ-indices .cta-indice-chasse, .champ-indices.carte-orgy .cta-indice-chasse {
   background-color: var(--color-editor-button);
   color: var(--color-white);
