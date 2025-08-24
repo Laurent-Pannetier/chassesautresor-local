@@ -36,6 +36,7 @@ namespace ProchainRangIndice {
             $this->assertSame('indice_enigme_linked', $captured_args['meta_query'][1]['key']);
             $this->assertSame(42, $captured_args['meta_query'][1]['value']);
             $this->assertSame('enigme', $captured_args['meta_query'][0]['value']);
+            $this->assertContains('desactive', $captured_args['meta_query'][2]['value']);
         }
     }
 }

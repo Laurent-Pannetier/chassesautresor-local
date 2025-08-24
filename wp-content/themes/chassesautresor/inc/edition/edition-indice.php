@@ -73,7 +73,7 @@ function prochain_rang_indice(int $objet_id, string $objet_type): int
                 ],
                 [
                     'key'     => 'indice_cache_etat_systeme',
-                    'value'   => ['programme', 'accessible'],
+                    'value'   => ['programme', 'accessible', 'desactive'],
                     'compare' => 'IN',
                 ],
             ],
@@ -122,7 +122,7 @@ function reordonner_indices(int $objet_id, string $objet_type): void
             ],
             [
                 'key'     => 'indice_cache_etat_systeme',
-                'value'   => ['programme', 'accessible'],
+                'value'   => ['programme', 'accessible', 'desactive'],
                 'compare' => 'IN',
             ],
         ],
@@ -445,21 +445,46 @@ function ajax_indices_lister_table(): void
     }
 
     $per_page = 10;
-    $meta     = [
-        [
-            'key'   => 'indice_cible_type',
-            'value' => $objet_type,
-        ],
-    ];
     if ($objet_type === 'chasse') {
-        $meta[] = [
-            'key'   => 'indice_chasse_linked',
-            'value' => $objet_id,
+        $enigme_ids = recuperer_ids_enigmes_pour_chasse($objet_id);
+        $meta       = [
+            'relation' => 'OR',
+            [
+                'relation' => 'AND',
+                [
+                    'key'   => 'indice_cible_type',
+                    'value' => 'chasse',
+                ],
+                [
+                    'key'   => 'indice_chasse_linked',
+                    'value' => $objet_id,
+                ],
+            ],
         ];
+        if (!empty($enigme_ids)) {
+            $meta[] = [
+                'relation' => 'AND',
+                [
+                    'key'   => 'indice_cible_type',
+                    'value' => 'enigme',
+                ],
+                [
+                    'key'     => 'indice_enigme_linked',
+                    'value'   => $enigme_ids,
+                    'compare' => 'IN',
+                ],
+            ];
+        }
     } else {
-        $meta[] = [
-            'key'   => 'indice_enigme_linked',
-            'value' => $objet_id,
+        $meta = [
+            [
+                'key'   => 'indice_cible_type',
+                'value' => 'enigme',
+            ],
+            [
+                'key'   => 'indice_enigme_linked',
+                'value' => $objet_id,
+            ],
         ];
     }
 

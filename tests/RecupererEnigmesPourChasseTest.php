@@ -1,17 +1,19 @@
 <?php
 namespace {
-    class WP_Query
-    {
-        public $posts = [];
-        public function __construct($args)
+    if (!class_exists('WP_Query')) {
+        class WP_Query
         {
-            global $last_query_args;
-            $last_query_args = $args;
-            $this->posts = [];
-        }
-        public function have_posts()
-        {
-            return !empty($this->posts);
+            public $posts = [];
+            public function __construct($args)
+            {
+                global $last_query_args;
+                $last_query_args = $args;
+                $this->posts = [];
+            }
+            public function have_posts()
+            {
+                return !empty($this->posts);
+            }
         }
     }
     if (!function_exists('get_post_type')) {
