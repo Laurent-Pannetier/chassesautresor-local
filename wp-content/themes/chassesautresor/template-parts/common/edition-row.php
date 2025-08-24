@@ -8,7 +8,7 @@
  * - string|callable $content Content HTML or callback printing it.
  * - string $class      Additional CSS classes for <li>.
  * - array  $attributes Additional HTML attributes for <li> (key => value).
- * - bool   $no_icon    True to remove icon placeholder.
+ * - bool   $no_icon    True to disable the completion icon.
  *
  * @package chassesautresor
  */
@@ -26,14 +26,12 @@ foreach ($attributes as $key => $value) {
 }
 ?>
 <li class="edition-row <?php echo esc_attr($class); ?>" <?php echo implode(' ', $attr_strings); ?><?php echo $no_icon ? ' data-no-icon="1"' : ''; ?>>
-  <?php if (!$no_icon) : ?>
+  <div class="edition-row-label">
     <span class="edition-row-icon">
-      <?php if (!empty($icon)) : ?>
+      <?php if (!$no_icon && !empty($icon)) : ?>
         <i class="<?php echo esc_attr($icon); ?>" aria-hidden="true"></i>
       <?php endif; ?>
     </span>
-  <?php endif; ?>
-  <div class="edition-row-label">
     <?php
     if (is_callable($label)) {
         $label();

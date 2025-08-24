@@ -2,23 +2,29 @@
 var DEBUG = window.DEBUG || false;
 DEBUG && console.log('✅ enigme-edit.js chargé');
 
-let boutonToggle;
+let boutonsToggle;
 let panneauEdition;
 
 
 
 function initEnigmeEdit() {
   if (typeof initZonesClicEdition === 'function') initZonesClicEdition();
-  boutonToggle = document.getElementById('toggle-mode-edition-enigme');
+  boutonsToggle = document.querySelectorAll(
+    '#toggle-mode-edition-enigme, .toggle-mode-edition-enigme'
+  );
   panneauEdition = document.querySelector('.edition-panel-enigme');
 
   // ==============================
   // 🛠️ Contrôles panneau principal
   // ==============================
-  boutonToggle?.addEventListener('click', () => {
+  const toggleEdition = () => {
     document.body.classList.toggle('edition-active-enigme');
     document.body.classList.toggle('panneau-ouvert');
     document.body.classList.toggle('mode-edition');
+  };
+
+  boutonsToggle.forEach((btn) => {
+    btn.addEventListener('click', toggleEdition);
   });
 
 
@@ -36,10 +42,12 @@ function initEnigmeEdit() {
   const params = new URLSearchParams(window.location.search);
   const doitOuvrir = params.get('edition') === 'open';
   const tab = params.get('tab');
-  if (doitOuvrir && boutonToggle) {
-    boutonToggle.click();
+  if (doitOuvrir && boutonsToggle.length > 0) {
+    boutonsToggle[0].click();
     if (tab) {
-      const btn = panneauEdition?.querySelector(`.edition-tab[data-target="enigme-tab-${tab}"]`);
+      const btn = panneauEdition?.querySelector(
+        `.edition-tab[data-target="enigme-tab-${tab}"]`
+      );
       btn?.click();
     }
     DEBUG && console.log('🔧 Ouverture auto du panneau édition énigme via ?edition=open');
@@ -51,6 +59,9 @@ function initEnigmeEdit() {
   // ==============================
   document.querySelectorAll('.champ-enigme[data-champ]').forEach((bloc) => {
     const champ = bloc.dataset.champ;
+    if (champ === 'enigme_reponse_bonne') {
+      return;
+    }
 
     if (bloc.classList.contains('champ-img') && champ !== 'enigme_visuel_image') {
       if (typeof initChampImage === 'function') initChampImage(bloc);
@@ -549,55 +560,132 @@ window.onCoutPointsUpdated = function (bloc, champ, valeur, postId, cpt) {
 // ==============================
 // 🔐 Champ bonne réponse – Limite 75 caractères + message d’alerte
 // ==============================
-function initChampBonneReponse() {
+function initChampBonnesReponses() {
   const bloc = document.querySelector('[data-champ="enigme_reponse_bonne"]');
   if (!bloc) return;
 
-  const input = bloc.querySelector('.champ-input');
-  if (!input) return;
+  const wrapper = bloc.querySelector('.bonnes-reponses-wrapper');
+  const postId = bloc.dataset.postId;
+  const cpt = bloc.dataset.cpt || 'enigme';
+  const max = 5;
+  let reponses = [];
 
-  const mettreAJourClasse = () => {
-    input.classList.toggle('champ-vide-obligatoire', input.value.trim() === '');
-  };
-
-  // Crée ou récupère l’alerte si déjà existante
-  let alerte = bloc.querySelector('.message-limite');
-  if (!alerte) {
-    alerte = document.createElement('p');
-    alerte.className = 'message-limite';
-    alerte.style.color = 'var(--color-editor-error)';
-    alerte.style.fontSize = '0.85em';
-    alerte.style.margin = '4px 0 0 5px';
-    alerte.style.display = 'none';
-    input.insertAdjacentElement('afterend', alerte);
+  try {
+    reponses = JSON.parse(bloc.dataset.reponses || '[]');
+  } catch (e) {
+    reponses = [];
   }
 
-  input.setAttribute('maxlength', '75');
-  mettreAJourClasse();
+  const sauvegarder = () => {
+    return modifierChampSimple(
+      'enigme_reponse_bonne',
+      JSON.stringify(reponses),
+      postId,
+      cpt
+    );
+  };
 
-  input.addEventListener('input', () => {
-    const longueur = input.value.length;
+  const render = () => {
+    wrapper.innerHTML = '';
+    const estVide = reponses.length === 0;
+    wrapper.classList.toggle('champ-vide-obligatoire', estVide);
+    bloc.classList.toggle('champ-vide', estVide);
+    bloc.classList.toggle('champ-rempli', !estVide);
+    bloc.classList.toggle('champ-attention', estVide);
 
-    if (longueur > 75) {
-      input.value = input.value.slice(0, 75);
+    if (reponses.length === 0) {
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'champ-input champ-texte-edit champ-vide-obligatoire';
+      input.setAttribute('maxlength', '75');
+      input.placeholder = wp.i18n.__('Ex : soleil', 'chassesautresor-com');
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'champ-modifier bonne-reponse-valider btn-obligatoire';
+      btn.textContent = wp.i18n.__('valider', 'chassesautresor-com');
+
+      btn.addEventListener('click', () => {
+        const val = input.value.trim();
+        if (!val) return;
+        reponses.push(val);
+        sauvegarder().then((ok) => {
+          if (ok) render();
+        });
+      });
+
+      wrapper.appendChild(input);
+      wrapper.appendChild(btn);
+      return;
     }
 
-    if (longueur >= 75) {
-      alerte.textContent = '75 caractères maximum atteints.';
-      alerte.style.display = '';
-    } else {
-      alerte.textContent = '';
-      alerte.style.display = 'none';
+    reponses.forEach((rep, index) => {
+      const tag = document.createElement('span');
+      tag.className = 'etiquette bonne-reponse-etiquette';
+      tag.textContent = rep;
+
+      const rm = document.createElement('button');
+      rm.type = 'button';
+      rm.className = 'bonne-reponse-supprimer';
+      rm.setAttribute('aria-label', wp.i18n.__('Supprimer', 'chassesautresor-com'));
+      rm.textContent = '×';
+      rm.addEventListener('click', () => {
+        reponses.splice(index, 1);
+        sauvegarder().then((ok) => {
+          if (ok) render();
+        });
+      });
+      tag.appendChild(rm);
+      wrapper.appendChild(tag);
+    });
+
+    if (reponses.length < max) {
+      const btnAjout = document.createElement('button');
+      btnAjout.type = 'button';
+      btnAjout.className = 'champ-modifier bonne-reponse-ajouter';
+      btnAjout.textContent = wp.i18n.__('ajouter', 'chassesautresor-com');
+
+      btnAjout.addEventListener('click', () => {
+        btnAjout.remove();
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'champ-input champ-texte-edit';
+        input.setAttribute('maxlength', '75');
+
+        const valider = document.createElement('button');
+        valider.type = 'button';
+        valider.className = 'champ-modifier bonne-reponse-valider';
+        valider.textContent = wp.i18n.__('valider', 'chassesautresor-com');
+
+        valider.addEventListener('click', () => {
+          const val = input.value.trim();
+          if (!val) return;
+          reponses.push(val);
+          sauvegarder().then((ok) => {
+            if (ok) render();
+          });
+        });
+
+        wrapper.appendChild(input);
+        wrapper.appendChild(valider);
+        input.focus();
+      });
+
+      wrapper.appendChild(btnAjout);
     }
 
-    mettreAJourClasse();
-  });
+    if (typeof window.mettreAJourResumeInfos === 'function') {
+      window.mettreAJourResumeInfos();
+    }
+  };
+
+  render();
 }
 
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initChampBonneReponse);
+  document.addEventListener('DOMContentLoaded', initChampBonnesReponses);
 } else {
-  initChampBonneReponse();
+  initChampBonnesReponses();
 }
 
 
@@ -642,9 +730,10 @@ function initPanneauVariantes() {
   const boutonAjouter = document.getElementById('bouton-ajouter-variante');
   const messageLimite = document.querySelector('.message-limite-variantes');
   const resumeBloc = document.querySelector('[data-champ="enigme_reponse_variantes"]');
-  let listeResume = resumeBloc?.querySelector('.variantes-table');
-  let lienAjouterResume = resumeBloc?.querySelector('.champ-ajouter');
-  let boutonEditerResume = resumeBloc?.querySelector('.champ-modifier.ouvrir-panneau-variantes');
+  const resumeContent = resumeBloc?.querySelector('.edition-row-content') || resumeBloc;
+  let listeResume = resumeContent?.querySelector('.variantes-table');
+  let lienAjouterResume = resumeContent?.querySelector('.champ-ajouter');
+  let boutonEditerResume = resumeContent?.querySelector('.champ-modifier.ouvrir-panneau-variantes');
 
   if (listeResume && !boutonEditerResume) {
     boutonEditerResume = document.createElement('button');
@@ -654,7 +743,7 @@ function initPanneauVariantes() {
     boutonEditerResume.dataset.postId = postId;
     boutonEditerResume.setAttribute('aria-label', wp.i18n.__('Modifier les variantes', 'chassesautresor-com'));
     boutonEditerResume.textContent = wp.i18n.__('modifier', 'chassesautresor-com');
-    resumeBloc.appendChild(boutonEditerResume);
+    resumeContent.appendChild(boutonEditerResume);
   }
 
   if (boutonEditerResume) {
@@ -788,7 +877,7 @@ function initPanneauVariantes() {
     const feedback = formulaire.querySelector('.champ-feedback-variantes');
     if (feedback) {
       feedback.style.display = 'block';
-      feedback.textContent = wp.i18n.__('Enregistrement...', 'chassesautresor-com');
+      feedback.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>';
       feedback.className = 'champ-feedback champ-loading';
     }
 
@@ -808,8 +897,9 @@ function initPanneauVariantes() {
     Promise.all(promises)
       .then(() => {
         if (feedback) {
-          feedback.textContent = wp.i18n.__('✔️ Variantes enregistrées', 'chassesautresor-com');
+          feedback.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i>';
           feedback.className = 'champ-feedback champ-success';
+          setTimeout(() => { feedback.innerHTML = ''; feedback.className = 'champ-feedback'; }, 1000);
         }
 
         setTimeout(() => {
@@ -835,7 +925,7 @@ function initPanneauVariantes() {
               listeResume.appendChild(thead);
               const tbodyEl = document.createElement('tbody');
               listeResume.appendChild(tbodyEl);
-              resumeBloc.insertBefore(listeResume, boutonEditerResume || lienAjouterResume || null);
+              resumeContent.insertBefore(listeResume, boutonEditerResume || lienAjouterResume || null);
             }
 
             const tbody = listeResume.querySelector('tbody');
@@ -878,7 +968,7 @@ function initPanneauVariantes() {
                 lienAjouterResume.dataset.postId = postId;
                 lienAjouterResume.setAttribute('aria-label', wp.i18n.__('Ajouter des variantes', 'chassesautresor-com'));
                 lienAjouterResume.textContent = wp.i18n.__('ajouter des variantes', 'chassesautresor-com');
-                resumeBloc.appendChild(lienAjouterResume);
+                resumeContent.appendChild(lienAjouterResume);
                 lienAjouterResume.addEventListener('click', e => {
                   e.preventDefault();
                   ouvrirPanneau();
@@ -899,7 +989,7 @@ function initPanneauVariantes() {
                 boutonEditerResume.dataset.postId = postId;
                 boutonEditerResume.setAttribute('aria-label', wp.i18n.__('Modifier les variantes', 'chassesautresor-com'));
                 boutonEditerResume.textContent = wp.i18n.__('modifier', 'chassesautresor-com');
-                resumeBloc.appendChild(boutonEditerResume);
+                resumeContent.appendChild(boutonEditerResume);
                 boutonEditerResume.addEventListener('click', e => {
                   e.preventDefault();
                   ouvrirPanneau();
@@ -1167,7 +1257,7 @@ function initSolutionInline() {
     formData.append('action', 'supprimer_fichier_solution_enigme');
     formData.append('post_id', postId);
     if (feedbackFichier) {
-      feedbackFichier.textContent = '⏳ Suppression en cours...';
+      feedbackFichier.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>';
       feedbackFichier.className = 'champ-feedback champ-loading';
     }
     fetch(ajaxurl, { method: 'POST', body: formData })
@@ -1185,8 +1275,9 @@ function initSolutionInline() {
           if (inputFichier) inputFichier.value = '';
           if (btnClearPdf) btnClearPdf.style.display = 'none';
           if (feedbackFichier) {
-            feedbackFichier.textContent = '✅ Fichier supprimé';
+            feedbackFichier.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i>';
             feedbackFichier.className = 'champ-feedback champ-success';
+            setTimeout(() => { feedbackFichier.innerHTML = ''; feedbackFichier.className = 'champ-feedback'; }, 1000);
           }
           majMessageSolution();
         } else if (feedbackFichier) {
@@ -1196,6 +1287,7 @@ function initSolutionInline() {
       })
       .catch(() => {
         if (feedbackFichier) {
+          feedbackFichier.innerHTML = '';
           feedbackFichier.textContent = '❌ Erreur réseau';
           feedbackFichier.className = 'champ-feedback champ-error';
         }
@@ -1262,7 +1354,7 @@ function initSolutionInline() {
     formData.append('post_id', postId);
     formData.append('fichier_pdf', fichier);
 
-    feedbackFichier.textContent = '⏳ Enregistrement en cours...';
+    feedbackFichier.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>';
     feedbackFichier.className = 'champ-feedback champ-loading';
 
     fetch(ajaxurl, {
@@ -1272,8 +1364,9 @@ function initSolutionInline() {
       .then(r => r.json())
       .then(res => {
         if (res.success) {
-          feedbackFichier.textContent = '✅ Fichier enregistré';
+          feedbackFichier.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i>';
           feedbackFichier.className = 'champ-feedback champ-success';
+          setTimeout(() => { feedbackFichier.innerHTML = ''; feedbackFichier.className = 'champ-feedback'; }, 1000);
 
           if (cardPdf) {
             const icon = cardPdf.querySelector('i');
@@ -1286,11 +1379,13 @@ function initSolutionInline() {
           if (btnClearPdf) btnClearPdf.style.display = '';
           majMessageSolution();
         } else {
+          feedbackFichier.innerHTML = '';
           feedbackFichier.textContent = '❌ Erreur : ' + (res.data || 'inconnue');
           feedbackFichier.className = 'champ-feedback champ-error';
         }
       })
       .catch(() => {
+        feedbackFichier.innerHTML = '';
         feedbackFichier.textContent = '❌ Erreur réseau';
         feedbackFichier.className = 'champ-feedback champ-error';
       });

@@ -45,17 +45,6 @@
 
 /* ========== ✅ AFFICHAGE DYNAMIQUE DE COMPLÉTION ========== */
 
-.resume-infos .icon-attente,
-.resume-infos .icone-check {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--editor-icon-width);
-  flex: 0 0 var(--editor-icon-width);
-  margin-right: 0.3rem;
-  overflow: hidden;
-}
-
 .resume-infos .champ-rempli .icon-attente {
   display: none;
 }
@@ -68,10 +57,6 @@
   color: var(--color-editor-success);
 }
 
-.resume-infos .edition-row-icon {
-  display: none;
-}
-
 /* Hauteur et alignement par défaut des lignes de paramètres */
 .resume-infos > li {
   min-height: 40px;
@@ -79,10 +64,16 @@
   align-items: center;
   flex-wrap: wrap;
   gap: var(--space-xs);
+  margin-bottom: var(--space-md);
+}
+
+.resume-infos > li:last-child {
+  margin-bottom: 0;
 }
 
 .resume-infos > li > label,
-.resume-infos > li > .champ-edition > label {
+.resume-infos > li > .champ-edition > label,
+.resume-infos > li > .champ-affichage > label {
   width: var(--editor-label-width);
   flex-shrink: 0;
 }
@@ -115,18 +106,31 @@
   min-height: 40px;
 }
 
-.edition-row-icon {
-  width: var(--editor-icon-width);
-  margin-right: 0.3rem;
-  text-align: center;
-}
-
 .edition-row-label {
   width: var(--editor-label-width);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.edition-row-icon {
+  width: var(--editor-icon-width);
+  flex: 0 0 var(--editor-icon-width);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .edition-row-content {
   flex: 1;
+}
+
+.edition-row.champ-attention .edition-row-label label {
+  color: var(--color-editor-error);
+}
+
+.resume-blocs-grid > .resume-bloc + .resume-bloc {
+  margin-top: var(--space-xl);
 }
 
 .cache {
@@ -174,7 +178,6 @@ body.edition-active .champ-organisateur.champ-vide:hover {
 }
 
 .champ-vide-obligatoire {
-  border: 2px dashed var(--color-editor-error);
   animation: clignoteTitre 1s infinite alternate;
 }
 
@@ -415,6 +418,10 @@ body .header-img-modifiable .icone-modif {
   transition: border-color 0.2s, background-color 0.2s;
 }
 
+.edition-panel-body input.champ-number {
+  width: 100px;
+}
+
 @media (min-width: 768px) {
   .edition-panel-body input.champ-texte-edit {
     width: 260px;
@@ -441,6 +448,38 @@ body .header-img-modifiable .icone-modif {
   width: auto;
 }
 
+.bonnes-reponses-wrapper {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.bonne-reponse-etiquette {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.bonne-reponse-etiquette button {
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.bonne-reponse-valider.btn-obligatoire {
+  background-color: var(--color-editor-error);
+  color: #fff;
+  border-radius: 0.3rem;
+}
+
+.bonne-reponse-valider,
+.bonne-reponse-ajouter {
+  font-size: 0.85rem;
+  padding: 0.1rem var(--space-xs);
+}
+
 .champ-edition input.champ-input::placeholder {
   color: var(--color-editor-placeholder);
 }
@@ -449,6 +488,16 @@ body .header-img-modifiable .icone-modif {
   outline: none;
   border-color: var(--color-editor-accent);
   background-color: var(--color-editor-field-hover);
+}
+
+.champ-status {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
+}
+
+.champ-status .fa-check {
+  color: var(--color-editor-success);
 }
 
 /* ========== 🎯 COMPTEUR DE CARACTÈRES – POSITION FIXE SOUS INPUT ========== */
@@ -697,7 +746,8 @@ body[class*="edition-active"] .champ-desactive .champ-modifier,
 
 body.edition-active .panneau-organisateur,
 body.edition-active-chasse .edition-panel-chasse,
-body.edition-active-enigme .edition-panel-enigme {
+body.edition-active-enigme .edition-panel-enigme,
+body.edition-active-indice .edition-panel-indice {
   height: 90vh;
   max-height: 90vh;
   opacity: 1;
@@ -713,7 +763,8 @@ body.edition-active-enigme .edition-panel-enigme {
 
 body.edition-active .panneau-organisateur.edition-panel-modal,
 body.edition-active-chasse .edition-panel-chasse.edition-panel-modal,
-body.edition-active-enigme .edition-panel-enigme.edition-panel-modal {
+body.edition-active-enigme .edition-panel-enigme.edition-panel-modal,
+body.edition-active-indice .edition-panel-indice.edition-panel-modal {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -786,23 +837,13 @@ body.edition-active-enigme .edition-panel-enigme.edition-panel-modal {
   width: 100%;
 }
 
-.edition-panel-section .resume-technique label,
-.edition-panel-section .resume-reglages label,
-.edition-panel-section .resume-obligatoire label {
-  display: inline-block;
-  min-width: var(--editor-label-width);
-}
 
 .resume-infos .champ-valeur {
   display: inline-block;
 }
 
 .edition-panel-section .resume-technique input.inline-date,
-.edition-panel-section .resume-technique input.champ-cout,
-.edition-panel-section .resume-technique input.champ-nb-edit,
-.edition-panel-section .resume-reglages input.inline-date,
-.edition-panel-section .resume-reglages input.champ-cout,
-.edition-panel-section .resume-reglages input.champ-nb-edit {
+.edition-panel-section .resume-reglages input.inline-date {
   width: 180px;
 }
 
@@ -896,9 +937,7 @@ body.edition-active .edition-panel {
 .champ-enigme.champ-texte[data-champ="enigme_visuel_legende"] {
   display: flex;
   align-items: center;
-}
-.champ-enigme.champ-texte[data-champ="enigme_visuel_legende"] i.fa-circle {
-  margin-right: 10px;
+  gap: var(--space-xs);
 }
 
 li.ligne-email.champ-organisateur.champ-vide,
@@ -924,10 +963,11 @@ li.ligne-logo .champ-modifier {
 }
 
 /* WYSIWYG résumé blocks */
+
 .resume-infos li.champ-description,
 .resume-infos li.champ-wysiwyg {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: var(--space-xs);
 }
 
@@ -939,11 +979,21 @@ li.ligne-logo .champ-modifier {
 .resume-infos li.champ-description .champ-texte,
 .resume-infos li.champ-wysiwyg .champ-texte {
   flex: 1;
+  display: flex;
+  align-items: center;
+  min-height: 40px;
 }
 
 .resume-infos li.champ-description .champ-texte-contenu,
 .resume-infos li.champ-wysiwyg .champ-texte-contenu {
   display: inline;
+}
+
+.resume-infos li.champ-description .champ-ajouter,
+.resume-infos li.champ-wysiwyg .champ-ajouter {
+  display: flex;
+  align-items: center;
+  height: 40px;
 }
 
 
@@ -956,6 +1006,12 @@ li.ligne-logo .champ-modifier {
 .resume-infos li.champ-description.champ-vide .champ-texte,
 .resume-infos li.champ-wysiwyg.champ-vide .champ-texte {
   color: var(--color-editor-text-muted);
+}
+
+.champ-img.champ-vide .champ-modifier {
+  display: flex;
+  align-items: center;
+  height: 40px;
 }
 
 .resume-infos li.champ-recompense {
@@ -1027,18 +1083,6 @@ li.ligne-email .champ-affichage {
   gap: 0 5px;
 }
 
-.edition-panel-section .resume-technique li,
-.edition-panel-section .resume-reglages li {
-  margin-bottom: 0.9rem;
-}
-
-.edition-panel-section .resume-reglages .resume-infos > .champ-enigme {
-  margin-bottom: 0.9rem;
-}
-
-.edition-panel-section .resume-reglages .resume-infos > .champ-enigme:last-child {
-  margin-bottom: 0;
-}
 
 
 /* ========== 📱 RESPONSIVE PANNEAU EDITION ========== */
@@ -1207,6 +1251,10 @@ body.panneau-ouvert::before {
 .panneau-lateral__contenu label {
   font-size: unset;
   color: var(--color-editor-text-muted);
+}
+
+.acf-hide-label > .acf-label {
+  display: none;
 }
 
 .ligne-lien-formulaire label {
@@ -1529,6 +1577,30 @@ body.panneau-ouvert::before {
   color: var(--color-editor-heading);
 }
 
+.dashboard-card.champ-indices .stat-value {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.dashboard-card.champ-indices .cta-indice-chasse {
+  background-color: var(--color-editor-button);
+  color: var(--color-white);
+}
+
+.dashboard-card.champ-indices .cta-indice-chasse:hover {
+  background-color: var(--color-editor-button-hover);
+}
+
+.dashboard-card.champ-indices .cta-indice-enigme {
+  background-color: var(--color-editor-success);
+  color: var(--color-white);
+}
+
+.dashboard-card.champ-indices .cta-indice-enigme:hover {
+  background-color: var(--color-editor-success-hover);
+}
+
 .dashboard-card .solution-reset {
   position: absolute;
   bottom: 8px;
@@ -1678,9 +1750,11 @@ body.panneau-ouvert::before {
   align-items: center;
 }
 
-.champ-mode-options label {
+.champ-mode-options label,
+.champ-mode-fin label {
   display: flex;
   align-items: center;
+  gap: var(--space-xxs);
 }
 
 #champ-enigme-date {
@@ -1950,4 +2024,163 @@ body.panneau-ouvert::before {
   to {
     transform: rotate(360deg);
   }
+}
+
+/* Overlay indice */
+.indice-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(var(--color-black-rgb), 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20000;
+}
+
+.indice-modal {
+    background: var(--color-editor-background);
+    color: var(--color-editor-text);
+    padding: var(--space-lg);
+    border: 1px solid var(--color-editor-border);
+    border-radius: 8px;
+    max-width: 500px;
+    width: 90%;
+    box-sizing: border-box;
+    position: relative;
+    font-family: var(--font-main);
+    z-index: 20001;
+}
+
+.indice-modal-header {
+    border-bottom: 1px solid var(--color-editor-border);
+    margin-bottom: var(--space-md);
+    padding-bottom: var(--space-sm);
+}
+
+.indice-modal-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-editor-heading);
+}
+
+.indice-modal-header p {
+    margin: var(--space-xs) 0 0;
+    color: var(--color-editor-text-muted);
+    font-size: 0.875rem;
+}
+
+.indice-modal-close {
+    position: absolute;
+    top: var(--space-sm);
+    right: var(--space-sm);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: var(--color-editor-heading);
+}
+
+.indice-modal-form label {
+    display: block;
+    margin-bottom: var(--space-sm);
+    color: var(--color-editor-text);
+}
+
+.indice-modal-form textarea {
+    width: 100%;
+    min-height: 100px;
+    background: var(--color-editor-background);
+    color: var(--color-editor-text);
+    border: 1px solid var(--color-editor-border);
+    border-radius: 4px;
+    padding: var(--space-sm);
+    box-sizing: border-box;
+}
+
+.indice-modal-form .select-image,
+.indice-modal-form .indice-modal-validate {
+    background: var(--color-editor-button);
+    color: var(--color-white);
+    border: none;
+    border-radius: 4px;
+    padding: var(--space-sm) var(--space-md);
+    cursor: pointer;
+    transition: background var(--transition-fast);
+}
+
+.indice-modal-form .select-image:hover,
+.indice-modal-form .indice-modal-validate:hover {
+    background: var(--color-editor-button-hover);
+}
+
+.indice-modal-form .indice-modal-validate:disabled {
+    cursor: not-allowed;
+}
+
+.indice-modal-form .indice-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: var(--space-md);
+    margin-top: var(--space-md);
+}
+
+.indice-modal-form .indice-state-message {
+    color: var(--color-editor-text-muted);
+    font-size: 0.875rem;
+}
+
+.indice-modal-form .date-wrapper input {
+    width: 100%;
+    background: var(--color-editor-background);
+    color: var(--color-editor-text);
+    border: 1px solid var(--color-editor-border);
+    border-radius: 4px;
+    padding: var(--space-sm);
+    box-sizing: border-box;
+}
+
+.indice-modal-form .image-field {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.indice-modal-form .image-preview {
+    position: relative;
+    display: inline-block;
+}
+
+.indice-modal-form .image-preview img {
+    max-height: 80px;
+    display: block;
+}
+
+.indice-modal-form .image-preview .image-actions {
+    position: absolute;
+    top: var(--space-xxs);
+    left: var(--space-xxs);
+    display: flex;
+    gap: var(--space-xxs);
+}
+
+.indice-modal-form .image-preview .image-actions button {
+    background-color: rgba(var(--color-black-rgb), 0.6);
+    border: none;
+    color: var(--color-white);
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.indice-modal-form .image-preview .image-actions button:hover {
+    background-color: rgba(var(--color-black-rgb), 0.8);
 }

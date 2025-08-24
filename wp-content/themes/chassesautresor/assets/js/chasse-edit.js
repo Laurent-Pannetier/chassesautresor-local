@@ -8,6 +8,41 @@ let erreurDebut;
 let erreurFin;
 let checkboxIllimitee;
 
+function rafraichirCarteIndices() {
+  const card = document.querySelector('.dashboard-card.champ-indices');
+  if (!card || !window.ChasseIndices) return;
+
+  card.classList.add('loading');
+  card.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+  const formData = new FormData();
+  formData.append('action', 'chasse_lister_indices');
+  formData.append('chasse_id', ChasseIndices.chasseId);
+
+  fetch(ChasseIndices.ajaxUrl, {
+    method: 'POST',
+    credentials: 'same-origin',
+    body: formData
+  })
+    .then(r => r.json())
+    .then(res => {
+      if (res.success && res.data?.html) {
+        const tmp = document.createElement('div');
+        tmp.innerHTML = res.data.html;
+        const nouvelleCarte = tmp.firstElementChild;
+        if (nouvelleCarte) {
+          card.replaceWith(nouvelleCarte);
+        }
+      } else {
+        throw new Error('invalid');
+      }
+    })
+    .catch(() => {
+      card.classList.remove('loading');
+      card.innerHTML = `<p class="error">${ChasseIndices.errorText}</p>`;
+    });
+}
+
 
 function initChasseEdit() {
   if (typeof initZonesClicEdition === 'function') initZonesClicEdition();
@@ -144,8 +179,6 @@ function initChasseEdit() {
       const initialDisabled = inputDateFin.disabled;
       inputDateFin.disabled = initialDisabled || checkboxIllimitee.checked;
 
-      const postId = inputDateFin.closest('.champ-chasse')?.dataset.postId;
-
       checkboxIllimitee.addEventListener('change', function () {
         inputDateFin.disabled = initialDisabled || this.checked;
 
@@ -164,12 +197,24 @@ function initChasseEdit() {
 
             const nouvelleValeur = `${yyyy}-${mm}-${dd}`;
             inputDateFin.value = nouvelleValeur;
+          }
         }
-      }
 
-        enregistrerDatesChasse();
+        const li = inputDateFin.closest('li');
+        const status = li?.querySelector('.champ-status');
+        if (status) {
+          status.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>';
+        }
 
-        mettreAJourAffichageDateFin();
+        enregistrerDatesChasse().then((ok) => {
+          if (status) {
+            status.innerHTML = ok
+              ? '<i class="fa-solid fa-check" aria-hidden="true"></i>'
+              : '<i class="fa-solid fa-xmark" aria-hidden="true"></i>';
+            setTimeout(() => { status.innerHTML = ''; }, 1500);
+          }
+          mettreAJourAffichageDateFin();
+        });
       });
     }
       // La logique d'enregistrement de la date de fin est gérée
@@ -279,7 +324,10 @@ function initChasseEdit() {
       const postId = panneauEdition.dataset.postId;
       if (!postId) return;
 
-      if (!confirm('Voulez-vous vraiment supprimer la récompense ?')) return;
+      if (!confirm(wp.i18n.__(
+        'Voulez-vous vraiment supprimer la récompense ?',
+        'chassesautresor-com'
+      ))) return;
 
       const champsASupprimer = [
         'chasse_infos_recompense_titre',
@@ -500,14 +548,21 @@ function initChasseEdit() {
           }
         });
     }
-  });
-}
+    });
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initChasseEdit);
-} else {
-  initChasseEdit();
-}
+    window.addEventListener('message', (e) => {
+      if (e.data && (e.data.type === 'indice-created' || e.data === 'indice-created')) {
+        rafraichirCarteIndices();
+      }
+    });
+    window.addEventListener('indice-created', rafraichirCarteIndices);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initChasseEdit);
+  } else {
+    initChasseEdit();
+  }
 
 
 // ==============================
@@ -724,15 +779,14 @@ function initChampNbGagnants() {
     if (checkboxIllimite.checked) {
       inputNb.disabled = true;
       inputNb.value = '0';
-      modifierChampSimple('chasse_infos_nb_max_gagants', 0, postId, 'chasse');
     } else {
       inputNb.disabled = false;
       if (parseInt(inputNb.value.trim(), 10) === 0 || inputNb.value.trim() === '') {
         inputNb.value = '1';
-        modifierChampSimple('chasse_infos_nb_max_gagants', 1, postId, 'chasse');
       }
     }
-    // 🔥 Mise à jour dynamique après changement illimité
+
+    inputNb.dispatchEvent(new Event('input', { bubbles: true }));
     mettreAJourAffichageNbGagnants(postId, inputNb.value.trim());
   });
 
@@ -747,8 +801,7 @@ function initChampNbGagnants() {
         valeur = 1;
         inputNb.value = '1';
       }
-      modifierChampSimple('chasse_infos_nb_max_gagants', valeur, postId, 'chasse');
-      mettreAJourAffichageNbGagnants(postId, valeur); // ✅ ici, APRES avoir défini valeur
+      mettreAJourAffichageNbGagnants(postId, valeur);
     }, 500);
   });
 }
@@ -780,6 +833,7 @@ function initModeFinChasse() {
         const clone = templateNb.content.firstElementChild.cloneNode(true);
         modeFinLi.insertAdjacentElement('afterend', clone);
         initChampNbGagnants();
+        if (typeof initChampTexte === 'function') initChampTexte(clone);
       }
 
       document.querySelector('.annuler-fin-chasse-btn')?.dispatchEvent(new Event('click', { bubbles: true }));

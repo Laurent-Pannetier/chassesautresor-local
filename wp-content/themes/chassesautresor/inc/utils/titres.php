@@ -15,11 +15,12 @@ defined('ABSPATH') || exit;
 define('TITRE_DEFAUT_ORGANISATEUR', 'Votre nom d’organisateur');
 define('TITRE_DEFAUT_CHASSE', 'Nouvelle chasse');
 define('TITRE_DEFAUT_ENIGME', 'en création');
+define('TITRE_DEFAUT_INDICE', 'Nouvel indice');
 
 /**
  * Retourne le titre par défaut associé à un type de post donné.
  *
- * @param string $post_type Type de post (organisateur, chasse, énigme).
+ * @param string $post_type Type de post (organisateur, chasse, énigme, indice).
  * @return string Titre par défaut ou chaîne vide si inconnu.
  */
 function get_titre_defaut(string $post_type): string {
@@ -30,6 +31,8 @@ function get_titre_defaut(string $post_type): string {
             return TITRE_DEFAUT_CHASSE;
         case 'enigme':
             return TITRE_DEFAUT_ENIGME;
+        case 'indice':
+            return TITRE_DEFAUT_INDICE;
         default:
             return '';
     }

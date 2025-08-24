@@ -214,9 +214,9 @@ Instructions : Nb max de tentatives quotidiennes
 Requis : non
 ----------------------------------------
 — enigme_reponse_bonne —
-Type : text
-Label : bonne réponse
-Instructions : (vide)
+Type : textarea
+Label : bonne(s) réponse(s)
+Instructions : Tableau de réponses attendues au format JSON.
 Requis : non
 ----------------------------------------
 — enigme_reponse_casse —
@@ -454,7 +454,7 @@ Requis : non
 🔹 Groupe : paramètres indices
 🆔 ID : 9568
 🔑 Key : group_68a1fb240748a
-📦 Champs trouvés : 9
+📦 Champs trouvés : 10
 
 — indice_image —
 Type : image
@@ -468,18 +468,24 @@ Label : texte de l indice
 Instructions : (vide)
 Requis : non
 ----------------------------------------
-— indice_cible —
+— indice_cible_type —
 Type : radio
-Label : contenu ciblé
+Label : type de contenu ciblé
 Instructions : (vide)
 Requis : non
 Choices :
   - chasse : chasse
   - enigme : énigme
 ----------------------------------------
-— indice_cible_objet —
+— indice_enigme_linked —
 Type : relationship
-Label : cible
+Label : énigme liée
+Instructions : (vide)
+Requis : non
+----------------------------------------
+— indice_chasse_linked —
+Type : relationship
+Label : chasse liée
 Instructions : (vide)
 Requis : non
 ----------------------------------------
@@ -513,7 +519,7 @@ Requis : non
 Choices :
   - accessible : accessible
   - programme : programmé
-  - expire : expiré
+  - invalide : invalide
   - desactive : désactivé
 ----------------------------------------
 — indice_cache_complet —

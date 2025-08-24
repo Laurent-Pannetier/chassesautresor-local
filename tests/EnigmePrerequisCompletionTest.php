@@ -34,7 +34,7 @@ class EnigmePrerequisCompletionTest extends TestCase
             1 => [
                 'enigme_visuel_image'      => [['ID' => 123]],
                 'enigme_mode_validation'   => 'automatique',
-                'enigme_reponse_bonne'     => 'soluce',
+                'enigme_reponse_bonne'     => ['soluce'],
                 'enigme_acces_condition'   => 'pre_requis',
                 'enigme_acces_pre_requis'  => [],
             ],

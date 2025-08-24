@@ -64,11 +64,6 @@ window.mettreAJourResumeInfos = function () {
         estRempli = valeurTitre && valeurTitre !== titreParDefaut;
       }
 
-      if (champ === 'chasse_principale_description') {
-        const texte = document.querySelector('#panneau-description-chasse textarea')?.value?.trim();
-        estRempli = !!texte;
-      }
-
       if (champ === 'chasse_principale_image') {
         const image = blocEdition?.querySelector('img');
         estRempli = image && !image.src.includes('defaut-chasse');
@@ -118,22 +113,17 @@ window.mettreAJourResumeInfos = function () {
         estRempli = !!val;
       }
 
-      if (champ === 'enigme_visuel_texte') {
-        const textarea = document.querySelector('#panneau-description-enigme textarea');
-        estRempli = textarea && textarea.value.trim().length > 0;
-      }
-
       if (champ === 'enigme_mode_validation') {
         const checked = document.querySelector('input[name="acf[enigme_mode_validation]"]:checked');
         estRempli = !!checked;
       }
 
-      if (champ === 'enigme_tentative_cout_points') {
+      if (champ.endsWith('enigme_tentative_cout_points')) {
         const val = parseInt(blocEdition?.querySelector('input')?.value || '', 10);
         estRempli = !isNaN(val);
       }
 
-      if (champ === 'enigme_tentative_max') {
+      if (champ.endsWith('enigme_tentative_max')) {
         const val = parseInt(blocEdition?.querySelector('input')?.value || '', 10);
         estRempli = !isNaN(val) && val > 0;
       }
@@ -279,7 +269,9 @@ window.onChampSimpleMisAJour = function (champ, postId, valeur, cpt) {
       'enigme_visuel_texte',
       'enigme_mode_validation',
       'enigme_tentative_cout_points',
+      'enigme_tentative.enigme_tentative_cout_points',
       'enigme_tentative_max',
+      'enigme_tentative.enigme_tentative_max',
       'enigme_reponse_bonne',
       'enigme_reponse_casse',
       'enigme_acces_condition',
@@ -317,7 +309,7 @@ function mettreAJourResumeTitre(cpt, valeur) {
 
   switch (cpt) {
     case 'chasse':
-      placeholder = 'renseigner le titre de la chasse';
+      placeholder = wp.i18n.__('renseigner le titre de la chasse', 'chassesautresor-com');
       defaut = window.CHP_CHASSE_DEFAUT?.titre || 'nouvelle chasse';
       break;
     case 'enigme':
@@ -349,8 +341,21 @@ function mettreAJourLigneResume(ligne, champ, estRempli, type) {
     );
   ligne.classList.toggle('champ-attention', estObligatoire && !estRempli);
 
+  const input = ligne.querySelector('input, textarea, select');
+  if (input) {
+    input.classList.toggle('champ-vide-obligatoire', estObligatoire && !estRempli);
+  }
+
+  const container = ligne.querySelector('.edition-row-label .edition-row-icon');
+
   // Nettoyer anciennes icônes
-  ligne.querySelectorAll(':scope > .icone-check, :scope > .icon-attente').forEach((i) => i.remove());
+  if (container) {
+    container.innerHTML = '';
+  } else {
+    ligne
+      .querySelectorAll(':scope > .icone-check, :scope > .icon-attente')
+      .forEach((i) => i.remove());
+  }
 
   // Ajouter nouvelle icône si autorisé
   if (ligne.dataset.noIcon === undefined) {
@@ -359,7 +364,11 @@ function mettreAJourLigneResume(ligne, champ, estRempli, type) {
       ? 'fa-solid fa-circle-check icone-check'
       : 'fa-regular fa-circle icon-attente';
     icone.setAttribute('aria-hidden', 'true');
-    ligne.prepend(icone);
+    if (container) {
+      container.appendChild(icone);
+    } else {
+      ligne.prepend(icone);
+    }
   }
 
   // Ajouter bouton édition ✏️ si besoin

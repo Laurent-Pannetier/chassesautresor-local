@@ -12,7 +12,8 @@ function modifierChampSimple(champ, valeur, postId, cpt = 'enigme') {
 
   const action = (cpt === 'enigme') ? 'modifier_champ_enigme' :
     (cpt === 'organisateur') ? 'modifier_champ_organisateur' :
-      'modifier_champ_chasse';
+      (cpt === 'indice') ? 'modifier_champ_indice' :
+        'modifier_champ_chasse';
 
   return fetch(ajaxurl, {
     method: 'POST',
@@ -66,7 +67,8 @@ function initChampTexte(bloc) {
 
   const action = (cpt === 'chasse') ? 'modifier_champ_chasse'
     : (cpt === 'enigme') ? 'modifier_champ_enigme'
-      : 'modifier_champ_organisateur';
+      : (cpt === 'indice') ? 'modifier_champ_indice'
+        : 'modifier_champ_organisateur';
 
   if (!champ || !cpt || !postId || !input) return;
 
@@ -77,16 +79,23 @@ function initChampTexte(bloc) {
     bloc.appendChild(feedback);
   }
 
+  let status = bloc.querySelector('.champ-status');
+  if (!status && input) {
+    status = document.createElement('span');
+    status.className = 'champ-status';
+    input.insertAdjacentElement('afterend', status);
+  }
+
   // ✍️ Édition directe : aucun bouton d'édition/sauvegarde
   if (!boutonSave && !boutonEdit) {
     let timer;
     input.addEventListener('input', () => {
       clearTimeout(timer);
-      const valeur = input.value.trim();
+      const brute = input.value.trim();
 
       timer = setTimeout(() => {
         if (champ === 'email_contact') {
-          const isValide = valeur === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valeur);
+          const isValide = brute === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(brute);
           if (!isValide) {
             feedback.textContent = '⛔ Adresse email invalide';
             feedback.className = 'champ-feedback champ-error';
@@ -94,7 +103,7 @@ function initChampTexte(bloc) {
           }
         }
 
-        if (champ === 'post_title' && !valeur) {
+        if (champ === 'post_title' && !brute) {
           feedback.textContent = '❌ Le titre est obligatoire.';
           feedback.className = 'champ-feedback champ-error';
           return;
@@ -105,23 +114,40 @@ function initChampTexte(bloc) {
             document.querySelector('.enigme-soustitre') ||
             document.querySelector('.enigme-legende');
           if (legendeDOM) {
-            legendeDOM.textContent = valeur;
+            legendeDOM.textContent = brute;
             legendeDOM.classList.add('modifiee');
           }
         }
 
-        feedback.textContent = 'Enregistrement en cours...';
-        feedback.className = 'champ-feedback champ-loading';
+        if (status) {
+          status.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>';
+        }
+        feedback.textContent = '';
+        feedback.className = 'champ-feedback';
 
-        modifierChampSimple(champ, valeur, postId, cpt).then(success => {
+        let valeurEnvoyee = brute;
+        let estVide = !brute;
+
+        if (champ === 'enigme_reponse_bonne') {
+          const parts = brute.split(',').map(v => v.trim()).filter(v => v);
+          valeurEnvoyee = JSON.stringify(parts);
+          estVide = parts.length === 0;
+        }
+
+        modifierChampSimple(champ, valeurEnvoyee, postId, cpt).then(success => {
           if (success) {
-            bloc.classList.toggle('champ-vide', !valeur);
+            bloc.classList.toggle('champ-vide', estVide);
+            if (status) {
+              status.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i>';
+              setTimeout(() => { status.innerHTML = ''; }, 1000);
+            }
             feedback.textContent = '';
-            feedback.className = 'champ-feedback champ-success';
+            feedback.className = 'champ-feedback';
             if (typeof window.mettreAJourResumeInfos === 'function') {
               window.mettreAJourResumeInfos();
             }
           } else {
+            if (status) status.innerHTML = '';
             feedback.textContent = 'Erreur lors de l’enregistrement.';
             feedback.className = 'champ-feedback champ-error';
           }
@@ -192,8 +218,11 @@ function initChampTexte(bloc) {
       }
     }
 
-    feedback.textContent = 'Enregistrement en cours...';
-    feedback.className = 'champ-feedback champ-loading';
+    if (status) {
+      status.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>';
+    }
+    feedback.textContent = '';
+    feedback.className = 'champ-feedback';
 
     modifierChampSimple(champ, valeur, postId, cpt).then(success => {
       if (success) {
@@ -213,13 +242,18 @@ function initChampTexte(bloc) {
         if (affichage?.style) affichage.style.display = '';
         bloc.classList.toggle('champ-vide', !valeur);
 
+        if (status) {
+          status.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i>';
+          setTimeout(() => { status.innerHTML = ''; }, 1000);
+        }
         feedback.textContent = '';
-        feedback.className = 'champ-feedback champ-success';
+        feedback.className = 'champ-feedback';
 
         if (typeof window.mettreAJourResumeInfos === 'function') {
           window.mettreAJourResumeInfos();
         }
       } else {
+        if (status) status.innerHTML = '';
         feedback.textContent = 'Erreur lors de l’enregistrement.';
         feedback.className = 'champ-feedback champ-error';
       }

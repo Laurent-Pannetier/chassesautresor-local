@@ -41,7 +41,7 @@ $date_debut_iso = $date_debut_obj ? $date_debut_obj->format('Y-m-d\TH:i') : '';
 $date_fin_obj = convertir_en_datetime($date_fin);
 $date_fin_iso = $date_fin_obj ? $date_fin_obj->format('Y-m-d') : '';
 $illimitee  = $infos_chasse['champs']['illimitee'];
-$nb_max     = $infos_chasse['champs']['nb_max'] ?: 1;
+$nb_max     = $infos_chasse['champs']['nb_max'] ?? 1;
 $mode_fin   = $infos_chasse['champs']['mode_fin'] ?? 'automatique';
 $statut_metier = $infos_chasse['statut'] ?? 'revision';
 
@@ -109,7 +109,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                             <input type="text" class="champ-input champ-texte-edit" maxlength="70"
                                 value="<?= esc_attr($titre); ?>"
                                 id="champ-titre-chasse" <?= $peut_editer_titre ? '' : 'disabled'; ?>
-                                placeholder="renseigner le titre de la chasse" />
+                                placeholder="<?= esc_attr__('renseigner le titre de la chasse', 'chassesautresor-com'); ?>" />
                             <div class="champ-feedback"></div>
                             <?php
                         },
@@ -118,106 +118,198 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                 ?>
                 
                 <!-- Image -->
-                <li class="champ-chasse champ-img <?= empty($image_id) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>"
-                  data-champ="chasse_principale_image"
-                  data-cpt="chasse"
-                  data-post-id="<?= esc_attr($chasse_id); ?>">
-                  <div class="champ-affichage">
-                    <label><?= esc_html__('Image chasse', 'chassesautresor-com'); ?> <span class="champ-obligatoire">*</span></label>
-                    <?php if ($peut_editer) : ?>
-                      <button type="button"
-                        class="champ-modifier"
-                        data-champ="chasse_principale_image"
-                        data-cpt="chasse"
-                        data-post-id="<?= esc_attr($chasse_id); ?>"
-                        aria-label="<?= esc_attr__('Modifier l’image', 'chassesautresor-com'); ?>">
-                        <img src="<?= esc_url($image_url ?: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=='); ?>" alt="Image de la chasse" />
-                        <span class="champ-ajout-image"><?= esc_html__('ajouter une image', 'chassesautresor-com'); ?></span>
-                      </button>
-                    <?php else : ?>
-                      <?php if ($image_url) : ?>
-                        <img src="<?= esc_url($image_url); ?>" alt="Image de la chasse" />
-                      <?php else : ?>
-                        <span class="champ-ajout-image"><?= esc_html__('ajouter une image', 'chassesautresor-com'); ?></span>
-                      <?php endif; ?>
-                    <?php endif; ?>
-                  </div>
-                  <input type="hidden" class="champ-input" value="<?= esc_attr($image_id ?? '') ?>">
-                  <div class="champ-feedback"></div>
-                </li>
+                <?php
+                get_template_part(
+                    'template-parts/common/edition-row',
+                    null,
+                    [
+                        'class'      => 'champ-chasse champ-img '
+                            . (empty($image_id) ? 'champ-vide' : 'champ-rempli')
+                            . ($peut_editer ? '' : ' champ-desactive'),
+                        'attributes' => [
+                            'data-champ'   => 'chasse_principale_image',
+                            'data-cpt'     => 'chasse',
+                            'data-post-id' => $chasse_id,
+                        ],
+                        'label' => function () {
+                            ?>
+                            <label>
+                                <?= esc_html__('Image chasse', 'chassesautresor-com'); ?>
+                                <span class="champ-obligatoire">*</span>
+                            </label>
+                            <?php
+                        },
+                        'content' => function () use ($image_url, $image_id, $peut_editer, $chasse_id) {
+                            $transparent = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+                            ?>
+                            <div class="champ-affichage">
+                                <?php if ($peut_editer) : ?>
+                                    <button type="button"
+                                        class="champ-modifier"
+                                        data-champ="chasse_principale_image"
+                                        data-cpt="chasse"
+                                        data-post-id="<?= esc_attr($chasse_id); ?>"
+                                        aria-label="<?= esc_attr__('Modifier l’image', 'chassesautresor-com'); ?>">
+                                        <img
+                                            src="<?= esc_url($image_url ?: $transparent); ?>"
+                                            alt="<?= esc_attr__('Image de la chasse', 'chassesautresor-com'); ?>"
+                                        />
+                                        <span class="champ-ajout-image">
+                                            <?= esc_html__('ajouter une image', 'chassesautresor-com'); ?>
+                                        </span>
+                                    </button>
+                                <?php else : ?>
+                                    <?php if ($image_url) : ?>
+                                        <img
+                                            src="<?= esc_url($image_url); ?>"
+                                            alt="<?= esc_attr__('Image de la chasse', 'chassesautresor-com'); ?>"
+                                        />
+                                    <?php else : ?>
+                                        <span class="champ-ajout-image">
+                                            <?= esc_html__('ajouter une image', 'chassesautresor-com'); ?>
+                                        </span>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+                            </div>
+                            <input type="hidden" class="champ-input" value="<?= esc_attr($image_id ?? '') ?>">
+                            <div class="champ-feedback"></div>
+                            <?php
+                        },
+                    ]
+                );
+                ?>
 
                 <!-- Description -->
-                <li class="champ-chasse champ-description <?= empty($description) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>"
-                  data-champ="chasse_principale_description"
-                  data-cpt="chasse"
-                  data-post-id="<?= esc_attr($chasse_id); ?>">
-                    <label><?= esc_html__('Description chasse', 'chassesautresor-com'); ?> <span class="champ-obligatoire">*</span></label>
-                    <div class="champ-texte">
-                        <?php if (empty(trim($description))) : ?>
-                            <?php if ($peut_editer) : ?>
-                                <a href="#" class="champ-ajouter ouvrir-panneau-description"
-                                   data-cpt="chasse"
-                                   data-champ="chasse_principale_description"
-                                   data-post-id="<?= esc_attr($chasse_id); ?>">
-                                    <?= esc_html__('ajouter', 'chassesautresor-com'); ?>
-                                </a>
-                            <?php endif; ?>
-                        <?php else : ?>
-                            <span class="champ-texte-contenu">
-                                <?= esc_html(wp_trim_words(wp_strip_all_tags($description), 25)); ?>
-                                <?php if ($peut_editer) : ?>
-                                      <button type="button"
-                                          class="champ-modifier ouvrir-panneau-description"
-                                          data-cpt="chasse"
-                                          data-champ="chasse_principale_description"
-                                          data-post-id="<?= esc_attr($chasse_id); ?>"
-                                          aria-label="<?= esc_attr__('Modifier la description', 'chassesautresor-com'); ?>">
-                                          <?= esc_html__('modifier', 'chassesautresor-com'); ?>
-                                      </button>
+                <?php
+                get_template_part(
+                    'template-parts/common/edition-row',
+                    null,
+                    [
+                        'class'      => 'champ-chasse champ-description '
+                            . (empty($description) ? 'champ-vide' : 'champ-rempli')
+                            . ($peut_editer ? '' : ' champ-desactive'),
+                        'attributes' => [
+                            'data-champ'   => 'chasse_principale_description',
+                            'data-cpt'     => 'chasse',
+                            'data-post-id' => $chasse_id,
+                        ],
+                        'label' => function () {
+                            ?>
+                            <label>
+                                <?= esc_html__('Description chasse', 'chassesautresor-com'); ?>
+                                <span class="champ-obligatoire">*</span>
+                            </label>
+                            <?php
+                        },
+                        'content' => function () use ($description, $peut_editer, $chasse_id) {
+                            ?>
+                            <div class="champ-texte">
+                                <?php if (empty(trim($description))) : ?>
+                                    <?php if ($peut_editer) : ?>
+                                        <a href="#" class="champ-ajouter ouvrir-panneau-description"
+                                            data-cpt="chasse"
+                                            data-champ="chasse_principale_description"
+                                            data-post-id="<?= esc_attr($chasse_id); ?>">
+                                            <?= esc_html__('ajouter', 'chassesautresor-com'); ?>
+                                        </a>
+                                    <?php endif; ?>
+                                <?php else : ?>
+                                    <span class="champ-texte-contenu">
+                                        <?= esc_html(wp_trim_words(wp_strip_all_tags($description), 25)); ?>
+                                        <?php if ($peut_editer) : ?>
+                                            <button type="button"
+                                                class="champ-modifier ouvrir-panneau-description"
+                                                data-cpt="chasse"
+                                                data-champ="chasse_principale_description"
+                                                data-post-id="<?= esc_attr($chasse_id); ?>"
+                                                aria-label="<?= esc_attr__(
+                                                    'Modifier la description',
+                                                    'chassesautresor-com'
+                                                ); ?>"
+                                            >
+                                                <?= esc_html__('modifier', 'chassesautresor-com'); ?>
+                                            </button>
+                                        <?php endif; ?>
+                                    </span>
                                 <?php endif; ?>
-                            </span>
-                        <?php endif; ?>
-                    </div>
-                </li>
+                            </div>
+                            <div class="champ-feedback"></div>
+                            <?php
+                        },
+                    ]
+                );
+                ?>
 
                 <!-- Récompense -->
                 <?php
                 $recompense_remplie = !empty($titre_recompense) && !empty($recompense) && (float) $valeur > 0;
+                get_template_part(
+                    'template-parts/common/edition-row',
+                    null,
+                    [
+                        'class'      => 'champ-chasse champ-recompense '
+                            . ($recompense_remplie ? 'champ-rempli' : 'champ-vide')
+                            . ($peut_editer ? '' : ' champ-desactive'),
+                        'attributes' => [
+                            'data-champ'   => 'chasse_infos_recompense_valeur',
+                            'data-cpt'     => 'chasse',
+                            'data-post-id' => $chasse_id,
+                        ],
+                        'label' => function () {
+                            ?>
+                            <label><?= esc_html__('Récompense', 'chassesautresor-com'); ?></label>
+                            <?php
+                        },
+                        'content' => function () use (
+                            $recompense_remplie,
+                            $recompense,
+                            $valeur,
+                            $titre_recompense,
+                            $peut_editer,
+                            $chasse_id
+                        ) {
+                            $desc_brut  = wp_strip_all_tags($recompense);
+                            $desc_court = mb_substr($desc_brut, 0, 200);
+                            if (mb_strlen($desc_brut) > 200) {
+                                $desc_court .= '…';
+                            }
+                            ?>
+                            <div class="champ-texte">
+                                <?php if ($recompense_remplie) : ?>
+                                    <span class="champ-texte-contenu">
+                                        <span class="recompense-valeur">
+                                            <?= esc_html(number_format_i18n(round((float) $valeur), 0)); ?> €
+                                        </span>
+                                        &nbsp;–&nbsp;
+                                        <span class="recompense-titre"><?= esc_html($titre_recompense); ?></span>
+                                        &nbsp;–&nbsp;
+                                        <span class="recompense-description"><?= esc_html($desc_court); ?></span>
+                                    </span>
+                                <?php endif; ?>
+                                <?php if ($peut_editer) : ?>
+                                    <button type="button"
+                                        class="champ-modifier ouvrir-panneau-recompense"
+                                        data-champ="chasse_infos_recompense_valeur"
+                                        data-cpt="chasse"
+                                        data-post-id="<?= esc_attr($chasse_id); ?>"
+                                        aria-label="<?= esc_attr__(
+                                            $recompense_remplie ? 'Modifier la récompense' : 'Ajouter la récompense',
+                                            'chassesautresor-com'
+                                        ); ?>"
+                                    >
+                                        <?= esc_html__(
+                                            $recompense_remplie ? 'modifier' : 'ajouter',
+                                            'chassesautresor-com'
+                                        ); ?>
+                                    </button>
+                                <?php endif; ?>
+                            </div>
+                            <div class="champ-feedback"></div>
+                            <?php
+                        },
+                    ]
+                );
                 ?>
-                <li class="champ-chasse champ-recompense <?= $recompense_remplie ? 'champ-rempli' : 'champ-vide'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>"
-                    data-champ="chasse_infos_recompense_valeur"
-                    data-cpt="chasse"
-                    data-post-id="<?= esc_attr($chasse_id); ?>">
-                    <label><?= esc_html__('Récompense', 'chassesautresor-com'); ?></label>
-                    <div class="champ-texte">
-                        <?php
-                        $desc_brut  = wp_strip_all_tags($recompense);
-                        $desc_court = mb_substr($desc_brut, 0, 200);
-                        if (mb_strlen($desc_brut) > 200) {
-                            $desc_court .= '…';
-                        }
-                        ?>
-                        <?php if ($recompense_remplie) : ?>
-                            <span class="champ-texte-contenu">
-                                <span class="recompense-valeur"><?= esc_html(number_format_i18n(round((float) $valeur), 0)); ?> €</span>
-                                &nbsp;–&nbsp;
-                                <span class="recompense-titre"><?= esc_html($titre_recompense); ?></span>
-                                &nbsp;–&nbsp;
-                                <span class="recompense-description"><?= esc_html($desc_court); ?></span>
-                            </span>
-                        <?php endif; ?>
-                        <?php if ($peut_editer) : ?>
-                            <button type="button"
-                                class="champ-modifier ouvrir-panneau-recompense"
-                                data-champ="chasse_infos_recompense_valeur"
-                                data-cpt="chasse"
-                                data-post-id="<?= esc_attr($chasse_id); ?>"
-                                aria-label="<?= esc_attr__($recompense_remplie ? 'Modifier la récompense' : 'Ajouter la récompense', 'chassesautresor-com'); ?>">
-                                <?= esc_html__($recompense_remplie ? 'modifier' : 'ajouter', 'chassesautresor-com'); ?>
-                            </button>
-                        <?php endif; ?>
-                    </div>
-                </li>
 
               </ul>
             </div>
@@ -228,99 +320,114 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                 <ul class="resume-infos">
 
                 <!-- Mode de fin de chasse -->
-                  <li
-                    class="champ-chasse champ-mode-fin<?= $peut_editer ? '' : ' champ-desactive'; ?>"
-                    data-champ="chasse_mode_fin"
+                <?php ob_start(); ?>
+                <?php if (in_array($statut_metier, ['payante', 'en_cours', 'revision'], true)) : ?>
+                  <button
+                    type="button"
+                    class="terminer-chasse-btn bouton-cta"
+                    data-post-id="<?= esc_attr($chasse_id); ?>"
                     data-cpt="chasse"
-                  data-post-id="<?= esc_attr($chasse_id); ?>"
-                  data-no-edit="1"
-                  data-no-icon="1"
-                >
-                  <label for="chasse_mode_fin"><?= esc_html__('Mode de fin', 'chassesautresor-com'); ?></label>
-                  <div class="champ-mode-options">
-                    <label>
-                      <input
-                        id="chasse_mode_fin"
-                        type="radio"
-                        name="acf[chasse_mode_fin]"
-                        value="automatique"
-                        <?= $mode_fin === 'automatique' ? 'checked' : ''; ?>
-                        <?= $peut_editer ? '' : 'disabled'; ?>
-                      >
-                      <?= esc_html__('Automatique', 'chassesautresor-com'); ?>
-                      <?php
-                      get_template_part(
-                          'template-parts/common/help-icon',
-                          null,
-                          [
-                              'aria_label' => __('Explication du mode automatique', 'chassesautresor-com'),
-                              'variant'    => 'aide',
-                              'title'      => __('Fin de chasse automatique', 'chassesautresor-com'),
-                              'message'    => __('Un joueur est déclaré gagnant lorsqu’il a résolu toutes les énigmes. En mode automatique, la chasse se termine dès que le nombre de gagnants prévu est atteint.', 'chassesautresor-com'),
-                          ]
-                      );
-                      ?>
-                    </label>
-                    <label>
-                      <input
-                        type="radio"
-                        name="acf[chasse_mode_fin]"
-                        value="manuelle"
-                        <?= $mode_fin === 'manuelle' ? 'checked' : ''; ?>
-                        <?= $peut_editer ? '' : 'disabled'; ?>
-                      >
-                      <?= esc_html__('Manuelle', 'chassesautresor-com'); ?>
-                      <?php
-                      get_template_part(
-                          'template-parts/common/help-icon',
-                          null,
-                          [
-                              'aria_label' => __('Explication du mode manuel', 'chassesautresor-com'),
-                              'variant'    => 'aide',
-                              'title'      => __('Fin de chasse manuelle', 'chassesautresor-com'),
-                              'message'    => __('Vous pouvez arrêter la chasse à tout moment grâce au bouton disponible dans le panneau d’édition de la chasse, onglet Paramètres.', 'chassesautresor-com'),
-                          ]
-                      );
-                      ?>
-                    </label>
-                  </div>
-                  <?php ob_start(); ?>
-                  <?php if (in_array($statut_metier, ['payante', 'en_cours', 'revision'], true)) : ?>
+                    <?= ($statut_metier === 'revision') ? 'disabled' : ''; ?>
+                  ><?= esc_html__('Terminer la chasse', 'chassesautresor-com'); ?></button>
+                  <div class="zone-validation-fin" style="display:none;">
+                    <label for="chasse-gagnants"><?= esc_html__('Gagnants', 'chassesautresor-com'); ?></label>
+                    <textarea id="chasse-gagnants" required></textarea>
                     <button
                       type="button"
-                      class="terminer-chasse-btn bouton-cta"
+                      class="valider-fin-chasse-btn bouton-cta"
                       data-post-id="<?= esc_attr($chasse_id); ?>"
                       data-cpt="chasse"
-                      <?= ($statut_metier === 'revision') ? 'disabled' : ''; ?>
-                    ><?= esc_html__('Terminer la chasse', 'chassesautresor-com'); ?></button>
-                    <div class="zone-validation-fin" style="display:none;">
-                      <label for="chasse-gagnants"><?= esc_html__('Gagnants', 'chassesautresor-com'); ?></label>
-                      <textarea id="chasse-gagnants" required></textarea>
-                      <button
-                        type="button"
-                        class="valider-fin-chasse-btn bouton-cta"
-                        data-post-id="<?= esc_attr($chasse_id); ?>"
-                        data-cpt="chasse"
-                        disabled
-                      ><?= esc_html__('Valider la fin de chasse', 'chassesautresor-com'); ?></button>
-                      <button
-                        type="button"
-                        class="annuler-fin-chasse-btn bouton-secondaire"
-                      ><?= esc_html__('Annuler', 'chassesautresor-com'); ?></button>
-                    </div>
-                  <?php endif; ?>
-                  <?php $bloc_fin_chasse = trim(ob_get_clean()); ?>
-
-                  <div class="fin-chasse-actions">
-                    <?php if ($mode_fin === 'manuelle') : ?>
-                      <?= $bloc_fin_chasse; ?>
-                    <?php elseif ($statut_metier === 'termine') : ?>
-                      <p class="message-chasse-terminee">
-                        <?= sprintf(__('Chasse gagnée le %s par %s', 'chassesautresor-com'), esc_html($date_decouverte_formatee), esc_html($gagnants)); ?>
-                      </p>
-                    <?php endif; ?>
+                      disabled
+                    ><?= esc_html__('Valider la fin de chasse', 'chassesautresor-com'); ?></button>
+                    <button
+                      type="button"
+                      class="annuler-fin-chasse-btn bouton-secondaire"
+                    ><?= esc_html__('Annuler', 'chassesautresor-com'); ?></button>
                   </div>
-                </li>
+                <?php endif; ?>
+                <?php $bloc_fin_chasse = trim(ob_get_clean()); ?>
+
+                <?php
+                get_template_part(
+                    'template-parts/common/edition-row',
+                    null,
+                    [
+                        'class'      => 'champ-chasse champ-mode-fin' . ($peut_editer ? '' : ' champ-desactive'),
+                        'attributes' => [
+                            'data-champ'   => 'chasse_mode_fin',
+                            'data-cpt'     => 'chasse',
+                            'data-post-id' => $chasse_id,
+                            'data-no-edit' => '1',
+                        ],
+                        'no_icon'   => true,
+                        'label'    => function () {
+                            ?>
+                            <label for="chasse_mode_fin"><?= esc_html__('Mode de fin', 'chassesautresor-com'); ?></label>
+                            <?php
+                        },
+                        'content'  => function () use ($mode_fin, $peut_editer, $statut_metier, $date_decouverte_formatee, $gagnants, $bloc_fin_chasse) {
+                            ?>
+                            <div class="champ-mode-options">
+                                <label>
+                                    <input
+                                        id="chasse_mode_fin"
+                                        type="radio"
+                                        name="acf[chasse_mode_fin]"
+                                        value="automatique"
+                                        <?= $mode_fin === 'automatique' ? 'checked' : ''; ?>
+                                        <?= $peut_editer ? '' : 'disabled'; ?>
+                                    >
+                                    <?= esc_html__('Automatique', 'chassesautresor-com'); ?>
+                                    <?php
+                                    get_template_part(
+                                        'template-parts/common/help-icon',
+                                        null,
+                                        [
+                                            'aria_label' => __('Explication du mode automatique', 'chassesautresor-com'),
+                                            'variant'    => 'aide',
+                                            'title'      => __('Fin de chasse automatique', 'chassesautresor-com'),
+                                            'message'    => __('Un joueur est déclaré gagnant lorsqu’il a résolu toutes les énigmes. En mode automatique, la chasse se termine dès que le nombre de gagnants prévu est atteint.', 'chassesautresor-com'),
+                                        ]
+                                    );
+                                    ?>
+                                </label>
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name="acf[chasse_mode_fin]"
+                                        value="manuelle"
+                                        <?= $mode_fin === 'manuelle' ? 'checked' : ''; ?>
+                                        <?= $peut_editer ? '' : 'disabled'; ?>
+                                    >
+                                    <?= esc_html__('Manuelle', 'chassesautresor-com'); ?>
+                                    <?php
+                                    get_template_part(
+                                        'template-parts/common/help-icon',
+                                        null,
+                                        [
+                                            'aria_label' => __('Explication du mode manuel', 'chassesautresor-com'),
+                                            'variant'    => 'aide',
+                                            'title'      => __('Fin de chasse manuelle', 'chassesautresor-com'),
+                                            'message'    => __('Vous pouvez arrêter la chasse à tout moment grâce au bouton disponible dans le panneau d’édition de la chasse, onglet Paramètres.', 'chassesautresor-com'),
+                                        ]
+                                    );
+                                    ?>
+                                </label>
+                                <div class="fin-chasse-actions">
+                                    <?php if ($mode_fin === 'manuelle') : ?>
+                                        <?= $bloc_fin_chasse; ?>
+                                    <?php elseif ($statut_metier === 'termine') : ?>
+                                        <p class="message-chasse-terminee">
+                                            <?= sprintf(__('Chasse gagnée le %s par %s', 'chassesautresor-com'), esc_html($date_decouverte_formatee), esc_html($gagnants)); ?>
+                                        </p>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <?php
+                        },
+                    ]
+                );
+                ?>
                 <?php if ($bloc_fin_chasse !== '') : ?>
                   <template id="template-fin-chasse-actions">
                     <?= $bloc_fin_chasse; ?>
@@ -329,32 +436,46 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
 
                 <?php ob_start(); ?>
                 <!-- Nombre de gagnants -->
-                <li class="champ-chasse champ-nb-gagnants <?= empty($nb_max) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>"
-                  data-champ="chasse_infos_nb_max_gagants"
-                  data-cpt="chasse"
-                  data-post-id="<?= esc_attr($chasse_id); ?>">
+                <?php
+                get_template_part(
+                    'template-parts/common/edition-row',
+                    null,
+                    [
+                        'class'      => 'champ-chasse champ-nb-gagnants ' . (empty($nb_max) ? 'champ-vide' : 'champ-rempli') . ($peut_editer ? '' : ' champ-desactive'),
+                        'attributes' => [
+                            'data-champ'   => 'chasse_infos_nb_max_gagants',
+                            'data-cpt'     => 'chasse',
+                            'data-post-id' => $chasse_id,
+                        ],
+                        'label'    => function () {
+                            ?>
+                            <label for="chasse-nb-gagnants"><?= esc_html__('Nb gagnants', 'chassesautresor-com'); ?></label>
+                            <?php
+                        },
+                        'content'  => function () use ($nb_max, $peut_editer) {
+                            ?>
+                            <input type="number"
+                                id="chasse-nb-gagnants"
+                                name="chasse-nb-gagnants"
+                                value="<?= esc_attr($nb_max); ?>"
+                                min="1"
+                                class="champ-inline-nb champ-nb-edit champ-input champ-number"
+                                <?= ($peut_editer && $nb_max != 0) ? '' : 'disabled'; ?> />
 
-                  <label for="chasse-nb-gagnants"><?= esc_html__('Nb gagnants', 'chassesautresor-com'); ?></label>
+                            <div class="champ-option-illimitee ">
+                                <input type="checkbox"
+                                    id="nb-gagnants-illimite"
+                                    name="nb-gagnants-illimite"
+                                    <?= ($nb_max == 0 ? 'checked' : ''); ?> <?= $peut_editer ? '' : 'disabled'; ?>>
+                                <label for="nb-gagnants-illimite"><?= esc_html__('Illimité', 'chassesautresor-com'); ?></label>
+                            </div>
 
-                  <input type="number"
-                    id="chasse-nb-gagnants"
-                    name="chasse-nb-gagnants"
-                    value="<?= esc_attr($nb_max); ?>"
-                    min="1"
-                    class="champ-inline-nb champ-nb-edit"
-                    <?= ($peut_editer && $nb_max != 0) ? '' : 'disabled'; ?> />
-
-                  <div class="champ-option-illimitee ">
-                    <input type="checkbox"
-                      id="nb-gagnants-illimite"
-                      name="nb-gagnants-illimite"
-                      <?= ($nb_max == 0 ? 'checked' : ''); ?> <?= $peut_editer ? '' : 'disabled'; ?>
-                      data-champ="chasse_infos_nb_max_gagants">
-                    <label for="nb-gagnants-illimite"><?= esc_html__('Illimité', 'chassesautresor-com'); ?></label>
-                  </div>
-
-                  <div id="erreur-nb-gagnants" class="message-erreur" style="display:none; color:red; font-size:0.9em; margin-top:5px;"></div>
-                </li>
+                            <div id="erreur-nb-gagnants" class="message-erreur" style="display:none; color:red; font-size:0.9em; margin-top:5px;"></div>
+                            <?php
+                        },
+                    ]
+                );
+                ?>
                 <?php $bloc_nb_gagnants = ob_get_clean(); ?>
 
                 <?php if ($mode_fin === 'automatique') : ?>
@@ -366,88 +487,132 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                 </template>
 
                 <!-- Date de début (édition inline) -->
-                <li class="champ-chasse champ-date-debut<?= $peut_editer ? '' : ' champ-desactive'; ?>"
-                  data-champ="chasse_infos_date_debut"
-                  data-cpt="chasse"
-                  data-post-id="<?= esc_attr($chasse_id); ?>">
-
-                  <label for="chasse-date-debut"><?= esc_html__('Début', 'chassesautresor-com'); ?></label>
-                  <input type="datetime-local"
-                    id="chasse-date-debut"
-                    name="chasse-date-debut"
-                    value="<?= esc_attr($date_debut_iso); ?>"
-                    class="champ-inline-date champ-date-edit" <?= $peut_editer ? '' : 'disabled'; ?> required />
-                  <div id="erreur-date-debut" class="message-erreur" style="display:none; color:red; font-size:0.9em; margin-top:5px;"></div>
-
-                </li>
+                <?php
+                get_template_part(
+                    'template-parts/common/edition-row',
+                    null,
+                    [
+                        'class'      => 'champ-chasse champ-date-debut' . ($peut_editer ? '' : ' champ-desactive'),
+                        'attributes' => [
+                            'data-champ'   => 'chasse_infos_date_debut',
+                            'data-cpt'     => 'chasse',
+                            'data-post-id' => $chasse_id,
+                        ],
+                        'label'    => function () {
+                            ?>
+                            <label for="chasse-date-debut"><?= esc_html__('Début', 'chassesautresor-com'); ?></label>
+                            <?php
+                        },
+                        'content'  => function () use ($date_debut_iso, $peut_editer) {
+                            ?>
+                            <input type="datetime-local"
+                                id="chasse-date-debut"
+                                name="chasse-date-debut"
+                                value="<?= esc_attr($date_debut_iso); ?>"
+                                class="champ-inline-date champ-date-edit" <?= $peut_editer ? '' : 'disabled'; ?> required />
+                            <div id="erreur-date-debut" class="message-erreur" style="display:none; color:red; font-size:0.9em; margin-top:5px;"></div>
+                            <?php
+                        },
+                    ]
+                );
+                ?>
 
                 <!-- Date de fin -->
-                <li class="champ-chasse champ-date-fin<?= $peut_editer ? '' : ' champ-desactive'; ?>"
-                  data-champ="chasse_infos_date_fin"
-                  data-cpt="chasse"
-                  data-post-id="<?= esc_attr($chasse_id); ?>">
+                <?php
+                get_template_part(
+                    'template-parts/common/edition-row',
+                    null,
+                    [
+                        'class'      => 'champ-chasse champ-date-fin' . ($peut_editer ? '' : ' champ-desactive'),
+                        'attributes' => [
+                            'data-champ'   => 'chasse_infos_date_fin',
+                            'data-cpt'     => 'chasse',
+                            'data-post-id' => $chasse_id,
+                        ],
+                        'label'    => function () {
+                            ?>
+                            <label for="chasse-date-fin"><?= esc_html__('Date de fin', 'chassesautresor-com'); ?></label>
+                            <?php
+                        },
+                        'content'  => function () use ($date_fin_iso, $peut_editer, $illimitee) {
+                            ?>
+                            <input type="date"
+                                id="chasse-date-fin"
+                                name="chasse-date-fin"
+                                value="<?= esc_attr($date_fin_iso); ?>"
+                                class="champ-inline-date champ-date-edit" <?= $peut_editer ? '' : 'disabled'; ?> />
+                            <div id="erreur-date-fin" class="message-erreur" style="display:none; color:red; font-size:0.9em; margin-top:5px;"></div>
 
-                  <label for="chasse-date-fin"><?= esc_html__('Date de fin', 'chassesautresor-com'); ?></label>
-                  <input type="date"
-                    id="chasse-date-fin"
-                    name="chasse-date-fin"
-                    value="<?= esc_attr($date_fin_iso); ?>"
-                    class="champ-inline-date champ-date-edit" <?= $peut_editer ? '' : 'disabled'; ?> />
-                  <div id="erreur-date-fin" class="message-erreur" style="display:none; color:red; font-size:0.9em; margin-top:5px;"></div>
-
-                  <div class="champ-option-illimitee">
-                    <input type="checkbox"
-                      id="duree-illimitee"
-                      name="duree-illimitee"
-                      data-champ="chasse_infos_duree_illimitee"
-                      <?= ($illimitee ? 'checked' : ''); ?> <?= $peut_editer ? '' : 'disabled'; ?>>
-                    <label for="duree-illimitee"><?= esc_html__('Durée illimitée', 'chassesautresor-com'); ?></label>
-                  </div>
-
-                </li>
+                            <div class="champ-option-illimitee">
+                                <input type="checkbox"
+                                    id="duree-illimitee"
+                                    name="duree-illimitee"
+                                    data-champ="chasse_infos_duree_illimitee"
+                                    <?= ($illimitee ? 'checked' : ''); ?> <?= $peut_editer ? '' : 'disabled'; ?>>
+                                <label for="duree-illimitee"><?= esc_html__('Durée illimitée', 'chassesautresor-com'); ?></label>
+                            </div>
+                            <?php
+                        },
+                    ]
+                );
+                ?>
 
 
                 <!-- Coût -->
-                <li class="champ-chasse champ-cout-points <?= empty($cout) ? 'champ-vide' : 'champ-rempli'; ?><?= $peut_editer_cout ? '' : ' champ-desactive'; ?>"
-                  data-champ="chasse_infos_cout_points"
-                  data-cpt="chasse"
-                  data-post-id="<?= esc_attr($chasse_id); ?>">
+                <?php
+                get_template_part(
+                    'template-parts/common/edition-row',
+                    null,
+                    [
+                        'class'      => 'champ-chasse champ-cout-points ' . (empty($cout) ? 'champ-vide' : 'champ-rempli') . ($peut_editer_cout ? '' : ' champ-desactive'),
+                        'attributes' => [
+                            'data-champ'   => 'chasse_infos_cout_points',
+                            'data-cpt'     => 'chasse',
+                            'data-post-id' => $chasse_id,
+                        ],
+                        'label'    => function () {
+                            ?>
+                            <label><?= esc_html__('Coût', 'chassesautresor-com'); ?> <span class="txt-small"><?= esc_html__('points', 'chassesautresor-com'); ?></span>
+                                <?php
+                                get_template_part(
+                                    'template-parts/common/help-icon',
+                                    null,
+                                    [
+                                        'aria_label' => __('En savoir plus sur les points', 'chassesautresor-com'),
+                                        'classes'    => 'open-points-modal',
+                                        'variant'    => 'info',
+                                        'title'      => __('Coût d’accès à une chasse', 'chassesautresor-com'),
+                                        'message'    => __('Vous êtes libre de définir le coût d’accès à votre chasse : gratuit ou payant. Cet accès est indispensable pour consulter les énigmes, qui restent invisibles tant qu’il n’a pas été débloqué.', 'chassesautresor-com'),
+                                    ]
+                                );
+                                ?>
+                            </label>
+                            <?php
+                        },
+                        'content'  => function () use ($cout, $peut_editer_cout) {
+                            ?>
+                            <div style="display: flex; align-items: center;">
+                                <input type="number"
+                                    class="champ-input champ-cout champ-number"
+                                    min="0"
+                                    step="1"
+                                    value="<?= esc_attr($cout); ?>"
+                                    placeholder="0" <?= $peut_editer_cout ? '' : 'disabled'; ?> />
 
-                  <div class="champ-edition" style="display: flex; align-items: center;">
-                    <label><?= esc_html__('Coût', 'chassesautresor-com'); ?> <span class="txt-small">(<?= esc_html__('points', 'chassesautresor-com'); ?>)</span>
-                      <?php
-                      get_template_part(
-                          'template-parts/common/help-icon',
-                          null,
-                          [
-                              'aria_label' => __('En savoir plus sur les points', 'chassesautresor-com'),
-                              'classes'    => 'open-points-modal',
-                              'variant'    => 'info',
-                              'title'      => __('Coût d’accès à une chasse', 'chassesautresor-com'),
-                              'message'    => __('Vous êtes libre de définir le coût d’accès à votre chasse : gratuit ou payant. Cet accès est indispensable pour consulter les énigmes, qui restent invisibles tant qu’il n’a pas été débloqué.', 'chassesautresor-com'),
-                          ]
-                      );
-                      ?>
-                    </label>
-
-                    <input type="number"
-                      class="champ-input champ-cout"
-                      min="0"
-                      step="1"
-                      value="<?= esc_attr($cout); ?>"
-                      placeholder="0" <?= $peut_editer_cout ? '' : 'disabled'; ?> />
-
-                    <div class="champ-option-gratuit" style="margin-left: 15px;">
-                      <input type="checkbox"
-                        id="cout-gratuit"
-                        name="cout-gratuit"
-                        <?= ((int)$cout === 0) ? 'checked' : ''; ?> <?= $peut_editer_cout ? '' : 'disabled'; ?>>
-                      <label for="cout-gratuit"><?= esc_html__('Gratuit', 'chassesautresor-com'); ?></label>
-                    </div>
-                  </div>
-
-                  <div class="champ-feedback"></div>
-                </li>
+                                <div class="champ-option-gratuit" style="margin-left: 15px;">
+                                    <input type="checkbox"
+                                        id="cout-gratuit"
+                                        name="cout-gratuit"
+                                        <?= ((int) $cout === 0) ? 'checked' : ''; ?> <?= $peut_editer_cout ? '' : 'disabled'; ?>>
+                                    <label for="cout-gratuit"><?= esc_html__('Gratuit', 'chassesautresor-com'); ?></label>
+                                </div>
+                            </div>
+                            <div class="champ-feedback"></div>
+                            <?php
+                        },
+                    ]
+                );
+                ?>
 
               </ul>
             </div>
@@ -463,7 +628,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
     <div id="chasse-tab-stats" class="edition-tab-content" style="display:none;">
       <i class="fa-solid fa-chart-column tab-watermark" aria-hidden="true"></i>
       <div class="edition-panel-header">
-        <h2><i class="fa-solid fa-chart-column"></i> Statistiques</h2>
+        <h2><i class="fa-solid fa-chart-column"></i> <?= esc_html__('Statistiques', 'chassesautresor-com'); ?></h2>
       </div>
       <?php if (!utilisateur_est_organisateur_associe_a_chasse(get_current_user_id(), $chasse_id)) : ?>
         <p class="edition-placeholder"><?php esc_html_e('Accès refusé.', 'chassesautresor-com'); ?></p>
@@ -622,7 +787,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
               <?php endif;
           endif;
           get_template_part('template-parts/chasse/partials/chasse-partial-enigmes', null, [
-              'title'         => 'Énigmes',
+              'title'         => esc_html__('Énigmes', 'chassesautresor-com'),
               'enigmes'       => $enigmes_stats,
               'total'         => $total_engagements,
               'cols_etiquette' => [2, 3, 4, 5, 6, 7],
@@ -644,96 +809,102 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
     <div id="chasse-tab-animation" class="edition-tab-content" style="display:none;">
       <i class="fa-solid fa-bullhorn tab-watermark" aria-hidden="true"></i>
       <div class="edition-panel-header">
-        <h2><i class="fa-solid fa-bullhorn"></i> Animation</h2>
+        <h2><i class="fa-solid fa-bullhorn"></i> <?= esc_html__('Animation', 'chassesautresor-com'); ?></h2>
       </div>
       <div class="edition-panel-body">
         <div class="edition-panel-section edition-panel-section-ligne">
           <div class="section-content">
-            <div class="resume-blocs-grid">
-
-              <div class="resume-bloc resume-visibilite">
-                <h3><?= esc_html__('Communiquez', 'chassesautresor-com'); ?></h3>
-                <div class="dashboard-grid stats-cards">
-                  <div class="dashboard-card champ-chasse champ-liens <?= empty($liens) ? 'champ-vide' : 'champ-rempli'; ?>"
+            <div class="dashboard-grid stats-cards">
+              <?php
+              get_template_part('template-parts/chasse/partials/chasse-partial-indices', null, [
+                'objet_id'   => $chasse_id,
+                'objet_type' => 'chasse',
+              ]);
+              ?>
+              <div class="dashboard-card champ-chasse champ-liens <?= empty($liens) ? 'champ-vide' : 'champ-rempli'; ?>"
+                data-champ="chasse_principale_liens"
+                data-cpt="chasse"
+                data-post-id="<?= esc_attr($chasse_id); ?>">
+                <i class="fa-solid fa-share-nodes icone-defaut" aria-hidden="true"></i>
+                <h3><?= esc_html__('Sites et réseaux de la chasse', 'chassesautresor-com'); ?></h3>
+                <div class="champ-affichage champ-affichage-liens">
+                  <?= render_liens_publics($liens, 'chasse', ['placeholder' => false]); ?>
+                </div>
+                <?php if ($peut_modifier) : ?>
+                  <a href="#"
+                    class="stat-value champ-modifier ouvrir-panneau-liens"
                     data-champ="chasse_principale_liens"
                     data-cpt="chasse"
                     data-post-id="<?= esc_attr($chasse_id); ?>">
-                    <i class="fa-solid fa-share-nodes icone-defaut" aria-hidden="true"></i>
-                    <h3><?= esc_html__('Sites et réseaux de la chasse', 'chassesautresor-com'); ?></h3>
-                    <div class="champ-affichage champ-affichage-liens">
-                      <?= render_liens_publics($liens, 'chasse', ['placeholder' => false]); ?>
-                    </div>
-                    <?php if ($peut_modifier) : ?>
-                      <a href="#"
-                        class="stat-value champ-modifier ouvrir-panneau-liens"
-                        data-champ="chasse_principale_liens"
-                        data-cpt="chasse"
-                        data-post-id="<?= esc_attr($chasse_id); ?>">
-                        <?= empty($liens)
-                          ? esc_html__('Ajouter', 'chassesautresor-com')
-                          : esc_html__('Éditer', 'chassesautresor-com'); ?>
-                      </a>
-                    <?php endif; ?>
-                    <div class="champ-donnees"
-                      data-valeurs='<?= json_encode($liens, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>'></div>
-                    <div class="champ-feedback"></div>
-                  </div>
-                  <?php
-                  if (
-                      est_organisateur()
-                      && ($infos_chasse['statut'] ?? '') !== 'revision'
-                      && ($infos_chasse['statut_validation'] ?? '') === 'valide'
-                  ) :
-                      $format = isset($_GET['format']) ? sanitize_key($_GET['format']) : 'png';
-                      $formats_autorises = ['png', 'svg', 'eps'];
-                      if (!in_array($format, $formats_autorises, true)) {
-                          $format = 'png';
-                      }
-                      $url = get_permalink($chasse_id);
-                      $url_qr_code = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data='
-                          . rawurlencode($url)
-                          . '&format=' . $format;
-                  ?>
-                  <div class="dashboard-card champ-qr-code">
-                    <img class="qr-code-icon" src="<?= esc_url($url_qr_code); ?>" alt="QR code de la chasse">
-                    <h3>QR code de votre chasse</h3>
-                    <a class="stat-value" href="<?= esc_url($url_qr_code); ?>"
-                      download="<?= esc_attr('qr-chasse-' . $chasse_id . '.' . $format); ?>">Télécharger</a>
-                  </div>
-                  <?php endif; ?>
-                </div>
+                    <?= empty($liens)
+                      ? esc_html__('Ajouter', 'chassesautresor-com')
+                      : esc_html__('Éditer', 'chassesautresor-com'); ?>
+                  </a>
+                <?php endif; ?>
+                <div class="champ-donnees"
+                  data-valeurs='<?= json_encode($liens, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>'></div>
+                <div class="champ-feedback"></div>
               </div>
-
-              <div class="resume-bloc resume-indices">
-                <h3><?= esc_html__('Indices', 'chassesautresor-com'); ?></h3>
-                <div class="dashboard-grid stats-cards">
-                  <?php
-                  $est_admin        = current_user_can('administrator');
-                  $est_organisateur = utilisateur_est_organisateur_associe_a_chasse(get_current_user_id(), $chasse_id);
-                  $est_publie       = get_post_status($chasse_id) === 'publish';
-                  $statut_valide    = get_field('chasse_cache_statut_validation', $chasse_id) === 'valide';
-
-                  $peut_ajouter_indice = $est_admin || ($est_organisateur && $est_publie && $statut_valide);
-                  ?>
-                  <div class="dashboard-card champ-chasse champ-indices<?= $peut_ajouter_indice ? '' : ' disabled'; ?>">
-                    <i class="fa-regular fa-circle-question icone-defaut" aria-hidden="true"></i>
-                    <h3><?= esc_html__('Indices', 'chassesautresor-com'); ?></h3>
-                    <?php if ($peut_ajouter_indice) : ?>
-                      <a href="#" class="stat-value"><?= esc_html__('Ajouter', 'chassesautresor-com'); ?></a>
-                    <?php else : ?>
-                      <span class="stat-value"><?= esc_html__('Ajouter', 'chassesautresor-com'); ?></span>
-                    <?php endif; ?>
-                  </div>
-                </div>
+              <?php
+              if (
+                  est_organisateur()
+                  && ($infos_chasse['statut'] ?? '') !== 'revision'
+                  && ($infos_chasse['statut_validation'] ?? '') === 'valide'
+              ) :
+                  $format = isset($_GET['format']) ? sanitize_key($_GET['format']) : 'png';
+                  $formats_autorises = ['png', 'svg', 'eps'];
+                  if (!in_array($format, $formats_autorises, true)) {
+                      $format = 'png';
+                  }
+                  $url = get_permalink($chasse_id);
+                  $url_qr_code = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data='
+                      . rawurlencode($url)
+                      . '&format=' . $format;
+              ?>
+              <div class="dashboard-card champ-qr-code">
+                <img class="qr-code-icon" src="<?= esc_url($url_qr_code); ?>" alt="<?= esc_attr__('QR code de la chasse', 'chassesautresor-com'); ?>">
+                <h3><?= esc_html__('QR code de votre chasse', 'chassesautresor-com'); ?></h3>
+                <a class="stat-value" href="<?= esc_url($url_qr_code); ?>"
+                  download="<?= esc_attr('qr-chasse-' . $chasse_id . '.' . $format); ?>"><?= esc_html__('Télécharger', 'chassesautresor-com'); ?></a>
               </div>
+              <?php endif; ?>
+            </div>
 
-              <div class="resume-bloc resume-news">
-                <h3>News</h3>
-                <ul class="resume-infos">
-                  <li class="champ-chasse champ-placeholder">Section à venir</li>
-                </ul>
-              </div>
-
+            <?php
+            $par_page_indices = 10;
+            $page_indices     = 1;
+            $indices_query    = new WP_Query([
+              'post_type'      => 'indice',
+              'post_status'    => ['publish', 'pending', 'draft'],
+              'orderby'        => 'date',
+              'order'          => 'DESC',
+              'posts_per_page' => $par_page_indices,
+              'paged'          => $page_indices,
+              'meta_query'     => [
+                [
+                  'key'   => 'indice_cible_type',
+                  'value' => 'chasse',
+                ],
+                [
+                  'key'   => 'indice_chasse_linked',
+                  'value' => $chasse_id,
+                ],
+              ],
+            ]);
+            $indices_list  = $indices_query->posts;
+            $pages_indices = (int) $indices_query->max_num_pages;
+            ?>
+            <h3><?= esc_html__('Indices', 'chassesautresor-com'); ?></h3>
+            <div class="liste-indices" data-page="1" data-pages="<?= esc_attr($pages_indices); ?>" data-objet-type="chasse" data-objet-id="<?= esc_attr($chasse_id); ?>" data-ajax-url="<?= esc_url(admin_url('admin-ajax.php')); ?>">
+              <?php
+              get_template_part('template-parts/common/indices-table', null, [
+                'indices'    => $indices_list,
+                'page'       => 1,
+                'pages'      => $pages_indices,
+                'objet_type' => 'chasse',
+                'objet_id'   => $chasse_id,
+              ]);
+              ?>
             </div>
           </div>
         </div>

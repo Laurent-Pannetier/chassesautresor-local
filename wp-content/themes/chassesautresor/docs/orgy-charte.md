@@ -11,9 +11,9 @@ Le mode Orgy est actif lorsque la classe `mode-edition` est présente sur la bal
 
 ## Feuilles de style
 
-- `assets/css/edition.css` : styles des panneaux d'édition frontaux.
-- `assets/css/mon-compte.css` : mise en page du tableau de bord utilisateur.
-- `assets/css/general.css` : variables CSS du mode Orgy sous la classe `.mode-edition`.
+- `assets/scss/_edition.scss` : styles des panneaux d'édition frontaux.
+- `assets/scss/_mon-compte.scss` : mise en page du tableau de bord utilisateur.
+- `assets/scss/_general.scss` : variables CSS du mode Orgy sous la classe `.mode-edition`.
 
 ## Structure et composants
 
@@ -25,7 +25,7 @@ Le mode Orgy est actif lorsque la classe `mode-edition` est présente sur la bal
 ### Indentation des labels
 
 Les formulaires des panneaux d'édition alignent les zones de saisie grâce à une largeur minimale appliquée aux labels.
-Cette valeur est centralisée dans `assets/css/general.css` via la variable `--editor-label-width` (par défaut : `150px`).
+Cette valeur est centralisée dans `assets/scss/_general.scss` via la variable `--editor-label-width` (par défaut : `150px`).
 Modifier cette variable ajuste l'indentation de tous les champs du mode Orgy.
 
 ## Typographie

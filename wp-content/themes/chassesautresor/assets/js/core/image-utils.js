@@ -49,7 +49,7 @@ function initChampImage(bloc) {
       }
 
       if (feedback) {
-        feedback.textContent = 'Enregistrement...';
+        feedback.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>';
         feedback.className = 'champ-feedback champ-loading';
       }
 
@@ -59,7 +59,8 @@ function initChampImage(bloc) {
         body: new URLSearchParams({
           action: (cpt === 'chasse') ? 'modifier_champ_chasse' :
             (cpt === 'enigme') ? 'modifier_champ_enigme' :
-              'modifier_champ_organisateur',
+              (cpt === 'indice') ? 'modifier_champ_indice' :
+                'modifier_champ_organisateur',
           champ,
           valeur: id,
           post_id: postId
@@ -69,8 +70,9 @@ function initChampImage(bloc) {
         .then(res => {
           if (res.success) {
             if (feedback) {
-              feedback.textContent = '';
+              feedback.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i>';
               feedback.className = 'champ-feedback champ-success';
+              setTimeout(() => { feedback.innerHTML = ''; feedback.className = 'champ-feedback'; }, 1000);
             }
             if (typeof window.mettreAJourResumeInfos === 'function') {
               window.mettreAJourResumeInfos();
@@ -80,6 +82,7 @@ function initChampImage(bloc) {
             }
           } else {
             if (feedback) {
+              feedback.innerHTML = '';
               feedback.textContent = '❌ Erreur : ' + (res.data || 'inconnue');
               feedback.className = 'champ-feedback champ-error';
             }
@@ -87,6 +90,7 @@ function initChampImage(bloc) {
         })
         .catch(() => {
           if (feedback) {
+            feedback.innerHTML = '';
             feedback.textContent = '❌ Erreur réseau.';
             feedback.className = 'champ-feedback champ-error';
           }

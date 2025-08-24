@@ -20,6 +20,6 @@
     "jest-environment-jsdom": "^30.0.5",
     "postcss": "^8.4.38",
     "postcss-custom-media": "^11.0.6",
-    "postcss-import": "^16.1.1"
+    "sass": "^1.90.0"
   }
 }

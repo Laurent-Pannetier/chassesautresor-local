@@ -276,6 +276,44 @@ tbody tr:nth-child(even) {
   margin-left: 4px;
 }
 
+/* Indices table */
+.indices-table th,
+.indices-table td {
+  text-align: left;
+}
+
+.indices-table td img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+}
+
+.indices-table .badge-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  font-size: 0.875rem;
+  border: 0;
+  cursor: pointer;
+  color: var(--color-text-primary);
+  text-decoration: none;
+}
+
+.indices-table .badge-action.edit {
+  background: var(--color-secondary);
+}
+
+.indices-table .badge-action.delete {
+  background: var(--color-error);
+}
+
+.indices-table .badge-action + .badge-action {
+  margin-left: 0.25rem;
+}
+
 /* Labels */
 .etiquette {
   display: inline-block;
@@ -365,7 +403,7 @@ span.champ-obligatoire {
   --color-editor-field-hover:      #E8F0FE;   /* 💠 Fond des champs actifs / survolés */
   --color-editor-placeholder:      #9AA0A6;   /* 💬 Placeholder ou aide contextuelle */
 
-  --editor-label-width:            221px;     /* 📏 Largeur minimale des labels dans les panneaux */
+  --editor-label-width:            309px;     /* 📏 Largeur minimale des labels dans les panneaux */
   --editor-icon-width:            1rem;      /* 📏 Largeur des icônes dans les panneaux */
 }
 

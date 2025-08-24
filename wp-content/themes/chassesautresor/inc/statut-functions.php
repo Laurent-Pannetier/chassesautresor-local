@@ -5,6 +5,32 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+if (!function_exists('enigme_get_bonnes_reponses')) {
+    function enigme_get_bonnes_reponses(int $enigme_id): array
+    {
+        $raw = function_exists('get_field') ? get_field('enigme_reponse_bonne', $enigme_id) : '';
+
+        if (is_string($raw) && $raw !== '') {
+            $decoded = json_decode($raw, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                return array_values(array_filter(array_map('strval', $decoded)));
+            }
+
+            if (function_exists('update_field')) {
+                update_field('enigme_reponse_bonne', wp_json_encode([$raw]), $enigme_id);
+            }
+
+            return [$raw];
+        }
+
+        if (is_array($raw)) {
+            return array_values(array_filter(array_map('strval', $raw)));
+        }
+
+        return [];
+    }
+}
+
 //
 // 🧩 GESTION DES STATUTS ET DE L’ACCESSIBILITÉ DES ÉNIGMES
 // 🧠 GESTION DES STATUTS DES CHASSES
@@ -514,8 +540,8 @@ function enigme_mettre_a_jour_etat_systeme(int $enigme_id, bool $mettre_a_jour =
 
     // ❓ Vérifie si la réponse attendue est bien définie si validation = automatique
     $mode = get_field('enigme_mode_validation', $enigme_id);
-    $reponse = get_field('enigme_reponse_bonne', $enigme_id);
-    if ($etat === 'accessible' && $mode === 'automatique' && !$reponse) {
+    $reponses = enigme_get_bonnes_reponses($enigme_id);
+    if ($etat === 'accessible' && $mode === 'automatique' && empty($reponses)) {
         $etat = 'invalide';
         cat_debug("🧩 #$enigme_id → invalide (automatique sans réponse)");
     }
@@ -703,8 +729,8 @@ function enigme_est_complet(int $enigme_id): bool
 
     // 🔄 [NOVELTY] Require an expected answer if validation is automatic
     $mode = get_field('enigme_mode_validation', $enigme_id);
-    $reponse = trim((string) get_field('enigme_reponse_bonne', $enigme_id));
-    $reponse_ok = $mode !== 'automatique' || $reponse !== '';
+    $reponses = enigme_get_bonnes_reponses($enigme_id);
+    $reponse_ok = $mode !== 'automatique' || !empty($reponses);
 
     // ✅ Ensure prerequisite list is filled when required
     $condition_acces = get_field('enigme_acces_condition', $enigme_id) ?? 'immediat';
