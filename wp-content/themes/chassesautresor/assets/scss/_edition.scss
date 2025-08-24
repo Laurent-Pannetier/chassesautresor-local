@@ -895,6 +895,12 @@ body.edition-active .edition-panel {
   background: none;
 }
 
+.edition-panel .bouton-cta:focus,
+.edition-panel .bouton-cta:hover {
+  opacity: 1;
+  background: none;
+}
+
 .mce-menu .mce-container-body {
   color: var(--color-editor-text);
 }
