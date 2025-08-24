@@ -348,9 +348,17 @@ msgstr "Insufficient Points"
 msgid "Indice #%d"
 msgstr "Clue #%d"
 
-#: inc/edition/edition-core.php:155
-msgid "lié à"
-msgstr "linked to"
+#: inc/edition/edition-core.php:157
+msgid "Liée à"
+msgstr "Linked to"
+
+#: inc/edition/edition-core.php:158
+msgid "la chasse"
+msgstr "the hunt"
+
+#: inc/edition/edition-core.php:159
+msgid "l’énigme"
+msgstr "the riddle"
 
 #: inc/edition/edition-indice.php:151
 #, fuzzy

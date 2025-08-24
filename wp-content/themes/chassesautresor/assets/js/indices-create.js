@@ -4,6 +4,9 @@
     overlay.className = 'indice-modal-overlay';
     var titre = indicesCreate.texts.indiceTitre.replace('%d', btn.dataset.indiceRang || '');
     var needRiddle = btn.dataset.objetType === 'enigme' && !btn.dataset.indiceId;
+    var typeLabel = btn.dataset.objetType === 'enigme'
+      ? indicesCreate.texts.typeEnigme
+      : indicesCreate.texts.typeChasse;
     var riddleField = needRiddle
       ? `<p><label>${indicesCreate.texts.enigmeLabel}<br><select name="indice_enigme_linked"><option value="">${indicesCreate.texts.loading}</option></select></label></p>`
       : '';
@@ -11,7 +14,7 @@
       <div class="indice-modal">
         <div class="indice-modal-header">
           <h2>${titre}</h2>
-          <p>${indicesCreate.texts.lieA} - <span class="objet-titre">${btn.dataset.objetTitre || ''}</span></p>
+          <p>${indicesCreate.texts.lieA} ${typeLabel} - <span class="objet-titre">${btn.dataset.objetTitre || ''}</span></p>
         </div>
         <button type="button" class="indice-modal-close" aria-label="${indicesCreate.texts.close}">×</button>
         <form class="indice-modal-form">

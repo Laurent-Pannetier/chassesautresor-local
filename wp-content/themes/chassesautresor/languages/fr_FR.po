@@ -349,9 +349,17 @@ msgstr "Points insuffisants"
 msgid "Indice #%d"
 msgstr "Indice #%d"
 
-#: inc/edition/edition-core.php:155
-msgid "lié à"
-msgstr "lié à"
+#: inc/edition/edition-core.php:157
+msgid "Liée à"
+msgstr "Liée à"
+
+#: inc/edition/edition-core.php:158
+msgid "la chasse"
+msgstr "la chasse"
+
+#: inc/edition/edition-core.php:159
+msgid "l’énigme"
+msgstr "l’énigme"
 
 #: inc/edition/edition-indice.php:151
 #, fuzzy
