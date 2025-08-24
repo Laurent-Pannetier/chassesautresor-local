@@ -3240,6 +3240,27 @@ body.panneau-ouvert::before {
   margin-top: 0;
 }
 
+.dashboard-card.champ-indices .cta-indice-options, .champ-indices.carte-orgy .cta-indice-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transition: opacity 0.3s ease, max-height 0.3s ease;
+}
+
+.dashboard-card.champ-indices.show-options .cta-indice-options, .champ-indices.show-options.carte-orgy .cta-indice-options {
+  opacity: 1;
+  max-height: 10rem;
+  pointer-events: auto;
+}
+
+.dashboard-card.champ-indices.show-options .cta-indice-pour, .champ-indices.show-options.carte-orgy .cta-indice-pour {
+  display: none;
+}
+
 .dashboard-card.champ-indices .cta-indice-chasse, .champ-indices.carte-orgy .cta-indice-chasse {
   background-color: var(--color-editor-button);
   color: var(--color-white);
