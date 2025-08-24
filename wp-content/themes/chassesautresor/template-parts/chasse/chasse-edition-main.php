@@ -964,6 +964,11 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
               ]);
               ?>
             </div>
+            <div class="dashboard-card carte-orgy champ-visuels">
+              <?php get_template_part('template-parts/chasse/partials/chasse-partial-visuels', null, [
+                'chasse_id' => $chasse_id,
+              ]); ?>
+            </div>
           </div>
         </div>
       </div>

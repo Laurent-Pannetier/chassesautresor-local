@@ -3871,6 +3871,41 @@ body.panneau-ouvert::before {
   background-color: rgba(var(--color-black-rgb), 0.8);
 }
 
+/* ========== 🎨 VISUELS PARTAGE ========== */
+.champ-visuels {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.champ-visuels .visuel-web {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  align-items: center;
+}
+
+.champ-visuels .visuel-image,
+.champ-visuels .visuel-qr {
+  max-width: 150px;
+  height: auto;
+}
+
+.champ-visuels .visuel-contenu {
+  flex: 1;
+  min-width: 200px;
+}
+
+.champ-visuels .visuel-description {
+  font-size: clamp(0.85rem, 2.5vw, 1rem);
+}
+
+@media (max-width: 600px) {
+  .champ-visuels .visuel-web {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
 /* Layout for enigma pages */
 .enigme-layout {
   display: grid;

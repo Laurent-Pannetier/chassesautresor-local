@@ -32,7 +32,14 @@ const html = `
       </div>
     </template>
   </div>
-  <div id="chasse-tab-animation"></div>
+  <div id="chasse-tab-animation">
+    <div class="dashboard-card carte-orgy champ-visuels">
+      <p id="visuels-texte">Texte à copier</p>
+      <button type="button" class="copier-btn" data-copy-target="#visuels-texte">Copier</button>
+      <p id="visuels-complet">Message complet</p>
+      <button type="button" class="copier-btn" data-copy-target="#visuels-complet">Copier</button>
+    </div>
+  </div>
 `;
 
 describe('chasse-edit UI', () => {
@@ -50,6 +57,8 @@ describe('chasse-edit UI', () => {
     global.initChampNbGagnants = jest.fn();
     global.modifierChampSimple = jest.fn(() => Promise.resolve(true));
     global.wp = { i18n: { __: (s) => s } };
+    global.navigator = global.navigator || {};
+    global.navigator.clipboard = { writeText: jest.fn() };
     jest.resetModules();
     require('../../wp-content/themes/chassesautresor/assets/js/chasse-edit.js');
   });
@@ -105,5 +114,13 @@ describe('chasse-edit UI', () => {
     expect(message).not.toBeNull();
     expect(message.textContent).toContain('Alice');
     expect(message.textContent).toContain('02/01/2024');
+  });
+
+  test('visuels block present and copy works', () => {
+    const bloc = document.querySelector('#chasse-tab-animation .champ-visuels');
+    expect(bloc).not.toBeNull();
+    const btn = bloc.querySelector('button[data-copy-target="#visuels-texte"]');
+    btn.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(global.navigator.clipboard.writeText).toHaveBeenCalledWith('Texte à copier');
   });
 });

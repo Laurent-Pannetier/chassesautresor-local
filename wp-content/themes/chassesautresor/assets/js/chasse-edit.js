@@ -597,12 +597,30 @@ window.rafraichirCarteIndices = rafraichirCarteIndices;
           }
         });
     }
-    });
+  });
 
-    window.addEventListener('message', (e) => {
-      if (e.data && (e.data.type === 'indice-created' || e.data === 'indice-created')) {
-        rafraichirCarteIndices();
-      }
+  // ==============================
+  // 📋 Copie visuels
+  // ==============================
+  const blocVisuels = document.querySelector('.champ-visuels');
+  if (blocVisuels) {
+    blocVisuels.querySelectorAll('button[data-copy-target]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const sel = btn.getAttribute('data-copy-target');
+        const cible = sel ? blocVisuels.querySelector(sel) : null;
+        if (!cible) return;
+        const texte = cible.textContent || cible.value || '';
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(texte);
+        }
+      });
+    });
+  }
+
+  window.addEventListener('message', (e) => {
+    if (e.data && (e.data.type === 'indice-created' || e.data === 'indice-created')) {
+      rafraichirCarteIndices();
+    }
     });
     window.addEventListener('indice-created', rafraichirCarteIndices);
   }
