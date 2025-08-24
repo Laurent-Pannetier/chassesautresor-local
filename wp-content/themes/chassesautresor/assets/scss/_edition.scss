@@ -149,6 +149,28 @@
   margin-bottom: var(--space-xs);
 }
 
+.qr-code-block {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-md);
+  margin-top: var(--space-lg);
+}
+
+.qr-code-block .qr-code-image {
+  flex: 0 0 200px;
+}
+
+.qr-code-block .qr-code-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.qr-code-block .qr-code-content h3 {
+  margin-top: 0;
+}
+
 /* ========== 🖊️ CHAMPS ÉDITABLES ========== */
 
 .champ-edition {
