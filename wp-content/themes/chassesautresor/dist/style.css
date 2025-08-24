@@ -492,8 +492,8 @@ button,
 .bouton-cta {
   display: inline-block;
   padding: 10px 15px;
-  background-color: var(--color-background-button);
-  color: var(--color-text-primary);
+  background-color: var(--color-gris-3);
+  color: var(--color-text-secondary);
   border-radius: 5px;
   text-decoration: none;
   font-weight: bold;
@@ -505,7 +505,16 @@ button,
 }
 
 .bouton-cta:hover {
-  background-color: var(--color-secondary);
+  background-color: var(--color-gris-carte);
+}
+
+.bouton-cta--color {
+  background-color: var(--color-background-button);
+  color: var(--color-text-primary);
+}
+
+.bouton-cta--color:hover {
+  background-color: var(--color-background-button-hover);
 }
 
 .bouton-cta:disabled {
@@ -2049,25 +2058,25 @@ body .header-img-modifiable .icone-modif {
   align-items: center;
 }
 
-.dashboard-card.champ-liens .icone-defaut {
+.dashboard-card.champ-liens .icone-defaut, .champ-liens.carte-orgy .icone-defaut {
   display: none;
 }
 
-.dashboard-card.champ-liens.champ-vide .champ-affichage-liens {
+.dashboard-card.champ-liens.champ-vide .champ-affichage-liens, .champ-liens.champ-vide.carte-orgy .champ-affichage-liens {
   display: none;
 }
 
-.dashboard-card.champ-liens.champ-vide .icone-defaut {
+.dashboard-card.champ-liens.champ-vide .icone-defaut, .champ-liens.champ-vide.carte-orgy .icone-defaut {
   display: block;
 }
 
-.dashboard-card.champ-liens .liste-liens-publics {
+.dashboard-card.champ-liens .liste-liens-publics, .champ-liens.carte-orgy .liste-liens-publics {
   display: flex;
   gap: var(--space-xs);
   justify-content: center;
 }
 
-.dashboard-card.champ-liens .texte-lien {
+.dashboard-card.champ-liens .texte-lien, .champ-liens.carte-orgy .texte-lien {
   display: none;
 }
 
@@ -3145,7 +3154,7 @@ body.panneau-ouvert::before {
   margin-top: 20px;
 }
 
-.dashboard-card {
+.dashboard-card, .carte-orgy {
   background-color: var(--color-editor-background);
   border: 1px solid var(--color-editor-border);
   border-radius: 8px;
@@ -3161,83 +3170,85 @@ body.panneau-ouvert::before {
   position: relative;
 }
 
-.dashboard-grid > .dashboard-card:only-child {
+.dashboard-grid > .dashboard-card:only-child, .dashboard-grid > .carte-orgy:only-child {
   max-width: var(--dashboard-card-max-width);
   width: 100%;
   justify-self: center;
 }
 
-.dashboard-card.disabled {
+.dashboard-card.disabled, .disabled.carte-orgy {
   opacity: 0.5;
   filter: grayscale(100%);
   pointer-events: none;
   cursor: not-allowed;
 }
 
-.dashboard-card.disabled h3,
+.dashboard-card.disabled h3, .disabled.carte-orgy h3,
 .dashboard-card.disabled i,
-.dashboard-card.disabled .stat-value {
+.disabled.carte-orgy i,
+.dashboard-card.disabled .stat-value,
+.disabled.carte-orgy .stat-value {
   color: var(--color-editor-text-muted);
 }
 
-.dashboard-card i {
+.dashboard-card i, .carte-orgy i {
   font-size: 2rem;
   color: var(--color-editor-heading);
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.1));
 }
 
-.dashboard-card img {
+.dashboard-card img, .carte-orgy img {
   width: 2rem;
   height: 2rem;
 }
 
-.dashboard-card.solution-option {
+.dashboard-card.solution-option, .solution-option.carte-orgy {
   cursor: pointer;
   transition: background-color 0.2s, border-color 0.2s, opacity 0.2s;
 }
 
-.dashboard-card.solution-option.active {
+.dashboard-card.solution-option.active, .solution-option.active.carte-orgy {
   border-color: var(--color-editor-button);
   background-color: rgba(26, 115, 232, 0.1);
   opacity: 1;
 }
 
-.dashboard-card.solution-option:not(.active) {
+.dashboard-card.solution-option:not(.active), .solution-option.carte-orgy:not(.active) {
   opacity: 0.6;
 }
 
-.dashboard-card h3 {
+.dashboard-card h3, .carte-orgy h3 {
   margin: 0;
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--color-editor-heading);
 }
 
-.dashboard-card.champ-indices .stat-value {
+.dashboard-card.champ-indices .stat-value, .champ-indices.carte-orgy .stat-value {
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
 }
 
-.dashboard-card.champ-indices .cta-indice-chasse {
+.dashboard-card.champ-indices .cta-indice-chasse, .champ-indices.carte-orgy .cta-indice-chasse {
   background-color: var(--color-editor-button);
   color: var(--color-white);
 }
 
-.dashboard-card.champ-indices .cta-indice-chasse:hover {
+.dashboard-card.champ-indices .cta-indice-chasse:hover, .champ-indices.carte-orgy .cta-indice-chasse:hover {
   background-color: var(--color-editor-button-hover);
 }
 
-.dashboard-card.champ-indices .cta-indice-enigme {
+.dashboard-card.champ-indices .cta-indice-enigme, .champ-indices.carte-orgy .cta-indice-enigme {
   background-color: var(--color-editor-success);
   color: var(--color-white);
 }
 
-.dashboard-card.champ-indices .cta-indice-enigme:hover {
+.dashboard-card.champ-indices .cta-indice-enigme:hover, .champ-indices.carte-orgy .cta-indice-enigme:hover {
   background-color: var(--color-editor-success-hover);
 }
 
-.dashboard-card .solution-reset {
+.dashboard-card .solution-reset, .carte-orgy .solution-reset {
   position: absolute;
   bottom: 8px;
   left: 8px;
@@ -3250,7 +3261,7 @@ body.panneau-ouvert::before {
   font-size: 1rem;
 }
 
-.dashboard-card .solution-reset:hover {
+.dashboard-card .solution-reset:hover, .carte-orgy .solution-reset:hover {
   color: var(--color-editor-text);
 }
 
@@ -3259,7 +3270,7 @@ body.panneau-ouvert::before {
   font-weight: 700;
 }
 
-.dashboard-card.solution-delai .stat-value {
+.dashboard-card.solution-delai .stat-value, .solution-delai.carte-orgy .stat-value {
   display: flex;
   flex-direction: line;
   gap: var(--space-xxs);
@@ -3268,14 +3279,14 @@ body.panneau-ouvert::before {
   line-height: 1.2;
 }
 
-.dashboard-card.solution-delai .stat-value span {
+.dashboard-card.solution-delai .stat-value span, .solution-delai.carte-orgy .stat-value span {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-xxs);
 }
 
-.dashboard-card.solution-reassurance {
+.dashboard-card.solution-reassurance, .solution-reassurance.carte-orgy {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -3287,19 +3298,19 @@ body.panneau-ouvert::before {
   margin: 4rem auto 0;
 }
 
-.dashboard-card.solution-reassurance .reassurance-icon {
+.dashboard-card.solution-reassurance .reassurance-icon, .solution-reassurance.carte-orgy .reassurance-icon {
   font-size: 5rem;
   color: var(--color-editor-heading);
 }
 
-.dashboard-card.solution-reassurance ul {
+.dashboard-card.solution-reassurance ul, .solution-reassurance.carte-orgy ul {
   margin: 0;
   padding: 0;
   list-style: none;
   text-align: left;
 }
 
-.dashboard-card.solution-reassurance ul li {
+.dashboard-card.solution-reassurance ul li, .solution-reassurance.carte-orgy ul li {
   margin-bottom: var(--space-xs);
   font-size: 1.25rem;
   line-height: 1.5;
@@ -3308,23 +3319,23 @@ body.panneau-ouvert::before {
   gap: var(--space-sm);
 }
 
-.dashboard-card.solution-reassurance ul li i {
+.dashboard-card.solution-reassurance ul li i, .solution-reassurance.carte-orgy ul li i {
   color: var(--color-editor-success);
   font-size: 1.2rem;
   margin-top: 0.3rem;
 }
 
-.dashboard-card.solution-reassurance ul li strong {
+.dashboard-card.solution-reassurance ul li strong, .solution-reassurance.carte-orgy ul li strong {
   font-size: 1.4rem;
 }
 
-.dashboard-card.graph-card {
+.dashboard-card.graph-card, .graph-card.carte-orgy {
   align-items: stretch;
   text-align: left;
   margin: var(--space-md) 0 var(--space-3xl);
 }
 
-.dashboard-card.graph-card h3 {
+.dashboard-card.graph-card h3, .graph-card.carte-orgy h3 {
   text-align: center;
 }
 
@@ -6690,7 +6701,7 @@ footer .ast-footer-widget a {
   margin: var(--space-md) 0 var(--space-3xl);
 }
 
-.dashboard-card {
+.dashboard-card, .carte-orgy {
   background: hsl(var(--card));
   border: 1px solid hsl(var(--border));
   border-radius: 8px;
@@ -6704,17 +6715,17 @@ footer .ast-footer-widget a {
   gap: 8px;
 }
 
-.dashboard-grid > .dashboard-card:only-child {
+.dashboard-grid > .dashboard-card:only-child, .dashboard-grid > .carte-orgy:only-child {
   max-width: var(--dashboard-card-max-width);
   width: 100%;
   justify-self: center;
 }
 
-.dashboard-card:hover {
+.dashboard-card:hover, .carte-orgy:hover {
   background: hsl(var(--muted));
 }
 
-.dashboard-card .stat-value {
+.dashboard-card .stat-value, .carte-orgy .stat-value {
   background: none;
   border: none;
   padding: 0;
@@ -6723,7 +6734,7 @@ footer .ast-footer-widget a {
   color: hsl(var(--foreground));
 }
 
-.dashboard-card > i {
+.dashboard-card > i, .carte-orgy > i {
   font-size: 2rem;
 }
 
@@ -6744,7 +6755,7 @@ footer .ast-footer-widget a {
 }
 
 /* listes */
-.dashboard-card ul li {
+.dashboard-card ul li, .carte-orgy ul li {
   list-style: none;
   text-align: left;
 }
@@ -6783,24 +6794,24 @@ footer .ast-footer-widget a {
 }
 
 /* Tuile Paiment Points (organisateurs) */
-.dashboard-card.points-card {
+.dashboard-card.points-card, .points-card.carte-orgy {
   text-align: center;
 }
 
-.dashboard-card.points-card p {
+.dashboard-card.points-card p, .points-card.carte-orgy p {
   margin-bottom: 15px;
 }
 
-.dashboard-card.points-card p.vos-points {
+.dashboard-card.points-card p.vos-points, .points-card.carte-orgy p.vos-points {
   border-bottom: 1px solid var(--color-primary);
   padding-bottom: 10px;
 }
 
-.dashboard-card.points-card label {
+.dashboard-card.points-card label, .points-card.carte-orgy label {
   font-size: 18px;
 }
 
-.dashboard-card input {
+.dashboard-card input, .carte-orgy input {
   border: 1px solid var(--color-gris-3);
   background-color: rgba(255, 255, 255, 0.1);
   color: var(--color-secondary);
@@ -6810,16 +6821,16 @@ footer .ast-footer-widget a {
 }
 
 /* Mise en avant pour les organisateurs en création */
-.dashboard-card.creation-card {
+.dashboard-card.creation-card, .creation-card.carte-orgy {
   border: 2px dashed var(--color-editor-error);
   background: rgba(217, 48, 37, 0.1);
 }
 
-.dashboard-card.creation-card ul {
+.dashboard-card.creation-card ul, .creation-card.carte-orgy ul {
   padding-left: 1.2em;
 }
 
-.dashboard-card.creation-card li {
+.dashboard-card.creation-card li, .creation-card.carte-orgy li {
   list-style: disc;
 }
 
