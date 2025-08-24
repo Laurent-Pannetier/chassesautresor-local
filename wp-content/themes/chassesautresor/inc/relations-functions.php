@@ -451,14 +451,26 @@ function recuperer_enigmes_pour_chasse(int $chasse_id): array
   $query = new WP_Query([
     'post_type'      => 'enigme',
     'posts_per_page' => -1,
-    'post_status'    => ['publish', 'pending', 'draft'], // extensible
-    'orderby'        => 'menu_order', // ou autre critère futur
+    'post_status'    => ['publish', 'pending'],
+    'orderby'        => 'menu_order',
     'order'          => 'ASC',
     'meta_query'     => [
       [
         'key'     => 'enigme_chasse_associee',
         'value'   => $chasse_id,
-        'compare' => '=', // champ Relationship stocké sous forme d'ID
+        'compare' => '=',
+      ],
+      [
+        'relation' => 'OR',
+        [
+          'key'     => 'enigme_cache_statut_validation',
+          'compare' => 'NOT EXISTS',
+        ],
+        [
+          'key'     => 'enigme_cache_statut_validation',
+          'value'   => 'banni',
+          'compare' => '!=',
+        ],
       ],
     ],
   ]);

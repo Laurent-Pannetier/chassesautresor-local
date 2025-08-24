@@ -348,6 +348,42 @@ function creer_indice_et_rediriger_si_appel(): void
 add_action('template_redirect', 'creer_indice_et_rediriger_si_appel');
 
 /**
+ * AJAX handler listing enigmas available for a hunt.
+ *
+ * @return void
+ */
+function ajax_chasse_lister_enigmes(): void
+{
+    if (!is_user_logged_in()) {
+        wp_send_json_error('non_connecte');
+    }
+
+    $chasse_id = isset($_POST['chasse_id']) ? (int) $_POST['chasse_id'] : 0;
+
+    if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
+        wp_send_json_error('post_invalide');
+    }
+
+    if (!indice_action_autorisee('create', 'chasse', $chasse_id)) {
+        wp_send_json_error('acces_refuse');
+    }
+
+    $posts = recuperer_enigmes_pour_chasse($chasse_id);
+
+    $enigmes = array_map(
+        static fn($p) => [
+            'id'          => $p->ID,
+            'title'       => get_the_title($p),
+            'indice_rang' => prochain_rang_indice($p->ID, 'enigme'),
+        ],
+        $posts
+    );
+
+    wp_send_json_success(['enigmes' => $enigmes]);
+}
+add_action('wp_ajax_chasse_lister_enigmes', 'ajax_chasse_lister_enigmes');
+
+/**
  * AJAX handler returning indices card HTML for a hunt.
  *
  * @return void

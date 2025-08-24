@@ -18,6 +18,8 @@ $objet_titre = get_the_title($objet_id);
 $indice_rang = prochain_rang_indice($objet_id, $objet_type);
 
 $peut_ajouter = indice_action_autorisee('create', $objet_type, $objet_id);
+$enigmes_disponibles = $objet_type === 'chasse' ? recuperer_enigmes_pour_chasse($objet_id) : [];
+$has_enigmes = !empty($enigmes_disponibles);
 ?>
 <div class="dashboard-card champ-<?= esc_attr($objet_type); ?> champ-indices<?= $peut_ajouter ? '' : ' disabled'; ?>">
   <i class="fa-solid fa-kit-medical icone-defaut" aria-hidden="true"></i>
@@ -34,16 +36,19 @@ $peut_ajouter = indice_action_autorisee('create', $objet_type, $objet_id);
       >
         <?= esc_html__('La chasse entière', 'chassesautresor-com'); ?>
       </a>
-      <a
-        href="#"
-        class="bouton-cta cta-indice-enigme"
-        data-objet-type="enigme"
-        <?php if ($default_enigme) : ?>
-          data-default-enigme="<?= esc_attr($default_enigme); ?>"
-        <?php endif; ?>
-      >
-        <?= esc_html__('Une énigme de la chasse', 'chassesautresor-com'); ?>
-      </a>
+      <?php if ($has_enigmes) : ?>
+        <a
+          href="#"
+          class="bouton-cta cta-indice-enigme"
+          data-objet-type="enigme"
+          data-chasse-id="<?= esc_attr($objet_id); ?>"
+          <?php if ($default_enigme) : ?>
+            data-default-enigme="<?= esc_attr($default_enigme); ?>"
+          <?php endif; ?>
+        >
+          <?= esc_html__('Une énigme de la chasse', 'chassesautresor-com'); ?>
+        </a>
+      <?php endif; ?>
     </div>
   <?php else : ?>
     <span class="stat-value">
