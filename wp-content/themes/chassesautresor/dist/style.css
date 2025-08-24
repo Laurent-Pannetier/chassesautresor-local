@@ -3228,33 +3228,39 @@ body.panneau-ouvert::before {
   color: var(--color-editor-heading);
 }
 
-.dashboard-card.champ-indices .stat-value, .champ-indices.carte-orgy .stat-value {
+.dashboard-card.champ-indices .stat-value,
+.champ-indices.carte-orgy .stat-value {
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
 }
 
-.dashboard-card.champ-indices .stat-value .bouton-cta, .champ-indices.carte-orgy .stat-value .bouton-cta {
+.dashboard-card.champ-indices .stat-value .bouton-cta,
+.champ-indices.carte-orgy .stat-value .bouton-cta {
   display: block;
   width: 100%;
   margin-top: 0;
 }
 
-.dashboard-card.champ-indices .cta-indice-chasse, .champ-indices.carte-orgy .cta-indice-chasse {
+.dashboard-card.champ-indices .cta-indice-chasse,
+.champ-indices.carte-orgy .cta-indice-chasse {
   background-color: var(--color-editor-button);
   color: var(--color-white);
 }
 
-.dashboard-card.champ-indices .cta-indice-chasse:hover, .champ-indices.carte-orgy .cta-indice-chasse:hover {
+.dashboard-card.champ-indices .cta-indice-chasse:hover,
+.champ-indices.carte-orgy .cta-indice-chasse:hover {
   background-color: var(--color-editor-button-hover);
 }
 
-.dashboard-card.champ-indices .cta-indice-enigme, .champ-indices.carte-orgy .cta-indice-enigme {
+.dashboard-card.champ-indices .cta-indice-enigme,
+.champ-indices.carte-orgy .cta-indice-enigme {
   background-color: var(--color-editor-success);
   color: var(--color-white);
 }
 
-.dashboard-card.champ-indices .cta-indice-enigme:hover, .champ-indices.carte-orgy .cta-indice-enigme:hover {
+.dashboard-card.champ-indices .cta-indice-enigme:hover,
+.champ-indices.carte-orgy .cta-indice-enigme:hover {
   background-color: var(--color-editor-success-hover);
 }
 
