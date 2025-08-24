@@ -1002,8 +1002,24 @@ function memoriser_cible_indice_avant_suppression(int $post_id): void
     }
 
     $cible_type = get_field('indice_cible_type', $post_id);
-    $chasse_id  = (int) get_field('indice_chasse_linked', $post_id);
-    $enigme_id  = $cible_type === 'enigme' ? (int) get_field('indice_enigme_linked', $post_id) : 0;
+
+    $linked_chasse = get_field('indice_chasse_linked', $post_id);
+    $chasse_id     = 0;
+    if (is_array($linked_chasse)) {
+        $first     = $linked_chasse[0] ?? null;
+        $chasse_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
+    } else {
+        $chasse_id = (int) $linked_chasse;
+    }
+
+    $linked_enigme = $cible_type === 'enigme' ? get_field('indice_enigme_linked', $post_id) : 0;
+    $enigme_id     = 0;
+    if (is_array($linked_enigme)) {
+        $first     = $linked_enigme[0] ?? null;
+        $enigme_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
+    } else {
+        $enigme_id = (int) $linked_enigme;
+    }
 
     if (!$chasse_id && $cible_type === 'enigme' && $enigme_id) {
         $chasse_id = recuperer_id_chasse_associee($enigme_id) ?: 0;

@@ -225,5 +225,23 @@ namespace ReordonnerIndicesTest {
 
             $this->assertSame(['chasse_id' => 5, 'enigme_id' => 7], $indice_delete_context);
         }
+
+        /**
+         * @runInSeparateProcess
+         * @preserveGlobalState disabled
+         */
+        public function test_memorises_chasse_from_array_before_deletion(): void
+        {
+            global $indice_delete_context, $get_field_overrides;
+            $get_field_overrides['indice_cible_type']    = 'enigme';
+            $get_field_overrides['indice_chasse_linked'] = [['ID' => 5]];
+            $get_field_overrides['indice_enigme_linked'] = 7;
+
+            require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
+
+            \memoriser_cible_indice_avant_suppression(99);
+
+            $this->assertSame(['chasse_id' => 5, 'enigme_id' => 7], $indice_delete_context);
+        }
     }
 }
