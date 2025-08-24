@@ -1859,7 +1859,9 @@ a[aria-disabled=true] {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-md);
+  -moz-column-gap: calc(4 * var(--space-xl));
+       column-gap: calc(4 * var(--space-xl));
+  row-gap: var(--space-md);
   margin-top: var(--space-lg);
 }
 

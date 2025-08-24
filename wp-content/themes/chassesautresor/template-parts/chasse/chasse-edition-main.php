@@ -973,7 +973,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   <h3><?= esc_html__('QR code de votre chasse', 'chassesautresor-com'); ?></h3>
                   <h4><?= esc_html__('Partagez votre chasse en un scan', 'chassesautresor-com'); ?></h4>
                   <p><?= esc_html__('Facilitez l\'accès à votre chasse avec un simple scan. Un QR code évite de saisir une URL et se partage facilement.', 'chassesautresor-com'); ?></p>
-                  <a class="bouton-cta" href="<?= esc_url($url_qr_code); ?>" download="<?= esc_attr('qr-chasse-' . $chasse_id . '.png'); ?>">
+                  <a class="bouton-cta qr-code-download" href="<?= esc_url($url_qr_code); ?>" download="<?= esc_attr('qr-chasse-' . $chasse_id . '.png'); ?>">
                     <?= esc_html__('Télécharger', 'chassesautresor-com'); ?>
                   </a>
                 </div>
