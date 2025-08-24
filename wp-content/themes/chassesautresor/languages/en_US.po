@@ -352,6 +352,18 @@ msgstr "Clue #%d"
 msgid "lié à"
 msgstr "linked to"
 
+#: inc/edition/edition-core.php:155
+msgid "liée à"
+msgstr "linked to"
+
+#: inc/edition/edition-core.php:155
+msgid "la chasse"
+msgstr "the hunt"
+
+#: inc/edition/edition-core.php:155
+msgid "l’énigme"
+msgstr "the riddle"
+
 #: inc/edition/edition-indice.php:151
 #, fuzzy
 msgid "Action non autorisée."
