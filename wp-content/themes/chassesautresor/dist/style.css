@@ -2099,6 +2099,19 @@ body .header-img-modifiable .icone-modif {
   display: flex;
   gap: var(--space-xs);
   justify-content: center;
+  flex-wrap: nowrap;
+}
+
+.dashboard-card.champ-liens .lien-public, .champ-liens.carte-orgy .lien-public {
+  padding: 0;
+  font-size: 2rem;
+  line-height: 1;
+  background: none;
+  gap: 0;
+}
+
+.dashboard-card.champ-liens .lien-public i, .champ-liens.carte-orgy .lien-public i {
+  font-size: inherit;
 }
 
 .dashboard-card.champ-liens .texte-lien, .champ-liens.carte-orgy .texte-lien {
@@ -3268,7 +3281,7 @@ body.panneau-ouvert::before {
 .dashboard-card.champ-indices .stat-value .bouton-cta, .champ-indices.carte-orgy .stat-value .bouton-cta {
   display: block;
   width: 100%;
-  margin-top: 0;
+  /*margin-top: 0;*/
 }
 
 .dashboard-card.champ-indices .cta-indice-options, .champ-indices.carte-orgy .cta-indice-options {
