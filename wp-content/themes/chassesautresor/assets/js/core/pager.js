@@ -31,7 +31,9 @@
      if (select) {
        select.value = String(current);
      }
-     pager.dispatchEvent(new CustomEvent('pager:change', { detail: { page: current } }));
+    pager.dispatchEvent(
+      new CustomEvent('pager:change', { detail: { page: current }, bubbles: true })
+    );
    });
  
    document.body.addEventListener('change', (e) => {
@@ -45,6 +47,8 @@
      }
      const page = parseInt(select.value, 10);
      pager.dataset.current = String(page);
-     pager.dispatchEvent(new CustomEvent('pager:change', { detail: { page } }));
-   });
- });
+    pager.dispatchEvent(
+      new CustomEvent('pager:change', { detail: { page }, bubbles: true })
+    );
+  });
+});

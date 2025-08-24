@@ -960,7 +960,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                     ?>
                   </div>
                   <?php
-                  $par_page_indices = 10;
+                  $par_page_indices = 8;
                   $page_indices     = 1;
                   $indices_query    = new WP_Query([
                     'post_type'      => 'indice',
