@@ -872,7 +872,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
             </div>
 
             <?php
-            $par_page_indices = 10;
+            $par_page_indices = 8;
             $page_indices     = 1;
             $enigme_ids       = recuperer_ids_enigmes_pour_chasse($chasse_id);
             $meta             = [
