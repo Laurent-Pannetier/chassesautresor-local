@@ -3219,6 +3219,14 @@ body.panneau-ouvert::before {
   gap: var(--space-xs);
 }
 
+.dashboard-card.champ-indices .stat-value .bouton-cta {
+  display: block;
+  width: 100%;
+  margin-top: 0;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: 8px;
+}
+
 .dashboard-card.champ-indices .cta-indice-chasse {
   background-color: var(--color-editor-button);
   color: var(--color-white);
@@ -5669,6 +5677,17 @@ body.accueil-fullscreen {
 }
 
 /* 📐 Layout – Structure générale des pages */
+:root {
+  --bp-xl: 1440px;
+}
+
+@media (min-width: var(--bp-xl)) {
+  .layout-fullwidth .ast-container,
+  .layout-fullwidth .myaccount-layout {
+    width: 100vw;
+    max-width: 100%;
+  }
+}
 /* 🎯 Header top bar */
 /* 🧭 Hero  */
 /* 📄 Contenu */
