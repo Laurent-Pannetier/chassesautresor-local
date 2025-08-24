@@ -2049,9 +2049,21 @@ msgstr[0] "Votre réponse"
 msgstr[1] "Votre réponse"
 
 #: templates/myaccount/content-chasses.php:125
-#, fuzzy
+#: inc/edition/edition-core.php:158
 msgid "Énigme"
-msgstr "Énigmes"
+msgstr "Énigme"
+
+#: inc/edition/edition-core.php:159
+msgid "Sélectionner une énigme"
+msgstr "Sélectionner une énigme"
+
+#: inc/edition/edition-core.php:160
+msgid "Sélectionnez une énigme"
+msgstr "Sélectionnez une énigme"
+
+#: inc/edition/edition-core.php:161
+msgid "Chargement…"
+msgstr "Chargement…"
 
 #: templates/myaccount/content-dashboard-organisateur.php:25
 msgid "Votre demande de conversion a bien été envoyée."

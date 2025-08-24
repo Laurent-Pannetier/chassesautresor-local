@@ -2034,8 +2034,21 @@ msgstr[0] "%d correct answer"
 msgstr[1] "%d correct answers"
 
 #: templates/myaccount/content-chasses.php:125
+#: inc/edition/edition-core.php:158
 msgid "Énigme"
 msgstr "Riddle"
+
+#: inc/edition/edition-core.php:159
+msgid "Sélectionner une énigme"
+msgstr "Select a riddle"
+
+#: inc/edition/edition-core.php:160
+msgid "Sélectionnez une énigme"
+msgstr "Please select a riddle"
+
+#: inc/edition/edition-core.php:161
+msgid "Chargement…"
+msgstr "Loading…"
 
 #: templates/myaccount/content-dashboard-organisateur.php:25
 msgid "Votre demande de conversion a bien été envoyée."
