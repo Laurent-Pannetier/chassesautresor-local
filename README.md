@@ -61,6 +61,7 @@ Les liens déclenchant la modale de création peuvent utiliser la classe `.cta-i
 avec l’attribut `data-objet-type="enigme"`. Un attribut optionnel `data-default-enigme`
 permet de présélectionner une énigme. L’attribut `data-chasse-id` doit être fourni pour
 charger via l’endpoint AJAX `chasse_lister_enigmes` la liste des énigmes admissibles.
+La modale affiche alors un sélecteur d’énigme pour choisir la cible de l’indice.
 
 ### Accessibilité
 

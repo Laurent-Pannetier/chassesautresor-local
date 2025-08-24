@@ -3,17 +3,21 @@
     var overlay = document.createElement('div');
     overlay.className = 'indice-modal-overlay';
     var titre = indicesCreate.texts.indiceTitre.replace('%d', btn.dataset.indiceRang || '');
+    var needRiddle = btn.dataset.objetType === 'enigme' && !btn.dataset.objetId;
+    var riddleField = needRiddle
+      ? `<p><label>${indicesCreate.texts.riddle}<br><select name="objet_id"><option value="">${indicesCreate.texts.loading}</option></select></label></p>`
+      : `<input type="hidden" name="objet_id" value="${btn.dataset.objetId || ''}" />`;
     overlay.innerHTML = `
       <div class="indice-modal">
         <div class="indice-modal-header">
           <h2>${titre}</h2>
-          <p>${indicesCreate.texts.lieA} - ${btn.dataset.objetTitre || ''}</p>
+          <p>${indicesCreate.texts.lieA} - <span class="objet-titre">${btn.dataset.objetTitre || ''}</span></p>
         </div>
         <button type="button" class="indice-modal-close" aria-label="${indicesCreate.texts.close}">×</button>
         <form class="indice-modal-form">
           <input type="hidden" name="action" value="creer_indice_modal" />
           <input type="hidden" name="objet_type" value="${btn.dataset.objetType}" />
-          <input type="hidden" name="objet_id" value="${btn.dataset.objetId}" />
+          ${riddleField}
           <input type="hidden" name="indice_image" value="" />
           <p class="image-field"><button type="button" class="select-image">${indicesCreate.texts.image}</button><span class="image-preview"></span></p>
           <p><label>${indicesCreate.texts.contenu}<br><textarea name="indice_contenu"></textarea></label></p>
@@ -146,11 +150,15 @@
       var content = overlay.querySelector('textarea[name="indice_contenu"]').value.trim();
       var image = overlay.querySelector('input[name="indice_image"]').value.trim();
       var dispo = overlay.querySelector('input[name="indice_disponibilite"]:checked').value;
+      var select = overlay.querySelector('select[name="objet_id"]');
+      var riddleSelected = !select || select.value !== '';
       var state = 'desactive';
       var message = '';
       var complete = content !== '' || image !== '';
 
-      if (!complete) {
+      if (!riddleSelected) {
+        message = indicesCreate.texts.needRiddle;
+      } else if (!complete) {
         message = indicesCreate.texts.needContent;
       } else {
         state = 'accessible';
@@ -195,6 +203,45 @@
           }
         });
     });
+
+    if (needRiddle) {
+      var select = overlay.querySelector('select[name="objet_id"]');
+      var titleSpan = overlay.querySelector('.objet-titre');
+      var fd = new FormData();
+      fd.append('action', 'chasse_lister_enigmes');
+      fd.append('chasse_id', btn.dataset.chasseId || '');
+      fetch(indicesCreate.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: fd })
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+          select.innerHTML = '';
+          if (!res.success || !res.data.enigmes.length) {
+            var opt = document.createElement('option');
+            opt.value = '';
+            opt.textContent = indicesCreate.texts.chooseRiddle;
+            select.appendChild(opt);
+            refreshState();
+            return;
+          }
+          res.data.enigmes.forEach(function (enigme) {
+            var opt = document.createElement('option');
+            opt.value = enigme.id;
+            opt.textContent = enigme.title;
+            select.appendChild(opt);
+          });
+          var def = btn.dataset.defaultEnigme;
+          if (def) select.value = def;
+          if (!select.value) select.value = select.options[0].value;
+          btn.dataset.objetId = select.value;
+          titleSpan.textContent = select.options[select.selectedIndex].text;
+          refreshState();
+        });
+      select.addEventListener('change', function () {
+        var txt = select.options[select.selectedIndex] ? select.options[select.selectedIndex].text : '';
+        btn.dataset.objetId = select.value;
+        titleSpan.textContent = txt;
+        refreshState();
+      });
+    }
 
     refreshState();
   }
