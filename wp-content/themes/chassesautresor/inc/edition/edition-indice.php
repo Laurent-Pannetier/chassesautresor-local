@@ -392,7 +392,7 @@ function ajax_chasse_lister_enigmes(): void
         static fn($p) => [
             'id'          => $p->ID,
             'title'       => get_the_title($p),
-            'indice_rang' => prochain_rang_indice($p->ID, 'enigme'),
+            'indice_rang' => prochain_rang_indice($chasse_id, 'chasse'),
         ],
         $posts
     );
