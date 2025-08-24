@@ -806,6 +806,7 @@ function supprimer_indice_ajax(): void
     }
 
     $cible_type = get_field('indice_cible_type', $indice_id) === 'enigme' ? 'enigme' : 'chasse';
+    $chasse_id  = 0;
     if ($cible_type === 'enigme') {
         $linked = get_field('indice_enigme_linked', $indice_id);
         if (is_array($linked)) {
@@ -813,6 +814,18 @@ function supprimer_indice_ajax(): void
             $objet_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
         } else {
             $objet_id = (int) $linked;
+        }
+
+        $chasse_linked = get_field('indice_chasse_linked', $indice_id);
+        if (is_array($chasse_linked)) {
+            $first     = $chasse_linked[0] ?? null;
+            $chasse_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
+        } else {
+            $chasse_id = (int) $chasse_linked;
+        }
+
+        if (!$chasse_id && $objet_id) {
+            $chasse_id = (int) recuperer_id_chasse_associee($objet_id);
         }
     } else {
         $linked = get_field('indice_chasse_linked', $indice_id);
@@ -834,6 +847,9 @@ function supprimer_indice_ajax(): void
     }
 
     reordonner_indices($objet_id, $cible_type);
+    if ($cible_type === 'enigme' && $chasse_id) {
+        reordonner_indices($chasse_id, 'chasse');
+    }
 
     wp_send_json_success();
 }
