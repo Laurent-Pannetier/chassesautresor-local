@@ -30,7 +30,14 @@ function enqueue_script_chasse_edit()
   }
 
   // Enfile les scripts nécessaires
-  enqueue_core_edit_scripts(['chasse-edit', 'chasse-stats', 'table-etiquette', 'indices-pager', 'indices-create']);
+  enqueue_core_edit_scripts([
+    'chasse-edit',
+    'chasse-stats',
+    'table-etiquette',
+    'tentatives-toggle',
+    'indices-pager',
+    'indices-create',
+  ]);
   wp_localize_script(
     'chasse-stats',
     'ChasseStats',
