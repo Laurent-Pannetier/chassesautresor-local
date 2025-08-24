@@ -26,25 +26,72 @@ function rafraichirCarteIndices() {
   })
     .then(r => r.json())
     .then(res => {
-      if (res.success && res.data?.html) {
-        const tmp = document.createElement('div');
-        tmp.innerHTML = res.data.html;
-        const nouvelleCarte = tmp.firstElementChild;
-        if (nouvelleCarte) {
-          card.replaceWith(nouvelleCarte);
+        if (res.success && res.data?.html) {
+          const tmp = document.createElement('div');
+          tmp.innerHTML = res.data.html;
+          const nouvelleCarte = tmp.firstElementChild;
+          if (nouvelleCarte) {
+            card.replaceWith(nouvelleCarte);
+            initIndicesOptions(nouvelleCarte);
+          }
+        } else {
+          throw new Error('invalid');
         }
-      } else {
-        throw new Error('invalid');
+      })
+      .catch(() => {
+        card.classList.remove('loading');
+        card.innerHTML = `<p class="error">${ChasseIndices.errorText}</p>`;
+      });
+  }
+
+  function initIndicesOptions(card) {
+    if (!card) return;
+    const btn = card.querySelector('.cta-indice-pour');
+    const options = card.querySelector('.cta-indice-options');
+    if (!btn || !options) return;
+
+    let timeoutId;
+
+    function hide() {
+      card.classList.remove('show-options');
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
       }
-    })
-    .catch(() => {
-      card.classList.remove('loading');
-      card.innerHTML = `<p class="error">${ChasseIndices.errorText}</p>`;
+    }
+
+    function show() {
+      card.classList.add('show-options');
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        hide();
+      }, 5000);
+    }
+
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      show();
     });
-}
+
+    options.addEventListener('click', () => {
+      hide();
+    });
+  }
+
+  function initAllIndicesOptions() {
+    document.querySelectorAll('.dashboard-card.champ-indices').forEach((c) => {
+      initIndicesOptions(c);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAllIndicesOptions);
+  } else {
+    initAllIndicesOptions();
+  }
 
 
-function initChasseEdit() {
+  function initChasseEdit() {
   if (typeof initZonesClicEdition === 'function') initZonesClicEdition();
   inputDateDebut = document.getElementById('chasse-date-debut');
   inputDateFin = document.getElementById('chasse-date-fin');
