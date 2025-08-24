@@ -199,6 +199,46 @@
     refreshState();
   }
 
+  function openEnigmeSelector(btn) {
+    var chasseId = btn.dataset.chasseId;
+    if (!chasseId) return;
+    var data = new URLSearchParams({ action: 'lister_enigmes_pour_chasse', chasse_id: chasseId });
+    fetch(indicesCreate.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: data })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        if (!res.success || !res.data || !res.data.enigmes || !res.data.enigmes.length) {
+          return;
+        }
+        var overlay = document.createElement('div');
+        overlay.className = 'indice-modal-overlay';
+        var options = res.data.enigmes
+          .map(function (e) { return '<option value="' + e.id + '">' + e.title + '</option>'; })
+          .join('');
+        overlay.innerHTML = '\
+      <div class="indice-modal">\
+        <div class="indice-modal-header">\
+          <h2>' + indicesCreate.texts.selectionEnigme + '</h2>\
+        </div>\
+        <button type="button" class="indice-modal-close" aria-label="' + indicesCreate.texts.close + '">×</button>\
+        <div class="indice-modal-form">\
+          <p><label>' + indicesCreate.texts.selectionEnigme + '<br><select class="enigme-select">' + options + '</select></label></p>\
+          <div class="indice-modal-footer"><button type="button" class="indice-modal-validate bouton-cta">' + indicesCreate.texts.valider + '</button></div>\
+        </div>\
+      </div>';
+        document.body.appendChild(overlay);
+        function close() { overlay.remove(); }
+        overlay.querySelector('.indice-modal-close').addEventListener('click', close);
+        overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
+        overlay.querySelector('.indice-modal-validate').addEventListener('click', function () {
+          var select = overlay.querySelector('.enigme-select');
+          var id = select.value;
+          var title = select.options[select.selectedIndex].textContent;
+          close();
+          openModal({ dataset: { objetType: 'enigme', objetId: id, objetTitre: title } });
+        });
+      });
+  }
+
   function handleClick(e) {
     var target = e.target;
     if (target && target.nodeType !== 1) {
@@ -207,6 +247,7 @@
     var placeholder = target && target.closest ? target.closest('.cta-indice-enigme') : null;
     if (placeholder) {
       e.preventDefault();
+      openEnigmeSelector(placeholder);
       return;
     }
     var btn = target && target.closest ? target.closest('.cta-creer-indice, .badge-action.edit') : null;

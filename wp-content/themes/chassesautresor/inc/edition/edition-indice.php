@@ -384,6 +384,38 @@ function ajax_chasse_lister_indices(): void
 add_action('wp_ajax_chasse_lister_indices', 'ajax_chasse_lister_indices');
 
 /**
+ * Retourne via AJAX les énigmes admissibles d'une chasse.
+ *
+ * @return void
+ */
+function ajax_lister_enigmes_pour_chasse(): void
+{
+    if (!is_user_logged_in()) {
+        wp_send_json_error('non_connecte');
+    }
+
+    $chasse_id = isset($_POST['chasse_id']) ? (int) $_POST['chasse_id'] : 0;
+
+    if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
+        wp_send_json_error('post_invalide');
+    }
+
+    if (!indice_action_autorisee('create', 'chasse', $chasse_id)) {
+        wp_send_json_error('acces_refuse');
+    }
+
+    $posts = recuperer_enigmes_pour_chasse($chasse_id);
+
+    $enigmes = array_map(
+        static fn($p) => ['id' => $p->ID, 'title' => get_the_title($p->ID)],
+        $posts
+    );
+
+    wp_send_json_success(['enigmes' => $enigmes]);
+}
+add_action('wp_ajax_lister_enigmes_pour_chasse', 'ajax_lister_enigmes_pour_chasse');
+
+/**
  * AJAX handler returning indices table HTML.
  *
  * @return void

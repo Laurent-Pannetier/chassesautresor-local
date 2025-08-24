@@ -158,6 +158,7 @@ function enqueue_core_edit_scripts(array $additional = [])
             'needContent' => __('Au moins une image ou un texte nécessaire', 'chassesautresor-com'),
             'needDate'    => __('Date et heure requises', 'chassesautresor-com'),
             'invalidDate' => __('Date invalide', 'chassesautresor-com'),
+            'selectionEnigme' => __('Sélectionner une énigme', 'chassesautresor-com'),
           ],
         ]
       );
