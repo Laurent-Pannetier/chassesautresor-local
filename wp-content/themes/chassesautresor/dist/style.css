@@ -3213,6 +3213,30 @@ body.panneau-ouvert::before {
   color: var(--color-editor-heading);
 }
 
+.dashboard-card.champ-indices .stat-value {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.dashboard-card.champ-indices .cta-indice-chasse {
+  background-color: var(--color-editor-button);
+  color: var(--color-white);
+}
+
+.dashboard-card.champ-indices .cta-indice-chasse:hover {
+  background-color: var(--color-editor-button-hover);
+}
+
+.dashboard-card.champ-indices .cta-indice-enigme {
+  background-color: var(--color-editor-success);
+  color: var(--color-white);
+}
+
+.dashboard-card.champ-indices .cta-indice-enigme:hover {
+  background-color: var(--color-editor-success-hover);
+}
+
 .dashboard-card .solution-reset {
   position: absolute;
   bottom: 8px;
