@@ -852,14 +852,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   && ($infos_chasse['statut_validation'] ?? '') === 'valide'
               ) :
                   $format = isset($_GET['format']) ? sanitize_key($_GET['format']) : 'png';
-                  $formats_autorises = ['png', 'svg', 'eps'];
-                  if (!in_array($format, $formats_autorises, true)) {
-                      $format = 'png';
-                  }
-                  $url = get_permalink($chasse_id);
-                  $url_qr_code = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data='
-                      . rawurlencode($url)
-                      . '&format=' . $format;
+                  $url_qr_code = get_qr_code_url($chasse_id, $format);
               ?>
               <div class="dashboard-card carte-orgy champ-qr-code">
                 <img class="qr-code-icon" src="<?= esc_url($url_qr_code); ?>" alt="<?= esc_attr__('QR code de la chasse', 'chassesautresor-com'); ?>">

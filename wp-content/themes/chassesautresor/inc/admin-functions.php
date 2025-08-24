@@ -2169,7 +2169,7 @@ function envoyer_mail_chasse_validee(int $organisateur_id, int $chasse_id)
     $admin_email = get_option('admin_email');
     $titre_chasse = get_the_title($chasse_id);
     $url_chasse   = get_permalink($chasse_id);
-    $url_qr_code  = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=' . rawurlencode($url_chasse);
+    $url_qr_code  = get_qr_code_url($chasse_id);
 
     $subject_raw = '✅ Votre chasse est maintenant validée !';
     $subject = function_exists('wp_encode_mime_header')
