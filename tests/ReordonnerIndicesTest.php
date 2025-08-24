@@ -3,6 +3,8 @@ namespace {
     if (!function_exists('get_posts')) {
         function get_posts($args)
         {
+            global $captured_args;
+            $captured_args = $args;
             return [10, 20, 30];
         }
     }
@@ -26,14 +28,8 @@ namespace {
     if (!function_exists('get_field')) {
         function get_field($key, $post_id)
         {
-            if ($key === 'indice_cible_type') {
-                return 'chasse';
-            }
-            if ($key === 'indice_chasse_linked') {
-                return 5;
-            }
-
-            return null;
+            global $get_field_overrides;
+            return $get_field_overrides[$key] ?? null;
         }
     }
     if (!function_exists('wp_is_post_revision')) {
@@ -57,9 +53,14 @@ namespace ReordonnerIndicesTest {
     {
         protected function setUp(): void
         {
-            global $updated_posts, $simulate_recursion;
+            global $updated_posts, $simulate_recursion, $get_field_overrides, $captured_args;
             $updated_posts      = [];
             $simulate_recursion = 0;
+            $captured_args      = [];
+            $get_field_overrides = [
+                'indice_cible_type'   => 'chasse',
+                'indice_chasse_linked' => 5,
+            ];
         }
 
         /**
@@ -68,7 +69,7 @@ namespace ReordonnerIndicesTest {
          */
         public function test_renames_indices_sequentially(): void
         {
-            global $updated_posts;
+            global $updated_posts, $captured_args;
             require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
 
             \reordonner_indices(5, 'chasse');
@@ -77,6 +78,8 @@ namespace ReordonnerIndicesTest {
             $this->assertSame(['ID' => 10, 'post_title' => 'Indice #1'], $updated_posts[0]);
             $this->assertSame(['ID' => 20, 'post_title' => 'Indice #2'], $updated_posts[1]);
             $this->assertSame(['ID' => 30, 'post_title' => 'Indice #3'], $updated_posts[2]);
+            $this->assertSame('indice_chasse_linked', $captured_args['meta_query'][0]['key']);
+            $this->assertCount(2, $captured_args['meta_query']);
         }
 
         /**
@@ -130,6 +133,25 @@ namespace ReordonnerIndicesTest {
             $this->assertSame(['ID' => 10, 'post_title' => 'Indice #1'], $updated_posts[0]);
             $this->assertSame(['ID' => 20, 'post_title' => 'Indice #2'], $updated_posts[1]);
             $this->assertSame(['ID' => 30, 'post_title' => 'Indice #3'], $updated_posts[2]);
+        }
+
+        /**
+         * @runInSeparateProcess
+         * @preserveGlobalState disabled
+         */
+        public function test_reorders_enigme_indices_using_chasse_context(): void
+        {
+            global $updated_posts, $get_field_overrides, $captured_args;
+            $get_field_overrides['indice_cible_type']   = 'enigme';
+            $get_field_overrides['indice_chasse_linked'] = 5;
+
+            require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
+
+            \reordonner_indices_pour_indice(99);
+
+            $this->assertCount(3, $updated_posts);
+            $this->assertSame(['ID' => 10, 'post_title' => 'Indice #1'], $updated_posts[0]);
+            $this->assertSame('indice_chasse_linked', $captured_args['meta_query'][0]['key']);
         }
     }
 }

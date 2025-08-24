@@ -38,5 +38,23 @@ namespace ProchainRangIndice {
             $this->assertSame('enigme', $captured_args['meta_query'][0]['value']);
             $this->assertContains('desactive', $captured_args['meta_query'][2]['value']);
         }
+
+        /**
+         * @runInSeparateProcess
+         * @preserveGlobalState disabled
+         */
+        public function test_counts_all_indices_for_chasse(): void
+        {
+            global $captured_args;
+
+            require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
+
+            $rank = \prochain_rang_indice(5, 'chasse');
+
+            $this->assertSame(3, $rank);
+            $this->assertSame('indice_chasse_linked', $captured_args['meta_query'][0]['key']);
+            $this->assertSame(5, $captured_args['meta_query'][0]['value']);
+            $this->assertCount(2, $captured_args['meta_query']);
+        }
     }
 }
