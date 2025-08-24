@@ -488,6 +488,8 @@ function modifier_champ_chasse()
         }
       }
 
+      planifier_ou_deplacer_pdf_solution_chasse_immediatement($post_id);
+
       // 🏁 Mise à jour des statuts joueurs
       gerer_chasse_terminee($post_id);
     }
@@ -643,3 +645,168 @@ function definir_date_fin_par_defaut($post_id, $post)
   }
 }
 add_action('save_post_chasse', 'definir_date_fin_par_defaut', 10, 2);
+
+// ==================================================
+// 🎯 Gestion de la solution de la chasse
+// ==================================================
+
+add_action('wp_ajax_enregistrer_fichier_solution_chasse', 'enregistrer_fichier_solution_chasse');
+function enregistrer_fichier_solution_chasse()
+{
+    if (!is_user_logged_in()) {
+        wp_send_json_error('Non autorisé.');
+    }
+
+    $post_id = intval($_POST['post_id'] ?? 0);
+    if (!$post_id || get_post_type($post_id) !== 'chasse') {
+        wp_send_json_error('ID de post invalide.');
+    }
+
+    if (!utilisateur_peut_modifier_post($post_id)) {
+        wp_send_json_error('Non autorisé.');
+    }
+
+    if (empty($_FILES['fichier_pdf']) || $_FILES['fichier_pdf']['error'] !== 0) {
+        wp_send_json_error('Fichier manquant ou erreur de transfert.');
+    }
+
+    $fichier = $_FILES['fichier_pdf'];
+    if ($fichier['size'] > 5 * 1024 * 1024) {
+        wp_send_json_error('Fichier trop volumineux (5 Mo maximum).');
+    }
+
+    $filetype = wp_check_filetype($fichier['name']);
+    if ($filetype['ext'] !== 'pdf' || $filetype['type'] !== 'application/pdf') {
+        wp_send_json_error('Seuls les fichiers PDF sont autorisés.');
+    }
+
+    require_once ABSPATH . 'wp-admin/includes/file.php';
+    $overrides = ['test_form' => false];
+
+    add_filter('upload_dir', 'rediriger_upload_fichier_solution');
+    $uploaded = wp_handle_upload($fichier, $overrides);
+    remove_filter('upload_dir', 'rediriger_upload_fichier_solution');
+
+    if (!isset($uploaded['url']) || !isset($uploaded['file'])) {
+        wp_send_json_error('Échec de l’upload.');
+    }
+
+    $attachment = [
+        'post_mime_type' => $filetype['type'],
+        'post_title'     => sanitize_file_name($fichier['name']),
+        'post_content'   => '',
+        'post_status'    => 'inherit',
+    ];
+
+    $attach_id = wp_insert_attachment($attachment, $uploaded['file'], $post_id);
+    if (strpos($filetype['type'], 'image/') === 0) {
+        require_once ABSPATH . 'wp-admin/includes/image.php';
+        wp_generate_attachment_metadata($attach_id, $uploaded['file']);
+    }
+
+    update_field('chasse_solution_fichier', $attach_id, $post_id);
+
+    wp_send_json_success([
+        'fichier' => $uploaded['url'],
+    ]);
+}
+
+add_action('wp_ajax_supprimer_fichier_solution_chasse', 'supprimer_fichier_solution_chasse');
+function supprimer_fichier_solution_chasse()
+{
+    if (!is_user_logged_in()) {
+        wp_send_json_error('Non autorisé.');
+    }
+
+    $post_id = intval($_POST['post_id'] ?? 0);
+    if (!$post_id || get_post_type($post_id) !== 'chasse') {
+        wp_send_json_error('ID de post invalide.');
+    }
+
+    if (!utilisateur_peut_modifier_post($post_id)) {
+        wp_send_json_error('Non autorisé.');
+    }
+
+    $fichier_id = get_field('chasse_solution_fichier', $post_id, false);
+    if ($fichier_id) {
+        wp_delete_attachment($fichier_id, true);
+    }
+
+    update_field('chasse_solution_fichier', null, $post_id);
+
+    wp_send_json_success();
+}
+
+function deplacer_pdf_solution_chasse($chasse_id)
+{
+    if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
+        return;
+    }
+
+    $fichier_id = get_field('chasse_solution_fichier', $chasse_id, false);
+    if (!$fichier_id || !is_numeric($fichier_id)) {
+        return;
+    }
+
+    $chemin_source = get_attached_file($fichier_id);
+    if (!$chemin_source || !file_exists($chemin_source)) {
+        return;
+    }
+
+    $cache = get_field('champs_caches', $chasse_id);
+    $statut = $cache['chasse_cache_statut'] ?? '';
+    if (trim(strtolower($statut)) !== 'termine') {
+        return;
+    }
+
+    $dossier_public = WP_CONTENT_DIR . '/uploads/solutions-publiques';
+    if (!file_exists($dossier_public)) {
+        if (!wp_mkdir_p($dossier_public)) {
+            return;
+        }
+    }
+
+    $nom_fichier = basename($chemin_source);
+    $chemin_cible = $dossier_public . '/' . $nom_fichier;
+    if (file_exists($chemin_cible)) {
+        return;
+    }
+
+    $deplacement = @rename($chemin_source, $chemin_cible);
+    if (!$deplacement) {
+        $copie = @copy($chemin_source, $chemin_cible);
+        if (!$copie || !@unlink($chemin_source)) {
+            return;
+        }
+    }
+
+    update_attached_file($fichier_id, $chemin_cible);
+}
+add_action('publier_solution_chasse', 'deplacer_pdf_solution_chasse');
+
+function planifier_ou_deplacer_pdf_solution_chasse_immediatement($chasse_id)
+{
+    if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
+        return;
+    }
+
+    $mode  = get_field('chasse_solution_mode', $chasse_id);
+    $delai = get_field('chasse_solution_delai', $chasse_id);
+    $heure = get_field('chasse_solution_heure', $chasse_id);
+
+    if ($delai === null || $heure === null) {
+        return;
+    }
+
+    $timestamp = strtotime("+$delai days $heure");
+    if (!$timestamp) {
+        return;
+    }
+
+    if ($timestamp <= time()) {
+        $timestamp = time() + 5;
+    }
+
+    wp_schedule_single_event($timestamp, 'publier_solution_chasse', [$chasse_id]);
+}
+

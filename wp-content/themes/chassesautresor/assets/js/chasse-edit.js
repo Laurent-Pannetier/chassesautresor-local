@@ -220,6 +220,12 @@ window.rafraichirCarteIndices = rafraichirCarteIndices;
     window.mettreAJourEtatIntroChasse();
   }
 
+  initSolutionInline();
+  const paramsMaj = new URLSearchParams(window.location.search);
+  if (paramsMaj.get('maj') === 'solution' && !paramsMaj.has('tab')) {
+    ouvrirPanneauSolution();
+  }
+
   // ==============================
   // 📅 Gestion Date de fin + Durée illimitée
   // ==============================
@@ -1113,3 +1119,284 @@ function enregistrerDatesChasse() {
     });
 }
 window.enregistrerDatesChasse = enregistrerDatesChasse;
+
+// ==============================
+// 🧩 Initialisation inline – solution de la chasse
+// ==============================
+function initSolutionInline() {
+  const bloc = document.querySelector('.champ-solution-mode');
+  if (!bloc) {
+    console.warn('initSolutionInline() : .champ-solution-mode introuvable');
+    return;
+  }
+
+  const postId = bloc.dataset.postId;
+  const cpt = bloc.dataset.cpt || 'chasse';
+  const cards = bloc.querySelectorAll('.solution-option');
+  const cardPdf = bloc.querySelector('.solution-option[data-mode="pdf"]');
+  const cardTexte = bloc.querySelector('.solution-option[data-mode="texte"]');
+  const btnClearPdf = cardPdf?.querySelector('.solution-reset');
+  const btnClearTexte = cardTexte?.querySelector('.solution-reset');
+  const inputDelai = bloc.querySelector('#solution-delai');
+  const selectHeure = bloc.querySelector('#solution-heure');
+  const inputFichier = bloc.querySelector('#solution-pdf-upload');
+  const feedbackFichier = bloc.querySelector('.champ-feedback');
+  const publicationMessage = bloc.querySelector('.solution-publication-message');
+  const textareaExplication = document.querySelector('.acf-field[data-name="chasse_solution_explication"] textarea');
+
+  if (textareaExplication) {
+    const valInit = textareaExplication.value.trim();
+    if (btnClearTexte) btnClearTexte.style.display = valInit !== '' ? '' : 'none';
+  }
+
+  function majMessageSolution() {
+    if (!publicationMessage) return;
+    const modeActuel = bloc.querySelector('input[name="acf[chasse_solution_mode]"]:checked')?.value;
+    const delaiVal = parseInt(inputDelai?.value.trim(), 10) || 0;
+    const heureVal = selectHeure?.value || '';
+    let label = 'aucune solution ne';
+    let note = '';
+
+    if (modeActuel === 'pdf') {
+      const titre = cardPdf?.querySelector('h3')?.textContent.trim();
+      if (titre && titre !== 'Document PDF') {
+        label = `votre fichier ${titre}`;
+        note = ` ${delaiVal} jours après la fin de la chasse, à ${heureVal}`;
+      } else {
+        note = ' (pdf sélectionné mais pas de fichier chargé)';
+      }
+    } else if (modeActuel === 'texte') {
+      const btnTexte = cardTexte?.querySelector('button.stat-value');
+      const explicationRemplie = btnTexte && btnTexte.textContent.trim() !== 'Rédiger';
+      if (explicationRemplie) {
+        label = "votre texte d'explication";
+        note = `, ${delaiVal} jours après la fin de la chasse, à ${heureVal}`;
+      } else {
+        note = ' (rédaction libre sélectionnée mais non remplie)';
+      }
+    }
+
+    publicationMessage.textContent = `${label} sera affiché(e)${note}`;
+  }
+
+  textareaExplication?.addEventListener('input', () => {
+    const value = textareaExplication.value.trim();
+    const iconTexte = cardTexte?.querySelector('i');
+    const boutonTexte = cardTexte?.querySelector('button.stat-value');
+    if (value !== '') {
+      if (iconTexte) iconTexte.style.color = 'var(--color-editor-success)';
+      if (boutonTexte) boutonTexte.textContent = 'éditer';
+      if (btnClearTexte) btnClearTexte.style.display = '';
+    } else {
+      if (iconTexte) iconTexte.style.color = '';
+      if (boutonTexte) boutonTexte.textContent = 'Rédiger';
+      if (btnClearTexte) btnClearTexte.style.display = 'none';
+    }
+    majMessageSolution();
+  });
+
+  btnClearTexte?.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    textareaExplication.value = '';
+    const iconTexte = cardTexte?.querySelector('i');
+    const boutonTexte = cardTexte?.querySelector('button.stat-value');
+    if (iconTexte) iconTexte.style.color = '';
+    if (boutonTexte) boutonTexte.textContent = 'Rédiger';
+    if (btnClearTexte) btnClearTexte.style.display = 'none';
+    modifierChampSimple('chasse_solution_explication', '', postId, cpt);
+    majMessageSolution();
+  });
+
+  btnClearPdf?.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const formData = new FormData();
+    formData.append('action', 'supprimer_fichier_solution_chasse');
+    formData.append('post_id', postId);
+    if (feedbackFichier) {
+      feedbackFichier.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>';
+      feedbackFichier.className = 'champ-feedback champ-loading';
+    }
+    fetch(ajaxurl, { method: 'POST', body: formData })
+      .then(r => r.json())
+      .then(res => {
+        if (res.success) {
+          if (cardPdf) {
+            const icon = cardPdf.querySelector('i');
+            if (icon) icon.style.color = '';
+            const titre = cardPdf.querySelector('h3');
+            if (titre) titre.textContent = 'Document PDF';
+            const lien = cardPdf.querySelector('a.stat-value');
+            if (lien) lien.textContent = 'Choisir un fichier';
+          }
+          if (inputFichier) inputFichier.value = '';
+          if (btnClearPdf) btnClearPdf.style.display = 'none';
+          if (feedbackFichier) {
+            feedbackFichier.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i>';
+            feedbackFichier.className = 'champ-feedback champ-success';
+            setTimeout(() => { feedbackFichier.innerHTML = ''; feedbackFichier.className = 'champ-feedback'; }, 1000);
+          }
+          majMessageSolution();
+        } else if (feedbackFichier) {
+          feedbackFichier.textContent = '❌ Erreur : ' + (res.data || 'inconnue');
+          feedbackFichier.className = 'champ-feedback champ-error';
+        }
+      })
+      .catch(() => {
+        if (feedbackFichier) {
+          feedbackFichier.innerHTML = '';
+          feedbackFichier.textContent = '❌ Erreur réseau';
+          feedbackFichier.className = 'champ-feedback champ-error';
+        }
+      });
+  });
+
+  cards.forEach(card => {
+    card.addEventListener('click', (e) => {
+      e.preventDefault();
+      const mode = card.dataset.mode;
+      bloc.querySelectorAll('input[name="acf[chasse_solution_mode]"]').forEach(r => { r.checked = false; });
+      card.querySelector('input[name="acf[chasse_solution_mode]"]').checked = true;
+
+      cards.forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+
+      modifierChampSimple('chasse_solution_mode', mode, postId, cpt);
+      majMessageSolution();
+
+      if (mode === 'pdf') {
+        setTimeout(() => {
+          inputFichier?.click();
+        }, 100);
+      }
+
+      if (mode === 'texte') {
+        setTimeout(ouvrirPanneauSolution, 100);
+      }
+    });
+  });
+
+  const checked = bloc.querySelector('input[name="acf[chasse_solution_mode]"]:checked');
+  checked?.closest('.solution-option')?.classList.add('active');
+
+  inputDelai?.addEventListener('input', () => {
+    const valeur = parseInt(inputDelai.value.trim(), 10);
+    if (!isNaN(valeur)) {
+      modifierChampSimple('chasse_solution_delai', valeur, postId, cpt);
+      majMessageSolution();
+    }
+  });
+
+  selectHeure?.addEventListener('change', () => {
+    const valeur = selectHeure.value;
+    modifierChampSimple('chasse_solution_heure', valeur, postId, cpt);
+    majMessageSolution();
+  });
+
+  inputFichier?.addEventListener('change', () => {
+    const fichier = inputFichier.files[0];
+    if (!fichier || fichier.type !== 'application/pdf') {
+      if (feedbackFichier) {
+        feedbackFichier.textContent = '❌ Fichier invalide. PDF uniquement.';
+        feedbackFichier.className = 'champ-feedback champ-error';
+      }
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('action', 'enregistrer_fichier_solution_chasse');
+    formData.append('post_id', postId);
+    formData.append('fichier_pdf', fichier);
+
+    if (feedbackFichier) {
+      feedbackFichier.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>';
+      feedbackFichier.className = 'champ-feedback champ-loading';
+    }
+
+    fetch(ajaxurl, {
+      method: 'POST',
+      body: formData
+    })
+      .then(r => r.json())
+      .then(res => {
+        if (res.success) {
+          if (feedbackFichier) {
+            feedbackFichier.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i>';
+            feedbackFichier.className = 'champ-feedback champ-success';
+            setTimeout(() => { feedbackFichier.innerHTML = ''; feedbackFichier.className = 'champ-feedback'; }, 1000);
+          }
+
+          if (cardPdf) {
+            const icon = cardPdf.querySelector('i');
+            if (icon) icon.style.color = 'var(--color-editor-success)';
+            const titre = cardPdf.querySelector('h3');
+            if (titre) titre.textContent = fichier.name;
+            const lien = cardPdf.querySelector('a.stat-value');
+            if (lien) lien.textContent = 'Modifier';
+          }
+          if (btnClearPdf) btnClearPdf.style.display = '';
+          majMessageSolution();
+        } else if (feedbackFichier) {
+          feedbackFichier.innerHTML = '';
+          feedbackFichier.textContent = '❌ Erreur : ' + (res.data || 'inconnue');
+          feedbackFichier.className = 'champ-feedback champ-error';
+        }
+      })
+      .catch(() => {
+        if (feedbackFichier) {
+          feedbackFichier.innerHTML = '';
+          feedbackFichier.textContent = '❌ Erreur réseau';
+          feedbackFichier.className = 'champ-feedback champ-error';
+        }
+      });
+  });
+
+  majMessageSolution();
+}
+
+function ouvrirPanneauSolution() {
+  const panneau = document.getElementById('panneau-solution-chasse');
+  if (!panneau) return;
+
+  document.querySelectorAll('.panneau-lateral.ouvert, .panneau-lateral-liens.ouvert').forEach((p) => {
+    p.classList.remove('ouvert');
+    p.setAttribute('aria-hidden', 'true');
+  });
+
+  panneau.classList.add('ouvert');
+  document.body.classList.add('panneau-ouvert');
+  panneau.setAttribute('aria-hidden', 'false');
+}
+
+document.addEventListener('click', (e) => {
+  const trigger = e.target.closest('#ouvrir-panneau-solution');
+  if (!trigger) return;
+
+  const bloc = document.querySelector('.champ-solution-mode');
+  const postId = bloc?.dataset.postId;
+  const cpt = bloc?.dataset.cpt || 'chasse';
+  const radioTexte = bloc?.querySelector('input[name="acf[chasse_solution_mode]"][value="texte"]');
+
+  if (bloc && radioTexte && !radioTexte.checked) {
+    bloc.querySelectorAll('input[name="acf[chasse_solution_mode]"]').forEach(r => { r.checked = false; });
+    radioTexte.checked = true;
+    bloc.querySelectorAll('.solution-option').forEach(c => c.classList.remove('active'));
+    radioTexte.closest('.solution-option')?.classList.add('active');
+    if (postId) {
+      modifierChampSimple('chasse_solution_mode', 'texte', postId, cpt);
+    }
+  }
+
+  ouvrirPanneauSolution();
+});
+
+document.addEventListener('click', (e) => {
+  if (e.target.closest('#panneau-solution-chasse .panneau-fermer')) {
+    const panneau = document.getElementById('panneau-solution-chasse');
+    panneau.classList.remove('ouvert');
+    document.body.classList.remove('panneau-ouvert');
+    panneau.setAttribute('aria-hidden', 'true');
+  }
+});
+

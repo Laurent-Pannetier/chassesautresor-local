@@ -812,6 +812,103 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
         <h2><i class="fa-solid fa-bullhorn"></i> <?= esc_html__('Animation', 'chassesautresor-com'); ?></h2>
       </div>
       <div class="edition-panel-body">
+        <?php
+        $solution_mode = get_field('chasse_solution_mode', $chasse_id) ?? 'pdf';
+        $fichier       = get_field('chasse_solution_fichier', $chasse_id);
+        $fichier_url   = is_array($fichier) ? ($fichier['url'] ?? '') : '';
+        $fichier_nom   = is_array($fichier) && !empty($fichier['filename']) ? $fichier['filename'] : '';
+        $explication   = get_field('chasse_solution_explication', $chasse_id);
+        $explication   = is_string($explication) ? trim(wp_strip_all_tags($explication)) : '';
+        $delai         = get_field('chasse_solution_delai', $chasse_id) ?? 7;
+        $heure         = get_field('chasse_solution_heure', $chasse_id) ?? '18:00';
+
+        $pdf_icon_attr   = $fichier_nom ? ' style="color: var(--color-editor-success);"' : '';
+        $pdf_title       = $fichier_nom ?: esc_html__('Document PDF', 'chassesautresor-com');
+        $pdf_link_text   = $fichier_nom ? esc_html__('Modifier', 'chassesautresor-com') : esc_html__('Choisir un fichier', 'chassesautresor-com');
+        $texte_icon_attr = $explication !== '' ? ' style="color: var(--color-editor-success);"' : '';
+        $texte_link_text = $explication !== '' ? esc_html__('éditer', 'chassesautresor-com') : esc_html__('Rédiger', 'chassesautresor-com');
+
+        $publication_label = esc_html__('aucune solution ne', 'chassesautresor-com');
+        $publication_note  = '';
+
+        if ($solution_mode === 'pdf') {
+            if ($fichier_url !== '') {
+                $publication_label = sprintf(esc_html__('votre fichier %s', 'chassesautresor-com'), $fichier_nom);
+                $publication_note  = sprintf(esc_html__(' %d jours après la fin de la chasse, à %s', 'chassesautresor-com'), $delai, $heure);
+            } else {
+                $publication_note = esc_html__(' (pdf sélectionné mais pas de fichier chargé)', 'chassesautresor-com');
+            }
+        } elseif ($solution_mode === 'texte') {
+            if ($explication !== '') {
+                $publication_label = esc_html__("votre texte d'explication", 'chassesautresor-com');
+                $publication_note  = sprintf(esc_html__(', %d jours après la fin de la chasse, à %s', 'chassesautresor-com'), $delai, $heure);
+            } else {
+                $publication_note = esc_html__(' (rédaction libre sélectionnée mais non remplie)', 'chassesautresor-com');
+            }
+        }
+
+        $publication_message = $publication_label . ' sera affiché(e)' . $publication_note;
+        ?>
+        <div class="champ-chasse champ-solution">
+          <div class="champ-solution-mode" data-cpt="chasse" data-post-id="<?= esc_attr($chasse_id); ?>">
+            <p class="solution-publication-message"><?= esc_html($publication_message); ?></p>
+            <div class="dashboard-grid solution-cards">
+              <div class="dashboard-card solution-option<?= $solution_mode === 'pdf' ? ' active' : ''; ?>" data-mode="pdf">
+                <button type="button" class="solution-reset" aria-label="<?= esc_attr__('Vider', 'chassesautresor-com'); ?>"<?= $fichier_nom ? '' : ' style="display:none;"'; ?>><i class="fa-solid fa-circle-xmark"></i></button>
+                <i class="fa-solid fa-file-pdf" aria-hidden="true"<?= $pdf_icon_attr; ?>></i>
+                <h3><?= esc_html($pdf_title); ?></h3>
+                <a href="#" class="stat-value"><?= esc_html($pdf_link_text); ?></a>
+                <input type="radio" name="acf[chasse_solution_mode]" value="pdf" <?= $solution_mode === 'pdf' ? 'checked' : ''; ?> hidden>
+              </div>
+
+              <div class="dashboard-card solution-option<?= $solution_mode === 'texte' ? ' active' : ''; ?>" data-mode="texte">
+                <button type="button" class="solution-reset" aria-label="<?= esc_attr__('Vider', 'chassesautresor-com'); ?>"<?= $explication !== '' ? '' : ' style="display:none;"'; ?>><i class="fa-solid fa-circle-xmark"></i></button>
+                <i class="fa-solid fa-pen-to-square" aria-hidden="true"<?= $texte_icon_attr; ?>></i>
+                <h3><?= esc_html__('Rédaction libre', 'chassesautresor-com'); ?></h3>
+                <button type="button" id="ouvrir-panneau-solution" class="stat-value"><?= esc_html($texte_link_text); ?></button>
+                <input type="radio" name="acf[chasse_solution_mode]" value="texte" <?= $solution_mode === 'texte' ? 'checked' : ''; ?> hidden>
+              </div>
+
+              <div class="dashboard-card solution-delai">
+                <i class="fa-regular fa-clock" aria-hidden="true"></i>
+                <h3>
+                  <?= esc_html__('Délai après fin de chasse', 'chassesautresor-com'); ?>
+                </h3>
+                <p class="stat-value champ-solution-timing">
+                  <input
+                    type="number"
+                    min="0"
+                    max="60"
+                    step="1"
+                    value="<?= esc_attr($delai); ?>"
+                    id="solution-delai"
+                    class="champ-input champ-delai-inline"
+                  >
+                  <?= esc_html__('jours, publié à', 'chassesautresor-com'); ?>
+                  <select id="solution-heure" class="champ-select-heure">
+                    <?php foreach (range(0, 23) as $h) :
+                      $formatted = str_pad($h, 2, '0', STR_PAD_LEFT) . ':00'; ?>
+                      <option value="<?= $formatted; ?>" <?= $formatted === $heure ? 'selected' : ''; ?>><?= $formatted; ?></option>
+                    <?php endforeach; ?>
+                  </select>
+                  H
+                </p>
+              </div>
+            </div>
+            <div class="stats-table-wrapper">
+              <div class="dashboard-card solution-reassurance">
+                <i class="fa-solid fa-shield-halved reassurance-icon" aria-hidden="true"></i>
+                <ul>
+                  <li><i class="fa-solid fa-check" aria-hidden="true"></i> <strong><?= esc_html__('Vos solutions sont protégées', 'chassesautresor-com'); ?></strong></li>
+                  <li><i class="fa-solid fa-check" aria-hidden="true"></i> <?= esc_html__('Stockées dans un espace privé, hors de portée des joueurs.', 'chassesautresor-com'); ?></li>
+                </ul>
+              </div>
+            </div>
+            <input type="file" id="solution-pdf-upload" accept="application/pdf" style="display:none;">
+            <div class="champ-feedback" style="margin-top: 5px;"></div>
+          </div>
+        </div>
+
         <div class="edition-panel-section edition-panel-section-ligne">
           <div class="section-content">
             <div class="dashboard-grid stats-cards">
@@ -996,6 +1093,9 @@ get_template_part('template-parts/chasse/panneaux/chasse-edition-recompense', nu
   'chasse_id' => $chasse_id
 ]);
 get_template_part('template-parts/chasse/panneaux/chasse-edition-liens', null, [
+  'chasse_id' => $chasse_id
+]);
+get_template_part('template-parts/chasse/panneaux/chasse-edition-solution', null, [
   'chasse_id' => $chasse_id
 ]);
 ?>
