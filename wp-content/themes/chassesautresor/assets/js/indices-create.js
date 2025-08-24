@@ -204,9 +204,13 @@
     if (target && target.nodeType !== 1) {
       target = target.parentElement;
     }
-    var placeholder = target && target.closest ? target.closest('.cta-indice-enigme') : null;
-    if (placeholder) {
+    var enigmeBtn = target && target.closest ? target.closest('.cta-indice-enigme') : null;
+    if (enigmeBtn) {
       e.preventDefault();
+      if (!enigmeBtn.dataset.objetType) {
+        enigmeBtn.dataset.objetType = 'enigme';
+      }
+      openModal(enigmeBtn);
       return;
     }
     var btn = target && target.closest ? target.closest('.cta-creer-indice, .badge-action.edit') : null;
