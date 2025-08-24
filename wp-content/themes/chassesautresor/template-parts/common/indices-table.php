@@ -56,7 +56,7 @@ if (empty($indices)) {
             <th><?= esc_html__('Indice', 'chassesautresor-com'); ?></th>
             <th><?= esc_html__('Texte', 'chassesautresor-com'); ?></th>
             <th><?= esc_html__('Indice pour', 'chassesautresor-com'); ?></th>
-            <th><?= esc_html__('Action', 'chassesautresor-com'); ?></th>
+            <th class="indice-actions"><?= esc_html__('Action', 'chassesautresor-com'); ?></th>
         </tr>
     </thead>
     <tbody>

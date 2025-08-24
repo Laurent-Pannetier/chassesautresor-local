@@ -5401,6 +5401,11 @@ tbody tr:nth-child(even) {
   margin-top: 0.25rem;
 }
 
+.indices-table th.indice-actions,
+.indices-table td.indice-actions {
+  text-align: center;
+}
+
 .indices-table-header {
   margin-bottom: 0.5rem;
 }
