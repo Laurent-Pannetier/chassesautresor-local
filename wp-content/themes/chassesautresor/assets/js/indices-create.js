@@ -194,8 +194,20 @@
         .then(function (res) {
           if (!res.success) return;
           close();
-          var selector = '.liste-indices[data-objet-type="' + btn.dataset.objetType + '"][data-objet-id="' + btn.dataset.objetId + '"]';
+          var selector =
+            '.liste-indices[data-objet-type="' +
+            btn.dataset.objetType +
+            '"][data-objet-id="' +
+            btn.dataset.objetId +
+            '"]';
           var wrapper = document.querySelector(selector);
+          if (!wrapper && btn.dataset.chasseId) {
+            selector =
+              '.liste-indices[data-objet-type="chasse"][data-objet-id="' +
+              btn.dataset.chasseId +
+              '"]';
+            wrapper = document.querySelector(selector);
+          }
           if (wrapper && window.reloadIndicesTable) {
             wrapper.dataset.page = '1';
             window.reloadIndicesTable(wrapper);

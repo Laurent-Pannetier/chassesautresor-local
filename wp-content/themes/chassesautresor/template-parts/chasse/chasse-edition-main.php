@@ -874,14 +874,11 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
             <?php
             $par_page_indices = 10;
             $page_indices     = 1;
-            $indices_query    = new WP_Query([
-              'post_type'      => 'indice',
-              'post_status'    => ['publish', 'pending', 'draft'],
-              'orderby'        => 'date',
-              'order'          => 'DESC',
-              'posts_per_page' => $par_page_indices,
-              'paged'          => $page_indices,
-              'meta_query'     => [
+            $enigme_ids       = recuperer_ids_enigmes_pour_chasse($chasse_id);
+            $meta             = [
+              'relation' => 'OR',
+              [
+                'relation' => 'AND',
                 [
                   'key'   => 'indice_cible_type',
                   'value' => 'chasse',
@@ -891,6 +888,29 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   'value' => $chasse_id,
                 ],
               ],
+            ];
+            if (!empty($enigme_ids)) {
+              $meta[] = [
+                'relation' => 'AND',
+                [
+                  'key'   => 'indice_cible_type',
+                  'value' => 'enigme',
+                ],
+                [
+                  'key'     => 'indice_enigme_linked',
+                  'value'   => $enigme_ids,
+                  'compare' => 'IN',
+                ],
+              ];
+            }
+            $indices_query = new WP_Query([
+              'post_type'      => 'indice',
+              'post_status'    => ['publish', 'pending', 'draft'],
+              'orderby'        => 'date',
+              'order'          => 'DESC',
+              'posts_per_page' => $par_page_indices,
+              'paged'          => $page_indices,
+              'meta_query'     => $meta,
             ]);
             $indices_list  = $indices_query->posts;
             $pages_indices = (int) $indices_query->max_num_pages;
