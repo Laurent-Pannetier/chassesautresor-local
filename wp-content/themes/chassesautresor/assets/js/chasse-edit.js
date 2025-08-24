@@ -42,7 +42,9 @@ function rafraichirCarteIndices() {
         card.classList.remove('loading');
         card.innerHTML = `<p class="error">${ChasseIndices.errorText}</p>`;
       });
-  }
+}
+
+window.rafraichirCarteIndices = rafraichirCarteIndices;
 
   function initIndicesOptions(card) {
     if (!card) return;

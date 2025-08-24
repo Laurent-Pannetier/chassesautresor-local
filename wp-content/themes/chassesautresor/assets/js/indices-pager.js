@@ -57,6 +57,7 @@
       .then(function (res) {
         if (!res.success) return;
         reloadTable(wrapper);
+        window.dispatchEvent(new Event('indice-created'));
       });
   });
 })();
