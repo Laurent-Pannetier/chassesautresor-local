@@ -55,28 +55,10 @@ foreach ($posts as $p) {
     break;
   }
 }
-// ✅ Une chasse publiée ne doit plus afficher la bordure d'indicateur sur les énigmes
-$chasse_publiee = (get_post_status($chasse_id) === 'publish');
 ?>
 
 <div class="bloc-enigmes-chasse">
   <div class="grille-3">
-  <?php foreach ($posts_visibles as $post): ?>
-    <?php
-    $enigme_id = $post->ID;
-    $titre = get_the_title($enigme_id);
-    $etat_systeme = enigme_get_etat_systeme($enigme_id);
-    $statut_utilisateur = enigme_get_statut_utilisateur($enigme_id, $utilisateur_id);
-    $cta = get_cta_enigme($enigme_id);
-
-  $est_orga = est_organisateur();
-  $voir_bordure = $est_orga && !$chasse_publiee && utilisateur_est_organisateur_associe_a_chasse($utilisateur_id, $chasse_id);
-    $classe_completion = '';
-    if ($voir_bordure) {
-      verifier_ou_mettre_a_jour_cache_complet($enigme_id);
-      $complet = (bool) get_field('enigme_cache_complet', $enigme_id);
-      $classe_completion = $complet ? 'carte-complete' : 'carte-incomplete';
-    }
     <?php foreach ($posts_visibles as $post):
       $enigme_id = $post->ID;
       $titre = get_the_title($enigme_id);
