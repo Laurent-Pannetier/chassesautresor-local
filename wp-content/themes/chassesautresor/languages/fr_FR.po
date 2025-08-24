@@ -353,6 +353,18 @@ msgstr "Indice #%d"
 msgid "lié à"
 msgstr "lié à"
 
+#: inc/edition/edition-core.php:155
+msgid "liée à"
+msgstr "liée à"
+
+#: inc/edition/edition-core.php:155
+msgid "la chasse"
+msgstr "la chasse"
+
+#: inc/edition/edition-core.php:155
+msgid "l’énigme"
+msgstr "l’énigme"
+
 #: inc/edition/edition-indice.php:151
 #, fuzzy
 msgid "Action non autorisée."

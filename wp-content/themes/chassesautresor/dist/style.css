@@ -3754,7 +3754,20 @@ body.panneau-ouvert::before {
   box-sizing: border-box;
 }
 
-.indice-modal-form .select-image,
+.indice-modal-form .select-image {
+  background: var(--color-editor-background);
+  color: var(--color-editor-text);
+  border: 1px solid var(--color-editor-border);
+  border-radius: 4px;
+  padding: var(--space-sm) var(--space-md);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.indice-modal-form .select-image:hover {
+  background: var(--color-editor-background);
+}
+
 .indice-modal-form .indice-modal-validate {
   background: var(--color-editor-button);
   color: var(--color-white);
@@ -3765,7 +3778,6 @@ body.panneau-ouvert::before {
   transition: background var(--transition-fast);
 }
 
-.indice-modal-form .select-image:hover,
 .indice-modal-form .indice-modal-validate:hover {
   background: var(--color-editor-button-hover);
 }
