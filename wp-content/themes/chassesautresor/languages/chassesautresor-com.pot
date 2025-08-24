@@ -2253,3 +2253,19 @@ msgstr ""
 msgid "à %s"
 msgstr ""
 
+#: template-parts/chasse/chasse-edition-main.php:867 template-parts/chasse/chasse-edition-main.php:986
+msgid "Solution"
+msgstr ""
+
+#: template-parts/chasse/chasse-edition-main.php:974
+msgid "Partagez votre chasse en un scan"
+msgstr ""
+
+#: template-parts/chasse/chasse-edition-main.php:975
+msgid "Facilitez l'accès à votre chasse avec un simple scan. Un QR code évite de saisir une URL et se partage facilement."
+msgstr ""
+
+#: template-parts/chasse/chasse-edition-main.php:987
+msgid "Contenu de la solution à venir."
+msgstr ""
+

@@ -2501,3 +2501,19 @@ msgstr "Hint"
 msgid "à %s"
 msgstr "at %s"
 
+#: template-parts/chasse/chasse-edition-main.php:867 template-parts/chasse/chasse-edition-main.php:986
+msgid "Solution"
+msgstr "Solution"
+
+#: template-parts/chasse/chasse-edition-main.php:974
+msgid "Partagez votre chasse en un scan"
+msgstr "Share your hunt with a single scan"
+
+#: template-parts/chasse/chasse-edition-main.php:975
+msgid "Facilitez l'accès à votre chasse avec un simple scan. Un QR code évite de saisir une URL et se partage facilement."
+msgstr "Make access to your hunt easy with a simple scan. A QR code avoids typing a URL and is easy to share."
+
+#: template-parts/chasse/chasse-edition-main.php:987
+msgid "Contenu de la solution à venir."
+msgstr "Solution content coming soon."
+

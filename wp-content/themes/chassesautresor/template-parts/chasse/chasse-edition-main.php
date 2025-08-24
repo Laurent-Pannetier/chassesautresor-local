@@ -814,6 +814,23 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
       <div class="edition-panel-body">
         <div class="edition-panel-section edition-panel-section-ligne">
           <div class="section-content">
+            <?php
+            $afficher_qr_code = est_organisateur()
+                && ($infos_chasse['statut'] ?? '') !== 'revision'
+                && ($infos_chasse['statut_validation'] ?? '') === 'valide';
+
+            if ($afficher_qr_code) {
+                $format            = isset($_GET['format']) ? sanitize_key($_GET['format']) : 'png';
+                $formats_autorises = ['png', 'svg', 'eps'];
+                if (!in_array($format, $formats_autorises, true)) {
+                    $format = 'png';
+                }
+                $url         = get_permalink($chasse_id);
+                $url_qr_code = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data='
+                    . rawurlencode($url)
+                    . '&format=' . $format;
+            }
+            ?>
             <div class="dashboard-grid stats-cards">
               <?php
               get_template_part('template-parts/chasse/partials/chasse-partial-indices', null, [
@@ -845,30 +862,13 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   data-valeurs='<?= json_encode($liens, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>'></div>
                 <div class="champ-feedback"></div>
               </div>
-              <?php
-              if (
-                  est_organisateur()
-                  && ($infos_chasse['statut'] ?? '') !== 'revision'
-                  && ($infos_chasse['statut_validation'] ?? '') === 'valide'
-              ) :
-                  $format = isset($_GET['format']) ? sanitize_key($_GET['format']) : 'png';
-                  $formats_autorises = ['png', 'svg', 'eps'];
-                  if (!in_array($format, $formats_autorises, true)) {
-                      $format = 'png';
-                  }
-                  $url = get_permalink($chasse_id);
-                  $url_qr_code = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data='
-                      . rawurlencode($url)
-                      . '&format=' . $format;
-              ?>
-              <div class="dashboard-card carte-orgy champ-qr-code">
-                <img class="qr-code-icon" src="<?= esc_url($url_qr_code); ?>" alt="<?= esc_attr__('QR code de la chasse', 'chassesautresor-com'); ?>">
-                <h3><?= esc_html__('QR code de votre chasse', 'chassesautresor-com'); ?></h3>
-                <a class="bouton-cta" href="<?= esc_url($url_qr_code); ?>" download="<?= esc_attr('qr-chasse-' . $chasse_id . '.' . $format); ?>">
-                  <?= esc_html__('Télécharger', 'chassesautresor-com'); ?>
+              <div class="dashboard-card carte-orgy champ-solution">
+                <i class="fa-solid fa-lightbulb icone-defaut" aria-hidden="true"></i>
+                <h3><?= esc_html__('Solution', 'chassesautresor-com'); ?></h3>
+                <a class="bouton-cta" href="#solution">
+                  <?= esc_html__('Voir la solution', 'chassesautresor-com'); ?>
                 </a>
               </div>
-              <?php endif; ?>
             </div>
 
             <?php
@@ -964,6 +964,27 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
               ]);
               ?>
             </div>
+            <?php if ($afficher_qr_code) : ?>
+              <div class="qr-code-block">
+                <div class="qr-code-image">
+                  <img src="<?= esc_url($url_qr_code); ?>" alt="<?= esc_attr__('QR code de votre chasse', 'chassesautresor-com'); ?>">
+                </div>
+                <div class="qr-code-content">
+                  <h3><?= esc_html__('QR code de votre chasse', 'chassesautresor-com'); ?></h3>
+                  <h4><?= esc_html__('Partagez votre chasse en un scan', 'chassesautresor-com'); ?></h4>
+                  <p><?= esc_html__('Facilitez l\'accès à votre chasse avec un simple scan. Un QR code évite de saisir une URL et se partage facilement.', 'chassesautresor-com'); ?></p>
+                  <a class="bouton-cta qr-code-download" href="<?= esc_url($url_qr_code); ?>" download="<?= esc_attr('qr-chasse-' . $chasse_id . '.png'); ?>">
+                    <?= esc_html__('Télécharger', 'chassesautresor-com'); ?>
+                  </a>
+                </div>
+              </div>
+            <?php endif; ?>
+          </div>
+        </div>
+        <div id="solution" class="edition-panel-section">
+          <div class="section-content">
+            <h3><?= esc_html__('Solution', 'chassesautresor-com'); ?></h3>
+            <p><?= esc_html__('Contenu de la solution à venir.', 'chassesautresor-com'); ?></p>
           </div>
         </div>
       </div>

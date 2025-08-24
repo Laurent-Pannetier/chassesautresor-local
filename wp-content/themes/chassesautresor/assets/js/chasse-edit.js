@@ -1113,3 +1113,40 @@ function enregistrerDatesChasse() {
     });
 }
 window.enregistrerDatesChasse = enregistrerDatesChasse;
+
+// ================================
+// 📥 Téléchargement du QR code sans redirection
+// ================================
+const qrDownloadBtn = document.querySelector('.qr-code-download');
+qrDownloadBtn?.addEventListener('click', (e) => {
+  e.preventDefault();
+  const url = qrDownloadBtn.getAttribute('href');
+  const filename = qrDownloadBtn.getAttribute('download') || 'qr-code.png';
+
+  fetch(url)
+    .then(res => res.blob())
+    .then(blob => {
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(link.href);
+    })
+    .catch(err => {
+      console.error('Erreur téléchargement QR code', err);
+      window.location.href = url;
+    });
+});
+
+// ================================
+// 🔗 Défilement doux vers la section Solution
+// ================================
+const solutionLink = document.querySelector('.champ-solution .bouton-cta[href="#solution"]');
+solutionLink?.addEventListener('click', (e) => {
+  e.preventDefault();
+  document
+    .querySelector('#chasse-tab-animation #solution')
+    ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
