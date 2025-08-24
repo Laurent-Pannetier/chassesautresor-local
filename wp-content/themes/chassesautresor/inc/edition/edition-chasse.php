@@ -567,6 +567,105 @@ function modifier_champ_chasse()
   wp_send_json_success($reponse);
 }
 
+/**
+ * Enregistre un fichier PDF de solution pour une chasse via AJAX.
+ *
+ * @return void (JSON)
+ */
+add_action('wp_ajax_enregistrer_fichier_solution_chasse', 'enregistrer_fichier_solution_chasse');
+function enregistrer_fichier_solution_chasse()
+{
+    if (!is_user_logged_in()) {
+        wp_send_json_error('Non autorisé.');
+    }
+
+    $post_id = intval($_POST['post_id'] ?? 0);
+    if (!$post_id || get_post_type($post_id) !== 'chasse') {
+        wp_send_json_error('ID de post invalide.');
+    }
+
+    if (!utilisateur_peut_modifier_post($post_id)) {
+        wp_send_json_error('Non autorisé.');
+    }
+
+    if (empty($_FILES['fichier_pdf']) || $_FILES['fichier_pdf']['error'] !== 0) {
+        wp_send_json_error('Fichier manquant ou erreur de transfert.');
+    }
+
+    $fichier = $_FILES['fichier_pdf'];
+
+    if ($fichier['size'] > 5 * 1024 * 1024) {
+        wp_send_json_error('Fichier trop volumineux (5 Mo maximum).');
+    }
+
+    $filetype = wp_check_filetype($fichier['name']);
+    if ($filetype['ext'] !== 'pdf' || $filetype['type'] !== 'application/pdf') {
+        wp_send_json_error('Seuls les fichiers PDF sont autorisés.');
+    }
+
+    require_once ABSPATH . 'wp-admin/includes/file.php';
+
+    $overrides = ['test_form' => false];
+
+    add_filter('upload_dir', 'rediriger_upload_fichier_solution');
+    $uploaded = wp_handle_upload($fichier, $overrides);
+    remove_filter('upload_dir', 'rediriger_upload_fichier_solution');
+
+    if (!isset($uploaded['url']) || !isset($uploaded['file'])) {
+        wp_send_json_error("Échec de l’upload.");
+    }
+
+    $attachment = [
+        'post_mime_type' => $filetype['type'],
+        'post_title'     => sanitize_file_name($fichier['name']),
+        'post_content'   => '',
+        'post_status'    => 'inherit',
+    ];
+
+    $attach_id = wp_insert_attachment($attachment, $uploaded['file'], $post_id);
+    if (strpos($filetype['type'], 'image/') === 0) {
+        require_once ABSPATH . 'wp-admin/includes/image.php';
+        wp_generate_attachment_metadata($attach_id, $uploaded['file']);
+    }
+
+    update_field('chasse_solution_fichier', $attach_id, $post_id);
+
+    wp_send_json_success([
+        'fichier' => $uploaded['url'],
+    ]);
+}
+
+/**
+ * Supprime le fichier PDF de solution d'une chasse via AJAX.
+ *
+ * @return void (JSON)
+ */
+add_action('wp_ajax_supprimer_fichier_solution_chasse', 'supprimer_fichier_solution_chasse');
+function supprimer_fichier_solution_chasse()
+{
+    if (!is_user_logged_in()) {
+        wp_send_json_error('Non autorisé.');
+    }
+
+    $post_id = intval($_POST['post_id'] ?? 0);
+    if (!$post_id || get_post_type($post_id) !== 'chasse') {
+        wp_send_json_error('ID de post invalide.');
+    }
+
+    if (!utilisateur_peut_modifier_post($post_id)) {
+        wp_send_json_error('Non autorisé.');
+    }
+
+    $fichier_id = get_field('chasse_solution_fichier', $post_id, false);
+    if ($fichier_id) {
+        wp_delete_attachment($fichier_id, true);
+    }
+
+    update_field('chasse_solution_fichier', null, $post_id);
+
+    wp_send_json_success();
+}
+
 
 
 
