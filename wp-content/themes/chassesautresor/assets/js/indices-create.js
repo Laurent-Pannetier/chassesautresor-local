@@ -196,6 +196,8 @@
       e.preventDefault();
       var form = e.target;
       var data = new FormData(form);
+      validateBtn.disabled = true;
+      stateMessage.textContent = '';
       fetch(indicesCreate.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: data })
         .then(function (r) { return r.json(); })
         .then(function (res) {
@@ -232,6 +234,10 @@
             }
           }
           window.dispatchEvent(new Event('indice-created'));
+        })
+        .catch(function () {
+          stateMessage.textContent = indicesCreate.texts.ajaxError;
+          validateBtn.disabled = false;
         });
     });
 

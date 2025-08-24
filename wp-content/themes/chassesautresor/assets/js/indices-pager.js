@@ -18,6 +18,15 @@
         wrapper.innerHTML = res.data.html;
         wrapper.dataset.page = String(res.data.page);
         wrapper.dataset.pages = String(res.data.pages);
+      })
+      .catch(function () {
+        var txt =
+          window.indicesCreate &&
+          indicesCreate.texts &&
+          indicesCreate.texts.ajaxError
+            ? indicesCreate.texts.ajaxError
+            : wp.i18n.__('Erreur réseau', 'chassesautresor-com');
+        wrapper.innerHTML = '<p class="error">' + txt + '</p>';
       });
   }
 
@@ -58,6 +67,15 @@
         if (!res.success) return;
         reloadTable(wrapper);
         window.dispatchEvent(new Event('indice-created'));
+      })
+      .catch(function () {
+        var txt =
+          window.indicesCreate &&
+          indicesCreate.texts &&
+          indicesCreate.texts.ajaxError
+            ? indicesCreate.texts.ajaxError
+            : wp.i18n.__('Erreur réseau', 'chassesautresor-com');
+        wrapper.innerHTML = '<p class="error">' + txt + '</p>';
       });
   });
 })();
