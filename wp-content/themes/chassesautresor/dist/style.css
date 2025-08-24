@@ -3170,6 +3170,10 @@ body.panneau-ouvert::before {
   position: relative;
 }
 
+.carte-orgy .bouton-cta {
+  line-height: 1.4;
+}
+
 .dashboard-grid > .dashboard-card:only-child, .dashboard-grid > .carte-orgy:only-child {
   max-width: var(--dashboard-card-max-width);
   width: 100%;
@@ -6719,6 +6723,10 @@ footer .ast-footer-widget a {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.carte-orgy .bouton-cta {
+  line-height: 1.4;
 }
 
 .dashboard-grid > .dashboard-card:only-child, .dashboard-grid > .carte-orgy:only-child {
