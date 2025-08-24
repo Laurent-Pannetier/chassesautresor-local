@@ -219,6 +219,15 @@
           if (!btn.dataset.indiceId && btn.dataset.indiceRang) {
             btn.dataset.indiceRang = parseInt(btn.dataset.indiceRang, 10) + 1;
           }
+          if (!btn.dataset.indiceId && btn.dataset.chasseId) {
+            var chasseBtn = document.querySelector(
+              '.cta-indice-chasse[data-objet-id="' + btn.dataset.chasseId + '"]'
+            );
+            if (chasseBtn && chasseBtn.dataset.indiceRang) {
+              chasseBtn.dataset.indiceRang =
+                parseInt(chasseBtn.dataset.indiceRang, 10) + 1;
+            }
+          }
         });
     });
 
