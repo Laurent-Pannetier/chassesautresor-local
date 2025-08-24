@@ -7,6 +7,13 @@ namespace {
         }
     }
 
+    if (!function_exists('get_posts')) {
+        function get_posts($args)
+        {
+            return [];
+        }
+    }
+
     if (!function_exists('wp_is_post_revision')) {
         function wp_is_post_revision($id)
         {
@@ -58,6 +65,13 @@ namespace {
             $updated_post = $data;
         }
     }
+
+    if (!function_exists('recuperer_id_chasse_associee')) {
+        function recuperer_id_chasse_associee(int $enigme_id): int
+        {
+            return 42;
+        }
+    }
 }
 
 namespace MettreAJourCacheIndiceTest {
@@ -88,6 +102,30 @@ namespace MettreAJourCacheIndiceTest {
 
             $this->assertSame(0, $updated_fields['indice_cache_complet']);
             $this->assertSame('desactive', $updated_fields['indice_cache_etat_systeme']);
+        }
+
+        /**
+         * @runInSeparateProcess
+         * @preserveGlobalState disabled
+         */
+        public function test_completes_missing_chasse_link_from_target(): void
+        {
+            global $fields, $updated_fields;
+            $post_id = 456;
+            $fields  = [
+                $post_id => [
+                    'indice_cible_type'    => 'enigme',
+                    'indice_enigme_linked' => 789,
+                    'indice_contenu'       => '',
+                    'indice_image'         => null,
+                ],
+            ];
+
+            require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
+
+            \mettre_a_jour_cache_indice($post_id);
+
+            $this->assertSame(42, $updated_fields['indice_chasse_linked']);
         }
     }
 }
