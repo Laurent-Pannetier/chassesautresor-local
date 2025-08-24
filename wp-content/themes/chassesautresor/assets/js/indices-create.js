@@ -5,7 +5,7 @@
     var titre = indicesCreate.texts.indiceTitre.replace('%d', btn.dataset.indiceRang || '');
     var needRiddle = btn.dataset.objetType === 'enigme' && !btn.dataset.indiceId;
     var riddleField = needRiddle
-      ? `<p><label>${indicesCreate.texts.riddle}<br><select name="indice_enigme_linked"><option value="">${indicesCreate.texts.loading}</option></select></label></p>`
+      ? `<p><label>${indicesCreate.texts.enigmeLabel}<br><select name="indice_enigme_linked"><option value="">${indicesCreate.texts.loading}</option></select></label></p>`
       : '';
     overlay.innerHTML = `
       <div class="indice-modal">
@@ -159,7 +159,7 @@
       var complete = content !== '' || image !== '';
 
       if (!riddleSelected) {
-        message = indicesCreate.texts.needRiddle;
+        message = indicesCreate.texts.needEnigme;
       } else if (!complete) {
         message = indicesCreate.texts.needContent;
       } else {
@@ -220,7 +220,7 @@
           if (!res.success || !res.data.enigmes.length) {
             var opt = document.createElement('option');
             opt.value = '';
-            opt.textContent = indicesCreate.texts.chooseRiddle;
+            opt.textContent = indicesCreate.texts.enigmePlaceholder;
             select.appendChild(opt);
             btn.dataset.objetId = '';
             hidden.value = '';
