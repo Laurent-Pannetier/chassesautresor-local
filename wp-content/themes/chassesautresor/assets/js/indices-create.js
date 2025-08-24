@@ -231,6 +231,7 @@
                 parseInt(chasseBtn.dataset.indiceRang, 10) + 1;
             }
           }
+          window.dispatchEvent(new Event('indice-created'));
         });
     });
 
