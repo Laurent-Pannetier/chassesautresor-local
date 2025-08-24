@@ -1139,3 +1139,14 @@ qrDownloadBtn?.addEventListener('click', (e) => {
       window.location.href = url;
     });
 });
+
+// ================================
+// 🔗 Défilement doux vers la section Solution
+// ================================
+const solutionLink = document.querySelector('.champ-solution .bouton-cta[href="#solution"]');
+solutionLink?.addEventListener('click', (e) => {
+  e.preventDefault();
+  document
+    .querySelector('#chasse-tab-animation #solution')
+    ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
