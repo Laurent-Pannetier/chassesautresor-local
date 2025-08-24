@@ -1209,3 +1209,50 @@ function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): 
 
     return $memo[$cache_key];
 }
+
+/**
+ * Retrieve visual data for a hunt.
+ *
+ * @param int $chasse_id Hunt ID.
+ * @return array<string,mixed>
+ */
+function chasse_get_visuels_data(int $chasse_id): array
+{
+    $image_id = get_field('chasse_principale_image', $chasse_id);
+    $image_url = '';
+    if ($image_id) {
+        $image_data = wp_get_attachment_image_src($image_id, 'large');
+        if ($image_data) {
+            $image_url = $image_data[0];
+        }
+    }
+
+    $qr_url = cat_get_qr_code_url(get_permalink($chasse_id));
+
+    $organisateur_id   = get_organisateur_from_chasse($chasse_id);
+    $organisateur_titre = get_the_title($organisateur_id);
+    $logo_id           = get_field('organisateur_principale_logo', $organisateur_id);
+    $logo_url          = $logo_id ? wp_get_attachment_image_url($logo_id, 'thumbnail') : '';
+    $description       = get_field('organisateur_principale_description', $organisateur_id) ?? '';
+
+    $liens = get_field('chasse_principale_liens', $chasse_id);
+    if (empty($liens)) {
+        $liens = get_field('organisateur_principale_liens', $organisateur_id) ?: [];
+    }
+    $liens_html = render_liens_publics($liens, 'chasse', ['placeholder' => false]);
+
+    return [
+        'image'       => $image_url,
+        'qr'          => $qr_url,
+        'titre'       => get_the_title($chasse_id),
+        'organisateur_titre' => $organisateur_titre,
+        'logo'        => $logo_url,
+        'description' => $description,
+        'liens'       => $liens_html,
+        'texte'       => sprintf(
+            /* translators: %s: hunt title */
+            __('Découvrez la chasse "%s" sur Chasses au trésor !', 'chassesautresor-com'),
+            get_the_title($chasse_id)
+        ),
+    ];
+}
