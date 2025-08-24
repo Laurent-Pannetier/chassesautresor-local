@@ -2207,3 +2207,33 @@ msgstr ""
 msgid "programmé le %s"
 msgstr ""
 
+#: template-parts/common/indices-table.php:41
+#, php-format
+msgid "%d indice au total"
+msgid_plural "%d indices au total"
+msgstr[0] ""
+msgstr[1] ""
+
+#: template-parts/common/indices-table.php:44
+#, php-format
+msgid "%d indice chasse"
+msgid_plural "%d indices chasse"
+msgstr[0] ""
+msgstr[1] ""
+
+#: template-parts/common/indices-table.php:47
+#, php-format
+msgid "%d indice énigme"
+msgid_plural "%d indices énigme"
+msgstr[0] ""
+msgstr[1] ""
+
+#: template-parts/common/indices-table.php:55
+msgid "Indice"
+msgstr ""
+
+#: template-parts/common/indices-table.php:136
+#, php-format
+msgid "à %s"
+msgstr ""
+

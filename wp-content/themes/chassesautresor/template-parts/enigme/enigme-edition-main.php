@@ -982,15 +982,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                   ]);
                   $indices_list  = $indices_query->posts;
                   $pages_indices = (int) $indices_query->max_num_pages;
+                  $count_enigme  = function_exists('get_posts') ? count(get_posts([
+                    'post_type'      => 'indice',
+                    'post_status'    => ['publish', 'pending', 'draft'],
+                    'fields'         => 'ids',
+                    'nopaging'       => true,
+                    'meta_query'     => [
+                      [
+                        'key'   => 'indice_cible_type',
+                        'value' => 'enigme',
+                      ],
+                      [
+                        'key'   => 'indice_enigme_linked',
+                        'value' => $enigme_id,
+                      ],
+                    ],
+                  ])) : 0;
+                  $count_total = $count_enigme;
                   ?>
                   <div class="liste-indices" data-page="1" data-pages="<?= esc_attr($pages_indices); ?>" data-objet-type="enigme" data-objet-id="<?= esc_attr($enigme_id); ?>" data-ajax-url="<?= esc_url(admin_url('admin-ajax.php')); ?>">
                     <?php
                     get_template_part('template-parts/common/indices-table', null, [
-                      'indices'    => $indices_list,
-                      'page'       => 1,
-                      'pages'      => $pages_indices,
-                      'objet_type' => 'enigme',
-                      'objet_id'   => $enigme_id,
+                      'indices'      => $indices_list,
+                      'page'         => 1,
+                      'pages'        => $pages_indices,
+                      'objet_type'   => 'enigme',
+                      'objet_id'     => $enigme_id,
+                      'count_total'  => $count_total,
+                      'count_chasse' => 0,
+                      'count_enigme' => $count_enigme,
                     ]);
                     ?>
                   </div>

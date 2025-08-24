@@ -282,6 +282,22 @@ tbody tr:nth-child(even) {
   text-align: left;
 }
 
+.indices-table td {
+  vertical-align: top;
+}
+
+.indices-table td > div + div {
+  margin-top: 0.25rem;
+}
+
+.indices-table-header {
+  margin-bottom: 0.5rem;
+}
+
+.indices-table-header .etiquette + .etiquette {
+  margin-left: 0.25rem;
+}
+
 .indices-table td img {
   width: 80px;
   height: 80px;

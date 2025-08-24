@@ -516,13 +516,74 @@ function ajax_indices_lister_table(): void
         'meta_query'     => $meta,
     ]);
 
+    $count_chasse = 0;
+    $count_enigme = 0;
+    if ($objet_type === 'chasse') {
+        $count_chasse = function_exists('get_posts') ? count(get_posts([
+            'post_type'      => 'indice',
+            'post_status'    => ['publish', 'pending', 'draft'],
+            'fields'         => 'ids',
+            'nopaging'       => true,
+            'meta_query'     => [
+                [
+                    'key'   => 'indice_cible_type',
+                    'value' => 'chasse',
+                ],
+                [
+                    'key'   => 'indice_chasse_linked',
+                    'value' => $objet_id,
+                ],
+            ],
+        ])) : 0;
+        if (!empty($enigme_ids)) {
+            $count_enigme = function_exists('get_posts') ? count(get_posts([
+                'post_type'      => 'indice',
+                'post_status'    => ['publish', 'pending', 'draft'],
+                'fields'         => 'ids',
+                'nopaging'       => true,
+                'meta_query'     => [
+                    [
+                        'key'   => 'indice_cible_type',
+                        'value' => 'enigme',
+                    ],
+                    [
+                        'key'     => 'indice_enigme_linked',
+                        'value'   => $enigme_ids,
+                        'compare' => 'IN',
+                    ],
+                ],
+            ])) : 0;
+        }
+    } else {
+        $count_enigme = function_exists('get_posts') ? count(get_posts([
+            'post_type'      => 'indice',
+            'post_status'    => ['publish', 'pending', 'draft'],
+            'fields'         => 'ids',
+            'nopaging'       => true,
+            'meta_query'     => [
+                [
+                    'key'   => 'indice_cible_type',
+                    'value' => 'enigme',
+                ],
+                [
+                    'key'   => 'indice_enigme_linked',
+                    'value' => $objet_id,
+                ],
+            ],
+        ])) : 0;
+    }
+    $count_total = $count_chasse + $count_enigme;
+
     ob_start();
     get_template_part('template-parts/common/indices-table', null, [
-        'indices'    => $query->posts,
-        'page'       => max(1, $page),
-        'pages'      => (int) $query->max_num_pages,
-        'objet_type' => $objet_type,
-        'objet_id'   => $objet_id,
+        'indices'      => $query->posts,
+        'page'         => max(1, $page),
+        'pages'        => (int) $query->max_num_pages,
+        'objet_type'   => $objet_type,
+        'objet_id'     => $objet_id,
+        'count_total'  => $count_total,
+        'count_chasse' => $count_chasse,
+        'count_enigme' => $count_enigme,
     ]);
     $html = ob_get_clean();
 
