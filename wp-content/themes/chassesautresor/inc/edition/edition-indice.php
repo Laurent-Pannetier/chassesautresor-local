@@ -769,10 +769,11 @@ add_action('acf/save_post', 'sauvegarder_indice_chasse_si_manquant', 20);
 /**
  * Met à jour les champs de cache d'un indice.
  *
- * @param int|string $post_id ID du post ACF.
+ * @param int|string $post_id  ID du post ACF.
+ * @param int|null   $chasse_id ID de la chasse si connu.
  * @return void
  */
-function mettre_a_jour_cache_indice($post_id): void
+function mettre_a_jour_cache_indice($post_id, ?int $chasse_id = null): void
 {
     if (!is_numeric($post_id) || get_post_type((int) $post_id) !== 'indice') {
         return;
@@ -780,6 +781,22 @@ function mettre_a_jour_cache_indice($post_id): void
 
     if (wp_is_post_revision($post_id) || wp_is_post_autosave($post_id)) {
         return;
+    }
+
+    $chasse_linked = get_field('indice_chasse_linked', $post_id);
+    if (!$chasse_linked) {
+        $cible_type = get_field('indice_cible_type', $post_id);
+        $enigme_id  = get_field('indice_enigme_linked', $post_id);
+
+        if ($cible_type === 'enigme' && $enigme_id) {
+            $chasse_linked = recuperer_id_chasse_associee((int) $enigme_id);
+        } elseif ($chasse_id !== null) {
+            $chasse_linked = $chasse_id;
+        }
+
+        if ($chasse_linked) {
+            update_field('indice_chasse_linked', $chasse_linked, $post_id);
+        }
     }
 
     $content  = trim((string) get_field('indice_contenu', $post_id));
