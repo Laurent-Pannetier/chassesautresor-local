@@ -2360,70 +2360,11 @@ msgstr "Content title"
 msgid "Action"
 msgstr "Action"
 
-#~ msgid "Activer Orgy"
-#~ msgstr "Enable Orgy"
-
 msgid "Modifier la récompense"
 msgstr "Edit the reward"
 
-#~ msgid "Solution"
-#~ msgstr "Solution"
-
-#~ msgid "🛠️ Cette énigme est la vôtre. Aucun formulaire n’est affiché."
-#~ msgstr "🛠️ This riddle is yours. No forms are displayed."
-
-#~ msgid "Actions"
-#~ msgstr "Actions"
-
-#~ msgid ""
-#~ "Un joueur devient gagnant lorsqu’il résout toutes les énigmes. La chasse "
-#~ "s’achève dès que le nombre de gagnants prévu est atteint."
-#~ msgstr ""
-#~ "A player becomes a winner when they solve all the puzzles. The hunt ends "
-#~ "as soon as the expected number of winners is reached."
-
-#~ msgid ""
-#~ "Vous arrêtez la chasse manuellement, grâce au bouton situé dans le "
-#~ "panneau d'édition chasse."
-#~ msgstr ""
-#~ "You stop the hunt manually, thanks to the button located in the hunt edit "
-#~ "panel."
-
-#~ msgid ""
-#~ "Nombre maximum de tentatives quotidiennes d'un joueur\n"
-#~ "Mode payant : tentatives illimitées.\n"
-#~ "Mode gratuit : maximum 24 tentatives par jour."
-#~ msgstr ""
-#~ "Maximum number of daily attempts by a player\n"
-#~ "Paid mode: unlimited attempts.\n"
-#~ "Free mode: maximum 24 attempts per day."
-
-#~ msgid ""
-#~ "Validation automatique : Le joueur devra saisir une réponse exacte. Celle-"
-#~ "ci sera automatiquement vérifiée selon les critères définis (réponse "
-#~ "attendue, casse, variantes)."
-#~ msgstr ""
-#~ "Automatic validation: The player must enter an exact answer. It will be "
-#~ "automatically checked based on the defined criteria (expected answer, "
-#~ "case, variants)."
-
-#~ msgid ""
-#~ "Validation manuelle : Le joueur rédige une réponse libre. Vous validez ou "
-#~ "invalidez manuellement sa tentative depuis votre espace personnel. Un "
-#~ "email et un message d'alerte vous avertit de chaque nouvelle soumission."
-#~ msgstr ""
-#~ "Manual validation: The player enters a free-form answer. You approve or "
-#~ "reject their attempt manually from your personal area. An email and alert "
-#~ "message notify you of each new submission."
-
 msgid "Ajouter la récompense"
 msgstr "Add the reward"
-
-#~ msgid "Contenu d'édition à venir..."
-#~ msgstr "Editing content coming soon..."
-
-#~ msgid "renseigner le texte de l’indice"
-#~ msgstr "enter the clue text"
 
 #: template-parts/chasse/chasse-edition-main.php:112
 #: assets/js/core/resume.js:322

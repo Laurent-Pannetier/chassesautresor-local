@@ -2337,24 +2337,6 @@ msgstr "Votre réponse"
 msgid "Tentatives quotidiennes"
 msgstr "Tentatives quotidiennes"
 
-#~ msgid "Activer Orgy"
-#~ msgstr "Activer Orgy"
-
-#~ msgid "Solution"
-#~ msgstr "Solution"
-
-#~ msgid "🛠️ Cette énigme est la vôtre. Aucun formulaire n’est affiché."
-#~ msgstr "🛠️ Cette énigme est la vôtre. Aucun formulaire n’est affiché."
-
-#~ msgid "Actions"
-#~ msgstr "Actions"
-
-#~ msgid "Contenu d'édition à venir..."
-#~ msgstr "Contenu d'édition à venir..."
-
-#~ msgid "renseigner le texte de l’indice"
-#~ msgstr "renseigner le texte de l’indice"
-
 #: template-parts/chasse/chasse-edition-main.php:112
 #: assets/js/core/resume.js:322
 msgid "renseigner le titre de la chasse"
