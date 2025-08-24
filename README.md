@@ -59,7 +59,8 @@ Un endpoint dédié permet de créer rapidement un indice :
 
 Les liens déclenchant la modale de création peuvent utiliser la classe `.cta-indice-enigme`
 avec l’attribut `data-objet-type="enigme"`. Un attribut optionnel `data-default-enigme`
-permet de présélectionner une énigme.
+permet de présélectionner une énigme. L’attribut `data-chasse-id` doit être fourni pour
+charger via l’endpoint AJAX `chasse_lister_enigmes` la liste des énigmes admissibles.
 
 ### Accessibilité
 
