@@ -121,8 +121,8 @@ button,
 .bouton-cta {
     display: inline-block;
     padding: 10px 15px;
-    background-color: var(--color-background-button);
-    color: var(--color-text-primary);
+    background-color: var(--color-gris-3);
+    color: var(--color-text-secondary);
     border-radius: 5px;
     text-decoration: none;
     font-weight: bold;
@@ -132,7 +132,14 @@ button,
      width: fit-content;
 }
 .bouton-cta:hover {
-    background-color: var(--color-secondary);
+    background-color: var(--color-gris-carte);
+}
+.bouton-cta--color {
+    background-color: var(--color-background-button);
+    color: var(--color-text-primary);
+}
+.bouton-cta--color:hover {
+    background-color: var(--color-background-button-hover);
 }
 .bouton-cta:disabled {
     background: var(--color-gris-3);

@@ -1525,6 +1525,10 @@ body.panneau-ouvert::before {
   position: relative;
 }
 
+.carte-orgy {
+  @extend .dashboard-card;
+}
+
 .dashboard-grid > .dashboard-card:only-child {
   max-width: var(--dashboard-card-max-width);
   width: 100%;
