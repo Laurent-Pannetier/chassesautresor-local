@@ -29,6 +29,7 @@
       </div>`;
     document.body.appendChild(overlay);
 
+    var titleEl = overlay.querySelector('.indice-modal-header h2');
     var dateInput = overlay.querySelector('input[name="indice_date_disponibilite"]');
     var defaultDate = (function () {
       var d = new Date();
@@ -219,6 +220,8 @@
             opt.value = '';
             opt.textContent = indicesCreate.texts.chooseRiddle;
             select.appendChild(opt);
+            btn.dataset.indiceRang = '';
+            titleEl.textContent = indicesCreate.texts.indiceTitre.replace('%d', '');
             refreshState();
             return;
           }
@@ -226,19 +229,27 @@
             var opt = document.createElement('option');
             opt.value = enigme.id;
             opt.textContent = enigme.title;
+            if (enigme.indice_rang !== undefined) {
+              opt.dataset.indiceRang = enigme.indice_rang;
+            }
             select.appendChild(opt);
           });
           var def = btn.dataset.defaultEnigme;
           if (def) select.value = def;
           if (!select.value) select.value = select.options[0].value;
+          var selected = select.options[select.selectedIndex];
           btn.dataset.objetId = select.value;
-          titleSpan.textContent = select.options[select.selectedIndex].text;
+          btn.dataset.indiceRang = selected && selected.dataset.indiceRang ? selected.dataset.indiceRang : '';
+          titleSpan.textContent = selected ? selected.text : '';
+          titleEl.textContent = indicesCreate.texts.indiceTitre.replace('%d', btn.dataset.indiceRang || '');
           refreshState();
         });
       select.addEventListener('change', function () {
-        var txt = select.options[select.selectedIndex] ? select.options[select.selectedIndex].text : '';
+        var opt = select.options[select.selectedIndex];
         btn.dataset.objetId = select.value;
-        titleSpan.textContent = txt;
+        btn.dataset.indiceRang = opt && opt.dataset.indiceRang ? opt.dataset.indiceRang : '';
+        titleSpan.textContent = opt ? opt.text : '';
+        titleEl.textContent = indicesCreate.texts.indiceTitre.replace('%d', btn.dataset.indiceRang || '');
         refreshState();
       });
     }
@@ -257,6 +268,7 @@
       if (!enigmeBtn.dataset.objetType) {
         enigmeBtn.dataset.objetType = 'enigme';
       }
+      enigmeBtn.dataset.indiceRang = '';
       openModal(enigmeBtn);
       return;
     }
