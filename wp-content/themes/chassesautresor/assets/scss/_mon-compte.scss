@@ -424,6 +424,10 @@
 
 .carte-orgy {
     @extend .dashboard-card;
+
+    .bouton-cta {
+        line-height: 1.4;
+    }
 }
 
 .dashboard-grid > .dashboard-card:only-child {
