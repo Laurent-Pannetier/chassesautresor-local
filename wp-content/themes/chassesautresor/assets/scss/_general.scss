@@ -280,10 +280,7 @@ tbody tr:nth-child(even) {
 .indices-table th,
 .indices-table td {
   text-align: left;
-}
-
-.indices-table td {
-  vertical-align: top;
+  vertical-align: middle;
 }
 
 .indices-table td > div + div {
