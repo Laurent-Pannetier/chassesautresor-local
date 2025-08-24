@@ -625,7 +625,11 @@ function ajax_modifier_indice_modal(): void
     $dispo   = sanitize_key($_POST['indice_disponibilite'] ?? 'immediate');
     $date    = sanitize_text_field($_POST['indice_date_disponibilite'] ?? '');
 
-    update_field('indice_image', $image, $indice_id);
+    if ($image) {
+        update_field('indice_image', $image, $indice_id);
+    } else {
+        delete_field('indice_image', $indice_id);
+    }
     update_field('indice_contenu', $contenu, $indice_id);
 
     $dispo = $dispo === 'differe' ? 'differe' : 'immediate';

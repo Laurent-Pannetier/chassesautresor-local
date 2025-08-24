@@ -36,6 +36,9 @@
 
     var titleEl = overlay.querySelector('.indice-modal-header h2');
     var dateInput = overlay.querySelector('input[name="indice_date_disponibilite"]');
+    var validateBtn = overlay.querySelector('.indice-modal-validate');
+    var stateMessage = overlay.querySelector('.indice-state-message');
+    var selectBtn = overlay.querySelector('.select-image');
     var defaultDate = (function () {
       var d = new Date();
       d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
@@ -71,8 +74,6 @@
       dateInput.value = defaultDate;
     }
     var lastDateValue = dateInput.value;
-    var validateBtn = overlay.querySelector('.indice-modal-validate');
-    var stateMessage = overlay.querySelector('.indice-state-message');
 
     function close() {
       overlay.remove();
@@ -87,9 +88,11 @@
       var preview = overlay.querySelector('.image-preview');
       if (!url) {
         preview.innerHTML = '';
+        if (selectBtn) selectBtn.disabled = false;
         refreshState();
         return;
       }
+      if (selectBtn) selectBtn.disabled = false;
       preview.innerHTML = '<img src="' + url + '" alt="" />' +
         '<span class="image-actions">' +
         '<button type="button" class="image-edit" aria-label="' + indicesCreate.texts.edit + '"><span class="dashicons dashicons-edit"></span></button>' +
@@ -131,7 +134,7 @@
       });
     });
 
-    overlay.querySelector('.select-image').addEventListener('click', function (e) {
+    selectBtn.addEventListener('click', function (e) {
       e.preventDefault();
       openMedia();
     });
