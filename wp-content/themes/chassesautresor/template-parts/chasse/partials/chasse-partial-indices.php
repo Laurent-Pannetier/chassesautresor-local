@@ -30,10 +30,19 @@ $peut_ajouter = indice_action_autorisee('create', $objet_type, $objet_id);
         data-objet-id="<?= esc_attr($objet_id); ?>"
         data-objet-titre="<?= esc_attr($objet_titre); ?>"
         data-indice-rang="<?= esc_attr($indice_rang); ?>"
+        aria-haspopup="dialog"
       >
         <?= esc_html__('La chasse entière', 'chassesautresor-com'); ?>
       </a>
-      <a href="#" class="bouton-cta cta-indice-enigme">
+      <a
+        href="#"
+        class="bouton-cta cta-indice-enigme"
+        data-objet-type="enigme"
+        <?php if ('enigme' === $objet_type) : ?>
+          data-default-enigme="<?= esc_attr($objet_id); ?>"
+        <?php endif; ?>
+        aria-haspopup="dialog"
+      >
         <?= esc_html__('Une énigme de la chasse', 'chassesautresor-com'); ?>
       </a>
     </div>
