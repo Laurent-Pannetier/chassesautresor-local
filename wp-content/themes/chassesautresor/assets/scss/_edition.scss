@@ -1596,7 +1596,8 @@ body.panneau-ouvert::before {
   flex-direction: column;
 }
 
-.dashboard-card.champ-indices .stat-value .bouton-cta {
+.dashboard-card.champ-indices .stat-value .bouton-cta,
+.dashboard-card.champ-liens .bouton-cta {
   display: block;
   width: 100%;
   margin-top: 0;

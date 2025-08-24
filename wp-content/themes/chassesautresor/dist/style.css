@@ -3240,7 +3240,9 @@ body.panneau-ouvert::before {
   flex-direction: column;
 }
 
-.dashboard-card.champ-indices .stat-value .bouton-cta, .champ-indices.carte-orgy .stat-value .bouton-cta {
+.dashboard-card.champ-indices .stat-value .bouton-cta, .champ-indices.carte-orgy .stat-value .bouton-cta,
+.dashboard-card.champ-liens .bouton-cta,
+.champ-liens.carte-orgy .bouton-cta {
   display: block;
   width: 100%;
   margin-top: 0;
