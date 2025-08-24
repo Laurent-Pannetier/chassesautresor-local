@@ -57,6 +57,10 @@ Un endpoint dédié permet de créer rapidement un indice :
 - **Champs ACF initialisés :** `indice_cible_type`, `indice_enigme_linked`, `indice_chasse_linked`, `indice_disponibilite`, `indice_date_disponibilite`, `indice_cout_points` et `indice_cache_complet`.
 - **Comportement :** après création, l’utilisateur est redirigé vers la chasse ou l’énigme associée.
 
+Les liens déclenchant la modale de création peuvent utiliser la classe `.cta-indice-enigme`
+avec l’attribut `data-objet-type="enigme"`. Un attribut optionnel `data-default-enigme`
+permet de présélectionner une énigme.
+
 ### Accessibilité
 
 Les libellés du formulaire utilisent `color: var(--color-editor-text)` afin de rester lisibles sur fond clair. Évitez d'appliquer `--color-text-primary` dans ce contexte pour garantir un contraste suffisant.
