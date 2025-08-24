@@ -2095,6 +2095,11 @@ body .header-img-modifiable .icone-modif {
   display: block;
 }
 
+.dashboard-card.champ-liens.champ-vide,
+.champ-liens.champ-vide.carte-orgy {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08), 0 0 0 3px hsl(var(--editor-error-hsl)/0.3);
+}
+
 .dashboard-card.champ-liens .liste-liens-publics, .champ-liens.carte-orgy .liste-liens-publics {
   display: flex;
   gap: var(--space-xs);
@@ -3206,7 +3211,6 @@ body.panneau-ouvert::before {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   gap: 12px;
   text-align: center;
   color: var(--color-editor-text);
