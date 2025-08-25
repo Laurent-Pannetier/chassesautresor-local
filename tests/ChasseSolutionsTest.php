@@ -224,4 +224,100 @@ class ChasseSolutionsTest extends TestCase
         $this->assertSame('IN', $meta[1][1]['compare']);
         $this->assertIsArray($json_success_data);
     }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_creer_solution_modal_uploads_pdf_file(): void
+    {
+        if (!defined('TITRE_DEFAUT_SOLUTION')) {
+            define('TITRE_DEFAUT_SOLUTION', 'solution');
+        }
+        if (!function_exists('__')) {
+            function __($text, $domain = null) { return $text; }
+        }
+        if (!function_exists('is_user_logged_in')) {
+            function is_user_logged_in() { return true; }
+        }
+        if (!function_exists('get_post_type')) {
+            function get_post_type($id) { return $id === 3 ? 'chasse' : 'solution'; }
+        }
+        if (!function_exists('solution_action_autorisee')) {
+            function solution_action_autorisee($action, $type, $id) { return true; }
+        }
+        if (!function_exists('get_current_user_id')) {
+            function get_current_user_id() { return 1; }
+        }
+        if (!function_exists('wp_insert_post')) {
+            function wp_insert_post($args) { return 456; }
+        }
+        if (!function_exists('wp_update_post')) {
+            function wp_update_post($args) {}
+        }
+        if (!function_exists('get_the_title')) {
+            function get_the_title($id) { return 'Titre'; }
+        }
+        if (!function_exists('get_posts')) {
+            function get_posts($args) { return []; }
+        }
+        if (!function_exists('media_handle_upload')) {
+            function media_handle_upload($field, $parent)
+            {
+                global $uploaded_args;
+                $uploaded_args = [$field, $parent];
+                return 789;
+            }
+        }
+        if (!function_exists('update_field')) {
+            function update_field($key, $value, $post_id)
+            {
+                global $captured_fields;
+                $captured_fields[$key] = $value;
+            }
+        }
+        if (!function_exists('get_field')) {
+            function get_field($key, $post_id) { return ''; }
+        }
+        if (!function_exists('wp_send_json_error')) {
+            function wp_send_json_error($data = null) { throw new Exception((string) $data); }
+        }
+        if (!function_exists('wp_send_json_success')) {
+            function wp_send_json_success($data = null) { global $json_success_data; $json_success_data = $data; return $data; }
+        }
+        if (!function_exists('sanitize_key')) {
+            function sanitize_key($key) { return $key; }
+        }
+        if (!function_exists('wp_kses_post')) {
+            function wp_kses_post($data) { return $data; }
+        }
+        if (!function_exists('sanitize_text_field')) {
+            function sanitize_text_field($text) { return $text; }
+        }
+        if (!function_exists('add_action')) {
+            function add_action($hook, $callable, $priority = 10, $accepted_args = 1) {}
+        }
+
+        require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-solution.php';
+
+        $_POST = [
+            'objet_id'   => 3,
+            'objet_type' => 'chasse',
+        ];
+        $_FILES = [
+            'solution_fichier' => [
+                'name'     => 'test.pdf',
+                'tmp_name' => '/tmp/test.pdf',
+                'error'    => 0,
+                'size'     => 123,
+            ],
+        ];
+
+        ajax_creer_solution_modal();
+
+        global $captured_fields, $uploaded_args, $json_success_data;
+        $this->assertSame(['solution_fichier', 456], $uploaded_args);
+        $this->assertSame(789, $captured_fields['solution_fichier']);
+        $this->assertSame(456, $json_success_data['solution_id']);
+    }
 }
