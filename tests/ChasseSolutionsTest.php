@@ -432,6 +432,115 @@ class ChasseSolutionsTest extends TestCase
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      */
+    public function test_modifier_solution_modal_keeps_existing_content(): void
+    {
+        if (!function_exists('__')) {
+            function __($text, $domain = null) { return $text; }
+        }
+        if (!function_exists('is_user_logged_in')) {
+            function is_user_logged_in() { return true; }
+        }
+        if (!function_exists('get_post_type')) {
+            function get_post_type($id) { return $id === 3 ? 'chasse' : ($id === 123 ? 'solution' : ''); }
+        }
+        if (!function_exists('solution_action_autorisee')) {
+            function solution_action_autorisee($action, $type, $id) { return true; }
+        }
+        if (!function_exists('update_field')) {
+            function update_field($key, $value, $post_id)
+            {
+                global $captured_fields;
+                $captured_fields[$key] = $value;
+            }
+        }
+        if (!function_exists('wp_send_json_error')) {
+            function wp_send_json_error($data = null) { throw new Exception((string) $data); }
+        }
+        if (!function_exists('wp_send_json_success')) {
+            function wp_send_json_success($data = null) { global $json_success_data; $json_success_data = $data; return $data; }
+        }
+        if (!function_exists('sanitize_key')) {
+            function sanitize_key($key) { return $key; }
+        }
+        if (!function_exists('wp_kses_post')) {
+            function wp_kses_post($data) { return $data; }
+        }
+        if (!function_exists('sanitize_text_field')) {
+            function sanitize_text_field($text) { return $text; }
+        }
+        if (!function_exists('add_action')) {
+            function add_action($hook, $callable, $priority = 10, $accepted_args = 1) {}
+        }
+        if (!function_exists('current_time')) {
+            function current_time($type) { return 1; }
+        }
+        if (!function_exists('wp_clear_scheduled_hook')) {
+            function wp_clear_scheduled_hook($hook, $args = []) {}
+        }
+        if (!function_exists('delete_post_meta')) {
+            function delete_post_meta($id, $key) {}
+        }
+        if (!function_exists('update_post_meta')) {
+            function update_post_meta($id, $key, $value) {}
+        }
+        if (!function_exists('wp_schedule_single_event')) {
+            function wp_schedule_single_event($timestamp, $hook, $args = []) {}
+        }
+        if (!function_exists('get_post_status')) {
+            function get_post_status($id) { return 'pending'; }
+        }
+        if (!function_exists('get_field')) {
+            function get_field($key, $post_id)
+            {
+                global $captured_fields;
+                if ($key === 'solution_cible_type') {
+                    return 'chasse';
+                }
+                if ($key === 'solution_chasse_linked') {
+                    return 3;
+                }
+                if (array_key_exists($key, $captured_fields)) {
+                    return $captured_fields[$key];
+                }
+                if ($key === 'solution_fichier') {
+                    return 10;
+                }
+                if ($key === 'solution_explication') {
+                    return 'ancien';
+                }
+                if ($key === 'statut_chasse') {
+                    return 'terminée';
+                }
+                return null;
+            }
+        }
+
+        require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-solution.php';
+
+        $_POST = [
+            'solution_id'              => 123,
+            'objet_id'                 => 3,
+            'objet_type'               => 'chasse',
+            'solution_disponibilite'   => 'differee',
+            'solution_decalage_jours'  => 2,
+            'solution_heure_publication' => '12:00',
+        ];
+
+        ajax_modifier_solution_modal();
+
+        global $captured_fields, $json_success_data;
+        $this->assertSame(123, $json_success_data['solution_id']);
+        $this->assertTrue($captured_fields['solution_cache_complet']);
+        $this->assertSame('programme', $captured_fields['solution_cache_etat_systeme']);
+        $this->assertSame('differee', $captured_fields['solution_disponibilite']);
+        $this->assertSame(2, $captured_fields['solution_decalage_jours']);
+        $this->assertSame('12:00', $captured_fields['solution_heure_publication']);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function test_lister_table_for_hunt_includes_riddle_solutions(): void
     {
         if (!defined('TITRE_DEFAUT_SOLUTION')) {

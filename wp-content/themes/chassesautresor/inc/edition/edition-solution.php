@@ -764,7 +764,6 @@ function ajax_modifier_solution_modal(): void
         wp_send_json_error('acces_refuse');
     }
 
-    $fichier = 0;
     $has_file_input = isset($_POST['solution_fichier']) || (!empty($_FILES['solution_fichier']) && !empty($_FILES['solution_fichier']['tmp_name']));
     if (!empty($_FILES['solution_fichier']) && !empty($_FILES['solution_fichier']['tmp_name'])) {
         if (!function_exists('media_handle_upload')) {
@@ -778,19 +777,26 @@ function ajax_modifier_solution_modal(): void
         }
     } elseif (isset($_POST['solution_fichier'])) {
         $fichier = (int) $_POST['solution_fichier'];
+    } else {
+        $fichier = (int) get_field('solution_fichier', $solution_id);
     }
 
-    $explic = wp_kses_post($_POST['solution_explication'] ?? '');
-    $dispo  = sanitize_key($_POST['solution_disponibilite'] ?? 'fin_chasse');
-    $delai  = isset($_POST['solution_decalage_jours']) ? (int) $_POST['solution_decalage_jours'] : 0;
-    $heure  = sanitize_text_field($_POST['solution_heure_publication'] ?? '');
+    if (array_key_exists('solution_explication', $_POST)) {
+        $explic = wp_kses_post((string) $_POST['solution_explication']);
+        update_field('solution_explication', $explic, $solution_id);
+    } else {
+        $explic = (string) get_field('solution_explication', $solution_id);
+    }
+
+    $dispo = sanitize_key($_POST['solution_disponibilite'] ?? 'fin_chasse');
+    $delai = isset($_POST['solution_decalage_jours']) ? (int) $_POST['solution_decalage_jours'] : 0;
+    $heure = sanitize_text_field($_POST['solution_heure_publication'] ?? '');
 
     if ($fichier) {
         update_field('solution_fichier', $fichier, $solution_id);
     } elseif ($has_file_input) {
         delete_field('solution_fichier', $solution_id);
     }
-    update_field('solution_explication', $explic, $solution_id);
 
     $has_content = (bool) $fichier || $explic !== '';
     update_field('solution_cache_complet', $has_content, $solution_id);
