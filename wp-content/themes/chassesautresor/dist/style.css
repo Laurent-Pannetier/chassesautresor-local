@@ -2657,9 +2657,19 @@ body.edition-active .edition-panel {
 
 .edition-panel label {
   color: var(--color-editor-text-muted);
-  font-size: 16px;
+  font-size: 1rem;
 }
 
+@media not all and (min-width: 600px) {
+  .edition-panel label {
+    font-size: 0.9rem;
+  }
+}
+@media not all and (min-width: 480px) {
+  .edition-panel label {
+    font-size: 0.8rem;
+  }
+}
 /* ========== 🧪 PLACEHOLDER ========== */
 .edition-placeholder {
   border: 1px dashed var(--color-editor-border);
