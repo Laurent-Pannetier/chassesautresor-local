@@ -76,6 +76,14 @@ if (!function_exists('wp_update_post')) {
     }
 }
 
+if (!function_exists('get_post')) {
+    function get_post($id)
+    {
+        global $posts;
+        return $posts[$id] ?? null;
+    }
+}
+
 if (!function_exists('get_the_title')) {
     function get_the_title($id)
     {
@@ -98,7 +106,7 @@ final class SupprimerSolutionAjaxTest extends TestCase
     {
         parent::setUp();
         $_POST = [];
-        global $fields, $permission_args, $deleted_id, $deleted_force, $json_success, $updated_posts;
+        global $fields, $permission_args, $deleted_id, $deleted_force, $json_success, $updated_posts, $posts;
         $fields = [
             'solution_cible_type'   => 'enigme',
             'solution_enigme_linked' => 55,
@@ -108,6 +116,16 @@ final class SupprimerSolutionAjaxTest extends TestCase
         $deleted_force   = null;
         $json_success    = null;
         $updated_posts   = [];
+        $posts           = [
+            11 => (object) [
+                'post_date'     => '2023-01-01 10:00:00',
+                'post_date_gmt' => '2023-01-01 09:00:00',
+            ],
+            12 => (object) [
+                'post_date'     => '2023-02-01 10:00:00',
+                'post_date_gmt' => '2023-02-01 09:00:00',
+            ],
+        ];
     }
 
     /**
@@ -126,7 +144,13 @@ final class SupprimerSolutionAjaxTest extends TestCase
         $this->assertTrue($deleted_force);
         $this->assertNull($json_success);
         $this->assertSame('Solution Titre #1', $updated_posts[0]['post_title']);
+        $this->assertSame('2023-01-01 10:00:00', $updated_posts[0]['post_date']);
+        $this->assertSame('2023-01-01 09:00:00', $updated_posts[0]['post_date_gmt']);
+        $this->assertTrue($updated_posts[0]['edit_date']);
         $this->assertSame('Solution Titre #2', $updated_posts[1]['post_title']);
+        $this->assertSame('2023-02-01 10:00:00', $updated_posts[1]['post_date']);
+        $this->assertSame('2023-02-01 09:00:00', $updated_posts[1]['post_date_gmt']);
+        $this->assertTrue($updated_posts[1]['edit_date']);
     }
 }
 
