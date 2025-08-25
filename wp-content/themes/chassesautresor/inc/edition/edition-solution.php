@@ -825,6 +825,7 @@ function ajax_creer_solution_modal(): void
     update_field('solution_decalage_jours', $delai, $solution_id);
     update_field('solution_heure_publication', $heure ?: '00:00', $solution_id);
 
+    mettre_a_jour_cache_solution($solution_id);
     solution_planifier_publication($solution_id);
 
     wp_send_json_success(['solution_id' => $solution_id]);
@@ -895,6 +896,7 @@ function ajax_modifier_solution_modal(): void
     update_field('solution_decalage_jours', $delai, $solution_id);
     update_field('solution_heure_publication', $heure ?: '00:00', $solution_id);
 
+    mettre_a_jour_cache_solution($solution_id);
     solution_planifier_publication($solution_id);
 
     wp_send_json_success(['solution_id' => $solution_id]);
