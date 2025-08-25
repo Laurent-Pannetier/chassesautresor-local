@@ -77,7 +77,11 @@ if (empty($solutions)) {
                 $etat_class = 'etiquette-success';
             } elseif ($etat === 'programme' || $etat === 'programmé') {
                 $etat_class = 'etiquette-pending';
-                if ($dt instanceof DateTimeInterface) {
+                if ($dispo === 'fin_chasse') {
+                    $etat_label = __('fin de chasse', 'chassesautresor-com');
+                } elseif ($dispo === 'differee') {
+                    $etat_label = __('différée', 'chassesautresor-com');
+                } elseif ($dt instanceof DateTimeInterface) {
                     $format     = get_option('date_format') . ' ' . get_option('time_format');
                     $date_label = function_exists('wp_date')
                         ? wp_date($format, $dt->getTimestamp())

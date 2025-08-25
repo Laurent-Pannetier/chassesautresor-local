@@ -2474,3 +2474,11 @@ msgstr "Solution for"
 msgid "PDF"
 msgstr "PDF"
 
+#: template-parts/common/solutions-table.php:81
+msgid "fin de chasse"
+msgstr "end of hunt"
+
+#: template-parts/common/solutions-table.php:83
+msgid "différée"
+msgstr "deferred"
+

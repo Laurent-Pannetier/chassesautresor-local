@@ -2445,3 +2445,11 @@ msgstr "Solution pour"
 msgid "PDF"
 msgstr "PDF"
 
+#: template-parts/common/solutions-table.php:81
+msgid "fin de chasse"
+msgstr "fin de chasse"
+
+#: template-parts/common/solutions-table.php:83
+msgid "différée"
+msgstr "différée"
+
