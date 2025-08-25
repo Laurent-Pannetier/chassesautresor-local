@@ -395,23 +395,23 @@ function initChampCoutPoints() {
     const valeurInitiale = parseInt(input.value.trim(), 10);
     if (valeurInitiale === 0) {
       input.disabled = true;
-      checkbox.checked = true;
+      checkbox.checked = false;
     } else {
       input.disabled = false;
-      checkbox.checked = false;
+      checkbox.checked = true;
     }
 
     input.addEventListener('input', enregistrerCout);
 
     checkbox.addEventListener('change', () => {
       if (checkbox.checked) {
-        ancienneValeur = input.value.trim();
-        input.value = 0;
-        input.disabled = true;
-      } else {
         const valeur = parseInt(ancienneValeur, 10);
         input.value = valeur > 0 ? valeur : 10;
         input.disabled = false;
+      } else {
+        ancienneValeur = input.value.trim();
+        input.value = 0;
+        input.disabled = true;
       }
       enregistrerCout();
     });
