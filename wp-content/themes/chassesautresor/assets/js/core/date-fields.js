@@ -35,11 +35,11 @@ function mettreAJourAffichageDateFin() {
   console.log('[mettreAJourAffichageDateFin]');
   const spanDateFin = document.querySelector('.chasse-date-plage .date-fin');
   const inputDateFin = document.getElementById('chasse-date-fin');
-  const checkboxIllimitee = document.getElementById('duree-illimitee');
+  const toggleLimitee = document.getElementById('date-fin-limitee');
 
-  if (!spanDateFin || !inputDateFin || !checkboxIllimitee) return;
+  if (!spanDateFin || !inputDateFin || !toggleLimitee) return;
 
-  if (checkboxIllimitee.checked) {
+  if (!toggleLimitee.checked) {
     spanDateFin.textContent = 'Illimitée';
   } else {
     spanDateFin.textContent = formatDateFr(inputDateFin.value);

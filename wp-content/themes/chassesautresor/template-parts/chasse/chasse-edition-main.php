@@ -40,6 +40,8 @@ $date_debut_iso = $date_debut_obj ? $date_debut_obj->format('Y-m-d\TH:i') : '';
 
 $date_fin_obj = convertir_en_datetime($date_fin);
 $date_fin_iso = $date_fin_obj ? $date_fin_obj->format('Y-m-d') : '';
+$maintenant    = current_datetime();
+$debut_differe = $date_debut_obj && $date_debut_obj > $maintenant;
 $illimitee  = $infos_chasse['champs']['illimitee'];
 $nb_max     = $infos_chasse['champs']['nb_max'] ?? 1;
 $mode_fin   = $infos_chasse['champs']['mode_fin'] ?? 'automatique';
@@ -450,23 +452,30 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                         },
                         'content'  => function () use ($nb_max, $peut_editer) {
                             ?>
-                            <input type="number"
-                                id="chasse-nb-gagnants"
-                                name="chasse-nb-gagnants"
-                                value="<?= esc_attr($nb_max); ?>"
-                                min="1"
-                                class="champ-inline-nb champ-nb-edit champ-input champ-number"
-                                <?= ($peut_editer && $nb_max != 0) ? '' : 'disabled'; ?> />
+                            <div class="champ-mode-options">
+                                <span class="toggle-option"><?= esc_html__('Illimité', 'chassesautresor-com'); ?></span>
+                                <label class="switch-control">
+                                    <input
+                                        id="nb-gagnants-limite"
+                                        type="checkbox"
+                                        <?= $nb_max != 0 ? 'checked' : ''; ?>
+                                        <?= $peut_editer ? '' : 'disabled'; ?>
+                                    >
+                                    <span class="switch-slider"></span>
+                                </label>
+                                <span class="toggle-option"><?= esc_html__('Limité', 'chassesautresor-com'); ?></span>
+                                <div class="nb-gagnants-actions" style="<?= $nb_max != 0 ? '' : 'display:none;'; ?>">
+                                    <input type="number"
+                                        id="chasse-nb-gagnants"
+                                        name="chasse-nb-gagnants"
+                                        value="<?= esc_attr($nb_max); ?>"
+                                        min="1"
+                                        class="champ-inline-nb champ-nb-edit champ-input champ-number"
+                                        <?= ($peut_editer && $nb_max != 0) ? '' : 'disabled'; ?> />
 
-                            <div class="champ-option-illimitee ">
-                                <input type="checkbox"
-                                    id="nb-gagnants-illimite"
-                                    name="nb-gagnants-illimite"
-                                    <?= ($nb_max == 0 ? 'checked' : ''); ?> <?= $peut_editer ? '' : 'disabled'; ?>>
-                                <label for="nb-gagnants-illimite"><?= esc_html__('Illimité', 'chassesautresor-com'); ?></label>
+                                    <div id="erreur-nb-gagnants" class="message-erreur" style="display:none; color:red; font-size:0.9em; margin-top:5px;"></div>
+                                </div>
                             </div>
-
-                            <div id="erreur-nb-gagnants" class="message-erreur" style="display:none; color:red; font-size:0.9em; margin-top:5px;"></div>
                             <?php
                         },
                     ]
@@ -499,14 +508,29 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                             <label for="chasse-date-debut"><?= esc_html__('Début', 'chassesautresor-com'); ?></label>
                             <?php
                         },
-                        'content'  => function () use ($date_debut_iso, $peut_editer) {
+                        'content'  => function () use ($date_debut_iso, $peut_editer, $debut_differe) {
                             ?>
-                            <input type="datetime-local"
-                                id="chasse-date-debut"
-                                name="chasse-date-debut"
-                                value="<?= esc_attr($date_debut_iso); ?>"
-                                class="champ-inline-date champ-date-edit" <?= $peut_editer ? '' : 'disabled'; ?> required />
-                            <div id="erreur-date-debut" class="message-erreur" style="display:none; color:red; font-size:0.9em; margin-top:5px;"></div>
+                            <div class="champ-mode-options">
+                                <span class="toggle-option"><?= esc_html__('Now', 'chassesautresor-com'); ?></span>
+                                <label class="switch-control">
+                                    <input
+                                        id="date-debut-differee"
+                                        type="checkbox"
+                                        <?= $debut_differe ? 'checked' : ''; ?>
+                                        <?= $peut_editer ? '' : 'disabled'; ?>
+                                    >
+                                    <span class="switch-slider"></span>
+                                </label>
+                                <span class="toggle-option"><?= esc_html__('Later', 'chassesautresor-com'); ?></span>
+                                <div class="date-debut-actions" style="<?= $debut_differe ? '' : 'display:none;'; ?>">
+                                    <input type="datetime-local"
+                                        id="chasse-date-debut"
+                                        name="chasse-date-debut"
+                                        value="<?= esc_attr($date_debut_iso); ?>"
+                                        class="champ-inline-date champ-date-edit" <?= ($peut_editer && $debut_differe) ? '' : 'disabled'; ?> required />
+                                    <div id="erreur-date-debut" class="message-erreur" style="display:none; color:red; font-size:0.9em; margin-top:5px;"></div>
+                                </div>
+                            </div>
                             <?php
                         },
                     ]
@@ -532,20 +556,25 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                         },
                         'content'  => function () use ($date_fin_iso, $peut_editer, $illimitee) {
                             ?>
-                            <input type="date"
-                                id="chasse-date-fin"
-                                name="chasse-date-fin"
-                                value="<?= esc_attr($date_fin_iso); ?>"
-                                class="champ-inline-date champ-date-edit" <?= $peut_editer ? '' : 'disabled'; ?> />
-                            <div id="erreur-date-fin" class="message-erreur" style="display:none; color:red; font-size:0.9em; margin-top:5px;"></div>
-
-                            <div class="champ-option-illimitee">
-                                <input type="checkbox"
-                                    id="duree-illimitee"
-                                    name="duree-illimitee"
-                                    data-champ="chasse_infos_duree_illimitee"
-                                    <?= ($illimitee ? 'checked' : ''); ?> <?= $peut_editer ? '' : 'disabled'; ?>>
-                                <label for="duree-illimitee"><?= esc_html__('Durée illimitée', 'chassesautresor-com'); ?></label>
+                            <div class="champ-mode-options">
+                                <span class="toggle-option"><?= esc_html__('Illimitée', 'chassesautresor-com'); ?></span>
+                                <label class="switch-control">
+                                    <input type="checkbox"
+                                        id="date-fin-limitee"
+                                        name="date-fin-limitee"
+                                        data-champ="chasse_infos_duree_illimitee"
+                                        <?= $illimitee ? '' : 'checked'; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
+                                    <span class="switch-slider"></span>
+                                </label>
+                                <span class="toggle-option"><?= esc_html__('Limitée', 'chassesautresor-com'); ?></span>
+                                <div class="date-fin-actions" style="<?= $illimitee ? 'display:none;' : ''; ?>">
+                                    <input type="date"
+                                        id="chasse-date-fin"
+                                        name="chasse-date-fin"
+                                        value="<?= esc_attr($date_fin_iso); ?>"
+                                        class="champ-inline-date champ-date-edit" <?= $peut_editer ? '' : 'disabled'; ?> />
+                                    <div id="erreur-date-fin" class="message-erreur" style="display:none; color:red; font-size:0.9em; margin-top:5px;"></div>
+                                </div>
                             </div>
                             <?php
                         },
@@ -554,13 +583,13 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                 ?>
 
 
-                <!-- Coût -->
+                <!-- Accès -->
                 <?php
                 get_template_part(
                     'template-parts/common/edition-row',
                     null,
                     [
-                        'class'      => 'champ-chasse champ-cout-points ' . (empty($cout) ? 'champ-vide' : 'champ-rempli') . ($peut_editer_cout ? '' : ' champ-desactive'),
+                        'class'      => 'champ-chasse champ-cout-points ' . ((int) $cout === 0 ? 'champ-vide' : 'champ-rempli') . ($peut_editer_cout ? '' : ' champ-desactive'),
                         'attributes' => [
                             'data-champ'   => 'chasse_infos_cout_points',
                             'data-cpt'     => 'chasse',
@@ -568,7 +597,8 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                         ],
                         'label'    => function () {
                             ?>
-                            <label><?= esc_html__('Coût', 'chassesautresor-com'); ?> <span class="txt-small"><?= esc_html__('points', 'chassesautresor-com'); ?></span>
+                            <label>
+                                <?= esc_html__('Accès', 'chassesautresor-com'); ?>
                                 <?php
                                 get_template_part(
                                     'template-parts/common/help-icon',
@@ -587,20 +617,23 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                         },
                         'content'  => function () use ($cout, $peut_editer_cout) {
                             ?>
-                            <div style="display: flex; align-items: center;">
-                                <input type="number"
-                                    class="champ-input champ-cout champ-number"
-                                    min="0"
-                                    step="1"
-                                    value="<?= esc_attr($cout); ?>"
-                                    placeholder="0" <?= $peut_editer_cout ? '' : 'disabled'; ?> />
-
-                                <div class="champ-option-gratuit" style="margin-left: 15px;">
+                            <div class="champ-mode-options">
+                                <span class="toggle-option"><?= esc_html__('Gratuit', 'chassesautresor-com'); ?></span>
+                                <label class="switch-control">
                                     <input type="checkbox"
-                                        id="cout-gratuit"
-                                        name="cout-gratuit"
-                                        <?= ((int) $cout === 0) ? 'checked' : ''; ?> <?= $peut_editer_cout ? '' : 'disabled'; ?>>
-                                    <label for="cout-gratuit"><?= esc_html__('Gratuit', 'chassesautresor-com'); ?></label>
+                                        id="cout-payant"
+                                        name="cout-payant"
+                                        <?= ((int) $cout > 0) ? 'checked' : ''; ?> <?= $peut_editer_cout ? '' : 'disabled'; ?>>
+                                    <span class="switch-slider"></span>
+                                </label>
+                                <span class="toggle-option"><?= esc_html__('Points', 'chassesautresor-com'); ?></span>
+                                <div class="cout-points-actions" style="<?= ((int) $cout > 0) ? '' : 'display:none;'; ?>">
+                                    <input type="number"
+                                        class="champ-input champ-cout champ-number"
+                                        min="1"
+                                        step="1"
+                                        value="<?= esc_attr($cout); ?>"
+                                        placeholder="10" <?= $peut_editer_cout ? '' : 'disabled'; ?> />
                                 </div>
                             </div>
                             <div class="champ-feedback"></div>

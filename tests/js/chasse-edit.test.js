@@ -14,13 +14,72 @@ const html = `
           </div>
         </div>
       </li>
+      <li class="edition-row champ-chasse champ-date-debut" data-post-id="1">
+        <div class="edition-row-label"><label for="chasse-date-debut">Début</label></div>
+        <div class="edition-row-content">
+          <div class="champ-mode-options">
+            <span class="toggle-option">Now</span>
+            <label class="switch-control">
+              <input type="checkbox" id="date-debut-differee">
+              <span class="switch-slider"></span>
+            </label>
+            <span class="toggle-option">Later</span>
+            <div class="date-debut-actions" style="display:none;">
+              <input type="datetime-local" id="chasse-date-debut" value="" class="champ-inline-date champ-date-edit">
+              <div id="erreur-date-debut" class="message-erreur"></div>
+            </div>
+          </div>
+        </div>
+      </li>
+      <li class="edition-row champ-chasse champ-date-fin" data-post-id="1">
+        <div class="edition-row-label"><label for="chasse-date-fin">Fin</label></div>
+        <div class="edition-row-content">
+          <div class="champ-mode-options">
+            <span class="toggle-option">Illimitée</span>
+            <label class="switch-control">
+              <input type="checkbox" id="date-fin-limitee">
+              <span class="switch-slider"></span>
+            </label>
+            <span class="toggle-option">Limitée</span>
+            <div class="date-fin-actions" style="display:none;">
+              <input type="date" id="chasse-date-fin" value="" class="champ-inline-date champ-date-edit">
+              <div id="erreur-date-fin" class="message-erreur"></div>
+            </div>
+          </div>
+        </div>
+      </li>
+      <li class="edition-row champ-chasse champ-cout-points" data-post-id="1">
+        <div class="edition-row-label"><label>Accès</label></div>
+        <div class="edition-row-content">
+          <div class="champ-mode-options">
+            <span class="toggle-option">Gratuit</span>
+            <label class="switch-control">
+              <input type="checkbox" id="cout-payant">
+              <span class="switch-slider"></span>
+            </label>
+            <span class="toggle-option">Points</span>
+            <div class="cout-points-actions" style="display:none;">
+              <input type="number" value="0" min="1" step="1" placeholder="10" class="champ-input champ-cout champ-number">
+            </div>
+          </div>
+        </div>
+      </li>
     </ul>
     <template id="template-nb-gagnants">
       <li class="edition-row champ-nb-gagnants" data-post-id="1">
         <div class="edition-row-label"><label for="chasse-nb-gagnants">Nb gagnants</label></div>
         <div class="edition-row-content">
-          <input type="number" id="chasse-nb-gagnants" value="0" class="champ-input champ-number">
-          <input type="checkbox" id="nb-gagnants-illimite">
+          <div class="champ-mode-options">
+            <span class="toggle-option">Illimité</span>
+            <label class="switch-control">
+              <input type="checkbox" id="nb-gagnants-limite">
+              <span class="switch-slider"></span>
+            </label>
+            <span class="toggle-option">Limité</span>
+            <div class="nb-gagnants-actions" style="display:none;">
+              <input type="number" id="chasse-nb-gagnants" value="0" class="champ-input champ-number">
+            </div>
+          </div>
         </div>
       </li>
     </template>
@@ -50,6 +109,9 @@ describe('chasse-edit UI', () => {
     global.mettreAJourCarteAjoutEnigme = jest.fn();
     global.mettreAJourEtatIntroChasse = jest.fn();
     global.initChampNbGagnants = jest.fn();
+    global.initChampDate = jest.fn();
+    global.mettreAJourAffichageDateFin = jest.fn();
+    global.fetch = jest.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve({ success: true }) }));
     global.modifierChampSimple = jest.fn(() => Promise.resolve(true));
     global.wp = { i18n: { __: (s) => s } };
     jest.resetModules();
@@ -106,5 +168,79 @@ describe('chasse-edit UI', () => {
     expect(message).not.toBeNull();
     expect(message.textContent).toContain('Alice');
     expect(message.textContent).toContain('02/01/2024');
+  });
+
+  test('start date toggle reveals datepicker when checked', () => {
+    const toggle = document.getElementById('date-debut-differee');
+    const actions = document.querySelector('.date-debut-actions');
+    const input = document.getElementById('chasse-date-debut');
+    expect(actions.style.display).toBe('none');
+    toggle.checked = true;
+    toggle.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(actions.style.display).toBe('');
+    expect(input.disabled).toBe(false);
+    expect(global.initChampDate).toHaveBeenCalledWith(input);
+  });
+
+  test('start date toggle hides datepicker when unchecked', () => {
+    const toggle = document.getElementById('date-debut-differee');
+    const actions = document.querySelector('.date-debut-actions');
+    const input = document.getElementById('chasse-date-debut');
+    toggle.checked = true;
+    toggle.dispatchEvent(new Event('change', { bubbles: true }));
+    toggle.checked = false;
+    toggle.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(actions.style.display).toBe('none');
+    expect(input.disabled).toBe(true);
+  });
+
+  test('end date toggle reveals datepicker when checked', () => {
+    const toggle = document.getElementById('date-fin-limitee');
+    const actions = document.querySelector('.date-fin-actions');
+    const input = document.getElementById('chasse-date-fin');
+    expect(actions.style.display).toBe('none');
+    toggle.checked = true;
+    toggle.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(actions.style.display).toBe('');
+    expect(input.disabled).toBe(false);
+    expect(global.initChampDate).toHaveBeenCalledWith(input);
+  });
+
+  test('end date toggle hides datepicker when unchecked', () => {
+    const toggle = document.getElementById('date-fin-limitee');
+    const actions = document.querySelector('.date-fin-actions');
+    const input = document.getElementById('chasse-date-fin');
+    toggle.checked = true;
+    toggle.dispatchEvent(new Event('change', { bubbles: true }));
+    toggle.checked = false;
+    toggle.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(actions.style.display).toBe('none');
+    expect(input.disabled).toBe(true);
+  });
+
+  test('access toggle reveals points input when checked', () => {
+    const toggle = document.getElementById('cout-payant');
+    const actions = document.querySelector('.cout-points-actions');
+    const input = document.querySelector('.champ-cout');
+    expect(actions.style.display).toBe('none');
+    toggle.checked = true;
+    toggle.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(actions.style.display).toBe('');
+    expect(input.disabled).toBe(false);
+    expect(input.value).toBe('10');
+    expect(input.min).toBe('1');
+  });
+
+  test('access toggle hides points input when unchecked', () => {
+    const toggle = document.getElementById('cout-payant');
+    const actions = document.querySelector('.cout-points-actions');
+    const input = document.querySelector('.champ-cout');
+    toggle.checked = true;
+    toggle.dispatchEvent(new Event('change', { bubbles: true }));
+    toggle.checked = false;
+    toggle.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(actions.style.display).toBe('none');
+    expect(input.disabled).toBe(true);
+    expect(input.value).toBe('0');
   });
 });
