@@ -72,6 +72,7 @@ class IndicesListerTableChasseTest extends TestCase {
         ajax_indices_lister_table();
 
         $meta = $captured_query_args['meta_query'];
+        $this->assertSame(5, $captured_query_args['posts_per_page']);
         $this->assertSame('OR', $meta['relation']);
         $this->assertSame('AND', $meta[0]['relation']);
         $this->assertSame('indice_chasse_linked', $meta[0][1]['key']);
