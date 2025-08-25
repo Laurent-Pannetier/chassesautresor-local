@@ -143,3 +143,431 @@ function solution_acf_save_post(int $post_id): void
     solution_planifier_publication($post_id);
 }
 add_action('acf/save_post', 'solution_acf_save_post', 40);
+
+// ==================================================
+// 💡 GESTION DES SOLUTIONS (création, redirection, AJAX)
+// ==================================================
+
+/**
+ * Redirige l’affichage d’une solution vers sa chasse ou son énigme liée.
+ *
+ * @return void
+ */
+function rediriger_si_affichage_solution(): void
+{
+    if (!is_singular('solution')) {
+        return;
+    }
+
+    $solution_id = get_the_ID();
+    $cible_type  = get_field('solution_cible_type', $solution_id);
+    $redirect_id = 0;
+
+    if ($cible_type === 'chasse') {
+        $redirect_id = (int) get_field('solution_chasse_linked', $solution_id);
+    } elseif ($cible_type === 'enigme') {
+        $redirect_id = (int) get_field('solution_enigme_linked', $solution_id);
+    }
+
+    if ($redirect_id) {
+        wp_safe_redirect(get_permalink($redirect_id));
+        exit;
+    }
+}
+add_action('template_redirect', 'rediriger_si_affichage_solution');
+
+/**
+ * Calcule le rang de la prochaine solution pour une chasse ou une énigme.
+ *
+ * @param int    $objet_id   ID de la chasse ou de l’énigme.
+ * @param string $objet_type Type de cible ('chasse' ou 'enigme').
+ * @return int
+ */
+function prochain_rang_solution(int $objet_id, string $objet_type): int
+{
+    if (!in_array($objet_type, ['chasse', 'enigme'], true)) {
+        return 1;
+    }
+
+    if ($objet_type === 'chasse') {
+        $meta_query = [
+            [
+                'key'   => 'solution_chasse_linked',
+                'value' => $objet_id,
+            ],
+        ];
+    } else {
+        $meta_query = [
+            [
+                'key'   => 'solution_cible_type',
+                'value' => 'enigme',
+            ],
+            [
+                'key'   => 'solution_enigme_linked',
+                'value' => $objet_id,
+            ],
+        ];
+    }
+
+    $existing = function_exists('get_posts')
+        ? get_posts([
+            'post_type'      => 'solution',
+            'post_status'    => ['publish', 'pending', 'draft', 'private', 'future'],
+            'meta_query'     => $meta_query,
+            'fields'         => 'ids',
+            'no_found_rows'  => true,
+            'posts_per_page' => -1,
+        ])
+        : [];
+
+    return count($existing) + 1;
+}
+
+/**
+ * Crée une solution liée à une chasse ou une énigme.
+ *
+ * @param int      $objet_id   ID de la chasse ou de l’énigme.
+ * @param string   $objet_type Type de cible ('chasse' ou 'enigme').
+ * @param int|null $user_id    ID utilisateur (null = courant).
+ * @return int|WP_Error
+ */
+function creer_solution_pour_objet(int $objet_id, string $objet_type, ?int $user_id = null)
+{
+    if (!in_array($objet_type, ['chasse', 'enigme'], true)) {
+        return new WP_Error('type_invalide', __('Type de cible invalide.', 'chassesautresor-com'));
+    }
+
+    if (get_post_type($objet_id) !== $objet_type) {
+        return new WP_Error('cible_invalide', __('ID cible invalide.', 'chassesautresor-com'));
+    }
+
+    if (!is_user_logged_in()) {
+        return new WP_Error('non_connecte', __('Utilisateur non connecté.', 'chassesautresor-com'));
+    }
+
+    if (!solution_action_autorisee('create', $objet_type, $objet_id)) {
+        return new WP_Error('permission_refusee', __('Droits insuffisants.', 'chassesautresor-com'));
+    }
+
+    $chasse_id = $objet_type === 'chasse'
+        ? $objet_id
+        : recuperer_id_chasse_associee($objet_id);
+
+    if (!$chasse_id) {
+        return new WP_Error('permission_refusee', __('Droits insuffisants.', 'chassesautresor-com'));
+    }
+
+    $user_id       = $user_id ?? get_current_user_id();
+    $solution_rank = prochain_rang_solution($chasse_id, 'chasse');
+
+    $solution_id = wp_insert_post([
+        'post_type'   => 'solution',
+        'post_status' => 'pending',
+        'post_title'  => TITRE_DEFAUT_SOLUTION,
+        'post_author' => $user_id,
+    ]);
+
+    if (is_wp_error($solution_id)) {
+        return $solution_id;
+    }
+
+    $nouveau_titre = sprintf(__('Solution #%d', 'chassesautresor-com'), $solution_rank);
+    wp_update_post([
+        'ID'         => $solution_id,
+        'post_title' => $nouveau_titre,
+    ]);
+
+    update_field('solution_cible_type', $objet_type, $solution_id);
+    update_field('solution_chasse_linked', $chasse_id, $solution_id);
+    if ($objet_type === 'enigme') {
+        update_field('solution_enigme_linked', $objet_id, $solution_id);
+    }
+    update_field('solution_disponibilite', 'fin_chasse', $solution_id);
+    update_field('solution_decalage_jours', 0, $solution_id);
+    update_field('solution_heure_publication', '00:00', $solution_id);
+    update_field('solution_cache_etat_systeme', 'desactive', $solution_id);
+
+    return $solution_id;
+}
+
+/**
+ * Enregistre l’URL personnalisée /creer-solution/
+ *
+ * @return void
+ */
+function register_endpoint_creer_solution(): void
+{
+    add_rewrite_rule('^creer-solution/?$', 'index.php?creer_solution=1', 'top');
+    add_rewrite_tag('%creer_solution%', '1');
+}
+add_action('init', 'register_endpoint_creer_solution');
+
+/**
+ * S'assure que les règles de réécriture prennent en compte /creer-solution/.
+ *
+ * @return void
+ */
+function flush_rewrite_rules_creer_solution(): void
+{
+    register_endpoint_creer_solution();
+    flush_rewrite_rules();
+    update_option('creer_solution_rewrite_flushed', 1);
+}
+
+add_action('after_switch_theme', 'flush_rewrite_rules_creer_solution');
+
+add_action('init', function (): void {
+    if (!get_option('creer_solution_rewrite_flushed')) {
+        flush_rewrite_rules_creer_solution();
+    }
+}, 20);
+
+/**
+ * Détecte l’appel à /creer-solution/ et redirige vers la page cible.
+ *
+ * @return void
+ */
+function creer_solution_et_rediriger_si_appel(): void
+{
+    if (get_query_var('creer_solution') !== '1') {
+        return;
+    }
+
+    $nonce = $_GET['nonce'] ?? '';
+    if (!wp_verify_nonce($nonce, 'creer_solution')) {
+        wp_die(__('Action non autorisée.', 'chassesautresor-com'), 'Erreur', ['response' => 403]);
+    }
+
+    if (!is_user_logged_in()) {
+        wp_redirect(wp_login_url());
+        exit;
+    }
+
+    $cible_id   = isset($_GET['chasse_id']) ? absint($_GET['chasse_id']) : 0;
+    $cible_type = 'chasse';
+    if (!$cible_id) {
+        $cible_id   = isset($_GET['enigme_id']) ? absint($_GET['enigme_id']) : 0;
+        $cible_type = 'enigme';
+    }
+
+    if (!$cible_id) {
+        wp_die(__('ID cible manquant.', 'chassesautresor-com'), 'Erreur', ['response' => 400]);
+    }
+
+    $solution_id = creer_solution_pour_objet($cible_id, $cible_type);
+    if (is_wp_error($solution_id)) {
+        $error_message = sanitize_text_field($solution_id->get_error_message());
+        $referer       = wp_get_referer() ?: get_permalink($cible_id);
+        $redirect_url  = add_query_arg('erreur', $error_message, $referer);
+        wp_safe_redirect($redirect_url);
+        exit;
+    }
+
+    wp_safe_redirect(get_permalink($cible_id));
+    exit;
+}
+add_action('template_redirect', 'creer_solution_et_rediriger_si_appel');
+
+/**
+ * Liste les solutions via AJAX pour un objet donné.
+ *
+ * @return void
+ */
+function ajax_solutions_lister_table(): void
+{
+    if (!is_user_logged_in()) {
+        wp_send_json_error('non_connecte');
+    }
+
+    $objet_id   = isset($_POST['objet_id']) ? (int) $_POST['objet_id'] : 0;
+    $objet_type = sanitize_key($_POST['objet_type'] ?? '');
+    $page       = isset($_POST['page']) ? (int) $_POST['page'] : 1;
+
+    if (!$objet_id || !in_array($objet_type, ['chasse', 'enigme'], true)
+        || get_post_type($objet_id) !== $objet_type
+    ) {
+        wp_send_json_error('post_invalide');
+    }
+
+    if (!solution_action_autorisee('edit', $objet_type, $objet_id)) {
+        wp_send_json_error('acces_refuse');
+    }
+
+    $per_page = 5;
+    if ($objet_type === 'chasse') {
+        $enigme_ids = recuperer_ids_enigmes_pour_chasse($objet_id);
+        $meta       = [
+            'relation' => 'OR',
+            [
+                'relation' => 'AND',
+                [
+                    'key'   => 'solution_cible_type',
+                    'value' => 'chasse',
+                ],
+                [
+                    'key'   => 'solution_chasse_linked',
+                    'value' => $objet_id,
+                ],
+            ],
+        ];
+        if (!empty($enigme_ids)) {
+            $meta[] = [
+                'relation' => 'AND',
+                [
+                    'key'   => 'solution_cible_type',
+                    'value' => 'enigme',
+                ],
+                [
+                    'key'     => 'solution_enigme_linked',
+                    'value'   => $enigme_ids,
+                    'compare' => 'IN',
+                ],
+            ];
+        }
+    } else {
+        $meta = [
+            [
+                'key'   => 'solution_cible_type',
+                'value' => 'enigme',
+            ],
+            [
+                'key'   => 'solution_enigme_linked',
+                'value' => $objet_id,
+            ],
+        ];
+    }
+
+    $query = new WP_Query([
+        'post_type'      => 'solution',
+        'post_status'    => ['publish', 'pending', 'draft'],
+        'orderby'        => 'date',
+        'order'          => 'DESC',
+        'posts_per_page' => $per_page,
+        'paged'          => max(1, $page),
+        'meta_query'     => $meta,
+    ]);
+
+    ob_start();
+    get_template_part('template-parts/common/solutions-table', null, [
+        'solutions'  => $query->posts,
+        'page'       => max(1, $page),
+        'pages'      => (int) $query->max_num_pages,
+        'objet_type' => $objet_type,
+        'objet_id'   => $objet_id,
+    ]);
+    $html = ob_get_clean();
+
+    wp_send_json_success([
+        'html'  => $html,
+        'page'  => max(1, $page),
+        'pages' => (int) $query->max_num_pages,
+    ]);
+}
+add_action('wp_ajax_solutions_lister_table', 'ajax_solutions_lister_table');
+
+/**
+ * Crée une solution via une requête AJAX depuis une modale.
+ *
+ * @return void
+ */
+function ajax_creer_solution_modal(): void
+{
+    if (!is_user_logged_in()) {
+        wp_send_json_error('non_connecte');
+    }
+
+    $objet_id   = isset($_POST['objet_id']) ? (int) $_POST['objet_id'] : 0;
+    $objet_type = sanitize_key($_POST['objet_type'] ?? '');
+
+    if (!$objet_id || !in_array($objet_type, ['chasse', 'enigme'], true) || get_post_type($objet_id) !== $objet_type) {
+        wp_send_json_error('post_invalide');
+    }
+
+    if ($objet_type === 'enigme') {
+        $linked = isset($_POST['solution_enigme_linked']) ? (int) $_POST['solution_enigme_linked'] : 0;
+        if (!$linked || $linked !== $objet_id) {
+            wp_send_json_error('post_invalide');
+        }
+    }
+
+    if (!solution_action_autorisee('create', $objet_type, $objet_id)) {
+        wp_send_json_error('acces_refuse');
+    }
+
+    $solution_id = creer_solution_pour_objet($objet_id, $objet_type);
+    if (is_wp_error($solution_id)) {
+        wp_send_json_error($solution_id->get_error_message());
+    }
+
+    $fichier = isset($_POST['solution_fichier']) ? (int) $_POST['solution_fichier'] : 0;
+    $explic  = wp_kses_post($_POST['solution_explication'] ?? '');
+    $dispo   = sanitize_key($_POST['solution_disponibilite'] ?? 'fin_chasse');
+    $delai   = isset($_POST['solution_decalage_jours']) ? (int) $_POST['solution_decalage_jours'] : 0;
+    $heure   = sanitize_text_field($_POST['solution_heure_publication'] ?? '');
+
+    if ($fichier) {
+        update_field('solution_fichier', $fichier, $solution_id);
+    }
+    if ($explic !== '') {
+        update_field('solution_explication', $explic, $solution_id);
+    }
+
+    $dispo = $dispo === 'differee' ? 'differee' : 'fin_chasse';
+    update_field('solution_disponibilite', $dispo, $solution_id);
+    update_field('solution_decalage_jours', $delai, $solution_id);
+    update_field('solution_heure_publication', $heure ?: '00:00', $solution_id);
+
+    solution_planifier_publication($solution_id);
+
+    wp_send_json_success(['solution_id' => $solution_id]);
+}
+add_action('wp_ajax_creer_solution_modal', 'ajax_creer_solution_modal');
+
+/**
+ * Met à jour une solution existante via le modal d'édition.
+ *
+ * @return void
+ */
+function ajax_modifier_solution_modal(): void
+{
+    if (!is_user_logged_in()) {
+        wp_send_json_error('non_connecte');
+    }
+
+    $solution_id = isset($_POST['solution_id']) ? (int) $_POST['solution_id'] : 0;
+    $objet_id    = isset($_POST['objet_id']) ? (int) $_POST['objet_id'] : 0;
+    $objet_type  = sanitize_key($_POST['objet_type'] ?? '');
+
+    if (!$solution_id || get_post_type($solution_id) !== 'solution') {
+        wp_send_json_error('solution_invalide');
+    }
+    if (!$objet_id || !in_array($objet_type, ['chasse', 'enigme'], true) || get_post_type($objet_id) !== $objet_type) {
+        wp_send_json_error('post_invalide');
+    }
+    if (!solution_action_autorisee('edit', $objet_type, $objet_id)) {
+        wp_send_json_error('acces_refuse');
+    }
+
+    $fichier = isset($_POST['solution_fichier']) ? (int) $_POST['solution_fichier'] : 0;
+    $explic  = wp_kses_post($_POST['solution_explication'] ?? '');
+    $dispo   = sanitize_key($_POST['solution_disponibilite'] ?? 'fin_chasse');
+    $delai   = isset($_POST['solution_decalage_jours']) ? (int) $_POST['solution_decalage_jours'] : 0;
+    $heure   = sanitize_text_field($_POST['solution_heure_publication'] ?? '');
+
+    if ($fichier) {
+        update_field('solution_fichier', $fichier, $solution_id);
+    } else {
+        delete_field('solution_fichier', $solution_id);
+    }
+    update_field('solution_explication', $explic, $solution_id);
+
+    $dispo = $dispo === 'differee' ? 'differee' : 'fin_chasse';
+    update_field('solution_disponibilite', $dispo, $solution_id);
+    update_field('solution_decalage_jours', $delai, $solution_id);
+    update_field('solution_heure_publication', $heure ?: '00:00', $solution_id);
+
+    solution_planifier_publication($solution_id);
+
+    wp_send_json_success(['solution_id' => $solution_id]);
+}
+add_action('wp_ajax_modifier_solution_modal', 'ajax_modifier_solution_modal');
