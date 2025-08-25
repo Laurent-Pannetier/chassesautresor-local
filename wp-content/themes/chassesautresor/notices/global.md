@@ -432,6 +432,29 @@ Groupe : paramètres indices
 | invalide  | Indice marqué comme invalide                  |
 | desactive | Indice incomplet ou désactivé                 |
 
+CPT : solution
+Groupe : paramètres solution
+
+* solution_cible_type (radio, chasse/enigme)
+* solution_chasse_linked (relationship)
+* solution_enigme_linked (relationship)
+* solution_fichier (file)
+* solution_explication (wysiwyg)
+* solution_disponibilite (radio, fin_chasse/differee)
+* solution_decalage_jours (number)
+* solution_heure_publication (time_picker)
+* solution_cache_etat_systeme (select, accessible/programme/invalide/desactive)
+* solution_cache_complet (true_false)
+
+États possibles pour `solution_cache_etat_systeme` :
+
+| Valeur    | Description                                   |
+|-----------|-----------------------------------------------|
+| accessible| Solution visible immédiatement                |
+| programme | Disponible à une date ultérieure              |
+| invalide  | Solution marquée comme invalide               |
+| desactive | Solution incomplète ou désactivée             |
+
 liste avec tous les détails des groupes de champs ACF dans champs-acf-liste.md
 
 
