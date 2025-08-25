@@ -3,7 +3,9 @@
     var overlay = document.createElement('div');
     overlay.className = 'solution-modal-overlay';
     var isEdit = !!btn.dataset.solutionId;
-    var titre = isEdit ? solutionsCreate.texts.editTitre : solutionsCreate.texts.addTitre;
+    var titre = isEdit
+      ? solutionsCreate.texts.editTitre + ' ' + (btn.dataset.solutionTitre || '')
+      : solutionsCreate.texts.addTitre;
     var objetTypeLabel = btn.dataset.objetType === 'chasse'
       ? solutionsCreate.texts.laChasse
       : solutionsCreate.texts.lenigme;

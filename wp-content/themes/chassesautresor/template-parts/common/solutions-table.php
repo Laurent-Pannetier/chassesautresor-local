@@ -39,12 +39,13 @@ if (empty($solutions)) {
             $timestamp   = strtotime($solution->post_date);
             $date_value  = function_exists('wp_date') ? wp_date('d/m/y', $timestamp) : date('d/m/y', $timestamp);
             $time_value  = function_exists('wp_date') ? wp_date('H:i', $timestamp) : date('H:i', $timestamp);
-            $fichier_id  = get_field('solution_fichier', $solution->ID, false);
-            $fichier_url = $fichier_id ? wp_get_attachment_url($fichier_id) : '';
-            $explication = wp_strip_all_tags(get_field('solution_explication', $solution->ID) ?: '');
-            $dispo       = get_field('solution_disponibilite', $solution->ID) ?: 'fin_chasse';
-            $delai       = (int) get_field('solution_decalage_jours', $solution->ID);
-            $heure       = get_field('solution_heure_publication', $solution->ID) ?: '18:00';
+            $fichier_id     = get_field('solution_fichier', $solution->ID, false);
+            $fichier_url    = $fichier_id ? wp_get_attachment_url($fichier_id) : '';
+            $explication    = wp_strip_all_tags(get_field('solution_explication', $solution->ID) ?: '');
+            $dispo          = get_field('solution_disponibilite', $solution->ID) ?: 'fin_chasse';
+            $delai          = (int) get_field('solution_decalage_jours', $solution->ID);
+            $heure          = get_field('solution_heure_publication', $solution->ID) ?: '18:00';
+            $solution_title = get_the_title($solution);
 
             $cible_type  = get_field('solution_cible_type', $solution->ID) === 'chasse' ? 'chasse' : 'enigme';
             $cible_label = $cible_type === 'enigme'
@@ -62,7 +63,8 @@ if (empty($solutions)) {
                     $linked_id = $linked;
                 }
             }
-            $linked_html = '';
+            $linked_title = '';
+            $linked_html  = '';
             if ($linked_id) {
                 $linked_title = get_the_title($linked_id);
                 $linked_html  = '<a href="' . esc_url(get_permalink($linked_id)) . '">' . esc_html($linked_title) . '</a>';
@@ -102,6 +104,9 @@ if (empty($solutions)) {
             }
 
             $target_url = $linked_id ? get_permalink($linked_id) : get_permalink($solution);
+            $edit_type  = $linked_id ? $cible_type : $objet_type;
+            $edit_id    = $linked_id ?: $objet_id;
+            $edit_title = $linked_id ? $linked_title : get_the_title($objet_id);
         ?>
         <tr>
             <td>
@@ -109,7 +114,7 @@ if (empty($solutions)) {
                 <div><?= esc_html(sprintf(__('à %s', 'chassesautresor-com'), $time_value)); ?></div>
             </td>
             <td>
-                <a href="<?= esc_url($target_url); ?>"><?= esc_html(get_the_title($solution)); ?></a>
+                <a href="<?= esc_url($target_url); ?>"><?= esc_html($solution_title); ?></a>
                 <div>
                     <?php if ($fichier_url) : ?>
                         <span class="etiquette"><i class="fa-solid fa-file-pdf" aria-hidden="true"></i> <?= esc_html__('PDF', 'chassesautresor-com'); ?></span>
@@ -137,10 +142,11 @@ if (empty($solutions)) {
                 <div class="solution-action-buttons">
                     <button type="button"
                         class="badge-action edit"
-                        data-objet-type="<?= esc_attr($objet_type); ?>"
-                        data-objet-id="<?= esc_attr($objet_id); ?>"
-                        data-objet-titre="<?= esc_attr(get_the_title($objet_id)); ?>"
+                        data-objet-type="<?= esc_attr($edit_type); ?>"
+                        data-objet-id="<?= esc_attr($edit_id); ?>"
+                        data-objet-titre="<?= esc_attr($edit_title); ?>"
                         data-solution-id="<?= esc_attr($solution->ID); ?>"
+                        data-solution-titre="<?= esc_attr($solution_title); ?>"
                         data-solution-explication="<?= esc_attr($explication); ?>"
                         data-solution-fichier-id="<?= esc_attr($fichier_id); ?>"
                         data-solution-fichier-url="<?= esc_attr($fichier_url); ?>"
