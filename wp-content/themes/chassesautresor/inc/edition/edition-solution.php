@@ -141,7 +141,19 @@ function solution_acf_save_post(int $post_id): void
         return;
     }
 
-    solution_planifier_publication($post_id);
+    $fichier = (int) get_field('solution_fichier', $post_id);
+    $explic  = (string) get_field('solution_explication', $post_id);
+    $complet = $fichier || $explic !== '';
+    if ($complet) {
+        update_field('solution_cache_complet', 1, $post_id);
+        update_field('solution_cache_etat_systeme', 'programme', $post_id);
+        solution_planifier_publication($post_id);
+    } else {
+        update_field('solution_cache_complet', 0, $post_id);
+        update_field('solution_cache_etat_systeme', 'invalide', $post_id);
+        wp_clear_scheduled_hook('publier_solution_programmee', [$post_id]);
+        delete_post_meta($post_id, 'solution_date_disponibilite');
+    }
     reordonner_solutions_pour_solution($post_id);
 }
 add_action('acf/save_post', 'solution_acf_save_post', 40);
@@ -705,6 +717,7 @@ function ajax_creer_solution_modal(): void
     $complet = $fichier || $explic !== '';
     if ($complet) {
         update_field('solution_cache_complet', 1, $solution_id);
+        update_field('solution_cache_etat_systeme', 'programme', $solution_id);
         solution_planifier_publication($solution_id);
     } else {
         update_field('solution_cache_complet', 0, $solution_id);
@@ -775,6 +788,7 @@ function ajax_modifier_solution_modal(): void
     $complet = $fichier || $explic !== '';
     if ($complet) {
         update_field('solution_cache_complet', 1, $solution_id);
+        update_field('solution_cache_etat_systeme', 'programme', $solution_id);
         solution_planifier_publication($solution_id);
     } else {
         update_field('solution_cache_complet', 0, $solution_id);
