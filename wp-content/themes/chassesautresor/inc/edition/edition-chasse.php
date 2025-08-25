@@ -485,7 +485,16 @@ function modifier_champ_chasse()
         foreach ($liste_enigmes as $enigme_id) {
           cat_debug("🧩 Planification/déplacement : énigme #$enigme_id");
           planifier_ou_deplacer_pdf_solution_immediatement($enigme_id);
+          $sol = solution_recuperer_par_objet((int) $enigme_id, 'enigme');
+          if ($sol) {
+            solution_planifier_publication($sol->ID);
+          }
         }
+      }
+
+      $sol_chasse = solution_recuperer_par_objet((int) $post_id, 'chasse');
+      if ($sol_chasse) {
+        solution_planifier_publication($sol_chasse->ID);
       }
 
       // 🏁 Mise à jour des statuts joueurs
