@@ -57,6 +57,14 @@
 
     var delaiValue = btn.dataset.solutionDelai;
     var heureValue = btn.dataset.solutionHeure;
+    if (heureValue) {
+      var match = heureValue.match(/^(\d{1,2})(?:h|:)(\d{2})/);
+      if (match) {
+        heureValue = match[1].padStart(2, '0') + ':' + match[2];
+      } else {
+        heureValue = '';
+      }
+    }
     if (isEdit) {
       var now = new Date();
       var pad = function (n) {
