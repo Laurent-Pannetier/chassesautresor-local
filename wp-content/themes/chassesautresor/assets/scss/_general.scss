@@ -526,6 +526,12 @@ span.champ-obligatoire {
   --editor-icon-width:            1rem;      /* 📏 Largeur des icônes dans les panneaux */
 }
 
+@media not all and (--bp-tablet) {
+  .mode-edition {
+    --editor-label-width: 200px;
+  }
+}
+
 
 /* 🔗 Bridge HSL ↔️ nuancier existant (ne remplace rien) */
 .mode-edition {

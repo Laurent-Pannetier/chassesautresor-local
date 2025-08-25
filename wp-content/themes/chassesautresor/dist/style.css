@@ -2835,9 +2835,6 @@ li.ligne-email .champ-affichage {
   .edition-panel-section {
     border: 0;
   }
-  .mode-edition {
-    --editor-label-width: 200px;
-  }
 }
 @media not all and (min-width: 480px) {
   .edition-panel-body {
@@ -5921,6 +5918,11 @@ span.champ-obligatoire {
   --editor-icon-width: 1rem; /* 📏 Largeur des icônes dans les panneaux */
 }
 
+@media not all and (min-width: 768px) {
+  .mode-edition {
+    --editor-label-width: 200px;
+  }
+}
 /* 🔗 Bridge HSL ↔️ nuancier existant (ne remplace rien) */
 .mode-edition {
   /* dérivés HSL (triplets) de tes variables existantes */
