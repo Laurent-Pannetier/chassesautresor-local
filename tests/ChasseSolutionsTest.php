@@ -105,6 +105,12 @@ class ChasseSolutionsTest extends TestCase
         if (!function_exists('sanitize_key')) {
             function sanitize_key($key) { return $key; }
         }
+        if (!function_exists('wp_is_post_revision')) {
+            function wp_is_post_revision($id) { return false; }
+        }
+        if (!function_exists('wp_is_post_autosave')) {
+            function wp_is_post_autosave($id) { return false; }
+        }
         if (!function_exists('wp_kses_post')) {
             function wp_kses_post($data) { return $data; }
         }
@@ -272,6 +278,18 @@ class ChasseSolutionsTest extends TestCase
         if (!function_exists('get_posts')) {
             function get_posts($args) { return []; }
         }
+        if (!function_exists('get_post_status')) {
+            function get_post_status($id) { return 'pending'; }
+        }
+        if (!function_exists('get_post')) {
+            function get_post($id)
+            {
+                return (object) [
+                    'post_date'     => '2024-01-01 00:00:00',
+                    'post_date_gmt' => '2024-01-01 00:00:00',
+                ];
+            }
+        }
         if (!function_exists('media_handle_upload')) {
             function media_handle_upload($field, $parent)
             {
@@ -298,6 +316,12 @@ class ChasseSolutionsTest extends TestCase
         }
         if (!function_exists('sanitize_key')) {
             function sanitize_key($key) { return $key; }
+        }
+        if (!function_exists('wp_is_post_revision')) {
+            function wp_is_post_revision($id) { return false; }
+        }
+        if (!function_exists('wp_is_post_autosave')) {
+            function wp_is_post_autosave($id) { return false; }
         }
         if (!function_exists('wp_kses_post')) {
             function wp_kses_post($data) { return $data; }
