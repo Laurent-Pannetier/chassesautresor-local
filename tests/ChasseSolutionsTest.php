@@ -366,4 +366,54 @@ class ChasseSolutionsTest extends TestCase
 
         ajax_creer_solution_modal();
     }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_mettre_a_jour_cache_solution_requires_target(): void
+    {
+        global $fields, $updated_fields;
+        $post_id = 321;
+        $fields  = [
+            $post_id => [
+                'solution_cible_type'   => 'enigme',
+                'solution_enigme_linked' => 0,
+                'solution_explication'  => 'texte',
+                'solution_fichier'      => null,
+            ],
+        ];
+
+        if (!function_exists('get_post_type')) {
+            function get_post_type($id) { return 'solution'; }
+        }
+        if (!function_exists('wp_is_post_revision')) {
+            function wp_is_post_revision($id) { return false; }
+        }
+        if (!function_exists('wp_is_post_autosave')) {
+            function wp_is_post_autosave($id) { return false; }
+        }
+        if (!function_exists('get_field')) {
+            function get_field($name, $post_id) { global $fields; return $fields[$post_id][$name] ?? null; }
+        }
+        if (!function_exists('update_field')) {
+            function update_field($name, $value, $post_id): void { global $updated_fields; $updated_fields[$name] = $value; }
+        }
+        if (!function_exists('get_post_status')) {
+            function get_post_status($post_id) { return 'draft'; }
+        }
+        if (!function_exists('get_post')) {
+            function get_post($post_id) { return (object) ['post_date' => '2024-01-01 00:00:00', 'post_date_gmt' => '2024-01-01 00:00:00']; }
+        }
+        if (!function_exists('wp_update_post')) {
+            function wp_update_post(array $data): void { }
+        }
+
+        require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-solution.php';
+
+        \mettre_a_jour_cache_solution($post_id);
+
+        $this->assertSame(0, $updated_fields['solution_cache_complet']);
+        $this->assertSame('invalide', $updated_fields['solution_cache_etat_systeme']);
+    }
 }

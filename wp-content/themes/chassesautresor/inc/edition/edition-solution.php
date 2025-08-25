@@ -130,6 +130,69 @@ function planifier_tache_basculer_solutions_programme(): void
 add_action('after_switch_theme', 'planifier_tache_basculer_solutions_programme');
 
 /**
+ * Met à jour le cache et l'état système d'une solution.
+ *
+ * @param int $post_id ID de la solution.
+ * @return void
+ */
+function mettre_a_jour_cache_solution(int $post_id): void
+{
+    if (get_post_type($post_id) !== 'solution') {
+        return;
+    }
+
+    if (wp_is_post_revision($post_id) || wp_is_post_autosave($post_id)) {
+        return;
+    }
+
+    $cible_type = get_field('solution_cible_type', $post_id);
+    $target_id  = 0;
+    if ($cible_type === 'chasse') {
+        $target_id = (int) get_field('solution_chasse_linked', $post_id);
+    } elseif ($cible_type === 'enigme') {
+        $target_id = (int) get_field('solution_enigme_linked', $post_id);
+    }
+
+    $explic  = trim((string) get_field('solution_explication', $post_id));
+    $fichier = get_field('solution_fichier', $post_id);
+    $content = $explic !== '' || !empty($fichier);
+
+    $complete = $content && $target_id > 0;
+    $state    = $complete ? 'accessible' : 'desactive';
+
+    if ($target_id === 0) {
+        $state    = 'invalide';
+        $complete = false;
+    }
+
+    update_field('solution_cache_complet', $complete ? 1 : 0, $post_id);
+    update_field('solution_cache_etat_systeme', $state, $post_id);
+
+    $status = get_post_status($post_id);
+    $post   = get_post($post_id);
+
+    if ($complete && $state === 'accessible') {
+        if ($status !== 'publish') {
+            wp_update_post([
+                'ID'            => $post_id,
+                'post_status'   => 'publish',
+                'post_date'     => $post->post_date,
+                'post_date_gmt' => $post->post_date_gmt,
+                'edit_date'     => true,
+            ]);
+        }
+    } elseif ($status === 'publish') {
+        wp_update_post([
+            'ID'            => $post_id,
+            'post_status'   => 'pending',
+            'post_date'     => $post->post_date,
+            'post_date_gmt' => $post->post_date_gmt,
+            'edit_date'     => true,
+        ]);
+    }
+}
+
+/**
  * Hook ACF pour planifier la publication à la sauvegarde.
  *
  * @param int $post_id ID du post sauvegardé.
@@ -141,6 +204,7 @@ function solution_acf_save_post(int $post_id): void
         return;
     }
 
+    mettre_a_jour_cache_solution($post_id);
     solution_planifier_publication($post_id);
     reordonner_solutions_pour_solution($post_id);
 }
