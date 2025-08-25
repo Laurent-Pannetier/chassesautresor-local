@@ -62,7 +62,8 @@ if (empty($solutions)) {
                     $linked_id = $linked;
                 }
             }
-            $linked_html = '';
+            $linked_title = '';
+            $linked_html  = '';
             if ($linked_id) {
                 $linked_title = get_the_title($linked_id);
                 $linked_html  = '<a href="' . esc_url(get_permalink($linked_id)) . '">' . esc_html($linked_title) . '</a>';
@@ -102,6 +103,9 @@ if (empty($solutions)) {
             }
 
             $target_url = $linked_id ? get_permalink($linked_id) : get_permalink($solution);
+            $edit_type  = $linked_id ? $cible_type : $objet_type;
+            $edit_id    = $linked_id ?: $objet_id;
+            $edit_title = $linked_id ? $linked_title : get_the_title($objet_id);
         ?>
         <tr>
             <td>
@@ -137,9 +141,9 @@ if (empty($solutions)) {
                 <div class="solution-action-buttons">
                     <button type="button"
                         class="badge-action edit"
-                        data-objet-type="<?= esc_attr($objet_type); ?>"
-                        data-objet-id="<?= esc_attr($objet_id); ?>"
-                        data-objet-titre="<?= esc_attr(get_the_title($objet_id)); ?>"
+                        data-objet-type="<?= esc_attr($edit_type); ?>"
+                        data-objet-id="<?= esc_attr($edit_id); ?>"
+                        data-objet-titre="<?= esc_attr($edit_title); ?>"
                         data-solution-id="<?= esc_attr($solution->ID); ?>"
                         data-solution-explication="<?= esc_attr($explication); ?>"
                         data-solution-fichier-id="<?= esc_attr($fichier_id); ?>"
