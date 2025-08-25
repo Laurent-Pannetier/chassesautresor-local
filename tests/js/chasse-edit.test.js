@@ -231,6 +231,16 @@ describe('chasse-edit UI', () => {
     expect(input.min).toBe('1');
   });
 
+  test('points input hidden and disabled initially when gratuit selected', () => {
+    const toggle = document.getElementById('cout-payant');
+    const actions = document.querySelector('.cout-points-actions');
+    const input = document.querySelector('.champ-cout');
+    expect(toggle.checked).toBe(false);
+    expect(actions.style.display).toBe('none');
+    expect(input.disabled).toBe(true);
+    expect(input.value).toBe('0');
+  });
+
   test('access toggle hides points input when unchecked', () => {
     const toggle = document.getElementById('cout-payant');
     const actions = document.querySelector('.cout-points-actions');
