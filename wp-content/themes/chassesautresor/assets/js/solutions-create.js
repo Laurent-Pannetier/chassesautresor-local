@@ -41,7 +41,7 @@
       solutionsCreate.texts.chooseFile +
       '</button> <span class="solution-file-name">' +
       (initialName || solutionsCreate.texts.noFile) +
-      '</span> <button type="button" class="solution-file-remove' +
+      '</span> <button type="button" class="solution-file-remove champ-modifier' +
       (initialName ? '' : '" style="display:none"') +
       '">' +
       solutionsCreate.texts.removeFile +
