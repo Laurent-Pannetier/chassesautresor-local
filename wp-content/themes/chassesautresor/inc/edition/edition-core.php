@@ -196,6 +196,9 @@ function enqueue_core_edit_scripts(array $additional = [])
             'lieeA'            => __('liée à', 'chassesautresor-com'),
             'laChasse'         => __('la chasse', 'chassesautresor-com'),
             'lenigme'          => __('l’énigme', 'chassesautresor-com'),
+            'chooseFile'       => __('Choisir un fichier', 'chassesautresor-com'),
+            'noFile'           => __('Aucun fichier choisi', 'chassesautresor-com'),
+            'removeFile'       => __('Supprimer le fichier', 'chassesautresor-com'),
           ],
         ]
       );

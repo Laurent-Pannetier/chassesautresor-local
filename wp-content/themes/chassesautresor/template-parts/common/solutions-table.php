@@ -39,7 +39,7 @@ if (empty($solutions)) {
             $timestamp   = strtotime($solution->post_date);
             $date_value  = function_exists('wp_date') ? wp_date('d/m/y', $timestamp) : date('d/m/y', $timestamp);
             $time_value  = function_exists('wp_date') ? wp_date('H:i', $timestamp) : date('H:i', $timestamp);
-            $fichier_id  = get_field('solution_fichier', $solution->ID);
+            $fichier_id  = get_field('solution_fichier', $solution->ID, false);
             $fichier_url = $fichier_id ? wp_get_attachment_url($fichier_id) : '';
             $explication = wp_strip_all_tags(get_field('solution_explication', $solution->ID) ?: '');
             $dispo       = get_field('solution_disponibilite', $solution->ID) ?: 'fin_chasse';
