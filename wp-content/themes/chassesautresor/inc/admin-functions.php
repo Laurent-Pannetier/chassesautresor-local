@@ -1350,6 +1350,7 @@ function recuperer_details_acf() {
         'group_67b58134d7647', // Paramètres de l’énigme (ID 9)
         'group_67c7dbfea4a39', // Paramètres organisateur (ID 657)
         'group_68a1fb240748a', // Paramètres indices
+        'group_68abd01f80aee', // Paramètres solution
     ];
 
     ob_start();
