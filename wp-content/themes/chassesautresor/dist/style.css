@@ -4568,7 +4568,7 @@ body.single-enigme.topbar-visible header.site-header {
   transform: translateY(0);
 }
 
-@media (max-width: 1023px), (hover: none) {
+@media not all and (min-width: 1024px), (hover: none) {
   body.single-enigme header.site-header {
     display: none;
   }
@@ -5723,6 +5723,10 @@ span.champ-obligatoire {
   margin-right: auto;
   padding-left: var(--space-md);
   padding-right: var(--space-md);
+}
+
+.container--narrow {
+  --container-max-width: var(--container-max-width-narrow);
 }
 
 .container.fullwidth,
@@ -7815,21 +7819,28 @@ section#presentation .presentation-fermer {
   resize: vertical;
 }
 
-/* 🎨 Variables globales */ /* alias ancien 540px */ /* alias ancien 921px */ /* alias ancien 922px */
+/* 🎨 Variables globales */
+/* Legacy aliases */
 :root {
   /* Typographie et breakpoints */
   --font-main: "Poppins", sans-serif; /* Police principale */
   --bp-xs: 374px;
-  --bp-sm: 480px;
-  --bp-600: 600px;
-  --bp-540: 600px; /* alias 540px */
-  --bp-md: 768px;
-  --bp-lg: 1024px;
-  --bp-921: 1024px; /* alias 921px */
-  --bp-922: 1024px; /* alias 922px */
-  --bp-xl: 1280px;
+  --bp-small: 480px;
+  --bp-mobile: 600px;
+  --bp-tablet: 768px;
+  --bp-desktop: 1024px;
+  --bp-wide: 1280px;
   --bp-xxl: 1440px;
   --bp-xxxl: 1920px;
+  /* Legacy variables */
+  --bp-sm: var(--bp-small);
+  --bp-600: var(--bp-mobile);
+  --bp-540: var(--bp-mobile);
+  --bp-md: var(--bp-tablet);
+  --bp-lg: var(--bp-desktop);
+  --bp-921: var(--bp-desktop);
+  --bp-922: var(--bp-desktop);
+  --bp-xl: var(--bp-wide);
   /* Couleurs globales */
   --color-primary: #FFD700; /* 🟡 Couleur principale : jaune or */
   --color-secondary: #E1A95F; /* 🟠 Couleur secondaire : lien */
@@ -7868,6 +7879,7 @@ section#presentation .presentation-fermer {
   --aside-opacity: 0.15; /* ⚙️ Opacité standard des fonds d'aside */
   /* Grille */
   --container-max-width: 1200px;
+  --container-max-width-narrow: 800px;
   --grid-gap: 1rem;
   --grid-columns: 12;
   --dashboard-card-max-width: 420px; /* 🔲 Largeur max des dashboard-card isolées */
@@ -7887,9 +7899,11 @@ section#presentation .presentation-fermer {
   --transition-medium: 0.3s ease;
   --transition-slow: 0.6s ease;
   /* Breakpoints layout */
-  --breakpoint-desktop: 1280px;
-  --breakpoint-tablette: 1024px;
-  --breakpoint-mobile: 768px;
+  --breakpoint-small: 480px;
+  --breakpoint-mobile: 600px;
+  --breakpoint-tablet: 768px;
+  --breakpoint-desktop: 1024px;
+  --breakpoint-wide: 1280px;
 }
 
 @media (prefers-reduced-motion: reduce) {
