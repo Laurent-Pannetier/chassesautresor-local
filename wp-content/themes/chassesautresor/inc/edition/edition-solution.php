@@ -19,6 +19,7 @@ function solution_planifier_publication(int $solution_id): void
     if (get_post_type($solution_id) !== 'solution') {
         return;
     }
+    update_field('solution_cache_etat_systeme', 'programme', $solution_id);
 
     $cible = get_field('solution_cible_type', $solution_id);
     $chasse_id = 0;
@@ -59,7 +60,6 @@ function solution_planifier_publication(int $solution_id): void
     }
 
     update_post_meta($solution_id, 'solution_date_disponibilite', gmdate('Y-m-d H:i:s', $timestamp));
-    update_field('solution_cache_etat_systeme', 'programme', $solution_id);
     wp_schedule_single_event($timestamp, 'publier_solution_programmee', [$solution_id]);
 }
 
@@ -708,11 +708,22 @@ function ajax_creer_solution_modal(): void
         update_field('solution_explication', $explic, $solution_id);
     }
 
+    $has_content = (bool) $fichier || $explic !== '';
+    update_field('solution_cache_complet', $has_content, $solution_id);
+    if (!$has_content) {
+        update_field('solution_cache_etat_systeme', 'invalide', $solution_id);
+        wp_clear_scheduled_hook('publier_solution_programmee', [$solution_id]);
+        delete_post_meta($solution_id, 'solution_date_disponibilite');
+        wp_delete_post($solution_id, true);
+        wp_send_json_error(__('Un texte ou un PDF est requis.', 'chassesautresor-com'));
+    }
+
     $dispo = $dispo === 'differee' ? 'differee' : 'fin_chasse';
     update_field('solution_disponibilite', $dispo, $solution_id);
     update_field('solution_decalage_jours', $delai, $solution_id);
     update_field('solution_heure_publication', $heure ?: '00:00', $solution_id);
 
+    update_field('solution_cache_etat_systeme', 'programme', $solution_id);
     solution_planifier_publication($solution_id);
 
     wp_send_json_success(['solution_id' => $solution_id]);
@@ -738,6 +749,13 @@ function ajax_modifier_solution_modal(): void
         wp_send_json_error('solution_invalide');
     }
     if (!$objet_id || !in_array($objet_type, ['chasse', 'enigme'], true) || get_post_type($objet_id) !== $objet_type) {
+        wp_send_json_error('post_invalide');
+    }
+    $cible_type = get_field('solution_cible_type', $solution_id);
+    $cible_id   = $cible_type === 'enigme'
+        ? (int) get_field('solution_enigme_linked', $solution_id)
+        : (int) get_field('solution_chasse_linked', $solution_id);
+    if ($cible_type !== $objet_type || $cible_id !== $objet_id) {
         wp_send_json_error('post_invalide');
     }
     if (!solution_action_autorisee('edit', $objet_type, $objet_id)) {
@@ -772,11 +790,21 @@ function ajax_modifier_solution_modal(): void
     }
     update_field('solution_explication', $explic, $solution_id);
 
+    $has_content = (bool) $fichier || $explic !== '';
+    update_field('solution_cache_complet', $has_content, $solution_id);
+    if (!$has_content) {
+        update_field('solution_cache_etat_systeme', 'invalide', $solution_id);
+        wp_clear_scheduled_hook('publier_solution_programmee', [$solution_id]);
+        delete_post_meta($solution_id, 'solution_date_disponibilite');
+        wp_send_json_error(__('Un texte ou un PDF est requis.', 'chassesautresor-com'));
+    }
+
     $dispo = $dispo === 'differee' ? 'differee' : 'fin_chasse';
     update_field('solution_disponibilite', $dispo, $solution_id);
     update_field('solution_decalage_jours', $delai, $solution_id);
     update_field('solution_heure_publication', $heure ?: '00:00', $solution_id);
 
+    update_field('solution_cache_etat_systeme', 'programme', $solution_id);
     solution_planifier_publication($solution_id);
 
     wp_send_json_success(['solution_id' => $solution_id]);

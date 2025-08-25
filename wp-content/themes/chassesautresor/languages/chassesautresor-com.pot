@@ -2285,3 +2285,15 @@ msgstr ""
 msgid "PDF"
 msgstr ""
 
+#: template-parts/common/solutions-table.php:81
+msgid "fin de chasse"
+msgstr ""
+
+#: template-parts/common/solutions-table.php:83
+msgid "différée"
+msgstr ""
+
+#: inc/edition/edition-solution.php:718 inc/edition/edition-solution.php:799
+msgid "Un texte ou un PDF est requis."
+msgstr ""
+

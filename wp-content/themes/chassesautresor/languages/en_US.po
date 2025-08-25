@@ -2474,3 +2474,15 @@ msgstr "Solution for"
 msgid "PDF"
 msgstr "PDF"
 
+#: template-parts/common/solutions-table.php:81
+msgid "fin de chasse"
+msgstr "end of hunt"
+
+#: template-parts/common/solutions-table.php:83
+msgid "différée"
+msgstr "delayed"
+
+#: inc/edition/edition-solution.php:718 inc/edition/edition-solution.php:799
+msgid "Un texte ou un PDF est requis."
+msgstr "A text or a PDF is required."
+
