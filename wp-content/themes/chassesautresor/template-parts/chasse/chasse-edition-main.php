@@ -1009,12 +1009,8 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
               ]);
               ?>
             </div>
-          </div>
-        </div>
-        <?php if ($afficher_qr_code) : ?>
-          <div class="edition-panel-section">
-            <h3><?= esc_html__('Vos liens', 'chassesautresor-com'); ?></h3>
-            <div class="section-content">
+            <?php if ($afficher_qr_code) : ?>
+              <h3><?= esc_html__('Vos liens', 'chassesautresor-com'); ?></h3>
               <div class="dashboard-card carte-orgy champ-qr-code">
                 <div class="qr-code-block">
                   <div class="qr-code-url txt-small">
@@ -1034,9 +1030,9 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   </div>
                 </div>
               </div>
-            </div>
+            <?php endif; ?>
           </div>
-        <?php endif; ?>
+        </div>
       </div>
     </div>
 
