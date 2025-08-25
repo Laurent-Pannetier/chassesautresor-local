@@ -532,6 +532,12 @@ span.champ-obligatoire {
   }
 }
 
+@media not all and (--bp-small) {
+  .mode-edition {
+    --editor-label-width: 150px;
+  }
+}
+
 
 /* 🔗 Bridge HSL ↔️ nuancier existant (ne remplace rien) */
 .mode-edition {

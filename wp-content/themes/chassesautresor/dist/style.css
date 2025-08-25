@@ -3121,6 +3121,16 @@ body.panneau-ouvert::before {
   border-bottom: 3px solid var(--color-primary);
 }
 
+@media not all and (min-width: 600px) {
+  .edition-tab {
+    font-size: 90%;
+  }
+}
+@media not all and (min-width: 480px) {
+  .edition-tab {
+    font-size: 80%;
+  }
+}
 .edition-tab-content {
   display: none;
   min-height: 180px;
@@ -5921,6 +5931,11 @@ span.champ-obligatoire {
 @media not all and (min-width: 768px) {
   .mode-edition {
     --editor-label-width: 200px;
+  }
+}
+@media not all and (min-width: 480px) {
+  .mode-edition {
+    --editor-label-width: 150px;
   }
 }
 /* 🔗 Bridge HSL ↔️ nuancier existant (ne remplace rien) */

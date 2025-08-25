@@ -1473,6 +1473,18 @@ body.panneau-ouvert::before {
   border-bottom: 3px solid var(--color-primary);
 }
 
+@media not all and (--bp-mobile) {
+  .edition-tab {
+    font-size: 90%;
+  }
+}
+
+@media not all and (--bp-small) {
+  .edition-tab {
+    font-size: 80%;
+  }
+}
+
 
 .edition-tab-content {
   display: none;
