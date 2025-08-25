@@ -277,6 +277,7 @@ require_once $inc_path . 'edition/edition-organisateur.php';
 require_once $inc_path . 'edition/edition-chasse.php';
 require_once $inc_path . 'edition/edition-enigme.php';
 require_once $inc_path . 'edition/edition-indice.php';
+require_once $inc_path . 'edition/edition-solution.php';
 require_once $inc_path . 'edition/edition-securite.php';
 
 
