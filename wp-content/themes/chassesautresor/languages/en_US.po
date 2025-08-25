@@ -2474,3 +2474,31 @@ msgstr "Solution for"
 msgid "PDF"
 msgstr "PDF"
 
+#: template-parts/common/solutions-table.php:???
+msgid "Invalid solution"
+msgstr "Invalid solution"
+
+#: template-parts/common/solutions-table.php:???
+msgid "Hunt finished"
+msgstr "Hunt finished"
+
+#: template-parts/common/solutions-table.php:???
+msgid "Hunt end delayed"
+msgstr "Hunt end delayed"
+
+#: template-parts/common/solutions-table.php:???
+msgid "Coming soon"
+msgstr "Coming soon"
+
+#: template-parts/common/solutions-table.php:???
+msgid "In progress"
+msgstr "In progress"
+
+#: template-parts/common/solutions-table.php:???
+msgid "Disabled"
+msgstr "Disabled"
+
+#: template-parts/common/solutions-table.php:???
+msgid "Coming on %s"
+msgstr "Coming on %s"
+
