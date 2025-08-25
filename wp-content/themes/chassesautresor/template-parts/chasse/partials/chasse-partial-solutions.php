@@ -36,6 +36,7 @@ $has_enigmes = !empty($enigmes_disponibles);
                 class='bouton-cta cta-solution-chasse ajouter-solution'
                 data-objet-type='chasse'
                 data-objet-id='<?= esc_attr($objet_id); ?>'
+                data-objet-titre='<?= esc_attr(get_the_title($objet_id)); ?>'
             >
                 <?= esc_html__('La chasse entière', 'chassesautresor-com'); ?>
             </button>

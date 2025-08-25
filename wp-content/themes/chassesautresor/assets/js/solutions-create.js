@@ -3,6 +3,10 @@
     var overlay = document.createElement('div');
     overlay.className = 'solution-modal-overlay';
     var isEdit = !!btn.dataset.solutionId;
+    var titre = isEdit ? solutionsCreate.texts.editTitre : solutionsCreate.texts.addTitre;
+    var objetTypeLabel = btn.dataset.objetType === 'chasse'
+      ? solutionsCreate.texts.laChasse
+      : solutionsCreate.texts.lenigme;
     var needEnigme = btn.dataset.chasseId && !btn.dataset.objetId;
     var enigmeField = needEnigme
       ? '<p><label>' +
@@ -13,6 +17,10 @@
       : '';
     overlay.innerHTML = `
       <div class="solution-modal">
+        <div class="solution-modal-header">
+          <h2>${titre}</h2>
+          <p>${solutionsCreate.texts.lieeA} ${objetTypeLabel} : <span class="objet-titre">${btn.dataset.objetTitre || ''}</span></p>
+        </div>
         <button type="button" class="solution-modal-close" aria-label="${solutionsCreate.texts.close}">×</button>
         <form class="solution-modal-form">
           <input type="hidden" name="action" value="${isEdit ? 'modifier_solution_modal' : 'creer_solution_modal'}" />
@@ -44,17 +52,29 @@
     var stateMessage = overlay.querySelector('.solution-state-message');
     var selectDispo = overlay.querySelector('select[name="solution_disponibilite"]');
     var delaiWrapper = overlay.querySelector('.delai-wrapper');
+    var delaiInput = overlay.querySelector('input[name="solution_delai"]');
+    var heureInput = overlay.querySelector('input[name="solution_heure"]');
+    var explicationInput = overlay.querySelector('textarea[name="solution_explication"]');
+    var fichierInput = overlay.querySelector('input[name="solution_fichier"]');
     if (btn.dataset.solutionDisponibilite === 'differee') {
       selectDispo.value = 'differee';
       delaiWrapper.style.display = '';
     }
     selectDispo.addEventListener('change', function () {
       delaiWrapper.style.display = this.value === 'differee' ? '' : 'none';
+      refreshState();
     });
+    delaiInput.addEventListener('input', refreshState);
+    heureInput.addEventListener('input', refreshState);
+    explicationInput.addEventListener('input', refreshState);
+    if (fichierInput) {
+      fichierInput.addEventListener('change', refreshState);
+    }
 
     if (needEnigme) {
       var selectEnigme = overlay.querySelector('select[name="solution_enigme_linked"]');
       var hiddenObjet = overlay.querySelector('input[name="objet_id"]');
+      var titleSpan = overlay.querySelector('.objet-titre');
       var fd = new FormData();
       fd.append('action', 'chasse_lister_enigmes');
       fd.append('chasse_id', btn.dataset.chasseId || '');
@@ -70,6 +90,8 @@
             btn.dataset.objetId = '';
             btn.dataset.objetTitre = '';
             hiddenObjet.value = '';
+            titleSpan.textContent = '';
+            refreshState();
             return;
           }
           res.data.enigmes.forEach(function (enigme) {
@@ -78,21 +100,56 @@
             opt.textContent = enigme.title;
             selectEnigme.appendChild(opt);
           });
-          var def = btn.dataset.defaultEnigme;
+          var def = btn.dataset.defaultEnigme || btn.dataset.objetId;
           if (def) selectEnigme.value = def;
           if (!selectEnigme.value) selectEnigme.value = selectEnigme.options[0].value;
           var sel = selectEnigme.options[selectEnigme.selectedIndex];
           btn.dataset.objetId = selectEnigme.value;
           btn.dataset.objetTitre = sel ? sel.text : '';
           hiddenObjet.value = selectEnigme.value;
+          titleSpan.textContent = sel ? sel.text : '';
+          refreshState();
         });
       selectEnigme.addEventListener('change', function () {
         var opt = selectEnigme.options[selectEnigme.selectedIndex];
         btn.dataset.objetId = selectEnigme.value;
         btn.dataset.objetTitre = opt ? opt.text : '';
         hiddenObjet.value = selectEnigme.value;
+        titleSpan.textContent = opt ? opt.text : '';
+        refreshState();
       });
     }
+
+    function refreshState() {
+      var riddleOk = !needEnigme || (btn.dataset.objetId && overlay.querySelector('input[name="objet_id"]').value);
+      var explication = explicationInput.value.trim();
+      var hasFile = fichierInput && fichierInput.files && fichierInput.files.length > 0;
+      var state = 'desactive';
+      var message = '';
+      if (!riddleOk) {
+        message = solutionsCreate.texts.needEnigme;
+      } else if (!explication && !hasFile) {
+        message = solutionsCreate.texts.needContent;
+      } else {
+        state = 'accessible';
+        if (selectDispo.value === 'differee') {
+          var delai = parseInt(delaiInput.value, 10) || 0;
+          var heure = heureInput.value || '00:00';
+          var now = new Date();
+          var target = new Date(now);
+          var parts = heure.split(':');
+          target.setDate(target.getDate() + delai);
+          target.setHours(parseInt(parts[0], 10), parseInt(parts[1], 10), 0, 0);
+          if (target > now) {
+            state = 'programme';
+          }
+        }
+      }
+      validateBtn.disabled = state === 'desactive';
+      stateMessage.textContent = message;
+    }
+
+    refreshState();
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();

@@ -192,6 +192,10 @@ function enqueue_core_edit_scripts(array $additional = [])
             'enigmePlaceholder' => __('Sélectionner une énigme', 'chassesautresor-com'),
             'needEnigme'        => __('Sélectionnez une énigme', 'chassesautresor-com'),
             'loading'           => __('Chargement…', 'chassesautresor-com'),
+            'needContent'      => __('Ajoutez un fichier ou un texte', 'chassesautresor-com'),
+            'lieeA'            => __('liée à', 'chassesautresor-com'),
+            'laChasse'         => __('la chasse', 'chassesautresor-com'),
+            'lenigme'          => __('l’énigme', 'chassesautresor-com'),
           ],
         ]
       );
