@@ -1089,6 +1089,14 @@ msgstr ""
 msgid "Limité"
 msgstr ""
 
+#: template-parts/chasse/chasse-edition-main.php:514
+msgid "Now"
+msgstr ""
+
+#: template-parts/chasse/chasse-edition-main.php:524
+msgid "Later"
+msgstr ""
+
 #: template-parts/chasse/chasse-edition-main.php:374
 msgid "Début"
 msgstr ""

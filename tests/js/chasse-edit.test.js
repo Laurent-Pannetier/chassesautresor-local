@@ -14,6 +14,23 @@ const html = `
           </div>
         </div>
       </li>
+      <li class="edition-row champ-chasse champ-date-debut" data-post-id="1">
+        <div class="edition-row-label"><label for="chasse-date-debut">Début</label></div>
+        <div class="edition-row-content">
+          <div class="champ-mode-options">
+            <span class="toggle-option">Now</span>
+            <label class="switch-control">
+              <input type="checkbox" id="date-debut-differee">
+              <span class="switch-slider"></span>
+            </label>
+            <span class="toggle-option">Later</span>
+            <div class="date-debut-actions" style="display:none;">
+              <input type="datetime-local" id="chasse-date-debut" value="" class="champ-inline-date champ-date-edit">
+              <div id="erreur-date-debut" class="message-erreur"></div>
+            </div>
+          </div>
+        </div>
+      </li>
     </ul>
     <template id="template-nb-gagnants">
       <li class="edition-row champ-nb-gagnants" data-post-id="1">
@@ -59,6 +76,7 @@ describe('chasse-edit UI', () => {
     global.mettreAJourCarteAjoutEnigme = jest.fn();
     global.mettreAJourEtatIntroChasse = jest.fn();
     global.initChampNbGagnants = jest.fn();
+    global.initChampDate = jest.fn();
     global.modifierChampSimple = jest.fn(() => Promise.resolve(true));
     global.wp = { i18n: { __: (s) => s } };
     jest.resetModules();
@@ -115,5 +133,29 @@ describe('chasse-edit UI', () => {
     expect(message).not.toBeNull();
     expect(message.textContent).toContain('Alice');
     expect(message.textContent).toContain('02/01/2024');
+  });
+
+  test('start date toggle reveals datepicker when checked', () => {
+    const toggle = document.getElementById('date-debut-differee');
+    const actions = document.querySelector('.date-debut-actions');
+    const input = document.getElementById('chasse-date-debut');
+    expect(actions.style.display).toBe('none');
+    toggle.checked = true;
+    toggle.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(actions.style.display).toBe('');
+    expect(input.disabled).toBe(false);
+    expect(global.initChampDate).toHaveBeenCalledWith(input);
+  });
+
+  test('start date toggle hides datepicker when unchecked', () => {
+    const toggle = document.getElementById('date-debut-differee');
+    const actions = document.querySelector('.date-debut-actions');
+    const input = document.getElementById('chasse-date-debut');
+    toggle.checked = true;
+    toggle.dispatchEvent(new Event('change', { bubbles: true }));
+    toggle.checked = false;
+    toggle.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(actions.style.display).toBe('none');
+    expect(input.disabled).toBe(true);
   });
 });

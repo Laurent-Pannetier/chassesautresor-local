@@ -1004,6 +1004,37 @@ function initChampNbGagnants() {
 }
 
 // ================================
+// 🕒 Gestion du champ Date de début (Maintenant / Plus tard)
+// ================================
+function initChampDateDebut() {
+  const input = document.getElementById('chasse-date-debut');
+  const toggle = document.getElementById('date-debut-differee');
+  const actions = input?.closest('.date-debut-actions');
+
+  if (!input || !toggle || !actions) return;
+
+  function updateVisibility() {
+    if (toggle.checked) {
+      actions.style.display = '';
+      input.disabled = false;
+      if (typeof window.initChampDate === 'function') {
+        window.initChampDate(input);
+      }
+    } else {
+      actions.style.display = 'none';
+      input.disabled = true;
+      const now = new Date();
+      const iso = now.toISOString().slice(0, 16);
+      input.value = iso;
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  }
+
+  toggle.addEventListener('change', updateVisibility);
+  updateVisibility();
+}
+
+// ================================
 // 🔚 Gestion dynamique du mode de fin
 // ================================
 function initModeFinChasse() {
@@ -1062,6 +1093,7 @@ function initModeFinChasse() {
 }
 
 // À appeler :
+initChampDateDebut();
 initChampNbGagnants();
 initModeFinChasse();
 
