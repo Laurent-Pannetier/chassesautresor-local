@@ -5649,6 +5649,77 @@ tbody tr:nth-child(even) {
   margin-left: 0.25rem;
 }
 
+.solutions-table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.solutions-table th,
+.solutions-table td {
+  text-align: left;
+  vertical-align: middle;
+}
+
+.solutions-table td > div + div {
+  margin-top: 0.25rem;
+}
+
+.solutions-table th:first-child,
+.solutions-table td:first-child {
+  width: 15%;
+}
+
+.solutions-table th:nth-child(2),
+.solutions-table td:nth-child(2) {
+  width: 25%;
+}
+
+.solutions-table th:nth-child(3),
+.solutions-table td:nth-child(3) {
+  width: 15%;
+}
+
+.solutions-table th:nth-child(4),
+.solutions-table td:nth-child(4) {
+  width: 35%;
+}
+
+.solutions-table th:nth-child(5),
+.solutions-table td:nth-child(5) {
+  width: 10%;
+}
+
+.solutions-table th.solution-actions,
+.solutions-table td.solution-actions {
+  text-align: center;
+}
+
+.solutions-table .badge-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  font-size: 0.875rem;
+  border: 0;
+  cursor: pointer;
+  color: var(--color-text-primary);
+  text-decoration: none;
+}
+
+.solutions-table .badge-action.edit {
+  background: var(--color-secondary);
+}
+
+.solutions-table .badge-action.delete {
+  background: var(--color-error);
+}
+
+.solutions-table .badge-action + .badge-action {
+  margin-left: 0.25rem;
+}
+
 /* Labels */
 .etiquette {
   display: inline-block;

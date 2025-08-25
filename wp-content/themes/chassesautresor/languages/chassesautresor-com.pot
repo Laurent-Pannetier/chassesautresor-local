@@ -2277,3 +2277,11 @@ msgstr ""
 msgid "Adresse de votre chasse&nbsp;:"
 msgstr ""
 
+#: template-parts/common/solutions-table.php:33
+msgid "Solution pour"
+msgstr ""
+
+#: template-parts/common/solutions-table.php:105
+msgid "PDF"
+msgstr ""
+

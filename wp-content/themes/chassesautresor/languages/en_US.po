@@ -2466,3 +2466,11 @@ msgstr "Your links"
 msgid "Adresse de votre chasse&nbsp;:"
 msgstr "Your hunt's address:"
 
+#: template-parts/common/solutions-table.php:33
+msgid "Solution pour"
+msgstr "Solution for"
+
+#: template-parts/common/solutions-table.php:105
+msgid "PDF"
+msgstr "PDF"
+
