@@ -85,7 +85,14 @@ function solution_rendre_accessible(int $solution_id): void
     update_field('solution_cache_etat_systeme', SOLUTION_STATE_EN_COURS, $solution_id);
     delete_post_meta($solution_id, 'solution_date_disponibilite');
     if (get_post_status($solution_id) !== 'publish') {
-        wp_update_post(['ID' => $solution_id, 'post_status' => 'publish']);
+        $post = get_post($solution_id);
+        wp_update_post([
+            'ID'            => $solution_id,
+            'post_status'   => 'publish',
+            'post_date'     => $post->post_date,
+            'post_date_gmt' => $post->post_date_gmt,
+            'edit_date'     => true,
+        ]);
     }
 }
 add_action('publier_solution_programmee', 'solution_rendre_accessible');
