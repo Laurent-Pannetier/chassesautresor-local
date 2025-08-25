@@ -2122,6 +2122,11 @@ body .header-img-modifiable .icone-modif {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08), 0 0 0 3px hsl(var(--editor-error-hsl)/0.3);
 }
 
+.champ-indices.champ-vide.carte-orgy,
+.champ-solutions.champ-vide.carte-orgy {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08), 0 0 0 3px hsl(var(--editor-error-hsl)/0.3);
+}
+
 .dashboard-card.champ-liens .liste-liens-publics, .champ-liens.carte-orgy .liste-liens-publics {
   display: flex;
   gap: var(--space-xs);
@@ -3244,6 +3249,28 @@ body.panneau-ouvert::before {
   line-height: 1.4;
 }
 
+.carte-check {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: var(--color-editor-success);
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.carte-check i {
+  color: #fff;
+  font-size: 0.6rem;
+  line-height: 1;
+}
+
+.carte-orgy.champ-rempli .carte-check {
+  display: flex;
+}
+
 .dashboard-grid > .dashboard-card:only-child, .dashboard-grid > .carte-orgy:only-child {
   max-width: var(--dashboard-card-max-width);
   width: 100%;
@@ -3269,6 +3296,13 @@ body.panneau-ouvert::before {
   font-size: 2rem;
   color: var(--color-editor-heading);
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.1));
+}
+
+.dashboard-card .carte-check i, .carte-orgy .carte-check i {
+  font-size: 0.6rem;
+  color: #fff;
+  line-height: 1;
+  filter: none;
 }
 
 .dashboard-card img, .carte-orgy img {

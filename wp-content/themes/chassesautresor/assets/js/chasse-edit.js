@@ -87,6 +87,11 @@ function rafraichirCarteSolutions() {
           btnEnigme.title = disableEnigme ? ChasseSolutions.tooltipEnigme : '';
         }
       }
+
+      const hasSolutions = !!res.data.has_solutions;
+      card.classList.toggle('champ-rempli', hasSolutions);
+      card.classList.toggle('champ-vide', !hasSolutions);
+
       initDisabledSolutionButtons();
     })
     .catch(() => {});
@@ -729,6 +734,25 @@ window.rafraichirCarteSolutions = rafraichirCarteSolutions;
   window.addEventListener('solution-created', () => {
     rafraichirCarteSolutions();
   });
+
+  function rafraichirCarteLiens() {
+    const card = document.querySelector('.dashboard-card.champ-liens');
+    if (!card) return;
+    const dataEl = card.querySelector('.champ-donnees');
+    let valeurs = [];
+    if (dataEl && dataEl.dataset.valeurs) {
+      try {
+        valeurs = JSON.parse(dataEl.dataset.valeurs);
+      } catch (e) {
+        valeurs = [];
+      }
+    }
+    const filled = Array.isArray(valeurs) && valeurs.length > 0;
+    card.classList.toggle('champ-rempli', filled);
+    card.classList.toggle('champ-vide', !filled);
+  }
+
+  window.addEventListener('liens-publics-updated', rafraichirCarteLiens);
 
 
 // ==============================
