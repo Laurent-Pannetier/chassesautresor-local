@@ -367,11 +367,11 @@ Groupe : paramètre de la chasse
 * chasse_infos_nb_max_gagants (number)
 * chasse_cache_gagnants (text)
 * chasse_cache_date_decouverte (date_picker)
-* chasse_cache_statut (select)
-* chasse_cache_statut_validation (select)
 * chasse_cache_enigmes (relationship)
 * chasse_cache_commentaire (textarea)
 * chasse_cache_organisateur (relationship)
+* chasse_cache_statut_validation (select)
+* chasse_cache_statut (select)
 * chasse_cache_complet (true_false)
 
 CPT : enigme
@@ -384,7 +384,7 @@ Groupe : Paramètres de l’énigme
 * enigme_style_affichage (select)
 * enigme_tentative_cout_points (number)
 * enigme_tentative_max (number)
-* enigme_reponse_bonne (textarea) — réponses multiples encodées en JSON
+* enigme_reponse_bonne (textarea)
 * enigme_reponse_casse (true_false)
 * texte_1 (text)
 * message_1 (text)
@@ -394,15 +394,20 @@ Groupe : Paramètres de l’énigme
 * respecter_casse_2 (true_false)
 * texte_3 (text)
 * message_3 (text)
-* respecter_casse_3 (text)
+* respecter_casse_3 (true_false)
 * texte_4 (text)
 * message_4 (text)
-* respecter_casse_4 (text)
+* respecter_casse_4 (true_false)
 * enigme_acces_condition (radio)
 * enigme_acces_date (date_picker)
 * enigme_acces_pre_requis (relationship)
-* enigme_cache_etat_systeme (select)
 * enigme_chasse_associee (relationship)
+* enigme_solution_mode (radio)
+* enigme_solution_delai (number)
+* enigme_solution_heure (time_picker)
+* enigme_solution_fichier (file)
+* enigme_solution_explication (wysiwyg)
+* enigme_cache_etat_systeme (select)
 * enigme_cache_complet (true_false)
 
 CPT : indice
@@ -411,11 +416,11 @@ Groupe : paramètres indices
 * indice_image (image)
 * indice_contenu (wysiwyg)
 * indice_cible_type (radio)
-* indice_enigme_linked (relationship)
-* indice_chasse_linked (relationship)
 * indice_disponibilite (radio)
 * indice_date_disponibilite (date_time_picker, retour d/m/Y g:i a)
 * indice_cout_points (number)
+* indice_enigme_linked (relationship)
+* indice_chasse_linked (relationship)
 * indice_cache_etat_systeme (select, accessible/programme/invalide/desactive)
 * indice_cache_complet (true_false)
 
@@ -434,22 +439,24 @@ Groupe : paramètres solution
 * solution_cible_type (radio, chasse/enigme)
 * solution_chasse_linked (relationship)
 * solution_enigme_linked (relationship)
-* solution_fichier (file, PDF de la solution)
-* solution_explication (wysiwyg, solution rédigée)
-* solution_disponibilite (radio, fin_chasse/differee — fin_chasse : publication à la fin de la chasse ; differee : publication après `solution_decalage_jours` jours à `solution_heure_publication`)
-* solution_decalage_jours (number, délai en jours pour mode differee)
-* solution_heure_publication (time_picker, heure de mise en ligne pour mode differee)
-* solution_cache_etat_systeme (select, accessible/programme/invalide/desactive)
+* solution_fichier (file)
+* solution_explication (wysiwyg)
+* solution_disponibilite (radio, fin_chasse/differee)
+* solution_decalage_jours (number)
+* solution_heure_publication (time_picker)
+* solution_cache_etat_systeme (select, INVALIDE/FIN_CHASSE/FIN_CHASSE_DIFFERE/A_VENIR/EN_COURS/DESACTIVE)
 * solution_cache_complet (true_false)
 
 États possibles pour `solution_cache_etat_systeme` :
 
-| Valeur    | Description                                   |
-|-----------|-----------------------------------------------|
-| accessible| Solution visible immédiatement                |
-| programme | Disponible à une date ultérieure              |
-| invalide  | Solution marquée comme invalide               |
-| desactive | Solution incomplète ou désactivée             |
+| Valeur            | Description               |
+|-------------------|---------------------------|
+| INVALIDE          | INVALIDE                  |
+| FIN_CHASSE        | fin de chasse             |
+| FIN_CHASSE_DIFFERE| différé                   |
+| A_VENIR           | à venir                   |
+| EN_COURS          | en cours                  |
+| DESACTIVE         | désactivé                 |
 
 liste avec tous les détails des groupes de champs ACF dans champs-acf-liste.md
 
