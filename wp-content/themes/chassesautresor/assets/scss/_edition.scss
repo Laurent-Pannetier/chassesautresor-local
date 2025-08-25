@@ -2218,7 +2218,9 @@ body.panneau-ouvert::before {
 }
 
 /* Overlay indice */
-.indice-modal-overlay {
+
+.indice-modal-overlay,
+.solution-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -2231,7 +2233,8 @@ body.panneau-ouvert::before {
     z-index: 20000;
 }
 
-.indice-modal {
+.indice-modal,
+.solution-modal {
     background: var(--color-editor-background);
     color: var(--color-editor-text);
     padding: var(--space-lg);
@@ -2264,7 +2267,8 @@ body.panneau-ouvert::before {
     font-size: 0.875rem;
 }
 
-.indice-modal-close {
+.indice-modal-close,
+.solution-modal-close {
     position: absolute;
     top: var(--space-sm);
     right: var(--space-sm);
@@ -2275,13 +2279,15 @@ body.panneau-ouvert::before {
     color: var(--color-editor-heading);
 }
 
-.indice-modal-form label {
+.indice-modal-form label,
+.solution-modal-form label {
     display: block;
     margin-bottom: var(--space-sm);
     color: var(--color-editor-text);
 }
 
-.indice-modal-form textarea {
+.indice-modal-form textarea,
+.solution-modal-form textarea {
     width: 100%;
     min-height: 100px;
     background: var(--color-editor-background);
@@ -2307,7 +2313,8 @@ body.panneau-ouvert::before {
     background: var(--color-editor-background);
 }
 
-.indice-modal-form .indice-modal-validate {
+.indice-modal-form .indice-modal-validate,
+.solution-modal-form .solution-modal-validate {
     background: var(--color-editor-button);
     color: var(--color-white);
     border: none;
@@ -2317,15 +2324,18 @@ body.panneau-ouvert::before {
     transition: background var(--transition-fast);
 }
 
-.indice-modal-form .indice-modal-validate:hover {
+.indice-modal-form .indice-modal-validate:hover,
+.solution-modal-form .solution-modal-validate:hover {
     background: var(--color-editor-button-hover);
 }
 
-.indice-modal-form .indice-modal-validate:disabled {
+.indice-modal-form .indice-modal-validate:disabled,
+.solution-modal-form .solution-modal-validate:disabled {
     cursor: not-allowed;
 }
 
-.indice-modal-form .indice-modal-footer {
+.indice-modal-form .indice-modal-footer,
+.solution-modal-form .solution-modal-footer {
     display: flex;
     justify-content: flex-end;
     align-items: center;
@@ -2333,12 +2343,14 @@ body.panneau-ouvert::before {
     margin-top: var(--space-md);
 }
 
-.indice-modal-form .indice-state-message {
+.indice-modal-form .indice-state-message,
+.solution-modal-form .solution-state-message {
     color: var(--color-editor-text-muted);
     font-size: 0.875rem;
 }
 
-.indice-modal-form .date-wrapper input {
+.indice-modal-form .date-wrapper input,
+.solution-modal-form .delai-wrapper input {
     width: 100%;
     background: var(--color-editor-background);
     color: var(--color-editor-text);
@@ -2346,6 +2358,13 @@ body.panneau-ouvert::before {
     border-radius: 4px;
     padding: var(--space-sm);
     box-sizing: border-box;
+}
+
+.solution-modal-form .delai-wrapper {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-top: var(--space-sm);
 }
 
 .indice-modal-form .image-field {
