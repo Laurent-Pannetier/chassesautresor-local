@@ -1005,7 +1005,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
               $solutions_list  = $solutions_query->posts;
               $pages_solutions = (int) $solutions_query->max_num_pages;
               ?>
-              <h3><?= esc_html__('Solutions', 'chassesautresor-com'); ?></h3>
+              <h3 id="chasse-section-solutions"><?= esc_html__('Solutions', 'chassesautresor-com'); ?></h3>
               <div class="liste-solutions"
                 data-page="1"
                 data-pages="<?= esc_attr($pages_solutions); ?>"
