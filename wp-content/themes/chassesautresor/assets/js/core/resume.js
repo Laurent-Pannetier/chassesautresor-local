@@ -162,21 +162,6 @@ window.mettreAJourResumeInfos = function () {
         const select = blocEdition?.querySelector('select');
         estRempli = !!select?.value;
       }
-
-      if (champ === 'enigme_solution_mode') {
-        const checked = blocEdition?.querySelector('input[name="acf[enigme_solution_mode]"]:checked');
-        estRempli = !!checked;
-      }
-
-      if (champ === 'enigme_solution_delai') {
-        const val = parseInt(document.querySelector('#solution-delai')?.value || '', 10);
-        estRempli = !isNaN(val) && val >= 0;
-      }
-
-      if (champ === 'enigme_solution_heure') {
-        const val = document.querySelector('#solution-heure')?.value?.trim();
-        estRempli = !!val;
-      }
       mettreAJourLigneResume(ligne, champ, estRempli, 'enigme');
     });
     // ✅ Marquage spécial si bonne réponse manquante
@@ -277,10 +262,7 @@ window.onChampSimpleMisAJour = function (champ, postId, valeur, cpt) {
       'enigme_acces_condition',
       'enigme_acces_date',
       'enigme_acces_pre_requis',
-      'enigme_style_affichage',
-      'enigme_solution_mode',
-      'enigme_solution_delai',
-      'enigme_solution_heure'
+      'enigme_style_affichage'
     ];
 
     if (champ === 'enigme_visuel_legende') {
