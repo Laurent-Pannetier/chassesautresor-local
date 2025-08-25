@@ -1692,6 +1692,56 @@ body.panneau-ouvert::before {
   background-color: var(--color-editor-success-hover);
 }
 
+.dashboard-card.champ-solutions .stat-value {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.dashboard-card.champ-solutions .stat-value .bouton-cta {
+  display: block;
+  width: 100%;
+}
+
+.dashboard-card.champ-solutions .cta-solution-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transition: opacity 0.3s ease, max-height 0.3s ease;
+}
+
+.dashboard-card.champ-solutions.show-options .cta-solution-options {
+  opacity: 1;
+  max-height: 10rem;
+  pointer-events: auto;
+}
+
+.dashboard-card.champ-solutions.show-options .cta-solution-pour {
+  display: none;
+}
+
+.dashboard-card.champ-solutions .cta-solution-chasse {
+  background-color: var(--color-editor-button);
+  color: var(--color-white);
+}
+
+.dashboard-card.champ-solutions .cta-solution-chasse:hover {
+  background-color: var(--color-editor-button-hover);
+}
+
+.dashboard-card.champ-solutions .cta-solution-enigme {
+  background-color: var(--color-editor-success);
+  color: var(--color-white);
+}
+
+.dashboard-card.champ-solutions .cta-solution-enigme:hover {
+  background-color: var(--color-editor-success-hover);
+}
+
 .dashboard-card .solution-reset {
   position: absolute;
   bottom: 8px;
