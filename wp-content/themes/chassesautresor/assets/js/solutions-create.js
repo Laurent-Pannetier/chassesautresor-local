@@ -4,7 +4,7 @@
     overlay.className = 'solution-modal-overlay';
     var isEdit = !!btn.dataset.solutionId;
     var titre = isEdit
-      ? solutionsCreate.texts.editTitre + ' ' + (btn.dataset.objetTitre || '')
+      ? solutionsCreate.texts.editTitre + ' ' + (btn.dataset.solutionTitre || '')
       : solutionsCreate.texts.addTitre;
     var objetTypeLabel = btn.dataset.objetType === 'chasse'
       ? solutionsCreate.texts.laChasse
