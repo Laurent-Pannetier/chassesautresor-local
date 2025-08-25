@@ -140,7 +140,9 @@ function solution_acf_save_post(int $post_id): void
     if (get_post_type($post_id) !== 'solution') {
         return;
     }
+
     solution_planifier_publication($post_id);
+    reordonner_solutions_pour_solution($post_id);
 }
 add_action('acf/save_post', 'solution_acf_save_post', 40);
 
@@ -192,8 +194,17 @@ function prochain_rang_solution(int $objet_id, string $objet_type): int
     if ($objet_type === 'chasse') {
         $meta_query = [
             [
+                'key'   => 'solution_cible_type',
+                'value' => 'chasse',
+            ],
+            [
                 'key'   => 'solution_chasse_linked',
                 'value' => $objet_id,
+            ],
+            [
+                'key'     => 'solution_cache_etat_systeme',
+                'value'   => ['programme', 'accessible', 'desactive'],
+                'compare' => 'IN',
             ],
         ];
     } else {
@@ -205,6 +216,11 @@ function prochain_rang_solution(int $objet_id, string $objet_type): int
             [
                 'key'   => 'solution_enigme_linked',
                 'value' => $objet_id,
+            ],
+            [
+                'key'     => 'solution_cache_etat_systeme',
+                'value'   => ['programme', 'accessible', 'desactive'],
+                'compare' => 'IN',
             ],
         ];
     }
@@ -222,6 +238,169 @@ function prochain_rang_solution(int $objet_id, string $objet_type): int
 
     return count($existing) + 1;
 }
+
+/**
+ * Renomme les solutions d'une chasse ou d'une énigme en séquence.
+ *
+ * @param int    $objet_id   ID de la chasse ou de l'énigme.
+ * @param string $objet_type Type de cible ('chasse' ou 'enigme').
+ * @return void
+ */
+function reordonner_solutions(int $objet_id, string $objet_type): void
+{
+    static $processing = false;
+    if (!in_array($objet_type, ['chasse', 'enigme'], true) || $processing) {
+        return;
+    }
+
+    $processing = true;
+
+    if ($objet_type === 'chasse') {
+        $meta_query = [
+            [
+                'key'   => 'solution_cible_type',
+                'value' => 'chasse',
+            ],
+            [
+                'key'   => 'solution_chasse_linked',
+                'value' => $objet_id,
+            ],
+            [
+                'key'     => 'solution_cache_etat_systeme',
+                'value'   => ['programme', 'accessible', 'desactive'],
+                'compare' => 'IN',
+            ],
+        ];
+    } else {
+        $meta_query = [
+            [
+                'key'   => 'solution_cible_type',
+                'value' => 'enigme',
+            ],
+            [
+                'key'   => 'solution_enigme_linked',
+                'value' => $objet_id,
+            ],
+            [
+                'key'     => 'solution_cache_etat_systeme',
+                'value'   => ['programme', 'accessible', 'desactive'],
+                'compare' => 'IN',
+            ],
+        ];
+    }
+
+    $solutions = get_posts([
+        'post_type'      => 'solution',
+        'post_status'    => ['publish', 'pending', 'draft', 'private', 'future'],
+        'meta_query'     => $meta_query,
+        'orderby'        => 'date',
+        'order'          => 'ASC',
+        'fields'         => 'ids',
+        'no_found_rows'  => true,
+        'posts_per_page' => -1,
+    ]);
+
+    $objet_titre = get_the_title($objet_id);
+    $i          = 1;
+    foreach ($solutions as $sid) {
+        $title = sprintf(__('Solution %s #%d', 'chassesautresor-com'), $objet_titre, $i);
+        wp_update_post([
+            'ID'         => $sid,
+            'post_title' => $title,
+        ]);
+        $i++;
+    }
+
+    $processing = false;
+}
+
+/**
+ * Renomme les solutions liées à la solution donnée.
+ *
+ * @param int $solution_id ID de la solution.
+ * @return void
+ */
+function reordonner_solutions_pour_solution(int $solution_id): void
+{
+    $type = get_field('solution_cible_type', $solution_id);
+    if ($type === 'chasse') {
+        $objet_id = (int) get_field('solution_chasse_linked', $solution_id);
+    } elseif ($type === 'enigme') {
+        $objet_id = (int) get_field('solution_enigme_linked', $solution_id);
+    } else {
+        return;
+    }
+
+    if ($objet_id) {
+        reordonner_solutions($objet_id, $type);
+    }
+}
+
+/**
+ * Réordonne les solutions après sauvegarde d'une solution.
+ *
+ * @param int $post_id ID de la solution.
+ * @return void
+ */
+function reordonner_solutions_apres_enregistrement(int $post_id): void
+{
+    if (wp_is_post_revision($post_id) || wp_is_post_autosave($post_id)) {
+        return;
+    }
+
+    reordonner_solutions_pour_solution($post_id);
+}
+
+add_action('save_post_solution', 'reordonner_solutions_apres_enregistrement', 20, 1);
+
+/**
+ * Enregistre la cible d'une solution avant suppression définitive.
+ *
+ * @param int $post_id ID du post.
+ * @return void
+ */
+function memoriser_cible_solution_avant_suppression(int $post_id): void
+{
+    global $solution_delete_context;
+
+    if (get_post_type($post_id) !== 'solution') {
+        return;
+    }
+
+    $type = get_field('solution_cible_type', $post_id);
+    if ($type === 'chasse') {
+        $id = (int) get_field('solution_chasse_linked', $post_id);
+    } elseif ($type === 'enigme') {
+        $id = (int) get_field('solution_enigme_linked', $post_id);
+    } else {
+        $id = 0;
+    }
+
+    if ($id) {
+        $solution_delete_context = ['id' => $id, 'type' => $type];
+    }
+}
+
+add_action('before_delete_post', 'memoriser_cible_solution_avant_suppression');
+
+/**
+ * Réordonne les solutions après suppression définitive.
+ *
+ * @param int $post_id ID du post.
+ * @return void
+ */
+function reordonner_solutions_apres_suppression(int $post_id): void
+{
+    global $solution_delete_context;
+
+    if ($solution_delete_context) {
+        reordonner_solutions($solution_delete_context['id'], $solution_delete_context['type']);
+        $solution_delete_context = null;
+    }
+}
+
+add_action('deleted_post', 'reordonner_solutions_apres_suppression');
+add_action('trashed_post', 'reordonner_solutions_pour_solution');
 
 /**
  * Crée une solution liée à une chasse ou une énigme.
@@ -258,7 +437,7 @@ function creer_solution_pour_objet(int $objet_id, string $objet_type, ?int $user
     }
 
     $user_id       = $user_id ?? get_current_user_id();
-    $solution_rank = prochain_rang_solution($chasse_id, 'chasse');
+    $solution_rank = prochain_rang_solution($objet_id, $objet_type);
 
     $solution_id = wp_insert_post([
         'post_type'   => 'solution',
@@ -271,7 +450,8 @@ function creer_solution_pour_objet(int $objet_id, string $objet_type, ?int $user
         return $solution_id;
     }
 
-    $nouveau_titre = sprintf(__('Solution #%d', 'chassesautresor-com'), $solution_rank);
+    $objet_titre   = get_the_title($objet_id);
+    $nouveau_titre = sprintf(__('Solution %s #%d', 'chassesautresor-com'), $objet_titre, $solution_rank);
     wp_update_post([
         'ID'         => $solution_id,
         'post_title' => $nouveau_titre,
@@ -286,6 +466,8 @@ function creer_solution_pour_objet(int $objet_id, string $objet_type, ?int $user
     update_field('solution_decalage_jours', 0, $solution_id);
     update_field('solution_heure_publication', '00:00', $solution_id);
     update_field('solution_cache_etat_systeme', 'desactive', $solution_id);
+
+    reordonner_solutions($objet_id, $objet_type);
 
     return $solution_id;
 }

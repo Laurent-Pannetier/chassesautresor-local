@@ -73,6 +73,9 @@ class ChasseSolutionsTest extends TestCase
         if (!function_exists('wp_update_post')) {
             function wp_update_post($args) {}
         }
+        if (!function_exists('get_posts')) {
+            function get_posts($args) { return []; }
+        }
         if (!function_exists('update_field')) {
             function update_field($key, $value, $post_id)
             {
@@ -112,6 +115,9 @@ class ChasseSolutionsTest extends TestCase
         }
         if (!function_exists('get_post_status')) {
             function get_post_status($id) { return 'pending'; }
+        }
+        if (!function_exists('get_the_title')) {
+            function get_the_title($id) { return 'Titre'; }
         }
         if (!function_exists('get_field')) {
             function get_field($key, $post_id)
@@ -178,6 +184,12 @@ class ChasseSolutionsTest extends TestCase
         }
         if (!function_exists('wp_send_json_success')) {
             function wp_send_json_success($data = null) { global $json_success_data; $json_success_data = $data; return $data; }
+        }
+        if (!function_exists('get_posts')) {
+            function get_posts($args) { return []; }
+        }
+        if (!function_exists('get_the_title')) {
+            function get_the_title($id) { return 'Titre'; }
         }
         if (!function_exists('recuperer_ids_enigmes_pour_chasse')) {
             function recuperer_ids_enigmes_pour_chasse($id) { return [5,6]; }
