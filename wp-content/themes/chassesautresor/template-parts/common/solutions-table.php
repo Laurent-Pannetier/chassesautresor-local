@@ -72,7 +72,15 @@ if (empty($solutions)) {
             $date_raw   = get_field('solution_date_disponibilite', $solution->ID) ?: '';
             $dt         = $date_raw ? convertir_en_datetime($date_raw) : null;
             $etat_class = 'etiquette-error';
-            $etat_label = __($etat, 'chassesautresor-com');
+            $state_labels = [
+                SOLUTION_STATE_INVALIDE           => __('Invalid solution', 'chassesautresor-com'),
+                SOLUTION_STATE_FIN_CHASSE         => __('Hunt finished', 'chassesautresor-com'),
+                SOLUTION_STATE_FIN_CHASSE_DIFFERE => __('Hunt end delayed', 'chassesautresor-com'),
+                SOLUTION_STATE_A_VENIR            => __('Coming soon', 'chassesautresor-com'),
+                SOLUTION_STATE_EN_COURS           => __('In progress', 'chassesautresor-com'),
+                SOLUTION_STATE_DESACTIVE          => __('Disabled', 'chassesautresor-com'),
+            ];
+            $etat_label = $state_labels[$etat] ?? $etat;
 
             switch ($etat) {
                 case SOLUTION_STATE_EN_COURS:
@@ -92,7 +100,7 @@ if (empty($solutions)) {
                     : date($format, $dt->getTimestamp());
                 $etat_label = sprintf(
                     /* translators: %s: scheduled date */
-                    __('à venir le %s', 'chassesautresor-com'),
+                    __('Coming on %s', 'chassesautresor-com'),
                     $date_label
                 );
             }
