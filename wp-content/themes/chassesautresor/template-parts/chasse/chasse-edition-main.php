@@ -868,6 +868,56 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
             </div>
 
             <?php
+            $par_page_solutions = 5;
+            $page_solutions     = 1;
+            $solutions_query    = new WP_Query([
+              'post_type'      => 'solution',
+              'post_status'    => ['publish', 'pending', 'draft'],
+              'orderby'        => 'date',
+              'order'          => 'DESC',
+              'posts_per_page' => $par_page_solutions,
+              'paged'          => $page_solutions,
+              'meta_query'     => [
+                [
+                  'key'   => 'solution_cible_type',
+                  'value' => 'chasse',
+                ],
+                [
+                  'key'   => 'solution_chasse_linked',
+                  'value' => $chasse_id,
+                ],
+              ],
+            ]);
+            $solutions_list  = $solutions_query->posts;
+            $pages_solutions = (int) $solutions_query->max_num_pages;
+            ?>
+            <h3><?= esc_html__('Solutions', 'chassesautresor-com'); ?></h3>
+            <div class="liste-solutions"
+              data-page="1"
+              data-pages="<?= esc_attr($pages_solutions); ?>"
+              data-objet-type="chasse"
+              data-objet-id="<?= esc_attr($chasse_id); ?>"
+              data-ajax-url="<?= esc_url(admin_url('admin-ajax.php')); ?>">
+              <?php
+              get_template_part('template-parts/common/solutions-table', null, [
+                'solutions'  => $solutions_list,
+                'page'       => 1,
+                'pages'      => $pages_solutions,
+                'objet_type' => 'chasse',
+                'objet_id'   => $chasse_id,
+              ]);
+              ?>
+            </div>
+            <p>
+              <button type="button" class="button ajouter-solution"
+                data-objet-type="chasse"
+                data-objet-id="<?= esc_attr($chasse_id); ?>"
+                data-objet-titre="<?= esc_attr(get_the_title($chasse_id)); ?>">
+                <?= esc_html__('Ajouter une solution', 'chassesautresor-com'); ?>
+              </button>
+            </p>
+
+            <?php
             $par_page_indices = 5;
             $page_indices     = 1;
             $enigme_ids       = recuperer_ids_enigmes_pour_chasse($chasse_id);

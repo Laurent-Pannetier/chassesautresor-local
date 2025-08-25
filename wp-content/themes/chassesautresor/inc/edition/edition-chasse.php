@@ -35,6 +35,8 @@ function enqueue_script_chasse_edit()
     'chasse-stats',
     'table-etiquette',
     'tentatives-toggle',
+    'solutions-pager',
+    'solutions-create',
     'indices-pager',
     'indices-create',
   ]);
