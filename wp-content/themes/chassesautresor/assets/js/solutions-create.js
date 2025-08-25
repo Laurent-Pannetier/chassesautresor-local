@@ -10,13 +10,22 @@
     var needEnigme = btn.dataset.chasseId && !btn.dataset.objetId;
     var existingFileId = btn.dataset.solutionFichierId || '';
     var existingFileUrl = btn.dataset.solutionFichierUrl || '';
-    var enigmeField = needEnigme
-      ? '<p><label>' +
+    var enigmeField;
+    if (needEnigme) {
+      enigmeField =
+        '<p><label>' +
         solutionsCreate.texts.enigmeLabel +
         '<br><select name="solution_enigme_linked"><option value="">' +
         solutionsCreate.texts.loading +
-        '</option></select></label></p>'
-      : '';
+        '</option></select></label></p>';
+    } else if (btn.dataset.objetType === 'enigme') {
+      enigmeField =
+        '<input type="hidden" name="solution_enigme_linked" value="' +
+        (btn.dataset.objetId || '') +
+        '" />';
+    } else {
+      enigmeField = '';
+    }
     var initialName = '';
     if (existingFileUrl) {
       initialName = '<a href="' +
@@ -84,8 +93,8 @@
             <option value="differee">${solutionsCreate.texts.differee}</option>
           </select></label></p>
           <p class="delai-wrapper" style="display:none;">
-            <input type="number" name="solution_delai" min="0" value="${delaiValue}" /> ${solutionsCreate.texts.days}
-            <input type="time" name="solution_heure" value="${heureValue}" />
+            <input type="number" name="solution_decalage_jours" min="0" value="${delaiValue}" /> ${solutionsCreate.texts.days}
+            <input type="time" name="solution_heure_publication" value="${heureValue}" />
           </p>
           <div class="solution-modal-footer"><span class="solution-state-message"></span><button type="submit" class="solution-modal-validate bouton-cta">${solutionsCreate.texts.valider}</button></div>
         </form>
@@ -101,8 +110,8 @@
     var stateMessage = overlay.querySelector('.solution-state-message');
     var selectDispo = overlay.querySelector('select[name="solution_disponibilite"]');
     var delaiWrapper = overlay.querySelector('.delai-wrapper');
-    var delaiInput = overlay.querySelector('input[name="solution_delai"]');
-    var heureInput = overlay.querySelector('input[name="solution_heure"]');
+    var delaiInput = overlay.querySelector('input[name="solution_decalage_jours"]');
+    var heureInput = overlay.querySelector('input[name="solution_heure_publication"]');
     var explicationInput = overlay.querySelector('textarea[name="solution_explication"]');
     var fichierInput = overlay.querySelector('input[name="solution_fichier"][type="file"]');
     var existingFileInput = overlay.querySelector('input[name="solution_fichier"][type="hidden"]');
