@@ -630,10 +630,10 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                                 <div class="cout-points-actions" style="<?= ((int) $cout > 0) ? '' : 'display:none;'; ?>">
                                     <input type="number"
                                         class="champ-input champ-cout champ-number"
-                                        min="0"
+                                        min="1"
                                         step="1"
                                         value="<?= esc_attr($cout); ?>"
-                                        placeholder="0" <?= $peut_editer_cout ? '' : 'disabled'; ?> />
+                                        placeholder="10" <?= $peut_editer_cout ? '' : 'disabled'; ?> />
                                 </div>
                             </div>
                             <div class="champ-feedback"></div>

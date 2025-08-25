@@ -59,7 +59,7 @@ const html = `
             </label>
             <span class="toggle-option">Points</span>
             <div class="cout-points-actions" style="display:none;">
-              <input type="number" value="0" class="champ-input champ-cout champ-number">
+              <input type="number" value="0" min="1" step="1" placeholder="10" class="champ-input champ-cout champ-number">
             </div>
           </div>
         </div>
@@ -227,6 +227,8 @@ describe('chasse-edit UI', () => {
     toggle.dispatchEvent(new Event('change', { bubbles: true }));
     expect(actions.style.display).toBe('');
     expect(input.disabled).toBe(false);
+    expect(input.value).toBe('10');
+    expect(input.min).toBe('1');
   });
 
   test('access toggle hides points input when unchecked', () => {
@@ -239,5 +241,6 @@ describe('chasse-edit UI', () => {
     toggle.dispatchEvent(new Event('change', { bubbles: true }));
     expect(actions.style.display).toBe('none');
     expect(input.disabled).toBe(true);
+    expect(input.value).toBe('0');
   });
 });

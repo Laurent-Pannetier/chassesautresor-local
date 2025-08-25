@@ -1039,14 +1039,12 @@ function initChampCoutPoints() {
   if (!input || !toggle || !actions) return;
 
   function updateVisibility() {
-    const postId = input.closest('li')?.dataset.postId;
-    if (!postId) return;
-
     if (toggle.checked) {
       actions.style.display = '';
       input.disabled = false;
+      input.min = '1';
       if (parseInt(input.value.trim(), 10) === 0 || input.value.trim() === '') {
-        input.value = '1';
+        input.value = '10';
       }
     } else {
       actions.style.display = 'none';
