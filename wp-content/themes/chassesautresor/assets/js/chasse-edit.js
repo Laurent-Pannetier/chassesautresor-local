@@ -73,14 +73,21 @@ function rafraichirCarteSolutions() {
       if (!res.success || !res.data) return;
       if (btnChasse) {
         const disableChasse = !!res.data.has_solution_chasse;
-        btnChasse.disabled = disableChasse;
         btnChasse.classList.toggle('disabled', disableChasse);
+        btnChasse.setAttribute('aria-disabled', disableChasse);
+        if (ChasseSolutions && ChasseSolutions.tooltipChasse) {
+          btnChasse.title = disableChasse ? ChasseSolutions.tooltipChasse : '';
+        }
       }
       if (btnEnigme) {
         const disableEnigme = !res.data.has_enigmes;
-        btnEnigme.disabled = disableEnigme;
         btnEnigme.classList.toggle('disabled', disableEnigme);
+        btnEnigme.setAttribute('aria-disabled', disableEnigme);
+        if (ChasseSolutions && ChasseSolutions.tooltipEnigme) {
+          btnEnigme.title = disableEnigme ? ChasseSolutions.tooltipEnigme : '';
+        }
       }
+      initDisabledSolutionButtons();
     })
     .catch(() => {});
 }
@@ -166,6 +173,27 @@ window.rafraichirCarteSolutions = rafraichirCarteSolutions;
       .querySelectorAll('.dashboard-card.champ-solutions')
       .forEach((c) => {
         initSolutionsOptions(c);
+      });
+    initDisabledSolutionButtons();
+  }
+
+  function initDisabledSolutionButtons() {
+    document
+      .querySelectorAll('.cta-solution-chasse, .cta-solution-enigme')
+      .forEach((btn) => {
+        if (btn.dataset.scrollBound) return;
+        btn.dataset.scrollBound = '1';
+        btn.addEventListener('click', (e) => {
+          if (!btn.classList.contains('disabled')) return;
+          e.preventDefault();
+          const targetId =
+            (ChasseSolutions && ChasseSolutions.scrollTarget) ||
+            '#chasse-section-solutions';
+          const anchor = document.querySelector(targetId);
+          if (anchor) {
+            anchor.scrollIntoView({ behavior: 'smooth' });
+          }
+        });
       });
   }
 

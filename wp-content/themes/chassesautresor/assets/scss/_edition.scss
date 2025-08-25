@@ -1749,6 +1749,12 @@ body.panneau-ouvert::before {
   background-color: var(--color-editor-success-hover);
 }
 
+.dashboard-card.champ-solutions .cta-solution-chasse.disabled,
+.dashboard-card.champ-solutions .cta-solution-enigme.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .dashboard-card .solution-reset {
   position: absolute;
   bottom: 8px;

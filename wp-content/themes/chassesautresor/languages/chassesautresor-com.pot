@@ -2310,3 +2310,11 @@ msgid "Aucun fichier choisi"
 
 msgstr ""
 
+#: template-parts/chasse/partials/chasse-partial-solutions.php:47
+msgid "Il existe déjà une solution pour cette chasse"
+msgstr ""
+
+#: template-parts/chasse/partials/chasse-partial-solutions.php:62
+msgid "Toutes les énigmes de la chasse ont déjà une solution"
+msgstr ""
+
