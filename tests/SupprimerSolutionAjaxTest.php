@@ -61,6 +61,35 @@ if (!function_exists('wp_send_json_success')) {
     }
 }
 
+if (!function_exists('get_posts')) {
+    function get_posts($args)
+    {
+        return [11, 12];
+    }
+}
+
+if (!function_exists('wp_update_post')) {
+    function wp_update_post($args)
+    {
+        global $updated_posts;
+        $updated_posts[] = $args;
+    }
+}
+
+if (!function_exists('get_the_title')) {
+    function get_the_title($id)
+    {
+        return 'Titre';
+    }
+}
+
+if (!function_exists('__')) {
+    function __($text, $domain = null)
+    {
+        return $text;
+    }
+}
+
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-solution.php';
 
 final class SupprimerSolutionAjaxTest extends TestCase
@@ -69,7 +98,7 @@ final class SupprimerSolutionAjaxTest extends TestCase
     {
         parent::setUp();
         $_POST = [];
-        global $fields, $permission_args, $deleted_id, $deleted_force, $json_success;
+        global $fields, $permission_args, $deleted_id, $deleted_force, $json_success, $updated_posts;
         $fields = [
             'solution_cible_type'   => 'enigme',
             'solution_enigme_linked' => 55,
@@ -78,6 +107,7 @@ final class SupprimerSolutionAjaxTest extends TestCase
         $deleted_id      = null;
         $deleted_force   = null;
         $json_success    = null;
+        $updated_posts   = [];
     }
 
     /**
@@ -86,7 +116,7 @@ final class SupprimerSolutionAjaxTest extends TestCase
      */
     public function test_deletes_solution_after_permission_check(): void
     {
-        global $permission_args, $deleted_id, $deleted_force, $json_success;
+        global $permission_args, $deleted_id, $deleted_force, $json_success, $updated_posts;
         $_POST['solution_id'] = 123;
 
         supprimer_solution_ajax();
@@ -95,6 +125,8 @@ final class SupprimerSolutionAjaxTest extends TestCase
         $this->assertSame(123, $deleted_id);
         $this->assertTrue($deleted_force);
         $this->assertNull($json_success);
+        $this->assertSame('Solution Titre #1', $updated_posts[0]['post_title']);
+        $this->assertSame('Solution Titre #2', $updated_posts[1]['post_title']);
     }
 }
 
