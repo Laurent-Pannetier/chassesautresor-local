@@ -865,7 +865,6 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
               </div>
 
               <?php if ($afficher_qr_code) : ?>
-                <h3><?= esc_html__('Vos liens', 'chassesautresor-com'); ?></h3>
                 <div class="dashboard-card carte-orgy champ-qr-code">
                   <div class="qr-code-block">
                     <div class="qr-code-url txt-small">
