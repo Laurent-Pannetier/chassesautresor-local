@@ -390,7 +390,7 @@ function ajax_chasse_lister_enigmes(): void
     if (!empty($_POST['sans_solution'])) {
         $posts = array_filter(
             $posts,
-            static fn($p) => !solution_recuperer_par_objet($p->ID, 'enigme')
+            static fn($p) => !solution_existe_pour_objet($p->ID, 'enigme')
         );
     }
 

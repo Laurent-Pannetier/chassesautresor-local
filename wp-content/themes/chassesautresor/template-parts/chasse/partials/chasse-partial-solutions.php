@@ -15,14 +15,13 @@ $objet_type = $args['objet_type'] ?? 'chasse';
 $default_enigme = $args['default_enigme'] ?? null;
 
 $peut_ajouter = solution_action_autorisee('create', $objet_type, $objet_id);
-$solution_chasse = $objet_type === 'chasse' ? solution_recuperer_par_objet($objet_id, 'chasse') : null;
+$has_solution_chasse = $objet_type === 'chasse' && solution_existe_pour_objet($objet_id, 'chasse');
 $enigmes_disponibles = $objet_type === 'chasse' ? recuperer_enigmes_pour_chasse($objet_id) : [];
 $enigmes_disponibles = array_filter(
     $enigmes_disponibles,
-    static fn($e) => !solution_recuperer_par_objet($e->ID, 'enigme')
+    static fn($e) => !solution_existe_pour_objet($e->ID, 'enigme')
 );
 $has_enigmes = !empty($enigmes_disponibles);
-$has_solution_chasse = $solution_chasse !== null;
 ?>
 <div class='dashboard-card carte-orgy champ-<?= esc_attr($objet_type); ?> champ-solutions<?= $peut_ajouter ? '' : ' disabled'; ?>'
 >
