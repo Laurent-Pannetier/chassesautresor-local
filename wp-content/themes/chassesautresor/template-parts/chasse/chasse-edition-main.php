@@ -1041,11 +1041,22 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                 ]);
                 ?>
               </div>
+              <div class="solutions-protection-banner">
+                <i class="fa-solid fa-shield-halved protection-icon" aria-hidden="true"></i>
+                <div class="solutions-protection-text">
+                  <h4><?= esc_html__('Vos solutions sont protégées', 'chassesautresor-com'); ?></h4>
+                  <ul>
+                    <li><?= esc_html__('Stockées dans un espace privé, hors de portée des joueurs.', 'chassesautresor-com'); ?></li>
+                    <li><?= esc_html__('Aucun lien ne peut être trouvé ni ouvert.', 'chassesautresor-com'); ?></li>
+                    <li><?= esc_html__('Débloquées uniquement au moment choisi.', 'chassesautresor-com'); ?></li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-
+      
     <div class="edition-panel-footer">
       <?php if (current_user_can('administrator')) : ?>
         <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="admin-validation-actions form-traitement-validation-chasse">
