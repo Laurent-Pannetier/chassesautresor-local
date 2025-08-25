@@ -1017,11 +1017,9 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
             <div class="section-content">
               <div class="dashboard-card carte-orgy champ-qr-code">
                 <div class="qr-code-block">
-                  <div class="qr-code-url">
+                  <div class="qr-code-url txt-small">
                     <?= esc_html__('Adresse de votre chasse&nbsp;:', 'chassesautresor-com'); ?>
-                    <a href="<?= esc_url($url); ?>" target="_blank" rel="noopener">
-                      <?= esc_html($url); ?>
-                    </a>
+                    <?= esc_html($url); ?>
                   </div>
                   <div class="qr-code-image">
                     <img src="<?= esc_url($url_qr_code); ?>" alt="<?= esc_attr__('QR code de votre chasse', 'chassesautresor-com'); ?>">
