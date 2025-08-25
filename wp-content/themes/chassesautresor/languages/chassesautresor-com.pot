@@ -2285,11 +2285,28 @@ msgstr ""
 msgid "PDF"
 msgstr ""
 
-#: inc/edition/edition-core.php
+#: inc/edition/edition-core.php:180
+msgid "Texte de la solution"
+msgstr ""
+
+#: inc/edition/edition-core.php:181
+msgid "Fichier"
+msgstr ""
+
+#: inc/edition/edition-core.php:182
 msgid "Disponibilité"
 msgstr ""
 
-#: inc/edition/edition-core.php
-msgid "Date et heure requises"
+#: inc/edition/edition-core.php:187 template-parts/chasse/partials/chasse-partial-solutions.php:24
+msgid "Ajouter une solution"
+msgstr ""
+
+#: inc/edition/edition-core.php:195
+msgid "Ajoutez un fichier ou un texte"
+msgstr ""
+
+#: inc/edition/edition-core.php:200
+msgid "Aucun fichier choisi"
+
 msgstr ""
 
