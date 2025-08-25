@@ -3276,14 +3276,19 @@ body.panneau-ouvert::before {
   height: 2rem;
 }
 
-.dashboard-card.champ-qr-code, .champ-qr-code.carte-orgy {
+.dashboard-card.champ-qr-code, .champ-qr-code.carte-orgy,
+.dashboard-card.champ-protection-solutions,
+.champ-protection-solutions.carte-orgy {
   width: 75%;
-  margin: 0 auto;
+  margin: var(--space-4xl) auto;
 }
 
 @media not all and (min-width: 1024px) {
-  .dashboard-card.champ-qr-code, .champ-qr-code.carte-orgy {
+  .dashboard-card.champ-qr-code, .champ-qr-code.carte-orgy,
+  .dashboard-card.champ-protection-solutions,
+  .champ-protection-solutions.carte-orgy {
     width: 100%;
+    margin: var(--space-xl) auto;
   }
 }
 .dashboard-card.solution-option, .solution-option.carte-orgy {
