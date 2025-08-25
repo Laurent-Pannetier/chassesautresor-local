@@ -3895,6 +3895,25 @@ body.panneau-ouvert::before {
   font-size: 0.875rem;
 }
 
+.solution-modal-header {
+  border-bottom: 1px solid var(--color-editor-border);
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-sm);
+}
+
+.solution-modal-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-editor-heading);
+}
+
+.solution-modal-header p {
+  margin: var(--space-xs) 0 0;
+  color: var(--color-editor-text-muted);
+  font-size: 0.875rem;
+}
+
 .indice-modal-close,
 .solution-modal-close {
   position: absolute;
@@ -5632,6 +5651,77 @@ tbody tr:nth-child(even) {
 }
 
 .indices-table .badge-action + .badge-action {
+  margin-left: 0.25rem;
+}
+
+.solutions-table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.solutions-table th,
+.solutions-table td {
+  text-align: left;
+  vertical-align: middle;
+}
+
+.solutions-table td > div + div {
+  margin-top: 0.25rem;
+}
+
+.solutions-table th:first-child,
+.solutions-table td:first-child {
+  width: 15%;
+}
+
+.solutions-table th:nth-child(2),
+.solutions-table td:nth-child(2) {
+  width: 25%;
+}
+
+.solutions-table th:nth-child(3),
+.solutions-table td:nth-child(3) {
+  width: 15%;
+}
+
+.solutions-table th:nth-child(4),
+.solutions-table td:nth-child(4) {
+  width: 35%;
+}
+
+.solutions-table th:nth-child(5),
+.solutions-table td:nth-child(5) {
+  width: 10%;
+}
+
+.solutions-table th.solution-actions,
+.solutions-table td.solution-actions {
+  text-align: center;
+}
+
+.solutions-table .badge-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  font-size: 0.875rem;
+  border: 0;
+  cursor: pointer;
+  color: var(--color-text-primary);
+  text-decoration: none;
+}
+
+.solutions-table .badge-action.edit {
+  background: var(--color-secondary);
+}
+
+.solutions-table .badge-action.delete {
+  background: var(--color-error);
+}
+
+.solutions-table .badge-action + .badge-action {
   margin-left: 0.25rem;
 }
 
