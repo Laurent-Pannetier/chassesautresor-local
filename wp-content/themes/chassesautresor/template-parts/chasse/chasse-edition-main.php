@@ -964,23 +964,36 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
               ]);
               ?>
             </div>
-            <?php if ($afficher_qr_code) : ?>
-              <div class="qr-code-block">
-                <div class="qr-code-image">
-                  <img src="<?= esc_url($url_qr_code); ?>" alt="<?= esc_attr__('QR code de votre chasse', 'chassesautresor-com'); ?>">
-                </div>
-                <div class="qr-code-content">
-                  <h3><?= esc_html__('QR code de votre chasse', 'chassesautresor-com'); ?></h3>
-                  <h4><?= esc_html__('Partagez votre chasse en un scan', 'chassesautresor-com'); ?></h4>
-                  <p><?= esc_html__('Facilitez l\'accès à votre chasse avec un simple scan. Un QR code évite de saisir une URL et se partage facilement.', 'chassesautresor-com'); ?></p>
-                  <a class="bouton-cta qr-code-download" href="<?= esc_url($url_qr_code); ?>" download="<?= esc_attr('qr-chasse-' . $chasse_id . '.png'); ?>">
-                    <?= esc_html__('Télécharger', 'chassesautresor-com'); ?>
-                  </a>
-                </div>
-              </div>
-            <?php endif; ?>
           </div>
         </div>
+        <?php if ($afficher_qr_code) : ?>
+          <div class="edition-panel-section">
+            <div class="section-content">
+              <div class="dashboard-card carte-orgy champ-qr-code">
+                <h3><?= esc_html__('Vos liens', 'chassesautresor-com'); ?></h3>
+                <div class="qr-code-block">
+                  <div class="qr-code-url">
+                    <?= esc_html__('Adresse de votre chasse&nbsp;:', 'chassesautresor-com'); ?>
+                    <a href="<?= esc_url($url); ?>" target="_blank" rel="noopener">
+                      <?= esc_html($url); ?>
+                    </a>
+                  </div>
+                  <div class="qr-code-image">
+                    <img src="<?= esc_url($url_qr_code); ?>" alt="<?= esc_attr__('QR code de votre chasse', 'chassesautresor-com'); ?>">
+                  </div>
+                  <div class="qr-code-content">
+                    <h3><?= esc_html__('QR code de votre chasse', 'chassesautresor-com'); ?></h3>
+                    <h4><?= esc_html__('Partagez votre chasse en un scan', 'chassesautresor-com'); ?></h4>
+                    <p><?= esc_html__('Facilitez l\'accès à votre chasse avec un simple scan. Un QR code évite de saisir une URL et se partage facilement.', 'chassesautresor-com'); ?></p>
+                    <a class="bouton-cta qr-code-download" href="<?= esc_url($url_qr_code); ?>" download="<?= esc_attr('qr-chasse-' . $chasse_id . '.png'); ?>">
+                      <?= esc_html__('Télécharger', 'chassesautresor-com'); ?>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        <?php endif; ?>
         <div id="solution" class="edition-panel-section">
           <div class="section-content">
             <h3><?= esc_html__('Solution', 'chassesautresor-com'); ?></h3>
