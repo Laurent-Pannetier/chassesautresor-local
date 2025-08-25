@@ -2269,3 +2269,11 @@ msgstr ""
 msgid "Contenu de la solution à venir."
 msgstr ""
 
+#: template-parts/chasse/chasse-edition-main.php:973
+msgid "Vos liens"
+msgstr ""
+
+#: template-parts/chasse/chasse-edition-main.php:976
+msgid "Adresse de votre chasse&nbsp;:"
+msgstr ""
+

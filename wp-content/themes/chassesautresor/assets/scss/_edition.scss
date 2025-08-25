@@ -158,6 +158,15 @@
   margin-top: var(--space-lg);
 }
 
+.qr-code-block .qr-code-url {
+  flex: 1 0 100%;
+  text-align: right;
+}
+
+.qr-code-block .qr-code-url a {
+  word-break: break-all;
+}
+
 .qr-code-block .qr-code-image {
   flex: 0 0 200px;
 }

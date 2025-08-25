@@ -2429,3 +2429,11 @@ msgstr "Facilitez l'accès à votre chasse avec un simple scan. Un QR code évit
 msgid "Contenu de la solution à venir."
 msgstr "Contenu de la solution à venir."
 
+#: template-parts/chasse/chasse-edition-main.php:973
+msgid "Vos liens"
+msgstr "Vos liens"
+
+#: template-parts/chasse/chasse-edition-main.php:976
+msgid "Adresse de votre chasse&nbsp;:"
+msgstr "Adresse de votre chasse&nbsp;:"
+
