@@ -1163,8 +1163,22 @@ li.ligne-email .champ-affichage {
 
 /* ========== 📱 RESPONSIVE PANNEAU EDITION ========== */
 @media not all and (--bp-tablet) {
+  .edition-tab-content {
+    padding: 0;
+  }
+
   .edition-panel-body {
     flex-direction: column;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .edition-panel-section {
+    border: 0;
+  }
+
+  .mode-edition {
+    --editor-label-width: 200px;
   }
 }
 
