@@ -141,6 +141,7 @@ class ChasseSolutionsTest extends TestCase
         $_POST = [
             'objet_id'   => 3,
             'objet_type' => 'chasse',
+            'solution_explication' => 'Test',
         ];
 
         ajax_creer_solution_modal();
@@ -223,5 +224,98 @@ class ChasseSolutionsTest extends TestCase
         $this->assertSame([5,6], $meta[1][1]['value']);
         $this->assertSame('IN', $meta[1][1]['compare']);
         $this->assertIsArray($json_success_data);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_creer_solution_modal_requires_content(): void
+    {
+        if (!function_exists('__')) {
+            function __($text, $domain = null) { return $text; }
+        }
+        if (!function_exists('is_user_logged_in')) {
+            function is_user_logged_in() { return true; }
+        }
+        if (!function_exists('get_post_type')) {
+            function get_post_type($id) { return $id === 3 ? 'chasse' : ''; }
+        }
+        if (!function_exists('solution_action_autorisee')) {
+            function solution_action_autorisee($action, $type, $id) { return true; }
+        }
+        if (!function_exists('sanitize_key')) {
+            function sanitize_key($key) { return $key; }
+        }
+        if (!function_exists('wp_kses_post')) {
+            function wp_kses_post($data) { return $data; }
+        }
+        if (!function_exists('wp_send_json_error')) {
+            function wp_send_json_error($data = null) { throw new Exception((string) $data); }
+        }
+        if (!function_exists('add_action')) {
+            function add_action($hook, $callable, $priority = 10, $accepted_args = 1) {}
+        }
+
+        require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-solution.php';
+
+        $_POST = [
+            'objet_id'   => 3,
+            'objet_type' => 'chasse',
+        ];
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('contenu_manquant');
+        ajax_creer_solution_modal();
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_modifier_solution_modal_requires_content(): void
+    {
+        if (!function_exists('__')) {
+            function __($text, $domain = null) { return $text; }
+        }
+        if (!function_exists('is_user_logged_in')) {
+            function is_user_logged_in() { return true; }
+        }
+        if (!function_exists('get_post_type')) {
+            function get_post_type($id) { return $id === 10 ? 'solution' : ($id === 3 ? 'chasse' : ''); }
+        }
+        if (!function_exists('solution_action_autorisee')) {
+            function solution_action_autorisee($action, $type, $id) { return true; }
+        }
+        if (!function_exists('sanitize_key')) {
+            function sanitize_key($key) { return $key; }
+        }
+        if (!function_exists('wp_kses_post')) {
+            function wp_kses_post($data) { return $data; }
+        }
+        if (!function_exists('sanitize_text_field')) {
+            function sanitize_text_field($text) { return $text; }
+        }
+        if (!function_exists('get_field')) {
+            function get_field($key, $id) { return ''; }
+        }
+        if (!function_exists('wp_send_json_error')) {
+            function wp_send_json_error($data = null) { throw new Exception((string) $data); }
+        }
+        if (!function_exists('add_action')) {
+            function add_action($hook, $callable, $priority = 10, $accepted_args = 1) {}
+        }
+
+        require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-solution.php';
+
+        $_POST = [
+            'solution_id' => 10,
+            'objet_id'    => 3,
+            'objet_type'  => 'chasse',
+        ];
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('contenu_manquant');
+        ajax_modifier_solution_modal();
     }
 }

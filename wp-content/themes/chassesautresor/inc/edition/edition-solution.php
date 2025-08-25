@@ -676,16 +676,20 @@ function ajax_creer_solution_modal(): void
         wp_send_json_error('acces_refuse');
     }
 
+    $fichier = isset($_POST['solution_fichier']) ? (int) $_POST['solution_fichier'] : 0;
+    $explic  = wp_kses_post($_POST['solution_explication'] ?? '');
+    if (!$fichier && $explic === '') {
+        wp_send_json_error('contenu_manquant');
+    }
+
     $solution_id = creer_solution_pour_objet($objet_id, $objet_type);
     if (is_wp_error($solution_id)) {
         wp_send_json_error($solution_id->get_error_message());
     }
 
-    $fichier = isset($_POST['solution_fichier']) ? (int) $_POST['solution_fichier'] : 0;
-    $explic  = wp_kses_post($_POST['solution_explication'] ?? '');
-    $dispo   = sanitize_key($_POST['solution_disponibilite'] ?? 'fin_chasse');
-    $delai   = isset($_POST['solution_decalage_jours']) ? (int) $_POST['solution_decalage_jours'] : 0;
-    $heure   = sanitize_text_field($_POST['solution_heure_publication'] ?? '');
+    $dispo = sanitize_key($_POST['solution_disponibilite'] ?? 'fin_chasse');
+    $delai = isset($_POST['solution_decalage_jours']) ? (int) $_POST['solution_decalage_jours'] : 0;
+    $heure = sanitize_text_field($_POST['solution_heure_publication'] ?? '');
 
     if ($fichier) {
         update_field('solution_fichier', $fichier, $solution_id);
@@ -730,11 +734,24 @@ function ajax_modifier_solution_modal(): void
         wp_send_json_error('acces_refuse');
     }
 
+    if ($objet_type === 'enigme') {
+        $linked = (int) get_field('solution_enigme_linked', $solution_id);
+        if (!$linked || $linked !== $objet_id) {
+            wp_send_json_error('post_invalide');
+        }
+    }
+
     $fichier = isset($_POST['solution_fichier']) ? (int) $_POST['solution_fichier'] : 0;
     $explic  = wp_kses_post($_POST['solution_explication'] ?? '');
-    $dispo   = sanitize_key($_POST['solution_disponibilite'] ?? 'fin_chasse');
-    $delai   = isset($_POST['solution_decalage_jours']) ? (int) $_POST['solution_decalage_jours'] : 0;
-    $heure   = sanitize_text_field($_POST['solution_heure_publication'] ?? '');
+    $existing_file   = (int) get_field('solution_fichier', $solution_id);
+    $existing_explic = (string) get_field('solution_explication', $solution_id);
+    if (!$fichier && $explic === '' && !$existing_file && $existing_explic === '') {
+        wp_send_json_error('contenu_manquant');
+    }
+
+    $dispo = sanitize_key($_POST['solution_disponibilite'] ?? 'fin_chasse');
+    $delai = isset($_POST['solution_decalage_jours']) ? (int) $_POST['solution_decalage_jours'] : 0;
+    $heure = sanitize_text_field($_POST['solution_heure_publication'] ?? '');
 
     if ($fichier) {
         update_field('solution_fichier', $fichier, $solution_id);
