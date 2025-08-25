@@ -535,16 +535,20 @@ function ajax_chasse_solution_status(): void
     }
 
     $has_solution_chasse = solution_existe_pour_objet($chasse_id, 'chasse');
-    $enigmes = recuperer_enigmes_pour_chasse($chasse_id);
-    $enigmes = array_filter(
-        $enigmes,
+
+    $toutes_enigmes = recuperer_enigmes_pour_chasse($chasse_id);
+    $enigmes        = array_filter(
+        $toutes_enigmes,
         static fn($e) => !solution_existe_pour_objet($e->ID, 'enigme')
     );
-    $has_enigmes = !empty($enigmes);
+    $has_enigmes         = !empty($enigmes);
+    $has_enigme_solution = count($toutes_enigmes) > count($enigmes);
+    $has_solutions       = $has_solution_chasse || $has_enigme_solution;
 
     wp_send_json_success([
         'has_solution_chasse' => $has_solution_chasse ? 1 : 0,
         'has_enigmes'        => $has_enigmes ? 1 : 0,
+        'has_solutions'      => $has_solutions ? 1 : 0,
     ]);
 }
 add_action('wp_ajax_chasse_solution_status', 'ajax_chasse_solution_status');
