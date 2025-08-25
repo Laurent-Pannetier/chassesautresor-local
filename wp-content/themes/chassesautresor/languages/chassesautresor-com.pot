@@ -1101,17 +1101,20 @@ msgstr ""
 msgid "Début"
 msgstr ""
 
-#: template-parts/chasse/chasse-edition-main.php:390
+#: template-parts/chasse/chasse-edition-main.php:554
 msgid "Date de fin"
 msgstr ""
 
-#: template-parts/chasse/chasse-edition-main.php:404
-msgid "Durée illimitée"
+#: template-parts/chasse/chasse-edition-main.php:560
+msgid "Illimitée"
 msgstr ""
 
-#: template-parts/chasse/chasse-edition-main.php:417
-#: template-parts/indice/indice-edition-main.php:198
-msgid "Coût"
+#: template-parts/chasse/chasse-edition-main.php:569
+msgid "Limitée"
+msgstr ""
+
+#: template-parts/chasse/chasse-edition-main.php:601
+msgid "Accès"
 msgstr ""
 
 #: template-parts/chasse/chasse-edition-main.php:423
@@ -1126,7 +1129,7 @@ msgstr ""
 msgid "Vous êtes libre de définir le coût d’accès à votre chasse : gratuit ou payant. Cet accès est indispensable pour consulter les énigmes, qui restent invisibles tant qu’il n’a pas été débloqué."
 msgstr ""
 
-#: template-parts/chasse/chasse-edition-main.php:445
+#: template-parts/chasse/chasse-edition-main.php:621
 #: template-parts/enigme/enigme-edition-main.php:394
 #: template-parts/indice/indice-edition-main.php:202
 msgid "Gratuit"
@@ -1862,6 +1865,7 @@ msgstr ""
 msgid "Panneau d'édition organisateur"
 msgstr ""
 
+#: template-parts/chasse/chasse-edition-main.php:629
 #: template-parts/organisateur/organisateur-edition-main.php:78
 #: template-parts/organisateur/organisateur-edition-main.php:264
 #: template-parts/organisateur/organisateur-edition-main.php:270

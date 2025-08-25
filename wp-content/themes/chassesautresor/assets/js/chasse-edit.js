@@ -6,7 +6,7 @@ let inputDateDebut;
 let inputDateFin;
 let erreurDebut;
 let erreurFin;
-let checkboxIllimitee;
+let toggleDateFin;
 
 function rafraichirCarteIndices() {
   const card = document.querySelector('.dashboard-card.champ-indices');
@@ -217,7 +217,7 @@ window.rafraichirCarteSolutions = rafraichirCarteSolutions;
   inputDateFin = document.getElementById('chasse-date-fin');
   erreurDebut = document.getElementById('erreur-date-debut');
   erreurFin = document.getElementById('erreur-date-fin');
-  checkboxIllimitee = document.getElementById('duree-illimitee');
+  toggleDateFin = document.getElementById('date-fin-limitee');
 
 
   // ==============================
@@ -338,57 +338,6 @@ window.rafraichirCarteSolutions = rafraichirCarteSolutions;
     window.mettreAJourEtatIntroChasse();
   }
 
-  // ==============================
-  // 📅 Gestion Date de fin + Durée illimitée
-  // ==============================
-  if (inputDateFin) {
-    if (checkboxIllimitee) {
-      const initialDisabled = inputDateFin.disabled;
-      inputDateFin.disabled = initialDisabled || checkboxIllimitee.checked;
-
-      checkboxIllimitee.addEventListener('change', function () {
-        inputDateFin.disabled = initialDisabled || this.checked;
-
-        // Si la case est décochée et les dates incohérentes, corriger la date de fin
-        if (!this.checked) {
-          const debut = new Date(inputDateDebut.value);
-          const fin = new Date(inputDateFin.value);
-
-          if (!isNaN(debut) && !isNaN(fin) && debut >= fin) {
-            const nouvelleDateFin = new Date(debut);
-            nouvelleDateFin.setFullYear(nouvelleDateFin.getFullYear() + 2);
-
-            const yyyy = nouvelleDateFin.getFullYear();
-            const mm = String(nouvelleDateFin.getMonth() + 1).padStart(2, '0');
-            const dd = String(nouvelleDateFin.getDate()).padStart(2, '0');
-
-            const nouvelleValeur = `${yyyy}-${mm}-${dd}`;
-            inputDateFin.value = nouvelleValeur;
-          }
-        }
-
-        const li = inputDateFin.closest('li');
-        const status = li?.querySelector('.champ-status');
-        if (status) {
-          status.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>';
-        }
-
-        enregistrerDatesChasse().then((ok) => {
-          if (status) {
-            status.innerHTML = ok
-              ? '<i class="fa-solid fa-check" aria-hidden="true"></i>'
-              : '<i class="fa-solid fa-xmark" aria-hidden="true"></i>';
-            setTimeout(() => { status.innerHTML = ''; }, 1500);
-          }
-          mettreAJourAffichageDateFin();
-        });
-      });
-    }
-      // La logique d'enregistrement de la date de fin est gérée
-      // globalement par `date-fields.js` via `initChampDate()`.
-      // On se limite ici à mettre à jour l'affichage lorsqu'on
-      // modifie la case « illimitée ».
-  }
   if (inputDateDebut) {
     // L'enregistrement et la validation sont gérés par `date-fields.js`.
     // Ce fichier ne fait que fournir les messages d'erreur via
@@ -774,8 +723,8 @@ function initLiensChasse(bloc) {
 // ==============================
 function validerDatesAvantEnvoi(champModifie) {
   console.log('[validerDatesAvantEnvoi] champModifie=', champModifie);
-  // ✅ Si illimité, on n'applique aucun contrôle
-  if (checkboxIllimitee?.checked) return true;
+  // ✅ Si illimitée, on n'applique aucun contrôle
+  if (!toggleDateFin?.checked) return true;
 
   if (erreurDebut) erreurDebut.style.display = 'none';
   if (erreurFin) erreurFin.style.display = 'none';
@@ -1035,6 +984,84 @@ function initChampDateDebut() {
 }
 
 // ================================
+// 📅 Gestion du champ Date de fin (Illimitée / Limitée)
+// ================================
+function initChampDateFin() {
+  const input = document.getElementById('chasse-date-fin');
+  const toggle = document.getElementById('date-fin-limitee');
+  const actions = input?.closest('.date-fin-actions');
+
+  if (!input || !toggle || !actions) return;
+
+  function updateVisibility() {
+    if (toggle.checked) {
+      actions.style.display = '';
+      input.disabled = false;
+      if (typeof window.initChampDate === 'function') {
+        window.initChampDate(input);
+      }
+    } else {
+      actions.style.display = 'none';
+      input.disabled = true;
+    }
+  }
+
+  toggle.addEventListener('change', () => {
+    updateVisibility();
+    const li = input.closest('li');
+    const status = li?.querySelector('.champ-status');
+    if (status) {
+      status.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>';
+    }
+
+    enregistrerDatesChasse().then((ok) => {
+      if (status) {
+        status.innerHTML = ok
+          ? '<i class="fa-solid fa-check" aria-hidden="true"></i>'
+          : '<i class="fa-solid fa-xmark" aria-hidden="true"></i>';
+        setTimeout(() => { status.innerHTML = ''; }, 1500);
+      }
+      mettreAJourAffichageDateFin();
+    });
+  });
+
+  updateVisibility();
+}
+
+// ================================
+// 💰 Gestion du champ Accès (Gratuit / Points)
+// ================================
+function initChampCoutPoints() {
+  const input = document.querySelector('.champ-cout-points .champ-cout');
+  const toggle = document.getElementById('cout-payant');
+  const actions = input?.closest('.cout-points-actions');
+
+  if (!input || !toggle || !actions) return;
+
+  function updateVisibility() {
+    const postId = input.closest('li')?.dataset.postId;
+    if (!postId) return;
+
+    if (toggle.checked) {
+      actions.style.display = '';
+      input.disabled = false;
+      if (parseInt(input.value.trim(), 10) === 0 || input.value.trim() === '') {
+        input.value = '1';
+      }
+    } else {
+      actions.style.display = 'none';
+      input.disabled = true;
+      input.value = '0';
+    }
+
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+
+  toggle.addEventListener('change', updateVisibility);
+  updateVisibility();
+}
+
+// ================================
 // 🔚 Gestion dynamique du mode de fin
 // ================================
 function initModeFinChasse() {
@@ -1094,7 +1121,9 @@ function initModeFinChasse() {
 
 // À appeler :
 initChampDateDebut();
+initChampDateFin();
 initChampNbGagnants();
+initChampCoutPoints();
 initModeFinChasse();
 
 // ==============================
@@ -1265,7 +1294,7 @@ function enregistrerDatesChasse() {
     date_debut: inputDateDebut.value.trim(),
     // On conserve toujours la date en base, même si l'affichage est "Illimitée"
     date_fin: inputDateFin.value.trim(),
-    illimitee: checkboxIllimitee?.checked ? 1 : 0
+    illimitee: toggleDateFin?.checked ? 0 : 1
   });
   console.log('[enregistrerDatesChasse] params=', params.toString());
 
