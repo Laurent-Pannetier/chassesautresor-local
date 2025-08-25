@@ -960,12 +960,26 @@ function mettre_a_jour_cache_indice($post_id, ?int $chasse_id = null): void
     update_field('indice_cache_etat_systeme', $state, $post_id);
 
     $status = get_post_status($post_id);
+    $post   = get_post($post_id);
+
     if ($complete && $state === 'accessible') {
         if ($status !== 'publish') {
-            wp_update_post(['ID' => $post_id, 'post_status' => 'publish']);
+            wp_update_post([
+                'ID'            => $post_id,
+                'post_status'   => 'publish',
+                'post_date'     => $post->post_date,
+                'post_date_gmt' => $post->post_date_gmt,
+                'edit_date'     => true,
+            ]);
         }
     } elseif ($status === 'publish') {
-        wp_update_post(['ID' => $post_id, 'post_status' => 'pending']);
+        wp_update_post([
+            'ID'            => $post_id,
+            'post_status'   => 'pending',
+            'post_date'     => $post->post_date,
+            'post_date_gmt' => $post->post_date_gmt,
+            'edit_date'     => true,
+        ]);
     }
 
     reordonner_indices_pour_indice((int) $post_id);

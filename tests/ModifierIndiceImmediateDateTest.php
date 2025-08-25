@@ -36,6 +36,14 @@ namespace {
             return $updated_fields[$field] ?? ($existing_fields[$field] ?? null);
         }
     }
+    if (!function_exists('get_post')) {
+        function get_post($post_id) {
+            return (object) [
+                'post_date'     => '2024-01-01 00:00:00',
+                'post_date_gmt' => '2024-01-01 00:00:00',
+            ];
+        }
+    }
     if (!function_exists('current_time')) {
         function current_time($type) { return $type === 'timestamp' ? 1704067200 : '2024-01-01 00:00:00'; }
     }
