@@ -315,6 +315,9 @@
     }
     var btn = target && target.closest ? target.closest('.cta-creer-indice, .badge-action.edit') : null;
     if (!btn) return;
+    if (btn.classList.contains('badge-action') && !btn.closest('.liste-indices')) {
+      return;
+    }
     e.preventDefault();
     openModal(btn);
   }
