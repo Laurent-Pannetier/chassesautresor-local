@@ -870,7 +870,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                     ]);
                     ?>
                   </div>
-                  <p><button type="button" class="button ajouter-solution" data-objet-type="enigme" data-objet-id="<?= esc_attr($enigme_id); ?>" data-objet-titre="<?= esc_attr(get_the_title($enigme_id)); ?>"><?= esc_html__('Ajouter une solution', 'chassesautresor-com'); ?></button></p>
                 </div>
 
                 <div class="resume-bloc resume-indices">
