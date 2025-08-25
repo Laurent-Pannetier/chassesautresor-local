@@ -445,6 +445,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                             'data-cpt'     => 'chasse',
                             'data-post-id' => $chasse_id,
                         ],
+                        'no_icon'   => true,
                         'label'    => function () {
                             ?>
                             <label for="chasse-nb-gagnants"><?= esc_html__('Nb gagnants', 'chassesautresor-com'); ?></label>
@@ -503,6 +504,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                             'data-cpt'     => 'chasse',
                             'data-post-id' => $chasse_id,
                         ],
+                        'no_icon'   => true,
                         'label'    => function () {
                             ?>
                             <label for="chasse-date-debut"><?= esc_html__('Début', 'chassesautresor-com'); ?></label>
@@ -549,6 +551,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                             'data-cpt'     => 'chasse',
                             'data-post-id' => $chasse_id,
                         ],
+                        'no_icon'   => true,
                         'label'    => function () {
                             ?>
                             <label for="chasse-date-fin"><?= esc_html__('Date de fin', 'chassesautresor-com'); ?></label>
@@ -595,6 +598,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                             'data-cpt'     => 'chasse',
                             'data-post-id' => $chasse_id,
                         ],
+                        'no_icon'   => true,
                         'label'    => function () {
                             ?>
                             <label>

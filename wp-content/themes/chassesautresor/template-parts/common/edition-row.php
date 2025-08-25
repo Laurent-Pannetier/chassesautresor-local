@@ -26,27 +26,29 @@ foreach ($attributes as $key => $value) {
 }
 ?>
 <li class="edition-row <?php echo esc_attr($class); ?>" <?php echo implode(' ', $attr_strings); ?><?php echo $no_icon ? ' data-no-icon="1"' : ''; ?>>
-  <div class="edition-row-label">
-    <span class="edition-row-icon">
-      <?php if (!$no_icon && !empty($icon)) : ?>
-        <i class="<?php echo esc_attr($icon); ?>" aria-hidden="true"></i>
-      <?php endif; ?>
-    </span>
-    <?php
-    if (is_callable($label)) {
-        $label();
-    } else {
-        echo $label; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-    }
-    ?>
-  </div>
-  <div class="edition-row-content">
-    <?php
-    if (is_callable($content)) {
-        $content();
-    } else {
-        echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-    }
-    ?>
-  </div>
+    <div class="edition-row-label">
+        <?php if (!$no_icon) : ?>
+            <span class="edition-row-icon">
+                <?php if (!empty($icon)) : ?>
+                    <i class="<?php echo esc_attr($icon); ?>" aria-hidden="true"></i>
+                <?php endif; ?>
+            </span>
+        <?php endif; ?>
+        <?php
+        if (is_callable($label)) {
+            $label();
+        } else {
+            echo $label; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+        }
+        ?>
+    </div>
+    <div class="edition-row-content">
+        <?php
+        if (is_callable($content)) {
+            $content();
+        } else {
+            echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+        }
+        ?>
+    </div>
 </li>
