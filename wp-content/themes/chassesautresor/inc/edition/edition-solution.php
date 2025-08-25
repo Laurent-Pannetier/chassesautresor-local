@@ -666,8 +666,10 @@ function ajax_creer_solution_modal(): void
     }
 
     if ($objet_type === 'enigme') {
-        $linked = isset($_POST['solution_enigme_linked']) ? (int) $_POST['solution_enigme_linked'] : 0;
-        if (!$linked || $linked !== $objet_id) {
+        $linked = isset($_POST['solution_enigme_linked'])
+            ? (int) $_POST['solution_enigme_linked']
+            : $objet_id;
+        if ($linked !== $objet_id) {
             wp_send_json_error('post_invalide');
         }
     }

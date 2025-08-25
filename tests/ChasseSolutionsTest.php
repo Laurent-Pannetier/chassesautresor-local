@@ -76,13 +76,13 @@ class ChasseSolutionsTest extends TestCase
         if (!function_exists('get_posts')) {
             function get_posts($args) { return []; }
         }
+        if (!function_exists('get_posts')) {
+            function get_posts($args) { return []; }
+        }
         if (!function_exists('update_field')) {
             function update_field($key, $value, $post_id)
             {
                 global $captured_fields;
-                if ($key === 'solution_cache_etat_systeme' && array_key_exists($key, $captured_fields)) {
-                    return;
-                }
                 $captured_fields[$key] = $value;
             }
         }
@@ -187,6 +187,9 @@ class ChasseSolutionsTest extends TestCase
         if (!function_exists('wp_update_post')) {
             function wp_update_post($args) {}
         }
+        if (!function_exists('get_posts')) {
+            function get_posts($args) { return []; }
+        }
         if (!function_exists('update_field')) {
             function update_field($key, $value, $post_id)
             {
@@ -227,12 +230,110 @@ class ChasseSolutionsTest extends TestCase
         if (!function_exists('get_field')) {
             function get_field($key, $post_id) { return null; }
         }
+        if (!function_exists('get_the_title')) {
+            function get_the_title($id) { return 'Titre'; }
+        }
 
         require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-solution.php';
 
         $_POST = [
             'objet_id'   => 3,
             'objet_type' => 'chasse',
+        ];
+
+        try {
+            ajax_creer_solution_modal();
+            $this->fail('Expected exception not thrown');
+        } catch (Exception $e) {
+            $this->assertSame('Un texte ou un PDF est requis.', $e->getMessage());
+        }
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_creer_solution_modal_enigme_requires_content(): void
+    {
+        if (!defined('TITRE_DEFAUT_SOLUTION')) {
+            define('TITRE_DEFAUT_SOLUTION', 'solution');
+        }
+        if (!function_exists('__')) {
+            function __($text, $domain = null) { return $text; }
+        }
+        if (!function_exists('is_user_logged_in')) {
+            function is_user_logged_in() { return true; }
+        }
+        if (!function_exists('get_post_type')) {
+            function get_post_type($id) { return $id === 5 ? 'enigme' : ($id === 123 ? 'solution' : ''); }
+        }
+        if (!function_exists('recuperer_id_chasse_associee')) {
+            function recuperer_id_chasse_associee($id) { return 3; }
+        }
+        if (!function_exists('solution_action_autorisee')) {
+            function solution_action_autorisee($action, $type, $id) { return true; }
+        }
+        if (!function_exists('get_current_user_id')) {
+            function get_current_user_id() { return 1; }
+        }
+        if (!function_exists('wp_insert_post')) {
+            function wp_insert_post($args) { return 123; }
+        }
+        if (!function_exists('wp_update_post')) {
+            function wp_update_post($args) {}
+        }
+        if (!function_exists('get_posts')) {
+            function get_posts($args) { return []; }
+        }
+        if (!function_exists('update_field')) {
+            function update_field($key, $value, $post_id)
+            {
+                global $captured_fields;
+                $captured_fields[$key] = $value;
+            }
+        }
+        if (!function_exists('wp_send_json_error')) {
+            function wp_send_json_error($data = null) { throw new Exception((string) $data); }
+        }
+        if (!function_exists('wp_send_json_success')) {
+            function wp_send_json_success($data = null) { return $data; }
+        }
+        if (!function_exists('sanitize_key')) {
+            function sanitize_key($key) { return $key; }
+        }
+        if (!function_exists('wp_kses_post')) {
+            function wp_kses_post($data) { return $data; }
+        }
+        if (!function_exists('sanitize_text_field')) {
+            function sanitize_text_field($text) { return $text; }
+        }
+        if (!function_exists('add_action')) {
+            function add_action($hook, $callable, $priority = 10, $accepted_args = 1) {}
+        }
+        if (!function_exists('current_time')) {
+            function current_time($type) { return 1; }
+        }
+        if (!function_exists('wp_clear_scheduled_hook')) {
+            function wp_clear_scheduled_hook($hook, $args = []) {}
+        }
+        if (!function_exists('delete_post_meta')) {
+            function delete_post_meta($id, $key) {}
+        }
+        if (!function_exists('wp_delete_post')) {
+            function wp_delete_post($id, $force = false) {}
+        }
+        if (!function_exists('get_field')) {
+            function get_field($key, $post_id) { return null; }
+        }
+        if (!function_exists('get_the_title')) {
+            function get_the_title($id) { return 'Titre'; }
+        }
+
+        require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-solution.php';
+
+        $_POST = [
+            'objet_id'   => 5,
+            'objet_type' => 'enigme',
         ];
 
         try {
