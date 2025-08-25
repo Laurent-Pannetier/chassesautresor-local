@@ -52,6 +52,37 @@ function rafraichirCarteSolutions() {
       window.reloadSolutionsTable(wrapper);
     }
   });
+
+  const card = document.querySelector('.dashboard-card.champ-solutions');
+  if (!card) return;
+  const btnChasse = card.querySelector('.cta-solution-chasse');
+  const btnEnigme = card.querySelector('.cta-solution-enigme');
+  const chasseId =
+    (btnChasse && btnChasse.dataset.objetId) ||
+    (btnEnigme && btnEnigme.dataset.chasseId);
+  const ajaxUrl =
+    (window.solutionsCreate && solutionsCreate.ajaxUrl) || window.ajaxurl;
+  if (!ajaxUrl || !chasseId) return;
+
+  const fd = new FormData();
+  fd.append('action', 'chasse_solution_status');
+  fd.append('chasse_id', chasseId);
+  fetch(ajaxUrl, { method: 'POST', credentials: 'same-origin', body: fd })
+    .then((r) => r.json())
+    .then((res) => {
+      if (!res.success || !res.data) return;
+      if (btnChasse) {
+        const disableChasse = !!res.data.has_solution_chasse;
+        btnChasse.disabled = disableChasse;
+        btnChasse.classList.toggle('disabled', disableChasse);
+      }
+      if (btnEnigme) {
+        const disableEnigme = !res.data.has_enigmes;
+        btnEnigme.disabled = disableEnigme;
+        btnEnigme.classList.toggle('disabled', disableEnigme);
+      }
+    })
+    .catch(() => {});
 }
 
 window.rafraichirCarteSolutions = rafraichirCarteSolutions;

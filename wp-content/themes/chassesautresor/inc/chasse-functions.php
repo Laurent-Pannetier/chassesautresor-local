@@ -973,6 +973,40 @@ function solution_recuperer_par_objet(int $id, string $type)
 }
 
 /**
+ * Checks whether a solution exists for the given object.
+ *
+ * Unlike {@see solution_recuperer_par_objet()}, this helper ignores the
+ * cache state and returns any matching solution regardless of its
+ * publication status.
+ *
+ * @param int    $id   Object ID.
+ * @param string $type Object type ('enigme' or 'chasse').
+ * @return bool True if a solution exists, false otherwise.
+ */
+function solution_existe_pour_objet(int $id, string $type): bool
+{
+    if (!$id || !in_array($type, ['enigme', 'chasse'], true)) {
+        return false;
+    }
+
+    $meta_key = $type === 'enigme' ? 'solution_enigme_linked' : 'solution_chasse_linked';
+
+    $solutions = get_posts([
+        'post_type'      => 'solution',
+        'post_status'    => ['publish', 'pending', 'draft', 'private', 'future'],
+        'fields'         => 'ids',
+        'no_found_rows'  => true,
+        'posts_per_page' => 1,
+        'meta_query'     => [
+            ['key' => 'solution_cible_type', 'value' => $type],
+            ['key' => $meta_key, 'value' => $id],
+        ],
+    ]);
+
+    return !empty($solutions);
+}
+
+/**
  * Vérifie si la solution d'une énigme peut être affichée.
  *
  * La solution n'est visible que si la chasse associée est terminée

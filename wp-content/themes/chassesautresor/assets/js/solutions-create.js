@@ -174,6 +174,7 @@
       var fd = new FormData();
       fd.append('action', 'chasse_lister_enigmes');
       fd.append('chasse_id', btn.dataset.chasseId || '');
+      fd.append('sans_solution', '1');
       fetch(solutionsCreate.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: fd })
         .then(function (r) { return r.json(); })
         .then(function (res) {
@@ -309,7 +310,7 @@
 
   document.addEventListener('click', function(e){
     var btn = e.target.closest('.ajouter-solution, .badge-action.edit');
-    if(!btn) return;
+    if(!btn || btn.classList.contains('disabled') || btn.disabled) return;
     e.preventDefault();
     openModal(btn);
   });

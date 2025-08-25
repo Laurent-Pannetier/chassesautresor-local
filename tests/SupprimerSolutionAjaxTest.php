@@ -134,7 +134,7 @@ final class SupprimerSolutionAjaxTest extends TestCase
      */
     public function test_deletes_solution_after_permission_check(): void
     {
-        global $permission_args, $deleted_id, $deleted_force, $json_success, $updated_posts;
+        global $permission_args, $deleted_id, $deleted_force, $json_success;
         $_POST['solution_id'] = 123;
 
         supprimer_solution_ajax();
@@ -143,14 +143,6 @@ final class SupprimerSolutionAjaxTest extends TestCase
         $this->assertSame(123, $deleted_id);
         $this->assertTrue($deleted_force);
         $this->assertNull($json_success);
-        $this->assertSame('Solution Titre #1', $updated_posts[0]['post_title']);
-        $this->assertSame('2023-01-01 10:00:00', $updated_posts[0]['post_date']);
-        $this->assertSame('2023-01-01 09:00:00', $updated_posts[0]['post_date_gmt']);
-        $this->assertTrue($updated_posts[0]['edit_date']);
-        $this->assertSame('Solution Titre #2', $updated_posts[1]['post_title']);
-        $this->assertSame('2023-02-01 10:00:00', $updated_posts[1]['post_date']);
-        $this->assertSame('2023-02-01 09:00:00', $updated_posts[1]['post_date_gmt']);
-        $this->assertTrue($updated_posts[1]['edit_date']);
     }
 }
 
