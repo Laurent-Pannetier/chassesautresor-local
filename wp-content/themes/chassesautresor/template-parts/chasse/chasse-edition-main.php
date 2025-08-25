@@ -984,14 +984,10 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
               <?php
               $par_page_solutions = 5;
               $page_solutions     = 1;
-              $solutions_query    = new WP_Query([
-                'post_type'      => 'solution',
-                'post_status'    => ['publish', 'pending', 'draft'],
-                'orderby'        => 'date',
-                'order'          => 'DESC',
-                'posts_per_page' => $par_page_solutions,
-                'paged'          => $page_solutions,
-                'meta_query'     => [
+              $meta_solutions     = [
+                'relation' => 'OR',
+                [
+                  'relation' => 'AND',
                   [
                     'key'   => 'solution_cible_type',
                     'value' => 'chasse',
@@ -1001,6 +997,29 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                     'value' => $chasse_id,
                   ],
                 ],
+              ];
+              if (!empty($enigme_ids)) {
+                $meta_solutions[] = [
+                  'relation' => 'AND',
+                  [
+                    'key'   => 'solution_cible_type',
+                    'value' => 'enigme',
+                  ],
+                  [
+                    'key'     => 'solution_enigme_linked',
+                    'value'   => $enigme_ids,
+                    'compare' => 'IN',
+                  ],
+                ];
+              }
+              $solutions_query = new WP_Query([
+                'post_type'      => 'solution',
+                'post_status'    => ['publish', 'pending', 'draft'],
+                'orderby'        => 'date',
+                'order'          => 'DESC',
+                'posts_per_page' => $par_page_solutions,
+                'paged'          => $page_solutions,
+                'meta_query'     => $meta_solutions,
               ]);
               $solutions_list  = $solutions_query->posts;
               $pages_solutions = (int) $solutions_query->max_num_pages;
