@@ -676,6 +676,12 @@ function ajax_creer_solution_modal(): void
         wp_send_json_error('acces_refuse');
     }
 
+    $has_file   = !empty($_FILES['solution_fichier']['tmp_name']) || !empty($_POST['solution_fichier']);
+    $has_explic = isset($_POST['solution_explication']) && trim((string) $_POST['solution_explication']) !== '';
+    if (!$has_file && !$has_explic) {
+        wp_send_json_error('contenu_manquant');
+    }
+
     $solution_id = creer_solution_pour_objet($objet_id, $objet_type);
     if (is_wp_error($solution_id)) {
         wp_send_json_error($solution_id->get_error_message());
@@ -742,6 +748,12 @@ function ajax_modifier_solution_modal(): void
     }
     if (!solution_action_autorisee('edit', $objet_type, $objet_id)) {
         wp_send_json_error('acces_refuse');
+    }
+
+    $has_file   = !empty($_FILES['solution_fichier']['tmp_name']) || !empty($_POST['solution_fichier']);
+    $has_explic = isset($_POST['solution_explication']) && trim((string) $_POST['solution_explication']) !== '';
+    if (!$has_file && !$has_explic) {
+        wp_send_json_error('contenu_manquant');
     }
 
     $fichier = 0;
