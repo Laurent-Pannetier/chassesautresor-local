@@ -8,6 +8,8 @@
       ? solutionsCreate.texts.laChasse
       : solutionsCreate.texts.lenigme;
     var needEnigme = btn.dataset.chasseId && !btn.dataset.objetId;
+    var existingFileId = btn.dataset.solutionFichierId || '';
+    var existingFileUrl = btn.dataset.solutionFichierUrl || '';
     var enigmeField = needEnigme
       ? '<p><label>' +
         solutionsCreate.texts.enigmeLabel +
@@ -15,6 +17,23 @@
         solutionsCreate.texts.loading +
         '</option></select></label></p>'
       : '';
+    var fileField =
+      '<p><label>' +
+      solutionsCreate.texts.fichier +
+      '<br><input type="file" name="solution_fichier" accept="application/pdf" /></label>';
+    if (isEdit && existingFileUrl) {
+      var fileName = existingFileUrl.split('/').pop();
+      fileField +=
+        '<input type="hidden" name="solution_fichier" value="' +
+        existingFileId +
+        '" />' +
+        '<br><a href="' +
+        existingFileUrl +
+        '" target="_blank" rel="noopener noreferrer">' +
+        solutionsCreate.texts.currentFile.replace('%s', fileName) +
+        '</a>';
+    }
+    fileField += '</p>';
     overlay.innerHTML = `
       <div class="solution-modal">
         <div class="solution-modal-header">
@@ -29,7 +48,7 @@
           <input type="hidden" name="objet_id" value="${btn.dataset.objetId || ''}" />
           ${isEdit ? '<input type="hidden" name="solution_id" value="' + btn.dataset.solutionId + '" />' : ''}
           <p><label>${solutionsCreate.texts.contenu}<br><textarea name="solution_explication">${btn.dataset.solutionExplication || ''}</textarea></label></p>
-          <p><label>${solutionsCreate.texts.fichier}<br><input type="file" name="solution_fichier" accept="application/pdf" /></label></p>
+          ${fileField}
           <p><label>${solutionsCreate.texts.disponibilite}<br><select name="solution_disponibilite">
             <option value="fin_chasse">${solutionsCreate.texts.finChasse}</option>
             <option value="differee">${solutionsCreate.texts.differee}</option>
@@ -55,7 +74,8 @@
     var delaiInput = overlay.querySelector('input[name="solution_delai"]');
     var heureInput = overlay.querySelector('input[name="solution_heure"]');
     var explicationInput = overlay.querySelector('textarea[name="solution_explication"]');
-    var fichierInput = overlay.querySelector('input[name="solution_fichier"]');
+    var fichierInput = overlay.querySelector('input[name="solution_fichier"][type="file"]');
+    var existingFileInput = overlay.querySelector('input[name="solution_fichier"][type="hidden"]');
     if (btn.dataset.solutionDisponibilite === 'differee') {
       selectDispo.value = 'differee';
       delaiWrapper.style.display = '';
@@ -68,7 +88,13 @@
     heureInput.addEventListener('input', refreshState);
     explicationInput.addEventListener('input', refreshState);
     if (fichierInput) {
-      fichierInput.addEventListener('change', refreshState);
+      fichierInput.addEventListener('change', function () {
+        if (existingFileInput) {
+          existingFileInput.value = '';
+        }
+        existingFileId = '';
+        refreshState();
+      });
     }
 
     if (needEnigme) {
@@ -123,7 +149,9 @@
     function refreshState() {
       var riddleOk = !needEnigme || (btn.dataset.objetId && overlay.querySelector('input[name="objet_id"]').value);
       var explication = explicationInput.value.trim();
-      var hasFile = fichierInput && fichierInput.files && fichierInput.files.length > 0;
+      var hasFile =
+        (fichierInput && fichierInput.files && fichierInput.files.length > 0) ||
+        existingFileId;
       var state = 'desactive';
       var message = '';
       if (!riddleOk) {
