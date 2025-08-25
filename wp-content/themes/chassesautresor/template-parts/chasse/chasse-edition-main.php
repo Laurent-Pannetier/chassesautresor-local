@@ -984,9 +984,22 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                     <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
                   </div>
                   <div class="qr-code-content">
-                    <h3><?= esc_html__('Protection des PDF de solution', 'chassesautresor-com'); ?></h3>
-                    <h4><?= esc_html__('Sécurisez le partage de vos réponses', 'chassesautresor-com'); ?></h4>
-                    <p><?= esc_html__("Les fichiers PDF de solution ne sont accessibles qu'aux joueurs autorisés. Cette protection limite les partages involontaires et préserve l'équité entre les participants.", 'chassesautresor-com'); ?></p>
+                    <h3><?= esc_html__('Sécurité des PDF de solution', 'chassesautresor-com'); ?></h3>
+                    <h4><?= esc_html__('Vos PDF sont conservés dans un coffre-fort numérique', 'chassesautresor-com'); ?></h4>
+                    <p>
+                      <?= esc_html__(
+                        'Les fichiers PDF de solution sont conservés dans un dossier protégé. ',
+                        'chassesautresor-com'
+                      ); ?>
+                      <?= esc_html__(
+                        "Ils ne seront partagés qu'à la date que vous aurez choisie : ",
+                        'chassesautresor-com'
+                      ); ?>
+                      <?= esc_html__(
+                        'immédiatement après la fin de la chasse ou après un délai paramétrable.',
+                        'chassesautresor-com'
+                      ); ?>
+                    </p>
                   </div>
                 </div>
               </div>

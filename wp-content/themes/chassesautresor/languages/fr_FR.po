@@ -2505,3 +2505,23 @@ msgstr "Il existe déjà une solution pour cette chasse"
 msgid "Toutes les énigmes de la chasse ont déjà une solution"
 msgstr "Toutes les énigmes de la chasse ont déjà une solution"
 
+#: template-parts/chasse/chasse-edition-main.php:987
+msgid "Sécurité des PDF de solution"
+msgstr "Sécurité des PDF de solution"
+
+#: template-parts/chasse/chasse-edition-main.php:988
+msgid "Vos PDF sont conservés dans un coffre-fort numérique"
+msgstr "Vos PDF sont conservés dans un coffre-fort numérique"
+
+#: template-parts/chasse/chasse-edition-main.php:991
+msgid "Les fichiers PDF de solution sont conservés dans un dossier protégé. "
+msgstr "Les fichiers PDF de solution sont conservés dans un dossier protégé. "
+
+#: template-parts/chasse/chasse-edition-main.php:995
+msgid "Ils ne seront partagés qu'à la date que vous aurez choisie : "
+msgstr "Ils ne seront partagés qu'à la date que vous aurez choisie : "
+
+#: template-parts/chasse/chasse-edition-main.php:999
+msgid "immédiatement après la fin de la chasse ou après un délai paramétrable."
+msgstr "immédiatement après la fin de la chasse ou après un délai paramétrable."
+

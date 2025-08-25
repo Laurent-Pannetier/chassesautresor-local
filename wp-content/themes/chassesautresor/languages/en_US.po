@@ -2530,3 +2530,23 @@ msgstr "A solution already exists for this hunt"
 msgid "Toutes les énigmes de la chasse ont déjà une solution"
 msgstr "All riddles in this hunt already have a solution"
 
+#: template-parts/chasse/chasse-edition-main.php:987
+msgid "Sécurité des PDF de solution"
+msgstr "Solution PDF security"
+
+#: template-parts/chasse/chasse-edition-main.php:988
+msgid "Vos PDF sont conservés dans un coffre-fort numérique"
+msgstr "Your PDFs are stored in a digital safe"
+
+#: template-parts/chasse/chasse-edition-main.php:991
+msgid "Les fichiers PDF de solution sont conservés dans un dossier protégé. "
+msgstr "Solution PDFs are stored in a protected folder. "
+
+#: template-parts/chasse/chasse-edition-main.php:995
+msgid "Ils ne seront partagés qu'à la date que vous aurez choisie : "
+msgstr "They will only be released on the date you choose: "
+
+#: template-parts/chasse/chasse-edition-main.php:999
+msgid "immédiatement après la fin de la chasse ou après un délai paramétrable."
+msgstr "right after the hunt ends or after a configurable delay."
+
