@@ -175,6 +175,12 @@
   display: block;
 }
 
+.qr-code-block .qr-code-image i {
+  display: block;
+  font-size: 200px;
+  line-height: 1;
+}
+
 .qr-code-block .qr-code-content {
   flex: 1;
   display: flex;
@@ -1626,14 +1632,17 @@ body.panneau-ouvert::before {
   height: 2rem;
 }
 
-.dashboard-card.champ-qr-code {
+.dashboard-card.champ-qr-code,
+.dashboard-card.champ-protection-solutions {
   width: 75%;
-  margin: 0 auto;
+  margin: var(--space-4xl) auto;
 }
 
 @media not all and (--bp-desktop) {
-  .dashboard-card.champ-qr-code {
+  .dashboard-card.champ-qr-code,
+  .dashboard-card.champ-protection-solutions {
     width: 100%;
+    margin: var(--space-xl) auto;
   }
 }
 
