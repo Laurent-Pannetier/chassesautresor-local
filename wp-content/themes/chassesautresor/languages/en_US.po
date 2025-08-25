@@ -2502,3 +2502,27 @@ msgstr "Disabled"
 msgid "Coming on %s"
 msgstr "Coming on %s"
 
+#: inc/edition/edition-core.php:180
+msgid "Texte de la solution"
+msgstr "Solution text"
+
+#: inc/edition/edition-core.php:181
+msgid "Fichier"
+msgstr "File"
+
+#: inc/edition/edition-core.php:182
+msgid "Disponibilité"
+msgstr "Availability"
+
+#: inc/edition/edition-core.php:187 template-parts/chasse/partials/chasse-partial-solutions.php:24
+msgid "Ajouter une solution"
+msgstr "Add a solution"
+
+#: inc/edition/edition-core.php:195
+msgid "Ajoutez un fichier ou un texte"
+msgstr "Add a file or text"
+
+#: inc/edition/edition-core.php:200
+msgid "Aucun fichier choisi"
+msgstr "No file selected"
+
