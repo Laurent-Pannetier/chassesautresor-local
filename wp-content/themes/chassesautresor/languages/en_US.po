@@ -2395,6 +2395,10 @@ msgstr "Date and time required"
 msgid "Date invalide"
 msgstr "Invalid date"
 
+#: inc/edition/edition-core.php
+msgid "Disponibilité"
+msgstr "Availability"
+
 #: template-parts/common/indices-table.php:69
 msgid "accessible"
 msgstr "accessible"

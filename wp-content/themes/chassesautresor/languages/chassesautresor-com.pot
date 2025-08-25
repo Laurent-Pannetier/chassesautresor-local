@@ -2307,5 +2307,6 @@ msgstr ""
 
 #: inc/edition/edition-core.php:200
 msgid "Aucun fichier choisi"
+
 msgstr ""
 
