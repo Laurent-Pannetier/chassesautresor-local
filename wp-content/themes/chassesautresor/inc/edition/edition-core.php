@@ -188,6 +188,10 @@ function enqueue_core_edit_scripts(array $additional = [])
             'editTitre'  => __('Modifier la solution', 'chassesautresor-com'),
             'success'    => __('Solution enregistrée.', 'chassesautresor-com'),
             'ajaxError'  => __('Erreur réseau', 'chassesautresor-com'),
+            'enigmeLabel'       => __('Énigme', 'chassesautresor-com'),
+            'enigmePlaceholder' => __('Sélectionner une énigme', 'chassesautresor-com'),
+            'needEnigme'        => __('Sélectionnez une énigme', 'chassesautresor-com'),
+            'loading'           => __('Chargement…', 'chassesautresor-com'),
           ],
         ]
       );
