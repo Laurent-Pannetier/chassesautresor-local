@@ -405,10 +405,14 @@ function reordonner_solutions(int $objet_id, string $objet_type): void
     $objet_titre = get_the_title($objet_id);
     $i          = 1;
     foreach ($solutions as $sid) {
+        $post  = get_post($sid);
         $title = sprintf(__('Solution %s #%d', 'chassesautresor-com'), $objet_titre, $i);
         wp_update_post([
-            'ID'         => $sid,
-            'post_title' => $title,
+            'ID'            => $sid,
+            'post_title'    => $title,
+            'post_date'     => $post->post_date,
+            'post_date_gmt' => $post->post_date_gmt,
+            'edit_date'     => true,
         ]);
         $i++;
     }

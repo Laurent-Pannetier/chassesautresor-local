@@ -16,6 +16,14 @@ if (!function_exists('get_posts')) {
 if (!function_exists('wp_update_post')) {
     function wp_update_post($args) { global $updated_posts; $updated_posts[] = $args; }
 }
+if (!function_exists('get_post')) {
+    function get_post($id) {
+        return (object) [
+            'post_date'     => '2023-01-01 10:00:00',
+            'post_date_gmt' => '2023-01-01 09:00:00',
+        ];
+    }
+}
 if (!function_exists('get_the_title')) {
     function get_the_title($id) { return 'Titre'; }
 }
