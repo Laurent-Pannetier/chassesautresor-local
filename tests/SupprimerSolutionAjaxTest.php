@@ -38,8 +38,9 @@ if (!function_exists('solution_action_autorisee')) {
 if (!function_exists('wp_delete_post')) {
     function wp_delete_post($id, $force = false)
     {
-        global $deleted_id;
-        $deleted_id = $id;
+        global $deleted_id, $deleted_force;
+        $deleted_id    = $id;
+        $deleted_force = $force;
         return true;
     }
 }
@@ -68,13 +69,14 @@ final class SupprimerSolutionAjaxTest extends TestCase
     {
         parent::setUp();
         $_POST = [];
-        global $fields, $permission_args, $deleted_id, $json_success;
+        global $fields, $permission_args, $deleted_id, $deleted_force, $json_success;
         $fields = [
             'solution_cible_type'   => 'enigme',
             'solution_enigme_linked' => 55,
         ];
         $permission_args = null;
         $deleted_id      = null;
+        $deleted_force   = null;
         $json_success    = null;
     }
 
@@ -84,13 +86,14 @@ final class SupprimerSolutionAjaxTest extends TestCase
      */
     public function test_deletes_solution_after_permission_check(): void
     {
-        global $permission_args, $deleted_id, $json_success;
+        global $permission_args, $deleted_id, $deleted_force, $json_success;
         $_POST['solution_id'] = 123;
 
         supprimer_solution_ajax();
 
         $this->assertSame(['delete', 'enigme', 55], $permission_args);
         $this->assertSame(123, $deleted_id);
+        $this->assertTrue($deleted_force);
         $this->assertNull($json_success);
     }
 }

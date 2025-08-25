@@ -818,8 +818,7 @@ function supprimer_solution_ajax(): void
         wp_send_json_error('acces_refuse');
     }
 
-    $deleted = wp_delete_post($solution_id, true);
-    if (!$deleted) {
+    if (wp_delete_post($solution_id, true) === false) {
         wp_send_json_error('echec_suppression');
     }
 
