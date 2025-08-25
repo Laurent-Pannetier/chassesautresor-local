@@ -2526,3 +2526,11 @@ msgstr "Add a file or text"
 msgid "Aucun fichier choisi"
 msgstr "No file selected"
 
+#: template-parts/chasse/partials/chasse-partial-solutions.php:47
+msgid "Il existe déjà une solution pour cette chasse"
+msgstr "A solution already exists for this hunt"
+
+#: template-parts/chasse/partials/chasse-partial-solutions.php:62
+msgid "Toutes les énigmes de la chasse ont déjà une solution"
+msgstr "All riddles in this hunt already have a solution"
+

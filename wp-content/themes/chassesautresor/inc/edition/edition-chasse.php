@@ -58,6 +58,16 @@ function enqueue_script_chasse_edit()
     ]
   );
 
+  wp_localize_script(
+    'chasse-edit',
+    'ChasseSolutions',
+    [
+      'scrollTarget'  => '#chasse-section-solutions',
+      'tooltipChasse' => __('Il existe déjà une solution pour cette chasse', 'chassesautresor-com'),
+      'tooltipEnigme' => __('Toutes les énigmes de la chasse ont déjà une solution', 'chassesautresor-com'),
+    ]
+  );
+
   // Injecte les valeurs par défaut pour JS
   wp_localize_script('champ-init', 'CHP_CHASSE_DEFAUT', [
     'titre' => strtolower(TITRE_DEFAUT_CHASSE),

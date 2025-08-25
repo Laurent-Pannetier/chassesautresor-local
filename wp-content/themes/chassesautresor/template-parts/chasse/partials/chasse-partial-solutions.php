@@ -42,7 +42,10 @@ $has_enigmes = !empty($enigmes_disponibles);
                 data-objet-type='chasse'
                 data-objet-id='<?= esc_attr($objet_id); ?>'
                 data-objet-titre='<?= esc_attr(get_the_title($objet_id)); ?>'
-                <?= $has_solution_chasse ? 'disabled' : ''; ?>
+                <?php if ($has_solution_chasse) : ?>
+                    aria-disabled="true"
+                    title="<?= esc_attr__('Il existe déjà une solution pour cette chasse', 'chassesautresor-com'); ?>"
+                <?php endif; ?>
             >
                 <?= esc_html__('La chasse entière', 'chassesautresor-com'); ?>
             </button>
@@ -54,7 +57,10 @@ $has_enigmes = !empty($enigmes_disponibles);
                 <?php if ($default_enigme) : ?>
                     data-default-enigme='<?= esc_attr($default_enigme); ?>'
                 <?php endif; ?>
-                <?= $has_enigmes ? '' : 'disabled'; ?>
+                <?php if (!$has_enigmes) : ?>
+                    aria-disabled="true"
+                    title="<?= esc_attr__('Toutes les énigmes de la chasse ont déjà une solution', 'chassesautresor-com'); ?>"
+                <?php endif; ?>
             >
                 <?= esc_html__('Une énigme de la chasse', 'chassesautresor-com'); ?>
             </button>
