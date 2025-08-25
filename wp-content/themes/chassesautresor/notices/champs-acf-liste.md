@@ -528,3 +528,80 @@ Label : complétion de l'indice
 Instructions : (vide)
 Requis : non
 ----------------------------------------
+
+🔹 Groupe : paramètres solution
+🆔 ID : 9756
+🔑 Key : group_68abd01f80aee
+📦 Champs trouvés : 10
+
+— solution_cible_type —
+Type : radio
+Label : for
+Instructions : (vide)
+Requis : non
+Choices :
+  - chasse : chasse
+  - enigme : enigme
+----------------------------------------
+— solution_chasse_linked —
+Type : relationship
+Label : chasse liée
+Instructions : (vide)
+Requis : non
+----------------------------------------
+— solution_enigme_linked —
+Type : relationship
+Label : énigme liée
+Instructions : (vide)
+Requis : non
+----------------------------------------
+— solution_fichier —
+Type : file
+Label : fichier pdf de solution
+Instructions : (vide)
+Requis : non
+----------------------------------------
+— solution_explication —
+Type : wysiwyg
+Label : explication
+Instructions : (vide)
+Requis : non
+----------------------------------------
+— solution_disponibilite —
+Type : radio
+Label : disponibilité
+Instructions : (vide)
+Requis : non
+Choices :
+  - fin_chasse : fin de chasse
+  - differee : différée
+----------------------------------------
+— solution_decalage_jours —
+Type : number
+Label : jours de décalage
+Instructions : (vide)
+Requis : non
+----------------------------------------
+— solution_heure_publication —
+Type : time_picker
+Label : heure de publication
+Instructions : (vide)
+Requis : non
+----------------------------------------
+— solution_cache_etat_systeme —
+Type : select
+Label : état système
+Instructions : (vide)
+Requis : non
+Choices :
+  - accessible : accessible
+  - programme : programmé
+  - invalide : invalide
+  - desactive : désactivé
+----------------------------------------
+— solution_cache_complet —
+Type : true_false
+Label : complétion de la solution
+Instructions : (vide)
+Requis : non
+----------------------------------------
