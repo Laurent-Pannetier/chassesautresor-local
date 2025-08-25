@@ -858,13 +858,12 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   data-valeurs='<?= json_encode($liens, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>'></div>
                 <div class="champ-feedback"></div>
               </div>
-              <div class="dashboard-card carte-orgy champ-solution">
-                <i class="fa-solid fa-lightbulb icone-defaut" aria-hidden="true"></i>
-                <h3><?= esc_html__('Solution', 'chassesautresor-com'); ?></h3>
-                <a class="bouton-cta" href="#solution">
-                  <?= esc_html__('Voir la solution', 'chassesautresor-com'); ?>
-                </a>
-              </div>
+              <?php
+              get_template_part('template-parts/chasse/partials/chasse-partial-solutions', null, [
+                'objet_id'   => $chasse_id,
+                'objet_type' => 'chasse',
+              ]);
+              ?>
             </div>
 
             <?php
@@ -1040,12 +1039,6 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
             </div>
           </div>
         <?php endif; ?>
-        <div id="solution" class="edition-panel-section">
-          <div class="section-content">
-            <h3><?= esc_html__('Solution', 'chassesautresor-com'); ?></h3>
-            <p><?= esc_html__('Contenu de la solution à venir.', 'chassesautresor-com'); ?></p>
-          </div>
-        </div>
       </div>
     </div>
 

@@ -132,9 +132,7 @@ window.rafraichirCarteSolutions = rafraichirCarteSolutions;
 
   function initAllSolutionsOptions() {
     document
-      .querySelectorAll(
-        '.dashboard-card.champ-solution, .dashboard-card.champ-solutions'
-      )
+      .querySelectorAll('.dashboard-card.champ-solutions')
       .forEach((c) => {
         initSolutionsOptions(c);
       });
@@ -1198,13 +1196,3 @@ qrDownloadBtn?.addEventListener('click', (e) => {
     });
 });
 
-// ================================
-// 🔗 Défilement doux vers la section Solution
-// ================================
-const solutionLink = document.querySelector('.champ-solution .bouton-cta[href="#solution"]');
-solutionLink?.addEventListener('click', (e) => {
-  e.preventDefault();
-  document
-    .querySelector('#chasse-tab-animation #solution')
-    ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-});
