@@ -514,6 +514,42 @@ function ajax_solutions_lister_table(): void
 add_action('wp_ajax_solutions_lister_table', 'ajax_solutions_lister_table');
 
 /**
+ * Retourne l'état des boutons d'ajout de solutions pour une chasse.
+ *
+ * @return void
+ */
+function ajax_chasse_solution_status(): void
+{
+    if (!is_user_logged_in()) {
+        wp_send_json_error('non_connecte');
+    }
+
+    $chasse_id = isset($_POST['chasse_id']) ? (int) $_POST['chasse_id'] : 0;
+
+    if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
+        wp_send_json_error('post_invalide');
+    }
+
+    if (!solution_action_autorisee('create', 'chasse', $chasse_id)) {
+        wp_send_json_error('acces_refuse');
+    }
+
+    $has_solution_chasse = solution_existe_pour_objet($chasse_id, 'chasse');
+    $enigmes = recuperer_enigmes_pour_chasse($chasse_id);
+    $enigmes = array_filter(
+        $enigmes,
+        static fn($e) => !solution_existe_pour_objet($e->ID, 'enigme')
+    );
+    $has_enigmes = !empty($enigmes);
+
+    wp_send_json_success([
+        'has_solution_chasse' => $has_solution_chasse ? 1 : 0,
+        'has_enigmes'        => $has_enigmes ? 1 : 0,
+    ]);
+}
+add_action('wp_ajax_chasse_solution_status', 'ajax_chasse_solution_status');
+
+/**
  * Crée une solution via une requête AJAX depuis une modale.
  *
  * @return void
