@@ -2377,3 +2377,19 @@ msgstr "programmé"
 msgid "programmé le %s"
 msgstr "programmé le %s"
 
+#: template-parts/chasse/chasse-edition-main.php:818
+msgid "Vos liens"
+msgstr "Vos liens"
+
+#: template-parts/chasse/chasse-edition-main.php:847
+msgid "Liens de votre chasse"
+msgstr "Liens de votre chasse"
+
+#: template-parts/chasse/chasse-edition-main.php:849
+msgid "Page de votre chasse"
+msgstr "Page de votre chasse"
+
+#: template-parts/chasse/chasse-edition-main.php:851
+msgid "Page de votre organisation"
+msgstr "Page de votre organisation"
+

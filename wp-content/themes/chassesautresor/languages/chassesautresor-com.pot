@@ -2207,3 +2207,19 @@ msgstr ""
 msgid "programmé le %s"
 msgstr ""
 
+#: template-parts/chasse/chasse-edition-main.php:818
+msgid "Vos liens"
+msgstr ""
+
+#: template-parts/chasse/chasse-edition-main.php:847
+msgid "Liens de votre chasse"
+msgstr ""
+
+#: template-parts/chasse/chasse-edition-main.php:849
+msgid "Page de votre chasse"
+msgstr ""
+
+#: template-parts/chasse/chasse-edition-main.php:851
+msgid "Page de votre organisation"
+msgstr ""
+

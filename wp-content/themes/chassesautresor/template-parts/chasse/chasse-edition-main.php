@@ -812,39 +812,11 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
         <h2><i class="fa-solid fa-bullhorn"></i> <?= esc_html__('Animation', 'chassesautresor-com'); ?></h2>
       </div>
       <div class="edition-panel-body">
-        <div class="edition-panel-section edition-panel-section-ligne">
+        <?php $organisateur_id = get_organisateur_from_chasse($chasse_id); ?>
+        <div class="edition-panel-section edition-panel-section-ligne vos-liens-section">
           <div class="section-content">
+            <h3><?= esc_html__('Vos liens', 'chassesautresor-com'); ?></h3>
             <div class="dashboard-grid stats-cards">
-              <?php
-              get_template_part('template-parts/chasse/partials/chasse-partial-indices', null, [
-                'objet_id'   => $chasse_id,
-                'objet_type' => 'chasse',
-              ]);
-              ?>
-              <div class="dashboard-card champ-chasse champ-liens <?= empty($liens) ? 'champ-vide' : 'champ-rempli'; ?>"
-                data-champ="chasse_principale_liens"
-                data-cpt="chasse"
-                data-post-id="<?= esc_attr($chasse_id); ?>">
-                <i class="fa-solid fa-share-nodes icone-defaut" aria-hidden="true"></i>
-                <h3><?= esc_html__('Sites et réseaux de la chasse', 'chassesautresor-com'); ?></h3>
-                <div class="champ-affichage champ-affichage-liens">
-                  <?= render_liens_publics($liens, 'chasse', ['placeholder' => false]); ?>
-                </div>
-                <?php if ($peut_modifier) : ?>
-                  <a href="#"
-                    class="stat-value champ-modifier ouvrir-panneau-liens"
-                    data-champ="chasse_principale_liens"
-                    data-cpt="chasse"
-                    data-post-id="<?= esc_attr($chasse_id); ?>">
-                    <?= empty($liens)
-                      ? esc_html__('Ajouter', 'chassesautresor-com')
-                      : esc_html__('Éditer', 'chassesautresor-com'); ?>
-                  </a>
-                <?php endif; ?>
-                <div class="champ-donnees"
-                  data-valeurs='<?= json_encode($liens, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>'></div>
-                <div class="champ-feedback"></div>
-              </div>
               <?php
               if (
                   est_organisateur()
@@ -861,13 +833,54 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                       . rawurlencode($url)
                       . '&format=' . $format;
               ?>
-              <div class="dashboard-card champ-qr-code">
+              <div class="dashboard-card qr-code-block">
                 <img class="qr-code-icon" src="<?= esc_url($url_qr_code); ?>" alt="<?= esc_attr__('QR code de la chasse', 'chassesautresor-com'); ?>">
                 <h3><?= esc_html__('QR code de votre chasse', 'chassesautresor-com'); ?></h3>
-                <a class="stat-value" href="<?= esc_url($url_qr_code); ?>"
-                  download="<?= esc_attr('qr-chasse-' . $chasse_id . '.' . $format); ?>"><?= esc_html__('Télécharger', 'chassesautresor-com'); ?></a>
+                <a class="stat-value" href="<?= esc_url($url_qr_code); ?>" download="<?= esc_attr('qr-chasse-' . $chasse_id . '.' . $format); ?>"><?= esc_html__('Télécharger', 'chassesautresor-com'); ?></a>
               </div>
               <?php endif; ?>
+
+              <div class="dashboard-card vos-liens-links <?= empty($liens) ? 'champ-vide' : 'champ-rempli'; ?>"
+                data-champ="chasse_principale_liens"
+                data-cpt="chasse"
+                data-post-id="<?= esc_attr($chasse_id); ?>">
+                <h3><?= esc_html__('Liens de votre chasse', 'chassesautresor-com'); ?></h3>
+                <ul class="liste-liens">
+                  <li><a href="<?= esc_url(get_permalink($chasse_id)); ?>"><?= esc_html__('Page de votre chasse', 'chassesautresor-com'); ?></a></li>
+                  <?php if ($organisateur_id) : ?>
+                    <li><a href="<?= esc_url(get_permalink($organisateur_id)); ?>"><?= esc_html__('Page de votre organisation', 'chassesautresor-com'); ?></a></li>
+                  <?php endif; ?>
+                </ul>
+                <div class="liens-publics">
+                  <div class="champ-affichage champ-affichage-liens">
+                    <?= render_liens_publics($liens, 'chasse', ['placeholder' => false]); ?>
+                  </div>
+                  <?php if ($peut_modifier) : ?>
+                    <a href="#"
+                      class="champ-modifier txt-small ouvrir-panneau-liens"
+                      data-champ="chasse_principale_liens"
+                      data-cpt="chasse"
+                      data-post-id="<?= esc_attr($chasse_id); ?>">
+                      <?= esc_html__('Modifier', 'chassesautresor-com'); ?>
+                    </a>
+                  <?php endif; ?>
+                  <div class="champ-donnees" data-valeurs='<?= json_encode($liens, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>'></div>
+                  <div class="champ-feedback"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="edition-panel-section edition-panel-section-ligne">
+          <div class="section-content">
+            <div class="dashboard-grid stats-cards">
+              <?php
+              get_template_part('template-parts/chasse/partials/chasse-partial-indices', null, [
+                'objet_id'   => $chasse_id,
+                'objet_type' => 'chasse',
+              ]);
+              ?>
             </div>
 
             <?php

@@ -2430,3 +2430,19 @@ msgstr "scheduled"
 msgid "programmé le %s"
 msgstr "scheduled for %s"
 
+#: template-parts/chasse/chasse-edition-main.php:818
+msgid "Vos liens"
+msgstr "Your links"
+
+#: template-parts/chasse/chasse-edition-main.php:847
+msgid "Liens de votre chasse"
+msgstr "Links to your hunt"
+
+#: template-parts/chasse/chasse-edition-main.php:849
+msgid "Page de votre chasse"
+msgstr "Your hunt page"
+
+#: template-parts/chasse/chasse-edition-main.php:851
+msgid "Page de votre organisation"
+msgstr "Your organization page"
+

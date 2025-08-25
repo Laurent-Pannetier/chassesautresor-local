@@ -2082,6 +2082,31 @@ body .header-img-modifiable .icone-modif {
   opacity: 0.7;
 }
 
+.vos-liens-section .liste-liens {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-sm);
+}
+
+.vos-liens-section .liste-liens li + li {
+  margin-top: var(--space-xs);
+}
+
+.vos-liens-section .liens-publics {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.vos-liens-section .liens-publics .champ-affichage-liens {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.vos-liens-section .liens-publics .texte-lien {
+  display: none;
+}
+
 /* ========== 🖊️ CHAMPS DE SAISIE ========== */
 .champ-edition .champ-input-wrapper {
   flex: 1;
@@ -5669,6 +5694,17 @@ body.accueil-fullscreen {
 }
 
 /* 📐 Layout – Structure générale des pages */
+:root {
+  --bp-xl: 1440px;
+}
+
+@media (min-width: var(--bp-xl)) {
+  .layout-fullwidth .ast-container,
+  .layout-fullwidth .myaccount-layout {
+    width: 100vw;
+    max-width: 100%;
+  }
+}
 /* 🎯 Header top bar */
 /* 🧭 Hero  */
 /* 📄 Contenu */
