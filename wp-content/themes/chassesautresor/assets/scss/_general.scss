@@ -548,3 +548,21 @@ span.champ-obligatoire {
   align-items: center;
   gap: var(--space-md);
 }
+
+/* 🔄 Loading spinner for pager */
+.pager-loading {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: pager-spin 0.6s linear infinite;
+  vertical-align: middle;
+}
+
+@keyframes pager-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
