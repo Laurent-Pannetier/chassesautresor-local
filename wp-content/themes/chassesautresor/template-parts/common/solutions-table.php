@@ -122,12 +122,12 @@ if (empty($solutions)) {
             <td>
                 <div>
                     <span class="etiquette <?= esc_attr($etat_class); ?>"><?= esc_html($etat_label); ?></span>
-                    <?php if ($etat === SOLUTION_STATE_FIN_CHASSE_DIFFERE) : ?>
-                        <span class="txt-small">(<?= esc_html(sprintf(_n('%d day', '%d days', $delai, 'chassesautresor-com'), $delai)); ?> <?= esc_html__('at', 'chassesautresor-com'); ?> <?= esc_html($heure); ?>h)</span>
-                    <?php elseif ($etat === SOLUTION_STATE_A_VENIR && $date_label !== '') : ?>
-                        <span class="txt-small"><?= esc_html($date_label); ?></span>
-                    <?php endif; ?>
                 </div>
+                <?php if ($etat === SOLUTION_STATE_FIN_CHASSE_DIFFERE) : ?>
+                    <div class="txt-small">(<?= esc_html(sprintf(_n('%d day', '%d days', $delai, 'chassesautresor-com'), $delai)); ?> <?= esc_html__('at', 'chassesautresor-com'); ?> <?= esc_html($heure); ?>h)</div>
+                <?php elseif ($etat === SOLUTION_STATE_A_VENIR && $date_label !== '') : ?>
+                    <div class="txt-small"><?= esc_html($date_label); ?></div>
+                <?php endif; ?>
             </td>
             <td>
                 <div><span class="etiquette"><?= esc_html($cible_label); ?></span></div>
