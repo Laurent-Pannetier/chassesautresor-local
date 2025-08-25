@@ -907,15 +907,6 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
               ]);
               ?>
             </div>
-            <p>
-              <button type="button" class="button ajouter-solution"
-                data-objet-type="chasse"
-                data-objet-id="<?= esc_attr($chasse_id); ?>"
-                data-objet-titre="<?= esc_attr(get_the_title($chasse_id)); ?>">
-                <?= esc_html__('Ajouter une solution', 'chassesautresor-com'); ?>
-              </button>
-            </p>
-
             <?php
             $par_page_indices = 5;
             $page_indices     = 1;
