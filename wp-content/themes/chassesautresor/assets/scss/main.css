@@ -1857,10 +1857,14 @@ a[aria-disabled=true] {
   column-gap: calc(4 * var(--space-xl));
   row-gap: var(--space-md);
   margin-top: var(--space-lg);
+  padding-top: var(--space-lg);
+  position: relative;
 }
 
 .qr-code-block .qr-code-url {
-  flex: 1 0 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
   text-align: right;
   word-break: break-all;
 }
@@ -4051,32 +4055,56 @@ body.panneau-ouvert::before {
 }
 
 .indice-modal-form .image-preview .image-actions button:hover {
-    background-color: rgba(var(--color-black-rgb), 0.8);
+  background-color: rgba(var(--color-black-rgb), 0.8);
 }
 
 /* ========== 🛡️ PROTECTION DES SOLUTIONS ========== */
+.champ-qr-code,
 .solutions-protection-banner {
+  width: 100%;
+  margin: var(--space-2xl) auto 0;
+}
+
+@media not all and (--bp-tablet) {
+  .champ-qr-code,
+  .solutions-protection-banner {
     width: 75%;
-    margin: var(--space-2xl) auto 0;
-    display: flex;
-    align-items: flex-start;
-    gap: var(--space-lg);
-    color: var(--color-editor-text);
+  }
+}
+.solutions-protection-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: calc(4 * var(--space-xl));
+  row-gap: var(--space-md);
 }
 
 .solutions-protection-banner .protection-icon {
-    font-size: 4rem;
-    color: var(--color-primary);
+  flex: 0 0 200px;
+  font-size: 200px;
+  line-height: 1;
+  color: var(--color-primary);
 }
 
-.solutions-protection-banner h4 {
-    margin: 0 0 var(--space-sm) 0;
-    color: var(--color-editor-heading);
+.solutions-protection-banner .solutions-protection-text {
+  flex: 1 1 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: var(--color-editor-text);
 }
 
-.solutions-protection-banner ul {
-    margin: 0;
-    padding-left: var(--space-lg);
+.solutions-protection-banner .solutions-protection-text h3 {
+  margin: 0 0 var(--space-sm);
+  color: var(--color-editor-heading);
+}
+
+.solutions-protection-banner .solutions-protection-text ul {
+  margin: 0;
+  padding-left: var(--space-lg);
+  text-align: left;
 }
 
 /* Layout for enigma pages */

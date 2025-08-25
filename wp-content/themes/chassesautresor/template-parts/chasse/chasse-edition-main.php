@@ -1041,10 +1041,10 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                 ]);
                 ?>
               </div>
-              <div class="solutions-protection-banner">
+              <div class="dashboard-card carte-orgy solutions-protection-banner">
                 <i class="fa-solid fa-shield-halved protection-icon" aria-hidden="true"></i>
                 <div class="solutions-protection-text">
-                  <h4><?= esc_html__('Vos solutions sont protégées', 'chassesautresor-com'); ?></h4>
+                  <h3><?= esc_html__('Vos solutions sont protégées', 'chassesautresor-com'); ?></h3>
                   <ul>
                     <li><?= esc_html__('Stockées dans un espace privé, hors de portée des joueurs.', 'chassesautresor-com'); ?></li>
                     <li><?= esc_html__('Aucun lien ne peut être trouvé ni ouvert.', 'chassesautresor-com'); ?></li>
