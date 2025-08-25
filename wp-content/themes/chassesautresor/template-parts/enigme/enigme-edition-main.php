@@ -30,7 +30,6 @@ $casse = get_field('enigme_reponse_casse', $enigme_id);
 $max = (int) get_field('enigme_tentative_max', $enigme_id);
 $cout = get_field('enigme_tentative_cout_points', $enigme_id);
 $mode_validation = get_field('enigme_mode_validation', $enigme_id) ?? 'aucune';
-$solution = get_field('enigme_solution', $enigme_id);
 $date_raw = get_field('enigme_acces_date', $enigme_id);
 $date_obj = convertir_en_datetime($date_raw);
 $date_deblocage = $date_obj ? $date_obj->format('Y-m-d\TH:i') : '';
@@ -834,144 +833,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
     <h2><i class="fa-solid fa-bullhorn"></i> <?= esc_html__('Animation de cette énigme', 'chassesautresor-com'); ?></h2>
   </div>
 
-            <?php
-            $solution      = solution_recuperer_par_objet($enigme_id, 'enigme');
-            $solution_mode = 'pdf';
-            $fichier_url   = '';
-            $fichier_nom   = '';
-            $explication   = '';
-            $delai         = 7;
-            $heure         = '18:00';
-            $disponibilite = 'fin_chasse';
-
-            if ($solution) {
-                $fichier     = get_field('solution_fichier', $solution->ID);
-                $fichier_url = is_array($fichier) ? ($fichier['url'] ?? '') : '';
-                $fichier_nom = is_array($fichier) && !empty($fichier['filename']) ? $fichier['filename'] : '';
-                $explication = get_field('solution_explication', $solution->ID);
-                $explication = is_string($explication) ? trim(wp_strip_all_tags($explication)) : '';
-                $disponibilite = get_field('solution_disponibilite', $solution->ID) ?: 'fin_chasse';
-                $delai         = (int) get_field('solution_decalage_jours', $solution->ID);
-                $heure         = get_field('solution_heure_publication', $solution->ID) ?: '18:00';
-                if ($explication !== '') {
-                    $solution_mode = 'texte';
-                }
-                if ($fichier_url) {
-                    $solution_mode = 'pdf';
-                }
-            }
-
-            $aide_delai = esc_html__(
-                'Les solutions ne peuvent être publiées que lorsqu’une chasse est déclarée terminée. Une fois celle-ci achevée, elles restent conservées dans un coffre-fort numérique pendant le délai que vous définissez ici.',
-                'chassesautresor-com'
-            );
-
-            $pdf_icon_attr   = $fichier_nom ? ' style="color: var(--color-editor-success);"' : '';
-            $pdf_title       = $fichier_nom ?: esc_html__('Document PDF', 'chassesautresor-com');
-            $pdf_link_text   = $fichier_nom ? esc_html__('Modifier', 'chassesautresor-com') : esc_html__('Choisir un fichier', 'chassesautresor-com');
-            $texte_icon_attr = $explication !== '' ? ' style="color: var(--color-editor-success);"' : '';
-            $texte_link_text = $explication !== '' ? esc_html__('éditer', 'chassesautresor-com') : esc_html__('Rédiger', 'chassesautresor-com');
-
-            $publication_label = esc_html__('aucune solution ne', 'chassesautresor-com');
-            $publication_note  = '';
-
-            if ($solution_mode === 'pdf') {
-                if ($fichier_url !== '') {
-                    $publication_label = sprintf(esc_html__('votre fichier %s', 'chassesautresor-com'), $fichier_nom);
-                    $publication_note  = $disponibilite === 'differee'
-                        ? sprintf(esc_html__(' %d jours après la fin de la chasse, à %s', 'chassesautresor-com'), $delai, $heure)
-                        : esc_html__(' à la fin de la chasse', 'chassesautresor-com');
-                } else {
-                    $publication_note = esc_html__(' (pdf sélectionné mais pas de fichier chargé)', 'chassesautresor-com');
-                }
-            } elseif ($solution_mode === 'texte') {
-                if ($explication !== '') {
-                    $publication_label = esc_html__("votre texte d'explication", 'chassesautresor-com');
-                    $publication_note  = $disponibilite === 'differee'
-                        ? sprintf(esc_html__(', %d jours après la fin de la chasse, à %s', 'chassesautresor-com'), $delai, $heure)
-                        : esc_html__(' à la fin de la chasse', 'chassesautresor-com');
-                } else {
-                    $publication_note = esc_html__(' (rédaction libre sélectionnée mais non remplie)', 'chassesautresor-com');
-                }
-            }
-
-            $publication_message = $publication_label . ' sera affiché(e)' . $publication_note;
-            ?>
-
-            <div class="champ-enigme champ-solution">
-              <div class="champ-solution-mode" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
-                <p class="solution-publication-message"><?= esc_html($publication_message); ?></p>
-                <div class="dashboard-grid solution-cards">
-                    <div class="dashboard-card solution-option<?= $solution_mode === 'pdf' ? ' active' : ''; ?>" data-mode="pdf">
-                      <button type="button" class="solution-reset" aria-label="<?= esc_attr__('Vider', 'chassesautresor-com'); ?>"<?= $fichier_nom ? '' : ' style="display:none;"'; ?>><i class="fa-solid fa-circle-xmark"></i></button>
-                      <i class="fa-solid fa-file-pdf" aria-hidden="true"<?= $pdf_icon_attr; ?>></i>
-                      <h3><?= esc_html($pdf_title); ?></h3>
-                      <a href="#" class="stat-value"><?= esc_html($pdf_link_text); ?></a>
-                      <input type="radio" name="acf[enigme_solution_mode]" value="pdf" <?= $solution_mode === 'pdf' ? 'checked' : ''; ?> hidden>
-                    </div>
-
-                    <div class="dashboard-card solution-option<?= $solution_mode === 'texte' ? ' active' : ''; ?>" data-mode="texte">
-                      <button type="button" class="solution-reset" aria-label="<?= esc_attr__('Vider', 'chassesautresor-com'); ?>"<?= $explication !== '' ? '' : ' style="display:none;"'; ?>><i class="fa-solid fa-circle-xmark"></i></button>
-                      <i class="fa-solid fa-pen-to-square" aria-hidden="true"<?= $texte_icon_attr; ?>></i>
-                      <h3><?= esc_html__('Rédaction libre', 'chassesautresor-com'); ?></h3>
-                      <button type="button" id="ouvrir-panneau-solution" class="stat-value"><?= esc_html($texte_link_text); ?></button>
-                      <input type="radio" name="acf[enigme_solution_mode]" value="texte" <?= $solution_mode === 'texte' ? 'checked' : ''; ?> hidden>
-                    </div>
-
-                    <div class="dashboard-card solution-delai">
-                      <i class="fa-regular fa-clock" aria-hidden="true"></i>
-                      <h3>
-                        <?= esc_html__('Délai après fin de chasse', 'chassesautresor-com'); ?>
-                        <?php
-                        get_template_part(
-                            'template-parts/common/help-icon',
-                            null,
-                            [
-                                'aria_label' => __('Informations sur la publication de la solution', 'chassesautresor-com'),
-                                'classes'    => 'stat-help',
-                                'variant'    => 'aide-small',
-                                'title'      => __('Délai de parution des solutions', 'chassesautresor-com'),
-                                'message'    => $aide_delai,
-                            ]
-                        );
-                        ?>
-                      </h3>
-                      <p class="stat-value champ-solution-timing">
-                        <input
-                          type="number"
-                          min="0"
-                          max="60"
-                          step="1"
-                          value="<?= esc_attr($delai); ?>"
-                          id="solution-delai"
-                          class="champ-input champ-delai-inline"
-                        >
-                        <?= esc_html__('jours, publié à', 'chassesautresor-com'); ?>
-                        <select id="solution-heure" class="champ-select-heure">
-                          <?php foreach (range(0, 23) as $h) :
-                            $formatted = str_pad($h, 2, '0', STR_PAD_LEFT) . ':00'; ?>
-                            <option value="<?= $formatted; ?>" <?= $formatted === $heure ? 'selected' : ''; ?>><?= $formatted; ?></option>
-                          <?php endforeach; ?>
-                        </select>
-                        H
-                      </p>
-                    </div>
+                <div class="resume-bloc resume-solutions">
+                  <h3><?= sprintf(esc_html__('Solutions pour %s', 'chassesautresor-com'), get_the_title($enigme_id)); ?></h3>
+                  <?php
+                  $par_page_solutions = 8;
+                  $page_solutions     = 1;
+                  $solutions_query    = new WP_Query([
+                    'post_type'      => 'solution',
+                    'post_status'    => ['publish', 'pending', 'draft'],
+                    'orderby'        => 'date',
+                    'order'          => 'DESC',
+                    'posts_per_page' => $par_page_solutions,
+                    'paged'          => $page_solutions,
+                    'meta_query'     => [
+                      [
+                        'key'   => 'solution_cible_type',
+                        'value' => 'enigme',
+                      ],
+                      [
+                        'key'   => 'solution_enigme_linked',
+                        'value' => $enigme_id,
+                      ],
+                    ],
+                  ]);
+                  $solutions_list  = $solutions_query->posts;
+                  $pages_solutions = (int) $solutions_query->max_num_pages;
+                  ?>
+                  <div class="liste-solutions" data-page="1" data-pages="<?= esc_attr($pages_solutions); ?>" data-objet-type="enigme" data-objet-id="<?= esc_attr($enigme_id); ?>" data-ajax-url="<?= esc_url(admin_url('admin-ajax.php')); ?>">
+                    <?php
+                    get_template_part('template-parts/common/solutions-table', null, [
+                      'solutions'  => $solutions_list,
+                      'page'       => 1,
+                      'pages'      => $pages_solutions,
+                      'objet_type' => 'enigme',
+                      'objet_id'   => $enigme_id,
+                    ]);
+                    ?>
                   </div>
-                  <div class="stats-table-wrapper">
-                    <div class="dashboard-card solution-reassurance">
-                      <i class="fa-solid fa-shield-halved reassurance-icon" aria-hidden="true"></i>
-                      <ul>
-                        <li><i class="fa-solid fa-check" aria-hidden="true"></i> <strong><?= esc_html__('Vos solutions sont protégées', 'chassesautresor-com'); ?></strong></li>
-                        <li><i class="fa-solid fa-check" aria-hidden="true"></i> <?= esc_html__('Stockées dans un espace privé, hors de portée des joueurs.', 'chassesautresor-com'); ?></li>
-                        <li><i class="fa-solid fa-check" aria-hidden="true"></i> <?= esc_html__('Aucun lien ne peut être trouvé ni ouvert.', 'chassesautresor-com'); ?></li>
-                        <li><i class="fa-solid fa-check" aria-hidden="true"></i> <?= esc_html__('Débloquées uniquement au moment choisi.', 'chassesautresor-com'); ?></li>
-                      </ul>
-                    </div>
-                  </div>
-
-                    <input type="file" id="solution-pdf-upload" accept="application/pdf" style="display:none;">
-                    <div class="champ-feedback" style="margin-top: 5px;"></div>
-                  </div>
+                  <p><button type="button" class="button ajouter-solution" data-objet-type="enigme" data-objet-id="<?= esc_attr($enigme_id); ?>" data-objet-titre="<?= esc_attr(get_the_title($enigme_id)); ?>"><?= esc_html__('Ajouter une solution', 'chassesautresor-com'); ?></button></p>
                 </div>
 
                 <div class="resume-bloc resume-indices">
