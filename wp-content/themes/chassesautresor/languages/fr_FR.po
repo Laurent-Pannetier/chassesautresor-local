@@ -2473,3 +2473,11 @@ msgstr "Désactivée"
 msgid "Coming on %s"
 msgstr "À venir le %s"
 
+#: inc/edition/edition-core.php
+msgid "Date et heure requises"
+msgstr "Date et heure requises"
+
+#: inc/edition/edition-core.php
+msgid "Disponibilité"
+msgstr "Disponibilité"
+

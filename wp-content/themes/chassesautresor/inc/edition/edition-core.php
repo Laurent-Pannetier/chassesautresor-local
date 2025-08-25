@@ -199,6 +199,7 @@ function enqueue_core_edit_scripts(array $additional = [])
             'chooseFile'       => __('Choisir un fichier', 'chassesautresor-com'),
             'noFile'           => __('Aucun fichier choisi', 'chassesautresor-com'),
             'removeFile'       => __('Supprimer le fichier', 'chassesautresor-com'),
+            'needDate'         => __('Date et heure requises', 'chassesautresor-com'),
           ],
         ]
       );

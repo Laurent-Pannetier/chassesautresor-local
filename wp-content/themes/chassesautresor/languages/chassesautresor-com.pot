@@ -2285,3 +2285,11 @@ msgstr ""
 msgid "PDF"
 msgstr ""
 
+#: inc/edition/edition-core.php
+msgid "Disponibilité"
+msgstr ""
+
+#: inc/edition/edition-core.php
+msgid "Date et heure requises"
+msgstr ""
+

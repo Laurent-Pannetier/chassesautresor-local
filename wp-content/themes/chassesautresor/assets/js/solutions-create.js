@@ -45,6 +45,25 @@
         '" />';
     }
     fileField += '</p>';
+
+    var delaiValue = btn.dataset.solutionDelai;
+    var heureValue = btn.dataset.solutionHeure;
+    if (isEdit) {
+      var now = new Date();
+      var pad = function (n) {
+        return String(n).padStart(2, '0');
+      };
+      if (delaiValue === undefined || delaiValue === '') {
+        delaiValue = 0;
+      }
+      if (!heureValue) {
+        heureValue = pad(now.getHours()) + ':' + pad(now.getMinutes());
+      }
+    } else {
+      delaiValue = delaiValue || 0;
+      heureValue = heureValue || '18:00';
+    }
+
     overlay.innerHTML = `
       <div class="solution-modal">
         <div class="solution-modal-header">
@@ -65,8 +84,8 @@
             <option value="differee">${solutionsCreate.texts.differee}</option>
           </select></label></p>
           <p class="delai-wrapper" style="display:none;">
-            <input type="number" name="solution_delai" min="0" value="${btn.dataset.solutionDelai || 0}" /> ${solutionsCreate.texts.days}
-            <input type="time" name="solution_heure" value="${btn.dataset.solutionHeure || '18:00'}" />
+            <input type="number" name="solution_delai" min="0" value="${delaiValue}" /> ${solutionsCreate.texts.days}
+            <input type="time" name="solution_heure" value="${heureValue}" />
           </p>
           <div class="solution-modal-footer"><span class="solution-state-message"></span><button type="submit" class="solution-modal-validate bouton-cta">${solutionsCreate.texts.valider}</button></div>
         </form>
@@ -196,15 +215,22 @@
       } else {
         state = 'accessible';
         if (selectDispo.value === 'differee') {
-          var delai = parseInt(delaiInput.value, 10) || 0;
-          var heure = heureInput.value || '00:00';
-          var now = new Date();
-          var target = new Date(now);
-          var parts = heure.split(':');
-          target.setDate(target.getDate() + delai);
-          target.setHours(parseInt(parts[0], 10), parseInt(parts[1], 10), 0, 0);
-          if (target > now) {
-            state = 'programme';
+          var delaiVide = delaiInput.value === '';
+          var heureVide = heureInput.value === '';
+          if (delaiVide || heureVide) {
+            state = 'desactive';
+            message = solutionsCreate.texts.needDate;
+          } else {
+            var delai = parseInt(delaiInput.value, 10) || 0;
+            var heure = heureInput.value;
+            var now = new Date();
+            var target = new Date(now);
+            var parts = heure.split(':');
+            target.setDate(target.getDate() + delai);
+            target.setHours(parseInt(parts[0], 10), parseInt(parts[1], 10), 0, 0);
+            if (target > now) {
+              state = 'programme';
+            }
           }
         }
       }
