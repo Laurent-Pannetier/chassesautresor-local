@@ -172,6 +172,30 @@
   margin-top: 0;
 }
 
+/* ========== 🔗 VOS LIENS ========== */
+.vos-liens-grid {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+@media (min-width: 768px) {
+  .vos-liens-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.vos-liens-container .vos-liens-list {
+  list-style: none;
+  margin: 0 0 var(--space-md);
+  padding: 0;
+}
+
+.vos-liens-container .vos-liens-reseaux {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
 /* ========== 🖊️ CHAMPS ÉDITABLES ========== */
 
 .champ-edition {

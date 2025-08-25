@@ -2458,3 +2458,19 @@ msgstr "Make access to your hunt easy with a simple scan. A QR code avoids typin
 msgid "Contenu de la solution à venir."
 msgstr "Solution content coming soon."
 
+#: template-parts/chasse/chasse-edition-main.php
+msgid "Vos liens"
+msgstr "Your links"
+
+#: template-parts/chasse/chasse-edition-main.php
+msgid "Liens de votre chasse"
+msgstr "Links to your hunt"
+
+#: template-parts/chasse/chasse-edition-main.php
+msgid "Page de votre chasse"
+msgstr "Your hunt page"
+
+#: template-parts/chasse/chasse-edition-main.php
+msgid "Page de votre organisation"
+msgstr "Your organization page"
+

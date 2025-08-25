@@ -830,6 +830,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                     . rawurlencode($url)
                     . '&format=' . $format;
             }
+            $organisateur_id = get_organisateur_from_chasse($chasse_id);
             ?>
             <div class="dashboard-grid stats-cards">
               <?php
@@ -838,31 +839,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                 'objet_type' => 'chasse',
               ]);
               ?>
-              <div class="dashboard-card carte-orgy champ-chasse champ-liens <?= empty($liens) ? 'champ-vide' : 'champ-rempli'; ?>"
-                data-champ="chasse_principale_liens"
-                data-cpt="chasse"
-                data-post-id="<?= esc_attr($chasse_id); ?>">
-                <i class="fa-solid fa-share-nodes icone-defaut" aria-hidden="true"></i>
-                <div class="champ-affichage champ-affichage-liens">
-                  <?= render_liens_publics($liens, 'chasse', ['placeholder' => false]); ?>
-                </div>
-                <h3><?= esc_html__('Sites et réseaux de la chasse', 'chassesautresor-com'); ?></h3>
-                <?php if ($peut_modifier) : ?>
-                  <button type="button"
-                    class="bouton-cta champ-modifier ouvrir-panneau-liens"
-                    data-champ="chasse_principale_liens"
-                    data-cpt="chasse"
-                    data-post-id="<?= esc_attr($chasse_id); ?>">
-                    <?= empty($liens)
-                      ? esc_html__('Ajouter', 'chassesautresor-com')
-                      : esc_html__('Éditer', 'chassesautresor-com'); ?>
-                  </button>
-                <?php endif; ?>
-                <div class="champ-donnees"
-                  data-valeurs='<?= json_encode($liens, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>'></div>
-                <div class="champ-feedback"></div>
-              </div>
-              <div class="dashboard-card carte-orgy champ-solution">
+                <div class="dashboard-card carte-orgy champ-solution">
                 <i class="fa-solid fa-lightbulb icone-defaut" aria-hidden="true"></i>
                 <h3><?= esc_html__('Solution', 'chassesautresor-com'); ?></h3>
                 <a class="bouton-cta" href="#solution">
@@ -964,24 +941,57 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
               ]);
               ?>
             </div>
-            <?php if ($afficher_qr_code) : ?>
-              <div class="qr-code-block">
-                <div class="qr-code-image">
-                  <img src="<?= esc_url($url_qr_code); ?>" alt="<?= esc_attr__('QR code de votre chasse', 'chassesautresor-com'); ?>">
+            </div>
+          </div>
+          <?php if ($afficher_qr_code) : ?>
+          <div class="edition-panel-section vos-liens-section">
+            <div class="section-content">
+              <h3><?= esc_html__('Vos liens', 'chassesautresor-com'); ?></h3>
+              <div class="vos-liens-grid">
+                <div class="dashboard-card carte-orgy">
+                  <div class="qr-code-block">
+                    <div class="qr-code-image">
+                      <img src="<?= esc_url($url_qr_code); ?>" alt="<?= esc_attr__('QR code de votre chasse', 'chassesautresor-com'); ?>">
+                    </div>
+                    <div class="qr-code-content">
+                      <h3><?= esc_html__('QR code de votre chasse', 'chassesautresor-com'); ?></h3>
+                      <h4><?= esc_html__('Partagez votre chasse en un scan', 'chassesautresor-com'); ?></h4>
+                      <p><?= esc_html__('Facilitez l\'accès à votre chasse avec un simple scan. Un QR code évite de saisir une URL et se partage facilement.', 'chassesautresor-com'); ?></p>
+                      <a class="bouton-cta qr-code-download" href="<?= esc_url($url_qr_code); ?>" download="<?= esc_attr('qr-chasse-' . $chasse_id . '.png'); ?>">
+                        <?= esc_html__('Télécharger', 'chassesautresor-com'); ?>
+                      </a>
+                    </div>
+                  </div>
                 </div>
-                <div class="qr-code-content">
-                  <h3><?= esc_html__('QR code de votre chasse', 'chassesautresor-com'); ?></h3>
-                  <h4><?= esc_html__('Partagez votre chasse en un scan', 'chassesautresor-com'); ?></h4>
-                  <p><?= esc_html__('Facilitez l\'accès à votre chasse avec un simple scan. Un QR code évite de saisir une URL et se partage facilement.', 'chassesautresor-com'); ?></p>
-                  <a class="bouton-cta qr-code-download" href="<?= esc_url($url_qr_code); ?>" download="<?= esc_attr('qr-chasse-' . $chasse_id . '.png'); ?>">
-                    <?= esc_html__('Télécharger', 'chassesautresor-com'); ?>
-                  </a>
+                <div class="dashboard-card carte-orgy vos-liens-container champ-chasse champ-liens <?= empty($liens) ? 'champ-vide' : 'champ-rempli'; ?>"
+                  data-champ="chasse_principale_liens"
+                  data-cpt="chasse"
+                  data-post-id="<?= esc_attr($chasse_id); ?>">
+                  <h3><?= esc_html__('Liens de votre chasse', 'chassesautresor-com'); ?></h3>
+                  <ul class="vos-liens-list">
+                    <li><a href="<?= esc_url(get_permalink($chasse_id)); ?>" target="_blank" rel="noopener"><?= esc_html__('Page de votre chasse', 'chassesautresor-com'); ?></a></li>
+                    <?php if ($organisateur_id) : ?>
+                      <li><a href="<?= esc_url(get_permalink($organisateur_id)); ?>" target="_blank" rel="noopener"><?= esc_html__('Page de votre organisation', 'chassesautresor-com'); ?></a></li>
+                    <?php endif; ?>
+                  </ul>
+                  <div class="vos-liens-reseaux">
+                    <div class="champ-affichage champ-affichage-liens">
+                      <?= render_liens_publics($liens, 'chasse', ['placeholder' => false]); ?>
+                    </div>
+                    <?php if ($peut_modifier) : ?>
+                      <button type="button" class="champ-modifier ouvrir-panneau-liens" data-champ="chasse_principale_liens" data-cpt="chasse" data-post-id="<?= esc_attr($chasse_id); ?>">
+                        <?= esc_html__('modifier', 'chassesautresor-com'); ?>
+                      </button>
+                    <?php endif; ?>
+                  </div>
+                  <div class="champ-donnees" data-valeurs='<?= json_encode($liens, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>'></div>
+                  <div class="champ-feedback"></div>
                 </div>
               </div>
-            <?php endif; ?>
+            </div>
           </div>
-        </div>
-        <div id="solution" class="edition-panel-section">
+          <?php endif; ?>
+          <div id="solution" class="edition-panel-section">
           <div class="section-content">
             <h3><?= esc_html__('Solution', 'chassesautresor-com'); ?></h3>
             <p><?= esc_html__('Contenu de la solution à venir.', 'chassesautresor-com'); ?></p>
