@@ -1780,7 +1780,7 @@ a[aria-disabled=true] {
 .resume-infos > li > label,
 .resume-infos > li > .champ-edition > label,
 .resume-infos > li > .champ-affichage > label {
-  width: var(--editor-label-width);
+  min-width: var(--editor-label-width);
   flex-shrink: 0;
 }
 
@@ -1813,7 +1813,7 @@ a[aria-disabled=true] {
 }
 
 .edition-row-label {
-  width: var(--editor-label-width);
+  min-width: var(--editor-label-width);
   display: flex;
   align-items: center;
   gap: var(--space-xs);
@@ -2834,9 +2834,6 @@ li.ligne-email .champ-affichage {
   }
   .edition-panel-section {
     border: 0;
-  }
-  .mode-edition {
-    --editor-label-width: 200px;
   }
 }
 @media not all and (min-width: 480px) {
@@ -5921,6 +5918,11 @@ span.champ-obligatoire {
   --editor-icon-width: 1rem; /* 📏 Largeur des icônes dans les panneaux */
 }
 
+@media not all and (min-width: 768px) {
+  .mode-edition {
+    --editor-label-width: 200px;
+  }
+}
 /* 🔗 Bridge HSL ↔️ nuancier existant (ne remplace rien) */
 .mode-edition {
   /* dérivés HSL (triplets) de tes variables existantes */
