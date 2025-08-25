@@ -599,6 +599,7 @@ Choices :
   - A_VENIR : à venir
   - EN_COURS : en cours
   - DESACTIVE : désactivé
+Référence : constantes définies dans `inc/constants.php`
 ----------------------------------------
 — solution_cache_complet —
 Type : true_false

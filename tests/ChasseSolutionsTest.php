@@ -153,7 +153,7 @@ class ChasseSolutionsTest extends TestCase
         $this->assertSame('fin_chasse', $captured_fields['solution_disponibilite']);
         $this->assertSame(0, $captured_fields['solution_decalage_jours']);
         $this->assertSame('00:00', $captured_fields['solution_heure_publication']);
-        $this->assertSame('desactive', $captured_fields['solution_cache_etat_systeme']);
+        $this->assertSame(SOLUTION_STATE_DESACTIVE, $captured_fields['solution_cache_etat_systeme']);
     }
 
     /**
@@ -414,6 +414,115 @@ class ChasseSolutionsTest extends TestCase
         \mettre_a_jour_cache_solution($post_id);
 
         $this->assertSame(0, $updated_fields['solution_cache_complet']);
-        $this->assertSame('invalide', $updated_fields['solution_cache_etat_systeme']);
+        $this->assertSame(SOLUTION_STATE_INVALIDE, $updated_fields['solution_cache_etat_systeme']);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_planifier_publication_before_hunt_sets_fin_chasse(): void
+    {
+        $solution_id = 10;
+        $chasse_id   = 20;
+        global $fields, $updated_fields;
+        $fields = [
+            $solution_id => [
+                'solution_cible_type'     => 'chasse',
+                'solution_chasse_linked'  => $chasse_id,
+                'solution_disponibilite'  => 'fin_chasse',
+                'solution_decalage_jours' => 0,
+                'solution_heure_publication' => '00:00',
+            ],
+            $chasse_id   => [
+                'statut_chasse' => 'en cours',
+            ],
+        ];
+
+        if (!function_exists('get_post_type')) {
+            function get_post_type($id) { return $id === 10 ? 'solution' : ($id === 20 ? 'chasse' : ''); }
+        }
+        if (!function_exists('get_field')) {
+            function get_field($name, $post_id) { global $fields; return $fields[$post_id][$name] ?? null; }
+        }
+        if (!function_exists('update_field')) {
+            function update_field($name, $value, $post_id): void { global $updated_fields; $updated_fields[$name] = $value; }
+        }
+        if (!function_exists('current_time')) {
+            function current_time($type) { return 100; }
+        }
+        if (!function_exists('wp_clear_scheduled_hook')) {
+            function wp_clear_scheduled_hook($hook, $args = []) {}
+        }
+        if (!function_exists('delete_post_meta')) {
+            function delete_post_meta($id, $key) {}
+        }
+        if (!function_exists('update_post_meta')) {
+            function update_post_meta($id, $key, $value) {}
+        }
+        if (!function_exists('wp_schedule_single_event')) {
+            function wp_schedule_single_event($timestamp, $hook, $args = []) {}
+        }
+
+        require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-solution.php';
+
+        solution_planifier_publication($solution_id);
+
+        $this->assertSame(SOLUTION_STATE_FIN_CHASSE, $updated_fields['solution_cache_etat_systeme']);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_planifier_publication_after_hunt_sets_a_venir(): void
+    {
+        $solution_id = 10;
+        $chasse_id   = 20;
+        global $fields, $updated_fields, $meta_updates;
+        $fields = [
+            $solution_id => [
+                'solution_cible_type'     => 'chasse',
+                'solution_chasse_linked'  => $chasse_id,
+                'solution_disponibilite'  => 'differee',
+                'solution_decalage_jours' => 1,
+                'solution_heure_publication' => '00:00',
+            ],
+            $chasse_id   => [
+                'statut_chasse' => 'terminée',
+            ],
+        ];
+
+        if (!function_exists('get_post_type')) {
+            function get_post_type($id) { return $id === 10 ? 'solution' : ($id === 20 ? 'chasse' : ''); }
+        }
+        if (!function_exists('get_field')) {
+            function get_field($name, $post_id) { global $fields; return $fields[$post_id][$name] ?? null; }
+        }
+        if (!function_exists('update_field')) {
+            function update_field($name, $value, $post_id): void { global $updated_fields; $updated_fields[$name] = $value; }
+        }
+        if (!function_exists('current_time')) {
+            function current_time($type) { return 100; }
+        }
+        if (!function_exists('wp_clear_scheduled_hook')) {
+            function wp_clear_scheduled_hook($hook, $args = []) {}
+        }
+        if (!function_exists('delete_post_meta')) {
+            function delete_post_meta($id, $key) {}
+        }
+        if (!function_exists('update_post_meta')) {
+            function update_post_meta($id, $key, $value): void { global $meta_updates; $meta_updates[$key] = $value; }
+        }
+        if (!function_exists('wp_schedule_single_event')) {
+            function wp_schedule_single_event($timestamp, $hook, $args = []) {}
+        }
+
+        require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-solution.php';
+
+        solution_planifier_publication($solution_id);
+
+        $this->assertSame(SOLUTION_STATE_A_VENIR, $updated_fields['solution_cache_etat_systeme']);
+        $this->assertArrayHasKey('solution_date_disponibilite', $meta_updates);
     }
 }

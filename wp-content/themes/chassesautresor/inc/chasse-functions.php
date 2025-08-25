@@ -958,7 +958,12 @@ function solution_recuperer_par_objet(int $id, string $type)
             ],
             [
                 'key'     => 'solution_cache_etat_systeme',
-                'value'   => ['accessible', 'programme'],
+                'value'   => [
+                    SOLUTION_STATE_EN_COURS,
+                    SOLUTION_STATE_A_VENIR,
+                    SOLUTION_STATE_FIN_CHASSE,
+                    SOLUTION_STATE_FIN_CHASSE_DIFFERE,
+                ],
                 'compare' => 'IN',
             ],
         ],

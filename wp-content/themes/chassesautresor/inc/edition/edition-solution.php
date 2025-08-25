@@ -5,6 +5,8 @@
  * @package chassesautresor.com
  */
 
+require_once __DIR__ . '/../constants.php';
+
 /**
  * Planifie la publication d'une solution.
  *
@@ -20,38 +22,43 @@ function solution_planifier_publication(int $solution_id): void
         return;
     }
 
-    $cible = get_field('solution_cible_type', $solution_id);
+    $cible     = get_field('solution_cible_type', $solution_id);
     $chasse_id = 0;
     if ($cible === 'chasse') {
-        $chasse = get_field('solution_chasse_linked', $solution_id);
+        $chasse    = get_field('solution_chasse_linked', $solution_id);
         $chasse_id = is_array($chasse) ? (int) ($chasse[0] ?? 0) : (int) $chasse;
     } elseif ($cible === 'enigme') {
-        $enigme = get_field('solution_enigme_linked', $solution_id);
+        $enigme    = get_field('solution_enigme_linked', $solution_id);
         $enigme_id = is_array($enigme) ? (int) ($enigme[0] ?? 0) : (int) $enigme;
         $chasse_id = $enigme_id ? recuperer_id_chasse_associee($enigme_id) : 0;
     }
 
     if (!$chasse_id) {
+        update_field('solution_cache_etat_systeme', SOLUTION_STATE_INVALIDE, $solution_id);
         return;
     }
 
-    $statut = get_field('statut_chasse', $chasse_id);
+    $statut   = get_field('statut_chasse', $chasse_id);
     $terminee = is_string($statut) && in_array(strtolower($statut), ['terminée', 'termine', 'terminé'], true);
+
+    $dispo    = get_field('solution_disponibilite', $solution_id) ?: 'fin_chasse';
+    $decalage = (int) get_field('solution_decalage_jours', $solution_id);
+    $heure    = get_field('solution_heure_publication', $solution_id) ?: '00:00';
+
+    wp_clear_scheduled_hook('publier_solution_programmee', [$solution_id]);
+
     if (!$terminee) {
+        delete_post_meta($solution_id, 'solution_date_disponibilite');
+        $etat = $dispo === 'differee' ? SOLUTION_STATE_FIN_CHASSE_DIFFERE : SOLUTION_STATE_FIN_CHASSE;
+        update_field('solution_cache_etat_systeme', $etat, $solution_id);
         return;
     }
 
-    $dispo = get_field('solution_disponibilite', $solution_id) ?: 'fin_chasse';
-    $decalage = (int) get_field('solution_decalage_jours', $solution_id);
-    $heure = get_field('solution_heure_publication', $solution_id) ?: '00:00';
-
-    $base = current_time('timestamp');
+    $base      = current_time('timestamp');
     $timestamp = $base;
     if ($dispo === 'differee') {
         $timestamp = strtotime("+{$decalage} days {$heure}", $base);
     }
-
-    wp_clear_scheduled_hook('publier_solution_programmee', [$solution_id]);
 
     if (!$timestamp || $timestamp <= current_time('timestamp')) {
         solution_rendre_accessible($solution_id);
@@ -59,7 +66,7 @@ function solution_planifier_publication(int $solution_id): void
     }
 
     update_post_meta($solution_id, 'solution_date_disponibilite', gmdate('Y-m-d H:i:s', $timestamp));
-    update_field('solution_cache_etat_systeme', 'programme', $solution_id);
+    update_field('solution_cache_etat_systeme', SOLUTION_STATE_A_VENIR, $solution_id);
     wp_schedule_single_event($timestamp, 'publier_solution_programmee', [$solution_id]);
 }
 
@@ -75,7 +82,7 @@ function solution_rendre_accessible(int $solution_id): void
         return;
     }
 
-    update_field('solution_cache_etat_systeme', 'accessible', $solution_id);
+    update_field('solution_cache_etat_systeme', SOLUTION_STATE_EN_COURS, $solution_id);
     delete_post_meta($solution_id, 'solution_date_disponibilite');
     if (get_post_status($solution_id) !== 'publish') {
         wp_update_post(['ID' => $solution_id, 'post_status' => 'publish']);
@@ -99,7 +106,7 @@ function basculer_solutions_programme(): void
         'meta_query'     => [
             [
                 'key'   => 'solution_cache_etat_systeme',
-                'value' => 'programme',
+                'value' => SOLUTION_STATE_A_VENIR,
             ],
             [
                 'key'     => 'solution_date_disponibilite',
@@ -158,10 +165,10 @@ function mettre_a_jour_cache_solution(int $post_id): void
     $content = $explic !== '' || !empty($fichier);
 
     $complete = $content && $target_id > 0;
-    $state    = $complete ? 'accessible' : 'desactive';
+    $state    = $complete ? SOLUTION_STATE_EN_COURS : SOLUTION_STATE_DESACTIVE;
 
     if ($target_id === 0) {
-        $state    = 'invalide';
+        $state    = SOLUTION_STATE_INVALIDE;
         $complete = false;
     }
 
@@ -171,7 +178,7 @@ function mettre_a_jour_cache_solution(int $post_id): void
     $status = get_post_status($post_id);
     $post   = get_post($post_id);
 
-    if ($complete && $state === 'accessible') {
+    if ($complete && $state === SOLUTION_STATE_EN_COURS) {
         if ($status !== 'publish') {
             wp_update_post([
                 'ID'            => $post_id,
@@ -267,7 +274,13 @@ function prochain_rang_solution(int $objet_id, string $objet_type): int
             ],
             [
                 'key'     => 'solution_cache_etat_systeme',
-                'value'   => ['programme', 'accessible', 'desactive'],
+                'value'   => [
+                    SOLUTION_STATE_FIN_CHASSE,
+                    SOLUTION_STATE_FIN_CHASSE_DIFFERE,
+                    SOLUTION_STATE_A_VENIR,
+                    SOLUTION_STATE_EN_COURS,
+                    SOLUTION_STATE_DESACTIVE,
+                ],
                 'compare' => 'IN',
             ],
         ];
@@ -283,7 +296,13 @@ function prochain_rang_solution(int $objet_id, string $objet_type): int
             ],
             [
                 'key'     => 'solution_cache_etat_systeme',
-                'value'   => ['programme', 'accessible', 'desactive'],
+                'value'   => [
+                    SOLUTION_STATE_FIN_CHASSE,
+                    SOLUTION_STATE_FIN_CHASSE_DIFFERE,
+                    SOLUTION_STATE_A_VENIR,
+                    SOLUTION_STATE_EN_COURS,
+                    SOLUTION_STATE_DESACTIVE,
+                ],
                 'compare' => 'IN',
             ],
         ];
@@ -331,7 +350,13 @@ function reordonner_solutions(int $objet_id, string $objet_type): void
             ],
             [
                 'key'     => 'solution_cache_etat_systeme',
-                'value'   => ['programme', 'accessible', 'desactive'],
+                'value'   => [
+                    SOLUTION_STATE_FIN_CHASSE,
+                    SOLUTION_STATE_FIN_CHASSE_DIFFERE,
+                    SOLUTION_STATE_A_VENIR,
+                    SOLUTION_STATE_EN_COURS,
+                    SOLUTION_STATE_DESACTIVE,
+                ],
                 'compare' => 'IN',
             ],
         ];
@@ -347,7 +372,13 @@ function reordonner_solutions(int $objet_id, string $objet_type): void
             ],
             [
                 'key'     => 'solution_cache_etat_systeme',
-                'value'   => ['programme', 'accessible', 'desactive'],
+                'value'   => [
+                    SOLUTION_STATE_FIN_CHASSE,
+                    SOLUTION_STATE_FIN_CHASSE_DIFFERE,
+                    SOLUTION_STATE_A_VENIR,
+                    SOLUTION_STATE_EN_COURS,
+                    SOLUTION_STATE_DESACTIVE,
+                ],
                 'compare' => 'IN',
             ],
         ];
@@ -529,7 +560,7 @@ function creer_solution_pour_objet(int $objet_id, string $objet_type, ?int $user
     update_field('solution_disponibilite', 'fin_chasse', $solution_id);
     update_field('solution_decalage_jours', 0, $solution_id);
     update_field('solution_heure_publication', '00:00', $solution_id);
-    update_field('solution_cache_etat_systeme', 'desactive', $solution_id);
+    update_field('solution_cache_etat_systeme', SOLUTION_STATE_DESACTIVE, $solution_id);
 
     reordonner_solutions($objet_id, $objet_type);
 
