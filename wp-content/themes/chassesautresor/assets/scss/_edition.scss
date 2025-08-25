@@ -1626,6 +1626,17 @@ body.panneau-ouvert::before {
   height: 2rem;
 }
 
+.dashboard-card.champ-qr-code {
+  width: 75%;
+  margin: 0 auto;
+}
+
+@media not all and (--bp-desktop) {
+  .dashboard-card.champ-qr-code {
+    width: 100%;
+  }
+}
+
 .dashboard-card.solution-option {
   cursor: pointer;
   transition: background-color 0.2s, border-color 0.2s, opacity 0.2s;

@@ -3270,6 +3270,16 @@ body.panneau-ouvert::before {
   height: 2rem;
 }
 
+.dashboard-card.champ-qr-code, .champ-qr-code.carte-orgy {
+  width: 75%;
+  margin: 0 auto;
+}
+
+@media not all and (min-width: 1024px) {
+  .dashboard-card.champ-qr-code, .champ-qr-code.carte-orgy {
+    width: 100%;
+  }
+}
 .dashboard-card.solution-option, .solution-option.carte-orgy {
   cursor: pointer;
   transition: background-color 0.2s, border-color 0.2s, opacity 0.2s;
