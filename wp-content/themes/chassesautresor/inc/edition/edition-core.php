@@ -169,6 +169,29 @@ function enqueue_core_edit_scripts(array $additional = [])
         ]
       );
     }
+    if ($handle === 'solutions-create') {
+      wp_localize_script(
+        'solutions-create',
+        'solutionsCreate',
+        [
+          'ajaxUrl' => admin_url('admin-ajax.php'),
+          'texts'   => [
+            'close'      => __('Fermer', 'chassesautresor-com'),
+            'contenu'    => __('Texte de la solution', 'chassesautresor-com'),
+            'fichier'    => __('Fichier', 'chassesautresor-com'),
+            'disponibilite' => __('Disponibilité', 'chassesautresor-com'),
+            'finChasse'  => __('Fin de la chasse', 'chassesautresor-com'),
+            'differee'   => __('Différée', 'chassesautresor-com'),
+            'days'       => __('jours', 'chassesautresor-com'),
+            'valider'    => __('Valider', 'chassesautresor-com'),
+            'addTitre'   => __('Ajouter une solution', 'chassesautresor-com'),
+            'editTitre'  => __('Modifier la solution', 'chassesautresor-com'),
+            'success'    => __('Solution enregistrée.', 'chassesautresor-com'),
+            'ajaxError'  => __('Erreur réseau', 'chassesautresor-com'),
+          ],
+        ]
+      );
+    }
   }
 }
 
