@@ -2473,3 +2473,27 @@ msgstr "Désactivée"
 msgid "Coming on %s"
 msgstr "À venir le %s"
 
+#: inc/edition/edition-core.php:180
+msgid "Texte de la solution"
+msgstr "Texte de la solution"
+
+#: inc/edition/edition-core.php:181
+msgid "Fichier"
+msgstr "Fichier"
+
+#: inc/edition/edition-core.php:182
+msgid "Disponibilité"
+msgstr "Disponibilité"
+
+#: inc/edition/edition-core.php:187 template-parts/chasse/partials/chasse-partial-solutions.php:24
+msgid "Ajouter une solution"
+msgstr "Ajouter une solution"
+
+#: inc/edition/edition-core.php:195
+msgid "Ajoutez un fichier ou un texte"
+msgstr "Ajoutez un fichier ou un texte"
+
+#: inc/edition/edition-core.php:200
+msgid "Aucun fichier choisi"
+msgstr "Aucun fichier choisi"
+
