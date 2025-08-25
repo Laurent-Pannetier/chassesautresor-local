@@ -29,7 +29,7 @@ if (empty($solutions)) {
         <tr>
             <th><?= esc_html__('Date', 'chassesautresor-com'); ?></th>
             <th><?= esc_html__('Solution', 'chassesautresor-com'); ?></th>
-            <th><?= esc_html__('Type', 'chassesautresor-com'); ?></th>
+            <th><?= esc_html__('Availability', 'chassesautresor-com'); ?></th>
             <th><?= esc_html__('Solution pour', 'chassesautresor-com'); ?></th>
             <th class="solution-actions"><?= esc_html__('Action', 'chassesautresor-com'); ?></th>
         </tr>
@@ -81,6 +81,7 @@ if (empty($solutions)) {
                 SOLUTION_STATE_DESACTIVE          => __('Disabled', 'chassesautresor-com'),
             ];
             $etat_label = $state_labels[$etat] ?? $etat;
+            $date_label = '';
 
             switch ($etat) {
                 case SOLUTION_STATE_EN_COURS:
@@ -98,11 +99,6 @@ if (empty($solutions)) {
                 $date_label = function_exists('wp_date')
                     ? wp_date($format, $dt->getTimestamp())
                     : date($format, $dt->getTimestamp());
-                $etat_label = sprintf(
-                    /* translators: %s: scheduled date */
-                    __('Coming on %s', 'chassesautresor-com'),
-                    $date_label
-                );
             }
 
             $target_url = $linked_id ? get_permalink($linked_id) : get_permalink($solution);
@@ -112,23 +108,32 @@ if (empty($solutions)) {
                 <div><?= esc_html($date_value); ?></div>
                 <div><?= esc_html(sprintf(__('à %s', 'chassesautresor-com'), $time_value)); ?></div>
             </td>
-            <td><a href="<?= esc_url($target_url); ?>"><?= esc_html(get_the_title($solution)); ?></a></td>
             <td>
-                <?php if ($fichier_url) : ?>
-                    <span class="etiquette"><?= esc_html__('PDF', 'chassesautresor-com'); ?></span>
-                <?php endif; ?>
-                <?php if ($explication !== '') : ?>
-                    <span class="etiquette"><?= esc_html__('Texte', 'chassesautresor-com'); ?></span>
-                <?php endif; ?>
-                <?php if (!$fichier_url && $explication === '') : ?>-
-                <?php endif; ?>
+                <a href="<?= esc_url($target_url); ?>"><?= esc_html(get_the_title($solution)); ?></a>
+                <div>
+                    <?php if ($fichier_url) : ?>
+                        <span class="etiquette"><i class="fa-solid fa-file-pdf" aria-hidden="true"></i> <?= esc_html__('PDF', 'chassesautresor-com'); ?></span>
+                    <?php endif; ?>
+                    <?php if ($explication !== '') : ?>
+                        <span class="etiquette"><?= esc_html__('Texte', 'chassesautresor-com'); ?></span>
+                    <?php endif; ?>
+                </div>
+            </td>
+            <td>
+                <div>
+                    <span class="etiquette <?= esc_attr($etat_class); ?>"><?= esc_html($etat_label); ?></span>
+                    <?php if ($etat === SOLUTION_STATE_FIN_CHASSE_DIFFERE) : ?>
+                        <span class="txt-small">(<?= esc_html(sprintf(_n('%d day', '%d days', $delai, 'chassesautresor-com'), $delai)); ?> <?= esc_html__('at', 'chassesautresor-com'); ?> <?= esc_html($heure); ?>h)</span>
+                    <?php elseif ($etat === SOLUTION_STATE_A_VENIR && $date_label !== '') : ?>
+                        <span class="txt-small"><?= esc_html($date_label); ?></span>
+                    <?php endif; ?>
+                </div>
             </td>
             <td>
                 <div><span class="etiquette"><?= esc_html($cible_label); ?></span></div>
                 <div><?= $linked_html; ?></div>
             </td>
             <td class="solution-actions">
-                <div><span class="etiquette <?= esc_attr($etat_class); ?>"><?= esc_html($etat_label); ?></span></div>
                 <div class="solution-action-buttons">
                     <button type="button"
                         class="badge-action edit"
