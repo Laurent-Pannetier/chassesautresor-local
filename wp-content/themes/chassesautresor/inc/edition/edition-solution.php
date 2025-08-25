@@ -782,3 +782,47 @@ function ajax_modifier_solution_modal(): void
     wp_send_json_success(['solution_id' => $solution_id]);
 }
 add_action('wp_ajax_modifier_solution_modal', 'ajax_modifier_solution_modal');
+
+/**
+ * Supprime une solution via requête AJAX.
+ *
+ * @hook wp_ajax_supprimer_solution
+ * @return void
+ */
+function supprimer_solution_ajax(): void
+{
+    if (!is_user_logged_in()) {
+        wp_send_json_error('non_connecte');
+    }
+
+    $solution_id = isset($_POST['solution_id']) ? (int) $_POST['solution_id'] : 0;
+    if (!$solution_id || get_post_type($solution_id) !== 'solution') {
+        wp_send_json_error('id_invalide');
+    }
+
+    $cible_type = get_field('solution_cible_type', $solution_id) === 'enigme' ? 'enigme' : 'chasse';
+    if ($cible_type === 'chasse') {
+        $linked = get_field('solution_chasse_linked', $solution_id);
+    } else {
+        $linked = get_field('solution_enigme_linked', $solution_id);
+    }
+
+    if (is_array($linked)) {
+        $first    = $linked[0] ?? null;
+        $objet_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
+    } else {
+        $objet_id = (int) $linked;
+    }
+
+    if (!$objet_id || !solution_action_autorisee('delete', $cible_type, $objet_id)) {
+        wp_send_json_error('acces_refuse');
+    }
+
+    $deleted = wp_delete_post($solution_id, true);
+    if (!$deleted) {
+        wp_send_json_error('echec_suppression');
+    }
+
+    wp_send_json_success();
+}
+add_action('wp_ajax_supprimer_solution', 'supprimer_solution_ajax');
