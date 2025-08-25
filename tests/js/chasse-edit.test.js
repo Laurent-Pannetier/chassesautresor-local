@@ -19,8 +19,17 @@ const html = `
       <li class="edition-row champ-nb-gagnants" data-post-id="1">
         <div class="edition-row-label"><label for="chasse-nb-gagnants">Nb gagnants</label></div>
         <div class="edition-row-content">
-          <input type="number" id="chasse-nb-gagnants" value="0" class="champ-input champ-number">
-          <input type="checkbox" id="nb-gagnants-illimite">
+          <div class="champ-mode-options">
+            <span class="toggle-option">Illimité</span>
+            <label class="switch-control">
+              <input type="checkbox" id="nb-gagnants-limite">
+              <span class="switch-slider"></span>
+            </label>
+            <span class="toggle-option">Limité</span>
+          </div>
+          <div class="nb-gagnants-actions" style="display:none;">
+            <input type="number" id="chasse-nb-gagnants" value="0" class="champ-input champ-number">
+          </div>
         </div>
       </li>
     </template>

@@ -450,23 +450,30 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                         },
                         'content'  => function () use ($nb_max, $peut_editer) {
                             ?>
-                            <input type="number"
-                                id="chasse-nb-gagnants"
-                                name="chasse-nb-gagnants"
-                                value="<?= esc_attr($nb_max); ?>"
-                                min="1"
-                                class="champ-inline-nb champ-nb-edit champ-input champ-number"
-                                <?= ($peut_editer && $nb_max != 0) ? '' : 'disabled'; ?> />
-
-                            <div class="champ-option-illimitee ">
-                                <input type="checkbox"
-                                    id="nb-gagnants-illimite"
-                                    name="nb-gagnants-illimite"
-                                    <?= ($nb_max == 0 ? 'checked' : ''); ?> <?= $peut_editer ? '' : 'disabled'; ?>>
-                                <label for="nb-gagnants-illimite"><?= esc_html__('Illimité', 'chassesautresor-com'); ?></label>
+                            <div class="champ-mode-options">
+                                <span class="toggle-option"><?= esc_html__('Illimité', 'chassesautresor-com'); ?></span>
+                                <label class="switch-control">
+                                    <input
+                                        id="nb-gagnants-limite"
+                                        type="checkbox"
+                                        <?= $nb_max != 0 ? 'checked' : ''; ?>
+                                        <?= $peut_editer ? '' : 'disabled'; ?>
+                                    >
+                                    <span class="switch-slider"></span>
+                                </label>
+                                <span class="toggle-option"><?= esc_html__('Limité', 'chassesautresor-com'); ?></span>
                             </div>
+                            <div class="nb-gagnants-actions" style="<?= $nb_max != 0 ? '' : 'display:none;'; ?>">
+                                <input type="number"
+                                    id="chasse-nb-gagnants"
+                                    name="chasse-nb-gagnants"
+                                    value="<?= esc_attr($nb_max); ?>"
+                                    min="1"
+                                    class="champ-inline-nb champ-nb-edit champ-input champ-number"
+                                    <?= ($peut_editer && $nb_max != 0) ? '' : 'disabled'; ?> />
 
-                            <div id="erreur-nb-gagnants" class="message-erreur" style="display:none; color:red; font-size:0.9em; margin-top:5px;"></div>
+                                <div id="erreur-nb-gagnants" class="message-erreur" style="display:none; color:red; font-size:0.9em; margin-top:5px;"></div>
+                            </div>
                             <?php
                         },
                     ]

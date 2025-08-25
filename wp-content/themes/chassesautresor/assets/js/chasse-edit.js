@@ -956,29 +956,34 @@ document.querySelectorAll('.champ-cout-points .champ-annuler').forEach(bouton =>
 // ================================
 function initChampNbGagnants() {
   const inputNb = document.getElementById('chasse-nb-gagnants');
-  const checkboxIllimite = document.getElementById('nb-gagnants-illimite');
+  const toggleLimite = document.getElementById('nb-gagnants-limite');
+  const actions = inputNb?.closest('.nb-gagnants-actions');
 
-  if (!inputNb || !checkboxIllimite) return;
+  if (!inputNb || !toggleLimite || !actions) return;
 
   let timerDebounce;
 
-  checkboxIllimite.addEventListener('change', function () {
+  function updateVisibility() {
     const postId = inputNb.closest('li').dataset.postId;
     if (!postId) return;
 
-    if (checkboxIllimite.checked) {
-      inputNb.disabled = true;
-      inputNb.value = '0';
-    } else {
+    if (toggleLimite.checked) {
+      actions.style.display = '';
       inputNb.disabled = false;
       if (parseInt(inputNb.value.trim(), 10) === 0 || inputNb.value.trim() === '') {
         inputNb.value = '1';
       }
+    } else {
+      actions.style.display = 'none';
+      inputNb.disabled = true;
+      inputNb.value = '0';
     }
 
     inputNb.dispatchEvent(new Event('input', { bubbles: true }));
     mettreAJourAffichageNbGagnants(postId, inputNb.value.trim());
-  });
+  }
+
+  toggleLimite.addEventListener('change', updateVisibility);
 
   inputNb.addEventListener('input', function () {
     const postId = inputNb.closest('li').dataset.postId;
@@ -994,6 +999,8 @@ function initChampNbGagnants() {
       mettreAJourAffichageNbGagnants(postId, valeur);
     }, 500);
   });
+
+  updateVisibility();
 }
 
 // ================================
