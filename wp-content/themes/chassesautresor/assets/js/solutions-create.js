@@ -17,21 +17,28 @@
         solutionsCreate.texts.loading +
         '</option></select></label></p>'
       : '';
+    var initialName = '';
+    if (existingFileUrl) {
+      initialName = '<a href="' +
+        existingFileUrl +
+        '" target="_blank" rel="noopener noreferrer">' +
+        existingFileUrl.split('/').pop() +
+        '</a>';
+    }
     var fileField =
       '<p><label>' +
       solutionsCreate.texts.fichier +
-      '<br><input type="file" name="solution_fichier" accept="application/pdf" /></label>';
+      '<br><button type="button" class="solution-file-btn bouton-cta">' +
+      solutionsCreate.texts.chooseFile +
+      '</button> <span class="solution-file-name">' +
+      (initialName || solutionsCreate.texts.noFile) +
+      '</span>' +
+      '<input type="file" name="solution_fichier" accept="application/pdf" style="display:none" /></label>';
     if (isEdit && existingFileUrl) {
-      var fileName = existingFileUrl.split('/').pop();
       fileField +=
         '<input type="hidden" name="solution_fichier" value="' +
         existingFileId +
-        '" />' +
-        '<br><a href="' +
-        existingFileUrl +
-        '" target="_blank" rel="noopener noreferrer">' +
-        solutionsCreate.texts.currentFile.replace('%s', fileName) +
-        '</a>';
+        '" />';
     }
     fileField += '</p>';
     overlay.innerHTML = `
@@ -76,6 +83,8 @@
     var explicationInput = overlay.querySelector('textarea[name="solution_explication"]');
     var fichierInput = overlay.querySelector('input[name="solution_fichier"][type="file"]');
     var existingFileInput = overlay.querySelector('input[name="solution_fichier"][type="hidden"]');
+    var fichierBtn = overlay.querySelector('.solution-file-btn');
+    var fichierName = overlay.querySelector('.solution-file-name');
     if (btn.dataset.solutionDisponibilite === 'differee') {
       selectDispo.value = 'differee';
       delaiWrapper.style.display = '';
@@ -87,12 +96,18 @@
     delaiInput.addEventListener('input', refreshState);
     heureInput.addEventListener('input', refreshState);
     explicationInput.addEventListener('input', refreshState);
-    if (fichierInput) {
+    if (fichierBtn && fichierInput) {
+      fichierBtn.addEventListener('click', function () {
+        fichierInput.click();
+      });
       fichierInput.addEventListener('change', function () {
         if (existingFileInput) {
           existingFileInput.value = '';
         }
         existingFileId = '';
+        fichierName.textContent = fichierInput.files.length
+          ? fichierInput.files[0].name
+          : solutionsCreate.texts.noFile;
         refreshState();
       });
     }
@@ -195,6 +210,9 @@
           if (res.success) {
             stateMessage.textContent = solutionsCreate.texts.success;
             window.dispatchEvent(new Event('solution-created'));
+            if (window.rafraichirCarteSolutions) {
+              window.rafraichirCarteSolutions();
+            }
             setTimeout(close, 500);
           } else {
             stateMessage.textContent = res.data || solutionsCreate.texts.ajaxError;
