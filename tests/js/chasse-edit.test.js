@@ -3,11 +3,13 @@ const html = `
   <div id="chasse-tab-param">
     <ul>
       <li class="edition-row champ-chasse champ-mode-fin" data-post-id="1">
-        <div class="edition-row-label"><label>Mode</label></div>
+        <div class="edition-row-label"><label for="chasse_mode_fin">Mode</label></div>
         <div class="edition-row-content">
           <div class="champ-mode-options">
-            <input type="radio" name="acf[chasse_mode_fin]" value="automatique" checked>
-            <input type="radio" name="acf[chasse_mode_fin]" value="manuelle">
+            <label class="switch-control">
+              <input type="checkbox" id="chasse_mode_fin" name="acf[chasse_mode_fin]" value="manuelle">
+              <span class="switch-slider"></span>
+            </label>
             <div class="fin-chasse-actions"></div>
           </div>
         </div>
@@ -55,17 +57,17 @@ describe('chasse-edit UI', () => {
   });
 
   test('manual termination block is in Paramètres tab', () => {
-    const radio = document.querySelector('input[value="manuelle"]');
-    radio.checked = true;
-    radio.dispatchEvent(new Event('change', { bubbles: true }));
+    const toggle = document.getElementById('chasse_mode_fin');
+    toggle.checked = true;
+    toggle.dispatchEvent(new Event('change', { bubbles: true }));
     expect(document.querySelector('#chasse-tab-param .fin-chasse-actions .terminer-chasse-btn')).not.toBeNull();
     expect(document.querySelector('#chasse-tab-animation .fin-chasse-actions')).toBeNull();
   });
 
   test('changing termination mode saves field', async () => {
-    const radio = document.querySelector('input[value="manuelle"]');
-    radio.checked = true;
-    radio.dispatchEvent(new Event('change', { bubbles: true }));
+    const toggle = document.getElementById('chasse_mode_fin');
+    toggle.checked = true;
+    toggle.dispatchEvent(new Event('change', { bubbles: true }));
     await Promise.resolve();
     expect(global.modifierChampSimple).toHaveBeenCalledWith('chasse_mode_fin', 'manuelle', '1', 'chasse');
   });
@@ -73,20 +75,19 @@ describe('chasse-edit UI', () => {
   test('terminate button toggles with mode', () => {
     const actions = document.querySelector('.fin-chasse-actions');
     expect(actions.querySelector('.terminer-chasse-btn')).toBeNull();
-    const manual = document.querySelector('input[value="manuelle"]');
-    manual.checked = true;
-    manual.dispatchEvent(new Event('change', { bubbles: true }));
+    const toggle = document.getElementById('chasse_mode_fin');
+    toggle.checked = true;
+    toggle.dispatchEvent(new Event('change', { bubbles: true }));
     expect(actions.querySelector('.terminer-chasse-btn')).not.toBeNull();
-    const auto = document.querySelector('input[value="automatique"]');
-    auto.checked = true;
-    auto.dispatchEvent(new Event('change', { bubbles: true }));
+    toggle.checked = false;
+    toggle.dispatchEvent(new Event('change', { bubbles: true }));
     expect(actions.querySelector('.terminer-chasse-btn')).toBeNull();
   });
 
   test('validating manual termination updates message', async () => {
-    const radio = document.querySelector('input[value="manuelle"]');
-    radio.checked = true;
-    radio.dispatchEvent(new Event('change', { bubbles: true }));
+    const toggle = document.getElementById('chasse_mode_fin');
+    toggle.checked = true;
+    toggle.dispatchEvent(new Event('change', { bubbles: true }));
     const fakeNow = new Date('2024-01-02');
     jest.spyOn(global, 'Date').mockImplementation(() => fakeNow);
     global.Date.now = () => fakeNow.getTime();
