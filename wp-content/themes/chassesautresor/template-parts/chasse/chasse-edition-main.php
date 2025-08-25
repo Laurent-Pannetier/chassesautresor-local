@@ -965,7 +965,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                 ])) : 0;
               $count_total  = $count_chasse + $count_enigme;
               ?>
-              <h3><?= esc_html__('Indices', 'chassesautresor-com'); ?></h3>
+              <h3 style="margin-top: var(--space-xl);"><?= esc_html__('Indices', 'chassesautresor-com'); ?></h3>
               <div class="liste-indices" data-page="1" data-pages="<?= esc_attr($pages_indices); ?>" data-objet-type="chasse" data-objet-id="<?= esc_attr($chasse_id); ?>" data-ajax-url="<?= esc_url(admin_url('admin-ajax.php')); ?>">
                 <?php
                 get_template_part('template-parts/common/indices-table', null, [
