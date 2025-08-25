@@ -73,23 +73,28 @@ if (empty($solutions)) {
             $dt         = $date_raw ? convertir_en_datetime($date_raw) : null;
             $etat_class = 'etiquette-error';
             $etat_label = __($etat, 'chassesautresor-com');
-            if ($etat === 'accessible') {
-                $etat_class = 'etiquette-success';
-            } elseif ($etat === 'programme' || $etat === 'programmé') {
-                $etat_class = 'etiquette-pending';
-                if ($dt instanceof DateTimeInterface) {
-                    $format     = get_option('date_format') . ' ' . get_option('time_format');
-                    $date_label = function_exists('wp_date')
-                        ? wp_date($format, $dt->getTimestamp())
-                        : date($format, $dt->getTimestamp());
-                    $etat_label = sprintf(
-                        /* translators: %s: scheduled date */
-                        __('programmé le %s', 'chassesautresor-com'),
-                        $date_label
-                    );
-                } else {
-                    $etat_label = __('programmé', 'chassesautresor-com');
-                }
+
+            switch ($etat) {
+                case SOLUTION_STATE_EN_COURS:
+                    $etat_class = 'etiquette-success';
+                    break;
+                case SOLUTION_STATE_A_VENIR:
+                case SOLUTION_STATE_FIN_CHASSE:
+                case SOLUTION_STATE_FIN_CHASSE_DIFFERE:
+                    $etat_class = 'etiquette-pending';
+                    break;
+            }
+
+            if ($etat === SOLUTION_STATE_A_VENIR && $dt instanceof DateTimeInterface) {
+                $format     = get_option('date_format') . ' ' . get_option('time_format');
+                $date_label = function_exists('wp_date')
+                    ? wp_date($format, $dt->getTimestamp())
+                    : date($format, $dt->getTimestamp());
+                $etat_label = sprintf(
+                    /* translators: %s: scheduled date */
+                    __('à venir le %s', 'chassesautresor-com'),
+                    $date_label
+                );
             }
 
             $target_url = $linked_id ? get_permalink($linked_id) : get_permalink($solution);

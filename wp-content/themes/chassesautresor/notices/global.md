@@ -444,7 +444,7 @@ Groupe : paramètres solution
 * solution_disponibilite (radio, fin_chasse/differee)
 * solution_decalage_jours (number)
 * solution_heure_publication (time_picker)
-* solution_cache_etat_systeme (select, INVALIDE/FIN_CHASSE/FIN_CHASSE_DIFFERE/A_VENIR/EN_COURS/DESACTIVE)
+* solution_cache_etat_systeme (select, INVALIDE/FIN_CHASSE/FIN_CHASSE_DIFFERE/A_VENIR/EN_COURS/DESACTIVE) – voir les constantes définies dans `inc/constants.php`
 * solution_cache_complet (true_false)
 
 États possibles pour `solution_cache_etat_systeme` :
