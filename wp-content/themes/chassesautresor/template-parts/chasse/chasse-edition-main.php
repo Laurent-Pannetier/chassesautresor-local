@@ -832,6 +832,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   data-champ="chasse_principale_liens"
                   data-cpt="chasse"
                   data-post-id="<?= esc_attr($chasse_id); ?>">
+                  <span class="carte-check" aria-hidden="true"><i class="fa-solid fa-check"></i></span>
                   <i class="fa-solid fa-share-nodes icone-defaut" aria-hidden="true"></i>
                   <div class="champ-affichage champ-affichage-liens">
                     <?= render_liens_publics($liens, 'chasse', ['placeholder' => false]); ?>

@@ -2110,6 +2110,11 @@ body .header-img-modifiable .icone-modif {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08), 0 0 0 3px hsl(var(--editor-error-hsl)/0.3);
 }
 
+.champ-indices.champ-vide.carte-orgy,
+.champ-solutions.champ-vide.carte-orgy {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08), 0 0 0 3px hsl(var(--editor-error-hsl)/0.3);
+}
+
 .dashboard-card.champ-liens .liste-liens-publics, .champ-liens.carte-orgy .liste-liens-publics {
   display: flex;
   gap: var(--space-xs);
@@ -3228,6 +3233,25 @@ body.panneau-ouvert::before {
   line-height: 1.4;
 }
 
+.carte-check {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: var(--color-editor-success);
+  color: #fff;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+}
+
+.carte-orgy.champ-rempli .carte-check {
+  display: flex;
+}
+
 .dashboard-grid > .dashboard-card:only-child, .dashboard-grid > .carte-orgy:only-child {
   max-width: var(--dashboard-card-max-width);
   width: 100%;
@@ -3260,6 +3284,16 @@ body.panneau-ouvert::before {
   height: 2rem;
 }
 
+.dashboard-card.champ-qr-code, .champ-qr-code.carte-orgy {
+  width: 75%;
+  margin: 0 auto;
+}
+
+@media not all and (--bp-desktop) {
+  .dashboard-card.champ-qr-code, .champ-qr-code.carte-orgy {
+    width: 100%;
+  }
+}
 .dashboard-card.solution-option, .solution-option.carte-orgy {
   cursor: pointer;
   transition: background-color 0.2s, border-color 0.2s, opacity 0.2s;
@@ -3381,6 +3415,13 @@ body.panneau-ouvert::before {
 
 .dashboard-card.champ-solutions .cta-solution-enigme:hover, .champ-solutions.carte-orgy .cta-solution-enigme:hover {
   background-color: var(--color-editor-success-hover);
+}
+
+.dashboard-card.champ-solutions .cta-solution-chasse.disabled, .champ-solutions.carte-orgy .cta-solution-chasse.disabled,
+.dashboard-card.champ-solutions .cta-solution-enigme.disabled,
+.champ-solutions.carte-orgy .cta-solution-enigme.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .dashboard-card .solution-reset, .carte-orgy .solution-reset {
@@ -8140,5 +8181,3 @@ section#presentation .presentation-fermer {
   --editor-button-hsl: 214 82% 51%; /* = #1A73E8 → var(--color-editor-button) */
   --editor-button-hover-hsl: 214 79% 39%; /* = #1558B0 → var(--color-editor-button-hover) */
 }
-
-/*# sourceMappingURL=main.css.map */

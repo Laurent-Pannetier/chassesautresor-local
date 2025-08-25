@@ -16,15 +16,19 @@ $default_enigme = $args['default_enigme'] ?? null;
 
 $peut_ajouter = solution_action_autorisee('create', $objet_type, $objet_id);
 $has_solution_chasse = $objet_type === 'chasse' && solution_existe_pour_objet($objet_id, 'chasse');
-$enigmes_disponibles = $objet_type === 'chasse' ? recuperer_enigmes_pour_chasse($objet_id) : [];
+$toutes_enigmes = $objet_type === 'chasse' ? recuperer_enigmes_pour_chasse($objet_id) : [];
 $enigmes_disponibles = array_filter(
-    $enigmes_disponibles,
+    $toutes_enigmes,
     static fn($e) => !solution_existe_pour_objet($e->ID, 'enigme')
 );
 $has_enigmes = !empty($enigmes_disponibles);
+$has_enigme_solution = count($toutes_enigmes) > count($enigmes_disponibles);
+$has_solutions = $has_solution_chasse || $has_enigme_solution;
+$state_class = $has_solutions ? 'champ-rempli' : 'champ-vide';
 ?>
-<div class='dashboard-card carte-orgy champ-<?= esc_attr($objet_type); ?> champ-solutions<?= $peut_ajouter ? '' : ' disabled'; ?>'
+<div class='dashboard-card carte-orgy champ-<?= esc_attr($objet_type); ?> champ-solutions<?= $peut_ajouter ? '' : ' disabled'; ?> <?= esc_attr($state_class); ?>'
 >
+    <span class="carte-check" aria-hidden='true'><i class='fa-solid fa-check'></i></span>
     <i class='fa-solid fa-lightbulb icone-defaut' aria-hidden='true'></i>
     <h3><?= esc_html__('Ajouter une solution', 'chassesautresor-com'); ?></h3>
 <?php if ($peut_ajouter) : ?>

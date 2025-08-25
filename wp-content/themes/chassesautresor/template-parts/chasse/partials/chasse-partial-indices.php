@@ -16,12 +16,15 @@ $default_enigme = $args['default_enigme'] ?? null;
 
 $objet_titre = get_the_title($objet_id);
 $indice_rang = prochain_rang_indice($objet_id, $objet_type);
+$has_indices = $indice_rang > 1;
+$state_class = $has_indices ? 'champ-rempli' : 'champ-vide';
 
 $peut_ajouter = indice_action_autorisee('create', $objet_type, $objet_id);
 $enigmes_disponibles = $objet_type === 'chasse' ? recuperer_enigmes_pour_chasse($objet_id) : [];
 $has_enigmes = !empty($enigmes_disponibles);
 ?>
-<div class="dashboard-card carte-orgy champ-<?= esc_attr($objet_type); ?> champ-indices<?= $peut_ajouter ? '' : ' disabled'; ?>">
+<div class="dashboard-card carte-orgy champ-<?= esc_attr($objet_type); ?> champ-indices<?= $peut_ajouter ? '' : ' disabled'; ?> <?= esc_attr($state_class); ?>">
+    <span class="carte-check" aria-hidden="true"><i class="fa-solid fa-check"></i></span>
     <i class="fa-solid fa-kit-medical icone-defaut" aria-hidden="true"></i>
     <h3><?= esc_html__('Ajouter un indice', 'chassesautresor-com'); ?></h3>
 <?php if ($peut_ajouter) : ?>
