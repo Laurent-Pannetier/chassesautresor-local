@@ -452,6 +452,22 @@ function indice_action_autorisee(string $action, string $object_type, int $objec
 }
 
 /**
+ * Détermine si une action sur une solution est autorisée.
+ *
+ * Wrapper autour de indice_action_autorisee afin de réutiliser les
+ * règles d'accès existantes pour les chasses et les énigmes.
+ *
+ * @param string $action      Action souhaitée (create, edit, delete).
+ * @param string $object_type Type de cible (chasse ou enigme).
+ * @param int    $object_id   ID de la cible.
+ * @return bool
+ */
+function solution_action_autorisee(string $action, string $object_type, int $object_id): bool
+{
+    return indice_action_autorisee($action, $object_type, $object_id);
+}
+
+/**
  * Détermine si un utilisateur peut voir une énigme donnée.
  *
  * @param int $enigme_id ID du post de type 'enigme'
