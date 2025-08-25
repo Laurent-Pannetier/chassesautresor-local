@@ -918,69 +918,6 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   ],
                 ];
               }
-              $indices_query = new WP_Query([
-                'post_type'      => 'indice',
-                'post_status'    => ['publish', 'pending', 'draft'],
-                'orderby'        => 'date',
-                'order'          => 'DESC',
-                'posts_per_page' => $par_page_indices,
-                'paged'          => $page_indices,
-                'meta_query'     => $meta,
-              ]);
-              $indices_list  = $indices_query->posts;
-              $pages_indices = (int) $indices_query->max_num_pages;
-                $count_chasse  = function_exists('get_posts') ? count(get_posts([
-                  'post_type'      => 'indice',
-                  'post_status'    => ['publish', 'pending', 'draft'],
-                  'fields'         => 'ids',
-                  'nopaging'       => true,
-                  'meta_query'     => [
-                    [
-                      'key'   => 'indice_cible_type',
-                      'value' => 'chasse',
-                    ],
-                    [
-                      'key'   => 'indice_chasse_linked',
-                      'value' => $chasse_id,
-                    ],
-                  ],
-                ])) : 0;
-                $count_enigme = !empty($enigme_ids) && function_exists('get_posts') ? count(get_posts([
-                  'post_type'      => 'indice',
-                  'post_status'    => ['publish', 'pending', 'draft'],
-                  'fields'         => 'ids',
-                  'nopaging'       => true,
-                  'meta_query'     => [
-                    [
-                      'key'   => 'indice_cible_type',
-                      'value' => 'enigme',
-                    ],
-                    [
-                      'key'     => 'indice_enigme_linked',
-                      'value'   => $enigme_ids,
-                      'compare' => 'IN',
-                    ],
-                  ],
-                ])) : 0;
-              $count_total  = $count_chasse + $count_enigme;
-              ?>
-              <h3 style="margin-top: var(--space-xl);"><?= esc_html__('Indices', 'chassesautresor-com'); ?></h3>
-              <div class="liste-indices" data-page="1" data-pages="<?= esc_attr($pages_indices); ?>" data-objet-type="chasse" data-objet-id="<?= esc_attr($chasse_id); ?>" data-ajax-url="<?= esc_url(admin_url('admin-ajax.php')); ?>">
-                <?php
-                get_template_part('template-parts/common/indices-table', null, [
-                  'indices'     => $indices_list,
-                  'page'        => 1,
-                  'pages'       => $pages_indices,
-                  'objet_type'  => 'chasse',
-                  'objet_id'    => $chasse_id,
-                  'count_total' => $count_total,
-                  'count_chasse' => $count_chasse,
-                  'count_enigme' => $count_enigme,
-                ]);
-                ?>
-              </div>
-
-              <?php
               $par_page_solutions = 5;
               $page_solutions     = 1;
               $meta_solutions     = [
@@ -1039,6 +976,82 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   'objet_id'   => $chasse_id,
                 ]);
                 ?>
+              </div>
+
+              <div class="dashboard-card carte-orgy champ-protection-solutions">
+                <div class="qr-code-block">
+                  <div class="qr-code-image">
+                    <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+                  </div>
+                  <div class="qr-code-content">
+                    <h3><?= esc_html__('Protection des PDF de solution', 'chassesautresor-com'); ?></h3>
+                    <h4><?= esc_html__('Sécurisez le partage de vos réponses', 'chassesautresor-com'); ?></h4>
+                    <p><?= esc_html__("Les fichiers PDF de solution ne sont accessibles qu'aux joueurs autorisés. Cette protection limite les partages involontaires et préserve l'équité entre les participants.", 'chassesautresor-com'); ?></p>
+                  </div>
+                </div>
+              </div>
+
+              <?php
+              $indices_query = new WP_Query([
+                'post_type'      => 'indice',
+                'post_status'    => ['publish', 'pending', 'draft'],
+                'orderby'        => 'date',
+                'order'          => 'DESC',
+                'posts_per_page' => $par_page_indices,
+                'paged'          => $page_indices,
+                'meta_query'     => $meta,
+              ]);
+              $indices_list  = $indices_query->posts;
+              $pages_indices = (int) $indices_query->max_num_pages;
+                $count_chasse  = function_exists('get_posts') ? count(get_posts([
+                  'post_type'      => 'indice',
+                  'post_status'    => ['publish', 'pending', 'draft'],
+                  'fields'         => 'ids',
+                  'nopaging'       => true,
+                  'meta_query'     => [
+                    [
+                      'key'   => 'indice_cible_type',
+                      'value' => 'chasse',
+                    ],
+                    [
+                      'key'   => 'indice_chasse_linked',
+                      'value' => $chasse_id,
+                    ],
+                  ],
+                ])) : 0;
+                $count_enigme = !empty($enigme_ids) && function_exists('get_posts') ? count(get_posts([
+                  'post_type'      => 'indice',
+                  'post_status'    => ['publish', 'pending', 'draft'],
+                  'fields'         => 'ids',
+                  'nopaging'       => true,
+                  'meta_query'     => [
+                    [
+                      'key'   => 'indice_cible_type',
+                      'value' => 'enigme',
+                    ],
+                    [
+                      'key'     => 'indice_enigme_linked',
+                      'value'   => $enigme_ids,
+                      'compare' => 'IN',
+                    ],
+                  ],
+                ])) : 0;
+              $count_total  = $count_chasse + $count_enigme;
+              ?>
+              <h3 style="margin-top: var(--space-xl);"><?= esc_html__('Indices', 'chassesautresor-com'); ?></h3>
+              <div class="liste-indices" data-page="1" data-pages="<?= esc_attr($pages_indices); ?>" data-objet-type="chasse" data-objet-id="<?= esc_attr($chasse_id); ?>" data-ajax-url="<?= esc_url(admin_url('admin-ajax.php')); ?>">
+                <?php
+              get_template_part('template-parts/common/indices-table', null, [
+                'indices'     => $indices_list,
+                'page'        => 1,
+                'pages'       => $pages_indices,
+                'objet_type'  => 'chasse',
+                'objet_id'    => $chasse_id,
+                'count_total' => $count_total,
+                'count_chasse' => $count_chasse,
+                'count_enigme' => $count_enigme,
+              ]);
+              ?>
               </div>
             </div>
           </div>

@@ -1882,6 +1882,12 @@ a[aria-disabled=true] {
   display: block;
 }
 
+.qr-code-block .qr-code-image i {
+  display: block;
+  font-size: 200px;
+  line-height: 1;
+}
+
 .qr-code-block .qr-code-content {
   flex: 1;
   display: flex;
