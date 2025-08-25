@@ -859,7 +859,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                   $solutions_list  = $solutions_query->posts;
                   $pages_solutions = (int) $solutions_query->max_num_pages;
                   ?>
-                  <div class="liste-solutions" data-page="1" data-pages="<?= esc_attr($pages_solutions); ?>" data-objet-type="enigme" data-objet-id="<?= esc_attr($enigme_id); ?>" data-ajax-url="<?= esc_url(admin_url('admin-ajax.php')); ?>">
+                <div class="liste-solutions" data-page="1" data-pages="<?= esc_attr($pages_solutions); ?>" data-objet-type="enigme" data-objet-id="<?= esc_attr($enigme_id); ?>" data-ajax-url="<?= esc_url(admin_url('admin-ajax.php')); ?>">
                     <?php
                     get_template_part('template-parts/common/solutions-table', null, [
                       'solutions'  => $solutions_list,
@@ -869,13 +869,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                       'objet_id'   => $enigme_id,
                     ]);
                     ?>
-                  </div>
                 </div>
+            </div>
 
-                <div class="resume-bloc resume-indices">
-                  <h3><?= sprintf(esc_html__('Indices pour %s', 'chassesautresor-com'), get_the_title($enigme_id)); ?></h3>
-                  <div class="dashboard-grid stats-cards">
-                    <?php
+            <div class="solutions-protection-banner">
+              <i class="fa-solid fa-shield-halved protection-icon" aria-hidden="true"></i>
+              <div class="solutions-protection-text">
+                <h4><?= esc_html__('Vos solutions sont protégées', 'chassesautresor-com'); ?></h4>
+                <ul>
+                  <li><?= esc_html__('Stockées dans un espace privé, hors de portée des joueurs.', 'chassesautresor-com'); ?></li>
+                  <li><?= esc_html__('Aucun lien ne peut être trouvé ni ouvert.', 'chassesautresor-com'); ?></li>
+                  <li><?= esc_html__('Débloquées uniquement au moment choisi.', 'chassesautresor-com'); ?></li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="resume-bloc resume-indices">
+              <h3><?= sprintf(esc_html__('Indices pour %s', 'chassesautresor-com'), get_the_title($enigme_id)); ?></h3>
+              <div class="dashboard-grid stats-cards">
+                <?php
                     get_template_part('template-parts/chasse/partials/chasse-partial-indices', null, [
                       'objet_id'   => $enigme_id,
                       'objet_type' => 'enigme',

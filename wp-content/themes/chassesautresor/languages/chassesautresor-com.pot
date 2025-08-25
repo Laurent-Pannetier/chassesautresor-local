@@ -1574,19 +1574,19 @@ msgstr ""
 msgid "jours, publié à"
 msgstr ""
 
-#: template-parts/enigme/enigme-edition-main.php:760
+#: template-parts/enigme/enigme-edition-main.php:878
 msgid "Vos solutions sont protégées"
 msgstr ""
 
-#: template-parts/enigme/enigme-edition-main.php:761
+#: template-parts/enigme/enigme-edition-main.php:880
 msgid "Stockées dans un espace privé, hors de portée des joueurs."
 msgstr ""
 
-#: template-parts/enigme/enigme-edition-main.php:762
+#: template-parts/enigme/enigme-edition-main.php:881
 msgid "Aucun lien ne peut être trouvé ni ouvert."
 msgstr ""
 
-#: template-parts/enigme/enigme-edition-main.php:763
+#: template-parts/enigme/enigme-edition-main.php:882
 msgid "Débloquées uniquement au moment choisi."
 msgstr ""
 

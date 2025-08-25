@@ -4051,7 +4051,32 @@ body.panneau-ouvert::before {
 }
 
 .indice-modal-form .image-preview .image-actions button:hover {
-  background-color: rgba(var(--color-black-rgb), 0.8);
+    background-color: rgba(var(--color-black-rgb), 0.8);
+}
+
+/* ========== 🛡️ PROTECTION DES SOLUTIONS ========== */
+.solutions-protection-banner {
+    width: 75%;
+    margin: var(--space-2xl) auto 0;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-lg);
+    color: var(--color-editor-text);
+}
+
+.solutions-protection-banner .protection-icon {
+    font-size: 4rem;
+    color: var(--color-primary);
+}
+
+.solutions-protection-banner h4 {
+    margin: 0 0 var(--space-sm) 0;
+    color: var(--color-editor-heading);
+}
+
+.solutions-protection-banner ul {
+    margin: 0;
+    padding-left: var(--space-lg);
 }
 
 /* Layout for enigma pages */

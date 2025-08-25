@@ -1681,19 +1681,19 @@ msgstr "Solutions release delay"
 msgid "jours, publié à"
 msgstr "days, published at"
 
-#: template-parts/enigme/enigme-edition-main.php:760
+#: template-parts/enigme/enigme-edition-main.php:878
 msgid "Vos solutions sont protégées"
 msgstr "Your solutions are protected"
 
-#: template-parts/enigme/enigme-edition-main.php:761
+#: template-parts/enigme/enigme-edition-main.php:880
 msgid "Stockées dans un espace privé, hors de portée des joueurs."
 msgstr "Stored in a private area, out of players' reach."
 
-#: template-parts/enigme/enigme-edition-main.php:762
+#: template-parts/enigme/enigme-edition-main.php:881
 msgid "Aucun lien ne peut être trouvé ni ouvert."
 msgstr "No link can be found or opened."
 
-#: template-parts/enigme/enigme-edition-main.php:763
+#: template-parts/enigme/enigme-edition-main.php:882
 msgid "Débloquées uniquement au moment choisi."
 msgstr "Unlocked only at the chosen time."
 
