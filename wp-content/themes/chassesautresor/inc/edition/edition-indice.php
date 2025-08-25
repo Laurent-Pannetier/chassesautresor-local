@@ -462,7 +462,7 @@ function ajax_indices_lister_table(): void
         wp_send_json_error('acces_refuse');
     }
 
-    $per_page = 8;
+    $per_page = $objet_type === 'chasse' ? 5 : 8;
     if ($objet_type === 'chasse') {
         $enigme_ids = recuperer_ids_enigmes_pour_chasse($objet_id);
         $meta       = [
