@@ -75,7 +75,6 @@
 
     function close() { overlay.remove(); }
     overlay.querySelector('.solution-modal-close').addEventListener('click', close);
-    overlay.addEventListener('click', function(e){ if(e.target === overlay) close(); });
 
     var form = overlay.querySelector('.solution-modal-form');
     var validateBtn = overlay.querySelector('.solution-modal-validate');
@@ -233,7 +232,27 @@
             if (window.rafraichirCarteSolutions) {
               window.rafraichirCarteSolutions();
             }
-            setTimeout(close, 500);
+            setTimeout(function () {
+              close();
+              var anchorId = 'chasse-section-solutions';
+              var anchor = document.getElementById(anchorId);
+              if (!anchor) {
+                var list = document.querySelector('.liste-solutions');
+                if (list) {
+                  anchor = document.createElement('span');
+                  anchor.id = anchorId;
+                  var heading = list.previousElementSibling;
+                  if (heading) {
+                    heading.parentNode.insertBefore(anchor, heading);
+                  } else {
+                    list.parentNode.insertBefore(anchor, list);
+                  }
+                }
+              }
+              if (anchor) {
+                anchor.scrollIntoView({ behavior: 'smooth' });
+              }
+            }, 500);
           } else {
             stateMessage.textContent = res.data || solutionsCreate.texts.ajaxError;
           }
