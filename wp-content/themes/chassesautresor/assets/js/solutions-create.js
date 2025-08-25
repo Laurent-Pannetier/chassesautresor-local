@@ -32,9 +32,13 @@
       solutionsCreate.texts.chooseFile +
       '</button> <span class="solution-file-name">' +
       (initialName || solutionsCreate.texts.noFile) +
-      '</span>' +
+      '</span> <button type="button" class="solution-file-remove' +
+      (initialName ? '' : '" style="display:none"') +
+      '">' +
+      solutionsCreate.texts.removeFile +
+      '</button>' +
       '<input type="file" name="solution_fichier" accept="application/pdf" style="display:none" /></label>';
-    if (isEdit && existingFileUrl) {
+    if (isEdit) {
       fileField +=
         '<input type="hidden" name="solution_fichier" value="' +
         existingFileId +
@@ -85,6 +89,7 @@
     var existingFileInput = overlay.querySelector('input[name="solution_fichier"][type="hidden"]');
     var fichierBtn = overlay.querySelector('.solution-file-btn');
     var fichierName = overlay.querySelector('.solution-file-name');
+    var removeBtn = overlay.querySelector('.solution-file-remove');
     if (btn.dataset.solutionDisponibilite === 'differee') {
       selectDispo.value = 'differee';
       delaiWrapper.style.display = '';
@@ -108,6 +113,21 @@
         fichierName.textContent = fichierInput.files.length
           ? fichierInput.files[0].name
           : solutionsCreate.texts.noFile;
+        if (removeBtn) {
+          removeBtn.style.display = fichierInput.files.length ? '' : 'none';
+        }
+        refreshState();
+      });
+    }
+    if (removeBtn) {
+      removeBtn.addEventListener('click', function () {
+        fichierInput.value = '';
+        if (existingFileInput) {
+          existingFileInput.value = '';
+        }
+        existingFileId = '';
+        fichierName.textContent = solutionsCreate.texts.noFile;
+        removeBtn.style.display = 'none';
         refreshState();
       });
     }
