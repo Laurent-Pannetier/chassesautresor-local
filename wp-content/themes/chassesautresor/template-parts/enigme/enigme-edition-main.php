@@ -835,15 +835,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
   </div>
 
             <?php
-            $solution_mode = get_field('enigme_solution_mode', $enigme_id) ?? 'pdf';
-            $fichier      = get_field('enigme_solution_fichier', $enigme_id);
-            $fichier_url  = is_array($fichier) ? $fichier['url'] : '';
-            $fichier_nom  = is_array($fichier) && !empty($fichier['filename']) ? $fichier['filename'] : '';
-            $explication  = get_field('enigme_solution_explication', $enigme_id);
-            $explication  = is_string($explication) ? trim(wp_strip_all_tags($explication)) : '';
-            $delai        = get_field('enigme_solution_delai', $enigme_id) ?? 7;
-            $heure        = get_field('enigme_solution_heure', $enigme_id) ?? '18:00';
-            $aide_delai   = esc_html__('Les solutions ne peuvent être publiées que lorsqu’une chasse est déclarée terminée. Une fois celle-ci achevée, elles restent conservées dans un coffre-fort numérique pendant le délai que vous définissez ici.', 'chassesautresor-com');
+            $solution      = solution_recuperer_par_objet($enigme_id, 'enigme');
+            $solution_mode = 'pdf';
+            $fichier_url   = '';
+            $fichier_nom   = '';
+            $explication   = '';
+            $delai         = 7;
+            $heure         = '18:00';
+            $disponibilite = 'fin_chasse';
+
+            if ($solution) {
+                $fichier     = get_field('solution_fichier', $solution->ID);
+                $fichier_url = is_array($fichier) ? ($fichier['url'] ?? '') : '';
+                $fichier_nom = is_array($fichier) && !empty($fichier['filename']) ? $fichier['filename'] : '';
+                $explication = get_field('solution_explication', $solution->ID);
+                $explication = is_string($explication) ? trim(wp_strip_all_tags($explication)) : '';
+                $disponibilite = get_field('solution_disponibilite', $solution->ID) ?: 'fin_chasse';
+                $delai         = (int) get_field('solution_decalage_jours', $solution->ID);
+                $heure         = get_field('solution_heure_publication', $solution->ID) ?: '18:00';
+                if ($explication !== '') {
+                    $solution_mode = 'texte';
+                }
+                if ($fichier_url) {
+                    $solution_mode = 'pdf';
+                }
+            }
+
+            $aide_delai = esc_html__(
+                'Les solutions ne peuvent être publiées que lorsqu’une chasse est déclarée terminée. Une fois celle-ci achevée, elles restent conservées dans un coffre-fort numérique pendant le délai que vous définissez ici.',
+                'chassesautresor-com'
+            );
 
             $pdf_icon_attr   = $fichier_nom ? ' style="color: var(--color-editor-success);"' : '';
             $pdf_title       = $fichier_nom ?: esc_html__('Document PDF', 'chassesautresor-com');
@@ -857,14 +878,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
             if ($solution_mode === 'pdf') {
                 if ($fichier_url !== '') {
                     $publication_label = sprintf(esc_html__('votre fichier %s', 'chassesautresor-com'), $fichier_nom);
-                    $publication_note  = sprintf(esc_html__(' %d jours après la fin de la chasse, à %s', 'chassesautresor-com'), $delai, $heure);
+                    $publication_note  = $disponibilite === 'differee'
+                        ? sprintf(esc_html__(' %d jours après la fin de la chasse, à %s', 'chassesautresor-com'), $delai, $heure)
+                        : esc_html__(' à la fin de la chasse', 'chassesautresor-com');
                 } else {
                     $publication_note = esc_html__(' (pdf sélectionné mais pas de fichier chargé)', 'chassesautresor-com');
                 }
             } elseif ($solution_mode === 'texte') {
                 if ($explication !== '') {
                     $publication_label = esc_html__("votre texte d'explication", 'chassesautresor-com');
-                    $publication_note  = sprintf(esc_html__(', %d jours après la fin de la chasse, à %s', 'chassesautresor-com'), $delai, $heure);
+                    $publication_note  = $disponibilite === 'differee'
+                        ? sprintf(esc_html__(', %d jours après la fin de la chasse, à %s', 'chassesautresor-com'), $delai, $heure)
+                        : esc_html__(' à la fin de la chasse', 'chassesautresor-com');
                 } else {
                     $publication_note = esc_html__(' (rédaction libre sélectionnée mais non remplie)', 'chassesautresor-com');
                 }
