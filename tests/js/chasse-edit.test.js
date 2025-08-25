@@ -26,9 +26,9 @@ const html = `
               <span class="switch-slider"></span>
             </label>
             <span class="toggle-option">Limité</span>
-          </div>
-          <div class="nb-gagnants-actions" style="display:none;">
-            <input type="number" id="chasse-nb-gagnants" value="0" class="champ-input champ-number">
+            <div class="nb-gagnants-actions" style="display:none;">
+              <input type="number" id="chasse-nb-gagnants" value="0" class="champ-input champ-number">
+            </div>
           </div>
         </div>
       </li>

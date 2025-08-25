@@ -1077,11 +1077,16 @@ msgid "Chasse gagnée le %s par %s"
 msgstr ""
 
 #: template-parts/chasse/chasse-edition-main.php:337
+#: template-parts/chasse/chasse-edition-main.php:448
 msgid "Nb gagnants"
 msgstr ""
 
-#: template-parts/chasse/chasse-edition-main.php:353
+#: template-parts/chasse/chasse-edition-main.php:454
 msgid "Illimité"
+msgstr ""
+
+#: template-parts/chasse/chasse-edition-main.php:464
+msgid "Limité"
 msgstr ""
 
 #: template-parts/chasse/chasse-edition-main.php:374

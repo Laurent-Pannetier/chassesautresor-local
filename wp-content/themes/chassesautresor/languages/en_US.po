@@ -1121,13 +1121,17 @@ msgstr "Validate the end of hunting"
 msgid "Chasse gagnée le %s par %s"
 msgstr "Hunting won on %s by %s"
 
-#: template-parts/chasse/chasse-edition-main.php:337
+#: template-parts/chasse/chasse-edition-main.php:448
 msgid "Nb gagnants"
 msgstr "Number of winners"
 
-#: template-parts/chasse/chasse-edition-main.php:353
+#: template-parts/chasse/chasse-edition-main.php:454
 msgid "Illimité"
 msgstr "Unlimited"
+
+#: template-parts/chasse/chasse-edition-main.php:464
+msgid "Limité"
+msgstr "Limited"
 
 #: template-parts/chasse/chasse-edition-main.php:374
 msgid "Début"
