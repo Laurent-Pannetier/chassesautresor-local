@@ -2657,9 +2657,19 @@ body.edition-active .edition-panel {
 
 .edition-panel label {
   color: var(--color-editor-text-muted);
-  font-size: 16px;
+  font-size: 1rem;
 }
 
+@media not all and (min-width: 600px) {
+  .edition-panel label {
+    font-size: 0.9rem;
+  }
+}
+@media not all and (min-width: 480px) {
+  .edition-panel label {
+    font-size: 0.8rem;
+  }
+}
 /* ========== 🧪 PLACEHOLDER ========== */
 .edition-placeholder {
   border: 1px dashed var(--color-editor-border);
@@ -2825,7 +2835,8 @@ li.ligne-email .champ-affichage {
 /* ========== 📱 RESPONSIVE PANNEAU EDITION ========== */
 @media not all and (min-width: 768px) {
   .edition-tab-content {
-    padding: 0;
+    padding-left: 0;
+    padding-right: 0;
   }
   .edition-panel-body {
     flex-direction: column;
@@ -3123,6 +3134,16 @@ body.panneau-ouvert::before {
   border-bottom: 3px solid var(--color-primary);
 }
 
+@media not all and (min-width: 600px) {
+  .edition-tab {
+    font-size: 90%;
+  }
+}
+@media not all and (min-width: 480px) {
+  .edition-tab {
+    font-size: 80%;
+  }
+}
 .edition-tab-content {
   display: none;
   min-height: 180px;
@@ -5923,6 +5944,11 @@ span.champ-obligatoire {
 @media not all and (min-width: 768px) {
   .mode-edition {
     --editor-label-width: 200px;
+  }
+}
+@media not all and (min-width: 480px) {
+  .mode-edition {
+    --editor-label-width: 150px;
   }
 }
 /* 🔗 Bridge HSL ↔️ nuancier existant (ne remplace rien) */

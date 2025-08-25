@@ -988,7 +988,19 @@ body.edition-active .edition-panel {
 
 .edition-panel label {
   color: var(--color-editor-text-muted);
-  font-size: 16px;
+  font-size: 1rem;
+}
+
+@media not all and (--bp-mobile) {
+  .edition-panel label {
+    font-size: 0.9rem;
+  }
+}
+
+@media not all and (--bp-small) {
+  .edition-panel label {
+    font-size: 0.8rem;
+  }
 }
 
 /* ========== 🧪 PLACEHOLDER ========== */
@@ -1164,7 +1176,8 @@ li.ligne-email .champ-affichage {
 /* ========== 📱 RESPONSIVE PANNEAU EDITION ========== */
 @media not all and (--bp-tablet) {
   .edition-tab-content {
-    padding: 0;
+    padding-left: 0;
+    padding-right: 0;
   }
 
   .edition-panel-body {
@@ -1473,6 +1486,18 @@ body.panneau-ouvert::before {
 
 .edition-tab.active {
   border-bottom: 3px solid var(--color-primary);
+}
+
+@media not all and (--bp-mobile) {
+  .edition-tab {
+    font-size: 90%;
+  }
+}
+
+@media not all and (--bp-small) {
+  .edition-tab {
+    font-size: 80%;
+  }
 }
 
 
