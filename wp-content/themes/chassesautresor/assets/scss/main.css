@@ -3245,7 +3245,6 @@ body.panneau-ouvert::before {
   align-items: center;
   justify-content: center;
 }
-
 .carte-check i {
   color: #fff;
   font-size: 0.6rem;
@@ -3281,6 +3280,13 @@ body.panneau-ouvert::before {
   font-size: 2rem;
   color: var(--color-editor-heading);
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.1));
+}
+
+.dashboard-card .carte-check i, .carte-orgy .carte-check i {
+  font-size: 0.6rem;
+  color: #fff;
+  line-height: 1;
+  filter: none;
 }
 
 .dashboard-card img, .carte-orgy img {
@@ -8185,3 +8191,5 @@ section#presentation .presentation-fermer {
   --editor-button-hsl: 214 82% 51%; /* = #1A73E8 → var(--color-editor-button) */
   --editor-button-hover-hsl: 214 79% 39%; /* = #1558B0 → var(--color-editor-button-hover) */
 }
+
+/*# sourceMappingURL=main.css.map */
