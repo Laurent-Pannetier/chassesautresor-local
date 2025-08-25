@@ -267,7 +267,7 @@
   padding-bottom: var(--space-sm);
 }
 
-@media (min-width: 1280px) {
+@media (--bp-wide) {
   .menu-lateral {
     position: fixed;
     top: 50%;
