@@ -117,6 +117,7 @@ Le dossier `notices/` contient la documentation technique et fonctionnelle du th
 - organisateur : référence un ou plusieurs utilisateurs (organisateurs) + infos classiques. Structure pivot d identification
 - chasse : reliée au cpt organisateur, reliée au minimum à une énigme
 - enigme : obligatoirement reliée à une seule chasse
+- solution : publie la solution d’une chasse ou d’une énigme
 
 
 🧑‍🤝‍🧑 Rôles & accès (joueur, organisateur, organisateur_creation, admin)
@@ -402,11 +403,6 @@ Groupe : Paramètres de l’énigme
 * enigme_acces_pre_requis (relationship)
 * enigme_cache_etat_systeme (select)
 * enigme_chasse_associee (relationship)
-* enigme_solution_mode (radio)
-* enigme_solution_delai (number)
-* enigme_solution_heure (time_picker)
-* enigme_solution_fichier (file)
-* enigme_solution_explication (wysiwyg)
 * enigme_cache_complet (true_false)
 
 CPT : indice
@@ -438,11 +434,11 @@ Groupe : paramètres solution
 * solution_cible_type (radio, chasse/enigme)
 * solution_chasse_linked (relationship)
 * solution_enigme_linked (relationship)
-* solution_fichier (file)
-* solution_explication (wysiwyg)
-* solution_disponibilite (radio, fin_chasse/differee)
-* solution_decalage_jours (number)
-* solution_heure_publication (time_picker)
+* solution_fichier (file, PDF de la solution)
+* solution_explication (wysiwyg, solution rédigée)
+* solution_disponibilite (radio, fin_chasse/differee — fin_chasse : publication à la fin de la chasse ; differee : publication après `solution_decalage_jours` jours à `solution_heure_publication`)
+* solution_decalage_jours (number, délai en jours pour mode differee)
+* solution_heure_publication (time_picker, heure de mise en ligne pour mode differee)
 * solution_cache_etat_systeme (select, accessible/programme/invalide/desactive)
 * solution_cache_complet (true_false)
 
