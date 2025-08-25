@@ -162,6 +162,7 @@
   flex: 1 0 100%;
   text-align: right;
   word-break: break-all;
+  opacity: 0.5;
 }
 
 .qr-code-block .qr-code-image {
@@ -172,6 +173,15 @@
   width: 100%;
   height: auto;
   display: block;
+}
+
+.qr-code-block .qr-code-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .qr-code-block .qr-code-content h3 {
