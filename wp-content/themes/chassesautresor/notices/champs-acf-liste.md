@@ -338,39 +338,6 @@ Label : chasse associée
 Instructions : (vide)
 Requis : oui
 ----------------------------------------
-— enigme_solution_mode —
-Type : radio
-Label : Mode de publication des solutions
-Instructions : (vide)
-Requis : non
-Choices :
-  - pdf : Télécharger un PDF
-  - texte : Rédiger la solution
-----------------------------------------
-— enigme_solution_delai —
-Type : number
-Label : délai de publication des solutions
-Instructions : (vide)
-Requis : non
-----------------------------------------
-— enigme_solution_heure —
-Type : time_picker
-Label : Heure de publication
-Instructions : Heure à laquelle la solution sera publiée, X jours après la fin de la chasse
-Requis : non
-----------------------------------------
-— enigme_solution_fichier —
-Type : file
-Label : Fichier PDF de solution
-Instructions : Ajoutez un fichier PDF contenant la solution complète, si vous ne souhaitez pas utiliser l’éditeur texte.
-Requis : non
-----------------------------------------
-— enigme_solution_explication —
-Type : wysiwyg
-Label : Solution expliquée
-Instructions : La solution ne sera publiée que si la chasse est terminée, et selon le délai de votre choix
-Requis : non
-----------------------------------------
 — enigme_cache_complet —
 Type : true_false
 Label : enigme_cache_complet
@@ -537,7 +504,7 @@ Requis : non
 — solution_cible_type —
 Type : radio
 Label : for
-Instructions : (vide)
+Instructions : Définit si la solution concerne une chasse ou une énigme
 Requis : non
 Choices :
   - chasse : chasse
@@ -546,31 +513,31 @@ Choices :
 — solution_chasse_linked —
 Type : relationship
 Label : chasse liée
-Instructions : (vide)
+Instructions : Référence la chasse cible lorsque la solution concerne une chasse
 Requis : non
 ----------------------------------------
 — solution_enigme_linked —
 Type : relationship
 Label : énigme liée
-Instructions : (vide)
+Instructions : Référence l’énigme cible lorsque la solution concerne une énigme
 Requis : non
 ----------------------------------------
 — solution_fichier —
 Type : file
 Label : fichier pdf de solution
-Instructions : (vide)
+Instructions : Permet de téléverser un PDF de solution
 Requis : non
 ----------------------------------------
 — solution_explication —
 Type : wysiwyg
 Label : explication
-Instructions : (vide)
+Instructions : Texte explicatif affiché si aucun PDF n’est fourni
 Requis : non
 ----------------------------------------
 — solution_disponibilite —
 Type : radio
 Label : disponibilité
-Instructions : (vide)
+Instructions : fin_chasse : publication dès la fin ; differee : selon le délai et l’heure définis
 Requis : non
 Choices :
   - fin_chasse : fin de chasse
@@ -579,13 +546,13 @@ Choices :
 — solution_decalage_jours —
 Type : number
 Label : jours de décalage
-Instructions : (vide)
+Instructions : Nombre de jours à attendre en mode différé
 Requis : non
 ----------------------------------------
 — solution_heure_publication —
 Type : time_picker
 Label : heure de publication
-Instructions : (vide)
+Instructions : Heure de mise en ligne en mode différé
 Requis : non
 ----------------------------------------
 — solution_cache_etat_systeme —
