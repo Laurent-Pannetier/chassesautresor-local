@@ -859,21 +859,21 @@ function initChampNbGagnants() {
 // 🔚 Gestion dynamique du mode de fin
 // ================================
 function initModeFinChasse() {
-  const radios = document.querySelectorAll('input[name="acf[chasse_mode_fin]"]');
+  const toggle = document.getElementById('chasse_mode_fin');
   const templateNb = document.getElementById('template-nb-gagnants');
   const templateFin = document.getElementById('template-fin-chasse-actions');
   const modeFinLi = document.querySelector('.champ-mode-fin');
   const finActions = modeFinLi?.querySelector('.fin-chasse-actions');
 
-  if (!radios.length || !templateNb || !modeFinLi || !finActions) return;
+  if (!toggle || !templateNb || !modeFinLi || !finActions) return;
 
   const postId = modeFinLi.dataset.postId;
 
   function update(save = false) {
-    const selected = document.querySelector('input[name="acf[chasse_mode_fin]"]:checked')?.value;
+    const selected = toggle.checked ? 'manuelle' : 'automatique';
     const existingNb = document.querySelector('.champ-nb-gagnants');
 
-    if (save && selected) {
+    if (save) {
       modifierChampSimple('chasse_mode_fin', selected, postId, 'chasse');
     }
 
@@ -894,7 +894,7 @@ function initModeFinChasse() {
       if (inputNb) {
         mettreAJourAffichageNbGagnants(postId, inputNb.value.trim());
       }
-    } else if (selected === 'manuelle') {
+    } else {
       if (existingNb) existingNb.remove();
 
       if (!finActions.querySelector('.terminer-chasse-btn') && templateFin) {
@@ -908,9 +908,7 @@ function initModeFinChasse() {
     }
   }
 
-  radios.forEach(radio => {
-    radio.addEventListener('change', () => update(true));
-  });
+  toggle.addEventListener('change', () => update(true));
 
   update();
 }

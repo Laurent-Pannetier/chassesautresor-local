@@ -368,15 +368,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                         'content'  => function () use ($mode_fin, $peut_editer, $statut_metier, $date_decouverte_formatee, $gagnants, $bloc_fin_chasse) {
                             ?>
                             <div class="champ-mode-options">
-                                <label>
-                                    <input
-                                        id="chasse_mode_fin"
-                                        type="radio"
-                                        name="acf[chasse_mode_fin]"
-                                        value="automatique"
-                                        <?= $mode_fin === 'automatique' ? 'checked' : ''; ?>
-                                        <?= $peut_editer ? '' : 'disabled'; ?>
-                                    >
+                                <span class="toggle-option">
                                     <?= esc_html__('Automatique', 'chassesautresor-com'); ?>
                                     <?php
                                     get_template_part(
@@ -390,15 +382,19 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                                         ]
                                     );
                                     ?>
-                                </label>
-                                <label>
+                                </span>
+                                <label class="switch-control">
                                     <input
-                                        type="radio"
+                                        id="chasse_mode_fin"
+                                        type="checkbox"
                                         name="acf[chasse_mode_fin]"
                                         value="manuelle"
                                         <?= $mode_fin === 'manuelle' ? 'checked' : ''; ?>
                                         <?= $peut_editer ? '' : 'disabled'; ?>
                                     >
+                                    <span class="switch-slider"></span>
+                                </label>
+                                <span class="toggle-option">
                                     <?= esc_html__('Manuelle', 'chassesautresor-com'); ?>
                                     <?php
                                     get_template_part(
@@ -412,7 +408,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                                         ]
                                     );
                                     ?>
-                                </label>
+                                </span>
                                 <div class="fin-chasse-actions">
                                     <?php if ($mode_fin === 'manuelle') : ?>
                                         <?= $bloc_fin_chasse; ?>
