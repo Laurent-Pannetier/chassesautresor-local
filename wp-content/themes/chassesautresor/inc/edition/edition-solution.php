@@ -834,6 +834,8 @@ function supprimer_solution_ajax(): void
         wp_send_json_error('echec_suppression');
     }
 
+    reordonner_solutions($objet_id, $cible_type);
+
     wp_send_json_success();
 }
 add_action('wp_ajax_supprimer_solution', 'supprimer_solution_ajax');
