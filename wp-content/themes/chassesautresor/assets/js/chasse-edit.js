@@ -46,6 +46,16 @@ function rafraichirCarteIndices() {
 
 window.rafraichirCarteIndices = rafraichirCarteIndices;
 
+function rafraichirCarteSolutions() {
+  document.querySelectorAll('.liste-solutions').forEach((wrapper) => {
+    if (window.reloadSolutionsTable) {
+      window.reloadSolutionsTable(wrapper);
+    }
+  });
+}
+
+window.rafraichirCarteSolutions = rafraichirCarteSolutions;
+
   function initIndicesOptions(card) {
     if (!card) return;
     const btn = card.querySelector('.cta-indice-pour');
@@ -86,10 +96,56 @@ window.rafraichirCarteIndices = rafraichirCarteIndices;
     });
   }
 
+  function initSolutionsOptions(card) {
+    if (!card) return;
+    const btn = card.querySelector('.cta-solution-pour');
+    const options = card.querySelector('.cta-solution-options');
+    if (!btn || !options) return;
+
+    let timeoutId;
+
+    function hide() {
+      card.classList.remove('show-options');
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+    }
+
+    function show() {
+      card.classList.add('show-options');
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        hide();
+      }, 5000);
+    }
+
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      show();
+    });
+
+    options.addEventListener('click', () => {
+      hide();
+    });
+  }
+
+  function initAllSolutionsOptions() {
+    document
+      .querySelectorAll(
+        '.dashboard-card.champ-solution, .dashboard-card.champ-solutions'
+      )
+      .forEach((c) => {
+        initSolutionsOptions(c);
+      });
+  }
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initAllIndicesOptions);
+    document.addEventListener('DOMContentLoaded', initAllSolutionsOptions);
   } else {
     initAllIndicesOptions();
+    initAllSolutionsOptions();
   }
 
 
@@ -612,6 +668,10 @@ window.rafraichirCarteIndices = rafraichirCarteIndices;
   } else {
     initChasseEdit();
   }
+
+  window.addEventListener('solution-created', () => {
+    rafraichirCarteSolutions();
+  });
 
 
 // ==============================
