@@ -43,6 +43,10 @@ msgstr ""
 msgid "renseigner le titre de la chasse"
 msgstr ""
 
+#: template-parts/organisateur/organisateur-edition-main.php:120
+msgid "renseigner le titre de l’organisateur"
+msgstr ""
+
 #: functions.php:107
 msgid "English"
 msgstr ""
@@ -958,6 +962,7 @@ msgstr ""
 #: template-parts/chasse/chasse-edition-main.php:104
 #: template-parts/enigme/enigme-edition-main.php:128
 #: template-parts/indice/indice-edition-main.php:90
+#: template-parts/organisateur/organisateur-edition-main.php:110
 msgid "Titre"
 msgstr ""
 
@@ -2361,6 +2366,19 @@ msgstr ""
 
 #: template-parts/chasse/partials/chasse-partial-enigmes.php:31
 msgid "% total joueurs"
+msgstr ""
+
+#: template-parts/organisateur/organisateur-edition-main.php:144
+msgid "Logo organisateur"
+msgstr ""
+
+#: template-parts/organisateur/organisateur-edition-main.php:159
+msgid "Modifier le logo"
+msgstr ""
+
+#: template-parts/organisateur/organisateur-edition-main.php:162
+#: template-parts/organisateur/organisateur-edition-main.php:172
+msgid "Logo de l’organisateur"
 msgstr ""
 
 #: template-parts/chasse/partials/chasse-partial-enigmes.php:34
