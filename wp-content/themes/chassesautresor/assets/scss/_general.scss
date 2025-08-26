@@ -278,7 +278,6 @@ tbody tr:nth-child(even) {
 
 /* Indices table */
 .indices-table {
-  table-layout: fixed;
   width: 100%;
 }
 
@@ -363,7 +362,6 @@ tbody tr:nth-child(even) {
 }
 
 .solutions-table {
-  table-layout: fixed;
   width: 100%;
 }
 
@@ -431,6 +429,13 @@ tbody tr:nth-child(even) {
 
 .solutions-table .badge-action + .badge-action {
   margin-left: 0.25rem;
+}
+
+@media (--bp-tablet) {
+  .indices-table,
+  .solutions-table {
+    table-layout: fixed;
+  }
 }
 
 /* Labels */

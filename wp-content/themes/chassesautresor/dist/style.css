@@ -5705,7 +5705,6 @@ tbody tr:nth-child(even) {
 
 /* Indices table */
 .indices-table {
-  table-layout: fixed;
   width: 100%;
 }
 
@@ -5791,7 +5790,6 @@ tbody tr:nth-child(even) {
 }
 
 .solutions-table {
-  table-layout: fixed;
   width: 100%;
 }
 
@@ -5861,6 +5859,12 @@ tbody tr:nth-child(even) {
   margin-left: 0.25rem;
 }
 
+@media (min-width: 768px) {
+  .indices-table,
+  .solutions-table {
+    table-layout: fixed;
+  }
+}
 /* Labels */
 .etiquette {
   display: inline-block;
