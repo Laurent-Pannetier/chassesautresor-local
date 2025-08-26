@@ -1592,6 +1592,13 @@ body.panneau-ouvert::before {
   position: relative;
 }
 
+@media not all and (--bp-mobile) {
+  .edition-tab-content {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
 .edition-tab-content.active {
   display: block;
 }
