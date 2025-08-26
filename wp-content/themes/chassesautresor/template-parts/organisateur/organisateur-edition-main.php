@@ -405,67 +405,31 @@ $is_complete = (
         </div> <!-- .edition-panel-body -->
     </div>
 
-    <div id="organisateur-tab-animation" class="edition-tab-content" style="display:none;">
-      <i class="fa-solid fa-bullhorn tab-watermark" aria-hidden="true"></i>
-      <div class="edition-panel-header">
-        <h2><i class="fa-solid fa-bullhorn"></i> <?= esc_html__('Animation', 'chassesautresor-com'); ?></h2>
-      </div>
-      <div class="edition-panel-body">
-        <div class="edition-panel-section edition-panel-section-ligne">
-          <div class="section-content">
-            <div class="resume-blocs-grid">
-              <div class="resume-bloc resume-visibilite">
-                <h3><?= esc_html__('Communiquez', 'chassesautresor-com'); ?></h3>
-                <div class="dashboard-grid stats-cards">
-                  <div class="dashboard-card champ-organisateur champ-liens <?= empty($liens_publics) ? 'champ-vide' : 'champ-rempli'; ?>"
-                    data-champ="liens_publics"
-                    data-cpt="organisateur"
-                    data-post-id="<?= esc_attr($organisateur_id); ?>">
-                    <i class="fa-solid fa-share-nodes icone-defaut" aria-hidden="true"></i>
-                    <div class="champ-affichage champ-affichage-liens">
-                      <?= render_liens_publics($liens_publics, 'organisateur', ['placeholder' => false]); ?>
-                    </div>
-                    <h3><?= esc_html__('Sites et réseaux de l\'organisation', 'chassesautresor-com'); ?></h3>
-                    <?php if ($peut_modifier) : ?>
-                      <a href="#"
-                        class="stat-value champ-modifier ouvrir-panneau-liens"
-                        data-champ="liens_publics"
-                        data-cpt="organisateur"
-                        data-post-id="<?= esc_attr($organisateur_id); ?>">
-                        <?= empty($liens_publics)
-                          ? esc_html__('Ajouter', 'chassesautresor-com')
-                          : esc_html__('Éditer', 'chassesautresor-com'); ?>
-                      </a>
-                    <?php endif; ?>
-                    <div class="champ-donnees"
-                      data-valeurs='<?= json_encode($liens_publics, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>'></div>
-                    <div class="champ-feedback"></div>
-                  </div>
-                  <?php
-                  $format = isset($_GET['format']) ? sanitize_key($_GET['format']) : 'png';
-                  $formats_autorises = ['png', 'svg', 'eps'];
-                  if (!in_array($format, $formats_autorises, true)) {
-                      $format = 'png';
-                  }
-                  $url = get_permalink($organisateur_id);
-                  $url_qr_code = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data='
-                      . rawurlencode($url)
-                      . '&format=' . $format;
-                  ?>
-                  <div class="dashboard-card carte-orgy champ-qr-code">
-                    <img class="qr-code-icon" src="<?= esc_url($url_qr_code); ?>" alt="<?= esc_attr__('QR code de l\'organisation', 'chassesautresor-com'); ?>">
-                    <h3><?= esc_html__('QR code de votre organisation', 'chassesautresor-com'); ?></h3>
-                    <a class="bouton-cta" href="<?= esc_url($url_qr_code); ?>" download="<?= esc_attr('qr-organisateur-' . $organisateur_id . '.' . $format); ?>">
-                      <?= esc_html__('Télécharger', 'chassesautresor-com'); ?>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <?php
+    $format = isset($_GET['format']) ? sanitize_key($_GET['format']) : 'png';
+    $formats_autorises = ['png', 'svg', 'eps'];
+    if (!in_array($format, $formats_autorises, true)) {
+        $format = 'png';
+    }
+    $url        = get_permalink($organisateur_id);
+    $url_qr_code = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data='
+        . rawurlencode($url)
+        . '&format=' . $format;
+
+    get_template_part(
+        'template-parts/common/edition-animation',
+        null,
+        [
+            'objet_type'      => 'organisateur',
+            'objet_id'        => $organisateur_id,
+            'liens'           => $liens_publics,
+            'peut_modifier'   => $peut_modifier,
+            'afficher_qr_code' => true,
+            'url'             => $url,
+            'url_qr_code'     => $url_qr_code,
+        ]
+    );
+    ?>
 
     <div class="edition-panel-footer"></div>
   </section>
