@@ -1819,6 +1819,12 @@ a[aria-disabled=true] {
   gap: var(--space-xs);
 }
 
+@media not all and (min-width: 768px) {
+  .edition-row-label {
+    min-width: unset;
+    width: var(--editor-label-width);
+  }
+}
 .edition-row-icon {
   width: var(--editor-icon-width);
   flex: 0 0 var(--editor-icon-width);

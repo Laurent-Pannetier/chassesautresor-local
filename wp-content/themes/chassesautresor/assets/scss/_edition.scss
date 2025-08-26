@@ -113,6 +113,13 @@
   gap: var(--space-xs);
 }
 
+@media not all and (--bp-tablet) {
+  .edition-row-label {
+    min-width: unset;
+    width: var(--editor-label-width);
+  }
+}
+
 .edition-row-icon {
   width: var(--editor-icon-width);
   flex: 0 0 var(--editor-icon-width);
