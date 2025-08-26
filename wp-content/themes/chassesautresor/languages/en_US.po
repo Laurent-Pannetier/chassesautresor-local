@@ -1593,7 +1593,6 @@ msgid "Mois"
 msgstr "Month"
 
 #: template-parts/enigme/enigme-edition-main.php:556
-#: template-parts/chasse/partials/chasse-partial-enigmes.php:33
 msgid "Bonnes réponses"
 msgstr "Correct answers"
 
@@ -2561,4 +2560,16 @@ msgstr "They will only be released on the date you choose: "
 #: template-parts/chasse/chasse-edition-main.php:999
 msgid "immédiatement après la fin de la chasse ou après un délai paramétrable."
 msgstr "right after the hunt ends or after a configurable delay."
+
+#: template-parts/chasse/partials/chasse-partial-enigmes.php:30
+msgid "Nb joueurs"
+msgstr "Players"
+
+#: template-parts/chasse/partials/chasse-partial-enigmes.php:31
+msgid "% total joueurs"
+msgstr "% of total players"
+
+#: template-parts/chasse/partials/chasse-partial-enigmes.php:34
+msgid "Trouvé"
+msgstr "Solved"
 
