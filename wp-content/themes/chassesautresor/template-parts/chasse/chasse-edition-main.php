@@ -823,7 +823,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
               'title'         => esc_html__('Énigmes', 'chassesautresor-com'),
               'enigmes'       => $enigmes_stats,
               'total'         => $total_engagements,
-              'cols_etiquette' => [2, 3, 4, 5, 6, 7],
+              'cols_etiquette' => [2, 3, 4, 5, 6],
           ]); ?>
           <div class="liste-participants" data-page="1" data-pages="<?= esc_attr($pages_participants); ?>" data-order="asc" data-orderby="inscription">
             <?php get_template_part('template-parts/chasse/partials/chasse-partial-participants', null, [

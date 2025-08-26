@@ -5742,12 +5742,6 @@ tbody tr:nth-child(even) {
   font-size: 0.85em;
 }
 
-.stats-table thead tr:first-child th[colspan] {
-  text-align: center;
-  vertical-align: middle;
-  border-bottom: none;
-}
-
 .stats-table th button.sort {
   background: none;
   border: none;
