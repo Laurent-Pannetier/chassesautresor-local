@@ -5962,7 +5962,7 @@ span.champ-obligatoire {
 
 @media not all and (min-width: 768px) {
   .mode-edition {
-    --editor-label-width: 175px;
+    --editor-label-width: 165px;
   }
 }
 @media not all and (min-width: 480px) {
