@@ -125,58 +125,121 @@ $is_complete = (
                   );
                   ?>
 
-                <li class="champ-organisateur champ-img champ-logo ligne-logo <?= empty($logo_id) ? 'champ-vide' : 'champ-rempli'; ?>" data-champ="profil_public_logo_organisateur" data-cpt="organisateur" data-post-id="<?= esc_attr($organisateur_id); ?>">
-                  <div class="champ-affichage">
-                    <label>Logo organisateur <span class="champ-obligatoire">*</span></label>
-                    <?php if ($peut_editer) : ?>
-                      <button type="button"
-                        class="champ-modifier"
-                        aria-label="Modifier le logo"
-                        data-champ="profil_public_logo_organisateur"
-                        data-cpt="organisateur"
-                        data-post-id="<?= esc_attr($organisateur_id); ?>">
-                        <img src="<?= esc_url($logo_url ?: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=='); ?>" alt="Logo de l’organisateur" />
-                        <span class="champ-ajout-image">ajouter une image</span>
-                      </button>
-                    <?php else : ?>
-                      <?php if ($logo_url) : ?>
-                        <img src="<?= esc_url($logo_url); ?>" alt="Logo de l’organisateur" />
-                      <?php else : ?>
-                        <span class="champ-ajout-image">ajouter une image</span>
-                      <?php endif; ?>
-                    <?php endif; ?>
-                  </div>
-                  <input type="hidden" class="champ-input" value="<?= esc_attr($logo_id ?? '') ?>">
-                  <div class="champ-feedback"></div>
-                </li>
-                <?php $class_description = empty($description) ? 'champ-vide' : 'champ-rempli'; ?>
-                <li class="champ-organisateur champ-description ligne-description <?= $class_description; ?>" data-champ="description_longue">
-                    <label><?= esc_html__('Présentation', 'chassesautresor-com'); ?> <span class="champ-obligatoire">*</span></label>
-                    <div class="champ-texte">
-                        <?php if (empty(trim($description))) : ?>
-                            <?php if ($peut_editer) : ?>
-                                <a href="#" class="champ-ajouter ouvrir-panneau-description"
-                                   data-champ="description_longue"
-                                   data-cpt="organisateur"
-                                   data-post-id="<?= esc_attr($organisateur_id); ?>">
-                                    <?= esc_html__('ajouter', 'chassesautresor-com'); ?>
-                                </a>
-                            <?php endif; ?>
-                        <?php else : ?>
-                            <span class="champ-texte-contenu">
-                                <?= esc_html(wp_trim_words(wp_strip_all_tags($description), 25)); ?>
+                <?php
+                get_template_part(
+                    'template-parts/common/edition-row',
+                    null,
+                    [
+                        'class'      => 'champ-organisateur champ-img champ-logo ligne-logo '
+                            . (empty($logo_id) ? 'champ-vide' : 'champ-rempli')
+                            . ($peut_editer ? '' : ' champ-desactive'),
+                        'attributes' => [
+                            'data-champ'   => 'profil_public_logo_organisateur',
+                            'data-cpt'     => 'organisateur',
+                            'data-post-id' => $organisateur_id,
+                        ],
+                        'label' => function () {
+                            ?>
+                            <label>
+                                <?php esc_html_e('Logo organisateur', 'chassesautresor-com'); ?>
+                                <span class="champ-obligatoire">*</span>
+                            </label>
+                            <?php
+                        },
+                        'content' => function () use ($logo_url, $logo_id, $peut_editer, $organisateur_id) {
+                            $transparent = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+                            ?>
+                            <div class="champ-affichage">
                                 <?php if ($peut_editer) : ?>
                                     <button type="button"
-                                        class="champ-modifier ouvrir-panneau-description"
-                                        data-champ="description_longue"
+                                        class="champ-modifier"
+                                        data-champ="profil_public_logo_organisateur"
                                         data-cpt="organisateur"
                                         data-post-id="<?= esc_attr($organisateur_id); ?>"
-                                          aria-label="<?= esc_attr__('Modifier la présentation', 'chassesautresor-com'); ?>"><?= esc_html__('modifier', 'chassesautresor-com'); ?></button>
+                                        aria-label="<?= esc_attr__('Modifier le logo', 'chassesautresor-com'); ?>">
+                                        <img
+                                            src="<?= esc_url($logo_url ?: $transparent); ?>"
+                                            alt="<?= esc_attr__('Logo de l’organisateur', 'chassesautresor-com'); ?>"
+                                        />
+                                        <span class="champ-ajout-image">
+                                            <?= esc_html__('ajouter une image', 'chassesautresor-com'); ?>
+                                        </span>
+                                    </button>
+                                <?php else : ?>
+                                    <?php if ($logo_url) : ?>
+                                        <img
+                                            src="<?= esc_url($logo_url); ?>"
+                                            alt="<?= esc_attr__('Logo de l’organisateur', 'chassesautresor-com'); ?>"
+                                        />
+                                    <?php else : ?>
+                                        <span class="champ-ajout-image">
+                                            <?= esc_html__('ajouter une image', 'chassesautresor-com'); ?>
+                                        </span>
+                                    <?php endif; ?>
                                 <?php endif; ?>
-                            </span>
-                        <?php endif; ?>
-                    </div>
-                </li>
+                            </div>
+                            <input type="hidden" class="champ-input" value="<?= esc_attr($logo_id ?? '') ?>">
+                            <div class="champ-feedback"></div>
+                            <?php
+                        },
+                    ]
+                );
+                ?>
+                <?php
+                get_template_part(
+                    'template-parts/common/edition-row',
+                    null,
+                    [
+                        'class'      => 'champ-organisateur champ-description ligne-description '
+                            . (empty($description) ? 'champ-vide' : 'champ-rempli')
+                            . ($peut_editer ? '' : ' champ-desactive'),
+                        'attributes' => [
+                            'data-champ'   => 'description_longue',
+                            'data-cpt'     => 'organisateur',
+                            'data-post-id' => $organisateur_id,
+                        ],
+                        'label' => function () {
+                            ?>
+                            <label>
+                                <?= esc_html__('Présentation', 'chassesautresor-com'); ?>
+                                <span class="champ-obligatoire">*</span>
+                            </label>
+                            <?php
+                        },
+                        'content' => function () use ($description, $peut_editer, $organisateur_id) {
+                            ?>
+                            <div class="champ-texte">
+                                <?php if (empty(trim($description))) : ?>
+                                    <?php if ($peut_editer) : ?>
+                                        <a href="#" class="champ-ajouter ouvrir-panneau-description"
+                                            data-champ="description_longue"
+                                            data-cpt="organisateur"
+                                            data-post-id="<?= esc_attr($organisateur_id); ?>">
+                                            <?= esc_html__('ajouter', 'chassesautresor-com'); ?>
+                                        </a>
+                                    <?php endif; ?>
+                                <?php else : ?>
+                                    <span class="champ-texte-contenu">
+                                        <?= esc_html(wp_trim_words(wp_strip_all_tags($description), 25)); ?>
+                                        <?php if ($peut_editer) : ?>
+                                            <button type="button"
+                                                class="champ-modifier ouvrir-panneau-description"
+                                                data-champ="description_longue"
+                                                data-cpt="organisateur"
+                                                data-post-id="<?= esc_attr($organisateur_id); ?>"
+                                                aria-label="<?= esc_attr__('Modifier la présentation', 'chassesautresor-com'); ?>">
+                                                <?= esc_html__('modifier', 'chassesautresor-com'); ?>
+                                            </button>
+                                        <?php endif; ?>
+                                    </span>
+                                <?php endif; ?>
+                            </div>
+                            <div class="champ-feedback"></div>
+                            <?php
+                        },
+                    ]
+                );
+                ?>
               </ul>
               </div>
 

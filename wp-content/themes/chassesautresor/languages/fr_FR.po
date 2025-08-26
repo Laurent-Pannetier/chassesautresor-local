@@ -2549,3 +2549,16 @@ msgstr "Nb joueurs"
 msgid "% total joueurs"
 msgstr "% total joueurs"
 
+#: template-parts/organisateur/organisateur-edition-main.php:144
+msgid "Logo organisateur"
+msgstr "Logo organisateur"
+
+#: template-parts/organisateur/organisateur-edition-main.php:159
+msgid "Modifier le logo"
+msgstr "Modifier le logo"
+
+#: template-parts/organisateur/organisateur-edition-main.php:162
+#: template-parts/organisateur/organisateur-edition-main.php:172
+msgid "Logo de l’organisateur"
+msgstr "Logo de l’organisateur"
+
