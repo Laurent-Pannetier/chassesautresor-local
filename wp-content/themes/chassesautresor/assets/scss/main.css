@@ -3791,7 +3791,8 @@ body.panneau-ouvert::before {
 }
 
 #champ-enigme-date.cache,
-#champ-enigme-pre-requis.cache {
+#champ-enigme-pre-requis.cache,
+#champ-enigme-cout.cache {
   display: none;
 }
 
@@ -5953,7 +5954,8 @@ tbody tr:nth-child(even) {
 
 @media (--bp-tablet) {
   .indices-table,
-  .solutions-table {
+  .solutions-table,
+  .stats-table {
     table-layout: fixed;
   }
   .indices-table td:first-child,

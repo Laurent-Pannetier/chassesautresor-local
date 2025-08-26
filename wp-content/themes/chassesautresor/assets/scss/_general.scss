@@ -489,7 +489,8 @@ tbody tr:nth-child(even) {
 
 @media (--bp-tablet) {
   .indices-table,
-  .solutions-table {
+  .solutions-table,
+  .stats-table {
     table-layout: fixed;
   }
 
