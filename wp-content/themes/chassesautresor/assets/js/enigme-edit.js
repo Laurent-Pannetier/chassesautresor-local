@@ -543,9 +543,11 @@ function initChampCoutPoints() {
   function appliquerEtat() {
     if (toggle.checked) {
       blocInput.classList.remove('cache');
+      blocInput.style.display = '';
       input.disabled = false;
     } else {
       blocInput.classList.add('cache');
+      blocInput.style.display = 'none';
       input.disabled = true;
       input.value = '0';
     }
