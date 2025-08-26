@@ -83,17 +83,23 @@ const html = `
         </div>
       </li>
     </template>
-    <template id="template-fin-chasse-actions">
-      <button type="button" class="terminer-chasse-btn bouton-cta" data-post-id="1" data-cpt="chasse">Terminer la chasse</button>
-      <div class="zone-validation-fin" style="display:none;">
-        <label for="chasse-gagnants">Gagnants</label>
-        <textarea id="chasse-gagnants"></textarea>
-        <button type="button" class="valider-fin-chasse-btn bouton-cta" data-post-id="1" data-cpt="chasse" disabled>Valider la fin de chasse</button>
-        <button type="button" class="annuler-fin-chasse-btn bouton-secondaire">Annuler</button>
-      </div>
-    </template>
   </div>
-  <div id="chasse-tab-animation"></div>
+  <div id="chasse-tab-animation">
+    <div class="dashboard-card carte-orgy champ-chasse carte-arret-chasse" style="display:none;">
+      <span class="carte-check" aria-hidden="true"><i class="fa-solid fa-check"></i></span>
+      <i class="fa-solid fa-hand icone-defaut" aria-hidden="true"></i>
+      <h3>Arrêt chasse</h3>
+      <div class="stat-value fin-chasse-actions">
+        <button type="button" class="terminer-chasse-btn bouton-cta" data-post-id="1" data-cpt="chasse">Terminer la chasse</button>
+        <div class="zone-validation-fin" style="display:none;">
+          <label for="chasse-gagnants">Gagnants</label>
+          <textarea id="chasse-gagnants"></textarea>
+          <button type="button" class="valider-fin-chasse-btn bouton-cta" data-post-id="1" data-cpt="chasse" disabled>Valider la fin de chasse</button>
+          <button type="button" class="annuler-fin-chasse-btn bouton-secondaire">Annuler</button>
+        </div>
+      </div>
+    </div>
+  </div>
 `;
 
 describe('chasse-edit UI', () => {
@@ -114,16 +120,17 @@ describe('chasse-edit UI', () => {
     global.fetch = jest.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve({ success: true }) }));
     global.modifierChampSimple = jest.fn(() => Promise.resolve(true));
     global.wp = { i18n: { __: (s) => s } };
+    global.confirm = jest.fn(() => true);
     jest.resetModules();
     require('../../wp-content/themes/chassesautresor/assets/js/chasse-edit.js');
   });
 
-  test('manual termination block is in Paramètres tab', () => {
+  test('manual termination card is in Animation tab', () => {
     const toggle = document.getElementById('chasse_mode_fin');
     toggle.checked = true;
     toggle.dispatchEvent(new Event('change', { bubbles: true }));
-    expect(document.querySelector('#chasse-tab-param .fin-chasse-actions .terminer-chasse-btn')).not.toBeNull();
-    expect(document.querySelector('#chasse-tab-animation .fin-chasse-actions')).toBeNull();
+    expect(document.querySelector('#chasse-tab-animation .terminer-chasse-btn')).not.toBeNull();
+    expect(document.querySelector('#chasse-tab-param .fin-chasse-actions .terminer-chasse-btn')).toBeNull();
   });
 
   test('changing termination mode saves field', async () => {
@@ -135,15 +142,15 @@ describe('chasse-edit UI', () => {
   });
 
   test('terminate button toggles with mode', () => {
-    const actions = document.querySelector('.fin-chasse-actions');
-    expect(actions.querySelector('.terminer-chasse-btn')).toBeNull();
+    const card = document.querySelector('.carte-arret-chasse');
+    expect(card.style.display).toBe('none');
     const toggle = document.getElementById('chasse_mode_fin');
     toggle.checked = true;
     toggle.dispatchEvent(new Event('change', { bubbles: true }));
-    expect(actions.querySelector('.terminer-chasse-btn')).not.toBeNull();
+    expect(card.style.display).toBe('');
     toggle.checked = false;
     toggle.dispatchEvent(new Event('change', { bubbles: true }));
-    expect(actions.querySelector('.terminer-chasse-btn')).toBeNull();
+    expect(card.style.display).toBe('none');
   });
 
   test('validating manual termination updates message', async () => {
@@ -164,10 +171,11 @@ describe('chasse-edit UI', () => {
     await flush();
     await flush();
     await flush();
-    const message = document.querySelector('.message-chasse-terminee');
+    const message = document.querySelector('.carte-arret-chasse .message-chasse-terminee');
     expect(message).not.toBeNull();
     expect(message.textContent).toContain('Alice');
     expect(message.textContent).toContain('02/01/2024');
+    expect(document.querySelector('#chasse-tab-param .message-chasse-terminee')).not.toBeNull();
   });
 
   test('start date toggle reveals datepicker when checked', () => {

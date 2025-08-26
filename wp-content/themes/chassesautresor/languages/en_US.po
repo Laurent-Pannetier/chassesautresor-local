@@ -1097,12 +1097,8 @@ msgid "Fin de chasse manuelle"
 msgstr "Manual hunt end"
 
 #: template-parts/chasse/chasse-edition-main.php:281
-msgid ""
-"Vous pouvez arrêter la chasse à tout moment grâce au bouton disponible dans "
-"le panneau d’édition de la chasse, onglet Paramètres."
-msgstr ""
-"You can stop the hunt at any time using the button available in the hunt "
-"editing panel, Settings tab."
+msgid "Vous pouvez arrêter la chasse à tout moment grâce au bouton disponible dans le panneau d’édition de la chasse, onglet Animation."
+msgstr "You can stop the hunt at any time using the button available in the hunt editing panel, Animation tab."
 
 #: template-parts/chasse/chasse-edition-main.php:295
 msgid "Terminer la chasse"
@@ -2395,6 +2391,14 @@ msgstr "Please enter a value in euros between 0 and 5,000,000."
 #: assets/js/chasse-edit.js:318
 msgid "Voulez-vous vraiment supprimer la récompense ?"
 msgstr "Do you really want to delete the reward?"
+
+#: assets/js/chasse-edit.js
+msgid "Voulez-vous vraiment arrêter la chasse ?"
+msgstr "Do you really want to end the hunt?"
+
+#: template-parts/chasse/chasse-edition-main.php
+msgid "Arrêt chasse"
+msgstr "End hunt"
 
 #: inc/edition/edition-core.php
 msgid "Choisir une image"

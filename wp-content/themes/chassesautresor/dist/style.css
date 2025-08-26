@@ -3805,34 +3805,6 @@ body.panneau-ouvert::before {
   display: none;
 }
 
-.fin-chasse-actions {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-}
-
-.fin-chasse-actions .terminer-chasse-btn,
-.zone-validation-fin .valider-fin-chasse-btn {
-  font-size: 1.1rem;
-  padding: 12px 20px;
-}
-
-.fin-chasse-actions .terminer-chasse-btn {
-  margin-left: var(--space-md);
-}
-
-.fin-chasse-actions .terminer-chasse-btn:not(:disabled),
-.zone-validation-fin .valider-fin-chasse-btn:not(:disabled) {
-  color: var(--color-text-primary);
-  opacity: 1;
-}
-
-.fin-chasse-actions .terminer-chasse-btn:not(:disabled):hover,
-.zone-validation-fin .valider-fin-chasse-btn:not(:disabled):hover {
-  background-color: var(--color-secondary);
-  color: var(--color-background-button);
-}
-
 .zone-validation-fin {
   margin-top: var(--space-md);
   display: flex;
@@ -3840,8 +3812,28 @@ body.panneau-ouvert::before {
   gap: var(--space-xs);
 }
 
-.zone-validation-fin .annuler-fin-chasse-btn {
-  margin-left: var(--space-xs);
+.zone-validation-fin .valider-fin-chasse-btn {
+  font-size: 1.1rem;
+  padding: 12px 20px;
+}
+
+.zone-validation-fin .valider-fin-chasse-btn:not(:disabled) {
+  color: var(--color-text-primary);
+  opacity: 1;
+}
+
+.zone-validation-fin .valider-fin-chasse-btn:not(:disabled):hover {
+  background-color: var(--color-secondary);
+  color: var(--color-background-button);
+}
+
+.carte-arret-chasse .zone-validation-fin {
+  align-items: center;
+}
+.carte-arret-chasse .fin-chasse-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .help-icon-button,

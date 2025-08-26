@@ -1060,7 +1060,7 @@ msgid "Fin de chasse manuelle"
 msgstr ""
 
 #: template-parts/chasse/chasse-edition-main.php:281
-msgid "Vous pouvez arrêter la chasse à tout moment grâce au bouton disponible dans le panneau d’édition de la chasse, onglet Paramètres."
+msgid "Vous pouvez arrêter la chasse à tout moment grâce au bouton disponible dans le panneau d’édition de la chasse, onglet Animation."
 msgstr ""
 
 #: template-parts/chasse/chasse-edition-main.php:295
@@ -2226,6 +2226,14 @@ msgstr ""
 
 #: assets/js/chasse-edit.js:318
 msgid "Voulez-vous vraiment supprimer la récompense ?"
+msgstr ""
+
+#: assets/js/chasse-edit.js
+msgid "Voulez-vous vraiment arrêter la chasse ?"
+msgstr ""
+
+#: template-parts/chasse/chasse-edition-main.php
+msgid "Arrêt chasse"
 msgstr ""
 
 #: template-parts/common/indices-table.php:69
