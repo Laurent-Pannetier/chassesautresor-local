@@ -1865,8 +1865,8 @@ a[aria-disabled=true] {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  -moz-column-gap: calc(4 * var(--space-xl));
-       column-gap: calc(4 * var(--space-xl));
+  -moz-column-gap: var(--space-xl);
+       column-gap: var(--space-xl);
   row-gap: var(--space-md);
   margin-top: var(--space-lg);
 }
@@ -1911,17 +1911,17 @@ a[aria-disabled=true] {
   .dashboard-card.champ-protection-solutions .qr-code-image, .champ-protection-solutions.carte-orgy .qr-code-image,
   .dashboard-card.champ-qr-code .qr-code-image,
   .champ-qr-code.carte-orgy .qr-code-image {
-    flex: 0 0 200px;
+    flex: 0 0 150px;
   }
   .dashboard-card.champ-protection-solutions .qr-code-image img, .champ-protection-solutions.carte-orgy .qr-code-image img,
   .dashboard-card.champ-qr-code .qr-code-image img,
   .champ-qr-code.carte-orgy .qr-code-image img {
-    width: 200px;
+    width: 150px;
   }
   .dashboard-card.champ-protection-solutions .qr-code-image i, .champ-protection-solutions.carte-orgy .qr-code-image i,
   .dashboard-card.champ-qr-code .qr-code-image i,
   .champ-qr-code.carte-orgy .qr-code-image i {
-    font-size: 200px;
+    font-size: 150px;
   }
 }
 @media not all and (min-width: 768px) {

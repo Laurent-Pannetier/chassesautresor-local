@@ -160,7 +160,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  column-gap: calc(4 * var(--space-xl));
+  column-gap: var(--space-xl);
   row-gap: var(--space-md);
   margin-top: var(--space-lg);
 }
@@ -204,17 +204,17 @@
 @media not all and (--bp-desktop) {
   .dashboard-card.champ-protection-solutions .qr-code-image,
   .dashboard-card.champ-qr-code .qr-code-image {
-    flex: 0 0 200px;
+    flex: 0 0 150px;
   }
 
   .dashboard-card.champ-protection-solutions .qr-code-image img,
   .dashboard-card.champ-qr-code .qr-code-image img {
-    width: 200px;
+    width: 150px;
   }
 
   .dashboard-card.champ-protection-solutions .qr-code-image i,
   .dashboard-card.champ-qr-code .qr-code-image i {
-    font-size: 200px;
+    font-size: 150px;
   }
 }
 
