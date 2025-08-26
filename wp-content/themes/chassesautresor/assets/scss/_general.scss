@@ -433,6 +433,12 @@ tbody tr:nth-child(even) {
   text-align: center;
 }
 
+.solutions-table .solution-action-buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: nowrap;
+}
+
 .solutions-table .badge-action {
   display: inline-flex;
   align-items: center;
