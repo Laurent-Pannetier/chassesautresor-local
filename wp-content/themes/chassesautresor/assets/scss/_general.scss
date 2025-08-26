@@ -500,6 +500,28 @@ tbody tr:nth-child(even) {
   }
 }
 
+@media not all and (--bp-small) {
+  .solutions-table th:nth-child(3),
+  .solutions-table td:nth-child(3) {
+    display: none;
+  }
+
+  .solutions-table th:nth-child(2),
+  .solutions-table td:nth-child(2) {
+    width: 55%;
+  }
+
+  .solutions-table th:nth-child(4),
+  .solutions-table td:nth-child(4) {
+    width: 35%;
+  }
+
+  .solutions-table th:nth-child(5),
+  .solutions-table td:nth-child(5) {
+    width: 10%;
+  }
+}
+
 /* Labels */
 .etiquette {
   display: inline-block;
