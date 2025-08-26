@@ -437,7 +437,8 @@ msgstr "View Stats"
 
 #: inc/enigme/affichage.php:649
 #: template-parts/chasse/chasse-edition-main.php:708
-#: template-parts/chasse/partials/chasse-partial-indices.php:32
+#: inc/enigme/affichage.php:649
+#: template-parts/chasse/chasse-edition-main.php:708
 msgid "Indices"
 msgstr "Hints"
 
@@ -447,19 +448,24 @@ msgstr "Hints"
 msgid "Indices pour %s"
 msgstr "Hints for %s"
 
-#: template-parts/chasse/partials/chasse-partial-indices.php:26
+#: template-parts/chasse/partials/chasse-partial-indices.php:35
 msgid "Ajouter un indice"
 msgstr "Add a hint"
 
-#: template-parts/chasse/partials/chasse-partial-indices.php:33
+#: template-parts/chasse/partials/chasse-partial-indices.php:42
 msgid "Pour…"
 msgstr "For…"
 
-#: template-parts/chasse/partials/chasse-partial-indices.php:44
+#: template-parts/chasse/partials/chasse-partial-indices.php:56
+msgid "Cette énigme"
+msgstr "This riddle"
+
+#: template-parts/chasse/partials/chasse-partial-indices.php:66
+#: template-parts/chasse/partials/chasse-partial-indices.php:77
 msgid "La chasse entière"
 msgstr "The entire hunt"
 
-#: template-parts/chasse/partials/chasse-partial-indices.php:56
+#: template-parts/chasse/partials/chasse-partial-indices.php:89
 msgid "Une énigme de la chasse"
 msgstr "A riddle from the hunt"
 
@@ -772,8 +778,7 @@ msgstr "Add bank details"
 
 #: inc/organisateur-functions.php:231
 #: template-parts/chasse/chasse-edition-main.php:673
-#: template-parts/chasse/partials/chasse-partial-indices.php:46
-#: template-parts/chasse/partials/chasse-partial-indices.php:50
+#: template-parts/chasse/partials/chasse-partial-indices.php:97
 #: template-parts/organisateur/organisateur-edition-main.php:305
 #: template-parts/organisateur/organisateur-edition-main.php:319
 #: template-parts/organisateur/organisateur-edition-main.php:360

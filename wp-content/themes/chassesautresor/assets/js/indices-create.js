@@ -1,5 +1,5 @@
 (function () {
-  function openModal(btn) {
+  function openModal(btn, defaultEnigme) {
     var overlay = document.createElement('div');
     overlay.className = 'indice-modal-overlay';
     var titre = indicesCreate.texts.indiceTitre.replace('%d', btn.dataset.indiceRang || '');
@@ -273,7 +273,7 @@
             }
             select.appendChild(opt);
           });
-          var def = btn.dataset.defaultEnigme || btn.dataset.objetId;
+      var def = defaultEnigme || btn.dataset.defaultEnigme || btn.dataset.objetId;
           if (def) select.value = def;
           if (!select.value) select.value = select.options[0].value;
           var selected = select.options[select.selectedIndex];
@@ -310,7 +310,8 @@
         enigmeBtn.dataset.objetType = 'enigme';
       }
       enigmeBtn.dataset.indiceRang = '';
-      openModal(enigmeBtn);
+      var def = enigmeBtn.dataset.objetId || enigmeBtn.dataset.defaultEnigme || '';
+      openModal(enigmeBtn, def);
       return;
     }
     var btn = target && target.closest ? target.closest('.cta-creer-indice, .badge-action.edit') : null;

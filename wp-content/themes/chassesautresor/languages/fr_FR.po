@@ -437,7 +437,6 @@ msgstr "Afficher les statistiques"
 
 #: inc/enigme/affichage.php:649
 #: template-parts/chasse/chasse-edition-main.php:708
-#: template-parts/chasse/partials/chasse-partial-indices.php:32
 msgid "Indices"
 msgstr "Indices"
 
@@ -446,6 +445,27 @@ msgstr "Indices"
 #, php-format
 msgid "Indices pour %s"
 msgstr "Indices pour %s"
+
+#: template-parts/chasse/partials/chasse-partial-indices.php:35
+msgid "Ajouter un indice"
+msgstr "Ajouter un indice"
+
+#: template-parts/chasse/partials/chasse-partial-indices.php:42
+msgid "Pour…"
+msgstr "Pour…"
+
+#: template-parts/chasse/partials/chasse-partial-indices.php:56
+msgid "Cette énigme"
+msgstr "Cette énigme"
+
+#: template-parts/chasse/partials/chasse-partial-indices.php:66
+#: template-parts/chasse/partials/chasse-partial-indices.php:77
+msgid "La chasse entière"
+msgstr "La chasse entière"
+
+#: template-parts/chasse/partials/chasse-partial-indices.php:89
+msgid "Une énigme de la chasse"
+msgstr "Une énigme de la chasse"
 
 #: inc/enigme/affichage.php:677
 #, fuzzy
@@ -760,8 +780,7 @@ msgstr "Ajouter des coordonnées bancaires"
 
 #: inc/organisateur-functions.php:231
 #: template-parts/chasse/chasse-edition-main.php:673
-#: template-parts/chasse/partials/chasse-partial-indices.php:46
-#: template-parts/chasse/partials/chasse-partial-indices.php:50
+#: template-parts/chasse/partials/chasse-partial-indices.php:97
 #: template-parts/organisateur/organisateur-edition-main.php:305
 #: template-parts/organisateur/organisateur-edition-main.php:319
 #: template-parts/organisateur/organisateur-edition-main.php:360
