@@ -310,9 +310,12 @@
     });
   }
 
-  document.addEventListener('click', function(e){
+  document.addEventListener('click', function (e) {
     var btn = e.target.closest('.ajouter-solution, .badge-action.edit');
-    if(!btn || btn.classList.contains('disabled') || btn.disabled) return;
+    if (!btn || btn.classList.contains('disabled') || btn.disabled) return;
+    if (btn.classList.contains('badge-action') && !btn.closest('.liste-solutions')) {
+      return;
+    }
     e.preventDefault();
     openModal(btn);
   });

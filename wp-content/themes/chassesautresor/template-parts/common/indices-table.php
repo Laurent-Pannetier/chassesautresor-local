@@ -73,12 +73,10 @@ if (empty($indices)) {
             $time_value  = function_exists('wp_date')
                 ? wp_date('H:i', $timestamp)
                 : date('H:i', $timestamp);
-            $img_id      = get_field('indice_image', $indice->ID);
-            $img_html    = '';
-            $img_url     = '';
+            $img_id  = get_field('indice_image', $indice->ID);
+            $img_url = '';
             if ($img_id) {
-                $img_html = wp_get_attachment_image($img_id, [80, 80]);
-                $img_url  = wp_get_attachment_image_url($img_id, 'thumbnail') ?: '';
+                $img_url = wp_get_attachment_image_url($img_id, 'thumbnail') ?: '';
             }
 
             $contenu = wp_strip_all_tags(get_field('indice_contenu', $indice->ID) ?: '');
@@ -145,9 +143,7 @@ if (empty($indices)) {
             </td>
             <td>
                 <div><a href="<?= esc_url(get_permalink($indice)); ?>"><?= esc_html(get_the_title($indice)); ?></a></div>
-                <?php if ($img_html) : ?>
-                    <div><?= $img_html; ?></div>
-                <?php endif; ?>
+                <div><span class="etiquette <?= esc_attr($etat_class); ?>"><?= esc_html($etat_label); ?></span></div>
             </td>
             <?php echo cta_render_proposition_cell($contenu); ?>
             <td>
@@ -155,7 +151,6 @@ if (empty($indices)) {
                 <div><?= $linked_html; ?></div>
             </td>
             <td class="indice-actions">
-                <div><span class="etiquette <?= esc_attr($etat_class); ?>"><?= esc_html($etat_label); ?></span></div>
                 <div class="indice-action-buttons">
                     <button
                         type="button"
