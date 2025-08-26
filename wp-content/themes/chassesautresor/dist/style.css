@@ -1812,6 +1812,11 @@ a[aria-disabled=true] {
   min-height: 40px;
 }
 
+li.edition-row {
+  border-top: 1px solid var(--color-grey-light);
+  padding-top: var(--space-xs);
+}
+
 .edition-row-label {
   min-width: var(--editor-label-width);
   display: flex;
