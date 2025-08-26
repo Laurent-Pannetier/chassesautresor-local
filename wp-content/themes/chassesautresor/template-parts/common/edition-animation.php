@@ -330,6 +330,15 @@ $solution_prefill = apply_filters('chassesautresor/edition_animation_solution_pr
               $count_total  = $count_enigme;
           }
 
+          $enigme_title = get_the_title($objet_id);
+          if ($enigme_title === TITRE_DEFAUT_ENIGME) {
+              $enigme_title = __('en création', 'chassesautresor-com');
+          }
+          $chasse_title = $chasse_id ? get_the_title($chasse_id) : '';
+          if ($chasse_title === TITRE_DEFAUT_CHASSE) {
+              $chasse_title = __('Nouvelle chasse', 'chassesautresor-com');
+          }
+
           $par_page_solutions = 5;
           $page_solutions     = 1;
 
@@ -393,25 +402,19 @@ $solution_prefill = apply_filters('chassesautresor/edition_animation_solution_pr
 
           <h3
             id="<?= esc_attr($objet_type); ?>-section-indices"
-            data-titre-template="<?= esc_attr__('Indices pour %s', 'chassesautresor-com'); ?>"
+            data-titre-enigme="<?= esc_attr__('Indices pour %s', 'chassesautresor-com'); ?>"
+            data-titre-chasse="<?= esc_attr__('Indices pour toute la chasse %s', 'chassesautresor-com'); ?>"
+            data-enigme-title="<?= esc_attr($enigme_title); ?>"
+            data-chasse-title="<?= esc_attr($chasse_title); ?>"
             style="margin-top: var(--space-xl);"
           >
-            <?php if ($indices_objet_type === 'enigme') : ?>
-              <?= esc_html(sprintf(__('Indices pour %s', 'chassesautresor-com'), get_the_title($objet_id))); ?>
+            <?php if ($indices_objet_type === 'chasse') : ?>
+              <?= esc_html(sprintf(__('Indices pour toute la chasse %s', 'chassesautresor-com'), $chasse_title)); ?>
             <?php else : ?>
-              <?= esc_html__('Indices', 'chassesautresor-com'); ?>
+              <?= esc_html(sprintf(__('Indices pour %s', 'chassesautresor-com'), $enigme_title)); ?>
             <?php endif; ?>
           </h3>
-          <?php if ($has_enigme_indices) : ?>
-          <div class="indices-table-toggle">
-            <span class="etiquette">
-              <button type="button" class="indices-toggle champ-modifier" data-chasse-id="<?= esc_attr($chasse_id); ?>" data-enigme-id="<?= esc_attr($objet_id); ?>">
-                <?= esc_html__('Voir tous les indices de la chasse', 'chassesautresor-com'); ?>
-              </button>
-            </span>
-          </div>
-          <?php endif; ?>
-          <div class="liste-indices" data-page="1" data-pages="<?= esc_attr($pages_indices); ?>" data-objet-type="<?= esc_attr($indices_objet_type); ?>" data-objet-id="<?= esc_attr($indices_objet_id); ?>" data-enigme-id="<?= esc_attr($objet_id); ?>" data-chasse-id="<?= esc_attr($chasse_id); ?>" data-ajax-url="<?= esc_url(admin_url('admin-ajax.php')); ?>">
+          <div class="liste-indices" data-page="1" data-pages="<?= esc_attr($pages_indices); ?>" data-objet-type="<?= esc_attr($indices_objet_type); ?>" data-objet-id="<?= esc_attr($indices_objet_id); ?>" data-enigme-id="<?= esc_attr($objet_id); ?>" data-chasse-id="<?= esc_attr($chasse_id); ?>" data-ajax-url="<?= esc_url(admin_url('admin-ajax.php')); ?>" data-has-enigme-indices="<?= esc_attr($has_enigme_indices ? '1' : '0'); ?>">
             <?php
             get_template_part('template-parts/common/indices-table', null, [
                 'indices'      => $indices_list,
@@ -422,6 +425,11 @@ $solution_prefill = apply_filters('chassesautresor/edition_animation_solution_pr
                 'count_total'  => $count_total,
                 'count_chasse' => $count_chasse,
                 'count_enigme' => $count_enigme,
+                'toggle'       => $has_enigme_indices ? [
+                    'chasse_id' => $chasse_id,
+                    'enigme_id' => $objet_id,
+                    'label'     => __('Voir tous les indices de la chasse', 'chassesautresor-com'),
+                ] : null,
             ]);
             ?>
           </div>
