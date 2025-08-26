@@ -2711,10 +2711,6 @@ li.ligne-logo .champ-modifier {
   gap: var(--space-xs);
 }
 
-.resume-infos li.champ-description label,
-.resume-infos li.champ-wysiwyg label {
-  min-width: var(--editor-label-width);
-}
 
 .resume-infos li.champ-description .champ-texte,
 .resume-infos li.champ-wysiwyg .champ-texte {
@@ -2759,9 +2755,6 @@ li.ligne-logo .champ-modifier {
   gap: var(--space-xs);
 }
 
-.resume-infos li.champ-recompense label {
-  min-width: var(--editor-label-width);
-}
 
 .resume-infos li.champ-recompense .champ-texte {
   flex: 1;
