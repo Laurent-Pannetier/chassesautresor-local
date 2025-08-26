@@ -1338,6 +1338,7 @@ msgid "Trier par énigmes trouvées"
 msgstr "Trier par énigmes trouvées"
 
 #: template-parts/chasse/partials/chasse-partial-participants.php:70
+#: template-parts/chasse/partials/chasse-partial-enigmes.php:34
 msgid "Trouvées"
 msgstr "Trouvées"
 
@@ -2542,8 +2543,4 @@ msgstr "Nb joueurs"
 #: template-parts/chasse/partials/chasse-partial-enigmes.php:31
 msgid "% total joueurs"
 msgstr "% total joueurs"
-
-#: template-parts/chasse/partials/chasse-partial-enigmes.php:34
-msgid "Trouvées"
-msgstr "Trouvées"
 
