@@ -6,6 +6,12 @@
     formData.append('objet_id', wrapper.dataset.objetId);
     formData.append('objet_type', wrapper.dataset.objetType);
     formData.append('page', page);
+    if (wrapper.dataset.chasseId) {
+      formData.append('chasse_id', wrapper.dataset.chasseId);
+    }
+    if (wrapper.dataset.enigmeId) {
+      formData.append('enigme_id', wrapper.dataset.enigmeId);
+    }
 
     fetch(wrapper.dataset.ajaxUrl, {
       method: 'POST',

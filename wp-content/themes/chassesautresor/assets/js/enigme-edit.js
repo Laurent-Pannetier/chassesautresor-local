@@ -130,12 +130,53 @@ function initEnigmeEdit() {
   // ==============================
   const titreInput = document.querySelector('.champ-enigme[data-champ="post_title"] .champ-input');
   const indiceHeading = document.getElementById('enigme-section-indices');
+  const indicesWrapper = document.querySelector('.liste-indices');
+
+  function updateIndiceHeading(type) {
+    if (!indiceHeading) return;
+    const isEnigme = type === 'enigme';
+    const template = isEnigme
+      ? indiceHeading.dataset.titreEnigme
+      : indiceHeading.dataset.titreChasse;
+    const titre = isEnigme
+      ? indiceHeading.dataset.enigmeTitle
+      : indiceHeading.dataset.chasseTitle;
+    if (template && typeof titre === 'string') {
+      indiceHeading.textContent = template.replace('%s', titre);
+    }
+  }
+
   if (titreInput && indiceHeading) {
-    const template = indiceHeading.dataset.titreTemplate || 'Indices pour %s';
     titreInput.addEventListener('input', () => {
-      indiceHeading.textContent = template.replace('%s', titreInput.value.trim());
+      indiceHeading.dataset.enigmeTitle = titreInput.value.trim();
+      if (indicesWrapper?.dataset.objetType === 'enigme') {
+        updateIndiceHeading('enigme');
+      }
     });
   }
+
+  updateIndiceHeading(indicesWrapper?.dataset.objetType || 'enigme');
+
+  // ==============================
+  // 🔀 Toggle indices table between enigme and chasse
+  // ==============================
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.indices-toggle');
+    if (!btn || !indicesWrapper) return;
+    const isEnigme = indicesWrapper.dataset.objetType === 'enigme';
+    indicesWrapper.dataset.objetType = isEnigme ? 'chasse' : 'enigme';
+    indicesWrapper.dataset.objetId = isEnigme
+      ? indicesWrapper.dataset.chasseId
+      : indicesWrapper.dataset.enigmeId;
+    indicesWrapper.dataset.page = '1';
+    btn.textContent = isEnigme
+      ? wp.i18n.__('Voir les indices de cette énigme', 'chassesautresor-com')
+      : wp.i18n.__('Voir tous les indices de la chasse', 'chassesautresor-com');
+    updateIndiceHeading(indicesWrapper.dataset.objetType);
+    if (typeof window.reloadIndicesTable === 'function') {
+      window.reloadIndicesTable(indicesWrapper);
+    }
+  });
 
   // ==============================
   // 🧩 Affichage conditionnel – Champs radio
