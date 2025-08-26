@@ -6101,6 +6101,11 @@ span.champ-obligatoire {
   --editor-icon-width: 1rem; /* 📏 Largeur des icônes dans les panneaux */
 }
 
+@media (min-width: 768px) and (max-width: 1023px) {
+  .mode-edition {
+    --editor-label-width: 220px;
+  }
+}
 @media not all and (min-width: 768px) {
   .mode-edition {
     --editor-label-width: 165px;
