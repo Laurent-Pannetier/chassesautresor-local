@@ -5873,11 +5873,13 @@ tbody tr:nth-child(even) {
   flex-wrap: nowrap;
 }
 
-.indices-table-header {
+.indices-table-header,
+.solutions-table-header {
   margin-bottom: 0.5rem;
 }
 
-.indices-table-header .etiquette + .etiquette {
+.indices-table-header .etiquette + .etiquette,
+.solutions-table-header .etiquette + .etiquette {
   margin-left: 0.25rem;
 }
 

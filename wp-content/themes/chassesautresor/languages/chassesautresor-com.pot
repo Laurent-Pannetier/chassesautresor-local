@@ -1296,6 +1296,23 @@ msgstr ""
 msgid "Trouvées"
 msgstr ""
 
+#: template-parts/common/edition-animation.php:512
+msgid "Solutions pour toute la chasse %s"
+msgstr ""
+
+#: template-parts/common/edition-animation.php:514
+msgid "Solutions pour %s"
+msgstr ""
+
+#: template-parts/common/edition-animation.php:521
+#: inc/edition/edition-enigme.php:64
+msgid "Voir toutes les solutions de la chasse"
+msgstr ""
+
+#: inc/edition/edition-enigme.php:65
+msgid "Voir la solution de cette énigme"
+msgstr ""
+
 #: template-parts/common/stat-histogram-card.php:38
 msgid "Aucune donnée."
 msgstr ""

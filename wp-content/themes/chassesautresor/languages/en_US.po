@@ -2598,3 +2598,20 @@ msgstr "Edit logo"
 msgid "Logo de l’organisateur"
 msgstr "Organizer logo"
 
+#: template-parts/common/edition-animation.php:512
+msgid "Solutions pour toute la chasse %s"
+msgstr "Solutions for the whole hunt %s"
+
+#: template-parts/common/edition-animation.php:514
+msgid "Solutions pour %s"
+msgstr "Solutions for %s"
+
+#: template-parts/common/edition-animation.php:521
+#: inc/edition/edition-enigme.php:64
+msgid "Voir toutes les solutions de la chasse"
+msgstr "See all hunt solutions"
+
+#: inc/edition/edition-enigme.php:65
+msgid "Voir la solution de cette énigme"
+msgstr "See this riddle's solution"
+
