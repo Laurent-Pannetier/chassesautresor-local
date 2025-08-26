@@ -32,7 +32,7 @@
   grid-template-columns: repeat(var(--grid-columns), 1fr);
 }
 
-[class^="col-"] {
+[class^="col-"], [class*=" col-"] {
   --col-span: 12;
   grid-column: span var(--col-span);
 }
