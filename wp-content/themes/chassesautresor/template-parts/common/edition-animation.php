@@ -186,8 +186,38 @@ $solution_prefill = apply_filters('chassesautresor/edition_animation_solution_pr
           $par_page_indices = 5;
           $page_indices     = 1;
 
-          if ($objet_type === 'chasse') {
-              $enigme_ids = recuperer_ids_enigmes_pour_chasse($objet_id);
+          $indices_objet_type = $objet_type;
+          $indices_objet_id   = $objet_id;
+          $chasse_id          = 0;
+          $has_enigme_indices = false;
+
+          if ($objet_type === 'enigme') {
+              $chasse_id = (int) recuperer_id_chasse_associee($objet_id);
+              $has_enigme_indices = function_exists('get_posts') ? count(get_posts([
+                  'post_type'   => 'indice',
+                  'post_status' => ['publish', 'pending', 'draft'],
+                  'fields'      => 'ids',
+                  'nopaging'    => true,
+                  'meta_query'  => [
+                      [
+                          'key'   => 'indice_cible_type',
+                          'value' => 'enigme',
+                      ],
+                      [
+                          'key'   => 'indice_enigme_linked',
+                          'value' => $objet_id,
+                      ],
+                  ],
+              ])) > 0 : false;
+
+              if (!$has_enigme_indices && $chasse_id) {
+                  $indices_objet_type = 'chasse';
+                  $indices_objet_id   = $chasse_id;
+              }
+          }
+
+          if ($indices_objet_type === 'chasse') {
+              $enigme_ids = recuperer_ids_enigmes_pour_chasse($indices_objet_id);
               $meta       = [
                   'relation' => 'OR',
                   [
@@ -198,7 +228,7 @@ $solution_prefill = apply_filters('chassesautresor/edition_animation_solution_pr
                       ],
                       [
                           'key'   => 'indice_chasse_linked',
-                          'value' => $objet_id,
+                          'value' => $indices_objet_id,
                       ],
                   ],
               ];
@@ -224,7 +254,7 @@ $solution_prefill = apply_filters('chassesautresor/edition_animation_solution_pr
                   ],
                   [
                       'key'   => 'indice_enigme_linked',
-                      'value' => $objet_id,
+                      'value' => $indices_objet_id,
                   ],
               ];
           }
@@ -244,7 +274,7 @@ $solution_prefill = apply_filters('chassesautresor/edition_animation_solution_pr
           $indices_list       = $indices_query->posts;
           $pages_indices      = (int) $indices_query->max_num_pages;
 
-          if ($objet_type === 'chasse') {
+          if ($indices_objet_type === 'chasse') {
               $count_chasse = function_exists('get_posts') ? count(get_posts([
                   'post_type'   => 'indice',
                   'post_status' => ['publish', 'pending', 'draft'],
@@ -257,7 +287,7 @@ $solution_prefill = apply_filters('chassesautresor/edition_animation_solution_pr
                       ],
                       [
                           'key'   => 'indice_chasse_linked',
-                          'value' => $objet_id,
+                          'value' => $indices_objet_id,
                       ],
                   ],
               ])) : 0;
@@ -292,7 +322,7 @@ $solution_prefill = apply_filters('chassesautresor/edition_animation_solution_pr
                       ],
                       [
                           'key'   => 'indice_enigme_linked',
-                          'value' => $objet_id,
+                          'value' => $indices_objet_id,
                       ],
                   ],
               ])) : 0;
@@ -366,20 +396,29 @@ $solution_prefill = apply_filters('chassesautresor/edition_animation_solution_pr
             data-titre-template="<?= esc_attr__('Indices pour %s', 'chassesautresor-com'); ?>"
             style="margin-top: var(--space-xl);"
           >
-            <?php if ($objet_type === 'enigme') : ?>
+            <?php if ($indices_objet_type === 'enigme') : ?>
               <?= esc_html(sprintf(__('Indices pour %s', 'chassesautresor-com'), get_the_title($objet_id))); ?>
             <?php else : ?>
               <?= esc_html__('Indices', 'chassesautresor-com'); ?>
             <?php endif; ?>
           </h3>
-          <div class="liste-indices" data-page="1" data-pages="<?= esc_attr($pages_indices); ?>" data-objet-type="<?= esc_attr($objet_type); ?>" data-objet-id="<?= esc_attr($objet_id); ?>" data-ajax-url="<?= esc_url(admin_url('admin-ajax.php')); ?>">
+          <?php if ($has_enigme_indices) : ?>
+          <div class="indices-table-toggle">
+            <span class="etiquette">
+              <button type="button" class="indices-toggle champ-modifier" data-chasse-id="<?= esc_attr($chasse_id); ?>" data-enigme-id="<?= esc_attr($objet_id); ?>">
+                <?= esc_html__('Voir tous les indices de la chasse', 'chassesautresor-com'); ?>
+              </button>
+            </span>
+          </div>
+          <?php endif; ?>
+          <div class="liste-indices" data-page="1" data-pages="<?= esc_attr($pages_indices); ?>" data-objet-type="<?= esc_attr($indices_objet_type); ?>" data-objet-id="<?= esc_attr($indices_objet_id); ?>" data-enigme-id="<?= esc_attr($objet_id); ?>" data-chasse-id="<?= esc_attr($chasse_id); ?>" data-ajax-url="<?= esc_url(admin_url('admin-ajax.php')); ?>">
             <?php
             get_template_part('template-parts/common/indices-table', null, [
                 'indices'      => $indices_list,
                 'page'         => 1,
                 'pages'        => $pages_indices,
-                'objet_type'   => $objet_type,
-                'objet_id'     => $objet_id,
+                'objet_type'   => $indices_objet_type,
+                'objet_id'     => $indices_objet_id,
                 'count_total'  => $count_total,
                 'count_chasse' => $count_chasse,
                 'count_enigme' => $count_enigme,

@@ -138,6 +138,28 @@ function initEnigmeEdit() {
   }
 
   // ==============================
+  // 🔀 Toggle indices table between enigme and chasse
+  // ==============================
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.indices-toggle');
+    if (!btn) return;
+    const wrapper = document.querySelector('.liste-indices');
+    if (!wrapper) return;
+    const isEnigme = wrapper.dataset.objetType === 'enigme';
+    wrapper.dataset.objetType = isEnigme ? 'chasse' : 'enigme';
+    wrapper.dataset.objetId = isEnigme
+      ? wrapper.dataset.chasseId
+      : wrapper.dataset.enigmeId;
+    wrapper.dataset.page = '1';
+    btn.textContent = isEnigme
+      ? wp.i18n.__('Voir les indices de cette énigme', 'chassesautresor-com')
+      : wp.i18n.__('Voir tous les indices de la chasse', 'chassesautresor-com');
+    if (typeof window.reloadIndicesTable === 'function') {
+      window.reloadIndicesTable(wrapper);
+    }
+  });
+
+  // ==============================
   // 🧩 Affichage conditionnel – Champs radio
   // ==============================
   initChampConditionnel('acf[enigme_mode_validation]', {
