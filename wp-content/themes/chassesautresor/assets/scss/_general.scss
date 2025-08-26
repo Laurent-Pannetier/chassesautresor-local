@@ -528,13 +528,13 @@ span.champ-obligatoire {
 
 @media not all and (--bp-tablet) {
   .mode-edition {
-    --editor-label-width: 200px;
+    --editor-label-width: 175px;
   }
 }
 
 @media not all and (--bp-small) {
   .mode-edition {
-    --editor-label-width: 150px;
+    --editor-label-width: 135px;
   }
 }
 

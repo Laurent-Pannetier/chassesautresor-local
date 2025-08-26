@@ -5949,12 +5949,12 @@ span.champ-obligatoire {
 
 @media not all and (min-width: 768px) {
   .mode-edition {
-    --editor-label-width: 200px;
+    --editor-label-width: 175px;
   }
 }
 @media not all and (min-width: 480px) {
   .mode-edition {
-    --editor-label-width: 150px;
+    --editor-label-width: 135px;
   }
 }
 /* 🔗 Bridge HSL ↔️ nuancier existant (ne remplace rien) */
