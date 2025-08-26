@@ -2836,7 +2836,7 @@ li.ligne-email .champ-affichage {
     border: 0;
   }
   .mode-edition {
-    --editor-label-width: 200px;
+    --editor-label-width: 175px;
   }
 }
 @media not all and (min-width: 480px) {
