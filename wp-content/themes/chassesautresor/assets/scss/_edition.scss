@@ -1718,6 +1718,7 @@ body.panneau-ouvert::before {
   color: var(--color-editor-text);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
   position: relative;
+  box-sizing: border-box;
 }
 
 .carte-orgy {
