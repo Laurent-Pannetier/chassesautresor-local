@@ -1907,6 +1907,23 @@ a[aria-disabled=true] {
   margin-top: 0;
 }
 
+@media not all and (min-width: 1024px) {
+  .dashboard-card.champ-protection-solutions .qr-code-image, .champ-protection-solutions.carte-orgy .qr-code-image,
+  .dashboard-card.champ-qr-code .qr-code-image,
+  .champ-qr-code.carte-orgy .qr-code-image {
+    flex: 0 0 200px;
+  }
+  .dashboard-card.champ-protection-solutions .qr-code-image img, .champ-protection-solutions.carte-orgy .qr-code-image img,
+  .dashboard-card.champ-qr-code .qr-code-image img,
+  .champ-qr-code.carte-orgy .qr-code-image img {
+    width: 200px;
+  }
+  .dashboard-card.champ-protection-solutions .qr-code-image i, .champ-protection-solutions.carte-orgy .qr-code-image i,
+  .dashboard-card.champ-qr-code .qr-code-image i,
+  .champ-qr-code.carte-orgy .qr-code-image i {
+    font-size: 200px;
+  }
+}
 @media not all and (min-width: 768px) {
   .dashboard-card.champ-protection-solutions .qr-code-image, .champ-protection-solutions.carte-orgy .qr-code-image,
   .dashboard-card.champ-qr-code .qr-code-image,
