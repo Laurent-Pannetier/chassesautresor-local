@@ -137,6 +137,10 @@ li.edition-row {
   flex: 1;
 }
 
+#chasse-tab-param .edition-row-label label {
+  font-style: italic;
+}
+
 .edition-row.champ-attention .edition-row-label label {
   color: var(--color-editor-error);
 }
