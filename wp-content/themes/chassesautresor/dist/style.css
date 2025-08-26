@@ -5968,7 +5968,8 @@ tbody tr:nth-child(even) {
 
 @media (min-width: 768px) {
   .indices-table,
-  .solutions-table {
+  .solutions-table,
+  .stats-table {
     table-layout: fixed;
   }
   .indices-table td:first-child,

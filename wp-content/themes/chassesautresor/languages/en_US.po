@@ -1309,6 +1309,7 @@ msgid "Supprimer la récompense"
 msgstr "Delete the reward"
 
 #: template-parts/chasse/partials/chasse-partial-participants.php:40
+#: template-parts/chasse/partials/chasse-partial-enigmes.php:30
 msgid "Joueurs"
 msgstr "Players"
 
@@ -2570,14 +2571,6 @@ msgstr "They will only be released on the date you choose: "
 #: template-parts/chasse/chasse-edition-main.php:999
 msgid "immédiatement après la fin de la chasse ou après un délai paramétrable."
 msgstr "right after the hunt ends or after a configurable delay."
-
-#: template-parts/chasse/partials/chasse-partial-enigmes.php:30
-msgid "Nb joueurs"
-msgstr "Players"
-
-#: template-parts/chasse/partials/chasse-partial-enigmes.php:31
-msgid "% total joueurs"
-msgstr "% of total players"
 
 #: template-parts/organisateur/organisateur-edition-main.php:144
 msgid "Logo organisateur"

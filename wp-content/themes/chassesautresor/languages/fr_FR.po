@@ -1308,6 +1308,7 @@ msgid "Supprimer la récompense"
 msgstr "Modifier la récompense"
 
 #: template-parts/chasse/partials/chasse-partial-participants.php:40
+#: template-parts/chasse/partials/chasse-partial-enigmes.php:30
 msgid "Joueurs"
 msgstr "Joueurs"
 
@@ -2543,14 +2544,6 @@ msgstr "Ils ne seront partagés qu'à la date que vous aurez choisie : "
 #: template-parts/chasse/chasse-edition-main.php:999
 msgid "immédiatement après la fin de la chasse ou après un délai paramétrable."
 msgstr "immédiatement après la fin de la chasse ou après un délai paramétrable."
-
-#: template-parts/chasse/partials/chasse-partial-enigmes.php:30
-msgid "Nb joueurs"
-msgstr "Nb joueurs"
-
-#: template-parts/chasse/partials/chasse-partial-enigmes.php:31
-msgid "% total joueurs"
-msgstr "% total joueurs"
 
 #: template-parts/organisateur/organisateur-edition-main.php:144
 msgid "Logo organisateur"
