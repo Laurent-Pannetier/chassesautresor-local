@@ -472,64 +472,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
 
             <!-- Tentatives -->
             <?php
-            $cout_attrs = [
-                'data-champ'   => 'enigme_tentative.enigme_tentative_cout_points',
-                'data-cpt'     => 'enigme',
-                'data-post-id' => $enigme_id,
-                'data-no-edit' => '1',
-                'data-no-icon' => '1',
-            ];
-            if ($mode_validation === 'aucune') {
-                $cout_attrs['style'] = 'display:none;';
-            }
-            get_template_part(
-                'template-parts/common/edition-row',
-                null,
-                [
-                    'class'      => 'champ-enigme champ-cout-points ' . (empty($cout) ? 'champ-vide' : 'champ-rempli') . ($peut_editer ? '' : ' champ-desactive') . ($mode_validation === 'aucune' ? ' cache' : ''),
-                    'attributes' => $cout_attrs,
-                    'label' => function () {
-                        ?>
-                        <label for="enigme-tentative-cout"><?= esc_html__('Coût tentative', 'chassesautresor-com'); ?>
-                            <?php
-                            get_template_part(
-                                'template-parts/common/help-icon',
-                                null,
-                                [
-                                    'aria_label' => __('Informations sur le coût des tentatives', 'chassesautresor-com'),
-                                    'classes'    => 'open-points-modal',
-                                    'variant'    => 'info',
-                                    'title'      => __('Tentative gratuite ou payante ?', 'chassesautresor-com'),
-                                    'message'    => __('Vous êtes libre de définir le coût d’une tentative pour votre énigme : gratuite ou payante en points. Lorsqu’un joueur dépense des points pour soumettre une réponse, ceux-ci sont immédiatement crédités sur votre compte.', 'chassesautresor-com'),
-                                ]
-                            );
-                            ?>
-                        </label>
-                        <?php
-                    },
-                    'content' => function () use ($cout, $peut_editer) {
-                        ?>
-                        <div class="champ-edition">
-                            <input type="number" id="enigme-tentative-cout" class="champ-input champ-cout champ-number" min="0" max="999999" step="1" value="<?= esc_attr($cout); ?>" placeholder="0" <?= $peut_editer ? '' : 'disabled'; ?> />
-                            <span class="champ-status"></span>
-                            <span class="txt-small"><?= esc_html__('points', 'chassesautresor-com'); ?></span>
-                            <div class="champ-option-gratuit" style="margin-left: 5px;">
-                                <?php
-                                $cout_normalise = trim((string) $cout);
-                                $is_gratuit     = $cout_normalise === '' || $cout_normalise === '0' || (int) $cout === 0;
-                                ?>
-                                <input type="checkbox" id="cout-gratuit-enigme" name="cout-gratuit-enigme" <?= $is_gratuit ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?> />
-                                <label for="cout-gratuit-enigme"><?= esc_html__('Gratuit', 'chassesautresor-com'); ?></label>
-                            </div>
-                        </div>
-                        <div class="champ-feedback"></div>
-                        <?php
-                    },
-                ]
-            );
-            ?>
-
-            <?php
             get_template_part(
                 'template-parts/common/edition-row',
                 null,
@@ -575,15 +517,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
             );
             ?>
 
+            <?php
+            $cout_attrs = [
+                'data-champ'   => 'enigme_tentative.enigme_tentative_cout_points',
+                'data-cpt'     => 'enigme',
+                'data-post-id' => $enigme_id,
+                'data-no-edit' => '1',
+                'data-no-icon' => '1',
+            ];
+            if ($mode_validation === 'aucune') {
+                $cout_attrs['style'] = 'display:none;';
+            }
+            $cout_normalise = trim((string) $cout);
+            $is_payant = $cout_normalise !== '' && $cout_normalise !== '0' && (int) $cout !== 0;
+            get_template_part(
+                'template-parts/common/edition-row',
+                null,
+                [
+                    'class'      => 'champ-enigme champ-cout-points champ-mode-fin ' . ($is_payant ? 'champ-rempli' : 'champ-vide') . ($peut_editer ? '' : ' champ-desactive') . ($mode_validation === 'aucune' ? ' cache' : ''),
+                    'attributes' => $cout_attrs,
+                    'label' => function () {
+                        ?>
+                        <label for="enigme-cout-toggle"><?= esc_html__('Coût tentative', 'chassesautresor-com'); ?>
+                            <?php
+                            get_template_part(
+                                'template-parts/common/help-icon',
+                                null,
+                                [
+                                    'aria_label' => __('Informations sur le coût des tentatives', 'chassesautresor-com'),
+                                    'classes'    => 'open-points-modal',
+                                    'variant'    => 'info',
+                                    'title'      => __('Tentative gratuite ou payante ?', 'chassesautresor-com'),
+                                    'message'    => __('Vous êtes libre de définir le coût d’une tentative pour votre énigme : gratuite ou payante en points. Lorsqu’un joueur dépense des points pour soumettre une réponse, ceux-ci sont immédiatement crédités sur votre compte.', 'chassesautresor-com'),
+                                ]
+                            );
+                            ?>
+                        </label>
+                        <?php
+                    },
+                    'content' => function () use ($cout, $peut_editer, $is_payant, $enigme_id) {
+                        ?>
+                        <div class="champ-mode-options">
+                            <span class="toggle-option"><?= esc_html__('Free', 'chassesautresor-com'); ?></span>
+                            <label class="switch-control">
+                                <input type="checkbox" id="enigme-cout-toggle" <?= $is_payant ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
+                                <span class="switch-slider"></span>
+                            </label>
+                            <span class="toggle-option"><?= esc_html__('Points', 'chassesautresor-com'); ?></span>
+                            <div id="champ-enigme-cout" class="champ-edition<?= $is_payant ? '' : ' cache'; ?>">
+                                <input type="number" id="enigme-tentative-cout" class="champ-input champ-cout champ-number" min="0" max="999999" step="1" value="<?= esc_attr($is_payant ? $cout : '0'); ?>" placeholder="0" <?= $peut_editer ? '' : 'disabled'; ?> />
+                                <span class="champ-status"></span>
+                                <span class="txt-small"><?= esc_html__('points', 'chassesautresor-com'); ?></span>
+                            </div>
+                        </div>
+                        <div class="champ-feedback"></div>
+                        <?php
+                    },
+                ]
+            );
+            ?>
+
             <!-- Accès à l'énigme -->
             <?php
-            $condition          = get_field('enigme_acces_condition', $enigme_id) ?? 'immediat';
-            $enigmes_possibles  = enigme_get_liste_prerequis_possibles($enigme_id);
-            $prerequis_actuels  = get_field('enigme_acces_pre_requis', $enigme_id, false) ?? [];
-            if (!is_array($prerequis_actuels)) {
-              $prerequis_actuels = [$prerequis_actuels];
-            }
-            $pre_requis_vide = ($condition === 'pre_requis' && empty($prerequis_actuels));
+            $condition = get_field('enigme_acces_condition', $enigme_id) ?? 'immediat';
             ?>
             <?php
             get_template_part(
@@ -600,54 +596,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                     ],
                     'label' => function () {
                         ?>
-                        <label for="enigme_acces_condition"><?= esc_html__('Accès', 'chassesautresor-com'); ?></label>
+                        <label for="enigme-acces-toggle"><?= esc_html__('Accès', 'chassesautresor-com'); ?></label>
                         <?php
                     },
-                    'content' => function () use ($condition, $peut_editer, $date_deblocage, $enigmes_possibles, $prerequis_actuels, $pre_requis_vide, $enigme_id) {
+                    'content' => function () use ($condition, $peut_editer, $date_deblocage, $enigme_id) {
                         ?>
                         <div class="champ-mode-options">
-                            <label>
-                                <input id="enigme_acces_condition" type="radio" name="acf[enigme_acces_condition]" value="immediat" <?= $condition === 'immediat' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
-                                <?= esc_html__('Libre', 'chassesautresor-com'); ?>
+                            <span class="toggle-option"><?= esc_html__('Libre', 'chassesautresor-com'); ?></span>
+                            <label class="switch-control">
+                                <input type="checkbox" id="enigme-acces-toggle" <?= $condition === 'date_programmee' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
+                                <span class="switch-slider"></span>
                             </label>
-                            <label>
-                                <input type="radio" name="acf[enigme_acces_condition]" value="date_programmee" <?= $condition === 'date_programmee' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
-                                <?= esc_html__('Date programmée', 'chassesautresor-com'); ?>
-                            </label>
+                            <span class="toggle-option"><?= esc_html__('Date programmée', 'chassesautresor-com'); ?></span>
+                            <input type="hidden" id="enigme_acces_condition" name="acf[enigme_acces_condition]" value="<?= $condition === 'date_programmee' ? 'date_programmee' : 'immediat'; ?>" />
                             <div id="champ-enigme-date" class="champ-enigme champ-date<?= $condition === 'date_programmee' ? '' : ' cache'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_acces_date" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" data-no-edit="1">
-                                <input type="datetime-local" id="enigme-date-deblocage" name="enigme-date-deblocage" value="<?= esc_attr($date_deblocage); ?>" class="champ-inline-date champ-date-edit" <?= $peut_editer ? '' : 'disabled'; ?> />
+                                <input type="datetime-local" id="enigme-date-deblocage" name="enigme-date-deblocage" value="<?= esc_attr($date_deblocage); ?>" data-previous="<?= esc_attr($date_deblocage); ?>" class="champ-inline-date champ-date-edit" <?= $peut_editer ? '' : 'disabled'; ?> />
                                 <span class="champ-status"></span>
                                 <div class="champ-feedback champ-date-feedback" style="display:none;"></div>
                             </div>
-                            <?php if (!empty($enigmes_possibles)) : ?>
-                                <label>
-                                    <input type="radio" name="acf[enigme_acces_condition]" value="pre_requis" <?= $condition === 'pre_requis' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
-                                    <?= esc_html__('Pré-requis', 'chassesautresor-com'); ?>
-                                </label>
-                                <div id="champ-enigme-pre-requis" class="champ-enigme champ-pre-requis<?= $condition === 'pre_requis' ? '' : ' cache'; ?><?= $pre_requis_vide ? ' champ-vide' : ''; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_acces_pre_requis" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" data-no-edit="1" data-vide="<?= empty($enigmes_possibles) ? '1' : '0'; ?>">
-                                    <?php if (empty($enigmes_possibles)) : ?>
-                                        <em><?= esc_html__('Aucune autre énigme disponible comme prérequis.', 'chassesautresor-com'); ?></em>
-                                    <?php else : ?>
-                                        <div class="liste-pre-requis">
-                                            <?php foreach ($enigmes_possibles as $id => $titre) :
-                                                $checked = in_array($id, $prerequis_actuels);
-                                                $img     = get_image_enigme($id, 'thumbnail'); ?>
-                                                <label class="prerequis-item">
-                                                    <input type="checkbox" value="<?= esc_attr($id); ?>" <?= $checked ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
-                                                    <span class="prerequis-mini">
-                                                        <?php if ($img) : ?>
-                                                            <img src="<?= esc_url($img); ?>" alt="" />
-                                                        <?php endif; ?>
-                                                        <span class="prerequis-titre"><?= esc_html($titre); ?></span>
-                                                        <span class="prerequis-check"><i class="fa-solid fa-check" aria-hidden="true"></i></span>
-                                                    </span>
-                                                </label>
-                                            <?php endforeach; ?>
-                                        </div>
-                                    <?php endif; ?>
-                                    <div class="champ-feedback"></div>
-                                </div>
-                            <?php endif; ?>
                         </div>
                         <div class="champ-feedback"></div>
                         <?php
