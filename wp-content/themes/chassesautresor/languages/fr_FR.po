@@ -1191,9 +1191,8 @@ msgstr ""
 
 #: template-parts/chasse/chasse-edition-main.php:568
 #: template-parts/enigme/enigme-edition-main.php:533
-#, fuzzy
 msgid "Participants"
-msgstr "Tx participation"
+msgstr "Participants"
 
 #: template-parts/chasse/chasse-edition-main.php:575
 #: template-parts/enigme/enigme-edition-main.php:97
@@ -1327,20 +1326,20 @@ msgid "Inscription"
 msgstr "Inscription"
 
 #: template-parts/chasse/partials/chasse-partial-participants.php:58
-msgid "Trier par taux de participation"
-msgstr "Trier par taux de participation"
+msgid "Trier par participation"
+msgstr "Trier par participation"
 
 #: template-parts/chasse/partials/chasse-partial-participants.php:60
-msgid "Tx participation"
-msgstr "Tx participation"
+msgid "Participation"
+msgstr "Participation"
 
 #: template-parts/chasse/partials/chasse-partial-participants.php:68
-msgid "Trier par taux de résolution"
-msgstr "Trier par taux de résolution"
+msgid "Trier par énigmes trouvées"
+msgstr "Trier par énigmes trouvées"
 
 #: template-parts/chasse/partials/chasse-partial-participants.php:70
-msgid "Tx résolution"
-msgstr "Tx résolution"
+msgid "Trouvées"
+msgstr "Trouvées"
 
 #: template-parts/common/stat-histogram-card.php:38
 msgid "Aucune donnée."
@@ -1783,9 +1782,8 @@ msgid "Aucun participant engagé."
 msgstr "Aucun participant engagé."
 
 #: template-parts/enigme/partials/enigme-partial-participants.php:47
-#, fuzzy
 msgid "Liste participants"
-msgstr "Tx participation"
+msgstr "Liste participants"
 
 #: template-parts/enigme/partials/enigme-partial-participants.php:51
 msgid "Nom"
@@ -2546,6 +2544,6 @@ msgid "% total joueurs"
 msgstr "% total joueurs"
 
 #: template-parts/chasse/partials/chasse-partial-enigmes.php:34
-msgid "Trouvé"
-msgstr "Trouvé"
+msgid "Trouvées"
+msgstr "Trouvées"
 

@@ -1270,19 +1270,19 @@ msgid "Inscription"
 msgstr ""
 
 #: template-parts/chasse/partials/chasse-partial-participants.php:58
-msgid "Trier par taux de participation"
+msgid "Trier par participation"
 msgstr ""
 
 #: template-parts/chasse/partials/chasse-partial-participants.php:60
-msgid "Tx participation"
+msgid "Participation"
 msgstr ""
 
 #: template-parts/chasse/partials/chasse-partial-participants.php:68
-msgid "Trier par taux de résolution"
+msgid "Trier par énigmes trouvées"
 msgstr ""
 
 #: template-parts/chasse/partials/chasse-partial-participants.php:70
-msgid "Tx résolution"
+msgid "Trouvées"
 msgstr ""
 
 #: template-parts/common/stat-histogram-card.php:38
@@ -2364,6 +2364,6 @@ msgid "% total joueurs"
 msgstr ""
 
 #: template-parts/chasse/partials/chasse-partial-enigmes.php:34
-msgid "Trouvé"
+msgid "Trouvées"
 msgstr ""
 

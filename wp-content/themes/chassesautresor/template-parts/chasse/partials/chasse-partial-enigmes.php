@@ -31,7 +31,7 @@ if ($title !== '') {
       <th scope="col"<?= in_array(3, $cols_etiquette, true) ? ' data-format="etiquette" data-col="3"' : ''; ?>><?= esc_html__('% total joueurs', 'chassesautresor-com'); ?></th>
       <th scope="col"<?= in_array(4, $cols_etiquette, true) ? ' data-format="etiquette" data-col="4"' : ''; ?>><?= esc_html__('Tentatives', 'chassesautresor-com'); ?></th>
       <th scope="col"<?= in_array(5, $cols_etiquette, true) ? ' data-format="etiquette" data-col="5"' : ''; ?>><?= esc_html__('Points', 'chassesautresor-com'); ?></th>
-      <th scope="col"<?= in_array(6, $cols_etiquette, true) ? ' data-format="etiquette" data-col="6"' : ''; ?>><?= esc_html__('Trouvé', 'chassesautresor-com'); ?></th>
+      <th scope="col"<?= in_array(6, $cols_etiquette, true) ? ' data-format="etiquette" data-col="6"' : ''; ?>><?= esc_html__('Trouvées', 'chassesautresor-com'); ?></th>
     </tr>
   </thead>
   <tbody>

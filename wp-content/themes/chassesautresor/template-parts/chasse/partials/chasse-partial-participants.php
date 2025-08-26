@@ -55,9 +55,9 @@ if (empty($participants)) {
         <button
           class="sort"
           data-orderby="participation"
-          aria-label="<?= esc_attr__('Trier par taux de participation', 'chassesautresor-com'); ?>"
+          aria-label="<?= esc_attr__('Trier par participation', 'chassesautresor-com'); ?>"
         >
-          <?= esc_html__('Tx participation', 'chassesautresor-com'); ?>
+          <?= esc_html__('Participation', 'chassesautresor-com'); ?>
           <i class="fa-solid <?= esc_attr($icon_participation); ?>"></i>
         </button>
       </th>
@@ -65,9 +65,9 @@ if (empty($participants)) {
         <button
           class="sort"
           data-orderby="resolution"
-          aria-label="<?= esc_attr__('Trier par taux de résolution', 'chassesautresor-com'); ?>"
+          aria-label="<?= esc_attr__('Trier par énigmes trouvées', 'chassesautresor-com'); ?>"
         >
-          <?= esc_html__('Tx résolution', 'chassesautresor-com'); ?>
+          <?= esc_html__('Trouvées', 'chassesautresor-com'); ?>
           <i class="fa-solid <?= esc_attr($icon_resolution); ?>"></i>
         </button>
       </th>
@@ -79,8 +79,8 @@ if (empty($participants)) {
     foreach ($p['enigmes'] as $e) {
         $titles[] = esc_html($e['title']);
     }
-    $taux_participation = $total_enigmes > 0 ? (100 * $p['nb_engagees'] / $total_enigmes) : 0;
-    $taux_resolution    = $total_enigmes > 0 ? (100 * $p['nb_resolues'] / $total_enigmes) : 0;
+    $participation_ratio = sprintf('%d/%d', (int) $p['nb_engagees'], (int) $total_enigmes);
+    $trouvees_ratio      = sprintf('%d/%d', (int) $p['nb_resolues'], (int) $total_enigmes);
 ?>
     <tr>
       <td><?= esc_html($p['username']); ?></td>
@@ -96,8 +96,8 @@ if (empty($participants)) {
         echo implode(' ', $etiquettes);
         ?>
       </td>
-      <td><?= esc_html(number_format_i18n($taux_participation, 0)); ?>%</td>
-      <td><?= esc_html(number_format_i18n($taux_resolution, 0)); ?>%</td>
+      <td><?= esc_html($participation_ratio); ?></td>
+      <td><?= esc_html($trouvees_ratio); ?></td>
     </tr>
     <?php endforeach; ?>
   </tbody>
