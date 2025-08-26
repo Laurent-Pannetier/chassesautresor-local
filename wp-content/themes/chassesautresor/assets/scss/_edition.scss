@@ -201,6 +201,31 @@
   margin-top: 0;
 }
 
+@media not all and (--bp-tablet) {
+  .dashboard-card.champ-protection-solutions .qr-code-image,
+  .dashboard-card.champ-qr-code .qr-code-image {
+    flex: 0 0 100px;
+  }
+
+  .dashboard-card.champ-protection-solutions .qr-code-image i {
+    font-size: 100px;
+  }
+}
+
+@media not all and (--bp-mobile) {
+  .dashboard-card.champ-protection-solutions .qr-code-block,
+  .dashboard-card.champ-qr-code .qr-code-block {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .dashboard-card.champ-protection-solutions .qr-code-content,
+  .dashboard-card.champ-qr-code .qr-code-content {
+    align-items: center;
+    text-align: center;
+  }
+}
+
 /* ========== 🖊️ CHAMPS ÉDITABLES ========== */
 
 .champ-edition {
