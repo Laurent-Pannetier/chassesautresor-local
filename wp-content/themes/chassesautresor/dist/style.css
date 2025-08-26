@@ -257,10 +257,8 @@
    ================================================== */
 .chasse-fiche-container {
   margin-top: var(--space-2xl);
-  display: flex;
-  gap: 2.6rem;
-  align-items: flex-start;
-  flex-wrap: wrap; /* utile si largeur écran réduite */
+  --grid-gap: 2.6rem;
+  align-items: start;
   position: relative;
 }
 
@@ -277,7 +275,6 @@
 
 /* ========== 📝 COLONNE INFOS DE LA CHASSE ========== */
 .chasse-details-wrapper {
-  flex: 1;
   min-width: 240px;
 }
 
@@ -351,13 +348,6 @@ body.edition-active-chasse .chasse-enigmes-header .liens-placeholder {
 
 /* ========== 📱 RESPONSIVE PAGE DE CHASSE ========== */
 @media not all and (min-width: 768px) {
-  .chasse-fiche-container {
-    flex-direction: column;
-  }
-  .chasse-image-wrapper,
-  .chasse-details-wrapper {
-    width: 100%;
-  }
   .header-chasse {
     font-size: 22px;
   }
@@ -377,6 +367,22 @@ body.edition-active-chasse .chasse-enigmes-header .liens-placeholder {
   font-weight: 500;
 }
 
+@media (min-width: 768px) {
+  .chasse-section-intro .col-image {
+    --col-span: 4;
+  }
+  .chasse-section-intro .col-details {
+    --col-span: 8;
+  }
+}
+@media (min-width: 1024px) {
+  .chasse-section-intro .col-image {
+    --col-span: 5;
+  }
+  .chasse-section-intro .col-details {
+    --col-span: 7;
+  }
+}
 /* ========== 🛒 AJOUT AU PANIER ========== */
 .woocommerce a.button.add_to_cart_button {
   font-weight: 500;
