@@ -107,7 +107,7 @@ $is_complete = (
                           ],
                           'label' => function () {
                               ?>
-                              <label for="champ-titre-organisateur">Titre <span class="champ-obligatoire">*</span></label>
+                              <label for="champ-titre-organisateur"><?php esc_html_e('Titre', 'chassesautresor-com'); ?> <span class="champ-obligatoire">*</span></label>
                               <?php
                           },
                           'content' => function () use ($titre, $peut_editer_titre) {
@@ -117,7 +117,7 @@ $is_complete = (
                                 maxlength="50"
                                 value="<?= esc_attr($titre); ?>"
                                 id="champ-titre-organisateur" <?= $peut_editer_titre ? '' : 'disabled'; ?>
-                                placeholder="renseigner le titre de l’organisateur" />
+                                placeholder="<?= esc_attr__('renseigner le titre de l’organisateur', 'chassesautresor-com'); ?>" />
                               <div class="champ-feedback"></div>
                               <?php
                           },

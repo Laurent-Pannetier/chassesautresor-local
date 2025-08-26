@@ -984,8 +984,9 @@ msgstr "Variation"
 #: template-parts/chasse/chasse-edition-main.php:104
 #: template-parts/enigme/enigme-edition-main.php:128
 #: template-parts/indice/indice-edition-main.php:90
+#: template-parts/organisateur/organisateur-edition-main.php:110
 msgid "Titre"
-msgstr ""
+msgstr "Titre"
 
 #: template-parts/chasse/chasse-edition-main.php:126
 #, fuzzy
@@ -2352,6 +2353,10 @@ msgstr "Tentatives quotidiennes"
 #: assets/js/core/resume.js:322
 msgid "renseigner le titre de la chasse"
 msgstr "renseigner le titre de la chasse"
+
+#: template-parts/organisateur/organisateur-edition-main.php:120
+msgid "renseigner le titre de l’organisateur"
+msgstr "renseigner le titre de l’organisateur"
 
 #: assets/js/help-modal.js:19
 #: inc/edition/edition-core.php:***

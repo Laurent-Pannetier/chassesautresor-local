@@ -996,6 +996,7 @@ msgstr "Animation"
 #: template-parts/enigme/enigme-edition-main.php:128
 #: template-parts/indice/indice-edition-main.php:90
 #: template-parts/chasse/partials/chasse-partial-enigmes.php:29
+#: template-parts/organisateur/organisateur-edition-main.php:110
 msgid "Titre"
 msgstr "Title"
 
@@ -2382,6 +2383,10 @@ msgstr "Add the reward"
 #: assets/js/core/resume.js:322
 msgid "renseigner le titre de la chasse"
 msgstr "enter the hunt title"
+
+#: template-parts/organisateur/organisateur-edition-main.php:120
+msgid "renseigner le titre de l’organisateur"
+msgstr "enter the organizer title"
 
 #: assets/js/chasse-edit.js:376
 msgid "Veuillez saisir une valeur en euros comprise entre 0 et 5 000 000."

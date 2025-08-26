@@ -43,6 +43,10 @@ msgstr ""
 msgid "renseigner le titre de la chasse"
 msgstr ""
 
+#: template-parts/organisateur/organisateur-edition-main.php:120
+msgid "renseigner le titre de l’organisateur"
+msgstr ""
+
 #: functions.php:107
 msgid "English"
 msgstr ""
@@ -958,6 +962,7 @@ msgstr ""
 #: template-parts/chasse/chasse-edition-main.php:104
 #: template-parts/enigme/enigme-edition-main.php:128
 #: template-parts/indice/indice-edition-main.php:90
+#: template-parts/organisateur/organisateur-edition-main.php:110
 msgid "Titre"
 msgstr ""
 
