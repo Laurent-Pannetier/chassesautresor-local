@@ -2540,6 +2540,10 @@ msgstr "Aucun fichier choisi"
 msgid "Il existe déjà une solution pour cette chasse"
 msgstr "Il existe déjà une solution pour cette chasse"
 
+#: template-parts/chasse/partials/chasse-partial-solutions.php:33
+msgid "Il existe déjà une solution pour cette énigme"
+msgstr "Il existe déjà une solution pour cette énigme"
+
 #: template-parts/chasse/partials/chasse-partial-solutions.php:62
 msgid "Toutes les énigmes de la chasse ont déjà une solution"
 msgstr "Toutes les énigmes de la chasse ont déjà une solution"

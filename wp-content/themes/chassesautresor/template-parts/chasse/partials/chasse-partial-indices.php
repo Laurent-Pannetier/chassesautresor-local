@@ -53,7 +53,7 @@ if ($objet_type === 'enigme') {
                     data-default-enigme="<?= esc_attr($objet_id); ?>"
                     data-indice-rang="<?= esc_attr($indice_rang); ?>"
                 >
-                    <?= esc_html__('Cette énigme', 'chassesautresor-com'); ?>
+                    <?= esc_html__('Énigme', 'chassesautresor-com'); ?>
                 </button>
                 <button
                     type="button"
