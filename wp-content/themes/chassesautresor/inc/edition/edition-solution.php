@@ -550,11 +550,55 @@ function ajax_chasse_solution_status(): void
     $has_enigme_solution = count($toutes_enigmes) > count($enigmes);
     $has_solutions       = $has_solution_chasse || $has_enigme_solution;
 
+    $meta_total = [
+        'relation' => 'OR',
+        [
+            'relation' => 'AND',
+            [
+                'key'   => 'solution_cible_type',
+                'value' => 'chasse',
+            ],
+            [
+                'key'   => 'solution_chasse_linked',
+                'value' => $chasse_id,
+            ],
+        ],
+    ];
+
+    if (!empty($toutes_enigmes)) {
+        $enigme_ids = array_map(static fn($e) => $e->ID, $toutes_enigmes);
+        $meta_total[] = [
+            'relation' => 'AND',
+            [
+                'key'   => 'solution_cible_type',
+                'value' => 'enigme',
+            ],
+            [
+                'key'     => 'solution_enigme_linked',
+                'value'   => $enigme_ids,
+                'compare' => 'IN',
+            ],
+        ];
+    }
+
+    $total_solutions = 0;
+    if (function_exists('get_posts')) {
+        $count_posts = get_posts([
+            'post_type'   => 'solution',
+            'post_status' => ['publish', 'pending', 'draft'],
+            'fields'      => 'ids',
+            'nopaging'    => true,
+            'meta_query'  => $meta_total,
+        ]);
+        $total_solutions = is_array($count_posts) ? count($count_posts) : 0;
+    }
+
     wp_send_json_success([
         'has_solution_chasse' => $has_solution_chasse ? 1 : 0,
         'has_solution_enigme' => $has_solution_enigme ? 1 : 0,
         'has_enigmes'        => $has_enigmes ? 1 : 0,
         'has_solutions'      => $has_solutions ? 1 : 0,
+        'total_solutions'    => $total_solutions,
     ]);
 }
 add_action('wp_ajax_chasse_solution_status', 'ajax_chasse_solution_status');

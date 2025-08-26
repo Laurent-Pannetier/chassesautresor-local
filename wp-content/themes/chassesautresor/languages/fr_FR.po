@@ -2585,3 +2585,20 @@ msgstr "Modifier le logo"
 msgid "Logo de l’organisateur"
 msgstr "Logo de l’organisateur"
 
+#: template-parts/common/edition-animation.php:512
+msgid "Solutions pour toute la chasse %s"
+msgstr "Solutions pour toute la chasse %s"
+
+#: template-parts/common/edition-animation.php:514
+msgid "Solutions pour %s"
+msgstr "Solutions pour %s"
+
+#: template-parts/common/edition-animation.php:521
+#: inc/edition/edition-enigme.php:64
+msgid "Voir toutes les solutions de la chasse"
+msgstr "Voir toutes les solutions de la chasse"
+
+#: inc/edition/edition-enigme.php:65
+msgid "Voir la solution de cette énigme"
+msgstr "Voir la solution de cette énigme"
+

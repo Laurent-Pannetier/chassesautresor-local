@@ -61,6 +61,8 @@ function enqueue_script_enigme_edit()
       'scrollTarget'  => '#enigme-section-solutions',
       'tooltipChasse' => __('Il existe déjà une solution pour cette chasse', 'chassesautresor-com'),
       'tooltipEnigme' => __('Il existe déjà une solution pour cette énigme', 'chassesautresor-com'),
+      'toggleChasse'  => __('Voir toutes les solutions de la chasse', 'chassesautresor-com'),
+      'toggleEnigme'  => __('Voir la solution de cette énigme', 'chassesautresor-com'),
     ]
   );
 

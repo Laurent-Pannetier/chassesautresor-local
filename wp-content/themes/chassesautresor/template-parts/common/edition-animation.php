@@ -339,11 +339,23 @@ $solution_prefill = apply_filters('chassesautresor/edition_animation_solution_pr
               $chasse_title = __('Nouvelle chasse', 'chassesautresor-com');
           }
 
-          $par_page_solutions = 5;
-          $page_solutions     = 1;
+          $par_page_solutions   = 5;
+          $page_solutions       = 1;
+          $solutions_objet_type = $objet_type;
+          $solutions_objet_id   = $objet_id;
+          $has_solution_enigme  = false;
 
-          if ($objet_type === 'chasse') {
-              $meta_solutions = [
+          if ($objet_type === 'enigme') {
+              $has_solution_enigme = solution_existe_pour_objet($objet_id, 'enigme');
+              if (!$has_solution_enigme && $chasse_id) {
+                  $solutions_objet_type = 'chasse';
+                  $solutions_objet_id   = $chasse_id;
+              }
+          }
+
+          if ($solutions_objet_type === 'chasse') {
+              $solutions_enigme_ids = recuperer_ids_enigmes_pour_chasse($solutions_objet_id);
+              $meta_solutions       = [
                   'relation' => 'OR',
                   [
                       'relation' => 'AND',
@@ -353,11 +365,11 @@ $solution_prefill = apply_filters('chassesautresor/edition_animation_solution_pr
                       ],
                       [
                           'key'   => 'solution_chasse_linked',
-                          'value' => $objet_id,
+                          'value' => $solutions_objet_id,
                       ],
                   ],
               ];
-              if (!empty($enigme_ids)) {
+              if (!empty($solutions_enigme_ids)) {
                   $meta_solutions[] = [
                       'relation' => 'AND',
                       [
@@ -366,7 +378,7 @@ $solution_prefill = apply_filters('chassesautresor/edition_animation_solution_pr
                       ],
                       [
                           'key'     => 'solution_enigme_linked',
-                          'value'   => $enigme_ids,
+                          'value'   => $solutions_enigme_ids,
                           'compare' => 'IN',
                       ],
                   ];
@@ -379,7 +391,7 @@ $solution_prefill = apply_filters('chassesautresor/edition_animation_solution_pr
                   ],
                   [
                       'key'   => 'solution_enigme_linked',
-                      'value' => $objet_id,
+                      'value' => $solutions_objet_id,
                   ],
               ];
           }
@@ -396,8 +408,46 @@ $solution_prefill = apply_filters('chassesautresor/edition_animation_solution_pr
 
           $solutions_query_args = apply_filters('chassesautresor/edition_animation_solutions_query_args', $solutions_query_args, $args);
           $solutions_query      = new WP_Query($solutions_query_args);
-          $solutions_list       = $solutions_query->posts;
-          $pages_solutions      = (int) $solutions_query->max_num_pages;
+          $solutions_list  = $solutions_query->posts;
+          $pages_solutions = (int) $solutions_query->max_num_pages;
+
+          $meta_total = [
+              'relation' => 'OR',
+              [
+                  'relation' => 'AND',
+                  [
+                      'key'   => 'solution_cible_type',
+                      'value' => 'chasse',
+                  ],
+                  [
+                      'key'   => 'solution_chasse_linked',
+                      'value' => $chasse_id,
+                  ],
+              ],
+          ];
+          $total_enigme_ids = recuperer_ids_enigmes_pour_chasse($chasse_id);
+          if (!empty($total_enigme_ids)) {
+              $meta_total[] = [
+                  'relation' => 'AND',
+                  [
+                      'key'   => 'solution_cible_type',
+                      'value' => 'enigme',
+                  ],
+                  [
+                      'key'     => 'solution_enigme_linked',
+                      'value'   => $total_enigme_ids,
+                      'compare' => 'IN',
+                  ],
+              ];
+          }
+          $total_solutions    = function_exists('get_posts') ? count(get_posts([
+              'post_type'   => 'solution',
+              'post_status' => ['publish', 'pending', 'draft'],
+              'fields'      => 'ids',
+              'nopaging'    => true,
+              'meta_query'  => $meta_total,
+          ])) : 0;
+          $has_other_solutions = $has_solution_enigme ? $total_solutions > 1 : $total_solutions > 0;
           ?>
 
           <h3
@@ -451,22 +501,43 @@ $solution_prefill = apply_filters('chassesautresor/edition_animation_solution_pr
             </div>
           </div>
 
-          <h3 id="<?= esc_attr($objet_type); ?>-section-solutions">
-            <?= esc_html__('Solutions', 'chassesautresor-com'); ?>
+          <h3
+            id="<?= esc_attr($objet_type); ?>-section-solutions"
+            data-titre-enigme="<?= esc_attr__('Solutions pour %s', 'chassesautresor-com'); ?>"
+            data-titre-chasse="<?= esc_attr__('Solutions pour toute la chasse %s', 'chassesautresor-com'); ?>"
+            data-enigme-title="<?= esc_attr($enigme_title); ?>"
+            data-chasse-title="<?= esc_attr($chasse_title); ?>"
+          >
+            <?php if ($solutions_objet_type === 'chasse') : ?>
+              <?= esc_html(sprintf(__('Solutions pour toute la chasse %s', 'chassesautresor-com'), $chasse_title)); ?>
+            <?php else : ?>
+              <?= esc_html(sprintf(__('Solutions pour %s', 'chassesautresor-com'), $enigme_title)); ?>
+            <?php endif; ?>
           </h3>
+          <?php if ($objet_type === 'enigme') : ?>
+          <div class="solutions-table-header"<?= $has_other_solutions ? '' : ' style="display:none;"'; ?>>
+            <span class="etiquette">
+              <button type="button" class="solutions-toggle champ-modifier" data-chasse-id="<?= esc_attr($chasse_id); ?>" data-enigme-id="<?= esc_attr($objet_id); ?>">
+                <?= esc_html__('Voir toutes les solutions de la chasse', 'chassesautresor-com'); ?>
+              </button>
+            </span>
+          </div>
+          <?php endif; ?>
           <div class="liste-solutions"
             data-page="1"
             data-pages="<?= esc_attr($pages_solutions); ?>"
-            data-objet-type="<?= esc_attr($objet_type); ?>"
-            data-objet-id="<?= esc_attr($objet_id); ?>"
+            data-objet-type="<?= esc_attr($solutions_objet_type); ?>"
+            data-objet-id="<?= esc_attr($solutions_objet_id); ?>"
+            data-enigme-id="<?= esc_attr($objet_id); ?>"
+            data-chasse-id="<?= esc_attr($chasse_id); ?>"
             data-ajax-url="<?= esc_url(admin_url('admin-ajax.php')); ?>">
             <?php
             get_template_part('template-parts/common/solutions-table', null, [
                 'solutions'  => $solutions_list,
                 'page'       => 1,
                 'pages'      => $pages_solutions,
-                'objet_type' => $objet_type,
-                'objet_id'   => $objet_id,
+                'objet_type' => $solutions_objet_type,
+                'objet_id'   => $solutions_objet_id,
             ]);
             ?>
           </div>
