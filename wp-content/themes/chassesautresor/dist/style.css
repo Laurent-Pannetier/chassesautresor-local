@@ -3721,6 +3721,48 @@ body.panneau-ouvert::before {
   align-items: center;
 }
 
+.champ-mode-options.segmented-control {
+  gap: 0;
+  border: 1px solid var(--color-editor-border);
+  border-radius: var(--space-xs);
+  overflow: hidden;
+}
+
+.champ-mode-options.segmented-control input[type=radio] {
+  position: absolute;
+  opacity: 0;
+}
+
+.champ-mode-options.segmented-control label {
+  flex: 1;
+  padding: var(--space-xs) var(--space-sm);
+  text-align: center;
+  cursor: pointer;
+  background: var(--color-editor-background);
+  border-right: 1px solid var(--color-editor-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xxs);
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+
+.champ-mode-options.segmented-control label:last-of-type {
+  border-right: none;
+}
+
+.champ-mode-options.segmented-control input[type=radio]:checked + label {
+  background: var(--color-editor-accent);
+  color: var(--color-editor-background);
+}
+
+.champ-mode-options.segmented-control input[type=radio]:disabled + label {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .champ-mode-fin label {
   display: flex;
   align-items: center;
