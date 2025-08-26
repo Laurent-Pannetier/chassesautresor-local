@@ -321,6 +321,12 @@ tbody tr:nth-child(even) {
   text-align: center;
 }
 
+.indices-table .indice-action-buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: nowrap;
+}
+
 .indices-table-header {
   margin-bottom: 0.5rem;
 }
@@ -431,6 +437,12 @@ tbody tr:nth-child(even) {
 .solutions-table th.solution-actions,
 .solutions-table td.solution-actions {
   text-align: center;
+}
+
+.solutions-table .solution-action-buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: nowrap;
 }
 
 .solutions-table .badge-action {
