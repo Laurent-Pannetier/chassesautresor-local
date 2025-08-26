@@ -251,21 +251,13 @@ function initEnigmeEdit() {
     coutCheckbox.addEventListener('change', mettreAJourCartesStats);
   }
 
-  initChampPreRequis();
-  const paramsMaj = new URLSearchParams(window.location.search);
-  initChampConditionnel('acf[enigme_acces_condition]', {
-    'immediat': [], // pas d'affichage spécifique pour l'accès immédiat
-    'date_programmee': ['#champ-enigme-date'],
-    'pre_requis': ['#champ-enigme-pre-requis']
-  });
-  initChampRadioAjax('acf[enigme_acces_condition]');
+  initChampAccesDate();
   appliquerEtatGratuitEnLive(); // ✅ Synchronise état initial de "Gratuit"
 
   if (enigmeId) {
-    document.querySelectorAll('input[name="acf[enigme_acces_condition]"]').forEach(radio => {
-      radio.addEventListener('change', () => {
-        forcerRecalculStatutEnigme(enigmeId);
-      });
+    const accesToggle = document.getElementById('enigme-acces-toggle');
+    accesToggle?.addEventListener('change', () => {
+      forcerRecalculStatutEnigme(enigmeId);
     });
   }
 
@@ -528,6 +520,33 @@ function initChampNbTentatives() {
 
   // 🔄 Fonction exportée globalement
   window.mettreAJourMessageTentatives = mettreAJourAideTentatives;
+}
+
+// ================================
+// 🔓 Gestion du champ d'accès (Libre / Date programmée)
+// ================================
+function initChampAccesDate() {
+  const toggle = document.getElementById('enigme-acces-toggle');
+  const hidden = document.getElementById('enigme_acces_condition');
+  const blocDate = document.getElementById('champ-enigme-date');
+  const inputDate = blocDate?.querySelector('input');
+  if (!toggle || !hidden || !blocDate || !inputDate) return;
+
+  function update() {
+    if (toggle.checked) {
+      hidden.value = 'date_programmee';
+      blocDate.classList.remove('cache');
+      inputDate.disabled = false;
+    } else {
+      hidden.value = 'immediat';
+      blocDate.classList.add('cache');
+      inputDate.disabled = true;
+    }
+    hidden.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+
+  toggle.addEventListener('change', update);
+  update();
 }
 
 
