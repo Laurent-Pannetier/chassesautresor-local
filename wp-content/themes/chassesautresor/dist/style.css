@@ -5846,6 +5846,28 @@ tbody tr:nth-child(even) {
   margin-left: 0.25rem;
 }
 
+@media not all and (min-width: 768px) {
+  .indices-table th.indice-text,
+  .indices-table td.proposition-cell {
+    display: none;
+  }
+  .indices-table th:first-child,
+  .indices-table td:first-child {
+    width: 25%;
+  }
+  .indices-table th:nth-child(2),
+  .indices-table td:nth-child(2) {
+    width: 35%;
+  }
+  .indices-table th:nth-child(4),
+  .indices-table td:nth-child(4) {
+    width: 30%;
+  }
+  .indices-table th:nth-child(5),
+  .indices-table td:nth-child(5) {
+    width: 10%;
+  }
+}
 .solutions-table {
   width: 100%;
 }
