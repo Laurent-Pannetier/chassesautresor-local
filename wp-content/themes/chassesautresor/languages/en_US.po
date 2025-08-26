@@ -444,6 +444,8 @@ msgstr "Hints"
 
 #: template-parts/chasse/chasse-edition-main.php:708
 #: template-parts/enigme/enigme-edition-main.php:774
+#: template-parts/common/edition-animation.php:366
+#: template-parts/common/edition-animation.php:370
 #, php-format
 msgid "Indices pour %s"
 msgstr "Hints for %s"
@@ -2550,10 +2552,12 @@ msgid "Aucun fichier choisi"
 msgstr "No file selected"
 
 #: template-parts/chasse/partials/chasse-partial-solutions.php:47
+#: inc/edition/edition-enigme.php:62
 msgid "Il existe déjà une solution pour cette chasse"
 msgstr "A solution already exists for this hunt"
 
 #: template-parts/chasse/partials/chasse-partial-solutions.php:33
+#: inc/edition/edition-enigme.php:63
 msgid "Il existe déjà une solution pour cette énigme"
 msgstr "A solution already exists for this riddle"
 

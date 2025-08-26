@@ -361,8 +361,16 @@ $solution_prefill = apply_filters('chassesautresor/edition_animation_solution_pr
           $pages_solutions      = (int) $solutions_query->max_num_pages;
           ?>
 
-          <h3 style="margin-top: var(--space-xl);">
-            <?= esc_html__('Indices', 'chassesautresor-com'); ?>
+          <h3
+            id="<?= esc_attr($objet_type); ?>-section-indices"
+            data-titre-template="<?= esc_attr__('Indices pour %s', 'chassesautresor-com'); ?>"
+            style="margin-top: var(--space-xl);"
+          >
+            <?php if ($objet_type === 'enigme') : ?>
+              <?= esc_html(sprintf(__('Indices pour %s', 'chassesautresor-com'), get_the_title($objet_id))); ?>
+            <?php else : ?>
+              <?= esc_html__('Indices', 'chassesautresor-com'); ?>
+            <?php endif; ?>
           </h3>
           <div class="liste-indices" data-page="1" data-pages="<?= esc_attr($pages_indices); ?>" data-objet-type="<?= esc_attr($objet_type); ?>" data-objet-id="<?= esc_attr($objet_id); ?>" data-ajax-url="<?= esc_url(admin_url('admin-ajax.php')); ?>">
             <?php

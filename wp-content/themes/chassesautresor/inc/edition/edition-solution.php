@@ -525,9 +525,13 @@ function ajax_chasse_solution_status(): void
     }
 
     $chasse_id = isset($_POST['chasse_id']) ? (int) $_POST['chasse_id'] : 0;
+    $enigme_id = isset($_POST['enigme_id']) ? (int) $_POST['enigme_id'] : 0;
 
     if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
         wp_send_json_error('post_invalide');
+    }
+    if ($enigme_id && get_post_type($enigme_id) !== 'enigme') {
+        $enigme_id = 0;
     }
 
     if (!solution_action_autorisee('create', 'chasse', $chasse_id)) {
@@ -535,6 +539,7 @@ function ajax_chasse_solution_status(): void
     }
 
     $has_solution_chasse = solution_existe_pour_objet($chasse_id, 'chasse');
+    $has_solution_enigme = $enigme_id ? solution_existe_pour_objet($enigme_id, 'enigme') : false;
 
     $toutes_enigmes = recuperer_enigmes_pour_chasse($chasse_id);
     $enigmes        = array_filter(
@@ -547,6 +552,7 @@ function ajax_chasse_solution_status(): void
 
     wp_send_json_success([
         'has_solution_chasse' => $has_solution_chasse ? 1 : 0,
+        'has_solution_enigme' => $has_solution_enigme ? 1 : 0,
         'has_enigmes'        => $has_enigmes ? 1 : 0,
         'has_solutions'      => $has_solutions ? 1 : 0,
     ]);
