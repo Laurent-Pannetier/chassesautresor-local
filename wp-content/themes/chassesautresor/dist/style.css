@@ -3212,12 +3212,12 @@ body.panneau-ouvert::before {
 
 @media not all and (min-width: 600px) {
   .edition-tab {
-    font-size: 90%;
+    font-size: 16px;
   }
 }
 @media not all and (min-width: 480px) {
   .edition-tab {
-    font-size: 80%;
+    font-size: 16px;
   }
 }
 .edition-tab-content {

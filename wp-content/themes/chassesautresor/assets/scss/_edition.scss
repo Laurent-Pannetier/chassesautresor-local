@@ -1573,13 +1573,13 @@ body.panneau-ouvert::before {
 
 @media not all and (--bp-mobile) {
   .edition-tab {
-    font-size: 90%;
+    font-size: 16px;
   }
 }
 
 @media not all and (--bp-small) {
   .edition-tab {
-    font-size: 80%;
+    font-size: 16px;
   }
 }
 

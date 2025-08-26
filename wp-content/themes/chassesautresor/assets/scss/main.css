@@ -3202,12 +3202,12 @@ body.panneau-ouvert::before {
 
 @media not all and (--bp-mobile) {
   .edition-tab {
-    font-size: 90%;
+    font-size: 16px;
   }
 }
 @media not all and (--bp-small) {
   .edition-tab {
-    font-size: 80%;
+    font-size: 16px;
   }
 }
 .edition-tab-content {
@@ -5850,9 +5850,10 @@ tbody tr:nth-child(even) {
     display: none;
   }
   .indices-table th:first-child,
-  .indices-table td:first-child {
-    width: 25%;
-    font-size: 12px;
+  .indices-table td:first-child,
+  .solutions-table th:first-child,
+  .solutions-table td:first-child {
+    display: none;
   }
   .indices-table th:nth-child(2),
   .indices-table td:nth-child(2) {
@@ -5866,9 +5867,21 @@ tbody tr:nth-child(even) {
   .indices-table td:nth-child(5) {
     width: 10%;
   }
-  .solutions-table th:first-child,
-  .solutions-table td:first-child {
-    font-size: 12px;
+  .solutions-table th:nth-child(2),
+  .solutions-table td:nth-child(2) {
+    width: 35%;
+  }
+  .solutions-table th:nth-child(3),
+  .solutions-table td:nth-child(3) {
+    width: 25%;
+  }
+  .solutions-table th:nth-child(4),
+  .solutions-table td:nth-child(4) {
+    width: 30%;
+  }
+  .solutions-table th:nth-child(5),
+  .solutions-table td:nth-child(5) {
+    width: 10%;
   }
 }
 .solutions-table {
@@ -5951,6 +5964,11 @@ tbody tr:nth-child(even) {
   .indices-table,
   .solutions-table {
     table-layout: fixed;
+  }
+  .indices-table td:first-child,
+  .solutions-table td:first-child {
+    font-size: 14px;
+    font-weight: 400;
   }
 }
 /* Labels */
