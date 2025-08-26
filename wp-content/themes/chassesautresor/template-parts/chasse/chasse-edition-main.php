@@ -894,7 +894,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                 ?>
                <div class="dashboard-card carte-orgy champ-chasse carte-arret-chasse" style="<?= ($statut_metier !== 'termine' && $mode_fin !== 'manuelle') ? 'display:none;' : ''; ?>">
                  <span class="carte-check" aria-hidden="true"><i class="fa-solid fa-check"></i></span>
-                 <i class="fa-solid fa-stop icone-defaut" aria-hidden="true"></i>
+                 <i class="fa-solid fa-hand icone-defaut" aria-hidden="true"></i>
                  <h3><?= esc_html__('Arrêt chasse', 'chassesautresor-com'); ?></h3>
                  <div class="stat-value fin-chasse-actions">
                    <?php if ($statut_metier === 'termine') : ?>

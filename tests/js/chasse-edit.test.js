@@ -87,7 +87,7 @@ const html = `
   <div id="chasse-tab-animation">
     <div class="dashboard-card carte-orgy champ-chasse carte-arret-chasse" style="display:none;">
       <span class="carte-check" aria-hidden="true"><i class="fa-solid fa-check"></i></span>
-      <i class="fa-solid fa-stop icone-defaut" aria-hidden="true"></i>
+      <i class="fa-solid fa-hand icone-defaut" aria-hidden="true"></i>
       <h3>Arrêt chasse</h3>
       <div class="stat-value fin-chasse-actions">
         <button type="button" class="terminer-chasse-btn bouton-cta" data-post-id="1" data-cpt="chasse">Terminer la chasse</button>

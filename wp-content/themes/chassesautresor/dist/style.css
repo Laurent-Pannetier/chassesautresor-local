@@ -3844,6 +3844,20 @@ body.panneau-ouvert::before {
   margin-left: var(--space-xs);
 }
 
+.carte-arret-chasse .fin-chasse-actions {
+  margin-left: 0;
+  justify-content: center;
+}
+.carte-arret-chasse .fin-chasse-actions .terminer-chasse-btn {
+  margin-left: 0;
+}
+.carte-arret-chasse .zone-validation-fin {
+  align-items: center;
+}
+.carte-arret-chasse .zone-validation-fin .annuler-fin-chasse-btn {
+  margin-left: 0;
+}
+
 .help-icon-button,
 .mode-fin-aide {
   background: none;

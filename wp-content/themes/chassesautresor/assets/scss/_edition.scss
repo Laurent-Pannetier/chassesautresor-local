@@ -2215,6 +2215,25 @@ body.panneau-ouvert::before {
   margin-left: var(--space-xs);
 }
 
+.carte-arret-chasse {
+  .fin-chasse-actions {
+    margin-left: 0;
+    justify-content: center;
+
+    .terminer-chasse-btn {
+      margin-left: 0;
+    }
+  }
+
+  .zone-validation-fin {
+    align-items: center;
+
+    .annuler-fin-chasse-btn {
+      margin-left: 0;
+    }
+  }
+}
+
 .help-icon-button,
 .mode-fin-aide {
   background: none;
