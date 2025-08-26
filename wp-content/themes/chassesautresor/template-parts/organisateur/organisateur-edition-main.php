@@ -304,10 +304,9 @@ $is_complete = (
                                     id="champ-email-contact"
                                     placeholder="<?= esc_attr__('exemple@domaine.com', 'chassesautresor-com'); ?>"
                                 >
-                                <div class="champ-inline-actions">
-                                    <button type="button" class="champ-enregistrer">✓</button>
-                                    <button type="button" class="champ-annuler">✖</button>
-                                </div>
+                                <span class="champ-status"></span>
+                                <button type="button" class="champ-enregistrer">✓</button>
+                                <button type="button" class="champ-annuler">✖</button>
                             </div>
                             <div class="champ-feedback"></div>
                             <?php

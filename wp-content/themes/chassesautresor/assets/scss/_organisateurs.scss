@@ -365,18 +365,15 @@ a.bouton-edition-attention {
   }
 
   .champ-email-contact .champ-edition {
+    width: auto;
     flex-direction: row;
     align-items: center;
     gap: var(--space-sm);
   }
 
-  .champ-email-contact .champ-edition .champ-inline-actions {
-    opacity: 1;
-    visibility: visible;
-  }
-
   .champ-email-contact .champ-input {
     width: auto;
+    max-width: 300px;
   }
 
 
