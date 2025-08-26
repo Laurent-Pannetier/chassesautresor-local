@@ -5,7 +5,62 @@ DEBUG && console.log('✅ enigme-edit.js chargé');
 let boutonsToggle;
 let panneauEdition;
 
+function rafraichirCarteSolutions() {
+  document.querySelectorAll('.liste-solutions').forEach((wrapper) => {
+    if (window.reloadSolutionsTable) {
+      window.reloadSolutionsTable(wrapper);
+    }
+  });
 
+  const card = document.querySelector('.dashboard-card.champ-solutions');
+  if (!card) return;
+  const btnChasse = card.querySelector('.cta-solution-chasse');
+  const btnEnigme = card.querySelector('.cta-solution-enigme');
+  const chasseId =
+    (btnChasse && btnChasse.dataset.objetId) ||
+    (btnEnigme && btnEnigme.dataset.chasseId);
+  const enigmeId =
+    (btnEnigme && btnEnigme.dataset.objetId) ||
+    (btnChasse && btnChasse.dataset.enigmeId);
+  const ajaxUrl =
+    (window.solutionsCreate && solutionsCreate.ajaxUrl) || window.ajaxurl;
+  if (!ajaxUrl || !chasseId) return;
+
+  const fd = new FormData();
+  fd.append('action', 'chasse_solution_status');
+  fd.append('chasse_id', chasseId);
+  if (enigmeId) fd.append('enigme_id', enigmeId);
+  fetch(ajaxUrl, { method: 'POST', credentials: 'same-origin', body: fd })
+    .then((r) => r.json())
+    .then((res) => {
+      if (!res.success || !res.data) return;
+      if (btnChasse) {
+        const disableChasse = !!res.data.has_solution_chasse;
+        btnChasse.classList.toggle('disabled', disableChasse);
+        btnChasse.setAttribute('aria-disabled', disableChasse);
+        if (ChasseSolutions && ChasseSolutions.tooltipChasse) {
+          btnChasse.title = disableChasse ? ChasseSolutions.tooltipChasse : '';
+        }
+      }
+      if (btnEnigme) {
+        const disableEnigme = !!res.data.has_solution_enigme;
+        btnEnigme.classList.toggle('disabled', disableEnigme);
+        btnEnigme.setAttribute('aria-disabled', disableEnigme);
+        if (ChasseSolutions && ChasseSolutions.tooltipEnigme) {
+          btnEnigme.title = disableEnigme ? ChasseSolutions.tooltipEnigme : '';
+        }
+      }
+
+      const hasSolutions = !!res.data.has_solutions;
+      card.classList.toggle('champ-rempli', hasSolutions);
+      card.classList.toggle('champ-vide', !hasSolutions);
+
+      initDisabledSolutionButtons();
+    })
+    .catch(() => {});
+}
+
+window.rafraichirCarteSolutions = rafraichirCarteSolutions;
 
 function initEnigmeEdit() {
   if (typeof initZonesClicEdition === 'function') initZonesClicEdition();
@@ -69,6 +124,18 @@ function initEnigmeEdit() {
       if (typeof initChampTexte === 'function') initChampTexte(bloc);
     }
   });
+
+  // ==============================
+  // 🏷️ Titre dynamique du tableau des indices
+  // ==============================
+  const titreInput = document.querySelector('.champ-enigme[data-champ="post_title"] .champ-input');
+  const indiceHeading = document.getElementById('enigme-section-indices');
+  if (titreInput && indiceHeading) {
+    const template = indiceHeading.dataset.titreTemplate || 'Indices pour %s';
+    titreInput.addEventListener('input', () => {
+      indiceHeading.textContent = template.replace('%s', titreInput.value.trim());
+    });
+  }
 
   // ==============================
   // 🧩 Affichage conditionnel – Champs radio
@@ -330,6 +397,7 @@ function initEnigmeEdit() {
   }
 
   initEnigmeReorder();
+  rafraichirCarteSolutions();
 
 }
 
@@ -340,11 +408,7 @@ if (document.readyState === 'loading') {
 }
 
 window.addEventListener('solution-created', () => {
-  document.querySelectorAll('.liste-solutions').forEach((wrapper) => {
-    if (window.reloadSolutionsTable) {
-      window.reloadSolutionsTable(wrapper);
-    }
-  });
+  rafraichirCarteSolutions();
 });
 
 // ================================
