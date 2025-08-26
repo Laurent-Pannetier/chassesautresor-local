@@ -9,6 +9,10 @@
   padding-right: var(--space-md);
 }
 
+.container--narrow {
+  --container-max-width: var(--container-max-width-narrow);
+}
+
 .container.fullwidth,
 .container--full {
   max-width: none;
@@ -46,14 +50,14 @@
 .col-11 { --col-span: 11; }
 .col-12 { --col-span: 12; }
 
-@media not all and (--bp-lg) {
+@media not all and (--bp-desktop) {
   .row { --grid-columns: 8; }
 }
 
-@media not all and (--bp-md) {
+@media not all and (--bp-tablet) {
   .row { --grid-columns: 6; }
 }
 
-@media not all and (--bp-sm) {
+@media not all and (--bp-small) {
   .row { --grid-columns: 4; }
 }

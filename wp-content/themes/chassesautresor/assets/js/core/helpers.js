@@ -229,7 +229,7 @@ function updateTargetBlocks(bloc, champ, postId, donnees) {
     if (!zoneAffichage.dataset.noEdit && !bloc.querySelector('.champ-modifier')) {
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'champ-modifier txt-small ouvrir-panneau-liens';
+      btn.className = 'bouton-cta champ-modifier ouvrir-panneau-liens';
       btn.setAttribute('aria-label', 'Configurer vos liens');
       btn.textContent = wp.i18n.__('modifier', 'chassesautresor-com');
       zoneAffichage.appendChild(btn);
@@ -251,11 +251,16 @@ function updateTargetBlocks(bloc, champ, postId, donnees) {
         if (!zone.dataset.noEdit && !blocCible.querySelector('.champ-modifier')) {
           const btn = document.createElement('button');
           btn.type = 'button';
-          btn.className = 'champ-modifier txt-small ouvrir-panneau-liens';
+          btn.className = 'bouton-cta champ-modifier ouvrir-panneau-liens';
           btn.setAttribute('aria-label', 'Configurer vos liens');
           btn.textContent = wp.i18n.__('modifier', 'chassesautresor-com');
           zone.appendChild(btn);
         }
+      }
+
+      const donneesCible = blocCible.querySelector('.champ-donnees');
+      if (donneesCible) {
+        donneesCible.dataset.valeurs = JSON.stringify(donnees);
       }
 
       blocCible.classList.toggle('champ-vide', donnees.length === 0);
@@ -273,16 +278,23 @@ function updateTargetBlocks(bloc, champ, postId, donnees) {
         if (!zone.dataset.noEdit && !blocCible.querySelector('.champ-modifier')) {
           const btn = document.createElement('button');
           btn.type = 'button';
-          btn.className = 'champ-modifier txt-small ouvrir-panneau-liens';
+          btn.className = 'bouton-cta champ-modifier ouvrir-panneau-liens';
           btn.setAttribute('aria-label', 'Configurer vos liens');
           btn.textContent = wp.i18n.__('modifier', 'chassesautresor-com');
           zone.appendChild(btn);
         }
       }
 
+      const donneesCible = blocCible.querySelector('.champ-donnees');
+      if (donneesCible) {
+        donneesCible.dataset.valeurs = JSON.stringify(donnees);
+      }
+
       blocCible.classList.toggle('champ-vide', donnees.length === 0);
       blocCible.classList.toggle('champ-rempli', donnees.length > 0);
     });
+
+  window.dispatchEvent(new Event('liens-publics-updated'));
 }
 
 function initLiensPublics(bloc, { panneauId, formId, action, reload = false }) {

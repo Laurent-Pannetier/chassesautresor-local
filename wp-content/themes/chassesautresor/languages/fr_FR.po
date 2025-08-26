@@ -353,6 +353,18 @@ msgstr "Indice #%d"
 msgid "lié à"
 msgstr "lié à"
 
+#: inc/edition/edition-core.php:155
+msgid "liée à"
+msgstr "liée à"
+
+#: inc/edition/edition-core.php:155
+msgid "la chasse"
+msgstr "la chasse"
+
+#: inc/edition/edition-core.php:155
+msgid "l’énigme"
+msgstr "l’énigme"
+
 #: inc/edition/edition-indice.php:151
 #, fuzzy
 msgid "Action non autorisée."
@@ -972,8 +984,9 @@ msgstr "Variation"
 #: template-parts/chasse/chasse-edition-main.php:104
 #: template-parts/enigme/enigme-edition-main.php:128
 #: template-parts/indice/indice-edition-main.php:90
+#: template-parts/organisateur/organisateur-edition-main.php:110
 msgid "Titre"
-msgstr ""
+msgstr "Titre"
 
 #: template-parts/chasse/chasse-edition-main.php:126
 #, fuzzy
@@ -1078,13 +1091,8 @@ msgid "Fin de chasse manuelle"
 msgstr "ID de chasse invalide."
 
 #: template-parts/chasse/chasse-edition-main.php:281
-#, fuzzy
-msgid ""
-"Vous pouvez arrêter la chasse à tout moment grâce au bouton disponible dans "
-"le panneau d’édition de la chasse, onglet Paramètres."
-msgstr ""
-"Vous arrêtez la chasse manuellement, grâce au bouton situé dans le panneau "
-"d'édition chasse."
+msgid "Vous pouvez arrêter la chasse à tout moment grâce au bouton disponible dans le panneau d’édition de la chasse, onglet Animation."
+msgstr "Vous pouvez arrêter la chasse à tout moment grâce au bouton disponible dans le panneau d’édition de la chasse, onglet Animation."
 
 #: template-parts/chasse/chasse-edition-main.php:295
 msgid "Terminer la chasse"
@@ -1104,14 +1112,25 @@ msgstr "Valider la fin de chasse"
 msgid "Chasse gagnée le %s par %s"
 msgstr "Chasse gagnée le %s par %s"
 
-#: template-parts/chasse/chasse-edition-main.php:337
-#, fuzzy
+#: template-parts/chasse/chasse-edition-main.php:448
 msgid "Nb gagnants"
 msgstr "Gagnants"
 
-#: template-parts/chasse/chasse-edition-main.php:353
+#: template-parts/chasse/chasse-edition-main.php:454
 msgid "Illimité"
-msgstr ""
+msgstr "Illimité"
+
+#: template-parts/chasse/chasse-edition-main.php:464
+msgid "Limité"
+msgstr "Limité"
+
+#: template-parts/chasse/chasse-edition-main.php:514
+msgid "Now"
+msgstr "Maintenant"
+
+#: template-parts/chasse/chasse-edition-main.php:524
+msgid "Later"
+msgstr "Plus tard"
 
 #: template-parts/chasse/chasse-edition-main.php:374
 msgid "Début"
@@ -1119,25 +1138,29 @@ msgstr ""
 
 #: template-parts/chasse/chasse-edition-main.php:390
 #, fuzzy
+#: template-parts/chasse/chasse-edition-main.php:554
 msgid "Date de fin"
-msgstr "Mode de fin"
-
-#: template-parts/chasse/chasse-edition-main.php:404
-msgid "Durée illimitée"
 msgstr ""
 
-#: template-parts/chasse/chasse-edition-main.php:417
-#: template-parts/indice/indice-edition-main.php:198
-msgid "Coût"
+#: template-parts/chasse/chasse-edition-main.php:560
+msgid "Illimitée"
 msgstr ""
 
-#: template-parts/chasse/chasse-edition-main.php:423
+#: template-parts/chasse/chasse-edition-main.php:569
+msgid "Limitée"
+msgstr ""
+
+#: template-parts/chasse/chasse-edition-main.php:607
 msgid "En savoir plus sur les points"
 msgstr "En savoir plus sur les points"
 
-#: template-parts/chasse/chasse-edition-main.php:426
+#: template-parts/chasse/chasse-edition-main.php:610
 msgid "Coût d’accès à une chasse"
 msgstr ""
+
+#: template-parts/chasse/chasse-edition-main.php:601 template-parts/enigme/enigme-edition-main.php:434
+msgid "Accès"
+msgstr "Accès"
 
 #: template-parts/chasse/chasse-edition-main.php:427
 msgid ""
@@ -1152,7 +1175,7 @@ msgstr ""
 msgid "Gratuit"
 msgstr ""
 
-#: template-parts/chasse/chasse-edition-main.php:552
+#: template-parts/chasse/chasse-edition-main.php:621
 #: template-parts/enigme/enigme-edition-main.php:517
 msgid "Actualiser"
 msgstr ""
@@ -1164,9 +1187,8 @@ msgstr ""
 
 #: template-parts/chasse/chasse-edition-main.php:568
 #: template-parts/enigme/enigme-edition-main.php:533
-#, fuzzy
 msgid "Participants"
-msgstr "Tx participation"
+msgstr "Participants"
 
 #: template-parts/chasse/chasse-edition-main.php:575
 #: template-parts/enigme/enigme-edition-main.php:97
@@ -1286,6 +1308,7 @@ msgid "Supprimer la récompense"
 msgstr "Modifier la récompense"
 
 #: template-parts/chasse/partials/chasse-partial-participants.php:40
+#: template-parts/chasse/partials/chasse-partial-enigmes.php:30
 msgid "Joueurs"
 msgstr "Joueurs"
 
@@ -1300,20 +1323,21 @@ msgid "Inscription"
 msgstr "Inscription"
 
 #: template-parts/chasse/partials/chasse-partial-participants.php:58
-msgid "Trier par taux de participation"
-msgstr "Trier par taux de participation"
+msgid "Trier par participation"
+msgstr "Trier par participation"
 
 #: template-parts/chasse/partials/chasse-partial-participants.php:60
-msgid "Tx participation"
-msgstr "Tx participation"
+msgid "Participation"
+msgstr "Participation"
 
 #: template-parts/chasse/partials/chasse-partial-participants.php:68
-msgid "Trier par taux de résolution"
-msgstr "Trier par taux de résolution"
+msgid "Trier par énigmes trouvées"
+msgstr "Trier par énigmes trouvées"
 
 #: template-parts/chasse/partials/chasse-partial-participants.php:70
-msgid "Tx résolution"
-msgstr "Tx résolution"
+#: template-parts/chasse/partials/chasse-partial-enigmes.php:34
+msgid "Trouvées"
+msgstr "Trouvées"
 
 #: template-parts/common/stat-histogram-card.php:38
 msgid "Aucune donnée."
@@ -1522,10 +1546,6 @@ msgstr ""
 #: template-parts/enigme/enigme-edition-main.php:418
 msgid "max par jour"
 msgstr ""
-
-#: template-parts/enigme/enigme-edition-main.php:434
-msgid "Accès"
-msgstr "Accès"
 
 #: template-parts/enigme/enigme-edition-main.php:438
 msgid "Libre"
@@ -1760,9 +1780,8 @@ msgid "Aucun participant engagé."
 msgstr "Aucun participant engagé."
 
 #: template-parts/enigme/partials/enigme-partial-participants.php:47
-#, fuzzy
 msgid "Liste participants"
-msgstr "Tx participation"
+msgstr "Liste participants"
 
 #: template-parts/enigme/partials/enigme-partial-participants.php:51
 msgid "Nom"
@@ -1953,6 +1972,7 @@ msgstr "Panneau d'édition organisateur"
 
 #: template-parts/organisateur/organisateur-edition-main.php:78
 #: template-parts/organisateur/organisateur-edition-main.php:264
+#: template-parts/chasse/chasse-edition-main.php:629
 #: template-parts/organisateur/organisateur-edition-main.php:270
 #: templates/myaccount/content-points.php:75
 #: templates/myaccount/content-points.php:96 templates/myaccount/layout.php:57
@@ -2049,9 +2069,21 @@ msgstr[0] "Votre réponse"
 msgstr[1] "Votre réponse"
 
 #: templates/myaccount/content-chasses.php:125
-#, fuzzy
+#: inc/edition/edition-core.php:158
 msgid "Énigme"
-msgstr "Énigmes"
+msgstr "Énigme"
+
+#: inc/edition/edition-core.php:159
+msgid "Sélectionner une énigme"
+msgstr "Sélectionner une énigme"
+
+#: inc/edition/edition-core.php:160
+msgid "Sélectionnez une énigme"
+msgstr "Sélectionnez une énigme"
+
+#: inc/edition/edition-core.php:161
+msgid "Chargement…"
+msgstr "Chargement…"
 
 #: templates/myaccount/content-dashboard-organisateur.php:25
 msgid "Votre demande de conversion a bien été envoyée."
@@ -2313,28 +2345,14 @@ msgstr "Votre réponse"
 msgid "Tentatives quotidiennes"
 msgstr "Tentatives quotidiennes"
 
-#~ msgid "Activer Orgy"
-#~ msgstr "Activer Orgy"
-
-#~ msgid "Solution"
-#~ msgstr "Solution"
-
-#~ msgid "🛠️ Cette énigme est la vôtre. Aucun formulaire n’est affiché."
-#~ msgstr "🛠️ Cette énigme est la vôtre. Aucun formulaire n’est affiché."
-
-#~ msgid "Actions"
-#~ msgstr "Actions"
-
-#~ msgid "Contenu d'édition à venir..."
-#~ msgstr "Contenu d'édition à venir..."
-
-#~ msgid "renseigner le texte de l’indice"
-#~ msgstr "renseigner le texte de l’indice"
-
 #: template-parts/chasse/chasse-edition-main.php:112
 #: assets/js/core/resume.js:322
 msgid "renseigner le titre de la chasse"
 msgstr "renseigner le titre de la chasse"
+
+#: template-parts/organisateur/organisateur-edition-main.php:120
+msgid "renseigner le titre de l’organisateur"
+msgstr "renseigner le titre de l’organisateur"
 
 #: assets/js/help-modal.js:19
 #: inc/edition/edition-core.php:***
@@ -2361,6 +2379,14 @@ msgstr "Veuillez saisir une valeur en euros comprise entre 0 et 5 000 000."
 msgid "Voulez-vous vraiment supprimer la récompense ?"
 msgstr "Voulez-vous vraiment supprimer la récompense ?"
 
+#: assets/js/chasse-edit.js
+msgid "Voulez-vous vraiment arrêter la chasse ?"
+msgstr "Voulez-vous vraiment arrêter la chasse ?"
+
+#: template-parts/chasse/chasse-edition-main.php
+msgid "Arrêt chasse"
+msgstr "Arrêt chasse"
+
 #: template-parts/common/indices-table.php:69
 msgid "accessible"
 msgstr "accessible"
@@ -2376,4 +2402,159 @@ msgstr "programmé"
 #: template-parts/common/indices-table.php:75
 msgid "programmé le %s"
 msgstr "programmé le %s"
+
+#: template-parts/common/indices-table.php:41
+#, php-format
+msgid "%d indice au total"
+msgid_plural "%d indices au total"
+msgstr[0] "%d indice au total"
+msgstr[1] "%d indices au total"
+
+#: template-parts/common/indices-table.php:44
+#, php-format
+msgid "%d indice chasse"
+msgid_plural "%d indices chasse"
+msgstr[0] "%d indice chasse"
+msgstr[1] "%d indices chasse"
+
+#: template-parts/common/indices-table.php:47
+#, php-format
+msgid "%d indice énigme"
+msgid_plural "%d indices énigme"
+msgstr[0] "%d indice énigme"
+msgstr[1] "%d indices énigme"
+
+#: template-parts/common/indices-table.php:55
+msgid "Indice"
+msgstr "Indice"
+
+#: template-parts/common/indices-table.php:136
+#, php-format
+msgid "à %s"
+msgstr "à %s"
+
+#: template-parts/chasse/chasse-edition-main.php:867 template-parts/chasse/chasse-edition-main.php:986
+msgid "Solution"
+msgstr "Solution"
+
+#: template-parts/chasse/chasse-edition-main.php:974
+msgid "Partagez votre chasse en un scan"
+msgstr "Partagez votre chasse en un scan"
+
+#: template-parts/chasse/chasse-edition-main.php:975
+msgid "Facilitez l'accès à votre chasse avec un simple scan. Un QR code évite de saisir une URL et se partage facilement."
+msgstr "Facilitez l'accès à votre chasse avec un simple scan. Un QR code évite de saisir une URL et se partage facilement."
+
+#: template-parts/chasse/chasse-edition-main.php:987
+msgid "Contenu de la solution à venir."
+msgstr "Contenu de la solution à venir."
+
+#: template-parts/chasse/chasse-edition-main.php:973
+msgid "Vos liens"
+msgstr "Vos liens"
+
+#: template-parts/chasse/chasse-edition-main.php:976
+msgid "Adresse de votre chasse&nbsp;:"
+msgstr "Adresse de votre chasse&nbsp;:"
+
+#: template-parts/common/solutions-table.php:33
+msgid "Solution pour"
+msgstr "Solution pour"
+
+#: template-parts/common/solutions-table.php:105
+msgid "PDF"
+msgstr "PDF"
+
+#: template-parts/common/solutions-table.php:???
+msgid "Invalid solution"
+msgstr "Solution invalide"
+
+#: template-parts/common/solutions-table.php:???
+msgid "Hunt finished"
+msgstr "Fin de chasse"
+
+#: template-parts/common/solutions-table.php:???
+msgid "Hunt end delayed"
+msgstr "Fin de chasse différée"
+
+#: template-parts/common/solutions-table.php:???
+msgid "Coming soon"
+msgstr "À venir"
+
+#: template-parts/common/solutions-table.php:???
+msgid "In progress"
+msgstr "En cours"
+
+#: template-parts/common/solutions-table.php:???
+msgid "Disabled"
+msgstr "Désactivée"
+
+#: template-parts/common/solutions-table.php:???
+msgid "Coming on %s"
+msgstr "À venir le %s"
+
+#: inc/edition/edition-core.php:180
+msgid "Texte de la solution"
+msgstr "Texte de la solution"
+
+#: inc/edition/edition-core.php:181
+msgid "Fichier"
+msgstr "Fichier"
+
+#: inc/edition/edition-core.php:182
+msgid "Disponibilité"
+msgstr "Disponibilité"
+
+#: inc/edition/edition-core.php:187 template-parts/chasse/partials/chasse-partial-solutions.php:24
+msgid "Ajouter une solution"
+msgstr "Ajouter une solution"
+
+#: inc/edition/edition-core.php:195
+msgid "Ajoutez un fichier ou un texte"
+msgstr "Ajoutez un fichier ou un texte"
+
+#: inc/edition/edition-core.php:200
+msgid "Aucun fichier choisi"
+msgstr "Aucun fichier choisi"
+
+#: template-parts/chasse/partials/chasse-partial-solutions.php:47
+msgid "Il existe déjà une solution pour cette chasse"
+msgstr "Il existe déjà une solution pour cette chasse"
+
+#: template-parts/chasse/partials/chasse-partial-solutions.php:62
+msgid "Toutes les énigmes de la chasse ont déjà une solution"
+msgstr "Toutes les énigmes de la chasse ont déjà une solution"
+
+#: template-parts/chasse/chasse-edition-main.php:987
+msgid "Sécurité des PDF de solution"
+msgstr "Sécurité des PDF de solution"
+
+#: template-parts/chasse/chasse-edition-main.php:988
+msgid "Vos PDF sont conservés dans un coffre-fort numérique"
+msgstr "Vos PDF sont conservés dans un coffre-fort numérique"
+
+#: template-parts/chasse/chasse-edition-main.php:991
+msgid "Les fichiers PDF de solution sont conservés dans un dossier protégé. "
+msgstr "Les fichiers PDF de solution sont conservés dans un dossier protégé. "
+
+#: template-parts/chasse/chasse-edition-main.php:995
+msgid "Ils ne seront partagés qu'à la date que vous aurez choisie : "
+msgstr "Ils ne seront partagés qu'à la date que vous aurez choisie : "
+
+#: template-parts/chasse/chasse-edition-main.php:999
+msgid "immédiatement après la fin de la chasse ou après un délai paramétrable."
+msgstr "immédiatement après la fin de la chasse ou après un délai paramétrable."
+
+#: template-parts/organisateur/organisateur-edition-main.php:144
+msgid "Logo organisateur"
+msgstr "Logo organisateur"
+
+#: template-parts/organisateur/organisateur-edition-main.php:159
+msgid "Modifier le logo"
+msgstr "Modifier le logo"
+
+#: template-parts/organisateur/organisateur-edition-main.php:162
+#: template-parts/organisateur/organisateur-edition-main.php:172
+msgid "Logo de l’organisateur"
+msgstr "Logo de l’organisateur"
 

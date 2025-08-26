@@ -313,7 +313,7 @@
 
 
 /* ✅ Mobile : Les éléments s'empilent */
-@media not all and (--bp-md) {
+@media not all and (--bp-tablet) {
     .dashboard-profile-wrapper {
         flex-direction: column; /* ✅ Empile les éléments */
         justify-content: center; /* ✅ Centre les éléments verticalement */
@@ -375,7 +375,7 @@
     vertical-align: middle;
 }
 
-@media not all and (--bp-md) {
+@media not all and (--bp-tablet) {
     .menu-deroulant .submenu {
         left: -50px;
     }
@@ -420,6 +420,14 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+}
+
+.carte-orgy {
+    @extend .dashboard-card;
+
+    .bouton-cta {
+        line-height: 1.4;
+    }
 }
 
 .dashboard-grid > .dashboard-card:only-child {
@@ -696,7 +704,7 @@
 
 
 /* Tablette : 2 colonnes */
-@media not all and (--bp-md) {
+@media not all and (--bp-tablet) {
     .image-container {
         height: 260px;
     }

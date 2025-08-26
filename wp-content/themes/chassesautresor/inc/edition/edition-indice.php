@@ -52,31 +52,44 @@ function prochain_rang_indice(int $objet_id, string $objet_type): int
         return 1;
     }
 
-    $meta_key = $objet_type === 'chasse'
-        ? 'indice_chasse_linked'
-        : 'indice_enigme_linked';
+    if ($objet_type === 'chasse') {
+        $meta_query = [
+            [
+                'key'     => 'indice_chasse_linked',
+                'value'   => $objet_id,
+                'compare' => '=',
+            ],
+            [
+                'key'     => 'indice_cache_etat_systeme',
+                'value'   => ['programme', 'accessible', 'desactive'],
+                'compare' => 'IN',
+            ],
+        ];
+    } else {
+        $meta_query = [
+            [
+                'key'     => 'indice_cible_type',
+                'value'   => 'enigme',
+                'compare' => '=',
+            ],
+            [
+                'key'     => 'indice_enigme_linked',
+                'value'   => $objet_id,
+                'compare' => '=',
+            ],
+            [
+                'key'     => 'indice_cache_etat_systeme',
+                'value'   => ['programme', 'accessible', 'desactive'],
+                'compare' => 'IN',
+            ],
+        ];
+    }
 
     $existing_indices = function_exists('get_posts')
         ? get_posts([
             'post_type'      => 'indice',
             'post_status'    => ['publish', 'pending', 'draft', 'private', 'future'],
-            'meta_query'     => [
-                [
-                    'key'     => 'indice_cible_type',
-                    'value'   => $objet_type,
-                    'compare' => '=',
-                ],
-                [
-                    'key'     => $meta_key,
-                    'value'   => $objet_id,
-                    'compare' => '=',
-                ],
-                [
-                    'key'     => 'indice_cache_etat_systeme',
-                    'value'   => ['programme', 'accessible'],
-                    'compare' => 'IN',
-                ],
-            ],
+            'meta_query'     => $meta_query,
             'fields'         => 'ids',
             'no_found_rows'  => true,
             'posts_per_page' => -1,
@@ -102,30 +115,43 @@ function reordonner_indices(int $objet_id, string $objet_type): void
 
     $processing = true;
 
-    $meta_key = $objet_type === 'chasse'
-        ? 'indice_chasse_linked'
-        : 'indice_enigme_linked';
-
-    $indices = get_posts([
-        'post_type'      => 'indice',
-        'post_status'    => ['publish', 'pending', 'draft', 'private', 'future'],
-        'meta_query'     => [
+    if ($objet_type === 'chasse') {
+        $meta_query = [
             [
-                'key'     => 'indice_cible_type',
-                'value'   => $objet_type,
-                'compare' => '=',
-            ],
-            [
-                'key'     => $meta_key,
+                'key'     => 'indice_chasse_linked',
                 'value'   => $objet_id,
                 'compare' => '=',
             ],
             [
                 'key'     => 'indice_cache_etat_systeme',
-                'value'   => ['programme', 'accessible'],
+                'value'   => ['programme', 'accessible', 'desactive'],
                 'compare' => 'IN',
             ],
-        ],
+        ];
+    } else {
+        $meta_query = [
+            [
+                'key'     => 'indice_cible_type',
+                'value'   => 'enigme',
+                'compare' => '=',
+            ],
+            [
+                'key'     => 'indice_enigme_linked',
+                'value'   => $objet_id,
+                'compare' => '=',
+            ],
+            [
+                'key'     => 'indice_cache_etat_systeme',
+                'value'   => ['programme', 'accessible', 'desactive'],
+                'compare' => 'IN',
+            ],
+        ];
+    }
+
+    $indices = get_posts([
+        'post_type'      => 'indice',
+        'post_status'    => ['publish', 'pending', 'draft', 'private', 'future'],
+        'meta_query'     => $meta_query,
         'orderby'        => 'date',
         'order'          => 'ASC',
         'fields'         => 'ids',
@@ -154,25 +180,17 @@ function reordonner_indices(int $objet_id, string $objet_type): void
  */
 function reordonner_indices_pour_indice(int $indice_id): void
 {
-    $cible_type = get_field('indice_cible_type', $indice_id);
-
-    if ($cible_type === 'chasse') {
-        $linked   = get_field('indice_chasse_linked', $indice_id);
-    } elseif ($cible_type === 'enigme') {
-        $linked   = get_field('indice_enigme_linked', $indice_id);
-    } else {
-        return;
-    }
+    $linked = get_field('indice_chasse_linked', $indice_id);
 
     if (is_array($linked)) {
-        $first    = $linked[0] ?? null;
-        $cible_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
+        $first     = $linked[0] ?? null;
+        $chasse_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
     } else {
-        $cible_id = (int) $linked;
+        $chasse_id = (int) $linked;
     }
 
-    if ($cible_id) {
-        reordonner_indices($cible_id, $cible_type);
+    if ($chasse_id) {
+        reordonner_indices($chasse_id, 'chasse');
     }
 }
 
@@ -227,8 +245,8 @@ function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_i
         return new WP_Error('permission_refusee', __('Droits insuffisants.', 'chassesautresor-com'));
     }
 
-    $user_id = $user_id ?? get_current_user_id();
-    $indice_rank = prochain_rang_indice($objet_id, $objet_type);
+    $user_id    = $user_id ?? get_current_user_id();
+    $indice_rank = prochain_rang_indice($chasse_id, 'chasse');
 
     $indice_id = wp_insert_post([
         'post_type'   => 'indice',
@@ -348,6 +366,48 @@ function creer_indice_et_rediriger_si_appel(): void
 add_action('template_redirect', 'creer_indice_et_rediriger_si_appel');
 
 /**
+ * AJAX handler listing enigmas available for a hunt.
+ *
+ * @return void
+ */
+function ajax_chasse_lister_enigmes(): void
+{
+    if (!is_user_logged_in()) {
+        wp_send_json_error('non_connecte');
+    }
+
+    $chasse_id = isset($_POST['chasse_id']) ? (int) $_POST['chasse_id'] : 0;
+
+    if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
+        wp_send_json_error('post_invalide');
+    }
+
+    if (!indice_action_autorisee('create', 'chasse', $chasse_id)) {
+        wp_send_json_error('acces_refuse');
+    }
+
+    $posts = recuperer_enigmes_pour_chasse($chasse_id);
+    if (!empty($_POST['sans_solution'])) {
+        $posts = array_filter(
+            $posts,
+            static fn($p) => !solution_existe_pour_objet($p->ID, 'enigme')
+        );
+    }
+
+    $enigmes = array_map(
+        static fn($p) => [
+            'id'          => $p->ID,
+            'title'       => get_the_title($p),
+            'indice_rang' => prochain_rang_indice($chasse_id, 'chasse'),
+        ],
+        $posts
+    );
+
+    wp_send_json_success(['enigmes' => $enigmes]);
+}
+add_action('wp_ajax_chasse_lister_enigmes', 'ajax_chasse_lister_enigmes');
+
+/**
  * AJAX handler returning indices card HTML for a hunt.
  *
  * @return void
@@ -408,22 +468,47 @@ function ajax_indices_lister_table(): void
         wp_send_json_error('acces_refuse');
     }
 
-    $per_page = 10;
-    $meta     = [
-        [
-            'key'   => 'indice_cible_type',
-            'value' => $objet_type,
-        ],
-    ];
+    $per_page = $objet_type === 'chasse' ? 5 : 8;
     if ($objet_type === 'chasse') {
-        $meta[] = [
-            'key'   => 'indice_chasse_linked',
-            'value' => $objet_id,
+        $enigme_ids = recuperer_ids_enigmes_pour_chasse($objet_id);
+        $meta       = [
+            'relation' => 'OR',
+            [
+                'relation' => 'AND',
+                [
+                    'key'   => 'indice_cible_type',
+                    'value' => 'chasse',
+                ],
+                [
+                    'key'   => 'indice_chasse_linked',
+                    'value' => $objet_id,
+                ],
+            ],
         ];
+        if (!empty($enigme_ids)) {
+            $meta[] = [
+                'relation' => 'AND',
+                [
+                    'key'   => 'indice_cible_type',
+                    'value' => 'enigme',
+                ],
+                [
+                    'key'     => 'indice_enigme_linked',
+                    'value'   => $enigme_ids,
+                    'compare' => 'IN',
+                ],
+            ];
+        }
     } else {
-        $meta[] = [
-            'key'   => 'indice_enigme_linked',
-            'value' => $objet_id,
+        $meta = [
+            [
+                'key'   => 'indice_cible_type',
+                'value' => 'enigme',
+            ],
+            [
+                'key'   => 'indice_enigme_linked',
+                'value' => $objet_id,
+            ],
         ];
     }
 
@@ -437,13 +522,41 @@ function ajax_indices_lister_table(): void
         'meta_query'     => $meta,
     ]);
 
+    $ids = [];
+    if (function_exists('get_posts')) {
+        $ids = get_posts([
+            'post_type'   => 'indice',
+            'post_status' => ['publish', 'pending', 'draft'],
+            'fields'      => 'ids',
+            'nopaging'    => true,
+            'meta_query'  => $meta,
+        ]);
+    }
+
+    $count_chasse = 0;
+    $count_enigme = 0;
+    if (function_exists('get_post_meta')) {
+        foreach ($ids as $indice_id) {
+            $type = get_post_meta($indice_id, 'indice_cible_type', true);
+            if ($type === 'chasse') {
+                ++$count_chasse;
+            } elseif ($type === 'enigme') {
+                ++$count_enigme;
+            }
+        }
+    }
+    $count_total = $count_chasse + $count_enigme;
+
     ob_start();
     get_template_part('template-parts/common/indices-table', null, [
-        'indices'    => $query->posts,
-        'page'       => max(1, $page),
-        'pages'      => (int) $query->max_num_pages,
-        'objet_type' => $objet_type,
-        'objet_id'   => $objet_id,
+        'indices'      => $query->posts,
+        'page'         => max(1, $page),
+        'pages'        => (int) $query->max_num_pages,
+        'objet_type'   => $objet_type,
+        'objet_id'     => $objet_id,
+        'count_total'  => $count_total,
+        'count_chasse' => $count_chasse,
+        'count_enigme' => $count_enigme,
     ]);
     $html = ob_get_clean();
 
@@ -471,6 +584,13 @@ function ajax_creer_indice_modal(): void
 
     if (!$objet_id || !in_array($objet_type, ['chasse', 'enigme'], true) || get_post_type($objet_id) !== $objet_type) {
         wp_send_json_error('post_invalide');
+    }
+
+    if ($objet_type === 'enigme') {
+        $linked = isset($_POST['indice_enigme_linked']) ? (int) $_POST['indice_enigme_linked'] : 0;
+        if (!$linked || $linked !== $objet_id) {
+            wp_send_json_error('post_invalide');
+        }
     }
 
     if (!indice_action_autorisee('create', $objet_type, $objet_id)) {
@@ -539,7 +659,11 @@ function ajax_modifier_indice_modal(): void
     $dispo   = sanitize_key($_POST['indice_disponibilite'] ?? 'immediate');
     $date    = sanitize_text_field($_POST['indice_date_disponibilite'] ?? '');
 
-    update_field('indice_image', $image, $indice_id);
+    if ($image) {
+        update_field('indice_image', $image, $indice_id);
+    } else {
+        delete_field('indice_image', $indice_id);
+    }
     update_field('indice_contenu', $contenu, $indice_id);
 
     $dispo = $dispo === 'differe' ? 'differe' : 'immediate';
@@ -655,6 +779,7 @@ function supprimer_indice_ajax(): void
     }
 
     $cible_type = get_field('indice_cible_type', $indice_id) === 'enigme' ? 'enigme' : 'chasse';
+    $chasse_id  = 0;
     if ($cible_type === 'enigme') {
         $linked = get_field('indice_enigme_linked', $indice_id);
         if (is_array($linked)) {
@@ -662,6 +787,18 @@ function supprimer_indice_ajax(): void
             $objet_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
         } else {
             $objet_id = (int) $linked;
+        }
+
+        $chasse_linked = get_field('indice_chasse_linked', $indice_id);
+        if (is_array($chasse_linked)) {
+            $first     = $chasse_linked[0] ?? null;
+            $chasse_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
+        } else {
+            $chasse_id = (int) $chasse_linked;
+        }
+
+        if (!$chasse_id && $objet_id) {
+            $chasse_id = (int) recuperer_id_chasse_associee($objet_id);
         }
     } else {
         $linked = get_field('indice_chasse_linked', $indice_id);
@@ -683,6 +820,9 @@ function supprimer_indice_ajax(): void
     }
 
     reordonner_indices($objet_id, $cible_type);
+    if ($cible_type === 'enigme' && $chasse_id) {
+        reordonner_indices($chasse_id, 'chasse');
+    }
 
     wp_send_json_success();
 }
@@ -826,12 +966,26 @@ function mettre_a_jour_cache_indice($post_id, ?int $chasse_id = null): void
     update_field('indice_cache_etat_systeme', $state, $post_id);
 
     $status = get_post_status($post_id);
+    $post   = get_post($post_id);
+
     if ($complete && $state === 'accessible') {
         if ($status !== 'publish') {
-            wp_update_post(['ID' => $post_id, 'post_status' => 'publish']);
+            wp_update_post([
+                'ID'            => $post_id,
+                'post_status'   => 'publish',
+                'post_date'     => $post->post_date,
+                'post_date_gmt' => $post->post_date_gmt,
+                'edit_date'     => true,
+            ]);
         }
     } elseif ($status === 'publish') {
-        wp_update_post(['ID' => $post_id, 'post_status' => 'pending']);
+        wp_update_post([
+            'ID'            => $post_id,
+            'post_status'   => 'pending',
+            'post_date'     => $post->post_date,
+            'post_date_gmt' => $post->post_date_gmt,
+            'edit_date'     => true,
+        ]);
     }
 
     reordonner_indices_pour_indice((int) $post_id);
@@ -899,17 +1053,10 @@ function memoriser_cible_indice_avant_suppression(int $post_id): void
         return;
     }
 
-    $cible_type = get_field('indice_cible_type', $post_id);
-
-    if ($cible_type === 'chasse') {
-        $cible_id = (int) get_field('indice_chasse_linked', $post_id);
-    } elseif ($cible_type === 'enigme') {
-        $cible_id = (int) get_field('indice_enigme_linked', $post_id);
-    } else {
-        return;
+    $chasse_id = (int) get_field('indice_chasse_linked', $post_id);
+    if ($chasse_id) {
+        $indice_delete_context = ['id' => $chasse_id, 'type' => 'chasse'];
     }
-
-    $indice_delete_context = ['id' => $cible_id, 'type' => $cible_type];
 }
 add_action('before_delete_post', 'memoriser_cible_indice_avant_suppression');
 

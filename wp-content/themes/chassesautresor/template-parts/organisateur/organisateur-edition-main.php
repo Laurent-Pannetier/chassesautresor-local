@@ -18,10 +18,11 @@ $edition_active = in_array(ROLE_ORGANISATEUR_CREATION, $roles) && !$cache_comple
 $user_points    = function_exists('get_user_points') ? get_user_points((int) $current_user->ID) : 0;
 
 // Post
-$titre        = get_post_field('post_title', $organisateur_id);
-$logo         = get_field('profil_public_logo_organisateur', $organisateur_id);
-$logo_id      = is_array($logo) ? ($logo['ID'] ?? null) : $logo;
-$logo_url     = $logo_id ? wp_get_attachment_image_src($logo_id, 'thumbnail')[0] : null;
+$titre       = get_post_field('post_title', $organisateur_id);
+$logo        = get_field('profil_public_logo_organisateur', $organisateur_id);
+$logo_id     = is_array($logo) ? ($logo['ID'] ?? null) : $logo;
+$logo_src    = $logo_id ? wp_get_attachment_image_src($logo_id, 'thumbnail') : false;
+$logo_url    = is_array($logo_src) ? $logo_src[0] : null;
 $description  = get_field('description_longue', $organisateur_id);
 $reseaux      = get_field('reseaux_sociaux', $organisateur_id);
 $site         = get_field('lien_site_web', $organisateur_id);
@@ -106,7 +107,7 @@ $is_complete = (
                           ],
                           'label' => function () {
                               ?>
-                              <label for="champ-titre-organisateur">Titre <span class="champ-obligatoire">*</span></label>
+                              <label for="champ-titre-organisateur"><?php esc_html_e('Titre', 'chassesautresor-com'); ?> <span class="champ-obligatoire">*</span></label>
                               <?php
                           },
                           'content' => function () use ($titre, $peut_editer_titre) {
@@ -116,7 +117,7 @@ $is_complete = (
                                 maxlength="50"
                                 value="<?= esc_attr($titre); ?>"
                                 id="champ-titre-organisateur" <?= $peut_editer_titre ? '' : 'disabled'; ?>
-                                placeholder="renseigner le titre de l’organisateur" />
+                                placeholder="<?= esc_attr__('renseigner le titre de l’organisateur', 'chassesautresor-com'); ?>" />
                               <div class="champ-feedback"></div>
                               <?php
                           },
@@ -124,58 +125,121 @@ $is_complete = (
                   );
                   ?>
 
-                <li class="champ-organisateur champ-img champ-logo ligne-logo <?= empty($logo_id) ? 'champ-vide' : 'champ-rempli'; ?>" data-champ="profil_public_logo_organisateur" data-cpt="organisateur" data-post-id="<?= esc_attr($organisateur_id); ?>">
-                  <div class="champ-affichage">
-                    <label>Logo organisateur <span class="champ-obligatoire">*</span></label>
-                    <?php if ($peut_editer) : ?>
-                      <button type="button"
-                        class="champ-modifier"
-                        aria-label="Modifier le logo"
-                        data-champ="profil_public_logo_organisateur"
-                        data-cpt="organisateur"
-                        data-post-id="<?= esc_attr($organisateur_id); ?>">
-                        <img src="<?= esc_url($logo_url ?: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=='); ?>" alt="Logo de l’organisateur" />
-                        <span class="champ-ajout-image">ajouter une image</span>
-                      </button>
-                    <?php else : ?>
-                      <?php if ($logo_url) : ?>
-                        <img src="<?= esc_url($logo_url); ?>" alt="Logo de l’organisateur" />
-                      <?php else : ?>
-                        <span class="champ-ajout-image">ajouter une image</span>
-                      <?php endif; ?>
-                    <?php endif; ?>
-                  </div>
-                  <input type="hidden" class="champ-input" value="<?= esc_attr($logo_id ?? '') ?>">
-                  <div class="champ-feedback"></div>
-                </li>
-                <?php $class_description = empty($description) ? 'champ-vide' : 'champ-rempli'; ?>
-                <li class="champ-organisateur champ-description ligne-description <?= $class_description; ?>" data-champ="description_longue">
-                    <label><?= esc_html__('Présentation', 'chassesautresor-com'); ?> <span class="champ-obligatoire">*</span></label>
-                    <div class="champ-texte">
-                        <?php if (empty(trim($description))) : ?>
-                            <?php if ($peut_editer) : ?>
-                                <a href="#" class="champ-ajouter ouvrir-panneau-description"
-                                   data-champ="description_longue"
-                                   data-cpt="organisateur"
-                                   data-post-id="<?= esc_attr($organisateur_id); ?>">
-                                    <?= esc_html__('ajouter', 'chassesautresor-com'); ?>
-                                </a>
-                            <?php endif; ?>
-                        <?php else : ?>
-                            <span class="champ-texte-contenu">
-                                <?= esc_html(wp_trim_words(wp_strip_all_tags($description), 25)); ?>
+                <?php
+                get_template_part(
+                    'template-parts/common/edition-row',
+                    null,
+                    [
+                        'class'      => 'champ-organisateur champ-img champ-logo ligne-logo '
+                            . (empty($logo_id) ? 'champ-vide' : 'champ-rempli')
+                            . ($peut_editer ? '' : ' champ-desactive'),
+                        'attributes' => [
+                            'data-champ'   => 'profil_public_logo_organisateur',
+                            'data-cpt'     => 'organisateur',
+                            'data-post-id' => $organisateur_id,
+                        ],
+                        'label' => function () {
+                            ?>
+                            <label>
+                                <?php esc_html_e('Logo organisateur', 'chassesautresor-com'); ?>
+                                <span class="champ-obligatoire">*</span>
+                            </label>
+                            <?php
+                        },
+                        'content' => function () use ($logo_url, $logo_id, $peut_editer, $organisateur_id) {
+                            $transparent = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+                            ?>
+                            <div class="champ-affichage">
                                 <?php if ($peut_editer) : ?>
                                     <button type="button"
-                                        class="champ-modifier ouvrir-panneau-description"
-                                        data-champ="description_longue"
+                                        class="champ-modifier"
+                                        data-champ="profil_public_logo_organisateur"
                                         data-cpt="organisateur"
                                         data-post-id="<?= esc_attr($organisateur_id); ?>"
-                                          aria-label="<?= esc_attr__('Modifier la présentation', 'chassesautresor-com'); ?>"><?= esc_html__('modifier', 'chassesautresor-com'); ?></button>
+                                        aria-label="<?= esc_attr__('Modifier le logo', 'chassesautresor-com'); ?>">
+                                        <img
+                                            src="<?= esc_url($logo_url ?: $transparent); ?>"
+                                            alt="<?= esc_attr__('Logo de l’organisateur', 'chassesautresor-com'); ?>"
+                                        />
+                                        <span class="champ-ajout-image">
+                                            <?= esc_html__('ajouter une image', 'chassesautresor-com'); ?>
+                                        </span>
+                                    </button>
+                                <?php else : ?>
+                                    <?php if ($logo_url) : ?>
+                                        <img
+                                            src="<?= esc_url($logo_url); ?>"
+                                            alt="<?= esc_attr__('Logo de l’organisateur', 'chassesautresor-com'); ?>"
+                                        />
+                                    <?php else : ?>
+                                        <span class="champ-ajout-image">
+                                            <?= esc_html__('ajouter une image', 'chassesautresor-com'); ?>
+                                        </span>
+                                    <?php endif; ?>
                                 <?php endif; ?>
-                            </span>
-                        <?php endif; ?>
-                    </div>
-                </li>
+                            </div>
+                            <input type="hidden" class="champ-input" value="<?= esc_attr($logo_id ?? '') ?>">
+                            <div class="champ-feedback"></div>
+                            <?php
+                        },
+                    ]
+                );
+                ?>
+                <?php
+                get_template_part(
+                    'template-parts/common/edition-row',
+                    null,
+                    [
+                        'class'      => 'champ-organisateur champ-description ligne-description '
+                            . (empty($description) ? 'champ-vide' : 'champ-rempli')
+                            . ($peut_editer ? '' : ' champ-desactive'),
+                        'attributes' => [
+                            'data-champ'   => 'description_longue',
+                            'data-cpt'     => 'organisateur',
+                            'data-post-id' => $organisateur_id,
+                        ],
+                        'label' => function () {
+                            ?>
+                            <label>
+                                <?= esc_html__('Présentation', 'chassesautresor-com'); ?>
+                                <span class="champ-obligatoire">*</span>
+                            </label>
+                            <?php
+                        },
+                        'content' => function () use ($description, $peut_editer, $organisateur_id) {
+                            ?>
+                            <div class="champ-texte">
+                                <?php if (empty(trim($description))) : ?>
+                                    <?php if ($peut_editer) : ?>
+                                        <a href="#" class="champ-ajouter ouvrir-panneau-description"
+                                            data-champ="description_longue"
+                                            data-cpt="organisateur"
+                                            data-post-id="<?= esc_attr($organisateur_id); ?>">
+                                            <?= esc_html__('ajouter', 'chassesautresor-com'); ?>
+                                        </a>
+                                    <?php endif; ?>
+                                <?php else : ?>
+                                    <span class="champ-texte-contenu">
+                                        <?= esc_html(wp_trim_words(wp_strip_all_tags($description), 25)); ?>
+                                        <?php if ($peut_editer) : ?>
+                                            <button type="button"
+                                                class="champ-modifier ouvrir-panneau-description"
+                                                data-champ="description_longue"
+                                                data-cpt="organisateur"
+                                                data-post-id="<?= esc_attr($organisateur_id); ?>"
+                                                aria-label="<?= esc_attr__('Modifier la présentation', 'chassesautresor-com'); ?>">
+                                                <?= esc_html__('modifier', 'chassesautresor-com'); ?>
+                                            </button>
+                                        <?php endif; ?>
+                                    </span>
+                                <?php endif; ?>
+                            </div>
+                            <div class="champ-feedback"></div>
+                            <?php
+                        },
+                    ]
+                );
+                ?>
               </ul>
               </div>
 
@@ -183,61 +247,73 @@ $is_complete = (
               <div class="resume-bloc resume-reglages">
                 <h3>Réglages</h3>
                 <ul class="resume-infos">
-
-                <li
-                  class="champ-organisateur champ-email-contact ligne-email <?= empty($email_contact) ? 'champ-vide' : 'champ-rempli'; ?>"
-                  data-champ="email_contact"
-                  data-cpt="organisateur"
-                  data-post-id="<?= esc_attr($organisateur_id); ?>"
-                  data-no-icon
-                >
-                  <i class="fa-regular fa-envelope" aria-hidden="true"></i>
-                  <div class="champ-affichage">
-                    <label for="champ-email-contact">
-                      Email de contact
-                    </label>
-                    <span class="champ-valeur">
-                      <?= esc_html($email_contact ?: get_the_author_meta('user_email', get_post_field('post_author', $organisateur_id))); ?>
-                    </span>
-                    <?php
-                    get_template_part(
-                        'template-parts/common/help-icon',
-                        null,
-                        [
-                            'aria_label' => __('Informations sur l’adresse email de contact', 'chassesautresor-com'),
-                            'variant'    => 'aide',
-                            'title'      => __('Email de contact organisateur', 'chassesautresor-com'),
-                            'message'    => __('Si aucune adresse n’est renseignée, votre adresse email utilisateur est utilisée par défaut.', 'chassesautresor-com'),
-                        ]
-                    );
-                    ?>
-                    <?php if ($peut_editer) : ?>
-                        <button
-                          type="button"
-                          class="champ-modifier"
-                          aria-label="Modifier l’adresse email de contact"
-                        >
-                          <?= esc_html__('modifier', 'chassesautresor-com'); ?>
-                        </button>
-                    <?php endif; ?>
-                  </div>
-
-                  <div class="champ-edition" style="display: none;">
-                    <input
-                      type="email"
-                      maxlength="255"
-                      value="<?= esc_attr($email_contact); ?>"
-                      class="champ-input"
-                      id="champ-email-contact"
-                      placeholder="exemple@domaine.com"
-                    >
-                    <button type="button" class="champ-enregistrer">✓</button>
-                    <button type="button" class="champ-annuler">✖</button>
-                  </div>
-
-                  <div class="champ-feedback"></div>
-                </li>
-
+                <?php
+                get_template_part(
+                    'template-parts/common/edition-row',
+                    null,
+                    [
+                        'icon'  => 'fa-regular fa-envelope',
+                        'class' => 'champ-organisateur champ-email-contact ligne-email ' . (empty($email_contact) ? 'champ-vide' : 'champ-rempli'),
+                        'attributes' => [
+                            'data-champ'   => 'email_contact',
+                            'data-cpt'     => 'organisateur',
+                            'data-post-id' => $organisateur_id,
+                            'data-no-icon' => '1',
+                        ],
+                        'label' => function () {
+                            ?>
+                            <label for="champ-email-contact"><?php esc_html_e('Email de contact', 'chassesautresor-com'); ?></label>
+                            <?php
+                        },
+                        'content' => function () use ($email_contact, $organisateur_id, $peut_editer) {
+                            ?>
+                            <div class="champ-affichage">
+                                <span class="champ-valeur">
+                                    <?= esc_html($email_contact ?: get_the_author_meta('user_email', get_post_field('post_author', $organisateur_id))); ?>
+                                </span>
+                                <?php
+                                get_template_part(
+                                    'template-parts/common/help-icon',
+                                    null,
+                                    [
+                                        'aria_label' => __('Informations sur l’adresse email de contact', 'chassesautresor-com'),
+                                        'variant'    => 'aide',
+                                        'title'      => __('Email de contact organisateur', 'chassesautresor-com'),
+                                        'message'    => __('Si aucune adresse n’est renseignée, votre adresse email utilisateur est utilisée par défaut.', 'chassesautresor-com'),
+                                    ]
+                                );
+                                if ($peut_editer) :
+                                    ?>
+                                    <button
+                                        type="button"
+                                        class="champ-modifier"
+                                        aria-label="<?= esc_attr__('Modifier l’adresse email de contact', 'chassesautresor-com'); ?>"
+                                    >
+                                        <?= esc_html__('modifier', 'chassesautresor-com'); ?>
+                                    </button>
+                                <?php
+                                endif;
+                                ?>
+                            </div>
+                            <div class="champ-edition" style="display: none;">
+                                <input
+                                    type="email"
+                                    maxlength="255"
+                                    value="<?= esc_attr($email_contact); ?>"
+                                    class="champ-input"
+                                    id="champ-email-contact"
+                                    placeholder="<?= esc_attr__('exemple@domaine.com', 'chassesautresor-com'); ?>"
+                                >
+                                <span class="champ-status"></span>
+                                <button type="button" class="champ-enregistrer">✓</button>
+                                <button type="button" class="champ-annuler">✖</button>
+                            </div>
+                            <div class="champ-feedback"></div>
+                            <?php
+                        },
+                    ]
+                );
+                ?>
                 </ul>
               </div>
             </div>
@@ -376,11 +452,12 @@ $is_complete = (
                       . rawurlencode($url)
                       . '&format=' . $format;
                   ?>
-                  <div class="dashboard-card champ-qr-code">
+                  <div class="dashboard-card carte-orgy champ-qr-code">
                     <img class="qr-code-icon" src="<?= esc_url($url_qr_code); ?>" alt="<?= esc_attr__('QR code de l\'organisation', 'chassesautresor-com'); ?>">
                     <h3><?= esc_html__('QR code de votre organisation', 'chassesautresor-com'); ?></h3>
-                    <a class="stat-value" href="<?= esc_url($url_qr_code); ?>"
-                      download="<?= esc_attr('qr-organisateur-' . $organisateur_id . '.' . $format); ?>"><?= esc_html__('Télécharger', 'chassesautresor-com'); ?></a>
+                    <a class="bouton-cta" href="<?= esc_url($url_qr_code); ?>" download="<?= esc_attr('qr-organisateur-' . $organisateur_id . '.' . $format); ?>">
+                      <?= esc_html__('Télécharger', 'chassesautresor-com'); ?>
+                    </a>
                   </div>
                 </div>
               </div>

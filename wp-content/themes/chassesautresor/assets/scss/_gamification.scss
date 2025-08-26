@@ -340,18 +340,18 @@ header .points-link:hover {
 
 
 /* 📱 Responsive : ajuste la taille du texte sur mobile/tablette */
-@media not all and (--bp-lg) {
+@media not all and (--bp-desktop) {
     .points-value {
         font-size: 16px;
     }
 }
 
-@media not all and (--bp-md) {
+@media not all and (--bp-tablet) {
     .points-value {
         font-size: 14px;
     }
 }
-@media not all and (--bp-sm) {
+@media not all and (--bp-small) {
   .points-unite {
     display: none;
   }

@@ -154,10 +154,52 @@ function enqueue_core_edit_scripts(array $additional = [])
             'valider'   => __('Valider', 'chassesautresor-com'),
             'mediaTitle'=> __('Sélectionner une image', 'chassesautresor-com'),
             'indiceTitre' => __('Indice #%d', 'chassesautresor-com'),
-            'lieA'        => __('lié à', 'chassesautresor-com'),
+            'lieeA'            => __('liée à', 'chassesautresor-com'),
+            'laChasse'         => __('la chasse', 'chassesautresor-com'),
+            'lenigme'          => __('l’énigme', 'chassesautresor-com'),
+            'enigmeLabel'      => __('Énigme', 'chassesautresor-com'),
+            'enigmePlaceholder'=> __('Sélectionner une énigme', 'chassesautresor-com'),
+            'needEnigme'       => __('Sélectionnez une énigme', 'chassesautresor-com'),
+            'loading'          => __('Chargement…', 'chassesautresor-com'),
             'needContent' => __('Au moins une image ou un texte nécessaire', 'chassesautresor-com'),
             'needDate'    => __('Date et heure requises', 'chassesautresor-com'),
             'invalidDate' => __('Date invalide', 'chassesautresor-com'),
+            'ajaxError'   => __('Erreur réseau', 'chassesautresor-com'),
+          ],
+        ]
+      );
+    }
+    if ($handle === 'solutions-create') {
+      wp_localize_script(
+        'solutions-create',
+        'solutionsCreate',
+        [
+          'ajaxUrl' => admin_url('admin-ajax.php'),
+          'texts'   => [
+            'close'      => __('Fermer', 'chassesautresor-com'),
+            'contenu'    => __('Texte de la solution', 'chassesautresor-com'),
+            'fichier'    => __('Fichier', 'chassesautresor-com'),
+            'disponibilite' => __('Disponibilité', 'chassesautresor-com'),
+            'finChasse'  => __('Fin de la chasse', 'chassesautresor-com'),
+            'differee'   => __('Différée', 'chassesautresor-com'),
+            'days'       => __('jours', 'chassesautresor-com'),
+            'valider'    => __('Valider', 'chassesautresor-com'),
+            'addTitre'   => __('Ajouter une solution', 'chassesautresor-com'),
+            'editTitre'  => __('Modifier', 'chassesautresor-com'),
+            'success'    => __('Solution enregistrée.', 'chassesautresor-com'),
+            'ajaxError'  => __('Erreur réseau', 'chassesautresor-com'),
+            'enigmeLabel'       => __('Énigme', 'chassesautresor-com'),
+            'enigmePlaceholder' => __('Sélectionner une énigme', 'chassesautresor-com'),
+            'needEnigme'        => __('Sélectionnez une énigme', 'chassesautresor-com'),
+            'loading'           => __('Chargement…', 'chassesautresor-com'),
+            'needContent'      => __('Ajoutez un fichier ou un texte', 'chassesautresor-com'),
+            'lieeA'            => __('liée à', 'chassesautresor-com'),
+            'laChasse'         => __('la chasse', 'chassesautresor-com'),
+            'lenigme'          => __('l’énigme', 'chassesautresor-com'),
+            'chooseFile'       => __('Choisir un fichier', 'chassesautresor-com'),
+            'noFile'           => __('Aucun fichier choisi', 'chassesautresor-com'),
+            'removeFile'       => __('Supprimer le fichier', 'chassesautresor-com'),
+            'needDate'         => __('Date et heure requises', 'chassesautresor-com'),
           ],
         ]
       );

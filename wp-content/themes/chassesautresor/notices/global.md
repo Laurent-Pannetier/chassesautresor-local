@@ -117,6 +117,7 @@ Le dossier `notices/` contient la documentation technique et fonctionnelle du th
 - organisateur : référence un ou plusieurs utilisateurs (organisateurs) + infos classiques. Structure pivot d identification
 - chasse : reliée au cpt organisateur, reliée au minimum à une énigme
 - enigme : obligatoirement reliée à une seule chasse
+- solution : publie la solution d’une chasse ou d’une énigme
 
 
 🧑‍🤝‍🧑 Rôles & accès (joueur, organisateur, organisateur_creation, admin)
@@ -366,11 +367,11 @@ Groupe : paramètre de la chasse
 * chasse_infos_nb_max_gagants (number)
 * chasse_cache_gagnants (text)
 * chasse_cache_date_decouverte (date_picker)
-* chasse_cache_statut (select)
-* chasse_cache_statut_validation (select)
 * chasse_cache_enigmes (relationship)
 * chasse_cache_commentaire (textarea)
 * chasse_cache_organisateur (relationship)
+* chasse_cache_statut_validation (select)
+* chasse_cache_statut (select)
 * chasse_cache_complet (true_false)
 
 CPT : enigme
@@ -383,7 +384,7 @@ Groupe : Paramètres de l’énigme
 * enigme_style_affichage (select)
 * enigme_tentative_cout_points (number)
 * enigme_tentative_max (number)
-* enigme_reponse_bonne (textarea) — réponses multiples encodées en JSON
+* enigme_reponse_bonne (textarea)
 * enigme_reponse_casse (true_false)
 * texte_1 (text)
 * message_1 (text)
@@ -393,20 +394,20 @@ Groupe : Paramètres de l’énigme
 * respecter_casse_2 (true_false)
 * texte_3 (text)
 * message_3 (text)
-* respecter_casse_3 (text)
+* respecter_casse_3 (true_false)
 * texte_4 (text)
 * message_4 (text)
-* respecter_casse_4 (text)
+* respecter_casse_4 (true_false)
 * enigme_acces_condition (radio)
 * enigme_acces_date (date_picker)
 * enigme_acces_pre_requis (relationship)
-* enigme_cache_etat_systeme (select)
 * enigme_chasse_associee (relationship)
 * enigme_solution_mode (radio)
 * enigme_solution_delai (number)
 * enigme_solution_heure (time_picker)
 * enigme_solution_fichier (file)
 * enigme_solution_explication (wysiwyg)
+* enigme_cache_etat_systeme (select)
 * enigme_cache_complet (true_false)
 
 CPT : indice
@@ -415,11 +416,11 @@ Groupe : paramètres indices
 * indice_image (image)
 * indice_contenu (wysiwyg)
 * indice_cible_type (radio)
-* indice_enigme_linked (relationship)
-* indice_chasse_linked (relationship)
 * indice_disponibilite (radio)
 * indice_date_disponibilite (date_time_picker, retour d/m/Y g:i a)
 * indice_cout_points (number)
+* indice_enigme_linked (relationship)
+* indice_chasse_linked (relationship)
 * indice_cache_etat_systeme (select, accessible/programme/invalide/desactive)
 * indice_cache_complet (true_false)
 
@@ -431,6 +432,31 @@ Groupe : paramètres indices
 | programme | Disponible à une date ultérieure              |
 | invalide  | Indice marqué comme invalide                  |
 | desactive | Indice incomplet ou désactivé                 |
+
+CPT : solution
+Groupe : paramètres solution
+
+* solution_cible_type (radio, chasse/enigme)
+* solution_chasse_linked (relationship)
+* solution_enigme_linked (relationship)
+* solution_fichier (file)
+* solution_explication (wysiwyg)
+* solution_disponibilite (radio, fin_chasse/differee)
+* solution_decalage_jours (number)
+* solution_heure_publication (time_picker)
+* solution_cache_etat_systeme (select, INVALIDE/FIN_CHASSE/FIN_CHASSE_DIFFERE/A_VENIR/EN_COURS/DESACTIVE) – voir les constantes définies dans `inc/constants.php`
+* solution_cache_complet (true_false)
+
+États possibles pour `solution_cache_etat_systeme` :
+
+| Valeur            | Description               |
+|-------------------|---------------------------|
+| INVALIDE          | INVALIDE                  |
+| FIN_CHASSE        | fin de chasse             |
+| FIN_CHASSE_DIFFERE| différé                   |
+| A_VENIR           | à venir                   |
+| EN_COURS          | en cours                  |
+| DESACTIVE         | désactivé                 |
 
 liste avec tous les détails des groupes de champs ACF dans champs-acf-liste.md
 
@@ -571,20 +597,58 @@ En revanche, les champs obligatoires ou facultatifs sont masqués derrière un r
           id="chasse-nb-gagnants"
           name="chasse-nb-gagnants"
           value="<?= esc_attr($nb_max); ?>"
-          min="1"
-          class="champ-inline-nb champ-nb-edit champ-number"
-          <?= ($nb_max == 0 ? 'disabled' : ''); ?> />
-
-  <div class="champ-option-illimitee ">
-    <input type="checkbox"
-            id="nb-gagnants-illimite"
-            name="nb-gagnants-illimite"
-            <?= ($nb_max == 0 ? 'checked' : ''); ?>
-            data-champ="chasse_infos_nb_max_gagants">
-    <label for="nb-gagnants-illimite">Illimité</label>
+  <div class="champ-mode-options">
+    <span class="toggle-option">Illimité</span>
+    <label class="switch-control">
+      <input
+        id="nb-gagnants-limite"
+        type="checkbox"
+        <?= $nb_max != 0 ? 'checked' : ''; ?>
+        <?= $peut_editer ? '' : 'disabled'; ?>>
+      <span class="switch-slider"></span>
+    </label>
+    <span class="toggle-option">Limité</span>
+    <div class="nb-gagnants-actions" style="<?= $nb_max != 0 ? '' : 'display:none;'; ?>">
+      <input type="number"
+            id="chasse-nb-gagnants"
+            name="chasse-nb-gagnants"
+            value="<?= esc_attr($nb_max); ?>"
+            min="1"
+            class="champ-inline-nb champ-nb-edit champ-input champ-number"
+            <?= ($peut_editer && $nb_max != 0) ? '' : 'disabled'; ?> />
+      <div id="erreur-nb-gagnants" class="message-erreur" style="display:none; color:red; font-size:0.9em; margin-top:5px;"></div>
+    </div>
   </div>
+</li>
 
-  <div id="erreur-nb-gagnants" class="message-erreur" style="display:none; color:red; font-size:0.9em; margin-top:5px;"></div>
+
+<!-- Date de début -->
+<li class="champ-chasse champ-date-debut <?= $peut_editer ? '' : ' champ-desactive'; ?>"
+    data-champ="chasse_infos_date_debut"
+    data-cpt="chasse"
+    data-post-id="<?= esc_attr($chasse_id); ?>">
+
+  <label for="chasse-date-debut">Début</label>
+
+  <div class="champ-mode-options">
+    <span class="toggle-option">Now</span>
+    <label class="switch-control">
+      <input
+        id="date-debut-differee"
+        type="checkbox"
+        <?= $debut_differe ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
+      <span class="switch-slider"></span>
+    </label>
+    <span class="toggle-option">Later</span>
+    <div class="date-debut-actions" style="<?= $debut_differe ? '' : 'display:none;'; ?>">
+      <input type="datetime-local"
+            id="chasse-date-debut"
+            name="chasse-date-debut"
+            value="<?= esc_attr($date_debut_iso); ?>"
+            class="champ-inline-date champ-date-edit" <?= ($peut_editer && $debut_differe) ? '' : 'disabled'; ?> />
+      <div id="erreur-date-debut" class="message-erreur" style="display:none; color:red; font-size:0.9em; margin-top:5px;"></div>
+    </div>
+  </div>
 </li>
 
 

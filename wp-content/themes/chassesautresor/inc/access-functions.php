@@ -452,6 +452,22 @@ function indice_action_autorisee(string $action, string $object_type, int $objec
 }
 
 /**
+ * Détermine si une action sur une solution est autorisée.
+ *
+ * Wrapper autour de indice_action_autorisee afin de réutiliser les
+ * règles d'accès existantes pour les chasses et les énigmes.
+ *
+ * @param string $action      Action souhaitée (create, edit, delete).
+ * @param string $object_type Type de cible (chasse ou enigme).
+ * @param int    $object_id   ID de la cible.
+ * @return bool
+ */
+function solution_action_autorisee(string $action, string $object_type, int $object_id): bool
+{
+    return indice_action_autorisee($action, $object_type, $object_id);
+}
+
+/**
  * Détermine si un utilisateur peut voir une énigme donnée.
  *
  * @param int $enigme_id ID du post de type 'enigme'
@@ -1101,30 +1117,79 @@ add_action('init', function () {
 /**
  * Vérifie si un utilisateur a le droit de consulter la solution (PDF ou texte) d'une énigme
  *
- * @param int $enigme_id ID du post énigme
- * @param int $user_id   ID de l'utilisateur connecté
+ * @param int $post_id ID du post (énigme ou chasse)
+ * @param int $user_id ID de l'utilisateur connecté
  * @return bool
  */
-function utilisateur_peut_voir_solution_enigme(int $enigme_id, int $user_id): bool
+function utilisateur_peut_voir_solution_enigme(int $post_id, int $user_id): bool
 {
-    if (!$enigme_id || !$user_id) return false;
+    if (!$post_id || !$user_id) {
+        return false;
+    }
 
-    // 🔐 Autorisation admin
-    if (user_can($user_id, 'manage_options')) return true;
+    $type = get_post_type($post_id);
+    if ($type === 'chasse') {
+        return utilisateur_peut_voir_solution_chasse($post_id, $user_id);
+    }
 
-    // 🔍 Récupère la chasse liée
-    $chasse_id = recuperer_id_chasse_associee($enigme_id);
-    if (!$chasse_id) return false;
+    if ($type !== 'enigme') {
+        return false;
+    }
 
-    // 🔒 Organisateur lié à la chasse
+    $solution = solution_recuperer_par_objet($post_id, 'enigme');
+    if (!$solution) {
+        return false;
+    }
+
+    if (user_can($user_id, 'manage_options')) {
+        return true;
+    }
+
+    $chasse_id = recuperer_id_chasse_associee($post_id);
+    if (!$chasse_id) {
+        return false;
+    }
+
     if (utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
         return true;
     }
 
-    // 🧩 Joueur ayant résolu l’énigme (statut stocké en base)
-    $statut = get_statut_utilisateur_enigme($user_id, $enigme_id);
+    $statut = get_statut_utilisateur_enigme($user_id, $post_id);
     if ($statut) {
         return in_array($statut, ['resolue', 'terminee'], true);
+    }
+
+    return false;
+}
+
+/**
+ * Vérifie si un utilisateur a le droit de consulter la solution d'une chasse.
+ *
+ * @param int $chasse_id ID de la chasse
+ * @param int $user_id   ID de l'utilisateur connecté
+ * @return bool
+ */
+function utilisateur_peut_voir_solution_chasse(int $chasse_id, int $user_id): bool
+{
+    if (!$chasse_id || !$user_id) {
+        return false;
+    }
+
+    $solution = solution_recuperer_par_objet($chasse_id, 'chasse');
+    if (!$solution) {
+        return false;
+    }
+
+    if (user_can($user_id, 'manage_options')) {
+        return true;
+    }
+
+    if (utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
+        return true;
+    }
+
+    if (utilisateur_est_engage_dans_chasse($user_id, $chasse_id)) {
+        return true;
     }
 
     return false;

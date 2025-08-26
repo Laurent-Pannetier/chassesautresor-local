@@ -27,10 +27,21 @@ namespace {
     if (!function_exists('update_field')) {
         function update_field($field, $value, $post_id) { global $updated_fields; $updated_fields[$field] = $value; }
     }
+    if (!function_exists('delete_field')) {
+        function delete_field($field, $post_id) { global $deleted_fields; $deleted_fields[] = $field; }
+    }
     if (!function_exists('get_field')) {
         function get_field($field, $post_id) {
             global $existing_fields, $updated_fields;
             return $updated_fields[$field] ?? ($existing_fields[$field] ?? null);
+        }
+    }
+    if (!function_exists('get_post')) {
+        function get_post($post_id) {
+            return (object) [
+                'post_date'     => '2024-01-01 00:00:00',
+                'post_date_gmt' => '2024-01-01 00:00:00',
+            ];
         }
     }
     if (!function_exists('current_time')) {

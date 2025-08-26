@@ -3,17 +3,26 @@
     var overlay = document.createElement('div');
     overlay.className = 'indice-modal-overlay';
     var titre = indicesCreate.texts.indiceTitre.replace('%d', btn.dataset.indiceRang || '');
+    var needRiddle = btn.dataset.objetType === 'enigme' && !btn.dataset.indiceId;
+    var objetTypeLabel =
+      btn.dataset.objetType === 'chasse'
+        ? indicesCreate.texts.laChasse
+        : indicesCreate.texts.lenigme;
+    var riddleField = needRiddle
+      ? `<p><label>${indicesCreate.texts.enigmeLabel}<br><select name="indice_enigme_linked"><option value="">${indicesCreate.texts.loading}</option></select></label></p>`
+      : '';
     overlay.innerHTML = `
       <div class="indice-modal">
         <div class="indice-modal-header">
           <h2>${titre}</h2>
-          <p>${indicesCreate.texts.lieA} - ${btn.dataset.objetTitre || ''}</p>
+          <p>${indicesCreate.texts.lieeA} ${objetTypeLabel} - <span class="objet-titre">${btn.dataset.objetTitre || ''}</span></p>
         </div>
         <button type="button" class="indice-modal-close" aria-label="${indicesCreate.texts.close}">×</button>
         <form class="indice-modal-form">
           <input type="hidden" name="action" value="creer_indice_modal" />
           <input type="hidden" name="objet_type" value="${btn.dataset.objetType}" />
-          <input type="hidden" name="objet_id" value="${btn.dataset.objetId}" />
+          ${riddleField}
+          <input type="hidden" name="objet_id" value="${btn.dataset.objetId || ''}" />
           <input type="hidden" name="indice_image" value="" />
           <p class="image-field"><button type="button" class="select-image">${indicesCreate.texts.image}</button><span class="image-preview"></span></p>
           <p><label>${indicesCreate.texts.contenu}<br><textarea name="indice_contenu"></textarea></label></p>
@@ -25,7 +34,11 @@
       </div>`;
     document.body.appendChild(overlay);
 
+    var titleEl = overlay.querySelector('.indice-modal-header h2');
     var dateInput = overlay.querySelector('input[name="indice_date_disponibilite"]');
+    var validateBtn = overlay.querySelector('.indice-modal-validate');
+    var stateMessage = overlay.querySelector('.indice-state-message');
+    var selectBtn = overlay.querySelector('.select-image');
     var defaultDate = (function () {
       var d = new Date();
       d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
@@ -61,8 +74,6 @@
       dateInput.value = defaultDate;
     }
     var lastDateValue = dateInput.value;
-    var validateBtn = overlay.querySelector('.indice-modal-validate');
-    var stateMessage = overlay.querySelector('.indice-state-message');
 
     function close() {
       overlay.remove();
@@ -77,9 +88,11 @@
       var preview = overlay.querySelector('.image-preview');
       if (!url) {
         preview.innerHTML = '';
+        if (selectBtn) selectBtn.disabled = false;
         refreshState();
         return;
       }
+      if (selectBtn) selectBtn.disabled = false;
       preview.innerHTML = '<img src="' + url + '" alt="" />' +
         '<span class="image-actions">' +
         '<button type="button" class="image-edit" aria-label="' + indicesCreate.texts.edit + '"><span class="dashicons dashicons-edit"></span></button>' +
@@ -121,7 +134,7 @@
       });
     });
 
-    overlay.querySelector('.select-image').addEventListener('click', function (e) {
+    selectBtn.addEventListener('click', function (e) {
       e.preventDefault();
       openMedia();
     });
@@ -146,11 +159,15 @@
       var content = overlay.querySelector('textarea[name="indice_contenu"]').value.trim();
       var image = overlay.querySelector('input[name="indice_image"]').value.trim();
       var dispo = overlay.querySelector('input[name="indice_disponibilite"]:checked').value;
+      var select = overlay.querySelector('select[name="indice_enigme_linked"]');
+      var riddleSelected = !select || select.value !== '';
       var state = 'desactive';
       var message = '';
       var complete = content !== '' || image !== '';
 
-      if (!complete) {
+      if (!riddleSelected) {
+        message = indicesCreate.texts.needEnigme;
+      } else if (!complete) {
         message = indicesCreate.texts.needContent;
       } else {
         state = 'accessible';
@@ -179,13 +196,27 @@
       e.preventDefault();
       var form = e.target;
       var data = new FormData(form);
+      validateBtn.disabled = true;
+      stateMessage.textContent = '';
       fetch(indicesCreate.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: data })
         .then(function (r) { return r.json(); })
         .then(function (res) {
           if (!res.success) return;
           close();
-          var selector = '.liste-indices[data-objet-type="' + btn.dataset.objetType + '"][data-objet-id="' + btn.dataset.objetId + '"]';
+          var selector =
+            '.liste-indices[data-objet-type="' +
+            btn.dataset.objetType +
+            '"][data-objet-id="' +
+            btn.dataset.objetId +
+            '"]';
           var wrapper = document.querySelector(selector);
+          if (!wrapper && btn.dataset.chasseId) {
+            selector =
+              '.liste-indices[data-objet-type="chasse"][data-objet-id="' +
+              btn.dataset.chasseId +
+              '"]';
+            wrapper = document.querySelector(selector);
+          }
           if (wrapper && window.reloadIndicesTable) {
             wrapper.dataset.page = '1';
             window.reloadIndicesTable(wrapper);
@@ -193,8 +224,76 @@
           if (!btn.dataset.indiceId && btn.dataset.indiceRang) {
             btn.dataset.indiceRang = parseInt(btn.dataset.indiceRang, 10) + 1;
           }
+          if (!btn.dataset.indiceId && btn.dataset.chasseId) {
+            var chasseBtn = document.querySelector(
+              '.cta-indice-chasse[data-objet-id="' + btn.dataset.chasseId + '"]'
+            );
+            if (chasseBtn && chasseBtn.dataset.indiceRang) {
+              chasseBtn.dataset.indiceRang =
+                parseInt(chasseBtn.dataset.indiceRang, 10) + 1;
+            }
+          }
+          window.dispatchEvent(new Event('indice-created'));
+        })
+        .catch(function () {
+          stateMessage.textContent = indicesCreate.texts.ajaxError;
+          validateBtn.disabled = false;
         });
     });
+
+    if (needRiddle) {
+      var select = overlay.querySelector('select[name="indice_enigme_linked"]');
+      var hidden = overlay.querySelector('input[name="objet_id"]');
+      var titleSpan = overlay.querySelector('.objet-titre');
+      var fd = new FormData();
+      fd.append('action', 'chasse_lister_enigmes');
+      fd.append('chasse_id', btn.dataset.chasseId || '');
+      fetch(indicesCreate.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: fd })
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+          select.innerHTML = '';
+          if (!res.success || !res.data.enigmes.length) {
+            var opt = document.createElement('option');
+            opt.value = '';
+            opt.textContent = indicesCreate.texts.enigmePlaceholder;
+            select.appendChild(opt);
+            btn.dataset.objetId = '';
+            hidden.value = '';
+            btn.dataset.indiceRang = '';
+            titleEl.textContent = indicesCreate.texts.indiceTitre.replace('%d', '');
+            refreshState();
+            return;
+          }
+          res.data.enigmes.forEach(function (enigme) {
+            var opt = document.createElement('option');
+            opt.value = enigme.id;
+            opt.textContent = enigme.title;
+            if (enigme.indice_rang !== undefined) {
+              opt.dataset.indiceRang = enigme.indice_rang;
+            }
+            select.appendChild(opt);
+          });
+          var def = btn.dataset.defaultEnigme || btn.dataset.objetId;
+          if (def) select.value = def;
+          if (!select.value) select.value = select.options[0].value;
+          var selected = select.options[select.selectedIndex];
+          btn.dataset.objetId = select.value;
+          hidden.value = select.value;
+          btn.dataset.indiceRang = selected && selected.dataset.indiceRang ? selected.dataset.indiceRang : '';
+          titleSpan.textContent = selected ? selected.text : '';
+          titleEl.textContent = indicesCreate.texts.indiceTitre.replace('%d', btn.dataset.indiceRang || '');
+          refreshState();
+        });
+      select.addEventListener('change', function () {
+        var opt = select.options[select.selectedIndex];
+        btn.dataset.objetId = select.value;
+        hidden.value = select.value;
+        btn.dataset.indiceRang = opt && opt.dataset.indiceRang ? opt.dataset.indiceRang : '';
+        titleSpan.textContent = opt ? opt.text : '';
+        titleEl.textContent = indicesCreate.texts.indiceTitre.replace('%d', btn.dataset.indiceRang || '');
+        refreshState();
+      });
+    }
 
     refreshState();
   }
@@ -204,13 +303,21 @@
     if (target && target.nodeType !== 1) {
       target = target.parentElement;
     }
-    var placeholder = target && target.closest ? target.closest('.cta-indice-enigme') : null;
-    if (placeholder) {
+    var enigmeBtn = target && target.closest ? target.closest('.cta-indice-enigme') : null;
+    if (enigmeBtn) {
       e.preventDefault();
+      if (!enigmeBtn.dataset.objetType) {
+        enigmeBtn.dataset.objetType = 'enigme';
+      }
+      enigmeBtn.dataset.indiceRang = '';
+      openModal(enigmeBtn);
       return;
     }
     var btn = target && target.closest ? target.closest('.cta-creer-indice, .badge-action.edit') : null;
     if (!btn) return;
+    if (btn.classList.contains('badge-action') && !btn.closest('.liste-indices')) {
+      return;
+    }
     e.preventDefault();
     openModal(btn);
   }

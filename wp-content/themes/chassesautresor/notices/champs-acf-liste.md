@@ -109,30 +109,6 @@ Label : Date de découverte
 Instructions : Permet de terminer manuellement la chasse.
 Requis : non
 ----------------------------------------
-— chasse_cache_statut —
-Type : select
-Label : Statut de la chasse
-Instructions : (vide)
-Requis : non
-Choices :
-  - revision : en cours de révision
-  - a_venir : à venir
-  - payante : payante
-  - termine : terminée
-  - en_cours : en cours
-----------------------------------------
-— chasse_cache_statut_validation —
-Type : select
-Label : statut_validation
-Instructions : (vide)
-Requis : non
-Choices :
-  - creation : Création
-  - en_attente : En attente
-  - valide : Valide
-  - correction : Correction
-  - banni : Banni
-----------------------------------------
 — chasse_cache_enigmes —
 Type : relationship
 Label : Énigmes associées
@@ -150,6 +126,30 @@ Type : relationship
 Label : organisateur chasse
 Instructions : (vide)
 Requis : non
+----------------------------------------
+— chasse_cache_statut_validation —
+Type : select
+Label : statut_validation
+Instructions : (vide)
+Requis : non
+Choices :
+  - creation : Création
+  - en_attente : En attente
+  - valide : Valide
+  - correction : Correction
+  - banni : Banni
+----------------------------------------
+— chasse_cache_statut —
+Type : select
+Label : Statut de la chasse
+Instructions : (vide)
+Requis : non
+Choices :
+  - revision : en cours de révision
+  - a_venir : à venir
+  - payante : payante
+  - termine : terminée
+  - en_cours : en cours
 ----------------------------------------
 — chasse_cache_complet —
 Type : true_false
@@ -216,7 +216,7 @@ Requis : non
 — enigme_reponse_bonne —
 Type : textarea
 Label : bonne(s) réponse(s)
-Instructions : Tableau de réponses attendues au format JSON.
+Instructions : (vide)
 Requis : non
 ----------------------------------------
 — enigme_reponse_casse —
@@ -274,7 +274,7 @@ Instructions : (vide)
 Requis : non
 ----------------------------------------
 — respecter_casse_3 —
-Type : text
+Type : true_false
 Label : respecter casse 3
 Instructions : (vide)
 Requis : non
@@ -292,7 +292,7 @@ Instructions : (vide)
 Requis : non
 ----------------------------------------
 — respecter_casse_4 —
-Type : text
+Type : true_false
 Label : respecter casse 4
 Instructions : (vide)
 Requis : non
@@ -318,19 +318,6 @@ Type : relationship
 Label : pré requis
 Instructions : autre(s) énigme(s) devant être résolues pour débloquer celle là
 Requis : non
-----------------------------------------
-— enigme_cache_etat_systeme —
-Type : select
-Label : enigme_cache_etat_systeme
-Instructions : (vide)
-Requis : non
-Choices :
-  - accessible : Accessible
-  - bloquee_date : Bloquée - à venir
-  - bloquee_chasse : Bloquée - chasse indisponible
-  - invalide : Invalide (données manquantes)
-  - cache_invalide : Erreur de configuration
-  - bloquee_pre_requis : bloquee_pre_requis
 ----------------------------------------
 — enigme_chasse_associee —
 Type : relationship
@@ -370,6 +357,19 @@ Type : wysiwyg
 Label : Solution expliquée
 Instructions : La solution ne sera publiée que si la chasse est terminée, et selon le délai de votre choix
 Requis : non
+----------------------------------------
+— enigme_cache_etat_systeme —
+Type : select
+Label : enigme_cache_etat_systeme
+Instructions : (vide)
+Requis : non
+Choices :
+  - accessible : Accessible
+  - bloquee_date : Bloquée - à venir
+  - bloquee_chasse : Bloquée - chasse indisponible
+  - invalide : Invalide (données manquantes)
+  - cache_invalide : Erreur de configuration
+  - bloquee_pre_requis : bloquee_pre_requis
 ----------------------------------------
 — enigme_cache_complet —
 Type : true_false
@@ -477,18 +477,6 @@ Choices :
   - chasse : chasse
   - enigme : énigme
 ----------------------------------------
-— indice_enigme_linked —
-Type : relationship
-Label : énigme liée
-Instructions : (vide)
-Requis : non
-----------------------------------------
-— indice_chasse_linked —
-Type : relationship
-Label : chasse liée
-Instructions : (vide)
-Requis : non
-----------------------------------------
 — indice_disponibilite —
 Type : radio
 Label : disponibilité
@@ -503,11 +491,22 @@ Type : date_time_picker
 Label : date de disponibilité
 Instructions : (vide)
 Requis : non
-Format de retour : d/m/Y g:i a
 ----------------------------------------
 — indice_cout_points —
 Type : number
 Label : coût en points
+Instructions : (vide)
+Requis : non
+----------------------------------------
+— indice_enigme_linked —
+Type : relationship
+Label : énigme liée
+Instructions : (vide)
+Requis : non
+----------------------------------------
+— indice_chasse_linked —
+Type : relationship
+Label : chasse liée
 Instructions : (vide)
 Requis : non
 ----------------------------------------
@@ -525,6 +524,86 @@ Choices :
 — indice_cache_complet —
 Type : true_false
 Label : complétion de l'indice
+Instructions : (vide)
+Requis : non
+----------------------------------------
+
+🔹 Groupe : paramètres solution
+🆔 ID : 9756
+🔑 Key : group_68abd01f80aee
+📦 Champs trouvés : 10
+
+— solution_cible_type —
+Type : radio
+Label : for
+Instructions : (vide)
+Requis : non
+Choices :
+  - chasse : chasse
+  - enigme : enigme
+----------------------------------------
+— solution_chasse_linked —
+Type : relationship
+Label : chasse liée
+Instructions : (vide)
+Requis : non
+----------------------------------------
+— solution_enigme_linked —
+Type : relationship
+Label : énigme liée
+Instructions : (vide)
+Requis : non
+----------------------------------------
+— solution_fichier —
+Type : file
+Label : fichier pdf de solution
+Instructions : (vide)
+Requis : non
+----------------------------------------
+— solution_explication —
+Type : wysiwyg
+Label : explication
+Instructions : (vide)
+Requis : non
+----------------------------------------
+— solution_disponibilite —
+Type : radio
+Label : disponibilité
+Instructions : (vide)
+Requis : non
+Choices :
+  - fin_chasse : fin de chasse
+  - differee : différée
+----------------------------------------
+— solution_decalage_jours —
+Type : number
+Label : jours de décalage
+Instructions : (vide)
+Requis : non
+----------------------------------------
+— solution_heure_publication —
+Type : time_picker
+Label : heure de publication
+Instructions : (vide)
+Requis : non
+----------------------------------------
+— solution_cache_etat_systeme —
+Type : select
+Label : état système
+Instructions : (vide)
+Requis : non
+Choices :
+  - INVALIDE : INVALIDE
+  - FIN_CHASSE : fin de chasse
+  - FIN_CHASSE_DIFFERE : différé
+  - A_VENIR : à venir
+  - EN_COURS : en cours
+  - DESACTIVE : désactivé
+Référence : constantes définies dans `inc/constants.php`
+----------------------------------------
+— solution_cache_complet —
+Type : true_false
+Label : complétion de la solution
 Instructions : (vide)
 Requis : non
 ----------------------------------------

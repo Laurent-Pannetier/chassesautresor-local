@@ -6,7 +6,7 @@ let inputDateDebut;
 let inputDateFin;
 let erreurDebut;
 let erreurFin;
-let checkboxIllimitee;
+let toggleDateFin;
 
 function rafraichirCarteIndices() {
   const card = document.querySelector('.dashboard-card.champ-indices');
@@ -26,31 +26,198 @@ function rafraichirCarteIndices() {
   })
     .then(r => r.json())
     .then(res => {
-      if (res.success && res.data?.html) {
-        const tmp = document.createElement('div');
-        tmp.innerHTML = res.data.html;
-        const nouvelleCarte = tmp.firstElementChild;
-        if (nouvelleCarte) {
-          card.replaceWith(nouvelleCarte);
+        if (res.success && res.data?.html) {
+          const tmp = document.createElement('div');
+          tmp.innerHTML = res.data.html;
+          const nouvelleCarte = tmp.firstElementChild;
+          if (nouvelleCarte) {
+            card.replaceWith(nouvelleCarte);
+            initIndicesOptions(nouvelleCarte);
+          }
+        } else {
+          throw new Error('invalid');
         }
-      } else {
-        throw new Error('invalid');
-      }
-    })
-    .catch(() => {
-      card.classList.remove('loading');
-      card.innerHTML = `<p class="error">${ChasseIndices.errorText}</p>`;
-    });
+      })
+      .catch(() => {
+        card.classList.remove('loading');
+        card.innerHTML = `<p class="error">${ChasseIndices.errorText}</p>`;
+      });
 }
 
+window.rafraichirCarteIndices = rafraichirCarteIndices;
 
-function initChasseEdit() {
+function rafraichirCarteSolutions() {
+  document.querySelectorAll('.liste-solutions').forEach((wrapper) => {
+    if (window.reloadSolutionsTable) {
+      window.reloadSolutionsTable(wrapper);
+    }
+  });
+
+  const card = document.querySelector('.dashboard-card.champ-solutions');
+  if (!card) return;
+  const btnChasse = card.querySelector('.cta-solution-chasse');
+  const btnEnigme = card.querySelector('.cta-solution-enigme');
+  const chasseId =
+    (btnChasse && btnChasse.dataset.objetId) ||
+    (btnEnigme && btnEnigme.dataset.chasseId);
+  const ajaxUrl =
+    (window.solutionsCreate && solutionsCreate.ajaxUrl) || window.ajaxurl;
+  if (!ajaxUrl || !chasseId) return;
+
+  const fd = new FormData();
+  fd.append('action', 'chasse_solution_status');
+  fd.append('chasse_id', chasseId);
+  fetch(ajaxUrl, { method: 'POST', credentials: 'same-origin', body: fd })
+    .then((r) => r.json())
+    .then((res) => {
+      if (!res.success || !res.data) return;
+      if (btnChasse) {
+        const disableChasse = !!res.data.has_solution_chasse;
+        btnChasse.classList.toggle('disabled', disableChasse);
+        btnChasse.setAttribute('aria-disabled', disableChasse);
+        if (ChasseSolutions && ChasseSolutions.tooltipChasse) {
+          btnChasse.title = disableChasse ? ChasseSolutions.tooltipChasse : '';
+        }
+      }
+      if (btnEnigme) {
+        const disableEnigme = !res.data.has_enigmes;
+        btnEnigme.classList.toggle('disabled', disableEnigme);
+        btnEnigme.setAttribute('aria-disabled', disableEnigme);
+        if (ChasseSolutions && ChasseSolutions.tooltipEnigme) {
+          btnEnigme.title = disableEnigme ? ChasseSolutions.tooltipEnigme : '';
+        }
+      }
+
+      const hasSolutions = !!res.data.has_solutions;
+      card.classList.toggle('champ-rempli', hasSolutions);
+      card.classList.toggle('champ-vide', !hasSolutions);
+
+      initDisabledSolutionButtons();
+    })
+    .catch(() => {});
+}
+
+window.rafraichirCarteSolutions = rafraichirCarteSolutions;
+
+  function initIndicesOptions(card) {
+    if (!card) return;
+    const btn = card.querySelector('.cta-indice-pour');
+    const options = card.querySelector('.cta-indice-options');
+    if (!btn || !options) return;
+
+    let timeoutId;
+
+    function hide() {
+      card.classList.remove('show-options');
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+    }
+
+    function show() {
+      card.classList.add('show-options');
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        hide();
+      }, 5000);
+    }
+
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      show();
+    });
+
+    options.addEventListener('click', () => {
+      hide();
+    });
+  }
+
+  function initAllIndicesOptions() {
+    document.querySelectorAll('.dashboard-card.champ-indices').forEach((c) => {
+      initIndicesOptions(c);
+    });
+  }
+
+  function initSolutionsOptions(card) {
+    if (!card) return;
+    const btn = card.querySelector('.cta-solution-pour');
+    const options = card.querySelector('.cta-solution-options');
+    if (!btn || !options) return;
+
+    let timeoutId;
+
+    function hide() {
+      card.classList.remove('show-options');
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+    }
+
+    function show() {
+      card.classList.add('show-options');
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        hide();
+      }, 5000);
+    }
+
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      show();
+    });
+
+    options.addEventListener('click', () => {
+      hide();
+    });
+  }
+
+  function initAllSolutionsOptions() {
+    document
+      .querySelectorAll('.dashboard-card.champ-solutions')
+      .forEach((c) => {
+        initSolutionsOptions(c);
+      });
+    initDisabledSolutionButtons();
+  }
+
+  function initDisabledSolutionButtons() {
+    document
+      .querySelectorAll('.cta-solution-chasse, .cta-solution-enigme')
+      .forEach((btn) => {
+        if (btn.dataset.scrollBound) return;
+        btn.dataset.scrollBound = '1';
+        btn.addEventListener('click', (e) => {
+          if (!btn.classList.contains('disabled')) return;
+          e.preventDefault();
+          const targetId =
+            (ChasseSolutions && ChasseSolutions.scrollTarget) ||
+            '#chasse-section-solutions';
+          const anchor = document.querySelector(targetId);
+          if (anchor) {
+            anchor.scrollIntoView({ behavior: 'smooth' });
+          }
+        });
+      });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAllIndicesOptions);
+    document.addEventListener('DOMContentLoaded', initAllSolutionsOptions);
+  } else {
+    initAllIndicesOptions();
+    initAllSolutionsOptions();
+  }
+
+
+  function initChasseEdit() {
   if (typeof initZonesClicEdition === 'function') initZonesClicEdition();
   inputDateDebut = document.getElementById('chasse-date-debut');
   inputDateFin = document.getElementById('chasse-date-fin');
   erreurDebut = document.getElementById('erreur-date-debut');
   erreurFin = document.getElementById('erreur-date-fin');
-  checkboxIllimitee = document.getElementById('duree-illimitee');
+  toggleDateFin = document.getElementById('date-fin-limitee');
 
 
   // ==============================
@@ -171,57 +338,6 @@ function initChasseEdit() {
     window.mettreAJourEtatIntroChasse();
   }
 
-  // ==============================
-  // 📅 Gestion Date de fin + Durée illimitée
-  // ==============================
-  if (inputDateFin) {
-    if (checkboxIllimitee) {
-      const initialDisabled = inputDateFin.disabled;
-      inputDateFin.disabled = initialDisabled || checkboxIllimitee.checked;
-
-      checkboxIllimitee.addEventListener('change', function () {
-        inputDateFin.disabled = initialDisabled || this.checked;
-
-        // Si la case est décochée et les dates incohérentes, corriger la date de fin
-        if (!this.checked) {
-          const debut = new Date(inputDateDebut.value);
-          const fin = new Date(inputDateFin.value);
-
-          if (!isNaN(debut) && !isNaN(fin) && debut >= fin) {
-            const nouvelleDateFin = new Date(debut);
-            nouvelleDateFin.setFullYear(nouvelleDateFin.getFullYear() + 2);
-
-            const yyyy = nouvelleDateFin.getFullYear();
-            const mm = String(nouvelleDateFin.getMonth() + 1).padStart(2, '0');
-            const dd = String(nouvelleDateFin.getDate()).padStart(2, '0');
-
-            const nouvelleValeur = `${yyyy}-${mm}-${dd}`;
-            inputDateFin.value = nouvelleValeur;
-          }
-        }
-
-        const li = inputDateFin.closest('li');
-        const status = li?.querySelector('.champ-status');
-        if (status) {
-          status.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>';
-        }
-
-        enregistrerDatesChasse().then((ok) => {
-          if (status) {
-            status.innerHTML = ok
-              ? '<i class="fa-solid fa-check" aria-hidden="true"></i>'
-              : '<i class="fa-solid fa-xmark" aria-hidden="true"></i>';
-            setTimeout(() => { status.innerHTML = ''; }, 1500);
-          }
-          mettreAJourAffichageDateFin();
-        });
-      });
-    }
-      // La logique d'enregistrement de la date de fin est gérée
-      // globalement par `date-fields.js` via `initChampDate()`.
-      // On se limite ici à mettre à jour l'affichage lorsqu'on
-      // modifie la case « illimitée ».
-  }
   if (inputDateDebut) {
     // L'enregistrement et la validation sont gérés par `date-fields.js`.
     // Ce fichier ne fait que fournir les messages d'erreur via
@@ -522,10 +638,22 @@ function initChasseEdit() {
       const textarea = zone.querySelector('#chasse-gagnants');
       const gagnants = textarea.value.trim();
       if (!gagnants) return;
+      if (
+        !confirm(
+          wp.i18n.__(
+            'Voulez-vous vraiment arrêter la chasse ?',
+            'chassesautresor-com'
+          )
+        )
+      ) {
+        return;
+      }
       valider.disabled = true;
       const now = new Date();
       const dateValue = now.toISOString().split('T')[0];
-      const dateDisplay = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+      const dateDisplay = `${String(now.getDate()).padStart(2, '0')}/${String(
+        now.getMonth() + 1
+      ).padStart(2, '0')}/${now.getFullYear()}`;
       const gagnantsEsc = gagnants.replace(/[&<>\"']/g, (c) => ({
         '&': '&amp;',
         '<': '&lt;',
@@ -534,15 +662,37 @@ function initChasseEdit() {
         "'": '&#039;',
       })[c]);
 
-      modifierChampSimple('champs_caches.chasse_cache_gagnants', gagnants, postId, 'chasse')
-        .then((ok) => ok && modifierChampSimple('champs_caches.chasse_cache_date_decouverte', dateValue, postId, 'chasse'))
-        .then((ok) => ok && modifierChampSimple('champs_caches.chasse_cache_statut', 'termine', postId, 'chasse'))
+      modifierChampSimple(
+        'champs_caches.chasse_cache_gagnants',
+        gagnants,
+        postId,
+        'chasse'
+      )
+        .then((ok) =>
+          ok &&
+          modifierChampSimple(
+            'champs_caches.chasse_cache_date_decouverte',
+            dateValue,
+            postId,
+            'chasse'
+          )
+        )
+        .then((ok) =>
+          ok &&
+          modifierChampSimple(
+            'champs_caches.chasse_cache_statut',
+            'termine',
+            postId,
+            'chasse'
+          )
+        )
         .then((ok) => {
           if (ok) {
-            const container = document.querySelector('.champ-mode-fin .fin-chasse-actions');
-            if (container) {
-              container.innerHTML = `<p class="message-chasse-terminee">Chasse gagnée le ${dateDisplay} par ${gagnantsEsc}</p>`;
-            }
+            document
+              .querySelectorAll('.fin-chasse-actions')
+              .forEach((container) => {
+                container.innerHTML = `<p class="message-chasse-terminee">Chasse gagnée le ${dateDisplay} par ${gagnantsEsc}</p>`;
+              });
           } else {
             valider.disabled = false;
           }
@@ -564,6 +714,29 @@ function initChasseEdit() {
     initChasseEdit();
   }
 
+  window.addEventListener('solution-created', () => {
+    rafraichirCarteSolutions();
+  });
+
+  function rafraichirCarteLiens() {
+    const card = document.querySelector('.dashboard-card.champ-liens');
+    if (!card) return;
+    const dataEl = card.querySelector('.champ-donnees');
+    let valeurs = [];
+    if (dataEl && dataEl.dataset.valeurs) {
+      try {
+        valeurs = JSON.parse(dataEl.dataset.valeurs);
+      } catch (e) {
+        valeurs = [];
+      }
+    }
+    const filled = Array.isArray(valeurs) && valeurs.length > 0;
+    card.classList.toggle('champ-rempli', filled);
+    card.classList.toggle('champ-vide', !filled);
+  }
+
+  window.addEventListener('liens-publics-updated', rafraichirCarteLiens);
+
 
 // ==============================
 // 🔗 Initialisation des liens chasse
@@ -584,8 +757,8 @@ function initLiensChasse(bloc) {
 // ==============================
 function validerDatesAvantEnvoi(champModifie) {
   console.log('[validerDatesAvantEnvoi] champModifie=', champModifie);
-  // ✅ Si illimité, on n'applique aucun contrôle
-  if (checkboxIllimitee?.checked) return true;
+  // ✅ Si illimitée, on n'applique aucun contrôle
+  if (!toggleDateFin?.checked) return true;
 
   if (erreurDebut) erreurDebut.style.display = 'none';
   if (erreurFin) erreurFin.style.display = 'none';
@@ -766,29 +939,34 @@ document.querySelectorAll('.champ-cout-points .champ-annuler').forEach(bouton =>
 // ================================
 function initChampNbGagnants() {
   const inputNb = document.getElementById('chasse-nb-gagnants');
-  const checkboxIllimite = document.getElementById('nb-gagnants-illimite');
+  const toggleLimite = document.getElementById('nb-gagnants-limite');
+  const actions = inputNb?.closest('.nb-gagnants-actions');
 
-  if (!inputNb || !checkboxIllimite) return;
+  if (!inputNb || !toggleLimite || !actions) return;
 
   let timerDebounce;
 
-  checkboxIllimite.addEventListener('change', function () {
+  function updateVisibility() {
     const postId = inputNb.closest('li').dataset.postId;
     if (!postId) return;
 
-    if (checkboxIllimite.checked) {
-      inputNb.disabled = true;
-      inputNb.value = '0';
-    } else {
+    if (toggleLimite.checked) {
+      actions.style.display = '';
       inputNb.disabled = false;
       if (parseInt(inputNb.value.trim(), 10) === 0 || inputNb.value.trim() === '') {
         inputNb.value = '1';
       }
+    } else {
+      actions.style.display = 'none';
+      inputNb.disabled = true;
+      inputNb.value = '0';
     }
 
     inputNb.dispatchEvent(new Event('input', { bubbles: true }));
     mettreAJourAffichageNbGagnants(postId, inputNb.value.trim());
-  });
+  }
+
+  toggleLimite.addEventListener('change', updateVisibility);
 
   inputNb.addEventListener('input', function () {
     const postId = inputNb.closest('li').dataset.postId;
@@ -804,27 +982,135 @@ function initChampNbGagnants() {
       mettreAJourAffichageNbGagnants(postId, valeur);
     }, 500);
   });
+
+  updateVisibility();
+}
+
+// ================================
+// 🕒 Gestion du champ Date de début (Maintenant / Plus tard)
+// ================================
+function initChampDateDebut() {
+  const input = document.getElementById('chasse-date-debut');
+  const toggle = document.getElementById('date-debut-differee');
+  const actions = input?.closest('.date-debut-actions');
+
+  if (!input || !toggle || !actions) return;
+
+  function updateVisibility() {
+    if (toggle.checked) {
+      actions.style.display = '';
+      input.disabled = false;
+      if (typeof window.initChampDate === 'function') {
+        window.initChampDate(input);
+      }
+    } else {
+      actions.style.display = 'none';
+      input.disabled = true;
+      const now = new Date();
+      const iso = now.toISOString().slice(0, 16);
+      input.value = iso;
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  }
+
+  toggle.addEventListener('change', updateVisibility);
+  updateVisibility();
+}
+
+// ================================
+// 📅 Gestion du champ Date de fin (Illimitée / Limitée)
+// ================================
+function initChampDateFin() {
+  const input = document.getElementById('chasse-date-fin');
+  const toggle = document.getElementById('date-fin-limitee');
+  const actions = input?.closest('.date-fin-actions');
+
+  if (!input || !toggle || !actions) return;
+
+  function updateVisibility() {
+    if (toggle.checked) {
+      actions.style.display = '';
+      input.disabled = false;
+      if (typeof window.initChampDate === 'function') {
+        window.initChampDate(input);
+      }
+    } else {
+      actions.style.display = 'none';
+      input.disabled = true;
+    }
+  }
+
+  toggle.addEventListener('change', () => {
+    updateVisibility();
+    const li = input.closest('li');
+    const status = li?.querySelector('.champ-status');
+    if (status) {
+      status.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>';
+    }
+
+    enregistrerDatesChasse().then((ok) => {
+      if (status) {
+        status.innerHTML = ok
+          ? '<i class="fa-solid fa-check" aria-hidden="true"></i>'
+          : '<i class="fa-solid fa-xmark" aria-hidden="true"></i>';
+        setTimeout(() => { status.innerHTML = ''; }, 1500);
+      }
+      mettreAJourAffichageDateFin();
+    });
+  });
+
+  updateVisibility();
+}
+
+// ================================
+// 💰 Gestion du champ Accès (Gratuit / Points)
+// ================================
+function initChampCoutPoints() {
+  const input = document.querySelector('.champ-cout-points .champ-cout');
+  const toggle = document.getElementById('cout-payant');
+  const actions = input?.closest('.cout-points-actions');
+
+  if (!input || !toggle || !actions) return;
+
+  function updateVisibility() {
+    if (toggle.checked) {
+      actions.style.display = '';
+      input.disabled = false;
+      input.min = '1';
+      if (parseInt(input.value.trim(), 10) === 0 || input.value.trim() === '') {
+        input.value = '10';
+      }
+    } else {
+      actions.style.display = 'none';
+      input.disabled = true;
+      input.value = '0';
+    }
+
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+
+  toggle.addEventListener('change', updateVisibility);
+  updateVisibility();
 }
 
 // ================================
 // 🔚 Gestion dynamique du mode de fin
 // ================================
 function initModeFinChasse() {
-  const radios = document.querySelectorAll('input[name="acf[chasse_mode_fin]"]');
+  const toggle = document.getElementById('chasse_mode_fin');
   const templateNb = document.getElementById('template-nb-gagnants');
-  const templateFin = document.getElementById('template-fin-chasse-actions');
   const modeFinLi = document.querySelector('.champ-mode-fin');
-  const finActions = modeFinLi?.querySelector('.fin-chasse-actions');
+  const finCard = document.querySelector('.carte-arret-chasse');
 
-  if (!radios.length || !templateNb || !modeFinLi || !finActions) return;
+  if (!toggle || !templateNb || !modeFinLi || !finCard) return;
 
   const postId = modeFinLi.dataset.postId;
 
   function update(save = false) {
-    const selected = document.querySelector('input[name="acf[chasse_mode_fin]"]:checked')?.value;
+    const selected = toggle.checked ? 'manuelle' : 'automatique';
     const existingNb = document.querySelector('.champ-nb-gagnants');
 
-    if (save && selected) {
+    if (save) {
       modifierChampSimple('chasse_mode_fin', selected, postId, 'chasse');
     }
 
@@ -836,38 +1122,37 @@ function initModeFinChasse() {
         if (typeof initChampTexte === 'function') initChampTexte(clone);
       }
 
-      document.querySelector('.annuler-fin-chasse-btn')?.dispatchEvent(new Event('click', { bubbles: true }));
-      const message = finActions.querySelector('.message-chasse-terminee');
-      finActions.innerHTML = '';
-      if (message) finActions.appendChild(message);
+      document
+        .querySelector('.annuler-fin-chasse-btn')
+        ?.dispatchEvent(new Event('click', { bubbles: true }));
+
+      if (finCard && !finCard.querySelector('.message-chasse-terminee')) {
+        finCard.style.display = 'none';
+      }
 
       const inputNb = document.getElementById('chasse-nb-gagnants');
       if (inputNb) {
         mettreAJourAffichageNbGagnants(postId, inputNb.value.trim());
       }
-    } else if (selected === 'manuelle') {
+    } else {
       if (existingNb) existingNb.remove();
 
-      if (!finActions.querySelector('.terminer-chasse-btn') && templateFin) {
-        const message = finActions.querySelector('.message-chasse-terminee');
-        finActions.innerHTML = '';
-        if (message) finActions.appendChild(message);
-        finActions.appendChild(templateFin.content.cloneNode(true));
-      }
+      if (finCard) finCard.style.display = '';
 
       mettreAJourAffichageNbGagnants(postId, 0);
     }
   }
 
-  radios.forEach(radio => {
-    radio.addEventListener('change', () => update(true));
-  });
+  toggle.addEventListener('change', () => update(true));
 
   update();
 }
 
 // À appeler :
+initChampDateDebut();
+initChampDateFin();
 initChampNbGagnants();
+initChampCoutPoints();
 initModeFinChasse();
 
 // ==============================
@@ -1038,7 +1323,7 @@ function enregistrerDatesChasse() {
     date_debut: inputDateDebut.value.trim(),
     // On conserve toujours la date en base, même si l'affichage est "Illimitée"
     date_fin: inputDateFin.value.trim(),
-    illimitee: checkboxIllimitee?.checked ? 1 : 0
+    illimitee: toggleDateFin?.checked ? 0 : 1
   });
   console.log('[enregistrerDatesChasse] params=', params.toString());
 
@@ -1064,3 +1349,30 @@ function enregistrerDatesChasse() {
     });
 }
 window.enregistrerDatesChasse = enregistrerDatesChasse;
+
+// ================================
+// 📥 Téléchargement du QR code sans redirection
+// ================================
+const qrDownloadBtn = document.querySelector('.qr-code-download');
+qrDownloadBtn?.addEventListener('click', (e) => {
+  e.preventDefault();
+  const url = qrDownloadBtn.getAttribute('href');
+  const filename = qrDownloadBtn.getAttribute('download') || 'qr-code.png';
+
+  fetch(url)
+    .then(res => res.blob())
+    .then(blob => {
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(link.href);
+    })
+    .catch(err => {
+      console.error('Erreur téléchargement QR code', err);
+      window.location.href = url;
+    });
+});
+

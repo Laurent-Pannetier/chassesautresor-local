@@ -121,8 +121,8 @@ button,
 .bouton-cta {
     display: inline-block;
     padding: 10px 15px;
-    background-color: var(--color-background-button);
-    color: var(--color-text-primary);
+    background-color: var(--color-gris-3);
+    color: var(--color-text-secondary);
     border-radius: 5px;
     text-decoration: none;
     font-weight: bold;
@@ -132,7 +132,15 @@ button,
      width: fit-content;
 }
 .bouton-cta:hover {
-    background-color: var(--color-secondary);
+    background-color: var(--color-gris-carte);
+    text-decoration: none;
+}
+.bouton-cta--color {
+    background-color: var(--color-background-button);
+    color: var(--color-text-primary);
+}
+.bouton-cta--color:hover {
+    background-color: var(--color-background-button-hover);
 }
 .bouton-cta:disabled {
     background: var(--color-gris-3);
@@ -173,7 +181,7 @@ button,
     opacity: 0.7;
 }
 
-@media not all and (--bp-sm) {
+@media not all and (--bp-small) {
     .bloc-reponse .reponse-cta-row {
         flex-direction: column;
         align-items: stretch;
@@ -185,12 +193,12 @@ button,
         margin-top: var(--space-xs);
     }
 }
-@media not all and (--bp-md) {
+@media not all and (--bp-tablet) {
     .bouton-cta {
         padding: 8px 13px;
     }
 }
-@media not all and (--bp-sm) {
+@media not all and (--bp-small) {
     .bouton-cta {
         padding: 6px 10px;
     }
@@ -424,7 +432,7 @@ a.ajout-link:focus-visible {
   outline-offset: 2px;
 }
 
-@media not all and (--bp-md) {
+@media not all and (--bp-tablet) {
   .btn-lire-plus {
     width: 100%;
   }
@@ -464,7 +472,7 @@ a.ajout-link:focus-visible {
   outline-offset: 2px;
 }
 
-@media not all and (--bp-sm) {
+@media not all and (--bp-small) {
   .bouton-retour {
     font-size: 1.25rem;
   }
@@ -529,7 +537,7 @@ a.ajout-link:focus-visible {
 .bloc-metas-inline--compact .meta-etiquette {
   padding: 0.2em 0.6em;
 }
-@media not all and (--bp-sm) {
+@media not all and (--bp-small) {
     .bloc-metas-inline {
         gap:0.8rem;
     }
@@ -707,7 +715,7 @@ a.ajout-link:focus-visible {
 }
 
 /* ========== 📱 RESPONSIVE ========== */
-@media not all and (--bp-sm) {
+@media not all and (--bp-small) {
     .separateur-2 {
         margin: 0 auto;
     }
@@ -731,7 +739,7 @@ a.ajout-link:focus-visible {
 body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
     color: var(--color-text-primary);
 }
-@media not all and (--bp-sm) {
+@media not all and (--bp-small) {
   .formulaire-contact-wrapper {
     padding-left: var(--space-md);
     padding-right: var(--space-md);
@@ -819,7 +827,7 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
     text-align: center;
 }
 
-@media not all and (--bp-md) {
+@media not all and (--bp-tablet) {
     .countdown-container { font-size: 1rem; }
 }
 

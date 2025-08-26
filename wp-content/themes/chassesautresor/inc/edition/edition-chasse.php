@@ -30,7 +30,16 @@ function enqueue_script_chasse_edit()
   }
 
   // Enfile les scripts nécessaires
-  enqueue_core_edit_scripts(['chasse-edit', 'chasse-stats', 'table-etiquette', 'indices-pager', 'indices-create']);
+  enqueue_core_edit_scripts([
+    'chasse-edit',
+    'chasse-stats',
+    'table-etiquette',
+    'tentatives-toggle',
+    'solutions-pager',
+    'solutions-create',
+    'indices-pager',
+    'indices-create',
+  ]);
   wp_localize_script(
     'chasse-stats',
     'ChasseStats',
@@ -46,6 +55,16 @@ function enqueue_script_chasse_edit()
       'ajaxUrl'   => admin_url('admin-ajax.php'),
       'chasseId'  => $chasse_id,
       'errorText' => __('Erreur lors du chargement des indices.', 'chassesautresor-com'),
+    ]
+  );
+
+  wp_localize_script(
+    'chasse-edit',
+    'ChasseSolutions',
+    [
+      'scrollTarget'  => '#chasse-section-solutions',
+      'tooltipChasse' => __('Il existe déjà une solution pour cette chasse', 'chassesautresor-com'),
+      'tooltipEnigme' => __('Toutes les énigmes de la chasse ont déjà une solution', 'chassesautresor-com'),
     ]
   );
 
@@ -478,7 +497,16 @@ function modifier_champ_chasse()
         foreach ($liste_enigmes as $enigme_id) {
           cat_debug("🧩 Planification/déplacement : énigme #$enigme_id");
           planifier_ou_deplacer_pdf_solution_immediatement($enigme_id);
+          $sol = solution_recuperer_par_objet((int) $enigme_id, 'enigme');
+          if ($sol) {
+            solution_planifier_publication($sol->ID);
+          }
         }
+      }
+
+      $sol_chasse = solution_recuperer_par_objet((int) $post_id, 'chasse');
+      if ($sol_chasse) {
+        solution_planifier_publication($sol_chasse->ID);
       }
 
       // 🏁 Mise à jour des statuts joueurs

@@ -928,6 +928,85 @@ function actualiser_cta_validation_chasse(): void
 
 
 /**
+ * Retrieve the active solution for a given object.
+ *
+ * @param int    $id   Object ID.
+ * @param string $type Object type ('enigme' or 'chasse').
+ * @return WP_Post|null
+ */
+function solution_recuperer_par_objet(int $id, string $type)
+{
+    if (!$id || !in_array($type, ['enigme', 'chasse'], true)) {
+        return null;
+    }
+
+    $meta_key = $type === 'enigme' ? 'solution_enigme_linked' : 'solution_chasse_linked';
+
+    $solutions = get_posts([
+        'post_type'      => 'solution',
+        'post_status'    => ['publish', 'pending', 'draft'],
+        'posts_per_page' => 1,
+        'meta_query'     => [
+            [
+                'key'   => 'solution_cible_type',
+                'value' => $type,
+            ],
+            [
+                'key'     => $meta_key,
+                'value'   => '"' . $id . '"',
+                'compare' => 'LIKE',
+            ],
+            [
+                'key'     => 'solution_cache_etat_systeme',
+                'value'   => [
+                    SOLUTION_STATE_EN_COURS,
+                    SOLUTION_STATE_A_VENIR,
+                    SOLUTION_STATE_FIN_CHASSE,
+                    SOLUTION_STATE_FIN_CHASSE_DIFFERE,
+                ],
+                'compare' => 'IN',
+            ],
+        ],
+    ]);
+
+    return $solutions[0] ?? null;
+}
+
+/**
+ * Checks whether a solution exists for the given object.
+ *
+ * Unlike {@see solution_recuperer_par_objet()}, this helper ignores the
+ * cache state and returns any matching solution regardless of its
+ * publication status.
+ *
+ * @param int    $id   Object ID.
+ * @param string $type Object type ('enigme' or 'chasse').
+ * @return bool True if a solution exists, false otherwise.
+ */
+function solution_existe_pour_objet(int $id, string $type): bool
+{
+    if (!$id || !in_array($type, ['enigme', 'chasse'], true)) {
+        return false;
+    }
+
+    $meta_key = $type === 'enigme' ? 'solution_enigme_linked' : 'solution_chasse_linked';
+
+    $solutions = get_posts([
+        'post_type'      => 'solution',
+        'post_status'    => ['publish', 'pending', 'draft', 'private', 'future'],
+        'fields'         => 'ids',
+        'no_found_rows'  => true,
+        'posts_per_page' => 1,
+        'meta_query'     => [
+            ['key' => 'solution_cible_type', 'value' => $type],
+            ['key' => $meta_key, 'value' => $id],
+        ],
+    ]);
+
+    return !empty($solutions);
+}
+
+/**
  * Vérifie si la solution d'une énigme peut être affichée.
  *
  * La solution n'est visible que si la chasse associée est terminée
@@ -942,6 +1021,11 @@ function solution_peut_etre_affichee(int $enigme_id): bool
         return false;
     }
 
+    $solution = solution_recuperer_par_objet($enigme_id, 'enigme');
+    if (!$solution) {
+        return false;
+    }
+
     $chasse_id = recuperer_id_chasse_associee($enigme_id);
     if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
         return false;
@@ -953,25 +1037,18 @@ function solution_peut_etre_affichee(int $enigme_id): bool
         return false;
     }
 
-    $mode  = get_field('enigme_solution_mode', $enigme_id) ?: 'fin_de_chasse';
-    $delai = (int) get_field('enigme_solution_delai', $enigme_id);
-    $heure = get_field('enigme_solution_heure', $enigme_id);
-    $date  = get_field('enigme_solution_date', $enigme_id);
+    $dispo    = get_field('solution_disponibilite', $solution->ID) ?: 'fin_chasse';
+    $decalage = (int) get_field('solution_decalage_jours', $solution->ID);
+    $heure    = get_field('solution_heure_publication', $solution->ID) ?: '00:00';
+    $now      = current_time('timestamp');
 
-    $now = current_time('timestamp');
-
-    if ($mode === 'delai_fin_chasse') {
+    if ($dispo === 'differee') {
         $base = get_field('date_de_decouverte', $chasse_id);
         if (!$base) {
             $base = get_field('chasse_infos_date_fin', $chasse_id);
         }
         $timestamp_base = $base ? strtotime($base) : $now;
-        $cible = strtotime("+$delai days $heure", $timestamp_base);
-        if ($cible && $now < $cible) {
-            return false;
-        }
-    } elseif ($mode === 'date_fin_chasse') {
-        $cible = $date ? strtotime("$date $heure") : null;
+        $cible          = strtotime("+$decalage days $heure", $timestamp_base);
         if ($cible && $now < $cible) {
             return false;
         }
