@@ -1841,6 +1841,16 @@ a[aria-disabled=true] {
   color: var(--color-editor-error);
 }
 
+@media not all and (min-width: 600px) {
+  li.edition-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  li.edition-row .edition-row-label,
+  li.edition-row .edition-row-content {
+    width: 100%;
+  }
+}
 .resume-blocs-grid > .resume-bloc + .resume-bloc {
   margin-top: var(--space-xl);
 }
