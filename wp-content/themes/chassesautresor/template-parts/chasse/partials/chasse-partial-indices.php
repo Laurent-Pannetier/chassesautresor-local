@@ -9,10 +9,11 @@
 
 defined('ABSPATH') || exit;
 
-$args       = $args ?? [];
-$objet_id   = $args['objet_id'] ?? $chasse_id ?? 0;
-$objet_type = $args['objet_type'] ?? 'chasse';
+$args           = $args ?? [];
+$objet_id       = $args['objet_id'] ?? 0;
+$objet_type     = $args['objet_type'] ?? 'chasse';
 $default_enigme = $args['default_enigme'] ?? null;
+$chasse_id      = $args['chasse_id'] ?? ($objet_type === 'chasse' ? $objet_id : 0);
 
 $objet_titre = get_the_title($objet_id);
 $indice_rang = prochain_rang_indice($objet_id, $objet_type);
@@ -29,13 +30,7 @@ $has_enigmes = !empty($enigmes_disponibles);
     <h3><?= esc_html__('Ajouter un indice', 'chassesautresor-com'); ?></h3>
 <?php if ($peut_ajouter) : ?>
     <div class="stat-value">
-        <button
-            type="button"
-            class="bouton-cta cta-indice-pour"
-        >
-            <?= esc_html__('Pour…', 'chassesautresor-com'); ?>
-        </button>
-        <div class="cta-indice-options">
+        <?php if ($objet_type === 'chasse') : ?>
             <button
                 type="button"
                 class="bouton-cta cta-creer-indice cta-indice-chasse"
@@ -59,7 +54,17 @@ $has_enigmes = !empty($enigmes_disponibles);
                     <?= esc_html__('Une énigme de la chasse', 'chassesautresor-com'); ?>
                 </button>
             <?php endif; ?>
-        </div>
+        <?php else : ?>
+            <button
+                type="button"
+                class="bouton-cta cta-indice-enigme"
+                data-objet-type="<?= esc_attr($objet_type); ?>"
+                data-chasse-id="<?= esc_attr($chasse_id); ?>"
+                data-default-enigme="<?= esc_attr($default_enigme); ?>"
+            >
+                <?= esc_html__('Cette énigme', 'chassesautresor-com'); ?>
+            </button>
+        <?php endif; ?>
     </div>
 <?php else : ?>
     <span class="stat-value">

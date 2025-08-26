@@ -33,14 +33,14 @@ $state_class         = $has_solutions ? 'champ-rempli' : 'champ-vide';
     <h3><?= esc_html__('Ajouter une solution', 'chassesautresor-com'); ?></h3>
 <?php if ($peut_ajouter) : ?>
     <div class='stat-value'>
-        <?php if ($objet_type === 'chasse') : ?>
-            <button
-                type='button'
-                class='bouton-cta cta-solution-pour'
-            >
-                <?= esc_html__('Pour…', 'chassesautresor-com'); ?>
-            </button>
-            <div class='cta-solution-options'>
+        <button
+            type='button'
+            class='bouton-cta cta-solution-pour'
+        >
+            <?= esc_html__('Pour…', 'chassesautresor-com'); ?>
+        </button>
+        <div class='cta-solution-options'>
+            <?php if ($objet_type === 'chasse') : ?>
                 <button
                     type='button'
                     class='bouton-cta cta-solution-chasse ajouter-solution<?= $has_solution_chasse ? ' disabled' : ''; ?>'
@@ -69,18 +69,18 @@ $state_class         = $has_solutions ? 'champ-rempli' : 'champ-vide';
                 >
                     <?= esc_html__('Une énigme de la chasse', 'chassesautresor-com'); ?>
                 </button>
-            </div>
-        <?php else : ?>
-            <button
-                type='button'
-                class='bouton-cta cta-solution-enigme ajouter-solution'
-                data-objet-type='<?= esc_attr($objet_type); ?>'
-                data-chasse-id='<?= esc_attr($chasse_id); ?>'
-                data-default-enigme='<?= esc_attr($default_enigme); ?>'
-            >
-                <?= esc_html__('Cette énigme', 'chassesautresor-com'); ?>
-            </button>
-        <?php endif; ?>
+            <?php else : ?>
+                <button
+                    type='button'
+                    class='bouton-cta cta-solution-enigme ajouter-solution'
+                    data-objet-type='<?= esc_attr($objet_type); ?>'
+                    data-chasse-id='<?= esc_attr($chasse_id); ?>'
+                    data-default-enigme='<?= esc_attr($default_enigme); ?>'
+                >
+                    <?= esc_html__('Cette énigme', 'chassesautresor-com'); ?>
+                </button>
+            <?php endif; ?>
+        </div>
     </div>
 <?php else : ?>
     <span class='stat-value'>
