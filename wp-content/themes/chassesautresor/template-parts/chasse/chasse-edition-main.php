@@ -406,15 +406,13 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                                             'aria_label' => __('Explication du mode manuel', 'chassesautresor-com'),
                                             'variant'    => 'aide',
                                             'title'      => __('Fin de chasse manuelle', 'chassesautresor-com'),
-                                            'message'    => __('Vous pouvez arrêter la chasse à tout moment grâce au bouton disponible dans le panneau d’édition de la chasse, onglet Paramètres.', 'chassesautresor-com'),
+                                            'message'    => __('Vous pouvez arrêter la chasse à tout moment grâce au bouton disponible dans le panneau d’édition de la chasse, onglet Animation.', 'chassesautresor-com'),
                                         ]
                                     );
                                     ?>
                                 </span>
                                 <div class="fin-chasse-actions">
-                                    <?php if ($mode_fin === 'manuelle') : ?>
-                                        <?= $bloc_fin_chasse; ?>
-                                    <?php elseif ($statut_metier === 'termine') : ?>
+                                    <?php if ($statut_metier === 'termine') : ?>
                                         <p class="message-chasse-terminee">
                                             <?= sprintf(__('Chasse gagnée le %s par %s', 'chassesautresor-com'), esc_html($date_decouverte_formatee), esc_html($gagnants)); ?>
                                         </p>
@@ -426,12 +424,6 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                     ]
                 );
                 ?>
-                <?php if ($bloc_fin_chasse !== '') : ?>
-                  <template id="template-fin-chasse-actions">
-                    <?= $bloc_fin_chasse; ?>
-                  </template>
-                <?php endif; ?>
-
                 <?php ob_start(); ?>
                 <!-- Nombre de gagnants -->
                 <?php
@@ -900,6 +892,20 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                   'objet_type' => 'chasse',
                 ]);
                 ?>
+               <div class="dashboard-card carte-orgy champ-chasse carte-arret-chasse" style="<?= ($statut_metier !== 'termine' && $mode_fin !== 'manuelle') ? 'display:none;' : ''; ?>">
+                 <span class="carte-check" aria-hidden="true"><i class="fa-solid fa-check"></i></span>
+                 <i class="fa-solid fa-stop icone-defaut" aria-hidden="true"></i>
+                 <h3><?= esc_html__('Arrêt chasse', 'chassesautresor-com'); ?></h3>
+                 <div class="stat-value fin-chasse-actions">
+                   <?php if ($statut_metier === 'termine') : ?>
+                     <p class="message-chasse-terminee">
+                       <?= sprintf(__('Chasse gagnée le %s par %s', 'chassesautresor-com'), esc_html($date_decouverte_formatee), esc_html($gagnants)); ?>
+                     </p>
+                   <?php elseif ($mode_fin === 'manuelle') : ?>
+                     <?= $bloc_fin_chasse; ?>
+                   <?php endif; ?>
+                 </div>
+               </div>
               </div>
 
               <?php if ($afficher_qr_code) : ?>

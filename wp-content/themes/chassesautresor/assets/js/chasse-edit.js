@@ -638,10 +638,22 @@ window.rafraichirCarteSolutions = rafraichirCarteSolutions;
       const textarea = zone.querySelector('#chasse-gagnants');
       const gagnants = textarea.value.trim();
       if (!gagnants) return;
+      if (
+        !confirm(
+          wp.i18n.__(
+            'Voulez-vous vraiment arrêter la chasse ?',
+            'chassesautresor-com'
+          )
+        )
+      ) {
+        return;
+      }
       valider.disabled = true;
       const now = new Date();
       const dateValue = now.toISOString().split('T')[0];
-      const dateDisplay = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+      const dateDisplay = `${String(now.getDate()).padStart(2, '0')}/${String(
+        now.getMonth() + 1
+      ).padStart(2, '0')}/${now.getFullYear()}`;
       const gagnantsEsc = gagnants.replace(/[&<>\"']/g, (c) => ({
         '&': '&amp;',
         '<': '&lt;',
@@ -650,15 +662,37 @@ window.rafraichirCarteSolutions = rafraichirCarteSolutions;
         "'": '&#039;',
       })[c]);
 
-      modifierChampSimple('champs_caches.chasse_cache_gagnants', gagnants, postId, 'chasse')
-        .then((ok) => ok && modifierChampSimple('champs_caches.chasse_cache_date_decouverte', dateValue, postId, 'chasse'))
-        .then((ok) => ok && modifierChampSimple('champs_caches.chasse_cache_statut', 'termine', postId, 'chasse'))
+      modifierChampSimple(
+        'champs_caches.chasse_cache_gagnants',
+        gagnants,
+        postId,
+        'chasse'
+      )
+        .then((ok) =>
+          ok &&
+          modifierChampSimple(
+            'champs_caches.chasse_cache_date_decouverte',
+            dateValue,
+            postId,
+            'chasse'
+          )
+        )
+        .then((ok) =>
+          ok &&
+          modifierChampSimple(
+            'champs_caches.chasse_cache_statut',
+            'termine',
+            postId,
+            'chasse'
+          )
+        )
         .then((ok) => {
           if (ok) {
-            const container = document.querySelector('.champ-mode-fin .fin-chasse-actions');
-            if (container) {
-              container.innerHTML = `<p class="message-chasse-terminee">Chasse gagnée le ${dateDisplay} par ${gagnantsEsc}</p>`;
-            }
+            document
+              .querySelectorAll('.fin-chasse-actions')
+              .forEach((container) => {
+                container.innerHTML = `<p class="message-chasse-terminee">Chasse gagnée le ${dateDisplay} par ${gagnantsEsc}</p>`;
+              });
           } else {
             valider.disabled = false;
           }
@@ -1065,11 +1099,10 @@ function initChampCoutPoints() {
 function initModeFinChasse() {
   const toggle = document.getElementById('chasse_mode_fin');
   const templateNb = document.getElementById('template-nb-gagnants');
-  const templateFin = document.getElementById('template-fin-chasse-actions');
   const modeFinLi = document.querySelector('.champ-mode-fin');
-  const finActions = modeFinLi?.querySelector('.fin-chasse-actions');
+  const finCard = document.querySelector('.carte-arret-chasse');
 
-  if (!toggle || !templateNb || !modeFinLi || !finActions) return;
+  if (!toggle || !templateNb || !modeFinLi || !finCard) return;
 
   const postId = modeFinLi.dataset.postId;
 
@@ -1089,10 +1122,13 @@ function initModeFinChasse() {
         if (typeof initChampTexte === 'function') initChampTexte(clone);
       }
 
-      document.querySelector('.annuler-fin-chasse-btn')?.dispatchEvent(new Event('click', { bubbles: true }));
-      const message = finActions.querySelector('.message-chasse-terminee');
-      finActions.innerHTML = '';
-      if (message) finActions.appendChild(message);
+      document
+        .querySelector('.annuler-fin-chasse-btn')
+        ?.dispatchEvent(new Event('click', { bubbles: true }));
+
+      if (finCard && !finCard.querySelector('.message-chasse-terminee')) {
+        finCard.style.display = 'none';
+      }
 
       const inputNb = document.getElementById('chasse-nb-gagnants');
       if (inputNb) {
@@ -1101,12 +1137,7 @@ function initModeFinChasse() {
     } else {
       if (existingNb) existingNb.remove();
 
-      if (!finActions.querySelector('.terminer-chasse-btn') && templateFin) {
-        const message = finActions.querySelector('.message-chasse-terminee');
-        finActions.innerHTML = '';
-        if (message) finActions.appendChild(message);
-        finActions.appendChild(templateFin.content.cloneNode(true));
-      }
+      if (finCard) finCard.style.display = '';
 
       mettreAJourAffichageNbGagnants(postId, 0);
     }

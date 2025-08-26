@@ -1090,13 +1090,8 @@ msgid "Fin de chasse manuelle"
 msgstr "ID de chasse invalide."
 
 #: template-parts/chasse/chasse-edition-main.php:281
-#, fuzzy
-msgid ""
-"Vous pouvez arrêter la chasse à tout moment grâce au bouton disponible dans "
-"le panneau d’édition de la chasse, onglet Paramètres."
-msgstr ""
-"Vous arrêtez la chasse manuellement, grâce au bouton situé dans le panneau "
-"d'édition chasse."
+msgid "Vous pouvez arrêter la chasse à tout moment grâce au bouton disponible dans le panneau d’édition de la chasse, onglet Animation."
+msgstr "Vous pouvez arrêter la chasse à tout moment grâce au bouton disponible dans le panneau d’édition de la chasse, onglet Animation."
 
 #: template-parts/chasse/chasse-edition-main.php:295
 msgid "Terminer la chasse"
@@ -2377,6 +2372,14 @@ msgstr "Veuillez saisir une valeur en euros comprise entre 0 et 5 000 000."
 #: assets/js/chasse-edit.js:318
 msgid "Voulez-vous vraiment supprimer la récompense ?"
 msgstr "Voulez-vous vraiment supprimer la récompense ?"
+
+#: assets/js/chasse-edit.js
+msgid "Voulez-vous vraiment arrêter la chasse ?"
+msgstr "Voulez-vous vraiment arrêter la chasse ?"
+
+#: template-parts/chasse/chasse-edition-main.php
+msgid "Arrêt chasse"
+msgstr "Arrêt chasse"
 
 #: template-parts/common/indices-table.php:69
 msgid "accessible"
