@@ -121,10 +121,19 @@ $solution_prefill = apply_filters('chassesautresor/edition_animation_solution_pr
                   'objet_id'   => $objet_id,
                   'objet_type' => $objet_type,
               ]);
-              get_template_part('template-parts/chasse/partials/chasse-partial-solutions', null, [
+
+              $solutions_args = [
                   'objet_id'   => $objet_id,
                   'objet_type' => $objet_type,
-              ]);
+              ];
+
+              if ($objet_type === 'enigme') {
+                  $chasse_id                    = recuperer_id_chasse_associee($objet_id);
+                  $solutions_args['chasse_id']   = $chasse_id;
+                  $solutions_args['default_enigme'] = $objet_id;
+              }
+
+              get_template_part('template-parts/chasse/partials/chasse-partial-solutions', null, $solutions_args);
           }
           ?>
 
