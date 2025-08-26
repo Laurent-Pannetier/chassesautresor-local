@@ -868,23 +868,23 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
     );
     ?>
 
+      <div class="edition-panel-footer">
+        <?php if (current_user_can('administrator')) : ?>
+          <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="admin-validation-actions form-traitement-validation-chasse">
+            <?php wp_nonce_field('validation_admin_' . $chasse_id, 'validation_admin_nonce'); ?>
+            <input type="hidden" name="action" value="traiter_validation_chasse">
+            <input type="hidden" name="chasse_id" value="<?php echo esc_attr($chasse_id); ?>">
+            <button type="button" class="bouton-secondaire btn-correction">
+              <i class="fa-solid fa-triangle-exclamation"></i> Correction
+            </button>
+            <button type="submit" name="validation_admin_action" value="bannir" class="bouton-secondaire" onclick="return confirm('Bannir cette chasse&nbsp;?');">
+              <i class="fa-solid fa-triangle-exclamation"></i> Bannir
+            </button>
+          </form>
+        <?php endif; ?>
       </div>
 
-    <div class="edition-panel-footer">
-      <?php if (current_user_can('administrator')) : ?>
-        <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="admin-validation-actions form-traitement-validation-chasse">
-          <?php wp_nonce_field('validation_admin_' . $chasse_id, 'validation_admin_nonce'); ?>
-          <input type="hidden" name="action" value="traiter_validation_chasse">
-          <input type="hidden" name="chasse_id" value="<?php echo esc_attr($chasse_id); ?>">
-          <button type="button" class="bouton-secondaire btn-correction">
-            <i class="fa-solid fa-triangle-exclamation"></i> Correction
-          </button>
-          <button type="submit" name="validation_admin_action" value="bannir" class="bouton-secondaire" onclick="return confirm('Bannir cette chasse&nbsp;?');">
-            <i class="fa-solid fa-triangle-exclamation"></i> Bannir
-          </button>
-        </form>
-      <?php endif; ?>
-    </div>
+      </div>
   </section>
 <?php endif; ?>
 
