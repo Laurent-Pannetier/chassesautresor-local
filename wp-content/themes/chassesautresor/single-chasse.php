@@ -95,7 +95,7 @@ cat_debug("🧪 test organisateur_associe : " . ($est_orga_associe ? 'OUI' : 'NO
 $can_validate = peut_valider_chasse($chasse_id, $user_id);
 ?>
 
-<div id="primary" class="content-area">
+<div id="primary" class="content-area container fullwidth page-chasse-wrapper">
   <main id="main" class="site-main">
 
     <?php
