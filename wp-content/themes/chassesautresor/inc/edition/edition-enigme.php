@@ -33,6 +33,7 @@ function enqueue_script_enigme_edit()
 
   // 📦 Modules JS partagés + scripts spécifiques
   enqueue_core_edit_scripts([
+    'edition-animation-options',
     'organisateur-edit',
     'enigme-edit',
     'enigme-stats',
