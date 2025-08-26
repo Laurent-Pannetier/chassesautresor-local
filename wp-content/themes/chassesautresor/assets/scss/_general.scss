@@ -321,6 +321,12 @@ tbody tr:nth-child(even) {
   text-align: center;
 }
 
+.indices-table .indice-action-buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: nowrap;
+}
+
 .indices-table-header {
   margin-bottom: 0.5rem;
 }
