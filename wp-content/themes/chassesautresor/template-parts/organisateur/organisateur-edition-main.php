@@ -247,61 +247,73 @@ $is_complete = (
               <div class="resume-bloc resume-reglages">
                 <h3>Réglages</h3>
                 <ul class="resume-infos">
-
-                <li
-                  class="champ-organisateur champ-email-contact ligne-email <?= empty($email_contact) ? 'champ-vide' : 'champ-rempli'; ?>"
-                  data-champ="email_contact"
-                  data-cpt="organisateur"
-                  data-post-id="<?= esc_attr($organisateur_id); ?>"
-                  data-no-icon
-                >
-                  <i class="fa-regular fa-envelope" aria-hidden="true"></i>
-                  <div class="champ-affichage">
-                    <label for="champ-email-contact">
-                      Email de contact
-                    </label>
-                    <span class="champ-valeur">
-                      <?= esc_html($email_contact ?: get_the_author_meta('user_email', get_post_field('post_author', $organisateur_id))); ?>
-                    </span>
-                    <?php
-                    get_template_part(
-                        'template-parts/common/help-icon',
-                        null,
-                        [
-                            'aria_label' => __('Informations sur l’adresse email de contact', 'chassesautresor-com'),
-                            'variant'    => 'aide',
-                            'title'      => __('Email de contact organisateur', 'chassesautresor-com'),
-                            'message'    => __('Si aucune adresse n’est renseignée, votre adresse email utilisateur est utilisée par défaut.', 'chassesautresor-com'),
-                        ]
-                    );
-                    ?>
-                    <?php if ($peut_editer) : ?>
-                        <button
-                          type="button"
-                          class="champ-modifier"
-                          aria-label="Modifier l’adresse email de contact"
-                        >
-                          <?= esc_html__('modifier', 'chassesautresor-com'); ?>
-                        </button>
-                    <?php endif; ?>
-                  </div>
-
-                  <div class="champ-edition" style="display: none;">
-                    <input
-                      type="email"
-                      maxlength="255"
-                      value="<?= esc_attr($email_contact); ?>"
-                      class="champ-input"
-                      id="champ-email-contact"
-                      placeholder="exemple@domaine.com"
-                    >
-                    <button type="button" class="champ-enregistrer">✓</button>
-                    <button type="button" class="champ-annuler">✖</button>
-                  </div>
-
-                  <div class="champ-feedback"></div>
-                </li>
-
+                <?php
+                get_template_part(
+                    'template-parts/common/edition-row',
+                    null,
+                    [
+                        'icon'  => 'fa-regular fa-envelope',
+                        'class' => 'champ-organisateur champ-email-contact ligne-email ' . (empty($email_contact) ? 'champ-vide' : 'champ-rempli'),
+                        'attributes' => [
+                            'data-champ'   => 'email_contact',
+                            'data-cpt'     => 'organisateur',
+                            'data-post-id' => $organisateur_id,
+                            'data-no-icon' => '1',
+                        ],
+                        'label' => function () {
+                            ?>
+                            <label for="champ-email-contact"><?php esc_html_e('Email de contact', 'chassesautresor-com'); ?></label>
+                            <?php
+                        },
+                        'content' => function () use ($email_contact, $organisateur_id, $peut_editer) {
+                            ?>
+                            <div class="champ-affichage">
+                                <span class="champ-valeur">
+                                    <?= esc_html($email_contact ?: get_the_author_meta('user_email', get_post_field('post_author', $organisateur_id))); ?>
+                                </span>
+                                <?php
+                                get_template_part(
+                                    'template-parts/common/help-icon',
+                                    null,
+                                    [
+                                        'aria_label' => __('Informations sur l’adresse email de contact', 'chassesautresor-com'),
+                                        'variant'    => 'aide',
+                                        'title'      => __('Email de contact organisateur', 'chassesautresor-com'),
+                                        'message'    => __('Si aucune adresse n’est renseignée, votre adresse email utilisateur est utilisée par défaut.', 'chassesautresor-com'),
+                                    ]
+                                );
+                                if ($peut_editer) :
+                                    ?>
+                                    <button
+                                        type="button"
+                                        class="champ-modifier"
+                                        aria-label="<?= esc_attr__('Modifier l’adresse email de contact', 'chassesautresor-com'); ?>"
+                                    >
+                                        <?= esc_html__('modifier', 'chassesautresor-com'); ?>
+                                    </button>
+                                <?php
+                                endif;
+                                ?>
+                            </div>
+                            <div class="champ-edition" style="display: none;">
+                                <input
+                                    type="email"
+                                    maxlength="255"
+                                    value="<?= esc_attr($email_contact); ?>"
+                                    class="champ-input"
+                                    id="champ-email-contact"
+                                    placeholder="<?= esc_attr__('exemple@domaine.com', 'chassesautresor-com'); ?>"
+                                >
+                                <span class="champ-status"></span>
+                                <button type="button" class="champ-enregistrer">✓</button>
+                                <button type="button" class="champ-annuler">✖</button>
+                            </div>
+                            <div class="champ-feedback"></div>
+                            <?php
+                        },
+                    ]
+                );
+                ?>
                 </ul>
               </div>
             </div>

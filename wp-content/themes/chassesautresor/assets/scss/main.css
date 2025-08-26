@@ -8032,6 +8032,16 @@ a.bouton-edition-attention {
   .champ-organisateur .champ-input {
     background-color: rgba(255, 255, 255, 0.04);
   }
+  .champ-email-contact .champ-edition {
+    width: auto;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+  .champ-email-contact .champ-input {
+    width: auto;
+    max-width: 300px;
+  }
   /* 🔹 Panneau latéral */
   .ligne-lien-formulaire label {
     padding-left: 0.2rem;
