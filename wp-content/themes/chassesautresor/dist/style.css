@@ -2189,6 +2189,13 @@ body .header-img-modifiable .icone-modif {
   transition: border-color 0.2s, background-color 0.2s;
 }
 
+@media not all and (min-width: 768px) {
+  .edition-panel-body input.champ-input,
+  .edition-panel-body input[type=date],
+  .edition-panel-body input[type=datetime-local] {
+    font-size: 0.85rem;
+  }
+}
 .edition-panel-body input.champ-number {
   width: 100px;
 }
