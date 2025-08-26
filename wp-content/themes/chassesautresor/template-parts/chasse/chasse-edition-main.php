@@ -831,287 +831,43 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
       <?php endif; ?>
     </div>
 
-    <div id="chasse-tab-animation" class="edition-tab-content" style="display:none;">
-      <i class="fa-solid fa-bullhorn tab-watermark" aria-hidden="true"></i>
-      <div class="edition-panel-header">
-        <h2><i class="fa-solid fa-bullhorn"></i> <?= esc_html__('Animation', 'chassesautresor-com'); ?></h2>
-      </div>
-      <div class="edition-panel-body">
-        <div class="edition-panel-section edition-panel-section-ligne">
-          <div class="section-content">
-            <?php
-            $afficher_qr_code = est_organisateur()
-                && ($infos_chasse['statut'] ?? '') !== 'revision'
-                && ($infos_chasse['statut_validation'] ?? '') === 'valide';
+    <?php
+    $afficher_qr_code = est_organisateur()
+        && ($infos_chasse['statut'] ?? '') !== 'revision'
+        && ($infos_chasse['statut_validation'] ?? '') === 'valide';
 
-            if ($afficher_qr_code) {
-                $format            = isset($_GET['format']) ? sanitize_key($_GET['format']) : 'png';
-                $formats_autorises = ['png', 'svg', 'eps'];
-                if (!in_array($format, $formats_autorises, true)) {
-                    $format = 'png';
-                }
-                $url         = get_permalink($chasse_id);
-                $url_qr_code = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data='
-                    . rawurlencode($url)
-                    . '&format=' . $format;
-            }
-            ?>
-              <div class="dashboard-grid stats-cards">
-                <div class="dashboard-card carte-orgy champ-chasse champ-liens <?= empty($liens) ? 'champ-vide' : 'champ-rempli'; ?>"
-                  data-champ="chasse_principale_liens"
-                  data-cpt="chasse"
-                  data-post-id="<?= esc_attr($chasse_id); ?>">
-                  <span class="carte-check" aria-hidden="true"><i class="fa-solid fa-check"></i></span>
-                  <i class="fa-solid fa-share-nodes icone-defaut" aria-hidden="true"></i>
-                  <div class="champ-affichage champ-affichage-liens">
-                    <?= render_liens_publics($liens, 'chasse', ['placeholder' => false]); ?>
-                  </div>
-                  <h3><?= esc_html__('Sites et réseaux de la chasse', 'chassesautresor-com'); ?></h3>
-                  <?php if ($peut_modifier) : ?>
-                    <button type="button"
-                      class="bouton-cta champ-modifier ouvrir-panneau-liens"
-                      data-champ="chasse_principale_liens"
-                      data-cpt="chasse"
-                      data-post-id="<?= esc_attr($chasse_id); ?>">
-                      <?= empty($liens)
-                        ? esc_html__('Ajouter', 'chassesautresor-com')
-                        : esc_html__('Éditer', 'chassesautresor-com'); ?>
-                    </button>
-                  <?php endif; ?>
-                  <div class="champ-donnees"
-                    data-valeurs='<?= json_encode($liens, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>'></div>
-                  <div class="champ-feedback"></div>
-                </div>
-                <?php
-                get_template_part('template-parts/chasse/partials/chasse-partial-indices', null, [
-                  'objet_id'   => $chasse_id,
-                  'objet_type' => 'chasse',
-                ]);
-                get_template_part('template-parts/chasse/partials/chasse-partial-solutions', null, [
-                  'objet_id'   => $chasse_id,
-                  'objet_type' => 'chasse',
-                ]);
-                ?>
-               <div class="dashboard-card carte-orgy champ-chasse carte-arret-chasse" style="<?= ($statut_metier !== 'termine' && $mode_fin !== 'manuelle') ? 'display:none;' : ''; ?>">
-                 <span class="carte-check" aria-hidden="true"><i class="fa-solid fa-check"></i></span>
-                 <i class="fa-solid fa-hand icone-defaut" aria-hidden="true"></i>
-                 <h3><?= esc_html__('Arrêt chasse', 'chassesautresor-com'); ?></h3>
-                 <div class="stat-value fin-chasse-actions">
-                   <?php if ($statut_metier === 'termine') : ?>
-                     <p class="message-chasse-terminee">
-                       <?= sprintf(__('Chasse gagnée le %s par %s', 'chassesautresor-com'), esc_html($date_decouverte_formatee), esc_html($gagnants)); ?>
-                     </p>
-                   <?php elseif ($mode_fin === 'manuelle') : ?>
-                     <?= $bloc_fin_chasse; ?>
-                   <?php endif; ?>
-                 </div>
-               </div>
-              </div>
+    if ($afficher_qr_code) {
+        $format            = isset($_GET['format']) ? sanitize_key($_GET['format']) : 'png';
+        $formats_autorises = ['png', 'svg', 'eps'];
+        if (!in_array($format, $formats_autorises, true)) {
+            $format = 'png';
+        }
+        $url       = get_permalink($chasse_id);
+        $url_qr_code = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data='
+            . rawurlencode($url)
+            . '&format=' . $format;
+    }
 
-              <?php if ($afficher_qr_code) : ?>
-                <div class="dashboard-card carte-orgy champ-qr-code">
-                  <div class="qr-code-block">
-                    <div class="qr-code-url txt-small">
-                      <?= esc_html__('Adresse de votre chasse&nbsp;:', 'chassesautresor-com'); ?>
-                      <?= esc_html($url); ?>
-                    </div>
-                    <div class="qr-code-image">
-                      <img src="<?= esc_url($url_qr_code); ?>" alt="<?= esc_attr__('QR code de votre chasse', 'chassesautresor-com'); ?>">
-                    </div>
-                    <div class="qr-code-content">
-                      <h3><?= esc_html__('QR code de votre chasse', 'chassesautresor-com'); ?></h3>
-                      <h4><?= esc_html__('Partagez votre chasse en un scan', 'chassesautresor-com'); ?></h4>
-                      <p><?= esc_html__('Facilitez l\'accès à votre chasse avec un simple scan. Un QR code évite de saisir une URL et se partage facilement.', 'chassesautresor-com'); ?></p>
-                      <a class="bouton-cta qr-code-download" href="<?= esc_url($url_qr_code); ?>" download="<?= esc_attr('qr-chasse-' . $chasse_id . '.png'); ?>">
-                        <?= esc_html__('Télécharger', 'chassesautresor-com'); ?>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              <?php endif; ?>
+    get_template_part(
+        'template-parts/common/edition-animation',
+        null,
+        [
+            'objet_type'               => 'chasse',
+            'objet_id'                 => $chasse_id,
+            'liens'                    => $liens,
+            'peut_modifier'            => $peut_modifier,
+            'statut_metier'            => $statut_metier,
+            'mode_fin'                 => $mode_fin,
+            'bloc_fin_chasse'          => $bloc_fin_chasse,
+            'date_decouverte_formatee' => $date_decouverte_formatee,
+            'gagnants'                 => $gagnants,
+            'afficher_qr_code'         => $afficher_qr_code,
+            'url'                      => $url ?? '',
+            'url_qr_code'              => $url_qr_code ?? '',
+        ]
+    );
+    ?>
 
-              <?php
-              $par_page_indices = 5;
-              $page_indices     = 1;
-              $enigme_ids       = recuperer_ids_enigmes_pour_chasse($chasse_id);
-              $meta             = [
-                'relation' => 'OR',
-                [
-                  'relation' => 'AND',
-                  [
-                    'key'   => 'indice_cible_type',
-                    'value' => 'chasse',
-                  ],
-                  [
-                    'key'   => 'indice_chasse_linked',
-                    'value' => $chasse_id,
-                  ],
-                ],
-              ];
-              if (!empty($enigme_ids)) {
-                $meta[] = [
-                  'relation' => 'AND',
-                  [
-                    'key'   => 'indice_cible_type',
-                    'value' => 'enigme',
-                  ],
-                  [
-                    'key'     => 'indice_enigme_linked',
-                    'value'   => $enigme_ids,
-                    'compare' => 'IN',
-                  ],
-                ];
-              }
-              $indices_query = new WP_Query([
-                'post_type'      => 'indice',
-                'post_status'    => ['publish', 'pending', 'draft'],
-                'orderby'        => 'date',
-                'order'          => 'DESC',
-                'posts_per_page' => $par_page_indices,
-                'paged'          => $page_indices,
-                'meta_query'     => $meta,
-              ]);
-              $indices_list  = $indices_query->posts;
-              $pages_indices = (int) $indices_query->max_num_pages;
-              $count_chasse  = function_exists('get_posts') ? count(get_posts([
-                'post_type'      => 'indice',
-                'post_status'    => ['publish', 'pending', 'draft'],
-                'fields'         => 'ids',
-                'nopaging'       => true,
-                'meta_query'     => [
-                  [
-                    'key'   => 'indice_cible_type',
-                    'value' => 'chasse',
-                  ],
-                  [
-                    'key'   => 'indice_chasse_linked',
-                    'value' => $chasse_id,
-                  ],
-                ],
-              ])) : 0;
-              $count_enigme = !empty($enigme_ids) && function_exists('get_posts') ? count(get_posts([
-                'post_type'      => 'indice',
-                'post_status'    => ['publish', 'pending', 'draft'],
-                'fields'         => 'ids',
-                'nopaging'       => true,
-                'meta_query'     => [
-                  [
-                    'key'   => 'indice_cible_type',
-                    'value' => 'enigme',
-                  ],
-                  [
-                    'key'     => 'indice_enigme_linked',
-                    'value'   => $enigme_ids,
-                    'compare' => 'IN',
-                  ],
-                ],
-              ])) : 0;
-              $count_total  = $count_chasse + $count_enigme;
-
-              $par_page_solutions = 5;
-              $page_solutions     = 1;
-              $meta_solutions     = [
-                'relation' => 'OR',
-                [
-                  'relation' => 'AND',
-                  [
-                    'key'   => 'solution_cible_type',
-                    'value' => 'chasse',
-                  ],
-                  [
-                    'key'   => 'solution_chasse_linked',
-                    'value' => $chasse_id,
-                  ],
-                ],
-              ];
-              if (!empty($enigme_ids)) {
-                $meta_solutions[] = [
-                  'relation' => 'AND',
-                  [
-                    'key'   => 'solution_cible_type',
-                    'value' => 'enigme',
-                  ],
-                  [
-                    'key'     => 'solution_enigme_linked',
-                    'value'   => $enigme_ids,
-                    'compare' => 'IN',
-                  ],
-                ];
-              }
-              $solutions_query = new WP_Query([
-                'post_type'      => 'solution',
-                'post_status'    => ['publish', 'pending', 'draft'],
-                'orderby'        => 'date',
-                'order'          => 'DESC',
-                'posts_per_page' => $par_page_solutions,
-                'paged'          => $page_solutions,
-                'meta_query'     => $meta_solutions,
-              ]);
-              $solutions_list  = $solutions_query->posts;
-              $pages_solutions = (int) $solutions_query->max_num_pages;
-              ?>
-              <h3 style="margin-top: var(--space-xl);"><?= esc_html__('Indices', 'chassesautresor-com'); ?></h3>
-              <div class="liste-indices" data-page="1" data-pages="<?= esc_attr($pages_indices); ?>" data-objet-type="chasse" data-objet-id="<?= esc_attr($chasse_id); ?>" data-ajax-url="<?= esc_url(admin_url('admin-ajax.php')); ?>">
-                <?php
-              get_template_part('template-parts/common/indices-table', null, [
-                'indices'     => $indices_list,
-                'page'        => 1,
-                'pages'       => $pages_indices,
-                'objet_type'  => 'chasse',
-                'objet_id'    => $chasse_id,
-                'count_total' => $count_total,
-                'count_chasse' => $count_chasse,
-                'count_enigme' => $count_enigme,
-              ]);
-              ?>
-              </div>
-
-              <div class="dashboard-card carte-orgy champ-protection-solutions">
-                <div class="qr-code-block">
-                  <div class="qr-code-image">
-                    <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
-                  </div>
-                  <div class="qr-code-content">
-                    <h3><?= esc_html__('Sécurité des PDF de solution', 'chassesautresor-com'); ?></h3>
-                    <h4><?= esc_html__('Vos PDF sont conservés dans un coffre-fort numérique', 'chassesautresor-com'); ?></h4>
-                    <p>
-                      <?= esc_html__(
-                        'Les fichiers PDF de solution sont conservés dans un dossier protégé. ',
-                        'chassesautresor-com'
-                      ); ?>
-                      <?= esc_html__(
-                        "Ils ne seront partagés qu'à la date que vous aurez choisie : ",
-                        'chassesautresor-com'
-                      ); ?>
-                      <?= esc_html__(
-                        'immédiatement après la fin de la chasse ou après un délai paramétrable.',
-                        'chassesautresor-com'
-                      ); ?>
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <h3 id="chasse-section-solutions"><?= esc_html__('Solutions', 'chassesautresor-com'); ?></h3>
-              <div class="liste-solutions"
-                data-page="1"
-                data-pages="<?= esc_attr($pages_solutions); ?>"
-                data-objet-type="chasse"
-                data-objet-id="<?= esc_attr($chasse_id); ?>"
-                data-ajax-url="<?= esc_url(admin_url('admin-ajax.php')); ?>">
-                <?php
-                get_template_part('template-parts/common/solutions-table', null, [
-                  'solutions'  => $solutions_list,
-                  'page'       => 1,
-                  'pages'      => $pages_solutions,
-                  'objet_type' => 'chasse',
-                  'objet_id'   => $chasse_id,
-                ]);
-                ?>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
     <div class="edition-panel-footer">
