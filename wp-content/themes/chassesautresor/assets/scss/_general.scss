@@ -376,6 +376,7 @@ tbody tr:nth-child(even) {
   .indices-table th:first-child,
   .indices-table td:first-child {
     width: 25%;
+    font-size: 12px;
   }
 
   .indices-table th:nth-child(2),
@@ -391,6 +392,11 @@ tbody tr:nth-child(even) {
   .indices-table th:nth-child(5),
   .indices-table td:nth-child(5) {
     width: 10%;
+  }
+
+  .solutions-table th:first-child,
+  .solutions-table td:first-child {
+    font-size: 12px;
   }
 }
 
