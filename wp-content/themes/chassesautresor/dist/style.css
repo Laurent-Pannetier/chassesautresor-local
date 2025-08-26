@@ -3228,6 +3228,12 @@ body.panneau-ouvert::before {
   position: relative;
 }
 
+@media not all and (min-width: 600px) {
+  .edition-tab-content {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
 .edition-tab-content.active {
   display: block;
 }
