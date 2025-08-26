@@ -1165,7 +1165,7 @@ msgstr "Learn more about loyalty points"
 msgid "Coût d’accès à une chasse"
 msgstr "Hunt access cost"
 
-#: template-parts/chasse/chasse-edition-main.php:601
+#: template-parts/chasse/chasse-edition-main.php:601 template-parts/enigme/enigme-edition-main.php:434
 msgid "Accès"
 msgstr "Access"
 
@@ -1559,10 +1559,6 @@ msgstr ""
 #: template-parts/enigme/enigme-edition-main.php:418
 msgid "max par jour"
 msgstr "max per day"
-
-#: template-parts/enigme/enigme-edition-main.php:434
-msgid "Accès"
-msgstr "Access"
 
 #: template-parts/enigme/enigme-edition-main.php:438
 msgid "Libre"

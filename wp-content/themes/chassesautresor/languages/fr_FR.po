@@ -1162,7 +1162,7 @@ msgstr "En savoir plus sur les points"
 msgid "Coût d’accès à une chasse"
 msgstr ""
 
-#: template-parts/chasse/chasse-edition-main.php:601
+#: template-parts/chasse/chasse-edition-main.php:601 template-parts/enigme/enigme-edition-main.php:434
 msgid "Accès"
 msgstr "Accès"
 
@@ -1549,10 +1549,6 @@ msgstr ""
 #: template-parts/enigme/enigme-edition-main.php:418
 msgid "max par jour"
 msgstr ""
-
-#: template-parts/enigme/enigme-edition-main.php:434
-msgid "Accès"
-msgstr "Accès"
 
 #: template-parts/enigme/enigme-edition-main.php:438
 msgid "Libre"
