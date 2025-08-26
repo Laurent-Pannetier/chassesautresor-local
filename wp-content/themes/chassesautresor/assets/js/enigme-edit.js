@@ -532,7 +532,11 @@ function initChampAccesDate() {
   const inputDate = blocDate?.querySelector('input');
   if (!toggle || !hidden || !blocDate || !inputDate) return;
 
-  function update() {
+  const bloc = hidden.closest('[data-champ]');
+  const postId = bloc?.dataset.postId;
+  const cpt = bloc?.dataset.cpt || 'enigme';
+
+  function appliquerEtat() {
     if (toggle.checked) {
       hidden.value = 'date_programmee';
       blocDate.classList.remove('cache');
@@ -542,11 +546,18 @@ function initChampAccesDate() {
       blocDate.classList.add('cache');
       inputDate.disabled = true;
     }
-    hidden.dispatchEvent(new Event('input', { bubbles: true }));
   }
 
-  toggle.addEventListener('change', update);
-  update();
+  function enregistrer() {
+    if (!postId) return;
+    modifierChampSimple('enigme_acces_condition', hidden.value, postId, cpt);
+  }
+
+  toggle.addEventListener('change', () => {
+    appliquerEtat();
+    enregistrer();
+  });
+  appliquerEtat();
 }
 
 
