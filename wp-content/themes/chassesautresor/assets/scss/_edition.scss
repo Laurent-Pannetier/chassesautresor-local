@@ -224,6 +224,22 @@
     align-items: center;
     text-align: center;
   }
+
+  .dashboard-card.champ-protection-solutions .qr-code-image,
+  .dashboard-card.champ-qr-code .qr-code-image {
+    width: 100px;
+    flex: none;
+  }
+
+  .dashboard-card.champ-protection-solutions .qr-code-image img,
+  .dashboard-card.champ-qr-code .qr-code-image img {
+    width: 100px;
+  }
+
+  .dashboard-card.champ-protection-solutions .qr-code-image i,
+  .dashboard-card.champ-qr-code .qr-code-image i {
+    font-size: 100px;
+  }
 }
 
 /* ========== 🖊️ CHAMPS ÉDITABLES ========== */
