@@ -3217,12 +3217,12 @@ body.panneau-ouvert::before {
 
 @media not all and (min-width: 600px) {
   .edition-tab {
-    font-size: 90%;
+    font-size: 16px;
   }
 }
 @media not all and (min-width: 480px) {
   .edition-tab {
-    font-size: 80%;
+    font-size: 16px;
   }
 }
 .edition-tab-content {
@@ -5745,12 +5745,6 @@ tbody tr:nth-child(even) {
 .stats-table.compact td {
   padding: 4px 8px;
   font-size: 0.85em;
-}
-
-.stats-table thead tr:first-child th[colspan] {
-  text-align: center;
-  vertical-align: middle;
-  border-bottom: none;
 }
 
 .stats-table th button.sort {
