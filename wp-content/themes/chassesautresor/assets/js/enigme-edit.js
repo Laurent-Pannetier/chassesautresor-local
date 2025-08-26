@@ -242,17 +242,8 @@ function initEnigmeEdit() {
     });
   });
 
-  const coutInput = document.querySelector('[data-champ="enigme_tentative.enigme_tentative_cout_points"] .champ-input');
-  const coutCheckbox = document.getElementById('cout-gratuit-enigme');
-  if (coutInput) {
-    ['input', 'change'].forEach(evt => coutInput.addEventListener(evt, mettreAJourCartesStats));
-  }
-  if (coutCheckbox) {
-    coutCheckbox.addEventListener('change', mettreAJourCartesStats);
-  }
-
   initChampAccesDate();
-  appliquerEtatGratuitEnLive(); // ✅ Synchronise état initial de "Gratuit"
+  initChampCoutPoints();
 
   if (enigmeId) {
     const accesToggle = document.getElementById('enigme-acces-toggle');
@@ -309,29 +300,6 @@ function initEnigmeEdit() {
   window.forcerRecalculStatutEnigme = forcerRecalculStatutEnigme;
   window.mettreAJourCTAValidationChasse = mettreAJourCTAValidationChasse;
 
-
-  (() => {
-    const $cout = document.querySelector('.champ-cout');
-    const $checkbox = document.getElementById('cout-gratuit-enigme');
-
-    if (!$cout || !$checkbox) return;
-
-    const raw = $cout.value;
-    const trimmed = raw.trim();
-    const valeur = trimmed === '' ? null : parseInt(trimmed, 10);
-
-    DEBUG && console.log('[INIT GRATUIT] valeur brute =', raw, '| valeur interprétée =', valeur);
-
-    const estGratuit = valeur === 0;
-
-    $checkbox.checked = estGratuit;
-    $cout.disabled = estGratuit;
-
-    // 🔄 Mettre à jour le message sur les tentatives après init coût
-    if (typeof window.mettreAJourMessageTentatives === 'function') {
-      window.mettreAJourMessageTentatives();
-    }
-  })();
 
   const boutonSupprimer = document.getElementById('bouton-supprimer-enigme');
   if (boutonSupprimer) {
@@ -557,6 +525,69 @@ function initChampAccesDate() {
     appliquerEtat();
     enregistrer();
   });
+  appliquerEtat();
+}
+// ================================
+// 💸 Gestion du champ coût (Gratuit / Points)
+// ================================
+function initChampCoutPoints() {
+  const toggle = document.getElementById('enigme-cout-toggle');
+  const input = document.getElementById('enigme-tentative-cout');
+  const blocInput = document.getElementById('champ-enigme-cout');
+  if (!toggle || !input || !blocInput) return;
+
+  const bloc = input.closest('[data-champ]');
+  const postId = bloc?.dataset.postId;
+  const cpt = bloc?.dataset.cpt || 'enigme';
+
+  function appliquerEtat() {
+    if (toggle.checked) {
+      blocInput.classList.remove('cache');
+      input.disabled = false;
+    } else {
+      blocInput.classList.add('cache');
+      input.disabled = true;
+      input.value = '0';
+    }
+
+    if (typeof window.onCoutPointsUpdated === 'function') {
+      const valeur = parseInt(input.value || '0', 10);
+      window.onCoutPointsUpdated(bloc, 'enigme_tentative_cout_points', valeur, postId, cpt);
+    }
+  }
+
+  function enregistrer() {
+    if (!postId) return;
+    const valeur = toggle.checked ? input.value : '0';
+    modifierChampSimple('enigme_tentative_cout_points', valeur, postId, cpt);
+  }
+
+  toggle.addEventListener('change', () => {
+    appliquerEtat();
+    enregistrer();
+    mettreAJourCartesStats();
+    if (typeof window.mettreAJourMessageTentatives === 'function') {
+      window.mettreAJourMessageTentatives();
+    }
+  });
+
+  input.addEventListener('change', () => {
+    if (!toggle.checked) return;
+    enregistrer();
+    mettreAJourCartesStats();
+    if (typeof window.mettreAJourMessageTentatives === 'function') {
+      window.mettreAJourMessageTentatives();
+    }
+  });
+
+  ['input'].forEach(evt => input.addEventListener(evt, () => {
+    if (!toggle.checked) return;
+    mettreAJourCartesStats();
+    if (typeof window.mettreAJourMessageTentatives === 'function') {
+      window.mettreAJourMessageTentatives();
+    }
+  }));
+
   appliquerEtat();
 }
 
@@ -1229,33 +1260,6 @@ function mettreAJourCartesStats() {
   if (resolveursSection) {
     resolveursSection.style.display = mode === 'aucune' ? 'none' : '';
   }
-}
-
-function appliquerEtatGratuitEnLive() {
-  DEBUG && console.log('✅ enappliquerEtatGratuit() chargé');
-  const $cout = document.querySelector('.champ-cout');
-  const $checkbox = document.getElementById('cout-gratuit-enigme');
-  if (!$cout || !$checkbox) return;
-
-  function syncGratuit() {
-    const raw = $cout.value;
-    const trimmed = raw.trim();
-    const valeur = trimmed === '' ? 0 : parseInt(trimmed, 10);
-    const estGratuit = valeur === 0;
-
-    DEBUG && console.log('[🎯 syncGratuit] coût =', $cout.value, '| gratuit ?', estGratuit);
-    $checkbox.checked = estGratuit;
-    $cout.disabled = estGratuit;
-    if (typeof window.mettreAJourMessageTentatives === 'function') {
-      window.mettreAJourMessageTentatives();
-    }
-  }
-
-  $cout.addEventListener('input', syncGratuit);
-  $cout.addEventListener('change', syncGratuit);
-
-  // Appel initial différé de 50ms pour laisser le temps à la valeur d’être injectée
-  setTimeout(syncGratuit, 50);
 }
 
 function initPagerTentatives() {

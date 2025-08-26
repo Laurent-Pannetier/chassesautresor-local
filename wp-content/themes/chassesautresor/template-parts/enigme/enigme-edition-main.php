@@ -528,15 +528,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
             if ($mode_validation === 'aucune') {
                 $cout_attrs['style'] = 'display:none;';
             }
+            $cout_normalise = trim((string) $cout);
+            $is_payant = $cout_normalise !== '' && $cout_normalise !== '0' && (int) $cout !== 0;
             get_template_part(
                 'template-parts/common/edition-row',
                 null,
                 [
-                    'class'      => 'champ-enigme champ-cout-points ' . (empty($cout) ? 'champ-vide' : 'champ-rempli') . ($peut_editer ? '' : ' champ-desactive') . ($mode_validation === 'aucune' ? ' cache' : ''),
+                    'class'      => 'champ-enigme champ-cout-points champ-mode-fin ' . ($is_payant ? 'champ-rempli' : 'champ-vide') . ($peut_editer ? '' : ' champ-desactive') . ($mode_validation === 'aucune' ? ' cache' : ''),
                     'attributes' => $cout_attrs,
                     'label' => function () {
                         ?>
-                        <label for="enigme-tentative-cout"><?= esc_html__('Coût tentative', 'chassesautresor-com'); ?>
+                        <label for="enigme-cout-toggle"><?= esc_html__('Coût tentative', 'chassesautresor-com'); ?>
                             <?php
                             get_template_part(
                                 'template-parts/common/help-icon',
@@ -553,19 +555,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                         </label>
                         <?php
                     },
-                    'content' => function () use ($cout, $peut_editer) {
+                    'content' => function () use ($cout, $peut_editer, $is_payant, $enigme_id) {
                         ?>
-                        <div class="champ-edition">
-                            <input type="number" id="enigme-tentative-cout" class="champ-input champ-cout champ-number" min="0" max="999999" step="1" value="<?= esc_attr($cout); ?>" placeholder="0" <?= $peut_editer ? '' : 'disabled'; ?> />
-                            <span class="champ-status"></span>
-                            <span class="txt-small"><?= esc_html__('points', 'chassesautresor-com'); ?></span>
-                            <div class="champ-option-gratuit" style="margin-left: 5px;">
-                                <?php
-                                $cout_normalise = trim((string) $cout);
-                                $is_gratuit     = $cout_normalise === '' || $cout_normalise === '0' || (int) $cout === 0;
-                                ?>
-                                <input type="checkbox" id="cout-gratuit-enigme" name="cout-gratuit-enigme" <?= $is_gratuit ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?> />
-                                <label for="cout-gratuit-enigme"><?= esc_html__('Gratuit', 'chassesautresor-com'); ?></label>
+                        <div class="champ-mode-options">
+                            <span class="toggle-option"><?= esc_html__('Free', 'chassesautresor-com'); ?></span>
+                            <label class="switch-control">
+                                <input type="checkbox" id="enigme-cout-toggle" <?= $is_payant ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
+                                <span class="switch-slider"></span>
+                            </label>
+                            <span class="toggle-option"><?= esc_html__('Points', 'chassesautresor-com'); ?></span>
+                            <div id="champ-enigme-cout" class="champ-edition<?= $is_payant ? '' : ' cache'; ?>">
+                                <input type="number" id="enigme-tentative-cout" class="champ-input champ-cout champ-number" min="0" max="999999" step="1" value="<?= esc_attr($is_payant ? $cout : '0'); ?>" placeholder="0" <?= $peut_editer ? '' : 'disabled'; ?> />
+                                <span class="champ-status"></span>
+                                <span class="txt-small"><?= esc_html__('points', 'chassesautresor-com'); ?></span>
                             </div>
                         </div>
                         <div class="champ-feedback"></div>
