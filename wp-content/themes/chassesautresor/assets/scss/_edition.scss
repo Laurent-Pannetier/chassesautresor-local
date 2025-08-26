@@ -177,7 +177,7 @@ li.edition-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  column-gap: calc(4 * var(--space-xl));
+  column-gap: var(--space-xl);
   row-gap: var(--space-md);
   margin-top: var(--space-lg);
 }
@@ -216,6 +216,64 @@ li.edition-row {
 
 .qr-code-block .qr-code-content h3 {
   margin-top: 0;
+}
+
+@media not all and (--bp-desktop) {
+  .dashboard-card.champ-protection-solutions .qr-code-image,
+  .dashboard-card.champ-qr-code .qr-code-image {
+    flex: 0 0 150px;
+  }
+
+  .dashboard-card.champ-protection-solutions .qr-code-image img,
+  .dashboard-card.champ-qr-code .qr-code-image img {
+    width: 150px;
+  }
+
+  .dashboard-card.champ-protection-solutions .qr-code-image i,
+  .dashboard-card.champ-qr-code .qr-code-image i {
+    font-size: 150px;
+  }
+}
+
+@media not all and (--bp-tablet) {
+  .dashboard-card.champ-protection-solutions .qr-code-image,
+  .dashboard-card.champ-qr-code .qr-code-image {
+    flex: 0 0 100px;
+  }
+
+  .dashboard-card.champ-protection-solutions .qr-code-image i {
+    font-size: 100px;
+  }
+}
+
+@media not all and (--bp-mobile) {
+  .dashboard-card.champ-protection-solutions .qr-code-block,
+  .dashboard-card.champ-qr-code .qr-code-block {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .dashboard-card.champ-protection-solutions .qr-code-content,
+  .dashboard-card.champ-qr-code .qr-code-content {
+    align-items: center;
+    text-align: center;
+  }
+
+  .dashboard-card.champ-protection-solutions .qr-code-image,
+  .dashboard-card.champ-qr-code .qr-code-image {
+    width: 100px;
+    flex: none;
+  }
+
+  .dashboard-card.champ-protection-solutions .qr-code-image img,
+  .dashboard-card.champ-qr-code .qr-code-image img {
+    width: 100px;
+  }
+
+  .dashboard-card.champ-protection-solutions .qr-code-image i,
+  .dashboard-card.champ-qr-code .qr-code-image i {
+    font-size: 100px;
+  }
 }
 
 /* ========== 🖊️ CHAMPS ÉDITABLES ========== */

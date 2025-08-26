@@ -1880,8 +1880,8 @@ li.edition-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  -moz-column-gap: calc(4 * var(--space-xl));
-       column-gap: calc(4 * var(--space-xl));
+  -moz-column-gap: var(--space-xl);
+       column-gap: var(--space-xl);
   row-gap: var(--space-md);
   margin-top: var(--space-lg);
 }
@@ -1922,6 +1922,63 @@ li.edition-row {
   margin-top: 0;
 }
 
+@media not all and (min-width: 1024px) {
+  .dashboard-card.champ-protection-solutions .qr-code-image, .champ-protection-solutions.carte-orgy .qr-code-image,
+  .dashboard-card.champ-qr-code .qr-code-image,
+  .champ-qr-code.carte-orgy .qr-code-image {
+    flex: 0 0 150px;
+  }
+  .dashboard-card.champ-protection-solutions .qr-code-image img, .champ-protection-solutions.carte-orgy .qr-code-image img,
+  .dashboard-card.champ-qr-code .qr-code-image img,
+  .champ-qr-code.carte-orgy .qr-code-image img {
+    width: 150px;
+  }
+  .dashboard-card.champ-protection-solutions .qr-code-image i, .champ-protection-solutions.carte-orgy .qr-code-image i,
+  .dashboard-card.champ-qr-code .qr-code-image i,
+  .champ-qr-code.carte-orgy .qr-code-image i {
+    font-size: 150px;
+  }
+}
+@media not all and (min-width: 768px) {
+  .dashboard-card.champ-protection-solutions .qr-code-image, .champ-protection-solutions.carte-orgy .qr-code-image,
+  .dashboard-card.champ-qr-code .qr-code-image,
+  .champ-qr-code.carte-orgy .qr-code-image {
+    flex: 0 0 100px;
+  }
+  .dashboard-card.champ-protection-solutions .qr-code-image i, .champ-protection-solutions.carte-orgy .qr-code-image i {
+    font-size: 100px;
+  }
+}
+@media not all and (min-width: 600px) {
+  .dashboard-card.champ-protection-solutions .qr-code-block, .champ-protection-solutions.carte-orgy .qr-code-block,
+  .dashboard-card.champ-qr-code .qr-code-block,
+  .champ-qr-code.carte-orgy .qr-code-block {
+    flex-direction: column;
+    align-items: center;
+  }
+  .dashboard-card.champ-protection-solutions .qr-code-content, .champ-protection-solutions.carte-orgy .qr-code-content,
+  .dashboard-card.champ-qr-code .qr-code-content,
+  .champ-qr-code.carte-orgy .qr-code-content {
+    align-items: center;
+    text-align: center;
+  }
+  .dashboard-card.champ-protection-solutions .qr-code-image, .champ-protection-solutions.carte-orgy .qr-code-image,
+  .dashboard-card.champ-qr-code .qr-code-image,
+  .champ-qr-code.carte-orgy .qr-code-image {
+    width: 100px;
+    flex: none;
+  }
+  .dashboard-card.champ-protection-solutions .qr-code-image img, .champ-protection-solutions.carte-orgy .qr-code-image img,
+  .dashboard-card.champ-qr-code .qr-code-image img,
+  .champ-qr-code.carte-orgy .qr-code-image img {
+    width: 100px;
+  }
+  .dashboard-card.champ-protection-solutions .qr-code-image i, .champ-protection-solutions.carte-orgy .qr-code-image i,
+  .dashboard-card.champ-qr-code .qr-code-image i,
+  .champ-qr-code.carte-orgy .qr-code-image i {
+    font-size: 100px;
+  }
+}
 /* ========== 🖊️ CHAMPS ÉDITABLES ========== */
 .champ-edition {
   display: flex;
