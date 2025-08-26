@@ -364,6 +364,21 @@ a.bouton-edition-attention {
     background-color: rgba(255, 255, 255, 0.04);
   }
 
+  .champ-email-contact .champ-edition {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .champ-email-contact .champ-edition .champ-inline-actions {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .champ-email-contact .champ-input {
+    width: auto;
+  }
+
 
   /* 🔹 Panneau latéral */
   .ligne-lien-formulaire label {
