@@ -296,7 +296,7 @@
     --hunt-img-max-height: 300px;
   }
 }
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
   .chasse-fiche-container {
     --hunt-img-max-height: 400px;
   }
@@ -405,10 +405,12 @@ body.edition-active-chasse .chasse-enigmes-header .liens-placeholder {
   --col-span: 12;
 }
 
-@media (min-width: 1024px) {
-  .chasse-section-intro .col-image,
+@media (min-width: 768px) {
+  .chasse-section-intro .col-image {
+    --col-span: 5;
+  }
   .chasse-section-intro .col-details {
-    --col-span: 6;
+    --col-span: 7;
   }
 }
 /* ========== 🛒 AJOUT AU PANIER ========== */

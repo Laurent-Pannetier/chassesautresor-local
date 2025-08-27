@@ -294,7 +294,7 @@
     --hunt-img-max-height: 300px;
   }
 }
-@media (--bp-desktop) {
+@media (--bp-tablet) {
   .chasse-fiche-container {
     --hunt-img-max-height: 400px;
   }
@@ -403,10 +403,12 @@ body.edition-active-chasse .chasse-enigmes-header .liens-placeholder {
   --col-span: 12;
 }
 
-@media (--bp-desktop) {
-  .chasse-section-intro .col-image,
+@media (--bp-tablet) {
+  .chasse-section-intro .col-image {
+    --col-span: 5;
+  }
   .chasse-section-intro .col-details {
-    --col-span: 6;
+    --col-span: 7;
   }
 }
 /* ========== 🛒 AJOUT AU PANIER ========== */
@@ -980,7 +982,7 @@ a.ajout-link:focus-visible {
 
 /* Couleurs par statut (alignées sur le nuancier) */
 .badge-statut.statut-en_cours {
-  background-color: var(--color-editor-success);
+  background-color: var(--color-success);
 }
 
 .badge-statut.statut-payante {
@@ -989,7 +991,7 @@ a.ajout-link:focus-visible {
 }
 
 .badge-statut.statut-a_venir {
-  background-color: var(--color-editor-placeholder);
+  background-color: var(--color-grey-medium);
 }
 
 .badge-statut.statut-termine {
@@ -997,7 +999,7 @@ a.ajout-link:focus-visible {
 }
 
 .badge-statut.statut-revision {
-  background-color: var(--color-editor-error);
+  background-color: var(--color-error);
 }
 
 /* ========== 🎁 BADGE RÉCOMPENSE ========== */
