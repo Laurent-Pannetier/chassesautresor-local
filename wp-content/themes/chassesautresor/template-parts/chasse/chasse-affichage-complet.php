@@ -123,8 +123,7 @@ if ($edition_active && !$est_complet) {
             alt="Image de la chasse"
             class="chasse-image visuel-cpt"
             data-cpt="chasse"
-            data-post-id="<?= esc_attr($chasse_id); ?>"
-            style="width:100%; height:auto;" />
+            data-post-id="<?= esc_attr($chasse_id); ?>" />
         </div>
       </div>
 

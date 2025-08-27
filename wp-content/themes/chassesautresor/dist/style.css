@@ -260,6 +260,8 @@
   --grid-gap: 2.6rem;
   align-items: start;
   position: relative;
+  /* Image container max height (mobile first) */
+  --hunt-img-max-height: 200px;
 }
 
 /* ========== 🖼️ COLONNE IMAGE DE LA CHASSE ========== */
@@ -268,11 +270,42 @@
   max-width: 100%;
 }
 
-.champ-chasse.champ-img img {
-  max-height: 430px;
+/* Image container handling full width and limited height */
+.chasse-fiche-container .champ-img .champ-affichage {
+  display: block;
+}
+
+.header-chasse__image {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--hunt-img-max-height);
+}
+
+.header-chasse__image img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.45);
 }
 
+@media (min-width: 600px) {
+  .chasse-fiche-container {
+    --hunt-img-max-height: 300px;
+  }
+}
+@media (min-width: 1024px) {
+  .chasse-fiche-container {
+    --hunt-img-max-height: 400px;
+  }
+}
+@media (min-width: 1440px) {
+  .chasse-fiche-container {
+    --hunt-img-max-height: 600px;
+  }
+}
 /* ========== 📝 COLONNE INFOS DE LA CHASSE ========== */
 .chasse-details-wrapper {
   min-width: 240px;
@@ -372,18 +405,6 @@ body.edition-active-chasse .chasse-enigmes-header .liens-placeholder {
   --col-span: 12;
 }
 
-@media (min-width: 600px) {
-  .chasse-section-intro .col-image,
-  .chasse-section-intro .col-details {
-    --col-span: 3;
-  }
-}
-@media (min-width: 768px) {
-  .chasse-section-intro .col-image,
-  .chasse-section-intro .col-details {
-    --col-span: 4;
-  }
-}
 @media (min-width: 1024px) {
   .chasse-section-intro .col-image,
   .chasse-section-intro .col-details {
