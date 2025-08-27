@@ -215,8 +215,6 @@ if ($edition_active && !$est_complet) {
       </div>
 
       <div class="chasse-caracteristiques">
-        <h2><?= esc_html__('Caractéristiques', 'chassesautresor-com'); ?></h2>
-
         <?php if ($mode_fin === 'automatique' && (int) $nb_max > 0) : ?>
           <div class="caracteristique">
             <span class="caracteristique-label"><?= esc_html__('Limite', 'chassesautresor-com'); ?></span>
