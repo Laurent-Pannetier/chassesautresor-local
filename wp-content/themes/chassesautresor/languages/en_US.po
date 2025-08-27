@@ -499,6 +499,12 @@ msgstr "Daily Attempts: %1$d/%2$s"
 msgid "Coût par tentative : %d points."
 msgstr "Attempt cost"
 
+#: template-parts/chasse/chasse-affichage-complet.php:120
+#: template-parts/chasse/chasse-affichage-complet.php:130
+#, php-format
+msgid "Coût de participation : %d points."
+msgstr "Participation cost: %d points."
+
 #: inc/enigme/affichage.php:741 assets/js/reponse-automatique.js:76
 #: assets/js/reponse-automatique.js:98
 msgid "pts"

@@ -23,6 +23,7 @@ $date_debut        = $champs['date_debut'];
 $date_fin          = $champs['date_fin'];
 $illimitee         = $champs['illimitee'];
 $nb_max            = $champs['nb_max'];
+$cout_points       = (int) ($champs['cout_points'] ?? 0);
 
 // Champs cachés
 $date_decouverte      = $champs['date_decouverte'];
@@ -114,20 +115,33 @@ if ($edition_active && !$est_complet) {
       data-post-id="<?= esc_attr($chasse_id); ?>">
 
       <div class="champ-affichage">
-        <div class="header-chasse__image">
+        <div
+            class="header-chasse__image"
+            data-cout-label="<?= esc_attr__('Coût de participation : %d points.', 'chassesautresor-com'); ?>"
+            data-pts-label="<?= esc_attr__('pts', 'chassesautresor-com'); ?>"
+        >
           <span class="badge-statut statut-<?= esc_attr($statut_for_class); ?>" data-post-id="<?= esc_attr($chasse_id); ?>">
             <?= esc_html($statut_label); ?>
           </span>
+          <?php if ($cout_points > 0) : ?>
+            <span
+                class="badge-cout"
+                data-post-id="<?= esc_attr($chasse_id); ?>"
+                aria-label="<?= esc_attr(sprintf(__('Coût de participation : %d points.', 'chassesautresor-com'), $cout_points)); ?>"
+            >
+              <?= esc_html($cout_points . ' ' . __('pts', 'chassesautresor-com')); ?>
+            </span>
+          <?php endif; ?>
           <?php
           echo wp_get_attachment_image(
               $image_id,
               'chasse-fiche',
               false,
               [
-                  'class'      => 'chasse-image visuel-cpt img-h-max',
-                  'data-cpt'   => 'chasse',
+                  'class'       => 'chasse-image visuel-cpt img-h-max',
+                  'data-cpt'    => 'chasse',
                   'data-post-id' => $chasse_id,
-                  'alt'        => __( 'Image de la chasse', 'chassesautresor-com' ),
+                  'alt'         => __('Image de la chasse', 'chassesautresor-com'),
               ]
           );
           ?>
