@@ -134,11 +134,18 @@ a.bouton-edition-attention {
 
 .header-organisateur__actions .bouton-edition-toggle {
   font-size: 1rem;
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
 }
 
 .header-organisateur__actions a:hover,
-.header-organisateur__actions button:hover {
+.header-organisateur__actions button:not(.bouton-edition-toggle):hover {
   color: var(--color-accent);
+}
+
+.header-organisateur__actions .bouton-edition-toggle:hover {
+  color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
 }
 
 /* ========== 🖼 LOGO CLIQUABLE ========== */
