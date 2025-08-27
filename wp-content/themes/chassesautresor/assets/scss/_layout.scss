@@ -224,21 +224,6 @@ body #primary {
   align-items: flex-start; /* ✅ important : alignement haut */
   flex-wrap: wrap; /* ✅ si l’un est trop large */
 }
-.ast-container,
-.ast-container-fluid {
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 13px;
-    padding-right: 13px;
-}
-
-@media (--bp-desktop) {
-    .ast-container,
-    .ast-container-fluid {
-        padding-left: var(--space-md);
-        padding-right: var(--space-md);
-    }
-}
 .deux-col-wrapper {
     display: flex;
     flex-wrap: wrap;
