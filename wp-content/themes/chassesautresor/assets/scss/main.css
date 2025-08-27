@@ -7892,9 +7892,9 @@ a.bouton-edition-attention {
 }
 
 .header-organisateur__actions .bouton-edition-toggle {
-  font-size: 1.2rem;
-  border: 1px solid hsl(var(--editor-button-hsl)/0.6);
-  color: hsl(var(--editor-button-hsl)/0.6);
+  font-size: 1rem;
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
 }
 
 .header-organisateur__actions a:hover,
@@ -7903,8 +7903,8 @@ a.bouton-edition-attention {
 }
 
 .header-organisateur__actions .bouton-edition-toggle:hover {
-  color: var(--color-editor-button);
-  border-color: var(--color-editor-button);
+  color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
 }
 
 /* ========== 🖼 LOGO CLIQUABLE ========== */
