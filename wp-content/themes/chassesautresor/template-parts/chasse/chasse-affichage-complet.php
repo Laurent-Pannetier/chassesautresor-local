@@ -29,11 +29,6 @@ $cout_points       = (int) ($champs['cout_points'] ?? 0);
 $date_decouverte      = $champs['date_decouverte'];
 $current_stored_statut = $champs['current_stored_statut'];
 
-// Données supplémentaires
-$description   = $infos_chasse['description'];
-$texte_complet = $infos_chasse['texte_complet'];
-$extrait       = $infos_chasse['extrait'];
-$est_tronque   = ($extrait !== $texte_complet);
 
 $image_raw = $infos_chasse['image_raw'];
 $image_id  = $infos_chasse['image_id'];
@@ -46,7 +41,6 @@ $nb_joueurs        = $infos_chasse['nb_joueurs'];
 $nb_enigmes_payantes = $infos_chasse['nb_enigmes_payantes'];
 $top_avances         = $infos_chasse['top_avances'];
 $mode_fin            = $champs['mode_fin'] ?? 'automatique';
-$liens               = $infos_chasse['liens'];
 $title_mode          = $mode_fin === 'automatique'
     ? __('mode de fin de chasse : automatique', 'chassesautresor-com')
     : __('mode de fin de chasse : action manuelle de l\'organisateur', 'chassesautresor-com');
@@ -145,6 +139,13 @@ if ($edition_active && !$est_complet) {
                 <?= esc_html($cout_points . ' ' . __('pts', 'chassesautresor-com')); ?>
               </span>
             <?php endif; ?>
+            <span class="mode-fin-icone" title="<?= esc_attr($title_mode); ?>">
+              <?php if ($mode_fin === 'automatique') : ?>
+                <i class="fa-solid fa-bolt"></i>
+              <?php else : ?>
+                <?= get_svg_icon('hand'); ?>
+              <?php endif; ?>
+            </span>
           <?php
           echo wp_get_attachment_image(
               $image_id,
@@ -204,15 +205,6 @@ if ($edition_active && !$est_complet) {
         <div class="icone-svg"></div>
         <div class="trait-droite"></div>
       </div>
-
-      <?php if ($extrait) : ?>
-        <p class="chasse-intro-extrait liste-elegante">
-          <strong><?= esc_html__('Présentation :', 'chassesautresor-com'); ?></strong> <?= esc_html($extrait); ?>
-          <?php if ($est_tronque) : ?>
-            <a href="#chasse-description"><?= esc_html__('Voir les détails', 'chassesautresor-com'); ?></a>
-          <?php endif; ?>
-        </p>
-      <?php endif; ?>
 
       <div class="chasse-caracteristiques">
         <h2><?= esc_html__('Caractéristiques', 'chassesautresor-com'); ?></h2>
@@ -295,32 +287,24 @@ if ($edition_active && !$est_complet) {
         <?php endif; ?>
       </div>
 
-      <?php if (!empty($titre_recompense) && (float) $valeur_recompense > 0) : ?>
-        <div class="chasse-lot" aria-live="polite">
-          <?php echo get_svg_icon('trophee'); ?>
-          <?= esc_html($titre_recompense); ?> — <?= esc_html($valeur_recompense); ?> €
-        </div>
-      <?php endif; ?>
+        <?php if (!empty($titre_recompense) && (float) $valeur_recompense > 0) : ?>
+          <div class="chasse-lot" aria-live="polite">
+            <?php echo get_svg_icon('trophee'); ?>
+            <?= esc_html($titre_recompense); ?> — <?= esc_html($valeur_recompense); ?> €
+          </div>
+        <?php endif; ?>
 
-      <footer class="chasse-intro-footer">
-        <div class="footer-icons">
-          <span class="mode-fin-icone" title="<?= esc_attr($title_mode); ?>">
-            <?php if ($mode_fin === 'automatique') : ?>
-              <i class="fa-solid fa-bolt"></i>
-            <?php else : ?>
-              <?= get_svg_icon('hand'); ?>
-            <?php endif; ?>
-          </span>
-          <?php
-          $liens_html = render_liens_publics($liens, 'chasse', ['placeholder' => false]);
-          if ($liens_html) {
-              echo $liens_html;
-          }
-          ?>
-        </div>
-      </footer>
+        <?php
+        $cta_data = $infos_chasse['cta_data'] ?? [];
+        if (($cta_data['type'] ?? '') !== 'engage') :
+        ?>
+          <div class="cta-chasse-row">
+            <div class="cta-action"><?= $cta_data['cta_html']; ?></div>
+            <div class="cta-message" aria-live="polite"><?= $cta_data['cta_message']; ?></div>
+          </div>
+        <?php endif; ?>
 
-    </div>
+      </div>
   </div>
 </section>
 
