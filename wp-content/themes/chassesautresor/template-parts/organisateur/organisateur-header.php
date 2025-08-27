@@ -39,7 +39,7 @@ if ($peut_modifier && !$est_complet) {
 }
 $classes_header .= ' container container--boxed';
 ?>
-<div class="header-organisateur-wrapper container fullwidth">
+<div class="header-organisateur-wrapper">
   <div class="ligne-morse" aria-hidden="true">
     <div class="morse-wrapper" data-morse="<?= esc_attr($titre_organisateur); ?>"></div>
   </div>
