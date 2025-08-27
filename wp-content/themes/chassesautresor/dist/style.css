@@ -6281,21 +6281,26 @@ span.champ-obligatoire {
 .ast-container,
 .ast-container-fluid {
   width: 100%;
-  max-width: none;
+  max-width: var(--container-max-width);
   margin-left: auto;
   margin-right: auto;
   padding-left: var(--space-md);
   padding-right: var(--space-md);
 }
 
-.container--boxed,
-.ast-container--boxed {
-  max-width: var(--container-max-width);
+@media (min-width: 1440px) {
+  .container--boxed {
+    --container-max-width: var(--container-max-width-default);
+  }
 }
-
 .container--narrow,
 .ast-container--narrow {
   --container-max-width: var(--container-max-width-narrow);
+}
+
+.container.fullwidth,
+.ast-container.fullwidth {
+  --container-max-width: none;
 }
 
 .row {
@@ -8449,7 +8454,8 @@ section#presentation .presentation-fermer {
   --aside-border-color: var(--color-grey-medium); /* 🖊 Couleur de bordure des asides */
   --aside-opacity: 0.15; /* ⚙️ Opacité standard des fonds d'aside */
   /* Grille */
-  --container-max-width: 1200px;
+  --container-max-width-default: 1200px;
+  --container-max-width: var(--container-max-width-default);
   --container-max-width-narrow: 800px;
   --grid-gap: 1rem;
   --grid-columns: 12;
@@ -8477,6 +8483,11 @@ section#presentation .presentation-fermer {
   --breakpoint-wide: 1280px;
 }
 
+@media (min-width: 1440px) {
+  :root {
+    --container-max-width: none;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   :root {
     --transition-fast: 0s;

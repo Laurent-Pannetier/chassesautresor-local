@@ -4,21 +4,28 @@
 .ast-container,
 .ast-container-fluid {
   width: 100%;
-  max-width: none;
+  max-width: var(--container-max-width);
   margin-left: auto;
   margin-right: auto;
   padding-left: var(--space-md);
   padding-right: var(--space-md);
 }
 
-.container--boxed,
-.ast-container--boxed {
-  max-width: var(--container-max-width);
+
+@media (--bp-xxl) {
+  .container--boxed {
+    --container-max-width: var(--container-max-width-default);
+  }
 }
 
 .container--narrow,
 .ast-container--narrow {
   --container-max-width: var(--container-max-width-narrow);
+}
+
+.container.fullwidth,
+.ast-container.fullwidth {
+  --container-max-width: none;
 }
 
 .row {
