@@ -6,9 +6,10 @@ Ce document décrit les grilles disponibles dans le thème afin de faciliter leu
 
 La grille générique repose sur un conteneur `.row` utilisant **CSS Grid**. Chaque élément enfant reçoit une classe `.col-X` pour définir le nombre de colonnes occupées (de `1` à `12`).
 
-- Largeur par défaut : `12` colonnes.
+- 4 colonnes par défaut sur mobile.
+- 6 colonnes à partir de `--bp-small`, 8 à partir de `--bp-tablet` et 12 à partir de `--bp-desktop`.
 - Espacement configurable via la variable `--grid-gap`.
-- Les colonnes se réorganisent automatiquement en fonction des points de rupture (`--bp-desktop`, `--bp-tablet`, `--bp-small`).
+- Les styles de base ciblent les petits écrans : la grille suit une approche mobile-first.
 
 ```html
 <div class="row">
