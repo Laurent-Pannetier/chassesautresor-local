@@ -104,12 +104,6 @@ document.addEventListener('DOMContentLoaded', initChampCoutPoints);
 
 ```js
 window.onCoutPointsUpdated = function (bloc, champ, valeur, postId, cpt) {
-  if (champ === 'chasse_infos_cout_points') {
-    if (typeof mettreAJourAffichageCout === 'function') {
-      mettreAJourAffichageCout(postId, valeur);
-    }
-  }
-
   if (champ === 'enigme_tentative_cout_points') {
     const champMaxBloc = document.querySelector('[data-champ="enigme_tentative_max"]');
     const champMaxInput = champMaxBloc?.querySelector('.champ-input');

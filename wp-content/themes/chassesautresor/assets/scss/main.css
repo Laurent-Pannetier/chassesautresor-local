@@ -337,14 +337,6 @@
   color: white;
 }
 
-.chasse-prix {
-  font-size: 2.3rem;
-}
-
-.chasse-prix svg {
-  vertical-align: middle;
-}
-
 .page-chasse-wrapper .chasse-lot {
   display: flex;
   gap: 0.7rem;

@@ -827,9 +827,6 @@ initChampNbGagnants()
 mettreAJourResumeInfos()
 → Met à jour dynamiquement les indicateurs "champ-vide" / "champ-rempli" dans le résumé
 
-mettreAJourAffichageCout(postId, cout)
-→ Met à jour dynamiquement l’affichage du prix (ex : badge Gratuit / X pts)
-
 validerDatesAvantEnvoi(champModifie)
 → Contrôle logique cohérent entre date de début / fin d’une chasse
 

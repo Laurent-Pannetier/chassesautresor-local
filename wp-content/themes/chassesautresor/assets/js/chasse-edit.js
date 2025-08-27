@@ -99,7 +99,6 @@ function rafraichirCarteSolutions() {
 
 window.rafraichirCarteSolutions = rafraichirCarteSolutions;
 
-
   function initChasseEdit() {
   if (typeof initZonesClicEdition === 'function') initZonesClicEdition();
   inputDateDebut = document.getElementById('chasse-date-debut');
@@ -107,7 +106,6 @@ window.rafraichirCarteSolutions = rafraichirCarteSolutions;
   erreurDebut = document.getElementById('erreur-date-debut');
   erreurFin = document.getElementById('erreur-date-fin');
   toggleDateFin = document.getElementById('date-fin-limitee');
-
 
   // ==============================
   // 🟢 Initialisation des champs
@@ -232,8 +230,6 @@ window.rafraichirCarteSolutions = rafraichirCarteSolutions;
     // Ce fichier ne fait que fournir les messages d'erreur via
     // `validerDatesAvantEnvoi` appelé par `initChampDate()`.
   }
-
-
 
   // ================================
   // 🏆 Gestion de l'enregistrement de la récompense (titre, texte, valeur)
@@ -365,7 +361,6 @@ window.rafraichirCarteSolutions = rafraichirCarteSolutions;
     });
 
   }
-
 
   if (boutonRecompense && inputTitreRecompense && inputTexteRecompense && inputValeurRecompense) {
     boutonRecompense.addEventListener('click', () => {
@@ -626,7 +621,6 @@ window.rafraichirCarteSolutions = rafraichirCarteSolutions;
 
   window.addEventListener('liens-publics-updated', rafraichirCarteLiens);
 
-
 // ==============================
 // 🔗 Initialisation des liens chasse
 // ==============================
@@ -639,7 +633,6 @@ function initLiensChasse(bloc) {
     });
   }
 }
-
 
 // ==============================
 // 🔎 Validation logique entre date de début et date de fin
@@ -712,7 +705,6 @@ function validerDatesAvantEnvoi(champModifie) {
   return true;
 }
 
-
 // ==============================
 // 🔥 Affichage d'un message global temporaire
 // ==============================
@@ -734,36 +726,6 @@ function afficherErreurGlobale(message) {
   }, 4000); // Disparition après 4 secondes
 }
 
-
-// ================================
-// 💰 Mise à jour dynamique de l'affichage du coût (Gratuit / Payant)
-// ================================
-function mettreAJourAffichageCout(postId, cout) {
-  const coutAffichage = document.querySelector(`.chasse-prix[data-post-id="${postId}"] .cout-affichage`);
-  if (!coutAffichage) return;
-
-  coutAffichage.dataset.cout = cout; // Met à jour data-cout
-  coutAffichage.innerHTML = ''; // Vide l'affichage
-
-  const templateId = parseInt(cout, 10) === 0 ? 'icon-free' : 'icon-unlock';
-  const template = document.getElementById(templateId);
-
-  if (template) {
-    coutAffichage.appendChild(template.content.cloneNode(true));
-  }
-
-  if (parseInt(cout, 10) === 0) {
-    coutAffichage.insertAdjacentText('beforeend', ' Gratuit');
-  } else {
-    coutAffichage.insertAdjacentText('beforeend', ` ${cout}`);
-    const devise = document.createElement('span');
-    devise.className = 'prix-devise';
-    devise.textContent = 'pts';
-    coutAffichage.appendChild(devise);
-  }
-}
-
-
 // ================================
 // 💾 Enregistrement du coût en points après clic bouton "✓"
 // ================================
@@ -783,7 +745,6 @@ document.querySelectorAll('.champ-cout-points .champ-enregistrer').forEach(bouto
     modifierChampSimple(champ, valeur, postId, 'chasse');
 
     if (champ === 'chasse_infos_cout_points') {
-      mettreAJourAffichageCout(postId, valeur);
       rafraichirStatutChasse(postId);
     }
 
@@ -796,8 +757,6 @@ document.querySelectorAll('.champ-cout-points .champ-enregistrer').forEach(bouto
     }
   });
 });
-
-
 
 // ================================
 // 💰 Gestion de l'enregistrement du coût en points
@@ -820,8 +779,6 @@ document.querySelectorAll('.champ-cout-points .champ-annuler').forEach(bouton =>
     }
   });
 });
-
-
 
 // ================================
 // 🎯 Gestion du champ Nombre de gagnants + Illimité (avec debounce)
@@ -1114,7 +1071,6 @@ window.mettreAJourEtatIntroChasse = function () {
   section.classList.toggle('champ-vide-obligatoire', incomplets.length > 0);
 };
 
-
 // ================================
 // 👥 Mise à jour dynamique de l'affichage du nombre de gagnants
 // ================================
@@ -1129,15 +1085,12 @@ function mettreAJourAffichageNbGagnants(postId, nb) {
   }
 }
 
-
-
 document.addEventListener('acf/submit_success', function (e) {
   DEBUG && console.log('✅ Formulaire ACF soumis avec succès', e);
   if (typeof window.mettreAJourResumeInfos === 'function') {
     window.mettreAJourResumeInfos();
   }
 });
-
 
 // ================================
 // 🔁 Rafraîchissement dynamique du statut de la chasse
