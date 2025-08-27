@@ -107,7 +107,7 @@ Le dossier `notices/` contient la documentation technique et fonctionnelle du th
 
 ### Styles d'affichage
 
-- **Style par défaut** : utilisé sur l'ensemble des pages publiques. Il repose sur un système de grille `.container`, `.row`, `.col-*` et accepte l'extension `fullwidth` pour occuper toute la largeur.
+- **Style par défaut** : utilisé sur l'ensemble des pages publiques. Il repose sur un système de grille `.container`, `.row`, `.col-*` et propose l'option `--boxed` pour limiter la largeur à un format contenu classique.
 - **Orgy** : appliqué uniquement aux panneaux d'édition des CPT et aux pages `mon-compte/*`. Il charge des feuilles spécifiques (`edition.css`, `mon-compte.css`) sans la grille globale.
 
 
