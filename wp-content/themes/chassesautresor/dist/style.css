@@ -297,6 +297,26 @@
   right: 10px;
 }
 
+.header-chasse__image .mode-fin-icone {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--color-grey-light);
+  color: var(--color-text-fond-clair);
+  font-size: 0.75rem;
+}
+
+.header-chasse__image .mode-fin-icone svg {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
 .header-chasse__image img {
   display: block;
   max-width: 100%;
@@ -364,15 +384,35 @@
   color: var(--color-secondary);
 }
 
-.chasse-section-intro .bloc-discret {
-  margin-bottom: 0;
-}
-
 .chasse-section-intro.champ-vide-obligatoire {
   border: 2px dashed var(--color-editor-error);
   animation: clignoteTitre 1s infinite alternate;
   padding: var(--space-xs);
   border-radius: 0.5rem;
+}
+
+/* ========== 🎯 CARACTÉRISTIQUES DE LA CHASSE ========== */
+.chasse-caracteristiques {
+  margin-top: var(--space-lg);
+}
+
+.chasse-caracteristiques h2 {
+  margin-bottom: var(--space-sm);
+}
+
+.chasse-caracteristiques .caracteristique {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xs);
+}
+
+.chasse-caracteristiques .caracteristique-label {
+  flex: 0 0 9rem;
+  font-weight: 600;
+}
+
+.chasse-caracteristiques .caracteristique-valeur {
+  flex: 1;
 }
 
 /* ========== 🧾 BLOC PRÉSENTATION DE LA CHASSE ========== */

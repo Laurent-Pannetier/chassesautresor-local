@@ -197,21 +197,8 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
     ]);
     ?>
 
-    <!-- 🎯 Appel à l’action principal -->
-    <?php
-    $cta_data = $infos_chasse['cta_data'];
-
-    if (($cta_data['type'] ?? '') !== 'engage') :
-    ?>
-      <div class="cta-chasse-row">
-        <div class="cta-action"><?= $cta_data['cta_html']; ?></div>
-        <div class="cta-message" aria-live="polite"><?= $cta_data['cta_message']; ?></div>
-      </div>
-    <?php endif; ?>
-
-
-    <!-- 🧩 Liste des énigmes -->
-    <section class="chasse-enigmes-wrapper" id="chasse-enigmes-wrapper">
+      <!-- 🧩 Liste des énigmes -->
+      <section class="chasse-enigmes-wrapper" id="chasse-enigmes-wrapper">
       <header class="chasse-enigmes-header">
         <div class="barre-progression">
           <div class="remplissage" style="width: <?= ($total_enigmes ? round(100 * $enigmes_resolues / $total_enigmes) : 0); ?>%;"></div>

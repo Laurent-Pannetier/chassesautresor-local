@@ -1266,6 +1266,30 @@ function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): 
     $liens = is_array($liens) ? $liens : [];
 
     $enigmes = recuperer_enigmes_associees($chasse_id);
+    $nb_enigmes_payantes = 0;
+    foreach ($enigmes as $eid) {
+        $cout = (int) get_field('enigme_tentative_cout_points', $eid);
+        if ($cout > 0) {
+            $nb_enigmes_payantes++;
+        }
+    }
+
+    $nb_joueurs = compter_joueurs_engages_chasse($chasse_id);
+    $top_nb      = 0;
+    $top_enigmes = 0;
+    if ($nb_joueurs > 0) {
+        $participants = chasse_lister_participants($chasse_id, $nb_joueurs, 0, 'resolution', 'DESC');
+        $top_enigmes  = $participants[0]['nb_resolues'] ?? 0;
+        if ($top_enigmes > 0) {
+            foreach ($participants as $p) {
+                if ($p['nb_resolues'] === $top_enigmes) {
+                    $top_nb++;
+                } else {
+                    break;
+                }
+            }
+        }
+    }
 
     $memo[$cache_key] = [
         'champs'            => $champs,
@@ -1279,7 +1303,12 @@ function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): 
         'enigmes_associees' => $enigmes,
         'total_enigmes'     => count($enigmes),
         'cta_data'          => generer_cta_chasse($chasse_id, $user_id),
-        'nb_joueurs'        => compter_joueurs_engages_chasse($chasse_id),
+        'nb_joueurs'        => $nb_joueurs,
+        'nb_enigmes_payantes' => $nb_enigmes_payantes,
+        'top_avances'       => [
+            'nb'      => $top_nb,
+            'enigmes' => $top_enigmes,
+        ],
         'statut'            => get_field('chasse_cache_statut', $chasse_id) ?: 'revision',
         'statut_validation' => get_field('chasse_cache_statut_validation', $chasse_id),
     ];
