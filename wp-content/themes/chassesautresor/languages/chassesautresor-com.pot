@@ -2420,3 +2420,54 @@ msgstr ""
 msgid "Trouvées"
 msgstr ""
 
+#: template-parts/chasse/chasse-affichage-complet.php:48
+msgid "mode de fin de chasse : automatique"
+msgstr ""
+
+#: template-parts/chasse/chasse-affichage-complet.php:49
+msgid "mode de fin de chasse : manuelle"
+msgstr ""
+
+#: template-parts/chasse/chasse-affichage-complet.php:178
+msgid "Par"
+msgstr ""
+
+#: template-parts/chasse/chasse-affichage-complet.php:206
+#: template-parts/chasse/chasse-card.php:24
+msgid "%d énigme"
+msgid_plural "%d énigmes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/chasse-functions.php:772
+#: template-parts/chasse/chasse-affichage-complet.php:207
+#: template-parts/chasse/chasse-card.php:25
+msgid "%d joueur"
+msgid_plural "%d joueurs"
+msgstr[0] ""
+msgstr[1] ""
+
+#: template-parts/chasse/chasse-card.php:32
+msgid "En savoir plus"
+msgstr ""
+
+#: template-parts/chasse/chasse-affichage-complet.php:46
+#: inc/chasse-functions.php:1096
+msgid "en cours"
+msgstr ""
+
+#: template-parts/chasse/chasse-affichage-complet.php:46
+#: inc/chasse-functions.php:1096
+msgid "révision"
+msgstr ""
+
+#: template-parts/chasse/chasse-affichage-complet.php:46
+#: inc/chasse-functions.php:1096
+msgid "à venir"
+msgstr ""
+
+#: template-parts/chasse/chasse-affichage-complet.php:46
+#: inc/chasse-functions.php:1096
+msgid "terminée"
+msgstr ""
+

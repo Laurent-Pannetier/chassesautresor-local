@@ -29,7 +29,8 @@ if (empty($infos)) {
 
         <div class="meta-row svg-xsmall">
             <div class="meta-regular">
-                <?php echo get_svg_icon('enigme'); ?> <?php echo esc_html($infos['total_enigmes']); ?> énigme<?php echo ($infos['total_enigmes'] > 1 ? 's' : ''); ?> —
+                <?php echo get_svg_icon('enigme'); ?>
+                <?php echo esc_html(sprintf(_n('%d énigme', '%d énigmes', $infos['total_enigmes'], 'chassesautresor-com'), $infos['total_enigmes'])); ?> —
                 <?php echo get_svg_icon('participants'); ?><?php echo esc_html($infos['nb_joueurs_label']); ?>
             </div>
             <div class="meta-etiquette">
@@ -44,7 +45,7 @@ if (empty($infos)) {
         <?php echo $infos['extrait_html']; ?>
         <?php echo $infos['lot_html']; ?>
         <div class="flex-row cta-div">
-            <a href="<?php echo esc_url($infos['permalink']); ?>" class="bouton-secondaire">En savoir plus</a>
+            <a href="<?php echo esc_url($infos['permalink']); ?>" class="bouton-secondaire"><?= esc_html__('En savoir plus', 'chassesautresor-com'); ?></a>
         </div>
         <?php echo $infos['footer_html']; ?>
     </div>
