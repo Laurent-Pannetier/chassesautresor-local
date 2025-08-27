@@ -342,9 +342,15 @@ section.enigme-wrapper {
 }
 
 .bouton-edition-toggle {
-  border: 1px solid;
+  border: 1px solid var(--color-primary);
   background: none;
-  color: var(--color-text-primary);
+  color: var(--color-primary);
+  font-size: 1rem;
+}
+
+.bouton-edition-toggle:hover {
+  color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
 }
 
 .bouton-edition-toggle--clair {
@@ -841,11 +847,11 @@ body[class*="edition-active"] .champ-desactive .champ-modifier,
    🧭 HEADER
    ================================================== */
 
-/* PARAMETRES EN HAUT À DROITE DU HEADER */
-.header-actions-droite {
+/* Bouton d'ouverture du panneau sur la page chasse */
+.chasse-fiche-container .bouton-edition-toggle {
+  position: absolute;
   top: 1.2rem;
   right: var(--space-xs);
-  position: absolute;
 }
 
 .header-coordonnees.champ-vide {
