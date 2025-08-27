@@ -2070,8 +2070,7 @@ section.enigme-wrapper {
 }
 
 .bouton-edition-toggle:hover {
-  color: var(--color-primary-dark);
-  border-color: var(--color-primary-dark);
+  background-color: rgba(var(--color-black-rgb, 0, 0, 0), 0.2);
 }
 
 .bouton-edition-toggle--clair {
@@ -4781,9 +4780,6 @@ li.active .enigme-menu__edit {
   width: 2.5rem;
   height: 2.5rem;
   padding: var(--space-xs);
-  color: var(--color-primary);
-  background: none;
-  border: 1px solid rgba(255, 215, 0, 0.5);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -7891,26 +7887,19 @@ a.bouton-edition-attention {
 .header-organisateur__actions button {
   color: var(--color-text-primary);
   background: none;
-  border: none;
-  font-size: 1.4rem;
   cursor: pointer;
   transition: color 0.2s ease;
 }
 
-.header-organisateur__actions .bouton-edition-toggle {
-  font-size: 1rem;
-  border: 1px solid var(--color-primary);
-  color: var(--color-primary);
+.header-organisateur__actions a,
+.header-organisateur__actions button:not(.bouton-edition-toggle) {
+  border: none;
+  font-size: 1.4rem;
 }
 
 .header-organisateur__actions a:hover,
 .header-organisateur__actions button:not(.bouton-edition-toggle):hover {
   color: var(--color-accent);
-}
-
-.header-organisateur__actions .bouton-edition-toggle:hover {
-  color: var(--color-primary-dark);
-  border-color: var(--color-primary-dark);
 }
 
 /* ========== 🖼 LOGO CLIQUABLE ========== */
