@@ -255,10 +255,8 @@
    ================================================== */
 .chasse-fiche-container {
   margin-top: var(--space-2xl);
-  display: flex;
-  gap: 2.6rem;
-  align-items: flex-start;
-  flex-wrap: wrap; /* utile si largeur écran réduite */
+  --grid-gap: 2.6rem;
+  align-items: start;
   position: relative;
 }
 
@@ -275,7 +273,6 @@
 
 /* ========== 📝 COLONNE INFOS DE LA CHASSE ========== */
 .chasse-details-wrapper {
-  flex: 1;
   min-width: 240px;
 }
 
@@ -349,13 +346,6 @@ body.edition-active-chasse .chasse-enigmes-header .liens-placeholder {
 
 /* ========== 📱 RESPONSIVE PAGE DE CHASSE ========== */
 @media not all and (--bp-tablet) {
-  .chasse-fiche-container {
-    flex-direction: column;
-  }
-  .chasse-image-wrapper,
-  .chasse-details-wrapper {
-    width: 100%;
-  }
   .header-chasse {
     font-size: 22px;
   }
@@ -375,6 +365,22 @@ body.edition-active-chasse .chasse-enigmes-header .liens-placeholder {
   font-weight: 500;
 }
 
+@media (--bp-tablet) {
+  .chasse-section-intro .col-image {
+    --col-span: 4;
+  }
+  .chasse-section-intro .col-details {
+    --col-span: 8;
+  }
+}
+@media (--bp-desktop) {
+  .chasse-section-intro .col-image {
+    --col-span: 5;
+  }
+  .chasse-section-intro .col-details {
+    --col-span: 7;
+  }
+}
 /* ========== 🛒 AJOUT AU PANIER ========== */
 .woocommerce a.button.add_to_cart_button {
   font-weight: 500;
@@ -1377,6 +1383,28 @@ a[aria-disabled=true] {
   padding: var(--space-sm) var(--space-md);
   position: relative;
   border-radius: 8px 8px 0 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.menu-lateral__back {
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: var(--space-xs);
+  color: inherit;
+  text-decoration: none;
+  background: none;
+  border: 1px solid rgba(var(--color-white-rgb, 255, 255, 255), 0.5);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-lateral__back svg {
+  width: 1rem;
+  height: 1rem;
 }
 
 .menu-lateral__title {
@@ -3709,6 +3737,46 @@ body.panneau-ouvert::before {
   flex-direction: row;
   gap: var(--space-md);
   align-items: center;
+}
+
+.champ-mode-options.segmented-control {
+  gap: 0;
+  border: 1px solid var(--color-editor-border);
+  border-radius: var(--space-xs);
+  overflow: hidden;
+}
+
+.champ-mode-options.segmented-control input[type=radio] {
+  position: absolute;
+  opacity: 0;
+}
+
+.champ-mode-options.segmented-control label {
+  flex: 1;
+  padding: var(--space-xs) var(--space-sm);
+  text-align: center;
+  cursor: pointer;
+  background: var(--color-editor-background);
+  border-right: 1px solid var(--color-editor-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xxs);
+  user-select: none;
+}
+
+.champ-mode-options.segmented-control label:last-of-type {
+  border-right: none;
+}
+
+.champ-mode-options.segmented-control input[type=radio]:checked + label {
+  background: var(--color-editor-accent);
+  color: var(--color-editor-background);
+}
+
+.champ-mode-options.segmented-control input[type=radio]:disabled + label {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .champ-mode-fin label {
@@ -6192,39 +6260,35 @@ span.champ-obligatoire {
     transform: rotate(360deg);
   }
 }
-/* \uD83D\uDCC0 Grid system */
-.container {
+/* 📦 Grid system */
+.container,
+.ast-container,
+.ast-container-fluid {
   width: 100%;
-  max-width: var(--container-max-width);
+  max-width: none;
   margin-left: auto;
   margin-right: auto;
   padding-left: var(--space-md);
   padding-right: var(--space-md);
 }
 
-.container--narrow {
+.container--boxed,
+.ast-container--boxed {
+  max-width: var(--container-max-width);
+}
+
+.container--narrow,
+.ast-container--narrow {
   --container-max-width: var(--container-max-width-narrow);
 }
 
-.container.fullwidth,
-.container--full {
-  max-width: none;
-}
-
-/* Full width only on very large screens */
-@media (min-width: 1400px) {
-  .container.fullwidth-xl,
-  .container--xl-full {
-    max-width: none;
-  }
-}
 .row {
   display: grid;
   gap: var(--grid-gap);
   grid-template-columns: repeat(var(--grid-columns), 1fr);
 }
 
-[class^=col-] {
+[class^=col-], [class*=" col-"] {
   --col-span: 12;
   grid-column: span var(--col-span);
 }
@@ -7829,6 +7893,8 @@ a.bouton-edition-attention {
 
 .header-organisateur__actions .bouton-edition-toggle {
   font-size: 1.2rem;
+  border: 1px solid hsl(var(--editor-button-hsl)/0.6);
+  color: hsl(var(--editor-button-hsl)/0.6);
 }
 
 .header-organisateur__actions a:hover,
@@ -7836,9 +7902,17 @@ a.bouton-edition-attention {
   color: var(--color-accent);
 }
 
+.header-organisateur__actions .bouton-edition-toggle:hover {
+  color: var(--color-editor-button);
+  border-color: var(--color-editor-button);
+}
+
 /* ========== 🖼 LOGO CLIQUABLE ========== */
 .header-organisateur__logo img {
-  width: 100px;
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  border-radius: 50%;
 }
 
 /* ========== 🧭 MODAL BIENVENUE ========== */

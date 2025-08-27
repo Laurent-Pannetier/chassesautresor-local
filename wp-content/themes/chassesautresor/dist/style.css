@@ -7915,11 +7915,18 @@ a.bouton-edition-attention {
 
 .header-organisateur__actions .bouton-edition-toggle {
   font-size: 1.2rem;
+  border: 1px solid hsl(var(--editor-button-hsl)/0.6);
+  color: hsl(var(--editor-button-hsl)/0.6);
 }
 
 .header-organisateur__actions a:hover,
 .header-organisateur__actions button:hover {
   color: var(--color-accent);
+}
+
+.header-organisateur__actions .bouton-edition-toggle:hover {
+  color: var(--color-editor-button);
+  border-color: var(--color-editor-button);
 }
 
 /* ========== 🖼 LOGO CLIQUABLE ========== */
