@@ -963,7 +963,7 @@ a.ajout-link:focus-visible {
 
 /* Couleurs par statut (alignées sur le nuancier) */
 .badge-statut.statut-en_cours {
-  background-color: var(--color-editor-success);
+  background-color: var(--color-success);
 }
 
 .badge-statut.statut-payante {
@@ -972,7 +972,7 @@ a.ajout-link:focus-visible {
 }
 
 .badge-statut.statut-a_venir {
-  background-color: var(--color-editor-placeholder);
+  background-color: var(--color-grey-medium);
 }
 
 .badge-statut.statut-termine {
@@ -980,7 +980,7 @@ a.ajout-link:focus-visible {
 }
 
 .badge-statut.statut-revision {
-  background-color: var(--color-editor-error);
+  background-color: var(--color-error);
 }
 
 /* ========== 🎁 BADGE RÉCOMPENSE ========== */
