@@ -32,6 +32,7 @@
   display: grid;
   gap: var(--grid-gap);
   grid-template-columns: repeat(var(--grid-columns), 1fr);
+  --grid-columns: 4;
 }
 
 [class^="col-"], [class*=" col-"] {
@@ -52,14 +53,14 @@
 .col-11 { --col-span: 11; }
 .col-12 { --col-span: 12; }
 
-@media not all and (--bp-desktop) {
-  .row { --grid-columns: 8; }
-}
-
-@media not all and (--bp-tablet) {
+@media (--bp-small) {
   .row { --grid-columns: 6; }
 }
 
-@media not all and (--bp-small) {
-  .row { --grid-columns: 4; }
+@media (--bp-tablet) {
+  .row { --grid-columns: 8; }
+}
+
+@media (--bp-desktop) {
+  .row { --grid-columns: 12; }
 }
