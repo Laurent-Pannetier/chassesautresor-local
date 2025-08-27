@@ -373,19 +373,13 @@
 }
 
 .page-chasse-wrapper .chasse-lot {
-  display: flex;
-  gap: 0.7rem;
-  align-items: flex-start;
   margin-bottom: var(--space-md);
   font-size: 20px;
 }
 
-.page-chasse-wrapper .chasse-lot svg {
-  color: var(--color-secondary);
-}
-
 .page-chasse-wrapper .chasse-lot .lot-title {
   font-weight: 600;
+  margin: 0;
 }
 
 .page-chasse-wrapper .chasse-lot .lot-subtitle {

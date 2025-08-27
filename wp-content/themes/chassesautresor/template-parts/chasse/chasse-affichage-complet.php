@@ -289,25 +289,22 @@ if ($edition_active && !$est_complet) {
 
         <?php if (!empty($titre_recompense) || (float) $valeur_recompense > 0 || !empty($lot)) : ?>
           <div class="chasse-lot" aria-live="polite">
-            <?php echo get_svg_icon('trophee'); ?>
-            <div>
-              <div class="lot-title"><?= esc_html__('lot à gagner', 'chassesautresor-com'); ?></div>
-              <?php
-              $subtitle_parts = [];
-              if (!empty($titre_recompense)) {
-                  $subtitle_parts[] = esc_html($titre_recompense);
-              }
-              if ((float) $valeur_recompense > 0) {
-                  $subtitle_parts[] = esc_html(number_format_i18n((float) $valeur_recompense, 0)) . ' €';
-              }
-              if (!empty($subtitle_parts)) :
-              ?>
-                <div class="lot-subtitle"><?= implode(' — ', $subtitle_parts); ?></div>
-              <?php endif; ?>
-              <?php if (!empty($lot)) : ?>
-                <div class="lot-description"><?= wp_kses_post($lot); ?></div>
-              <?php endif; ?>
-            </div>
+            <h2 class="lot-title"><?= esc_html__('lot à gagner', 'chassesautresor-com'); ?></h2>
+            <?php
+            $subtitle_parts = [];
+            if (!empty($titre_recompense)) {
+                $subtitle_parts[] = esc_html($titre_recompense);
+            }
+            if ((float) $valeur_recompense > 0) {
+                $subtitle_parts[] = esc_html(number_format_i18n((float) $valeur_recompense, 0)) . ' €';
+            }
+            if (!empty($subtitle_parts)) :
+            ?>
+              <div class="lot-subtitle"><?= implode(' — ', $subtitle_parts); ?></div>
+            <?php endif; ?>
+            <?php if (!empty($lot)) : ?>
+              <div class="lot-description"><?= wp_kses_post($lot); ?></div>
+            <?php endif; ?>
           </div>
         <?php endif; ?>
 
