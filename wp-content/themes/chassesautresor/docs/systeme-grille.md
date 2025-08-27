@@ -9,7 +9,7 @@ La grille générique repose sur un conteneur `.row` utilisant **CSS Grid**. Cha
 - 4 colonnes par défaut sur mobile.
 - 6 colonnes à partir de `--bp-small`, 8 à partir de `--bp-tablet` et 12 à partir de `--bp-desktop`.
 - Espacement configurable via la variable `--grid-gap`.
-- La variable `--mobile-first` (valeur `1`) rappelle que les styles de base ciblent les petits écrans.
+- Les styles de base ciblent les petits écrans : la grille suit une approche mobile-first.
 
 ```html
 <div class="row">

@@ -5,6 +5,7 @@
 - Keep function and variable names in English when possible.
 - Place opening braces on the same line as declarations.
 - Wrap all user-facing strings in WordPress internationalization functions and use the `chassesautresor-com` text domain.
+- Write CSS and SCSS using a mobile-first approach: base styles for small screens, then extend via media queries.
 
 ## Testing
 - Before committing any change, run the project tests.
