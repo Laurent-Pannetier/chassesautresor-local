@@ -726,6 +726,30 @@ function afficherErreurGlobale(message) {
   }, 4000); // Disparition après 4 secondes
 }
 
+function mettreAJourBadgeCoutChasse(postId, cout) {
+  const container = document.querySelector('.header-chasse__image');
+  if (!container) return;
+  const labelTpl = container.dataset.coutLabel || '';
+  const ptsLabel = container.dataset.ptsLabel || 'pts';
+  let badge = container.querySelector('.badge-cout');
+  if (cout > 0) {
+    if (!badge) {
+      badge = document.createElement('span');
+      badge.className = 'badge-cout';
+      badge.dataset.postId = postId;
+      container.appendChild(badge);
+    }
+    badge.textContent = `${cout} ${ptsLabel}`;
+    if (labelTpl) {
+      badge.setAttribute('aria-label', labelTpl.replace('%d', cout));
+    }
+  } else if (badge) {
+    badge.remove();
+  }
+}
+
+window.mettreAJourBadgeCoutChasse = mettreAJourBadgeCoutChasse;
+
 // ================================
 // 💾 Enregistrement du coût en points après clic bouton "✓"
 // ================================
@@ -746,6 +770,7 @@ document.querySelectorAll('.champ-cout-points .champ-enregistrer').forEach(bouto
 
     if (champ === 'chasse_infos_cout_points') {
       rafraichirStatutChasse(postId);
+      mettreAJourBadgeCoutChasse(postId, parseInt(valeur, 10));
     }
 
     // Cache les boutons après envoi

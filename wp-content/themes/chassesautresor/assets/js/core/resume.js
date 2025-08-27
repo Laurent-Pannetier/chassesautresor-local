@@ -239,6 +239,9 @@ window.onChampSimpleMisAJour = function (champ, postId, valeur, cpt) {
     ];
     if (champsStatut.includes(champ)) {
       rafraichirStatutChasse(postId);
+      if (champ === 'chasse_infos_cout_points' && typeof window.mettreAJourBadgeCoutChasse === 'function') {
+        window.mettreAJourBadgeCoutChasse(postId, parseInt(valeur, 10));
+      }
     }
     const champsResume = ['post_title'];
     if (champsResume.includes(champ) && typeof window.mettreAJourResumeInfos === 'function') {
