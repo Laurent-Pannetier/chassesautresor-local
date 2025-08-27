@@ -13,6 +13,13 @@
 
 
 @media (--bp-xxl) {
+  .container,
+  .ast-container,
+  .ast-container-fluid {
+    padding-left: var(--space-3xl);
+    padding-right: var(--space-3xl);
+  }
+
   .container--boxed {
     --container-max-width: var(--container-max-width-default);
   }
