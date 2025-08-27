@@ -10,6 +10,8 @@
   --grid-gap: 2.6rem;
   align-items: start;
   position: relative;
+  /* Image container max height (mobile first) */
+  --hunt-img-max-height: 200px;
 }
 
 
@@ -28,7 +30,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 400px;
+  height: var(--hunt-img-max-height);
 }
 
 .header-chasse__image img {
@@ -39,15 +41,21 @@
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.45);
 }
 
-@media (--bp-tablet) {
-  .header-chasse__image {
-    height: 500px;
+@media (--bp-mobile) {
+  .chasse-fiche-container {
+    --hunt-img-max-height: 300px;
   }
 }
 
 @media (--bp-desktop) {
-  .header-chasse__image {
-    height: 600px;
+  .chasse-fiche-container {
+    --hunt-img-max-height: 400px;
+  }
+}
+
+@media (--bp-xxl) {
+  .chasse-fiche-container {
+    --hunt-img-max-height: 600px;
   }
 }
 
@@ -143,24 +151,10 @@ body.edition-active-chasse .chasse-enigmes-header  .liens-placeholder {
   font-weight: 500;
 }
 
-// Layout responsive: image and details stack on mobile, side-by-side on larger screens
+// Layout responsive: stack on small screens, 50/50 on desktop and up
 .chasse-section-intro .col-image,
 .chasse-section-intro .col-details {
   --col-span: 12;
-}
-
-@media (--bp-mobile) {
-  .chasse-section-intro .col-image,
-  .chasse-section-intro .col-details {
-    --col-span: 3;
-  }
-}
-
-@media (--bp-tablet) {
-  .chasse-section-intro .col-image,
-  .chasse-section-intro .col-details {
-    --col-span: 4;
-  }
 }
 
 @media (--bp-desktop) {
