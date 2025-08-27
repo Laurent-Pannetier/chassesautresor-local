@@ -116,14 +116,16 @@ if ($edition_active && !$est_complet) {
 
         <div class="champ-affichage">
             <div class="header-chasse__image">
-                <span class="badge-statut statut-<?= esc_attr($statut_for_class); ?>" data-post-id="<?= esc_attr($chasse_id); ?>">
-                    <?= esc_html($statut_label); ?>
-                </span>
-                <img src="<?= esc_url($image_url); ?>"
-                    alt="Image de la chasse"
-                    class="chasse-image visuel-cpt"
-                    data-cpt="chasse"
-                    data-post-id="<?= esc_attr($chasse_id); ?>" />
+                <div class="header-chasse__image-wrapper">
+                    <span class="badge-statut statut-<?= esc_attr($statut_for_class); ?>" data-post-id="<?= esc_attr($chasse_id); ?>">
+                        <?= esc_html($statut_label); ?>
+                    </span>
+                    <img src="<?= esc_url($image_url); ?>"
+                        alt="Image de la chasse"
+                        class="chasse-image visuel-cpt"
+                        data-cpt="chasse"
+                        data-post-id="<?= esc_attr($chasse_id); ?>" />
+                </div>
             </div>
         </div>
 
