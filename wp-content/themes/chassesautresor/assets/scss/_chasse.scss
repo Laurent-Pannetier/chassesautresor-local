@@ -5,6 +5,14 @@
    🗺️ PAGE DE CHASSE (single-chasse.php)
    ================================================== */
 
+/* Utility: image constrained by max height with optional custom property */
+.img-h-max {
+  max-height: var(--img-max-height, 600px);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
 .chasse-fiche-container {
   margin-top: var(--space-2xl);
   --grid-gap: 2.6rem;
