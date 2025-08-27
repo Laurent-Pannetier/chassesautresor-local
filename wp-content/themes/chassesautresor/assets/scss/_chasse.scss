@@ -19,6 +19,7 @@
 .champ-chasse.champ-img {
   /* flex: 0 0 400px; /* largeur fixe raisonnable */
   max-width: 100%;
+  position: relative;
 }
 /* Image container handling full width and limited height */
 .chasse-fiche-container .champ-img .champ-affichage {
