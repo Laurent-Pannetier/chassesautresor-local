@@ -7928,7 +7928,10 @@ a.bouton-edition-attention {
 
 /* ========== 🖼 LOGO CLIQUABLE ========== */
 .header-organisateur__logo img {
-  width: 100px;
+  max-height: 50px;
+  width: auto;
+  -o-object-fit: contain;
+     object-fit: contain;
 }
 
 /* ========== 🧭 MODAL BIENVENUE ========== */
