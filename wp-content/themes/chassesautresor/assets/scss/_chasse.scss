@@ -115,12 +115,29 @@ body.edition-active-chasse .chasse-enigmes-header  .liens-placeholder {
   font-weight: 500;
 }
 
+// Layout responsive: image and details stack on mobile, side-by-side on larger screens
+.chasse-section-intro .col-image,
+.chasse-section-intro .col-details {
+  --col-span: 12;
+}
+
+@media (--bp-mobile) {
+  .chasse-section-intro .col-image,
+  .chasse-section-intro .col-details {
+    --col-span: 3;
+  }
+}
+
 @media (--bp-tablet) {
-  .chasse-section-intro .col-image { --col-span: 4; }
-  .chasse-section-intro .col-details { --col-span: 8; }
+  .chasse-section-intro .col-image,
+  .chasse-section-intro .col-details {
+    --col-span: 4;
+  }
 }
 
 @media (--bp-desktop) {
-  .chasse-section-intro .col-image { --col-span: 5; }
-  .chasse-section-intro .col-details { --col-span: 7; }
+  .chasse-section-intro .col-image,
+  .chasse-section-intro .col-details {
+    --col-span: 6;
+  }
 }

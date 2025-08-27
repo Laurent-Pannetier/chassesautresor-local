@@ -112,7 +112,7 @@ if ($edition_active && !$est_complet) {
     <?php endif; ?>
 
     <!-- 📷 Image principale -->
-    <div class="champ-chasse champ-img col-image col-12 <?= empty($image_url) ? 'champ-vide' : 'champ-rempli'; ?>"
+    <div class="champ-chasse champ-img col-image <?= empty($image_url) ? 'champ-vide' : 'champ-rempli'; ?>"
       data-champ="chasse_principale_image"
       data-cpt="chasse"
       data-post-id="<?= esc_attr($chasse_id); ?>">
@@ -134,7 +134,7 @@ if ($edition_active && !$est_complet) {
 
 
     <!-- 📟 Informations -->
-    <div class="chasse-details-wrapper col-details col-12">
+    <div class="chasse-details-wrapper col-details">
 
       <!-- Titre dynamique -->
       <h1 class="titre-objet header-chasse"
