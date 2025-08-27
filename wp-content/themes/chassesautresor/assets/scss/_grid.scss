@@ -11,9 +11,11 @@
   padding-right: var(--space-md);
 }
 
-.container--boxed,
-.ast-container--boxed {
-  --container-max-width: var(--container-max-width-default);
+
+@media (--bp-xxl) {
+  .container--boxed {
+    --container-max-width: var(--container-max-width-default);
+  }
 }
 
 .container--narrow,

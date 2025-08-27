@@ -6288,11 +6288,11 @@ span.champ-obligatoire {
   padding-right: var(--space-md);
 }
 
-.container--boxed,
-.ast-container--boxed {
-  --container-max-width: var(--container-max-width-default);
+@media (min-width: 1440px) {
+  .container--boxed {
+    --container-max-width: var(--container-max-width-default);
+  }
 }
-
 .container--narrow,
 .ast-container--narrow {
   --container-max-width: var(--container-max-width-narrow);
