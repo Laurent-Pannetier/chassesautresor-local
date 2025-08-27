@@ -106,14 +106,9 @@ if ($edition_active && !$est_complet) {
 
     <!-- 🔧 Bouton panneau édition -->
     <?php if ($edition_active) : ?>
-      <div class="header-actions-droite">
-        <button id="toggle-mode-edition-chasse" type="button"
-          class="bouton-edition-toggle"
-          data-cpt="chasse"
-          aria-label="Activer Orgy">
-          <i class="fa-solid fa-gear"></i>
-        </button>
-      </div>
+      <button id="toggle-mode-edition-chasse" class="bouton-edition-toggle" aria-label="Activer Orgy">
+        <i class="fa-solid fa-gear"></i>
+      </button>
     <?php endif; ?>
 
     <!-- 📷 Image principale -->

@@ -1024,7 +1024,7 @@ defined('ABSPATH') || exit;
         echo '</header>';
 
         if (function_exists('utilisateur_peut_modifier_enigme') && utilisateur_peut_modifier_enigme($enigme_id)) {
-            echo '<button type="button" class="enigme-edit-toggle--desktop toggle-mode-edition-enigme" aria-label="'
+            echo '<button type="button" class="bouton-edition-toggle enigme-edit-toggle--desktop toggle-mode-edition-enigme" aria-label="'
                 . esc_attr__('Paramètres', 'chassesautresor-com') . '">';
             echo '<span class="screen-reader-text">' . esc_html__('Paramètres', 'chassesautresor-com') . '</span>';
             echo $settings_icon;

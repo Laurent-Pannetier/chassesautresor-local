@@ -2069,9 +2069,20 @@ section.enigme-wrapper {
 }
 
 .bouton-edition-toggle {
-  border: 1px solid;
+  border: 1px solid rgba(255, 215, 0, 0.6);
   background: none;
-  color: var(--color-text-primary);
+  color: #fff;
+  font-size: 1rem;
+  transition: background-color 0.2s ease;
+}
+
+.bouton-edition-toggle:hover,
+.bouton-edition-toggle:focus {
+  background-color: rgba(255, 215, 0, 0.15);
+}
+
+.bouton-edition-toggle:active {
+  background-color: rgba(255, 215, 0, 0.3);
 }
 
 .bouton-edition-toggle--clair {
@@ -2544,11 +2555,11 @@ body[class*=edition-active] .champ-desactive .champ-modifier,
 /* ==================================================
    🧭 HEADER
    ================================================== */
-/* PARAMETRES EN HAUT À DROITE DU HEADER */
-.header-actions-droite {
+/* Bouton d'ouverture du panneau sur la page chasse */
+.chasse-fiche-container .bouton-edition-toggle {
+  position: absolute;
   top: 1.2rem;
   right: var(--space-xs);
-  position: absolute;
 }
 
 .header-coordonnees.champ-vide {
@@ -4789,9 +4800,6 @@ li.active .enigme-menu__edit {
   width: 2.5rem;
   height: 2.5rem;
   padding: var(--space-xs);
-  color: var(--color-primary);
-  background: none;
-  border: 1px solid rgba(255, 215, 0, 0.5);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -7906,24 +7914,24 @@ a.bouton-edition-attention {
   display: flex;
   align-items: center;
   gap: var(--space-md);
+  color: var(--color-text-primary);
 }
 
 .header-organisateur__actions a,
 .header-organisateur__actions button {
-  color: var(--color-text-primary);
   background: none;
-  border: none;
-  font-size: 1.4rem;
   cursor: pointer;
   transition: color 0.2s ease;
 }
 
-.header-organisateur__actions .bouton-edition-toggle {
-  font-size: 1.2rem;
+.header-organisateur__actions a,
+.header-organisateur__actions button:not(.bouton-edition-toggle) {
+  border: none;
+  font-size: 1.4rem;
 }
 
 .header-organisateur__actions a:hover,
-.header-organisateur__actions button:hover {
+.header-organisateur__actions button:not(.bouton-edition-toggle):hover {
   color: var(--color-accent);
 }
 
