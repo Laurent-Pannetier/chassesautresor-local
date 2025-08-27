@@ -99,9 +99,6 @@ if ($edition_active && !$est_complet) {
       $statut_for_class = 'en_cours';
     }
     ?>
-      <span class="badge-statut statut-<?= esc_attr($statut_for_class); ?>" data-post-id="<?= esc_attr($chasse_id); ?>">
-        <?= esc_html($statut_label); ?>
-      </span>
 
     <!-- 🔧 Bouton panneau édition -->
     <?php if ($edition_active) : ?>
@@ -117,6 +114,9 @@ if ($edition_active && !$est_complet) {
       data-post-id="<?= esc_attr($chasse_id); ?>">
 
       <div class="champ-affichage">
+        <span class="badge-statut statut-<?= esc_attr($statut_for_class); ?>" data-post-id="<?= esc_attr($chasse_id); ?>">
+          <?= esc_html($statut_label); ?>
+        </span>
         <div class="header-chasse__image">
           <img src="<?= esc_url($image_url); ?>"
             alt="Image de la chasse"

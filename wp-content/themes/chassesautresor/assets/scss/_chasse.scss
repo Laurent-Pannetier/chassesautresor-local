@@ -23,6 +23,7 @@
 /* Image container handling full width and limited height */
 .chasse-fiche-container .champ-img .champ-affichage {
   display: block;
+  position: relative;
 }
 
 .header-chasse__image {
