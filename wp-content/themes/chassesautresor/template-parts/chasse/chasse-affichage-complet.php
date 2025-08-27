@@ -114,22 +114,21 @@ if ($edition_active && !$est_complet) {
       data-cpt="chasse"
       data-post-id="<?= esc_attr($chasse_id); ?>">
 
-      <span class="badge-statut statut-<?= esc_attr($statut_for_class); ?>" data-post-id="<?= esc_attr($chasse_id); ?>">
-        <?= esc_html($statut_label); ?>
-      </span>
-
-      <div class="champ-affichage">
-        <div class="header-chasse__image">
-          <img src="<?= esc_url($image_url); ?>"
-            alt="Image de la chasse"
-            class="chasse-image visuel-cpt"
-            data-cpt="chasse"
-            data-post-id="<?= esc_attr($chasse_id); ?>" />
+        <div class="champ-affichage">
+            <div class="header-chasse__image">
+                <span class="badge-statut statut-<?= esc_attr($statut_for_class); ?>" data-post-id="<?= esc_attr($chasse_id); ?>">
+                    <?= esc_html($statut_label); ?>
+                </span>
+                <img src="<?= esc_url($image_url); ?>"
+                    alt="Image de la chasse"
+                    class="chasse-image visuel-cpt"
+                    data-cpt="chasse"
+                    data-post-id="<?= esc_attr($chasse_id); ?>" />
+            </div>
         </div>
-      </div>
 
-      <input type="hidden" class="champ-input" value="<?= esc_attr($image_id); ?>">
-      <div class="champ-feedback"></div>
+        <input type="hidden" class="champ-input" value="<?= esc_attr($image_id); ?>">
+        <div class="champ-feedback"></div>
     </div>
 
 
