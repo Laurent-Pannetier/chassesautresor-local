@@ -360,7 +360,7 @@ $is_complete = (
             <div class="dashboard-card" data-stat="bank-details">
               <i class="fa-solid fa-building-columns" aria-hidden="true"></i>
               <h3>
-                Coordonnées bancaires
+                <?= esc_html__('Coordonnées bancaires', 'chassesautresor-com'); ?>
                 <?php
                 get_template_part(
                     'template-parts/common/help-icon',

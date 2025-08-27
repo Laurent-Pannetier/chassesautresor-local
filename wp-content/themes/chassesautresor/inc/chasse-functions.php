@@ -770,7 +770,7 @@ function formater_nombre_joueurs(int $nombre): string
     $quantite = ($nombre === 0 || $nombre === 1) ? 1 : $nombre;
 
     return sprintf(
-        _n('%d joueur', '%d joueurs', $quantite, 'chassesautresor'),
+        _n('%d joueur', '%d joueurs', $quantite, 'chassesautresor-com'),
         $nombre
     );
 }
@@ -1105,20 +1105,28 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id): array
     verifier_ou_recalculer_statut_chasse($chasse_id);
     $statut            = get_field('chasse_cache_statut', $chasse_id) ?: 'revision';
     $statut_validation = get_field('chasse_cache_statut_validation', $chasse_id);
-    $statut_label      = ucfirst(str_replace('_', ' ', $statut));
     $badge_class       = 'statut-' . $statut;
+    $statut_label      = '';
 
     if ($statut === 'revision') {
         if ($statut_validation === 'creation') {
-            $statut_label = 'création';
+            $statut_label = __('création', 'chassesautresor-com');
         } elseif ($statut_validation === 'correction') {
-            $statut_label = 'correction';
+            $statut_label = __('correction', 'chassesautresor-com');
         } elseif ($statut_validation === 'en_attente') {
-            $statut_label = 'en attente';
+            $statut_label = __('en attente', 'chassesautresor-com');
+        } else {
+            $statut_label = __('révision', 'chassesautresor-com');
         }
-    } elseif ($statut === 'payante') {
-        $statut_label = 'en cours';
+    } elseif ($statut === 'payante' || $statut === 'en_cours') {
+        $statut_label = __('en cours', 'chassesautresor-com');
         $badge_class   = 'statut-en_cours';
+    } elseif ($statut === 'a_venir') {
+        $statut_label = __('à venir', 'chassesautresor-com');
+    } elseif ($statut === 'termine') {
+        $statut_label = __('terminée', 'chassesautresor-com');
+    } else {
+        $statut_label = __($statut, 'chassesautresor-com');
     }
 
     $enigmes_associees = recuperer_enigmes_associees($chasse_id);

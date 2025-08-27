@@ -43,7 +43,7 @@ $top_avances         = $infos_chasse['top_avances'];
 $mode_fin            = $champs['mode_fin'] ?? 'automatique';
 $title_mode          = $mode_fin === 'automatique'
     ? __('mode de fin de chasse : automatique', 'chassesautresor-com')
-    : __('mode de fin de chasse : action manuelle de l\'organisateur', 'chassesautresor-com');
+    : __('mode de fin de chasse : manuelle', 'chassesautresor-com');
 
 // Dates
 $date_debut_formatee = formater_date($date_debut);
@@ -85,20 +85,28 @@ if ($edition_active && !$est_complet) {
     <?php
     $statut = $infos_chasse['statut'];
     $statut_validation = $infos_chasse['statut_validation'];
-    $statut_label = ucfirst(str_replace('_', ' ', $statut));
+    $statut_label = '';
     $statut_for_class = $statut;
 
     if ($statut === 'revision') {
       if ($statut_validation === 'creation') {
-        $statut_label = 'création';
+        $statut_label = __('création', 'chassesautresor-com');
       } elseif ($statut_validation === 'correction') {
-        $statut_label = 'correction';
+        $statut_label = __('correction', 'chassesautresor-com');
       } elseif ($statut_validation === 'en_attente') {
-        $statut_label = 'en attente';
+        $statut_label = __('en attente', 'chassesautresor-com');
+      } else {
+        $statut_label = __('révision', 'chassesautresor-com');
       }
-    } elseif ($statut === 'payante') {
-      $statut_label = 'en cours';
+    } elseif ($statut === 'payante' || $statut === 'en_cours') {
+      $statut_label = __('en cours', 'chassesautresor-com');
       $statut_for_class = 'en_cours';
+    } elseif ($statut === 'a_venir') {
+      $statut_label = __('à venir', 'chassesautresor-com');
+    } elseif ($statut === 'termine') {
+      $statut_label = __('terminée', 'chassesautresor-com');
+    } else {
+      $statut_label = __($statut, 'chassesautresor-com');
     }
     ?>
 
@@ -179,16 +187,16 @@ if ($edition_active && !$est_complet) {
 
       <?php if ($organisateur_id): ?>
         <p class="txt-small auteur-organisateur">
-          Par <a href="<?= get_permalink($organisateur_id); ?>"><?= esc_html($organisateur_nom); ?></a>
+          <?php esc_html_e('Par', 'chassesautresor-com'); ?> <a href="<?= get_permalink($organisateur_id); ?>"><?= esc_html($organisateur_nom); ?></a>
         </p>
       <?php endif; ?>
 
       <div class="meta-row svg-xsmall">
         <div class="meta-regular">
           <?php echo get_svg_icon('enigme'); ?>
-          <?= esc_html($total_enigmes); ?> énigme<?= ($total_enigmes > 1 ? 's' : ''); ?> —
+          <?= esc_html(sprintf(_n('%d énigme', '%d énigmes', $total_enigmes, 'chassesautresor-com'), $total_enigmes)); ?> —
           <?php echo get_svg_icon('participants'); ?>
-          <?= esc_html($nb_joueurs); ?> joueur<?= ($nb_joueurs > 1 ? 's' : ''); ?>
+          <?= esc_html(sprintf(_n('%d joueur', '%d joueurs', $nb_joueurs, 'chassesautresor-com'), $nb_joueurs)); ?>
         </div>
         <div class="meta-etiquette">
           <?php echo get_svg_icon('calendar'); ?>
