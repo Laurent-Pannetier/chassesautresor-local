@@ -267,16 +267,23 @@
 .chasse-fiche-container {
   margin-top: var(--space-2xl);
   --grid-gap: 2.6rem;
-  align-items: start;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--grid-gap);
   /* Image container max height (mobile first) */
   --hunt-img-max-height: 200px;
 }
 
 /* ========== 🖼️ COLONNE IMAGE DE LA CHASSE ========== */
 .champ-chasse.champ-img {
-  /* flex: 0 0 400px; /* largeur fixe raisonnable */
+  flex: 0 0 auto;
+  padding: var(--space-xs);
+  width: -moz-fit-content;
+  width: fit-content;
   max-width: 100%;
+  margin: 0 auto;
 }
 
 /* Image container handling full width and limited height */
@@ -331,7 +338,11 @@
 }
 @media (min-width: 768px) {
   .chasse-fiche-container {
+    flex-direction: row;
     --hunt-img-max-height: 400px;
+  }
+  .champ-chasse.champ-img {
+    margin: 0;
   }
 }
 @media (min-width: 1440px) {
@@ -342,6 +353,7 @@
 /* ========== 📝 COLONNE INFOS DE LA CHASSE ========== */
 .chasse-details-wrapper {
   min-width: 240px;
+  flex: 1;
 }
 
 .header-chasse {
@@ -450,27 +462,6 @@ body.edition-active-chasse .chasse-enigmes-header .liens-placeholder {
   font-weight: 500;
 }
 
-.chasse-section-intro .col-image,
-.chasse-section-intro .col-details {
-  --col-span: 12;
-}
-
-@media (min-width: 768px) {
-  .chasse-section-intro .col-image {
-    --col-span: 3;
-  }
-  .chasse-section-intro .col-details {
-    --col-span: 5;
-  }
-}
-@media (min-width: 1024px) {
-  .chasse-section-intro .col-image {
-    --col-span: 5;
-  }
-  .chasse-section-intro .col-details {
-    --col-span: 7;
-  }
-}
 /* ========== 🛒 AJOUT AU PANIER ========== */
 .woocommerce a.button.add_to_cart_button {
   font-weight: 500;

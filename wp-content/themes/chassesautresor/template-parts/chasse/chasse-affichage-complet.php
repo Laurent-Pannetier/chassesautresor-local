@@ -81,7 +81,7 @@ if ($edition_active && !$est_complet) {
 
 <section class="<?= esc_attr($classe_intro); ?>">
 
-  <div class="chasse-fiche-container row">
+  <div class="chasse-fiche-container">
     <?php
     $statut = $infos_chasse['statut'];
     $statut_validation = $infos_chasse['statut_validation'];
@@ -118,7 +118,7 @@ if ($edition_active && !$est_complet) {
     <?php endif; ?>
 
     <!-- 📷 Image principale -->
-    <div class="champ-chasse champ-img col-image <?= empty($image_url) ? 'champ-vide' : 'champ-rempli'; ?>"
+    <div class="champ-chasse champ-img <?= empty($image_url) ? 'champ-vide' : 'champ-rempli'; ?>"
       data-champ="chasse_principale_image"
       data-cpt="chasse"
       data-post-id="<?= esc_attr($chasse_id); ?>">
@@ -176,7 +176,7 @@ if ($edition_active && !$est_complet) {
 
 
     <!-- 📟 Informations -->
-    <div class="chasse-details-wrapper col-details">
+    <div class="chasse-details-wrapper">
 
       <!-- Titre dynamique -->
       <h1 class="titre-objet header-chasse"
