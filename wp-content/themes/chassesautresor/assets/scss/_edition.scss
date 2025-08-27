@@ -342,14 +342,20 @@ section.enigme-wrapper {
 }
 
 .bouton-edition-toggle {
-  border: 1px solid var(--color-primary);
+  border: 1px solid hsla(var(--editor-accent-hsl), 0.6);
   background: none;
-  color: var(--color-primary);
+  color: var(--color-editor-accent);
   font-size: 1rem;
+  transition: background-color 0.2s ease;
 }
 
-.bouton-edition-toggle:hover {
-  background-color: rgba(var(--color-black-rgb, 0, 0, 0), 0.2);
+.bouton-edition-toggle:hover,
+.bouton-edition-toggle:focus {
+  background-color: hsla(var(--editor-accent-hsl), 0.15);
+}
+
+.bouton-edition-toggle:active {
+  background-color: hsla(var(--editor-accent-hsl), 0.3);
 }
 
 .bouton-edition-toggle--clair {

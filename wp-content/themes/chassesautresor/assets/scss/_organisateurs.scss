@@ -120,11 +120,11 @@ a.bouton-edition-attention {
   display: flex;
   align-items: center;
   gap: var(--space-md);
+  color: var(--color-text-primary);
 }
 
 .header-organisateur__actions a,
 .header-organisateur__actions button {
-  color: var(--color-text-primary);
   background: none;
   cursor: pointer;
   transition: color 0.2s ease;
