@@ -437,15 +437,37 @@ msgstr "Afficher les statistiques"
 
 #: inc/enigme/affichage.php:649
 #: template-parts/chasse/chasse-edition-main.php:708
-#: template-parts/chasse/partials/chasse-partial-indices.php:32
 msgid "Indices"
 msgstr "Indices"
 
 #: template-parts/chasse/chasse-edition-main.php:708
 #: template-parts/enigme/enigme-edition-main.php:774
+#: template-parts/common/edition-animation.php:366
+#: template-parts/common/edition-animation.php:370
 #, php-format
 msgid "Indices pour %s"
 msgstr "Indices pour %s"
+
+#: template-parts/chasse/partials/chasse-partial-indices.php:35
+msgid "Ajouter un indice"
+msgstr "Ajouter un indice"
+
+#: template-parts/chasse/partials/chasse-partial-indices.php:42
+msgid "Pour…"
+msgstr "Pour…"
+
+#: template-parts/chasse/partials/chasse-partial-indices.php:56
+msgid "Cette énigme"
+msgstr "Cette énigme"
+
+#: template-parts/chasse/partials/chasse-partial-indices.php:66
+#: template-parts/chasse/partials/chasse-partial-indices.php:77
+msgid "La chasse entière"
+msgstr "La chasse entière"
+
+#: template-parts/chasse/partials/chasse-partial-indices.php:89
+msgid "Une énigme de la chasse"
+msgstr "Une énigme de la chasse"
 
 #: inc/enigme/affichage.php:677
 #, fuzzy
@@ -760,8 +782,7 @@ msgstr "Ajouter des coordonnées bancaires"
 
 #: inc/organisateur-functions.php:231
 #: template-parts/chasse/chasse-edition-main.php:673
-#: template-parts/chasse/partials/chasse-partial-indices.php:46
-#: template-parts/chasse/partials/chasse-partial-indices.php:50
+#: template-parts/chasse/partials/chasse-partial-indices.php:97
 #: template-parts/organisateur/organisateur-edition-main.php:305
 #: template-parts/organisateur/organisateur-edition-main.php:319
 #: template-parts/organisateur/organisateur-edition-main.php:360
@@ -2518,8 +2539,14 @@ msgid "Aucun fichier choisi"
 msgstr "Aucun fichier choisi"
 
 #: template-parts/chasse/partials/chasse-partial-solutions.php:47
+#: inc/edition/edition-enigme.php:62
 msgid "Il existe déjà une solution pour cette chasse"
 msgstr "Il existe déjà une solution pour cette chasse"
+
+#: template-parts/chasse/partials/chasse-partial-solutions.php:33
+#: inc/edition/edition-enigme.php:63
+msgid "Il existe déjà une solution pour cette énigme"
+msgstr "Il existe déjà une solution pour cette énigme"
 
 #: template-parts/chasse/partials/chasse-partial-solutions.php:62
 msgid "Toutes les énigmes de la chasse ont déjà une solution"
@@ -2557,4 +2584,21 @@ msgstr "Modifier le logo"
 #: template-parts/organisateur/organisateur-edition-main.php:172
 msgid "Logo de l’organisateur"
 msgstr "Logo de l’organisateur"
+
+#: template-parts/common/edition-animation.php:512
+msgid "Solutions pour toute la chasse %s"
+msgstr "Solutions pour toute la chasse %s"
+
+#: template-parts/common/edition-animation.php:514
+msgid "Solutions pour %s"
+msgstr "Solutions pour %s"
+
+#: template-parts/common/edition-animation.php:521
+#: inc/edition/edition-enigme.php:64
+msgid "Voir toutes les solutions de la chasse"
+msgstr "Voir toutes les solutions de la chasse"
+
+#: inc/edition/edition-enigme.php:65
+msgid "Voir la solution de cette énigme"
+msgstr "Voir la solution de cette énigme"
 

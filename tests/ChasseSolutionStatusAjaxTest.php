@@ -54,12 +54,14 @@ class ChasseSolutionStatusAjaxTest extends TestCase
 
         $_POST = [
             'chasse_id' => 10,
+            'enigme_id' => 1,
         ];
 
         ajax_chasse_solution_status();
 
         global $json_success_data;
         $this->assertSame(1, $json_success_data['has_solution_chasse']);
+        $this->assertSame(1, $json_success_data['has_solution_enigme']);
         $this->assertSame(1, $json_success_data['has_enigmes']);
     }
 }

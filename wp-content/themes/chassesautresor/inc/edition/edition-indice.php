@@ -457,6 +457,8 @@ function ajax_indices_lister_table(): void
     $objet_id   = isset($_POST['objet_id']) ? (int) $_POST['objet_id'] : 0;
     $objet_type = sanitize_key($_POST['objet_type'] ?? '');
     $page       = isset($_POST['page']) ? (int) $_POST['page'] : 1;
+    $chasse_id  = isset($_POST['chasse_id']) ? (int) $_POST['chasse_id'] : 0;
+    $enigme_id  = isset($_POST['enigme_id']) ? (int) $_POST['enigme_id'] : 0;
 
     if (!$objet_id || !in_array($objet_type, ['chasse', 'enigme'], true)
         || get_post_type($objet_id) !== $objet_type
@@ -466,6 +468,15 @@ function ajax_indices_lister_table(): void
 
     if (!indice_action_autorisee('edit', $objet_type, $objet_id)) {
         wp_send_json_error('acces_refuse');
+    }
+
+    if ($objet_type === 'enigme') {
+        $enigme_id = $objet_id;
+        if (!$chasse_id) {
+            $chasse_id = (int) recuperer_id_chasse_associee($enigme_id);
+        }
+    } elseif ($objet_type === 'chasse') {
+        $chasse_id = $objet_id;
     }
 
     $per_page = $objet_type === 'chasse' ? 5 : 8;
@@ -547,6 +558,37 @@ function ajax_indices_lister_table(): void
     }
     $count_total = $count_chasse + $count_enigme;
 
+    $has_enigme_indices = false;
+    if ($enigme_id) {
+        $has_enigme_indices = function_exists('get_posts') ? count(get_posts([
+            'post_type'   => 'indice',
+            'post_status' => ['publish', 'pending', 'draft'],
+            'fields'      => 'ids',
+            'nopaging'    => true,
+            'meta_query'  => [
+                [
+                    'key'   => 'indice_cible_type',
+                    'value' => 'enigme',
+                ],
+                [
+                    'key'   => 'indice_enigme_linked',
+                    'value' => $enigme_id,
+                ],
+            ],
+        ])) > 0 : false;
+    }
+
+    $toggle_args = null;
+    if ($has_enigme_indices && $chasse_id && $enigme_id) {
+        $toggle_args = [
+            'chasse_id' => $chasse_id,
+            'enigme_id' => $enigme_id,
+            'label'     => $objet_type === 'enigme'
+                ? __('Voir tous les indices de la chasse', 'chassesautresor-com')
+                : __('Voir les indices de cette énigme', 'chassesautresor-com'),
+        ];
+    }
+
     ob_start();
     get_template_part('template-parts/common/indices-table', null, [
         'indices'      => $query->posts,
@@ -557,6 +599,7 @@ function ajax_indices_lister_table(): void
         'count_total'  => $count_total,
         'count_chasse' => $count_chasse,
         'count_enigme' => $count_enigme,
+        'toggle'       => $toggle_args,
     ]);
     $html = ob_get_clean();
 

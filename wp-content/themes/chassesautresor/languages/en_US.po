@@ -437,29 +437,37 @@ msgstr "View Stats"
 
 #: inc/enigme/affichage.php:649
 #: template-parts/chasse/chasse-edition-main.php:708
-#: template-parts/chasse/partials/chasse-partial-indices.php:32
+#: inc/enigme/affichage.php:649
+#: template-parts/chasse/chasse-edition-main.php:708
 msgid "Indices"
 msgstr "Hints"
 
 #: template-parts/chasse/chasse-edition-main.php:708
 #: template-parts/enigme/enigme-edition-main.php:774
+#: template-parts/common/edition-animation.php:366
+#: template-parts/common/edition-animation.php:370
 #, php-format
 msgid "Indices pour %s"
 msgstr "Hints for %s"
 
-#: template-parts/chasse/partials/chasse-partial-indices.php:26
+#: template-parts/chasse/partials/chasse-partial-indices.php:35
 msgid "Ajouter un indice"
 msgstr "Add a hint"
 
-#: template-parts/chasse/partials/chasse-partial-indices.php:33
+#: template-parts/chasse/partials/chasse-partial-indices.php:42
 msgid "Pour…"
 msgstr "For…"
 
-#: template-parts/chasse/partials/chasse-partial-indices.php:44
+#: template-parts/chasse/partials/chasse-partial-indices.php:56
+msgid "Cette énigme"
+msgstr "This riddle"
+
+#: template-parts/chasse/partials/chasse-partial-indices.php:66
+#: template-parts/chasse/partials/chasse-partial-indices.php:77
 msgid "La chasse entière"
 msgstr "The entire hunt"
 
-#: template-parts/chasse/partials/chasse-partial-indices.php:56
+#: template-parts/chasse/partials/chasse-partial-indices.php:89
 msgid "Une énigme de la chasse"
 msgstr "A riddle from the hunt"
 
@@ -772,8 +780,7 @@ msgstr "Add bank details"
 
 #: inc/organisateur-functions.php:231
 #: template-parts/chasse/chasse-edition-main.php:673
-#: template-parts/chasse/partials/chasse-partial-indices.php:46
-#: template-parts/chasse/partials/chasse-partial-indices.php:50
+#: template-parts/chasse/partials/chasse-partial-indices.php:97
 #: template-parts/organisateur/organisateur-edition-main.php:305
 #: template-parts/organisateur/organisateur-edition-main.php:319
 #: template-parts/organisateur/organisateur-edition-main.php:360
@@ -2545,8 +2552,14 @@ msgid "Aucun fichier choisi"
 msgstr "No file selected"
 
 #: template-parts/chasse/partials/chasse-partial-solutions.php:47
+#: inc/edition/edition-enigme.php:62
 msgid "Il existe déjà une solution pour cette chasse"
 msgstr "A solution already exists for this hunt"
+
+#: template-parts/chasse/partials/chasse-partial-solutions.php:33
+#: inc/edition/edition-enigme.php:63
+msgid "Il existe déjà une solution pour cette énigme"
+msgstr "A solution already exists for this riddle"
 
 #: template-parts/chasse/partials/chasse-partial-solutions.php:62
 msgid "Toutes les énigmes de la chasse ont déjà une solution"
@@ -2584,4 +2597,21 @@ msgstr "Edit logo"
 #: template-parts/organisateur/organisateur-edition-main.php:172
 msgid "Logo de l’organisateur"
 msgstr "Organizer logo"
+
+#: template-parts/common/edition-animation.php:512
+msgid "Solutions pour toute la chasse %s"
+msgstr "Solutions for the whole hunt %s"
+
+#: template-parts/common/edition-animation.php:514
+msgid "Solutions pour %s"
+msgstr "Solutions for %s"
+
+#: template-parts/common/edition-animation.php:521
+#: inc/edition/edition-enigme.php:64
+msgid "Voir toutes les solutions de la chasse"
+msgstr "See all hunt solutions"
+
+#: inc/edition/edition-enigme.php:65
+msgid "Voir la solution de cette énigme"
+msgstr "See this riddle's solution"
 

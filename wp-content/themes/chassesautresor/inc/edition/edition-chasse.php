@@ -31,6 +31,7 @@ function enqueue_script_chasse_edit()
 
   // Enfile les scripts nécessaires
   enqueue_core_edit_scripts([
+    'edition-animation-options',
     'chasse-edit',
     'chasse-stats',
     'table-etiquette',

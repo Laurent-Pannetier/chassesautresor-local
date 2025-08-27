@@ -22,6 +22,7 @@ $objet_titre  = get_the_title($objet_id);
 $count_total  = isset($args['count_total']) ? (int) $args['count_total'] : 0;
 $count_chasse = isset($args['count_chasse']) ? (int) $args['count_chasse'] : 0;
 $count_enigme = isset($args['count_enigme']) ? (int) $args['count_enigme'] : 0;
+$toggle       = $args['toggle'] ?? null;
 
 if (empty($indices)) {
     $titre = get_the_title($objet_id);
@@ -35,7 +36,7 @@ if (empty($indices)) {
 }
 ?>
 
-<?php if ($count_total || $count_chasse || $count_enigme) : ?>
+<?php if ($count_total || $count_chasse || $count_enigme || $toggle) : ?>
 <div class="indices-table-header">
     <?php if ($count_total) : ?>
         <span class="etiquette"><?php echo esc_html(sprintf(_n('%d indice au total', '%d indices au total', $count_total, 'chassesautresor-com'), $count_total)); ?></span>
@@ -45,6 +46,13 @@ if (empty($indices)) {
     <?php endif; ?>
     <?php if ($count_enigme) : ?>
         <span class="etiquette"><?php echo esc_html(sprintf(_n('%d indice énigme', '%d indices énigme', $count_enigme, 'chassesautresor-com'), $count_enigme)); ?></span>
+    <?php endif; ?>
+    <?php if ($toggle) : ?>
+        <span class="etiquette">
+            <button type="button" class="indices-toggle champ-modifier" data-chasse-id="<?= esc_attr($toggle['chasse_id']); ?>" data-enigme-id="<?= esc_attr($toggle['enigme_id']); ?>">
+                <?= esc_html($toggle['label']); ?>
+            </button>
+        </span>
     <?php endif; ?>
 </div>
 <?php endif; ?>

@@ -309,9 +309,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                     },
                     'content' => function () use ($mode_validation, $peut_editer, $enigme_id) {
                         ?>
-                        <div class="champ-mode-options">
-                            <label>
-                                <input id="enigme_mode_validation" type="radio" name="acf[enigme_mode_validation]" value="automatique" <?= $mode_validation === 'automatique' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
+                        <div class="champ-mode-options segmented-control">
+                            <input id="enigme_mode_validation_auto" type="radio" name="acf[enigme_mode_validation]" value="automatique" <?= $mode_validation === 'automatique' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
+                            <label for="enigme_mode_validation_auto">
                                 <?= esc_html__('Automatique', 'chassesautresor-com'); ?>
                                 <?php
                                 get_template_part(
@@ -327,8 +327,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                                 );
                                 ?>
                             </label>
-                            <label>
-                                <input type="radio" name="acf[enigme_mode_validation]" value="manuelle" <?= $mode_validation === 'manuelle' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
+
+                            <input id="enigme_mode_validation_manuelle" type="radio" name="acf[enigme_mode_validation]" value="manuelle" <?= $mode_validation === 'manuelle' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
+                            <label for="enigme_mode_validation_manuelle">
                                 <?= esc_html__('Manuelle', 'chassesautresor-com'); ?>
                                 <?php
                                 get_template_part(
@@ -344,8 +345,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                                 );
                                 ?>
                             </label>
-                            <label>
-                                <input type="radio" name="acf[enigme_mode_validation]" value="aucune" <?= $mode_validation === 'aucune' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
+
+                            <input id="enigme_mode_validation_aucune" type="radio" name="acf[enigme_mode_validation]" value="aucune" <?= $mode_validation === 'aucune' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
+                            <label for="enigme_mode_validation_aucune">
                                 <?= esc_html__('Aucune', 'chassesautresor-com'); ?>
                             </label>
                         </div>

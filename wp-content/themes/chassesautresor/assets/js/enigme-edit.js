@@ -4,8 +4,110 @@ DEBUG && console.log('✅ enigme-edit.js chargé');
 
 let boutonsToggle;
 let panneauEdition;
+let solutionsWrapper;
+let solutionHeading;
 
+function updateSolutionHeading(type) {
+  if (!solutionHeading) return;
+  const isEnigme = type === 'enigme';
+  const template = isEnigme
+    ? solutionHeading.dataset.titreEnigme
+    : solutionHeading.dataset.titreChasse;
+  const titre = isEnigme
+    ? solutionHeading.dataset.enigmeTitle
+    : solutionHeading.dataset.chasseTitle;
+  if (template && typeof titre === 'string') {
+    solutionHeading.textContent = template.replace('%s', titre);
+  }
+}
 
+function rafraichirCarteSolutions() {
+  solutionsWrapper = document.querySelector('.liste-solutions');
+  solutionHeading = document.getElementById('enigme-section-solutions');
+
+  const card = document.querySelector('.dashboard-card.champ-solutions');
+  if (!card) return;
+  const btnChasse = card.querySelector('.cta-solution-chasse');
+  const btnEnigme = card.querySelector('.cta-solution-enigme');
+  const chasseId =
+    (btnChasse && btnChasse.dataset.objetId) ||
+    (btnEnigme && btnEnigme.dataset.chasseId);
+  const enigmeId =
+    (btnEnigme && btnEnigme.dataset.objetId) ||
+    (btnChasse && btnChasse.dataset.enigmeId);
+  const ajaxUrl =
+    (window.solutionsCreate && solutionsCreate.ajaxUrl) || window.ajaxurl;
+  if (!ajaxUrl || !chasseId) return;
+
+  const fd = new FormData();
+  fd.append('action', 'chasse_solution_status');
+  fd.append('chasse_id', chasseId);
+  if (enigmeId) fd.append('enigme_id', enigmeId);
+  fetch(ajaxUrl, { method: 'POST', credentials: 'same-origin', body: fd })
+    .then((r) => r.json())
+    .then((res) => {
+      if (!res.success || !res.data) return;
+      if (btnChasse) {
+        const disableChasse = !!res.data.has_solution_chasse;
+        btnChasse.classList.toggle('disabled', disableChasse);
+        btnChasse.setAttribute('aria-disabled', disableChasse);
+        if (ChasseSolutions && ChasseSolutions.tooltipChasse) {
+          btnChasse.title = disableChasse ? ChasseSolutions.tooltipChasse : '';
+        }
+      }
+      if (btnEnigme) {
+        const disableEnigme = !!res.data.has_solution_enigme;
+        btnEnigme.classList.toggle('disabled', disableEnigme);
+        btnEnigme.setAttribute('aria-disabled', disableEnigme);
+        if (ChasseSolutions && ChasseSolutions.tooltipEnigme) {
+          btnEnigme.title = disableEnigme ? ChasseSolutions.tooltipEnigme : '';
+        }
+      }
+
+      const hasSolutions = !!res.data.has_solutions;
+      card.classList.toggle('champ-rempli', hasSolutions);
+      card.classList.toggle('champ-vide', !hasSolutions);
+
+      if (solutionsWrapper) {
+        const header = document.querySelector('.solutions-table-header');
+        const toggleBtn = header ? header.querySelector('.solutions-toggle') : null;
+        const total = parseInt(res.data.total_solutions || '0', 10);
+        const hasEnigme = !!res.data.has_solution_enigme;
+        const hasOther = hasEnigme ? total > 1 : total > 0;
+        if (hasEnigme) {
+          solutionsWrapper.dataset.objetType = 'enigme';
+          solutionsWrapper.dataset.objetId = enigmeId;
+          solutionsWrapper.dataset.page = '1';
+          if (header && toggleBtn) {
+            header.style.display = hasOther ? '' : 'none';
+            toggleBtn.textContent =
+              (ChasseSolutions && ChasseSolutions.toggleChasse) ||
+              wp.i18n.__('Voir toutes les solutions de la chasse', 'chassesautresor-com');
+          }
+          updateSolutionHeading('enigme');
+        } else {
+          solutionsWrapper.dataset.objetType = 'chasse';
+          solutionsWrapper.dataset.objetId = chasseId;
+          solutionsWrapper.dataset.page = '1';
+          if (header) header.style.display = 'none';
+          if (toggleBtn) {
+            toggleBtn.textContent =
+              (ChasseSolutions && ChasseSolutions.toggleEnigme) ||
+              wp.i18n.__('Voir la solution de cette énigme', 'chassesautresor-com');
+          }
+          updateSolutionHeading('chasse');
+        }
+        if (window.reloadSolutionsTable) {
+          window.reloadSolutionsTable(solutionsWrapper);
+        }
+      }
+
+      initDisabledSolutionButtons();
+    })
+    .catch(() => {});
+}
+
+window.rafraichirCarteSolutions = rafraichirCarteSolutions;
 
 function initEnigmeEdit() {
   if (typeof initZonesClicEdition === 'function') initZonesClicEdition();
@@ -67,6 +169,97 @@ function initEnigmeEdit() {
       if (typeof initChampImage === 'function') initChampImage(bloc);
     } else {
       if (typeof initChampTexte === 'function') initChampTexte(bloc);
+    }
+  });
+
+  // ==============================
+  // 🏷️ Titre dynamique du tableau des indices
+  // ==============================
+  const titreInput = document.querySelector('.champ-enigme[data-champ="post_title"] .champ-input');
+  const indiceHeading = document.getElementById('enigme-section-indices');
+  const indicesWrapper = document.querySelector('.liste-indices');
+
+  function updateIndiceHeading(type) {
+    if (!indiceHeading) return;
+    const isEnigme = type === 'enigme';
+    const template = isEnigme
+      ? indiceHeading.dataset.titreEnigme
+      : indiceHeading.dataset.titreChasse;
+    const titre = isEnigme
+      ? indiceHeading.dataset.enigmeTitle
+      : indiceHeading.dataset.chasseTitle;
+    if (template && typeof titre === 'string') {
+      indiceHeading.textContent = template.replace('%s', titre);
+    }
+  }
+
+  if (titreInput && indiceHeading) {
+    titreInput.addEventListener('input', () => {
+      indiceHeading.dataset.enigmeTitle = titreInput.value.trim();
+      if (indicesWrapper?.dataset.objetType === 'enigme') {
+        updateIndiceHeading('enigme');
+      }
+    });
+  }
+
+  updateIndiceHeading(indicesWrapper?.dataset.objetType || 'enigme');
+
+  // ==============================
+  // 🔀 Toggle indices table between enigme and chasse
+  // ==============================
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.indices-toggle');
+    if (!btn || !indicesWrapper) return;
+    const isEnigme = indicesWrapper.dataset.objetType === 'enigme';
+    indicesWrapper.dataset.objetType = isEnigme ? 'chasse' : 'enigme';
+    indicesWrapper.dataset.objetId = isEnigme
+      ? indicesWrapper.dataset.chasseId
+      : indicesWrapper.dataset.enigmeId;
+    indicesWrapper.dataset.page = '1';
+    btn.textContent = isEnigme
+      ? wp.i18n.__('Voir les indices de cette énigme', 'chassesautresor-com')
+      : wp.i18n.__('Voir tous les indices de la chasse', 'chassesautresor-com');
+    updateIndiceHeading(indicesWrapper.dataset.objetType);
+    if (typeof window.reloadIndicesTable === 'function') {
+      window.reloadIndicesTable(indicesWrapper);
+    }
+  });
+
+  // ==============================
+  // 🏷️ Titre dynamique du tableau des solutions
+  // ==============================
+  solutionHeading = document.getElementById('enigme-section-solutions');
+  solutionsWrapper = document.querySelector('.liste-solutions');
+  if (titreInput && solutionHeading) {
+    titreInput.addEventListener('input', () => {
+      solutionHeading.dataset.enigmeTitle = titreInput.value.trim();
+      if (solutionsWrapper?.dataset.objetType === 'enigme') {
+        updateSolutionHeading('enigme');
+      }
+    });
+  }
+  updateSolutionHeading(solutionsWrapper?.dataset.objetType || 'enigme');
+
+  // ==============================
+  // 🔀 Toggle solutions table between enigme and chasse
+  // ==============================
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.solutions-toggle');
+    if (!btn || !solutionsWrapper) return;
+    const isEnigme = solutionsWrapper.dataset.objetType === 'enigme';
+    solutionsWrapper.dataset.objetType = isEnigme ? 'chasse' : 'enigme';
+    solutionsWrapper.dataset.objetId = isEnigme
+      ? solutionsWrapper.dataset.chasseId
+      : solutionsWrapper.dataset.enigmeId;
+    solutionsWrapper.dataset.page = '1';
+    btn.textContent = isEnigme
+      ? (ChasseSolutions && ChasseSolutions.toggleEnigme) ||
+        wp.i18n.__('Voir la solution de cette énigme', 'chassesautresor-com')
+      : (ChasseSolutions && ChasseSolutions.toggleChasse) ||
+        wp.i18n.__('Voir toutes les solutions de la chasse', 'chassesautresor-com');
+    updateSolutionHeading(solutionsWrapper.dataset.objetType);
+    if (typeof window.reloadSolutionsTable === 'function') {
+      window.reloadSolutionsTable(solutionsWrapper);
     }
   });
 
@@ -330,6 +523,7 @@ function initEnigmeEdit() {
   }
 
   initEnigmeReorder();
+  rafraichirCarteSolutions();
 
 }
 
@@ -340,11 +534,7 @@ if (document.readyState === 'loading') {
 }
 
 window.addEventListener('solution-created', () => {
-  document.querySelectorAll('.liste-solutions').forEach((wrapper) => {
-    if (window.reloadSolutionsTable) {
-      window.reloadSolutionsTable(wrapper);
-    }
-  });
+  rafraichirCarteSolutions();
 });
 
 // ================================

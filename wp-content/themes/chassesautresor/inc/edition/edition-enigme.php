@@ -32,7 +32,18 @@ function enqueue_script_enigme_edit()
   if (!utilisateur_peut_modifier_post($enigme_id)) return;
 
   // 📦 Modules JS partagés + scripts spécifiques
-  enqueue_core_edit_scripts(['organisateur-edit', 'enigme-edit', 'enigme-stats', 'table-etiquette', 'tentatives-toggle', 'indices-pager', 'indices-create']);
+  enqueue_core_edit_scripts([
+    'edition-animation-options',
+    'organisateur-edit',
+    'enigme-edit',
+    'enigme-stats',
+    'table-etiquette',
+    'tentatives-toggle',
+    'solutions-pager',
+    'solutions-create',
+    'indices-pager',
+    'indices-create',
+  ]);
 
   wp_localize_script(
     'enigme-stats',
@@ -40,6 +51,18 @@ function enqueue_script_enigme_edit()
     [
       'ajaxUrl'   => admin_url('admin-ajax.php'),
       'enigmeId'  => $enigme_id,
+    ]
+  );
+
+  wp_localize_script(
+    'enigme-edit',
+    'ChasseSolutions',
+    [
+      'scrollTarget'  => '#enigme-section-solutions',
+      'tooltipChasse' => __('Il existe déjà une solution pour cette chasse', 'chassesautresor-com'),
+      'tooltipEnigme' => __('Il existe déjà une solution pour cette énigme', 'chassesautresor-com'),
+      'toggleChasse'  => __('Voir toutes les solutions de la chasse', 'chassesautresor-com'),
+      'toggleEnigme'  => __('Voir la solution de cette énigme', 'chassesautresor-com'),
     ]
   );
 
