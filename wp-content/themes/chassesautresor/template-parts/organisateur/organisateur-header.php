@@ -35,10 +35,11 @@ $url_contact = esc_url($base_url . 'contact?email_organisateur=' . urlencode($em
 $est_complet = organisateur_est_complet($organisateur_id);
 $classes_header = 'header-organisateur';
 if ($peut_modifier && !$est_complet) {
-  $classes_header .= ' champ-organisateur champ-vide-obligatoire';
+    $classes_header .= ' champ-organisateur champ-vide-obligatoire';
 }
+$classes_header .= ' container container--boxed';
 ?>
-<div class="header-organisateur-wrapper">
+<div class="header-organisateur-wrapper container fullwidth">
   <div class="ligne-morse" aria-hidden="true">
     <div class="morse-wrapper" data-morse="<?= esc_attr($titre_organisateur); ?>"></div>
   </div>
