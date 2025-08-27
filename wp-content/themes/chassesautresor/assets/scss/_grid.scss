@@ -13,7 +13,7 @@
 
 .container--boxed,
 .ast-container--boxed {
-  max-width: var(--container-max-width);
+  --container-max-width: var(--container-max-width-default);
 }
 
 .container--narrow,
@@ -23,25 +23,7 @@
 
 .container.fullwidth,
 .ast-container.fullwidth {
-  max-width: none;
-}
-
-@media (--bp-xxl) {
-  .container,
-  .ast-container,
-  .ast-container-fluid {
-    max-width: none;
-  }
-
-  .container--boxed,
-  .ast-container--boxed {
-    max-width: var(--container-max-width);
-  }
-
-  .container.fullwidth-xl,
-  .ast-container.fullwidth-xl {
-    max-width: none;
-  }
+  --container-max-width: none;
 }
 
 .row {

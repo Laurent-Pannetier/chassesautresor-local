@@ -82,7 +82,8 @@
   --aside-opacity: 0.15;                     /* ⚙️ Opacité standard des fonds d'aside */
 
   /* Grille */
-  --container-max-width: 1200px;
+  --container-max-width-default: 1200px;
+  --container-max-width: var(--container-max-width-default);
   --container-max-width-narrow: 800px;
   --grid-gap: 1rem;
   --grid-columns: 12;
@@ -111,6 +112,12 @@
   --breakpoint-tablet: 768px;
   --breakpoint-desktop: 1024px;
   --breakpoint-wide: 1280px;
+}
+
+@media (--bp-xxl) {
+  :root {
+    --container-max-width: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

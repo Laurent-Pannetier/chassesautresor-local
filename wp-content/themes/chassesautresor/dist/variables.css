@@ -71,7 +71,8 @@
   --aside-border-color: var(--color-grey-medium); /* 🖊 Couleur de bordure des asides */
   --aside-opacity: 0.15; /* ⚙️ Opacité standard des fonds d'aside */
   /* Grille */
-  --container-max-width: 1200px;
+  --container-max-width-default: 1200px;
+  --container-max-width: var(--container-max-width-default);
   --container-max-width-narrow: 800px;
   --grid-gap: 1rem;
   --grid-columns: 12;
@@ -99,6 +100,11 @@
   --breakpoint-wide: 1280px;
 }
 
+@media (--bp-xxl) {
+  :root {
+    --container-max-width: none;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   :root {
     --transition-fast: 0s;
