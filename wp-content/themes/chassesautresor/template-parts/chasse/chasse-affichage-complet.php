@@ -217,20 +217,10 @@ if ($edition_active && !$est_complet) {
       <div class="chasse-caracteristiques">
         <h2><?= esc_html__('Caractéristiques', 'chassesautresor-com'); ?></h2>
 
-        <?php if (!empty($titre_recompense) && (float) $valeur_recompense > 0) : ?>
-          <div class="caracteristique">
-            <span class="caracteristique-label"><?= esc_html__('Récompense', 'chassesautresor-com'); ?></span>
-            <span class="caracteristique-valeur">
-              <?php echo get_svg_icon('trophee'); ?>
-              <?= esc_html($titre_recompense); ?> — <?= esc_html($valeur_recompense); ?> €
-            </span>
-          </div>
-        <?php endif; ?>
-
         <?php if ($mode_fin === 'automatique' && (int) $nb_max > 0) : ?>
           <div class="caracteristique">
-            <span class="caracteristique-label"><?= esc_html__('Nb gagnants', 'chassesautresor-com'); ?></span>
-            <span class="caracteristique-valeur"><?= esc_html($nb_max); ?></span>
+            <span class="caracteristique-label"><?= esc_html__('Limite', 'chassesautresor-com'); ?></span>
+            <span class="caracteristique-valeur"><?= sprintf(esc_html__('%d gagnants', 'chassesautresor-com'), $nb_max); ?></span>
           </div>
         <?php endif; ?>
 
@@ -305,10 +295,21 @@ if ($edition_active && !$est_complet) {
         <?php endif; ?>
       </div>
 
+      <?php if (!empty($titre_recompense) && (float) $valeur_recompense > 0) : ?>
+        <div class="chasse-lot" aria-live="polite">
+          <?php echo get_svg_icon('trophee'); ?>
+          <?= esc_html($titre_recompense); ?> — <?= esc_html($valeur_recompense); ?> €
+        </div>
+      <?php endif; ?>
+
       <footer class="chasse-intro-footer">
         <div class="footer-icons">
           <span class="mode-fin-icone" title="<?= esc_attr($title_mode); ?>">
-            <?= $mode_fin === 'automatique' ? get_svg_icon('hourglass') : get_svg_icon('hand'); ?>
+            <?php if ($mode_fin === 'automatique') : ?>
+              <i class="fa-solid fa-bolt"></i>
+            <?php else : ?>
+              <?= get_svg_icon('hand'); ?>
+            <?php endif; ?>
           </span>
           <?php
           $liens_html = render_liens_publics($liens, 'chasse', ['placeholder' => false]);
