@@ -151,13 +151,22 @@ body.edition-active-chasse .chasse-enigmes-header  .liens-placeholder {
   font-weight: 500;
 }
 
-// Layout responsive: stack on small screens, 40/60 on tablet and up
+// Layout responsive: stack on small screens, ~40/60 from tablet upward
 .chasse-section-intro .col-image,
 .chasse-section-intro .col-details {
   --col-span: 12;
 }
 
 @media (--bp-tablet) {
+  .chasse-section-intro .col-image {
+    --col-span: 3;
+  }
+  .chasse-section-intro .col-details {
+    --col-span: 5;
+  }
+}
+
+@media (--bp-desktop) {
   .chasse-section-intro .col-image {
     --col-span: 5;
   }

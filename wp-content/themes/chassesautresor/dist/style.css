@@ -407,6 +407,14 @@ body.edition-active-chasse .chasse-enigmes-header .liens-placeholder {
 
 @media (min-width: 768px) {
   .chasse-section-intro .col-image {
+    --col-span: 3;
+  }
+  .chasse-section-intro .col-details {
+    --col-span: 5;
+  }
+}
+@media (min-width: 1024px) {
+  .chasse-section-intro .col-image {
     --col-span: 5;
   }
   .chasse-section-intro .col-details {
