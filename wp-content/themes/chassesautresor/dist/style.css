@@ -268,11 +268,26 @@
   max-width: 100%;
 }
 
-.champ-chasse.champ-img img {
-  max-height: 430px;
+/* Image container handling full width and limited height */
+.header-chasse__image {
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-chasse__image img {
+  width: 100%;
+  height: auto;
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.45);
 }
 
+@media (min-width: 1024px) {
+  .header-chasse__image {
+    height: 600px;
+  }
+}
 /* ========== 📝 COLONNE INFOS DE LA CHASSE ========== */
 .chasse-details-wrapper {
   min-width: 240px;
