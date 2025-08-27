@@ -19,11 +19,10 @@ $champs = $infos_chasse['champs'];
 $lot               = $champs['lot'];
 $titre_recompense  = $champs['titre_recompense'];
 $valeur_recompense = $champs['valeur_recompense'];
-$cout_points       = $champs['cout_points'];
 $date_debut        = $champs['date_debut'];
 $date_fin          = $champs['date_fin'];
 $illimitee         = $champs['illimitee'];
-$nb_max            = $champs['nb_max'];   
+$nb_max            = $champs['nb_max'];
 
 // Champs cachés
 $date_decouverte      = $champs['date_decouverte'];
@@ -169,21 +168,6 @@ if ($edition_active && !$est_complet) {
         <div class="trait-droite"></div>
       </div>
 
-      <div class="bloc-metas-inline">
-
-        <div class="prix chasse-prix" data-cpt="chasse" data-post-id="<?= esc_attr($chasse_id); ?>">
-          <span class="cout-affichage" data-cout="<?= esc_attr((int)$cout_points); ?>">
-            <?php if ((int)$cout_points === 0) : ?>
-              <?php echo get_svg_icon('free'); ?>
-              <span class="texte-cout">Gratuit</span>
-            <?php else : ?>
-              <?php echo get_svg_icon('unlock'); ?>
-              <span class="valeur-cout"><?= esc_html($cout_points); ?></span>
-              <span class="prix-devise">pts</span>
-            <?php endif; ?>
-          </span>
-        </div>
-      </div>
       <?php if (!empty($titre_recompense) && (float) $valeur_recompense > 0) : ?>
         <div class="chasse-lot" aria-live="polite">
           <?php echo get_svg_icon('trophee'); ?>

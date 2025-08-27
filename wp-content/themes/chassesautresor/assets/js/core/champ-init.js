@@ -377,14 +377,6 @@ function initChampCoutPoints() {
         input.value = valeur;
         modifierChampSimple(champ, valeur, postId, cpt);
 
-        // ✅ Mise à jour visuelle du badge coût pour la chasse
-        if (
-          champ === 'chasse_infos_cout_points' &&
-          typeof mettreAJourAffichageCout === 'function'
-        ) {
-          mettreAJourAffichageCout(postId, valeur);
-        }
-
         if (typeof window.onCoutPointsUpdated === 'function') {
           window.onCoutPointsUpdated(bloc, champ, valeur, postId, cpt);
         }
