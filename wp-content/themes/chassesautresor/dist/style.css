@@ -6276,8 +6276,10 @@ span.champ-obligatoire {
     transform: rotate(360deg);
   }
 }
-/* \uD83D\uDCC0 Grid system */
-.container {
+/* 📦 Grid system */
+.container,
+.ast-container,
+.ast-container-fluid {
   width: 100%;
   max-width: var(--container-max-width);
   margin-left: auto;
@@ -6286,19 +6288,24 @@ span.champ-obligatoire {
   padding-right: var(--space-md);
 }
 
-.container--narrow {
+.container--narrow,
+.ast-container--narrow {
   --container-max-width: var(--container-max-width-narrow);
 }
 
 .container.fullwidth,
-.container--full {
+.container--full,
+.ast-container.fullwidth,
+.ast-container--full {
   max-width: none;
 }
 
 /* Full width only on very large screens */
 @media (min-width: 1400px) {
   .container.fullwidth-xl,
-  .container--xl-full {
+  .container--xl-full,
+  .ast-container.fullwidth-xl,
+  .ast-container--xl-full {
     max-width: none;
   }
 }
