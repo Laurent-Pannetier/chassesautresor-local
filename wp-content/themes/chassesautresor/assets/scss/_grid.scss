@@ -4,7 +4,7 @@
 .ast-container,
 .ast-container-fluid {
   width: 100%;
-  max-width: none;
+  max-width: var(--container-max-width);
   margin-left: auto;
   margin-right: auto;
   padding-left: var(--space-md);
@@ -19,6 +19,29 @@
 .container--narrow,
 .ast-container--narrow {
   --container-max-width: var(--container-max-width-narrow);
+}
+
+.container.fullwidth,
+.ast-container.fullwidth {
+  max-width: none;
+}
+
+@media (--bp-xxl) {
+  .container,
+  .ast-container,
+  .ast-container-fluid {
+    max-width: none;
+  }
+
+  .container--boxed,
+  .ast-container--boxed {
+    max-width: var(--container-max-width);
+  }
+
+  .container.fullwidth-xl,
+  .ast-container.fullwidth-xl {
+    max-width: none;
+  }
 }
 
 .row {
