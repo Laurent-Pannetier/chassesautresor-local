@@ -124,7 +124,7 @@ if ($edition_active && !$est_complet) {
               'chasse-fiche',
               false,
               [
-                  'class'      => 'chasse-image visuel-cpt',
+                  'class'      => 'chasse-image visuel-cpt img-h-max',
                   'data-cpt'   => 'chasse',
                   'data-post-id' => $chasse_id,
                   'alt'        => __( 'Image de la chasse', 'chassesautresor-com' ),
