@@ -6335,10 +6335,18 @@ span.champ-obligatoire {
   max-width: var(--container-max-width);
   margin-left: auto;
   margin-right: auto;
-  padding-left: var(--space-md);
-  padding-right: var(--space-md);
+  padding-left: 13px;
+  padding-right: 13px;
 }
 
+@media (min-width: 1024px) {
+  .container,
+  .ast-container,
+  .ast-container-fluid {
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
+  }
+}
 @media (min-width: 1440px) {
   .container,
   .ast-container,
@@ -6676,21 +6684,6 @@ body #primary {
   flex-wrap: wrap; /* ✅ si l’un est trop large */
 }
 
-.ast-container,
-.ast-container-fluid {
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 13px;
-  padding-right: 13px;
-}
-
-@media (min-width: 1024px) {
-  .ast-container,
-  .ast-container-fluid {
-    padding-left: var(--space-md);
-    padding-right: var(--space-md);
-  }
-}
 .deux-col-wrapper {
   display: flex;
   flex-wrap: wrap;

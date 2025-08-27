@@ -7,10 +7,18 @@
   max-width: var(--container-max-width);
   margin-left: auto;
   margin-right: auto;
-  padding-left: var(--space-md);
-  padding-right: var(--space-md);
+  padding-left: 13px;
+  padding-right: 13px;
 }
 
+@media (--bp-desktop) {
+  .container,
+  .ast-container,
+  .ast-container-fluid {
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
+  }
+}
 
 @media (--bp-xxl) {
   .container,
