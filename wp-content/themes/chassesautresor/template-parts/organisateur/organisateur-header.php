@@ -5,8 +5,8 @@ $peut_modifier = utilisateur_peut_modifier_post($organisateur_id);
 
 
 $logo_id = get_field('profil_public_logo_organisateur', $organisateur_id, false);
-$logo = wp_get_attachment_image_src($logo_id, 'medium');
-$logo_url = $logo ? $logo[0] : esc_url(wp_get_attachment_image_src(3927, 'medium')[0]);
+$logo = wp_get_attachment_image_src($logo_id, 'thumbnail');
+$logo_url = $logo ? $logo[0] : wp_get_attachment_image_src(3927, 'thumbnail')[0];
 
 $titre_organisateur = get_post_field('post_title', $organisateur_id);
 
@@ -54,13 +54,13 @@ if ($peut_modifier && !$est_complet) {
 
           <div class="champ-affichage">
             <div class="header-organisateur__logo">
-              <a href="<?= esc_url(get_permalink($organisateur_id)); ?>" aria-label="Voir la page de l’organisateur">
+              <a href="<?= esc_url(get_permalink($organisateur_id)); ?>"
+                aria-label="<?= esc_attr__('Voir la page de l\u2019organisateur', 'chassesautresor-com'); ?>">
                 <img src="<?= esc_url($logo_url); ?>"
-                  alt="Logo de l’organisateur"
+                  alt="<?= esc_attr__('Logo de l\u2019organisateur', 'chassesautresor-com'); ?>"
                   class="header-organisateur__logo visuel-cpt"
                   data-cpt="organisateur"
-                  data-post-id="<?= esc_attr($organisateur_id); ?>"
-                  style="max-width:100%; height:auto;" />
+                  data-post-id="<?= esc_attr($organisateur_id); ?>" />
               </a>
             </div>
           </div>
