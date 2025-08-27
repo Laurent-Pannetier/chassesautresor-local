@@ -23,6 +23,17 @@ add_action( 'after_setup_theme', 'cta_load_textdomain' );
 
 
 /**
+ * Adds custom image sizes.
+ *
+ * @return void
+ */
+function cta_register_image_sizes() {
+    add_image_size( 'chasse-fiche', 1024, 600, false );
+}
+add_action( 'after_setup_theme', 'cta_register_image_sizes' );
+
+
+/**
  * Retrieves the locale from the cookie.
  *
  * @return string

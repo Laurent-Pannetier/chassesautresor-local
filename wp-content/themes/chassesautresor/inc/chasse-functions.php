@@ -1260,7 +1260,7 @@ function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): 
 
     $image_raw = get_field('chasse_principale_image', $chasse_id);
     $image_id  = is_array($image_raw) ? ($image_raw['ID'] ?? null) : $image_raw;
-    $image_url = $image_id ? wp_get_attachment_image_src($image_id, 'large')[0] : null;
+    $image_url = $image_id ? wp_get_attachment_image_src( $image_id, 'chasse-fiche' )[0] : null;
 
     $liens = get_field('chasse_principale_liens', $chasse_id);
     $liens = is_array($liens) ? $liens : [];

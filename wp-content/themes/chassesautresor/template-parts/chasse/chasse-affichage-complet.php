@@ -118,11 +118,19 @@ if ($edition_active && !$est_complet) {
 
       <div class="champ-affichage">
         <div class="header-chasse__image">
-          <img src="<?= esc_url($image_url); ?>"
-            alt="Image de la chasse"
-            class="chasse-image visuel-cpt"
-            data-cpt="chasse"
-            data-post-id="<?= esc_attr($chasse_id); ?>" />
+          <?php
+          echo wp_get_attachment_image(
+              $image_id,
+              'chasse-fiche',
+              false,
+              [
+                  'class'      => 'chasse-image visuel-cpt',
+                  'data-cpt'   => 'chasse',
+                  'data-post-id' => $chasse_id,
+                  'alt'        => __( 'Image de la chasse', 'chassesautresor-com' ),
+              ]
+          );
+          ?>
         </div>
       </div>
 
