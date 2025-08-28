@@ -5,6 +5,28 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('click', (e) => {
+    const close = e.target.closest('.msg-important .message-close');
+    if (close) {
+      const key = close.dataset.key;
+      if (key) {
+        const params = new URLSearchParams();
+        params.set('action', 'cta_dismiss_message');
+        params.set('key', key);
+        const ajaxUrl =
+          typeof ctaMyAccount !== 'undefined'
+            ? ctaMyAccount.ajaxUrl
+            : '/wp-admin/admin-ajax.php';
+        fetch(ajaxUrl, {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: params.toString(),
+        }).catch(() => {});
+      }
+      close.closest('p')?.remove();
+      return;
+    }
+
     const btn = e.target.closest('.bouton-validation-chasse');
     if (!btn) return;
 

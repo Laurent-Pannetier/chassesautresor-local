@@ -66,4 +66,21 @@ describe('validation chasse', () => {
     expect(document.querySelector('.msg-important').innerHTML.trim()).toBe('');
     expect(form.submit).toHaveBeenCalled();
   });
+
+  test('dismisses message when close button is clicked', () => {
+    require('../../wp-content/themes/chassesautresor/assets/js/validation-chasse.js');
+    document.dispatchEvent(new Event('DOMContentLoaded'));
+
+    const btn = document.querySelector('.message-close');
+    btn.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+    expect(fetch).toHaveBeenCalledWith(
+      '/wp-admin/admin-ajax.php',
+      expect.objectContaining({
+        method: 'POST',
+        body: 'action=cta_dismiss_message&key=correction_chasse_123'
+      })
+    );
+    expect(document.querySelector('.msg-important').innerHTML.trim()).toBe('');
+  });
 });

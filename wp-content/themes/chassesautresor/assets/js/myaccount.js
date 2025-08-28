@@ -38,32 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
         p.setAttribute('aria-live', 'polite');
       }
     });
-
-    siteMessages.querySelectorAll('.message-close').forEach((btn) => {
-      btn.addEventListener('click', async () => {
-        const key = btn.dataset.key;
-        if (!key) {
-          return;
-        }
-        const params = new URLSearchParams();
-        params.set('action', 'cta_dismiss_message');
-        params.set('key', key);
-        try {
-          await fetch(ctaMyAccount.ajaxUrl, {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: params.toString(),
-          });
-        } catch (e) {
-          // ignore network errors
-        }
-        const parent = btn.closest('p');
-        if (parent) {
-          parent.remove();
-        }
-      });
-    });
   };
 
   const loadSection = async (link, push = true) => {
