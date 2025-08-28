@@ -1,7 +1,7 @@
 🔹 Groupe : paramètre de la chasse
 🆔 ID : 27
 🔑 Key : group_67b58c51b9a49
-📦 Champs trouvés : 20
+📦 Champs trouvés : 19
 
 — chasse_principale_image —
 Type : image
@@ -113,12 +113,6 @@ Requis : non
 Type : relationship
 Label : Énigmes associées
 Instructions : Sélectionnez les énigmes associées à cette chasse
-Requis : non
-----------------------------------------
-— chasse_cache_commentaire —
-Type : textarea
-Label : commentaire validation
-Instructions : (vide)
 Requis : non
 ----------------------------------------
 — chasse_cache_organisateur —

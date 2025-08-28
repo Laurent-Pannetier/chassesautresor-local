@@ -368,7 +368,6 @@ Groupe : paramètre de la chasse
 * chasse_cache_gagnants (text)
 * chasse_cache_date_decouverte (date_picker)
 * chasse_cache_enigmes (relationship)
-* chasse_cache_commentaire (textarea)
 * chasse_cache_organisateur (relationship)
 * chasse_cache_statut_validation (select)
 * chasse_cache_statut (select)
