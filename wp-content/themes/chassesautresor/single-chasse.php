@@ -184,19 +184,6 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
 
     <div class="separateur-avec-icone"></div>
 
-    <!-- 📜 Description finale -->
-    <?php
-    get_template_part('template-parts/chasse/chasse-partial-description', null, [
-      'description' => $description,
-      'titre_recompense' => $titre_recompense,
-      'lot' => $lot,
-      'valeur_recompense' => $valeur_recompense,
-      'nb_max' => $nb_max,
-      'chasse_id' => $chasse_id,
-      'mode' => 'complet'
-    ]);
-    ?>
-
       <!-- 🧩 Liste des énigmes -->
       <section class="chasse-enigmes-wrapper" id="chasse-enigmes-wrapper">
       <header class="chasse-enigmes-header">

@@ -217,6 +217,15 @@ if ($edition_active && !$est_complet) {
         <div class="icone-svg"></div>
         <div class="trait-droite"></div>
       </div>
+      <?php
+      get_template_part(
+          'template-parts/chasse/chasse-partial-description',
+          null,
+          [
+              'description' => $infos_chasse['description'] ?? '',
+          ]
+      );
+      ?>
 
       <div class="chasse-caracteristiques">
         <?php if ($mode_fin === 'automatique' && (int) $nb_max > 0) : ?>
