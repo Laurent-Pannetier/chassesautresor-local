@@ -210,7 +210,10 @@ class MyAccountMessagesTest extends TestCase
             1,
             '_myaccount_messages',
             [
-                'tentative_123' => '<a href="https://example.com/enigme">Énigme</a>',
+                'tentative_123' => [
+                    'text' => '<a href="https://example.com/enigme">Énigme</a>',
+                    'type' => 'info',
+                ],
             ]
         );
 
@@ -228,8 +231,14 @@ class MyAccountMessagesTest extends TestCase
             1,
             '_myaccount_messages',
             [
-                'tentative_1' => '<a href="https://example.com/e1">E1</a>',
-                'tentative_2' => '<a href="https://example.com/e2">E2</a>',
+                'tentative_1' => [
+                    'text' => '<a href="https://example.com/e1">E1</a>',
+                    'type' => 'info',
+                ],
+                'tentative_2' => [
+                    'text' => '<a href="https://example.com/e2">E2</a>',
+                    'type' => 'info',
+                ],
             ]
         );
 
@@ -249,7 +258,10 @@ class MyAccountMessagesTest extends TestCase
             1,
             '_myaccount_messages',
             [
-                'tentative_456' => $stored,
+                'tentative_456' => [
+                    'text' => $stored,
+                    'type' => 'info',
+                ],
             ]
         );
 
@@ -263,7 +275,13 @@ class MyAccountMessagesTest extends TestCase
 
     public function test_flash_message_is_displayed_once(): void
     {
-        update_user_meta(1, '_myaccount_flash_messages', ['Message unique']);
+        update_user_meta(
+            1,
+            '_myaccount_flash_messages',
+            [
+                ['text' => 'Message unique', 'type' => 'info'],
+            ]
+        );
 
         $first = myaccount_get_important_messages();
         $this->assertStringContainsString('Message unique', $first);
@@ -274,7 +292,13 @@ class MyAccountMessagesTest extends TestCase
 
     public function test_persistent_message_persists_until_removed(): void
     {
-        update_user_meta(1, '_myaccount_messages', ['foo' => 'Persiste']);
+        update_user_meta(
+            1,
+            '_myaccount_messages',
+            [
+                'foo' => ['text' => 'Persiste', 'type' => 'info'],
+            ]
+        );
 
         $first = myaccount_get_important_messages();
         $this->assertStringContainsString('Persiste', $first);
@@ -289,14 +313,26 @@ class MyAccountMessagesTest extends TestCase
 
     public function test_messages_are_styled(): void
     {
-        update_user_meta(1, '_myaccount_flash_messages', ['Stylé']);
+        update_user_meta(
+            1,
+            '_myaccount_flash_messages',
+            [
+                ['text' => 'Stylé', 'type' => 'info'],
+            ]
+        );
         $output = myaccount_get_important_messages();
-        $this->assertStringContainsString('<p class="alerte-discret">Stylé</p>', $output);
+        $this->assertStringContainsString('<p class="alerte-discret alerte-discret--info">Stylé</p>', $output);
     }
 
     public function test_ajax_section_returns_flash_message(): void
     {
-        update_user_meta(1, '_myaccount_flash_messages', ['Via AJAX']);
+        update_user_meta(
+            1,
+            '_myaccount_flash_messages',
+            [
+                ['text' => 'Via AJAX', 'type' => 'info'],
+            ]
+        );
         $_GET['section'] = 'organisateurs';
 
         ob_start();

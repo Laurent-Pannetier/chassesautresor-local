@@ -934,6 +934,41 @@ a[aria-disabled="true"] {
     margin-top: 15px;
 }
 
+/* ========== ❌ MESSAGE ERREUR ========== */
+.message-error {
+    text-align: center;
+    font-weight: bold;
+    color: var(--color-error);
+    font-size: 16px;
+    margin-top: 15px;
+}
+
+/* ========== ⚠️ MESSAGE WARNING ========== */
+.message-warning {
+    text-align: center;
+    font-weight: bold;
+    color: var(--color-accent);
+    font-size: 16px;
+    margin-top: 15px;
+}
+
+/* ========== 📨 ALERTES DISCRÈTES (TYPES) ========== */
+.alerte-discret--success {
+    border-left-color: var(--color-success);
+}
+
+.alerte-discret--info {
+    border-left-color: var(--color-accent);
+}
+
+.alerte-discret--error {
+    border-left-color: var(--color-error);
+}
+
+.alerte-discret--warning {
+    border-left-color: var(--color-secondary);
+}
+
 /* ========== 🖼️ ICONES SVG ========== */
 .icone-aces-casino, .icone-compass-rose {
   color: var(--color-text-primary);
