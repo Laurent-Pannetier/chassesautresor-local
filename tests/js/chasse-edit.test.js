@@ -119,7 +119,13 @@ describe('chasse-edit UI', () => {
     global.mettreAJourAffichageDateFin = jest.fn();
     global.fetch = jest.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve({ success: true }) }));
     global.modifierChampSimple = jest.fn(() => Promise.resolve(true));
-    global.wp = { i18n: { __: (s) => s } };
+    global.wp = {
+      i18n: {
+        __: (s) => s,
+        _n: (sing, plur, n) => (n > 1 ? plur : sing),
+        sprintf: (fmt, ...args) => fmt.replace(/%d|%s/g, () => args.shift())
+      }
+    };
     global.confirm = jest.fn(() => true);
     jest.resetModules();
     require('../../wp-content/themes/chassesautresor/assets/js/chasse-edit.js');

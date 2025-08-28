@@ -2635,3 +2635,27 @@ msgid "%d gagnant"
 msgid_plural "%d gagnants"
 msgstr[0] "%d gagnant"
 msgstr[1] "%d gagnants"
+
+#: template-parts/chasse/chasse-affichage-complet.php:59
+#: assets/js/chasse-edit.js:1165
+msgid "illimitée"
+msgstr "illimitée"
+
+#: template-parts/chasse/chasse-affichage-complet.php:63
+#: assets/js/chasse-edit.js:1174
+msgid "%d jour à attendre"
+msgid_plural "%d jours à attendre"
+msgstr[0] "%d jour à attendre"
+msgstr[1] "%d jours à attendre"
+
+#: template-parts/chasse/chasse-affichage-complet.php:68
+#: assets/js/chasse-edit.js:1182
+msgid "terminée depuis %s"
+msgstr "terminée depuis %s"
+
+#: template-parts/chasse/chasse-affichage-complet.php:74
+#: assets/js/chasse-edit.js:1190
+msgid "%d jour restant"
+msgid_plural "%d jours restants"
+msgstr[0] "%d jour restant"
+msgstr[1] "%d jours restants"

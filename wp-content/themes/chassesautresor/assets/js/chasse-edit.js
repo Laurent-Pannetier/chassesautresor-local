@@ -913,7 +913,9 @@ function initChampDateDebut() {
   }
 
   toggle.addEventListener('change', updateVisibility);
+  toggle.addEventListener('change', mettreAJourMessageDate);
   updateVisibility();
+  mettreAJourMessageDate();
 }
 
 // ================================
@@ -955,10 +957,12 @@ function initChampDateFin() {
         setTimeout(() => { status.innerHTML = ''; }, 1500);
       }
       mettreAJourAffichageDateFin();
+      mettreAJourMessageDate();
     });
   });
 
   updateVisibility();
+  mettreAJourMessageDate();
 }
 
 // ================================
@@ -1061,6 +1065,7 @@ initChampDateFin();
 initChampNbGagnants();
 initChampCoutPoints();
 initModeFinChasse();
+mettreAJourMessageDate();
 
 // ==============================
 // ➕ Mise à jour de la carte d'ajout d'énigme
@@ -1149,6 +1154,63 @@ function mettreAJourAffichageNbGagnants(postId, nb) {
     );
   }
 }
+
+function calculerMessageDate() {
+  const now = new Date();
+  const debutStr = inputDateDebut?.value.trim();
+  const finStr = inputDateFin?.value.trim();
+  const illimitee = toggleDateFin && !toggleDateFin.checked;
+
+  if (illimitee) {
+    return wp.i18n.__('illimitée', 'chassesautresor-com');
+  }
+
+  const debut = debutStr ? new Date(debutStr) : null;
+  const fin = finStr ? new Date(finStr) : null;
+
+  if (debut && now < debut) {
+    const diff = Math.ceil((debut - now) / (1000 * 60 * 60 * 24));
+    return wp.i18n.sprintf(
+      wp.i18n._n('%d jour à attendre', '%d jours à attendre', diff, 'chassesautresor-com'),
+      diff
+    );
+  }
+
+  if (fin && now > fin) {
+    const intl = fin.toISOString().split('T')[0];
+    return wp.i18n.sprintf(
+      wp.i18n.__('terminée depuis %s', 'chassesautresor-com'),
+      intl
+    );
+  }
+
+  if (fin) {
+    const diff = Math.ceil((fin - now) / (1000 * 60 * 60 * 24));
+    return wp.i18n.sprintf(
+      wp.i18n._n('%d jour restant', '%d jours restants', diff, 'chassesautresor-com'),
+      diff
+    );
+  }
+
+  return wp.i18n.__('Non spécifiée', 'chassesautresor-com');
+}
+
+function mettreAJourMessageDate() {
+  const span = document.querySelector('.caracteristique-date .caracteristique-valeur');
+  if (!span) return;
+  span.textContent = calculerMessageDate();
+}
+
+const ancienOnDateFieldUpdated = window.onDateFieldUpdated;
+window.onDateFieldUpdated = function(input, valeur) {
+  if (typeof ancienOnDateFieldUpdated === 'function') {
+    ancienOnDateFieldUpdated(input, valeur);
+  }
+  const champ = input.closest('[data-champ]')?.dataset.champ;
+  if (champ === 'chasse_infos_date_debut' || champ === 'chasse_infos_date_fin') {
+    mettreAJourMessageDate();
+  }
+};
 
 document.addEventListener('acf/submit_success', function (e) {
   DEBUG && console.log('✅ Formulaire ACF soumis avec succès', e);
