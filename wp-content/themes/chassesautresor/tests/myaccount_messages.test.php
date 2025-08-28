@@ -110,7 +110,33 @@ if (!function_exists('wp_send_json_success')) {
 if (!function_exists('get_permalink')) {
     function get_permalink($post_id)
     {
-        return 'https://example.com/organisateur';
+        if ($post_id === 99) {
+            return 'https://example.com/organisateur';
+        }
+
+        if ($post_id === 101) {
+            return 'https://example.com/chasse-101';
+        }
+
+        return 'https://example.com/post-' . $post_id;
+    }
+}
+
+if (!function_exists('get_the_title')) {
+    function get_the_title($post_id)
+    {
+        if ($post_id === 101) {
+            return 'Chasse Example';
+        }
+
+        return 'Post ' . $post_id;
+    }
+}
+
+if (!function_exists('esc_html')) {
+    function esc_html($text)
+    {
+        return $text;
     }
 }
 
@@ -201,7 +227,12 @@ class MyAccountMessagesTest extends TestCase
     {
         $output = myaccount_get_important_messages();
 
-        $this->assertStringContainsString('Demande de validation en cours de traitement', $output);
+        $this->assertStringContainsString('Demande pour', $output);
+        $this->assertStringContainsString('en cours de traitement', $output);
+        $this->assertStringContainsString(
+            '<a href="https://example.com/chasse-101">Chasse Example</a>',
+            $output
+        );
     }
 
     public function test_pending_request_message_contains_riddle_link(): void
