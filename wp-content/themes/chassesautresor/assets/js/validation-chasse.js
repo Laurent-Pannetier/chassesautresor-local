@@ -64,14 +64,18 @@ function ouvrirModalConfirmation(form) {
       const params = new URLSearchParams();
       params.set('action', 'cta_dismiss_message');
       params.set('key', key);
-      if (typeof ctaMyAccount !== 'undefined') {
-        fetch(ctaMyAccount.ajaxUrl, {
-          method: 'POST',
-          credentials: 'same-origin',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: params.toString(),
-        }).catch(() => {});
-      }
+
+      const ajaxUrl =
+        typeof ctaMyAccount !== 'undefined'
+          ? ctaMyAccount.ajaxUrl
+          : '/wp-admin/admin-ajax.php';
+
+      fetch(ajaxUrl, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params.toString(),
+      }).catch(() => {});
 
       const btn = document.querySelector(`.msg-important .message-close[data-key="${key}"]`);
       const parent = btn ? btn.closest('p') : null;

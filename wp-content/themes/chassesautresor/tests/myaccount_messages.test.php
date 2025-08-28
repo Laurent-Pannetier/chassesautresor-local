@@ -48,11 +48,11 @@ if (!function_exists('get_user_meta')) {
     function get_user_meta($user_id, $key, $single)
     {
         if ($key === '_myaccount_flash_messages') {
-            return $GLOBALS['test_myaccount_flash_meta'] ?? [];
+            return $GLOBALS['test_myaccount_flash_meta'][$user_id] ?? [];
         }
 
         if ($key === '_myaccount_messages') {
-            return $GLOBALS['test_myaccount_persistent_meta'] ?? [];
+            return $GLOBALS['test_myaccount_persistent_meta'][$user_id] ?? [];
         }
 
         return [
@@ -67,11 +67,9 @@ if (!function_exists('update_user_meta')) {
     function update_user_meta($user_id, $key, $value)
     {
         if ($key === '_myaccount_flash_messages') {
-            $GLOBALS['test_myaccount_flash_meta'] = $value;
-        }
-
-        if ($key === '_myaccount_messages') {
-            $GLOBALS['test_myaccount_persistent_meta'] = $value;
+            $GLOBALS['test_myaccount_flash_meta'][$user_id] = $value;
+        } elseif ($key === '_myaccount_messages') {
+            $GLOBALS['test_myaccount_persistent_meta'][$user_id] = $value;
         }
 
         return true;
@@ -82,14 +80,33 @@ if (!function_exists('delete_user_meta')) {
     function delete_user_meta($user_id, $key)
     {
         if ($key === '_myaccount_flash_messages') {
-            unset($GLOBALS['test_myaccount_flash_meta']);
-        }
-
-        if ($key === '_myaccount_messages') {
-            unset($GLOBALS['test_myaccount_persistent_meta']);
+            unset($GLOBALS['test_myaccount_flash_meta'][$user_id]);
+        } elseif ($key === '_myaccount_messages') {
+            unset($GLOBALS['test_myaccount_persistent_meta'][$user_id]);
         }
 
         return true;
+    }
+}
+
+if (!function_exists('get_organisateur_from_chasse')) {
+    function get_organisateur_from_chasse($chasse_id)
+    {
+        return 99;
+    }
+}
+
+if (!function_exists('get_field')) {
+    function get_field($field, $post_id)
+    {
+        if ($field === 'utilisateurs_associes' && $post_id === 99) {
+            return [
+                (object) ['ID' => 1],
+                (object) ['ID' => 2],
+            ];
+        }
+
+        return null;
     }
 }
 
@@ -340,6 +357,29 @@ class MyAccountMessagesTest extends TestCase
         myaccount_remove_persistent_message(1, 'foo');
         $third = myaccount_get_important_messages();
         $this->assertStringNotContainsString('Persiste', $third);
+    }
+
+    public function test_clear_correction_message_removes_for_all_users(): void
+    {
+        update_user_meta(
+            1,
+            '_myaccount_messages',
+            [
+                'correction_chasse_123' => ['text' => 'X', 'type' => 'info'],
+            ]
+        );
+        update_user_meta(
+            2,
+            '_myaccount_messages',
+            [
+                'correction_chasse_123' => ['text' => 'X', 'type' => 'info'],
+            ]
+        );
+
+        myaccount_clear_correction_message(123);
+
+        $this->assertSame([], get_user_meta(1, '_myaccount_messages', true));
+        $this->assertSame([], get_user_meta(2, '_myaccount_messages', true));
     }
 
     public function test_messages_are_styled(): void

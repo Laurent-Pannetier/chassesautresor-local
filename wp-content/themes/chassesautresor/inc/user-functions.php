@@ -305,6 +305,33 @@ function myaccount_remove_persistent_message(int $user_id, string $key): void
 }
 
 /**
+ * Remove correction messages for a given hunt for all related users.
+ *
+ * @param int $chasse_id Hunt identifier.
+ *
+ * @return void
+ */
+function myaccount_clear_correction_message(int $chasse_id): void
+{
+    $current = get_current_user_id();
+    $organisateur_id = get_organisateur_from_chasse($chasse_id);
+    $users = $organisateur_id ? (array) get_field('utilisateurs_associes', $organisateur_id) : [];
+
+    $user_ids = array_unique(array_merge([
+        $current,
+    ], array_map(
+        static function ($uid) {
+            return is_object($uid) ? (int) $uid->ID : (int) $uid;
+        },
+        $users
+    )));
+
+    foreach ($user_ids as $uid) {
+        myaccount_remove_persistent_message($uid, 'correction_chasse_' . $chasse_id);
+    }
+}
+
+/**
  * Retrieve persistent important messages for the given user.
  *
  * @param int $user_id User identifier.
