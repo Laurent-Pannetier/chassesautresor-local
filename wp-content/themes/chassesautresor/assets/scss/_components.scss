@@ -974,7 +974,9 @@ a[aria-disabled="true"] {
 }
 
 /* 🔗 Boutons de partage AddToAny */
+
 a.addtoany_share {
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -993,6 +995,7 @@ a.addtoany_share span {
   width: 30px;
   height: 30px;
   border: none;
+
   border-radius: 0;
 }
 
