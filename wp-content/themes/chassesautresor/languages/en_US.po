@@ -2764,3 +2764,15 @@ msgstr "F j, Y"
 #. translators: %s: hunt title with link
 msgid "Demande pour %s en cours de traitement"
 msgstr "Request for %s is being processed"
+
+#: template-parts/chasse/chasse-affichage-complet.php:279
+#: assets/js/chasse-edit.js:1144
+msgid "illimité"
+msgstr "unlimited"
+
+#: template-parts/chasse/chasse-affichage-complet.php:281
+#: assets/js/chasse-edit.js:1147
+msgid "%d gagnant"
+msgid_plural "%d gagnants"
+msgstr[0] "%d winner"
+msgstr[1] "%d winners"
