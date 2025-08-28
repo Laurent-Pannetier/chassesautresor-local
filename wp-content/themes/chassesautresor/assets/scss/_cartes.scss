@@ -265,6 +265,7 @@
   height: 24px;
   background: url('../assets/svg/warning.svg') no-repeat center/contain;
   animation: clignoteTitre 1s infinite alternate;
+  z-index: 2;
 }
 
 @media (--bp-tablet) {
