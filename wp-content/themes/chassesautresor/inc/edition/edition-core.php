@@ -589,9 +589,9 @@ function formater_date($date): string
     if ($date instanceof DateTimeInterface) {
         $timestamp = $date->getTimestamp();
     } elseif (is_array($date) && isset($date['date'])) {
-        $timestamp = strtotime($date['date']);
+        $timestamp = convertir_en_timestamp($date['date']);
     } else {
-        $timestamp = strtotime((string) $date);
+        $timestamp = convertir_en_timestamp((string) $date);
     }
 
     if ($timestamp === false) {
