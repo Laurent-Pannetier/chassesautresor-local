@@ -2623,3 +2623,15 @@ msgstr "Illimitée"
 #. translators: %s: hunt title with link
 msgid "Demande pour %s en cours de traitement"
 msgstr "Demande pour %s en cours de traitement"
+
+#: template-parts/chasse/chasse-affichage-complet.php:279
+#: assets/js/chasse-edit.js:1144
+msgid "illimité"
+msgstr "illimité"
+
+#: template-parts/chasse/chasse-affichage-complet.php:281
+#: assets/js/chasse-edit.js:1147
+msgid "%d gagnant"
+msgid_plural "%d gagnants"
+msgstr[0] "%d gagnant"
+msgstr[1] "%d gagnants"

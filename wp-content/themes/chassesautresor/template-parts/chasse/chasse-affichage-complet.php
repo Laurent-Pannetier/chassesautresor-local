@@ -271,10 +271,16 @@ if ($edition_active && !$est_complet) {
         ?>
         <div class="chasse-cta-section cta-chasse">
           <div class="chasse-caracteristiques">
-          <?php if ($mode_fin === 'automatique' && (int) $nb_max > 0) : ?>
+          <?php if ($mode_fin === 'automatique') : ?>
             <div class="caracteristique">
               <span class="caracteristique-label"><?= esc_html__('Limite', 'chassesautresor-com'); ?></span>
-              <span class="caracteristique-valeur"><?= sprintf(esc_html__('%d gagnants', 'chassesautresor-com'), $nb_max); ?></span>
+              <span class="caracteristique-valeur nb-gagnants-affichage" data-post-id="<?= esc_attr($chasse_id); ?>">
+                <?php if ((int) $nb_max === 0) : ?>
+                  <?= esc_html__('illimité', 'chassesautresor-com'); ?>
+                <?php else : ?>
+                  <?= esc_html(sprintf(_n('%d gagnant', '%d gagnants', $nb_max, 'chassesautresor-com'), $nb_max)); ?>
+                <?php endif; ?>
+              </span>
             </div>
           <?php endif; ?>
 

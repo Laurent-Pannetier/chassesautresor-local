@@ -1139,10 +1139,14 @@ function mettreAJourAffichageNbGagnants(postId, nb) {
   const nbGagnantsAffichage = document.querySelector(`.nb-gagnants-affichage[data-post-id="${postId}"]`);
   if (!nbGagnantsAffichage) return;
 
-  if (parseInt(nb, 10) === 0) {
-    nbGagnantsAffichage.textContent = 'Nombre illimité de gagnants';
+  const valeur = parseInt(nb, 10);
+  if (valeur === 0) {
+    nbGagnantsAffichage.textContent = wp.i18n.__('illimité', 'chassesautresor-com');
   } else {
-    nbGagnantsAffichage.textContent = `${nb} gagnant${nb > 1 ? 's' : ''}`;
+    nbGagnantsAffichage.textContent = wp.i18n.sprintf(
+      wp.i18n._n('%d gagnant', '%d gagnants', valeur, 'chassesautresor-com'),
+      valeur
+    );
   }
 }
 
