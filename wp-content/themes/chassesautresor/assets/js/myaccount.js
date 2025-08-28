@@ -7,13 +7,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const navs = document.querySelectorAll('.dashboard-nav');
   const content = document.querySelector('.myaccount-content');
   const header = document.querySelector('.myaccount-title');
+  const messages = document.querySelector('.msg-important');
 
-  if (!navs.length || !content || typeof ctaMyAccount === 'undefined') {
+  if (!navs.length || !content || !messages || typeof ctaMyAccount === 'undefined') {
     return;
   }
 
   const fadeFlash = () => {
-    const flash = content.querySelector('.msg-important .flash');
+    const flash = messages.querySelector('.flash');
     if (flash) {
       setTimeout(() => {
         flash.remove();
@@ -22,11 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const decorateMessages = () => {
-    const container = content.querySelector('.msg-important');
-    if (!container) {
-      return;
-    }
-    container.querySelectorAll('p').forEach((p) => {
+    messages.querySelectorAll('p').forEach((p) => {
       if (p.classList.contains('message-erreur')) {
         p.setAttribute('role', 'alert');
         p.setAttribute('aria-live', 'assertive');
@@ -61,10 +58,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!data.success) {
         throw new Error('Request failed');
       }
-      const messages = data.data.messages || '';
-      content.innerHTML = `<section class="msg-important">${messages}</section>` + data.data.html;
+      const messageHtml = data.data.messages || '';
+      messages.innerHTML = messageHtml;
       decorateMessages();
       fadeFlash();
+      content.innerHTML = data.data.html;
       document
         .querySelectorAll('.dashboard-nav-link[data-section]')
         .forEach((a) => a.classList.remove('active'));
@@ -84,18 +82,18 @@ document.addEventListener('DOMContentLoaded', () => {
         window.history.replaceState(null, '', '/mon-compte/');
       }
     } catch (err) {
-      content.innerHTML = `
-        <section class="msg-important">
+      messages.innerHTML = `
           <p class="message-erreur" role="alert" aria-live="assertive">Impossible de charger la section.</p>
           <p class="message-info" role="status" aria-live="polite"><a href="#" class="reload-section">Recharger</a> ou <a href="${link.href}">ouvrir la page complète</a>.</p>
-        </section>`;
-      const reload = content.querySelector('.reload-section');
+        `;
+      const reload = messages.querySelector('.reload-section');
       if (reload) {
         reload.addEventListener('click', (e) => {
           e.preventDefault();
           loadSection(link);
         });
       }
+      content.innerHTML = '';
     }
   };
 
