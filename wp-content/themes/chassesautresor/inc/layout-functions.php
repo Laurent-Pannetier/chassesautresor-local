@@ -131,6 +131,13 @@ function charger_scripts_personnalises() {
     // 📌 Chargement des scripts JS personnalisés
     wp_enqueue_script('toggle-text', $theme_dir . 'toggle-text.js', ['jquery'], null, true);
     wp_enqueue_script('toggle-tooltip', $theme_dir . 'toggle-tooltip.js', [], null, true);
+    wp_enqueue_script(
+        'chasse-description-toggle',
+        $theme_dir . 'chasse-description-toggle.js',
+        [],
+        filemtime(get_stylesheet_directory() . '/assets/js/chasse-description-toggle.js'),
+        true
+    );
     
     wp_enqueue_script(
       'encodage-morse',
