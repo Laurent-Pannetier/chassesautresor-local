@@ -2743,3 +2743,11 @@ msgstr "We need to record your bank details to send you a payout"
 msgid "renseigner coordonnées bancaires"
 msgstr "enter bank details"
 
+#: inc/edition/edition-core.php:583
+msgid "Non spécifiée"
+msgstr "Not specified"
+
+#: inc/edition/edition-core.php:594
+msgctxt "formatting for dates"
+msgid "j F Y"
+msgstr "F j, Y"

@@ -48,7 +48,9 @@ $title_mode          = $mode_fin === 'automatique'
 
 // Dates
 $date_debut_formatee = formater_date($date_debut);
-$date_fin_formatee = $illimitee ? 'Illimitée' : ($date_fin ? formater_date($date_fin) : 'Non spécifiée');
+$date_fin_formatee   = $illimitee
+    ? __('Illimitée', 'chassesautresor-com')
+    : ($date_fin ? formater_date($date_fin) : __('Non spécifiée', 'chassesautresor-com'));
 
 // Edition
 $edition_active = utilisateur_peut_modifier_post($chasse_id);
@@ -197,7 +199,11 @@ if ($edition_active && !$est_complet) {
           data-valeurs='<?= json_encode($liens, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>'></div>
         <div class="champ-affichage">
           <div class="champ-affichage-liens">
-            <?= render_liens_publics($liens, 'chasse', ['afficher_titre' => false, 'wrap' => false]); ?>
+            <?= render_liens_publics($liens, 'chasse', [
+                'afficher_titre' => false,
+                'wrap'           => false,
+                'placeholder'    => false,
+            ]); ?>
           </div>
         </div>
         <div class="champ-feedback"></div>
@@ -231,7 +237,7 @@ if ($edition_active && !$est_complet) {
         <div class="meta-etiquette">
           <?php echo get_svg_icon('calendar'); ?>
           <span class="chasse-date-plage">
-            <span class="date-debut"><?= esc_html($date_debut_formatee); ?></span> →
+            <span class="date-debut"><?= esc_html($date_debut_formatee); ?></span> –
             <span class="date-fin"><?= esc_html($date_fin_formatee); ?></span>
           </span>
 

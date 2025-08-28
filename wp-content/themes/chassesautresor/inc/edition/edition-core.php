@@ -583,33 +583,24 @@ function injection_classe_edition_active( array $classes ): array
 function formater_date($date): string
 {
     if (empty($date)) {
-        return 'Non spécifiée';
+        return __('Non spécifiée', 'chassesautresor-com');
     }
 
     if ($date instanceof DateTimeInterface) {
-        return $date->format('d/m/Y');
+        $timestamp = $date->getTimestamp();
+    } elseif (is_array($date) && isset($date['date'])) {
+        $timestamp = strtotime($date['date']);
+    } else {
+        $timestamp = strtotime((string) $date);
     }
 
-    if (is_array($date) && isset($date['date'])) {
-        $date = $date['date'];
+    if ($timestamp === false) {
+        return __('Non spécifiée', 'chassesautresor-com');
     }
 
-    $date = (string) $date;
+    $format = _x('j F Y', 'formatting for dates', 'chassesautresor-com');
 
-    // Déjà formatée ?
-    if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $date)) {
-        return $date;
-    }
-
-    // Format '27/06/2025 1:55 pm'
-    $dt = DateTime::createFromFormat('d/m/Y g:i a', $date);
-    if ($dt instanceof DateTime) {
-        return $dt->format('d/m/Y');
-    }
-
-    // Dernière tentative : strtotime
-    $timestamp = strtotime($date);
-    return ($timestamp !== false) ? date_i18n('d/m/Y', $timestamp) : 'Non spécifiée';
+    return wp_date($format, $timestamp);
 }
 
 

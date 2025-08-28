@@ -2608,3 +2608,11 @@ msgstr "Voir toutes les solutions de la chasse"
 msgid "Voir la solution de cette énigme"
 msgstr "Voir la solution de cette énigme"
 
+#: inc/edition/edition-core.php:583
+msgid "Non spécifiée"
+msgstr "Non spécifiée"
+
+#: inc/edition/edition-core.php:594
+msgctxt "formatting for dates"
+msgid "j F Y"
+msgstr "j F Y"
