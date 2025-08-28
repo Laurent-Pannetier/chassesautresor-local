@@ -928,8 +928,8 @@ a[aria-disabled="true"] {
 /* ========== ℹ️ MESSAGE INFO ========== */
 .message-info {
     text-align: center;
-    font-weight: bold;
-    color: var(--color-text-primary);
+    font-weight: normal;
+    color: var(--color-text-secondary);
     font-size: 16px;
     margin-top: 15px;
 }
@@ -950,19 +950,6 @@ a[aria-disabled="true"] {
     color: var(--color-accent);
     font-size: 16px;
     margin-top: 15px;
-}
-
-/* ========== 📨 MESSAGES (TYPES) ========== */
-.message-succes {
-    border-left-color: var(--color-success);
-}
-
-.message-info {
-    border-left-color: var(--color-accent);
-}
-
-.message-erreur {
-    border-left-color: var(--color-error);
 }
 
 /* ========== 🖼️ ICONES SVG ========== */

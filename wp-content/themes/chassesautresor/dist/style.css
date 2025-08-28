@@ -1418,8 +1418,8 @@ a[aria-disabled=true] {
 /* ========== ℹ️ MESSAGE INFO ========== */
 .message-info {
   text-align: center;
-  font-weight: bold;
-  color: var(--color-text-primary);
+  font-weight: normal;
+  color: var(--color-text-secondary);
   font-size: 16px;
   margin-top: 15px;
 }
@@ -1440,19 +1440,6 @@ a[aria-disabled=true] {
   color: var(--color-accent);
   font-size: 16px;
   margin-top: 15px;
-}
-
-/* ========== 📨 MESSAGES (TYPES) ========== */
-.message-succes {
-  border-left-color: var(--color-success);
-}
-
-.message-info {
-  border-left-color: var(--color-accent);
-}
-
-.message-erreur {
-  border-left-color: var(--color-error);
 }
 
 /* ========== 🖼️ ICONES SVG ========== */
@@ -6962,9 +6949,6 @@ body #primary {
 .message-info,
 .message-erreur,
 .message-succes {
-  background: var(--color-text-primary, #fff4d4);
-  color: var(--color-text, var(--color-grey-dark));
-  border-left: 4px solid var(--color-accent);
   padding: 0.8rem 1.2rem;
   margin: var(--space-md) auto;
   max-width: 700px;
@@ -6972,12 +6956,22 @@ body #primary {
   font-size: 0.95rem;
 }
 
+.message-info {
+  background: var(--color-grey-light);
+  color: var(--color-text-secondary);
+  border-left: 4px solid var(--color-grey-medium);
+}
+
 .message-erreur {
-  border-left-color: var(--color-error);
+  background: var(--color-text-primary, #fff4d4);
+  color: var(--color-text, var(--color-grey-dark));
+  border-left: 4px solid var(--color-error);
 }
 
 .message-succes {
-  border-left-color: var(--color-success);
+  background: var(--color-text-primary, #fff4d4);
+  color: var(--color-text, var(--color-grey-dark));
+  border-left: 4px solid var(--color-success);
 }
 
 /* ==================================================
