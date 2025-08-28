@@ -374,7 +374,7 @@
   align-items: center;
 }
 
-.chasse-details-actions .bouton-edition-toggle {
+.chasse-details-actions .chasse-share-button {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -385,14 +385,15 @@
   border: 1px solid rgba(255, 255, 255, 0.6);
   color: #fff;
   background: none;
+  transition: background-color 0.2s ease;
 }
 
-.chasse-details-actions .bouton-edition-toggle:hover,
-.chasse-details-actions .bouton-edition-toggle:focus {
+.chasse-details-actions .chasse-share-button:hover,
+.chasse-details-actions .chasse-share-button:focus {
   background-color: rgba(255, 255, 255, 0.15);
 }
 
-.chasse-details-actions .bouton-edition-toggle:active {
+.chasse-details-actions .chasse-share-button:active {
   background-color: rgba(255, 255, 255, 0.3);
 }
 
@@ -8798,3 +8799,5 @@ section#presentation .presentation-fermer {
   --editor-button-hsl: 214 82% 51%; /* = #1A73E8 → var(--color-editor-button) */
   --editor-button-hover-hsl: 214 79% 39%; /* = #1558B0 → var(--color-editor-button-hover) */
 }
+
+/*# sourceMappingURL=main.css.map */
