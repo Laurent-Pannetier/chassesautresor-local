@@ -10,20 +10,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // ==============================
-// 📅 Formatage des dates Y-m-d ➔ d/m/Y
+// 📅 Formatage des dates avec Intl.DateTimeFormat (fr-FR)
 // ==============================
 function formatDateFr(dateStr) {
   console.log('[formatDateFr] input=', dateStr);
   if (!dateStr) return '';
-  if (dateStr.includes('T')) {
-    const [datePart] = dateStr.split('T');
-    const parts = datePart.split('-');
-    if (parts.length !== 3) return dateStr;
-    return `${parts[2]}/${parts[1]}/${parts[0]}`;
-  }
-  const parts = dateStr.split('-');
-  if (parts.length !== 3) return dateStr;
-  return `${parts[2]}/${parts[1]}/${parts[0]}`;
+
+  // Conversion en objet Date (gestion des espaces ou du "T")
+  const parsed = new Date(dateStr.replace(' ', 'T'));
+  if (Number.isNaN(parsed.getTime())) return dateStr;
+
+  return parsed.toLocaleDateString('fr-FR', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
 }
 
 
