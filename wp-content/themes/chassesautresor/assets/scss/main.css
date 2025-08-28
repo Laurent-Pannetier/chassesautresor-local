@@ -421,10 +421,34 @@
 
 .chasse-caracteristiques .caracteristique {
   display: flex;
-  gap: var(--space-md);
+  gap: var(--space-sm);
   margin-bottom: var(--space-xs);
 }
 
+.chasse-cta-section {
+  display: flex;
+  gap: var(--space-xl);
+  align-items: center;
+  text-align: left;
+  width: 100%;
+  max-width: 100%;
+}
+
+.chasse-cta-section .chasse-caracteristiques {
+  margin-top: 0;
+  flex: 1;
+}
+
+.chasse-cta-section .cta-chasse-row {
+  flex: 0 0 auto;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .chasse-cta-section {
+    max-width: 650px;
+  }
+}
 .chasse-caracteristiques .caracteristique-label {
   flex: 0 0 9rem;
   font-weight: 700;
