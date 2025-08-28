@@ -215,6 +215,13 @@ function soumettre_reponse_manuelle()
     $link         = '<a href="' . esc_url(get_permalink($enigme_id)) . '">' . esc_html($titre_enigme) . '</a>';
     myaccount_add_persistent_message($user_id, 'tentative_' . $uid, $link, 'info');
 
+    $chasse_id       = recuperer_id_chasse_associee($enigme_id);
+    $organisateur_id = get_organisateur_from_chasse($chasse_id);
+    $orga_users      = (array) get_field('utilisateurs_associes', $organisateur_id);
+    foreach ($orga_users as $orga_user_id) {
+        myaccount_add_persistent_message((int) $orga_user_id, 'tentative_' . $uid, $link, 'info');
+    }
+
     envoyer_mail_reponse_manuelle($user_id, $enigme_id, $reponse, $uid);
 
     $solde = get_user_points($user_id);
