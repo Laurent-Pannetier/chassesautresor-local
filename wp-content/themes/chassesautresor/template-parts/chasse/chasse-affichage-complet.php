@@ -211,7 +211,7 @@ if ($edition_active && !$est_complet) {
         <?php if (function_exists('ADDTOANY_SHARE_SAVE_BUTTON')) : ?>
           <?= ADDTOANY_SHARE_SAVE_BUTTON([
             'html_content' => get_svg_icon('share-icon'),
-            'button_additional_classes' => 'bouton-edition-toggle chasse-share-button',
+            'button_additional_classes' => 'chasse-share-button',
           ]); ?>
         <?php endif; ?>
         <?php if ($edition_active) : ?>

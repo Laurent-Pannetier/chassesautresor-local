@@ -974,7 +974,9 @@ a[aria-disabled="true"] {
 }
 
 /* 🔗 Boutons de partage AddToAny */
-.addtoany_share {
+
+a.addtoany_share {
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -987,11 +989,13 @@ a[aria-disabled="true"] {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
-.addtoany_share img,
-.addtoany_share svg,
-.addtoany_share span {
+a.addtoany_share img,
+a.addtoany_share svg,
+a.addtoany_share span {
   width: 30px;
   height: 30px;
+  border: none;
+
   border-radius: 0;
 }
 
