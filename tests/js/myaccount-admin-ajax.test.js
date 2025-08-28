@@ -13,6 +13,7 @@ const html = `
   </aside>
   <div class="myaccount-main">
     <header class="myaccount-header"><h1 class="myaccount-title">Init</h1></header>
+    <section class="msg-important"></section>
     <main class="myaccount-content">init</main>
   </div>
 </div>
@@ -26,7 +27,7 @@ describe('myaccount ajax navigation', () => {
     global.ctaMyAccount = { ajaxUrl: '/admin-ajax.php' };
     global.fetch = jest.fn((url) => Promise.resolve({
       ok: true,
-      json: () => Promise.resolve({ success: true, data: { html: `<p>${url}</p>`, messages: '' } })
+      json: () => Promise.resolve({ success: true, data: { html: '<section class="msg-important"></section>', messages: '' } })
     }));
     jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
     jest.spyOn(window.history, 'replaceState').mockImplementation(() => {});

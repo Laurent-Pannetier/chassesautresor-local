@@ -8,6 +8,16 @@ let erreurDebut;
 let erreurFin;
 let toggleDateFin;
 
+function parseDateDMY(value) {
+  if (!value) return new Date(NaN);
+  const [datePart, timePart = ''] = value.trim().split(' ');
+  const [day, month, year] = datePart.split('/').map(Number);
+  const [hour = 0, minute = 0] = timePart.split(':').map(Number);
+  return new Date(year, month - 1, day, hour, minute);
+}
+
+window.parseDateDMY = parseDateDMY;
+
 function rafraichirCarteIndices() {
   const card = document.querySelector('.dashboard-card.champ-indices');
   if (!card || !window.ChasseIndices) return;
@@ -106,6 +116,7 @@ window.rafraichirCarteSolutions = rafraichirCarteSolutions;
   erreurDebut = document.getElementById('erreur-date-debut');
   erreurFin = document.getElementById('erreur-date-fin');
   toggleDateFin = document.getElementById('date-fin-limitee');
+  mettreAJourCaracteristiqueDate();
 
   // ==============================
   // 🟢 Initialisation des champs
@@ -655,8 +666,8 @@ function validerDatesAvantEnvoi(champModifie) {
 
   console.log('[validerDatesAvantEnvoi] bornes=', dateMinimum.toISOString(), dateMaximum.toISOString());
 
-  const debut = new Date(inputDateDebut.value);
-  const fin = new Date(inputDateFin.value);
+  const debut = parseDateDMY(inputDateDebut.value);
+  const fin = parseDateDMY(inputDateFin.value);
 
   console.log('[validerDatesAvantEnvoi] debut=', debut.toISOString(), 'fin=', fin.toISOString());
 
@@ -724,6 +735,17 @@ function afficherErreurGlobale(message) {
   setTimeout(() => {
     erreurGlobal.style.display = 'none';
   }, 4000); // Disparition après 4 secondes
+}
+
+function mettreAJourCaracteristiqueDate() {
+  const span = document.querySelector('.caracteristique-date .caracteristique-valeur');
+  if (!span || !inputDateDebut || !inputDateFin) return;
+  const debut = parseDateDMY(inputDateDebut.value);
+  const fin = parseDateDMY(inputDateFin.value);
+  if (isNaN(debut.getTime()) || isNaN(fin.getTime())) return;
+  const diff = Math.round((fin.getTime() - debut.getTime()) / (1000 * 60 * 60 * 24));
+  const label = diff > 1 ? wp.i18n.__('jours', 'chassesautresor-com') : wp.i18n.__('jour', 'chassesautresor-com');
+  span.textContent = `${diff} ${label}`;
 }
 
 function mettreAJourBadgeCoutChasse(postId, cout) {
@@ -1245,6 +1267,7 @@ function enregistrerDatesChasse() {
       if (res.success) {
         rafraichirStatutChasse(postId);
         mettreAJourAffichageDateFin();
+        mettreAJourCaracteristiqueDate();
         return true;
       }
       console.error('❌ Erreur sauvegarde dates:', res.data);
