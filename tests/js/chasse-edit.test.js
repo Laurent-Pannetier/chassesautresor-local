@@ -261,4 +261,45 @@ describe('chasse-edit UI', () => {
     expect(input.disabled).toBe(true);
     expect(input.value).toBe('0');
   });
+
+  test('cost badge updates on input change', () => {
+    const container = document.createElement('div');
+    container.className = 'header-chasse__image';
+    container.dataset.coutLabel = 'Coût de participation : %d points.';
+    container.dataset.ptsLabel = 'pts';
+    document.body.appendChild(container);
+
+    const input = document.querySelector('.champ-cout');
+    input.value = '25';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+
+    const badge = container.querySelector('.badge-cout');
+    expect(badge).not.toBeNull();
+    expect(badge.textContent).toBe('25 pts');
+    expect(badge.getAttribute('aria-label')).toBe('Coût de participation : 25 points.');
+  });
+
+  test('mode badge updates on toggle change', () => {
+    const container = document.createElement('div');
+    container.className = 'header-chasse__image';
+    container.dataset.modeAutoLabel = 'mode de fin de chasse : automatique';
+    container.dataset.modeManuelLabel = 'mode de fin de chasse : manuelle';
+    container.dataset.modeAutoIcon = '<i class="fa-solid fa-bolt"></i>';
+    container.dataset.modeManuelIcon = '<i class="hand"></i>';
+    const icone = document.createElement('span');
+    icone.className = 'mode-fin-icone';
+    container.appendChild(icone);
+    document.body.appendChild(container);
+
+    const toggle = document.getElementById('chasse_mode_fin');
+    toggle.checked = true;
+    toggle.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(icone.innerHTML).toBe('<i class="hand"></i>');
+    expect(icone.getAttribute('title')).toBe('mode de fin de chasse : manuelle');
+
+    toggle.checked = false;
+    toggle.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(icone.innerHTML).toBe('<i class="fa-solid fa-bolt"></i>');
+    expect(icone.getAttribute('title')).toBe('mode de fin de chasse : automatique');
+  });
 });

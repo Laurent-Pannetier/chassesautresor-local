@@ -128,6 +128,10 @@ if ($edition_active && !$est_complet) {
             class="header-chasse__image"
             data-cout-label="<?= esc_attr__('Coût de participation : %d points.', 'chassesautresor-com'); ?>"
             data-pts-label="<?= esc_attr__('pts', 'chassesautresor-com'); ?>"
+            data-mode-auto-label="<?= esc_attr__('mode de fin de chasse : automatique', 'chassesautresor-com'); ?>"
+            data-mode-manuel-label="<?= esc_attr__('mode de fin de chasse : manuelle', 'chassesautresor-com'); ?>"
+            data-mode-auto-icon="<?= esc_attr('<i class="fa-solid fa-bolt"></i>'); ?>"
+            data-mode-manuel-icon="<?= esc_attr(get_svg_icon('hand')); ?>"
         >
             <span class="badge-statut statut-<?= esc_attr($statut_for_class); ?>"
               data-post-id="<?= esc_attr($chasse_id); ?>">
@@ -147,7 +151,7 @@ if ($edition_active && !$est_complet) {
                 <?= esc_html($cout_points . ' ' . __('pts', 'chassesautresor-com')); ?>
               </span>
             <?php endif; ?>
-            <span class="mode-fin-icone" title="<?= esc_attr($title_mode); ?>">
+            <span class="mode-fin-icone" title="<?= esc_attr($title_mode); ?>" aria-label="<?= esc_attr($title_mode); ?>">
               <?php if ($mode_fin === 'automatique') : ?>
                 <i class="fa-solid fa-bolt"></i>
               <?php else : ?>

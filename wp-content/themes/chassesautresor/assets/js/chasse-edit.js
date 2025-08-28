@@ -750,6 +750,32 @@ function mettreAJourBadgeCoutChasse(postId, cout) {
 
 window.mettreAJourBadgeCoutChasse = mettreAJourBadgeCoutChasse;
 
+function mettreAJourBadgeModeFinChasse(mode) {
+  const container = document.querySelector('.header-chasse__image');
+  if (!container) return;
+  const icone = container.querySelector('.mode-fin-icone');
+  if (!icone) return;
+  const autoLabel = container.dataset.modeAutoLabel || '';
+  const manuelLabel = container.dataset.modeManuelLabel || '';
+  const autoIcon = container.dataset.modeAutoIcon || '';
+  const manuelIcon = container.dataset.modeManuelIcon || '';
+  if (mode === 'automatique') {
+    icone.innerHTML = autoIcon;
+    if (autoLabel) {
+      icone.setAttribute('title', autoLabel);
+      icone.setAttribute('aria-label', autoLabel);
+    }
+  } else {
+    icone.innerHTML = manuelIcon;
+    if (manuelLabel) {
+      icone.setAttribute('title', manuelLabel);
+      icone.setAttribute('aria-label', manuelLabel);
+    }
+  }
+}
+
+window.mettreAJourBadgeModeFinChasse = mettreAJourBadgeModeFinChasse;
+
 // ================================
 // 💾 Enregistrement du coût en points après clic bouton "✓"
 // ================================
@@ -792,9 +818,11 @@ document.querySelectorAll('.champ-cout-points .champ-annuler').forEach(bouton =>
     const li = bouton.closest('li');
     const input = li.querySelector('.champ-input');
     if (!li || !input) return;
+    const postId = li.dataset.postId;
 
     // Restaure l'ancienne valeur
     input.value = input.dataset.valeurInitiale || '0';
+    mettreAJourBadgeCoutChasse(postId, parseInt(input.value.trim(), 10) || 0);
 
     // Cache les boutons
     const boutons = li.querySelector('.champ-inline-actions');
@@ -940,8 +968,9 @@ function initChampCoutPoints() {
   const input = document.querySelector('.champ-cout-points .champ-cout');
   const toggle = document.getElementById('cout-payant');
   const actions = input?.closest('.cout-points-actions');
+  const postId = input?.closest('li')?.dataset.postId;
 
-  if (!input || !toggle || !actions) return;
+  if (!input || !toggle || !actions || !postId) return;
 
   function updateVisibility() {
     if (toggle.checked) {
@@ -959,6 +988,11 @@ function initChampCoutPoints() {
 
     input.dispatchEvent(new Event('input', { bubbles: true }));
   }
+
+  input.addEventListener('input', () => {
+    const valeur = parseInt(input.value.trim(), 10) || 0;
+    mettreAJourBadgeCoutChasse(postId, valeur);
+  });
 
   toggle.addEventListener('change', updateVisibility);
   updateVisibility();
@@ -1012,6 +1046,8 @@ function initModeFinChasse() {
 
       mettreAJourAffichageNbGagnants(postId, 0);
     }
+
+    mettreAJourBadgeModeFinChasse(selected);
   }
 
   toggle.addEventListener('change', () => update(true));
