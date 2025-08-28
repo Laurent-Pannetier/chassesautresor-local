@@ -6,8 +6,8 @@ $description = $args['description'] ?? '';
 if (!empty($description)) {
     $word_count = str_word_count(wp_strip_all_tags($description));
 
-    if ($word_count > 50) {
-        $short_description = wp_trim_words(wp_strip_all_tags($description), 50, '…');
+    if ($word_count > 200) {
+        $short_description = wp_trim_words(wp_strip_all_tags($description), 200, '…');
         ?>
         <div class="chasse-description" id="chasse-description">
             <div class="description-short"><?= esc_html($short_description); ?></div>
