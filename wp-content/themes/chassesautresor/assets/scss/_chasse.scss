@@ -36,13 +36,17 @@
 }
 /* Image container handling full width and limited height */
 .chasse-fiche-container .champ-img .champ-affichage {
-  display: block;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .header-chasse__image {
-  display: inline-block;
+  display: flex;
   position: relative;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
   --img-max-height: var(--hunt-img-max-height);
 }
 
@@ -94,7 +98,7 @@
     margin: 0;
     position: sticky;
     top: 0;
-    flex: 0 0 40%;
+    flex: 0 0 auto;
     max-width: 40%;
   }
 }
