@@ -2660,3 +2660,11 @@ msgstr ""
 #: assets/js/reponse-automatique.js:187
 msgid "Tentatives quotidiennes"
 msgstr ""
+
+#: inc/user-functions.php:693 inc/user-functions.php:711 inc/user-functions.php:736
+msgid "Unauthorized"
+msgstr ""
+
+#: inc/user-functions.php:706
+msgid "Section not found"
+msgstr ""

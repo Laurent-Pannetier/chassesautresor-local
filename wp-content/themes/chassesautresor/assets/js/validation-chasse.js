@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
             : '/wp-admin/admin-ajax.php';
         fetch(ajaxUrl, {
           method: 'POST',
-          credentials: 'same-origin',
+          credentials: 'include',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: params.toString(),
         }).catch(() => {});
@@ -94,7 +94,7 @@ function ouvrirModalConfirmation(form) {
 
       fetch(ajaxUrl, {
         method: 'POST',
-        credentials: 'same-origin',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: params.toString(),
       }).catch(() => {});

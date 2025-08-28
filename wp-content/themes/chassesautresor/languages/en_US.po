@@ -2782,3 +2782,11 @@ msgid "%d gagnant"
 msgid_plural "%d gagnants"
 msgstr[0] "%d winner"
 msgstr[1] "%d winners"
+
+#: inc/user-functions.php:693 inc/user-functions.php:711 inc/user-functions.php:736
+msgid "Unauthorized"
+msgstr "Unauthorized"
+
+#: inc/user-functions.php:706
+msgid "Section not found"
+msgstr "Section not found"

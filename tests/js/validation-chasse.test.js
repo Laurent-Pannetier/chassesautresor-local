@@ -34,10 +34,14 @@ describe('validation chasse', () => {
     const confirmBtn = document.querySelector('.confirmer-envoi');
     confirmBtn.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 
-    expect(fetch).toHaveBeenCalledWith('/admin-ajax.php', expect.objectContaining({
-      method: 'POST',
-      body: 'action=cta_dismiss_message&key=correction_chasse_123'
-    }));
+    expect(fetch).toHaveBeenCalledWith(
+      '/admin-ajax.php',
+      expect.objectContaining({
+        method: 'POST',
+        credentials: 'include',
+        body: 'action=cta_dismiss_message&key=correction_chasse_123'
+      })
+    );
     expect(document.querySelector('.msg-important').innerHTML.trim()).toBe('');
     expect(form.submit).toHaveBeenCalled();
   });
@@ -59,10 +63,14 @@ describe('validation chasse', () => {
     const confirmBtn = document.querySelector('.confirmer-envoi');
     confirmBtn.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 
-    expect(fetch).toHaveBeenCalledWith('/wp-admin/admin-ajax.php', expect.objectContaining({
-      method: 'POST',
-      body: 'action=cta_dismiss_message&key=correction_chasse_123'
-    }));
+    expect(fetch).toHaveBeenCalledWith(
+      '/wp-admin/admin-ajax.php',
+      expect.objectContaining({
+        method: 'POST',
+        credentials: 'include',
+        body: 'action=cta_dismiss_message&key=correction_chasse_123'
+      })
+    );
     expect(document.querySelector('.msg-important').innerHTML.trim()).toBe('');
     expect(form.submit).toHaveBeenCalled();
   });
@@ -78,6 +86,7 @@ describe('validation chasse', () => {
       '/wp-admin/admin-ajax.php',
       expect.objectContaining({
         method: 'POST',
+        credentials: 'include',
         body: 'action=cta_dismiss_message&key=correction_chasse_123'
       })
     );

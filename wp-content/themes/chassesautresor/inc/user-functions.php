@@ -690,7 +690,7 @@ function myaccount_get_important_messages(): string
 function ca_load_admin_section()
 {
     if (!is_user_logged_in()) {
-        wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor')], 403);
+        wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor-com')], 403);
     }
 
     $section = sanitize_key($_GET['section'] ?? '');
@@ -703,12 +703,12 @@ function ca_load_admin_section()
     ];
 
     if (!isset($allowed[$section])) {
-        wp_send_json_error(['message' => __('Section not found', 'chassesautresor')], 404);
+        wp_send_json_error(['message' => __('Section not found', 'chassesautresor-com')], 404);
     }
 
     $cap = $allowed[$section]['cap'];
     if ($cap !== 'read' && !current_user_can($cap)) {
-        wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor')], 403);
+        wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor-com')], 403);
     }
 
     ob_start();
@@ -733,7 +733,7 @@ add_action('wp_ajax_cta_load_admin_section', 'ca_load_admin_section');
 function ca_dismiss_message(): void
 {
     if (!is_user_logged_in()) {
-        wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor')], 403);
+        wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor-com')], 403);
     }
 
     $key = sanitize_key($_POST['key'] ?? '');
