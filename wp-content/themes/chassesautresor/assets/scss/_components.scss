@@ -973,6 +973,29 @@ a[aria-disabled="true"] {
   display: inline-block;
 }
 
+/* 🔗 Boutons de partage AddToAny */
+a.addtoany_share {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+a.addtoany_share img,
+a.addtoany_share svg,
+a.addtoany_share span {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 0;
+}
+
 /* 🌐 Language switcher */
 
 .lang-switcher {
