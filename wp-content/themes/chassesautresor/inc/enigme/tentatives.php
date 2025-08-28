@@ -139,7 +139,11 @@ defined('ABSPATH') || exit;
             '</a>'
         );
         myaccount_remove_persistent_message($user_id, 'tentative_' . $uid);
-        myaccount_add_flash_message($user_id, $message);
+        myaccount_add_flash_message(
+            $user_id,
+            $message,
+            $resultat === 'bon' ? 'success' : 'error'
+        );
 
         cat_debug("✅ Tentative UID=$uid traitée comme $resultat");
         return true;

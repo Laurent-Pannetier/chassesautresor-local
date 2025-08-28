@@ -263,17 +263,21 @@ add_filter('woocommerce_endpoint_edit-account_title', 'ca_profile_endpoint_title
  * @param int    $user_id User identifier.
  * @param string $key     Unique message key.
  * @param string $message Message to store.
+ * @param string $type    Message type (success, info, error, warning).
  *
  * @return void
  */
-function myaccount_add_persistent_message(int $user_id, string $key, string $message): void
+function myaccount_add_persistent_message(int $user_id, string $key, string $message, string $type = 'info'): void
 {
     $messages = get_user_meta($user_id, '_myaccount_messages', true);
     if (!is_array($messages)) {
         $messages = [];
     }
 
-    $messages[$key] = $message;
+    $messages[$key] = [
+        'text' => $message,
+        'type' => $type,
+    ];
     update_user_meta($user_id, '_myaccount_messages', $messages);
 }
 
@@ -306,7 +310,7 @@ function myaccount_remove_persistent_message(int $user_id, string $key): void
  *
  * @param int $user_id User identifier.
  *
- * @return array<string>
+ * @return array<int, array{text:string,type:string}>
  */
 function myaccount_get_persistent_messages(int $user_id): array
 {
@@ -317,28 +321,43 @@ function myaccount_get_persistent_messages(int $user_id): array
 
     $tentatives = [];
     foreach ($messages as $key => $msg) {
-        if (strpos($key, 'tentative_') === 0 && is_string($msg)) {
-            if (preg_match('/<a[^>]*>.*?<\/a>/', $msg, $matches)) {
+        $item = is_array($msg) ? $msg : ['text' => $msg, 'type' => 'info'];
+        if (strpos($key, 'tentative_') === 0) {
+            $text = $item['text'] ?? '';
+            if (preg_match('/<a[^>]*>.*?<\/a>/', $text, $matches)) {
                 $tentatives[] = $matches[0];
             } else {
-                $tentatives[] = $msg;
+                $tentatives[] = $text;
             }
             unset($messages[$key]);
+        } else {
+            $messages[$key] = $item;
         }
     }
 
-    $output = array_values(array_filter($messages, 'is_string'));
+    $output = [];
+    foreach ($messages as $msg) {
+        if (is_array($msg) && isset($msg['text'])) {
+            $output[] = [
+                'text' => (string) $msg['text'],
+                'type' => isset($msg['type']) ? (string) $msg['type'] : 'info',
+            ];
+        }
+    }
 
     if (!empty($tentatives)) {
         if (count($tentatives) === 1) {
-            $output[] = sprintf(
-                __(
-                    'Votre demande de résolution de l\'énigme %s est en cours de traitement. '
-                    . 'Vous recevrez une notification dès que votre demande sera traitée.',
-                    'chassesautresor-com'
+            $output[] = [
+                'text' => sprintf(
+                    __(
+                        'Votre demande de résolution de l\'énigme %s est en cours de traitement. '
+                        . 'Vous recevrez une notification dès que votre demande sera traitée.',
+                        'chassesautresor-com'
+                    ),
+                    $tentatives[0]
                 ),
-                $tentatives[0]
-            );
+                'type' => 'info',
+            ];
         } else {
             $links = array_map(
                 function ($anchor) {
@@ -347,14 +366,17 @@ function myaccount_get_persistent_messages(int $user_id): array
                 $tentatives
             );
 
-            $output[] = sprintf(
-                __(
-                    'Vos demandes de résolution d\'énigmes sont en cours de traitement : %s. '
-                    . 'Vous recevrez une notification dès que vos demandes seront traitées.',
-                    'chassesautresor-com'
+            $output[] = [
+                'text' => sprintf(
+                    __(
+                        'Vos demandes de résolution d\'énigmes sont en cours de traitement : %s. '
+                        . 'Vous recevrez une notification dès que vos demandes seront traitées.',
+                        'chassesautresor-com'
+                    ),
+                    implode(' ', $links)
                 ),
-                implode(' ', $links)
-            );
+                'type' => 'info',
+            ];
         }
     }
 
@@ -366,17 +388,21 @@ function myaccount_get_persistent_messages(int $user_id): array
  *
  * @param int    $user_id User identifier.
  * @param string $message Message to store.
+ * @param string $type    Message type (success, info, error, warning).
  *
  * @return void
  */
-function myaccount_add_flash_message(int $user_id, string $message): void
+function myaccount_add_flash_message(int $user_id, string $message, string $type = 'info'): void
 {
     $messages = get_user_meta($user_id, '_myaccount_flash_messages', true);
     if (!is_array($messages)) {
         $messages = [];
     }
 
-    $messages[] = $message;
+    $messages[] = [
+        'text' => $message,
+        'type' => $type,
+    ];
     update_user_meta($user_id, '_myaccount_flash_messages', $messages);
 }
 
@@ -385,7 +411,7 @@ function myaccount_add_flash_message(int $user_id, string $message): void
  *
  * @param int $user_id User identifier.
  *
- * @return array<string>
+ * @return array<int, array{text:string,type:string}>
  */
 function myaccount_get_flash_messages(int $user_id): array
 {
@@ -394,10 +420,28 @@ function myaccount_get_flash_messages(int $user_id): array
         return [];
     }
 
-    $messages = array_filter($messages, 'is_string');
+    $messages = array_map(
+        function ($msg) {
+            if (is_array($msg) && isset($msg['text'])) {
+                return [
+                    'text' => (string) $msg['text'],
+                    'type' => isset($msg['type']) ? (string) $msg['type'] : 'info',
+                ];
+            }
+            if (is_string($msg)) {
+                return [
+                    'text' => $msg,
+                    'type' => 'info',
+                ];
+            }
+            return null;
+        },
+        $messages
+    );
+
     delete_user_meta($user_id, '_myaccount_flash_messages');
 
-    return $messages;
+    return array_values(array_filter($messages));
 }
 
 /**
@@ -408,14 +452,14 @@ function myaccount_get_flash_messages(int $user_id): array
 function myaccount_get_important_messages(): string
 {
     $current_user_id = get_current_user_id();
-    $messages        = array_merge(
+    $messages = array_merge(
         myaccount_get_persistent_messages($current_user_id),
         myaccount_get_flash_messages($current_user_id)
     );
-    $flash           = '';
+    $flash    = '';
 
     if (isset($_GET['points_modifies']) && $_GET['points_modifies'] === '1') {
-        $flash = '<p class="flash">' . __('Points mis à jour avec succès.', 'chassesautresor') . '</p>';
+        $flash = '<p class="flash flash--success">' . __('Points mis à jour avec succès.', 'chassesautresor') . '</p>';
     }
 
     if (current_user_can('administrator')) {
@@ -441,7 +485,10 @@ function myaccount_get_important_messages(): string
                     ? __('Chasses à valider :', 'chassesautresor')
                     : __('Chasse à valider :', 'chassesautresor');
 
-                $messages[] = $label . ' ' . implode(', ', $links);
+                $messages[] = [
+                    'text' => $label . ' ' . implode(', ', $links),
+                    'type' => 'info',
+                ];
             }
         }
 
@@ -451,12 +498,15 @@ function myaccount_get_important_messages(): string
 
         if (!empty($pendingRequests)) {
             $url = esc_url(add_query_arg('section', 'points', home_url('/mon-compte/')));
-            $messages[] = sprintf(
-                /* translators: 1: opening anchor tag, 2: closing anchor tag */
-                __('Vous avez des %1$sdemandes de conversion%2$s en attente.', 'chassesautresor-com'),
-                '<a href="' . $url . '">',
-                '</a>'
-            );
+            $messages[] = [
+                'text' => sprintf(
+                    /* translators: 1: opening anchor tag, 2: closing anchor tag */
+                    __('Vous avez des %1$sdemandes de conversion%2$s en attente.', 'chassesautresor-com'),
+                    '<a href="' . $url . '">',
+                    '</a>'
+                ),
+                'type' => 'info',
+            ];
         }
     }
 
@@ -475,7 +525,10 @@ function myaccount_get_important_messages(): string
                     $enigmes
                 );
 
-                $messages[] = '⚠️ ' . __('Important ! Des tentatives attendent votre action :', 'chassesautresor-com') . ' ' . implode('', $links);
+                $messages[] = [
+                    'text' => '⚠️ ' . __('Important ! Des tentatives attendent votre action :', 'chassesautresor-com') . ' ' . implode('', $links),
+                    'type' => 'warning',
+                ];
             }
         }
 
@@ -495,12 +548,15 @@ function myaccount_get_important_messages(): string
                 )
                 : esc_url(home_url('/mon-compte/?section=points'));
 
-            $messages[] = sprintf(
-                /* translators: 1: opening anchor tag, 2: closing anchor tag */
-                __('Vous avez une %1$sdemande de conversion%2$s en attente de règlement.', 'chassesautresor'),
-                '<a href="' . $conversion_url . '">',
-                '</a>'
-            );
+            $messages[] = [
+                'text' => sprintf(
+                    /* translators: 1: opening anchor tag, 2: closing anchor tag */
+                    __('Vous avez une %1$sdemande de conversion%2$s en attente de règlement.', 'chassesautresor'),
+                    '<a href="' . $conversion_url . '">',
+                    '</a>'
+                ),
+                'type' => 'info',
+            ];
         }
 
         if ($organisateur_id) {
@@ -523,7 +579,10 @@ function myaccount_get_important_messages(): string
             ]);
 
             if (!empty($pendingChasses)) {
-                $messages[] = __('Demande de validation en cours de traitement.', 'chassesautresor');
+                $messages[] = [
+                    'text' => __('Demande de validation en cours de traitement.', 'chassesautresor'),
+                    'type' => 'info',
+                ];
             }
         }
     }
@@ -534,7 +593,9 @@ function myaccount_get_important_messages(): string
 
     $output = array_map(
         function ($msg) {
-            return '<p class="alerte-discret">' . $msg . '</p>';
+            $type = $msg['type'] ?? 'info';
+            $text = $msg['text'] ?? '';
+            return '<p class="alerte-discret alerte-discret--' . esc_attr($type) . '">' . $text . '</p>';
         },
         $messages
     );

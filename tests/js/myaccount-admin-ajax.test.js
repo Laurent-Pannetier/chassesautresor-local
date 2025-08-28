@@ -85,7 +85,7 @@ describe('myaccount ajax navigation', () => {
         success: true,
         data: {
           html: '<p>outils</p>',
-          messages: '<p class="flash">Temp</p><p>Persistent</p>'
+          messages: '<p class="flash flash--info">Temp</p><p class="alerte-discret alerte-discret--info">Persistent</p>'
         }
       })
     }));
@@ -94,10 +94,10 @@ describe('myaccount ajax navigation', () => {
     await Promise.resolve();
     await Promise.resolve();
     const container = document.querySelector('.msg-important');
-    expect(container.innerHTML).toBe('<p class="flash">Temp</p><p class="alerte-discret">Persistent</p>');
+    expect(container.innerHTML).toBe('<p class="flash flash--info">Temp</p><p class="alerte-discret alerte-discret--info">Persistent</p>');
     jest.advanceTimersByTime(3000);
     await Promise.resolve();
-    expect(container.innerHTML).toBe('<p class="alerte-discret">Persistent</p>');
+    expect(container.innerHTML).toBe('<p class="alerte-discret alerte-discret--info">Persistent</p>');
     jest.useRealTimers();
   });
 
