@@ -101,7 +101,7 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
                 <?php astra_content_top(); ?>
                 <?php
                 $messages = get_site_messages();
-                if (is_account_page()) {
+                if ( ! is_singular( 'enigme' ) ) {
                     $messages .= myaccount_get_important_messages();
                 }
                 ?>
