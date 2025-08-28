@@ -579,10 +579,18 @@ function myaccount_get_important_messages(): string
             ]);
 
             if (!empty($pendingChasses)) {
-                $messages[] = [
-                    'text' => __('Demande de validation en cours de traitement.', 'chassesautresor'),
-                    'type' => 'info',
-                ];
+                foreach ($pendingChasses as $chasse_id) {
+                    $url   = esc_url(get_permalink($chasse_id));
+                    $title = esc_html(get_the_title($chasse_id));
+                    $messages[] = [
+                        'text' => sprintf(
+                            /* translators: %s: hunt title with link */
+                            __('Demande pour %s en cours de traitement', 'chassesautresor-com'),
+                            '<a href="' . $url . '">' . $title . '</a>'
+                        ),
+                        'type' => 'info',
+                    ];
+                }
             }
         }
     }

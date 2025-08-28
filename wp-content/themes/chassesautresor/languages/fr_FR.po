@@ -2618,3 +2618,8 @@ msgstr "j F Y"
 
 msgid "Unlimited"
 msgstr "Illimitée"
+
+#: inc/user-functions.php:588
+#. translators: %s: hunt title with link
+msgid "Demande pour %s en cours de traitement"
+msgstr "Demande pour %s en cours de traitement"

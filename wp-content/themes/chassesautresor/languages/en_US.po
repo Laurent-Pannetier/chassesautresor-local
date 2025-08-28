@@ -2751,3 +2751,8 @@ msgstr "Not specified"
 msgctxt "formatting for dates"
 msgid "j F Y"
 msgstr "F j, Y"
+
+#: inc/user-functions.php:588
+#. translators: %s: hunt title with link
+msgid "Demande pour %s en cours de traitement"
+msgstr "Request for %s is being processed"
