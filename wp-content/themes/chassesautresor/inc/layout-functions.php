@@ -131,6 +131,13 @@ function charger_scripts_personnalises() {
     // 📌 Chargement des scripts JS personnalisés
     wp_enqueue_script('toggle-text', $theme_dir . 'toggle-text.js', ['jquery'], null, true);
     wp_enqueue_script('toggle-tooltip', $theme_dir . 'toggle-tooltip.js', [], null, true);
+    wp_enqueue_script(
+        'chasse-description-toggle',
+        $theme_dir . 'chasse-description-toggle.js',
+        [],
+        filemtime(get_stylesheet_directory() . '/assets/js/chasse-description-toggle.js'),
+        true
+    );
     
     wp_enqueue_script(
       'encodage-morse',
@@ -351,6 +358,51 @@ function filtrer_content_sans_titre($content) {
 // ==================================================
 // 🎯 AFFICHAGES SPÉCIFIQUES
 // ==================================================
+
+/**
+ * Trim HTML content to a given number of words while preserving tags.
+ *
+ * @param string $html  HTML to trim.
+ * @param int    $limit Number of words to retain.
+ * @param string $more  Optional string appended after trimming.
+ * @return string Trimmed HTML content.
+ */
+function cst_trim_html_words($html, $limit = 200, $more = '…') {
+    $wordCount = 0;
+    $output = '';
+    $openTags = [];
+
+    preg_match_all('/(<[^>]+>|\s+|[^<\s]+)/u', $html, $tokens);
+
+    foreach ($tokens[0] as $token) {
+        if ($token[0] === '<') {
+            if ($token[1] === '/') {
+                array_pop($openTags);
+            } elseif (substr($token, -2) !== '/>') {
+                $tagName = strtolower(preg_replace('/[\s>].*/', '', substr($token, 1)));
+                $openTags[] = $tagName;
+            }
+            $output .= $token;
+        } elseif (trim($token) === '') {
+            $output .= $token;
+        } else {
+            $wordCount++;
+            $output .= $token;
+
+            if ($wordCount >= $limit) {
+                $output = rtrim($output);
+                $output .= $more;
+                break;
+            }
+        }
+    }
+
+    while (!empty($openTags)) {
+        $output .= '</' . array_pop($openTags) . '>';
+    }
+
+    return $output;
+}
 /**
  * Limite l'affichage d'un texte à un certain nombre de caractères, avec un bouton "Lire la suite" pour afficher la totalité.
  *
