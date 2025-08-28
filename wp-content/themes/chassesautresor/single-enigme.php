@@ -38,7 +38,7 @@ if (is_singular('enigme')) {
 
         <?php if (!empty($_GET['erreur'])) : ?>
             <?php $error_message = sanitize_text_field(wp_unslash($_GET['erreur'])); ?>
-            <div class="message-erreur" role="alert" aria-live="assertive" style="color:red; margin-bottom:1em;">
+            <div class="message-erreur" role="alert" aria-live="assertive">
                 <?= esc_html($error_message); ?>
             </div>
         <?php endif; ?>

@@ -466,7 +466,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                                         class="champ-inline-nb champ-nb-edit champ-input champ-number"
                                         <?= ($peut_editer && $nb_max != 0) ? '' : 'disabled'; ?> />
 
-                                    <div id="erreur-nb-gagnants" class="message-erreur" role="alert" aria-live="assertive" style="display:none; color:red; font-size:0.9em; margin-top:5px;"></div>
+                                    <div id="erreur-nb-gagnants" class="message-erreur" role="alert" aria-live="assertive" style="display:none;"></div>
                                 </div>
                             </div>
                             <?php
@@ -522,7 +522,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                                         name="chasse-date-debut"
                                         value="<?= esc_attr($date_debut_iso); ?>"
                                         class="champ-inline-date champ-date-edit" <?= ($peut_editer && $debut_differe) ? '' : 'disabled'; ?> required />
-                                    <div id="erreur-date-debut" class="message-erreur" role="alert" aria-live="assertive" style="display:none; color:red; font-size:0.9em; margin-top:5px;"></div>
+                                    <div id="erreur-date-debut" class="message-erreur" role="alert" aria-live="assertive" style="display:none;"></div>
                                 </div>
                             </div>
                             <?php
@@ -568,7 +568,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                                         name="chasse-date-fin"
                                         value="<?= esc_attr($date_fin_iso); ?>"
                                         class="champ-inline-date champ-date-edit" <?= $peut_editer ? '' : 'disabled'; ?> />
-                                    <div id="erreur-date-fin" class="message-erreur" role="alert" aria-live="assertive" style="display:none; color:red; font-size:0.9em; margin-top:5px;"></div>
+                                    <div id="erreur-date-fin" class="message-erreur" role="alert" aria-live="assertive" style="display:none;"></div>
                                 </div>
                             </div>
                             <?php

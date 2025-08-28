@@ -1404,7 +1404,7 @@ a[aria-disabled=true] {
 }
 
 /* ========== ❌ MESSAGE ERREUR ========== */
-.message-error {
+.message-erreur {
   text-align: center;
   font-weight: bold;
   color: var(--color-error);
