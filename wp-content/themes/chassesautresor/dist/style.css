@@ -255,9 +255,9 @@
 /* ==================================================
    🗺️ PAGE DE CHASSE (single-chasse.php)
    ================================================== */
-/* Utility: image constrained by max height with optional custom property */
+/* Utility: image constrained by the global max height */
 .img-h-max {
-  max-height: var(--img-max-height, 600px);
+  max-height: var(--hunt-img-max-height);
   width: auto;
   height: auto;
   -o-object-fit: contain;
@@ -267,13 +267,12 @@
 .chasse-fiche-container {
   margin-top: var(--space-2xl);
   --grid-gap: 2.6rem;
+  --hunt-img-max-height: 350px;
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: var(--grid-gap);
-  /* Image container max height (mobile first) */
-  --hunt-img-max-height: 200px;
 }
 
 /* ========== 🖼️ COLONNE IMAGE DE LA CHASSE ========== */
@@ -288,14 +287,17 @@
 
 /* Image container handling full width and limited height */
 .chasse-fiche-container .champ-img .champ-affichage {
-  display: block;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .header-chasse__image {
-  display: inline-block;
+  display: flex;
   position: relative;
-  --img-max-height: var(--hunt-img-max-height);
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
 .header-chasse__image .badge-cout {
@@ -333,23 +335,20 @@
 
 @media (min-width: 600px) {
   .chasse-fiche-container {
-    --hunt-img-max-height: 300px;
+    --hunt-img-max-height: 500px;
   }
 }
 @media (min-width: 768px) {
   .chasse-fiche-container {
     flex-direction: row;
-    --hunt-img-max-height: 400px;
+    --hunt-img-max-height: 800px;
   }
   .champ-chasse.champ-img {
     margin: 0;
     position: sticky;
     top: 0;
-  }
-}
-@media (min-width: 1440px) {
-  .chasse-fiche-container {
-    --hunt-img-max-height: 600px;
+    flex: 0 0 auto;
+    max-width: 40%;
   }
 }
 /* ========== 📝 COLONNE INFOS DE LA CHASSE ========== */
