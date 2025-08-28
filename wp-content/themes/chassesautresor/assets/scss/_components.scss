@@ -958,11 +958,6 @@ a[aria-disabled="true"] {
     border: 0;
     cursor: pointer;
     font-size: 1em;
-    color: var(--color-grey-light);
-}
-
-.message-info:hover .message-close,
-.message-info:focus-within .message-close {
     color: var(--color-error);
 }
 
