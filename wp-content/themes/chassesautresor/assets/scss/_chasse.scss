@@ -24,6 +24,15 @@
   gap: var(--grid-gap);
 }
 
+.chasse-visuel-wrapper {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+  gap: var(--space-xs);
+}
+
 
 /* ========== 🖼️ COLONNE IMAGE DE LA CHASSE ========== */
 .champ-chasse.champ-img {
@@ -92,12 +101,14 @@
     flex-direction: row;
     --hunt-img-max-height: 800px;
   }
-  .champ-chasse.champ-img {
-    margin: 0;
+  .chasse-visuel-wrapper {
     position: sticky;
     top: 0;
-    flex: 0 0 auto;
     max-width: 40%;
+    margin: 0;
+  }
+  .champ-chasse.champ-img {
+    margin: 0;
   }
 }
 

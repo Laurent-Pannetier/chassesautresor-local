@@ -33,6 +33,7 @@ $current_stored_statut = $champs['current_stored_statut'];
 $image_raw = $infos_chasse['image_raw'];
 $image_id  = $infos_chasse['image_id'];
 $image_url = $infos_chasse['image_url'];
+$liens     = $infos_chasse['liens'] ?? [];
 
 // Enigmes
 $enigmes_associees = $infos_chasse['enigmes_associees'];
@@ -117,73 +118,90 @@ if ($edition_active && !$est_complet) {
       </button>
     <?php endif; ?>
 
-    <!-- 📷 Image principale -->
-    <div class="champ-chasse champ-img <?= empty($image_url) ? 'champ-vide' : 'champ-rempli'; ?>"
-      data-champ="chasse_principale_image"
-      data-cpt="chasse"
-      data-post-id="<?= esc_attr($chasse_id); ?>">
-
-      <div class="champ-affichage">
-        <div
-            class="header-chasse__image"
-            data-cout-label="<?= esc_attr__('Coût de participation : %d points.', 'chassesautresor-com'); ?>"
-            data-pts-label="<?= esc_attr__('pts', 'chassesautresor-com'); ?>"
-            data-mode-auto-label="<?= esc_attr__('mode de fin de chasse : automatique', 'chassesautresor-com'); ?>"
-            data-mode-manuel-label="<?= esc_attr__('mode de fin de chasse : manuelle', 'chassesautresor-com'); ?>"
-            data-mode-auto-icon="<?= esc_attr('<i class="fa-solid fa-bolt"></i>'); ?>"
-            data-mode-manuel-icon="<?= esc_attr(get_svg_icon('hand')); ?>"
-        >
-            <span class="badge-statut statut-<?= esc_attr($statut_for_class); ?>"
-              data-post-id="<?= esc_attr($chasse_id); ?>">
-              <?= esc_html($statut_label); ?>
-            </span>
-            <?php if ($cout_points > 0) : ?>
-              <span
-                  class="badge-cout"
-                  data-post-id="<?= esc_attr($chasse_id); ?>"
-                  aria-label="<?= esc_attr(
-                      sprintf(
-                          __('Coût de participation : %d points.', 'chassesautresor-com'),
-                          $cout_points
-                      )
-                  ); ?>"
-              >
-                <?= esc_html($cout_points . ' ' . __('pts', 'chassesautresor-com')); ?>
+    <div class="chasse-visuel-wrapper">
+      <!-- 📷 Image principale -->
+      <div class="champ-chasse champ-img <?= empty($image_url) ? 'champ-vide' : 'champ-rempli'; ?>"
+        data-champ="chasse_principale_image"
+        data-cpt="chasse"
+        data-post-id="<?= esc_attr($chasse_id); ?>">
+        <div class="champ-affichage">
+          <div
+              class="header-chasse__image"
+              data-cout-label="<?= esc_attr__('Coût de participation : %d points.', 'chassesautresor-com'); ?>"
+              data-pts-label="<?= esc_attr__('pts', 'chassesautresor-com'); ?>"
+              data-mode-auto-label="<?= esc_attr__('mode de fin de chasse : automatique', 'chassesautresor-com'); ?>"
+              data-mode-manuel-label="<?= esc_attr__('mode de fin de chasse : manuelle', 'chassesautresor-com'); ?>"
+              data-mode-auto-icon="<?= esc_attr('<i class="fa-solid fa-bolt"></i>'); ?>"
+              data-mode-manuel-icon="<?= esc_attr(get_svg_icon('hand')); ?>"
+          >
+              <span class="badge-statut statut-<?= esc_attr($statut_for_class); ?>"
+                data-post-id="<?= esc_attr($chasse_id); ?>">
+                <?= esc_html($statut_label); ?>
               </span>
-            <?php endif; ?>
-            <span class="mode-fin-icone" title="<?= esc_attr($title_mode); ?>" aria-label="<?= esc_attr($title_mode); ?>">
-              <?php if ($mode_fin === 'automatique') : ?>
-                <i class="fa-solid fa-bolt"></i>
-              <?php else : ?>
-                <?= get_svg_icon('hand'); ?>
+              <?php if ($cout_points > 0) : ?>
+                <span
+                    class="badge-cout"
+                    data-post-id="<?= esc_attr($chasse_id); ?>"
+                    aria-label="<?= esc_attr(
+                        sprintf(
+                            __('Coût de participation : %d points.', 'chassesautresor-com'),
+                            $cout_points
+                        )
+                    ); ?>"
+                >
+                  <?= esc_html($cout_points . ' ' . __('pts', 'chassesautresor-com')); ?>
+                </span>
               <?php endif; ?>
-            </span>
-            <?php if ($image_id) : ?>
-              <a
-                href="<?= esc_url(wp_get_attachment_image_url($image_id, 'full')); ?>"
-                class="fancybox image"
-              >
-                <?php
-                echo wp_get_attachment_image(
-                    $image_id,
-                    'chasse-fiche',
-                    false,
-                    [
-                        'class'       => 'chasse-image visuel-cpt img-h-max',
-                        'data-cpt'    => 'chasse',
-                        'data-post-id' => $chasse_id,
-                        'alt'         => __('Image de la chasse', 'chassesautresor-com'),
-                        'sizes'       => '(max-width: 800px) 100vw, 800px',
-                    ]
-                );
-                ?>
-              </a>
-            <?php endif; ?>
+              <span class="mode-fin-icone" title="<?= esc_attr($title_mode); ?>" aria-label="<?= esc_attr($title_mode); ?>">
+                <?php if ($mode_fin === 'automatique') : ?>
+                  <i class="fa-solid fa-bolt"></i>
+                <?php else : ?>
+                  <?= get_svg_icon('hand'); ?>
+                <?php endif; ?>
+              </span>
+              <?php if ($image_id) : ?>
+                <a
+                  href="<?= esc_url(wp_get_attachment_image_url($image_id, 'full')); ?>"
+                  class="fancybox image"
+                >
+                  <?php
+                  echo wp_get_attachment_image(
+                      $image_id,
+                      'chasse-fiche',
+                      false,
+                      [
+                          'class'       => 'chasse-image visuel-cpt img-h-max',
+                          'data-cpt'    => 'chasse',
+                          'data-post-id' => $chasse_id,
+                          'alt'         => __('Image de la chasse', 'chassesautresor-com'),
+                          'sizes'       => '(max-width: 800px) 100vw, 800px',
+                      ]
+                  );
+                  ?>
+                </a>
+              <?php endif; ?>
+            </div>
+          </div>
+
+        <input type="hidden" class="champ-input" value="<?= esc_attr($image_id); ?>">
+        <div class="champ-feedback"></div>
+      </div>
+      <?php
+      $vide = empty($liens);
+      ?>
+      <div class="champ-chasse champ-liens champ-fiche-publication <?= $vide ? 'champ-vide' : 'champ-rempli'; ?>"
+        data-champ="chasse_principale_liens"
+        data-cpt="chasse"
+        data-post-id="<?= esc_attr($chasse_id); ?>">
+        <div class="champ-donnees"
+          data-valeurs='<?= json_encode($liens, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>'></div>
+        <div class="champ-affichage">
+          <div class="champ-affichage-liens">
+            <?= render_liens_publics($liens, 'chasse', ['afficher_titre' => false, 'wrap' => false]); ?>
           </div>
         </div>
-
-      <input type="hidden" class="champ-input" value="<?= esc_attr($image_id); ?>">
-      <div class="champ-feedback"></div>
+        <div class="champ-feedback"></div>
+      </div>
     </div>
 
 
