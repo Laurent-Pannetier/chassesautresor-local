@@ -217,8 +217,8 @@ function render_conversion_modal_content($access_message = null): string
         <span class="close-modal">&times;</span>
         <div class="points-modal-message">
             <i class="fa-solid fa-building-columns modal-icon" aria-hidden="true"></i>
-            <h2>Coordonnées bancaires manquantes</h2>
-            <p>nous avons besoin d'enregistrer vos coordonnées bancaires pour vous envoyer un versement</p>
+            <h2><?php esc_html_e('Coordonnées bancaires manquantes', 'chassesautresor-com'); ?></h2>
+            <p><?php esc_html_e("Nous avons besoin d'enregistrer vos coordonnées bancaires pour vous envoyer un versement", 'chassesautresor-com'); ?></p>
             <p>
                 <a
                     id="ouvrir-coordonnees-modal"
@@ -232,7 +232,7 @@ function render_conversion_modal_content($access_message = null): string
                     data-label-edit="<?php esc_attr_e('Éditer', 'chassesautresor-com'); ?>"
                     data-aria-add="<?php esc_attr_e('Ajouter des coordonnées bancaires', 'chassesautresor-com'); ?>"
                     data-aria-edit="<?php esc_attr_e('Modifier les coordonnées bancaires', 'chassesautresor-com'); ?>"
-                >renseigner coordonnées bancaires</a>
+                ><?php esc_html_e('renseigner coordonnées bancaires', 'chassesautresor-com'); ?></a>
             </p>
             <button type="button" class="close-modal">Fermer</button>
         </div>

@@ -640,7 +640,7 @@ msgstr ""
 
 #: inc/enigme/cta.php:206
 msgid "Indisponible"
-msgstr ""
+msgstr "Unavailable"
 
 #: inc/enigme/cta.php:232
 msgid "Commencer"
@@ -2669,4 +2669,77 @@ msgstr "See all hunt solutions"
 #: inc/edition/edition-enigme.php:65
 msgid "Voir la solution de cette énigme"
 msgstr "See this riddle's solution"
+
+#: template-parts/chasse/chasse-affichage-complet.php:263
+msgid "Limite"
+msgstr "Limit"
+
+#: template-parts/chasse/chasse-affichage-complet.php:264
+#, php-format
+msgid "%d gagnants"
+msgstr "%d winners"
+
+#: template-parts/chasse/chasse-affichage-complet.php:269
+msgid "Fin de chasse"
+msgstr "Hunt end"
+
+#: template-parts/chasse/chasse-affichage-complet.php:280
+msgid "Accès chasse"
+msgstr "Hunt access"
+
+#: template-parts/chasse/chasse-affichage-complet.php:284
+msgid "libre"
+msgstr "free"
+
+#: template-parts/chasse/chasse-affichage-complet.php:289
+msgid "Accès énigme"
+msgstr "Riddle access"
+
+#: template-parts/chasse/chasse-affichage-complet.php:305
+msgid "gratuit"
+msgstr "free"
+
+#: template-parts/chasse/chasse-affichage-complet.php:332
+msgid "Les + avancés"
+msgstr "Most advanced"
+
+#: inc/chasse-functions.php:606
+msgid "S'identifier"
+msgstr "Sign in"
+
+#: inc/chasse-functions.php:607
+msgid "Vous devez être identifié pour participer à cette chasse"
+msgstr "You must be logged in to participate in this hunt"
+
+#: inc/chasse-functions.php:639
+msgid "Chasse disponible à partir du %s"
+msgstr "Hunt available from %s"
+
+#: inc/chasse-functions.php:641
+msgid "Chasse disponible prochainement"
+msgstr "Hunt available soon"
+
+#: inc/chasse-functions.php:672
+msgid "Accès libre à cette chasse. Les tentatives seront tarifées individuellement."
+msgstr "Free access to this hunt. Attempts will be charged individually."
+
+#: inc/chasse-functions.php:683
+msgid "Cette chasse est terminée depuis le %s"
+msgstr "This hunt has ended since %s"
+
+#: inc/chasse-functions.php:685
+msgid "Cette chasse est terminée"
+msgstr "This hunt is over"
+
+#: inc/organisateur-functions.php:220
+msgid "Coordonnées bancaires manquantes"
+msgstr "Missing bank details"
+
+#: inc/organisateur-functions.php:221
+msgid "Nous avons besoin d'enregistrer vos coordonnées bancaires pour vous envoyer un versement"
+msgstr "We need to record your bank details to send you a payout"
+
+#: inc/organisateur-functions.php:235
+msgid "renseigner coordonnées bancaires"
+msgstr "enter bank details"
 
