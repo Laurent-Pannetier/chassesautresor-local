@@ -204,6 +204,11 @@ if ($edition_active && !$est_complet) {
                 'wrap'           => false,
                 'placeholder'    => false,
             ]); ?>
+            <?php if (function_exists('ADDTOANY_SHARE_SAVE_KIT')) : ?>
+                <div class="chasse-share-right">
+                    <?php ADDTOANY_SHARE_SAVE_KIT(); ?>
+                </div>
+            <?php endif; ?>
           </div>
         </div>
         <div class="champ-feedback"></div>

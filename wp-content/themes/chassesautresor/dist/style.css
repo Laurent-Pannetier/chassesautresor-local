@@ -342,6 +342,11 @@
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.45);
 }
 
+.champ-chasse.champ-liens .chasse-share-right {
+  text-align: right;
+  margin-top: var(--space-xs);
+}
+
 @media (min-width: 600px) {
   .chasse-fiche-container {
     --hunt-img-max-height: 500px;
