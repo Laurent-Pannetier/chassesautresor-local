@@ -128,7 +128,8 @@
   align-items: center;
 }
 
-.chasse-details-actions .bouton-edition-toggle {
+
+.chasse-details-actions .chasse-share-button {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -139,14 +140,15 @@
   border: 1px solid rgba(255, 255, 255, 0.6);
   color: #fff;
   background: none;
+  transition: background-color 0.2s ease;
 }
 
-.chasse-details-actions .bouton-edition-toggle:hover,
-.chasse-details-actions .bouton-edition-toggle:focus {
+.chasse-details-actions .chasse-share-button:hover,
+.chasse-details-actions .chasse-share-button:focus {
   background-color: rgba(255, 255, 255, 0.15);
 }
 
-.chasse-details-actions .bouton-edition-toggle:active {
+.chasse-details-actions .chasse-share-button:active {
   background-color: rgba(255, 255, 255, 0.3);
 }
 
