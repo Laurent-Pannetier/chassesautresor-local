@@ -195,6 +195,17 @@
     padding: 0;
     font: inherit;
     text-decoration: underline;
+
+    &::before {
+      content: "▾";
+      display: inline-block;
+      color: var(--color-text-primary);
+      margin-right: var(--space-xxs);
+    }
+
+    &[aria-expanded='true']::before {
+      content: "▴";
+    }
   }
 }
 .chasse-section-intro.champ-vide-obligatoire {
