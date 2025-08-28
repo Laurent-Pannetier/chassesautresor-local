@@ -89,6 +89,7 @@ $needs_validatable_message = $statut === 'revision'
 $statut_validation = $infos_chasse['statut_validation'];
 $nb_joueurs = $infos_chasse['nb_joueurs'];
 
+afficher_message_validation_chasse($chasse_id);
 get_header();
 cat_debug("🧪 test organisateur_associe : " . ($est_orga_associe ? 'OUI' : 'NON'));
 
@@ -148,8 +149,6 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
         echo render_form_validation_chasse($chasse_id);
         echo '</div>';
     }
-
-    afficher_message_validation_chasse($chasse_id);
     ?>
 
     <?php
