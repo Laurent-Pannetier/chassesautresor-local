@@ -113,26 +113,11 @@
   --breakpoint-desktop: 1024px;
   --breakpoint-wide: 1280px;
 
-  /* Hauteur maximale des images de chasse */
-  --hunt-img-max-height: 350px;
-}
-
-@media (--bp-mobile) {
-  :root {
-    --hunt-img-max-height: 500px;
-  }
-}
-
-@media (--bp-tablet) {
-  :root {
-    --hunt-img-max-height: 800px;
-  }
 }
 
 @media (--bp-xxl) {
   :root {
     --container-max-width: none;
-    --hunt-img-max-height: 600px;
   }
 }
 

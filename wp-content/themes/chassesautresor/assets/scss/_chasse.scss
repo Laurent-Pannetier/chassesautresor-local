@@ -16,6 +16,7 @@
 .chasse-fiche-container {
   margin-top: var(--space-2xl);
   --grid-gap: 2.6rem;
+  --hunt-img-max-height: 350px;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -80,9 +81,16 @@
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.45);
 }
 
+@media (--bp-mobile) {
+  .chasse-fiche-container {
+    --hunt-img-max-height: 500px;
+  }
+}
+
 @media (--bp-tablet) {
   .chasse-fiche-container {
     flex-direction: row;
+    --hunt-img-max-height: 800px;
   }
   .champ-chasse.champ-img {
     margin: 0;

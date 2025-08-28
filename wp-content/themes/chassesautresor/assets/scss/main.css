@@ -264,6 +264,7 @@
 .chasse-fiche-container {
   margin-top: var(--space-2xl);
   --grid-gap: 2.6rem;
+  --hunt-img-max-height: 350px;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -328,9 +329,15 @@
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.45);
 }
 
+@media (--bp-mobile) {
+  .chasse-fiche-container {
+    --hunt-img-max-height: 500px;
+  }
+}
 @media (--bp-tablet) {
   .chasse-fiche-container {
     flex-direction: row;
+    --hunt-img-max-height: 800px;
   }
   .champ-chasse.champ-img {
     margin: 0;
@@ -8627,24 +8634,11 @@ section#presentation .presentation-fermer {
   --breakpoint-tablet: 768px;
   --breakpoint-desktop: 1024px;
   --breakpoint-wide: 1280px;
-  /* Hauteur maximale des images de chasse */
-  --hunt-img-max-height: 350px;
 }
 
-@media (--bp-mobile) {
-  :root {
-    --hunt-img-max-height: 500px;
-  }
-}
-@media (--bp-tablet) {
-  :root {
-    --hunt-img-max-height: 800px;
-  }
-}
 @media (--bp-xxl) {
   :root {
     --container-max-width: none;
-    --hunt-img-max-height: 600px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

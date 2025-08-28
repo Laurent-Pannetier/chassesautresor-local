@@ -168,6 +168,7 @@ if ($edition_active && !$est_complet) {
                   'data-cpt'    => 'chasse',
                   'data-post-id' => $chasse_id,
                   'alt'         => __('Image de la chasse', 'chassesautresor-com'),
+                  'sizes'       => '(max-width: 800px) 100vw, 800px',
               ]
           );
           ?>
