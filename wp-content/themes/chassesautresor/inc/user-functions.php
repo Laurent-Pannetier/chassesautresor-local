@@ -595,7 +595,25 @@ function myaccount_get_important_messages(): string
         function ($msg) {
             $type = $msg['type'] ?? 'info';
             $text = $msg['text'] ?? '';
-            return '<p class="alerte-discret alerte-discret--' . esc_attr($type) . '">' . $text . '</p>';
+            switch ($type) {
+                case 'success':
+                    $class = 'message-succes';
+                    $aria  = 'role="status" aria-live="polite"';
+                    break;
+                case 'error':
+                    $class = 'message-erreur';
+                    $aria  = 'role="alert" aria-live="assertive"';
+                    break;
+                case 'warning':
+                    $class = 'message-info';
+                    $aria  = 'role="status" aria-live="polite"';
+                    break;
+                default:
+                    $class = 'message-info';
+                    $aria  = 'role="status" aria-live="polite"';
+                    break;
+            }
+            return '<p class="' . esc_attr($class) . '" ' . $aria . '>' . $text . '</p>';
         },
         $messages
     );

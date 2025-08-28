@@ -952,21 +952,17 @@ a[aria-disabled="true"] {
     margin-top: 15px;
 }
 
-/* ========== 📨 ALERTES DISCRÈTES (TYPES) ========== */
-.alerte-discret--success {
+/* ========== 📨 MESSAGES (TYPES) ========== */
+.message-succes {
     border-left-color: var(--color-success);
 }
 
-.alerte-discret--info {
+.message-info {
     border-left-color: var(--color-accent);
 }
 
-.alerte-discret--error {
+.message-erreur {
     border-left-color: var(--color-error);
-}
-
-.alerte-discret--warning {
-    border-left-color: var(--color-secondary);
 }
 
 /* ========== 🖼️ ICONES SVG ========== */

@@ -615,7 +615,7 @@ En revanche, les champs obligatoires ou facultatifs sont masqués derrière un r
             min="1"
             class="champ-inline-nb champ-nb-edit champ-input champ-number"
             <?= ($peut_editer && $nb_max != 0) ? '' : 'disabled'; ?> />
-      <div id="erreur-nb-gagnants" class="message-erreur" style="display:none; color:red; font-size:0.9em; margin-top:5px;"></div>
+      <div id="erreur-nb-gagnants" class="message-erreur" role="alert" aria-live="assertive" style="display:none; color:red; font-size:0.9em; margin-top:5px;"></div>
     </div>
   </div>
 </li>
@@ -645,7 +645,7 @@ En revanche, les champs obligatoires ou facultatifs sont masqués derrière un r
             name="chasse-date-debut"
             value="<?= esc_attr($date_debut_iso); ?>"
             class="champ-inline-date champ-date-edit" <?= ($peut_editer && $debut_differe) ? '' : 'disabled'; ?> />
-      <div id="erreur-date-debut" class="message-erreur" style="display:none; color:red; font-size:0.9em; margin-top:5px;"></div>
+      <div id="erreur-date-debut" class="message-erreur" role="alert" aria-live="assertive" style="display:none; color:red; font-size:0.9em; margin-top:5px;"></div>
     </div>
   </div>
 </li>

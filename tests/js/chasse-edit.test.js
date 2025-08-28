@@ -26,7 +26,7 @@ const html = `
             <span class="toggle-option">Later</span>
             <div class="date-debut-actions" style="display:none;">
               <input type="datetime-local" id="chasse-date-debut" value="" class="champ-inline-date champ-date-edit">
-              <div id="erreur-date-debut" class="message-erreur"></div>
+              <div id="erreur-date-debut" class="message-erreur" role="alert" aria-live="assertive"></div>
             </div>
           </div>
         </div>
@@ -43,7 +43,7 @@ const html = `
             <span class="toggle-option">Limitée</span>
             <div class="date-fin-actions" style="display:none;">
               <input type="date" id="chasse-date-fin" value="" class="champ-inline-date champ-date-edit">
-              <div id="erreur-date-fin" class="message-erreur"></div>
+              <div id="erreur-date-fin" class="message-erreur" role="alert" aria-live="assertive"></div>
             </div>
           </div>
         </div>

@@ -321,7 +321,7 @@ class MyAccountMessagesTest extends TestCase
             ]
         );
         $output = myaccount_get_important_messages();
-        $this->assertStringContainsString('<p class="alerte-discret alerte-discret--info">Stylé</p>', $output);
+        $this->assertStringContainsString('<p class="message-info" role="status" aria-live="polite">Stylé</p>', $output);
     }
 
     public function test_ajax_section_returns_flash_message(): void
