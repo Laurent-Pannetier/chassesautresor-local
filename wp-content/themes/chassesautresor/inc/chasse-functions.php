@@ -603,8 +603,12 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
     // 🧑‍💻 Utilisateur non connecté
     if (!$user_id) {
         return [
-            'cta_html'    => '<a href="' . esc_url(site_url('/mon-compte')) . '" class="bouton-cta">S\'identifier</a>',
-            'cta_message' => 'Vous devez être identifié pour participer à cette chasse',
+            'cta_html'    => sprintf(
+                '<a href="%s" class="bouton-cta">%s</a>',
+                esc_url(site_url('/mon-compte')),
+                esc_html__('S\'identifier', 'chassesautresor-com')
+            ),
+            'cta_message' => __('Vous devez être identifié pour participer à cette chasse', 'chassesautresor-com'),
             'type'        => 'connexion',
         ];
     }
@@ -636,11 +640,17 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
     $type    = '';
 
     if ($statut === 'a_venir') {
-        $html = '<button class="bouton-cta" disabled>Indisponible</button>';
+        $html = sprintf(
+            '<button class="bouton-cta" disabled>%s</button>',
+            esc_html__('Indisponible', 'chassesautresor-com')
+        );
         $type = 'indisponible';
         $message = $date_debut
-            ? 'Chasse disponible à partir du ' . date_i18n('d/m/Y \à H:i', strtotime($date_debut))
-            : 'Chasse disponible prochainement';
+            ? sprintf(
+                __('Chasse disponible à partir du %s', 'chassesautresor-com'),
+                date_i18n('d/m/Y \à H:i', strtotime($date_debut))
+            )
+            : __('Chasse disponible prochainement', 'chassesautresor-com');
     } elseif ($statut === 'en_cours' || $statut === 'payante') {
         $cout_points        = (int) get_field('chasse_infos_cout_points', $chasse_id);
         $points_disponibles = get_user_points($user_id);
@@ -667,9 +677,12 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
             $html  = '<form method="post" action="' . esc_url(site_url('/traitement-engagement')) . '" class="cta-chasse-form">';
             $html .= '<input type="hidden" name="chasse_id" value="' . esc_attr($chasse_id) . '">';
             $html .= wp_nonce_field('engager_chasse_' . $chasse_id, 'engager_chasse_nonce', true, false);
-            $html .= '<button type="submit" class="bouton-cta">Participer</button>';
+            $html .= sprintf(
+                '<button type="submit" class="bouton-cta">%s</button>',
+                esc_html__('Participer', 'chassesautresor-com')
+            );
             $html .= '</form>';
-            $message = 'Accès libre à cette chasse. Les tentatives seront tarifées individuellement.';
+            $message = __('Accès libre à cette chasse. Les tentatives seront tarifées individuellement.', 'chassesautresor-com');
             $type    = 'engager';
         }
     } elseif ($statut === 'termine') {
@@ -677,12 +690,18 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
         $html  = '<form method="post" action="' . esc_url(site_url('/traitement-engagement')) . '" class="cta-chasse-form">';
         $html .= '<input type="hidden" name="chasse_id" value="' . esc_attr($chasse_id) . '">';
         $html .= wp_nonce_field('engager_chasse_' . $chasse_id, 'engager_chasse_nonce', true, false);
-        $html .= '<button type="submit" class="bouton-cta">Voir</button>';
+        $html .= sprintf(
+            '<button type="submit" class="bouton-cta">%s</button>',
+            esc_html__('Voir', 'chassesautresor-com')
+        );
         $html .= '</form>';
         $type = 'voir';
         $message = $date_fin
-            ? 'Cette chasse est terminée depuis le ' . date_i18n('d/m/Y', strtotime($date_fin))
-            : 'Cette chasse est terminée';
+            ? sprintf(
+                __('Cette chasse est terminée depuis le %s', 'chassesautresor-com'),
+                date_i18n('d/m/Y', strtotime($date_fin))
+            )
+            : __('Cette chasse est terminée', 'chassesautresor-com');
     }
 
     return [
