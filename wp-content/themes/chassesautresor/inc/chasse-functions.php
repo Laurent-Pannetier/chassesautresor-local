@@ -609,9 +609,16 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
         ];
     }
 
-    // 🔐 Admin ou organisateur : pas de bouton
+    // 🔐 Admin or organiser: disabled participation button
     if (current_user_can('administrator') || utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
-        return ['cta_html' => '', 'cta_message' => '', 'type' => ''];
+        return [
+            'cta_html'    => sprintf(
+                '<button class="bouton-cta" disabled>%s</button>',
+                esc_html__( 'Participer', 'chassesautresor-com' )
+            ),
+            'cta_message' => '',
+            'type'        => 'indisponible',
+        ];
     }
 
     // ✅ Déjà engagé
