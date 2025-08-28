@@ -160,21 +160,52 @@
   margin-top: var(--space-lg);
   font-size: 0.8rem;
   line-height: 1.3;
+  color: var(--color-editor-text-muted);
+  text-align: left;
+  width: fit-content;
 }
+
 
 .chasse-caracteristiques .caracteristique {
   display: flex;
-  gap: var(--space-md);
-  margin-bottom: var(--space-xs);
+  gap: var(--space-xxs);
+  margin-bottom: var(--space-xxs);
+}
+
+.chasse-cta-section {
+  display: flex;
+  gap: var(--space-xl);
+  align-items: center;
+  text-align: left;
+  width: 100%;
+  max-width: 100%;
+}
+
+.chasse-cta-section .chasse-caracteristiques {
+  margin-top: 0;
+  flex: 0 0 auto;
+}
+
+.chasse-cta-section .cta-chasse-row {
+  flex: 1;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+
+@media (--bp-tablet) {
+  .chasse-cta-section {
+    max-width: 650px;
+  }
 }
 
 .chasse-caracteristiques .caracteristique-label {
-  flex: 0 0 9rem;
+  flex: 0 0 6rem;
   font-weight: 700;
 }
 
 .chasse-caracteristiques .caracteristique-valeur {
-  flex: 1;
+  flex: 0 0 auto;
 }
 
 /* ========== 🧾 BLOC PRÉSENTATION DE LA CHASSE ========== */

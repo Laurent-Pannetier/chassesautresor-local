@@ -225,23 +225,27 @@ if ($edition_active && !$est_complet) {
         <div class="icone-svg"></div>
         <div class="trait-droite"></div>
       </div>
-      <?php
-      get_template_part(
-          'template-parts/chasse/chasse-partial-description',
-          null,
-          [
-              'description' => $infos_chasse['description'] ?? '',
-          ]
-      );
-      ?>
+        <?php
+        get_template_part(
+            'template-parts/chasse/chasse-partial-description',
+            null,
+            [
+                'description' => $infos_chasse['description'] ?? '',
+            ]
+        );
+        ?>
 
-      <div class="chasse-caracteristiques">
-        <?php if ($mode_fin === 'automatique' && (int) $nb_max > 0) : ?>
-          <div class="caracteristique">
-            <span class="caracteristique-label"><?= esc_html__('Limite', 'chassesautresor-com'); ?></span>
-            <span class="caracteristique-valeur"><?= sprintf(esc_html__('%d gagnants', 'chassesautresor-com'), $nb_max); ?></span>
-          </div>
-        <?php endif; ?>
+        <?php
+        $cta_data = $infos_chasse['cta_data'] ?? [];
+        ?>
+        <div class="chasse-cta-section cta-chasse">
+          <div class="chasse-caracteristiques">
+          <?php if ($mode_fin === 'automatique' && (int) $nb_max > 0) : ?>
+            <div class="caracteristique">
+              <span class="caracteristique-label"><?= esc_html__('Limite', 'chassesautresor-com'); ?></span>
+              <span class="caracteristique-valeur"><?= sprintf(esc_html__('%d gagnants', 'chassesautresor-com'), $nb_max); ?></span>
+            </div>
+          <?php endif; ?>
 
           <div class="caracteristique">
             <span class="caracteristique-label"><?= esc_html__('Fin de chasse', 'chassesautresor-com'); ?></span>
@@ -311,8 +315,16 @@ if ($edition_active && !$est_complet) {
               <span class="caracteristique-valeur"><?= esc_html($txt_top); ?></span>
             </div>
           <?php endif; ?>
-        <?php endif; ?>
-      </div>
+          <?php endif; ?>
+          </div>
+
+          <?php if (($cta_data['type'] ?? '') !== 'engage') : ?>
+            <div class="cta-chasse-row">
+              <div class="cta-action"><?= $cta_data['cta_html']; ?></div>
+              <div class="cta-message" aria-live="polite"><?= $cta_data['cta_message']; ?></div>
+            </div>
+          <?php endif; ?>
+        </div>
 
         <?php if (!empty($titre_recompense) || (float) $valeur_recompense > 0 || !empty($lot)) : ?>
             <div class="chasse-lot-complet" style="margin-top: 30px;">
@@ -330,16 +342,6 @@ if ($edition_active && !$est_complet) {
                     <p><strong><?= esc_html__('Description complète :', 'chassesautresor-com'); ?></strong><br><?= wp_kses_post($lot); ?></p>
                 <?php endif; ?>
             </div>
-        <?php endif; ?>
-
-        <?php
-        $cta_data = $infos_chasse['cta_data'] ?? [];
-        if (($cta_data['type'] ?? '') !== 'engage') :
-        ?>
-          <div class="cta-chasse-row">
-            <div class="cta-action"><?= $cta_data['cta_html']; ?></div>
-            <div class="cta-message" aria-live="polite"><?= $cta_data['cta_message']; ?></div>
-          </div>
         <?php endif; ?>
 
       </div>
