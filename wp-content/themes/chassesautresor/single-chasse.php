@@ -163,12 +163,12 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
     <?php if (!empty($_GET['erreur'])) : ?>
         <?php $error_message = sanitize_text_field(wp_unslash($_GET['erreur'])); ?>
         <?php if ($error_message === 'points_insuffisants') : ?>
-            <div class="message-erreur" role="alert" style="color:red; margin-bottom:1em;">
+            <div class="message-erreur" role="alert" aria-live="assertive" style="color:red; margin-bottom:1em;">
                 ❌ <?= esc_html__('Vous n’avez pas assez de points pour engager cette énigme.', 'chassesautresor-com'); ?>
                 <a href="<?= esc_url(home_url('/boutique')); ?>"><?= esc_html__('Accéder à la boutique', 'chassesautresor-com'); ?></a>
             </div>
         <?php else : ?>
-            <div class="message-erreur" role="alert" style="color:red; margin-bottom:1em;">
+            <div class="message-erreur" role="alert" aria-live="assertive" style="color:red; margin-bottom:1em;">
                 <?= esc_html($error_message); ?>
             </div>
         <?php endif; ?>

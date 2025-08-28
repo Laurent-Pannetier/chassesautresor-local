@@ -23,11 +23,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const decorateMessages = () => {
     const container = content.querySelector('.msg-important');
-    if (container) {
-      container
-        .querySelectorAll('p:not(.flash)')
-        .forEach((p) => p.classList.add('alerte-discret'));
+    if (!container) {
+      return;
     }
+    container.querySelectorAll('p').forEach((p) => {
+      if (p.classList.contains('message-erreur')) {
+        p.setAttribute('role', 'alert');
+        p.setAttribute('aria-live', 'assertive');
+      } else {
+        if (!p.className.match(/message-(info|succes)/) && !p.classList.contains('flash')) {
+          p.classList.add('message-info');
+        }
+        p.setAttribute('role', 'status');
+        p.setAttribute('aria-live', 'polite');
+      }
+    });
   };
 
   const loadSection = async (link, push = true) => {
@@ -76,8 +86,8 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
       content.innerHTML = `
         <section class="msg-important">
-          <p>Impossible de charger la section.</p>
-          <p><a href="#" class="reload-section">Recharger</a> ou <a href="${link.href}">ouvrir la page complète</a>.</p>
+          <p class="message-erreur" role="alert" aria-live="assertive">Impossible de charger la section.</p>
+          <p class="message-info" role="status" aria-live="polite"><a href="#" class="reload-section">Recharger</a> ou <a href="${link.href}">ouvrir la page complète</a>.</p>
         </section>`;
       const reload = content.querySelector('.reload-section');
       if (reload) {
