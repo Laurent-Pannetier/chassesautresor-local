@@ -262,10 +262,22 @@ function get_svg_icon($icone) {
  *
  * @return bool
  */
-function is_user_account_area(): bool {
-    $request = trim($_SERVER['REQUEST_URI'], '/');
+function is_user_account_area(): bool
+{
+    if (function_exists('is_account_page') && is_account_page()) {
+        return true;
+    }
 
-    return strpos($request, 'mon-compte') === 0;
+    $slugs  = ['mon-compte', 'my-account'];
+    $request = trim((string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH), '/');
+
+    foreach ($slugs as $slug) {
+        if (strpos($request, $slug) === 0) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 
