@@ -56,6 +56,30 @@ function ouvrirModalConfirmation(form) {
 
   confirmBtn.addEventListener('click', () => {
     confirmBtn.disabled = true;
+
+    const idInput = form.querySelector('input[name="chasse_id"]');
+    const key = idInput ? `correction_chasse_${idInput.value}` : null;
+
+    if (key) {
+      const params = new URLSearchParams();
+      params.set('action', 'cta_dismiss_message');
+      params.set('key', key);
+      if (typeof ctaMyAccount !== 'undefined') {
+        fetch(ctaMyAccount.ajaxUrl, {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: params.toString(),
+        }).catch(() => {});
+      }
+
+      const btn = document.querySelector(`.msg-important .message-close[data-key="${key}"]`);
+      const parent = btn ? btn.closest('p') : null;
+      if (parent) {
+        parent.remove();
+      }
+    }
+
     fermer();
     form.submit();
   });

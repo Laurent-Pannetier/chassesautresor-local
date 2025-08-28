@@ -1495,8 +1495,8 @@ a[aria-disabled=true] {
   color: var(--color-grey-light);
 }
 
-.message-close:hover,
-.message-close:focus {
+.message-info:hover .message-close,
+.message-info:focus-within .message-close {
   color: var(--color-error);
 }
 
