@@ -125,6 +125,15 @@ describe('chasse-edit UI', () => {
     require('../../wp-content/themes/chassesautresor/assets/js/chasse-edit.js');
   });
 
+  test('parseDateDMY parses d/m/Y format', () => {
+    const date = global.parseDateDMY('02/01/2024 03:04');
+    expect(date.getFullYear()).toBe(2024);
+    expect(date.getMonth()).toBe(0);
+    expect(date.getDate()).toBe(2);
+    expect(date.getHours()).toBe(3);
+    expect(date.getMinutes()).toBe(4);
+  });
+
   test('manual termination card is in Animation tab', () => {
     const toggle = document.getElementById('chasse_mode_fin');
     toggle.checked = true;
