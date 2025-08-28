@@ -258,6 +258,12 @@ msgstr ""
 msgid "Votre chasse « %s » a été bannie."
 msgstr ""
 
+msgid "Supprimer ce message"
+msgstr ""
+
+msgid "Clé de message invalide."
+msgstr ""
+
 #: inc/admin-functions.php:1940
 #, php-format
 msgid "Votre chasse « %s » a été supprimée."

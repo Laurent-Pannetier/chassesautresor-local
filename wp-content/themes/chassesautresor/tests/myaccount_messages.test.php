@@ -355,6 +355,26 @@ class MyAccountMessagesTest extends TestCase
         $this->assertStringContainsString('<p class="message-info" role="status" aria-live="polite">Stylé</p>', $output);
     }
 
+    public function test_dismissible_message_has_button(): void
+    {
+        update_user_meta(
+            1,
+            '_myaccount_messages',
+            [
+                'foo' => [
+                    'text'        => 'Salut',
+                    'type'        => 'info',
+                    'dismissible' => true,
+                ],
+            ]
+        );
+
+        $output = myaccount_get_important_messages();
+        $this->assertStringContainsString('class="message-close" data-key="foo"', $output);
+
+        delete_user_meta(1, '_myaccount_messages');
+    }
+
     public function test_ajax_section_returns_flash_message(): void
     {
         update_user_meta(

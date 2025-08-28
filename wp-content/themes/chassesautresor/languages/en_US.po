@@ -312,6 +312,12 @@ msgstr "Your hunt “%s” was banned."
 msgid "Votre chasse « %s » a été supprimée."
 msgstr "Your hunt “%s” was banned."
 
+msgid "Supprimer ce message"
+msgstr "Dismiss this message"
+
+msgid "Clé de message invalide."
+msgstr "Invalid message key."
+
 #: inc/chasse-functions.php:245
 msgid ""
 "⚠️ Erreur : La date de fin ne peut pas être antérieure à la date de début."

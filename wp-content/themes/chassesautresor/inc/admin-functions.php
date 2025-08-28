@@ -1895,7 +1895,13 @@ function traiter_validation_chasse_admin() {
         }
         $flash .= '<br>' . __('Une copie de ce message vous a été envoyée par email.', 'chassesautresor-com');
         foreach ($user_ids as $uid) {
-            myaccount_add_flash_message($uid, $flash, 'warning');
+            myaccount_add_persistent_message(
+                $uid,
+                uniqid('correction_', true),
+                $flash,
+                'warning',
+                true
+            );
         }
 
     } elseif ($action === 'bannir') {
