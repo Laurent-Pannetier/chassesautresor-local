@@ -366,6 +366,16 @@
 .chasse-details-wrapper {
   min-width: 240px;
   flex: 1;
+  position: relative;
+}
+
+.chasse-details-actions {
+  position: absolute;
+  top: 1.2rem;
+  right: var(--space-xs);
+  display: flex;
+  gap: var(--space-xs);
+  align-items: center;
 }
 
 .header-chasse {
@@ -2724,13 +2734,6 @@ body[class*=edition-active] .champ-desactive .champ-modifier,
 /* ==================================================
    🧭 HEADER
    ================================================== */
-/* Bouton d'ouverture du panneau sur la page chasse */
-.chasse-fiche-container .bouton-edition-toggle {
-  position: absolute;
-  top: 1.2rem;
-  right: var(--space-xs);
-}
-
 .header-coordonnees.champ-vide {
   border: 1px dashed var(--color-border-header-organisateur);
   padding: 0.2rem var(--space-xs);

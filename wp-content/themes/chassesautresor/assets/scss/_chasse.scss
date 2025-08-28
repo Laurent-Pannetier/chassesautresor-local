@@ -116,6 +116,16 @@
 .chasse-details-wrapper {
   min-width: 240px;
   flex: 1;
+  position: relative;
+}
+
+.chasse-details-actions {
+  position: absolute;
+  top: 1.2rem;
+  right: var(--space-xs);
+  display: flex;
+  gap: var(--space-xs);
+  align-items: center;
 }
 .header-chasse {
   font-size: 30px;

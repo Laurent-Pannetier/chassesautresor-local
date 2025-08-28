@@ -853,12 +853,6 @@ body[class*="edition-active"] .champ-desactive .champ-modifier,
    🧭 HEADER
    ================================================== */
 
-/* Bouton d'ouverture du panneau sur la page chasse */
-.chasse-fiche-container .bouton-edition-toggle {
-  position: absolute;
-  top: 1.2rem;
-  right: var(--space-xs);
-}
 
 .header-coordonnees.champ-vide {
   border: 1px dashed var(--color-border-header-organisateur);
