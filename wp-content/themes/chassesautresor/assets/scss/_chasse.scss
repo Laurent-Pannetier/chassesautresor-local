@@ -127,6 +127,33 @@
   gap: var(--space-xs);
   align-items: center;
 }
+
+.chasse-details-actions .bouton-edition-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  color: #fff;
+  background: none;
+}
+
+.chasse-details-actions .bouton-edition-toggle:hover,
+.chasse-details-actions .bouton-edition-toggle:focus {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.chasse-details-actions .bouton-edition-toggle:active {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.chasse-share-button svg {
+  width: 1rem;
+  height: 1rem;
+}
 .header-chasse {
   font-size: 30px;
 }

@@ -209,7 +209,10 @@ if ($edition_active && !$est_complet) {
 
       <div class="chasse-details-actions">
         <?php if (function_exists('ADDTOANY_SHARE_SAVE_BUTTON')) : ?>
-          <?php ADDTOANY_SHARE_SAVE_BUTTON(); ?>
+          <?= ADDTOANY_SHARE_SAVE_BUTTON([
+            'html_content' => get_svg_icon('share-icon'),
+            'button_additional_classes' => 'bouton-edition-toggle chasse-share-button',
+          ]); ?>
         <?php endif; ?>
         <?php if ($edition_active) : ?>
           <button id="toggle-mode-edition-chasse" class="bouton-edition-toggle" aria-label="<?php esc_attr_e('Paramètres de chasse', 'chassesautresor-com'); ?>">
