@@ -52,6 +52,7 @@
   overflow: hidden;
   transition: transform 0.2s, box-shadow 0.2s;
   min-height: 350px;
+  position: relative;
 }
 
 .carte-enigme:hover,
@@ -252,6 +253,29 @@
   animation: clignoteTitre 1s infinite alternate;
 }
 
+.warning-icon {
+  position: absolute;
+  top: var(--space-xs);
+  right: var(--space-xs);
+  width: 24px;
+  height: 24px;
+  background: url("../assets/svg/warning.svg") no-repeat center/contain;
+  animation: clignoteTitre 1s infinite alternate;
+  z-index: 2;
+}
+
+@media (min-width: 768px) {
+  .warning-icon {
+    width: 28px;
+    height: 28px;
+  }
+}
+@media (min-width: 1024px) {
+  .warning-icon {
+    width: 32px;
+    height: 32px;
+  }
+}
 /* ==================================================
    🗺️ PAGE DE CHASSE (single-chasse.php)
    ================================================== */

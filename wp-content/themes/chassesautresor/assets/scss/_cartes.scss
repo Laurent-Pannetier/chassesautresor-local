@@ -53,6 +53,7 @@
   overflow: hidden;
   transition: transform 0.2s, box-shadow 0.2s;
   min-height: 350px;
+  position: relative;
 }
 
 
@@ -254,4 +255,29 @@
 .carte-incomplete {
   border: 2px dashed var(--color-editor-error);
   animation: clignoteTitre 1s infinite alternate;
+}
+
+.warning-icon {
+  position: absolute;
+  top: var(--space-xs);
+  right: var(--space-xs);
+  width: 24px;
+  height: 24px;
+  background: url('../assets/svg/warning.svg') no-repeat center/contain;
+  animation: clignoteTitre 1s infinite alternate;
+  z-index: 2;
+}
+
+@media (--bp-tablet) {
+  .warning-icon {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+@media (--bp-desktop) {
+  .warning-icon {
+    width: 32px;
+    height: 32px;
+  }
 }

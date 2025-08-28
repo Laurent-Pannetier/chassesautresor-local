@@ -113,13 +113,16 @@ foreach ($posts as $p) {
             <h3><?= esc_html($titre); ?></h3>
           <?php endif; ?>
 
-          <?php 
+          <?php
           if (!empty($mapping_visuel['disponible_le'])) : ?>
             <div class="infos-dispo">
               <small class="infos-secondaires">Disponible le <?= esc_html($mapping_visuel['disponible_le']); ?></small>
             </div>
           <?php endif; ?>
         </div>
+        <?php if ($classe_completion === 'carte-incomplete') : ?>
+          <span class="warning-icon" aria-label="<?= esc_attr__('Énigme incomplète', 'chassesautresor-com'); ?>"></span>
+        <?php endif; ?>
       </article>
     <?php endforeach; ?>
 
