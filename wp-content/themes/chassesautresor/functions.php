@@ -265,6 +265,7 @@ $inc_path = get_stylesheet_directory() . '/inc/';
 require_once $inc_path . 'constants.php';
 require_once $inc_path . 'utils.php';
 require_once $inc_path . 'PointsRepository.php';
+require_once $inc_path . 'messages.php';
 
 require_once $inc_path . 'shortcodes-init.php';
 require_once $inc_path . 'enigme-functions.php';
