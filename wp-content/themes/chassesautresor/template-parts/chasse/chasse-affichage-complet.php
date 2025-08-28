@@ -53,8 +53,21 @@ $date_fin_formatee   = $illimitee
     : ($date_fin ? formater_date($date_fin) : __('Non spécifiée', 'chassesautresor-com'));
 
 $now = current_time('timestamp');
-$date_debut_ts = convertir_en_timestamp($date_debut);
-$date_fin_ts   = convertir_en_timestamp($date_fin);
+if ($date_debut instanceof DateTimeInterface) {
+    $date_debut_ts = $date_debut->getTimestamp();
+} elseif (is_array($date_debut) && isset($date_debut['date'])) {
+    $date_debut_ts = convertir_en_timestamp($date_debut['date']);
+} else {
+    $date_debut_ts = convertir_en_timestamp($date_debut);
+}
+
+if ($date_fin instanceof DateTimeInterface) {
+    $date_fin_ts = $date_fin->getTimestamp();
+} elseif (is_array($date_fin) && isset($date_fin['date'])) {
+    $date_fin_ts = convertir_en_timestamp($date_fin['date']);
+} else {
+    $date_fin_ts = convertir_en_timestamp($date_fin);
+}
 if ($illimitee) {
     $date_message = __('illimitée', 'chassesautresor-com');
 } elseif ($date_debut_ts && $date_debut_ts > $now) {
