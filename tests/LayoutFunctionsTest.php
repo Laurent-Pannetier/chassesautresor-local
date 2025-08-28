@@ -98,6 +98,13 @@ if (!function_exists('peut_valider_chasse')) {
     }
 }
 
+if (!function_exists('is_account_page')) {
+    function is_account_page(): bool
+    {
+        return $GLOBALS['is_account_page_return'] ?? false;
+    }
+}
+
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/layout-functions.php';
 
 class LayoutFunctionsTest extends TestCase
@@ -144,5 +151,42 @@ class LayoutFunctionsTest extends TestCase
         $current_post_id = 456;
 
         $this->assertSame('', $this->getBannerOutput());
+    }
+
+    /**
+     * @dataProvider accountUriProvider
+     */
+    public function test_is_user_account_area_with_slugs(string $uri): void
+    {
+        $GLOBALS['is_account_page_return'] = false;
+        $_SERVER['REQUEST_URI'] = $uri;
+
+        $this->assertTrue(is_user_account_area());
+    }
+
+    public function accountUriProvider(): array
+    {
+        return [
+            ['/mon-compte'],
+            ['/mon-compte/?lang=fr'],
+            ['/my-account'],
+            ['/my-account?lang=en'],
+        ];
+    }
+
+    public function test_is_user_account_area_false_on_other_pages(): void
+    {
+        $GLOBALS['is_account_page_return'] = false;
+        $_SERVER['REQUEST_URI'] = '/autre-page';
+
+        $this->assertFalse(is_user_account_area());
+    }
+
+    public function test_is_user_account_area_respects_is_account_page(): void
+    {
+        $GLOBALS['is_account_page_return'] = true;
+        $_SERVER['REQUEST_URI'] = '/autre-page';
+
+        $this->assertTrue(is_user_account_area());
     }
 }
