@@ -312,3 +312,38 @@ describe('chasse-edit UI', () => {
     expect(icone.getAttribute('title')).toBe('mode de fin de chasse : automatique');
   });
 });
+
+describe('date message utils', () => {
+  beforeEach(() => {
+    document.body.innerHTML = '<span id="message-date">Initial</span>';
+    global.ajaxurl = '/ajax';
+    global.initZonesClicEdition = jest.fn();
+    global.initChampImage = jest.fn();
+    global.initLiensChasse = jest.fn();
+    global.initChampTexte = jest.fn();
+    global.initChampDeclencheur = jest.fn();
+    global.mettreAJourResumeInfos = jest.fn();
+    global.mettreAJourCarteAjoutEnigme = jest.fn();
+    global.mettreAJourEtatIntroChasse = jest.fn();
+    global.initChampNbGagnants = jest.fn();
+    global.initChampDate = jest.fn();
+    global.mettreAJourAffichageDateFin = jest.fn();
+    global.fetch = jest.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve({ success: true }) }));
+    global.modifierChampSimple = jest.fn(() => Promise.resolve(true));
+    global.wp = { i18n: { __: (s) => s } };
+    global.confirm = jest.fn(() => true);
+    jest.resetModules();
+    require('../../wp-content/themes/chassesautresor/assets/js/chasse-edit.js');
+  });
+
+  test('mettreAJourMessageDate leaves content when fields missing', () => {
+    const span = document.getElementById('message-date');
+    global.mettreAJourMessageDate();
+    expect(span.textContent).toBe('Initial');
+  });
+
+  test('calculerMessageDate parses d/m/Y format', () => {
+    const msg = global.calculerMessageDate('02/01/2024');
+    expect(msg).toContain('02/01/2024');
+  });
+});
