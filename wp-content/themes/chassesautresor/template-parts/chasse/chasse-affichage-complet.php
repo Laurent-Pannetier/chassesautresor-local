@@ -158,21 +158,28 @@ if ($edition_active && !$est_complet) {
                 <?= get_svg_icon('hand'); ?>
               <?php endif; ?>
             </span>
-          <?php
-          echo wp_get_attachment_image(
-              $image_id,
-              'chasse-fiche',
-              false,
-              [
-                  'class'       => 'chasse-image visuel-cpt img-h-max',
-                  'data-cpt'    => 'chasse',
-                  'data-post-id' => $chasse_id,
-                  'alt'         => __('Image de la chasse', 'chassesautresor-com'),
-              ]
-          );
-          ?>
+            <?php if ($image_id) : ?>
+              <a
+                href="<?= esc_url(wp_get_attachment_image_url($image_id, 'full')); ?>"
+                class="fancybox"
+              >
+                <?php
+                echo wp_get_attachment_image(
+                    $image_id,
+                    'chasse-fiche',
+                    false,
+                    [
+                        'class'       => 'chasse-image visuel-cpt img-h-max',
+                        'data-cpt'    => 'chasse',
+                        'data-post-id' => $chasse_id,
+                        'alt'         => __('Image de la chasse', 'chassesautresor-com'),
+                    ]
+                );
+                ?>
+              </a>
+            <?php endif; ?>
+          </div>
         </div>
-      </div>
 
       <input type="hidden" class="champ-input" value="<?= esc_attr($image_id); ?>">
       <div class="champ-feedback"></div>
