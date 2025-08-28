@@ -28,7 +28,8 @@ add_action( 'after_setup_theme', 'cta_load_textdomain' );
  * @return void
  */
 function cta_register_image_sizes() {
-    add_image_size( 'chasse-fiche', 1024, 600, false );
+    // Allow taller hunt visuals so CSS can scale up to 800px height
+    add_image_size( 'chasse-fiche', 1024, 800, false );
 }
 add_action( 'after_setup_theme', 'cta_register_image_sizes' );
 
