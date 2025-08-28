@@ -84,6 +84,9 @@ foreach ($posts as $p) {
       $mapping_visuel = get_mapping_visuel_enigme($enigme_id);
     ?>
       <article class="<?= esc_attr($classes_carte); ?>">
+        <?php if ($classe_completion === 'carte-incomplete') : ?>
+          <span class="warning-icon" aria-label="<?= esc_attr__('Énigme incomplète', 'chassesautresor-com'); ?>"></span>
+        <?php endif; ?>
         <div class="carte-core">
           <div class="carte-enigme-image <?= esc_attr($mapping_visuel['filtre'] ?? ''); ?>"
             title="<?= esc_attr($mapping_visuel['sens'] ?? '') ?>">

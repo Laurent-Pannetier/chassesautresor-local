@@ -111,35 +111,13 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
 
     <?php
 
-    if ($est_orga_associe && ($has_incomplete_enigme || $needs_validatable_message)) {
+    if ($est_orga_associe && $needs_validatable_message) {
         echo '<div class="cta-chasse">';
-        if ($has_incomplete_enigme) {
-            $warning = esc_html__(
-                'Certaines énigmes doivent être complétées :',
-                'chassesautresor-com'
-            );
-            echo '<p>⚠️ ' . $warning . '</p>';
-            echo '<ul class="liste-enigmes-incompletes">';
-            foreach ($enigmes_incompletes as $eid) {
-                $titre = get_the_title($eid);
-                $lien  = add_query_arg('edition', 'open', get_permalink($eid));
-                echo '<li><a href="' . esc_url($lien) . '">' . esc_html($titre) . '</a></li>';
-            }
-            echo '</ul>';
-            echo '<script>';
-            echo 'document.addEventListener("DOMContentLoaded", function () {';
-            echo 'var t = document.getElementById("liste-enigmes");';
-            echo 'if (t) { t.scrollIntoView({ behavior: "smooth" }); }';
-            echo '});';
-            echo '</script>';
-        }
-        if ($needs_validatable_message) {
-            $msg = __(
-                'Votre chasse se termine automatiquement ; ajoutez une énigme à validation manuelle ou automatique.',
-                'chassesautresor-com'
-            );
-            echo '<p>⚠️ ' . esc_html($msg) . '</p>';
-        }
+        $msg = __(
+            'Votre chasse se termine automatiquement ; ajoutez une énigme à validation manuelle ou automatique.',
+            'chassesautresor-com'
+        );
+        echo '<p>⚠️ ' . esc_html($msg) . '</p>';
         echo '</div>';
     } elseif ($can_validate) {
         echo '<div class="cta-chasse">';

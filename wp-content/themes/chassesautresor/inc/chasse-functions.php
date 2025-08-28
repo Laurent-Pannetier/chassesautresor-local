@@ -888,32 +888,12 @@ function actualiser_cta_validation_chasse(): void
         ]],
     ]);
 
-    $incompletes = [];
     foreach ($posts as $p) {
         verifier_ou_mettre_a_jour_cache_complet($p->ID);
-        if (!get_field('enigme_cache_complet', $p->ID)) {
-            $incompletes[] = [
-                'titre' => get_the_title($p->ID),
-                'lien'  => add_query_arg('edition', 'open', get_permalink($p->ID)),
-            ];
-        }
     }
 
     ob_start();
-    if (!empty($incompletes)) {
-        echo '<div class="cta-chasse">';
-        $warning = esc_html__(
-            'Certaines énigmes doivent être complétées :',
-            'chassesautresor-com'
-        );
-        echo '<p>⚠️ ' . $warning . '</p>';
-        echo '<ul class="liste-enigmes-incompletes">';
-        foreach ($incompletes as $data) {
-            echo '<li><a href="' . esc_url($data['lien']) . '">' . esc_html($data['titre']) . '</a></li>';
-        }
-        echo '</ul>';
-        echo '</div>';
-    } elseif (peut_valider_chasse($chasse_id, get_current_user_id())) {
+    if (peut_valider_chasse($chasse_id, get_current_user_id())) {
         echo '<div class="cta-chasse">';
         $statut = get_field('chasse_cache_statut_validation', $chasse_id);
         $msg = ($statut === 'correction')
