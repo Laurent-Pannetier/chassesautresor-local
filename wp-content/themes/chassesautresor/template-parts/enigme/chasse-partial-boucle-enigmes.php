@@ -121,7 +121,9 @@ foreach ($posts as $p) {
           <?php endif; ?>
         </div>
         <?php if ($classe_completion === 'carte-incomplete') : ?>
-          <span class="warning-icon" aria-label="<?= esc_attr__('Énigme incomplète', 'chassesautresor-com'); ?>"></span>
+          <span class="warning-icon" aria-label="<?= esc_attr__('Énigme incomplète', 'chassesautresor-com'); ?>">
+            <i class="fa-solid fa-exclamation" aria-hidden="true"></i>
+          </span>
         <?php endif; ?>
       </article>
     <?php endforeach; ?>
