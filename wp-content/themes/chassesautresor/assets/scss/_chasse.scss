@@ -5,9 +5,9 @@
    🗺️ PAGE DE CHASSE (single-chasse.php)
    ================================================== */
 
-/* Utility: image constrained by max height with optional custom property */
+/* Utility: image constrained by the global max height */
 .img-h-max {
-  max-height: var(--img-max-height, 600px);
+  max-height: var(--hunt-img-max-height);
   width: auto;
   height: auto;
   object-fit: contain;
@@ -21,8 +21,6 @@
   flex-direction: column;
   align-items: flex-start;
   gap: var(--grid-gap);
-  /* Image container max height (mobile first) */
-  --hunt-img-max-height: 350px;
 }
 
 
@@ -47,7 +45,6 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  --img-max-height: var(--hunt-img-max-height);
 }
 
 .header-chasse__image .badge-cout {
@@ -83,16 +80,9 @@
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.45);
 }
 
-@media (--bp-mobile) {
-  .chasse-fiche-container {
-    --hunt-img-max-height: 500px;
-  }
-}
-
 @media (--bp-tablet) {
   .chasse-fiche-container {
     flex-direction: row;
-    --hunt-img-max-height: 800px;
   }
   .champ-chasse.champ-img {
     margin: 0;
@@ -100,12 +90,6 @@
     top: 0;
     flex: 0 0 auto;
     max-width: 40%;
-  }
-}
-
-@media (--bp-xxl) {
-  .chasse-fiche-container {
-    --hunt-img-max-height: 600px;
   }
 }
 

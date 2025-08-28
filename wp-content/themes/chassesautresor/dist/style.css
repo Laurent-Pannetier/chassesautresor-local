@@ -255,9 +255,9 @@
 /* ==================================================
    🗺️ PAGE DE CHASSE (single-chasse.php)
    ================================================== */
-/* Utility: image constrained by max height with optional custom property */
+/* Utility: image constrained by the global max height */
 .img-h-max {
-  max-height: var(--img-max-height, 600px);
+  max-height: var(--hunt-img-max-height);
   width: auto;
   height: auto;
   -o-object-fit: contain;
@@ -272,8 +272,6 @@
   flex-direction: column;
   align-items: flex-start;
   gap: var(--grid-gap);
-  /* Image container max height (mobile first) */
-  --hunt-img-max-height: 350px;
 }
 
 /* ========== 🖼️ COLONNE IMAGE DE LA CHASSE ========== */
@@ -299,7 +297,6 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  --img-max-height: var(--hunt-img-max-height);
 }
 
 .header-chasse__image .badge-cout {
@@ -335,15 +332,9 @@
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.45);
 }
 
-@media (min-width: 600px) {
-  .chasse-fiche-container {
-    --hunt-img-max-height: 500px;
-  }
-}
 @media (min-width: 768px) {
   .chasse-fiche-container {
     flex-direction: row;
-    --hunt-img-max-height: 800px;
   }
   .champ-chasse.champ-img {
     margin: 0;
@@ -351,11 +342,6 @@
     top: 0;
     flex: 0 0 auto;
     max-width: 40%;
-  }
-}
-@media (min-width: 1440px) {
-  .chasse-fiche-container {
-    --hunt-img-max-height: 600px;
   }
 }
 /* ========== 📝 COLONNE INFOS DE LA CHASSE ========== */
@@ -8654,11 +8640,24 @@ section#presentation .presentation-fermer {
   --breakpoint-tablet: 768px;
   --breakpoint-desktop: 1024px;
   --breakpoint-wide: 1280px;
+  /* Hauteur maximale des images de chasse */
+  --hunt-img-max-height: 350px;
 }
 
+@media (min-width: 600px) {
+  :root {
+    --hunt-img-max-height: 500px;
+  }
+}
+@media (min-width: 768px) {
+  :root {
+    --hunt-img-max-height: 800px;
+  }
+}
 @media (min-width: 1440px) {
   :root {
     --container-max-width: none;
+    --hunt-img-max-height: 600px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
