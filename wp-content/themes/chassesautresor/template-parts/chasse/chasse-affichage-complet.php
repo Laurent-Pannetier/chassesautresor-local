@@ -161,7 +161,7 @@ if ($edition_active && !$est_complet) {
             <?php if ($image_id) : ?>
               <a
                 href="<?= esc_url(wp_get_attachment_image_url($image_id, 'full')); ?>"
-                class="fancybox"
+                class="fancybox image"
               >
                 <?php
                 echo wp_get_attachment_image(
