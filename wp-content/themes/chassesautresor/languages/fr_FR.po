@@ -1164,18 +1164,17 @@ msgid "Début"
 msgstr ""
 
 #: template-parts/chasse/chasse-edition-main.php:390
-#, fuzzy
 #: template-parts/chasse/chasse-edition-main.php:554
 msgid "Date de fin"
-msgstr ""
+msgstr "Date de fin"
 
 #: template-parts/chasse/chasse-edition-main.php:560
 msgid "Illimitée"
-msgstr ""
+msgstr "Illimitée"
 
 #: template-parts/chasse/chasse-edition-main.php:569
 msgid "Limitée"
-msgstr ""
+msgstr "Limitée"
 
 #: template-parts/chasse/chasse-edition-main.php:607
 msgid "En savoir plus sur les points"
@@ -1183,7 +1182,7 @@ msgstr "En savoir plus sur les points"
 
 #: template-parts/chasse/chasse-edition-main.php:610
 msgid "Coût d’accès à une chasse"
-msgstr ""
+msgstr "Coût d’accès à une chasse"
 
 #: template-parts/chasse/chasse-edition-main.php:601 template-parts/enigme/enigme-edition-main.php:434
 msgid "Accès"
@@ -2616,3 +2615,6 @@ msgstr "Non spécifiée"
 msgctxt "formatting for dates"
 msgid "j F Y"
 msgstr "j F Y"
+
+msgid "Unlimited"
+msgstr "Illimitée"
