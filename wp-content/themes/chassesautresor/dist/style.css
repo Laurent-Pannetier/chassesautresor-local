@@ -1495,6 +1495,15 @@ a[aria-disabled=true] {
   margin-top: 15px;
 }
 
+.message-close {
+  margin-left: 0.5rem;
+  background: var(--color-grey-light);
+  border: 0;
+  cursor: pointer;
+  font-size: 1em;
+  color: var(--color-error);
+}
+
 /* ========== 🖼️ ICONES SVG ========== */
 .icone-aces-casino, .icone-compass-rose {
   color: var(--color-text-primary);

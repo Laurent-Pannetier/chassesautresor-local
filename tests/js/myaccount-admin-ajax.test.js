@@ -1,4 +1,5 @@
 const html = `
+<section class="msg-important"></section>
 <div class="myaccount-layout">
   <aside class="myaccount-sidebar">
     <nav class="dashboard-nav">
@@ -51,7 +52,6 @@ describe('myaccount ajax navigation', () => {
     await Promise.resolve();
     await Promise.resolve();
     expect(fetch).toHaveBeenCalledWith(`/admin-ajax.php?action=cta_load_admin_section&section=${section}`, expect.any(Object));
-    expect(document.querySelector('.myaccount-content').innerHTML).toContain('<section class="msg-important"></section>');
     expect(window.history.pushState).toHaveBeenCalled();
     const expectedTitle = link.dataset.title || link.textContent;
     expect(document.querySelector('.myaccount-title').textContent).toBe(expectedTitle);

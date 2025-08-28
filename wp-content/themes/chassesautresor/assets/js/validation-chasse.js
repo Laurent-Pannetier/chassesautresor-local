@@ -5,6 +5,28 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('click', (e) => {
+    const close = e.target.closest('.msg-important .message-close');
+    if (close) {
+      const key = close.dataset.key;
+      if (key) {
+        const params = new URLSearchParams();
+        params.set('action', 'cta_dismiss_message');
+        params.set('key', key);
+        const ajaxUrl =
+          typeof ctaMyAccount !== 'undefined'
+            ? ctaMyAccount.ajaxUrl
+            : '/wp-admin/admin-ajax.php';
+        fetch(ajaxUrl, {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: params.toString(),
+        }).catch(() => {});
+      }
+      close.closest('p')?.remove();
+      return;
+    }
+
     const btn = e.target.closest('.bouton-validation-chasse');
     if (!btn) return;
 
@@ -56,6 +78,34 @@ function ouvrirModalConfirmation(form) {
 
   confirmBtn.addEventListener('click', () => {
     confirmBtn.disabled = true;
+
+    const idInput = form.querySelector('input[name="chasse_id"]');
+    const key = idInput ? `correction_chasse_${idInput.value}` : null;
+
+    if (key) {
+      const params = new URLSearchParams();
+      params.set('action', 'cta_dismiss_message');
+      params.set('key', key);
+
+      const ajaxUrl =
+        typeof ctaMyAccount !== 'undefined'
+          ? ctaMyAccount.ajaxUrl
+          : '/wp-admin/admin-ajax.php';
+
+      fetch(ajaxUrl, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params.toString(),
+      }).catch(() => {});
+
+      const btn = document.querySelector(`.msg-important .message-close[data-key="${key}"]`);
+      const parent = btn ? btn.closest('p') : null;
+      if (parent) {
+        parent.remove();
+      }
+    }
+
     fermer();
     form.submit();
   });

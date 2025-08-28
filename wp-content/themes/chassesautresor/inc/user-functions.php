@@ -250,33 +250,32 @@ add_filter('woocommerce_endpoint_edit-account_title', 'ca_profile_endpoint_title
 // 📣 IMPORTANT MESSAGES
 // ==================================================
 /**
- * Store a flash message for the given user.
- *
- * @param int    $user_id User identifier.
- * @param string $message Message to store.
- *
- * @return void
- */
-/**
  * Store a persistent important message for the given user.
  *
- * @param int    $user_id User identifier.
- * @param string $key     Unique message key.
- * @param string $message Message to store.
- * @param string $type    Message type (success, info, error, warning).
+ * @param int    $user_id     User identifier.
+ * @param string $key         Unique message key.
+ * @param string $message     Message to store.
+ * @param string $type        Message type (success, info, error, warning).
+ * @param bool   $dismissible Whether the user can dismiss the message.
  *
  * @return void
  */
-function myaccount_add_persistent_message(int $user_id, string $key, string $message, string $type = 'info'): void
-{
+function myaccount_add_persistent_message(
+    int $user_id,
+    string $key,
+    string $message,
+    string $type = 'info',
+    bool $dismissible = false
+): void {
     $messages = get_user_meta($user_id, '_myaccount_messages', true);
     if (!is_array($messages)) {
         $messages = [];
     }
 
     $messages[$key] = [
-        'text' => $message,
-        'type' => $type,
+        'text'        => $message,
+        'type'        => $type,
+        'dismissible' => $dismissible,
     ];
     update_user_meta($user_id, '_myaccount_messages', $messages);
 }
@@ -306,11 +305,38 @@ function myaccount_remove_persistent_message(int $user_id, string $key): void
 }
 
 /**
+ * Remove correction messages for a given hunt for all related users.
+ *
+ * @param int $chasse_id Hunt identifier.
+ *
+ * @return void
+ */
+function myaccount_clear_correction_message(int $chasse_id): void
+{
+    $current = get_current_user_id();
+    $organisateur_id = get_organisateur_from_chasse($chasse_id);
+    $users = $organisateur_id ? (array) get_field('utilisateurs_associes', $organisateur_id) : [];
+
+    $user_ids = array_unique(array_merge([
+        $current,
+    ], array_map(
+        static function ($uid) {
+            return is_object($uid) ? (int) $uid->ID : (int) $uid;
+        },
+        $users
+    )));
+
+    foreach ($user_ids as $uid) {
+        myaccount_remove_persistent_message($uid, 'correction_chasse_' . $chasse_id);
+    }
+}
+
+/**
  * Retrieve persistent important messages for the given user.
  *
  * @param int $user_id User identifier.
  *
- * @return array<int, array{text:string,type:string}>
+ * @return array<int, array{key:string,text:string,type:string,dismissible:bool}>
  */
 function myaccount_get_persistent_messages(int $user_id): array
 {
@@ -321,7 +347,9 @@ function myaccount_get_persistent_messages(int $user_id): array
 
     $tentatives = [];
     foreach ($messages as $key => $msg) {
-        $item = is_array($msg) ? $msg : ['text' => $msg, 'type' => 'info'];
+        $item = is_array($msg)
+            ? $msg
+            : ['text' => $msg, 'type' => 'info', 'dismissible' => false];
         if (strpos($key, 'tentative_') === 0) {
             $text = $item['text'] ?? '';
             if (preg_match('/<a[^>]*>.*?<\/a>/', $text, $matches)) {
@@ -336,11 +364,13 @@ function myaccount_get_persistent_messages(int $user_id): array
     }
 
     $output = [];
-    foreach ($messages as $msg) {
+    foreach ($messages as $key => $msg) {
         if (is_array($msg) && isset($msg['text'])) {
             $output[] = [
-                'text' => (string) $msg['text'],
-                'type' => isset($msg['type']) ? (string) $msg['type'] : 'info',
+                'key'         => (string) $key,
+                'text'        => (string) $msg['text'],
+                'type'        => isset($msg['type']) ? (string) $msg['type'] : 'info',
+                'dismissible' => !empty($msg['dismissible']),
             ];
         }
     }
@@ -386,22 +416,28 @@ function myaccount_get_persistent_messages(int $user_id): array
 /**
  * Store a flash message for the given user.
  *
- * @param int    $user_id User identifier.
- * @param string $message Message to store.
- * @param string $type    Message type (success, info, error, warning).
+ * @param int    $user_id     User identifier.
+ * @param string $message     Message to store.
+ * @param string $type        Message type (success, info, error, warning).
+ * @param bool   $dismissible Whether the user can dismiss the message.
  *
  * @return void
  */
-function myaccount_add_flash_message(int $user_id, string $message, string $type = 'info'): void
-{
+function myaccount_add_flash_message(
+    int $user_id,
+    string $message,
+    string $type = 'info',
+    bool $dismissible = false
+): void {
     $messages = get_user_meta($user_id, '_myaccount_flash_messages', true);
     if (!is_array($messages)) {
         $messages = [];
     }
 
     $messages[] = [
-        'text' => $message,
-        'type' => $type,
+        'text'        => $message,
+        'type'        => $type,
+        'dismissible' => $dismissible,
     ];
     update_user_meta($user_id, '_myaccount_flash_messages', $messages);
 }
@@ -411,7 +447,7 @@ function myaccount_add_flash_message(int $user_id, string $message, string $type
  *
  * @param int $user_id User identifier.
  *
- * @return array<int, array{text:string,type:string}>
+ * @return array<int, array{text:string,type:string,dismissible:bool}>
  */
 function myaccount_get_flash_messages(int $user_id): array
 {
@@ -424,14 +460,16 @@ function myaccount_get_flash_messages(int $user_id): array
         function ($msg) {
             if (is_array($msg) && isset($msg['text'])) {
                 return [
-                    'text' => (string) $msg['text'],
-                    'type' => isset($msg['type']) ? (string) $msg['type'] : 'info',
+                    'text'        => (string) $msg['text'],
+                    'type'        => isset($msg['type']) ? (string) $msg['type'] : 'info',
+                    'dismissible' => !empty($msg['dismissible']),
                 ];
             }
             if (is_string($msg)) {
                 return [
-                    'text' => $msg,
-                    'type' => 'info',
+                    'text'        => $msg,
+                    'type'        => 'info',
+                    'dismissible' => false,
                 ];
             }
             return null;
@@ -601,8 +639,10 @@ function myaccount_get_important_messages(): string
 
     $output = array_map(
         function ($msg) {
-            $type = $msg['type'] ?? 'info';
-            $text = $msg['text'] ?? '';
+            $type        = $msg['type'] ?? 'info';
+            $text        = $msg['text'] ?? '';
+            $dismissible = !empty($msg['dismissible']) && !empty($msg['key']);
+
             switch ($type) {
                 case 'success':
                     $class = 'message-succes';
@@ -621,7 +661,17 @@ function myaccount_get_important_messages(): string
                     $aria  = 'role="status" aria-live="polite"';
                     break;
             }
-            return '<p class="' . esc_attr($class) . '" ' . $aria . '>' . $text . '</p>';
+
+            $button = '';
+            if ($dismissible) {
+                $button = ' <button type="button" class="message-close" data-key="'
+                    . esc_attr($msg['key'])
+                    . '" aria-label="'
+                    . esc_attr__('Supprimer ce message', 'chassesautresor-com')
+                    . '">×</button>';
+            }
+
+            return '<p class="' . esc_attr($class) . '" ' . $aria . '>' . $text . $button . '</p>';
         },
         $messages
     );
@@ -640,7 +690,7 @@ function myaccount_get_important_messages(): string
 function ca_load_admin_section()
 {
     if (!is_user_logged_in()) {
-        wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor')], 403);
+        wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor-com')], 403);
     }
 
     $section = sanitize_key($_GET['section'] ?? '');
@@ -653,12 +703,12 @@ function ca_load_admin_section()
     ];
 
     if (!isset($allowed[$section])) {
-        wp_send_json_error(['message' => __('Section not found', 'chassesautresor')], 404);
+        wp_send_json_error(['message' => __('Section not found', 'chassesautresor-com')], 404);
     }
 
     $cap = $allowed[$section]['cap'];
     if ($cap !== 'read' && !current_user_can($cap)) {
-        wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor')], 403);
+        wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor-com')], 403);
     }
 
     ob_start();
@@ -674,6 +724,28 @@ function ca_load_admin_section()
     ]);
 }
 add_action('wp_ajax_cta_load_admin_section', 'ca_load_admin_section');
+
+/**
+ * Dismiss a persistent message via AJAX.
+ *
+ * @return void
+ */
+function ca_dismiss_message(): void
+{
+    if (!is_user_logged_in()) {
+        wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor-com')], 403);
+    }
+
+    $key = sanitize_key($_POST['key'] ?? '');
+    if ($key === '') {
+        wp_send_json_error(['message' => __('Clé de message invalide.', 'chassesautresor-com')], 400);
+    }
+
+    myaccount_remove_persistent_message(get_current_user_id(), $key);
+
+    wp_send_json_success();
+}
+add_action('wp_ajax_cta_dismiss_message', 'ca_dismiss_message');
 
 // ==================================================
 // 📦 MODIFICATION AVATAR EN FRONT
