@@ -7,6 +7,8 @@ defined('ABSPATH') || exit;
 
 require_once get_theme_file_path('inc/chasse-functions.php');
 require_once get_theme_file_path('inc/statut-functions.php');
+require_once get_theme_file_path('inc/relations-functions.php');
+require_once get_theme_file_path('inc/user-functions.php');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     wp_redirect(home_url());
@@ -36,6 +38,23 @@ forcer_statut_apres_acf($chasse_id, 'en_attente');
 
 // Met à jour le statut métier pour refléter l'attente de validation
 update_field('chasse_cache_statut', 'en_attente', $chasse_id);
+
+$organisateur_id = get_organisateur_from_chasse($chasse_id);
+$users           = $organisateur_id ? (array) get_field('utilisateurs_associes', $organisateur_id) : [];
+$user_ids        = array_values(
+    array_filter(
+        array_map(
+            static function ($uid) {
+                return is_object($uid) ? (int) $uid->ID : (int) $uid;
+            },
+            $users
+        )
+    )
+);
+
+foreach ($user_ids as $uid) {
+    myaccount_remove_persistent_message($uid, 'correction_chasse_' . $chasse_id);
+}
 
 wp_redirect(add_query_arg('validation_demandee', '1', get_permalink($chasse_id)));
 exit;

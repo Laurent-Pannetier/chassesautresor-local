@@ -1897,7 +1897,7 @@ function traiter_validation_chasse_admin() {
         foreach ($user_ids as $uid) {
             myaccount_add_persistent_message(
                 $uid,
-                uniqid('correction_', true),
+                'correction_chasse_' . $chasse_id,
                 $flash,
                 'warning',
                 true

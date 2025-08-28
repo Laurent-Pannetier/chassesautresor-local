@@ -954,10 +954,16 @@ a[aria-disabled="true"] {
 
 .message-close {
     margin-left: 0.5rem;
-    background: transparent;
+    background: var(--color-grey-light);
     border: 0;
     cursor: pointer;
     font-size: 1em;
+    color: var(--color-grey-light);
+}
+
+.message-close:hover,
+.message-close:focus {
+    color: var(--color-error);
 }
 
 /* ========== 🖼️ ICONES SVG ========== */
