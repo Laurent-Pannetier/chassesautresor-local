@@ -139,6 +139,14 @@ defined('ABSPATH') || exit;
             '</a>'
         );
         myaccount_remove_persistent_message($user_id, 'tentative_' . $uid);
+
+        $chasse_id       = recuperer_id_chasse_associee($enigme_id);
+        $organisateur_id = get_organisateur_from_chasse($chasse_id);
+        $orga_users      = (array) get_field('utilisateurs_associes', $organisateur_id);
+        foreach ($orga_users as $orga_user_id) {
+            myaccount_remove_persistent_message((int) $orga_user_id, 'tentative_' . $uid);
+        }
+
         myaccount_add_flash_message(
             $user_id,
             $message,
