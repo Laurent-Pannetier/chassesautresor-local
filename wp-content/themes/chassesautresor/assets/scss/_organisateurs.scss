@@ -468,6 +468,26 @@ body:not(.edition-active) #presentation .champ-liens.champ-vide {
     white-space: nowrap;
 }
 
+.lien-public.lien-facebook i {
+  color: #1877f2;
+}
+
+.lien-public.lien-twitter i {
+  color: #1da1f2;
+}
+
+.lien-public.lien-instagram i {
+  color: #e4405f;
+}
+
+.lien-public.lien-discord i {
+  color: #5865f2;
+}
+
+.lien-public.lien-site_web i {
+  color: var(--color-secondary);
+}
+
 
 /* ========== 🧾 DESCRIPTION ORGANISATEUR ========== */
 

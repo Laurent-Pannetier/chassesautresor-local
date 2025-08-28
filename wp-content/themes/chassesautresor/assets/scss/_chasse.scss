@@ -159,6 +159,19 @@
     font-size: 16px;
     margin-top: 0.3rem;
 }
+
+.chasse-description {
+  margin-top: var(--space-xl);
+  line-height: 1.6;
+
+  p {
+    margin-bottom: var(--space-md);
+  }
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+}
 .chasse-section-intro.champ-vide-obligatoire {
     border: 2px dashed var(--color-editor-error);
     animation: clignoteTitre 1s infinite alternate;

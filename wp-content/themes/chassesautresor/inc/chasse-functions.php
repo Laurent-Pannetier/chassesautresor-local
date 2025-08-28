@@ -1123,7 +1123,9 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id): array
     $illimitee         = $champs['illimitee'];
 
     $date_debut_affichage = formater_date($date_debut);
-    $date_fin_affichage   = $illimitee ? 'Illimitée' : ($date_fin ? formater_date($date_fin) : 'Non spécifiée');
+    $date_fin_affichage   = $illimitee
+        ? __('Illimitée', 'chassesautresor-com')
+        : ($date_fin ? formater_date($date_fin) : __('Non spécifiée', 'chassesautresor-com'));
 
     $nb_joueurs       = compter_joueurs_engages_chasse($chasse_id);
     $nb_joueurs_label = formater_nombre_joueurs($nb_joueurs);

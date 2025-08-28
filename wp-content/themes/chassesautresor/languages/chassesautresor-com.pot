@@ -1474,6 +1474,15 @@ msgstr ""
 msgid "En savoir plus sur les points"
 msgstr ""
 
+#: inc/edition/edition-core.php:583
+msgid "Non spécifiée"
+msgstr ""
+
+#: inc/edition/edition-core.php:594
+msgctxt "formatting for dates"
+msgid "j F Y"
+msgstr ""
+
 #: template-parts/chasse/chasse-edition-main.php:606
 msgid "Coût d’accès à une chasse"
 msgstr ""

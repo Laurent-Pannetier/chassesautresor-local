@@ -38,8 +38,10 @@ $nb_max = $champs['nb_max'];
 $date_decouverte = $champs['date_decouverte'];
 $current_stored_statut = $champs['current_stored_statut'];
 
-$date_debut_formatee = formater_date($date_debut);
-$date_fin_formatee = $illimitee ? 'Illimitée' : ($date_fin ? formater_date($date_fin) : 'Non spécifiée');
+$date_debut_formatee       = formater_date($date_debut);
+$date_fin_formatee         = $illimitee
+    ? __('Illimitée', 'chassesautresor-com')
+    : ($date_fin ? formater_date($date_fin) : __('Non spécifiée', 'chassesautresor-com'));
 $date_decouverte_formatee = $date_decouverte ? formater_date($date_decouverte) : '';
 
 $timestamp_debut = convertir_en_timestamp($date_debut);
