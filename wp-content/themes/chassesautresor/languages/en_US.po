@@ -2699,9 +2699,17 @@ msgstr "Riddle access"
 msgid "gratuit"
 msgstr "free"
 
-#: template-parts/chasse/chasse-affichage-complet.php:332
+#: template-parts/chasse/chasse-affichage-complet.php:345
 msgid "Les + avancés"
 msgstr "Most advanced"
+
+#: template-parts/chasse/chasse-affichage-complet.php:363
+msgid "Récompense :"
+msgstr "Reward:"
+
+#: template-parts/chasse/chasse-affichage-complet.php:375
+msgid "Description complète :"
+msgstr "Full description:"
 
 #: inc/chasse-functions.php:606
 msgid "S'identifier"

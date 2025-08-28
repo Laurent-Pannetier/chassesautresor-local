@@ -1270,23 +1270,15 @@ msgid_plural "%1$d joueurs ont trouvé %2$d énigmes"
 msgstr[0] ""
 msgstr[1] ""
 
-#: template-parts/chasse/chasse-affichage-complet.php:332
+#: template-parts/chasse/chasse-affichage-complet.php:345
 msgid "Les + avancés"
 msgstr ""
 
-#: template-parts/chasse/chasse-affichage-complet.php:349
-msgid "Récompense de la chasse"
+#: template-parts/chasse/chasse-affichage-complet.php:363
+msgid "Récompense :"
 msgstr ""
 
-#: template-parts/chasse/chasse-affichage-complet.php:352
-msgid "Titre :"
-msgstr ""
-
-#: template-parts/chasse/chasse-affichage-complet.php:356
-msgid "Valeur :"
-msgstr ""
-
-#: template-parts/chasse/chasse-affichage-complet.php:360
+#: template-parts/chasse/chasse-affichage-complet.php:375
 msgid "Description complète :"
 msgstr ""
 
