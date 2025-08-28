@@ -113,13 +113,6 @@ if ($edition_active && !$est_complet) {
     }
     ?>
 
-    <!-- 🔧 Bouton panneau édition -->
-    <?php if ($edition_active) : ?>
-      <button id="toggle-mode-edition-chasse" class="bouton-edition-toggle" aria-label="Activer Orgy">
-        <i class="fa-solid fa-gear"></i>
-      </button>
-    <?php endif; ?>
-
     <div class="chasse-visuel-wrapper">
       <!-- 📷 Image principale -->
       <div class="champ-chasse champ-img <?= empty($image_url) ? 'champ-vide' : 'champ-rempli'; ?>"
@@ -213,6 +206,20 @@ if ($edition_active && !$est_complet) {
 
     <!-- 📟 Informations -->
     <div class="chasse-details-wrapper">
+
+      <div class="chasse-details-actions">
+        <?php if (function_exists('ADDTOANY_SHARE_SAVE_BUTTON')) : ?>
+          <?= ADDTOANY_SHARE_SAVE_BUTTON([
+            'html_content' => get_svg_icon('share-icon'),
+            'button_additional_classes' => 'bouton-edition-toggle chasse-share-button',
+          ]); ?>
+        <?php endif; ?>
+        <?php if ($edition_active) : ?>
+          <button id="toggle-mode-edition-chasse" class="bouton-edition-toggle" aria-label="<?php esc_attr_e('Paramètres de chasse', 'chassesautresor-com'); ?>">
+            <i class="fa-solid fa-gear"></i>
+          </button>
+        <?php endif; ?>
+      </div>
 
       <!-- Titre dynamique -->
       <h1 class="titre-objet header-chasse"
