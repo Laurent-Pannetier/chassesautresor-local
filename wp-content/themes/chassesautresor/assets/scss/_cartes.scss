@@ -261,9 +261,15 @@
   position: absolute;
   top: var(--space-xs);
   right: var(--space-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 24px;
   height: 24px;
-  background: url('../assets/svg/warning.svg') no-repeat center/contain;
+  border-radius: 50%;
+  background-color: var(--color-accent);
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
   animation: clignoteTitre 1s infinite alternate;
   z-index: 2;
 }
@@ -272,6 +278,7 @@
   .warning-icon {
     width: 28px;
     height: 28px;
+    font-size: 1rem;
   }
 }
 
@@ -279,5 +286,6 @@
   .warning-icon {
     width: 32px;
     height: 32px;
+    font-size: 1.125rem;
   }
 }
