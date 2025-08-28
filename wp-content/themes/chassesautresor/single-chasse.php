@@ -182,59 +182,31 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
     ]);
     ?>
 
-    <div class="separateur-avec-icone"></div>
-
-      <!-- 🧩 Liste des énigmes -->
-      <section class="chasse-enigmes-wrapper" id="chasse-enigmes-wrapper">
-      <header class="chasse-enigmes-header">
-        <div class="barre-progression">
-          <div class="remplissage" style="width: <?= ($total_enigmes ? round(100 * $enigmes_resolues / $total_enigmes) : 0); ?>%;"></div>
+    <!-- 🧩 Liste des énigmes -->
+    <section class="chasse-enigmes-wrapper" id="chasse-enigmes-wrapper">
+        <div class="titre-enigmes-wrapper">
+            <h2>Énigmes</h2>
+            <?php if ($peut_ajouter_enigme && $total_enigmes > 0 && !$has_incomplete_enigme) :
+                get_template_part('template-parts/enigme/chasse-partial-ajout-enigme', null, [
+                    'has_enigmes' => true,
+                    'chasse_id'   => $chasse_id,
+                    'use_button'  => true,
+                ]);
+            endif; ?>
+        </div>
+        <div id="liste-enigmes" class="chasse-enigmes-liste">
+            <?php
+            get_template_part('template-parts/enigme/chasse-partial-boucle-enigmes', null, [
+                'chasse_id'       => $chasse_id,
+                'est_orga_associe'=> $est_orga_associe,
+                'infos_chasse'    => $infos_chasse,
+            ]);
+            ?>
         </div>
 
-        <?php if (!empty($date_decouverte_formatee)) : ?>
-          <div class="meta-etiquette">🕵️‍♂️ Trouvée le <?= esc_html($date_decouverte_formatee); ?></div>
-        <?php endif; ?>
+        <footer class="chasse-enigmes-footer">
 
-        <?php
-        $liens = $infos_chasse['liens'];
-        $vide  = empty($liens);
-        ?>
-        <div class="champ-chasse champ-liens champ-fiche-publication <?= $vide ? 'champ-vide' : 'champ-rempli'; ?>"
-          data-champ="chasse_principale_liens"
-          data-cpt="chasse"
-          data-post-id="<?= esc_attr($chasse_id); ?>">
-          <div class="champ-donnees"
-            data-valeurs='<?= json_encode($liens, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>'></div>
-          <div class="champ-affichage">
-            <?= render_liens_publics($liens, 'chasse', ['afficher_titre' => false, 'wrap' => false]); ?>
-          </div>
-          <div class="champ-feedback"></div>
-        </div>
-      </header>
-
-      <div class="titre-enigmes-wrapper">
-        <h2>Énigmes</h2>
-        <?php if ($peut_ajouter_enigme && $total_enigmes > 0 && !$has_incomplete_enigme) :
-          get_template_part('template-parts/enigme/chasse-partial-ajout-enigme', null, [
-            'has_enigmes' => true,
-            'chasse_id'   => $chasse_id,
-            'use_button'  => true,
-          ]);
-        endif; ?>
-      </div>
-      <div id="liste-enigmes" class="chasse-enigmes-liste">
-        <?php
-        get_template_part('template-parts/enigme/chasse-partial-boucle-enigmes', null, [
-          'chasse_id'       => $chasse_id,
-          'est_orga_associe'=> $est_orga_associe,
-          'infos_chasse'    => $infos_chasse,
-        ]);
-        ?>
-      </div>
-
-      <footer class="chasse-enigmes-footer">
-
-      </footer>
+        </footer>
     </section>
 
   </main>

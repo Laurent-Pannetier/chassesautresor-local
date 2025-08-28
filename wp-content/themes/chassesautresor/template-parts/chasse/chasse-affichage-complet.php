@@ -33,6 +33,7 @@ $current_stored_statut = $champs['current_stored_statut'];
 $image_raw = $infos_chasse['image_raw'];
 $image_id  = $infos_chasse['image_id'];
 $image_url = $infos_chasse['image_url'];
+$liens     = $infos_chasse['liens'] ?? [];
 
 // Enigmes
 $enigmes_associees = $infos_chasse['enigmes_associees'];
@@ -183,6 +184,23 @@ if ($edition_active && !$est_complet) {
         </div>
 
       <input type="hidden" class="champ-input" value="<?= esc_attr($image_id); ?>">
+      <div class="champ-feedback"></div>
+    </div>
+
+    <?php
+    $vide = empty($liens);
+    ?>
+    <div class="champ-chasse champ-liens champ-fiche-publication <?= $vide ? 'champ-vide' : 'champ-rempli'; ?>"
+      data-champ="chasse_principale_liens"
+      data-cpt="chasse"
+      data-post-id="<?= esc_attr($chasse_id); ?>">
+      <div class="champ-donnees"
+        data-valeurs='<?= json_encode($liens, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>'></div>
+      <div class="champ-affichage">
+        <div class="champ-affichage-liens">
+          <?= render_liens_publics($liens, 'chasse', ['afficher_titre' => false, 'wrap' => false]); ?>
+        </div>
+      </div>
       <div class="champ-feedback"></div>
     </div>
 
