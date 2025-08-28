@@ -479,6 +479,16 @@
   font: inherit;
   text-decoration: underline;
 }
+.chasse-description .description-toggle::before {
+  content: "▾";
+  display: inline-block;
+  font-size: 0.75em;
+  color: var(--color-text-primary);
+  margin-right: var(--space-xxs);
+}
+.chasse-description .description-toggle[aria-expanded=true]::before {
+  content: "▴";
+}
 
 .chasse-section-intro.champ-vide-obligatoire {
   border: 2px dashed var(--color-editor-error);
