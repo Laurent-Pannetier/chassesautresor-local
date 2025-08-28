@@ -18,6 +18,47 @@ function parseDateDMY(value) {
 
 window.parseDateDMY = parseDateDMY;
 
+function calculerMessageDate(debutStr = '', finStr = '') {
+  const pad = (n) => String(n).padStart(2, '0');
+  const format = (date, withTime) => {
+    const base = `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()}`;
+    return withTime
+      ? `${base} ${pad(date.getHours())}:${pad(date.getMinutes())}`
+      : base;
+  };
+
+  const debut = parseDateDMY(debutStr);
+  const fin = parseDateDMY(finStr);
+  const hasDebut = !isNaN(debut.getTime());
+  const hasFin = !isNaN(fin.getTime());
+
+  if (hasDebut && hasFin) {
+    return `${format(debut, debutStr.includes(':'))} – ${format(fin, finStr.includes(':'))}`;
+  }
+  if (hasDebut) {
+    return format(debut, debutStr.includes(':'));
+  }
+  if (hasFin) {
+    return format(fin, finStr.includes(':'));
+  }
+  return '';
+}
+
+function mettreAJourMessageDate() {
+  if (!inputDateDebut && !inputDateFin) return;
+  const span = document.getElementById('message-date');
+  if (!span) return;
+  const debutVal = inputDateDebut?.value.trim() || '';
+  const finVal = inputDateFin?.value.trim() || '';
+  const message = calculerMessageDate(debutVal, finVal);
+  if (message) {
+    span.textContent = message;
+  }
+}
+
+window.calculerMessageDate = calculerMessageDate;
+window.mettreAJourMessageDate = mettreAJourMessageDate;
+
 function rafraichirCarteIndices() {
   const card = document.querySelector('.dashboard-card.champ-indices');
   if (!card || !window.ChasseIndices) return;
@@ -1277,6 +1318,9 @@ function enregistrerDatesChasse() {
       console.error('❌ Erreur réseau sauvegarde dates:', err);
       return false;
     });
+}
+if (document.getElementById('chasse-date-debut') || document.getElementById('chasse-date-fin')) {
+  mettreAJourMessageDate();
 }
 window.enregistrerDatesChasse = enregistrerDatesChasse;
 
