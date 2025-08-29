@@ -274,7 +274,25 @@ add_action('wp_enqueue_scripts', function () {
     }
 }, 20);
 
+/**
+ * Enqueues custom styles for the login page.
+ *
+ * @return void
+ */
+function cta_enqueue_login_styles(): void
+{
+    $theme_uri  = get_stylesheet_directory_uri();
+    $theme_path = get_stylesheet_directory();
+    $css_rel    = '/assets/css/login.css';
 
+    wp_enqueue_style(
+        'cta-login',
+        $theme_uri . $css_rel,
+        [],
+        filemtime($theme_path . $css_rel)
+    );
+}
+add_action('login_enqueue_scripts', 'cta_enqueue_login_styles');
 
 // ----------------------------------------------------------
 // 📂 Chargement des fichiers fonctionnels organisés
