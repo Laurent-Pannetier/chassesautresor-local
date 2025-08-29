@@ -46,7 +46,9 @@ $nb_joueurs        = $infos_chasse['nb_joueurs'];
 
 // Dates
 $date_debut_formatee = formater_date($date_debut);
-$date_fin_formatee = $illimitee ? 'Illimitée' : ($date_fin ? formater_date($date_fin) : 'Non spécifiée');
+$date_fin_formatee = $illimitee
+    ? esc_html__('Illimitée', 'chassesautresor-com')
+    : ($date_fin ? formater_date($date_fin) : esc_html__('Non spécifiée', 'chassesautresor-com'));
 
 // Edition
 $edition_active = utilisateur_peut_modifier_post($chasse_id);

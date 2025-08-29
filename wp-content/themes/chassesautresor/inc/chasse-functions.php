@@ -34,9 +34,9 @@ function recuperer_infos_chasse($chasse_id)
 {
     $champs = get_fields($chasse_id);
     return [
-        'lot' => $champs['lot'] ?? 'Non spécifié',
-        'date_de_debut' => $champs['date_de_debut'] ?? 'Non spécifiée',
-        'date_de_fin' => $champs['date_de_fin'] ?? 'Non spécifiée',
+        'lot' => $champs['lot'] ?? esc_html__('Non spécifié', 'chassesautresor-com'),
+        'date_de_debut' => $champs['date_de_debut'] ?? esc_html__('Non spécifiée', 'chassesautresor-com'),
+        'date_de_fin' => $champs['date_de_fin'] ?? esc_html__('Non spécifiée', 'chassesautresor-com'),
     ];
 }
 
@@ -487,9 +487,9 @@ function afficher_chasse_associee_callback()
     if (!$chasse) return ''; // 🚫 Pas de chasse associée
 
     $infos_chasse = recuperer_infos_chasse($chasse->ID) ?: [
-        'lot' => 'Non spécifié',
-        'date_de_debut' => 'Non spécifiée',
-        'date_de_fin' => 'Non spécifiée',
+        'lot' => esc_html__('Non spécifié', 'chassesautresor-com'),
+        'date_de_debut' => esc_html__('Non spécifiée', 'chassesautresor-com'),
+        'date_de_fin' => esc_html__('Non spécifiée', 'chassesautresor-com'),
     ];
 
     $lien_discord = get_field('lien_discord', $chasse->ID);
@@ -770,7 +770,7 @@ function formater_nombre_joueurs(int $nombre): string
     $quantite = ($nombre === 0 || $nombre === 1) ? 1 : $nombre;
 
     return sprintf(
-        _n('%d joueur', '%d joueurs', $quantite, 'chassesautresor'),
+        _n('%d joueur', '%d joueurs', $quantite, 'chassesautresor-com'),
         $nombre
     );
 }
@@ -1097,7 +1097,9 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id): array
     $illimitee         = $champs['illimitee'];
 
     $date_debut_affichage = formater_date($date_debut);
-    $date_fin_affichage   = $illimitee ? 'Illimitée' : ($date_fin ? formater_date($date_fin) : 'Non spécifiée');
+    $date_fin_affichage   = $illimitee
+        ? esc_html__('Illimitée', 'chassesautresor-com')
+        : ($date_fin ? formater_date($date_fin) : esc_html__('Non spécifiée', 'chassesautresor-com'));
 
     $nb_joueurs       = compter_joueurs_engages_chasse($chasse_id);
     $nb_joueurs_label = formater_nombre_joueurs($nb_joueurs);
