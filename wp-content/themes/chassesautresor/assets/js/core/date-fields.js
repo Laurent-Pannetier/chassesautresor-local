@@ -183,3 +183,24 @@ function initChampDate(input) {
   }
   window.formatDateLocalized = formatDateLocalized;
 })();
+
+// Remplace la logique d'affichage de la date de fin pour respecter la locale
+(function(){
+  const override = function(){
+    const spanDateFin = document.querySelector('.chasse-date-plage .date-fin');
+    const inputDateFin = document.getElementById('chasse-date-fin');
+    const toggleLimitee = document.getElementById('date-fin-limitee');
+    if (!spanDateFin || !toggleLimitee) return;
+    const txtUnlimited = (window.catI18n && window.catI18n.texts && window.catI18n.texts.unlimited)
+      ? window.catI18n.texts.unlimited
+      : 'Illimitée';
+    if (!toggleLimitee.checked) {
+      spanDateFin.textContent = txtUnlimited;
+    } else if (inputDateFin) {
+      spanDateFin.textContent = (typeof window.formatDateLocalized === 'function')
+        ? window.formatDateLocalized(inputDateFin.value)
+        : inputDateFin.value;
+    }
+  };
+  window.mettreAJourAffichageDateFin = override;
+})();
