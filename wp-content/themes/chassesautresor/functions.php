@@ -326,7 +326,7 @@ function cta_enqueue_login_styles(): void
         }
     }
 
-    $form_css = '#loginform{display:flex;flex-direction:column;}#loginform .cta-login-register{order:99;}';
+    $form_css = '#loginform,#registerform{display:flex;flex-direction:column;}#loginform .cta-login-register,#registerform .cta-login-register{order:99;}';
     wp_add_inline_style('cta-login', $form_css);
 }
 add_action( 'login_enqueue_scripts', 'cta_enqueue_login_styles' );
@@ -348,6 +348,24 @@ function cta_login_links() {
     );
 }
 add_action( 'login_form', 'cta_login_links' );
+
+/**
+ * Displays a login link on the registration form.
+ *
+ * @hook register_form
+ *
+ * @return void
+ */
+function cta_register_links() {
+    $login_url = wp_login_url();
+
+    echo sprintf(
+        '<p class="cta-login-register"><a class="button" href="%1$s">%2$s</a></p>',
+        esc_url( $login_url ),
+        esc_html__( 'Se connecter', 'chassesautresor-com' )
+    );
+}
+add_action( 'register_form', 'cta_register_links' );
 
 // ----------------------------------------------------------
 // 📂 Chargement des fichiers fonctionnels organisés
