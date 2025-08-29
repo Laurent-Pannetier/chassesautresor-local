@@ -2822,6 +2822,10 @@ msgstr "Demander la validation"
 msgid "illimitée"
 msgstr "illimitée"
 
+#: assets/js/chasse-edit.js:1270
+msgid "illimité"
+msgstr "illimité"
+
 #: template-parts/chasse/chasse-affichage-complet.php:65
 #: assets/js/chasse-edit.js:806 assets/js/chasse-edit.js:815
 msgid "%d jour à attendre"
@@ -2840,6 +2844,14 @@ msgid "%d jour restant"
 msgid_plural "%d jours restants"
 msgstr[0] "%d jour restant"
 msgstr[1] "%d jours restants"
+
+#: wp-content/themes/chassesautresor/functions.php:347
+msgid "Créer un compte"
+msgstr "Créer un compte"
+
+#: wp-login.php
+msgid "Politique de confidentialité"
+msgstr "Politique de confidentialité"
 
 #~ msgid "lié à"
 #~ msgstr "lié à"
