@@ -160,3 +160,26 @@ function initChampDate(input) {
   input.dataset.previous = input.value?.trim() || '';
 
 }
+
+// === Helpers i18n pour formatage de dates (sans dépendre d'autres modules)
+(function(){
+  if (typeof window.formatDateLocalized === 'function') return; // déjà défini
+  function getPreferredLocale(){
+    const wpLocale = (window.catI18n && window.catI18n.locale) ? String(window.catI18n.locale) : '';
+    const docLang = (document.documentElement && document.documentElement.lang) ? document.documentElement.lang : '';
+    const navLang = (navigator && (navigator.language || (navigator.languages && navigator.languages[0]))) || '';
+    return (wpLocale || docLang || navLang || 'fr-FR');
+  }
+  function formatDateLocalized(dateStr){
+    if (!dateStr) return '';
+    const parsed = new Date(String(dateStr).replace(' ', 'T'));
+    if (Number.isNaN(parsed.getTime())) return dateStr;
+    const locale = getPreferredLocale();
+    try {
+      return parsed.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' });
+    } catch(e) {
+      return parsed.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
+  }
+  window.formatDateLocalized = formatDateLocalized;
+})();
