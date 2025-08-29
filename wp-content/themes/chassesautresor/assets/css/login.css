@@ -22,7 +22,8 @@ body.login #login {
     padding: 1rem;
 }
 
-body.login #loginform {
+body.login #loginform,
+body.login #registerform {
     background-color: var(--color-background-dark);
     border: 1px solid var(--color-primary);
 }
@@ -71,6 +72,16 @@ body.login #wp-submit:hover {
 body.login #wp-submit:focus {
     outline: 2px solid var(--color-primary);
     border-color: var(--color-primary);
+}
+
+body.login .notice {
+    background-color: var(--color-background-dark);
+    border-left: 4px solid var(--color-primary);
+    color: var(--color-text-primary);
+}
+
+body.login .notice p {
+    color: inherit;
 }
 
 @media (min-width: 768px) {

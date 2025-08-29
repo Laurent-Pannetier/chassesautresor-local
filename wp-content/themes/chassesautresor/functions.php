@@ -326,28 +326,8 @@ function cta_enqueue_login_styles(): void
         }
     }
 
-    $form_css = '#loginform{display:flex;flex-direction:column;}#loginform .cta-login-register{order:99;}';
-    wp_add_inline_style('cta-login', $form_css);
 }
 add_action( 'login_enqueue_scripts', 'cta_enqueue_login_styles' );
-
-/**
- * Displays a registration link on the login form.
- *
- * @hook login_form
- *
- * @return void
- */
-function cta_login_links() {
-    $registration_url = wp_registration_url();
-
-    echo sprintf(
-        '<p class="cta-login-register"><a href="%1$s">%2$s</a></p>',
-        esc_url( $registration_url ),
-        esc_html__( 'Créer un compte', 'chassesautresor-com' )
-    );
-}
-add_action( 'login_form', 'cta_login_links' );
 
 // ----------------------------------------------------------
 // 📂 Chargement des fichiers fonctionnels organisés
