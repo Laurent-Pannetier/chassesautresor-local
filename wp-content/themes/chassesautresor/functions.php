@@ -81,6 +81,25 @@ function cta_handle_language() {
 add_action( 'init', 'cta_handle_language' );
 
 /**
+ * Redirects non-logged-in users requesting `/mon-compte` to the login page.
+ *
+ * @return void
+ */
+function cta_redirect_account_page_for_guests() {
+    if ( is_user_logged_in() ) {
+        return;
+    }
+
+    $request_path = wp_parse_url( $_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH );
+
+    if ( 0 === strpos( $request_path, '/mon-compte' ) ) {
+        wp_safe_redirect( wp_login_url() );
+        exit;
+    }
+}
+add_action( 'init', 'cta_redirect_account_page_for_guests' );
+
+/**
  * Renders the language switcher in the header.
  *
  * @param string $row    Header builder row.
