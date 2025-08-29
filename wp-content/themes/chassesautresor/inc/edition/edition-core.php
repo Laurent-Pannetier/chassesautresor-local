@@ -121,6 +121,24 @@ function enqueue_core_edit_scripts(array $additional = [])
     $previous_handle = $handle; // pour chaîner la dépendance
   }
 
+  // Expose locale and common texts to JS (for date formatting, etc.).
+  // Use WordPress current locale and convert underscore to hyphen for Intl APIs.
+  $locale = function_exists('get_locale') ? get_locale() : 'fr_FR';
+  $locale = str_replace('_', '-', $locale);
+
+  if (wp_script_is('date-fields', 'enqueued')) {
+      wp_localize_script(
+          'date-fields',
+          'catI18n',
+          [
+              'locale' => $locale,
+              'texts'  => [
+                  'unlimited' => __('Illimitée', 'chassesautresor-com'),
+              ],
+          ]
+      );
+  }
+
   foreach ($additional as $handle) {
     $path = "/assets/js/{$handle}.js";
     $file = $theme_dir . $path;
