@@ -1978,9 +1978,12 @@ msgstr "Aucune donnée."
 
 #: template-parts/enigme/chasse-partial-ajout-enigme.php:28
 #: assets/js/enigme-edit.js:1533
-#, fuzzy
 msgid "Ajouter une énigme"
-msgstr "Ajouter une variante"
+msgstr "Ajouter une énigme"
+
+#: template-parts/enigme/chasse-partial-ajout-enigme.php:0
+msgid "Validation en ligne nécessaire"
+msgstr "Validation en ligne nécessaire"
 
 #: template-parts/enigme/enigme-edition-main.php:86
 msgid "Panneau d'édition énigme"

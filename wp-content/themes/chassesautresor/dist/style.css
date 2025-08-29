@@ -240,6 +240,13 @@
   z-index: 1;
 }
 
+.carte-ajout-enigme .ajout-enigme-help {
+  position: absolute;
+  top: var(--space-xs);
+  right: var(--space-xs);
+  z-index: 2;
+}
+
 .carte-ajout-enigme .carte-core i {
   color: var(--color-background-button);
   font-size: 28px;

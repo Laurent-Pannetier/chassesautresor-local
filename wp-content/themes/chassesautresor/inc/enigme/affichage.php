@@ -484,6 +484,24 @@ defined('ABSPATH') || exit;
         $mode    = get_field('enigme_mode_validation', $enigme_id);
         $user_id = get_current_user_id();
 
+        $needs_validatable_message = false;
+        if ($chasse_id && function_exists('get_field')) {
+            $statut     = get_field('chasse_cache_statut', $chasse_id) ?: 'revision';
+            $mode_fin   = get_field('chasse_mode_fin', $chasse_id);
+            $title_filled = function_exists('get_the_title') ? trim((string) get_the_title($chasse_id)) !== '' : false;
+            $image_filled = function_exists('get_post_thumbnail_id') ? !empty(get_post_thumbnail_id($chasse_id)) : false;
+            $description  = get_field('chasse_principale_description', $chasse_id);
+            $description_filled = !empty(trim((string) $description));
+            $required_fields_filled = $title_filled && $image_filled && $description_filled;
+            $has_validatable = function_exists('chasse_has_validatable_enigme')
+                ? chasse_has_validatable_enigme($chasse_id)
+                : false;
+            $needs_validatable_message = $statut === 'revision'
+                && $mode_fin === 'automatique'
+                && !$has_validatable
+                && $required_fields_filled;
+        }
+
         $stats_html = enigme_sidebar_progression_html($chasse_id, $user_id)
             . enigme_sidebar_resolution_html($enigme_id);
         $meta_html   = enigme_sidebar_metas_html($enigme_id);
@@ -500,9 +518,10 @@ defined('ABSPATH') || exit;
         ) {
             ob_start();
             get_template_part('template-parts/enigme/chasse-partial-ajout-enigme', null, [
-                'has_enigmes' => true,
-                'chasse_id'   => $chasse_id,
-                'use_button'  => true,
+                'has_enigmes'             => true,
+                'chasse_id'               => $chasse_id,
+                'use_button'              => true,
+                'needs_validatable_message'=> $needs_validatable_message,
             ]);
             $ajout_html = ob_get_clean();
         }

@@ -11,6 +11,7 @@ $chasse_id = $args['chasse_id'] ?? null;
 if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') return;
 
 $infos_chasse = $args['infos_chasse'] ?? preparer_infos_affichage_chasse($chasse_id);
+$needs_validatable_message = $args['needs_validatable_message'] ?? false;
 
 $utilisateur_id = get_current_user_id();
 
@@ -155,6 +156,7 @@ foreach ($posts as $p) {
         'disabled'        => !$complete,
         'highlight_pulse' => $highlight_pulse,
         'use_button'      => false,
+        'needs_validatable_message'=> $needs_validatable_message,
       ]);
     }
     ?>

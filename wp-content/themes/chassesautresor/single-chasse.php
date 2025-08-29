@@ -110,19 +110,6 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
     ?>
 
     <?php
-
-    if ($est_orga_associe && $needs_validatable_message) {
-        echo '<div class="cta-chasse">';
-        $msg = __(
-            'Votre chasse se termine automatiquement ; ajoutez une énigme à validation manuelle ou automatique.',
-            'chassesautresor-com'
-        );
-        echo '<p>⚠️ ' . esc_html($msg) . '</p>';
-        echo '</div>';
-    }
-    ?>
-
-    <?php
     if (current_user_can('administrator') && $statut_validation === 'en_attente') {
       get_template_part('template-parts/chasse/chasse-validation-actions', null, [
         'chasse_id' => $chasse_id,
@@ -158,9 +145,10 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
             <h2>Énigmes</h2>
             <?php if ($peut_ajouter_enigme && $total_enigmes > 0 && !$has_incomplete_enigme) :
                 get_template_part('template-parts/enigme/chasse-partial-ajout-enigme', null, [
-                    'has_enigmes' => true,
-                    'chasse_id'   => $chasse_id,
-                    'use_button'  => true,
+                    'has_enigmes'             => true,
+                    'chasse_id'               => $chasse_id,
+                    'use_button'              => true,
+                    'needs_validatable_message'=> $est_orga_associe && $needs_validatable_message,
                 ]);
             endif; ?>
         </div>
@@ -170,6 +158,7 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
                 'chasse_id'       => $chasse_id,
                 'est_orga_associe'=> $est_orga_associe,
                 'infos_chasse'    => $infos_chasse,
+                'needs_validatable_message'=> $est_orga_associe && $needs_validatable_message,
             ]);
             ?>
         </div>
