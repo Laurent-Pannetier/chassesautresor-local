@@ -58,7 +58,7 @@ foreach ($posts as $p) {
 ?>
 
 <div class="bloc-enigmes-chasse">
-  <div class="grille-3">
+  <div class="cards-grid">
     <?php foreach ($posts_visibles as $post):
       $enigme_id = $post->ID;
       $titre = get_the_title($enigme_id);

@@ -27,7 +27,7 @@ Les classes `.container`, `.container--narrow` et `.container.fullwidth` permett
 Certaines pages proposent des grilles prêtes à l'emploi pour organiser des cartes :
 
 - `.grille-liste` : une seule colonne.
-- `.grille-3` : trois colonnes, puis deux en dessous de `--bp-desktop` et une en dessous de `--bp-tablet`.
+- `.cards-grid` : grille adaptative passant de 1 à plusieurs colonnes selon l'espace disponible (`minmax(300px, 1fr)`).
 
 ## Grilles de cartes
 
