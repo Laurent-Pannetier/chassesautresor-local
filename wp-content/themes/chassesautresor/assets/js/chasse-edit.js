@@ -987,13 +987,36 @@ function initChampNbGagnants() {
   const inputNb = document.getElementById('chasse-nb-gagnants');
   const toggleLimite = document.getElementById('nb-gagnants-limite');
   const actions = inputNb?.closest('.nb-gagnants-actions');
-
   if (!inputNb || !toggleLimite || !actions) return;
+
+  const li = inputNb.closest('li');
+  const postId = li?.dataset.postId;
+  const champ = 'caracteristiques.chasse_infos_nb_max_gagants';
+  const cpt = li?.dataset.cpt || 'chasse';
 
   let timerDebounce;
 
-  function updateVisibility() {
-    const postId = inputNb.closest('li').dataset.postId;
+  let status = inputNb.nextElementSibling;
+  if (!status || !status.classList.contains('champ-status')) {
+    status = document.createElement('span');
+    status.className = 'champ-status';
+    inputNb.insertAdjacentElement('afterend', status);
+  }
+
+  function enregistrer(valeur) {
+    if (!postId) return;
+    status.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>';
+    modifierChampSimple(champ, valeur, postId, cpt).then(success => {
+      if (success) {
+        status.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i>';
+        setTimeout(() => { status.innerHTML = ''; }, 1000);
+      } else {
+        status.innerHTML = '';
+      }
+    });
+  }
+
+  function updateVisibility(save = false) {
     if (!postId) return;
 
     if (toggleLimite.checked) {
@@ -1012,15 +1035,15 @@ function initChampNbGagnants() {
       inputNb.disabled = true;
       inputNb.value = '0';
       mettreAJourAffichageNbGagnants(postId, 0);
+      if (save) enregistrer(0);
     }
   }
 
-  toggleLimite.addEventListener('change', updateVisibility);
+  toggleLimite.addEventListener('change', () => updateVisibility(true));
 
   inputNb.addEventListener('input', function () {
     if (!toggleLimite.checked) return;
 
-    const postId = inputNb.closest('li').dataset.postId;
     if (!postId) return;
 
     clearTimeout(timerDebounce);
@@ -1031,6 +1054,7 @@ function initChampNbGagnants() {
         inputNb.value = '1';
       }
       mettreAJourAffichageNbGagnants(postId, valeur);
+      enregistrer(valeur);
     }, 500);
   });
 
