@@ -80,7 +80,7 @@ function initChampImage(bloc) {
               window.mettreAJourResumeInfos();
             }
             if (typeof window.mettreAJourVisuelCPT === 'function') {
-              mettreAJourVisuelCPT(cpt, postId, ficheUrl);
+              mettreAJourVisuelCPT(cpt, postId, ficheUrl, fullUrl);
             }
           } else {
             if (feedback) {
