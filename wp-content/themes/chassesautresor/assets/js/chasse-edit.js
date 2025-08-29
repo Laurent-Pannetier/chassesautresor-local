@@ -992,22 +992,27 @@ function initChampNbGagnants() {
     if (toggleLimite.checked) {
       actions.style.display = '';
       inputNb.disabled = false;
-      if (parseInt(inputNb.value.trim(), 10) === 0 || inputNb.value.trim() === '') {
+      if (
+        parseInt(inputNb.value.trim(), 10) === 0 ||
+        inputNb.value.trim() === ''
+      ) {
         inputNb.value = '1';
       }
+      inputNb.dispatchEvent(new Event('input', { bubbles: true }));
+      mettreAJourAffichageNbGagnants(postId, inputNb.value.trim());
     } else {
       actions.style.display = 'none';
       inputNb.disabled = true;
       inputNb.value = '0';
+      mettreAJourAffichageNbGagnants(postId, 0);
     }
-
-    inputNb.dispatchEvent(new Event('input', { bubbles: true }));
-    mettreAJourAffichageNbGagnants(postId, inputNb.value.trim());
   }
 
   toggleLimite.addEventListener('change', updateVisibility);
 
   inputNb.addEventListener('input', function () {
+    if (!toggleLimite.checked) return;
+
     const postId = inputNb.closest('li').dataset.postId;
     if (!postId) return;
 
