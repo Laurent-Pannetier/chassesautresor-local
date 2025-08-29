@@ -19,64 +19,76 @@ defined('ABSPATH') || exit;
  */
 function enqueue_script_chasse_edit()
 {
-  if (!is_singular('chasse')) {
-    return;
-  }
+    if (!is_singular('chasse')) {
+        return;
+    }
 
-  $chasse_id = get_the_ID();
+    $chasse_id = get_the_ID();
 
-  if (!utilisateur_peut_modifier_post($chasse_id)) {
-    return;
-  }
+    if (!utilisateur_peut_modifier_post($chasse_id)) {
+        return;
+    }
 
-  // Enfile les scripts nécessaires
-  enqueue_core_edit_scripts([
-    'edition-animation-options',
-    'chasse-edit',
-    'chasse-stats',
-    'table-etiquette',
-    'tentatives-toggle',
-    'solutions-pager',
-    'solutions-create',
-    'indices-pager',
-    'indices-create',
-  ]);
-  wp_localize_script(
-    'chasse-stats',
-    'ChasseStats',
-    [
-      'ajaxUrl' => admin_url('admin-ajax.php'),
-      'chasseId' => $chasse_id,
-    ]
-  );
-  wp_localize_script(
-    'chasse-edit',
-    'ChasseIndices',
-    [
-      'ajaxUrl'   => admin_url('admin-ajax.php'),
-      'chasseId'  => $chasse_id,
-      'errorText' => __('Erreur lors du chargement des indices.', 'chassesautresor-com'),
-    ]
-  );
+    // Enfile les scripts nécessaires
+    enqueue_core_edit_scripts([
+        'edition-animation-options',
+        'chasse-edit',
+        'chasse-stats',
+        'table-etiquette',
+        'tentatives-toggle',
+        'solutions-pager',
+        'solutions-create',
+        'indices-pager',
+        'indices-create',
+    ]);
+    wp_localize_script(
+        'chasse-stats',
+        'ChasseStats',
+        [
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'chasseId' => $chasse_id,
+        ]
+    );
+    wp_localize_script(
+        'chasse-edit',
+        'ChasseIndices',
+        [
+            'ajaxUrl'   => admin_url('admin-ajax.php'),
+            'chasseId'  => $chasse_id,
+            'errorText' => __('Erreur lors du chargement des indices.', 'chassesautresor-com'),
+        ]
+    );
 
-  wp_localize_script(
-    'chasse-edit',
-    'ChasseSolutions',
-    [
-      'scrollTarget'  => '#chasse-section-solutions',
-      'tooltipChasse' => __('Il existe déjà une solution pour cette chasse', 'chassesautresor-com'),
-      'tooltipEnigme' => __('Toutes les énigmes de la chasse ont déjà une solution', 'chassesautresor-com'),
-    ]
-  );
+    wp_localize_script(
+        'chasse-edit',
+        'ChasseSolutions',
+        [
+            'scrollTarget'  => '#chasse-section-solutions',
+            'tooltipChasse' => __('Il existe déjà une solution pour cette chasse', 'chassesautresor-com'),
+            'tooltipEnigme' => __('Toutes les énigmes de la chasse ont déjà une solution', 'chassesautresor-com'),
+        ]
+    );
 
-  // Injecte les valeurs par défaut pour JS
-  wp_localize_script('champ-init', 'CHP_CHASSE_DEFAUT', [
-    'titre' => strtolower(TITRE_DEFAUT_CHASSE),
-    'image_slug' => 'defaut-chasse-2',
-  ]);
+    wp_localize_script(
+        'chasse-edit',
+        'ChasseNbGagnantsI18n',
+        [
+            'unlimited'    => __('illimitée', 'chassesautresor-com'),
+            'winnersLabel' => __('Gagnants', 'chassesautresor-com'),
+            'limitLabel'   => __('Limite', 'chassesautresor-com'),
+            'single'       => _n('%d gagnant', '%d gagnants', 1, 'chassesautresor-com'),
+            'plural'       => _n('%d gagnant', '%d gagnants', 2, 'chassesautresor-com'),
+        ]
+    );
 
-  // Charge les médias pour les champs image
-  wp_enqueue_media();
+    // Injecte les valeurs par défaut pour JS
+    wp_localize_script('champ-init', 'CHP_CHASSE_DEFAUT', [
+        'titre' => strtolower(TITRE_DEFAUT_CHASSE),
+        'image_slug' => 'defaut-chasse-2',
+    ]);
+
+    // Charge les médias pour les champs image
+    wp_enqueue_media();
 }
 add_action('wp_enqueue_scripts', 'enqueue_script_chasse_edit');
 
