@@ -4447,9 +4447,16 @@ body.panneau-ouvert::before {
   position: relative;
 }
 
-.champ-pre-requis .prerequis-mini img {
-  width: 80px;
-  height: 80px;
+.champ-pre-requis .prerequis-visuel {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.champ-pre-requis .prerequis-mini img.vignette-enigme {
+  display: inline-block;
+  max-width: 60px;
+  margin-right: var(--space-xxs);
   -o-object-fit: cover;
      object-fit: cover;
   border-radius: 4px;
