@@ -35,9 +35,6 @@ $ajout_url = esc_url(add_query_arg('chasse_id', $chasse_id, home_url('/creer-eni
         data-post-id="0">
         <div class="carte-core">
             <div class="carte-enigme-image">
-                <div class="enigme-placeholder">
-                    <i class="fa-solid fa-circle-plus fa-3x" aria-hidden="true"></i>
-                </div>
                 <div class="carte-enigme-cta">
                     <span class="bouton-cta bouton-cta--color">
                         <?php echo $has_enigmes

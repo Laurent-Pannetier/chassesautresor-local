@@ -113,6 +113,7 @@
   right: 0;
   display: flex;
   justify-content: center;
+  z-index: 1;
 }
 
 .carte-enigme h3 {
@@ -204,6 +205,20 @@
 .carte-ajout-enigme {
   display: block;
   position: relative;
+}
+
+.carte-ajout-enigme .carte-enigme-image::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 160%;
+  height: 160%;
+  transform: translate(-50%, -50%);
+  background: url("../assets/svg/compass-rose.svg") no-repeat center;
+  background-size: 160%;
+  opacity: 0.3;
+  pointer-events: none;
 }
 
 .carte-ajout-chasse .carte-ligne__image,
@@ -1460,8 +1475,8 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
     opacity: 1;
   }
   50% {
-    transform: scale(1.05);
-    opacity: 0.9;
+    transform: scale(1.02);
+    opacity: 0.95;
   }
   100% {
     transform: scale(1);
@@ -1469,7 +1484,7 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
   }
 }
 .pulsation {
-  animation: pulsePromo 1.5s infinite ease-in-out;
+  animation: pulsePromo 3s infinite ease-in-out;
 }
 
 /* ========== 🚫 NO-CLICK ========== */

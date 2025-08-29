@@ -115,6 +115,7 @@
   right: 0;
   display: flex;
   justify-content: center;
+  z-index: 1;
 }
 
 .carte-enigme h3 {
@@ -205,6 +206,20 @@
 .carte-ajout-enigme {
   display: block;
   position: relative;
+}
+
+.carte-ajout-enigme .carte-enigme-image::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 160%;
+  height: 160%;
+  transform: translate(-50%, -50%);
+  background: url('../assets/svg/compass-rose.svg') no-repeat center;
+  background-size: 160%;
+  opacity: 0.3;
+  pointer-events: none;
 }
 
 .carte-ajout-chasse .carte-ligne__image,
