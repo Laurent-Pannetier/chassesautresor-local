@@ -72,8 +72,12 @@ if ($illimitee) {
         $date_label = __('terminée depuis', 'chassesautresor-com');
         $date_value = formater_date($date_fin);
     } elseif ($fin_ts) {
-        $date_label = __('en cours jusqu\'au', 'chassesautresor-com');
-        $date_value = formater_date($date_fin);
+        $diff       = (int) ceil(($fin_ts - $now) / DAY_IN_SECONDS);
+        $date_label = __('jours restants', 'chassesautresor-com');
+        $date_value = sprintf(
+            _n('%d jour', '%d jours', $diff, 'chassesautresor-com'),
+            $diff
+        );
     }
 }
 

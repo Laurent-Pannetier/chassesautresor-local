@@ -338,7 +338,7 @@ msgstr ""
 #: template-parts/chasse/chasse-affichage-complet.php:108
 #, fuzzy
 msgid "terminée"
-msgstr "terminée depuis %s"
+msgstr "terminée"
 
 #: inc/edition/edition-chasse.php:58
 #, fuzzy
@@ -2826,25 +2826,6 @@ msgstr "illimitée"
 msgid "illimité"
 msgstr "illimité"
 
-#: template-parts/chasse/chasse-affichage-complet.php:65
-#: assets/js/chasse-edit.js:806 assets/js/chasse-edit.js:815
-msgid "%d jour à attendre"
-msgid_plural "%d jours à attendre"
-msgstr[0] "%d jour à attendre"
-msgstr[1] "%d jours à attendre"
-
-#: template-parts/chasse/chasse-affichage-complet.php:70
-#: assets/js/chasse-edit.js:802
-msgid "terminée depuis %s"
-msgstr "terminée depuis %s"
-
-#: template-parts/chasse/chasse-affichage-complet.php:76
-#: assets/js/chasse-edit.js:810
-msgid "%d jour restant"
-msgid_plural "%d jours restants"
-msgstr[0] "%d jour restant"
-msgstr[1] "%d jours restants"
-
 #: wp-content/themes/chassesautresor/functions.php:347
 msgid "Créer un compte"
 msgstr "Créer un compte"
@@ -2852,6 +2833,33 @@ msgstr "Créer un compte"
 #: wp-login.php
 msgid "Politique de confidentialité"
 msgstr "Politique de confidentialité"
+
+#: wp-content/themes/chassesautresor/template-parts/chasse/chasse-affichage-complet.php
+#: wp-content/themes/chassesautresor/assets/js/chasse-edit.js
+msgid "durée"
+msgstr "durée"
+
+#: wp-content/themes/chassesautresor/template-parts/chasse/chasse-affichage-complet.php
+#: wp-content/themes/chassesautresor/assets/js/chasse-edit.js
+msgid "début dans"
+msgstr "début dans"
+
+#: wp-content/themes/chassesautresor/template-parts/chasse/chasse-affichage-complet.php
+#: wp-content/themes/chassesautresor/assets/js/chasse-edit.js
+msgid "terminée depuis"
+msgstr "terminée depuis"
+
+#: wp-content/themes/chassesautresor/template-parts/chasse/chasse-affichage-complet.php
+#: wp-content/themes/chassesautresor/assets/js/chasse-edit.js
+msgid "jours restants"
+msgstr "jours restants"
+
+#: wp-content/themes/chassesautresor/template-parts/chasse/chasse-affichage-complet.php
+#: wp-content/themes/chassesautresor/assets/js/chasse-edit.js
+msgid "%d jour"
+msgid_plural "%d jours"
+msgstr[0] "%d jour"
+msgstr[1] "%d jours"
 
 #~ msgid "lié à"
 #~ msgstr "lié à"

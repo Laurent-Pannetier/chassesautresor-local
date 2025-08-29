@@ -830,7 +830,8 @@ function mettreAJourCaracteristiqueDate() {
   if (!isNaN(fin.getTime())) {
     if (today > fin) {
       labelSpan.textContent = wp.i18n.__('terminée depuis', 'chassesautresor-com');
-      valueSpan.textContent = fin.toISOString().slice(0, 10);
+      const pad = (n) => String(n).padStart(2, '0');
+      valueSpan.textContent = `${pad(fin.getDate())}/${pad(fin.getMonth() + 1)}/${fin.getFullYear()}`;
     } else if (today < debut) {
       const diff = Math.max(
         0,
@@ -840,8 +841,13 @@ function mettreAJourCaracteristiqueDate() {
       const tpl = wp.i18n._n('%d jour', '%d jours', diff, 'chassesautresor-com');
       valueSpan.textContent = tpl.replace('%d', diff);
     } else {
-      labelSpan.textContent = wp.i18n.__("en cours jusqu'au", 'chassesautresor-com');
-      valueSpan.textContent = fin.toISOString().slice(0, 10);
+      const diff = Math.max(
+        0,
+        Math.floor((fin - today) / (1000 * 60 * 60 * 24))
+      );
+      labelSpan.textContent = wp.i18n.__('jours restants', 'chassesautresor-com');
+      const tpl = wp.i18n._n('%d jour', '%d jours', diff, 'chassesautresor-com');
+      valueSpan.textContent = tpl.replace('%d', diff);
     }
   } else if (today < debut) {
     const diff = Math.max(
