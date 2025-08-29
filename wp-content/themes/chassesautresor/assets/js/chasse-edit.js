@@ -996,20 +996,25 @@ function initChampNbGagnants() {
 
   let timerDebounce;
 
-  let status = inputNb.nextElementSibling;
-  if (!status || !status.classList.contains('champ-status')) {
+  let status = li.querySelector('.champ-status');
+  const content = li.querySelector('.edition-row-content');
+  if (!status) {
     status = document.createElement('span');
     status.className = 'champ-status';
-    inputNb.insertAdjacentElement('afterend', status);
+  }
+  if (content && status.parentElement !== content) {
+    content.appendChild(status);
   }
 
   function enregistrer(valeur) {
-    if (!postId) return;
+    if (!postId || !status) return;
     status.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>';
-    modifierChampSimple(champ, valeur, postId, cpt).then(success => {
+    modifierChampSimple(champ, valeur, postId, cpt).then((success) => {
       if (success) {
         status.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i>';
-        setTimeout(() => { status.innerHTML = ''; }, 1000);
+        setTimeout(() => {
+          status.innerHTML = '';
+        }, 1000);
       } else {
         status.innerHTML = '';
       }

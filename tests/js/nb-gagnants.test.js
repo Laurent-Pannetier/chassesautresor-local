@@ -2,15 +2,17 @@ describe('initChampNbGagnants', () => {
   beforeEach(() => {
     document.body.innerHTML = `
       <li class="edition-row champ-nb-gagnants" data-post-id="1" data-champ="chasse_infos_nb_max_gagants" data-cpt="chasse">
-        <div class="champ-mode-options">
-          <span class="toggle-option">Illimité</span>
-          <label class="switch-control">
-            <input type="checkbox" id="nb-gagnants-limite" checked>
-            <span class="switch-slider"></span>
-          </label>
-          <span class="toggle-option">Limité</span>
-          <div class="nb-gagnants-actions">
-            <input type="number" id="chasse-nb-gagnants" value="2" class="champ-input champ-number">
+        <div class="edition-row-content">
+          <div class="champ-mode-options">
+            <span class="toggle-option">Illimité</span>
+            <label class="switch-control">
+              <input type="checkbox" id="nb-gagnants-limite" checked>
+              <span class="switch-slider"></span>
+            </label>
+            <span class="toggle-option">Limité</span>
+            <div class="nb-gagnants-actions">
+              <input type="number" id="chasse-nb-gagnants" value="2" class="champ-input champ-number">
+            </div>
           </div>
         </div>
       </li>
@@ -57,5 +59,7 @@ describe('initChampNbGagnants', () => {
       'chasse'
     );
     expect(document.querySelector('.nb-gagnants-affichage').textContent).toMatch(/illimité/i);
+    const status = document.querySelector('.champ-status');
+    expect(status.closest('.nb-gagnants-actions')).toBeNull();
   });
 });
