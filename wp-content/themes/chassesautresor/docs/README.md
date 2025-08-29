@@ -9,6 +9,7 @@ Ce répertoire rassemble des documents complémentaires au thème.
 - [Traductions du thème](traductions.md)
 - [Panneau d'édition : Paramètres d'énigme](panneau-enigme-parametres.md)
 - [Panneau d'édition : Paramètres de chasse](panneau-chasse-parametres.md)
+- [Connexion personnalisée](login.md)
 
 Toutes les nouvelles chaînes de texte doivent utiliser les fonctions d'internationalisation de WordPress avec le domaine `chassesautresor-com`.
 
