@@ -211,6 +211,22 @@ describe('chasse-edit UI', () => {
     expect(input.disabled).toBe(true);
   });
 
+  test('validerDatesAvantEnvoi accepte les dates ISO', () => {
+    if (global.Date && global.Date.mockRestore) {
+      global.Date.mockRestore();
+    }
+
+    const debut = document.getElementById('chasse-date-debut');
+    const fin = document.getElementById('chasse-date-fin');
+    const toggleFin = document.getElementById('date-fin-limitee');
+    toggleFin.checked = true;
+
+    debut.value = '2024-02-10T10:30';
+    fin.value = '2024-02-20';
+
+    expect(global.validerDatesAvantEnvoi('debut')).toBe(true);
+  });
+
   test('end date toggle reveals datepicker when checked', () => {
     const toggle = document.getElementById('date-fin-limitee');
     const actions = document.querySelector('.date-fin-actions');

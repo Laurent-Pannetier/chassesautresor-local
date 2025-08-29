@@ -10,10 +10,27 @@ let toggleDateFin;
 
 function parseDateDMY(value) {
   if (!value) return new Date(NaN);
-  const [datePart, timePart = ''] = value.trim().split(' ');
-  const [day, month, year] = datePart.split('/').map(Number);
-  const [hour = 0, minute = 0] = timePart.split(':').map(Number);
-  return new Date(year, month - 1, day, hour, minute);
+
+  const raw = value.trim();
+
+  // 📅 Format français JJ/MM/AAAA (optionnellement HH:MM)
+  if (/^\d{2}\/\d{2}\/\d{4}/.test(raw)) {
+    const [datePart, timePart = ''] = raw.split(' ');
+    const [day, month, year] = datePart.split('/').map(Number);
+    const [hour = 0, minute = 0] = timePart.split(':').map(Number);
+    return new Date(year, month - 1, day, hour, minute);
+  }
+
+  // 📅 Format ISO : YYYY-MM-DD ou YYYY-MM-DDTHH:MM
+  const iso = raw.replace('T', ' ');
+  if (/^\d{4}-\d{2}-\d{2}/.test(iso)) {
+    const [datePart, timePart = ''] = iso.split(' ');
+    const [year, month, day] = datePart.split('-').map(Number);
+    const [hour = 0, minute = 0] = timePart.split(':').map(Number);
+    return new Date(year, month - 1, day, hour, minute);
+  }
+
+  return new Date(NaN);
 }
 
 window.parseDateDMY = parseDateDMY;
@@ -759,6 +776,8 @@ function validerDatesAvantEnvoi(champModifie) {
 
   return true;
 }
+
+window.validerDatesAvantEnvoi = validerDatesAvantEnvoi;
 
 // ==============================
 // 🔥 Affichage d'un message global temporaire
