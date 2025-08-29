@@ -210,13 +210,13 @@
 .carte-ajout-enigme .carte-enigme-image::before {
   content: "";
   position: absolute;
-  top: 50%;
+  top: 40px;
   left: 50%;
-  width: 160%;
-  height: 160%;
-  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  transform: translateX(-50%);
   background: url("../assets/svg/compass-rose.svg") no-repeat center;
-  background-size: 160%;
+  background-size: 80px 80px;
   opacity: 0.3;
   pointer-events: none;
 }
