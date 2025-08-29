@@ -28,8 +28,9 @@
 
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 400px));
   gap: var(--space-xl);
+  justify-content: center;
 }
 
 /* ========== 🎴 Cartes d\'énigme et de chasse ========== */
@@ -112,6 +113,7 @@
   right: 0;
   display: flex;
   justify-content: center;
+  z-index: 1;
 }
 
 .carte-enigme h3 {
@@ -183,7 +185,6 @@
 }
 
 /* ========== ➕ Cartes d'ajout d'énigme et de chasse ========== */
-.carte-ajout-enigme,
 .carte-ajout-chasse {
   display: flex;
   align-items: center;
@@ -192,16 +193,86 @@
   padding: var(--space-xl);
   min-height: 140px;
   text-align: center;
-  border: 2px dashed var(--color-editor-border);
+  border: 2px dashed var(--color-background-button);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.05);
   position: relative;
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
+.carte-ajout-enigme {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border: 2px dashed var(--color-background-button);
+  background: var(--color-text-primary);
+  color: var(--color-background);
+  position: relative;
+  cursor: pointer;
+}
+
+.carte-ajout-enigme:hover {
+  background: var(--color-text-primary);
+  color: var(--color-background);
+  border-style: solid;
+  border-color: var(--color-background-button);
+  transform: translateY(-4px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.carte-ajout-enigme:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.carte-ajout-enigme.disabled,
+.carte-ajout-enigme[disabled] {
+  cursor: not-allowed;
+}
+
+.carte-ajout-enigme .carte-core {
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  height: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.carte-ajout-enigme .carte-core i {
+  color: var(--color-background-button);
+  font-size: 28px;
+}
+
+@media (min-width: 768px) {
+  .carte-ajout-enigme .carte-core i {
+    font-size: 36px;
+  }
+}
+.carte-ajout-enigme .carte-ajout-libelle {
+  font-weight: 600;
+}
+
+.carte-ajout-enigme::after {
+  content: "";
+  position: absolute;
+  bottom: var(--space-sm);
+  left: 50%;
+  width: 80px;
+  height: 80px;
+  transform: translateX(-50%);
+  background: url("../assets/svg/compass-rose.svg") no-repeat center;
+  background-size: 80px 80px;
+  opacity: 0.08;
+  pointer-events: none;
+}
+
 .carte-ajout-chasse .carte-ligne__image,
-.carte-ajout-chasse .carte-ligne__contenu,
-.carte-ajout-enigme .contenu-carte {
+.carte-ajout-chasse .carte-ligne__contenu {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -229,6 +300,13 @@
   text-align: center;
   gap: var(--space-xs);
   padding: 0 var(--space-md);
+}
+
+.carte-ajout-enigme .help-icon-button {
+  position: absolute;
+  top: var(--space-xs);
+  right: var(--space-xs);
+  z-index: 2;
 }
 
 /* ========== ✅ Indicateurs de complétion ========== */
@@ -1449,8 +1527,8 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
     opacity: 1;
   }
   50% {
-    transform: scale(1.05);
-    opacity: 0.9;
+    transform: scale(1.02);
+    opacity: 0.95;
   }
   100% {
     transform: scale(1);
@@ -1458,7 +1536,7 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
   }
 }
 .pulsation {
-  animation: pulsePromo 1.5s infinite ease-in-out;
+  animation: pulsePromo 3s infinite ease-in-out;
 }
 
 /* ========== 🚫 NO-CLICK ========== */
@@ -2800,10 +2878,6 @@ body[class*=edition-active] .champ-desactive .champ-modifier,
 }
 
 /* ➕ bouton d'ajout d'énigme et de chasse */
-#carte-ajout-enigme .fa-circle-plus {
-  color: var(--color-background-button);
-}
-
 /* ========== 📱 RESPONSIVE GLOBAL ========== */
 /* Empilage à partir de tablette */
 @media not all and (--bp-tablet) {

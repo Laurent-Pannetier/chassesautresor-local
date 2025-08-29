@@ -306,6 +306,13 @@
   padding: 0 var(--space-md);
 }
 
+.carte-ajout-enigme .help-icon-button {
+  position: absolute;
+  top: var(--space-xs);
+  right: var(--space-xs);
+  z-index: 2;
+}
+
 
 /* ========== ✅ Indicateurs de complétion ========== */
 .carte-complete {
