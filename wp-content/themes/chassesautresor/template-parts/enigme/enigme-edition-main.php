@@ -650,18 +650,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                                     <?php foreach ($prerequis_possibles as $id => $titre) : ?>
                                         <?php
                                         $checked = in_array($id, $pre_requis_selected, true) ? 'checked' : '';
-                                        $thumb   = get_the_post_thumbnail_url($id, 'thumbnail');
                                         ?>
                                         <label class="prerequis-item">
                                             <input type="checkbox" value="<?= esc_attr($id); ?>" <?= $checked; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
                                             <span class="prerequis-mini">
                                                 <span class="prerequis-titre"><?= esc_html($titre); ?></span>
-                                                <span class="prerequis-visuel">
-                                                    <?php if ($thumb) : ?>
-                                                        <img src="<?= esc_url($thumb); ?>" alt="" class="vignette-enigme" />
-                                                    <?php endif; ?>
-                                                    <span class="prerequis-check"><i class="fa-solid fa-check"></i></span>
-                                                </span>
+                                                <span class="prerequis-check"><i class="fa-solid fa-check"></i></span>
                                             </span>
                                         </label>
                                     <?php endforeach; ?>
