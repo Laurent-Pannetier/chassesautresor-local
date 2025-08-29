@@ -18,16 +18,7 @@ if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') return;
 $ajout_url = esc_url(add_query_arg('chasse_id', $chasse_id, home_url('/creer-enigme/')));
 
 ?>
-
-<button
-    type="button"
-    id="carte-ajout-enigme"
-    class="carte carte-enigme carte-ajout-enigme <?php echo $has_enigmes ? 'etat-suivante' : 'etat-vide'; ?> <?php echo $disabled ? 'disabled' : ''; ?><?php echo $highlight_pulse ? ' pulsation' : ''; ?>"
-    data-post-id="0"
-    aria-label="<?php echo esc_attr__('Ajouter une énigme', 'chassesautresor-com'); ?>"
-    <?php echo $disabled ? 'disabled' : ''; ?>
-    onclick="if(!this.hasAttribute('disabled')){window.location.href='<?php echo $ajout_url; ?>';}"
->
+<div class="carte-ajout-wrapper">
     <?php if ($show_help_icon) : ?>
         <?php
         get_template_part(
@@ -43,13 +34,23 @@ $ajout_url = esc_url(add_query_arg('chasse_id', $chasse_id, home_url('/creer-eni
         );
         ?>
     <?php endif; ?>
-    <div class="carte-core">
-        <i class="fa-solid fa-circle-plus" aria-hidden="true"></i>
-        <span class="carte-ajout-libelle"><?php echo esc_html__('Ajouter une énigme', 'chassesautresor-com'); ?></span>
-    </div>
-    <div class="overlay-message">
-        <i class="fa-solid fa-circle-info"></i>
-        <p><?php echo esc_html__('Complétez d’abord : titre, image, description', 'chassesautresor-com'); ?></p>
-    </div>
-</button>
+    <button
+        type="button"
+        id="carte-ajout-enigme"
+        class="carte carte-enigme carte-ajout-enigme <?php echo $has_enigmes ? 'etat-suivante' : 'etat-vide'; ?> <?php echo $disabled ? 'disabled' : ''; ?><?php echo $highlight_pulse ? ' pulsation' : ''; ?>"
+        data-post-id="0"
+        aria-label="<?php echo esc_attr__('Ajouter une énigme', 'chassesautresor-com'); ?>"
+        <?php echo $disabled ? 'disabled' : ''; ?>
+        onclick="if(!this.hasAttribute('disabled')){window.location.href='<?php echo $ajout_url; ?>';}"
+    >
+        <div class="carte-core">
+            <i class="fa-solid fa-circle-plus" aria-hidden="true"></i>
+            <span class="carte-ajout-libelle"><?php echo esc_html__('Ajouter une énigme', 'chassesautresor-com'); ?></span>
+        </div>
+        <div class="overlay-message">
+            <i class="fa-solid fa-circle-info"></i>
+            <p><?php echo esc_html__('Complétez d’abord : titre, image, description', 'chassesautresor-com'); ?></p>
+        </div>
+    </button>
+</div>
 
