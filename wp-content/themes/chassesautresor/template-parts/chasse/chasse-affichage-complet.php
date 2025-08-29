@@ -288,83 +288,91 @@ if ($edition_active && !$est_complet) {
         ?>
         <div class="chasse-cta-section cta-chasse">
           <div class="chasse-caracteristiques">
-          <div class="caracteristique caracteristique-date">
-            <span class="caracteristique-label"><?= esc_html__('Date', 'chassesautresor-com'); ?></span>
-            <span class="caracteristique-valeur"><?= esc_html($message_date); ?></span>
-          </div>
-          <?php if ($mode_fin === 'automatique') : ?>
-            <div class="caracteristique">
-              <span class="caracteristique-label"><?= esc_html__('Limite', 'chassesautresor-com'); ?></span>
-              <span class="caracteristique-valeur nb-gagnants-affichage" data-post-id="<?= esc_attr($chasse_id); ?>">
-                <?php if ((int) $nb_max === 0) : ?>
-                  <?= esc_html__('illimité', 'chassesautresor-com'); ?>
+            <div class="caracteristique caracteristique-date">
+              <span class="caracteristique-icone" aria-hidden="true">📅</span>
+              <span class="caracteristique-label"><?= esc_html__('Date', 'chassesautresor-com'); ?></span>
+              <span class="caracteristique-valeur"><?= esc_html($message_date); ?></span>
+            </div>
+            <?php if ($mode_fin === 'automatique') : ?>
+              <div class="caracteristique caracteristique-limite">
+                <span class="caracteristique-icone" aria-hidden="true">🚫</span>
+                <span class="caracteristique-label"><?= esc_html__('Limite', 'chassesautresor-com'); ?></span>
+                <span class="caracteristique-valeur nb-gagnants-affichage" data-post-id="<?= esc_attr($chasse_id); ?>">
+                  <?php if ((int) $nb_max === 0) : ?>
+                    <?= esc_html__('illimité', 'chassesautresor-com'); ?>
+                  <?php else : ?>
+                    <?= esc_html(sprintf(_n('%d gagnant', '%d gagnants', $nb_max, 'chassesautresor-com'), $nb_max)); ?>
+                  <?php endif; ?>
+                </span>
+              </div>
+            <?php endif; ?>
+
+            <div class="caracteristique caracteristique-fin">
+              <span class="caracteristique-icone" aria-hidden="true">⏱️</span>
+              <span class="caracteristique-label"><?= esc_html__('Fin de chasse', 'chassesautresor-com'); ?></span>
+              <span class="caracteristique-valeur">
+                <?= esc_html(
+                    $mode_fin === 'automatique'
+                        ? __('automatique', 'chassesautresor-com')
+                        : __('manuelle', 'chassesautresor-com')
+                ); ?>
+              </span>
+            </div>
+
+            <div class="caracteristique caracteristique-acces-chasse">
+              <span class="caracteristique-icone" aria-hidden="true">🔑</span>
+              <span class="caracteristique-label"><?= esc_html__('Accès chasse', 'chassesautresor-com'); ?></span>
+              <span class="caracteristique-valeur">
+                <?php if ($cout_points > 0) : ?>
+                  <span class="badge-cout"><?= esc_html($cout_points . ' ' . __('pts', 'chassesautresor-com')); ?></span>
                 <?php else : ?>
-                  <?= esc_html(sprintf(_n('%d gagnant', '%d gagnants', $nb_max, 'chassesautresor-com'), $nb_max)); ?>
+                  <?= esc_html__('libre', 'chassesautresor-com'); ?>
                 <?php endif; ?>
               </span>
             </div>
-          <?php endif; ?>
 
-          <div class="caracteristique">
-            <span class="caracteristique-label"><?= esc_html__('Fin de chasse', 'chassesautresor-com'); ?></span>
-            <span class="caracteristique-valeur">
-              <?= esc_html(
-                  $mode_fin === 'automatique'
-                      ? __('automatique', 'chassesautresor-com')
-                      : __('manuelle', 'chassesautresor-com')
-              ); ?>
-            </span>
-          </div>
+            <div class="caracteristique caracteristique-acces-enigme">
+              <span class="caracteristique-icone" aria-hidden="true">🧩</span>
+              <span class="caracteristique-label"><?= esc_html__('Accès énigme', 'chassesautresor-com'); ?></span>
+              <span class="caracteristique-valeur">
+                <?php if ($nb_enigmes_payantes > 0) : ?>
+                  <?php
+                  $txt_enigme_payante = sprintf(
+                      _n(
+                          '%d énigme nécessite des points pour soumettre une tentative',
+                          '%d énigmes nécessitent des points pour soumettre une tentative',
+                          $nb_enigmes_payantes,
+                          'chassesautresor-com'
+                      ),
+                      $nb_enigmes_payantes
+                  );
+                  ?>
+                  <?= esc_html($txt_enigme_payante); ?>
+                <?php else : ?>
+                  <?= esc_html__('gratuit', 'chassesautresor-com'); ?>
+                <?php endif; ?>
+              </span>
+            </div>
 
-          <div class="caracteristique">
-            <span class="caracteristique-label"><?= esc_html__('Accès chasse', 'chassesautresor-com'); ?></span>
-            <span class="caracteristique-valeur">
-              <?= $cout_points > 0
-                  ? sprintf(esc_html__('%d points', 'chassesautresor-com'), $cout_points)
-                  : esc_html__('libre', 'chassesautresor-com'); ?>
-            </span>
-          </div>
-
-        <div class="caracteristique">
-          <span class="caracteristique-label"><?= esc_html__('Accès énigme', 'chassesautresor-com'); ?></span>
-          <span class="caracteristique-valeur">
-            <?php if ($nb_enigmes_payantes > 0) : ?>
+            <?php if ($top_avances['nb'] > 0 && $top_avances['enigmes'] > 0) : ?>
               <?php
-              $txt_enigme_payante = sprintf(
+              $txt_top = sprintf(
                   _n(
-                      '%d énigme nécessite des points pour soumettre une tentative',
-                      '%d énigmes nécessitent des points pour soumettre une tentative',
-                      $nb_enigmes_payantes,
+                      '%1$d joueur a trouvé %2$d énigme',
+                      '%1$d joueurs ont trouvé %2$d énigmes',
+                      $top_avances['nb'],
                       'chassesautresor-com'
                   ),
-                  $nb_enigmes_payantes
+                  $top_avances['nb'],
+                  $top_avances['enigmes']
               );
               ?>
-              <?= esc_html($txt_enigme_payante); ?>
-            <?php else : ?>
-              <?= esc_html__('gratuit', 'chassesautresor-com'); ?>
+              <div class="caracteristique caracteristique-top">
+                <span class="caracteristique-icone" aria-hidden="true">⭐</span>
+                <span class="caracteristique-label"><?= esc_html__('Les + avancés', 'chassesautresor-com'); ?></span>
+                <span class="caracteristique-valeur"><?= esc_html($txt_top); ?></span>
+              </div>
             <?php endif; ?>
-          </span>
-        </div>
-
-        <?php if ($top_avances['nb'] > 0 && $top_avances['enigmes'] > 0) : ?>
-            <?php
-            $txt_top = sprintf(
-                _n(
-                    '%1$d joueur a trouvé %2$d énigme',
-                    '%1$d joueurs ont trouvé %2$d énigmes',
-                    $top_avances['nb'],
-                    'chassesautresor-com'
-                ),
-                $top_avances['nb'],
-                $top_avances['enigmes']
-            );
-            ?>
-            <div class="caracteristique">
-              <span class="caracteristique-label"><?= esc_html__('Les + avancés', 'chassesautresor-com'); ?></span>
-              <span class="caracteristique-valeur"><?= esc_html($txt_top); ?></span>
-            </div>
-        <?php endif; ?>
           </div>
 
           <?php if (($cta_data['type'] ?? '') !== 'engage') : ?>
@@ -387,22 +395,19 @@ if ($edition_active && !$est_complet) {
         ?>
 
         <?php if (!empty($titre_recompense) || (float) $valeur_recompense > 0 || !empty($lot)) : ?>
-            <div class="chasse-lot-complet" style="margin-top: 30px;">
-                <h3>
-                    <?= '🏆 ' . esc_html__('Récompense :', 'chassesautresor-com'); ?>
-                    <?php if (!empty($titre_recompense)) : ?>
-                        <?= esc_html($titre_recompense); ?>
-                    <?php endif; ?>
-                    <?php if (!empty($titre_recompense) && (float) $valeur_recompense > 0) : ?>
-                        -
-                    <?php endif; ?>
-                    <?php if ((float) $valeur_recompense > 0) : ?>
-                        <span class="badge-recompense avec-recompense"><?= esc_html($valeur_recompense); ?> €</span>
-                    <?php endif; ?>
-                </h3>
+            <div class="chasse-lot-complet">
+                <h3><?= '🏆 ' . esc_html__('Récompense', 'chassesautresor-com'); ?></h3>
+
+                <?php if (!empty($titre_recompense)) : ?>
+                    <p class="lot-titre"><?= esc_html($titre_recompense); ?></p>
+                <?php endif; ?>
+
+                <?php if ((float) $valeur_recompense > 0) : ?>
+                    <p class="lot-valeur"><span class="badge-recompense avec-recompense"><?= esc_html($valeur_recompense); ?> €</span></p>
+                <?php endif; ?>
 
                 <?php if (!empty($lot)) : ?>
-                    <p><?= wp_kses_post($lot); ?></p>
+                    <p class="lot-description"><?= wp_kses_post($lot); ?></p>
                 <?php endif; ?>
             </div>
         <?php endif; ?>

@@ -509,8 +509,14 @@
 
 .chasse-caracteristiques .caracteristique {
   display: flex;
+  align-items: center;
   gap: var(--space-xxs);
   margin-bottom: var(--space-xxs);
+}
+
+.chasse-caracteristiques .caracteristique-icone {
+  flex: 0 0 1rem;
+  text-align: center;
 }
 
 .chasse-cta-section {
@@ -546,6 +552,27 @@
 
 .chasse-caracteristiques .caracteristique-valeur {
   flex: 0 0 auto;
+}
+
+.chasse-lot-complet {
+  margin-top: var(--space-2xl);
+  padding: var(--space-md);
+  background-color: var(--color-background-dark);
+  border-radius: 8px;
+}
+
+.chasse-lot-complet h3 {
+  margin-top: 0;
+  margin-bottom: var(--space-xs);
+}
+
+.chasse-lot-complet .lot-titre,
+.chasse-lot-complet .lot-valeur {
+  margin: 0 0 var(--space-xs);
+}
+
+.chasse-lot-complet .lot-description {
+  margin: 0;
 }
 
 /* ========== 🧾 BLOC PRÉSENTATION DE LA CHASSE ========== */
