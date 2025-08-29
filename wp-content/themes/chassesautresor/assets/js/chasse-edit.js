@@ -1306,13 +1306,13 @@ function mettreAJourAffichageNbGagnants(postId, nb) {
   const valeur = parseInt(nb, 10);
   if (valeur === 0) {
     nbGagnantsAffichage.textContent = wp.i18n.__('illimitée', 'chassesautresor-com');
-    labelSpan.textContent = wp.i18n.__('gagnants', 'chassesautresor-com');
+    labelSpan.textContent = wp.i18n.__('Gagnants', 'chassesautresor-com');
   } else {
     nbGagnantsAffichage.textContent = wp.i18n.sprintf(
       wp.i18n._n('%d gagnant', '%d gagnants', valeur, 'chassesautresor-com'),
       valeur
     );
-    labelSpan.textContent = wp.i18n.__('limite', 'chassesautresor-com');
+    labelSpan.textContent = wp.i18n.__('Limite', 'chassesautresor-com');
   }
 }
 
