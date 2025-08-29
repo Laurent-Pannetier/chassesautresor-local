@@ -383,7 +383,7 @@ function mettreAJourLigneResume(ligne, champ, estRempli, type) {
 
     const champTexte = ligne.querySelector('.champ-texte');
     if (champTexte) {
-      champTexte.after(bouton);
+      champTexte.appendChild(bouton);
     } else {
       ligne.appendChild(bouton);
     }
