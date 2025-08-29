@@ -1249,9 +1249,11 @@ window.mettreAJourCarteAjoutEnigme = function () {
 
   if (incomplets.length === 0) {
     carte.classList.remove('disabled');
+    carte.removeAttribute('disabled');
     overlay?.remove();
   } else {
     carte.classList.add('disabled');
+    carte.setAttribute('disabled', 'disabled');
     const texte = incomplets.map(sel => {
       if (sel.includes('post_title')) return 'titre';
       if (sel.includes('image')) return 'image';
