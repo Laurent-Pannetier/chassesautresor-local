@@ -291,6 +291,40 @@ function cta_enqueue_login_styles(): void
         [],
         filemtime($theme_path . $css_rel)
     );
+
+    $logo_id = get_theme_mod('custom_logo');
+
+    if ($logo_id) {
+        $logo_data = wp_get_attachment_image_src($logo_id, 'full');
+
+        if (is_array($logo_data)) {
+            $logo_url   = $logo_data[0];
+            $logo_width = (int) $logo_data[1];
+            $logo_height = (int) $logo_data[2];
+            $max_width  = 320;
+
+            if ($logo_width > $max_width) {
+                $ratio       = $max_width / $logo_width;
+                $logo_width  = (int) $max_width;
+                $logo_height = (int) floor($logo_height * $ratio);
+            }
+
+            $custom_css = sprintf(
+                '#login h1 a {' .
+                'background-image:url(%1$s);' .
+                'background-size:contain;' .
+                'background-repeat:no-repeat;' .
+                'width:%2$spx;' .
+                'height:%3$spx;' .
+                '}',
+                esc_url($logo_url),
+                $logo_width,
+                $logo_height
+            );
+
+            wp_add_inline_style('cta-login', $custom_css);
+        }
+    }
 }
 add_action('login_enqueue_scripts', 'cta_enqueue_login_styles');
 
