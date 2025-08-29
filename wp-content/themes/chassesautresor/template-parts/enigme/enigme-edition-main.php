@@ -42,6 +42,7 @@ $enigme_status = get_post_status($enigme_id);
 $chasse_validation = $chasse_id ? get_field('chasse_cache_statut_validation', $chasse_id) : '';
 $stats_locked = in_array($chasse_validation, ['creation', 'en_attente', 'correction'], true)
     || $enigme_status !== 'publish';
+$cancel_url = $chasse_id ? get_permalink($chasse_id) : home_url('/');
 
 $nb_variantes   = 0;
 $variantes_list = [];
@@ -75,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
 }
 ?>
 <?php if ($peut_modifier) : ?>
-  <section class="edition-panel edition-panel-enigme edition-panel-modal" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>">
+  <section class="edition-panel edition-panel-enigme edition-panel-modal" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" data-cancel-url="<?= esc_url($cancel_url); ?>">
     <div id="erreur-global"
       style="display:none; background:red; color:white; padding:5px; text-align:center; font-size:0.9em;"></div>
 
@@ -87,8 +88,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
             <span class="titre-objet" data-cpt="enigme"><?= esc_html($titre); ?></span>
           </h2>
 
-        <button type="button" class="panneau-fermer" aria-label="<?= esc_attr__('Fermer les paramètres', 'chassesautresor-com'); ?>">✖</button>
-      </div>
+          <button type="button" class="panneau-annuler bouton-secondaire"><?= esc_html__('Annuler', 'chassesautresor-com'); ?></button>
+          <button type="button" class="panneau-fermer" aria-label="<?= esc_attr__('Fermer les paramètres', 'chassesautresor-com'); ?>">✖</button>
+        </div>
       <div class="edition-tabs">
         <button class="edition-tab active" data-target="enigme-tab-param"><?= esc_html__('Paramètres', 'chassesautresor-com'); ?></button>
         <button class="edition-tab" data-target="enigme-tab-stats"><?= esc_html__('Statistiques', 'chassesautresor-com'); ?></button>

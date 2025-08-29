@@ -115,6 +115,19 @@ function initEnigmeEdit() {
     '#toggle-mode-edition-enigme, .toggle-mode-edition-enigme'
   );
   panneauEdition = document.querySelector('.edition-panel-enigme');
+  const cancelBtn = panneauEdition?.querySelector('.panneau-annuler');
+  const cancelUrl = panneauEdition?.dataset.cancelUrl;
+
+  function cancelEdition() {
+    if (cancelUrl) {
+      window.location.href = cancelUrl;
+      return;
+    }
+    document.body.classList.remove('edition-active-enigme');
+    document.body.classList.remove('panneau-ouvert');
+    document.body.classList.remove('mode-edition');
+    document.activeElement?.blur();
+  }
 
   // ==============================
   // 🛠️ Contrôles panneau principal
@@ -135,6 +148,23 @@ function initEnigmeEdit() {
     document.body.classList.remove('panneau-ouvert');
     document.body.classList.remove('mode-edition');
     document.activeElement?.blur();
+  });
+
+  cancelBtn?.addEventListener('click', cancelEdition);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && document.body.classList.contains('edition-active-enigme')) {
+      cancelEdition();
+    }
+  });
+  document.addEventListener('click', (e) => {
+    if (
+      document.body.classList.contains('edition-active-enigme') &&
+      panneauEdition &&
+      !panneauEdition.contains(e.target) &&
+      !e.target.closest('.toggle-mode-edition-enigme')
+    ) {
+      cancelEdition();
+    }
   });
 
 
