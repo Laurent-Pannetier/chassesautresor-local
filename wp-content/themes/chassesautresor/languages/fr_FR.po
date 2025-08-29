@@ -2944,5 +2944,3 @@ msgstr "Politique de confidentialité"
 #~ msgid "Demande pour %s en cours de traitement"
 #~ msgstr "Demande pour %s en cours de traitement"
 
-#~ msgid "illimité"
-#~ msgstr "illimité"
