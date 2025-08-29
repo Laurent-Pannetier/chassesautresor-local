@@ -1293,7 +1293,7 @@ function mettreAJourAffichageNbGagnants(postId, nb) {
 
   const valeur = parseInt(nb, 10);
   if (valeur === 0) {
-    nbGagnantsAffichage.textContent = wp.i18n.__('illimité', 'chassesautresor-com');
+    nbGagnantsAffichage.textContent = wp.i18n.__('illimitée', 'chassesautresor-com');
   } else {
     nbGagnantsAffichage.textContent = wp.i18n.sprintf(
       wp.i18n._n('%d gagnant', '%d gagnants', valeur, 'chassesautresor-com'),

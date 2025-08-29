@@ -299,11 +299,11 @@ if ($edition_active && !$est_complet) {
             <?php endif; ?>
             <?php if ($mode_fin === 'automatique') : ?>
               <div class="caracteristique caracteristique-limite">
-                <span class="caracteristique-icone" aria-hidden="true">🚫</span>
-                <span class="caracteristique-label"><?= esc_html__('Limite', 'chassesautresor-com'); ?></span>
+                <span class="caracteristique-icone" aria-hidden="true">👥</span>
+                <span class="caracteristique-label"><?= esc_html__('Gagnants', 'chassesautresor-com'); ?></span>
                 <span class="caracteristique-valeur nb-gagnants-affichage" data-post-id="<?= esc_attr($chasse_id); ?>">
                   <?php if ((int) $nb_max === 0) : ?>
-                    <?= esc_html__('illimité', 'chassesautresor-com'); ?>
+                    <?= esc_html__('illimitée', 'chassesautresor-com'); ?>
                   <?php else : ?>
                     <?= esc_html(sprintf(_n('%d gagnant', '%d gagnants', $nb_max, 'chassesautresor-com'), $nb_max)); ?>
                   <?php endif; ?>
