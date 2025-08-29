@@ -203,21 +203,68 @@
 }
 
 .carte-ajout-enigme {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border: 2px dashed var(--color-editor-border);
+  background: var(--color-text-primary);
+  color: var(--color-background);
   position: relative;
+  cursor: pointer;
 }
 
-.carte-ajout-enigme .carte-enigme-image::before {
+.carte-ajout-enigme:hover {
+  border-style: solid;
+}
+
+.carte-ajout-enigme:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.carte-ajout-enigme.disabled,
+.carte-ajout-enigme[disabled] {
+  cursor: not-allowed;
+}
+
+.carte-ajout-enigme .carte-core {
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  height: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.carte-ajout-enigme .carte-core i {
+  color: var(--color-background-button);
+  font-size: 28px;
+}
+
+@media (min-width: 768px) {
+  .carte-ajout-enigme .carte-core i {
+    font-size: 36px;
+  }
+}
+.carte-ajout-enigme .carte-ajout-libelle {
+  font-weight: 600;
+}
+
+.carte-ajout-enigme::after {
   content: "";
   position: absolute;
-  top: 40px;
+  bottom: var(--space-sm);
   left: 50%;
   width: 80px;
   height: 80px;
   transform: translateX(-50%);
   background: url("../assets/svg/compass-rose.svg") no-repeat center;
   background-size: 80px 80px;
-  opacity: 0.3;
+  opacity: 0.08;
   pointer-events: none;
 }
 
@@ -2832,10 +2879,6 @@ body[class*=edition-active] .champ-desactive .champ-modifier,
 }
 
 /* ➕ bouton d'ajout d'énigme et de chasse */
-#carte-ajout-enigme .fa-circle-plus {
-  color: var(--color-background-button);
-}
-
 /* ========== 📱 RESPONSIVE GLOBAL ========== */
 /* Empilage à partir de tablette */
 @media not all and (min-width: 768px) {
