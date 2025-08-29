@@ -320,7 +320,7 @@ function render_cta_enigme(array $cta, int $enigme_id): void
 {
     $statut = $cta['statut_utilisateur'] ?? '';
     $classes_bouton = in_array($statut, ['non_commencee', 'echouee', 'abandonnee', 'soumis'], true)
-        ? 'bouton bouton-cta'
+        ? 'bouton bouton-cta bouton-cta--color'
         : 'bouton bouton-secondaire';
 
     switch ($cta['action']) {
