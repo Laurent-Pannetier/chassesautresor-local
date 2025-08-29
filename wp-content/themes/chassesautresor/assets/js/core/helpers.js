@@ -131,13 +131,20 @@ window.mettreAJourTitreMenuEnigme = function (valeur) {
  *
  * @param {string} cpt - Le nom du CPT (ex. "organisateur", "chasse", "enigme")
  * @param {number|string} postId - L’ID du post
- * @param {string} nouvelleUrl - L’URL de l’image mise à jour
+ * @param {string} nouvelleUrl - L’URL de l’image mise à jour pour l’affichage
+ * @param {string} [fullUrl=nouvelleUrl] - L’URL de l’image originale pour la lightbox
  */
-function mettreAJourVisuelCPT(cpt, postId, nouvelleUrl) {
-  document.querySelectorAll(`img.visuel-cpt[data-cpt="${cpt}"][data-post-id="${postId}"]`)
+function mettreAJourVisuelCPT(cpt, postId, nouvelleUrl, fullUrl = nouvelleUrl) {
+  document
+    .querySelectorAll(`img.visuel-cpt[data-cpt="${cpt}"][data-post-id="${postId}"]`)
     .forEach(img => {
       img.src = nouvelleUrl;
       img.srcset = nouvelleUrl;
+
+      const lien = img.closest('a');
+      if (lien) {
+        lien.href = fullUrl;
+      }
     });
 }
 
