@@ -94,7 +94,7 @@ window.mettreAJourResumeInfos = function () {
       const champ = ligne.dataset.champ;
       const blocEdition = document.querySelector(`.champ-enigme[data-champ="${champ}"]`);
 
-      let estRempli = false;
+      let estRempli = blocEdition && !blocEdition.classList.contains('champ-vide');
 
       // Règles spécifiques pour les énigmes
       if (champ === 'post_title') {
@@ -383,7 +383,7 @@ function mettreAJourLigneResume(ligne, champ, estRempli, type) {
 
     const champTexte = ligne.querySelector('.champ-texte');
     if (champTexte) {
-      champTexte.after(bouton);
+      champTexte.appendChild(bouton);
     } else {
       ligne.appendChild(bouton);
     }

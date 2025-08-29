@@ -234,16 +234,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                                 <?php else : ?>
                                   <span class="champ-texte-contenu">
                                     <?= esc_html(wp_trim_words(wp_strip_all_tags($texte_enigme), 25)); ?>
-                                    <?php if ($peut_editer) : ?>
-                                      <button type="button" class="champ-modifier ouvrir-panneau-description"
-                                        data-champ="enigme_visuel_texte"
-                                        data-cpt="enigme"
-                                        data-post-id="<?= esc_attr($enigme_id); ?>"
-                                        aria-label="<?= esc_attr__('Éditer le texte', 'chassesautresor-com'); ?>">
-                                        <?= esc_html__('éditer', 'chassesautresor-com'); ?>
-                                      </button>
-                                    <?php endif; ?>
                                   </span>
+                                  <?php if ($peut_editer) : ?>
+                                    <button type="button" class="champ-modifier ouvrir-panneau-description"
+                                      data-champ="enigme_visuel_texte"
+                                      data-cpt="enigme"
+                                      data-post-id="<?= esc_attr($enigme_id); ?>"
+                                      aria-label="<?= esc_attr__('Éditer le texte', 'chassesautresor-com'); ?>">
+                                      <?= esc_html__('éditer', 'chassesautresor-com'); ?>
+                                    </button>
+                                  <?php endif; ?>
                                 <?php endif; ?>
                               </div>
                               <div class="champ-feedback"></div>
