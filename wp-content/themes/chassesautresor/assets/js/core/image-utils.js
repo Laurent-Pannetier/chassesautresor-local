@@ -35,7 +35,9 @@ function initChampImage(bloc) {
       const selection = frame.state().get('selection').first();
       const id = selection?.id;
       const fullUrl = selection?.attributes?.url;
-      const mediumUrl = selection?.attributes?.sizes?.medium?.url || fullUrl;
+      const ficheUrl =
+        selection?.attributes?.sizes?.['chasse-fiche']?.url || fullUrl;
+      const mediumUrl = selection?.attributes?.sizes?.medium?.url || ficheUrl;
       const thumbUrl = selection?.attributes?.sizes?.thumbnail?.url || mediumUrl;
       if (!id || !fullUrl) return;
 
@@ -78,7 +80,7 @@ function initChampImage(bloc) {
               window.mettreAJourResumeInfos();
             }
             if (typeof window.mettreAJourVisuelCPT === 'function') {
-              mettreAJourVisuelCPT(cpt, postId, mediumUrl);
+              mettreAJourVisuelCPT(cpt, postId, ficheUrl);
             }
           } else {
             if (feedback) {
