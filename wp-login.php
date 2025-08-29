@@ -102,10 +102,11 @@ function login_header( $title = null, $message = '', $wp_error = null ) {
                 'login',
                 <<<'CSS'
 body.login {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
+       display: flex;
+       flex-direction: column;
+       align-items: center;
+       justify-content: center;
+       min-height: 100vh;
 }
 
 #login {
@@ -128,6 +129,11 @@ body.login {
 #login .login-title {
         text-align: center;
         margin-bottom: 1rem;
+}
+
+.language-switcher {
+       text-align: center;
+       margin-top: 1rem;
 }
 CSS
         );
