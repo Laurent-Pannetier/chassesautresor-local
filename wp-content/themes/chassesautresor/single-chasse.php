@@ -62,19 +62,7 @@ $image_raw = $infos_chasse['image_raw'];
 $image_id  = $infos_chasse['image_id'];
 $image_url = $infos_chasse['image_url'];
 
-$enigmes_associees = $infos_chasse['enigmes_associees'];
-$total_enigmes     = $infos_chasse['total_enigmes'];
-$enigmes_resolues  = compter_enigmes_resolues($chasse_id, $user_id);
-$peut_ajouter_enigme = utilisateur_peut_ajouter_enigme($chasse_id);
-
-$enigmes_incompletes = [];
-foreach ($enigmes_associees as $eid) {
-    verifier_ou_mettre_a_jour_cache_complet($eid);
-    if (!get_field('enigme_cache_complet', $eid)) {
-        $enigmes_incompletes[] = $eid;
-    }
-}
-$has_incomplete_enigme = !empty($enigmes_incompletes);
+$enigmes_resolues = compter_enigmes_resolues($chasse_id, $user_id);
 
 $mode_fin = get_field('chasse_mode_fin', $chasse_id) ?: 'automatique';
 $statut = $infos_chasse['statut'];
@@ -156,13 +144,6 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
     <section class="chasse-enigmes-wrapper" id="chasse-enigmes-wrapper">
         <div class="titre-enigmes-wrapper">
             <h2>Énigmes</h2>
-            <?php if ($peut_ajouter_enigme && $total_enigmes > 0 && !$has_incomplete_enigme) :
-                get_template_part('template-parts/enigme/chasse-partial-ajout-enigme', null, [
-                    'has_enigmes' => true,
-                    'chasse_id'   => $chasse_id,
-                    'use_button'  => true,
-                ]);
-            endif; ?>
         </div>
         <div id="liste-enigmes" class="chasse-enigmes-liste">
             <?php
