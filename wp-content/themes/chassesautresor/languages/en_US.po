@@ -2968,21 +2968,3 @@ msgstr[1] "%d days remaining"
 #~ msgid "Coordonnées bancaires manquantes"
 #~ msgstr "Missing bank details"
 
-#~ msgid ""
-#~ "Nous avons besoin d'enregistrer vos coordonnées bancaires pour vous "
-#~ "envoyer un versement"
-#~ msgstr "We need to record your bank details to send you a payout"
-
-#~ msgid "renseigner coordonnées bancaires"
-#~ msgstr "enter bank details"
-
-#~ msgid "Demande pour %s en cours de traitement"
-#~ msgstr "Request for %s is being processed"
-
-#~ msgid "illimité"
-#~ msgstr "unlimited"
-
-#~ msgid "%d gagnant"
-#~ msgid_plural "%d gagnants"
-#~ msgstr[0] "%d winner"
-#~ msgstr[1] "%d winners"
