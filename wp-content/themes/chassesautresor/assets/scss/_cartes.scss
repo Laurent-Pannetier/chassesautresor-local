@@ -196,7 +196,7 @@
   padding: var(--space-xl);
   min-height: 140px;
   text-align: center;
-  border: 2px dashed var(--color-editor-border);
+  border: 2px dashed var(--color-background-button);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.05);
   position: relative;
@@ -208,7 +208,7 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  border: 2px dashed var(--color-editor-border);
+  border: 2px dashed var(--color-background-button);
   background: var(--color-text-primary);
   color: var(--color-background);
   position: relative;
@@ -219,7 +219,7 @@
   background: var(--color-text-primary);
   color: var(--color-background);
   border-style: solid;
-  border-color: var(--color-editor-border);
+  border-color: var(--color-background-button);
   transform: translateY(-4px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
