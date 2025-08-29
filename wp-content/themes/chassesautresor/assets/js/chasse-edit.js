@@ -805,6 +805,8 @@ function mettreAJourCaracteristiqueDate() {
   if (!span || !inputDateDebut) return;
   const debut = parseDateDMY(inputDateDebut.value);
   const fin = parseDateDMY(inputDateFin?.value || '');
+  if (!isNaN(debut.getTime())) debut.setHours(0, 0, 0, 0);
+  if (!isNaN(fin.getTime())) fin.setHours(0, 0, 0, 0);
   const illimite = toggleDateFin ? !toggleDateFin.checked : false;
 
   if (illimite) {
@@ -821,16 +823,25 @@ function mettreAJourCaracteristiqueDate() {
       const tpl = wp.i18n.__('terminée depuis %s', 'chassesautresor-com');
       span.textContent = tpl.replace('%s', fin.toISOString().slice(0, 10));
     } else if (today < debut) {
-      const diff = Math.ceil((debut - today) / (1000 * 60 * 60 * 24));
+      const diff = Math.max(
+        0,
+        Math.floor((debut - today) / (1000 * 60 * 60 * 24))
+      );
       const tpl = wp.i18n._n('%d jour à attendre', '%d jours à attendre', diff, 'chassesautresor-com');
       span.textContent = tpl.replace('%d', diff);
     } else {
-      const diff = Math.ceil((fin - today) / (1000 * 60 * 60 * 24));
+      const diff = Math.max(
+        0,
+        Math.floor((fin - today) / (1000 * 60 * 60 * 24))
+      );
       const tpl = wp.i18n._n('%d jour restant', '%d jours restants', diff, 'chassesautresor-com');
       span.textContent = tpl.replace('%d', diff);
     }
   } else if (today < debut) {
-    const diff = Math.ceil((debut - today) / (1000 * 60 * 60 * 24));
+    const diff = Math.max(
+      0,
+      Math.floor((debut - today) / (1000 * 60 * 60 * 24))
+    );
     const tpl = wp.i18n._n('%d jour à attendre', '%d jours à attendre', diff, 'chassesautresor-com');
     span.textContent = tpl.replace('%d', diff);
   }
