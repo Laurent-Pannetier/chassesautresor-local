@@ -115,6 +115,44 @@ button,
   transition: background-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
+button:focus,
+.menu-toggle:hover,
+button:hover,
+.ast-button:hover,
+.ast-custom-button:hover,
+.button:hover,
+input[type=reset]:hover,
+input[type=reset]:focus,
+input#submit:hover,
+input#submit:focus,
+input[type="button"]:hover,
+input[type="button"]:focus,
+input[type="submit"]:hover,
+input[type="submit"]:focus,
+form[class*="wp-block-search__"].wp-block-search .wp-block-search__inside-wrapper .wp-block-search__button:hover,
+form[class*="wp-block-search__"].wp-block-search .wp-block-search__inside-wrapper .wp-block-search__button:focus,
+body .wp-block-file .wp-block-file__button:hover,
+body .wp-block-file .wp-block-file__button:focus,
+.woocommerce-js a.button:hover,
+.woocommerce button.button:hover,
+.woocommerce .woocommerce-message a.button:hover,
+.woocommerce #respond input#submit:hover,
+.woocommerce #respond input#submit.alt:hover,
+.woocommerce input.button.alt:hover,
+.woocommerce input.button:hover,
+.woocommerce button.button.alt.disabled:hover,
+.wc-block-grid__products .wc-block-grid__product .wp-block-button__link:hover,
+[class*="wc-block"] button:hover,
+.woocommerce-js .astra-cart-drawer .astra-cart-drawer-content .woocommerce-mini-cart__buttons .button:not(.checkout):not(.ast-continue-shopping):hover,
+.woocommerce-js .astra-cart-drawer .astra-cart-drawer-content .woocommerce-mini-cart__buttons a.checkout:hover,
+.woocommerce button.button.alt.disabled.wc-variation-selection-needed:hover,
+[class*="wc-block"] .wc-block-components-button:hover,
+[class*="wc-block"] .wc-block-components-button:focus {
+  background-color: transparent;
+  color: inherit;
+  border-color: currentColor;
+}
+
 
 /* ========== 🚀 BOUTON CTA ========== */
 
