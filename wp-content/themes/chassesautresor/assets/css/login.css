@@ -74,23 +74,14 @@ body.login #wp-submit:focus {
     border-color: var(--color-primary);
 }
 
-body.login .cta-login-register .button {
-    background-color: var(--color-background-button);
-    border: 1px solid transparent;
+body.login .notice {
+    background-color: var(--color-background-dark);
+    border-left: 4px solid var(--color-primary);
     color: var(--color-text-primary);
-    width: 100%;
-    padding: 0.5rem;
-    display: block;
-    text-align: center;
 }
 
-body.login .cta-login-register .button:hover {
-    background-color: var(--color-background-button-hover);
-}
-
-body.login .cta-login-register .button:focus {
-    outline: 2px solid var(--color-primary);
-    border-color: var(--color-primary);
+body.login .notice p {
+    color: inherit;
 }
 
 @media (min-width: 768px) {
