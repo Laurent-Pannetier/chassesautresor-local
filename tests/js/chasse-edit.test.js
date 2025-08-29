@@ -374,7 +374,10 @@ describe('mettreAJourCaracteristiqueDate time zones', () => {
       jest.resetModules();
 
       document.body.innerHTML = `
-        <span class="caracteristique-date"><span class="caracteristique-valeur"></span></span>
+        <span class="caracteristique-date">
+          <span class="caracteristique-label"></span>
+          <span class="caracteristique-valeur"></span>
+        </span>
         <input id="chasse-date-debut" />
         <input id="chasse-date-fin" />
         <input type="checkbox" id="date-fin-limitee" checked />
@@ -394,8 +397,11 @@ describe('mettreAJourCaracteristiqueDate time zones', () => {
 
       global.mettreAJourCaracteristiqueDate();
 
-      const text = document.querySelector('.caracteristique-date .caracteristique-valeur').textContent;
-      expect(text).toBe('1 jour restant');
+      const valeur = document.querySelector('.caracteristique-date .caracteristique-valeur').textContent;
+      const label = document.querySelector('.caracteristique-date .caracteristique-label').textContent;
+      const expectedTpl = global.wp.i18n._n('%d jour', '%d jours', 1, 'chassesautresor-com');
+      expect(label).toBe('jours restants');
+      expect(valeur).toBe(expectedTpl.replace('%d', 1));
       const tzDetected = Intl.DateTimeFormat().resolvedOptions().timeZone;
       expect(typeof tzDetected).toBe('string');
       timezoneMock.unregister();

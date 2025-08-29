@@ -2688,25 +2688,6 @@ msgstr ""
 msgid "illimité"
 msgstr ""
 
-#: template-parts/chasse/chasse-affichage-complet.php:65
-#: assets/js/chasse-edit.js:806 assets/js/chasse-edit.js:815
-msgid "%d jour à attendre"
-msgid_plural "%d jours à attendre"
-msgstr[0] ""
-msgstr[1] ""
-
-#: template-parts/chasse/chasse-affichage-complet.php:70
-#: assets/js/chasse-edit.js:802
-msgid "terminée depuis %s"
-msgstr ""
-
-#: template-parts/chasse/chasse-affichage-complet.php:76
-#: assets/js/chasse-edit.js:810
-msgid "%d jour restant"
-msgid_plural "%d jours restants"
-msgstr[0] ""
-msgstr[1] ""
-
 #: wp-content/themes/chassesautresor/functions.php:347
 msgid "Créer un compte"
 msgstr ""
@@ -2714,3 +2695,30 @@ msgstr ""
 #: wp-login.php
 msgid "Politique de confidentialité"
 msgstr ""
+
+#: wp-content/themes/chassesautresor/template-parts/chasse/chasse-affichage-complet.php
+#: wp-content/themes/chassesautresor/assets/js/chasse-edit.js
+msgid "durée"
+msgstr ""
+
+#: wp-content/themes/chassesautresor/template-parts/chasse/chasse-affichage-complet.php
+#: wp-content/themes/chassesautresor/assets/js/chasse-edit.js
+msgid "début dans"
+msgstr ""
+
+#: wp-content/themes/chassesautresor/template-parts/chasse/chasse-affichage-complet.php
+#: wp-content/themes/chassesautresor/assets/js/chasse-edit.js
+msgid "terminée depuis"
+msgstr ""
+
+#: wp-content/themes/chassesautresor/template-parts/chasse/chasse-affichage-complet.php
+#: wp-content/themes/chassesautresor/assets/js/chasse-edit.js
+msgid "jours restants"
+msgstr ""
+
+#: wp-content/themes/chassesautresor/template-parts/chasse/chasse-affichage-complet.php
+#: wp-content/themes/chassesautresor/assets/js/chasse-edit.js
+msgid "%d jour"
+msgid_plural "%d jours"
+msgstr[0] ""
+msgstr[1] ""
