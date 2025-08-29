@@ -326,25 +326,28 @@ function cta_enqueue_login_styles(): void
         }
     }
 }
-add_action('login_enqueue_scripts', 'cta_enqueue_login_styles');
+add_action( 'login_enqueue_scripts', 'cta_enqueue_login_styles' );
 
 /**
- * Displays additional links on the login form.
+ * Filters the login form bottom output to add a registration link.
  *
  * @hook login_form_bottom
  *
- * @return void
+ * @param string $content Existing content displayed after the form.
+ * @return string
  */
-function cta_login_links() {
+function cta_login_links( $content ) {
     $registration_url = wp_registration_url();
 
-    printf(
+    $content .= sprintf(
         '<p class="cta-login-register"><a href="%1$s">%2$s</a></p>',
-        esc_url($registration_url),
-        esc_html( __( 'Créer un compte', 'chassesautresor-com' ) )
+        esc_url( $registration_url ),
+        esc_html__( 'Créer un compte', 'chassesautresor-com' )
     );
+
+    return $content;
 }
-add_action('login_form_bottom', 'cta_login_links');
+add_filter( 'login_form_bottom', 'cta_login_links' );
 
 // ----------------------------------------------------------
 // 📂 Chargement des fichiers fonctionnels organisés
