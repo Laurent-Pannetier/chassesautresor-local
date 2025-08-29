@@ -284,16 +284,6 @@ if ($edition_active && !$est_complet) {
         <div class="trait-droite"></div>
       </div>
         <?php
-        get_template_part(
-            'template-parts/chasse/chasse-partial-description',
-            null,
-            [
-                'description' => $infos_chasse['description'] ?? '',
-            ]
-        );
-        ?>
-
-        <?php
         $cta_data = $infos_chasse['cta_data'] ?? [];
         ?>
         <div class="chasse-cta-section cta-chasse">
@@ -384,7 +374,17 @@ if ($edition_active && !$est_complet) {
               <div class="cta-message" aria-live="polite"><?= $cta_data['cta_message']; ?></div>
             </div>
           <?php endif; ?>
-        </div>
+          </div>
+
+        <?php
+        get_template_part(
+            'template-parts/chasse/chasse-partial-description',
+            null,
+            [
+                'description' => $infos_chasse['description'] ?? '',
+            ]
+        );
+        ?>
 
         <?php if (!empty($titre_recompense) || (float) $valeur_recompense > 0 || !empty($lot)) : ?>
             <div class="chasse-lot-complet" style="margin-top: 30px;">
