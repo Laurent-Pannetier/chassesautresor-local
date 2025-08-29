@@ -94,7 +94,7 @@ window.mettreAJourResumeInfos = function () {
       const champ = ligne.dataset.champ;
       const blocEdition = document.querySelector(`.champ-enigme[data-champ="${champ}"]`);
 
-      let estRempli = false;
+      let estRempli = blocEdition && !blocEdition.classList.contains('champ-vide');
 
       // Règles spécifiques pour les énigmes
       if (champ === 'post_title') {
