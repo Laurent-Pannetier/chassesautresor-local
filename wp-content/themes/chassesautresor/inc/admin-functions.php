@@ -1900,6 +1900,17 @@ function traiter_validation_chasse_admin() {
                 'correction_chasse_' . $chasse_id,
                 $flash,
                 'warning',
+                true,
+                $chasse_id,
+                true
+            );
+            myaccount_add_persistent_message(
+                $uid,
+                'correction_info_chasse_' . $chasse_id,
+                __('Lorsque vous aurez terminé vos corrections, demandez sa validation.', 'chassesautresor-com'),
+                'info',
+                false,
+                $chasse_id,
                 true
             );
         }

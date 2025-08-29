@@ -2668,3 +2668,7 @@ msgstr ""
 #: inc/user-functions.php:706
 msgid "Section not found"
 msgstr ""
+
+#: wp-content/themes/chassesautresor/inc/admin-functions.php:1910
+msgid "Lorsque vous aurez terminé vos corrections, demandez sa validation."
+msgstr ""

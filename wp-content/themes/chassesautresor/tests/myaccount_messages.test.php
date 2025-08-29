@@ -180,6 +180,29 @@ if (!function_exists('home_url')) {
     }
 }
 
+if (!function_exists('get_queried_object_id')) {
+    function get_queried_object_id()
+    {
+        return $GLOBALS['test_current_post_id'] ?? 0;
+    }
+}
+
+if (!function_exists('get_post_type')) {
+    function get_post_type($post = null)
+    {
+        $post_id = $post ?? ($GLOBALS['test_current_post_id'] ?? 0);
+        return $GLOBALS['test_post_types'][$post_id] ?? 'post';
+    }
+}
+
+if (!function_exists('recuperer_id_chasse_associee')) {
+    function recuperer_id_chasse_associee($post_id = null)
+    {
+        $post_id = $post_id ?? 0;
+        return $GLOBALS['test_enigme_to_chasse'][$post_id] ?? 0;
+    }
+}
+
 if (!function_exists('esc_html__')) {
     function esc_html__($text, $domain = 'default')
     {
@@ -366,6 +389,7 @@ class MyAccountMessagesTest extends TestCase
             '_myaccount_messages',
             [
                 'correction_chasse_123' => ['text' => 'X', 'type' => 'info'],
+                'correction_info_chasse_123' => ['text' => 'Y', 'type' => 'info'],
             ]
         );
         update_user_meta(
@@ -373,6 +397,7 @@ class MyAccountMessagesTest extends TestCase
             '_myaccount_messages',
             [
                 'correction_chasse_123' => ['text' => 'X', 'type' => 'info'],
+                'correction_info_chasse_123' => ['text' => 'Y', 'type' => 'info'],
             ]
         );
 
@@ -380,6 +405,46 @@ class MyAccountMessagesTest extends TestCase
 
         $this->assertSame([], get_user_meta(1, '_myaccount_messages', true));
         $this->assertSame([], get_user_meta(2, '_myaccount_messages', true));
+    }
+
+    public function test_scoped_message_only_on_related_pages(): void
+    {
+        update_user_meta(
+            1,
+            '_myaccount_messages',
+            [
+                'scoped' => [
+                    'text'            => 'Info',
+                    'type'            => 'info',
+                    'chasse_scope'    => 42,
+                    'include_enigmes' => true,
+                ],
+            ]
+        );
+
+        $GLOBALS['test_current_post_id'] = 42;
+        $GLOBALS['test_post_types']      = [42 => 'chasse'];
+        $output = myaccount_get_important_messages();
+        $this->assertStringContainsString('Info', $output);
+
+        $GLOBALS['test_current_post_id'] = 100;
+        $GLOBALS['test_post_types']      = [100 => 'enigme'];
+        $GLOBALS['test_enigme_to_chasse'] = [100 => 42];
+        $output = myaccount_get_important_messages();
+        $this->assertStringContainsString('Info', $output);
+
+        $GLOBALS['test_current_post_id'] = 43;
+        $GLOBALS['test_post_types']      = [43 => 'chasse'];
+        $output = myaccount_get_important_messages();
+        $this->assertStringNotContainsString('Info', $output);
+
+        $GLOBALS['test_current_post_id'] = 101;
+        $GLOBALS['test_post_types']      = [101 => 'enigme'];
+        $GLOBALS['test_enigme_to_chasse'] = [101 => 43];
+        $output = myaccount_get_important_messages();
+        $this->assertStringNotContainsString('Info', $output);
+
+        delete_user_meta(1, '_myaccount_messages');
     }
 
     public function test_messages_are_styled(): void

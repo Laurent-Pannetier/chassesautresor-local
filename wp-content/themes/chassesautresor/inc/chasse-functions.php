@@ -613,6 +613,14 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
         ];
     }
 
+    if (peut_valider_chasse($chasse_id, $user_id)) {
+        return [
+            'cta_html'    => render_form_validation_chasse($chasse_id),
+            'cta_message' => '',
+            'type'        => 'validation',
+        ];
+    }
+
     // 🔐 Admin or organiser: disabled participation button
     if (current_user_can('administrator') || utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
         return [
@@ -894,13 +902,9 @@ function actualiser_cta_validation_chasse(): void
 
     ob_start();
     if (peut_valider_chasse($chasse_id, get_current_user_id())) {
-        echo '<div class="cta-chasse">';
-        $statut = get_field('chasse_cache_statut_validation', $chasse_id);
-        $msg = ($statut === 'correction')
-            ? 'Lorsque vous aurez terminé vos corrections, demandez sa validation :'
-            : 'Lorsque vous avez finalisé votre chasse, demandez sa validation :';
-        echo '<p>' . $msg . '</p>';
-        echo render_form_validation_chasse($chasse_id);
+        echo '<div class="cta-chasse-row">';
+        echo '<div class="cta-action">' . render_form_validation_chasse($chasse_id) . '</div>';
+        echo '<div class="cta-message" aria-live="polite"></div>';
         echo '</div>';
     }
     $html = ob_get_clean();

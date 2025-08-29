@@ -265,7 +265,9 @@ function myaccount_add_persistent_message(
     string $key,
     string $message,
     string $type = 'info',
-    bool $dismissible = false
+    bool $dismissible = false,
+    int $chasse_scope = 0,
+    bool $include_enigmes = false
 ): void {
     $messages = get_user_meta($user_id, '_myaccount_messages', true);
     if (!is_array($messages)) {
@@ -273,10 +275,16 @@ function myaccount_add_persistent_message(
     }
 
     $messages[$key] = [
-        'text'        => $message,
-        'type'        => $type,
-        'dismissible' => $dismissible,
+        'text'            => $message,
+        'type'            => $type,
+        'dismissible'     => $dismissible,
     ];
+
+    if ($chasse_scope > 0) {
+        $messages[$key]['chasse_scope']   = $chasse_scope;
+        $messages[$key]['include_enigmes'] = $include_enigmes;
+    }
+
     update_user_meta($user_id, '_myaccount_messages', $messages);
 }
 
@@ -328,6 +336,7 @@ function myaccount_clear_correction_message(int $chasse_id): void
 
     foreach ($user_ids as $uid) {
         myaccount_remove_persistent_message($uid, 'correction_chasse_' . $chasse_id);
+        myaccount_remove_persistent_message($uid, 'correction_info_chasse_' . $chasse_id);
     }
 }
 
@@ -343,6 +352,15 @@ function myaccount_get_persistent_messages(int $user_id): array
     $messages = get_user_meta($user_id, '_myaccount_messages', true);
     if (!is_array($messages)) {
         return [];
+    }
+
+    $current_id   = get_queried_object_id();
+    $current_type = get_post_type($current_id);
+    $current_chasse = 0;
+    if ($current_type === 'chasse') {
+        $current_chasse = $current_id;
+    } elseif ($current_type === 'enigme' && function_exists('recuperer_id_chasse_associee')) {
+        $current_chasse = (int) recuperer_id_chasse_associee($current_id);
     }
 
     $tentatives = [];
@@ -366,6 +384,19 @@ function myaccount_get_persistent_messages(int $user_id): array
     $output = [];
     foreach ($messages as $key => $msg) {
         if (is_array($msg) && isset($msg['text'])) {
+            $scope = isset($msg['chasse_scope']) ? (int) $msg['chasse_scope'] : 0;
+            $include_enigmes = !empty($msg['include_enigmes']);
+            if ($scope) {
+                if ($scope !== $current_chasse) {
+                    continue;
+                }
+                if (!$include_enigmes && $current_type === 'enigme') {
+                    continue;
+                }
+            } elseif ($current_type === 'enigme') {
+                continue;
+            }
+
             $output[] = [
                 'key'         => (string) $key,
                 'text'        => (string) $msg['text'],
