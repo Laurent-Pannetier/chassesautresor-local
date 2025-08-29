@@ -323,6 +323,17 @@
   z-index: 2;
 }
 
+.carte-ajout-wrapper .carte-help-icon {
+  color: var(--color-background-button);
+  border-color: var(--color-background-button);
+}
+
+.carte-ajout-wrapper .carte-help-icon:hover,
+.carte-ajout-wrapper .carte-help-icon:focus {
+  color: var(--color-background-button-hover);
+  border-color: var(--color-background-button-hover);
+}
+
 
 /* ========== ✅ Indicateurs de complétion ========== */
 .carte-complete {
