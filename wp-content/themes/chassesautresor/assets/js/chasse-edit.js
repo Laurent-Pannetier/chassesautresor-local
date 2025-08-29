@@ -1009,8 +1009,9 @@ function initChampNbGagnants() {
       mettreAJourAffichageNbGagnants(postId, inputNb.value.trim());
     } else {
       actions.style.display = 'none';
-      inputNb.disabled = true;
       inputNb.value = '0';
+      inputNb.dispatchEvent(new Event('input', { bubbles: true }));
+      inputNb.disabled = true;
       mettreAJourAffichageNbGagnants(postId, 0);
     }
   }
