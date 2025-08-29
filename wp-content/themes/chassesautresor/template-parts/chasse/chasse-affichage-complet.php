@@ -357,15 +357,7 @@ if ($edition_active && !$est_complet) {
           </span>
         </div>
 
-        <?php if ($nb_joueurs > 0) : ?>
-          <div class="caracteristique">
-            <span class="caracteristique-label"><?= esc_html__('Joueurs', 'chassesautresor-com'); ?></span>
-            <span class="caracteristique-valeur"><?= sprintf(
-                _n('%d participant', '%d participants', $nb_joueurs, 'chassesautresor-com'),
-                $nb_joueurs
-            ); ?></span>
-          </div>
-          <?php if ($top_avances['nb'] > 0 && $top_avances['enigmes'] > 0) : ?>
+        <?php if ($top_avances['nb'] > 0 && $top_avances['enigmes'] > 0) : ?>
             <?php
             $txt_top = sprintf(
                 _n(
@@ -382,8 +374,7 @@ if ($edition_active && !$est_complet) {
               <span class="caracteristique-label"><?= esc_html__('Les + avancés', 'chassesautresor-com'); ?></span>
               <span class="caracteristique-valeur"><?= esc_html($txt_top); ?></span>
             </div>
-          <?php endif; ?>
-          <?php endif; ?>
+        <?php endif; ?>
           </div>
 
           <?php if (($cta_data['type'] ?? '') !== 'engage') : ?>
