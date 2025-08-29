@@ -52,6 +52,33 @@ $date_fin_formatee   = $illimitee
     ? __('Illimitée', 'chassesautresor-com')
     : ($date_fin ? formater_date($date_fin) : __('Non spécifiée', 'chassesautresor-com'));
 
+$now          = current_time('timestamp');
+$message_date = '';
+if ($illimitee) {
+    $message_date = __('illimitée', 'chassesautresor-com');
+} else {
+    $debut_ts = $date_debut ? strtotime($date_debut) : null;
+    $fin_ts   = $date_fin ? strtotime($date_fin) : null;
+    if ($debut_ts && $now < $debut_ts) {
+        $diff = (int) ceil(($debut_ts - $now) / DAY_IN_SECONDS);
+        $message_date = sprintf(
+            _n('%d jour à attendre', '%d jours à attendre', $diff, 'chassesautresor-com'),
+            $diff
+        );
+    } elseif ($fin_ts && $now > $fin_ts) {
+        $message_date = sprintf(
+            __('terminée depuis %s', 'chassesautresor-com'),
+            wp_date('Y-m-d', $fin_ts)
+        );
+    } elseif ($fin_ts) {
+        $diff = (int) ceil(($fin_ts - $now) / DAY_IN_SECONDS);
+        $message_date = sprintf(
+            _n('%d jour restant', '%d jours restants', $diff, 'chassesautresor-com'),
+            $diff
+        );
+    }
+}
+
 // Edition
 $edition_active = utilisateur_peut_modifier_post($chasse_id);
 
@@ -271,6 +298,10 @@ if ($edition_active && !$est_complet) {
         ?>
         <div class="chasse-cta-section cta-chasse">
           <div class="chasse-caracteristiques">
+          <div class="caracteristique caracteristique-date">
+            <span class="caracteristique-label"><?= esc_html__('Date', 'chassesautresor-com'); ?></span>
+            <span class="caracteristique-valeur"><?= esc_html($message_date); ?></span>
+          </div>
           <?php if ($mode_fin === 'automatique') : ?>
             <div class="caracteristique">
               <span class="caracteristique-label"><?= esc_html__('Limite', 'chassesautresor-com'); ?></span>

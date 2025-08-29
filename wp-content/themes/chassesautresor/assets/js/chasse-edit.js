@@ -158,6 +158,9 @@ window.rafraichirCarteSolutions = rafraichirCarteSolutions;
   erreurFin = document.getElementById('erreur-date-fin');
   toggleDateFin = document.getElementById('date-fin-limitee');
   mettreAJourCaracteristiqueDate();
+  inputDateDebut?.addEventListener('change', mettreAJourCaracteristiqueDate);
+  inputDateFin?.addEventListener('change', mettreAJourCaracteristiqueDate);
+  toggleDateFin?.addEventListener('change', mettreAJourCaracteristiqueDate);
 
   // ==============================
   // 🟢 Initialisation des champs
@@ -780,14 +783,41 @@ function afficherErreurGlobale(message) {
 
 function mettreAJourCaracteristiqueDate() {
   const span = document.querySelector('.caracteristique-date .caracteristique-valeur');
-  if (!span || !inputDateDebut || !inputDateFin) return;
+  if (!span || !inputDateDebut) return;
   const debut = parseDateDMY(inputDateDebut.value);
-  const fin = parseDateDMY(inputDateFin.value);
-  if (isNaN(debut.getTime()) || isNaN(fin.getTime())) return;
-  const diff = Math.round((fin.getTime() - debut.getTime()) / (1000 * 60 * 60 * 24));
-  const label = diff > 1 ? wp.i18n.__('jours', 'chassesautresor-com') : wp.i18n.__('jour', 'chassesautresor-com');
-  span.textContent = `${diff} ${label}`;
+  const fin = parseDateDMY(inputDateFin?.value || '');
+  const illimite = toggleDateFin ? !toggleDateFin.checked : false;
+
+  if (illimite) {
+    span.textContent = wp.i18n.__('illimitée', 'chassesautresor-com');
+    return;
+  }
+  if (isNaN(debut.getTime())) return;
+
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  if (!isNaN(fin.getTime())) {
+    if (today > fin) {
+      const tpl = wp.i18n.__('terminée depuis %s', 'chassesautresor-com');
+      span.textContent = tpl.replace('%s', fin.toISOString().slice(0, 10));
+    } else if (today < debut) {
+      const diff = Math.ceil((debut - today) / (1000 * 60 * 60 * 24));
+      const tpl = wp.i18n._n('%d jour à attendre', '%d jours à attendre', diff, 'chassesautresor-com');
+      span.textContent = tpl.replace('%d', diff);
+    } else {
+      const diff = Math.ceil((fin - today) / (1000 * 60 * 60 * 24));
+      const tpl = wp.i18n._n('%d jour restant', '%d jours restants', diff, 'chassesautresor-com');
+      span.textContent = tpl.replace('%d', diff);
+    }
+  } else if (today < debut) {
+    const diff = Math.ceil((debut - today) / (1000 * 60 * 60 * 24));
+    const tpl = wp.i18n._n('%d jour à attendre', '%d jours à attendre', diff, 'chassesautresor-com');
+    span.textContent = tpl.replace('%d', diff);
+  }
 }
+
+window.mettreAJourCaracteristiqueDate = mettreAJourCaracteristiqueDate;
 
 function mettreAJourBadgeCoutChasse(postId, cout) {
   const container = document.querySelector('.header-chasse__image');
