@@ -2676,3 +2676,27 @@ msgstr ""
 #: wp-content/themes/chassesautresor/inc/chasse-functions.php:853
 msgid "Demander la validation"
 msgstr ""
+
+#: template-parts/chasse/chasse-affichage-complet.php:58
+#: assets/js/chasse-edit.js:792
+msgid "illimitée"
+msgstr ""
+
+#: template-parts/chasse/chasse-affichage-complet.php:65
+#: assets/js/chasse-edit.js:806 assets/js/chasse-edit.js:815
+msgid "%d jour à attendre"
+msgid_plural "%d jours à attendre"
+msgstr[0] ""
+msgstr[1] ""
+
+#: template-parts/chasse/chasse-affichage-complet.php:70
+#: assets/js/chasse-edit.js:802
+msgid "terminée depuis %s"
+msgstr ""
+
+#: template-parts/chasse/chasse-affichage-complet.php:76
+#: assets/js/chasse-edit.js:810
+msgid "%d jour restant"
+msgid_plural "%d jours restants"
+msgstr[0] ""
+msgstr[1] ""
