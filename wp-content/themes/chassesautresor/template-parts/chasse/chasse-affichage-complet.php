@@ -398,17 +398,41 @@ if ($edition_active && !$est_complet) {
             <div class="chasse-lot-complet">
                 <h3><?= '🏆 ' . esc_html__('Récompense', 'chassesautresor-com'); ?></h3>
 
-                <?php if (!empty($titre_recompense)) : ?>
-                    <p class="lot-titre"><?= esc_html($titre_recompense); ?></p>
-                <?php endif; ?>
+                <div class="champ-chasse champ-lot-titre <?= empty($titre_recompense) ? 'champ-vide' : 'champ-rempli'; ?>"
+                    data-champ="chasse_infos_recompense_titre"
+                    data-cpt="chasse"
+                    data-post-id="<?= esc_attr($chasse_id); ?>">
+                    <div class="champ-affichage">
+                        <?php if (!empty($titre_recompense)) : ?>
+                            <p class="lot-titre"><?= esc_html($titre_recompense); ?></p>
+                        <?php endif; ?>
+                    </div>
+                    <div class="champ-feedback"></div>
+                </div>
 
-                <?php if ((float) $valeur_recompense > 0) : ?>
-                    <p class="lot-valeur"><span class="badge-recompense avec-recompense"><?= esc_html($valeur_recompense); ?> €</span></p>
-                <?php endif; ?>
+                <div class="champ-chasse champ-lot-valeur <?= (float) $valeur_recompense > 0 ? 'champ-rempli' : 'champ-vide'; ?>"
+                    data-champ="chasse_infos_recompense_valeur"
+                    data-cpt="chasse"
+                    data-post-id="<?= esc_attr($chasse_id); ?>">
+                    <div class="champ-affichage">
+                        <?php if ((float) $valeur_recompense > 0) : ?>
+                            <p class="lot-valeur"><span class="badge-recompense avec-recompense"><?= esc_html($valeur_recompense); ?> €</span></p>
+                        <?php endif; ?>
+                    </div>
+                    <div class="champ-feedback"></div>
+                </div>
 
-                <?php if (!empty($lot)) : ?>
-                    <p class="lot-description"><?= wp_kses_post($lot); ?></p>
-                <?php endif; ?>
+                <div class="champ-chasse champ-lot-description <?= empty($lot) ? 'champ-vide' : 'champ-rempli'; ?>"
+                    data-champ="chasse_lot"
+                    data-cpt="chasse"
+                    data-post-id="<?= esc_attr($chasse_id); ?>">
+                    <div class="champ-affichage">
+                        <?php if (!empty($lot)) : ?>
+                            <p class="lot-description"><?= wp_kses_post($lot); ?></p>
+                        <?php endif; ?>
+                    </div>
+                    <div class="champ-feedback"></div>
+                </div>
             </div>
         <?php endif; ?>
 
