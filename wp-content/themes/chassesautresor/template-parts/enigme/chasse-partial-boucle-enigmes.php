@@ -18,6 +18,7 @@ $utilisateur_id = get_current_user_id();
 if (!chasse_est_visible_pour_utilisateur($chasse_id, $utilisateur_id)) return;
 
 $est_orga_associe = $args['est_orga_associe'] ?? utilisateur_est_organisateur_associe_a_chasse($utilisateur_id, $chasse_id);
+$show_help_icon  = $args['show_help_icon'] ?? false;
 
 $autorise_boucle = (
   user_can($utilisateur_id, 'manage_options') ||
@@ -155,6 +156,7 @@ foreach ($posts as $p) {
         'disabled'        => !$complete,
         'highlight_pulse' => $highlight_pulse,
         'use_button'      => false,
+        'show_help_icon'  => $show_help_icon,
       ]);
     }
     ?>

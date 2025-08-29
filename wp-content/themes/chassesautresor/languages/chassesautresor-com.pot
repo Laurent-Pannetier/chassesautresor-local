@@ -1167,12 +1167,17 @@ msgstr ""
 msgid "Chasse introuvable."
 msgstr ""
 
-#: single-chasse.php:135
+#: template-parts/enigme/chasse-partial-ajout-enigme.php:39
 msgid "Votre chasse se termine automatiquement ; ajoutez une énigme à validation manuelle ou automatique."
 msgstr ""
 
 #: single-chasse.php:167
 msgid "Vous n’avez pas assez de points pour engager cette énigme."
+msgstr ""
+
+#: template-parts/enigme/chasse-partial-ajout-enigme.php:37
+#: template-parts/enigme/chasse-partial-ajout-enigme.php:38
+msgid "Validation en ligne nécessaire"
 msgstr ""
 
 #: single-organisateur.php:84

@@ -8,6 +8,7 @@
  * @param string $classes    CSS classes to apply on the button.
  * @param string $variant    Visual variant (aide, info, aide-small).
  * @param string $icon       Font Awesome classes for the icon.
+ * @param string $background Optional background tone (light, dark) to adjust icon color.
  * @param array  $attributes Additional HTML attributes for the button.
  */
 
@@ -22,6 +23,7 @@ $args = wp_parse_args(
         'classes'    => '',
         'variant'    => 'aide',
         'icon'       => '',
+        'background' => '',
         'attributes' => [],
     ]
 );
@@ -32,6 +34,7 @@ $message    = $args['message'];
 $classes    = $args['classes'];
 $variant    = $args['variant'];
 $icon       = $args['icon'];
+$background = $args['background'];
 $attributes = $args['attributes'];
 
 if ($icon === '') {
@@ -49,6 +52,9 @@ if ($variant !== '') {
     $classes = trim('help-icon-button help-icon--' . $variant . ' ' . $classes);
 } else {
     $classes = trim('help-icon-button ' . $classes);
+}
+if ($background !== '') {
+    $classes = trim($classes . ' help-icon--bg-' . $background);
 }
 if ($icon !== '') {
     $attributes['data-icon'] = $icon;

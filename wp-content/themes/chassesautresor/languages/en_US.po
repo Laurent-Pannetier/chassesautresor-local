@@ -1167,13 +1167,18 @@ msgstr ""
 msgid "Chasse introuvable."
 msgstr "Hunting not found."
 
-#: single-chasse.php:135
+#: template-parts/enigme/chasse-partial-ajout-enigme.php:39
 msgid ""
 "Votre chasse se termine automatiquement ; ajoutez une énigme à validation "
 "manuelle ou automatique."
 msgstr ""
 "Your hunt ends automatically; add a manually or automatically validated "
 "puzzle."
+
+#: template-parts/enigme/chasse-partial-ajout-enigme.php:37
+#: template-parts/enigme/chasse-partial-ajout-enigme.php:38
+msgid "Validation en ligne nécessaire"
+msgstr "Online validation required"
 
 #: single-chasse.php:167
 #, fuzzy
