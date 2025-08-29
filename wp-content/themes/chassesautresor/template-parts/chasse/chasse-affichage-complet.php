@@ -402,7 +402,7 @@ if ($edition_active && !$est_complet) {
                 </h3>
 
                 <?php if (!empty($lot)) : ?>
-                    <p><strong><?= esc_html__('Description complète :', 'chassesautresor-com'); ?></strong><br><?= wp_kses_post($lot); ?></p>
+                    <p><?= wp_kses_post($lot); ?></p>
                 <?php endif; ?>
             </div>
         <?php endif; ?>
