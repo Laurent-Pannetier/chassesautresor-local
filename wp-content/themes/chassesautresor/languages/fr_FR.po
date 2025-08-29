@@ -2650,6 +2650,14 @@ msgstr "Non autorisé"
 msgid "Section not found"
 msgstr "Section introuvable"
 
+#: wp-content/themes/chassesautresor/inc/admin-functions.php:1910
+msgid "Votre chasse est éligible à une %1$sdemande de validation%2$s."
+msgstr "Votre chasse est éligible à une %1$sdemande de validation%2$s."
+
+#: wp-content/themes/chassesautresor/inc/chasse-functions.php:853
+msgid "Demander la validation"
+msgstr "Demander la validation"
+
 #: template-parts/chasse/chasse-affichage-complet.php:58
 #: assets/js/chasse-edit.js:792
 msgid "illimitée"

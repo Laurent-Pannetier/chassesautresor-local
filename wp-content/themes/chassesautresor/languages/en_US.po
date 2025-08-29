@@ -2791,6 +2791,14 @@ msgstr "Unauthorized"
 msgid "Section not found"
 msgstr "Section not found"
 
+#: wp-content/themes/chassesautresor/inc/admin-functions.php:1910
+msgid "Votre chasse est éligible à une %1$sdemande de validation%2$s."
+msgstr "Your hunt is eligible for a %1$svalidation request%2$s."
+
+#: wp-content/themes/chassesautresor/inc/chasse-functions.php:853
+msgid "Demander la validation"
+msgstr "Request validation"
+
 #: template-parts/chasse/chasse-affichage-complet.php:58
 #: assets/js/chasse-edit.js:792
 msgid "illimitée"
