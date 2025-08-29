@@ -373,6 +373,7 @@ describe('mettreAJourCaracteristiqueDate time zones', () => {
       timezoneMock.register(tz);
       jest.resetModules();
 
+      document.documentElement.lang = 'fr';
       document.body.innerHTML = `
         <span class="caracteristique-date">
           <span class="caracteristique-label"></span>

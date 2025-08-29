@@ -806,6 +806,13 @@ function mettreAJourCaracteristiqueDate() {
   const labelSpan = container.querySelector('.caracteristique-label');
   const valueSpan = container.querySelector('.caracteristique-valeur');
   if (!labelSpan || !valueSpan) return;
+  const lang = document.documentElement.lang || '';
+  if (
+    !lang.startsWith('fr') &&
+    wp.i18n.__('jours restants', 'chassesautresor-com') === 'jours restants'
+  ) {
+    return;
+  }
   const debut = parseDateDMY(inputDateDebut.value);
   const fin = parseDateDMY(inputDateFin?.value || '');
   if (!isNaN(debut.getTime())) debut.setHours(0, 0, 0, 0);

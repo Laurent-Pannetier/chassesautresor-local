@@ -81,45 +81,56 @@ add_filter('tiny_mce_before_init', function ($init) {
  */
 function enqueue_core_edit_scripts(array $additional = [])
 {
-  static $versions = [];
+    static $versions = [];
 
-  $theme_uri = get_stylesheet_directory_uri();
-  $theme_dir = get_stylesheet_directory();
+    $theme_uri = get_stylesheet_directory_uri();
+    $theme_dir = get_stylesheet_directory();
+    $lang_dir  = get_template_directory() . '/languages';
 
-  // Déclare les fichiers dans l’ordre des dépendances internes
-  $core_scripts = [
-    'helpers'          => 'helpers.js',
-    'ajax'             => 'ajax.js',
-    'ui'               => 'ui.js',
-    'resume'           => 'resume.js',
-    'image-utils'      => 'image-utils.js',
-    'date-fields'      => 'date-fields.js',
-    'champ-init'       => 'champ-init.js',
-    'champ-date-hooks' => 'champ-date-hooks.js',
-    'modal-tabs'       => 'modal-tabs.js',
-    'pager'            => 'pager.js',
-  ];
+    $uses_i18n = static function ($file) {
+        return file_exists($file) && strpos(file_get_contents($file), 'wp.i18n') !== false;
+    };
 
-  $previous_handle = null;
+    // Déclare les fichiers dans l’ordre des dépendances internes
+    $core_scripts = [
+        'helpers'          => 'helpers.js',
+        'ajax'             => 'ajax.js',
+        'ui'               => 'ui.js',
+        'resume'           => 'resume.js',
+        'image-utils'      => 'image-utils.js',
+        'date-fields'      => 'date-fields.js',
+        'champ-init'       => 'champ-init.js',
+        'champ-date-hooks' => 'champ-date-hooks.js',
+        'modal-tabs'       => 'modal-tabs.js',
+        'pager'            => 'pager.js',
+    ];
 
-  foreach ($core_scripts as $handle => $filename) {
-    $path = "/assets/js/core/{$filename}";
-    $file = $theme_dir . $path;
+    $previous_handle = null;
 
-    if (!isset($versions[$handle])) {
-      $versions[$handle] = file_exists($file) ? filemtime($file) : null;
+    foreach ($core_scripts as $handle => $filename) {
+        $path = "/assets/js/core/{$filename}";
+        $file = $theme_dir . $path;
+
+        if (!isset($versions[$handle])) {
+            $versions[$handle] = file_exists($file) ? filemtime($file) : null;
+        }
+
+        $deps = $previous_handle ? [$previous_handle] : [];
+        if ($uses_i18n($file)) {
+            $deps[] = 'wp-i18n';
+        }
+
+        wp_enqueue_script(
+            $handle,
+            $theme_uri . $path,
+            $deps, // le script dépend du précédent
+            $versions[$handle],
+            true
+        );
+        wp_set_script_translations($handle, 'chassesautresor-com', $lang_dir);
+
+        $previous_handle = $handle; // pour chaîner la dépendance
     }
-
-    wp_enqueue_script(
-      $handle,
-      $theme_uri . $path,
-      $previous_handle ? [$previous_handle] : [], // le script dépend du précédent
-      $versions[$handle],
-      true
-    );
-
-    $previous_handle = $handle; // pour chaîner la dépendance
-  }
 
   // Expose locale and common texts to JS (for date formatting, etc.).
   // Use WordPress current locale and convert underscore to hyphen for Intl APIs.
@@ -147,14 +158,19 @@ function enqueue_core_edit_scripts(array $additional = [])
       $versions[$handle] = file_exists($file) ? filemtime($file) : null;
     }
 
+    $deps = ['helpers', 'ajax', 'ui', 'champ-init'];
+    if ($uses_i18n($file)) {
+      $deps[] = 'wp-i18n';
+    }
+
     wp_enqueue_script(
       $handle,
       $theme_uri . $path,
-      ['helpers', 'ajax', 'ui', 'champ-init'],
+      $deps,
       $versions[$handle],
       true
     );
-    wp_set_script_translations($handle, 'chassesautresor-com');
+    wp_set_script_translations($handle, 'chassesautresor-com', $lang_dir);
     if ($handle === 'indices-create') {
       wp_localize_script(
         'indices-create',
