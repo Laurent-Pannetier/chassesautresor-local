@@ -1289,16 +1289,28 @@ window.mettreAJourEtatIntroChasse = function () {
 // ================================
 function mettreAJourAffichageNbGagnants(postId, nb) {
   const nbGagnantsAffichage = document.querySelector(`.nb-gagnants-affichage[data-post-id="${postId}"]`);
-  if (!nbGagnantsAffichage) return;
+  const container = nbGagnantsAffichage?.closest('.caracteristique');
+  const labelSpan = container?.querySelector('.caracteristique-label');
+  if (!nbGagnantsAffichage || !labelSpan) return;
+
+  const lang = document.documentElement.lang || '';
+  if (
+    !lang.startsWith('fr') &&
+    wp.i18n.__('gagnants', 'chassesautresor-com') === 'gagnants'
+  ) {
+    return;
+  }
 
   const valeur = parseInt(nb, 10);
   if (valeur === 0) {
     nbGagnantsAffichage.textContent = wp.i18n.__('illimitée', 'chassesautresor-com');
+    labelSpan.textContent = wp.i18n.__('gagnants', 'chassesautresor-com');
   } else {
     nbGagnantsAffichage.textContent = wp.i18n.sprintf(
       wp.i18n._n('%d gagnant', '%d gagnants', valeur, 'chassesautresor-com'),
       valeur
     );
+    labelSpan.textContent = wp.i18n.__('limite', 'chassesautresor-com');
   }
 }
 
