@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: chassesautresor.com 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/chassesautresor\n"
 "POT-Creation-Date: 2025-08-28T06:27:25+00:00\n"
-"PO-Revision-Date: 2025-08-23 08:28+0000\n"
+"PO-Revision-Date: 2025-08-29 03:57+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: en_US\n"
@@ -2780,8 +2780,8 @@ msgstr "unlimited"
 #: assets/js/chasse-edit.js:806 assets/js/chasse-edit.js:815
 msgid "%d jour à attendre"
 msgid_plural "%d jours à attendre"
-msgstr[0] "%d day to wait"
-msgstr[1] "%d days to wait"
+msgstr[0] "%d day to go"
+msgstr[1] "%d days to go"
 
 #: template-parts/chasse/chasse-affichage-complet.php:70
 #: assets/js/chasse-edit.js:802
