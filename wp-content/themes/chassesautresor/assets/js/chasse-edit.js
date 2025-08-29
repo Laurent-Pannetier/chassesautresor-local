@@ -801,16 +801,25 @@ function afficherErreurGlobale(message) {
 }
 
 function mettreAJourCaracteristiqueDate() {
-  const span = document.querySelector('.caracteristique-date .caracteristique-valeur');
-  if (!span || !inputDateDebut) return;
+  const container = document.querySelector('.caracteristique-date');
+  if (!container || !inputDateDebut) return;
+  const labelSpan = container.querySelector('.caracteristique-label');
+  const valueSpan = container.querySelector('.caracteristique-valeur');
+  if (!labelSpan || !valueSpan) return;
   const debut = parseDateDMY(inputDateDebut.value);
   const fin = parseDateDMY(inputDateFin?.value || '');
   if (!isNaN(debut.getTime())) debut.setHours(0, 0, 0, 0);
   if (!isNaN(fin.getTime())) fin.setHours(0, 0, 0, 0);
   const illimite = toggleDateFin ? !toggleDateFin.checked : false;
 
+  labelSpan.textContent = '';
+  valueSpan.textContent = '';
+  container.style.display = 'none';
+
   if (illimite) {
-    span.textContent = wp.i18n.__('illimitée', 'chassesautresor-com');
+    labelSpan.textContent = wp.i18n.__('durée', 'chassesautresor-com');
+    valueSpan.textContent = wp.i18n.__('illimitée', 'chassesautresor-com');
+    container.style.display = '';
     return;
   }
   if (isNaN(debut.getTime())) return;
@@ -820,31 +829,33 @@ function mettreAJourCaracteristiqueDate() {
 
   if (!isNaN(fin.getTime())) {
     if (today > fin) {
-      const tpl = wp.i18n.__('terminée depuis %s', 'chassesautresor-com');
-      span.textContent = tpl.replace('%s', fin.toISOString().slice(0, 10));
+      labelSpan.textContent = wp.i18n.__('terminée depuis', 'chassesautresor-com');
+      valueSpan.textContent = fin.toISOString().slice(0, 10);
     } else if (today < debut) {
       const diff = Math.max(
         0,
         Math.floor((debut - today) / (1000 * 60 * 60 * 24))
       );
-      const tpl = wp.i18n._n('%d jour à attendre', '%d jours à attendre', diff, 'chassesautresor-com');
-      span.textContent = tpl.replace('%d', diff);
+      labelSpan.textContent = wp.i18n.__('début dans', 'chassesautresor-com');
+      const tpl = wp.i18n._n('%d jour', '%d jours', diff, 'chassesautresor-com');
+      valueSpan.textContent = tpl.replace('%d', diff);
     } else {
-      const diff = Math.max(
-        0,
-        Math.floor((fin - today) / (1000 * 60 * 60 * 24))
-      );
-      const tpl = wp.i18n._n('%d jour restant', '%d jours restants', diff, 'chassesautresor-com');
-      span.textContent = tpl.replace('%d', diff);
+      labelSpan.textContent = wp.i18n.__("en cours jusqu'au", 'chassesautresor-com');
+      valueSpan.textContent = fin.toISOString().slice(0, 10);
     }
   } else if (today < debut) {
     const diff = Math.max(
       0,
       Math.floor((debut - today) / (1000 * 60 * 60 * 24))
     );
-    const tpl = wp.i18n._n('%d jour à attendre', '%d jours à attendre', diff, 'chassesautresor-com');
-    span.textContent = tpl.replace('%d', diff);
+    labelSpan.textContent = wp.i18n.__('début dans', 'chassesautresor-com');
+    const tpl = wp.i18n._n('%d jour', '%d jours', diff, 'chassesautresor-com');
+    valueSpan.textContent = tpl.replace('%d', diff);
+  } else {
+    return;
   }
+
+  container.style.display = '';
 }
 
 window.mettreAJourCaracteristiqueDate = mettreAJourCaracteristiqueDate;

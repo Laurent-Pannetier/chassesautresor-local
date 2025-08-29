@@ -52,30 +52,28 @@ $date_fin_formatee   = $illimitee
     ? __('Illimitée', 'chassesautresor-com')
     : ($date_fin ? formater_date($date_fin) : __('Non spécifiée', 'chassesautresor-com'));
 
-$now          = current_time('timestamp');
-$message_date = '';
+$now        = current_time('timestamp');
+$date_label = '';
+$date_value = '';
 if ($illimitee) {
-    $message_date = __('illimitée', 'chassesautresor-com');
+    $date_label = __('durée', 'chassesautresor-com');
+    $date_value = __('illimitée', 'chassesautresor-com');
 } else {
     $debut_ts = $date_debut ? strtotime($date_debut) : null;
     $fin_ts   = $date_fin ? strtotime($date_fin) : null;
     if ($debut_ts && $now < $debut_ts) {
-        $diff = (int) ceil(($debut_ts - $now) / DAY_IN_SECONDS);
-        $message_date = sprintf(
-            _n('%d jour à attendre', '%d jours à attendre', $diff, 'chassesautresor-com'),
+        $diff       = (int) ceil(($debut_ts - $now) / DAY_IN_SECONDS);
+        $date_label = __('début dans', 'chassesautresor-com');
+        $date_value = sprintf(
+            _n('%d jour', '%d jours', $diff, 'chassesautresor-com'),
             $diff
         );
     } elseif ($fin_ts && $now > $fin_ts) {
-        $message_date = sprintf(
-            __('terminée depuis %s', 'chassesautresor-com'),
-            wp_date('Y-m-d', $fin_ts)
-        );
+        $date_label = __('terminée depuis', 'chassesautresor-com');
+        $date_value = formater_date($date_fin);
     } elseif ($fin_ts) {
-        $diff = (int) ceil(($fin_ts - $now) / DAY_IN_SECONDS);
-        $message_date = sprintf(
-            _n('%d jour restant', '%d jours restants', $diff, 'chassesautresor-com'),
-            $diff
-        );
+        $date_label = __('en cours jusqu\'au', 'chassesautresor-com');
+        $date_value = formater_date($date_fin);
     }
 }
 
@@ -288,11 +286,13 @@ if ($edition_active && !$est_complet) {
         ?>
         <div class="chasse-cta-section cta-chasse">
           <div class="chasse-caracteristiques">
-            <div class="caracteristique caracteristique-date">
-              <span class="caracteristique-icone" aria-hidden="true">📅</span>
-              <span class="caracteristique-label"><?= esc_html__('Date', 'chassesautresor-com'); ?></span>
-              <span class="caracteristique-valeur"><?= esc_html($message_date); ?></span>
-            </div>
+            <?php if ($date_label && $date_value) : ?>
+              <div class="caracteristique caracteristique-date">
+                <span class="caracteristique-icone" aria-hidden="true">📅</span>
+                <span class="caracteristique-label"><?= esc_html($date_label); ?></span>
+                <span class="caracteristique-valeur"><?= esc_html($date_value); ?></span>
+              </div>
+            <?php endif; ?>
             <?php if ($mode_fin === 'automatique') : ?>
               <div class="caracteristique caracteristique-limite">
                 <span class="caracteristique-icone" aria-hidden="true">🚫</span>

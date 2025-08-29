@@ -374,7 +374,10 @@ describe('mettreAJourCaracteristiqueDate time zones', () => {
       jest.resetModules();
 
       document.body.innerHTML = `
-        <span class="caracteristique-date"><span class="caracteristique-valeur"></span></span>
+        <span class="caracteristique-date">
+          <span class="caracteristique-label"></span>
+          <span class="caracteristique-valeur"></span>
+        </span>
         <input id="chasse-date-debut" />
         <input id="chasse-date-fin" />
         <input type="checkbox" id="date-fin-limitee" checked />
@@ -388,14 +391,21 @@ describe('mettreAJourCaracteristiqueDate time zones', () => {
       const todayStr = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
       const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
       const tomorrowStr = `${tomorrow.getFullYear()}-${pad(tomorrow.getMonth() + 1)}-${pad(tomorrow.getDate())}`;
+      const expectedIso = new Date(
+        tomorrow.getFullYear(),
+        tomorrow.getMonth(),
+        tomorrow.getDate()
+      ).toISOString().slice(0, 10);
 
       document.getElementById('chasse-date-debut').value = `${todayStr} 23:00`;
       document.getElementById('chasse-date-fin').value = `${tomorrowStr}`;
 
       global.mettreAJourCaracteristiqueDate();
 
-      const text = document.querySelector('.caracteristique-date .caracteristique-valeur').textContent;
-      expect(text).toBe('1 jour restant');
+      const valeur = document.querySelector('.caracteristique-date .caracteristique-valeur').textContent;
+      const label = document.querySelector('.caracteristique-date .caracteristique-label').textContent;
+      expect(label).toBe("en cours jusqu'au");
+      expect(valeur).toBe(expectedIso);
       const tzDetected = Intl.DateTimeFormat().resolvedOptions().timeZone;
       expect(typeof tzDetected).toBe('string');
       timezoneMock.unregister();
