@@ -365,8 +365,11 @@ function myaccount_maybe_add_validation_message(): void
         return;
     }
 
+    verifier_ou_mettre_a_jour_cache_complet($chasse_id);
+
     $user_id = get_current_user_id();
     if (!peut_valider_chasse($chasse_id, $user_id)) {
+        myaccount_remove_persistent_message($user_id, 'correction_info_chasse_' . $chasse_id);
         return;
     }
 
