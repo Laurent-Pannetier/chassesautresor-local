@@ -120,10 +120,13 @@ body.login {
 }
 
 #login .wp-login-logo a {
-        background-size: contain;
-        width: 80px;
-        height: 80px;
+        display: block;
         margin: 0 auto;
+}
+
+#login .wp-login-logo img {
+        max-width: 80px;
+        height: auto;
 }
 
 #login .login-title {
@@ -250,13 +253,30 @@ CSS
 	 */
         do_action( 'login_header' );
         ?>
-       <div id="login">
-               <div class="wp-login-logo">
-                       <a href="<?php echo esc_url( $login_header_url ); ?>"><?php echo $login_header_text; ?></a>
-               </div>
-       <?php if ( 'confirm_admin_email' !== $action && ! empty( $title ) ) : ?>
-               <h1 class="login-title"><?php echo $title; ?></h1>
-       <?php endif; ?>
+      <div id="login">
+              <div class="wp-login-logo">
+                      <?php
+                      $custom_logo_id = get_theme_mod( 'custom_logo' );
+                      $logo           = $custom_logo_id
+                              ? wp_get_attachment_image(
+                                      $custom_logo_id,
+                                      'full',
+                                      false,
+                                      array( 'alt' => get_bloginfo( 'name' ) )
+                              )
+                              : '';
+                      ?>
+                      <a href="<?php echo esc_url( $login_header_url ); ?>">
+                      <?php if ( $logo ) : ?>
+                              <?php echo $logo; ?>
+                      <?php else : ?>
+                              <span class="screen-reader-text"><?php echo esc_html( $login_header_text ); ?></span>
+                      <?php endif; ?>
+                      </a>
+              </div>
+      <?php if ( 'confirm_admin_email' !== $action && ! empty( $title ) ) : ?>
+              <h1 class="login-title"><?php echo esc_html( $title ); ?></h1>
+      <?php endif; ?>
         <?php
         /**
          * Filters the message to display above the login form.
