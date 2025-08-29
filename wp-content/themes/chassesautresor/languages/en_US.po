@@ -1229,8 +1229,10 @@ msgstr "Limit"
 
 #: template-parts/chasse/chasse-affichage-complet.php:264
 #, php-format
-msgid "%d gagnants"
-msgstr "%d winners"
+msgid "%d gagnant"
+msgid_plural "%d gagnants"
+msgstr[0] "%d winner"
+msgstr[1] "%d winners"
 
 #: template-parts/chasse/chasse-affichage-complet.php:269
 msgid "Fin de chasse"
@@ -1241,9 +1243,9 @@ msgid "Accès chasse"
 msgstr "Hunt access"
 
 #: template-parts/chasse/chasse-affichage-complet.php:283
-#, fuzzy, php-format
+#, php-format
 msgid "%d points"
-msgstr "points"
+msgstr "%d points"
 
 #: template-parts/chasse/chasse-affichage-complet.php:284
 msgid "libre"
@@ -1257,8 +1259,8 @@ msgstr "Riddle access"
 #, php-format
 msgid "%d énigme nécessite des points pour soumettre une tentative"
 msgid_plural "%d énigmes nécessitent des points pour soumettre une tentative"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d puzzle requires points to submit an attempt"
+msgstr[1] "%d puzzles require points to submit an attempt"
 
 #: template-parts/chasse/chasse-affichage-complet.php:305
 msgid "gratuit"

@@ -1223,8 +1223,10 @@ msgstr ""
 
 #: template-parts/chasse/chasse-affichage-complet.php:264
 #, php-format
-msgid "%d gagnants"
-msgstr ""
+msgid "%d gagnant"
+msgid_plural "%d gagnants"
+msgstr[0] ""
+msgstr[1] ""
 
 #: template-parts/chasse/chasse-affichage-complet.php:269
 msgid "Fin de chasse"
