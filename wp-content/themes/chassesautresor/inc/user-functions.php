@@ -341,6 +341,62 @@ function myaccount_clear_correction_message(int $chasse_id): void
 }
 
 /**
+ * Ensure the validation info message is stored for eligible hunts.
+ *
+ * Adds a persistent informational message when an organizer can request
+ * validation for a hunt but has not yet dismissed the message. The message is
+ * scoped to the hunt and its riddles.
+ *
+ * @return void
+ */
+function myaccount_maybe_add_validation_message(): void
+{
+    if (!is_user_logged_in() || !is_singular(['chasse', 'enigme'])) {
+        return;
+    }
+
+    $post_id = get_queried_object_id();
+    $chasse_id = get_post_type($post_id) === 'chasse'
+        ? $post_id
+        : (function_exists('recuperer_id_chasse_associee')
+            ? (int) recuperer_id_chasse_associee($post_id)
+            : 0);
+
+    if (!$chasse_id) {
+        return;
+    }
+
+    $user_id = get_current_user_id();
+    if (!peut_valider_chasse($chasse_id, $user_id)) {
+        return;
+    }
+
+    $key      = 'correction_info_chasse_' . $chasse_id;
+    $messages = get_user_meta($user_id, '_myaccount_messages', true);
+    if (is_array($messages) && isset($messages[$key])) {
+        return;
+    }
+
+    $info_msg = sprintf(
+        /* translators: %1$s and %2$s are anchor tags */
+        __('Votre chasse est éligible à une %1$sdemande de validation%2$s.', 'chassesautresor-com'),
+        '<a href="' . esc_url(get_permalink($chasse_id) . '#cta-validation-chasse') . '">',
+        '</a>'
+    );
+
+    myaccount_add_persistent_message(
+        $user_id,
+        $key,
+        $info_msg,
+        'info',
+        false,
+        $chasse_id,
+        true
+    );
+}
+add_action('template_redirect', 'myaccount_maybe_add_validation_message');
+
+/**
  * Retrieve persistent important messages for the given user.
  *
  * @param int $user_id User identifier.

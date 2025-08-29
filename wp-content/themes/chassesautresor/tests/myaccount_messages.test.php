@@ -23,6 +23,21 @@ if (!function_exists('is_user_logged_in')) {
     }
 }
 
+if (!function_exists('is_singular')) {
+    function is_singular($types = [])
+    {
+        $post_id = $GLOBALS['test_current_post_id'] ?? 0;
+        $post_type = $GLOBALS['test_post_types'][$post_id] ?? 'post';
+        if (empty($types)) {
+            return true;
+        }
+        if (is_array($types)) {
+            return in_array($post_type, $types, true);
+        }
+        return $post_type === $types;
+    }
+}
+
 if (!function_exists('get_current_user_id')) {
     function get_current_user_id()
     {
@@ -200,6 +215,13 @@ if (!function_exists('recuperer_id_chasse_associee')) {
     {
         $post_id = $post_id ?? 0;
         return $GLOBALS['test_enigme_to_chasse'][$post_id] ?? 0;
+    }
+}
+
+if (!function_exists('peut_valider_chasse')) {
+    function peut_valider_chasse($chasse_id, $user_id)
+    {
+        return true;
     }
 }
 
@@ -443,6 +465,19 @@ class MyAccountMessagesTest extends TestCase
         $GLOBALS['test_enigme_to_chasse'] = [101 => 43];
         $output = myaccount_get_important_messages();
         $this->assertStringNotContainsString('Info', $output);
+
+        delete_user_meta(1, '_myaccount_messages');
+    }
+
+    public function test_maybe_add_validation_message_populates_meta(): void
+    {
+        delete_user_meta(1, '_myaccount_messages');
+        $GLOBALS['test_current_post_id'] = 42;
+        $GLOBALS['test_post_types']      = [42 => 'chasse'];
+
+        myaccount_maybe_add_validation_message();
+        $messages = get_user_meta(1, '_myaccount_messages', true);
+        $this->assertArrayHasKey('correction_info_chasse_42', $messages);
 
         delete_user_meta(1, '_myaccount_messages');
     }
