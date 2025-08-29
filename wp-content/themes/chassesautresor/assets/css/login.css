@@ -1,0 +1,60 @@
+/* Styles personnalisés pour l'interface de connexion */
+:root {
+    --color-background: #0B132B;
+    --color-background-dark: #060A1F;
+    --color-primary: #FFD700;
+    --color-secondary: #E1A95F;
+    --color-text-primary: #F5F5DC;
+    --color-background-button: #880000;
+    --color-background-button-hover: #a00000;
+    --font-main: 'Poppins', sans-serif;
+}
+
+body.login {
+    background-color: var(--color-background);
+    font-family: var(--font-main);
+    color: var(--color-text-primary);
+}
+
+body.login #login {
+    width: 100%;
+    max-width: 320px;
+    padding: 1rem;
+}
+
+body.login #loginform {
+    background-color: var(--color-background-dark);
+    border: 1px solid var(--color-primary);
+}
+
+body.login label {
+    color: var(--color-text-primary);
+}
+
+body.login a {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+body.login a:hover,
+body.login a:focus {
+    color: var(--color-secondary);
+}
+
+body.login #wp-submit {
+    background-color: var(--color-background-button);
+    border: none;
+    color: var(--color-text-primary);
+    width: 100%;
+    padding: 0.5rem;
+}
+
+body.login #wp-submit:hover {
+    background-color: var(--color-background-button-hover);
+}
+
+@media (min-width: 768px) {
+    body.login #login {
+        max-width: 360px;
+    }
+}
