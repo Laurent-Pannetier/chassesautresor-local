@@ -303,7 +303,7 @@ if ($edition_active && !$est_complet) {
                 <span class="caracteristique-label"><?= esc_html__('Limite', 'chassesautresor-com'); ?></span>
                 <span class="caracteristique-valeur nb-gagnants-affichage" data-post-id="<?= esc_attr($chasse_id); ?>">
                   <?php if ((int) $nb_max === 0) : ?>
-                    <?= esc_html__('illimité', 'chassesautresor-com'); ?>
+                    <?= esc_html__('illimitée', 'chassesautresor-com'); ?>
                   <?php else : ?>
                     <?= esc_html(sprintf(_n('%d gagnant', '%d gagnants', $nb_max, 'chassesautresor-com'), $nb_max)); ?>
                   <?php endif; ?>
