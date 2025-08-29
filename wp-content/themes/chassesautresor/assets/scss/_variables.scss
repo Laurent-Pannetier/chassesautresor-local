@@ -75,6 +75,7 @@
   --etat-enigme-menu-succes: var(--color-success);
   --etat-enigme-menu-non-engagee: transparent;
   --etat-enigme-menu-incomplete: var(--color-error);
+  --etat-enigme-menu-eligible: var(--color-primary); /* chasse éligible à validation */
 
   /* Asides */
   --aside-bg-rgb: 238, 238, 238;            /* 🎨 Couleur de fond des asides : gris clair du nuancier (var(--color-grey-light)) */

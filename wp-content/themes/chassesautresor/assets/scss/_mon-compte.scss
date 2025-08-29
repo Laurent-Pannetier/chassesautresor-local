@@ -155,6 +155,12 @@
     --status-bullet: var(--etat-enigme-menu-succes);
 }
 
+.dashboard-nav-link.status-eligible,
+.dashboard-nav-sublink.status-eligible,
+.dashboard-nav-subitem.status-eligible {
+    --status-bullet: var(--etat-enigme-menu-eligible);
+}
+
 .myaccount-main {
     flex: 1;
     display: flex;

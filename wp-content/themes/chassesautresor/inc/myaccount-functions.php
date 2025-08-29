@@ -92,6 +92,10 @@ function myaccount_get_organizer_nav(int $user_id): ?array
             }
         }
 
+        if (function_exists('peut_valider_chasse') && peut_valider_chasse($chasse->ID, $user_id)) {
+            $classes .= ' status-eligible';
+        }
+
         $chasse_item = [
             'title'        => get_the_title($chasse->ID),
             'url'          => get_permalink($chasse->ID),
