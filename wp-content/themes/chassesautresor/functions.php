@@ -328,6 +328,24 @@ function cta_enqueue_login_styles(): void
 }
 add_action('login_enqueue_scripts', 'cta_enqueue_login_styles');
 
+/**
+ * Displays additional links on the login form.
+ *
+ * @hook login_form_bottom
+ *
+ * @return void
+ */
+function cta_login_links() {
+    $registration_url = wp_registration_url();
+
+    printf(
+        '<p class="cta-login-register"><a href="%1$s">%2$s</a></p>',
+        esc_url($registration_url),
+        esc_html( __( 'Créer un compte', 'chassesautresor-com' ) )
+    );
+}
+add_action('login_form_bottom', 'cta_login_links');
+
 // ----------------------------------------------------------
 // 📂 Chargement des fichiers fonctionnels organisés
 // ----------------------------------------------------------
