@@ -17,7 +17,9 @@ $utilisateur_id = get_current_user_id();
 // 🔒 Vérification d'accès à la chasse
 if (!chasse_est_visible_pour_utilisateur($chasse_id, $utilisateur_id)) return;
 
-$est_orga_associe = $args['est_orga_associe'] ?? utilisateur_est_organisateur_associe_a_chasse($utilisateur_id, $chasse_id);
+$est_orga_associe = $args['est_orga_associe']
+    ?? utilisateur_est_organisateur_associe_a_chasse($utilisateur_id, $chasse_id);
+$needs_validatable_message = $args['needs_validatable_message'] ?? false;
 
 $autorise_boucle = (
   user_can($utilisateur_id, 'manage_options') ||
@@ -120,11 +122,15 @@ foreach ($posts as $p) {
             </div>
           <?php endif; ?>
         </div>
-        <?php if ($classe_completion === 'carte-incomplete') : ?>
-          <span class="warning-icon" aria-label="<?= esc_attr__('Énigme incomplète', 'chassesautresor-com'); ?>" title="<?= esc_attr__('Énigme incomplète', 'chassesautresor-com'); ?>">
-            <i class="fa-solid fa-exclamation" aria-hidden="true"></i>
-          </span>
-        <?php endif; ?>
+          <?php if ($classe_completion === 'carte-incomplete') : ?>
+            <span
+              class="warning-icon"
+              aria-label="<?= esc_attr__('Énigme incomplète', 'chassesautresor-com'); ?>"
+              title="<?= esc_attr__('Énigme incomplète', 'chassesautresor-com'); ?>"
+            >
+              <i class="fa-solid fa-exclamation" aria-hidden="true"></i>
+            </span>
+          <?php endif; ?>
       </article>
     <?php endforeach; ?>
 
@@ -149,13 +155,18 @@ foreach ($posts as $p) {
         }
       }
 
-      get_template_part('template-parts/enigme/chasse-partial-ajout-enigme', null, [
-        'has_enigmes'     => $has_enigmes,
-        'chasse_id'       => $chasse_id,
-        'disabled'        => !$complete,
-        'highlight_pulse' => $highlight_pulse,
-        'use_button'      => false,
-      ]);
+      get_template_part(
+          'template-parts/enigme/chasse-partial-ajout-enigme',
+          null,
+          [
+              'has_enigmes'     => $has_enigmes,
+              'chasse_id'       => $chasse_id,
+              'disabled'        => !$complete,
+              'highlight_pulse' => $highlight_pulse,
+              'use_button'      => false,
+              'show_info_icon'  => ($est_orga_associe && $needs_validatable_message),
+          ]
+      );
     }
     ?>
   </div>

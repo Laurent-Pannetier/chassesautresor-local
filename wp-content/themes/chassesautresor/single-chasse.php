@@ -98,19 +98,6 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
     ?>
 
     <?php
-
-    if ($est_orga_associe && $needs_validatable_message) {
-        echo '<div class="cta-chasse">';
-        $msg = __(
-            'Votre chasse se termine automatiquement ; ajoutez une énigme à validation manuelle ou automatique.',
-            'chassesautresor-com'
-        );
-        echo '<p>⚠️ ' . esc_html($msg) . '</p>';
-        echo '</div>';
-    }
-    ?>
-
-    <?php
     if (current_user_can('administrator') && $statut_validation === 'en_attente') {
       get_template_part('template-parts/chasse/chasse-validation-actions', null, [
         'chasse_id' => $chasse_id,
@@ -122,8 +109,13 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
         <?php $error_message = sanitize_text_field(wp_unslash($_GET['erreur'])); ?>
         <?php if ($error_message === 'points_insuffisants') : ?>
             <div class="message-erreur" role="alert" aria-live="assertive">
-                ❌ <?= esc_html__('Vous n’avez pas assez de points pour engager cette énigme.', 'chassesautresor-com'); ?>
-                <a href="<?= esc_url(home_url('/boutique')); ?>"><?= esc_html__('Accéder à la boutique', 'chassesautresor-com'); ?></a>
+                ❌ <?= esc_html__(
+                    'Vous n’avez pas assez de points pour engager cette énigme.',
+                    'chassesautresor-com'
+                ); ?>
+                <a href="<?= esc_url(home_url('/boutique')); ?>">
+                    <?= esc_html__('Accéder à la boutique', 'chassesautresor-com'); ?>
+                </a>
             </div>
         <?php else : ?>
             <div class="message-erreur" role="alert" aria-live="assertive">
@@ -148,9 +140,10 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
         <div id="liste-enigmes" class="chasse-enigmes-liste">
             <?php
             get_template_part('template-parts/enigme/chasse-partial-boucle-enigmes', null, [
-                'chasse_id'       => $chasse_id,
-                'est_orga_associe'=> $est_orga_associe,
-                'infos_chasse'    => $infos_chasse,
+                'chasse_id'                => $chasse_id,
+                'est_orga_associe'        => $est_orga_associe,
+                'infos_chasse'            => $infos_chasse,
+                'needs_validatable_message' => $needs_validatable_message,
             ]);
             ?>
         </div>
