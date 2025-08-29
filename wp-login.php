@@ -94,15 +94,48 @@ function login_header( $title = null, $message = '', $wp_error = null ) {
 	<html <?php language_attributes(); ?>>
 	<head>
 	<meta http-equiv="Content-Type" content="<?php bloginfo( 'html_type' ); ?>; charset=<?php bloginfo( 'charset' ); ?>" />
-	<title><?php echo $login_title; ?></title>
-	<?php
+        <title><?php echo $login_title; ?></title>
+        <?php
 
-	wp_enqueue_style( 'login' );
+        wp_enqueue_style( 'login' );
+        wp_add_inline_style(
+                'login',
+                <<<'CSS'
+body.login {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+}
 
-	/*
-	 * Remove all stored post data on logging out.
-	 * This could be added by add_action('login_head'...) like wp_shake_js(),
-	 * but maybe better if it's not removable by plugins.
+#login {
+        margin: 0;
+}
+
+#login .wp-login-logo {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 1rem;
+}
+
+#login .wp-login-logo a {
+        background-size: contain;
+        width: 80px;
+        height: 80px;
+        margin: 0 auto;
+}
+
+#login .login-title {
+        text-align: center;
+        margin-bottom: 1rem;
+}
+CSS
+        );
+
+        /*
+         * Remove all stored post data on logging out.
+         * This could be added by add_action('login_head'...) like wp_shake_js(),
+         * but maybe better if it's not removable by plugins.
 	 */
 	if ( 'loggedout' === $wp_error->get_error_code() ) {
 		ob_start();
@@ -209,22 +242,20 @@ function login_header( $title = null, $message = '', $wp_error = null ) {
 	 *
 	 * @since 4.6.0
 	 */
-	do_action( 'login_header' );
-	?>
-	<?php
-	if ( 'confirm_admin_email' !== $action && ! empty( $title ) ) :
-		?>
-		<h1 class="screen-reader-text"><?php echo $title; ?></h1>
-		<?php
-	endif;
-	?>
-	<div id="login">
-		<h1 role="presentation" class="wp-login-logo"><a href="<?php echo esc_url( $login_header_url ); ?>"><?php echo $login_header_text; ?></a></h1>
-	<?php
-	/**
-	 * Filters the message to display above the login form.
-	 *
-	 * @since 2.1.0
+        do_action( 'login_header' );
+        ?>
+       <div id="login">
+               <div class="wp-login-logo">
+                       <a href="<?php echo esc_url( $login_header_url ); ?>"><?php echo $login_header_text; ?></a>
+               </div>
+       <?php if ( 'confirm_admin_email' !== $action && ! empty( $title ) ) : ?>
+               <h1 class="login-title"><?php echo $title; ?></h1>
+       <?php endif; ?>
+        <?php
+        /**
+         * Filters the message to display above the login form.
+         *
+         * @since 2.1.0
 	 *
 	 * @param string $message Login message text.
 	 */
@@ -1152,17 +1183,11 @@ switch ( $action ) {
 		 */
 		$redirect_to = apply_filters( 'registration_redirect', $registration_redirect, $errors );
 
-		login_header(
-			__( 'Registration Form' ),
-			wp_get_admin_notice(
-				__( 'Register For This Site' ),
-				array(
-					'type'               => 'info',
-					'additional_classes' => array( 'message', 'register' ),
-				)
-			),
-			$errors
-		);
+               login_header(
+                       esc_html__( "S'enregistrer", 'chassesautresor-com' ),
+                       '',
+                       $errors
+               );
 
 		?>
 		<form name="registerform" id="registerform" action="<?php echo esc_url( site_url( 'wp-login.php?action=register', 'login_post' ) ); ?>" method="post" novalidate="novalidate">
@@ -1487,7 +1512,7 @@ switch ( $action ) {
 			wp_clear_auth_cookie();
 		}
 
-		login_header( __( 'Log In' ), '', $errors );
+               login_header( esc_html__( 'Se connecter', 'chassesautresor-com' ), '', $errors );
 
 		if ( isset( $_POST['log'] ) ) {
 			$user_login = ( 'incorrect_password' === $errors->get_error_code() || 'empty_password' === $errors->get_error_code() ) ? wp_unslash( $_POST['log'] ) : '';
