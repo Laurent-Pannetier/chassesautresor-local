@@ -10,11 +10,11 @@ window.onDateFieldUpdated = function(input, valeur) {
   const handlers = {
     'enigme_acces_date': (val) => {
       const span = document.querySelector('.date-deblocage');
-      if (span) span.textContent = formatDateFr(val);
+      if (span) span.textContent = (typeof window.formatDateLocalized === 'function') ? window.formatDateLocalized(val) : val;
     },
     'chasse_infos_date_debut': (val) => {
       const span = document.querySelector('.date-debut');
-      if (span) span.textContent = formatDateFr(val);
+      if (span) span.textContent = (typeof window.formatDateLocalized === 'function') ? window.formatDateLocalized(val) : val;
     },
     'chasse_infos_date_fin': (val) => {
       const span = document.querySelector('.date-fin');
@@ -22,9 +22,12 @@ window.onDateFieldUpdated = function(input, valeur) {
 
       const checkboxIllimitee = document.getElementById('duree-illimitee');
       if (checkboxIllimitee && checkboxIllimitee.checked) {
-        span.textContent = 'Illimitée';
+        const txtUnlimited = (window.catI18n && window.catI18n.texts && window.catI18n.texts.unlimited)
+          ? window.catI18n.texts.unlimited
+          : 'Illimitée';
+        span.textContent = txtUnlimited;
       } else {
-        span.textContent = formatDateFr(val);
+        span.textContent = (typeof window.formatDateLocalized === 'function') ? window.formatDateLocalized(val) : val;
       }
     }
     // Ajoutez ici d'autres handlers spécifiques si nécessaire
