@@ -435,15 +435,9 @@ function initEnigmeEdit() {
     });
   });
 
-  initChampAccesDate();
+  initChampAccesCondition();
+  initChampPreRequis();
   initChampCoutPoints();
-
-  if (enigmeId) {
-    const accesToggle = document.getElementById('enigme-acces-toggle');
-    accesToggle?.addEventListener('change', () => {
-      forcerRecalculStatutEnigme(enigmeId);
-    });
-  }
 
   initPanneauVariantes();
   initPagerTentatives();
@@ -683,38 +677,50 @@ function initChampNbTentatives() {
 // ================================
 // 🔓 Gestion du champ d'accès (Libre / Date programmée)
 // ================================
-function initChampAccesDate() {
-  const toggle = document.getElementById('enigme-acces-toggle');
-  const hidden = document.getElementById('enigme_acces_condition');
+function initChampAccesCondition() {
+  const radios = document.querySelectorAll('input[name="acf[enigme_acces_condition]"]');
   const blocDate = document.getElementById('champ-enigme-date');
   const inputDate = blocDate?.querySelector('input');
-  if (!toggle || !hidden || !blocDate || !inputDate) return;
+  const blocPre = document.getElementById('champ-enigme-pre-requis');
+  if (!radios.length || !blocDate || !inputDate || !blocPre) return;
 
-  const bloc = hidden.closest('[data-champ]');
+  const bloc = document.querySelector('[data-champ="enigme_acces_condition"]');
   const postId = bloc?.dataset.postId;
   const cpt = bloc?.dataset.cpt || 'enigme';
 
   function appliquerEtat() {
-    if (toggle.checked) {
-      hidden.value = 'date_programmee';
+    const valeur = document.querySelector('input[name="acf[enigme_acces_condition]"]:checked')?.value || 'immediat';
+    if (valeur === 'date_programmee') {
       blocDate.classList.remove('cache');
+      blocPre.classList.add('cache');
       inputDate.disabled = false;
-    } else {
-      hidden.value = 'immediat';
+    } else if (valeur === 'pre_requis') {
+      blocPre.classList.remove('cache');
       blocDate.classList.add('cache');
+      inputDate.disabled = true;
+    } else {
+      blocDate.classList.add('cache');
+      blocPre.classList.add('cache');
       inputDate.disabled = true;
     }
   }
 
-  function enregistrer() {
+  function enregistrer(valeur) {
     if (!postId) return;
-    modifierChampSimple('enigme_acces_condition', hidden.value, postId, cpt);
+    modifierChampSimple('enigme_acces_condition', valeur, postId, cpt);
   }
 
-  toggle.addEventListener('change', () => {
-    appliquerEtat();
-    enregistrer();
+  radios.forEach(radio => {
+    radio.addEventListener('change', () => {
+      const valeur = radio.value;
+      appliquerEtat();
+      enregistrer(valeur);
+      if (typeof window.forcerRecalculStatutEnigme === 'function' && postId) {
+        window.forcerRecalculStatutEnigme(postId);
+      }
+    });
   });
+
   appliquerEtat();
 }
 // ================================

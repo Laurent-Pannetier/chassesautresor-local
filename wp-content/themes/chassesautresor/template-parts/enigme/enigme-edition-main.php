@@ -581,7 +581,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
 
             <!-- Accès à l'énigme -->
             <?php
-            $condition = get_field('enigme_acces_condition', $enigme_id) ?? 'immediat';
+            if (!function_exists('enigme_get_liste_prerequis_possibles')) {
+                require_once get_stylesheet_directory() . '/inc/enigme/cta.php';
+            }
+
+            $condition           = get_field('enigme_acces_condition', $enigme_id) ?? 'immediat';
+            $pre_requis_selected = get_field('enigme_acces_pre_requis', $enigme_id) ?: [];
+            $prerequis_possibles = enigme_get_liste_prerequis_possibles($enigme_id);
+            $has_prerequis       = !empty($prerequis_possibles);
             ?>
             <?php
             get_template_part(
@@ -598,24 +605,68 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                     ],
                     'label' => function () {
                         ?>
-                        <label for="enigme-acces-toggle"><?= esc_html__('Accès', 'chassesautresor-com'); ?></label>
+                        <label for="enigme_acces_libre"><?= esc_html__('Accès', 'chassesautresor-com'); ?></label>
                         <?php
                     },
-                    'content' => function () use ($condition, $peut_editer, $date_deblocage, $enigme_id) {
+                    'content' => function () use ($condition, $peut_editer, $date_deblocage, $enigme_id, $prerequis_possibles, $pre_requis_selected, $has_prerequis) {
                         ?>
-                        <div class="champ-mode-options">
-                            <span class="toggle-option"><?= esc_html__('Libre', 'chassesautresor-com'); ?></span>
-                            <label class="switch-control">
-                                <input type="checkbox" id="enigme-acces-toggle" <?= $condition === 'date_programmee' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
-                                <span class="switch-slider"></span>
+                        <div class="champ-mode-options segmented-control">
+                            <input id="enigme_acces_libre" type="radio" name="acf[enigme_acces_condition]" value="immediat" <?= $condition === 'immediat' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
+                            <label for="enigme_acces_libre"><?= esc_html__('Libre', 'chassesautresor-com'); ?></label>
+
+                            <input id="enigme_acces_date" type="radio" name="acf[enigme_acces_condition]" value="date_programmee" <?= $condition === 'date_programmee' ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
+                            <label for="enigme_acces_date"><?= esc_html__('Date programmée', 'chassesautresor-com'); ?></label>
+
+                            <input id="enigme_acces_prerequis" type="radio" name="acf[enigme_acces_condition]" value="pre_requis" <?= $condition === 'pre_requis' ? 'checked' : ''; ?> <?= $peut_editer && $has_prerequis ? '' : 'disabled'; ?>>
+                            <label for="enigme_acces_prerequis">
+                                <?= esc_html__('Pré-requis', 'chassesautresor-com'); ?>
+                                <?php
+                                $message = $has_prerequis
+                                    ? __('Sélectionnez les énigmes à résoudre avant celle-ci.', 'chassesautresor-com')
+                                    : __('Aucune autre énigme disponible comme pré-requis.', 'chassesautresor-com');
+                                get_template_part(
+                                    'template-parts/common/help-icon',
+                                    null,
+                                    [
+                                        'aria_label' => $message,
+                                        'message'    => $message,
+                                        'variant'    => 'info',
+                                        'classes'    => 'validation-aide',
+                                    ]
+                                );
+                                ?>
                             </label>
-                            <span class="toggle-option"><?= esc_html__('Date programmée', 'chassesautresor-com'); ?></span>
-                            <input type="hidden" id="enigme_acces_condition" name="acf[enigme_acces_condition]" value="<?= $condition === 'date_programmee' ? 'date_programmee' : 'immediat'; ?>" />
-                            <div id="champ-enigme-date" class="champ-enigme champ-date<?= $condition === 'date_programmee' ? '' : ' cache'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_acces_date" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" data-no-edit="1">
-                                <input type="datetime-local" id="enigme-date-deblocage" name="enigme-date-deblocage" value="<?= esc_attr($date_deblocage); ?>" data-previous="<?= esc_attr($date_deblocage); ?>" class="champ-inline-date champ-date-edit" <?= $peut_editer ? '' : 'disabled'; ?> />
+                        </div>
+
+                        <div id="champ-enigme-date" class="champ-enigme champ-date<?= $condition === 'date_programmee' ? '' : ' cache'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_acces_date" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" data-no-edit="1">
+                            <input type="datetime-local" id="enigme-date-deblocage" name="enigme-date-deblocage" value="<?= esc_attr($date_deblocage); ?>" data-previous="<?= esc_attr($date_deblocage); ?>" class="champ-inline-date champ-date-edit" <?= $peut_editer ? '' : 'disabled'; ?> />
+                            <span class="champ-status"></span>
+                            <div class="champ-feedback champ-date-feedback" style="display:none;"></div>
+                        </div>
+
+                        <div id="champ-enigme-pre-requis" class="champ-enigme champ-pre-requis<?= $condition === 'pre_requis' && $has_prerequis ? '' : ' cache'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?><?= empty($pre_requis_selected) ? ' champ-vide' : ''; ?>" data-champ="enigme_acces_pre_requis" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" data-no-edit="1">
+                            <?php if ($has_prerequis) : ?>
+                                <div class="liste-pre-requis">
+                                    <?php foreach ($prerequis_possibles as $id => $titre) : ?>
+                                        <?php
+                                        $checked = in_array($id, $pre_requis_selected, true) ? 'checked' : '';
+                                        $thumb   = get_the_post_thumbnail_url($id, 'thumbnail');
+                                        ?>
+                                        <label class="prerequis-item">
+                                            <input type="checkbox" value="<?= esc_attr($id); ?>" <?= $checked; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
+                                            <span class="prerequis-mini">
+                                                <?php if ($thumb) : ?>
+                                                    <img src="<?= esc_url($thumb); ?>" alt="" />
+                                                <?php endif; ?>
+                                                <span class="prerequis-check"><i class="fa-solid fa-check"></i></span>
+                                                <span class="prerequis-titre"><?= esc_html($titre); ?></span>
+                                            </span>
+                                        </label>
+                                    <?php endforeach; ?>
+                                </div>
                                 <span class="champ-status"></span>
-                                <div class="champ-feedback champ-date-feedback" style="display:none;"></div>
-                            </div>
+                                <div class="champ-feedback"></div>
+                            <?php endif; ?>
                         </div>
                         <div class="champ-feedback"></div>
                         <?php
