@@ -363,3 +363,42 @@ describe('date message utils', () => {
     expect(msg).toContain('02/01/2024');
   });
 });
+
+describe('mettreAJourCaracteristiqueDate time zones', () => {
+  const timezoneMock = require('timezone-mock');
+  const timezones = ['UTC', 'US/Eastern', 'Australia/Adelaide'];
+
+  timezones.forEach((tz) => {
+    test(`no wait message when start later same day in ${tz}`, () => {
+      timezoneMock.register(tz);
+      jest.resetModules();
+
+      document.body.innerHTML = `
+        <span class="caracteristique-date"><span class="caracteristique-valeur"></span></span>
+        <input id="chasse-date-debut" />
+        <input id="chasse-date-fin" />
+        <input type="checkbox" id="date-fin-limitee" checked />
+      `;
+      global.wp = { i18n: { __: (s) => s, _n: (s, p, n) => (n > 1 ? p : s) } };
+
+      require('../../wp-content/themes/chassesautresor/assets/js/chasse-edit.js');
+
+      const today = new Date();
+      const pad = (n) => String(n).padStart(2, '0');
+      const todayStr = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
+      const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+      const tomorrowStr = `${tomorrow.getFullYear()}-${pad(tomorrow.getMonth() + 1)}-${pad(tomorrow.getDate())}`;
+
+      document.getElementById('chasse-date-debut').value = `${todayStr} 23:00`;
+      document.getElementById('chasse-date-fin').value = `${tomorrowStr}`;
+
+      global.mettreAJourCaracteristiqueDate();
+
+      const text = document.querySelector('.caracteristique-date .caracteristique-valeur').textContent;
+      expect(text).toBe('1 jour restant');
+      const tzDetected = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      expect(typeof tzDetected).toBe('string');
+      timezoneMock.unregister();
+    });
+  });
+});
