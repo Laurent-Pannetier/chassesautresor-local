@@ -1900,6 +1900,23 @@ function traiter_validation_chasse_admin() {
                 'correction_chasse_' . $chasse_id,
                 $flash,
                 'warning',
+                true,
+                $chasse_id,
+                true
+            );
+            $info_msg = sprintf(
+                /* translators: %1$s and %2$s are anchor tags */
+                __('Votre chasse est éligible à une %1$sdemande de validation%2$s.', 'chassesautresor-com'),
+                '<a href="' . esc_url(get_permalink($chasse_id) . '#cta-validation-chasse') . '">',
+                '</a>'
+            );
+            myaccount_add_persistent_message(
+                $uid,
+                'correction_info_chasse_' . $chasse_id,
+                $info_msg,
+                'info',
+                false,
+                $chasse_id,
                 true
             );
         }

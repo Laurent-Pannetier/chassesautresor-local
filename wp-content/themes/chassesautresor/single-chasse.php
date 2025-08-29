@@ -119,14 +119,6 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
         );
         echo '<p>⚠️ ' . esc_html($msg) . '</p>';
         echo '</div>';
-    } elseif ($can_validate) {
-        echo '<div class="cta-chasse">';
-        $msg = ($statut_validation === 'correction')
-            ? 'Lorsque vous aurez terminé vos corrections, demandez sa validation :'
-            : 'Lorsque vous avez finalisé votre chasse, demandez sa validation :';
-        echo '<p>' . $msg . '</p>';
-        echo render_form_validation_chasse($chasse_id);
-        echo '</div>';
     }
     ?>
 

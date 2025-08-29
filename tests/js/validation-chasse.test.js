@@ -4,7 +4,7 @@ const html = `
 </section>
 <form class="form-validation-chasse">
   <input type="hidden" name="chasse_id" value="123">
-  <button type="submit" class="bouton-cta bouton-validation-chasse">VALIDATION</button>
+  <button type="submit" class="bouton-cta bouton-cta--color bouton-validation-chasse">Demander la validation</button>
 </form>
 `;
 

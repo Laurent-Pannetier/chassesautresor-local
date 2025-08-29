@@ -613,6 +613,14 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
         ];
     }
 
+    if (peut_valider_chasse($chasse_id, $user_id)) {
+        return [
+            'cta_html'    => render_form_validation_chasse($chasse_id),
+            'cta_message' => '',
+            'type'        => 'validation',
+        ];
+    }
+
     // 🔐 Admin or organiser: disabled participation button
     if (current_user_can('administrator') || utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
         return [
@@ -842,7 +850,9 @@ function render_form_validation_chasse(int $chasse_id): string
         <input type="hidden" name="chasse_id" value="<?= esc_attr($chasse_id); ?>">
         <input type="hidden" name="validation_chasse_nonce" value="<?= esc_attr($nonce); ?>">
         <input type="hidden" name="demande_validation_chasse" value="1">
-        <button type="submit" class="bouton-cta bouton-validation-chasse">VALIDATION</button>
+        <button type="submit" class="bouton-cta bouton-cta--color bouton-validation-chasse">
+            <?= esc_html__( 'Demander la validation', 'chassesautresor-com' ); ?>
+        </button>
     </form>
 <?php
     return ob_get_clean();
@@ -894,13 +904,9 @@ function actualiser_cta_validation_chasse(): void
 
     ob_start();
     if (peut_valider_chasse($chasse_id, get_current_user_id())) {
-        echo '<div class="cta-chasse">';
-        $statut = get_field('chasse_cache_statut_validation', $chasse_id);
-        $msg = ($statut === 'correction')
-            ? 'Lorsque vous aurez terminé vos corrections, demandez sa validation :'
-            : 'Lorsque vous avez finalisé votre chasse, demandez sa validation :';
-        echo '<p>' . $msg . '</p>';
-        echo render_form_validation_chasse($chasse_id);
+        echo '<div id="cta-validation-chasse" class="cta-chasse-row">';
+        echo '<div class="cta-action">' . render_form_validation_chasse($chasse_id) . '</div>';
+        echo '<div class="cta-message" aria-live="polite"></div>';
         echo '</div>';
     }
     $html = ob_get_clean();
