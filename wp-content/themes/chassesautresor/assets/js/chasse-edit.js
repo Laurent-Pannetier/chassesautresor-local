@@ -990,10 +990,16 @@ function initChampNbGagnants() {
 
   if (!inputNb || !toggleLimite || !actions) return;
 
+  const li = inputNb.closest('li');
+  const status = li?.querySelector('.champ-status');
+  if (status && status.parentElement === actions) {
+    actions.insertAdjacentElement('afterend', status);
+  }
+
   let timerDebounce;
 
   function updateVisibility() {
-    const postId = inputNb.closest('li').dataset.postId;
+    const postId = li?.dataset.postId;
     if (!postId) return;
 
     if (toggleLimite.checked) {
@@ -1006,11 +1012,13 @@ function initChampNbGagnants() {
         inputNb.value = '1';
       }
       inputNb.dispatchEvent(new Event('input', { bubbles: true }));
+      inputNb.dispatchEvent(new Event('change', { bubbles: true }));
       mettreAJourAffichageNbGagnants(postId, inputNb.value.trim());
     } else {
       actions.style.display = 'none';
       inputNb.value = '0';
       inputNb.dispatchEvent(new Event('input', { bubbles: true }));
+      inputNb.dispatchEvent(new Event('change', { bubbles: true }));
       inputNb.disabled = true;
       mettreAJourAffichageNbGagnants(postId, 0);
     }
@@ -1021,7 +1029,7 @@ function initChampNbGagnants() {
   inputNb.addEventListener('input', function () {
     if (!toggleLimite.checked) return;
 
-    const postId = inputNb.closest('li').dataset.postId;
+    const postId = li?.dataset.postId;
     if (!postId) return;
 
     clearTimeout(timerDebounce);
@@ -1031,6 +1039,7 @@ function initChampNbGagnants() {
         valeur = 1;
         inputNb.value = '1';
       }
+      inputNb.dispatchEvent(new Event('change', { bubbles: true }));
       mettreAJourAffichageNbGagnants(postId, valeur);
     }, 500);
   });
@@ -1293,14 +1302,6 @@ function mettreAJourAffichageNbGagnants(postId, nb) {
   const container = nbGagnantsAffichage?.closest('.caracteristique');
   const labelSpan = container?.querySelector('.caracteristique-label');
   if (!nbGagnantsAffichage || !labelSpan) return;
-
-  const lang = document.documentElement.lang || '';
-  if (
-    !lang.startsWith('fr') &&
-    wp.i18n.__('gagnants', 'chassesautresor-com') === 'gagnants'
-  ) {
-    return;
-  }
 
   const valeur = parseInt(nb, 10);
   if (valeur === 0) {
