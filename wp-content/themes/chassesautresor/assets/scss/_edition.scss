@@ -2286,6 +2286,14 @@ body.panneau-ouvert::before {
   border: 1px solid var(--color-gray-300, #ccc);
 }
 
+.help-icon--bg-light {
+  color: var(--color-text-primary);
+}
+
+.help-icon--bg-dark {
+  color: var(--color-background);
+}
+
 .help-icon--aide-small {
   width: 1em;
   height: 1em;

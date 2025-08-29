@@ -308,6 +308,12 @@
 
 .carte-ajout-wrapper {
   position: relative;
+  height: 100%;
+}
+
+.carte-ajout-wrapper .carte-ajout-enigme {
+  width: 100%;
+  height: 100%;
 }
 
 .carte-ajout-wrapper .help-icon-button {

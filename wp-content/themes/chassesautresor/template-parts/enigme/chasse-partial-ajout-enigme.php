@@ -30,6 +30,7 @@ $ajout_url = esc_url(add_query_arg('chasse_id', $chasse_id, home_url('/creer-eni
                 'message'    => __('Votre chasse se termine automatiquement ; ajoutez une énigme à validation manuelle ou automatique.', 'chassesautresor-com'),
                 'variant'    => 'info',
                 'classes'    => 'carte-help-icon',
+                'background' => 'light',
             ]
         );
         ?>
