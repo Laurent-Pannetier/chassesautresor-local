@@ -2792,5 +2792,9 @@ msgid "Section not found"
 msgstr "Section not found"
 
 #: wp-content/themes/chassesautresor/inc/admin-functions.php:1910
-msgid "Lorsque vous aurez terminé vos corrections, demandez sa validation."
-msgstr "Once you have finished your corrections, request validation."
+msgid "Votre chasse est éligible à une %1$sdemande de validation%2$s."
+msgstr "Your hunt is eligible for a %1$svalidation request%2$s."
+
+#: wp-content/themes/chassesautresor/inc/chasse-functions.php:853
+msgid "Demander la validation"
+msgstr "Request validation"

@@ -850,7 +850,9 @@ function render_form_validation_chasse(int $chasse_id): string
         <input type="hidden" name="chasse_id" value="<?= esc_attr($chasse_id); ?>">
         <input type="hidden" name="validation_chasse_nonce" value="<?= esc_attr($nonce); ?>">
         <input type="hidden" name="demande_validation_chasse" value="1">
-        <button type="submit" class="bouton-cta bouton-validation-chasse">VALIDATION</button>
+        <button type="submit" class="bouton-cta bouton-cta--color bouton-validation-chasse">
+            <?= esc_html__( 'Demander la validation', 'chassesautresor-com' ); ?>
+        </button>
     </form>
 <?php
     return ob_get_clean();
@@ -902,7 +904,7 @@ function actualiser_cta_validation_chasse(): void
 
     ob_start();
     if (peut_valider_chasse($chasse_id, get_current_user_id())) {
-        echo '<div class="cta-chasse-row">';
+        echo '<div id="cta-validation-chasse" class="cta-chasse-row">';
         echo '<div class="cta-action">' . render_form_validation_chasse($chasse_id) . '</div>';
         echo '<div class="cta-message" aria-live="polite"></div>';
         echo '</div>';

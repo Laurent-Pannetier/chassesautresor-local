@@ -1904,10 +1904,16 @@ function traiter_validation_chasse_admin() {
                 $chasse_id,
                 true
             );
+            $info_msg = sprintf(
+                /* translators: %1$s and %2$s are anchor tags */
+                __('Votre chasse est éligible à une %1$sdemande de validation%2$s.', 'chassesautresor-com'),
+                '<a href="' . esc_url(get_permalink($chasse_id) . '#cta-validation-chasse') . '">',
+                '</a>'
+            );
             myaccount_add_persistent_message(
                 $uid,
                 'correction_info_chasse_' . $chasse_id,
-                __('Lorsque vous aurez terminé vos corrections, demandez sa validation.', 'chassesautresor-com'),
+                $info_msg,
                 'info',
                 false,
                 $chasse_id,

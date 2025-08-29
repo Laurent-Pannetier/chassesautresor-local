@@ -356,7 +356,8 @@ if ($edition_active && !$est_complet) {
           </div>
 
           <?php if (($cta_data['type'] ?? '') !== 'engage') : ?>
-            <div class="cta-chasse-row">
+            <?php $cta_id = ($cta_data['type'] ?? '') === 'validation' ? 'cta-validation-chasse' : ''; ?>
+            <div class="cta-chasse-row"<?php echo $cta_id ? ' id="' . esc_attr($cta_id) . '"' : ''; ?>>
               <div class="cta-action"><?= $cta_data['cta_html']; ?></div>
               <div class="cta-message" aria-live="polite"><?= $cta_data['cta_message']; ?></div>
             </div>
