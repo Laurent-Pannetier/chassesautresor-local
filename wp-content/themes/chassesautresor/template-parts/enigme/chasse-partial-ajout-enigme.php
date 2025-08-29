@@ -28,18 +28,29 @@ $ajout_url = esc_url(add_query_arg('chasse_id', $chasse_id, home_url('/creer-eni
     <span><?php echo esc_html__('Ajouter une énigme', 'chassesautresor-com'); ?></span>
   </a>
 <?php else : ?>
-  <a
-    href="<?php echo $ajout_url; ?>"
-    id="carte-ajout-enigme"
-    class="carte-ajout-enigme <?php echo $has_enigmes ? 'etat-suivante' : 'etat-vide'; ?> <?php echo $disabled ? 'disabled' : ''; ?><?php echo $highlight_pulse ? ' pulsation' : ''; ?>"
-    data-post-id="0">
-    <div class="contenu-carte">
-      ➕ <?php echo $has_enigmes ? 'Ajouter une énigme' : 'Créer la première énigme'; ?>
-    </div>
-    <div class="overlay-message">
-      <i class="fa-solid fa-circle-info"></i>
-      <p>Complétez d’abord : titre, image, description</p>
-    </div>
-  </a>
+    <a
+        href="<?php echo $ajout_url; ?>"
+        id="carte-ajout-enigme"
+        class="carte carte-enigme carte-ajout-enigme <?php echo $has_enigmes ? 'etat-suivante' : 'etat-vide'; ?> <?php echo $disabled ? 'disabled' : ''; ?><?php echo $highlight_pulse ? ' pulsation' : ''; ?>"
+        data-post-id="0">
+        <div class="carte-core">
+            <div class="carte-enigme-image">
+                <div class="enigme-placeholder">
+                    <i class="fa-solid fa-circle-plus fa-3x" aria-hidden="true"></i>
+                </div>
+                <div class="carte-enigme-cta">
+                    <span class="bouton-cta bouton-cta--color">
+                        <?php echo $has_enigmes
+                            ? esc_html__('Ajouter une énigme', 'chassesautresor-com')
+                            : esc_html__('Créer la première énigme', 'chassesautresor-com'); ?>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="overlay-message">
+            <i class="fa-solid fa-circle-info"></i>
+            <p><?php echo esc_html__('Complétez d’abord : titre, image, description', 'chassesautresor-com'); ?></p>
+        </div>
+    </a>
 <?php endif; ?>
 

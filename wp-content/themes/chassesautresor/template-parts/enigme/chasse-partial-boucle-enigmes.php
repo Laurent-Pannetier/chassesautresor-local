@@ -130,7 +130,7 @@ foreach ($posts as $p) {
 
     <?php
     // ➕ CTA pour ajouter une énigme si besoin
-    if (utilisateur_peut_ajouter_enigme($chasse_id, $utilisateur_id) && !$has_incomplete && !$has_enigmes) {
+    if (utilisateur_peut_ajouter_enigme($chasse_id, $utilisateur_id) && !$has_incomplete) {
       verifier_ou_mettre_a_jour_cache_complet($chasse_id);
       $complete = (bool) get_field('chasse_cache_complet', $chasse_id);
 

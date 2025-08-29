@@ -186,7 +186,6 @@
 }
 
 /* ========== ➕ Cartes d'ajout d'énigme et de chasse ========== */
-.carte-ajout-enigme,
 .carte-ajout-chasse {
   display: flex;
   align-items: center;
@@ -202,9 +201,13 @@
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
+.carte-ajout-enigme {
+  display: block;
+  position: relative;
+}
+
 .carte-ajout-chasse .carte-ligne__image,
-.carte-ajout-chasse .carte-ligne__contenu,
-.carte-ajout-enigme .contenu-carte {
+.carte-ajout-chasse .carte-ligne__contenu {
   display: flex;
   flex-direction: column;
   align-items: center;
