@@ -93,7 +93,8 @@ function cta_redirect_account_page_for_guests() {
     $request_path = wp_parse_url( $_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH );
 
     if ( 0 === strpos( $request_path, '/mon-compte' ) ) {
-        wp_safe_redirect( wp_login_url() );
+        $current_url = home_url( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ) ) );
+        wp_safe_redirect( wp_login_url( $current_url ) );
         exit;
     }
 }
