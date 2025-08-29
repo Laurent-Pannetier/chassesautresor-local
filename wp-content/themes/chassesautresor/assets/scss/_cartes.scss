@@ -25,22 +25,11 @@
   gap: var(--space-xl);
 }
 
-.grille-3 {
+.cards-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(300px, 400px));
   gap: var(--space-xl);
-}
-
-@media not all and (--bp-desktop) {
-  .grille-3 {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media not all and (--bp-tablet) {
-  .grille-3 {
-    grid-template-columns: 1fr;
-  }
+  justify-content: center;
 }
 
 /* ========== 🎴 Cartes d\'énigme et de chasse ========== */
