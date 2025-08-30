@@ -55,9 +55,10 @@ function ca_site_password_protection(): void
     status_header(401);
     header('Content-Type: text/html; charset=utf-8');
 
-    $svg_url = esc_url(home_url('/assets/svg/pirate-skull.svg'));
+    $svg_url    = esc_url(home_url('/assets/svg/pirate-skull.svg'));
+    $style_url  = esc_url(get_stylesheet_directory_uri() . '/dist/style.css');
 
-    $styles  = '.ca-site-password-wrapper{'
+    $styles = '.ca-site-password-wrapper{'
         . 'display:flex;'
         . 'min-height:100vh;'
         . 'align-items:center;'
@@ -66,10 +67,21 @@ function ca_site_password_protection(): void
         . 'color:var(--color-text-primary);'
         . 'font-family:var(--font-main);'
         . '}'
-        . '.ca-site-password-form{text-align:center;}'
+        . '.ca-site-password-form{'
+        . 'text-align:center;'
+        . 'display:flex;'
+        . 'flex-direction:column;'
+        . 'align-items:center;'
+        . 'gap:var(--space-md);'
+        . 'font-size:var(--space-lg);'
+        . '}'
+        . '.ca-site-password-form label{'
+        . 'display:flex;'
+        . 'flex-direction:column;'
+        . 'gap:var(--space-xs);'
+        . '}'
         . '.ca-site-password-form input[type="password"]{'
         . 'padding:var(--space-sm) var(--space-md);'
-        . 'margin-bottom:var(--space-md);'
         . 'border:1px solid var(--color-grey-dark);'
         . 'border-radius:4px;'
         . 'background:var(--color-background);'
@@ -85,12 +97,13 @@ function ca_site_password_protection(): void
         . '}'
         . '.ca-site-password-form button:hover{background:var(--color-background-button-hover);}'
         . '.ca-site-password-error{color:var(--color-error);}'
-        . '.ca-site-password-logo{width:150px;display:block;margin:0 auto var(--space-md);}'
-        . '';
+        . '.ca-site-password-logo{width:150px;display:block;margin:0 auto var(--space-md);}';
 
     echo '<!doctype html><html><head><meta charset="utf-8"><title>'
         . esc_html__('Protected Site', 'chassesautresor-com')
-        . '</title><style>'
+        . '</title><link rel="stylesheet" href="'
+        . $style_url
+        . '"><style>'
         . $styles
         . '</style></head><body><div class="ca-site-password-wrapper">'
         . '<form class="ca-site-password-form" method="post">'
@@ -98,13 +111,13 @@ function ca_site_password_protection(): void
         . $svg_url
         . '" alt="'
         . esc_attr__('Pirate skull', 'chassesautresor-com')
-        . '"><p><label>'
+        . '"><label>'
         . esc_html__('Password:', 'chassesautresor-com')
         . ' <input type="password" name="'
         . esc_attr($field)
-        . '"></label></p><p><button type="submit">'
+        . '"></label><button type="submit">'
         . esc_html__('Submit', 'chassesautresor-com')
-        . '</button></p>'
+        . '</button>'
         . ($error_message ? '<p class="ca-site-password-error">' . $error_message . '</p>' : '')
         . '</form></div></body></html>';
 
