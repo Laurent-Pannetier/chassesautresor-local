@@ -92,6 +92,41 @@
   border-bottom: 1px solid rgba(var(--color-grey-light-rgb, 220, 220, 220), 0.15);
 }
 
+.enigme-navigation__ajout {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-sm);
+}
+
+.enigme-navigation__ajout-bouton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  background: none;
+  border: none;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.enigme-navigation__ajout-bouton:hover {
+  color: var(--color-primary);
+}
+
+.enigme-navigation__ajout-lien {
+  color: inherit;
+  text-decoration: none;
+  font-size: 0.875rem;
+}
+
+.enigme-navigation__ajout-lien:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
 .menu-lateral section + section:not(.enigme-statistiques) {
   margin-top: var(--space-lg);
   padding-top: var(--space-lg);
