@@ -68,6 +68,13 @@
   position: relative
 }
 
+.carte-enigme .badge-validation {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1;
+}
+
 .etat-bloquee_chasse .carte-core,
 .etat-bloquee_date .carte-core,
 .etat-bloquee_pre_requis .carte-core,
