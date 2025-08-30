@@ -112,6 +112,7 @@ if (!function_exists('compter_tentatives_du_jour')) {
         : 0;
     ?>
         <article class="<?= esc_attr($classes_carte); ?>" data-enigme-id="<?= esc_attr($enigme_id); ?>" draggable="true">
+            <span class="carte-enigme-handle" aria-hidden="true"><i class="fa-solid fa-up-down-left-right"></i></span>
             <?php if ($linkable) : ?>
               <a href="<?= esc_url($cta['url']); ?>" class="carte-enigme-lien" aria-label="<?= esc_attr($aria_label); ?>">
             <?php else : ?>

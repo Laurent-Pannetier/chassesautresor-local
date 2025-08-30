@@ -5164,6 +5164,24 @@ li.active .enigme-menu__edit {
   cursor: grabbing;
 }
 
+.carte-enigme {
+  position: relative;
+}
+.carte-enigme-handle {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background-color: rgba(var(--color-black-rgb, 0, 0, 0), 0.6);
+  color: var(--color-white);
+  pointer-events: none;
+}
+
 .carte-enigme[draggable=true] {
   cursor: grab;
   -webkit-user-select: none;
