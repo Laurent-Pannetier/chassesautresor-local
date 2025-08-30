@@ -789,11 +789,6 @@ msgstr "Statistics"
 msgid "À venir"
 msgstr ""
 
-#: inc/enigme/cta.php:194
-#, fuzzy
-msgid "Chasse verrouillée"
-msgstr "Hunting not found."
-
 #: inc/enigme/cta.php:195
 msgid "Pré-requis"
 msgstr "Requirements"
@@ -1126,7 +1121,7 @@ msgstr "Canceled"
 msgid "Refusé"
 msgstr "Denied"
 
-#: inc/organisateur-functions.php:457 inc/organisateur-functions.php:559
+#: inc/organisateur-functions.php:457 inc/organisateur-functions.php:559 inc/enigme/cta.php:276
 msgid "En attente"
 msgstr "Pending"
 
@@ -3110,7 +3105,7 @@ msgstr "Login required"
 msgid "Énigme disponible plus tard"
 msgstr "Puzzle available later"
 
-#: inc/enigme/visuels.php:420 inc/enigme/cta.php:210
+#: inc/enigme/cta.php:194 inc/enigme/cta.php:210 inc/enigme/visuels.php:420
 msgid "Chasse verrouillée"
 msgstr "Hunt locked"
 
@@ -3161,10 +3156,6 @@ msgstr "Review"
 #: inc/enigme/cta.php:261
 msgid "Résolue"
 msgstr "Solved"
-
-#: inc/enigme/cta.php:276
-msgid "En attente"
-msgstr "Pending"
 
 #: inc/enigme/cta.php:280
 msgid "Soumise"
