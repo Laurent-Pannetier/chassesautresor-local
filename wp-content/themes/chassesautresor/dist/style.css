@@ -98,6 +98,12 @@
   flex: 2;
 }
 
+.carte-enigme-image .badge-cout {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
 .carte-ligne__image {
   width: 300px;
   height: auto;
