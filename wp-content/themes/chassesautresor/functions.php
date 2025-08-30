@@ -250,26 +250,6 @@ add_action('wp_enqueue_scripts', function () {
             true
         );
     }
-    $sidebar_dir = $theme_uri . '/assets/sidebar/';
-    if (is_singular(['enigme', 'chasse'])) {
-        wp_enqueue_script(
-            'sidebar',
-            $sidebar_dir . 'sidebar.js',
-            [],
-            filemtime($theme_path . '/assets/sidebar/sidebar.js'),
-            true
-        );
-        wp_localize_script('sidebar', 'sidebarData', [
-            'ajaxUrl' => admin_url('admin-ajax.php'),
-        ]);
-        wp_enqueue_script(
-            'sidebar-menu-toggle',
-            $sidebar_dir . 'menu-toggle.js',
-            [],
-            filemtime($theme_path . '/assets/sidebar/menu-toggle.js'),
-            true
-        );
-    }
 });
 
 add_action('wp_enqueue_scripts', function () {

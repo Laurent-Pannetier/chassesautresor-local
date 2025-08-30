@@ -48,6 +48,14 @@ Le projet utilise plusieurs tables SQL dédiées pour suivre l'activité des jou
 - `wp_indices_deblocages` trace le déblocage des indices et les points dépensés.
 - `wp_user_points` inclut la valeur `indice` dans le champ `origin_type` pour comptabiliser ces dépenses.
 
+## Performances du panneau latéral
+
+Le script `assets/sidebar/sidebar.js` instrumente l'affichage du panneau grâce à
+`performance.mark` et `performance.measure`. Analysez ces mesures dans les outils
+de développement pour suivre le délai d'apparition du panneau. Selon les
+résultats, ajustez la limite d'éléments visibles via le filtre
+`enigme_menu_max_visible` ou adaptez la stratégie de cache.
+
 ## Création d’indice
 
 Un endpoint dédié permet de créer rapidement un indice :

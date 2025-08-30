@@ -183,16 +183,22 @@ cat_debug("🧪 test organisateur_associe : " . ($est_orga_associe ? 'OUI' : 'NO
 
 $can_validate = peut_valider_chasse($chasse_id, $user_id);
 echo '<div class="container container--xl-full chasse-layout">';
-$sidebar_sections = render_sidebar(
-    'chasse',
-    0,
-    $edition_active,
-    $chasse_id,
-    $sidebar_data['menu_items'],
-    $sidebar_data['peut_ajouter_enigme'],
-    $sidebar_data['total_enigmes'],
-    $sidebar_data['has_incomplete_enigme']
-);
+$sidebar_sections = [
+    'navigation' => '',
+    'stats'      => '',
+];
+if (function_exists('render_sidebar')) {
+    $sidebar_sections = render_sidebar(
+        'chasse',
+        0,
+        $edition_active,
+        $chasse_id,
+        $sidebar_data['menu_items'],
+        $sidebar_data['peut_ajouter_enigme'],
+        $sidebar_data['total_enigmes'],
+        $sidebar_data['has_incomplete_enigme']
+    );
+}
 ?>
 
 <?php

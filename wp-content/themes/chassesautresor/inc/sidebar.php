@@ -153,6 +153,29 @@ if (!function_exists('render_sidebar')) {
         int $total_enigmes = 0,
         bool $has_incomplete_enigme = false
     ): array {
+        if (function_exists('wp_script_is') && !wp_script_is('sidebar', 'enqueued')) {
+            $theme_path  = get_template_directory();
+            $theme_uri   = get_template_directory_uri();
+            $sidebar_dir = $theme_uri . '/assets/sidebar/';
+            wp_enqueue_script(
+                'sidebar',
+                $sidebar_dir . 'sidebar.js',
+                [],
+                filemtime($theme_path . '/assets/sidebar/sidebar.js'),
+                true
+            );
+            wp_localize_script('sidebar', 'sidebarData', [
+                'ajaxUrl' => admin_url('admin-ajax.php'),
+            ]);
+            wp_enqueue_script(
+                'sidebar-menu-toggle',
+                $sidebar_dir . 'menu-toggle.js',
+                [],
+                filemtime($theme_path . '/assets/sidebar/menu-toggle.js'),
+                true
+            );
+            wp_script_add_data('sidebar-menu-toggle', 'defer', true);
+        }
         if ($context === 'enigme') {
             $mode    = get_field('enigme_mode_validation', $enigme_id);
             $user_id = get_current_user_id();
@@ -185,6 +208,8 @@ if (!function_exists('render_sidebar')) {
             $ajout_html = ob_get_clean();
         }
 
+        // Adjust this limit if performance marks reveal slow rendering. The value
+        // can be filtered via 'enigme_menu_max_visible'.
         $max_visible   = function_exists('apply_filters')
             ? (int) apply_filters('enigme_menu_max_visible', 10)
             : 10;
