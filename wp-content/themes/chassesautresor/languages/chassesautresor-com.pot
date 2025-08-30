@@ -661,9 +661,55 @@ msgstr ""
 #: template-parts/chasse/chasse-edition-main.php:815
 #: template-parts/chasse/partials/chasse-partial-participants.php:53
 #: template-parts/enigme/partials/enigme-sidebar-section.php:37
-#: single-chasse.php:133
+#: single-chasse.php:222
 msgid "Énigmes"
 msgstr ""
+
+#: single-chasse.php:222
+#, php-format
+msgid "Énigmes de %s"
+msgstr ""
+
+#: single-chasse.php:128
+msgid "La chasse est terminée. Vous pouvez revoir toutes les énigmes ainsi que leurs solutions et indices."
+msgstr ""
+
+#: single-chasse.php:131
+msgid "La chasse est terminée. Les énigmes restent consultables."
+msgstr ""
+
+#: single-chasse.php:134
+#, php-format
+msgid "Les énigmes seront affichées au début de la chasse, le %s."
+msgstr ""
+
+#: single-chasse.php:141
+#, php-format
+msgid "Voici les énigmes de cette chasse. Résolvez-les pour tenter de remporter %s."
+msgstr ""
+
+#: single-chasse.php:145
+msgid "Voici les énigmes de cette chasse."
+msgstr ""
+
+#: single-chasse.php:149
+#, php-format
+msgid "Progression : %1$d/%2$d %3$s — %4$d/%5$d %6$s."
+msgstr ""
+
+#: single-chasse.php:125
+#: single-chasse.php:126
+msgid "énigme résolue"
+msgid_plural "énigmes résolues"
+msgstr[0] ""
+msgstr[1] ""
+
+#: single-chasse.php:125
+#: single-chasse.php:126
+msgid "engagée"
+msgid_plural "engagées"
+msgstr[0] ""
+msgstr[1] ""
 
 #: inc/enigme/affichage.php:536
 #: inc/enigme/affichage.php:1008
