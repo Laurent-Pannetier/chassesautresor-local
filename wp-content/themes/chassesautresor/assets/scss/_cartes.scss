@@ -112,23 +112,46 @@
   right: 10px;
 }
 
+.carte-enigme-lien {
+  display: block;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+  position: relative;
+}
+
+.carte-enigme-overlay {
+  position: absolute;
+  inset: 0;
+  display: none;
+}
+
+@media (--bp-tablet) {
+  .carte-enigme-overlay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(
+      to top,
+      rgba(var(--color-black-rgb), 0.6),
+      rgba(var(--color-black-rgb), 0)
+    );
+    opacity: 0;
+    transition: opacity var(--transition-medium);
+  }
+
+  .carte-enigme-lien:hover .carte-enigme-overlay,
+  .carte-enigme-lien:focus .carte-enigme-overlay {
+    opacity: 1;
+  }
+}
+
 .carte-ligne__image {
   width: 300px;
   height: auto;
   overflow: hidden;
   position: relative;
   flex-shrink: 0;
-}
-
-
-.carte-enigme-cta {
-  position: absolute;
-  top:150px;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-  z-index: 1;
 }
 
 .carte-enigme h3 {
