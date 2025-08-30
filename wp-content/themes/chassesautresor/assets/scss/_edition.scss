@@ -632,6 +632,12 @@ body .header-img-modifiable .icone-modif {
   align-items: center;
 }
 
+.champ-casse {
+  display: inline-flex;
+  align-items: center;
+  margin-left: var(--space-md);
+}
+
 .bonne-reponse-etiquette {
   display: inline-flex;
   align-items: center;
@@ -643,6 +649,14 @@ body .header-img-modifiable .icone-modif {
   background: none;
   padding: 0;
   cursor: pointer;
+}
+
+.bonne-reponse-annuler {
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--color-editor-error);
 }
 
 .bonne-reponse-valider.btn-obligatoire {
