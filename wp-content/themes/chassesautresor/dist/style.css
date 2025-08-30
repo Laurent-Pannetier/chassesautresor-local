@@ -141,12 +141,14 @@
 .carte-enigme h3 {
   margin: 0;
   padding: var(--space-xs) var(--space-md);
-  flex: 0.5;
   text-align: center;
+  line-height: 1.3;
+  height: 2.6em;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .carte-enigme-footer {
