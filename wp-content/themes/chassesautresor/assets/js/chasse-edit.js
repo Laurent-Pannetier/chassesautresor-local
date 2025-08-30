@@ -1245,32 +1245,12 @@ window.mettreAJourCarteAjoutEnigme = function () {
     return li && li.classList.contains('champ-vide');
   });
 
-  let overlay = carte.querySelector('.overlay-message');
-
   if (incomplets.length === 0) {
     carte.classList.remove('disabled');
     carte.removeAttribute('disabled');
-    overlay?.remove();
   } else {
     carte.classList.add('disabled');
     carte.setAttribute('disabled', 'disabled');
-    const texte = incomplets.map(sel => {
-      if (sel.includes('post_title')) return 'titre';
-      if (sel.includes('image')) return 'image';
-      if (sel.includes('description')) return 'description';
-      return 'champ requis';
-    }).join(', ');
-
-    if (!overlay) {
-      overlay = document.createElement('div');
-      overlay.className = 'overlay-message';
-      carte.appendChild(overlay);
-    }
-
-    overlay.innerHTML = `
-      <i class="fa-solid fa-circle-info"></i>
-      <p>Complétez d’abord : ${texte}</p>
-    `;
   }
 };
 

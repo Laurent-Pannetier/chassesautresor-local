@@ -35,10 +35,24 @@ $ajout_url = esc_url(add_query_arg('chasse_id', $chasse_id, home_url('/creer-eni
         );
         ?>
     <?php endif; ?>
+    <?php
+    $classes = [
+        'carte',
+        'carte-enigme',
+        'carte-ajout-enigme',
+        $has_enigmes ? 'etat-suivante' : 'etat-vide',
+    ];
+    if ($disabled) {
+        $classes[] = 'disabled';
+    }
+    if ($highlight_pulse) {
+        $classes[] = 'pulsation';
+    }
+    ?>
     <button
         type="button"
         id="carte-ajout-enigme"
-        class="carte carte-enigme carte-ajout-enigme <?php echo $has_enigmes ? 'etat-suivante' : 'etat-vide'; ?> <?php echo $disabled ? 'disabled' : ''; ?><?php echo $highlight_pulse ? ' pulsation' : ''; ?>"
+        class="<?php echo esc_attr(implode(' ', $classes)); ?>"
         data-post-id="0"
         aria-label="<?php echo esc_attr__('Ajouter une énigme', 'chassesautresor-com'); ?>"
         <?php echo $disabled ? 'disabled' : ''; ?>
@@ -47,10 +61,6 @@ $ajout_url = esc_url(add_query_arg('chasse_id', $chasse_id, home_url('/creer-eni
         <div class="carte-core">
             <i class="fa-solid fa-circle-plus" aria-hidden="true"></i>
             <span class="carte-ajout-libelle"><?php echo esc_html__('Ajouter une énigme', 'chassesautresor-com'); ?></span>
-        </div>
-        <div class="overlay-message">
-            <i class="fa-solid fa-circle-info"></i>
-            <p><?php echo esc_html__('Complétez d’abord : titre, image, description', 'chassesautresor-com'); ?></p>
         </div>
     </button>
 </div>
