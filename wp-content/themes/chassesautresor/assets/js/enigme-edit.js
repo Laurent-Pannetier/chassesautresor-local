@@ -919,17 +919,55 @@ function initChampBonnesReponses() {
         valider.className = 'champ-modifier bonne-reponse-valider';
         valider.textContent = wp.i18n.__('valider', 'chassesautresor-com');
 
+        const annuler = document.createElement('button');
+        annuler.type = 'button';
+        annuler.className = 'bonne-reponse-annuler';
+        annuler.setAttribute('aria-label', wp.i18n.__('Annuler', 'chassesautresor-com'));
+        annuler.textContent = '×';
+
+        const cleanup = () => {
+          input.remove();
+          valider.remove();
+          annuler.remove();
+          document.removeEventListener('click', outsideClick);
+          document.removeEventListener('keydown', escHandler);
+          wrapper.appendChild(btnAjout);
+        };
+
+        const outsideClick = (e) => {
+          if (!wrapper.contains(e.target)) {
+            cleanup();
+          }
+        };
+
+        const escHandler = (e) => {
+          if (e.key === 'Escape') {
+            cleanup();
+          }
+        };
+
+        annuler.addEventListener('click', (e) => {
+          e.stopPropagation();
+          cleanup();
+        });
+
         valider.addEventListener('click', () => {
           const val = input.value.trim();
           if (!val) return;
           reponses.push(val);
+          document.removeEventListener('click', outsideClick);
+          document.removeEventListener('keydown', escHandler);
           sauvegarder().then((ok) => {
             if (ok) render();
           });
         });
 
+        document.addEventListener('click', outsideClick);
+        document.addEventListener('keydown', escHandler);
+
         wrapper.appendChild(input);
         wrapper.appendChild(valider);
+        wrapper.appendChild(annuler);
         input.focus();
       });
 

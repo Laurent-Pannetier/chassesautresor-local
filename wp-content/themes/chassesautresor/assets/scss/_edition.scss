@@ -645,6 +645,13 @@ body .header-img-modifiable .icone-modif {
   cursor: pointer;
 }
 
+.bonne-reponse-annuler {
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+}
+
 .bonne-reponse-valider.btn-obligatoire {
   background-color: var(--color-editor-error);
   color: #fff;
