@@ -172,10 +172,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-xxs) var(--space-sm);
+  padding: var(--space-xs) var(--space-sm);
   font-size: 0.95rem;
   color: var(--color-text-secondary);
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 .carte-enigme-footer .footer-icons {
