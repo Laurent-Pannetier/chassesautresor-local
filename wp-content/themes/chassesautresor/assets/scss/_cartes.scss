@@ -166,7 +166,7 @@
   padding: var(--space-xs) var(--space-md) 0;
   min-height: var(--space-3xl);
   font-size: 0.875rem;
-  color: var(--color-gris-3);
+  color: var(--color-text-secondary);
 }
 
 .carte-enigme-footer .footer-icons {
@@ -178,7 +178,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-xxs);
-  opacity: 0.6;
+  opacity: 0.8;
 }
 
 .carte-enigme-footer i,
@@ -188,9 +188,14 @@
   fill: currentColor;
 }
 
+.carte-enigme-footer .footer-item--points {
+  color: var(--color-secondary);
+  opacity: 1;
+}
+
 .carte-enigme-footer .fa-circle-info {
-  color: var(--color-gris-3);
-  opacity: 0.6;
+  color: inherit;
+  opacity: 0.8;
 }
 
 .carte-enigme-image img,
