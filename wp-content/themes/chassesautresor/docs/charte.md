@@ -1,6 +1,6 @@
 # Charte du thème
 
-Ce document synthétise les styles du thème à partir des variables définies dans [`assets/scss/_variables.scss`](../assets/scss/_variables.scss).
+ Ce document synthétise les styles du thème à partir des variables définies dans [`assets/scss/_variables.scss`](../assets/scss/_variables.scss). Les variables spécifiques au mode édition sont regroupées dans [`assets/scss/_variables-edition.scss`](../assets/scss/_variables-edition.scss).
 
 ## Couleurs
 
@@ -37,6 +37,8 @@ Ce document synthétise les styles du thème à partir des variables définies d
 - `--color-gris-3` : `#adadad`
 
 ### Mode édition
+Variables définies dans [`assets/scss/_variables-edition.scss`](../assets/scss/_variables-edition.scss).
+
 - `--color-editor-button` : `#1A73E8` – bouton
 - `--color-editor-button-hover` : `#1558B0` – survol
 - `--editor-button-hsl` : `214 82% 51%`
