@@ -160,7 +160,7 @@ if (!function_exists('compter_tentatives_du_jour')) {
           <?php endif; ?>
             <footer class="carte-enigme-footer">
               <div class="footer-icons footer-icons-left">
-                <?php if ($cout_points > 0) : ?>
+                <?php if ($mode_validation !== 'aucune' && $cout_points > 0) : ?>
                   <span class="footer-item footer-item--points" title="<?= esc_attr(sprintf(__('Cette énigme coûte %d point(s)', 'chassesautresor-com'), $cout_points)); ?>" aria-label="<?= esc_attr(sprintf(__('Cette énigme coûte %d point(s)', 'chassesautresor-com'), $cout_points)); ?>">
                     <i class="fa-solid fa-coins" aria-hidden="true"></i>
                     <?= esc_html($cout_points); ?>
