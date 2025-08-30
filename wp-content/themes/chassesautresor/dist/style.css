@@ -286,6 +286,8 @@
   color: var(--color-background);
   position: relative;
   cursor: pointer;
+  width: 100%;
+  height: 100%;
 }
 
 .carte-ajout-enigme:hover {
@@ -375,34 +377,6 @@
   text-align: center;
   gap: var(--space-xs);
   padding: 0 var(--space-md);
-}
-
-.carte-ajout-wrapper {
-  position: relative;
-  height: 100%;
-}
-
-.carte-ajout-wrapper .carte-ajout-enigme {
-  width: 100%;
-  height: 100%;
-}
-
-.carte-ajout-wrapper .help-icon-button {
-  position: absolute;
-  top: var(--space-xs);
-  right: var(--space-xs);
-  z-index: 2;
-}
-
-.carte-ajout-wrapper .carte-help-icon {
-  color: var(--color-gris-3);
-  border-color: var(--color-gris-3);
-}
-
-.carte-ajout-wrapper .carte-help-icon:hover,
-.carte-ajout-wrapper .carte-help-icon:focus {
-  color: var(--color-gris-3);
-  border-color: var(--color-gris-3);
 }
 
 /* ========== ✅ Indicateurs de complétion ========== */

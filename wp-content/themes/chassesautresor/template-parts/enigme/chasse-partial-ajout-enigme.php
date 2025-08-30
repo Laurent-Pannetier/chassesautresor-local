@@ -38,50 +38,37 @@ if ($use_button) : ?>
 endif;
 
 ?>
-<div class="carte-ajout-wrapper">
+<?php
+$classes = [
+    'carte',
+    'carte-enigme',
+    'carte-ajout-enigme',
+    $has_enigmes ? 'etat-suivante' : 'etat-vide',
+];
+if ($disabled) {
+    $classes[] = 'disabled';
+}
+if ($highlight_pulse) {
+    $classes[] = 'pulsation';
+}
+?>
+<button
+    type="button"
+    id="carte-ajout-enigme"
+    class="<?php echo esc_attr(implode(' ', $classes)); ?>"
+    data-post-id="0"
+    aria-label="<?php echo esc_attr__('Ajouter une énigme', 'chassesautresor-com'); ?>"
+    <?php echo $disabled ? 'disabled' : ''; ?>
+    onclick="if(!this.hasAttribute('disabled')){window.location.href='<?php echo $ajout_url; ?>';}"
+>
     <?php if ($show_help_icon) : ?>
-        <?php
-        get_template_part(
-            'template-parts/common/help-icon',
-            null,
-            [
-                'aria_label' => __('Validation en ligne nécessaire', 'chassesautresor-com'),
-                'title'      => __('Validation en ligne nécessaire', 'chassesautresor-com'),
-                'message'    => __('Votre chasse se termine automatiquement ; ajoutez une énigme à validation manuelle ou automatique.', 'chassesautresor-com'),
-                'variant'    => 'info',
-                'classes'    => 'carte-help-icon',
-                'background' => 'light',
-            ]
-        );
-        ?>
+        <span class="warning-icon" aria-label="<?php echo esc_attr__('Validation en ligne nécessaire', 'chassesautresor-com'); ?>" title="<?php echo esc_attr__('Validation en ligne nécessaire', 'chassesautresor-com'); ?>">
+            <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+        </span>
     <?php endif; ?>
-    <?php
-    $classes = [
-        'carte',
-        'carte-enigme',
-        'carte-ajout-enigme',
-        $has_enigmes ? 'etat-suivante' : 'etat-vide',
-    ];
-    if ($disabled) {
-        $classes[] = 'disabled';
-    }
-    if ($highlight_pulse) {
-        $classes[] = 'pulsation';
-    }
-    ?>
-    <button
-        type="button"
-        id="carte-ajout-enigme"
-        class="<?php echo esc_attr(implode(' ', $classes)); ?>"
-        data-post-id="0"
-        aria-label="<?php echo esc_attr__('Ajouter une énigme', 'chassesautresor-com'); ?>"
-        <?php echo $disabled ? 'disabled' : ''; ?>
-        onclick="if(!this.hasAttribute('disabled')){window.location.href='<?php echo $ajout_url; ?>';}"
-    >
-        <div class="carte-core">
-            <i class="fa-solid fa-circle-plus" aria-hidden="true"></i>
-            <span class="carte-ajout-libelle"><?php echo esc_html__('Ajouter une énigme', 'chassesautresor-com'); ?></span>
-        </div>
-    </button>
-</div>
+    <div class="carte-core">
+        <i class="fa-solid fa-circle-plus" aria-hidden="true"></i>
+        <span class="carte-ajout-libelle"><?php echo esc_html__('Ajouter une énigme', 'chassesautresor-com'); ?></span>
+    </div>
+</button>
 
