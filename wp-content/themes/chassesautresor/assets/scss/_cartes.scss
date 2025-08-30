@@ -171,10 +171,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-xs) var(--space-md);
+  padding: var(--space-xs) var(--space-md) 0;
   min-height: var(--space-3xl);
   font-size: 0.875rem;
-  color: var(--color-background);
+  color: var(--color-gris-3);
 }
 
 .carte-enigme-footer .footer-left,
