@@ -143,7 +143,7 @@ function get_cta_enigme(int $enigme_id, ?int $user_id = null): array
         'url'                => null,
         'points'             => $points,
         'classe_css'         => 'cta-inconnu',
-        'badge'              => 'Indéfini',
+        'badge'              => __('Indéfini', 'chassesautresor-com'),
     ];
 
     // 👑 Admin ou organisateur → accès direct
@@ -153,11 +153,11 @@ function get_cta_enigme(int $enigme_id, ?int $user_id = null): array
     ) {
         return array_merge($cta, [
             'type'       => 'voir',
-            'label'      => 'Voir l’énigme',
+            'label'      => __('Voir l’énigme', 'chassesautresor-com'),
             'action'     => 'link',
             'url'        => get_permalink($enigme_id),
             'classe_css' => 'cta-voir',
-            'badge'      => 'Accès total',
+            'badge'      => __('Accès total', 'chassesautresor-com'),
         ]);
     }
 
@@ -165,11 +165,11 @@ function get_cta_enigme(int $enigme_id, ?int $user_id = null): array
     if (!is_user_logged_in()) {
         return array_merge($cta, [
             'type'       => 'connexion',
-            'label'      => 'Connectez-vous',
+            'label'      => __('Connectez-vous', 'chassesautresor-com'),
             'action'     => 'link',
             'url'        => site_url('/mon-compte'),
             'classe_css' => 'cta-connexion',
-            'badge'      => 'Connexion requise',
+            'badge'      => __('Connexion requise', 'chassesautresor-com'),
         ]);
     }
 
@@ -215,11 +215,11 @@ function get_cta_enigme(int $enigme_id, ?int $user_id = null): array
     if ($chasse_terminee && $etat_systeme !== 'bloquee_pre_requis') {
         return array_merge($cta, [
             'type'       => 'voir',
-            'label'      => 'Voir',
+            'label'      => __('Voir', 'chassesautresor-com'),
             'action'     => 'link',
             'url'        => get_permalink($enigme_id),
             'classe_css' => 'cta-voir',
-            'badge'      => 'Terminée',
+            'badge'      => __('Terminée', 'chassesautresor-com'),
             'points'     => 0,
         ]);
     }
@@ -248,36 +248,36 @@ function get_cta_enigme(int $enigme_id, ?int $user_id = null): array
                 'action'     => 'link',
                 'url'        => get_permalink($enigme_id),
                 'classe_css' => $classe_cours,
-                'badge'      => 'En cours',
+                'badge'      => __('En cours', 'chassesautresor-com'),
             ]);
 
         case 'resolue':
             return array_merge($cta, [
                 'type'       => 'revoir',
-                'label'      => 'Revoir',
+                'label'      => __('Revoir', 'chassesautresor-com'),
                 'action'     => 'link',
                 'url'        => get_permalink($enigme_id),
                 'classe_css' => 'cta-resolue',
-                'badge'      => 'Résolue',
+                'badge'      => __('Résolue', 'chassesautresor-com'),
             ]);
 
         case 'terminee':
             return array_merge($cta, [
                 'type'       => 'terminee',
-                'label'      => 'Terminée',
+                'label'      => __('Terminée', 'chassesautresor-com'),
                 'action'     => 'disabled',
                 'classe_css' => 'cta-terminee',
-                'badge'      => 'Clôturée',
+                'badge'      => __('Clôturée', 'chassesautresor-com'),
             ]);
 
         case 'soumis':
             return array_merge($cta, [
                 'type'       => 'soumis',
-                'label'      => 'En attente',
+                'label'      => __('En attente', 'chassesautresor-com'),
                 'action'     => 'link',
                 'url'        => get_permalink($enigme_id),
                 'classe_css' => 'cta-soumis',
-                'badge'      => 'Soumise',
+                'badge'      => __('Soumise', 'chassesautresor-com'),
             ]);
 
         case 'echouee':
@@ -303,10 +303,10 @@ function get_cta_enigme(int $enigme_id, ?int $user_id = null): array
         default:
             return array_merge($cta, [
                 'type'       => 'erreur',
-                'label'      => 'Erreur',
-                'sous_label' => 'Statut inconnu',
+                'label'      => __('Erreur', 'chassesautresor-com'),
+                'sous_label' => __('Statut inconnu', 'chassesautresor-com'),
                 'classe_css' => 'cta-erreur',
-                'badge'      => 'Erreur',
+                'badge'      => __('Erreur', 'chassesautresor-com'),
             ]);
     }
 }
