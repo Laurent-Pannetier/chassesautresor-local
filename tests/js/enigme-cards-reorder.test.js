@@ -17,9 +17,11 @@ describe('enigme-cards-reorder dragover behavior', () => {
     const card2 = document.getElementById('card2');
     card2.getBoundingClientRect = () => ({ left: 100, top: 0, width: 100, height: 100 });
 
-    const dataTransfer = {};
+    const dataTransfer = { setData: jest.fn() };
     const dragstart = new Event('dragstart', { bubbles: true });
     dragstart.dataTransfer = dataTransfer;
+    Object.defineProperty(dragstart, 'clientX', { value: 0 });
+    Object.defineProperty(dragstart, 'clientY', { value: 0 });
     card1.dispatchEvent(dragstart);
 
     const dragoverAt = (x, y) => {

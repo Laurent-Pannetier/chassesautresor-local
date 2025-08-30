@@ -5,15 +5,24 @@ function initEnigmeCardsReorder() {
   const grid = document.querySelector('.cards-grid');
   if (!grid) return;
 
+  grid
+    .querySelectorAll('.carte-enigme a')
+    .forEach((a) => a.setAttribute('draggable', 'false'));
+
   const addCard = grid.querySelector('#carte-ajout-enigme');
   const addWrapper = addCard?.closest('.carte-ajout-wrapper');
   let dragged = null;
+  let startX = 0;
+  let startY = 0;
 
   grid.addEventListener('dragstart', (e) => {
     const card = e.target.closest('.carte-enigme');
     if (!card || card.id === 'carte-ajout-enigme') return;
     dragged = card;
+    startX = e.clientX;
+    startY = e.clientY;
     e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', '');
     grid.classList.add('dragging');
     dragged.classList.add('dragging');
   });
@@ -29,12 +38,8 @@ function initEnigmeCardsReorder() {
     const rect = target.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
-    const deltaX = e.clientX - centerX;
-    const deltaY = e.clientY - centerY;
-    const next =
-      Math.abs(deltaX) > Math.abs(deltaY)
-        ? e.clientX > centerX
-        : e.clientY > centerY;
+    const horizontal = Math.abs(e.clientX - startX) > Math.abs(e.clientY - startY);
+    const next = horizontal ? e.clientX > centerX : e.clientY > centerY;
     grid.insertBefore(dragged, next ? target.nextSibling : target);
   });
 
