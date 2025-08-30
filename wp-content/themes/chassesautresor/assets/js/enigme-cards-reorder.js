@@ -6,6 +6,7 @@ function initEnigmeCardsReorder() {
   if (!grid) return;
 
   const addCard = grid.querySelector('#carte-ajout-enigme');
+  const addWrapper = addCard?.closest('.carte-ajout-wrapper');
   let dragged = null;
 
   grid.addEventListener('dragstart', (e) => {
@@ -20,6 +21,7 @@ function initEnigmeCardsReorder() {
   grid.addEventListener('dragover', (e) => {
     e.preventDefault();
     if (!dragged) return;
+    e.dataTransfer.dropEffect = 'move';
     const target = e.target.closest('.carte-enigme');
     if (!target || target === dragged || target.id === 'carte-ajout-enigme') return;
     grid.querySelectorAll('.drag-over').forEach((el) => el.classList.remove('drag-over'));
@@ -30,15 +32,17 @@ function initEnigmeCardsReorder() {
   });
 
   const ensureAddLast = () => {
-    if (addCard) {
+    if (addWrapper) {
+      grid.appendChild(addWrapper);
+    } else if (addCard) {
       grid.appendChild(addCard);
     }
   };
 
   const saveOrder = () => {
-    const order = Array.from(grid.querySelectorAll('.carte-enigme'))
-      .filter((el) => el.id !== 'carte-ajout-enigme')
-      .map((el) => el.dataset.enigmeId);
+    const order = Array.from(
+      grid.querySelectorAll('.carte-enigme[data-enigme-id]')
+    ).map((el) => el.dataset.enigmeId);
     if (!order.length) return;
     const fd = new FormData();
     fd.append('action', 'reordonner_enigmes');
