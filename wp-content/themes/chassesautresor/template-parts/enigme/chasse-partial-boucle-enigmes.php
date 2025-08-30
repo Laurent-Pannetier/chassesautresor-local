@@ -112,51 +112,55 @@ if (!function_exists('compter_tentatives_du_jour')) {
         : 0;
     ?>
         <article class="<?= esc_attr($classes_carte); ?>">
-          <?php if ($linkable) : ?>
-            <a href="<?= esc_url($cta['url']); ?>" class="carte-enigme-lien" aria-label="<?= esc_attr($aria_label); ?>">
-          <?php else : ?>
-            <div class="carte-enigme-lien carte-enigme-lien--disabled">
-          <?php endif; ?>
-              <?php if (in_array($mode_validation, ['automatique', 'manuelle'], true)) :
-                  $icon = $mode_validation === 'automatique' ? 'fa-bolt' : 'fa-envelope';
-                  $label = $mode_validation === 'automatique'
-                      ? esc_html__('Mode de validation : automatique', 'chassesautresor-com')
-                      : esc_html__('Mode de validation : manuel', 'chassesautresor-com');
-              ?>
-                  <span class="badge-validation" title="<?= esc_attr($label); ?>" aria-label="<?= esc_attr($label); ?>">
-                      <i class="fa-solid <?= esc_attr($icon); ?>" aria-hidden="true"></i>
-                  </span>
-              <?php endif; ?>
-              <div class="carte-core">
-                <div class="carte-enigme-image <?= esc_attr($mapping_visuel['filtre'] ?? ''); ?>" title="<?= esc_attr($mapping_visuel['sens'] ?? ''); ?>">
-                  <?php if ($mapping_visuel['image_reelle']) : ?>
-                    <?php afficher_picture_vignette_enigme($enigme_id, 'Vignette de l’énigme', ['medium']); ?>
-                  <?php else : ?>
-                    <div class="enigme-placeholder">
-                      <?php
-                      $svg = $mapping_visuel['fallback_svg'] ?? 'warning.svg';
-                      $svg_path = get_stylesheet_directory() . '/assets/svg/' . $svg;
-                      if (file_exists($svg_path)) {
-                          echo file_get_contents($svg_path);
-                      } else {
-                          echo '<div class="svg-manquant">🕳</div>';
-                      }
-                      ?>
-                    </div>
-                  <?php endif; ?>
-                  <?php if ($cout_points > 0) : ?>
-                    <span class="badge-cout" aria-label="<?= esc_attr(sprintf(__('Cette énigme coûte %d point(s)', 'chassesautresor-com'), $cout_points)); ?>">
-                      <?= esc_html($cout_points . ' ' . __('pts', 'chassesautresor-com')); ?>
-                    </span>
-                  <?php endif; ?>
-                  <?php if ($linkable) : ?>
-                    <span class="carte-enigme-overlay" aria-hidden="true">
-                      <span class="carte-enigme-bouton <?= esc_attr($classes_bouton); ?>">
-                        <?= esc_html($cta['label']); ?>
+            <?php if ($linkable) : ?>
+              <a href="<?= esc_url($cta['url']); ?>" class="carte-enigme-lien" aria-label="<?= esc_attr($aria_label); ?>">
+            <?php else : ?>
+              <div class="carte-enigme-lien carte-enigme-lien--disabled">
+            <?php endif; ?>
+                <div class="carte-core">
+                  <div class="carte-enigme-image <?= esc_attr($mapping_visuel['filtre'] ?? ''); ?>" title="<?= esc_attr($mapping_visuel['sens'] ?? ''); ?>">
+                    <?php if ($mapping_visuel['image_reelle']) : ?>
+                      <?php afficher_picture_vignette_enigme($enigme_id, 'Vignette de l’énigme', ['medium']); ?>
+                    <?php else : ?>
+                      <div class="enigme-placeholder">
+                        <?php
+                        $svg = $mapping_visuel['fallback_svg'] ?? 'warning.svg';
+                        $svg_path = get_stylesheet_directory() . '/assets/svg/' . $svg;
+                        if (file_exists($svg_path)) {
+                            echo file_get_contents($svg_path);
+                        } else {
+                            echo '<div class="svg-manquant">🕳</div>';
+                        }
+                        ?>
+                      </div>
+                    <?php endif; ?>
+                    <?php if ($cout_points > 0 || in_array($mode_validation, ['automatique', 'manuelle'], true)) : ?>
+                      <div class="carte-enigme-badges">
+                        <?php if ($cout_points > 0) : ?>
+                          <span class="badge-cout" aria-label="<?= esc_attr(sprintf(__('Cette énigme coûte %d point(s)', 'chassesautresor-com'), $cout_points)); ?>">
+                            <?= esc_html($cout_points . ' ' . __('pts', 'chassesautresor-com')); ?>
+                          </span>
+                        <?php endif; ?>
+                        <?php if (in_array($mode_validation, ['automatique', 'manuelle'], true)) :
+                            $icon = $mode_validation === 'automatique' ? 'fa-bolt' : 'fa-envelope';
+                            $label = $mode_validation === 'automatique'
+                                ? esc_html__('Mode de validation : automatique', 'chassesautresor-com')
+                                : esc_html__('Mode de validation : manuel', 'chassesautresor-com');
+                        ?>
+                          <span class="badge-validation" title="<?= esc_attr($label); ?>" aria-label="<?= esc_attr($label); ?>">
+                            <i class="fa-solid <?= esc_attr($icon); ?>" aria-hidden="true"></i>
+                          </span>
+                        <?php endif; ?>
+                      </div>
+                    <?php endif; ?>
+                    <?php if ($linkable) : ?>
+                      <span class="carte-enigme-overlay" aria-hidden="true">
+                        <span class="carte-enigme-bouton <?= esc_attr($classes_bouton); ?>">
+                          <?= esc_html($cta['label']); ?>
+                        </span>
                       </span>
-                    </span>
-                  <?php endif; ?>
-                </div>
+                    <?php endif; ?>
+                  </div>
 
                 <?php if ($mapping_visuel['image_reelle']) : ?>
                   <h3><?= esc_html($titre); ?></h3>
@@ -173,28 +177,26 @@ if (!function_exists('compter_tentatives_du_jour')) {
           <?php else : ?>
             </div>
           <?php endif; ?>
-          <footer class="carte-enigme-footer">
-            <div class="footer-left">
-              <span class="footer-item" title="<?= esc_attr__('nombre de participants à cette énigme', 'chassesautresor-com'); ?>" aria-label="<?= esc_attr__('nombre de participants à cette énigme', 'chassesautresor-com'); ?>">
-                <i class="fa-solid fa-users" aria-hidden="true"></i>
-                <?= esc_html($nb_participants); ?>
-              </span>
-              <?php if ($mode_validation !== 'aucune') : ?>
-                <span class="footer-item" title="<?= esc_attr__('nombre de joueurs ayant trouvé la bonne réponse', 'chassesautresor-com'); ?>" aria-label="<?= esc_attr__('nombre de joueurs ayant trouvé la bonne réponse', 'chassesautresor-com'); ?>">
-                  <?= get_svg_icon('idea'); ?>
-                  <?= esc_html($nb_resolutions); ?>
+            <footer class="carte-enigme-footer">
+              <div class="footer-icons">
+                <span class="footer-item" title="<?= esc_attr__('nombre de participants à cette énigme', 'chassesautresor-com'); ?>" aria-label="<?= esc_attr__('nombre de participants à cette énigme', 'chassesautresor-com'); ?>">
+                  <i class="fa-solid fa-users" aria-hidden="true"></i>
+                  <?= esc_html($nb_participants); ?>
                 </span>
-              <?php endif; ?>
-            </div>
-            <div class="footer-right">
-              <?php if ($mode_validation === 'automatique' && $tentatives_max > 0) : ?>
-                <span class="footer-item" title="<?= esc_attr__('tentatives quotidiennes utilisées', 'chassesautresor-com'); ?>" aria-label="<?= esc_attr__('tentatives quotidiennes utilisées', 'chassesautresor-com'); ?>">
-                  <i class="fa-solid fa-repeat" aria-hidden="true"></i>
-                  <?= esc_html($tentatives_utilisees . '/' . $tentatives_max); ?>
-                </span>
-              <?php endif; ?>
-            </div>
-          </footer>
+                <?php if ($mode_validation !== 'aucune') : ?>
+                  <span class="footer-item" title="<?= esc_attr__('nombre de joueurs ayant trouvé la bonne réponse', 'chassesautresor-com'); ?>" aria-label="<?= esc_attr__('nombre de joueurs ayant trouvé la bonne réponse', 'chassesautresor-com'); ?>">
+                    <?= get_svg_icon('idea'); ?>
+                    <?= esc_html($nb_resolutions); ?>
+                  </span>
+                <?php endif; ?>
+                <?php if ($mode_validation === 'automatique' && $tentatives_max > 0) : ?>
+                  <span class="footer-item" title="<?= esc_attr__('tentatives quotidiennes utilisées', 'chassesautresor-com'); ?>" aria-label="<?= esc_attr__('tentatives quotidiennes utilisées', 'chassesautresor-com'); ?>">
+                    <i class="fa-solid fa-repeat" aria-hidden="true"></i>
+                    <?= esc_html($tentatives_utilisees . '/' . $tentatives_max); ?>
+                  </span>
+                <?php endif; ?>
+              </div>
+            </footer>
           <?php if ($classe_completion === 'carte-incomplete') : ?>
             <span class="warning-icon" aria-label="<?= esc_attr__('Énigme incomplète', 'chassesautresor-com'); ?>" title="<?= esc_attr__('Énigme incomplète', 'chassesautresor-com'); ?>">
               <i class="fa-solid fa-exclamation" aria-hidden="true"></i>
