@@ -157,6 +157,22 @@ if ($statut === 'termine') {
     }
 }
 
+if (
+    $enigmes_intro === ''
+    && $est_orga_associe
+    && in_array($statut, ['en_cours', 'payante'], true)
+    && $nb_engagees === 0
+) {
+    if ($titre_recompense) {
+        $enigmes_intro = sprintf(
+            esc_html__('Voici les énigmes de cette chasse. Résolvez-les pour tenter de remporter %s.', 'chassesautresor-com'),
+            esc_html($titre_recompense)
+        );
+    } else {
+        $enigmes_intro = esc_html__('Voici les énigmes de cette chasse.', 'chassesautresor-com');
+    }
+}
+
 get_header();
 cat_debug("🧪 test organisateur_associe : " . ($est_orga_associe ? 'OUI' : 'NON'));
 
