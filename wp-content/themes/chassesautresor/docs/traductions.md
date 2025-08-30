@@ -55,4 +55,9 @@ wp i18n make-json languages
 - Ajouter des commentaires `/* translators: ... */` pour expliquer les placeholders complexes.
 - Utiliser l’interface anglaise pendant le développement pour repérer immédiatement les textes non traduits.
 - Utiliser `rg` pour repérer les chaînes non internationalisées dans le code.
+- Pour compiler tous les fichiers `.po` en `.mo` dans le dossier `languages`, exécutez :
+  
+  ```bash
+  for po in languages/*.po; do msgfmt "$po" -o "${po%.po}.mo"; done
+  ```
 - Poedit ou Loco Translate peuvent générer des rapports de couverture de traduction.
