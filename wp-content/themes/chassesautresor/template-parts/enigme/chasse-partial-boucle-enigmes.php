@@ -228,7 +228,6 @@ if (!function_exists('compter_tentatives_du_jour')) {
       get_template_part('template-parts/enigme/chasse-partial-ajout-enigme', null, [
         'has_enigmes'     => $has_enigmes,
         'chasse_id'       => $chasse_id,
-        'disabled'        => !$complete,
         'highlight_pulse' => $highlight_pulse,
         'use_button'      => false,
         'show_help_icon'  => $show_help_icon,
