@@ -62,7 +62,49 @@ $image_raw = $infos_chasse['image_raw'];
 $image_id  = $infos_chasse['image_id'];
 $image_url = $infos_chasse['image_url'];
 
+
 $enigmes_resolues = compter_enigmes_resolues($chasse_id, $user_id);
+
+$enigmes_associees = $infos_chasse['enigmes_associees'];
+$total_enigmes    = count($enigmes_associees);
+$validables       = [];
+foreach ($enigmes_associees as $eid) {
+    if (get_field('enigme_mode_validation', $eid) !== 'aucune') {
+        $validables[] = $eid;
+    }
+}
+$nb_resolvables = count($validables);
+
+$nb_engagees = 0;
+if ($user_id && $total_enigmes > 0) {
+    global $wpdb;
+    $placeholders = implode(',', array_fill(0, $total_enigmes, '%d'));
+    $sql          = "SELECT COUNT(DISTINCT enigme_id) FROM {$wpdb->prefix}engagements WHERE user_id = %d AND enigme_id IN ($placeholders)";
+    $nb_engagees  = (int) $wpdb->get_var($wpdb->prepare($sql, array_merge([$user_id], $enigmes_associees)));
+}
+
+$has_solutions = function_exists('solution_existe_pour_objet')
+    ? solution_existe_pour_objet($chasse_id, 'chasse')
+    : false;
+$has_indices = function_exists('prochain_rang_indice')
+    ? prochain_rang_indice($chasse_id, 'chasse') > 1
+    : false;
+if (!$has_solutions || !$has_indices) {
+    foreach ($enigmes_associees as $eid) {
+        if (!$has_solutions && function_exists('solution_existe_pour_objet') && solution_existe_pour_objet($eid, 'enigme')) {
+            $has_solutions = true;
+        }
+        if (!$has_indices && function_exists('prochain_rang_indice') && prochain_rang_indice($eid, 'enigme') > 1) {
+            $has_indices = true;
+        }
+        if ($has_solutions && $has_indices) {
+            break;
+        }
+    }
+}
+
+$titre_chasse   = get_the_title($chasse_id);
+$enigmes_intro  = '';
 
 $mode_fin = get_field('chasse_mode_fin', $chasse_id) ?: 'automatique';
 $statut = $infos_chasse['statut'];
@@ -79,6 +121,62 @@ $needs_validatable_message = $statut === 'revision'
 $statut_validation = $infos_chasse['statut_validation'];
 $nb_joueurs = $infos_chasse['nb_joueurs'];
 $sidebar_data = sidebar_prepare_chasse_nav($chasse_id, $user_id);
+
+$solved_label  = _n('énigme résolue', 'énigmes résolues', $enigmes_resolues, 'chassesautresor-com');
+$engaged_label = _n('engagée', 'engagées', $nb_engagees, 'chassesautresor-com');
+
+if ($statut === 'termine') {
+    $enigmes_intro = ($has_solutions || $has_indices)
+        ? esc_html__('La chasse est terminée. Vous pouvez revoir toutes les énigmes ainsi que leurs solutions et indices.', 'chassesautresor-com')
+        : esc_html__('La chasse est terminée. Les énigmes restent consultables.', 'chassesautresor-com');
+} elseif ($statut === 'a_venir') {
+    $enigmes_intro = sprintf(
+        esc_html__('Les énigmes seront affichées au début de la chasse, le %s.', 'chassesautresor-com'),
+        esc_html($date_debut_formatee)
+    );
+} elseif (in_array($statut, ['en_cours', 'payante'], true) && $statut_validation === 'valide') {
+    if ($nb_engagees === 0) {
+        if ($titre_recompense) {
+            $enigmes_intro = sprintf(
+                esc_html__('Voici les énigmes de cette chasse. Résolvez-les pour tenter de remporter %s.', 'chassesautresor-com'),
+                esc_html($titre_recompense)
+            );
+        } else {
+            $enigmes_intro = esc_html__('Voici les énigmes de cette chasse.', 'chassesautresor-com');
+        }
+    } else {
+        $enigmes_intro = sprintf(
+            esc_html__('Progression : %1$d/%2$d %3$s — %4$d/%5$d %6$s.', 'chassesautresor-com'),
+            $enigmes_resolues,
+            $nb_resolvables,
+            esc_html($solved_label),
+            $nb_engagees,
+            $total_enigmes,
+            esc_html($engaged_label)
+        );
+    }
+} elseif ($est_orga_associe && in_array($statut_validation, ['creation', 'correction'], true)) {
+    $enigmes_intro = esc_html__(
+        'Voici vos énigmes : ajoutez, modifiez ou supprimez celles dont vous n’avez plus besoin !',
+        'chassesautresor-com'
+    );
+}
+
+if (
+    $enigmes_intro === ''
+    && $est_orga_associe
+    && in_array($statut, ['en_cours', 'payante'], true)
+    && $nb_engagees === 0
+) {
+    if ($titre_recompense) {
+        $enigmes_intro = sprintf(
+            esc_html__('Voici les énigmes de cette chasse. Résolvez-les pour tenter de remporter %s.', 'chassesautresor-com'),
+            esc_html($titre_recompense)
+        );
+    } else {
+        $enigmes_intro = esc_html__('Voici les énigmes de cette chasse.', 'chassesautresor-com');
+    }
+}
 
 get_header();
 cat_debug("🧪 test organisateur_associe : " . ($est_orga_associe ? 'OUI' : 'NON'));
@@ -142,7 +240,11 @@ $sidebar_sections = render_sidebar(
     <!-- 🧩 Liste des énigmes -->
     <section class="chasse-enigmes-wrapper" id="chasse-enigmes-wrapper">
         <div class="titre-enigmes-wrapper">
-            <h2><?= esc_html__('Énigmes', 'chassesautresor-com'); ?></h2>
+            <h2><?php printf(esc_html__('Énigmes de %s', 'chassesautresor-com'), esc_html($titre_chasse)); ?></h2>
+            <?php if ($enigmes_intro !== '') : ?>
+                <p class="enigmes-intro"><?= $enigmes_intro; ?></p>
+            <?php endif; ?>
+            <div class="separateur-3"></div>
         </div>
         <div id="liste-enigmes" class="chasse-enigmes-liste">
             <?php

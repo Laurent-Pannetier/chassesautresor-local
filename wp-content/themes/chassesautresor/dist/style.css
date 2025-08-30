@@ -6663,8 +6663,12 @@ span.champ-obligatoire {
 
 .titre-enigmes-wrapper {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: var(--space-md);
+  text-align: center;
+  width: 100%;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-sm);
 }
 
 /* 🔄 Loading spinner for pager */

@@ -648,6 +648,56 @@ msgstr "Definition of the resolution rate"
 msgid "Énigmes"
 msgstr "Riddles"
 
+#: single-chasse.php:222
+#, php-format
+msgid "Énigmes de %s"
+msgstr "Riddles of %s"
+
+#: single-chasse.php:128
+msgid "La chasse est terminée. Vous pouvez revoir toutes les énigmes ainsi que leurs solutions et indices."
+msgstr "The hunt is over. You can review all riddles along with their solutions and hints."
+
+#: single-chasse.php:131
+msgid "La chasse est terminée. Les énigmes restent consultables."
+msgstr "The hunt is over. The riddles remain accessible."
+
+#: single-chasse.php:134
+#, php-format
+msgid "Les énigmes seront affichées au début de la chasse, le %s."
+msgstr "Riddles will be displayed at the start of the hunt on %s."
+
+#: single-chasse.php:141
+#, php-format
+msgid "Voici les énigmes de cette chasse. Résolvez-les pour tenter de remporter %s."
+msgstr "Here are the riddles of this hunt. Solve them for a chance to win %s."
+
+#: single-chasse.php:145
+msgid "Voici les énigmes de cette chasse."
+msgstr "Here are the riddles of this hunt."
+
+#: single-chasse.php:149
+#, php-format
+msgid "Progression : %1$d/%2$d %3$s — %4$d/%5$d %6$s."
+msgstr "Progress: %1$d/%2$d %3$s — %4$d/%5$d %6$s."
+
+#: single-chasse.php:159
+msgid "Voici vos énigmes : ajoutez, modifiez ou supprimez celles dont vous n’avez plus besoin !"
+msgstr "Here are your riddles: add, edit, or delete them as needed!"
+
+#: single-chasse.php:125
+#: single-chasse.php:126
+msgid "énigme résolue"
+msgid_plural "énigmes résolues"
+msgstr[0] "solved riddle"
+msgstr[1] "solved riddles"
+
+#: single-chasse.php:125
+#: single-chasse.php:126
+msgid "engagée"
+msgid_plural "engagées"
+msgstr[0] "engaged"
+msgstr[1] "engaged"
+
 #: inc/enigme/affichage.php:536 inc/enigme/affichage.php:1008
 msgid "Retour"
 msgstr ""
