@@ -71,3 +71,21 @@ test('group toggle collapses and expands', () => {
   expect(btn.getAttribute('aria-expanded')).toBe('false');
   expect(sub.hidden).toBe(true);
 });
+
+test('search works on narrow screens', () => {
+  jest.resetModules();
+  document.body.innerHTML = `<aside class="menu-lateral"><section class="enigme-navigation"><input class="enigme-menu__search" type="search"><ul class="enigme-menu"><li data-enigme-id="1">Alpha</li><li data-enigme-id="2">Beta</li></ul></section></aside>`;
+  window.sidebarData = { ajaxUrl: '#' };
+  window.matchMedia = jest.fn().mockReturnValue({ matches: false, addListener: () => {}, removeListener: () => {} });
+  jest.useFakeTimers();
+  require('../../wp-content/themes/chassesautresor/assets/sidebar/sidebar.js');
+  document.dispatchEvent(new Event('DOMContentLoaded'));
+  const input = document.querySelector('.enigme-menu__search');
+  const menu = document.querySelector('.enigme-menu');
+  input.value = 'beta';
+  input.dispatchEvent(new Event('input', { bubbles: true }));
+  jest.advanceTimersByTime(350);
+  const visibleItems = menu.querySelectorAll('li[data-enigme-id]:not([hidden])');
+  expect(visibleItems).toHaveLength(1);
+  expect(visibleItems[0].textContent).toBe('Beta');
+});

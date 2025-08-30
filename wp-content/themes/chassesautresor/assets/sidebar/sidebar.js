@@ -5,38 +5,43 @@
     const bp = getComputedStyle(document.documentElement)
       .getPropertyValue('--breakpoint-desktop')
       .trim() || '1280px';
-    if (!window.matchMedia(`(min-width: ${bp})`).matches) return;
+    const isDesktop = window.matchMedia(`(min-width: ${bp})`).matches;
     const __ = window.wp?.i18n?.__ || (s => s);
-    const opener = document.createElement('button');
-    opener.className = 'menu-lateral__reveal';
-    opener.type = 'button';
-    opener.innerHTML = '<i class="fa-solid fa-chevron-right" aria-hidden="true"></i>' +
-      '<span class="screen-reader-text">' + __('Afficher le panneau', 'chassesautresor-com') + '</span>';
-    document.body.appendChild(opener);
+    let opener = null;
     let timer = null;
     function hideAside() {
+      if (!isDesktop) return;
       aside.classList.add('is-hidden');
-      opener.style.display = 'flex';
+      if (opener) opener.style.display = 'flex';
       if (timer) {
         clearTimeout(timer);
         timer = null;
       }
     }
     function showAside() {
+      if (!isDesktop) return;
       aside.classList.remove('is-hidden');
-      opener.style.display = 'none';
+      if (opener) opener.style.display = 'none';
       if (timer) clearTimeout(timer);
       timer = setTimeout(hideAside, 5000);
     }
-    opener.addEventListener('click', showAside);
-    opener.addEventListener('mouseenter', showAside);
-    aside.addEventListener('mouseenter', () => {
-      if (timer) clearTimeout(timer);
-    });
-    aside.addEventListener('mouseleave', () => {
-      if (timer) clearTimeout(timer);
-      timer = setTimeout(hideAside, 5000);
-    });
+    if (isDesktop) {
+      opener = document.createElement('button');
+      opener.className = 'menu-lateral__reveal';
+      opener.type = 'button';
+      opener.innerHTML = '<i class="fa-solid fa-chevron-right" aria-hidden="true"></i>' +
+        '<span class="screen-reader-text">' + __('Afficher le panneau', 'chassesautresor-com') + '</span>';
+      document.body.appendChild(opener);
+      opener.addEventListener('click', showAside);
+      opener.addEventListener('mouseenter', showAside);
+      aside.addEventListener('mouseenter', () => {
+        if (timer) clearTimeout(timer);
+      });
+      aside.addEventListener('mouseleave', () => {
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(hideAside, 5000);
+      });
+    }
     const menu = aside.querySelector('.enigme-menu');
     const search = aside.querySelector('.enigme-menu__search');
     if (menu && search) {
