@@ -132,7 +132,9 @@ function initEnigmeEdit() {
   // ==============================
   // 🛠️ Contrôles panneau principal
   // ==============================
-  const toggleEdition = () => {
+  const toggleEdition = (e) => {
+    e?.preventDefault();
+    e?.stopPropagation();
     document.body.classList.toggle('edition-active-enigme');
     document.body.classList.toggle('panneau-ouvert');
     document.body.classList.toggle('mode-edition');
