@@ -159,11 +159,17 @@ function initEnigmeEdit() {
     }
   });
   document.addEventListener('click', (e) => {
+    const path = e.composedPath?.() || [];
+    const clickInside =
+      panneauEdition &&
+      (panneauEdition.contains(e.target) || path.includes(panneauEdition));
+    const onToggle = e.target.closest(
+      '#toggle-mode-edition-enigme, .toggle-mode-edition-enigme'
+    );
     if (
       document.body.classList.contains('edition-active-enigme') &&
-      panneauEdition &&
-      !panneauEdition.contains(e.target) &&
-      !e.target.closest('#toggle-mode-edition-enigme, .toggle-mode-edition-enigme')
+      !clickInside &&
+      !onToggle
     ) {
       cancelEdition();
     }
