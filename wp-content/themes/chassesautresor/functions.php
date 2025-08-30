@@ -246,19 +246,28 @@ add_action('wp_enqueue_scripts', function () {
             filemtime($theme_path . '/assets/js/enigme-panel.js'),
             true
         );
+    }
+    $sidebar_dir = $theme_uri . '/assets/sidebar/';
+    if (is_singular(['enigme', 'chasse'])) {
         wp_enqueue_script(
-            'enigme-aside',
-            $script_dir . 'enigme-aside.js',
+            'sidebar',
+            $sidebar_dir . 'sidebar.js',
             [],
-            filemtime($theme_path . '/assets/js/enigme-aside.js'),
+            filemtime($theme_path . '/assets/sidebar/sidebar.js'),
             true
         );
         wp_enqueue_script(
-            'enigme-menu-toggle',
-            $script_dir . 'enigme-menu-toggle.js',
+            'sidebar-menu-toggle',
+            $sidebar_dir . 'menu-toggle.js',
             [],
-            filemtime($theme_path . '/assets/js/enigme-menu-toggle.js'),
+            filemtime($theme_path . '/assets/sidebar/menu-toggle.js'),
             true
+        );
+        wp_enqueue_style(
+            'sidebar',
+            $sidebar_dir . 'sidebar.css',
+            [],
+            filemtime($theme_path . '/assets/sidebar/sidebar.css')
         );
     }
 });
@@ -353,6 +362,7 @@ require_once $inc_path . 'organisateur-functions.php';
 require_once $inc_path . 'access-functions.php';
 require_once $inc_path . 'relations-functions.php';
 require_once $inc_path . 'layout-functions.php';
+require_once $inc_path . 'sidebar.php';
 require_once $inc_path . 'myaccount-functions.php';
 require_once $inc_path . 'utils/liens.php';
 require_once $inc_path . 'chasse/stats.php';

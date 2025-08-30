@@ -1,18 +1,19 @@
 <?php
 /**
- * Rendu d'une section du panneau/aside d'énigme.
+ * Render a section of the reusable sidebar component.
  *
  * @param array $args {
- *     @type string $section       Section à afficher : 'navigation' ou 'stats'.
- *     @type array  $visible_items Éléments de menu visibles.
- *     @type array  $hidden_items  Éléments de menu masqués.
- *     @type bool   $edition_active Mode édition actif.
- *     @type int    $chasse_id     Identifiant de la chasse liée.
- *     @type string $ajout_html    HTML du lien d'ajout d'énigme.
- *     @type string $meta_html     Métadonnées de l'énigme.
- *     @type string $stats_html    Statistiques d'engagement/résolution.
- *     @type string $winners_html  Liste des gagnants.
- *     @type int    $enigme_id     Identifiant de l'énigme.
+ *     @type string $section       Section identifier: 'navigation' or 'stats'.
+ *     @type array  $visible_items Visible menu items.
+ *     @type array  $hidden_items  Hidden menu items.
+ *     @type bool   $edition_active Whether edition mode is active.
+ *     @type int    $chasse_id     Related hunt identifier.
+ *     @type string $ajout_html    HTML for the add link.
+ *     @type string $meta_html     Meta data HTML.
+ *     @type string $stats_html    Statistics HTML.
+ *     @type string $winners_html  Winners list HTML.
+ *     @type int    $enigme_id     Enigma identifier.
+ *     @type string $context       Rendering context ('enigme' or 'chasse').
  * }
  */
 
@@ -21,6 +22,7 @@ if (!isset($args['section'])) {
 }
 
 $section = $args['section'];
+$context = $args['context'] ?? 'enigme';
 
 if ($section === 'navigation') {
     if (!empty($args['chasse_id'])) {
@@ -38,14 +40,20 @@ if ($section === 'navigation') {
         $menu_class .= ' enigme-menu--editable';
     }
 
-    echo '<section class="enigme-navigation"' . $data_chasse . '>';
-    echo '<h3>' . esc_html__('Énigmes', 'chassesautresor-com') . '</h3>';
+    echo '<section class="enigme-navigation"' . $data_chasse . ' data-context="' . esc_attr($context) . '">';
+    $nav_title = $context === 'chasse'
+        ? esc_html__('Chasses', 'chassesautresor-com')
+        : esc_html__('Énigmes', 'chassesautresor-com');
+    echo '<h3>' . $nav_title . '</h3>';
     if (!empty($args['ajout_html'])) {
         echo $args['ajout_html'];
     }
 
     if (empty($visible_items) && empty($hidden_items)) {
-        echo '<p class="enigme-navigation__empty">' . esc_html__('Aucune énigme disponible', 'chassesautresor-com') . '</p>';
+        $empty_text = $context === 'chasse'
+            ? esc_html__('Aucune chasse disponible', 'chassesautresor-com')
+            : esc_html__('Aucune énigme disponible', 'chassesautresor-com');
+        echo '<p class="enigme-navigation__empty">' . $empty_text . '</p>';
     } else {
         echo '<ul class="' . esc_attr($menu_class) . '">' . implode('', $visible_items) . '</ul>';
         if (!empty($hidden_items)) {
