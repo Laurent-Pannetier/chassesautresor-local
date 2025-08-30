@@ -42,7 +42,7 @@
       const data = new URLSearchParams();
       data.append('action', 'chasse_recuperer_navigation');
       data.append('chasse_id', chasseId);
-      fetch('/wp-admin/admin-ajax.php', {
+      fetch(sidebarData.ajaxUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: data
