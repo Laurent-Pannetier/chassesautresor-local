@@ -5157,6 +5157,22 @@ li.active .enigme-menu__edit {
   background-color: rgba(255, 215, 0, 0.2);
 }
 
+.cards-grid.dragging {
+  outline: 2px dashed var(--color-accent);
+  outline-offset: -2px;
+  background-color: rgba(255, 215, 0, 0.1);
+}
+
+.carte-enigme.dragging {
+  opacity: 0.5;
+}
+
+.carte-enigme.drag-over {
+  outline: 2px dashed var(--color-accent);
+  outline-offset: -2px;
+  background-color: rgba(255, 215, 0, 0.2);
+}
+
 .enigme-menu--overflow {
   margin-top: 0;
 }
