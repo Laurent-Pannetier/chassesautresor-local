@@ -161,7 +161,7 @@ function initEnigmeEdit() {
       document.body.classList.contains('edition-active-enigme') &&
       panneauEdition &&
       !panneauEdition.contains(e.target) &&
-      !e.target.closest('.toggle-mode-edition-enigme')
+      !e.target.closest('#toggle-mode-edition-enigme, .toggle-mode-edition-enigme')
     ) {
       cancelEdition();
     }
