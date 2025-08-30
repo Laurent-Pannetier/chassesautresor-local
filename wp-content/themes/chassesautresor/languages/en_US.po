@@ -3069,3 +3069,115 @@ msgstr "Enabled"
 #: inc/admin-functions.php:1444
 msgid "Désactivé"
 msgstr "Disabled"
+
+#: template-parts/enigme/chasse-partial-boucle-enigmes.php:173
+msgid "Mode de validation : automatique"
+msgstr "Validation mode: automatic"
+
+#: template-parts/enigme/chasse-partial-boucle-enigmes.php:174
+msgid "Mode de validation : manuel"
+msgstr "Validation mode: manual"
+
+#: inc/enigme/visuels.php:366
+msgid "L’énigme est accessible et engagée"
+msgstr "The puzzle is accessible and engaged"
+
+#: inc/enigme/visuels.php:372
+msgid "L’énigme est ouverte, mais pas encore tentée"
+msgstr "The puzzle is open but not yet attempted"
+
+#: inc/enigme/visuels.php:378
+msgid "Énigme déjà résolue"
+msgstr "Puzzle already solved"
+
+#: inc/enigme/visuels.php:385
+msgid "Énigme en cours"
+msgstr "Puzzle in progress"
+
+#: inc/enigme/visuels.php:392
+msgid "Réponse en attente de validation"
+msgstr "Answer awaiting validation"
+
+#: inc/enigme/visuels.php:399
+msgid "Énigme clôturée"
+msgstr "Puzzle closed"
+
+#: inc/enigme/visuels.php:406 inc/enigme/cta.php:172
+msgid "Connexion requise"
+msgstr "Login required"
+
+#: inc/enigme/visuels.php:413
+msgid "Énigme disponible plus tard"
+msgstr "Puzzle available later"
+
+#: inc/enigme/visuels.php:420 inc/enigme/cta.php:210
+msgid "Chasse verrouillée"
+msgstr "Hunt locked"
+
+#: inc/enigme/visuels.php:427
+msgid "Énigme mal configurée"
+msgstr "Puzzle misconfigured"
+
+#: inc/enigme/visuels.php:434
+msgid "Cache technique corrompu"
+msgstr "Technical cache corrupted"
+
+#: inc/enigme/visuels.php:441
+msgid "Erreur technique"
+msgstr "Technical error"
+
+#: inc/enigme/visuels.php:458
+msgid "État inconnu"
+msgstr "Unknown state"
+
+#: inc/enigme/cta.php:146
+msgid "Indéfini"
+msgstr "Undefined"
+
+#: inc/enigme/cta.php:156
+msgid "Voir l’énigme"
+msgstr "View the puzzle"
+
+#: inc/enigme/cta.php:160
+msgid "Accès total"
+msgstr "Full access"
+
+#: inc/enigme/cta.php:168
+msgid "Connectez-vous"
+msgstr "Log in"
+
+#: inc/enigme/cta.php:222 inc/enigme/cta.php:267
+msgid "Terminée"
+msgstr "Finished"
+
+#: inc/enigme/cta.php:251
+msgid "En cours"
+msgstr "In progress"
+
+#: inc/enigme/cta.php:257
+msgid "Revoir"
+msgstr "Review"
+
+#: inc/enigme/cta.php:261
+msgid "Résolue"
+msgstr "Solved"
+
+#: inc/enigme/cta.php:276
+msgid "En attente"
+msgstr "Pending"
+
+#: inc/enigme/cta.php:280
+msgid "Soumise"
+msgstr "Submitted"
+
+#: inc/enigme/cta.php:270
+msgid "Clôturée"
+msgstr "Closed"
+
+#: inc/enigme/cta.php:309 inc/enigme/cta.php:316
+msgid "Erreur"
+msgstr "Error"
+
+#: inc/enigme/cta.php:307
+msgid "Statut inconnu"
+msgstr "Unknown status"
