@@ -613,6 +613,7 @@ a.ajout-link:focus-visible {
     background: var(--color-grey-light);
     color: var(--color-text-fond-clair);
     font-size: 0.75rem;
+    box-shadow: 0 0 0 1px var(--color-grey-dark), 0 2px 4px rgba(var(--color-text-fond-clair-rgb), 0.15);
 }
 
 /* ========== 🟢 BADGE ROND ========== */
