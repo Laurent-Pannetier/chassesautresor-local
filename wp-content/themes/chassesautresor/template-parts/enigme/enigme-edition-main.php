@@ -393,7 +393,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                     'content' => function () use ($reponses, $casse, $peut_editer, $enigme_id) {
                         ?>
                         <div class="bonnes-reponses-wrapper<?= empty($reponses) ? ' champ-vide-obligatoire' : ''; ?>"></div>
-                        <div class="champ-enigme champ-casse <?= $casse ? 'champ-rempli' : 'champ-vide'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_reponse_casse" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" data-no-edit="1" style="display: inline-flex; align-items: center;">
+                        <div class="champ-enigme champ-casse <?= $casse ? 'champ-rempli' : 'champ-vide'; ?><?= $peut_editer ? '' : ' champ-desactive'; ?>" data-champ="enigme_reponse_casse" data-cpt="enigme" data-post-id="<?= esc_attr($enigme_id); ?>" data-no-edit="1">
                             <label style="display: flex; align-items: center; gap: 4px;"><input type="checkbox" <?= $casse ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>> <?= esc_html__('Respecter la casse', 'chassesautresor-com'); ?></label>
                             <div class="champ-feedback"></div>
                         </div>
