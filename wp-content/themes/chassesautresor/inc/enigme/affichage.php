@@ -507,11 +507,18 @@ defined('ABSPATH') || exit;
             $ajout_html = ob_get_clean();
         }
 
+        $max_visible   = function_exists('apply_filters')
+            ? (int) apply_filters('enigme_menu_max_visible', 10)
+            : 10;
+        $visible_items = array_slice($menu_items, 0, $max_visible);
+        $hidden_items  = array_slice($menu_items, $max_visible);
+
         $navigation_html = enigme_get_sidebar_section_html('navigation', [
-            'menu_items'    => $menu_items,
-            'edition_active'=> $edition_active,
-            'chasse_id'     => $chasse_id,
-            'ajout_html'    => $ajout_html,
+            'visible_items'  => $visible_items,
+            'hidden_items'   => $hidden_items,
+            'edition_active' => $edition_active,
+            'chasse_id'      => $chasse_id,
+            'ajout_html'     => $ajout_html,
         ]);
         if ($navigation_html === '') {
             $navigation_html = '<section class="enigme-navigation"><h3>'

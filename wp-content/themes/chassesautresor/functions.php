@@ -253,6 +253,13 @@ add_action('wp_enqueue_scripts', function () {
             filemtime($theme_path . '/assets/js/enigme-aside.js'),
             true
         );
+        wp_enqueue_script(
+            'enigme-menu-toggle',
+            $script_dir . 'enigme-menu-toggle.js',
+            [],
+            filemtime($theme_path . '/assets/js/enigme-menu-toggle.js'),
+            true
+        );
     }
 });
 
