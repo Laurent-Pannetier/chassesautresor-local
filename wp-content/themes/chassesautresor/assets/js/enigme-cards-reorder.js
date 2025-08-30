@@ -27,7 +27,14 @@ function initEnigmeCardsReorder() {
     grid.querySelectorAll('.drag-over').forEach((el) => el.classList.remove('drag-over'));
     target.classList.add('drag-over');
     const rect = target.getBoundingClientRect();
-    const next = e.clientY > rect.top + rect.height / 2;
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const deltaX = e.clientX - centerX;
+    const deltaY = e.clientY - centerY;
+    const next =
+      Math.abs(deltaX) > Math.abs(deltaY)
+        ? e.clientX > centerX
+        : e.clientY > centerY;
     grid.insertBefore(dragged, next ? target.nextSibling : target);
   });
 
