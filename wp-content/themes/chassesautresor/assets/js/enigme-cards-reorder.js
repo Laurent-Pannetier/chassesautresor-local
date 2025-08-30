@@ -38,5 +38,16 @@
 
       grid.insertBefore(dragged, shouldInsertAfter ? target.nextSibling : target);
     });
+
+    grid.addEventListener('drop', (e) => {
+      e.preventDefault();
+      if (dragged) {
+        dragged.classList.remove('dragging');
+        dragged = null;
+      }
+      grid
+        .querySelectorAll('.drag-over')
+        .forEach((el) => el.classList.remove('drag-over'));
+    });
   });
 })();
