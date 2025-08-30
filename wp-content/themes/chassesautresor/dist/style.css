@@ -226,7 +226,7 @@
   padding: var(--space-xl);
   min-height: 140px;
   text-align: center;
-  border: 2px dashed var(--color-background-button);
+  border: 2px dashed var(--color-gris-3);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.05);
   position: relative;
@@ -238,7 +238,7 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  border: 2px dashed var(--color-background-button);
+  border: 2px dashed var(--color-gris-3);
   background: var(--color-text-primary);
   color: var(--color-background);
   position: relative;
@@ -249,7 +249,7 @@
   background: var(--color-text-primary);
   color: var(--color-background);
   border-style: solid;
-  border-color: var(--color-background-button);
+  border-color: var(--color-gris-3);
   transform: translateY(-4px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
@@ -277,7 +277,7 @@
 }
 
 .carte-ajout-enigme .carte-core i {
-  color: var(--color-background-button);
+  color: var(--color-gris-3);
   font-size: 28px;
 }
 
@@ -353,14 +353,14 @@
 }
 
 .carte-ajout-wrapper .carte-help-icon {
-  color: var(--color-background-button);
-  border-color: var(--color-background-button);
+  color: var(--color-gris-3);
+  border-color: var(--color-gris-3);
 }
 
 .carte-ajout-wrapper .carte-help-icon:hover,
 .carte-ajout-wrapper .carte-help-icon:focus {
-  color: var(--color-background-button-hover);
-  border-color: var(--color-background-button-hover);
+  color: var(--color-gris-3);
+  border-color: var(--color-gris-3);
 }
 
 /* ========== ✅ Indicateurs de complétion ========== */
