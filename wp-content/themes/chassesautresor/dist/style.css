@@ -67,6 +67,13 @@
   position: relative;
 }
 
+.carte-enigme .badge-validation {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1;
+}
+
 .etat-bloquee_chasse .carte-core,
 .etat-bloquee_date .carte-core,
 .etat-bloquee_pre_requis .carte-core,
@@ -1282,6 +1289,19 @@ a.ajout-link:focus-visible {
 /* ==================================================
    🏷️ BADGES
    ================================================== */
+/* ========== ✔️ BADGE VALIDATION ========== */
+.badge-validation {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--color-grey-light);
+  color: var(--color-text-fond-clair);
+  font-size: 0.75rem;
+}
+
 /* ========== 🟢 BADGE ROND ========== */
 .badge-rond {
   margin: 0;
@@ -5123,18 +5143,6 @@ li.active .enigme-menu__edit {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.participation .badge-validation {
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: var(--color-grey-light);
-  color: var(--color-text-fond-clair);
-  font-size: 0.75rem;
 }
 
 .zone-reponse form {

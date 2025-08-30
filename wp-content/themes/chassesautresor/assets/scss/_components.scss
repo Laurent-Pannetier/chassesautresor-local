@@ -601,6 +601,20 @@ a.ajout-link:focus-visible {
    🏷️ BADGES
    ================================================== */
 
+/* ========== ✔️ BADGE VALIDATION ========== */
+
+.badge-validation {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--color-grey-light);
+    color: var(--color-text-fond-clair);
+    font-size: 0.75rem;
+}
+
 /* ========== 🟢 BADGE ROND ========== */
 
 .badge-rond {

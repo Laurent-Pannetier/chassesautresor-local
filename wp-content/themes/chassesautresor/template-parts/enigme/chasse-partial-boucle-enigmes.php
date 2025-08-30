@@ -66,6 +66,7 @@ foreach ($posts as $p) {
       $cta = get_cta_enigme($enigme_id, $utilisateur_id);
       $type_cta = $cta['type'] ?? 'inconnu';
       $classe_cta = 'cta-' . sanitize_html_class($type_cta);
+        $mode_validation = get_field('enigme_mode_validation', $enigme_id);
 
       // 🔍 Vérification bordure admin/orga
       $statut_enigme = get_post_status($enigme_id);
@@ -84,8 +85,18 @@ foreach ($posts as $p) {
       $classes_carte = trim("carte carte-enigme $classe_completion $classe_cta");
       $mapping_visuel = get_mapping_visuel_enigme($enigme_id);
     ?>
-      <article class="<?= esc_attr($classes_carte); ?>">
-        <div class="carte-core">
+        <article class="<?= esc_attr($classes_carte); ?>">
+            <?php if (in_array($mode_validation, ['automatique', 'manuelle'], true)) :
+                $icon = $mode_validation === 'automatique' ? 'fa-bolt' : 'fa-envelope';
+                $label = $mode_validation === 'automatique'
+                    ? esc_html__('Mode de validation : automatique', 'chassesautresor-com')
+                    : esc_html__('Mode de validation : manuel', 'chassesautresor-com');
+            ?>
+                <span class="badge-validation" title="<?= esc_attr($label); ?>" aria-label="<?= esc_attr($label); ?>">
+                    <i class="fa-solid <?= esc_attr($icon); ?>" aria-hidden="true"></i>
+                </span>
+            <?php endif; ?>
+            <div class="carte-core">
           <div class="carte-enigme-image <?= esc_attr($mapping_visuel['filtre'] ?? ''); ?>"
             title="<?= esc_attr($mapping_visuel['sens'] ?? '') ?>">
             <?php if ($mapping_visuel['image_reelle']) : ?>
