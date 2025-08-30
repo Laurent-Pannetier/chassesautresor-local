@@ -130,7 +130,7 @@ $can_validate = peut_valider_chasse($chasse_id, $user_id);
     <!-- 🧩 Liste des énigmes -->
     <section class="chasse-enigmes-wrapper" id="chasse-enigmes-wrapper">
         <div class="titre-enigmes-wrapper">
-            <h2>Énigmes</h2>
+            <h2><?= esc_html__('Énigmes', 'chassesautresor-com'); ?></h2>
         </div>
         <div id="liste-enigmes" class="chasse-enigmes-liste">
             <?php
