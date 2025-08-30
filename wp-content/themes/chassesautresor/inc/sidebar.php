@@ -28,12 +28,13 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
     /**
      * Prepare navigation items for a hunt sidebar.
      *
-     * @param int $chasse_id Hunt identifier.
-     * @param int $user_id   Current user identifier.
+     * @param int $chasse_id         Hunt identifier.
+     * @param int $user_id           Current user identifier.
+     * @param int $current_enigme_id Current enigma identifier.
      *
-     * @return array{menu_items:array,peut_ajouter_enigme:bool,total_enigmes:int,has_incomplete_enigme:bool}
+     * @return array{menu_items:array,peut_ajouter_enigme:bool,total_enigmes:int,has_incomplete_enigme:bool,visible_ids:array}
      */
-    function sidebar_prepare_chasse_nav(int $chasse_id, int $user_id): array
+    function sidebar_prepare_chasse_nav(int $chasse_id, int $user_id, int $current_enigme_id = 0): array
     {
         $all_enigmes         = recuperer_enigmes_pour_chasse($chasse_id);
         $submenu_items       = [];
@@ -79,8 +80,13 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
                 $classes = [];
             }
 
-            $title = esc_html(get_the_title($post->ID));
-            $link  = '<a href="' . esc_url(get_permalink($post->ID)) . '">' . $title . '</a>';
+            if ($post->ID === $current_enigme_id) {
+                $classes[] = 'active';
+            }
+
+            $title        = esc_html(get_the_title($post->ID));
+            $aria_current = $post->ID === $current_enigme_id ? ' aria-current="page"' : '';
+            $link         = '<a href="' . esc_url(get_permalink($post->ID)) . '"' . $aria_current . '>' . $title . '</a>';
             $submenu_items[] = sprintf(
                 '<li class="%s" data-enigme-id="%d">%s</li>',
                 esc_attr(implode(' ', $classes)),
@@ -194,9 +200,11 @@ if (!function_exists('render_sidebar')) {
             'context'        => $context,
         ]);
         if ($navigation_html === '') {
-            $navigation_html = '<section class="enigme-navigation"><h3>'
+            $navigation_html = '<nav class="enigme-navigation" aria-label="'
+                . esc_attr__('Navigation des énigmes', 'chassesautresor-com')
+                . '"><h3>'
                 . esc_html__('Énigmes', 'chassesautresor-com')
-                . '</h3><ul class="enigme-menu"></ul></section>';
+                . '</h3><ul class="enigme-menu"></ul></nav>';
         }
 
         $stats_section_html = sidebar_get_section_html('stats', [

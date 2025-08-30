@@ -330,3 +330,9 @@ body.edition-active-chasse .chasse-enigmes-header  .liens-placeholder {
   font-size: 0.8em;
   font-weight: 500;
 }
+
+@media not all and (--bp-desktop) {
+  .chasse-layout .menu-lateral {
+    display: none;
+  }
+}

@@ -195,6 +195,27 @@ $sidebar_sections = render_sidebar(
 );
 ?>
 
+<?php
+echo '<header class="enigme-mobile-header">';
+echo '<div aria-hidden="true"></div>';
+echo '<div class="enigme-mobile-actions">';
+echo '<button type="button" class="enigme-mobile-panel-toggle" aria-controls="enigme-mobile-panel" aria-expanded="false" aria-label="'
+    . esc_attr__('Menu de navigation', 'chassesautresor-com') . '">';
+echo '<span class="screen-reader-text">' . esc_html__('Menu de navigation', 'chassesautresor-com') . '</span>';
+echo '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';
+echo '</button>';
+echo '</div>';
+echo '</header>';
+
+echo '<div id="enigme-mobile-panel" class="enigme-mobile-panel" hidden>';
+echo '<div class="enigme-mobile-panel__overlay" tabindex="-1"></div>';
+echo '<div class="enigme-mobile-panel__sheet" role="dialog" aria-modal="true" aria-labelledby="enigme-mobile-panel-title">';
+echo '<h2 id="enigme-mobile-panel-title" class="screen-reader-text">' . esc_html__('Navigation de la chasse', 'chassesautresor-com') . '</h2>';
+echo '<div class="enigme-mobile-panel__content">' . ($sidebar_sections['navigation'] ?? '') . '</div>';
+echo '</div>';
+echo '</div>';
+?>
+
 <div id="primary" class="content-area page-chasse-wrapper">
   <main id="main" class="site-main">
 

@@ -239,6 +239,9 @@ add_action('wp_enqueue_scripts', function () {
             true
         );
         wp_set_script_translations('accordeon', 'chassesautresor-com');
+    }
+
+    if (is_singular(['enigme', 'chasse'])) {
         wp_enqueue_script(
             'enigme-panel',
             $script_dir . 'enigme-panel.js',
