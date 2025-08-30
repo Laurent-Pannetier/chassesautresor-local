@@ -55,6 +55,9 @@
           if (menu) {
             menu.innerHTML = res.data.html;
           }
+          if (nav && Array.isArray(res.data.ids)) {
+            nav.dataset.visibleIds = res.data.ids.join(',');
+          }
         });
     }
     document.addEventListener('enigmeDebloquee', () => {
