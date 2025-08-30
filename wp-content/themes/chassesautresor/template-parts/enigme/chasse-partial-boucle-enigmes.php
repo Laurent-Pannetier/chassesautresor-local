@@ -67,7 +67,7 @@ if (!function_exists('compter_tentatives_du_jour')) {
 ?>
 
 <div class="bloc-enigmes-chasse">
-  <div class="cards-grid">
+  <div class="cards-grid" data-chasse-id="<?= esc_attr($chasse_id); ?>">
     <?php foreach ($posts_visibles as $post):
       $enigme_id = $post->ID;
       $titre = get_the_title($enigme_id);
@@ -111,7 +111,8 @@ if (!function_exists('compter_tentatives_du_jour')) {
         ? compter_tentatives_du_jour($utilisateur_id, $enigme_id)
         : 0;
     ?>
-        <article class="<?= esc_attr($classes_carte); ?>">
+        <article class="<?= esc_attr($classes_carte); ?>" data-enigme-id="<?= esc_attr($enigme_id); ?>" draggable="true">
+            <span class="carte-enigme-handle" aria-hidden="true"><i class="fa-solid fa-up-down-left-right"></i></span>
             <?php if ($linkable) : ?>
               <a href="<?= esc_url($cta['url']); ?>" class="carte-enigme-lien" aria-label="<?= esc_attr($aria_label); ?>">
             <?php else : ?>

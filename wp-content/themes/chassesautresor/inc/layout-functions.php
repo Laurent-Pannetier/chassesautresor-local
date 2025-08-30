@@ -162,6 +162,16 @@ function charger_scripts_personnalises() {
       filemtime(get_stylesheet_directory() . '/assets/js/validation-admin.js'),
       true
     );
+    if (is_singular('chasse')) {
+      wp_enqueue_script(
+        'enigme-cards-reorder',
+        $theme_dir . 'enigme-cards-reorder.js',
+        ['wp-i18n'],
+        filemtime(get_stylesheet_directory() . '/assets/js/enigme-cards-reorder.js'),
+        true
+      );
+      wp_set_script_translations('enigme-cards-reorder', 'chassesautresor-com');
+    }
     wp_enqueue_script(
       'tri-organisateurs',
       $theme_dir . 'tri-organisateurs.js',
