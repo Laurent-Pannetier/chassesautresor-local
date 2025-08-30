@@ -256,6 +256,9 @@ add_action('wp_enqueue_scripts', function () {
             filemtime($theme_path . '/assets/sidebar/sidebar.js'),
             true
         );
+        wp_localize_script('sidebar', 'sidebarData', [
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+        ]);
         wp_enqueue_script(
             'sidebar-menu-toggle',
             $sidebar_dir . 'menu-toggle.js',
