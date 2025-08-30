@@ -851,8 +851,9 @@ require_once __DIR__ . '/../sidebar.php';
                 }
             }
 
-            $title = esc_html(get_the_title($post->ID));
-            $link  = '<a href="' . esc_url(get_permalink($post->ID)) . '">' . $title . '</a>';
+            $title        = esc_html(get_the_title($post->ID));
+            $aria_current = $post->ID === $enigme_id ? ' aria-current="page"' : '';
+            $link         = '<a href="' . esc_url(get_permalink($post->ID)) . '"' . $aria_current . '>' . $title . '</a>';
 
             $submenu_items[] = sprintf(
                 '<li class="%s" data-enigme-id="%d">%s%s%s</li>',

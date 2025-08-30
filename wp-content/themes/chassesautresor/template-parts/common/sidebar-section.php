@@ -40,7 +40,8 @@ if ($section === 'navigation') {
         $menu_class .= ' enigme-menu--editable';
     }
 
-    echo '<section class="enigme-navigation"' . $data_chasse . ' data-context="' . esc_attr($context) . '">';
+    $aria_label = esc_attr__('Navigation des énigmes', 'chassesautresor-com');
+    echo '<nav class="enigme-navigation" aria-label="' . $aria_label . '"' . $data_chasse . ' data-context="' . esc_attr($context) . '">';
     $nav_title = $context === 'chasse'
         ? esc_html__('Énigmes', 'chassesautresor-com')
         : esc_html__('Énigmes', 'chassesautresor-com');
@@ -65,7 +66,7 @@ if ($section === 'navigation') {
                 . '</button>';
         }
     }
-    echo '</section>';
+    echo '</nav>';
     return;
 }
 

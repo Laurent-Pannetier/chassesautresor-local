@@ -772,6 +772,11 @@ body.edition-active-chasse .chasse-enigmes-header .liens-placeholder {
   font-weight: 500;
 }
 
+@media not all and (min-width: 1024px) {
+  .chasse-layout .menu-lateral {
+    display: none;
+  }
+}
 /* ========== 🛒 AJOUT AU PANIER ========== */
 .woocommerce a.button.add_to_cart_button {
   font-weight: 500;
