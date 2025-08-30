@@ -907,7 +907,8 @@ function initChampBonnesReponses() {
       btnAjout.className = 'champ-modifier bonne-reponse-ajouter';
       btnAjout.textContent = wp.i18n.__('ajouter', 'chassesautresor-com');
 
-      btnAjout.addEventListener('click', () => {
+      btnAjout.addEventListener('click', (e) => {
+        e.stopPropagation();
         btnAjout.remove();
         const input = document.createElement('input');
         input.type = 'text';
