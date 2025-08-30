@@ -46,6 +46,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  padding: 0;
 }
 
 .carte-enigme:hover,
@@ -65,7 +66,6 @@
   flex-direction: column;
   padding: 0;
   flex: 1;
-  border: 1px solid var(--color-gris-3);
   position: relative;
 }
 
@@ -155,16 +155,17 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-transform: none;
 }
 
 .carte-enigme-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-xs) var(--space-md) 0;
-  min-height: var(--space-3xl);
-  font-size: 0.875rem;
+  padding: var(--space-xxs) var(--space-sm);
+  font-size: 0.95rem;
   color: var(--color-text-secondary);
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .carte-enigme-footer .footer-icons {
@@ -177,13 +178,15 @@
   align-items: center;
   gap: var(--space-xxs);
   opacity: 0.8;
+  line-height: 1;
 }
 
 .carte-enigme-footer i,
 .carte-enigme-footer svg {
-  width: 1em;
-  height: 1em;
+  width: 1.1em;
+  height: 1.1em;
   fill: currentColor;
+  display: block;
 }
 
 .carte-enigme-footer .footer-item--points {
