@@ -12,10 +12,30 @@ $chasse_id       = $args['chasse_id'] ?? null;
 $disabled        = $args['disabled'] ?? true;
 $highlight_pulse = $args['highlight_pulse'] ?? false;
 $show_help_icon  = $args['show_help_icon'] ?? false;
+$use_button      = $args['use_button'] ?? false;
 
 if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') return;
 
 $ajout_url = esc_url(add_query_arg('chasse_id', $chasse_id, home_url('/creer-enigme/')));
+
+if ($use_button) : ?>
+<div class="enigme-navigation__ajout">
+    <a
+        href="<?php echo $ajout_url; ?>"
+        id="carte-ajout-enigme"
+        class="enigme-navigation__ajout-bouton"
+        data-post-id="0"
+    >
+        <i class="fa-solid fa-circle-plus fa-lg" aria-hidden="true"></i>
+        <span class="screen-reader-text"><?php echo esc_html__('Ajouter une énigme', 'chassesautresor-com'); ?></span>
+    </a>
+    <a href="<?php echo $ajout_url; ?>" class="enigme-navigation__ajout-lien">
+        <?php echo esc_html__('Ajouter une énigme', 'chassesautresor-com'); ?>
+    </a>
+</div>
+<?php
+    return;
+endif;
 
 ?>
 <div class="carte-ajout-wrapper">
