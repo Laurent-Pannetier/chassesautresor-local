@@ -66,7 +66,7 @@ if (!function_exists('compter_tentatives_du_jour')) {
 }
 ?>
 
-<div class="bloc-enigmes-chasse">
+<div class="bloc-enigmes-chasse" data-chasse-id="<?= esc_attr($chasse_id); ?>">
   <div class="cards-grid">
     <?php foreach ($posts_visibles as $post):
       $enigme_id = $post->ID;

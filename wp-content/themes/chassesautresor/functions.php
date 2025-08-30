@@ -247,6 +247,16 @@ add_action('wp_enqueue_scripts', function () {
             true
         );
     }
+
+    if (is_singular('chasse')) {
+        wp_enqueue_script(
+            'visible-enigmes',
+            $script_dir . 'visible-enigmes.js',
+            [],
+            filemtime($theme_path . '/assets/js/visible-enigmes.js'),
+            true
+        );
+    }
     $sidebar_dir = $theme_uri . '/assets/sidebar/';
     if (is_singular(['enigme', 'chasse'])) {
         wp_enqueue_script(

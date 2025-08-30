@@ -508,6 +508,59 @@ function recuperer_ids_enigmes_pour_chasse(int $chasse_id): array
 
 
 /**
+ * Retrieve enigmas visible (not blocked) for a given hunt and user.
+ *
+ * @param int $chasse_id Hunt ID.
+ * @param int $user_id   User ID.
+ * @return array<int, array{id:int,title:string,permalink:string}>
+ */
+function get_visible_enigmes(int $chasse_id, int $user_id): array
+{
+    $ids     = recuperer_enigmes_associees($chasse_id);
+    $visible = [];
+
+    foreach ($ids as $id) {
+        if (get_post_status($id) !== 'publish') {
+            continue;
+        }
+        if (!get_field('enigme_cache_complet', $id)) {
+            continue;
+        }
+        if (!enigme_est_visible_pour($user_id, $id)) {
+            continue;
+        }
+
+        $visible[] = [
+            'id'        => $id,
+            'title'     => get_the_title($id),
+            'permalink' => get_permalink($id),
+        ];
+    }
+
+    return $visible;
+}
+
+/**
+ * AJAX handler returning visible enigmas for a hunt.
+ *
+ * @return void
+ */
+function ajax_chasse_recuperer_enigmes_visibles(): void
+{
+    $chasse_id = isset($_POST['chasse_id']) ? (int) $_POST['chasse_id'] : 0;
+    if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
+        wp_send_json_error('post_invalide', 400);
+    }
+
+    $user_id = get_current_user_id();
+    $enigmes = get_visible_enigmes($chasse_id, $user_id);
+
+    wp_send_json_success(['enigmes' => $enigmes]);
+}
+add_action('wp_ajax_chasse_recuperer_enigmes_visibles', 'ajax_chasse_recuperer_enigmes_visibles');
+add_action('wp_ajax_nopriv_chasse_recuperer_enigmes_visibles', 'ajax_chasse_recuperer_enigmes_visibles');
+
+/**
  * Clear the cached enigme list for a chasse when an enigme is saved.
  *
  * @param int $post_id Post ID of the enigme being saved.
