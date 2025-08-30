@@ -2194,6 +2194,7 @@ a.addtoany_share span {
     width: 320px;
     transform: translateY(-50%);
     transition: transform var(--transition-slow);
+    z-index: 1000;
   }
   .menu-lateral.is-hidden {
     transform: translate(calc(-100% - var(--space-2xl) - var(--space-md)), -50%);
@@ -2215,6 +2216,7 @@ a.addtoany_share span {
     height: 8rem;
     align-items: center;
     justify-content: center;
+    z-index: 1001;
   }
   .menu-lateral__reveal i {
     pointer-events: none;
@@ -4870,50 +4872,9 @@ body.panneau-ouvert::before {
 
 /* Layout for enigma pages */
 .enigme-layout {
-  display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: var(--space-xl);
-  transition: grid-template-columns var(--transition-slow);
+  display: block;
 }
 
-.enigme-layout > .menu-lateral {
-  grid-column: 1;
-}
-
-.enigme-layout > .page-enigme {
-  grid-column: 2;
-  transition: margin-left var(--transition-slow);
-}
-
-.enigme-layout--aside-hidden > .page-enigme {
-  grid-column: 1;
-}
-
-@media not all and (min-width: 1024px) {
-  .enigme-layout .menu-lateral {
-    position: sticky;
-    top: var(--space-md);
-  }
-  .enigme-layout > .page-enigme {
-    grid-column: 1;
-  }
-}
-.enigme-layout--aside-hidden {
-  grid-template-columns: 1fr;
-}
-
-@media (min-width: 1280px) {
-  .enigme-layout {
-    display: block;
-    gap: 0;
-  }
-  .enigme-layout > .page-enigme {
-    margin-left: calc(320px + 2 * var(--space-md));
-  }
-  .enigme-layout--aside-hidden > .page-enigme {
-    margin-left: 0;
-  }
-}
 /* Display images stacked with full width */
 .enigme-images {
   display: flex;
@@ -5336,11 +5297,6 @@ li.active .enigme-menu__edit {
   margin-inline: auto;
 }
 
-@media not all and (min-width: 1024px) {
-  .enigme-layout {
-    grid-template-columns: 1fr;
-  }
-}
 .enigme-mobile-header {
   display: none;
 }

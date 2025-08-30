@@ -2,7 +2,6 @@
   function init() {
     const aside = document.querySelector('.menu-lateral');
     if (!aside) return;
-    const layout = aside.closest('.enigme-layout, .chasse-layout');
     const bp = getComputedStyle(document.documentElement)
       .getPropertyValue('--breakpoint-desktop')
       .trim() || '1280px';
@@ -17,7 +16,6 @@
     let timer = null;
     function hideAside() {
       aside.classList.add('is-hidden');
-      layout?.classList.add('enigme-layout--aside-hidden');
       opener.style.display = 'flex';
       if (timer) {
         clearTimeout(timer);
@@ -26,7 +24,6 @@
     }
     function showAside() {
       aside.classList.remove('is-hidden');
-      layout?.classList.remove('enigme-layout--aside-hidden');
       opener.style.display = 'none';
       if (timer) clearTimeout(timer);
       timer = setTimeout(hideAside, 5000);
@@ -40,8 +37,34 @@
       if (timer) clearTimeout(timer);
       timer = setTimeout(hideAside, 5000);
     });
+    function reloadNav(chasseId) {
+      if (!chasseId) return;
+      const data = new URLSearchParams();
+      data.append('action', 'chasse_recuperer_navigation');
+      data.append('chasse_id', chasseId);
+      fetch('/wp-admin/admin-ajax.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: data
+      })
+        .then(r => r.json())
+        .then(res => {
+          if (!res.success) return;
+          const nav = document.querySelector('.enigme-navigation');
+          const menu = nav ? nav.querySelector('.enigme-menu') : null;
+          if (menu) {
+            menu.innerHTML = res.data.html;
+          }
+        });
+    }
+    document.addEventListener('enigmeDebloquee', () => {
+      const nav = document.querySelector('.enigme-navigation');
+      const chasseId = nav ? nav.dataset.chasseId : null;
+      reloadNav(chasseId);
+    });
     showAside();
-    window.sidebarAside = { show: showAside };
+    window.sidebarAside = { show: showAside, reload: reloadNav };
+    window.enigmeAside = window.sidebarAside;
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);

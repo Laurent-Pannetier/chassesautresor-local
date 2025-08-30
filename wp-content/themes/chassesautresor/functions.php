@@ -263,12 +263,6 @@ add_action('wp_enqueue_scripts', function () {
             filemtime($theme_path . '/assets/sidebar/menu-toggle.js'),
             true
         );
-        wp_enqueue_style(
-            'sidebar',
-            $sidebar_dir . 'sidebar.css',
-            [],
-            filemtime($theme_path . '/assets/sidebar/sidebar.css')
-        );
     }
 });
 

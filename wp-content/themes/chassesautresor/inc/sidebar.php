@@ -23,6 +23,104 @@ if (!function_exists('sidebar_get_section_html')) {
     }
 }
 
+
+if (!function_exists('sidebar_prepare_chasse_nav')) {
+    /**
+     * Prepare navigation items for a hunt sidebar.
+     *
+     * @param int $chasse_id Hunt identifier.
+     * @param int $user_id   Current user identifier.
+     *
+     * @return array{menu_items:array,peut_ajouter_enigme:bool,total_enigmes:int,has_incomplete_enigme:bool}
+     */
+    function sidebar_prepare_chasse_nav(int $chasse_id, int $user_id): array
+    {
+        $liste               = recuperer_enigmes_pour_chasse($chasse_id);
+        $submenu_items       = [];
+        $total_enigmes       = count($liste);
+        $has_incomplete_enigme = false;
+
+        foreach ($liste as $post_check) {
+            if (!get_field('enigme_cache_complet', $post_check->ID)) {
+                $has_incomplete_enigme = true;
+                break;
+            }
+        }
+
+        $peut_ajouter_enigme = function_exists('utilisateur_peut_ajouter_enigme')
+            ? utilisateur_peut_ajouter_enigme($chasse_id)
+            : false;
+
+        $is_privileged = current_user_can('administrator')
+            || (est_organisateur($user_id)
+            && utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id));
+
+        foreach ($liste as $post) {
+            if (!$is_privileged) {
+                if (get_post_status($post->ID) !== 'publish') {
+                    continue;
+                }
+                if (!get_field('enigme_cache_complet', $post->ID)) {
+                    continue;
+                }
+                if (!enigme_est_visible_pour($user_id, $post->ID)) {
+                    continue;
+                }
+            }
+
+            $classes = [];
+            if (!$is_privileged) {
+                $statut_user = enigme_get_statut_utilisateur($post->ID, $user_id);
+                if (in_array($statut_user, ['resolue', 'terminee'], true)) {
+                    $classes[] = 'succes';
+                } elseif ($statut_user === 'soumis') {
+                    $classes[] = 'en-attente';
+                } elseif (
+                    $statut_user === 'non_commencee'
+                    && !utilisateur_est_engage_dans_enigme($user_id, $post->ID)
+                ) {
+                    $classes[] = 'non-engagee';
+                }
+            }
+
+            $title = esc_html(get_the_title($post->ID));
+            $link  = '<a href="' . esc_url(get_permalink($post->ID)) . '">' . $title . '</a>';
+            $submenu_items[] = sprintf(
+                '<li class="%s" data-enigme-id="%d">%s</li>',
+                esc_attr(implode(' ', $classes)),
+                $post->ID,
+                $link
+            );
+        }
+
+        return [
+            'menu_items'           => $submenu_items,
+            'peut_ajouter_enigme'  => $peut_ajouter_enigme,
+            'total_enigmes'        => $total_enigmes,
+            'has_incomplete_enigme' => $has_incomplete_enigme,
+        ];
+    }
+}
+
+if (!function_exists('ajax_chasse_recuperer_navigation')) {
+    /**
+     * AJAX handler to refresh hunt navigation items.
+     */
+    function ajax_chasse_recuperer_navigation(): void
+    {
+        $chasse_id = isset($_POST['chasse_id']) ? (int) $_POST['chasse_id'] : 0;
+        if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
+            wp_send_json_error('post_invalide', 400);
+        }
+
+        $user_id = get_current_user_id();
+        $data    = sidebar_prepare_chasse_nav($chasse_id, $user_id);
+        wp_send_json_success(['html' => implode('', $data['menu_items'])]);
+    }
+    add_action('wp_ajax_chasse_recuperer_navigation', 'ajax_chasse_recuperer_navigation');
+    add_action('wp_ajax_nopriv_chasse_recuperer_navigation', 'ajax_chasse_recuperer_navigation');
+}
+
 if (!function_exists('render_sidebar')) {
     /**
      * Render the sidebar component and return its sections.
