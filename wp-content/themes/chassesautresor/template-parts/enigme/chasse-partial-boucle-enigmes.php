@@ -84,6 +84,7 @@ foreach ($posts as $p) {
 
       $classes_carte = trim("carte carte-enigme $classe_completion $classe_cta");
       $mapping_visuel = get_mapping_visuel_enigme($enigme_id);
+      $cout_points    = (int) get_field('enigme_tentative_cout_points', $enigme_id);
     ?>
         <article class="<?= esc_attr($classes_carte); ?>">
             <?php if (in_array($mode_validation, ['automatique', 'manuelle'], true)) :
@@ -113,6 +114,11 @@ foreach ($posts as $p) {
                 }
                 ?>
               </div>
+            <?php endif; ?>
+            <?php if ($cout_points > 0) : ?>
+              <span class="badge-cout" aria-label="<?= esc_attr(sprintf(__('Cette énigme coûte %d point(s)', 'chassesautresor-com'), $cout_points)); ?>">
+                <?= esc_html($cout_points . ' ' . __('pts', 'chassesautresor-com')); ?>
+              </span>
             <?php endif; ?>
             <?php if (!in_array($cta['type'], ['bloquee', 'invalide', 'cache_invalide', 'erreur'], true)) { ?>
               <div class="carte-enigme-cta">
