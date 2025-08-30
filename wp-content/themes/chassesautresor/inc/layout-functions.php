@@ -178,6 +178,13 @@ function charger_scripts_personnalises() {
       true
     );
     wp_enqueue_script(
+      'list-skeleton',
+      $theme_dir . 'core/skeleton.js',
+      ['pager'],
+      filemtime(get_stylesheet_directory() . '/assets/js/core/skeleton.js'),
+      true
+    );
+    wp_enqueue_script(
       'organisateurs-pager',
       $theme_dir . 'organisateurs-pager.js',
       ['pager'],
