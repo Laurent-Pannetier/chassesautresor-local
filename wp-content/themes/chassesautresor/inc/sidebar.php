@@ -35,12 +35,12 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
      */
     function sidebar_prepare_chasse_nav(int $chasse_id, int $user_id): array
     {
-        $liste               = recuperer_enigmes_pour_chasse($chasse_id);
+        $all_enigmes         = recuperer_enigmes_pour_chasse($chasse_id);
         $submenu_items       = [];
-        $total_enigmes       = count($liste);
+        $total_enigmes       = count($all_enigmes);
         $has_incomplete_enigme = false;
 
-        foreach ($liste as $post_check) {
+        foreach ($all_enigmes as $post_check) {
             if (!get_field('enigme_cache_complet', $post_check->ID)) {
                 $has_incomplete_enigme = true;
                 break;
@@ -55,22 +55,16 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
             || (est_organisateur($user_id)
             && utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id));
 
+        $liste = $is_privileged
+            ? $all_enigmes
+            : filter_visible_enigmes($all_enigmes, $user_id);
+
+        $visible_ids = [];
+
         foreach ($liste as $post) {
             if (!$is_privileged) {
-                if (get_post_status($post->ID) !== 'publish') {
-                    continue;
-                }
-                if (!get_field('enigme_cache_complet', $post->ID)) {
-                    continue;
-                }
-                if (!enigme_est_visible_pour($user_id, $post->ID)) {
-                    continue;
-                }
-            }
-
-            $classes = [];
-            if (!$is_privileged) {
                 $statut_user = enigme_get_statut_utilisateur($post->ID, $user_id);
+                $classes     = [];
                 if (in_array($statut_user, ['resolue', 'terminee'], true)) {
                     $classes[] = 'succes';
                 } elseif ($statut_user === 'soumis') {
@@ -81,6 +75,8 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
                 ) {
                     $classes[] = 'non-engagee';
                 }
+            } else {
+                $classes = [];
             }
 
             $title = esc_html(get_the_title($post->ID));
@@ -91,6 +87,7 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
                 $post->ID,
                 $link
             );
+            $visible_ids[] = $post->ID;
         }
 
         return [
@@ -98,6 +95,7 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
             'peut_ajouter_enigme'  => $peut_ajouter_enigme,
             'total_enigmes'        => $total_enigmes,
             'has_incomplete_enigme' => $has_incomplete_enigme,
+            'visible_ids'          => $visible_ids,
         ];
     }
 }
@@ -115,7 +113,10 @@ if (!function_exists('ajax_chasse_recuperer_navigation')) {
 
         $user_id = get_current_user_id();
         $data    = sidebar_prepare_chasse_nav($chasse_id, $user_id);
-        wp_send_json_success(['html' => implode('', $data['menu_items'])]);
+        wp_send_json_success([
+            'html' => implode('', $data['menu_items']),
+            'ids'  => $data['visible_ids'],
+        ]);
     }
     add_action('wp_ajax_chasse_recuperer_navigation', 'ajax_chasse_recuperer_navigation');
     add_action('wp_ajax_nopriv_chasse_recuperer_navigation', 'ajax_chasse_recuperer_navigation');
