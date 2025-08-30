@@ -869,12 +869,17 @@ require_once __DIR__ . '/../sidebar.php';
         }
 
         echo '<div class="container container--xl-full enigme-layout">';
+        $group_data = ['menu_groups' => []];
+        if (function_exists('filter_visible_enigmes')) {
+            $group_data = sidebar_prepare_chasse_nav($chasse_id, get_current_user_id());
+        }
         $sidebar_sections = render_sidebar(
             'enigme',
             $enigme_id,
             $edition_active,
             $chasse_id,
             $menu_items,
+            $group_data['menu_groups'],
             $peut_ajouter_enigme,
             $total_enigmes,
             $has_incomplete_enigme

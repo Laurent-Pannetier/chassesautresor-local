@@ -37,6 +37,44 @@
       if (timer) clearTimeout(timer);
       timer = setTimeout(hideAside, 5000);
     });
+    const menu = aside.querySelector('.enigme-menu');
+    const search = aside.querySelector('.enigme-menu__search');
+    if (menu && search) {
+      let searchTimer = null;
+      search.addEventListener('input', () => {
+        if (searchTimer) clearTimeout(searchTimer);
+        searchTimer = setTimeout(() => {
+          const q = search.value.toLowerCase();
+          const items = menu.querySelectorAll('li[data-enigme-id]');
+          items.forEach(li => {
+            li.hidden = !li.textContent.toLowerCase().includes(q);
+          });
+          const groups = menu.querySelectorAll('.enigme-menu__group');
+          groups.forEach(group => {
+            const visible = group.querySelector('li[data-enigme-id]:not([hidden])');
+            const toggle = group.querySelector('.enigme-menu__group-toggle');
+            const list = group.querySelector('.enigme-menu__group-list');
+            if (q && visible) {
+              group.hidden = false;
+              if (toggle && list) {
+                toggle.setAttribute('aria-expanded', 'true');
+                list.hidden = false;
+              }
+            } else {
+              group.hidden = !visible;
+            }
+          });
+        }, 300);
+      });
+      aside.addEventListener('click', e => {
+        const btn = e.target.closest('.enigme-menu__group-toggle');
+        if (!btn) return;
+        const list = btn.nextElementSibling;
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+        if (list) list.hidden = expanded;
+      });
+    }
     function reloadNav(chasseId) {
       if (!chasseId) return;
       const data = new URLSearchParams();

@@ -78,23 +78,24 @@ $needs_validatable_message = $statut === 'revision'
 
 $statut_validation = $infos_chasse['statut_validation'];
 $nb_joueurs = $infos_chasse['nb_joueurs'];
-$sidebar_data = sidebar_prepare_chasse_nav($chasse_id, $user_id);
+    $sidebar_data = sidebar_prepare_chasse_nav($chasse_id, $user_id);
 
 get_header();
 cat_debug("🧪 test organisateur_associe : " . ($est_orga_associe ? 'OUI' : 'NON'));
 
 $can_validate = peut_valider_chasse($chasse_id, $user_id);
 echo '<div class="container container--xl-full chasse-layout">';
-$sidebar_sections = render_sidebar(
-    'chasse',
-    0,
-    $edition_active,
-    $chasse_id,
-    $sidebar_data['menu_items'],
-    $sidebar_data['peut_ajouter_enigme'],
-    $sidebar_data['total_enigmes'],
-    $sidebar_data['has_incomplete_enigme']
-);
+    $sidebar_sections = render_sidebar(
+        'chasse',
+        0,
+        $edition_active,
+        $chasse_id,
+        $sidebar_data['menu_items'],
+        $sidebar_data['menu_groups'],
+        $sidebar_data['peut_ajouter_enigme'],
+        $sidebar_data['total_enigmes'],
+        $sidebar_data['has_incomplete_enigme']
+    );
 ?>
 
 <div id="primary" class="content-area page-chasse-wrapper">

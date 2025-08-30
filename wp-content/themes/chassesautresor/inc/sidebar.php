@@ -31,13 +31,21 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
      * @param int $chasse_id Hunt identifier.
      * @param int $user_id   Current user identifier.
      *
-     * @return array{menu_items:array,peut_ajouter_enigme:bool,total_enigmes:int,has_incomplete_enigme:bool}
+     * @return array{
+     *     menu_items:array,
+     *     menu_groups:array,
+     *     peut_ajouter_enigme:bool,
+     *     total_enigmes:int,
+     *     has_incomplete_enigme:bool,
+     *     visible_ids:array
+     * }
      */
     function sidebar_prepare_chasse_nav(int $chasse_id, int $user_id): array
     {
-        $all_enigmes         = recuperer_enigmes_pour_chasse($chasse_id);
-        $submenu_items       = [];
-        $total_enigmes       = count($all_enigmes);
+        $all_enigmes           = recuperer_enigmes_pour_chasse($chasse_id);
+        $submenu_items         = [];
+        $submenu_groups        = [];
+        $total_enigmes         = count($all_enigmes);
         $has_incomplete_enigme = false;
 
         foreach ($all_enigmes as $post_check) {
@@ -58,6 +66,10 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
         $liste = $is_privileged
             ? $all_enigmes
             : filter_visible_enigmes($all_enigmes, $user_id);
+
+        $group_chapters = function_exists('apply_filters')
+            ? (bool) apply_filters('enigme_menu_group_by_chapter', false, $chasse_id)
+            : false;
 
         $visible_ids = [];
 
@@ -81,17 +93,41 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
 
             $title = esc_html(get_the_title($post->ID));
             $link  = '<a href="' . esc_url(get_permalink($post->ID)) . '">' . $title . '</a>';
-            $submenu_items[] = sprintf(
+            $item  = sprintf(
                 '<li class="%s" data-enigme-id="%d">%s</li>',
                 esc_attr(implode(' ', $classes)),
                 $post->ID,
                 $link
             );
-            $visible_ids[] = $post->ID;
+            $submenu_items[] = $item;
+            $visible_ids[]   = $post->ID;
+
+            if ($group_chapters) {
+                $chapter = '';
+                $terms   = get_the_terms($post->ID, 'chapitre');
+                if ($terms && !is_wp_error($terms)) {
+                    $chapter = $terms[0]->name;
+                } else {
+                    $acf_chapter = get_field('chapitre', $post->ID);
+                    if (is_array($acf_chapter)) {
+                        $chapter = $acf_chapter['label'] ?? ($acf_chapter['value'] ?? '');
+                    } else {
+                        $chapter = (string) $acf_chapter;
+                    }
+                }
+                if ($chapter === '') {
+                    $chapter = esc_html__('Sans chapitre', 'chassesautresor-com');
+                }
+                if (!isset($submenu_groups[$chapter])) {
+                    $submenu_groups[$chapter] = [];
+                }
+                $submenu_groups[$chapter][] = $item;
+            }
         }
 
         return [
             'menu_items'           => $submenu_items,
+            'menu_groups'          => $submenu_groups,
             'peut_ajouter_enigme'  => $peut_ajouter_enigme,
             'total_enigmes'        => $total_enigmes,
             'has_incomplete_enigme' => $has_incomplete_enigme,
@@ -131,6 +167,7 @@ if (!function_exists('render_sidebar')) {
      * @param bool     $edition_active       Whether the edition mode is active.
      * @param int|null $chasse_id            Associated hunt ID.
      * @param array    $menu_items           Menu items to display.
+     * @param array    $menu_groups          Grouped menu items.
      * @param bool     $peut_ajouter_enigme  Whether a new enigma can be added.
      * @param int      $total_enigmes        Total number of enigmas.
      * @param bool     $has_incomplete_enigme Whether there is an incomplete enigma.
@@ -143,6 +180,7 @@ if (!function_exists('render_sidebar')) {
         bool $edition_active,
         ?int $chasse_id,
         array $menu_items,
+        array $menu_groups = [],
         bool $peut_ajouter_enigme = false,
         int $total_enigmes = 0,
         bool $has_incomplete_enigme = false
@@ -179,11 +217,16 @@ if (!function_exists('render_sidebar')) {
             $ajout_html = ob_get_clean();
         }
 
-        $max_visible   = function_exists('apply_filters')
-            ? (int) apply_filters('enigme_menu_max_visible', 10)
-            : 10;
-        $visible_items = array_slice($menu_items, 0, $max_visible);
-        $hidden_items  = array_slice($menu_items, $max_visible);
+        if (empty($menu_groups)) {
+            $max_visible   = function_exists('apply_filters')
+                ? (int) apply_filters('enigme_menu_max_visible', 10)
+                : 10;
+            $visible_items = array_slice($menu_items, 0, $max_visible);
+            $hidden_items  = array_slice($menu_items, $max_visible);
+        } else {
+            $visible_items = $menu_items;
+            $hidden_items  = [];
+        }
 
         $navigation_html = sidebar_get_section_html('navigation', [
             'visible_items'  => $visible_items,
@@ -192,6 +235,7 @@ if (!function_exists('render_sidebar')) {
             'chasse_id'      => $chasse_id,
             'ajout_html'     => $ajout_html,
             'context'        => $context,
+            'menu_groups'    => $menu_groups,
         ]);
         if ($navigation_html === '') {
             $navigation_html = '<section class="enigme-navigation"><h3>'

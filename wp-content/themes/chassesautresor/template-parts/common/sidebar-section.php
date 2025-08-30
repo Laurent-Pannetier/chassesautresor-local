@@ -6,6 +6,7 @@
  *     @type string $section       Section identifier: 'navigation' or 'stats'.
  *     @type array  $visible_items Visible menu items.
  *     @type array  $hidden_items  Hidden menu items.
+ *     @type array  $menu_groups   Grouped menu items.
  *     @type bool   $edition_active Whether edition mode is active.
  *     @type int    $chasse_id     Related hunt identifier.
  *     @type string $ajout_html    HTML for the add link.
@@ -35,6 +36,7 @@ if ($section === 'navigation') {
     $menu_class    = 'enigme-menu';
     $visible_items = $args['visible_items'] ?? [];
     $hidden_items  = $args['hidden_items'] ?? [];
+    $menu_groups   = $args['menu_groups'] ?? [];
 
     if (!empty($args['edition_active'])) {
         $menu_class .= ' enigme-menu--editable';
@@ -48,21 +50,36 @@ if ($section === 'navigation') {
     if (!empty($args['ajout_html'])) {
         echo $args['ajout_html'];
     }
+    $search_placeholder = esc_attr__('Rechercher une énigme', 'chassesautresor-com');
+    echo '<input type="search" class="enigme-menu__search" placeholder="' . $search_placeholder
+        . '" aria-label="' . $search_placeholder . '">';
 
-    if (empty($visible_items) && empty($hidden_items)) {
+    if (empty($visible_items) && empty($hidden_items) && empty($menu_groups)) {
         $empty_text = $context === 'chasse'
             ? esc_html__('Aucune énigme disponible', 'chassesautresor-com')
             : esc_html__('Aucune énigme disponible', 'chassesautresor-com');
         echo '<p class="enigme-navigation__empty">' . $empty_text . '</p>';
     } else {
-        echo '<ul class="' . esc_attr($menu_class) . '">' . implode('', $visible_items) . '</ul>';
-        if (!empty($hidden_items)) {
-            echo '<ul class="' . esc_attr($menu_class . ' enigme-menu--overflow') . '" hidden>'
-                . implode('', $hidden_items)
-                . '</ul>';
-            echo '<button class="enigme-menu__toggle" type="button" aria-expanded="false">'
-                . esc_html__('Afficher plus', 'chassesautresor-com')
-                . '</button>';
+        if (!empty($menu_groups)) {
+            echo '<ul class="' . esc_attr($menu_class) . '">';
+            foreach ($menu_groups as $group_label => $items) {
+                echo '<li class="enigme-menu__group">';
+                echo '<button class="enigme-menu__group-toggle" type="button" aria-expanded="false">'
+                    . esc_html($group_label) . '</button>';
+                echo '<ul class="enigme-menu__group-list" hidden>' . implode('', $items) . '</ul>';
+                echo '</li>';
+            }
+            echo '</ul>';
+        } else {
+            echo '<ul class="' . esc_attr($menu_class) . '">' . implode('', $visible_items) . '</ul>';
+            if (!empty($hidden_items)) {
+                echo '<ul class="' . esc_attr($menu_class . ' enigme-menu--overflow') . '" hidden>'
+                    . implode('', $hidden_items)
+                    . '</ul>';
+                echo '<button class="enigme-menu__toggle" type="button" aria-expanded="false">'
+                    . esc_html__('Afficher plus', 'chassesautresor-com')
+                    . '</button>';
+            }
         }
     }
     echo '</section>';
