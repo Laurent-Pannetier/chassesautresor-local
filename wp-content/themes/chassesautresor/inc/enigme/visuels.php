@@ -84,7 +84,18 @@ function build_picture_enigme(int $image_id, string $alt, array $sizes, array $i
         'taille' => $fallback_size,
     ], $base_url));
 
+    $dimensions = function_exists('wp_get_attachment_image_src')
+        ? wp_get_attachment_image_src($image_id, $fallback_size)
+        : null;
+    if (is_array($dimensions)) {
+        $img_attrs['width']  = $dimensions[1];
+        $img_attrs['height'] = $dimensions[2];
+    }
+
     $img_attrs['loading'] = 'lazy';
+    if (!isset($img_attrs['sizes'])) {
+        $img_attrs['sizes'] = '(min-width:1025px) 400px, (min-width:769px) 300px, (min-width:481px) 200px, 100vw';
+    }
 
     $attr_str = '';
     foreach ($img_attrs as $key => $value) {
