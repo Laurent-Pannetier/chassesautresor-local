@@ -66,7 +66,18 @@ foreach ($posts as $p) {
       $cta = get_cta_enigme($enigme_id, $utilisateur_id);
       $type_cta = $cta['type'] ?? 'inconnu';
       $classe_cta = 'cta-' . sanitize_html_class($type_cta);
-        $mode_validation = get_field('enigme_mode_validation', $enigme_id);
+      $mode_validation = get_field('enigme_mode_validation', $enigme_id);
+      $linkable = $cta['action'] === 'link';
+      $aria_label = $linkable
+        ? sprintf(__('Ouvrir l\'énigme — %s', 'chassesautresor-com'), $cta['label'])
+        : '';
+      $classes_bouton = in_array(
+        $cta['statut_utilisateur'],
+        ['non_commencee', 'echouee', 'abandonnee', 'soumis'],
+        true
+      )
+        ? 'bouton bouton-cta bouton-cta--color'
+        : 'bouton bouton-secondaire';
 
       // 🔍 Vérification bordure admin/orga
       $statut_enigme = get_post_status($enigme_id);
@@ -87,63 +98,73 @@ foreach ($posts as $p) {
       $cout_points    = (int) get_field('enigme_tentative_cout_points', $enigme_id);
     ?>
         <article class="<?= esc_attr($classes_carte); ?>">
-            <?php if (in_array($mode_validation, ['automatique', 'manuelle'], true)) :
-                $icon = $mode_validation === 'automatique' ? 'fa-bolt' : 'fa-envelope';
-                $label = $mode_validation === 'automatique'
-                    ? esc_html__('Mode de validation : automatique', 'chassesautresor-com')
-                    : esc_html__('Mode de validation : manuel', 'chassesautresor-com');
-            ?>
-                <span class="badge-validation" title="<?= esc_attr($label); ?>" aria-label="<?= esc_attr($label); ?>">
-                    <i class="fa-solid <?= esc_attr($icon); ?>" aria-hidden="true"></i>
-                </span>
-            <?php endif; ?>
-            <div class="carte-core">
-          <div class="carte-enigme-image <?= esc_attr($mapping_visuel['filtre'] ?? ''); ?>"
-            title="<?= esc_attr($mapping_visuel['sens'] ?? '') ?>">
-            <?php if ($mapping_visuel['image_reelle']) : ?>
-              <?php afficher_picture_vignette_enigme($enigme_id, 'Vignette de l’énigme', ['medium']); ?>
-            <?php else : ?>
-              <div class="enigme-placeholder">
-                <?php
-                $svg = $mapping_visuel['fallback_svg'] ?? 'warning.svg';
-                $svg_path = get_stylesheet_directory() . '/assets/svg/' . $svg;
-                if (file_exists($svg_path)) {
-                  echo file_get_contents($svg_path);
-                } else {
-                  echo '<div class="svg-manquant">🕳</div>';
-                }
-                ?>
-              </div>
-            <?php endif; ?>
-            <?php if ($cout_points > 0) : ?>
-              <span class="badge-cout" aria-label="<?= esc_attr(sprintf(__('Cette énigme coûte %d point(s)', 'chassesautresor-com'), $cout_points)); ?>">
-                <?= esc_html($cout_points . ' ' . __('pts', 'chassesautresor-com')); ?>
-              </span>
-            <?php endif; ?>
-            <?php if (!in_array($cta['type'], ['bloquee', 'invalide', 'cache_invalide', 'erreur'], true)) { ?>
-              <div class="carte-enigme-cta">
-                <?php render_cta_enigme($cta, $enigme_id); ?>
-              </div>
-            <?php } ?>
-          </div>
-
-          <?php if ($mapping_visuel['image_reelle']) : ?>
-            <h3><?= esc_html($titre); ?></h3>
+          <?php if ($linkable) : ?>
+            <a href="<?= esc_url($cta['url']); ?>" class="carte-enigme-lien" aria-label="<?= esc_attr($aria_label); ?>">
+          <?php else : ?>
+            <div class="carte-enigme-lien carte-enigme-lien--disabled">
           <?php endif; ?>
+              <?php if (in_array($mode_validation, ['automatique', 'manuelle'], true)) :
+                  $icon = $mode_validation === 'automatique' ? 'fa-bolt' : 'fa-envelope';
+                  $label = $mode_validation === 'automatique'
+                      ? esc_html__('Mode de validation : automatique', 'chassesautresor-com')
+                      : esc_html__('Mode de validation : manuel', 'chassesautresor-com');
+              ?>
+                  <span class="badge-validation" title="<?= esc_attr($label); ?>" aria-label="<?= esc_attr($label); ?>">
+                      <i class="fa-solid <?= esc_attr($icon); ?>" aria-hidden="true"></i>
+                  </span>
+              <?php endif; ?>
+              <div class="carte-core">
+                <div class="carte-enigme-image <?= esc_attr($mapping_visuel['filtre'] ?? ''); ?>" title="<?= esc_attr($mapping_visuel['sens'] ?? ''); ?>">
+                  <?php if ($mapping_visuel['image_reelle']) : ?>
+                    <?php afficher_picture_vignette_enigme($enigme_id, 'Vignette de l’énigme', ['medium']); ?>
+                  <?php else : ?>
+                    <div class="enigme-placeholder">
+                      <?php
+                      $svg = $mapping_visuel['fallback_svg'] ?? 'warning.svg';
+                      $svg_path = get_stylesheet_directory() . '/assets/svg/' . $svg;
+                      if (file_exists($svg_path)) {
+                          echo file_get_contents($svg_path);
+                      } else {
+                          echo '<div class="svg-manquant">🕳</div>';
+                      }
+                      ?>
+                    </div>
+                  <?php endif; ?>
+                  <?php if ($cout_points > 0) : ?>
+                    <span class="badge-cout" aria-label="<?= esc_attr(sprintf(__('Cette énigme coûte %d point(s)', 'chassesautresor-com'), $cout_points)); ?>">
+                      <?= esc_html($cout_points . ' ' . __('pts', 'chassesautresor-com')); ?>
+                    </span>
+                  <?php endif; ?>
+                  <?php if ($linkable) : ?>
+                    <span class="carte-enigme-overlay" aria-hidden="true">
+                      <span class="carte-enigme-bouton <?= esc_attr($classes_bouton); ?>">
+                        <?= esc_html($cta['label']); ?>
+                      </span>
+                    </span>
+                  <?php endif; ?>
+                </div>
 
-          <?php
-          if (!empty($mapping_visuel['disponible_le'])) : ?>
-            <div class="infos-dispo">
-              <small class="infos-secondaires">Disponible le <?= esc_html($mapping_visuel['disponible_le']); ?></small>
+                <?php if ($mapping_visuel['image_reelle']) : ?>
+                  <h3><?= esc_html($titre); ?></h3>
+                <?php endif; ?>
+
+                <?php if (!empty($mapping_visuel['disponible_le'])) : ?>
+                  <div class="infos-dispo">
+                    <small class="infos-secondaires">Disponible le <?= esc_html($mapping_visuel['disponible_le']); ?></small>
+                  </div>
+                <?php endif; ?>
+              </div>
+          <?php if ($linkable) : ?>
+            </a>
+          <?php else : ?>
             </div>
           <?php endif; ?>
-        </div>
-        <?php if ($classe_completion === 'carte-incomplete') : ?>
-          <span class="warning-icon" aria-label="<?= esc_attr__('Énigme incomplète', 'chassesautresor-com'); ?>" title="<?= esc_attr__('Énigme incomplète', 'chassesautresor-com'); ?>">
-            <i class="fa-solid fa-exclamation" aria-hidden="true"></i>
-          </span>
-        <?php endif; ?>
-      </article>
+          <?php if ($classe_completion === 'carte-incomplete') : ?>
+            <span class="warning-icon" aria-label="<?= esc_attr__('Énigme incomplète', 'chassesautresor-com'); ?>" title="<?= esc_attr__('Énigme incomplète', 'chassesautresor-com'); ?>">
+              <i class="fa-solid fa-exclamation" aria-hidden="true"></i>
+            </span>
+          <?php endif; ?>
+        </article>
     <?php endforeach; ?>
 
     <?php
