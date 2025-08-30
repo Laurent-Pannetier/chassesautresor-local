@@ -42,7 +42,7 @@ if ($section === 'navigation') {
 
     echo '<section class="enigme-navigation"' . $data_chasse . ' data-context="' . esc_attr($context) . '">';
     $nav_title = $context === 'chasse'
-        ? esc_html__('Chasses', 'chassesautresor-com')
+        ? esc_html__('Énigmes', 'chassesautresor-com')
         : esc_html__('Énigmes', 'chassesautresor-com');
     echo '<h3>' . $nav_title . '</h3>';
     if (!empty($args['ajout_html'])) {
@@ -51,7 +51,7 @@ if ($section === 'navigation') {
 
     if (empty($visible_items) && empty($hidden_items)) {
         $empty_text = $context === 'chasse'
-            ? esc_html__('Aucune chasse disponible', 'chassesautresor-com')
+            ? esc_html__('Aucune énigme disponible', 'chassesautresor-com')
             : esc_html__('Aucune énigme disponible', 'chassesautresor-com');
         echo '<p class="enigme-navigation__empty">' . $empty_text . '</p>';
     } else {

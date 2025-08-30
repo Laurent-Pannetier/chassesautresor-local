@@ -40,8 +40,34 @@
       if (timer) clearTimeout(timer);
       timer = setTimeout(hideAside, 5000);
     });
+    function reloadNav(chasseId) {
+      if (!chasseId) return;
+      const data = new URLSearchParams();
+      data.append('action', 'chasse_recuperer_navigation');
+      data.append('chasse_id', chasseId);
+      fetch('/wp-admin/admin-ajax.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: data
+      })
+        .then(r => r.json())
+        .then(res => {
+          if (!res.success) return;
+          const nav = document.querySelector('.enigme-navigation');
+          const menu = nav ? nav.querySelector('.enigme-menu') : null;
+          if (menu) {
+            menu.innerHTML = res.data.html;
+          }
+        });
+    }
+    document.addEventListener('enigmeDebloquee', () => {
+      const nav = document.querySelector('.enigme-navigation');
+      const chasseId = nav ? nav.dataset.chasseId : null;
+      reloadNav(chasseId);
+    });
     showAside();
-    window.sidebarAside = { show: showAside };
+    window.sidebarAside = { show: showAside, reload: reloadNav };
+    window.enigmeAside = window.sidebarAside;
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
