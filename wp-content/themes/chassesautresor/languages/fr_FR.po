@@ -2970,3 +2970,16 @@ msgstr[1] "%d jours"
 #~ msgid "Demande pour %s en cours de traitement"
 #~ msgstr "Demande pour %s en cours de traitement"
 
+#: templates/myaccount/content-outils.php:24
+msgid "Protection globale"
+msgstr "Protection globale"
+
+#: templates/myaccount/content-outils.php:32
+#: inc/admin-functions.php:1443
+msgid "Activé"
+msgstr "Activé"
+
+#: templates/myaccount/content-outils.php:32
+#: inc/admin-functions.php:1444
+msgid "Désactivé"
+msgstr "Désactivé"

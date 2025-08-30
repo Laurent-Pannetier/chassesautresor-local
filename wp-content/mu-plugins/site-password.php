@@ -14,6 +14,10 @@ function ca_site_password_protection(): void
         return;
     }
 
+    if ('1' !== get_option('ca_site_password_enabled', '1')) {
+        return;
+    }
+
     $field          = 'ca_site_password';
     $password       = 'rosebud';
     $attempt_field  = 'ca_site_password_attempts';
@@ -55,7 +59,7 @@ function ca_site_password_protection(): void
     status_header(401);
     header('Content-Type: text/html; charset=utf-8');
 
-    $svg_url    = esc_url(home_url('/assets/svg/pirate-skull.svg'));
+    $svg_url    = esc_url(get_stylesheet_directory_uri() . '/assets/svg/pirate-skull.svg');
     $style_url  = esc_url(get_stylesheet_directory_uri() . '/dist/style.css');
 
     $styles = '.ca-site-password-wrapper{'
@@ -97,7 +101,7 @@ function ca_site_password_protection(): void
         . '}'
         . '.ca-site-password-form button:hover{background:var(--color-background-button-hover);}'
         . '.ca-site-password-error{color:var(--color-error);}'
-        . '.ca-site-password-logo{width:150px;display:block;margin:0 auto var(--space-md);}';
+        . '.ca-site-password-logo{width:195px;display:block;margin:0 auto var(--space-md);}';
 
     echo '<!doctype html><html><head><meta charset="utf-8"><title>'
         . esc_html__('Protected Site', 'chassesautresor-com')

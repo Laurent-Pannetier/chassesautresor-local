@@ -20,6 +20,19 @@ msgstr ""
 msgid "chassesautresor.com"
 msgstr ""
 
+#: templates/myaccount/content-outils.php:24
+msgid "Protection globale"
+msgstr ""
+
+#: templates/myaccount/content-outils.php:32
+#: inc/admin-functions.php:1443
+msgid "Activé"
+msgstr ""
+
+#: templates/myaccount/content-outils.php:32
+#: inc/admin-functions.php:1444
+msgid "Désactivé"
+msgstr ""
 #. Description of the theme
 #: style.css
 msgid "sites dédiés aux amoureux de chasses au trésor chassesautresor.com"

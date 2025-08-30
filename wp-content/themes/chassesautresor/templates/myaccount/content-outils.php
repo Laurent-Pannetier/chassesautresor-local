@@ -17,6 +17,22 @@ $taux_conversion = get_taux_conversion_actuel();
 <section>
     <h1 class="mb-4 text-xl font-semibold"><?php esc_html_e('Outils', 'chassesautresor-com'); ?></h1>
     <div class="dashboard-grid">
+        <?php $protection_active = get_option('ca_site_password_enabled', '1') === '1'; ?>
+        <div class="dashboard-card">
+            <div class="dashboard-card-header">
+                <i class="fas fa-lock"></i>
+                <h3><?php esc_html_e('Protection globale', 'chassesautresor-com'); ?></h3>
+            </div>
+            <div class="stats-content">
+                <label class="switch-control">
+                    <input type="checkbox" id="site-protection-toggle" <?php checked($protection_active); ?>>
+                    <span class="switch-slider"></span>
+                </label>
+                <span id="site-protection-status">
+                    <?php echo $protection_active ? esc_html__('Activé', 'chassesautresor-com') : esc_html__('Désactivé', 'chassesautresor-com'); ?>
+                </span>
+            </div>
+        </div>
         <div class="dashboard-card">
             <div class="dashboard-card-header">
                 <i class="fas fa-euro-sign"></i>
