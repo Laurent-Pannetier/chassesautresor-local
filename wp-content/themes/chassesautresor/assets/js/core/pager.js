@@ -37,6 +37,9 @@ document.addEventListener('DOMContentLoaded', () => {
       select.value = String(current);
     }
     pager.dispatchEvent(
+      new CustomEvent('pager:loading', { detail: { page: current }, bubbles: true })
+    );
+    pager.dispatchEvent(
       new CustomEvent('pager:change', { detail: { page: current }, bubbles: true })
     );
   });
@@ -52,6 +55,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     const page = parseInt(select.value, 10);
     pager.dataset.current = String(page);
+    pager.dispatchEvent(
+      new CustomEvent('pager:loading', { detail: { page }, bubbles: true })
+    );
     pager.dispatchEvent(
       new CustomEvent('pager:change', { detail: { page }, bubbles: true })
     );
