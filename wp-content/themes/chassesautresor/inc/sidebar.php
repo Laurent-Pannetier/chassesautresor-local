@@ -154,8 +154,8 @@ if (!function_exists('render_sidebar')) {
         bool $has_incomplete_enigme = false
     ): array {
         if (function_exists('wp_script_is') && !wp_script_is('sidebar', 'enqueued')) {
-            $theme_path  = get_template_directory();
-            $theme_uri   = get_template_directory_uri();
+            $theme_path  = get_stylesheet_directory();
+            $theme_uri   = get_stylesheet_directory_uri();
             $sidebar_dir = $theme_uri . '/assets/sidebar/';
             wp_enqueue_script(
                 'sidebar',
