@@ -305,6 +305,7 @@
     width: 320px;
     transform: translateY(-50%);
     transition: transform var(--transition-slow);
+    z-index: 1000;
   }
   .menu-lateral.is-hidden {
     transform: translate(calc(-100% - var(--space-2xl) - var(--space-md)), -50%);
@@ -326,6 +327,7 @@
     height: 8rem;
     align-items: center;
     justify-content: center;
+    z-index: 1001;
   }
   .menu-lateral__reveal i {
     pointer-events: none;
