@@ -155,6 +155,11 @@ if ($statut === 'termine') {
             esc_html($engaged_label)
         );
     }
+} elseif ($est_orga_associe && in_array($statut_validation, ['creation', 'correction'], true)) {
+    $enigmes_intro = esc_html__(
+        'Voici vos énigmes : ajoutez, modifiez ou supprimez celles dont vous n’avez plus besoin !',
+        'chassesautresor-com'
+    );
 }
 
 if (

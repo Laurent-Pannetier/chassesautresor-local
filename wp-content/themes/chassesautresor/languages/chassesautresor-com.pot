@@ -697,6 +697,10 @@ msgstr ""
 msgid "Progression : %1$d/%2$d %3$s — %4$d/%5$d %6$s."
 msgstr ""
 
+#: single-chasse.php:159
+msgid "Voici vos énigmes : ajoutez, modifiez ou supprimez celles dont vous n’avez plus besoin !"
+msgstr ""
+
 #: single-chasse.php:125
 #: single-chasse.php:126
 msgid "énigme résolue"
