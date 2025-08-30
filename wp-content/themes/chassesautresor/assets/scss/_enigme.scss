@@ -1,49 +1,6 @@
 /* Layout for enigma pages */
 .enigme-layout {
-  display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: var(--space-xl);
-  transition: grid-template-columns var(--transition-slow);
-}
-
-.enigme-layout > .menu-lateral {
-  grid-column: 1;
-}
-
-.enigme-layout > .page-enigme {
-  grid-column: 2;
-  transition: margin-left var(--transition-slow);
-}
-
-.enigme-layout--aside-hidden > .page-enigme {
-  grid-column: 1;
-}
-
-@media not all and (--bp-desktop) {
-  .enigme-layout .menu-lateral {
-    position: sticky;
-    top: var(--space-md);
-  }
-  .enigme-layout > .page-enigme {
-    grid-column: 1;
-  }
-}
-
-.enigme-layout--aside-hidden {
-  grid-template-columns: 1fr;
-}
-
-@media (--bp-wide) {
-  .enigme-layout {
-    display: block;
-    gap: 0;
-  }
-  .enigme-layout > .page-enigme {
-    margin-left: calc(320px + 2 * var(--space-md));
-  }
-  .enigme-layout--aside-hidden > .page-enigme {
-    margin-left: 0;
-  }
+  display: block;
 }
 
 /* Display images stacked with full width */
@@ -486,12 +443,6 @@ li.active .enigme-menu__edit {
   height: auto;
   display: block;
   margin-inline: auto;
-}
-
-@media not all and (--bp-desktop) {
-  .enigme-layout {
-    grid-template-columns: 1fr;
-  }
 }
 
 .enigme-mobile-header {

@@ -2,7 +2,6 @@
   function init() {
     const aside = document.querySelector('.menu-lateral');
     if (!aside) return;
-    const layout = aside.closest('.enigme-layout, .chasse-layout');
     const bp = getComputedStyle(document.documentElement)
       .getPropertyValue('--breakpoint-desktop')
       .trim() || '1280px';
@@ -17,7 +16,6 @@
     let timer = null;
     function hideAside() {
       aside.classList.add('is-hidden');
-      layout?.classList.add('enigme-layout--aside-hidden');
       opener.style.display = 'flex';
       if (timer) {
         clearTimeout(timer);
@@ -26,7 +24,6 @@
     }
     function showAside() {
       aside.classList.remove('is-hidden');
-      layout?.classList.remove('enigme-layout--aside-hidden');
       opener.style.display = 'none';
       if (timer) clearTimeout(timer);
       timer = setTimeout(hideAside, 5000);
