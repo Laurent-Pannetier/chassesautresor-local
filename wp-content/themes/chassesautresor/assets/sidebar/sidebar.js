@@ -2,7 +2,7 @@
   function init() {
     const aside = document.querySelector('.menu-lateral');
     if (!aside) return;
-    const layout = aside.closest('.enigme-layout');
+    const layout = aside.closest('.enigme-layout, .chasse-layout');
     const bp = getComputedStyle(document.documentElement)
       .getPropertyValue('--breakpoint-desktop')
       .trim() || '1280px';
@@ -41,7 +41,7 @@
       timer = setTimeout(hideAside, 5000);
     });
     showAside();
-    window.enigmeAside = { show: showAside };
+    window.sidebarAside = { show: showAside };
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
