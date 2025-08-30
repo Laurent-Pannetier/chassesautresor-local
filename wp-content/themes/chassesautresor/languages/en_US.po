@@ -3006,3 +3006,16 @@ msgstr[1] "%d days"
 #~ msgid "Coordonnées bancaires manquantes"
 #~ msgstr "Missing bank details"
 
+#: templates/myaccount/content-outils.php:24
+msgid "Protection globale"
+msgstr "Global protection"
+
+#: templates/myaccount/content-outils.php:32
+#: inc/admin-functions.php:1443
+msgid "Activé"
+msgstr "Enabled"
+
+#: templates/myaccount/content-outils.php:32
+#: inc/admin-functions.php:1444
+msgid "Désactivé"
+msgstr "Disabled"

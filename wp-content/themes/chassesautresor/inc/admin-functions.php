@@ -1391,6 +1391,20 @@ function cta_reset_stats() {
 }
 add_action('wp_ajax_cta_reset_stats', 'cta_reset_stats');
 
+function cta_toggle_site_protection() {
+    if (!current_user_can('administrator')) {
+        wp_send_json_error(__('Non autorisé', 'chassesautresor-com'));
+    }
+
+    check_ajax_referer('cta_site_protection', 'nonce');
+
+    $enabled = isset($_POST['enabled']) && $_POST['enabled'] === '1' ? '1' : '0';
+    update_option('ca_site_password_enabled', $enabled);
+
+    wp_send_json_success(['enabled' => $enabled]);
+}
+add_action('wp_ajax_cta_toggle_site_protection', 'cta_toggle_site_protection');
+
 
 /**
  * Charge le script de la carte Développement sur les pages Mon Compte.
@@ -1410,6 +1424,29 @@ function charger_script_developpement_card() {
     }
 }
 add_action('wp_enqueue_scripts', 'charger_script_developpement_card');
+
+function charger_script_site_protection_card() {
+    if (preg_match('#^/mon-compte(?:/|$|\\?)#', $_SERVER['REQUEST_URI'] ?? '')) {
+        wp_enqueue_script(
+            'site-protection-card',
+            get_stylesheet_directory_uri() . '/assets/js/site-protection-card.js',
+            [],
+            filemtime(get_stylesheet_directory() . '/assets/js/site-protection-card.js'),
+            true
+        );
+        wp_localize_script(
+            'site-protection-card',
+            'siteProtectionCard',
+            [
+                'ajax_url'    => admin_url('admin-ajax.php'),
+                'nonce'       => wp_create_nonce('cta_site_protection'),
+                'activated'   => __('Activé', 'chassesautresor-com'),
+                'deactivated' => __('Désactivé', 'chassesautresor-com'),
+            ]
+        );
+    }
+}
+add_action('wp_enqueue_scripts', 'charger_script_site_protection_card');
 
 function charger_script_reset_stats_card() {
     if (preg_match('#^/mon-compte(?:/|$|\\?)#', $_SERVER['REQUEST_URI'] ?? '')) {
