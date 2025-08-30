@@ -56,6 +56,14 @@ foreach ($posts as $p) {
     break;
   }
 }
+
+if (!function_exists('enigme_compter_joueurs_engages')) {
+  require_once get_stylesheet_directory() . '/inc/enigme/stats.php';
+}
+
+if (!function_exists('compter_tentatives_du_jour')) {
+  require_once get_stylesheet_directory() . '/inc/enigme/tentatives.php';
+}
 ?>
 
 <div class="bloc-enigmes-chasse">
@@ -96,6 +104,12 @@ foreach ($posts as $p) {
       $classes_carte = trim("carte carte-enigme $classe_completion $classe_cta");
       $mapping_visuel = get_mapping_visuel_enigme($enigme_id);
       $cout_points    = (int) get_field('enigme_tentative_cout_points', $enigme_id);
+      $nb_participants = enigme_compter_joueurs_engages($enigme_id);
+      $nb_resolutions  = enigme_compter_bonnes_solutions($enigme_id);
+      $tentatives_max  = (int) get_field('enigme_tentative_max', $enigme_id);
+      $tentatives_utilisees = ($tentatives_max > 0 && $mode_validation === 'automatique')
+        ? compter_tentatives_du_jour($utilisateur_id, $enigme_id)
+        : 0;
     ?>
         <article class="<?= esc_attr($classes_carte); ?>">
           <?php if ($linkable) : ?>
@@ -159,6 +173,28 @@ foreach ($posts as $p) {
           <?php else : ?>
             </div>
           <?php endif; ?>
+          <footer class="carte-enigme-footer">
+            <div class="footer-left">
+              <span class="footer-item" title="<?= esc_attr__('nombre de participants à cette énigme', 'chassesautresor-com'); ?>" aria-label="<?= esc_attr__('nombre de participants à cette énigme', 'chassesautresor-com'); ?>">
+                <i class="fa-solid fa-users" aria-hidden="true"></i>
+                <?= esc_html($nb_participants); ?>
+              </span>
+              <?php if ($mode_validation !== 'aucune') : ?>
+                <span class="footer-item" title="<?= esc_attr__('nombre de joueurs ayant trouvé la bonne réponse', 'chassesautresor-com'); ?>" aria-label="<?= esc_attr__('nombre de joueurs ayant trouvé la bonne réponse', 'chassesautresor-com'); ?>">
+                  <?= get_svg_icon('idea'); ?>
+                  <?= esc_html($nb_resolutions); ?>
+                </span>
+              <?php endif; ?>
+            </div>
+            <div class="footer-right">
+              <?php if ($mode_validation === 'automatique' && $tentatives_max > 0) : ?>
+                <span class="footer-item" title="<?= esc_attr__('tentatives quotidiennes utilisées', 'chassesautresor-com'); ?>" aria-label="<?= esc_attr__('tentatives quotidiennes utilisées', 'chassesautresor-com'); ?>">
+                  <i class="fa-solid fa-repeat" aria-hidden="true"></i>
+                  <?= esc_html($tentatives_utilisees . '/' . $tentatives_max); ?>
+                </span>
+              <?php endif; ?>
+            </div>
+          </footer>
           <?php if ($classe_completion === 'carte-incomplete') : ?>
             <span class="warning-icon" aria-label="<?= esc_attr__('Énigme incomplète', 'chassesautresor-com'); ?>" title="<?= esc_attr__('Énigme incomplète', 'chassesautresor-com'); ?>">
               <i class="fa-solid fa-exclamation" aria-hidden="true"></i>

@@ -2282,6 +2282,18 @@ msgstr "No participants engaged."
 msgid "Liste participants"
 msgstr "Participants list"
 
+#: template-parts/enigme/chasse-partial-boucle-enigmes.php:178
+msgid "nombre de participants à cette énigme"
+msgstr "number of participants for this puzzle"
+
+#: template-parts/enigme/chasse-partial-boucle-enigmes.php:182
+msgid "nombre de joueurs ayant trouvé la bonne réponse"
+msgstr "number of players who found the correct answer"
+
+#: template-parts/enigme/chasse-partial-boucle-enigmes.php:189
+msgid "tentatives quotidiennes utilisées"
+msgstr "daily attempts used"
+
 #: template-parts/enigme/partials/enigme-partial-participants.php:51
 msgid "Nom"
 msgstr "Name"

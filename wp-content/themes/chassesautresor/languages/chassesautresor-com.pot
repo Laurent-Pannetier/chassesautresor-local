@@ -2729,3 +2729,15 @@ msgid "%d jour"
 msgid_plural "%d jours"
 msgstr[0] ""
 msgstr[1] ""
+
+#: wp-content/themes/chassesautresor/template-parts/enigme/chasse-partial-boucle-enigmes.php:178
+msgid "nombre de participants à cette énigme"
+msgstr ""
+
+#: wp-content/themes/chassesautresor/template-parts/enigme/chasse-partial-boucle-enigmes.php:182
+msgid "nombre de joueurs ayant trouvé la bonne réponse"
+msgstr ""
+
+#: wp-content/themes/chassesautresor/template-parts/enigme/chasse-partial-boucle-enigmes.php:189
+msgid "tentatives quotidiennes utilisées"
+msgstr ""
