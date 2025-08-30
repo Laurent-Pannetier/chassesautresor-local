@@ -70,21 +70,6 @@
   position: relative;
 }
 
-
-.carte-enigme-badges {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  display: flex;
-  gap: var(--space-xxs);
-  z-index: 1;
-}
-
-.carte-enigme-badges .badge-cout,
-.carte-enigme-badges .badge-validation {
-  position: static;
-}
-
 .etat-bloquee_chasse .carte-core,
 .etat-bloquee_date .carte-core,
 .etat-bloquee_pre_requis .carte-core,
@@ -173,9 +158,10 @@
   overflow: hidden;
 }
 
+
 .carte-enigme-footer {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   padding: var(--space-xs) var(--space-md) 0;
   min-height: var(--space-3xl);
@@ -199,6 +185,12 @@
 .carte-enigme-footer svg {
   width: 1em;
   height: 1em;
+  fill: currentColor;
+}
+
+.carte-enigme-footer .fa-circle-info {
+  color: var(--color-gris-3);
+  opacity: 0.6;
 }
 
 .carte-enigme-image img,

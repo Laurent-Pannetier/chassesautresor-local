@@ -134,25 +134,6 @@ if (!function_exists('compter_tentatives_du_jour')) {
                         ?>
                       </div>
                     <?php endif; ?>
-                    <?php if ($cout_points > 0 || in_array($mode_validation, ['automatique', 'manuelle'], true)) : ?>
-                      <div class="carte-enigme-badges">
-                        <?php if ($cout_points > 0) : ?>
-                          <span class="badge-cout" aria-label="<?= esc_attr(sprintf(__('Cette énigme coûte %d point(s)', 'chassesautresor-com'), $cout_points)); ?>">
-                            <?= esc_html($cout_points . ' ' . __('pts', 'chassesautresor-com')); ?>
-                          </span>
-                        <?php endif; ?>
-                        <?php if (in_array($mode_validation, ['automatique', 'manuelle'], true)) :
-                            $icon = $mode_validation === 'automatique' ? 'fa-bolt' : 'fa-envelope';
-                            $label = $mode_validation === 'automatique'
-                                ? esc_html__('Mode de validation : automatique', 'chassesautresor-com')
-                                : esc_html__('Mode de validation : manuel', 'chassesautresor-com');
-                        ?>
-                          <span class="badge-validation" title="<?= esc_attr($label); ?>" aria-label="<?= esc_attr($label); ?>">
-                            <i class="fa-solid <?= esc_attr($icon); ?>" aria-hidden="true"></i>
-                          </span>
-                        <?php endif; ?>
-                      </div>
-                    <?php endif; ?>
                     <?php if ($linkable) : ?>
                       <span class="carte-enigme-overlay" aria-hidden="true">
                         <span class="carte-enigme-bouton <?= esc_attr($classes_bouton); ?>">
@@ -178,7 +159,25 @@ if (!function_exists('compter_tentatives_du_jour')) {
             </div>
           <?php endif; ?>
             <footer class="carte-enigme-footer">
-              <div class="footer-icons">
+              <div class="footer-icons footer-icons-left">
+                <?php if ($cout_points > 0) : ?>
+                  <span class="footer-item" title="<?= esc_attr(sprintf(__('Cette énigme coûte %d point(s)', 'chassesautresor-com'), $cout_points)); ?>" aria-label="<?= esc_attr(sprintf(__('Cette énigme coûte %d point(s)', 'chassesautresor-com'), $cout_points)); ?>">
+                    <i class="fa-solid fa-coins" aria-hidden="true"></i>
+                    <?= esc_html($cout_points); ?>
+                  </span>
+                <?php endif; ?>
+                <?php if (in_array($mode_validation, ['automatique', 'manuelle'], true)) :
+                  $icon = $mode_validation === 'automatique' ? 'fa-bolt' : 'fa-envelope';
+                  $label = $mode_validation === 'automatique'
+                    ? esc_html__('Mode de validation : automatique', 'chassesautresor-com')
+                    : esc_html__('Mode de validation : manuel', 'chassesautresor-com');
+                ?>
+                  <span class="footer-item" title="<?= esc_attr($label); ?>" aria-label="<?= esc_attr($label); ?>">
+                    <i class="fa-solid <?= esc_attr($icon); ?>" aria-hidden="true"></i>
+                  </span>
+                <?php endif; ?>
+              </div>
+              <div class="footer-icons footer-icons-right">
                 <span class="footer-item" title="<?= esc_attr__('nombre de participants à cette énigme', 'chassesautresor-com'); ?>" aria-label="<?= esc_attr__('nombre de participants à cette énigme', 'chassesautresor-com'); ?>">
                   <i class="fa-solid fa-users" aria-hidden="true"></i>
                   <?= esc_html($nb_participants); ?>
