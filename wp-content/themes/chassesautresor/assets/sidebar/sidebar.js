@@ -1,5 +1,6 @@
 (function() {
   function init() {
+    performance.mark('sidebar-init');
     const aside = document.querySelector('.menu-lateral');
     if (!aside) return;
     const bp = getComputedStyle(document.documentElement)
@@ -14,6 +15,7 @@
       '<span class="screen-reader-text">' + __('Afficher le panneau', 'chassesautresor-com') + '</span>';
     document.body.appendChild(opener);
     let timer = null;
+    let revealed = false;
     function hideAside() {
       aside.classList.add('is-hidden');
       opener.style.display = 'flex';
@@ -23,6 +25,11 @@
       }
     }
     function showAside() {
+      if (!revealed) {
+        performance.mark('sidebar-visible');
+        performance.measure('sidebar-time-to-visible', 'sidebar-init', 'sidebar-visible');
+        revealed = true;
+      }
       aside.classList.remove('is-hidden');
       opener.style.display = 'none';
       if (timer) clearTimeout(timer);

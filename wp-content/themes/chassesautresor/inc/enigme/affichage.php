@@ -870,16 +870,22 @@ require_once __DIR__ . '/../sidebar.php';
         }
 
         echo '<div class="container container--xl-full enigme-layout">';
-        $sidebar_sections = render_sidebar(
-            'enigme',
-            $enigme_id,
-            $edition_active,
-            $chasse_id,
-            $menu_items,
-            $peut_ajouter_enigme,
-            $total_enigmes,
-            $has_incomplete_enigme
-        );
+        $sidebar_sections = [
+            'navigation' => '',
+            'stats'      => '',
+        ];
+        if (function_exists('render_sidebar')) {
+            $sidebar_sections = render_sidebar(
+                'enigme',
+                $enigme_id,
+                $edition_active,
+                $chasse_id,
+                $menu_items,
+                $peut_ajouter_enigme,
+                $total_enigmes,
+                $has_incomplete_enigme
+            );
+        }
 
         $retour_url   = $chasse_id ? get_permalink($chasse_id) : home_url('/');
         $settings_icon = '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none"'
