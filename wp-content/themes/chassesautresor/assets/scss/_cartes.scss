@@ -163,6 +163,33 @@
   justify-content: center;
 }
 
+.carte-enigme-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-xs) var(--space-md);
+  min-height: var(--space-3xl);
+  font-size: 0.875rem;
+}
+
+.carte-enigme-footer .footer-left,
+.carte-enigme-footer .footer-right {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.carte-enigme-footer .footer-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xxs);
+}
+
+.carte-enigme-footer i,
+.carte-enigme-footer svg {
+  width: 1em;
+  height: 1em;
+}
+
 .carte-enigme-image img,
 .carte-ligne__image img {
   width: 100%;
