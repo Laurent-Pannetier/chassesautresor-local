@@ -67,21 +67,41 @@ function build_picture_enigme(int $image_id, string $alt, array $sizes, array $i
     $base_url = site_url('/voir-image-enigme');
 
     $html = "<picture>\n";
+    $size_2x_map = [
+        'thumbnail' => 'medium',
+        'medium'    => 'large',
+        'large'     => 'full',
+        'full'      => 'full',
+    ];
+
     for ($i = count($used_sizes) - 1; $i > 0; $i--) {
         $size = $used_sizes[$i];
-        $src = esc_url(add_query_arg([
+        $src_1x = esc_url(add_query_arg([
             'id'     => $image_id,
             'taille' => $size,
         ], $base_url));
+        $src_2x = esc_url(add_query_arg([
+            'id'     => $image_id,
+            'taille' => $size_2x_map[$size] ?? $size,
+        ], $base_url));
+        $srcset_parts = [$src_1x . ' 1x'];
+        if ($src_2x !== $src_1x) {
+            $srcset_parts[] = $src_2x . ' 2x';
+        }
+        $srcset = implode(', ', $srcset_parts);
         $media = $breakpoints[$size];
         $media_attr = $media ? ' media="' . $media . '"' : '';
-        $html .= '  <source srcset="' . $src . '" data-size="' . $size . '"' . $media_attr . ">\n";
+        $html .= '  <source srcset="' . $srcset . '" data-size="' . $size . '"' . $media_attr . ">\n";
     }
 
     $fallback_size = $used_sizes[0];
-    $src_fallback = esc_url(add_query_arg([
+    $src_fallback_1x = esc_url(add_query_arg([
         'id'     => $image_id,
         'taille' => $fallback_size,
+    ], $base_url));
+    $src_fallback_2x = esc_url(add_query_arg([
+        'id'     => $image_id,
+        'taille' => $size_2x_map[$fallback_size] ?? $fallback_size,
     ], $base_url));
 
     $dimensions = function_exists('wp_get_attachment_image_src')
@@ -102,7 +122,14 @@ function build_picture_enigme(int $image_id, string $alt, array $sizes, array $i
         $attr_str .= ' ' . $key . '="' . esc_attr($value) . '"';
     }
 
-    $html .= '  <img src="' . $src_fallback . '" alt="' . esc_attr($alt) . '"' . $attr_str . ">\n";
+    $img_srcset_parts = [$src_fallback_1x . ' 1x'];
+    if ($src_fallback_2x !== $src_fallback_1x) {
+        $img_srcset_parts[] = $src_fallback_2x . ' 2x';
+    }
+    $img_srcset = implode(', ', $img_srcset_parts);
+
+    $html .= '  <img src="' . $src_fallback_1x . '" srcset="' . $img_srcset . '" alt="'
+        . esc_attr($alt) . '"' . $attr_str . ">\n";
     $html .= "</picture>\n";
 
     return $html;
