@@ -4,7 +4,8 @@
  *
  * @param array $args {
  *     @type string $section       Section à afficher : 'navigation' ou 'stats'.
- *     @type array  $menu_items    Éléments de menu.
+ *     @type array  $visible_items Éléments de menu visibles.
+ *     @type array  $hidden_items  Éléments de menu masqués.
  *     @type bool   $edition_active Mode édition actif.
  *     @type int    $chasse_id     Identifiant de la chasse liée.
  *     @type string $ajout_html    HTML du lien d'ajout d'énigme.
@@ -28,20 +29,33 @@ if ($section === 'navigation') {
             echo '<div class="enigme-chasse-logo">' . $logo . '</div>';
         }
     }
-    $data_chasse = $args['chasse_id'] ? ' data-chasse-id="' . intval($args['chasse_id']) . '"' : '';
-    $menu_class  = 'enigme-menu';
+    $data_chasse   = $args['chasse_id'] ? ' data-chasse-id="' . intval($args['chasse_id']) . '"' : '';
+    $menu_class    = 'enigme-menu';
+    $visible_items = $args['visible_items'] ?? [];
+    $hidden_items  = $args['hidden_items'] ?? [];
+
     if (!empty($args['edition_active'])) {
         $menu_class .= ' enigme-menu--editable';
     }
+
     echo '<section class="enigme-navigation"' . $data_chasse . '>';
     echo '<h3>' . esc_html__('Énigmes', 'chassesautresor-com') . '</h3>';
     if (!empty($args['ajout_html'])) {
         echo $args['ajout_html'];
     }
-    if (empty($args['menu_items'])) {
+
+    if (empty($visible_items) && empty($hidden_items)) {
         echo '<p class="enigme-navigation__empty">' . esc_html__('Aucune énigme disponible', 'chassesautresor-com') . '</p>';
     } else {
-        echo '<ul class="' . esc_attr($menu_class) . '">' . implode('', $args['menu_items']) . '</ul>';
+        echo '<ul class="' . esc_attr($menu_class) . '">' . implode('', $visible_items) . '</ul>';
+        if (!empty($hidden_items)) {
+            echo '<ul class="' . esc_attr($menu_class . ' enigme-menu--overflow') . '" hidden>'
+                . implode('', $hidden_items)
+                . '</ul>';
+            echo '<button class="enigme-menu__toggle" type="button" aria-expanded="false">'
+                . esc_html__('Afficher plus', 'chassesautresor-com')
+                . '</button>';
+        }
     }
     echo '</section>';
     return;
