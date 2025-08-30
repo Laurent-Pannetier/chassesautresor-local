@@ -144,7 +144,7 @@ if (!function_exists('compter_tentatives_du_jour')) {
                   </div>
 
                 <?php if ($mapping_visuel['image_reelle']) : ?>
-                  <h3><?= esc_html($titre); ?></h3>
+                  <h3><span class="carte-enigme-titre"><?= esc_html($titre); ?></span></h3>
                 <?php endif; ?>
 
                 <?php if (!empty($mapping_visuel['disponible_le'])) : ?>
