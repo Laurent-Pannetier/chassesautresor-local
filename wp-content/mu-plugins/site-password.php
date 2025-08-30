@@ -101,7 +101,7 @@ function ca_site_password_protection(): void
         . '}'
         . '.ca-site-password-form button:hover{background:var(--color-background-button-hover);}'
         . '.ca-site-password-error{color:var(--color-error);}'
-        . '.ca-site-password-logo{width:150px;display:block;margin:0 auto var(--space-md);}';
+        . '.ca-site-password-logo{width:195px;display:block;margin:0 auto var(--space-md);}';
 
     echo '<!doctype html><html><head><meta charset="utf-8"><title>'
         . esc_html__('Protected Site', 'chassesautresor-com')
