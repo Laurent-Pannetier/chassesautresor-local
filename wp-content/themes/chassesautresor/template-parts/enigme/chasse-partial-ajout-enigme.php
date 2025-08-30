@@ -5,11 +5,16 @@ defined('ABSPATH') || exit;
  *
  * Contexte attendu :
  * - $args['has_enigmes'] (bool) : indique s’il y a déjà des énigmes
+ * - $args['chasse_id'] (int) : identifiant de la chasse
+ * - $args['disabled'] (bool) : désactive la carte si true
+ * - $args['highlight_pulse'] (bool) : affiche un effet de pulsation
+ * - $args['show_help_icon'] (bool) : affiche un badge d’information
+ * - $args['use_button'] (bool) : rend un bouton dans la navigation latérale
  */
 
 $has_enigmes     = $args['has_enigmes'] ?? false;
 $chasse_id       = $args['chasse_id'] ?? null;
-$disabled        = $args['disabled'] ?? true;
+$disabled        = $args['disabled'] ?? false;
 $highlight_pulse = $args['highlight_pulse'] ?? false;
 $show_help_icon  = $args['show_help_icon'] ?? false;
 $use_button      = $args['use_button'] ?? false;
