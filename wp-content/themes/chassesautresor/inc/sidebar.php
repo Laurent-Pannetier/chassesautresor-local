@@ -153,28 +153,39 @@ if (!function_exists('render_sidebar')) {
         int $total_enigmes = 0,
         bool $has_incomplete_enigme = false
     ): array {
-        if (function_exists('wp_script_is') && !wp_script_is('sidebar', 'enqueued')) {
+        if (
+            function_exists('wp_script_is')
+            && !wp_script_is('chassesautresor-sidebar', 'enqueued')
+        ) {
             $theme_path  = get_template_directory();
             $theme_uri   = get_template_directory_uri();
             $sidebar_dir = $theme_uri . '/assets/sidebar/';
             wp_enqueue_script(
-                'sidebar',
+                'chassesautresor-sidebar',
                 $sidebar_dir . 'sidebar.js',
                 [],
                 filemtime($theme_path . '/assets/sidebar/sidebar.js'),
                 true
             );
-            wp_localize_script('sidebar', 'sidebarData', [
-                'ajaxUrl' => admin_url('admin-ajax.php'),
-            ]);
+            wp_localize_script(
+                'chassesautresor-sidebar',
+                'sidebarData',
+                [
+                    'ajaxUrl' => admin_url('admin-ajax.php'),
+                ]
+            );
             wp_enqueue_script(
-                'sidebar-menu-toggle',
+                'chassesautresor-sidebar-menu-toggle',
                 $sidebar_dir . 'menu-toggle.js',
                 [],
                 filemtime($theme_path . '/assets/sidebar/menu-toggle.js'),
                 true
             );
-            wp_script_add_data('sidebar-menu-toggle', 'defer', true);
+            wp_script_add_data(
+                'chassesautresor-sidebar-menu-toggle',
+                'defer',
+                true
+            );
         }
         if ($context === 'enigme') {
             $mode    = get_field('enigme_mode_validation', $enigme_id);
