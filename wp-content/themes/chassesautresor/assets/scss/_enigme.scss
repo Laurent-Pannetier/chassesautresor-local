@@ -270,6 +270,7 @@ li.active .enigme-menu__edit {
     background-color: rgba(var(--color-black-rgb, 0, 0, 0), 0.6);
     color: var(--color-white);
     pointer-events: none;
+    z-index: 10;
   }
 }
 
