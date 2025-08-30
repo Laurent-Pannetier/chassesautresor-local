@@ -29,7 +29,7 @@
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 400px));
-  gap: var(--space-xl);
+  gap: var(--space-2xl);
   justify-content: center;
 }
 
@@ -69,13 +69,6 @@
   position: relative;
 }
 
-.carte-enigme .badge-validation {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 1;
-}
-
 .etat-bloquee_chasse .carte-core,
 .etat-bloquee_date .carte-core,
 .etat-bloquee_pre_requis .carte-core,
@@ -105,12 +98,6 @@
   overflow: hidden;
   position: relative;
   flex: 2;
-}
-
-.carte-enigme-image .badge-cout {
-  position: absolute;
-  top: 10px;
-  right: 10px;
 }
 
 .carte-enigme-lien {
@@ -154,10 +141,14 @@
 .carte-enigme h3 {
   margin: 0;
   padding: var(--space-xs) var(--space-md);
-  flex: 0.5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  text-align: center;
+  line-height: 1.3;
+  height: 2.6em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .carte-enigme-footer {
@@ -167,11 +158,10 @@
   padding: var(--space-xs) var(--space-md) 0;
   min-height: var(--space-3xl);
   font-size: 0.875rem;
-  color: var(--color-gris-3);
+  color: var(--color-text-secondary);
 }
 
-.carte-enigme-footer .footer-left,
-.carte-enigme-footer .footer-right {
+.carte-enigme-footer .footer-icons {
   display: flex;
   gap: var(--space-sm);
 }
@@ -180,12 +170,24 @@
   display: flex;
   align-items: center;
   gap: var(--space-xxs);
+  opacity: 0.8;
 }
 
 .carte-enigme-footer i,
 .carte-enigme-footer svg {
   width: 1em;
   height: 1em;
+  fill: currentColor;
+}
+
+.carte-enigme-footer .footer-item--points {
+  color: var(--color-secondary);
+  opacity: 1;
+}
+
+.carte-enigme-footer .fa-circle-info {
+  color: inherit;
+  opacity: 0.8;
 }
 
 .carte-enigme-image img,
