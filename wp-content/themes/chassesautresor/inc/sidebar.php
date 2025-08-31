@@ -52,18 +52,29 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
             ? utilisateur_peut_ajouter_enigme($chasse_id)
             : false;
 
+        $is_privileged = user_can($user_id, 'manage_options')
+            || (
+                function_exists('utilisateur_est_organisateur_associe_a_chasse')
+                && utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)
+            );
+
         $visible_ids = [];
 
         foreach ($all_enigmes as $post) {
             $cta = get_cta_enigme($post->ID, $user_id);
 
-            if (in_array($cta['etat_systeme'], ['bloquee_date', 'bloquee_pre_requis'], true)) {
+            if (
+                !$is_privileged
+                && in_array($cta['etat_systeme'], ['bloquee_date', 'bloquee_pre_requis'], true)
+            ) {
                 continue;
             }
 
             $classes = [];
 
-            if ($cta['etat_systeme'] === 'bloquee_chasse') {
+            if (in_array($cta['etat_systeme'], ['bloquee_date', 'bloquee_pre_requis'], true)) {
+                $classes[] = 'bloquee';
+            } elseif ($cta['etat_systeme'] === 'bloquee_chasse') {
                 if (!get_field('enigme_cache_complet', $post->ID)) {
                     $classes[] = 'incomplete';
                 } else {
