@@ -1914,8 +1914,18 @@ a.addtoany_share span {
 
 .menu-lateral__edition-toggle {
   position: absolute;
-  top: var(--space-sm);
   right: var(--space-sm);
+}
+
+.menu-lateral__header .menu-lateral__edition-toggle {
+  color: var(--color-white);
+  transition: color 0.2s ease-in-out;
+}
+
+.menu-lateral__header:hover .menu-lateral__edition-toggle,
+.menu-lateral__header:focus-within .menu-lateral__edition-toggle {
+  opacity: 1;
+  color: var(--color-grey-light);
 }
 
 .menu-lateral__title a {
