@@ -9,7 +9,8 @@ if (!defined('ABSPATH')) {
 if (!function_exists('get_field')) {
     function get_field($key, $post_id)
     {
-        return true;
+        $map = $GLOBALS['get_field_values'] ?? [];
+        return $map[$post_id][$key] ?? true;
     }
 }
 
@@ -23,7 +24,8 @@ if (!function_exists('utilisateur_peut_ajouter_enigme')) {
 if (!function_exists('utilisateur_est_engage_dans_enigme')) {
     function utilisateur_est_engage_dans_enigme($user_id, $enigme_id)
     {
-        return false;
+        $map = $GLOBALS['engagements'] ?? [];
+        return $map[$enigme_id] ?? false;
     }
 }
 
@@ -85,7 +87,7 @@ if (!function_exists('utilisateur_est_organisateur_associe_a_chasse')) {
 if (!function_exists('recuperer_enigmes_pour_chasse')) {
     function recuperer_enigmes_pour_chasse($chasse_id)
     {
-        return [
+        return $GLOBALS['posts'] ?? [
             (object) ['ID' => 1],
             (object) ['ID' => 2],
         ];
@@ -147,6 +149,59 @@ class SidebarPrepareChasseNavTest extends TestCase
         $data = sidebar_prepare_chasse_nav(10, 5);
 
         $this->assertSame([1, 2], $data['visible_ids']);
+    }
+
+    public function test_menu_item_classes_reflect_cta_state(): void
+    {
+        $GLOBALS['is_admin'] = true;
+        $GLOBALS['posts'] = [
+            (object) ['ID' => 1],
+            (object) ['ID' => 2],
+            (object) ['ID' => 3],
+            (object) ['ID' => 4],
+            (object) ['ID' => 5],
+            (object) ['ID' => 6],
+        ];
+
+        $GLOBALS['ctas'] = [
+            1 => [
+                'etat_systeme'       => 'accessible',
+                'statut_utilisateur' => 'en_cours',
+            ],
+            2 => [
+                'etat_systeme'       => 'accessible',
+                'statut_utilisateur' => 'non_commencee',
+            ],
+            3 => [
+                'etat_systeme'       => 'accessible',
+                'statut_utilisateur' => 'resolue',
+            ],
+            4 => [
+                'etat_systeme'       => 'bloquee_pre_requis',
+                'statut_utilisateur' => 'non_commencee',
+            ],
+            5 => [
+                'etat_systeme'       => 'accessible',
+                'statut_utilisateur' => 'soumis',
+            ],
+            6 => [
+                'etat_systeme'       => 'bloquee_chasse',
+                'statut_utilisateur' => 'non_commencee',
+            ],
+        ];
+
+        $GLOBALS['engagements'] = [1 => true];
+        $GLOBALS['get_field_values'] = [6 => ['enigme_cache_complet' => false]];
+
+        $data = sidebar_prepare_chasse_nav(10, 5);
+        $items = $data['menu_items'];
+
+        $this->assertStringNotContainsString('class=', $items[0]);
+        $this->assertStringContainsString('class="non-engagee"', $items[1]);
+        $this->assertStringContainsString('class="succes"', $items[2]);
+        $this->assertStringContainsString('class="bloquee"', $items[3]);
+        $this->assertStringContainsString('class="en-attente"', $items[4]);
+        $this->assertStringContainsString('class="incomplete"', $items[5]);
     }
 }
 

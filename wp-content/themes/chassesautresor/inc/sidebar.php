@@ -139,9 +139,14 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
             $title        = esc_html(get_the_title($post->ID));
             $aria_current = $post->ID === $current_enigme_id ? ' aria-current="page"' : '';
             $link         = '<a href="' . esc_url(get_permalink($post->ID)) . '"' . $aria_current . '>' . $title . '</a>';
+
+            $class_attr = $classes
+                ? ' class="' . esc_attr(implode(' ', $classes)) . '"'
+                : '';
+
             $submenu_items[] = sprintf(
-                '<li class="%s" data-enigme-id="%d">%s%s</li>',
-                esc_attr(implode(' ', $classes)),
+                '<li%s data-enigme-id="%d">%s%s</li>',
+                $class_attr,
                 $post->ID,
                 $link,
                 $edit
