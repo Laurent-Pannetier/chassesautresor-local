@@ -420,11 +420,19 @@ class MyAccountMessagesTest extends TestCase
                 'correction_chasse_123' => ['text' => 'X', 'type' => 'info'],
             ]
         );
+        update_user_meta(
+            99,
+            '_myaccount_messages',
+            [
+                'correction_chasse_123' => ['text' => 'X', 'type' => 'info'],
+            ]
+        );
 
         myaccount_clear_correction_message(123);
 
         $this->assertSame([], get_user_meta(1, '_myaccount_messages', true));
         $this->assertSame([], get_user_meta(2, '_myaccount_messages', true));
+        $this->assertSame([], get_user_meta(99, '_myaccount_messages', true));
     }
 
     public function test_scoped_message_only_on_related_pages(): void
