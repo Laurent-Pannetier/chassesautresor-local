@@ -5,7 +5,7 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-class OrganisateurPrerequisAccessTest extends TestCase
+class OrganisateurAccessTest extends TestCase
 {
     protected function setUp(): void
     {
@@ -21,6 +21,20 @@ class OrganisateurPrerequisAccessTest extends TestCase
         $post_status = [$enigme_id => 'publish'];
         $fields = [
             $enigme_id => ['enigme_cache_etat_systeme' => 'bloquee_pre_requis'],
+            $chasse_id => ['chasse_cache_statut_validation' => 'active'],
+        ];
+        $this->assertTrue(utilisateur_peut_voir_enigme($enigme_id));
+    }
+
+    public function test_organisateur_peut_voir_enigme_bloquee_par_date(): void
+    {
+        global $fields, $enigme_chasse, $post_status;
+        $enigme_id = 3;
+        $chasse_id = 4;
+        $enigme_chasse = [$enigme_id => $chasse_id];
+        $post_status = [$enigme_id => 'publish'];
+        $fields = [
+            $enigme_id => ['enigme_cache_etat_systeme' => 'bloquee_date'],
             $chasse_id => ['chasse_cache_statut_validation' => 'active'],
         ];
         $this->assertTrue(utilisateur_peut_voir_enigme($enigme_id));
