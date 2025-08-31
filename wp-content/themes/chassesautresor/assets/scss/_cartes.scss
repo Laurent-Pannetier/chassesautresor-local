@@ -209,6 +209,18 @@
   opacity: 0.8;
 }
 
+.carte-enigme-footer--texte {
+  justify-content: center;
+}
+
+.carte-enigme-footer--texte .footer-texte {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+}
+
 .carte-enigme-image img,
 .carte-ligne__image img {
   width: 100%;

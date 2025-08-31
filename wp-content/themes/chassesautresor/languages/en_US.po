@@ -3175,3 +3175,15 @@ msgstr "Error"
 #: inc/enigme/cta.php:307
 msgid "Statut inconnu"
 msgstr "Unknown status"
+
+#: template-parts/enigme/chasse-partial-boucle-enigmes.php:160
+msgid "Parution programmée"
+msgstr "Scheduled release"
+
+#: template-parts/enigme/chasse-partial-boucle-enigmes.php:187
+msgid "Nécessite : %s"
+msgstr "Requires %s"
+
+#: template-parts/enigme/chasse-partial-boucle-enigmes.php:194
+msgid "Parution le %1$s à %2$s"
+msgstr "Published on %1$s at %2$s"
