@@ -546,6 +546,18 @@ function utilisateur_peut_voir_enigme(int $enigme_id, ?int $user_id = null): boo
         return true;
     }
 
+    // ✅ Cas organisateur avec énigme bloquée par pré-requis
+    if ($post_status === 'publish' && $etat_systeme === 'bloquee_pre_requis') {
+        cat_debug("🟢 [voir énigme] organisateur → pré-requis ignorés");
+        return true;
+    }
+
+    // ✅ Cas organisateur avec énigme bloquée par date programmée
+    if ($post_status === 'publish' && $etat_systeme === 'bloquee_date') {
+        cat_debug("🟢 [voir énigme] organisateur → date programmée ignorée");
+        return true;
+    }
+
     // ✅ Cas standard : publish + accessible
     $autorise = ($post_status === 'publish') && ($etat_systeme === 'accessible');
     cat_debug("🟠 [voir énigme] cas standard → accès " . ($autorise ? 'OK' : 'REFUSÉ'));
