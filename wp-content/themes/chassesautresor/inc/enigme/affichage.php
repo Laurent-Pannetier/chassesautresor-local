@@ -1,6 +1,7 @@
 <?php
 defined('ABSPATH') || exit;
 require_once __DIR__ . '/../sidebar.php';
+require_once __DIR__ . '/utils.php';
 
     // ==================================================
     // 🎨 AFFICHAGE STYLISÉ DES ÉNIGMES
@@ -756,6 +757,10 @@ require_once __DIR__ . '/../sidebar.php';
         $peut_ajouter_enigme = false;
         if ($chasse_id && function_exists('utilisateur_peut_ajouter_enigme')) {
             $peut_ajouter_enigme = utilisateur_peut_ajouter_enigme($chasse_id);
+        }
+
+        if (!$is_privileged) {
+            $liste = filter_visible_enigmes($liste, $user_id);
         }
 
         foreach ($liste as $post) {
