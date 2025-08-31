@@ -653,6 +653,15 @@ msgstr "Riddles"
 msgid "Énigmes de %s"
 msgstr "Riddles of %s"
 
+#: single-chasse.php:270
+#, php-format
+msgid "Énigmes accessibles uniquement pour les joueurs connectés. Nouveau ? <a href=\"%1$s\">S'enregistrer</a> Déjà inscrit ? <a href=\"%2$s\">Se connecter</a>"
+msgstr "Riddles accessible only to logged-in players. New? <a href=\"%1$s\">Sign up</a> Already registered? <a href=\"%2$s\">Log in</a>"
+
+#: single-chasse.php:276
+msgid "Énigmes accessibles uniquement pour les joueurs connectés."
+msgstr "Riddles accessible only to logged-in players."
+
 #: single-chasse.php:128
 msgid "La chasse est terminée. Vous pouvez revoir toutes les énigmes ainsi que leurs solutions et indices."
 msgstr "The hunt is over. You can review all riddles along with their solutions and hints."
