@@ -52,22 +52,25 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
             ? utilisateur_peut_ajouter_enigme($chasse_id)
             : false;
 
-        $is_privileged = current_user_can('administrator')
-            || (est_organisateur($user_id)
-            && utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id));
-
-        if ($is_privileged) {
-            $liste = $all_enigmes;
-        } else {
-            $liste = filter_visible_enigmes($all_enigmes, $user_id);
-        }
-
         $visible_ids = [];
 
-        foreach ($liste as $post) {
-            if (!$is_privileged) {
-                $statut_user = enigme_get_statut_utilisateur($post->ID, $user_id);
-                $classes     = [];
+        foreach ($all_enigmes as $post) {
+            $cta = get_cta_enigme($post->ID, $user_id);
+
+            if (in_array($cta['etat_systeme'], ['bloquee_date', 'bloquee_pre_requis'], true)) {
+                continue;
+            }
+
+            $classes = [];
+
+            if ($cta['etat_systeme'] === 'bloquee_chasse') {
+                if (!get_field('enigme_cache_complet', $post->ID)) {
+                    $classes[] = 'incomplete';
+                } else {
+                    $classes[] = 'bloquee';
+                }
+            } else {
+                $statut_user = $cta['statut_utilisateur'];
                 if (in_array($statut_user, ['resolue', 'terminee'], true)) {
                     $classes[] = 'succes';
                 } elseif ($statut_user === 'soumis') {
@@ -78,8 +81,6 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
                 ) {
                     $classes[] = 'non-engagee';
                 }
-            } else {
-                $classes = [];
             }
 
             if ($post->ID === $current_enigme_id) {
