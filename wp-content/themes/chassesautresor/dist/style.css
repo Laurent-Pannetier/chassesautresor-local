@@ -688,6 +688,7 @@
 
 .chasse-caracteristiques .caracteristique-valeur {
   flex: 0 0 auto;
+  margin-left: var(--space-xs);
 }
 
 .chasse-lot-complet {
