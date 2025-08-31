@@ -732,7 +732,12 @@ require_once __DIR__ . '/utils.php';
         $has_incomplete_enigme = false;
 
         if ($chasse_id && $show_menu) {
-            $sidebar_data         = sidebar_prepare_chasse_nav($chasse_id, $user_id, $enigme_id);
+            $sidebar_data         = sidebar_prepare_chasse_nav(
+                $chasse_id,
+                $user_id,
+                $enigme_id,
+                $edition_active
+            );
             $menu_items           = $sidebar_data['menu_items'];
             $peut_ajouter_enigme  = $sidebar_data['peut_ajouter_enigme'];
             $total_enigmes        = $sidebar_data['total_enigmes'];

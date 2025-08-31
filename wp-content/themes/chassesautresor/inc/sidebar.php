@@ -28,13 +28,19 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
     /**
      * Prepare navigation items for a hunt sidebar.
      *
-     * @param int $chasse_id         Hunt identifier.
-     * @param int $user_id           Current user identifier.
-     * @param int $current_enigme_id Current enigma identifier.
+     * @param int  $chasse_id         Hunt identifier.
+     * @param int  $user_id           Current user identifier.
+     * @param int  $current_enigme_id Current enigma identifier.
+     * @param bool $edition_active    Whether edition mode is active.
      *
      * @return array{menu_items:array,peut_ajouter_enigme:bool,total_enigmes:int,has_incomplete_enigme:bool,visible_ids:array}
      */
-    function sidebar_prepare_chasse_nav(int $chasse_id, int $user_id, int $current_enigme_id = 0): array
+    function sidebar_prepare_chasse_nav(
+        int $chasse_id,
+        int $user_id,
+        int $current_enigme_id = 0,
+        bool $edition_active = false
+    ): array
     {
         $all_enigmes         = recuperer_enigmes_pour_chasse($chasse_id);
         $submenu_items       = [];
@@ -104,14 +110,48 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
                 $classes[] = 'active';
             }
 
+            $handle = $edition_active
+                ? '<span class="enigme-menu__handle" aria-hidden="true"></span>'
+                : '';
+
+            $edit = '';
+            if (
+                function_exists('utilisateur_peut_modifier_enigme')
+                && utilisateur_peut_modifier_enigme($post->ID)
+            ) {
+                if ($post->ID === $current_enigme_id) {
+                    $edit = '<button id="toggle-mode-edition-enigme" type="button"'
+                        . ' class="enigme-menu__edit" aria-label="'
+                        . esc_attr__("Paramètres", "chassesautresor-com")
+                        . '"><i class="fa-solid fa-gear"></i></button>';
+                } else {
+                    $status = function_exists('get_post_status')
+                        ? get_post_status($post->ID)
+                        : 'publish';
+                    $tab = ($status === 'publish' && get_field('enigme_cache_complet', $post->ID))
+                        ? 'stats'
+                        : 'param';
+                    $base_url = esc_url(get_permalink($post->ID));
+                    $edit_url = function_exists('add_query_arg')
+                        ? add_query_arg(['edition' => 'open', 'tab' => $tab], $base_url)
+                        : $base_url . '?edition=open&tab=' . $tab;
+                    $edit = '<a class="enigme-menu__edit" href="' . esc_url($edit_url)
+                        . '" aria-label="'
+                        . esc_attr__("Paramètres", "chassesautresor-com")
+                        . '"><i class="fa-solid fa-gear"></i></a>';
+                }
+            }
+
             $title        = esc_html(get_the_title($post->ID));
             $aria_current = $post->ID === $current_enigme_id ? ' aria-current="page"' : '';
             $link         = '<a href="' . esc_url(get_permalink($post->ID)) . '"' . $aria_current . '>' . $title . '</a>';
             $submenu_items[] = sprintf(
-                '<li class="%s" data-enigme-id="%d">%s</li>',
+                '<li class="%s" data-enigme-id="%d">%s%s%s</li>',
                 esc_attr(implode(' ', $classes)),
                 $post->ID,
-                $link
+                $handle,
+                $link,
+                $edit
             );
             $visible_ids[] = $post->ID;
         }
@@ -137,8 +177,15 @@ if (!function_exists('ajax_chasse_recuperer_navigation')) {
             wp_send_json_error('post_invalide', 400);
         }
 
-        $user_id = get_current_user_id();
-        $data    = sidebar_prepare_chasse_nav($chasse_id, $user_id);
+        $user_id          = get_current_user_id();
+        $current_enigme   = isset($_POST['enigme_id']) ? (int) $_POST['enigme_id'] : 0;
+        $edition_active   = !empty($_POST['edition_active']);
+        $data             = sidebar_prepare_chasse_nav(
+            $chasse_id,
+            $user_id,
+            $current_enigme,
+            $edition_active
+        );
         wp_send_json_success([
             'html' => implode('', $data['menu_items']),
             'ids'  => $data['visible_ids'],

@@ -120,7 +120,12 @@ $needs_validatable_message = $statut === 'revision'
 
 $statut_validation = $infos_chasse['statut_validation'];
 $nb_joueurs = $infos_chasse['nb_joueurs'];
-$sidebar_data = sidebar_prepare_chasse_nav($chasse_id, $user_id);
+$sidebar_data = sidebar_prepare_chasse_nav(
+    $chasse_id,
+    $user_id,
+    0,
+    $edition_active
+);
 
 $solved_label  = _n('énigme résolue', 'énigmes résolues', $enigmes_resolues, 'chassesautresor-com');
 $engaged_label = _n('engagée', 'engagées', $nb_engagees, 'chassesautresor-com');
