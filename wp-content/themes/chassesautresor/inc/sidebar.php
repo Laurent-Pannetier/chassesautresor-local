@@ -56,9 +56,24 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
             || (est_organisateur($user_id)
             && utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id));
 
-        $liste = $is_privileged
-            ? $all_enigmes
-            : filter_visible_enigmes($all_enigmes, $user_id);
+        if ($is_privileged) {
+            $liste = $all_enigmes;
+        } else {
+            $is_engage_dans_chasse = function_exists('utilisateur_est_engage_dans_chasse')
+                ? utilisateur_est_engage_dans_chasse($user_id, $chasse_id)
+                : false;
+
+            $liste = array_values(
+                array_filter(
+                    $all_enigmes,
+                    static function ($post) use ($is_engage_dans_chasse) {
+                        return $is_engage_dans_chasse
+                            && get_post_status($post->ID) === 'publish'
+                            && (bool) get_field('enigme_cache_complet', $post->ID);
+                    }
+                )
+            );
+        }
 
         $visible_ids = [];
 
