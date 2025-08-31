@@ -34,10 +34,11 @@ class UserMessageRepositoryTest extends TestCase
 
     public function test_insert_stores_row_and_returns_id(): void
     {
-        $id = $this->repo->insert(1, 'Salut', 'info', null);
+        $id = $this->repo->insert(1, 'Salut', 'info', null, 'fr_FR');
 
         $this->assertSame(1, $id);
         $this->assertSame('Salut', $this->wpdb->data[$id]['message']);
+        $this->assertSame('fr_FR', $this->wpdb->data[$id]['locale']);
     }
 
     public function test_update_modifies_row(): void

@@ -619,6 +619,28 @@ class MyAccountMessagesTest extends TestCase
         delete_user_meta(1, '_myaccount_messages');
     }
 
+    public function test_message_key_is_translated(): void
+    {
+        global $wpdb;
+        $repo = new UserMessageRepository($wpdb);
+        $repo->insert(
+            1,
+            wp_json_encode([
+                'key'         => 'bar',
+                'text'        => 'Original',
+                'message_key' => 'translated_key',
+                'type'        => 'info',
+            ]),
+            'persistent'
+        );
+
+        $output = myaccount_get_important_messages();
+        $this->assertStringContainsString('translated_key', $output);
+        $this->assertStringNotContainsString('Original', $output);
+
+        delete_user_meta(1, '_myaccount_messages');
+    }
+
     public function test_ajax_section_returns_flash_message(): void
     {
         update_user_meta(
