@@ -160,11 +160,6 @@ if (!function_exists('compter_tentatives_du_jour')) {
                   <h3><span class="carte-enigme-titre"><?= esc_html__('Parution programmée', 'chassesautresor-com'); ?></span></h3>
                 <?php endif; ?>
 
-                <?php if (!empty($mapping_visuel['disponible_le'])) : ?>
-                  <div class="infos-dispo">
-                    <small class="infos-secondaires">Disponible le <?= esc_html($mapping_visuel['disponible_le']); ?></small>
-                  </div>
-                <?php endif; ?>
               </div>
           <?php if ($linkable) : ?>
             </a>
@@ -183,12 +178,19 @@ if (!function_exists('compter_tentatives_du_jour')) {
                         $liens[] = '<a href="' . esc_url(get_permalink($pr_id)) . '">' . esc_html(get_the_title($pr_id)) . '</a>';
                       }
                     }
-                    echo esc_html__('Nécessite', 'chassesautresor-com') . ' ' . implode(', ', $liens);
+                    echo wp_kses_post(
+                      sprintf(
+                        __('Nécessite : %s', 'chassesautresor-com'),
+                        implode(', ', $liens)
+                      )
+                    );
                   elseif (($mapping_visuel['etat_systeme'] ?? '') === 'bloquee_date') :
                     $timestamp = strtotime(get_field('enigme_acces_date', $enigme_id));
                     if ($timestamp) {
-                      $date_txt = wp_date('j F Y \à H\hi', $timestamp);
-                      echo sprintf(esc_html__('Parution le %s', 'chassesautresor-com'), esc_html($date_txt));
+                      $date_txt = wp_date(get_option('date_format'), $timestamp);
+                      $time_txt = wp_date(get_option('time_format'), $timestamp);
+                      $format   = __('Parution le %1$s à %2$s', 'chassesautresor-com');
+                      echo esc_html(sprintf($format, $date_txt, $time_txt));
                     }
                   endif; ?>
                 </span>

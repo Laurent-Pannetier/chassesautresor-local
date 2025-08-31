@@ -3137,3 +3137,15 @@ msgstr "Erreur"
 #: inc/enigme/cta.php:307
 msgid "Statut inconnu"
 msgstr "Statut inconnu"
+
+#: template-parts/enigme/chasse-partial-boucle-enigmes.php:160
+msgid "Parution programmée"
+msgstr "Parution programmée"
+
+#: template-parts/enigme/chasse-partial-boucle-enigmes.php:187
+msgid "Nécessite : %s"
+msgstr "Nécessite : %s"
+
+#: template-parts/enigme/chasse-partial-boucle-enigmes.php:194
+msgid "Parution le %1$s à %2$s"
+msgstr "Parution le %1$s à %2$s"
