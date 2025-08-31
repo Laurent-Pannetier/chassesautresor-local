@@ -14,6 +14,7 @@
       '<span class="screen-reader-text">' + __('Afficher le panneau', 'chassesautresor-com') + '</span>';
     document.body.appendChild(opener);
     let timer = null;
+    const HIDE_DELAY = 3500;
     function hideAside() {
       aside.classList.add('is-hidden');
       opener.style.display = 'flex';
@@ -26,7 +27,7 @@
       aside.classList.remove('is-hidden');
       opener.style.display = 'none';
       if (timer) clearTimeout(timer);
-      timer = setTimeout(hideAside, 5000);
+      timer = setTimeout(hideAside, HIDE_DELAY);
     }
     opener.addEventListener('click', showAside);
     opener.addEventListener('mouseenter', showAside);
@@ -35,7 +36,7 @@
     });
     aside.addEventListener('mouseleave', () => {
       if (timer) clearTimeout(timer);
-      timer = setTimeout(hideAside, 5000);
+      timer = setTimeout(hideAside, HIDE_DELAY);
     });
     function reloadNav(chasseId) {
       if (!chasseId) return;
