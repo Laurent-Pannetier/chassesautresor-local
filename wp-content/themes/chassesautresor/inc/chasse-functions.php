@@ -1267,7 +1267,8 @@ function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): 
     $nb_enigmes_payantes = 0;
     foreach ($enigmes as $eid) {
         $cout = (int) get_field('enigme_tentative_cout_points', $eid);
-        if ($cout > 0) {
+        $mode = get_field('enigme_mode_validation', $eid);
+        if ($cout > 0 && $mode !== 'aucune') {
             $nb_enigmes_payantes++;
         }
     }
