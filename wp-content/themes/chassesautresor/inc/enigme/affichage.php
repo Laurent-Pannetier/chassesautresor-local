@@ -821,6 +821,14 @@ require_once __DIR__ . '/../sidebar.php';
                 }
             }
 
+            // Ajoute une classe selon le mode de validation de l'énigme
+            $mode_validation = get_field('enigme_mode_validation', $post->ID) ?? 'aucune';
+            if ($mode_validation === 'automatique') {
+                $classes[] = 'validation-automatique';
+            } elseif ($mode_validation === 'manuelle') {
+                $classes[] = 'validation-manuelle';
+            }
+
             if ($post->ID === $enigme_id) {
                 $classes[] = 'active';
             }

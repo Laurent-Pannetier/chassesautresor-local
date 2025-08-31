@@ -185,6 +185,31 @@ li.active .enigme-menu__edit {
   }
 }
 
+.enigme-menu li.validation-automatique::before,
+.enigme-menu li.validation-manuelle::before {
+  left: 12px;
+  width: 16px;
+  height: 16px;
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bullet-fill);
+}
+
+.enigme-menu li.validation-automatique::before {
+  content: '\f0e7';
+}
+
+.enigme-menu li.validation-manuelle::before {
+  content: '\f0e0';
+}
+
 .enigme-menu li.en-attente {
   --bullet-fill: var(--etat-enigme-menu-en-attente);
   --bullet-outline: var(--etat-enigme-menu-en-attente);
