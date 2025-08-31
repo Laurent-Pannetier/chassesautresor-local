@@ -350,6 +350,10 @@ require_once $inc_path . 'PointsRepository.php';
 require_once $inc_path . 'messages.php';
 require_once $inc_path . 'messages/class-user-message-repository.php';
 
+if (defined('WP_CLI') && WP_CLI) {
+    require_once $inc_path . 'cli/class-cat-cli-command.php';
+}
+
 add_action('shutdown', function (): void {
     global $wpdb;
 
