@@ -219,10 +219,8 @@ if (!function_exists('render_sidebar')) {
 
         echo '<div class="menu-lateral__header">';
         if ($chasse_id) {
-            $url_chasse  = get_permalink($chasse_id);
-            $titre       = get_the_title($chasse_id);
-            $retour_icon = '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>';
-            echo '<a class="menu-lateral__back" href="' . esc_url($url_chasse) . '"><span class="screen-reader-text">' . esc_html__("Retour", "chassesautresor-com") . '</span>' . $retour_icon . '</a>';
+            $url_chasse = get_permalink($chasse_id);
+            $titre      = get_the_title($chasse_id);
             echo '<h2 class="menu-lateral__title"><a href="' . esc_url($url_chasse) . '">' . esc_html($titre) . '</a></h2>';
         }
         echo '</div>';
