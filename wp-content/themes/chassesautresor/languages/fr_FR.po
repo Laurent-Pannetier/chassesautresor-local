@@ -2789,10 +2789,9 @@ msgstr "Voulez-vous vraiment supprimer la récompense ?"
 msgid "Voulez-vous vraiment arrêter la chasse ?"
 msgstr "Voulez-vous vraiment arrêter la chasse ?"
 
-#: assets/js/enigme-aside.js:15
-#, fuzzy
+#: assets/sidebar/sidebar.js:14
 msgid "Afficher le panneau"
-msgstr "Fermer le panneau"
+msgstr "Afficher le panneau"
 
 #: assets/js/enigme-edit.js:857
 msgid "Ex : soleil"

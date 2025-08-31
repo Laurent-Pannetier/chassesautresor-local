@@ -2663,7 +2663,7 @@ msgstr ""
 msgid "Voulez-vous vraiment arrêter la chasse ?"
 msgstr ""
 
-#: assets/js/enigme-aside.js:15
+#: assets/sidebar/sidebar.js:14
 msgid "Afficher le panneau"
 msgstr ""
 
