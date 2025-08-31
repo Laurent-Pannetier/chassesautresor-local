@@ -717,14 +717,8 @@ require_once __DIR__ . '/utils.php';
         $user_id        = get_current_user_id();
         $style          = get_field('enigme_style_affichage', $enigme_id) ?? 'defaut';
         $chasse_id      = recuperer_id_chasse_associee($enigme_id);
-        $edition_active = utilisateur_peut_modifier_post($enigme_id);
-
-        $chasse_stat       = $chasse_id ? get_field('chasse_cache_statut', $chasse_id) : '';
-        $validation_status = $chasse_id ? get_field('chasse_cache_statut_validation', $chasse_id) : '';
-        if ($edition_active && !in_array($validation_status, ['creation', 'correction'], true)) {
-            $edition_active = false;
-        }
-        $show_menu = enigme_user_can_see_menu($user_id, $chasse_id, $chasse_stat);
+        $chasse_stat = $chasse_id ? get_field('chasse_cache_statut', $chasse_id) : '';
+        $show_menu   = enigme_user_can_see_menu($user_id, $chasse_id, $chasse_stat);
 
         $menu_items           = [];
         $peut_ajouter_enigme  = false;
@@ -735,8 +729,7 @@ require_once __DIR__ . '/utils.php';
             $sidebar_data         = sidebar_prepare_chasse_nav(
                 $chasse_id,
                 $user_id,
-                $enigme_id,
-                $edition_active
+                $enigme_id
             );
             $menu_items           = $sidebar_data['menu_items'];
             $peut_ajouter_enigme  = $sidebar_data['peut_ajouter_enigme'];
@@ -748,7 +741,6 @@ require_once __DIR__ . '/utils.php';
         $sidebar_sections = render_sidebar(
             'enigme',
             $enigme_id,
-            $edition_active,
             $chasse_id,
             $menu_items,
             $peut_ajouter_enigme,
