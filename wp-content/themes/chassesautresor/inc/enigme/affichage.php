@@ -771,8 +771,9 @@ require_once __DIR__ . '/../sidebar.php';
             $classes = [];
 
             if (!$skip_checks) {
-                $etat_sys       = get_field('enigme_cache_etat_systeme', $post->ID) ?? 'accessible';
-                $condition_acces = get_field('enigme_acces_condition', $post->ID) ?? 'immediat';
+                $etat_sys_initial = get_field('enigme_cache_etat_systeme', $post->ID) ?? 'accessible';
+                $etat_sys         = $etat_sys_initial;
+                $condition_acces  = get_field('enigme_acces_condition', $post->ID) ?? 'immediat';
 
                 if (in_array($etat_sys, ['invalide', 'cache_invalide'], true)) {
                     continue;
@@ -819,6 +820,10 @@ require_once __DIR__ . '/../sidebar.php';
                         $classes[] = 'non-engagee';
                     }
                 }
+
+                if ($etat_sys_initial === 'bloquee_pre_requis') {
+                    $classes[] = 'bloquee';
+                }
             }
 
             if ($post->ID === $enigme_id) {
@@ -851,9 +856,32 @@ require_once __DIR__ . '/../sidebar.php';
                 }
             }
 
-            $title        = esc_html(get_the_title($post->ID));
-            $aria_current = $post->ID === $enigme_id ? ' aria-current="page"' : '';
-            $link         = '<a href="' . esc_url(get_permalink($post->ID)) . '"' . $aria_current . '>' . $title . '</a>';
+            $title         = esc_html(get_the_title($post->ID));
+            $aria_current  = $post->ID === $enigme_id ? ' aria-current="page"' : '';
+            $mode_validation = get_field('enigme_mode_validation', $post->ID) ?? 'aucune';
+            $cout_points     = (int) get_field('enigme_tentative_cout_points', $post->ID);
+
+            $icon_html = '<span class="enigme-menu__icon enigme-menu__icon--circle" aria-hidden="true"></span>';
+            if ($etat_sys_initial === 'bloquee_date') {
+                $icon_html = '<span class="enigme-menu__icon" aria-hidden="true">' . get_svg_icon('hourglass') . '</span>';
+            } elseif ($etat_sys_initial === 'bloquee_pre_requis') {
+                $icon_html = '<span class="enigme-menu__icon" aria-hidden="true">' . get_svg_icon('lock') . '</span>';
+            } elseif ($mode_validation === 'automatique') {
+                $icon_html = '<span class="enigme-menu__icon" aria-hidden="true"><i class="fa-solid fa-bolt"></i></span>';
+            } elseif ($mode_validation === 'manuelle') {
+                $icon_html = '<span class="enigme-menu__icon" aria-hidden="true"><i class="fa-solid fa-envelope"></i></span>';
+            }
+
+            $cost_html = '';
+            if ($mode_validation !== 'aucune' && $cout_points > 0) {
+                $cost_html = '<span class="enigme-menu__cost" aria-hidden="true"><i class="fa-solid fa-coins"></i></span>';
+            }
+
+            $link = '<a href="' . esc_url(get_permalink($post->ID)) . '"' . $aria_current . '>'
+                . $icon_html
+                . '<span class="enigme-menu__title">' . $title . '</span>'
+                . $cost_html
+                . '</a>';
 
             $submenu_items[] = sprintf(
                 '<li class="%s" data-enigme-id="%d">%s%s%s</li>',

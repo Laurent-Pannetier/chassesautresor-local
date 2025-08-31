@@ -53,26 +53,13 @@
   align-items: center;
   width: 100%;
   margin-bottom: var(--space-xxs);
-  padding-left: calc(var(--space-md) + 16px);
+  padding-left: var(--space-md);
   --bullet-fill: var(--etat-enigme-menu-en-cours);
   --bullet-outline: var(--etat-enigme-menu-en-cours);
 }
 
 .enigme-menu--editable li {
   cursor: grab;
-}
-
-.enigme-menu li::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 16px;
-  width: 8px;
-  height: 8px;
-  background-color: var(--bullet-fill);
-  box-shadow: 0 0 0 1px var(--bullet-outline);
-  transform: translateY(-50%);
-  border-radius: 50%;
 }
 
 .enigme-menu--editable li .enigme-menu__handle {
@@ -96,8 +83,9 @@
 .enigme-menu li > a:not(.enigme-menu__edit) {
   display: flex;
   align-items: center;
+  gap: var(--space-sm);
   flex: 1;
-  padding: var(--space-xxs) calc(var(--space-sm) + 1.5em);
+  padding: var(--space-xxs) calc(var(--space-sm) + 1.5em) var(--space-xxs) var(--space-sm);
   font-weight: 600;
   font-size: 0.9rem;
   color: inherit;
@@ -119,6 +107,40 @@
 
 .enigme-menu li > a:not(.enigme-menu__edit):visited {
   color: inherit;
+}
+
+.enigme-menu__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--bullet-fill);
+}
+
+.enigme-menu__icon svg,
+.enigme-menu__icon i {
+  width: 100%;
+  height: 100%;
+  color: var(--bullet-fill);
+  stroke: var(--bullet-fill);
+  fill: var(--bullet-fill);
+}
+
+.enigme-menu__icon--circle {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--bullet-fill);
+  box-shadow: 0 0 0 1px var(--bullet-outline);
+}
+
+.enigme-menu__cost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .enigme-menu:not(.enigme-menu--editable) li.bloquee > a:not(.enigme-menu__edit) {
