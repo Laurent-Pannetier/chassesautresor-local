@@ -252,11 +252,15 @@ add_filter('woocommerce_endpoint_edit-account_title', 'ca_profile_endpoint_title
 /**
  * Store a persistent important message for the given user.
  *
- * @param int    $user_id     User identifier.
- * @param string $key         Unique message key.
- * @param string $message     Message to store.
- * @param string $type        Message type (success, info, error, warning).
- * @param bool   $dismissible Whether the user can dismiss the message.
+ * @param int         $user_id       User identifier.
+ * @param string      $key           Unique message key.
+ * @param string      $message       Message to store.
+ * @param string      $type          Message type (success, info, error, warning).
+ * @param bool        $dismissible   Whether the user can dismiss the message.
+ * @param int         $chasse_scope  Optional hunt scope.
+ * @param bool        $include_enigmes Whether to include enigmas in the scope.
+ * @param string|null $message_key   Optional translation key.
+ * @param string|null $locale        Optional locale for the message.
  *
  * @return void
  */
@@ -267,7 +271,9 @@ function myaccount_add_persistent_message(
     string $type = 'info',
     bool $dismissible = false,
     int $chasse_scope = 0,
-    bool $include_enigmes = false
+    bool $include_enigmes = false,
+    ?string $message_key = null,
+    ?string $locale = null
 ): void {
     global $wpdb;
 
@@ -278,6 +284,14 @@ function myaccount_add_persistent_message(
         'type'        => $type,
         'dismissible' => $dismissible,
     ];
+
+    if ($message_key !== null) {
+        $payload['message_key'] = $message_key;
+    }
+
+    if ($locale !== null) {
+        $payload['locale'] = $locale;
+    }
 
     if ($chasse_scope > 0) {
         $payload['chasse_scope']   = $chasse_scope;
@@ -293,7 +307,7 @@ function myaccount_add_persistent_message(
         }
     }
 
-    $repo->insert($user_id, wp_json_encode($payload), 'persistent');
+    $repo->insert($user_id, wp_json_encode($payload), 'persistent', null, $locale);
 }
 
 /**
@@ -420,8 +434,8 @@ add_action('template_redirect', 'myaccount_maybe_add_validation_message');
  *
  * @param int $user_id User identifier.
  *
- * @return array<int, array{key:string,text:string,type:string,dismissible:bool}>
- */
+ * @return array<int, array{key:string,text:string,message_key:string,locale:string,type:string,dismissible:bool}>
+*/
 function myaccount_get_persistent_messages(int $user_id): array
 {
     global $wpdb;
@@ -432,6 +446,9 @@ function myaccount_get_persistent_messages(int $user_id): array
     foreach ($rows as $row) {
         $data = json_decode($row['message'], true);
         if (is_array($data)) {
+            if (!empty($row['locale'])) {
+                $data['locale'] = $row['locale'];
+            }
             $key = isset($data['key']) ? (string) $data['key'] : (string) $row['id'];
             $messages[$key] = $data;
         }
@@ -483,6 +500,8 @@ function myaccount_get_persistent_messages(int $user_id): array
             $output[] = [
                 'key'         => (string) $key,
                 'text'        => (string) $msg['text'],
+                'message_key' => isset($msg['message_key']) ? (string) $msg['message_key'] : '',
+                'locale'      => isset($msg['locale']) ? (string) $msg['locale'] : '',
                 'type'        => isset($msg['type']) ? (string) $msg['type'] : 'info',
                 'dismissible' => !empty($msg['dismissible']),
             ];
@@ -746,6 +765,15 @@ function myaccount_get_important_messages(): string
         function ($msg) {
             $type        = $msg['type'] ?? 'info';
             $text        = $msg['text'] ?? '';
+            if (!empty($msg['message_key'])) {
+                if (!empty($msg['locale']) && function_exists('switch_to_locale')) {
+                    switch_to_locale($msg['locale']);
+                    $text = __($msg['message_key'], 'chassesautresor-com');
+                    restore_previous_locale();
+                } else {
+                    $text = __($msg['message_key'], 'chassesautresor-com');
+                }
+            }
             $dismissible = !empty($msg['dismissible']) && !empty($msg['key']);
 
             switch ($type) {

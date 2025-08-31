@@ -5,18 +5,34 @@ defined('ABSPATH') || exit;
 /**
  * Store a site-wide message.
  *
- * @param string $type       Message type used as CSS class.
- * @param string $content    Message content.
- * @param bool   $persistent Whether the message should persist across sessions.
+ * @param string      $type        Message type used as CSS class.
+ * @param string      $content     Message content.
+ * @param bool        $persistent  Whether the message should persist across sessions.
+ * @param string|null $message_key Optional translation key.
+ * @param string|null $locale      Optional locale for the message.
  *
  * @return void
  */
-function add_site_message(string $type, string $content, bool $persistent = false): void
+function add_site_message(
+    string $type,
+    string $content,
+    bool $persistent = false,
+    ?string $message_key = null,
+    ?string $locale = null
+): void
 {
     $message = [
         'type'    => $type,
         'content' => $content,
     ];
+
+    if ($message_key !== null) {
+        $message['message_key'] = $message_key;
+    }
+
+    if ($locale !== null) {
+        $message['locale'] = $locale;
+    }
 
     if ($persistent) {
         $messages = get_transient('cat_site_messages');
@@ -28,7 +44,7 @@ function add_site_message(string $type, string $content, bool $persistent = fals
 
         global $wpdb;
         $repo = new UserMessageRepository($wpdb);
-        $repo->insert(0, wp_json_encode($message), 'site');
+        $repo->insert(0, wp_json_encode($message), 'site', null, $locale);
         return;
     }
 
@@ -71,6 +87,9 @@ function get_site_messages(): string
     foreach ($rows as $row) {
         $data = json_decode($row['message'], true);
         if (is_array($data)) {
+            if (!empty($row['locale'])) {
+                $data['locale'] = $row['locale'];
+            }
             $messages[] = $data;
         }
     }
@@ -81,7 +100,17 @@ function get_site_messages(): string
 
     $output = array_map(
         function (array $msg): string {
-            return '<p class="' . esc_attr($msg['type']) . '">' . esc_html($msg['content']) . '</p>';
+            $content = $msg['content'] ?? '';
+            if (!empty($msg['message_key'])) {
+                if (!empty($msg['locale']) && function_exists('switch_to_locale')) {
+                    switch_to_locale($msg['locale']);
+                    $content = __($msg['message_key'], 'chassesautresor-com');
+                    restore_previous_locale();
+                } else {
+                    $content = __($msg['message_key'], 'chassesautresor-com');
+                }
+            }
+            return '<p class="' . esc_attr($msg['type']) . '">' . esc_html($content) . '</p>';
         },
         $messages
     );

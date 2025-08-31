@@ -30,8 +30,13 @@ class UserMessageRepository
     /**
      * Insert a new message and return its identifier.
      */
-    public function insert(int $userId, string $message, string $status, ?string $expiresAt = null): int
-    {
+    public function insert(
+        int $userId,
+        string $message,
+        string $status,
+        ?string $expiresAt = null,
+        ?string $locale = null
+    ): int {
         $this->wpdb->insert(
             $this->table,
             [
@@ -39,8 +44,9 @@ class UserMessageRepository
                 'message'    => $message,
                 'status'     => $status,
                 'expires_at' => $expiresAt,
+                'locale'     => $locale,
             ],
-            ['%d', '%s', '%s', '%s']
+            ['%d', '%s', '%s', '%s', '%s']
         );
 
         return (int) $this->wpdb->insert_id;
