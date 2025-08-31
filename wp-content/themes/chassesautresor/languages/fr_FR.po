@@ -1273,13 +1273,13 @@ msgstr "Terminer la chasse"
 msgid "Par"
 msgstr ""
 
-#: template-parts/chasse/chasse-affichage-complet.php:227
+#: template-parts/chasse/chasse-affichage-complet.php:355
 #: template-parts/chasse/chasse-card.php:33
-#, fuzzy, php-format
+#, php-format
 msgid "%d énigme"
 msgid_plural "%d énigmes"
-msgstr[0] "Énigmes"
-msgstr[1] "Énigmes"
+msgstr[0] "%d énigme"
+msgstr[1] "%d énigmes"
 
 #: template-parts/chasse/chasse-affichage-complet.php:263
 #, fuzzy
@@ -1311,21 +1311,9 @@ msgstr "points"
 msgid "libre"
 msgstr "Libre"
 
-#: template-parts/chasse/chasse-affichage-complet.php:289
-#, fuzzy
-msgid "Accès énigme"
-msgstr "Visuel énigme"
-
-#: template-parts/chasse/chasse-affichage-complet.php:294
-#, php-format
-msgid "%d énigme nécessite des points pour soumettre une tentative"
-msgid_plural "%d énigmes nécessitent des points pour soumettre une tentative"
-msgstr[0] ""
-msgstr[1] ""
-
 #: template-parts/chasse/chasse-affichage-complet.php:305
 msgid "gratuit"
-msgstr ""
+msgstr "gratuit"
 
 #: template-parts/chasse/chasse-affichage-complet.php:312
 #: template-parts/chasse/partials/chasse-partial-enigmes.php:30
@@ -1581,8 +1569,9 @@ msgid ""
 msgstr ""
 
 #: template-parts/chasse/chasse-edition-main.php:617
+#: template-parts/chasse/chasse-affichage-complet.php:364
 msgid "Gratuit"
-msgstr ""
+msgstr "Gratuit"
 
 #: template-parts/chasse/chasse-edition-main.php:625
 #: template-parts/chasse/partials/chasse-partial-enigmes.php:32
@@ -1595,6 +1584,10 @@ msgstr ""
 #: templates/myaccount/layout.php:58 templates/myaccount/layout.php:160
 msgid "Points"
 msgstr "Points"
+
+#: template-parts/chasse/chasse-affichage-complet.php:345
+msgid "Points requis"
+msgstr "Points requis"
 
 #: template-parts/chasse/chasse-edition-main.php:742
 #: template-parts/enigme/enigme-edition-main.php:663

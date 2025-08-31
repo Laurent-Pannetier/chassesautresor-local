@@ -1278,7 +1278,8 @@ msgstr ""
 msgid "Par"
 msgstr ""
 
-#: template-parts/chasse/chasse-affichage-complet.php:227
+#: template-parts/chasse/chasse-affichage-complet.php:355
+#: template-parts/chasse/chasse-affichage-complet.php:355
 #: template-parts/chasse/chasse-card.php:33
 #, php-format
 msgid "%d énigme"
@@ -1286,47 +1287,36 @@ msgid_plural "%d énigmes"
 msgstr[0] ""
 msgstr[1] ""
 
-#: template-parts/chasse/chasse-affichage-complet.php:263
+#: template-parts/chasse/chasse-affichage-complet.php:309
 msgid "Limite"
 msgstr ""
 
-#: template-parts/chasse/chasse-affichage-complet.php:264
+#: template-parts/chasse/chasse-affichage-complet.php:310
 #, php-format
 msgid "%d gagnant"
 msgid_plural "%d gagnants"
 msgstr[0] ""
 msgstr[1] ""
 
-#: template-parts/chasse/chasse-affichage-complet.php:269
+#: template-parts/chasse/chasse-affichage-complet.php:319
 msgid "Fin de chasse"
 msgstr ""
 
-#: template-parts/chasse/chasse-affichage-complet.php:280
+#: template-parts/chasse/chasse-affichage-complet.php:331
 msgid "Accès chasse"
 msgstr ""
 
-#: template-parts/chasse/chasse-affichage-complet.php:283
+#: template-parts/chasse/chasse-affichage-complet.php:333
 #, php-format
 msgid "%d points"
 msgstr ""
 
-#: template-parts/chasse/chasse-affichage-complet.php:284
+#: template-parts/chasse/chasse-affichage-complet.php:334
 msgid "libre"
 msgstr ""
 
-#: template-parts/chasse/chasse-affichage-complet.php:289
-msgid "Accès énigme"
-msgstr ""
-
-#: template-parts/chasse/chasse-affichage-complet.php:294
-#, php-format
-msgid "%d énigme nécessite des points pour soumettre une tentative"
-msgid_plural "%d énigmes nécessitent des points pour soumettre une tentative"
-msgstr[0] ""
-msgstr[1] ""
-
-#: template-parts/chasse/chasse-affichage-complet.php:305
-msgid "gratuit"
+#: template-parts/chasse/chasse-affichage-complet.php:345
+msgid "Points requis"
 msgstr ""
 
 #: template-parts/chasse/chasse-affichage-complet.php:312
@@ -1563,6 +1553,7 @@ msgid "Vous êtes libre de définir le coût d’accès à votre chasse : gratui
 msgstr ""
 
 #: template-parts/chasse/chasse-edition-main.php:617
+#: template-parts/chasse/chasse-affichage-complet.php:364
 msgid "Gratuit"
 msgstr ""
 

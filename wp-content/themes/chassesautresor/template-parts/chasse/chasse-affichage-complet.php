@@ -340,23 +340,28 @@ if ($edition_active && !$est_complet) {
 
             <div class="caracteristique caracteristique-acces-enigme">
               <span class="caracteristique-icone" aria-hidden="true">🧩</span>
-              <span class="caracteristique-label"><?= esc_html__('Accès énigme', 'chassesautresor-com'); ?></span>
+              <span class="caracteristique-label">
+                <?php if ($nb_enigmes_payantes > 0) : ?>
+                  <?= esc_html__('Points requis', 'chassesautresor-com'); ?>
+                <?php else : ?>
+                  <?= esc_html__('Tentatives', 'chassesautresor-com'); ?>
+                <?php endif; ?>
+              </span>
               <span class="caracteristique-valeur">
                 <?php if ($nb_enigmes_payantes > 0) : ?>
-                  <?php
-                  $txt_enigme_payante = sprintf(
-                      _n(
-                          '%d énigme nécessite des points pour soumettre une tentative',
-                          '%d énigmes nécessitent des points pour soumettre une tentative',
-                          $nb_enigmes_payantes,
-                          'chassesautresor-com'
-                      ),
-                      $nb_enigmes_payantes
-                  );
-                  ?>
-                  <?= esc_html($txt_enigme_payante); ?>
+                  <?= esc_html(
+                      sprintf(
+                          _n(
+                              '%d énigme',
+                              '%d énigmes',
+                              $nb_enigmes_payantes,
+                              'chassesautresor-com'
+                          ),
+                          $nb_enigmes_payantes
+                      )
+                  ); ?>
                 <?php else : ?>
-                  <?= esc_html__('gratuit', 'chassesautresor-com'); ?>
+                  <?= esc_html__('Gratuit', 'chassesautresor-com'); ?>
                 <?php endif; ?>
               </span>
             </div>

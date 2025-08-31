@@ -1267,6 +1267,7 @@ msgid "Par"
 msgstr "By"
 
 #: template-parts/chasse/chasse-affichage-complet.php:227
+#: template-parts/chasse/chasse-affichage-complet.php:355
 #: template-parts/chasse/chasse-card.php:33
 #, php-format
 msgid "%d énigme"
@@ -1274,7 +1275,7 @@ msgid_plural "%d énigmes"
 msgstr[0] "%d puzzle"
 msgstr[1] "%d puzzles"
 
-#: template-parts/chasse/chasse-affichage-complet.php:263
+#: template-parts/chasse/chasse-affichage-complet.php:309
 msgid "Limite"
 msgstr "Limit"
 
@@ -1302,18 +1303,6 @@ msgstr "%d points"
 msgid "libre"
 msgstr "free"
 
-#: template-parts/chasse/chasse-affichage-complet.php:289
-msgid "Accès énigme"
-msgstr "Riddle access"
-
-#: template-parts/chasse/chasse-affichage-complet.php:294
-#, php-format
-msgid "%d énigme nécessite des points pour soumettre une tentative"
-msgid_plural "%d énigmes nécessitent des points pour soumettre une tentative"
-msgstr[0] "%d puzzle requires points to submit an attempt"
-msgstr[1] "%d puzzles require points to submit an attempt"
-
-#: template-parts/chasse/chasse-affichage-complet.php:305
 msgid "gratuit"
 msgstr "free"
 
@@ -1564,6 +1553,7 @@ msgstr ""
 "unlocked."
 
 #: template-parts/chasse/chasse-edition-main.php:617
+#: template-parts/chasse/chasse-affichage-complet.php:364
 msgid "Gratuit"
 msgstr "Free"
 
@@ -1578,6 +1568,10 @@ msgstr "Free"
 #: templates/myaccount/layout.php:58 templates/myaccount/layout.php:160
 msgid "Points"
 msgstr "Points"
+
+#: template-parts/chasse/chasse-affichage-complet.php:345
+msgid "Points requis"
+msgstr "Points required"
 
 #: template-parts/chasse/chasse-edition-main.php:742
 #: template-parts/enigme/enigme-edition-main.php:663
