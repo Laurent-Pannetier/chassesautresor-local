@@ -348,6 +348,13 @@ require_once $inc_path . 'constants.php';
 require_once $inc_path . 'utils.php';
 require_once $inc_path . 'PointsRepository.php';
 require_once $inc_path . 'messages.php';
+require_once $inc_path . 'messages/class-user-message-repository.php';
+
+add_action('shutdown', function (): void {
+    global $wpdb;
+
+    (new UserMessageRepository($wpdb))->purgeExpired();
+});
 
 require_once $inc_path . 'shortcodes-init.php';
 require_once $inc_path . 'enigme-functions.php';
