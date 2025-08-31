@@ -4930,7 +4930,6 @@ body.panneau-ouvert::before {
   margin-bottom: var(--space-xxs);
   padding-left: calc(var(--space-md) + 16px);
   --bullet-fill: var(--etat-enigme-menu-en-cours);
-  --bullet-outline: var(--etat-enigme-menu-en-cours);
 }
 
 .enigme-menu__icon {
@@ -4946,16 +4945,8 @@ body.panneau-ouvert::before {
   color: var(--bullet-fill);
 }
 
-.enigme-menu__icon--bullet {
-  left: 20px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: var(--bullet-fill);
-  box-shadow: 0 0 0 1px var(--bullet-outline);
-}
-
-.enigme-menu__icon svg {
+.enigme-menu__icon svg,
+.enigme-menu__icon i {
   width: 100%;
   height: 100%;
   fill: currentColor;
@@ -5006,7 +4997,6 @@ body.panneau-ouvert::before {
 
 .enigme-menu li.bloquee {
   --bullet-fill: var(--etat-enigme-menu-bloquee);
-  --bullet-outline: var(--etat-enigme-menu-bloquee);
 }
 
 .enigme-menu__edit {
@@ -5052,7 +5042,6 @@ li.active .enigme-menu__edit {
 }
 .enigme-menu li.en-attente {
   --bullet-fill: var(--etat-enigme-menu-en-attente);
-  --bullet-outline: var(--etat-enigme-menu-en-attente);
 }
 
 .enigme-menu__icon--spinner {
@@ -5068,7 +5057,6 @@ li.active .enigme-menu__edit {
 
 .enigme-menu li.succes {
   --bullet-fill: var(--etat-enigme-menu-succes);
-  --bullet-outline: var(--etat-enigme-menu-succes);
 }
 
 .enigme-menu li.non-engagee > a:not(.enigme-menu__edit) {
@@ -5081,7 +5069,6 @@ li.active .enigme-menu__edit {
 
 .enigme-menu li.incomplete {
   --bullet-fill: var(--etat-enigme-menu-incomplete);
-  --bullet-outline: var(--etat-enigme-menu-incomplete);
 }
 
 .enigme-menu li.active > a:not(.enigme-menu__edit) {

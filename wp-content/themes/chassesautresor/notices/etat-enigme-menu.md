@@ -16,5 +16,5 @@ Référence centralisée des états utilisés pour les pastilles du menu des én
 Pour ajouter un nouvel état :
 
 1. Déclarer la couleur dans `variables.css` via `--etat-enigme-menu-NOUVEL_ETAT`.
-2. Ajouter la classe `.NOUVEL_ETAT` dans `enigme.css` en utilisant cette variable pour `--bullet-fill` et `--bullet-outline`.
+2. Ajouter la classe `.NOUVEL_ETAT` dans `enigme.css` en utilisant cette variable pour `--bullet-fill`.
 3. Utiliser la classe dans le menu ou toute autre interface.
