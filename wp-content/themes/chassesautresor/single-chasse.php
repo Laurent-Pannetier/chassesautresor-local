@@ -178,6 +178,21 @@ if (
     }
 }
 
+if (!is_user_logged_in()) {
+    $redirect_url     = get_permalink($chasse_id);
+    $registration_url = add_query_arg('redirect_to', rawurlencode($redirect_url), wp_registration_url());
+    $login_url        = wp_login_url($redirect_url);
+    $enigmes_intro    = sprintf(
+        wp_kses(
+            /* translators: 1: registration URL, 2: login URL */
+            __('Énigmes accessibles uniquement pour les joueurs connectés. Nouveau ? <a href="%1$s">S\'enregistrer</a> Déjà inscrit ? <a href="%2$s">Se connecter</a>', 'chassesautresor-com'),
+            ['a' => ['href' => []]]
+        ),
+        esc_url($registration_url),
+        esc_url($login_url)
+    );
+}
+
 get_header();
 cat_debug("🧪 test organisateur_associe : " . ($est_orga_associe ? 'OUI' : 'NON'));
 
@@ -267,27 +282,6 @@ echo '</div>';
             <?php endif; ?>
             <div class="separateur-3"></div>
         </div>
-        <?php if (!is_user_logged_in()) : ?>
-            <?php
-            $redirect_url     = get_permalink();
-            $registration_url = add_query_arg('redirect_to', rawurlencode($redirect_url), wp_registration_url());
-            $login_url        = wp_login_url($redirect_url);
-            ?>
-            <p class="enigmes-login-notice">
-                <?php esc_html_e('Énigmes accessibles uniquement pour les joueurs connectés.', 'chassesautresor-com'); ?>
-                <?php
-                printf(
-                    wp_kses(
-                        /* translators: 1: registration URL, 2: login URL */
-                        __('Nouveau ? <a href="%1$s">S\'enregistrer</a> Déjà inscrit ? <a href="%2$s">Se connecter</a>', 'chassesautresor-com'),
-                        ['a' => ['href' => []]]
-                    ),
-                    esc_url($registration_url),
-                    esc_url($login_url)
-                );
-                ?>
-            </p>
-        <?php endif; ?>
         <div id="liste-enigmes" class="chasse-enigmes-liste">
             <?php
             get_template_part('template-parts/enigme/chasse-partial-boucle-enigmes', null, [

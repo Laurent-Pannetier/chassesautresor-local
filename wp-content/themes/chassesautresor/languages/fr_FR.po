@@ -650,19 +650,15 @@ msgstr "Définition du taux de résolution"
 msgid "Énigmes"
 msgstr "Énigmes"
 
-#: single-chasse.php:222
+#: single-chasse.php:279
 #, php-format
 msgid "Énigmes de %s"
 msgstr "Énigmes de %s"
 
-#: single-chasse.php:270
+#: single-chasse.php:188
 #, php-format
 msgid "Énigmes accessibles uniquement pour les joueurs connectés. Nouveau ? <a href=\"%1$s\">S'enregistrer</a> Déjà inscrit ? <a href=\"%2$s\">Se connecter</a>"
 msgstr "Énigmes accessibles uniquement pour les joueurs connectés. Nouveau ? <a href=\"%1$s\">S'enregistrer</a> Déjà inscrit ? <a href=\"%2$s\">Se connecter</a>"
-
-#: single-chasse.php:276
-msgid "Énigmes accessibles uniquement pour les joueurs connectés."
-msgstr "Énigmes accessibles uniquement pour les joueurs connectés."
 
 #: single-chasse.php:128
 msgid "La chasse est terminée. Vous pouvez revoir toutes les énigmes ainsi que leurs solutions et indices."
