@@ -142,7 +142,9 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
 
             $title = esc_html(get_the_title($post->ID));
             if ($cout_points > 0) {
-                $title .= '<i class="fa-solid fa-coins enigme-menu__cost" aria-hidden="true"></i>';
+                $coin_path = $svg_dir . 'coins-points.svg';
+                $coin_svg  = file_exists($coin_path) ? file_get_contents($coin_path) : '';
+                $title    .= '<span class="enigme-menu__cost" aria-hidden="true">' . $coin_svg . '</span>';
             }
 
             $aria_current = $post->ID === $current_enigme_id ? ' aria-current="page"' : '';
@@ -162,9 +164,13 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
                 $svg  = str_replace('stroke="#000000"', 'stroke="currentColor"', $svg);
                 $icon_html = '<span class="enigme-menu__icon" aria-hidden="true">' . $svg . '</span>';
             } elseif ($mode_validation === 'automatique') {
-                $icon_html = '<span class="enigme-menu__icon" aria-hidden="true"><i class="fa-solid fa-bolt"></i></span>';
+                $path = $svg_dir . 'reply-auto.svg';
+                $svg  = file_exists($path) ? file_get_contents($path) : '';
+                $icon_html = '<span class="enigme-menu__icon" aria-hidden="true">' . $svg . '</span>';
             } elseif ($mode_validation === 'manuelle') {
-                $icon_html = '<span class="enigme-menu__icon" aria-hidden="true"><i class="fa-solid fa-envelope"></i></span>';
+                $path = $svg_dir . 'reply-mail.svg';
+                $svg  = file_exists($path) ? file_get_contents($path) : '';
+                $icon_html = '<span class="enigme-menu__icon" aria-hidden="true">' . $svg . '</span>';
             }
 
             $class_attr = $classes

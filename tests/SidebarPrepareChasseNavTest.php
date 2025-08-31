@@ -291,9 +291,9 @@ class SidebarPrepareChasseNavTest extends TestCase
         $items = $data['menu_items'];
 
         $this->assertStringContainsString('enigme-menu__icon--bullet', $items[0]);
-        $this->assertStringContainsString('fa-bolt', $items[1]);
-        $this->assertStringContainsString('fa-envelope', $items[2]);
-        $this->assertStringContainsString('fa-coins', $items[2]);
+        $this->assertStringContainsString('Réponse automatique', $items[1]);
+        $this->assertStringContainsString('validation manuelle', $items[2]);
+        $this->assertStringContainsString("l'accès à cette chasse nécessite des points", $items[2]);
         $this->assertStringContainsString('hourglass', $items[3]);
         $this->assertStringContainsString('lock', $items[4]);
     }

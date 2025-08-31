@@ -4937,8 +4937,8 @@ body.panneau-ouvert::before {
   position: absolute;
   top: 50%;
   left: 16px;
-  width: 8px;
-  height: 8px;
+  width: 16px;
+  height: 16px;
   transform: translateY(-50%);
   display: flex;
   align-items: center;
@@ -4947,13 +4947,15 @@ body.panneau-ouvert::before {
 }
 
 .enigme-menu__icon--bullet {
+  left: 20px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background-color: var(--bullet-fill);
   box-shadow: 0 0 0 1px var(--bullet-outline);
 }
 
-.enigme-menu__icon svg,
-.enigme-menu__icon i {
+.enigme-menu__icon svg {
   width: 100%;
   height: 100%;
   fill: currentColor;
@@ -4962,6 +4964,13 @@ body.panneau-ouvert::before {
 .enigme-menu__cost {
   margin-left: var(--space-xs);
   color: var(--bullet-fill);
+  display: inline-flex;
+}
+
+.enigme-menu__cost svg {
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
 }
 
 .enigme-menu li > a:not(.enigme-menu__edit) {
