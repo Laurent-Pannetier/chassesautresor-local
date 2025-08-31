@@ -46,6 +46,12 @@ $has_enigmes = !empty($posts_visibles);
 
 $est_orga = est_organisateur();
 $statut_chasse = get_post_status($chasse_id);
+$peut_reordonner = in_array(
+    $infos_chasse['statut_validation'] ?? '',
+    ['creation', 'correction'],
+    true
+) && ($est_orga_associe || user_can($utilisateur_id, 'manage_options'));
+$attr_draggable = $peut_reordonner ? ' draggable="true"' : '';
 
 // 📌 Vérifie si une énigme est incomplète
 $has_incomplete = false;
@@ -111,8 +117,10 @@ if (!function_exists('compter_tentatives_du_jour')) {
         ? compter_tentatives_du_jour($utilisateur_id, $enigme_id)
         : 0;
     ?>
-        <article class="<?= esc_attr($classes_carte); ?>" data-enigme-id="<?= esc_attr($enigme_id); ?>" draggable="true">
+        <article class="<?= esc_attr($classes_carte); ?>" data-enigme-id="<?= esc_attr($enigme_id); ?>"<?= $attr_draggable; ?>>
+            <?php if ($peut_reordonner) : ?>
             <span class="carte-enigme-handle" aria-hidden="true"><i class="fa-solid fa-up-down-left-right"></i></span>
+            <?php endif; ?>
             <?php if ($linkable) : ?>
               <a href="<?= esc_url($cta['url']); ?>" class="carte-enigme-lien" aria-label="<?= esc_attr($aria_label); ?>">
             <?php else : ?>
