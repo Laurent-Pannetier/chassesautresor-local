@@ -83,5 +83,18 @@ class GenererCtaChasseTest extends TestCase
             $cta
         );
     }
+
+    public function test_guest_gets_login_cta_without_message(): void
+    {
+        $cta = generer_cta_chasse(123, 0);
+        $this->assertSame(
+            [
+                'cta_html'    => '<a href="https://example.com/mon-compte" class="bouton-cta bouton-cta--color">S\'identifier</a>',
+                'cta_message' => '',
+                'type'        => 'connexion',
+            ],
+            $cta
+        );
+    }
 }
 
