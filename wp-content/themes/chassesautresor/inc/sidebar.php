@@ -221,7 +221,18 @@ if (!function_exists('render_sidebar')) {
         if ($chasse_id) {
             $url_chasse = get_permalink($chasse_id);
             $titre      = get_the_title($chasse_id);
+            $edit_url   = function_exists('add_query_arg')
+                ? add_query_arg(
+                    ['edition' => 'open', 'tab' => 'param'],
+                    $url_chasse
+                )
+                : $url_chasse . '?edition=open&tab=param';
             echo '<h2 class="menu-lateral__title"><a href="' . esc_url($url_chasse) . '">' . esc_html($titre) . '</a></h2>';
+            echo '<a class="menu-lateral__edition-toggle enigme-menu__edit" href="'
+                . esc_url($edit_url)
+                . '" aria-label="'
+                . esc_attr__('Paramètres', 'chassesautresor-com')
+                . '"><i class="fa-solid fa-gear"></i></a>';
         }
         echo '</div>';
 
