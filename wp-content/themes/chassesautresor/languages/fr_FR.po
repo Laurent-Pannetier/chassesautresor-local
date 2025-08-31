@@ -673,21 +673,25 @@ msgstr "La chasse est terminée. Les énigmes restent consultables."
 msgid "Les énigmes seront affichées au début de la chasse, le %s."
 msgstr "Les énigmes seront affichées au début de la chasse, le %s."
 
-#: single-chasse.php:141
+#: single-chasse.php:142
 #, php-format
 msgid "Voici les énigmes de cette chasse. Résolvez-les pour tenter de remporter %s."
 msgstr "Voici les énigmes de cette chasse. Résolvez-les pour tenter de remporter %s."
 
-#: single-chasse.php:145
+#: single-chasse.php:146
 msgid "Voici les énigmes de cette chasse."
 msgstr "Voici les énigmes de cette chasse."
 
 #: single-chasse.php:149
+msgid "L'accès aux énigmes est réservé aux participants de chasse. Inscrivez-vous !"
+msgstr "L'accès aux énigmes est réservé aux participants de chasse. Inscrivez-vous !"
+
+#: single-chasse.php:153
 #, php-format
 msgid "Progression : %1$d/%2$d %3$s — %4$d/%5$d %6$s."
 msgstr "Progression : %1$d/%2$d %3$s — %4$d/%5$d %6$s."
 
-#: single-chasse.php:159
+#: single-chasse.php:163
 msgid "Voici vos énigmes : ajoutez, modifiez ou supprimez celles dont vous n’avez plus besoin !"
 msgstr "Voici vos énigmes : ajoutez, modifiez ou supprimez celles dont vous n’avez plus besoin !"
 

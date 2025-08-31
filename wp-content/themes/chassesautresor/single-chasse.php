@@ -136,13 +136,17 @@ if ($statut === 'termine') {
     );
 } elseif (in_array($statut, ['en_cours', 'payante'], true) && $statut_validation === 'valide') {
     if ($nb_engagees === 0) {
-        if ($titre_recompense) {
-            $enigmes_intro = sprintf(
-                esc_html__('Voici les énigmes de cette chasse. Résolvez-les pour tenter de remporter %s.', 'chassesautresor-com'),
-                esc_html($titre_recompense)
-            );
+        if ($est_orga_associe) {
+            if ($titre_recompense) {
+                $enigmes_intro = sprintf(
+                    esc_html__('Voici les énigmes de cette chasse. Résolvez-les pour tenter de remporter %s.', 'chassesautresor-com'),
+                    esc_html($titre_recompense)
+                );
+            } else {
+                $enigmes_intro = esc_html__('Voici les énigmes de cette chasse.', 'chassesautresor-com');
+            }
         } else {
-            $enigmes_intro = esc_html__('Voici les énigmes de cette chasse.', 'chassesautresor-com');
+            $enigmes_intro = esc_html__('L\'accès aux énigmes est réservé aux participants de chasse. Inscrivez-vous !', 'chassesautresor-com');
         }
     } else {
         $enigmes_intro = sprintf(
@@ -160,22 +164,6 @@ if ($statut === 'termine') {
         'Voici vos énigmes : ajoutez, modifiez ou supprimez celles dont vous n’avez plus besoin !',
         'chassesautresor-com'
     );
-}
-
-if (
-    $enigmes_intro === ''
-    && $est_orga_associe
-    && in_array($statut, ['en_cours', 'payante'], true)
-    && $nb_engagees === 0
-) {
-    if ($titre_recompense) {
-        $enigmes_intro = sprintf(
-            esc_html__('Voici les énigmes de cette chasse. Résolvez-les pour tenter de remporter %s.', 'chassesautresor-com'),
-            esc_html($titre_recompense)
-        );
-    } else {
-        $enigmes_intro = esc_html__('Voici les énigmes de cette chasse.', 'chassesautresor-com');
-    }
 }
 
 if (!is_user_logged_in()) {
