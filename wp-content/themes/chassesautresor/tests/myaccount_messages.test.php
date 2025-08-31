@@ -116,12 +116,22 @@ if (!function_exists('get_field')) {
     {
         if ($field === 'utilisateurs_associes' && $post_id === 99) {
             return [
-                (object) ['ID' => 1],
                 (object) ['ID' => 2],
             ];
         }
 
         return null;
+    }
+}
+
+if (!function_exists('get_post_field')) {
+    function get_post_field($field, $post_id)
+    {
+        if ($field === 'post_author' && $post_id === 99) {
+            return 10;
+        }
+
+        return 0;
     }
 }
 
@@ -421,7 +431,7 @@ class MyAccountMessagesTest extends TestCase
             ]
         );
         update_user_meta(
-            99,
+            10,
             '_myaccount_messages',
             [
                 'correction_chasse_123' => ['text' => 'X', 'type' => 'info'],
@@ -432,7 +442,7 @@ class MyAccountMessagesTest extends TestCase
 
         $this->assertSame([], get_user_meta(1, '_myaccount_messages', true));
         $this->assertSame([], get_user_meta(2, '_myaccount_messages', true));
-        $this->assertSame([], get_user_meta(99, '_myaccount_messages', true));
+        $this->assertSame([], get_user_meta(10, '_myaccount_messages', true));
     }
 
     public function test_scoped_message_only_on_related_pages(): void

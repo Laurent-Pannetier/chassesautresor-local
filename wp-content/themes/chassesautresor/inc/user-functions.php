@@ -334,7 +334,10 @@ function myaccount_clear_correction_message(int $chasse_id): void
     $user_ids[] = $current;
 
     if ($organisateur_id) {
-        $user_ids[] = (int) $organisateur_id;
+        $author_id = (int) get_post_field('post_author', $organisateur_id);
+        if ($author_id) {
+            $user_ids[] = $author_id;
+        }
     }
 
     $user_ids = array_unique($user_ids);
