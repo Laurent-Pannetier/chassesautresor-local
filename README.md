@@ -47,6 +47,49 @@ Le projet utilise plusieurs tables SQL dédiées pour suivre l'activité des jou
 - `wp_engagements` enregistre les engagements liés aux énigmes, chasses ou indices (`indice_id`).
 - `wp_indices_deblocages` trace le déblocage des indices et les points dépensés.
 - `wp_user_points` inclut la valeur `indice` dans le champ `origin_type` pour comptabiliser ces dépenses.
+- `wp_user_messages` stocke les messages associés aux utilisateurs ou au site.
+
+### Table `wp_user_messages`
+
+| Colonne    | Type                                     | Commentaire                                      |
+|------------|------------------------------------------|--------------------------------------------------|
+| id         | bigint unsigned AUTO_INCREMENT           | clé primaire                                     |
+| user_id    | bigint unsigned                          | identifiant du joueur, `0` pour un message site |
+| message    | longtext                                 | contenu JSON du message                          |
+| status     | varchar(20)                              | type (`persistent`, `flash`, `site`…)           |
+| created_at | datetime DEFAULT CURRENT_TIMESTAMP       | date d'enregistrement                            |
+| expires_at | datetime NULL                            | expiration optionnelle                           |
+| locale     | varchar(10) NULL                         | locale associée                                  |
+
+Index :
+
+- `PRIMARY(id)`
+- `INDEX(user_id)`
+- `INDEX(status)`
+- `INDEX(expires_at)`
+
+#### APIs
+
+Les fonctions utilitaires s'appuient sur `UserMessageRepository` pour manipuler la table :
+
+- `myaccount_add_persistent_message()` et `myaccount_remove_persistent_message()` pour les messages durables.
+- `myaccount_add_flash_message()` et `myaccount_get_flash_messages()` pour les notifications temporaires.
+- `add_site_message()` et `get_site_messages()` pour les messages globaux.
+- Le repository expose également `insert`, `update`, `delete`, `get` et `purgeExpired()`.
+
+#### Workflow de migration
+
+1. Lancer `wp cat migrate-messages` via WP‑CLI.
+2. Vérifier la suppression des métadonnées `_myaccount_messages`, `_myaccount_flash_messages` et du transient `cat_site_messages`.
+3. Exécuter `vendor/bin/phpunit -c tests/phpunit.xml`.
+
+#### Rollback
+
+En cas d’échec, restaurer la base depuis un backup puis supprimer la table avec :
+
+```sql
+DROP TABLE wp_user_messages;
+```
 
 ## Création d’indice
 
