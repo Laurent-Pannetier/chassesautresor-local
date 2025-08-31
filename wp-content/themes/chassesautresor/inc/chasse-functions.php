@@ -604,11 +604,11 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
     if (!$user_id) {
         return [
             'cta_html'    => sprintf(
-                '<a href="%s" class="bouton-cta">%s</a>',
+                '<a href="%s" class="bouton-cta bouton-cta--color">%s</a>',
                 esc_url(site_url('/mon-compte')),
                 esc_html__('S\'identifier', 'chassesautresor-com')
             ),
-            'cta_message' => __('Vous devez être identifié pour participer à cette chasse', 'chassesautresor-com'),
+            'cta_message' => '',
             'type'        => 'connexion',
         ];
     }
