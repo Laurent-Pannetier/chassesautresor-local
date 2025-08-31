@@ -62,12 +62,31 @@ if (!function_exists('recuperer_enigmes_tentatives_en_attente')) {
 if (!function_exists('get_user_meta')) {
     function get_user_meta($user_id, $key, $single)
     {
+        global $wpdb;
+        $repo = new UserMessageRepository($wpdb);
+
         if ($key === '_myaccount_flash_messages') {
-            return $GLOBALS['test_myaccount_flash_meta'][$user_id] ?? [];
+            $rows = $repo->get($user_id, 'flash', false);
+            $messages = [];
+            foreach ($rows as $row) {
+                $data = json_decode($row['message'], true);
+                if (is_array($data)) {
+                    $messages[] = $data;
+                }
+            }
+            return $messages;
         }
 
         if ($key === '_myaccount_messages') {
-            return $GLOBALS['test_myaccount_persistent_meta'][$user_id] ?? [];
+            $rows = $repo->get($user_id, 'persistent', false);
+            $messages = [];
+            foreach ($rows as $row) {
+                $data = json_decode($row['message'], true);
+                if (is_array($data) && isset($data['key'])) {
+                    $messages[$data['key']] = $data;
+                }
+            }
+            return $messages;
         }
 
         return [
@@ -81,10 +100,21 @@ if (!function_exists('get_user_meta')) {
 if (!function_exists('update_user_meta')) {
     function update_user_meta($user_id, $key, $value)
     {
+        global $wpdb;
+        $repo = new UserMessageRepository($wpdb);
+
         if ($key === '_myaccount_flash_messages') {
-            $GLOBALS['test_myaccount_flash_meta'][$user_id] = $value;
+            delete_user_meta($user_id, $key);
+            foreach ((array) $value as $msg) {
+                $repo->insert($user_id, wp_json_encode($msg), 'flash');
+            }
         } elseif ($key === '_myaccount_messages') {
-            $GLOBALS['test_myaccount_persistent_meta'][$user_id] = $value;
+            delete_user_meta($user_id, $key);
+            foreach ($value as $k => $msg) {
+                $payload       = $msg;
+                $payload['key'] = $k;
+                $repo->insert($user_id, wp_json_encode($payload), 'persistent');
+            }
         }
 
         return true;
@@ -94,10 +124,19 @@ if (!function_exists('update_user_meta')) {
 if (!function_exists('delete_user_meta')) {
     function delete_user_meta($user_id, $key)
     {
+        global $wpdb;
+        $repo = new UserMessageRepository($wpdb);
+
         if ($key === '_myaccount_flash_messages') {
-            unset($GLOBALS['test_myaccount_flash_meta'][$user_id]);
+            $rows = $repo->get($user_id, 'flash', null);
         } elseif ($key === '_myaccount_messages') {
-            unset($GLOBALS['test_myaccount_persistent_meta'][$user_id]);
+            $rows = $repo->get($user_id, 'persistent', null);
+        } else {
+            return true;
+        }
+
+        foreach ($rows as $row) {
+            $repo->delete((int) $row['id']);
         }
 
         return true;
@@ -270,6 +309,55 @@ if (!function_exists('get_posts')) {
     }
 }
 
+if (!function_exists('wp_json_encode')) {
+    function wp_json_encode($data, $options = 0, $depth = 512)
+    {
+        return json_encode($data, $options, $depth);
+    }
+}
+
+global $wpdb;
+$wpdb = new class {
+    public string $prefix = 'wp_';
+    public int $insert_id = 0;
+    /**
+     * @var array<int, array<string, mixed>>
+     */
+    public array $data = [];
+
+    public function insert($table, array $data, array $format): void
+    {
+        $this->insert_id++;
+        $data['id'] = $this->insert_id;
+        $this->data[$this->insert_id] = $data;
+    }
+
+    public function update($table, array $data, array $where, array $format, array $whereFormat): void
+    {
+        $id = $where['id'];
+        $this->data[$id] = array_merge($this->data[$id], $data);
+    }
+
+    public function delete($table, array $where, array $whereFormat): void
+    {
+        unset($this->data[$where['id']]);
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function get_results($sql, $output): array
+    {
+        return array_values($this->data);
+    }
+
+    public function query($sql): void
+    {
+        // no-op
+    }
+};
+
+require_once __DIR__ . '/../inc/messages/class-user-message-repository.php';
 require_once __DIR__ . '/../inc/user-functions.php';
 
 class MyAccountMessagesTest extends TestCase

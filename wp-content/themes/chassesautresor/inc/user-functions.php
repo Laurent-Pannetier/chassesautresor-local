@@ -269,22 +269,31 @@ function myaccount_add_persistent_message(
     int $chasse_scope = 0,
     bool $include_enigmes = false
 ): void {
-    $messages = get_user_meta($user_id, '_myaccount_messages', true);
-    if (!is_array($messages)) {
-        $messages = [];
-    }
+    global $wpdb;
 
-    $messages[$key] = [
-        'text'            => $message,
-        'type'            => $type,
-        'dismissible'     => $dismissible,
+    $repo   = new UserMessageRepository($wpdb);
+    $payload = [
+        'key'         => $key,
+        'text'        => $message,
+        'type'        => $type,
+        'dismissible' => $dismissible,
     ];
 
     if ($chasse_scope > 0) {
-        $messages[$key]['chasse_scope']   = $chasse_scope;
-        $messages[$key]['include_enigmes'] = $include_enigmes;
+        $payload['chasse_scope']   = $chasse_scope;
+        $payload['include_enigmes'] = $include_enigmes;
     }
-    update_user_meta($user_id, '_myaccount_messages', $messages);
+
+    // Remove existing message with the same key if present.
+    $existing = $repo->get($user_id, 'persistent', null);
+    foreach ($existing as $row) {
+        $data = json_decode($row['message'], true);
+        if (is_array($data) && ($data['key'] ?? '') === $key) {
+            $repo->delete((int) $row['id']);
+        }
+    }
+
+    $repo->insert($user_id, wp_json_encode($payload), 'persistent');
 }
 
 /**
@@ -297,17 +306,16 @@ function myaccount_add_persistent_message(
  */
 function myaccount_remove_persistent_message(int $user_id, string $key): void
 {
-    $messages = get_user_meta($user_id, '_myaccount_messages', true);
-    if (!is_array($messages) || !isset($messages[$key])) {
-        return;
-    }
+    global $wpdb;
 
-    unset($messages[$key]);
+    $repo     = new UserMessageRepository($wpdb);
+    $messages = $repo->get($user_id, 'persistent', null);
 
-    if (!empty($messages)) {
-        update_user_meta($user_id, '_myaccount_messages', $messages);
-    } else {
-        delete_user_meta($user_id, '_myaccount_messages');
+    foreach ($messages as $row) {
+        $data = json_decode($row['message'], true);
+        if (is_array($data) && ($data['key'] ?? '') === $key) {
+            $repo->delete((int) $row['id']);
+        }
     }
 }
 
@@ -416,9 +424,17 @@ add_action('template_redirect', 'myaccount_maybe_add_validation_message');
  */
 function myaccount_get_persistent_messages(int $user_id): array
 {
-    $messages = get_user_meta($user_id, '_myaccount_messages', true);
-    if (!is_array($messages)) {
-        return [];
+    global $wpdb;
+
+    $repo   = new UserMessageRepository($wpdb);
+    $rows   = $repo->get($user_id, 'persistent', false);
+    $messages = [];
+    foreach ($rows as $row) {
+        $data = json_decode($row['message'], true);
+        if (is_array($data)) {
+            $key = isset($data['key']) ? (string) $data['key'] : (string) $row['id'];
+            $messages[$key] = $data;
+        }
     }
 
     $current_id   = get_queried_object_id();
@@ -527,17 +543,18 @@ function myaccount_add_flash_message(
     string $type = 'info',
     bool $dismissible = false
 ): void {
-    $messages = get_user_meta($user_id, '_myaccount_flash_messages', true);
-    if (!is_array($messages)) {
-        $messages = [];
-    }
+    global $wpdb;
 
-    $messages[] = [
-        'text'        => $message,
-        'type'        => $type,
-        'dismissible' => $dismissible,
-    ];
-    update_user_meta($user_id, '_myaccount_flash_messages', $messages);
+    $repo = new UserMessageRepository($wpdb);
+    $repo->insert(
+        $user_id,
+        wp_json_encode([
+            'text'        => $message,
+            'type'        => $type,
+            'dismissible' => $dismissible,
+        ]),
+        'flash'
+    );
 }
 
 /**
@@ -549,35 +566,25 @@ function myaccount_add_flash_message(
  */
 function myaccount_get_flash_messages(int $user_id): array
 {
-    $messages = get_user_meta($user_id, '_myaccount_flash_messages', true);
-    if (!is_array($messages)) {
-        return [];
+    global $wpdb;
+
+    $repo = new UserMessageRepository($wpdb);
+    $rows = $repo->get($user_id, 'flash', false);
+    $messages = [];
+
+    foreach ($rows as $row) {
+        $data = json_decode($row['message'], true);
+        if (is_array($data) && isset($data['text'])) {
+            $messages[] = [
+                'text'        => (string) $data['text'],
+                'type'        => isset($data['type']) ? (string) $data['type'] : 'info',
+                'dismissible' => !empty($data['dismissible']),
+            ];
+        }
+        $repo->delete((int) $row['id']);
     }
 
-    $messages = array_map(
-        function ($msg) {
-            if (is_array($msg) && isset($msg['text'])) {
-                return [
-                    'text'        => (string) $msg['text'],
-                    'type'        => isset($msg['type']) ? (string) $msg['type'] : 'info',
-                    'dismissible' => !empty($msg['dismissible']),
-                ];
-            }
-            if (is_string($msg)) {
-                return [
-                    'text'        => $msg,
-                    'type'        => 'info',
-                    'dismissible' => false,
-                ];
-            }
-            return null;
-        },
-        $messages
-    );
-
-    delete_user_meta($user_id, '_myaccount_flash_messages');
-
-    return array_values(array_filter($messages));
+    return $messages;
 }
 
 /**
