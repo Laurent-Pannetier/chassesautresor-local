@@ -4933,17 +4933,35 @@ body.panneau-ouvert::before {
   --bullet-outline: var(--etat-enigme-menu-en-cours);
 }
 
-.enigme-menu li::before {
-  content: "";
+.enigme-menu__icon {
   position: absolute;
   top: 50%;
   left: 16px;
   width: 8px;
   height: 8px;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bullet-fill);
+}
+
+.enigme-menu__icon--bullet {
+  border-radius: 50%;
   background-color: var(--bullet-fill);
   box-shadow: 0 0 0 1px var(--bullet-outline);
-  transform: translateY(-50%);
-  border-radius: 50%;
+}
+
+.enigme-menu__icon svg,
+.enigme-menu__icon i {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+.enigme-menu__cost {
+  margin-left: var(--space-xs);
+  color: var(--bullet-fill);
 }
 
 .enigme-menu li > a:not(.enigme-menu__edit) {
@@ -5028,15 +5046,14 @@ li.active .enigme-menu__edit {
   --bullet-outline: var(--etat-enigme-menu-en-attente);
 }
 
-.enigme-menu li.en-attente::before {
+.enigme-menu__icon--spinner {
   box-sizing: border-box;
   width: 8px;
   height: 8px;
-  border: 2px solid var(--etat-enigme-menu-en-attente);
+  border: 2px solid var(--bullet-fill);
   border-top-color: transparent;
   border-radius: 50%;
   background-color: transparent;
-  box-shadow: none;
   animation: enigme-menu-spin 0.6s linear infinite;
 }
 

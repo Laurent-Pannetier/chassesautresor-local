@@ -190,18 +190,112 @@ class SidebarPrepareChasseNavTest extends TestCase
             ],
         ];
 
-        $GLOBALS['engagements'] = [1 => true];
-        $GLOBALS['get_field_values'] = [6 => ['enigme_cache_complet' => false]];
+        $GLOBALS['engagements']      = [1 => true];
+        $GLOBALS['get_field_values'] = [
+            1 => [
+                'enigme_tentative_cout_points' => 0,
+                'enigme_mode_validation'       => 'aucune',
+            ],
+            2 => [
+                'enigme_tentative_cout_points' => 0,
+                'enigme_mode_validation'       => 'aucune',
+            ],
+            3 => [
+                'enigme_tentative_cout_points' => 0,
+                'enigme_mode_validation'       => 'aucune',
+            ],
+            4 => [
+                'enigme_tentative_cout_points' => 0,
+                'enigme_mode_validation'       => 'aucune',
+            ],
+            5 => [
+                'enigme_tentative_cout_points' => 0,
+                'enigme_mode_validation'       => 'aucune',
+            ],
+            6 => [
+                'enigme_cache_complet'         => false,
+                'enigme_tentative_cout_points' => 0,
+                'enigme_mode_validation'       => 'aucune',
+            ],
+        ];
 
         $data = sidebar_prepare_chasse_nav(10, 5);
         $items = $data['menu_items'];
 
-        $this->assertStringNotContainsString('class=', $items[0]);
+        $this->assertStringContainsString('<li data-enigme-id="1">', $items[0]);
         $this->assertStringContainsString('class="non-engagee"', $items[1]);
         $this->assertStringContainsString('class="succes"', $items[2]);
         $this->assertStringContainsString('class="bloquee"', $items[3]);
         $this->assertStringContainsString('class="en-attente"', $items[4]);
         $this->assertStringContainsString('class="incomplete"', $items[5]);
+    }
+
+    public function test_menu_item_icons_are_displayed(): void
+    {
+        $GLOBALS['is_admin'] = true;
+        $GLOBALS['posts']    = [
+            (object) ['ID' => 1],
+            (object) ['ID' => 2],
+            (object) ['ID' => 3],
+            (object) ['ID' => 4],
+            (object) ['ID' => 5],
+        ];
+
+        $GLOBALS['ctas'] = [
+            1 => [
+                'etat_systeme'       => 'accessible',
+                'statut_utilisateur' => 'en_cours',
+            ],
+            2 => [
+                'etat_systeme'       => 'accessible',
+                'statut_utilisateur' => 'en_cours',
+            ],
+            3 => [
+                'etat_systeme'       => 'accessible',
+                'statut_utilisateur' => 'en_cours',
+            ],
+            4 => [
+                'etat_systeme'       => 'bloquee_date',
+                'statut_utilisateur' => 'non_commencee',
+            ],
+            5 => [
+                'etat_systeme'       => 'bloquee_pre_requis',
+                'statut_utilisateur' => 'non_commencee',
+            ],
+        ];
+
+        $GLOBALS['get_field_values'] = [
+            1 => [
+                'enigme_mode_validation'       => 'aucune',
+                'enigme_tentative_cout_points' => 0,
+            ],
+            2 => [
+                'enigme_mode_validation'       => 'automatique',
+                'enigme_tentative_cout_points' => 0,
+            ],
+            3 => [
+                'enigme_mode_validation'       => 'manuelle',
+                'enigme_tentative_cout_points' => 5,
+            ],
+            4 => [
+                'enigme_mode_validation'       => 'aucune',
+                'enigme_tentative_cout_points' => 0,
+            ],
+            5 => [
+                'enigme_mode_validation'       => 'aucune',
+                'enigme_tentative_cout_points' => 0,
+            ],
+        ];
+
+        $data  = sidebar_prepare_chasse_nav(10, 5);
+        $items = $data['menu_items'];
+
+        $this->assertStringContainsString('enigme-menu__icon--bullet', $items[0]);
+        $this->assertStringContainsString('fa-bolt', $items[1]);
+        $this->assertStringContainsString('fa-envelope', $items[2]);
+        $this->assertStringContainsString('fa-coins', $items[2]);
+        $this->assertStringContainsString('hourglass', $items[3]);
+        $this->assertStringContainsString('lock', $items[4]);
     }
 }
 
