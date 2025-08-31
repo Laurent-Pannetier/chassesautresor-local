@@ -686,11 +686,11 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
             $html .= '<input type="hidden" name="chasse_id" value="' . esc_attr($chasse_id) . '">';
             $html .= wp_nonce_field('engager_chasse_' . $chasse_id, 'engager_chasse_nonce', true, false);
             $html .= sprintf(
-                '<button type="submit" class="bouton-cta">%s</button>',
+                '<button type="submit" class="bouton-cta bouton-cta--color">%s</button>',
                 esc_html__('Participer', 'chassesautresor-com')
             );
             $html .= '</form>';
-            $message = __('Accès libre à cette chasse. Les tentatives seront tarifées individuellement.', 'chassesautresor-com');
+            $message = '';
             $type    = 'engager';
         }
     } elseif ($statut === 'termine') {
