@@ -88,6 +88,7 @@ function charger_fontawesome() {
     wp_enqueue_style('fontawesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.css', [], null);
 }
 add_action('wp_enqueue_scripts', 'charger_fontawesome');
+add_action('admin_enqueue_scripts', 'charger_fontawesome');
 
 /**
  * Ajoute une classe CSS "role-xx" au body de l'interface admin en fonction des rôles de l'utilisateur.
