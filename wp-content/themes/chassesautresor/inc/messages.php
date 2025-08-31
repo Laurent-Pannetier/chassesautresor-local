@@ -25,6 +25,10 @@ function add_site_message(string $type, string $content, bool $persistent = fals
         }
         $messages[] = $message;
         set_transient('cat_site_messages', $messages, 0);
+
+        global $wpdb;
+        $repo = new UserMessageRepository($wpdb);
+        $repo->insert(0, wp_json_encode($message), 'site');
         return;
     }
 
@@ -59,6 +63,16 @@ function get_site_messages(): string
     $transient = get_transient('cat_site_messages');
     if (is_array($transient) && !empty($transient)) {
         $messages = array_merge($messages, $transient);
+    }
+
+    global $wpdb;
+    $repo = new UserMessageRepository($wpdb);
+    $rows = $repo->get(0, 'site', false);
+    foreach ($rows as $row) {
+        $data = json_decode($row['message'], true);
+        if (is_array($data)) {
+            $messages[] = $data;
+        }
     }
 
     if (empty($messages)) {
