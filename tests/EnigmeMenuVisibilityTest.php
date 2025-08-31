@@ -33,6 +33,13 @@ if (!function_exists('est_organisateur')) {
     }
 }
 
+if (!function_exists('utilisateur_est_engage_dans_chasse')) {
+    function utilisateur_est_engage_dans_chasse($user_id, $chasse_id)
+    {
+        return $GLOBALS['is_engaged'] ?? false;
+    }
+}
+
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/enigme/affichage.php';
 
 /**
@@ -49,6 +56,7 @@ class EnigmeMenuVisibilityTest extends TestCase
         $GLOBALS['is_admin'] = false;
         $GLOBALS['is_associated'] = false;
         $GLOBALS['is_organizer'] = false;
+        $GLOBALS['is_engaged'] = true;
     }
 
     public function test_menu_visible_for_associated_organizer(): void
@@ -62,5 +70,17 @@ class EnigmeMenuVisibilityTest extends TestCase
     public function test_menu_hidden_for_other_roles_in_revision(): void
     {
         $this->assertFalse(enigme_user_can_see_menu(1, 2, 'revision'));
+    }
+
+    public function test_menu_hidden_for_non_engaged_user(): void
+    {
+        $GLOBALS['is_engaged'] = false;
+        $this->assertFalse(enigme_user_can_see_menu(1, 2, 'en_cours'));
+    }
+
+    public function test_menu_hidden_for_anonymous_user(): void
+    {
+        $GLOBALS['is_engaged'] = false;
+        $this->assertFalse(enigme_user_can_see_menu(0, 2, 'en_cours'));
     }
 }

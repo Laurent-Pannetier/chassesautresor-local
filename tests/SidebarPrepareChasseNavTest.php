@@ -293,9 +293,56 @@ class SidebarPrepareChasseNavTest extends TestCase
         $this->assertStringContainsString('fa-eye', $items[0]);
         $this->assertStringContainsString('fa-bolt', $items[1]);
         $this->assertStringContainsString('fa-envelope', $items[2]);
-        $this->assertStringContainsString("l'accès à cette chasse nécessite des points", $items[2]);
+        $this->assertStringContainsString('<span class="enigme-menu__cost"', $items[2]);
         $this->assertStringContainsString('hourglass', $items[3]);
         $this->assertStringContainsString('lock', $items[4]);
+    }
+
+    public function test_menu_item_icons_for_associated_organizer(): void
+    {
+        $GLOBALS['is_orga_assoc'] = true;
+        $GLOBALS['posts']        = [
+            (object) ['ID' => 1],
+            (object) ['ID' => 2],
+            (object) ['ID' => 3],
+        ];
+
+        $GLOBALS['ctas'] = [
+            1 => [
+                'etat_systeme'       => 'accessible',
+                'statut_utilisateur' => 'en_cours',
+            ],
+            2 => [
+                'etat_systeme'       => 'accessible',
+                'statut_utilisateur' => 'en_cours',
+            ],
+            3 => [
+                'etat_systeme'       => 'accessible',
+                'statut_utilisateur' => 'en_cours',
+            ],
+        ];
+
+        $GLOBALS['get_field_values'] = [
+            1 => [
+                'enigme_mode_validation'       => 'aucune',
+                'enigme_tentative_cout_points' => 0,
+            ],
+            2 => [
+                'enigme_mode_validation'       => 'automatique',
+                'enigme_tentative_cout_points' => 0,
+            ],
+            3 => [
+                'enigme_mode_validation'       => 'manuelle',
+                'enigme_tentative_cout_points' => 5,
+            ],
+        ];
+
+        $data  = sidebar_prepare_chasse_nav(10, 5);
+        $items = $data['menu_items'];
+
+        $this->assertStringContainsString('fa-bolt', $items[1]);
+        $this->assertStringContainsString('fa-envelope', $items[2]);
+        $this->assertStringContainsString('<span class="enigme-menu__cost"', $items[2]);
     }
 }
 
