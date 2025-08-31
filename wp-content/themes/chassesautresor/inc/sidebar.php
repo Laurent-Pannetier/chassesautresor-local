@@ -34,7 +34,11 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
      *
      * @return array{menu_items:array,peut_ajouter_enigme:bool,total_enigmes:int,has_incomplete_enigme:bool,visible_ids:array}
      */
-    function sidebar_prepare_chasse_nav(int $chasse_id, int $user_id, int $current_enigme_id = 0): array
+    function sidebar_prepare_chasse_nav(
+        int $chasse_id,
+        int $user_id,
+        int $current_enigme_id = 0
+    ): array
     {
         $all_enigmes         = recuperer_enigmes_pour_chasse($chasse_id);
         $submenu_items       = [];
@@ -52,8 +56,9 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
             ? utilisateur_peut_ajouter_enigme($chasse_id)
             : false;
 
-        $is_privileged = user_can($user_id, 'manage_options')
-            || (
+        $is_privileged = (
+                function_exists('user_can') && user_can($user_id, 'manage_options')
+            ) || (
                 function_exists('utilisateur_est_organisateur_associe_a_chasse')
                 && utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)
             );
@@ -61,7 +66,12 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
         $visible_ids = [];
 
         foreach ($all_enigmes as $post) {
-            $cta = get_cta_enigme($post->ID, $user_id);
+            $cta = function_exists('get_cta_enigme')
+                ? get_cta_enigme($post->ID, $user_id)
+                : [
+                    'etat_systeme'      => get_field('enigme_cache_etat_systeme', $post->ID) ?? 'accessible',
+                    'statut_utilisateur' => enigme_get_statut_utilisateur($post->ID, $user_id),
+                ];
 
             if (
                 !$is_privileged
@@ -98,14 +108,43 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
                 $classes[] = 'active';
             }
 
+            $edit = '';
+            if (
+                function_exists('utilisateur_peut_modifier_enigme')
+                && utilisateur_peut_modifier_enigme($post->ID)
+            ) {
+                if ($post->ID === $current_enigme_id) {
+                    $edit = '<button id="toggle-mode-edition-enigme" type="button"'
+                        . ' class="enigme-menu__edit" aria-label="'
+                        . esc_attr__("Paramètres", "chassesautresor-com")
+                        . '"><i class="fa-solid fa-gear"></i></button>';
+                } else {
+                    $status = function_exists('get_post_status')
+                        ? get_post_status($post->ID)
+                        : 'publish';
+                    $tab = ($status === 'publish' && get_field('enigme_cache_complet', $post->ID))
+                        ? 'stats'
+                        : 'param';
+                    $base_url = esc_url(get_permalink($post->ID));
+                    $edit_url = function_exists('add_query_arg')
+                        ? add_query_arg(['edition' => 'open', 'tab' => $tab], $base_url)
+                        : $base_url . '?edition=open&tab=' . $tab;
+                    $edit = '<a class="enigme-menu__edit" href="' . esc_url($edit_url)
+                        . '" aria-label="'
+                        . esc_attr__("Paramètres", "chassesautresor-com")
+                        . '"><i class="fa-solid fa-gear"></i></a>';
+                }
+            }
+
             $title        = esc_html(get_the_title($post->ID));
             $aria_current = $post->ID === $current_enigme_id ? ' aria-current="page"' : '';
             $link         = '<a href="' . esc_url(get_permalink($post->ID)) . '"' . $aria_current . '>' . $title . '</a>';
             $submenu_items[] = sprintf(
-                '<li class="%s" data-enigme-id="%d">%s</li>',
+                '<li class="%s" data-enigme-id="%d">%s%s</li>',
                 esc_attr(implode(' ', $classes)),
                 $post->ID,
-                $link
+                $link,
+                $edit
             );
             $visible_ids[] = $post->ID;
         }
@@ -131,8 +170,13 @@ if (!function_exists('ajax_chasse_recuperer_navigation')) {
             wp_send_json_error('post_invalide', 400);
         }
 
-        $user_id = get_current_user_id();
-        $data    = sidebar_prepare_chasse_nav($chasse_id, $user_id);
+        $user_id        = get_current_user_id();
+        $current_enigme = isset($_POST['enigme_id']) ? (int) $_POST['enigme_id'] : 0;
+        $data           = sidebar_prepare_chasse_nav(
+            $chasse_id,
+            $user_id,
+            $current_enigme
+        );
         wp_send_json_success([
             'html' => implode('', $data['menu_items']),
             'ids'  => $data['visible_ids'],
@@ -148,7 +192,6 @@ if (!function_exists('render_sidebar')) {
      *
      * @param string   $context              Rendering context ('enigme' or 'chasse').
      * @param int      $enigme_id            Enigma identifier.
-     * @param bool     $edition_active       Whether the edition mode is active.
      * @param int|null $chasse_id            Associated hunt ID.
      * @param array    $menu_items           Menu items to display.
      * @param bool     $peut_ajouter_enigme  Whether a new enigma can be added.
@@ -160,7 +203,6 @@ if (!function_exists('render_sidebar')) {
     function render_sidebar(
         string $context,
         int $enigme_id,
-        bool $edition_active,
         ?int $chasse_id,
         array $menu_items,
         bool $peut_ajouter_enigme = false,
@@ -206,12 +248,11 @@ if (!function_exists('render_sidebar')) {
         $hidden_items  = array_slice($menu_items, $max_visible);
 
         $navigation_html = sidebar_get_section_html('navigation', [
-            'visible_items'  => $visible_items,
-            'hidden_items'   => $hidden_items,
-            'edition_active' => $edition_active,
-            'chasse_id'      => $chasse_id,
-            'ajout_html'     => $ajout_html,
-            'context'        => $context,
+            'visible_items' => $visible_items,
+            'hidden_items'  => $hidden_items,
+            'chasse_id'     => $chasse_id,
+            'ajout_html'    => $ajout_html,
+            'context'       => $context,
         ]);
         if ($navigation_html === '') {
             $navigation_html = '<nav class="enigme-navigation" aria-label="'

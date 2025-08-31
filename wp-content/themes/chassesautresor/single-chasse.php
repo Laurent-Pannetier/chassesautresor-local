@@ -17,7 +17,6 @@ verifier_ou_recalculer_statut_chasse($chasse_id);
 verifier_et_synchroniser_cache_enigmes_si_autorise($chasse_id);
 verifier_ou_mettre_a_jour_cache_complet($chasse_id);
 
-$edition_active     = utilisateur_peut_modifier_post($chasse_id);
 $user_id            = get_current_user_id();
 $est_orga_associe   = utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
 $points_utilisateur = get_user_points($user_id);
@@ -120,7 +119,11 @@ $needs_validatable_message = $statut === 'revision'
 
 $statut_validation = $infos_chasse['statut_validation'];
 $nb_joueurs = $infos_chasse['nb_joueurs'];
-$sidebar_data = sidebar_prepare_chasse_nav($chasse_id, $user_id);
+$sidebar_data = sidebar_prepare_chasse_nav(
+    $chasse_id,
+    $user_id,
+    0
+);
 
 $solved_label  = _n('énigme résolue', 'énigmes résolues', $enigmes_resolues, 'chassesautresor-com');
 $engaged_label = _n('engagée', 'engagées', $nb_engagees, 'chassesautresor-com');
@@ -189,7 +192,6 @@ echo '<div class="container container--xl-full chasse-layout">';
 $sidebar_sections = render_sidebar(
     'chasse',
     0,
-    $edition_active,
     $chasse_id,
     $sidebar_data['menu_items'],
     $sidebar_data['peut_ajouter_enigme'],

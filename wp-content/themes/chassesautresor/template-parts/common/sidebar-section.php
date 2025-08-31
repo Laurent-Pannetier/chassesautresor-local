@@ -6,7 +6,6 @@
  *     @type string $section       Section identifier: 'navigation' or 'stats'.
  *     @type array  $visible_items Visible menu items.
  *     @type array  $hidden_items  Hidden menu items.
- *     @type bool   $edition_active Whether edition mode is active.
  *     @type int    $chasse_id     Related hunt identifier.
  *     @type string $ajout_html    HTML for the add link.
  *     @type string $meta_html     Meta data HTML.
@@ -35,10 +34,6 @@ if ($section === 'navigation') {
     $menu_class    = 'enigme-menu';
     $visible_items = $args['visible_items'] ?? [];
     $hidden_items  = $args['hidden_items'] ?? [];
-
-    if (!empty($args['edition_active'])) {
-        $menu_class .= ' enigme-menu--editable';
-    }
 
     $aria_label = esc_attr__('Navigation des énigmes', 'chassesautresor-com');
     echo '<nav class="enigme-navigation" aria-label="' . $aria_label . '"' . $data_chasse . ' data-context="' . esc_attr($context) . '">';
