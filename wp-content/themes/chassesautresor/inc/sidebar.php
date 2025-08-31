@@ -52,8 +52,9 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
             ? utilisateur_peut_ajouter_enigme($chasse_id)
             : false;
 
-        $is_privileged = user_can($user_id, 'manage_options')
-            || (
+        $is_privileged = (
+                function_exists('user_can') && user_can($user_id, 'manage_options')
+            ) || (
                 function_exists('utilisateur_est_organisateur_associe_a_chasse')
                 && utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)
             );
@@ -61,7 +62,12 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
         $visible_ids = [];
 
         foreach ($all_enigmes as $post) {
-            $cta = get_cta_enigme($post->ID, $user_id);
+            $cta = function_exists('get_cta_enigme')
+                ? get_cta_enigme($post->ID, $user_id)
+                : [
+                    'etat_systeme'      => get_field('enigme_cache_etat_systeme', $post->ID) ?? 'accessible',
+                    'statut_utilisateur' => enigme_get_statut_utilisateur($post->ID, $user_id),
+                ];
 
             if (
                 !$is_privileged

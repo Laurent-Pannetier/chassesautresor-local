@@ -719,159 +719,24 @@ require_once __DIR__ . '/utils.php';
         $chasse_id      = recuperer_id_chasse_associee($enigme_id);
         $edition_active = utilisateur_peut_modifier_post($enigme_id);
 
-        $menu_items        = [];
-        $liste             = [];
         $chasse_stat       = $chasse_id ? get_field('chasse_cache_statut', $chasse_id) : '';
         $validation_status = $chasse_id ? get_field('chasse_cache_statut_validation', $chasse_id) : '';
         if ($edition_active && !in_array($validation_status, ['creation', 'correction'], true)) {
             $edition_active = false;
         }
-        $show_menu         = enigme_user_can_see_menu($user_id, $chasse_id, $chasse_stat);
-        $skip_checks       = $chasse_stat === 'termine';
-        $is_privileged = current_user_can('administrator')
-            || (est_organisateur($user_id)
-            && utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id));
+        $show_menu = enigme_user_can_see_menu($user_id, $chasse_id, $chasse_stat);
 
-        if ($show_menu) {
-            $cache_key = 'enigmes_chasse_' . $chasse_id;
-            $liste     = wp_cache_get($cache_key, 'chassesautresor');
-            if ($liste === false) {
-                $liste = recuperer_enigmes_pour_chasse($chasse_id);
-                wp_cache_set($cache_key, $liste, 'chassesautresor', HOUR_IN_SECONDS);
-            }
-        }
-
-        $submenu_items = [];
-
-        $total_enigmes       = count($liste);
+        $menu_items           = [];
+        $peut_ajouter_enigme  = false;
+        $total_enigmes        = 0;
         $has_incomplete_enigme = false;
-        foreach ($liste as $post_check) {
-            if (function_exists('verifier_ou_mettre_a_jour_cache_complet')) {
-                verifier_ou_mettre_a_jour_cache_complet($post_check->ID);
-            }
-            if (!get_field('enigme_cache_complet', $post_check->ID)) {
-                $has_incomplete_enigme = true;
-                break;
-            }
-        }
-        $peut_ajouter_enigme = false;
-        if ($chasse_id && function_exists('utilisateur_peut_ajouter_enigme')) {
-            $peut_ajouter_enigme = utilisateur_peut_ajouter_enigme($chasse_id);
-        }
 
-        if (!$is_privileged) {
-            $liste = filter_visible_enigmes($liste, $user_id);
-        }
-
-        foreach ($liste as $post) {
-            if (!$is_privileged) {
-                if (get_post_status($post->ID) !== 'publish') {
-                    continue;
-                }
-                if (!get_field('enigme_cache_complet', $post->ID)) {
-                    continue;
-                }
-            }
-
-            $classes = [];
-
-            if (!$skip_checks) {
-                $etat_sys       = get_field('enigme_cache_etat_systeme', $post->ID) ?? 'accessible';
-                $condition_acces = get_field('enigme_acces_condition', $post->ID) ?? 'immediat';
-
-                if (in_array($etat_sys, ['invalide', 'cache_invalide'], true)) {
-                    continue;
-                }
-
-                if (
-                    $condition_acces === 'pre_requis'
-                    && !$is_privileged
-                    && (!function_exists('enigme_pre_requis_remplis')
-                        || !enigme_pre_requis_remplis($post->ID, $user_id))
-                ) {
-                    continue;
-                }
-
-                if (
-                    $condition_acces === 'pre_requis'
-                    && $etat_sys === 'bloquee_pre_requis'
-                ) {
-                    $etat_sys = 'accessible';
-                }
-
-                if (!$is_privileged && $etat_sys === 'bloquee_date') {
-                    continue;
-                }
-
-                if ($etat_sys === 'bloquee_chasse' && in_array($validation_status, ['creation', 'correction'], true)) {
-                    if (!get_field('enigme_cache_complet', $post->ID)) {
-                        $classes[] = 'incomplete';
-                    } else {
-                        $classes[] = 'bloquee';
-                    }
-                } elseif (in_array($etat_sys, ['bloquee_date', 'bloquee_chasse'], true)) {
-                    $classes[] = 'bloquee';
-                } else {
-                    $statut_user = enigme_get_statut_utilisateur($post->ID, $user_id);
-                    if (in_array($statut_user, ['resolue', 'terminee'], true)) {
-                        $classes[] = 'succes';
-                    } elseif ($statut_user === 'soumis') {
-                        $classes[] = 'en-attente';
-                    } elseif (
-                        $statut_user === 'non_commencee'
-                        && !utilisateur_est_engage_dans_enigme($user_id, $post->ID)
-                    ) {
-                        $classes[] = 'non-engagee';
-                    }
-                }
-            }
-
-            if ($post->ID === $enigme_id) {
-                $classes[] = 'active';
-            }
-
-            $handle = '';
-            if ($edition_active) {
-                $handle = '<span class="enigme-menu__handle" aria-hidden="true"></span>';
-            }
-
-            $edit = '';
-            if (function_exists('utilisateur_peut_modifier_enigme') && utilisateur_peut_modifier_enigme($post->ID)) {
-                if ($post->ID === $enigme_id) {
-                    $edit = '<button id="toggle-mode-edition-enigme" type="button"'
-                        . ' class="enigme-menu__edit" aria-label="'
-                        . esc_attr__('Paramètres', 'chassesautresor-com')
-                        . '"><i class="fa-solid fa-gear"></i></button>';
-                } else {
-                    $tab     = (get_post_status($post->ID) === 'publish' && get_field('enigme_cache_complet', $post->ID))
-                        ? 'stats'
-                        : 'param';
-                    $edit_url = add_query_arg(
-                        ['edition' => 'open', 'tab' => $tab],
-                        get_permalink($post->ID)
-                    );
-                    $edit     = '<a class="enigme-menu__edit" href="' . esc_url($edit_url) . '" aria-label="'
-                        . esc_attr__('Paramètres', 'chassesautresor-com')
-                        . '"><i class="fa-solid fa-gear"></i></a>';
-                }
-            }
-
-            $title        = esc_html(get_the_title($post->ID));
-            $aria_current = $post->ID === $enigme_id ? ' aria-current="page"' : '';
-            $link         = '<a href="' . esc_url(get_permalink($post->ID)) . '"' . $aria_current . '>' . $title . '</a>';
-
-            $submenu_items[] = sprintf(
-                '<li class="%s" data-enigme-id="%d">%s%s%s</li>',
-                esc_attr(implode(' ', $classes)),
-                $post->ID,
-                $handle,
-                $link,
-                $edit
-            );
-        }
-
-        if ($show_menu && !empty($submenu_items)) {
-            $menu_items = $submenu_items;
+        if ($chasse_id && $show_menu) {
+            $sidebar_data         = sidebar_prepare_chasse_nav($chasse_id, $user_id, $enigme_id);
+            $menu_items           = $sidebar_data['menu_items'];
+            $peut_ajouter_enigme  = $sidebar_data['peut_ajouter_enigme'];
+            $total_enigmes        = $sidebar_data['total_enigmes'];
+            $has_incomplete_enigme = $sidebar_data['has_incomplete_enigme'];
         }
 
         echo '<div class="container container--xl-full enigme-layout">';
