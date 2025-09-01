@@ -328,7 +328,6 @@
   align-items: center;
   text-align: left;
   width: 100%;
-  max-width: 100%;
 }
 
 .chasse-cta-section .chasse-caracteristiques {
@@ -343,12 +342,6 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-}
-
-@media (--bp-tablet) {
-  .chasse-cta-section {
-    max-width: 650px;
-  }
 }
 
 .chasse-caracteristiques .caracteristique-label {
