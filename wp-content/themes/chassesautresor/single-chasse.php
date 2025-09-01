@@ -66,25 +66,13 @@ $image_id  = $infos_chasse['image_id'];
 $image_url = $infos_chasse['image_url'];
 
 
-$enigmes_resolues = compter_enigmes_resolues($chasse_id, $user_id);
+$progression      = $infos_chasse['progression'];
+$enigmes_resolues = $progression['resolues'];
+$total_enigmes    = $progression['total'];
+$nb_resolvables   = $progression['resolvables'];
+$nb_engagees      = $progression['engagees'];
 
 $enigmes_associees = $infos_chasse['enigmes_associees'];
-$total_enigmes    = count($enigmes_associees);
-$validables       = [];
-foreach ($enigmes_associees as $eid) {
-    if (get_field('enigme_mode_validation', $eid) !== 'aucune') {
-        $validables[] = $eid;
-    }
-}
-$nb_resolvables = count($validables);
-
-$nb_engagees = 0;
-if ($user_id && $total_enigmes > 0) {
-    global $wpdb;
-    $placeholders = implode(',', array_fill(0, $total_enigmes, '%d'));
-    $sql          = "SELECT COUNT(DISTINCT enigme_id) FROM {$wpdb->prefix}engagements WHERE user_id = %d AND enigme_id IN ($placeholders)";
-    $nb_engagees  = (int) $wpdb->get_var($wpdb->prepare($sql, array_merge([$user_id], $enigmes_associees)));
-}
 
 $has_solutions = function_exists('solution_existe_pour_objet')
     ? solution_existe_pour_objet($chasse_id, 'chasse')

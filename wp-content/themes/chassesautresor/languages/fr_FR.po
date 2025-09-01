@@ -3170,3 +3170,33 @@ msgstr "validation manuelle de votre tentative par l'organisateur"
 #: inc/sidebar.php:144
 msgid "pas de système de validation en ligne pour cette énigme"
 msgstr "pas de système de validation en ligne pour cette énigme"
+
+#: inc/chasse-functions.php:681
+msgid "Vous participez à cette chasse"
+msgstr "Vous participez à cette chasse"
+
+#: inc/chasse-functions.php:684
+msgid "Commencez par consulter les énigmes disponibles"
+msgstr "Commencez par consulter les énigmes disponibles"
+
+#: inc/chasse-functions.php:685
+msgid "Voir les énigmes"
+msgstr "Voir les énigmes"
+
+#: inc/chasse-functions.php:698
+msgid "Voir mes énigmes"
+msgstr "Voir mes énigmes"
+
+#: inc/chasse-functions.php:688
+#, php-format
+msgid "%1$d / %2$d énigme vue"
+msgid_plural "%1$d / %2$d énigmes vues"
+msgstr[0] "%1$d / %2$d énigme vue"
+msgstr[1] "%1$d / %2$d énigmes vues"
+
+#: inc/chasse-functions.php:693
+#, php-format
+msgid "%1$d / %2$d énigme résolue"
+msgid_plural "%1$d / %2$d énigmes résolues"
+msgstr[0] "%1$d / %2$d énigme résolue"
+msgstr[1] "%1$d / %2$d énigmes résolues"

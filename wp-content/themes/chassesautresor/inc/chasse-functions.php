@@ -584,6 +584,51 @@ function peut_valider_chasse(int $chasse_id, int $user_id): bool
 }
 
 /**
+ * Calcule la progression d'un joueur dans une chasse.
+ *
+ * @param int $chasse_id ID de la chasse.
+ * @param int $user_id   ID de l'utilisateur.
+ * @return array{
+ *     engagees:int,
+ *     total:int,
+ *     resolues:int,
+ *     resolvables:int
+ * }
+ */
+function chasse_calculer_progression_utilisateur(int $chasse_id, int $user_id): array
+{
+    $enigmes = recuperer_enigmes_associees($chasse_id);
+    $total   = count($enigmes);
+
+    $resolvables = 0;
+    foreach ($enigmes as $eid) {
+        if (get_field('enigme_mode_validation', $eid) !== 'aucune') {
+            $resolvables++;
+        }
+    }
+
+    $engagees = 0;
+    if ($user_id && $total > 0) {
+        global $wpdb;
+        $placeholders = implode(',', array_fill(0, $total, '%d'));
+        $sql = "SELECT COUNT(DISTINCT enigme_id) FROM {$wpdb->prefix}engagements WHERE user_id = %d AND enigme_id IN ($placeholders)";
+        $engagees = (int) $wpdb->get_var($wpdb->prepare($sql, array_merge([$user_id], $enigmes)));
+    }
+
+    $resolues = 0;
+    if ($user_id && function_exists('compter_enigmes_resolues')) {
+        $resolues = compter_enigmes_resolues($chasse_id, $user_id);
+    }
+
+    return [
+        'engagees'    => $engagees,
+        'total'       => $total,
+        'resolues'    => $resolues,
+        'resolvables' => $resolvables,
+    ];
+}
+
+/**
  * Génère le bouton d'action et le message d'explication pour une chasse.
  *
  * @param int      $chasse_id ID de la chasse.
@@ -622,7 +667,11 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
     }
 
     // 🔐 Admin or organiser: disabled participation button
-    if (current_user_can('administrator') || utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
+    $admin_override = $GLOBALS['force_admin_override'] ?? null;
+    $is_admin = $admin_override !== null ? (bool) $admin_override : current_user_can('administrator');
+    $orga_override = $GLOBALS['force_organisateur_override'] ?? null;
+    $is_orga = $orga_override !== null ? (bool) $orga_override : utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
+    if ($is_admin || $is_orga) {
         return [
             'cta_html'    => sprintf(
                 '<button class="bouton-cta" disabled>%s</button>',
@@ -634,8 +683,35 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
     }
 
     // ✅ Déjà engagé
-    if (utilisateur_est_engage_dans_chasse($user_id, $chasse_id)) {
-        return ['cta_html' => '', 'cta_message' => '', 'type' => 'engage'];
+    $engage_override = $GLOBALS['force_engage_override'] ?? null;
+    $est_engage = $engage_override !== null ? (bool) $engage_override : utilisateur_est_engage_dans_chasse($user_id, $chasse_id);
+    if ($est_engage) {
+        $progression = chasse_calculer_progression_utilisateur($chasse_id, $user_id);
+        $confirmation = '<p>✅ ' . esc_html__('Vous participez à cette chasse', 'chassesautresor-com') . '</p>';
+
+        if ($progression['engagees'] === 0) {
+            $message = $confirmation . '<p>' . esc_html__('Commencez par consulter les énigmes disponibles', 'chassesautresor-com') . '</p>';
+            $html    = '<a href="#chasse-enigmes-wrapper" class="bouton-secondaire">' . esc_html__('Voir les énigmes', 'chassesautresor-com') . '</a>';
+        } else {
+            $ligne_progression = sprintf(
+                _n('%1$d / %2$d énigme vue', '%1$d / %2$d énigmes vues', $progression['engagees'], 'chassesautresor-com'),
+                $progression['engagees'],
+                $progression['total']
+            );
+            $ligne_reussite = sprintf(
+                _n('%1$d / %2$d énigme résolue', '%1$d / %2$d énigmes résolues', $progression['resolues'], 'chassesautresor-com'),
+                $progression['resolues'],
+                $progression['resolvables']
+            );
+            $message = $confirmation . '<p>' . esc_html($ligne_progression) . '</p><p>' . esc_html($ligne_reussite) . '</p>';
+            $html    = '<a href="#chasse-enigmes-wrapper" class="bouton-secondaire">' . esc_html__('Voir mes énigmes', 'chassesautresor-com') . '</a>';
+        }
+
+        return [
+            'cta_html'    => $html,
+            'cta_message' => $message,
+            'type'        => 'engage',
+        ];
     }
 
     // ❌ Chasse non validée
@@ -1273,6 +1349,8 @@ function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): 
         }
     }
 
+    $progression = chasse_calculer_progression_utilisateur($chasse_id, $user_id);
+
     $nb_joueurs = compter_joueurs_engages_chasse($chasse_id);
     $top_nb      = 0;
     $top_enigmes = 0;
@@ -1301,6 +1379,7 @@ function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): 
         'liens'             => $liens,
         'enigmes_associees' => $enigmes,
         'total_enigmes'     => count($enigmes),
+        'progression'       => $progression,
         'cta_data'          => generer_cta_chasse($chasse_id, $user_id),
         'nb_joueurs'        => $nb_joueurs,
         'nb_enigmes_payantes' => $nb_enigmes_payantes,
