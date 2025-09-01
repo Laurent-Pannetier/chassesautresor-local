@@ -105,7 +105,8 @@
   }
   .chasse-visuel-wrapper {
     position: sticky;
-    top: 0;
+    top: 50vh;
+    transform: translateY(-50%);
     max-width: 40%;
     margin: 0;
   }
