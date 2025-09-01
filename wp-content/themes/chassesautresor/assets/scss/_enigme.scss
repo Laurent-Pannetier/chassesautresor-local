@@ -205,9 +205,19 @@ li.active .enigme-menu__edit {
 .enigme-menu li.non-engagee {
   --bullet-fill: var(--etat-enigme-menu-non-engagee);
 }
-
-.enigme-menu li.non-engagee::before {
+.enigme-menu li.non-engagee:not(.validation-auto):not(.validation-manuelle):not(.validation-aucune):not(.complete):not(.incomplete):not(.bloquee-date):not(.bloquee-pre-requis)::before {
   content: none;
+}
+
+.enigme-menu li.non-engagee.validation-auto,
+.enigme-menu li.non-engagee.validation-manuelle,
+.enigme-menu li.non-engagee.validation-aucune,
+.enigme-menu li.non-engagee.complete {
+  --bullet-fill: var(--etat-enigme-menu-en-cours);
+}
+
+.enigme-menu li.non-engagee.incomplete {
+  --bullet-fill: var(--etat-enigme-menu-incomplete);
 }
 
 .enigme-menu li.incomplete {

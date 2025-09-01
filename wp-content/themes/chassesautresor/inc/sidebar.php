@@ -45,6 +45,7 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
         $total_enigmes         = count($all_enigmes);
         $has_incomplete_enigme = false;
         $chasse_validation     = get_field('chasse_cache_statut_validation', $chasse_id) ?? '';
+        $chasse_statut         = get_field('chasse_cache_statut', $chasse_id) ?? '';
 
         foreach ($all_enigmes as $post_check) {
             if (!get_field('enigme_cache_complet', $post_check->ID)) {
@@ -81,9 +82,25 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
                 continue;
             }
 
-            $classes    = [];
-            $complet    = (bool) get_field('enigme_cache_complet', $post->ID);
-            $mode_valid = get_field('enigme_mode_validation', $post->ID);
+            $classes            = [];
+            $complet            = (bool) get_field('enigme_cache_complet', $post->ID);
+            $mode_valid         = get_field('enigme_mode_validation', $post->ID);
+            $display_validation = false;
+
+            if ($complet) {
+                if (
+                    $chasse_validation === 'valide'
+                    && in_array($chasse_statut, ['payante', 'termine', 'en_cours'], true)
+                ) {
+                    $display_validation = true;
+                } elseif (
+                    $is_privileged
+                    && in_array($chasse_validation, ['creation', 'correction', 'en_attente'], true)
+                    && in_array($chasse_statut, ['revision', 'a_venir'], true)
+                ) {
+                    $display_validation = true;
+                }
+            }
 
             if (in_array($cta['etat_systeme'], ['bloquee_date', 'bloquee_pre_requis'], true)) {
                 $classes[] = 'bloquee';
@@ -107,12 +124,14 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
                     $classes[] = 'non-engagee';
                 }
 
-                if ($mode_valid === 'automatique') {
-                    $classes[] = 'validation-auto';
-                } elseif ($mode_valid === 'manuelle') {
-                    $classes[] = 'validation-manuelle';
-                } else {
-                    $classes[] = 'validation-aucune';
+                if ($display_validation) {
+                    if ($mode_valid === 'automatique') {
+                        $classes[] = 'validation-auto';
+                    } elseif ($mode_valid === 'manuelle') {
+                        $classes[] = 'validation-manuelle';
+                    } else {
+                        $classes[] = 'validation-aucune';
+                    }
                 }
             }
 
