@@ -250,18 +250,26 @@ if ($edition_active && !$est_complet) {
         <?php endif; ?>
       </div>
 
+      <?php if ($organisateur_id) :
+          $logo_id = get_field('profil_public_logo_organisateur', $organisateur_id, false);
+          $logo    = wp_get_attachment_image_src($logo_id, 'thumbnail');
+          $logo_url = $logo ? $logo[0] : wp_get_attachment_image_src(3927, 'thumbnail')[0];
+      ?>
+        <div class="chasse-organisateur">
+          <img class="chasse-organisateur__logo" src="<?= esc_url($logo_url); ?>" alt="<?= esc_attr__('Logo de l\u2019organisateur', 'chassesautresor-com'); ?>">
+          <span class="chasse-organisateur__texte">
+            <a class="chasse-organisateur__nom" href="<?= esc_url(get_permalink($organisateur_id)); ?>"><?= esc_html($organisateur_nom); ?></a>
+            <span class="chasse-organisateur__presente"><?php esc_html_e('présente', 'chassesautresor-com'); ?></span>
+          </span>
+        </div>
+      <?php endif; ?>
+
       <!-- Titre dynamique -->
       <h1 class="titre-objet header-chasse"
         data-cpt="chasse"
         data-post-id="<?= esc_attr($chasse_id); ?>">
         <?= esc_html($titre); ?>
       </h1>
-
-      <?php if ($organisateur_id): ?>
-        <p class="txt-small auteur-organisateur">
-          <?php esc_html_e('Par', 'chassesautresor-com'); ?> <a href="<?= get_permalink($organisateur_id); ?>"><?= esc_html($organisateur_nom); ?></a>
-        </p>
-      <?php endif; ?>
 
       <div class="meta-row svg-xsmall">
         <div class="meta-regular">
