@@ -1,7 +1,7 @@
 🔹 Groupe : paramètre de la chasse
 🆔 ID : 27
 🔑 Key : group_67b58c51b9a49
-📦 Champs trouvés : 19
+📦 Champs trouvés : 21
 
 — chasse_principale_image —
 Type : image
@@ -148,6 +148,18 @@ Choices :
 — chasse_cache_complet —
 Type : true_false
 Label : chasse_cache_complet
+Instructions : (vide)
+Requis : non
+----------------------------------------
+— chasse_cache_has_solutions —
+Type : true_false
+Label : chasse_cache_has_solutions
+Instructions : (vide)
+Requis : non
+----------------------------------------
+— chasse_cache_has_indices —
+Type : true_false
+Label : chasse_cache_has_indices
 Instructions : (vide)
 Requis : non
 ----------------------------------------

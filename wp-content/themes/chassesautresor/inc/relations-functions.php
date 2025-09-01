@@ -527,6 +527,107 @@ function clear_enigmes_chasse_cache(int $post_id): void
 }
 add_action('save_post_enigme', 'clear_enigmes_chasse_cache', 20, 1);
 
+function recalculate_chasse_cached_flags(int $chasse_id): void
+{
+    $has_solutions = function_exists('solution_existe_pour_objet')
+        && solution_existe_pour_objet($chasse_id, 'chasse');
+    $has_indices = function_exists('prochain_rang_indice')
+        && prochain_rang_indice($chasse_id, 'chasse') > 1;
+
+    $enigmes = recuperer_enigmes_associees($chasse_id);
+    foreach ($enigmes as $eid) {
+        if (
+            !$has_solutions
+            && function_exists('solution_existe_pour_objet')
+            && solution_existe_pour_objet($eid, 'enigme')
+        ) {
+            $has_solutions = true;
+        }
+        if (
+            !$has_indices
+            && function_exists('prochain_rang_indice')
+            && prochain_rang_indice($eid, 'enigme') > 1
+        ) {
+            $has_indices = true;
+        }
+        if ($has_solutions && $has_indices) {
+            break;
+        }
+    }
+
+    update_field('chasse_cache_has_solutions', $has_solutions ? 1 : 0, $chasse_id);
+    update_field('chasse_cache_has_indices', $has_indices ? 1 : 0, $chasse_id);
+}
+
+/**
+ * Met à jour les indicateurs mis en cache lors de la sauvegarde d'une énigme.
+ *
+ * @param int $post_id ID de l'énigme.
+ * @return void
+ */
+function update_chasse_cached_flags_on_enigme_save(int $post_id): void
+{
+    $chasse_id = (int) get_field('enigme_chasse_associee', $post_id);
+    if ($chasse_id) {
+        recalculate_chasse_cached_flags($chasse_id);
+    }
+}
+add_action('save_post_enigme', 'update_chasse_cached_flags_on_enigme_save', 20, 1);
+
+/**
+ * Met à jour les indicateurs mis en cache lors de la sauvegarde d'un indice.
+ *
+ * @param int $post_id ID de l'indice.
+ * @return void
+ */
+function update_chasse_cached_flags_on_indice_save(int $post_id): void
+{
+    $cible = get_field('indice_cible_type', $post_id);
+    $chasse_id = 0;
+
+    if ($cible === 'chasse') {
+        $chasse_id = (int) get_field('indice_chasse_linked', $post_id);
+    } elseif ($cible === 'enigme') {
+        $enigme_id = (int) get_field('indice_enigme_linked', $post_id);
+        if ($enigme_id) {
+            $chasse = recuperer_chasse_associee($enigme_id);
+            $chasse_id = $chasse ? (int) $chasse->ID : 0;
+        }
+    }
+
+    if ($chasse_id) {
+        recalculate_chasse_cached_flags($chasse_id);
+    }
+}
+add_action('save_post_indice', 'update_chasse_cached_flags_on_indice_save', 20, 1);
+
+/**
+ * Met à jour les indicateurs mis en cache lors de la sauvegarde d'une solution.
+ *
+ * @param int $post_id ID de la solution.
+ * @return void
+ */
+function update_chasse_cached_flags_on_solution_save(int $post_id): void
+{
+    $cible = get_field('solution_cible_type', $post_id);
+    $chasse_id = 0;
+
+    if ($cible === 'chasse') {
+        $chasse_id = (int) get_field('solution_chasse_linked', $post_id);
+    } elseif ($cible === 'enigme') {
+        $enigme_id = (int) get_field('solution_enigme_linked', $post_id);
+        if ($enigme_id) {
+            $chasse = recuperer_chasse_associee($enigme_id);
+            $chasse_id = $chasse ? (int) $chasse->ID : 0;
+        }
+    }
+
+    if ($chasse_id) {
+        recalculate_chasse_cached_flags($chasse_id);
+    }
+}
+add_action('save_post_solution', 'update_chasse_cached_flags_on_solution_save', 20, 1);
+
 
 // ==================================================
 // 📦 ASSIGNATION AUTOMATIQUES
