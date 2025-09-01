@@ -72,27 +72,8 @@ $total_enigmes    = $progression['total'];
 $nb_resolvables   = $progression['resolvables'];
 $nb_engagees      = $progression['engagees'];
 
-$enigmes_associees = $infos_chasse['enigmes_associees'];
-
-$has_solutions = function_exists('solution_existe_pour_objet')
-    ? solution_existe_pour_objet($chasse_id, 'chasse')
-    : false;
-$has_indices = function_exists('prochain_rang_indice')
-    ? prochain_rang_indice($chasse_id, 'chasse') > 1
-    : false;
-if (!$has_solutions || !$has_indices) {
-    foreach ($enigmes_associees as $eid) {
-        if (!$has_solutions && function_exists('solution_existe_pour_objet') && solution_existe_pour_objet($eid, 'enigme')) {
-            $has_solutions = true;
-        }
-        if (!$has_indices && function_exists('prochain_rang_indice') && prochain_rang_indice($eid, 'enigme') > 1) {
-            $has_indices = true;
-        }
-        if ($has_solutions && $has_indices) {
-            break;
-        }
-    }
-}
+$has_solutions = (bool) get_field('chasse_cache_has_solutions', $chasse_id);
+$has_indices   = (bool) get_field('chasse_cache_has_indices', $chasse_id);
 
 $titre_chasse   = get_the_title($chasse_id);
 $enigmes_intro  = '';
