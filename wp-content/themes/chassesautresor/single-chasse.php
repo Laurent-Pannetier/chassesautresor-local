@@ -142,7 +142,8 @@ if ($statut === 'termine') {
         esc_html($date_debut_formatee)
     );
 } elseif (in_array($statut, ['en_cours', 'payante'], true) && $statut_validation === 'valide') {
-    if ($nb_engagees === 0) {
+    $est_engage = utilisateur_est_engage_dans_chasse($user_id, $chasse_id);
+    if (!$est_engage) {
         if ($est_orga_associe) {
             if ($titre_recompense) {
                 $enigmes_intro = sprintf(
