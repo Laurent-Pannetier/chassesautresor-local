@@ -159,7 +159,7 @@ if ($statut === 'termine') {
     } else {
         if ($nb_engagees === 0) {
             $enigmes_intro = esc_html__(
-                'Commencez par consulter les énigmes pour progresser dans la chasse.',
+                'commencez par consulter des énigmes parmi celles ci-dessous. Bonne chasse !',
                 'chassesautresor-com'
             );
         } else {

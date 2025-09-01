@@ -685,6 +685,10 @@ msgstr "Here are the riddles of this hunt."
 msgid "L'accès aux énigmes est réservé aux participants de chasse. Inscrivez-vous !"
 msgstr "Access to the riddles is reserved for hunt participants. Sign up!"
 
+#: single-chasse.php:162
+msgid "commencez par consulter des énigmes parmi celles ci-dessous. Bonne chasse !"
+msgstr "start by checking out some puzzles below. Happy hunting!"
+
 #: single-chasse.php:153
 #, php-format
 msgid "Progression : %1$d/%2$d %3$s — %4$d/%5$d %6$s."
