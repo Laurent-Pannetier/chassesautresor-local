@@ -5404,7 +5404,7 @@ li.active .enigme-menu__edit {
     padding-bottom: var(--space-sm);
     padding-left: calc(var(--space-md) + env(safe-area-inset-left));
     padding-right: calc(var(--space-md) + env(safe-area-inset-right));
-    background-color: var(--color-background);
+    background-color: transparent;
     z-index: 10;
   }
   .enigme-mobile-actions {
