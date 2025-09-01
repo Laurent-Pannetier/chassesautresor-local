@@ -866,6 +866,15 @@ function initChampBonnesReponses() {
       btn.className = 'champ-modifier bonne-reponse-valider btn-obligatoire';
       btn.textContent = wp.i18n.__('valider', 'chassesautresor-com');
 
+      const updateBlink = () => {
+        const hasValue = input.value.trim().length > 0;
+        wrapper.classList.toggle('champ-vide-obligatoire', !hasValue);
+        input.classList.toggle('champ-vide-obligatoire', !hasValue);
+        btn.classList.toggle('champ-vide-obligatoire', hasValue);
+      };
+
+      input.addEventListener('input', updateBlink);
+
       btn.addEventListener('click', () => {
         const val = input.value.trim();
         if (!val) return;
@@ -877,6 +886,7 @@ function initChampBonnesReponses() {
 
       wrapper.appendChild(input);
       wrapper.appendChild(btn);
+      updateBlink();
       return;
     }
 
