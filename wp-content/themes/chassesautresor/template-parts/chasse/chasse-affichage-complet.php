@@ -238,10 +238,20 @@ if ($edition_active && !$est_complet) {
 
       <div class="chasse-details-actions">
         <?php if (function_exists('ADDTOANY_SHARE_SAVE_BUTTON')) : ?>
-          <?= ADDTOANY_SHARE_SAVE_BUTTON([
-            'html_content' => get_svg_icon('share-icon'),
-            'button_additional_classes' => 'chasse-share-button',
-          ]); ?>
+          <?php
+          $share_url   = get_permalink($chasse_id);
+          $share_title = $titre;
+          $share_href  = 'https://www.addtoany.com/share#url=' . rawurlencode($share_url) . '&title=' . rawurlencode($share_title);
+          ?>
+          <a
+            class="a2a_dd a2a_counter chasse-share-button addtoany_share_save addtoany_share"
+            href="<?= esc_url($share_href); ?>"
+            data-a2a-url="<?= esc_url($share_url); ?>"
+            data-a2a-title="<?= esc_attr($share_title); ?>"
+            aria-label="<?= esc_attr__('Partager', 'chassesautresor-com'); ?>"
+          >
+            <?= get_svg_icon('share-icon'); ?>
+          </a>
         <?php endif; ?>
         <?php if ($edition_active) : ?>
           <button id="toggle-mode-edition-chasse" class="bouton-edition-toggle" aria-label="<?php esc_attr_e('Paramètres de chasse', 'chassesautresor-com'); ?>">
