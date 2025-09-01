@@ -10,15 +10,20 @@ defined('ABSPATH') || exit;
 // 🧠 LOGIQUE MÉTIER
 $chasse_id = get_the_ID();
 if (!$chasse_id) {
-  wp_die(__('Chasse introuvable.', 'chassesautresor-com'));
+    wp_die(__('Chasse introuvable.', 'chassesautresor-com'));
 }
 
-verifier_ou_recalculer_statut_chasse($chasse_id);
-verifier_et_synchroniser_cache_enigmes_si_autorise($chasse_id);
-verifier_ou_mettre_a_jour_cache_complet($chasse_id);
+// Utilisateur courant et rôle organisateur
+$user_id          = get_current_user_id();
+$est_orga_associe = utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
 
-$user_id            = get_current_user_id();
-$est_orga_associe   = utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
+// Mise à jour des statuts réservée aux administrateurs ou organisateurs
+if (current_user_can('manage_options') || $est_orga_associe) {
+    verifier_ou_recalculer_statut_chasse($chasse_id);
+    verifier_et_synchroniser_cache_enigmes_si_autorise($chasse_id);
+    verifier_ou_mettre_a_jour_cache_complet($chasse_id);
+}
+
 $points_utilisateur = get_user_points($user_id);
 $est_engage_chasse  = utilisateur_est_engage_dans_chasse($user_id, $chasse_id);
 $peut_voir_aside    = $est_engage_chasse
