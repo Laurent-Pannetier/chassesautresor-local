@@ -86,6 +86,7 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
             $complet            = (bool) get_field('enigme_cache_complet', $post->ID);
             $mode_valid         = get_field('enigme_mode_validation', $post->ID);
             $display_validation = false;
+            $title_validation   = '';
 
             if ($complet) {
                 if (
@@ -126,11 +127,23 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
 
                 if ($display_validation) {
                     if ($mode_valid === 'automatique') {
-                        $classes[] = 'validation-auto';
+                        $classes[]       = 'validation-auto';
+                        $title_validation = esc_attr__(
+                            'validation instantanée en ligne de votre tentative',
+                            'chassesautresor-com'
+                        );
                     } elseif ($mode_valid === 'manuelle') {
-                        $classes[] = 'validation-manuelle';
+                        $classes[]       = 'validation-manuelle';
+                        $title_validation = esc_attr__(
+                            'validation manuelle de votre tentative par l\'organisateur',
+                            'chassesautresor-com'
+                        );
                     } else {
-                        $classes[] = 'validation-aucune';
+                        $classes[]       = 'validation-aucune';
+                        $title_validation = esc_attr__(
+                            'pas de système de validation en ligne pour cette énigme',
+                            'chassesautresor-com'
+                        );
                     }
                 }
             }
@@ -175,9 +188,10 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
             $aria_current = $post->ID === $current_enigme_id ? ' aria-current="page"' : '';
             $link         = '<a href="' . esc_url(get_permalink($post->ID)) . '"' . $aria_current . '>' . $title . '</a>';
             $submenu_items[] = sprintf(
-                '<li class="%s" data-enigme-id="%d">%s%s</li>',
+                '<li class="%s" data-enigme-id="%d"%s>%s%s</li>',
                 esc_attr(implode(' ', $classes)),
                 $post->ID,
+                $title_validation ? ' title="' . $title_validation . '"' : '',
                 $link,
                 $edit
             );

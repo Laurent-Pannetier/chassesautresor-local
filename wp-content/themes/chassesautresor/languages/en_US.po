@@ -3187,3 +3187,15 @@ msgstr "Requires %s"
 #: template-parts/enigme/chasse-partial-boucle-enigmes.php:194
 msgid "Parution le %1$s à %2$s"
 msgstr "Published on %1$s at %2$s"
+
+#: inc/sidebar.php:132
+msgid "validation instantanée en ligne de votre tentative"
+msgstr "instant online validation of your attempt"
+
+#: inc/sidebar.php:138
+msgid "validation manuelle de votre tentative par l'organisateur"
+msgstr "manual validation of your attempt by the organizer"
+
+#: inc/sidebar.php:144
+msgid "pas de système de validation en ligne pour cette énigme"
+msgstr "no online validation system for this enigma"
