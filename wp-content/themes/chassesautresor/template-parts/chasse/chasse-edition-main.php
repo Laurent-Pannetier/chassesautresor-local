@@ -280,7 +280,11 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                                 <?php if ($recompense_remplie) : ?>
                                     <span class="champ-texte-contenu">
                                         <span class="recompense-valeur">
-                                            <?= esc_html(number_format_i18n(round((float) $valeur), 0)); ?> €
+                                            <span class="recompense-valeur__label">
+                                                <?= esc_html__('Valeur estimée', 'chassesautresor-com'); ?>
+                                            </span>
+                                            <?= esc_html(number_format_i18n(round((float) $valeur), 0)); ?>
+                                            <span class="recompense-valeur__devise">€</span>
                                         </span>
                                         &nbsp;–&nbsp;
                                         <span class="recompense-titre"><?= esc_html($titre_recompense); ?></span>

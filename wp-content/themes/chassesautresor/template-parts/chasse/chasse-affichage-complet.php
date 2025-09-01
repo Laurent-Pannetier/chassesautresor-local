@@ -437,7 +437,15 @@ if ($edition_active && !$est_complet) {
                     data-post-id="<?= esc_attr($chasse_id); ?>">
                     <div class="champ-affichage">
                         <?php if ((float) $valeur_recompense > 0) : ?>
-                            <p class="lot-valeur"><span class="badge-recompense avec-recompense"><?= esc_html($valeur_recompense); ?> €</span></p>
+                            <p class="lot-valeur">
+                                <span class="badge-recompense avec-recompense">
+                                    <span class="badge-recompense__label">
+                                        <?= esc_html__('Valeur estimée', 'chassesautresor-com'); ?>
+                                    </span>
+                                    <?= esc_html($valeur_recompense); ?>
+                                    <span class="badge-recompense__devise">€</span>
+                                </span>
+                            </p>
                         <?php endif; ?>
                     </div>
                     <div class="champ-feedback"></div>
