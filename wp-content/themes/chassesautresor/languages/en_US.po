@@ -1548,6 +1548,11 @@ msgctxt "formatting for dates"
 msgid "j F Y"
 msgstr "F j, Y"
 
+#: inc/edition/edition-core.php:665
+msgctxt "formatting for datetime"
+msgid "j F Y \\à H:i"
+msgstr "F j, Y \\a\\t g:i a"
+
 #: template-parts/chasse/chasse-edition-main.php:606
 msgid "Coût d’accès à une chasse"
 msgstr "Hunt access cost"
@@ -3185,8 +3190,8 @@ msgid "Nécessite : %s"
 msgstr "Requires %s"
 
 #: template-parts/enigme/chasse-partial-boucle-enigmes.php:194
-msgid "Parution le %1$s à %2$s"
-msgstr "Published on %1$s at %2$s"
+msgid "Parution le %s"
+msgstr "Published on %s"
 
 #: inc/sidebar.php:132
 msgid "validation instantanée en ligne de votre tentative"

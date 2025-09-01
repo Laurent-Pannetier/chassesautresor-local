@@ -639,6 +639,36 @@ function formater_date($date): string
 
 
 /**
+ * 📅⏰ Formate une date avec l'heure ou retourne "Non spécifiée".
+ *
+ * @param mixed $date La date à formater.
+ * @return string La date/heure formatée ou "Non spécifiée" si invalide.
+ */
+function formater_date_heure($date): string
+{
+    if (empty($date)) {
+        return __('Non spécifiée', 'chassesautresor-com');
+    }
+
+    if ($date instanceof DateTimeInterface) {
+        $timestamp = $date->getTimestamp();
+    } elseif (is_array($date) && isset($date['date'])) {
+        $timestamp = convertir_en_timestamp($date['date']);
+    } else {
+        $timestamp = convertir_en_timestamp((string) $date);
+    }
+
+    if ($timestamp === false) {
+        return __('Non spécifiée', 'chassesautresor-com');
+    }
+
+    $format = _x('j F Y \\à H:i', 'formatting for datetime', 'chassesautresor-com');
+
+    return wp_date($format, $timestamp);
+}
+
+
+/**
  * 🗓️ Convertit une date string en objet DateTime en testant plusieurs formats.
  *
  * @param string|null $date_string La date à convertir.
