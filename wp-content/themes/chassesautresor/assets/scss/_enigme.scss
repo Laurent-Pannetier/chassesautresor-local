@@ -95,10 +95,6 @@
 }
 
 
-.enigme-menu li.bloquee > a:not(.enigme-menu__edit) {
-  cursor: default;
-}
-
 .enigme-menu li:not(.active):hover > a:not(.enigme-menu__edit) {
   background-color: rgba(255, 215, 0, 0.1);
 }
