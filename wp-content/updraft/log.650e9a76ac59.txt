@@ -1,0 +1,891 @@
+0000.000 (0) Opened log file at time: Mon, 01 Sep 2025 04:15:28 +0000 on http://chassesautresor.local
+0000.005 (0) UpdraftPlus WordPress backup plugin (https://updraftplus.com): 1.25.7 WP: 6.8.2 PHP: 8.2.27 (cgi-fcgi, Windows NT LAURENTPC 10.0 build 26100 (Windows 11) AMD64) MySQL: 8.0.35 (max packet size=1073741824) WPLANG: fr_FR Server: nginx/1.26.1 safe_mode: 0 max_execution_time: 900 memory_limit: 256M (used: 18M | 20M) multisite: N openssl: OpenSSL 3.0.15 3 Sep 2024 mcrypt: N LANG:  WP Proxy: disabled ZipArchive::addFile: Y
+0000.010 (0) Free space on disk containing Updraft's temporary directory: 699414.5 MB
+0000.028 (0) Tasks: Backup files: 1 (schedule: daily) Backup DB: 1 (schedule: daily)
+0000.058 (0) Requesting semaphore lock (fd) (apparently not via scheduler)
+0000.070 (0) Set semaphore last lock (fd) time to 2025-09-01 04:15:28
+0000.074 (0) Semaphore lock (fd) complete
+0000.086 (0) Backup run: resumption=0, nonce=650e9a76ac59, file_nonce=650e9a76ac59 begun at=1756700128 (0s ago), job type=backup
+0000.095 (0) Scheduling a resumption (1) after 300 seconds (1756700428) in case this run gets aborted
+0000.138 (0) PHP event: code E_DEPRECATED: rtrim(): Passing null to parameter #1 ($string) of type string is deprecated (line 2829, C:\Users\laure\Local Sites\chassesautresor\app\public\wp-includes\formatting.php)
+0000.144 (0) Checking if we have a zip executable available
+0000.153 (0) Creation of backups of directories: beginning
+0000.168 (0) Beginning creation of dump of plugins (split every: 25 MB)
+0002.803 (0) Total entities for the zip file: 2325 directories, 15319 files (0 skipped as non-modified), 167.7 MB
+0002.816 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 2.0 seconds have passed since the last write (0.1 MB, 1 (1) files added so far); re-opening (prior size: 0 KB)
+0002.932 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins.zip.tmp: 100 files added (on-disk size: 430.9 KB)
+0002.961 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins.zip.tmp: 200 files added (on-disk size: 430.9 KB)
+0002.991 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins.zip.tmp: 300 files added (on-disk size: 430.9 KB)
+0003.024 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins.zip.tmp: 400 files added (on-disk size: 430.9 KB)
+0003.056 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins.zip.tmp: 500 files added (on-disk size: 430.9 KB)
+0003.084 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins.zip.tmp: 600 files added (on-disk size: 430.9 KB)
+0003.110 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins.zip.tmp: 700 files added (on-disk size: 430.9 KB)
+0003.138 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins.zip.tmp: 800 files added (on-disk size: 430.9 KB)
+0003.152 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): possibly approaching split limit (22.3 MB, 834 (835) files added so far); last ratio: 1; re-opening (prior size: 430.9 KB)
+0022.813 (0) Zip size is at/near split limit (6.7 MB / 25 MB) - bumping index (from: 0)
+0022.892 (0) Creating zip file manifest (backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins.zip.list-temp.tmp)
+0022.900 (0) Successfully created zip file manifest (size: 61619)
+0022.910 (0) Created plugins zip (0) - 6874.3 KB in 22.6 s (303.6 KB/s) (checksums: sha1: 6ace094d78340b1d42d1f4ac59410632ccf95b82, sha256: 79a28c86a2d8f3764ce54893aa56d0548f0119cc1504faf72941f0e10beecaef)
+0022.930 (0) Cloud backup selection (1/1): none with instance (1/1) (last)
+0022.934 (0) No remote despatch: user chose no remote backup service
+0022.938 (0) Recording as successfully uploaded: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins.zip
+0022.945 (0) Deleting zip manifest (backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins.zip.list.tmp)
+0022.949 (0) Prune old backups from local store: nothing to do, since the user disabled local deletion and we are using local backups
+0022.973 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 900 files added (on-disk size: 0 KB)
+0023.012 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 1000 files added (on-disk size: 0 KB)
+0023.051 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 1100 files added (on-disk size: 0 KB)
+0023.096 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 1200 files added (on-disk size: 0 KB)
+0023.144 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 1300 files added (on-disk size: 0 KB)
+0023.191 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 1400 files added (on-disk size: 0 KB)
+0023.230 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 1500 files added (on-disk size: 0 KB)
+0023.267 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 1600 files added (on-disk size: 0 KB)
+0023.309 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 1700 files added (on-disk size: 0 KB)
+0023.343 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 1800 files added (on-disk size: 0 KB)
+0023.358 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 1000 files added on this batch (11.6 MB, 15319 files batched, 1001 (1836) added so far); re-opening (prior size: 0 KB)
+0055.793 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 1900 files added (on-disk size: 4519.7 KB)
+0055.825 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 2000 files added (on-disk size: 4519.7 KB)
+0055.863 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 2100 files added (on-disk size: 4519.7 KB)
+0055.891 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 2200 files added (on-disk size: 4519.7 KB)
+0055.917 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 2300 files added (on-disk size: 4519.7 KB)
+0055.943 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 2400 files added (on-disk size: 4519.7 KB)
+0055.971 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 2500 files added (on-disk size: 4519.7 KB)
+0056.002 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 2600 files added (on-disk size: 4519.7 KB)
+0056.032 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 2700 files added (on-disk size: 4519.7 KB)
+0056.062 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 2800 files added (on-disk size: 4519.7 KB)
+0056.077 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 1000 files added on this batch (8.4 MB, 15319 files batched, 1001 (2837) added so far); re-opening (prior size: 4519.7 KB)
+0090.230 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 2900 files added (on-disk size: 7386 KB)
+0090.259 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 3000 files added (on-disk size: 7386 KB)
+0090.295 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 3100 files added (on-disk size: 7386 KB)
+0090.329 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 3200 files added (on-disk size: 7386 KB)
+0090.361 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 3300 files added (on-disk size: 7386 KB)
+0090.397 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 3400 files added (on-disk size: 7386 KB)
+0090.436 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 3500 files added (on-disk size: 7386 KB)
+0090.474 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 3600 files added (on-disk size: 7386 KB)
+0090.508 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 3700 files added (on-disk size: 7386 KB)
+0090.548 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 3800 files added (on-disk size: 7386 KB)
+0090.573 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 1000 files added on this batch (22.5 MB, 15319 files batched, 1001 (3838) added so far); re-opening (prior size: 7386 KB)
+0139.886 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 3900 files added (on-disk size: 14071.5 KB)
+0139.927 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 4000 files added (on-disk size: 14071.5 KB)
+0139.955 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 4100 files added (on-disk size: 14071.5 KB)
+0139.981 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 4200 files added (on-disk size: 14071.5 KB)
+0140.008 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 4300 files added (on-disk size: 14071.5 KB)
+0140.034 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 4400 files added (on-disk size: 14071.5 KB)
+0140.062 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 4500 files added (on-disk size: 14071.5 KB)
+0140.088 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 4600 files added (on-disk size: 14071.5 KB)
+0140.114 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 4700 files added (on-disk size: 14071.5 KB)
+0140.141 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 4800 files added (on-disk size: 14071.5 KB)
+0140.156 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 1000 files added on this batch (11.6 MB, 15319 files batched, 1001 (4839) added so far); re-opening (prior size: 14071.5 KB)
+0149.828 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 4900 files added (on-disk size: 17707.6 KB)
+0149.855 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 5000 files added (on-disk size: 17707.6 KB)
+0149.882 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 5100 files added (on-disk size: 17707.6 KB)
+0149.911 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 5200 files added (on-disk size: 17707.6 KB)
+0149.936 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 5300 files added (on-disk size: 17707.6 KB)
+0149.965 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 5400 files added (on-disk size: 17707.6 KB)
+0149.994 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 5500 files added (on-disk size: 17707.6 KB)
+0150.020 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 5600 files added (on-disk size: 17707.6 KB)
+0150.049 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 5700 files added (on-disk size: 17707.6 KB)
+0150.075 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 5800 files added (on-disk size: 17707.6 KB)
+0150.089 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 1000 files added on this batch (8.5 MB, 15319 files batched, 1001 (5840) added so far); re-opening (prior size: 17707.6 KB)
+0150.604 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 5900 files added (on-disk size: 21327.8 KB)
+0150.632 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 6000 files added (on-disk size: 21327.8 KB)
+0150.658 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 6100 files added (on-disk size: 21327.8 KB)
+0150.684 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.tmp: 6200 files added (on-disk size: 21327.8 KB)
+0150.697 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): possibly approaching split limit (9.2 MB, 387 (6227) files added so far); last ratio: 0.4152; re-opening (prior size: 21327.8 KB)
+0151.133 (0) Zip size is at/near split limit (26.1 MB / 25 MB) - bumping index (from: 1)
+0151.374 (0) Creating zip file manifest (backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.list-temp.tmp)
+0151.396 (0) Successfully created zip file manifest (size: 457236)
+0151.408 (0) Created plugins zip (1) - 26678.3 KB in 128.2 s (208.1 KB/s) (checksums: sha1: 9a675c100c9ac23287dbd8ec1764f60f59126a59, sha256: a219dba5d0cceaf46d236d1a185d96e26e1e13c127ea74f78cd784acea997170)
+0151.436 (0) Cloud backup selection (1/1): none with instance (1/1) (last)
+0151.440 (0) No remote despatch: user chose no remote backup service
+0151.445 (0) Recording as successfully uploaded: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip
+0151.454 (0) Deleting zip manifest (backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip.list.tmp)
+0151.459 (0) Prune old backups from local store: nothing to do, since the user disabled local deletion and we are using local backups
+0151.491 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 6300 files added (on-disk size: 0 KB)
+0151.527 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 6400 files added (on-disk size: 0 KB)
+0151.563 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 6500 files added (on-disk size: 0 KB)
+0151.598 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 6600 files added (on-disk size: 0 KB)
+0151.632 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 6700 files added (on-disk size: 0 KB)
+0151.668 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 6800 files added (on-disk size: 0 KB)
+0151.703 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 6900 files added (on-disk size: 0 KB)
+0151.738 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 7000 files added (on-disk size: 0 KB)
+0151.779 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 7100 files added (on-disk size: 0 KB)
+0151.812 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 7200 files added (on-disk size: 0 KB)
+0151.826 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 1000 files added on this batch (8.4 MB, 15319 files batched, 1001 (7228) added so far); re-opening (prior size: 0 KB)
+0152.253 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 7300 files added (on-disk size: 2349.2 KB)
+0152.284 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 7400 files added (on-disk size: 2349.2 KB)
+0152.423 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 7500 files added (on-disk size: 2349.2 KB)
+0152.446 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 7600 files added (on-disk size: 2349.2 KB)
+0152.473 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 7700 files added (on-disk size: 2349.2 KB)
+0152.499 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 7800 files added (on-disk size: 2349.2 KB)
+0152.525 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 7900 files added (on-disk size: 2349.2 KB)
+0152.553 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 8000 files added (on-disk size: 2349.2 KB)
+0152.583 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 8100 files added (on-disk size: 2349.2 KB)
+0152.609 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 8200 files added (on-disk size: 2349.2 KB)
+0152.621 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 1000 files added on this batch (5.7 MB, 15319 files batched, 1001 (8229) added so far); re-opening (prior size: 2349.2 KB)
+0152.909 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 8300 files added (on-disk size: 4119.7 KB)
+0152.935 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 8400 files added (on-disk size: 4119.7 KB)
+0152.960 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 8500 files added (on-disk size: 4119.7 KB)
+0152.989 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 8600 files added (on-disk size: 4119.7 KB)
+0153.016 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 8700 files added (on-disk size: 4119.7 KB)
+0153.044 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 8800 files added (on-disk size: 4119.7 KB)
+0153.072 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 8900 files added (on-disk size: 4119.7 KB)
+0153.111 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 9000 files added (on-disk size: 4119.7 KB)
+0153.143 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 9100 files added (on-disk size: 4119.7 KB)
+0153.173 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 9200 files added (on-disk size: 4119.7 KB)
+0153.187 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 1000 files added on this batch (6.3 MB, 15319 files batched, 1001 (9230) added so far); re-opening (prior size: 4119.7 KB)
+0157.000 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 9300 files added (on-disk size: 6198 KB)
+0157.032 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 9400 files added (on-disk size: 6198 KB)
+0157.056 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 9500 files added (on-disk size: 6198 KB)
+0157.080 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 9600 files added (on-disk size: 6198 KB)
+0157.104 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 9700 files added (on-disk size: 6198 KB)
+0157.131 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 9800 files added (on-disk size: 6198 KB)
+0157.158 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 9900 files added (on-disk size: 6198 KB)
+0157.185 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 10000 files added (on-disk size: 6198 KB)
+0157.212 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 10100 files added (on-disk size: 6198 KB)
+0157.239 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 10200 files added (on-disk size: 6198 KB)
+0157.251 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 1000 files added on this batch (12.5 MB, 15319 files batched, 1001 (10231) added so far); re-opening (prior size: 6198 KB)
+0175.515 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 10300 files added (on-disk size: 12268.9 KB)
+0175.550 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 10400 files added (on-disk size: 12268.9 KB)
+0175.581 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 10500 files added (on-disk size: 12268.9 KB)
+0175.613 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 10600 files added (on-disk size: 12268.9 KB)
+0175.644 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 10700 files added (on-disk size: 12268.9 KB)
+0175.676 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 10800 files added (on-disk size: 12268.9 KB)
+0175.709 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 10900 files added (on-disk size: 12268.9 KB)
+0175.746 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 11000 files added (on-disk size: 12268.9 KB)
+0175.784 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 11100 files added (on-disk size: 12268.9 KB)
+0175.823 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 11200 files added (on-disk size: 12268.9 KB)
+0175.835 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 1000 files added on this batch (20.7 MB, 15319 files batched, 1001 (11232) added so far); re-opening (prior size: 12268.9 KB)
+0199.958 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 11300 files added (on-disk size: 19460.2 KB)
+0199.988 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 11400 files added (on-disk size: 19460.2 KB)
+0200.017 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 11500 files added (on-disk size: 19460.2 KB)
+0200.048 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 11600 files added (on-disk size: 19460.2 KB)
+0200.082 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 11700 files added (on-disk size: 19460.2 KB)
+0200.112 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 11800 files added (on-disk size: 19460.2 KB)
+0200.141 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 11900 files added (on-disk size: 19460.2 KB)
+0200.172 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 12000 files added (on-disk size: 19460.2 KB)
+0200.207 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 12100 files added (on-disk size: 19460.2 KB)
+0200.241 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 12200 files added (on-disk size: 19460.2 KB)
+0200.257 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 1000 files added on this batch (9.5 MB, 15319 files batched, 1001 (12233) added so far); re-opening (prior size: 19460.2 KB)
+0255.395 (0) The scheduled resumption is within 45 seconds - will reschedule
+0255.406 (0) Rescheduling resumption 1: moving to 345 seconds from now (1756700729)
+0255.421 (0) To decrease the likelihood of overlaps, increasing resumption interval to: 300 + 45 = 345
+0255.462 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 12300 files added (on-disk size: 22172.5 KB)
+0255.496 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 12400 files added (on-disk size: 22172.5 KB)
+0255.535 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 12500 files added (on-disk size: 22172.5 KB)
+0255.574 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 12600 files added (on-disk size: 22172.5 KB)
+0255.608 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 12700 files added (on-disk size: 22172.5 KB)
+0255.640 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 12800 files added (on-disk size: 22172.5 KB)
+0255.674 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 12900 files added (on-disk size: 22172.5 KB)
+0255.712 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 13000 files added (on-disk size: 22172.5 KB)
+0255.749 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 13100 files added (on-disk size: 22172.5 KB)
+0255.789 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 13200 files added (on-disk size: 22172.5 KB)
+0255.807 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 1000 files added on this batch (3.3 MB, 15319 files batched, 1001 (13234) added so far); re-opening (prior size: 22172.5 KB)
+0316.244 (0) The time we have been running (316.2) is approaching the resumption interval (345) - increasing resumption interval to 347
+0316.333 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 13300 files added (on-disk size: 23284.7 KB)
+0316.377 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 13400 files added (on-disk size: 23284.7 KB)
+0316.412 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 13500 files added (on-disk size: 23284.7 KB)
+0316.445 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 13600 files added (on-disk size: 23284.7 KB)
+0316.480 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 13700 files added (on-disk size: 23284.7 KB)
+0316.513 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 13800 files added (on-disk size: 23284.7 KB)
+0316.548 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 13900 files added (on-disk size: 23284.7 KB)
+0316.584 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 14000 files added (on-disk size: 23284.7 KB)
+0316.618 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 14100 files added (on-disk size: 23284.7 KB)
+0316.651 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 14200 files added (on-disk size: 23284.7 KB)
+0316.666 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 1000 files added on this batch (2.8 MB, 15319 files batched, 1001 (14235) added so far); re-opening (prior size: 23284.7 KB)
+0377.442 (0) The time we have been running (377.4) is approaching the resumption interval (347) - increasing resumption interval to 408
+0377.502 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 14300 files added (on-disk size: 24250.9 KB)
+0377.532 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 14400 files added (on-disk size: 24250.9 KB)
+0377.568 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 14500 files added (on-disk size: 24250.9 KB)
+0377.604 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 14600 files added (on-disk size: 24250.9 KB)
+0377.638 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 14700 files added (on-disk size: 24250.9 KB)
+0377.669 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 14800 files added (on-disk size: 24250.9 KB)
+0377.702 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 14900 files added (on-disk size: 24250.9 KB)
+0377.748 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.tmp: 15000 files added (on-disk size: 24250.9 KB)
+0377.774 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): possibly approaching split limit (3.6 MB, 836 (15071) files added so far); last ratio: 0.338; re-opening (prior size: 24250.9 KB)
+0429.406 (0) The time we have been running (429.4) is approaching the resumption interval (408) - increasing resumption interval to 460
+0429.416 (0) Zip size is at/near split limit (24.8 MB / 25 MB) - bumping index (from: 2)
+0429.609 (0) Creating zip file manifest (backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.list-temp.tmp)
+0429.636 (0) Successfully created zip file manifest (size: 822326)
+0429.647 (0) Created plugins zip (2) - 25430.7 KB in 278 s (91.5 KB/s) (checksums: sha1: 612349b3baefcfd2fab102babfe124c891bd3f4f, sha256: 3d9c2cd9ddd324755e6dd2ad9ddc653c5dc65b9b843f63771666ae2bb1ff8241)
+0429.674 (0) Cloud backup selection (1/1): none with instance (1/1) (last)
+0429.678 (0) No remote despatch: user chose no remote backup service
+0429.682 (0) Recording as successfully uploaded: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip
+0429.690 (0) Deleting zip manifest (backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip.list.tmp)
+0429.694 (0) Prune old backups from local store: nothing to do, since the user disabled local deletion and we are using local backups
+0429.711 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins4.zip.tmp: 15100 files added (on-disk size: 0 KB)
+0429.749 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins4.zip.tmp: 15200 files added (on-disk size: 0 KB)
+0429.785 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins4.zip.tmp: 15300 files added (on-disk size: 0 KB)
+0444.474 (0) The time we have been running (444.5) is approaching the resumption interval (460) - increasing resumption interval to 475
+0444.498 (0) Creating zip file manifest (backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins4.zip.list-temp.tmp)
+0444.504 (0) Successfully created zip file manifest (size: 25246)
+0444.527 (0) Created plugins zip (3) - 277.9 KB in 14.9 s (18.7 KB/s) (sha1: c344a1c428f82a396f7a3bd87e703435aaa6075c, sha256: b251535f7891fb07892bc62b82c3010f945ed1e8da0c86ce1b613d9736e1210a)
+0444.541 (0) Cloud backup selection (1/1): none with instance (1/1) (last)
+0444.545 (0) No remote despatch: user chose no remote backup service
+0444.549 (0) Recording as successfully uploaded: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins4.zip
+0444.558 (0) Deleting zip manifest (backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins4.zip.list.tmp)
+0444.563 (0) Prune old backups from local store: nothing to do, since the user disabled local deletion and we are using local backups
+0444.577 (0) Beginning creation of dump of themes (split every: 25 MB)
+0444.792 (0) Total entities for the zip file: 400 directories, 1228 files (0 skipped as non-modified), 35.7 MB
+0444.837 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-themes.zip.tmp: 100 files added (on-disk size: 0 KB)
+0444.875 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-themes.zip.tmp: 200 files added (on-disk size: 0 KB)
+0444.912 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-themes.zip.tmp: 300 files added (on-disk size: 0 KB)
+0444.947 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-themes.zip.tmp: 400 files added (on-disk size: 0 KB)
+0444.982 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-themes.zip.tmp: 500 files added (on-disk size: 0 KB)
+0445.020 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-themes.zip.tmp: 600 files added (on-disk size: 0 KB)
+0445.058 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-themes.zip.tmp: 700 files added (on-disk size: 0 KB)
+0445.072 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 25 MB added on this batch (25.2 MB, 1228 files batched, 725 (725) added so far); re-opening (prior size: 0 KB)
+0465.066 (0) The time we have been running (465.1) is approaching the resumption interval (475) - increasing resumption interval to 496
+0465.074 (0) A useful amount of data was added after this amount of zip processing: 20.8 s (normalised: 20.6 s, rate: 1243 KB/s)
+0465.078 (0) Performance is good - but we will not increase the amount of data we batch, as we are already at the present limit (time=20.763617992401, normalised_time=20.595710594407, max_time=465.07745099068, data points known=1, max_bytes=26214400)
+0465.108 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-themes.zip.tmp: 800 files added (on-disk size: 8496.1 KB)
+0465.138 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-themes.zip.tmp: 900 files added (on-disk size: 8496.1 KB)
+0465.170 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-themes.zip.tmp: 1000 files added (on-disk size: 8496.1 KB)
+0465.202 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-themes.zip.tmp: 1100 files added (on-disk size: 8496.1 KB)
+0465.232 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-themes.zip.tmp: 1200 files added (on-disk size: 8496.1 KB)
+0494.005 (0) The time we have been running (494) is approaching the resumption interval (496) - increasing resumption interval to 524
+0494.018 (0) Creating zip file manifest (backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-themes.zip.list-temp.tmp)
+0494.026 (0) Successfully created zip file manifest (size: 97580)
+0494.147 (0) Created themes zip (0) - 17022.6 KB in 49.6 s (343.5 KB/s) (sha1: 94196892b71190ee9c86cfe8be603daa202c1e15, sha256: f63fb7ba180c2880be09858ab6040c4ce509bf9cc943393659ba37c8224a2c77)
+0494.163 (0) Cloud backup selection (1/1): none with instance (1/1) (last)
+0494.167 (0) No remote despatch: user chose no remote backup service
+0494.171 (0) Recording as successfully uploaded: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-themes.zip
+0494.183 (0) Deleting zip manifest (backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-themes.zip.list.tmp)
+0494.187 (0) Prune old backups from local store: nothing to do, since the user disabled local deletion and we are using local backups
+0494.206 (0) Exclusion option setting (uploads): 
+0494.210 (0) Looking for candidates to backup in: C:\Users\laure\Local Sites\chassesautresor\app\public/wp-content/uploads
+0494.215 (0) finding files: 2025: adding to list (1)
+0494.220 (0) finding files: astra-docs: adding to list (2)
+0494.225 (0) finding files: backup: adding to list (3)
+0494.230 (0) finding files: mailchimp-for-wp: adding to list (4)
+0494.233 (0) finding files: protectedfiles: adding to list (5)
+0494.238 (0) finding files: solutions-publiques: adding to list (6)
+0494.242 (0) finding files: test-access: adding to list (7)
+0494.246 (0) finding files: wc-logs: adding to list (8)
+0494.252 (0) finding files: woocommerce-placeholder-100x100.png: adding to list (9)
+0494.256 (0) finding files: woocommerce-placeholder-100x100.png.webp: adding to list (10)
+0494.261 (0) finding files: woocommerce-placeholder-1024x1024.png: adding to list (11)
+0494.265 (0) finding files: woocommerce-placeholder-1024x1024.png.webp: adding to list (12)
+0494.271 (0) finding files: woocommerce-placeholder-150x150.png: adding to list (13)
+0494.275 (0) finding files: woocommerce-placeholder-150x150.png.webp: adding to list (14)
+0494.279 (0) finding files: woocommerce-placeholder-300x300.png: adding to list (15)
+0494.283 (0) finding files: woocommerce-placeholder-300x300.png.webp: adding to list (16)
+0494.287 (0) finding files: woocommerce-placeholder-50x50.png: adding to list (17)
+0494.291 (0) finding files: woocommerce-placeholder-600x600.png: adding to list (18)
+0494.295 (0) finding files: woocommerce-placeholder-600x600.png.webp: adding to list (19)
+0494.299 (0) finding files: woocommerce-placeholder-768x768.png: adding to list (20)
+0494.303 (0) finding files: woocommerce-placeholder-768x768.png.webp: adding to list (21)
+0494.306 (0) finding files: woocommerce-placeholder.png: adding to list (22)
+0494.310 (0) finding files: woocommerce-placeholder.png.webp: adding to list (23)
+0494.314 (0) finding files: woocommerce_uploads: adding to list (24)
+0494.319 (0) finding files: wpforms: adding to list (25)
+0494.323 (0) finding files: _enigmes: adding to list (26)
+0494.327 (0) Beginning creation of dump of uploads (split every: 25 MB)
+0494.734 (0) Total entities for the zip file: 107 directories, 2671 files (0 skipped as non-modified), 86.2 MB
+0494.770 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads.zip.tmp: 100 files added (on-disk size: 0 KB)
+0494.806 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads.zip.tmp: 200 files added (on-disk size: 0 KB)
+0494.843 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads.zip.tmp: 300 files added (on-disk size: 0 KB)
+0494.852 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 25 MB added on this batch (26.7 MB, 2671 files batched, 308 (308) added so far); re-opening (prior size: 0 KB)
+0496.998 (0) The time we have been running (497) is approaching the resumption interval (524) - increasing resumption interval to 527
+0497.008 (0) A useful amount of data was added after this amount of zip processing: 2.7 s (normalised: 2.5 s, rate: 10138.1 KB/s)
+0497.012 (0) Performance is good - but we will not increase the amount of data we batch, as we are already at the present limit (time=2.6972980499268, normalised_time=2.5251373445115, max_time=497.01156401634, data points known=1, max_bytes=26214400)
+0497.025 (0) The time we have been running (497) is approaching the resumption interval (527) - increasing resumption interval to 528
+0497.034 (0) Zip size is at/near split limit (26.6 MB / 25 MB) - bumping index (from: 0)
+0497.224 (0) Creating zip file manifest (backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads.zip.list-temp.tmp)
+0497.230 (0) Successfully created zip file manifest (size: 17569)
+0497.241 (0) Created uploads zip (0) - 27201.2 KB in 2.7 s (10059.6 KB/s) (checksums: sha1: 4e64dd66f59e8d55fc3ca341dd24e4ff837800a4, sha256: c5a89968edc9ff19bbf49fac0cfc8347366a5dbc1f0dfa4bbdc2cdc152ad05b3)
+0497.265 (0) Cloud backup selection (1/1): none with instance (1/1) (last)
+0497.270 (0) No remote despatch: user chose no remote backup service
+0497.274 (0) Recording as successfully uploaded: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads.zip
+0497.284 (0) Deleting zip manifest (backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads.zip.list.tmp)
+0497.290 (0) Prune old backups from local store: nothing to do, since the user disabled local deletion and we are using local backups
+0497.332 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 25 MB added on this batch (27.1 MB, 2671 files batched, 91 (399) added so far); re-opening (prior size: 0 KB)
+0498.124 (0) The time we have been running (498.1) is approaching the resumption interval (528) - increasing resumption interval to 529
+0498.132 (0) A useful amount of data was added after this amount of zip processing: 1.8 s (normalised: 1.7 s, rate: 15258.6 KB/s)
+0498.135 (0) Performance is good - but we will not increase the amount of data we batch, as we are already at the present limit (time=1.8209180831909, normalised_time=1.6777384087199, max_time=498.13467001915, data points known=1, max_bytes=26214400)
+0498.144 (0) Zip size is at/near split limit (27 MB / 25 MB) - bumping index (from: 1)
+0498.334 (0) Creating zip file manifest (backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads2.zip.list-temp.tmp)
+0498.340 (0) Successfully created zip file manifest (size: 5293)
+0498.348 (0) Created uploads zip (1) - 27639.3 KB in 0.9 s (30632.1 KB/s) (checksums: sha1: 6d34bd412254459719f0b0c703f1aab607d44be5, sha256: 8e8c12b7fcee7085011642a5fdb5164991b5f5274c5882dd93deb86439846d39)
+0498.375 (0) Cloud backup selection (1/1): none with instance (1/1) (last)
+0498.379 (0) No remote despatch: user chose no remote backup service
+0498.383 (0) Recording as successfully uploaded: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads2.zip
+0498.393 (0) Deleting zip manifest (backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads2.zip.list.tmp)
+0498.398 (0) Prune old backups from local store: nothing to do, since the user disabled local deletion and we are using local backups
+0498.407 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads3.zip.tmp: 400 files added (on-disk size: 0 KB)
+0498.446 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads3.zip.tmp: 500 files added (on-disk size: 0 KB)
+0498.487 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads3.zip.tmp: 600 files added (on-disk size: 0 KB)
+0498.526 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads3.zip.tmp: 700 files added (on-disk size: 0 KB)
+0498.570 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads3.zip.tmp: 800 files added (on-disk size: 0 KB)
+0498.616 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads3.zip.tmp: 900 files added (on-disk size: 0 KB)
+0498.654 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads3.zip.tmp: 1000 files added (on-disk size: 0 KB)
+0498.692 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads3.zip.tmp: 1100 files added (on-disk size: 0 KB)
+0498.729 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads3.zip.tmp: 1200 files added (on-disk size: 0 KB)
+0498.765 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads3.zip.tmp: 1300 files added (on-disk size: 0 KB)
+0498.809 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 1000 files added on this batch (5.8 MB, 2671 files batched, 1001 (1400) added so far); re-opening (prior size: 0 KB)
+0520.142 (0) The time we have been running (520.1) is approaching the resumption interval (529) - increasing resumption interval to 551
+0520.151 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads3.zip.tmp: 1400 files added (on-disk size: 3342.4 KB)
+0520.188 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads3.zip.tmp: 1500 files added (on-disk size: 3342.4 KB)
+0520.219 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads3.zip.tmp: 1600 files added (on-disk size: 3342.4 KB)
+0520.248 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads3.zip.tmp: 1700 files added (on-disk size: 3342.4 KB)
+0520.277 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads3.zip.tmp: 1800 files added (on-disk size: 3342.4 KB)
+0520.305 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads3.zip.tmp: 1900 files added (on-disk size: 3342.4 KB)
+0520.333 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads3.zip.tmp: 2000 files added (on-disk size: 3342.4 KB)
+0520.361 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads3.zip.tmp: 2100 files added (on-disk size: 3342.4 KB)
+0520.389 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads3.zip.tmp: 2200 files added (on-disk size: 3342.4 KB)
+0520.417 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads3.zip.tmp: 2300 files added (on-disk size: 3342.4 KB)
+0520.446 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads3.zip.tmp: 2400 files added (on-disk size: 3342.4 KB)
+0520.451 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 1000 files added on this batch (0.8 MB, 2671 files batched, 1001 (2401) added so far); re-opening (prior size: 3342.4 KB)
+0540.761 (0) The time we have been running (540.7) is approaching the resumption interval (551) - increasing resumption interval to 571
+0540.807 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads3.zip.tmp: 2500 files added (on-disk size: 3972.6 KB)
+0540.843 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads3.zip.tmp: 2600 files added (on-disk size: 3972.6 KB)
+0540.867 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 25 MB added on this batch (25 MB, 2671 files batched, 261 (2662) added so far); re-opening (prior size: 3972.6 KB)
+0544.958 (0) The time we have been running (544.9) is approaching the resumption interval (571) - increasing resumption interval to 575
+0544.969 (0) A useful amount of data was added after this amount of zip processing: 4.7 s (normalised: 4.7 s, rate: 5498.4 KB/s)
+0544.973 (0) Performance is good - but we will not increase the amount of data we batch, as we are already at the present limit (time=4.6582770347595, normalised_time=4.6558677922591, max_time=544.97280216217, data points known=1, max_bytes=26214400)
+0544.983 (0) Zip size is at/near split limit (28.9 MB / 25 MB) - bumping index (from: 2)
+0547.129 (0) Creating zip file manifest (backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads3.zip.list-temp.tmp)
+0547.141 (0) Successfully created zip file manifest (size: 157196)
+0547.159 (0) The time we have been running (547.1) is approaching the resumption interval (575) - increasing resumption interval to 578
+0547.167 (0) Created uploads zip (2) - 29585.2 KB in 46.6 s (634.4 KB/s) (checksums: sha1: badfabe19a2e45f7cff35571af9f264df48f30f9, sha256: 349170c25c4d1f2444a436ab1cf909fda220f81cabe973b4d65dfa92ded528a0)
+0547.192 (0) Cloud backup selection (1/1): none with instance (1/1) (last)
+0547.196 (0) No remote despatch: user chose no remote backup service
+0547.200 (0) Recording as successfully uploaded: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads3.zip
+0547.209 (0) Deleting zip manifest (backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads3.zip.list.tmp)
+0547.214 (0) Prune old backups from local store: nothing to do, since the user disabled local deletion and we are using local backups
+0547.308 (0) Creating zip file manifest (backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads4.zip.list-temp.tmp)
+0547.315 (0) Successfully created zip file manifest (size: 622)
+0547.350 (0) Created uploads zip (3) - 786.4 KB in 0.2 s (4549.4 KB/s) (sha1: 27cfba3de2a5d94ab5ae7b4da1e37213a1d1b4ae, sha256: 95ebb232ef315d91291d2dcaddace8e5e3e507189b227235eff0f5cbb11d03ec)
+0547.371 (0) Cloud backup selection (1/1): none with instance (1/1) (last)
+0547.377 (0) No remote despatch: user chose no remote backup service
+0547.383 (0) Recording as successfully uploaded: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads4.zip
+0547.395 (0) Deleting zip manifest (backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads4.zip.list.tmp)
+0547.401 (0) Prune old backups from local store: nothing to do, since the user disabled local deletion and we are using local backups
+0547.432 (0) Beginning creation of dump of mu-plugins (split every: 25 MB)
+0547.456 (0) Total entities for the zip file: 1 directories, 3 files (0 skipped as non-modified), 0 MB
+0547.479 (0) Creating zip file manifest (backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-mu-plugins.zip.list-temp.tmp)
+0547.485 (0) Successfully created zip file manifest (size: 164)
+0547.510 (0) Created mu-plugins zip (0) - 6.4 KB in 0.1 s (113.2 KB/s) (sha1: 1828f40db05705702f16f4af61bf2f82c21e0dea, sha256: 6fb84ec6bb9fb601846b8c69e7c4504516139290dde9cfff9cf0ac73737cf4d2)
+0547.531 (0) Cloud backup selection (1/1): none with instance (1/1) (last)
+0547.536 (0) No remote despatch: user chose no remote backup service
+0547.541 (0) Recording as successfully uploaded: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-mu-plugins.zip
+0547.553 (0) Deleting zip manifest (backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-mu-plugins.zip.list.tmp)
+0547.558 (0) Prune old backups from local store: nothing to do, since the user disabled local deletion and we are using local backups
+0547.578 (0) Beginning backup of other directories found in the content directory (index: 0)
+0547.582 (0) Exclusion option setting (others): 
+0547.586 (0) Looking for candidates to backup in: C:\Users\laure\Local Sites\chassesautresor\app\public/wp-content
+0547.591 (0) finding files: .litespeed_conf.dat: adding to list (1)
+0547.597 (0) finding files: debug.log: adding to list (2)
+0547.603 (0) finding files: index.php: adding to list (3)
+0547.609 (0) finding files: index.php-old: adding to list (4)
+0547.613 (0) finding files: languages: adding to list (5)
+0547.618 (0) finding files: litespeed: adding to list (6)
+0547.622 (0) finding files: mu-plugins: skipping: this is the mu-plugins directory
+0547.627 (0) finding files: object-cache.php: adding to list (7)
+0547.632 (0) finding files: plugins: skipping: this is the plugins directory
+0547.637 (0) finding files: protected: adding to list (8)
+0547.641 (0) finding files: themes: skipping: this is the themes directory
+0547.646 (0) finding files: updraft: skipping: this is the updraft directory
+0547.650 (0) finding files: upgrade: adding to list (9)
+0547.655 (0) finding files: upgrade-temp-backup: adding to list (10)
+0547.661 (0) finding files: uploads: skipping: this is the uploads directory
+0547.723 (0) Total entities for the zip file: 10 directories, 441 files (0 skipped as non-modified), 20.2 MB
+0547.761 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-others.zip.tmp: 100 files added (on-disk size: 0 KB)
+0547.801 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-others.zip.tmp: 200 files added (on-disk size: 0 KB)
+0547.838 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-others.zip.tmp: 300 files added (on-disk size: 0 KB)
+0547.873 (0) Zip: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-others.zip.tmp: 400 files added (on-disk size: 0 KB)
+0549.838 (0) The time we have been running (549.8) is approaching the resumption interval (578) - increasing resumption interval to 580
+0549.885 (0) Creating zip file manifest (backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-others.zip.list-temp.tmp)
+0549.894 (0) Successfully created zip file manifest (size: 33400)
+0549.945 (0) Created others zip (0) - 4377.2 KB in 2.3 s (1929.2 KB/s) (sha1: ad501ed94bf657c899c9b6d314d02faf907f2197, sha256: dc5d6545e604999a779ea4390ace1c0e18b5620ed7ca82ccd32330c10f7a47d8)
+0549.961 (0) Cloud backup selection (1/1): none with instance (1/1) (last)
+0549.965 (0) No remote despatch: user chose no remote backup service
+0549.969 (0) Recording as successfully uploaded: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-others.zip
+0549.978 (0) Deleting zip manifest (backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-others.zip.list.tmp)
+0549.982 (0) Prune old backups from local store: nothing to do, since the user disabled local deletion and we are using local backups
+0550.009 (0) Saving backup status to database (elements: 16)
+0550.022 (0) Beginning creation of database dump (WordPress DB)
+0550.027 (0) SQL compatibility mode is: NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+0550.060 (0) Table wp_options: Total expected rows (approximate): 1173
+0550.110 (0) Table wp_options: Rows added in this batch (next record: 130371): 1080 (uncompressed bytes in this segment=1987697) in 0.06 seconds
+0550.166 (0) The time we have been running (550.1) is approaching the resumption interval (580) - increasing resumption interval to 581
+0550.198 (0) Table wp_options: finishing file(s) (2, 229.7 KB)
+0550.232 (0) Table wp_users: Total expected rows (via COUNT): 7
+0550.245 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0550.272 (0) Table wp_users: Rows added in this batch (next record: 10): 7 (uncompressed bytes in this segment=2519) in 0.04 seconds
+0550.311 (0) Table wp_users: finishing file(s) (2, 1.1 KB)
+0550.328 (0) Table wp_usermeta: Total expected rows (via COUNT): 459
+0550.332 (0) Table is relatively small; fetch_rows will thus be: 500 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0550.348 (0) Table wp_usermeta: Rows added in this batch (next record: 3364): 459 (uncompressed bytes in this segment=31080) in 0.03 seconds
+0550.371 (0) Table wp_usermeta: finishing file(s) (2, 7.7 KB)
+0550.395 (0) Table wp_actionscheduler_actions: Total expected rows (via COUNT): 654
+0550.414 (0) Table wp_actionscheduler_actions: Rows added in this batch (next record: 2845): 654 (uncompressed bytes in this segment=315268) in 0.03 seconds
+0550.438 (0) Table wp_actionscheduler_actions: finishing file(s) (2, 21.7 KB)
+0550.449 (0) Table wp_actionscheduler_claims: Total expected rows (via COUNT): 0
+0550.453 (0) Table wp_actionscheduler_claims: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=623) in 0.01 seconds
+0550.472 (0) Table wp_actionscheduler_claims: finishing file(s) (2, 0.4 KB)
+0550.483 (0) Table wp_actionscheduler_groups: Total expected rows (via COUNT): 10
+0550.488 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0550.499 (0) Table wp_actionscheduler_groups: Rows added in this batch (next record: 10): 10 (uncompressed bytes in this segment=888) in 0.02 seconds
+0550.514 (0) Table wp_actionscheduler_groups: finishing file(s) (2, 0.5 KB)
+0550.527 (0) Table wp_actionscheduler_logs: Total expected rows (approximate): 1802
+0550.547 (0) Table wp_actionscheduler_logs: Rows added in this batch (next record: 8258): 1919 (uncompressed bytes in this segment=188498) in 0.02 seconds
+0550.566 (0) Table wp_actionscheduler_logs: finishing file(s) (2, 17.3 KB)
+0550.583 (0) Table wp_commentmeta: Total expected rows (via COUNT): 0
+0550.592 (0) Table wp_commentmeta: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=694) in 0.02 seconds
+0550.617 (0) Table wp_commentmeta: finishing file(s) (2, 0.4 KB)
+0550.632 (0) Table wp_comments: Total expected rows (via COUNT): 155
+0550.637 (0) Table is relatively small; fetch_rows will thus be: 250 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0550.649 (0) Table wp_comments: Rows added in this batch (next record: 155): 155 (uncompressed bytes in this segment=38337) in 0.02 seconds
+0550.666 (0) Table wp_comments: finishing file(s) (2, 3.5 KB)
+0550.685 (0) Table wp_imagify_files: Total expected rows (via COUNT): 0
+0550.695 (0) Table wp_imagify_files: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=1487) in 0.02 seconds
+0550.716 (0) Table wp_imagify_files: finishing file(s) (2, 0.5 KB)
+0550.728 (0) Table wp_imagify_folders: Total expected rows (via COUNT): 0
+0550.733 (0) Table wp_imagify_folders: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=635) in 0.01 seconds
+0550.749 (0) Table wp_imagify_folders: finishing file(s) (2, 0.4 KB)
+0550.761 (0) Table wp_links: Total expected rows (via COUNT): 0
+0550.765 (0) Table wp_links: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=1298) in 0.01 seconds
+0550.784 (0) Table wp_links: finishing file(s) (2, 0.5 KB)
+0550.802 (0) Table wp_postmeta: Total expected rows (approximate): 2702
+0550.827 (0) Table wp_postmeta: Rows added in this batch (next record: 63942): 2598 (uncompressed bytes in this segment=321582) in 0.03 seconds
+0550.849 (0) Table wp_postmeta: finishing file(s) (2, 47.1 KB)
+0550.879 (0) Table wp_posts: Total expected rows (via COUNT): 556
+0550.910 (0) Table wp_posts: Rows added in this batch (next record: 9836): 556 (uncompressed bytes in this segment=888908) in 0.05 seconds
+0550.935 (0) Table wp_posts: finishing file(s) (2, 91.4 KB)
+0550.947 (0) Table wp_term_relationships: Total expected rows (approximate): 39
+0550.957 (0) Table wp_term_relationships: Rows added in this batch (next record: 100000): 40 (uncompressed bytes in this segment=1267) in 0.01 seconds
+0550.977 (0) Table wp_term_relationships: finishing file(s) (2, 0.5 KB)
+0550.995 (0) Table wp_term_taxonomy: Total expected rows (via COUNT): 26
+0550.999 (0) Table is relatively small; fetch_rows will thus be: 50 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0551.009 (0) Table wp_term_taxonomy: Rows added in this batch (next record: 28): 26 (uncompressed bytes in this segment=1914) in 0.02 seconds
+0551.031 (0) The time we have been running (551) is approaching the resumption interval (581) - increasing resumption interval to 582
+0551.046 (0) Table wp_term_taxonomy: finishing file(s) (2, 0.6 KB)
+0551.061 (0) Table wp_termmeta: Total expected rows (via COUNT): 1
+0551.065 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0551.074 (0) Table wp_termmeta: Rows added in this batch (next record: 1): 1 (uncompressed bytes in this segment=744) in 0.02 seconds
+0551.115 (0) Table wp_termmeta: finishing file(s) (2, 0.4 KB)
+0551.132 (0) Table wp_terms: Total expected rows (via COUNT): 26
+0551.137 (0) Table is relatively small; fetch_rows will thus be: 50 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0551.148 (0) Table wp_terms: Rows added in this batch (next record: 28): 26 (uncompressed bytes in this segment=1701) in 0.02 seconds
+0551.170 (0) Table wp_terms: finishing file(s) (2, 0.7 KB)
+0551.184 (0) Table wp_wc_category_lookup: Total expected rows (approximate): 1
+0551.196 (0) Table wp_wc_category_lookup: Rows added in this batch (next record: 1000): 1 (uncompressed bytes in this segment=581) in 0.01 seconds
+0551.213 (0) Table wp_wc_category_lookup: finishing file(s) (2, 0.3 KB)
+0551.229 (0) Table wp_wc_product_meta_lookup: Total expected rows (via COUNT): 3
+0551.233 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0551.243 (0) Table wp_wc_product_meta_lookup: Rows added in this batch (next record: 341): 3 (uncompressed bytes in this segment=1778) in 0.02 seconds
+0551.261 (0) Table wp_wc_product_meta_lookup: finishing file(s) (2, 0.6 KB)
+0551.274 (0) Table wp_wc_reserved_stock: Total expected rows (approximate): 0
+0551.284 (0) Table wp_wc_reserved_stock: Rows added in this batch (next record: 0): 0 (uncompressed bytes in this segment=657) in 0.01 seconds
+0551.300 (0) Table wp_wc_reserved_stock: finishing file(s) (2, 0.4 KB)
+0551.312 (0) Table wp_wc_tax_rate_classes: Total expected rows (via COUNT): 2
+0551.315 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0551.324 (0) Table wp_wc_tax_rate_classes: Rows added in this batch (next record: 2): 2 (uncompressed bytes in this segment=808) in 0.01 seconds
+0551.341 (0) Table wp_wc_tax_rate_classes: finishing file(s) (2, 0.4 KB)
+0551.359 (0) Table wp_woocommerce_order_itemmeta: Total expected rows (via COUNT): 483
+0551.364 (0) Table is relatively small; fetch_rows will thus be: 500 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0551.376 (0) Table wp_woocommerce_order_itemmeta: Rows added in this batch (next record: 1059): 483 (uncompressed bytes in this segment=20115) in 0.02 seconds
+0551.400 (0) Table wp_woocommerce_order_itemmeta: finishing file(s) (2, 3.6 KB)
+0551.452 (0) Table wp_woocommerce_payment_tokenmeta: Total expected rows (via COUNT): 1
+0551.456 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0551.465 (0) Table wp_woocommerce_payment_tokenmeta: Rows added in this batch (next record: 1): 1 (uncompressed bytes in this segment=905) in 0.02 seconds
+0551.486 (0) Table wp_woocommerce_payment_tokenmeta: finishing file(s) (2, 0.4 KB)
+0551.499 (0) Table wp_chasse_winners: Total expected rows (via COUNT): 0
+0551.509 (0) Table wp_chasse_winners: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=631) in 0.01 seconds
+0551.526 (0) Table wp_chasse_winners: finishing file(s) (2, 0.4 KB)
+0551.541 (0) Table wp_e_events: Total expected rows (via COUNT): 8
+0551.545 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0551.555 (0) Table wp_e_events: Rows added in this batch (next record: 8): 8 (uncompressed bytes in this segment=2714) in 0.02 seconds
+0551.571 (0) Table wp_e_events: finishing file(s) (2, 0.7 KB)
+0551.590 (0) Table wp_e_notes: Total expected rows (via COUNT): 0
+0551.599 (0) Table wp_e_notes: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=2049) in 0.02 seconds
+0551.619 (0) Table wp_e_notes: finishing file(s) (2, 0.8 KB)
+0551.636 (0) Table wp_e_notes_users_relations: Total expected rows (via COUNT): 0
+0551.641 (0) Table wp_e_notes_users_relations: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=871) in 0.01 seconds
+0551.659 (0) Table wp_e_notes_users_relations: finishing file(s) (2, 0.4 KB)
+0551.675 (0) Table wp_e_submissions: Total expected rows (via COUNT): 0
+0551.681 (0) Table wp_e_submissions: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=2254) in 0.01 seconds
+0551.703 (0) Table wp_e_submissions: finishing file(s) (2, 0.7 KB)
+0551.719 (0) Table wp_e_submissions_actions_log: Total expected rows (via COUNT): 0
+0551.723 (0) Table wp_e_submissions_actions_log: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=1243) in 0.01 seconds
+0551.741 (0) Table wp_e_submissions_actions_log: finishing file(s) (2, 0.5 KB)
+0551.758 (0) Table wp_e_submissions_values: Total expected rows (via COUNT): 0
+0551.762 (0) Table wp_e_submissions_values: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=716) in 0.01 seconds
+0551.785 (0) Table wp_e_submissions_values: finishing file(s) (2, 0.4 KB)
+0551.799 (0) Table wp_engagements: Total expected rows (via COUNT): 3
+0551.803 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0551.812 (0) Table wp_engagements: Rows added in this batch (next record: 3): 3 (uncompressed bytes in this segment=1007) in 0.02 seconds
+0551.827 (0) Table wp_engagements: finishing file(s) (2, 0.5 KB)
+0551.839 (0) Table wp_enigme_statuts_utilisateur: Total expected rows (approximate): 1
+0551.849 (0) Table wp_enigme_statuts_utilisateur: Rows added in this batch (next record: 1000): 2 (uncompressed bytes in this segment=945) in 0.01 seconds
+0551.865 (0) Table wp_enigme_statuts_utilisateur: finishing file(s) (2, 0.5 KB)
+0551.877 (0) Table wp_enigme_tentatives: Total expected rows (via COUNT): 0
+0551.881 (0) Table wp_enigme_tentatives: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=1323) in 0.01 seconds
+0551.900 (0) Table wp_enigme_tentatives: finishing file(s) (2, 0.5 KB)
+0551.917 (0) Table wp_gamipress_logs: Total expected rows (via COUNT): 258
+0551.922 (0) Table is relatively small; fetch_rows will thus be: 500 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0551.934 (0) Table wp_gamipress_logs: Rows added in this batch (next record: 258): 258 (uncompressed bytes in this segment=47521) in 0.02 seconds
+0551.953 (0) Table wp_gamipress_logs: finishing file(s) (2, 4 KB)
+0551.974 (0) Table wp_gamipress_logs_meta: Total expected rows (approximate): 1275
+0551.989 (0) Table wp_gamipress_logs_meta: Rows added in this batch (next record: 1275): 1275 (uncompressed bytes in this segment=79909) in 0.03 seconds
+0552.019 (0) The time we have been running (552) is approaching the resumption interval (582) - increasing resumption interval to 583
+0552.028 (0) Table wp_gamipress_logs_meta: finishing file(s) (2, 8.5 KB)
+0552.041 (0) Table wp_gamipress_user_earnings: Total expected rows (via COUNT): 0
+0552.050 (0) Table wp_gamipress_user_earnings: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=916) in 0.01 seconds
+0552.066 (0) Table wp_gamipress_user_earnings: finishing file(s) (2, 0.4 KB)
+0552.085 (0) Table wp_gamipress_user_earnings_meta: Total expected rows (via COUNT): 0
+0552.102 (0) Table wp_gamipress_user_earnings_meta: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=794) in 0.03 seconds
+0552.128 (0) Table wp_gamipress_user_earnings_meta: finishing file(s) (2, 0.4 KB)
+0552.140 (0) Table wp_indices_deblocages: Total expected rows (via COUNT): 0
+0552.152 (0) Table wp_indices_deblocages: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=888) in 0.02 seconds
+0552.172 (0) Table wp_indices_deblocages: finishing file(s) (2, 0.4 KB)
+0552.185 (0) Table wp_litespeed_url: Total expected rows (via COUNT): 0
+0552.190 (0) Table wp_litespeed_url: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=635) in 0.01 seconds
+0552.206 (0) Table wp_litespeed_url: finishing file(s) (2, 0.4 KB)
+0552.220 (0) Table wp_litespeed_url_file: Total expected rows (via COUNT): 0
+0552.225 (0) Table wp_litespeed_url_file: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=1090) in 0.01 seconds
+0552.242 (0) Table wp_litespeed_url_file: finishing file(s) (2, 0.5 KB)
+0552.260 (0) Table wp_mycred_log: Total expected rows (via COUNT): 0
+0552.265 (0) Table wp_mycred_log: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=911) in 0.01 seconds
+0552.288 (0) Table wp_mycred_log: finishing file(s) (2, 0.4 KB)
+0552.303 (0) Table wp_user_messages: Total expected rows (via COUNT): 0
+0552.308 (0) Table wp_user_messages: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=933) in 0.01 seconds
+0552.327 (0) Table wp_user_messages: finishing file(s) (2, 0.5 KB)
+0552.342 (0) Table wp_user_points: Total expected rows (via COUNT): 0
+0552.347 (0) Table wp_user_points: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=1174) in 0.01 seconds
+0552.366 (0) Table wp_user_points: finishing file(s) (2, 0.6 KB)
+0552.385 (0) Table wp_wc_admin_note_actions: Total expected rows (via COUNT): 82
+0552.389 (0) Table is relatively small; fetch_rows will thus be: 100 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0552.401 (0) Table wp_wc_admin_note_actions: Rows added in this batch (next record: 3787): 82 (uncompressed bytes in this segment=15858) in 0.02 seconds
+0552.426 (0) Table wp_wc_admin_note_actions: finishing file(s) (2, 2.6 KB)
+0552.447 (0) Table wp_wc_admin_notes: Total expected rows (via COUNT): 53
+0552.451 (0) Table is relatively small; fetch_rows will thus be: 100 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0552.457 (0) Table wp_wc_admin_notes: Rows added in this batch (next record: 70): 53 (uncompressed bytes in this segment=27876) in 0.02 seconds
+0552.481 (0) Table wp_wc_admin_notes: finishing file(s) (2, 6 KB)
+0552.496 (0) Table wp_wc_customer_lookup: Total expected rows (via COUNT): 1
+0552.500 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0552.511 (0) Table wp_wc_customer_lookup: Rows added in this batch (next record: 1): 1 (uncompressed bytes in this segment=1461) in 0.02 seconds
+0552.531 (0) Table wp_wc_customer_lookup: finishing file(s) (2, 0.6 KB)
+0552.546 (0) Table wp_wc_download_log: Total expected rows (via COUNT): 0
+0552.558 (0) Table wp_wc_download_log: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=735) in 0.01 seconds
+0552.578 (0) Table wp_wc_download_log: finishing file(s) (2, 0.4 KB)
+0552.594 (0) Table wp_wc_order_addresses: Total expected rows (via COUNT): 58
+0552.600 (0) Table is relatively small; fetch_rows will thus be: 100 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0552.621 (0) Table wp_wc_order_addresses: Rows added in this batch (next record: 58): 58 (uncompressed bytes in this segment=9623) in 0.03 seconds
+0552.642 (0) Table wp_wc_order_addresses: finishing file(s) (2, 0.9 KB)
+0552.659 (0) Table wp_wc_order_coupon_lookup: Total expected rows (approximate): 0
+0552.670 (0) Table wp_wc_order_coupon_lookup: Rows added in this batch (next record: 0): 0 (uncompressed bytes in this segment=709) in 0.01 seconds
+0552.690 (0) Table wp_wc_order_coupon_lookup: finishing file(s) (2, 0.4 KB)
+0552.705 (0) Table wp_wc_order_operational_data: Total expected rows (via COUNT): 29
+0552.710 (0) Table is relatively small; fetch_rows will thus be: 50 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0552.720 (0) Table wp_wc_order_operational_data: Rows added in this batch (next record: 245): 29 (uncompressed bytes in this segment=7661) in 0.02 seconds
+0552.740 (0) Table wp_wc_order_operational_data: finishing file(s) (2, 1.6 KB)
+0552.754 (0) Table wp_wc_order_product_lookup: Total expected rows (via COUNT): 29
+0552.759 (0) Table is relatively small; fetch_rows will thus be: 50 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0552.764 (0) Table wp_wc_order_product_lookup: Rows added in this batch (next record: 155): 29 (uncompressed bytes in this segment=3856) in 0.01 seconds
+0552.781 (0) Table wp_wc_order_product_lookup: finishing file(s) (2, 0.9 KB)
+0552.804 (0) Table wp_wc_order_stats: Total expected rows (via COUNT): 29
+0552.812 (0) Table is relatively small; fetch_rows will thus be: 50 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0552.819 (0) Table wp_wc_order_stats: Rows added in this batch (next record: 628): 29 (uncompressed bytes in this segment=5582) in 0.02 seconds
+0552.841 (0) Table wp_wc_order_stats: finishing file(s) (2, 1.1 KB)
+0552.855 (0) Table wp_wc_order_tax_lookup: Total expected rows (approximate): 29
+0552.866 (0) Table wp_wc_order_tax_lookup: Rows added in this batch (next record: 1000): 29 (uncompressed bytes in this segment=2445) in 0.01 seconds
+0552.888 (0) Table wp_wc_order_tax_lookup: finishing file(s) (2, 0.7 KB)
+0552.902 (0) Table wp_wc_orders: Total expected rows (via COUNT): 29
+0552.906 (0) Table is relatively small; fetch_rows will thus be: 50 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0552.918 (0) Table wp_wc_orders: Rows added in this batch (next record: 628): 29 (uncompressed bytes in this segment=12232) in 0.02 seconds
+0552.939 (0) Table wp_wc_orders: finishing file(s) (2, 1.6 KB)
+0552.956 (0) Table wp_wc_orders_meta: Total expected rows (via COUNT): 702
+0552.961 (0) Table is relatively small; fetch_rows will thus be: 500 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0552.990 (0) Table wp_wc_orders_meta: Rows added in this batch (next record: 734): 702 (uncompressed bytes in this segment=51164) in 0.04 seconds
+0553.017 (0) The time we have been running (553) is approaching the resumption interval (583) - increasing resumption interval to 584
+0553.026 (0) Table wp_wc_orders_meta: finishing file(s) (2, 5.9 KB)
+0553.038 (0) Table wp_wc_product_attributes_lookup: Total expected rows (approximate): 0
+0553.047 (0) Table wp_wc_product_attributes_lookup: Rows added in this batch (next record: 0): 0 (uncompressed bytes in this segment=850) in 0.01 seconds
+0553.064 (0) Table wp_wc_product_attributes_lookup: finishing file(s) (2, 0.4 KB)
+0553.080 (0) Table wp_wc_product_download_directories: Total expected rows (via COUNT): 2
+0553.086 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0553.096 (0) Table wp_wc_product_download_directories: Rows added in this batch (next record: 2): 2 (uncompressed bytes in this segment=950) in 0.02 seconds
+0553.143 (0) Table wp_wc_product_download_directories: finishing file(s) (2, 0.5 KB)
+0553.166 (0) Table wp_wc_rate_limits: Total expected rows (via COUNT): 0
+0553.182 (0) Table wp_wc_rate_limits: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=688) in 0.02 seconds
+0553.211 (0) Table wp_wc_rate_limits: finishing file(s) (2, 0.4 KB)
+0553.229 (0) Table wp_wc_webhooks: Total expected rows (via COUNT): 0
+0553.235 (0) Table wp_wc_webhooks: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=1215) in 0.01 seconds
+0553.256 (0) Table wp_wc_webhooks: finishing file(s) (2, 0.5 KB)
+0553.278 (0) Table wp_woocommerce_api_keys: Total expected rows (via COUNT): 0
+0553.283 (0) Table wp_woocommerce_api_keys: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=1038) in 0.01 seconds
+0553.308 (0) Table wp_woocommerce_api_keys: finishing file(s) (2, 0.5 KB)
+0553.320 (0) Table wp_woocommerce_attribute_taxonomies: Total expected rows (via COUNT): 0
+0553.324 (0) Table wp_woocommerce_attribute_taxonomies: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=954) in 0.01 seconds
+0553.341 (0) Table wp_woocommerce_attribute_taxonomies: finishing file(s) (2, 0.4 KB)
+0553.354 (0) Table wp_woocommerce_downloadable_product_permissions: Total expected rows (via COUNT): 0
+0553.358 (0) Table wp_woocommerce_downloadable_product_permissions: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=1518) in 0.01 seconds
+0553.376 (0) Table wp_woocommerce_downloadable_product_permissions: finishing file(s) (2, 0.5 KB)
+0553.393 (0) Table wp_woocommerce_log: Total expected rows (via COUNT): 0
+0553.399 (0) Table wp_woocommerce_log: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=715) in 0.01 seconds
+0553.421 (0) Table wp_woocommerce_log: finishing file(s) (2, 0.4 KB)
+0553.438 (0) Table wp_woocommerce_order_items: Total expected rows (via COUNT): 66
+0553.443 (0) Table is relatively small; fetch_rows will thus be: 100 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0553.454 (0) Table wp_woocommerce_order_items: Rows added in this batch (next record: 160): 66 (uncompressed bytes in this segment=3441) in 0.02 seconds
+0553.476 (0) Table wp_woocommerce_order_items: finishing file(s) (2, 0.8 KB)
+0553.490 (0) Table wp_woocommerce_payment_tokens: Total expected rows (via COUNT): 1
+0553.495 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0553.504 (0) Table wp_woocommerce_payment_tokens: Rows added in this batch (next record: 1): 1 (uncompressed bytes in this segment=962) in 0.02 seconds
+0553.523 (0) Table wp_woocommerce_payment_tokens: finishing file(s) (2, 0.5 KB)
+0553.542 (0) Table wp_woocommerce_sessions: Total expected rows (via COUNT): 5
+0553.546 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0553.552 (0) Table wp_woocommerce_sessions: Rows added in this batch (next record: 981): 5 (uncompressed bytes in this segment=5127) in 0.02 seconds
+0553.578 (0) Table wp_woocommerce_sessions: finishing file(s) (2, 1 KB)
+0553.591 (0) Table wp_woocommerce_shipping_zone_locations: Total expected rows (via COUNT): 0
+0553.602 (0) Table wp_woocommerce_shipping_zone_locations: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=858) in 0.01 seconds
+0553.618 (0) Table wp_woocommerce_shipping_zone_locations: finishing file(s) (2, 0.4 KB)
+0553.631 (0) Table wp_woocommerce_shipping_zone_methods: Total expected rows (via COUNT): 1
+0553.634 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0553.643 (0) Table wp_woocommerce_shipping_zone_methods: Rows added in this batch (next record: 1): 1 (uncompressed bytes in this segment=870) in 0.01 seconds
+0553.661 (0) Table wp_woocommerce_shipping_zone_methods: finishing file(s) (2, 0.4 KB)
+0553.672 (0) Table wp_woocommerce_shipping_zones: Total expected rows (via COUNT): 1
+0553.677 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0553.681 (0) Table wp_woocommerce_shipping_zones: Rows added in this batch (next record: 1): 1 (uncompressed bytes in this segment=711) in 0.01 seconds
+0553.701 (0) Table wp_woocommerce_shipping_zones: finishing file(s) (2, 0.4 KB)
+0553.715 (0) Table wp_woocommerce_tax_rate_locations: Total expected rows (via COUNT): 0
+0553.726 (0) Table wp_woocommerce_tax_rate_locations: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=840) in 0.01 seconds
+0553.743 (0) Table wp_woocommerce_tax_rate_locations: finishing file(s) (2, 0.4 KB)
+0553.757 (0) Table wp_woocommerce_tax_rates: Total expected rows (via COUNT): 1
+0553.761 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0553.770 (0) Table wp_woocommerce_tax_rates: Rows added in this batch (next record: 1): 1 (uncompressed bytes in this segment=1396) in 0.02 seconds
+0553.787 (0) Table wp_woocommerce_tax_rates: finishing file(s) (2, 0.5 KB)
+0553.804 (0) Table wp_wpforms_entries: Total expected rows (via COUNT): 34
+0553.808 (0) Table is relatively small; fetch_rows will thus be: 50 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0553.818 (0) Table wp_wpforms_entries: Rows added in this batch (next record: 63): 34 (uncompressed bytes in this segment=29375) in 0.02 seconds
+0553.842 (0) Table wp_wpforms_entries: finishing file(s) (2, 2.7 KB)
+0553.863 (0) Table wp_wpforms_entry_fields: Total expected rows (via COUNT): 124
+0553.866 (0) Table is relatively small; fetch_rows will thus be: 200 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0553.877 (0) Table wp_wpforms_entry_fields: Rows added in this batch (next record: 289): 124 (uncompressed bytes in this segment=8692) in 0.02 seconds
+0553.900 (0) Table wp_wpforms_entry_fields: finishing file(s) (2, 2.1 KB)
+0553.919 (0) Table wp_wpforms_entry_meta: Total expected rows (via COUNT): 176
+0553.922 (0) Table is relatively small; fetch_rows will thus be: 250 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0553.932 (0) Table wp_wpforms_entry_meta: Rows added in this batch (next record: 332): 176 (uncompressed bytes in this segment=16965) in 0.02 seconds
+0553.957 (0) Table wp_wpforms_entry_meta: finishing file(s) (2, 2.2 KB)
+0553.979 (0) Table wp_wpforms_file_restrictions: Total expected rows (via COUNT): 0
+0553.988 (0) Table wp_wpforms_file_restrictions: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=737) in 0.02 seconds
+0554.018 (0) The time we have been running (554) is approaching the resumption interval (584) - increasing resumption interval to 585
+0554.026 (0) Table wp_wpforms_file_restrictions: finishing file(s) (2, 0.4 KB)
+0554.046 (0) Table wp_wpforms_logs: Total expected rows (via COUNT): 18
+0554.050 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0554.058 (0) Table wp_wpforms_logs: Rows added in this batch (next record: 18): 18 (uncompressed bytes in this segment=2835) in 0.02 seconds
+0554.080 (0) Table wp_wpforms_logs: finishing file(s) (2, 0.7 KB)
+0554.097 (0) Table wp_wpforms_payment_meta: Total expected rows (via COUNT): 0
+0554.106 (0) Table wp_wpforms_payment_meta: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=731) in 0.02 seconds
+0554.141 (0) Table wp_wpforms_payment_meta: finishing file(s) (2, 0.4 KB)
+0554.154 (0) Table wp_wpforms_payments: Total expected rows (via COUNT): 0
+0554.163 (0) Table wp_wpforms_payments: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=1958) in 0.01 seconds
+0554.180 (0) Table wp_wpforms_payments: finishing file(s) (2, 0.6 KB)
+0554.199 (0) Table wp_wpforms_protected_files: Total expected rows (via COUNT): 0
+0554.203 (0) Table wp_wpforms_protected_files: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=862) in 0.01 seconds
+0554.228 (0) Table wp_wpforms_protected_files: finishing file(s) (2, 0.4 KB)
+0554.250 (0) Table wp_wpforms_tasks_meta: Total expected rows (via COUNT): 22
+0554.255 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0554.267 (0) Table wp_wpforms_tasks_meta: Rows added in this batch (next record: 47): 22 (uncompressed bytes in this segment=2671) in 0.03 seconds
+0554.291 (0) Table wp_wpforms_tasks_meta: finishing file(s) (2, 0.9 KB)
+0554.304 (0) Table wp_wpmailsmtp_debug_events: Total expected rows (via COUNT): 0
+0554.312 (0) Table wp_wpmailsmtp_debug_events: Rows added in this batch (next record: -1): 0 (uncompressed bytes in this segment=700) in 0.01 seconds
+0554.327 (0) Table wp_wpmailsmtp_debug_events: finishing file(s) (2, 0.4 KB)
+0554.345 (0) Table wp_wpmailsmtp_tasks_meta: Total expected rows (via COUNT): 1
+0554.349 (0) Table is relatively small; fetch_rows will thus be: 20 (allow_further_reductions=1, is_first_fetch=1, known_bigger_than_table=1)
+0554.357 (0) Table wp_wpmailsmtp_tasks_meta: Rows added in this batch (next record: 1): 1 (uncompressed bytes in this segment=762) in 0.02 seconds
+0554.378 (0) Table wp_wpmailsmtp_tasks_meta: finishing file(s) (2, 0.4 KB)
+0554.383 (0) PHP event: code E_WARNING: filemtime(): stat failed for C:\Users\laure\Local Sites\chassesautresor\app\public/wp-content/updraft/backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db.gz (line 1923, C:\Users\laure\Local Sites\chassesautresor\app\public\wp-content\plugins\updraftplus\backup.php)
+0554.388 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_options.table.tmpr130372.gz (1/83/fopen): adding to final database dump
+0554.395 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_options.table.gz (2/83/fopen): adding to final database dump
+0554.399 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_users.table.tmpr11.gz (3/83/fopen): adding to final database dump
+0554.403 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_users.table.gz (4/83/fopen): adding to final database dump
+0554.407 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_usermeta.table.tmpr3365.gz (5/83/fopen): adding to final database dump
+0554.412 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_usermeta.table.gz (6/83/fopen): adding to final database dump
+0554.416 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_actionscheduler_actions.table.tmpr2846.gz (7/83/fopen): adding to final database dump
+0554.421 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_actionscheduler_actions.table.gz (8/83/fopen): adding to final database dump
+0554.425 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_actionscheduler_claims.table.tmpr0.gz (9/83/fopen): adding to final database dump
+0554.429 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_actionscheduler_claims.table.gz (10/83/fopen): adding to final database dump
+0554.433 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_actionscheduler_groups.table.tmpr11.gz (11/83/fopen): adding to final database dump
+0554.436 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_actionscheduler_groups.table.gz (12/83/fopen): adding to final database dump
+0554.440 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_actionscheduler_logs.table.tmpr8259.gz (13/83/fopen): adding to final database dump
+0554.444 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_actionscheduler_logs.table.gz (14/83/fopen): adding to final database dump
+0554.448 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_commentmeta.table.tmpr0.gz (15/83/fopen): adding to final database dump
+0554.453 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_commentmeta.table.gz (16/83/fopen): adding to final database dump
+0554.457 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_comments.table.tmpr156.gz (17/83/fopen): adding to final database dump
+0554.462 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_comments.table.gz (18/83/fopen): adding to final database dump
+0554.466 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_imagify_files.table.tmpr0.gz (19/83/fopen): adding to final database dump
+0554.470 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_imagify_files.table.gz (20/83/fopen): adding to final database dump
+0554.474 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_imagify_folders.table.tmpr0.gz (21/83/fopen): adding to final database dump
+0554.479 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_imagify_folders.table.gz (22/83/fopen): adding to final database dump
+0554.483 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_links.table.tmpr0.gz (23/83/fopen): adding to final database dump
+0554.488 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_links.table.gz (24/83/fopen): adding to final database dump
+0554.492 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_postmeta.table.tmpr63943.gz (25/83/fopen): adding to final database dump
+0554.497 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_postmeta.table.gz (26/83/fopen): adding to final database dump
+0554.501 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_posts.table.tmpr9837.gz (27/83/fopen): adding to final database dump
+0554.505 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_posts.table.gz (28/83/fopen): adding to final database dump
+0554.510 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_term_relationships.table.tmpr100001.gz (29/83/fopen): adding to final database dump
+0554.514 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_term_relationships.table.gz (30/83/fopen): adding to final database dump
+0554.519 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_term_taxonomy.table.tmpr29.gz (31/83/fopen): adding to final database dump
+0554.523 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_term_taxonomy.table.gz (32/83/fopen): adding to final database dump
+0554.527 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_termmeta.table.tmpr2.gz (33/83/fopen): adding to final database dump
+0554.532 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_termmeta.table.gz (34/83/fopen): adding to final database dump
+0554.536 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_terms.table.tmpr29.gz (35/83/fopen): adding to final database dump
+0554.540 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_terms.table.gz (36/83/fopen): adding to final database dump
+0554.545 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_category_lookup.table.tmpr1001.gz (37/83/fopen): adding to final database dump
+0554.550 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_category_lookup.table.gz (38/83/fopen): adding to final database dump
+0554.554 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_product_meta_lookup.table.tmpr342.gz (39/83/fopen): adding to final database dump
+0554.558 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_product_meta_lookup.table.gz (40/83/fopen): adding to final database dump
+0554.562 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_reserved_stock.table.tmpr1.gz (41/83/fopen): adding to final database dump
+0554.565 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_reserved_stock.table.gz (42/83/fopen): adding to final database dump
+0554.570 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_tax_rate_classes.table.tmpr3.gz (43/83/fopen): adding to final database dump
+0554.575 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_tax_rate_classes.table.gz (44/83/fopen): adding to final database dump
+0554.579 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_woocommerce_order_itemmeta.table.tmpr1060.gz (45/83/fopen): adding to final database dump
+0554.582 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_woocommerce_order_itemmeta.table.gz (46/83/fopen): adding to final database dump
+0554.586 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_woocommerce_payment_tokenmeta.table.tmpr2.gz (47/83/fopen): adding to final database dump
+0554.590 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_woocommerce_payment_tokenmeta.table.gz (48/83/fopen): adding to final database dump
+0554.594 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_chasse_winners.table.tmpr0.gz (49/83/fopen): adding to final database dump
+0554.597 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_chasse_winners.table.gz (50/83/fopen): adding to final database dump
+0554.602 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_e_events.table.tmpr9.gz (51/83/fopen): adding to final database dump
+0554.606 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_e_events.table.gz (52/83/fopen): adding to final database dump
+0554.611 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_e_notes.table.tmpr0.gz (53/83/fopen): adding to final database dump
+0554.615 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_e_notes.table.gz (54/83/fopen): adding to final database dump
+0554.621 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_e_notes_users_relations.table.tmpr0.gz (55/83/fopen): adding to final database dump
+0554.624 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_e_notes_users_relations.table.gz (56/83/fopen): adding to final database dump
+0554.628 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_e_submissions.table.tmpr0.gz (57/83/fopen): adding to final database dump
+0554.632 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_e_submissions.table.gz (58/83/fopen): adding to final database dump
+0554.635 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_e_submissions_actions_log.table.tmpr0.gz (59/83/fopen): adding to final database dump
+0554.639 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_e_submissions_actions_log.table.gz (60/83/fopen): adding to final database dump
+0554.643 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_e_submissions_values.table.tmpr0.gz (61/83/fopen): adding to final database dump
+0554.647 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_e_submissions_values.table.gz (62/83/fopen): adding to final database dump
+0554.650 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_engagements.table.tmpr4.gz (63/83/fopen): adding to final database dump
+0554.654 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_engagements.table.gz (64/83/fopen): adding to final database dump
+0554.658 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_enigme_statuts_utilisateur.table.tmpr1001.gz (65/83/fopen): adding to final database dump
+0554.661 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_enigme_statuts_utilisateur.table.gz (66/83/fopen): adding to final database dump
+0554.666 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_enigme_tentatives.table.tmpr0.gz (67/83/fopen): adding to final database dump
+0554.669 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_enigme_tentatives.table.gz (68/83/fopen): adding to final database dump
+0554.673 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_gamipress_logs.table.tmpr259.gz (69/83/fopen): adding to final database dump
+0554.677 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_gamipress_logs.table.gz (70/83/fopen): adding to final database dump
+0554.682 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_gamipress_logs_meta.table.tmpr1276.gz (71/83/fopen): adding to final database dump
+0554.685 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_gamipress_logs_meta.table.gz (72/83/fopen): adding to final database dump
+0554.689 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_gamipress_user_earnings.table.tmpr0.gz (73/83/fopen): adding to final database dump
+0554.693 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_gamipress_user_earnings.table.gz (74/83/fopen): adding to final database dump
+0554.696 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_gamipress_user_earnings_meta.table.tmpr0.gz (75/83/fopen): adding to final database dump
+0554.700 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_gamipress_user_earnings_meta.table.gz (76/83/fopen): adding to final database dump
+0554.704 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_indices_deblocages.table.tmpr0.gz (77/83/fopen): adding to final database dump
+0554.709 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_indices_deblocages.table.gz (78/83/fopen): adding to final database dump
+0554.712 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_litespeed_url.table.tmpr0.gz (79/83/fopen): adding to final database dump
+0554.716 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_litespeed_url.table.gz (80/83/fopen): adding to final database dump
+0554.720 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_litespeed_url_file.table.tmpr0.gz (81/83/fopen): adding to final database dump
+0554.724 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_litespeed_url_file.table.gz (82/83/fopen): adding to final database dump
+0554.730 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_mycred_log.table.tmpr0.gz (83/83/fopen): adding to final database dump
+0554.735 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_mycred_log.table.gz (84/83/fopen): adding to final database dump
+0554.740 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_user_messages.table.tmpr0.gz (85/83/fopen): adding to final database dump
+0554.745 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_user_messages.table.gz (86/83/fopen): adding to final database dump
+0554.749 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_user_points.table.tmpr0.gz (87/83/fopen): adding to final database dump
+0554.753 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_user_points.table.gz (88/83/fopen): adding to final database dump
+0554.759 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_admin_note_actions.table.tmpr3788.gz (89/83/fopen): adding to final database dump
+0554.763 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_admin_note_actions.table.gz (90/83/fopen): adding to final database dump
+0554.768 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_admin_notes.table.tmpr71.gz (91/83/fopen): adding to final database dump
+0554.773 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_admin_notes.table.gz (92/83/fopen): adding to final database dump
+0554.777 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_customer_lookup.table.tmpr2.gz (93/83/fopen): adding to final database dump
+0554.783 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_customer_lookup.table.gz (94/83/fopen): adding to final database dump
+0554.787 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_download_log.table.tmpr0.gz (95/83/fopen): adding to final database dump
+0554.791 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_download_log.table.gz (96/83/fopen): adding to final database dump
+0554.795 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_order_addresses.table.tmpr59.gz (97/83/fopen): adding to final database dump
+0554.800 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_order_addresses.table.gz (98/83/fopen): adding to final database dump
+0554.804 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_order_coupon_lookup.table.tmpr1.gz (99/83/fopen): adding to final database dump
+0554.812 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_order_coupon_lookup.table.gz (100/83/fopen): adding to final database dump
+0554.816 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_order_operational_data.table.tmpr246.gz (101/83/fopen): adding to final database dump
+0554.820 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_order_operational_data.table.gz (102/83/fopen): adding to final database dump
+0554.823 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_order_product_lookup.table.tmpr156.gz (103/83/fopen): adding to final database dump
+0554.827 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_order_product_lookup.table.gz (104/83/fopen): adding to final database dump
+0554.831 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_order_stats.table.tmpr629.gz (105/83/fopen): adding to final database dump
+0554.835 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_order_stats.table.gz (106/83/fopen): adding to final database dump
+0554.839 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_order_tax_lookup.table.tmpr1001.gz (107/83/fopen): adding to final database dump
+0554.844 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_order_tax_lookup.table.gz (108/83/fopen): adding to final database dump
+0554.848 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_orders.table.tmpr629.gz (109/83/fopen): adding to final database dump
+0554.852 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_orders.table.gz (110/83/fopen): adding to final database dump
+0554.855 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_orders_meta.table.tmpr735.gz (111/83/fopen): adding to final database dump
+0554.859 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_orders_meta.table.gz (112/83/fopen): adding to final database dump
+0554.863 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_product_attributes_lookup.table.tmpr1.gz (113/83/fopen): adding to final database dump
+0554.867 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_product_attributes_lookup.table.gz (114/83/fopen): adding to final database dump
+0554.871 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_product_download_directories.table.tmpr3.gz (115/83/fopen): adding to final database dump
+0554.874 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_product_download_directories.table.gz (116/83/fopen): adding to final database dump
+0554.878 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_rate_limits.table.tmpr0.gz (117/83/fopen): adding to final database dump
+0554.882 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_rate_limits.table.gz (118/83/fopen): adding to final database dump
+0554.886 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_webhooks.table.tmpr0.gz (119/83/fopen): adding to final database dump
+0554.890 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wc_webhooks.table.gz (120/83/fopen): adding to final database dump
+0554.895 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_woocommerce_api_keys.table.tmpr0.gz (121/83/fopen): adding to final database dump
+0554.899 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_woocommerce_api_keys.table.gz (122/83/fopen): adding to final database dump
+0554.902 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_woocommerce_attribute_taxonomies.table.tmpr0.gz (123/83/fopen): adding to final database dump
+0554.906 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_woocommerce_attribute_taxonomies.table.gz (124/83/fopen): adding to final database dump
+0554.909 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_woocommerce_downloadable_product_permissions.table.tmpr0.gz (125/83/fopen): adding to final database dump
+0554.913 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_woocommerce_downloadable_product_permissions.table.gz (126/83/fopen): adding to final database dump
+0554.917 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_woocommerce_log.table.tmpr0.gz (127/83/fopen): adding to final database dump
+0554.920 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_woocommerce_log.table.gz (128/83/fopen): adding to final database dump
+0554.925 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_woocommerce_order_items.table.tmpr161.gz (129/83/fopen): adding to final database dump
+0554.929 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_woocommerce_order_items.table.gz (130/83/fopen): adding to final database dump
+0554.932 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_woocommerce_payment_tokens.table.tmpr2.gz (131/83/fopen): adding to final database dump
+0554.936 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_woocommerce_payment_tokens.table.gz (132/83/fopen): adding to final database dump
+0554.940 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_woocommerce_sessions.table.tmpr982.gz (133/83/fopen): adding to final database dump
+0554.945 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_woocommerce_sessions.table.gz (134/83/fopen): adding to final database dump
+0554.948 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_woocommerce_shipping_zone_locations.table.tmpr0.gz (135/83/fopen): adding to final database dump
+0554.953 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_woocommerce_shipping_zone_locations.table.gz (136/83/fopen): adding to final database dump
+0554.958 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_woocommerce_shipping_zone_methods.table.tmpr2.gz (137/83/fopen): adding to final database dump
+0554.962 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_woocommerce_shipping_zone_methods.table.gz (138/83/fopen): adding to final database dump
+0554.967 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_woocommerce_shipping_zones.table.tmpr2.gz (139/83/fopen): adding to final database dump
+0554.971 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_woocommerce_shipping_zones.table.gz (140/83/fopen): adding to final database dump
+0554.977 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_woocommerce_tax_rate_locations.table.tmpr0.gz (141/83/fopen): adding to final database dump
+0554.981 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_woocommerce_tax_rate_locations.table.gz (142/83/fopen): adding to final database dump
+0554.986 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_woocommerce_tax_rates.table.tmpr2.gz (143/83/fopen): adding to final database dump
+0554.991 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_woocommerce_tax_rates.table.gz (144/83/fopen): adding to final database dump
+0554.996 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wpforms_entries.table.tmpr64.gz (145/83/fopen): adding to final database dump
+0555.000 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wpforms_entries.table.gz (146/83/fopen): adding to final database dump
+0555.005 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wpforms_entry_fields.table.tmpr290.gz (147/83/fopen): adding to final database dump
+0555.009 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wpforms_entry_fields.table.gz (148/83/fopen): adding to final database dump
+0555.013 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wpforms_entry_meta.table.tmpr333.gz (149/83/fopen): adding to final database dump
+0555.018 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wpforms_entry_meta.table.gz (150/83/fopen): adding to final database dump
+0555.022 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wpforms_file_restrictions.table.tmpr0.gz (151/83/fopen): adding to final database dump
+0555.026 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wpforms_file_restrictions.table.gz (152/83/fopen): adding to final database dump
+0555.030 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wpforms_logs.table.tmpr19.gz (153/83/fopen): adding to final database dump
+0555.035 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wpforms_logs.table.gz (154/83/fopen): adding to final database dump
+0555.040 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wpforms_payment_meta.table.tmpr0.gz (155/83/fopen): adding to final database dump
+0555.044 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wpforms_payment_meta.table.gz (156/83/fopen): adding to final database dump
+0555.048 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wpforms_payments.table.tmpr0.gz (157/83/fopen): adding to final database dump
+0555.053 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wpforms_payments.table.gz (158/83/fopen): adding to final database dump
+0555.056 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wpforms_protected_files.table.tmpr0.gz (159/83/fopen): adding to final database dump
+0555.060 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wpforms_protected_files.table.gz (160/83/fopen): adding to final database dump
+0555.064 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wpforms_tasks_meta.table.tmpr48.gz (161/83/fopen): adding to final database dump
+0555.068 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wpforms_tasks_meta.table.gz (162/83/fopen): adding to final database dump
+0555.071 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wpmailsmtp_debug_events.table.tmpr0.gz (163/83/fopen): adding to final database dump
+0555.075 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wpmailsmtp_debug_events.table.gz (164/83/fopen): adding to final database dump
+0555.079 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wpmailsmtp_tasks_meta.table.tmpr2.gz (165/83/fopen): adding to final database dump
+0555.083 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db-table-wp_wpmailsmtp_tasks_meta.table.gz (166/83/fopen): adding to final database dump
+0555.097 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db.gz: finished writing out complete database file (492.7 KB)
+0555.160 (0) Total database tables backed up: 83 (backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db.gz, size: 504686, sha1: ff6335694b70c63268401ce202bd9c23b023af5b, sha256: a593c533dee946a436ff67a2c0f226a105221495da947e5dd615569a8253c539)
+0555.193 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins.zip: plugins: This file has already been successfully processed
+0555.197 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins2.zip: plugins: This file has already been successfully processed
+0555.202 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins3.zip: plugins: This file has already been successfully processed
+0555.207 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-plugins4.zip: plugins: This file has already been successfully processed
+0555.211 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-themes.zip: themes: This file has already been successfully processed
+0555.215 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads.zip: uploads: This file has already been successfully processed
+0555.219 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads2.zip: uploads: This file has already been successfully processed
+0555.222 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads3.zip: uploads: This file has already been successfully processed
+0555.226 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-uploads4.zip: uploads: This file has already been successfully processed
+0555.230 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-mu-plugins.zip: mu-plugins: This file has already been successfully processed
+0555.235 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-others.zip: others: This file has already been successfully processed
+0555.239 (0) backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db.gz: db: This file has not yet been successfully uploaded: will queue
+0555.244 (0) Saving backup history. Total backup size: 162.5 MB
+0555.257 (0) Requesting upload of the files that have not yet been successfully uploaded (1)
+0555.276 (0) Cloud backup selection (1/1): none with instance (1/1) (last)
+0555.282 (0) No remote despatch: user chose no remote backup service
+0555.289 (0) Recording as successfully uploaded: backup_2025-09-01-0615_chassesautresorlocal_650e9a76ac59-db.gz
+0555.300 (0) Prune old backups from local store: nothing to do, since the user disabled local deletion and we are using local backups
+0555.306 (0) Resume backup (650e9a76ac59, 0): finish run
+0555.318 (0) Decremented the semaphore (fd) by 1
+0555.325 (0) Semaphore (fd) unlocked
+0555.329 (0) There were no errors in the uploads, so the 'resume' event (1) is being unscheduled
+0555.344 (0) The backup succeeded and is now complete
+0555.348 (0) No email will/can be sent - the user has not configured an email address.
+0555.352 (0) La sauvegarde a réussi et est maintenant terminée
