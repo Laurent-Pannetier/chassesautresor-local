@@ -28,18 +28,19 @@ $autorise_boucle = (
 if (!$autorise_boucle) return;
 
 // 🔁 Récupération des énigmes associées
-$posts = get_posts([
-  'post_type'      => 'enigme',
-  'posts_per_page' => -1,
-  'orderby'        => 'menu_order',
-  'order'          => 'ASC',
-  'post_status'    => ['publish', 'pending', 'draft'],
-  'meta_query'     => [[
-    'key'     => 'enigme_chasse_associee',
-    'value'   => $chasse_id,     // 👈 pas de guillemets !
-    'compare' => 'LIKE',
-  ]]
-]);
+$ids_enigmes = $infos_chasse['enigmes_associees'] ?? [];
+
+if (!empty($ids_enigmes)) {
+    $posts = get_posts([
+        'post_type'      => 'enigme',
+        'post_status'    => ['publish', 'pending', 'draft'],
+        'posts_per_page' => count($ids_enigmes),
+        'post__in'       => array_map('intval', $ids_enigmes),
+        'orderby'        => 'post__in',
+    ]);
+} else {
+    $posts = [];
+}
 
 $posts_visibles = $posts;
 $has_enigmes = !empty($posts_visibles);
