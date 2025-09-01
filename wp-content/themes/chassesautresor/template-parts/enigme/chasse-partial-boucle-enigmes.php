@@ -67,7 +67,7 @@ if (!function_exists('enigme_compter_joueurs_engages')) {
   require_once get_stylesheet_directory() . '/inc/enigme/stats.php';
 }
 
-if (!function_exists('compter_tentatives_du_jour')) {
+if (!function_exists('compter_tentatives_du_jour') || !function_exists('compter_tentatives_en_attente')) {
   require_once get_stylesheet_directory() . '/inc/enigme/tentatives.php';
 }
 ?>
@@ -234,11 +234,38 @@ if (!function_exists('compter_tentatives_du_jour')) {
                 </div>
               </footer>
             <?php endif; ?>
-          <?php if ($classe_completion === 'carte-incomplete') : ?>
-            <span class="warning-icon" aria-label="<?= esc_attr__('Énigme incomplète', 'chassesautresor-com'); ?>" title="<?= esc_attr__('Énigme incomplète', 'chassesautresor-com'); ?>">
-              <i class="fa-solid fa-exclamation" aria-hidden="true"></i>
-            </span>
-          <?php endif; ?>
+            <?php
+            $can_edit = function_exists('utilisateur_peut_modifier_enigme') && utilisateur_peut_modifier_enigme($enigme_id);
+            $tab = 'param';
+            if (!in_array($infos_chasse['statut_validation'] ?? '', ['creation', 'correction'], true)) {
+              $statut_metier = $infos_chasse['statut'] ?? '';
+              if (in_array($statut_metier, ['en_cours', 'a_venir', 'payante'], true)) {
+                if ($mode_validation === 'manuelle' && compter_tentatives_en_attente($enigme_id) > 0) {
+                  $tab = 'soumission';
+                } else {
+                  $tab = 'stats';
+                }
+              }
+            }
+            $settings_url = add_query_arg([
+              'edition' => 'open',
+              'tab'     => $tab,
+            ], get_permalink($enigme_id));
+            ?>
+            <?php if ($classe_completion === 'carte-incomplete' || $can_edit) : ?>
+              <div class="carte-icons">
+                <?php if ($classe_completion === 'carte-incomplete') : ?>
+                  <span class="warning-icon" aria-label="<?= esc_attr__('Énigme incomplète', 'chassesautresor-com'); ?>" title="<?= esc_attr__('Énigme incomplète', 'chassesautresor-com'); ?>">
+                    <i class="fa-solid fa-exclamation" aria-hidden="true"></i>
+                  </span>
+                <?php endif; ?>
+                <?php if ($can_edit) : ?>
+                  <a class="settings-icon" href="<?= esc_url($settings_url); ?>" aria-label="<?= esc_attr__('Paramètres', 'chassesautresor-com'); ?>">
+                    <i class="fa-solid fa-gear" aria-hidden="true"></i>
+                  </a>
+                <?php endif; ?>
+              </div>
+            <?php endif; ?>
         </article>
     <?php endforeach; ?>
 
