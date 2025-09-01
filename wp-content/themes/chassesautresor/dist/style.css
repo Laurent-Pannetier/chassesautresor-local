@@ -494,6 +494,8 @@
   top: 10px;
   right: 10px;
   z-index: 1;
+  background: var(--color-grey-light);
+  color: var(--color-text-fond-clair);
 }
 
 .header-chasse__image .mode-fin-icone {
@@ -512,7 +514,8 @@
   z-index: 1;
 }
 
-.header-chasse__image .mode-fin-icone svg {
+.header-chasse__image .mode-fin-icone svg,
+.header-chasse__image .mode-fin-icone i {
   width: 0.75rem;
   height: 0.75rem;
 }
@@ -522,6 +525,32 @@
   max-width: 100%;
   height: auto;
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.45);
+}
+
+.chasse-visuel-wrapper .liste-liens-publics {
+  display: flex;
+  gap: var(--space-xs);
+  justify-content: center;
+}
+
+.chasse-visuel-wrapper .lien-public {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--color-grey-light) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.chasse-visuel-wrapper .lien-public i {
+  color: var(--color-text-fond-clair) !important;
+  font-size: 0.75rem;
+}
+
+.chasse-visuel-wrapper .lien-public .texte-lien {
+  display: none;
 }
 
 @media (min-width: 600px) {
@@ -558,6 +587,20 @@
   display: flex;
   gap: var(--space-xs);
   align-items: center;
+}
+
+.chasse-details-actions .chasse-share-button {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chasse-details-actions .chasse-share-button svg {
+  width: 1rem;
+  height: 1rem;
+  color: var(--color-grey-light);
 }
 
 .header-chasse {
@@ -717,6 +760,11 @@
 .chasse-lot-complet h3 {
   margin-top: 0;
   margin-bottom: var(--space-xs);
+}
+
+.chasse-lot-complet h3 .fa-trophy {
+  color: var(--color-grey-light);
+  margin-right: 0.3em;
 }
 
 .chasse-lot-complet .lot-titre,

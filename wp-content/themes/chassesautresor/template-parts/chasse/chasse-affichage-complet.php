@@ -409,7 +409,7 @@ if ($edition_active && !$est_complet) {
 
         <?php if (!empty($titre_recompense) || (float) $valeur_recompense > 0 || !empty($lot)) : ?>
             <div class="chasse-lot-complet">
-                <h3><?= '🏆 ' . esc_html__('Récompense', 'chassesautresor-com'); ?></h3>
+                <h3><i class="fa-solid fa-trophy" aria-hidden="true"></i> <?= esc_html__('Récompense', 'chassesautresor-com'); ?></h3>
 
                 <div class="champ-chasse champ-lot-titre <?= empty($titre_recompense) ? 'champ-vide' : 'champ-rempli'; ?>"
                     data-champ="chasse_infos_recompense_titre"
