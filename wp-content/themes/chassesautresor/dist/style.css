@@ -564,12 +564,34 @@
   font-size: 30px;
 }
 
-.chasse-details-wrapper .auteur-organisateur a {
+.chasse-organisateur {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-xs);
+}
+.chasse-organisateur__logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+.chasse-organisateur__texte {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+.chasse-organisateur__nom {
+  font-weight: 700;
   color: var(--color-text-primary);
 }
-
-.chasse-details-wrapper .auteur-organisateur a:hover {
+.chasse-organisateur__nom:hover {
   text-decoration: underline;
+}
+.chasse-organisateur__presente {
+  color: var(--color-gris-3);
+  font-style: italic;
 }
 
 .chasse-details-wrapper .meta-row,
