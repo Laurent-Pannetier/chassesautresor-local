@@ -1216,6 +1216,20 @@ li.ligne-logo .champ-modifier {
   gap: var(--space-xs);
 }
 
+.recompense-valeur__label,
+.recompense-valeur__devise {
+  font-size: 0.75em;
+  opacity: 0.8;
+}
+
+.recompense-valeur__label {
+  margin-right: var(--space-xxs);
+}
+
+.recompense-valeur__devise {
+  margin-left: 0.15rem;
+}
+
 
 .resume-infos li.champ-recompense .champ-texte {
   flex: 1;

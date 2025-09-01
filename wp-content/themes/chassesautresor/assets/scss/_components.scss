@@ -681,6 +681,20 @@ a.ajout-link:focus-visible {
   color: var(--color-text-primary);
 }
 
+.badge-recompense__label,
+.badge-recompense__devise {
+  font-size: 0.75em;
+  opacity: 0.8;
+}
+
+.badge-recompense__label {
+  margin-right: var(--space-xxs);
+}
+
+.badge-recompense__devise {
+  margin-left: 0.15rem;
+}
+
 .badge-recompense.avec-recompense {
   color: var(--color-primary);
 }

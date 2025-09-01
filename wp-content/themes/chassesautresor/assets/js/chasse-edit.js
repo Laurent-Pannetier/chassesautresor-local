@@ -350,8 +350,16 @@ window.rafraichirCarteSolutions = rafraichirCarteSolutions;
     if (complet) {
       const valeurSpan = document.createElement('span');
       valeurSpan.className = 'recompense-valeur';
+      const labelSpan = document.createElement('span');
+      labelSpan.className = 'recompense-valeur__label';
+      labelSpan.textContent = wp.i18n.__('Valeur estimée', 'chassesautresor-com');
+      valeurSpan.appendChild(labelSpan);
       const arrondi = Math.round(valeur);
-      valeurSpan.textContent = arrondi.toLocaleString('fr-FR') + ' €';
+      valeurSpan.appendChild(document.createTextNode(arrondi.toLocaleString('fr-FR')));
+      const deviseSpan = document.createElement('span');
+      deviseSpan.className = 'recompense-valeur__devise';
+      deviseSpan.textContent = '€';
+      valeurSpan.appendChild(deviseSpan);
 
       const titreSpan = document.createElement('span');
       titreSpan.className = 'recompense-titre';
