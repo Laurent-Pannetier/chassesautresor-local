@@ -328,7 +328,7 @@
   padding-bottom: var(--space-sm);
 }
 
-@media (--bp-wide) {
+  @media (--bp-desktop) {
   .menu-lateral {
     position: fixed;
     top: 50%;

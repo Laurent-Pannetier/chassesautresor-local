@@ -2213,7 +2213,7 @@ a.addtoany_share span {
   padding-bottom: var(--space-sm);
 }
 
-@media (min-width: 1280px) {
+@media (min-width: 1024px) {
   .menu-lateral {
     position: fixed;
     top: 50%;
