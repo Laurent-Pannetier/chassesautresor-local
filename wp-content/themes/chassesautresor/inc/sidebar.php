@@ -125,7 +125,7 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
                     $tab = ($status === 'publish' && get_field('enigme_cache_complet', $post->ID))
                         ? 'stats'
                         : 'param';
-                    $base_url = esc_url(get_permalink($post->ID));
+                    $base_url = get_permalink($post->ID);
                     $edit_url = function_exists('add_query_arg')
                         ? add_query_arg(['edition' => 'open', 'tab' => $tab], $base_url)
                         : $base_url . '?edition=open&tab=' . $tab;
