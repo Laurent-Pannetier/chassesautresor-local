@@ -5397,7 +5397,7 @@ li.active .enigme-menu__edit {
     justify-content: space-between;
     align-items: center;
     position: fixed;
-    top: 0;
+    top: calc(var(--space-4xl) + env(safe-area-inset-top));
     left: 0;
     right: 0;
     padding-top: calc(var(--space-sm) + env(safe-area-inset-top));
@@ -5405,7 +5405,7 @@ li.active .enigme-menu__edit {
     padding-left: calc(var(--space-md) + env(safe-area-inset-left));
     padding-right: calc(var(--space-md) + env(safe-area-inset-right));
     background-color: var(--color-background);
-    z-index: 1000;
+    z-index: 10;
   }
   .enigme-mobile-actions {
     display: flex;
