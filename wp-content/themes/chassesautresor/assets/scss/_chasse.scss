@@ -136,7 +136,7 @@
   .chasse-visuel-wrapper {
     position: sticky;
     top: 0;
-    max-width: 40%;
+    max-width: 35%;
     margin: 0;
   }
   .champ-chasse.champ-img {
@@ -151,6 +151,10 @@
   }
   .chasse-visuel-wrapper .lien-public .texte-lien {
     display: inline;
+  }
+  .chasse-details-wrapper {
+    margin-left: 2.5%;
+    padding-left: 2.5%;
   }
 }
 
