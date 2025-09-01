@@ -185,12 +185,11 @@ if (!function_exists('compter_tentatives_du_jour')) {
                       )
                     );
                   elseif (($mapping_visuel['etat_systeme'] ?? '') === 'bloquee_date') :
-                    $timestamp = strtotime(get_field('enigme_acces_date', $enigme_id));
-                    if ($timestamp) {
-                      $date_txt = wp_date(get_option('date_format'), $timestamp);
-                      $time_txt = wp_date(get_option('time_format'), $timestamp);
-                      $format   = __('Parution le %1$s à %2$s', 'chassesautresor-com');
-                      echo esc_html(sprintf($format, $date_txt, $time_txt));
+                    $date_raw     = get_field('enigme_acces_date', $enigme_id);
+                    $datetime_txt = formater_date_heure($date_raw);
+                    if ($datetime_txt !== __('Non spécifiée', 'chassesautresor-com')) {
+                      $format = __('Parution le %s', 'chassesautresor-com');
+                      echo esc_html(sprintf($format, $datetime_txt));
                     }
                   endif; ?>
                 </span>
