@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Themes - Twenty Twenty-Five package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-01-16 14:02:33+0000\n"
+"PO-Revision-Date: 2025-08-29 13:31:57+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -23,6 +23,31 @@ msgstr "Twenty Twenty-Five met l’accent sur la simplicité et la polyvalence. 
 #, gp-priority: high
 msgid "Twenty Twenty-Five"
 msgstr "Twenty Twenty-Five"
+
+#: patterns/template-home-vertical-header-blog.php
+msgctxt "Pattern title"
+msgid "Right-aligned home"
+msgstr "Accueil aligné à droite"
+
+#: patterns/template-archive-vertical-header-blog.php
+msgctxt "Pattern title"
+msgid "Right-aligned archive"
+msgstr "Archive alignée à droite"
+
+#: patterns/template-search-text-blog.php
+msgctxt "Pattern title"
+msgid "Text blog search results"
+msgstr "Résultats de recherche du blog texte"
+
+#: patterns/template-query-loop-vertical-header-blog.php
+msgctxt "Pattern title"
+msgid "Right-aligned query loop"
+msgstr "Boucle de requête alignée à droite"
+
+#: patterns/template-query-loop-text-blog.php
+msgctxt "Pattern title"
+msgid "Text blog query loop"
+msgstr "Boucle de requête du blog texte"
 
 #: patterns/text-faqs.php:35 patterns/text-faqs.php:51
 #: patterns/text-faqs.php:71 patterns/text-faqs.php:87
@@ -59,6 +84,11 @@ msgstr "Pied de page"
 msgctxt "Template part name"
 msgid "Header with large title"
 msgstr "Entête avec grand titre"
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Vertical site header"
+msgstr "Entête du site vertical"
 
 #: theme.json
 msgctxt "Template part name"
@@ -422,6 +452,16 @@ msgctxt "Style variation name"
 msgid "Evening"
 msgstr "Soir"
 
+#: patterns/vertical-header.php
+msgctxt "Pattern description"
+msgid "Vertical site header with site title and navigation."
+msgstr "Entête du site vertical avec titre du site et navigation."
+
+#: patterns/vertical-header.php
+msgctxt "Pattern title"
+msgid "Vertical site header"
+msgstr "Entête du site vertical"
+
 #: patterns/text-faqs.php:83
 msgctxt "Question in the FAQs pattern."
 msgid "Are signed copies available?"
@@ -538,6 +578,11 @@ msgctxt "Pattern title"
 msgid "Right-aligned single post"
 msgstr "Publication unique alignée à droite"
 
+#: patterns/template-single-text-blog.php
+msgctxt "Pattern title"
+msgid "Text blog single post"
+msgstr "Publication unique du blog texte"
+
 #: patterns/template-single-photo-blog.php:79
 msgid "Next Photo"
 msgstr "Photo suivante"
@@ -624,6 +669,11 @@ msgctxt "Pattern title"
 msgid "List of posts, 1 column"
 msgstr "Liste de publications, 1 colonne"
 
+#: patterns/template-page-vertical-header-blog.php
+msgctxt "Pattern title"
+msgid "Right-aligned page"
+msgstr "Page alignée à droite"
+
 #: patterns/template-query-loop-photo-blog.php
 msgctxt "Pattern description"
 msgid "A list of posts, 3 columns, with only featured images."
@@ -666,6 +716,11 @@ msgctxt "Pattern title"
 msgid "News blog with sidebar"
 msgstr "Blog d’actualités avec colonne latérale"
 
+#: patterns/template-home-text-blog.php
+msgctxt "Pattern title"
+msgid "Text blog home"
+msgstr "Accueil du blog texte"
+
 #: patterns/template-home-posts-grid-news-blog.php:114
 msgid "Architecture"
 msgstr "Architecture"
@@ -685,6 +740,11 @@ msgctxt "Pattern title"
 msgid "News blog home"
 msgstr "Accueil du blog d’actualités"
 
+#: patterns/template-archive-text-blog.php
+msgctxt "Pattern title"
+msgid "Text blog archive"
+msgstr "Archive du blog texte"
+
 #: patterns/template-archive-photo-blog.php
 msgctxt "Pattern title"
 msgid "Photo blog archive"
@@ -694,6 +754,11 @@ msgstr "Archive du blog photo"
 msgctxt "Pattern title"
 msgid "News blog archive"
 msgstr "Archive du blog d’actualités"
+
+#: patterns/template-404-vertical-header-blog.php
+msgctxt "Pattern title"
+msgid "Right-aligned 404"
+msgstr "404 aligné à droite"
 
 #: patterns/services-team-photos.php:50
 msgid "Man in hat, standing in front of a building."
@@ -1407,9 +1472,19 @@ msgid "Heading and paragraph with image on the right"
 msgstr "Entête et paragraphe avec image à droite"
 
 #: patterns/header.php
+msgctxt "Pattern description"
+msgid "Site header with site title and navigation."
+msgstr "Entête du site avec titre du site et navigation."
+
+#: patterns/header.php
 msgctxt "Pattern title"
 msgid "Header"
 msgstr "Entête"
+
+#: patterns/header-large-title.php
+msgctxt "Pattern description"
+msgid "Site header with large site title and right-aligned navigation."
+msgstr "Entête du site avec titre de site large et navigation alignée à droite."
 
 #: patterns/header-large-title.php
 msgctxt "Pattern title"
@@ -1417,9 +1492,24 @@ msgid "Header with large title"
 msgstr "Entête avec titre large"
 
 #: patterns/header-columns.php
+msgctxt "Pattern description"
+msgid "Site header with site title and navigation in columns."
+msgstr "Entête du site avec titre du site et navigation en colonnes."
+
+#: patterns/header-columns.php
 msgctxt "Pattern title"
 msgid "Header with columns"
 msgstr "Entête avec colonnes"
+
+#: patterns/header-centered.php
+msgctxt "Pattern description"
+msgid "Site header with centered site title and navigation."
+msgstr "Entête du site avec titre du site centré et navigation."
+
+#: patterns/header-centered.php
+msgctxt "Pattern title"
+msgid "Centered site header"
+msgstr "Entête du site centré"
 
 #: patterns/grid-with-categories.php:64
 msgid "Sunflowers"
