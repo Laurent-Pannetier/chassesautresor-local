@@ -157,15 +157,22 @@ if ($statut === 'termine') {
             $enigmes_intro = esc_html__('L\'accès aux énigmes est réservé aux participants de chasse. Inscrivez-vous !', 'chassesautresor-com');
         }
     } else {
-        $enigmes_intro = sprintf(
-            esc_html__('Progression : %1$d/%2$d %3$s — %4$d/%5$d %6$s.', 'chassesautresor-com'),
-            $enigmes_resolues,
-            $nb_resolvables,
-            esc_html($solved_label),
-            $nb_engagees,
-            $total_enigmes,
-            esc_html($engaged_label)
-        );
+        if ($nb_engagees === 0) {
+            $enigmes_intro = esc_html__(
+                'Commencez par consulter les énigmes pour progresser dans la chasse.',
+                'chassesautresor-com'
+            );
+        } else {
+            $enigmes_intro = sprintf(
+                esc_html__('Progression : %1$d/%2$d %3$s — %4$d/%5$d %6$s.', 'chassesautresor-com'),
+                $enigmes_resolues,
+                $nb_resolvables,
+                esc_html($solved_label),
+                $nb_engagees,
+                $total_enigmes,
+                esc_html($engaged_label)
+            );
+        }
     }
 } elseif ($est_orga_associe && in_array($statut_validation, ['creation', 'correction'], true)) {
     $enigmes_intro = esc_html__(
