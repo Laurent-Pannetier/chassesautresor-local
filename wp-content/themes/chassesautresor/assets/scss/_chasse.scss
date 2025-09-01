@@ -61,6 +61,7 @@
   position: absolute;
   top: 10px;
   right: 10px;
+  z-index: 1;
 }
 
 .header-chasse__image .mode-fin-icone {
@@ -76,6 +77,7 @@
   background: var(--color-grey-light);
   color: var(--color-text-fond-clair);
   font-size: 0.75rem;
+  z-index: 1;
 }
 
 .header-chasse__image .mode-fin-icone svg {
