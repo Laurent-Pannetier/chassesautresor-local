@@ -751,7 +751,6 @@
   align-items: center;
   text-align: left;
   width: 100%;
-  max-width: 100%;
 }
 
 .chasse-cta-section .chasse-caracteristiques {
@@ -768,11 +767,6 @@
   justify-content: center;
 }
 
-@media (min-width: 768px) {
-  .chasse-cta-section {
-    max-width: 650px;
-  }
-}
 .chasse-caracteristiques .caracteristique-label {
   flex: 0 0 6rem;
   font-weight: 700;
@@ -8539,7 +8533,6 @@ a.bouton-edition-attention {
   border-left: 4px solid var(--color-secondary);
   padding: 1.2rem;
   margin: var(--space-2xl) auto;
-  max-width: 700px;
   text-align: center;
   border-radius: 6px;
   font-size: 1rem;
