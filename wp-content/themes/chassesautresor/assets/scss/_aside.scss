@@ -56,7 +56,28 @@
 
 .menu-lateral__edition-toggle {
   position: absolute;
+  top: var(--space-sm);
+  right: calc(var(--space-sm) + 2rem);
+}
+
+.menu-lateral__close {
+  position: absolute;
+  top: var(--space-sm);
   right: var(--space-sm);
+  color: var(--color-white);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.menu-lateral__header .menu-lateral__close {
+  transition: color 0.2s ease-in-out;
+}
+
+.menu-lateral__header:hover .menu-lateral__close,
+.menu-lateral__header:focus-within .menu-lateral__close {
+  color: var(--color-grey-light);
 }
 
 .menu-lateral__header .menu-lateral__edition-toggle {

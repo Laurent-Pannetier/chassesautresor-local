@@ -13,6 +13,7 @@
     opener.innerHTML = '<i class="fa-solid fa-chevron-right" aria-hidden="true"></i>' +
       '<span class="screen-reader-text">' + __('Afficher le panneau', 'chassesautresor-com') + '</span>';
     document.body.appendChild(opener);
+    const closer = aside.querySelector('.menu-lateral__close');
     let timer = null;
     const HIDE_DELAY = 3500;
     function hideAside() {
@@ -31,6 +32,9 @@
     }
     opener.addEventListener('click', showAside);
     opener.addEventListener('mouseenter', showAside);
+    if (closer) {
+      closer.addEventListener('click', hideAside);
+    }
     aside.addEventListener('mouseenter', () => {
       if (timer) clearTimeout(timer);
     });

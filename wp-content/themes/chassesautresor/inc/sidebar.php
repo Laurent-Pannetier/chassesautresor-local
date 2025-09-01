@@ -382,6 +382,11 @@ if (!function_exists('render_sidebar')) {
                     . '"><i class="fa-solid fa-gear"></i></a>';
             }
         }
+        echo '<button class="menu-lateral__close" type="button">'
+            . '<i class="fa-solid fa-xmark" aria-hidden="true"></i>'
+            . '<span class="screen-reader-text">'
+            . esc_html__('Fermer le panneau', 'chassesautresor-com')
+            . '</span></button>';
         echo '</div>';
 
         echo '<div class="menu-lateral__content">' . $navigation_html . '</div>';
