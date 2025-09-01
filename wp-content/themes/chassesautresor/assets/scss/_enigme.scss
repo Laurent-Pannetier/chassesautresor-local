@@ -228,6 +228,15 @@ li.active .enigme-menu__edit {
   content: "\f111";
   color: var(--etat-enigme-menu-en-attente);
 }
+.menu-lateral.joueur .enigme-menu li > a:not(.enigme-menu__edit) {
+  font-weight: 400;
+}
+
+.menu-lateral.joueur .enigme-menu li.non-engagee > a:not(.enigme-menu__edit),
+.menu-lateral.joueur .enigme-menu li.active > a:not(.enigme-menu__edit) {
+  font-weight: 600;
+}
+
 
 
 .enigme-menu li.active > a:not(.enigme-menu__edit) {

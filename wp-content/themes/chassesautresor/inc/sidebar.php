@@ -274,9 +274,9 @@ if (!function_exists('render_sidebar')) {
         int $total_enigmes = 0,
         bool $has_incomplete_enigme = false
     ): array {
+        $user_id = get_current_user_id();
         if ($context === 'enigme') {
-            $mode    = get_field('enigme_mode_validation', $enigme_id);
-            $user_id = get_current_user_id();
+            $mode = get_field('enigme_mode_validation', $enigme_id);
 
             $stats_html = enigme_sidebar_progression_html($chasse_id, $user_id)
                 . enigme_sidebar_resolution_html($enigme_id);
@@ -337,6 +337,17 @@ if (!function_exists('render_sidebar')) {
 
         $chasse_validation = $chasse_id ? get_field('chasse_cache_statut_validation', $chasse_id) : '';
         $aside_classes     = ['menu-lateral'];
+        $is_player         = !(
+            current_user_can('manage_options')
+            || (
+                $chasse_id
+                && function_exists('utilisateur_est_organisateur_associe_a_chasse')
+                && utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)
+            )
+        );
+        if ($is_player) {
+            $aside_classes[] = 'joueur';
+        }
         if ($chasse_validation === 'en_attente') {
             $aside_classes[] = 'chasse-en-attente';
         }
