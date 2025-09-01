@@ -204,7 +204,9 @@ function verifier_souscription_chasse($user_id, $enigme_id)
 function utilisateur_est_engage_dans_chasse(int $user_id, int $chasse_id): bool
 {
     global $wpdb;
-    if (!$user_id || !$chasse_id) return false;
+    if (!$user_id || !$chasse_id || !isset($wpdb)) {
+        return false;
+    }
 
     $table = $wpdb->prefix . 'engagements';
 
@@ -754,6 +756,13 @@ function enregistrer_engagement_chasse(int $user_id, int $chasse_id): bool
     );
     if ($inserted) {
         do_action('chasse_engagement_created', $chasse_id);
+        if (!function_exists('enigme_clear_sidebar_cache')) {
+            $path = function_exists('get_theme_file_path')
+                ? get_theme_file_path('inc/enigme/affichage.php')
+                : __DIR__ . '/enigme/affichage.php';
+            require_once $path;
+        }
+        enigme_clear_sidebar_cache($chasse_id, $user_id);
     }
 
     return (bool) $inserted;

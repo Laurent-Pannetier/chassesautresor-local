@@ -97,13 +97,25 @@ defined('ABSPATH') || exit;
             return false;
         }
 
+        if (!function_exists('utilisateur_est_engage_dans_chasse')) {
+            $path = function_exists('get_theme_file_path')
+                ? get_theme_file_path('inc/chasse-functions.php')
+                : __DIR__ . '/../chasse-functions.php';
+            require_once $path;
+        }
+
         $validation_status = get_field('chasse_cache_statut_validation', $chasse_id) ?? '';
         $is_admin          = current_user_can('administrator');
         $is_associated     = utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
         $is_organizer      = est_organisateur($user_id);
+        $is_engaged        = utilisateur_est_engage_dans_chasse($user_id, $chasse_id);
 
         if (($is_admin || ($is_organizer && $is_associated)) && $validation_status !== 'banni') {
             return true;
+        }
+
+        if (!$is_engaged) {
+            return false;
         }
 
         return !in_array($chasse_stat, ['revision', 'a_venir'], true);
@@ -483,6 +495,18 @@ defined('ABSPATH') || exit;
     ): array {
         $mode    = get_field('enigme_mode_validation', $enigme_id);
         $user_id = get_current_user_id();
+
+        if ($chasse_id && !$edition_active) {
+            if (!function_exists('utilisateur_est_engage_dans_chasse')) {
+                $path = function_exists('get_theme_file_path')
+                    ? get_theme_file_path('inc/chasse-functions.php')
+                    : __DIR__ . '/../chasse-functions.php';
+                require_once $path;
+            }
+            if (!utilisateur_est_engage_dans_chasse($user_id, $chasse_id)) {
+                return ['navigation' => '', 'stats' => ''];
+            }
+        }
 
         $stats_html = enigme_sidebar_progression_html($chasse_id, $user_id)
             . enigme_sidebar_resolution_html($enigme_id);
@@ -977,16 +1001,25 @@ defined('ABSPATH') || exit;
             $menu_items = $submenu_items;
         }
 
-        echo '<div class="container container--xl-full enigme-layout">';
-        $sidebar_sections = render_enigme_sidebar(
-            $enigme_id,
-            $edition_active,
-            $chasse_id,
-            $menu_items,
-            $peut_ajouter_enigme,
-            $total_enigmes,
-            $has_incomplete_enigme
+        $aside_needed = $edition_active || (
+            $chasse_id && utilisateur_est_engage_dans_chasse($user_id, $chasse_id)
         );
+        $layout_class = 'container container--xl-full enigme-layout' . (
+            $aside_needed ? '' : ' enigme-layout--aside-hidden'
+        );
+        echo '<div class="' . esc_attr($layout_class) . '">';
+
+        $sidebar_sections = $aside_needed
+            ? render_enigme_sidebar(
+                $enigme_id,
+                $edition_active,
+                $chasse_id,
+                $menu_items,
+                $peut_ajouter_enigme,
+                $total_enigmes,
+                $has_incomplete_enigme
+            )
+            : ['navigation' => '', 'stats' => ''];
 
         $retour_url   = $chasse_id ? get_permalink($chasse_id) : home_url('/');
         $settings_icon = '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none"'
@@ -1040,9 +1073,13 @@ defined('ABSPATH') || exit;
         echo '<button type="button" role="tab" aria-selected="false" class="panel-tab" data-target="panel-stats">' . esc_html__('Statistiques', 'chassesautresor-com') . '</button>';
         echo '</nav>';
         echo '<div class="enigme-mobile-panel__content">';
-        echo '<div id="panel-enigmes" class="panel-tab-content">' . ($sidebar_sections['navigation'] ?? '') . '</div>';
-        $ajax_url = function_exists('admin_url') ? admin_url('admin-ajax.php') : '';
-        echo '<div id="panel-stats" class="panel-tab-content" hidden aria-live="polite" data-ajax-url="' . esc_url($ajax_url) . '" data-enigme-id="' . intval($enigme_id) . '">' . ($sidebar_sections['stats'] ?? '') . '</div>';
+        if (!empty($sidebar_sections['navigation'])) {
+            echo '<div id="panel-enigmes" class="panel-tab-content">' . $sidebar_sections['navigation'] . '</div>';
+        }
+        if (!empty($sidebar_sections['stats'])) {
+            $ajax_url = function_exists('admin_url') ? admin_url('admin-ajax.php') : '';
+            echo '<div id="panel-stats" class="panel-tab-content" hidden aria-live="polite" data-ajax-url="' . esc_url($ajax_url) . '" data-enigme-id="' . intval($enigme_id) . '">' . $sidebar_sections['stats'] . '</div>';
+        }
         echo '</div>';
         echo '</div>';
         echo '</div>';
@@ -1104,9 +1141,13 @@ defined('ABSPATH') || exit;
         if (get_field('enigme_mode_validation', $enigme_id) === 'aucune') {
             wp_send_json_error('disabled', 400);
         }
+        $user_id   = get_current_user_id();
+        $chasse_id = recuperer_id_chasse_associee($enigme_id);
+        if ($chasse_id && !utilisateur_est_engage_dans_chasse($user_id, $chasse_id)) {
+            wp_send_json_error('non_engage', 403);
+        }
 
-        $user_id = get_current_user_id();
-        $html    = enigme_sidebar_gagnants_html($enigme_id, $user_id, $page);
+        $html = enigme_sidebar_gagnants_html($enigme_id, $user_id, $page);
         wp_send_json_success(['html' => $html]);
     }
 
@@ -1129,6 +1170,9 @@ defined('ABSPATH') || exit;
         }
 
         $user_id = get_current_user_id();
+        if (!utilisateur_est_engage_dans_chasse($user_id, $chasse_id)) {
+            wp_send_json_error('non_engage', 403);
+        }
 
         // Ensure stats are recalculated with up-to-date engagement data.
         enigme_clear_sidebar_cache($chasse_id, $user_id);
