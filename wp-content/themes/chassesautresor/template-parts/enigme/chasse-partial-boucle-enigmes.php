@@ -56,12 +56,14 @@ $attr_draggable = $peut_reordonner ? ' draggable="true"' : '';
 
 // 📌 Vérifie si une énigme est incomplète
 $has_incomplete = false;
-foreach ($posts as $p) {
-  verifier_ou_mettre_a_jour_cache_complet($p->ID);
-  if (!get_field('enigme_cache_complet', $p->ID)) {
-    $has_incomplete = true;
-    break;
-  }
+if ($peut_reordonner || user_can($utilisateur_id, 'manage_options')) {
+    foreach ($posts as $p) {
+        verifier_ou_mettre_a_jour_cache_complet($p->ID);
+        if (!get_field('enigme_cache_complet', $p->ID)) {
+            $has_incomplete = true;
+            break;
+        }
+    }
 }
 
 if (!function_exists('enigme_compter_joueurs_engages')) {
@@ -102,7 +104,10 @@ if (!function_exists('compter_tentatives_du_jour') || !function_exists('compter_
         $statut_enigme !== 'publish';
 
       $classe_completion = '';
-      if ($voir_bordure) {
+      if (
+        $voir_bordure
+        && ($peut_reordonner || user_can($utilisateur_id, 'manage_options'))
+      ) {
         verifier_ou_mettre_a_jour_cache_complet($enigme_id);
         $complet = (bool) get_field('enigme_cache_complet', $enigme_id);
         $classe_completion = $complet ? 'carte-complete' : 'carte-incomplete';
