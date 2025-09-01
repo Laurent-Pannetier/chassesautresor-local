@@ -233,8 +233,9 @@ if ($peut_voir_aside) {
     // 🧭 Fil d'Ariane
     $breadcrumb_items = [
       [
-        'label' => esc_html__('Accueil', 'chassesautresor-com'),
-        'url'   => home_url('/'),
+        'label'      => esc_html__('Accueil', 'chassesautresor-com'),
+        'label_html' => '<i class="fa-solid fa-house" aria-hidden="true"></i><span class="screen-reader-text">' . esc_html__('Accueil', 'chassesautresor-com') . '</span>',
+        'url'        => home_url('/'),
       ],
     ];
     if ($organisateur_id) {
