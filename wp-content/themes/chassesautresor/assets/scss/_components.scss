@@ -1113,3 +1113,33 @@ a.addtoany_share span {
     font-weight: 600;
 }
 
+/* ========== 🧭 FIL D'ARIANE ========== */
+
+.breadcrumb {
+  margin: var(--space-sm) 0;
+}
+
+.breadcrumb ol {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+  font-size: 0.875rem;
+}
+
+.breadcrumb li + li::before {
+  content: '›';
+  margin: 0 var(--space-xs);
+  color: var(--color-text-secondary);
+}
+
+.breadcrumb a {
+  color: var(--color-secondary);
+  text-decoration: none;
+}
+
+.breadcrumb a:hover,
+.breadcrumb a:focus {
+  text-decoration: underline;
+}
+

@@ -230,12 +230,24 @@ if ($peut_voir_aside) {
   <main id="main" class="site-main">
 
     <?php
-    // 🧭 Header organisateur (dans le flux visible)
+    // 🧭 Fil d'Ariane
+    $breadcrumb_items = [
+      [
+        'label' => esc_html__('Accueil', 'chassesautresor-com'),
+        'url'   => home_url('/'),
+      ],
+    ];
     if ($organisateur_id) {
-      get_template_part('template-parts/organisateur/organisateur-header', null, [
-        'organisateur_id' => $organisateur_id
-      ]);
+      $breadcrumb_items[] = [
+        'label' => get_the_title($organisateur_id),
+        'url'   => get_permalink($organisateur_id),
+      ];
     }
+    $breadcrumb_items[] = [
+      'label'   => get_the_title($chasse_id),
+      'current' => true,
+    ];
+    get_template_part('template-parts/common/breadcrumb', null, ['items' => $breadcrumb_items]);
     ?>
 
     <?php
