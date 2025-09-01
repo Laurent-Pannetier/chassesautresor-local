@@ -37,12 +37,6 @@ if (!function_exists('esc_html')) {
     }
 }
 
-if (!function_exists('_n')) {
-    function _n($single, $plural, $number, $domain) {
-        return $number === 1 ? $single : $plural;
-    }
-}
-
 if (!function_exists('esc_url')) {
     function esc_url($url) {
         return $url;
@@ -85,11 +79,6 @@ if (!function_exists('utilisateur_est_engage_dans_chasse')) {
     }
 }
 
-if (!function_exists('chasse_calculer_progression_utilisateur')) {
-    function chasse_calculer_progression_utilisateur($chasse_id, $user_id) {
-        return $GLOBALS['progression'] ?? ['engagees' => 0, 'total' => 0, 'resolues' => 0, 'resolvables' => 0];
-    }
-}
 
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/chasse-functions.php';
 
@@ -132,12 +121,11 @@ class GenererCtaChasseTest extends TestCase
         $GLOBALS['force_admin_override'] = false;
         $GLOBALS['force_engage_override'] = true;
         $GLOBALS['force_organisateur_override'] = false;
-        $GLOBALS['progression'] = ['engagees' => 0, 'total' => 3, 'resolues' => 0, 'resolvables' => 2];
         $cta = generer_cta_chasse(123, 1);
         $this->assertSame(
             [
-                'cta_html'    => '<a href="#chasse-enigmes-wrapper" class="bouton-secondaire">Voir les énigmes</a>',
-                'cta_message' => '<p>✅ Vous participez à cette chasse</p><p>Commencez par consulter les énigmes disponibles</p>',
+                'cta_html'    => '<a href="#chasse-enigmes-wrapper" class="bouton-secondaire">Voir mes énigmes</a>',
+                'cta_message' => '<p>✅ Vous participez à cette chasse</p>',
                 'type'        => 'engage',
             ],
             $cta

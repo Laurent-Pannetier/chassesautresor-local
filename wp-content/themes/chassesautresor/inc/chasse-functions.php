@@ -686,25 +686,9 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
     $engage_override = $GLOBALS['force_engage_override'] ?? null;
     $est_engage = $engage_override !== null ? (bool) $engage_override : utilisateur_est_engage_dans_chasse($user_id, $chasse_id);
     if ($est_engage) {
-        $progression = chasse_calculer_progression_utilisateur($chasse_id, $user_id);
-        $confirmation = '<p>✅ ' . esc_html__('Vous participez à cette chasse', 'chassesautresor-com') . '</p>';
-
-        if ($progression['engagees'] === 0) {
-            $message = $confirmation . '<p>' . esc_html__('Commencez par consulter les énigmes disponibles', 'chassesautresor-com') . '</p>';
-            $html    = '<a href="#chasse-enigmes-wrapper" class="bouton-secondaire">' . esc_html__('Voir les énigmes', 'chassesautresor-com') . '</a>';
-        } else {
-            $ligne_reussite = sprintf(
-                _n('%1$d / %2$d énigme résolue', '%1$d / %2$d énigmes résolues', $progression['resolues'], 'chassesautresor-com'),
-                $progression['resolues'],
-                $progression['resolvables']
-            );
-            $message = $confirmation . '<p>' . esc_html($ligne_reussite) . '</p>';
-            $html    = '<a href="#chasse-enigmes-wrapper" class="bouton-secondaire">' . esc_html__('Voir mes énigmes', 'chassesautresor-com') . '</a>';
-        }
-
         return [
-            'cta_html'    => $html,
-            'cta_message' => $message,
+            'cta_html'    => '<a href="#chasse-enigmes-wrapper" class="bouton-secondaire">' . esc_html__('Voir mes énigmes', 'chassesautresor-com') . '</a>',
+            'cta_message' => '<p>✅ ' . esc_html__('Vous participez à cette chasse', 'chassesautresor-com') . '</p>',
             'type'        => 'engage',
         ];
     }

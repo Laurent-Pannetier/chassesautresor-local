@@ -20,28 +20,13 @@ msgstr ""
 msgid "chassesautresor.com"
 msgstr ""
 
-#: inc/chasse-functions.php:681
+#: inc/chasse-functions.php:691
 msgid "Vous participez à cette chasse"
 msgstr ""
 
-#: inc/chasse-functions.php:684
-msgid "Commencez par consulter les énigmes disponibles"
-msgstr ""
-
-#: inc/chasse-functions.php:685
-msgid "Voir les énigmes"
-msgstr ""
-
-#: inc/chasse-functions.php:694
+#: inc/chasse-functions.php:690
 msgid "Voir mes énigmes"
 msgstr ""
-
-#: inc/chasse-functions.php:689
-#, php-format
-msgid "%1$d / %2$d énigme résolue"
-msgid_plural "%1$d / %2$d énigmes résolues"
-msgstr[0] ""
-msgstr[1] ""
 
 #: templates/myaccount/content-outils.php:24
 msgid "Protection globale"
