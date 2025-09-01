@@ -448,8 +448,8 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background-color: var(--color-secondary);
-  color: var(--color-text-primary);
+  background-color: var(--color-grey-light);
+  color: var(--color-text-fond-clair);
   font-size: 0.875rem;
 }
 
