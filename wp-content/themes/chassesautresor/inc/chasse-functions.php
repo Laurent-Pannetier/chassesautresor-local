@@ -1294,15 +1294,27 @@ function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): 
 {
     static $memo = [];
 
-    $user_id = $user_id ?? get_current_user_id();
-    $cache_key = $chasse_id . '-' . $user_id;
+    $user_id  = $user_id ?? get_current_user_id();
+    $memo_key = $chasse_id . '-' . $user_id;
 
-    if (isset($memo[$cache_key])) {
-        return $memo[$cache_key];
+    if (isset($memo[$memo_key])) {
+        return $memo[$memo_key];
     }
 
     if (get_post_type($chasse_id) !== 'chasse') {
         return [];
+    }
+
+    $cache_key = chasse_infos_affichage_cache_key($chasse_id);
+    $cache     = wp_cache_get($cache_key, 'chasse_affichage');
+    if (!is_array($cache)) {
+        $cache = get_transient($cache_key);
+        $cache = is_array($cache) ? $cache : [];
+    }
+
+    if (isset($cache[$user_id])) {
+        $memo[$memo_key] = $cache[$user_id];
+        return $memo[$memo_key];
     }
 
     $champs = chasse_get_champs($chasse_id);
@@ -1313,12 +1325,12 @@ function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): 
 
     $image_raw = get_field('chasse_principale_image', $chasse_id);
     $image_id  = is_array($image_raw) ? ($image_raw['ID'] ?? null) : $image_raw;
-    $image_url = $image_id ? wp_get_attachment_image_src( $image_id, 'chasse-fiche' )[0] : null;
+    $image_url = $image_id ? wp_get_attachment_image_src($image_id, 'chasse-fiche')[0] : null;
 
     $liens = get_field('chasse_principale_liens', $chasse_id);
     $liens = is_array($liens) ? $liens : [];
 
-    $enigmes = recuperer_enigmes_associees($chasse_id);
+    $enigmes             = recuperer_enigmes_associees($chasse_id);
     $nb_enigmes_payantes = 0;
     foreach ($enigmes as $eid) {
         $cout = (int) get_field('enigme_tentative_cout_points', $eid);
@@ -1347,22 +1359,22 @@ function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): 
         }
     }
 
-    $memo[$cache_key] = [
-        'champs'            => $champs,
-        'description'       => $description,
-        'texte_complet'     => $texte_complet,
-        'extrait'           => $extrait,
-        'image_raw'         => $image_raw,
-        'image_id'          => $image_id,
-        'image_url'         => $image_url,
-        'liens'             => $liens,
-        'enigmes_associees' => $enigmes,
-        'total_enigmes'     => count($enigmes),
-        'progression'       => $progression,
-        'cta_data'          => generer_cta_chasse($chasse_id, $user_id),
-        'nb_joueurs'        => $nb_joueurs,
+    $memo[$memo_key] = [
+        'champs'              => $champs,
+        'description'         => $description,
+        'texte_complet'       => $texte_complet,
+        'extrait'             => $extrait,
+        'image_raw'           => $image_raw,
+        'image_id'            => $image_id,
+        'image_url'           => $image_url,
+        'liens'               => $liens,
+        'enigmes_associees'   => $enigmes,
+        'total_enigmes'       => count($enigmes),
+        'progression'         => $progression,
+        'cta_data'            => generer_cta_chasse($chasse_id, $user_id),
+        'nb_joueurs'          => $nb_joueurs,
         'nb_enigmes_payantes' => $nb_enigmes_payantes,
-        'top_avances'       => [
+        'top_avances'         => [
             'nb'      => $top_nb,
             'enigmes' => $top_enigmes,
         ],
@@ -1370,5 +1382,40 @@ function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): 
         'statut_validation' => get_field('chasse_cache_statut_validation', $chasse_id),
     ];
 
-    return $memo[$cache_key];
+    $cache[$user_id] = $memo[$memo_key];
+    $ttl             = HOUR_IN_SECONDS;
+    wp_cache_set($cache_key, $cache, 'chasse_affichage', $ttl);
+    set_transient($cache_key, $cache, $ttl);
+
+    return $memo[$memo_key];
 }
+
+function chasse_infos_affichage_cache_key(int $chasse_id): string
+{
+    return "chasse_infos_affichage_{$chasse_id}";
+}
+
+function chasse_clear_infos_affichage_cache(int $chasse_id): void
+{
+    $key = chasse_infos_affichage_cache_key($chasse_id);
+    wp_cache_delete($key, 'chasse_affichage');
+    delete_transient($key);
+}
+
+function chasse_invalidate_infos_affichage_cache(int $post_id, \WP_Post $post, bool $update): void
+{
+    if (wp_is_post_revision($post_id)) {
+        return;
+    }
+
+    if ($post->post_type === 'chasse') {
+        chasse_clear_infos_affichage_cache($post_id);
+    } elseif ($post->post_type === 'enigme') {
+        $chasse_id = get_field('chasse_associee', $post_id);
+        if ($chasse_id) {
+            chasse_clear_infos_affichage_cache((int) $chasse_id);
+        }
+    }
+}
+add_action('save_post', 'chasse_invalidate_infos_affichage_cache', 10, 3);
+add_action('chasse_engagement_created', 'chasse_clear_infos_affichage_cache');
