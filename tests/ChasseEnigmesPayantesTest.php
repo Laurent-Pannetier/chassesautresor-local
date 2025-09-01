@@ -60,6 +60,27 @@ class ChasseEnigmesPayantesTest extends TestCase
         if (!function_exists('get_post_meta')) {
             function get_post_meta($post_id, $key, $single = false) { return null; }
         }
+        if (!defined('HOUR_IN_SECONDS')) {
+            define('HOUR_IN_SECONDS', 3600);
+        }
+        if (!function_exists('wp_cache_get')) {
+            function wp_cache_get($key, $group) { return false; }
+        }
+        if (!function_exists('wp_cache_set')) {
+            function wp_cache_set($key, $value, $group, $expire) {}
+        }
+        if (!function_exists('wp_cache_delete')) {
+            function wp_cache_delete($key, $group) {}
+        }
+        if (!function_exists('get_transient')) {
+            function get_transient($key) { return false; }
+        }
+        if (!function_exists('set_transient')) {
+            function set_transient($key, $value, $expire) {}
+        }
+        if (!function_exists('delete_transient')) {
+            function delete_transient($key) {}
+        }
 
         require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/chasse-functions.php';
 
