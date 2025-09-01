@@ -3170,3 +3170,11 @@ msgstr "validation manuelle de votre tentative par l'organisateur"
 #: inc/sidebar.php:144
 msgid "pas de système de validation en ligne pour cette énigme"
 msgstr "pas de système de validation en ligne pour cette énigme"
+
+#: inc/chasse-functions.php:691
+msgid "Vous participez à cette chasse"
+msgstr "Vous participez à cette chasse"
+
+#: inc/chasse-functions.php:690
+msgid "Voir mes énigmes"
+msgstr "Voir mes énigmes"

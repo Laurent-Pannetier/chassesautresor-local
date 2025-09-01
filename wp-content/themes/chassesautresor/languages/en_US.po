@@ -3208,3 +3208,11 @@ msgstr "manual validation of your attempt by the organizer"
 #: inc/sidebar.php:144
 msgid "pas de système de validation en ligne pour cette énigme"
 msgstr "no online validation system for this enigma"
+
+#: inc/chasse-functions.php:691
+msgid "Vous participez à cette chasse"
+msgstr "You are participating in this hunt"
+
+#: inc/chasse-functions.php:690
+msgid "Voir mes énigmes"
+msgstr "View my riddles"

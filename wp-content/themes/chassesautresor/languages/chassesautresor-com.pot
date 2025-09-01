@@ -20,6 +20,14 @@ msgstr ""
 msgid "chassesautresor.com"
 msgstr ""
 
+#: inc/chasse-functions.php:691
+msgid "Vous participez à cette chasse"
+msgstr ""
+
+#: inc/chasse-functions.php:690
+msgid "Voir mes énigmes"
+msgstr ""
+
 #: templates/myaccount/content-outils.php:24
 msgid "Protection globale"
 msgstr ""

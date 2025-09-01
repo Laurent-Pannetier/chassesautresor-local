@@ -3,7 +3,7 @@ use PHPUnit\Framework\TestCase;
 
 if (!function_exists('current_user_can')) {
     function current_user_can($capability) {
-        return $capability === 'administrator';
+        return false;
     }
 }
 
@@ -27,6 +27,12 @@ if (!function_exists('get_permalink')) {
 
 if (!function_exists('esc_html__')) {
     function esc_html__($text, $domain) {
+        return $text;
+    }
+}
+
+if (!function_exists('esc_html')) {
+    function esc_html($text) {
         return $text;
     }
 }
@@ -67,12 +73,22 @@ if (!function_exists('date_i18n')) {
     }
 }
 
+if (!function_exists('utilisateur_est_engage_dans_chasse')) {
+    function utilisateur_est_engage_dans_chasse($user_id, $chasse_id) {
+        return $GLOBALS['is_engage'] ?? false;
+    }
+}
+
+
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/chasse-functions.php';
 
 class GenererCtaChasseTest extends TestCase
 {
     public function test_admin_or_organizer_gets_disabled_button(): void
     {
+        $GLOBALS['force_admin_override'] = true;
+        $GLOBALS['force_engage_override'] = false;
+        $GLOBALS['force_organisateur_override'] = false;
         $cta = generer_cta_chasse(123, 5);
         $this->assertSame(
             [
@@ -86,6 +102,9 @@ class GenererCtaChasseTest extends TestCase
 
     public function test_guest_gets_login_cta_without_message(): void
     {
+        $GLOBALS['force_admin_override'] = false;
+        $GLOBALS['force_engage_override'] = false;
+        $GLOBALS['force_organisateur_override'] = false;
         $cta = generer_cta_chasse(123, 0);
         $this->assertSame(
             [
@@ -96,5 +115,22 @@ class GenererCtaChasseTest extends TestCase
             $cta
         );
     }
+
+    public function test_engaged_without_enigme_shows_prompt(): void
+    {
+        $GLOBALS['force_admin_override'] = false;
+        $GLOBALS['force_engage_override'] = true;
+        $GLOBALS['force_organisateur_override'] = false;
+        $cta = generer_cta_chasse(123, 1);
+        $this->assertSame(
+            [
+                'cta_html'    => '<a href="#chasse-enigmes-wrapper" class="bouton-secondaire">Voir mes énigmes</a>',
+                'cta_message' => '<p>✅ Vous participez à cette chasse</p>',
+                'type'        => 'engage',
+            ],
+            $cta
+        );
+    }
+
 }
 
