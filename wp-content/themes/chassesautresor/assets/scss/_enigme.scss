@@ -55,20 +55,18 @@
   margin-bottom: var(--space-xxs);
   padding-left: calc(var(--space-md) + 16px);
   --bullet-fill: var(--etat-enigme-menu-en-cours);
-  --bullet-outline: var(--etat-enigme-menu-en-cours);
 }
 
 .enigme-menu li::before {
-  content: '';
   position: absolute;
   top: 50%;
   left: 16px;
-  width: 8px;
-  height: 8px;
-  background-color: var(--bullet-fill);
-  box-shadow: 0 0 0 1px var(--bullet-outline);
   transform: translateY(-50%);
-  border-radius: 50%;
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  font-size: 0.75rem;
+  color: var(--bullet-fill);
+  content: "\f111";
 }
 
 .enigme-menu li > a:not(.enigme-menu__edit) {
@@ -101,7 +99,6 @@
 
 .enigme-menu li.bloquee {
   --bullet-fill: var(--etat-enigme-menu-bloquee);
-  --bullet-outline: var(--etat-enigme-menu-bloquee);
 }
 
 
@@ -149,10 +146,10 @@ li.active .enigme-menu__edit {
 
 .enigme-menu li.en-attente {
   --bullet-fill: var(--etat-enigme-menu-en-attente);
-  --bullet-outline: var(--etat-enigme-menu-en-attente);
 }
 
 .enigme-menu li.en-attente::before {
+  content: '';
   box-sizing: border-box;
   width: 8px;
   height: 8px;
@@ -160,13 +157,40 @@ li.active .enigme-menu__edit {
   border-top-color: transparent;
   border-radius: 50%;
   background-color: transparent;
-  box-shadow: none;
   animation: enigme-menu-spin 0.6s linear infinite;
 }
 
 .enigme-menu li.succes {
   --bullet-fill: var(--etat-enigme-menu-succes);
-  --bullet-outline: var(--etat-enigme-menu-succes);
+}
+
+.enigme-menu li.succes::before,
+.enigme-menu li.complete::before {
+  content: "\f00c";
+}
+
+.enigme-menu li.incomplete::before {
+  content: "\f044";
+}
+
+.enigme-menu li.bloquee-date::before {
+  content: "\f254";
+}
+
+.enigme-menu li.bloquee-pre-requis::before {
+  content: "\f023";
+}
+
+.enigme-menu li.validation-auto::before {
+  content: "\f0e7";
+}
+
+.enigme-menu li.validation-manuelle::before {
+  content: "\f0e0";
+}
+
+.enigme-menu li.validation-aucune::before {
+  content: "\f06e";
 }
 
 
@@ -177,11 +201,38 @@ li.active .enigme-menu__edit {
 .enigme-menu li.non-engagee {
   --bullet-fill: var(--etat-enigme-menu-non-engagee);
 }
+.enigme-menu li.non-engagee:not(.validation-auto):not(.validation-manuelle):not(.validation-aucune):not(.complete):not(.incomplete):not(.bloquee-date):not(.bloquee-pre-requis)::before {
+  content: none;
+}
+
+.enigme-menu li.non-engagee.validation-auto,
+.enigme-menu li.non-engagee.validation-manuelle,
+.enigme-menu li.non-engagee.validation-aucune,
+.enigme-menu li.non-engagee.complete {
+  --bullet-fill: var(--etat-enigme-menu-en-cours);
+}
+
+.enigme-menu li.non-engagee.incomplete {
+  --bullet-fill: var(--etat-enigme-menu-incomplete);
+}
 
 .enigme-menu li.incomplete {
   --bullet-fill: var(--etat-enigme-menu-incomplete);
-  --bullet-outline: var(--etat-enigme-menu-incomplete);
 }
+
+.menu-lateral.chasse-en-attente .enigme-menu li::before {
+  content: "\f111";
+  color: var(--etat-enigme-menu-en-attente);
+}
+.menu-lateral.joueur .enigme-menu li > a:not(.enigme-menu__edit) {
+  font-weight: 400;
+}
+
+.menu-lateral.joueur .enigme-menu li.non-engagee > a:not(.enigme-menu__edit),
+.menu-lateral.joueur .enigme-menu li.active > a:not(.enigme-menu__edit) {
+  font-weight: 600;
+}
+
 
 
 .enigme-menu li.active > a:not(.enigme-menu__edit) {

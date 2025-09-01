@@ -2911,3 +2911,15 @@ msgstr ""
 #: wp-content/themes/chassesautresor/inc/enigme/cta.php:307
 msgid "Statut inconnu"
 msgstr ""
+
+#: inc/sidebar.php:132
+msgid "validation instantanée en ligne de votre tentative"
+msgstr ""
+
+#: inc/sidebar.php:138
+msgid "validation manuelle de votre tentative par l'organisateur"
+msgstr ""
+
+#: inc/sidebar.php:144
+msgid "pas de système de validation en ligne pour cette énigme"
+msgstr ""

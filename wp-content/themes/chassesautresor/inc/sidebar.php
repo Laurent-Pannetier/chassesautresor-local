@@ -40,10 +40,12 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
         int $current_enigme_id = 0
     ): array
     {
-        $all_enigmes         = recuperer_enigmes_pour_chasse($chasse_id);
-        $submenu_items       = [];
-        $total_enigmes       = count($all_enigmes);
+        $all_enigmes           = recuperer_enigmes_pour_chasse($chasse_id);
+        $submenu_items         = [];
+        $total_enigmes         = count($all_enigmes);
         $has_incomplete_enigme = false;
+        $chasse_validation     = get_field('chasse_cache_statut_validation', $chasse_id) ?? '';
+        $chasse_statut         = get_field('chasse_cache_statut', $chasse_id) ?? '';
 
         foreach ($all_enigmes as $post_check) {
             if (!get_field('enigme_cache_complet', $post_check->ID)) {
@@ -69,7 +71,7 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
             $cta = function_exists('get_cta_enigme')
                 ? get_cta_enigme($post->ID, $user_id)
                 : [
-                    'etat_systeme'      => get_field('enigme_cache_etat_systeme', $post->ID) ?? 'accessible',
+                    'etat_systeme'       => get_field('enigme_cache_etat_systeme', $post->ID) ?? 'accessible',
                     'statut_utilisateur' => enigme_get_statut_utilisateur($post->ID, $user_id),
                 ];
 
@@ -80,12 +82,32 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
                 continue;
             }
 
-            $classes = [];
+            $classes            = [];
+            $complet            = (bool) get_field('enigme_cache_complet', $post->ID);
+            $mode_valid         = get_field('enigme_mode_validation', $post->ID);
+            $display_validation = false;
+            $title_validation   = '';
+
+            if ($complet) {
+                if (
+                    $chasse_validation === 'valide'
+                    && in_array($chasse_statut, ['payante', 'termine', 'en_cours'], true)
+                ) {
+                    $display_validation = true;
+                } elseif (
+                    $is_privileged
+                    && in_array($chasse_validation, ['creation', 'correction', 'en_attente'], true)
+                    && in_array($chasse_statut, ['revision', 'a_venir'], true)
+                ) {
+                    $display_validation = true;
+                }
+            }
 
             if (in_array($cta['etat_systeme'], ['bloquee_date', 'bloquee_pre_requis'], true)) {
                 $classes[] = 'bloquee';
+                $classes[] = str_replace('_', '-', $cta['etat_systeme']);
             } elseif ($cta['etat_systeme'] === 'bloquee_chasse') {
-                if (!get_field('enigme_cache_complet', $post->ID)) {
+                if (!$complet) {
                     $classes[] = 'incomplete';
                 } else {
                     $classes[] = 'bloquee';
@@ -102,6 +124,32 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
                 ) {
                     $classes[] = 'non-engagee';
                 }
+
+                if ($display_validation) {
+                    if ($mode_valid === 'automatique') {
+                        $classes[]       = 'validation-auto';
+                        $title_validation = esc_attr__(
+                            'validation instantanée en ligne de votre tentative',
+                            'chassesautresor-com'
+                        );
+                    } elseif ($mode_valid === 'manuelle') {
+                        $classes[]       = 'validation-manuelle';
+                        $title_validation = esc_attr__(
+                            'validation manuelle de votre tentative par l\'organisateur',
+                            'chassesautresor-com'
+                        );
+                    } else {
+                        $classes[]       = 'validation-aucune';
+                        $title_validation = esc_attr__(
+                            'pas de système de validation en ligne pour cette énigme',
+                            'chassesautresor-com'
+                        );
+                    }
+                }
+            }
+
+            if (in_array($chasse_validation, ['creation', 'correction'], true)) {
+                $classes[] = $complet ? 'complete' : 'incomplete';
             }
 
             if ($post->ID === $current_enigme_id) {
@@ -140,9 +188,10 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
             $aria_current = $post->ID === $current_enigme_id ? ' aria-current="page"' : '';
             $link         = '<a href="' . esc_url(get_permalink($post->ID)) . '"' . $aria_current . '>' . $title . '</a>';
             $submenu_items[] = sprintf(
-                '<li class="%s" data-enigme-id="%d">%s%s</li>',
+                '<li class="%s" data-enigme-id="%d"%s>%s%s</li>',
                 esc_attr(implode(' ', $classes)),
                 $post->ID,
+                $title_validation ? ' title="' . $title_validation . '"' : '',
                 $link,
                 $edit
             );
@@ -225,9 +274,9 @@ if (!function_exists('render_sidebar')) {
         int $total_enigmes = 0,
         bool $has_incomplete_enigme = false
     ): array {
+        $user_id = get_current_user_id();
         if ($context === 'enigme') {
-            $mode    = get_field('enigme_mode_validation', $enigme_id);
-            $user_id = get_current_user_id();
+            $mode = get_field('enigme_mode_validation', $enigme_id);
 
             $stats_html = enigme_sidebar_progression_html($chasse_id, $user_id)
                 . enigme_sidebar_resolution_html($enigme_id);
@@ -286,7 +335,24 @@ if (!function_exists('render_sidebar')) {
             'context'      => $context,
         ]);
 
-        echo '<aside class="menu-lateral" data-context="' . esc_attr($context) . '">';
+        $chasse_validation = $chasse_id ? get_field('chasse_cache_statut_validation', $chasse_id) : '';
+        $aside_classes     = ['menu-lateral'];
+        $is_player         = !(
+            current_user_can('manage_options')
+            || (
+                $chasse_id
+                && function_exists('utilisateur_est_organisateur_associe_a_chasse')
+                && utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)
+            )
+        );
+        if ($is_player) {
+            $aside_classes[] = 'joueur';
+        }
+        if ($chasse_validation === 'en_attente') {
+            $aside_classes[] = 'chasse-en-attente';
+        }
+
+        echo '<aside class="' . esc_attr(implode(' ', $aside_classes)) . '" data-context="' . esc_attr($context) . '">';
 
         echo '<div class="menu-lateral__header">';
         if ($chasse_id) {
@@ -296,7 +362,11 @@ if (!function_exists('render_sidebar')) {
                 ? utilisateur_peut_voir_panneau($chasse_id)
                 : false;
 
-            echo '<h2 class="menu-lateral__title"><a href="' . esc_url($url_chasse) . '">' . esc_html($titre) . '</a></h2>';
+            $titre_html = '<a href="' . esc_url($url_chasse) . '">' . esc_html($titre) . '</a>';
+            if ($chasse_validation === 'en_attente') {
+                $titre_html = '<i class="fa-solid fa-hourglass" aria-hidden="true"></i>' . $titre_html;
+            }
+            echo '<h2 class="menu-lateral__title">' . $titre_html . '</h2>';
 
             if ($can_edit) {
                 $edit_url = function_exists('add_query_arg')
