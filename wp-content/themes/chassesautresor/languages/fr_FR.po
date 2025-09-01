@@ -686,6 +686,10 @@ msgstr "Voici les énigmes de cette chasse."
 msgid "L'accès aux énigmes est réservé aux participants de chasse. Inscrivez-vous !"
 msgstr "L'accès aux énigmes est réservé aux participants de chasse. Inscrivez-vous !"
 
+#: single-chasse.php:162
+msgid "commencez par consulter des énigmes parmi celles ci-dessous. Bonne chasse !"
+msgstr "commencez par consulter des énigmes parmi celles ci-dessous. Bonne chasse !"
+
 #: single-chasse.php:153
 #, php-format
 msgid "Progression : %1$d/%2$d %3$s — %4$d/%5$d %6$s."
