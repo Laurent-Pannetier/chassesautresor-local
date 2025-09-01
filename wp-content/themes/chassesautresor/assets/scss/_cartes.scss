@@ -437,6 +437,50 @@
   }
 }
 
+.carte-icons {
+  position: absolute;
+  top: var(--space-xs);
+  right: var(--space-xs);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  z-index: 2;
+}
+
+.carte-icons .warning-icon {
+  position: static;
+  top: auto;
+  right: auto;
+}
+
+.settings-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: var(--color-grey-light);
+  color: var(--color-text-fond-clair);
+  font-size: 0.875rem;
+}
+
+@media (--bp-tablet) {
+  .settings-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 1rem;
+  }
+}
+
+@media (--bp-desktop) {
+  .settings-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 1.125rem;
+  }
+}
+
 @media (--bp-desktop) {
   .warning-icon {
     width: 32px;

@@ -425,6 +425,48 @@
     font-size: 1rem;
   }
 }
+.carte-icons {
+  position: absolute;
+  top: var(--space-xs);
+  right: var(--space-xs);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  z-index: 2;
+}
+
+.carte-icons .warning-icon {
+  position: static;
+  top: auto;
+  right: auto;
+}
+
+.settings-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: var(--color-grey-light);
+  color: var(--color-text-fond-clair);
+  font-size: 0.875rem;
+}
+
+@media (min-width: 768px) {
+  .settings-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 1rem;
+  }
+}
+@media (min-width: 1024px) {
+  .settings-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 1.125rem;
+  }
+}
 @media (min-width: 1024px) {
   .warning-icon {
     width: 32px;
@@ -5295,18 +5337,33 @@ li.active .enigme-menu__edit {
 }
 .carte-enigme-handle {
   position: absolute;
-  top: 0.5rem;
-  left: 0.5rem;
+  top: var(--space-xs);
+  left: var(--space-xs);
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2rem;
-  height: 2rem;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  background-color: rgba(var(--color-black-rgb, 0, 0, 0), 0.6);
-  color: var(--color-white);
+  background-color: var(--color-grey-light);
+  color: var(--color-text-fond-clair);
+  font-size: 0.875rem;
   pointer-events: none;
-  z-index: 10;
+  z-index: 2;
+}
+@media (min-width: 768px) {
+  .carte-enigme-handle {
+    width: 28px;
+    height: 28px;
+    font-size: 1rem;
+  }
+}
+@media (min-width: 1024px) {
+  .carte-enigme-handle {
+    width: 32px;
+    height: 32px;
+    font-size: 1.125rem;
+  }
 }
 
 .carte-enigme[draggable=true] {

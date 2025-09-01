@@ -252,18 +252,35 @@ li.active .enigme-menu__edit {
 
   &-handle {
     position: absolute;
-    top: 0.5rem;
-    left: 0.5rem;
+    top: var(--space-xs);
+    left: var(--space-xs);
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 2rem;
-    height: 2rem;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
-    background-color: rgba(var(--color-black-rgb, 0, 0, 0), 0.6);
-    color: var(--color-white);
+    background-color: var(--color-grey-light);
+    color: var(--color-text-fond-clair);
+    font-size: 0.875rem;
     pointer-events: none;
-    z-index: 10;
+    z-index: 2;
+  }
+
+  @media (--bp-tablet) {
+    &-handle {
+      width: 28px;
+      height: 28px;
+      font-size: 1rem;
+    }
+  }
+
+  @media (--bp-desktop) {
+    &-handle {
+      width: 32px;
+      height: 32px;
+      font-size: 1.125rem;
+    }
   }
 }
 
