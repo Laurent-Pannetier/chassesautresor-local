@@ -108,6 +108,13 @@ require_once __DIR__ . '/utils.php';
             return true;
         }
 
+        if (
+            !function_exists('utilisateur_est_engage_dans_chasse')
+            || !utilisateur_est_engage_dans_chasse($user_id, $chasse_id)
+        ) {
+            return false;
+        }
+
         return !in_array($chasse_stat, ['revision', 'a_venir'], true);
     }
 
@@ -737,16 +744,21 @@ require_once __DIR__ . '/utils.php';
             $has_incomplete_enigme = $sidebar_data['has_incomplete_enigme'];
         }
 
-        echo '<div class="container container--xl-full enigme-layout">';
-        $sidebar_sections = render_sidebar(
-            'enigme',
-            $enigme_id,
-            $chasse_id,
-            $menu_items,
-            $peut_ajouter_enigme,
-            $total_enigmes,
-            $has_incomplete_enigme
-        );
+        $peut_voir_aside = $chasse_id && $show_menu;
+        $layout_class    = $peut_voir_aside ? 'enigme-layout' : 'enigme-layout enigme-layout--aside-hidden';
+        echo '<div class="container container--xl-full ' . esc_attr($layout_class) . '">';
+        $sidebar_sections = ['navigation' => '', 'stats' => ''];
+        if ($peut_voir_aside) {
+            $sidebar_sections = render_sidebar(
+                'enigme',
+                $enigme_id,
+                $chasse_id,
+                $menu_items,
+                $peut_ajouter_enigme,
+                $total_enigmes,
+                $has_incomplete_enigme
+            );
+        }
 
         $retour_url   = $chasse_id ? get_permalink($chasse_id) : home_url('/');
         $settings_icon = '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none"'
@@ -776,10 +788,12 @@ require_once __DIR__ . '/utils.php';
             echo $settings_icon;
             echo '</button>';
         }
-        echo '<button type="button" class="enigme-mobile-panel-toggle" aria-controls="enigme-mobile-panel" aria-expanded="false" aria-label="' . esc_attr__('Menu énigme', 'chassesautresor-com') . '">';
-        echo '<span class="screen-reader-text">' . esc_html__('Menu énigme', 'chassesautresor-com') . '</span>';
-        echo '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';
-        echo '</button>';
+        if ($peut_voir_aside) {
+            echo '<button type="button" class="enigme-mobile-panel-toggle" aria-controls="enigme-mobile-panel" aria-expanded="false" aria-label="' . esc_attr__('Menu énigme', 'chassesautresor-com') . '">';
+            echo '<span class="screen-reader-text">' . esc_html__('Menu énigme', 'chassesautresor-com') . '</span>';
+            echo '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';
+            echo '</button>';
+        }
         echo '</div>';
         echo '</header>';
 
@@ -791,21 +805,23 @@ require_once __DIR__ . '/utils.php';
             echo '</button>';
         }
 
-        echo '<div id="enigme-mobile-panel" class="enigme-mobile-panel" hidden>';
-        echo '<div class="enigme-mobile-panel__overlay" tabindex="-1"></div>';
-        echo '<div class="enigme-mobile-panel__sheet" role="dialog" aria-modal="true" aria-labelledby="enigme-mobile-panel-title">';
-        echo '<h2 id="enigme-mobile-panel-title" class="screen-reader-text">' . esc_html__('Panneau d\'énigme', 'chassesautresor-com') . '</h2>';
-        echo '<nav class="enigme-mobile-panel__tabs" role="tablist">';
-        echo '<button type="button" role="tab" aria-selected="true" class="panel-tab" data-target="panel-enigmes">' . esc_html__('Énigmes', 'chassesautresor-com') . '</button>';
-        echo '<button type="button" role="tab" aria-selected="false" class="panel-tab" data-target="panel-stats">' . esc_html__('Statistiques', 'chassesautresor-com') . '</button>';
-        echo '</nav>';
-        echo '<div class="enigme-mobile-panel__content">';
-        echo '<div id="panel-enigmes" class="panel-tab-content">' . ($sidebar_sections['navigation'] ?? '') . '</div>';
-        $ajax_url = function_exists('admin_url') ? admin_url('admin-ajax.php') : '';
-        echo '<div id="panel-stats" class="panel-tab-content" hidden aria-live="polite" data-ajax-url="' . esc_url($ajax_url) . '" data-enigme-id="' . intval($enigme_id) . '">' . ($sidebar_sections['stats'] ?? '') . '</div>';
-        echo '</div>';
-        echo '</div>';
-        echo '</div>';
+        if ($peut_voir_aside) {
+            echo '<div id="enigme-mobile-panel" class="enigme-mobile-panel" hidden>';
+            echo '<div class="enigme-mobile-panel__overlay" tabindex="-1"></div>';
+            echo '<div class="enigme-mobile-panel__sheet" role="dialog" aria-modal="true" aria-labelledby="enigme-mobile-panel-title">';
+            echo '<h2 id="enigme-mobile-panel-title" class="screen-reader-text">' . esc_html__('Panneau d\'énigme', 'chassesautresor-com') . '</h2>';
+            echo '<nav class="enigme-mobile-panel__tabs" role="tablist">';
+            echo '<button type="button" role="tab" aria-selected="true" class="panel-tab" data-target="panel-enigmes">' . esc_html__('Énigmes', 'chassesautresor-com') . '</button>';
+            echo '<button type="button" role="tab" aria-selected="false" class="panel-tab" data-target="panel-stats">' . esc_html__('Statistiques', 'chassesautresor-com') . '</button>';
+            echo '</nav>';
+            echo '<div class="enigme-mobile-panel__content">';
+            echo '<div id="panel-enigmes" class="panel-tab-content">' . ($sidebar_sections['navigation'] ?? '') . '</div>';
+            $ajax_url = function_exists('admin_url') ? admin_url('admin-ajax.php') : '';
+            echo '<div id="panel-stats" class="panel-tab-content" hidden aria-live="polite" data-ajax-url="' . esc_url($ajax_url) . '" data-enigme-id="' . intval($enigme_id) . '">' . ($sidebar_sections['stats'] ?? '') . '</div>';
+            echo '</div>';
+            echo '</div>';
+            echo '</div>';
+        }
 
         echo '<main class="page-enigme enigme-style-' . esc_attr($style) . '">';
         render_enigme_title($enigme_id, $style, $user_id);

@@ -170,13 +170,29 @@ if (!function_exists('ajax_chasse_recuperer_navigation')) {
             wp_send_json_error('post_invalide', 400);
         }
 
-        $user_id        = get_current_user_id();
+        $user_id = get_current_user_id();
+        $is_privileged = current_user_can('manage_options') || (
+            function_exists('utilisateur_est_organisateur_associe_a_chasse')
+            && utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)
+        );
+
+        if (
+            !$is_privileged
+            && (
+                !function_exists('utilisateur_est_engage_dans_chasse')
+                || !utilisateur_est_engage_dans_chasse($user_id, $chasse_id)
+            )
+        ) {
+            wp_send_json_error('non_engage', 403);
+        }
+
         $current_enigme = isset($_POST['enigme_id']) ? (int) $_POST['enigme_id'] : 0;
         $data           = sidebar_prepare_chasse_nav(
             $chasse_id,
             $user_id,
             $current_enigme
         );
+
         wp_send_json_success([
             'html' => implode('', $data['menu_items']),
             'ids'  => $data['visible_ids'],

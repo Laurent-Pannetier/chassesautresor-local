@@ -270,6 +270,16 @@ add_action('wp_enqueue_scripts', function () {
             true
         );
     }
+
+    if (is_singular('chasse')) {
+        wp_enqueue_script(
+            'chasse-engagement',
+            $script_dir . 'chasse-engagement.js',
+            [],
+            filemtime($theme_path . '/assets/js/chasse-engagement.js'),
+            true
+        );
+    }
 });
 
 add_action('wp_enqueue_scripts', function () {
