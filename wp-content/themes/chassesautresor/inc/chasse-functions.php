@@ -693,17 +693,12 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
             $message = $confirmation . '<p>' . esc_html__('Commencez par consulter les énigmes disponibles', 'chassesautresor-com') . '</p>';
             $html    = '<a href="#chasse-enigmes-wrapper" class="bouton-secondaire">' . esc_html__('Voir les énigmes', 'chassesautresor-com') . '</a>';
         } else {
-            $ligne_progression = sprintf(
-                _n('%1$d / %2$d énigme vue', '%1$d / %2$d énigmes vues', $progression['engagees'], 'chassesautresor-com'),
-                $progression['engagees'],
-                $progression['total']
-            );
             $ligne_reussite = sprintf(
                 _n('%1$d / %2$d énigme résolue', '%1$d / %2$d énigmes résolues', $progression['resolues'], 'chassesautresor-com'),
                 $progression['resolues'],
                 $progression['resolvables']
             );
-            $message = $confirmation . '<p>' . esc_html($ligne_progression) . '</p><p>' . esc_html($ligne_reussite) . '</p>';
+            $message = $confirmation . '<p>' . esc_html($ligne_reussite) . '</p>';
             $html    = '<a href="#chasse-enigmes-wrapper" class="bouton-secondaire">' . esc_html__('Voir mes énigmes', 'chassesautresor-com') . '</a>';
         }
 

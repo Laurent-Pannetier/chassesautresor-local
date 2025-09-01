@@ -3183,18 +3183,11 @@ msgstr "Commencez par consulter les énigmes disponibles"
 msgid "Voir les énigmes"
 msgstr "Voir les énigmes"
 
-#: inc/chasse-functions.php:698
+#: inc/chasse-functions.php:694
 msgid "Voir mes énigmes"
 msgstr "Voir mes énigmes"
 
-#: inc/chasse-functions.php:688
-#, php-format
-msgid "%1$d / %2$d énigme vue"
-msgid_plural "%1$d / %2$d énigmes vues"
-msgstr[0] "%1$d / %2$d énigme vue"
-msgstr[1] "%1$d / %2$d énigmes vues"
-
-#: inc/chasse-functions.php:693
+#: inc/chasse-functions.php:689
 #, php-format
 msgid "%1$d / %2$d énigme résolue"
 msgid_plural "%1$d / %2$d énigmes résolues"
