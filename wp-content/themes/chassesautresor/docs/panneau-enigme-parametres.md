@@ -37,6 +37,8 @@ Ce comportement est géré par [`champ-init.js`](../assets/js/core/champ-init.js
 
 Lorsqu'un champ obligatoire est vide, la classe `champ-attention` colore son label en rouge et la classe `champ-vide-obligatoire` déclenche une animation clignotante autour de l'input.
 
+Pour la ligne « Bonne(s) réponse(s) », tant qu'aucune réponse n'est enregistrée, le clignotement se déplace sur le bouton « valider » dès qu'une saisie est entamée afin d'inciter l'utilisateur à confirmer l'ajout.
+
 ## Saisie des nombres
 
 Les champs numériques « Coût » et « Nb tentatives » sont limités à six chiffres (`max="999999"`) et leur largeur est fixée à 100px (classe `champ-number`).
