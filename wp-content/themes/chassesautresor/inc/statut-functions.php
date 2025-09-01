@@ -1184,6 +1184,39 @@ function forcer_statut_selon_validation_chasse($post_id, $post, $update)
     }
 }
 
+/**
+ * Planifie une tâche récurrente pour vérifier le statut des chasses.
+ *
+ * @return void
+ */
+function schedule_cat_recalculate_chasse_statuses(): void
+{
+    if (!wp_next_scheduled('cat_recalculate_chasse_statuses')) {
+        wp_schedule_event(time(), 'hourly', 'cat_recalculate_chasse_statuses');
+    }
+}
+add_action('after_switch_theme', 'schedule_cat_recalculate_chasse_statuses');
+
+/**
+ * Vérifie périodiquement les statuts des chasses afin de les maintenir à jour.
+ *
+ * @return void
+ */
+function cat_recalculate_chasse_statuses(): void
+{
+    $chasses = get_posts([
+        'post_type'      => 'chasse',
+        'post_status'    => 'any',
+        'fields'         => 'ids',
+        'posts_per_page' => -1,
+    ]);
+
+    foreach ($chasses as $chasse_id) {
+        verifier_ou_recalculer_statut_chasse((int) $chasse_id);
+    }
+}
+add_action('cat_recalculate_chasse_statuses', 'cat_recalculate_chasse_statuses');
+
 
 // ==================================================
 // 🧑‍💻 GESTION DES STATUTS DES JOUEURS (UTILISATEUR ↔ ÉNIGME)
