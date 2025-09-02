@@ -408,18 +408,39 @@ function modifier_champ_chasse()
       if ($type && $url) {
         $repetitions[] = [
           'chasse_principale_liens_type' => $type,
-          'chasse_principale_liens_url'  => $url
+          'chasse_principale_liens_url'  => $url,
         ];
       }
     }
 
+    $actuels = get_field('chasse_principale_liens', $post_id);
+    $actuels = is_array($actuels) ? array_values($actuels) : [];
+
+    $normaliser = static function (array $items): array {
+      $sortie = [];
+      foreach ($items as $row) {
+        $type = sanitize_text_field($row['chasse_principale_liens_type'] ?? '');
+        $url  = esc_url_raw($row['chasse_principale_liens_url'] ?? '');
+        if ($type && $url) {
+          $sortie[] = [
+            'chasse_principale_liens_type' => $type,
+            'chasse_principale_liens_url'  => $url,
+          ];
+        }
+      }
+
+      return $sortie;
+    };
+
+    if (json_encode($normaliser($actuels)) === json_encode($repetitions)) {
+      wp_send_json_success($reponse);
+    }
+
     $ok = update_field('chasse_principale_liens', $repetitions, $post_id);
+    if ($ok) {
+      wp_send_json_success($reponse);
+    }
 
-    $enregistre = get_field('chasse_principale_liens', $post_id);
-    $enregistre = is_array($enregistre) ? array_values($enregistre) : [];
-    $equiv = json_encode($enregistre) === json_encode($repetitions);
-
-    if ($ok || $equiv) wp_send_json_success($reponse);
     wp_send_json_error(__('⚠️ echec_mise_a_jour_liens', 'chassesautresor-com'));
   }
 

@@ -292,6 +292,7 @@ function initLiensPublics(bloc, { panneauId, formId, action, reload = false }) {
   const panneau = document.getElementById(panneauId);
   let formulaire = document.getElementById(formId);
   const feedback = bloc.querySelector('.champ-feedback');
+  const champDonnees = bloc.querySelector('.champ-donnees');
 
   if (!champ || !postId || !bouton || !panneau || !formulaire) return;
 
@@ -307,6 +308,20 @@ function initLiensPublics(bloc, { panneauId, formId, action, reload = false }) {
     e.stopPropagation();
 
     const donnees = serializeLiensForm(formulaire);
+
+    let initial = [];
+    if (champDonnees?.dataset.valeurs) {
+      try {
+        initial = JSON.parse(champDonnees.dataset.valeurs);
+      } catch (_) {
+        initial = [];
+      }
+    }
+
+    if (JSON.stringify(initial) === JSON.stringify(donnees)) {
+      closeLocalPanel(panneau, panneauId);
+      return;
+    }
 
     try {
       const response = await fetch('/wp-admin/admin-ajax.php', {
