@@ -87,7 +87,8 @@ if (empty($indices)) {
                 $img_url = wp_get_attachment_image_url($img_id, 'thumbnail') ?: '';
             }
 
-            $contenu = wp_strip_all_tags(get_field('indice_contenu', $indice->ID) ?: '');
+            $indice_title = sprintf(__('Indice #%d', 'chassesautresor-com'), $indice_rank);
+            $contenu      = wp_strip_all_tags(get_field('indice_contenu', $indice->ID) ?: '');
             $dispo   = get_field('indice_disponibilite', $indice->ID) ?: 'immediate';
 
             $date_raw   = get_field('indice_date_disponibilite', $indice->ID) ?: '';
@@ -150,7 +151,7 @@ if (empty($indices)) {
                 <div><?= esc_html(sprintf(__('à %s', 'chassesautresor-com'), $time_value)); ?></div>
             </td>
             <td>
-                <div><a href="<?= esc_url(get_permalink($indice)); ?>"><?= esc_html(get_the_title($indice)); ?></a></div>
+                <div><a href="<?= esc_url(get_permalink($indice)); ?>"><?= esc_html($indice_title); ?></a></div>
                 <div><span class="etiquette <?= esc_attr($etat_class); ?>"><?= esc_html($etat_label); ?></span></div>
             </td>
             <?php echo cta_render_proposition_cell($contenu); ?>
