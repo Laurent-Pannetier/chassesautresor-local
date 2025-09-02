@@ -397,7 +397,7 @@ function ajax_chasse_lister_enigmes(): void
     $enigmes = array_map(
         static fn($p) => [
             'id'          => $p->ID,
-            'title'       => get_the_title($p),
+            'title'       => html_entity_decode(get_the_title($p), ENT_QUOTES, 'UTF-8'),
             'indice_rang' => prochain_rang_indice($chasse_id, 'chasse'),
         ],
         $posts
