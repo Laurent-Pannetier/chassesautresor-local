@@ -119,7 +119,7 @@ if (!function_exists('compter_tentatives_du_jour') || !function_exists('compter_
       $classes_carte = trim("carte carte-enigme $classe_completion $classe_cta");
       if (
         $est_joueur_engage
-        && $statut_utilisateur !== 'non_commencee'
+        && $statut_utilisateur === 'non_commencee'
       ) {
         $classes_carte .= ' carte-engagee';
       }
