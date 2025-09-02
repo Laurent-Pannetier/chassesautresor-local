@@ -42,6 +42,32 @@ $url_qr_code         = $args['url_qr_code'] ?? '';
 $indice_prefill   = apply_filters('chassesautresor/edition_animation_indice_prefill', [], $args);
 $solution_prefill = apply_filters('chassesautresor/edition_animation_solution_prefill', [], $args);
 
+$liens_js = [];
+if ($objet_type === 'chasse') {
+    foreach ($liens as $entree) {
+        $type_raw = $entree['chasse_principale_liens_type'] ?? null;
+        $url_raw  = $entree['chasse_principale_liens_url'] ?? null;
+        $type     = is_array($type_raw) ? ($type_raw[0] ?? '') : $type_raw;
+        if (is_string($type) && trim($type) !== '' && is_string($url_raw) && trim($url_raw) !== '') {
+            $liens_js[] = [
+                'type_de_lien' => sanitize_text_field($type),
+                'url_lien'     => esc_url_raw($url_raw),
+            ];
+        }
+    }
+} else {
+    foreach ($liens as $entree) {
+        $type = $entree['type_de_lien'] ?? '';
+        $url  = $entree['url_lien'] ?? '';
+        if (is_string($type) && trim($type) !== '' && is_string($url) && trim($url) !== '') {
+            $liens_js[] = [
+                'type_de_lien' => sanitize_text_field($type),
+                'url_lien'     => esc_url_raw($url),
+            ];
+        }
+    }
+}
+
 ?>
 <div id="<?= esc_attr($objet_type); ?>-tab-animation" class="edition-tab-content" style="display:none;">
   <i class="fa-solid fa-bullhorn tab-watermark" aria-hidden="true"></i>
@@ -84,7 +110,7 @@ $solution_prefill = apply_filters('chassesautresor/edition_animation_solution_pr
                 </button>
               <?php endif; ?>
               <div class="champ-donnees"
-                data-valeurs='<?= json_encode($liens, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>'></div>
+                data-valeurs='<?= json_encode($liens_js, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>'></div>
               <div class="champ-feedback"></div>
             </div>
           <?php elseif ($objet_type === 'organisateur') : ?>
@@ -110,7 +136,7 @@ $solution_prefill = apply_filters('chassesautresor/edition_animation_solution_pr
                 </button>
               <?php endif; ?>
               <div class="champ-donnees"
-                data-valeurs='<?= json_encode($liens, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>'></div>
+                data-valeurs='<?= json_encode($liens_js, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>'></div>
               <div class="champ-feedback"></div>
             </div>
           <?php endif; ?>

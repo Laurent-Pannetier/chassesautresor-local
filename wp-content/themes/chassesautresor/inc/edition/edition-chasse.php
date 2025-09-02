@@ -413,31 +413,36 @@ function modifier_champ_chasse()
       }
     }
 
-    $actuels = get_field('chasse_principale_liens', $post_id);
-    $actuels = is_array($actuels) ? array_values($actuels) : [];
+    $reponse = ['champ' => $champ, 'valeur' => $repetitions];
 
     $normaliser = static function (array $items): array {
-      $sortie = [];
+      $out = [];
       foreach ($items as $row) {
         $type = sanitize_text_field($row['chasse_principale_liens_type'] ?? '');
         $url  = esc_url_raw($row['chasse_principale_liens_url'] ?? '');
         if ($type && $url) {
-          $sortie[] = [
+          $out[] = [
             'chasse_principale_liens_type' => $type,
             'chasse_principale_liens_url'  => $url,
           ];
         }
       }
-
-      return $sortie;
+      return $out;
     };
 
-    if (json_encode($normaliser($actuels)) === json_encode($repetitions)) {
+    $actuels = get_field('chasse_principale_liens', $post_id);
+    $actuels = is_array($actuels) ? array_values($actuels) : [];
+    if (wp_json_encode($normaliser($actuels)) === wp_json_encode($repetitions)) {
       wp_send_json_success($reponse);
     }
 
     $ok = update_field('chasse_principale_liens', $repetitions, $post_id);
-    if ($ok) {
+
+    $enregistre = get_field('chasse_principale_liens', $post_id);
+    $enregistre = is_array($enregistre) ? array_values($enregistre) : [];
+    $equivalent = wp_json_encode($normaliser($enregistre)) === wp_json_encode($repetitions);
+
+    if ($ok !== false || $equivalent) {
       wp_send_json_success($reponse);
     }
 
