@@ -277,8 +277,14 @@
   gap: var(--space-xs);
 }
 
-.carte-ligne__footer .texte-lien {
+.carte-ligne__footer .liste-liens-publics.liens-sans-intitule .texte-lien {
   display: none;
+}
+
+.carte-ligne__footer .liste-liens-publics.liens-sans-intitule .lien-public {
+  padding: 0.3em;
+  gap: 0;
+  border-radius: 50%;
 }
 
 /* ========== ➕ Cartes d'ajout d'énigme et de chasse ========== */

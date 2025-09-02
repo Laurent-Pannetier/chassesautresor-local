@@ -43,6 +43,12 @@ function renderLiensPublics(liens = []) {
   const liste = document.createElement('ul');
   liste.className = 'liste-liens-publics';
 
+  const showLabels = liens.length <= 2;
+
+  if (!showLabels) {
+    liste.classList.add('liens-sans-intitule');
+  }
+
   liens.forEach(({ type_de_lien, url_lien }) => {
     const type = Array.isArray(type_de_lien) ? type_de_lien[0] : type_de_lien;
     const icone = icones[type] || 'fa-link';
@@ -62,10 +68,12 @@ function renderLiensPublics(liens = []) {
     icon.className = `fa ${icone}`;
     a.appendChild(icon);
 
-    const span = document.createElement('span');
-    span.className = 'texte-lien';
-    span.textContent = label;
-    a.appendChild(span);
+    if (showLabels) {
+      const span = document.createElement('span');
+      span.className = 'texte-lien';
+      span.textContent = label;
+      a.appendChild(span);
+    }
 
     li.appendChild(a);
     liste.appendChild(li);

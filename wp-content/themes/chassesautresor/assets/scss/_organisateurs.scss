@@ -467,6 +467,16 @@ body:not(.edition-active) #presentation .champ-liens.champ-vide {
     white-space: nowrap;
 }
 
+.liste-liens-publics.liens-sans-intitule .lien-public {
+  padding: 0.3em;
+  gap: 0;
+  border-radius: 50%;
+}
+
+.liste-liens-publics.liens-sans-intitule .lien-public .texte-lien {
+  display: none;
+}
+
 .lien-public.lien-facebook i {
   color: #1877f2;
 }
@@ -522,9 +532,6 @@ section#presentation .presentation-fermer {
 
 /* ========== 📱 RESPONSIVE ========== */
 @media not all and (--bp-small) {
-    .lien-public .texte-lien {
-        display: none;
-    }
     section#presentation .titre-presentation {
         justify-content: center;
     }
