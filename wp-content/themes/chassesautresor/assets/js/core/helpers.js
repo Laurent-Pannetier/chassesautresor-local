@@ -240,15 +240,6 @@ function updateTargetBlocks(bloc, champ, postId, donnees) {
 
   if (zoneAffichage && typeof renderLiensPublicsJS === 'function') {
     zoneAffichage.replaceChildren(renderLiensPublicsJS(donnees));
-
-    if (!zoneAffichage.dataset.noEdit && !bloc.querySelector('.champ-modifier')) {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'bouton-cta champ-modifier ouvrir-panneau-liens';
-      btn.setAttribute('aria-label', 'Configurer vos liens');
-      btn.textContent = wp.i18n.__('modifier', 'chassesautresor-com');
-      zoneAffichage.appendChild(btn);
-    }
   }
 
   bloc.classList.toggle('champ-vide', donnees.length === 0);
@@ -262,15 +253,6 @@ function updateTargetBlocks(bloc, champ, postId, donnees) {
       const zone = blocCible.querySelector('.champ-affichage');
       if (zone && typeof renderLiensPublicsJS === 'function') {
         zone.replaceChildren(renderLiensPublicsJS(donnees));
-
-        if (!zone.dataset.noEdit && !blocCible.querySelector('.champ-modifier')) {
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.className = 'bouton-cta champ-modifier ouvrir-panneau-liens';
-          btn.setAttribute('aria-label', 'Configurer vos liens');
-          btn.textContent = wp.i18n.__('modifier', 'chassesautresor-com');
-          zone.appendChild(btn);
-        }
       }
 
       const donneesCible = blocCible.querySelector('.champ-donnees');
@@ -289,15 +271,6 @@ function updateTargetBlocks(bloc, champ, postId, donnees) {
 
       if (zone && typeof renderLiensPublicsJS === 'function') {
         zone.replaceChildren(renderLiensPublicsJS(donnees));
-
-        if (!zone.dataset.noEdit && !blocCible.querySelector('.champ-modifier')) {
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.className = 'bouton-cta champ-modifier ouvrir-panneau-liens';
-          btn.setAttribute('aria-label', 'Configurer vos liens');
-          btn.textContent = wp.i18n.__('modifier', 'chassesautresor-com');
-          zone.appendChild(btn);
-        }
       }
 
       const donneesCible = blocCible.querySelector('.champ-donnees');
