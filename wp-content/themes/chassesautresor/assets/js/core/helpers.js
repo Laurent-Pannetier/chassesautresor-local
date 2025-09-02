@@ -43,6 +43,12 @@ function renderLiensPublics(liens = []) {
   const liste = document.createElement('ul');
   liste.className = 'liste-liens-publics';
 
+  const showLabels = liens.length <= 2;
+
+  if (!showLabels) {
+    liste.classList.add('liens-sans-intitule');
+  }
+
   liens.forEach(({ type_de_lien, url_lien }) => {
     const type = Array.isArray(type_de_lien) ? type_de_lien[0] : type_de_lien;
     const icone = icones[type] || 'fa-link';
@@ -62,10 +68,12 @@ function renderLiensPublics(liens = []) {
     icon.className = `fa ${icone}`;
     a.appendChild(icon);
 
-    const span = document.createElement('span');
-    span.className = 'texte-lien';
-    span.textContent = label;
-    a.appendChild(span);
+    if (showLabels) {
+      const span = document.createElement('span');
+      span.className = 'texte-lien';
+      span.textContent = label;
+      a.appendChild(span);
+    }
 
     li.appendChild(a);
     liste.appendChild(li);
@@ -232,15 +240,6 @@ function updateTargetBlocks(bloc, champ, postId, donnees) {
 
   if (zoneAffichage && typeof renderLiensPublicsJS === 'function') {
     zoneAffichage.replaceChildren(renderLiensPublicsJS(donnees));
-
-    if (!zoneAffichage.dataset.noEdit && !bloc.querySelector('.champ-modifier')) {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'bouton-cta champ-modifier ouvrir-panneau-liens';
-      btn.setAttribute('aria-label', 'Configurer vos liens');
-      btn.textContent = wp.i18n.__('modifier', 'chassesautresor-com');
-      zoneAffichage.appendChild(btn);
-    }
   }
 
   bloc.classList.toggle('champ-vide', donnees.length === 0);
@@ -254,15 +253,6 @@ function updateTargetBlocks(bloc, champ, postId, donnees) {
       const zone = blocCible.querySelector('.champ-affichage');
       if (zone && typeof renderLiensPublicsJS === 'function') {
         zone.replaceChildren(renderLiensPublicsJS(donnees));
-
-        if (!zone.dataset.noEdit && !blocCible.querySelector('.champ-modifier')) {
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.className = 'bouton-cta champ-modifier ouvrir-panneau-liens';
-          btn.setAttribute('aria-label', 'Configurer vos liens');
-          btn.textContent = wp.i18n.__('modifier', 'chassesautresor-com');
-          zone.appendChild(btn);
-        }
       }
 
       const donneesCible = blocCible.querySelector('.champ-donnees');
@@ -281,15 +271,6 @@ function updateTargetBlocks(bloc, champ, postId, donnees) {
 
       if (zone && typeof renderLiensPublicsJS === 'function') {
         zone.replaceChildren(renderLiensPublicsJS(donnees));
-
-        if (!zone.dataset.noEdit && !blocCible.querySelector('.champ-modifier')) {
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.className = 'bouton-cta champ-modifier ouvrir-panneau-liens';
-          btn.setAttribute('aria-label', 'Configurer vos liens');
-          btn.textContent = wp.i18n.__('modifier', 'chassesautresor-com');
-          zone.appendChild(btn);
-        }
       }
 
       const donneesCible = blocCible.querySelector('.champ-donnees');
@@ -311,6 +292,7 @@ function initLiensPublics(bloc, { panneauId, formId, action, reload = false }) {
   const panneau = document.getElementById(panneauId);
   let formulaire = document.getElementById(formId);
   const feedback = bloc.querySelector('.champ-feedback');
+  const champDonnees = bloc.querySelector('.champ-donnees');
 
   if (!champ || !postId || !bouton || !panneau || !formulaire) return;
 
@@ -326,6 +308,20 @@ function initLiensPublics(bloc, { panneauId, formId, action, reload = false }) {
     e.stopPropagation();
 
     const donnees = serializeLiensForm(formulaire);
+
+    let initial = [];
+    if (champDonnees?.dataset.valeurs) {
+      try {
+        initial = JSON.parse(champDonnees.dataset.valeurs);
+      } catch (_) {
+        initial = [];
+      }
+    }
+
+    if (JSON.stringify(initial) === JSON.stringify(donnees)) {
+      closeLocalPanel(panneau, panneauId);
+      return;
+    }
 
     try {
       const response = await fetch('/wp-admin/admin-ajax.php', {

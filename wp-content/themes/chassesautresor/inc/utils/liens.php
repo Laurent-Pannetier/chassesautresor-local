@@ -51,23 +51,23 @@ defined( 'ABSPATH' ) || exit;
 function get_types_liens_publics(): array {
     return [
         'site_web' => [
-            'label' => 'Site Web',
+            'label' => __('Site Web', 'chassesautresor-com'),
             'icone' => 'fa-solid fa-globe',
         ],
         'discord' => [
-            'label' => 'Discord',
+            'label' => __('Discord', 'chassesautresor-com'),
             'icone' => 'fa-brands fa-discord',
         ],
         'facebook' => [
-            'label' => 'Facebook',
+            'label' => __('Facebook', 'chassesautresor-com'),
             'icone' => 'fa-brands fa-facebook-f',
         ],
         'twitter' => [
-            'label' => 'Twitter/X',
+            'label' => __('Twitter/X', 'chassesautresor-com'),
             'icone' => 'fa-brands fa-x-twitter',
         ],
         'instagram' => [
-            'label' => 'Instagram',
+            'label' => __('Instagram', 'chassesautresor-com'),
             'icone' => 'fa-brands fa-instagram',
         ],
     ];
@@ -107,17 +107,28 @@ function render_liens_publics(array $liens, string $contexte = 'organisateur', a
         }
     }
 
-    if (!empty($liens_actifs)) {
-        $out = '<ul class="liste-liens-publics">';
+    if (! empty($liens_actifs)) {
+        $show_labels = count($liens_actifs) <= 2;
+        $classes = 'liste-liens-publics';
+        if (! $show_labels) {
+            $classes .= ' liens-sans-intitule';
+        }
+
+        $out = '<ul class="' . esc_attr($classes) . '">';
         foreach ($liens_actifs as $type => $url) {
             $label = $types[$type]['label'] ?? ucfirst($type);
             $icone = $types[$type]['icone'] ?? 'fa-solid fa-link';
-            $out .= '<li class="item-lien-public">
-                      <a href="' . esc_url($url) . '" class="lien-public lien-' . esc_attr($type) . '" target="_blank" rel="noopener">
-                        <i class="fa ' . esc_attr($icone) . '"></i>
-                        <span class="texte-lien">' . esc_html($label) . '</span>
-                      </a>
-                    </li>';
+
+            $out .= '<li class="item-lien-public">'
+                . '<a href="' . esc_url($url) . '" class="lien-public lien-' . esc_attr($type) . '" target="_blank" rel="noopener">'
+                . '<i class="fa ' . esc_attr($icone) . '"></i>';
+
+            if ($show_labels) {
+                $out .= '<span class="texte-lien">' . esc_html($label) . '</span>';
+            }
+
+            $out .= '</a>'
+                . '</li>';
         }
         $out .= '</ul>';
         return $out;
@@ -129,7 +140,7 @@ function render_liens_publics(array $liens, string $contexte = 'organisateur', a
 
     // Placeholder si aucun lien
     $out = '<div class="liens-placeholder">';
-    $out .= '<p class="liens-placeholder-message">Aucun lien ajouté pour le moment.</p>';
+    $out .= '<p class="liens-placeholder-message">' . esc_html__( 'Aucun lien ajouté pour le moment.', 'chassesautresor-com' ) . '</p>';
     foreach ($types as $type => $infos) {
         $out .= '<i class="fa ' . esc_attr($infos['icone']) . ' icone-grisee" title="' . esc_attr($infos['label']) . '"></i>';
     }

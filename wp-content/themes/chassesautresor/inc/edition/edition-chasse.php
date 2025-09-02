@@ -399,28 +399,54 @@ function modifier_champ_chasse()
   if ($champ === 'chasse_principale_liens') {
     $tableau = json_decode(stripslashes($valeur), true);
     if (!is_array($tableau)) {
-      wp_send_json_error('⚠️ format_invalide');
+      wp_send_json_error(__('⚠️ format_invalide', 'chassesautresor-com'));
     }
     $repetitions = [];
     foreach ($tableau as $ligne) {
       $type = sanitize_text_field($ligne['type_de_lien'] ?? '');
-      $url  = sanitize_text_field($ligne['url_lien'] ?? '');
+      $url  = esc_url_raw($ligne['url_lien'] ?? '');
       if ($type && $url) {
         $repetitions[] = [
           'chasse_principale_liens_type' => $type,
-          'chasse_principale_liens_url'  => $url
+          'chasse_principale_liens_url'  => $url,
         ];
       }
+    }
+
+    $reponse = ['champ' => $champ, 'valeur' => $repetitions];
+
+    $normaliser = static function (array $items): array {
+      $out = [];
+      foreach ($items as $row) {
+        $type = sanitize_text_field($row['chasse_principale_liens_type'] ?? '');
+        $url  = esc_url_raw($row['chasse_principale_liens_url'] ?? '');
+        if ($type && $url) {
+          $out[] = [
+            'chasse_principale_liens_type' => $type,
+            'chasse_principale_liens_url'  => $url,
+          ];
+        }
+      }
+      return $out;
+    };
+
+    $actuels = get_field('chasse_principale_liens', $post_id);
+    $actuels = is_array($actuels) ? array_values($actuels) : [];
+    if (wp_json_encode($normaliser($actuels)) === wp_json_encode($repetitions)) {
+      wp_send_json_success($reponse);
     }
 
     $ok = update_field('chasse_principale_liens', $repetitions, $post_id);
 
     $enregistre = get_field('chasse_principale_liens', $post_id);
     $enregistre = is_array($enregistre) ? array_values($enregistre) : [];
-    $equiv = json_encode($enregistre) === json_encode($repetitions);
+    $equivalent = wp_json_encode($normaliser($enregistre)) === wp_json_encode($repetitions);
 
-    if ($ok || $equiv) wp_send_json_success($reponse);
-    wp_send_json_error('⚠️ echec_mise_a_jour_liens');
+    if ($ok !== false || $equivalent) {
+      wp_send_json_success($reponse);
+    }
+
+    wp_send_json_error(__('⚠️ echec_mise_a_jour_liens', 'chassesautresor-com'));
   }
 
   // 🔹 Dates (début / fin)

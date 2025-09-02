@@ -268,8 +268,18 @@
   gap: var(--space-xs);
 }
 
-.carte-ligne__footer .texte-lien {
+.carte-ligne__footer .liste-liens-publics.liens-sans-intitule {
+  gap: var(--space-sm);
+}
+
+.carte-ligne__footer .liste-liens-publics.liens-sans-intitule .texte-lien {
   display: none;
+}
+
+.carte-ligne__footer .liste-liens-publics.liens-sans-intitule .lien-public {
+  padding: 0.3em;
+  gap: 0;
+  border-radius: 50%;
 }
 
 /* ========== ➕ Cartes d'ajout d'énigme et de chasse ========== */
@@ -583,15 +593,18 @@
   justify-content: center;
 }
 
+.chasse-visuel-wrapper .liste-liens-publics.liens-sans-intitule {
+  gap: var(--space-sm);
+}
+
 .chasse-visuel-wrapper .lien-public {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: var(--color-grey-light) !important;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
+  gap: var(--space-xxs);
+  padding: 0 var(--space-xs);
+  border-radius: 1rem;
+  background: var(--color-grey-light) !important;
   color: var(--color-text-fond-clair) !important;
 }
 
@@ -600,7 +613,14 @@
   font-size: 0.75rem;
 }
 
-.chasse-visuel-wrapper .lien-public .texte-lien {
+.chasse-visuel-wrapper .liste-liens-publics.liens-sans-intitule .lien-public {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.chasse-visuel-wrapper .liste-liens-publics.liens-sans-intitule .lien-public .texte-lien {
   display: none;
 }
 
@@ -628,16 +648,7 @@
   .champ-chasse.champ-img {
     margin: 0;
   }
-  .chasse-visuel-wrapper .lien-public {
-    width: auto;
-    height: auto;
-    padding: 0 var(--space-xs);
-    gap: var(--space-xxs);
-    border-radius: 1rem;
-  }
-  .chasse-visuel-wrapper .lien-public .texte-lien {
-    display: inline;
-  }
+  /* Styles spécifiques au layout desktop conservés */
 }
 /* ========== 📝 COLONNE INFOS DE LA CHASSE ========== */
 .chasse-details-wrapper {
@@ -8972,6 +8983,10 @@ body:not(.edition-active) #presentation .champ-liens.champ-vide {
   margin: 0;
 }
 
+.liste-liens-publics.liens-sans-intitule {
+  gap: var(--space-sm);
+}
+
 .item-lien-public {
   display: flex;
 }
@@ -8999,6 +9014,16 @@ body:not(.edition-active) #presentation .champ-liens.champ-vide {
 
 .lien-public .texte-lien {
   white-space: nowrap;
+}
+
+.liste-liens-publics.liens-sans-intitule .lien-public {
+  padding: 0.3em;
+  gap: 0;
+  border-radius: 50%;
+}
+
+.liste-liens-publics.liens-sans-intitule .lien-public .texte-lien {
+  display: none;
 }
 
 .lien-public.lien-facebook i {
@@ -9057,9 +9082,6 @@ section#presentation .presentation-fermer {
 
 /* ========== 📱 RESPONSIVE ========== */
 @media not all and (min-width: 480px) {
-  .lien-public .texte-lien {
-    display: none;
-  }
   section#presentation .titre-presentation {
     justify-content: center;
   }

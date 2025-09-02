@@ -439,6 +439,10 @@ body:not(.edition-active) #presentation .champ-liens.champ-vide {
   margin: 0;
 }
 
+.liste-liens-publics.liens-sans-intitule {
+  gap: var(--space-sm);
+}
+
 .item-lien-public {
   display: flex;
 }
@@ -465,6 +469,16 @@ body:not(.edition-active) #presentation .champ-liens.champ-vide {
 }
 .lien-public .texte-lien {
     white-space: nowrap;
+}
+
+.liste-liens-publics.liens-sans-intitule .lien-public {
+  padding: 0.3em;
+  gap: 0;
+  border-radius: 50%;
+}
+
+.liste-liens-publics.liens-sans-intitule .lien-public .texte-lien {
+  display: none;
 }
 
 .lien-public.lien-facebook i {
@@ -522,9 +536,6 @@ section#presentation .presentation-fermer {
 
 /* ========== 📱 RESPONSIVE ========== */
 @media not all and (--bp-small) {
-    .lien-public .texte-lien {
-        display: none;
-    }
     section#presentation .titre-presentation {
         justify-content: center;
     }

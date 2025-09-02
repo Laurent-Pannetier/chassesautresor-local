@@ -33,17 +33,18 @@ if (!empty($liens_publics) && is_array($liens_publics)) {
 <section id="presentation" class="bloc-presentation-organisateur bloc-toggle masque bloc-discret">
     <button type="button" class="panneau-fermer presentation-fermer" aria-label="Fermer les informations">✖</button>
     <!-- Liens publics -->
-    <?php $champ_vide_liens = count($liens_actifs) === 0;    ?>
-    <?php $classe_liens = count($liens_actifs) >= 3 ? 'liens-compacts' : ''; ?>
-    <div class="champ-organisateur champ-liens <?= empty($liens_actifs) ? 'champ-vide' : ''; ?>"
+    <?php $nb_liens = count($liens_actifs); ?>
+    <div class="champ-organisateur champ-liens <?= $nb_liens === 0 ? 'champ-vide' : ''; ?>"
              data-champ="liens_publics"
              data-cpt="organisateur"
              data-post-id="<?= esc_attr($organisateur_id); ?>">
-        
-            <div class="champ-affichage champ-affichage-liens bloc-liens-publics header-organisateur__liens <?= count($liens_actifs) >= 3 ? 'liens-compacts' : ''; ?>" data-no-edit="1">
-        
-            <?php if (!empty($liens_actifs)) : ?>
-              <ul class="liste-liens-publics">
+
+            <div class="champ-affichage champ-affichage-liens bloc-liens-publics header-organisateur__liens" data-no-edit="1">
+
+            <?php if ($nb_liens > 0) : ?>
+              <?php $ul_classes = 'liste-liens-publics'; ?>
+              <?php if ($nb_liens > 2) { $ul_classes .= ' liens-sans-intitule'; } ?>
+              <ul class="<?= esc_attr($ul_classes); ?>">
                 <?php foreach ($liens_actifs as $type => $url) :
                   $infos = organisateur_get_lien_public_infos($type);
                 ?>
@@ -53,7 +54,9 @@ if (!empty($liens_publics) && is_array($liens_publics)) {
                        target="_blank" rel="noopener"
                        aria-label="<?= esc_attr($infos['label']); ?>">
                       <i class="fa <?= esc_attr($infos['icone']); ?>" aria-hidden="true"></i>
-                      <span class="texte-lien"><?= esc_html($infos['label']); ?></span>
+                      <?php if ($nb_liens <= 2) : ?>
+                        <span class="texte-lien"><?= esc_html($infos['label']); ?></span>
+                      <?php endif; ?>
                     </a>
                   </li>
                 <?php endforeach; ?>

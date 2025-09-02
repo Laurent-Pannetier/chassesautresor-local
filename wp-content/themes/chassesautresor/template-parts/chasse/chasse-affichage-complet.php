@@ -212,13 +212,25 @@ if ($edition_active && !$est_complet) {
       </div>
       <?php
       $vide = empty($liens);
+      $liens_js = [];
+      foreach ($liens as $entree) {
+        $type_raw = $entree['chasse_principale_liens_type'] ?? null;
+        $url_raw  = $entree['chasse_principale_liens_url'] ?? null;
+        $type     = is_array($type_raw) ? ($type_raw[0] ?? '') : $type_raw;
+        if (is_string($type) && trim($type) !== '' && is_string($url_raw) && trim($url_raw) !== '') {
+          $liens_js[] = [
+            'type_de_lien' => sanitize_text_field($type),
+            'url_lien'     => esc_url_raw($url_raw),
+          ];
+        }
+      }
       ?>
       <div class="champ-chasse champ-liens champ-fiche-publication <?= $vide ? 'champ-vide' : 'champ-rempli'; ?>"
         data-champ="chasse_principale_liens"
         data-cpt="chasse"
         data-post-id="<?= esc_attr($chasse_id); ?>">
         <div class="champ-donnees"
-          data-valeurs='<?= json_encode($liens, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>'></div>
+          data-valeurs='<?= json_encode($liens_js, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>'></div>
         <div class="champ-affichage">
           <div class="champ-affichage-liens">
             <?= render_liens_publics($liens, 'chasse', [
