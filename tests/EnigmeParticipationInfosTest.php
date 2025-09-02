@@ -83,13 +83,48 @@ if (!function_exists('wp_date')) {
     }
 }
 
+if (!function_exists('locate_template')) {
+    function locate_template($template)
+    {
+        return false;
+    }
+}
+
+if (!function_exists('get_template_part')) {
+    function get_template_part($slug, $name = null, $args = [])
+    {
+    }
+}
+
+if (!function_exists('cat_debug')) {
+    function cat_debug($msg)
+    {
+    }
+}
+
+if (!function_exists('get_posts')) {
+    function get_posts($args = [])
+    {
+        global $mocked_posts;
+        return $mocked_posts ?? [];
+    }
+}
+
+if (!function_exists('get_the_title')) {
+    function get_the_title($post_id)
+    {
+        global $mocked_titles;
+        return $mocked_titles[$post_id] ?? '';
+    }
+}
+
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/enigme/affichage.php';
 
 class EnigmeParticipationInfosTest extends TestCase
 {
     public function setUp(): void
     {
-        global $fields, $resolved, $wpdb;
+        global $fields, $resolved, $wpdb, $mocked_posts, $mocked_titles;
         $fields = [
             10 => [
                 'indices'                      => [],
@@ -99,6 +134,8 @@ class EnigmeParticipationInfosTest extends TestCase
             ],
         ];
         $resolved = false;
+        $mocked_posts  = [];
+        $mocked_titles = [];
         $wpdb = new class {
             public string $prefix = 'wp_';
             public function prepare($query, ...$args)
@@ -133,5 +170,26 @@ class EnigmeParticipationInfosTest extends TestCase
         $html = ob_get_clean();
         $this->assertStringNotContainsString('Solde', $html);
         $this->assertStringNotContainsString('Tentatives quotidiennes', $html);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_indices_titles_displayed(): void
+    {
+        global $mocked_posts, $mocked_titles;
+        $mocked_posts  = [101, 102];
+        $mocked_titles = [101 => 'Indice A', 102 => 'Indice B'];
+
+        ob_start();
+        render_enigme_participation(10, 'defaut', 1);
+        $html = ob_get_clean();
+
+        $this->assertStringContainsString('Indice A', $html);
+        $this->assertStringContainsString('Indice B', $html);
+
+        $pos_indice = strpos($html, 'Indice A');
+        $this->assertNotFalse($pos_indice);
     }
 }

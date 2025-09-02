@@ -541,13 +541,50 @@ require_once __DIR__ . '/utils.php';
 
         $content = '';
 
-        if ($bloc_reponse !== '') {
-            $content .= '<div class="zone-reponse">' . $bloc_reponse . '</div>';
+        $indices = function_exists('get_posts')
+            ? get_posts([
+                'post_type'      => 'indice',
+                'post_status'    => 'publish',
+                'meta_query'     => [
+                    [
+                        'key'     => 'indice_cible_type',
+                        'value'   => 'enigme',
+                        'compare' => '=',
+                    ],
+                    [
+                        'key'     => 'indice_enigme_linked',
+                        'value'   => $enigme_id,
+                        'compare' => '=',
+                    ],
+                    [
+                        'key'     => 'indice_cache_etat_systeme',
+                        'value'   => 'accessible',
+                        'compare' => '=',
+                    ],
+                ],
+                'orderby'        => 'date',
+                'order'          => 'ASC',
+                'fields'         => 'ids',
+                'no_found_rows'  => true,
+                'posts_per_page' => -1,
+            ])
+            : [];
+
+        if (!empty($indices)) {
+            $content .= '<div class="zone-indices"><h3>'
+                . esc_html__('Indices', 'chassesautresor-com')
+                . '</h3><ul>';
+            foreach ($indices as $indice_id) {
+                $title = function_exists('get_the_title')
+                    ? get_the_title($indice_id)
+                    : '';
+                $content .= '<li>' . esc_html($title) . '</li>';
+            }
+            $content .= '</ul></div>';
         }
 
-        $hints = get_field('indices', $enigme_id);
-        if (!empty($hints)) {
-            $content .= '<div class="zone-indices"><h3>' . esc_html__('Indices', 'chassesautresor-com') . '</h3></div>';
+        if ($bloc_reponse !== '') {
+            $content .= '<div class="zone-reponse">' . $bloc_reponse . '</div>';
         }
 
         $mode_validation = get_field('enigme_mode_validation', $enigme_id);
