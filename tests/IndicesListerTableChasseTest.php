@@ -29,15 +29,19 @@ if (!function_exists('sanitize_key')) {
 if (!function_exists('recuperer_ids_enigmes_pour_chasse')) {
     function recuperer_ids_enigmes_pour_chasse($id) { return [5,6]; }
 }
+if (!function_exists('get_posts')) {
+    function get_posts($args) { return [1, 2, 3, 4, 5]; }
+}
 if (!class_exists('WP_Query')) {
     class WP_Query {
         public $posts = [];
         public $max_num_pages = 1;
         public function __construct($args) {
-            global $captured_query_args;
-            $captured_query_args = $args;
-            $this->posts = [];
-            $this->max_num_pages = 1;
+            global $captured_query_args, $captured_query_args_list;
+            $captured_query_args      = $args;
+            $captured_query_args_list[] = $args;
+            $this->max_num_pages      = 1;
+            $this->posts              = ($args['paged'] ?? 1) > 1 ? [] : ['p'];
         }
     }
 }
@@ -50,9 +54,10 @@ require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/editio
 class IndicesListerTableChasseTest extends TestCase {
     protected function setUp(): void {
         parent::setUp();
-        global $captured_query_args, $json_success_data;
-        $captured_query_args = [];
-        $json_success_data   = null;
+        global $captured_query_args, $captured_query_args_list, $json_success_data;
+        $captured_query_args      = [];
+        $captured_query_args_list = [];
+        $json_success_data        = null;
         $_POST = [];
     }
 
@@ -82,5 +87,26 @@ class IndicesListerTableChasseTest extends TestCase {
         $this->assertSame([5,6], $meta[1][1]['value']);
         $this->assertSame('IN', $meta[1][1]['compare']);
         $this->assertIsArray($json_success_data);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_resets_to_last_page_when_page_exceeds_total(): void {
+        global $captured_query_args_list, $json_success_data;
+
+        $_POST = [
+            'objet_id'   => 3,
+            'objet_type' => 'chasse',
+            'page'       => 2,
+        ];
+
+        ajax_indices_lister_table();
+
+        $this->assertCount(1, $captured_query_args_list);
+        $this->assertSame(1, $captured_query_args_list[0]['paged']);
+        $this->assertSame(1, $json_success_data['page']);
+        $this->assertSame(1, $json_success_data['pages']);
     }
 }
