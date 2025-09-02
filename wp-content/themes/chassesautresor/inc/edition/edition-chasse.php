@@ -399,12 +399,12 @@ function modifier_champ_chasse()
   if ($champ === 'chasse_principale_liens') {
     $tableau = json_decode(stripslashes($valeur), true);
     if (!is_array($tableau)) {
-      wp_send_json_error('⚠️ format_invalide');
+      wp_send_json_error(__('⚠️ format_invalide', 'chassesautresor-com'));
     }
     $repetitions = [];
     foreach ($tableau as $ligne) {
       $type = sanitize_text_field($ligne['type_de_lien'] ?? '');
-      $url  = sanitize_text_field($ligne['url_lien'] ?? '');
+      $url  = esc_url_raw($ligne['url_lien'] ?? '');
       if ($type && $url) {
         $repetitions[] = [
           'chasse_principale_liens_type' => $type,
@@ -420,7 +420,7 @@ function modifier_champ_chasse()
     $equiv = json_encode($enregistre) === json_encode($repetitions);
 
     if ($ok || $equiv) wp_send_json_success($reponse);
-    wp_send_json_error('⚠️ echec_mise_a_jour_liens');
+    wp_send_json_error(__('⚠️ echec_mise_a_jour_liens', 'chassesautresor-com'));
   }
 
   // 🔹 Dates (début / fin)

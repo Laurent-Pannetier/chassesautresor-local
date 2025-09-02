@@ -51,23 +51,23 @@ defined( 'ABSPATH' ) || exit;
 function get_types_liens_publics(): array {
     return [
         'site_web' => [
-            'label' => 'Site Web',
+            'label' => __('Site Web', 'chassesautresor-com'),
             'icone' => 'fa-solid fa-globe',
         ],
         'discord' => [
-            'label' => 'Discord',
+            'label' => __('Discord', 'chassesautresor-com'),
             'icone' => 'fa-brands fa-discord',
         ],
         'facebook' => [
-            'label' => 'Facebook',
+            'label' => __('Facebook', 'chassesautresor-com'),
             'icone' => 'fa-brands fa-facebook-f',
         ],
         'twitter' => [
-            'label' => 'Twitter/X',
+            'label' => __('Twitter/X', 'chassesautresor-com'),
             'icone' => 'fa-brands fa-x-twitter',
         ],
         'instagram' => [
-            'label' => 'Instagram',
+            'label' => __('Instagram', 'chassesautresor-com'),
             'icone' => 'fa-brands fa-instagram',
         ],
     ];
@@ -140,7 +140,7 @@ function render_liens_publics(array $liens, string $contexte = 'organisateur', a
 
     // Placeholder si aucun lien
     $out = '<div class="liens-placeholder">';
-    $out .= '<p class="liens-placeholder-message">Aucun lien ajouté pour le moment.</p>';
+    $out .= '<p class="liens-placeholder-message">' . esc_html__( 'Aucun lien ajouté pour le moment.', 'chassesautresor-com' ) . '</p>';
     foreach ($types as $type => $infos) {
         $out .= '<i class="fa ' . esc_attr($infos['icone']) . ' icone-grisee" title="' . esc_attr($infos['label']) . '"></i>';
     }
