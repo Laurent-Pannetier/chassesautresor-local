@@ -27,6 +27,8 @@ $autorise_boucle = (
 );
 if (!$autorise_boucle) return;
 
+$est_joueur_engage = utilisateur_est_engage_dans_chasse($utilisateur_id, $chasse_id);
+
 // 🔁 Récupération des énigmes associées
 $ids_enigmes = $infos_chasse['enigmes_associees'] ?? [];
 
@@ -89,8 +91,9 @@ if (!function_exists('compter_tentatives_du_jour') || !function_exists('compter_
       $aria_label = $linkable
         ? sprintf(__('Ouvrir l\'énigme — %s', 'chassesautresor-com'), $cta['label'])
         : '';
+      $statut_utilisateur = $cta['statut_utilisateur'] ?? '';
       $classes_bouton = in_array(
-        $cta['statut_utilisateur'],
+        $statut_utilisateur,
         ['non_commencee', 'echouee', 'abandonnee', 'soumis'],
         true
       )
@@ -114,6 +117,12 @@ if (!function_exists('compter_tentatives_du_jour') || !function_exists('compter_
       }
 
       $classes_carte = trim("carte carte-enigme $classe_completion $classe_cta");
+      if (
+        $est_joueur_engage
+        && $statut_utilisateur !== 'non_commencee'
+      ) {
+        $classes_carte .= ' carte-engagee';
+      }
       $mapping_visuel = get_mapping_visuel_enigme($enigme_id);
       $cout_points    = (int) get_field('enigme_tentative_cout_points', $enigme_id);
       $nb_participants = enigme_compter_joueurs_engages($enigme_id);

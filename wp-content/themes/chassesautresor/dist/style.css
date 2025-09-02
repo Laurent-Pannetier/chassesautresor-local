@@ -401,6 +401,14 @@
   animation: clignoteTitre 1s infinite alternate;
 }
 
+.carte-engagee {
+  box-shadow: 0 0 0 2px var(--color-accent), 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.carte-engagee:hover {
+  box-shadow: 0 0 0 2px var(--color-accent), 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
 .warning-icon {
   position: absolute;
   top: var(--space-xs);
