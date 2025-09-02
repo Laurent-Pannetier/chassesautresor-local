@@ -29,6 +29,9 @@ if (!function_exists('sanitize_key')) {
 if (!function_exists('recuperer_ids_enigmes_pour_chasse')) {
     function recuperer_ids_enigmes_pour_chasse($id) { return [5,6]; }
 }
+if (!function_exists('get_posts')) {
+    function get_posts($args) { return [1, 2, 3, 4, 5]; }
+}
 if (!class_exists('WP_Query')) {
     class WP_Query {
         public $posts = [];
@@ -101,9 +104,8 @@ class IndicesListerTableChasseTest extends TestCase {
 
         ajax_indices_lister_table();
 
-        $this->assertCount(2, $captured_query_args_list);
-        $this->assertSame(2, $captured_query_args_list[0]['paged']);
-        $this->assertSame(1, $captured_query_args_list[1]['paged']);
+        $this->assertCount(1, $captured_query_args_list);
+        $this->assertSame(1, $captured_query_args_list[0]['paged']);
         $this->assertSame(1, $json_success_data['page']);
         $this->assertSame(1, $json_success_data['pages']);
     }

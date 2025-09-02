@@ -523,24 +523,7 @@ function ajax_indices_lister_table(): void
         ];
     }
 
-    $page       = max(1, $page);
-    $query_args = [
-        'post_type'      => 'indice',
-        'post_status'    => ['publish', 'pending', 'draft'],
-        'orderby'        => 'date',
-        'order'          => 'DESC',
-        'posts_per_page' => $per_page,
-        'paged'          => $page,
-        'meta_query'     => $meta,
-    ];
-    $query      = new WP_Query($query_args);
-    $total_pages = (int) $query->max_num_pages;
-    if ($page > $total_pages && $total_pages > 0) {
-        $page                  = $total_pages;
-        $query_args['paged']   = $page;
-        $query                 = new WP_Query($query_args);
-        $total_pages           = (int) $query->max_num_pages;
-    }
+    $page = max(1, $page);
 
     $ids = [];
     if (function_exists('get_posts')) {
@@ -553,6 +536,23 @@ function ajax_indices_lister_table(): void
         ]);
     }
 
+    $count_total = is_countable($ids) ? count($ids) : 0;
+    $total_pages = (int) ceil($count_total / $per_page);
+    if ($total_pages > 0 && $page > $total_pages) {
+        $page = $total_pages;
+    }
+
+    $query_args = [
+        'post_type'      => 'indice',
+        'post_status'    => ['publish', 'pending', 'draft'],
+        'orderby'        => 'date',
+        'order'          => 'DESC',
+        'posts_per_page' => $per_page,
+        'paged'          => $page,
+        'meta_query'     => $meta,
+    ];
+    $query      = new WP_Query($query_args);
+
     $count_chasse = 0;
     $count_enigme = 0;
     if (function_exists('get_post_meta')) {
@@ -564,8 +564,8 @@ function ajax_indices_lister_table(): void
                 ++$count_enigme;
             }
         }
+        $count_total = $count_chasse + $count_enigme;
     }
-    $count_total = $count_chasse + $count_enigme;
 
     $has_enigme_indices = false;
     if ($enigme_id) {
