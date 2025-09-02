@@ -5606,16 +5606,14 @@ li.active .enigme-menu__edit {
   }
   .enigme-mobile-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
     position: fixed;
     top: calc(var(--space-4xl) + env(safe-area-inset-top));
-    left: 0;
-    right: 0;
+    left: auto;
+    right: calc(var(--space-md) + env(safe-area-inset-right));
     padding-top: calc(var(--space-sm) + env(safe-area-inset-top));
     padding-bottom: var(--space-sm);
-    padding-left: calc(var(--space-md) + env(safe-area-inset-left));
-    padding-right: calc(var(--space-md) + env(safe-area-inset-right));
     background-color: transparent;
     z-index: 10;
   }
