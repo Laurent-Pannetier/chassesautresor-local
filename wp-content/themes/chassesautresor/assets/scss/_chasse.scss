@@ -128,6 +128,12 @@
   }
 }
 
+@media (--bp-tablet) {
+  .chasse-fiche-container {
+    --hunt-img-max-height: 600px;
+  }
+}
+
 @media (--bp-desktop) {
   .chasse-fiche-container {
     flex-direction: row;

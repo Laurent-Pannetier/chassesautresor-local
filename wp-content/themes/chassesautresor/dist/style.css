@@ -601,6 +601,11 @@
     --hunt-img-max-height: 500px;
   }
 }
+@media (min-width: 768px) {
+  .chasse-fiche-container {
+    --hunt-img-max-height: 600px;
+  }
+}
 @media (min-width: 1024px) {
   .chasse-fiche-container {
     flex-direction: row;
