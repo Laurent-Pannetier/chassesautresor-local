@@ -23,10 +23,11 @@ if (!class_exists('WP_Query')) {
         public $max_num_pages = 1;
         public function __construct($args)
         {
-            global $captured_query_args;
-            $captured_query_args = $args;
-            $this->posts = [];
-            $this->max_num_pages = 1;
+            global $captured_query_args, $captured_query_args_list;
+            $captured_query_args        = $args;
+            $captured_query_args_list[] = $args;
+            $this->max_num_pages        = 1;
+            $this->posts                = ($args['paged'] ?? 1) > 1 ? [] : ['p'];
         }
     }
 }
@@ -46,10 +47,11 @@ class ChasseSolutionsTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        global $captured_fields, $json_success_data, $captured_query_args;
-        $captured_fields     = [];
-        $json_success_data   = null;
-        $captured_query_args = [];
+        global $captured_fields, $json_success_data, $captured_query_args, $captured_query_args_list;
+        $captured_fields         = [];
+        $json_success_data       = null;
+        $captured_query_args     = [];
+        $captured_query_args_list = [];
         $_POST = [];
     }
 
@@ -240,6 +242,68 @@ class ChasseSolutionsTest extends TestCase
         $this->assertSame([5,6], $meta[1][1]['value']);
         $this->assertSame('IN', $meta[1][1]['compare']);
         $this->assertIsArray($json_success_data);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_resets_to_last_page_when_page_exceeds_total(): void
+    {
+        if (!defined('TITRE_DEFAUT_SOLUTION')) {
+            define('TITRE_DEFAUT_SOLUTION', 'solution');
+        }
+        if (!function_exists('__')) {
+            function __($text, $domain = null) { return $text; }
+        }
+        if (!function_exists('is_user_logged_in')) {
+            function is_user_logged_in() { return true; }
+        }
+        if (!function_exists('get_post_type')) {
+            function get_post_type($id) { return $id === 3 ? 'chasse' : 'enigme'; }
+        }
+        if (!function_exists('solution_action_autorisee')) {
+            function solution_action_autorisee($action, $type, $id) { return true; }
+        }
+        if (!function_exists('sanitize_key')) {
+            function sanitize_key($key) { return $key; }
+        }
+        if (!function_exists('wp_send_json_error')) {
+            function wp_send_json_error($data = null) { throw new Exception((string) $data); }
+        }
+        if (!function_exists('wp_send_json_success')) {
+            function wp_send_json_success($data = null) { global $json_success_data; $json_success_data = $data; return $data; }
+        }
+        if (!function_exists('get_posts')) {
+            function get_posts($args) { return []; }
+        }
+        if (!function_exists('recuperer_ids_enigmes_pour_chasse')) {
+            function recuperer_ids_enigmes_pour_chasse($id) { return []; }
+        }
+        if (!function_exists('get_template_part')) {
+            function get_template_part($slug, $name = null, $args = []) { echo 'table'; }
+        }
+        if (!function_exists('add_action')) {
+            function add_action($hook, $callable, $priority = 10, $accepted_args = 1) {}
+        }
+
+        require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-solution.php';
+
+        $_POST = [
+            'objet_id'   => 3,
+            'objet_type' => 'chasse',
+            'page'       => 2,
+        ];
+
+        global $captured_query_args_list, $json_success_data;
+
+        ajax_solutions_lister_table();
+
+        $this->assertCount(2, $captured_query_args_list);
+        $this->assertSame(2, $captured_query_args_list[0]['paged']);
+        $this->assertSame(1, $captured_query_args_list[1]['paged']);
+        $this->assertSame(1, $json_success_data['page']);
+        $this->assertSame(1, $json_success_data['pages']);
     }
 
     /**

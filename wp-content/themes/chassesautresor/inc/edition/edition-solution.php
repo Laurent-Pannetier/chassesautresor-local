@@ -485,21 +485,30 @@ function ajax_solutions_lister_table(): void
         ];
     }
 
-    $query = new WP_Query([
+    $page       = max(1, $page);
+    $query_args = [
         'post_type'      => 'solution',
         'post_status'    => ['publish', 'pending', 'draft'],
         'orderby'        => 'date',
         'order'          => 'DESC',
         'posts_per_page' => $per_page,
-        'paged'          => max(1, $page),
+        'paged'          => $page,
         'meta_query'     => $meta,
-    ]);
+    ];
+    $query      = new WP_Query($query_args);
+    $total_pages = (int) $query->max_num_pages;
+    if ($page > $total_pages && $total_pages > 0) {
+        $page                  = $total_pages;
+        $query_args['paged']   = $page;
+        $query                 = new WP_Query($query_args);
+        $total_pages           = (int) $query->max_num_pages;
+    }
 
     ob_start();
     get_template_part('template-parts/common/solutions-table', null, [
         'solutions'  => $query->posts,
-        'page'       => max(1, $page),
-        'pages'      => (int) $query->max_num_pages,
+        'page'       => $page,
+        'pages'      => $total_pages,
         'objet_type' => $objet_type,
         'objet_id'   => $objet_id,
     ]);
@@ -507,8 +516,8 @@ function ajax_solutions_lister_table(): void
 
     wp_send_json_success([
         'html'  => $html,
-        'page'  => max(1, $page),
-        'pages' => (int) $query->max_num_pages,
+        'page'  => $page,
+        'pages' => $total_pages,
     ]);
 }
 add_action('wp_ajax_solutions_lister_table', 'ajax_solutions_lister_table');

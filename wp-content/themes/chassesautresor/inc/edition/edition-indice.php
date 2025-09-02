@@ -523,15 +523,24 @@ function ajax_indices_lister_table(): void
         ];
     }
 
-    $query = new WP_Query([
+    $page       = max(1, $page);
+    $query_args = [
         'post_type'      => 'indice',
         'post_status'    => ['publish', 'pending', 'draft'],
         'orderby'        => 'date',
         'order'          => 'DESC',
         'posts_per_page' => $per_page,
-        'paged'          => max(1, $page),
+        'paged'          => $page,
         'meta_query'     => $meta,
-    ]);
+    ];
+    $query      = new WP_Query($query_args);
+    $total_pages = (int) $query->max_num_pages;
+    if ($page > $total_pages && $total_pages > 0) {
+        $page                  = $total_pages;
+        $query_args['paged']   = $page;
+        $query                 = new WP_Query($query_args);
+        $total_pages           = (int) $query->max_num_pages;
+    }
 
     $ids = [];
     if (function_exists('get_posts')) {
@@ -592,8 +601,8 @@ function ajax_indices_lister_table(): void
     ob_start();
     get_template_part('template-parts/common/indices-table', null, [
         'indices'      => $query->posts,
-        'page'         => max(1, $page),
-        'pages'        => (int) $query->max_num_pages,
+        'page'         => $page,
+        'pages'        => $total_pages,
         'objet_type'   => $objet_type,
         'objet_id'     => $objet_id,
         'count_total'  => $count_total,
@@ -605,8 +614,8 @@ function ajax_indices_lister_table(): void
 
     wp_send_json_success([
         'html'  => $html,
-        'page'  => max(1, $page),
-        'pages' => (int) $query->max_num_pages,
+        'page'  => $page,
+        'pages' => $total_pages,
     ]);
 }
 add_action('wp_ajax_indices_lister_table', 'ajax_indices_lister_table');
