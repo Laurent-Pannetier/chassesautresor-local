@@ -439,6 +439,10 @@ body:not(.edition-active) #presentation .champ-liens.champ-vide {
   margin: 0;
 }
 
+.liste-liens-publics.liens-sans-intitule {
+  gap: var(--space-sm);
+}
+
 .item-lien-public {
   display: flex;
 }

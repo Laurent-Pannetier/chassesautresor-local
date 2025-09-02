@@ -101,6 +101,10 @@
   justify-content: center;
 }
 
+.chasse-visuel-wrapper .liste-liens-publics.liens-sans-intitule {
+  gap: var(--space-sm);
+}
+
 .chasse-visuel-wrapper .lien-public {
   display: inline-flex;
   align-items: center;

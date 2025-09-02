@@ -268,6 +268,10 @@
   gap: var(--space-xs);
 }
 
+.carte-ligne__footer .liste-liens-publics.liens-sans-intitule {
+  gap: var(--space-sm);
+}
+
 .carte-ligne__footer .liste-liens-publics.liens-sans-intitule .texte-lien {
   display: none;
 }
@@ -579,6 +583,10 @@
   display: flex;
   gap: var(--space-xs);
   justify-content: center;
+}
+
+.chasse-visuel-wrapper .liste-liens-publics.liens-sans-intitule {
+  gap: var(--space-sm);
 }
 
 .chasse-visuel-wrapper .lien-public {
@@ -8960,6 +8968,10 @@ body:not(.edition-active) #presentation .champ-liens.champ-vide {
   list-style: none;
   padding: 0;
   margin: 0;
+}
+
+.liste-liens-publics.liens-sans-intitule {
+  gap: var(--space-sm);
 }
 
 .item-lien-public {

@@ -277,6 +277,10 @@
   gap: var(--space-xs);
 }
 
+.carte-ligne__footer .liste-liens-publics.liens-sans-intitule {
+  gap: var(--space-sm);
+}
+
 .carte-ligne__footer .liste-liens-publics.liens-sans-intitule .texte-lien {
   display: none;
 }
