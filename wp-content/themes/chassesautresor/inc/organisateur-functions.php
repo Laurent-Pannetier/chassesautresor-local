@@ -879,6 +879,9 @@ function traiter_confirmation_organisateur() {
     }
 
     remove_site_message('profil_verification');
+    if (function_exists('myaccount_remove_persistent_message')) {
+        myaccount_remove_persistent_message($user_id, 'profil_verification');
+    }
 
     if ($organisateur_id) {
         wp_set_current_user($user_id);

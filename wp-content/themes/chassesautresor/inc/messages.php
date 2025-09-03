@@ -41,6 +41,7 @@ add_action('after_switch_theme', 'cat_install_user_messages_table');
  * @param string|null $message_key Optional translation key.
  * @param string|null $locale      Optional locale for the message.
  * @param int|null    $expires     Expiration as timestamp or duration in seconds.
+ * @param bool        $dismissible Whether the message can be dismissed.
  *
  * @return void
  */
@@ -50,12 +51,14 @@ function add_site_message(
     bool $persistent = false,
     ?string $message_key = null,
     ?string $locale = null,
-    ?int $expires = null
+    ?int $expires = null,
+    bool $dismissible = false
 ): void
 {
     $message = [
-        'type'    => $type,
-        'content' => $content,
+        'type'        => $type,
+        'content'     => $content,
+        'dismissible' => $dismissible,
     ];
 
     if ($message_key !== null) {
@@ -177,11 +180,53 @@ function get_site_messages(): string
                     $content = __($msg['message_key'], 'chassesautresor-com');
                 }
             }
-            return '<p class="' . esc_attr($msg['type']) . '">' . esc_html($content) . '</p>';
+
+            $button = '';
+            if (!empty($msg['dismissible']) && !empty($msg['message_key'])) {
+                $button = ' <button type="button" class="message-close" data-key="'
+                    . esc_attr($msg['message_key'])
+                    . '" aria-label="'
+                    . esc_attr__('Supprimer ce message', 'chassesautresor-com')
+                    . '">×</button>';
+            }
+
+            $type = $msg['type'] ?? 'info';
+            switch ($type) {
+                case 'success':
+                    $class = 'message-succes';
+                    $aria  = 'role="status" aria-live="polite"';
+                    break;
+                case 'error':
+                    $class = 'message-erreur';
+                    $aria  = 'role="alert" aria-live="assertive"';
+                    break;
+                default:
+                    $class = 'message-info';
+                    $aria  = 'role="status" aria-live="polite"';
+                    break;
+            }
+
+            return '<p class="' . esc_attr($class) . '" ' . $aria . '>' . esc_html($content) . $button . '</p>';
         },
         $messages
     );
 
     return implode('', $output);
+}
+
+/**
+ * Print all site-wide and account-specific messages.
+ *
+ * @return void
+ */
+function print_site_messages(): void
+{
+    $messages = get_site_messages();
+
+    if (function_exists('myaccount_get_important_messages')) {
+        $messages .= myaccount_get_important_messages();
+    }
+
+    echo $messages; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 }
 

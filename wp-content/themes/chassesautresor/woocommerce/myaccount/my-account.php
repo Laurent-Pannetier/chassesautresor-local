@@ -4,12 +4,6 @@
 
 defined('ABSPATH') || exit;
 
-if (isset($_GET['notice']) && $_GET['notice'] === 'profil_verification') {
-    echo '<div class="woocommerce-message" role="alert">'
-        . esc_html__('✉️ Un email de vérification vous a été envoyé. Veuillez cliquer sur le lien pour confirmer votre demande.', 'chassesautresor-com')
-        . '</div>';
-}
-
 // S'assure que la variable globale est définie.
 $GLOBALS['myaccount_content_template'] = $GLOBALS['myaccount_content_template'] ?? null;
 
