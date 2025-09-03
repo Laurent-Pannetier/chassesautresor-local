@@ -37,7 +37,7 @@ class UserMessageRepository
         ?string $expiresAt = null,
         ?string $locale = null
     ): int {
-        $this->wpdb->insert(
+        $result = $this->wpdb->insert(
             $this->table,
             [
                 'user_id'    => $userId,
@@ -48,6 +48,14 @@ class UserMessageRepository
             ],
             ['%d', '%s', '%s', '%s', '%s']
         );
+
+        if (false === $result) {
+            error_log('Failed to insert user message: ' . $this->wpdb->last_error);
+
+            throw new \RuntimeException(
+                __('Unable to insert user message.', 'chassesautresor-com')
+            );
+        }
 
         return (int) $this->wpdb->insert_id;
     }
