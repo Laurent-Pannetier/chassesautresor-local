@@ -94,7 +94,7 @@ namespace {
     }
 
     if (!function_exists('wp_date')) {
-        function wp_date($format, $timestamp) { return gmdate($format, $timestamp); }
+        function wp_date($format, $timestamp, $timezone = null) { return gmdate($format, $timestamp); }
     }
 
     if (!function_exists('get_the_title')) {

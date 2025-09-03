@@ -236,7 +236,7 @@ if (!function_exists('remove_accents')) {
 }
 
 if (!function_exists('wp_date')) {
-    function wp_date($format, $timestamp)
+    function wp_date($format, $timestamp, $timezone = null)
     {
         return date($format, $timestamp);
     }

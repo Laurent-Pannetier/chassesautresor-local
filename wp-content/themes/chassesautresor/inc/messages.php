@@ -79,10 +79,10 @@ function add_site_message(
             $now = (int) current_time('timestamp');
             if ($expires > $now) {
                 $expirationSeconds = $expires - $now;
-                $expiresAt         = gmdate('c', $expires);
+                $expiresAt         = wp_date('Y-m-d H:i:s', $expires, wp_timezone());
             } else {
                 $expirationSeconds = $expires;
-                $expiresAt         = gmdate('c', $now + $expires);
+                $expiresAt         = wp_date('Y-m-d H:i:s', $now + $expires, wp_timezone());
             }
         }
 
