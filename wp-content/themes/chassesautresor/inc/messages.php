@@ -81,8 +81,16 @@ function add_site_message(
         }
 
         global $wpdb;
-        $repo = new UserMessageRepository($wpdb);
-        $repo->insert(0, wp_json_encode($message), 'site', $expiresAt, $locale);
+        $repo     = new UserMessageRepository($wpdb);
+        $insertId = $repo->insert(0, wp_json_encode($message), 'site', $expiresAt, $locale);
+        if ($insertId === 0) {
+            if (!empty($wpdb->last_error)) {
+                error_log($wpdb->last_error);
+            } else {
+                trigger_error('Failed to insert site message', E_USER_NOTICE);
+            }
+        }
+
         return;
     }
 
