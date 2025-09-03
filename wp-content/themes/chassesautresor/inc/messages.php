@@ -235,3 +235,29 @@ function print_site_messages(): void
     echo $messages; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 }
 
+/**
+ * Remove legacy test messages left in the database.
+ *
+ * @return void
+ */
+function cat_remove_legacy_test_messages(): void
+{
+    if (get_option('cat_removed_test_messages')) {
+        return;
+    }
+
+    global $wpdb;
+    $repo = new UserMessageRepository($wpdb);
+    $rows = $repo->get(0, 'site', null);
+
+    foreach ($rows as $row) {
+        $data = json_decode($row['message'], true);
+        if (is_array($data) && ($data['content'] ?? '') === 'prout') {
+            $repo->delete((int) $row['id']);
+        }
+    }
+
+    update_option('cat_removed_test_messages', 1);
+}
+add_action('init', 'cat_remove_legacy_test_messages');
+
