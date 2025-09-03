@@ -435,10 +435,16 @@ function myaccount_maybe_add_validation_message(): void
         return;
     }
 
-    $key      = 'correction_info_chasse_' . $chasse_id;
-    $messages = get_user_meta($user_id, '_myaccount_messages', true);
-    if (is_array($messages) && isset($messages[$key])) {
-        return;
+    $key = 'correction_info_chasse_' . $chasse_id;
+
+    global $wpdb;
+    $repo     = new UserMessageRepository($wpdb);
+    $existing = $repo->get($user_id, 'persistent', null);
+    foreach ($existing as $row) {
+        $data = json_decode($row['message'], true);
+        if (is_array($data) && ($data['key'] ?? '') === $key) {
+            return;
+        }
     }
 
     $info_msg = sprintf(
