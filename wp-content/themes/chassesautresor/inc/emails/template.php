@@ -19,8 +19,20 @@ function cta_render_email_template(string $title, string $content): string
 {
     $content = function_exists('wp_kses_post') ? wp_kses_post($content) : $content;
 
-    $loader = new \Twig\Loader\FilesystemLoader(__DIR__ . '/templates');
-    $twig   = new \Twig\Environment($loader);
+    if (!class_exists('\\Twig\\Loader\\FilesystemLoader')) {
+        $autoloader = dirname(__DIR__, 5) . '/vendor/autoload.php';
+        if (file_exists($autoloader)) {
+            require_once $autoloader;
+        }
+    }
+
+    if (!class_exists('\\Twig\\Loader\\FilesystemLoader')) {
+        $title_html = function_exists('esc_html') ? esc_html($title) : $title;
+        return '<h1>' . $title_html . '</h1>' . $content;
+    }
+
+    $loader = new \\Twig\\Loader\\FilesystemLoader(__DIR__ . '/templates');
+    $twig   = new \\Twig\\Environment($loader);
 
     if (function_exists('get_theme_file_uri')) {
         $twig->addFunction(new \Twig\TwigFunction('get_theme_file_uri', 'get_theme_file_uri'));
