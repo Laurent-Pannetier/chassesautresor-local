@@ -32,6 +32,13 @@ if (!function_exists('creer_organisateur_pour_utilisateur')) {
     }
 }
 
+if (!function_exists('current_time')) {
+    function current_time(string $type)
+    {
+        return $type === 'mysql' ? gmdate('Y-m-d H:i:s', time()) : time();
+    }
+}
+
 if (!class_exists('WP_User')) {
     class WP_User
     {
@@ -64,9 +71,10 @@ class OrganisateurConfirmationTest extends TestCase
     {
         global $cat_test_user_meta;
         $user_id = 1;
+        $now = strtotime(current_time('mysql'));
         $cat_test_user_meta[$user_id] = [
             'organisateur_demande_token' => 'abc',
-            'organisateur_demande_date' => gmdate('Y-m-d H:i:s', time() - 3 * DAY_IN_SECONDS),
+            'organisateur_demande_date' => gmdate('Y-m-d H:i:s', $now - 3 * DAY_IN_SECONDS),
         ];
         $this->assertNull(confirmer_demande_organisateur($user_id, 'abc'));
     }
@@ -75,9 +83,10 @@ class OrganisateurConfirmationTest extends TestCase
     {
         global $cat_test_user_meta;
         $user_id = 2;
+        $now = strtotime(current_time('mysql'));
         $cat_test_user_meta[$user_id] = [
             'organisateur_demande_token' => 'def',
-            'organisateur_demande_date' => gmdate('Y-m-d H:i:s', time() - DAY_IN_SECONDS),
+            'organisateur_demande_date' => gmdate('Y-m-d H:i:s', $now - DAY_IN_SECONDS),
         ];
         $this->assertSame(123, confirmer_demande_organisateur($user_id, 'def'));
     }
