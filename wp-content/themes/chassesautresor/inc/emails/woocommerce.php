@@ -38,7 +38,7 @@ function cta_wc_store_email_heading(string $email_heading): void
 add_action('woocommerce_email_header', 'cta_wc_store_email_heading');
 
 /**
- * Injects the Twig template around WooCommerce email content.
+ * Injects the HTML template around WooCommerce email content.
  *
  * @param string $message Email body content.
  *
