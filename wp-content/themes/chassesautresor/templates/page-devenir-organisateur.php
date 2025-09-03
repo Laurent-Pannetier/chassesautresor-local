@@ -35,15 +35,22 @@ $organisateur_id = get_organisateur_from_user($user_id);
 $image_url = '';
 
 if (has_post_thumbnail()) {
-  $image_url = get_the_post_thumbnail_url(null, 'full'); // ou 'large' si besoin
+    $image_url = get_the_post_thumbnail_url(null, 'full'); // ou 'large' si besoin
 }
 
-get_header(); ?>
-<?php if (isset($_GET['notice']) && $_GET['notice'] === 'profil_verification') : ?>
-<div class="woocommerce-message" role="alert">
-  ✉️ Un email de vérification vous a été envoyé. Veuillez cliquer sur le lien pour confirmer votre demande.
-</div>
-<?php endif; ?>
+get_header();
+
+if (isset($_GET['notice']) && $_GET['notice'] === 'profil_verification') {
+    add_site_message(
+        'info',
+        __('✉️ Un email de vérification vous a été envoyé. Veuillez cliquer sur le lien pour confirmer votre demande.', 'chassesautresor-com'),
+        true,
+        null,
+        null,
+        DAY_IN_SECONDS * 2
+    );
+}
+?>
 <section class="bandeau-hero">
   <div class="hero-overlay" style="background-image: url('<?php echo esc_url($image_url); ?>');">
     <div class="contenu-hero">

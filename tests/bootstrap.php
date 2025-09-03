@@ -13,3 +13,7 @@ if (!function_exists('add_action')) {
 if (!function_exists('add_filter')) {
     function add_filter(...$args): void {}
 }
+
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
