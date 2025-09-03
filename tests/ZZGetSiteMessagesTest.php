@@ -4,6 +4,15 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
+if (!function_exists('current_time')) {
+    function current_time(string $type)
+    {
+        return $type === 'timestamp'
+            ? time()
+            : gmdate('Y-m-d H:i:s', time());
+    }
+}
+
 /**
  * @runTestsInSeparateProcesses
  */
