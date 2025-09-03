@@ -168,6 +168,16 @@ class MigrationDummyWpdb
         return array_values($rows);
     }
 
+    public function prepare(string $query, array $params): string
+    {
+        $placeholders = array_map(
+            fn($p) => is_int($p) ? $p : "'{$p}'",
+            $params
+        );
+
+        return vsprintf($query, $placeholders);
+    }
+
     public function delete(string $table, array $where, array $whereFormat): void
     {
         unset($this->data[$where['id']]);

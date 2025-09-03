@@ -96,28 +96,41 @@ class UserMessageRepository
      */
     public function get(?int $userId = null, ?string $status = null, ?bool $expired = null): array
     {
-        $rows = $this->wpdb->get_results("SELECT * FROM {$this->table}", ARRAY_A);
-        $now  = current_time('mysql');
+        $sql    = "SELECT * FROM {$this->table}";
+        $where  = [];
+        $params = [];
 
-        return array_values(array_filter($rows, function ($row) use ($userId, $status, $expired, $now) {
-            if ($userId !== null && (int) $row['user_id'] !== $userId) {
-                return false;
-            }
+        if ($userId !== null) {
+            $where[]  = 'user_id = %d';
+            $params[] = $userId;
+        }
 
-            if ($status !== null && $row['status'] !== $status) {
-                return false;
-            }
+        if ($status !== null) {
+            $where[]  = 'status = %s';
+            $params[] = $status;
+        }
+
+        if ($expired !== null) {
+            $now = current_time('mysql');
 
             if ($expired === true) {
-                return $row['expires_at'] !== null && $row['expires_at'] < $now;
+                $where[]  = 'expires_at IS NOT NULL AND expires_at < %s';
+                $params[] = $now;
+            } else {
+                $where[]  = '(expires_at IS NULL OR expires_at >= %s)';
+                $params[] = $now;
             }
+        }
 
-            if ($expired === false) {
-                return $row['expires_at'] === null || $row['expires_at'] >= $now;
-            }
+        if ($where !== []) {
+            $sql .= ' WHERE ' . implode(' AND ', $where);
+        }
 
-            return true;
-        }));
+        if ($params !== []) {
+            $sql = $this->wpdb->prepare($sql, $params);
+        }
+
+        return $this->wpdb->get_results($sql, ARRAY_A);
     }
 
     /**
