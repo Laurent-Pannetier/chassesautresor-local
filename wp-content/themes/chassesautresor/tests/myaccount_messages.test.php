@@ -573,15 +573,27 @@ class MyAccountMessagesTest extends TestCase
         delete_user_meta(1, '_myaccount_messages');
     }
 
-    public function test_maybe_add_validation_message_populates_meta(): void
+    public function test_maybe_add_validation_message_persists_message(): void
     {
         delete_user_meta(1, '_myaccount_messages');
         $GLOBALS['test_current_post_id'] = 42;
         $GLOBALS['test_post_types']      = [42 => 'chasse'];
 
         myaccount_maybe_add_validation_message();
-        $messages = get_user_meta(1, '_myaccount_messages', true);
-        $this->assertArrayHasKey('correction_info_chasse_42', $messages);
+
+        global $wpdb;
+        $repo       = new UserMessageRepository($wpdb);
+        $rows       = $repo->get(1, 'persistent', null);
+        $hasMessage = false;
+        foreach ($rows as $row) {
+            $data = json_decode($row['message'], true);
+            if (is_array($data) && ($data['key'] ?? '') === 'correction_info_chasse_42') {
+                $hasMessage = true;
+                break;
+            }
+        }
+
+        $this->assertTrue($hasMessage);
 
         delete_user_meta(1, '_myaccount_messages');
     }
