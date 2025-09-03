@@ -74,6 +74,42 @@ function add_site_message(
 }
 
 /**
+ * Remove a persistent site-wide message.
+ *
+ * @param string $key Message translation key.
+ *
+ * @return void
+ */
+function remove_site_message(string $key): void
+{
+    $messages = get_transient('cat_site_messages');
+    if (is_array($messages)) {
+        $messages = array_values(array_filter(
+            $messages,
+            static function (array $msg) use ($key): bool {
+                return ($msg['message_key'] ?? '') !== $key;
+            }
+        ));
+
+        if (!empty($messages)) {
+            set_transient('cat_site_messages', $messages);
+        } else {
+            delete_transient('cat_site_messages');
+        }
+    }
+
+    global $wpdb;
+    $repo = new UserMessageRepository($wpdb);
+    $rows = $repo->get(0, 'site', null);
+    foreach ($rows as $row) {
+        $data = json_decode($row['message'], true);
+        if (is_array($data) && ($data['message_key'] ?? '') === $key) {
+            $repo->delete((int) $row['id']);
+        }
+    }
+}
+
+/**
  * Retrieve site-wide messages.
  *
  * @return string HTML content for the messages.
