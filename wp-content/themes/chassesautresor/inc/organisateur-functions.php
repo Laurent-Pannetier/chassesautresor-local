@@ -811,7 +811,8 @@ function renvoyer_email_confirmation_organisateur(int $user_id): bool {
         return lancer_demande_organisateur($user_id);
     }
     $timestamp = strtotime((string) $date);
-    if (!$timestamp || (time() - $timestamp) > 2 * DAY_IN_SECONDS) {
+    $now = strtotime((string) current_time('mysql'));
+    if (!$timestamp || ($now - $timestamp) > 2 * DAY_IN_SECONDS) {
         return lancer_demande_organisateur($user_id);
     }
     return envoyer_email_confirmation_organisateur($user_id, (string) $token);
@@ -825,7 +826,8 @@ function confirmer_demande_organisateur(int $user_id, string $token): ?int {
 
     $date      = get_user_meta($user_id, 'organisateur_demande_date', true);
     $timestamp = $date ? strtotime((string) $date) : false;
-    if (!$timestamp || (time() - $timestamp) > 2 * DAY_IN_SECONDS) {
+    $now = strtotime((string) current_time('mysql'));
+    if (!$timestamp || ($now - $timestamp) > 2 * DAY_IN_SECONDS) {
         return null;
     }
 
