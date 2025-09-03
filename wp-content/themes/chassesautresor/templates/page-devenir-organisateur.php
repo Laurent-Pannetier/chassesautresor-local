@@ -38,18 +38,24 @@ if (has_post_thumbnail()) {
     $image_url = get_the_post_thumbnail_url(null, 'full'); // ou 'large' si besoin
 }
 
-get_header();
-
 if (isset($_GET['notice']) && $_GET['notice'] === 'profil_verification') {
     add_site_message(
         'info',
-        __('✉️ Un email de vérification vous a été envoyé. Veuillez cliquer sur le lien pour confirmer votre demande.', 'chassesautresor-com'),
+        __(
+            '✉️ Un email de vérification vous a été envoyé. Veuillez cliquer sur le lien pour confirmer.',
+            'chassesautresor-com'
+        ),
         true,
         null,
         null,
         DAY_IN_SECONDS * 2
     );
+
+    wp_safe_redirect(remove_query_arg('notice'));
+    exit;
 }
+
+get_header();
 ?>
 <section class="bandeau-hero">
   <div class="hero-overlay" style="background-image: url('<?php echo esc_url($image_url); ?>');">
@@ -57,7 +63,13 @@ if (isset($_GET['notice']) && $_GET['notice'] === 'profil_verification') {
       <h1 class="hero-title"><?php the_title(); ?></h1>
       <p class="hero-subtitle">Créez, publiez et partagez vos aventures interactives.</p>
       <?php $cta = get_cta_devenir_organisateur(); ?>
-      <a href="<?php echo $cta['url'] ? esc_url($cta['url']) : '#'; ?>" class="bouton-cta" id="creer-profil-btn" data-event="clic_creer_profil" <?php echo $cta['disabled'] ? 'style="pointer-events:none;opacity:0.6"' : ''; ?>>
+      <a
+        href="<?php echo $cta['url'] ? esc_url($cta['url']) : '#'; ?>"
+        class="bouton-cta"
+        id="creer-profil-btn"
+        data-event="clic_creer_profil"
+        <?php echo $cta['disabled'] ? 'style="pointer-events:none;opacity:0.6"' : ''; ?>
+      >
         <?php echo esc_html($cta['label']); ?>
       </a>
     </div>
