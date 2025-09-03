@@ -176,6 +176,8 @@ function creer_enigme_et_rediriger_si_appel()
     return;
   }
 
+  nocache_headers();
+
   // Vérification de l’utilisateur
   if (!is_user_logged_in()) {
     wp_redirect(wp_login_url());
