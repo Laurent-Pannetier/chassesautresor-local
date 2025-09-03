@@ -1420,5 +1420,18 @@ function chasse_invalidate_infos_affichage_cache(int $post_id, \WP_Post $post, b
         }
     }
 }
+
+function chasse_acf_clear_infos_affichage_cache($post_id): void
+{
+    if (!is_numeric($post_id)) {
+        return;
+    }
+
+    $post_id = (int) $post_id;
+    if (get_post_type($post_id) === 'chasse') {
+        chasse_clear_infos_affichage_cache($post_id);
+    }
+}
+add_action('acf/save_post', 'chasse_acf_clear_infos_affichage_cache', 20);
 add_action('save_post', 'chasse_invalidate_infos_affichage_cache', 10, 3);
 add_action('chasse_engagement_created', 'chasse_clear_infos_affichage_cache');
