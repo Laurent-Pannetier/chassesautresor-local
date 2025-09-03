@@ -65,7 +65,39 @@ class MessagesDummyWpdb
      */
     public function get_results(string $sql, $output): array
     {
-        return array_values($this->data);
+        $rows = array_values($this->data);
+
+        if (preg_match('/user_id = (\d+)/', $sql, $m)) {
+            $rows = array_filter($rows, fn($r) => (int) $r['user_id'] === (int) $m[1]);
+        }
+
+        if (preg_match("/status = '([^']+)'/", $sql, $m)) {
+            $rows = array_filter($rows, fn($r) => $r['status'] === $m[1]);
+        }
+
+        if (preg_match("/\(expires_at IS NULL OR expires_at >= '([^']+)'\)/", $sql, $m)) {
+            $rows = array_filter(
+                $rows,
+                fn($r) => $r['expires_at'] === null || $r['expires_at'] >= $m[1]
+            );
+        } elseif (preg_match("/expires_at IS NOT NULL AND expires_at < '([^']+)'/", $sql, $m)) {
+            $rows = array_filter(
+                $rows,
+                fn($r) => $r['expires_at'] !== null && $r['expires_at'] < $m[1]
+            );
+        }
+
+        return array_values($rows);
+    }
+
+    public function prepare(string $query, array $params): string
+    {
+        $placeholders = array_map(
+            fn($p) => is_int($p) ? $p : "'{$p}'",
+            $params
+        );
+
+        return vsprintf($query, $placeholders);
     }
 
     public function query(string $sql): void

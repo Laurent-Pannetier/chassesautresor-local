@@ -121,7 +121,12 @@ class DummyWpdb
 
     public function prepare(string $query, array $params): string
     {
-        return vsprintf(str_replace(['%d', '%s'], ['%d', '%s'], $query), $params);
+        $placeholders = array_map(
+            fn($p) => is_int($p) ? $p : "'{$p}'",
+            $params
+        );
+
+        return vsprintf($query, $placeholders);
     }
 
     /**
@@ -139,16 +144,15 @@ class DummyWpdb
             $rows = array_filter($rows, fn($r) => $r['status'] === $m[1]);
         }
 
-        $now = current_time('mysql');
-        if (str_contains($sql, 'expires_at IS NOT NULL AND expires_at < NOW()')) {
+        if (preg_match("/expires_at IS NOT NULL AND expires_at < '([^']+)'/", $sql, $m)) {
             $rows = array_filter(
                 $rows,
-                fn($r) => $r['expires_at'] !== null && $r['expires_at'] < $now
+                fn($r) => $r['expires_at'] !== null && $r['expires_at'] < $m[1]
             );
-        } elseif (str_contains($sql, '(expires_at IS NULL OR expires_at >= NOW())')) {
+        } elseif (preg_match("/\(expires_at IS NULL OR expires_at >= '([^']+)'\)/", $sql, $m)) {
             $rows = array_filter(
                 $rows,
-                fn($r) => $r['expires_at'] === null || $r['expires_at'] >= $now
+                fn($r) => $r['expires_at'] === null || $r['expires_at'] >= $m[1]
             );
         }
 
