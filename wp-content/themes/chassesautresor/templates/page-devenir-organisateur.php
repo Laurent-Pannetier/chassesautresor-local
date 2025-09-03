@@ -44,8 +44,14 @@ get_header(); ?>
     <div class="contenu-hero">
       <h1 class="hero-title"><?php the_title(); ?></h1>
       <p class="hero-subtitle">Créez, publiez et partagez vos aventures interactives.</p>
-      <?php $cta = get_cta_devenir_organisateur(); ?>
-      <a href="<?php echo $cta['url'] ? esc_url($cta['url']) : '#'; ?>" class="bouton-cta" id="creer-profil-btn" data-event="clic_creer_profil" <?php echo $cta['disabled'] ? 'style="pointer-events:none;opacity:0.6"' : ''; ?>>
+      <?php
+      $cta = get_cta_devenir_organisateur();
+      $cta_class = 'bouton-cta';
+      if (!$cta['disabled']) {
+          $cta_class .= ' bouton-cta--color';
+      }
+      ?>
+      <a href="<?php echo $cta['url'] ? esc_url($cta['url']) : '#'; ?>" class="<?php echo esc_attr($cta_class); ?>" id="creer-profil-btn" data-event="clic_creer_profil" <?php echo $cta['disabled'] ? 'style="pointer-events:none;opacity:0.6"' : ''; ?>>
         <?php echo esc_html($cta['label']); ?>
       </a>
     </div>
@@ -77,6 +83,9 @@ get_header(); ?>
          $cta     = get_cta_devenir_organisateur();
          $content = str_replace('/creer-mon-profil/', $cta['url'], $content);
          $content = str_replace('Créer mon profil', $cta['label'], $content);
+         if (!$cta['disabled']) {
+             $content = str_replace('bouton-cta"', 'bouton-cta bouton-cta--color"', $content);
+         }
          echo $content;
       }
     ?>
