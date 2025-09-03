@@ -17,31 +17,30 @@ defined('ABSPATH') || exit();
  */
 function cta_render_email_template(string $title, string $content): string
 {
-    static $twig = null;
-
     $content = function_exists('wp_kses_post') ? wp_kses_post($content) : $content;
 
-    if (null === $twig) {
-        $loader = new \Twig\Loader\FilesystemLoader(__DIR__ . '/templates');
-        $twig   = new \Twig\Environment($loader);
+    $loader = new \Twig\Loader\FilesystemLoader(__DIR__ . '/templates');
+    $twig   = new \Twig\Environment($loader);
 
-        if (function_exists('get_theme_file_uri')) {
-            $twig->addFunction(new \Twig\TwigFunction('get_theme_file_uri', 'get_theme_file_uri'));
-        }
-
-        if (function_exists('home_url')) {
-            $twig->addFunction(new \Twig\TwigFunction('home_url', 'home_url'));
-        }
-
-        if (function_exists('__')) {
-            $twig->addFunction(new \Twig\TwigFunction('__', '__'));
-        }
+    if (function_exists('get_theme_file_uri')) {
+        $twig->addFunction(new \Twig\TwigFunction('get_theme_file_uri', 'get_theme_file_uri'));
     }
 
-    return $twig->render('email.twig', [
-        'title'   => $title,
-        'content' => $content,
-    ]);
+    if (function_exists('home_url')) {
+        $twig->addFunction(new \Twig\TwigFunction('home_url', 'home_url'));
+    }
+
+    if (function_exists('__')) {
+        $twig->addFunction(new \Twig\TwigFunction('__', '__'));
+    }
+
+    return $twig->render(
+        'email.twig',
+        [
+            'title'   => $title,
+            'content' => $content,
+        ]
+    );
 }
 
 /**
