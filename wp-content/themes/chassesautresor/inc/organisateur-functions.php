@@ -783,6 +783,7 @@ function envoyer_email_confirmation_organisateur(int $user_id, string $token): b
     $message .= '<p>Bonjour <strong>' . esc_html($user->display_name) . '</strong>,</p>';
     $message .= '<p>Pour finaliser la création de votre profil organisateur, veuillez cliquer sur le bouton ci-dessous :</p>';
     $message .= '<p style="text-align:center;"><a href="' . esc_url($confirmation_url) . '" style="background:#0073aa;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold;display:inline-block;">Confirmer mon inscription</a></p>';
+    $message .= '<p>' . esc_html__( 'Ce lien est valable pendant 2 jours.', 'chassesautresor-com' ) . '</p>';
     $message .= '<p style="margin-top:2em;">Merci et à très bientôt !<br>L’équipe chassesautresor.com</p>';
     $message .= '</div>';
 
@@ -805,7 +806,12 @@ function lancer_demande_organisateur(int $user_id): bool {
 function renvoyer_email_confirmation_organisateur(int $user_id): bool {
     if ($user_id <= 0) return false;
     $token = get_user_meta($user_id, 'organisateur_demande_token', true);
-    if (!$token) {
+    $date  = get_user_meta($user_id, 'organisateur_demande_date', true);
+    if (!$token || !$date) {
+        return lancer_demande_organisateur($user_id);
+    }
+    $timestamp = strtotime((string) $date);
+    if (!$timestamp || (time() - $timestamp) > 2 * DAY_IN_SECONDS) {
         return lancer_demande_organisateur($user_id);
     }
     return envoyer_email_confirmation_organisateur($user_id, (string) $token);
@@ -813,7 +819,15 @@ function renvoyer_email_confirmation_organisateur(int $user_id): bool {
 
 function confirmer_demande_organisateur(int $user_id, string $token): ?int {
     $saved = get_user_meta($user_id, 'organisateur_demande_token', true);
-    if (!$saved || $token !== $saved) return null;
+    if (!$saved || $token !== $saved) {
+        return null;
+    }
+
+    $date      = get_user_meta($user_id, 'organisateur_demande_date', true);
+    $timestamp = $date ? strtotime((string) $date) : false;
+    if (!$timestamp || (time() - $timestamp) > 2 * DAY_IN_SECONDS) {
+        return null;
+    }
 
     delete_user_meta($user_id, 'organisateur_demande_token');
     delete_user_meta($user_id, 'organisateur_demande_date');
