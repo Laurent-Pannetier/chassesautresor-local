@@ -22,6 +22,24 @@ if (!function_exists('current_time')) {
     }
 }
 
+if (!function_exists('wp_timezone')) {
+    function wp_timezone(): DateTimeZone
+    {
+        return new DateTimeZone('UTC');
+    }
+}
+
+if (!function_exists('wp_date')) {
+    function wp_date(string $format, int $timestamp, ?DateTimeZone $timezone = null): string
+    {
+        $dt = new DateTime('@' . $timestamp);
+        if ($timezone instanceof DateTimeZone) {
+            $dt->setTimezone($timezone);
+        }
+        return $dt->format($format);
+    }
+}
+
 if (!function_exists('wp_json_encode')) {
     function wp_json_encode($data, $options = 0, $depth = 512)
     {

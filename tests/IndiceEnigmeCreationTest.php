@@ -118,7 +118,7 @@ if (!function_exists('current_time')) {
 }
 
 if (!function_exists('wp_date')) {
-    function wp_date($format, $timestamp) { return gmdate($format, $timestamp); }
+    function wp_date($format, $timestamp, $timezone = null) { return gmdate($format, $timestamp); }
 }
 
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';

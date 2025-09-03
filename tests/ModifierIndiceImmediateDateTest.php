@@ -48,7 +48,7 @@ namespace {
         function current_time($type) { return $type === 'timestamp' ? 1704067200 : '2024-01-01 00:00:00'; }
     }
     if (!function_exists('wp_date')) {
-        function wp_date($format, $timestamp) { return gmdate($format, $timestamp); }
+        function wp_date($format, $timestamp, $timezone = null) { return gmdate($format, $timestamp); }
     }
     if (!function_exists('wp_is_post_revision')) {
         function wp_is_post_revision($id) { return false; }
