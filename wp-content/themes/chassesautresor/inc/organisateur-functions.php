@@ -876,6 +876,8 @@ function traiter_confirmation_organisateur() {
         $organisateur_id = confirmer_demande_organisateur($user_id, $token);
     }
 
+    remove_site_message('profil_verification');
+
     if ($organisateur_id) {
         wp_set_current_user($user_id);
         wp_set_auth_cookie($user_id);
