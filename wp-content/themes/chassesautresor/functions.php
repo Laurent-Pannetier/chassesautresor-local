@@ -141,7 +141,7 @@ function cta_render_lang_switcher( $row, $column ) {
         ],
     ];
 
-    $current_url = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    $current_url = home_url( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ) ) );
     $current_url = remove_query_arg( 'lang', $current_url );
     ?>
     <div class="lang-switcher ast-builder-layout-element site-header-focus-item">
