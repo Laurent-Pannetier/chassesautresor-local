@@ -52,6 +52,7 @@ if (!function_exists('get_bloginfo')) {
     }
 }
 
+require_once dirname(__DIR__, 4) . '/vendor/autoload.php';
 require_once __DIR__ . '/../inc/emails/template.php';
 
 class EmailTemplateTest extends TestCase
