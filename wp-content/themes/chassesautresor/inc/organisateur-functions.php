@@ -778,20 +778,43 @@ function envoyer_email_confirmation_organisateur(int $user_id, string $token): b
         'token' => $token,
     ], site_url('/confirmation-organisateur/'));
 
-    $subject  = '[Chasses au Trésor] Confirmez votre inscription organisateur';
-    $message  = '<div style="font-family:Arial,sans-serif;font-size:14px;">';
-    $message .= '<p>Bonjour <strong>' . esc_html($user->display_name) . '</strong>,</p>';
-    $message .= '<p>Pour finaliser la création de votre profil organisateur, veuillez cliquer sur le bouton ci-dessous :</p>';
-    $message .= '<p style="text-align:center;"><a href="' . esc_url($confirmation_url) . '" style="background:#0073aa;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold;display:inline-block;">Confirmer mon inscription</a></p>';
-    $message .= '<p>' . esc_html__( 'Ce lien est valable pendant 2 jours.', 'chassesautresor-com' ) . '</p>';
-    $message .= '<p style="margin-top:2em;">Merci et à très bientôt !<br>L’équipe chassesautresor.com</p>';
-    $message .= '</div>';
+    $subject = esc_html__(
+        '[Chasses au Trésor] Confirmez votre inscription organisateur',
+        'chassesautresor-com'
+    );
 
-    $headers = ['Content-Type: text/html; charset=UTF-8'];
-    $from_filter = static function ($name) { return 'Chasses au Trésor'; };
-    add_filter('wp_mail_from_name', $from_filter, 10, 1);
-    wp_mail($user->user_email, $subject, $message, $headers);
-    remove_filter('wp_mail_from_name', $from_filter, 10);
+    $body  = '<p>' . sprintf(
+        esc_html__( 'Bonjour %s,', 'chassesautresor-com' ),
+        '<strong>' . esc_html( $user->display_name ) . '</strong>'
+    ) . '</p>';
+    $body .= '<p>' . esc_html__(
+        'Pour finaliser la création de votre profil organisateur, veuillez cliquer sur le bouton ci-dessous :',
+        'chassesautresor-com'
+    ) . '</p>';
+    $cta_styles  = 'background:#0073aa;color:#fff;padding:12px 24px;';
+    $cta_styles .= 'border-radius:6px;text-decoration:none;font-weight:bold;';
+    $cta_styles .= 'display:inline-block;';
+    $body      .= '<p style="text-align:center;margin:24px 0;"><a href="'
+        . esc_url( $confirmation_url )
+        . '" style="'
+        . esc_attr( $cta_styles )
+        . '">'
+        . esc_html__( 'Confirmer mon inscription', 'chassesautresor-com' )
+        . '</a></p>';
+    $body .= '<p>' . esc_html__( 'Ce lien est valable pendant 2 jours.', 'chassesautresor-com' ) . '</p>';
+    $body .= '<p style="margin-top:2em;">' . esc_html__( 'Merci et à très bientôt !', 'chassesautresor-com' ) . '<br>' . esc_html__(
+        'L’équipe chassesautresor.com',
+        'chassesautresor-com'
+    ) . '</p>';
+
+    $from_filter = static function ($name) {
+        return 'Chasses au Trésor';
+    };
+
+    add_filter( 'wp_mail_from_name', $from_filter, 10, 1 );
+    cta_send_email( $user->user_email, $subject, $body );
+    remove_filter( 'wp_mail_from_name', $from_filter, 10 );
+
     return true;
 }
 
