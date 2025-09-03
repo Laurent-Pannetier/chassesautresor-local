@@ -1,35 +1,23 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-  </head>
-  <body>
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
-      <tr>
-        <td>
-          <header style="background:#0B132B;padding:20px;text-align:center;">
-            <img src="{{ get_theme_file_uri('assets/images/logo-cat_icone-s.png') }}" alt="" style="max-width:150px;height:auto;display:block;margin:0 auto 10px;" />
-            <h1 style="color:#ffffff;font-family:Arial,sans-serif;font-size:24px;margin:0;">{{ title }}</h1>
-          </header>
-        </td>
-      </tr>
-      <tr>
-        <td style="padding:20px;font-family:Arial,sans-serif;">
-          {{ content|raw }}
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <footer style="background:#0B132B;padding:20px;text-align:center;font-family:Arial,sans-serif;color:#ffffff;font-size:12px;">
-            <p style="margin:0;">
-              <a href="{{ home_url('mentions-legales') }}" style="color:#ffffff;text-decoration:none;">{{ __('Mentions légales', 'chassesautresor-com') }}</a>
-            </p>
-            <p style="margin:10px 0 0;">
-              <img src="{{ get_theme_file_uri('assets/images/logo-cat_hz-txt.png') }}" alt="" style="max-width:150px;height:auto;" />
-            </p>
-          </footer>
-        </td>
-      </tr>
-    </table>
-  </body>
+    <head>
+        <meta charset="UTF-8" />
+    </head>
+    <body>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+            {% block header %}
+                {% include 'header.twig' %}
+            {% endblock %}
+            {% block content %}
+                <tr>
+                    <td style="padding:20px;font-family:Arial,sans-serif;">
+                        {{ content|raw }}
+                    </td>
+                </tr>
+            {% endblock %}
+            {% block footer %}
+                {% include 'footer.twig' %}
+            {% endblock %}
+        </table>
+    </body>
 </html>
