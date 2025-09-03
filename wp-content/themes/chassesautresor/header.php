@@ -99,4 +99,6 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
         <div id="content" class="site-content">
                 <div class="ast-container<?php echo ( is_singular('enigme') || is_singular('chasse') ) ? '' : ' ast-container--boxed'; ?>">
                 <?php astra_content_top(); ?>
+                <?php if (!is_page_template('templates/page-devenir-organisateur.php')) : ?>
                 <section class="msg-important"><?php print_site_messages(); ?></section>
+                <?php endif; ?>
