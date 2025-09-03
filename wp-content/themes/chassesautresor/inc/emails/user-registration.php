@@ -44,7 +44,10 @@ function cta_new_user_notification_email(array $email, $user, string $blogname):
     $email['subject'] = $subject;
     $email['message'] = cta_render_email_template($subject, $content);
 
-    $headers   = $email['headers'] ?? [];
+    $headers = $email['headers'] ?? [];
+    if (!is_array($headers)) {
+        $headers = $headers ? preg_split("/(\r\n|\r|\n)/", (string) $headers) : [];
+    }
     $has_type  = false;
     foreach ($headers as $header) {
         if (stripos($header, 'Content-Type:') === 0) {

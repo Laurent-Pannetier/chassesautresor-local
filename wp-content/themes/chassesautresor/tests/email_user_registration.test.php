@@ -78,6 +78,22 @@ class EmailUserRegistrationTest extends TestCase
         $this->assertStringContainsString('Bienvenue', $email['subject']);
         $this->assertStringContainsString('Configurer mon mot de passe', $email['message']);
         $this->assertStringContainsString('abc123', $email['message']);
+        $this->assertIsArray($email['headers']);
+        $this->assertContains('Content-Type: text/html; charset=UTF-8', $email['headers']);
+    }
+
+    public function test_registration_email_handles_string_headers(): void
+    {
+        $user = (object) [
+            'user_login'   => 'test4',
+            'display_name' => 'test4',
+            'user_email'   => 'test4@example.com',
+        ];
+
+        $email = [ 'headers' => "From: admin@example.com" ];
+        $email = cta_new_user_notification_email($email, $user, 'chassesautresor.com');
+
+        $this->assertContains('From: admin@example.com', $email['headers']);
         $this->assertContains('Content-Type: text/html; charset=UTF-8', $email['headers']);
     }
 }
