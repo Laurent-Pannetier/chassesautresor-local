@@ -401,7 +401,7 @@ require_once $inc_path . 'edition/edition-indice.php';
 require_once $inc_path . 'edition/edition-solution.php';
 require_once $inc_path . 'edition/edition-securite.php';
 
-require_once get_template_directory() . '/inc/emails/template.php';
+require_once get_theme_file_path( 'inc/emails/template.php' );
 
 
 
