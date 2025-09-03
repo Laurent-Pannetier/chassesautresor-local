@@ -176,9 +176,19 @@ function afficher_visuels_enigme(int $enigme_id): void
                 : ($caption ?: __('Visuel énigme', 'chassesautresor-com'));
         }
 
+        $classes = 'enigme-image--limited';
+        if ($index === 0) {
+            $classes .= ' image-active';
+        }
+
         $attrs = [
-            'class' => $index === 0 ? 'image-active' : '',
+            'class' => $classes,
+            'style' => 'width:auto;max-width:100%;',
         ];
+
+        if ($index === 0) {
+            $attrs['id'] = 'image-enigme-active';
+        }
 
         echo '<figure class="image-principale">';
         echo build_picture_enigme($image_id, $alt, ['full'], $attrs);
