@@ -22,8 +22,8 @@ if (!function_exists('get_theme_file_uri')) {
     }
 }
 
-require_once dirname(__DIR__, 4) . '/vendor/autoload.php';
-require_once __DIR__ . '/../inc/emails/template.php';
+require_once dirname(__DIR__) . '/vendor/autoload.php';
+require_once dirname(__DIR__) . '/wp-content/themes/chassesautresor/inc/emails/template.php';
 
 class EmailTemplateTest extends TestCase
 {

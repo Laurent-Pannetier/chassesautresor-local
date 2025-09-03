@@ -15,45 +15,33 @@ defined('ABSPATH') || exit();
  *
  * @return string
  */
-function cta_render_email_template( string $title, string $content ): string {
-    $logo_url = '';
-    if ( function_exists( 'get_theme_mod' ) ) {
-        $logo_id = get_theme_mod( 'custom_logo' );
-        if ( $logo_id && function_exists( 'wp_get_attachment_image_url' ) ) {
-            $logo_url = wp_get_attachment_image_url( $logo_id, 'full' );
+function cta_render_email_template(string $title, string $content): string
+{
+    static $twig = null;
+
+    $content = function_exists('wp_kses_post') ? wp_kses_post($content) : $content;
+
+    if (null === $twig) {
+        $loader = new \Twig\Loader\FilesystemLoader(__DIR__ . '/templates');
+        $twig   = new \Twig\Environment($loader);
+
+        if (function_exists('get_theme_file_uri')) {
+            $twig->addFunction(new \Twig\TwigFunction('get_theme_file_uri', 'get_theme_file_uri'));
+        }
+
+        if (function_exists('home_url')) {
+            $twig->addFunction(new \Twig\TwigFunction('home_url', 'home_url'));
+        }
+
+        if (function_exists('__')) {
+            $twig->addFunction(new \Twig\TwigFunction('__', '__'));
         }
     }
 
-    if ( ! $logo_url && function_exists( 'get_theme_file_uri' ) ) {
-        $logo_url = get_theme_file_uri( 'assets/images/logo.png' );
-    }
-
-    $title_icon  = function_exists( 'get_theme_file_uri' ) ? get_theme_file_uri( 'assets/images/logo-cat_icone-s.png' ) : '';
-    $footer_logo = function_exists( 'get_theme_file_uri' ) ? get_theme_file_uri( 'assets/images/logo-cat_hz-txt.png' ) : '';
-    $site_name   = function_exists( 'get_bloginfo' ) ? get_bloginfo( 'name' ) : '';
-    $header_bg   = '#0B132B';
-    $team_label  = function_exists( 'esc_html__' )
-        ? esc_html__( "L'équipe chassesautresor.com", 'chassesautresor-com' )
-        : "L'équipe chassesautresor.com";
-
-    $content = function_exists( 'wp_kses_post' ) ? wp_kses_post( $content ) : $content;
-
-    $loader = new \Twig\Loader\FilesystemLoader( __DIR__ . '/templates' );
-    $twig   = new \Twig\Environment( $loader );
-
-    return $twig->render(
-        'email.twig',
-        [
-            'title'       => $title,
-            'content'     => $content,
-            'logo_url'    => $logo_url,
-            'title_icon'  => $title_icon,
-            'footer_logo' => $footer_logo,
-            'site_name'   => $site_name,
-            'header_bg'   => $header_bg,
-            'team_label'  => $team_label,
-        ]
-    );
+    return $twig->render('email.twig', [
+        'title'   => $title,
+        'content' => $content,
+    ]);
 }
 
 /**
