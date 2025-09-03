@@ -18,11 +18,7 @@ defined('ABSPATH') || exit();
  */
 function cta_new_user_notification_email(array $email, $user, string $blogname): array
 {
-    $subject = sprintf(
-        /* translators: %s: Site name */
-        esc_html__('Bienvenue chez %s', 'chassesautresor-com'),
-        $blogname
-    );
+    $subject = esc_html__('Bienvenue chez chassesautresor.com', 'chassesautresor-com');
 
     $key = function_exists('get_password_reset_key') ? get_password_reset_key($user) : '';
     $reset_url = function_exists('network_site_url')
@@ -38,7 +34,7 @@ function cta_new_user_notification_email(array $email, $user, string $blogname):
         'Merci de votre inscription. Cliquez sur le bouton ci-dessous pour définir votre mot de passe.',
         'chassesautresor-com'
     ) . '</p>';
-    $content .= '<p><a href="' . esc_url($reset_url) . '" style="display:inline-block;padding:10px 20px;background:#0B132B;color:#ffffff;text-decoration:none;">' . esc_html__('Configurer mon mot de passe', 'chassesautresor-com') . '</a></p>';
+    $content .= '<p style="margin-top:20px;"><a href="' . esc_url($reset_url) . '" style="display:inline-block;padding:10px 20px;background:#0B132B;color:#ffffff;text-decoration:none;">' . esc_html__('Configurer mon mot de passe', 'chassesautresor-com') . '</a></p>';
 
     $email['to']      = $user->user_email;
     $email['subject'] = $subject;

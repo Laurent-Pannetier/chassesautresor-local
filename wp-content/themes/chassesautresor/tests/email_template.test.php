@@ -68,5 +68,8 @@ class EmailTemplateTest extends TestCase
         $this->assertStringContainsString('<header', $html);
         $this->assertStringContainsString('<footer', $html);
         $this->assertGreaterThanOrEqual(2, substr_count($html, '#0B132B'));
+        $this->assertStringContainsString('logo-cat_icone-s.png', $html);
+        $this->assertStringContainsString('logo-cat_hz-txt.png', $html);
+        $this->assertStringContainsString("L'équipe chassesautresor.com", $html);
     }
 }

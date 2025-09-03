@@ -75,9 +75,10 @@ class EmailUserRegistrationTest extends TestCase
 
         $email = cta_new_user_notification_email([], $user, 'chassesautresor.com');
 
-        $this->assertStringContainsString('Bienvenue', $email['subject']);
+        $this->assertSame('Bienvenue chez chassesautresor.com', $email['subject']);
         $this->assertStringContainsString('Configurer mon mot de passe', $email['message']);
         $this->assertStringContainsString('abc123', $email['message']);
+        $this->assertStringContainsString('margin-top:20px', $email['message']);
         $this->assertIsArray($email['headers']);
         $this->assertContains('Content-Type: text/html; charset=UTF-8', $email['headers']);
     }
