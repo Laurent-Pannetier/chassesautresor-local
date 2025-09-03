@@ -52,6 +52,7 @@ get_header(); ?>
   </div>
 </section>
 <main id="primary" class="site-main conteneur-devenir-organisateur">
+    <?php echo myaccount_get_important_messages(); ?>
     <?php
       while ( have_posts() ) :
         the_post();
