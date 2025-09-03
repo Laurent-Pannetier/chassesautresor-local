@@ -47,33 +47,6 @@ if (!function_exists('wp_json_encode')) {
     }
 }
 
-$cat_test_transients = [];
-if (!function_exists('get_transient')) {
-    function get_transient($key)
-    {
-        global $cat_test_transients;
-        return $cat_test_transients[$key] ?? false;
-    }
-}
-
-if (!function_exists('set_transient')) {
-    function set_transient($key, $value, $expiration = 0)
-    {
-        global $cat_test_transients;
-        $cat_test_transients[$key] = $value;
-        return true;
-    }
-}
-
-if (!function_exists('delete_transient')) {
-    function delete_transient($key)
-    {
-        global $cat_test_transients;
-        unset($cat_test_transients[$key]);
-        return true;
-    }
-}
-
 if (!function_exists('is_user_logged_in')) {
     function is_user_logged_in()
     {
@@ -120,10 +93,9 @@ class SiteMessageDismissalTest extends TestCase
 
     protected function setUp(): void
     {
-        global $wpdb, $cat_test_transients;
+        global $wpdb;
         $this->wpdb = new DummyWpdb();
         $wpdb       = $this->wpdb;
-        $cat_test_transients = [];
         if (session_status() !== PHP_SESSION_ACTIVE) {
             session_start();
         }
