@@ -19,6 +19,17 @@ function cta_render_email_template(string $title, string $content): string
 {
     $content = function_exists('wp_kses_post') ? wp_kses_post($content) : $content;
 
+    if (!class_exists('\\Twig\\Environment')) {
+        $autoloader = ABSPATH . 'vendor/autoload.php';
+        if (file_exists($autoloader)) {
+            require_once $autoloader;
+        }
+    }
+
+    if (!class_exists('\\Twig\\Environment')) {
+        return '<h2>' . esc_html($title) . '</h2>' . $content;
+    }
+
     $loader = new \Twig\Loader\FilesystemLoader(__DIR__ . '/templates');
     $twig   = new \Twig\Environment($loader);
 
