@@ -30,15 +30,17 @@ function cta_render_email_template(string $title, string $content): string
     $html .= 'style="border-collapse:collapse;">';
 
     $html .= '<tr><td>';
-    $html .= '<header style="background:' . esc_attr($header_bg) . ';padding:20px;text-align:center;">';
-    $html .= '<h1 style="margin:0;color:#ffffff;font-family:Arial,sans-serif;font-size:24px;">';
+    $html .= '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" '
+        . 'class="cta-email-header" style="background:' . esc_attr($header_bg) . ';">';
+    $html .= '<tr><td style="padding:20px;text-align:center;">';
+    $html .= '<span style="display:inline-block;font-family:Arial,sans-serif;font-size:24px;color:#ffffff;">';
     if ($icon_url) {
         $html .= '<img src="' . esc_url($icon_url) . '" alt="' .
             esc_attr__('Chasses au Trésor', 'chassesautresor-com') . '" ' .
             'style="width:50px;height:50px;vertical-align:middle;margin-right:10px;" />';
     }
-    $html .= esc_html($title) . '</h1>';
-    $html .= '</header>';
+    $html .= esc_html($title) . '</span>';
+    $html .= '</td></tr></table>';
     $html .= '</td></tr>';
 
     $html .= '<tr><td>';
@@ -50,17 +52,20 @@ function cta_render_email_template(string $title, string $content): string
     $html .= '</td></tr>';
 
     $html .= '<tr><td>';
-    $html .= '<footer style="background:' . esc_attr($header_bg) . ';padding:20px;text-align:center;';
-    $html .= 'font-family:Arial,sans-serif;font-size:12px;color:#ffffff;">';
-    $html .= '<a href="' . esc_url('http://chassesautresor.local/mentions-legales/') . '" style="color:#ffffff;">' .
-        esc_html__('Mentions légales', 'chassesautresor-com') . '</a>';
-    $html .= '<a href="' . esc_url('https://www.chassesautresor.com') . '" ' .
-        'style="display:block;margin:10px auto 0;">';
+    $html .= '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" '
+        . 'class="cta-email-footer" style="background:' . esc_attr($header_bg) . ';">';
+    $html .= '<tr><td style="padding:20px;text-align:center;font-family:Arial,sans-serif;'
+        . 'font-size:12px;color:#ffffff;">';
+    $html .= '<a href="' . esc_url('http://chassesautresor.local/mentions-legales/') . '" style="color:#ffffff;">'
+        . esc_html__('Mentions légales', 'chassesautresor-com') . '</a>';
+    $html .= '<a href="' . esc_url('https://www.chassesautresor.com') . '" '
+        . 'style="display:block;margin:10px auto 0;">';
     $logo_url = function_exists('get_theme_file_uri') ? get_theme_file_uri('assets/images/logo-cat_hz-txt.png') : '';
-    $html    .= '<img src="' . esc_url($logo_url) . '" alt="' . esc_attr__('Chasses au Trésor', 'chassesautresor-com') . '" ' .
-        'style="max-width:100%;height:auto;display:block;margin:0 auto;" />';
+    $html    .= '<img src="' . esc_url($logo_url) . '" alt="'
+        . esc_attr__('Chasses au Trésor', 'chassesautresor-com') . '" '
+        . 'style="max-width:100%;height:auto;display:block;margin:0 auto;" />';
     $html .= '</a>';
-    $html .= '</footer>';
+    $html .= '</td></tr></table>';
     $html .= '</td></tr>';
 
     $html .= '</table>';

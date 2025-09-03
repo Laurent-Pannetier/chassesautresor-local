@@ -66,8 +66,8 @@ class EmailTemplateTest extends TestCase
 
         $this->assertStringContainsString($title, $html);
         $this->assertStringContainsString($content, $html);
-        $this->assertStringContainsString('<header', $html);
-        $this->assertStringContainsString('<footer', $html);
+        $this->assertStringContainsString('cta-email-header', $html);
+        $this->assertStringContainsString('cta-email-footer', $html);
         $this->assertSame(2, substr_count($html, '#0B132B'));
         $this->assertStringContainsString('logo-cat_icone-s.png', $html);
         $this->assertStringContainsString('http://chassesautresor.local/mentions-legales/', $html);

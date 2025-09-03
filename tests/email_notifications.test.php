@@ -115,8 +115,8 @@ class EmailNotificationsTest extends TestCase
 
         $this->assertSame('foo@example.com', $result['to']);
         $this->assertStringContainsString('Réinitialiser mon mot de passe', $result['message']);
-        $this->assertStringContainsString('<header', $result['message']);
-        $this->assertStringContainsString('<footer', $result['message']);
+        $this->assertStringContainsString('cta-email-header', $result['message']);
+        $this->assertStringContainsString('cta-email-footer', $result['message']);
         $this->assertStringContainsString('Content-Type: text/html', $result['headers']);
     }
 }
