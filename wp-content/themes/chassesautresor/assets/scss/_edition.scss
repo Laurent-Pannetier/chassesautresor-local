@@ -743,6 +743,11 @@ body[class*="edition-active"] .champ-modifier:not(.bouton-cta):focus {
   outline-offset: 2px;
 }
 
+body[class*="edition-active"] .champ-img .champ-modifier:focus {
+  outline: none;
+  outline-offset: 0;
+}
+
 
 /* ========== 💾 BOUTONS ÉDITION : ENREGISTRER / ANNULER ========== */
 
