@@ -360,6 +360,7 @@ require_once $inc_path . 'utils.php';
 require_once $inc_path . 'PointsRepository.php';
 require_once $inc_path . 'messages.php';
 require_once $inc_path . 'messages/class-user-message-repository.php';
+require_once $inc_path . 'emails/template.php';
 
 if (defined('WP_CLI') && WP_CLI) {
     require_once $inc_path . 'cli/class-cat-cli-command.php';
