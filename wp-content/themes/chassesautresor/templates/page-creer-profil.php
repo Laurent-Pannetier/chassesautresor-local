@@ -23,9 +23,9 @@ if (isset($_GET['resend'])) {
     renvoyer_email_confirmation_organisateur($current_user_id);
     add_site_message(
         'info',
-        '',
+        __('prout', 'chassesautresor-com'),
         true,
-        'profil_verification',
+        null,
         get_user_locale($current_user_id),
         2 * DAY_IN_SECONDS,
         true
@@ -33,12 +33,12 @@ if (isset($_GET['resend'])) {
     myaccount_add_persistent_message(
         $current_user_id,
         'profil_verification',
-        '',
+        __('prout', 'chassesautresor-com'),
         'info',
         true,
         0,
         false,
-        'profil_verification',
+        null,
         get_user_locale($current_user_id),
         2 * DAY_IN_SECONDS
     );
@@ -57,9 +57,9 @@ if ($token) {
 lancer_demande_organisateur($current_user_id);
 add_site_message(
     'info',
-    '',
+    __('prout', 'chassesautresor-com'),
     true,
-    'profil_verification',
+    null,
     get_user_locale($current_user_id),
     2 * DAY_IN_SECONDS,
     true
@@ -67,12 +67,12 @@ add_site_message(
 myaccount_add_persistent_message(
     $current_user_id,
     'profil_verification',
-    '',
+    __('prout', 'chassesautresor-com'),
     'info',
     true,
     0,
     false,
-    'profil_verification',
+    null,
     get_user_locale($current_user_id),
     2 * DAY_IN_SECONDS
 );
