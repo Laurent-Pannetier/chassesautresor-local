@@ -360,7 +360,6 @@ require_once $inc_path . 'utils.php';
 require_once $inc_path . 'PointsRepository.php';
 require_once $inc_path . 'messages.php';
 require_once $inc_path . 'messages/class-user-message-repository.php';
-require_once $inc_path . 'emails/template.php';
 require_once $inc_path . 'emails/user-registration.php';
 
 if (defined('WP_CLI') && WP_CLI) {
@@ -401,6 +400,8 @@ require_once $inc_path . 'edition/edition-enigme.php';
 require_once $inc_path . 'edition/edition-indice.php';
 require_once $inc_path . 'edition/edition-solution.php';
 require_once $inc_path . 'edition/edition-securite.php';
+
+require_once get_template_directory() . '/inc/emails/template.php';
 
 
 
