@@ -53,6 +53,13 @@ function add_site_message(
         if (!is_array($messages)) {
             $messages = [];
         }
+
+        if ($key !== null) {
+            $messages = array_values(array_filter(
+                $messages,
+                fn ($msg) => ($msg['key'] ?? null) !== $key
+            ));
+        }
         $messages[] = $message;
 
         $expirationSeconds = 0;
@@ -71,6 +78,15 @@ function add_site_message(
 
         global $wpdb;
         $repo = new UserMessageRepository($wpdb);
+        if ($key !== null) {
+            $existing = $repo->get(0, 'site', false);
+            foreach ($existing as $row) {
+                $data = json_decode($row['message'], true);
+                if (is_array($data) && (($data['key'] ?? null) === $key)) {
+                    $repo->delete((int) $row['id']);
+                }
+            }
+        }
         $repo->insert(0, wp_json_encode($message), 'site', $expiresAt, $locale);
         return;
     }
@@ -92,20 +108,26 @@ function add_site_message(
  */
 function get_site_messages(): string
 {
-    $messages = [];
+    $messagesByKey = [];
 
     if (session_status() !== PHP_SESSION_ACTIVE) {
         session_start();
     }
 
     if (!empty($_SESSION['cat_site_messages'])) {
-        $messages = array_merge($messages, $_SESSION['cat_site_messages']);
+        foreach ($_SESSION['cat_site_messages'] as $msg) {
+            $hash = $msg['key'] ?? md5($msg['type'] . ($msg['message_key'] ?? $msg['content']));
+            $messagesByKey[$hash] = $msg;
+        }
         unset($_SESSION['cat_site_messages']);
     }
 
     $transient = get_transient('cat_site_messages');
     if (is_array($transient) && !empty($transient)) {
-        $messages = array_merge($messages, $transient);
+        foreach ($transient as $msg) {
+            $hash = $msg['key'] ?? md5($msg['type'] . ($msg['message_key'] ?? $msg['content']));
+            $messagesByKey[$hash] = $msg;
+        }
     }
 
     global $wpdb;
@@ -113,15 +135,21 @@ function get_site_messages(): string
     $rows = $repo->get(0, 'site', false);
     foreach ($rows as $row) {
         $data = json_decode($row['message'], true);
-        if (is_array($data)) {
-            if (!empty($row['locale'])) {
-                $data['locale'] = $row['locale'];
-            }
-            $messages[] = $data;
+        if (!is_array($data)) {
+            continue;
         }
+        if (!empty($row['locale'])) {
+            $data['locale'] = $row['locale'];
+        }
+        $hash = $data['key'] ?? md5($data['type'] . ($data['message_key'] ?? $data['content']));
+        if (isset($messagesByKey[$hash])) {
+            $repo->delete((int) $row['id']);
+            continue;
+        }
+        $messagesByKey[$hash] = $data;
     }
 
-    if (empty($messages)) {
+    if (empty($messagesByKey)) {
         return '';
     }
 
@@ -149,7 +177,7 @@ function get_site_messages(): string
 
             return '<p class="' . esc_attr($msg['type']) . '">' . esc_html($content) . $button . '</p>';
         },
-        $messages
+        $messagesByKey
     );
 
     return implode('', $output);

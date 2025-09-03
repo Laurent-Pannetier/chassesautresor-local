@@ -77,11 +77,32 @@ if (!function_exists('__')) {
 if (!class_exists('UserMessageRepository')) {
     class UserMessageRepository
     {
+        private static array $rows = [];
+        private static int $nextId = 1;
+
         public function __construct($wpdb) {}
-        public function insert($userId, $message, $status, $expiresAt, $locale): void {}
+
+        public function insert($userId, $message, $status, $expiresAt, $locale): void
+        {
+            self::$rows[self::$nextId] = [
+                'id'         => self::$nextId,
+                'user_id'    => $userId,
+                'message'    => $message,
+                'status'     => $status,
+                'expires_at' => $expiresAt,
+                'locale'     => $locale,
+            ];
+            self::$nextId++;
+        }
+
         public function get($userId, $status, $expired): array
         {
-            return [];
+            return array_values(self::$rows);
+        }
+
+        public function delete($id): void
+        {
+            unset(self::$rows[$id]);
         }
     }
 }
@@ -143,5 +164,18 @@ class SiteMessageExpirationTest extends TestCase
         add_site_message('info', 'Hi', true, null, null, null, 'foo', true);
         $output = get_site_messages();
         $this->assertStringContainsString('class="message-close" data-key="foo"', $output);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_persistent_message_is_not_duplicated(): void
+    {
+        add_site_message('info', 'Hello', true, null, null, DAY_IN_SECONDS, 'bar', true);
+        add_site_message('info', 'Hello', true, null, null, DAY_IN_SECONDS, 'bar', true);
+
+        $output = get_site_messages();
+        $this->assertSame(1, substr_count($output, 'Hello'));
     }
 }
