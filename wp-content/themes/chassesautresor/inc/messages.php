@@ -10,6 +10,7 @@ defined('ABSPATH') || exit;
  * @param bool        $persistent  Whether the message should persist across sessions.
  * @param string|null $message_key Optional translation key.
  * @param string|null $locale      Optional locale for the message.
+ * @param int|null    $expires     Expiration as timestamp or duration in seconds.
  *
  * @return void
  */
@@ -18,7 +19,8 @@ function add_site_message(
     string $content,
     bool $persistent = false,
     ?string $message_key = null,
-    ?string $locale = null
+    ?string $locale = null,
+    ?int $expires = null
 ): void
 {
     $message = [
@@ -40,11 +42,24 @@ function add_site_message(
             $messages = [];
         }
         $messages[] = $message;
-        set_transient('cat_site_messages', $messages, 0);
+
+        $expirationSeconds = 0;
+        $expiresAt         = null;
+        if ($expires !== null) {
+            if ($expires > time()) {
+                $expirationSeconds = $expires - time();
+                $expiresAt         = gmdate('c', $expires);
+            } else {
+                $expirationSeconds = $expires;
+                $expiresAt         = gmdate('c', time() + $expires);
+            }
+        }
+
+        set_transient('cat_site_messages', $messages, $expirationSeconds);
 
         global $wpdb;
         $repo = new UserMessageRepository($wpdb);
-        $repo->insert(0, wp_json_encode($message), 'site', null, $locale);
+        $repo->insert(0, wp_json_encode($message), 'site', $expiresAt, $locale);
         return;
     }
 
