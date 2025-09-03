@@ -384,7 +384,7 @@ function filtrer_content_sans_titre($content) {
  * @param string $more  Optional string appended after trimming.
  * @return string Trimmed HTML content.
  */
-function cst_trim_html_words($html, $limit = 200, $more = '…') {
+function cst_trim_html_words($html, $limit = 120, $more = '…') {
     $wordCount = 0;
     $output = '';
     $openTags = [];
