@@ -37,25 +37,14 @@ function add_site_message(
     }
 
     if ($persistent) {
-        $messages = get_transient('cat_site_messages');
-        if (!is_array($messages)) {
-            $messages = [];
-        }
-        $messages[] = $message;
-
-        $expirationSeconds = 0;
-        $expiresAt         = null;
+        $expiresAt = null;
         if ($expires !== null) {
             if ($expires > time()) {
-                $expirationSeconds = $expires - time();
-                $expiresAt         = gmdate('c', $expires);
+                $expiresAt = gmdate('c', $expires);
             } else {
-                $expirationSeconds = $expires;
-                $expiresAt         = gmdate('c', time() + $expires);
+                $expiresAt = gmdate('c', time() + $expires);
             }
         }
-
-        set_transient('cat_site_messages', $messages, $expirationSeconds);
 
         global $wpdb;
         $repo = new UserMessageRepository($wpdb);
@@ -82,22 +71,6 @@ function add_site_message(
  */
 function remove_site_message(string $key): void
 {
-    $messages = get_transient('cat_site_messages');
-    if (is_array($messages)) {
-        $messages = array_values(array_filter(
-            $messages,
-            static function (array $msg) use ($key): bool {
-                return ($msg['message_key'] ?? '') !== $key;
-            }
-        ));
-
-        if (!empty($messages)) {
-            set_transient('cat_site_messages', $messages);
-        } else {
-            delete_transient('cat_site_messages');
-        }
-    }
-
     global $wpdb;
     $repo = new UserMessageRepository($wpdb);
     $rows = $repo->get(0, 'site', null);
@@ -125,11 +98,6 @@ function get_site_messages(): string
     if (!empty($_SESSION['cat_site_messages'])) {
         $messages = array_merge($messages, $_SESSION['cat_site_messages']);
         unset($_SESSION['cat_site_messages']);
-    }
-
-    $transient = get_transient('cat_site_messages');
-    if (is_array($transient) && !empty($transient)) {
-        $messages = array_merge($messages, $transient);
     }
 
     global $wpdb;
