@@ -4,6 +4,61 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
+if (!function_exists('__')) {
+    function __($text, $domain = 'default')
+    {
+        return $text;
+    }
+}
+
+if (!function_exists('wp_json_encode')) {
+    function wp_json_encode($data, $options = 0, $depth = 512)
+    {
+        return json_encode($data, $options);
+    }
+}
+
+$cat_test_transients = [];
+if (!function_exists('get_transient')) {
+    function get_transient($key)
+    {
+        global $cat_test_transients;
+        return $cat_test_transients[$key] ?? false;
+    }
+}
+
+if (!function_exists('set_transient')) {
+    function set_transient($key, $value, $expiration = 0)
+    {
+        global $cat_test_transients;
+        $cat_test_transients[$key] = $value;
+        return true;
+    }
+}
+
+if (!function_exists('delete_transient')) {
+    function delete_transient($key)
+    {
+        global $cat_test_transients;
+        unset($cat_test_transients[$key]);
+        return true;
+    }
+}
+
+if (!function_exists('esc_attr')) {
+    function esc_attr($text)
+    {
+        return $text;
+    }
+}
+
+if (!function_exists('esc_html')) {
+    function esc_html($text)
+    {
+        return $text;
+    }
+}
+
 if (!function_exists('current_time')) {
     function current_time(string $type)
     {
@@ -40,8 +95,9 @@ class ZZGetSiteMessagesTest extends TestCase
     {
         require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/messages/class-user-message-repository.php';
         require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/messages.php';
-        global $wpdb;
-        $wpdb = new MessagesDummyWpdb();
+        global $wpdb, $cat_test_transients;
+        $wpdb             = new MessagesDummyWpdb();
+        $cat_test_transients = [];
         session_start();
         $_SESSION['cat_site_messages'] = [];
     }
@@ -57,6 +113,16 @@ class ZZGetSiteMessagesTest extends TestCase
 
         $this->assertStringContainsString('Active', $html);
         $this->assertStringNotContainsString('Expired', $html);
+    }
+
+    public function test_persistent_message_in_transient_and_db_is_displayed_once(): void
+    {
+        add_site_message('info', 'Hello', true, 'unique_key');
+
+        $html = get_site_messages();
+
+        $this->assertStringContainsString('unique_key', $html);
+        $this->assertSame(1, substr_count($html, 'unique_key'));
     }
 }
 

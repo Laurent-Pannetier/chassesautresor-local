@@ -177,6 +177,22 @@ function get_site_messages(): string
         }
     }
 
+    if (!empty($messages)) {
+        $unique   = [];
+        $seenKeys = [];
+        foreach ($messages as $msg) {
+            $key = $msg['message_key'] ?? null;
+            if ($key !== null) {
+                if (isset($seenKeys[$key])) {
+                    continue;
+                }
+                $seenKeys[$key] = true;
+            }
+            $unique[] = $msg;
+        }
+        $messages = $unique;
+    }
+
     if (empty($messages)) {
         return '';
     }
