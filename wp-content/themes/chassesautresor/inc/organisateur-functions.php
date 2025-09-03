@@ -778,7 +778,7 @@ function envoyer_email_confirmation_organisateur(int $user_id, string $token): b
         'token' => $token,
     ], site_url('/confirmation-organisateur/'));
 
-    $subject  = '[Chasses au Trésor] Confirmez votre inscription organisateur';
+    $subject  = esc_html__('[Chasses au Trésor] Confirmez votre inscription organisateur', 'chassesautresor-com');
     $message  = '<div style="font-family:Arial,sans-serif;font-size:14px;">';
     $message .= '<p>Bonjour <strong>' . esc_html($user->display_name) . '</strong>,</p>';
     $message .= '<p>Pour finaliser la création de votre profil organisateur, veuillez cliquer sur le bouton ci-dessous :</p>';
@@ -787,10 +787,10 @@ function envoyer_email_confirmation_organisateur(int $user_id, string $token): b
     $message .= '<p style="margin-top:2em;">Merci et à très bientôt !<br>L’équipe chassesautresor.com</p>';
     $message .= '</div>';
 
-    $headers = ['Content-Type: text/html; charset=UTF-8'];
+    $headers = [];
     $from_filter = static function ($name) { return 'Chasses au Trésor'; };
     add_filter('wp_mail_from_name', $from_filter, 10, 1);
-    wp_mail($user->user_email, $subject, $message, $headers);
+    cta_send_email($user->user_email, $subject, $message, $headers);
     remove_filter('wp_mail_from_name', $from_filter, 10);
     return true;
 }
