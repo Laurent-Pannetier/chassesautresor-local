@@ -361,6 +361,7 @@ require_once $inc_path . 'PointsRepository.php';
 require_once $inc_path . 'messages.php';
 require_once $inc_path . 'messages/class-user-message-repository.php';
 require_once $inc_path . 'emails/user-registration.php';
+require_once $inc_path . 'emails/password-reset.php';
 
 if (defined('WP_CLI') && WP_CLI) {
     require_once $inc_path . 'cli/class-cat-cli-command.php';

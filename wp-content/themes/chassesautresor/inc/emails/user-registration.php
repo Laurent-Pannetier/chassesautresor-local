@@ -54,7 +54,7 @@ function cta_new_user_notification_email(array $email, $user, string $blogname):
     if (!$has_type) {
         $headers[] = 'Content-Type: text/html; charset=UTF-8';
     }
-    $email['headers'] = $headers;
+    $email['headers'] = implode("\r\n", $headers);
 
     return $email;
 }
