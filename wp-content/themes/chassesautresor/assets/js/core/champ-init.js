@@ -30,7 +30,7 @@ function modifierChampSimple(champ, valeur, postId, cpt = 'enigme') {
       if (res.success) {
         DEBUG && console.log(`✅ Champ ${champ} enregistré`);
         if (typeof window.onChampSimpleMisAJour === 'function') {
-          window.onChampSimpleMisAJour(champ, postId, valeur, cpt);
+          window.onChampSimpleMisAJour(champ, postId, valeur, cpt, res.data);
         }
         return true; // important : pour pouvoir chaîner dans le .then(...)
       } else {
