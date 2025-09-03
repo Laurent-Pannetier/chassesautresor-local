@@ -209,7 +209,9 @@ function gerer_organisateur() {
         // Envoi d'un email de confirmation
         $email = get_post_meta($post_id, 'email_organisateur', true);
         if (!empty($email)) {
-            wp_mail($email, "Validation de votre inscription", "Votre demande d'organisateur a été validée !");
+            $subject = __('Validation de votre inscription', 'chassesautresor-com');
+            $message = '<p>' . esc_html__('Votre demande d\'organisateur a été validée !', 'chassesautresor-com') . '</p>';
+            cta_send_email($email, $subject, $message);
         }
 
         wp_send_json_success(array("message" => "Organisateur accepté."));
@@ -222,7 +224,9 @@ function gerer_organisateur() {
         // Envoi d'un email de refus
         $email = get_post_meta($post_id, 'email_organisateur', true);
         if (!empty($email)) {
-            wp_mail($email, "Refus de votre demande", "Votre demande d'organisateur a été refusée.");
+            $subject = __('Refus de votre demande', 'chassesautresor-com');
+            $message = '<p>' . esc_html__('Votre demande d\'organisateur a été refusée.', 'chassesautresor-com') . '</p>';
+            cta_send_email($email, $subject, $message);
         }
 
         wp_send_json_success(array("message" => "Demande refusée et supprimée."));
@@ -615,15 +619,17 @@ function traiter_demande_paiement() {
 
     // 📧 Notification admin
     $admin_email = get_option('admin_email');
-    $subject = "Nouvelle demande de paiement";
-    $message = "Une nouvelle demande de paiement a été soumise.\n\n";
-    $message .= "Organisateur ID : $user_id\n";
-    $message .= "Montant : {$montant_euros} €\n";
-    $message .= "Points utilisés : {$points_a_convertir} points\n"; // ✅ AJOUTÉ DANS LE MAIL
-    $message .= "Date : " . current_time('mysql') . "\n";
-    $message .= "Statut : En attente";
+    $subject = __('Nouvelle demande de paiement', 'chassesautresor-com');
+    $message  = '<p>' . esc_html__('Une nouvelle demande de paiement a été soumise.', 'chassesautresor-com') . '</p>';
+    $message .= '<p>';
+    $message .= esc_html__('Organisateur ID :', 'chassesautresor-com') . ' ' . intval($user_id) . '<br />';
+    $message .= esc_html__('Montant :', 'chassesautresor-com') . ' ' . esc_html(number_format($montant_euros, 2, ',', ' ')) . ' €<br />';
+    $message .= esc_html__('Points utilisés :', 'chassesautresor-com') . ' ' . intval($points_a_convertir) . ' ' . esc_html__('points', 'chassesautresor-com') . '<br />';
+    $message .= esc_html__('Date :', 'chassesautresor-com') . ' ' . esc_html(current_time('mysql')) . '<br />';
+    $message .= esc_html__('Statut : En attente', 'chassesautresor-com');
+    $message .= '</p>';
 
-    wp_mail($admin_email, $subject, $message);
+    cta_send_email($admin_email, $subject, $message);
     cat_debug("📧 Notification envoyée à l'administrateur.");
 
     // ✅ Redirection après soumission
@@ -2072,9 +2078,7 @@ function envoyer_mail_demande_correction(int $organisateur_id, int $chasse_id, s
     $body .= '<p style="margin-top:2em;">L’équipe chassesautresor.com</p>';
     $body .= '</div>';
 
-    $headers = [
-        'Content-Type: text/html; charset=UTF-8',
-    ];
+    $headers = [];
 
     $from_filter = function ($name) use ($organisateur_id) {
         $titre = get_the_title($organisateur_id);
@@ -2082,8 +2086,8 @@ function envoyer_mail_demande_correction(int $organisateur_id, int $chasse_id, s
     };
     add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
-    wp_mail($emails, $subject, $body, $headers);
-    wp_mail($admin_email, $subject, $body, $headers);
+    cta_send_email($emails, $subject, $body, $headers);
+    cta_send_email($admin_email, $subject, $body, $headers);
     remove_filter('wp_mail_from_name', $from_filter, 10);
 
 }
@@ -2119,11 +2123,10 @@ function envoyer_mail_chasse_bannie(int $organisateur_id, int $chasse_id)
         ? wp_encode_mime_header($subject_raw)
         : mb_encode_mimeheader($subject_raw, 'UTF-8', 'B', "\r\n");
 
-    $body  = "Bonjour,\n\n";
-    $body .= sprintf('Votre chasse "%s" a été bannie par l\'administrateur.', $titre_chasse);
+    $body  = '<p>' . esc_html__('Bonjour,', 'chassesautresor-com') . '</p>';
+    $body .= '<p>' . sprintf(esc_html__('Votre chasse "%s" a été bannie par l\'administrateur.', 'chassesautresor-com'), esc_html($titre_chasse)) . '</p>';
 
     $headers = [
-        'Content-Type: text/plain; charset=UTF-8',
         'Bcc: ' . $admin_email,
     ];
 
@@ -2133,7 +2136,7 @@ function envoyer_mail_chasse_bannie(int $organisateur_id, int $chasse_id)
     };
     add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
-    wp_mail($email, $subject, $body, $headers);
+    cta_send_email($email, $subject, $body, $headers);
     remove_filter('wp_mail_from_name', $from_filter, 10);
 }
 
@@ -2168,11 +2171,10 @@ function envoyer_mail_chasse_supprimee(int $organisateur_id, int $chasse_id)
         ? wp_encode_mime_header($subject_raw)
         : mb_encode_mimeheader($subject_raw, 'UTF-8', 'B', "\r\n");
 
-    $body  = "Bonjour,\n\n";
-    $body .= sprintf('Votre chasse "%s" a été supprimée par l\'administrateur.', $titre_chasse);
+    $body  = '<p>' . esc_html__('Bonjour,', 'chassesautresor-com') . '</p>';
+    $body .= '<p>' . sprintf(esc_html__('Votre chasse "%s" a été supprimée par l\'administrateur.', 'chassesautresor-com'), esc_html($titre_chasse)) . '</p>';
 
     $headers = [
-        'Content-Type: text/plain; charset=UTF-8',
         'Bcc: ' . $admin_email,
     ];
 
@@ -2182,7 +2184,7 @@ function envoyer_mail_chasse_supprimee(int $organisateur_id, int $chasse_id)
     };
     add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
-    wp_mail($email, $subject, $body, $headers);
+    cta_send_email($email, $subject, $body, $headers);
     remove_filter('wp_mail_from_name', $from_filter, 10);
 }
 
@@ -2251,7 +2253,6 @@ function envoyer_mail_chasse_validee(int $organisateur_id, int $chasse_id)
     $body .= 'À très bientôt,<br>L’équipe <strong>Chasses au Trésor</strong></p>';
 
     $headers = [
-        'Content-Type: text/html; charset=UTF-8',
         'Bcc: ' . $admin_email,
     ];
 
@@ -2261,7 +2262,7 @@ function envoyer_mail_chasse_validee(int $organisateur_id, int $chasse_id)
     };
     add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
-    wp_mail($emails, $subject, $body, $headers);
+    cta_send_email($emails, $subject, $body, $headers);
     remove_filter('wp_mail_from_name', $from_filter, 10);
 }
 

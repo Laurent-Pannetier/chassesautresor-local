@@ -811,9 +811,11 @@ function envoyer_email_confirmation_organisateur(int $user_id, string $token): b
         return 'Chasses au Trésor';
     };
 
-    add_filter( 'wp_mail_from_name', $from_filter, 10, 1 );
-    cta_send_email( $user->user_email, $subject, $body );
-    remove_filter( 'wp_mail_from_name', $from_filter, 10 );
+    $headers = [];
+
+    add_filter('wp_mail_from_name', $from_filter, 10, 1);
+    cta_send_email($user->user_email, $subject, $body, $headers);
+    remove_filter('wp_mail_from_name', $from_filter, 10);
 
     return true;
 }

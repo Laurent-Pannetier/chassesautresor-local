@@ -414,7 +414,6 @@ add_action('wp_ajax_nopriv_soumettre_reponse_automatique', 'soumettre_reponse_au
         $message .= '</div>';
 
         $headers = [
-            'Content-Type: text/html; charset=UTF-8',
             'Reply-To: ' . $user->display_name . ' <' . $user->user_email . '>',
         ];
 
@@ -423,7 +422,7 @@ add_action('wp_ajax_nopriv_soumettre_reponse_automatique', 'soumettre_reponse_au
         };
         add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
-        wp_mail($email_organisateur, $subject, $message, $headers);
+        cta_send_email($email_organisateur, $subject, $message, $headers);
         remove_filter('wp_mail_from_name', $from_filter, 10);
     }
 
@@ -471,12 +470,7 @@ add_action('wp_ajax_nopriv_soumettre_reponse_automatique', 'soumettre_reponse_au
             $result_label
         );
 
-        $message  = '<!doctype html><html lang="fr"><head><meta charset="utf-8">';
-        $message .= '<title>' . esc_html($enigme_title) . ' — ';
-        $message .= esc_html($result_label) . '</title></head>';
-        $message .= '<body style="margin:0; padding:0; background:#0d1a2b; ';
-        $message .= 'font-family:Arial, sans-serif; color:#e6ebf2;">';
-        $message .= '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" ';
+        $message  = '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" ';
         $message .= 'style="background:#0d1a2b; padding:24px;"><tr><td align="center">';
         $message .= '<table role="presentation" width="600" cellpadding="0" cellspacing="0" ';
         $message .= 'style="background:#101e33; border-radius:12px; padding:24px;">';
@@ -499,11 +493,9 @@ add_action('wp_ajax_nopriv_soumettre_reponse_automatique', 'soumettre_reponse_au
             $tentatives_utilisees,
             $tentatives_max > 0 ? $tentatives_max : '∞'
         );
-        $message .= '</td></tr></table></td></tr></table></body></html>';
+        $message .= '</td></tr></table></td></tr></table>';
 
-        $headers = [
-            'Content-Type: text/html; charset=UTF-8',
-        ];
+        $headers = [];
 
         $chasse_raw = get_field('enigme_chasse_associee', $enigme_id, false);
         if (is_array($chasse_raw)) {
@@ -535,7 +527,7 @@ add_action('wp_ajax_nopriv_soumettre_reponse_automatique', 'soumettre_reponse_au
         };
         add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
-        wp_mail($user->user_email, $subject, $message, $headers);
+        cta_send_email($user->user_email, $subject, $message, $headers);
         remove_filter('wp_mail_from_name', $from_filter, 10);
     }
 
@@ -575,7 +567,6 @@ function envoyer_mail_accuse_reception_joueur($user_id, $enigme_id, $uid)
         }
 
         $headers = [
-            'Content-Type: text/html; charset=UTF-8',
             'Reply-To: ' . $email_organisateur
         ];
 
@@ -585,7 +576,7 @@ function envoyer_mail_accuse_reception_joueur($user_id, $enigme_id, $uid)
         };
         add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
-        wp_mail($user->user_email, $sujet, $message, $headers);
+        cta_send_email($user->user_email, $sujet, $message, $headers);
         remove_filter('wp_mail_from_name', $from_filter, 10); // si mis ailleurs
 
     }
