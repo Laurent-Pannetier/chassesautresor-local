@@ -1,7 +1,6 @@
 <?php
 /**
- * Plugin Name: Site Password Protection
- * Description: Protects the site with a global password.
+ * Site password protection.
  */
 
 function ca_site_password_protection(): void
@@ -18,12 +17,12 @@ function ca_site_password_protection(): void
         return;
     }
 
-    $field          = 'ca_site_password';
-    $password       = 'rosebud';
-    $attempt_field  = 'ca_site_password_attempts';
-    $max_attempts   = 10;
-    $attempts       = isset($_COOKIE[$attempt_field]) ? (int) $_COOKIE[$attempt_field] : 0;
-    $error_message  = '';
+    $field         = 'ca_site_password';
+    $password      = getenv('CA_SITE_PASSWORD') ?: (string) get_option('ca_site_password', '');
+    $attempt_field = 'ca_site_password_attempts';
+    $max_attempts  = 10;
+    $attempts      = isset($_COOKIE[$attempt_field]) ? (int) $_COOKIE[$attempt_field] : 0;
+    $error_message = '';
 
     if (
         isset($_COOKIE[$field])
@@ -37,14 +36,14 @@ function ca_site_password_protection(): void
         && is_string($_POST[$field])
     ) {
         if (strcasecmp($_POST[$field], $password) === 0) {
-            setcookie($field, $password, time() + DAY_IN_SECONDS, '/');
-            setcookie($attempt_field, '', time() - DAY_IN_SECONDS, '/');
+            setcookie($field, $password, time() + DAY_IN_SECONDS, '/', COOKIE_DOMAIN, is_ssl(), true);
+            setcookie($attempt_field, '', time() - DAY_IN_SECONDS, '/', COOKIE_DOMAIN, is_ssl(), true);
 
             return;
         }
 
         $attempts++;
-        setcookie($attempt_field, (string) $attempts, time() + DAY_IN_SECONDS, '/');
+        setcookie($attempt_field, (string) $attempts, time() + DAY_IN_SECONDS, '/', COOKIE_DOMAIN, is_ssl(), true);
         $error_message = esc_html__('Incorrect password.', 'chassesautresor-com');
     }
 
@@ -59,8 +58,8 @@ function ca_site_password_protection(): void
     status_header(401);
     header('Content-Type: text/html; charset=utf-8');
 
-    $svg_url    = esc_url(get_stylesheet_directory_uri() . '/assets/svg/pirate-skull.svg');
-    $style_url  = esc_url(get_stylesheet_directory_uri() . '/dist/style.css');
+    $svg_url   = esc_url(get_stylesheet_directory_uri() . '/assets/svg/pirate-skull.svg');
+    $style_url = esc_url(get_stylesheet_directory_uri() . '/dist/style.css');
 
     $styles = '.ca-site-password-wrapper{'
         . 'display:flex;'

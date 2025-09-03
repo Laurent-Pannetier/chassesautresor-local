@@ -354,6 +354,7 @@ add_action( 'login_enqueue_scripts', 'cta_enqueue_login_styles' );
 
 $inc_path = get_stylesheet_directory() . '/inc/';
 
+require_once get_template_directory() . '/inc/site-password.php';
 require_once $inc_path . 'constants.php';
 require_once $inc_path . 'utils.php';
 require_once $inc_path . 'PointsRepository.php';
