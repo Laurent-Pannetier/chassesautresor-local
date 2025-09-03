@@ -20,8 +20,8 @@ function cta_render_email_template(string $title, string $content): string
     $header_bg = '#0B132B';
     $icon_url  = '';
 
-    if (function_exists('get_template_directory_uri')) {
-        $icon_url = get_template_directory_uri() . '/assets/images/logo-cat_icone-s.png';
+    if (function_exists('get_theme_file_uri')) {
+        $icon_url = get_theme_file_uri('assets/images/logo-cat_icone-s.png');
     }
 
     $html  = '<!DOCTYPE html><html><head><meta charset="UTF-8"></head>';
@@ -56,10 +56,8 @@ function cta_render_email_template(string $title, string $content): string
         esc_html__('Mentions légales', 'chassesautresor-com') . '</a>';
     $html .= '<a href="' . esc_url('https://www.chassesautresor.com') . '" ' .
         'style="display:block;margin:10px auto 0;">';
-    $html .= '<img src="' . esc_url(
-        (function_exists('get_template_directory_uri') ? get_template_directory_uri() : '') .
-        '/assets/images/logo-cat_hz-txt.png'
-    ) . '" alt="' . esc_attr__('Chasses au Trésor', 'chassesautresor-com') . '" ' .
+    $logo_url = function_exists('get_theme_file_uri') ? get_theme_file_uri('assets/images/logo-cat_hz-txt.png') : '';
+    $html    .= '<img src="' . esc_url($logo_url) . '" alt="' . esc_attr__('Chasses au Trésor', 'chassesautresor-com') . '" ' .
         'style="max-width:100%;height:auto;display:block;margin:0 auto;" />';
     $html .= '</a>';
     $html .= '</footer>';
@@ -115,8 +113,26 @@ function cta_send_email(array|string $to, string $subject, string $body, array $
         $headers[] = 'From: ' . $from;
     }
 
-    $html = cta_render_email_template($subject, $body);
+    add_filter('wp_mail_content_type', 'cta_set_html_content_type');
+    $html   = cta_render_email_template($subject, $body);
+    $result = function_exists('wp_mail') ? wp_mail($to, $subject, $html, $headers) : false;
 
-    return function_exists('wp_mail') ? wp_mail($to, $subject, $html, $headers) : false;
+    return $result;
+}
+
+/**
+ * Forces HTML content type for outgoing emails.
+ *
+ * @param string $content_type Current content type.
+ *
+ * @return string
+ */
+function cta_set_html_content_type(string $content_type = ''): string
+{
+    if (function_exists('remove_filter')) {
+        remove_filter('wp_mail_content_type', 'cta_set_html_content_type');
+    }
+
+    return 'text/html; charset=UTF-8';
 }
 

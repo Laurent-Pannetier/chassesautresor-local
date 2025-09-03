@@ -56,6 +56,8 @@ function cta_new_user_notification_email(array $email, $user, string $blogname):
     }
     $email['headers'] = implode("\r\n", $headers);
 
+    add_filter('wp_mail_content_type', 'cta_set_html_content_type');
+
     return $email;
 }
 add_filter('wp_new_user_notification_email', 'cta_new_user_notification_email', 10, 3);

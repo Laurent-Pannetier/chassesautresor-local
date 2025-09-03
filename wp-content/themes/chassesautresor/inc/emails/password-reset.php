@@ -67,6 +67,8 @@ function cta_password_reset_notification_email(array $email, string $key, string
     }
     $email['headers'] = implode("\r\n", $headers);
 
+    add_filter('wp_mail_content_type', 'cta_set_html_content_type');
+
     return $email;
 }
 add_filter('retrieve_password_notification_email', 'cta_password_reset_notification_email', 10, 4);

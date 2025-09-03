@@ -39,10 +39,10 @@ if (!function_exists('esc_attr')) {
     }
 }
 
-if (!function_exists('get_template_directory_uri')) {
-    function get_template_directory_uri(): string
+if (!function_exists('get_theme_file_uri')) {
+    function get_theme_file_uri(string $path = ''): string
     {
-        return 'https://example.com/wp-content/themes/chassesautresor';
+        return 'https://example.com/wp-content/themes/chassesautresor/' . ltrim($path, '/');
     }
 }
 
