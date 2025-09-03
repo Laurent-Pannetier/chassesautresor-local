@@ -11,19 +11,18 @@ defined('ABSPATH') || exit();
  * Filters the password reset email to use the HTML template.
  *
  * @param array   $email      Default email arguments.
+ * @param string  $key        Activation key for the reset link.
+ * @param string  $user_login Username of the account.
  * @param WP_User $user       User object requesting reset.
- * @param string  $site_title Site name.
  *
  * @return array
  */
-function cta_password_reset_notification_email(array $email, $user, string $site_title): array
+function cta_password_reset_notification_email(array $email, string $key, string $user_login, WP_User $user): array
 {
-    $subject = esc_html__('Réinitialisation du mot de passe', 'chassesautresor-com');
-
-    $key = function_exists('get_password_reset_key') ? get_password_reset_key($user) : '';
+    $subject   = esc_html__('Réinitialisation du mot de passe', 'chassesautresor-com');
     $reset_url = function_exists('network_site_url')
         ? network_site_url(
-            'wp-login.php?action=rp&key=' . $key . '&login=' . rawurlencode($user->user_login),
+            'wp-login.php?action=rp&key=' . $key . '&login=' . rawurlencode($user_login),
             'login'
         )
         : '';
@@ -70,4 +69,4 @@ function cta_password_reset_notification_email(array $email, $user, string $site
 
     return $email;
 }
-add_filter('retrieve_password_notification_email', 'cta_password_reset_notification_email', 10, 3);
+add_filter('retrieve_password_notification_email', 'cta_password_reset_notification_email', 10, 4);

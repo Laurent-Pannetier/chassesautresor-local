@@ -60,10 +60,12 @@ if (!function_exists('network_site_url')) {
     }
 }
 
-if (!function_exists('get_password_reset_key')) {
-    function get_password_reset_key($user): string
+if (!class_exists('WP_User')) {
+    class WP_User
     {
-        return 'key';
+        public $user_login;
+        public $user_email;
+        public $display_name;
     }
 }
 
@@ -75,11 +77,10 @@ class EmailNotificationsTest extends TestCase
 {
     public function test_user_registration_email_headers_are_string(): void
     {
-        $user = (object) [
-            'user_login'    => 'test',
-            'user_email'    => 'foo@example.com',
-            'display_name'  => 'Test',
-        ];
+        $user = new WP_User();
+        $user->user_login   = 'test';
+        $user->user_email   = 'foo@example.com';
+        $user->display_name = 'Test';
 
         $email = [
             'to'      => '',
@@ -98,11 +99,10 @@ class EmailNotificationsTest extends TestCase
 
     public function test_password_reset_email_uses_template(): void
     {
-        $user = (object) [
-            'user_login'    => 'test',
-            'user_email'    => 'foo@example.com',
-            'display_name'  => 'Test',
-        ];
+        $user = new WP_User();
+        $user->user_login   = 'test';
+        $user->user_email   = 'foo@example.com';
+        $user->display_name = 'Test';
 
         $email = [
             'to'      => '',
@@ -111,7 +111,7 @@ class EmailNotificationsTest extends TestCase
             'headers' => '',
         ];
 
-        $result = cta_password_reset_notification_email($email, $user, 'Site');
+        $result = cta_password_reset_notification_email($email, 'key', 'test', $user);
 
         $this->assertSame('foo@example.com', $result['to']);
         $this->assertStringContainsString('Réinitialiser mon mot de passe', $result['message']);
