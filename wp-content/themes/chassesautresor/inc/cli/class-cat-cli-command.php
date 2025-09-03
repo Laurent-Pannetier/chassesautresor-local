@@ -75,25 +75,6 @@ class Cat_CLI_Command
             }
         }
 
-        $siteMessages = get_transient('cat_site_messages');
-        if (is_array($siteMessages)) {
-            $defaultExpiration = gmdate('Y-m-d H:i:s', time() + DAY_IN_SECONDS);
-
-            foreach ($siteMessages as $msg) {
-                if (!is_array($msg)) {
-                    continue;
-                }
-                $status    = isset($msg['status']) ? (string) $msg['status'] : 'site';
-                $expiresAt = isset($msg['expires_at']) ? (string) $msg['expires_at'] : $defaultExpiration;
-
-                $payload = $msg;
-                unset($payload['status'], $payload['expires_at']);
-
-                $repo->insert(0, wp_json_encode($payload), $status, $expiresAt);
-            }
-            delete_transient('cat_site_messages');
-        }
-
         \WP_CLI::success(__('Migration des messages terminée.', 'chassesautresor-com'));
     }
 }

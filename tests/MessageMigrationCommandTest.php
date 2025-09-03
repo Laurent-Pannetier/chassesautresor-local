@@ -39,9 +39,8 @@ if (!function_exists('wp_json_encode')) {
     }
 }
 
-// Global storage for meta and transients.
+// Global storage for user meta.
 $cat_test_user_meta = [];
-$cat_test_transients = [];
 
 if (!function_exists('get_users')) {
     function get_users($args)
@@ -66,21 +65,6 @@ if (!function_exists('delete_user_meta')) {
     }
 }
 
-if (!function_exists('get_transient')) {
-    function get_transient($key)
-    {
-        global $cat_test_transients;
-        return $cat_test_transients[$key] ?? false;
-    }
-}
-
-if (!function_exists('delete_transient')) {
-    function delete_transient($key)
-    {
-        global $cat_test_transients;
-        unset($cat_test_transients[$key]);
-    }
-}
 
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/messages/class-user-message-repository.php';
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/cli/class-cat-cli-command.php';
@@ -94,7 +78,7 @@ class MessageMigrationCommandTest extends TestCase
 
     protected function setUp(): void
     {
-        global $cat_test_user_meta, $cat_test_transients, $wpdb;
+        global $cat_test_user_meta, $wpdb;
         $cat_test_user_meta = [
             1 => [
                 '_myaccount_messages' => [
@@ -109,11 +93,6 @@ class MessageMigrationCommandTest extends TestCase
                 ],
             ],
         ];
-        $cat_test_transients = [
-            'cat_site_messages' => [
-                ['type' => 'warning', 'content' => 'Global'],
-            ],
-        ];
         $this->wpdb = new MigrationDummyWpdb();
         $wpdb       = $this->wpdb;
     }
@@ -123,15 +102,14 @@ class MessageMigrationCommandTest extends TestCase
         $cmd = new Cat_CLI_Command();
         $cmd->migrate_messages();
 
-        global $cat_test_user_meta, $cat_test_transients;
+        global $cat_test_user_meta;
 
         $repo = new UserMessageRepository($this->wpdb);
         $this->assertCount(2, $repo->get(1, null, null));
-        $this->assertCount(1, $repo->get(0, 'site', null));
+        $this->assertCount(0, $repo->get(0, 'site', null));
 
         $this->assertArrayNotHasKey('_myaccount_messages', $cat_test_user_meta[1] ?? []);
         $this->assertArrayNotHasKey('_myaccount_flash_messages', $cat_test_user_meta[1] ?? []);
-        $this->assertArrayNotHasKey('cat_site_messages', $cat_test_transients);
     }
 }
 
