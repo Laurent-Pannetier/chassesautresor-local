@@ -810,6 +810,7 @@ function verifier_ou_mettre_a_jour_cache_complet(int $post_id): void
             $reel  = chasse_est_complet($post_id);
             if ($cache !== $reel) {
                 update_field('chasse_cache_complet', $reel ? 1 : 0, $post_id);
+                chasse_clear_infos_affichage_cache($post_id);
             }
             break;
 
@@ -818,6 +819,12 @@ function verifier_ou_mettre_a_jour_cache_complet(int $post_id): void
             $reel  = enigme_est_complet($post_id);
             if ($cache !== $reel) {
                 update_field('enigme_cache_complet', $reel ? 1 : 0, $post_id);
+                if (function_exists('recuperer_id_chasse_associee')) {
+                    $chasse_id = recuperer_id_chasse_associee($post_id);
+                    if ($chasse_id) {
+                        chasse_clear_infos_affichage_cache((int) $chasse_id);
+                    }
+                }
             }
             break;
     }
@@ -868,6 +875,7 @@ function verifier_ou_recalculer_statut_chasse($chasse_id): void
     $statuts_valides = ['revision', 'a_venir', 'en_cours', 'payante', 'termine'];
     if (!in_array($statut, $statuts_valides, true)) {
         mettre_a_jour_statuts_chasse($chasse_id);
+        chasse_clear_infos_affichage_cache($chasse_id);
         return;
     }
 
@@ -881,6 +889,7 @@ function verifier_ou_recalculer_statut_chasse($chasse_id): void
 
     if ($statut !== 'termine' && $date_fin && $date_fin < $now) {
         mettre_a_jour_statuts_chasse($chasse_id);
+        chasse_clear_infos_affichage_cache($chasse_id);
     }
 }
 
@@ -961,6 +970,7 @@ function mettre_a_jour_statuts_chasse($chasse_id)
     }
 
     mettre_a_jour_statuts_enigmes_de_la_chasse($chasse_id, $statut);
+    chasse_clear_infos_affichage_cache($chasse_id);
 }
 
 
