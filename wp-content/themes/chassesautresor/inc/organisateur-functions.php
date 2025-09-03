@@ -794,7 +794,7 @@ function envoyer_email_confirmation_organisateur(int $user_id, string $token): b
     $cta_styles  = 'background:#0073aa;color:#fff;padding:12px 24px;';
     $cta_styles .= 'border-radius:6px;text-decoration:none;font-weight:bold;';
     $cta_styles .= 'display:inline-block;';
-    $body      .= '<p style="text-align:center;"><a href="'
+    $body      .= '<p style="text-align:center;margin:24px 0;"><a href="'
         . esc_url( $confirmation_url )
         . '" style="'
         . esc_attr( $cta_styles )
