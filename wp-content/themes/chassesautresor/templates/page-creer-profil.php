@@ -48,9 +48,19 @@ if (isset($_GET['resend'])) {
 
 $token = get_user_meta($current_user_id, 'organisateur_demande_token', true);
 if ($token) {
-    echo '<p>⚠️ Une demande de création de profil organisateur est déjà en cours pour ce compte.</p>';
-    echo '<p><a href="?resend=1">Renvoyer l\'email de confirmation</a></p>';
-    exit;
+    get_header();
+    ?>
+    <p>
+        <?php esc_html_e('Une demande de création de profil organisateur est déjà en cours pour ce compte.', 'chassesautresor-com'); ?>
+    </p>
+    <p>
+        <a href="<?php echo esc_url(add_query_arg('resend', '1')); ?>">
+            <?php esc_html_e("Renvoyer l'email de confirmation", 'chassesautresor-com'); ?>
+        </a>
+    </p>
+    <?php
+    get_footer();
+    return;
 }
 
 // 4. Nouvelle demande
