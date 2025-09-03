@@ -187,7 +187,7 @@ window.mettreAJourResumeInfos = function () {
 // ==============================
 // ✅ Hook unifié – Réagit à toute modification simple de champ pour tous les CPTs
 // ==============================
-window.onChampSimpleMisAJour = function (champ, postId, valeur, cpt) {
+window.onChampSimpleMisAJour = function (champ, postId, valeur, cpt, extra) {
   cpt = cpt?.toLowerCase?.() || cpt;
 
   if (champ === 'post_title') {
@@ -276,6 +276,15 @@ window.onChampSimpleMisAJour = function (champ, postId, valeur, cpt) {
 
     if (champsResume.includes(champ) && typeof window.mettreAJourResumeInfos === 'function') {
       window.mettreAJourResumeInfos();
+    }
+    if (
+      extra &&
+      extra.complet_changed &&
+      window.sidebarAside &&
+      typeof window.sidebarAside.reload === 'function'
+    ) {
+      const cid = extra.chasse_id || document.querySelector('.enigme-navigation')?.dataset.chasseId;
+      window.sidebarAside.reload(cid);
     }
   }
 
