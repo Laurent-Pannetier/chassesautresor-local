@@ -46,13 +46,15 @@ function add_site_message(
         $expirationSeconds = 0;
         $expiresAt         = null;
         if ($expires !== null) {
-            if ($expires > time()) {
-                $expirationSeconds = $expires - time();
-                $expiresAt         = gmdate('c', $expires);
+            $now       = current_time('timestamp');
+            if ($expires > $now) {
+                $expirationSeconds = $expires - $now;
+                $timestamp         = $expires;
             } else {
                 $expirationSeconds = $expires;
-                $expiresAt         = gmdate('c', time() + $expires);
+                $timestamp         = $now + $expires;
             }
+            $expiresAt = gmdate('Y-m-d H:i:s', $timestamp);
         }
 
         set_transient('cat_site_messages', $messages, $expirationSeconds);

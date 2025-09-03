@@ -311,9 +311,9 @@ function myaccount_add_persistent_message(
 
     $expires_at = null;
     if ($expires !== null) {
-        $expires_at = $expires > time()
-            ? gmdate('c', $expires)
-            : gmdate('c', time() + $expires);
+        $now       = current_time('timestamp');
+        $timestamp = $expires > $now ? $expires : $now + $expires;
+        $expires_at = gmdate('Y-m-d H:i:s', $timestamp);
     }
 
     $repo->insert($user_id, wp_json_encode($payload), 'persistent', $expires_at, $locale);
