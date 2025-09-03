@@ -875,6 +875,7 @@ function ca_dismiss_message(): void
     }
 
     myaccount_remove_persistent_message(get_current_user_id(), $key);
+    remove_site_message($key);
 
     wp_send_json_success();
 }
