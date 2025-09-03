@@ -8,7 +8,7 @@
 defined('ABSPATH') || exit();
 
 /**
- * Renders the HTML email template.
+ * Renders the HTML email template without Twig.
  *
  * @param string $title   Email title.
  * @param string $content Email body content.
@@ -17,47 +17,60 @@ defined('ABSPATH') || exit();
  */
 function cta_render_email_template(string $title, string $content): string
 {
-    $content = function_exists('wp_kses_post') ? wp_kses_post($content) : $content;
-
-    if (!class_exists('\Twig\Loader\FilesystemLoader')) {
-        $autoloader = dirname(__DIR__, 5) . '/vendor/autoload.php';
-        if (file_exists($autoloader)) {
-            require_once $autoloader;
-        }
-    }
-
-    if (!class_exists('\Twig\Loader\FilesystemLoader')) {
-        $title_html = function_exists('esc_html') ? esc_html($title) : $title;
-        return '<h1>' . $title_html . '</h1>' . $content;
-    }
-
-    $loader = new \Twig\Loader\FilesystemLoader(__DIR__ . '/templates');
-    $twig   = new \Twig\Environment($loader);
-
-    if (function_exists('get_theme_file_uri')) {
-        $twig->addFunction(new \Twig\TwigFunction('get_theme_file_uri', 'get_theme_file_uri'));
-    }
-
-    if (function_exists('home_url')) {
-        $twig->addFunction(new \Twig\TwigFunction('home_url', 'home_url'));
-    }
-
-    if (function_exists('__')) {
-        $twig->addFunction(new \Twig\TwigFunction('__', '__'));
-    }
-
+    $content      = function_exists('wp_kses_post') ? wp_kses_post($content) : $content;
     $mentions_url = function_exists('home_url') ? home_url('/mentions-legales/') : '';
     $home_url     = function_exists('home_url') ? home_url('/') : '';
+    $logo_header  = function_exists('get_theme_file_uri') ? get_theme_file_uri('assets/images/logo-cat_icone-s.png') : '';
+    $logo_footer  = function_exists('get_theme_file_uri') ? get_theme_file_uri('assets/images/logo-cat_hz-txt.png') : '';
 
-    return $twig->render(
-        'email.twig',
-        [
-            'title'        => $title,
-            'content'      => $content,
-            'mentions_url' => $mentions_url,
-            'home_url'     => $home_url,
-        ]
-    );
+    $title_html = function_exists('esc_html') ? esc_html($title) : $title;
+
+    ob_start();
+    ?>
+    <!DOCTYPE html>
+    <html>
+        <head>
+            <meta charset="UTF-8" />
+        </head>
+        <body>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+                <tr>
+                    <td>
+                        <header style="background:#0B132B;padding:20px;text-align:center;">
+                            <img src="<?php echo esc_url($logo_header); ?>" alt="" style="max-width:150px;height:auto;display:block;margin:0 auto 10px;" />
+                            <h1 style="color:#ffffff;font-family:Arial,sans-serif;font-size:24px;margin:0;">
+                                <?php echo $title_html; ?>
+                            </h1>
+                        </header>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:20px;font-family:Arial,sans-serif;">
+                        <?php echo $content; ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <footer style="background:#0B132B;padding:20px;text-align:center;font-family:Arial,sans-serif;color:#ffffff;font-size:12px;">
+                            <p style="margin:0;">
+                                <a href="<?php echo esc_url($mentions_url); ?>" style="color:#ffffff;text-decoration:none;">
+                                    <?php echo esc_html__('Mentions légales', 'chassesautresor-com'); ?>
+                                </a>
+                            </p>
+                            <p style="margin:10px 0 0;">
+                                <a href="<?php echo esc_url($home_url); ?>" style="display:inline-block;">
+                                    <img src="<?php echo esc_url($logo_footer); ?>" alt="" style="max-width:150px;height:auto;" />
+                                </a>
+                            </p>
+                        </footer>
+                    </td>
+                </tr>
+            </table>
+        </body>
+    </html>
+    <?php
+
+    return (string) ob_get_clean();
 }
 
 /**
@@ -98,3 +111,4 @@ function cta_send_email($to, string $subject, string $body, array $headers = [])
 
     return function_exists('wp_mail') ? wp_mail($to, $subject, $html, $headers) : false;
 }
+
