@@ -98,6 +98,7 @@ function get_site_messages(): string
 
     global $wpdb;
     $repo = new UserMessageRepository($wpdb);
+    $repo->purgeExpired();
     $rows = $repo->get(0, 'site', false);
     foreach ($rows as $row) {
         $data = json_decode($row['message'], true);
