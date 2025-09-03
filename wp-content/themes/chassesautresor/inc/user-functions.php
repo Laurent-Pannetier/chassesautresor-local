@@ -262,7 +262,7 @@ add_filter('woocommerce_endpoint_edit-account_title', 'ca_profile_endpoint_title
  * @param string|null $message_key   Optional translation key.
  * @param string|null $locale        Optional locale for the message.
  *
- * @return void
+ * @return int Message identifier or 0 on failure.
  */
 function myaccount_add_persistent_message(
     int $user_id,
@@ -274,7 +274,7 @@ function myaccount_add_persistent_message(
     bool $include_enigmes = false,
     ?string $message_key = null,
     ?string $locale = null
-): void {
+): int {
     global $wpdb;
 
     $repo   = new UserMessageRepository($wpdb);
@@ -307,7 +307,20 @@ function myaccount_add_persistent_message(
         }
     }
 
-    $repo->insert($user_id, wp_json_encode($payload), 'persistent', null, $locale);
+    $message_id = $repo->insert($user_id, wp_json_encode($payload), 'persistent', null, $locale);
+
+    if (0 === $message_id) {
+        error_log(
+            sprintf(
+                'myaccount_add_persistent_message failed for user %d and key %s: %s',
+                $user_id,
+                $key,
+                $wpdb->last_error
+            )
+        );
+    }
+
+    return $message_id;
 }
 
 /**
