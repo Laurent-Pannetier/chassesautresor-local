@@ -22,6 +22,7 @@ if (current_user_can('manage_options') || $est_orga_associe) {
     verifier_ou_recalculer_statut_chasse($chasse_id);
     verifier_et_synchroniser_cache_enigmes_si_autorise($chasse_id);
     verifier_ou_mettre_a_jour_cache_complet($chasse_id);
+    chasse_clear_infos_affichage_cache($chasse_id);
 }
 
 $points_utilisateur = get_user_points($user_id);
