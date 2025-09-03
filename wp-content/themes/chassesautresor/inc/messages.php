@@ -11,6 +11,8 @@ defined('ABSPATH') || exit;
  * @param string|null $message_key Optional translation key.
  * @param string|null $locale      Optional locale for the message.
  * @param int|null    $expires     Expiration as timestamp or duration in seconds.
+ * @param string|null $key         Optional identifier used for dismissible messages.
+ * @param bool        $dismissible Whether the user can dismiss the message.
  *
  * @return void
  */
@@ -20,7 +22,9 @@ function add_site_message(
     bool $persistent = false,
     ?string $message_key = null,
     ?string $locale = null,
-    ?int $expires = null
+    ?int $expires = null,
+    ?string $key = null,
+    bool $dismissible = false
 ): void
 {
     $message = [
@@ -34,6 +38,14 @@ function add_site_message(
 
     if ($locale !== null) {
         $message['locale'] = $locale;
+    }
+
+    if ($key !== null) {
+        $message['key'] = $key;
+    }
+
+    if ($dismissible) {
+        $message['dismissible'] = true;
     }
 
     if ($persistent) {
@@ -125,7 +137,17 @@ function get_site_messages(): string
                     $content = __($msg['message_key'], 'chassesautresor-com');
                 }
             }
-            return '<p class="' . esc_attr($msg['type']) . '">' . esc_html($content) . '</p>';
+            $dismissible = !empty($msg['dismissible']) && !empty($msg['key']);
+            $button      = '';
+            if ($dismissible) {
+                $button = ' <button type="button" class="message-close" data-key="'
+                    . esc_attr($msg['key'])
+                    . '" aria-label="'
+                    . esc_attr__('Supprimer ce message', 'chassesautresor-com')
+                    . '">×</button>';
+            }
+
+            return '<p class="' . esc_attr($msg['type']) . '">' . esc_html($content) . $button . '</p>';
         },
         $messages
     );

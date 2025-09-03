@@ -60,6 +60,20 @@ if (!function_exists('esc_html')) {
     }
 }
 
+if (!function_exists('esc_attr__')) {
+    function esc_attr__($text, $domain = null)
+    {
+        return $text;
+    }
+}
+
+if (!function_exists('__')) {
+    function __($text, $domain = null)
+    {
+        return $text;
+    }
+}
+
 if (!class_exists('UserMessageRepository')) {
     class UserMessageRepository
     {
@@ -118,5 +132,16 @@ class SiteMessageExpirationTest extends TestCase
         global $current_time;
         $current_time += DAY_IN_SECONDS * 2 + 1;
         $this->assertSame('', get_site_messages());
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_dismissible_message_renders_close_button(): void
+    {
+        add_site_message('info', 'Hi', true, null, null, null, 'foo', true);
+        $output = get_site_messages();
+        $this->assertStringContainsString('class="message-close" data-key="foo"', $output);
     }
 }

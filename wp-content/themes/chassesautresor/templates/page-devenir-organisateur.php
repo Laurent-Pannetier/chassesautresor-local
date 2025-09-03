@@ -48,7 +48,9 @@ if (isset($_GET['notice']) && $_GET['notice'] === 'profil_verification') {
         true,
         null,
         null,
-        DAY_IN_SECONDS * 2
+        DAY_IN_SECONDS * 2,
+        'profil_verification',
+        true
     );
 
     wp_safe_redirect(remove_query_arg('notice'));
