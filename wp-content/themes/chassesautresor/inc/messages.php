@@ -82,8 +82,13 @@ function add_site_message(
 
         global $wpdb;
         $repo = new UserMessageRepository($wpdb);
-        $repo->insert(0, wp_json_encode($message), 'site', $expiresAt, $locale);
-        return;
+        $inserted = $repo->insert(0, wp_json_encode($message), 'site', $expiresAt, $locale);
+
+        if ($inserted !== 0) {
+            return;
+        }
+
+        error_log('Failed to insert site message, storing in session instead.');
     }
 
     if (session_status() !== PHP_SESSION_ACTIVE) {
