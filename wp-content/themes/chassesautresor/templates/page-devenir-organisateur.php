@@ -51,6 +51,7 @@ get_header(); ?>
     </div>
   </div>
 </section>
+<section class="msg-important"><?php print_site_messages(); ?></section>
 <main id="primary" class="site-main conteneur-devenir-organisateur">
     <?php
       while ( have_posts() ) :
