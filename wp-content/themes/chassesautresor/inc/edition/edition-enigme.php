@@ -342,6 +342,21 @@ function modifier_champ_enigme()
     enigme_mettre_a_jour_etat_systeme($post_id);
   }
 
+    // 🔹 Accès : pré-requis (liste d'IDs)
+    if ($champ === 'enigme_acces_pre_requis') {
+        $ids = is_array($valeur)
+            ? array_filter(array_map('intval', $valeur))
+            : array_filter(array_map('intval', explode(',', (string) $valeur)));
+
+        $ok = update_field($champ, $ids, $post_id);
+        if ($ok) {
+            $champ_valide = true;
+            $condition = !empty($ids) ? 'pre_requis' : 'immediat';
+            update_field('enigme_acces_condition', $condition, $post_id);
+            enigme_mettre_a_jour_etat_systeme($post_id);
+        }
+    }
+
   // 🔹 Style visuel
   if ($champ === 'enigme_style_affichage') {
     $ok = update_field($champ, sanitize_text_field($valeur), $post_id);
