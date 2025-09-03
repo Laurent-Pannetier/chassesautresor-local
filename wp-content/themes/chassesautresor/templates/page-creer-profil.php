@@ -13,6 +13,11 @@ if (!is_user_logged_in()) {
 }
 
 $current_user_id = get_current_user_id();
+$verification_message = __(
+    'Un email de confirmation vous a été envoyé. '
+    . "Cliquez sur le lien qu'il contient pour valider la création de votre profil organisateur.",
+    'chassesautresor-com'
+);
 
 // 2. Si un profil existe déjà, on n'effectue plus de redirection automatique
 // vers l'espace organisateur. Le bouton principal se charge de guider
@@ -21,19 +26,10 @@ $current_user_id = get_current_user_id();
 // 3. Gestion de la demande en cours
 if (isset($_GET['resend'])) {
     renvoyer_email_confirmation_organisateur($current_user_id);
-    add_site_message(
-        'info',
-        __('prout', 'chassesautresor-com'),
-        true,
-        null,
-        get_user_locale($current_user_id),
-        2 * DAY_IN_SECONDS,
-        true
-    );
     myaccount_add_persistent_message(
         $current_user_id,
         'profil_verification',
-        __('prout', 'chassesautresor-com'),
+        $verification_message,
         'info',
         true,
         0,
@@ -48,19 +44,10 @@ if (isset($_GET['resend'])) {
 
 $token = get_user_meta($current_user_id, 'organisateur_demande_token', true);
 if ($token) {
-    add_site_message(
-        'info',
-        '',
-        true,
-        'profil_verification',
-        get_user_locale($current_user_id),
-        2 * DAY_IN_SECONDS,
-        true
-    );
     myaccount_add_persistent_message(
         $current_user_id,
         'profil_verification',
-        '',
+        $verification_message,
         'info',
         true,
         0,
@@ -88,19 +75,10 @@ if ($token) {
 
 // 4. Nouvelle demande
 lancer_demande_organisateur($current_user_id);
-add_site_message(
-    'info',
-    __('prout', 'chassesautresor-com'),
-    true,
-    null,
-    get_user_locale($current_user_id),
-    2 * DAY_IN_SECONDS,
-    true
-);
 myaccount_add_persistent_message(
     $current_user_id,
     'profil_verification',
-    __('prout', 'chassesautresor-com'),
+    $verification_message,
     'info',
     true,
     0,
