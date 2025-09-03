@@ -190,7 +190,23 @@ function get_site_messages(): string
                     . '">×</button>';
             }
 
-            return '<p class="' . esc_attr($msg['type']) . '">' . esc_html($content) . $button . '</p>';
+            $type = $msg['type'] ?? 'info';
+            switch ($type) {
+                case 'success':
+                    $class = 'message-succes';
+                    $aria  = 'role="status" aria-live="polite"';
+                    break;
+                case 'error':
+                    $class = 'message-erreur';
+                    $aria  = 'role="alert" aria-live="assertive"';
+                    break;
+                default:
+                    $class = 'message-info';
+                    $aria  = 'role="status" aria-live="polite"';
+                    break;
+            }
+
+            return '<p class="' . esc_attr($class) . '" ' . $aria . '>' . esc_html($content) . $button . '</p>';
         },
         $messages
     );
