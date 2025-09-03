@@ -94,6 +94,49 @@ if (!function_exists('home_url')) {
     }
 }
 
+if (!function_exists('get_current_user_id')) {
+    function get_current_user_id(): int
+    {
+        return 1;
+    }
+}
+if (!function_exists('current_user_can')) {
+    function current_user_can(string $cap): bool
+    {
+        return false;
+    }
+}
+if (!function_exists('est_organisateur')) {
+    function est_organisateur(): bool
+    {
+        return false;
+    }
+}
+if (!function_exists('get_organisateur_from_user')) {
+    function get_organisateur_from_user(int $user_id): int
+    {
+        return 0;
+    }
+}
+if (!function_exists('recuperer_enigmes_tentatives_en_attente')) {
+    function recuperer_enigmes_tentatives_en_attente(int $id): array
+    {
+        return [];
+    }
+}
+if (!function_exists('get_queried_object_id')) {
+    function get_queried_object_id(): int
+    {
+        return 0;
+    }
+}
+if (!function_exists('get_post_type')) {
+    function get_post_type($id): string
+    {
+        return '';
+    }
+}
+
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/messages/class-user-message-repository.php';
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/user-functions.php';
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/organisateur-functions.php';
@@ -140,6 +183,27 @@ class OrganisateurConfirmationMessageTest extends TestCase
         }
 
         $this->assertSame([], $repo->get(1, 'persistent', false));
+    }
+
+    public function test_profil_verification_message_has_close_button(): void
+    {
+        $expires = time() + 2 * DAY_IN_SECONDS;
+        myaccount_add_persistent_message(
+            1,
+            'profil_verification',
+            'Test',
+            'info',
+            true,
+            0,
+            false,
+            null,
+            null,
+            $expires
+        );
+
+        $html = myaccount_get_important_messages();
+        $this->assertStringContainsString('class="message-close" data-key="profil_verification"', $html);
+        $this->assertStringContainsString('aria-label="Supprimer ce message"', $html);
     }
 }
 

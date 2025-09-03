@@ -33,7 +33,7 @@ if (isset($_GET['resend'])) {
         false,
         null,
         null,
-        time() + 2 * DAY_IN_SECONDS
+        current_time('timestamp') + 2 * DAY_IN_SECONDS
     );
 
     wp_redirect(home_url('/devenir-organisateur/'));
@@ -60,7 +60,7 @@ myaccount_add_persistent_message(
     false,
     null,
     null,
-    time() + 2 * DAY_IN_SECONDS
+    current_time('timestamp') + 2 * DAY_IN_SECONDS
 );
 wp_redirect(home_url('/devenir-organisateur/'));
 exit;
