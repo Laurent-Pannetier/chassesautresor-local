@@ -99,8 +99,4 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
         <div id="content" class="site-content">
                 <div class="ast-container<?php echo ( is_singular('enigme') || is_singular('chasse') ) ? '' : ' ast-container--boxed'; ?>">
                 <?php astra_content_top(); ?>
-                <?php
-                $messages  = get_site_messages();
-                $messages .= myaccount_get_important_messages();
-                ?>
-                <section class="msg-important"><?php echo $messages; ?></section>
+                <section class="msg-important"><?php print_site_messages(); ?></section>

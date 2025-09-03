@@ -185,3 +185,19 @@ function get_site_messages(): string
     return implode('', $output);
 }
 
+/**
+ * Print all site-wide and account-specific messages.
+ *
+ * @return void
+ */
+function print_site_messages(): void
+{
+    $messages = get_site_messages();
+
+    if (function_exists('myaccount_get_important_messages')) {
+        $messages .= myaccount_get_important_messages();
+    }
+
+    echo $messages; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+}
+

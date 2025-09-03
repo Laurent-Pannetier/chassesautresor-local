@@ -39,11 +39,6 @@ if (has_post_thumbnail()) {
 }
 
 get_header(); ?>
-<?php if (isset($_GET['notice']) && $_GET['notice'] === 'profil_verification') : ?>
-<div class="woocommerce-message" role="alert">
-  ✉️ Un email de vérification vous a été envoyé. Veuillez cliquer sur le lien pour confirmer votre demande.
-</div>
-<?php endif; ?>
 <section class="bandeau-hero">
   <div class="hero-overlay" style="background-image: url('<?php echo esc_url($image_url); ?>');">
     <div class="contenu-hero">
