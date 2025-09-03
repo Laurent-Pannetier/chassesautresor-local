@@ -28,7 +28,7 @@ class UserMessageRepository
     }
 
     /**
-     * Insert a new message and return its identifier.
+     * Insert a new message and return its identifier or 0 on failure.
      */
     public function insert(
         int $userId,
@@ -52,9 +52,7 @@ class UserMessageRepository
         if (false === $result) {
             error_log('Failed to insert user message: ' . $this->wpdb->last_error);
 
-            throw new \RuntimeException(
-                __('Unable to insert user message.', 'chassesautresor-com')
-            );
+            return 0;
         }
 
         return (int) $this->wpdb->insert_id;
