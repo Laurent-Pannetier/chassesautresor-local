@@ -15,59 +15,45 @@ defined('ABSPATH') || exit();
  *
  * @return string
  */
-function cta_render_email_template(string $title, string $content): string
-{
+function cta_render_email_template( string $title, string $content ): string {
     $logo_url = '';
-    if (function_exists('get_theme_mod')) {
-        $logo_id = get_theme_mod('custom_logo');
-        if ($logo_id && function_exists('wp_get_attachment_image_url')) {
-            $logo_url = wp_get_attachment_image_url($logo_id, 'full');
+    if ( function_exists( 'get_theme_mod' ) ) {
+        $logo_id = get_theme_mod( 'custom_logo' );
+        if ( $logo_id && function_exists( 'wp_get_attachment_image_url' ) ) {
+            $logo_url = wp_get_attachment_image_url( $logo_id, 'full' );
         }
     }
 
-    if (!$logo_url && function_exists('get_theme_file_uri')) {
-        $logo_url = get_theme_file_uri('assets/images/logo.png');
+    if ( ! $logo_url && function_exists( 'get_theme_file_uri' ) ) {
+        $logo_url = get_theme_file_uri( 'assets/images/logo.png' );
     }
 
-    $title_icon = function_exists('get_theme_file_uri') ? get_theme_file_uri('assets/images/logo-cat_icone-s.png') : '';
-    $footer_logo = function_exists('get_theme_file_uri') ? get_theme_file_uri('assets/images/logo-cat_hz-txt.png') : '';
-    $site_name   = function_exists('get_bloginfo') ? get_bloginfo('name') : '';
+    $title_icon  = function_exists( 'get_theme_file_uri' ) ? get_theme_file_uri( 'assets/images/logo-cat_icone-s.png' ) : '';
+    $footer_logo = function_exists( 'get_theme_file_uri' ) ? get_theme_file_uri( 'assets/images/logo-cat_hz-txt.png' ) : '';
+    $site_name   = function_exists( 'get_bloginfo' ) ? get_bloginfo( 'name' ) : '';
     $header_bg   = '#0B132B';
+    $team_label  = function_exists( 'esc_html__' )
+        ? esc_html__( "L'équipe chassesautresor.com", 'chassesautresor-com' )
+        : "L'équipe chassesautresor.com";
 
-    $html  = '<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>';
-    $html .= '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" ';
-    $html .= 'style="border-collapse:collapse;">';
-    $html .= '<tr><td>';
-    $html .= '<header style="background:' . esc_attr($header_bg) . ';padding:20px;text-align:center;">';
-    if ($logo_url) {
-        $html .= '<img src="' . esc_url($logo_url) . '" alt="' . esc_attr($site_name) . '" ';
-        $html .= 'style="max-width:150px;height:auto;display:block;margin:0 auto 10px;" />';
-    }
-    $html .= '<h1 style="color:#ffffff;font-family:Arial,sans-serif;font-size:24px;margin:0;">';
-    if ($title_icon) {
-        $html .= '<img src="' . esc_url($title_icon) . '" alt="" style="height:24px;width:24px;vertical-align:middle;margin-right:8px;" />';
-    }
-    $html .= esc_html($title) . '</h1>';
-    $html .= '</header>';
-    $html .= '</td></tr>';
-    $html .= '<tr><td style="background:#f5f5f5;padding:20px;font-family:Arial,sans-serif;">';
-    $html .= wp_kses_post($content);
-    $html .= '<p style="margin-top:20px;">' . esc_html__('L\'équipe chassesautresor.com', 'chassesautresor-com') . '</p>';
-    $html .= '</td></tr>';
-    $html .= '<tr><td>';
-    $html .= '<footer style="background:' . esc_attr($header_bg) . ';padding:20px;text-align:center;';
-    $html .= 'font-family:Arial,sans-serif;color:#ffffff;font-size:12px;">';
-    if ($footer_logo) {
-        $html .= '<p style="margin:0;"><a href="https://chassesautresor.com" style="display:inline-block;">';
-        $html .= '<img src="' . esc_url($footer_logo) . '" alt="chassesautresor.com" style="max-width:150px;height:auto;" />';
-        $html .= '</a></p>';
-    }
-    $html .= '</footer>';
-    $html .= '</td></tr>';
-    $html .= '</table>';
-    $html .= '</body></html>';
+    $content = function_exists( 'wp_kses_post' ) ? wp_kses_post( $content ) : $content;
 
-    return $html;
+    $loader = new \Twig\Loader\FilesystemLoader( __DIR__ . '/templates' );
+    $twig   = new \Twig\Environment( $loader );
+
+    return $twig->render(
+        'email.twig',
+        [
+            'title'       => $title,
+            'content'     => $content,
+            'logo_url'    => $logo_url,
+            'title_icon'  => $title_icon,
+            'footer_logo' => $footer_logo,
+            'site_name'   => $site_name,
+            'header_bg'   => $header_bg,
+            'team_label'  => $team_label,
+        ]
+    );
 }
 
 /**
