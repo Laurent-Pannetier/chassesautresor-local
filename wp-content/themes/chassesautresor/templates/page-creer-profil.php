@@ -48,8 +48,41 @@ if (isset($_GET['resend'])) {
 
 $token = get_user_meta($current_user_id, 'organisateur_demande_token', true);
 if ($token) {
-    echo '<p>⚠️ Une demande de création de profil organisateur est déjà en cours pour ce compte.</p>';
-    echo '<p><a href="?resend=1">Renvoyer l\'email de confirmation</a></p>';
+    add_site_message(
+        'info',
+        '',
+        true,
+        'profil_verification',
+        get_user_locale($current_user_id),
+        2 * DAY_IN_SECONDS,
+        true
+    );
+    myaccount_add_persistent_message(
+        $current_user_id,
+        'profil_verification',
+        '',
+        'info',
+        true,
+        0,
+        false,
+        'profil_verification',
+        get_user_locale($current_user_id),
+        2 * DAY_IN_SECONDS
+    );
+    get_header();
+    echo '<p>'
+        . esc_html__(
+            '⚠️ Une demande de création de profil organisateur est déjà en cours pour ce compte.',
+            'chassesautresor-com'
+        )
+        . '</p>';
+    echo '<p><a href="?resend=1">'
+        . esc_html__(
+            "Renvoyer l'email de confirmation",
+            'chassesautresor-com'
+        )
+        . '</a></p>';
+    get_footer();
     exit;
 }
 
