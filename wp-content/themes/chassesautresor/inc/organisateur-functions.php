@@ -876,6 +876,7 @@ function traiter_confirmation_organisateur() {
         $organisateur_id = confirmer_demande_organisateur($user_id, $token);
     }
 
+    myaccount_remove_persistent_message($user_id, 'profil_verification');
     remove_site_message('profil_verification');
 
     if ($organisateur_id) {

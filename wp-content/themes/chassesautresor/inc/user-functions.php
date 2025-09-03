@@ -261,6 +261,7 @@ add_filter('woocommerce_endpoint_edit-account_title', 'ca_profile_endpoint_title
  * @param bool        $include_enigmes Whether to include enigmas in the scope.
  * @param string|null $message_key   Optional translation key.
  * @param string|null $locale        Optional locale for the message.
+ * @param int|null    $expires       Expiration timestamp or delay in seconds.
  *
  * @return void
  */
@@ -273,7 +274,8 @@ function myaccount_add_persistent_message(
     int $chasse_scope = 0,
     bool $include_enigmes = false,
     ?string $message_key = null,
-    ?string $locale = null
+    ?string $locale = null,
+    ?int $expires = null
 ): void {
     global $wpdb;
 
@@ -307,7 +309,14 @@ function myaccount_add_persistent_message(
         }
     }
 
-    $repo->insert($user_id, wp_json_encode($payload), 'persistent', null, $locale);
+    $expires_at = null;
+    if ($expires !== null) {
+        $expires_at = $expires > time()
+            ? gmdate('c', $expires)
+            : gmdate('c', time() + $expires);
+    }
+
+    $repo->insert($user_id, wp_json_encode($payload), 'persistent', $expires_at, $locale);
 }
 
 /**

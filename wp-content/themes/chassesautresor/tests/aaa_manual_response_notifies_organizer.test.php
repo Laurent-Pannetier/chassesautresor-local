@@ -67,12 +67,23 @@ if (!function_exists('envoyer_mail_reponse_manuelle')) {
     function envoyer_mail_reponse_manuelle(...$args) {}
 }
 if (!function_exists('myaccount_add_persistent_message')) {
-    function myaccount_add_persistent_message($user_id, $key, $message, $type = 'info'): void {
+    function myaccount_add_persistent_message(
+        $user_id,
+        $key,
+        $message,
+        $type = 'info',
+        $dismissible = false,
+        $chasse_scope = 0,
+        $include_enigmes = false,
+        $message_key = null,
+        $locale = null,
+        $expires = null
+    ): void {
         $messages = get_user_meta($user_id, '_myaccount_messages', true);
         if (!is_array($messages)) {
             $messages = [];
         }
-        $messages[$key] = ['text' => $message, 'type' => $type];
+        $messages[$key] = ['text' => $message, 'type' => $type, 'dismissible' => $dismissible];
         update_user_meta($user_id, '_myaccount_messages', $messages);
     }
 }
