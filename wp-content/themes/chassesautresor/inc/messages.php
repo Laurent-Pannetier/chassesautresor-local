@@ -41,6 +41,7 @@ add_action('after_switch_theme', 'cat_install_user_messages_table');
  * @param string|null $message_key Optional translation key.
  * @param string|null $locale      Optional locale for the message.
  * @param int|null    $expires     Expiration as timestamp or duration in seconds.
+ * @param bool        $dismissible Whether the message can be dismissed.
  *
  * @return void
  */
@@ -50,12 +51,14 @@ function add_site_message(
     bool $persistent = false,
     ?string $message_key = null,
     ?string $locale = null,
-    ?int $expires = null
+    ?int $expires = null,
+    bool $dismissible = false
 ): void
 {
     $message = [
-        'type'    => $type,
-        'content' => $content,
+        'type'        => $type,
+        'content'     => $content,
+        'dismissible' => $dismissible,
     ];
 
     if ($message_key !== null) {
@@ -177,7 +180,17 @@ function get_site_messages(): string
                     $content = __($msg['message_key'], 'chassesautresor-com');
                 }
             }
-            return '<p class="' . esc_attr($msg['type']) . '">' . esc_html($content) . '</p>';
+
+            $button = '';
+            if (!empty($msg['dismissible']) && !empty($msg['message_key'])) {
+                $button = ' <button type="button" class="message-close" data-key="'
+                    . esc_attr($msg['message_key'])
+                    . '" aria-label="'
+                    . esc_attr__('Supprimer ce message', 'chassesautresor-com')
+                    . '">×</button>';
+            }
+
+            return '<p class="' . esc_attr($msg['type']) . '">' . esc_html($content) . $button . '</p>';
         },
         $messages
     );

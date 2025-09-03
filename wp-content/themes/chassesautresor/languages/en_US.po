@@ -3220,3 +3220,7 @@ msgstr "View my riddles"
 #: template-parts/chasse/chasse-affichage-complet.php:443 template-parts/chasse/chasse-edition-main.php:284 assets/js/chasse-edit.js:355
 msgid "Valeur estimée"
 msgstr "Estimated value"
+
+#: templates/page-creer-profil.php:24 inc/organisateur-functions.php:880
+msgid "profil_verification"
+msgstr "✉️ A verification email has been sent. Please click the link to confirm your request."
