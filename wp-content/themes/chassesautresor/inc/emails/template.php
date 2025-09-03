@@ -34,11 +34,16 @@ function cta_render_email_template(string $title, string $content): string
         $twig->addFunction(new \Twig\TwigFunction('__', '__'));
     }
 
+    $mentions_url = function_exists('home_url') ? home_url('/mentions-legales/') : '';
+    $home_url     = function_exists('home_url') ? home_url('/') : '';
+
     return $twig->render(
         'email.twig',
         [
-            'title'   => $title,
-            'content' => $content,
+            'title'        => $title,
+            'content'      => $content,
+            'mentions_url' => $mentions_url,
+            'home_url'     => $home_url,
         ]
     );
 }
