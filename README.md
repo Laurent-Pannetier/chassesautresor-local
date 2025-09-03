@@ -74,7 +74,7 @@ Les fonctions utilitaires s'appuient sur `UserMessageRepository` pour manipuler 
 
 - `myaccount_add_persistent_message()` et `myaccount_remove_persistent_message()` pour les messages durables.
 - `myaccount_add_flash_message()` et `myaccount_get_flash_messages()` pour les notifications temporaires.
-- `add_site_message()` et `get_site_messages()` pour les messages globaux.
+- `add_site_message()` (avec expiration optionnelle) et `get_site_messages()` pour les messages globaux.
 - Le repository expose également `insert`, `update`, `delete`, `get` et `purgeExpired()`.
 
 #### Workflow de migration
