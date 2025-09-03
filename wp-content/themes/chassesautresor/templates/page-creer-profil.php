@@ -38,7 +38,8 @@ if (isset($_GET['resend'])) {
         get_user_locale($current_user_id),
         2 * DAY_IN_SECONDS
     );
-    wp_redirect(home_url('/devenir-organisateur/'));
+    $redirect_url = add_query_arg('nocache', (string) time(), home_url('/devenir-organisateur/'));
+    wp_redirect($redirect_url);
     exit;
 }
 
@@ -87,5 +88,6 @@ myaccount_add_persistent_message(
     get_user_locale($current_user_id),
     2 * DAY_IN_SECONDS
 );
-wp_redirect(home_url('/devenir-organisateur/'));
+$redirect_url = add_query_arg('nocache', (string) time(), home_url('/devenir-organisateur/'));
+wp_redirect($redirect_url);
 exit;
