@@ -18,6 +18,13 @@ if (!function_exists('esc_html__')) {
     }
 }
 
+if (!function_exists('esc_attr__')) {
+    function esc_attr__(string $text, string $domain = 'default'): string
+    {
+        return $text;
+    }
+}
+
 if (!function_exists('esc_url')) {
     function esc_url(string $url): string
     {
@@ -32,31 +39,10 @@ if (!function_exists('esc_attr')) {
     }
 }
 
-if (!function_exists('home_url')) {
-    function home_url(string $path = ''): string
+if (!function_exists('get_template_directory_uri')) {
+    function get_template_directory_uri(): string
     {
-        return 'https://example.com' . $path;
-    }
-}
-
-if (!function_exists('get_theme_mod')) {
-    function get_theme_mod(string $name)
-    {
-        return 0;
-    }
-}
-
-if (!function_exists('wp_get_attachment_image_url')) {
-    function wp_get_attachment_image_url(int $id, string $size): string
-    {
-        return '';
-    }
-}
-
-if (!function_exists('get_bloginfo')) {
-    function get_bloginfo(string $show = ''): string
-    {
-        return 'Example Site';
+        return 'https://example.com/wp-content/themes/chassesautresor';
     }
 }
 
@@ -83,6 +69,11 @@ class EmailTemplateTest extends TestCase
         $this->assertStringContainsString('<header', $html);
         $this->assertStringContainsString('<footer', $html);
         $this->assertSame(2, substr_count($html, '#0B132B'));
+        $this->assertStringContainsString('logo-cat_icone-s.png', $html);
+        $this->assertStringContainsString('http://chassesautresor.local/mentions-legales/', $html);
+        $this->assertStringContainsString('logo-cat_hz-txt.png', $html);
+        $this->assertStringContainsString('https://www.chassesautresor.com', $html);
+        $this->assertStringNotContainsString('Se désabonner', $html);
     }
 }
 

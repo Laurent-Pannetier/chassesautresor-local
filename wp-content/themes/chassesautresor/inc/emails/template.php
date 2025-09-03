@@ -18,22 +18,10 @@ defined('ABSPATH') || exit();
 function cta_render_email_template(string $title, string $content): string
 {
     $header_bg = '#0B132B';
-    $logo_html = '';
+    $icon_url  = '';
 
-    if (function_exists('get_theme_mod')) {
-        $logo_id = get_theme_mod('custom_logo');
-
-        if ($logo_id && function_exists('wp_get_attachment_image_url')) {
-            $src = wp_get_attachment_image_url($logo_id, 'full');
-
-            if ($src) {
-                $logo_html = sprintf(
-                    '<img src="%s" alt="%s" style="max-height:60px;height:auto;display:block;margin:0 auto;" />',
-                    esc_url($src),
-                    esc_attr(function_exists('get_bloginfo') ? get_bloginfo('name') : '')
-                );
-            }
-        }
+    if (function_exists('get_template_directory_uri')) {
+        $icon_url = get_template_directory_uri() . '/assets/images/logo-cat_icone-s.png';
     }
 
     $html  = '<!DOCTYPE html><html><head><meta charset="UTF-8"></head>';
@@ -43,11 +31,13 @@ function cta_render_email_template(string $title, string $content): string
 
     $html .= '<tr><td>';
     $html .= '<header style="background:' . esc_attr($header_bg) . ';padding:20px;text-align:center;">';
-    if ($logo_html) {
-        $html .= $logo_html;
+    $html .= '<h1 style="margin:0;color:#ffffff;font-family:Arial,sans-serif;font-size:24px;">';
+    if ($icon_url) {
+        $html .= '<img src="' . esc_url($icon_url) . '" alt="' .
+            esc_attr__('Chasses au Trésor', 'chassesautresor-com') . '" ' .
+            'style="width:50px;height:50px;vertical-align:middle;margin-right:10px;" />';
     }
-    $html .= '<h1 style="margin:0;color:#ffffff;font-family:Arial,sans-serif;font-size:24px;">' .
-        esc_html($title) . '</h1>';
+    $html .= esc_html($title) . '</h1>';
     $html .= '</header>';
     $html .= '</td></tr>';
 
@@ -62,10 +52,16 @@ function cta_render_email_template(string $title, string $content): string
     $html .= '<tr><td>';
     $html .= '<footer style="background:' . esc_attr($header_bg) . ';padding:20px;text-align:center;';
     $html .= 'font-family:Arial,sans-serif;font-size:12px;color:#ffffff;">';
-    $html .= '<a href="' . esc_url(home_url('/mentions-legales/')) . '" style="color:#ffffff;">' .
-        esc_html__('Mentions légales', 'chassesautresor-com') . '</a> | ';
-    $html .= '<a href="' . esc_url(home_url('/?unsubscribe=1')) . '" style="color:#ffffff;">' .
-        esc_html__('Se désabonner', 'chassesautresor-com') . '</a>';
+    $html .= '<a href="' . esc_url('http://chassesautresor.local/mentions-legales/') . '" style="color:#ffffff;">' .
+        esc_html__('Mentions légales', 'chassesautresor-com') . '</a>';
+    $html .= '<a href="' . esc_url('https://www.chassesautresor.com') . '" ' .
+        'style="display:block;margin:10px auto 0;">';
+    $html .= '<img src="' . esc_url(
+        (function_exists('get_template_directory_uri') ? get_template_directory_uri() : '') .
+        '/assets/images/logo-cat_hz-txt.png'
+    ) . '" alt="' . esc_attr__('Chasses au Trésor', 'chassesautresor-com') . '" ' .
+        'style="max-width:100%;height:auto;display:block;margin:0 auto;" />';
+    $html .= '</a>';
     $html .= '</footer>';
     $html .= '</td></tr>';
 
