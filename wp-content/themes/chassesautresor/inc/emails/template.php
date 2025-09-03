@@ -37,7 +37,9 @@ function cta_render_email_template(string $title, string $content): string
                 <tr>
                     <td>
                         <header style="background:#0B132B;padding:20px;text-align:center;">
-                            <img src="<?php echo esc_url($logo_header); ?>" alt="" style="max-width:150px;height:auto;display:block;margin:0 auto 10px;" />
+                            <img src="<?php echo esc_url($logo_header); ?>"
+                                alt="<?php echo esc_attr__('Chasses au Trésor', 'chassesautresor-com'); ?>"
+                                style="max-width:150px;height:auto;display:block;margin:0 auto 10px;" />
                             <h1 style="color:#ffffff;font-family:Arial,sans-serif;font-size:24px;margin:0;">
                                 <?php echo $title_html; ?>
                             </h1>
@@ -59,7 +61,9 @@ function cta_render_email_template(string $title, string $content): string
                             </p>
                             <p style="margin:10px 0 0;">
                                 <a href="<?php echo esc_url($home_url); ?>" style="display:inline-block;">
-                                    <img src="<?php echo esc_url($logo_footer); ?>" alt="" style="max-width:150px;height:auto;" />
+                                    <img src="<?php echo esc_url($logo_footer); ?>"
+                                        alt="<?php echo esc_attr__('Chasses au Trésor', 'chassesautresor-com'); ?>"
+                                        style="max-width:150px;height:auto;" />
                                 </a>
                             </p>
                         </footer>
