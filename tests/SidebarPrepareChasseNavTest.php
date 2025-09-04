@@ -82,13 +82,28 @@ if (!function_exists('utilisateur_est_organisateur_associe_a_chasse')) {
     }
 }
 
-if (!function_exists('recuperer_enigmes_pour_chasse')) {
-    function recuperer_enigmes_pour_chasse($chasse_id)
+if (!function_exists('recuperer_enigmes_associees')) {
+    function recuperer_enigmes_associees($chasse_id)
     {
-        return [
-            (object) ['ID' => 1],
-            (object) ['ID' => 2],
+        return [2, 1];
+    }
+}
+
+if (!function_exists('get_posts')) {
+    function get_posts($args = [])
+    {
+        $ids   = $args['post__in'] ?? [];
+        $posts = [
+            2 => (object) ['ID' => 2],
+            1 => (object) ['ID' => 1],
         ];
+        $ordered = [];
+        foreach ($ids as $id) {
+            if (isset($posts[$id])) {
+                $ordered[] = $posts[$id];
+            }
+        }
+        return $ordered;
     }
 }
 
@@ -137,7 +152,7 @@ class SidebarPrepareChasseNavTest extends TestCase
 
         $data = sidebar_prepare_chasse_nav(10, 5);
 
-        $this->assertSame([1, 2], $data['visible_ids']);
+        $this->assertSame([2, 1], $data['visible_ids']);
     }
 
     public function test_associated_organizer_sees_all_enigmas(): void
@@ -146,7 +161,7 @@ class SidebarPrepareChasseNavTest extends TestCase
 
         $data = sidebar_prepare_chasse_nav(10, 5);
 
-        $this->assertSame([1, 2], $data['visible_ids']);
+        $this->assertSame([2, 1], $data['visible_ids']);
     }
 }
 

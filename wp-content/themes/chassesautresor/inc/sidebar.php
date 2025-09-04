@@ -40,7 +40,16 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
         int $current_enigme_id = 0
     ): array
     {
-        $all_enigmes           = recuperer_enigmes_pour_chasse($chasse_id);
+        $ids                   = recuperer_enigmes_associees($chasse_id);
+        $all_enigmes           = $ids
+            ? get_posts([
+                'post_type'      => 'enigme',
+                'post__in'       => $ids,
+                'orderby'        => 'post__in',
+                'post_status'    => ['publish', 'pending'],
+                'posts_per_page' => -1,
+            ])
+            : [];
         $submenu_items         = [];
         $total_enigmes         = count($all_enigmes);
         $has_incomplete_enigme = false;
