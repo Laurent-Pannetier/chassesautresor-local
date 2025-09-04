@@ -164,6 +164,35 @@ if (!function_exists('wp_cache_set')) {
     }
 }
 
+if (!function_exists('recuperer_enigmes_associees')) {
+    function recuperer_enigmes_associees($chasse_id)
+    {
+        return $GLOBALS['enigma_ids'] ?? array_map(
+            static fn($e) => $e->ID,
+            $GLOBALS['enigma_list'] ?? []
+        );
+    }
+}
+
+if (!function_exists('get_posts')) {
+    function get_posts($args = [])
+    {
+        $ids   = $args['post__in'] ?? [];
+        $posts = $GLOBALS['enigma_list'] ?? [];
+        $map   = [];
+        foreach ($posts as $post) {
+            $map[$post->ID] = $post;
+        }
+        $ordered = [];
+        foreach ($ids as $id) {
+            if (isset($map[$id])) {
+                $ordered[] = $map[$id];
+            }
+        }
+        return $ordered;
+    }
+}
+
 if (!function_exists('recuperer_enigmes_pour_chasse')) {
     function recuperer_enigmes_pour_chasse($chasse_id)
     {
@@ -399,7 +428,7 @@ class EnigmeMenuRenderingTest extends TestCase
         $GLOBALS['post_types'][102]  = 'enigme';
         $GLOBALS['post_status'][102] = 'publish';
         $GLOBALS['titles'][102]      = 'Enigme Bloquee';
-        $GLOBALS['enigma_list']      = [(object) ['ID' => 101], (object) ['ID' => 102]];
+        $GLOBALS['enigma_list']      = [(object) ['ID' => 102], (object) ['ID' => 101]];
 
         ob_start();
         afficher_enigme_stylisee(101);
@@ -428,7 +457,7 @@ class EnigmeMenuRenderingTest extends TestCase
         $GLOBALS['post_types'][102]  = 'enigme';
         $GLOBALS['post_status'][102] = 'publish';
         $GLOBALS['titles'][102]      = 'Enigme Mal Config';
-        $GLOBALS['enigma_list']      = [(object) ['ID' => 101], (object) ['ID' => 102]];
+        $GLOBALS['enigma_list']      = [(object) ['ID' => 102], (object) ['ID' => 101]];
 
         ob_start();
         afficher_enigme_stylisee(101);
@@ -460,7 +489,7 @@ class EnigmeMenuRenderingTest extends TestCase
         $GLOBALS['post_types'][102]  = 'enigme';
         $GLOBALS['post_status'][102] = 'publish';
         $GLOBALS['titles'][102]      = 'Enigme Future';
-        $GLOBALS['enigma_list']      = [(object) ['ID' => 101], (object) ['ID' => 102]];
+        $GLOBALS['enigma_list']      = [(object) ['ID' => 102], (object) ['ID' => 101]];
 
         ob_start();
         afficher_enigme_stylisee(101);
