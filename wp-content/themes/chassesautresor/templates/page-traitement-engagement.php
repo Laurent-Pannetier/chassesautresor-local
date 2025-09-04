@@ -42,7 +42,14 @@ if ($chasse_id) {
         exit;
     }
 
-    enregistrer_engagement_chasse($current_user_id, $chasse_id);
+    $engagement_saved = enregistrer_engagement_chasse($current_user_id, $chasse_id);
+
+    if (!$engagement_saved) {
+        wp_safe_redirect(
+            add_query_arg('erreur', 'engagement', get_permalink($chasse_id))
+        );
+        exit;
+    }
 
     if ($cout_points > 0) {
         $reason = sprintf(
