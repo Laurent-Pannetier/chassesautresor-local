@@ -888,24 +888,22 @@ function synchroniser_relations_cache_enigmes(int $chasse_id): bool
         return false;
     }
 
-    // 🧩 Énigmes réellement liées à la chasse
-    $posts = get_posts([
+    // 🧩 Énigmes réellement liées à la chasse, triées par menu_order
+    $ids_detectes = get_posts([
         'post_type'      => 'enigme',
         'post_status'    => ['draft', 'pending', 'publish'],
         'posts_per_page' => -1,
         'fields'         => 'ids',
+        'orderby'        => 'menu_order',
+        'order'          => 'ASC',
+        'meta_query'     => [
+            [
+                'key'     => 'enigme_chasse_associee',
+                'value'   => $chasse_id,
+                'compare' => 'LIKE',
+            ],
+        ],
     ]);
-
-    $ids_detectes = [];
-
-    foreach ($posts as $eid) {
-        $associees = get_field('enigme_chasse_associee', $eid, false);
-        $associees = is_array($associees) ? array_map('intval', $associees) : [(int) $associees];
-
-        if (in_array((int)$chasse_id, $associees, true)) {
-            $ids_detectes[] = $eid;
-        }
-    }
 
     // 🧮 Cache actuel
     $cache_actuel = get_field('chasse_cache_enigmes', $chasse_id, false);
