@@ -44,19 +44,35 @@ function ouvrirModalConfirmation(form) {
 
   const modal = document.createElement('div');
   modal.className = 'modal-confirmation-validation-chasse';
+  const closeLabel = wp.i18n.__('Fermer', 'chassesautresor-com');
+  const title = wp.i18n.__('Valider votre chasse au trésor', 'chassesautresor-com');
+  const warning1 = wp.i18n.__(
+    '⚠️ Avant d\u2019envoyer votre demande de validation, assurez-vous que votre chasse est complète et prête à être publiée.',
+    'chassesautresor-com'
+  );
+  const warning2 = wp.i18n.__(
+    '📌 Après validation, vous ne pourrez plus modifier ses paramètres.',
+    'chassesautresor-com'
+  );
+  const certification = wp.i18n.__(
+    'Je certifie que ma chasse et toutes ses énigmes sont finalisées.',
+    'chassesautresor-com'
+  );
+  const send = wp.i18n.__('Envoyer la demande de validation', 'chassesautresor-com');
+
   modal.innerHTML = `
     <div class="modal-contenu">
-      <button class="modal-close-top" aria-label="Fermer">&times;</button>
-      <h2>Valider votre chasse au trésor</h2>
+      <button class="modal-close-top" aria-label="${closeLabel}">&times;</button>
+      <h2>${title}</h2>
       <p>
-        ⚠️ Avant d\u2019envoyer votre demande de validation, assurez-vous que votre chasse est complète et prête à être publiée.<br>
-        📌 Après validation, vous ne pourrez plus modifier ses paramètres.
+        ${warning1}<br>
+        ${warning2}
       </p>
       <label>
-        <input type="checkbox" id="confirm-validation"> Je certifie que ma chasse et toutes ses énigmes sont finalisées.
+        <input type="checkbox" id="confirm-validation"> ${certification}
       </label>
       <div class="boutons-modal">
-        <button class="bouton-cta confirmer-envoi" disabled>Envoyer la demande de validation</button>
+        <button class="bouton-cta confirmer-envoi" disabled>${send}</button>
       </div>
     </div>`;
 

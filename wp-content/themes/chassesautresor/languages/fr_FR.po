@@ -293,9 +293,8 @@ msgstr ""
 "la chasse commence maintenant."
 
 #: inc/chasse-functions.php:617
-#, fuzzy
 msgid "Participer"
-msgstr "Participants"
+msgstr "Participer"
 
 #: inc/chasse-functions.php:651
 msgid "Points insuffisants"
@@ -3190,3 +3189,27 @@ msgstr "Valeur estimée"
 #: templates/page-creer-profil.php:24 inc/organisateur-functions.php:880
 msgid "profil_verification"
 msgstr "✉️ Un email de vérification vous a été envoyé. Veuillez cliquer sur le lien pour confirmer votre demande."
+
+#: template-parts/chasse/chasse-affichage-complet.php:284
+msgid "présente"
+msgstr "présente"
+
+#: assets/js/validation-chasse.js:48
+msgid "Valider votre chasse au trésor"
+msgstr "Valider votre chasse au trésor"
+
+#: assets/js/validation-chasse.js:50
+msgid "⚠️ Avant d’envoyer votre demande de validation, assurez-vous que votre chasse est complète et prête à être publiée."
+msgstr "⚠️ Avant d’envoyer votre demande de validation, assurez-vous que votre chasse est complète et prête à être publiée."
+
+#: assets/js/validation-chasse.js:54
+msgid "📌 Après validation, vous ne pourrez plus modifier ses paramètres."
+msgstr "📌 Après validation, vous ne pourrez plus modifier ses paramètres."
+
+#: assets/js/validation-chasse.js:58
+msgid "Je certifie que ma chasse et toutes ses énigmes sont finalisées."
+msgstr "Je certifie que ma chasse et toutes ses énigmes sont finalisées."
+
+#: assets/js/validation-chasse.js:61
+msgid "Envoyer la demande de validation"
+msgstr "Envoyer la demande de validation"
