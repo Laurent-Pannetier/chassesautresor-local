@@ -1111,6 +1111,13 @@ body .wp-block-file .wp-block-file__button:focus,
   outline-offset: 2px;
 }
 
+.bouton-cta--pending {
+  cursor: not-allowed;
+  opacity: 0.6;
+  max-width: 220px;
+  white-space: normal;
+}
+
 /* ========== 🎯 BLOCS RÉPONSE ========== */
 .bloc-reponse {
   position: relative;

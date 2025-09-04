@@ -223,6 +223,10 @@ msgstr ""
 msgid "Tentatives manuelles en attente de réponse"
 msgstr "Configurer les variantes de réponse"
 
+#: inc/chasse-functions.php:675
+msgid "Demande de validation en cours"
+msgstr "Demande de validation en cours"
+
 #: inc/admin-functions.php:1786
 #: template-parts/chasse/chasse-edition-main.php:659
 msgid "Accès refusé."
