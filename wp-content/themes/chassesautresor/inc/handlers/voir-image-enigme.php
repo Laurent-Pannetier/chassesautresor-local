@@ -51,13 +51,14 @@ ob_clean();
 header_remove();
 remove_all_actions('shutdown');
 remove_all_actions('template_redirect');
+do_action('litespeed_control_set_nocache');
 
 // ✅ Envoi du fichier
 // 📅 Cache (compatible CDN)
 $mtime = filemtime($path);
 $etag  = '"' . md5($mtime . filesize($path)) . '"';
 
-header('Cache-Control: public, max-age=604800, immutable');
+header('Cache-Control: public, max-age=3600, immutable');
 header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $mtime) . ' GMT');
 header('ETag: ' . $etag);
 
