@@ -21,7 +21,7 @@ if (!function_exists('get_field')) {
 
 if (!function_exists('get_permalink')) {
     function get_permalink($id) {
-        return '';
+        return "https://example.com/chasse/{$id}";
     }
 }
 
@@ -67,6 +67,16 @@ if (!function_exists('site_url')) {
     }
 }
 
+if (!function_exists('wp_login_url')) {
+    function wp_login_url($redirect = '', $force_reauth = false) {
+        $base = 'https://example.com/wp-login.php';
+
+        return $redirect
+            ? $base . '?redirect_to=' . rawurlencode($redirect)
+            : $base;
+    }
+}
+
 if (!function_exists('date_i18n')) {
     function date_i18n($format, $timestamp) {
         return '';
@@ -108,7 +118,7 @@ class GenererCtaChasseTest extends TestCase
         $cta = generer_cta_chasse(123, 0);
         $this->assertSame(
             [
-                'cta_html'    => '<a href="https://example.com/mon-compte" class="bouton-cta bouton-cta--color">S\'identifier</a>',
+                'cta_html'    => '<a href="https://example.com/wp-login.php?redirect_to=http%3A%2F%2Fexample.com%2F123" class="bouton-cta bouton-cta--color">S\'identifier</a>',
                 'cta_message' => '',
                 'type'        => 'connexion',
             ],
