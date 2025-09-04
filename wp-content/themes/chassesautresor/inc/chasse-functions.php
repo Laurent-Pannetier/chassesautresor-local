@@ -849,11 +849,15 @@ function enregistrer_engagement_chasse(int $user_id, int $chasse_id): bool
         [
             'user_id'         => $user_id,
             'chasse_id'       => $chasse_id,
-            'enigme_id'       => null,
             'date_engagement' => current_time('mysql', 1),
         ],
-        ['%d', '%d', '%s', '%s']
+        ['%d', '%d', '%s']
     );
+
+    if (!empty($wpdb->last_error)) {
+        return false;
+    }
+
     if ($inserted) {
         do_action('chasse_engagement_created', $chasse_id);
     }
