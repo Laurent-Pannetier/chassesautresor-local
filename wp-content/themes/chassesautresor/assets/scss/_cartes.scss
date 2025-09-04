@@ -183,6 +183,15 @@
   gap: var(--space-sm);
 }
 
+.carte-enigme-footer .footer-icons-right {
+  display: none;
+}
+
+.carte-enigme:hover .footer-icons-right,
+.carte-enigme:focus-within .footer-icons-right {
+  display: flex;
+}
+
 .carte-enigme-footer .footer-item {
   display: flex;
   align-items: center;
