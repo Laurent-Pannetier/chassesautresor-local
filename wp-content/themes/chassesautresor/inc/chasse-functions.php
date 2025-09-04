@@ -649,11 +649,13 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
     $date_fin   = get_field('chasse_infos_date_fin', $chasse_id);
 
     // 🧑‍💻 Utilisateur non connecté
-    if (!$user_id) {
+    if (! $user_id) {
+        $login_url = wp_login_url($permalink);
+
         return [
             'cta_html'    => sprintf(
                 '<a href="%s" class="bouton-cta bouton-cta--color">%s</a>',
-                esc_url(site_url('/mon-compte')),
+                esc_url($login_url),
                 esc_html__('S\'identifier', 'chassesautresor-com')
             ),
             'cta_message' => '',
