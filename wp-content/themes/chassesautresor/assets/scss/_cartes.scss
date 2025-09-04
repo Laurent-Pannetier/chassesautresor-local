@@ -183,12 +183,16 @@
   gap: var(--space-sm);
 }
 
-.carte-enigme-footer .footer-icons-right {
+
+.carte-enigme-footer .footer-item--participants,
+.carte-enigme-footer .footer-item--resolutions {
   display: none;
 }
 
-.carte-enigme:hover .footer-icons-right,
-.carte-enigme:focus-within .footer-icons-right {
+.carte-enigme:hover .footer-item--participants,
+.carte-enigme:focus-within .footer-item--participants,
+.carte-enigme:hover .footer-item--resolutions,
+.carte-enigme:focus-within .footer-item--resolutions {
   display: flex;
 }
 
