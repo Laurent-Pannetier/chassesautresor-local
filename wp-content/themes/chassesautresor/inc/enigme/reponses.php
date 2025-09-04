@@ -386,10 +386,6 @@ add_action('wp_ajax_nopriv_soumettre_reponse_automatique', 'soumettre_reponse_au
         $user = get_userdata($user_id);
         $subject_raw = '[Réponse Énigme] ' . $titre_enigme;
 
-        $subject = function_exists('wp_encode_mime_header')
-            ? wp_encode_mime_header($subject_raw)
-            : mb_encode_mimeheader($subject_raw, 'UTF-8', 'B', "\r\n");
-
         $date        = date_i18n('j F Y à H:i', current_time('timestamp'));
         $url_enigme  = get_permalink($enigme_id);
         $profil_url  = get_author_posts_url($user_id);
@@ -422,7 +418,7 @@ add_action('wp_ajax_nopriv_soumettre_reponse_automatique', 'soumettre_reponse_au
         };
         add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
-        cta_send_email($email_organisateur, $subject, $message, $headers);
+        cta_send_email($email_organisateur, $subject_raw, $message, $headers);
         remove_filter('wp_mail_from_name', $from_filter, 10);
     }
 
@@ -464,7 +460,7 @@ add_action('wp_ajax_nopriv_soumettre_reponse_automatique', 'soumettre_reponse_au
         $tentatives_utilisees = compter_tentatives_du_jour($user_id, $enigme_id);
         $tentatives_max = (int) get_field('enigme_tentative_max', $enigme_id);
 
-        $subject = sprintf(
+        $subject_raw = sprintf(
             __('[Chasses au Trésor] %1$s — %2$s', 'chassesautresor-com'),
             $enigme_title,
             $result_label
@@ -527,7 +523,7 @@ add_action('wp_ajax_nopriv_soumettre_reponse_automatique', 'soumettre_reponse_au
         };
         add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
-        cta_send_email($user->user_email, $subject, $message, $headers);
+        cta_send_email($user->user_email, $subject_raw, $message, $headers);
         remove_filter('wp_mail_from_name', $from_filter, 10);
     }
 

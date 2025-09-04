@@ -778,7 +778,7 @@ function envoyer_email_confirmation_organisateur(int $user_id, string $token): b
         'token' => $token,
     ], site_url('/confirmation-organisateur/'));
 
-    $subject = esc_html__(
+    $subject_raw = __(
         '[Chasses au Trésor] Confirmez votre inscription organisateur',
         'chassesautresor-com'
     );
@@ -814,7 +814,7 @@ function envoyer_email_confirmation_organisateur(int $user_id, string $token): b
     $headers = [];
 
     add_filter('wp_mail_from_name', $from_filter, 10, 1);
-    cta_send_email($user->user_email, $subject, $body, $headers);
+    cta_send_email($user->user_email, $subject_raw, $body, $headers);
     remove_filter('wp_mail_from_name', $from_filter, 10);
 
     return true;

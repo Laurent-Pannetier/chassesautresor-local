@@ -80,14 +80,14 @@ function cta_render_email_template(string $title, string $content): string
 /**
  * Sends an HTML email using the template.
  *
- * @param array|string $to      Recipient or list of recipients.
- * @param string       $subject Email subject.
- * @param string       $body    Email body content.
- * @param array        $headers Additional headers.
+ * @param array|string $to          Recipient or list of recipients.
+ * @param string       $subject_raw Email subject.
+ * @param string       $body        Email body content.
+ * @param array        $headers     Additional headers.
  *
  * @return bool
  */
-function cta_send_email($to, string $subject, string $body, array $headers = []): bool
+function cta_send_email($to, string $subject_raw, string $body, array $headers = []): bool
 {
     $has_content_type = false;
     foreach ($headers as $header) {
@@ -111,7 +111,11 @@ function cta_send_email($to, string $subject, string $body, array $headers = [])
         $headers[] = 'From: ' . $from;
     }
 
-    $html = cta_render_email_template($subject, $body);
+    $html = cta_render_email_template($subject_raw, $body);
+
+    $subject = function_exists('wp_encode_mime_header')
+        ? wp_encode_mime_header($subject_raw)
+        : mb_encode_mimeheader($subject_raw, 'UTF-8', 'B', "\r\n");
 
     return function_exists('wp_mail') ? wp_mail($to, $subject, $html, $headers) : false;
 }
