@@ -173,6 +173,14 @@
   gap: var(--space-sm);
 }
 
+.carte-enigme-footer .footer-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xxs);
+  opacity: 0.8;
+  line-height: 1;
+}
+
 .carte-enigme-footer .footer-item--participants,
 .carte-enigme-footer .footer-item--resolutions {
   display: none;
@@ -183,14 +191,6 @@
 .carte-enigme:hover .footer-item--resolutions,
 .carte-enigme:focus-within .footer-item--resolutions {
   display: flex;
-}
-
-.carte-enigme-footer .footer-item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xxs);
-  opacity: 0.8;
-  line-height: 1;
 }
 
 .carte-enigme-footer i,
