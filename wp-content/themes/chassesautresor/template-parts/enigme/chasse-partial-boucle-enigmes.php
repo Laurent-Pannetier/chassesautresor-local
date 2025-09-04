@@ -230,12 +230,12 @@ if (!function_exists('compter_tentatives_du_jour') || !function_exists('compter_
                   <?php endif; ?>
                 </div>
                 <div class="footer-icons footer-icons-right">
-                  <span class="footer-item" title="<?= esc_attr__('nombre de participants à cette énigme', 'chassesautresor-com'); ?>" aria-label="<?= esc_attr__('nombre de participants à cette énigme', 'chassesautresor-com'); ?>">
+                  <span class="footer-item footer-item--participants" title="<?= esc_attr__('nombre de participants à cette énigme', 'chassesautresor-com'); ?>" aria-label="<?= esc_attr__('nombre de participants à cette énigme', 'chassesautresor-com'); ?>">
                     <i class="fa-solid fa-users" aria-hidden="true"></i>
                     <?= esc_html($nb_participants); ?>
                   </span>
                   <?php if ($mode_validation !== 'aucune') : ?>
-                    <span class="footer-item" title="<?= esc_attr__('nombre de joueurs ayant trouvé la bonne réponse', 'chassesautresor-com'); ?>" aria-label="<?= esc_attr__('nombre de joueurs ayant trouvé la bonne réponse', 'chassesautresor-com'); ?>">
+                    <span class="footer-item footer-item--resolutions" title="<?= esc_attr__('nombre de joueurs ayant trouvé la bonne réponse', 'chassesautresor-com'); ?>" aria-label="<?= esc_attr__('nombre de joueurs ayant trouvé la bonne réponse', 'chassesautresor-com'); ?>">
                       <?= get_svg_icon('idea'); ?>
                       <?= esc_html($nb_resolutions); ?>
                     </span>

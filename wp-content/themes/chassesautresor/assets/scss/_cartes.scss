@@ -191,6 +191,18 @@
   line-height: 1;
 }
 
+.carte-enigme-footer .footer-item--participants,
+.carte-enigme-footer .footer-item--resolutions {
+  display: none;
+}
+
+.carte-enigme:hover .footer-item--participants,
+.carte-enigme:focus-within .footer-item--participants,
+.carte-enigme:hover .footer-item--resolutions,
+.carte-enigme:focus-within .footer-item--resolutions {
+  display: flex;
+}
+
 .carte-enigme-footer i,
 .carte-enigme-footer svg {
   width: 1.1em;
