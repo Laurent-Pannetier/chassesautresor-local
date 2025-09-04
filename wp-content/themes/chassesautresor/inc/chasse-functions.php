@@ -669,6 +669,16 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
         ];
     }
 
+    if ($validation === 'en_attente') {
+        return [
+            'cta_html'    => '<span class="bouton-cta bouton-cta--pending" aria-disabled="true">'
+                . esc_html__( 'Demande de validation en cours', 'chassesautresor-com' )
+                . '</span>',
+            'cta_message' => '',
+            'type'        => 'en_attente',
+        ];
+    }
+
     // 🔐 Admin or organiser: disabled participation button
     $admin_override = $GLOBALS['force_admin_override'] ?? null;
     $is_admin = $admin_override !== null ? (bool) $admin_override : current_user_can('administrator');
