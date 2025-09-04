@@ -869,7 +869,15 @@ function verifier_ou_recalculer_statut_chasse($chasse_id): void
     $chasses_traitees[] = $chasse_id;
 
 
-    $statut = get_field('chasse_cache_statut', $chasse_id);
+    $statut     = get_field('chasse_cache_statut', $chasse_id);
+    $validation = get_field('chasse_cache_statut_validation', $chasse_id);
+
+    // ⚠️ Validation non valide mais statut différent de "revision"
+    if ($validation !== 'valide' && $statut !== 'revision') {
+        mettre_a_jour_statuts_chasse($chasse_id);
+        chasse_clear_infos_affichage_cache($chasse_id);
+        return;
+    }
 
     // Si le statut est manquant ou invalide, on le recalcule
     $statuts_valides = ['revision', 'a_venir', 'en_cours', 'payante', 'termine'];
