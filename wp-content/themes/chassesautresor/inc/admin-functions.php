@@ -2064,9 +2064,6 @@ function envoyer_mail_demande_correction(int $organisateur_id, int $chasse_id, s
     $url_chasse   = get_permalink($chasse_id);
 
     $subject_raw = '[Chasses au Trésor] Corrections requises pour votre chasse';
-    $subject = function_exists('wp_encode_mime_header')
-        ? wp_encode_mime_header($subject_raw)
-        : mb_encode_mimeheader($subject_raw, 'UTF-8', 'B', "\r\n");
 
     $body  = '<div style="font-family:Arial,sans-serif;font-size:14px;">';
     $body .= '<p>Bonjour,</p>';
@@ -2086,8 +2083,8 @@ function envoyer_mail_demande_correction(int $organisateur_id, int $chasse_id, s
     };
     add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
-    cta_send_email($emails, $subject, $body, $headers);
-    cta_send_email($admin_email, $subject, $body, $headers);
+    cta_send_email($emails, $subject_raw, $body, $headers);
+    cta_send_email($admin_email, $subject_raw, $body, $headers);
     remove_filter('wp_mail_from_name', $from_filter, 10);
 
 }
@@ -2119,9 +2116,6 @@ function envoyer_mail_chasse_bannie(int $organisateur_id, int $chasse_id)
     $titre_chasse = get_the_title($chasse_id);
 
     $subject_raw = '[Chasses au Trésor] Chasse bannie';
-    $subject = function_exists('wp_encode_mime_header')
-        ? wp_encode_mime_header($subject_raw)
-        : mb_encode_mimeheader($subject_raw, 'UTF-8', 'B', "\r\n");
 
     $body  = '<p>' . esc_html__('Bonjour,', 'chassesautresor-com') . '</p>';
     $body .= '<p>' . sprintf(esc_html__('Votre chasse "%s" a été bannie par l\'administrateur.', 'chassesautresor-com'), esc_html($titre_chasse)) . '</p>';
@@ -2136,7 +2130,7 @@ function envoyer_mail_chasse_bannie(int $organisateur_id, int $chasse_id)
     };
     add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
-    cta_send_email($email, $subject, $body, $headers);
+    cta_send_email($email, $subject_raw, $body, $headers);
     remove_filter('wp_mail_from_name', $from_filter, 10);
 }
 
@@ -2167,9 +2161,6 @@ function envoyer_mail_chasse_supprimee(int $organisateur_id, int $chasse_id)
     $titre_chasse = get_the_title($chasse_id);
 
     $subject_raw = '[Chasses au Trésor] Chasse supprimée';
-    $subject = function_exists('wp_encode_mime_header')
-        ? wp_encode_mime_header($subject_raw)
-        : mb_encode_mimeheader($subject_raw, 'UTF-8', 'B', "\r\n");
 
     $body  = '<p>' . esc_html__('Bonjour,', 'chassesautresor-com') . '</p>';
     $body .= '<p>' . sprintf(esc_html__('Votre chasse "%s" a été supprimée par l\'administrateur.', 'chassesautresor-com'), esc_html($titre_chasse)) . '</p>';
@@ -2184,7 +2175,7 @@ function envoyer_mail_chasse_supprimee(int $organisateur_id, int $chasse_id)
     };
     add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
-    cta_send_email($email, $subject, $body, $headers);
+    cta_send_email($email, $subject_raw, $body, $headers);
     remove_filter('wp_mail_from_name', $from_filter, 10);
 }
 
@@ -2235,9 +2226,6 @@ function envoyer_mail_chasse_validee(int $organisateur_id, int $chasse_id)
     $url_qr_code  = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=' . rawurlencode($url_chasse);
 
     $subject_raw = '✅ Votre chasse est maintenant validée !';
-    $subject = function_exists('wp_encode_mime_header')
-        ? wp_encode_mime_header($subject_raw)
-        : mb_encode_mimeheader($subject_raw, 'UTF-8', 'B', "\r\n");
 
     $body  = '<p>Bonjour,</p>';
     $body .= '<p>Votre chasse <strong>&laquo;' . esc_html($titre_chasse) . '&raquo;</strong> a été <strong>validée avec succès</strong> par notre équipe 🎉<br>';
@@ -2262,7 +2250,7 @@ function envoyer_mail_chasse_validee(int $organisateur_id, int $chasse_id)
     };
     add_filter('wp_mail_from_name', $from_filter, 10, 1);
 
-    cta_send_email($emails, $subject, $body, $headers);
+    cta_send_email($emails, $subject_raw, $body, $headers);
     remove_filter('wp_mail_from_name', $from_filter, 10);
 }
 
