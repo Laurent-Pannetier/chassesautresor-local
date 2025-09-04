@@ -290,9 +290,8 @@ msgstr ""
 "now."
 
 #: inc/chasse-functions.php:617
-#, fuzzy
 msgid "Participer"
-msgstr "Players"
+msgstr "Join"
 
 #: inc/chasse-functions.php:651
 msgid "Points insuffisants"
@@ -380,7 +379,7 @@ msgstr "Error creating hunt."
 #: assets/js/help-modal.js:19
 #, fuzzy
 msgid "Fermer"
-msgstr "<g x=1 id=\"40\">Close Chart</g>"
+msgstr "Close"
 
 #: inc/edition/edition-core.php:148
 msgid "Choisir une image"
@@ -3228,3 +3227,27 @@ msgstr "Estimated value"
 #: templates/page-creer-profil.php:24 inc/organisateur-functions.php:880
 msgid "profil_verification"
 msgstr "✉️ A verification email has been sent. Please click the link to confirm your request."
+
+#: template-parts/chasse/chasse-affichage-complet.php:284
+msgid "présente"
+msgstr "presents"
+
+#: assets/js/validation-chasse.js:48
+msgid "Valider votre chasse au trésor"
+msgstr "Validate your treasure hunt"
+
+#: assets/js/validation-chasse.js:50
+msgid "⚠️ Avant d’envoyer votre demande de validation, assurez-vous que votre chasse est complète et prête à être publiée."
+msgstr "⚠️ Before sending your validation request, make sure your hunt is complete and ready to be published."
+
+#: assets/js/validation-chasse.js:54
+msgid "📌 Après validation, vous ne pourrez plus modifier ses paramètres."
+msgstr "📌 After validation, you will no longer be able to modify its settings."
+
+#: assets/js/validation-chasse.js:58
+msgid "Je certifie que ma chasse et toutes ses énigmes sont finalisées."
+msgstr "I certify that my hunt and all its riddles are finalized."
+
+#: assets/js/validation-chasse.js:61
+msgid "Envoyer la demande de validation"
+msgstr "Send the validation request"

@@ -2943,3 +2943,27 @@ msgstr ""
 #: templates/page-creer-profil.php:24 inc/organisateur-functions.php:880
 msgid "profil_verification"
 msgstr ""
+
+#: template-parts/chasse/chasse-affichage-complet.php:284
+msgid "présente"
+msgstr ""
+
+#: assets/js/validation-chasse.js:48
+msgid "Valider votre chasse au trésor"
+msgstr ""
+
+#: assets/js/validation-chasse.js:50
+msgid "⚠️ Avant d’envoyer votre demande de validation, assurez-vous que votre chasse est complète et prête à être publiée."
+msgstr ""
+
+#: assets/js/validation-chasse.js:54
+msgid "📌 Après validation, vous ne pourrez plus modifier ses paramètres."
+msgstr ""
+
+#: assets/js/validation-chasse.js:58
+msgid "Je certifie que ma chasse et toutes ses énigmes sont finalisées."
+msgstr ""
+
+#: assets/js/validation-chasse.js:61
+msgid "Envoyer la demande de validation"
+msgstr ""
