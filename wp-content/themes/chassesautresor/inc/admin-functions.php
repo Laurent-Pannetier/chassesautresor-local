@@ -1387,13 +1387,27 @@ function cta_reset_stats() {
         $wpdb->prefix . 'indices_deblocages',
     ];
 
+    $total_deleted = 0;
+
     foreach ($tables as $table) {
-        $wpdb->query("TRUNCATE TABLE {$table}");
+        $wpdb->query("DELETE FROM {$table}");
+
+        if (!empty($wpdb->last_error)) {
+            wp_send_json_error($wpdb->last_error);
+        }
+
+        $total_deleted += (int) $wpdb->rows_affected;
     }
 
     delete_metadata('user', 0, '_myaccount_messages', '', true);
 
-    wp_send_json_success();
+    if (!empty($wpdb->last_error)) {
+        wp_send_json_error($wpdb->last_error);
+    }
+
+    $total_deleted += (int) $wpdb->rows_affected;
+
+    wp_send_json_success(['deleted' => $total_deleted]);
 }
 add_action('wp_ajax_cta_reset_stats', 'cta_reset_stats');
 
