@@ -443,6 +443,10 @@ function myaccount_maybe_add_validation_message(): void
     foreach ($existing as $row) {
         $data = json_decode($row['message'], true);
         if (is_array($data) && ($data['key'] ?? '') === $key) {
+            if (!isset($data['chasse_scope']) || !array_key_exists('include_enigmes', $data)) {
+                $repo->delete((int) $row['id']);
+                break;
+            }
             return;
         }
     }
