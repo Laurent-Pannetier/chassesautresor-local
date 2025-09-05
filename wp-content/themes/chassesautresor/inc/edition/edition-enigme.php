@@ -172,36 +172,40 @@ add_action('init', 'register_endpoint_creer_enigme');
  */
 function creer_enigme_et_rediriger_si_appel()
 {
-  if (get_query_var('creer_enigme') !== '1') {
-    return;
-  }
+    if (get_query_var('creer_enigme') !== '1') {
+        return;
+    }
 
-  nocache_headers();
+    if (!defined('DONOTCACHEPAGE')) {
+        define('DONOTCACHEPAGE', true); // Indique aux plugins cache de ne pas mettre en cache
+    }
+    do_action('litespeed_control_set_nocache'); // Spécifique à LiteSpeed
+    nocache_headers();
 
-  // Vérification de l’utilisateur
-  if (!is_user_logged_in()) {
-    wp_redirect(wp_login_url());
+    // Vérification de l’utilisateur
+    if (!is_user_logged_in()) {
+        wp_redirect(wp_login_url());
+        exit;
+    }
+
+    $user_id = get_current_user_id();
+    $chasse_id = isset($_GET['chasse_id']) ? absint($_GET['chasse_id']) : 0;
+
+    if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
+        wp_die( __( 'Chasse non spécifiée ou invalide.', 'chassesautresor-com' ), 'Erreur', ['response' => 400] );
+    }
+
+    $enigme_id = creer_enigme_pour_chasse($chasse_id, $user_id);
+
+    if (is_wp_error($enigme_id)) {
+        wp_die($enigme_id->get_error_message(), 'Erreur', ['response' => 500]);
+    }
+
+    // Redirige vers l’énigme en création
+    $preview_url = add_query_arg('edition', 'open', get_preview_post_link($enigme_id));
+    wp_redirect($preview_url);
+
     exit;
-  }
-
-  $user_id = get_current_user_id();
-  $chasse_id = isset($_GET['chasse_id']) ? absint($_GET['chasse_id']) : 0;
-
-  if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
-    wp_die( __( 'Chasse non spécifiée ou invalide.', 'chassesautresor-com' ), 'Erreur', ['response' => 400] );
-  }
-
-  $enigme_id = creer_enigme_pour_chasse($chasse_id, $user_id);
-
-  if (is_wp_error($enigme_id)) {
-    wp_die($enigme_id->get_error_message(), 'Erreur', ['response' => 500]);
-  }
-
-  // Redirige vers l’énigme en création
-  $preview_url = add_query_arg('edition', 'open', get_preview_post_link($enigme_id));
-  wp_redirect($preview_url);
-
-  exit;
 }
 add_action('template_redirect', 'creer_enigme_et_rediriger_si_appel');
 
