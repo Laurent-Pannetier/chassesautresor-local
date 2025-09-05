@@ -19,11 +19,6 @@ if (!function_exists('get_field')) {
     }
 }
 
-if (!function_exists('admin_url')) {
-    function admin_url($path = '') {
-        return 'https://example.com/wp-admin/' . ltrim($path, '/');
-    }
-}
 
 if (!function_exists('get_post_type')) {
     function get_post_type($post_id) {
@@ -168,7 +163,7 @@ class GenererCtaChasseTest extends TestCase
         ];
 
         $cta          = generer_cta_chasse(123, 5);
-        $expected_url = 'https://example.com/wp-admin/post.php?post=123&action=edit&tab=statistiques';
+        $expected_url = 'https://example.com/chasse/123?edition=open&tab=stats';
 
         $this->assertSame(
             [
@@ -191,7 +186,7 @@ class GenererCtaChasseTest extends TestCase
         ];
 
         $cta          = generer_cta_chasse(456, 7);
-        $expected_url = 'https://example.com/wp-admin/post.php?post=456&action=edit&tab=statistiques';
+        $expected_url = 'https://example.com/chasse/456?edition=open&tab=stats';
 
         $this->assertSame(
             [
@@ -214,7 +209,7 @@ class GenererCtaChasseTest extends TestCase
         ];
 
         $cta          = generer_cta_chasse(789, 11);
-        $expected_url = 'https://example.com/wp-admin/post.php?post=789&action=edit&tab=statistiques';
+        $expected_url = 'https://example.com/chasse/789?edition=open&tab=stats';
 
         $this->assertSame(
             [
