@@ -976,7 +976,7 @@ function render_form_annulation_validation_chasse(int $chasse_id): string
     $nonce = wp_create_nonce('annulation_validation_chasse_' . $chasse_id);
     ob_start();
 ?>
-    <form method="post" action="<?= esc_url(admin_url('admin-post.php')); ?>" class="form-annulation-validation-chasse">
+    <form method="post" action="<?= esc_url(admin_url('admin-ajax.php')); ?>" class="form-annulation-validation-chasse">
         <input type="hidden" name="action" value="annulation_validation_chasse">
         <input type="hidden" name="chasse_id" value="<?= esc_attr($chasse_id); ?>">
         <input type="hidden" name="annulation_validation_chasse_nonce" value="<?= esc_attr($nonce); ?>">
@@ -989,8 +989,8 @@ function render_form_annulation_validation_chasse(int $chasse_id): string
     return ob_get_clean();
 }
 
-add_action('admin_post_annulation_validation_chasse', 'traiter_annulation_validation_chasse');
-add_action('admin_post_nopriv_annulation_validation_chasse', 'traiter_annulation_validation_chasse');
+add_action('wp_ajax_annulation_validation_chasse', 'traiter_annulation_validation_chasse');
+add_action('wp_ajax_nopriv_annulation_validation_chasse', 'traiter_annulation_validation_chasse');
 
 function traiter_annulation_validation_chasse(): void
 {
