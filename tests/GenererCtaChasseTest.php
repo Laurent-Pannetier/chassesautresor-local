@@ -13,9 +13,15 @@ if (!function_exists('utilisateur_est_organisateur_associe_a_chasse')) {
     }
 }
 
+if (!function_exists('est_organisateur')) {
+    function est_organisateur($user_id = null) {
+        return false;
+    }
+}
+
 if (!function_exists('get_field')) {
     function get_field($field, $post_id) {
-        return null;
+        return $GLOBALS['chasse_fields'][$field] ?? null;
     }
 }
 
@@ -67,6 +73,12 @@ if (!function_exists('site_url')) {
     }
 }
 
+if (!function_exists('admin_url')) {
+    function admin_url($path = '') {
+        return $path;
+    }
+}
+
 if (!function_exists('wp_login_url')) {
     function wp_login_url($redirect = '', $force_reauth = false) {
         $base = 'https://example.com/wp-login.php';
@@ -83,22 +95,35 @@ if (!function_exists('date_i18n')) {
     }
 }
 
+if (!function_exists('wp_create_nonce')) {
+    function wp_create_nonce($action) {
+        return 'nonce';
+    }
+}
+
 if (!function_exists('utilisateur_est_engage_dans_chasse')) {
     function utilisateur_est_engage_dans_chasse($user_id, $chasse_id) {
         return $GLOBALS['is_engage'] ?? false;
     }
 }
 
-
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/chasse-functions.php';
 
 class GenererCtaChasseTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $GLOBALS['chasse_fields']               = [];
+        $GLOBALS['fields']                      = &$GLOBALS['chasse_fields'];
+        $GLOBALS['force_admin_override']        = false;
+        $GLOBALS['force_engage_override']       = false;
+        $GLOBALS['force_organisateur_override'] = false;
+    }
+
     public function test_admin_or_organizer_gets_disabled_button(): void
     {
         $GLOBALS['force_admin_override'] = true;
-        $GLOBALS['force_engage_override'] = false;
-        $GLOBALS['force_organisateur_override'] = false;
         $cta = generer_cta_chasse(123, 5);
         $this->assertSame(
             [
@@ -112,9 +137,6 @@ class GenererCtaChasseTest extends TestCase
 
     public function test_guest_gets_login_cta_without_message(): void
     {
-        $GLOBALS['force_admin_override'] = false;
-        $GLOBALS['force_engage_override'] = false;
-        $GLOBALS['force_organisateur_override'] = false;
         $cta = generer_cta_chasse(123, 0);
         $this->assertSame(
             [
@@ -128,9 +150,7 @@ class GenererCtaChasseTest extends TestCase
 
     public function test_engaged_without_enigme_shows_prompt(): void
     {
-        $GLOBALS['force_admin_override'] = false;
         $GLOBALS['force_engage_override'] = true;
-        $GLOBALS['force_organisateur_override'] = false;
         $cta = generer_cta_chasse(123, 1);
         $this->assertSame(
             [
@@ -142,5 +162,34 @@ class GenererCtaChasseTest extends TestCase
         );
     }
 
+    public function test_organizer_can_cancel_validation_request(): void
+    {
+        $GLOBALS['force_organisateur_override'] = true;
+        $GLOBALS['chasse_fields'] = [
+            123 => [
+                'chasse_cache_statut_validation' => 'en_attente',
+            ],
+        ];
+        $cta = generer_cta_chasse(123, 5);
+        $this->assertSame('annuler_validation', $cta['type']);
+    }
+
+    public function test_standard_user_sees_pending_button(): void
+    {
+        $GLOBALS['chasse_fields'] = [
+            123 => [
+                'chasse_cache_statut_validation' => 'en_attente',
+            ],
+        ];
+        $cta = generer_cta_chasse(123, 5);
+        $this->assertSame(
+            [
+                'cta_html'    => '<span class="bouton-cta bouton-cta--pending" aria-disabled="true">Demande de validation en cours</span>',
+                'cta_message' => '',
+                'type'        => 'en_attente',
+            ],
+            $cta
+        );
+    }
 }
 

@@ -671,7 +671,20 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
         ];
     }
 
+    // 🔐 Admin or organiser info
+    $admin_override = $GLOBALS['force_admin_override'] ?? null;
+    $is_admin = $admin_override !== null ? (bool) $admin_override : current_user_can('administrator');
+    $orga_override = $GLOBALS['force_organisateur_override'] ?? null;
+    $is_orga = $orga_override !== null ? (bool) $orga_override : utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
+
     if ($validation === 'en_attente') {
+        if ($is_orga) {
+            return [
+                'cta_html'    => render_form_annulation_validation_chasse($chasse_id),
+                'cta_message' => '',
+                'type'        => 'annuler_validation',
+            ];
+        }
         return [
             'cta_html'    => '<span class="bouton-cta bouton-cta--pending" aria-disabled="true">'
                 . esc_html__( 'Demande de validation en cours', 'chassesautresor-com' )
@@ -682,10 +695,6 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
     }
 
     // 🔐 Admin or organiser: disabled participation button
-    $admin_override = $GLOBALS['force_admin_override'] ?? null;
-    $is_admin = $admin_override !== null ? (bool) $admin_override : current_user_can('administrator');
-    $orga_override = $GLOBALS['force_organisateur_override'] ?? null;
-    $is_orga = $orga_override !== null ? (bool) $orga_override : utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
     if ($is_orga && in_array($validation, ['creation', 'correction'], true)) {
         return [
             'cta_html'    => sprintf(
@@ -954,6 +963,80 @@ function render_form_validation_chasse(int $chasse_id): string
     </form>
 <?php
     return ob_get_clean();
+}
+
+/**
+ * Génère le formulaire d'annulation d'une demande de validation.
+ *
+ * @param int $chasse_id ID de la chasse.
+ * @return string HTML du formulaire.
+ */
+function render_form_annulation_validation_chasse(int $chasse_id): string
+{
+    $nonce = wp_create_nonce('annulation_validation_chasse_' . $chasse_id);
+    ob_start();
+?>
+    <form method="post" action="<?= esc_url(admin_url('admin-ajax.php')); ?>" class="form-annulation-validation-chasse">
+        <input type="hidden" name="action" value="annulation_validation_chasse">
+        <input type="hidden" name="chasse_id" value="<?= esc_attr($chasse_id); ?>">
+        <input type="hidden" name="annulation_validation_chasse_nonce" value="<?= esc_attr($nonce); ?>">
+        <input type="hidden" name="annuler_validation_chasse" value="1">
+        <button type="submit" class="bouton-cta bouton-cta--color bouton-annulation-validation-chasse">
+            <?= esc_html__( 'Annuler la demande', 'chassesautresor-com' ); ?>
+        </button>
+    </form>
+<?php
+    return ob_get_clean();
+}
+
+add_action('wp_ajax_annulation_validation_chasse', 'traiter_annulation_validation_chasse');
+add_action('wp_ajax_nopriv_annulation_validation_chasse', 'traiter_annulation_validation_chasse');
+
+function traiter_annulation_validation_chasse(): void
+{
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        wp_redirect(home_url());
+        exit;
+    }
+
+    $chasse_id = isset($_POST['chasse_id']) ? (int) $_POST['chasse_id'] : 0;
+    $user_id   = get_current_user_id();
+
+    if (!$user_id || !$chasse_id || get_post_type($chasse_id) !== 'chasse') {
+        wp_redirect(home_url());
+        exit;
+    }
+
+    $nonce_action = 'annulation_validation_chasse_' . $chasse_id;
+    if (
+        !isset($_POST['annulation_validation_chasse_nonce']) ||
+        !wp_verify_nonce($_POST['annulation_validation_chasse_nonce'], $nonce_action)
+    ) {
+        wp_die( __( 'Vérification de sécurité échouée.', 'chassesautresor-com' ) );
+    }
+
+    if (
+        !current_user_can('administrator') &&
+        !utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)
+    ) {
+        wp_die( __( 'Conditions non remplies.', 'chassesautresor-com' ) );
+    }
+
+    if (empty($_POST['annuler_validation_chasse'])) {
+        wp_redirect(home_url());
+        exit;
+    }
+
+    require_once get_theme_file_path('inc/statut-functions.php');
+    require_once get_theme_file_path('inc/relations-functions.php');
+    require_once get_theme_file_path('inc/user-functions.php');
+
+    forcer_statut_apres_acf($chasse_id, 'a_venir');
+    update_field('chasse_cache_statut', 'a_venir', $chasse_id);
+    update_field('chasse_cache_statut_validation', 'correction', $chasse_id);
+
+    wp_redirect(add_query_arg('validation_annulee', '1', get_permalink($chasse_id)));
+    exit;
 }
 
 /**
