@@ -697,6 +697,19 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
             'type'        => 'edition',
         ];
     }
+
+    if ($is_orga && $statut === 'en_cours' && $validation === 'valide') {
+        return [
+            'cta_html'    => sprintf(
+                '<a href="%s" class="bouton-secondaire">%s</a>',
+                esc_url(admin_url('post.php?post=' . $chasse_id . '&action=edit&tab=statistiques')),
+                esc_html__('Statistiques', 'chassesautresor-com')
+            ),
+            'cta_message' => '',
+            'type'        => 'statistiques',
+        ];
+    }
+
     if ($is_admin || $is_orga) {
         return [
             'cta_html'    => sprintf(
