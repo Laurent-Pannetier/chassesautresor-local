@@ -14,8 +14,20 @@ if (!function_exists('utilisateur_est_organisateur_associe_a_chasse')) {
 }
 
 if (!function_exists('get_field')) {
-    function get_field($field, $post_id) {
-        return null;
+    function get_field($field, $post_id = null, $format_value = true) {
+        return $GLOBALS['get_field_values'][$field] ?? null;
+    }
+}
+
+if (!function_exists('admin_url')) {
+    function admin_url($path = '') {
+        return 'https://example.com/wp-admin/' . ltrim($path, '/');
+    }
+}
+
+if (!function_exists('get_post_type')) {
+    function get_post_type($post_id) {
+        return 'post';
     }
 }
 
@@ -83,23 +95,22 @@ if (!function_exists('date_i18n')) {
     }
 }
 
-if (!function_exists('utilisateur_est_engage_dans_chasse')) {
-    function utilisateur_est_engage_dans_chasse($user_id, $chasse_id) {
-        return $GLOBALS['is_engage'] ?? false;
-    }
-}
-
-
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/chasse-functions.php';
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 class GenererCtaChasseTest extends TestCase
 {
     public function test_admin_or_organizer_gets_disabled_button(): void
     {
-        $GLOBALS['force_admin_override'] = true;
-        $GLOBALS['force_engage_override'] = false;
+        $GLOBALS['force_admin_override']        = true;
+        $GLOBALS['force_engage_override']       = false;
         $GLOBALS['force_organisateur_override'] = false;
-        $cta = generer_cta_chasse(123, 5);
+        $GLOBALS['get_field_values']            = [];
+        $cta                                    = generer_cta_chasse(123, 5);
+
         $this->assertSame(
             [
                 'cta_html'    => '<button class="bouton-cta" disabled>Participer</button>',
@@ -112,13 +123,15 @@ class GenererCtaChasseTest extends TestCase
 
     public function test_guest_gets_login_cta_without_message(): void
     {
-        $GLOBALS['force_admin_override'] = false;
-        $GLOBALS['force_engage_override'] = false;
+        $GLOBALS['force_admin_override']        = false;
+        $GLOBALS['force_engage_override']       = false;
         $GLOBALS['force_organisateur_override'] = false;
-        $cta = generer_cta_chasse(123, 0);
+        $GLOBALS['get_field_values']            = [];
+        $cta                                    = generer_cta_chasse(123, 0);
+
         $this->assertSame(
             [
-                'cta_html'    => '<a href="https://example.com/wp-login.php?redirect_to=http%3A%2F%2Fexample.com%2F123" class="bouton-cta bouton-cta--color">S\'identifier</a>',
+                'cta_html'    => '<a href="https://example.com/wp-login.php?redirect_to=https%3A%2F%2Fexample.com%2Fchasse%2F123" class="bouton-cta bouton-cta--color">S\'identifier</a>',
                 'cta_message' => '',
                 'type'        => 'connexion',
             ],
@@ -128,10 +141,12 @@ class GenererCtaChasseTest extends TestCase
 
     public function test_engaged_without_enigme_shows_prompt(): void
     {
-        $GLOBALS['force_admin_override'] = false;
-        $GLOBALS['force_engage_override'] = true;
+        $GLOBALS['force_admin_override']        = false;
+        $GLOBALS['force_engage_override']       = true;
         $GLOBALS['force_organisateur_override'] = false;
-        $cta = generer_cta_chasse(123, 1);
+        $GLOBALS['get_field_values']            = [];
+        $cta                                    = generer_cta_chasse(123, 1);
+
         $this->assertSame(
             [
                 'cta_html'    => '<a href="#chasse-enigmes-wrapper" class="bouton-secondaire">Voir mes énigmes</a>',
@@ -142,5 +157,27 @@ class GenererCtaChasseTest extends TestCase
         );
     }
 
+    public function test_organizer_in_progress_shows_statistics_link(): void
+    {
+        $GLOBALS['force_admin_override']        = false;
+        $GLOBALS['force_engage_override']       = false;
+        $GLOBALS['force_organisateur_override'] = true;
+        $GLOBALS['get_field_values']            = [
+            'chasse_cache_statut'            => 'en_cours',
+            'chasse_cache_statut_validation' => 'valide',
+        ];
+
+        $cta          = generer_cta_chasse(123, 5);
+        $expected_url = 'https://example.com/wp-admin/post.php?post=123&action=edit&tab=statistiques';
+
+        $this->assertSame(
+            [
+                'cta_html'    => '<a href="' . $expected_url . '" class="bouton-secondaire">Statistiques</a>',
+                'cta_message' => '',
+                'type'        => 'statistiques',
+            ],
+            $cta
+        );
+    }
 }
 
