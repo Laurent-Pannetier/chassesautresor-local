@@ -1880,6 +1880,7 @@ function traiter_validation_chasse_admin() {
         $cache['chasse_cache_statut_validation'] = 'valide';
         update_field('champs_caches', $cache, $chasse_id);
         update_field('chasse_cache_statut_validation', 'valide', $chasse_id);
+        function_exists('do_action') && do_action('litespeed_purge_post', $chasse_id);
         mettre_a_jour_statuts_chasse($chasse_id);
 
         foreach ($enigmes as $eid) {
@@ -1918,6 +1919,7 @@ function traiter_validation_chasse_admin() {
         $cache['chasse_cache_statut_validation'] = 'correction';
         update_field('champs_caches', $cache, $chasse_id);
         update_field('chasse_cache_statut_validation', 'correction', $chasse_id);
+        function_exists('do_action') && do_action('litespeed_purge_post', $chasse_id);
 
         wp_update_post([
             'ID'          => $chasse_id,
@@ -1988,6 +1990,7 @@ function traiter_validation_chasse_admin() {
         $cache['chasse_cache_statut_validation'] = 'banni';
         update_field('champs_caches', $cache, $chasse_id);
         update_field('chasse_cache_statut_validation', 'banni', $chasse_id);
+        function_exists('do_action') && do_action('litespeed_purge_post', $chasse_id);
 
         foreach ($enigmes as $eid) {
             wp_update_post(['ID' => $eid, 'post_status' => 'draft']);

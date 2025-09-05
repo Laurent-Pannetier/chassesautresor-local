@@ -199,6 +199,7 @@ function creer_chasse_et_rediriger_si_appel()
 
   update_field('chasse_cache_statut', 'revision', $post_id);
   update_field('chasse_cache_statut_validation', 'creation', $post_id);
+  function_exists('do_action') && do_action('litespeed_purge_post', $post_id);
   update_field('chasse_cache_organisateur', [$organisateur_id], $post_id);
 
   // 🚀 Redirection vers la prévisualisation frontale
@@ -527,6 +528,7 @@ function modifier_champ_chasse()
   if ($champ === 'champs_caches.chasse_cache_statut' && $valeur === 'termine') {
     $ok = update_field('chasse_cache_statut', 'termine', $post_id);
     if ($ok !== false) {
+      function_exists('do_action') && do_action('litespeed_purge_post', $post_id);
       // ✅ Marque la chasse comme complète sans déclencher de recalcul automatique
       update_field('chasse_cache_complet', 1, $post_id);
       $champ_valide = true;
@@ -590,7 +592,10 @@ function modifier_champ_chasse()
   // 🔹 Validation manuelle (par admin)
   if ($champ === 'champs_caches.chasse_cache_statut_validation' || $champ === 'chasse_cache_statut_validation') {
     $ok = update_field('chasse_cache_statut_validation', sanitize_text_field($valeur), $post_id);
-    if ($ok !== false) $champ_valide = true;
+    if ($ok !== false) {
+      function_exists('do_action') && do_action('litespeed_purge_post', $post_id);
+      $champ_valide = true;
+    }
   }
 
   // 🔹 Cas générique (fallback)
