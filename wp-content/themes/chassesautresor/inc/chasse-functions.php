@@ -707,11 +707,19 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
         ];
     }
 
-    if ($is_orga && $statut === 'en_cours' && $validation === 'valide') {
+    if (
+        $is_orga
+        && in_array($statut, ['en_cours', 'payante'], true)
+        && in_array($validation, ['valide', 'active'], true)
+    ) {
+        $stats_url = function_exists('add_query_arg')
+            ? add_query_arg(['edition' => 'open', 'tab' => 'stats'], $permalink)
+            : $permalink . '?edition=open&tab=stats';
+
         return [
             'cta_html'    => sprintf(
                 '<a href="%s" class="bouton-secondaire">%s</a>',
-                esc_url(admin_url('post.php?post=' . $chasse_id . '&action=edit&tab=statistiques')),
+                esc_url($stats_url),
                 esc_html__('Statistiques', 'chassesautresor-com')
             ),
             'cta_message' => '',
