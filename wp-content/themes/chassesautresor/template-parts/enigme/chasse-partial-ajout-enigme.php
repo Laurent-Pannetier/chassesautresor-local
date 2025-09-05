@@ -21,7 +21,15 @@ $use_button      = $args['use_button'] ?? false;
 
 if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') return;
 
-$ajout_url = esc_url(add_query_arg('chasse_id', $chasse_id, home_url('/creer-enigme/')));
+$ajout_url = esc_url(
+    add_query_arg(
+        [
+            'chasse_id' => $chasse_id,
+            'ts'        => time(),
+        ],
+        home_url('/creer-enigme/')
+    )
+);
 
 if ($use_button) : ?>
 <div class="enigme-navigation__ajout">
