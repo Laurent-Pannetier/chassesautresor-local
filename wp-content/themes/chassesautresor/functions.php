@@ -123,6 +123,25 @@ function cta_disable_cache_for_sensitive_pages() {
 add_action( 'template_redirect', 'cta_disable_cache_for_sensitive_pages' );
 
 /**
+ * Disables LiteSpeed image optimization and lazy loading for dynamic puzzle images.
+ *
+ * @param bool $enabled Whether the optimization is enabled.
+ *
+ * @return bool
+ */
+function cta_disable_litespeed_imgs_for_enigme( $enabled ) {
+    $uri = $_SERVER['REQUEST_URI'] ?? '';
+
+    if ( false !== strpos( $uri, '/voir-image-enigme' ) ) {
+        return false;
+    }
+
+    return $enabled;
+}
+add_filter( 'litespeed_optm_img_optm', 'cta_disable_litespeed_imgs_for_enigme' );
+add_filter( 'litespeed_optm_img_lazy', 'cta_disable_litespeed_imgs_for_enigme' );
+
+/**
  * Renders the language switcher in the header.
  *
  * @param string $row    Header builder row.
