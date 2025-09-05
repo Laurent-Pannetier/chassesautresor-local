@@ -686,6 +686,17 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
     $is_admin = $admin_override !== null ? (bool) $admin_override : current_user_can('administrator');
     $orga_override = $GLOBALS['force_organisateur_override'] ?? null;
     $is_orga = $orga_override !== null ? (bool) $orga_override : utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
+    if ($is_orga && in_array($validation, ['creation', 'correction'], true)) {
+        return [
+            'cta_html'    => sprintf(
+                '<a href="%s" class="bouton-secondaire">%s</a>',
+                esc_url(admin_url('post.php?post=' . $chasse_id . '&action=edit')),
+                esc_html__('Continuer l’édition', 'chassesautresor-com')
+            ),
+            'cta_message' => '',
+            'type'        => 'edition',
+        ];
+    }
     if ($is_admin || $is_orga) {
         return [
             'cta_html'    => sprintf(
