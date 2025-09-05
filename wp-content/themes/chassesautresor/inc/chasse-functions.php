@@ -671,7 +671,20 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
         ];
     }
 
+    // 🔐 Admin or organiser info
+    $admin_override = $GLOBALS['force_admin_override'] ?? null;
+    $is_admin = $admin_override !== null ? (bool) $admin_override : current_user_can('administrator');
+    $orga_override = $GLOBALS['force_organisateur_override'] ?? null;
+    $is_orga = $orga_override !== null ? (bool) $orga_override : utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
+
     if ($validation === 'en_attente') {
+        if ($is_orga) {
+            return [
+                'cta_html'    => render_form_annulation_validation_chasse($chasse_id),
+                'cta_message' => '',
+                'type'        => 'annuler_validation',
+            ];
+        }
         return [
             'cta_html'    => '<span class="bouton-cta bouton-cta--pending" aria-disabled="true">'
                 . esc_html__( 'Demande de validation en cours', 'chassesautresor-com' )
@@ -682,10 +695,6 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
     }
 
     // 🔐 Admin or organiser: disabled participation button
-    $admin_override = $GLOBALS['force_admin_override'] ?? null;
-    $is_admin = $admin_override !== null ? (bool) $admin_override : current_user_can('administrator');
-    $orga_override = $GLOBALS['force_organisateur_override'] ?? null;
-    $is_orga = $orga_override !== null ? (bool) $orga_override : utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
     if ($is_orga && in_array($validation, ['creation', 'correction'], true)) {
         return [
             'cta_html'    => sprintf(
@@ -950,6 +959,29 @@ function render_form_validation_chasse(int $chasse_id): string
         <input type="hidden" name="demande_validation_chasse" value="1">
         <button type="submit" class="bouton-cta bouton-cta--color bouton-validation-chasse">
             <?= esc_html__( 'Demander la validation', 'chassesautresor-com' ); ?>
+        </button>
+    </form>
+<?php
+    return ob_get_clean();
+}
+
+/**
+ * Génère le formulaire d'annulation d'une demande de validation.
+ *
+ * @param int $chasse_id ID de la chasse.
+ * @return string HTML du formulaire.
+ */
+function render_form_annulation_validation_chasse(int $chasse_id): string
+{
+    $nonce = wp_create_nonce('annulation_validation_chasse_' . $chasse_id);
+    ob_start();
+?>
+    <form method="post" action="<?= esc_url(site_url('/annulation-validation-chasse')); ?>" class="form-annulation-validation-chasse">
+        <input type="hidden" name="chasse_id" value="<?= esc_attr($chasse_id); ?>">
+        <input type="hidden" name="annulation_validation_chasse_nonce" value="<?= esc_attr($nonce); ?>">
+        <input type="hidden" name="annuler_validation_chasse" value="1">
+        <button type="submit" class="bouton-cta bouton-cta--color bouton-annulation-validation-chasse">
+            <?= esc_html__( 'Annuler la demande', 'chassesautresor-com' ); ?>
         </button>
     </form>
 <?php
