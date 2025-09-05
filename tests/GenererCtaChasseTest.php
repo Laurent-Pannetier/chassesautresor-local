@@ -73,6 +73,12 @@ if (!function_exists('site_url')) {
     }
 }
 
+if (!function_exists('admin_url')) {
+    function admin_url($path = '') {
+        return $path;
+    }
+}
+
 if (!function_exists('wp_login_url')) {
     function wp_login_url($redirect = '', $force_reauth = false) {
         $base = 'https://example.com/wp-login.php';
