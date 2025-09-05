@@ -694,12 +694,16 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
         ];
     }
 
-    // 🔐 Admin or organiser: disabled participation button
+    // 🔐 Admin or organiser: front-end edition
     if ($is_orga && in_array($validation, ['creation', 'correction'], true)) {
+        $edition_url = function_exists('add_query_arg')
+            ? add_query_arg(['edition' => 'open', 'tab' => 'param'], $permalink)
+            : $permalink . '?edition=open&tab=param';
+
         return [
             'cta_html'    => sprintf(
                 '<a href="%s" class="bouton-secondaire">%s</a>',
-                esc_url(admin_url('post.php?post=' . $chasse_id . '&action=edit')),
+                esc_url($edition_url),
                 esc_html__('Continuer l’édition', 'chassesautresor-com')
             ),
             'cta_message' => '',
