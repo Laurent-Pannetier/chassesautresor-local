@@ -698,7 +698,11 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
         ];
     }
 
-    if ($is_orga && $statut === 'en_cours' && in_array($validation, ['valide', 'active'], true)) {
+    if (
+        $is_orga
+        && in_array($statut, ['en_cours', 'payante'], true)
+        && in_array($validation, ['valide', 'active'], true)
+    ) {
         return [
             'cta_html'    => sprintf(
                 '<a href="%s" class="bouton-secondaire">%s</a>',

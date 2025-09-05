@@ -202,5 +202,28 @@ class GenererCtaChasseTest extends TestCase
             $cta
         );
     }
+
+    public function test_organizer_with_paid_status_shows_statistics_link(): void
+    {
+        $GLOBALS['force_admin_override']        = false;
+        $GLOBALS['force_engage_override']       = false;
+        $GLOBALS['force_organisateur_override'] = true;
+        $GLOBALS['get_field_values']            = [
+            'chasse_cache_statut'            => 'payante',
+            'chasse_cache_statut_validation' => 'valide',
+        ];
+
+        $cta          = generer_cta_chasse(789, 11);
+        $expected_url = 'https://example.com/wp-admin/post.php?post=789&action=edit&tab=statistiques';
+
+        $this->assertSame(
+            [
+                'cta_html'    => '<a href="' . $expected_url . '" class="bouton-secondaire">Statistiques</a>',
+                'cta_message' => '',
+                'type'        => 'statistiques',
+            ],
+            $cta
+        );
+    }
 }
 
