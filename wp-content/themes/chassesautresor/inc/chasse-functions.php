@@ -379,6 +379,7 @@ function gerer_chasse_terminee($chasse_id)
         // ✅ Marquer la chasse comme complète et terminée
         update_field('chasse_cache_complet', 1, $chasse_id);
         update_field('chasse_cache_statut', 'termine', $chasse_id);
+        function_exists('do_action') && do_action('litespeed_purge_post', $chasse_id);
     }
 
     foreach ($toutes_enigmes as $enigme_id) {

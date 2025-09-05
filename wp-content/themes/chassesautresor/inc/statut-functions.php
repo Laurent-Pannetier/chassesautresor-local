@@ -811,6 +811,7 @@ function verifier_ou_mettre_a_jour_cache_complet(int $post_id): void
             if ($cache !== $reel) {
                 update_field('chasse_cache_complet', $reel ? 1 : 0, $post_id);
                 chasse_clear_infos_affichage_cache($post_id);
+                function_exists('do_action') && do_action('litespeed_purge_post', $post_id);
             }
             break;
 
@@ -823,6 +824,7 @@ function verifier_ou_mettre_a_jour_cache_complet(int $post_id): void
                     $chasse_id = recuperer_id_chasse_associee($post_id);
                     if ($chasse_id) {
                         chasse_clear_infos_affichage_cache((int) $chasse_id);
+                        function_exists('do_action') && do_action('litespeed_purge_post', (int) $chasse_id);
                     }
                 }
             }
@@ -876,6 +878,7 @@ function verifier_ou_recalculer_statut_chasse($chasse_id): void
     if ($validation !== 'valide' && $statut !== 'revision') {
         mettre_a_jour_statuts_chasse($chasse_id);
         chasse_clear_infos_affichage_cache($chasse_id);
+        function_exists('do_action') && do_action('litespeed_purge_post', $chasse_id);
         return;
     }
 
@@ -884,6 +887,7 @@ function verifier_ou_recalculer_statut_chasse($chasse_id): void
     if (!in_array($statut, $statuts_valides, true)) {
         mettre_a_jour_statuts_chasse($chasse_id);
         chasse_clear_infos_affichage_cache($chasse_id);
+        function_exists('do_action') && do_action('litespeed_purge_post', $chasse_id);
         return;
     }
 
@@ -898,6 +902,7 @@ function verifier_ou_recalculer_statut_chasse($chasse_id): void
     if ($statut !== 'termine' && $date_fin && $date_fin < $now) {
         mettre_a_jour_statuts_chasse($chasse_id);
         chasse_clear_infos_affichage_cache($chasse_id);
+        function_exists('do_action') && do_action('litespeed_purge_post', $chasse_id);
     }
 }
 
@@ -979,6 +984,7 @@ function mettre_a_jour_statuts_chasse($chasse_id)
 
     mettre_a_jour_statuts_enigmes_de_la_chasse($chasse_id, $statut);
     chasse_clear_infos_affichage_cache($chasse_id);
+    function_exists('do_action') && do_action('litespeed_purge_post', $chasse_id);
 }
 
 
@@ -1111,6 +1117,7 @@ function forcer_statut_apres_acf($post_id, $nouvelle_validation = null)
 
     if ($nouvelle_validation !== null) {
         update_field('chasse_cache_statut_validation', sanitize_text_field($nouvelle_validation), $post_id);
+        function_exists('do_action') && do_action('litespeed_purge_post', $post_id);
         $validation = sanitize_text_field($nouvelle_validation);
     }
 

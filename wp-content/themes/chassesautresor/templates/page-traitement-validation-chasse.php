@@ -38,6 +38,7 @@ forcer_statut_apres_acf($chasse_id, 'en_attente');
 
 // Met à jour le statut métier pour refléter l'attente de validation
 update_field('chasse_cache_statut', 'en_attente', $chasse_id);
+function_exists('do_action') && do_action('litespeed_purge_post', $chasse_id);
 
 myaccount_clear_correction_message($chasse_id);
 
