@@ -107,6 +107,22 @@ function cta_redirect_account_page_for_guests() {
 add_action( 'init', 'cta_redirect_account_page_for_guests' );
 
 /**
+ * Disables LiteSpeed cache for logged-in users and sensitive pages.
+ *
+ * @return void
+ */
+function cta_disable_cache_for_sensitive_pages() {
+    if ( is_user_logged_in() || is_singular( [ 'chasse', 'enigme', 'organisateur' ] ) ) {
+        if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+            define( 'DONOTCACHEPAGE', true );
+        }
+
+        do_action( 'litespeed_control_set_nocache' );
+    }
+}
+add_action( 'template_redirect', 'cta_disable_cache_for_sensitive_pages' );
+
+/**
  * Renders the language switcher in the header.
  *
  * @param string $row    Header builder row.
