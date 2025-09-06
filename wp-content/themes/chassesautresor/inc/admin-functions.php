@@ -865,8 +865,9 @@ function ajouter_bouton_reinitialisation_stats() {
         <h2>Réinitialisation des Statistiques</h2>
         <p>⚠️ <strong>Attention :</strong> Cette action est irréversible. Toutes les statistiques des joueurs, énigmes et chasses seront supprimées.</p>
 
-        <form method="post">
-            <?php wp_nonce_field('reset_stats_action', 'reset_stats_nonce'); ?>
+        <form method="post" action="<?php echo admin_url('admin-post.php'); ?>">
+            <?php wp_nonce_field('toggle_reinit_stats_action', 'toggle_reinit_stats_nonce'); ?>
+            <input type="hidden" name="action" value="toggle_reinit_stats_action">
 
             <label>
                 <input type="checkbox" name="activer_reinit" value="1" <?php checked($reinit_active, true); ?>>
