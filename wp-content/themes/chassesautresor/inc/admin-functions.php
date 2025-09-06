@@ -1096,12 +1096,11 @@ function reinitialiser_chasses_terminees(): void
     $chasses = get_posts([
         'post_type'      => 'chasse',
         'posts_per_page' => -1,
-        'post_status'    => ['publish', 'pending'],
+        'post_status'    => 'any',
         'meta_query'     => [
             [
-                'key'     => 'statut_chasse',
-                'value'   => ['termine', 'terminé', 'terminée', 'terminee'],
-                'compare' => 'IN',
+                'key'   => 'chasse_cache_statut',
+                'value' => 'termine',
             ],
         ],
     ]);
@@ -1117,12 +1116,8 @@ function reinitialiser_chasses_terminees(): void
     foreach ($chasses as $chasse) {
         $chasse_id = $chasse->ID;
 
-        $mode = get_field('illimitee', $chasse_id);
-        if ($mode !== 'stop') {
-            continue;
-        }
-
         update_field('statut_chasse', 'en cours', $chasse_id);
+        update_field('chasse_cache_statut', 'en_cours', $chasse_id);
         update_field('gagnant', '', $chasse_id);
         update_field('date_de_decouverte', null, $chasse_id);
         update_field('chasse_cache_gagnants', '', $chasse_id);
@@ -1148,13 +1143,11 @@ function reinitialiser_chasses_terminees(): void
             }
         }
 
-        delete_post_meta($chasse_id, 'statut_chasse');
         delete_post_meta($chasse_id, 'gagnant');
         delete_post_meta($chasse_id, 'date_de_decouverte');
         delete_post_meta($chasse_id, 'chasse_cache_gagnants');
         delete_post_meta($chasse_id, 'chasse_cache_date_decouverte');
         delete_post_meta($chasse_id, 'chasse_cache_complet');
-        delete_post_meta($chasse_id, 'chasse_cache_statut');
 
         wp_cache_delete($chasse_id, 'post_meta');
         clean_post_cache($chasse_id);
