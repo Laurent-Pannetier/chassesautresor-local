@@ -114,9 +114,23 @@ window.mettreAJourTitreHeader = function (cpt, valeur) {
  * @param {string} valeur - La nouvelle légende à afficher
  */
 window.mettreAJourLegendeEnigme = function (valeur) {
-  const legende = document.querySelector('.enigme-soustitre');
-  if (legende) {
-    legende.textContent = valeur;
+  const texte = valeur?.trim() || '';
+  let legende =
+    document.querySelector('.enigme-soustitre') ||
+    document.querySelector('.enigme-legende');
+
+  if (texte) {
+    if (!legende) {
+      const header = document.querySelector('.enigme-header');
+      if (!header) return;
+      legende = document.createElement('p');
+      legende.className = 'enigme-soustitre';
+      header.appendChild(legende);
+    }
+    legende.textContent = texte;
+    legende.classList.add('modifiee');
+  } else if (legende) {
+    legende.remove();
   }
 };
 
