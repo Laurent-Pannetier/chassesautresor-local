@@ -303,22 +303,52 @@ function trouver_chemin_image(int $image_id, string $taille = 'full'): ?array
     $upload_dir = wp_get_upload_dir();
 
     if ($taille === 'full') {
+        $path = null;
+
         $src = wp_get_attachment_image_src($image_id, [1920, 1920]);
         $url = $src[0] ?? null;
         if ($url) {
-            $path = str_replace($upload_dir['baseurl'], $upload_dir['basedir'], $url);
-            if (!file_exists($path)) {
-                $url = null;
+            $candidate = str_replace($upload_dir['baseurl'], $upload_dir['basedir'], $url);
+            if (file_exists($candidate)) {
+                $path = $candidate;
             }
         }
 
-        if (!$url) {
+        if (!$path) {
             $src = wp_get_attachment_image_src($image_id, 'full');
             $url = $src[0] ?? wp_get_attachment_url($image_id);
-            if (!$url) {
-                return null;
+            if ($url) {
+                $candidate = str_replace($upload_dir['baseurl'], $upload_dir['basedir'], $url);
+                if (file_exists($candidate)) {
+                    $path = $candidate;
+                }
             }
-            $path = str_replace($upload_dir['baseurl'], $upload_dir['basedir'], $url);
+        }
+
+        if (!$path) {
+            $meta = wp_get_attachment_metadata($image_id);
+            if (is_array($meta) && isset($meta['sizes']) && is_array($meta['sizes'])) {
+                $base = trailingslashit($upload_dir['basedir']) . trailingslashit(dirname($meta['file']));
+                $largest = ['area' => 0, 'path' => null];
+                foreach ($meta['sizes'] as $size) {
+                    $candidate = $base . $size['file'];
+                    if (!file_exists($candidate)) {
+                        continue;
+                    }
+                    $area = (int) ($size['width'] ?? 0) * (int) ($size['height'] ?? 0);
+                    if ($area > $largest['area']) {
+                        $largest = ['area' => $area, 'path' => $candidate];
+                    }
+                }
+
+                if ($largest['path']) {
+                    $path = $largest['path'];
+                }
+            }
+        }
+
+        if (!$path) {
+            return null;
         }
     } else {
         $src = wp_get_attachment_image_src($image_id, $taille);
