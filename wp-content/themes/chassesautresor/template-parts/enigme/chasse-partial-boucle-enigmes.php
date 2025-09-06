@@ -19,13 +19,17 @@ if (!chasse_est_visible_pour_utilisateur($chasse_id, $utilisateur_id)) return;
 
 $est_orga_associe = $args['est_orga_associe'] ?? utilisateur_est_organisateur_associe_a_chasse($utilisateur_id, $chasse_id);
 $show_help_icon  = $args['show_help_icon'] ?? false;
+$statut_metier   = $infos_chasse['statut'] ?? 'revision';
 
 $autorise_boucle = (
-  user_can($utilisateur_id, 'manage_options') ||
-  $est_orga_associe ||
-  utilisateur_est_engage_dans_chasse($utilisateur_id, $chasse_id)
+    user_can($utilisateur_id, 'manage_options') ||
+    $est_orga_associe ||
+    utilisateur_est_engage_dans_chasse($utilisateur_id, $chasse_id) ||
+    $statut_metier === 'termine'
 );
-if (!$autorise_boucle) return;
+if (!$autorise_boucle) {
+    return;
+}
 
 $est_joueur_engage = utilisateur_est_engage_dans_chasse($utilisateur_id, $chasse_id);
 
