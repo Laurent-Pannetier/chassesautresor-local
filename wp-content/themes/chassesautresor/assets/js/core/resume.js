@@ -240,7 +240,7 @@ window.onChampSimpleMisAJour = function (champ, postId, valeur, cpt, extra) {
         window.mettreAJourBadgeCoutChasse(postId, parseInt(valeur, 10));
       }
     }
-    const champsResume = ['post_title'];
+    const champsResume = ['post_title', 'chasse_principale_image'];
     if (champsResume.includes(champ) && typeof window.mettreAJourResumeInfos === 'function') {
       window.mettreAJourResumeInfos();
     }
