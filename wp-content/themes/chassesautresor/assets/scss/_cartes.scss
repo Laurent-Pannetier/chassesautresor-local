@@ -25,11 +25,54 @@
   gap: var(--space-xl);
 }
 
+// Grille responsive pour cartes
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 400px));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: var(--space-4xl);
   justify-content: center;
+}
+
+/* ========== 🃏 Carte compacte ========== */
+.carte-compact {
+  padding: 0;
+  overflow: hidden;
+
+  .carte-compact__lien {
+    display: flex;
+    flex-direction: column;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .carte-compact__image-wrapper {
+    position: relative;
+  }
+
+  .carte-compact__image {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    display: block;
+  }
+
+  .badge-statut {
+    position: absolute;
+    top: var(--space-xs);
+    left: var(--space-xs);
+  }
+
+  .carte-compact__contenu {
+    padding: var(--space-md);
+  }
+
+  .carte-compact__titre {
+    margin: 0 0 var(--space-xs);
+  }
+
+  .carte-compact__meta {
+    font-size: 0.875rem;
+  }
 }
 
 /* ========== 🎴 Cartes d\'énigme et de chasse ========== */

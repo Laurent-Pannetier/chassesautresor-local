@@ -3,7 +3,8 @@ defined('ABSPATH') || exit;
 
 $show_header  = $args['show_header'] ?? true;
 $header_text  = $args['header_text'] ?? __('Chasses', 'chassesautresor-com');
-$grid_class   = $args['grid_class'] ?? 'grille-liste';
+$mode         = $args['mode'] ?? 'liste';
+$grid_class   = $args['grid_class'] ?? ($mode === 'carte' ? 'cards-grid' : 'grille-liste');
 $before_items = $args['before_items'] ?? '';
 $after_items  = $args['after_items'] ?? '';
 $query        = $args['query'] ?? null;
@@ -36,10 +37,18 @@ $chasse_ids = array_values(array_filter($chasse_ids, function ($chasse_id) use (
 <?php echo $before_items; ?>
   <?php foreach ($chasse_ids as $chasse_id) : ?>
     <?php
-    $chasse_id      = (int) $chasse_id;
-    $est_orga       = est_organisateur();
-    $wp_status      = get_post_status($chasse_id);
-    $voir_bordure   = $est_orga &&
+    $chasse_id = (int) $chasse_id;
+
+    if ('carte' === $mode) {
+        get_template_part('template-parts/chasse/chasse-card-compact', null, [
+            'chasse_id' => $chasse_id,
+        ]);
+        continue;
+    }
+
+    $est_orga     = est_organisateur();
+    $wp_status    = get_post_status($chasse_id);
+    $voir_bordure = $est_orga &&
       utilisateur_est_organisateur_associe_a_chasse(get_current_user_id(), $chasse_id) &&
       $wp_status !== 'publish';
     $classe_completion = '';
