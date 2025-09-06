@@ -188,7 +188,7 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
         <?= esc_html__('Ajouter des points', 'chassesautresor-com'); ?>
       </a>
     <?php else : ?>
-      <button type="submit" class="bouton-cta" <?= $disabled; ?>><?= $label_btn; ?></button>
+      <button type="submit" class="bouton-cta bouton-cta--color" <?= $disabled; ?>><?= $label_btn; ?></button>
     <?php endif; ?>
   </div>
   <?php if ($points_manquants <= 0 && $cout > 0) : ?>
