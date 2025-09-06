@@ -300,13 +300,34 @@ function afficher_picture_vignette_enigme(int $enigme_id, string $alt = '', arra
  */
 function trouver_chemin_image(int $image_id, string $taille = 'full'): ?array
 {
-    $wp_size = $taille === 'full' ? [1920, 1920] : $taille;
-    $src     = wp_get_attachment_image_src($image_id, $wp_size);
-    $url = $src[0] ?? null;
-    if (!$url) return null;
-
     $upload_dir = wp_get_upload_dir();
-    $path = str_replace($upload_dir['baseurl'], $upload_dir['basedir'], $url);
+
+    if ($taille === 'full') {
+        $src = wp_get_attachment_image_src($image_id, [1920, 1920]);
+        $url = $src[0] ?? null;
+        if ($url) {
+            $path = str_replace($upload_dir['baseurl'], $upload_dir['basedir'], $url);
+            if (!file_exists($path)) {
+                $url = null;
+            }
+        }
+
+        if (!$url) {
+            $src = wp_get_attachment_image_src($image_id, 'full');
+            $url = $src[0] ?? wp_get_attachment_url($image_id);
+            if (!$url) {
+                return null;
+            }
+            $path = str_replace($upload_dir['baseurl'], $upload_dir['basedir'], $url);
+        }
+    } else {
+        $src = wp_get_attachment_image_src($image_id, $taille);
+        $url = $src[0] ?? null;
+        if (!$url) {
+            return null;
+        }
+        $path = str_replace($upload_dir['baseurl'], $upload_dir['basedir'], $url);
+    }
 
     // 🔁 Si une version .webp existe, on la préfère
     $webp_path = preg_replace('/\.(jpe?g|png|gif)$/i', '.webp', $path);
