@@ -566,8 +566,28 @@
     font-size: 1rem;
   }
 }
+.validation-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: var(--color-success);
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+}
+
+@media (min-width: 768px) {
+  .validation-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 1rem;
+  }
+}
 @media (min-width: 1024px) {
-  .settings-icon {
+  .settings-icon,
+  .validation-icon {
     width: 32px;
     height: 32px;
     font-size: 1.125rem;
