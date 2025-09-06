@@ -4,10 +4,37 @@ defined('ABSPATH') || exit;
 $post_id = $args['post_id'] ?? null;
 $user_id = $args['user_id'] ?? get_current_user_id(); // ✅ sécurisation
 
-cat_debug("👤 STATUT ACTUEL : " . enigme_get_statut_utilisateur($post_id, $user_id));
+if (!$post_id || !$user_id) {
+    return;
+}
 
+if (!function_exists('est_enigme_resolue_par_utilisateur')) {
+    require_once get_theme_file_path('inc/statut-functions.php');
+}
 
-if (!$post_id || !$user_id) return;
+if (est_enigme_resolue_par_utilisateur($user_id, $post_id)) {
+    global $wpdb;
+    $table = $wpdb->prefix . 'enigme_statuts_utilisateur';
+    $resolution_date = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT date_mise_a_jour FROM $table WHERE user_id = %d AND enigme_id = %d",
+            $user_id,
+            $post_id
+        )
+    );
+    if ($resolution_date) {
+        $formatted_date = wp_date('d/m/y \\à H:i', strtotime($resolution_date));
+        $message        = sprintf(
+            __('Vous avez résolu cette énigme le %s.', 'chassesautresor-com'),
+            $formatted_date
+        );
+    } else {
+        $message = __('Énigme résolue', 'chassesautresor-com');
+    }
+    echo '<p class="message-joueur-statut">✅ ' . esc_html($message) . '</p>';
+    return;
+}
+
 
 // 🛡️ Organisateur / admin : on n'affiche rien
 $chasse_id = recuperer_id_chasse_associee($post_id);
@@ -33,7 +60,7 @@ if ($mode_validation === 'manuelle') {
         $statut = enigme_get_statut_utilisateur($post_id, $user_id);
         if ($statut === 'soumis') {
             global $wpdb;
-            $table = $wpdb->prefix . 'enigme_tentatives';
+            $table     = $wpdb->prefix . 'enigme_tentatives';
             $tentative = $wpdb->get_row(
                 $wpdb->prepare(
                     "SELECT id, date_tentative FROM $table WHERE user_id = %d AND enigme_id = %d AND traitee = 0 ORDER BY date_tentative DESC LIMIT 1",
@@ -42,11 +69,11 @@ if ($mode_validation === 'manuelle') {
                 )
             );
             if ($tentative) {
-                $timestamp = strtotime($tentative->date_tentative);
-                $date = wp_date('d/m/Y', $timestamp);
-                $time = wp_date('H:i', $timestamp);
+                $timestamp   = strtotime($tentative->date_tentative);
+                $date        = wp_date('d/m/Y', $timestamp);
+                $time        = wp_date('H:i', $timestamp);
                 $account_url = home_url('/mon-compte/?section=chasses');
-                $message = sprintf(
+                $message     = sprintf(
                     __(
                         '⏳ Votre tentative %1$s a été soumise le %2$s à %3$s.<br>' .
                         'Vous serez immédiatement averti de son traitement par l\'organisateur par email ' .
@@ -64,7 +91,7 @@ if ($mode_validation === 'manuelle') {
             }
         } else {
             global $wpdb;
-            $table = $wpdb->prefix . 'enigme_statuts_utilisateur';
+            $table           = $wpdb->prefix . 'enigme_statuts_utilisateur';
             $resolution_date = $wpdb->get_var(
                 $wpdb->prepare(
                     "SELECT date_mise_a_jour FROM $table WHERE user_id = %d AND enigme_id = %d",
@@ -74,7 +101,7 @@ if ($mode_validation === 'manuelle') {
             );
             if ($resolution_date) {
                 $formatted_date = wp_date('d/m/y \\à H:i', strtotime($resolution_date));
-                $message = sprintf(
+                $message        = sprintf(
                     __('Vous avez résolu cette énigme le %s.', 'chassesautresor-com'),
                     $formatted_date
                 );
@@ -86,30 +113,6 @@ if ($mode_validation === 'manuelle') {
         return;
     }
     echo do_shortcode('[formulaire_reponse_manuelle id="' . esc_attr($post_id) . '"]');
-    return;
-}
-
-$statut_actuel = enigme_get_statut_utilisateur($post_id, $user_id);
-if ($statut_actuel === 'resolue') {
-    global $wpdb;
-    $table = $wpdb->prefix . 'enigme_statuts_utilisateur';
-    $resolution_date = $wpdb->get_var(
-        $wpdb->prepare(
-            "SELECT date_mise_a_jour FROM $table WHERE user_id = %d AND enigme_id = %d",
-            $user_id,
-            $post_id
-        )
-    );
-    if ($resolution_date) {
-        $formatted_date = wp_date('d/m/y \\à H:i', strtotime($resolution_date));
-        $message = sprintf(
-            __('Vous avez résolu cette énigme le %s.', 'chassesautresor-com'),
-            $formatted_date
-        );
-    } else {
-        $message = __('Énigme résolue', 'chassesautresor-com');
-    }
-    echo '<p class="message-joueur-statut">✅ ' . esc_html($message) . '</p>';
     return;
 }
 
