@@ -1,14 +1,15 @@
 <?php
 defined('ABSPATH') || exit;
 
-$show_header  = $args['show_header'] ?? true;
-$header_text  = $args['header_text'] ?? __('Chasses', 'chassesautresor-com');
-$mode         = $args['mode'] ?? 'liste';
-$grid_class   = $args['grid_class'] ?? ($mode === 'carte' ? 'cards-grid' : 'grille-liste');
-$before_items = $args['before_items'] ?? '';
-$after_items  = $args['after_items'] ?? '';
-$query        = $args['query'] ?? null;
-$chasse_ids   = $args['chasse_ids'] ?? null;
+$show_header    = $args['show_header'] ?? true;
+$header_text    = $args['header_text'] ?? __('Chasses', 'chassesautresor-com');
+$mode           = $args['mode'] ?? 'liste';
+$grid_class     = $args['grid_class'] ?? ($mode === 'carte' ? 'cards-grid' : 'grille-liste');
+$before_items   = $args['before_items'] ?? '';
+$after_items    = $args['after_items'] ?? '';
+$query          = $args['query'] ?? null;
+$chasse_ids     = $args['chasse_ids'] ?? null;
+$highlight_label = $args['highlight_label'] ?? '';
 
 if ($query instanceof WP_Query) {
     $chasse_ids = array_map(
@@ -42,6 +43,14 @@ $chasse_ids = array_values(array_filter($chasse_ids, function ($chasse_id) use (
     if ('carte' === $mode) {
         get_template_part('template-parts/chasse/chasse-card-compact', null, [
             'chasse_id' => $chasse_id,
+        ]);
+        continue;
+    }
+
+    if ('a_la_une' === $mode) {
+        get_template_part('template-parts/chasse/chasse-featured', null, [
+            'chasse_id'       => $chasse_id,
+            'highlight_label' => $highlight_label,
         ]);
         continue;
     }

@@ -75,6 +75,45 @@
   }
 }
 
+/* ========== 🌟 Carte mise en avant ========== */
+.carte-featured {
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+
+  .carte-featured__label {
+    position: absolute;
+    top: var(--space-xs);
+    left: var(--space-xs);
+    background: var(--color-accent);
+    color: var(--color-text-primary);
+    padding: var(--space-xxs) var(--space-xs);
+    border-radius: 4px;
+    font-size: 0.875rem;
+  }
+
+  .carte-featured__image {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+  }
+
+  .carte-featured__content {
+    padding: var(--space-md);
+  }
+
+  .carte-featured__title {
+    margin: 0 0 var(--space-xs);
+  }
+
+  .carte-featured__excerpt {
+    margin: 0 0 var(--space-md);
+  }
+}
+
 /* ========== 🎴 Cartes d\'énigme et de chasse ========== */
 .carte-enigme {
   background: var(--color-text-primary);
