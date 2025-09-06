@@ -524,20 +524,48 @@ require_once __DIR__ . '/utils.php';
      *
      * @param int    $enigme_id Enigma identifier.
      * @param string $style     Display style.
-     * @param int    $user_id   Current user ID.
+    * @param int    $user_id   Current user ID.
      */
     function render_enigme_participation(int $enigme_id, string $style, int $user_id): void
     {
-        ob_start();
-        enigme_get_partial(
-            'bloc-reponse',
-            $style,
-            [
-                'post_id' => $enigme_id,
-                'user_id' => $user_id,
-            ]
-        );
-        $bloc_reponse = trim(ob_get_clean());
+        if (!function_exists('est_enigme_resolue_par_utilisateur')) {
+            require_once __DIR__ . '/../statut-functions.php';
+        }
+
+        $deja_resolue = est_enigme_resolue_par_utilisateur($user_id, $enigme_id);
+
+        if ($deja_resolue) {
+            global $wpdb;
+            $table           = $wpdb->prefix . 'enigme_statuts_utilisateur';
+            $resolution_date = $wpdb->get_var(
+                $wpdb->prepare(
+                    "SELECT date_mise_a_jour FROM $table WHERE user_id = %d AND enigme_id = %d",
+                    $user_id,
+                    $enigme_id
+                )
+            );
+            if ($resolution_date) {
+                $formatted_date = wp_date('d/m/y \\à H:i', strtotime($resolution_date));
+                $message        = sprintf(
+                    __('Vous avez résolu cette énigme le %s.', 'chassesautresor-com'),
+                    $formatted_date
+                );
+            } else {
+                $message = __('Énigme résolue', 'chassesautresor-com');
+            }
+            $bloc_reponse = '<p class="message-joueur-statut">✅ ' . esc_html($message) . '</p>';
+        } else {
+            ob_start();
+            enigme_get_partial(
+                'bloc-reponse',
+                $style,
+                [
+                    'post_id' => $enigme_id,
+                    'user_id' => $user_id,
+                ]
+            );
+            $bloc_reponse = trim(ob_get_clean());
+        }
 
         $content = '';
 
@@ -593,12 +621,6 @@ require_once __DIR__ . '/utils.php';
         if ($mode_validation === 'aucune') {
             $cout = 0;
         }
-
-        if (!function_exists('est_enigme_resolue_par_utilisateur')) {
-            require_once __DIR__ . '/../statut-functions.php';
-        }
-
-        $deja_resolue = est_enigme_resolue_par_utilisateur($user_id, $enigme_id);
 
         $solde_actuel = ($cout > 0 && function_exists('get_user_points'))
             ? get_user_points($user_id)
