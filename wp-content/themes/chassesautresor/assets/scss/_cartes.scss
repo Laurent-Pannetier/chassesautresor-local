@@ -31,6 +31,12 @@
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: var(--space-4xl);
   justify-content: center;
+
+  .carte-enigme {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+  }
 }
 
 /* ========== 🃏 Carte compacte ========== */
