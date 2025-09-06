@@ -14,12 +14,41 @@ body.login {
     background-color: var(--color-background);
     font-family: var(--font-main);
     color: var(--color-text-primary);
+    display: flex;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
 }
 
 body.login #login {
     width: 100%;
     max-width: 320px;
     padding: 1rem;
+}
+
+body.login h1.wp-login-logo {
+    display: none;
+}
+
+body.login .wp-login-logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+body.login .wp-login-logo a {
+    display: block;
+    margin: 0 auto;
+}
+
+body.login .wp-login-logo img {
+    max-width: 80px;
+    height: auto;
+}
+
+body.login .login-title {
+    text-align: center;
+    margin-bottom: 1rem;
 }
 
 body.login #loginform,

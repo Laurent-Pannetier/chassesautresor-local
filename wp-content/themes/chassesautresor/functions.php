@@ -354,6 +354,35 @@ function cta_enqueue_login_styles(): void
 }
 add_action( 'login_enqueue_scripts', 'cta_enqueue_login_styles' );
 
+/**
+ * Adds custom logo and title on the login page.
+ *
+ * @param string $message Existing login message.
+ * @return string
+ */
+function cta_login_branding( string $message ): string
+{
+    $action = isset( $_REQUEST['action'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ) : '';
+
+    if ( 'confirm_admin_email' === $action ) {
+        return $message;
+    }
+
+    $custom_logo_id = get_theme_mod( 'custom_logo' );
+    $logo           = $custom_logo_id
+        ? wp_get_attachment_image( $custom_logo_id, 'full', false, [ 'alt' => get_bloginfo( 'name' ) ] )
+        : '';
+    $title          = get_bloginfo( 'name' );
+
+    $html  = '<div class="wp-login-logo"><a href="' . esc_url( home_url( '/' ) ) . '">';
+    $html .= $logo ? $logo : '<span class="screen-reader-text">' . esc_html( $title ) . '</span>';
+    $html .= '</a></div>';
+    $html .= '<h1 class="login-title">' . esc_html( $title ) . '</h1>';
+
+    return $html . $message;
+}
+add_filter( 'login_message', 'cta_login_branding' );
+
 // ----------------------------------------------------------
 // 📂 Chargement des fichiers fonctionnels organisés
 // ----------------------------------------------------------
