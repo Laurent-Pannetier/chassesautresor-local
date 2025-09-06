@@ -34,3 +34,30 @@ get_template_part(
     ]
 );
 ```
+
+## Mode « à la une »
+
+Ce mode affiche une chasse mise en avant avec une image pleine largeur et un bouton d'appel à l'action.
+
+### Exemple avec `WP_Query`
+
+```php
+$query = new WP_Query([
+    'post_type'      => 'chasse',
+    'posts_per_page' => 1,
+    'meta_key'       => 'chasse_en_avant',
+    'meta_value'     => 1,
+]);
+
+get_template_part(
+    'template-parts/chasse/boucle-chasses',
+    null,
+    [
+        'query'           => $query,
+        'mode'            => 'a_la_une',
+        'highlight_label' => __('À la une', 'chassesautresor-com'),
+    ]
+);
+```
+
+Le `grid_class` par défaut est `grille-liste`, mais on peut le modifier via l'argument `grid_class`.
