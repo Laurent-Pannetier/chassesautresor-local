@@ -215,7 +215,7 @@ function get_image_enigme(int $post_id, string $size = 'medium'): ?string
     }
 
     // 🧩 Placeholder image : image statique ou ID définie par toi
-    return wp_get_attachment_image_url(3925, $size);
+    return wp_get_attachment_image_url(ID_IMAGE_PLACEHOLDER_ENIGME, $size);
 }
 
 
