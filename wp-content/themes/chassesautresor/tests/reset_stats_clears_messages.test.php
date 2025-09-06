@@ -59,12 +59,32 @@ if (!function_exists('delete_field')) {
     }
 }
 
+if (!function_exists('clean_user_cache')) {
+    function clean_user_cache($user_id)
+    {
+        $GLOBALS['clean_user_cache_ids'][] = $user_id;
+    }
+}
+
 global $wpdb;
 $wpdb = new class {
     public $prefix = 'wp_';
+    public $usermeta = 'wp_usermeta';
+    public $queries = [];
+    public $rows_affected = 0;
+    public $last_error = '';
+
     public function query($sql)
     {
-        // no-op
+        $this->queries[]    = $sql;
+        $this->rows_affected = 1;
+        return true;
+    }
+
+    public function get_col($sql)
+    {
+        $GLOBALS['get_col_sql'] = $sql;
+        return [1, 2];
     }
 };
 
@@ -121,5 +141,31 @@ class ResetStatsClearsMessagesTest extends TestCase
             ['chasse_cache_date_decouverte', 10],
             $GLOBALS['deleted_fields']
         );
+    }
+
+    public function test_reset_stats_clears_usermeta(): void
+    {
+        global $wpdb;
+        $wpdb->queries                = [];
+        $GLOBALS['clean_user_cache_ids'] = [];
+        $GLOBALS['get_col_sql']       = '';
+        $_POST['nonce']               = 'dummy';
+
+        cta_reset_stats();
+
+        $usermeta = $wpdb->usermeta;
+        $expected = [
+            "DELETE FROM {$usermeta} WHERE meta_key LIKE 'statut_enigme_%'",
+            "DELETE FROM {$usermeta} WHERE meta_key LIKE 'enigme_%_resolution_date'",
+            "DELETE FROM {$usermeta} WHERE meta_key LIKE 'indice_debloque_%'",
+            "DELETE FROM {$usermeta} WHERE meta_key LIKE 'souscription_chasse_%'",
+        ];
+
+        foreach ($expected as $sql) {
+            $this->assertContains($sql, $wpdb->queries);
+        }
+
+        $this->assertSame([1, 2], $GLOBALS['clean_user_cache_ids']);
+        $this->assertStringContainsString('meta_key LIKE', $GLOBALS['get_col_sql']);
     }
 }

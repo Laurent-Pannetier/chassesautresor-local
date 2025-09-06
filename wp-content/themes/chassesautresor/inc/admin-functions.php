@@ -1408,6 +1408,31 @@ function cta_reset_stats() {
 
     $total_deleted += (int) $wpdb->rows_affected;
 
+    $user_ids = $wpdb->get_col(
+        "SELECT DISTINCT user_id FROM {$wpdb->usermeta} WHERE meta_key LIKE 'statut_enigme_%' OR meta_key LIKE 'enigme_%_resolution_date' OR meta_key LIKE 'indice_debloque_%' OR meta_key LIKE 'souscription_chasse_%'"
+    );
+
+    $patterns = [
+        'statut_enigme_%',
+        'enigme_%_resolution_date',
+        'indice_debloque_%',
+        'souscription_chasse_%',
+    ];
+
+    foreach ($patterns as $pattern) {
+        $wpdb->query("DELETE FROM {$wpdb->usermeta} WHERE meta_key LIKE '{$pattern}'");
+
+        if (!empty($wpdb->last_error)) {
+            wp_send_json_error($wpdb->last_error);
+        }
+
+        $total_deleted += (int) $wpdb->rows_affected;
+    }
+
+    foreach ($user_ids as $user_id) {
+        clean_user_cache((int) $user_id);
+    }
+
     $chasses = get_posts([
         'post_type'   => 'chasse',
         'post_status' => 'any',
