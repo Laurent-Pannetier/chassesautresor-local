@@ -1089,7 +1089,11 @@ function supprimer_souscriptions_utilisateur() {
 }
 
 /**
- * 🔄 Remet toutes les chasses terminées en cours.
+ * 🔄 Remet les chasses marquées comme terminées en cours.
+ *
+ * - Détecte `chasse_cache_statut` égal à "termine".
+ * - Réinitialise le statut, le gagnant et la date de découverte.
+ * - Recalcule les statuts de la chasse et de ses énigmes.
  */
 function reinitialiser_chasses_terminees(): void
 {
@@ -1097,18 +1101,8 @@ function reinitialiser_chasses_terminees(): void
         'post_type'      => 'chasse',
         'posts_per_page' => -1,
         'post_status'    => 'any',
-        'meta_query'     => [
-            'relation' => 'OR',
-            [
-                'key'   => 'chasse_cache_statut',
-                'value' => 'termine',
-            ],
-            [
-                'key'     => 'statut_chasse',
-                'value'   => [ 'termine', 'terminée', 'terminé' ],
-                'compare' => 'IN',
-            ],
-        ],
+        'meta_key'       => 'chasse_cache_statut',
+        'meta_value'     => 'termine',
     ]);
 
     if (empty($chasses)) {
@@ -1116,27 +1110,13 @@ function reinitialiser_chasses_terminees(): void
         return;
     }
 
-    $now = current_time('timestamp');
-    global $wpdb;
-
     foreach ($chasses as $chasse) {
         $chasse_id = $chasse->ID;
 
         update_field('statut_chasse', 'en cours', $chasse_id);
         update_field('chasse_cache_statut', 'en_cours', $chasse_id);
         update_field('gagnant', '', $chasse_id);
-        update_field('date_de_decouverte', null, $chasse_id);
-        update_field('chasse_cache_gagnants', '', $chasse_id);
-        update_field('chasse_cache_date_decouverte', null, $chasse_id);
-        update_field('chasse_cache_complet', 0, $chasse_id);
-
-        $debut = get_field('chasse_infos_date_debut', $chasse_id);
-        $ts_debut = $debut ? strtotime($debut) : false;
-        if ($ts_debut && $ts_debut > $now) {
-            update_field('chasse_infos_date_debut', date('Y-m-d H:i:s', $now - MINUTE_IN_SECONDS), $chasse_id);
-        }
-
-        $wpdb->delete($wpdb->prefix . 'chasse_winners', ['chasse_id' => $chasse_id], ['%d']);
+        update_field('date_de_decouverte', '', $chasse_id);
 
         if (function_exists('mettre_a_jour_statuts_chasse')) {
             mettre_a_jour_statuts_chasse($chasse_id);
@@ -1148,12 +1128,6 @@ function reinitialiser_chasses_terminees(): void
                 enigme_mettre_a_jour_etat_systeme((int) $eid);
             }
         }
-
-        delete_post_meta($chasse_id, 'gagnant');
-        delete_post_meta($chasse_id, 'date_de_decouverte');
-        delete_post_meta($chasse_id, 'chasse_cache_gagnants');
-        delete_post_meta($chasse_id, 'chasse_cache_date_decouverte');
-        delete_post_meta($chasse_id, 'chasse_cache_complet');
 
         wp_cache_delete($chasse_id, 'post_meta');
         clean_post_cache($chasse_id);
