@@ -1425,6 +1425,7 @@ function cta_reset_stats() {
         update_field('chasse_cache_statut', 'en_cours', $chasse_id);
         delete_field('chasse_cache_gagnants', $chasse_id);
         delete_field('chasse_cache_date_decouverte', $chasse_id);
+        chasse_clear_infos_affichage_cache((int) $chasse_id);
     }
 
     wp_send_json_success(['deleted' => $total_deleted]);
