@@ -500,6 +500,13 @@ function utilisateur_peut_voir_enigme(int $enigme_id, ?int $user_id = null): boo
         return false;
     }
 
+    // 🏁 Chasse terminée : visuels accessibles à tous
+    $chasse_terminee = get_field('chasse_cache_statut', $chasse_id) === 'termine';
+    if ($chasse_terminee && $post_status === 'publish') {
+        cat_debug("🟢 [voir énigme] chasse #$chasse_id terminée → accès public");
+        return true;
+    }
+
     // ✅ Abonné engagé dans la chasse → peut voir l’image si énigme accessible
     if (utilisateur_est_engage_dans_chasse($user_id, $chasse_id)) {
         $autorise = ($post_status === 'publish') && ($etat_systeme === 'accessible');

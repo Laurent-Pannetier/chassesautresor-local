@@ -13,7 +13,7 @@ if (!function_exists('trouver_chemin_image')) {
     require_once get_stylesheet_directory() . '/inc/enigme-functions.php';
 }
 if (!function_exists('utilisateur_peut_voir_enigme')) {
-    require_once get_stylesheet_directory() . '/inc/statut-functions.php';
+    require_once get_stylesheet_directory() . '/inc/access-functions.php';
 }
 
 // 🧩 Récupération de l'énigme associée à cette image
