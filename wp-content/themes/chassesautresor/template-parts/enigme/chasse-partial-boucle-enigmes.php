@@ -92,6 +92,11 @@ if (!function_exists('compter_tentatives_du_jour') || !function_exists('compter_
         ? sprintf(__('Ouvrir l\'énigme — %s', 'chassesautresor-com'), $cta['label'])
         : '';
       $statut_utilisateur = $cta['statut_utilisateur'] ?? '';
+      $afficher_validation = in_array(
+        $statut_utilisateur,
+        ['resolue', 'terminee'],
+        true
+      );
       $classes_bouton = in_array(
         $statut_utilisateur,
         ['non_commencee', 'echouee', 'abandonnee', 'soumis'],
@@ -267,8 +272,13 @@ if (!function_exists('compter_tentatives_du_jour') || !function_exists('compter_
               'tab'     => $tab,
             ], get_permalink($enigme_id));
             ?>
-            <?php if ($classe_completion === 'carte-incomplete' || $can_edit) : ?>
+            <?php if ($classe_completion === 'carte-incomplete' || $can_edit || $afficher_validation) : ?>
               <div class="carte-icons">
+                <?php if ($afficher_validation) : ?>
+                  <span class="validation-icon" aria-label="<?= esc_attr__('Énigme résolue', 'chassesautresor-com'); ?>" title="<?= esc_attr__('Énigme résolue', 'chassesautresor-com'); ?>">
+                    <i class="fa-solid fa-check" aria-hidden="true"></i>
+                  </span>
+                <?php endif; ?>
                 <?php if ($classe_completion === 'carte-incomplete') : ?>
                   <span class="warning-icon" aria-label="<?= esc_attr__('Énigme incomplète', 'chassesautresor-com'); ?>" title="<?= esc_attr__('Énigme incomplète', 'chassesautresor-com'); ?>">
                     <i class="fa-solid fa-exclamation" aria-hidden="true"></i>
