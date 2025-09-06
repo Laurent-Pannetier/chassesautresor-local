@@ -732,6 +732,7 @@ add_action('wp_ajax_update_conversion_status', 'ajax_update_request_status');
  * 🔹 supprimer_metas_globales → Supprimer les métadonnées globales stockées dans `option_meta`.
  * 🔹 supprimer_metas_post → Supprimer les métadonnées des énigmes et chasses (optimisé).
  * 🔹 supprimer_souscriptions_utilisateur → Supprimer les souscriptions des joueurs aux énigmes.
+ * 🔹 reinitialiser_chasses_terminees → Remettre les chasses terminées en cours.
  * 🔹 reinitialiser_enigme → Réinitialiser l’état d’une énigme pour un utilisateur donné.
  * 🔹 bouton_reinitialiser_enigme_callback → Afficher le bouton de réinitialisation si l’utilisateur a résolu l’énigme.
  */
@@ -810,6 +811,8 @@ function traiter_reinitialisation_stats() {
     }
     supprimer_metas_globales();
     supprimer_metas_organisateur();
+
+    reinitialiser_chasses_terminees();
 
 
     // 🔄 Désactiver l'option après suppression
@@ -1082,6 +1085,81 @@ function supprimer_souscriptions_utilisateur() {
         cat_debug("⚠️ Erreur SQL lors de la suppression des souscriptions utilisateur : " . $wpdb->last_error);
     } else {
         cat_debug("✅ Suppression réussie des souscriptions aux énigmes.");
+    }
+}
+
+/**
+ * 🔄 Remet toutes les chasses terminées en cours.
+ */
+function reinitialiser_chasses_terminees(): void
+{
+    $chasses = get_posts([
+        'post_type'      => 'chasse',
+        'posts_per_page' => -1,
+        'post_status'    => ['publish', 'pending'],
+        'meta_query'     => [
+            [
+                'key'     => 'statut_chasse',
+                'value'   => ['termine', 'terminé', 'terminée', 'terminee'],
+                'compare' => 'IN',
+            ],
+        ],
+    ]);
+
+    if (empty($chasses)) {
+        cat_debug('ℹ️ Aucune chasse terminée à réinitialiser.');
+        return;
+    }
+
+    $now = current_time('timestamp');
+    global $wpdb;
+
+    foreach ($chasses as $chasse) {
+        $chasse_id = $chasse->ID;
+
+        $mode = get_field('illimitee', $chasse_id);
+        if ($mode !== 'stop') {
+            continue;
+        }
+
+        update_field('statut_chasse', 'en cours', $chasse_id);
+        update_field('gagnant', '', $chasse_id);
+        update_field('date_de_decouverte', null, $chasse_id);
+        update_field('chasse_cache_gagnants', '', $chasse_id);
+        update_field('chasse_cache_date_decouverte', null, $chasse_id);
+        update_field('chasse_cache_complet', 0, $chasse_id);
+
+        $debut = get_field('chasse_infos_date_debut', $chasse_id);
+        $ts_debut = $debut ? strtotime($debut) : false;
+        if ($ts_debut && $ts_debut > $now) {
+            update_field('chasse_infos_date_debut', date('Y-m-d H:i:s', $now - MINUTE_IN_SECONDS), $chasse_id);
+        }
+
+        $wpdb->delete($wpdb->prefix . 'chasse_winners', ['chasse_id' => $chasse_id], ['%d']);
+
+        if (function_exists('mettre_a_jour_statuts_chasse')) {
+            mettre_a_jour_statuts_chasse($chasse_id);
+        }
+
+        $enigmes = function_exists('recuperer_enigmes_associees') ? recuperer_enigmes_associees($chasse_id) : [];
+        foreach ($enigmes as $eid) {
+            if (function_exists('enigme_mettre_a_jour_etat_systeme')) {
+                enigme_mettre_a_jour_etat_systeme((int) $eid);
+            }
+        }
+
+        delete_post_meta($chasse_id, 'statut_chasse');
+        delete_post_meta($chasse_id, 'gagnant');
+        delete_post_meta($chasse_id, 'date_de_decouverte');
+        delete_post_meta($chasse_id, 'chasse_cache_gagnants');
+        delete_post_meta($chasse_id, 'chasse_cache_date_decouverte');
+        delete_post_meta($chasse_id, 'chasse_cache_complet');
+        delete_post_meta($chasse_id, 'chasse_cache_statut');
+
+        wp_cache_delete($chasse_id, 'post_meta');
+        clean_post_cache($chasse_id);
+
+        cat_debug("🔄 Chasse réinitialisée #{$chasse_id}");
     }
 }
 
