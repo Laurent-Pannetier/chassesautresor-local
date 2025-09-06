@@ -315,13 +315,12 @@ function trouver_chemin_image(int $image_id, string $taille = 'full'): ?array
         }
 
         if (!$path) {
-            $src = wp_get_attachment_image_src($image_id, 'full');
-            $url = $src[0] ?? wp_get_attachment_url($image_id);
-            if ($url) {
-                $candidate = str_replace($upload_dir['baseurl'], $upload_dir['basedir'], $url);
-                if (file_exists($candidate)) {
-                    $path = $candidate;
-                }
+            $candidate = wp_get_original_image_path($image_id);
+            if (!$candidate) {
+                $candidate = get_attached_file($image_id);
+            }
+            if ($candidate && file_exists($candidate)) {
+                $path = $candidate;
             }
         }
 
