@@ -1098,9 +1098,15 @@ function reinitialiser_chasses_terminees(): void
         'posts_per_page' => -1,
         'post_status'    => 'any',
         'meta_query'     => [
+            'relation' => 'OR',
             [
                 'key'   => 'chasse_cache_statut',
                 'value' => 'termine',
+            ],
+            [
+                'key'     => 'statut_chasse',
+                'value'   => [ 'termine', 'terminée', 'terminé' ],
+                'compare' => 'IN',
             ],
         ],
     ]);
