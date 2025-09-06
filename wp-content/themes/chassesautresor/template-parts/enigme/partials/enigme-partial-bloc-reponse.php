@@ -35,7 +35,6 @@ if (est_enigme_resolue_par_utilisateur($user_id, $post_id)) {
     return;
 }
 
-cat_debug("👤 STATUT ACTUEL : " . enigme_get_statut_utilisateur($post_id, $user_id));
 
 // 🛡️ Organisateur / admin : on n'affiche rien
 $chasse_id = recuperer_id_chasse_associee($post_id);

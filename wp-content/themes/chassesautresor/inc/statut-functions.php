@@ -1286,5 +1286,7 @@ function get_statut_utilisateur_enigme($user_id, $enigme_id)
  */
 function est_enigme_resolue_par_utilisateur($user_id, $enigme_id)
 {
-    return get_statut_utilisateur_enigme($user_id, $enigme_id) === 'resolue';
+    $statut = get_statut_utilisateur_enigme($user_id, $enigme_id);
+
+    return in_array($statut, ['resolue', 'terminee'], true);
 }
