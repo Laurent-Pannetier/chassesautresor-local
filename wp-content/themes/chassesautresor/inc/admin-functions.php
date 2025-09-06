@@ -1408,6 +1408,25 @@ function cta_reset_stats() {
 
     $total_deleted += (int) $wpdb->rows_affected;
 
+    $chasses = get_posts([
+        'post_type'   => 'chasse',
+        'post_status' => 'any',
+        'meta_query'  => [
+            [
+                'key'   => 'chasse_cache_statut',
+                'value' => 'termine',
+            ],
+        ],
+        'fields'   => 'ids',
+        'nopaging' => true,
+    ]);
+
+    foreach ($chasses as $chasse_id) {
+        update_field('chasse_cache_statut', 'en_cours', $chasse_id);
+        delete_field('chasse_cache_gagnants', $chasse_id);
+        delete_field('chasse_cache_date_decouverte', $chasse_id);
+    }
+
     wp_send_json_success(['deleted' => $total_deleted]);
 }
 add_action('wp_ajax_cta_reset_stats', 'cta_reset_stats');
