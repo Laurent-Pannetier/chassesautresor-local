@@ -8,6 +8,8 @@ const html = `
 </form>
 `;
 
+global.wp = { i18n: { __: (s) => s } };
+
 describe('validation chasse', () => {
   beforeEach(() => {
     jest.resetModules();

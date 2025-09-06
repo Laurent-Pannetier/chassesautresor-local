@@ -1505,6 +1505,11 @@ msgstr "Hunting won on %s by %s"
 msgid "Nb gagnants"
 msgstr "Number of winners"
 
+#: template-parts/chasse/chasse-affichage-complet.php:298
+#, php-format
+msgid "Chasse gagnée le %1$s par %2$s"
+msgstr "Hunt won on %1$s by %2$s"
+
 #: template-parts/chasse/chasse-edition-main.php:449
 msgid "Illimité"
 msgstr "Unlimited"
