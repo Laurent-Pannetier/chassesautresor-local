@@ -27,6 +27,7 @@ $cout_points       = (int) ($champs['cout_points'] ?? 0);
 
 // Champs cachés
 $date_decouverte      = $champs['date_decouverte'];
+$gagnants             = $champs['gagnants'];
 $current_stored_statut = $champs['current_stored_statut'];
 
 
@@ -47,10 +48,11 @@ $title_mode          = $mode_fin === 'automatique'
     : __('mode de fin de chasse : manuelle', 'chassesautresor-com');
 
 // Dates
-$date_debut_formatee = formater_date($date_debut);
-$date_fin_formatee   = $illimitee
+$date_debut_formatee        = formater_date($date_debut);
+$date_fin_formatee          = $illimitee
     ? __('Illimitée', 'chassesautresor-com')
     : ($date_fin ? formater_date($date_fin) : __('Non spécifiée', 'chassesautresor-com'));
+$date_decouverte_formatee   = $date_decouverte ? formater_date($date_decouverte) : '';
 
 $now        = current_time('timestamp');
 $date_label = '';
@@ -292,6 +294,12 @@ if ($edition_active && !$est_complet) {
         data-post-id="<?= esc_attr($chasse_id); ?>">
         <?= esc_html($titre); ?>
       </h1>
+
+      <?php if ($statut === 'termine' && !empty($date_decouverte) && !empty($gagnants)) : ?>
+        <div class="chasse-gagnant-info">
+          <?= sprintf(__('Chasse gagnée le %1$s par %2$s', 'chassesautresor-com'), esc_html($date_decouverte_formatee), esc_html($gagnants)); ?>
+        </div>
+      <?php endif; ?>
 
       <div class="meta-row svg-xsmall">
         <div class="meta-regular">

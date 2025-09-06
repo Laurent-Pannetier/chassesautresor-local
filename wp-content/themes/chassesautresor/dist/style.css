@@ -1017,6 +1017,15 @@ body.edition-active-chasse .chasse-enigmes-header .liens-placeholder {
     display: none;
   }
 }
+.chasse-gagnant-info {
+  background-color: #f6f9fd;
+  padding: 1rem;
+  border-left: 4px solid #3498db;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
 /* ========== 🛒 AJOUT AU PANIER ========== */
 .woocommerce a.button.add_to_cart_button {
   font-weight: 500;
