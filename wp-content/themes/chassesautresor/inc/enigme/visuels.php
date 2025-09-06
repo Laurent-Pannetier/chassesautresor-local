@@ -300,7 +300,7 @@ function afficher_picture_vignette_enigme(int $enigme_id, string $alt = '', arra
  */
 function trouver_chemin_image(int $image_id, string $taille = 'full'): ?array
 {
-    $wp_size = $taille === 'full' ? [1920, 1920] : $taille;
+    $wp_size = $taille === 'full' ? 'full' : $taille;
     $src     = wp_get_attachment_image_src($image_id, $wp_size);
     $url = $src[0] ?? null;
     if (!$url) return null;
