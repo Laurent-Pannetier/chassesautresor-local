@@ -300,6 +300,17 @@ add_action('wp_enqueue_scripts', function () {
 }, 20);
 
 /**
+ * Disables the language dropdown on the login page.
+ *
+ * @return bool
+ */
+function cta_disable_login_language_dropdown(): bool
+{
+    return false;
+}
+add_filter('login_display_language_dropdown', 'cta_disable_login_language_dropdown');
+
+/**
  * Enqueues custom styles for the login page.
  *
  * @return void
