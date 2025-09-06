@@ -64,8 +64,6 @@ function build_picture_enigme(int $image_id, string $alt, array $sizes, array $i
 
     $used_sizes = array_slice($order, 0, $max_index + 1);
 
-    $base_url = site_url('/voir-image-enigme');
-
     $html = "<picture>\n";
     $size_2x_map = [
         'thumbnail' => 'medium',
@@ -74,35 +72,38 @@ function build_picture_enigme(int $image_id, string $alt, array $sizes, array $i
         'full'      => 'full',
     ];
 
-    for ($i = count($used_sizes) - 1; $i > 0; $i--) {
-        $size = $used_sizes[$i];
-        $src_1x = esc_url(add_query_arg([
-            'id'     => $image_id,
-            'taille' => $size,
-        ], $base_url));
-        $src_2x = esc_url(add_query_arg([
-            'id'     => $image_id,
-            'taille' => $size_2x_map[$size] ?? $size,
-        ], $base_url));
-        $srcset_parts = [$src_1x . ' 1x'];
-        if ($src_2x !== $src_1x) {
-            $srcset_parts[] = $src_2x . ' 2x';
-        }
-        $srcset = implode(', ', $srcset_parts);
-        $media = $breakpoints[$size];
-        $media_attr = $media ? ' media="' . $media . '"' : '';
-        $html .= '  <source srcset="' . $srcset . '" data-size="' . $size . '"' . $media_attr . ">\n";
+    if ($image_id === ID_IMAGE_PLACEHOLDER_ENIGME) {
+        $url_builder = static function (int $id, string $size): string {
+            $url = wp_get_attachment_image_url($id, $size);
+            return $url ? esc_url($url) : '';
+        };
+    } else {
+        $base_url    = site_url('/voir-image-enigme');
+        $url_builder = static function (int $id, string $size) use ($base_url): string {
+            return esc_url(add_query_arg([
+                'id'     => $id,
+                'taille' => $size,
+            ], $base_url));
+        };
     }
 
-    $fallback_size = $used_sizes[0];
-    $src_fallback_1x = esc_url(add_query_arg([
-        'id'     => $image_id,
-        'taille' => $fallback_size,
-    ], $base_url));
-    $src_fallback_2x = esc_url(add_query_arg([
-        'id'     => $image_id,
-        'taille' => $size_2x_map[$fallback_size] ?? $fallback_size,
-    ], $base_url));
+    for ($i = count($used_sizes) - 1; $i > 0; $i--) {
+        $size         = $used_sizes[$i];
+        $src_1x       = $url_builder($image_id, $size);
+        $src_2x       = $url_builder($image_id, $size_2x_map[$size] ?? $size);
+        $srcset_parts = [$src_1x . ' 1x'];
+        if ($src_2x !== '' && $src_2x !== $src_1x) {
+            $srcset_parts[] = $src_2x . ' 2x';
+        }
+        $srcset     = implode(', ', $srcset_parts);
+        $media      = $breakpoints[$size];
+        $media_attr = $media ? ' media="' . $media . '"' : '';
+        $html      .= '  <source srcset="' . $srcset . '" data-size="' . $size . '"' . $media_attr . ">\n";
+    }
+
+    $fallback_size   = $used_sizes[0];
+    $src_fallback_1x = $url_builder($image_id, $fallback_size);
+    $src_fallback_2x = $url_builder($image_id, $size_2x_map[$fallback_size] ?? $fallback_size);
 
     $dimensions = function_exists('wp_get_attachment_image_src')
         ? wp_get_attachment_image_src($image_id, $fallback_size)
@@ -123,7 +124,7 @@ function build_picture_enigme(int $image_id, string $alt, array $sizes, array $i
     }
 
     $img_srcset_parts = [$src_fallback_1x . ' 1x'];
-    if ($src_fallback_2x !== $src_fallback_1x) {
+    if ($src_fallback_2x !== '' && $src_fallback_2x !== $src_fallback_1x) {
         $img_srcset_parts[] = $src_fallback_2x . ' 2x';
     }
     $img_srcset = implode(', ', $img_srcset_parts);
