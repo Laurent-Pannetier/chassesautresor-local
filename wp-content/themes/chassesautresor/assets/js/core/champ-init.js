@@ -110,12 +110,8 @@ function initChampTexte(bloc) {
         }
 
         if (champ === 'enigme_visuel_legende') {
-          const legendeDOM =
-            document.querySelector('.enigme-soustitre') ||
-            document.querySelector('.enigme-legende');
-          if (legendeDOM) {
-            legendeDOM.textContent = brute;
-            legendeDOM.classList.add('modifiee');
+          if (typeof window.mettreAJourLegendeEnigme === 'function') {
+            window.mettreAJourLegendeEnigme(brute);
           }
         }
 
@@ -198,15 +194,8 @@ function initChampTexte(bloc) {
     }
 
     if (champ === 'enigme_visuel_legende') {
-      // Mise à jour dynamique du sous-titre affiché sous le titre de l'énigme.
-      // ​​Supporte à la fois l'ancien sélecteur `.enigme-legende` et
-      // le nouveau `.enigme-soustitre` utilisé dans les templates.
-      const legendeDOM =
-        document.querySelector('.enigme-soustitre') ||
-        document.querySelector('.enigme-legende');
-      if (legendeDOM) {
-        legendeDOM.textContent = valeur;
-        legendeDOM.classList.add('modifiee');
+      if (typeof window.mettreAJourLegendeEnigme === 'function') {
+        window.mettreAJourLegendeEnigme(valeur);
       }
     }
 

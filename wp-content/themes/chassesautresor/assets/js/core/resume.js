@@ -266,8 +266,9 @@ window.onChampSimpleMisAJour = function (champ, postId, valeur, cpt, extra) {
     ];
 
     if (champ === 'enigme_visuel_legende') {
-      const legende = document.querySelector('.enigme-soustitre');
-      if (legende) legende.textContent = valeur;
+      if (typeof window.mettreAJourLegendeEnigme === 'function') {
+        window.mettreAJourLegendeEnigme(valeur);
+      }
     }
 
     if (champ === 'enigme_reponse_bonne' && typeof window.forcerRecalculStatutEnigme === 'function') {
