@@ -202,7 +202,7 @@ window.onChampSimpleMisAJour = function (champ, postId, valeur, cpt, extra) {
 
   // ✅ ORGANISATEUR : mise à jour image
   if (cpt === 'organisateur') {
-    if (champ === 'logo_organisateur') {
+    if (champ === 'profil_public_logo_organisateur') {
       const bloc = document.querySelector(`.champ-organisateur[data-champ="${champ}"][data-post-id="${postId}"]`);
       if (bloc && typeof bloc.__ouvrirMedia === 'function') bloc.__ouvrirMedia();
     }
@@ -210,7 +210,7 @@ window.onChampSimpleMisAJour = function (champ, postId, valeur, cpt, extra) {
       'post_title',
       'description_longue',
       'logo',
-      'logo_organisateur',
+      'profil_public_logo_organisateur',
       'email_contact',
       'coordonnees_bancaires',
       'liens_publics'

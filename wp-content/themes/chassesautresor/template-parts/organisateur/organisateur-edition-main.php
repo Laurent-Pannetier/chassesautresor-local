@@ -23,6 +23,7 @@ $logo        = get_field('profil_public_logo_organisateur', $organisateur_id);
 $logo_id     = is_array($logo) ? ($logo['ID'] ?? null) : $logo;
 $logo_src    = $logo_id ? wp_get_attachment_image_src($logo_id, 'thumbnail') : false;
 $logo_url    = is_array($logo_src) ? $logo_src[0] : null;
+$logo_id_db  = get_post_meta($organisateur_id, 'profil_public_logo_organisateur', true);
 $description  = get_field('description_longue', $organisateur_id);
 $reseaux      = get_field('reseaux_sociaux', $organisateur_id);
 $site         = get_field('lien_site_web', $organisateur_id);
@@ -131,7 +132,7 @@ $is_complete = (
                     null,
                     [
                         'class'      => 'champ-organisateur champ-img champ-logo ligne-logo '
-                            . (empty($logo_id) ? 'champ-vide' : 'champ-rempli')
+                            . (empty($logo_id_db) ? 'champ-vide' : 'champ-rempli')
                             . ($peut_editer ? '' : ' champ-desactive'),
                         'attributes' => [
                             'data-champ'   => 'profil_public_logo_organisateur',
@@ -178,7 +179,7 @@ $is_complete = (
                                     <?php endif; ?>
                                 <?php endif; ?>
                             </div>
-                            <input type="hidden" class="champ-input" value="<?= esc_attr($logo_id ?? '') ?>">
+                            <input type="hidden" class="champ-input" value="<?= esc_attr($logo_id_db ?: '') ?>">
                             <div class="champ-feedback"></div>
                             <?php
                         },
