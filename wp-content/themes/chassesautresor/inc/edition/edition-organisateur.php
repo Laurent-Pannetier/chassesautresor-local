@@ -189,6 +189,10 @@ function ajax_modifier_champ_organisateur()
   // 🔁 Corrige le nom du champ si groupé
   $champ_cible = $champ_correspondances[$champ] ?? $champ;
 
+  if ($champ_cible === 'profil_public_logo_organisateur') {
+    $valeur = absint($valeur);
+  }
+
   // 🛑 Validation métier : texte de présentation minimal
   if ($champ_cible === 'description_longue') {
     $texte = wp_strip_all_tags($valeur);
