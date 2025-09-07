@@ -6,7 +6,8 @@ $peut_modifier = utilisateur_peut_modifier_post($organisateur_id);
 
 $logo_id = get_field('profil_public_logo_organisateur', $organisateur_id, false);
 $logo = wp_get_attachment_image_src($logo_id, 'thumbnail');
-$logo_url = $logo ? $logo[0] : wp_get_attachment_image_src(3927, 'thumbnail')[0];
+$transparent = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+$logo_url = $logo ? $logo[0] : $transparent;
 
 $titre_organisateur = get_post_field('post_title', $organisateur_id);
 
@@ -48,7 +49,7 @@ $classes_header .= ' container container--boxed';
 
       <!-- Colonne gauche : logo -->
       <div class="colonne-logo">
-        <div class="champ-organisateur champ-img champ-logo <?= empty($logo_id) ? 'champ-vide' : ''; ?>"
+        <div class="champ-organisateur champ-img champ-logo <?= empty($logo_id) ? 'champ-vide champ-vide-obligatoire' : ''; ?>"
           data-cpt="organisateur"
           data-champ="profil_public_logo_organisateur"
           data-post-id="<?= esc_attr($organisateur_id); ?>">

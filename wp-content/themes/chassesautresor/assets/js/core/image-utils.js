@@ -44,6 +44,7 @@ function initChampImage(bloc) {
       image.src = thumbUrl;
       image.srcset = thumbUrl;
       bloc.classList.remove('champ-vide');
+      bloc.classList.remove('champ-vide-obligatoire');
       input.value = id;
 
       if (typeof window.mettreAJourResumeInfos === 'function') {

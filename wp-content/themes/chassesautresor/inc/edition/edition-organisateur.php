@@ -84,11 +84,10 @@ function creer_organisateur_pour_utilisateur($user_id)
   // Liaison utilisateur (champ relation)
   update_field('utilisateurs_associes', [strval($user_id)], $post_id);
 
-  // Préremplissage logo + email
+  // Préremplissage email
   $user_data = get_userdata($user_id);
   $email = $user_data ? $user_data->user_email : '';
 
-  update_field('profil_public_logo_organisateur', 3927, $post_id);
   update_field('profil_public_email_contact', $email, $post_id);
 
   cat_debug("✅ Organisateur créé (pending) pour user $user_id : post ID $post_id");

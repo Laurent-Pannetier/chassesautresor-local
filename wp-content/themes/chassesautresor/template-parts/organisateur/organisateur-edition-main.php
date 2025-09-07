@@ -131,7 +131,7 @@ $is_complete = (
                     null,
                     [
                         'class'      => 'champ-organisateur champ-img champ-logo ligne-logo '
-                            . (empty($logo_id) ? 'champ-vide' : 'champ-rempli')
+                            . (empty($logo_id) ? 'champ-vide champ-vide-obligatoire' : 'champ-rempli')
                             . ($peut_editer ? '' : ' champ-desactive'),
                         'attributes' => [
                             'data-champ'   => 'profil_public_logo_organisateur',

@@ -332,6 +332,7 @@ function mettreAJourLigneResume(ligne, champ, estRempli, type) {
       (type === 'enigme' && ['enigme_visuel_legende', 'enigme_visuel_texte'].includes(champ))
     );
   ligne.classList.toggle('champ-attention', estObligatoire && !estRempli);
+  ligne.classList.toggle('champ-vide-obligatoire', estObligatoire && !estRempli);
 
   const input = ligne.querySelector('input, textarea, select');
   if (input) {
