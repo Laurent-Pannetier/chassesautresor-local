@@ -278,7 +278,18 @@ function ajax_modifier_champ_organisateur()
   }
 
   // ✅ Autres champs ACF simples
-  $ok = update_field($champ_cible, is_numeric($valeur) ? (int) $valeur : $valeur, $post_id);
+  $valeur_formatee = is_numeric($valeur) ? (int) $valeur : $valeur;
+
+  if ($champ_cible === 'profil_public_logo_organisateur') {
+    $field_obj = function_exists('acf_get_field') ? acf_get_field('profil_public_logo_organisateur') : null;
+    $selector = $field_obj['key'] ?? $champ_cible;
+    $ok = update_field($selector, $valeur_formatee, $post_id);
+    if ($ok !== false && isset($field_obj['key'])) {
+      update_post_meta($post_id, '_' . $champ_cible, $field_obj['key']);
+    }
+  } else {
+    $ok = update_field($champ_cible, $valeur_formatee, $post_id);
+  }
 
   // 🔍 Vérifie via get_post_meta en fallback
   $valeur_meta = get_post_meta($post_id, $champ_cible, true);

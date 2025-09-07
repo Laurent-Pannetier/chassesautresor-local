@@ -44,6 +44,7 @@ function initChampImage(bloc) {
       image.src = thumbUrl;
       image.srcset = thumbUrl;
       bloc.classList.remove('champ-vide');
+      bloc.classList.add('champ-rempli');
       input.value = id;
 
       if (typeof window.mettreAJourResumeInfos === 'function') {
@@ -71,6 +72,8 @@ function initChampImage(bloc) {
         .then(r => r.json())
         .then(res => {
           if (res.success) {
+            bloc.classList.add('champ-rempli');
+            bloc.classList.remove('champ-vide');
             if (feedback) {
               feedback.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i>';
               feedback.className = 'champ-feedback champ-success';
