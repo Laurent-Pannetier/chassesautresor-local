@@ -122,6 +122,7 @@ $pages = (int) ceil($total / $per_page);
             <thead>
                 <tr>
                     <th><?php esc_html_e('Date', 'chassesautresor-com'); ?></th>
+                    <th><?php esc_html_e('Chasse', 'chassesautresor-com'); ?></th>
                     <th><?php esc_html_e('Énigme', 'chassesautresor-com'); ?></th>
                     <th><?php esc_html_e('Proposition', 'chassesautresor-com'); ?></th>
                     <th><?php esc_html_e('Résultat', 'chassesautresor-com'); ?></th>
@@ -130,7 +131,17 @@ $pages = (int) ceil($total / $per_page);
             <tbody>
                 <?php foreach ($tentatives as $tent) : ?>
                 <tr>
+                    <?php $chasse_id = (int) recuperer_id_chasse_associee($tent->enigme_id); ?>
                     <td><?php echo esc_html(mysql2date('d/m/Y H:i', $tent->date_tentative)); ?></td>
+                    <td>
+                        <?php if ($chasse_id) : ?>
+                        <a href="<?php echo esc_url(get_permalink($chasse_id)); ?>">
+                            <?php echo esc_html(get_the_title($chasse_id)); ?>
+                        </a>
+                        <?php else : ?>
+                        &mdash;
+                        <?php endif; ?>
+                    </td>
                     <td><?php echo esc_html($tent->post_title); ?></td>
                     <?php echo cta_render_proposition_cell($tent->reponse_saisie ?? ''); ?>
                     <?php
