@@ -19,7 +19,7 @@ $user_points    = function_exists('get_user_points') ? get_user_points((int) $cu
 
 // Post
 $titre       = get_post_field('post_title', $organisateur_id);
-$logo        = get_field('profil_public_logo_organisateur', $organisateur_id);
+$logo        = get_field('logo_organisateur', $organisateur_id);
 $logo_id     = is_array($logo) ? ($logo['ID'] ?? null) : $logo;
 $logo_src    = $logo_id ? wp_get_attachment_image_src($logo_id, 'thumbnail') : false;
 $logo_url    = is_array($logo_src) ? $logo_src[0] : null;
@@ -134,7 +134,7 @@ $is_complete = (
                             . (empty($logo_id) ? 'champ-vide' : 'champ-rempli')
                             . ($peut_editer ? '' : ' champ-desactive'),
                         'attributes' => [
-                            'data-champ'   => 'profil_public_logo_organisateur',
+                            'data-champ'   => 'logo_organisateur',
                             'data-cpt'     => 'organisateur',
                             'data-post-id' => $organisateur_id,
                         ],
@@ -153,7 +153,7 @@ $is_complete = (
                                 <?php if ($peut_editer) : ?>
                                     <button type="button"
                                         class="champ-modifier"
-                                        data-champ="profil_public_logo_organisateur"
+                                        data-champ="logo_organisateur"
                                         data-cpt="organisateur"
                                         data-post-id="<?= esc_attr($organisateur_id); ?>"
                                         aria-label="<?= esc_attr__('Modifier le logo', 'chassesautresor-com'); ?>">

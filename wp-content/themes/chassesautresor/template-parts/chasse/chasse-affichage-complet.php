@@ -273,7 +273,7 @@ if ($edition_active && !$est_complet) {
       </div>
 
       <?php if ($organisateur_id) :
-          $logo_id = get_field('profil_public_logo_organisateur', $organisateur_id, false);
+          $logo_id = get_field('logo_organisateur', $organisateur_id, false);
           $logo    = wp_get_attachment_image_src($logo_id, 'thumbnail');
           $logo_url = $logo ? $logo[0] : wp_get_attachment_image_src(3927, 'thumbnail')[0];
       ?>
