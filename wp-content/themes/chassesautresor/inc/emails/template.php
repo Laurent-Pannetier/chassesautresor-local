@@ -111,7 +111,8 @@ function cta_send_email($to, string $subject_raw, string $body, array $headers =
         $headers[] = 'From: ' . $from;
     }
 
-    $html = cta_render_email_template($subject_raw, $body);
+    $title = (string) preg_replace('/^\[[^\]]+\]\s*/', '', $subject_raw);
+    $html  = cta_render_email_template($title, $body);
 
     $subject = function_exists('wp_encode_mime_header')
         ? wp_encode_mime_header($subject_raw)
