@@ -106,9 +106,9 @@ $wpdb = new WpdbStub();
 
 require_once __DIR__ . '/../inc/enigme/reponses.php';
 
-class ManualResponseNotifiesOrganizerTest extends TestCase
+class ManualResponseDoesNotNotifyOrganizerTest extends TestCase
 {
-    public function test_organizer_receives_persistent_message(): void
+    public function test_organizer_does_not_receive_persistent_message(): void
     {
         $_POST = [
             'enigme_id' => 5,
@@ -116,8 +116,12 @@ class ManualResponseNotifiesOrganizerTest extends TestCase
             'reponse_manuelle_nonce' => 'nonce',
         ];
         soumettre_reponse_manuelle();
-        $messages = get_user_meta(2, '_myaccount_messages', true);
-        $this->assertArrayHasKey('tentative_abc123', $messages);
-        $this->assertSame('<a href="https://example.com/enigme">Énigme</a>', $messages['tentative_abc123']['text']);
+
+        $organizer_messages = get_user_meta(2, '_myaccount_messages', true);
+        $this->assertArrayNotHasKey('tentative_abc123', $organizer_messages);
+
+        $player_messages = get_user_meta(1, '_myaccount_messages', true);
+        $this->assertArrayHasKey('tentative_abc123', $player_messages);
+        $this->assertSame('<a href="https://example.com/enigme">Énigme</a>', $player_messages['tentative_abc123']['text']);
     }
 }
