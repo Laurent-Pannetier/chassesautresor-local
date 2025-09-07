@@ -549,7 +549,12 @@ function myaccount_get_persistent_messages(int $user_id): array
         }
     }
 
-    if (!empty($tentatives)) {
+    $is_tentatives_tab = est_organisateur()
+        && isset($_GET['edition'], $_GET['onglet'])
+        && $_GET['edition'] === 'open'
+        && $_GET['onglet'] === 'tentatives';
+
+    if (!empty($tentatives) && !$is_tentatives_tab) {
         if (count($tentatives) === 1) {
             $output[] = [
                 'text' => sprintf(
@@ -660,6 +665,10 @@ function myaccount_get_important_messages(): string
         myaccount_get_flash_messages($current_user_id)
     );
     $flash    = '';
+    $is_tentatives_tab = est_organisateur()
+        && isset($_GET['edition'], $_GET['onglet'])
+        && $_GET['edition'] === 'open'
+        && $_GET['onglet'] === 'tentatives';
 
     if (isset($_GET['points_modifies']) && $_GET['points_modifies'] === '1') {
         $flash = '<p class="flash flash--success">' . __('Points mis à jour avec succès.', 'chassesautresor') . '</p>';
@@ -718,7 +727,7 @@ function myaccount_get_important_messages(): string
         $organisateur_id   = get_organisateur_from_user($current_user_id);
         if ($organisateur_id) {
             $enigmes = recuperer_enigmes_tentatives_en_attente($organisateur_id);
-            if (!empty($enigmes)) {
+            if (!empty($enigmes) && !$is_tentatives_tab) {
                 $links = array_map(
                     function ($id) {
                         $url   = esc_url(get_permalink($id));

@@ -55,7 +55,7 @@ if (!function_exists('get_organisateur_from_user')) {
 if (!function_exists('recuperer_enigmes_tentatives_en_attente')) {
     function recuperer_enigmes_tentatives_en_attente($organisateur_id)
     {
-        return [];
+        return $GLOBALS['test_enigmes_pending'] ?? [];
     }
 }
 
@@ -462,6 +462,32 @@ class MyAccountMessagesTest extends TestCase
         $this->assertStringContainsString('<a href="https://example.com/enigme">Énigme</a>', $output);
 
         delete_user_meta(1, '_myaccount_messages');
+    }
+
+    public function test_messages_hidden_on_tentatives_tab(): void
+    {
+        update_user_meta(
+            1,
+            '_myaccount_messages',
+            [
+                'tentative_123' => [
+                    'text' => '<a href="https://example.com/enigme">Énigme</a>',
+                    'type' => 'info',
+                ],
+            ]
+        );
+
+        $GLOBALS['test_enigmes_pending'] = [321];
+        $_GET['edition'] = 'open';
+        $_GET['onglet'] = 'tentatives';
+
+        $output = myaccount_get_important_messages();
+
+        $this->assertStringNotContainsString('Votre demande de résolution', $output);
+        $this->assertStringNotContainsString('Important ! Des tentatives attendent votre action', $output);
+
+        delete_user_meta(1, '_myaccount_messages');
+        unset($GLOBALS['test_enigmes_pending'], $_GET['edition'], $_GET['onglet']);
     }
 
     public function test_flash_message_is_displayed_once(): void
