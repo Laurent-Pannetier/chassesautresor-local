@@ -280,7 +280,13 @@ if ($edition_active && !$est_complet) {
           $logo_url = $logo ? $logo[0] : wp_get_attachment_image_src(3927, 'thumbnail')[0];
       ?>
         <div class="chasse-organisateur">
-          <img class="chasse-organisateur__logo" src="<?= esc_url($logo_url); ?>" alt="<?= esc_attr__('Logo de l\u2019organisateur', 'chassesautresor-com'); ?>">
+          <img
+            class="chasse-organisateur__logo visuel-cpt"
+            src="<?= esc_url($logo_url); ?>"
+            alt="<?= esc_attr__('Logo de l\u2019organisateur', 'chassesautresor-com'); ?>"
+            data-cpt="organisateur"
+            data-post-id="<?= esc_attr($organisateur_id); ?>"
+          />
           <span class="chasse-organisateur__texte">
             <a class="chasse-organisateur__nom" href="<?= esc_url(get_permalink($organisateur_id)); ?>"><?= esc_html($organisateur_nom); ?></a>
             <span class="chasse-organisateur__presente"><?php esc_html_e('présente', 'chassesautresor-com'); ?></span>
