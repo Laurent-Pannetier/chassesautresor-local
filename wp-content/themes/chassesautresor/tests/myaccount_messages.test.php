@@ -464,30 +464,16 @@ class MyAccountMessagesTest extends TestCase
         delete_user_meta(1, '_myaccount_messages');
     }
 
-    public function test_messages_hidden_on_tentatives_tab(): void
+    public function test_no_pending_attempt_messages_for_organizer(): void
     {
-        update_user_meta(
-            1,
-            '_myaccount_messages',
-            [
-                'tentative_123' => [
-                    'text' => '<a href="https://example.com/enigme">Énigme</a>',
-                    'type' => 'info',
-                ],
-            ]
-        );
-
         $GLOBALS['test_enigmes_pending'] = [321];
-        $_GET['edition'] = 'open';
-        $_GET['onglet'] = 'tentatives';
 
         $output = myaccount_get_important_messages();
 
         $this->assertStringNotContainsString('Votre demande de résolution', $output);
         $this->assertStringNotContainsString('Important ! Des tentatives attendent votre action', $output);
 
-        delete_user_meta(1, '_myaccount_messages');
-        unset($GLOBALS['test_enigmes_pending'], $_GET['edition'], $_GET['onglet']);
+        unset($GLOBALS['test_enigmes_pending']);
     }
 
     public function test_flash_message_is_displayed_once(): void

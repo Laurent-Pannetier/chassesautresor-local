@@ -549,12 +549,7 @@ function myaccount_get_persistent_messages(int $user_id): array
         }
     }
 
-    $is_tentatives_tab = est_organisateur()
-        && isset($_GET['edition'], $_GET['onglet'])
-        && $_GET['edition'] === 'open'
-        && $_GET['onglet'] === 'tentatives';
-
-    if (!empty($tentatives) && !$is_tentatives_tab) {
+    if (!empty($tentatives)) {
         if (count($tentatives) === 1) {
             $output[] = [
                 'text' => sprintf(
@@ -664,11 +659,7 @@ function myaccount_get_important_messages(): string
         myaccount_get_persistent_messages($current_user_id),
         myaccount_get_flash_messages($current_user_id)
     );
-    $flash    = '';
-    $is_tentatives_tab = est_organisateur()
-        && isset($_GET['edition'], $_GET['onglet'])
-        && $_GET['edition'] === 'open'
-        && $_GET['onglet'] === 'tentatives';
+    $flash = '';
 
     if (isset($_GET['points_modifies']) && $_GET['points_modifies'] === '1') {
         $flash = '<p class="flash flash--success">' . __('Points mis à jour avec succès.', 'chassesautresor') . '</p>';
@@ -725,24 +716,6 @@ function myaccount_get_important_messages(): string
     if (est_organisateur()) {
         $current_user_id   = get_current_user_id();
         $organisateur_id   = get_organisateur_from_user($current_user_id);
-        if ($organisateur_id) {
-            $enigmes = recuperer_enigmes_tentatives_en_attente($organisateur_id);
-            if (!empty($enigmes) && !$is_tentatives_tab) {
-                $links = array_map(
-                    function ($id) {
-                        $url   = esc_url(get_permalink($id));
-                        $title = esc_html(get_the_title($id));
-                        return '<a class="enigme-link" href="' . $url . '">' . $title . '</a>';
-                    },
-                    $enigmes
-                );
-
-                $messages[] = [
-                    'text' => '⚠️ ' . __('Important ! Des tentatives attendent votre action :', 'chassesautresor-com') . ' ' . implode('', $links),
-                    'type' => 'warning',
-                ];
-            }
-        }
 
         global $wpdb;
         $repo       = new PointsRepository($wpdb);
