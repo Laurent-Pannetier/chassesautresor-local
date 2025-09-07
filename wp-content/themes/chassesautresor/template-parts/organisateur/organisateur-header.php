@@ -4,7 +4,7 @@ $organisateur_id = get_organisateur_id_from_context($args ?? []);
 $peut_modifier = utilisateur_peut_modifier_post($organisateur_id);
 
 
-$logo_id = get_field('profil_public_logo_organisateur', $organisateur_id, false);
+$logo_id = get_field('logo_organisateur', $organisateur_id, false);
 $logo = wp_get_attachment_image_src($logo_id, 'thumbnail');
 $logo_url = $logo ? $logo[0] : wp_get_attachment_image_src(3927, 'thumbnail')[0];
 
@@ -50,7 +50,7 @@ $classes_header .= ' container container--boxed';
       <div class="colonne-logo">
         <div class="champ-organisateur champ-img champ-logo <?= empty($logo_id) ? 'champ-vide' : ''; ?>"
           data-cpt="organisateur"
-          data-champ="profil_public_logo_organisateur"
+          data-champ="logo_organisateur"
           data-post-id="<?= esc_attr($organisateur_id); ?>">
 
           <div class="champ-affichage">
