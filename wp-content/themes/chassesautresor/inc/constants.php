@@ -1,8 +1,12 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
-const ROLE_ORGANISATEUR = 'organisateur';
-const ROLE_ORGANISATEUR_CREATION = 'organisateur_creation';
+if (!defined('ROLE_ORGANISATEUR')) {
+    define('ROLE_ORGANISATEUR', 'organisateur');
+}
+if (!defined('ROLE_ORGANISATEUR_CREATION')) {
+    define('ROLE_ORGANISATEUR_CREATION', 'organisateur_creation');
+}
 
 // --------------------------------------------------
 // 🔢 Solution states
