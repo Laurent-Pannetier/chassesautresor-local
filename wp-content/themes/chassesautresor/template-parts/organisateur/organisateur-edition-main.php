@@ -141,7 +141,7 @@ $is_complete = (
                         'label' => function () {
                             ?>
                             <label>
-                                <?php esc_html_e('Logo organisateur', 'chassesautresor-com'); ?>
+                                <?= esc_html__('Logo de l\'organisateur', 'chassesautresor-com'); ?>
                                 <span class="champ-obligatoire">*</span>
                             </label>
                             <?php
@@ -156,10 +156,10 @@ $is_complete = (
                                         data-champ="profil_public_logo_organisateur"
                                         data-cpt="organisateur"
                                         data-post-id="<?= esc_attr($organisateur_id); ?>"
-                                        aria-label="<?= esc_attr__('Modifier le logo', 'chassesautresor-com'); ?>">
+                                        aria-label="<?= esc_attr__('Modifier le logo de l\'organisateur', 'chassesautresor-com'); ?>">
                                         <img
                                             src="<?= esc_url($logo_url ?: $transparent); ?>"
-                                            alt="<?= esc_attr__('Logo de l’organisateur', 'chassesautresor-com'); ?>"
+                                            alt="<?= esc_attr__('Logo de l\'organisateur', 'chassesautresor-com'); ?>"
                                         />
                                         <span class="champ-ajout-image">
                                             <?= esc_html__('ajouter une image', 'chassesautresor-com'); ?>
