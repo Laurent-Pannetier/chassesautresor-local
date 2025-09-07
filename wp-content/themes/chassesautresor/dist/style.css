@@ -2898,6 +2898,10 @@ body.edition-active-enigme .single-enigme-main .champ-img .champ-modifier {
   display: none;
 }
 
+.champ-img.champ-vide img[data-placeholder="1"] {
+  display: inline-block;
+}
+
 .champ-img:not(.champ-vide) .champ-ajout-image {
   display: none;
 }

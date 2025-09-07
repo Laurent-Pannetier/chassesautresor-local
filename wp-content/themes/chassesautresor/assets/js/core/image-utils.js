@@ -9,6 +9,7 @@ function initChampImage(bloc) {
   const input = bloc.querySelector('.champ-input');
   const image = bloc.querySelector('img');
   const feedback = bloc.querySelector('.champ-feedback');
+  const ajouter = bloc.querySelector('.champ-ajout-image');
 
   if (!champ || !cpt || !postId || !input || !image) return;
 
@@ -45,6 +46,9 @@ function initChampImage(bloc) {
       image.srcset = thumbUrl;
       bloc.classList.remove('champ-vide');
       input.value = id;
+      if (ajouter) {
+        ajouter.style.display = 'none';
+      }
 
       if (typeof window.mettreAJourResumeInfos === 'function') {
         window.mettreAJourResumeInfos();

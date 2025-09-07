@@ -8,9 +8,9 @@ window.mettreAJourResumeInfos = function () {
   if (panneauOrganisateur) {
     panneauOrganisateur.querySelectorAll('.resume-infos li[data-champ]').forEach((ligne) => {
       const champ = ligne.dataset.champ;
-      const bloc = document.querySelector('.champ-organisateur[data-champ="' + champ + '"]');
+      const bloc = ligne;
 
-      let estRempli = bloc && !bloc.classList.contains('champ-vide');
+      let estRempli = !bloc.classList.contains('champ-vide');
 
       if (champ === 'post_title') {
         const valeurTitre = bloc?.querySelector('.champ-input')?.value.trim().toLowerCase();

@@ -23,6 +23,7 @@ $logo        = get_field('logo_organisateur', $organisateur_id);
 $logo_id     = is_array($logo) ? ($logo['ID'] ?? null) : $logo;
 $logo_src    = $logo_id ? wp_get_attachment_image_src($logo_id, 'thumbnail') : false;
 $logo_url    = is_array($logo_src) ? $logo_src[0] : null;
+$placeholder_url = wp_get_attachment_image_src(3927, 'thumbnail')[0];
 $description  = get_field('description_longue', $organisateur_id);
 $reseaux      = get_field('reseaux_sociaux', $organisateur_id);
 $site         = get_field('lien_site_web', $organisateur_id);
@@ -146,8 +147,7 @@ $is_complete = (
                             </label>
                             <?php
                         },
-                        'content' => function () use ($logo_url, $logo_id, $peut_editer, $organisateur_id) {
-                            $transparent = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+                        'content' => function () use ($logo_url, $logo_id, $peut_editer, $organisateur_id, $placeholder_url) {
                             ?>
                             <div class="champ-affichage">
                                 <?php if ($peut_editer) : ?>
@@ -158,7 +158,8 @@ $is_complete = (
                                         data-post-id="<?= esc_attr($organisateur_id); ?>"
                                         aria-label="<?= esc_attr__('Modifier le logo', 'chassesautresor-com'); ?>">
                                         <img
-                                            src="<?= esc_url($logo_url ?: $transparent); ?>"
+                                            src="<?= esc_url($logo_url ?: $placeholder_url); ?>"
+                                            <?php if (!$logo_url) : ?>data-placeholder="1"<?php endif; ?>
                                             alt="<?= esc_attr__('Logo de l’organisateur', 'chassesautresor-com'); ?>"
                                         />
                                         <span class="champ-ajout-image">
