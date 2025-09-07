@@ -2938,7 +2938,7 @@ body.edition-active .champ-organisateur.champ-vide:hover {
 }
 
 .champ-vide-obligatoire {
-  animation: clignoteTitre 1s infinite alternate;
+  box-shadow: 0 0 8px var(--color-editor-error);
 }
 
 @keyframes clignoteTitre {
