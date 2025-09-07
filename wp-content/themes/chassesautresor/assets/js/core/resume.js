@@ -31,6 +31,11 @@ window.mettreAJourResumeInfos = function () {
         estRempli = (ul && ul.children.length > 0) || aDesLiens;
       }
 
+      if (champ === 'profil_public_logo_organisateur') {
+        const image = bloc?.querySelector('img');
+        estRempli = image && !image.src.includes('logo-cat_icone-s');
+      }
+
 
       // Mise à jour visuelle + marquage obligatoire
       mettreAJourLigneResume(ligne, champ, estRempli, 'organisateur');

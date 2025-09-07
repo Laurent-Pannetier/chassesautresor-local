@@ -4,9 +4,13 @@ $organisateur_id = get_organisateur_id_from_context($args ?? []);
 $peut_modifier = utilisateur_peut_modifier_post($organisateur_id);
 
 
-$logo_id = get_field('profil_public_logo_organisateur', $organisateur_id, false);
-$logo = wp_get_attachment_image_src($logo_id, 'thumbnail');
-$logo_url = $logo ? $logo[0] : wp_get_attachment_image_src(3927, 'thumbnail')[0];
+$logo_id = (int) get_field('profil_public_logo_organisateur', $organisateur_id, false);
+$placeholder_logo_id = 3927;
+if ($logo_id === $placeholder_logo_id) {
+    $logo_id = 0;
+}
+$logo = $logo_id ? wp_get_attachment_image_src($logo_id, 'thumbnail') : false;
+$logo_url = $logo ? $logo[0] : wp_get_attachment_image_src($placeholder_logo_id, 'thumbnail')[0];
 
 $titre_organisateur = get_post_field('post_title', $organisateur_id);
 

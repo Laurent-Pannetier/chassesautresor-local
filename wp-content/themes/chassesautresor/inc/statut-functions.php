@@ -651,8 +651,8 @@ function organisateur_est_complet(int $organisateur_id): bool
 
     $titre_ok = titre_est_valide($organisateur_id);
 
-    $logo_id = get_post_meta($organisateur_id, 'profil_public_logo_organisateur', true);
-    $logo_ok = !empty($logo_id);
+    $logo_id = (int) get_post_meta($organisateur_id, 'profil_public_logo_organisateur', true);
+    $logo_ok = !empty($logo_id) && $logo_id !== 3927;
 
     $description_field = get_field('description_longue', $organisateur_id);
     $description = trim((string) $description_field);

@@ -18,12 +18,11 @@ $edition_active = in_array(ROLE_ORGANISATEUR_CREATION, $roles) && !$cache_comple
 $user_points    = function_exists('get_user_points') ? get_user_points((int) $current_user->ID) : 0;
 
 // Post
-$titre       = get_post_field('post_title', $organisateur_id);
-$logo        = get_field('profil_public_logo_organisateur', $organisateur_id);
-$logo_id     = is_array($logo) ? ($logo['ID'] ?? null) : $logo;
-$logo_src    = $logo_id ? wp_get_attachment_image_src($logo_id, 'thumbnail') : false;
-$logo_url    = is_array($logo_src) ? $logo_src[0] : null;
-$logo_id_db  = get_post_meta($organisateur_id, 'profil_public_logo_organisateur', true);
+$titre      = get_post_field('post_title', $organisateur_id);
+$logo_id_db = (int) get_post_meta($organisateur_id, 'profil_public_logo_organisateur', true);
+$placeholder_logo_id = 3927; // ID du logo par défaut
+$logo_id    = $logo_id_db && $logo_id_db !== $placeholder_logo_id ? $logo_id_db : null;
+$logo_url   = $logo_id ? wp_get_attachment_image_src($logo_id, 'thumbnail')[0] : null;
 $description  = get_field('description_longue', $organisateur_id);
 $reseaux      = get_field('reseaux_sociaux', $organisateur_id);
 $site         = get_field('lien_site_web', $organisateur_id);
@@ -53,11 +52,11 @@ if (function_exists('charger_script_conversion')) {
 
 $peut_editer_titre = champ_est_editable('post_title', $organisateur_id);
 
-$is_complete = (
-  !empty($titre) &&
-  !empty($logo) &&
-  !empty($description)
-);
+  $is_complete = (
+    !empty($titre) &&
+    !empty($logo_id) &&
+    !empty($description)
+  );
 
 ?>
 
@@ -132,7 +131,7 @@ $is_complete = (
                     null,
                     [
                         'class'      => 'champ-organisateur champ-img champ-logo ligne-logo '
-                            . (empty($logo_id_db) ? 'champ-vide' : 'champ-rempli')
+                            . (empty($logo_id) ? 'champ-vide' : 'champ-rempli')
                             . ($peut_editer ? '' : ' champ-desactive'),
                         'attributes' => [
                             'data-champ'   => 'profil_public_logo_organisateur',
@@ -179,7 +178,7 @@ $is_complete = (
                                     <?php endif; ?>
                                 <?php endif; ?>
                             </div>
-                            <input type="hidden" class="champ-input" value="<?= esc_attr($logo_id_db ?: '') ?>">
+                            <input type="hidden" class="champ-input" value="<?= esc_attr($logo_id ?: '') ?>">
                             <div class="champ-feedback"></div>
                             <?php
                         },
