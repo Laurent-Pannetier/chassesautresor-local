@@ -21,20 +21,25 @@ function cta_render_proposition_cell(string $text, bool $expanded = false, int $
     $needs_toggle = mb_strlen($text) > $limit;
     $excerpt      = $needs_toggle ? mb_substr($text, 0, $limit) . '…' : $text;
 
-    $excerpt_html = '<span class="proposition-excerpt"' . ($expanded ? ' hidden' : '') . '>' . esc_html($excerpt) . '</span>';
+    $excerpt_html = '<span class="proposition-excerpt"' . ($expanded && $needs_toggle ? ' hidden' : '') . '>' .
+        esc_html($excerpt) . '</span>';
     $full_html    = '';
     $button_html  = '';
     $class        = 'proposition-cell';
 
     if ($needs_toggle) {
-        $full_html = '<span class="proposition-full"' . ($expanded ? '' : ' hidden') . '>' . esc_html($text) . '</span>';
+        $full_html = '<span class="proposition-full"' . ($expanded ? '' : ' hidden') . '>' .
+            esc_html($text) . '</span>';
 
         $label_more = esc_attr__('Voir plus', 'chassesautresor-com');
         $label_less = esc_attr__('Voir moins', 'chassesautresor-com');
         $aria_label = $expanded ? $label_less : $label_more;
         $icon       = $expanded ? 'fa-minus' : 'fa-ellipsis';
 
-        $button_html = '<button type="button" class="toggle-proposition" aria-expanded="' . ($expanded ? 'true' : 'false') . '" aria-label="' . $aria_label . '" data-more="' . $label_more . '" data-less="' . $label_less . '"><i class="fa-solid ' . $icon . '" aria-hidden="true"></i></button>';
+        $button_html = '<button type="button" class="toggle-proposition" aria-expanded="' .
+            ($expanded ? 'true' : 'false') . '" aria-label="' . $aria_label .
+            '" data-more="' . $label_more . '" data-less="' . $label_less .
+            '"><i class="fa-solid ' . $icon . '" aria-hidden="true"></i></button>';
     }
 
     if ($expanded && $needs_toggle) {
