@@ -132,11 +132,16 @@ function get_site_messages(): string
 
     $uri = $_SERVER['REQUEST_URI'] ?? '';
     if (str_starts_with($uri, '/voir-image-enigme')) {
+        error_log('[get_site_messages] bypass pour requête image');
         return '';
     }
-
-    if (session_status() !== PHP_SESSION_ACTIVE && !headers_sent()) {
+    if (headers_sent($file, $line)) {
+        error_log("[get_site_messages] headers déjà envoyés ($file:$line)");
+        return '';
+    }
+    if (session_status() !== PHP_SESSION_ACTIVE) {
         session_start();
+        error_log('[get_site_messages] session démarrée');
     }
 
     if (!empty($_SESSION['cat_site_messages'])) {
