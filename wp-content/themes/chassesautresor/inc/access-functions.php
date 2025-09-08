@@ -1235,10 +1235,10 @@ add_action('init', function () {
  * Le handler effectue les vérifications d’accès, puis sert le fichier s’il est autorisé.
  */
 add_action('template_redirect', function () {
-    $voir_image_enigme = get_query_var('voir_image_enigme');
-    error_log('voir_image_enigme query var: ' . $voir_image_enigme);
+    $qv = get_query_var('voir_image_enigme');
+    error_log('voir_image_enigme query var: ' . var_export($qv, true) . ' | URI=' . $_SERVER['REQUEST_URI']);
 
-    if ((int) $voir_image_enigme !== 1) {
+    if ((int) $qv !== 1) {
         return;
     }
 
