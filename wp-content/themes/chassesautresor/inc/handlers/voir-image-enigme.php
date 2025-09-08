@@ -2,7 +2,7 @@
 // 🔒 Vérification minimale
 if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
     http_response_code(400);
-    exit('ID manquant ou invalide');
+    exit(__('ID manquant ou invalide', 'chassesautresor-com'));
 }
 
 $image_id = (int) $_GET['id'];
@@ -17,16 +17,37 @@ if (!function_exists('utilisateur_peut_voir_enigme')) {
 }
 
 // 🧩 Récupération de l'énigme associée à cette image
-$parent_id = wp_get_post_parent_id($image_id);
-if (!$parent_id || get_post_type($parent_id) !== 'enigme') {
+global $wpdb;
+$enigme_id = 0;
+
+$table = $wpdb->prefix . 'acf_enigme_visuel_image';
+if ($wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $table)) === $table) {
+    $enigme_id = (int) $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT post_id FROM $table WHERE value = %d LIMIT 1",
+            $image_id
+        )
+    );
+}
+
+if (!$enigme_id) {
+    $search = '%:"' . $wpdb->esc_like((string) $image_id) . '";%';
+    $sql    = "SELECT post_id FROM {$wpdb->postmeta} "
+        . "WHERE meta_key = 'enigme_visuel_image' AND meta_value LIKE %s LIMIT 1";
+    $enigme_id = (int) $wpdb->get_var(
+        $wpdb->prepare($sql, $search)
+    );
+}
+
+if (!$enigme_id) {
     http_response_code(403);
-    exit('Image non autorisée');
+    exit(__('Image non autorisée', 'chassesautresor-com'));
 }
 
 // 🔐 Vérification d'accès
-if (!utilisateur_peut_voir_enigme($parent_id)) {
+if (!utilisateur_peut_voir_enigme($enigme_id)) {
     http_response_code(403);
-    exit('Accès refusé');
+    exit(__('Accès refusé', 'chassesautresor-com'));
 }
 
 // 📦 Récupération du chemin de l'image
@@ -43,7 +64,7 @@ if (!$path && $taille !== 'full') {
 
 if (!$path) {
     http_response_code(404);
-    exit('Fichier introuvable');
+    exit(__('Fichier introuvable', 'chassesautresor-com'));
 }
 
 // 🧹 Nettoyage WordPress
