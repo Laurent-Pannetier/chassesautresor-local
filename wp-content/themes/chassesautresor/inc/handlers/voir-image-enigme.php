@@ -101,7 +101,9 @@ if (($if_none_match && trim($if_none_match) === $etag) ||
 
 header('Content-Type: ' . $mime);
 header('Content-Length: ' . filesize($path));
-$res = readfile($path);
-error_log('[voir-image-enigme] readfile(' . $path . ') → ' . var_export($res, true));
+$bytes = readfile($path);
+if (defined('WP_DEBUG') && WP_DEBUG) {
+    error_log('[voir-image-enigme] readfile(' . $path . ') => ' . var_export($bytes, true));
+}
 exit;
 
