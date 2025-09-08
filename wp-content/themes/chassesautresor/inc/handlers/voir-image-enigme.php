@@ -88,6 +88,7 @@ do_action('litespeed_control_set_nocache');
 // 📅 Cache (compatible CDN)
 $mtime = filemtime($path);
 $etag  = '"' . md5($mtime . filesize($path)) . '"';
+error_log('[voir-image-enigme] cache headers mtime=' . $mtime . ', etag=' . $etag);
 
 header('Cache-Control: public, max-age=3600, immutable');
 header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $mtime) . ' GMT');
