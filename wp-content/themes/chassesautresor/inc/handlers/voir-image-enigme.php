@@ -10,7 +10,7 @@ $taille   = $_GET['taille'] ?? 'full';
 
 error_log('[voir-image-enigme] handler start for image ' . $image_id);
 if (headers_sent($file, $line)) {
-    error_log('[voir-image-enigme] headers already sent in ' . $file . ':' . $line);
+    error_log("[voir-image-enigme] headers déjà envoyés ($file:$line)");
 }
 
 // 🔁 Chargement des fonctions
@@ -59,12 +59,14 @@ if (!utilisateur_peut_voir_enigme($enigme_id)) {
 $info = trouver_chemin_image($image_id, $taille);
 $path = $info['path'] ?? null;
 $mime = $info['mime'] ?? 'application/octet-stream';
+error_log('[voir-image-enigme] path=' . var_export($path, true) . ', mime=' . var_export($mime, true));
 
 // 🔁 Fallback automatique vers full si fichier manquant
 if (!$path && $taille !== 'full') {
     $info = trouver_chemin_image($image_id, 'full');
     $path = $info['path'] ?? null;
     $mime = $info['mime'] ?? 'application/octet-stream';
+    error_log('[voir-image-enigme] path=' . var_export($path, true) . ', mime=' . var_export($mime, true));
 }
 
 if (!$path) {
@@ -99,6 +101,7 @@ if (($if_none_match && trim($if_none_match) === $etag) ||
 
 header('Content-Type: ' . $mime);
 header('Content-Length: ' . filesize($path));
-readfile($path);
+$res = readfile($path);
+error_log('[voir-image-enigme] readfile(' . $path . ') → ' . var_export($res, true));
 exit;
 
