@@ -6,11 +6,9 @@ function initChampImage(bloc) {
   const cpt = bloc.dataset.cpt;
   const postId = bloc.dataset.postId;
 
-  const input = bloc.querySelector('.champ-input');
-  const image = bloc.querySelector('img');
   const feedback = bloc.querySelector('.champ-feedback');
 
-  if (!champ || !cpt || !postId || !input || !image) return;
+  if (!champ || !cpt || !postId) return;
 
   // ✅ Création du frame à la volée quand appelé
   const ouvrirMedia = () => {
@@ -41,10 +39,21 @@ function initChampImage(bloc) {
       const thumbUrl = selection?.attributes?.sizes?.thumbnail?.url || mediumUrl;
       if (!id || !fullUrl) return;
 
-      image.src = thumbUrl;
-      image.srcset = thumbUrl;
-      bloc.classList.remove('champ-vide');
-      input.value = id;
+      document
+        .querySelectorAll(`.champ-${cpt}[data-champ="${champ}"][data-post-id="${postId}"]`)
+        .forEach((el) => {
+          el.classList.remove('champ-vide');
+          el.classList.add('champ-rempli');
+          const imgEl = el.querySelector('img');
+          if (imgEl) {
+            imgEl.src = thumbUrl;
+            imgEl.srcset = thumbUrl;
+          }
+          const hidden = el.querySelector('.champ-input');
+          if (hidden) {
+            hidden.value = id;
+          }
+        });
 
       if (typeof window.mettreAJourResumeInfos === 'function') {
         window.mettreAJourResumeInfos();
