@@ -1238,7 +1238,7 @@ add_action('template_redirect', function () {
     $qv = get_query_var('voir_image_enigme');
     error_log('voir_image_enigme query var: ' . var_export($qv, true) . ' | URI=' . $_SERVER['REQUEST_URI']);
 
-    if ((int) $qv !== 1) {
+    if ((int) get_query_var('voir_image_enigme') !== 1) {
         return;
     }
 
