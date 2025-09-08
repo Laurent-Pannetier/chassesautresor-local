@@ -60,6 +60,9 @@ $info = trouver_chemin_image($image_id, $taille);
 $path = $info['path'] ?? null;
 $mime = $info['mime'] ?? 'application/octet-stream';
 error_log('[voir-image-enigme] path=' . var_export($path, true) . ', mime=' . var_export($mime, true));
+if (headers_sent($file, $line)) {
+    error_log('[voir-image-enigme] headers already sent in ' . $file . ':' . $line);
+}
 
 // 🔁 Fallback automatique vers full si fichier manquant
 if (!$path && $taille !== 'full') {
