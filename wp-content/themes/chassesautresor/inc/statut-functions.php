@@ -651,7 +651,7 @@ function organisateur_est_complet(int $organisateur_id): bool
 
     $titre_ok = titre_est_valide($organisateur_id);
 
-    $logo = get_field('profil_public_logo_organisateur', $organisateur_id);
+    $logo = get_field('logo_organisateur', $organisateur_id);
     $logo_ok = !empty($logo);
 
     $description_field = get_field('description_longue', $organisateur_id);
