@@ -21,7 +21,9 @@ $user_points    = function_exists('get_user_points') ? get_user_points((int) $cu
 $titre       = get_post_field('post_title', $organisateur_id);
 $logo        = get_field('logo_organisateur', $organisateur_id);
 $logo_id     = is_array($logo) ? ($logo['ID'] ?? null) : $logo;
-$logo_src    = $logo_id ? wp_get_attachment_image_src($logo_id, 'thumbnail') : false;
+$placeholder_id = 3927;
+$logo_src    = $logo_id ? wp_get_attachment_image_src($logo_id, 'thumbnail')
+    : wp_get_attachment_image_src($placeholder_id, 'thumbnail');
 $logo_url    = is_array($logo_src) ? $logo_src[0] : null;
 $description  = get_field('description_longue', $organisateur_id);
 $reseaux      = get_field('reseaux_sociaux', $organisateur_id);
