@@ -95,6 +95,9 @@ $if_modified_since = $_SERVER['HTTP_IF_MODIFIED_SINCE'] ?? '';
 
 if (($if_none_match && trim($if_none_match) === $etag) ||
     ($if_modified_since && strtotime($if_modified_since) >= $mtime)) {
+    if (defined('WP_DEBUG') && WP_DEBUG) {
+        error_log('[voir-image-enigme] 304 not modified for image ' . $image_id);
+    }
     http_response_code(304);
     exit;
 }
