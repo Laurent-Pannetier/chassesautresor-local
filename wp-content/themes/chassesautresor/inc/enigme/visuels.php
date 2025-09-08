@@ -209,14 +209,17 @@ function afficher_visuels_enigme(int $enigme_id): void
  */
 function get_image_enigme(int $post_id, string $size = 'medium'): ?string
 {
-    $images = get_field('enigme_visuel_image', $post_id);
+    $images   = get_field('enigme_visuel_image', $post_id);
+    $image_id = ID_IMAGE_PLACEHOLDER_ENIGME;
 
     if (is_array($images) && !empty($images[0]['ID'])) {
-        return wp_get_attachment_image_url($images[0]['ID'], $size);
+        $image_id = (int) $images[0]['ID'];
     }
 
-    // 🧩 Placeholder image : image statique ou ID définie par toi
-    return wp_get_attachment_image_url(ID_IMAGE_PLACEHOLDER_ENIGME, $size);
+    return esc_url(add_query_arg([
+        'id'     => $image_id,
+        'taille' => $size,
+    ], site_url('/voir-image-enigme')));
 }
 
 
