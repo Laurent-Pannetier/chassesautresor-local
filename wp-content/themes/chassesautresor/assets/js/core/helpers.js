@@ -145,13 +145,24 @@ window.mettreAJourTitreMenuEnigme = function (valeur) {
 function mettreAJourVisuelCPT(cpt, postId, nouvelleUrl, fullUrl = nouvelleUrl) {
   document
     .querySelectorAll(`img.visuel-cpt[data-cpt="${cpt}"][data-post-id="${postId}"]`)
-    .forEach(img => {
+    .forEach((img) => {
       img.src = nouvelleUrl;
       img.srcset = nouvelleUrl;
 
-      const lien = img.closest('a');
+      const lien = img.closest('a.fancybox');
       if (lien) {
         lien.href = fullUrl;
+      }
+
+      img.removeAttribute('data-placeholder');
+
+      const bloc = img.closest('.champ-img');
+      if (bloc) {
+        bloc.classList.remove('champ-vide');
+        const ajouter = bloc.querySelector('.champ-ajout-image');
+        if (ajouter) {
+          ajouter.style.display = 'none';
+        }
       }
     });
 }
