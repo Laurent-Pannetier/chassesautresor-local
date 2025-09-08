@@ -398,6 +398,7 @@ Requis : non
 — logo_organisateur —
 Type : image
 Label : Votre Logo
+Ancien nom : profil_public_logo_organisateur
 Instructions : (vide)
 Requis : non
 ----------------------------------------

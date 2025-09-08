@@ -3,7 +3,7 @@ const flush = () => new Promise(resolve => setTimeout(resolve, 0));
 describe('initChampImage', () => {
   beforeEach(() => {
     document.body.innerHTML = `
-      <div class="champ-organisateur champ-img" data-champ="profil_public_logo_organisateur" data-cpt="organisateur" data-post-id="123">
+      <div class="champ-organisateur champ-img" data-champ="logo_organisateur" data-cpt="organisateur" data-post-id="123">
         <img src="" />
         <input class="champ-input" type="hidden" />
         <div class="champ-feedback"></div>
