@@ -101,8 +101,10 @@ if (($if_none_match && trim($if_none_match) === $etag) ||
     if (defined('WP_DEBUG') && WP_DEBUG) {
         error_log('[voir-image-enigme] 304 not modified for image ' . $image_id);
     }
-    http_response_code(304);
-    exit;
+    // Les lignes ci-dessous sont désactivées afin de toujours renvoyer le fichier avec un
+    // code 200 et confirmer que le bloc de cache est en cause.
+    // http_response_code(304);
+    // exit;
 }
 
 header('Content-Type: ' . $mime);
