@@ -128,12 +128,12 @@ function remove_site_message(string $key): void
  */
 function get_site_messages(): string
 {
-    $requestUri = $_SERVER['REQUEST_URI'] ?? '';
-    if (strpos($requestUri, 'voir-image-enigme') !== false) {
+    $messages = [];
+
+    $uri = $_SERVER['REQUEST_URI'] ?? '';
+    if (str_starts_with($uri, '/voir-image-enigme')) {
         return '';
     }
-
-    $messages = [];
 
     if (session_status() !== PHP_SESSION_ACTIVE) {
         session_start();
