@@ -94,11 +94,23 @@ header('Cache-Control: public, max-age=3600, immutable');
 header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $mtime) . ' GMT');
 header('ETag: ' . $etag);
 
-$if_none_match    = $_SERVER['HTTP_IF_NONE_MATCH'] ?? '';
-$if_modified_since = $_SERVER['HTTP_IF_MODIFIED_SINCE'] ?? '';
+$if_none_match           = $_SERVER['HTTP_IF_NONE_MATCH'] ?? '';
+$if_modified_since       = $_SERVER['HTTP_IF_MODIFIED_SINCE'] ?? '';
+$if_none_match_match     = $if_none_match && trim($if_none_match) === $etag;
+$if_modified_since_match = $if_modified_since && strtotime($if_modified_since) >= $mtime;
 
-if (($if_none_match && trim($if_none_match) === $etag) ||
-    ($if_modified_since && strtotime($if_modified_since) >= $mtime)) {
+if (defined('WP_DEBUG') && WP_DEBUG) {
+    error_log(
+        '[voir-image-enigme] If-None-Match: ' . var_export($if_none_match, true)
+        . ' => ' . ($if_none_match_match ? 'match' : 'no match')
+    );
+    error_log(
+        '[voir-image-enigme] If-Modified-Since: ' . var_export($if_modified_since, true)
+        . ' => ' . ($if_modified_since_match ? 'match' : 'no match')
+    );
+}
+
+if ($if_none_match_match || $if_modified_since_match) {
     if (defined('WP_DEBUG') && WP_DEBUG) {
         error_log('[voir-image-enigme] 304 not modified for image ' . $image_id);
     }
