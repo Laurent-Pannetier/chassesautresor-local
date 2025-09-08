@@ -8,6 +8,11 @@ if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
 $image_id = (int) $_GET['id'];
 $taille   = $_GET['taille'] ?? 'full';
 
+headers_sent($file, $line);
+if ($file) {
+    error_log("[voir-image-enigme] headers already sent in $file:$line");
+}
+
 // 🔁 Chargement des fonctions
 if (!function_exists('trouver_chemin_image')) {
     require_once get_stylesheet_directory() . '/inc/enigme-functions.php';
