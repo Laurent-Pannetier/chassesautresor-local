@@ -1235,7 +1235,12 @@ add_action('init', function () {
  * Le handler effectue les vérifications d’accès, puis sert le fichier s’il est autorisé.
  */
 add_action('template_redirect', function () {
-    if (get_query_var('voir_image_enigme') !== '1') return;
+    $voir_image_enigme = get_query_var('voir_image_enigme');
+    error_log('voir_image_enigme query var: ' . $voir_image_enigme);
+
+    if ((int) $voir_image_enigme !== 1) {
+        return;
+    }
 
     $handler = get_stylesheet_directory() . '/inc/handlers/voir-image-enigme.php';
 
