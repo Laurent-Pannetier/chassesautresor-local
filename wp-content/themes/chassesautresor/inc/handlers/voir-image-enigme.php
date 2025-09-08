@@ -1,12 +1,18 @@
 <?php
 // 🔒 Vérification minimale
 if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
+    if (defined('WP_DEBUG') && WP_DEBUG) {
+        error_log('[voir-image-enigme] ID manquant ou invalide');
+    }
     http_response_code(400);
     exit(__('ID manquant ou invalide', 'chassesautresor-com'));
 }
 
 $image_id = (int) $_GET['id'];
 $taille   = $_GET['taille'] ?? 'full';
+if (defined('WP_DEBUG') && WP_DEBUG) {
+    error_log('[voir-image-enigme] Demande d\'image ' . $image_id . ' taille ' . $taille);
+}
 
 // 🔁 Chargement des fonctions
 if (!function_exists('trouver_chemin_image')) {
@@ -40,12 +46,18 @@ if (!$enigme_id) {
 }
 
 if (!$enigme_id) {
+    if (defined('WP_DEBUG') && WP_DEBUG) {
+        error_log('[voir-image-enigme] Image ' . $image_id . ' non liée à une énigme');
+    }
     http_response_code(403);
     exit(__('Image non autorisée', 'chassesautresor-com'));
 }
 
 // 🔐 Vérification d'accès
 if (!utilisateur_peut_voir_enigme($enigme_id)) {
+    if (defined('WP_DEBUG') && WP_DEBUG) {
+        error_log('[voir-image-enigme] Accès refusé pour l\'image ' . $image_id . ' (énigme ' . $enigme_id . ')');
+    }
     http_response_code(403);
     exit(__('Accès refusé', 'chassesautresor-com'));
 }
@@ -57,12 +69,18 @@ $mime = $info['mime'] ?? 'application/octet-stream';
 
 // 🔁 Fallback automatique vers full si fichier manquant
 if (!$path && $taille !== 'full') {
+    if (defined('WP_DEBUG') && WP_DEBUG) {
+        error_log('[voir-image-enigme] Fallback vers taille full pour l\'image ' . $image_id);
+    }
     $info = trouver_chemin_image($image_id, 'full');
     $path = $info['path'] ?? null;
     $mime = $info['mime'] ?? 'application/octet-stream';
 }
 
 if (!$path) {
+    if (defined('WP_DEBUG') && WP_DEBUG) {
+        error_log('[voir-image-enigme] Fichier introuvable pour l\'image ' . $image_id);
+    }
     http_response_code(404);
     exit(__('Fichier introuvable', 'chassesautresor-com'));
 }
@@ -95,5 +113,8 @@ if (($if_none_match && trim($if_none_match) === $etag) ||
 header('Content-Type: ' . $mime);
 header('Content-Length: ' . filesize($path));
 readfile($path);
+if (defined('WP_DEBUG') && WP_DEBUG) {
+    error_log('[voir-image-enigme] Fichier servi pour l\'image ' . $image_id . ' (' . $path . ')');
+}
 exit;
 

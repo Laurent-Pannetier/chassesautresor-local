@@ -306,7 +306,12 @@ function trouver_chemin_image(int $image_id, string $taille = 'full'): ?array
     $wp_size = $taille === 'full' ? 'full' : $taille;
     $src     = wp_get_attachment_image_src($image_id, $wp_size);
     $url = $src[0] ?? null;
-    if (!$url) return null;
+    if (!$url) {
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            error_log('[trouver_chemin_image] URL introuvable pour l\'image ' . $image_id . ' taille ' . $taille);
+        }
+        return null;
+    }
 
     $upload_dir = wp_get_upload_dir();
     $path = str_replace($upload_dir['baseurl'], $upload_dir['basedir'], $url);
@@ -328,6 +333,10 @@ function trouver_chemin_image(int $image_id, string $taille = 'full'): ?array
             default       => 'application/octet-stream',
         };
         return ['path' => $path, 'mime' => $mime];
+    }
+
+    if (defined('WP_DEBUG') && WP_DEBUG) {
+        error_log('[trouver_chemin_image] Fichier introuvable pour l\'image ' . $image_id . ' (' . $path . ')');
     }
 
     return null;
