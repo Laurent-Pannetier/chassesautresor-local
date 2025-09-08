@@ -135,7 +135,7 @@ function get_site_messages(): string
         return '';
     }
 
-    if (session_status() !== PHP_SESSION_ACTIVE) {
+    if (session_status() !== PHP_SESSION_ACTIVE && !headers_sent()) {
         session_start();
     }
 
