@@ -129,7 +129,7 @@ function remove_site_message(string $key): void
 function get_site_messages(): string
 {
     $requestUri = $_SERVER['REQUEST_URI'] ?? '';
-    if (strpos($requestUri, '/voir-image-enigme') === 0) {
+    if (strpos($requestUri, 'voir-image-enigme') !== false) {
         return '';
     }
 
