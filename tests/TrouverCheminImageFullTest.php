@@ -27,6 +27,8 @@ class TrouverCheminImageFullTest extends TestCase
 
         $capturedSize = null;
 
+        ini_set('error_log', sys_get_temp_dir() . '/phpunit-error.log');
+
         if (!function_exists('wp_get_attachment_image_src')) {
             function wp_get_attachment_image_src($id, $size)
             {
