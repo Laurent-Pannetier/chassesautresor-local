@@ -19,9 +19,11 @@ $user_points    = function_exists('get_user_points') ? get_user_points((int) $cu
 
 // Post
 $titre       = get_post_field('post_title', $organisateur_id);
+$placeholder_logo_id = 3927;
 $logo        = get_field('profil_public_logo_organisateur', $organisateur_id);
 $logo_id     = is_array($logo) ? ($logo['ID'] ?? null) : $logo;
-$logo_src    = $logo_id ? wp_get_attachment_image_src($logo_id, 'thumbnail') : false;
+$is_placeholder = (int) $logo_id === $placeholder_logo_id;
+$logo_src    = ($logo_id && !$is_placeholder) ? wp_get_attachment_image_src($logo_id, 'thumbnail') : false;
 $logo_url    = is_array($logo_src) ? $logo_src[0] : null;
 $description  = get_field('description_longue', $organisateur_id);
 $reseaux      = get_field('reseaux_sociaux', $organisateur_id);
@@ -131,7 +133,7 @@ $is_complete = (
                     null,
                     [
                         'class'      => 'champ-organisateur champ-img champ-logo ligne-logo '
-                            . (empty($logo_id) ? 'champ-vide' : 'champ-rempli')
+                            . ((empty($logo_id) || $is_placeholder) ? 'champ-vide' : 'champ-rempli')
                             . ($peut_editer ? '' : ' champ-desactive'),
                         'attributes' => [
                             'data-champ'   => 'profil_public_logo_organisateur',
@@ -146,8 +148,8 @@ $is_complete = (
                             </label>
                             <?php
                         },
-                        'content' => function () use ($logo_url, $logo_id, $peut_editer, $organisateur_id) {
-                            $transparent = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+                        'content' => function () use ($logo_url, $logo_id, $peut_editer, $organisateur_id, $placeholder_logo_id, $is_placeholder) {
+                            $placeholder_url = wp_get_attachment_image_src($placeholder_logo_id, 'thumbnail')[0];
                             ?>
                             <div class="champ-affichage">
                                 <?php if ($peut_editer) : ?>
@@ -158,7 +160,7 @@ $is_complete = (
                                         data-post-id="<?= esc_attr($organisateur_id); ?>"
                                         aria-label="<?= esc_attr__('Modifier le logo de l\'organisateur', 'chassesautresor-com'); ?>">
                                         <img
-                                            src="<?= esc_url($logo_url ?: $transparent); ?>"
+                                            src="<?= esc_url($logo_url ?: $placeholder_url); ?>"
                                             alt="<?= esc_attr__('Logo de l\'organisateur', 'chassesautresor-com'); ?>"
                                         />
                                         <span class="champ-ajout-image">
@@ -169,16 +171,17 @@ $is_complete = (
                                     <?php if ($logo_url) : ?>
                                         <img
                                             src="<?= esc_url($logo_url); ?>"
-                                            alt="<?= esc_attr__('Logo de l’organisateur', 'chassesautresor-com'); ?>"
+                                            alt="<?= esc_attr__('Logo de l\'organisateur', 'chassesautresor-com'); ?>"
                                         />
                                     <?php else : ?>
-                                        <span class="champ-ajout-image">
-                                            <?= esc_html__('ajouter une image', 'chassesautresor-com'); ?>
-                                        </span>
+                                        <img
+                                            src="<?= esc_url($placeholder_url); ?>"
+                                            alt="<?= esc_attr__('Logo de l\'organisateur', 'chassesautresor-com'); ?>"
+                                        />
                                     <?php endif; ?>
                                 <?php endif; ?>
                             </div>
-                            <input type="hidden" class="champ-input" value="<?= esc_attr($logo_id ?? '') ?>">
+                            <input type="hidden" class="champ-input" value="<?= esc_attr($is_placeholder ? '' : $logo_id); ?>">
                             <div class="champ-feedback"></div>
                             <?php
                         },

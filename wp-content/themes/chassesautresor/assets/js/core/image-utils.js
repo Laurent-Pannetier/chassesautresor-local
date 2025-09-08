@@ -44,6 +44,11 @@ function initChampImage(bloc) {
       image.src = thumbUrl;
       image.srcset = thumbUrl;
       bloc.classList.remove('champ-vide');
+      bloc.classList.add('champ-rempli');
+      const ajout = bloc.querySelector('.champ-ajout-image');
+      if (ajout) {
+        ajout.style.display = 'none';
+      }
       input.value = id;
 
       if (typeof window.mettreAJourResumeInfos === 'function') {
