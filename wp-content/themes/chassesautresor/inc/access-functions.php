@@ -1235,11 +1235,15 @@ add_action('init', function () {
  * Le handler effectue les vérifications d’accès, puis sert le fichier s’il est autorisé.
  */
 add_action('template_redirect', function () {
-    $flag = (int) get_query_var('voir_image_enigme');
-    error_log('voir_image_enigme query var: ' . $flag . ' | URI=' . $_SERVER['REQUEST_URI']);
-    if ($flag !== 1) {
+    $flag = get_query_var('voir_image_enigme');
+    error_log(
+        'template_redirect voir_image_enigme=' . var_export($flag, true) .
+        ' | URI=' . $_SERVER['REQUEST_URI']
+    );
+    if ((int) $flag !== 1) {
         return;
     }
+    error_log('[template_redirect] inclusion du handler voir-image-enigme');
 
     $handler = get_stylesheet_directory() . '/inc/handlers/voir-image-enigme.php';
 
