@@ -5,12 +5,13 @@ if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
     exit(__('ID manquant ou invalide', 'chassesautresor-com'));
 }
 
-if (headers_sent($file, $line)) {
-    error_log("[voir-image-enigme] headers already sent in $file:$line");
-}
-
 $image_id = (int) $_GET['id'];
 $taille   = $_GET['taille'] ?? 'full';
+
+error_log('[voir-image-enigme] handler start for image ' . $image_id);
+if (headers_sent($file, $line)) {
+    error_log('[voir-image-enigme] headers already sent in ' . $file . ':' . $line);
+}
 
 // 🔁 Chargement des fonctions
 if (!function_exists('trouver_chemin_image')) {
