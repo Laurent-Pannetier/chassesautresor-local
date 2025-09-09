@@ -101,7 +101,7 @@ a.bouton-edition-attention {
 
 .header-organisateur__col--logo {
   width: 100%;
-  max-width: 600px;
+  max-width: 500px;
   aspect-ratio: 1 / 1;
   overflow: hidden;
 }
@@ -120,7 +120,24 @@ a.bouton-edition-attention {
   height: 100%;
   object-fit: cover;
   object-position: center;
-  border-radius: 50%;
+}
+
+.description-modal__stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-sm);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.description-modal__stat {
+  background: var(--color-grey-light);
+  color: var(--color-text-fond-clair);
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
 }
 
 /* ========== 📌 ICÔNES D'ACTIONS ========== */
@@ -241,16 +258,6 @@ a.bouton-edition-attention {
   margin-top: var(--space-lg);
 }
 
-.description-modal__stats-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.description-modal__stats-list li {
-  margin-bottom: var(--space-sm);
-}
-
 @media (--bp-desktop) {
   .conteneur-organisateur {
     flex-direction: row;
@@ -264,7 +271,6 @@ a.bouton-edition-attention {
 
   .header-organisateur__col--infos {
     flex: 1;
-    min-height: 600px;
   }
 }
 

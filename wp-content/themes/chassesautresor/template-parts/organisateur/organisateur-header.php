@@ -5,8 +5,8 @@ $peut_modifier = utilisateur_peut_modifier_post($organisateur_id);
 
 
 $logo_id = get_field('logo_organisateur', $organisateur_id, false);
-$logo = wp_get_attachment_image_src($logo_id, [600, 600]);
-$logo_url = $logo ? $logo[0] : wp_get_attachment_image_src(3927, [600, 600])[0];
+$logo = wp_get_attachment_image_src($logo_id, 'full');
+$logo_url = $logo ? $logo[0] : wp_get_attachment_image_src(3927, 'full')[0];
 
 $titre_organisateur = get_post_field('post_title', $organisateur_id);
 
@@ -32,8 +32,7 @@ if (!$email_contact || !is_email($email_contact)) {
 
 $description      = get_field('description_longue', $organisateur_id);
 $description_full = is_string($description) ? $description : '';
-$description_short = wp_trim_words(wp_strip_all_tags($description_full), 50, '…');
-$description_has_more = str_word_count(wp_strip_all_tags($description_full)) > 50;
+$description_short = wp_trim_words(wp_strip_all_tags($description_full), 40, '…');
 
 $date_inscription = mysql2date(get_option('date_format'), get_post_field('post_date', $organisateur_id));
 $nb_chasses       = organisateur_get_nb_chasses_publiees($organisateur_id);
@@ -64,7 +63,7 @@ $classes_header .= ' container container--boxed';
                aria-label="<?= esc_attr__('Voir la page de l\u2019organisateur', 'chassesautresor-com'); ?>">
               <img src="<?= esc_url($logo_url); ?>"
                    alt="<?= esc_attr__('Logo de l\u2019organisateur', 'chassesautresor-com'); ?>"
-                   width="600" height="600"
+                   width="500" height="500"
                    class="header-organisateur__logo visuel-cpt"
                    data-cpt="organisateur"
                    data-post-id="<?= esc_attr($organisateur_id); ?>" />
@@ -79,11 +78,9 @@ $classes_header .= ' container container--boxed';
         <h1 class="header-organisateur__nom"><?= esc_html($titre_organisateur); ?></h1>
         <p class="header-organisateur__description">
           <?= esc_html($description_short); ?>
-          <?php if ($description_has_more) : ?>
-            <button type="button" class="header-organisateur__voir-plus" aria-label="<?= esc_attr__('Voir plus', 'chassesautresor-com'); ?>">
-              <i class="fa-solid fa-circle-plus" aria-hidden="true"></i>
-            </button>
-          <?php endif; ?>
+          <button type="button" class="header-organisateur__voir-plus" aria-label="<?= esc_attr__('Voir plus', 'chassesautresor-com'); ?>">
+            <i class="fa-solid fa-circle-plus" aria-hidden="true"></i>
+          </button>
         </p>
         <div class="header-organisateur__liens-row">
           <?php if ($nb_liens > 0) : ?>
@@ -129,14 +126,20 @@ $classes_header .= ' container container--boxed';
   <div class="description-modal__content">
     <button type="button" class="description-modal__close" aria-label="<?= esc_attr__('Fermer', 'chassesautresor-com'); ?>">✖</button>
     <h2 class="description-modal__title"><?= esc_html($titre_organisateur); ?></h2>
-    <section class="description-modal__section description-modal__section--stats">
-      <h3><?php esc_html_e('Statistiques', 'chassesautresor-com'); ?></h3>
-      <ul class="description-modal__stats-list">
-        <li><strong><?php esc_html_e('Inscrit depuis', 'chassesautresor-com'); ?> :</strong> <?= esc_html($date_inscription); ?></li>
-        <li><strong><?php echo esc_html(_n('Chasse', 'Chasses', $nb_chasses, 'chassesautresor-com')); ?> :</strong> <?= esc_html($nb_chasses); ?></li>
-        <li><strong><?php echo esc_html(_n('Joueur', 'Joueurs', $nb_joueurs, 'chassesautresor-com')); ?> :</strong> <?= esc_html($nb_joueurs); ?></li>
-      </ul>
-    </section>
+    <ul class="description-modal__stats">
+      <li class="description-modal__stat">
+        <?php esc_html_e('Inscrit depuis', 'chassesautresor-com'); ?> :
+        <?= esc_html($date_inscription); ?>
+      </li>
+      <li class="description-modal__stat">
+        <?php echo esc_html(_n('Chasse', 'Chasses', $nb_chasses, 'chassesautresor-com')); ?> :
+        <?= esc_html($nb_chasses); ?>
+      </li>
+      <li class="description-modal__stat">
+        <?php echo esc_html(_n('Joueur', 'Joueurs', $nb_joueurs, 'chassesautresor-com')); ?> :
+        <?= esc_html($nb_joueurs); ?>
+      </li>
+    </ul>
     <section class="description-modal__section description-modal__section--description">
       <h3><?php esc_html_e('Description', 'chassesautresor-com'); ?></h3>
       <?= wpautop($description_full ?: '<em>' . esc_html__('Aucune description fournie pour le moment.', 'chassesautresor-com') . '</em>'); ?>
