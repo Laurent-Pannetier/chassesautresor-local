@@ -17,28 +17,30 @@ if (empty($infos)) {
 ?>
 <div class="carte carte-chasse carte-wide <?php echo esc_attr(trim($infos['classe_statut'] . ' ' . $completion_class)); ?>">
     <div class="carte-wide__image">
-        <span class="badge-statut <?php echo esc_attr($infos['badge_class']); ?>"
-            data-post-id="<?php echo esc_attr($chasse_id); ?>">
-            <?php echo esc_html($infos['statut_label']); ?>
-        </span>
-        <?php
-        $image_id = $infos['image_id'] ?? 0;
-        if ($image_id) :
-            echo wp_get_attachment_image(
-                $image_id,
-                [400, 400],
-                false,
-                [
-                    'alt'     => $infos['titre'],
-                    'loading' => 'lazy',
-                ]
-            );
-        else :
-            ?>
-            <img src="<?php echo esc_url($infos['image']); ?>" alt="<?php echo esc_attr($infos['titre']); ?>" loading="lazy">
+        <a href="<?php echo esc_url($infos['permalink']); ?>" class="carte-wide__image-link">
+            <span class="badge-statut <?php echo esc_attr($infos['badge_class']); ?>"
+                data-post-id="<?php echo esc_attr($chasse_id); ?>">
+                <?php echo esc_html($infos['statut_label']); ?>
+            </span>
             <?php
-        endif;
-        ?>
+            $image_id = $infos['image_id'] ?? 0;
+            if ($image_id) :
+                echo wp_get_attachment_image(
+                    $image_id,
+                    [400, 400],
+                    false,
+                    [
+                        'alt'     => $infos['titre'],
+                        'loading' => 'lazy',
+                    ]
+                );
+            else :
+                ?>
+                <img src="<?php echo esc_url($infos['image']); ?>" alt="<?php echo esc_attr($infos['titre']); ?>" loading="lazy">
+                <?php
+            endif;
+            ?>
+        </a>
     </div>
 
     <div class="carte-wide__contenu">

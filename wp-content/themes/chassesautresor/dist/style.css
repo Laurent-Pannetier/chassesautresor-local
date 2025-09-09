@@ -442,6 +442,20 @@
      object-position: center;
 }
 
+.carte-wide__image-link {
+  display: block;
+  height: 100%;
+}
+
+.carte-wide__image-link img {
+  transition: transform var(--transition-fast);
+}
+
+.carte-wide__image-link:hover img,
+.carte-wide__image-link:focus img {
+  transform: scale(1.05);
+}
+
 .carte-wide__contenu {
   display: flex;
   flex-direction: column;

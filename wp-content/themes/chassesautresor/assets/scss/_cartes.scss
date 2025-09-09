@@ -454,17 +454,31 @@
 }
 
 .carte-wide__image {
-  width: 100%;
-  height: 400px;
-  overflow: hidden;
+    width: 100%;
+    height: 400px;
+    overflow: hidden;
 }
 
 .carte-wide__image img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.carte-wide__image-link {
+    display: block;
+    height: 100%;
+}
+
+.carte-wide__image-link img {
+    transition: transform var(--transition-fast);
+}
+
+.carte-wide__image-link:hover img,
+.carte-wide__image-link:focus img {
+    transform: scale(1.05);
 }
 
 
