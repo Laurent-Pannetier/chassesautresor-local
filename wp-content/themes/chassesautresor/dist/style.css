@@ -8950,6 +8950,13 @@ a.bouton-edition-attention {
   width: 100%;
 }
 
+.header-organisateur__col--logo {
+  width: 100%;
+  max-width: 600px;
+  aspect-ratio: 1/1;
+  overflow: hidden;
+}
+
 .header-organisateur__col--infos {
   display: flex;
   flex-direction: column;
@@ -8961,9 +8968,11 @@ a.bouton-edition-attention {
 
 .header-organisateur__col--logo img {
   width: 100%;
-  height: auto;
+  height: 100%;
   -o-object-fit: cover;
      object-fit: cover;
+  -o-object-position: center;
+     object-position: center;
   border-radius: 50%;
 }
 
@@ -9003,9 +9012,8 @@ a.bouton-edition-attention {
   margin-left: var(--space-md);
   background: none;
   border: none;
-  text-decoration: underline;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 1.2rem;
   color: inherit;
 }
 
@@ -9075,6 +9083,25 @@ a.bouton-edition-attention {
   cursor: pointer;
 }
 
+.description-modal__title {
+  margin-top: 0;
+  text-align: center;
+}
+
+.description-modal__section {
+  margin-top: var(--space-lg);
+}
+
+.description-modal__stats-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.description-modal__stats-list li {
+  margin-bottom: var(--space-sm);
+}
+
 @media (min-width: 1024px) {
   .conteneur-organisateur {
     flex-direction: row;
@@ -9083,11 +9110,6 @@ a.bouton-edition-attention {
   }
   .header-organisateur__col--logo {
     flex: 0 0 600px;
-    max-width: 600px;
-    height: 600px;
-  }
-  .header-organisateur__col--logo img {
-    height: 100%;
   }
   .header-organisateur__col--infos {
     flex: 1;
