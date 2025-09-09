@@ -919,6 +919,21 @@
   font-style: italic;
 }
 
+.chasse-footer {
+  margin-top: var(--space-md);
+  text-align: right;
+}
+.chasse-footer__texte {
+  color: var(--color-gris-3);
+}
+.chasse-footer__nom {
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+.chasse-footer__nom:hover {
+  text-decoration: underline;
+}
+
 .chasse-details-wrapper .meta-row,
 .carte-ligne__contenu .meta-row {
   display: flex;

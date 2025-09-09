@@ -9,10 +9,7 @@ $chasse_id = (int) $args['chasse_id'];
 $completion_class = $args['completion_class'] ?? '';
 $infos           = preparer_infos_affichage_carte_chasse($chasse_id);
 
-$orga_id    = get_organisateur_from_chasse($chasse_id);
-$logo_url   = $orga_id ? get_the_post_thumbnail_url($orga_id, 'thumbnail') : '';
-$orga_title = $orga_id ? get_the_title($orga_id) : '';
-$orga_link  = $orga_id ? get_permalink($orga_id) : '';
+$orga_id = get_organisateur_from_chasse($chasse_id);
 
 if (empty($infos)) {
     return;
@@ -29,12 +26,6 @@ if (empty($infos)) {
 
     <div class="carte-wide__contenu">
         <div class="carte-wide__header">
-            <?php if ($orga_id && $logo_url) : ?>
-                <img src="<?php echo esc_url($logo_url); ?>" alt="<?php echo esc_attr($orga_title); ?>">
-                <a href="<?php echo esc_url($orga_link); ?>"><?php echo esc_html($orga_title); ?></a>
-                <?php echo esc_html__('présente', 'chassesautresor-com'); ?>
-            <?php endif; ?>
-
             <h3 class="carte-wide__titre">
                 <a href="<?php echo esc_url($infos['permalink']); ?>"><?php echo esc_html($infos['titre']); ?></a>
             </h3>
@@ -94,7 +85,16 @@ if (empty($infos)) {
                     <?php echo esc_html__('En savoir plus', 'chassesautresor-com'); ?>
                 </a>
             </div>
-            <?php echo $infos['footer_html']; ?>
+            <?php if ($orga_id) : ?>
+                <footer class="chasse-footer">
+                    <span class="chasse-footer__texte">
+                        <?= esc_html__('Proposé par', 'chassesautresor-com'); ?>
+                        <a class="chasse-footer__nom" href="<?= esc_url(get_permalink($orga_id)); ?>">
+                            <?= esc_html(get_the_title($orga_id)); ?>
+                        </a>
+                    </span>
+                </footer>
+            <?php endif; ?>
         </div>
     </div>
 </div>

@@ -230,6 +230,24 @@
     }
 }
 
+.chasse-footer {
+    margin-top: var(--space-md);
+    text-align: right;
+
+    &__texte {
+        color: var(--color-gris-3);
+    }
+
+    &__nom {
+        font-weight: 700;
+        color: var(--color-text-primary);
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
 .chasse-details-wrapper .meta-row,
 .carte-ligne__contenu .meta-row{
     display: flex;
