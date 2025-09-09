@@ -257,6 +257,7 @@
   background: var(--color-grey-light);
   color: var(--color-text-fond-clair);
   font-size: 0.75rem;
+  z-index: 1;
 }
 .carte-wide__image .mode-fin-icone svg,
 .carte-wide__image .mode-fin-icone i {
