@@ -7,7 +7,12 @@ if (!isset($args['chasse_id']) || empty($args['chasse_id'])) {
 
 $chasse_id = (int) $args['chasse_id'];
 $completion_class = $args['completion_class'] ?? '';
-$infos     = preparer_infos_affichage_carte_chasse($chasse_id);
+$infos           = preparer_infos_affichage_carte_chasse($chasse_id);
+
+$orga_id    = get_organisateur_from_chasse($chasse_id);
+$logo_url   = $orga_id ? get_the_post_thumbnail_url($orga_id, 'thumbnail') : '';
+$orga_title = $orga_id ? get_the_title($orga_id) : '';
+$orga_link  = $orga_id ? get_permalink($orga_id) : '';
 
 if (empty($infos)) {
     return;
@@ -22,6 +27,12 @@ if (empty($infos)) {
     </div>
 
     <div class="carte-wide__contenu">
+        <?php if ($orga_id && $logo_url) : ?>
+            <img src="<?php echo esc_url($logo_url); ?>" alt="<?php echo esc_attr($orga_title); ?>">
+            <a href="<?php echo esc_url($orga_link); ?>"><?php echo esc_html($orga_title); ?></a>
+            <?php echo esc_html__('présente', 'chassesautresor-com'); ?>
+        <?php endif; ?>
+
         <h3 class="carte-wide__titre">
             <a href="<?php echo esc_url($infos['permalink']); ?>"><?php echo esc_html($infos['titre']); ?></a>
         </h3>
