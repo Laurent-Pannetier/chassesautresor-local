@@ -52,7 +52,7 @@ if (empty($infos)) {
         if ($image_id) {
             $image_html = wp_get_attachment_image(
                 $image_id,
-                [400, 400],
+                [200, 200],
                 false,
                 [
                     'alt'     => $infos['titre'],
