@@ -96,13 +96,8 @@ if (empty($infos)) {
             <?php echo $infos['lot_html']; ?>
         </div>
 
-        <div class="carte-wide__footer">
-            <div class="flex-row cta-div">
-                <a href="<?php echo esc_url($infos['permalink']); ?>" class="bouton-secondaire">
-                    <?php echo esc_html__('En savoir plus', 'chassesautresor-com'); ?>
-                </a>
-            </div>
-            <?php if ($orga_id) : ?>
+        <?php if ($orga_id) : ?>
+            <div class="carte-wide__footer">
                 <footer class="chasse-footer">
                     <span class="chasse-footer__texte">
                         <?= esc_html__('Proposé par', 'chassesautresor-com'); ?>
@@ -111,7 +106,7 @@ if (empty($infos)) {
                         </a>
                     </span>
                 </footer>
-            <?php endif; ?>
-        </div>
+            </div>
+        <?php endif; ?>
     </div>
 </div>
