@@ -20,11 +20,13 @@ if (empty($infos)) {
 ?>
 <div class="carte carte-chasse carte-wide <?php echo esc_attr(trim($infos['classe_statut'] . ' ' . $completion_class)); ?>">
     <div class="carte-wide__image">
-        <span class="badge-statut <?php echo esc_attr($infos['badge_class']); ?>"
-            data-post-id="<?php echo esc_attr($chasse_id); ?>">
-            <?php echo esc_html($infos['statut_label']); ?>
-        </span>
-        <img src="<?php echo esc_url($infos['image']); ?>" alt="<?php echo esc_attr($infos['titre']); ?>">
+        <a href="<?php echo esc_url($infos['permalink']); ?>">
+            <span class="badge-statut <?php echo esc_attr($infos['badge_class']); ?>"
+                data-post-id="<?php echo esc_attr($chasse_id); ?>">
+                <?php echo esc_html($infos['statut_label']); ?>
+            </span>
+            <img src="<?php echo esc_url($infos['image']); ?>" alt="<?php echo esc_attr($infos['titre']); ?>">
+        </a>
     </div>
 
     <div class="carte-wide__contenu">
@@ -88,13 +90,10 @@ if (empty($infos)) {
             <?php echo $infos['lot_html']; ?>
         </div>
 
+        <?php if (!empty($infos['footer_html'])) : ?>
         <div class="carte-wide__footer">
-            <div class="flex-row cta-div">
-                <a href="<?php echo esc_url($infos['permalink']); ?>" class="bouton-secondaire">
-                    <?php echo esc_html__('En savoir plus', 'chassesautresor-com'); ?>
-                </a>
-            </div>
             <?php echo $infos['footer_html']; ?>
         </div>
+        <?php endif; ?>
     </div>
 </div>
