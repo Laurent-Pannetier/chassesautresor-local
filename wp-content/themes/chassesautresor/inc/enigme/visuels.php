@@ -310,7 +310,6 @@ function trouver_chemin_image(int $image_id, string $taille = 'full'): ?array
 
     $upload_dir = wp_get_upload_dir();
     $path = str_replace($upload_dir['baseurl'], $upload_dir['basedir'], $url);
-    error_log("[trouver_chemin_image] chemin résolu $path pour image $image_id ($taille)");
 
     // 🔁 Si une version .webp existe, on la préfère
     $webp_path = preg_replace('/\.(jpe?g|png|gif)$/i', '.webp', $path);
@@ -333,7 +332,6 @@ function trouver_chemin_image(int $image_id, string $taille = 'full'): ?array
     }
 
     if ($taille !== 'full') {
-        error_log("[trouver_chemin_image] fallback vers taille full pour image $image_id");
         return trouver_chemin_image($image_id, 'full');
     }
 
