@@ -9,10 +9,7 @@ $chasse_id = (int) $args['chasse_id'];
 $completion_class = $args['completion_class'] ?? '';
 $infos           = preparer_infos_affichage_carte_chasse($chasse_id);
 
-$orga_id    = get_organisateur_from_chasse($chasse_id);
-$logo_url   = $orga_id ? get_the_post_thumbnail_url($orga_id, 'thumbnail') : '';
-$orga_title = $orga_id ? get_the_title($orga_id) : '';
-$orga_link  = $orga_id ? get_permalink($orga_id) : '';
+$orga_id = get_organisateur_from_chasse($chasse_id);
 
 if (empty($infos)) {
     return;
@@ -29,12 +26,6 @@ if (empty($infos)) {
 
     <div class="carte-wide__contenu">
         <div class="carte-wide__header">
-            <?php if ($orga_id && $logo_url) : ?>
-                <img src="<?php echo esc_url($logo_url); ?>" alt="<?php echo esc_attr($orga_title); ?>">
-                <a href="<?php echo esc_url($orga_link); ?>"><?php echo esc_html($orga_title); ?></a>
-                <?php echo esc_html__('présente', 'chassesautresor-com'); ?>
-            <?php endif; ?>
-
             <h3 class="carte-wide__titre">
                 <a href="<?php echo esc_url($infos['permalink']); ?>"><?php echo esc_html($infos['titre']); ?></a>
             </h3>
@@ -96,5 +87,42 @@ if (empty($infos)) {
             </div>
             <?php echo $infos['footer_html']; ?>
         </div>
+        <?php if ($orga_id) : ?>
+            <?php
+            $footer_logo_id = get_field('logo_organisateur', $orga_id, false);
+            $footer_logo    = $footer_logo_id
+                ? wp_get_attachment_image(
+                    $footer_logo_id,
+                    'thumbnail',
+                    false,
+                    [
+                        'class' => 'chasse-footer__logo visuel-cpt',
+                        'data-cpt' => 'organisateur',
+                        'data-post-id' => $orga_id,
+                    ]
+                )
+                : wp_get_attachment_image(
+                    3927,
+                    'thumbnail',
+                    false,
+                    [
+                        'class' => 'chasse-footer__logo visuel-cpt',
+                        'data-cpt' => 'organisateur',
+                        'data-post-id' => $orga_id,
+                    ]
+                );
+            ?>
+            <footer class="chasse-footer">
+                <?= $footer_logo; ?>
+                <span class="chasse-footer__texte">
+                    <a class="chasse-footer__nom" href="<?= esc_url(get_permalink($orga_id)); ?>">
+                        <?= esc_html(get_the_title($orga_id)); ?>
+                    </a>
+                    <span class="chasse-footer__presente">
+                        <?= esc_html__('présente', 'chassesautresor-com'); ?>
+                    </span>
+                </span>
+            </footer>
+        <?php endif; ?>
     </div>
 </div>
