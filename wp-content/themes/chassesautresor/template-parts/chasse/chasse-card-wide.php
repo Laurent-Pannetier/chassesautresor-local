@@ -52,7 +52,7 @@ if (empty($infos)) {
         if ($image_id) {
             $image_html = wp_get_attachment_image(
                 $image_id,
-                [200, 200],
+                [300, 300],
                 false,
                 [
                     'alt'     => $infos['titre'],
@@ -96,16 +96,24 @@ if (empty($infos)) {
             </div>
 
             <?php echo $infos['extrait_html']; ?>
-            <?php echo $infos['lot_html']; ?>
         </div>
 
         <?php if ($orga_id) : ?>
+            <?php
+            $reward_title = get_field('titre_recompense', $chasse_id);
+            $reward_value = get_field('valeur_recompense', $chasse_id);
+            ?>
             <div class="carte-wide__footer">
                 <footer class="chasse-footer">
+                    <?php if (!empty($reward_title) && (float) $reward_value > 0) : ?>
+                        <span class="chasse-footer__reward">
+                            <?php echo esc_html($reward_title . ' — ' . $reward_value . ' €'); ?>
+                        </span>
+                    <?php endif; ?>
                     <span class="chasse-footer__texte">
-                        <?= esc_html__('Proposé par', 'chassesautresor-com'); ?>
-                        <a class="chasse-footer__nom" href="<?= esc_url(get_permalink($orga_id)); ?>">
-                            <?= esc_html(get_the_title($orga_id)); ?>
+                        <?php echo esc_html__('Proposé par', 'chassesautresor-com'); ?>
+                        <a class="chasse-footer__nom" href="<?php echo esc_url(get_permalink($orga_id)); ?>">
+                            <?php echo esc_html(get_the_title($orga_id)); ?>
                         </a>
                     </span>
                 </footer>
