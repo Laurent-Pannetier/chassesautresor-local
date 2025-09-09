@@ -78,9 +78,10 @@ if (!$path) {
 }
 
 // 🧹 Nettoyage WordPress
-ob_clean();
-header_remove();
-remove_all_actions('shutdown');
+while (ob_get_level()) {
+    ob_end_clean();
+}
+nocache_headers();
 remove_all_actions('template_redirect');
 do_action('litespeed_control_set_nocache');
 
