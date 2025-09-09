@@ -239,11 +239,6 @@
   background: var(--color-grey-light);
   color: var(--color-text-fond-clair);
 }
-.carte-wide__image .badge-validation {
-  position: absolute;
-  bottom: var(--space-xs);
-  left: var(--space-xs);
-}
 .carte-wide__image .mode-fin-icone {
   position: absolute;
   bottom: var(--space-xs);
