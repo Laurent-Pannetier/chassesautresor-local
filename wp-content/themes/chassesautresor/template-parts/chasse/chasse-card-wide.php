@@ -29,7 +29,7 @@ if (empty($infos)) {
         if ($image_id) :
             echo wp_get_attachment_image(
                 $image_id,
-                'medium_large',
+                [400, 400],
                 false,
                 [
                     'alt'     => $infos['titre'],
