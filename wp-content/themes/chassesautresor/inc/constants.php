@@ -25,3 +25,7 @@ const SOLUTION_STATE_DESACTIVE         = 'DESACTIVE';
 if (!defined('CAT_DEBUG_VERBOSE')) {
     define('CAT_DEBUG_VERBOSE', false);
 }
+
+if (!defined('CAT_DEBUG_ENABLED')) {
+    define('CAT_DEBUG_ENABLED', false);
+}
