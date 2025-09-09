@@ -1408,6 +1408,7 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id): array
     return [
         'titre'             => $titre,
         'permalink'         => $permalink,
+        'image_id'          => $image_id,
         'image'             => $image,
         'total_enigmes'     => $total_enigmes,
         'nb_joueurs_label'  => $nb_joueurs_label,
