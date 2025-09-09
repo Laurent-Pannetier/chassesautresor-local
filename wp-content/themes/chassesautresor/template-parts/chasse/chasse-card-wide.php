@@ -40,18 +40,6 @@ if (empty($infos)) {
         </span>
         <?php endif; ?>
 
-        <?php if ($infos['mode_validation'] === 'manuelle') : ?>
-        <span class="badge-validation"
-            aria-label="<?php echo esc_attr(esc_html__('Validation manuelle', 'chassesautresor-com')); ?>">
-            <?php echo get_svg_icon('reply-mail'); ?>
-        </span>
-        <?php elseif ($infos['mode_validation'] === 'automatique') : ?>
-        <span class="badge-validation"
-            aria-label="<?php echo esc_attr(esc_html__('Validation automatique', 'chassesautresor-com')); ?>">
-            <?php echo get_svg_icon('reply-auto'); ?>
-        </span>
-        <?php endif; ?>
-
         <span class="mode-fin-icone" title="<?php echo esc_attr($title_mode); ?>" aria-label="<?php echo esc_attr($title_mode); ?>">
             <?php if ($mode_fin === 'automatique') : ?>
                 <i class="fa-solid fa-bolt"></i>
