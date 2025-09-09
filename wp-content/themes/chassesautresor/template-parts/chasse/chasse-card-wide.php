@@ -24,6 +24,20 @@ if (empty($infos)) {
             data-post-id="<?php echo esc_attr($chasse_id); ?>">
             <?php echo esc_html($infos['statut_label']); ?>
         </span>
+        <?php if ($infos['mode_validation'] === 'manuelle' || $infos['mode_validation'] === 'automatique') : ?>
+            <?php
+            $title_mode = $infos['mode_validation'] === 'automatique'
+                ? __('mode de fin de chasse : automatique', 'chassesautresor-com')
+                : __('mode de fin de chasse : manuelle', 'chassesautresor-com');
+            ?>
+            <span class="mode-fin-icone" title="<?php echo esc_attr($title_mode); ?>" aria-label="<?php echo esc_attr($title_mode); ?>">
+                <?php if ($infos['mode_validation'] === 'automatique') : ?>
+                    <i class="fa-solid fa-bolt"></i>
+                <?php else : ?>
+                    <?php echo get_svg_icon('hand'); ?>
+                <?php endif; ?>
+            </span>
+        <?php endif; ?>
         <img src="<?php echo esc_url($infos['image']); ?>" alt="<?php echo esc_attr($infos['titre']); ?>">
     </div>
 
@@ -56,9 +70,8 @@ if (empty($infos)) {
                 </div>
             </div>
 
-            <?php if ((int) $infos['cout_points'] > 0 || $infos['mode_validation'] !== '') : ?>
+            <?php if ((int) $infos['cout_points'] > 0) : ?>
             <div class="meta-badges">
-                <?php if ((int) $infos['cout_points'] > 0) : ?>
                 <span class="badge-rond badge-cout"
                     aria-label="<?php echo esc_attr(
                         sprintf(
@@ -69,19 +82,6 @@ if (empty($infos)) {
                     <?php echo get_svg_icon('coins-points'); ?>
                     <span><?php echo esc_html($infos['cout_points']); ?></span>
                 </span>
-                <?php endif; ?>
-
-                <?php if ($infos['mode_validation'] === 'manuelle') : ?>
-                <span class="badge-rond badge-validation"
-                    aria-label="<?php echo esc_attr(esc_html__('Validation manuelle', 'chassesautresor-com')); ?>">
-                    <?php echo get_svg_icon('reply-mail'); ?>
-                </span>
-                <?php elseif ($infos['mode_validation'] === 'automatique') : ?>
-                <span class="badge-rond badge-validation"
-                    aria-label="<?php echo esc_attr(esc_html__('Validation automatique', 'chassesautresor-com')); ?>">
-                    <?php echo get_svg_icon('reply-auto'); ?>
-                </span>
-                <?php endif; ?>
             </div>
             <?php endif; ?>
             <?php echo $infos['extrait_html']; ?>
