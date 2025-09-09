@@ -5,9 +5,10 @@ if (!isset($args['chasse_id']) || empty($args['chasse_id'])) {
     return;
 }
 
-$chasse_id = (int) $args['chasse_id'];
+$chasse_id       = (int) $args['chasse_id'];
 $completion_class = $args['completion_class'] ?? '';
-$infos           = preparer_infos_affichage_carte_chasse($chasse_id);
+$word_limit      = isset($args['word_limit']) ? (int) $args['word_limit'] : 300;
+$infos           = preparer_infos_affichage_carte_chasse($chasse_id, $word_limit);
 $mode_fin        = $infos['mode_fin'] ?? 'automatique';
 $title_mode      = $mode_fin === 'automatique'
     ? esc_html__('mode de fin de chasse : automatique', 'chassesautresor-com')

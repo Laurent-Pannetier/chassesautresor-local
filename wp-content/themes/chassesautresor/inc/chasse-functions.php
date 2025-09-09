@@ -1244,7 +1244,7 @@ function solution_peut_etre_affichee(int $enigme_id): bool
  * @param int $chasse_id ID de la chasse.
  * @return array Tableau associatif prêt pour le template.
  */
-function preparer_infos_affichage_carte_chasse(int $chasse_id): array
+function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit = 300): array
 {
     if (get_post_type($chasse_id) !== 'chasse') {
         return [];
@@ -1256,7 +1256,7 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id): array
     $description = get_field('chasse_principale_description', $chasse_id);
     $description = preg_replace('/^\s*Présentation\s*2\.1\s*/i', '', (string) $description);
     $texte_complet = wp_strip_all_tags($description);
-    $extrait = wp_trim_words($texte_complet, 300, '...');
+    $extrait = wp_trim_words($texte_complet, $word_limit, '...');
 
     $image_data = get_field('chasse_principale_image', $chasse_id);
     $image_id = 0;
