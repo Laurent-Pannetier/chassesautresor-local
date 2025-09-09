@@ -232,7 +232,13 @@
 
 .chasse-footer {
     margin-top: var(--space-md);
-    text-align: right;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &__reward {
+        font-weight: 700;
+    }
 
     &__texte {
         color: var(--color-gris-3);

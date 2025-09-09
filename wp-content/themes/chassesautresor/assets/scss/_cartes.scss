@@ -492,6 +492,19 @@
   flex-direction: column;
   flex: 1;
   padding: 0 var(--space-2xl) var(--space-md);
+  height: 100%;
+}
+
+.carte-wide__content {
+  flex: 1;
+  overflow: hidden;
+}
+
+.carte-wide__content .chasse-intro-extrait {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .carte-wide__titre {
@@ -502,15 +515,20 @@
   justify-content: center;
 }
 
+.carte-wide__footer {
+  margin-top: auto;
+}
+
 @media (--bp-desktop) {
   .carte-wide {
     flex-direction: row;
+    height: 320px;
   }
 
   .carte-wide__image {
-    flex: 0 0 200px;
-    width: 200px;
-    height: 200px;
+    flex: 0 0 300px;
+    width: 300px;
+    height: 300px;
   }
 }
 
