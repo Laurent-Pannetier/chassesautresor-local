@@ -5,14 +5,14 @@ $peut_modifier = utilisateur_peut_modifier_post($organisateur_id);
 
 
 $logo_id = get_field('logo_organisateur', $organisateur_id, false);
-$logo = wp_get_attachment_image_src($logo_id, 'thumbnail');
-$logo_url = $logo ? $logo[0] : wp_get_attachment_image_src(3927, 'thumbnail')[0];
+$logo = wp_get_attachment_image_src($logo_id, [600, 600]);
+$logo_url = $logo ? $logo[0] : wp_get_attachment_image_src(3927, [600, 600])[0];
 
 $titre_organisateur = get_post_field('post_title', $organisateur_id);
 
 if (!is_numeric($organisateur_id)) return;
 $liens_actifs = organisateur_get_liens_actifs($organisateur_id);
-$types_disponibles = organisateur_get_liste_liens_publics(); // à garder si nécessaire
+$nb_liens     = count($liens_actifs);
 
 $iban  = get_field('iban', $organisateur_id);
 $bic   = get_field('bic', $organisateur_id);
@@ -30,6 +30,15 @@ if (!$email_contact || !is_email($email_contact)) {
   $email_contact = get_the_author_meta('user_email', $auteur_id);
 }
 
+$description      = get_field('description_longue', $organisateur_id);
+$description_full = is_string($description) ? $description : '';
+$description_short = wp_trim_words(wp_strip_all_tags($description_full), 50, '…');
+$description_has_more = str_word_count(wp_strip_all_tags($description_full)) > 50;
+
+$date_inscription = mysql2date(get_option('date_format'), get_post_field('post_date', $organisateur_id));
+$nb_chasses       = organisateur_get_nb_chasses_publiees($organisateur_id);
+$nb_joueurs       = organisateur_compter_joueurs_uniques($organisateur_id);
+
 $base_url = trailingslashit(get_permalink($organisateur_id));
 $url_contact = esc_url($base_url . 'contact?email_organisateur=' . urlencode($email_contact));
 $est_complet = organisateur_est_complet($organisateur_id);
@@ -45,35 +54,65 @@ $classes_header .= ' container container--boxed';
   </div>
   <header class="<?= esc_attr($classes_header); ?>">
     <div class="conteneur-organisateur">
-
-      <!-- Colonne gauche : logo -->
-      <div class="colonne-logo">
+      <div class="header-organisateur__col header-organisateur__col--logo">
         <div class="champ-organisateur champ-img champ-logo <?= empty($logo_id) ? 'champ-vide' : ''; ?>"
           data-cpt="organisateur"
           data-champ="logo_organisateur"
           data-post-id="<?= esc_attr($organisateur_id); ?>">
-
           <div class="champ-affichage">
-            <div class="header-organisateur__logo">
-              <a href="<?= esc_url(get_permalink($organisateur_id)); ?>"
-                aria-label="<?= esc_attr__('Voir la page de l\u2019organisateur', 'chassesautresor-com'); ?>">
-                <img src="<?= esc_url($logo_url); ?>"
-                  alt="<?= esc_attr__('Logo de l\u2019organisateur', 'chassesautresor-com'); ?>"
-                  class="header-organisateur__logo visuel-cpt"
-                  data-cpt="organisateur"
-                  data-post-id="<?= esc_attr($organisateur_id); ?>" />
-              </a>
-            </div>
+            <a href="<?= esc_url(get_permalink($organisateur_id)); ?>"
+               aria-label="<?= esc_attr__('Voir la page de l\u2019organisateur', 'chassesautresor-com'); ?>">
+              <img src="<?= esc_url($logo_url); ?>"
+                   alt="<?= esc_attr__('Logo de l\u2019organisateur', 'chassesautresor-com'); ?>"
+                   width="600" height="600"
+                   class="header-organisateur__logo visuel-cpt"
+                   data-cpt="organisateur"
+                   data-post-id="<?= esc_attr($organisateur_id); ?>" />
+            </a>
           </div>
-
           <input type="hidden" class="champ-input" value="<?= esc_attr($logo_id ?? '') ?>">
           <div class="champ-feedback"></div>
         </div>
       </div>
 
-      <!-- Colonne droite : contenu -->
-      <div class="colonne-texte">
+      <div class="header-organisateur__col header-organisateur__col--infos">
         <h1 class="header-organisateur__nom"><?= esc_html($titre_organisateur); ?></h1>
+        <p class="header-organisateur__description">
+          <?= esc_html($description_short); ?>
+          <?php if ($description_has_more) : ?>
+            <button type="button" class="header-organisateur__voir-plus" aria-label="<?= esc_attr__('Voir plus', 'chassesautresor-com'); ?>">
+              <i class="fa-solid fa-circle-plus" aria-hidden="true"></i>
+            </button>
+          <?php endif; ?>
+        </p>
+        <div class="header-organisateur__liens-row">
+          <?php if ($nb_liens > 0) : ?>
+            <ul class="header-organisateur__liens">
+              <?php foreach ($liens_actifs as $type => $url) :
+                $infos = organisateur_get_lien_public_infos($type);
+              ?>
+                <li class="item-lien-public">
+                  <a href="<?= esc_url($url); ?>"
+                     class="lien-public lien-<?= esc_attr($type); ?>"
+                     target="_blank" rel="noopener"
+                     aria-label="<?= esc_attr($infos['label']); ?>">
+                    <i class="fa <?= esc_attr($infos['icone']); ?>" aria-hidden="true"></i>
+                  </a>
+                </li>
+              <?php endforeach; ?>
+            </ul>
+          <?php endif; ?>
+          <div class="header-organisateur__actions">
+            <a href="<?= esc_url($url_contact); ?>" class="lien-contact" aria-label="<?= esc_attr__('Contact', 'chassesautresor-com'); ?>">
+              <i class="fa-solid fa-envelope"></i>
+            </a>
+            <?php if ($peut_modifier) : ?>
+              <button id="toggle-mode-edition" class="bouton-edition-toggle" aria-label="Paramètres organisateur">
+                <i class="fa-solid fa-gear"></i>
+              </button>
+            <?php endif; ?>
+          </div>
+        </div>
       </div>
 
       <div class="champ-edition" style="display: none;">
@@ -82,30 +121,31 @@ $classes_header .= ' container container--boxed';
       </div>
 
       <div class="champ-feedback"></div>
-
-        <div class="header-organisateur__actions">
-          <button type="button" class="bouton-toggle-description btn-icon bouton-tertiaire" aria-label="Voir la description">
-            <i class="fa-solid fa-circle-info"></i>
-          </button>
-          <a href="<?= esc_url($url_contact); ?>" class="lien-contact btn-icon bouton-tertiaire" aria-label="Contact">
-            <i class="fa-solid fa-envelope"></i>
-          </a>
-          <?php if ($peut_modifier) : ?>
-            <button id="toggle-mode-edition" class="bouton-edition-toggle" aria-label="Paramètres organisateur">
-              <i class="fa-solid fa-gear"></i>
-            </button>
-          <?php endif; ?>
-        </div>
     </div>
 
   </header>
 </div>
+<div id="description-modal" class="description-modal masque">
+  <div class="description-modal__content">
+    <button type="button" class="description-modal__close" aria-label="<?= esc_attr__('Fermer', 'chassesautresor-com'); ?>">✖</button>
+    <h2 class="description-modal__title"><?= esc_html($titre_organisateur); ?></h2>
+    <section class="description-modal__section description-modal__section--stats">
+      <h3><?php esc_html_e('Statistiques', 'chassesautresor-com'); ?></h3>
+      <ul class="description-modal__stats-list">
+        <li><strong><?php esc_html_e('Inscrit depuis', 'chassesautresor-com'); ?> :</strong> <?= esc_html($date_inscription); ?></li>
+        <li><strong><?php echo esc_html(_n('Chasse', 'Chasses', $nb_chasses, 'chassesautresor-com')); ?> :</strong> <?= esc_html($nb_chasses); ?></li>
+        <li><strong><?php echo esc_html(_n('Joueur', 'Joueurs', $nb_joueurs, 'chassesautresor-com')); ?> :</strong> <?= esc_html($nb_joueurs); ?></li>
+      </ul>
+    </section>
+    <section class="description-modal__section description-modal__section--description">
+      <h3><?php esc_html_e('Description', 'chassesautresor-com'); ?></h3>
+      <?= wpautop($description_full ?: '<em>' . esc_html__('Aucune description fournie pour le moment.', 'chassesautresor-com') . '</em>'); ?>
+    </section>
+  </div>
+</div>
 
 <?php
 get_template_part('template-parts/organisateur/organisateur-edition-main', null, [
-  'organisateur_id' => $organisateur_id
-]);
-get_template_part('template-parts/organisateur/organisateur-partial-presentation', null, [
   'organisateur_id' => $organisateur_id
 ]);
 ?>
