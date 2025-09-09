@@ -8,11 +8,6 @@ if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
 $image_id = (int) $_GET['id'];
 $taille   = $_GET['taille'] ?? 'full';
 
-error_log('[voir-image-enigme] handler start for image ' . $image_id);
-if (headers_sent($file, $line)) {
-    error_log("[voir-image-enigme] headers déjà envoyés ($file:$line)");
-}
-
 // 🔁 Chargement des fonctions
 if (!function_exists('trouver_chemin_image')) {
     require_once get_stylesheet_directory() . '/inc/enigme-functions.php';
@@ -59,17 +54,12 @@ if (!utilisateur_peut_voir_enigme($enigme_id)) {
 $info = trouver_chemin_image($image_id, $taille);
 $path = $info['path'] ?? null;
 $mime = $info['mime'] ?? 'application/octet-stream';
-error_log('[voir-image-enigme] path=' . var_export($path, true) . ', mime=' . var_export($mime, true));
-if (headers_sent($file, $line)) {
-    error_log('[voir-image-enigme] headers already sent in ' . $file . ':' . $line);
-}
 
 // 🔁 Fallback automatique vers full si fichier manquant
 if (!$path && $taille !== 'full') {
     $info = trouver_chemin_image($image_id, 'full');
     $path = $info['path'] ?? null;
     $mime = $info['mime'] ?? 'application/octet-stream';
-    error_log('[voir-image-enigme] path=' . var_export($path, true) . ', mime=' . var_export($mime, true));
 }
 
 if (!$path) {
@@ -88,7 +78,6 @@ do_action('litespeed_control_set_nocache');
 // 📅 Cache (compatible CDN)
 $mtime = filemtime($path);
 $etag  = '"' . md5($mtime . filesize($path)) . '"';
-error_log('[voir-image-enigme] cache headers mtime=' . $mtime . ', etag=' . $etag);
 
 header('Cache-Control: public, max-age=3600, immutable');
 header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $mtime) . ' GMT');
@@ -99,21 +88,7 @@ $if_modified_since       = $_SERVER['HTTP_IF_MODIFIED_SINCE'] ?? '';
 $if_none_match_match     = $if_none_match && trim($if_none_match) === $etag;
 $if_modified_since_match = $if_modified_since && strtotime($if_modified_since) >= $mtime;
 
-if (defined('WP_DEBUG') && WP_DEBUG) {
-    error_log(
-        '[voir-image-enigme] If-None-Match: ' . var_export($if_none_match, true)
-        . ' => ' . ($if_none_match_match ? 'match' : 'no match')
-    );
-    error_log(
-        '[voir-image-enigme] If-Modified-Since: ' . var_export($if_modified_since, true)
-        . ' => ' . ($if_modified_since_match ? 'match' : 'no match')
-    );
-}
-
 if ($if_none_match_match || $if_modified_since_match) {
-    if (defined('WP_DEBUG') && WP_DEBUG) {
-        error_log('[voir-image-enigme] 304 not modified for image ' . $image_id);
-    }
     // Les lignes ci-dessous sont désactivées afin de toujours renvoyer le fichier avec un
     // code 200 et confirmer que le bloc de cache est en cause.
     // http_response_code(304);
@@ -122,9 +97,6 @@ if ($if_none_match_match || $if_modified_since_match) {
 
 header('Content-Type: ' . $mime);
 header('Content-Length: ' . filesize($path));
-$bytes = readfile($path);
-if (defined('WP_DEBUG') && WP_DEBUG) {
-    error_log('[voir-image-enigme] readfile(' . $path . ') => ' . var_export($bytes, true));
-}
+readfile($path);
 exit;
 
