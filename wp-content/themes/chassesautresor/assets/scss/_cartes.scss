@@ -261,6 +261,14 @@
     right: var(--space-xs);
     background: var(--color-grey-light);
     color: var(--color-text-fond-clair);
+    display: flex;
+    align-items: center;
+    gap: var(--space-xxs);
+
+    svg {
+      width: 0.75rem;
+      height: 0.75rem;
+    }
   }
 
   .badge-validation {

@@ -25,16 +25,13 @@ if (empty($infos)) {
             <?php echo esc_html($infos['statut_label']); ?>
         </span>
         <?php if ($infos['mode_validation'] === 'manuelle') : ?>
-            <span class="badge-validation" aria-label="<?php echo esc_attr(esc_html__('Validation manuelle', 'chassesautresor-com')); ?>">
-                <i class="fa-solid fa-envelope"></i>
-            </span>
+            <span class="badge-validation" aria-label="<?php echo esc_attr(esc_html__('Validation manuelle', 'chassesautresor-com')); ?>"><?php echo get_svg_icon('reply-mail'); ?></span>
         <?php elseif ($infos['mode_validation'] === 'automatique') : ?>
-            <span class="badge-validation" aria-label="<?php echo esc_attr(esc_html__('Validation automatique', 'chassesautresor-com')); ?>">
-                <i class="fa-solid fa-bolt"></i>
-            </span>
+            <span class="badge-validation" aria-label="<?php echo esc_attr(esc_html__('Validation automatique', 'chassesautresor-com')); ?>"><?php echo get_svg_icon('reply-auto'); ?></span>
         <?php endif; ?>
         <?php if ((int) $infos['cout_points'] > 0) : ?>
             <span class="badge-cout" aria-label="<?php echo esc_attr(sprintf(__('Coût de participation : %d points.', 'chassesautresor-com'), $infos['cout_points'])); ?>">
+                <?php echo get_svg_icon('coins-points'); ?>
                 <?php echo esc_html($infos['cout_points'] . ' ' . __('pts', 'chassesautresor-com')); ?>
             </span>
         <?php endif; ?>
