@@ -468,11 +468,16 @@
   display: block;
 }
 
+
 .carte-wide__contenu {
   display: flex;
   flex-direction: column;
   flex: 1;
-  padding: var(--space-md) var(--space-2xl);
+  padding: 0 var(--space-2xl) var(--space-md);
+}
+
+.carte-wide__titre {
+  margin-top: 0;
 }
 
 .carte-wide__footer .cta-div {
