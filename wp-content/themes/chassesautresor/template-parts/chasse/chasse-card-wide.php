@@ -26,11 +26,11 @@ if (empty($infos)) {
         </span>
         <?php if ($infos['mode_validation'] === 'manuelle') : ?>
             <span class="badge-validation" aria-label="<?php echo esc_attr(esc_html__('Validation manuelle', 'chassesautresor-com')); ?>">
-                <?php echo get_svg_icon('reply-mail'); ?>
+                <i class="fa-solid fa-envelope"></i>
             </span>
         <?php elseif ($infos['mode_validation'] === 'automatique') : ?>
             <span class="badge-validation" aria-label="<?php echo esc_attr(esc_html__('Validation automatique', 'chassesautresor-com')); ?>">
-                <?php echo get_svg_icon('reply-auto'); ?>
+                <i class="fa-solid fa-bolt"></i>
             </span>
         <?php endif; ?>
         <?php if ((int) $infos['cout_points'] > 0) : ?>
