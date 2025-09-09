@@ -499,13 +499,13 @@
 .carte-wide__content {
   flex: 1;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .carte-wide__content .chasse-intro-extrait {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  margin-top: auto;
+  margin-bottom: auto;
 }
 
 .carte-wide__titre {
