@@ -8950,8 +8950,8 @@ a.bouton-edition-attention {
 
 .conteneur-organisateur .colonne-logo {
   flex: 0 0 auto;
-  width: 100px;
-  max-width: 100px;
+  width: 300px;
+  max-width: 300px;
 }
 
 .conteneur-organisateur .colonne-texte {
@@ -8996,11 +8996,11 @@ a.bouton-edition-attention {
 
 /* ========== 🖼 LOGO CLIQUABLE ========== */
 .header-organisateur__logo img {
-  width: 50px;
-  height: 50px;
+  width: 300px;
+  height: 300px;
   -o-object-fit: contain;
      object-fit: contain;
-  border-radius: 50%;
+  border-radius: 0;
 }
 
 /* ========== 🧭 MODAL BIENVENUE ========== */
@@ -9095,7 +9095,7 @@ a.bouton-edition-attention {
 }
 
 .colonne-logo {
-  max-width: none;
+  max-width: 300px;
   margin: 0 auto;
 }
 
@@ -9122,7 +9122,7 @@ a.bouton-edition-attention {
     font-size: inherit;
   }
   .colonne-logo {
-    max-width: 100px;
+    max-width: 300px;
     margin: 0;
   }
   .colonne-texte {
@@ -9139,8 +9139,8 @@ a.bouton-edition-attention {
     gap: var(--space-xl);
   }
   .colonne-logo {
-    width: auto;
-    max-width: 120px;
+    width: 300px;
+    max-width: 300px;
     flex-shrink: 0;
     margin: 0;
   }
@@ -9175,7 +9175,7 @@ a.bouton-edition-attention {
   /* 🔹 Logo centré & redimensionné */
   .colonne-logo {
     width: 100%;
-    max-width: 120px;
+    max-width: 300px;
     margin: 0 auto;
   }
   .header-organisateur__logo {
@@ -9211,8 +9211,9 @@ a.bouton-edition-attention {
   }
   .header-organisateur__logo img {
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
-    border-radius: 0.5rem;
-    width: 70px;
+    border-radius: 0;
+    width: 300px;
+    height: 300px;
   }
   /* 🔹 Champs de saisie */
   .champ-edition,

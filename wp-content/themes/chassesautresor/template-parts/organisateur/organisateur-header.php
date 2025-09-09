@@ -59,6 +59,7 @@ $classes_header .= ' container container--boxed';
                 aria-label="<?= esc_attr__('Voir la page de l\u2019organisateur', 'chassesautresor-com'); ?>">
                 <img src="<?= esc_url($logo_url); ?>"
                   alt="<?= esc_attr__('Logo de l\u2019organisateur', 'chassesautresor-com'); ?>"
+                  width="300" height="300"
                   class="header-organisateur__logo visuel-cpt"
                   data-cpt="organisateur"
                   data-post-id="<?= esc_attr($organisateur_id); ?>" />
