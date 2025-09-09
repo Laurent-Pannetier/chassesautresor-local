@@ -15,6 +15,9 @@ class ChasseEnigmesPayantesTest extends TestCase
         if (!function_exists('get_permalink')) {
             function get_permalink($id) { return 'https://example.com/chasse/' . $id; }
         }
+        if (!function_exists('get_the_title')) {
+            function get_the_title($post_id) { return 'Chasse ' . $post_id; }
+        }
         if (!function_exists('current_user_can')) {
             function current_user_can($capability) { return false; }
         }
