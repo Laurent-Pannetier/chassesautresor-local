@@ -471,10 +471,9 @@
 
 .carte-wide__content {
   flex: 1;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
 }
 
 .carte-wide__content .chasse-intro-extrait {
