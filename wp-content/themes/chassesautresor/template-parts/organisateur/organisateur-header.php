@@ -77,20 +77,6 @@ $classes_header .= ' container container--boxed';
 
       <div class="header-organisateur__col header-organisateur__col--infos">
         <h1 class="header-organisateur__nom"><?= esc_html($titre_organisateur); ?></h1>
-        <ul class="header-organisateur__stats">
-          <li class="header-organisateur__stat">
-            <?php esc_html_e('Inscrit depuis', 'chassesautresor-com'); ?> :
-            <?= esc_html($date_inscription); ?>
-          </li>
-          <li class="header-organisateur__stat">
-            <?php echo esc_html(_n('Chasse', 'Chasses', $nb_chasses, 'chassesautresor-com')); ?> :
-            <?= esc_html($nb_chasses); ?>
-          </li>
-          <li class="header-organisateur__stat">
-            <?php echo esc_html(_n('Joueur', 'Joueurs', $nb_joueurs, 'chassesautresor-com')); ?> :
-            <?= esc_html($nb_joueurs); ?>
-          </li>
-        </ul>
         <p class="header-organisateur__description">
           <?= esc_html($description_short); ?>
           <?php if ($description_has_more) : ?>
@@ -143,6 +129,20 @@ $classes_header .= ' container container--boxed';
   <div class="description-modal__content">
     <button type="button" class="description-modal__close" aria-label="<?= esc_attr__('Fermer', 'chassesautresor-com'); ?>">✖</button>
     <h2 class="description-modal__title"><?= esc_html($titre_organisateur); ?></h2>
+    <ul class="description-modal__stats">
+      <li class="description-modal__stat">
+        <?php esc_html_e('Inscrit depuis', 'chassesautresor-com'); ?> :
+        <?= esc_html($date_inscription); ?>
+      </li>
+      <li class="description-modal__stat">
+        <?php echo esc_html(_n('Chasse', 'Chasses', $nb_chasses, 'chassesautresor-com')); ?> :
+        <?= esc_html($nb_chasses); ?>
+      </li>
+      <li class="description-modal__stat">
+        <?php echo esc_html(_n('Joueur', 'Joueurs', $nb_joueurs, 'chassesautresor-com')); ?> :
+        <?= esc_html($nb_joueurs); ?>
+      </li>
+    </ul>
     <section class="description-modal__section description-modal__section--description">
       <h3><?php esc_html_e('Description', 'chassesautresor-com'); ?></h3>
       <?= wpautop($description_full ?: '<em>' . esc_html__('Aucune description fournie pour le moment.', 'chassesautresor-com') . '</em>'); ?>

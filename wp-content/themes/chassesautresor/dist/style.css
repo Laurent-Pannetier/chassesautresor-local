@@ -8975,7 +8975,7 @@ a.bouton-edition-attention {
      object-position: center;
 }
 
-.header-organisateur__stats {
+.description-modal__stats {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -8985,7 +8985,7 @@ a.bouton-edition-attention {
   padding: 0;
 }
 
-.header-organisateur__stat {
+.description-modal__stat {
   background: var(--color-grey-light);
   color: var(--color-text-fond-clair);
   padding: 0.2rem 0.6rem;
