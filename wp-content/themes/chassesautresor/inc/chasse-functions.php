@@ -1253,9 +1253,10 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id): array
     $titre     = get_the_title($chasse_id);
     $permalink = get_permalink($chasse_id);
 
-    $description   = get_field('chasse_principale_description', $chasse_id);
+    $description = get_field('chasse_principale_description', $chasse_id);
+    $description = preg_replace('/^\s*Présentation\s*2\.1\s*/i', '', (string) $description);
     $texte_complet = wp_strip_all_tags($description);
-    $extrait       = wp_trim_words($texte_complet, 60, '...');
+    $extrait = wp_trim_words($texte_complet, 300, '...');
 
     $image_data = get_field('chasse_principale_image', $chasse_id);
     $image_id = 0;
@@ -1376,7 +1377,9 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id): array
     }
 
 
-    $extrait_html = $extrait ? '<p class="chasse-intro-extrait liste-elegante"> <strong>Présentation :</strong> ' . esc_html($extrait) . '</p>' : '';
+    $extrait_html = $extrait
+        ? '<p class="chasse-intro-extrait liste-elegante">' . esc_html($extrait) . '</p>'
+        : '';
 
     $cta_html    = $cta_data['cta_html'] ?? '';
     $cta_message = $cta_data['cta_message'] ?? '';
