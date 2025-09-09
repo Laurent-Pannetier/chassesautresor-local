@@ -32,8 +32,7 @@ if (!$email_contact || !is_email($email_contact)) {
 
 $description      = get_field('description_longue', $organisateur_id);
 $description_full = is_string($description) ? $description : '';
-$description_short = wp_trim_words(wp_strip_all_tags($description_full), 50, '…');
-$description_has_more = str_word_count(wp_strip_all_tags($description_full)) > 50;
+$description_short = wp_trim_words(wp_strip_all_tags($description_full), 40, '…');
 
 $date_inscription = mysql2date(get_option('date_format'), get_post_field('post_date', $organisateur_id));
 $nb_chasses       = organisateur_get_nb_chasses_publiees($organisateur_id);
@@ -79,11 +78,9 @@ $classes_header .= ' container container--boxed';
         <h1 class="header-organisateur__nom"><?= esc_html($titre_organisateur); ?></h1>
         <p class="header-organisateur__description">
           <?= esc_html($description_short); ?>
-          <?php if ($description_has_more) : ?>
-            <button type="button" class="header-organisateur__voir-plus" aria-label="<?= esc_attr__('Voir plus', 'chassesautresor-com'); ?>">
-              <i class="fa-solid fa-circle-plus" aria-hidden="true"></i>
-            </button>
-          <?php endif; ?>
+          <button type="button" class="header-organisateur__voir-plus" aria-label="<?= esc_attr__('Voir plus', 'chassesautresor-com'); ?>">
+            <i class="fa-solid fa-circle-plus" aria-hidden="true"></i>
+          </button>
         </p>
         <div class="header-organisateur__liens-row">
           <?php if ($nb_liens > 0) : ?>

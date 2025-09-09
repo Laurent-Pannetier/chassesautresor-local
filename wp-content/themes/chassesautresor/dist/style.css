@@ -9120,7 +9120,6 @@ a.bouton-edition-attention {
   }
   .header-organisateur__col--infos {
     flex: 1;
-    min-height: 600px;
   }
 }
 /* ========== 🧭 MODAL BIENVENUE ========== */
