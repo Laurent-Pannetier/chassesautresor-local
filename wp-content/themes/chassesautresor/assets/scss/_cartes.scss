@@ -289,6 +289,20 @@
     width: 0.75rem;
     height: 0.75rem;
   }
+
+  .carte-wide__image-link {
+    display: block;
+    overflow: hidden;
+
+    img {
+      display: block;
+      transition: transform var(--transition-medium);
+    }
+
+    &:hover img {
+      transform: scale(1.05);
+    }
+  }
 }
 
 .carte-enigme h3 {

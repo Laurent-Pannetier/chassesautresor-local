@@ -48,9 +48,9 @@ if (empty($infos)) {
             <?php endif; ?>
         </span>
         <?php
-        $image_id = $infos['image_id'] ?? 0;
-        if ($image_id) :
-            echo wp_get_attachment_image(
+        $image_id   = $infos['image_id'] ?? 0;
+        if ($image_id) {
+            $image_html = wp_get_attachment_image(
                 $image_id,
                 [400, 400],
                 false,
@@ -59,13 +59,18 @@ if (empty($infos)) {
                     'loading' => 'lazy',
                 ]
             );
-        else :
-            ?>
-            <img src="<?php echo esc_url($infos['image']); ?>" alt="<?php echo esc_attr($infos['titre']); ?>" loading="lazy">
-            <?php
-        endif;
+        } else {
+            $image_html = sprintf(
+                '<img src="%s" alt="%s" loading="lazy">',
+                esc_url($infos['image']),
+                esc_attr($infos['titre'])
+            );
+        }
         ?>
-    </div>
+        <a class="carte-wide__image-link" href="<?php echo esc_url($infos['permalink']); ?>">
+            <?php echo $image_html; ?>
+        </a>
+        </div>
 
     <div class="carte-wide__contenu">
         <div class="carte-wide__header">

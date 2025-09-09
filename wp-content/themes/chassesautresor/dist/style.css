@@ -263,6 +263,17 @@
   width: 0.75rem;
   height: 0.75rem;
 }
+.carte-wide__image .carte-wide__image-link {
+  display: block;
+  overflow: hidden;
+}
+.carte-wide__image .carte-wide__image-link img {
+  display: block;
+  transition: transform var(--transition-medium);
+}
+.carte-wide__image .carte-wide__image-link:hover img {
+  transform: scale(1.05);
+}
 
 .carte-enigme h3 {
   margin: 0;
