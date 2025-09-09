@@ -86,39 +86,12 @@ if (empty($infos)) {
                 </a>
             </div>
             <?php if ($orga_id) : ?>
-                <?php
-                $footer_logo_id = get_field('logo_organisateur', $orga_id, false);
-                $footer_logo    = $footer_logo_id
-                    ? wp_get_attachment_image(
-                        $footer_logo_id,
-                        'thumbnail',
-                        false,
-                        [
-                            'class' => 'chasse-footer__logo visuel-cpt',
-                            'data-cpt' => 'organisateur',
-                            'data-post-id' => $orga_id,
-                        ]
-                    )
-                    : wp_get_attachment_image(
-                        3927,
-                        'thumbnail',
-                        false,
-                        [
-                            'class' => 'chasse-footer__logo visuel-cpt',
-                            'data-cpt' => 'organisateur',
-                            'data-post-id' => $orga_id,
-                        ]
-                    );
-                ?>
                 <footer class="chasse-footer">
-                    <?= $footer_logo; ?>
                     <span class="chasse-footer__texte">
+                        <?= esc_html__('Proposé par', 'chassesautresor-com'); ?>
                         <a class="chasse-footer__nom" href="<?= esc_url(get_permalink($orga_id)); ?>">
                             <?= esc_html(get_the_title($orga_id)); ?>
                         </a>
-                        <span class="chasse-footer__presente">
-                            <?= esc_html__('présente', 'chassesautresor-com'); ?>
-                        </span>
                     </span>
                 </footer>
             <?php endif; ?>
