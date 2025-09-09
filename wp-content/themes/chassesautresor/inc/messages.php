@@ -32,6 +32,15 @@ function cat_install_user_messages_table(): void
 }
 add_action('after_switch_theme', 'cat_install_user_messages_table');
 
+add_action(
+    'init',
+    function (): void {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+    }
+);
+
 /**
  * Store a site-wide message.
  *
@@ -135,13 +144,13 @@ function get_site_messages(): string
         error_log('[get_site_messages] bypass pour requête image');
         return '';
     }
-    if (headers_sent($file, $line)) {
-        error_log("[get_site_messages] headers déjà envoyés ($file:$line)");
-        return '';
-    }
     if (session_status() !== PHP_SESSION_ACTIVE) {
-        session_start();
-        error_log('[get_site_messages] session démarrée');
+        if (headers_sent($file, $line)) {
+            error_log("[get_site_messages] headers déjà envoyés ($file:$line)");
+        } else {
+            session_start();
+            error_log('[get_site_messages] session démarrée');
+        }
     }
 
     if (!empty($_SESSION['cat_site_messages'])) {
