@@ -656,11 +656,11 @@
 
 /* ========== ✅ Indicateurs de complétion ========== */
 .carte-complete {
-  border: 2px solid var(--color-editor-success);
+  border: 2px solid var(--color-success);
 }
 
 .carte-incomplete {
-  border: 2px dashed var(--color-editor-error);
+  border: 2px dashed var(--color-error);
   animation: clignoteTitre 1s infinite alternate;
 }
 
