@@ -100,14 +100,20 @@ if (empty($infos)) {
 
         <?php if ($orga_id) : ?>
             <?php
-            $reward_title = get_field('titre_recompense', $chasse_id);
-            $reward_value = get_field('valeur_recompense', $chasse_id);
+            $reward_title = get_field('chasse_infos_recompense_titre', $chasse_id);
+            $reward_value = get_field('chasse_infos_recompense_valeur', $chasse_id);
             ?>
             <div class="carte-wide__footer">
                 <footer class="chasse-footer">
                     <?php if (!empty($reward_title) && (float) $reward_value > 0) : ?>
                         <span class="chasse-footer__reward">
-                            <?php echo esc_html($reward_title . ' — ' . $reward_value . ' €'); ?>
+                            <?php
+                            printf(
+                                esc_html__('%1$s — %2$s €', 'chassesautresor-com'),
+                                esc_html($reward_title),
+                                esc_html($reward_value)
+                            );
+                            ?>
                         </span>
                     <?php endif; ?>
                     <span class="chasse-footer__texte">
