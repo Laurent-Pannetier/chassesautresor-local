@@ -245,6 +245,52 @@
   flex-shrink: 0;
 }
 
+/* ========== 🗺️ Carte chasse large ========== */
+.carte-wide__image {
+  position: relative;
+
+  .badge-statut {
+    position: absolute;
+    top: var(--space-xs);
+    left: var(--space-xs);
+  }
+
+  .badge-cout {
+    position: absolute;
+    top: var(--space-xs);
+    right: var(--space-xs);
+    background: var(--color-grey-light);
+    color: var(--color-text-fond-clair);
+  }
+
+  .badge-validation {
+    position: absolute;
+    bottom: var(--space-xs);
+    left: var(--space-xs);
+  }
+
+  .mode-fin-icone {
+    position: absolute;
+    bottom: var(--space-xs);
+    right: var(--space-xs);
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--color-grey-light);
+    color: var(--color-text-fond-clair);
+    font-size: 0.75rem;
+  }
+
+  .mode-fin-icone svg,
+  .mode-fin-icone i {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+}
+
 .carte-enigme h3 {
   margin: 0;
   padding: 0 var(--space-md);
