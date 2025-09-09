@@ -977,7 +977,9 @@
 }
 
 .chasse-details-wrapper .meta-row,
-.carte-ligne__contenu .meta-row {
+.carte-ligne__contenu .meta-row,
+.carte-wide__content .meta-row,
+.carte-compact__meta {
   display: flex;
   gap: var(--space-xl);
   align-items: center;

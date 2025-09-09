@@ -255,14 +255,16 @@
 }
 
 .chasse-details-wrapper .meta-row,
-.carte-ligne__contenu .meta-row{
+.carte-ligne__contenu .meta-row,
+.carte-wide__content .meta-row,
+.carte-compact__meta {
     display: flex;
     gap: var(--space-xl);
     align-items: center;
     flex-wrap: wrap;
     justify-content: space-between;
     font-size: 93%;
-    color:var(--color-gris-3);
+    color: var(--color-gris-3);
 }
 .chasse-details-wrapper .bloc-metas-inline {
     margin: var(--space-xl) 0;
