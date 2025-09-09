@@ -8,7 +8,7 @@ if (!$organisateur_id || get_post_type($organisateur_id) !== 'organisateur') {
 }
 
 $show_header  = $args['show_header'] ?? true;
-$grid_class   = $args['grid_class'] ?? 'grille-liste';
+$grid_class   = $args['grid_class'] ?? 'liste-pleine-largeur';
 $before_items = $args['before_items'] ?? '';
 $after_items  = $args['after_items'] ?? '';
 
@@ -43,7 +43,7 @@ $chasse_ids = array_values(array_filter($chasse_ids, function ($chasse_id) use (
       $complet          = (bool) get_field('chasse_cache_complet', $chasse_id);
       $classe_completion = $complet ? 'carte-complete' : 'carte-incomplete';
     }
-    get_template_part('template-parts/chasse/chasse-card', null, [
+    get_template_part('template-parts/chasse/chasse-card-wide', null, [
       'chasse_id'        => $chasse_id,
       'completion_class' => $classe_completion,
     ]);
