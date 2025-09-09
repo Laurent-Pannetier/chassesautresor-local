@@ -915,6 +915,36 @@
   font-style: italic;
 }
 
+.chasse-footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-top: var(--space-md);
+}
+.chasse-footer__logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+.chasse-footer__texte {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+.chasse-footer__nom {
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+.chasse-footer__nom:hover {
+  text-decoration: underline;
+}
+.chasse-footer__presente {
+  color: var(--color-gris-3);
+  font-style: italic;
+}
+
 .chasse-details-wrapper .meta-row,
 .carte-ligne__contenu .meta-row {
   display: flex;

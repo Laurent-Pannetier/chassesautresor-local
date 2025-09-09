@@ -230,6 +230,40 @@
     }
 }
 
+.chasse-footer {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    margin-top: var(--space-md);
+
+    &__logo {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    &__texte {
+        display: flex;
+        align-items: baseline;
+        gap: 0.25rem;
+    }
+
+    &__nom {
+        font-weight: 700;
+        color: var(--color-text-primary);
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    &__presente {
+        color: var(--color-gris-3);
+        font-style: italic;
+    }
+}
+
 .chasse-details-wrapper .meta-row,
 .carte-ligne__contenu .meta-row{
     display: flex;

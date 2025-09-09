@@ -497,6 +497,44 @@ if ($edition_active && !$est_complet) {
 
       </div>
   </div>
+  <footer class="chasse-footer">
+    <?php
+    $footer_organisateur_id = get_organisateur_from_chasse($chasse_id);
+    if ($footer_organisateur_id) :
+        $footer_logo_id = get_field('logo_organisateur', $footer_organisateur_id, false);
+        $footer_logo = $footer_logo_id
+            ? wp_get_attachment_image(
+                $footer_logo_id,
+                'thumbnail',
+                false,
+                [
+                    'class' => 'chasse-footer__logo visuel-cpt',
+                    'data-cpt' => 'organisateur',
+                    'data-post-id' => $footer_organisateur_id,
+                ]
+            )
+            : wp_get_attachment_image(
+                3927,
+                'thumbnail',
+                false,
+                [
+                    'class' => 'chasse-footer__logo visuel-cpt',
+                    'data-cpt' => 'organisateur',
+                    'data-post-id' => $footer_organisateur_id,
+                ]
+            );
+    ?>
+        <?= $footer_logo; ?>
+        <span class="chasse-footer__texte">
+            <a class="chasse-footer__nom" href="<?= esc_url(get_permalink($footer_organisateur_id)); ?>">
+                <?= esc_html(get_the_title($footer_organisateur_id)); ?>
+            </a>
+            <span class="chasse-footer__presente">
+                <?= esc_html__('présente', 'chassesautresor-com'); ?>
+            </span>
+        </span>
+    <?php endif; ?>
+  </footer>
 </section>
 
 <?php if ($edition_active) : ?>
