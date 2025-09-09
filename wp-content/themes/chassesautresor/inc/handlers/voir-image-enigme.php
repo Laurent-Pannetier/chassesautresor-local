@@ -82,7 +82,13 @@ while (ob_get_level()) {
     ob_end_clean();
 }
 nocache_headers();
-remove_all_actions('template_redirect');
+// Supprime les actions susceptibles de rediriger ou d'altérer la sortie.
+// - redirect_canonical : évite la redirection automatique vers une URL canonique.
+// - wp_old_slug_redirect : empêche les redirections basées sur d'anciens slugs.
+// - myaccount_maybe_add_validation_message : supprime l'ajout de messages dans "Mon compte".
+remove_action('template_redirect', 'redirect_canonical');
+remove_action('template_redirect', 'wp_old_slug_redirect');
+remove_action('template_redirect', 'myaccount_maybe_add_validation_message');
 do_action('litespeed_control_set_nocache');
 
 // ✅ Envoi du fichier
