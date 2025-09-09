@@ -35,6 +35,13 @@ if (empty($infos)) {
                     ?> —
                     <?php echo get_svg_icon('participants'); ?><?php echo esc_html($infos['nb_joueurs_label']); ?>
                 </div>
+                <div class="meta-etiquette">
+                    <?php echo get_svg_icon('calendar'); ?>
+                    <span class="chasse-date-plage">
+                        <span class="date-debut"><?php echo esc_html($infos['date_debut']); ?></span> –
+                        <span class="date-fin"><?php echo esc_html($infos['date_fin']); ?></span>
+                    </span>
+                </div>
             </div>
         </div>
     </a>
