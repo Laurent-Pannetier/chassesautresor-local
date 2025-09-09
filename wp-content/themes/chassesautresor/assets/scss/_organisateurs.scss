@@ -142,9 +142,12 @@ a.bouton-edition-attention {
 
 /* ========== 📌 ICÔNES D'ACTIONS ========== */
 .header-organisateur__actions {
+  position: absolute;
+  top: 1.2rem;
+  right: var(--space-xs);
   display: flex;
+  gap: var(--space-xs);
   align-items: center;
-  gap: var(--space-md);
   color: var(--color-text-primary);
 }
 
@@ -164,6 +167,20 @@ a.bouton-edition-attention {
 .header-organisateur__actions a:hover,
 .header-organisateur__actions button:not(.bouton-edition-toggle):hover {
   color: var(--color-accent);
+}
+
+.header-organisateur__actions .organisateur-share-button {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-primary);
+}
+
+.header-organisateur__actions .organisateur-share-button svg {
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 /* ========== 🖼 LOGO CLIQUABLE ========== */
@@ -203,7 +220,7 @@ a.bouton-edition-attention {
   font-size: 1.6rem;
 }
 
-.header-organisateur__actions .lien-contact {
+.header-organisateur__liens-row .lien-contact {
   display: flex;
   align-items: center;
   justify-content: center;
