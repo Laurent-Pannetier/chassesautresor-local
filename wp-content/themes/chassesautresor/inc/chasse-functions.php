@@ -1414,6 +1414,7 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id): array
         'nb_joueurs_label'  => $nb_joueurs_label,
         'cout_points'       => $cout_points,
         'mode_validation'   => $mode_validation,
+        'mode_fin'          => $champs['mode_fin'],
         'date_debut'        => $date_debut_affichage,
         'date_fin'          => $date_fin_affichage,
         'badge_class'       => $badge_class,

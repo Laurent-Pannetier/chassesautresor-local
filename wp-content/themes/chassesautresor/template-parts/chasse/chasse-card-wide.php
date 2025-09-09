@@ -8,6 +8,10 @@ if (!isset($args['chasse_id']) || empty($args['chasse_id'])) {
 $chasse_id = (int) $args['chasse_id'];
 $completion_class = $args['completion_class'] ?? '';
 $infos           = preparer_infos_affichage_carte_chasse($chasse_id);
+$mode_fin        = $infos['mode_fin'] ?? 'automatique';
+$title_mode      = $mode_fin === 'automatique'
+    ? esc_html__('mode de fin de chasse : automatique', 'chassesautresor-com')
+    : esc_html__('mode de fin de chasse : manuelle', 'chassesautresor-com');
 
 $orga_id = get_organisateur_from_chasse($chasse_id);
 
@@ -20,6 +24,40 @@ if (empty($infos)) {
         <span class="badge-statut <?php echo esc_attr($infos['badge_class']); ?>"
             data-post-id="<?php echo esc_attr($chasse_id); ?>">
             <?php echo esc_html($infos['statut_label']); ?>
+        </span>
+        <?php if ((int) $infos['cout_points'] > 0) : ?>
+        <span
+            class="badge-cout"
+            data-post-id="<?php echo esc_attr($chasse_id); ?>"
+            aria-label="<?php echo esc_attr(
+                sprintf(
+                    __('Coût de participation : %d points.', 'chassesautresor-com'),
+                    $infos['cout_points']
+                )
+            ); ?>"
+        >
+            <?php echo esc_html($infos['cout_points'] . ' ' . __('pts', 'chassesautresor-com')); ?>
+        </span>
+        <?php endif; ?>
+
+        <?php if ($infos['mode_validation'] === 'manuelle') : ?>
+        <span class="badge-validation"
+            aria-label="<?php echo esc_attr(esc_html__('Validation manuelle', 'chassesautresor-com')); ?>">
+            <?php echo get_svg_icon('reply-mail'); ?>
+        </span>
+        <?php elseif ($infos['mode_validation'] === 'automatique') : ?>
+        <span class="badge-validation"
+            aria-label="<?php echo esc_attr(esc_html__('Validation automatique', 'chassesautresor-com')); ?>">
+            <?php echo get_svg_icon('reply-auto'); ?>
+        </span>
+        <?php endif; ?>
+
+        <span class="mode-fin-icone" title="<?php echo esc_attr($title_mode); ?>" aria-label="<?php echo esc_attr($title_mode); ?>">
+            <?php if ($mode_fin === 'automatique') : ?>
+                <i class="fa-solid fa-bolt"></i>
+            <?php else : ?>
+                <?php echo get_svg_icon('hand'); ?>
+            <?php endif; ?>
         </span>
         <?php
         $image_id = $infos['image_id'] ?? 0;
@@ -64,34 +102,6 @@ if (empty($infos)) {
                 </div>
             </div>
 
-            <?php if ((int) $infos['cout_points'] > 0 || $infos['mode_validation'] !== '') : ?>
-            <div class="meta-badges">
-                <?php if ((int) $infos['cout_points'] > 0) : ?>
-                <span class="badge-rond badge-cout"
-                    aria-label="<?php echo esc_attr(
-                        sprintf(
-                            esc_html__('Coût par tentative : %d points.', 'chassesautresor-com'),
-                            $infos['cout_points']
-                        )
-                    ); ?>">
-                    <?php echo get_svg_icon('coins-points'); ?>
-                    <span><?php echo esc_html($infos['cout_points']); ?></span>
-                </span>
-                <?php endif; ?>
-
-                <?php if ($infos['mode_validation'] === 'manuelle') : ?>
-                <span class="badge-rond badge-validation"
-                    aria-label="<?php echo esc_attr(esc_html__('Validation manuelle', 'chassesautresor-com')); ?>">
-                    <?php echo get_svg_icon('reply-mail'); ?>
-                </span>
-                <?php elseif ($infos['mode_validation'] === 'automatique') : ?>
-                <span class="badge-rond badge-validation"
-                    aria-label="<?php echo esc_attr(esc_html__('Validation automatique', 'chassesautresor-com')); ?>">
-                    <?php echo get_svg_icon('reply-auto'); ?>
-                </span>
-                <?php endif; ?>
-            </div>
-            <?php endif; ?>
             <?php echo $infos['extrait_html']; ?>
             <?php echo $infos['lot_html']; ?>
         </div>
