@@ -1258,15 +1258,18 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id): array
     $extrait       = wp_trim_words($texte_complet, 60, '...');
 
     $image_data = get_field('chasse_principale_image', $chasse_id);
+    $image_id = 0;
     $image = '';
     if (is_array($image_data) && !empty($image_data['sizes']['medium'])) {
+        $image_id = $image_data['ID'] ?? 0;
         $image = $image_data['sizes']['medium'];
     } elseif ($image_data) {
         $image_id = is_array($image_data) ? ($image_data['ID'] ?? 0) : (int) $image_data;
         $image = $image_id ? wp_get_attachment_image_url($image_id, 'medium') : '';
     }
     if (!$image) {
-        $image = get_the_post_thumbnail_url($chasse_id, 'medium');
+        $image_id = get_post_thumbnail_id($chasse_id);
+        $image = $image_id ? wp_get_attachment_image_url($image_id, 'medium') : '';
     }
 
     $champs = chasse_get_champs($chasse_id);
@@ -1403,6 +1406,7 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id): array
         'titre'             => $titre,
         'permalink'         => $permalink,
         'image'             => $image,
+        'image_id'          => $image_id,
         'total_enigmes'     => $total_enigmes,
         'nb_joueurs_label'  => $nb_joueurs_label,
         'date_debut'        => $date_debut_affichage,
