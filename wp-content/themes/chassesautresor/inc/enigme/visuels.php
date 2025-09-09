@@ -54,6 +54,16 @@ function build_picture_enigme(int $image_id, string $alt, array $sizes, array $i
     $breakpoints = get_enigme_picture_breakpoints();
     $order = ['thumbnail', 'medium', 'large', 'full'];
 
+    $valid_sizes = function_exists('get_intermediate_image_sizes')
+        ? get_intermediate_image_sizes()
+        : ['thumbnail', 'medium', 'large'];
+    $valid_sizes[] = 'full';
+    $valid_sizes = array_intersect($valid_sizes, $order);
+    $sizes = array_values(array_intersect($sizes, $valid_sizes));
+    if (!$sizes) {
+        $sizes = ['full'];
+    }
+
     $max_index = 0;
     foreach ($sizes as $s) {
         $idx = array_search($s, $order, true);

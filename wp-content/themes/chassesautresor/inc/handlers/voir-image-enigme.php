@@ -8,6 +8,16 @@ if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
 $image_id = (int) $_GET['id'];
 $taille   = $_GET['taille'] ?? 'full';
 
+$sizes = function_exists('get_intermediate_image_sizes')
+    ? get_intermediate_image_sizes()
+    : ['thumbnail', 'medium', 'large'];
+$sizes[] = 'full';
+
+if (!in_array($taille, $sizes, true)) {
+    http_response_code(400);
+    exit(__('Taille d\'image invalide', 'chassesautresor-com'));
+}
+
 // 🔁 Chargement des fonctions
 if (!function_exists('trouver_chemin_image')) {
     require_once get_stylesheet_directory() . '/inc/enigme-functions.php';
