@@ -21,7 +21,24 @@ if (empty($infos)) {
             data-post-id="<?php echo esc_attr($chasse_id); ?>">
             <?php echo esc_html($infos['statut_label']); ?>
         </span>
-        <img src="<?php echo esc_url($infos['image']); ?>" alt="<?php echo esc_attr($infos['titre']); ?>">
+        <?php
+        $image_id = $infos['image_id'] ?? 0;
+        if ($image_id) :
+            echo wp_get_attachment_image(
+                $image_id,
+                [400, 400],
+                false,
+                [
+                    'alt'     => $infos['titre'],
+                    'loading' => 'lazy',
+                ]
+            );
+        else :
+            ?>
+            <img src="<?php echo esc_url($infos['image']); ?>" alt="<?php echo esc_attr($infos['titre']); ?>" loading="lazy">
+            <?php
+        endif;
+        ?>
     </div>
 
     <div class="carte-wide__contenu">

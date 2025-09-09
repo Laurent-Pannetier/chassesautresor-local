@@ -428,19 +428,18 @@
 
 .carte-wide__image {
   width: 100%;
-  height: 250px;
-  max-height: 250px;
+  height: 400px;
   overflow: hidden;
 }
 
 .carte-wide__image img {
+  display: block;
   width: 100%;
   height: 100%;
   -o-object-fit: cover;
      object-fit: cover;
   -o-object-position: center;
      object-position: center;
-  display: block;
 }
 
 .carte-wide__contenu {
@@ -458,13 +457,13 @@
   justify-content: center;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .carte-wide {
     flex-direction: row;
   }
   .carte-wide__image {
-    flex: 0 0 30%;
-    max-width: 30%;
+    flex: 0 0 400px;
+    width: 400px;
   }
 }
 /* ========== ➕ Cartes d'ajout d'énigme et de chasse ========== */
