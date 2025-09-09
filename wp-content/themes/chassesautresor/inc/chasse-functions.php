@@ -526,31 +526,56 @@ function afficher_chasse_associee_callback()
 function peut_valider_chasse(int $chasse_id, int $user_id): bool
 {
     if (!$chasse_id || !$user_id) {
+        if (function_exists('cat_debug')) {
+            cat_debug('❌ ID de chasse ou utilisateur manquant.');
+        }
         return false;
     }
 
     if (get_post_type($chasse_id) !== 'chasse') {
+        if (function_exists('cat_debug')) {
+            cat_debug("❌ Post type différent de 'chasse' pour ID {$chasse_id}.");
+        }
         return false;
     }
 
     if (!est_organisateur($user_id)) {
+        if (function_exists('cat_debug')) {
+            cat_debug("❌ Utilisateur {$user_id} n'est pas un organisateur.");
+        }
         return false;
     }
 
     if (!utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
+        if (function_exists('cat_debug')) {
+            cat_debug("❌ Utilisateur {$user_id} non associé à la chasse {$chasse_id}.");
+        }
         return false;
     }
 
     $organisateur_id = get_organisateur_from_chasse($chasse_id);
     if (!$organisateur_id || !get_field('organisateur_cache_complet', $organisateur_id)) {
+        if (function_exists('cat_debug')) {
+            cat_debug(
+                "❌ Organisateur absent ou incomplet pour la chasse {$chasse_id}."
+            );
+        }
         return false;
     }
 
     if (!get_field('chasse_cache_complet', $chasse_id)) {
+        if (function_exists('cat_debug')) {
+            cat_debug("❌ Chasse {$chasse_id} incomplète.");
+        }
         return false;
     }
 
     if (get_post_status($chasse_id) !== 'pending') {
+        if (function_exists('cat_debug')) {
+            cat_debug(
+                "❌ Statut WP différent de 'pending' pour la chasse {$chasse_id}."
+            );
+        }
         return false;
     }
 
@@ -558,10 +583,20 @@ function peut_valider_chasse(int $chasse_id, int $user_id): bool
     $statut_metier     = get_field('chasse_cache_statut', $chasse_id);
 
     if (!in_array($statut_validation ?? '', ['creation', 'correction'], true)) {
+        if (function_exists('cat_debug')) {
+            cat_debug(
+                "❌ Statut de validation '{$statut_validation}' invalide pour la chasse {$chasse_id}."
+            );
+        }
         return false;
     }
 
     if (($statut_metier ?? '') !== 'revision') {
+        if (function_exists('cat_debug')) {
+            cat_debug(
+                "❌ Statut métier '{$statut_metier}' invalide pour la chasse {$chasse_id}."
+            );
+        }
         return false;
     }
 
@@ -569,13 +604,21 @@ function peut_valider_chasse(int $chasse_id, int $user_id): bool
     // afin d'éviter toute incohérence liée au cache "chasse_cache_enigmes".
     $enigmes = recuperer_ids_enigmes_pour_chasse($chasse_id);
     if (empty($enigmes)) {
+        if (function_exists('cat_debug')) {
+            cat_debug("❌ Aucune énigme associée à la chasse {$chasse_id}.");
+        }
         return false;
     }
 
     foreach ($enigmes as $eid) {
-        $etat = get_field('enigme_cache_etat_systeme', $eid);
+        $etat   = get_field('enigme_cache_etat_systeme', $eid);
         $complet = get_field('enigme_cache_complet', $eid);
         if ($etat !== 'bloquee_chasse' || !$complet) {
+            if (function_exists('cat_debug')) {
+                cat_debug(
+                    "❌ Énigme {$eid} non bloquée pour la chasse ou incomplète (etat={$etat}, complet={$complet})."
+                );
+            }
             return false;
         }
     }
