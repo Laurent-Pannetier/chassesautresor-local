@@ -379,6 +379,49 @@
   border-radius: 50%;
 }
 
+/* ========== 🧿 Carte wide ========== */
+.carte-wide {
+  display: flex;
+  flex-direction: column;
+}
+
+.carte-wide__image {
+  width: 100%;
+  height: 250px;
+  max-height: 250px;
+  overflow: hidden;
+}
+
+.carte-wide__image img {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  -o-object-position: center;
+     object-position: center;
+  display: block;
+}
+
+.carte-wide__contenu {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: var(--space-md) var(--space-2xl);
+}
+
+.carte-wide__footer .cta-div {
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .carte-wide {
+    flex-direction: row;
+  }
+  .carte-wide__image {
+    flex: 0 0 30%;
+    max-width: 30%;
+  }
+}
 /* ========== ➕ Cartes d'ajout d'énigme et de chasse ========== */
 .carte-ajout-chasse {
   display: flex;
