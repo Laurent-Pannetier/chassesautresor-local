@@ -1276,6 +1276,7 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id): array
     $date_debut        = $champs['date_debut'];
     $date_fin          = $champs['date_fin'];
     $illimitee         = $champs['illimitee'];
+    $mode_fin          = $champs['mode_fin'] ?? 'automatique';
 
     $date_debut_affichage = formater_date($date_debut);
     $date_fin_affichage   = $illimitee
@@ -1347,18 +1348,7 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id): array
         $footer_icones[] = 'coins-points';
     }
 
-    $modes = [];
-    foreach ($enigmes_associees as $eid) {
-        $mode = get_field('enigme_mode_validation', $eid);
-        if ($mode) {
-            $modes[$mode] = true;
-        }
-    }
-    if (isset($modes['manuelle'])) {
-        $footer_icones[] = 'reply-mail';
-    } elseif (isset($modes['automatique'])) {
-        $footer_icones[] = 'reply-auto';
-    }
+    $footer_icones[] = $mode_fin === 'manuelle' ? 'reply-mail' : 'reply-auto';
 
     $lot_html = '';
     if (!empty($titre_recompense) && (float) $valeur_recompense > 0) {
