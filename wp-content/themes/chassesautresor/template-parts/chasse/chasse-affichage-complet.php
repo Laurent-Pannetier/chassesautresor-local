@@ -190,20 +190,14 @@ if ($edition_active && !$est_complet) {
                   href="<?= esc_url(wp_get_attachment_image_url($image_id, 'full')); ?>"
                   class="fancybox image"
                 >
-                  <?php
-                  echo wp_get_attachment_image(
-                      $image_id,
-                      'chasse-fiche',
-                      false,
-                      [
-                          'class'       => 'chasse-image visuel-cpt img-h-max',
-                          'data-cpt'    => 'chasse',
-                          'data-post-id' => $chasse_id,
-                          'alt'         => __('Image de la chasse', 'chassesautresor-com'),
-                          'sizes'       => '(max-width: 800px) 100vw, 800px',
-                      ]
-                  );
-                  ?>
+                  <img
+                      class="chasse-image visuel-cpt img-h-max"
+                      data-cpt="chasse"
+                      data-post-id="<?= esc_attr($chasse_id); ?>"
+                      src="<?= esc_url($infos_chasse['image_url']); ?>"
+                      alt="<?= esc_attr($infos_chasse['image_alt']); ?>"
+                      sizes="(max-width: 800px) 100vw, 800px"
+                  />
                 </a>
               <?php endif; ?>
             </div>
