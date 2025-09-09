@@ -497,19 +497,6 @@ if ($edition_active && !$est_complet) {
 
       </div>
   </div>
-  <footer class="chasse-footer">
-    <?php
-    $footer_organisateur_id = get_organisateur_from_chasse($chasse_id);
-    if ($footer_organisateur_id) :
-    ?>
-        <span class="chasse-footer__texte">
-            <?= esc_html__('Proposé par', 'chassesautresor-com'); ?>
-            <a class="chasse-footer__nom" href="<?= esc_url(get_permalink($footer_organisateur_id)); ?>">
-                <?= esc_html(get_the_title($footer_organisateur_id)); ?>
-            </a>
-        </span>
-    <?php endif; ?>
-  </footer>
 </section>
 
 <?php if ($edition_active) : ?>
