@@ -313,19 +313,38 @@ function afficher_picture_vignette_enigme(int $enigme_id, string $alt = '', arra
  */
 function trouver_chemin_image(int $image_id, string $taille = 'full'): ?array
 {
+    $cache_key   = sprintf('%d_%s', $image_id, $taille);
+    $cache_group = 'trouver_chemin_image';
+
+    if (function_exists('wp_cache_get')) {
+        $cached = wp_cache_get($cache_key, $cache_group, false, $found);
+        if ($found) {
+            return $cached;
+        }
+    }
+
     $wp_size = $taille === 'full' ? 'full' : $taille;
     $src     = wp_get_attachment_image_src($image_id, $wp_size);
     $url = $src[0] ?? null;
-    if (!$url) return null;
+    if (!$url) {
+        if (function_exists('wp_cache_set')) {
+            wp_cache_set($cache_key, null, $cache_group);
+        }
+        return null;
+    }
 
     $upload_dir = wp_get_upload_dir();
     $path = str_replace($upload_dir['baseurl'], $upload_dir['basedir'], $url);
 
     // 🔁 Si une version .webp existe, on la préfère
-    $webp_path = preg_replace('/\.(jpe?g|png|gif)$/i', '.webp', $path);
+    $webp_path = preg_replace('/\\.(jpe?g|png|gif)$/i', '.webp', $path);
     if ($webp_path !== $path && file_exists($webp_path)) {
         error_log("[trouver_chemin_image] utilisation de $webp_path");
-        return ['path' => $webp_path, 'mime' => 'image/webp'];
+        $result = ['path' => $webp_path, 'mime' => 'image/webp'];
+        if (function_exists('wp_cache_set')) {
+            wp_cache_set($cache_key, $result, $cache_group);
+        }
+        return $result;
     }
 
     // 🔁 Sinon, on vérifie le fichier d’origine
@@ -338,13 +357,24 @@ function trouver_chemin_image(int $image_id, string $taille = 'full'): ?array
             'webp'        => 'image/webp',
             default       => 'application/octet-stream',
         };
-        return ['path' => $path, 'mime' => $mime];
+        $result = ['path' => $path, 'mime' => $mime];
+        if (function_exists('wp_cache_set')) {
+            wp_cache_set($cache_key, $result, $cache_group);
+        }
+        return $result;
     }
 
     if ($taille !== 'full') {
-        return trouver_chemin_image($image_id, 'full');
+        $result = trouver_chemin_image($image_id, 'full');
+        if (function_exists('wp_cache_set')) {
+            wp_cache_set($cache_key, $result, $cache_group);
+        }
+        return $result;
     }
 
+    if (function_exists('wp_cache_set')) {
+        wp_cache_set($cache_key, null, $cache_group);
+    }
     return null;
 }
 
