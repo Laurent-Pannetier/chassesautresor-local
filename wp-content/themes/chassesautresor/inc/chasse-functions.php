@@ -1350,7 +1350,8 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id): array
         $footer_icones[] = 'coins-points';
     }
 
-    $modes = [];
+    $mode_validation = '';
+    $modes          = [];
     foreach ($enigmes_associees as $eid) {
         $mode = get_field('enigme_mode_validation', $eid);
         if ($mode) {
@@ -1359,8 +1360,10 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id): array
     }
     if (isset($modes['manuelle'])) {
         $footer_icones[] = 'reply-mail';
+        $mode_validation = 'manuelle';
     } elseif (isset($modes['automatique'])) {
         $footer_icones[] = 'reply-auto';
+        $mode_validation = 'automatique';
     }
 
     $lot_html = '';
@@ -1406,9 +1409,10 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id): array
         'titre'             => $titre,
         'permalink'         => $permalink,
         'image'             => $image,
-        'image_id'          => $image_id,
         'total_enigmes'     => $total_enigmes,
         'nb_joueurs_label'  => $nb_joueurs_label,
+        'cout_points'       => $cout_points,
+        'mode_validation'   => $mode_validation,
         'date_debut'        => $date_debut_affichage,
         'date_fin'          => $date_fin_affichage,
         'badge_class'       => $badge_class,
