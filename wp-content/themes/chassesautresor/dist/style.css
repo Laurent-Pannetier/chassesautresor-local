@@ -8964,6 +8964,7 @@ a.bouton-edition-attention {
   height: auto;
   -o-object-fit: cover;
      object-fit: cover;
+  border-radius: 50%;
 }
 
 /* ========== 📌 ICÔNES D'ACTIONS ========== */
@@ -9011,7 +9012,7 @@ a.bouton-edition-attention {
 .header-organisateur__liens-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: var(--space-lg);
   width: 100%;
 }
@@ -9055,7 +9056,7 @@ a.bouton-edition-attention {
 
 .description-modal__content {
   background: var(--color-white);
-  color: var(--color-text-primary);
+  color: var(--color-text-fond-clair);
   padding: 2rem;
   max-width: 600px;
   max-height: 80vh;

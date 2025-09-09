@@ -5,8 +5,8 @@ $peut_modifier = utilisateur_peut_modifier_post($organisateur_id);
 
 
 $logo_id = get_field('logo_organisateur', $organisateur_id, false);
-$logo = wp_get_attachment_image_src($logo_id, 'thumbnail');
-$logo_url = $logo ? $logo[0] : wp_get_attachment_image_src(3927, 'thumbnail')[0];
+$logo = wp_get_attachment_image_src($logo_id, [600, 600]);
+$logo_url = $logo ? $logo[0] : wp_get_attachment_image_src(3927, [600, 600])[0];
 
 $titre_organisateur = get_post_field('post_title', $organisateur_id);
 
