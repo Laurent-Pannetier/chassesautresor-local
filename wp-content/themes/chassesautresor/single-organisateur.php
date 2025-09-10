@@ -85,7 +85,7 @@ get_header();
                         <span class="decor decor-gauche">
                             <?php echo file_get_contents(get_theme_file_path('assets/svg/star-line-right.svg')); ?>
                         </span>
-                        <h2><?php esc_html_e('Ses chasses au trésor', 'chassesautresor-com'); ?></h2>
+                        <h2><?php esc_html_e('Chasses au trésor', 'chassesautresor-com'); ?></h2>
                         <span class="decor decor-droite">
                             <?php echo file_get_contents(get_theme_file_path('assets/svg/star-line-left.svg')); ?>
                         </span>
