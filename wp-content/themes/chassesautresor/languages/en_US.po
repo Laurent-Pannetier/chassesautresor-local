@@ -1249,8 +1249,8 @@ msgid "Vous n’avez pas assez de points pour engager cette énigme."
 msgstr "❌ You don't have enough points to complete this conversion."
 
 #: single-organisateur.php:84
-msgid "Chasses au Trésor"
-msgstr "Treasure hunts"
+msgid "Ses chasses au trésor"
+msgstr "Their treasure hunts"
 
 #: single-organisateur.php:132
 msgid "C'est parti !"

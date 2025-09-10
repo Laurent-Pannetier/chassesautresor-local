@@ -1261,7 +1261,7 @@ msgid "Validation en ligne nécessaire"
 msgstr ""
 
 #: single-organisateur.php:84
-msgid "Chasses au Trésor"
+msgid "Ses chasses au trésor"
 msgstr ""
 
 #: single-organisateur.php:132

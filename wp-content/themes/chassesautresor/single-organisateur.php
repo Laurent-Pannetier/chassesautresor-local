@@ -81,7 +81,7 @@ get_header();
         <section class="chasses">
             <div class="conteneur">
                 <div class="titre-chasses-wrapper">
-                    <h2><?php esc_html_e('Chasses au Trésor', 'chassesautresor-com'); ?></h2>
+                    <h2><?php esc_html_e('Ses chasses au trésor', 'chassesautresor-com'); ?></h2>
                     <?php if ($peut_ajouter && $statut_organisateur === 'publish') :
                         get_template_part('template-parts/chasse/chasse-partial-ajout-chasse', null, [
                             'has_chasses'     => $has_chasses,

@@ -616,6 +616,11 @@ span.champ-obligatoire {
   gap: var(--space-md);
 }
 
+.titre-chasses-wrapper h2 {
+  flex: 1;
+  text-align: center;
+}
+
 .titre-enigmes-wrapper {
   display: flex;
   flex-direction: column;
