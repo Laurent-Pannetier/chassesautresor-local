@@ -1,5 +1,26 @@
 /* 👤 Header organisateur */
 
+/* 🧭 Fond page organisateur */
+#organisateur-page {
+  position: relative;
+  z-index: 0;
+}
+
+#organisateur-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 75vw;
+  height: 75vw;
+  background: url('../assets/svg/compass-rose.svg') no-repeat top left;
+  background-size: 100% 100%;
+  opacity: 0.15;
+  filter: brightness(0) invert(1);
+  pointer-events: none;
+  z-index: -1;
+}
+
   /* 🧱 Structure du header */
   /* 📐 Classes générales header */
   /* 🔠 Typographie spécifique au header */
