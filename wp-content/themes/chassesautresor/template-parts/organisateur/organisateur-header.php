@@ -82,15 +82,28 @@ $classes_header .= ' container container--boxed';
           data-champ="logo_organisateur"
           data-post-id="<?= esc_attr($organisateur_id); ?>">
           <div class="champ-affichage">
-            <a href="<?= esc_url(get_permalink($organisateur_id)); ?>"
-               aria-label="<?= esc_attr__('Voir la page de l\u2019organisateur', 'chassesautresor-com'); ?>">
+            <?php
+            $est_page_organisateur = is_singular('organisateur')
+              && (int) get_queried_object_id() === (int) $organisateur_id;
+            ?>
+            <?php if ($est_page_organisateur) : ?>
               <img src="<?= esc_url($logo_url); ?>"
                    alt="<?= esc_attr__('Logo de l\u2019organisateur', 'chassesautresor-com'); ?>"
                    width="500" height="500"
-                   class="header-organisateur__logo visuel-cpt"
+                   class="header-organisateur__logo header-organisateur__logo--static visuel-cpt"
                    data-cpt="organisateur"
                    data-post-id="<?= esc_attr($organisateur_id); ?>" />
-            </a>
+            <?php else : ?>
+              <a href="<?= esc_url(get_permalink($organisateur_id)); ?>"
+                 aria-label="<?= esc_attr__('Voir la page de l\u2019organisateur', 'chassesautresor-com'); ?>">
+                <img src="<?= esc_url($logo_url); ?>"
+                     alt="<?= esc_attr__('Logo de l\u2019organisateur', 'chassesautresor-com'); ?>"
+                     width="500" height="500"
+                     class="header-organisateur__logo visuel-cpt"
+                     data-cpt="organisateur"
+                     data-post-id="<?= esc_attr($organisateur_id); ?>" />
+              </a>
+            <?php endif; ?>
           </div>
           <input type="hidden" class="champ-input" value="<?= esc_attr($logo_id ?? '') ?>">
           <div class="champ-feedback"></div>
