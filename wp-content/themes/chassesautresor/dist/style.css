@@ -8984,7 +8984,8 @@ a.bouton-edition-attention {
 
 .header-organisateur__col--logo {
   width: 90%;
-  aspect-ratio: 1/1;
+  max-width: 90vw;
+  max-height: 300px;
   overflow: hidden;
   position: relative;
   border-radius: 22px;
@@ -9007,13 +9008,14 @@ a.bouton-edition-attention {
 }
 
 .header-organisateur__col--logo img {
-  width: 100%;
-  height: 100%;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 300px;
   -o-object-fit: cover;
      object-fit: cover;
   -o-object-position: center;
      object-position: center;
-  aspect-ratio: 1/1;
 }
 
 .header-organisateur__logo--static {
@@ -9197,9 +9199,16 @@ a.bouton-edition-attention {
   .header-organisateur__col--logo {
     flex: 0 0 350px;
     width: 350px;
+    aspect-ratio: 1/1;
+    max-height: none;
   }
   .header-organisateur__col--infos {
     flex: 1;
+  }
+  .header-organisateur__col--logo img {
+    width: 100%;
+    height: 100%;
+    max-height: none;
   }
 }
 @media (min-width: 1024px) {
