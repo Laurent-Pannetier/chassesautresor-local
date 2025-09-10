@@ -103,9 +103,10 @@ a.bouton-edition-attention {
 }
 
 .header-organisateur__col--logo {
-  width: 90%;
+  width: auto;
   max-width: 90vw;
   max-height: 300px;
+  margin: 0 auto;
   overflow: hidden;
   position: relative;
   border-radius: 22px;
@@ -129,6 +130,7 @@ a.bouton-edition-attention {
 }
 
 .header-organisateur__col--logo img {
+  display: block;
   width: auto;
   max-width: 100%;
   height: auto;
