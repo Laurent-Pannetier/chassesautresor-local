@@ -52,6 +52,29 @@ $classes_header .= ' container container--boxed';
     <div class="morse-wrapper" data-morse="<?= esc_attr($titre_organisateur); ?>"></div>
   </div>
   <header class="<?= esc_attr($classes_header); ?>">
+    <div class="header-organisateur__actions">
+      <?php if (function_exists('ADDTOANY_SHARE_SAVE_BUTTON')) : ?>
+        <?php
+        $share_url   = get_permalink($organisateur_id);
+        $share_title = $titre_organisateur;
+        $share_href  = 'https://www.addtoany.com/share#url=' . rawurlencode($share_url) . '&title=' . rawurlencode($share_title);
+        ?>
+        <a
+          class="a2a_dd a2a_counter organisateur-share-button addtoany_share_save addtoany_share"
+          href="<?= esc_url($share_href); ?>"
+          data-a2a-url="<?= esc_url($share_url); ?>"
+          data-a2a-title="<?= esc_attr($share_title); ?>"
+          aria-label="<?= esc_attr__('Partager', 'chassesautresor-com'); ?>"
+        >
+          <?= get_svg_icon('share-icon'); ?>
+        </a>
+      <?php endif; ?>
+      <?php if ($peut_modifier) : ?>
+        <button id="toggle-mode-edition" class="bouton-edition-toggle" aria-label="<?= esc_attr__('Paramètres organisateur', 'chassesautresor-com'); ?>">
+          <i class="fa-solid fa-gear"></i>
+        </button>
+      <?php endif; ?>
+    </div>
     <div class="conteneur-organisateur">
       <div class="header-organisateur__col header-organisateur__col--logo">
         <div class="champ-organisateur champ-img champ-logo <?= empty($logo_id) ? 'champ-vide' : ''; ?>"
@@ -99,16 +122,9 @@ $classes_header .= ' container container--boxed';
               <?php endforeach; ?>
             </ul>
           <?php endif; ?>
-          <div class="header-organisateur__actions">
-            <a href="<?= esc_url($url_contact); ?>" class="lien-contact" aria-label="<?= esc_attr__('Contact', 'chassesautresor-com'); ?>">
-              <i class="fa-solid fa-envelope"></i>
-            </a>
-            <?php if ($peut_modifier) : ?>
-              <button id="toggle-mode-edition" class="bouton-edition-toggle" aria-label="Paramètres organisateur">
-                <i class="fa-solid fa-gear"></i>
-              </button>
-            <?php endif; ?>
-          </div>
+          <a href="<?= esc_url($url_contact); ?>" class="lien-contact" aria-label="<?= esc_attr__('Contact', 'chassesautresor-com'); ?>">
+            <i class="fa-solid fa-envelope"></i>
+          </a>
         </div>
       </div>
 
