@@ -2082,6 +2082,7 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
   white-space: nowrap;
   overflow: hidden;
   max-width: 90%;
+  opacity: 0.5;
 }
 
 .morse-wrapper .point,
