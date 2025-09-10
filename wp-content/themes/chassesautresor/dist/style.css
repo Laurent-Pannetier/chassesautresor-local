@@ -7265,7 +7265,7 @@ span.champ-obligatoire {
 
 .titre-chasses-wrapper .titre-chasses .decor {
   flex: 1;
-  height: 6px;
+  height: 4px;
   color: var(--color-titre-enigme);
   display: flex;
   align-items: center;
