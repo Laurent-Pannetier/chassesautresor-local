@@ -83,7 +83,9 @@ a.bouton-edition-attention {
   line-height: 1.2;
   margin: 0;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.15);
-  padding-right: var(--space-4xl);
+  flex: 1;
+  min-width: 0;
+  padding-right: 0;
 }
 
 
@@ -142,7 +144,8 @@ a.bouton-edition-attention {
 
 /* ========== 📌 ICÔNES D'ACTIONS ========== */
 .header-organisateur__title-row {
-  position: relative;
+  display: flex;
+  align-items: flex-start;
   width: 100%;
 }
 
@@ -150,6 +153,7 @@ a.bouton-edition-attention {
   display: flex;
   gap: var(--space-xs);
   align-items: center;
+  margin-left: auto;
   color: var(--color-text-primary);
 }
 
@@ -186,10 +190,6 @@ a.bouton-edition-attention {
 }
 
 @media (--bp-tablet) {
-  .header-organisateur__title-row {
-    position: static;
-  }
-
   .header-organisateur__actions {
     position: absolute;
     top: 1.2rem;
@@ -197,7 +197,7 @@ a.bouton-edition-attention {
   }
 
   .header-organisateur__nom {
-    padding-right: 0;
+    padding-right: var(--space-4xl);
   }
 }
 
