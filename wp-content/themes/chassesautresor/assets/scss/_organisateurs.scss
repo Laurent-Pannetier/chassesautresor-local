@@ -211,6 +211,9 @@ a.bouton-edition-attention {
 /* Structure du contenu à droite */
 .header-organisateur__description {
   max-width: 40rem;
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--color-blue-grey-light);
 }
 
 .header-organisateur__voir-plus {

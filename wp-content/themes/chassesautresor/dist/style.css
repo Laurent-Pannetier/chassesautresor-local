@@ -9089,6 +9089,9 @@ a.bouton-edition-attention {
 /* Structure du contenu à droite */
 .header-organisateur__description {
   max-width: 40rem;
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--color-blue-grey-light);
 }
 
 .header-organisateur__voir-plus {
@@ -9472,6 +9475,7 @@ a.bouton-edition-attention {
   --color-text-fond-clair: #1c1c1c; /* noir clair */
   --color-text-fond-clair-rgb: 28, 28, 28; /* noir clair en RGB */
   --color-gris-carte: #c2c2c2; /* 🧩 Fond de carte énigme : gris bleuté doux */
+  --color-blue-grey-light: #C9D1E0; /* 💠 Bleu-gris clair */
   /* Groupe d'état : etat-enigme-menu */
   --etat-enigme-menu-en-cours: currentColor; /* état par défaut */
   --etat-enigme-menu-bloquee: var(--color-grey-medium);
