@@ -59,20 +59,17 @@ function build_picture_enigme(int $image_id, string $alt, array $sizes, array $i
         : ['thumbnail', 'medium', 'large'];
     $valid_sizes[] = 'full';
     $valid_sizes = array_intersect($valid_sizes, $order);
-    $sizes = array_values(array_intersect($sizes, $valid_sizes));
+    $sizes       = array_values(array_intersect($sizes, $valid_sizes));
     if (!$sizes) {
         $sizes = ['full'];
     }
 
-    $max_index = 0;
-    foreach ($sizes as $s) {
-        $idx = array_search($s, $order, true);
-        if ($idx !== false && $idx > $max_index) {
-            $max_index = $idx;
-        }
-    }
+    usort(
+        $sizes,
+        static fn (string $a, string $b): int => array_search($a, $order, true) <=> array_search($b, $order, true)
+    );
 
-    $used_sizes = array_slice($order, 0, $max_index + 1);
+    $used_sizes = $sizes;
 
     $html = "<picture>\n";
     $size_2x_map = [
@@ -194,7 +191,7 @@ function afficher_visuels_enigme(int $enigme_id): void
 
         $attrs = [
             'class' => $classes,
-            'style' => 'width:auto;max-width:100%;',
+            'style' => 'max-width:100%;height:auto;',
         ];
 
         if ($index === 0) {
@@ -202,7 +199,7 @@ function afficher_visuels_enigme(int $enigme_id): void
         }
 
         echo '<figure class="image-principale">';
-        echo build_picture_enigme($image_id, $alt, ['full'], $attrs);
+        echo build_picture_enigme($image_id, $alt, ['large', 'full'], $attrs);
         echo '</figure>';
     }
     echo '</div>';

@@ -35,7 +35,7 @@ class EnigmeImageDimensionsTest extends TestCase
     public function test_picture_contains_breakpoint_sources(): void
     {
         ob_start();
-        afficher_picture_vignette_enigme(123, 'Alt', ['full']);
+        afficher_picture_vignette_enigme(123, 'Alt', ['medium', 'large', 'full']);
         $html = ob_get_clean();
 
         $this->assertStringContainsString('<picture>', $html);
@@ -44,20 +44,17 @@ class EnigmeImageDimensionsTest extends TestCase
         $this->assertStringContainsString('taille=large', $html);
         $this->assertStringContainsString('media="(min-width: 769px)"', $html);
         $this->assertStringContainsString('taille=medium', $html);
-        $this->assertStringContainsString('media="(min-width: 481px)"', $html);
-        $this->assertStringContainsString('taille=thumbnail', $html);
-        $this->assertGreaterThan(0, substr_count($html, 'srcset='));
+        $this->assertStringNotContainsString('media="(min-width: 481px)"', $html);
+        $this->assertSame(2, substr_count($html, '<source'));
     }
 
-    public function test_medium_size_includes_thumbnail_fallback(): void
+    public function test_single_size_outputs_only_img(): void
     {
         ob_start();
         afficher_picture_vignette_enigme(321, 'Alt', ['medium']);
         $html = ob_get_clean();
 
         $this->assertStringContainsString('taille=medium', $html);
-        $this->assertStringContainsString('media="(min-width: 481px)"', $html);
-        $this->assertStringContainsString('taille=thumbnail', $html);
-        $this->assertSame(1, substr_count($html, '<source'));
+        $this->assertStringNotContainsString('<source', $html);
     }
 }
