@@ -91,6 +91,52 @@
   }
 }
 
+/* ========== 🆕 Carte format CART ========== */
+.carte-cart {
+  width: 100%;
+  max-width: 300px;
+  padding: 0;
+  overflow: hidden;
+  margin: 0 auto;
+
+  .carte-cart__lien {
+    display: flex;
+    flex-direction: column;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .carte-cart__image-wrapper {
+    position: relative;
+  }
+
+  .carte-cart__image {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    display: block;
+  }
+
+  .badge-statut {
+    position: absolute;
+    top: var(--space-xs);
+    left: var(--space-xs);
+  }
+
+  .carte-cart__contenu {
+    padding: var(--space-md);
+  }
+
+  .carte-cart__titre {
+    margin: 0 0 var(--space-xs);
+  }
+
+  .carte-cart__footer {
+    padding: 0 var(--space-md) var(--space-md);
+    font-size: 0.875rem;
+  }
+}
+
 /* ========== 🌟 Carte mise en avant ========== */
 .carte-featured {
   position: relative;
