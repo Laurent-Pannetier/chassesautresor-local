@@ -8965,6 +8965,7 @@ a.bouton-edition-attention {
   line-height: 1.2;
   margin: 0;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.15);
+  padding-right: var(--space-4xl);
 }
 
 /* ========== 📐 COLONNE LOGO & COLONNE TEXTE ========== */
@@ -9022,10 +9023,12 @@ a.bouton-edition-attention {
 }
 
 /* ========== 📌 ICÔNES D'ACTIONS ========== */
+.header-organisateur__title-row {
+  position: relative;
+  width: 100%;
+}
+
 .header-organisateur__actions {
-  position: absolute;
-  top: 1.2rem;
-  right: var(--space-xs);
   display: flex;
   gap: var(--space-xs);
   align-items: center;
@@ -9064,6 +9067,19 @@ a.bouton-edition-attention {
   height: 1.5rem;
 }
 
+@media (min-width: 768px) {
+  .header-organisateur__title-row {
+    position: static;
+  }
+  .header-organisateur__actions {
+    position: absolute;
+    top: 1.2rem;
+    right: var(--space-xs);
+  }
+  .header-organisateur__nom {
+    padding-right: 0;
+  }
+}
 /* ========== 🖼 LOGO CLIQUABLE ========== */
 /* Structure du contenu à droite */
 .header-organisateur__description {

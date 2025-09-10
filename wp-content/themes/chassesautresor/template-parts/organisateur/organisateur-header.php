@@ -52,29 +52,6 @@ $classes_header .= ' container container--boxed';
     <div class="morse-wrapper" data-morse="<?= esc_attr($titre_organisateur); ?>"></div>
   </div>
   <header class="<?= esc_attr($classes_header); ?>">
-    <div class="header-organisateur__actions">
-      <?php if (function_exists('ADDTOANY_SHARE_SAVE_BUTTON')) : ?>
-        <?php
-        $share_url   = get_permalink($organisateur_id);
-        $share_title = $titre_organisateur;
-        $share_href  = 'https://www.addtoany.com/share#url=' . rawurlencode($share_url) . '&title=' . rawurlencode($share_title);
-        ?>
-        <a
-          class="a2a_dd a2a_counter organisateur-share-button addtoany_share_save addtoany_share"
-          href="<?= esc_url($share_href); ?>"
-          data-a2a-url="<?= esc_url($share_url); ?>"
-          data-a2a-title="<?= esc_attr($share_title); ?>"
-          aria-label="<?= esc_attr__('Partager', 'chassesautresor-com'); ?>"
-        >
-          <?= get_svg_icon('share-icon'); ?>
-        </a>
-      <?php endif; ?>
-      <?php if ($peut_modifier) : ?>
-        <button id="toggle-mode-edition" class="bouton-edition-toggle" aria-label="<?= esc_attr__('Paramètres organisateur', 'chassesautresor-com'); ?>">
-          <i class="fa-solid fa-gear"></i>
-        </button>
-      <?php endif; ?>
-    </div>
     <div class="conteneur-organisateur">
       <div class="header-organisateur__col header-organisateur__col--logo">
         <div class="champ-organisateur champ-img champ-logo <?= empty($logo_id) ? 'champ-vide' : ''; ?>"
@@ -98,7 +75,32 @@ $classes_header .= ' container container--boxed';
       </div>
 
       <div class="header-organisateur__col header-organisateur__col--infos">
-        <h1 class="header-organisateur__nom"><?= esc_html($titre_organisateur); ?></h1>
+        <div class="header-organisateur__title-row">
+          <h1 class="header-organisateur__nom"><?= esc_html($titre_organisateur); ?></h1>
+          <div class="header-organisateur__actions">
+            <?php if (function_exists('ADDTOANY_SHARE_SAVE_BUTTON')) : ?>
+              <?php
+              $share_url   = get_permalink($organisateur_id);
+              $share_title = $titre_organisateur;
+              $share_href  = 'https://www.addtoany.com/share#url=' . rawurlencode($share_url) . '&title=' . rawurlencode($share_title);
+              ?>
+              <a
+                class="a2a_dd a2a_counter organisateur-share-button addtoany_share_save addtoany_share"
+                href="<?= esc_url($share_href); ?>"
+                data-a2a-url="<?= esc_url($share_url); ?>"
+                data-a2a-title="<?= esc_attr($share_title); ?>"
+                aria-label="<?= esc_attr__('Partager', 'chassesautresor-com'); ?>"
+              >
+                <?= get_svg_icon('share-icon'); ?>
+              </a>
+            <?php endif; ?>
+            <?php if ($peut_modifier) : ?>
+              <button id="toggle-mode-edition" class="bouton-edition-toggle" aria-label="<?= esc_attr__('Paramètres organisateur', 'chassesautresor-com'); ?>">
+                <i class="fa-solid fa-gear"></i>
+              </button>
+            <?php endif; ?>
+          </div>
+        </div>
         <p class="header-organisateur__description">
           <?= esc_html($description_short); ?>
           <button type="button" class="header-organisateur__voir-plus" aria-label="<?= esc_attr__('Voir plus', 'chassesautresor-com'); ?>">
