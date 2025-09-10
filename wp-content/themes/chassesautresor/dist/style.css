@@ -2081,9 +2081,9 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
   padding: 0 0.6rem; /* ✅ un peu plus de marge latérale */
   height: 2px;
   align-items: center;
-  background-color: var(--color-editor-background);
+  background-color: var(--color-background);
   z-index: 1;
-  box-shadow: 0 0 0 1px var(--color-editor-background); /* ✅ masque 1px de plus autour */
+  box-shadow: 0 0 0 1px var(--color-background); /* ✅ masque 1px de plus autour */
   white-space: nowrap;
   overflow: hidden;
   max-width: 90%;
@@ -2093,7 +2093,7 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
 .morse-wrapper .tiret {
   display: inline-block;
   height: 2px;
-  background-color: var(--color-editor-heading);
+  background-color: var(--color-text-primary);
 }
 
 .morse-wrapper .point {
