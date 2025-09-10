@@ -3218,3 +3218,11 @@ msgstr "Je certifie que ma chasse et toutes ses énigmes sont finalisées."
 #: assets/js/validation-chasse.js:61
 msgid "Envoyer la demande de validation"
 msgstr "Envoyer la demande de validation"
+
+#: inc/enigme/affichage.php:619 inc/enigme/indices.php:51 inc/enigme/indices.php:100
+msgid "Indice débloqué"
+msgstr "Indice débloqué"
+
+#: inc/enigme/affichage.php:625
+msgid "Débloquer l'indice (%d pts)"
+msgstr "Débloquer l’indice (%d pts)"

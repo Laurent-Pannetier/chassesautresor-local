@@ -3256,3 +3256,11 @@ msgstr "I certify that my hunt and all its riddles are finalized."
 #: assets/js/validation-chasse.js:61
 msgid "Envoyer la demande de validation"
 msgstr "Send the validation request"
+
+#: inc/enigme/affichage.php:619 inc/enigme/indices.php:51 inc/enigme/indices.php:100
+msgid "Indice débloqué"
+msgstr "Hint unlocked"
+
+#: inc/enigme/affichage.php:625
+msgid "Débloquer l'indice (%d pts)"
+msgstr "Unlock hint (%d pts)"

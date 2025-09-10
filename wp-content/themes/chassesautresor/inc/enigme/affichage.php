@@ -2,6 +2,7 @@
 defined('ABSPATH') || exit;
 require_once __DIR__ . '/../sidebar.php';
 require_once __DIR__ . '/utils.php';
+require_once __DIR__ . '/indices.php';
 
     // ==================================================
     // 🎨 AFFICHAGE STYLISÉ DES ÉNIGMES
@@ -603,10 +604,34 @@ require_once __DIR__ . '/utils.php';
                 . esc_html__('Indices', 'chassesautresor-com')
                 . '</h3><ul>';
             foreach ($indices as $indice_id) {
-                $title = function_exists('get_the_title')
-                    ? get_the_title($indice_id)
-                    : '';
-                $content .= '<li>' . esc_html($title) . '</li>';
+                $cout_indice = (int) get_field('indice_cout_points', $indice_id);
+                $est_debloque = indice_est_debloque($user_id, $indice_id) || $cout_indice === 0;
+                $content .= '<li>';
+                if ($est_debloque) {
+                    $contenu = get_field('indice_contenu', $indice_id) ?: '';
+                    $processed = function_exists('apply_filters')
+                        ? apply_filters('the_content', $contenu)
+                        : $contenu;
+                    $sanitized = function_exists('wp_kses_post')
+                        ? wp_kses_post($processed)
+                        : htmlspecialchars($processed, ENT_QUOTES);
+                    $content .= '<p class="indice-etat">'
+                        . esc_html__('Indice débloqué', 'chassesautresor-com')
+                        . '</p><div class="indice-contenu">'
+                        . $sanitized
+                        . '</div>';
+                } else {
+                    $label = sprintf(
+                        esc_html__('Débloquer l\'indice (%d pts)', 'chassesautresor-com'),
+                        $cout_indice
+                    );
+                    $content .= '<button type="button" class="btn-debloquer-indice"'
+                        . ' data-indice-id="' . esc_attr($indice_id) . '"'
+                        . ' data-cout="' . esc_attr($cout_indice) . '">'
+                        . $label
+                        . '</button>';
+                }
+                $content .= '</li>';
             }
             $content .= '</ul></div>';
         }
