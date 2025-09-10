@@ -8984,8 +8984,7 @@ a.bouton-edition-attention {
 }
 
 .header-organisateur__col--logo {
-  width: 100%;
-  max-width: 500px;
+  width: 90%;
   aspect-ratio: 1/1;
   overflow: hidden;
 }
@@ -9159,17 +9158,36 @@ a.bouton-edition-attention {
   margin-top: var(--space-lg);
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
   .conteneur-organisateur {
     flex-direction: row;
     align-items: center;
     gap: var(--space-3xl);
   }
   .header-organisateur__col--logo {
-    flex: 0 0 600px;
+    flex: 0 0 400px;
+    width: 400px;
   }
   .header-organisateur__col--infos {
     flex: 1;
+  }
+}
+@media (min-width: 1024px) {
+  .header-organisateur__col--logo {
+    flex-basis: 450px;
+    width: 450px;
+  }
+}
+@media (min-width: 1280px) {
+  .header-organisateur__col--logo {
+    flex-basis: 500px;
+    width: 500px;
+  }
+}
+@media (min-width: 1440px) {
+  .header-organisateur__col--logo {
+    flex-basis: 600px;
+    width: 600px;
   }
 }
 /* ========== 🧭 MODAL BIENVENUE ========== */
