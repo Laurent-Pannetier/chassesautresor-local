@@ -150,7 +150,8 @@ ul li {
     margin-bottom: 0.3rem;
 }
 
-.liste-liens-publics > li {
+.liste-liens-publics > li,
+.header-organisateur__liens > li {
     margin-bottom: 0;
 }
 figcaption, .figcaption {
