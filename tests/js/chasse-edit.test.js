@@ -23,7 +23,7 @@ const html = `
               <input type="checkbox" id="date-debut-differee">
               <span class="switch-slider"></span>
             </label>
-            <span class="toggle-option">Later</span>
+            <span class="toggle-option">Other date</span>
             <div class="date-debut-actions" style="display:none;">
               <input type="datetime-local" id="chasse-date-debut" value="" class="champ-inline-date champ-date-edit">
               <div id="erreur-date-debut" class="message-erreur" role="alert" aria-live="assertive"></div>

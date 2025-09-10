@@ -40,8 +40,7 @@ $date_debut_iso = $date_debut_obj ? $date_debut_obj->format('Y-m-d\TH:i') : '';
 
 $date_fin_obj = convertir_en_datetime($date_fin);
 $date_fin_iso = $date_fin_obj ? $date_fin_obj->format('Y-m-d') : '';
-$maintenant    = current_datetime();
-$debut_differe = $date_debut_obj && $date_debut_obj > $maintenant;
+$debut_differe = (bool) get_post_meta($chasse_id, 'chasse_infos_date_debut_differee', true);
 $illimitee  = $infos_chasse['champs']['illimitee'];
 $nb_max     = $infos_chasse['champs']['nb_max'] ?? 1;
 $mode_fin   = $infos_chasse['champs']['mode_fin'] ?? 'automatique';
@@ -519,7 +518,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                                     >
                                     <span class="switch-slider"></span>
                                 </label>
-                                <span class="toggle-option"><?= esc_html__('Later', 'chassesautresor-com'); ?></span>
+                                <span class="toggle-option"><?= esc_html__('Other date', 'chassesautresor-com'); ?></span>
                                 <div class="date-debut-actions" style="<?= $debut_differe ? '' : 'display:none;'; ?>">
                                     <input type="datetime-local"
                                         id="chasse-date-debut"
