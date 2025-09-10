@@ -2,18 +2,21 @@
 defined('ABSPATH') || exit;
 
 
+$chasse_ids      = $args['chasse_ids'] ?? null;
 $organisateur_id = $args['organisateur_id'] ?? null;
-if (!$organisateur_id || get_post_type($organisateur_id) !== 'organisateur') {
-  return;
+
+if (!$chasse_ids) {
+    if (!$organisateur_id || get_post_type($organisateur_id) !== 'organisateur') {
+        return;
+    }
+    $query      = get_chasses_de_organisateur($organisateur_id);
+    $chasse_ids = is_a($query, 'WP_Query') ? $query->posts : (array) $query;
 }
 
 $show_header  = $args['show_header'] ?? true;
 $grid_class   = $args['grid_class'] ?? 'organisateur-chasses-grid';
 $before_items = $args['before_items'] ?? '';
 $after_items  = $args['after_items'] ?? '';
-
-$query      = get_chasses_de_organisateur($organisateur_id);
-$chasse_ids = is_a($query, 'WP_Query') ? $query->posts : (array) $query;
 
 // 🔒 Filtrer les chasses visibles selon leur statut et l'utilisateur courant
 $user_id    = get_current_user_id();
