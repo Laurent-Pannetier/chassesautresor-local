@@ -83,6 +83,52 @@
   font-size: 0.875rem;
 }
 
+/* ========== 🆕 Carte format CART ========== */
+.carte-cart {
+  width: 100%;
+  max-width: 300px;
+  padding: 0;
+  overflow: hidden;
+  margin: 0 auto;
+}
+.carte-cart .carte-cart__lien {
+  display: flex;
+  flex-direction: column;
+  color: inherit;
+  text-decoration: none;
+}
+.carte-cart .carte-cart__image-wrapper {
+  position: relative;
+}
+.carte-cart .carte-cart__image {
+  width: 100%;
+  aspect-ratio: 4/3;
+  -o-object-fit: cover;
+     object-fit: cover;
+  display: block;
+}
+.carte-cart .badge-statut {
+  position: absolute;
+  top: var(--space-xs);
+  left: var(--space-xs);
+}
+.carte-cart .carte-cart__contenu {
+  padding: var(--space-md);
+  text-align: center;
+}
+.carte-cart .carte-cart__titre {
+  margin: 0 0 var(--space-xs);
+}
+.carte-cart .carte-cart__footer {
+  padding: 0 var(--space-md) var(--space-md);
+  font-size: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  text-align: center;
+}
+
 /* ========== 🌟 Carte mise en avant ========== */
 .carte-featured {
   position: relative;
@@ -9455,6 +9501,31 @@ a.bouton-edition-attention {
   margin-top: var(--space-4xl);
 }
 
+/* Grille responsive pour les chasses (format CART) */
+.organisateur-chasses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-xl);
+  justify-content: center;
+}
+
+.organisateur-chasse__desktop {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .organisateur-chasses-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+  }
+  .organisateur-chasse__desktop {
+    display: block;
+  }
+  .organisateur-chasse__mobile {
+    display: none;
+  }
+}
 /* 🎨 Variables globales */
 /* Legacy aliases */
 :root {

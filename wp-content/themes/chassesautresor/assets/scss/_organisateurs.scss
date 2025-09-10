@@ -587,3 +587,31 @@ a.bouton-edition-attention {
 .chasses {
   margin-top: var(--space-4xl);
 }
+
+/* Grille responsive pour les chasses (format CART) */
+.organisateur-chasses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-xl);
+  justify-content: center;
+}
+
+.organisateur-chasse__desktop {
+  display: none;
+}
+
+@media (--bp-desktop) {
+  .organisateur-chasses-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+  }
+
+  .organisateur-chasse__desktop {
+    display: block;
+  }
+
+  .organisateur-chasse__mobile {
+    display: none;
+  }
+}
