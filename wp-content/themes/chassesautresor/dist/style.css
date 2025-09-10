@@ -7253,9 +7253,28 @@ span.champ-obligatoire {
   gap: var(--space-md);
 }
 
-.titre-chasses-wrapper h2 {
+.titre-chasses-wrapper .titre-chasses {
+  display: flex;
+  align-items: center;
   flex: 1;
+  gap: var(--space-md);
+}
+
+.titre-chasses-wrapper .titre-chasses h2 {
+  flex: 0 0 auto;
+  margin: 0;
   text-align: center;
+}
+
+.titre-chasses-wrapper .titre-chasses .decor {
+  flex: 1;
+  height: var(--space-sm);
+  color: var(--color-titre-enigme);
+}
+
+.titre-chasses-wrapper .titre-chasses .decor svg {
+  width: 100%;
+  height: 100%;
 }
 
 .titre-enigmes-wrapper {
