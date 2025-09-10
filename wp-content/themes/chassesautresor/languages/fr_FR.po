@@ -3224,5 +3224,19 @@ msgid "Indice débloqué"
 msgstr "Indice débloqué"
 
 #: inc/enigme/affichage.php:625
-msgid "Débloquer l'indice (%d pts)"
-msgstr "Débloquer l’indice (%d pts)"
+#, php-format
+msgid "Indice #%d"
+msgstr "Indice #%d"
+
+#: inc/enigme/affichage.php:630
+#, php-format
+msgid "Indice #%1$d - %2$d pts"
+msgstr "Indice #%1$d - %2$d pts"
+
+#: inc/enigme/affichage.php:637
+msgid "Fermer"
+msgstr "Fermer"
+
+#: inc/enigme/indices.php:120
+msgid "Débloquer l'indice"
+msgstr "Débloquer l'indice"

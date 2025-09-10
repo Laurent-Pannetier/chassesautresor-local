@@ -176,7 +176,7 @@ class EnigmeParticipationInfosTest extends TestCase
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      */
-    public function test_indices_buttons_displayed(): void
+    public function test_indices_links_displayed(): void
     {
         global $mocked_posts, $fields;
         $mocked_posts = [101, 102];
@@ -187,6 +187,6 @@ class EnigmeParticipationInfosTest extends TestCase
         render_enigme_participation(10, 'defaut', 1);
         $html = ob_get_clean();
 
-        $this->assertStringContainsString("Débloquer l'indice", $html);
+        $this->assertStringContainsString('Indice #1', $html);
     }
 }

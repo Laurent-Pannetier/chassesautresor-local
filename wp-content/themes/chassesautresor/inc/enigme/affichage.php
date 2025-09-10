@@ -602,38 +602,34 @@ require_once __DIR__ . '/indices.php';
         if (!empty($indices)) {
             $content .= '<div class="zone-indices"><h3>'
                 . esc_html__('Indices', 'chassesautresor-com')
-                . '</h3><ul>';
-            foreach ($indices as $indice_id) {
+                . '</h3><ul class="indice-list">';
+            foreach ($indices as $i => $indice_id) {
                 $cout_indice = (int) get_field('indice_cout_points', $indice_id);
                 $est_debloque = indice_est_debloque($user_id, $indice_id) || $cout_indice === 0;
-                $content .= '<li>';
-                if ($est_debloque) {
-                    $contenu = get_field('indice_contenu', $indice_id) ?: '';
-                    $processed = function_exists('apply_filters')
-                        ? apply_filters('the_content', $contenu)
-                        : $contenu;
-                    $sanitized = function_exists('wp_kses_post')
-                        ? wp_kses_post($processed)
-                        : htmlspecialchars($processed, ENT_QUOTES);
-                    $content .= '<p class="indice-etat">'
-                        . esc_html__('Indice débloqué', 'chassesautresor-com')
-                        . '</p><div class="indice-contenu">'
-                        . $sanitized
-                        . '</div>';
-                } else {
-                    $label = sprintf(
-                        esc_html__('Débloquer l\'indice (%d pts)', 'chassesautresor-com'),
+                $classes = $est_debloque ? 'indice-link indice-link--unlocked' : 'indice-link indice-link--locked';
+                $label = $cout_indice > 0
+                    ? sprintf(
+                        esc_html__('Indice #%1$d - %2$d pts', 'chassesautresor-com'),
+                        $i + 1,
                         $cout_indice
+                    )
+                    : sprintf(
+                        esc_html__('Indice #%d', 'chassesautresor-com'),
+                        $i + 1
                     );
-                    $content .= '<button type="button" class="btn-debloquer-indice"'
-                        . ' data-indice-id="' . esc_attr($indice_id) . '"'
-                        . ' data-cout="' . esc_attr($cout_indice) . '">'
-                        . $label
-                        . '</button>';
-                }
-                $content .= '</li>';
+                $content .= '<li><a href="#" class="' . esc_attr($classes) . '"'
+                    . ' data-indice-id="' . esc_attr($indice_id) . '"'
+                    . ' data-cout="' . esc_attr($cout_indice) . '"'
+                    . ' data-unlocked="' . ($est_debloque ? '1' : '0') . '">' . $label . '</a></li>';
             }
-            $content .= '</ul></div>';
+            $content .= '</ul>'
+                . '<div class="indice-modal" hidden>'
+                . '<div class="indice-modal-dialog">'
+                . '<button type="button" class="indice-modal-close" aria-label="'
+                . esc_attr(esc_html__('Fermer', 'chassesautresor-com'))
+                . '">&times;</button>'
+                . '<div class="indice-modal-body"></div>'
+                . '</div></div></div>';
         }
 
         if ($bloc_reponse !== '') {
