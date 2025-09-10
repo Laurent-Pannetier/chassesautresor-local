@@ -293,6 +293,8 @@ if ($peut_voir_aside) {
         </footer>
     </section>
 
+    <?php render_chasse_solutions($chasse_id, $user_id); ?>
+
   </main>
 </div>
 </div>

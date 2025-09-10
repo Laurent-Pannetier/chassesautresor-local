@@ -2,28 +2,30 @@
 defined('ABSPATH') || exit;
 
 $post_id = $args['post_id'] ?? null;
+$user_id = $args['user_id'] ?? get_current_user_id();
 if (!$post_id) {
     return;
 }
 
 $solution = solution_recuperer_par_objet($post_id, 'enigme');
-if (!solution_peut_etre_affichee($post_id) || !$solution) {
+if ($solution && solution_peut_etre_affichee($post_id)
+    && utilisateur_peut_voir_solution_enigme($post_id, $user_id)) {
+    echo solution_contenu_html($solution);
     return;
 }
 
-$fichier     = get_field('solution_fichier', $solution->ID);
-$fichier_url = is_array($fichier) ? ($fichier['url'] ?? '') : '';
-$fichier_nom = is_array($fichier) ? ($fichier['filename'] ?? basename($fichier_url)) : basename($fichier_url);
-$texte       = get_field('solution_explication', $solution->ID);
-
-if ($fichier_url) {
-    echo '<a href="' . esc_url($fichier_url) . '" class="lien-solution-pdf" target="_blank" rel="noopener">';
-    echo '&#128196; ' . esc_html($fichier_nom);
-    echo '</a>';
+$chasse_id = (int) recuperer_id_chasse_associee($post_id);
+if (!$chasse_id) {
     return;
 }
 
-if ($texte) {
-    echo '<p>' . wp_kses_post($texte) . '</p>';
+if (!solution_chasse_peut_etre_affichee($chasse_id)
+    || !utilisateur_peut_voir_solution_chasse($chasse_id, $user_id)) {
+    return;
+}
+
+$solution = solution_recuperer_par_objet($chasse_id, 'chasse');
+if ($solution) {
+    echo solution_contenu_html($solution);
 }
 ?>
