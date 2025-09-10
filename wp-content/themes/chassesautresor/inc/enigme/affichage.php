@@ -2,6 +2,7 @@
 defined('ABSPATH') || exit;
 require_once __DIR__ . '/../sidebar.php';
 require_once __DIR__ . '/utils.php';
+require_once __DIR__ . '/indices.php';
 
     // ==================================================
     // 🎨 AFFICHAGE STYLISÉ DES ÉNIGMES
@@ -601,14 +602,34 @@ require_once __DIR__ . '/utils.php';
         if (!empty($indices)) {
             $content .= '<div class="zone-indices"><h3>'
                 . esc_html__('Indices', 'chassesautresor-com')
-                . '</h3><ul>';
-            foreach ($indices as $indice_id) {
-                $title = function_exists('get_the_title')
-                    ? get_the_title($indice_id)
-                    : '';
-                $content .= '<li>' . esc_html($title) . '</li>';
+                . '</h3><ul class="indice-list">';
+            foreach ($indices as $i => $indice_id) {
+                $cout_indice = (int) get_field('indice_cout_points', $indice_id);
+                $est_debloque = indice_est_debloque($user_id, $indice_id) || $cout_indice === 0;
+                $classes = $est_debloque ? 'indice-link indice-link--unlocked' : 'indice-link indice-link--locked';
+                $label = $cout_indice > 0
+                    ? sprintf(
+                        esc_html__('Indice #%1$d - %2$d pts', 'chassesautresor-com'),
+                        $i + 1,
+                        $cout_indice
+                    )
+                    : sprintf(
+                        esc_html__('Indice #%d', 'chassesautresor-com'),
+                        $i + 1
+                    );
+                $content .= '<li><a href="#" class="' . esc_attr($classes) . '"'
+                    . ' data-indice-id="' . esc_attr($indice_id) . '"'
+                    . ' data-cout="' . esc_attr($cout_indice) . '"'
+                    . ' data-unlocked="' . ($est_debloque ? '1' : '0') . '">' . $label . '</a></li>';
             }
-            $content .= '</ul></div>';
+            $content .= '</ul>'
+                . '<div class="indice-modal" hidden>'
+                . '<div class="indice-modal-dialog">'
+                . '<button type="button" class="indice-modal-close" aria-label="'
+                . esc_attr(esc_html__('Fermer', 'chassesautresor-com'))
+                . '">&times;</button>'
+                . '<div class="indice-modal-body"></div>'
+                . '</div></div></div>';
         }
 
         if ($bloc_reponse !== '') {

@@ -2972,3 +2972,25 @@ msgstr ""
 #: assets/js/validation-chasse.js:61
 msgid "Envoyer la demande de validation"
 msgstr ""
+
+#: inc/enigme/affichage.php:619 inc/enigme/indices.php:51 inc/enigme/indices.php:100
+msgid "Indice débloqué"
+msgstr ""
+
+#: inc/enigme/affichage.php:625
+#, php-format
+msgid "Indice #%d"
+msgstr ""
+
+#: inc/enigme/affichage.php:630
+#, php-format
+msgid "Indice #%1$d - %2$d pts"
+msgstr ""
+
+#: inc/enigme/affichage.php:637
+msgid "Fermer"
+msgstr ""
+
+#: inc/enigme/indices.php:120
+msgid "Débloquer l'indice"
+msgstr ""

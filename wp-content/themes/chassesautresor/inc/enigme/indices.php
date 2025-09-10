@@ -1,0 +1,133 @@
+<?php
+defined('ABSPATH') || exit;
+
+/**
+ * Check if a hint has been unlocked by a user.
+ *
+ * @param int $user_id   User identifier.
+ * @param int $indice_id Hint identifier.
+ * @return bool
+ */
+function indice_est_debloque(int $user_id, int $indice_id): bool
+{
+    global $wpdb;
+    $table = $wpdb->prefix . 'indices_deblocages';
+    return (bool) $wpdb->get_var($wpdb->prepare(
+        "SELECT 1 FROM {$table} WHERE user_id = %d AND indice_id = %d LIMIT 1",
+        $user_id,
+        $indice_id
+    ));
+}
+
+/**
+ * AJAX handler to unlock a hint.
+ *
+ * @return void
+ */
+function debloquer_indice(): void
+{
+    if (!is_user_logged_in()) {
+        wp_send_json_error('non_connecte', 403);
+    }
+
+    $indice_id = isset($_POST['indice_id']) ? (int) $_POST['indice_id'] : 0;
+    if ($indice_id <= 0 || get_post_type($indice_id) !== 'indice') {
+        wp_send_json_error('indice_invalide', 400);
+    }
+
+    $user_id = get_current_user_id();
+
+    if (indice_est_debloque($user_id, $indice_id)) {
+        $contenu   = get_field('indice_contenu', $indice_id) ?: '';
+        $processed = function_exists('apply_filters')
+            ? apply_filters('the_content', $contenu)
+            : $contenu;
+        $html = function_exists('wp_kses_post')
+            ? wp_kses_post($processed)
+            : htmlspecialchars($processed, ENT_QUOTES);
+        wp_send_json_success([
+            'html'    => '<div class="indice-contenu">' . $html . '</div>',
+            'points'  => function_exists('get_user_points') ? get_user_points($user_id) : 0,
+            'message' => esc_html__('Indice débloqué', 'chassesautresor-com'),
+        ]);
+    }
+
+    $cout      = (int) get_field('indice_cout_points', $indice_id);
+    $chasse_id = (int) get_field('indice_chasse_linked', $indice_id);
+    $enigme_id = (int) get_field('indice_enigme_linked', $indice_id);
+
+    if ($cout > 0) {
+        deduire_points_utilisateur(
+            $user_id,
+            $cout,
+            __('Déblocage indice', 'chassesautresor-com'),
+            'indice',
+            $indice_id
+        );
+    }
+
+    global $wpdb;
+    $table = $wpdb->prefix . 'indices_deblocages';
+    $wpdb->insert($table, [
+        'user_id'        => $user_id,
+        'indice_id'      => $indice_id,
+        'chasse_id'      => $chasse_id ?: null,
+        'enigme_id'      => $enigme_id ?: null,
+        'points_depenses'=> $cout,
+        'date_deblocage' => current_time('mysql', 1),
+    ], ['%d', '%d', '%d', '%d', '%d', '%s']);
+
+    $wpdb->insert($wpdb->prefix . 'engagements', [
+        'user_id'        => $user_id,
+        'enigme_id'      => $enigme_id ?: null,
+        'chasse_id'      => $chasse_id ?: null,
+        'indice_id'      => $indice_id,
+        'date_engagement'=> current_time('mysql', 1),
+    ], ['%d', '%d', '%d', '%d', '%s']);
+
+    $points_restants = function_exists('get_user_points') ? get_user_points($user_id) : 0;
+    $contenu         = get_field('indice_contenu', $indice_id) ?: '';
+    $processed       = function_exists('apply_filters')
+        ? apply_filters('the_content', $contenu)
+        : $contenu;
+    $html            = function_exists('wp_kses_post')
+        ? wp_kses_post($processed)
+        : htmlspecialchars($processed, ENT_QUOTES);
+
+    wp_send_json_success([
+        'html'    => '<div class="indice-contenu">' . $html . '</div>',
+        'points'  => $points_restants,
+        'message' => esc_html__('Indice débloqué', 'chassesautresor-com'),
+    ]);
+}
+add_action('wp_ajax_debloquer_indice', 'debloquer_indice');
+add_action('wp_ajax_nopriv_debloquer_indice', 'debloquer_indice');
+
+/**
+ * Enqueue script for hint unlocking on enigma pages.
+ */
+function charger_script_deblocage_indice(): void
+{
+    if (!is_singular('enigme')) {
+        return;
+    }
+
+    $path = '/assets/js/indices-deblocage.js';
+    wp_enqueue_script(
+        'indices-deblocage',
+        get_stylesheet_directory_uri() . $path,
+        [],
+        filemtime(get_stylesheet_directory() . $path),
+        true
+    );
+
+    wp_localize_script('indices-deblocage', 'indicesUnlock', [
+        'ajaxUrl' => admin_url('admin-ajax.php'),
+        'texts'   => [
+            'solde' => __('Solde', 'chassesautresor-com'),
+            'pts'   => __('pts', 'chassesautresor-com'),
+            'unlock'=> __('Débloquer l\'indice', 'chassesautresor-com'),
+        ],
+    ]);
+}
+add_action('wp_enqueue_scripts', 'charger_script_deblocage_indice');

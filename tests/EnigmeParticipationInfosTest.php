@@ -176,20 +176,17 @@ class EnigmeParticipationInfosTest extends TestCase
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      */
-    public function test_indices_titles_displayed(): void
+    public function test_indices_links_displayed(): void
     {
-        global $mocked_posts, $mocked_titles;
-        $mocked_posts  = [101, 102];
-        $mocked_titles = [101 => 'Indice A', 102 => 'Indice B'];
+        global $mocked_posts, $fields;
+        $mocked_posts = [101, 102];
+        $fields[101]['indice_cout_points'] = 3;
+        $fields[102]['indice_cout_points'] = 4;
 
         ob_start();
         render_enigme_participation(10, 'defaut', 1);
         $html = ob_get_clean();
 
-        $this->assertStringContainsString('Indice A', $html);
-        $this->assertStringContainsString('Indice B', $html);
-
-        $pos_indice = strpos($html, 'Indice A');
-        $this->assertNotFalse($pos_indice);
+        $this->assertStringContainsString('Indice #1', $html);
     }
 }
