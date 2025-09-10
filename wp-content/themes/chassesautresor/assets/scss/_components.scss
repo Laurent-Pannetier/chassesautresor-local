@@ -916,8 +916,6 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
 .ligne-morse {
   position: relative;
   height: 2px;
-  background-color: var(--color-grey-medium);
-  opacity: 0.2;
   overflow: hidden;
 }
 
@@ -931,20 +929,16 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
   padding: 0 0.6rem; /* ✅ un peu plus de marge latérale */
   height: 2px;
   align-items: center;
-  background-color: var(--color-background);
-  z-index: 1;
-  box-shadow: 0 0 0 1px var(--color-background); /* ✅ masque 1px de plus autour */
   white-space: nowrap;
   overflow: hidden;
   max-width: 90%;
 }
 
-
 .morse-wrapper .point,
 .morse-wrapper .tiret {
   display: inline-block;
   height: 2px;
-  background-color: var(--color-text-primary);
+  background-color: var(--color-grey-medium);
 }
 
 .morse-wrapper .point {
@@ -954,7 +948,6 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
 .morse-wrapper .tiret {
   width: 16px;
 }
-
 
 /* ========== 🧩 ACCORDÉON GÉNÉRIQUE – OUVERTURE / FERMETURE DYNAMIQUE ========== */
 
