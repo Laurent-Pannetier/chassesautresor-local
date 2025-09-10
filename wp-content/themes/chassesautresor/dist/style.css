@@ -2066,7 +2066,7 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
 .ligne-morse {
   position: relative;
   height: 2px;
-  background-color: var(--color-editor-border);
+  background-color: var(--color-grey-medium);
   opacity: 0.2;
   overflow: hidden;
 }
