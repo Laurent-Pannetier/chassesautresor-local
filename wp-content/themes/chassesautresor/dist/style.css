@@ -8960,7 +8960,7 @@ a.bouton-edition-attention {
 /* ========== 🔠 TYPOGRAPHIE SPÉCIFIQUE AU HEADER ========== */
 /* Titre principal */
 .header-organisateur__nom {
-  font-size: 3rem;
+  font-size: 2rem;
   font-weight: 700;
   line-height: 1.2;
   margin: 0;
@@ -8970,6 +8970,11 @@ a.bouton-edition-attention {
   padding-right: 0;
 }
 
+@media (min-width: 600px) {
+  .header-organisateur__nom {
+    font-size: 2.5rem;
+  }
+}
 /* ========== 📐 COLONNE LOGO & COLONNE TEXTE ========== */
 .conteneur-organisateur {
   display: flex;
@@ -9092,6 +9097,7 @@ a.bouton-edition-attention {
     right: var(--space-xs);
   }
   .header-organisateur__nom {
+    font-size: 3rem;
     padding-right: var(--space-4xl);
   }
 }

@@ -78,7 +78,7 @@ a.bouton-edition-attention {
 
 /* Titre principal */
 .header-organisateur__nom {
-  font-size: 3rem;
+  font-size: 2rem;
   font-weight: 700;
   line-height: 1.2;
   margin: 0;
@@ -86,6 +86,12 @@ a.bouton-edition-attention {
   flex: 1;
   min-width: 0;
   padding-right: 0;
+}
+
+@media (--bp-mobile) {
+  .header-organisateur__nom {
+    font-size: 2.5rem;
+  }
 }
 
 
@@ -212,6 +218,7 @@ a.bouton-edition-attention {
   }
 
   .header-organisateur__nom {
+    font-size: 3rem;
     padding-right: var(--space-4xl);
   }
 }
