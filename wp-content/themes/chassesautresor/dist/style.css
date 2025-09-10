@@ -7251,6 +7251,7 @@ span.champ-obligatoire {
   display: flex;
   align-items: center;
   gap: var(--space-md);
+  margin-bottom: var(--space-4xl);
 }
 
 .titre-chasses-wrapper .titre-chasses {

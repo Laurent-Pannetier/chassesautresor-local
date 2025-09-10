@@ -83,11 +83,11 @@ get_header();
                 <div class="titre-chasses-wrapper">
                     <div class="titre-chasses">
                         <span class="decor decor-gauche">
-                            <?php echo file_get_contents(get_theme_file_path('assets/svg/star-line-left.svg')); ?>
+                            <?php echo file_get_contents(get_theme_file_path('assets/svg/star-line-right.svg')); ?>
                         </span>
                         <h2><?php esc_html_e('Ses chasses au trésor', 'chassesautresor-com'); ?></h2>
                         <span class="decor decor-droite">
-                            <?php echo file_get_contents(get_theme_file_path('assets/svg/star-line-right.svg')); ?>
+                            <?php echo file_get_contents(get_theme_file_path('assets/svg/star-line-left.svg')); ?>
                         </span>
                     </div>
                     <?php if ($peut_ajouter && $statut_organisateur === 'publish') :
