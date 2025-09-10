@@ -7269,13 +7269,16 @@ span.champ-obligatoire {
 
 .titre-chasses-wrapper .titre-chasses .decor {
   flex: 1;
-  height: var(--space-sm);
+  height: 6px;
   color: var(--color-titre-enigme);
+  display: flex;
+  align-items: center;
 }
 
 .titre-chasses-wrapper .titre-chasses .decor svg {
   width: 100%;
   height: 100%;
+  display: block;
 }
 
 .titre-enigmes-wrapper {
