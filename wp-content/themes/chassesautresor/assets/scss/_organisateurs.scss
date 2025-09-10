@@ -83,6 +83,9 @@ a.bouton-edition-attention {
   line-height: 1.2;
   margin: 0;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.15);
+  flex: 1;
+  min-width: 0;
+  padding-right: 0;
 }
 
 
@@ -144,13 +147,17 @@ a.bouton-edition-attention {
 }
 
 /* ========== 📌 ICÔNES D'ACTIONS ========== */
+.header-organisateur__title-row {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+}
+
 .header-organisateur__actions {
-  position: absolute;
-  top: 1.2rem;
-  right: var(--space-xs);
   display: flex;
   gap: var(--space-xs);
   align-items: center;
+  margin-left: auto;
   color: var(--color-text-primary);
 }
 
@@ -184,6 +191,18 @@ a.bouton-edition-attention {
 .header-organisateur__actions .organisateur-share-button svg {
   width: 1.5rem;
   height: 1.5rem;
+}
+
+@media (--bp-tablet) {
+  .header-organisateur__actions {
+    position: absolute;
+    top: 1.2rem;
+    right: var(--space-xs);
+  }
+
+  .header-organisateur__nom {
+    padding-right: var(--space-4xl);
+  }
 }
 
 /* ========== 🖼 LOGO CLIQUABLE ========== */
