@@ -8986,6 +8986,15 @@ a.bouton-edition-attention {
   width: 90%;
   aspect-ratio: 1/1;
   overflow: hidden;
+  position: relative;
+  border-radius: 22px;
+}
+.header-organisateur__col--logo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.12));
+  pointer-events: none;
 }
 
 .header-organisateur__col--infos {
@@ -9004,6 +9013,7 @@ a.bouton-edition-attention {
      object-fit: cover;
   -o-object-position: center;
      object-position: center;
+  aspect-ratio: 1/1;
 }
 
 .header-organisateur__logo--static {
