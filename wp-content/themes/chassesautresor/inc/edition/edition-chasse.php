@@ -194,6 +194,7 @@ function creer_chasse_et_rediriger_si_appel()
   update_field('chasse_infos_date_debut', $today, $post_id);
   update_field('chasse_infos_date_fin', $in_two_years, $post_id);
   update_field('chasse_infos_duree_illimitee', false, $post_id);
+  update_post_meta($post_id, 'chasse_infos_date_debut_differee', 0);
   // Coût par défaut à 0 (mode gratuit)
   update_field('chasse_infos_cout_points', 0, $post_id);
 
@@ -227,18 +228,20 @@ function modifier_dates_chasse()
     wp_send_json_error('non_connecte');
   }
 
-  $post_id     = isset($_POST['post_id']) ? (int) $_POST['post_id'] : 0;
-  $date_debut  = sanitize_text_field($_POST['date_debut'] ?? '');
-  $date_fin    = sanitize_text_field($_POST['date_fin'] ?? '');
-  $illimitee   = isset($_POST['illimitee']) ? (int) $_POST['illimitee'] : 0;
+  $post_id         = isset($_POST['post_id']) ? (int) $_POST['post_id'] : 0;
+  $date_debut      = sanitize_text_field($_POST['date_debut'] ?? '');
+  $date_fin        = sanitize_text_field($_POST['date_fin'] ?? '');
+  $illimitee       = isset($_POST['illimitee']) ? (int) $_POST['illimitee'] : 0;
+  $debut_differee  = isset($_POST['debut_differee']) ? (int) $_POST['debut_differee'] : 0;
 
-  cat_debug("[modifier_dates_chasse] post_id={$post_id} date_debut={$date_debut} date_fin={$date_fin} illimitee={$illimitee}");
+  cat_debug("[modifier_dates_chasse] post_id={$post_id} date_debut={$date_debut} date_fin={$date_fin} illimitee={$illimitee} differee={$debut_differee}");
 
   // 📦 Valeurs existantes avant mise à jour (pour debug)
-  $old_debut = get_post_meta($post_id, 'chasse_infos_date_debut', true);
-  $old_fin   = get_post_meta($post_id, 'chasse_infos_date_fin', true);
-  $old_illim = get_post_meta($post_id, 'chasse_infos_duree_illimitee', true);
-  cat_debug("[modifier_dates_chasse] metas_avant: debut={$old_debut} fin={$old_fin} illim={$old_illim}");
+  $old_debut    = get_post_meta($post_id, 'chasse_infos_date_debut', true);
+  $old_fin      = get_post_meta($post_id, 'chasse_infos_date_fin', true);
+  $old_illim    = get_post_meta($post_id, 'chasse_infos_duree_illimitee', true);
+  $old_differee = get_post_meta($post_id, 'chasse_infos_date_debut_differee', true);
+  cat_debug("[modifier_dates_chasse] metas_avant: debut={$old_debut} fin={$old_fin} illim={$old_illim} differee={$old_differee}");
 
   if (!$post_id || get_post_type($post_id) !== 'chasse') {
     wp_send_json_error('post_invalide');
@@ -294,12 +297,14 @@ function modifier_dates_chasse()
     $ok3 = update_field('chasse_infos_date_fin', $dt_fin->format('Y-m-d'), $post_id);
   }
   cat_debug('[modifier_dates_chasse] update chasse_infos_date_fin=' . var_export($ok3, true));
+  update_post_meta($post_id, 'chasse_infos_date_debut_differee', $debut_differee ? 1 : 0);
 
   // 🔎 Métas après mise à jour
-  $new_debut = get_post_meta($post_id, 'chasse_infos_date_debut', true);
-  $new_fin   = get_post_meta($post_id, 'chasse_infos_date_fin', true);
-  $new_illim = get_post_meta($post_id, 'chasse_infos_duree_illimitee', true);
-  cat_debug("[modifier_dates_chasse] metas_apres: debut={$new_debut} fin={$new_fin} illim={$new_illim}");
+  $new_debut    = get_post_meta($post_id, 'chasse_infos_date_debut', true);
+  $new_fin      = get_post_meta($post_id, 'chasse_infos_date_fin', true);
+  $new_illim    = get_post_meta($post_id, 'chasse_infos_duree_illimitee', true);
+  $new_differee = get_post_meta($post_id, 'chasse_infos_date_debut_differee', true);
+  cat_debug("[modifier_dates_chasse] metas_apres: debut={$new_debut} fin={$new_fin} illim={$new_illim} differee={$new_differee}");
 
   // Lecture directe pour éviter un cache ACF éventuel
   $saved_debut_raw = get_post_meta($post_id, 'chasse_infos_date_debut', true);
@@ -312,11 +317,12 @@ function modifier_dates_chasse()
     $saved_fin_dt->setTime(0, 0, 0);
   }
 
-  $debut_ok = $saved_debut_dt && $saved_debut_dt->format('Y-m-d H:i:s') === $dt_debut->format('Y-m-d H:i:s');
-  $fin_ok   = $illimitee ? true : ($saved_fin_dt && $saved_fin_dt->format('Y-m-d H:i:s') === $dt_fin->format('Y-m-d H:i:s'));
-  $illim_ok = (int) $saved_illim === ($illimitee ? 1 : 0);
+  $debut_ok     = $saved_debut_dt && $saved_debut_dt->format('Y-m-d H:i:s') === $dt_debut->format('Y-m-d H:i:s');
+  $fin_ok       = $illimitee ? true : ($saved_fin_dt && $saved_fin_dt->format('Y-m-d H:i:s') === $dt_fin->format('Y-m-d H:i:s'));
+  $illim_ok     = (int) $saved_illim === ($illimitee ? 1 : 0);
+  $differee_ok  = (int) $new_differee === ($debut_differee ? 1 : 0);
 
-  cat_debug("[modifier_dates_chasse] verifs: debut_ok=" . var_export($debut_ok, true) . ' fin_ok=' . var_export($fin_ok, true) . ' illim_ok=' . var_export($illim_ok, true));
+  cat_debug("[modifier_dates_chasse] verifs: debut_ok=" . var_export($debut_ok, true) . ' fin_ok=' . var_export($fin_ok, true) . ' illim_ok=' . var_export($illim_ok, true) . ' differee_ok=' . var_export($differee_ok, true));
 
   if (($ok1 || $debut_ok) && ($ok2 || $illim_ok) && ($ok3 || $fin_ok)) {
     mettre_a_jour_statuts_chasse($post_id);

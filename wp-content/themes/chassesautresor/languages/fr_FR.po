@@ -1545,8 +1545,8 @@ msgid "Now"
 msgstr "Maintenant"
 
 #: template-parts/chasse/chasse-edition-main.php:518
-msgid "Later"
-msgstr "Plus tard"
+msgid "Other date"
+msgstr "Autre date"
 
 #: template-parts/chasse/chasse-edition-main.php:549
 msgid "Date de fin"

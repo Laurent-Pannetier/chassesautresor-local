@@ -7,6 +7,7 @@ let inputDateFin;
 let erreurDebut;
 let erreurFin;
 let toggleDateFin;
+let toggleDateDebut;
 
 function parseDateDMY(value) {
   if (!value) return new Date(NaN);
@@ -173,10 +174,12 @@ window.rafraichirCarteSolutions = rafraichirCarteSolutions;
   inputDateFin = document.getElementById('chasse-date-fin');
   erreurDebut = document.getElementById('erreur-date-debut');
   erreurFin = document.getElementById('erreur-date-fin');
+  toggleDateDebut = document.getElementById('date-debut-differee');
   toggleDateFin = document.getElementById('date-fin-limitee');
   mettreAJourCaracteristiqueDate();
   inputDateDebut?.addEventListener('change', mettreAJourCaracteristiqueDate);
   inputDateFin?.addEventListener('change', mettreAJourCaracteristiqueDate);
+  toggleDateDebut?.addEventListener('change', mettreAJourCaracteristiqueDate);
   toggleDateFin?.addEventListener('change', mettreAJourCaracteristiqueDate);
 
   // ==============================
@@ -1056,7 +1059,7 @@ function initChampNbGagnants() {
 }
 
 // ================================
-// 🕒 Gestion du champ Date de début (Maintenant / Plus tard)
+// 🕒 Gestion du champ Date de début (Maintenant / Autre date)
 // ================================
 function initChampDateDebut() {
   const input = document.getElementById('chasse-date-debut');
@@ -1384,7 +1387,8 @@ function enregistrerDatesChasse() {
     date_debut: inputDateDebut.value.trim(),
     // On conserve toujours la date en base, même si l'affichage est "Illimitée"
     date_fin: inputDateFin.value.trim(),
-    illimitee: toggleDateFin?.checked ? 0 : 1
+    illimitee: toggleDateFin?.checked ? 0 : 1,
+    debut_differee: toggleDateDebut?.checked ? 1 : 0
   });
   console.log('[enregistrerDatesChasse] params=', params.toString());
 
