@@ -7253,6 +7253,11 @@ span.champ-obligatoire {
   gap: var(--space-md);
 }
 
+.titre-chasses-wrapper h2 {
+  flex: 1;
+  text-align: center;
+}
+
 .titre-enigmes-wrapper {
   display: flex;
   flex-direction: column;
@@ -9355,6 +9360,11 @@ a.bouton-edition-attention {
   padding: var(--space-xs);
   font-size: 1rem;
   resize: vertical;
+}
+
+/* 🗺️ Section chasses de l'organisateur */
+.chasses {
+  margin-top: var(--space-4xl);
 }
 
 /* 🎨 Variables globales */
