@@ -7251,11 +7251,34 @@ span.champ-obligatoire {
   display: flex;
   align-items: center;
   gap: var(--space-md);
+  margin-bottom: var(--space-4xl);
 }
 
-.titre-chasses-wrapper h2 {
+.titre-chasses-wrapper .titre-chasses {
+  display: flex;
+  align-items: center;
   flex: 1;
+  gap: var(--space-md);
+}
+
+.titre-chasses-wrapper .titre-chasses h2 {
+  flex: 0 0 auto;
+  margin: 0;
   text-align: center;
+}
+
+.titre-chasses-wrapper .titre-chasses .decor {
+  flex: 1;
+  height: 6px;
+  color: var(--color-titre-enigme);
+  display: flex;
+  align-items: center;
+}
+
+.titre-chasses-wrapper .titre-chasses .decor svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .titre-enigmes-wrapper {
