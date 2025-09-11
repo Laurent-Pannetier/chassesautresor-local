@@ -624,14 +624,16 @@ require_once __DIR__ . '/indices.php';
                 } elseif ($est_debloque) {
                     $classes   = 'indice-link indice-link--unlocked etiquette';
                     $etat_icon = 'fa-lock-open';
-                    $label = sprintf(
+                    $title     = get_the_title($indice_id);
+                    $label     = $title !== '' ? esc_html($title) : sprintf(
                         esc_html__('Indice #%d', 'chassesautresor-com'),
                         $i + 1
                     );
                 } else {
                     $classes   = 'indice-link indice-link--locked etiquette';
                     $etat_icon = 'fa-lock';
-                    $label = sprintf(
+                    $title     = get_the_title($indice_id);
+                    $label     = $title !== '' ? esc_html($title) : sprintf(
                         esc_html__('Indice #%d', 'chassesautresor-com'),
                         $i + 1
                     );
