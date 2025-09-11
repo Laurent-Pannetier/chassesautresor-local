@@ -649,14 +649,7 @@ require_once __DIR__ . '/indices.php';
                     . '<i class="fa-solid ' . esc_attr($etat_icon) . '" aria-hidden="true"></i> '
                     . $label . $cout_html . '</a></li>';
             }
-            $content .= '</ul>'
-                . '<div class="indice-modal csa-modal masque">'
-                . '<div class="indice-modal__content csa-modal__content">'
-                . '<button type="button" class="indice-modal__close csa-modal__close" aria-label="'
-                . esc_attr(esc_html__('Fermer', 'chassesautresor-com'))
-                . '">&times;</button>'
-                . '<div class="indice-modal__body"></div>'
-                . '</div></div></div>';
+            $content .= '</ul><div class="indice-display"></div></div>';
         }
 
         if ($bloc_reponse !== '') {

@@ -68,23 +68,28 @@
     cursor: pointer;
   }
 
-  .indice-modal {
-    @extend .csa-modal;
+  .indice-display {
+    margin-top: var(--space-md);
+  }
 
-    &__content {
-      @extend .csa-modal__content;
-      background-color: var(--color-bg-primary);
-      color: var(--color-text-primary);
-      padding: var(--space-md);
-      max-width: 90%;
+  .indice-contenu {
+    display: flex;
+    gap: var(--space-md);
+    align-items: flex-start;
+
+    &__image {
+      flex: 0 0 auto;
+
+      img {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        display: block;
+      }
     }
 
-    &__close {
-      @extend .csa-modal__close;
-      background: none;
-      border: 0;
-      color: var(--color-text-primary);
-      font-size: 1.2rem;
+    &__texte {
+      flex: 1 1 auto;
     }
   }
 }

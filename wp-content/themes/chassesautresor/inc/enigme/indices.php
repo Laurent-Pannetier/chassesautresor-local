@@ -42,11 +42,18 @@ function debloquer_indice(): void
         $processed = function_exists('apply_filters')
             ? apply_filters('the_content', $contenu)
             : $contenu;
-        $html = function_exists('wp_kses_post')
+        $texte = function_exists('wp_kses_post')
             ? wp_kses_post($processed)
             : htmlspecialchars($processed, ENT_QUOTES);
+        $image_id = get_field('indice_image', $indice_id);
+        $image    = $image_id ? wp_get_attachment_image($image_id, 'thumbnail') : '';
+        $html     = '<div class="indice-contenu">';
+        if ($image) {
+            $html .= '<div class="indice-contenu__image">' . $image . '</div>';
+        }
+        $html .= '<div class="indice-contenu__texte">' . $texte . '</div></div>';
         wp_send_json_success([
-            'html'    => '<div class="indice-contenu">' . $html . '</div>',
+            'html'    => $html,
             'points'  => function_exists('get_user_points') ? get_user_points($user_id) : 0,
             'message' => esc_html__('Indice débloqué', 'chassesautresor-com'),
         ]);
@@ -90,12 +97,19 @@ function debloquer_indice(): void
     $processed       = function_exists('apply_filters')
         ? apply_filters('the_content', $contenu)
         : $contenu;
-    $html            = function_exists('wp_kses_post')
+    $texte           = function_exists('wp_kses_post')
         ? wp_kses_post($processed)
         : htmlspecialchars($processed, ENT_QUOTES);
+    $image_id        = get_field('indice_image', $indice_id);
+    $image           = $image_id ? wp_get_attachment_image($image_id, 'thumbnail') : '';
+    $html            = '<div class="indice-contenu">';
+    if ($image) {
+        $html .= '<div class="indice-contenu__image">' . $image . '</div>';
+    }
+    $html .= '<div class="indice-contenu__texte">' . $texte . '</div></div>';
 
     wp_send_json_success([
-        'html'    => '<div class="indice-contenu">' . $html . '</div>',
+        'html'    => $html,
         'points'  => $points_restants,
         'message' => esc_html__('Indice débloqué', 'chassesautresor-com'),
     ]);

@@ -2350,7 +2350,7 @@ a.addtoany_share span {
   text-decoration: underline;
 }
 
-.csa-modal, .description-modal, .zone-indices .indice-modal {
+.csa-modal, .description-modal {
   position: fixed;
   inset: 0;
   display: flex;
@@ -2359,10 +2359,10 @@ a.addtoany_share span {
   background: rgba(var(--color-black-rgb, 0, 0, 0), 0.6);
   z-index: 9999;
 }
-.csa-modal.is-hidden, .is-hidden.description-modal, .zone-indices .is-hidden.indice-modal, .csa-modal[hidden], [hidden].description-modal, .zone-indices [hidden].indice-modal, .csa-modal.masque, .masque.description-modal, .zone-indices .masque.indice-modal {
+.csa-modal.is-hidden, .is-hidden.description-modal, .csa-modal[hidden], [hidden].description-modal, .csa-modal.masque, .masque.description-modal {
   display: none;
 }
-.csa-modal__content, .description-modal__content, .zone-indices .indice-modal__content {
+.csa-modal__content, .description-modal__content {
   background: var(--color-white);
   color: var(--color-text-fond-clair);
   padding: 2rem;
@@ -2372,7 +2372,7 @@ a.addtoany_share span {
   border-radius: 8px;
   position: relative;
 }
-.csa-modal__close, .description-modal__close, .zone-indices .indice-modal__close {
+.csa-modal__close, .description-modal__close {
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
@@ -5537,17 +5537,26 @@ body.panneau-ouvert::before {
   border-radius: 4px;
   cursor: pointer;
 }
-.zone-indices .indice-modal__content {
-  background-color: var(--color-bg-primary);
-  color: var(--color-text-primary);
-  padding: var(--space-md);
-  max-width: 90%;
+.zone-indices .indice-display {
+  margin-top: var(--space-md);
 }
-.zone-indices .indice-modal__close {
-  background: none;
-  border: 0;
-  color: var(--color-text-primary);
-  font-size: 1.2rem;
+.zone-indices .indice-contenu {
+  display: flex;
+  gap: var(--space-md);
+  align-items: flex-start;
+}
+.zone-indices .indice-contenu__image {
+  flex: 0 0 auto;
+}
+.zone-indices .indice-contenu__image img {
+  width: 150px;
+  height: 150px;
+  -o-object-fit: cover;
+     object-fit: cover;
+  display: block;
+}
+.zone-indices .indice-contenu__texte {
+  flex: 1 1 auto;
 }
 
 .menu-lateral .stats-bar-chart .bar-value,

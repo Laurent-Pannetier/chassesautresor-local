@@ -1,27 +1,10 @@
 document.addEventListener('DOMContentLoaded', function () {
-  var modal = document.querySelector('.indice-modal');
-  if (!modal) return;
-  var body = modal.querySelector('.indice-modal__body');
-  var closeBtn = modal.querySelector('.indice-modal__close');
+  var container = document.querySelector('.zone-indices .indice-display');
+  if (!container) return;
 
-  function openModal(html) {
-    body.innerHTML = html;
-    modal.classList.remove('masque');
+  function displayContent(html) {
+    container.innerHTML = html;
   }
-
-  function closeModal() {
-    modal.classList.add('masque');
-  }
-
-  if (closeBtn) {
-    closeBtn.addEventListener('click', closeModal);
-  }
-
-  modal.addEventListener('click', function (e) {
-    if (e.target === modal) {
-      closeModal();
-    }
-  });
 
   function fetchIndice(id, link) {
     var fd = new FormData();
@@ -31,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
       .then(function (r) { return r.json(); })
       .then(function (res) {
         if (res.success) {
-          openModal(res.data.html);
+          displayContent(res.data.html);
           if (link) {
             link.dataset.unlocked = '1';
             link.classList.remove('indice-link--locked');
@@ -55,10 +38,9 @@ document.addEventListener('DOMContentLoaded', function () {
         fetchIndice(link.dataset.indiceId, link);
       } else {
         var cout = link.dataset.cout || '0';
-        body.innerHTML = '<p>' + indicesUnlock.texts.unlock + ' - ' + cout + ' ' + indicesUnlock.texts.pts + '</p>'
-          + '<button type="button" class="btn-debloquer-indice" data-indice-id="' + link.dataset.indiceId + '">' 
+        container.innerHTML = '<p>' + indicesUnlock.texts.unlock + ' - ' + cout + ' ' + indicesUnlock.texts.pts + '</p>'
+          + '<button type="button" class="btn-debloquer-indice" data-indice-id="' + link.dataset.indiceId + '">'
           + indicesUnlock.texts.unlock + '</button>';
-        modal.classList.remove('masque');
       }
       return;
     }
