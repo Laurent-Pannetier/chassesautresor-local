@@ -2350,6 +2350,38 @@ a.addtoany_share span {
   text-decoration: underline;
 }
 
+.csa-modal, .description-modal, .zone-indices .indice-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(var(--color-black-rgb, 0, 0, 0), 0.6);
+  z-index: 9999;
+}
+.csa-modal.is-hidden, .is-hidden.description-modal, .zone-indices .is-hidden.indice-modal {
+  display: none;
+}
+.csa-modal__content, .description-modal__content, .zone-indices .indice-modal__content {
+  background: var(--color-white);
+  color: var(--color-text-fond-clair);
+  padding: 2rem;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  border-radius: 8px;
+  position: relative;
+}
+.csa-modal__close, .description-modal__close, .zone-indices .indice-modal__close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
 /* Skeleton card styles */
 .carte-skeleton {
   position: relative;
@@ -5505,43 +5537,20 @@ body.panneau-ouvert::before {
   border-radius: 4px;
   cursor: pointer;
 }
-.zone-indices .indice-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  max-width: none;
-  background-color: rgba(var(--color-black-rgb, 0, 0, 0), 0.6);
-}
 .zone-indices .indice-modal[hidden] {
   display: none;
 }
-.zone-indices .indice-modal .indice-modal-dialog {
+.zone-indices .indice-modal__content {
   background-color: var(--color-bg-primary);
   color: var(--color-text-primary);
   padding: var(--space-md);
-  border-radius: 4px;
   max-width: 90%;
-  max-height: 80%;
-  overflow: auto;
-  position: relative;
 }
-.zone-indices .indice-modal .indice-modal-close {
-  position: absolute;
-  top: var(--space-xs);
-  right: var(--space-xs);
+.zone-indices .indice-modal__close {
   background: none;
   border: 0;
   color: var(--color-text-primary);
   font-size: 1.2rem;
-  cursor: pointer;
 }
 
 .menu-lateral .stats-bar-chart .bar-value,
@@ -9280,46 +9289,13 @@ a.bouton-edition-attention {
 }
 
 /* Modal description */
-.description-modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
-
 .description-modal.masque {
   display: none;
 }
-
-.description-modal__content {
-  background: var(--color-white);
-  color: var(--color-text-fond-clair);
-  padding: 2rem;
-  max-width: 600px;
-  max-height: 80vh;
-  overflow-y: auto;
-  border-radius: 8px;
-  position: relative;
-}
-
-.description-modal__close {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-}
-
 .description-modal__title {
   margin-top: 0;
   text-align: center;
 }
-
 .description-modal__section {
   margin-top: var(--space-lg);
 }

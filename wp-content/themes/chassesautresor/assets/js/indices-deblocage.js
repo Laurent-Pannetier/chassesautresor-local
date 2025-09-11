@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
   var modal = document.querySelector('.indice-modal');
   if (!modal) return;
-  var body = modal.querySelector('.indice-modal-body');
-  var closeBtn = modal.querySelector('.indice-modal-close');
+  var body = modal.querySelector('.indice-modal__body');
+  var closeBtn = modal.querySelector('.indice-modal__close');
 
   function openModal(html) {
     body.innerHTML = html;

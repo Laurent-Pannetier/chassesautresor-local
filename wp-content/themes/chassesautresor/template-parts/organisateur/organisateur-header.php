@@ -153,9 +153,9 @@ $classes_header .= ' container container--boxed';
 
   </header>
 </div>
-<div id="description-modal" class="description-modal masque">
-  <div class="description-modal__content">
-    <button type="button" class="description-modal__close" aria-label="<?= esc_attr__('Fermer', 'chassesautresor-com'); ?>">✖</button>
+<div id="description-modal" class="description-modal csa-modal masque">
+  <div class="description-modal__content csa-modal__content">
+    <button type="button" class="description-modal__close csa-modal__close" aria-label="<?= esc_attr__('Fermer', 'chassesautresor-com'); ?>">✖</button>
     <h2 class="description-modal__title"><?= esc_html($titre_organisateur); ?></h2>
     <ul class="description-modal__stats">
       <li class="description-modal__stat">
