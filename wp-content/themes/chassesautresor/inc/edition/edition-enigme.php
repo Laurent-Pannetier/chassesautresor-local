@@ -370,6 +370,7 @@ function modifier_champ_enigme()
   // 🔹 Fallback
   if (!$champ_valide) {
     if (is_array($valeur)) {
+      // Sanitize each element to avoid passing arrays to sanitize_text_field.
       $valeur_saine = array_map('sanitize_text_field', $valeur);
     } else {
       $valeur_saine = is_numeric($valeur) ? (int) $valeur : sanitize_text_field($valeur);
