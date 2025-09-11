@@ -14,7 +14,7 @@ class ChasseTermineeEnigmesVisibilityTest extends TestCase
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      */
-    public function test_affiche_enigmes_pour_chasse_terminee(): void
+    public function test_masque_enigmes_pour_chasse_terminee_non_engage(): void
     {
         if (!function_exists('get_post_type')) {
             function get_post_type($id) {
@@ -114,7 +114,7 @@ class ChasseTermineeEnigmesVisibilityTest extends TestCase
         require __DIR__ . '/../wp-content/themes/chassesautresor/template-parts/enigme/chasse-partial-boucle-enigmes.php';
         $output = ob_get_clean();
 
-        $this->assertStringContainsString('cards-grid', $output);
+        $this->assertSame('', $output);
     }
 }
 
