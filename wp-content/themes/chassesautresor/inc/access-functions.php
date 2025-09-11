@@ -45,6 +45,7 @@ function restreindre_media_library_tous_non_admins($query)
     return $query;
 }
 add_filter('ajax_query_attachments_args', 'restreindre_media_library_tous_non_admins');
+add_filter('rest_attachment_query', 'restreindre_media_library_tous_non_admins');
 
 /**
  * Filtre les fichiers visibles dans la médiathèque selon le post en cours.
