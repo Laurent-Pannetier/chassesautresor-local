@@ -172,41 +172,6 @@ if ($objet_type === 'chasse') {
           <?php endif; ?>
         </div>
 
-        <?php if ($afficher_qr_code && $url && $url_qr_code) : ?>
-          <div class="dashboard-card carte-orgy champ-qr-code">
-            <div class="qr-code-block">
-              <div class="qr-code-url txt-small">
-                <?php if ($objet_type === 'organisateur') : ?>
-                  <?= esc_html__("Adresse de votre organisation :", 'chassesautresor-com'); ?>
-                <?php else : ?>
-                  <?= esc_html__('Adresse de votre chasse&nbsp;:', 'chassesautresor-com'); ?>
-                <?php endif; ?>
-                <?= esc_html($url); ?>
-              </div>
-              <div class="qr-code-image">
-                <img src="<?= esc_url($url_qr_code); ?>" alt="<?= esc_attr($objet_type === 'organisateur' ? __('QR code de votre organisation', 'chassesautresor-com') : __('QR code de votre chasse', 'chassesautresor-com')); ?>">
-              </div>
-              <div class="qr-code-content">
-                <?php if ($objet_type === 'organisateur') : ?>
-                  <h3><?= esc_html__("QR code de votre organisation", 'chassesautresor-com'); ?></h3>
-                  <h4><?= esc_html__("Partagez votre organisation en un scan", 'chassesautresor-com'); ?></h4>
-                  <p><?= esc_html__('Facilitez l\'accès à votre organisation avec un simple scan. Un QR code évite de saisir une URL et se partage facilement.', 'chassesautresor-com'); ?></p>
-                  <a class="bouton-cta qr-code-download" href="<?= esc_url($url_qr_code); ?>" download="<?= esc_attr('qr-organisateur-' . $objet_id . '.png'); ?>">
-                    <?= esc_html__('Télécharger', 'chassesautresor-com'); ?>
-                  </a>
-                <?php else : ?>
-                  <h3><?= esc_html__('QR code de votre chasse', 'chassesautresor-com'); ?></h3>
-                  <h4><?= esc_html__('Partagez votre chasse en un scan', 'chassesautresor-com'); ?></h4>
-                  <p><?= esc_html__('Facilitez l\'accès à votre chasse avec un simple scan. Un QR code évite de saisir une URL et se partage facilement.', 'chassesautresor-com'); ?></p>
-                  <a class="bouton-cta qr-code-download" href="<?= esc_url($url_qr_code); ?>" download="<?= esc_attr('qr-chasse-' . $objet_id . '.png'); ?>">
-                    <?= esc_html__('Télécharger', 'chassesautresor-com'); ?>
-                  </a>
-                <?php endif; ?>
-              </div>
-            </div>
-          </div>
-        <?php endif; ?>
-
         <?php if ($objet_type !== 'organisateur') : ?>
           <?php
           $par_page_indices = 5;
@@ -510,23 +475,6 @@ if ($objet_type === 'chasse') {
             ?>
           </div>
 
-          <div class="dashboard-card carte-orgy champ-protection-solutions">
-            <div class="qr-code-block">
-              <div class="qr-code-image">
-                <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
-              </div>
-              <div class="qr-code-content">
-                <h3><?= esc_html__('Sécurité des PDF de solution', 'chassesautresor-com'); ?></h3>
-                <h4><?= esc_html__('Vos PDF sont conservés dans un coffre-fort numérique', 'chassesautresor-com'); ?></h4>
-                <p>
-                  <?= esc_html__('Les fichiers PDF de solution sont conservés dans un dossier protégé. ', 'chassesautresor-com'); ?>
-                  <?= esc_html__("Ils ne seront partagés qu'à la date que vous aurez choisie : ", 'chassesautresor-com'); ?>
-                  <?= esc_html__('immédiatement après la fin de la chasse ou après un délai paramétrable.', 'chassesautresor-com'); ?>
-                </p>
-              </div>
-            </div>
-          </div>
-
           <h3
             id="<?= esc_attr($objet_type); ?>-section-solutions"
             data-titre-enigme="<?= esc_attr__('Solutions pour %s', 'chassesautresor-com'); ?>"
@@ -569,6 +517,60 @@ if ($objet_type === 'chasse') {
           </div>
 
           <div class="edition-animation-prefill" data-indice='<?= wp_json_encode($indice_prefill); ?>' data-solution='<?= wp_json_encode($solution_prefill); ?>'></div>
+        <?php endif; ?>
+
+        <?php if ($afficher_qr_code && $url && $url_qr_code) : ?>
+          <div class="dashboard-card carte-orgy champ-qr-code">
+            <div class="qr-code-block">
+              <div class="qr-code-url txt-small">
+                <?php if ($objet_type === 'organisateur') : ?>
+                  <?= esc_html__("Adresse de votre organisation :", 'chassesautresor-com'); ?>
+                <?php else : ?>
+                  <?= esc_html__('Adresse de votre chasse&nbsp;:', 'chassesautresor-com'); ?>
+                <?php endif; ?>
+                <?= esc_html($url); ?>
+              </div>
+              <div class="qr-code-image">
+                <img src="<?= esc_url($url_qr_code); ?>" alt="<?= esc_attr($objet_type === 'organisateur' ? __('QR code de votre organisation', 'chassesautresor-com') : __('QR code de votre chasse', 'chassesautresor-com')); ?>">
+              </div>
+              <div class="qr-code-content">
+                <?php if ($objet_type === 'organisateur') : ?>
+                  <h3><?= esc_html__("QR code de votre organisation", 'chassesautresor-com'); ?></h3>
+                  <h4><?= esc_html__("Partagez votre organisation en un scan", 'chassesautresor-com'); ?></h4>
+                  <p><?= esc_html__('Facilitez l\'accès à votre organisation avec un simple scan. Un QR code évite de saisir une URL et se partage facilement.', 'chassesautresor-com'); ?></p>
+                  <a class="bouton-cta qr-code-download" href="<?= esc_url($url_qr_code); ?>" download="<?= esc_attr('qr-organisateur-' . $objet_id . '.png'); ?>">
+                    <?= esc_html__('Télécharger', 'chassesautresor-com'); ?>
+                  </a>
+                <?php else : ?>
+                  <h3><?= esc_html__('QR code de votre chasse', 'chassesautresor-com'); ?></h3>
+                  <h4><?= esc_html__('Partagez votre chasse en un scan', 'chassesautresor-com'); ?></h4>
+                  <p><?= esc_html__('Facilitez l\'accès à votre chasse avec un simple scan. Un QR code évite de saisir une URL et se partage facilement.', 'chassesautresor-com'); ?></p>
+                  <a class="bouton-cta qr-code-download" href="<?= esc_url($url_qr_code); ?>" download="<?= esc_attr('qr-chasse-' . $objet_id . '.png'); ?>">
+                    <?= esc_html__('Télécharger', 'chassesautresor-com'); ?>
+                  </a>
+                <?php endif; ?>
+              </div>
+            </div>
+          </div>
+        <?php endif; ?>
+
+        <?php if ($objet_type !== 'organisateur') : ?>
+          <div class="dashboard-card carte-orgy champ-protection-solutions">
+            <div class="qr-code-block">
+              <div class="qr-code-image">
+                <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+              </div>
+              <div class="qr-code-content">
+                <h3><?= esc_html__('Sécurité des PDF de solution', 'chassesautresor-com'); ?></h3>
+                <h4><?= esc_html__('Vos PDF sont conservés dans un coffre-fort numérique', 'chassesautresor-com'); ?></h4>
+                <p>
+                  <?= esc_html__('Les fichiers PDF de solution sont conservés dans un dossier protégé. ', 'chassesautresor-com'); ?>
+                  <?= esc_html__("Ils ne seront partagés qu'à la date que vous aurez choisie : ", 'chassesautresor-com'); ?>
+                  <?= esc_html__('immédiatement après la fin de la chasse ou après un délai paramétrable.', 'chassesautresor-com'); ?>
+                </p>
+              </div>
+            </div>
+          </div>
         <?php endif; ?>
       </div>
     </div>
