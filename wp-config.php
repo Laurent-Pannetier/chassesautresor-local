@@ -1,7 +1,5 @@
 <?php
-
-
-
+ob_start();
 
 /**
  * The base configuration for WordPress
