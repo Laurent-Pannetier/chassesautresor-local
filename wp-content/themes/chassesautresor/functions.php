@@ -19,6 +19,16 @@ if ( file_exists( $autoloader ) ) {
  */
 define( 'CHILD_THEME_CHASSESAUTRESOR_COM_VERSION', '1.0.0' );
 
+add_action(
+    'init',
+    static function () {
+        if ( ! ob_get_level() ) {
+            ob_start();
+        }
+    },
+    0
+);
+
 /**
  * Charge le domaine de traduction du thème enfant.
  */
