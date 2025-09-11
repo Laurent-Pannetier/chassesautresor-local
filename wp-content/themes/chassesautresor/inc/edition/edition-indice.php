@@ -180,17 +180,48 @@ function reordonner_indices(int $objet_id, string $objet_type): void
  */
 function reordonner_indices_pour_indice(int $indice_id): void
 {
-    $linked = get_field('indice_chasse_linked', $indice_id);
+    $cible_type = get_field('indice_cible_type', $indice_id) === 'enigme' ? 'enigme' : 'chasse';
 
-    if (is_array($linked)) {
-        $first     = $linked[0] ?? null;
-        $chasse_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
+    if ($cible_type === 'enigme') {
+        $linked = get_field('indice_enigme_linked', $indice_id);
+        if (is_array($linked)) {
+            $first     = $linked[0] ?? null;
+            $objet_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
+        } else {
+            $objet_id = (int) $linked;
+        }
+
+        if ($objet_id) {
+            reordonner_indices($objet_id, 'enigme');
+        }
+
+        $chasse_linked = get_field('indice_chasse_linked', $indice_id);
+        if (is_array($chasse_linked)) {
+            $first     = $chasse_linked[0] ?? null;
+            $chasse_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
+        } else {
+            $chasse_id = (int) $chasse_linked;
+        }
+
+        if (!$chasse_id && isset($objet_id)) {
+            $chasse_id = (int) recuperer_id_chasse_associee($objet_id);
+        }
+
+        if ($chasse_id) {
+            reordonner_indices($chasse_id, 'chasse');
+        }
     } else {
-        $chasse_id = (int) $linked;
-    }
+        $linked = get_field('indice_chasse_linked', $indice_id);
+        if (is_array($linked)) {
+            $first     = $linked[0] ?? null;
+            $chasse_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
+        } else {
+            $chasse_id = (int) $linked;
+        }
 
-    if ($chasse_id) {
-        reordonner_indices($chasse_id, 'chasse');
+        if ($chasse_id) {
+            reordonner_indices($chasse_id, 'chasse');
+        }
     }
 }
 
@@ -1105,9 +1136,47 @@ function memoriser_cible_indice_avant_suppression(int $post_id): void
         return;
     }
 
-    $chasse_id = (int) get_field('indice_chasse_linked', $post_id);
-    if ($chasse_id) {
-        $indice_delete_context = ['id' => $chasse_id, 'type' => 'chasse'];
+    $type = get_field('indice_cible_type', $post_id) === 'enigme' ? 'enigme' : 'chasse';
+    $objet_id = 0;
+    $chasse_id = 0;
+
+    if ($type === 'enigme') {
+        $linked = get_field('indice_enigme_linked', $post_id);
+        if (is_array($linked)) {
+            $first    = $linked[0] ?? null;
+            $objet_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
+        } else {
+            $objet_id = (int) $linked;
+        }
+
+        $chasse_linked = get_field('indice_chasse_linked', $post_id);
+        if (is_array($chasse_linked)) {
+            $first     = $chasse_linked[0] ?? null;
+            $chasse_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
+        } else {
+            $chasse_id = (int) $chasse_linked;
+        }
+
+        if (!$chasse_id && $objet_id) {
+            $chasse_id = (int) recuperer_id_chasse_associee($objet_id);
+        }
+    } else {
+        $linked = get_field('indice_chasse_linked', $post_id);
+        if (is_array($linked)) {
+            $first     = $linked[0] ?? null;
+            $objet_id  = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
+        } else {
+            $objet_id = (int) $linked;
+        }
+        $chasse_id = $objet_id;
+    }
+
+    if ($objet_id) {
+        $indice_delete_context = [
+            'objet_id'   => $objet_id,
+            'objet_type' => $type,
+            'chasse_id'  => $chasse_id,
+        ];
     }
 }
 add_action('before_delete_post', 'memoriser_cible_indice_avant_suppression');
@@ -1121,10 +1190,20 @@ add_action('before_delete_post', 'memoriser_cible_indice_avant_suppression');
 function reordonner_indices_apres_suppression(int $post_id): void
 {
     global $indice_delete_context;
-    if ($indice_delete_context) {
-        reordonner_indices($indice_delete_context['id'], $indice_delete_context['type']);
-        $indice_delete_context = null;
+    if (!$indice_delete_context) {
+        return;
     }
+
+    $objet_id   = (int) $indice_delete_context['objet_id'];
+    $objet_type = $indice_delete_context['objet_type'];
+    $chasse_id  = (int) ($indice_delete_context['chasse_id'] ?? 0);
+
+    reordonner_indices($objet_id, $objet_type);
+    if ($chasse_id && $chasse_id !== $objet_id) {
+        reordonner_indices($chasse_id, 'chasse');
+    }
+
+    $indice_delete_context = null;
 }
 add_action('deleted_post', 'reordonner_indices_apres_suppression');
 add_action('trashed_post', 'reordonner_indices_pour_indice');

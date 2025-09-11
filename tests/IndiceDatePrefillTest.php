@@ -107,7 +107,7 @@ namespace IndiceDatePrefill {
 
             $this->assertStringContainsString('data-indice-date="2024-03-14T18:00"', $output);
             $this->assertStringContainsString('data-indice-rang="1"', $output);
-            $this->assertStringContainsString('Indice #1', $output);
+            $this->assertStringContainsString('Titre', $output);
         }
     }
 }

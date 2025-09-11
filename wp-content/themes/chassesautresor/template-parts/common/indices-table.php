@@ -87,8 +87,12 @@ if (empty($indices)) {
                 $img_url = wp_get_attachment_image_url($img_id, 'thumbnail') ?: '';
             }
 
-            $indice_title = sprintf(__('Indice #%d', 'chassesautresor-com'), $indice_rank);
-            $contenu      = wp_strip_all_tags(get_field('indice_contenu', $indice->ID) ?: '');
+            $indice_title_raw = get_the_title($indice->ID);
+            $default_title    = defined('TITRE_DEFAUT_INDICE') ? TITRE_DEFAUT_INDICE : '';
+            $indice_title     = $indice_title_raw !== '' && $indice_title_raw !== $default_title
+                ? $indice_title_raw
+                : sprintf(__('Indice #%d', 'chassesautresor-com'), $indice_rank);
+            $contenu          = wp_strip_all_tags(get_field('indice_contenu', $indice->ID) ?: '');
             $dispo   = get_field('indice_disponibilite', $indice->ID) ?: 'immediate';
 
             $date_raw   = get_field('indice_date_disponibilite', $indice->ID) ?: '';
