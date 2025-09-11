@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - MC4WP: Mailchimp for WordPress - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-07-23 11:56:12+0000\n"
+"PO-Revision-Date: 2025-09-05 09:36:16+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -43,7 +43,7 @@ msgstr "Commande WooCommerce : avant le bouton de validation de la commande"
 msgid "After email field"
 msgstr "Après le champ email"
 
-#: includes/views/parts/lists-overview.php:50
+#: includes/views/parts/lists-overview.php:51
 msgid "Loading... Please wait."
 msgstr "Chargement... Veuillez patienter."
 
@@ -193,7 +193,7 @@ msgstr "Voulez-vous vous abonner à notre newsletter ?"
 msgid "Use this integration by adding the \"Mailchimp\" field to <a href=\"%s\">your WPForms forms</a>."
 msgstr "Utilisez cette intégration en ajoutant le champ \"Mailchimp\" à vos <a href=\"%s\">formulaires WPForms</a>."
 
-#: includes/admin/class-admin.php:421
+#: includes/admin/class-admin.php:417
 msgid "Looks like your server is blocked by Mailchimp's firewall. Please contact Mailchimp support and include the following reference number: %s"
 msgstr "On dirait que votre serveur est bloqué par le pare-feu de Mailchimp. Veuillez contacter le support de Mailchimp en indiquant le numéro de référence suivant : %s"
 
@@ -261,15 +261,15 @@ msgstr "<a href=\"%1$s\"> Mettre à niveau vers Mailchimp pour WordPress Premium
 msgid "Do you want to track all WooCommerce orders in Mailchimp so you can send emails based on the purchase activity of your subscribers?"
 msgstr "Voulez-vous suivre toutes les commandes de WooCommerce dans MailChimp afin que vous puissiez envoyer des emails en fonction de l'activité d'achat de vos abonnés?"
 
-#: includes/admin/class-admin.php:429
+#: includes/admin/class-admin.php:425
 msgid "Mailchimp returned the following error:"
 msgstr "MailChimp a retourné l’erreur suivante :"
 
-#: includes/admin/class-admin.php:424
+#: includes/admin/class-admin.php:420
 msgid "Here's some info on solving common connectivity issues."
 msgstr "Voici quelques informations sur les problèmes de connectivité courants"
 
-#: includes/admin/class-admin.php:418
+#: includes/admin/class-admin.php:414
 msgid "Error connecting to Mailchimp:"
 msgstr "Erreur de connexion à MailChimp"
 
@@ -329,7 +329,7 @@ msgstr "Pré-sélection"
 msgid "Optional"
 msgstr "Facultatif"
 
-#: includes/admin/class-admin.php:504
+#: includes/admin/class-admin.php:500
 msgid "To get started with Mailchimp for WordPress, please <a href=\"%s\">enter your Mailchimp API key on the settings page of the plugin</a>."
 msgstr "Pour commencer avec MailChimp pour WordPress, <a href=\"%s\"> entrez votre clé API MailChimp sur la page de configuration du plugin </a>."
 
@@ -389,15 +389,15 @@ msgstr "Journal de débogage"
 msgid "This field is marked as required in Mailchimp."
 msgstr "Ce champ est obligatoire dans MailChimp."
 
-#: includes/admin/class-admin.php:473
+#: includes/admin/class-admin.php:469
 msgid "Log successfully emptied."
 msgstr "Traces vidées avec succès."
 
-#: includes/admin/class-admin.php:338
+#: includes/admin/class-admin.php:334
 msgid "Other"
 msgstr "Divers"
 
-#: includes/admin/class-admin.php:337 includes/views/other-settings.php:14
+#: includes/admin/class-admin.php:333 includes/views/other-settings.php:14
 #: includes/views/other-settings.php:24
 msgid "Other Settings"
 msgstr "Autres paramètres"
@@ -1168,7 +1168,7 @@ msgstr "Réglages du formulaire"
 msgid "Checkboxes"
 msgstr "Cases à cocher"
 
-#: includes/admin/class-admin.php:330
+#: includes/admin/class-admin.php:326
 msgid "Mailchimp API Settings"
 msgstr "Paramètres de l'API MailChimp"
 

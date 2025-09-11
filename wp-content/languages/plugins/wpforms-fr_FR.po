@@ -7,8 +7,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-08-20T08:55:52+00:00\n"
-"PO-Revision-Date: 2025-08-20T08:55:52+00:00\n"
+"POT-Creation-Date: 2025-09-09T08:49:48+00:00\n"
+"PO-Revision-Date: 2025-09-09T08:49:48+00:00\n"
 "Language: \n"
 
 #. Plugin Name of the plugin
@@ -98,12 +98,12 @@ msgstr "<strong>Votre clé de licence n’est pas valide.</strong> La clé n’e
 #. translators: %1$s - WPForms.com Account licenses URL.
 #: pro/includes/admin/class-license.php:533
 msgid "<strong>Sorry, but this license has no activations left.</strong> You can manage your site activations, upgrade your license, or purchase a new one in <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">your account</a>."
-msgstr ""
+msgstr "<strong>Désolé, mais cette licence n’a plus d’activations.</strong> Vous pouvez gérer les activations de votre site, mettre à niveau votre licence ou en acheter une nouvelle dans <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">votre compte</a>."
 
 #. translators: %1$s - WPForms.com license key support URL.
 #: pro/includes/admin/class-license.php:550
 msgid "<strong>Heads up! Before you can activate this key, we'd like to check in with you.</strong> Please <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">reach out to support here.</a>"
-msgstr ""
+msgstr "<strong>Attention ! Avant que vous ne puissiez activer cette clé, nous aimerions faire le point avec vous.</strong> Veuillez <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">contacter le support ici.</a>"
 
 #. translators: %s - Link to the Settings > General screen in the plugin, where users can enter their license key.
 #: pro/includes/admin/class-license.php:594
@@ -157,11 +157,11 @@ msgstr "La clé n’existe plus ou l’utilisateur/utilisatrice associé·e à l
 
 #: pro/includes/admin/class-license.php:710
 msgid "Heads up! Your WPForms license has no activations left."
-msgstr ""
+msgstr "Attention ! Votre licence WPForms n’a plus d’activations."
 
 #: pro/includes/admin/class-license.php:711
 msgid "Sorry, but this license has no activations left. You can update the list of your sites, upgrade the license in the Account area or purchase a new license key."
-msgstr ""
+msgstr "Désolé, mais cette licence n’a plus d’activations. Vous pouvez mettre à jour la liste de vos sites, mettre à niveau la licence dans l’espace Compte ou acheter une nouvelle clé de licence."
 
 #: pro/includes/admin/class-license.php:739
 #: src/Pro/Admin/Education/StringsTrait.php:55
@@ -170,7 +170,7 @@ msgstr "Attention !"
 
 #: pro/includes/admin/class-license.php:740
 msgid "Before you can activate this key, we'd like to check in with you. Please reach out to support."
-msgstr ""
+msgstr "Avant que vous ne puissiez activer cette clé, nous aimerions faire le point avec vous. Veuillez contacter le support."
 
 #: pro/includes/admin/class-license.php:742
 #: src/Pro/Admin/Education/StringsTrait.php:97
@@ -199,12 +199,12 @@ msgstr "Votre clé de licence pour WPForms a été désactivée. Veuillez utilis
 
 #: pro/includes/admin/class-license.php:1131
 msgid "Sorry, but this license has no activations left. You can manage your site activations, upgrade your license, or purchase a new one in your account."
-msgstr ""
+msgstr "Désolé, mais cette licence n’a plus d’activations. Vous pouvez gérer les activations de votre site, mettre à niveau votre licence ou en acheter une nouvelle dans votre compte."
 
 #. translators: %1$s - WPForms.com license key support URL.
 #: pro/includes/admin/class-license.php:1158
 msgid "Heads up! Before you can activate this key, we'd like to check in with you. Please <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">reach out to support here.</a>"
-msgstr ""
+msgstr "Attention ! Avant que vous ne puissiez activer cette clé, nous aimerions faire le point avec vous. Veuillez <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">contacter le support ici.</a>"
 
 #: pro/includes/admin/class-license.php:1197
 msgid "Your key has been refreshed successfully."
@@ -1254,21 +1254,21 @@ msgstr "Un mot de passe plus fort est nécessaire. Pensez à utiliser des lettre
 
 #: pro/wpforms-pro.php:823
 msgid "Minimum Value"
-msgstr ""
+msgstr "Valeur minimale"
 
 #. translators: %s - value to compare with.
 #: pro/wpforms-pro.php:826
 msgid "Please enter a value greater than or equal to %s."
-msgstr ""
+msgstr "Veuillez saisir une valeur supérieure ou égale à %s."
 
 #: pro/wpforms-pro.php:833
 msgid "Maximum Value"
-msgstr ""
+msgstr "Valeur maximale"
 
 #. translators: %s - value to compare with.
 #: pro/wpforms-pro.php:836
 msgid "Please enter a value less than or equal to %s."
-msgstr ""
+msgstr "Veuillez saisir une valeur inférieure ou égale à %s."
 
 #: pro/wpforms-pro.php:847
 msgid "Disable User Cookies"
@@ -2033,7 +2033,7 @@ msgstr "Module %s"
 #. translators: %s - WPForms.com announcement page URL.
 #: src/Pro/Admin/Education/Builder/Fields.php:282
 msgid "They will not be present in the published form. <a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">Upgrade now</a> to unlock these features."
-msgstr ""
+msgstr "Elles ne seront pas présentes dans le formulaire publié. <a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">Effectuez la mise à niveau maintenant</a> pour déverrouiller ces fonctionnalités."
 
 #: src/Pro/Admin/Education/Builder/Fields.php:297
 msgid "They will still be visible in the form preview, but will not be present in the published form."
@@ -2254,7 +2254,7 @@ msgstr "Télécharger le fichier d’exportation (CSV)"
 #. translators: %1$s - link to the WPForms.com doc article.
 #: src/Pro/Admin/Entries/Export/Admin.php:166
 msgid "If you need to export entries on a regular basis, you can now automate this process. <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">Learn More</a>"
-msgstr ""
+msgstr "Si vous avez besoin d’exporter régulièrement des entrées, vous pouvez désormais automatiser ce processus. <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">En savoir plus</a>"
 
 #: src/Pro/Admin/Entries/Export/Admin.php:181
 msgid "Dismiss this notice."
@@ -3014,16 +3014,16 @@ msgstr "Votre licence WPForms Pro est non valide."
 
 #: src/Pro/Admin/PluginList.php:646
 msgid "Your WPForms Pro license has no activations left."
-msgstr ""
+msgstr "Votre licence WPForms Pro n’a plus d’activations."
 
 #: src/Pro/Admin/PluginList.php:647
 msgid "Your WPForms Pro license needs support."
-msgstr ""
+msgstr "Votre licence WPForms Pro a besoin de support."
 
 #. translators: %s - WPForms Pro key support link.
 #: src/Pro/Admin/PluginList.php:654
 msgid "Before you can activate this key, we'd like to check in with you. Please <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">reach out to support here.</a>"
-msgstr ""
+msgstr "Avant que vous ne puissiez activer cette clé, nous aimerions faire le point avec vous. Veuillez <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">contacter le support ici.</a>"
 
 #. translators: %s - WPForms Pro renew link.
 #: src/Pro/Admin/PluginList.php:665
@@ -3033,7 +3033,7 @@ msgstr "<a target=\"_blank\" href=\"%1$s\" rel=\"noopener noreferrer\">Renouvele
 #. translators: %1$s - WPForms Pro Changelog link; %2$s - WPForms Pro latest version.
 #: src/Pro/Admin/PluginList.php:696
 msgid "There is a new version of WPForms available. <a class=\"thickbox open-plugin-details-modal\" href=\"%1$s\" rel=\"noopener noreferrer\">View version %2$s details</a>"
-msgstr ""
+msgstr "Une nouvelle version de WPForms est disponible. <a class=\"thickbox open-plugin-details-modal\" href=\"%1$s\" rel=\"noopener noreferrer\">Voir les détails de la version %2$s</a>"
 
 #. translators: %1$s - WPForms Pro upgrade URL; %2$s - Update now link aria-label attribute.
 #: src/Pro/Admin/PluginList.php:711
@@ -3076,7 +3076,7 @@ msgstr "Une nouvelle version pour %1$s est disponible. <a href=\"%2$s\" %3$s>Voi
 
 #: src/Pro/Admin/PluginListDisabler.php:72
 msgid "WPForms license is not valid."
-msgstr ""
+msgstr "La licence WPForms n’est pas valide."
 
 #. translators: %1$s - capability being granted, %2$s - capability(s) required for a capability being granted, %3$s - role a capability is granted to.
 #: src/Pro/Admin/Settings/Access.php:77

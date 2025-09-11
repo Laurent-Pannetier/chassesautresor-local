@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - WooCommerce - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-08-26 09:54:12+0000\n"
+"PO-Revision-Date: 2025-09-09 17:06:54+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1212,6 +1212,19 @@ msgstr "L’état général du processus d’intégration."
 msgid "The onboarding steps."
 msgstr "Les étapes d’intégration."
 
+#: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:105
+#: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:132
+#: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:180
+#: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:229
+#: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:256
+#: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:283
+#: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:310
+#: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:343
+#: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:399
+#: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:445
+msgid "The upmost entry point from where the merchant entered the onboarding flow."
+msgstr "Le point d’entrée le plus élevé à partir duquel le commerçant est entré dans le flux d’intégration."
+
 #: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:337
 #: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:393
 #: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:439
@@ -1225,19 +1238,6 @@ msgstr "Indique si le processus d’intégration est en mode test."
 #: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:1047
 msgid "Whether WooPayments is in dev mode."
 msgstr "Indique si WooPayments est en mode développement."
-
-#: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:105
-#: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:132
-#: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:180
-#: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:229
-#: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:256
-#: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:283
-#: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:310
-#: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:343
-#: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:399
-#: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:445
-msgid "The upmost entry point from where the merchant entered the onboarding flow."
-msgstr "Le point d’entrée le plus élevé à partir duquel le commerçant est entré dans le flux d’intégration."
 
 #: src/Internal/Admin/Notes/EmailImprovements.php:78
 #: assets/client/admin/chunks/homescreen.js:1
@@ -1333,7 +1333,7 @@ msgstr "Indique si les importations de plan d’action sont actuellement autoris
 msgid "Your review is awaiting moderation. This is a preview; your review will be visible after it has been approved."
 msgstr "Votre avis est en attente de modération. Ceci est un aperçu ; votre avis sera visible une fois approuvé."
 
-#: src/Internal/Admin/EmailPreview/EmailPreview.php:577
+#: src/Internal/Admin/EmailPreview/EmailPreview.php:606
 msgid "There was an error rendering the email editor placeholder content."
 msgstr "Une erreur est survenue lors du rendu du contenu de texte indicatif de l’éditeur d’e-mail."
 
@@ -2256,7 +2256,7 @@ msgstr "Synchronisez vos données de vente sur plusieurs plateformes et gérez t
 msgid "Multichannel for WooCommerce"
 msgstr "Multichannel pour WooCommerce"
 
-#: src/Internal/Admin/EmailPreview/EmailPreview.php:384
+#: src/Internal/Admin/EmailPreview/EmailPreview.php:413
 msgid "Dummy Product"
 msgstr "Produit fictif"
 
@@ -2280,7 +2280,7 @@ msgstr "Modèle utilisé pour afficher le formulaire Ajouter au panier + options
 msgid "Wallets & Express checkouts"
 msgstr "Portefeuilles et Validation express de la commande"
 
-#: src/Internal/Admin/EmailPreview/EmailPreview.php:405
+#: src/Internal/Admin/EmailPreview/EmailPreview.php:434
 msgid "Dummy Product Variation"
 msgstr "Variante de produit fictive"
 
@@ -2728,7 +2728,7 @@ msgstr "Marques : "
 msgid "The product with SKU (%1$s) you are trying to insert is already present in the lookup table"
 msgstr "Le produit avec l’UGS (%1$s) que vous essayez d’insérer est déjà présent dans le tableau de consultation"
 
-#: includes/class-wc-cart.php:1177
+#: includes/class-wc-cart.php:1184
 msgid "The selected product is invalid."
 msgstr "Le produit sélectionné est non valide."
 
@@ -4664,7 +4664,7 @@ msgstr "Un produit doit être associé à cette marque pour que le code promo re
 msgid "Any brand"
 msgstr "N'importe quelle marque"
 
-#: src/Internal/Admin/EmailPreview/EmailPreview.php:409
+#: src/Internal/Admin/EmailPreview/EmailPreview.php:438
 #: assets/client/blocks/add-to-cart-with-options-variation-selector-attribute.js:1
 #: assets/client/blocks/add-to-cart-with-options-variation-selector.js:1
 #: assets/client/blocks/product-filter-active.js:1
@@ -4715,7 +4715,7 @@ msgstr "Paiements simplifiés, dont WooPay, une nouvelle fonctionnalité de vali
 msgid "A list of plugins to install"
 msgstr "Liste des extensions à installer"
 
-#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:598
+#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:600
 msgid "System status theme info cache cleared."
 msgstr "Cache des informations sur le thème de l’état système effacé."
 
@@ -5817,7 +5817,7 @@ msgstr "Votre abonnement à <strong>%1$s</strong> expire le %2$s. <a href=\"%3$s
 msgid "Renew for %1$s"
 msgstr "Renouveler pour %1$s"
 
-#: includes/class-wc-cart.php:1804
+#: includes/class-wc-cart.php:1811
 msgid "This method has been deprecated and will be removed soon. Use Automattic\\WooCommerce\\Utilities\\DiscountsUtil::is_coupon_emails_allowed instead."
 msgstr "Cette méthode est obsolète est sera bientôt supprimée. À la place, utilisez Automattic\\WooCommerce\\Utilities\\DiscountsUtil::is_coupon_emails_allowed."
 
@@ -5878,16 +5878,16 @@ msgstr "pour %s "
 msgid "<a href='%s'>More information</a>"
 msgstr "<a href='%s'>Plus d’informations</a>"
 
+#: includes/admin/settings/class-wc-settings-advanced.php:404
+msgid "The legacy REST API is NOT enabled"
+msgstr "L’ancienne API REST n’est PAS activée"
+
 #. translators: %s = URL
 #: includes/admin/class-wc-admin-webhooks.php:371
 msgid "This webhook has the ⚠️ symbol in front of its name in the list below. Please either edit the webhook to use a different delivery format, or install and activate <a href=\"%s\" target=\"_blank\">the WooCommerce Legacy REST API extension</a>."
 msgid_plural "These webhooks have the ⚠️ symbol in front of their names in the list below. Please either edit the webhooks to use a different delivery format, or install and activate <a href=\"%s\" target=\"_blank\">the WooCommerce Legacy REST API extension</a>."
 msgstr[0] "Ce webhook comporte le symbole ⚠️ devant son nom dans la liste ci-dessous. Veuillez modifier ce webhook pour utiliser un autre format de livraison ou installez et activez <a href=\"%s\" target=\"_blank\">l’extension WooCommerce Legacy REST API</a>."
 msgstr[1] "Ces webhooks comportent le symbole ⚠️ devant leur nom dans la liste ci-dessous. Veuillez modifier ces webhooks pour utiliser un autre format de livraison ou installez et activez <a href=\"%s\" target=\"_blank\">l’extension WooCommerce Legacy REST API</a>."
-
-#: includes/admin/settings/class-wc-settings-advanced.php:404
-msgid "The legacy REST API is NOT enabled"
-msgstr "L’ancienne API REST n’est PAS activée"
 
 #. translators: %s = webhooks count
 #: includes/admin/class-wc-admin-webhooks.php:354
@@ -10157,17 +10157,6 @@ msgctxt "block keyword"
 msgid "checkbox"
 msgstr "case à cocher"
 
-#: assets/client/admin/product-editor/blocks/generic/checkbox/block.json
-#: assets/client/admin/product-editor/blocks/generic/product-checkbox-field/block.json
-msgctxt "block title"
-msgid "Product checkbox control"
-msgstr "Contrôle de la case à cocher du produit"
-
-#: assets/client/admin/product-editor/blocks/generic/conditional/block.json
-msgctxt "block description"
-msgid "Container to only conditionally render inner blocks."
-msgstr "Conteneur permettant d’obtenir un rendu conditionnel des blocs qu’il contient."
-
 #: assets/client/admin/product-editor/blocks/generic/conditional/block.json
 msgctxt "block title"
 msgid "Conditional"
@@ -10253,6 +10242,17 @@ msgstr "Sous conditions"
 msgctxt "block keyword"
 msgid "products"
 msgstr "produits"
+
+#: assets/client/admin/product-editor/blocks/generic/checkbox/block.json
+#: assets/client/admin/product-editor/blocks/generic/product-checkbox-field/block.json
+msgctxt "block title"
+msgid "Product checkbox control"
+msgstr "Contrôle de la case à cocher du produit"
+
+#: assets/client/admin/product-editor/blocks/generic/conditional/block.json
+msgctxt "block description"
+msgid "Container to only conditionally render inner blocks."
+msgstr "Conteneur permettant d’obtenir un rendu conditionnel des blocs qu’il contient."
 
 #: assets/client/admin/product-editor/blocks/product-fields/name/block.json
 #: assets/client/admin/product-editor/blocks/product-fields/product-name-field/block.json
@@ -13343,21 +13343,6 @@ msgstr "Notification de transfert de données de paiement (PDT) reçue pour un a
 msgid "Received PDT notification for order %1$d on endpoint for order %2$d."
 msgstr "Notification de transfert de données de paiement (PDT) reçue pour la commande %1$d sur le point de terminaison de la commande %2$d."
 
-#: assets/client/blocks/checkout/block.json
-msgctxt "block description"
-msgid "Display a checkout form so your customers can submit orders."
-msgstr "Affichez un formulaire de validation de commande pour que vos clients puissent passer des commandes."
-
-#: assets/client/blocks/checkout/block.json
-msgctxt "block title"
-msgid "Checkout"
-msgstr "Validation de commande"
-
-#: assets/client/blocks/inner-blocks/mini-cart-items-block/block.json
-msgctxt "block description"
-msgid "Contains the products table and other custom blocks of filled mini-cart."
-msgstr "Contient le tableau des produits et d’autres blocs personnalisés de mini panier rempli."
-
 #: assets/client/blocks/accordion-group/block.json
 #: assets/client/blocks/accordion-header/block.json
 #: assets/client/blocks/accordion-item/block.json
@@ -13452,6 +13437,21 @@ msgstr "Contient le tableau des produits et d’autres blocs personnalisés de m
 msgctxt "block keyword"
 msgid "WooCommerce"
 msgstr "WooCommerce"
+
+#: assets/client/blocks/checkout/block.json
+msgctxt "block description"
+msgid "Display a checkout form so your customers can submit orders."
+msgstr "Affichez un formulaire de validation de commande pour que vos clients puissent passer des commandes."
+
+#: assets/client/blocks/checkout/block.json
+msgctxt "block title"
+msgid "Checkout"
+msgstr "Validation de commande"
+
+#: assets/client/blocks/inner-blocks/mini-cart-items-block/block.json
+msgctxt "block description"
+msgid "Contains the products table and other custom blocks of filled mini-cart."
+msgstr "Contient le tableau des produits et d’autres blocs personnalisés de mini panier rempli."
 
 #: assets/client/blocks/inner-blocks/mini-cart-items-block/block.json
 msgctxt "block title"
@@ -15401,7 +15401,7 @@ msgid "When product stock reaches this amount you will be notified by email. It 
 msgstr "Lorsque le stock atteindra cette valeur, vous recevrez une notification par e-mail. It is possible to define different values for each variation individually. The shop default value can be set in Settings > Produits > Inventaire."
 
 #. translators: 1: product link, 2: product name
-#: includes/class-wc-cart.php:1181
+#: includes/class-wc-cart.php:1188
 msgid "The selected product isn't a variation of %2$s, please choose product options by visiting <a href=\"%1$s\" title=\"%2$s\">%2$s</a>."
 msgstr "Le produit sélectionné n’est pas une variation de %2$s, veuillez choisir des options de produit en visitant <a href=\"%1$s\" title=\"%2$s\">%2$s</a>."
 
@@ -16081,7 +16081,7 @@ msgid "Town / City / Post Office"
 msgstr "Ville / Bureau de poste"
 
 #. translators: 1: product link, 2: product name
-#: includes/class-wc-cart.php:1076 includes/class-wc-form-handler.php:961
+#: includes/class-wc-cart.php:1083 includes/class-wc-form-handler.php:961
 msgid "Please choose product options by visiting <a href=\"%1$s\" title=\"%2$s\">%2$s</a>."
 msgstr "Veuillez choisir les options de produit en navigant sur <a href=\"%1$s\" title=\"%2$s\">%2$s</a>."
 
@@ -18358,7 +18358,7 @@ msgstr "Limitez les résultats aux produits en fonction d’un prix minimum, fou
 msgid "The %s payment gateway is not available."
 msgstr "La passerelle de paiement %s n’est pas disponible."
 
-#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:612
+#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:614
 msgid "Verifying database... One or more tables are still missing: "
 msgstr "Vérification de la base de données en cours… Une ou plusieurs tables sont toujours manquantes :"
 
@@ -18378,15 +18378,15 @@ msgstr "Vérifier la base de données"
 msgid "Verify if all base database tables are present."
 msgstr "Vérifiez si toutes les tables de base de données de base sont présentes."
 
-#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:589
+#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:591
 msgid "Template cache cleared."
 msgstr "Cache de modèles vidé."
 
-#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:591
+#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:593
 msgid "The active version of WooCommerce does not support template cache clearing."
 msgstr "La version active de WooCommerce ne prend pas en charge le vidage du cache de modèles."
 
-#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:603
+#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:605
 msgid "You need WooCommerce 4.2 or newer to run this tool."
 msgstr "WooCommerce 4.2 ou une version plus récente est nécessaire pour exécuter cet outil."
 
@@ -18429,7 +18429,7 @@ msgstr "Obtenir des alertes de commande en temps réel n’importe où"
 msgid "Get notifications about store activity, including new orders and product reviews directly on your mobile devices with the Woo app."
 msgstr "Obtenez des notifications sur l’activité de votre boutique, notamment des nouvelles commandes et des avis sur vos produits, directement sur vos appareils mobiles grâce à l’application Woo."
 
-#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:610
+#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:612
 msgid "Database verified successfully."
 msgstr "Base de données bien vérifiée."
 
@@ -21198,7 +21198,7 @@ msgstr "Filtrer les produits par prix minimum"
 msgid "Center"
 msgstr "Centre"
 
-#: src/Internal/Admin/EmailPreview/EmailPreview.php:409
+#: src/Internal/Admin/EmailPreview/EmailPreview.php:438
 #: assets/client/blocks/active-filters-frontend.js:6
 #: assets/client/blocks/active-filters-wrapper-frontend.js:6
 #: assets/client/blocks/active-filters.js:6
@@ -21214,7 +21214,7 @@ msgstr "Centre"
 msgid "Color"
 msgstr "Couleur"
 
-#: src/Internal/Admin/EmailPreview/EmailPreview.php:410
+#: src/Internal/Admin/EmailPreview/EmailPreview.php:439
 #: assets/client/blocks/active-filters-frontend.js:6
 #: assets/client/blocks/active-filters-wrapper-frontend.js:6
 #: assets/client/blocks/active-filters.js:6
@@ -21227,7 +21227,7 @@ msgstr "Couleur"
 msgid "Small"
 msgstr "Petit"
 
-#: src/Internal/Admin/EmailPreview/EmailPreview.php:410
+#: src/Internal/Admin/EmailPreview/EmailPreview.php:439
 #: assets/client/blocks/active-filters-frontend.js:6
 #: assets/client/blocks/active-filters-wrapper-frontend.js:6
 #: assets/client/blocks/active-filters.js:6
@@ -23116,7 +23116,7 @@ msgstr "La catégorie de produit par défaut ne peut pas être supprimée."
 msgid "Variation cannot be imported: Parent product cannot be a product variation"
 msgstr "La variation ne peut pas être importée : le produit parent ne peut pas être une variation de produit"
 
-#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:583
+#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:585
 msgid "Database upgrade routine has been scheduled to run in the background."
 msgstr "La routine de mise à jour de la base de données a été planifiée pour s’exécuter en arrière-plan."
 
@@ -23774,17 +23774,17 @@ msgstr "Impossible de restaurer le stock de l’élément %s."
 msgid "Unable to reduce stock for item %s."
 msgstr "Impossible de réduire le stock de l’élément %s."
 
+#. translators: 1: action HTML 2: action ID 3: error message
+#: packages/action-scheduler/classes/ActionScheduler_ListTable.php:437
+msgid "Could not process change for action: \"%1$s\" (ID: %2$d). Error: %3$s"
+msgstr "Impossible de traiter les modifications de l’action suivante : « %1$s » (ID : %2$d). Erreur :  %3$s"
+
 #. translators: %s: amount of claims
 #: packages/action-scheduler/classes/ActionScheduler_ListTable.php:381
 msgid "Maximum simultaneous queues already in progress (%s queue). No additional queues will begin processing until the current queues are complete."
 msgid_plural "Maximum simultaneous queues already in progress (%s queues). No additional queues will begin processing until the current queues are complete."
 msgstr[0] "Nombre maximal de files d’attente simultanées déjà en cours de traitement (%s file d’attente). Aucune file d’attente supplémentaire ne sera traitée tant que les files d’attente en cours ne seront pas terminées."
 msgstr[1] "Nombre maximal de files d’attente simultanées déjà en cours de traitement (%s files d’attente). Aucune file d’attente supplémentaire ne sera traitée tant que les files d’attente en cours ne seront pas terminées."
-
-#. translators: 1: action HTML 2: action ID 3: error message
-#: packages/action-scheduler/classes/ActionScheduler_ListTable.php:437
-msgid "Could not process change for action: \"%1$s\" (ID: %2$d). Error: %3$s"
-msgstr "Impossible de traiter les modifications de l’action suivante : « %1$s » (ID : %2$d). Erreur :  %3$s"
 
 #: includes/rest-api/Controllers/Version3/class-wc-rest-reports-controller.php:67
 msgid "Attributes totals."
@@ -24076,7 +24076,7 @@ msgstr "%1$s n’est pas valide. Vous trouverez le code Eircode approprié <a ta
 
 #. translators: 1: product name 2: quantity in stock
 #. translators: %s: product name
-#: includes/class-wc-cart.php:824
+#: includes/class-wc-cart.php:831
 #: includes/shortcodes/class-wc-shortcode-checkout.php:170
 #: src/StoreApi/Utilities/OrderController.php:756
 msgid "Sorry, we do not have enough \"%1$s\" in stock to fulfill your order (%2$s available). We apologize for any inconvenience caused."
@@ -24788,12 +24788,17 @@ msgstr "La désérialisation des instances de classe est interdite."
 msgid "Cloning is forbidden."
 msgstr "Le clonage est interdit."
 
+#. translators: %d: number of saved carts
+#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:555
+msgid "Deleted all active sessions, and %d saved carts."
+msgstr "Toutes les sessions actives ont été supprimées, et %d paniers ont été enregistrés."
+
 #: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:175
 msgid "This tool will delete all customer session data from the database, including current carts and saved carts in the database."
 msgstr "Cet outil supprimera toutes les données de session client de la base de données, y compris les paniers en cours et les paniers enregistrés dans la base de données."
 
 #. translators: %1$s: product name. %2$s product permalink
-#: includes/class-wc-cart-session.php:204
+#: includes/class-wc-cart-session.php:208
 msgid "%1$s has been removed from your cart because it has since been modified. You can add it back to your cart <a href=\"%2$s\">here</a>."
 msgstr "Le produit %1$s a été retiré de votre panier, car il a été modifié. Vous pouvez le rajouter dans votre panier <a href=\"%2$s\">ici</a>."
 
@@ -25762,7 +25767,7 @@ msgstr "Une fois vos modifications publiées, les nouveaux formats d’image ser
 msgid "Cancelled product image regeneration job."
 msgstr "Régénération de l’image du produit annulée."
 
-#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:575
+#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:577
 msgid "Thumbnail regeneration has been scheduled to run in the background."
 msgstr "La régénération des miniatures a été programmée pour s’exécuter en arrière-plan."
 
@@ -28401,7 +28406,7 @@ msgstr "Recalculer"
 msgid "Recalculate totals? This will calculate taxes based on the customers country (or the store base country) and update totals."
 msgstr "Recalculer les totaux ? Cela calculera la taxe sur la base du pays des clients (ou du pays de la boutique) et actualisera les totaux."
 
-#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:558
+#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:560
 msgid "All missing WooCommerce pages successfully installed"
 msgstr "Toutes les pages manquantes de WooCommerce ont été installées avec succès"
 
@@ -28972,7 +28977,7 @@ msgid "Visit premium customer support"
 msgstr "Visitez le forum support des clients premium"
 
 #. translators: %s: Attribute name.
-#: includes/class-wc-cart.php:1153
+#: includes/class-wc-cart.php:1160
 msgid "Invalid value posted for %s"
 msgstr "Valeur non valide publiée pour %s"
 
@@ -29027,7 +29032,7 @@ msgid "Apartment, suite, unit, etc. (optional)"
 msgstr "Bâtiment, appartement, lot, etc. (facultatif)"
 
 #. translators: %d item count
-#: includes/class-wc-cart-session.php:583
+#: includes/class-wc-cart-session.php:629
 msgid "%d item from your previous order is currently unavailable and could not be added to your cart."
 msgid_plural "%d items from your previous order are currently unavailable and could not be added to your cart."
 msgstr[0] "%d produit de votre commande précédente est actuellement indisponible et n’a pas pu être ajouté à votre panier."
@@ -29045,7 +29050,7 @@ msgstr "E-mail non valide"
 msgid "Invalid email address restriction."
 msgstr "Restriction d’adresse e-mail non valide."
 
-#: includes/class-wc-cart.php:1215 includes/class-wc-cart.php:1285
+#: includes/class-wc-cart.php:1222 includes/class-wc-cart.php:1292
 #: includes/class-wc-frontend-scripts.php:641
 #: includes/wc-cart-functions.php:133 includes/wc-template-functions.php:2446
 #: src/Blocks/BlockTypes/ProductButton.php:385
@@ -29054,7 +29059,7 @@ msgid "View cart"
 msgstr "Voir le panier"
 
 #. translators: %s: product name
-#: includes/class-wc-cart.php:1200
+#: includes/class-wc-cart.php:1207
 msgid "You cannot add another \"%s\" to your cart."
 msgstr "Vous ne pouvez pas ajouter un autre « %s » à votre panier."
 
@@ -29123,7 +29128,7 @@ msgstr "L&rsquo,avis produit ne supporte pas la mise à la corbeille."
 msgid "This resource cannot be created."
 msgstr "Cette ressource ne peut pas être créée."
 
-#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:662
+#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:664
 msgid "Tool ran."
 msgstr "Outil exécuté."
 
@@ -29165,7 +29170,7 @@ msgstr "L’outil a t-il été exécuté avec succès ?"
 msgid "Invalid tool ID."
 msgstr "ID outil non valide."
 
-#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:666
+#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:668
 msgid "There was an error calling this tool. There is no callback present."
 msgstr "Il y a eu une erreur lors de l’appel à cet outil. Il n’y a pas de retour."
 
@@ -32997,19 +33002,6 @@ msgstr "Moyenne des note des avis."
 msgid "Refund ID."
 msgstr "ID du remboursement."
 
-#: includes/cli/class-wc-cli-runner.php:114
-#: includes/rest-api/Controllers/Version1/class-wc-rest-products-v1-controller.php:2210
-#: includes/rest-api/Controllers/Version1/class-wc-rest-products-v1-controller.php:2252
-#: includes/rest-api/Controllers/Version1/class-wc-rest-products-v1-controller.php:2541
-#: includes/rest-api/Controllers/Version2/class-wc-rest-product-variations-v2-controller.php:1006
-#: includes/rest-api/Controllers/Version2/class-wc-rest-products-v2-controller.php:2198
-#: includes/rest-api/Controllers/Version2/class-wc-rest-products-v2-controller.php:2243
-#: includes/rest-api/Controllers/Version3/class-wc-rest-product-variations-controller.php:836
-#: includes/rest-api/Controllers/Version3/class-wc-rest-products-controller.php:1698
-#: includes/rest-api/Controllers/Version3/class-wc-rest-products-controller.php:1743
-msgid "Attribute ID."
-msgstr "ID de l’attribut."
-
 #: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:1205
 #: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1414
 msgid "Payment method ID."
@@ -33033,6 +33025,19 @@ msgstr "ID du parent du produit."
 #: includes/rest-api/Controllers/Version3/class-wc-rest-products-controller.php:1610
 msgid "Tag ID."
 msgstr "ID de l’étiquette."
+
+#: includes/cli/class-wc-cli-runner.php:114
+#: includes/rest-api/Controllers/Version1/class-wc-rest-products-v1-controller.php:2210
+#: includes/rest-api/Controllers/Version1/class-wc-rest-products-v1-controller.php:2252
+#: includes/rest-api/Controllers/Version1/class-wc-rest-products-v1-controller.php:2541
+#: includes/rest-api/Controllers/Version2/class-wc-rest-product-variations-v2-controller.php:1006
+#: includes/rest-api/Controllers/Version2/class-wc-rest-products-v2-controller.php:2198
+#: includes/rest-api/Controllers/Version2/class-wc-rest-products-v2-controller.php:2243
+#: includes/rest-api/Controllers/Version3/class-wc-rest-product-variations-controller.php:836
+#: includes/rest-api/Controllers/Version3/class-wc-rest-products-controller.php:1698
+#: includes/rest-api/Controllers/Version3/class-wc-rest-products-controller.php:1743
+msgid "Attribute ID."
+msgstr "ID de l’attribut."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-products-v1-controller.php:2277
 msgid "Variation ID."
@@ -33917,7 +33922,7 @@ msgstr "ID de téléchargement (MD5)."
 #: includes/rest-api/Controllers/Version3/class-wc-rest-order-notes-controller.php:79
 #: includes/rest-api/Controllers/Version3/class-wc-rest-order-refunds-controller.php:46
 #: includes/wc-core-functions.php:150 includes/wc-order-functions.php:573
-#: includes/wc-order-functions.php:1269
+#: includes/wc-order-functions.php:1273
 #: src/Internal/Fulfillments/OrderFulfillmentsRestController.php:173
 #: src/Internal/Fulfillments/OrderFulfillmentsRestController.php:600
 msgid "Invalid order ID."
@@ -34726,6 +34731,20 @@ msgstr "Prêt à commencer à vendre quelque chose de génial ?"
 msgid "Are you sure you wish to delete this note? This action cannot be undone."
 msgstr "Êtes-vous certain de vouloir supprimer cette note ? Cette action est irréversible."
 
+#: includes/rest-api/Controllers/Version1/class-wc-rest-webhooks-v1-controller.php:315
+#: includes/rest-api/Controllers/Version1/class-wc-rest-webhooks-v1-controller.php:476
+#: includes/rest-api/Controllers/Version2/class-wc-rest-product-variations-v2-controller.php:181
+#: includes/rest-api/Controllers/Version2/class-wc-rest-product-variations-v2-controller.php:195
+#: includes/rest-api/Controllers/Version2/class-wc-rest-product-variations-v2-controller.php:215
+#: includes/rest-api/Controllers/Version2/class-wc-rest-product-variations-v2-controller.php:547
+#: includes/rest-api/Controllers/Version2/class-wc-rest-products-v2-controller.php:1569
+#: includes/rest-api/Controllers/Version3/class-wc-rest-crud-controller.php:140
+#: includes/rest-api/Controllers/Version3/class-wc-rest-crud-controller.php:249
+#: includes/rest-api/Controllers/Version3/class-wc-rest-crud-controller.php:461
+#: includes/rest-api/Controllers/Version3/class-wc-rest-posts-controller.php:153
+msgid "Invalid ID."
+msgstr "ID non valide."
+
 #: includes/rest-api/Controllers/Version3/class-wc-rest-crud-controller.php:673
 #: includes/rest-api/Controllers/Version3/class-wc-rest-posts-controller.php:685
 #: src/Admin/API/Reports/Stock/Controller.php:460
@@ -34743,20 +34762,6 @@ msgstr "Limiter le jeu de résultats à tous les articles exceptés ceux disposa
 #: includes/rest-api/Controllers/Version1/class-wc-rest-products-v1-controller.php:1646
 msgid "Invalid post ID."
 msgstr "ID d&rsquo;article non valide."
-
-#: includes/rest-api/Controllers/Version1/class-wc-rest-webhooks-v1-controller.php:315
-#: includes/rest-api/Controllers/Version1/class-wc-rest-webhooks-v1-controller.php:476
-#: includes/rest-api/Controllers/Version2/class-wc-rest-product-variations-v2-controller.php:181
-#: includes/rest-api/Controllers/Version2/class-wc-rest-product-variations-v2-controller.php:195
-#: includes/rest-api/Controllers/Version2/class-wc-rest-product-variations-v2-controller.php:215
-#: includes/rest-api/Controllers/Version2/class-wc-rest-product-variations-v2-controller.php:547
-#: includes/rest-api/Controllers/Version2/class-wc-rest-products-v2-controller.php:1569
-#: includes/rest-api/Controllers/Version3/class-wc-rest-crud-controller.php:140
-#: includes/rest-api/Controllers/Version3/class-wc-rest-crud-controller.php:249
-#: includes/rest-api/Controllers/Version3/class-wc-rest-crud-controller.php:461
-#: includes/rest-api/Controllers/Version3/class-wc-rest-posts-controller.php:153
-msgid "Invalid ID."
-msgstr "ID non valide."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-coupons-v1-controller.php:354
 #: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:879
@@ -35493,7 +35498,7 @@ msgstr "Rand Afrique du Sud"
 msgid "This function should not be called before woocommerce_init."
 msgstr "Cette fonction ne doit pas être appelée avant woocommerce_init."
 
-#: includes/wc-order-functions.php:1117
+#: includes/wc-order-functions.php:1121
 msgid "Unpaid order cancelled - time limit reached."
 msgstr "Commande impayée annulée - temps limite atteint."
 
@@ -36953,7 +36958,7 @@ msgstr "Titre de la méthode"
 #: includes/shipping/flat-rate/class-wc-shipping-flat-rate.php:45
 #: includes/shipping/flat-rate/includes/settings-flat-rate.php:20
 #: includes/shipping/legacy-flat-rate/includes/settings-flat-rate.php:30
-#: src/Internal/Admin/EmailPreview/EmailPreview.php:354
+#: src/Internal/Admin/EmailPreview/EmailPreview.php:383
 msgid "Flat rate"
 msgstr "Forfait"
 
@@ -37079,7 +37084,7 @@ msgstr "Code guichet"
 #: includes/gateways/bacs/class-wc-gateway-bacs.php:63
 #: includes/gateways/bacs/class-wc-gateway-bacs.php:115
 #: src/Admin/Features/PaymentGatewaySuggestions/DefaultPaymentGateways.php:183
-#: src/Internal/Admin/EmailPreview/EmailPreview.php:346
+#: src/Internal/Admin/EmailPreview/EmailPreview.php:375
 #: assets/client/admin/wp-admin-scripts/settings-embed.js:2
 #: assets/client/blocks/wc-payment-method-bacs.js:1
 msgid "Direct bank transfer"
@@ -37460,7 +37465,7 @@ msgstr "Résultats de recherche pour &ldquo;%s&rdquo;"
 msgid "Page %d"
 msgstr "Page %d"
 
-#: includes/class-wc-cart.php:1223
+#: includes/class-wc-cart.php:1230
 msgid "Sorry, this product cannot be purchased."
 msgstr "Désolé, ce produit ne peut être acheté."
 
@@ -37606,7 +37611,7 @@ msgstr "Les nouveaux mots de passe ne correspondent pas."
 msgid "You can only have 1 %s in your cart."
 msgstr "Vous pouvez seulement avoir 1 %s dans votre panier."
 
-#: includes/class-wc-cart-session.php:596
+#: includes/class-wc-cart-session.php:642
 msgid "The cart has been filled with the items from your previous order."
 msgstr "Le panier a été rempli avec les articles de votre commande précédente."
 
@@ -37772,7 +37777,7 @@ msgstr "Une erreur s&rsquo;est produite lors de la requête et il est actuelleme
 msgid "Author: %s"
 msgstr "Auteur&nbsp;: %s"
 
-#: includes/class-wc-cart.php:778
+#: includes/class-wc-cart.php:785
 msgid "An item which is no longer available was removed from your cart."
 msgstr "Un produit qui n&rsquo;est plus disponible a été supprimé de votre panier."
 
@@ -37875,7 +37880,7 @@ msgstr "Veuillez saisir votre mot de passe."
 msgid "Please rate the product."
 msgstr "Veuillez évaluer le produit."
 
-#: includes/class-wc-cart.php:1121
+#: includes/class-wc-cart.php:1128
 msgid "Please choose product options&hellip;"
 msgstr "Veuillez choisir les options produit&hellip;"
 
@@ -38041,18 +38046,18 @@ msgid "%s is a required field."
 msgstr "%s est obligatoire."
 
 #. translators: 1: quantity in stock 2: current quantity
-#: includes/class-wc-cart.php:1282 includes/class-wc-cart.php:1289
+#: includes/class-wc-cart.php:1289 includes/class-wc-cart.php:1296
 msgid "You cannot add that amount to the cart &mdash; we have %1$s in stock and you already have %2$s in your cart."
 msgstr "Vous ne pouvez pas ajouter cette quantité dans le panier &mdash; nous en avons %1$s en stock et vous en avez déjà %2$s dans votre panier."
 
 #. translators: 1: product name 2: quantity in stock
-#: includes/class-wc-cart.php:1255
+#: includes/class-wc-cart.php:1262
 #: src/StoreApi/Utilities/CartController.php:308
 msgid "You cannot add that amount of &quot;%1$s&quot; to the cart because there is not enough stock (%2$s remaining)."
 msgstr "Vous ne pouvez pas ajouter cette quantité de &quot;%1$s&quot; au panier car il n&rsquo;y a pas assez de stock (reste %2$s)."
 
 #. translators: %s: product name
-#: includes/class-wc-cart.php:801
+#: includes/class-wc-cart.php:808
 msgid "Sorry, \"%s\" is not in stock. Please edit your cart and try again. We apologize for any inconvenience caused."
 msgstr "Désolé, &laquo;&nbsp;%s&nbsp;&raquo;  n&rsquo;est pas en stock. Veuillez modifier votre panier et essayez à nouveau. Nous nous excusons pour ce désagrément."
 
@@ -38137,7 +38142,7 @@ msgid "Order cancelled by customer."
 msgstr "Commande annulée par le client."
 
 #. translators: %s: Attribute name.
-#: includes/class-wc-cart.php:1163
+#: includes/class-wc-cart.php:1170
 #: src/StoreApi/Utilities/CartController.php:1361
 msgid "%s is a required field"
 msgid_plural "%s are required fields"
@@ -38208,7 +38213,7 @@ msgid "Please enter a coupon code."
 msgstr "Veuillez saisir un code promo."
 
 #. translators: %s: product name
-#: includes/class-wc-cart-session.php:180
+#: includes/class-wc-cart-session.php:186
 msgid "%s has been removed from your cart because it can no longer be purchased. Please contact us if you need assistance."
 msgstr "%s a été retiré de votre panier car il ne peut plus être acheté. Veuillez nous contacter si vous avez besoin d’aide."
 
@@ -38263,7 +38268,7 @@ msgid "checkout"
 msgstr "commander"
 
 #. translators: %s: product name
-#: includes/class-wc-cart.php:1238
+#: includes/class-wc-cart.php:1245
 #: src/StoreApi/Utilities/CartController.php:291
 msgid "You cannot add &quot;%s&quot; to the cart because the product is out of stock."
 msgstr "Vous ne pouvez ajouter &quot;%s&quot; au panier car nous n’en avons plus en stock."
@@ -38800,14 +38805,6 @@ msgstr "Base de la boutique"
 msgid "Table does not exist"
 msgstr "La table n’existe pas"
 
-#: includes/admin/views/html-admin-page-status-report.php:709
-msgid "Does your site force a SSL Certificate for transactions?"
-msgstr "Est-ce que votre site force un certificat SSL pour les transactions ?"
-
-#: includes/admin/settings/views/html-webhooks-edit.php:134
-msgid "API Version"
-msgstr "Version de l’API"
-
 #: includes/admin/meta-boxes/views/html-product-data-variations.php:172
 #: includes/admin/settings/class-wc-settings-emails.php:821
 #: includes/admin/settings/views/html-admin-page-shipping-zone-methods.php:104
@@ -38822,6 +38819,14 @@ msgstr "Version de l’API"
 #: assets/client/blocks/wc-shipping-method-pickup-location.js:242
 msgid "Save changes"
 msgstr "Enregistrer les modifications"
+
+#: includes/admin/views/html-admin-page-status-report.php:709
+msgid "Does your site force a SSL Certificate for transactions?"
+msgstr "Est-ce que votre site force un certificat SSL pour les transactions ?"
+
+#: includes/admin/settings/views/html-webhooks-edit.php:134
+msgid "API Version"
+msgstr "Version de l’API"
 
 #: includes/admin/views/html-admin-page-status-report.php:86
 msgid "The root URL of your site."
@@ -40854,6 +40859,16 @@ msgstr "Recherche de clients"
 msgid "Units in stock"
 msgstr "Quantité en stock"
 
+#: includes/admin/reports/class-wc-report-customer-list.php:216
+#: includes/class-wc-checkout.php:276
+#: src/Admin/API/Reports/Customers/Controller.php:542
+#: templates/myaccount/form-login.php:79
+#: assets/client/admin/chunks/analytics-report-customers.js:1
+#: assets/client/admin/chunks/analytics-report-downloads.js:1
+#: assets/client/admin/chunks/dashboard-charts.js:1
+msgid "Username"
+msgstr "Identifiant"
+
 #: includes/cli/class-wc-cli-runner.php:110
 #: includes/rest-api/Controllers/Version1/class-wc-rest-order-refunds-v1-controller.php:392
 #: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:1295
@@ -40866,16 +40881,6 @@ msgstr "Quantité en stock"
 #: src/Admin/API/Reports/Variations/Controller.php:166
 msgid "Product ID."
 msgstr "ID produit."
-
-#: includes/admin/reports/class-wc-report-customer-list.php:216
-#: includes/class-wc-checkout.php:276
-#: src/Admin/API/Reports/Customers/Controller.php:542
-#: templates/myaccount/form-login.php:79
-#: assets/client/admin/chunks/analytics-report-customers.js:1
-#: assets/client/admin/chunks/analytics-report-downloads.js:1
-#: assets/client/admin/chunks/dashboard-charts.js:1
-msgid "Username"
-msgstr "Identifiant"
 
 #. translators: %s: total sales
 #: includes/admin/reports/class-wc-report-sales-by-date.php:489
@@ -41013,6 +41018,14 @@ msgstr "Classes d’expédition"
 msgid "Shipping classes are used by certain shipping methods to group similar products."
 msgstr "Les classes d’expédition sont utilisées par certains modes d’expédition pour grouper des produits similaires."
 
+#: includes/admin/meta-boxes/views/html-product-data-shipping.php:61
+#: includes/admin/views/html-bulk-edit-product.php:240
+#: includes/admin/views/html-quick-edit-product.php:142
+#: assets/client/admin/product-editor/blocks/product-fields/shipping-class/edit.js:1
+#: assets/client/admin/product-editor/index.js:2
+msgid "No shipping class"
+msgstr "Pas de classe d’expédition"
+
 #: includes/admin/importers/class-wc-product-csv-importer-controller.php:644
 #: includes/admin/importers/class-wc-product-csv-importer-controller.php:832
 #: includes/admin/meta-boxes/views/html-product-data-shipping.php:70
@@ -41026,14 +41039,6 @@ msgstr "Les classes d’expédition sont utilisées par certains modes d’expé
 #: assets/client/admin/product-editor/index.js:2
 msgid "Shipping class"
 msgstr "Classe d’expédition"
-
-#: includes/admin/meta-boxes/views/html-product-data-shipping.php:61
-#: includes/admin/views/html-bulk-edit-product.php:240
-#: includes/admin/views/html-quick-edit-product.php:142
-#: assets/client/admin/product-editor/blocks/product-fields/shipping-class/edit.js:1
-#: assets/client/admin/product-editor/index.js:2
-msgid "No shipping class"
-msgstr "Pas de classe d’expédition"
 
 #: includes/admin/reports/class-wc-report-taxes-by-date.php:216
 msgid "This is the sum of the 'Shipping total' field within your orders."
@@ -41203,7 +41208,7 @@ msgid "Terms successfully recounted"
 msgstr "Termes recomptés avec succès"
 
 #. translators: %s: callback string
-#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:660
+#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:662
 msgid "There was an error calling %s"
 msgstr "Il y a une erreur en appelant %s"
 
@@ -42070,7 +42075,7 @@ msgstr "Supprimer les taux de taxe de WooCommerce"
 msgid "Import tax rates"
 msgstr "Importer les taux de taxe"
 
-#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:570
+#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:572
 msgid "Tax rates successfully deleted"
 msgstr "Taux de taxe supprimés avec succès "
 
@@ -42097,7 +42102,7 @@ msgid "Choose a file from your computer:"
 msgstr "Choisir un fichier depuis votre ordinateur&nbsp;:"
 
 #. translators: %1$s: callback string, %2$s: error message
-#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:638
+#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:640
 msgid "There was an error calling %1$s: %2$s"
 msgstr "Une erreur est survenue lors de l’appel à %1$s : %2$s"
 
@@ -43336,7 +43341,7 @@ msgstr "Inconnu"
 #: includes/class-wc-privacy.php:54
 #: includes/customizer/class-wc-shop-customizer.php:39
 #: includes/react-admin/connect-existing-pages.php:64
-#: includes/wc-order-functions.php:1161
+#: includes/wc-order-functions.php:1165
 #: src/Admin/Features/ProductBlockEditor/BlockRegistry.php:135
 #: src/Admin/PageController.php:208 src/Blocks/BlockTypesController.php:226
 #: src/Blocks/Patterns/PatternRegistry.php:24
@@ -44346,7 +44351,7 @@ msgid "CVC"
 msgstr "Cryptogramme"
 
 #: includes/abstracts/abstract-wc-order.php:2268
-#: includes/class-wc-cart.php:1713 includes/class-wc-product-grouped.php:122
+#: includes/class-wc-cart.php:1720 includes/class-wc-product-grouped.php:122
 msgid "Free!"
 msgstr "Gratuit !"
 
