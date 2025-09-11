@@ -606,21 +606,35 @@ require_once __DIR__ . '/indices.php';
             foreach ($indices as $i => $indice_id) {
                 $cout_indice = (int) get_field('indice_cout_points', $indice_id);
                 $est_debloque = indice_est_debloque($user_id, $indice_id) || $cout_indice === 0;
-                $classes = $est_debloque ? 'indice-link indice-link--unlocked' : 'indice-link indice-link--locked';
-                $label = $cout_indice > 0
-                    ? sprintf(
-                        esc_html__('Indice #%1$d - %2$d pts', 'chassesautresor-com'),
-                        $i + 1,
-                        $cout_indice
-                    )
-                    : sprintf(
-                        esc_html__('Indice #%d', 'chassesautresor-com'),
-                        $i + 1
-                    );
+                $classes = $est_debloque
+                    ? 'indice-link indice-link--unlocked'
+                    : 'indice-link indice-link--locked';
+                $label = sprintf(
+                    esc_html__('Indice #%d', 'chassesautresor-com'),
+                    $i + 1
+                );
+
+                $etat_icon  = $est_debloque ? 'fa-lock-open' : 'fa-lock';
+                $etat_label = $est_debloque
+                    ? esc_html__('Débloqué', 'chassesautresor-com')
+                    : esc_html__('Verrouillé', 'chassesautresor-com');
+
+                $cout_icon  = $cout_indice > 0 ? 'fa-coins' : 'fa-gift';
+                $cout_label = $cout_indice > 0
+                    ? sprintf(esc_html__('%d pts', 'chassesautresor-com'), $cout_indice)
+                    : esc_html__('Gratuit', 'chassesautresor-com');
+
+                $badges = '<span class="etiquette"><i class="fa-solid '
+                    . $etat_icon . '" aria-hidden="true"></i> ' . $etat_label
+                    . '</span> <span class="etiquette"><i class="fa-solid '
+                    . $cout_icon . '" aria-hidden="true"></i> ' . $cout_label
+                    . '</span>';
+
                 $content .= '<li><a href="#" class="' . esc_attr($classes) . '"'
                     . ' data-indice-id="' . esc_attr($indice_id) . '"'
                     . ' data-cout="' . esc_attr($cout_indice) . '"'
-                    . ' data-unlocked="' . ($est_debloque ? '1' : '0') . '">' . $label . '</a></li>';
+                    . ' data-unlocked="' . ($est_debloque ? '1' : '0') . '">' . $label
+                    . '</a> ' . $badges . '</li>';
             }
             $content .= '</ul>'
                 . '<div class="indice-modal" hidden>'
