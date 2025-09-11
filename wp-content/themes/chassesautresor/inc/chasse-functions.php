@@ -1293,9 +1293,19 @@ function solution_chasse_peut_etre_affichee(int $chasse_id): bool
 function solution_contenu_html(WP_Post $solution): string
 {
     $fichier     = get_field('solution_fichier', $solution->ID);
-    $fichier_url = is_array($fichier) ? ($fichier['url'] ?? '') : '';
-    $fichier_nom = is_array($fichier) ? ($fichier['filename'] ?? basename($fichier_url)) : basename($fichier_url);
-    $texte       = get_field('solution_explication', $solution->ID);
+    $fichier_url = '';
+    $fichier_nom = '';
+
+    if (is_array($fichier)) {
+        $fichier_url = $fichier['url'] ?? '';
+        $fichier_nom = $fichier['filename'] ?? basename($fichier_url);
+    } elseif (!empty($fichier)) {
+        $fichier_id  = (int) $fichier;
+        $fichier_url = wp_get_attachment_url($fichier_id) ?: '';
+        $fichier_nom = basename($fichier_url);
+    }
+
+    $texte = get_field('solution_explication', $solution->ID);
 
     if ($fichier_url) {
         $html  = '<div class="solution-pdf">';
