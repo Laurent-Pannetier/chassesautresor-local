@@ -289,7 +289,7 @@ if ($objet_type === 'chasse') {
               'post_type'      => 'indice',
               'post_status'    => ['publish', 'pending', 'draft'],
               'orderby'        => 'date',
-              'order'          => 'DESC',
+              'order'          => 'ASC',
               'posts_per_page' => $par_page_indices,
               'paged'          => $page_indices,
               'meta_query'     => $meta,
