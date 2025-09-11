@@ -13,7 +13,10 @@ if (
     && solution_peut_etre_affichee($post_id)
     && utilisateur_peut_voir_solution_enigme($post_id, $user_id)
 ) {
+    echo '<section class="solution-enigme">';
+    echo '<h4>' . esc_html__('Solution de l\'énigme', 'chassesautresor-com') . '</h4>';
     echo solution_contenu_html($enigme_solution);
+    echo '</section>';
 }
 
 $chasse_id = (int) recuperer_id_chasse_associee($post_id);
@@ -24,7 +27,10 @@ if (
 ) {
     $chasse_solution = solution_recuperer_par_objet($chasse_id, 'chasse');
     if ($chasse_solution) {
+        echo '<section class="solution-chasse">';
+        echo '<h4>' . esc_html__('Solution de la chasse', 'chassesautresor-com') . '</h4>';
         echo solution_contenu_html($chasse_solution);
+        echo '</section>';
     }
 }
 ?>
