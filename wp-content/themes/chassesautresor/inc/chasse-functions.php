@@ -1239,6 +1239,142 @@ function solution_peut_etre_affichee(int $enigme_id): bool
 }
 
 /**
+ * Vérifie si la solution d'une chasse peut être affichée.
+ *
+ * La solution n'est visible que si la chasse est terminée et que
+ * l'éventuel délai configuré est écoulé.
+ *
+ * @param int $chasse_id ID de la chasse.
+ * @return bool
+ */
+function solution_chasse_peut_etre_affichee(int $chasse_id): bool
+{
+    if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
+        return false;
+    }
+
+    $solution = solution_recuperer_par_objet($chasse_id, 'chasse');
+    if (!$solution) {
+        return false;
+    }
+
+    $statut   = get_field('statut_chasse', $chasse_id);
+    $terminee = is_string($statut) && in_array(strtolower($statut), ['terminée', 'termine', 'terminé'], true);
+    if (!$terminee) {
+        return false;
+    }
+
+    $dispo    = get_field('solution_disponibilite', $solution->ID) ?: 'fin_chasse';
+    $decalage = (int) get_field('solution_decalage_jours', $solution->ID);
+    $heure    = get_field('solution_heure_publication', $solution->ID) ?: '00:00';
+    $now      = current_time('timestamp');
+
+    if ($dispo === 'differee') {
+        $base = get_field('date_de_decouverte', $chasse_id);
+        if (!$base) {
+            $base = get_field('chasse_infos_date_fin', $chasse_id);
+        }
+        $timestamp_base = $base ? strtotime($base) : $now;
+        $cible          = strtotime("+$decalage days $heure", $timestamp_base);
+        if ($cible && $now < $cible) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/**
+ * Retourne le HTML d'une solution (PDF ou texte).
+ *
+ * @param WP_Post $solution Solution post object.
+ * @return string
+ */
+function solution_contenu_html(WP_Post $solution): string
+{
+    $fichier     = get_field('solution_fichier', $solution->ID);
+    $fichier_url = is_array($fichier) ? ($fichier['url'] ?? '') : '';
+    $fichier_nom = is_array($fichier) ? ($fichier['filename'] ?? basename($fichier_url)) : basename($fichier_url);
+    $texte       = get_field('solution_explication', $solution->ID);
+
+    if ($fichier_url) {
+        return '<a href="' . esc_url($fichier_url)
+            . '" class="lien-solution-pdf" target="_blank" rel="noopener">&#128196; '
+            . esc_html($fichier_nom) . '</a>';
+    }
+
+    if ($texte) {
+        return '<p>' . wp_kses_post($texte) . '</p>';
+    }
+
+    return '';
+}
+
+/**
+ * Affiche la section des solutions pour une chasse.
+ *
+ * @param int $chasse_id ID de la chasse.
+ * @param int $user_id   ID de l'utilisateur courant.
+ */
+function render_chasse_solutions(int $chasse_id, int $user_id): void
+{
+    if (get_post_type($chasse_id) !== 'chasse') {
+        return;
+    }
+
+    $sections = '';
+
+    if (solution_chasse_peut_etre_affichee($chasse_id)
+        && utilisateur_peut_voir_solution_chasse($chasse_id, $user_id)) {
+        $solution = solution_recuperer_par_objet($chasse_id, 'chasse');
+        if ($solution) {
+            $content = solution_contenu_html($solution);
+            if ($content !== '') {
+                $sections .= '<section class="solution">';
+                $sections .= '<details><summary>'
+                    . esc_html__('Solution de la chasse', 'chassesautresor-com')
+                    . '</summary>';
+                $sections .= '<div class="solution-content">' . $content . '</div></details></section>';
+            }
+        }
+    }
+
+    $enigmes = recuperer_enigmes_pour_chasse($chasse_id);
+    foreach ($enigmes as $enigme) {
+        $enigme_id = $enigme->ID;
+        if (!solution_peut_etre_affichee($enigme_id)
+            || !utilisateur_peut_voir_solution_enigme($enigme_id, $user_id)) {
+            continue;
+        }
+        $sol = solution_recuperer_par_objet($enigme_id, 'enigme');
+        if (!$sol) {
+            continue;
+        }
+        $content = solution_contenu_html($sol);
+        if ($content === '') {
+            continue;
+        }
+        $label = sprintf(
+            /* translators: %s: riddle title */
+            esc_html__('Solution de %s', 'chassesautresor-com'),
+            esc_html(get_the_title($enigme_id))
+        );
+        $sections .= '<section class="solution">';
+        $sections .= '<details><summary>' . $label . '</summary>';
+        $sections .= '<div class="solution-content">' . $content . '</div></details></section>';
+    }
+
+    if ($sections === '') {
+        return;
+    }
+
+    echo '<section class="chasse-solutions">';
+    echo '<h2>' . esc_html__('Solutions', 'chassesautresor-com') . '</h2>';
+    echo $sections;
+    echo '</section>';
+}
+
+/**
  * Prépare les informations d'affichage pour une carte de chasse.
  *
  * @param int $chasse_id  ID de la chasse.
