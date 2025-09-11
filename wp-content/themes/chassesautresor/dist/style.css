@@ -5485,7 +5485,7 @@ body.panneau-ouvert::before {
   font-weight: 600;
 }
 .zone-indices .indice-link--locked, .zone-indices .indice-link--unlocked, .zone-indices .indice-link--upcoming {
-  background-color: var(--color-grey-medium);
+  background-color: var(--color-gris-3);
   color: var(--color-white);
 }
 .zone-indices .btn-debloquer-indice {
