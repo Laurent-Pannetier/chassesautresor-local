@@ -1337,7 +1337,7 @@ function render_chasse_solutions(int $chasse_id, int $user_id): void
             $content = solution_contenu_html($solution);
             if ($content !== '') {
                 $sections .= '<section class="solution">';
-                $sections .= '<details><summary>'
+                $sections .= '<details open><summary>'
                     . esc_html__('Solution de la chasse', 'chassesautresor-com')
                     . '</summary>';
                 $sections .= '<div class="solution-content">' . $content . '</div></details></section>';
@@ -1366,7 +1366,7 @@ function render_chasse_solutions(int $chasse_id, int $user_id): void
             esc_html(get_the_title($enigme_id))
         );
         $sections .= '<section class="solution">';
-        $sections .= '<details><summary>' . $label . '</summary>';
+        $sections .= '<details open><summary>' . $label . '</summary>';
         $sections .= '<div class="solution-content">' . $content . '</div></details></section>';
     }
 
