@@ -3278,3 +3278,11 @@ msgstr "Close"
 #: inc/enigme/indices.php:120
 msgid "Débloquer l'indice"
 msgstr "Unlock hint"
+
+#: inc/enigme/affichage.php:725
+msgid "Pour cette énigme"
+msgstr "For this riddle"
+
+#: inc/enigme/affichage.php:728
+msgid "Pour toute la chasse"
+msgstr "For the entire hunt"

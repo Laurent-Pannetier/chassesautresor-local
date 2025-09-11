@@ -601,7 +601,9 @@ require_once __DIR__ . '/indices.php';
 
         $content = '';
 
-        $indices = function_exists('get_posts')
+        $chasse_id = recuperer_id_chasse_associee($enigme_id);
+
+        $indices_enigme = function_exists('get_posts')
             ? get_posts([
                 'post_type'      => 'indice',
                 'post_status'    => ['publish', 'draft', 'future'],
@@ -630,59 +632,102 @@ require_once __DIR__ . '/indices.php';
             ])
             : [];
 
-        if (!empty($indices)) {
-            $content .= '<div class="zone-indices"><h3><i class="fa-solid fa-lightbulb" aria-hidden="true"></i> '
-                . esc_html__('Indices', 'chassesautresor-com')
-                . '</h3><ul class="indice-list">';
-            foreach ($indices as $i => $indice_id) {
-                $cout_indice   = (int) get_field('indice_cout_points', $indice_id);
-                $etat_systeme  = get_field('indice_cache_etat_systeme', $indice_id) ?: '';
-                $est_debloque  = indice_est_debloque($user_id, $indice_id) || $cout_indice === 0;
+        $indices_chasse = [];
+        if ($chasse_id && function_exists('get_posts')) {
+            $indices_chasse = get_posts([
+                'post_type'      => 'indice',
+                'post_status'    => ['publish', 'draft', 'future'],
+                'meta_query'     => [
+                    [
+                        'key'     => 'indice_cible_type',
+                        'value'   => 'chasse',
+                        'compare' => '=',
+                    ],
+                    [
+                        'key'     => 'indice_chasse_linked',
+                        'value'   => $chasse_id,
+                        'compare' => '=',
+                    ],
+                    [
+                        'key'     => 'indice_cache_etat_systeme',
+                        'value'   => ['accessible', 'programme'],
+                        'compare' => 'IN',
+                    ],
+                ],
+                'orderby'        => 'date',
+                'order'          => 'ASC',
+                'fields'         => 'ids',
+                'no_found_rows'  => true,
+                'posts_per_page' => -1,
+            ]);
+        }
 
-                if ($etat_systeme === 'programme') {
-                    $classes   = 'indice-link indice-link--upcoming etiquette';
-                    $etat_icon = 'fa-hourglass';
+        if (!empty($indices_enigme) || !empty($indices_chasse)) {
+            $build_group = function (array $indices, string $title) use ($user_id) {
+                $html = '<div class="zone-indices-group"><h4>'
+                    . esc_html($title)
+                    . '</h4><ul class="indice-list">';
+                foreach ($indices as $i => $indice_id) {
+                    $cout_indice  = (int) get_field('indice_cout_points', $indice_id);
+                    $etat_systeme = get_field('indice_cache_etat_systeme', $indice_id) ?: '';
+                    $est_debloque = indice_est_debloque($user_id, $indice_id) || $cout_indice === 0;
 
-                    $date_raw = get_field('indice_date_disponibilite', $indice_id);
-                    $timestamp = $date_raw ? strtotime($date_raw) : false;
-                    $date_txt = $timestamp ? wp_date(get_option('date_format'), $timestamp) : '';
-                    $label = $date_txt !== ''
-                        ? sprintf(
-                            esc_html__('Disponible le %s', 'chassesautresor-com'),
-                            esc_html($date_txt)
-                        )
-                        : esc_html__('Disponible bientôt', 'chassesautresor-com');
-                } elseif ($est_debloque) {
-                    $classes   = 'indice-link indice-link--unlocked etiquette';
-                    $etat_icon = 'fa-lock-open';
-                    $title     = get_the_title($indice_id);
-                    $label     = $title !== '' ? esc_html($title) : sprintf(
-                        esc_html__('Indice #%d', 'chassesautresor-com'),
-                        $i + 1
-                    );
-                } else {
-                    $classes   = 'indice-link indice-link--locked etiquette';
-                    $etat_icon = 'fa-lock';
-                    $title     = get_the_title($indice_id);
-                    $label     = $title !== '' ? esc_html($title) : sprintf(
-                        esc_html__('Indice #%d', 'chassesautresor-com'),
-                        $i + 1
-                    );
+                    if ($etat_systeme === 'programme') {
+                        $classes   = 'indice-link indice-link--upcoming etiquette';
+                        $etat_icon = 'fa-hourglass';
+
+                        $date_raw = get_field('indice_date_disponibilite', $indice_id);
+                        $timestamp = $date_raw ? strtotime($date_raw) : false;
+                        $date_txt = $timestamp ? wp_date(get_option('date_format'), $timestamp) : '';
+                        $label = $date_txt !== ''
+                            ? sprintf(
+                                esc_html__('Disponible le %s', 'chassesautresor-com'),
+                                esc_html($date_txt)
+                            )
+                            : esc_html__('Disponible bientôt', 'chassesautresor-com');
+                    } elseif ($est_debloque) {
+                        $classes   = 'indice-link indice-link--unlocked etiquette';
+                        $etat_icon = 'fa-lock-open';
+                        $title_ind = get_the_title($indice_id);
+                        $label     = $title_ind !== '' ? esc_html($title_ind) : sprintf(
+                            esc_html__('Indice #%d', 'chassesautresor-com'),
+                            $i + 1
+                        );
+                    } else {
+                        $classes   = 'indice-link indice-link--locked etiquette';
+                        $etat_icon = 'fa-lock';
+                        $title_ind = get_the_title($indice_id);
+                        $label     = $title_ind !== '' ? esc_html($title_ind) : sprintf(
+                            esc_html__('Indice #%d', 'chassesautresor-com'),
+                            $i + 1
+                        );
+                    }
+
+                    $cout_html = $cout_indice > 0
+                        ? ' - ' . $cout_indice . ' <sup>'
+                            . esc_html__('pts', 'chassesautresor-com') . '</sup>'
+                        : '';
+
+                    $html .= '<li><a href="#" class="' . esc_attr($classes) . '"'
+                        . ' data-indice-id="' . esc_attr($indice_id) . '"'
+                        . ' data-cout="' . esc_attr($cout_indice) . '"'
+                        . ' data-unlocked="' . ($est_debloque ? '1' : '0') . '">'
+                        . '<i class="fa-solid ' . esc_attr($etat_icon) . '" aria-hidden="true"></i> '
+                        . $label . $cout_html . '</a></li>';
                 }
+                $html .= '</ul><div class="indice-display"></div></div>';
+                return $html;
+            };
 
-                $cout_html = $cout_indice > 0
-                    ? ' - ' . $cout_indice . ' <sup>'
-                        . esc_html__('pts', 'chassesautresor-com') . '</sup>'
-                    : '';
-
-                $content .= '<li><a href="#" class="' . esc_attr($classes) . '"'
-                    . ' data-indice-id="' . esc_attr($indice_id) . '"'
-                    . ' data-cout="' . esc_attr($cout_indice) . '"'
-                    . ' data-unlocked="' . ($est_debloque ? '1' : '0') . '">'
-                    . '<i class="fa-solid ' . esc_attr($etat_icon) . '" aria-hidden="true"></i> '
-                    . $label . $cout_html . '</a></li>';
+            $content .= '<div class="zone-indices"><h3><i class="fa-solid fa-lightbulb" aria-hidden="true"></i> '
+                . esc_html__('Indices', 'chassesautresor-com') . '</h3>';
+            if (!empty($indices_enigme)) {
+                $content .= $build_group($indices_enigme, esc_html__('Pour cette énigme', 'chassesautresor-com'));
             }
-            $content .= '</ul><div class="indice-display"></div></div>';
+            if (!empty($indices_chasse)) {
+                $content .= $build_group($indices_chasse, esc_html__('Pour toute la chasse', 'chassesautresor-com'));
+            }
+            $content .= '</div>';
         }
 
         if ($bloc_reponse !== '') {
