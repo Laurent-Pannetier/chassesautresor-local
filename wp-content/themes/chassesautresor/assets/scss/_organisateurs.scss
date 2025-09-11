@@ -279,47 +279,24 @@ a.bouton-edition-attention {
 
 /* Modal description */
 .description-modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
+  @extend .csa-modal;
 
-.description-modal.masque {
-  display: none;
-}
+  &__content {
+    @extend .csa-modal__content;
+  }
 
-.description-modal__content {
-  background: var(--color-white);
-  color: var(--color-text-fond-clair);
-  padding: 2rem;
-  max-width: 600px;
-  max-height: 80vh;
-  overflow-y: auto;
-  border-radius: 8px;
-  position: relative;
-}
+  &__close {
+    @extend .csa-modal__close;
+  }
 
-.description-modal__close {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-}
+  &__title {
+    margin-top: 0;
+    text-align: center;
+  }
 
-.description-modal__title {
-  margin-top: 0;
-  text-align: center;
-}
-
-.description-modal__section {
-  margin-top: var(--space-lg);
+  &__section {
+    margin-top: var(--space-lg);
+  }
 }
 
 @media (--bp-tablet) {

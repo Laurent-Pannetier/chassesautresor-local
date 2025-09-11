@@ -651,14 +651,7 @@ require_once __DIR__ . '/indices.php';
                     . '<i class="fa-solid ' . esc_attr($etat_icon) . '" aria-hidden="true"></i> '
                     . $label . $cout_html . '</a></li>';
             }
-            $content .= '</ul>'
-                . '<div class="indice-modal" hidden>'
-                . '<div class="indice-modal-dialog">'
-                . '<button type="button" class="indice-modal-close" aria-label="'
-                . esc_attr(esc_html__('Fermer', 'chassesautresor-com'))
-                . '">&times;</button>'
-                . '<div class="indice-modal-body"></div>'
-                . '</div></div></div>';
+            $content .= '</ul><div class="indice-display"></div></div>';
         }
 
         if ($bloc_reponse !== '') {

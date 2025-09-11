@@ -61,41 +61,28 @@
     cursor: pointer;
   }
 
-  .indice-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+  .indice-display {
+    margin-top: var(--space-md);
+  }
+
+  .indice-contenu {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(var(--color-black-rgb, 0, 0, 0), 0.6);
+    gap: var(--space-md);
+    align-items: flex-start;
 
-    &[hidden] {
-      display: none;
+    &__image {
+      flex: 0 0 auto;
+
+      img {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        display: block;
+      }
     }
 
-    .indice-modal-dialog {
-      background-color: var(--color-bg-primary);
-      color: var(--color-text-primary);
-      padding: var(--space-md);
-      border-radius: 4px;
-      max-width: 90%;
-      max-height: 80%;
-      overflow: auto;
-      position: relative;
-    }
-
-    .indice-modal-close {
-      position: absolute;
-      top: var(--space-xs);
-      right: var(--space-xs);
-      background: none;
-      border: 0;
-      color: var(--color-text-primary);
-      font-size: 1.2rem;
-      cursor: pointer;
+    &__texte {
+      flex: 1 1 auto;
     }
   }
 }
