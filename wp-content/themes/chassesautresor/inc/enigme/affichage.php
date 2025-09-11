@@ -57,6 +57,37 @@ require_once __DIR__ . '/indices.php';
     add_action('added_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
     add_action('updated_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
     add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
+
+    /**
+     * Clear solution caches when a solution is saved.
+     *
+     * @param int $solution_id Solution identifier.
+     */
+    function enigme_clear_render_cache_on_solution_save(int $solution_id): void
+    {
+        $target = get_field('solution_cible_type', $solution_id);
+
+        if ($target === 'enigme') {
+            $enigme_id = (int) get_field('solution_enigme_linked', $solution_id);
+            if ($enigme_id) {
+                enigme_clear_render_cache($enigme_id);
+            }
+
+            return;
+        }
+
+        if ($target === 'chasse') {
+            $chasse_id = (int) get_field('solution_chasse_linked', $solution_id);
+            if ($chasse_id) {
+                $enigmes = recuperer_enigmes_pour_chasse($chasse_id);
+                foreach ($enigmes as $enigme) {
+                    enigme_clear_render_cache((int) $enigme->ID);
+                }
+            }
+        }
+    }
+
+    add_action('save_post_solution', 'enigme_clear_render_cache_on_solution_save', 20, 1);
     /**
      * Clear sidebar caches for a given hunt and user.
      *
