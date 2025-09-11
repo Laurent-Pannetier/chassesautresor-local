@@ -552,6 +552,22 @@ li.active .enigme-menu__edit {
   font-weight: 600;
 }
 
+.solution-pdf {
+  margin-block: var(--space-md);
+
+  .solution-embed {
+    width: 100%;
+    height: 60vh;
+    border: 0;
+  }
+}
+
+@media (min-width: 768px) {
+  .solution-pdf .solution-embed {
+    height: 80vh;
+  }
+}
+
 /* 📝 Mise en forme du texte d'énigme */
 .enigme-texte {
   max-width: 65ch;

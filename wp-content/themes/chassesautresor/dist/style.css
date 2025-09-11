@@ -5464,6 +5464,76 @@ body.panneau-ouvert::before {
   height: auto;
 }
 
+.zone-indices {
+  margin-top: var(--space-lg);
+}
+.zone-indices .indice-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+.zone-indices .indice-link {
+  display: inline-block;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 600;
+}
+.zone-indices .indice-link--locked {
+  background-color: rgba(var(--color-black-rgb, 0, 0, 0), 0.05);
+  color: var(--color-text-primary);
+}
+.zone-indices .indice-link--unlocked {
+  background-color: var(--color-primary);
+  color: var(--color-text-fond-clair);
+}
+.zone-indices .btn-debloquer-indice {
+  display: inline-block;
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--color-primary);
+  color: var(--color-text-fond-clair);
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.zone-indices .indice-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(var(--color-black-rgb, 0, 0, 0), 0.6);
+}
+.zone-indices .indice-modal[hidden] {
+  display: none;
+}
+.zone-indices .indice-modal .indice-modal-dialog {
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  padding: var(--space-md);
+  border-radius: 4px;
+  max-width: 90%;
+  max-height: 80%;
+  overflow: auto;
+  position: relative;
+}
+.zone-indices .indice-modal .indice-modal-close {
+  position: absolute;
+  top: var(--space-xs);
+  right: var(--space-xs);
+  background: none;
+  border: 0;
+  color: var(--color-text-primary);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
 .menu-lateral .stats-bar-chart .bar-value,
 .menu-lateral .stats-bar-chart .bar-value--outside {
   font-size: 1rem;
@@ -5896,6 +5966,20 @@ li.active .enigme-menu__edit {
   font-weight: 600;
 }
 
+.solution-pdf {
+  margin-block: var(--space-md);
+}
+.solution-pdf .solution-embed {
+  width: 100%;
+  height: 60vh;
+  border: 0;
+}
+
+@media (min-width: 768px) {
+  .solution-pdf .solution-embed {
+    height: 80vh;
+  }
+}
 /* 📝 Mise en forme du texte d'énigme */
 .enigme-texte {
   max-width: 65ch;

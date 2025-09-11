@@ -1298,9 +1298,12 @@ function solution_contenu_html(WP_Post $solution): string
     $texte       = get_field('solution_explication', $solution->ID);
 
     if ($fichier_url) {
-        return '<a href="' . esc_url($fichier_url)
-            . '" class="lien-solution-pdf" target="_blank" rel="noopener">&#128196; '
-            . esc_html($fichier_nom) . '</a>';
+        $html  = '<div class="solution-pdf">';
+        $html .= '<iframe src="' . esc_url($fichier_url) . '" class="solution-embed"';
+        $html .= ' title="' . esc_attr__('Solution PDF', 'chassesautresor-com') . '"></iframe>';
+        $html .= '</div>';
+
+        return $html;
     }
 
     if ($texte) {
