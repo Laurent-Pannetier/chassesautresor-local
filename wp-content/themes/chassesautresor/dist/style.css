@@ -5474,6 +5474,7 @@ body.panneau-ouvert::before {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-sm);
+  justify-content: center;
 }
 .zone-indices .indice-link {
   display: inline-flex;
