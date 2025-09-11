@@ -42,19 +42,11 @@
     text-decoration: none;
     font-weight: 600;
 
-    &--locked {
-      background-color: rgba(var(--color-black-rgb, 0, 0, 0), 0.05);
-      color: var(--color-text-primary);
-    }
-
-    &--unlocked {
-      background-color: var(--color-primary);
-      color: var(--color-text-fond-clair);
-    }
-
+    &--locked,
+    &--unlocked,
     &--upcoming {
-      background-color: rgba(var(--color-black-rgb, 0, 0, 0), 0.05);
-      color: var(--color-text-primary);
+      background-color: var(--color-grey-medium);
+      color: var(--color-white);
     }
   }
 
