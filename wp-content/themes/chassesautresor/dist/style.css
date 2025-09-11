@@ -5484,17 +5484,9 @@ body.panneau-ouvert::before {
   text-decoration: none;
   font-weight: 600;
 }
-.zone-indices .indice-link--locked {
-  background-color: rgba(var(--color-black-rgb, 0, 0, 0), 0.05);
-  color: var(--color-text-primary);
-}
-.zone-indices .indice-link--unlocked {
-  background-color: var(--color-primary);
-  color: var(--color-text-fond-clair);
-}
-.zone-indices .indice-link--upcoming {
-  background-color: rgba(var(--color-black-rgb, 0, 0, 0), 0.05);
-  color: var(--color-text-primary);
+.zone-indices .indice-link--locked, .zone-indices .indice-link--unlocked, .zone-indices .indice-link--upcoming {
+  background-color: var(--color-gris-3);
+  color: var(--color-white);
 }
 .zone-indices .btn-debloquer-indice {
   display: inline-block;
