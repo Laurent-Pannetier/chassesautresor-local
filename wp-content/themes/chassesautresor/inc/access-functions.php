@@ -1170,6 +1170,14 @@ function utilisateur_peut_voir_solution_enigme(int $post_id, int $user_id): bool
         return false;
     }
 
+    if (
+        get_field('chasse_cache_statut', $chasse_id) === 'termine'
+        && function_exists('utilisateur_est_engage_dans_enigme')
+        && utilisateur_est_engage_dans_enigme($user_id, $post_id)
+    ) {
+        return true;
+    }
+
     if (utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
         return true;
     }
