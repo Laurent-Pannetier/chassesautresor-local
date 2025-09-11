@@ -809,16 +809,16 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
             $type    = 'engager';
         }
     } elseif ($statut === 'termine') {
-        // ✅ Chasse terminée : engagement gratuit et automatique
+        // ✅ Chasse terminée : engagement requis pour accéder aux énigmes
         $html  = '<form method="post" action="' . esc_url(site_url('/traitement-engagement')) . '" class="cta-chasse-form">';
         $html .= '<input type="hidden" name="chasse_id" value="' . esc_attr($chasse_id) . '">';
         $html .= wp_nonce_field('engager_chasse_' . $chasse_id, 'engager_chasse_nonce', true, false);
         $html .= sprintf(
-            '<button type="submit" class="bouton-cta">%s</button>',
-            esc_html__('Voir', 'chassesautresor-com')
+            '<button type="submit" class="bouton-cta bouton-cta--color">%s</button>',
+            esc_html__('Participer', 'chassesautresor-com')
         );
         $html .= '</form>';
-        $type = 'voir';
+        $type = 'engager';
         $message = $date_fin
             ? sprintf(
                 __('Cette chasse est terminée depuis le %s', 'chassesautresor-com'),

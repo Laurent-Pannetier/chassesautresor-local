@@ -57,6 +57,20 @@ if (!function_exists('esc_url')) {
     }
 }
 
+if (!function_exists('__')) {
+    function __($text, $domain)
+    {
+        return $text;
+    }
+}
+
+if (!function_exists('esc_attr')) {
+    function esc_attr($text)
+    {
+        return $text;
+    }
+}
+
 if (!function_exists('wp_nonce_field')) {
     function wp_nonce_field($action, $name, $referer = true, $echo = false)
     {
@@ -219,4 +233,26 @@ class GenererCtaChasseTest extends TestCase
             $cta
         );
     }
+    public function test_finished_hunt_requires_engagement_cta(): void
+    {
+        $GLOBALS['force_admin_override']        = false;
+        $GLOBALS['force_engage_override']       = false;
+        $GLOBALS['force_organisateur_override'] = false;
+        $GLOBALS['get_field_values']            = [
+            'chasse_cache_statut'            => 'termine',
+            'chasse_cache_statut_validation' => 'valide',
+        ];
+
+        $cta = generer_cta_chasse(123, 5);
+
+        $this->assertSame(
+            [
+                'cta_html'    => '<form method="post" action="/traitement-engagement" class="cta-chasse-form"><input type="hidden" name="chasse_id" value="123"><button type="submit" class="bouton-cta bouton-cta--color">Participer</button></form>',
+                'cta_message' => 'Cette chasse est terminée',
+                'type'        => 'engager',
+            ],
+            $cta,
+        );
+    }
 }
+
