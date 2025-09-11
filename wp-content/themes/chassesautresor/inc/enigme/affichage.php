@@ -573,7 +573,7 @@ require_once __DIR__ . '/indices.php';
         $indices = function_exists('get_posts')
             ? get_posts([
                 'post_type'      => 'indice',
-                'post_status'    => 'publish',
+                'post_status'    => ['publish', 'draft'],
                 'meta_query'     => [
                     [
                         'key'     => 'indice_cible_type',
@@ -610,19 +610,32 @@ require_once __DIR__ . '/indices.php';
 
                 if ($etat_systeme === 'programme') {
                     $classes   = 'indice-link indice-link--upcoming etiquette';
-                    $etat_icon = 'fa-clock';
+                    $etat_icon = 'fa-hourglass';
+
+                    $date_raw = get_field('indice_date_disponibilite', $indice_id);
+                    $timestamp = $date_raw ? strtotime($date_raw) : false;
+                    $date_txt = $timestamp ? wp_date(get_option('date_format'), $timestamp) : '';
+                    $label = $date_txt !== ''
+                        ? sprintf(
+                            esc_html__('Disponible le %s', 'chassesautresor-com'),
+                            esc_html($date_txt)
+                        )
+                        : esc_html__('Disponible bientôt', 'chassesautresor-com');
                 } elseif ($est_debloque) {
                     $classes   = 'indice-link indice-link--unlocked etiquette';
                     $etat_icon = 'fa-lock-open';
+                    $label = sprintf(
+                        esc_html__('Indice #%d', 'chassesautresor-com'),
+                        $i + 1
+                    );
                 } else {
                     $classes   = 'indice-link indice-link--locked etiquette';
                     $etat_icon = 'fa-lock';
+                    $label = sprintf(
+                        esc_html__('Indice #%d', 'chassesautresor-com'),
+                        $i + 1
+                    );
                 }
-
-                $label = sprintf(
-                    esc_html__('Indice #%d', 'chassesautresor-com'),
-                    $i + 1
-                );
 
                 $cout_html = $cout_indice > 0
                     ? ' - ' . $cout_indice . ' <sup>'
