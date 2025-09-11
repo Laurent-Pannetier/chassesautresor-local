@@ -3240,3 +3240,11 @@ msgstr "Fermer"
 #: inc/enigme/indices.php:120
 msgid "Débloquer l'indice"
 msgstr "Débloquer l'indice"
+
+#: inc/enigme/affichage.php:725
+msgid "Pour cette énigme"
+msgstr "Pour cette énigme"
+
+#: inc/enigme/affichage.php:728
+msgid "Pour toute la chasse"
+msgstr "Pour toute la chasse"

@@ -1,12 +1,9 @@
 document.addEventListener('DOMContentLoaded', function () {
-  var container = document.querySelector('.zone-indices .indice-display');
-  if (!container) return;
-
-  function displayContent(html) {
+  function displayContent(container, html) {
     container.innerHTML = html;
   }
 
-  function fetchIndice(id, link) {
+  function fetchIndice(id, link, container) {
     var fd = new FormData();
     fd.append('action', 'debloquer_indice');
     fd.append('indice_id', id);
@@ -14,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
       .then(function (r) { return r.json(); })
       .then(function (res) {
         if (res.success) {
-          displayContent(res.data.html);
+          displayContent(container, res.data.html);
           if (link) {
             link.dataset.unlocked = '1';
             link.classList.remove('indice-link--locked');
@@ -34,12 +31,15 @@ document.addEventListener('DOMContentLoaded', function () {
     var link = e.target.closest('.indice-link');
     if (link) {
       e.preventDefault();
+      var zone = link.closest('.zone-indices-group');
+      var container = zone ? zone.querySelector('.indice-display') : null;
+      if (!container) return;
       if (link.dataset.unlocked === '1') {
-        fetchIndice(link.dataset.indiceId, link);
+        fetchIndice(link.dataset.indiceId, link, container);
       } else {
         var cout = link.dataset.cout || '0';
         container.innerHTML = '<p>' + indicesUnlock.texts.unlock + ' - ' + cout + ' ' + indicesUnlock.texts.pts + '</p>'
-          + '<button type="button" class="btn-debloquer-indice" data-indice-id="' + link.dataset.indiceId + '">'
+          + '<button type="button" class="btn-debloquer-indice" data-indice-id="' + link.dataset.indiceId + '">' 
           + indicesUnlock.texts.unlock + '</button>';
       }
       return;
@@ -49,9 +49,13 @@ document.addEventListener('DOMContentLoaded', function () {
     if (btn) {
       e.preventDefault();
       btn.disabled = true;
+      var zoneBtn = btn.closest('.zone-indices-group');
+      var containerBtn = zoneBtn ? zoneBtn.querySelector('.indice-display') : null;
       var id = btn.dataset.indiceId;
-      var linkSel = document.querySelector('.indice-link[data-indice-id="' + id + '"]');
-      fetchIndice(id, linkSel);
+      var linkSel = zoneBtn ? zoneBtn.querySelector('.indice-link[data-indice-id="' + id + '"]') : null;
+      if (containerBtn) {
+        fetchIndice(id, linkSel, containerBtn);
+      }
     }
   });
 });

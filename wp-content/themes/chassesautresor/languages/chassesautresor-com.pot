@@ -2994,3 +2994,11 @@ msgstr ""
 #: inc/enigme/indices.php:120
 msgid "Débloquer l'indice"
 msgstr ""
+
+#: inc/enigme/affichage.php:725
+msgid "Pour cette énigme"
+msgstr ""
+
+#: inc/enigme/affichage.php:728
+msgid "Pour toute la chasse"
+msgstr ""

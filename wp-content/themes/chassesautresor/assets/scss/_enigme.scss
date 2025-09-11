@@ -65,6 +65,20 @@
     margin-top: var(--space-md);
   }
 
+  .zone-indices-group {
+    margin-top: var(--space-md);
+
+    &:first-of-type {
+      margin-top: 0;
+    }
+
+    h4 {
+      margin: 0 0 var(--space-sm);
+      font-size: 1rem;
+      text-align: center;
+    }
+  }
+
   .indice-contenu {
     display: flex;
     gap: var(--space-md);
