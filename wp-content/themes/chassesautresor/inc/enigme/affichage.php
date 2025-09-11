@@ -587,8 +587,8 @@ require_once __DIR__ . '/indices.php';
                     ],
                     [
                         'key'     => 'indice_cache_etat_systeme',
-                        'value'   => 'accessible',
-                        'compare' => '=',
+                        'value'   => ['accessible', 'programme'],
+                        'compare' => 'IN',
                     ],
                 ],
                 'orderby'        => 'date',
@@ -604,37 +604,37 @@ require_once __DIR__ . '/indices.php';
                 . esc_html__('Indices', 'chassesautresor-com')
                 . '</h3><ul class="indice-list">';
             foreach ($indices as $i => $indice_id) {
-                $cout_indice = (int) get_field('indice_cout_points', $indice_id);
-                $est_debloque = indice_est_debloque($user_id, $indice_id) || $cout_indice === 0;
-                $classes = $est_debloque
-                    ? 'indice-link indice-link--unlocked'
-                    : 'indice-link indice-link--locked';
+                $cout_indice   = (int) get_field('indice_cout_points', $indice_id);
+                $etat_systeme  = get_field('indice_cache_etat_systeme', $indice_id) ?: '';
+                $est_debloque  = indice_est_debloque($user_id, $indice_id) || $cout_indice === 0;
+
+                if ($etat_systeme === 'programme') {
+                    $classes   = 'indice-link indice-link--upcoming etiquette';
+                    $etat_icon = 'fa-clock';
+                } elseif ($est_debloque) {
+                    $classes   = 'indice-link indice-link--unlocked etiquette';
+                    $etat_icon = 'fa-lock-open';
+                } else {
+                    $classes   = 'indice-link indice-link--locked etiquette';
+                    $etat_icon = 'fa-lock';
+                }
+
                 $label = sprintf(
                     esc_html__('Indice #%d', 'chassesautresor-com'),
                     $i + 1
                 );
 
-                $etat_icon  = $est_debloque ? 'fa-lock-open' : 'fa-lock';
-                $etat_label = $est_debloque
-                    ? esc_html__('Débloqué', 'chassesautresor-com')
-                    : esc_html__('Verrouillé', 'chassesautresor-com');
-
-                $cout_icon  = $cout_indice > 0 ? 'fa-coins' : 'fa-gift';
-                $cout_label = $cout_indice > 0
-                    ? sprintf(esc_html__('%d pts', 'chassesautresor-com'), $cout_indice)
-                    : esc_html__('Gratuit', 'chassesautresor-com');
-
-                $badges = '<span class="etiquette"><i class="fa-solid '
-                    . $etat_icon . '" aria-hidden="true"></i> ' . $etat_label
-                    . '</span> <span class="etiquette"><i class="fa-solid '
-                    . $cout_icon . '" aria-hidden="true"></i> ' . $cout_label
-                    . '</span>';
+                $cout_html = $cout_indice > 0
+                    ? ' - ' . $cout_indice . ' <sup>'
+                        . esc_html__('pts', 'chassesautresor-com') . '</sup>'
+                    : '';
 
                 $content .= '<li><a href="#" class="' . esc_attr($classes) . '"'
                     . ' data-indice-id="' . esc_attr($indice_id) . '"'
                     . ' data-cout="' . esc_attr($cout_indice) . '"'
-                    . ' data-unlocked="' . ($est_debloque ? '1' : '0') . '">' . $label
-                    . '</a> ' . $badges . '</li>';
+                    . ' data-unlocked="' . ($est_debloque ? '1' : '0') . '">'
+                    . '<i class="fa-solid ' . esc_attr($etat_icon) . '" aria-hidden="true"></i> '
+                    . $label . $cout_html . '</a></li>';
             }
             $content .= '</ul>'
                 . '<div class="indice-modal" hidden>'
