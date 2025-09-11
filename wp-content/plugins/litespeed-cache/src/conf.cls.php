@@ -163,7 +163,7 @@ class Conf extends Base {
 		if ($blog_id !== null) {
 			// This is to load the primary settings ONLY
 			// These options are the ones that can be overwritten by primary
-			$options = array_diff_key($options, array_flip(self::$SINGLE_SITE_OPTIONS));
+			$options = array_diff_key($options, array_flip(self::$single_site_options));
 
 			$this->set_primary_conf($options);
 		} else {
@@ -434,7 +434,7 @@ class Conf extends Base {
 	 * @since  3.0
 	 * @access public
 	 */
-	public function update_confs( $the_matrix = false ) {
+	public function update_confs( $the_matrix = array() ) {
 		if ($the_matrix) {
 			foreach ($the_matrix as $id => $val) {
 				$this->update($id, $val);
