@@ -281,10 +281,6 @@ a.bouton-edition-attention {
 .description-modal {
   @extend .csa-modal;
 
-  &.masque {
-    display: none;
-  }
-
   &__content {
     @extend .csa-modal__content;
   }

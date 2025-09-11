@@ -6,13 +6,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function openModal(html) {
     body.innerHTML = html;
-    modal.classList.add('open');
-    modal.removeAttribute('hidden');
+    modal.classList.remove('masque');
   }
 
   function closeModal() {
-    modal.classList.remove('open');
-    modal.setAttribute('hidden', '');
+    modal.classList.add('masque');
   }
 
   if (closeBtn) {
@@ -58,10 +56,9 @@ document.addEventListener('DOMContentLoaded', function () {
       } else {
         var cout = link.dataset.cout || '0';
         body.innerHTML = '<p>' + indicesUnlock.texts.unlock + ' - ' + cout + ' ' + indicesUnlock.texts.pts + '</p>'
-          + '<button type="button" class="btn-debloquer-indice" data-indice-id="' + link.dataset.indiceId + '">'
+          + '<button type="button" class="btn-debloquer-indice" data-indice-id="' + link.dataset.indiceId + '">' 
           + indicesUnlock.texts.unlock + '</button>';
-        modal.classList.add('open');
-        modal.removeAttribute('hidden');
+        modal.classList.remove('masque');
       }
       return;
     }

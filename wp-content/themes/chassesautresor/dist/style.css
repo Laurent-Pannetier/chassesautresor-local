@@ -2359,7 +2359,7 @@ a.addtoany_share span {
   background: rgba(var(--color-black-rgb, 0, 0, 0), 0.6);
   z-index: 9999;
 }
-.csa-modal.is-hidden, .is-hidden.description-modal, .zone-indices .is-hidden.indice-modal {
+.csa-modal.is-hidden, .is-hidden.description-modal, .zone-indices .is-hidden.indice-modal, .csa-modal[hidden], [hidden].description-modal, .zone-indices [hidden].indice-modal, .csa-modal.masque, .masque.description-modal, .zone-indices .masque.indice-modal {
   display: none;
 }
 .csa-modal__content, .description-modal__content, .zone-indices .indice-modal__content {
@@ -5536,9 +5536,6 @@ body.panneau-ouvert::before {
   border: 0;
   border-radius: 4px;
   cursor: pointer;
-}
-.zone-indices .indice-modal[hidden] {
-  display: none;
 }
 .zone-indices .indice-modal__content {
   background-color: var(--color-bg-primary);
@@ -9289,9 +9286,6 @@ a.bouton-edition-attention {
 }
 
 /* Modal description */
-.description-modal.masque {
-  display: none;
-}
 .description-modal__title {
   margin-top: 0;
   text-align: center;

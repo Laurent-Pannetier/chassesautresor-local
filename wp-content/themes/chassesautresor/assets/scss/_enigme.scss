@@ -71,10 +71,6 @@
   .indice-modal {
     @extend .csa-modal;
 
-    &[hidden] {
-      display: none;
-    }
-
     &__content {
       @extend .csa-modal__content;
       background-color: var(--color-bg-primary);

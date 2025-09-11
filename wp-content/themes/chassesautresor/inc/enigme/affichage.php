@@ -650,7 +650,7 @@ require_once __DIR__ . '/indices.php';
                     . $label . $cout_html . '</a></li>';
             }
             $content .= '</ul>'
-                . '<div class="indice-modal csa-modal" hidden>'
+                . '<div class="indice-modal csa-modal masque">'
                 . '<div class="indice-modal__content csa-modal__content">'
                 . '<button type="button" class="indice-modal__close csa-modal__close" aria-label="'
                 . esc_attr(esc_html__('Fermer', 'chassesautresor-com'))
