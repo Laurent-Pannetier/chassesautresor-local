@@ -141,8 +141,8 @@ class ChasseSolutionsTest extends TestCase
             function get_field($key, $post_id)
             {
                 global $captured_fields;
-                if ($key === 'statut_chasse') {
-                    return 'terminée';
+                if ($key === 'chasse_cache_statut') {
+                    return 'termine';
                 }
                 return $captured_fields[$key] ?? null;
             }
@@ -533,7 +533,7 @@ class ChasseSolutionsTest extends TestCase
                 'solution_heure_publication' => '00:00',
             ],
             $chasse_id   => [
-                'statut_chasse' => 'en cours',
+                'chasse_cache_statut' => 'en_cours',
             ],
         ];
 
@@ -587,7 +587,7 @@ class ChasseSolutionsTest extends TestCase
                 'solution_heure_publication' => '00:00',
             ],
             $chasse_id   => [
-                'statut_chasse' => 'terminée',
+                'chasse_cache_statut' => 'termine',
             ],
         ];
 

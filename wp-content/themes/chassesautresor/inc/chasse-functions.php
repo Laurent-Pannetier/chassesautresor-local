@@ -1212,9 +1212,8 @@ function solution_peut_etre_affichee(int $enigme_id): bool
         return false;
     }
 
-    $statut   = get_field('statut_chasse', $chasse_id);
-    $terminee = is_string($statut) && in_array(strtolower($statut), ['terminée', 'termine', 'terminé'], true);
-    if (!$terminee) {
+    $statut   = get_field('chasse_cache_statut', $chasse_id);
+    if ($statut !== 'termine') {
         return false;
     }
 
@@ -1258,9 +1257,8 @@ function solution_chasse_peut_etre_affichee(int $chasse_id): bool
         return false;
     }
 
-    $statut   = get_field('statut_chasse', $chasse_id);
-    $terminee = is_string($statut) && in_array(strtolower($statut), ['terminée', 'termine', 'terminé'], true);
-    if (!$terminee) {
+    $statut   = get_field('chasse_cache_statut', $chasse_id);
+    if ($statut !== 'termine') {
         return false;
     }
 
