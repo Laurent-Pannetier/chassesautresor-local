@@ -573,7 +573,7 @@ require_once __DIR__ . '/indices.php';
         $indices = function_exists('get_posts')
             ? get_posts([
                 'post_type'      => 'indice',
-                'post_status'    => 'publish',
+                'post_status'    => ['publish', 'draft'],
                 'meta_query'     => [
                     [
                         'key'     => 'indice_cible_type',
@@ -587,8 +587,8 @@ require_once __DIR__ . '/indices.php';
                     ],
                     [
                         'key'     => 'indice_cache_etat_systeme',
-                        'value'   => 'accessible',
-                        'compare' => '=',
+                        'value'   => ['accessible', 'programme'],
+                        'compare' => 'IN',
                     ],
                 ],
                 'orderby'        => 'date',
@@ -604,23 +604,50 @@ require_once __DIR__ . '/indices.php';
                 . esc_html__('Indices', 'chassesautresor-com')
                 . '</h3><ul class="indice-list">';
             foreach ($indices as $i => $indice_id) {
-                $cout_indice = (int) get_field('indice_cout_points', $indice_id);
-                $est_debloque = indice_est_debloque($user_id, $indice_id) || $cout_indice === 0;
-                $classes = $est_debloque ? 'indice-link indice-link--unlocked' : 'indice-link indice-link--locked';
-                $label = $cout_indice > 0
-                    ? sprintf(
-                        esc_html__('Indice #%1$d - %2$d pts', 'chassesautresor-com'),
-                        $i + 1,
-                        $cout_indice
-                    )
-                    : sprintf(
+                $cout_indice   = (int) get_field('indice_cout_points', $indice_id);
+                $etat_systeme  = get_field('indice_cache_etat_systeme', $indice_id) ?: '';
+                $est_debloque  = indice_est_debloque($user_id, $indice_id) || $cout_indice === 0;
+
+                if ($etat_systeme === 'programme') {
+                    $classes   = 'indice-link indice-link--upcoming etiquette';
+                    $etat_icon = 'fa-hourglass';
+
+                    $date_raw = get_field('indice_date_disponibilite', $indice_id);
+                    $timestamp = $date_raw ? strtotime($date_raw) : false;
+                    $date_txt = $timestamp ? wp_date(get_option('date_format'), $timestamp) : '';
+                    $label = $date_txt !== ''
+                        ? sprintf(
+                            esc_html__('Disponible le %s', 'chassesautresor-com'),
+                            esc_html($date_txt)
+                        )
+                        : esc_html__('Disponible bientôt', 'chassesautresor-com');
+                } elseif ($est_debloque) {
+                    $classes   = 'indice-link indice-link--unlocked etiquette';
+                    $etat_icon = 'fa-lock-open';
+                    $label = sprintf(
                         esc_html__('Indice #%d', 'chassesautresor-com'),
                         $i + 1
                     );
+                } else {
+                    $classes   = 'indice-link indice-link--locked etiquette';
+                    $etat_icon = 'fa-lock';
+                    $label = sprintf(
+                        esc_html__('Indice #%d', 'chassesautresor-com'),
+                        $i + 1
+                    );
+                }
+
+                $cout_html = $cout_indice > 0
+                    ? ' - ' . $cout_indice . ' <sup>'
+                        . esc_html__('pts', 'chassesautresor-com') . '</sup>'
+                    : '';
+
                 $content .= '<li><a href="#" class="' . esc_attr($classes) . '"'
                     . ' data-indice-id="' . esc_attr($indice_id) . '"'
                     . ' data-cout="' . esc_attr($cout_indice) . '"'
-                    . ' data-unlocked="' . ($est_debloque ? '1' : '0') . '">' . $label . '</a></li>';
+                    . ' data-unlocked="' . ($est_debloque ? '1' : '0') . '">'
+                    . '<i class="fa-solid ' . esc_attr($etat_icon) . '" aria-hidden="true"></i> '
+                    . $label . $cout_html . '</a></li>';
             }
             $content .= '</ul>'
                 . '<div class="indice-modal" hidden>'
