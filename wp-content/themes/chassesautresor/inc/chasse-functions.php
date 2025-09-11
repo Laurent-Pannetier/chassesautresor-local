@@ -1290,15 +1290,23 @@ function solution_chasse_peut_etre_affichee(int $chasse_id): bool
  */
 function solution_contenu_html(WP_Post $solution): string
 {
-    $fichier     = get_field('solution_fichier', $solution->ID);
-    $fichier_url = is_array($fichier) ? ($fichier['url'] ?? '') : '';
-    $fichier_nom = is_array($fichier) ? ($fichier['filename'] ?? basename($fichier_url)) : basename($fichier_url);
-    $texte       = get_field('solution_explication', $solution->ID);
+    $fichier = get_field('solution_fichier', $solution->ID);
+    $texte   = get_field('solution_explication', $solution->ID);
 
-    if ($fichier_url) {
-        return '<a href="' . esc_url($fichier_url)
-            . '" class="lien-solution-pdf" target="_blank" rel="noopener">&#128196; '
-            . esc_html($fichier_nom) . '</a>';
+    if ($fichier) {
+        if (is_array($fichier)) {
+            $fichier_url = $fichier['url'] ?? '';
+            $fichier_nom = $fichier['filename'] ?? basename($fichier_url);
+        } else {
+            $fichier_url = wp_get_attachment_url($fichier);
+            $fichier_nom = basename(get_attached_file($fichier)) ?: basename($fichier_url);
+        }
+
+        if ($fichier_url) {
+            return '<a href="' . esc_url($fichier_url)
+                . '" class="lien-solution-pdf" target="_blank" rel="noopener">&#128196; '
+                . esc_html($fichier_nom) . '</a>';
+        }
     }
 
     if ($texte) {
