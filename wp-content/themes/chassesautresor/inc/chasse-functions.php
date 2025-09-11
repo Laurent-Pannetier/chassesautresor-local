@@ -1121,33 +1121,42 @@ function solution_recuperer_par_objet(int $id, string $type)
         return null;
     }
 
-    $meta_key = $type === 'enigme' ? 'solution_enigme_linked' : 'solution_chasse_linked';
-
-    $solutions = get_posts([
-        'post_type'      => 'solution',
-        'post_status'    => ['publish', 'pending', 'draft'],
-        'posts_per_page' => 1,
-        'meta_query'     => [
+    $meta_key   = $type === 'enigme' ? 'solution_enigme_linked' : 'solution_chasse_linked';
+    $meta_query = [
+        'relation' => 'AND',
+        [
+            'key'   => 'solution_cible_type',
+            'value' => $type,
+        ],
+        [
+            'key'     => 'solution_cache_etat_systeme',
+            'value'   => [
+                SOLUTION_STATE_EN_COURS,
+                SOLUTION_STATE_A_VENIR,
+                SOLUTION_STATE_FIN_CHASSE,
+                SOLUTION_STATE_FIN_CHASSE_DIFFERE,
+            ],
+            'compare' => 'IN',
+        ],
+        [
+            'relation' => 'OR',
             [
-                'key'   => 'solution_cible_type',
-                'value' => $type,
+                'key'   => $meta_key,
+                'value' => $id,
             ],
             [
                 'key'     => $meta_key,
                 'value'   => '"' . $id . '"',
                 'compare' => 'LIKE',
             ],
-            [
-                'key'     => 'solution_cache_etat_systeme',
-                'value'   => [
-                    SOLUTION_STATE_EN_COURS,
-                    SOLUTION_STATE_A_VENIR,
-                    SOLUTION_STATE_FIN_CHASSE,
-                    SOLUTION_STATE_FIN_CHASSE_DIFFERE,
-                ],
-                'compare' => 'IN',
-            ],
         ],
+    ];
+
+    $solutions = get_posts([
+        'post_type'      => 'solution',
+        'post_status'    => ['publish', 'pending', 'draft'],
+        'posts_per_page' => 1,
+        'meta_query'     => $meta_query,
     ]);
 
     return $solutions[0] ?? null;
@@ -1170,7 +1179,26 @@ function solution_existe_pour_objet(int $id, string $type): bool
         return false;
     }
 
-    $meta_key = $type === 'enigme' ? 'solution_enigme_linked' : 'solution_chasse_linked';
+    $meta_key   = $type === 'enigme' ? 'solution_enigme_linked' : 'solution_chasse_linked';
+    $meta_query = [
+        'relation' => 'AND',
+        [
+            'key'   => 'solution_cible_type',
+            'value' => $type,
+        ],
+        [
+            'relation' => 'OR',
+            [
+                'key'   => $meta_key,
+                'value' => $id,
+            ],
+            [
+                'key'     => $meta_key,
+                'value'   => '"' . $id . '"',
+                'compare' => 'LIKE',
+            ],
+        ],
+    ];
 
     $solutions = get_posts([
         'post_type'      => 'solution',
@@ -1178,10 +1206,7 @@ function solution_existe_pour_objet(int $id, string $type): bool
         'fields'         => 'ids',
         'no_found_rows'  => true,
         'posts_per_page' => 1,
-        'meta_query'     => [
-            ['key' => 'solution_cible_type', 'value' => $type],
-            ['key' => $meta_key, 'value' => $id],
-        ],
+        'meta_query'     => $meta_query,
     ]);
 
     return !empty($solutions);
