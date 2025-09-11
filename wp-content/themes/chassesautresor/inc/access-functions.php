@@ -1190,7 +1190,7 @@ function utilisateur_peut_voir_solution_enigme(int $post_id, int $user_id): bool
  */
 function utilisateur_peut_voir_solution_chasse(int $chasse_id, int $user_id): bool
 {
-    if (!$chasse_id || !$user_id) {
+    if (!$chasse_id) {
         return false;
     }
 
@@ -1199,19 +1199,22 @@ function utilisateur_peut_voir_solution_chasse(int $chasse_id, int $user_id): bo
         return false;
     }
 
-    if (user_can($user_id, 'manage_options')) {
-        return true;
+    if ($user_id) {
+        if (user_can($user_id, 'manage_options')) {
+            return true;
+        }
+
+        if (utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
+            return true;
+        }
+
+        if (utilisateur_est_engage_dans_chasse($user_id, $chasse_id)) {
+            return true;
+        }
     }
 
-    if (utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
-        return true;
-    }
-
-    if (utilisateur_est_engage_dans_chasse($user_id, $chasse_id)) {
-        return true;
-    }
-
-    return false;
+    $statut = get_field('chasse_cache_statut', $chasse_id);
+    return $statut === 'termine';
 }
 
 
