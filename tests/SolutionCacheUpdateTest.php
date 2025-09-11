@@ -97,8 +97,8 @@ class SolutionCacheUpdateTest extends TestCase
             function get_field($key, $post_id)
             {
                 global $captured_fields;
-                if ($key === 'statut_chasse') {
-                    return 'terminée';
+                if ($key === 'chasse_cache_statut') {
+                    return 'termine';
                 }
                 return $captured_fields[$key] ?? null;
             }

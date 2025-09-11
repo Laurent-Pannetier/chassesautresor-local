@@ -38,8 +38,8 @@ function solution_planifier_publication(int $solution_id): void
         return;
     }
 
-    $statut   = get_field('statut_chasse', $chasse_id);
-    $terminee = is_string($statut) && in_array(strtolower($statut), ['terminée', 'termine', 'terminé'], true);
+    $statut   = get_field('chasse_cache_statut', $chasse_id);
+    $terminee = ($statut === 'termine');
 
     $dispo    = get_field('solution_disponibilite', $solution_id) ?: 'fin_chasse';
     $decalage = (int) get_field('solution_decalage_jours', $solution_id);

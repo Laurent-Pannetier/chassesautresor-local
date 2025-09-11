@@ -1121,33 +1121,42 @@ function solution_recuperer_par_objet(int $id, string $type)
         return null;
     }
 
-    $meta_key = $type === 'enigme' ? 'solution_enigme_linked' : 'solution_chasse_linked';
-
-    $solutions = get_posts([
-        'post_type'      => 'solution',
-        'post_status'    => ['publish', 'pending', 'draft'],
-        'posts_per_page' => 1,
-        'meta_query'     => [
+    $meta_key   = $type === 'enigme' ? 'solution_enigme_linked' : 'solution_chasse_linked';
+    $meta_query = [
+        'relation' => 'AND',
+        [
+            'key'   => 'solution_cible_type',
+            'value' => $type,
+        ],
+        [
+            'key'     => 'solution_cache_etat_systeme',
+            'value'   => [
+                SOLUTION_STATE_EN_COURS,
+                SOLUTION_STATE_A_VENIR,
+                SOLUTION_STATE_FIN_CHASSE,
+                SOLUTION_STATE_FIN_CHASSE_DIFFERE,
+            ],
+            'compare' => 'IN',
+        ],
+        [
+            'relation' => 'OR',
             [
-                'key'   => 'solution_cible_type',
-                'value' => $type,
+                'key'   => $meta_key,
+                'value' => $id,
             ],
             [
                 'key'     => $meta_key,
                 'value'   => '"' . $id . '"',
                 'compare' => 'LIKE',
             ],
-            [
-                'key'     => 'solution_cache_etat_systeme',
-                'value'   => [
-                    SOLUTION_STATE_EN_COURS,
-                    SOLUTION_STATE_A_VENIR,
-                    SOLUTION_STATE_FIN_CHASSE,
-                    SOLUTION_STATE_FIN_CHASSE_DIFFERE,
-                ],
-                'compare' => 'IN',
-            ],
         ],
+    ];
+
+    $solutions = get_posts([
+        'post_type'      => 'solution',
+        'post_status'    => ['publish', 'pending', 'draft'],
+        'posts_per_page' => 1,
+        'meta_query'     => $meta_query,
     ]);
 
     return $solutions[0] ?? null;
@@ -1170,7 +1179,26 @@ function solution_existe_pour_objet(int $id, string $type): bool
         return false;
     }
 
-    $meta_key = $type === 'enigme' ? 'solution_enigme_linked' : 'solution_chasse_linked';
+    $meta_key   = $type === 'enigme' ? 'solution_enigme_linked' : 'solution_chasse_linked';
+    $meta_query = [
+        'relation' => 'AND',
+        [
+            'key'   => 'solution_cible_type',
+            'value' => $type,
+        ],
+        [
+            'relation' => 'OR',
+            [
+                'key'   => $meta_key,
+                'value' => $id,
+            ],
+            [
+                'key'     => $meta_key,
+                'value'   => '"' . $id . '"',
+                'compare' => 'LIKE',
+            ],
+        ],
+    ];
 
     $solutions = get_posts([
         'post_type'      => 'solution',
@@ -1178,10 +1206,7 @@ function solution_existe_pour_objet(int $id, string $type): bool
         'fields'         => 'ids',
         'no_found_rows'  => true,
         'posts_per_page' => 1,
-        'meta_query'     => [
-            ['key' => 'solution_cible_type', 'value' => $type],
-            ['key' => $meta_key, 'value' => $id],
-        ],
+        'meta_query'     => $meta_query,
     ]);
 
     return !empty($solutions);
@@ -1212,9 +1237,8 @@ function solution_peut_etre_affichee(int $enigme_id): bool
         return false;
     }
 
-    $statut   = get_field('statut_chasse', $chasse_id);
-    $terminee = is_string($statut) && in_array(strtolower($statut), ['terminée', 'termine', 'terminé'], true);
-    if (!$terminee) {
+    $statut   = get_field('chasse_cache_statut', $chasse_id);
+    if ($statut !== 'termine') {
         return false;
     }
 
@@ -1258,9 +1282,8 @@ function solution_chasse_peut_etre_affichee(int $chasse_id): bool
         return false;
     }
 
-    $statut   = get_field('statut_chasse', $chasse_id);
-    $terminee = is_string($statut) && in_array(strtolower($statut), ['terminée', 'termine', 'terminé'], true);
-    if (!$terminee) {
+    $statut   = get_field('chasse_cache_statut', $chasse_id);
+    if ($statut !== 'termine') {
         return false;
     }
 
@@ -1292,15 +1315,23 @@ function solution_chasse_peut_etre_affichee(int $chasse_id): bool
  */
 function solution_contenu_html(WP_Post $solution): string
 {
-    $fichier     = get_field('solution_fichier', $solution->ID);
-    $fichier_url = is_array($fichier) ? ($fichier['url'] ?? '') : '';
-    $fichier_nom = is_array($fichier) ? ($fichier['filename'] ?? basename($fichier_url)) : basename($fichier_url);
-    $texte       = get_field('solution_explication', $solution->ID);
+    $fichier = get_field('solution_fichier', $solution->ID);
+    $texte   = get_field('solution_explication', $solution->ID);
 
-    if ($fichier_url) {
-        return '<a href="' . esc_url($fichier_url)
-            . '" class="lien-solution-pdf" target="_blank" rel="noopener">&#128196; '
-            . esc_html($fichier_nom) . '</a>';
+    if ($fichier) {
+        if (is_array($fichier)) {
+            $fichier_url = $fichier['url'] ?? '';
+            $fichier_nom = $fichier['filename'] ?? basename($fichier_url);
+        } else {
+            $fichier_url = wp_get_attachment_url($fichier);
+            $fichier_nom = basename(get_attached_file($fichier)) ?: basename($fichier_url);
+        }
+
+        if ($fichier_url) {
+            return '<a href="' . esc_url($fichier_url)
+                . '" class="lien-solution-pdf" target="_blank" rel="noopener">&#128196; '
+                . esc_html($fichier_nom) . '</a>';
+        }
     }
 
     if ($texte) {
@@ -1331,7 +1362,7 @@ function render_chasse_solutions(int $chasse_id, int $user_id): void
             $content = solution_contenu_html($solution);
             if ($content !== '') {
                 $sections .= '<section class="solution">';
-                $sections .= '<details><summary>'
+                $sections .= '<details open><summary>'
                     . esc_html__('Solution de la chasse', 'chassesautresor-com')
                     . '</summary>';
                 $sections .= '<div class="solution-content">' . $content . '</div></details></section>';
@@ -1360,7 +1391,7 @@ function render_chasse_solutions(int $chasse_id, int $user_id): void
             esc_html(get_the_title($enigme_id))
         );
         $sections .= '<section class="solution">';
-        $sections .= '<details><summary>' . $label . '</summary>';
+        $sections .= '<details open><summary>' . $label . '</summary>';
         $sections .= '<div class="solution-content">' . $content . '</div></details></section>';
     }
 
