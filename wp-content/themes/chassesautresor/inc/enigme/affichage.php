@@ -670,7 +670,7 @@ require_once __DIR__ . '/indices.php';
                 foreach ($indices as $i => $indice_id) {
                     $cout_indice  = (int) get_field('indice_cout_points', $indice_id);
                     $etat_systeme = get_field('indice_cache_etat_systeme', $indice_id) ?: '';
-                    $est_debloque = indice_est_debloque($user_id, $indice_id) || $cout_indice === 0;
+                    $est_debloque = indice_est_debloque($user_id, $indice_id);
 
                     if ($etat_systeme === 'programme') {
                         $classes   = 'indice-link indice-link--upcoming etiquette';
