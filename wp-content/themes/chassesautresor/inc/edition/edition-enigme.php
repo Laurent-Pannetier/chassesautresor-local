@@ -369,7 +369,11 @@ function modifier_champ_enigme()
 
   // 🔹 Fallback
   if (!$champ_valide) {
-    $valeur_saine = is_numeric($valeur) ? (int) $valeur : sanitize_text_field($valeur);
+    if (is_array($valeur)) {
+      $valeur_saine = array_map('sanitize_text_field', $valeur);
+    } else {
+      $valeur_saine = is_numeric($valeur) ? (int) $valeur : sanitize_text_field($valeur);
+    }
     $ok = update_field($champ, $valeur_saine, $post_id);
     $valeur_meta = get_post_meta($post_id, $champ, true);
     if ($ok || trim((string) $valeur_meta) === trim((string) $valeur_saine)) {
