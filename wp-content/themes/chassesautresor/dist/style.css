@@ -5514,6 +5514,10 @@ body.panneau-ouvert::before {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  max-width: none;
   background-color: rgba(var(--color-black-rgb, 0, 0, 0), 0.6);
 }
 .zone-indices .indice-modal[hidden] {
