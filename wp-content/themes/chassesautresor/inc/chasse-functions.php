@@ -1370,31 +1370,6 @@ function render_chasse_solutions(int $chasse_id, int $user_id): void
         }
     }
 
-    $enigmes = recuperer_enigmes_pour_chasse($chasse_id);
-    foreach ($enigmes as $enigme) {
-        $enigme_id = $enigme->ID;
-        if (!solution_peut_etre_affichee($enigme_id)
-            || !utilisateur_peut_voir_solution_enigme($enigme_id, $user_id)) {
-            continue;
-        }
-        $sol = solution_recuperer_par_objet($enigme_id, 'enigme');
-        if (!$sol) {
-            continue;
-        }
-        $content = solution_contenu_html($sol);
-        if ($content === '') {
-            continue;
-        }
-        $label = sprintf(
-            /* translators: %s: riddle title */
-            esc_html__('Solution de %s', 'chassesautresor-com'),
-            esc_html(get_the_title($enigme_id))
-        );
-        $sections .= '<section class="solution">';
-        $sections .= '<details open><summary>' . $label . '</summary>';
-        $sections .= '<div class="solution-content">' . $content . '</div></details></section>';
-    }
-
     if ($sections === '') {
         return;
     }
