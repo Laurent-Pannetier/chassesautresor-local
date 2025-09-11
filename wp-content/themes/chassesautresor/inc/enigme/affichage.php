@@ -600,7 +600,7 @@ require_once __DIR__ . '/indices.php';
             : [];
 
         if (!empty($indices)) {
-            $content .= '<div class="zone-indices"><h3>'
+            $content .= '<div class="zone-indices"><h3><i class="fa-solid fa-lightbulb" aria-hidden="true"></i> '
                 . esc_html__('Indices', 'chassesautresor-com')
                 . '</h3><ul class="indice-list">';
             foreach ($indices as $i => $indice_id) {
