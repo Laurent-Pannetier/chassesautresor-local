@@ -573,7 +573,7 @@ require_once __DIR__ . '/indices.php';
         $indices = function_exists('get_posts')
             ? get_posts([
                 'post_type'      => 'indice',
-                'post_status'    => ['publish', 'draft'],
+                'post_status'    => ['publish', 'draft', 'future'],
                 'meta_query'     => [
                     [
                         'key'     => 'indice_cible_type',
