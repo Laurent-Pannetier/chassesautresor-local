@@ -1433,7 +1433,7 @@ function cta_reset_stats() {
         clean_user_cache((int) $user_id);
     }
 
-    $chasses = get_posts([
+    $chasses_terminees = get_posts([
         'post_type'   => 'chasse',
         'post_status' => 'any',
         'meta_query'  => [
@@ -1446,10 +1446,20 @@ function cta_reset_stats() {
         'nopaging' => true,
     ]);
 
-    foreach ($chasses as $chasse_id) {
+    foreach ($chasses_terminees as $chasse_id) {
         update_field('chasse_cache_statut', 'en_cours', $chasse_id);
         delete_field('chasse_cache_gagnants', $chasse_id);
         delete_field('chasse_cache_date_decouverte', $chasse_id);
+    }
+
+    $all_chasses = get_posts([
+        'post_type'   => 'chasse',
+        'post_status' => 'any',
+        'fields'      => 'ids',
+        'nopaging'    => true,
+    ]);
+
+    foreach ($all_chasses as $chasse_id) {
         chasse_clear_infos_affichage_cache((int) $chasse_id);
     }
 
