@@ -37,10 +37,14 @@ document.addEventListener('DOMContentLoaded', function () {
       if (link.dataset.unlocked === '1') {
         fetchIndice(link.dataset.indiceId, link, container);
       } else {
-        var cout = link.dataset.cout || '0';
-        container.innerHTML = '<p>' + indicesUnlock.texts.unlock + ' - ' + cout + ' ' + indicesUnlock.texts.pts + '</p>'
-          + '<button type="button" class="btn-debloquer-indice" data-indice-id="' + link.dataset.indiceId + '">' 
-          + indicesUnlock.texts.unlock + '</button>';
+        var cout = parseInt(link.dataset.cout || '0', 10);
+        if (cout > 0) {
+          container.innerHTML = '<p>' + indicesUnlock.texts.unlock + ' - ' + cout + ' ' + indicesUnlock.texts.pts + '</p>'
+            + '<button type="button" class="btn-debloquer-indice" data-indice-id="' + link.dataset.indiceId + '">'
+            + indicesUnlock.texts.unlock + '</button>';
+        } else {
+          fetchIndice(link.dataset.indiceId, link, container);
+        }
       }
       return;
     }
