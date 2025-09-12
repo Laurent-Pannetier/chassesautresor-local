@@ -3286,3 +3286,7 @@ msgstr "Riddle hints"
 #: inc/enigme/affichage.php:728
 msgid "Indices chasse"
 msgstr "Hunt hints"
+
+#: inc/chasse-functions.php:818
+msgid "Redécouvrir"
+msgstr "Rediscover"

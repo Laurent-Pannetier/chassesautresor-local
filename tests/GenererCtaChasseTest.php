@@ -247,7 +247,7 @@ class GenererCtaChasseTest extends TestCase
 
         $this->assertSame(
             [
-                'cta_html'    => '<form method="post" action="/traitement-engagement" class="cta-chasse-form"><input type="hidden" name="chasse_id" value="123"><button type="submit" class="bouton-cta bouton-cta--color">Participer</button></form>',
+                'cta_html'    => '<form method="post" action="/traitement-engagement" class="cta-chasse-form"><input type="hidden" name="chasse_id" value="123"><button type="submit" class="bouton-cta bouton-cta--color">Redécouvrir</button></form>',
                 'cta_message' => 'Cette chasse est terminée',
                 'type'        => 'engager',
             ],

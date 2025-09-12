@@ -3002,3 +3002,7 @@ msgstr ""
 #: inc/enigme/affichage.php:728
 msgid "Indices chasse"
 msgstr ""
+
+#: inc/chasse-functions.php:818
+msgid "Redécouvrir"
+msgstr ""

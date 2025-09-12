@@ -815,7 +815,7 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
         $html .= wp_nonce_field('engager_chasse_' . $chasse_id, 'engager_chasse_nonce', true, false);
         $html .= sprintf(
             '<button type="submit" class="bouton-cta bouton-cta--color">%s</button>',
-            esc_html__('Participer', 'chassesautresor-com')
+            esc_html__('Redécouvrir', 'chassesautresor-com')
         );
         $html .= '</form>';
         $type = 'engager';
