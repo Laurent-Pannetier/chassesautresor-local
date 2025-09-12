@@ -5533,16 +5533,18 @@ body.panneau-ouvert::before {
 .zone-indices .indice-display {
   margin-top: var(--space-md);
 }
-.zone-indices .zone-indices-group {
-  margin-top: var(--space-md);
+.zone-indices .zone-indices-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+  justify-content: center;
 }
-.zone-indices .zone-indices-group:first-of-type {
-  margin-top: 0;
+.zone-indices .zone-indices-line:not(:first-of-type) {
+  margin-top: var(--space-sm);
 }
-.zone-indices .zone-indices-group h4 {
-  margin: 0 0 var(--space-sm);
-  font-size: 1rem;
-  text-align: center;
+.zone-indices .zone-indices-line__label {
+  font-weight: 600;
 }
 .zone-indices .indice-contenu {
   display: flex;

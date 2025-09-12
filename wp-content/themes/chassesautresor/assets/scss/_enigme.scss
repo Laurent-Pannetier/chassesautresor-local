@@ -65,17 +65,19 @@
     margin-top: var(--space-md);
   }
 
-  .zone-indices-group {
-    margin-top: var(--space-md);
+  .zone-indices-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-sm);
+    justify-content: center;
 
-    &:first-of-type {
-      margin-top: 0;
+    &:not(:first-of-type) {
+      margin-top: var(--space-sm);
     }
 
-    h4 {
-      margin: 0 0 var(--space-sm);
-      font-size: 1rem;
-      text-align: center;
+    &__label {
+      font-weight: 600;
     }
   }
 
