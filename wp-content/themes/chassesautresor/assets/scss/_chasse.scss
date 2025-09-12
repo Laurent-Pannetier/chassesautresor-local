@@ -404,14 +404,19 @@
   margin-right: 0.3em;
 }
 
-.chasse-lot-complet .lot-titre,
-.chasse-lot-complet .lot-valeur {
-  margin: 0 0 var(--space-xs);
+.chasse-lot-complet .champ-lot-titre,
+.chasse-lot-complet .champ-lot-valeur {
+  display: inline-block;
 }
 
 .chasse-lot-complet .lot-titre {
+  margin: 0 var(--space-xs) 0 0;
   font-size: 1.25rem;
   font-weight: 600;
+}
+
+.chasse-lot-complet .lot-valeur {
+  margin: 0;
 }
 
 .chasse-lot-complet .lot-description {
