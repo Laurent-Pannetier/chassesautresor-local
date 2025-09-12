@@ -1437,6 +1437,10 @@ body .wp-block-file .wp-block-file__button:focus,
   font-weight: normal;
 }
 
+.bloc-reponse h3 .badge-validation {
+  margin-right: var(--space-xs);
+}
+
 .badge-cout {
   display: inline-block;
   padding: var(--space-xxs) var(--space-xs);
@@ -1829,7 +1833,7 @@ a.ajout-link:focus-visible {
 .badge-validation {
   width: 24px;
   height: 24px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
