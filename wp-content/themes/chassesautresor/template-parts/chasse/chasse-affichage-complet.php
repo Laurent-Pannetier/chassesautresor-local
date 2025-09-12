@@ -12,6 +12,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
 
 // Récupération centralisée des informations
 $infos_chasse = $args['infos_chasse'] ?? preparer_infos_affichage_chasse($chasse_id);
+$statut = $infos_chasse['statut'];
 
 
 // Champs principaux (avec fallback direct en meta)
@@ -29,6 +30,10 @@ $cout_points       = (int) ($champs['cout_points'] ?? 0);
 $date_decouverte      = $champs['date_decouverte'];
 $gagnants             = $champs['gagnants'];
 $current_stored_statut = $champs['current_stored_statut'];
+
+if ($statut === 'termine' && !empty($date_decouverte)) {
+    $date_fin = $date_decouverte;
+}
 
 
 $image_raw = $infos_chasse['image_raw'];
@@ -117,7 +122,6 @@ if ($edition_active && !$est_complet) {
 
   <div class="chasse-fiche-container">
     <?php
-    $statut = $infos_chasse['statut'];
     $statut_validation = $infos_chasse['statut_validation'];
     $statut_label = '';
     $statut_for_class = $statut;
