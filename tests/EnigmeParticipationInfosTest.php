@@ -302,26 +302,25 @@ class EnigmeParticipationInfosTest extends TestCase
      */
     public function test_programmed_indices_date_format(): void
     {
-        global $mocked_posts, $fields;
-        global $mocked_post_dates;
+        global $mocked_posts, $fields, $mocked_post_dates;
         $mocked_posts = [401, 402, 403, 404];
 
-        $fields[401]['indice_cache_etat_systeme'] = 'programme';
-        $fields[401]['indice_cout_points']        = 0;
-        $mocked_post_dates[401]                    = '2023-11-10 18:00:00';
+        $fields[401]['indice_cache_etat_systeme']       = 'programme';
+        $fields[401]['indice_cout_points']              = 0;
+        $fields[401]['indice_date_disponibilite']       = '2023-11-10 18:00:00';
 
-        $fields[402]['indice_cache_etat_systeme'] = 'programme';
-        $fields[402]['indice_cout_points']        = 0;
-        $mocked_post_dates[402]                    = '2023-11-12 15:30:00';
+        $fields[402]['indice_cache_etat_systeme']       = 'programme';
+        $fields[402]['indice_cout_points']              = 0;
+        $fields[402]['indice_date_disponibilite']       = '2023-11-12 15:30:00';
 
-        $fields[403]['indice_cache_etat_systeme'] = 'programme';
-        $fields[403]['indice_cout_points']        = 0;
-        $mocked_post_dates[403]                    = '2024-11-20 12:00:00';
+        $fields[403]['indice_cache_etat_systeme']       = 'programme';
+        $fields[403]['indice_cout_points']              = 0;
+        // No meta field: rely on the post date.
+        $mocked_post_dates[403]                         = '2024-11-20 12:00:00';
 
-        $fields[404]['indice_cache_etat_systeme'] = 'programme';
-        $fields[404]['indice_cout_points']        = 0;
-        // No post date: rely on the meta field.
-        $fields[404]['indice_date_disponibilite'] = '2023-11-14 09:15';
+        $fields[404]['indice_cache_etat_systeme']       = 'programme';
+        $fields[404]['indice_cout_points']              = 0;
+        $fields[404]['indice_date_disponibilite']       = '2023-11-14 09:15';
 
         ob_start();
         render_enigme_participation(10, 'defaut', 1);
