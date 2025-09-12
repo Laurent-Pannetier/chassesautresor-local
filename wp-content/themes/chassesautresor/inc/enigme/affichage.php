@@ -682,19 +682,35 @@ require_once __DIR__ . '/indices.php';
 
                         $date_raw  = get_field('indice_date_disponibilite', $indice_id);
                         $timestamp = $date_raw ? strtotime($date_raw) : false;
-                        $date_txt  = $timestamp
-                            ? wp_date(
-                                /* translators: Date format for a scheduled hint, e.g. 10 novembre 2028. */
-                                _x('j F Y', 'scheduled hint date', 'chassesautresor-com'),
-                                $timestamp
-                            )
-                            : '';
-                        $label     = $date_txt !== ''
-                            ? sprintf(
-                                esc_html__('Disponible le %s', 'chassesautresor-com'),
-                                esc_html($date_txt)
-                            )
-                            : esc_html__('Disponible bientôt', 'chassesautresor-com');
+
+                        if ($timestamp) {
+                            $now = current_time('timestamp');
+                            /* translators: Date format for scheduled hints, e.g. 10/11/28. */
+                            $date_fmt = _x('d/m/y', 'scheduled hint short date', 'chassesautresor-com');
+                            /* translators: Time format for scheduled hints, e.g. 14:30. */
+                            $time_fmt = _x('H:i', 'scheduled hint time', 'chassesautresor-com');
+                            $same_day   = wp_date('Y-m-d', $timestamp) === wp_date('Y-m-d', $now);
+                            $time_part  = esc_html(wp_date($time_fmt, $timestamp));
+
+                            if ($same_day) {
+                                $label = sprintf(
+                                    esc_html__('Aujourd\'hui à %s', 'chassesautresor-com'),
+                                    $time_part
+                                );
+                            } else {
+                                $date_part = esc_html(wp_date($date_fmt, $timestamp));
+                                if ($timestamp < $now + WEEK_IN_SECONDS) {
+                                    $label = $date_part . ' ' . sprintf(
+                                        esc_html__('à %s', 'chassesautresor-com'),
+                                        $time_part
+                                    );
+                                } else {
+                                    $label = $date_part;
+                                }
+                            }
+                        } else {
+                            $label = esc_html__('Disponible bientôt', 'chassesautresor-com');
+                        }
                     } elseif ($est_debloque) {
                         $classes   = 'indice-link indice-link--unlocked etiquette';
                         $etat_icon = 'fa-eye';
