@@ -681,9 +681,18 @@ require_once __DIR__ . '/indices.php';
                         $etat_icon = 'fa-hourglass';
 
                         $date_raw  = get_field('indice_date_disponibilite', $indice_id);
-                        $timestamp = $date_raw ? strtotime($date_raw) : false;
+                        $timestamp = false;
 
-                        if ($timestamp) {
+                        if ($date_raw instanceof DateTimeInterface) {
+                            $timestamp = $date_raw->getTimestamp();
+                        } elseif (is_numeric($date_raw)) {
+                            $timestamp = (int) $date_raw;
+                        } elseif (is_string($date_raw)) {
+                            $dt = date_create($date_raw, wp_timezone());
+                            $timestamp = $dt ? $dt->getTimestamp() : false;
+                        }
+
+                        if ($timestamp !== false) {
                             $now = current_time('timestamp');
                             /* translators: Date format for scheduled hints, e.g. 10/11/28. */
                             $date_fmt = _x('d/m/y', 'scheduled hint short date', 'chassesautresor-com');

@@ -33,6 +33,13 @@ if (!function_exists('__')) {
     }
 }
 
+if (!function_exists('_x')) {
+    function _x($text, $context, $domain = null)
+    {
+        return $text;
+    }
+}
+
 if (!function_exists('get_field')) {
     function get_field($key, $id)
     {
@@ -74,6 +81,25 @@ if (!function_exists('compter_tentatives_du_jour')) {
     {
         return 3;
     }
+}
+
+if (!function_exists('current_time')) {
+    function current_time($type)
+    {
+        if ($type === 'timestamp') {
+            return strtotime('2023-11-10 10:00:00');
+        }
+
+        return '';
+    }
+}
+
+if (!defined('DAY_IN_SECONDS')) {
+    define('DAY_IN_SECONDS', 86400);
+}
+
+if (!defined('WEEK_IN_SECONDS')) {
+    define('WEEK_IN_SECONDS', 7 * DAY_IN_SECONDS);
 }
 
 if (!function_exists('remove_accents')) {
@@ -240,5 +266,35 @@ class EnigmeParticipationInfosTest extends TestCase
             $pos_reponse,
             'La section "Votre réponse" doit précéder les indices.'
         );
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_programmed_indices_date_format(): void
+    {
+        global $mocked_posts, $fields;
+        $mocked_posts = [401, 402, 403];
+
+        $fields[401]['indice_cache_etat_systeme']   = 'programme';
+        $fields[401]['indice_cout_points']          = 0;
+        $fields[401]['indice_date_disponibilite']   = new DateTime('2023-11-10 18:00:00');
+
+        $fields[402]['indice_cache_etat_systeme']   = 'programme';
+        $fields[402]['indice_cout_points']          = 0;
+        $fields[402]['indice_date_disponibilite']   = new DateTime('2023-11-12 15:30:00');
+
+        $fields[403]['indice_cache_etat_systeme']   = 'programme';
+        $fields[403]['indice_cout_points']          = 0;
+        $fields[403]['indice_date_disponibilite']   = new DateTime('2024-11-20 12:00:00');
+
+        ob_start();
+        render_enigme_participation(10, 'defaut', 1);
+        $html = ob_get_clean();
+
+        $this->assertStringContainsString("Aujourd'hui à 18:00", $html);
+        $this->assertStringContainsString('12/11/23 à 15:30', $html);
+        $this->assertStringContainsString('20/11/24', $html);
     }
 }
