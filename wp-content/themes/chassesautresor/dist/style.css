@@ -5537,6 +5537,9 @@ body.panneau-ouvert::before {
 .zone-indices .indice-display {
   margin-top: var(--space-md);
   position: relative;
+  padding: var(--space-sm);
+  border: 1px solid var(--color-gris-3);
+  border-radius: 4px;
 }
 .zone-indices .indice-display .indice-close {
   position: absolute;
