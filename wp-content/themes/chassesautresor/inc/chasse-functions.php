@@ -370,9 +370,9 @@ function gerer_chasse_terminee($chasse_id)
 
     $should_close = ($max_winners === 0 || $winner_total >= $max_winners);
     if ($should_close) {
-        $date = current_time('Y-m-d');
-        $date_obj = DateTime::createFromFormat('Y-m-d', $date);
-        if ($date_obj && $date_obj->format('Y-m-d') === $date) {
+        $date = current_time('Y-m-d H:i:s');
+        $date_obj = DateTime::createFromFormat('Y-m-d H:i:s', $date);
+        if ($date_obj && $date_obj->format('Y-m-d H:i:s') === $date) {
             update_field('chasse_cache_date_decouverte', $date, $chasse_id);
         }
 

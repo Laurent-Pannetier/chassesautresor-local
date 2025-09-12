@@ -366,7 +366,7 @@ Groupe : paramètre de la chasse
 * chasse_mode_fin (radio)
 * chasse_infos_nb_max_gagants (number)
 * chasse_cache_gagnants (text)
-* chasse_cache_date_decouverte (date_picker)
+* chasse_cache_date_decouverte (date_time_picker)
 * chasse_cache_enigmes (relationship)
 * chasse_cache_organisateur (relationship)
 * chasse_cache_statut_validation (select)
