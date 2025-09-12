@@ -40,8 +40,13 @@ if (!function_exists('delete_metadata')) {
 if (!function_exists('get_posts')) {
     function get_posts($args = [])
     {
-        $GLOBALS['get_posts_args'] = $args;
-        return [10];
+        $GLOBALS['get_posts_calls'][] = $args;
+
+        if (isset($args['meta_query'])) {
+            return [10];
+        }
+
+        return [10, 20];
     }
 }
 
@@ -56,6 +61,13 @@ if (!function_exists('delete_field')) {
     function delete_field($field, $post_id)
     {
         $GLOBALS['deleted_fields'][] = [$field, $post_id];
+    }
+}
+
+if (!function_exists('chasse_clear_infos_affichage_cache')) {
+    function chasse_clear_infos_affichage_cache($chasse_id)
+    {
+        $GLOBALS['cache_cleared_ids'][] = $chasse_id;
     }
 }
 
@@ -94,7 +106,10 @@ class ResetStatsClearsMessagesTest extends TestCase
 {
     public function test_reset_stats_clears_messages(): void
     {
-        $_POST['nonce'] = 'dummy';
+        $GLOBALS['get_posts_calls']   = [];
+        $GLOBALS['cache_cleared_ids'] = [];
+        $_POST['nonce']               = 'dummy';
+
         cta_reset_stats();
 
         $this->assertSame(
@@ -105,9 +120,11 @@ class ResetStatsClearsMessagesTest extends TestCase
 
     public function test_reset_stats_resets_chasse_fields(): void
     {
-        $GLOBALS['updated_fields'] = [];
-        $GLOBALS['deleted_fields'] = [];
-        $_POST['nonce']            = 'dummy';
+        $GLOBALS['updated_fields']    = [];
+        $GLOBALS['deleted_fields']    = [];
+        $GLOBALS['get_posts_calls']   = [];
+        $GLOBALS['cache_cleared_ids'] = [];
+        $_POST['nonce']               = 'dummy';
 
         cta_reset_stats();
 
@@ -124,7 +141,7 @@ class ResetStatsClearsMessagesTest extends TestCase
                 'fields'   => 'ids',
                 'nopaging' => true,
             ],
-            $GLOBALS['get_posts_args']
+            $GLOBALS['get_posts_calls'][0]
         );
 
         $this->assertContains(
@@ -146,10 +163,12 @@ class ResetStatsClearsMessagesTest extends TestCase
     public function test_reset_stats_clears_usermeta(): void
     {
         global $wpdb;
-        $wpdb->queries                = [];
+        $wpdb->queries                  = [];
         $GLOBALS['clean_user_cache_ids'] = [];
-        $GLOBALS['get_col_sql']       = '';
-        $_POST['nonce']               = 'dummy';
+        $GLOBALS['get_col_sql']         = '';
+        $GLOBALS['get_posts_calls']     = [];
+        $GLOBALS['cache_cleared_ids']   = [];
+        $_POST['nonce']                 = 'dummy';
 
         cta_reset_stats();
 
@@ -167,5 +186,17 @@ class ResetStatsClearsMessagesTest extends TestCase
 
         $this->assertSame([1, 2], $GLOBALS['clean_user_cache_ids']);
         $this->assertStringContainsString('meta_key LIKE', $GLOBALS['get_col_sql']);
+    }
+
+    public function test_reset_stats_clears_all_chasse_caches(): void
+    {
+        $GLOBALS['get_posts_calls']   = [];
+        $GLOBALS['cache_cleared_ids'] = [];
+        $_POST['nonce']               = 'dummy';
+
+        cta_reset_stats();
+
+        $this->assertContains(10, $GLOBALS['cache_cleared_ids']);
+        $this->assertContains(20, $GLOBALS['cache_cleared_ids']);
     }
 }
