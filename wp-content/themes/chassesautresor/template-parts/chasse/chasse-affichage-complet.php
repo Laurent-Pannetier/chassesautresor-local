@@ -358,22 +358,34 @@ if ($edition_active && !$est_complet) {
                 <span class="caracteristique-valeur"><?= esc_html($date_value); ?></span>
               </div>
             <?php endif; ?>
-            <?php if ($mode_fin === 'automatique') : ?>
-              <div class="caracteristique caracteristique-limite">
-                <span class="caracteristique-icone" aria-hidden="true">👥</span>
-                <?php if ((int) $nb_max === 0) : ?>
-                  <span class="caracteristique-label"><?= esc_html__('Gagnants', 'chassesautresor-com'); ?></span>
-                  <span class="caracteristique-valeur nb-gagnants-affichage" data-post-id="<?= esc_attr($chasse_id); ?>">
-                    <?= esc_html__('illimitée', 'chassesautresor-com'); ?>
-                  </span>
-                <?php else : ?>
-                  <span class="caracteristique-label"><?= esc_html__('Limite', 'chassesautresor-com'); ?></span>
-                  <span class="caracteristique-valeur nb-gagnants-affichage" data-post-id="<?= esc_attr($chasse_id); ?>">
-                    <?= esc_html(sprintf(_n('%d gagnant', '%d gagnants', $nb_max, 'chassesautresor-com'), $nb_max)); ?>
-                  </span>
-                <?php endif; ?>
-              </div>
-            <?php endif; ?>
+            <div
+              class="caracteristique caracteristique-limite"
+              style="<?= $mode_fin === 'automatique' ? '' : 'display:none;'; ?>"
+            >
+              <span class="caracteristique-icone" aria-hidden="true">👥</span>
+              <?php if ((int) $nb_max === 0) : ?>
+                <span class="caracteristique-label"><?= esc_html__('Gagnants', 'chassesautresor-com'); ?></span>
+                <span
+                  class="caracteristique-valeur nb-gagnants-affichage"
+                  data-post-id="<?= esc_attr($chasse_id); ?>"
+                >
+                  <?= esc_html__('illimitée', 'chassesautresor-com'); ?>
+                </span>
+              <?php else : ?>
+                <span class="caracteristique-label"><?= esc_html__('Limite', 'chassesautresor-com'); ?></span>
+                <span
+                  class="caracteristique-valeur nb-gagnants-affichage"
+                  data-post-id="<?= esc_attr($chasse_id); ?>"
+                >
+                  <?= esc_html(
+                      sprintf(
+                          _n('%d gagnant', '%d gagnants', $nb_max, 'chassesautresor-com'),
+                          $nb_max
+                      )
+                  ); ?>
+                </span>
+              <?php endif; ?>
+            </div>
 
             <div class="caracteristique caracteristique-fin">
               <span class="caracteristique-icone" aria-hidden="true">⏱️</span>

@@ -1181,6 +1181,8 @@ function initModeFinChasse() {
   const templateNb = document.getElementById('template-nb-gagnants');
   const modeFinLi = document.querySelector('.champ-mode-fin');
   const finCard = document.querySelector('.carte-arret-chasse');
+  const caracLimite = document.querySelector('.caracteristique-limite');
+  const caracFinVal = document.querySelector('.caracteristique-fin .caracteristique-valeur');
 
   if (!toggle || !templateNb || !modeFinLi || !finCard) return;
 
@@ -1214,12 +1216,16 @@ function initModeFinChasse() {
       if (inputNb) {
         mettreAJourAffichageNbGagnants(postId, inputNb.value.trim());
       }
+      if (caracLimite) caracLimite.style.display = '';
+      if (caracFinVal) caracFinVal.textContent = ChasseModeFinI18n.auto;
     } else {
       if (existingNb) existingNb.remove();
 
       if (finCard) finCard.style.display = '';
 
       mettreAJourAffichageNbGagnants(postId, 0);
+      if (caracLimite) caracLimite.style.display = 'none';
+      if (caracFinVal) caracFinVal.textContent = ChasseModeFinI18n.manual;
     }
 
     mettreAJourBadgeModeFinChasse(selected);
