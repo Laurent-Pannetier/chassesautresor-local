@@ -1432,6 +1432,11 @@ body .wp-block-file .wp-block-file__button:focus,
   position: relative;
 }
 
+.bloc-reponse h3 {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
 .badge-cout {
   display: inline-block;
   padding: var(--space-xxs) var(--space-xs);
