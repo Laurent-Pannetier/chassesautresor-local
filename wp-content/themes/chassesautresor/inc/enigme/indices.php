@@ -151,6 +151,7 @@ function charger_script_deblocage_indice(): void
             'solde' => __('Solde', 'chassesautresor-com'),
             'pts'   => __('pts', 'chassesautresor-com'),
             'unlock'=> __('Débloquer l\'indice', 'chassesautresor-com'),
+            'close' => __('Fermer', 'chassesautresor-com'),
         ],
     ]);
 }
