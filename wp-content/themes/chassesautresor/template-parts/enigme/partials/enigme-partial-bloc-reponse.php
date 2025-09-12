@@ -152,6 +152,23 @@ if ($points_manquants <= 0 && !$message_tentatives && $cout > 0) {
     );
 }
 
+$badge_html = '';
+if ($mode_validation !== 'aucune') {
+    $icon       = $mode_validation === 'automatique' ? 'fa-bolt' : 'fa-envelope';
+    $mode_label = $mode_validation === 'automatique'
+        ? esc_html__('automatique', 'chassesautresor-com')
+        : esc_html__('manuelle', 'chassesautresor-com');
+    $title = sprintf(
+        esc_html__("Mode de validation de l'énigme : %s", 'chassesautresor-com'),
+        $mode_label
+    );
+    $badge_html = '<span class="badge-validation" title="'
+        . esc_attr($title)
+        . '"><i class="fa-solid '
+        . esc_attr($icon)
+        . '"></i></span>';
+}
+
 $nonce = wp_create_nonce('reponse_auto_nonce');
 ?>
 
@@ -162,7 +179,7 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
     data-solde-apres="<?= esc_attr($solde_apres); ?>"
     data-seuil="<?= esc_attr($seuil_cout_eleve); ?>"
 >
-    <h3><?= esc_html__('Votre réponse', 'chassesautresor-com'); ?></h3>
+    <h3><?= $badge_html . esc_html__('Votre réponse', 'chassesautresor-com'); ?></h3>
 
     <div class="reponse-feedback" style="display:none"></div>
   <?php if ($message_tentatives) : ?>

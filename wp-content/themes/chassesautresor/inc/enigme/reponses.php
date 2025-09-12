@@ -59,7 +59,25 @@ function enigme_get_bonnes_reponses(int $enigme_id): array
             return '<p>Vous ne pouvez plus répondre à cette énigme.</p>';
         }
 
-        $data = calculer_contexte_points($user_id, $enigme_id);
+        $mode_validation = get_field('enigme_mode_validation', $enigme_id);
+        $badge_html      = '';
+        if ($mode_validation !== 'aucune') {
+            $icon       = $mode_validation === 'automatique' ? 'fa-bolt' : 'fa-envelope';
+            $mode_label = $mode_validation === 'automatique'
+                ? esc_html__('automatique', 'chassesautresor-com')
+                : esc_html__('manuelle', 'chassesautresor-com');
+            $title = sprintf(
+                esc_html__("Mode de validation de l'énigme : %s", 'chassesautresor-com'),
+                $mode_label
+            );
+            $badge_html = '<span class="badge-validation" title="'
+                . esc_attr($title)
+                . '"><i class="fa-solid '
+                . esc_attr($icon)
+                . '"></i></span>';
+        }
+
+        $data  = calculer_contexte_points($user_id, $enigme_id);
         $nonce = wp_create_nonce('reponse_manuelle_nonce');
         ob_start();
     ?>
@@ -71,7 +89,7 @@ function enigme_get_bonnes_reponses(int $enigme_id): array
         data-solde-apres="<?php echo esc_attr($data['solde_apres']); ?>"
         data-seuil="<?php echo esc_attr($data['seuil']); ?>"
     >
-        <h3><?php echo esc_html__('Votre réponse', 'chassesautresor-com'); ?></h3>
+        <h3><?php echo $badge_html . esc_html__('Votre réponse', 'chassesautresor-com'); ?></h3>
         <?php if ($data['points_manquants'] > 0) : ?>
             <p class="message-limite" data-points="manquants">
                 <?php echo esc_html(sprintf(__('Il vous manque %d points pour soumettre votre réponse.', 'chassesautresor-com'), $data['points_manquants'])); ?>
