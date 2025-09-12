@@ -1432,6 +1432,15 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
     $date_debut        = $champs['date_debut'];
     $date_fin          = $champs['date_fin'];
     $illimitee         = $champs['illimitee'];
+    $date_decouverte   = $champs['date_decouverte'];
+
+    verifier_ou_recalculer_statut_chasse($chasse_id);
+    $statut            = get_field('chasse_cache_statut', $chasse_id) ?: 'revision';
+    $statut_validation = get_field('chasse_cache_statut_validation', $chasse_id);
+
+    if ($statut === 'termine' && $date_decouverte) {
+        $date_fin = $date_decouverte;
+    }
 
     $date_debut_affichage = formater_date($date_debut);
     $date_fin_affichage   = $illimitee
@@ -1440,10 +1449,6 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
 
     $nb_joueurs       = compter_joueurs_engages_chasse($chasse_id);
     $nb_joueurs_label = formater_nombre_joueurs($nb_joueurs);
-
-    verifier_ou_recalculer_statut_chasse($chasse_id);
-    $statut            = get_field('chasse_cache_statut', $chasse_id) ?: 'revision';
-    $statut_validation = get_field('chasse_cache_statut_validation', $chasse_id);
     $badge_class       = 'statut-' . $statut;
     $statut_label      = '';
 
