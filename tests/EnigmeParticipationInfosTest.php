@@ -189,4 +189,22 @@ class EnigmeParticipationInfosTest extends TestCase
 
         $this->assertStringContainsString('Indice #1', $html);
     }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_free_indices_locked_initially(): void
+    {
+        global $mocked_posts, $fields;
+        $mocked_posts = [201];
+        $fields[201]['indice_cout_points'] = 0;
+
+        ob_start();
+        render_enigme_participation(10, 'defaut', 1);
+        $html = ob_get_clean();
+
+        $this->assertStringContainsString('indice-link--locked', $html);
+        $this->assertStringContainsString('fa-lock', $html);
+    }
 }
