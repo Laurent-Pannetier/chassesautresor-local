@@ -27,6 +27,9 @@ class ChasseGagnantInfoTest extends TestCase
         if (!function_exists('formater_date')) {
             function formater_date($date) { return $date; }
         }
+        if (!function_exists('formater_date_heure')) {
+            function formater_date_heure($date) { return formater_date($date); }
+        }
         if (!function_exists('current_time')) {
             function current_time($type) { return 0; }
         }

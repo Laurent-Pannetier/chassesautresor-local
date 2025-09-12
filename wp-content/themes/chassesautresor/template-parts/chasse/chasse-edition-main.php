@@ -31,7 +31,7 @@ $cout       = $infos_chasse['champs']['cout_points'];
 $date_debut = $infos_chasse['champs']['date_debut'];
 $date_fin   = $infos_chasse['champs']['date_fin'];
 $date_decouverte = $infos_chasse['champs']['date_decouverte'];
-$date_decouverte_formatee = $date_decouverte ? formater_date($date_decouverte) : '';
+$date_decouverte_formatee = $date_decouverte ? formater_date_heure($date_decouverte) : '';
 $gagnants = $infos_chasse['champs']['gagnants'];
 
 // 🎯 Conversion des dates pour les champs <input>

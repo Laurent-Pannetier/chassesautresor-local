@@ -1580,8 +1580,8 @@ msgstr "j F Y"
 
 #: inc/edition/edition-core.php:665
 msgctxt "formatting for datetime"
-msgid "j F Y \\à H:i"
-msgstr "j F Y \\à H:i"
+msgid "j F Y à H:i"
+msgstr "j F Y à H:i"
 
 #: template-parts/chasse/chasse-edition-main.php:606
 msgid "Coût d’accès à une chasse"
