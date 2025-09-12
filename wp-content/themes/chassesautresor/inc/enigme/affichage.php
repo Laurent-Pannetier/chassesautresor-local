@@ -682,8 +682,31 @@ require_once __DIR__ . '/indices.php';
                         $etat_icon = 'fa-hourglass';
 
                         $date_raw = get_field('indice_date_disponibilite', $indice_id);
-                        $timestamp = $date_raw ? strtotime($date_raw) : false;
-                        $date_txt = $timestamp ? wp_date(get_option('date_format'), $timestamp) : '';
+                        $timestamp = false;
+                        if ($date_raw) {
+                            $formats = [
+                                'Y-m-d H:i:s',
+                                'd/m/Y H:i',
+                                'Y-m-d\TH:i:s',
+                                'd/m/Y g:i a',
+                                'd/m/Y g:i A',
+                                'Y-m-d g:i a',
+                            ];
+                            foreach ($formats as $format) {
+                                $date = date_create_from_format($format, $date_raw, wp_timezone());
+                                if ($date !== false) {
+                                    $timestamp = $date->getTimestamp();
+                                    break;
+                                }
+                            }
+                            if ($timestamp === false) {
+                                $date = date_create_from_format('d/m/Y g:i a', $date_raw, wp_timezone());
+                                if ($date !== false) {
+                                    $timestamp = $date->getTimestamp();
+                                }
+                            }
+                        }
+                        $date_txt = $timestamp ? wp_date(get_option('date_format') . ' H:i', $timestamp) : '';
                         $label = $date_txt !== ''
                             ? sprintf(
                                 esc_html__('Disponible le %s', 'chassesautresor-com'),
