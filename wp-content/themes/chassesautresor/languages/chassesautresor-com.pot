@@ -2996,9 +2996,9 @@ msgid "Débloquer l'indice"
 msgstr ""
 
 #: inc/enigme/affichage.php:725
-msgid "Pour cette énigme"
+msgid "Indices énigme"
 msgstr ""
 
 #: inc/enigme/affichage.php:728
-msgid "Pour toute la chasse"
+msgid "Indices chasse"
 msgstr ""

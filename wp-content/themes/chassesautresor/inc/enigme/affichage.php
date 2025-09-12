@@ -721,10 +721,10 @@ require_once __DIR__ . '/indices.php';
 
             $content .= '<div class="zone-indices">';
             if (!empty($indices_enigme)) {
-                $content .= $build_line($indices_enigme, esc_html__('Pour cette énigme', 'chassesautresor-com'));
+                $content .= $build_line($indices_enigme, esc_html__('Indices énigme', 'chassesautresor-com'));
             }
             if (!empty($indices_chasse)) {
-                $content .= $build_line($indices_chasse, esc_html__('Pour toute la chasse', 'chassesautresor-com'));
+                $content .= $build_line($indices_chasse, esc_html__('Indices chasse', 'chassesautresor-com'));
             }
             $content .= '<div class="indice-display"></div></div>';
         }

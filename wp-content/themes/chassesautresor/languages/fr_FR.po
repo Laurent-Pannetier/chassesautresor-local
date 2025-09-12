@@ -3242,9 +3242,9 @@ msgid "Débloquer l'indice"
 msgstr "Débloquer l'indice"
 
 #: inc/enigme/affichage.php:725
-msgid "Pour cette énigme"
-msgstr "Pour cette énigme"
+msgid "Indices énigme"
+msgstr "Indices énigme"
 
 #: inc/enigme/affichage.php:728
-msgid "Pour toute la chasse"
-msgstr "Pour toute la chasse"
+msgid "Indices chasse"
+msgstr "Indices chasse"

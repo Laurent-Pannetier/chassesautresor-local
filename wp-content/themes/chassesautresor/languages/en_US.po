@@ -3280,9 +3280,9 @@ msgid "Débloquer l'indice"
 msgstr "Unlock hint"
 
 #: inc/enigme/affichage.php:725
-msgid "Pour cette énigme"
-msgstr "For this riddle"
+msgid "Indices énigme"
+msgstr "Riddle hints"
 
 #: inc/enigme/affichage.php:728
-msgid "Pour toute la chasse"
-msgstr "For the entire hunt"
+msgid "Indices chasse"
+msgstr "Hunt hints"
