@@ -12,10 +12,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     btn.addEventListener('mouseenter', show);
     btn.addEventListener('mouseleave', hide);
-    btn.addEventListener('click', e => {
-      e.preventDefault();
+
+    let touched = false;
+
+    btn.addEventListener('touchstart', () => {
+      touched = true;
       btn.classList.toggle('show-tooltip');
     });
+
+    btn.addEventListener('click', () => {
+      if (touched) {
+        touched = false;
+        return;
+      }
+      btn.classList.toggle('show-tooltip');
+    });
+
     btn.addEventListener('blur', hide);
   });
 
