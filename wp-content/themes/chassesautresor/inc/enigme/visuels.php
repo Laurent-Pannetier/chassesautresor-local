@@ -94,18 +94,54 @@ function build_picture_enigme(int $image_id, string $alt, array $sizes, array $i
         };
     }
 
+    $can_webp = function_exists('wp_image_editor_supports')
+        && wp_image_editor_supports(['mime_type' => 'image/webp']);
+
+    $webp_builder = static function (int $id, string $size) use ($can_webp): string {
+        if (!$can_webp) {
+            return '';
+        }
+        $data = wp_get_attachment_image_src($id, $size);
+        $url  = $data[0] ?? '';
+        if (!$url) {
+            return '';
+        }
+        $webp_url = preg_replace('/\.(jpe?g|png)$/i', '.webp', $url);
+        if ($webp_url === $url) {
+            return '';
+        }
+        $upload_dir = wp_get_upload_dir();
+        $webp_path  = str_replace($upload_dir['baseurl'], $upload_dir['basedir'], $webp_url);
+        return file_exists($webp_path) ? esc_url($webp_url) : '';
+    };
+
     for ($i = count($used_sizes) - 1; $i > 0; $i--) {
-        $size         = $used_sizes[$i];
+        $size       = $used_sizes[$i];
+        $media      = $breakpoints[$size];
+        $media_attr = $media ? ' media="' . $media . '"' : '';
+
         $src_1x       = $url_builder($image_id, $size);
         $src_2x       = $url_builder($image_id, $size_2x_map[$size] ?? $size);
         $srcset_parts = [$src_1x . ' 1x'];
         if ($src_2x !== '' && $src_2x !== $src_1x) {
             $srcset_parts[] = $src_2x . ' 2x';
         }
-        $srcset     = implode(', ', $srcset_parts);
-        $media      = $breakpoints[$size];
-        $media_attr = $media ? ' media="' . $media . '"' : '';
-        $html      .= '  <source srcset="' . $srcset . '" data-size="' . $size . '"' . $media_attr . ">\n";
+        $srcset = implode(', ', $srcset_parts);
+
+        $webp_1x = $webp_builder($image_id, $size);
+        $webp_2x = $webp_builder($image_id, $size_2x_map[$size] ?? $size);
+        if ($webp_1x !== '') {
+            $webp_parts = [$webp_1x . ' 1x'];
+            if ($webp_2x !== '' && $webp_2x !== $webp_1x) {
+                $webp_parts[] = $webp_2x . ' 2x';
+            }
+            $webp_srcset = implode(', ', $webp_parts);
+            $html       .= '  <source type="image/webp" srcset="' . $webp_srcset
+                . '" data-size="' . $size . '"' . $media_attr . ">\n";
+        }
+
+        $html .= '  <source srcset="' . $srcset . '" data-size="' . $size . '"'
+            . $media_attr . ">\n";
     }
 
     $fallback_size   = $used_sizes[0];

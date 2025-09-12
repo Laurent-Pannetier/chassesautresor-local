@@ -3,6 +3,19 @@
 # BEGIN NON_LSCACHE
 # END NON_LSCACHE
 
+# BEGIN WebP
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteCond %{HTTP_ACCEPT} "image/webp"
+RewriteCond %{REQUEST_FILENAME} (.+)\.(jpe?g|png)$
+RewriteCond %{REQUEST_FILENAME}.webp -f
+RewriteRule ^ %1.webp [T=image/webp,E=accept:1,L]
+</IfModule>
+<IfModule mod_headers.c>
+Header append Vary Accept env=REDIRECT_accept
+</IfModule>
+# END WebP
+
 # BEGIN WordPress
 # The directives (lines) between "BEGIN WordPress" and "END WordPress" are
 # dynamically generated, and should only be modified via WordPress filters.
