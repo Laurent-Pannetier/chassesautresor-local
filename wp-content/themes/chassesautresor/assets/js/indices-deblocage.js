@@ -16,6 +16,11 @@ document.addEventListener('DOMContentLoaded', function () {
             link.dataset.unlocked = '1';
             link.classList.remove('indice-link--locked');
             link.classList.add('indice-link--unlocked');
+            var icon = link.querySelector('i');
+            if (icon) {
+              icon.classList.remove('fa-lightbulb', 'fa-hourglass');
+              icon.classList.add('fa-eye');
+            }
           }
           if (res.data.points !== undefined) {
             var solde = document.querySelector('.participation-infos .solde');
