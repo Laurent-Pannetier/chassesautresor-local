@@ -205,6 +205,6 @@ class EnigmeParticipationInfosTest extends TestCase
         $html = ob_get_clean();
 
         $this->assertStringContainsString('indice-link--locked', $html);
-        $this->assertStringContainsString('fa-lock', $html);
+        $this->assertStringContainsString('fa-lightbulb', $html);
     }
 }
