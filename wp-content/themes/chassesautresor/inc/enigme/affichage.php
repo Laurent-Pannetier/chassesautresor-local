@@ -687,7 +687,7 @@ require_once __DIR__ . '/indices.php';
                             : esc_html__('Disponible bientôt', 'chassesautresor-com');
                     } elseif ($est_debloque) {
                         $classes   = 'indice-link indice-link--unlocked etiquette';
-                        $etat_icon = 'fa-lock-open';
+                        $etat_icon = 'fa-eye';
                         $title_ind = get_the_title($indice_id);
                         $label     = $title_ind !== '' ? esc_html($title_ind) : sprintf(
                             esc_html__('Indice #%d', 'chassesautresor-com'),
@@ -695,7 +695,7 @@ require_once __DIR__ . '/indices.php';
                         );
                     } else {
                         $classes   = 'indice-link indice-link--locked etiquette';
-                        $etat_icon = 'fa-lock';
+                        $etat_icon = 'fa-lightbulb';
                         $title_ind = get_the_title($indice_id);
                         $label     = $title_ind !== '' ? esc_html($title_ind) : sprintf(
                             esc_html__('Indice #%d', 'chassesautresor-com'),
