@@ -42,10 +42,10 @@ document.addEventListener('DOMContentLoaded', function () {
       var zone = link.closest('.zone-indices');
       var container = zone ? zone.querySelector('.indice-display') : null;
       if (!container) return;
-      if (link.dataset.unlocked === '1') {
+      var cout = link.dataset.cout || '0';
+      if (link.dataset.unlocked === '1' || cout === '0') {
         fetchIndice(link.dataset.indiceId, link, container);
       } else {
-        var cout = link.dataset.cout || '0';
         var html = '<p>' + indicesUnlock.texts.unlock + ' - ' + cout + ' ' + indicesUnlock.texts.pts + '</p>'
           + '<button type="button" class="btn-debloquer-indice" data-indice-id="' + link.dataset.indiceId + '">'
           + indicesUnlock.texts.unlock + '</button>';

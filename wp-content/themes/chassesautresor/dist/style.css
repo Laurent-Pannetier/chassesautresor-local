@@ -5560,17 +5560,24 @@ body.panneau-ouvert::before {
   justify-content: flex-start;
   flex: 1 1 auto;
 }
-.zone-indices .indice-link {
+.zone-indices .indice-link,
+.zone-indices .indice-label {
   display: inline-flex;
   align-items: center;
   gap: var(--space-xs);
   padding: calc(var(--space-xs) / 2) var(--space-sm);
   border-radius: 4px;
-  text-decoration: none;
   font-weight: 600;
   font-size: 0.875rem;
 }
+.zone-indices .indice-link {
+  text-decoration: none;
+}
 .zone-indices .indice-link--locked, .zone-indices .indice-link--unlocked, .zone-indices .indice-link--upcoming {
+  background-color: var(--color-gris-3);
+  color: var(--color-white);
+}
+.zone-indices .indice-label.indice-link--upcoming {
   background-color: var(--color-gris-3);
   color: var(--color-white);
 }

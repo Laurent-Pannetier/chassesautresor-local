@@ -112,7 +112,8 @@ if (!function_exists('cat_debug')) {
 if (!function_exists('get_posts')) {
     function get_posts($args = [])
     {
-        global $mocked_posts;
+        global $mocked_posts, $last_get_posts_args;
+        $last_get_posts_args[] = $args;
         return $mocked_posts ?? [];
     }
 }
@@ -153,6 +154,13 @@ if (!function_exists('wp_timezone')) {
     }
 }
 
+if (!function_exists('current_time')) {
+    function current_time($type, $gmt = 0)
+    {
+        return time();
+    }
+}
+
 if (!function_exists('get_option')) {
     function get_option($name, $default = false)
     {
@@ -167,6 +175,12 @@ if (!function_exists('get_option')) {
 if (!defined('HOUR_IN_SECONDS')) {
     define('HOUR_IN_SECONDS', 3600);
 }
+if (!defined('DAY_IN_SECONDS')) {
+    define('DAY_IN_SECONDS', 86400);
+}
+if (!defined('WEEK_IN_SECONDS')) {
+    define('WEEK_IN_SECONDS', 7 * DAY_IN_SECONDS);
+}
 
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/enigme/affichage.php';
 
@@ -174,7 +188,7 @@ class EnigmeParticipationInfosTest extends TestCase
 {
     public function setUp(): void
     {
-        global $fields, $resolved, $wpdb, $mocked_posts, $mocked_titles;
+        global $fields, $resolved, $wpdb, $mocked_posts, $mocked_titles, $last_get_posts_args;
         $fields = [
             10 => [
                 'indices'                      => [],
@@ -184,8 +198,9 @@ class EnigmeParticipationInfosTest extends TestCase
             ],
         ];
         $resolved = false;
-        $mocked_posts  = [];
-        $mocked_titles = [];
+        $mocked_posts        = [];
+        $mocked_titles       = [];
+        $last_get_posts_args = [];
         $wpdb = new class {
             public string $prefix = 'wp_';
             public function prepare($query, ...$args)
@@ -250,13 +265,88 @@ class EnigmeParticipationInfosTest extends TestCase
         $mocked_posts = [405];
         $fields[405]['indice_cout_points']        = 0;
         $fields[405]['indice_cache_etat_systeme'] = 'programme';
-        $fields[405]['indice_date_disponibilite'] = '12/09/2025 8:47 am';
+        $fields[405]['indice_date_disponibilite'] = date('d/m/Y H:i', time() + 30 * DAY_IN_SECONDS);
+
+        ob_start();
+        render_enigme_participation(10, 'defaut', 1);
+        $html = ob_get_clean();
+        $this->assertStringContainsString('<span class="indice-label', $html);
+        $expected = date('d/m/y', time() + 30 * DAY_IN_SECONDS);
+        $this->assertStringContainsString($expected, $html);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_programmed_indices_label_today(): void
+    {
+        global $mocked_posts, $fields;
+        $mocked_posts = [501];
+        $fields[501]['indice_cout_points']        = 0;
+        $fields[501]['indice_cache_etat_systeme'] = 'programme';
+        $fields[501]['indice_date_disponibilite'] = date('d/m/Y H:i', time() + HOUR_IN_SECONDS);
 
         ob_start();
         render_enigme_participation(10, 'defaut', 1);
         $html = ob_get_clean();
 
-        $this->assertMatchesRegularExpression('/12\/09\/25( à 08:47)?/', $html);
+        $this->assertStringContainsString('indice-label', $html);
+        $this->assertMatchesRegularExpression('/Aujourd’hui à \d{2}:\d{2}/', $html);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_programmed_indices_label_within_week(): void
+    {
+        global $mocked_posts, $fields;
+        $mocked_posts = [502];
+        $fields[502]['indice_cout_points']        = 0;
+        $fields[502]['indice_cache_etat_systeme'] = 'programme';
+        $fields[502]['indice_date_disponibilite'] = date('d/m/Y H:i', time() + 2 * DAY_IN_SECONDS);
+
+        ob_start();
+        render_enigme_participation(10, 'defaut', 1);
+        $html = ob_get_clean();
+
+        $expected = date('d/m/y \à H:i', time() + 2 * DAY_IN_SECONDS);
+        $this->assertStringContainsString($expected, $html);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_programmed_indices_past_date_is_available(): void
+    {
+        global $mocked_posts, $fields;
+        $mocked_posts = [503];
+        $fields[503]['indice_cout_points']        = 0;
+        $fields[503]['indice_cache_etat_systeme'] = 'programme';
+        $fields[503]['indice_date_disponibilite'] = date('d/m/Y H:i', time() - HOUR_IN_SECONDS);
+
+        ob_start();
+        render_enigme_participation(10, 'defaut', 1);
+        $html = ob_get_clean();
+
+        $this->assertStringContainsString('indice-link', $html);
+        $this->assertStringNotContainsString('indice-link--upcoming', $html);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_get_posts_includes_pending_status(): void
+    {
+        global $last_get_posts_args;
+        render_enigme_participation(10, 'defaut', 1);
+        $this->assertNotEmpty($last_get_posts_args);
+        foreach ($last_get_posts_args as $args) {
+            $this->assertContains('pending', $args['post_status']);
+        }
     }
 
     /**

@@ -46,15 +46,19 @@
     flex: 1 1 auto;
   }
 
-  .indice-link {
+  .indice-link,
+  .indice-label {
     display: inline-flex;
     align-items: center;
     gap: var(--space-xs);
     padding: calc(var(--space-xs) / 2) var(--space-sm);
     border-radius: 4px;
-    text-decoration: none;
     font-weight: 600;
     font-size: 0.875rem;
+  }
+
+  .indice-link {
+    text-decoration: none;
 
     &--locked,
     &--unlocked,
@@ -62,6 +66,11 @@
       background-color: var(--color-gris-3);
       color: var(--color-white);
     }
+  }
+
+  .indice-label.indice-link--upcoming {
+    background-color: var(--color-gris-3);
+    color: var(--color-white);
   }
 
   .btn-debloquer-indice {
