@@ -57,6 +57,7 @@ function handle_single_enigme_access(): void
 
     $etat_systeme    = get_field('enigme_cache_etat_systeme', $enigme_id) ?? 'accessible';
     $condition_acces = get_field('enigme_acces_condition', $enigme_id) ?? 'immediat';
+    $chasse_terminee = ($chasse_id && get_field('chasse_cache_statut', $chasse_id) === 'termine');
 
     if (
         $condition_acces === 'pre_requis' &&
@@ -72,6 +73,7 @@ function handle_single_enigme_access(): void
     if (
         $etat_systeme !== 'accessible' &&
         $etat_systeme !== 'bloquee_pre_requis' &&
+        !($chasse_terminee && $etat_systeme === 'bloquee_date') &&
         !utilisateur_peut_modifier_enigme($enigme_id)
     ) {
         $url = $chasse_id ? get_permalink($chasse_id) : home_url('/');
