@@ -680,44 +680,43 @@ require_once __DIR__ . '/indices.php';
                         $classes   = 'indice-label indice-link--upcoming etiquette';
                         $etat_icon = 'fa-hourglass';
 
-                        $date_raw  = get_field('indice_date_disponibilite', $indice_id);
-                        $timestamp = false;
-
-                        if ($date_raw instanceof DateTimeInterface) {
-                            $timestamp = $date_raw->getTimestamp();
-                        } elseif (is_numeric($date_raw)) {
-                            $timestamp = (int) $date_raw;
-                        } elseif (is_string($date_raw) && trim($date_raw) !== '') {
-                            $formats = [
-                                'Y-m-d H:i:s',
-                                'Y-m-d H:i',
-                                'Y-m-d',
-                                'd/m/Y H:i',
-                                'd/m/Y',
-                            ];
-                            foreach ($formats as $format) {
-                                $dt = date_create_from_format($format, $date_raw, wp_timezone());
-                                if ($dt instanceof DateTimeInterface) {
-                                    $timestamp = $dt->getTimestamp();
-                                    break;
-                                }
-                            }
-                            if ($timestamp === false) {
-                                $dt = date_create($date_raw, wp_timezone());
-                                if ($dt instanceof DateTimeInterface) {
-                                    $timestamp = $dt->getTimestamp();
-                                }
-                            }
+                        if (function_exists('get_post_timestamp')) {
+                            $timestamp = get_post_timestamp($indice_id, 'date');
+                        } else {
+                            $post_date = function_exists('get_post_field')
+                                ? get_post_field('post_date', $indice_id)
+                                : '';
+                            $timestamp = $post_date ? strtotime($post_date) : false;
                         }
 
                         if ($timestamp === false) {
-                            if (function_exists('get_post_timestamp')) {
-                                $timestamp = get_post_timestamp($indice_id, 'date');
-                            } else {
-                                $post_date = function_exists('get_post_field')
-                                    ? get_post_field('post_date', $indice_id)
-                                    : '';
-                                $timestamp = $post_date ? strtotime($post_date) : false;
+                            $date_raw = get_field('indice_date_disponibilite', $indice_id);
+
+                            if ($date_raw instanceof DateTimeInterface) {
+                                $timestamp = $date_raw->getTimestamp();
+                            } elseif (is_numeric($date_raw)) {
+                                $timestamp = (int) $date_raw;
+                            } elseif (is_string($date_raw) && trim($date_raw) !== '') {
+                                $formats = [
+                                    'Y-m-d H:i:s',
+                                    'Y-m-d H:i',
+                                    'Y-m-d',
+                                    'd/m/Y H:i',
+                                    'd/m/Y',
+                                ];
+                                foreach ($formats as $format) {
+                                    $dt = date_create_from_format($format, $date_raw, wp_timezone());
+                                    if ($dt instanceof DateTimeInterface) {
+                                        $timestamp = $dt->getTimestamp();
+                                        break;
+                                    }
+                                }
+                                if ($timestamp === false) {
+                                    $dt = date_create($date_raw, wp_timezone());
+                                    if ($dt instanceof DateTimeInterface) {
+                                        $timestamp = $dt->getTimestamp();
+                                    }
+                                }
                             }
                         }
 

@@ -304,20 +304,24 @@ class EnigmeParticipationInfosTest extends TestCase
     {
         global $mocked_posts, $fields;
         global $mocked_post_dates;
-        $mocked_posts = [401, 402, 403];
+        $mocked_posts = [401, 402, 403, 404];
 
         $fields[401]['indice_cache_etat_systeme'] = 'programme';
         $fields[401]['indice_cout_points']        = 0;
-        $fields[401]['indice_date_disponibilite'] = '10/11/2023 18:00';
+        $mocked_post_dates[401]                    = '2023-11-10 18:00:00';
 
         $fields[402]['indice_cache_etat_systeme'] = 'programme';
         $fields[402]['indice_cout_points']        = 0;
-        $fields[402]['indice_date_disponibilite'] = '2023-11-12 15:30:00';
+        $mocked_post_dates[402]                    = '2023-11-12 15:30:00';
 
         $fields[403]['indice_cache_etat_systeme'] = 'programme';
         $fields[403]['indice_cout_points']        = 0;
-        // Fallback to the post's publication date when meta is absent.
-        $mocked_post_dates[403] = '2024-11-20 12:00:00';
+        $mocked_post_dates[403]                    = '2024-11-20 12:00:00';
+
+        $fields[404]['indice_cache_etat_systeme'] = 'programme';
+        $fields[404]['indice_cout_points']        = 0;
+        // No post date: rely on the meta field.
+        $fields[404]['indice_date_disponibilite'] = '2023-11-14 09:15';
 
         ob_start();
         render_enigme_participation(10, 'defaut', 1);
@@ -325,6 +329,7 @@ class EnigmeParticipationInfosTest extends TestCase
 
         $this->assertStringContainsString("Aujourd'hui à 18:00", $html);
         $this->assertStringContainsString('12/11/23 à 15:30', $html);
+        $this->assertStringContainsString('14/11/23 à 09:15', $html);
         $this->assertStringContainsString('20/11/24', $html);
     }
 }
