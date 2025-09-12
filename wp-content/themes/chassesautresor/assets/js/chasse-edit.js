@@ -620,7 +620,9 @@ window.rafraichirCarteSolutions = rafraichirCarteSolutions;
       const dateValue = now.toISOString().slice(0, 19).replace('T', ' ');
       const dateDisplay = `${String(now.getDate()).padStart(2, '0')}/${String(
         now.getMonth() + 1
-      ).padStart(2, '0')}/${now.getFullYear()}`;
+      ).padStart(2, '0')}/${now.getFullYear()} à ${String(
+        now.getHours()
+      ).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
       const gagnantsEsc = gagnants.replace(/[&<>\"']/g, (c) => ({
         '&': '&amp;',
         '<': '&lt;',
