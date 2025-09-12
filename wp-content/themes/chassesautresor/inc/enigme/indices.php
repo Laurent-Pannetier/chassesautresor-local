@@ -51,7 +51,7 @@ function debloquer_indice(): void
             $thumb = wp_get_attachment_image($image_id, 'thumbnail');
             $full  = wp_get_attachment_image_url($image_id, 'full');
             $image = $full
-                ? '<a href="' . esc_url($full) . '" class="fancybox image">' . $thumb . '</a>'
+                ? '<a href="' . esc_url($full) . '" class="image eyebox-trigger" data-full="' . esc_url($full) . '">' . $thumb . '<i class="fa-solid fa-eye eyebox-icon" aria-hidden="true"></i></a>'
                 : $thumb;
         }
         $html = '<div class="indice-contenu">';
@@ -113,7 +113,7 @@ function debloquer_indice(): void
         $thumb = wp_get_attachment_image($image_id, 'thumbnail');
         $full  = wp_get_attachment_image_url($image_id, 'full');
         $image = $full
-            ? '<a href="' . esc_url($full) . '" class="fancybox image">' . $thumb . '</a>'
+            ? '<a href="' . esc_url($full) . '" class="image eyebox-trigger" data-full="' . esc_url($full) . '">' . $thumb . '<i class="fa-solid fa-eye eyebox-icon" aria-hidden="true"></i></a>'
             : $thumb;
     }
     $html = '<div class="indice-contenu">';
