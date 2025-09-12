@@ -107,6 +107,11 @@ class ChasseGagnantInfoTest extends TestCase
         if (!function_exists('wp_get_attachment_image_src')) {
             function wp_get_attachment_image_src($id, $size) { return ['']; }
         }
+        if (!function_exists('number_format_i18n')) {
+            function number_format_i18n($number, $decimals = 0) {
+                return number_format($number, $decimals);
+            }
+        }
 
         global $fields;
         $fields = [
@@ -255,6 +260,11 @@ class ChasseGagnantInfoTest extends TestCase
         }
         if (!function_exists('wp_get_attachment_image_src')) {
             function wp_get_attachment_image_src($id, $size) { return ['']; }
+        }
+        if (!function_exists('number_format_i18n')) {
+            function number_format_i18n($number, $decimals = 0) {
+                return number_format($number, $decimals);
+            }
         }
         if (!function_exists('solution_chasse_peut_etre_affichee')) {
             function solution_chasse_peut_etre_affichee($id) { return true; }

@@ -119,7 +119,7 @@ if (empty($infos)) {
                             printf(
                                 esc_html__('%1$s — %2$s €', 'chassesautresor-com'),
                                 esc_html($reward_title),
-                                esc_html($reward_value)
+                                esc_html(number_format_i18n(round((float) $reward_value), 0))
                             );
                             ?>
                         </span>
