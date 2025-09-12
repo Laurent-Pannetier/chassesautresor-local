@@ -6046,6 +6046,8 @@ li.active .enigme-menu__edit {
 
 .participation .wp-block-separator {
   margin: var(--space-md) 0;
+  border: 0;
+  border-top: 1px solid rgba(var(--color-black-rgb, 0, 0, 0), 0.2);
 }
 
 .zone-reponse form {
