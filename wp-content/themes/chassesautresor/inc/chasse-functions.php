@@ -1382,7 +1382,7 @@ function render_chasse_solutions(int $chasse_id, int $user_id): void
         return;
     }
 
-    echo '<section class="chasse-solutions">';
+    echo '<section id="chasse-solutions" class="chasse-solutions">';
     echo '<h2>' . esc_html__('Solutions', 'chassesautresor-com') . '</h2>';
     echo $sections;
     echo '</section>';

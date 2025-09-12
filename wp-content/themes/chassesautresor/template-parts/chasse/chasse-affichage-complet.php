@@ -296,8 +296,27 @@ if ($edition_active && !$est_complet) {
       </h1>
 
       <?php if ($statut === 'termine' && !empty($date_decouverte) && !empty($gagnants)) : ?>
+        <?php
+        $solutions_link = '';
+        $user_id_solutions = function_exists('get_current_user_id') ? get_current_user_id() : 0;
+        if (
+            function_exists('solution_chasse_peut_etre_affichee')
+            && function_exists('utilisateur_peut_voir_solution_chasse')
+            && function_exists('solution_recuperer_par_objet')
+            && function_exists('solution_contenu_html')
+            && solution_chasse_peut_etre_affichee($chasse_id)
+            && utilisateur_peut_voir_solution_chasse($chasse_id, $user_id_solutions)
+        ) {
+            $sol_post = solution_recuperer_par_objet($chasse_id, 'chasse');
+            if ($sol_post && solution_contenu_html($sol_post) !== '') {
+                $solutions_link = ' — <a href="#chasse-solutions">'
+                    . esc_html__('Voir les solutions', 'chassesautresor-com')
+                    . '</a>';
+            }
+        }
+        ?>
         <div class="chasse-gagnant-info">
-          <?= sprintf(__('Chasse gagnée le %1$s par %2$s', 'chassesautresor-com'), esc_html($date_decouverte_formatee), esc_html($gagnants)); ?>
+          <?= sprintf(__('Chasse gagnée le %1$s par %2$s', 'chassesautresor-com'), esc_html($date_decouverte_formatee), esc_html($gagnants)); ?><?= $solutions_link; ?>
         </div>
       <?php endif; ?>
 
