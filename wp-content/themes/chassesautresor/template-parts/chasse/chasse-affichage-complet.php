@@ -52,7 +52,7 @@ $date_debut_formatee        = formater_date($date_debut);
 $date_fin_formatee          = $illimitee
     ? __('Illimitée', 'chassesautresor-com')
     : ($date_fin ? formater_date($date_fin) : __('Non spécifiée', 'chassesautresor-com'));
-$date_decouverte_formatee   = $date_decouverte ? formater_date($date_decouverte) : '';
+$date_decouverte_formatee   = $date_decouverte ? formater_date_heure($date_decouverte) : '';
 
 $now        = current_time('timestamp');
 $date_label = '';

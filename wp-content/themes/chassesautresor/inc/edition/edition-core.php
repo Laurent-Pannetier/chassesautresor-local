@@ -650,19 +650,27 @@ function formater_date_heure($date): string
         return __('Non spécifiée', 'chassesautresor-com');
     }
 
+    $original = '';
     if ($date instanceof DateTimeInterface) {
         $timestamp = $date->getTimestamp();
+        $original  = $date->format('Y-m-d H:i:s');
     } elseif (is_array($date) && isset($date['date'])) {
-        $timestamp = convertir_en_timestamp($date['date']);
+        $original  = $date['date'];
+        $timestamp = convertir_en_timestamp($original);
     } else {
-        $timestamp = convertir_en_timestamp((string) $date);
+        $original  = (string) $date;
+        $timestamp = convertir_en_timestamp($original);
     }
 
     if ($timestamp === false) {
         return __('Non spécifiée', 'chassesautresor-com');
     }
 
-    $format = _x('j F Y \\à H:i', 'formatting for datetime', 'chassesautresor-com');
+    if (!preg_match('/\d{1,2}:\d{2}/', $original)) {
+        return formater_date($date);
+    }
+
+    $format = _x('j F Y à H:i', 'formatting for datetime', 'chassesautresor-com');
 
     return wp_date($format, $timestamp);
 }

@@ -1562,7 +1562,7 @@ msgstr "F j, Y"
 
 #: inc/edition/edition-core.php:665
 msgctxt "formatting for datetime"
-msgid "j F Y \\à H:i"
+msgid "j F Y à H:i"
 msgstr "F j, Y \\a\\t g:i a"
 
 #: template-parts/chasse/chasse-edition-main.php:606
