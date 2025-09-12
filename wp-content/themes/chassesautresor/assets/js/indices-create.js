@@ -112,12 +112,19 @@
 
     function openMedia() {
       if (!window.wp || !window.wp.media) return;
+
+      var prevId = window.wp.media.model.settings.post.id;
+      window.wp.media.model.settings.post.id = 0;
+
       var frame = window.wp.media({ title: indicesCreate.texts.mediaTitle, multiple: false });
       frame.on('select', function () {
         var attachment = frame.state().get('selection').first().toJSON();
         overlay.querySelector('input[name="indice_image"]').value = attachment.id;
         var url = attachment.sizes && attachment.sizes.thumbnail ? attachment.sizes.thumbnail.url : attachment.url;
         renderPreview(url);
+      });
+      frame.on('close', function () {
+        window.wp.media.model.settings.post.id = prevId;
       });
       frame.open();
     }
