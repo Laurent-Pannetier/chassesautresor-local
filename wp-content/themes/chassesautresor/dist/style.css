@@ -5535,6 +5535,10 @@ body.panneau-ouvert::before {
   cursor: pointer;
 }
 .zone-indices .indice-display {
+  display: none;
+}
+.zone-indices .indice-display:not(:empty) {
+  display: block;
   margin-top: var(--space-md);
   position: relative;
   padding: var(--space-sm);

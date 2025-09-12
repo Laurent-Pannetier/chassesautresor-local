@@ -66,11 +66,16 @@
   }
 
   .indice-display {
-    margin-top: var(--space-md);
-    position: relative;
-    padding: var(--space-sm);
-    border: 1px solid var(--color-gris-3);
-    border-radius: 4px;
+    display: none;
+
+    &:not(:empty) {
+      display: block;
+      margin-top: var(--space-md);
+      position: relative;
+      padding: var(--space-sm);
+      border: 1px solid var(--color-gris-3);
+      border-radius: 4px;
+    }
 
     .indice-close {
       position: absolute;
