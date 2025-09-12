@@ -155,18 +155,24 @@ if ($points_manquants <= 0 && !$message_tentatives && $cout > 0) {
 $badge_html = '';
 if ($mode_validation !== 'aucune') {
     $icon       = $mode_validation === 'automatique' ? 'fa-bolt' : 'fa-envelope';
-    $mode_label = $mode_validation === 'automatique'
-        ? esc_html__('automatique', 'chassesautresor-com')
-        : esc_html__('manuelle', 'chassesautresor-com');
-    $title = sprintf(
-        esc_html__("Mode de validation de l'énigme : %s", 'chassesautresor-com'),
-        $mode_label
-    );
-    $badge_html = '<span class="badge-validation" title="'
-        . esc_attr($title)
+    if ($mode_validation === 'automatique') {
+        $message = __("Mode de validation de l'énigme automatique. Vous connaîtrez le résultat de votre tentative immédiatement après l'avoir soumise.", 'chassesautresor-com');
+    } else {
+        $organisateur_id   = get_organisateur_from_chasse($chasse_id);
+        $organisateur_nom  = $organisateur_id ? get_the_title($organisateur_id) : '';
+        $organisateur_lien = $organisateur_id ? get_permalink($organisateur_id) : '#';
+        $message           = sprintf(
+            __("Mode de validation de l'énigme manuelle. Vous connaîtrez le résultat de votre tentative après son traitement par %s.", 'chassesautresor-com'),
+            '<a href="' . esc_url($organisateur_lien) . '">' . esc_html($organisateur_nom) . '</a>'
+        );
+    }
+    $badge_html = '<button type="button" class="badge-validation" data-tooltip="'
+        . esc_attr($message)
+        . '" title="'
+        . esc_attr(wp_strip_all_tags($message))
         . '"><i class="fa-solid '
         . esc_attr($icon)
-        . '"></i></span>';
+        . '"></i></button>';
 }
 
 $nonce = wp_create_nonce('reponse_auto_nonce');

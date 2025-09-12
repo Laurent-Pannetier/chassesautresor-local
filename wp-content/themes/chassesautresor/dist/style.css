@@ -1836,11 +1836,39 @@ a.ajout-link:focus-visible {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  border: none;
+  padding: 0;
   border-radius: 50%;
   background: var(--color-grey-light);
   color: var(--color-text-fond-clair);
   font-size: 0.75rem;
   box-shadow: 0 0 0 1px var(--color-grey-dark), 0 2px 4px rgba(var(--color-text-fond-clair-rgb), 0.15);
+  cursor: pointer;
+  position: relative;
+  vertical-align: middle;
+}
+
+.badge-validation__tooltip {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-grey-light);
+  color: var(--color-text-fond-clair);
+  padding: var(--space-xs);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(var(--color-text-fond-clair-rgb), 0.2);
+  width: -moz-max-content;
+  width: max-content;
+  max-width: 220px;
+  z-index: 10;
+}
+
+.badge-validation.show-tooltip .badge-validation__tooltip {
+  display: block;
 }
 
 /* ========== 🟢 BADGE ROND ========== */
