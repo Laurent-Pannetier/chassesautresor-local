@@ -338,7 +338,7 @@ CPT : organisateur
 Groupe : Paramètres organisateur
 
 * email_contact (email)
-* logo_organisateur (image) — anciennement `profil_public_logo_organisateur`
+* logo_organisateur (image)
 * liens_publics (repeater)
   * type_de_lien (select)
   * url_lien (url)

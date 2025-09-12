@@ -398,7 +398,6 @@ Requis : non
 — logo_organisateur —
 Type : image
 Label : Votre Logo
-Ancien nom : profil_public_logo_organisateur
 Instructions : (vide)
 Requis : non
 ----------------------------------------
@@ -600,7 +599,7 @@ Label : état système
 Instructions : (vide)
 Requis : non
 Choices :
-  - INVALIDE : INVALIDE
+  - INVALIDE : invalide
   - FIN_CHASSE : fin de chasse
   - FIN_CHASSE_DIFFERE : différé
   - A_VENIR : à venir
