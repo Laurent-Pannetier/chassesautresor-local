@@ -116,6 +116,13 @@ if (!function_exists('wp_date')) {
     }
 }
 
+if (!function_exists('wp_timezone')) {
+    function wp_timezone()
+    {
+        return new DateTimeZone('UTC');
+    }
+}
+
 if (!function_exists('locate_template')) {
     function locate_template($template)
     {
@@ -151,13 +158,33 @@ if (!function_exists('get_the_title')) {
     }
 }
 
+if (!function_exists('get_post_field')) {
+    function get_post_field($field, $post_id)
+    {
+        global $mocked_post_dates;
+        if ($field === 'post_date') {
+            return $mocked_post_dates[$post_id] ?? null;
+        }
+
+        return null;
+    }
+}
+
+if (!function_exists('get_post_timestamp')) {
+    function get_post_timestamp($post_id, $field = 'date')
+    {
+        $date = get_post_field('post_date', $post_id);
+        return $date ? strtotime($date) : false;
+    }
+}
+
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/enigme/affichage.php';
 
 class EnigmeParticipationInfosTest extends TestCase
 {
     public function setUp(): void
     {
-        global $fields, $resolved, $wpdb, $mocked_posts, $mocked_titles;
+        global $fields, $resolved, $wpdb, $mocked_posts, $mocked_titles, $mocked_post_dates;
         $fields = [
             10 => [
                 'indices'                      => [],
@@ -166,9 +193,10 @@ class EnigmeParticipationInfosTest extends TestCase
                 'enigme_tentative_max'         => 10,
             ],
         ];
-        $resolved = false;
-        $mocked_posts  = [];
-        $mocked_titles = [];
+        $resolved          = false;
+        $mocked_posts      = [];
+        $mocked_titles     = [];
+        $mocked_post_dates = [];
         $wpdb = new class {
             public string $prefix = 'wp_';
             public function prepare($query, ...$args)
@@ -275,19 +303,21 @@ class EnigmeParticipationInfosTest extends TestCase
     public function test_programmed_indices_date_format(): void
     {
         global $mocked_posts, $fields;
+        global $mocked_post_dates;
         $mocked_posts = [401, 402, 403];
 
-        $fields[401]['indice_cache_etat_systeme']   = 'programme';
-        $fields[401]['indice_cout_points']          = 0;
-        $fields[401]['indice_date_disponibilite']   = new DateTime('2023-11-10 18:00:00');
+        $fields[401]['indice_cache_etat_systeme'] = 'programme';
+        $fields[401]['indice_cout_points']        = 0;
+        $fields[401]['indice_date_disponibilite'] = '10/11/2023 18:00';
 
-        $fields[402]['indice_cache_etat_systeme']   = 'programme';
-        $fields[402]['indice_cout_points']          = 0;
-        $fields[402]['indice_date_disponibilite']   = new DateTime('2023-11-12 15:30:00');
+        $fields[402]['indice_cache_etat_systeme'] = 'programme';
+        $fields[402]['indice_cout_points']        = 0;
+        $fields[402]['indice_date_disponibilite'] = '2023-11-12 15:30:00';
 
-        $fields[403]['indice_cache_etat_systeme']   = 'programme';
-        $fields[403]['indice_cout_points']          = 0;
-        $fields[403]['indice_date_disponibilite']   = new DateTime('2024-11-20 12:00:00');
+        $fields[403]['indice_cache_etat_systeme'] = 'programme';
+        $fields[403]['indice_cout_points']        = 0;
+        // Fallback to the post's publication date when meta is absent.
+        $mocked_post_dates[403] = '2024-11-20 12:00:00';
 
         ob_start();
         render_enigme_participation(10, 'defaut', 1);
