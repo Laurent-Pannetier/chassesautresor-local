@@ -168,8 +168,6 @@ if ($mode_validation !== 'aucune') {
     }
     $badge_html = '<button type="button" class="badge-validation" data-tooltip="'
         . esc_attr($message)
-        . '" title="'
-        . esc_attr(wp_strip_all_tags($message))
         . '"><i class="fa-solid '
         . esc_attr($icon)
         . '"></i></button>';

@@ -77,8 +77,6 @@ function enigme_get_bonnes_reponses(int $enigme_id): array
             }
             $badge_html = '<button type="button" class="badge-validation" data-tooltip="'
                 . esc_attr($message)
-                . '" title="'
-                . esc_attr(wp_strip_all_tags($message))
                 . '"><i class="fa-solid '
                 . esc_attr($icon)
                 . '"></i></button>';

@@ -635,6 +635,12 @@ a.ajout-link:focus-visible {
     cursor: pointer;
     position: relative;
     vertical-align: middle;
+
+    &:hover,
+    &:focus {
+        background: var(--color-grey-light);
+        color: var(--color-text-fond-clair);
+    }
 }
 
 .badge-validation__tooltip {

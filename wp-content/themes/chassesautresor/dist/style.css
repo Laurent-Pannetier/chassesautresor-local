@@ -1847,6 +1847,10 @@ a.ajout-link:focus-visible {
   position: relative;
   vertical-align: middle;
 }
+.badge-validation:hover, .badge-validation:focus {
+  background: var(--color-grey-light);
+  color: var(--color-text-fond-clair);
+}
 
 .badge-validation__tooltip {
   display: none;
