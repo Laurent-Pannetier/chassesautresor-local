@@ -663,10 +663,10 @@ require_once __DIR__ . '/indices.php';
         }
 
         if (!empty($indices_enigme) || !empty($indices_chasse)) {
-            $build_group = function (array $indices, string $title) use ($user_id) {
-                $html = '<div class="zone-indices-group"><h4>'
+            $build_line = function (array $indices, string $title) use ($user_id) {
+                $html = '<div class="zone-indices-line"><span class="zone-indices-line__label">'
                     . esc_html($title)
-                    . '</h4><ul class="indice-list">';
+                    . '</span><div class="indice-list">';
                 foreach ($indices as $i => $indice_id) {
                     $cout_indice  = (int) get_field('indice_cout_points', $indice_id);
                     $etat_systeme = get_field('indice_cache_etat_systeme', $indice_id) ?: '';
@@ -708,26 +708,25 @@ require_once __DIR__ . '/indices.php';
                             . esc_html__('pts', 'chassesautresor-com') . '</sup>'
                         : '';
 
-                    $html .= '<li><a href="#" class="' . esc_attr($classes) . '"'
+                    $html .= '<a href="#" class="' . esc_attr($classes) . '"'
                         . ' data-indice-id="' . esc_attr($indice_id) . '"'
                         . ' data-cout="' . esc_attr($cout_indice) . '"'
                         . ' data-unlocked="' . ($est_debloque ? '1' : '0') . '">'
                         . '<i class="fa-solid ' . esc_attr($etat_icon) . '" aria-hidden="true"></i> '
-                        . $label . $cout_html . '</a></li>';
+                        . $label . $cout_html . '</a>';
                 }
-                $html .= '</ul><div class="indice-display"></div></div>';
+                $html .= '</div></div>';
                 return $html;
             };
 
-            $content .= '<div class="zone-indices"><h3><i class="fa-solid fa-lightbulb" aria-hidden="true"></i> '
-                . esc_html__('Indices', 'chassesautresor-com') . '</h3>';
+            $content .= '<div class="zone-indices">';
             if (!empty($indices_enigme)) {
-                $content .= $build_group($indices_enigme, esc_html__('Pour cette énigme', 'chassesautresor-com'));
+                $content .= $build_line($indices_enigme, esc_html__('Pour cette énigme', 'chassesautresor-com'));
             }
             if (!empty($indices_chasse)) {
-                $content .= $build_group($indices_chasse, esc_html__('Pour toute la chasse', 'chassesautresor-com'));
+                $content .= $build_line($indices_chasse, esc_html__('Pour toute la chasse', 'chassesautresor-com'));
             }
-            $content .= '</div>';
+            $content .= '<div class="indice-display"></div></div>';
         }
 
         if ($bloc_reponse !== '') {

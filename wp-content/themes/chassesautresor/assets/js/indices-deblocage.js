@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var link = e.target.closest('.indice-link');
     if (link) {
       e.preventDefault();
-      var zone = link.closest('.zone-indices-group');
+      var zone = link.closest('.zone-indices');
       var container = zone ? zone.querySelector('.indice-display') : null;
       if (!container) return;
       if (link.dataset.unlocked === '1') {
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (btn) {
       e.preventDefault();
       btn.disabled = true;
-      var zoneBtn = btn.closest('.zone-indices-group');
+      var zoneBtn = btn.closest('.zone-indices');
       var containerBtn = zoneBtn ? zoneBtn.querySelector('.indice-display') : null;
       var id = btn.dataset.indiceId;
       var linkSel = zoneBtn ? zoneBtn.querySelector('.indice-link[data-indice-id="' + id + '"]') : null;
