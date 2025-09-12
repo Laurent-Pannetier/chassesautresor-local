@@ -1186,6 +1186,10 @@
   margin: 0;
 }
 
+.chasse-lot-complet .champ-lot-description {
+  margin-top: var(--space-sm);
+}
+
 .chasse-lot-complet .lot-description {
   margin: 0;
 }
