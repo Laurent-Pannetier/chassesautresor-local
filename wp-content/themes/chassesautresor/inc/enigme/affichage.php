@@ -667,6 +667,10 @@ require_once __DIR__ . '/indices.php';
         }
 
         if (!empty($indices_enigme) || !empty($indices_chasse)) {
+            if ($bloc_reponse !== '') {
+                $content .= '<hr class="wp-block-separator" />';
+            }
+
             $build_line = function (array $indices, string $title) use ($user_id) {
                 $html = '<div class="zone-indices-line"><span class="zone-indices-line__label">'
                     . esc_html($title)

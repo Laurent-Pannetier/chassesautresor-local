@@ -6044,6 +6044,10 @@ li.active .enigme-menu__edit {
   align-items: center;
 }
 
+.participation .wp-block-separator {
+  margin: var(--space-md) 0;
+}
+
 .zone-reponse form {
   display: flex;
   flex-direction: column;
