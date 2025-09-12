@@ -682,7 +682,13 @@ require_once __DIR__ . '/indices.php';
 
                         $date_raw  = get_field('indice_date_disponibilite', $indice_id);
                         $timestamp = $date_raw ? strtotime($date_raw) : false;
-                        $date_txt  = $timestamp ? wp_date(get_option('date_format'), $timestamp) : '';
+                        $date_txt  = $timestamp
+                            ? wp_date(
+                                /* translators: Date format for a scheduled hint, e.g. 10 novembre 2028. */
+                                _x('j F Y', 'scheduled hint date', 'chassesautresor-com'),
+                                $timestamp
+                            )
+                            : '';
                         $label     = $date_txt !== ''
                             ? sprintf(
                                 esc_html__('Disponible le %s', 'chassesautresor-com'),
