@@ -319,6 +319,26 @@ class EnigmeParticipationInfosTest extends TestCase
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      */
+    public function test_programmed_indices_past_date_is_available(): void
+    {
+        global $mocked_posts, $fields;
+        $mocked_posts = [503];
+        $fields[503]['indice_cout_points']        = 0;
+        $fields[503]['indice_cache_etat_systeme'] = 'programme';
+        $fields[503]['indice_date_disponibilite'] = date('d/m/Y H:i', time() - HOUR_IN_SECONDS);
+
+        ob_start();
+        render_enigme_participation(10, 'defaut', 1);
+        $html = ob_get_clean();
+
+        $this->assertStringContainsString('indice-link', $html);
+        $this->assertStringNotContainsString('indice-link--upcoming', $html);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function test_get_posts_includes_pending_status(): void
     {
         global $last_get_posts_args;

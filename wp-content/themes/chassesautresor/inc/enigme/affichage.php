@@ -704,30 +704,33 @@ require_once __DIR__ . '/indices.php';
                             }
                         }
 
-                        $date_txt = '';
-                        if ($timestamp !== false) {
-                            $now = current_time('timestamp');
-                            if (wp_date('Y-m-d', $timestamp) === wp_date('Y-m-d', $now)) {
-                                $date_txt = sprintf(
-                                    esc_html__("Aujourd’hui à %s", 'chassesautresor-com'),
-                                    wp_date('H:i', $timestamp)
-                                );
-                            } elseif ($timestamp <= $now + WEEK_IN_SECONDS) {
-                                $date_txt = wp_date('d/m/y \\à H:i', $timestamp);
-                            } else {
-                                $date_txt = wp_date('d/m/y', $timestamp);
+                        $now = current_time('timestamp');
+                        if ($timestamp === false || $timestamp > $now) {
+                            $date_txt = '';
+                            if ($timestamp !== false) {
+                                if (wp_date('Y-m-d', $timestamp) === wp_date('Y-m-d', $now)) {
+                                    $date_txt = sprintf(
+                                        esc_html__("Aujourd’hui à %s", 'chassesautresor-com'),
+                                        wp_date('H:i', $timestamp)
+                                    );
+                                } elseif ($timestamp <= $now + WEEK_IN_SECONDS) {
+                                    $date_txt = wp_date('d/m/y \\à H:i', $timestamp);
+                                } else {
+                                    $date_txt = wp_date('d/m/y', $timestamp);
+                                }
                             }
-                        }
-                        if ($date_txt === '') {
-                            $date_txt = esc_html__('Bientôt disponible', 'chassesautresor-com');
-                        }
+                            if ($date_txt === '') {
+                                $date_txt = esc_html__('Bientôt disponible', 'chassesautresor-com');
+                            }
 
-                        $html .= '<span class="indice-label indice-link--upcoming etiquette">'
-                            . '<i class="fa-solid fa-hourglass" aria-hidden="true"></i> '
-                            . esc_html($date_txt)
-                            . '</span>';
-                        continue;
-                    } elseif ($est_debloque) {
+                            $html .= '<span class="indice-label indice-link--upcoming etiquette">'
+                                . '<i class="fa-solid fa-hourglass" aria-hidden="true"></i> '
+                                . esc_html($date_txt)
+                                . '</span>';
+                            continue;
+                        }
+                    }
+                    if ($est_debloque) {
                         $classes   = 'indice-link indice-link--unlocked etiquette';
                         $etat_icon = 'fa-eye';
                         $title_ind = get_the_title($indice_id);
