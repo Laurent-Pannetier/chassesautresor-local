@@ -12,6 +12,9 @@ document.addEventListener('DOMContentLoaded', function () {
       .then(function (res) {
         if (res.success) {
           displayContent(container, res.data.html);
+          if (window.jQuery && typeof jQuery.fn.fancybox === 'function') {
+            jQuery(container).find('a.fancybox').fancybox();
+          }
           if (link) {
             link.dataset.unlocked = '1';
             link.classList.remove('indice-link--locked');
