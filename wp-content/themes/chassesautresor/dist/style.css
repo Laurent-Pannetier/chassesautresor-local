@@ -5498,6 +5498,8 @@ body.panneau-ouvert::before {
 
 .zone-indices {
   margin-top: var(--space-lg);
+  font-size: 0.9rem;
+  opacity: 0.85;
 }
 .zone-indices .indice-list {
   list-style: none;
@@ -5513,10 +5515,11 @@ body.panneau-ouvert::before {
   display: inline-flex;
   align-items: center;
   gap: var(--space-xs);
-  padding: var(--space-xs) var(--space-sm);
+  padding: calc(var(--space-xs) / 2) var(--space-sm);
   border-radius: 4px;
   text-decoration: none;
   font-weight: 600;
+  font-size: 0.875rem;
 }
 .zone-indices .indice-link--locked, .zone-indices .indice-link--unlocked, .zone-indices .indice-link--upcoming {
   background-color: var(--color-gris-3);
@@ -5547,6 +5550,8 @@ body.panneau-ouvert::before {
 .zone-indices .zone-indices-line__label {
   font-weight: 600;
   flex: 0 0 140px;
+  line-height: 1.2;
+  font-size: 0.875rem;
 }
 .zone-indices .indice-contenu {
   display: flex;
