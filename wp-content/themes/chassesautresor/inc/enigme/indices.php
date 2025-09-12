@@ -50,7 +50,9 @@ function debloquer_indice(): void
         if ($image_id) {
             $thumb = wp_get_attachment_image($image_id, 'thumbnail');
             $full  = wp_get_attachment_image_url($image_id, 'full');
-            $image = $full ? '<a href="' . esc_url($full) . '">' . $thumb . '</a>' : $thumb;
+            $image = $full
+                ? '<a href="' . esc_url($full) . '" class="fancybox image">' . $thumb . '</a>'
+                : $thumb;
         }
         $html = '<div class="indice-contenu">';
         if ($image !== '') {
@@ -110,7 +112,9 @@ function debloquer_indice(): void
     if ($image_id) {
         $thumb = wp_get_attachment_image($image_id, 'thumbnail');
         $full  = wp_get_attachment_image_url($image_id, 'full');
-        $image = $full ? '<a href="' . esc_url($full) . '">' . $thumb . '</a>' : $thumb;
+        $image = $full
+            ? '<a href="' . esc_url($full) . '" class="fancybox image">' . $thumb . '</a>'
+            : $thumb;
     }
     $html = '<div class="indice-contenu">';
     if ($image !== '') {
