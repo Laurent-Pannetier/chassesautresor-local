@@ -125,6 +125,49 @@ if (!function_exists('get_the_title')) {
     }
 }
 
+if (!function_exists('wp_cache_get')) {
+    function wp_cache_get($key, $group = '', $force = false, &$found = null)
+    {
+        return false;
+    }
+}
+
+if (!function_exists('wp_cache_set')) {
+    function wp_cache_set($key, $data, $group = '', $expire = 0)
+    {
+        return true;
+    }
+}
+
+if (!function_exists('wp_cache_delete')) {
+    function wp_cache_delete($key, $group = '')
+    {
+        return true;
+    }
+}
+
+if (!function_exists('wp_timezone')) {
+    function wp_timezone()
+    {
+        return new DateTimeZone('UTC');
+    }
+}
+
+if (!function_exists('get_option')) {
+    function get_option($name, $default = false)
+    {
+        if ($name === 'date_format') {
+            return 'd/m/y';
+        }
+
+        return $default;
+    }
+}
+
+if (!defined('HOUR_IN_SECONDS')) {
+    define('HOUR_IN_SECONDS', 3600);
+}
+
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/enigme/affichage.php';
 
 class EnigmeParticipationInfosTest extends TestCase
@@ -195,6 +238,25 @@ class EnigmeParticipationInfosTest extends TestCase
         $html = ob_get_clean();
 
         $this->assertStringContainsString('Indice #1', $html);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_programmed_indices_date_format_future(): void
+    {
+        global $mocked_posts, $fields;
+        $mocked_posts = [405];
+        $fields[405]['indice_cout_points']        = 0;
+        $fields[405]['indice_cache_etat_systeme'] = 'programme';
+        $fields[405]['indice_date_disponibilite'] = '12/09/2025 8:47 am';
+
+        ob_start();
+        render_enigme_participation(10, 'defaut', 1);
+        $html = ob_get_clean();
+
+        $this->assertMatchesRegularExpression('/12\/09\/25( à 08:47)?/', $html);
     }
 
     /**
