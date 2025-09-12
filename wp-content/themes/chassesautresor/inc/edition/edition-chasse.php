@@ -81,6 +81,15 @@ function enqueue_script_chasse_edit()
         ]
     );
 
+    wp_localize_script(
+        'chasse-edit',
+        'ChasseModeFinI18n',
+        [
+            'auto'   => __('automatique', 'chassesautresor-com'),
+            'manual' => __('manuelle', 'chassesautresor-com'),
+        ]
+    );
+
     // Injecte les valeurs par défaut pour JS
     wp_localize_script('champ-init', 'CHP_CHASSE_DEFAUT', [
         'titre' => strtolower(TITRE_DEFAUT_CHASSE),
