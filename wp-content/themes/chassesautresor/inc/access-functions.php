@@ -1222,8 +1222,7 @@ function utilisateur_peut_voir_solution_chasse(int $chasse_id, int $user_id): bo
         }
     }
 
-    $statut = get_field('chasse_cache_statut', $chasse_id);
-    return $statut === 'termine';
+    return false;
 }
 
 
