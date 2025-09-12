@@ -5506,7 +5506,8 @@ body.panneau-ouvert::before {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-sm);
-  justify-content: center;
+  justify-content: flex-start;
+  flex: 1 1 auto;
 }
 .zone-indices .indice-link {
   display: inline-flex;
@@ -5538,13 +5539,14 @@ body.panneau-ouvert::before {
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-sm);
-  justify-content: center;
+  justify-content: flex-start;
 }
 .zone-indices .zone-indices-line:not(:first-of-type) {
   margin-top: var(--space-sm);
 }
 .zone-indices .zone-indices-line__label {
   font-weight: 600;
+  flex: 0 0 140px;
 }
 .zone-indices .indice-contenu {
   display: flex;

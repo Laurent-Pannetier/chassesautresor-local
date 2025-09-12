@@ -46,9 +46,14 @@ function debloquer_indice(): void
             ? wp_kses_post($processed)
             : htmlspecialchars($processed, ENT_QUOTES);
         $image_id = get_field('indice_image', $indice_id);
-        $image    = $image_id ? wp_get_attachment_image($image_id, 'thumbnail') : '';
-        $html     = '<div class="indice-contenu">';
-        if ($image) {
+        $image    = '';
+        if ($image_id) {
+            $thumb = wp_get_attachment_image($image_id, 'thumbnail');
+            $full  = wp_get_attachment_image_url($image_id, 'full');
+            $image = $full ? '<a href="' . esc_url($full) . '">' . $thumb . '</a>' : $thumb;
+        }
+        $html = '<div class="indice-contenu">';
+        if ($image !== '') {
             $html .= '<div class="indice-contenu__image">' . $image . '</div>';
         }
         $html .= '<div class="indice-contenu__texte">' . $texte . '</div></div>';
@@ -100,10 +105,15 @@ function debloquer_indice(): void
     $texte           = function_exists('wp_kses_post')
         ? wp_kses_post($processed)
         : htmlspecialchars($processed, ENT_QUOTES);
-    $image_id        = get_field('indice_image', $indice_id);
-    $image           = $image_id ? wp_get_attachment_image($image_id, 'thumbnail') : '';
-    $html            = '<div class="indice-contenu">';
-    if ($image) {
+    $image_id = get_field('indice_image', $indice_id);
+    $image    = '';
+    if ($image_id) {
+        $thumb = wp_get_attachment_image($image_id, 'thumbnail');
+        $full  = wp_get_attachment_image_url($image_id, 'full');
+        $image = $full ? '<a href="' . esc_url($full) . '">' . $thumb . '</a>' : $thumb;
+    }
+    $html = '<div class="indice-contenu">';
+    if ($image !== '') {
         $html .= '<div class="indice-contenu__image">' . $image . '</div>';
     }
     $html .= '<div class="indice-contenu__texte">' . $texte . '</div></div>';

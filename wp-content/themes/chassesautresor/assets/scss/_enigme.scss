@@ -31,7 +31,8 @@
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-sm);
-    justify-content: center;
+    justify-content: flex-start;
+    flex: 1 1 auto;
   }
 
   .indice-link {
@@ -70,7 +71,7 @@
     flex-wrap: wrap;
     align-items: center;
     gap: var(--space-sm);
-    justify-content: center;
+    justify-content: flex-start;
 
     &:not(:first-of-type) {
       margin-top: var(--space-sm);
@@ -78,6 +79,7 @@
 
     &__label {
       font-weight: 600;
+      flex: 0 0 140px;
     }
   }
 
