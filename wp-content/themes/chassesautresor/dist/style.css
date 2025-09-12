@@ -5533,6 +5533,15 @@ body.panneau-ouvert::before {
 }
 .zone-indices .indice-display {
   margin-top: var(--space-md);
+  position: relative;
+}
+.zone-indices .indice-display .indice-close {
+  position: absolute;
+  top: var(--space-xs);
+  right: var(--space-xs);
+  background: none;
+  border: 0;
+  cursor: pointer;
 }
 .zone-indices .zone-indices-line {
   display: flex;
