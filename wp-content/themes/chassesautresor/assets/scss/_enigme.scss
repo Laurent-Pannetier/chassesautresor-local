@@ -21,8 +21,17 @@
   height: auto;
 }
 
+
+.reponse-indices-separator {
+  margin-top: var(--space-xl);
+  margin-bottom: var(--space-lg);
+  border: 0;
+  border-top: 1px solid var(--color-gris-3);
+  opacity: 0.5;
+}
+
 .zone-indices {
-  margin-top: var(--space-lg);
+  margin-top: 0;
   font-size: 0.9rem;
   opacity: 0.85;
 

@@ -241,4 +241,37 @@ class EnigmeParticipationInfosTest extends TestCase
             'La section "Votre réponse" doit précéder les indices.'
         );
     }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_separator_displayed_with_indices(): void
+    {
+        global $mocked_posts, $fields;
+        $mocked_posts = [401];
+        $fields[401]['indice_cout_points'] = 0;
+
+        ob_start();
+        render_enigme_participation(10, 'defaut', 1);
+        $html = ob_get_clean();
+
+        $this->assertStringContainsString('reponse-indices-separator', $html);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_no_separator_without_indices(): void
+    {
+        global $mocked_posts;
+        $mocked_posts = [];
+
+        ob_start();
+        render_enigme_participation(10, 'defaut', 1);
+        $html = ob_get_clean();
+
+        $this->assertStringNotContainsString('reponse-indices-separator', $html);
+    }
 }
