@@ -1328,9 +1328,17 @@ function solution_contenu_html(WP_Post $solution): string
         }
 
         if ($fichier_url) {
-            return '<a href="' . esc_url($fichier_url)
-                . '" class="lien-solution-pdf" target="_blank" rel="noopener">&#128196; '
-                . esc_html($fichier_nom) . '</a>';
+            return '<object data="' . esc_url($fichier_url)
+                . '" type="application/pdf" width="100%" height="800">'
+                . '<p>'
+                . esc_html__(
+                    'Votre navigateur ne peut pas afficher le PDF.',
+                    'chassesautresor-com'
+                )
+                . ' <a href="' . esc_url($fichier_url)
+                . '" class="lien-solution-pdf" target="_blank" rel="noopener">'
+                . esc_html__('Télécharger', 'chassesautresor-com')
+                . '</a></p></object>';
         }
     }
 
