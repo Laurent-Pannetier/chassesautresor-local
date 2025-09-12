@@ -1370,7 +1370,7 @@ function render_chasse_solutions(int $chasse_id, int $user_id): void
             $content = solution_contenu_html($solution);
             if ($content !== '') {
                 $sections .= '<section class="solution">';
-                $sections .= '<details open><summary>'
+                $sections .= '<details><summary>'
                     . esc_html__('Solution de la chasse', 'chassesautresor-com')
                     . '</summary>';
                 $sections .= '<div class="solution-content">' . $content . '</div></details></section>';

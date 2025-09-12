@@ -20,7 +20,7 @@ class ChasseSolutionsRenderTest extends TestCase
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      */
-    public function test_details_are_open_by_default(): void
+    public function test_details_are_closed_by_default(): void
     {
         if (!function_exists('get_post_type')) {
             function get_post_type($id) { return 'chasse'; }
@@ -79,7 +79,8 @@ class ChasseSolutionsRenderTest extends TestCase
         render_chasse_solutions(1, 0);
         $html = ob_get_clean();
 
-        $this->assertStringContainsString('<details open>', $html);
+        $this->assertStringContainsString('<details>', $html);
+        $this->assertStringNotContainsString('<details open>', $html);
         $this->assertStringContainsString('CONTENT', $html);
     }
 
