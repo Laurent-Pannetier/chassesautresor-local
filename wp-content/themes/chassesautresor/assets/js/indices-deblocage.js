@@ -12,9 +12,6 @@ document.addEventListener('DOMContentLoaded', function () {
       .then(function (res) {
         if (res.success) {
           displayContent(container, res.data.html);
-          if (window.jQuery && typeof jQuery.fn.fancybox === 'function') {
-            jQuery(container).find('a.fancybox').fancybox();
-          }
           if (link) {
             link.dataset.unlocked = '1';
             link.classList.remove('indice-link--locked');
@@ -36,6 +33,20 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   document.body.addEventListener('click', function (e) {
+    var eye = e.target.closest('.eyebox-trigger');
+    if (eye) {
+      e.preventDefault();
+      var url = eye.dataset.full || eye.getAttribute('href');
+      var overlay = document.createElement('div');
+      overlay.className = 'eyebox-overlay';
+      overlay.innerHTML = '<img src="' + url + '" alt="" />';
+      document.body.appendChild(overlay);
+      overlay.addEventListener('click', function () {
+        overlay.remove();
+      });
+      return;
+    }
+
     var link = e.target.closest('.indice-link');
     if (link) {
       e.preventDefault();
