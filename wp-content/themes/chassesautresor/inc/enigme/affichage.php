@@ -606,7 +606,7 @@ require_once __DIR__ . '/indices.php';
         $indices_enigme = function_exists('get_posts')
             ? get_posts([
                 'post_type'      => 'indice',
-                'post_status'    => ['publish', 'draft', 'future'],
+                'post_status'    => ['publish', 'draft', 'future', 'pending'],
                 'meta_query'     => [
                     [
                         'key'     => 'indice_cible_type',
@@ -636,7 +636,7 @@ require_once __DIR__ . '/indices.php';
         if ($chasse_id && function_exists('get_posts')) {
             $indices_chasse = get_posts([
                 'post_type'      => 'indice',
-                'post_status'    => ['publish', 'draft', 'future'],
+                'post_status'    => ['publish', 'draft', 'future', 'pending'],
                 'meta_query'     => [
                     [
                         'key'     => 'indice_cible_type',
@@ -677,13 +677,13 @@ require_once __DIR__ . '/indices.php';
                     $est_debloque = indice_est_debloque($user_id, $indice_id);
 
                     if ($etat_systeme === 'programme') {
-                        $classes   = 'indice-link indice-link--upcoming etiquette';
+                        $classes   = 'indice-label indice-link--upcoming etiquette';
                         $etat_icon = 'fa-hourglass';
 
-                        $date_raw = get_field('indice_date_disponibilite', $indice_id);
+                        $date_raw  = get_field('indice_date_disponibilite', $indice_id);
                         $timestamp = $date_raw ? strtotime($date_raw) : false;
-                        $date_txt = $timestamp ? wp_date(get_option('date_format'), $timestamp) : '';
-                        $label = $date_txt !== ''
+                        $date_txt  = $timestamp ? wp_date(get_option('date_format'), $timestamp) : '';
+                        $label     = $date_txt !== ''
                             ? sprintf(
                                 esc_html__('Disponible le %s', 'chassesautresor-com'),
                                 esc_html($date_txt)
@@ -712,12 +712,20 @@ require_once __DIR__ . '/indices.php';
                             . esc_html__('pts', 'chassesautresor-com') . '</sup>'
                         : '';
 
-                    $html .= '<a href="#" class="' . esc_attr($classes) . '"'
-                        . ' data-indice-id="' . esc_attr($indice_id) . '"'
-                        . ' data-cout="' . esc_attr($cout_indice) . '"'
-                        . ' data-unlocked="' . ($est_debloque ? '1' : '0') . '">'
-                        . '<i class="fa-solid ' . esc_attr($etat_icon) . '" aria-hidden="true"></i> '
-                        . $label . $cout_html . '</a>';
+                    if ($etat_systeme === 'programme') {
+                        $html .= '<span class="' . esc_attr($classes) . '">'
+                            . '<i class="fa-solid ' . esc_attr($etat_icon)
+                            . '" aria-hidden="true"></i> '
+                            . $label . $cout_html . '</span>';
+                    } else {
+                        $html .= '<a href="#" class="' . esc_attr($classes) . '"'
+                            . ' data-indice-id="' . esc_attr($indice_id) . '"'
+                            . ' data-cout="' . esc_attr($cout_indice) . '"'
+                            . ' data-unlocked="' . ($est_debloque ? '1' : '0') . '">'
+                            . '<i class="fa-solid ' . esc_attr($etat_icon)
+                            . '" aria-hidden="true"></i> '
+                            . $label . $cout_html . '</a>';
+                    }
                 }
                 $html .= '</div></div>';
                 return $html;

@@ -55,6 +55,23 @@
     }
   }
 
+  .indice-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: calc(var(--space-xs) / 2) var(--space-sm);
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.875rem;
+
+    &--locked,
+    &--unlocked,
+    &--upcoming {
+      background-color: var(--color-gris-3);
+      color: var(--color-white);
+    }
+  }
+
   .btn-debloquer-indice {
     display: inline-block;
     padding: var(--space-sm) var(--space-md);
