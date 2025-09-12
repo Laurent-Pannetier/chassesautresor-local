@@ -662,6 +662,10 @@ require_once __DIR__ . '/indices.php';
             ]);
         }
 
+        if ($bloc_reponse !== '') {
+            $content .= '<div class="zone-reponse">' . $bloc_reponse . '</div>';
+        }
+
         if (!empty($indices_enigme) || !empty($indices_chasse)) {
             $build_line = function (array $indices, string $title) use ($user_id) {
                 $html = '<div class="zone-indices-line"><span class="zone-indices-line__label">'
@@ -727,10 +731,6 @@ require_once __DIR__ . '/indices.php';
                 $content .= $build_line($indices_chasse, esc_html__('Indices chasse', 'chassesautresor-com'));
             }
             $content .= '<div class="indice-display"></div></div>';
-        }
-
-        if ($bloc_reponse !== '') {
-            $content .= '<div class="zone-reponse">' . $bloc_reponse . '</div>';
         }
 
         $mode_validation = get_field('enigme_mode_validation', $enigme_id);

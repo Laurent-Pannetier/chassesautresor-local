@@ -26,6 +26,13 @@ if (!function_exists('esc_html__')) {
     }
 }
 
+if (!function_exists('__')) {
+    function __($text, $domain = null)
+    {
+        return $text;
+    }
+}
+
 if (!function_exists('get_field')) {
     function get_field($key, $id)
     {
@@ -206,5 +213,32 @@ class EnigmeParticipationInfosTest extends TestCase
 
         $this->assertStringContainsString('indice-link--locked', $html);
         $this->assertStringContainsString('fa-lightbulb', $html);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_reponse_before_indices(): void
+    {
+        global $mocked_posts, $fields, $resolved;
+        $mocked_posts = [301];
+        $fields[301]['indice_cout_points'] = 2;
+        $resolved = true;
+
+        ob_start();
+        render_enigme_participation(10, 'defaut', 1);
+        $html = ob_get_clean();
+
+        $pos_reponse = strpos($html, 'zone-reponse');
+        $pos_indices = strpos($html, 'zone-indices');
+
+        $this->assertNotFalse($pos_reponse);
+        $this->assertNotFalse($pos_indices);
+        $this->assertLessThan(
+            $pos_indices,
+            $pos_reponse,
+            'La section "Votre réponse" doit précéder les indices.'
+        );
     }
 }
