@@ -117,7 +117,7 @@ class ChasseGagnantInfoTest extends TestCase
                 'illimitee' => false,
                 'nb_max' => 0,
                 'cout_points' => 0,
-                'date_decouverte' => '2024-01-01',
+                'date_decouverte' => '2024-01-01 00:00:00',
                 'gagnants' => 'John Doe',
                 'mode_fin' => 'automatique',
                 'current_stored_statut' => '',
@@ -146,6 +146,6 @@ class ChasseGagnantInfoTest extends TestCase
         include __DIR__ . '/../template-parts/chasse/chasse-affichage-complet.php';
         $html = ob_get_clean();
 
-        $this->assertStringContainsString('Chasse gagnée le 2024-01-01 par John Doe', $html);
+        $this->assertStringContainsString('Chasse gagnée le 2024-01-01 00:00:00 par John Doe', $html);
     }
 }

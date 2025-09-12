@@ -104,7 +104,7 @@ Instructions : (vide)
 Requis : non
 ----------------------------------------
 — chasse_cache_date_decouverte —
-Type : date_picker
+Type : date_time_picker
 Label : Date de découverte
 Instructions : Permet de terminer manuellement la chasse.
 Requis : non

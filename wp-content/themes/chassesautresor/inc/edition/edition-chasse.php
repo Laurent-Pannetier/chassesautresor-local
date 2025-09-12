@@ -569,9 +569,16 @@ function modifier_champ_chasse()
 
     // 🔹 Date de découverte
     if ($champ === 'champs_caches.chasse_cache_date_decouverte') {
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $valeur)) {
+        if (!preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}(:\d{2})?$/', $valeur)) {
             wp_send_json_error('⚠️ format_date_invalide');
         }
+
+        $date_obj = DateTime::createFromFormat('Y-m-d H:i:s', $valeur) ?: DateTime::createFromFormat('Y-m-d H:i', $valeur);
+        if (!$date_obj) {
+            wp_send_json_error('⚠️ format_date_invalide');
+        }
+
+        $valeur = $date_obj->format('Y-m-d H:i:s');
         $ok = update_field('chasse_cache_date_decouverte', $valeur, $post_id);
         if ($ok !== false) {
             $champ_valide = true;
