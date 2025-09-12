@@ -47,6 +47,9 @@ final class SolutionContentHtmlTest extends TestCase
         if (!function_exists('esc_html')) {
             function esc_html($text) { return $text; }
         }
+        if (!function_exists('esc_html__')) {
+            function esc_html__($text, $domain = '') { return $text; }
+        }
         if (!function_exists('wp_kses_post')) {
             function wp_kses_post($text) { return $text; }
         }
@@ -57,6 +60,7 @@ final class SolutionContentHtmlTest extends TestCase
         require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/chasse-functions.php';
 
         $html = solution_contenu_html($solution);
+        $this->assertStringContainsString('<object', $html);
         $this->assertStringContainsString('solution.pdf', $html);
     }
 }
