@@ -606,7 +606,7 @@ require_once __DIR__ . '/indices.php';
         $indices_enigme = function_exists('get_posts')
             ? get_posts([
                 'post_type'      => 'indice',
-                'post_status'    => ['publish', 'draft', 'future'],
+                'post_status'    => ['publish', 'draft', 'future', 'pending'],
                 'meta_query'     => [
                     [
                         'key'     => 'indice_cible_type',
@@ -636,7 +636,7 @@ require_once __DIR__ . '/indices.php';
         if ($chasse_id && function_exists('get_posts')) {
             $indices_chasse = get_posts([
                 'post_type'      => 'indice',
-                'post_status'    => ['publish', 'draft', 'future'],
+                'post_status'    => ['publish', 'draft', 'future', 'pending'],
                 'meta_query'     => [
                     [
                         'key'     => 'indice_cible_type',
@@ -678,16 +678,13 @@ require_once __DIR__ . '/indices.php';
                     $est_debloque = indice_est_debloque($user_id, $indice_id);
 
                     if ($etat_systeme === 'programme') {
-                        $classes   = 'indice-link indice-link--upcoming etiquette';
-                        $etat_icon = 'fa-hourglass';
-
-                        $date_raw = get_field('indice_date_disponibilite', $indice_id);
+                        $date_raw  = get_field('indice_date_disponibilite', $indice_id);
                         $timestamp = false;
                         if ($date_raw) {
                             $formats = [
                                 'Y-m-d H:i:s',
                                 'd/m/Y H:i',
-                                'Y-m-d\TH:i:s',
+                                'Y-m-d\\TH:i:s',
                                 'd/m/Y g:i a',
                                 'd/m/Y g:i A',
                                 'Y-m-d g:i a',
@@ -706,13 +703,30 @@ require_once __DIR__ . '/indices.php';
                                 }
                             }
                         }
-                        $date_txt = $timestamp ? wp_date(get_option('date_format') . ' H:i', $timestamp) : '';
-                        $label = $date_txt !== ''
-                            ? sprintf(
-                                esc_html__('Disponible le %s', 'chassesautresor-com'),
-                                esc_html($date_txt)
-                            )
-                            : esc_html__('Disponible bientôt', 'chassesautresor-com');
+
+                        $date_txt = '';
+                        if ($timestamp !== false) {
+                            $now = current_time('timestamp');
+                            if (wp_date('Y-m-d', $timestamp) === wp_date('Y-m-d', $now)) {
+                                $date_txt = sprintf(
+                                    esc_html__("Aujourd’hui à %s", 'chassesautresor-com'),
+                                    wp_date('H:i', $timestamp)
+                                );
+                            } elseif ($timestamp <= $now + WEEK_IN_SECONDS) {
+                                $date_txt = wp_date('d/m/y \\à H:i', $timestamp);
+                            } else {
+                                $date_txt = wp_date('d/m/y', $timestamp);
+                            }
+                        }
+                        if ($date_txt === '') {
+                            $date_txt = esc_html__('Bientôt disponible', 'chassesautresor-com');
+                        }
+
+                        $html .= '<span class="indice-label indice-link--upcoming etiquette">'
+                            . '<i class="fa-solid fa-hourglass" aria-hidden="true"></i> '
+                            . esc_html($date_txt)
+                            . '</span>';
+                        continue;
                     } elseif ($est_debloque) {
                         $classes   = 'indice-link indice-link--unlocked etiquette';
                         $etat_icon = 'fa-eye';
