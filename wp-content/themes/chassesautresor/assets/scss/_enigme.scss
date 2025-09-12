@@ -64,6 +64,16 @@
 
   .indice-display {
     margin-top: var(--space-md);
+    position: relative;
+
+    .indice-close {
+      position: absolute;
+      top: var(--space-xs);
+      right: var(--space-xs);
+      background: none;
+      border: 0;
+      cursor: pointer;
+    }
   }
 
   .zone-indices-line {
