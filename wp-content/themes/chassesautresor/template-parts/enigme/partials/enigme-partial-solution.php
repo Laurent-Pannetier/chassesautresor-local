@@ -28,8 +28,11 @@ if (
     $chasse_solution = solution_recuperer_par_objet($chasse_id, 'chasse');
     if ($chasse_solution) {
         echo '<section class="solution-chasse">';
+        echo '<details>';
+        echo '<summary>' . esc_html__('Voir la solution de la chasse', 'chassesautresor-com') . '</summary>';
         echo '<h4>' . esc_html__('Solution de la chasse', 'chassesautresor-com') . '</h4>';
         echo solution_contenu_html($chasse_solution);
+        echo '</details>';
         echo '</section>';
     }
 }

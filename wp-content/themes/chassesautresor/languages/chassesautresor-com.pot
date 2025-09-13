@@ -3010,3 +3010,7 @@ msgstr ""
 #: template-parts/chasse/chasse-affichage-complet.php:313
 msgid "Voir les solutions"
 msgstr ""
+
+#: template-parts/enigme/partials/enigme-partial-solution.php:32
+msgid "Voir la solution de la chasse"
+msgstr ""

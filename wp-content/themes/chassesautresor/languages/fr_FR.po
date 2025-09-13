@@ -3256,3 +3256,7 @@ msgstr "Redécouvrir"
 #: template-parts/chasse/chasse-affichage-complet.php:313
 msgid "Voir les solutions"
 msgstr "Voir les solutions"
+
+#: template-parts/enigme/partials/enigme-partial-solution.php:32
+msgid "Voir la solution de la chasse"
+msgstr "Voir la solution de la chasse"
