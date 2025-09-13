@@ -1319,6 +1319,10 @@ function solution_contenu_html(WP_Post $solution): string
     $texte   = get_field('solution_explication', $solution->ID);
     $content = '';
 
+    if ($texte) {
+        $content .= '<p>' . wp_kses_post($texte) . '</p>';
+    }
+
     if ($fichier) {
         if (is_array($fichier)) {
             $fichier_url = $fichier['url'] ?? '';
@@ -1339,10 +1343,6 @@ function solution_contenu_html(WP_Post $solution): string
                 . esc_html__('Télécharger', 'chassesautresor-com')
                 . '</a></p></object>';
         }
-    }
-
-    if ($texte) {
-        $content .= '<p>' . wp_kses_post($texte) . '</p>';
     }
 
     return $content;
