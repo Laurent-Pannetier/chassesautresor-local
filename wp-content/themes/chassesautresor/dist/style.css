@@ -6199,7 +6199,7 @@ li.active .enigme-menu__edit {
     gap: var(--space-md);
     padding-top: calc(var(--space-sm) + env(safe-area-inset-top));
     padding-right: calc(var(--space-md) + env(safe-area-inset-right));
-    padding-bottom: var(--space-sm);
+    padding-bottom: 0;
     background-color: transparent;
   }
   .enigme-mobile-actions {
@@ -6320,7 +6320,7 @@ li.active .enigme-menu__edit {
     max-height: calc(100vh - var(--space-xl));
   }
   .page-enigme {
-    margin-top: calc(var(--space-3xl) + var(--space-lg) + env(safe-area-inset-top));
+    margin-top: 0;
   }
 }
 body.no-scroll {
