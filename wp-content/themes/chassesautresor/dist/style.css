@@ -5588,7 +5588,9 @@ body.panneau-ouvert::before {
   color: var(--color-white);
 }
 .zone-indices .indice-link--active {
+  background-color: var(--color-secondary);
   border-color: var(--color-secondary);
+  color: var(--color-white);
 }
 .zone-indices .indice-label.indice-link--upcoming {
   background-color: var(--color-gris-3);
