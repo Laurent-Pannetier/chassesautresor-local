@@ -233,7 +233,7 @@
 .chasse-footer {
     margin-top: var(--space-md);
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
 
     &__reward {
@@ -259,10 +259,10 @@
 .carte-wide__content .meta-row,
 .carte-compact__meta {
     display: flex;
-    gap: var(--space-xl);
+    gap: var(--space-md);
     align-items: center;
-    flex-wrap: wrap;
-    justify-content: space-between;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
     font-size: 93%;
     color: var(--color-gris-3);
 }

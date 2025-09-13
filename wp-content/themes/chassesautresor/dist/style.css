@@ -123,10 +123,10 @@
   padding: 0 var(--space-md) var(--space-md);
   font-size: 0.875rem;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: var(--space-xs);
-  text-align: center;
+  justify-content: flex-start;
+  gap: var(--space-sm);
+  flex-wrap: nowrap;
 }
 
 /* ========== 🌟 Carte mise en avant ========== */
@@ -1006,7 +1006,7 @@
 .chasse-footer {
   margin-top: var(--space-md);
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
 }
 .chasse-footer__reward {
@@ -1028,10 +1028,10 @@
 .carte-wide__content .meta-row,
 .carte-compact__meta {
   display: flex;
-  gap: var(--space-xl);
+  gap: var(--space-md);
   align-items: center;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
   font-size: 93%;
   color: var(--color-gris-3);
 }
