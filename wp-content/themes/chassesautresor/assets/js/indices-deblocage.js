@@ -53,6 +53,11 @@ document.addEventListener('DOMContentLoaded', function () {
       var zone = link.closest('.zone-indices');
       var container = zone ? zone.querySelector('.indice-display') : null;
       if (!container) return;
+      var active = zone ? zone.querySelector('.indice-link--active') : null;
+      if (active) {
+        active.classList.remove('indice-link--active');
+      }
+      link.classList.add('indice-link--active');
       var cout = link.dataset.cout || '0';
       if (link.dataset.unlocked === '1' || cout === '0') {
         fetchIndice(link.dataset.indiceId, link, container);
@@ -71,6 +76,13 @@ document.addEventListener('DOMContentLoaded', function () {
       var closeContainer = closeBtn.closest('.indice-display');
       if (closeContainer) {
         closeContainer.innerHTML = '';
+      }
+      var closeZone = closeBtn.closest('.zone-indices');
+      if (closeZone) {
+        var activeLink = closeZone.querySelector('.indice-link--active');
+        if (activeLink) {
+          activeLink.classList.remove('indice-link--active');
+        }
       }
       return;
     }

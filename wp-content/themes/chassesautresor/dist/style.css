@@ -5578,6 +5578,7 @@ body.panneau-ouvert::before {
   border-radius: 4px;
   font-weight: 600;
   font-size: 0.875rem;
+  border: 2px solid transparent;
 }
 .zone-indices .indice-link {
   text-decoration: none;
@@ -5585,6 +5586,9 @@ body.panneau-ouvert::before {
 .zone-indices .indice-link--locked, .zone-indices .indice-link--unlocked, .zone-indices .indice-link--upcoming {
   background-color: var(--color-gris-3);
   color: var(--color-white);
+}
+.zone-indices .indice-link--active {
+  border-color: var(--color-secondary);
 }
 .zone-indices .indice-label.indice-link--upcoming {
   background-color: var(--color-gris-3);
