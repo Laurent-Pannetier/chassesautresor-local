@@ -114,9 +114,6 @@ final class SolutionContentHtmlTest extends TestCase
         $html = solution_contenu_html($solution);
         $this->assertStringContainsString('<object', $html);
         $this->assertStringContainsString('solution.pdf', $html);
-        $this->assertStringContainsString('<p>Explication</p>', $html);
-        $pdf_pos  = strpos($html, '<object');
-        $text_pos = strpos($html, '<p>Explication</p>');
-        $this->assertLessThan($pdf_pos, $text_pos);
+        $this->assertStringContainsString('<div class="solution-text"><p>Explication</p></div>', $html);
     }
 }

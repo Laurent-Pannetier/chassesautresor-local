@@ -1320,7 +1320,9 @@ function solution_contenu_html(WP_Post $solution): string
     $content = '';
 
     if ($texte) {
-        $content .= '<p>' . wp_kses_post($texte) . '</p>';
+        $content .= '<div class="solution-text"><p>'
+            . wp_kses_post($texte)
+            . '</p></div>';
     }
 
     if ($fichier) {
@@ -1372,7 +1374,9 @@ function render_chasse_solutions(int $chasse_id, int $user_id): void
                 $sections .= '<details><summary>'
                     . esc_html__('Solution de la chasse', 'chassesautresor-com')
                     . '</summary>';
-                $sections .= '<div class="solution-content">' . $content . '</div></details></section>';
+                $sections .= '<div class="solution-content">'
+                    . $content
+                    . '</div></details></section>';
             }
         }
     }
