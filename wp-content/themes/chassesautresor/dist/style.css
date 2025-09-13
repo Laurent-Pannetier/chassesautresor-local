@@ -6123,12 +6123,17 @@ li.active .enigme-menu__edit {
   padding: var(--space-md);
   border-radius: 6px;
   color: var(--color-text-fond-clair);
+  text-align: left;
 }
 
 .solution summary {
   cursor: pointer;
   font-weight: 600;
   color: var(--color-text-fond-clair);
+}
+
+.solution > details > summary {
+  text-align: center;
 }
 
 /* 📝 Mise en forme du texte d'énigme */
