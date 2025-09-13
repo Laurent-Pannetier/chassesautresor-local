@@ -734,14 +734,11 @@ li.active .enigme-menu__edit {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    position: fixed;
-    top: calc(var(--space-4xl) + env(safe-area-inset-top));
-    left: auto;
-    right: calc(var(--space-md) + env(safe-area-inset-right));
+    gap: var(--space-md);
     padding-top: calc(var(--space-sm) + env(safe-area-inset-top));
-    padding-bottom: var(--space-sm);
+    padding-right: calc(var(--space-md) + env(safe-area-inset-right));
+    padding-bottom: 0;
     background-color: transparent;
-    z-index: 10;
   }
 
   .enigme-mobile-actions {
@@ -880,7 +877,7 @@ li.active .enigme-menu__edit {
   }
 
   .page-enigme {
-    margin-top: calc(var(--space-3xl) + var(--space-lg) + env(safe-area-inset-top));
+    margin-top: 0;
   }
 }
 
