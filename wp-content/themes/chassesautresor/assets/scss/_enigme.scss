@@ -55,6 +55,7 @@
     border-radius: 4px;
     font-weight: 600;
     font-size: 0.875rem;
+    border: 2px solid transparent;
   }
 
   .indice-link {
@@ -64,6 +65,12 @@
     &--unlocked,
     &--upcoming {
       background-color: var(--color-gris-3);
+      color: var(--color-white);
+    }
+
+    &--active {
+      background-color: var(--color-secondary);
+      border-color: var(--color-secondary);
       color: var(--color-white);
     }
   }
