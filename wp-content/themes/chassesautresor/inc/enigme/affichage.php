@@ -875,9 +875,9 @@ require_once __DIR__ . '/indices.php';
             if ($content !== '') {
                 echo '<section class="solution">';
                 echo '<details><summary>' . esc_html__('Voir la solution', 'chassesautresor-com') . '</summary>';
-                echo '<div class="solution-content"><div class="solution-text">'
+                echo '<div class="solution-content">'
                     . $content
-                    . '</div></div>';
+                    . '</div>';
                 echo '</details>';
                 echo '</section>';
             }
