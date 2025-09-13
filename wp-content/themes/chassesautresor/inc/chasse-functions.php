@@ -1372,7 +1372,9 @@ function render_chasse_solutions(int $chasse_id, int $user_id): void
                 $sections .= '<details><summary>'
                     . esc_html__('Solution de la chasse', 'chassesautresor-com')
                     . '</summary>';
-                $sections .= '<div class="solution-content">' . $content . '</div></details></section>';
+                $sections .= '<div class="solution-content"><div class="solution-text">'
+                    . $content
+                    . '</div></div></details></section>';
             }
         }
     }

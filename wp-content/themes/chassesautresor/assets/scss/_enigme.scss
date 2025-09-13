@@ -655,6 +655,13 @@ li.active .enigme-menu__edit {
 }
 
 .solution-content {
+  .solution-text {
+    max-width: 1024px;
+    margin-inline: auto;
+    padding: var(--space-lg);
+    margin-bottom: var(--space-xl);
+  }
+
   .solution-enigme {
     margin-bottom: var(--space-xl);
 
