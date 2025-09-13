@@ -5609,6 +5609,7 @@ body.panneau-ouvert::before {
   padding: var(--space-sm);
   border: 1px solid var(--color-gris-3);
   border-radius: 4px;
+  text-align: left;
 }
 .zone-indices .indice-display .indice-close {
   position: absolute;
