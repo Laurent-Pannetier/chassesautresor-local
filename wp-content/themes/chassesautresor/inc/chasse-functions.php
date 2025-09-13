@@ -1317,18 +1317,17 @@ function solution_contenu_html(WP_Post $solution): string
 {
     $fichier = get_field('solution_fichier', $solution->ID);
     $texte   = get_field('solution_explication', $solution->ID);
+    $content = '';
 
     if ($fichier) {
         if (is_array($fichier)) {
             $fichier_url = $fichier['url'] ?? '';
-            $fichier_nom = $fichier['filename'] ?? basename($fichier_url);
         } else {
             $fichier_url = wp_get_attachment_url($fichier);
-            $fichier_nom = basename(get_attached_file($fichier)) ?: basename($fichier_url);
         }
 
-        if ($fichier_url) {
-            return '<object data="' . esc_url($fichier_url)
+        if (!empty($fichier_url)) {
+            $content .= '<object data="' . esc_url($fichier_url)
                 . '" type="application/pdf" width="100%" height="800">'
                 . '<p>'
                 . esc_html__(
@@ -1343,10 +1342,10 @@ function solution_contenu_html(WP_Post $solution): string
     }
 
     if ($texte) {
-        return '<p>' . wp_kses_post($texte) . '</p>';
+        $content .= '<p>' . wp_kses_post($texte) . '</p>';
     }
 
-    return '';
+    return $content;
 }
 
 /**
