@@ -1450,6 +1450,15 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
         ? __('Illimitée', 'chassesautresor-com')
         : ($date_fin ? formater_date($date_fin) : __('Non spécifiée', 'chassesautresor-com'));
 
+    $timestamp_debut = convertir_en_timestamp($date_debut);
+    $timestamp_fin   = (!$illimitee && $date_fin) ? convertir_en_timestamp($date_fin) : false;
+    $date_debut_court = $timestamp_debut
+        ? wp_date('d/m/y', $timestamp_debut)
+        : __('Non spécifiée', 'chassesautresor-com');
+    $date_fin_court   = $illimitee
+        ? __('Illimitée', 'chassesautresor-com')
+        : ($timestamp_fin ? wp_date('d/m/y', $timestamp_fin) : __('Non spécifiée', 'chassesautresor-com'));
+
     $nb_joueurs       = compter_joueurs_engages_chasse($chasse_id);
     $nb_joueurs_label = formater_nombre_joueurs($nb_joueurs);
     $badge_class       = 'statut-' . $statut;
@@ -1574,12 +1583,15 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
         'image_id'          => $image_id,
         'image'             => $image,
         'total_enigmes'     => $total_enigmes,
+        'nb_joueurs'        => $nb_joueurs,
         'nb_joueurs_label'  => $nb_joueurs_label,
         'cout_points'       => $cout_points,
         'mode_validation'   => $mode_validation,
         'mode_fin'          => $champs['mode_fin'],
         'date_debut'        => $date_debut_affichage,
         'date_fin'          => $date_fin_affichage,
+        'date_debut_court'  => $date_debut_court,
+        'date_fin_court'    => $date_fin_court,
         'badge_class'       => $badge_class,
         'statut_label'      => $statut_label,
         'classe_statut'     => $badge_class,

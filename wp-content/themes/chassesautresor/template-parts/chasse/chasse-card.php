@@ -29,15 +29,20 @@ if (empty($infos)) {
 
         <div class="meta-row svg-xsmall">
             <div class="meta-regular">
-                <?php echo get_svg_icon('enigme'); ?>
-                <?php echo esc_html(sprintf(_n('%d énigme', '%d énigmes', $infos['total_enigmes'], 'chassesautresor-com'), $infos['total_enigmes'])); ?> —
-                <?php echo get_svg_icon('participants'); ?><?php echo esc_html($infos['nb_joueurs_label']); ?>
+                <button type="button" class="meta-indic" data-tap="<?= esc_attr__('nombre d\'énigmes', 'chassesautresor-com'); ?>">
+                    <?php echo get_svg_icon('enigme'); ?>
+                    <span class="meta-indic__count"><?php echo esc_html(number_format_i18n($infos['total_enigmes'])); ?></span>
+                </button>
+                <button type="button" class="meta-indic" data-tap="<?= esc_attr__('nombre de joueurs', 'chassesautresor-com'); ?>">
+                    <?php echo get_svg_icon('participants'); ?>
+                    <span class="meta-indic__count"><?php echo esc_html(number_format_i18n($infos['nb_joueurs'])); ?></span>
+                </button>
             </div>
             <div class="meta-etiquette">
                 <?php echo get_svg_icon('calendar'); ?>
                 <span class="chasse-date-plage">
-                    <span class="date-debut"><?php echo esc_html($infos['date_debut']); ?></span> –
-                    <span class="date-fin"><?php echo esc_html($infos['date_fin']); ?></span>
+                    <span class="date-debut"><?php echo esc_html($infos['date_debut_court']); ?></span> –
+                    <span class="date-fin"><?php echo esc_html($infos['date_fin_court']); ?></span>
                 </span>
             </div>
         </div>

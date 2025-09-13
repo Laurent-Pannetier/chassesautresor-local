@@ -2813,6 +2813,12 @@ msgstr ""
 msgid "nombre de joueurs ayant trouvé la bonne réponse"
 msgstr ""
 
+msgid "nombre d'énigmes"
+msgstr ""
+
+msgid "nombre de joueurs"
+msgstr ""
+
 #: wp-content/themes/chassesautresor/template-parts/enigme/chasse-partial-boucle-enigmes.php:189
 msgid "tentatives quotidiennes utilisées"
 msgstr ""
