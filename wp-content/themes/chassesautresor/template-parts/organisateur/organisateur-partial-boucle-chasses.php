@@ -53,7 +53,7 @@ $chasse_ids = array_values(array_filter($chasse_ids, function ($chasse_id) use (
             get_template_part('template-parts/chasse/chasse-card-wide', null, [
                 'chasse_id'        => $chasse_id,
                 'completion_class' => $classe_completion,
-                'word_limit'       => 150,
+                'word_limit'       => 75,
             ]);
             ?>
         </div>
