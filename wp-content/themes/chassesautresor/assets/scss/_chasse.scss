@@ -266,6 +266,22 @@
     font-size: 93%;
     color: var(--color-gris-3);
 }
+
+.meta-regular .meta-indic {
+    background: none;
+    border: none;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+}
+
+.meta-regular .meta-indic__count {
+    font-weight: 600;
+}
 .chasse-details-wrapper .bloc-metas-inline {
     margin: var(--space-xl) 0;
     color: white;

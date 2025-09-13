@@ -2356,6 +2356,12 @@ msgstr "number of participants for this puzzle"
 msgid "nombre de joueurs ayant trouvé la bonne réponse"
 msgstr "number of players who found the correct answer"
 
+msgid "nombre d'énigmes"
+msgstr "number of puzzles"
+
+msgid "nombre de joueurs"
+msgstr "number of players"
+
 #: template-parts/enigme/chasse-partial-boucle-enigmes.php:189
 msgid "tentatives quotidiennes utilisées"
 msgstr "daily attempts used"

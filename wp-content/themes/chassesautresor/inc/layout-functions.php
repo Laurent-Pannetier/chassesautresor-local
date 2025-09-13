@@ -139,6 +139,13 @@ function charger_scripts_personnalises() {
         true
     );
     wp_enqueue_script(
+        'meta-tap-info',
+        $theme_dir . 'meta-tap-info.js',
+        [],
+        filemtime(get_stylesheet_directory() . '/assets/js/meta-tap-info.js'),
+        true
+    );
+    wp_enqueue_script(
         'chasse-description-toggle',
         $theme_dir . 'chasse-description-toggle.js',
         [],
