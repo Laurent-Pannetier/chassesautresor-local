@@ -80,8 +80,28 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
     // ==================================================
     if ( is_cart() ) {
         get_template_part('template-parts/header-panier');
-    }
-    elseif ( is_page() && ! is_user_account_area() ) {
+    } elseif ( is_front_page() ) {
+        $image_url = imagify_get_webp_url( wp_get_attachment_image_url( 8810, 'full' ) );
+
+        $line1 = sprintf(
+            /* translators: 1: ordinal suffix, 2: phrase 'plateforme de'. */
+            __( '1<sup>%1$s</sup> %2$s', 'chassesautresor-com' ),
+            esc_html__( 'ère', 'chassesautresor-com' ),
+            esc_html__( 'plateforme de', 'chassesautresor-com' )
+        );
+
+        $titre = sprintf(
+            '<span class="hero-title__line1">%1$s</span><span class="hero-title__line2">%2$s</span>',
+            wp_kses_post( $line1 ),
+            esc_html__( 'chasses au trésor', 'chassesautresor-com' )
+        );
+
+        get_header_fallback([
+            'titre'      => $titre,
+            'sous_titre' => '',
+            'image_fond' => $image_url,
+        ]);
+    } elseif ( is_page() && ! is_user_account_area() ) {
         $image_id  = get_post_thumbnail_id();
         $image_url = $image_id ? imagify_get_webp_url( wp_get_attachment_image_url( $image_id, 'full' ) ) : '';
 
