@@ -133,6 +133,7 @@ if (empty($infos)) {
                         </span>
                     <?php endif; ?>
                     <span class="chasse-footer__texte">
+                        <?php echo esc_html__('Proposé par', 'chassesautresor-com'); ?>
                         <a class="chasse-footer__logo-link" href="<?php echo esc_url(get_permalink($orga_id)); ?>">
                             <img
                                 class="chasse-organisateur__logo chasse-footer__logo visuel-cpt"
@@ -142,7 +143,6 @@ if (empty($infos)) {
                                 data-post-id="<?php echo esc_attr($orga_id); ?>"
                             />
                         </a>
-                        <?php echo esc_html__('Proposé par', 'chassesautresor-com'); ?>
                         <a class="chasse-footer__nom" href="<?php echo esc_url(get_permalink($orga_id)); ?>">
                             <?php echo esc_html(get_the_title($orga_id)); ?>
                         </a>
