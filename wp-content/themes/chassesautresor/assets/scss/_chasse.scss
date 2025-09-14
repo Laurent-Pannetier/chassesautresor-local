@@ -340,6 +340,15 @@
   padding-left: var(--space-md);
   padding-right: var(--space-md);
 
+  ul {
+    list-style: disc;
+    padding-left: var(--space-lg);
+
+    li::marker {
+      color: currentColor;
+    }
+  }
+
   p {
     margin-bottom: var(--space-md);
   }
