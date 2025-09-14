@@ -11,6 +11,25 @@ defined('ABSPATH') || exit;
 // 🔹 modifier_champ_indice() → Mise à jour AJAX (champ ACF ou natif)
 
 /**
+ * Generate a placeholder title for an indice based on its chasse.
+ *
+ * @param int $chasse_id Related hunt ID.
+ * @return string
+ */
+function build_indice_placeholder_title(int $chasse_id): string
+{
+    $prefix      = defined('INDICE_DEFAULT_PREFIX') ? INDICE_DEFAULT_PREFIX : 'clue-';
+    $chasse_name = get_post_field('post_title', $chasse_id);
+    $slug        = $chasse_name !== ''
+        ? (function_exists('sanitize_title')
+            ? sanitize_title($chasse_name)
+            : strtolower(trim(preg_replace('/[^A-Za-z0-9]+/', '-', $chasse_name), '-')))
+        : '';
+
+    return $prefix . $slug;
+}
+
+/**
  * Redirige l’affichage d’un indice vers sa chasse ou son énigme liée.
  *
  * @return void
@@ -159,16 +178,26 @@ function reordonner_indices(int $objet_id, string $objet_type): void
         'posts_per_page' => -1,
     ]);
 
-    $default_title = defined('TITRE_DEFAUT_INDICE') ? TITRE_DEFAUT_INDICE : '';
-
     $i = 1;
     foreach ($indices as $indice_id) {
         $current_title = get_post_field('post_title', $indice_id);
+        $prefix        = defined('INDICE_DEFAULT_PREFIX') ? INDICE_DEFAULT_PREFIX : '';
+        $should_update = (
+            $current_title === ''
+            || (defined('TITRE_DEFAUT_INDICE') && $current_title === TITRE_DEFAUT_INDICE)
+            || preg_match('/^Indice #\d+$/', $current_title)
+            || ($prefix !== '' && strpos($current_title, $prefix) === 0)
+        );
 
-        if ($current_title === '' || $current_title === $default_title || preg_match('/^Indice #\d+$/', $current_title)) {
+        if ($should_update) {
+            $chasse_id = (int) get_field('indice_chasse_linked', $indice_id);
+            if (!$chasse_id && $objet_type === 'chasse') {
+                $chasse_id = $objet_id;
+            }
+            $placeholder = build_indice_placeholder_title($chasse_id);
             wp_update_post([
                 'ID'         => $indice_id,
-                'post_title' => $default_title,
+                'post_title' => $placeholder,
             ]);
         }
 
@@ -284,12 +313,13 @@ function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_i
     }
 
     $user_id     = $user_id ?? get_current_user_id();
-    $indice_rank = prochain_rang_indice($chasse_id, 'chasse');
+    $indice_rank   = prochain_rang_indice($chasse_id, 'chasse');
+    $default_title = build_indice_placeholder_title($chasse_id);
 
     $indice_id = wp_insert_post([
         'post_type'   => 'indice',
         'post_status' => 'pending',
-        'post_title'  => TITRE_DEFAUT_INDICE,
+        'post_title'  => $default_title,
         'post_author' => $user_id,
     ]);
 

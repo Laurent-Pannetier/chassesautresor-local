@@ -14,11 +14,16 @@ function get_indice_title($post): string
         return '';
     }
 
-    $title        = (string) $post->post_title;
-    $rank         = (int) get_post_meta($post->ID, 'indice_rank', true);
-    $default      = defined('TITRE_DEFAUT_INDICE') ? TITRE_DEFAUT_INDICE : '';
+    $title   = (string) $post->post_title;
+    $rank    = (int) get_post_meta($post->ID, 'indice_rank', true);
+    $default = defined('TITRE_DEFAUT_INDICE') ? TITRE_DEFAUT_INDICE : '';
+    $prefix  = defined('INDICE_DEFAULT_PREFIX') ? INDICE_DEFAULT_PREFIX : '';
 
-    if ($title === '' || $title === $default) {
+    if (
+        $title === ''
+        || $title === $default
+        || ($prefix !== '' && strpos($title, $prefix) === 0)
+    ) {
         return sprintf(__('Indice #%d', 'chassesautresor-com'), $rank);
     }
 

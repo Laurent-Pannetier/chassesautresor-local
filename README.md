@@ -109,9 +109,10 @@ d’énigme pour choisir la cible de l’indice.
 
 ### Titres d’indice et langues
 
-Le champ `post_title` des indices conserve uniquement un libellé neutre. Le rang est
-stocké dans la métadonnée `indice_rank` et l’intitulé final est généré dynamiquement
-(`Indice #n`) en fonction de la langue active lors de l’affichage.
+Le champ `post_title` des indices conserve uniquement un libellé neutre, construit sous
+la forme `clue-[slug-de-la-chasse]`. Le rang est stocké dans la métadonnée
+`indice_rank` et l’intitulé final est généré dynamiquement (`Indice #n`) en fonction de
+la langue active lors de l’affichage.
 
 ### Accessibilité
 

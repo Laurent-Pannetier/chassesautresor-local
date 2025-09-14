@@ -8,6 +8,9 @@ if (!defined('ABSPATH')) {
 if (!defined('TITRE_DEFAUT_INDICE')) {
     define('TITRE_DEFAUT_INDICE', 'indice');
 }
+if (!defined('INDICE_DEFAULT_PREFIX')) {
+    define('INDICE_DEFAULT_PREFIX', 'clue-');
+}
 
 if (!function_exists('esc_html')) {
     function esc_html($text)
