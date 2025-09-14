@@ -115,6 +115,7 @@ if (empty($infos)) {
                 <footer class="chasse-footer">
                     <?php if (!empty($reward_title) && (float) $reward_value > 0) : ?>
                         <span class="chasse-footer__reward">
+                            <i class="fa-solid fa-trophy" aria-hidden="true"></i>
                             <?php
                             printf(
                                 esc_html__('%1$s — %2$s €', 'chassesautresor-com'),
