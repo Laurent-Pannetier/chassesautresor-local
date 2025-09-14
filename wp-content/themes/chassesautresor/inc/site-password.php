@@ -36,27 +36,35 @@ function ca_site_password_protection(): void
         && is_string($_POST[$field])
     ) {
         if (strcasecmp($_POST[$field], $password) === 0) {
-            setcookie($field, $password, time() + DAY_IN_SECONDS, '/', COOKIE_DOMAIN, is_ssl(), true);
-            setcookie($attempt_field, '', time() - DAY_IN_SECONDS, '/', COOKIE_DOMAIN, is_ssl(), true);
+            if (!headers_sent()) {
+                setcookie($field, $password, time() + DAY_IN_SECONDS, '/', COOKIE_DOMAIN, is_ssl(), true);
+                setcookie($attempt_field, '', time() - DAY_IN_SECONDS, '/', COOKIE_DOMAIN, is_ssl(), true);
+            }
 
             return;
         }
 
         $attempts++;
-        setcookie($attempt_field, (string) $attempts, time() + DAY_IN_SECONDS, '/', COOKIE_DOMAIN, is_ssl(), true);
+        if (!headers_sent()) {
+            setcookie($attempt_field, (string) $attempts, time() + DAY_IN_SECONDS, '/', COOKIE_DOMAIN, is_ssl(), true);
+        }
         $error_message = esc_html__('Incorrect password.', 'chassesautresor-com');
     }
 
     if ($attempts >= $max_attempts) {
-        status_header(403);
-        header('Content-Type: text/html; charset=utf-8');
+        if (!headers_sent()) {
+            status_header(403);
+            header('Content-Type: text/html; charset=utf-8');
+        }
 
         echo '<p>' . esc_html__('Too many attempts. Please try again later.', 'chassesautresor-com') . '</p>';
         exit;
     }
 
-    status_header(401);
-    header('Content-Type: text/html; charset=utf-8');
+    if (!headers_sent()) {
+        status_header(401);
+        header('Content-Type: text/html; charset=utf-8');
+    }
 
     $svg_url   = esc_url(get_stylesheet_directory_uri() . '/assets/svg/pirate-skull.svg');
     $style_url = esc_url(get_stylesheet_directory_uri() . '/dist/style.css');
