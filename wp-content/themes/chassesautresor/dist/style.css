@@ -7788,6 +7788,14 @@ body.accueil-fullscreen {
   z-index: 10;
 }
 
+.home.has-hero .hero-overlay {
+  height: 500px;
+}
+
+.home.has-hero #content {
+  padding-top: 500px;
+}
+
 /* 📐 Layout – Structure générale des pages */
 /* 🎯 Header top bar */
 /* 🧭 Hero  */

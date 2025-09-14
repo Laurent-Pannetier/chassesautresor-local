@@ -21,3 +21,11 @@ body.accueil-fullscreen {
     color: var(--color-white);
     z-index: 10;
 }
+
+.home.has-hero .hero-overlay {
+    height: 500px;
+}
+
+.home.has-hero #content {
+    padding-top: 500px;
+}

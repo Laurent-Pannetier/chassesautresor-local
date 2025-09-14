@@ -80,8 +80,15 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
     // ==================================================
     if ( is_cart() ) {
         get_template_part('template-parts/header-panier');
-    }
-    elseif ( is_page() && ! is_user_account_area() ) {
+    } elseif ( is_front_page() ) {
+        $image_url = imagify_get_webp_url( wp_get_attachment_image_url( 8810, 'full' ) );
+
+        get_header_fallback([
+            'titre'      => esc_html__( 'Plateforme de chasse au trésor', 'chassesautresor-com' ),
+            'sous_titre' => '',
+            'image_fond' => $image_url,
+        ]);
+    } elseif ( is_page() && ! is_user_account_area() ) {
         $image_id  = get_post_thumbnail_id();
         $image_url = $image_id ? imagify_get_webp_url( wp_get_attachment_image_url( $image_id, 'full' ) ) : '';
 
