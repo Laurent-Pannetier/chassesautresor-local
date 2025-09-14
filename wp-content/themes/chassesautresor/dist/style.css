@@ -1141,6 +1141,13 @@
   padding-left: var(--space-md);
   padding-right: var(--space-md);
 }
+.chasse-description ul {
+  list-style: disc;
+  padding-left: var(--space-lg);
+}
+.chasse-description ul li::marker {
+  color: currentColor;
+}
 .chasse-description p {
   margin-bottom: var(--space-md);
 }
@@ -6238,6 +6245,13 @@ li.active .enigme-menu__edit {
   font-size: clamp(1rem, 1.2vw + 0.9rem, 1.25rem);
   line-height: 1.6;
   overflow-wrap: anywhere;
+}
+.enigme-texte ul {
+  list-style: disc;
+  padding-left: var(--space-lg);
+}
+.enigme-texte ul li::marker {
+  color: currentColor;
 }
 
 .enigme-texte > * + * {

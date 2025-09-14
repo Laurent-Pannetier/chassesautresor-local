@@ -683,6 +683,15 @@ li.active .enigme-menu__edit {
   font-size: clamp(1rem, 1.2vw + 0.9rem, 1.25rem);
   line-height: 1.6;
   overflow-wrap: anywhere;
+
+  ul {
+    list-style: disc;
+    padding-left: var(--space-lg);
+
+    li::marker {
+      color: currentColor;
+    }
+  }
 }
 
 .enigme-texte > * + * {
