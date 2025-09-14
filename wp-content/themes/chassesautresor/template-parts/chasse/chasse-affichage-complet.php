@@ -513,7 +513,7 @@ if ($edition_active && !$est_complet) {
                                         <?= esc_html__('Valeur estimée', 'chassesautresor-com'); ?>
                                     </span>
                                     <?= esc_html(number_format_i18n(round((float) $valeur_recompense), 0)); ?>
-                                    <span class="badge-recompense__devise">€</span>
+                                    <span class="badge-recompense__devise prix-devise">€</span>
                                 </span>
                             </p>
                         <?php endif; ?>

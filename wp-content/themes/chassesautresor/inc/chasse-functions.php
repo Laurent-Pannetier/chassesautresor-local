@@ -1544,7 +1544,7 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
             . '<span class="screen-reader-text">' . esc_html__('Récompense :', 'chassesautresor-com') . '</span>'
             . '<span class="badge-recompense avec-recompense">'
             . esc_html(number_format_i18n(round((float) $valeur_recompense), 0))
-            . '<span class="badge-recompense__devise">€</span>'
+            . '<span class="badge-recompense__devise prix-devise">€</span>'
             . '</span>'
             . '<span class="chasse-lot__title">' . esc_html($titre_recompense) . '</span>'
             . '</div>';
