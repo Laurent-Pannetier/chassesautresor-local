@@ -22,6 +22,7 @@ if (empty($infos)) {
         </div>
         <div class="carte-compact__contenu">
             <h3 class="carte-compact__titre"><?php echo esc_html($infos['titre']); ?></h3>
+            <?php echo $infos['lot_html']; ?>
             <div class="carte-compact__meta meta-row svg-xsmall">
                 <div class="meta-regular">
                     <?php echo get_svg_icon('enigme'); ?>

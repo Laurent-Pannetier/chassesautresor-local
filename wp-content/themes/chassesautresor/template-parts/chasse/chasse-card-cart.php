@@ -30,6 +30,7 @@ if (empty($infos)) {
         </div>
         <div class="carte-cart__contenu">
             <h3 class="carte-cart__titre"><?php echo esc_html($infos['titre']); ?></h3>
+            <?php echo $infos['lot_html']; ?>
         </div>
     </a>
     <div class="carte-cart__footer meta-row svg-xsmall">

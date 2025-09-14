@@ -129,6 +129,37 @@
   flex-wrap: nowrap;
 }
 
+/* ========== 🎁 Récompense dans les cartes compactes ========== */
+.carte-compact .chasse-lot,
+.carte-cart .chasse-lot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xxs);
+  font-size: 0.875rem;
+  color: var(--color-text-primary);
+}
+
+.carte-compact .chasse-lot .badge-recompense,
+.carte-cart .chasse-lot .badge-recompense {
+  margin-left: 0;
+  color: var(--color-text-primary);
+}
+
+.carte-compact .chasse-lot__title,
+.carte-cart .chasse-lot__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.carte-compact .chasse-lot__icon svg,
+.carte-cart .chasse-lot__icon svg {
+  width: 20px;
+  height: 20px;
+  color: var(--color-grey-light);
+}
+
 /* ========== 🌟 Carte mise en avant ========== */
 .carte-featured {
   position: relative;
