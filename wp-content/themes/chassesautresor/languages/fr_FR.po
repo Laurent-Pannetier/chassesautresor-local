@@ -380,7 +380,7 @@ msgid "Erreur lors de la création de la chasse."
 msgstr "Erreur lors de la création de la chasse."
 
 #: inc/edition/edition-core.php:147 inc/edition/edition-core.php:179
-#: assets/js/help-modal.js:19
+#: assets/js/help-modal.js:19 inc/enigme/affichage.php:637
 msgid "Fermer"
 msgstr "Fermer"
 
@@ -422,7 +422,7 @@ msgid "Sélectionner une image"
 msgstr "Sélectionner une image"
 
 #: inc/edition/edition-core.php:156 inc/edition/edition-indice.php:164
-#: inc/edition/edition-indice.php:262
+#: inc/edition/edition-indice.php:262 inc/enigme/affichage.php:625
 #, php-format
 msgid "Indice #%d"
 msgstr "Indice #%d"
@@ -3229,19 +3229,12 @@ msgstr "Envoyer la demande de validation"
 msgid "Indice débloqué"
 msgstr "Indice débloqué"
 
-#: inc/enigme/affichage.php:625
-#, php-format
-msgid "Indice #%d"
-msgstr "Indice #%d"
 
 #: inc/enigme/affichage.php:630
 #, php-format
 msgid "Indice #%1$d - %2$d pts"
 msgstr "Indice #%1$d - %2$d pts"
 
-#: inc/enigme/affichage.php:637
-msgid "Fermer"
-msgstr "Fermer"
 
 #: inc/enigme/indices.php:120
 msgid "Débloquer l'indice"
