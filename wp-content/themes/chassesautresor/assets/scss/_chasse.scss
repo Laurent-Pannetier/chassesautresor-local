@@ -245,6 +245,11 @@
 
     &__reward {
         font-weight: 700;
+
+        .fa-trophy {
+            margin-right: 0.3em;
+            color: var(--color-gris-3);
+        }
     }
 
     &__texte {
