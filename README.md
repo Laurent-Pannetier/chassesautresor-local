@@ -107,6 +107,13 @@ charger via l’endpoint AJAX `chasse_lister_enigmes` la liste des énigmes admi
 ainsi que le rang du prochain indice pour chacune. La modale affiche alors un sélecteur
 d’énigme pour choisir la cible de l’indice.
 
+### Titres d’indice et langues
+
+Le champ `post_title` des indices conserve uniquement un libellé neutre, construit sous
+la forme `clue-[slug-de-la-chasse]`. Le rang est stocké dans la métadonnée
+`indice_rank` et l’intitulé final est généré dynamiquement (`Indice #n`) en fonction de
+la langue active lors de l’affichage.
+
 ### Accessibilité
 
 Les libellés du formulaire utilisent `color: var(--color-editor-text)` afin de rester lisibles sur fond clair. Évitez d'appliquer `--color-text-primary` dans ce contexte pour garantir un contraste suffisant.

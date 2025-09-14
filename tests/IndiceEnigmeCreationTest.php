@@ -32,6 +32,10 @@ if (!function_exists('get_post_type')) {
     function get_post_type($id) { return 'enigme'; }
 }
 
+if (!function_exists('get_post_field')) {
+    function get_post_field($field, $post_id) { return $field === 'post_title' ? 'Chasse' : ''; }
+}
+
 if (!function_exists('indice_action_autorisee')) {
     function indice_action_autorisee($action, $type, $id) { return true; }
 }
@@ -54,6 +58,9 @@ if (!function_exists('sanitize_text_field')) {
 
 if (!defined('TITRE_DEFAUT_INDICE')) {
     define('TITRE_DEFAUT_INDICE', 'indice');
+}
+if (!defined('INDICE_DEFAULT_PREFIX')) {
+    define('INDICE_DEFAULT_PREFIX', 'clue-');
 }
 
 if (!defined('DAY_IN_SECONDS')) {
@@ -78,6 +85,9 @@ if (!function_exists('wp_insert_post')) {
 
 if (!function_exists('wp_update_post')) {
     function wp_update_post($args) { return true; }
+}
+if (!function_exists('update_post_meta')) {
+    function update_post_meta($post_id, $key, $value) { }
 }
 
 if (!function_exists('get_posts')) {

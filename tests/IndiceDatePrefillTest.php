@@ -65,6 +65,19 @@ namespace {
             return null;
         }
     }
+    if (!function_exists('get_post_meta')) {
+        function get_post_meta($post_id, $key, $single = false)
+        {
+            global $post_meta;
+            return $post_meta[$post_id][$key] ?? '';
+        }
+    }
+    if (!function_exists('get_indice_title')) {
+        function get_indice_title($post)
+        {
+            return get_the_title(is_object($post) ? $post->ID : $post);
+        }
+    }
 }
 
 namespace IndiceDatePrefill {
@@ -101,6 +114,8 @@ namespace IndiceDatePrefill {
             $objet_id = 10;
             $img_url = '';
 
+            global $post_meta;
+            $post_meta = [123 => ['indice_rank' => 1]];
             ob_start();
             require __DIR__ . '/../wp-content/themes/chassesautresor/template-parts/common/indices-table.php';
             $output = ob_get_clean();

@@ -3,6 +3,9 @@ namespace {
     if (!defined('TITRE_DEFAUT_INDICE')) {
         define('TITRE_DEFAUT_INDICE', 'indice');
     }
+    if (!defined('INDICE_DEFAULT_PREFIX')) {
+        define('INDICE_DEFAULT_PREFIX', 'clue-');
+    }
 
     if (!function_exists('__')) {
         function __($text, $domain = null) { return $text; }

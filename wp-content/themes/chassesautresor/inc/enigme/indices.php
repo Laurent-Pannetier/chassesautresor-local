@@ -2,6 +2,35 @@
 defined('ABSPATH') || exit;
 
 /**
+ * Retrieve the display title for an indice.
+ *
+ * @param int|WP_Post $post Indice object or ID.
+ * @return string
+ */
+function get_indice_title($post): string
+{
+    $post        = get_post($post);
+    if (!$post) {
+        return '';
+    }
+
+    $title   = (string) $post->post_title;
+    $rank    = (int) get_post_meta($post->ID, 'indice_rank', true);
+    $default = defined('TITRE_DEFAUT_INDICE') ? TITRE_DEFAUT_INDICE : '';
+    $prefix  = defined('INDICE_DEFAULT_PREFIX') ? INDICE_DEFAULT_PREFIX : '';
+
+    if (
+        $title === ''
+        || $title === $default
+        || ($prefix !== '' && strpos($title, $prefix) === 0)
+    ) {
+        return sprintf(__('Indice #%d', 'chassesautresor-com'), $rank);
+    }
+
+    return $title;
+}
+
+/**
  * Check if a hint has been unlocked by a user.
  *
  * @param int $user_id   User identifier.
@@ -66,8 +95,14 @@ function debloquer_indice(): void
         ]);
     }
 
-    $cout      = (int) get_field('indice_cout_points', $indice_id);
-    $chasse_id = (int) get_field('indice_chasse_linked', $indice_id);
+    $cout        = (int) get_field('indice_cout_points', $indice_id);
+    $chasse_raw  = get_field('indice_chasse_linked', $indice_id);
+    if (is_array($chasse_raw)) {
+        $first     = $chasse_raw[0] ?? null;
+        $chasse_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
+    } else {
+        $chasse_id = (int) $chasse_raw;
+    }
     $enigme_id = (int) get_field('indice_enigme_linked', $indice_id);
 
     if ($cout > 0) {
