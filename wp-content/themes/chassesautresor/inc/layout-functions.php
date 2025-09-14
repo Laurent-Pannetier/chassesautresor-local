@@ -355,7 +355,7 @@ function get_header_fallback($args = []) {
  * @return array
  */
 function ajouter_class_has_hero_si_header_fallback( $classes ) {
-    if ( is_page() && ! is_user_account_area() ) {
+    if ( is_front_page() || ( is_page() && ! is_user_account_area() ) ) {
         $classes[] = 'has-hero';
     }
 
