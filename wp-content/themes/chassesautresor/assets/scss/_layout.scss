@@ -142,6 +142,10 @@ header.site-header {
     transform: translateY(0);
   }
 }
+.hero-logo {
+  max-width: 150px;
+  margin-bottom: var(--space-sm);
+}
 .hero-title {
   font-size: 1.5rem;
   font-weight: 700;
@@ -198,6 +202,9 @@ header.site-header {
   .hero-title__line2 {
     font-size: 2rem;
   }
+  .hero-logo {
+    max-width: 180px;
+  }
   .has-hero .hero-overlay {
     height: 280px;
   }
@@ -219,6 +226,9 @@ header.site-header {
   }
   .hero-title__line2 {
     font-size: 2.6rem;
+  }
+  .hero-logo {
+    max-width: 200px;
   }
   .has-hero .hero-overlay {
     height: 475px;

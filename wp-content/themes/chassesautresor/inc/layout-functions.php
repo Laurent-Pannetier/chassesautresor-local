@@ -331,6 +331,7 @@ function is_user_account_area(): bool
  *     @type string $titre       Le titre principal (H1).
  *     @type string $sous_titre  Le sous-titre affiché sous le titre.
  *     @type int|string $image_fond  ID de média WordPress ou URL d'image directe.
+ *     @type int $logo_id        ID de l'image du logo affichée au-dessus du titre.
  * }
  */
 function get_header_fallback($args = []) {
@@ -338,6 +339,7 @@ function get_header_fallback($args = []) {
         'titre'      => '',
         'sous_titre' => '',
         'image_fond' => '', // URL déjà optimisée
+        'logo_id'    => 0,
     ];
     $args = wp_parse_args($args, $defaults);
 
@@ -345,6 +347,7 @@ function get_header_fallback($args = []) {
         'titre'      => $args['titre'],
         'sous_titre' => $args['sous_titre'],
         'image_fond' => esc_url( $args['image_fond'] ),
+        'logo_id'    => absint( $args['logo_id'] ),
     ]);
 }
 
