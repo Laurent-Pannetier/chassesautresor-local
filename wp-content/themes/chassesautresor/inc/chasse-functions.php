@@ -1539,8 +1539,9 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
     $lot_html = '';
     if (!empty($titre_recompense) && (float) $valeur_recompense > 0) {
         $footer_icones[] = 'trophy';
-        $lot_html = '<div class="chasse-lot" aria-live="polite">'
-            . '<strong>Récompense :</strong> '
+        $lot_html       = '<div class="chasse-lot" aria-live="polite">'
+            . get_svg_icon('trophy')
+            . '<span class="screen-reader-text">' . esc_html__('Récompense :', 'chassesautresor-com') . '</span>'
             . esc_html($titre_recompense) . ' — ' . esc_html($valeur_recompense) . ' €'
             . '</div>';
     }
