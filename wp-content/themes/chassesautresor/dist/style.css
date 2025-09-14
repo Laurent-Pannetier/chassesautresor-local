@@ -134,13 +134,16 @@
 .carte-cart .chasse-lot {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--space-xxs);
   font-size: 0.875rem;
+  color: var(--color-text-primary);
 }
 
 .carte-compact .chasse-lot .badge-recompense,
 .carte-cart .chasse-lot .badge-recompense {
   margin-left: 0;
+  color: var(--color-text-primary);
 }
 
 .carte-compact .chasse-lot__title,
