@@ -100,6 +100,7 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
             'titre'      => $titre,
             'sous_titre' => '',
             'image_fond' => $image_url,
+            'logo_id'    => 475,
         ]);
     } elseif ( is_page() && ! is_user_account_area() ) {
         $image_id  = get_post_thumbnail_id();
