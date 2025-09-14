@@ -1006,8 +1006,16 @@
 .chasse-footer {
   margin-top: var(--space-md);
   display: flex;
-  justify-content: flex-start;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-xs);
+}
+@media (min-width: 1024px) {
+  .chasse-footer {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
 }
 .chasse-footer__reward {
   font-weight: 700;
