@@ -18,13 +18,17 @@ defined('ABSPATH') || exit;
  */
 function build_indice_placeholder_title(int $chasse_id): string
 {
-    $prefix      = defined('INDICE_DEFAULT_PREFIX') ? INDICE_DEFAULT_PREFIX : 'clue-';
-    $chasse_name = get_post_field('post_title', $chasse_id);
-    $slug        = $chasse_name !== ''
-        ? (function_exists('sanitize_title')
-            ? sanitize_title($chasse_name)
-            : strtolower(trim(preg_replace('/[^A-Za-z0-9]+/', '-', $chasse_name), '-')))
-        : '';
+    $prefix = defined('INDICE_DEFAULT_PREFIX') ? INDICE_DEFAULT_PREFIX : 'clue-';
+    $slug   = get_post_field('post_name', $chasse_id);
+
+    if ($slug === '') {
+        $chasse_name = get_post_field('post_title', $chasse_id);
+        $slug        = $chasse_name !== ''
+            ? (function_exists('sanitize_title')
+                ? sanitize_title($chasse_name)
+                : strtolower(trim(preg_replace('/[^A-Za-z0-9]+/', '-', $chasse_name), '-')))
+            : '';
+    }
 
     return $prefix . $slug;
 }
@@ -190,10 +194,18 @@ function reordonner_indices(int $objet_id, string $objet_type): void
         );
 
         if ($should_update) {
-            $chasse_id = (int) get_field('indice_chasse_linked', $indice_id);
+            $chasse_linked = get_field('indice_chasse_linked', $indice_id);
+            if (is_array($chasse_linked)) {
+                $first     = $chasse_linked[0] ?? null;
+                $chasse_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
+            } else {
+                $chasse_id = (int) $chasse_linked;
+            }
+
             if (!$chasse_id && $objet_type === 'chasse') {
                 $chasse_id = $objet_id;
             }
+
             $placeholder = build_indice_placeholder_title($chasse_id);
             wp_update_post([
                 'ID'         => $indice_id,

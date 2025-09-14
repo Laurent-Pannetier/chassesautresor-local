@@ -95,8 +95,14 @@ function debloquer_indice(): void
         ]);
     }
 
-    $cout      = (int) get_field('indice_cout_points', $indice_id);
-    $chasse_id = (int) get_field('indice_chasse_linked', $indice_id);
+    $cout        = (int) get_field('indice_cout_points', $indice_id);
+    $chasse_raw  = get_field('indice_chasse_linked', $indice_id);
+    if (is_array($chasse_raw)) {
+        $first     = $chasse_raw[0] ?? null;
+        $chasse_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
+    } else {
+        $chasse_id = (int) $chasse_raw;
+    }
     $enigme_id = (int) get_field('indice_enigme_linked', $indice_id);
 
     if ($cout > 0) {

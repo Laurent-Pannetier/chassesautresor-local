@@ -37,7 +37,14 @@ namespace {
         function get_post_field($field, $post_id)
         {
             global $post_titles;
-            return $field === 'post_title' ? ($post_titles[$post_id] ?? '') : '';
+            if ($field === 'post_title') {
+                return $post_titles[$post_id] ?? '';
+            }
+            if ($field === 'post_name') {
+                $title = $post_titles[$post_id] ?? '';
+                return strtolower(str_replace(' ', '-', $title));
+            }
+            return '';
         }
     }
     if (!function_exists('__')) {
@@ -82,7 +89,7 @@ namespace ReordonnerIndicesTest {
             $captured_args      = [];
             $get_field_overrides = [
                 'indice_cible_type'    => 'chasse',
-                'indice_chasse_linked' => 5,
+                'indice_chasse_linked' => [['ID' => 5]],
             ];
         }
 
@@ -179,8 +186,8 @@ namespace ReordonnerIndicesTest {
         {
             global $updated_posts, $get_field_overrides, $captured_args, $updated_meta;
             $get_field_overrides['indice_cible_type']   = 'enigme';
-            $get_field_overrides['indice_chasse_linked'] = 5;
-            $get_field_overrides['indice_enigme_linked'] = 15;
+            $get_field_overrides['indice_chasse_linked'] = [['ID' => 5]];
+            $get_field_overrides['indice_enigme_linked'] = [['ID' => 15]];
 
             require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
 
