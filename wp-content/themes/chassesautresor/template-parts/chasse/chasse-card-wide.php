@@ -124,10 +124,18 @@ if (empty($infos)) {
                         <span class="chasse-footer__reward">
                             <i class="fa-solid fa-trophy" aria-hidden="true"></i>
                             <?php
-                            printf(
-                                esc_html__('%1$s — %2$s €', 'chassesautresor-com'),
-                                esc_html($reward_title),
-                                esc_html(number_format_i18n(round((float) $reward_value), 0))
+                            echo wp_kses(
+                                sprintf(
+                                    esc_html__('%1$s — %2$s%3$s', 'chassesautresor-com'),
+                                    esc_html($reward_title),
+                                    esc_html(number_format_i18n(round((float) $reward_value), 0)),
+                                    '<span class="prix-devise">' . esc_html__('€', 'chassesautresor-com') . '</span>'
+                                ),
+                                [
+                                    'span' => [
+                                        'class' => [],
+                                    ],
+                                ]
                             );
                             ?>
                         </span>
