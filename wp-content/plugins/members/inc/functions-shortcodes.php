@@ -307,12 +307,18 @@ function members_login_form_shortcode() {
 function members_login_redirect( $redirect_to, $request, $user ) {
     if ( ! isset( $_POST['members_redirect_to'] ) ) {
         return $redirect_to;
-    } elseif ( empty( $user ) || is_wp_error( $user ) ) {
-        wp_redirect( str_replace('?login=failed', '', $_SERVER['HTTP_REFERER']) . '?login=failed' );
-        die;
-    } else {
-        return str_replace('?login=failed', '', $_SERVER['HTTP_REFERER']);
     }
+
+    $referrer = wp_get_referer();
+    $referrer = $referrer ? remove_query_arg( 'login', $referrer ) : $redirect_to;
+
+    if ( empty( $user ) || is_wp_error( $user ) ) {
+        $target = $referrer ? add_query_arg( 'login', 'failed', $referrer ) : wp_login_url();
+        wp_redirect( $target );
+        exit;
+    }
+
+    return $referrer ?: home_url();
 }
 
 /**
