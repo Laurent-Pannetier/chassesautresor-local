@@ -68,8 +68,8 @@ if (empty($indices)) {
         </tr>
     </thead>
     <tbody>
-        <?php foreach ($indices as $index => $indice) :
-            $indice_rank = $index + 1;
+        <?php foreach ($indices as $indice) :
+            $indice_rank = (int) get_post_meta($indice->ID, 'indice_rank', true);
             $timestamp   = strtotime($indice->post_date);
             $locale      = function_exists('determine_locale')
                 ? determine_locale()
@@ -87,12 +87,8 @@ if (empty($indices)) {
                 $img_url = wp_get_attachment_image_url($img_id, 'thumbnail') ?: '';
             }
 
-            $indice_title_raw = get_the_title($indice->ID);
-            $default_title    = defined('TITRE_DEFAUT_INDICE') ? TITRE_DEFAUT_INDICE : '';
-            $indice_title     = $indice_title_raw !== '' && $indice_title_raw !== $default_title
-                ? $indice_title_raw
-                : sprintf(__('Indice #%d', 'chassesautresor-com'), $indice_rank);
-            $contenu          = wp_strip_all_tags(get_field('indice_contenu', $indice->ID) ?: '');
+            $indice_title = get_indice_title($indice);
+            $contenu      = wp_strip_all_tags(get_field('indice_contenu', $indice->ID) ?: '');
             $dispo   = get_field('indice_disponibilite', $indice->ID) ?: 'immediate';
 
             $date_raw   = get_field('indice_date_disponibilite', $indice->ID) ?: '';

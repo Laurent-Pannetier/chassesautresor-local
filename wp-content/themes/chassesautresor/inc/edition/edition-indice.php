@@ -159,13 +159,20 @@ function reordonner_indices(int $objet_id, string $objet_type): void
         'posts_per_page' => -1,
     ]);
 
+    $default_title = defined('TITRE_DEFAUT_INDICE') ? TITRE_DEFAUT_INDICE : '';
+
     $i = 1;
     foreach ($indices as $indice_id) {
-        $title = sprintf(__('Indice #%d', 'chassesautresor-com'), $i);
-        wp_update_post([
-            'ID'         => $indice_id,
-            'post_title' => $title,
-        ]);
+        $current_title = get_post_field('post_title', $indice_id);
+
+        if ($current_title === '' || $current_title === $default_title || preg_match('/^Indice #\d+$/', $current_title)) {
+            wp_update_post([
+                'ID'         => $indice_id,
+                'post_title' => $default_title,
+            ]);
+        }
+
+        update_post_meta($indice_id, 'indice_rank', $i);
         $i++;
     }
 
@@ -276,7 +283,7 @@ function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_i
         return new WP_Error('permission_refusee', __('Droits insuffisants.', 'chassesautresor-com'));
     }
 
-    $user_id    = $user_id ?? get_current_user_id();
+    $user_id     = $user_id ?? get_current_user_id();
     $indice_rank = prochain_rang_indice($chasse_id, 'chasse');
 
     $indice_id = wp_insert_post([
@@ -290,11 +297,7 @@ function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_i
         return $indice_id;
     }
 
-    $nouveau_titre = sprintf(__('Indice #%d', 'chassesautresor-com'), $indice_rank);
-    wp_update_post([
-        'ID'         => $indice_id,
-        'post_title' => $nouveau_titre,
-    ]);
+    update_post_meta($indice_id, 'indice_rank', $indice_rank);
 
     update_field('indice_cible_type', $objet_type, $indice_id);
     update_field('indice_chasse_linked', $chasse_id, $indice_id);

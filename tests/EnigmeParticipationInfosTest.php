@@ -5,6 +5,10 @@ if (!defined('ABSPATH')) {
     define('ABSPATH', __DIR__ . '/');
 }
 
+if (!defined('TITRE_DEFAUT_INDICE')) {
+    define('TITRE_DEFAUT_INDICE', 'indice');
+}
+
 if (!function_exists('esc_html')) {
     function esc_html($text)
     {
@@ -126,6 +130,24 @@ if (!function_exists('get_the_title')) {
     }
 }
 
+if (!function_exists('get_post_meta')) {
+    function get_post_meta($post_id, $key, $single = false)
+    {
+        global $post_meta;
+        return $post_meta[$post_id][$key] ?? '';
+    }
+}
+
+if (!function_exists('get_post')) {
+    function get_post($post)
+    {
+        if (is_object($post)) {
+            return $post;
+        }
+        return (object) ['ID' => $post, 'post_title' => get_the_title($post)];
+    }
+}
+
 if (!function_exists('wp_cache_get')) {
     function wp_cache_get($key, $group = '', $force = false, &$found = null)
     {
@@ -188,7 +210,7 @@ class EnigmeParticipationInfosTest extends TestCase
 {
     public function setUp(): void
     {
-        global $fields, $resolved, $wpdb, $mocked_posts, $mocked_titles, $last_get_posts_args;
+        global $fields, $resolved, $wpdb, $mocked_posts, $mocked_titles, $last_get_posts_args, $post_meta;
         $fields = [
             10 => [
                 'indices'                      => [],
@@ -200,6 +222,7 @@ class EnigmeParticipationInfosTest extends TestCase
         $resolved = false;
         $mocked_posts        = [];
         $mocked_titles       = [];
+        $post_meta           = [];
         $last_get_posts_args = [];
         $wpdb = new class {
             public string $prefix = 'wp_';
@@ -243,10 +266,14 @@ class EnigmeParticipationInfosTest extends TestCase
      */
     public function test_indices_links_displayed(): void
     {
-        global $mocked_posts, $fields;
+        global $mocked_posts, $fields, $mocked_titles, $post_meta;
         $mocked_posts = [101, 102];
         $fields[101]['indice_cout_points'] = 3;
         $fields[102]['indice_cout_points'] = 4;
+        $mocked_titles[101] = TITRE_DEFAUT_INDICE;
+        $mocked_titles[102] = TITRE_DEFAUT_INDICE;
+        $post_meta[101]['indice_rank'] = 1;
+        $post_meta[102]['indice_rank'] = 2;
 
         ob_start();
         render_enigme_participation(10, 'defaut', 1);
@@ -261,11 +288,13 @@ class EnigmeParticipationInfosTest extends TestCase
      */
     public function test_programmed_indices_date_format_future(): void
     {
-        global $mocked_posts, $fields;
+        global $mocked_posts, $fields, $mocked_titles, $post_meta;
         $mocked_posts = [405];
         $fields[405]['indice_cout_points']        = 0;
         $fields[405]['indice_cache_etat_systeme'] = 'programme';
         $fields[405]['indice_date_disponibilite'] = date('d/m/Y H:i', time() + 30 * DAY_IN_SECONDS);
+        $mocked_titles[405] = TITRE_DEFAUT_INDICE;
+        $post_meta[405]['indice_rank'] = 1;
 
         ob_start();
         render_enigme_participation(10, 'defaut', 1);
@@ -281,11 +310,13 @@ class EnigmeParticipationInfosTest extends TestCase
      */
     public function test_programmed_indices_label_today(): void
     {
-        global $mocked_posts, $fields;
+        global $mocked_posts, $fields, $mocked_titles, $post_meta;
         $mocked_posts = [501];
         $fields[501]['indice_cout_points']        = 0;
         $fields[501]['indice_cache_etat_systeme'] = 'programme';
         $fields[501]['indice_date_disponibilite'] = date('d/m/Y H:i', time() + HOUR_IN_SECONDS);
+        $mocked_titles[501] = TITRE_DEFAUT_INDICE;
+        $post_meta[501]['indice_rank'] = 1;
 
         ob_start();
         render_enigme_participation(10, 'defaut', 1);
@@ -301,11 +332,13 @@ class EnigmeParticipationInfosTest extends TestCase
      */
     public function test_programmed_indices_label_within_week(): void
     {
-        global $mocked_posts, $fields;
+        global $mocked_posts, $fields, $mocked_titles, $post_meta;
         $mocked_posts = [502];
         $fields[502]['indice_cout_points']        = 0;
         $fields[502]['indice_cache_etat_systeme'] = 'programme';
         $fields[502]['indice_date_disponibilite'] = date('d/m/Y H:i', time() + 2 * DAY_IN_SECONDS);
+        $mocked_titles[502] = TITRE_DEFAUT_INDICE;
+        $post_meta[502]['indice_rank'] = 1;
 
         ob_start();
         render_enigme_participation(10, 'defaut', 1);
@@ -321,11 +354,13 @@ class EnigmeParticipationInfosTest extends TestCase
      */
     public function test_programmed_indices_past_date_is_available(): void
     {
-        global $mocked_posts, $fields;
+        global $mocked_posts, $fields, $mocked_titles, $post_meta;
         $mocked_posts = [503];
         $fields[503]['indice_cout_points']        = 0;
         $fields[503]['indice_cache_etat_systeme'] = 'programme';
         $fields[503]['indice_date_disponibilite'] = date('d/m/Y H:i', time() - HOUR_IN_SECONDS);
+        $mocked_titles[503] = TITRE_DEFAUT_INDICE;
+        $post_meta[503]['indice_rank'] = 1;
 
         ob_start();
         render_enigme_participation(10, 'defaut', 1);
@@ -355,9 +390,11 @@ class EnigmeParticipationInfosTest extends TestCase
      */
     public function test_free_indices_locked_initially(): void
     {
-        global $mocked_posts, $fields;
+        global $mocked_posts, $fields, $mocked_titles, $post_meta;
         $mocked_posts = [201];
         $fields[201]['indice_cout_points'] = 0;
+        $mocked_titles[201] = TITRE_DEFAUT_INDICE;
+        $post_meta[201]['indice_rank'] = 1;
 
         ob_start();
         render_enigme_participation(10, 'defaut', 1);
@@ -373,10 +410,12 @@ class EnigmeParticipationInfosTest extends TestCase
      */
     public function test_reponse_before_indices(): void
     {
-        global $mocked_posts, $fields, $resolved;
+        global $mocked_posts, $fields, $resolved, $mocked_titles, $post_meta;
         $mocked_posts = [301];
         $fields[301]['indice_cout_points'] = 2;
         $resolved = true;
+        $mocked_titles[301] = TITRE_DEFAUT_INDICE;
+        $post_meta[301]['indice_rank'] = 1;
 
         ob_start();
         render_enigme_participation(10, 'defaut', 1);
@@ -400,9 +439,11 @@ class EnigmeParticipationInfosTest extends TestCase
      */
     public function test_separator_displayed_with_indices(): void
     {
-        global $mocked_posts, $fields;
+        global $mocked_posts, $fields, $mocked_titles, $post_meta;
         $mocked_posts = [401];
         $fields[401]['indice_cout_points'] = 0;
+        $mocked_titles[401] = TITRE_DEFAUT_INDICE;
+        $post_meta[401]['indice_rank'] = 1;
 
         ob_start();
         render_enigme_participation(10, 'defaut', 1);

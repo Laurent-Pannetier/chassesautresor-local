@@ -2,6 +2,30 @@
 defined('ABSPATH') || exit;
 
 /**
+ * Retrieve the display title for an indice.
+ *
+ * @param int|WP_Post $post Indice object or ID.
+ * @return string
+ */
+function get_indice_title($post): string
+{
+    $post        = get_post($post);
+    if (!$post) {
+        return '';
+    }
+
+    $title        = (string) $post->post_title;
+    $rank         = (int) get_post_meta($post->ID, 'indice_rank', true);
+    $default      = defined('TITRE_DEFAUT_INDICE') ? TITRE_DEFAUT_INDICE : '';
+
+    if ($title === '' || $title === $default) {
+        return sprintf(__('Indice #%d', 'chassesautresor-com'), $rank);
+    }
+
+    return $title;
+}
+
+/**
  * Check if a hint has been unlocked by a user.
  *
  * @param int $user_id   User identifier.

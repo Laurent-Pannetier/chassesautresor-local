@@ -81,6 +81,9 @@ namespace {
     if (!function_exists('wp_update_post')) {
         function wp_update_post($args) { global $updated_posts; $updated_posts[] = $args; return $args['ID'] ?? 123; }
     }
+    if (!function_exists('update_post_meta')) {
+        function update_post_meta($post_id, $key, $value) { global $updated_meta; $updated_meta[$post_id][$key] = $value; }
+    }
 
     if (!function_exists('update_field')) {
         function update_field($field, $value, $post_id) { global $updated_fields; $updated_fields[$field] = $value; }
@@ -129,28 +132,31 @@ class CreerIndicePermissionsTest extends TestCase
 {
     protected function setUp(): void
     {
-        global $is_logged_in, $can_edit, $mocked_existing_indices, $mocked_fields;
-        $is_logged_in = true;
-        $can_edit = false;
+        global $is_logged_in, $can_edit, $mocked_existing_indices, $mocked_fields, $updated_meta;
+        $is_logged_in           = true;
+        $can_edit               = false;
         $mocked_existing_indices = [];
-        $mocked_fields = [];
+        $mocked_fields          = [];
+        $updated_meta           = [];
     }
 
     protected function tearDown(): void
     {
-        global $is_logged_in, $can_edit, $mocked_existing_indices, $mocked_fields;
-        $is_logged_in = true;
-        $can_edit = false;
+        global $is_logged_in, $can_edit, $mocked_existing_indices, $mocked_fields, $updated_meta;
+        $is_logged_in           = true;
+        $can_edit               = false;
         $mocked_existing_indices = [];
-        $mocked_fields = [];
+        $mocked_fields          = [];
+        $updated_meta           = [];
     }
 
     public function test_creates_indice_when_authorised(): void
     {
-        global $can_edit, $updated_fields, $updated_posts, $mocked_existing_indices;
-        $can_edit = true;
-        $updated_fields = [];
-        $updated_posts = [];
+        global $can_edit, $updated_fields, $updated_posts, $mocked_existing_indices, $updated_meta;
+        $can_edit               = true;
+        $updated_fields         = [];
+        $updated_posts          = [];
+        $updated_meta           = [];
         $mocked_existing_indices = [10, 11];
 
         $result = \creer_indice_pour_objet(42, 'chasse');
@@ -162,7 +168,7 @@ class CreerIndicePermissionsTest extends TestCase
         $this->assertSame($expected_date, $updated_fields['indice_date_disponibilite']);
         $this->assertSame('desactive', $updated_fields['indice_cache_etat_systeme']);
         $this->assertFalse($updated_fields['indice_cache_complet']);
-        $this->assertSame('Indice #3', $updated_posts[0]['post_title']);
+        $this->assertSame(3, $updated_meta[123]['indice_rank']);
     }
 
     public function test_utilisateur_peut_editer_indice_desactive(): void

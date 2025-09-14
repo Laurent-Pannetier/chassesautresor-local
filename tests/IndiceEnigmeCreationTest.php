@@ -79,6 +79,9 @@ if (!function_exists('wp_insert_post')) {
 if (!function_exists('wp_update_post')) {
     function wp_update_post($args) { return true; }
 }
+if (!function_exists('update_post_meta')) {
+    function update_post_meta($post_id, $key, $value) { }
+}
 
 if (!function_exists('get_posts')) {
     function get_posts($args) { return []; }

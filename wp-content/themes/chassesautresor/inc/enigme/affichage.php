@@ -733,20 +733,13 @@ require_once __DIR__ . '/indices.php';
                     if ($est_debloque) {
                         $classes   = 'indice-link indice-link--unlocked etiquette';
                         $etat_icon = 'fa-eye';
-                        $title_ind = get_the_title($indice_id);
-                        $label     = $title_ind !== '' ? esc_html($title_ind) : sprintf(
-                            esc_html__('Indice #%d', 'chassesautresor-com'),
-                            $i + 1
-                        );
                     } else {
                         $classes   = 'indice-link indice-link--locked etiquette';
                         $etat_icon = 'fa-lightbulb';
-                        $title_ind = get_the_title($indice_id);
-                        $label     = $title_ind !== '' ? esc_html($title_ind) : sprintf(
-                            esc_html__('Indice #%d', 'chassesautresor-com'),
-                            $i + 1
-                        );
                     }
+
+                    $title_ind = get_indice_title($indice_id);
+                    $label     = esc_html($title_ind);
 
                     $cout_html = $cout_indice > 0
                         ? ' - ' . $cout_indice . ' <sup>'
