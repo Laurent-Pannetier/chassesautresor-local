@@ -728,6 +728,8 @@ a.ajout-link:focus-visible {
   border-radius: 0.4rem;
   background-color: rgba(255, 255, 255, 0.05);
   color: var(--color-text-primary);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .badge-recompense__label,
