@@ -254,6 +254,22 @@
 
     &__texte {
         color: var(--color-gris-3);
+        display: flex;
+        align-items: center;
+        gap: var(--space-xs);
+    }
+
+    &__logo {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        filter: grayscale(1);
+        transition: filter 0.3s;
+    }
+
+    &__logo-link:hover &__logo {
+        filter: none;
     }
 
     &__nom {

@@ -1026,6 +1026,21 @@
 }
 .chasse-footer__texte {
   color: var(--color-gris-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+.chasse-footer__logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  filter: grayscale(1);
+  transition: filter 0.3s;
+}
+.chasse-footer__logo-link:hover .chasse-footer__logo {
+  filter: none;
 }
 .chasse-footer__nom {
   font-weight: 700;
