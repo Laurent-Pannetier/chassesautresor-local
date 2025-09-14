@@ -27,18 +27,6 @@ $chasse_ids = $query->posts;
     <main id="home-page">
         <section class="chasses">
             <div class="conteneur">
-                <div class="titre-chasses-wrapper">
-                    <div class="titre-chasses">
-                        <span class="decor decor-gauche">
-                            <?php echo file_get_contents(get_theme_file_path('assets/svg/star-line-right.svg')); ?>
-                        </span>
-                        <h2><?php esc_html_e('Chasses au trésor', 'chassesautresor-com'); ?></h2>
-                        <span class="decor decor-droite">
-                            <?php echo file_get_contents(get_theme_file_path('assets/svg/star-line-left.svg')); ?>
-                        </span>
-                    </div>
-                </div>
-                <div class="ligne-chasses"></div>
                 <div class="liste-chasses">
                     <?php
                     get_template_part('template-parts/organisateur/organisateur-partial-boucle-chasses', null, [
