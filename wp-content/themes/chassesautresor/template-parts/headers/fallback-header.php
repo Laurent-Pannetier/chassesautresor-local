@@ -16,7 +16,7 @@ if ( ! isset( $args ) || ! is_array( $args ) ) {
     return;
 }
 
-$titre       = isset( $args['titre'] ) ? esc_html( $args['titre'] ) : '';
+$titre       = isset( $args['titre'] ) ? wp_kses_post( $args['titre'] ) : '';
 $sous_titre  = isset( $args['sous_titre'] ) ? esc_html( $args['sous_titre'] ) : '';
 $image_url   = isset( $args['image_fond'] ) ? esc_url( $args['image_fond'] ) : '';
 ?>

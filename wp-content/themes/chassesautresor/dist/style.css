@@ -7943,6 +7943,22 @@ header.site-header {
   text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
 }
 
+.hero-title__line1,
+.hero-title__line2 {
+  display: block;
+  text-transform: none;
+}
+
+.hero-title__line1 {
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.hero-title__line2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
 .hero-subtitle {
   font-size: 1rem;
   color: var(--color-text-primary);
@@ -7970,6 +7986,12 @@ header.site-header {
     font-size: 1.5rem;
     margin-bottom: 1.1rem;
   }
+  .hero-title__line1 {
+    font-size: 1.2rem;
+  }
+  .hero-title__line2 {
+    font-size: 2rem;
+  }
   .has-hero .hero-overlay {
     height: 280px;
   }
@@ -7984,6 +8006,12 @@ header.site-header {
   .hero-subtitle {
     font-size: 1.3rem;
     margin-bottom: var(--space-2xl);
+  }
+  .hero-title__line1 {
+    font-size: 1.4rem;
+  }
+  .hero-title__line2 {
+    font-size: 2.6rem;
   }
   .has-hero .hero-overlay {
     height: 475px;
