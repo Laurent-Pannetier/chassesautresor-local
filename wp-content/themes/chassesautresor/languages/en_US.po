@@ -376,7 +376,7 @@ msgid "Erreur lors de la création de la chasse."
 msgstr "Error creating hunt."
 
 #: inc/edition/edition-core.php:147 inc/edition/edition-core.php:179
-#: assets/js/help-modal.js:19
+#: assets/js/help-modal.js:19 inc/enigme/affichage.php:637
 #, fuzzy
 msgid "Fermer"
 msgstr "Close"
@@ -420,10 +420,10 @@ msgid "Sélectionner une image"
 msgstr "Select a riddle"
 
 #: inc/edition/edition-core.php:156 inc/edition/edition-indice.php:164
-#: inc/edition/edition-indice.php:262
+#: inc/edition/edition-indice.php:262 inc/enigme/affichage.php:625
 #, php-format
 msgid "Indice #%d"
-msgstr "Clue #%d"
+msgstr "Hint #%d"
 
 #: inc/edition/edition-core.php:157 inc/edition/edition-core.php:196
 msgid "liée à"
@@ -3267,19 +3267,12 @@ msgstr "Send the validation request"
 msgid "Indice débloqué"
 msgstr "Hint unlocked"
 
-#: inc/enigme/affichage.php:625
-#, php-format
-msgid "Indice #%d"
-msgstr "Hint #%d"
 
 #: inc/enigme/affichage.php:630
 #, php-format
 msgid "Indice #%1$d - %2$d pts"
 msgstr "Hint #%1$d - %2$d pts"
 
-#: inc/enigme/affichage.php:637
-msgid "Fermer"
-msgstr "Close"
 
 #: inc/enigme/indices.php:120
 msgid "Débloquer l'indice"
