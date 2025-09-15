@@ -149,24 +149,34 @@ $is_complete = (
                             <?php
                         },
                         'content' => function () use ($logo_url, $logo_id, $peut_editer, $organisateur_id) {
-                            $transparent = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
                             ?>
                             <div class="champ-affichage">
                                 <?php if ($peut_editer) : ?>
-                                    <button type="button"
-                                        class="champ-modifier"
-                                        data-champ="logo_organisateur"
-                                        data-cpt="organisateur"
-                                        data-post-id="<?= esc_attr($organisateur_id); ?>"
-                                        aria-label="<?= esc_attr__('Modifier le logo de l\'organisateur', 'chassesautresor-com'); ?>">
+                                    <?php if ($logo_url) : ?>
                                         <img
-                                            src="<?= esc_url($logo_url ?: $transparent); ?>"
+                                            src="<?= esc_url($logo_url); ?>"
                                             alt="<?= esc_attr__('Logo de l\'organisateur', 'chassesautresor-com'); ?>"
                                         />
-                                        <span class="champ-ajout-image">
-                                            <?= esc_html__('ajouter une image', 'chassesautresor-com'); ?>
-                                        </span>
-                                    </button>
+                                        <button type="button"
+                                            class="champ-modifier"
+                                            data-champ="logo_organisateur"
+                                            data-cpt="organisateur"
+                                            data-post-id="<?= esc_attr($organisateur_id); ?>"
+                                            aria-label="<?= esc_attr__('Modifier le logo de l\'organisateur', 'chassesautresor-com'); ?>">
+                                            <?= esc_html__('modifier', 'chassesautresor-com'); ?>
+                                        </button>
+                                    <?php else : ?>
+                                        <button type="button"
+                                            class="champ-modifier"
+                                            data-champ="logo_organisateur"
+                                            data-cpt="organisateur"
+                                            data-post-id="<?= esc_attr($organisateur_id); ?>"
+                                            aria-label="<?= esc_attr__('Ajouter le logo de l\'organisateur', 'chassesautresor-com'); ?>">
+                                            <span class="champ-ajout-image">
+                                                <?= esc_html__('ajouter une image', 'chassesautresor-com'); ?>
+                                            </span>
+                                        </button>
+                                    <?php endif; ?>
                                 <?php else : ?>
                                     <?php if ($logo_url) : ?>
                                         <img

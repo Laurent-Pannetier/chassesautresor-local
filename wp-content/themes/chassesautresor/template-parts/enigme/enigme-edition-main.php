@@ -165,23 +165,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                               ?>
                               <div class="champ-affichage">
                                 <?php if ($peut_editer) : ?>
-                                  <button type="button"
-                                    class="champ-modifier ouvrir-panneau-images"
-                                    data-champ="enigme_visuel_image"
-                                    data-cpt="enigme"
-                                    data-post-id="<?= esc_attr($enigme_id); ?>">
-                                    <?php if ($has_images_utiles && is_array($images_ids)) : ?>
-                                      <?php foreach ($images_ids as $img_id) : ?>
-                                        <?php $thumb_url = esc_url(add_query_arg([
-                                          'id'     => $img_id,
-                                          'taille' => 'thumbnail',
-                                        ], site_url('/voir-image-enigme'))); ?>
-                                        <img src="<?= $thumb_url; ?>" alt="" class="vignette-enigme" />
-                                      <?php endforeach; ?>
-                                    <?php else : ?>
+                                  <?php if ($has_images_utiles && is_array($images_ids)) : ?>
+                                    <?php foreach ($images_ids as $img_id) : ?>
+                                      <?php $thumb_url = esc_url(add_query_arg([
+                                        'id'     => $img_id,
+                                        'taille' => 'thumbnail',
+                                      ], site_url('/voir-image-enigme'))); ?>
+                                      <img src="<?= $thumb_url; ?>" alt="" class="vignette-enigme" />
+                                    <?php endforeach; ?>
+                                    <button type="button"
+                                      class="champ-modifier ouvrir-panneau-images"
+                                      data-champ="enigme_visuel_image"
+                                      data-cpt="enigme"
+                                      data-post-id="<?= esc_attr($enigme_id); ?>"
+                                      aria-label="<?= esc_attr__('Modifier les images', 'chassesautresor-com'); ?>">
+                                      <?= esc_html__('modifier', 'chassesautresor-com'); ?>
+                                    </button>
+                                  <?php else : ?>
+                                    <button type="button"
+                                      class="champ-modifier ouvrir-panneau-images"
+                                      data-champ="enigme_visuel_image"
+                                      data-cpt="enigme"
+                                      data-post-id="<?= esc_attr($enigme_id); ?>"
+                                      aria-label="<?= esc_attr__('Ajouter une image', 'chassesautresor-com'); ?>">
                                       <span class="champ-ajout-image"><?= esc_html__('ajouter', 'chassesautresor-com'); ?></span>
-                                    <?php endif; ?>
-                                  </button>
+                                    </button>
+                                  <?php endif; ?>
                                 <?php else : ?>
                                   <?php if ($has_images_utiles && is_array($images_ids)) : ?>
                                     <?php foreach ($images_ids as $img_id) : ?>

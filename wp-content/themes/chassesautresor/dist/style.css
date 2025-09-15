@@ -3352,11 +3352,6 @@ section.enigme-wrapper {
 }
 
 /* ========== 🖼️ IMAGE MODIFIABLE ========== */
-body:not(.edition-active-chasse) .chasse-fiche-container .champ-img .champ-modifier .icone-modif,
-body:not(.edition-active) .header-organisateur .champ-img .champ-modifier .icone-modif {
-  display: none;
-}
-
 body:not(.edition-active-chasse) .chasse-fiche-container .champ-img .champ-modifier,
 body:not(.edition-active) .header-organisateur .champ-img .champ-modifier {
   opacity: 1;
@@ -3385,53 +3380,10 @@ body.edition-active-enigme .single-enigme-main .champ-img .champ-modifier {
   gap: var(--space-xs);
 }
 
-.champ-img .champ-modifier {
-  position: relative;
-  display: inline-block;
-  margin: 0;
-  padding: 0;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-.champ-img .champ-modifier img {
-  display: block;
-}
-
-.champ-img .champ-modifier img.vignette-enigme {
+.champ-img .champ-affichage img.vignette-enigme {
   display: inline-block;
   max-width: 60px;
   margin-right: var(--space-xxs);
-}
-
-.champ-img .champ-modifier .icone-modif {
-  position: absolute;
-  top: 0.2rem;
-  right: 0.2rem;
-  font-size: 0.9rem;
-  color: var(--color-secondary);
-  background-color: rgba(0, 0, 0, 0.6);
-  width: 1.4rem;
-  height: 1.4rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: transform 0.2s;
-}
-
-.champ-img .champ-modifier:hover .icone-modif {
-  transform: scale(1.1);
-}
-
-.champ-img.champ-vide .champ-modifier .icone-modif {
-  position: static;
-  display: inline;
-  width: auto;
-  height: auto;
-  margin-left: var(--space-xxs);
-  background: none;
 }
 
 .edition-panel .champ-img img {
