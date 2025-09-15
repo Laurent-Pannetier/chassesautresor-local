@@ -598,7 +598,8 @@
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
-.carte-ajout-enigme {
+.carte-ajout-enigme,
+.carte-ajout-chasse {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -612,7 +613,8 @@
   height: 100%;
 }
 
-.carte-ajout-enigme:hover {
+.carte-ajout-enigme:hover,
+.carte-ajout-chasse:hover {
   background: var(--color-text-primary);
   color: var(--color-background);
   border-style: solid;
@@ -621,17 +623,21 @@
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
-.carte-ajout-enigme:focus-visible {
+.carte-ajout-enigme:focus-visible,
+.carte-ajout-chasse:focus-visible {
   outline: 3px solid var(--color-primary);
   outline-offset: 2px;
 }
 
 .carte-ajout-enigme.disabled,
-.carte-ajout-enigme[disabled] {
+.carte-ajout-chasse.disabled,
+.carte-ajout-enigme[disabled],
+.carte-ajout-chasse[disabled] {
   cursor: not-allowed;
 }
 
-.carte-ajout-enigme .carte-core {
+.carte-ajout-enigme .carte-core,
+.carte-ajout-chasse .carte-core {
   border: none;
   display: flex;
   flex-direction: column;
@@ -643,21 +649,25 @@
   z-index: 1;
 }
 
-.carte-ajout-enigme .carte-core i {
+.carte-ajout-enigme .carte-core i,
+.carte-ajout-chasse .carte-core i {
   color: var(--color-gris-3);
   font-size: 28px;
 }
 
 @media (min-width: 768px) {
-  .carte-ajout-enigme .carte-core i {
+  .carte-ajout-enigme .carte-core i,
+  .carte-ajout-chasse .carte-core i {
     font-size: 32px;
   }
 }
-.carte-ajout-enigme .carte-ajout-libelle {
+.carte-ajout-enigme .carte-ajout-libelle,
+.carte-ajout-chasse .carte-ajout-libelle {
   font-weight: 600;
 }
 
-.carte-ajout-enigme::after {
+.carte-ajout-enigme::after,
+.carte-ajout-chasse::after {
   content: "";
   position: absolute;
   bottom: var(--space-sm);
@@ -669,19 +679,6 @@
   background-size: 80px 80px;
   opacity: 0.08;
   pointer-events: none;
-}
-
-.carte-ajout-chasse .carte-ligne__image,
-.carte-ajout-chasse .carte-ligne__contenu {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-xs);
-}
-
-.carte-ajout-chasse .icone-ajout i {
-  color: var(--color-secondary);
 }
 
 .carte-ajout-chasse .overlay-message {
