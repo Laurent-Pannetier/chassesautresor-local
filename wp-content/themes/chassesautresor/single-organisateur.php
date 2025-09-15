@@ -90,20 +90,12 @@ get_header();
                             <?php echo file_get_contents(get_theme_file_path('assets/svg/star-line-left.svg')); ?>
                         </span>
                     </div>
-                    <?php if ($peut_ajouter && $statut_organisateur === 'publish') :
-                        get_template_part('template-parts/chasse/chasse-partial-ajout-chasse', null, [
-                            'has_chasses'     => $has_chasses,
-                            'organisateur_id' => $organisateur_id,
-                            'highlight_pulse' => $highlight_pulse,
-                            'use_button'      => true,
-                        ]);
-                    endif; ?>
                 </div>
                 <div class="ligne-chasses"></div>
                 <div class="liste-chasses">
                     <?php
                     ob_start();
-                    if ($peut_ajouter && $statut_organisateur !== 'publish') {
+                    if ($peut_ajouter) {
                         get_template_part('template-parts/chasse/chasse-partial-ajout-chasse', null, [
                             'has_chasses'     => $has_chasses,
                             'organisateur_id' => $organisateur_id,
