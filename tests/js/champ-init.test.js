@@ -56,4 +56,20 @@ describe('initChampDeclencheur', () => {
     expect(bloc.__ouvrirMedia).not.toHaveBeenCalled();
     expect(vrai.click).toHaveBeenCalledTimes(1);
   });
+
+  it("n'ouvre pas la médiathèque si le bouton ouvre un panneau images", () => {
+    document.body.innerHTML = `
+      <div class="champ-enigme champ-img champ-vide" data-champ="illustration" data-post-id="1" data-cpt="enigme">
+        <button class="champ-modifier trigger ouvrir-panneau-images" data-champ="illustration" data-post-id="1" data-cpt="enigme"></button>
+      </div>`;
+
+    const bloc = document.querySelector('.champ-enigme');
+    bloc.__ouvrirMedia = jest.fn();
+    const trigger = bloc.querySelector('.trigger');
+
+    initChampDeclencheur(trigger);
+    trigger.click();
+
+    expect(bloc.__ouvrirMedia).not.toHaveBeenCalled();
+  });
 });

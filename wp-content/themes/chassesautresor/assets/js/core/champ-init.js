@@ -278,7 +278,11 @@ function initChampDeclencheur(bouton) {
       initChampImage(bloc);
     }
     // ✅ Cas particulier : clic sur le stylo image
-    if (bloc.classList.contains('champ-img') && typeof bloc.__ouvrirMedia === 'function') {
+    if (
+      bloc.classList.contains('champ-img') &&
+      typeof bloc.__ouvrirMedia === 'function' &&
+      !bouton.classList.contains('ouvrir-panneau-images')
+    ) {
       const estVide = bloc.classList.contains('champ-vide');
       if (estVide) {
         bloc.__ouvrirMedia();
