@@ -283,13 +283,9 @@ function initChampDeclencheur(bouton) {
       typeof bloc.__ouvrirMedia === 'function' &&
       !bouton.classList.contains('ouvrir-panneau-images')
     ) {
-      const estVide = bloc.classList.contains('champ-vide');
-      if (estVide) {
-        bloc.__ouvrirMedia();
-        return; // rien d’autre à faire si aucune illustration
-      }
+      bloc.__ouvrirMedia();
+      return; // ouvrir directement la médiathèque
     }
-
 
     // 🎯 Simuler clic sur vrai bouton si présent
     const vraiBouton = [...bloc.querySelectorAll('.champ-modifier')].find(b => b !== bouton);

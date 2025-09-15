@@ -37,7 +37,7 @@ describe('initChampDeclencheur', () => {
     expect(vrai.click).not.toHaveBeenCalled();
   });
 
-  it('ouvre le panneau si une illustration existe', () => {
+  it('ouvre la médiathèque même si une illustration existe', () => {
     document.body.innerHTML = `
       <div class="champ-enigme champ-img champ-rempli" data-champ="illustration" data-post-id="1" data-cpt="enigme">
         <button class="champ-modifier trigger" data-champ="illustration" data-post-id="1" data-cpt="enigme"></button>
@@ -53,8 +53,8 @@ describe('initChampDeclencheur', () => {
     initChampDeclencheur(trigger);
     trigger.click();
 
-    expect(bloc.__ouvrirMedia).not.toHaveBeenCalled();
-    expect(vrai.click).toHaveBeenCalledTimes(1);
+    expect(bloc.__ouvrirMedia).toHaveBeenCalledTimes(1);
+    expect(vrai.click).not.toHaveBeenCalled();
   });
 
   it("n'ouvre pas la médiathèque si le bouton ouvre un panneau images", () => {
