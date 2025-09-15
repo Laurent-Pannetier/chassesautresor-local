@@ -145,20 +145,33 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                             ?>
                             <div class="champ-affichage">
                                 <?php if ($peut_editer) : ?>
-                                    <button type="button"
-                                        class="champ-modifier"
-                                        data-champ="chasse_principale_image"
-                                        data-cpt="chasse"
-                                        data-post-id="<?= esc_attr($chasse_id); ?>"
-                                        aria-label="<?= esc_attr__('Modifier l’image', 'chassesautresor-com'); ?>">
+                                    <?php if ($image_url) : ?>
                                         <img
-                                            src="<?= esc_url($image_url ?: $transparent); ?>"
+                                            src="<?= esc_url($image_url); ?>"
                                             alt="<?= esc_attr__('Image de la chasse', 'chassesautresor-com'); ?>"
                                         />
-                                        <span class="champ-ajout-image">
-                                            <?= esc_html__('ajouter une image', 'chassesautresor-com'); ?>
-                                        </span>
-                                    </button>
+                                        <button type="button"
+                                            class="champ-modifier"
+                                            data-cpt="chasse"
+                                            data-post-id="<?= esc_attr($chasse_id); ?>"
+                                            aria-label="<?= esc_attr__('Modifier l’image', 'chassesautresor-com'); ?>">
+                                            <?= esc_html__('modifier', 'chassesautresor-com'); ?>
+                                        </button>
+                                    <?php else : ?>
+                                        <button type="button"
+                                            class="champ-modifier"
+                                            data-cpt="chasse"
+                                            data-post-id="<?= esc_attr($chasse_id); ?>"
+                                            aria-label="<?= esc_attr__('Ajouter une image', 'chassesautresor-com'); ?>">
+                                            <img
+                                                src="<?= esc_url($transparent); ?>"
+                                                alt="<?= esc_attr__('Image de la chasse', 'chassesautresor-com'); ?>"
+                                            />
+                                            <span class="champ-ajout-image">
+                                                <?= esc_html__('ajouter une image', 'chassesautresor-com'); ?>
+                                            </span>
+                                        </button>
+                                    <?php endif; ?>
                                 <?php else : ?>
                                     <?php if ($image_url) : ?>
                                         <img

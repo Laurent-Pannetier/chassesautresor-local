@@ -111,6 +111,11 @@ function initChampImage(bloc) {
     frame.open();
   };
 
+  const bouton = bloc.querySelector('.champ-modifier');
+  if (bouton && !bouton.classList.contains('ouvrir-panneau-images')) {
+    bouton.addEventListener('click', ouvrirMedia);
+  }
+
   // ✅ On expose la fonction pour la déclencher manuellement
   bloc.__ouvrirMedia = ouvrirMedia;
 }
