@@ -257,11 +257,13 @@ window.mettreAJourCarteAjoutChasse = function () {
   DEBUG && console.log('🧩 Vérif carte-ajout → champs vides détectés :', incomplets);
   DEBUG && console.log('🧩 carte actuelle :', carte);
 
-  let overlay = carte.querySelector('.overlay-message');
+  const message = carte.querySelector('.carte-ajout-message');
 
   if (incomplets.length === 0) {
     carte.classList.remove('disabled');
-    overlay?.remove();
+    if (message) {
+      message.textContent = '';
+    }
   } else {
     carte.classList.add('disabled');
 
@@ -272,16 +274,9 @@ window.mettreAJourCarteAjoutChasse = function () {
       return 'champ requis';
     }).join(', ');
 
-    if (!overlay) {
-      overlay = document.createElement('div');
-      overlay.className = 'overlay-message';
-      carte.appendChild(overlay);
+    if (message) {
+      message.textContent = `Complétez d’abord : ${texte}`;
     }
-
-    overlay.innerHTML = `
-      <i class="fa-solid fa-circle-info"></i>
-      <p>Complétez d’abord : ${texte}</p>
-    `;
   }
 };
 
