@@ -77,7 +77,36 @@ $table_prefix = 'wp_';
 
 /* Add any custom values between this line and the "stop editing" line. */
 
+if (! defined('WP_CACHE')) {
+    define('WP_CACHE', true);
+}
 
+if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && is_string($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
+    $forwardedProto = explode(',', strtolower(trim($_SERVER['HTTP_X_FORWARDED_PROTO'])));
+    $primaryProto = trim((string) $forwardedProto[0]);
+
+    if ('https' === $primaryProto) {
+        $_SERVER['HTTPS'] = 'on';
+        $_SERVER['REQUEST_SCHEME'] = 'https';
+    }
+}
+
+if (isset($_SERVER['HTTP_X_FORWARDED_HOST']) && is_string($_SERVER['HTTP_X_FORWARDED_HOST'])) {
+    $forwardedHosts = explode(',', $_SERVER['HTTP_X_FORWARDED_HOST']);
+    $primaryHost = trim((string) $forwardedHosts[0]);
+
+    if ('' !== $primaryHost) {
+        $_SERVER['HTTP_HOST'] = $primaryHost;
+    }
+}
+
+if (isset($_SERVER['HTTP_X_FORWARDED_PORT']) && is_string($_SERVER['HTTP_X_FORWARDED_PORT'])) {
+    $forwardedPort = (int) trim($_SERVER['HTTP_X_FORWARDED_PORT']);
+
+    if ($forwardedPort > 0) {
+        $_SERVER['SERVER_PORT'] = (string) $forwardedPort;
+    }
+}
 
 /**
  * For developers: WordPress debugging mode.
