@@ -1,0 +1,787 @@
+@charset "UTF-8";
+/* ==========================================================
+📌 Orgy – Layout "Mon Compte" (shadcn/ui inspired)
+========================================================== */
+.woocommerce-account .ast-container {
+  max-width: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.myaccount-layout {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+.myaccount-sidebar {
+  width: 280px;
+  border-right: 1px solid hsl(var(--border));
+  background: hsl(var(--background));
+  display: flex;
+  flex-direction: column;
+}
+
+.myaccount-brand {
+  display: flex;
+  align-items: center;
+  height: 56px;
+  padding: 0 16px;
+  border-bottom: 1px solid hsl(var(--border));
+  font-weight: 600;
+}
+
+.dashboard-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.dashboard-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: hsl(var(--muted-foreground));
+  text-decoration: none;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.dashboard-nav-link:hover,
+.dashboard-nav-sublink:hover,
+.dashboard-nav-subitem:hover {
+  color: hsl(var(--primary));
+  text-decoration: underline;
+}
+
+.dashboard-nav-link.active {
+  background: hsl(var(--muted));
+  color: hsl(var(--primary));
+}
+
+.dashboard-nav-link.logout {
+  font-size: 0.75rem;
+}
+
+.organizer-nav {
+  margin-top: 24px;
+}
+
+.dashboard-nav-sublink {
+  display: block;
+  padding: 6px 12px 6px 32px;
+  border-radius: 8px;
+  color: hsl(var(--muted-foreground));
+  text-decoration: none;
+  font-size: 0.8125rem;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.dashboard-nav-subitem {
+  display: block;
+  padding: 4px 12px 4px 48px;
+  border-radius: 8px;
+  color: hsl(var(--muted-foreground));
+  text-decoration: none;
+  font-size: 0.75rem;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.dashboard-nav-heading {
+  margin: 16px 0 8px;
+  padding: 0 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: hsl(var(--muted-foreground));
+  text-transform: uppercase;
+}
+
+.dashboard-nav-link .nav-title,
+.dashboard-nav-sublink .nav-title,
+.dashboard-nav-subitem .nav-title {
+  position: relative;
+  padding-left: 16px;
+}
+
+.dashboard-nav-link .nav-title::before,
+.dashboard-nav-sublink .nav-title::before,
+.dashboard-nav-subitem .nav-title::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background-color: var(--status-bullet, transparent);
+  box-shadow: 0 0 0 1px var(--status-bullet, transparent);
+}
+
+.dashboard-nav-link.status-important,
+.dashboard-nav-sublink.status-important,
+.dashboard-nav-subitem.status-important {
+  --status-bullet: hsl(var(--destructive));
+}
+
+.dashboard-nav-link.status-pending,
+.dashboard-nav-sublink.status-pending,
+.dashboard-nav-subitem.status-pending {
+  --status-bullet: var(--etat-enigme-menu-en-attente);
+}
+
+.dashboard-nav-link.status-banned,
+.dashboard-nav-sublink.status-banned,
+.dashboard-nav-subitem.status-banned {
+  --status-bullet: var(--etat-enigme-menu-bloquee);
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.dashboard-nav-link.status-muted,
+.dashboard-nav-sublink.status-muted,
+.dashboard-nav-subitem.status-muted {
+  --status-bullet: var(--etat-enigme-menu-bloquee);
+}
+
+.dashboard-nav-link.status-published,
+.dashboard-nav-sublink.status-published,
+.dashboard-nav-subitem.status-published {
+  --status-bullet: var(--etat-enigme-menu-succes);
+}
+
+.dashboard-nav-link.status-eligible,
+.dashboard-nav-sublink.status-eligible,
+.dashboard-nav-subitem.status-eligible {
+  --status-bullet: var(--etat-enigme-menu-eligible);
+}
+
+.myaccount-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.myaccount-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 56px;
+  padding: 0 16px;
+  border-bottom: 1px solid hsl(var(--border));
+  background: hsl(var(--background));
+}
+
+.myaccount-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xl);
+}
+
+@media (min-width: 1025px) {
+  .myaccount-content {
+    width: 70%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+.msg-important {
+  margin-bottom: var(--space-md);
+  padding: 0;
+}
+
+.msg-important:empty {
+  display: none;
+}
+
+.msg-important .icon {
+  margin-right: var(--space-sm);
+}
+
+.msg-important .enigme-link {
+  display: inline-block;
+  margin-right: var(--space-xs);
+  padding: 0 var(--space-xs);
+  background: hsl(var(--destructive-foreground));
+  color: hsl(var(--destructive));
+  border-radius: 0.25rem;
+  text-decoration: none;
+}
+
+.msg-important .enigme-link:hover,
+.msg-important .enigme-link:focus {
+  text-decoration: underline;
+}
+
+.myaccount-points {
+  margin-bottom: var(--space-md);
+  font-weight: 500;
+}
+
+/* ==========================================================
+📌 Styles Généraux - Conteneur & Typographie
+========================================================== */
+.dashboard-container {
+  width: 100%;
+  margin: 0;
+  padding: 20px;
+  font-family: var(--font-main);
+  background: var(--color-background);
+  color: var(--color-text-primary);
+}
+
+/* ==========================================================
+📌 Profil Utilisateur
+========================================================== */
+.dashboard-profile-wrapper {
+  display: flex;
+  justify-content: space-between; /* ✅ Écarte les éléments */
+  align-items: center; /* ✅ Centre verticalement */
+  width: 100%; /* ✅ Prend toute la largeur du parent */
+  background: rgba(255, 215, 0, 0.1);
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 215, 0, 0.4);
+}
+
+.dashboard-profile {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.dashboard-profile img {
+  border-radius: 50%;
+  border: 2px solid var(--color-primary);
+}
+
+.profile-info h2 {
+  margin: 0;
+  font-size: 20px;
+  color: var(--color-primary);
+  opacity: 0.8;
+}
+
+.profile-info p {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.6;
+}
+
+/* 📌 Conteneur de l'avatar */
+.profile-avatar-container {
+  position: relative;
+  display: inline-block;
+  text-align: center;
+}
+
+/* ✅ Image du profil */
+.profile-avatar img {
+  border-radius: 50%;
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* ✅ Bouton de téléversement */
+.upload-avatar-btn {
+  display: inline-block;
+  color: var(--texte-secondary);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+}
+
+.upload-avatar-btn:hover {
+  background: var(--color-secondary);
+}
+
+/* 📌 Messages cachés par défaut */
+.message-size-file-avatar,
+.message-format-file-avatar {
+  display: none;
+  color: red;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* 📌 Affichage dynamique */
+.message-size-file-avatar.message-avatar-visible,
+.message-format-file-avatar.message-avatar-visible {
+  display: block;
+}
+
+/* ✅ Mobile : Les éléments s'empilent */
+@media not all and (--bp-tablet) {
+  .dashboard-profile-wrapper {
+    flex-direction: column; /* ✅ Empile les éléments */
+    justify-content: center; /* ✅ Centre les éléments verticalement */
+    text-align: center; /* ✅ Centrage du texte */
+  }
+  .dashboard-profile,
+  .dashboard-container .user-points {
+    width: 100%; /* ✅ Les deux blocs prennent toute la largeur */
+    margin-bottom: 10px; /* ✅ Espacement entre les blocs */
+    justify-content: space-evenly;
+  }
+  .dashboard-container .points-container {
+    margin-top: 0;
+  }
+}
+/* ==========================================================
+📌 Menu Déroulant WooCommerce
+========================================================== */
+.menu-deroulant {
+  position: relative;
+}
+
+/* ✅ Positionnement propre du sous-menu */
+.menu-deroulant .submenu {
+  display: none;
+  position: absolute;
+  top: 35px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgb(11, 19, 43);
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  padding: 10px 0;
+  min-width: 180px;
+  text-align: center;
+  z-index: 201;
+  border: 1px solid var(--color-text-secondary);
+}
+
+/* ✅ Apparition propre au clic */
+.menu-deroulant:hover .submenu, .menu-deroulant .submenu.active {
+  display: block;
+}
+
+/* ✅ Alignement correct de l'icône et de la flèche */
+.menu-deroulant a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+/* ✅ Ajustement de la flèche */
+.dropdown-indicator {
+  font-size: 10px;
+  margin-left: 3px;
+  vertical-align: middle;
+}
+
+@media not all and (--bp-tablet) {
+  .menu-deroulant .submenu {
+    left: -50px;
+  }
+}
+/* ==========================================================
+📌 Contenu Principal
+========================================================== */
+.dashboard-content {
+  background: rgba(255, 215, 0, 0.05);
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid rgba(225, 169, 95, 0.3);
+  margin-bottom: 20px;
+}
+
+/* ==========================================================
+📌 Grille des Tuiles
+========================================================== */
+.dashboard-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  margin-top: 20px;
+}
+
+.stats-cards {
+  margin: var(--space-md) 0 var(--space-3xl);
+}
+
+.dashboard-card, .carte-orgy {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: 8px;
+  padding: 16px;
+  text-decoration: none;
+  color: hsl(var(--foreground));
+  transition: background 0.2s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.carte-orgy .bouton-cta {
+  line-height: 1.4;
+}
+
+.dashboard-grid > .dashboard-card:only-child, .dashboard-grid > .carte-orgy:only-child {
+  max-width: var(--dashboard-card-max-width);
+  width: 100%;
+  justify-self: center;
+}
+
+.dashboard-card:hover, .carte-orgy:hover {
+  background: hsl(var(--muted));
+}
+
+.dashboard-card .stat-value, .carte-orgy .stat-value {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.dashboard-card > i, .carte-orgy > i {
+  font-size: 2rem;
+}
+
+.dashboard-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.dashboard-card-header i {
+  font-size: 1rem;
+}
+
+.dashboard-card-content {
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+}
+
+/* listes */
+.dashboard-card ul li, .carte-orgy ul li {
+  list-style: none;
+  text-align: left;
+}
+
+/* images */
+.image-container {
+  position: relative; /* Permet de positionner l'overlay */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  overflow: hidden;
+  height: 220px; /* Fixer une hauteur pour éviter l’expansion */
+}
+
+.dashboard-logo {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover; /* Ajuste l’image pour occuper tout l’espace sans déformation */
+}
+
+/* 🔥 Overlay du nombre de chasses */
+.nb-chasses-overlay {
+  position: absolute;
+  bottom: 10px; /* Place le texte en bas de l'image */
+  left: 50%;
+  transform: translateX(-50%); /* Centre horizontalement */
+  background: rgba(11, 19, 43, 0.8); /* 🎭 Fond semi-transparent (color-background) */
+  color: var(--color-primary); /* 🟡 Jaune or */
+  padding: 6px 12px;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Tuile Paiment Points (organisateurs) */
+.dashboard-card.points-card, .points-card.carte-orgy {
+  text-align: center;
+}
+
+.dashboard-card.points-card p, .points-card.carte-orgy p {
+  margin-bottom: 15px;
+}
+
+.dashboard-card.points-card p.vos-points, .points-card.carte-orgy p.vos-points {
+  border-bottom: 1px solid var(--color-primary);
+  padding-bottom: 10px;
+}
+
+.dashboard-card.points-card label, .points-card.carte-orgy label {
+  font-size: 18px;
+}
+
+.dashboard-card input, .carte-orgy input {
+  border: 1px solid var(--color-gris-3);
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--color-secondary);
+  border-radius: 5px;
+  width: 80%;
+  margin-top: 10px;
+}
+
+/* Mise en avant pour les organisateurs en création */
+.dashboard-card.creation-card, .creation-card.carte-orgy {
+  border: 2px dashed var(--color-editor-error);
+  background: rgba(217, 48, 37, 0.1);
+}
+
+.dashboard-card.creation-card ul, .creation-card.carte-orgy ul {
+  padding-left: 1.2em;
+}
+
+.dashboard-card.creation-card li, .creation-card.carte-orgy li {
+  list-style: disc;
+}
+
+/* tuile Taux de Conversion admin */
+/* 📌 Overlay pour bloquer la tuile par défaut */
+.overlay-taux {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Assombrissement */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+}
+
+.message-bloque {
+  background: rgba(255, 0, 0, 0.8); /* Fond rouge semi-transparent */
+  color: var(--color-white);
+  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 8px rgba(255, 0, 0, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  max-width: 80%;
+}
+
+/* tuile gestion des points */
+/* 📌 Ligne d'entrée utilisateur + action */
+.gestion-points-ligne {
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+#type-modification {
+  width: 40px;
+}
+
+#suggestions-list li {
+  color: var(--color-text-secondary);
+}
+
+/* 📌 Largeur adaptée aux éléments */
+.gestion-points-ligne input,
+.gestion-points-ligne select {
+  flex: 1;
+  padding: 5px;
+}
+
+/* 📌 Bouton d'envoi compact */
+.gestion-points-ligne button {
+  padding: 6px 10px;
+  font-size: 16px;
+}
+
+/* 🎯 Pager de tableau */
+.pager {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.pager button.etiquette {
+  cursor: pointer;
+  padding: 4px 8px;
+  font-size: 1rem;
+}
+
+/* 🏷️ Étiquettes de résultat */
+.etiquette-success {
+  background-color: var(--color-success);
+  border-color: var(--color-success);
+  color: var(--color-white);
+}
+
+.etiquette-error {
+  background-color: var(--color-error);
+  border-color: var(--color-error);
+  color: var(--color-white);
+}
+
+.etiquette-pending {
+  background-color: var(--color-grey-medium);
+  border-color: var(--color-grey-medium);
+  color: var(--color-white);
+}
+
+.pager-info {
+  margin: 0 8px;
+  color: hsl(var(--foreground));
+  font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pager-info .pager-select {
+  width: auto;
+}
+
+.conversion-history .points-history-pager .etiquette,
+.conversion-history .points-history-pager .pager-info {
+  color: var(--color-text-fond-clair);
+}
+
+.stats-header {
+  display: flex;
+  align-items: center;
+}
+
+.stats-header .stats-filtres {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  background-color: var(--color-editor-background);
+  border: 1px solid var(--color-editor-border);
+  border-radius: 4px;
+}
+
+.table-organisateurs td.col-chasse,
+.table-organisateurs td.col-enigmes {
+  text-align: right;
+}
+
+/* 🏷️ Badges d'état dans le tableau des organisateurs */
+.table-organisateurs td[data-col=etat] .badge-statut {
+  position: static;
+  top: auto;
+  left: auto;
+  display: inline-block;
+  margin: 0;
+}
+
+.table-organisateurs td[data-col=etat] .required {
+  margin-left: var(--space-xxs);
+}
+
+/* 📌 Toggle d'historique de conversion */
+.conversion-history .conversion-history-toggle {
+  color: var(--color-text-fond-clair);
+}
+
+/* 📌 Actions de conversion en ligne */
+.liste-paiements .js-update-request {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  width: 100%;
+}
+
+.liste-paiements .js-update-request select {
+  flex: 0 0 auto;
+  width: auto;
+  font-size: 0.875rem;
+}
+
+.liste-paiements .js-update-request button {
+  flex: 0 0 auto;
+  padding: 2px 6px;
+}
+
+/* Tablette : 2 colonnes */
+@media not all and (--bp-tablet) {
+  .image-container {
+    height: 260px;
+  }
+}
+/* ==========================================================
+📌 Page adresse Woocommerce
+========================================================== */
+body.woocommerce header,
+body.woocommerce thead,
+body.woocommerce h2 {
+  background-color: transparent;
+}
+
+.woocommerce h2 {
+  font-size: 1.6rem;
+}
+
+/* Sections for account dashboard */
+.dashboard-section {
+  margin-top: 40px;
+}
+
+/* Tentatives table alignment */
+.tentatives-table th:nth-child(2),
+.tentatives-table td:nth-child(2),
+.tentatives-table th:nth-child(3),
+.tentatives-table td:nth-child(3),
+.tentatives-table th:nth-child(4),
+.tentatives-table td:nth-child(4) {
+  text-align: left;
+}
+
+/* Tentatives - Proposition toggle */
+.proposition-cell {
+  vertical-align: middle;
+}
+
+.proposition-cell .proposition-content {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.proposition-cell.expanded .proposition-content {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.proposition-cell .toggle-proposition {
+  background: none;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 2px;
+  width: 1.5em;
+  height: 1.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-fond-clair);
+  font-size: 1rem;
+}
+
+.proposition-cell.expanded .toggle-proposition {
+  margin-top: 4px;
+}
+
+.proposition-cell .toggle-proposition .fa-solid {
+  color: inherit;
+}

@@ -181,11 +181,64 @@ function cta_render_lang_switcher( $row, $column ) {
 add_action( 'astra_render_header_column', 'cta_render_lang_switcher', 999, 2 );
 
 /**
+ * Determines if edition-specific styles should be enqueued for the current request.
+ *
+ * @return bool
+ */
+function cta_should_enqueue_edition_styles(): bool {
+    if ( ! is_user_logged_in() ) {
+        return false;
+    }
+
+    if ( ! is_singular( [ 'organisateur', 'chasse', 'enigme' ] ) ) {
+        return false;
+    }
+
+    $post_id = get_queried_object_id();
+
+    if ( ! $post_id ) {
+        return false;
+    }
+
+    if ( current_user_can( 'edit_post', $post_id ) ) {
+        return true;
+    }
+
+    $user_id = get_current_user_id();
+
+    if ( get_post_type( $post_id ) === 'chasse'
+        && function_exists( 'utilisateur_est_organisateur_associe_a_chasse' )
+        && utilisateur_est_organisateur_associe_a_chasse( $user_id, $post_id ) ) {
+        return true;
+    }
+
+    if ( get_post_type( $post_id ) === 'enigme'
+        && function_exists( 'utilisateur_peut_modifier_enigme' )
+        && utilisateur_peut_modifier_enigme( $post_id, $user_id ) ) {
+        return true;
+    }
+
+    if ( get_post_type( $post_id ) === 'organisateur'
+        && (int) get_post_field( 'post_author', $post_id ) === $user_id
+        && defined( 'ROLE_ORGANISATEUR_CREATION' ) ) {
+        $roles = wp_get_current_user()->roles;
+
+        if ( in_array( ROLE_ORGANISATEUR_CREATION, $roles, true ) ) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
  * Chargement des styles du thème parent et enfant avec prise en charge d'Astra.
  */
 add_action('wp_enqueue_scripts', function () {
     $theme_uri  = get_stylesheet_directory_uri();
     $theme_path = get_stylesheet_directory();
+    $dist_uri   = $theme_uri . '/dist/';
+    $dist_path  = $theme_path . '/dist/';
 
     // 🎨 Chargement du style du thème parent (Astra)
     wp_enqueue_style('astra-style', get_template_directory_uri() . '/style.css');
@@ -196,6 +249,59 @@ add_action('wp_enqueue_scripts', function () {
         ['astra-style'],
         filemtime($theme_path . '/dist/style.css')
     );
+
+    $enqueue_style = static function (string $handle, string $filename) use ($dist_uri, $dist_path) {
+        $full_path = $dist_path . $filename;
+
+        if ( file_exists( $full_path ) ) {
+            wp_enqueue_style(
+                $handle,
+                $dist_uri . $filename,
+                ['chassesautresor-style'],
+                filemtime( $full_path )
+            );
+        }
+    };
+
+    if ( is_front_page() ) {
+        $enqueue_style( 'chassesautresor-front', 'front-page.css' );
+    }
+
+    if ( is_singular( 'chasse' ) ) {
+        $enqueue_style( 'chassesautresor-single-chasse', 'single-chasse.css' );
+    }
+
+    if ( is_singular( 'enigme' ) ) {
+        $enqueue_style( 'chassesautresor-single-enigme', 'single-enigme.css' );
+    }
+
+    if ( is_singular( 'organisateur' ) ) {
+        $enqueue_style( 'chassesautresor-single-organisateur', 'single-organisateur.css' );
+    }
+
+    if ( is_account_page() ) {
+        $enqueue_style( 'chassesautresor-account', 'account.css' );
+    }
+
+    if ( cta_should_enqueue_edition_styles() ) {
+        $enqueue_style( 'chassesautresor-edition', 'edition-mode.css' );
+    }
+
+    if ( function_exists( 'is_woocommerce' ) ) {
+        $is_woocommerce_context = is_woocommerce();
+
+        if ( ! $is_woocommerce_context && function_exists( 'is_cart' ) ) {
+            $is_woocommerce_context = is_cart();
+        }
+
+        if ( ! $is_woocommerce_context && function_exists( 'is_checkout' ) ) {
+            $is_woocommerce_context = is_checkout();
+        }
+
+        if ( $is_woocommerce_context ) {
+            $enqueue_style( 'chassesautresor-woocommerce', 'woocommerce.css' );
+        }
+    }
 
     $script_dir = $theme_uri . '/assets/js/';
 
