@@ -1,0 +1,1084 @@
+@charset "UTF-8";
+/* Core styles for reusable asides */
+.menu-lateral {
+  --aside-bg-rgb: 0, 0, 0;
+  --aside-opacity: 0.85;
+  background-color: rgba(var(--aside-bg-rgb, 0, 0, 0), var(--aside-opacity, 0.85));
+  padding: var(--space-md);
+  padding-bottom: 0;
+  border-radius: 6px;
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - var(--space-md));
+  color: var(--color-white);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  overflow-y: auto;
+}
+
+.menu-lateral__content {
+  flex: 1 1 auto;
+  overflow-x: hidden;
+  /*background-color: inherit;*/
+}
+
+.menu-lateral__accordeons {
+  margin-top: auto;
+  flex-shrink: 0;
+  /*background-color: inherit;*/
+  width: calc(100% + 2 * var(--space-md));
+  margin-left: calc(-1 * var(--space-md));
+  margin-right: calc(-1 * var(--space-md));
+}
+
+.menu-lateral__header {
+  background-color: var(--color-primary-dark);
+  color: var(--color-white);
+  margin: calc(-1 * var(--space-md)) calc(-1 * var(--space-md)) var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  position: relative;
+  border-radius: 8px 8px 0 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.menu-lateral__title {
+  font-size: 1.5rem;
+  margin: 0;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.menu-lateral__edition-toggle {
+  position: absolute;
+  top: var(--space-sm);
+  right: calc(var(--space-sm) + 2rem);
+}
+
+.menu-lateral__close {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  color: var(--color-white);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.menu-lateral__header .menu-lateral__close {
+  transition: color 0.2s ease-in-out;
+}
+
+.menu-lateral__header:hover .menu-lateral__close,
+.menu-lateral__header:focus-within .menu-lateral__close {
+  color: var(--color-grey-light);
+}
+
+.menu-lateral__header .menu-lateral__edition-toggle {
+  color: var(--color-white);
+  transition: color 0.2s ease-in-out;
+}
+
+.menu-lateral__header:hover .menu-lateral__edition-toggle,
+.menu-lateral__header:focus-within .menu-lateral__edition-toggle {
+  opacity: 1;
+  color: var(--color-grey-light);
+}
+
+.menu-lateral__title a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+
+.menu-lateral__title a:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+.menu-lateral h3 {
+  font-size: 1rem;
+  margin: var(--space-md) 0 var(--space-sm);
+  padding-bottom: var(--space-xs);
+  border-bottom: 1px solid rgba(var(--color-grey-light-rgb, 220, 220, 220), 0.15);
+}
+
+.enigme-navigation__ajout {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-sm);
+}
+
+.enigme-navigation__ajout-bouton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  background: none;
+  border: none;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.enigme-navigation__ajout-bouton:hover {
+  color: var(--color-primary);
+}
+
+.enigme-navigation__ajout-lien {
+  color: inherit;
+  text-decoration: none;
+  font-size: 0.875rem;
+}
+
+.enigme-navigation__ajout-lien:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+.menu-lateral section + section:not(.enigme-statistiques) {
+  margin-top: var(--space-lg);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--color-grey-light);
+}
+
+.aside-subsection-title {
+  font-weight: 600;
+  font-size: 1.125rem;
+  margin: var(--space-md) 0 var(--space-xs);
+}
+
+.aside-subsection-title .mode-fin-aide,
+.aside-subsection-title .help-icon-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 0.3em;
+  color: inherit;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.aside-subsection-title .mode-fin-aide i,
+.aside-subsection-title .help-icon-button i {
+  pointer-events: none;
+  font-size: 0.8em;
+}
+
+.help-icon--aide,
+.help-icon--info,
+.help-icon--aide-small {
+  border-radius: 50%;
+  background-color: var(--color-gray-100, #eee);
+  width: 1.4em;
+  height: 1.4em;
+}
+
+.help-icon--info {
+  background-color: var(--color-white, #fff);
+  border: 1px solid var(--color-gray-300, #ccc);
+}
+
+.help-icon--bg-light {
+  color: var(--color-text-primary);
+}
+
+.help-icon--bg-dark {
+  color: var(--color-background);
+}
+
+.help-icon--aide-small {
+  width: 1em;
+  height: 1em;
+}
+
+.help-icon--aide-small i {
+  font-size: 0.7em;
+}
+
+.menu-lateral ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.menu-lateral .sub-menu {
+  margin-left: var(--space-md);
+  padding-left: 0;
+}
+
+/* ====== Histogrammes de statistiques ====== */
+.stats-bar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.stats-bar-chart .bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stats-bar-chart .bar-label {
+  flex: 0 0 25%;
+  font-size: 0.8rem;
+  color: var(--color-editor-heading);
+  text-decoration: none;
+}
+
+.stats-bar-chart .bar-wrapper {
+  flex: 1;
+  background-color: var(--color-editor-background);
+  border: 1px solid var(--color-editor-border);
+  border-radius: 4px;
+  height: 22px;
+  overflow: hidden;
+  position: relative;
+}
+
+.stats-bar-chart .bar-fill {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 4px;
+  color: var(--color-editor-background);
+  font-size: 0.8rem;
+  font-weight: 600;
+  background-color: hsl(0, 0%, 80%);
+}
+
+.stats-bar-chart .bar-value--outside {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-editor-heading);
+  white-space: nowrap;
+}
+
+.stats-bar-chart .bar-row:nth-child(2) .bar-fill {
+  background-color: hsl(0, 0%, 70%);
+}
+
+.stats-bar-chart .bar-row:nth-child(3) .bar-fill {
+  background-color: hsl(0, 0%, 60%);
+}
+
+.stats-bar-chart .bar-row:nth-child(4) .bar-fill {
+  background-color: hsl(0, 0%, 50%);
+}
+
+.stats-bar-chart .bar-row:nth-child(5) .bar-fill {
+  background-color: hsl(0, 0%, 40%);
+}
+
+/* ===== Accordéons ===== */
+/* Premier bloc après le contenu principal */
+.accordeon-bloc {
+  margin-top: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.accordeon-bloc + .accordeon-bloc {
+  margin-top: var(--space-sm);
+}
+
+.accordeon-toggle {
+  width: 100%;
+  background: none;
+  border: none;
+  color: inherit;
+  padding: var(--space-sm) 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.3s ease;
+  border-radius: 0 0 6px 6px;
+}
+
+.accordeon-toggle i {
+  transition: transform 0.3s ease;
+}
+
+.accordeon-toggle[aria-expanded=true] i {
+  transform: rotate(180deg);
+}
+
+.accordeon-toggle::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 50%;
+  height: 1px;
+  background-color: currentColor;
+  transform: translateX(-50%) scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.accordeon-toggle.is-hovered::after {
+  transform: translateX(-50%) scaleX(1);
+}
+
+.accordeon-toggle:hover,
+.accordeon-toggle:focus,
+.accordeon-toggle:active {
+  background: none;
+}
+
+.accordeon-contenu {
+  overflow: hidden;
+  width: 100%;
+  max-height: 0;
+  transition: max-height 0.3s ease;
+  padding: 0 var(--space-md);
+  background-color: inherit;
+}
+
+.accordeon-contenu:not(.accordeon-ferme) {
+  max-height: 1000px;
+  padding-bottom: var(--space-sm);
+}
+
+@media (--bp-desktop) {
+  .menu-lateral {
+    position: fixed;
+    top: 50%;
+    left: var(--space-md);
+    width: 320px;
+    transform: translateY(-50%);
+    transition: transform var(--transition-slow);
+    z-index: 1000;
+  }
+  .menu-lateral.is-hidden {
+    transform: translate(calc(-100% - var(--space-2xl) - var(--space-md)), -50%);
+    box-shadow: none;
+    pointer-events: none;
+  }
+  .menu-lateral__reveal {
+    position: fixed;
+    top: 50%;
+    left: var(--space-md);
+    transform: translateY(-50%);
+    background-color: var(--color-primary-dark);
+    color: var(--color-white);
+    border: none;
+    padding: var(--space-sm);
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+    display: none;
+    height: 8rem;
+    align-items: center;
+    justify-content: center;
+    z-index: 1001;
+  }
+  .menu-lateral__reveal i {
+    pointer-events: none;
+    font-size: 1.25rem;
+  }
+}
+/* ===== Gagnants ===== */
+.enigme-gagnants tr.current-user {
+  font-weight: 700;
+}
+
+/* ====== Modal d'aide ====== */
+.help-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* S'assure que l'overlay est au-dessus des panneaux d'édition */
+  z-index: 20000;
+}
+
+.help-modal {
+  background: var(--color-white, #fff);
+  color: var(--color-editor-heading, #000);
+  padding: var(--space-md);
+  border-radius: 8px;
+  max-width: 400px;
+  width: 90%;
+  position: relative;
+  z-index: 20001;
+}
+
+.help-modal-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.help-modal-header i {
+  font-size: 1.5rem;
+}
+
+.help-modal-title {
+  margin: 0 0 var(--space-sm);
+  font-size: 1.25rem;
+}
+
+.help-modal-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: inherit;
+}
+
+.help-modal-content p {
+  margin: 0 0 var(--space-sm);
+}
+
+.help-modal-content p.help-definition {
+  margin-bottom: var(--space-md);
+}
+
+/* ==================================================
+   🗺️ PAGE DE CHASSE (single-chasse.php)
+   ================================================== */
+/* Utility: image constrained by the global max height */
+.img-h-max {
+  max-height: var(--hunt-img-max-height);
+  width: auto;
+  height: auto;
+  -o-object-fit: contain;
+     object-fit: contain;
+}
+
+.chasse-fiche-container {
+  margin-top: var(--space-2xl);
+  --grid-gap: 2.6rem;
+  --hunt-img-max-height: 350px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--grid-gap);
+}
+
+.chasse-visuel-wrapper {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+  gap: var(--space-md);
+}
+
+/* ========== 🖼️ COLONNE IMAGE DE LA CHASSE ========== */
+.champ-chasse.champ-img {
+  flex: 0 0 auto;
+  padding: 0;
+  width: -moz-fit-content;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* Image container handling full width and limited height */
+.chasse-fiche-container .champ-img .champ-affichage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-chasse__image {
+  display: flex;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.header-chasse__image .badge-cout {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1;
+  background: var(--color-grey-light);
+  color: var(--color-text-fond-clair);
+}
+
+.header-chasse__image .mode-fin-icone {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--color-grey-light);
+  color: var(--color-text-fond-clair);
+  font-size: 0.75rem;
+  z-index: 1;
+}
+
+.header-chasse__image .mode-fin-icone svg,
+.header-chasse__image .mode-fin-icone i {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.header-chasse__image img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.45);
+}
+
+.chasse-visuel-wrapper .liste-liens-publics {
+  display: flex;
+  gap: var(--space-xs);
+  justify-content: center;
+}
+
+.chasse-visuel-wrapper .liste-liens-publics.liens-sans-intitule {
+  gap: var(--space-sm);
+}
+
+.chasse-visuel-wrapper .lien-public {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xxs);
+  padding: 0 var(--space-xs);
+  border-radius: 1rem;
+  background: var(--color-grey-light) !important;
+  color: var(--color-text-fond-clair) !important;
+}
+
+.chasse-visuel-wrapper .lien-public i {
+  color: var(--color-text-fond-clair) !important;
+  font-size: 0.75rem;
+}
+
+.chasse-visuel-wrapper .liste-liens-publics.liens-sans-intitule .lien-public {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.chasse-visuel-wrapper .liste-liens-publics.liens-sans-intitule .lien-public .texte-lien {
+  display: none;
+}
+
+@media (--bp-mobile) {
+  .chasse-fiche-container {
+    --hunt-img-max-height: 500px;
+  }
+}
+@media (--bp-tablet) {
+  .chasse-fiche-container {
+    --hunt-img-max-height: 600px;
+  }
+}
+@media (--bp-desktop) {
+  .chasse-fiche-container {
+    flex-direction: row;
+    --hunt-img-max-height: 800px;
+  }
+  .chasse-visuel-wrapper {
+    position: sticky;
+    top: 0;
+    max-width: 40%;
+    margin: 0;
+  }
+  .champ-chasse.champ-img {
+    margin: 0;
+  }
+  /* Styles spécifiques au layout desktop conservés */
+}
+/* ========== 📝 COLONNE INFOS DE LA CHASSE ========== */
+.chasse-details-wrapper {
+  min-width: 240px;
+  flex: 1;
+  position: relative;
+}
+
+.chasse-details-actions {
+  position: absolute;
+  top: 1.2rem;
+  right: var(--space-xs);
+  display: flex;
+  gap: var(--space-xs);
+  align-items: center;
+}
+
+.chasse-details-actions .chasse-share-button {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-primary);
+}
+
+.chasse-details-actions .chasse-share-button svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.header-chasse {
+  font-size: 30px;
+}
+
+.chasse-organisateur {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-xs);
+}
+.chasse-organisateur__logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+.chasse-organisateur__texte {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+.chasse-organisateur__nom {
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+.chasse-organisateur__nom:hover {
+  text-decoration: underline;
+}
+.chasse-organisateur__presente {
+  color: var(--color-gris-3);
+  font-style: italic;
+}
+
+.chasse-footer {
+  margin-top: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-xs);
+}
+@media (--bp-desktop) {
+  .chasse-footer {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+.chasse-footer__reward {
+  font-weight: 700;
+}
+.chasse-footer__reward .fa-trophy {
+  margin-right: 0.3em;
+  color: var(--color-gris-3);
+}
+.chasse-footer__texte {
+  color: var(--color-gris-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+.chasse-footer__logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  filter: grayscale(1);
+  transition: filter 0.3s;
+}
+.chasse-footer__logo-link:hover .chasse-footer__logo {
+  filter: none;
+}
+.chasse-footer__nom {
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+.chasse-footer__nom:hover {
+  text-decoration: underline;
+}
+
+.chasse-details-wrapper .meta-row,
+.carte-ligne__contenu .meta-row,
+.carte-wide__content .meta-row,
+.carte-compact__meta {
+  display: flex;
+  gap: var(--space-md);
+  align-items: center;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  font-size: 93%;
+  color: var(--color-gris-3);
+}
+
+.meta-regular .meta-indic {
+  background: none;
+  border: none;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.meta-regular .meta-indic__count {
+  font-weight: 600;
+}
+
+.chasse-details-wrapper .bloc-metas-inline {
+  margin: var(--space-xl) 0;
+  color: white;
+}
+
+.page-chasse-wrapper .chasse-lot {
+  margin-bottom: var(--space-md);
+  font-size: 20px;
+}
+
+.page-chasse-wrapper .chasse-lot .lot-title {
+  font-weight: 600;
+  margin: 0;
+}
+
+.page-chasse-wrapper .chasse-lot .lot-subtitle {
+  font-weight: 500;
+}
+
+.page-chasse-wrapper .chasse-lot .lot-description {
+  font-size: 16px;
+  margin-top: 0.3rem;
+}
+
+.chasse-description {
+  margin-top: var(--space-xl);
+  line-height: 1.6;
+  font-size: 1.05rem;
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+}
+.chasse-description ul {
+  list-style: disc;
+  padding-left: var(--space-lg);
+}
+.chasse-description ul li::marker {
+  color: currentColor;
+}
+.chasse-description p {
+  margin-bottom: var(--space-md);
+}
+.chasse-description p:last-child {
+  margin-bottom: 0;
+}
+.chasse-description .description-toggle {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+  text-decoration: underline;
+}
+.chasse-description .description-toggle::before {
+  content: "▾";
+  display: inline-block;
+  color: var(--color-text-primary);
+  margin-right: var(--space-xxs);
+}
+.chasse-description .description-toggle[aria-expanded=true]::before {
+  content: "▴";
+}
+
+.chasse-section-intro.champ-vide-obligatoire {
+  border: 2px dashed var(--color-editor-error);
+  animation: clignoteTitre 1s infinite alternate;
+  padding: var(--space-xs);
+  border-radius: 0.5rem;
+}
+
+/* ========== 🎯 CARACTÉRISTIQUES DE LA CHASSE ========== */
+.chasse-caracteristiques {
+  margin-top: var(--space-lg);
+  font-size: 0.8rem;
+  line-height: 1.3;
+  color: var(--color-editor-text-muted);
+  text-align: left;
+  width: -moz-fit-content;
+  width: fit-content;
+}
+
+.chasse-caracteristiques .caracteristique {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xxs);
+  margin-bottom: var(--space-xxs);
+}
+
+.chasse-caracteristiques .caracteristique-icone {
+  flex: 0 0 1rem;
+  text-align: center;
+}
+
+.chasse-cta-section {
+  display: flex;
+  gap: var(--space-xl);
+  align-items: center;
+  text-align: left;
+  width: 100%;
+}
+
+.chasse-cta-section .chasse-caracteristiques {
+  margin-top: 0;
+  flex: 0 0 auto;
+}
+
+.chasse-cta-section .cta-chasse-row {
+  flex: 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.chasse-caracteristiques .caracteristique-label {
+  flex: 0 0 6rem;
+  font-weight: 700;
+}
+
+.chasse-caracteristiques .caracteristique-valeur {
+  flex: 0 0 auto;
+  margin-left: var(--space-xs);
+}
+
+.chasse-lot-complet {
+  margin-top: var(--space-2xl);
+  padding: var(--space-md);
+  background-color: var(--color-background-dark);
+  border-radius: 8px;
+}
+
+.chasse-lot-complet h3 {
+  margin-top: 0;
+  margin-bottom: var(--space-xs);
+}
+
+.chasse-lot-complet h3 .fa-trophy {
+  color: var(--color-grey-light);
+  margin-right: 0.3em;
+}
+
+.chasse-lot-complet .champ-lot-titre,
+.chasse-lot-complet .champ-lot-valeur {
+  display: inline-block;
+}
+
+.chasse-lot-complet .lot-titre {
+  margin: 0 var(--space-xs) 0 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.chasse-lot-complet .lot-valeur {
+  margin: 0;
+}
+
+.chasse-lot-complet .champ-lot-description {
+  margin-top: var(--space-sm);
+}
+
+.chasse-lot-complet .lot-description {
+  margin: 0;
+}
+
+/* ========== 🧾 BLOC PRÉSENTATION DE LA CHASSE ========== */
+.chasse-enigmes-header .liens-placeholder {
+  display: none;
+}
+
+body.edition-active-chasse .chasse-enigmes-header .liens-placeholder {
+  display: block;
+}
+
+/* ========== 📱 RESPONSIVE PAGE DE CHASSE ========== */
+@media not all and (--bp-tablet) {
+  .header-chasse {
+    font-size: 22px;
+  }
+}
+.infos-dispo {
+  text-align: center;
+  margin-top: var(--space-xxs);
+}
+
+.infos-dispo .infos-secondaires {
+  display: inline-block;
+  background-color: var(--color-grey-light);
+  color: var(--color-grey-dark);
+  padding: 0.25em 0.6em;
+  border-radius: 999px;
+  font-size: 0.8em;
+  font-weight: 500;
+}
+
+@media not all and (--bp-desktop) {
+  .chasse-layout .menu-lateral {
+    display: none;
+  }
+}
+.chasse-gagnant-info {
+  background-color: var(--color-white);
+  color: var(--color-text-fond-clair);
+  padding: var(--space-md);
+  border-left: 4px solid var(--color-primary);
+  border-radius: 4px;
+  margin-bottom: var(--space-md);
+  font-weight: 600;
+}
+
+/* ========== 🧭 MODAL BIENVENUE COMMUN ========== */
+.modal-bienvenue-wrapper,
+.modal-bienvenue {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10001;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.modal-bienvenue-inner,
+.modal-contenu {
+  position: relative;
+  background: var(--color-white);
+  color: var(--color-text-fond-clair);
+  padding: var(--space-3xl) var(--space-2xl);
+  border-radius: 12px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.modal-close-top {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.8rem;
+  font-size: 1.2rem;
+  background: none;
+  border: none;
+  color: var(--color-text-fond-clair);
+  cursor: pointer;
+  width: 2rem;
+  height: 2rem;
+  line-height: 2rem;
+  text-align: center;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.modal-close-top:hover {
+  color: var(--color-white);
+  background: var(--color-accent, #ffc400);
+  border-color: var(--color-accent, #ffc400);
+}
+
+.modal-title {
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--color-accent, #ffc400);
+  margin-bottom: var(--space-xs);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.modal-subtitle {
+  text-align: center;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--color-text-fond-clair);
+  margin-bottom: 1.2rem;
+}
+
+.modal-bienvenue-inner p,
+.modal-contenu p {
+  margin: var(--space-md) 0;
+}
+
+.modal-bienvenue-inner strong,
+.modal-contenu strong {
+  font-weight: 600;
+}
+
+.modal-bienvenue-inner svg,
+.modal-bienvenue-inner button.header-bouton-edition,
+.modal-contenu svg,
+.modal-contenu button.header-bouton-edition {
+  vertical-align: middle;
+  margin-right: 0.4em;
+  margin-top: -0.15em;
+}
+
+@media screen and (max-width: 480px) {
+  .modal-bienvenue-inner,
+  .modal-contenu {
+    padding: var(--space-xl);
+    font-size: 0.95rem;
+  }
+  .modal-title {
+    font-size: 1.2rem;
+  }
+  .modal-subtitle {
+    font-size: 1.1rem;
+  }
+}
