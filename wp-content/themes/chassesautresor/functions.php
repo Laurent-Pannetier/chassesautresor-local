@@ -206,6 +206,7 @@ add_action('wp_enqueue_scripts', function () {
         filemtime($theme_path . '/assets/js/lang-switcher.js'),
         true
     );
+    wp_script_add_data('lang-switcher', 'defer', true);
 
     wp_enqueue_script(
         'help-modal',
@@ -214,6 +215,7 @@ add_action('wp_enqueue_scripts', function () {
         filemtime($theme_path . '/assets/js/help-modal.js'),
         true
     );
+    wp_script_add_data('help-modal', 'defer', true);
     wp_set_script_translations('help-modal', 'chassesautresor-com');
 
     if (is_account_page() && is_user_logged_in()) {
@@ -224,6 +226,7 @@ add_action('wp_enqueue_scripts', function () {
             filemtime($theme_path . '/assets/js/myaccount.js'),
             true
         );
+        wp_script_add_data('myaccount', 'defer', true);
         wp_localize_script('myaccount', 'ctaMyAccount', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
         ]);
@@ -234,6 +237,7 @@ add_action('wp_enqueue_scripts', function () {
             filemtime($theme_path . '/assets/js/tentatives-toggle.js'),
             true
         );
+        wp_script_add_data('tentatives-toggle', 'defer', true);
     }
 
     if (is_singular('enigme')) {
@@ -244,6 +248,7 @@ add_action('wp_enqueue_scripts', function () {
             filemtime($theme_path . '/assets/js/accordeon.js'),
             true
         );
+        wp_script_add_data('accordeon', 'defer', true);
         wp_set_script_translations('accordeon', 'chassesautresor-com');
     }
 
@@ -255,6 +260,7 @@ add_action('wp_enqueue_scripts', function () {
             filemtime($theme_path . '/assets/js/enigme-panel.js'),
             true
         );
+        wp_script_add_data('enigme-panel', 'defer', true);
     }
     $sidebar_dir = $theme_uri . '/assets/sidebar/';
     if (is_singular(['enigme', 'chasse'])) {
@@ -265,6 +271,7 @@ add_action('wp_enqueue_scripts', function () {
             filemtime($theme_path . '/assets/sidebar/sidebar.js'),
             true
         );
+        wp_script_add_data('sidebar', 'defer', true);
         wp_localize_script('sidebar', 'sidebarData', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
         ]);
@@ -275,6 +282,7 @@ add_action('wp_enqueue_scripts', function () {
             filemtime($theme_path . '/assets/sidebar/menu-toggle.js'),
             true
         );
+        wp_script_add_data('sidebar-menu-toggle', 'defer', true);
     }
 
     if (is_singular('chasse')) {
@@ -285,6 +293,7 @@ add_action('wp_enqueue_scripts', function () {
             filemtime($theme_path . '/assets/js/chasse-engagement.js'),
             true
         );
+        wp_script_add_data('chasse-engagement', 'defer', true);
     }
 });
 
@@ -298,6 +307,51 @@ add_action('wp_enqueue_scripts', function () {
         wp_dequeue_style('fancybox-ie');
     }
 }, 20);
+
+/**
+ * Charge les feuilles de style principales de manière asynchrone.
+ *
+ * @param string $html   Balise de feuille de style générée.
+ * @param string $handle Identifiant du style.
+ * @param string $href   URL du style.
+ * @param string $media  Media attribué au style.
+ *
+ * @return string
+ */
+function cta_async_style_loader($html, $handle, $href, $media)
+{
+    if (is_admin()) {
+        return $html;
+    }
+
+    $async_handles = [
+        'astra-style',
+        'chassesautresor-style',
+    ];
+
+    if (!in_array($handle, $async_handles, true)) {
+        return $html;
+    }
+
+    $handle_attr         = esc_attr($handle);
+    $href_attr           = esc_url($href);
+    $original_media_attr = esc_attr($media ?: 'all');
+
+    $async_html  = sprintf(
+        '<link rel="stylesheet" id="%1$s-css" href="%2$s" media="print" data-async="true" onload="this.onload=null;this.media=\'all\';" />',
+        $handle_attr,
+        $href_attr
+    );
+    $async_html .= sprintf(
+        '<noscript><link rel="stylesheet" id="%1$s-css-noscript" href="%2$s" media="%3$s" /></noscript>',
+        $handle_attr,
+        $href_attr,
+        $original_media_attr
+    );
+
+    return $async_html;
+}
+add_filter('style_loader_tag', 'cta_async_style_loader', 10, 4);
 
 /**
  * Disables the language dropdown on the login page.
