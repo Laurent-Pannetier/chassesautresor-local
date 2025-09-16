@@ -681,21 +681,16 @@
   pointer-events: none;
 }
 
-.carte-ajout-chasse .overlay-message {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-text-primary);
+.carte-ajout-chasse .carte-ajout-message {
+  color: var(--color-gris-4);
+  font-size: 0.875rem;
+  line-height: 1.3;
   text-align: center;
-  gap: var(--space-xs);
-  padding: 0 var(--space-md);
+  margin-top: var(--space-xxs);
+}
+
+.carte-ajout-chasse .carte-ajout-message:empty {
+  display: none;
 }
 
 /* ========== ✅ Indicateurs de complétion ========== */

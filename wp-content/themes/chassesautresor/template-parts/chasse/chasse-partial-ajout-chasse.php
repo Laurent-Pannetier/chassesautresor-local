@@ -39,9 +39,8 @@ $ajout_url = esc_url(site_url('/creer-chasse/'));
                 ? esc_html__('Ajouter une nouvelle chasse', 'chassesautresor-com')
                 : esc_html__('Créer ma première chasse', 'chassesautresor-com'); ?>
         </span>
-    </div>
-    <div class="overlay-message">
-        <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
-        <p><?php esc_html_e('Complétez d\u2019abord : titre, logo, description', 'chassesautresor-com'); ?></p>
+        <span class="carte-ajout-message" aria-live="polite">
+            <?php esc_html_e('Complétez d\u2019abord : titre, logo, description', 'chassesautresor-com'); ?>
+        </span>
     </div>
 </button>
