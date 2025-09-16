@@ -11,7 +11,19 @@
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly.
+    exit; // Exit if accessed directly.
+}
+
+$hero_image_url = '';
+
+if ( is_front_page() ) {
+    $hero_image_url = imagify_get_webp_url( wp_get_attachment_image_url( 8810, 'full' ) );
+} elseif ( is_page() && ! is_user_account_area() ) {
+    $featured_image_id = get_post_thumbnail_id();
+
+    if ( $featured_image_id ) {
+        $hero_image_url = imagify_get_webp_url( wp_get_attachment_image_url( $featured_image_id, 'full' ) );
+    }
 }
 
 ?><!DOCTYPE html>
@@ -31,10 +43,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 <?php astra_head_top(); ?>
 <meta charset="<?php bloginfo( 'charset' ); ?>">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<?php if ( $hero_image_url ) : ?>
+<link rel="preload" as="image" href="<?php echo esc_url( $hero_image_url ); ?>">
+<?php endif; ?>
 <?php
 if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
-	?>
-	<link rel="profile" href="https://gmpg.org/xfn/11"> 
+        ?>
+        <link rel="profile" href="https://gmpg.org/xfn/11">
 	<?php
 }
 ?>
@@ -81,8 +96,6 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
     if ( is_cart() ) {
         get_template_part('template-parts/header-panier');
     } elseif ( is_front_page() ) {
-        $image_url = imagify_get_webp_url( wp_get_attachment_image_url( 8810, 'full' ) );
-
         $line1 = sprintf(
             /* translators: 1: ordinal suffix, 2: phrase 'plateforme de'. */
             __( '1<sup>%1$s</sup> %2$s', 'chassesautresor-com' ),
@@ -99,17 +112,14 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
         get_header_fallback([
             'titre'      => $titre,
             'sous_titre' => '',
-            'image_fond' => $image_url,
+            'image_fond' => $hero_image_url,
             'logo_id'    => 475,
         ]);
     } elseif ( is_page() && ! is_user_account_area() ) {
-        $image_id  = get_post_thumbnail_id();
-        $image_url = $image_id ? imagify_get_webp_url( wp_get_attachment_image_url( $image_id, 'full' ) ) : '';
-
         get_header_fallback([
             'titre'       => get_the_title(),
             'sous_titre'  => '',
-            'image_fond'  => $image_url,
+            'image_fond'  => $hero_image_url,
         ]);
     }
     

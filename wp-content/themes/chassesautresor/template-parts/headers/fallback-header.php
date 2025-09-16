@@ -27,7 +27,10 @@ $logo_id     = isset( $args['logo_id'] ) ? absint( $args['logo_id'] ) : 0;
   <div class="hero-overlay" <?php if ( $image_url ) : ?>style="background-image: url('<?php echo $image_url; ?>');"<?php endif; ?>>
     <div class="contenu-hero">
       <?php if ( $logo_id ) : ?>
-        <?php echo wp_get_attachment_image( $logo_id, 'full', false, [ 'class' => 'hero-logo' ] ); ?>
+        <?php echo wp_get_attachment_image( $logo_id, 'full', false, [
+            'class'    => 'hero-logo',
+            'loading'  => 'eager',
+        ] ); ?>
       <?php endif; ?>
 
       <?php if ( $titre ) : ?>
