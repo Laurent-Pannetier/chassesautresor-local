@@ -49,6 +49,9 @@
 
 /* ========== 🃏 Carte compacte ========== */
 .carte-compact {
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
   padding: 0;
   overflow: hidden;
 }
