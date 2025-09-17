@@ -187,13 +187,41 @@ function myaccount_is_organisation_page() {
  * @return array
  */
 function myaccount_add_organisation_body_class(array $classes) {
-    if (myaccount_is_organisation_page() && !in_array('myaccount-organisation-page', $classes, true)) {
-        $classes[] = 'myaccount-organisation-page';
+    if (!myaccount_is_organisation_page()) {
+        return $classes;
+    }
+
+    $additional_classes = array(
+        'myaccount-organisation-page',
+        'woocommerce-account',
+        'woocommerce-page',
+    );
+
+    foreach ($additional_classes as $class) {
+        if (!in_array($class, $classes, true)) {
+            $classes[] = $class;
+        }
     }
 
     return $classes;
 }
 add_filter('body_class', 'myaccount_add_organisation_body_class');
+
+/**
+ * Ensure the organisation page is treated as a WooCommerce account page.
+ *
+ * @param bool $is_account_page Whether WooCommerce already considers the view an account page.
+ *
+ * @return bool
+ */
+function myaccount_mark_organisation_account_page($is_account_page) {
+    if ($is_account_page) {
+        return true;
+    }
+
+    return myaccount_is_organisation_page();
+}
+add_filter('woocommerce_is_account_page', 'myaccount_mark_organisation_account_page');
 
 /**
  * Modifier dynamiquement le titre de la page dans l'onglet du navigateur
