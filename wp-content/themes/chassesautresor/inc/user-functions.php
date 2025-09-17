@@ -47,6 +47,7 @@ defined( 'ABSPATH' ) || exit;
 function ajouter_rewrite_rules() {
     add_rewrite_rule('^mon-compte/statistiques/?$', 'index.php?mon_compte_statistiques=1', 'top');
     add_rewrite_rule('^mon-compte/outils/?$', 'index.php?mon_compte_outils=1', 'top');
+    add_rewrite_rule('^mon-compte/organisation/?$', 'index.php?mon_compte_organisation=1', 'top');
 }
 add_action('init', 'ajouter_rewrite_rules');
 
@@ -64,6 +65,7 @@ add_action('init', 'ajouter_rewrite_rules');
 function ajouter_query_vars($vars) {
     $vars[] = 'mon_compte_statistiques';
     $vars[] = 'mon_compte_outils';
+    $vars[] = 'mon_compte_organisation';
     return $vars;
 }
 add_filter('query_vars', 'ajouter_query_vars');
@@ -109,6 +111,8 @@ function charger_template_utilisateur($template) {
         'mon-compte/organisateurs/'       => 'content-organisateurs.php', // Variante avec /
         'mon-compte/statistiques'         => 'content-statistiques.php',
         'mon-compte/outils'               => 'content-outils.php',
+        'mon-compte/organisation'         => 'content-organisation.php',
+        'mon-compte/organisation/'        => 'content-organisation.php',
     );
 
     $admin_paths = array(
@@ -174,6 +178,21 @@ function modifier_titre_onglet($title) {
 
     if ($current_url === 'mon-compte' && (($_GET['section'] ?? '') === 'chasses')) {
         return __('Chasses - Chasses au Trésor', 'chassesautresor-com');
+    }
+
+    if ($current_url === 'mon-compte/organisation') {
+        $user = wp_get_current_user();
+        if ($user && $user->ID && function_exists('get_organisateur_from_user')) {
+            $organisateur_id = get_organisateur_from_user((int) $user->ID);
+            if ($organisateur_id && function_exists('get_the_title')) {
+                $organisateur_title = get_the_title($organisateur_id);
+                if ($organisateur_title) {
+                    return wp_strip_all_tags($organisateur_title);
+                }
+            }
+        }
+
+        return __('Mon organisation', 'chassesautresor-com');
     }
 
     // Si l’URL correspond à une page définie, modifier le titre
