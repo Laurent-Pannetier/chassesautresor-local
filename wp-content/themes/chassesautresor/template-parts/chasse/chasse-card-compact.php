@@ -23,27 +23,18 @@ if (empty($infos)) {
         <div class="carte-compact__contenu">
             <h3 class="carte-compact__titre"><?php echo esc_html($infos['titre']); ?></h3>
             <?php echo $infos['lot_html']; ?>
-            <div class="carte-compact__meta meta-row svg-xsmall">
-                <div class="meta-regular">
-                    <?php echo get_svg_icon('enigme'); ?>
-                    <?php
-                    echo esc_html(
-                        sprintf(
-                            _n('%d énigme', '%d énigmes', $infos['total_enigmes'], 'chassesautresor-com'),
-                            $infos['total_enigmes']
-                        )
-                    );
-                    ?> —
-                    <?php echo get_svg_icon('participants'); ?><?php echo esc_html($infos['nb_joueurs_label']); ?>
-                </div>
-                <div class="meta-etiquette">
-                    <?php echo get_svg_icon('calendar'); ?>
-                    <span class="chasse-date-plage">
-                        <span class="date-debut"><?php echo esc_html($infos['date_debut']); ?></span> –
-                        <span class="date-fin"><?php echo esc_html($infos['date_fin']); ?></span>
-                    </span>
-                </div>
-            </div>
+            <?php
+            get_template_part(
+                'template-parts/chasse/partials/chasse-meta-row',
+                null,
+                array(
+                    'infos'           => $infos,
+                    'wrapper_class'   => 'carte-compact__meta meta-row svg-xsmall',
+                    'display_mode'    => 'buttons',
+                    'use_short_dates' => true,
+                )
+            );
+            ?>
         </div>
     </a>
 </div>
