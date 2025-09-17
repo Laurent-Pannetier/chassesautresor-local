@@ -14,7 +14,10 @@ $content_template = $GLOBALS['myaccount_content_template'] ?? null;
 $current_user     = wp_get_current_user();
 $display_name     = $current_user->ID ? $current_user->display_name : get_bloginfo('name');
 $show_nav         = is_user_logged_in();
-$current_path     = trim($_SERVER['REQUEST_URI'], '/');
+$current_path     = '';
+if (!empty($_SERVER['REQUEST_URI'])) {
+    $current_path = trim(parse_url(wp_unslash($_SERVER['REQUEST_URI']), PHP_URL_PATH), '/');
+}
 
 get_header();
 ?>

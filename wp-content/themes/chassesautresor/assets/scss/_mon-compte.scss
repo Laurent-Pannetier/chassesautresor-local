@@ -7,6 +7,32 @@
     padding-right: 0;
 }
 
+.woocommerce-account.myaccount-organisation-page .ast-container,
+.woocommerce-account.myaccount-organisation-page .ast-container-fluid,
+.woocommerce-account.myaccount-organisation-page .container {
+    max-width: var(--container-max-width);
+    padding-left: 13px;
+    padding-right: 13px;
+}
+
+@media (--bp-desktop) {
+    .woocommerce-account.myaccount-organisation-page .ast-container,
+    .woocommerce-account.myaccount-organisation-page .ast-container-fluid,
+    .woocommerce-account.myaccount-organisation-page .container {
+        padding-left: var(--space-md);
+        padding-right: var(--space-md);
+    }
+}
+
+@media (--bp-xxl) {
+    .woocommerce-account.myaccount-organisation-page .ast-container,
+    .woocommerce-account.myaccount-organisation-page .ast-container-fluid,
+    .woocommerce-account.myaccount-organisation-page .container {
+        padding-left: var(--space-3xl);
+        padding-right: var(--space-3xl);
+    }
+}
+
 .myaccount-layout {
     display: flex;
     min-height: 100vh;

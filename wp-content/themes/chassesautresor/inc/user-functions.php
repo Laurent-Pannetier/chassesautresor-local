@@ -155,6 +155,47 @@ function charger_template_utilisateur($template) {
 add_filter('template_include', 'charger_template_utilisateur');
 
 /**
+ * Check if the current request corresponds to the organisation account page.
+ *
+ * @return bool
+ */
+function myaccount_is_organisation_page() {
+    if ((int) get_query_var('mon_compte_organisation') === 1) {
+        return true;
+    }
+
+    if (empty($_SERVER['REQUEST_URI'])) {
+        return false;
+    }
+
+    $path = parse_url(wp_unslash($_SERVER['REQUEST_URI']), PHP_URL_PATH);
+
+    if ($path === null || $path === false) {
+        return false;
+    }
+
+    $request_path = trim($path, '/');
+
+    return $request_path === 'mon-compte/organisation';
+}
+
+/**
+ * Add a dedicated body class for the organisation account page.
+ *
+ * @param array $classes The body classes collected by WordPress.
+ *
+ * @return array
+ */
+function myaccount_add_organisation_body_class(array $classes) {
+    if (myaccount_is_organisation_page() && !in_array('myaccount-organisation-page', $classes, true)) {
+        $classes[] = 'myaccount-organisation-page';
+    }
+
+    return $classes;
+}
+add_filter('body_class', 'myaccount_add_organisation_body_class');
+
+/**
  * Modifier dynamiquement le titre de la page dans l'onglet du navigateur
  *
  * @param string $title Le titre actuel.
