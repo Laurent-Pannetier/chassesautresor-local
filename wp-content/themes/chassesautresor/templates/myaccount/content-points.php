@@ -20,7 +20,6 @@ $is_organizer = in_array(ROLE_ORGANISATEUR, $roles, true) || in_array(ROLE_ORGAN
 
 if ($is_organizer) {
     $user_id         = (int) $current_user->ID;
-    $organisateur_id = function_exists('get_organisateur_from_user') ? get_organisateur_from_user($user_id) : null;
     $user_points     = function_exists('get_user_points') ? get_user_points($user_id) : 0;
     ?>
     <div class="dashboard-grid stats-cards myaccount-points-cards">
@@ -29,16 +28,6 @@ if ($is_organizer) {
             <h3><?php esc_html_e('Points', 'chassesautresor-com'); ?></h3>
             <p class="stat-value"><?php echo esc_html($user_points); ?></p>
         </div>
-        <?php if ($organisateur_id) : ?>
-        <div class="dashboard-card" data-stat="organizer-points">
-            <i class="fa-solid fa-landmark" aria-hidden="true"></i>
-            <h3><?php esc_html_e('Points de mon organisation', 'chassesautresor-com'); ?></h3>
-            <a
-                class="stat-value"
-                href="<?php echo esc_url(add_query_arg(['edition' => 'open', 'onglet' => 'revenus'], get_permalink($organisateur_id))); ?>"
-            ><?php esc_html_e('Gérer', 'chassesautresor-com'); ?></a>
-        </div>
-        <?php endif; ?>
     </div>
     <?php
 } else {

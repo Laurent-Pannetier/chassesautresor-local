@@ -47,6 +47,7 @@ defined( 'ABSPATH' ) || exit;
 function ajouter_rewrite_rules() {
     add_rewrite_rule('^mon-compte/statistiques/?$', 'index.php?mon_compte_statistiques=1', 'top');
     add_rewrite_rule('^mon-compte/outils/?$', 'index.php?mon_compte_outils=1', 'top');
+    add_rewrite_rule('^mon-compte/organisation/?$', 'index.php?mon_compte_organisation=1', 'top');
 }
 add_action('init', 'ajouter_rewrite_rules');
 
@@ -64,6 +65,7 @@ add_action('init', 'ajouter_rewrite_rules');
 function ajouter_query_vars($vars) {
     $vars[] = 'mon_compte_statistiques';
     $vars[] = 'mon_compte_outils';
+    $vars[] = 'mon_compte_organisation';
     return $vars;
 }
 add_filter('query_vars', 'ajouter_query_vars');
@@ -109,6 +111,8 @@ function charger_template_utilisateur($template) {
         'mon-compte/organisateurs/'       => 'content-organisateurs.php', // Variante avec /
         'mon-compte/statistiques'         => 'content-statistiques.php',
         'mon-compte/outils'               => 'content-outils.php',
+        'mon-compte/organisation'         => 'content-organisation.php',
+        'mon-compte/organisation/'        => 'content-organisation.php',
     );
 
     $admin_paths = array(
@@ -151,6 +155,75 @@ function charger_template_utilisateur($template) {
 add_filter('template_include', 'charger_template_utilisateur');
 
 /**
+ * Check if the current request corresponds to the organisation account page.
+ *
+ * @return bool
+ */
+function myaccount_is_organisation_page() {
+    if ((int) get_query_var('mon_compte_organisation') === 1) {
+        return true;
+    }
+
+    if (empty($_SERVER['REQUEST_URI'])) {
+        return false;
+    }
+
+    $path = parse_url(wp_unslash($_SERVER['REQUEST_URI']), PHP_URL_PATH);
+
+    if ($path === null || $path === false) {
+        return false;
+    }
+
+    $request_path = trim($path, '/');
+
+    return $request_path === 'mon-compte/organisation';
+}
+
+/**
+ * Add a dedicated body class for the organisation account page.
+ *
+ * @param array $classes The body classes collected by WordPress.
+ *
+ * @return array
+ */
+function myaccount_add_organisation_body_class(array $classes) {
+    if (!myaccount_is_organisation_page()) {
+        return $classes;
+    }
+
+    $additional_classes = array(
+        'myaccount-organisation-page',
+        'woocommerce-account',
+        'woocommerce-page',
+    );
+
+    foreach ($additional_classes as $class) {
+        if (!in_array($class, $classes, true)) {
+            $classes[] = $class;
+        }
+    }
+
+    return $classes;
+}
+add_filter('body_class', 'myaccount_add_organisation_body_class');
+
+/**
+ * Ensure the organisation page is treated as a WooCommerce account page.
+ *
+ * @param bool $is_account_page Whether WooCommerce already considers the view an account page.
+ *
+ * @return bool
+ */
+function myaccount_mark_organisation_account_page($is_account_page) {
+    if ($is_account_page) {
+        return true;
+    }
+
+    return myaccount_is_organisation_page();
+}
+add_filter('woocommerce_is_account_page', 'myaccount_mark_organisation_account_page');
+
+/**
  * Modifier dynamiquement le titre de la page dans l'onglet du navigateur
  *
  * @param string $title Le titre actuel.
@@ -174,6 +247,21 @@ function modifier_titre_onglet($title) {
 
     if ($current_url === 'mon-compte' && (($_GET['section'] ?? '') === 'chasses')) {
         return __('Chasses - Chasses au Trésor', 'chassesautresor-com');
+    }
+
+    if ($current_url === 'mon-compte/organisation') {
+        $user = wp_get_current_user();
+        if ($user && $user->ID && function_exists('get_organisateur_from_user')) {
+            $organisateur_id = get_organisateur_from_user((int) $user->ID);
+            if ($organisateur_id && function_exists('get_the_title')) {
+                $organisateur_title = get_the_title($organisateur_id);
+                if ($organisateur_title) {
+                    return wp_strip_all_tags($organisateur_title);
+                }
+            }
+        }
+
+        return __('Mon organisation', 'chassesautresor-com');
     }
 
     // Si l’URL correspond à une page définie, modifier le titre

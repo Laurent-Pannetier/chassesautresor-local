@@ -14,7 +14,10 @@ $content_template = $GLOBALS['myaccount_content_template'] ?? null;
 $current_user     = wp_get_current_user();
 $display_name     = $current_user->ID ? $current_user->display_name : get_bloginfo('name');
 $show_nav         = is_user_logged_in();
-$current_path     = trim($_SERVER['REQUEST_URI'], '/');
+$current_path     = '';
+if (!empty($_SERVER['REQUEST_URI'])) {
+    $current_path = trim(parse_url(wp_unslash($_SERVER['REQUEST_URI']), PHP_URL_PATH), '/');
+}
 
 get_header();
 ?>
@@ -139,6 +142,44 @@ get_header();
         </nav>
         <?php endif; ?>
         <?php
+        $organizer_roles = array();
+        if (defined('ROLE_ORGANISATEUR')) {
+            $organizer_roles[] = ROLE_ORGANISATEUR;
+        } else {
+            $organizer_roles[] = 'organisateur';
+        }
+        if (defined('ROLE_ORGANISATEUR_CREATION')) {
+            $organizer_roles[] = ROLE_ORGANISATEUR_CREATION;
+        } else {
+            $organizer_roles[] = 'organisateur_creation';
+        }
+
+        if (array_intersect($organizer_roles, (array) $current_user->roles)) {
+            $organizer_id = function_exists('get_organisateur_from_user')
+                ? get_organisateur_from_user((int) $current_user->ID)
+                : 0;
+
+            if ($organizer_id && function_exists('get_the_title')) {
+                $organisation_title = get_the_title($organizer_id);
+                if ($organisation_title) {
+                    $organisation_url     = home_url('/mon-compte/organisation/');
+                    $organisation_classes = 'dashboard-nav-link';
+                    if ($current_path === 'mon-compte/organisation') {
+                        $organisation_classes .= ' active';
+                    }
+                    ?>
+                    <nav class="dashboard-nav organizer-organisation-nav">
+                        <a href="<?php echo esc_url($organisation_url); ?>" class="<?php echo esc_attr($organisation_classes); ?>">
+                            <i class="fas fa-landmark"></i>
+                            <span><?php echo esc_html($organisation_title); ?></span>
+                        </a>
+                    </nav>
+                    <?php
+                }
+            }
+        }
+        ?>
+        <?php
         $organizer_nav = myaccount_get_organizer_nav($current_user->ID);
         if ($organizer_nav) {
             echo myaccount_render_organizer_nav($organizer_nav);
@@ -158,6 +199,16 @@ get_header();
                 $page_title = __('Vos chasses', 'chassesautresor-com');
             } elseif (isset($_GET['section']) && $_GET['section'] === 'points') {
                 $page_title = __('Points', 'chassesautresor-com');
+            } elseif ($current_path === 'mon-compte/organisation') {
+                if (function_exists('get_organisateur_from_user')) {
+                    $organizer_id = get_organisateur_from_user((int) $current_user->ID);
+                    if ($organizer_id && function_exists('get_the_title')) {
+                        $page_title = get_the_title($organizer_id);
+                    }
+                }
+                if (empty($page_title)) {
+                    $page_title = __('Mon organisation', 'chassesautresor-com');
+                }
             } elseif (is_account_page() && empty($_GET['section'])) {
                 $page_title = sprintf(__('Bienvenue %s', 'chassesautresor-com'), $display_name);
             }
