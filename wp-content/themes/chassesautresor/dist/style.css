@@ -8547,30 +8547,6 @@ footer .site-footer-primary-section-3 {
   padding-right: 0;
 }
 
-.woocommerce-account.myaccount-organisation-page .ast-container,
-.woocommerce-account.myaccount-organisation-page .ast-container-fluid,
-.woocommerce-account.myaccount-organisation-page .container {
-  max-width: var(--container-max-width);
-  padding-left: 13px;
-  padding-right: 13px;
-}
-
-@media (min-width: 1024px) {
-  .woocommerce-account.myaccount-organisation-page .ast-container,
-  .woocommerce-account.myaccount-organisation-page .ast-container-fluid,
-  .woocommerce-account.myaccount-organisation-page .container {
-    padding-left: var(--space-md);
-    padding-right: var(--space-md);
-  }
-}
-@media (min-width: 1440px) {
-  .woocommerce-account.myaccount-organisation-page .ast-container,
-  .woocommerce-account.myaccount-organisation-page .ast-container-fluid,
-  .woocommerce-account.myaccount-organisation-page .container {
-    padding-left: var(--space-3xl);
-    padding-right: var(--space-3xl);
-  }
-}
 .myaccount-layout {
   display: flex;
   min-height: 100vh;
