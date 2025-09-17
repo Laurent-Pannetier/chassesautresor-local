@@ -8902,6 +8902,33 @@ footer .site-footer-primary-section-3 {
   margin-top: 20px;
 }
 
+.myaccount-organisation-hunts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.myaccount-section-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.myaccount-section-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.myaccount-section-action {
+  margin-left: auto;
+}
+
+.myaccount-organisation-hunts-grid {
+  gap: var(--space-3xl);
+}
+
 .stats-cards {
   margin: var(--space-md) 0 var(--space-3xl);
 }

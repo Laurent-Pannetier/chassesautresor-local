@@ -73,3 +73,54 @@ if ($organizer_permalink) {
         <?php endif; ?>
     </div>
 </div>
+<?php
+$chasses_query = function_exists('get_chasses_de_organisateur')
+    ? get_chasses_de_organisateur($organisateur_id)
+    : null;
+$chasse_ids = array();
+
+if ($chasses_query instanceof WP_Query) {
+    $chasse_ids = array_map('intval', $chasses_query->posts);
+} elseif (is_array($chasses_query)) {
+    $chasse_ids = array_map('intval', $chasses_query);
+}
+
+if (function_exists('chasse_est_visible_pour_utilisateur')) {
+    $chasse_ids = array_values(array_filter(
+        $chasse_ids,
+        static function ($chasse_id) use ($user_id) {
+            return chasse_est_visible_pour_utilisateur((int) $chasse_id, $user_id);
+        }
+    ));
+}
+
+$can_create_hunt = function_exists('utilisateur_peut_ajouter_chasse')
+    ? utilisateur_peut_ajouter_chasse($organisateur_id)
+    : false;
+?>
+<section class="myaccount-organisation-hunts">
+    <div class="myaccount-section-header">
+        <h2 class="myaccount-section-title"><?php esc_html_e('Chasses de votre organisation', 'chassesautresor-com'); ?></h2>
+        <?php if ($can_create_hunt) : ?>
+        <a class="myaccount-section-action bouton-cta" href="<?php echo esc_url(home_url('/creer-chasse/')); ?>">
+            <?php esc_html_e('Créer une chasse', 'chassesautresor-com'); ?>
+        </a>
+        <?php endif; ?>
+    </div>
+    <?php if (!empty($chasse_ids)) : ?>
+        <?php
+        get_template_part(
+            'template-parts/chasse/boucle-chasses',
+            null,
+            array(
+                'show_header' => false,
+                'mode'        => 'carte',
+                'grid_class'  => 'cards-grid myaccount-organisation-hunts-grid',
+                'chasse_ids'  => $chasse_ids,
+            )
+        );
+        ?>
+    <?php else : ?>
+        <p class="myaccount-placeholder"><?php esc_html_e('Aucune chasse n’est liée à votre organisation pour le moment.', 'chassesautresor-com'); ?></p>
+    <?php endif; ?>
+</section>
