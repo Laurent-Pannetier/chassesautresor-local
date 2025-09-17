@@ -27,25 +27,18 @@ if (empty($infos)) {
             <a href="<?php echo esc_url($infos['permalink']); ?>"><?php echo esc_html($infos['titre']); ?></a>
         </h3>
 
-        <div class="meta-row svg-xsmall">
-            <div class="meta-regular">
-                <button type="button" class="meta-indic" data-tap="<?= esc_attr__('nombre d\'énigmes', 'chassesautresor-com'); ?>">
-                    <?php echo get_svg_icon('enigme'); ?>
-                    <span class="meta-indic__count"><?php echo esc_html(number_format_i18n($infos['total_enigmes'])); ?></span>
-                </button>
-                <button type="button" class="meta-indic" data-tap="<?= esc_attr__('nombre de joueurs', 'chassesautresor-com'); ?>">
-                    <?php echo get_svg_icon('participants'); ?>
-                    <span class="meta-indic__count"><?php echo esc_html(number_format_i18n($infos['nb_joueurs'])); ?></span>
-                </button>
-            </div>
-            <div class="meta-etiquette">
-                <?php echo get_svg_icon('calendar'); ?>
-                <span class="chasse-date-plage">
-                    <span class="date-debut"><?php echo esc_html($infos['date_debut_court']); ?></span> –
-                    <span class="date-fin"><?php echo esc_html($infos['date_fin_court']); ?></span>
-                </span>
-            </div>
-        </div>
+        <?php
+        get_template_part(
+            'template-parts/chasse/partials/chasse-meta-row',
+            null,
+            array(
+                'infos'           => $infos,
+                'wrapper_class'   => 'meta-row svg-xsmall',
+                'display_mode'    => 'buttons',
+                'use_short_dates' => true,
+            )
+        );
+        ?>
 
         <?php echo $infos['extrait_html']; ?>
         <?php echo $infos['lot_html']; ?>
