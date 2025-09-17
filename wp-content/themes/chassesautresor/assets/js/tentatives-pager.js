@@ -9,12 +9,27 @@
     }
     var page = e.detail.page || 1;
     var url = new URL(window.location.href);
-    url.searchParams.set('section', 'chasses');
+    var param = pager.dataset.param || 'page';
+    var section = pager.dataset.section;
+
+    if (typeof section === 'string') {
+      if (section.length) {
+        url.searchParams.set('section', section);
+      } else {
+        url.searchParams.delete('section');
+      }
+    }
+
     if (page > 1) {
-      url.searchParams.set('page', String(page));
+      url.searchParams.set(param, String(page));
     } else {
+      url.searchParams.delete(param);
+    }
+
+    if (param !== 'page') {
       url.searchParams.delete('page');
     }
+
     window.location.href = url.toString();
   });
 })();
