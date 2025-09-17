@@ -37,9 +37,14 @@
 
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: var(--space-4xl);
+  grid-template-columns: minmax(0, 1fr);
+  gap: calc(var(--space-4xl) + var(--space-md));
   justify-content: center;
+}
+@media (min-width: 768px) {
+  .cards-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 300px));
+  }
 }
 .cards-grid .carte-enigme {
   width: 100%;

@@ -38,9 +38,13 @@
 // Grille responsive pour cartes (compactes ou énigmes)
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: var(--space-4xl);
+  grid-template-columns: minmax(0, 1fr);
+  gap: calc(var(--space-4xl) + var(--space-md));
   justify-content: center;
+
+  @media (--bp-tablet) {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 300px));
+  }
 
   .carte-enigme {
     width: 100%;
