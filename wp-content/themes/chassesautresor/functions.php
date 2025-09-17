@@ -435,7 +435,6 @@ require_once $inc_path . 'access-functions.php';
 require_once $inc_path . 'relations-functions.php';
 require_once $inc_path . 'layout-functions.php';
 require_once $inc_path . 'sidebar.php';
-require_once $inc_path . 'myaccount-functions.php';
 require_once $inc_path . 'utils/liens.php';
 require_once $inc_path . 'chasse/stats.php';
 require_once $inc_path . 'organisateur/stats.php';

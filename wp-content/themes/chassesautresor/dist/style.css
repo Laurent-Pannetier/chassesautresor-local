@@ -8592,9 +8592,7 @@ footer .site-footer-primary-section-3 {
   transition: color 0.2s ease, background 0.2s ease;
 }
 
-.dashboard-nav-link:hover,
-.dashboard-nav-sublink:hover,
-.dashboard-nav-subitem:hover {
+.dashboard-nav-link:hover {
   color: hsl(var(--primary));
   text-decoration: underline;
 }
@@ -8608,30 +8606,6 @@ footer .site-footer-primary-section-3 {
   font-size: 0.75rem;
 }
 
-.organizer-nav {
-  margin-top: 24px;
-}
-
-.dashboard-nav-sublink {
-  display: block;
-  padding: 6px 12px 6px 32px;
-  border-radius: 8px;
-  color: hsl(var(--muted-foreground));
-  text-decoration: none;
-  font-size: 0.8125rem;
-  transition: color 0.2s ease, background 0.2s ease;
-}
-
-.dashboard-nav-subitem {
-  display: block;
-  padding: 4px 12px 4px 48px;
-  border-radius: 8px;
-  color: hsl(var(--muted-foreground));
-  text-decoration: none;
-  font-size: 0.75rem;
-  transition: color 0.2s ease, background 0.2s ease;
-}
-
 .dashboard-nav-heading {
   margin: 16px 0 8px;
   padding: 0 12px;
@@ -8641,16 +8615,12 @@ footer .site-footer-primary-section-3 {
   text-transform: uppercase;
 }
 
-.dashboard-nav-link .nav-title,
-.dashboard-nav-sublink .nav-title,
-.dashboard-nav-subitem .nav-title {
+.dashboard-nav-link .nav-title {
   position: relative;
   padding-left: 16px;
 }
 
-.dashboard-nav-link .nav-title::before,
-.dashboard-nav-sublink .nav-title::before,
-.dashboard-nav-subitem .nav-title::before {
+.dashboard-nav-link .nav-title::before {
   content: "";
   position: absolute;
   top: 50%;
@@ -8663,41 +8633,29 @@ footer .site-footer-primary-section-3 {
   box-shadow: 0 0 0 1px var(--status-bullet, transparent);
 }
 
-.dashboard-nav-link.status-important,
-.dashboard-nav-sublink.status-important,
-.dashboard-nav-subitem.status-important {
+.dashboard-nav-link.status-important {
   --status-bullet: hsl(var(--destructive));
 }
 
-.dashboard-nav-link.status-pending,
-.dashboard-nav-sublink.status-pending,
-.dashboard-nav-subitem.status-pending {
+.dashboard-nav-link.status-pending {
   --status-bullet: var(--etat-enigme-menu-en-attente);
 }
 
-.dashboard-nav-link.status-banned,
-.dashboard-nav-sublink.status-banned,
-.dashboard-nav-subitem.status-banned {
+.dashboard-nav-link.status-banned {
   --status-bullet: var(--etat-enigme-menu-bloquee);
   opacity: 0.3;
   pointer-events: none;
 }
 
-.dashboard-nav-link.status-muted,
-.dashboard-nav-sublink.status-muted,
-.dashboard-nav-subitem.status-muted {
+.dashboard-nav-link.status-muted {
   --status-bullet: var(--etat-enigme-menu-bloquee);
 }
 
-.dashboard-nav-link.status-published,
-.dashboard-nav-sublink.status-published,
-.dashboard-nav-subitem.status-published {
+.dashboard-nav-link.status-published {
   --status-bullet: var(--etat-enigme-menu-succes);
 }
 
-.dashboard-nav-link.status-eligible,
-.dashboard-nav-sublink.status-eligible,
-.dashboard-nav-subitem.status-eligible {
+.dashboard-nav-link.status-eligible {
   --status-bullet: var(--etat-enigme-menu-eligible);
 }
 

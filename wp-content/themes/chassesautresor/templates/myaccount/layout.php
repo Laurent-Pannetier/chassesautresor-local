@@ -179,12 +179,6 @@ get_header();
             }
         }
         ?>
-        <?php
-        $organizer_nav = myaccount_get_organizer_nav($current_user->ID);
-        if ($organizer_nav) {
-            echo myaccount_render_organizer_nav($organizer_nav);
-        }
-        ?>
         <?php endif; ?>
     </aside>
     <div class="myaccount-main">
