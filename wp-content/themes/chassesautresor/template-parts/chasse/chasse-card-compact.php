@@ -30,7 +30,7 @@ if (empty($infos)) {
                 array(
                     'infos'           => $infos,
                     'wrapper_class'   => 'carte-compact__meta meta-row svg-xsmall',
-                    'display_mode'    => 'buttons',
+                    'display_mode'    => 'counts',
                     'use_short_dates' => true,
                 )
             );

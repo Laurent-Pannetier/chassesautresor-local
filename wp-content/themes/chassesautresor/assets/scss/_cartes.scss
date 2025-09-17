@@ -59,6 +59,7 @@
     flex-direction: column;
     color: inherit;
     text-decoration: none;
+    height: 100%;
   }
 
   .carte-compact__image-wrapper {
@@ -79,15 +80,20 @@
   }
 
   .carte-compact__contenu {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: var(--space-sm);
     padding: var(--space-md);
   }
 
   .carte-compact__titre {
-    margin: 0 0 var(--space-xs);
+    margin: 0;
   }
 
   .carte-compact__meta {
     font-size: 0.875rem;
+    margin-top: auto;
   }
 }
 

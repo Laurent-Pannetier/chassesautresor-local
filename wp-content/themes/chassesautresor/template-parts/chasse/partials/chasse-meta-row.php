@@ -41,6 +41,23 @@ $date_fin   = isset($infos[$date_fin_key]) ? (string) $infos[$date_fin_key] : ''
             &mdash;
             <?php echo get_svg_icon('participants'); ?>
             <?php echo esc_html($label_joueurs); ?>
+        <?php elseif ($display_mode === 'counts') : ?>
+            <span
+                class="meta-indic meta-indic--static"
+                title="<?php echo esc_attr($label_enigmes); ?>"
+                aria-label="<?php echo esc_attr($label_enigmes); ?>"
+            >
+                <?php echo get_svg_icon('enigme'); ?>
+                <span class="meta-indic__count"><?php echo esc_html($nombre_enigmes_format); ?></span>
+            </span>
+            <span
+                class="meta-indic meta-indic--static"
+                title="<?php echo esc_attr($label_joueurs); ?>"
+                aria-label="<?php echo esc_attr($label_joueurs); ?>"
+            >
+                <?php echo get_svg_icon('participants'); ?>
+                <span class="meta-indic__count"><?php echo esc_html($nombre_joueurs_format); ?></span>
+            </span>
         <?php else : ?>
             <button
                 type="button"

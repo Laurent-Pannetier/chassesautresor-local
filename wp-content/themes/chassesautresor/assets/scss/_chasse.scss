@@ -307,6 +307,10 @@
     cursor: pointer;
 }
 
+.meta-regular .meta-indic--static {
+    cursor: default;
+}
+
 .meta-regular .meta-indic__count {
     font-weight: 600;
 }
