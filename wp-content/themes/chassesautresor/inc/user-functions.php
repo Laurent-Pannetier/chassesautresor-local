@@ -924,6 +924,144 @@ function myaccount_get_important_messages(): string
 }
 
 // ==================================================
+// 📊 TENTATIVES UTILISATEUR
+// ==================================================
+/**
+ * Display the Tentatives table on the My Account dashboard.
+ *
+ * @return void
+ */
+function ca_render_dashboard_tentatives(): void
+{
+    if (!is_user_logged_in()) {
+        return;
+    }
+
+    $user_id = (int) get_current_user_id();
+    if ($user_id <= 0) {
+        return;
+    }
+
+    $dir = get_stylesheet_directory();
+    $uri = get_stylesheet_directory_uri();
+
+    wp_enqueue_script(
+        'pager',
+        $uri . '/assets/js/core/pager.js',
+        [],
+        filemtime($dir . '/assets/js/core/pager.js'),
+        true
+    );
+
+    wp_enqueue_script(
+        'tentatives-pager',
+        $uri . '/assets/js/tentatives-pager.js',
+        ['pager'],
+        filemtime($dir . '/assets/js/tentatives-pager.js'),
+        true
+    );
+
+    global $wpdb;
+
+    $table   = $wpdb->prefix . 'enigme_tentatives';
+    $pending = (int) $wpdb->get_var($wpdb->prepare(
+        "SELECT COUNT(*) FROM {$table} WHERE user_id = %d AND resultat = 'attente' AND traitee = 0",
+        $user_id
+    ));
+    $total   = (int) $wpdb->get_var($wpdb->prepare(
+        "SELECT COUNT(*) FROM {$table} WHERE user_id = %d",
+        $user_id
+    ));
+    $success = (int) $wpdb->get_var($wpdb->prepare(
+        "SELECT COUNT(*) FROM {$table} WHERE user_id = %d AND resultat = 'bon'",
+        $user_id
+    ));
+
+    if ($total <= 0) {
+        return;
+    }
+
+    $per_page   = 10;
+    $page       = max(1, (int) ($_GET['tentatives-page'] ?? 1));
+    $offset     = ($page - 1) * $per_page;
+    $tentatives = $wpdb->get_results($wpdb->prepare(
+        "SELECT t.*, p.post_title FROM {$table} t JOIN {$wpdb->posts} p ON t.enigme_id = p.ID WHERE t.user_id = %d ORDER BY t.date_tentative DESC LIMIT %d OFFSET %d",
+        $user_id,
+        $per_page,
+        $offset
+    ));
+
+    $pages = (int) ceil($total / $per_page);
+
+    ob_start();
+    ?>
+    <section class="myaccount-tentatives">
+        <h3><?php esc_html_e('Tentatives', 'chassesautresor-com'); ?></h3>
+        <div class="table-header">
+            <?php if ($pending > 0) : ?>
+            <span class="stat-badge"><?php printf(esc_html(_n('%d tentative en attente', '%d tentatives en attente', $pending, 'chassesautresor-com')), $pending); ?></span>
+            <?php endif; ?>
+            <span class="stat-badge"><?php printf(esc_html(_n('%d tentative', '%d tentatives', $total, 'chassesautresor-com')), $total); ?></span>
+            <?php if ($success > 0) : ?>
+            <span class="stat-badge" style="color:var(--color-success);">
+                <?php printf(esc_html(_n('%d bonne réponse', '%d bonnes rponses', $success, 'chassesautresor-com')), $success); ?>
+            </span>
+            <?php endif; ?>
+        </div>
+        <div class="stats-table-wrapper" data-per-page="<?php echo esc_attr($per_page); ?>">
+            <table class="stats-table tentatives-table">
+                <thead>
+                    <tr>
+                        <th><?php esc_html_e('Date', 'chassesautresor-com'); ?></th>
+                        <th><?php esc_html_e('Chasse', 'chassesautresor-com'); ?></th>
+                        <th><?php esc_html_e('Énigme', 'chassesautresor-com'); ?></th>
+                        <th><?php esc_html_e('Proposition', 'chassesautresor-com'); ?></th>
+                        <th><?php esc_html_e('Résultat', 'chassesautresor-com'); ?></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($tentatives as $tent) : ?>
+                    <tr>
+                        <?php $chasse_id = (int) recuperer_id_chasse_associee($tent->enigme_id); ?>
+                        <td><?php echo esc_html(mysql2date('d/m/Y H:i', $tent->date_tentative)); ?></td>
+                        <td>
+                            <?php if ($chasse_id) : ?>
+                            <a href="<?php echo esc_url(get_permalink($chasse_id)); ?>">
+                                <?php echo esc_html(get_the_title($chasse_id)); ?>
+                            </a>
+                            <?php else : ?>
+                            &mdash;
+                            <?php endif; ?>
+                        </td>
+                        <td><?php echo esc_html($tent->post_title); ?></td>
+                        <?php echo cta_render_proposition_cell($tent->reponse_saisie ?? ''); ?>
+                        <?php
+                        $result = $tent->resultat;
+                        $class  = 'etiquette-error';
+                        if ($result === 'bon') {
+                            $class = 'etiquette-success';
+                        } elseif ($result === 'attente') {
+                            $class = 'etiquette-pending';
+                        }
+                        ?>
+                        <td>
+                            <span class="etiquette <?php echo esc_attr($class); ?>">
+                                <?php echo esc_html__($result, 'chassesautresor-com'); ?>
+                            </span>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+            <?php echo cta_render_pager($page, $pages, 'tentatives-pager', ['data-param' => 'tentatives-page', 'data-section' => '']); ?>
+        </div>
+    </section>
+    <?php
+    echo ob_get_clean();
+}
+add_action('woocommerce_account_dashboard', 'ca_render_dashboard_tentatives', 20);
+
+// ==================================================
 // 📡 AJAX ADMIN SECTIONS
 // ==================================================
 /**
