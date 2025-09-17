@@ -5,6 +5,11 @@
 
 defined('ABSPATH') || exit;
 
+$points_history = '';
+if (is_user_logged_in() && function_exists('render_points_history_table')) {
+    $points_history = render_points_history_table((int) get_current_user_id());
+}
+
 get_header();
 
 $query = new WP_Query([
@@ -38,6 +43,13 @@ $chasse_ids = $query->posts;
                 </div>
             </div>
         </section>
+        <?php if ($points_history) : ?>
+            <section class="points-history">
+                <div class="conteneur">
+                    <?php echo $points_history; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                </div>
+            </section>
+        <?php endif; ?>
     </main>
 </div>
 

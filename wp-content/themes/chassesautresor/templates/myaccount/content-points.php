@@ -2,49 +2,20 @@
 /**
  * Points section for "Mon Compte".
  *
- * Displays points related cards and tables depending on user role.
+ * Points cards and history have been removed from this area.
  *
  * @package chassesautresor
  */
 
 defined('ABSPATH') || exit;
 
-$current_user = wp_get_current_user();
-
 if (current_user_can('administrator')) {
     return;
 }
 
+$current_user = wp_get_current_user();
 $roles        = (array) $current_user->roles;
-$is_organizer = in_array(ROLE_ORGANISATEUR, $roles, true) || in_array(ROLE_ORGANISATEUR_CREATION, $roles, true);
 
-if ($is_organizer) {
-    $user_id         = (int) $current_user->ID;
-    $user_points     = function_exists('get_user_points') ? get_user_points($user_id) : 0;
-    ?>
-    <div class="dashboard-grid stats-cards myaccount-points-cards">
-        <div class="dashboard-card" data-stat="points">
-            <i class="fa-solid fa-coins" aria-hidden="true"></i>
-            <h3><?php esc_html_e('Points', 'chassesautresor-com'); ?></h3>
-            <p class="stat-value"><?php echo esc_html($user_points); ?></p>
-        </div>
-    </div>
-    <?php
-} else {
-    $points = function_exists('get_user_points') ? get_user_points((int) $current_user->ID) : 0;
-    ?>
-    <div class="dashboard-grid stats-cards myaccount-points-cards">
-        <div class="dashboard-card" data-stat="points">
-            <i class="fa-solid fa-coins" aria-hidden="true"></i>
-            <h3><?php esc_html_e('Points', 'chassesautresor-com'); ?></h3>
-            <p class="stat-value"><?php echo esc_html($points); ?></p>
-        </div>
-    </div>
-    <?php
-    if ($points === 0) {
-        $shop_url = esc_url(home_url('/boutique'));
-        echo '<p class="myaccount-points"><a href="' . $shop_url . '">' . esc_html__('Ajouter des points', 'chassesautresor') . '</a></p>';
-    }
+if (in_array(ROLE_ORGANISATEUR, $roles, true) || in_array(ROLE_ORGANISATEUR_CREATION, $roles, true)) {
+    return;
 }
-
-echo render_points_history_table((int) $current_user->ID);
