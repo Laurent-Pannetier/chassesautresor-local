@@ -47,15 +47,6 @@ get_header();
                     'active'   => is_wc_endpoint_url('orders'),
                 ),
                 array(
-                    'endpoint' => 'chasses',
-                    'label'    => __('Chasses', 'chassesautresor-com'),
-                    'title'    => __('Vos chasses', 'chassesautresor-com'),
-                    'icon'     => 'fas fa-map',
-                    'url'      => home_url('/mon-compte/?section=chasses'),
-                    'section'  => 'chasses',
-                    'active'   => isset($_GET['section']) && $_GET['section'] === 'chasses',
-                ),
-                array(
                     'endpoint' => 'points',
                     'label'    => __('Points', 'chassesautresor-com'),
                     'title'    => __('Points', 'chassesautresor-com'),
@@ -189,8 +180,6 @@ get_header();
                 $page_title = __('Votre profil', 'chassesautresor-com');
             } elseif (is_wc_endpoint_url('orders')) {
                 $page_title = __('Vos commandes', 'chassesautresor-com');
-            } elseif (isset($_GET['section']) && $_GET['section'] === 'chasses') {
-                $page_title = __('Vos chasses', 'chassesautresor-com');
             } elseif (isset($_GET['section']) && $_GET['section'] === 'points') {
                 $page_title = __('Points', 'chassesautresor-com');
             } elseif ($current_path === 'mon-compte/organisation') {

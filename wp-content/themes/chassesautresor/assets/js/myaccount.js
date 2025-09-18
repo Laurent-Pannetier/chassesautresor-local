@@ -13,6 +13,10 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
+  const accountPath = window.location.pathname && window.location.pathname !== '/'
+    ? window.location.pathname
+    : '/mon-compte/';
+
   const fadeFlash = () => {
     const flash = siteMessages ? siteMessages.querySelector('.flash') : null;
     if (flash) {
@@ -47,10 +51,10 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const params = new URLSearchParams(window.location.search);
-    params.set('action', 'cta_load_admin_section');
-    params.set('section', section);
-    const url = `${ctaMyAccount.ajaxUrl}?${params.toString()}`;
+    const searchParams = new URLSearchParams(window.location.search);
+    searchParams.set('action', 'cta_load_admin_section');
+    searchParams.set('section', section);
+    const url = `${ctaMyAccount.ajaxUrl}?${searchParams.toString()}`;
 
     try {
       const response = await fetch(url, { credentials: 'same-origin' });
@@ -84,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (push) {
         window.history.pushState(null, '', link.href);
       } else {
-        window.history.replaceState(null, '', '/mon-compte/');
+        window.history.replaceState(null, '', accountPath);
       }
     } catch (err) {
       if (siteMessages) {
@@ -122,6 +126,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const initialLink = document.querySelector(`.dashboard-nav-link[data-section="${initialSection}"]`);
     if (initialLink) {
       loadSection(initialLink, false);
+    } else {
+      params.delete('section');
+      const newQuery = params.toString();
+      const targetUrl = newQuery ? `${accountPath}?${newQuery}` : accountPath;
+      window.history.replaceState(null, '', targetUrl);
     }
   }
 

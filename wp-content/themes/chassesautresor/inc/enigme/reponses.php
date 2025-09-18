@@ -632,7 +632,7 @@ function charger_script_reponse_manuelle() {
                 'et sur votre <a href="%4$s">espace personnel</a>.',
                 'chassesautresor-com'
             ),
-            'accountUrl' => esc_url(home_url('/mon-compte/?section=chasses')),
+            'accountUrl' => esc_url(home_url('/mon-compte/')),
         ]);
     }
 }
