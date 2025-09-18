@@ -1017,19 +1017,19 @@ function ca_render_dashboard_engaged_hunts(): void
 add_action('woocommerce_account_dashboard', 'ca_render_dashboard_engaged_hunts', 10);
 
 /**
- * Display the Tentatives table on the My Account dashboard.
+ * Retrieve the Tentatives table markup for a specific user.
  *
- * @return void
+ * The function also ensures the required pagination scripts are enqueued so the
+ * result can be rendered from any template, including the homepage.
+ *
+ * @param int $user_id The identifier of the user whose attempts must be displayed.
+ *
+ * @return string The rendered HTML of the Tentatives table, or an empty string when no data is available.
  */
-function ca_render_dashboard_tentatives(): void
+function ca_get_tentatives_table(int $user_id): string
 {
-    if (!is_user_logged_in()) {
-        return;
-    }
-
-    $user_id = (int) get_current_user_id();
     if ($user_id <= 0) {
-        return;
+        return '';
     }
 
     $dir = get_stylesheet_directory();
@@ -1068,7 +1068,7 @@ function ca_render_dashboard_tentatives(): void
     ));
 
     if ($total <= 0) {
-        return;
+        return '';
     }
 
     $per_page   = 10;
@@ -1147,9 +1147,28 @@ function ca_render_dashboard_tentatives(): void
         </div>
     </section>
     <?php
-    echo ob_get_clean();
+    return (string) ob_get_clean();
 }
-add_action('woocommerce_account_dashboard', 'ca_render_dashboard_tentatives', 20);
+
+/**
+ * Display the Tentatives table on the My Account dashboard.
+ *
+ * @return void
+ */
+function ca_render_dashboard_tentatives(): void
+{
+    if (!is_user_logged_in()) {
+        return;
+    }
+
+    $table = ca_get_tentatives_table((int) get_current_user_id());
+
+    if ($table === '') {
+        return;
+    }
+
+    echo $table;
+}
 
 // ==================================================
 // 📡 AJAX ADMIN SECTIONS

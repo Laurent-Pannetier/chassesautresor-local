@@ -5,9 +5,18 @@
 
 defined('ABSPATH') || exit;
 
-$points_history = '';
-if (is_user_logged_in() && function_exists('render_points_history_table')) {
-    $points_history = render_points_history_table((int) get_current_user_id());
+$points_history   = '';
+$tentatives_table = '';
+if (is_user_logged_in()) {
+    $user_id = (int) get_current_user_id();
+
+    if (function_exists('render_points_history_table')) {
+        $points_history = render_points_history_table($user_id);
+    }
+
+    if (function_exists('ca_get_tentatives_table')) {
+        $tentatives_table = ca_get_tentatives_table($user_id);
+    }
 }
 
 get_header();
@@ -47,6 +56,13 @@ $chasse_ids = $query->posts;
             <section class="points-history">
                 <div class="conteneur">
                     <?php echo $points_history; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                </div>
+            </section>
+        <?php endif; ?>
+        <?php if ($tentatives_table) : ?>
+            <section class="tentatives-history">
+                <div class="conteneur">
+                    <?php echo $tentatives_table; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
                 </div>
             </section>
         <?php endif; ?>
