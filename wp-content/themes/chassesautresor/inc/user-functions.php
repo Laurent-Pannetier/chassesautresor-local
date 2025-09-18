@@ -924,8 +924,98 @@ function myaccount_get_important_messages(): string
 }
 
 // ==================================================
-// 📊 TENTATIVES UTILISATEUR
+// 🎯 CHASSES ENGAGÉES & 📊 TENTATIVES UTILISATEUR
 // ==================================================
+/**
+ * Display engaged hunts on the My Account dashboard for player roles.
+ *
+ * @return void
+ */
+function ca_render_dashboard_engaged_hunts(): void
+{
+    if (!is_user_logged_in()) {
+        return;
+    }
+
+    $current_user = wp_get_current_user();
+    $user_id      = (int) $current_user->ID;
+
+    if ($user_id <= 0) {
+        return;
+    }
+
+    $roles         = (array) $current_user->roles;
+    $player_roles  = ['subscriber', 'customer'];
+    $is_player     = !empty(array_intersect($player_roles, $roles));
+    $is_admin      = current_user_can('administrator');
+    $is_organizer  = function_exists('est_organisateur') && est_organisateur($user_id);
+
+    if (!$is_player || $is_admin || $is_organizer) {
+        return;
+    }
+
+    global $wpdb;
+
+    $table = $wpdb->prefix . 'engagements';
+    $query = $wpdb->prepare(
+        "SELECT chasse_id FROM {$table} WHERE user_id = %d AND chasse_id IS NOT NULL ORDER BY date_engagement DESC",
+        $user_id
+    );
+
+    $raw_ids = $wpdb->get_col($query);
+    if (empty($raw_ids)) {
+        $raw_ids = [];
+    }
+
+    $chasse_ids = [];
+    foreach ($raw_ids as $chasse_id) {
+        $chasse_id = (int) $chasse_id;
+        if ($chasse_id <= 0) {
+            continue;
+        }
+
+        if (
+            function_exists('chasse_est_visible_pour_utilisateur')
+            && !chasse_est_visible_pour_utilisateur($chasse_id, $user_id)
+        ) {
+            continue;
+        }
+
+        $chasse_ids[] = $chasse_id;
+    }
+
+    $chasse_ids = array_values(array_unique($chasse_ids));
+
+    $section_title = esc_html__('Vos chasses en cours', 'chassesautresor-com');
+
+    ob_start();
+    ?>
+    <section class="myaccount-chasses-engagees">
+        <div class="myaccount-section-header">
+            <h2 class="myaccount-section-title"><?php echo $section_title; ?></h2>
+        </div>
+        <?php if (!empty($chasse_ids)) : ?>
+            <?php
+            get_template_part(
+                'template-parts/chasse/boucle-chasses',
+                null,
+                [
+                    'show_header' => false,
+                    'mode'        => 'carte',
+                    'grid_class'  => 'cards-grid myaccount-chasses-engagees-grid',
+                    'chasse_ids'  => $chasse_ids,
+                ]
+            );
+            ?>
+        <?php else : ?>
+            <p class="myaccount-placeholder"><?php esc_html_e('Vous ne participez à aucune chasse pour le moment.', 'chassesautresor-com'); ?></p>
+        <?php endif; ?>
+    </section>
+    <?php
+    echo ob_get_clean();
+}
+add_action('woocommerce_account_dashboard', 'ca_render_dashboard_engaged_hunts', 10);
+
 /**
  * Display the Tentatives table on the My Account dashboard.
  *
