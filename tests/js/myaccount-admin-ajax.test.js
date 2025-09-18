@@ -3,7 +3,6 @@ const html = `
 <div class="myaccount-layout">
   <aside class="myaccount-sidebar">
     <nav class="dashboard-nav">
-      <a href="/mon-compte/?section=chasses" class="dashboard-nav-link" data-section="chasses" data-title="Vos chasses">Chasses</a>
       <a href="/mon-compte/?section=points" class="dashboard-nav-link" data-section="points" data-title="Points">Points</a>
     </nav>
     <nav class="dashboard-nav admin-nav">
@@ -22,6 +21,7 @@ const html = `
 
 describe('myaccount ajax navigation', () => {
   let initModule;
+  let originalReplaceState;
 
   beforeEach(() => {
     document.body.innerHTML = html;
@@ -30,6 +30,8 @@ describe('myaccount ajax navigation', () => {
       ok: true,
       json: () => Promise.resolve({ success: true, data: { html: '<section class="msg-important"></section>', messages: '' } })
     }));
+    originalReplaceState = window.history.replaceState.bind(window.history);
+    originalReplaceState(null, '', '/mon-compte/');
     jest.spyOn(window.history, 'pushState').mockImplementation(() => {});
     jest.spyOn(window.history, 'replaceState').mockImplementation(() => {});
     initModule = () => {
@@ -40,7 +42,6 @@ describe('myaccount ajax navigation', () => {
   });
 
   test.each([
-    'chasses',
     'points',
     'organisateurs',
     'statistiques',
@@ -65,6 +66,9 @@ describe('myaccount ajax navigation', () => {
       set: (key, value) => {
         params[key] = value;
       },
+      delete: (key) => {
+        delete params[key];
+      },
       toString: () => Object.entries(params).map(([k, v]) => `${k}=${v}`).join('&')
     }));
     initModule();
@@ -74,6 +78,24 @@ describe('myaccount ajax navigation', () => {
     expect(window.history.replaceState).toHaveBeenCalledWith(null, '', '/mon-compte/');
     expect(document.querySelector('a[data-section="organisateurs"]').classList.contains('active')).toBe(true);
     expect(document.querySelector('.myaccount-title').textContent).toBe('Organisateurs');
+    global.URLSearchParams = originalURLSearchParams;
+  });
+
+  test('removes legacy section parameter from url', () => {
+    const originalURLSearchParams = URLSearchParams;
+    const params = { section: 'chasses', foo: 'bar' };
+    global.URLSearchParams = jest.fn(() => ({
+      get: (key) => (key in params ? params[key] : null),
+      set: (key, value) => {
+        params[key] = value;
+      },
+      delete: (key) => {
+        delete params[key];
+      },
+      toString: () => Object.entries(params).map(([k, v]) => `${k}=${v}`).join('&')
+    }));
+    initModule();
+    expect(window.history.replaceState).toHaveBeenCalledWith(null, '', '/mon-compte/?foo=bar');
     global.URLSearchParams = originalURLSearchParams;
   });
 

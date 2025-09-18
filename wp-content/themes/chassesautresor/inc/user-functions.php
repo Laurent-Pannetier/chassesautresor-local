@@ -88,20 +88,28 @@ add_filter('query_vars', 'ajouter_query_vars');
  */
 function charger_template_utilisateur($template) {
     // Récupération et nettoyage de l'URL demandée
-    $request_uri = trim($_SERVER['REQUEST_URI'], '/');
+    $raw_request = $_SERVER['REQUEST_URI'] ?? '';
+    $request_uri = '';
+    if ($raw_request !== '') {
+        $parsed_url = wp_parse_url(wp_unslash($raw_request));
+        if (!empty($parsed_url['path'])) {
+            $request_uri = trim($parsed_url['path'], '/');
+        }
+    }
+    $requested_section = sanitize_key($_GET['section'] ?? '');
 
     // Vérification pour éviter les conflits avec WooCommerce
     if (is_wc_endpoint_url()) {
         return $template;
     }
 
-    if ($request_uri === 'mon-compte/points' || $request_uri === 'mon-compte/points/') {
-        wp_redirect(home_url('/mon-compte/?section=points'));
+    if ($request_uri === 'mon-compte/points') {
+        wp_safe_redirect(home_url('/mon-compte/?section=points'));
         exit;
     }
 
-    if ($request_uri === 'mon-compte/chasses' || $request_uri === 'mon-compte/chasses/') {
-        wp_redirect(home_url('/mon-compte/?section=chasses'));
+    if ($request_uri === 'mon-compte/chasses' || ($request_uri === 'mon-compte' && $requested_section === 'chasses')) {
+        wp_safe_redirect(home_url('/mon-compte/'));
         exit;
     }
     
@@ -243,10 +251,6 @@ function modifier_titre_onglet($title) {
     // Titre spécifique pour /mon-compte/?section=points
     if ($current_url === 'mon-compte' && (($_GET['section'] ?? '') === 'points')) {
         return __('Points - Chasses au Trésor', 'chassesautresor-com');
-    }
-
-    if ($current_url === 'mon-compte' && (($_GET['section'] ?? '') === 'chasses')) {
-        return __('Chasses - Chasses au Trésor', 'chassesautresor-com');
     }
 
     if ($current_url === 'mon-compte/organisation') {
@@ -1168,7 +1172,6 @@ function ca_load_admin_section()
     $section = sanitize_key($_GET['section'] ?? '');
     $allowed = [
         'points'        => ['template' => 'content-points.php', 'cap' => 'read'],
-        'chasses'       => ['template' => 'content-chasses.php', 'cap' => 'read'],
         'organisateurs' => ['template' => 'content-organisateurs.php', 'cap' => 'administrator'],
         'statistiques'  => ['template' => 'content-statistiques.php', 'cap' => 'administrator'],
         'outils'        => ['template' => 'content-outils.php', 'cap' => 'administrator'],

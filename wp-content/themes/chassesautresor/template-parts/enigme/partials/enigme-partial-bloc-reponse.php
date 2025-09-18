@@ -72,7 +72,7 @@ if ($mode_validation === 'manuelle') {
                 $timestamp   = strtotime($tentative->date_tentative);
                 $date        = wp_date('d/m/Y', $timestamp);
                 $time        = wp_date('H:i', $timestamp);
-                $account_url = home_url('/mon-compte/?section=chasses');
+                $account_url = home_url('/mon-compte/');
                 $message     = sprintf(
                     __(
                         '⏳ Votre tentative %1$s a été soumise le %2$s à %3$s.<br>' .
