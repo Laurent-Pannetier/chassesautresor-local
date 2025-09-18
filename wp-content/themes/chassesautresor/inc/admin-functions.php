@@ -130,9 +130,10 @@ function traiter_gestion_points() {
     // ✅ Redirection après soumission
     $redirect_url = add_query_arg(
         [
+            'section'         => 'outils',
             'points_modifies' => '1',
         ],
-        home_url('/mon-compte/?section=points')
+        home_url('/mon-compte/')
     );
 
     wp_redirect($redirect_url);
@@ -633,7 +634,7 @@ function traiter_demande_paiement() {
     cat_debug("📧 Notification envoyée à l'administrateur.");
 
     // ✅ Redirection après soumission
-    wp_safe_redirect(home_url('/mon-compte/?section=points'));
+    wp_safe_redirect(add_query_arg('paiement_envoye', '1', home_url('/mon-compte/')));
     exit;
 }
 add_action('init', 'traiter_demande_paiement');

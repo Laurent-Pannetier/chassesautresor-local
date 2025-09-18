@@ -3,7 +3,7 @@ const html = `
 <div class="myaccount-layout">
   <aside class="myaccount-sidebar">
     <nav class="dashboard-nav">
-      <a href="/mon-compte/?section=points" class="dashboard-nav-link" data-section="points" data-title="Points">Points</a>
+      <a href="/mon-compte/" class="dashboard-nav-link">Accueil</a>
     </nav>
     <nav class="dashboard-nav admin-nav">
       <a href="/mon-compte/organisateurs/" class="dashboard-nav-link" data-section="organisateurs">Organisateurs</a>
@@ -42,7 +42,6 @@ describe('myaccount ajax navigation', () => {
   });
 
   test.each([
-    'points',
     'organisateurs',
     'statistiques',
     'outils'
@@ -54,7 +53,7 @@ describe('myaccount ajax navigation', () => {
     await Promise.resolve();
     expect(fetch).toHaveBeenCalledWith(`/admin-ajax.php?action=cta_load_admin_section&section=${section}`, expect.any(Object));
     expect(window.history.pushState).toHaveBeenCalled();
-    const expectedTitle = link.dataset.title || link.textContent;
+    const expectedTitle = link.dataset.title || link.textContent.trim();
     expect(document.querySelector('.myaccount-title').textContent).toBe(expectedTitle);
   });
 

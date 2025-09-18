@@ -103,11 +103,6 @@ function charger_template_utilisateur($template) {
         return $template;
     }
 
-    if ($request_uri === 'mon-compte/points') {
-        wp_safe_redirect(home_url('/mon-compte/?section=points'));
-        exit;
-    }
-
     if ($request_uri === 'mon-compte/chasses' || ($request_uri === 'mon-compte' && $requested_section === 'chasses')) {
         wp_safe_redirect(home_url('/mon-compte/'));
         exit;
@@ -247,11 +242,6 @@ function modifier_titre_onglet($title) {
         'mon-compte/outils'        => __('Outils - Chasses au Trésor', 'chassesautresor-com'),
         'mon-compte/organisateurs' => __('Organisateur - Chasses au Trésor', 'chassesautresor-com'),
     ];
-
-    // Titre spécifique pour /mon-compte/?section=points
-    if ($current_url === 'mon-compte' && (($_GET['section'] ?? '') === 'points')) {
-        return __('Points - Chasses au Trésor', 'chassesautresor-com');
-    }
 
     if ($current_url === 'mon-compte/organisation') {
         $user = wp_get_current_user();
@@ -792,14 +782,8 @@ function myaccount_get_important_messages(): string
         $pendingRequests = $repo->getConversionRequests(null, 'pending');
 
         if (!empty($pendingRequests)) {
-            $url = esc_url(add_query_arg('section', 'points', home_url('/mon-compte/')));
             $messages[] = [
-                'text' => sprintf(
-                    /* translators: 1: opening anchor tag, 2: closing anchor tag */
-                    __('Vous avez des %1$sdemandes de conversion%2$s en attente.', 'chassesautresor-com'),
-                    '<a href="' . $url . '">',
-                    '</a>'
-                ),
+                'text' => __('Des demandes de conversion sont en attente de traitement.', 'chassesautresor-com'),
                 'type' => 'info',
             ];
         }
@@ -823,7 +807,7 @@ function myaccount_get_important_messages(): string
                         get_permalink($organisateur_id)
                     )
                 )
-                : esc_url(home_url('/mon-compte/?section=points'));
+                : esc_url(home_url('/mon-compte/'));
 
             $messages[] = [
                 'text' => sprintf(
@@ -1171,7 +1155,6 @@ function ca_load_admin_section()
 
     $section = sanitize_key($_GET['section'] ?? '');
     $allowed = [
-        'points'        => ['template' => 'content-points.php', 'cap' => 'read'],
         'organisateurs' => ['template' => 'content-organisateurs.php', 'cap' => 'administrator'],
         'statistiques'  => ['template' => 'content-statistiques.php', 'cap' => 'administrator'],
         'outils'        => ['template' => 'content-outils.php', 'cap' => 'administrator'],

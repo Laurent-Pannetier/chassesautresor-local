@@ -47,15 +47,6 @@ get_header();
                     'active'   => is_wc_endpoint_url('orders'),
                 ),
                 array(
-                    'endpoint' => 'points',
-                    'label'    => __('Points', 'chassesautresor-com'),
-                    'title'    => __('Points', 'chassesautresor-com'),
-                    'icon'     => 'fas fa-coins',
-                    'url'      => home_url('/mon-compte/?section=points'),
-                    'section'  => 'points',
-                    'active'   => isset($_GET['section']) && $_GET['section'] === 'points',
-                ),
-                array(
                     'endpoint' => 'edit-account',
                     'label'    => __('Profil', 'chassesautresor-com'),
                     'icon'     => 'fas fa-user',
@@ -180,8 +171,6 @@ get_header();
                 $page_title = __('Votre profil', 'chassesautresor-com');
             } elseif (is_wc_endpoint_url('orders')) {
                 $page_title = __('Vos commandes', 'chassesautresor-com');
-            } elseif (isset($_GET['section']) && $_GET['section'] === 'points') {
-                $page_title = __('Points', 'chassesautresor-com');
             } elseif ($current_path === 'mon-compte/organisation') {
                 if (function_exists('get_organisateur_from_user')) {
                     $organizer_id = get_organisateur_from_user((int) $current_user->ID);
