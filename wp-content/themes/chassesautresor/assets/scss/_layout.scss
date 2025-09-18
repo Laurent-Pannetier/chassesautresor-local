@@ -32,6 +32,14 @@
 
 /* ========== 🎯 HEADER TOP BAR ========== */
 
+:is(#ast-desktop-header, #ast-mobile-header) .ast-header-account-link.ast-header-account-type-icon {
+    color: var(--color-contrast-low, #f9fafb);
+}
+
+body.logged-in :is(#ast-desktop-header, #ast-mobile-header) .ast-header-account-link.ast-header-account-type-icon {
+    color: var(--color-success, #22c55e);
+}
+
 .site-above-header-wrap {
     background-color: rgba(0, 0, 0, 0.2);
     width: 100%;
