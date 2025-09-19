@@ -1376,14 +1376,19 @@ body.edition-active-chasse .chasse-enigmes-header .liens-placeholder {
 /* 🎁 Badge récompense */
 /* ✨ ICÔNES SVG  */
 /* ========== 👤 Icônes du compte ========== */
+.ast-header-account-type-icon .ahfb-svg-iconset svg {
+  height: 26px;
+  width: auto;
+}
+
 body:not(.logged-in) .ast-header-account-type-icon .ahfb-svg-iconset svg {
-  fill: var(--cta-account-icon-guest-fill, var(--color-text-secondary, currentColor));
-  stroke: var(--cta-account-icon-guest-stroke, var(--color-text-secondary, currentColor));
+  fill: var(--cta-account-icon-guest-fill, #fff);
+  stroke: var(--cta-account-icon-guest-stroke, #fff);
 }
 
 body.logged-in .ast-header-account-type-icon .ahfb-svg-iconset svg {
-  fill: var(--cta-account-icon-user-fill, var(--color-primary, currentColor));
-  stroke: var(--cta-account-icon-user-stroke, var(--color-primary, currentColor));
+  fill: var(--cta-account-icon-user-fill, #fff);
+  stroke: var(--cta-account-icon-user-stroke, #fff);
 }
 
 /* 🏷Séparateurs */
