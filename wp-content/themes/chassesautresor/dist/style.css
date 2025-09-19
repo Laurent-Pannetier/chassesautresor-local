@@ -1376,17 +1376,17 @@ body.edition-active-chasse .chasse-enigmes-header .liens-placeholder {
 /* 🎁 Badge récompense */
 /* ✨ ICÔNES SVG  */
 /* ========== 👤 Icônes du compte ========== */
-.ast-header-account-type-icon .ahfb-svg-iconset svg {
+.ast-header-account-wrap .ast-header-account-type-icon .ahfb-svg-iconset svg {
   height: 26px;
   width: auto;
 }
 
-body:not(.logged-in) .ast-header-account-type-icon .ahfb-svg-iconset svg {
+body:not(.logged-in) .ast-header-account-wrap .ast-header-account-type-icon .ahfb-svg-iconset svg {
   fill: var(--cta-account-icon-guest-fill, #fff);
   stroke: var(--cta-account-icon-guest-stroke, #fff);
 }
 
-body.logged-in .ast-header-account-type-icon .ahfb-svg-iconset svg {
+body.logged-in .ast-header-account-wrap .ast-header-account-type-icon .ahfb-svg-iconset svg {
   fill: var(--cta-account-icon-user-fill, #fff);
   stroke: var(--cta-account-icon-user-stroke, #fff);
 }
