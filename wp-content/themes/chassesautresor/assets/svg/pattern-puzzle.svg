@@ -1,22 +1,37 @@
 <svg width="320" height="320" viewBox="0 0 320 320" fill="none" xmlns="http://www.w3.org/2000/svg">
   <rect width="320" height="320" fill="none"/>
-  <g stroke="#2D3E75" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.86">
-    <path d="M36 96H116C132 52 188 52 204 96H284"/>
-    <path d="M204 96V176C248 188 248 244 204 256V320"/>
-    <path d="M116 204H36C20 248 20 304 36 320"/>
-    <path d="M96 36V116C52 132 52 188 96 204V284"/>
+  <g stroke="#0A173B" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.7">
+    <path d="M32 92H116C132 48 188 48 204 92H288"/>
+    <path d="M204 92V176C248 190 248 246 204 260V320"/>
+    <path d="M116 208H32C16 252 16 308 32 320"/>
+    <path d="M92 32V116C48 132 48 188 92 204V288"/>
   </g>
-  <g stroke="#FFFFFF" stroke-opacity="0.82" stroke-width="2" stroke-linecap="round">
-    <path d="M160 24C160 48 180 68 204 68H252"/>
-    <path d="M24 160C48 160 68 180 68 204V252"/>
-    <path d="M160 296C160 272 180 252 204 252H252"/>
-    <path d="M296 160C272 160 252 180 252 204V252"/>
+  <g stroke="#89A9FF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.78">
+    <path d="M160 36C160 70 188 96 222 96H280"/>
+    <path d="M44 160C78 160 104 188 104 222V280"/>
+    <path d="M160 284C160 250 188 224 222 224H280"/>
+    <path d="M284 160C250 160 224 188 224 222V280"/>
   </g>
-  <g fill="#FFFFFF" fill-opacity="0.26">
-    <circle cx="88" cy="88" r="6"/>
-    <circle cx="232" cy="60" r="6"/>
-    <circle cx="60" cy="232" r="6"/>
-    <circle cx="232" cy="232" r="6"/>
-    <circle cx="168" cy="160" r="5"/>
+  <g stroke="#11224C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.38">
+    <path d="M132 120C132 104 146 90 162 90H188"/>
+    <path d="M196 132C212 132 226 146 226 162V188"/>
+    <path d="M132 200C132 216 146 230 162 230H188"/>
+    <path d="M120 188C104 188 90 202 90 218V244"/>
+    <path d="M196 188C212 188 226 202 226 218V244"/>
+    <path d="M120 132C104 132 90 146 90 162V188"/>
+  </g>
+  <g fill="#F9F5E6" fill-opacity="0.32">
+    <circle cx="86" cy="82" r="9"/>
+    <circle cx="228" cy="66" r="7"/>
+    <circle cx="70" cy="234" r="8"/>
+    <circle cx="228" cy="228" r="9"/>
+    <circle cx="168" cy="160" r="6"/>
+  </g>
+  <g fill="#0B1435" fill-opacity="0.28">
+    <circle cx="112" cy="148" r="4"/>
+    <circle cx="188" cy="112" r="4"/>
+    <circle cx="148" cy="228" r="5"/>
+    <circle cx="244" cy="188" r="4"/>
+    <circle cx="92" cy="196" r="3.5"/>
   </g>
 </svg>
