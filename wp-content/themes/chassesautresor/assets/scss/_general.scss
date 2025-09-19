@@ -125,8 +125,8 @@ h3, .entry-content h3 {
 body {
   font-family: 'Poppins', sans-serif;
   color: var(--color-text-primary);
-  --site-background-overlay: linear-gradient(146deg, rgba(11, 18, 36, 0.62) 0%, rgba(7, 13, 28, 0.58) 45%, rgba(3, 6, 16, 0.68) 100%);
-  --site-background-pattern-size: clamp(120px, 18vw, 220px);
+  --site-background-overlay: linear-gradient(146deg, rgba(10, 16, 29, 0.46) 0%, rgba(7, 12, 25, 0.38) 48%, rgba(4, 8, 19, 0.52) 100%);
+  --site-background-pattern-size: clamp(160px, 18vw, 288px);
   --site-background-pattern-blend: normal;
   --site-background-overlay-blend: multiply;
   background-color: var(--color-background); /* Bleu nuit (fond global) */
@@ -140,9 +140,9 @@ body {
 }
 
 body.woocommerce-account {
-  --site-background-overlay: linear-gradient(140deg, rgba(255, 246, 229, 0.78) 0%, rgba(242, 227, 202, 0.75) 100%);
-  --site-background-pattern-size: clamp(116px, 19vw, 208px);
-  --site-background-pattern-blend: multiply;
+  --site-background-overlay: linear-gradient(140deg, rgba(255, 246, 229, 0.74) 0%, rgba(242, 227, 202, 0.7) 100%);
+  --site-background-pattern-size: clamp(150px, 20vw, 256px);
+  --site-background-pattern-blend: normal;
   --site-background-overlay-blend: screen;
   --color-text-primary: var(--color-text-fond-clair);
   background-color: #f7f4eb;
