@@ -125,9 +125,10 @@ h3, .entry-content h3 {
 body {
   font-family: 'Poppins', sans-serif;
   color: var(--color-text-primary);
-  --site-background-overlay: linear-gradient(152deg, rgba(9, 16, 34, 0.8) 0%, rgba(7, 13, 28, 0.76) 42%, rgba(4, 8, 20, 0.86) 100%);
-  --site-background-pattern-size: clamp(136px, 22vw, 236px);
-  --site-background-pattern-blend: screen;
+  --site-background-overlay: linear-gradient(146deg, rgba(11, 18, 36, 0.62) 0%, rgba(7, 13, 28, 0.58) 45%, rgba(3, 6, 16, 0.68) 100%);
+  --site-background-pattern-size: clamp(120px, 18vw, 220px);
+  --site-background-pattern-blend: normal;
+  --site-background-overlay-blend: multiply;
   background-color: var(--color-background); /* Bleu nuit (fond global) */
   background-image:
     url("../assets/svg/pattern-puzzle.svg"),
@@ -135,13 +136,14 @@ body {
   background-repeat: repeat, no-repeat;
   background-size: var(--site-background-pattern-size), 100% 100%;
   background-position: center, center;
-  background-blend-mode: var(--site-background-pattern-blend), normal;
+  background-blend-mode: var(--site-background-pattern-blend), var(--site-background-overlay-blend);
 }
 
 body.woocommerce-account {
-  --site-background-overlay: linear-gradient(140deg, rgba(255, 246, 229, 0.9) 0%, rgba(242, 227, 202, 0.88) 100%);
-  --site-background-pattern-size: clamp(124px, 20vw, 220px);
+  --site-background-overlay: linear-gradient(140deg, rgba(255, 246, 229, 0.78) 0%, rgba(242, 227, 202, 0.75) 100%);
+  --site-background-pattern-size: clamp(116px, 19vw, 208px);
   --site-background-pattern-blend: multiply;
+  --site-background-overlay-blend: screen;
   --color-text-primary: var(--color-text-fond-clair);
   background-color: #f7f4eb;
 }
