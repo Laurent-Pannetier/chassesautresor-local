@@ -37,6 +37,18 @@
 /* ✨ ICÔNES SVG  */
 
 
+/* ========== 👤 Icônes du compte ========== */
+body:not(.logged-in) .ast-header-account-type-icon .ahfb-svg-iconset svg {
+  fill: var(--cta-account-icon-guest-fill, var(--color-text-secondary, currentColor));
+  stroke: var(--cta-account-icon-guest-stroke, var(--color-text-secondary, currentColor));
+}
+
+body.logged-in .ast-header-account-type-icon .ahfb-svg-iconset svg {
+  fill: var(--cta-account-icon-user-fill, var(--color-primary, currentColor));
+  stroke: var(--cta-account-icon-user-stroke, var(--color-primary, currentColor));
+}
+
+
 /* 🏷Séparateurs */
 
   /* 🧭 Séparateur avec icône */
