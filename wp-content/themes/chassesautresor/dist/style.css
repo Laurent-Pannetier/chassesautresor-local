@@ -1375,6 +1375,34 @@ body.edition-active-chasse .chasse-enigmes-header .liens-placeholder {
 /* 🏷️ Badges de statut */
 /* 🎁 Badge récompense */
 /* ✨ ICÔNES SVG  */
+/* ========== 👤 Icônes du compte ========== */
+.ast-header-account-wrap .ast-header-account-type-icon {
+  color: #fff;
+}
+
+.ast-header-account-wrap .ast-header-account-type-icon .ahfb-svg-iconset svg {
+  height: 26px;
+  width: auto;
+}
+
+body:not(.logged-in) .ast-header-account-wrap .ast-header-account-type-icon {
+  color: #fff;
+}
+
+body:not(.logged-in) .ast-header-account-wrap .ast-header-account-type-icon .ahfb-svg-iconset svg {
+  fill: #fff;
+  stroke: #fff;
+}
+
+body.logged-in .ast-header-account-wrap .ast-header-account-type-icon {
+  color: #fff;
+}
+
+body.logged-in .ast-header-account-wrap .ast-header-account-type-icon .ahfb-svg-iconset svg {
+  fill: #fff;
+  stroke: #fff;
+}
+
 /* 🏷Séparateurs */
 /* 🧭 Séparateur avec icône */
 /* 🧭 Séparateur 1 */
