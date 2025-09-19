@@ -1,18 +1,18 @@
 <svg width="320" height="320" viewBox="0 0 320 320" fill="none" xmlns="http://www.w3.org/2000/svg">
   <rect width="320" height="320" fill="none"/>
-  <g stroke="#15203B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.45">
+  <g stroke="#24335D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.68">
     <path d="M36 96H116C132 52 188 52 204 96H284"/>
     <path d="M204 96V176C248 188 248 244 204 256V320"/>
     <path d="M116 204H36C20 248 20 304 36 320"/>
     <path d="M96 36V116C52 132 52 188 96 204V284"/>
   </g>
-  <g stroke="#FFFFFF" stroke-opacity="0.35" stroke-width="2" stroke-linecap="round">
+  <g stroke="#FFFFFF" stroke-opacity="0.55" stroke-width="2" stroke-linecap="round">
     <path d="M160 24C160 48 180 68 204 68H252"/>
     <path d="M24 160C48 160 68 180 68 204V252"/>
     <path d="M160 296C160 272 180 252 204 252H252"/>
     <path d="M296 160C272 160 252 180 252 204V252"/>
   </g>
-  <g fill="#FFFFFF" fill-opacity="0.08">
+  <g fill="#FFFFFF" fill-opacity="0.14">
     <circle cx="88" cy="88" r="6"/>
     <circle cx="232" cy="60" r="6"/>
     <circle cx="60" cy="232" r="6"/>

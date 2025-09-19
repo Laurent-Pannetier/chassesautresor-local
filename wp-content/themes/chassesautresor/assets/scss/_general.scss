@@ -125,20 +125,21 @@ h3, .entry-content h3 {
 body {
   font-family: 'Poppins', sans-serif;
   color: var(--color-text-primary);
-  --site-background-overlay: rgba(11, 19, 43, 0.82);
-  --site-background-pattern-size: 360px;
+  --site-background-overlay: rgba(11, 19, 43, 0.58);
+  --site-background-pattern-size: 280px;
   background-color: var(--color-background); /* Bleu nuit (fond global) */
   background-image:
     linear-gradient(var(--site-background-overlay), var(--site-background-overlay)),
     url("../assets/svg/pattern-puzzle.svg");
   background-repeat: no-repeat, repeat;
-  background-size: cover, var(--site-background-pattern-size);
+  background-size: 100% 100%, var(--site-background-pattern-size);
   background-position: center, center;
+  background-blend-mode: normal, soft-light;
 }
 
 body.woocommerce-account {
-  --site-background-overlay: rgba(247, 244, 235, 0.86);
-  --site-background-pattern-size: 320px;
+  --site-background-overlay: rgba(247, 244, 235, 0.82);
+  --site-background-pattern-size: 240px;
   --color-text-primary: var(--color-text-fond-clair);
   background-color: #f7f1e3;
 }
