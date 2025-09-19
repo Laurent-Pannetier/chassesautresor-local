@@ -181,6 +181,78 @@ function cta_render_lang_switcher( $row, $column ) {
 add_action( 'astra_render_header_column', 'cta_render_lang_switcher', 999, 2 );
 
 /**
+ * Loads custom account state SVG icons for Astra.
+ *
+ * @return array<string, string>
+ */
+function cta_get_account_state_icons() {
+    static $icons = null;
+
+    if ( null !== $icons ) {
+        return $icons;
+    }
+
+    $icons     = [];
+    $base_path = trailingslashit( get_stylesheet_directory() ) . 'assets/svg/';
+    $files     = [
+        'cta-account-guest' => 'user-anonyme.svg',
+        'cta-account-user'  => 'user-connecte.svg',
+    ];
+
+    foreach ( $files as $key => $file ) {
+        $path = $base_path . $file;
+
+        if ( ! file_exists( $path ) || ! is_readable( $path ) ) {
+            continue;
+        }
+
+        $content = file_get_contents( $path );
+
+        if ( false !== $content ) {
+            $icons[ $key ] = $content;
+        }
+    }
+
+    return $icons;
+}
+
+/**
+ * Registers custom account icons with Astra.
+ *
+ * @param array<string, string> $icons Default Astra icons.
+ *
+ * @return array<string, string>
+ */
+function cta_register_account_state_icons( $icons ) {
+    $custom_icons = cta_get_account_state_icons();
+
+    if ( empty( $custom_icons ) ) {
+        return $icons;
+    }
+
+    return array_merge( $icons, $custom_icons );
+}
+add_filter( 'astra_svg_icons', 'cta_register_account_state_icons' );
+
+/**
+ * Determines the account icon key to use depending on the user state.
+ *
+ * @param string $default Default Astra icon key.
+ *
+ * @return string
+ */
+function cta_account_icon_by_state( $default ) {
+    $icons = cta_get_account_state_icons();
+
+    if ( is_user_logged_in() ) {
+        return isset( $icons['cta-account-user'] ) ? 'cta-account-user' : $default;
+    }
+
+    return isset( $icons['cta-account-guest'] ) ? 'cta-account-guest' : $default;
+}
+add_filter( 'astra_get_option_header-account-icon-type', 'cta_account_icon_by_state' );
+
+/**
  * Chargement des styles du thème parent et enfant avec prise en charge d'Astra.
  */
 add_action('wp_enqueue_scripts', function () {
