@@ -7181,6 +7181,7 @@ h3, .entry-content h3 {
 body {
   font-family: "Poppins", sans-serif;
   color: var(--color-text-primary);
+  position: relative;
   --site-background-overlay: linear-gradient(146deg, rgba(10, 16, 29, 0.46) 0%, rgba(7, 12, 25, 0.38) 48%, rgba(4, 8, 19, 0.52) 100%);
   --site-background-pattern-size: clamp(160px, 18vw, 288px);
   --site-background-pattern-blend: normal;
@@ -7191,6 +7192,22 @@ body {
   background-size: var(--site-background-pattern-size), 100% 100%;
   background-position: center, center;
   background-blend-mode: var(--site-background-pattern-blend), var(--site-background-overlay-blend);
+}
+
+body.ast-plain-container,
+body.ast-page-builder-template,
+body.ast-separate-container {
+  background-image: url("../assets/svg/pattern-puzzle.svg"), var(--site-background-overlay);
+  background-repeat: repeat, no-repeat;
+  background-size: var(--site-background-pattern-size), 100% 100%;
+  background-position: center, center;
+  background-blend-mode: var(--site-background-pattern-blend), var(--site-background-overlay-blend);
+}
+
+body > #page,
+body > #page > #content,
+body > #page > #content > .ast-container {
+  background: transparent;
 }
 
 body.woocommerce-account {
