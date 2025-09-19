@@ -1382,13 +1382,13 @@ body.edition-active-chasse .chasse-enigmes-header .liens-placeholder {
 }
 
 body:not(.logged-in) .ast-header-account-wrap .ast-header-account-type-icon .ahfb-svg-iconset svg {
-  fill: var(--cta-account-icon-guest-fill, #fff);
-  stroke: var(--cta-account-icon-guest-stroke, #fff);
+  fill: #fff;
+  stroke: #fff;
 }
 
 body.logged-in .ast-header-account-wrap .ast-header-account-type-icon .ahfb-svg-iconset svg {
-  fill: var(--cta-account-icon-user-fill, #fff);
-  stroke: var(--cta-account-icon-user-stroke, #fff);
+  fill: #fff;
+  stroke: #fff;
 }
 
 /* 🏷Séparateurs */
