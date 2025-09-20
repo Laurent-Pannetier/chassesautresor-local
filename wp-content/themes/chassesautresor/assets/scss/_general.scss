@@ -126,9 +126,9 @@ body {
   font-family: 'Poppins', sans-serif;
   color: var(--color-text-primary);
   position: relative;
-  --site-background-overlay: linear-gradient(160deg, rgba(10, 17, 34, 0.28) 0%, rgba(6, 12, 26, 0.26) 46%, rgba(4, 9, 20, 0.3) 100%);
+  --site-background-overlay: linear-gradient(160deg, rgba(10, 17, 34, 0.18) 0%, rgba(6, 12, 26, 0.16) 46%, rgba(4, 9, 20, 0.18) 100%);
   --site-background-pattern-size: clamp(256px, 28vw, 420px);
-  --site-background-pattern-blend: soft-light;
+  --site-background-pattern-blend: normal;
   --site-background-overlay-blend: soft-light;
   background-color: var(--color-background); /* Bleu nuit (fond global) */
   background-image:
@@ -157,16 +157,16 @@ body > #page > #content > .ast-container {
 }
 
 body.woocommerce-account {
-  --site-background-overlay: linear-gradient(150deg, rgba(233, 215, 186, 0.28) 0%, rgba(221, 201, 168, 0.24) 100%);
+  --site-background-overlay: linear-gradient(150deg, rgba(233, 215, 186, 0.16) 0%, rgba(221, 201, 168, 0.14) 100%);
   --site-background-pattern-size: clamp(220px, 26vw, 360px);
-  --site-background-pattern-blend: multiply;
+  --site-background-pattern-blend: normal;
   --site-background-overlay-blend: soft-light;
   --color-text-primary: var(--color-text-fond-clair);
   background-color: #f7f4eb;
-  --woocommerce-surface-strong: rgba(247, 244, 235, 0.97);
-  --woocommerce-surface: rgba(247, 244, 235, 0.9);
-  --woocommerce-surface-muted: rgba(247, 244, 235, 0.82);
-  --woocommerce-chrome: rgba(247, 244, 235, 0.96);
+  --woocommerce-surface-strong: rgba(247, 244, 235, 0.9);
+  --woocommerce-surface: rgba(247, 244, 235, 0.8);
+  --woocommerce-surface-muted: rgba(247, 244, 235, 0.72);
+  --woocommerce-chrome: rgba(247, 244, 235, 0.86);
 }
 p {
     margin-bottom: var(--space-0);
