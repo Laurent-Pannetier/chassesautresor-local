@@ -7182,9 +7182,9 @@ body {
   font-family: "Poppins", sans-serif;
   color: var(--color-text-primary);
   position: relative;
-  --site-background-overlay: linear-gradient(150deg, rgba(14, 23, 45, 0.18) 0%, rgba(9, 16, 33, 0.16) 48%, rgba(4, 9, 23, 0.22) 100%);
-  --site-background-pattern-size: clamp(208px, 24vw, 360px);
-  --site-background-pattern-blend: screen;
+  --site-background-overlay: linear-gradient(160deg, rgba(10, 17, 34, 0.28) 0%, rgba(6, 12, 26, 0.26) 46%, rgba(4, 9, 20, 0.3) 100%);
+  --site-background-pattern-size: clamp(256px, 28vw, 420px);
+  --site-background-pattern-blend: soft-light;
   --site-background-overlay-blend: soft-light;
   background-color: var(--color-background); /* Bleu nuit (fond global) */
   background-image: url("../assets/svg/pattern-puzzle.svg"), var(--site-background-overlay);
@@ -7211,12 +7211,15 @@ body > #page > #content > .ast-container {
 }
 
 body.woocommerce-account {
-  --site-background-overlay: linear-gradient(150deg, rgba(234, 215, 186, 0.45) 0%, rgba(223, 203, 168, 0.4) 100%);
-  --site-background-pattern-size: clamp(200px, 26vw, 320px);
+  --site-background-overlay: linear-gradient(150deg, rgba(233, 215, 186, 0.28) 0%, rgba(221, 201, 168, 0.24) 100%);
+  --site-background-pattern-size: clamp(220px, 26vw, 360px);
   --site-background-pattern-blend: multiply;
   --site-background-overlay-blend: soft-light;
   --color-text-primary: var(--color-text-fond-clair);
   background-color: #f7f4eb;
+  --woocommerce-surface-strong: rgba(247, 244, 235, 0.92);
+  --woocommerce-surface: rgba(247, 244, 235, 0.86);
+  --woocommerce-surface-muted: rgba(247, 244, 235, 0.74);
 }
 
 p {
@@ -8632,14 +8635,14 @@ footer .site-footer-primary-section-3 {
   display: flex;
   min-height: 100vh;
   width: 100%;
-  background: hsl(var(--background));
+  background-color: var(--woocommerce-surface, rgba(247, 244, 235, 0.86));
   color: hsl(var(--foreground));
 }
 
 .myaccount-sidebar {
   width: 280px;
   border-right: 1px solid hsl(var(--border));
-  background: hsl(var(--background));
+  background-color: var(--woocommerce-surface-strong, rgba(247, 244, 235, 0.92));
   display: flex;
   flex-direction: column;
 }
@@ -8753,7 +8756,7 @@ footer .site-footer-primary-section-3 {
   height: 56px;
   padding: 0 16px;
   border-bottom: 1px solid hsl(var(--border));
-  background: hsl(var(--background));
+  background-color: var(--woocommerce-surface-muted, rgba(247, 244, 235, 0.74));
 }
 
 .myaccount-content {
@@ -8813,7 +8816,7 @@ footer .site-footer-primary-section-3 {
   margin: 0;
   padding: 20px;
   font-family: var(--font-main);
-  background: var(--color-background);
+  background-color: var(--woocommerce-surface, rgba(247, 244, 235, 0.86));
   color: var(--color-text-primary);
 }
 

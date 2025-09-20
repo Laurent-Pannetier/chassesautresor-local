@@ -11,14 +11,14 @@
     display: flex;
     min-height: 100vh;
     width: 100%;
-    background: hsl(var(--background));
+    background-color: var(--woocommerce-surface, rgba(247, 244, 235, 0.86));
     color: hsl(var(--foreground));
 }
 
 .myaccount-sidebar {
     width: 280px;
     border-right: 1px solid hsl(var(--border));
-    background: hsl(var(--background));
+    background-color: var(--woocommerce-surface-strong, rgba(247, 244, 235, 0.92));
     display: flex;
     flex-direction: column;
 }
@@ -132,7 +132,7 @@
     height: 56px;
     padding: 0 16px;
     border-bottom: 1px solid hsl(var(--border));
-    background: hsl(var(--background));
+    background-color: var(--woocommerce-surface-muted, rgba(247, 244, 235, 0.74));
 }
 
 .myaccount-content {
@@ -193,7 +193,7 @@
     margin: 0;
     padding: 20px;
     font-family: var(--font-main);
-    background: var(--color-background);
+    background-color: var(--woocommerce-surface, rgba(247, 244, 235, 0.86));
     color: var(--color-text-primary);
 }
 
