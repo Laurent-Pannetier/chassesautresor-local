@@ -7184,6 +7184,20 @@ body {
   background-color: var(--color-background); /* Bleu nuit (fond global) */
 }
 
+/* 🟦 Fond global avec motif typographique */
+body,
+body.ast-plain-container,
+body.ast-page-builder-template,
+body.ast-separate-container,
+body.ast-theme-transparent-header,
+body.custom-background {
+  background-color: var(--color-background);
+  background-image: url("../assets/svg/pattern-typographique.svg");
+  background-position: center;
+  background-repeat: repeat;
+  background-size: 600px 600px;
+}
+
 p {
   margin-bottom: var(--space-0);
 }
