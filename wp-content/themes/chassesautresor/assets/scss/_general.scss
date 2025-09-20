@@ -122,10 +122,11 @@ h3, .entry-content h3 {
 
 /* ========== 🎨 ÉLÉMENTS HTML NATIFS ========== */
 
-body {
+body,
+body[class*="ast-"] {
   font-family: 'Poppins', sans-serif;
   color: var(--color-text-primary);
-  background-color: var(--color-background); /* Bleu nuit (fond global) */
+  background-color: var(--color-background); /* Fond neutre sans motif */
 }
 p {
     margin-bottom: var(--space-0);
