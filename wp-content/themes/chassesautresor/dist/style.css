@@ -7217,9 +7217,10 @@ body.woocommerce-account {
   --site-background-overlay-blend: soft-light;
   --color-text-primary: var(--color-text-fond-clair);
   background-color: #f7f4eb;
-  --woocommerce-surface-strong: rgba(247, 244, 235, 0.92);
-  --woocommerce-surface: rgba(247, 244, 235, 0.86);
-  --woocommerce-surface-muted: rgba(247, 244, 235, 0.74);
+  --woocommerce-surface-strong: rgba(247, 244, 235, 0.97);
+  --woocommerce-surface: rgba(247, 244, 235, 0.9);
+  --woocommerce-surface-muted: rgba(247, 244, 235, 0.82);
+  --woocommerce-chrome: rgba(247, 244, 235, 0.96);
 }
 
 p {
@@ -8654,6 +8655,7 @@ footer .site-footer-primary-section-3 {
   padding: 0 16px;
   border-bottom: 1px solid hsl(var(--border));
   font-weight: 600;
+  background-color: var(--woocommerce-chrome, rgba(247, 244, 235, 0.96));
 }
 
 .dashboard-nav {
@@ -8756,7 +8758,7 @@ footer .site-footer-primary-section-3 {
   height: 56px;
   padding: 0 16px;
   border-bottom: 1px solid hsl(var(--border));
-  background-color: var(--woocommerce-surface-muted, rgba(247, 244, 235, 0.74));
+  background-color: var(--woocommerce-chrome, rgba(247, 244, 235, 0.96));
 }
 
 .myaccount-content {

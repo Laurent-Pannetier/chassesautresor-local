@@ -30,6 +30,7 @@
     padding: 0 16px;
     border-bottom: 1px solid hsl(var(--border));
     font-weight: 600;
+    background-color: var(--woocommerce-chrome, rgba(247, 244, 235, 0.96));
 }
 
 .dashboard-nav {
@@ -132,7 +133,7 @@
     height: 56px;
     padding: 0 16px;
     border-bottom: 1px solid hsl(var(--border));
-    background-color: var(--woocommerce-surface-muted, rgba(247, 244, 235, 0.74));
+    background-color: var(--woocommerce-chrome, rgba(247, 244, 235, 0.96));
 }
 
 .myaccount-content {

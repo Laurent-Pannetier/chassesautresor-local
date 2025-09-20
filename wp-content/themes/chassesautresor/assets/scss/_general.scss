@@ -163,9 +163,10 @@ body.woocommerce-account {
   --site-background-overlay-blend: soft-light;
   --color-text-primary: var(--color-text-fond-clair);
   background-color: #f7f4eb;
-  --woocommerce-surface-strong: rgba(247, 244, 235, 0.92);
-  --woocommerce-surface: rgba(247, 244, 235, 0.86);
-  --woocommerce-surface-muted: rgba(247, 244, 235, 0.74);
+  --woocommerce-surface-strong: rgba(247, 244, 235, 0.97);
+  --woocommerce-surface: rgba(247, 244, 235, 0.9);
+  --woocommerce-surface-muted: rgba(247, 244, 235, 0.82);
+  --woocommerce-chrome: rgba(247, 244, 235, 0.96);
 }
 p {
     margin-bottom: var(--space-0);
