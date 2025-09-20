@@ -122,10 +122,34 @@ h3, .entry-content h3 {
 
 /* ========== 🎨 ÉLÉMENTS HTML NATIFS ========== */
 
-body {
+body,
+body.ast-plain-container,
+body.ast-page-builder-template,
+body.ast-separate-container {
   font-family: 'Poppins', sans-serif;
   color: var(--color-text-primary);
   background-color: var(--color-background); /* Bleu nuit (fond global) */
+  --site-background-overlay: linear-gradient(135deg, rgba(6, 12, 33, 0.9), rgba(18, 27, 55, 0.82));
+  --site-background-pattern-size: 320px;
+  --site-background-overlay-blend-mode: overlay;
+  --site-background-pattern-blend-mode: soft-light;
+  background-image: var(--site-background-overlay), url("../assets/svg/pattern-puzzle.svg");
+  background-repeat: no-repeat, repeat;
+  background-position: center;
+  background-size: cover, var(--site-background-pattern-size);
+  background-blend-mode: var(--site-background-overlay-blend-mode), var(--site-background-pattern-blend-mode);
+}
+
+body > #page,
+body > #page > #content,
+body > #page > #content > .ast-container {
+  background: transparent;
+}
+
+body.woocommerce-account {
+  --site-background-overlay: linear-gradient(145deg, rgba(9, 14, 38, 0.82), rgba(32, 24, 58, 0.76));
+  --site-background-pattern-size: 220px;
+  --site-background-pattern-blend-mode: multiply;
 }
 p {
     margin-bottom: var(--space-0);
