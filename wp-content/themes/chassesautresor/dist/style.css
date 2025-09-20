@@ -7182,10 +7182,10 @@ body {
   font-family: "Poppins", sans-serif;
   color: var(--color-text-primary);
   position: relative;
-  --site-background-overlay: linear-gradient(144deg, rgba(9, 15, 28, 0.32) 0%, rgba(6, 11, 23, 0.28) 52%, rgba(3, 7, 18, 0.34) 100%);
+  --site-background-overlay: linear-gradient(150deg, rgba(14, 23, 45, 0.18) 0%, rgba(9, 16, 33, 0.16) 48%, rgba(4, 9, 23, 0.22) 100%);
   --site-background-pattern-size: clamp(208px, 24vw, 360px);
-  --site-background-pattern-blend: soft-light;
-  --site-background-overlay-blend: multiply;
+  --site-background-pattern-blend: screen;
+  --site-background-overlay-blend: soft-light;
   background-color: var(--color-background); /* Bleu nuit (fond global) */
   background-image: url("../assets/svg/pattern-puzzle.svg"), var(--site-background-overlay);
   background-repeat: repeat, no-repeat;
@@ -7211,10 +7211,10 @@ body > #page > #content > .ast-container {
 }
 
 body.woocommerce-account {
-  --site-background-overlay: linear-gradient(140deg, rgba(255, 246, 229, 0.62) 0%, rgba(242, 227, 202, 0.56) 100%);
+  --site-background-overlay: linear-gradient(150deg, rgba(234, 215, 186, 0.45) 0%, rgba(223, 203, 168, 0.4) 100%);
   --site-background-pattern-size: clamp(200px, 26vw, 320px);
   --site-background-pattern-blend: multiply;
-  --site-background-overlay-blend: screen;
+  --site-background-overlay-blend: soft-light;
   --color-text-primary: var(--color-text-fond-clair);
   background-color: #f7f4eb;
 }
