@@ -139,6 +139,13 @@ function charger_scripts_personnalises() {
         true
     );
     wp_enqueue_script(
+        'badge-statut-tooltips',
+        $theme_dir . 'badge-statut-tooltips.js',
+        [],
+        filemtime(get_stylesheet_directory() . '/assets/js/badge-statut-tooltips.js'),
+        true
+    );
+    wp_enqueue_script(
         'meta-tap-info',
         $theme_dir . 'meta-tap-info.js',
         [],

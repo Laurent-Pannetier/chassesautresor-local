@@ -26,11 +26,23 @@ if ($orga_id) {
 if (empty($infos)) {
     return;
 }
+
+$badge_tooltip = $infos['badge_tooltip'] ?? '';
+$badge_has_interaction = !empty($infos['badge_requires_interaction']);
+$badge_attributes = '';
+
+if ($badge_has_interaction && $badge_tooltip !== '') {
+    $tooltip_attr = esc_attr($badge_tooltip);
+    $badge_attributes .= ' aria-label="' . $tooltip_attr . '"';
+    $badge_attributes .= ' title="' . $tooltip_attr . '"';
+    $badge_attributes .= ' data-tooltip="' . $tooltip_attr . '"';
+    $badge_attributes .= ' role="img" tabindex="0"';
+}
 ?>
 <div class="carte carte-chasse carte-wide <?php echo esc_attr(trim($infos['classe_statut'] . ' ' . $completion_class)); ?>">
     <div class="carte-wide__image">
         <span class="badge-statut <?php echo esc_attr($infos['badge_class']); ?>"
-            data-post-id="<?php echo esc_attr($chasse_id); ?>">
+            data-post-id="<?php echo esc_attr($chasse_id); ?>"<?= $badge_attributes; ?>>
             <?php echo $infos['badge_content']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- contenu préparé et sécurisé en amont. ?>
         </span>
         <?php if ((int) $infos['cout_points'] > 0) : ?>

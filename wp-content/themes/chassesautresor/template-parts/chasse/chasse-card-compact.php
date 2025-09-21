@@ -17,11 +17,23 @@ $infos     = preparer_infos_affichage_carte_chasse(
 if (empty($infos)) {
     return;
 }
+
+$badge_tooltip = $infos['badge_tooltip'] ?? '';
+$badge_has_interaction = !empty($infos['badge_requires_interaction']);
+$badge_attributes = '';
+
+if ($badge_has_interaction && $badge_tooltip !== '') {
+    $tooltip_attr = esc_attr($badge_tooltip);
+    $badge_attributes .= ' aria-label="' . $tooltip_attr . '"';
+    $badge_attributes .= ' title="' . $tooltip_attr . '"';
+    $badge_attributes .= ' data-tooltip="' . $tooltip_attr . '"';
+    $badge_attributes .= ' role="img" tabindex="0"';
+}
 ?>
 <div class="carte carte-chasse carte-compact <?php echo esc_attr($infos['classe_statut']); ?>">
     <a href="<?php echo esc_url($infos['permalink']); ?>" class="carte-compact__lien">
         <div class="carte-compact__image-wrapper">
-            <span class="badge-statut <?php echo esc_attr($infos['badge_class']); ?>" data-post-id="<?php echo esc_attr($chasse_id); ?>">
+            <span class="badge-statut <?php echo esc_attr($infos['badge_class']); ?>" data-post-id="<?php echo esc_attr($chasse_id); ?>"<?= $badge_attributes; ?>>
                 <?php echo $infos['badge_content']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- contenu préparé et sécurisé en amont. ?>
             </span>
             <img src="<?php echo esc_url($infos['image']); ?>" alt="<?php echo esc_attr($infos['titre']); ?>" class="carte-compact__image">

@@ -1473,6 +1473,8 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
     $badge_infos = chasse_preparer_badge_statut($statut, $statut_validation);
     $badge_format = ($options['badge_format'] === 'icon' && $badge_infos['icon_html']) ? 'icon' : 'text';
     $badge_class = $badge_infos['base_class'];
+    $badge_tooltip = $badge_infos['label'];
+    $badge_requires_interaction = ($badge_format === 'icon' && $badge_tooltip !== '');
 
     if ($badge_format === 'icon') {
         $badge_class .= ' badge-statut--format-icon';
@@ -1601,6 +1603,8 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
         'statut_icon_name'  => $badge_infos['icon_name'],
         'badge_format'      => $badge_format,
         'badge_content'     => $badge_content,
+        'badge_tooltip'     => $badge_tooltip,
+        'badge_requires_interaction' => $badge_requires_interaction,
         'classe_statut'     => $badge_infos['base_class'],
         'extrait_html'      => $extrait_html,
         'lot_html'          => $lot_html,

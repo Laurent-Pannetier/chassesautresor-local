@@ -52,5 +52,6 @@ class ChasseCorrectionBadgeTest extends TestCase
         $_POST['post_id'] = 123;
         recuperer_statut_chasse();
         $this->assertSame('correction', $json_success_data['statut_label']);
+        $this->assertSame('correction', $json_success_data['statut_tooltip']);
     }
 }

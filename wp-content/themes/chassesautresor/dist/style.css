@@ -2106,6 +2106,57 @@ a.ajout-link:focus-visible {
   z-index: 1;
 }
 
+.badge-statut[data-tooltip] {
+  cursor: help;
+}
+
+.badge-statut[data-tooltip]::before,
+.badge-statut[data-tooltip]::after {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.badge-statut[data-tooltip]::after {
+  content: attr(data-tooltip);
+  top: calc(100% + var(--space-xs));
+  left: 50%;
+  transform: translate(-50%, -8px);
+  background: rgba(var(--color-text-fond-clair-rgb), 0.95);
+  color: var(--color-text-primary);
+  padding: var(--space-xxs) var(--space-xs);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  line-height: 1.3;
+  white-space: normal;
+  text-align: center;
+  max-width: 220px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+  z-index: 5;
+}
+
+.badge-statut[data-tooltip]::before {
+  content: "";
+  top: calc(100% + 4px);
+  left: 50%;
+  transform: translate(-50%, -6px);
+  border: 6px solid transparent;
+  border-bottom-width: 0;
+  border-top-color: rgba(var(--color-text-fond-clair-rgb), 0.95);
+  z-index: 5;
+}
+
+.badge-statut[data-tooltip]:hover::before,
+.badge-statut[data-tooltip]:hover::after,
+.badge-statut[data-tooltip]:focus-visible::before,
+.badge-statut[data-tooltip]:focus-visible::after,
+.badge-statut[data-tooltip][data-tooltip-visible=true]::before,
+.badge-statut[data-tooltip][data-tooltip-visible=true]::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
 .badge-statut--format-icon {
   padding: var(--space-xxs);
   width: 2.5rem;

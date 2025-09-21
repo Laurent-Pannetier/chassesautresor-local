@@ -1358,25 +1358,52 @@ function rafraichirStatutChasse(postId) {
             const statut = data.data.statut;
             const label = data.data.statut_label;
             const icon = data.data.statut_icon || '';
+            const tooltip = data.data.statut_tooltip || label || '';
+            const wantsIconFormat = icon.trim().length > 0;
             const badge = document.querySelector(`.badge-statut[data-post-id="${postId}"]`);
             DEBUG && console.log('🔎 Badge trouvé :', badge);
 
             if (badge) {
-              const hadIconFormat = badge.classList.contains('badge-statut--format-icon');
               let extraClasses = Array.from(badge.classList).filter(
                 cls => cls !== 'badge-statut' && !cls.startsWith('statut-')
               );
 
-              if (hadIconFormat && !icon.trim()) {
+              if (wantsIconFormat && !extraClasses.includes('badge-statut--format-icon')) {
+                extraClasses.push('badge-statut--format-icon');
+              }
+
+              if (!wantsIconFormat) {
                 extraClasses = extraClasses.filter(cls => cls !== 'badge-statut--format-icon');
               }
 
               badge.className = ['badge-statut', `statut-${statut}`, ...extraClasses].join(' ');
 
-              if (hadIconFormat && icon.trim()) {
+              if (wantsIconFormat) {
                 badge.innerHTML = `<span class="badge-statut__icon" aria-hidden="true">${icon}</span><span class="screen-reader-text">${label}</span>`;
+                if (tooltip) {
+                  badge.dataset.tooltip = tooltip;
+                  badge.setAttribute('title', tooltip);
+                  badge.setAttribute('aria-label', tooltip);
+                } else {
+                  badge.removeAttribute('data-tooltip');
+                  badge.removeAttribute('title');
+                  badge.removeAttribute('aria-label');
+                }
+                badge.setAttribute('role', 'img');
+                badge.setAttribute('tabindex', '0');
               } else {
                 badge.textContent = label;
+                if (tooltip) {
+                  badge.setAttribute('aria-label', tooltip);
+                  badge.setAttribute('title', tooltip);
+                } else {
+                  badge.removeAttribute('aria-label');
+                  badge.removeAttribute('title');
+                }
+                badge.removeAttribute('role');
+                badge.removeAttribute('data-tooltip');
+                badge.removeAttribute('data-tooltip-visible');
+                badge.removeAttribute('tabindex');
               }
             } else {
               console.warn('❓ Aucun badge-statut trouvé pour postId', postId);
