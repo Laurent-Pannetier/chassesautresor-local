@@ -326,6 +326,17 @@
       });
   }
 
+  function isTentativesForm(form) {
+    return (
+      form &&
+      typeof form === 'object' &&
+      typeof form.classList !== 'undefined' &&
+      form.classList.contains('table-search') &&
+      form.dataset &&
+      form.dataset.ajaxAction === SEARCH_ACTION
+    );
+  }
+
   function handleSearchSubmit(event) {
     var detail = event.detail;
     if (!detail || !detail.form) {
@@ -333,7 +344,7 @@
     }
 
     var form = detail.form;
-    if (form.dataset.ajaxAction !== SEARCH_ACTION) {
+    if (!isTentativesForm(form)) {
       return;
     }
 
@@ -348,7 +359,7 @@
     }
 
     var form = detail.form;
-    if (form.dataset.ajaxAction !== SEARCH_ACTION) {
+    if (!isTentativesForm(form)) {
       return;
     }
 
@@ -378,6 +389,51 @@
     loadTentatives(form, { page: page });
   }
 
+  function handleNativeSubmit(event) {
+    var form = event.target;
+
+    if (!isTentativesForm(form)) {
+      return;
+    }
+
+    if (event.defaultPrevented) {
+      return;
+    }
+
+    event.preventDefault();
+    loadTentatives(form, { page: 1 });
+  }
+
+  function handleNativeReset(event) {
+    var trigger =
+      event.target && typeof event.target.closest === 'function'
+        ? event.target.closest('[data-table-search-reset]')
+        : null;
+
+    if (!trigger) {
+      return;
+    }
+
+    var form = trigger.closest('form.table-search');
+    if (!isTentativesForm(form)) {
+      return;
+    }
+
+    if (event.defaultPrevented) {
+      return;
+    }
+
+    event.preventDefault();
+
+    var field = getSearchField(form);
+    if (field) {
+      field.value = '';
+    }
+
+    toggleReset(form, false);
+    loadTentatives(form, { page: 1, term: '' });
+  }
+
   function initialise() {
     var form = getSearchForm();
     if (form) {
@@ -388,5 +444,7 @@
   document.addEventListener('tablesearch:submit', handleSearchSubmit);
   document.addEventListener('tablesearch:reset', handleSearchReset);
   document.addEventListener('pager:change', handlePagerChange);
+  document.addEventListener('submit', handleNativeSubmit);
+  document.addEventListener('click', handleNativeReset);
   document.addEventListener('DOMContentLoaded', initialise);
 })();
