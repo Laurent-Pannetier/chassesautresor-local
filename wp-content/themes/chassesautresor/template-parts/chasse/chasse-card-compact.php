@@ -55,4 +55,7 @@ if ($badge_has_interaction && $badge_tooltip !== '') {
             ?>
         </div>
     </a>
+    <?php if (!empty($args['extra_content'])) : ?>
+        <?php echo $args['extra_content']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Safe HTML generated internally. ?>
+    <?php endif; ?>
 </div>

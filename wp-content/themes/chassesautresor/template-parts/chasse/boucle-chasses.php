@@ -10,6 +10,7 @@ $after_items    = $args['after_items'] ?? '';
 $query          = $args['query'] ?? null;
 $chasse_ids     = $args['chasse_ids'] ?? null;
 $highlight_label = $args['highlight_label'] ?? '';
+$extra_content_map = $args['extra_content_map'] ?? [];
 
 if ($query instanceof WP_Query) {
     $chasse_ids = array_map(
@@ -41,8 +42,11 @@ $chasse_ids = array_values(array_filter($chasse_ids, function ($chasse_id) use (
     $chasse_id = (int) $chasse_id;
 
     if ('carte' === $mode) {
+        $extra_content = $extra_content_map[$chasse_id] ?? '';
+
         get_template_part('template-parts/chasse/chasse-card-compact', null, [
-            'chasse_id' => $chasse_id,
+            'chasse_id'     => $chasse_id,
+            'extra_content' => $extra_content,
         ]);
         continue;
     }

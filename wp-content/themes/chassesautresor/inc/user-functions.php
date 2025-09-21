@@ -995,6 +995,74 @@ function ca_prepare_engaged_hunts_pagination(array $chasse_ids, int $page, int $
 }
 
 /**
+ * Build the HTML snippet displaying the hunt progression for a user.
+ *
+ * @param int $chasse_id Target hunt identifier.
+ * @param int $user_id   Target user identifier.
+ *
+ * @return string
+ */
+function ca_get_hunt_progress_markup(int $chasse_id, int $user_id): string
+{
+    if ($chasse_id <= 0 || $user_id <= 0) {
+        return '';
+    }
+
+    if (!function_exists('chasse_calculer_progression_utilisateur')) {
+        return '';
+    }
+
+    $progression = chasse_calculer_progression_utilisateur($chasse_id, $user_id);
+    $resolues    = isset($progression['resolues']) ? (int) $progression['resolues'] : 0;
+    $resolvables = isset($progression['resolvables']) ? (int) $progression['resolvables'] : 0;
+
+    $resolues   = max(0, min($resolues, $resolvables));
+    $percentage = $resolvables > 0 ? (int) round(($resolues / $resolvables) * 100) : 0;
+    $percentage = max(0, min(100, $percentage));
+
+    ob_start();
+    ?>
+    <div class="carte-compact__contenu">
+        <div class="info-meta">
+            <span class="meta-label"><?php esc_html_e('Progression', 'chassesautresor-com'); ?></span>
+            <span class="meta-value">
+                <?php
+                if ($resolvables > 0) {
+                    $enigmes_label = _n('énigme résolue', 'énigmes résolues', $resolues, 'chassesautresor-com');
+                    echo esc_html(
+                        sprintf(
+                            /* translators: 1: number of solved riddles, 2: number of solvable riddles, 3: localized label. */
+                            __('%1$d / %2$d %3$s', 'chassesautresor-com'),
+                            $resolues,
+                            $resolvables,
+                            $enigmes_label
+                        )
+                    );
+                } else {
+                    esc_html_e('Aucune énigme à résoudre pour le moment.', 'chassesautresor-com');
+                }
+                ?>
+            </span>
+        </div>
+        <?php if ($resolvables > 0) : ?>
+        <div
+            class="progression-container"
+            role="progressbar"
+            aria-valuemin="0"
+            aria-valuemax="<?php echo esc_attr($resolvables); ?>"
+            aria-valuenow="<?php echo esc_attr($resolues); ?>"
+            aria-label="<?php echo esc_attr__('Progression des énigmes résolues', 'chassesautresor-com'); ?>"
+        >
+            <div class="progression-bar" style="width: <?php echo esc_attr($percentage); ?>%;"></div>
+        </div>
+        <?php endif; ?>
+    </div>
+    <?php
+
+    return trim((string) ob_get_clean());
+}
+
+/**
  * Build the HTML markup for engaged hunts and the related pager.
  *
  * @param int[]  $chasse_ids  Hunt identifiers to render.
@@ -1017,14 +1085,25 @@ function ca_get_engaged_hunts_content_html(
     ob_start();
 
     if (!empty($chasse_ids)) {
+        $extra_content_map = [];
+        $current_user_id   = get_current_user_id();
+
+        if ($current_user_id > 0) {
+            foreach ($chasse_ids as $chasse_id) {
+                $chasse_id = (int) $chasse_id;
+                $extra_content_map[$chasse_id] = ca_get_hunt_progress_markup($chasse_id, $current_user_id);
+            }
+        }
+
         get_template_part(
             'template-parts/chasse/boucle-chasses',
             null,
             [
-                'show_header' => false,
-                'mode'        => $mode,
-                'grid_class'  => $grid_class,
-                'chasse_ids'  => $chasse_ids,
+                'show_header'        => false,
+                'mode'               => $mode,
+                'grid_class'         => $grid_class,
+                'chasse_ids'         => $chasse_ids,
+                'extra_content_map'  => $extra_content_map,
             ]
         );
 

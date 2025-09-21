@@ -607,8 +607,8 @@ function chasse_calculer_progression_utilisateur(int $chasse_id, int $user_id): 
         global $wpdb;
         $placeholders = implode(',', array_fill(0, $total, '%d'));
         $sql = "SELECT COUNT(DISTINCT post_id) FROM {$wpdb->prefix}postmeta WHERE meta_key = %s "
-            . "AND meta_value <> %s AND post_id IN ($placeholders)";
-        $params = array_merge(['enigme_mode_validation', 'aucune'], $enigmes);
+            . "AND meta_value NOT IN (%s, %s) AND post_id IN ($placeholders)";
+        $params = array_merge(['enigme_mode_validation', 'aucune', 'visualisation'], $enigmes);
         $resolvables = (int) $wpdb->get_var($wpdb->prepare($sql, $params));
     }
 
