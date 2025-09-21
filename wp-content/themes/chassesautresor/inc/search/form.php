@@ -97,6 +97,10 @@ function cta_render_search_form(string $key, array $overrides = []): string
         array_unshift($class_tokens, 'table-search');
     }
 
+    if ('' === trim((string) ($config['label'] ?? ''))) {
+        $class_tokens[] = 'table-search--no-label';
+    }
+
     $form_classes = implode(' ', array_unique($class_tokens));
 
     $search_value = $config['value'];

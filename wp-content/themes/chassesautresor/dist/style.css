@@ -1520,6 +1520,9 @@ body.edition-active-chasse .chasse-enigmes-header .liens-placeholder {
     grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
   }
+  .table-search--inline.table-search--no-label {
+    grid-template-columns: minmax(0, 1fr);
+  }
   .table-search--inline .table-search__label {
     margin-bottom: 0;
   }
