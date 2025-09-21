@@ -21,7 +21,16 @@ if (empty($infos)) {
 }
 
 $badge_tooltip = $infos['badge_tooltip'] ?? '';
-$badge_has_interaction = !empty($infos['badge_requires_interaction']);
+$badge_icon_html = $infos['statut_icon'] ?? '';
+$badge_label = $infos['statut_label'] ?? ($infos['badge_content'] ?? '');
+$has_badge_icon = $badge_icon_html !== '';
+$badge_classes = $infos['badge_class'] ?? '';
+
+if ($has_badge_icon) {
+    $badge_classes = trim($badge_classes . ' badge-statut--responsive');
+}
+
+$badge_has_interaction = $has_badge_icon && $badge_tooltip !== '';
 $badge_attributes = '';
 
 if ($badge_has_interaction && $badge_tooltip !== '') {
@@ -35,8 +44,13 @@ if ($badge_has_interaction && $badge_tooltip !== '') {
 <div class="carte carte-chasse carte-cart <?php echo esc_attr(trim($infos['classe_statut'] . ' ' . $completion_class)); ?>">
     <a href="<?php echo esc_url($infos['permalink']); ?>" class="carte-cart__lien">
         <div class="carte-cart__image-wrapper">
-            <span class="badge-statut <?php echo esc_attr($infos['badge_class']); ?>" data-post-id="<?php echo esc_attr($chasse_id); ?>"<?= $badge_attributes; ?>>
-                <?php echo $infos['badge_content']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- contenu préparé et sécurisé en amont. ?>
+            <span class="badge-statut <?php echo esc_attr($badge_classes); ?>" data-post-id="<?php echo esc_attr($chasse_id); ?>"<?= $badge_attributes; ?>>
+                <span class="badge-statut__label"><?php echo esc_html($badge_label); ?></span>
+                <?php if ($has_badge_icon) : ?>
+                    <span class="badge-statut__icon" aria-hidden="true">
+                        <?php echo $badge_icon_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- contenu préparé et sécurisé en amont. ?>
+                    </span>
+                <?php endif; ?>
             </span>
             <img src="<?php echo esc_url($infos['image']); ?>" alt="<?php echo esc_attr($infos['titre']); ?>" class="carte-cart__image">
         </div>
