@@ -408,6 +408,77 @@
 
 
 /* ==========================================================
+📌 Adresses
+========================================================== */
+.woocommerce-account {
+    .woocommerce-Address-title {
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        margin-bottom: var(--space-md);
+
+        h2 {
+            margin: 0;
+        }
+    }
+
+    .woocommerce-Address-action {
+        margin-left: auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 999px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+
+        &:focus-visible {
+            outline: 2px solid var(--color-titre-enigme);
+            outline-offset: 2px;
+        }
+    }
+
+    .woocommerce-Address-action--edit {
+        color: var(--color-titre-enigme);
+    }
+
+    .woocommerce-Address-action--add {
+        width: 3.25rem;
+        height: 3.25rem;
+        padding: 0;
+        border-radius: 50%;
+        background-color: var(--color-titre-enigme);
+        color: var(--color-background);
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1;
+
+        &:hover,
+        &:focus-visible {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1);
+        }
+    }
+
+    .woocommerce-Address-actionIcon {
+        line-height: 1;
+    }
+}
+
+@media (--bp-tablet) {
+    .woocommerce-account {
+        .woocommerce-Address-action--add {
+            width: 3.5rem;
+            height: 3.5rem;
+            font-size: 2.25rem;
+        }
+    }
+}
+
+
+/* ==========================================================
 📌 Contenu Principal
 ========================================================== */
 .dashboard-content {
