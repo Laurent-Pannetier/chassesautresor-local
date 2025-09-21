@@ -5,7 +5,29 @@
 
 function ca_site_password_protection(): void
 {
-    if (PHP_SAPI === 'cli' || (defined('WP_INSTALLING') && WP_INSTALLING)) {
+    $is_cron_request = (
+        (function_exists('wp_doing_cron') && wp_doing_cron())
+        || (defined('DOING_CRON') && DOING_CRON)
+    );
+
+    $is_ajax_request = (
+        (function_exists('wp_doing_ajax') && wp_doing_ajax())
+        || (defined('DOING_AJAX') && DOING_AJAX)
+    );
+
+    $is_rest_request = defined('REST_REQUEST') && REST_REQUEST;
+
+    if (! $is_rest_request && function_exists('wp_is_serving_rest_request')) {
+        $is_rest_request = wp_is_serving_rest_request();
+    }
+
+    if (
+        PHP_SAPI === 'cli'
+        || (defined('WP_INSTALLING') && WP_INSTALLING)
+        || $is_cron_request
+        || $is_ajax_request
+        || $is_rest_request
+    ) {
         return;
     }
 
