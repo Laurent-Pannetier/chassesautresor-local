@@ -38,9 +38,9 @@ namespace {
     if (!function_exists('wp_get_attachment_image')) {
         function wp_get_attachment_image($id, $size) { return ''; }
     }
-    if (!function_exists('cta_render_proposition_cell')) {
-        function cta_render_proposition_cell($text) { return ''; }
-    }
+if (!function_exists('cta_render_proposition_cell')) {
+    function cta_render_proposition_cell($text, $expanded = false, $limit = 39, $options = []) { return ''; }
+}
     if (!function_exists('cta_render_pager')) {
         function cta_render_pager($page, $pages, $class = '') { return ''; }
     }
