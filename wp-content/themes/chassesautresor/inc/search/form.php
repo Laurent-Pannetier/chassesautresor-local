@@ -64,11 +64,19 @@ function cta_render_search_form(string $key, array $overrides = []): string
     }
 
     $form_classes = trim((string) $config['class']);
-    if ('' === $form_classes) {
-        $form_classes = 'table-search';
-    } elseif (false === strpos($form_classes, 'table-search')) {
-        $form_classes = trim('table-search ' . $form_classes);
+    $class_tokens = preg_split('/\s+/', $form_classes);
+    $class_tokens = array_filter(
+        is_array($class_tokens) ? $class_tokens : [],
+        static function ($class_name): bool {
+            return is_string($class_name) && '' !== $class_name;
+        }
+    );
+
+    if (!in_array('table-search', $class_tokens, true)) {
+        array_unshift($class_tokens, 'table-search');
     }
+
+    $form_classes = implode(' ', array_unique($class_tokens));
 
     $search_value = $config['value'];
     if (null === $search_value) {

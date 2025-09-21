@@ -57,6 +57,8 @@ Génère le formulaire `<form class="table-search">` associé à un contexte :
   fusionne les `hidden_fields` déclarés.
 - accepte des surcharges (`method`, `action`, `hidden_fields`, `submit_label`,
   `show_reset_button`, `reset_label`, `data_attributes`, etc.) et insère un nonce si demandé.
+- garantit la présence de la classe de base `table-search` même lorsque des
+  modificateurs (`table-search--inline`, `table-search--compact`, ...) sont fournis.
 - renseigne `data-reset-pagination` pour que le script JS supprime les anciens
   paramètres de pagination.
 

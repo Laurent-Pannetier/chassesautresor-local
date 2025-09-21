@@ -362,7 +362,7 @@ class MyAccountTentativesTest extends TestCase
 
         $this->assertStringContainsString('Chasse aux bonbons', $output);
         $this->assertStringNotContainsString('Chasse aux pirates', $output);
-        $this->assertStringContainsString('table-search', $output);
+        $this->assertStringContainsString('class="table-search table-search--inline table-search--compact"', $output);
         $this->assertStringContainsString('table-search__reset', $output);
         $this->assertStringContainsString('data-ajax-action="ca_fetch_tentatives"', $output);
         $this->assertStringContainsString('id="tentatives-table-wrapper"', $output);
