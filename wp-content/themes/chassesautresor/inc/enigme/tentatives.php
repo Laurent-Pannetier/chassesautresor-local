@@ -54,6 +54,85 @@ defined('ABSPATH') || exit;
         return $wpdb->get_row($wpdb->prepare("SELECT * FROM $table WHERE tentative_uid = %s", $uid));
     }
 
+    /**
+     * Check if the current user can view the proposition linked to a tentative.
+     */
+    function ca_user_can_view_tentative_proposition(object $tentative): bool
+    {
+        $current_user_id = (int) get_current_user_id();
+        if ($current_user_id <= 0) {
+            return false;
+        }
+
+        if ((int) ($tentative->user_id ?? 0) === $current_user_id) {
+            return true;
+        }
+
+        if (current_user_can('manage_options')) {
+            return true;
+        }
+
+        $enigme_id = isset($tentative->enigme_id) ? (int) $tentative->enigme_id : 0;
+        if ($enigme_id <= 0) {
+            return false;
+        }
+
+        $chasse_id = function_exists('recuperer_id_chasse_associee') ? (int) recuperer_id_chasse_associee($enigme_id) : 0;
+        if ($chasse_id <= 0) {
+            return false;
+        }
+
+        if (
+            function_exists('utilisateur_est_organisateur_associe_a_chasse')
+            && utilisateur_est_organisateur_associe_a_chasse($current_user_id, $chasse_id)
+        ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * AJAX handler to safely reveal a tentative proposition.
+     */
+    function ca_ajax_view_tentative_proposition(): void
+    {
+        if (!is_user_logged_in()) {
+            wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor-com')], 403);
+        }
+
+        $uid = isset($_POST['uid']) ? sanitize_text_field(wp_unslash((string) $_POST['uid'])) : '';
+        if ($uid === '') {
+            wp_send_json_error(['message' => __('Identifiant de tentative invalide.', 'chassesautresor-com')], 400);
+        }
+
+        $nonce_valid = true;
+        if (function_exists('check_ajax_referer')) {
+            $nonce_valid = check_ajax_referer('ca_view_tentative_' . $uid, 'nonce', false);
+        }
+
+        if ($nonce_valid === false) {
+            wp_send_json_error(['message' => __('Vérification de sécurité échouée.', 'chassesautresor-com')], 403);
+        }
+
+        $tentative = get_tentative_by_uid($uid);
+        if (!$tentative) {
+            wp_send_json_error(['message' => __('Tentative introuvable.', 'chassesautresor-com')], 404);
+        }
+
+        if (!ca_user_can_view_tentative_proposition($tentative)) {
+            wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor-com')], 403);
+        }
+
+        $proposition = isset($tentative->reponse_saisie) ? (string) $tentative->reponse_saisie : '';
+
+        wp_send_json_success([
+            'proposition' => $proposition,
+        ]);
+    }
+    add_action('wp_ajax_ca_view_tentative_proposition', 'ca_ajax_view_tentative_proposition');
+    add_action('wp_ajax_nopriv_ca_view_tentative_proposition', 'ca_ajax_view_tentative_proposition');
+
 
     /**
      * Traite une tentative manuelle : effectue l'action (validation/refus) une seule fois.

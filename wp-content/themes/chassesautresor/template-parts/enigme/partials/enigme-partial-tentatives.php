@@ -39,7 +39,11 @@ $pages = $args['pages'] ?? $pages ?? (int) ceil($total / $par_page);
     <tr class="<?= $pending ?>">
       <td><?= esc_html($date); ?></td>
       <td><?= esc_html($login); ?></td>
-      <?php echo cta_render_proposition_cell($tent->reponse_saisie ?? '', $is_pending); ?>
+      <?php
+      $uid     = isset($tent->tentative_uid) ? (string) $tent->tentative_uid : '';
+      $options = $uid !== '' ? cta_prepare_masked_proposition_options($uid) : [];
+      echo cta_render_proposition_cell($uid !== '' ? '' : ($tent->reponse_saisie ?? ''), false, 39, $options);
+      ?>
       <td>
         <?php
         $result = $tent->resultat;

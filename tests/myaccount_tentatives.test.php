@@ -203,8 +203,20 @@ if (!function_exists('cta_render_search_form')) {
 }
 
 if (!function_exists('cta_render_proposition_cell')) {
-    function cta_render_proposition_cell($text, $expanded = false, $limit = 39)
+    function cta_render_proposition_cell($text, $expanded = false, $limit = 39, $options = [])
     {
+        if (!empty($options['mask'])) {
+            $placeholder = isset($options['placeholder']) ? $options['placeholder'] : '••••••';
+            $label       = isset($options['button_label']) ? $options['button_label'] : 'Voir';
+
+            return '<td class="proposition-cell proposition-cell--masked">'
+                . '<div class="proposition-content">'
+                . '<span class="proposition-mask">' . esc_html($placeholder) . '</span>'
+                . '<button type="button" class="toggle-proposition" data-mode="mask">' . esc_html($label) . '</button>'
+                . '</div>'
+                . '</td>';
+        }
+
         return '<td class="proposition-cell">' . esc_html($text) . '</td>';
     }
 }

@@ -1359,7 +1359,11 @@ function ca_render_tentatives_rows(array $tentatives, int $filtered_total, strin
                     <?php endif; ?>
                 </td>
                 <td><?php echo esc_html($tent->enigme_title ?? ''); ?></td>
-                <?php echo cta_render_proposition_cell($tent->reponse_saisie ?? ''); ?>
+                <?php
+                $uid     = isset($tent->tentative_uid) ? (string) $tent->tentative_uid : '';
+                $options = $uid !== '' ? cta_prepare_masked_proposition_options($uid) : [];
+                echo cta_render_proposition_cell($uid !== '' ? '' : ($tent->reponse_saisie ?? ''), false, 39, $options);
+                ?>
                 <?php
                 $result = $tent->resultat;
                 $class  = 'etiquette-error';
