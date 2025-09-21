@@ -1,6 +1,8 @@
 <?php
 defined('ABSPATH') || exit;
 
+require_once __DIR__ . '/badge-functions.php';
+
 
 //
 // 1. 📦 FONCTIONS LIÉES À UNE CHASSE
@@ -1399,11 +1401,18 @@ function render_chasse_solutions(int $chasse_id, int $user_id): void
  *
  * @return array Tableau associatif prêt pour le template.
 */
-function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit = 300): array
+function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit = 300, array $options = []): array
 {
     if (get_post_type($chasse_id) !== 'chasse') {
         return [];
     }
+
+    $options = wp_parse_args(
+        $options,
+        [
+            'badge_format' => 'text',
+        ]
+    );
 
     $titre     = get_the_title($chasse_id);
     $permalink = get_permalink($chasse_id);
@@ -1461,29 +1470,18 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
 
     $nb_joueurs       = compter_joueurs_engages_chasse($chasse_id);
     $nb_joueurs_label = formater_nombre_joueurs($nb_joueurs);
-    $badge_class       = 'statut-' . $statut;
-    $statut_label      = '';
+    $badge_infos = chasse_preparer_badge_statut($statut, $statut_validation);
+    $badge_format = ($options['badge_format'] === 'icon' && $badge_infos['icon_html']) ? 'icon' : 'text';
+    $badge_class = $badge_infos['base_class'];
 
-    if ($statut === 'revision') {
-        if ($statut_validation === 'creation') {
-            $statut_label = __('création', 'chassesautresor-com');
-        } elseif ($statut_validation === 'correction') {
-            $statut_label = __('correction', 'chassesautresor-com');
-        } elseif ($statut_validation === 'en_attente') {
-            $statut_label = __('en attente', 'chassesautresor-com');
-        } else {
-            $statut_label = __('révision', 'chassesautresor-com');
-        }
-    } elseif ($statut === 'payante' || $statut === 'en_cours') {
-        $statut_label = __('en cours', 'chassesautresor-com');
-        $badge_class   = 'statut-en_cours';
-    } elseif ($statut === 'a_venir') {
-        $statut_label = __('à venir', 'chassesautresor-com');
-    } elseif ($statut === 'termine') {
-        $statut_label = __('terminée', 'chassesautresor-com');
-    } else {
-        $statut_label = __($statut, 'chassesautresor-com');
+    if ($badge_format === 'icon') {
+        $badge_class .= ' badge-statut--format-icon';
     }
+
+    $badge_content = $badge_format === 'icon'
+        ? '<span class="badge-statut__icon" aria-hidden="true">' . $badge_infos['icon_html'] . '</span>'
+            . '<span class="screen-reader-text">' . esc_html($badge_infos['label']) . '</span>'
+        : esc_html($badge_infos['label']);
 
     $enigmes_associees = recuperer_enigmes_associees($chasse_id);
     $total_enigmes     = count($enigmes_associees);
@@ -1597,9 +1595,13 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
         'date_fin'          => $date_fin_affichage,
         'date_debut_court'  => $date_debut_court,
         'date_fin_court'    => $date_fin_court,
-        'badge_class'       => $badge_class,
-        'statut_label'      => $statut_label,
-        'classe_statut'     => $badge_class,
+        'badge_class'       => trim($badge_class),
+        'statut_label'      => $badge_infos['label'],
+        'statut_icon'       => $badge_infos['icon_html'],
+        'statut_icon_name'  => $badge_infos['icon_name'],
+        'badge_format'      => $badge_format,
+        'badge_content'     => $badge_content,
+        'classe_statut'     => $badge_infos['base_class'],
         'extrait_html'      => $extrait_html,
         'lot_html'          => $lot_html,
         'cta_html'          => $cta_html,

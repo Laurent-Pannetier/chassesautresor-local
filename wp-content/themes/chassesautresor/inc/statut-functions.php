@@ -5,6 +5,8 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+require_once __DIR__ . '/badge-functions.php';
+
 if (!function_exists('enigme_get_bonnes_reponses')) {
     function enigme_get_bonnes_reponses(int $enigme_id): array
     {
@@ -1068,26 +1070,13 @@ function recuperer_statut_chasse()
     }
 
     $statut_str = is_string($statut) ? $statut : '';
-    $statut_label = ucfirst(str_replace('_', ' ', $statut_str));
-    if ($statut_str === 'payante') {
-        $statut_str = 'en_cours';
-        $statut_label = 'en cours';
-    }
-
-    if ($statut_str === 'revision') {
-        $validation = get_field('chasse_cache_statut_validation', $post_id);
-        if ($validation === 'creation') {
-            $statut_label = 'création';
-        } elseif ($validation === 'correction') {
-            $statut_label = 'correction';
-        } elseif ($validation === 'en_attente') {
-            $statut_label = 'en attente';
-        }
-    }
+    $validation = get_field('chasse_cache_statut_validation', $post_id);
+    $badge_infos = chasse_preparer_badge_statut($statut_str, is_string($validation) ? $validation : null);
 
     wp_send_json_success([
-        'statut' => $statut_str,
-        'statut_label' => $statut_label
+        'statut'       => $badge_infos['statut'],
+        'statut_label' => $badge_infos['label'],
+        'statut_icon'  => $badge_infos['icon_html'],
     ]);
 }
 
