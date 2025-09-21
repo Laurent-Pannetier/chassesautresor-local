@@ -147,10 +147,35 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
                 ? wp_trim_words( wp_strip_all_tags( (string) $raw_description ), 75, '…' )
                 : '';
 
-            $image_fond = get_the_post_thumbnail_url( $latest_chasse_id, 'chasse-fiche' );
+            $image_fond = '';
+            $image_data = get_field( 'chasse_principale_image', $latest_chasse_id );
+
+            if ( is_array( $image_data ) ) {
+                if ( ! empty( $image_data['sizes']['chasse-fiche'] ) ) {
+                    $image_fond = (string) $image_data['sizes']['chasse-fiche'];
+                } elseif ( ! empty( $image_data['ID'] ) ) {
+                    $image_fond = (string) wp_get_attachment_image_url( (int) $image_data['ID'], 'chasse-fiche' );
+                } elseif ( ! empty( $image_data['url'] ) ) {
+                    $image_fond = (string) $image_data['url'];
+                }
+            } elseif ( ! empty( $image_data ) ) {
+                $image_fond = (string) wp_get_attachment_image_url( (int) $image_data, 'chasse-fiche' );
+            }
+
+            if ( ! $image_fond ) {
+                $image_fond = get_the_post_thumbnail_url( $latest_chasse_id, 'chasse-fiche' );
+            }
 
             if ( ! $image_fond ) {
                 $image_fond = get_the_post_thumbnail_url( $latest_chasse_id, 'full' );
+            }
+
+            if ( $image_fond && function_exists( 'imagify_get_webp_url' ) ) {
+                $webp_url = imagify_get_webp_url( $image_fond );
+
+                if ( $webp_url ) {
+                    $image_fond = $webp_url;
+                }
             }
 
             $cta_data = generer_cta_chasse( $latest_chasse_id, get_current_user_id() );
