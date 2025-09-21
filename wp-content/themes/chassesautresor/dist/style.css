@@ -7414,6 +7414,7 @@ label {
 
 .edition-panel label,
 .edit-account label,
+.edit-account legend,
 .stats-filtres label {
   color: var(--color-editor-text-muted);
 }
