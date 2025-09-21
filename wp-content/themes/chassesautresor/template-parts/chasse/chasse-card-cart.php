@@ -25,8 +25,18 @@ $badge_icon_html = $infos['statut_icon'] ?? '';
 $badge_label = $infos['statut_label'] ?? ($infos['badge_content'] ?? '');
 $has_badge_icon = $badge_icon_html !== '';
 $badge_classes = $infos['badge_class'] ?? '';
+$image_size = $infos['image_size'] ?? 'medium_large';
 $image_ratio = $infos['image_ratio'] ?? '';
-$image_style = $image_ratio !== '' ? '--carte-cart-aspect-ratio:' . $image_ratio . ';' : '';
+$image_style = '';
+
+if ($image_ratio !== '') {
+    $style_parts = [
+        '--carte-cart-aspect-ratio:' . $image_ratio,
+        'aspect-ratio:' . $image_ratio,
+    ];
+
+    $image_style = implode(';', $style_parts) . ';';
+}
 $image_html = '';
 
 if (!empty($infos['image_id'])) {
@@ -34,6 +44,7 @@ if (!empty($infos['image_id'])) {
         'class'   => 'carte-cart__image',
         'alt'     => $infos['titre'],
         'loading' => 'lazy',
+        'sizes'   => '(max-width: 320px) 100vw, 300px',
     ];
 
     if ($image_style !== '') {
@@ -42,7 +53,7 @@ if (!empty($infos['image_id'])) {
 
     $image_html = wp_get_attachment_image(
         (int) $infos['image_id'],
-        'medium',
+        $image_size,
         false,
         $image_attributes
     );

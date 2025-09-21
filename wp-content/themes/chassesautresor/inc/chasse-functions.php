@@ -1427,34 +1427,48 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
     $image = '';
     $image_width = 0;
     $image_height = 0;
+    $image_size = 'medium_large';
 
-    if (is_array($image_data) && !empty($image_data['sizes']['medium'])) {
-        $image_id = $image_data['ID'] ?? 0;
-        $image = $image_data['sizes']['medium'];
-
-        if (!empty($image_data['sizes']['medium-width']) && !empty($image_data['sizes']['medium-height'])) {
-            $image_width  = (int) $image_data['sizes']['medium-width'];
-            $image_height = (int) $image_data['sizes']['medium-height'];
-        } elseif (!empty($image_data['width']) && !empty($image_data['height'])) {
-            $image_width  = (int) $image_data['width'];
-            $image_height = (int) $image_data['height'];
+    if (is_array($image_data)) {
+        if (!empty($image_data['ID'])) {
+            $image_id = (int) $image_data['ID'];
+        } elseif (!empty($image_data['id'])) {
+            $image_id = (int) $image_data['id'];
         }
-    } elseif ($image_data) {
-        $image_id = is_array($image_data) ? ($image_data['ID'] ?? 0) : (int) $image_data;
-        $image = $image_id ? wp_get_attachment_image_url($image_id, 'medium') : '';
+    } elseif (!empty($image_data)) {
+        $image_id = (int) $image_data;
     }
 
-    if (!$image) {
+    if (!$image_id) {
         $image_id = get_post_thumbnail_id($chasse_id);
-        $image = $image_id ? wp_get_attachment_image_url($image_id, 'medium') : '';
     }
 
-    if ((!$image_width || !$image_height) && $image_id) {
-        $image_src = wp_get_attachment_image_src($image_id, 'medium');
-        if (is_array($image_src)) {
-            $image_width  = (int) $image_src[1];
+    if ($image_id) {
+        $preferred_sizes = ['medium_large', 'large', 'medium', 'full'];
+
+        foreach ($preferred_sizes as $size_candidate) {
+            $image_src = wp_get_attachment_image_src($image_id, $size_candidate);
+
+            if (!is_array($image_src) || empty($image_src[0])) {
+                continue;
+            }
+
+            $image = $image_src[0];
+            $image_width = (int) $image_src[1];
             $image_height = (int) $image_src[2];
+            $image_size = $size_candidate;
+
+            break;
         }
+
+        if ($image === '') {
+            $image = wp_get_attachment_url($image_id) ?: '';
+            $image_size = 'full';
+        }
+    } elseif (is_array($image_data) && !empty($image_data['url'])) {
+        $image = (string) $image_data['url'];
+    } elseif (is_string($image_data) && $image_data !== '') {
+        $image = $image_data;
     }
 
     $image_ratio = '';
@@ -1628,6 +1642,7 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
         'image_id'          => $image_id,
         'image'             => $image,
         'image_ratio'       => $image_ratio,
+        'image_size'        => $image_size,
         'total_enigmes'     => $total_enigmes,
         'nb_joueurs'        => $nb_joueurs,
         'nb_joueurs_label'  => $nb_joueurs_label,
