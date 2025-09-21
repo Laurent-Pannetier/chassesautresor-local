@@ -240,33 +240,34 @@ header.site-header {
 
 .homepage-hero-wrapper {
   position: relative;
+  display: grid;
+  overflow: hidden;
 }
 
 .homepage-hero-wrapper [data-home-hero] {
-  transition: opacity 0.6s ease;
+  grid-area: 1 / 1;
+  transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
 }
 
 .homepage-hero-wrapper [data-home-hero="initial"] {
-  opacity: 1;
+  transform: translateY(0);
   pointer-events: auto;
 }
 
 .homepage-hero-wrapper [data-home-hero="initial"].is-home-hero-hidden {
-  opacity: 0;
-  visibility: hidden;
+  transform: translateY(-100%);
   pointer-events: none;
 }
 
 .homepage-hero-wrapper [data-home-hero="latest"] {
-  opacity: 0;
-  visibility: hidden;
+  transform: translateY(100%);
   pointer-events: none;
   z-index: 9;
 }
 
 .homepage-hero-wrapper [data-home-hero="latest"].is-home-hero-visible {
-  opacity: 1;
-  visibility: visible;
+  transform: translateY(0);
   pointer-events: auto;
   z-index: 11;
 }
