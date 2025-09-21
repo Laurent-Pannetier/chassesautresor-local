@@ -1224,7 +1224,9 @@ function ca_register_tentatives_search_context(): void
         ],
         'ui' => [
             'label'       => __('Rechercher une tentative', 'chassesautresor-com'),
-            'placeholder' => __('Chasse, énigme ou réponse...', 'chassesautresor-com'),
+            'placeholder' => __('Que recherchez-vous ?', 'chassesautresor-com'),
+            'submit_icon' => 'search',
+            'submit_icon_only' => true,
         ],
         'pagination_params' => ['tentatives-page'],
     ]);

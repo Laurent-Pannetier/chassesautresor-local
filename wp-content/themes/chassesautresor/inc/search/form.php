@@ -8,6 +8,25 @@
 defined('ABSPATH') || exit;
 
 /**
+ * Returns the SVG markup for supported submit icons.
+ *
+ * @param string $icon Identifier of the icon to render.
+ *
+ * @return string
+ */
+function cta_get_table_search_submit_icon_markup(string $icon): string
+{
+    switch ($icon) {
+        case 'search':
+            return '<svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">'
+                . '<path fill="currentColor" d="M10.5 3a7.5 7.5 0 015.88 12.04l4.79 4.79-1.42 1.42-4.79-4.79A7.5 7.5 0 1110.5 3zm0 2a5.5 5.5 0 100 11 5.5 5.5 0 000-11z" />'
+                . '</svg>';
+        default:
+            return '';
+    }
+}
+
+/**
  * Renders the HTML markup for a table search form.
  *
  * @param string $key       Context identifier.
@@ -49,6 +68,8 @@ function cta_render_search_form(string $key, array $overrides = []): string
         'nonce_action'       => $ui['nonce_action'] ?? '',
         'nonce_name'         => $ui['nonce_name'] ?? 'nonce',
         'submit_label'       => $ui['submit_label'] ?? esc_html__('Rechercher', 'chassesautresor-com'),
+        'submit_icon'        => $ui['submit_icon'] ?? '',
+        'submit_icon_only'   => $ui['submit_icon_only'] ?? false,
         'reset_label'        => $ui['reset_label'] ?? esc_html__('Réinitialiser', 'chassesautresor-com'),
         'show_reset_button'  => $ui['show_reset_button'] ?? false,
         'pagination_params'  => $context['pagination_params'] ?? [],
@@ -115,8 +136,27 @@ function cta_render_search_form(string $key, array $overrides = []): string
     $label       = (string) $config['label'];
     $desc        = (string) $config['description'];
     $submit      = (string) $config['submit_label'];
+    $submit_icon = (string) $config['submit_icon'];
     $reset_label = (string) $config['reset_label'];
     $show_reset  = (bool) $config['show_reset_button'];
+
+    $icon_markup = '';
+    if ('' !== $submit_icon) {
+        $icon_markup = cta_get_table_search_submit_icon_markup($submit_icon);
+    }
+
+    $has_icon   = '' !== $icon_markup;
+    $icon_only  = $has_icon && !empty($config['submit_icon_only']);
+    $submit_cls = 'table-search__submit';
+
+    $submit_text = $submit;
+    if ('' === $submit_text && $icon_only) {
+        $submit_text = __('Rechercher', 'chassesautresor-com');
+    }
+
+    if ($icon_only) {
+        $submit_cls .= ' table-search__submit--icon-only';
+    }
 
     $form_attrs = sprintf(' method="%s"', esc_attr($method));
 
@@ -214,8 +254,17 @@ function cta_render_search_form(string $key, array $overrides = []): string
 
         <div class="table-search__controls">
             <input<?php echo $input_html; ?> />
-            <button type="submit" class="table-search__submit">
-                <span class="table-search__submit-text"><?php echo esc_html($submit); ?></span>
+            <button type="submit" class="<?php echo esc_attr($submit_cls); ?>">
+                <?php if ($has_icon) : ?>
+                <span class="table-search__submit-icon" aria-hidden="true">
+                    <?php echo $icon_markup; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                </span>
+                <?php endif; ?>
+                <?php if ('' !== $submit_text) : ?>
+                <span class="table-search__submit-text<?php echo $icon_only ? ' screen-reader-text' : ''; ?>">
+                    <?php echo esc_html($submit_text); ?>
+                </span>
+                <?php endif; ?>
             </button>
             <?php if ($show_reset) : ?>
             <button type="button" class="table-search__reset" data-table-search-reset<?php echo '' === $search_value ? ' hidden' : ''; ?>>
