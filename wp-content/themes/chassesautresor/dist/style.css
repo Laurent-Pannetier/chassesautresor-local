@@ -53,10 +53,18 @@
 }
 
 /* ========== 🃏 Carte compacte ========== */
-.carte-compact {
+.carte-compact-card {
   width: 100%;
   max-width: 300px;
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-xs);
+}
+
+.carte-compact {
+  width: 100%;
   padding: 0;
   overflow: hidden;
 }
@@ -96,10 +104,12 @@
   font-size: 0.875rem;
   margin-top: auto;
 }
-.carte-compact .carte-compact__progression-wrapper {
-  padding: 0 var(--space-md) var(--space-md);
+
+.carte-compact__progression-wrapper {
+  width: 100%;
 }
-.carte-compact .carte-compact__progression {
+
+.carte-compact__progression {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -107,18 +117,21 @@
   width: 100%;
   max-width: 50%;
 }
-.carte-compact .carte-compact__progression-label {
+
+.carte-compact__progression-label {
   font-size: 0.75rem;
   letter-spacing: 0.02em;
 }
-.carte-compact .carte-compact__progression-bar {
+
+.carte-compact__progression-bar {
   width: 100%;
   height: 6px;
   background-color: var(--color-background-button-inactive);
   border-radius: 999px;
   overflow: hidden;
 }
-.carte-compact .carte-compact__progression-bar-fill {
+
+.carte-compact__progression-bar-fill {
   display: block;
   height: 100%;
   background: var(--color-success);

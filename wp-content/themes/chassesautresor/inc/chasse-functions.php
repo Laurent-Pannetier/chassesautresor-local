@@ -1630,8 +1630,9 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
     ];
 
     if (!empty($progression['resolvables'])) {
+        $resolvables_count = (int) $progression['resolvables'];
         $infos['progression'] = $progression;
-        $infos['resolues_validables'] = $resolues_validables;
+        $infos['resolues_validables'] = min($resolues_validables, $resolvables_count);
     }
 
     return $infos;
