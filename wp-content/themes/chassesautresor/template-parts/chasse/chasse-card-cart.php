@@ -28,7 +28,7 @@ $badge_classes = $infos['badge_class'] ?? '';
 $image_size = $infos['image_size'] ?? 'medium_large';
 $image_ratio = $infos['image_ratio'] ?? '';
 $image_compact_ratio = $infos['image_compact_ratio'] ?? '';
-$image_style = '';
+$wrapper_style = '';
 
 if ($image_ratio !== '' || $image_compact_ratio !== '') {
     $style_parts = [];
@@ -42,9 +42,15 @@ if ($image_ratio !== '' || $image_compact_ratio !== '') {
     }
 
     if (!empty($style_parts)) {
-        $image_style = implode(';', $style_parts) . ';';
+        $wrapper_style = implode(';', $style_parts) . ';';
     }
 }
+$wrapper_attributes = 'class="carte-cart__image-wrapper"';
+
+if ($wrapper_style !== '') {
+    $wrapper_attributes .= ' style="' . esc_attr($wrapper_style) . '"';
+}
+
 $image_html = '';
 
 if (!empty($infos['image_id'])) {
@@ -55,10 +61,6 @@ if (!empty($infos['image_id'])) {
         'sizes'   => '(max-width: 320px) 100vw, 300px',
     ];
 
-    if ($image_style !== '') {
-        $image_attributes['style'] = $image_style;
-    }
-
     $image_html = wp_get_attachment_image(
         (int) $infos['image_id'],
         $image_size,
@@ -68,12 +70,10 @@ if (!empty($infos['image_id'])) {
 }
 
 if ($image_html === '') {
-    $style_attribute = $image_style !== '' ? ' style="' . esc_attr($image_style) . '"' : '';
     $image_html = sprintf(
-        '<img src="%1$s" alt="%2$s" class="carte-cart__image" loading="lazy"%3$s>',
+        '<img src="%1$s" alt="%2$s" class="carte-cart__image" loading="lazy">',
         esc_url($infos['image']),
-        esc_attr($infos['titre']),
-        $style_attribute
+        esc_attr($infos['titre'])
     );
 }
 
@@ -94,7 +94,7 @@ if ($badge_has_interaction && $badge_tooltip !== '') {
 ?>
 <div class="carte carte-chasse carte-cart <?php echo esc_attr(trim($infos['classe_statut'] . ' ' . $completion_class)); ?>">
     <a href="<?php echo esc_url($infos['permalink']); ?>" class="carte-cart__lien">
-        <div class="carte-cart__image-wrapper">
+        <div <?php echo $wrapper_attributes; ?>>
             <span class="badge-statut <?php echo esc_attr($badge_classes); ?>" data-post-id="<?php echo esc_attr($chasse_id); ?>"<?= $badge_attributes; ?>>
                 <span class="badge-statut__label"><?php echo esc_html($badge_label); ?></span>
                 <?php if ($has_badge_icon) : ?>

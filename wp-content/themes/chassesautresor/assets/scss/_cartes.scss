@@ -152,24 +152,26 @@
 
   .carte-cart__image-wrapper {
     position: relative;
-  }
-
-  .carte-cart__image {
     width: 100%;
-    height: auto;
     aspect-ratio: var(--carte-cart-aspect-ratio, 4 / 3);
-    object-fit: cover;
-    display: block;
-    object-position: center;
-  }
+    overflow: hidden;
 
-  @media not all and (--bp-desktop) {
-    .carte-cart__image {
+    @media not all and (--bp-desktop) {
       aspect-ratio: var(
         --carte-cart-compact-aspect-ratio,
         var(--carte-cart-aspect-ratio, 4 / 3)
       );
     }
+  }
+
+  .carte-cart__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    object-position: center;
+    position: absolute;
+    inset: 0;
   }
 
   .badge-statut {
