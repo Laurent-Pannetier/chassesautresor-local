@@ -33,11 +33,6 @@ if ($badge_has_interaction && $badge_tooltip !== '') {
 $progression = $infos['progression'] ?? null;
 $resolvables = is_array($progression) ? (int) ($progression['resolvables'] ?? 0) : 0;
 $resolues_validables = isset($infos['resolues_validables']) ? (int) $infos['resolues_validables'] : 0;
-$progression_percent = 0;
-if ($resolvables > 0) {
-    $progression_percent = min(100, max(0, ($resolues_validables / $resolvables) * 100));
-    $progression_percent = round($progression_percent, 2);
-}
 ?>
 <div class="carte-compact-card">
     <div class="carte carte-chasse carte-compact <?php echo esc_attr($infos['classe_statut']); ?>">
@@ -78,15 +73,6 @@ if ($resolvables > 0) {
                     );
                     echo esc_html($label);
                     ?>
-                </div>
-                <div
-                    class="carte-compact__progression-bar"
-                    role="progressbar"
-                    aria-valuemin="0"
-                    aria-valuenow="<?php echo esc_attr($resolues_validables); ?>"
-                    aria-valuemax="<?php echo esc_attr($resolvables); ?>"
-                >
-                    <span class="carte-compact__progression-bar-fill" style="width: <?php echo esc_attr($progression_percent); ?>%;"></span>
                 </div>
             </div>
         </div>
