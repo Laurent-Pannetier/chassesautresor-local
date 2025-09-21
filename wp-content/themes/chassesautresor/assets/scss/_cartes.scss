@@ -503,61 +503,9 @@
   max-height: 350px;
 }
 
-.carte-ligne { 
+.carte-ligne {
   display: flex;
   align-items: stretch;
-
-  .badge-statut--responsive {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: var(--space-xxs);
-    width: 2.5rem;
-    height: 2.5rem;
-  }
-
-  .badge-statut--responsive .badge-statut__icon {
-    display: inline-flex;
-  }
-
-  .badge-statut--responsive .badge-statut__label {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-  }
-
-  @media (--bp-tablet) {
-    .badge-statut--responsive {
-      width: auto;
-      height: auto;
-      padding: 4px 8px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .badge-statut--responsive .badge-statut__icon {
-      display: none;
-    }
-
-    .badge-statut--responsive .badge-statut__label {
-      position: static;
-      width: auto;
-      height: auto;
-      margin: 0;
-      padding: 0;
-      overflow: visible;
-      clip: auto;
-      white-space: normal;
-      border: 0;
-    }
-  }
 }
 
 .carte-ligne__contenu {
