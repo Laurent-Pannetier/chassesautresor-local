@@ -8705,6 +8705,12 @@ footer .site-footer-primary-section-3 {
   color: var(--color-text-primary);
 }
 
+.myaccount-layout h1,
+.myaccount-layout h2,
+.myaccount-layout h3 {
+  text-transform: none;
+}
+
 .myaccount-sidebar {
   width: 280px;
   border-right: 1px solid rgba(255, 255, 255, 0.1);
