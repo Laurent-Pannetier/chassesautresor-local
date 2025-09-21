@@ -1077,6 +1077,7 @@ function recuperer_statut_chasse()
         'statut'       => $badge_infos['statut'],
         'statut_label' => $badge_infos['label'],
         'statut_icon'  => $badge_infos['icon_html'],
+        'statut_tooltip' => $badge_infos['label'],
     ]);
 }
 
