@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - WooCommerce - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-09-09 17:06:54+0000\n"
+"PO-Revision-Date: 2025-09-17 14:23:47+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -34,6 +34,61 @@ msgstr "Action pour désactiver le compte de test en cours d’utilisation"
 #: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:1180
 msgid "Action to reset the onboarding process, either partially, for a certain step, or fully."
 msgstr "Action pour réinitialiser le processus d’intégration, soit partiellement, pour une certaine étape, ou complètement."
+
+#: assets/client/blocks/single-product/block.json
+msgctxt "block keyword"
+msgid "single product"
+msgstr "produit unique"
+
+#: assets/client/blocks/single-product/block.json
+msgctxt "block description"
+msgid "Display a single product of your choice with full control over its presentation."
+msgstr "Affichez un seul produit de votre choix avec un contrôle total sur sa présentation."
+
+#: assets/client/blocks/single-product/block.json
+msgctxt "block title"
+msgid "Product"
+msgstr "Produit"
+
+#: assets/client/blocks/product-filter-taxonomy/block.json
+msgctxt "block description"
+msgid "Enable customers to filter the product collection by selecting one or more taxonomy terms, such as categories, brands, or tags."
+msgstr "Permettez aux clients de filtrer la collection de produits en sélectionnant un ou plusieurs termes de taxonomie, tels que des catégories, des marques ou des étiquettes."
+
+#: assets/client/blocks/product-filter-taxonomy/block.json
+msgctxt "block title"
+msgid "Taxonomy Filter"
+msgstr "Filtre de taxonomie"
+
+#: assets/client/blocks/payment-method-icons/block.json
+msgctxt "block keyword"
+msgid "payment methods"
+msgstr "moyens de paiement"
+
+#: assets/client/blocks/payment-method-icons/block.json
+msgctxt "block keyword"
+msgid "payments"
+msgstr "paiements"
+
+#: assets/client/blocks/payment-method-icons/block.json
+msgctxt "block description"
+msgid "Display icons for available payment methods."
+msgstr "Affichez des icônes pour les modes de paiement sélectionnés."
+
+#: assets/client/blocks/payment-method-icons/block.json
+msgctxt "block title"
+msgid "Payment Method Icons"
+msgstr "Icônes des moyens de paiement"
+
+#: assets/client/blocks/mini-cart-contents/block.json
+msgctxt "block title"
+msgid "Mini-Cart Contents"
+msgstr "Contenu du mini panier"
+
+#: assets/client/blocks/mini-cart-contents/block.json
+msgctxt "block description"
+msgid "Display a Mini-Cart widget."
+msgstr "Affichez un widget de mini-panier."
 
 #. translators: %1$d: number of entries processed, %2$d: number of errors
 #: includes/wc-coupon-functions.php:208
@@ -1187,6 +1242,20 @@ msgstr "Économiser sur l’expédition avec WooCommerce Shipping"
 msgid "Print discounted USPS, UPS, and DHL labels"
 msgstr "Imprimer des étiquettes USPS, UPS et DHL à prix réduit"
 
+#: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:1023
+msgid "The general state of the onboarding process."
+msgstr "L’état général du processus d’intégration."
+
+#: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:1055
+msgid "The onboarding steps."
+msgstr "Les étapes d’intégration."
+
+#: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:337
+#: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:393
+#: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:439
+msgid "Where from in the onboarding flow this request was triggered."
+msgstr "L’endroit où cette requête a été déclenchée dans le flux d’intégration."
+
 #: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:76
 #: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:98
 #: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:125
@@ -1204,14 +1273,6 @@ msgstr "Imprimer des étiquettes USPS, UPS et DHL à prix réduit"
 msgid "ISO3166 alpha-2 country code. Defaults to the stored providers business location country code."
 msgstr "Code pays ISO 3166 alpha-2. Par défaut, le code pays de l’emplacement commercial des fournisseurs enregistrés."
 
-#: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:1023
-msgid "The general state of the onboarding process."
-msgstr "L’état général du processus d’intégration."
-
-#: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:1055
-msgid "The onboarding steps."
-msgstr "Les étapes d’intégration."
-
 #: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:105
 #: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:132
 #: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:180
@@ -1224,12 +1285,6 @@ msgstr "Les étapes d’intégration."
 #: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:445
 msgid "The upmost entry point from where the merchant entered the onboarding flow."
 msgstr "Le point d’entrée le plus élevé à partir duquel le commerçant est entré dans le flux d’intégration."
-
-#: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:337
-#: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:393
-#: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:439
-msgid "Where from in the onboarding flow this request was triggered."
-msgstr "L’endroit où cette requête a été déclenchée dans le flux d’intégration."
 
 #: src/Internal/Admin/Settings/PaymentsProviders/WooPayments/WooPaymentsRestController.php:1041
 msgid "Whether the onboarding process is in test mode."
@@ -2226,10 +2281,6 @@ msgstr "Supprimer des colonnes de coût des marchandises vendues du tableau de c
 #: src/Internal/Admin/Suggestions/PaymentsExtensionSuggestions.php:3153
 msgid "MONEI"
 msgstr "MONEI"
-
-#: src/Internal/Admin/Suggestions/PaymentsExtensionSuggestions.php:3252
-msgid "Accept Direct Debit, ACH Pull, and open baking payments."
-msgstr "Acceptez le prélèvement automatique, le prélèvement ACH et les paiements en Open Banking."
 
 #: src/Internal/Admin/Suggestions/PaymentsExtensionSuggestions.php:3202
 msgid "Billie is the leading provider of Buy Now, Pay Later payment methods for B2B stores."
@@ -4647,15 +4698,6 @@ msgstr "Marques de produits"
 msgid "Exclude brands"
 msgstr "Exclure des marques"
 
-#: includes/admin/class-wc-admin-brands.php:75
-#: includes/admin/class-wc-admin-brands.php:677
-#: includes/admin/class-wc-admin-brands.php:688
-#: includes/class-wc-brands.php:278 includes/class-wc-brands.php:280
-#: includes/class-wc-brands.php:1057
-#: includes/widgets/class-wc-widget-brand-nav.php:173
-msgid "Brands"
-msgstr "Brands"
-
 #: includes/admin/class-wc-admin-brands.php:167
 msgid "A product must be associated with this brand for the coupon to remain valid or, for \"Product Discounts\", products with these brands will be discounted."
 msgstr "Un produit doit être associé à cette marque pour que le code promo reste valide. Pour « Remises sur les produits », les produits associés à cette marque seront assortis d'une remise."
@@ -4663,6 +4705,15 @@ msgstr "Un produit doit être associé à cette marque pour que le code promo re
 #: includes/admin/class-wc-admin-brands.php:148
 msgid "Any brand"
 msgstr "N'importe quelle marque"
+
+#: includes/admin/class-wc-admin-brands.php:75
+#: includes/admin/class-wc-admin-brands.php:677
+#: includes/admin/class-wc-admin-brands.php:688
+#: includes/class-wc-brands.php:278 includes/class-wc-brands.php:280
+#: includes/class-wc-brands.php:1057
+#: includes/widgets/class-wc-widget-brand-nav.php:173
+msgid "Brands"
+msgstr "Marques"
 
 #: src/Internal/Admin/EmailPreview/EmailPreview.php:438
 #: assets/client/blocks/add-to-cart-with-options-variation-selector-attribute.js:1
@@ -8032,6 +8083,10 @@ msgstr "coûts complexes"
 #: includes/shipping/flat-rate/includes/settings-flat-rate.php:21
 msgid "e.g. Standard national"
 msgstr "ex. Standard"
+
+#: includes/admin/settings/class-wc-settings-shipping.php:344
+msgid "Please enter a valid number."
+msgstr "Veuillez saisir un numéro valide"
 
 #: includes/shipping/free-shipping/class-wc-shipping-free-shipping.php:108
 msgid "e.g. Free shipping"
@@ -47174,6 +47229,10 @@ msgstr "Nouveaux territoires"
 #: i18n/states.php:847
 msgid "Tehran (تهران)"
 msgstr "Téhéran (تهران)"
+
+#: i18n/states.php:842
+msgid "Lakshadweep"
+msgstr "Lakshadweep"
 
 #: i18n/countries.php:17
 msgid "Afghanistan"
