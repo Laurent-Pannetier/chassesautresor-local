@@ -8,7 +8,13 @@ if (!isset($args['chasse_id']) || empty($args['chasse_id'])) {
 $chasse_id = $args['chasse_id'];
 $completion_class = $args['completion_class'] ?? '';
 
-$infos = preparer_infos_affichage_carte_chasse($chasse_id);
+$infos = preparer_infos_affichage_carte_chasse(
+    $chasse_id,
+    300,
+    [
+        'badge_format' => 'icon',
+    ]
+);
 if (empty($infos)) {
     return;
 }
