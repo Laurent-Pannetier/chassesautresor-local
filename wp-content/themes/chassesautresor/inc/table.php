@@ -26,7 +26,6 @@ function cta_prepare_masked_proposition_options(?string $uid, array $overrides =
         'placeholder'     => '••••••',
         'button_label'    => __('Voir', 'chassesautresor-com'),
         'button_aria'     => __('Afficher la proposition masquée', 'chassesautresor-com'),
-        'confirm_message' => __('Afficher cette proposition ?', 'chassesautresor-com'),
         'prompt_label'    => __('Proposition :', 'chassesautresor-com'),
         'error_message'   => __('Impossible de récupérer la proposition.', 'chassesautresor-com'),
         'loading_label'   => __('Chargement…', 'chassesautresor-com'),
@@ -56,7 +55,6 @@ function cta_render_proposition_cell(string $text, bool $expanded = false, int $
         $placeholder   = isset($options['placeholder']) ? (string) $options['placeholder'] : '••••••';
         $button_label  = isset($options['button_label']) ? (string) $options['button_label'] : __('Voir', 'chassesautresor-com');
         $button_aria   = isset($options['button_aria']) ? (string) $options['button_aria'] : __('Afficher la proposition masquée', 'chassesautresor-com');
-        $confirm_label = isset($options['confirm_message']) ? (string) $options['confirm_message'] : '';
         $prompt_label  = isset($options['prompt_label']) ? (string) $options['prompt_label'] : '';
         $error_label   = isset($options['error_message']) ? (string) $options['error_message'] : '';
         $loading_label = isset($options['loading_label']) ? (string) $options['loading_label'] : '';
@@ -82,10 +80,6 @@ function cta_render_proposition_cell(string $text, bool $expanded = false, int $
 
         if ($ajax_url !== '') {
             $attributes[] = 'data-ajax-url="' . esc_url($ajax_url) . '"';
-        }
-
-        if ($confirm_label !== '') {
-            $attributes[] = 'data-confirm="' . esc_attr($confirm_label) . '"';
         }
 
         if ($prompt_label !== '') {

@@ -9942,10 +9942,10 @@ body.woocommerce h2 {
 }
 
 .proposition-cell--masked .toggle-proposition {
-  border: 1px solid var(--color-text-fond-clair);
+  border: 1px solid rgba(245, 245, 220, 0.65);
   border-radius: 999px;
   background: transparent;
-  color: var(--color-text-fond-clair);
+  color: var(--color-text-primary);
   padding: 0.35rem 0.75rem;
   height: auto;
   width: auto;
@@ -9955,8 +9955,9 @@ body.woocommerce h2 {
 
 .proposition-cell--masked .toggle-proposition:hover,
 .proposition-cell--masked .toggle-proposition:focus {
-  background: var(--color-text-fond-clair);
-  color: var(--color-bg);
+  background: var(--color-text-primary);
+  border-color: var(--color-text-primary);
+  color: var(--color-background);
 }
 
 .proposition-cell--masked .toggle-proposition:focus-visible {

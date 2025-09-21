@@ -56,11 +56,6 @@
   }
 
   function handleMasked(button) {
-    var confirmMessage = button.dataset.confirm || '';
-    if (confirmMessage && !window.confirm(confirmMessage)) {
-      return;
-    }
-
     if (button.__propositionText) {
       showPrompt(button, button.__propositionText);
       return;
