@@ -242,6 +242,11 @@ header.site-header {
   position: relative;
   display: grid;
   overflow: hidden;
+  min-height: 220px;
+}
+
+.has-hero .homepage-hero-wrapper + #content {
+  padding-top: 0;
 }
 
 .homepage-hero-wrapper [data-home-hero] {
@@ -319,12 +324,28 @@ header.site-header {
     font-size: 1.1rem;
     max-width: 760px;
   }
+
+  .homepage-hero-wrapper {
+    min-height: 280px;
+  }
+
+  .has-hero .homepage-hero-wrapper + #content {
+    padding-top: 0;
+  }
 }
 
 @media (--bp-tablet) {
   .hero-description {
     font-size: 1.2rem;
     max-width: 840px;
+  }
+
+  .homepage-hero-wrapper {
+    min-height: 475px;
+  }
+
+  .has-hero .homepage-hero-wrapper + #content {
+    padding-top: 0;
   }
 }
 
