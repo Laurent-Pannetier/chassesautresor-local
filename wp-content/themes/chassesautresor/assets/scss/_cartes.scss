@@ -153,14 +153,41 @@
   .carte-cart__image-wrapper {
     position: relative;
     width: 100%;
-    aspect-ratio: var(--carte-cart-aspect-ratio, 4 / 3);
     overflow: hidden;
+    --carte-cart-effective-aspect: var(
+      --carte-cart-aspect-ratio,
+      4 / 3
+    );
+    --carte-cart-effective-padding: var(
+      --carte-cart-padding,
+      75%
+    );
+    aspect-ratio: var(--carte-cart-effective-aspect, 4 / 3);
+
+    &::before {
+      content: "";
+      display: block;
+      width: 100%;
+      padding-top: var(--carte-cart-effective-padding, 75%);
+    }
 
     @media not all and (--bp-desktop) {
-      aspect-ratio: var(
+      --carte-cart-effective-aspect: var(
         --carte-cart-compact-aspect-ratio,
         var(--carte-cart-aspect-ratio, 4 / 3)
       );
+      --carte-cart-effective-padding: var(
+        --carte-cart-compact-padding,
+        var(--carte-cart-padding, 75%)
+      );
+    }
+  }
+
+  @supports (aspect-ratio: 1 / 1) {
+    .carte-cart__image-wrapper::before {
+      display: none;
+      content: none;
+      padding-top: 0;
     }
   }
 
