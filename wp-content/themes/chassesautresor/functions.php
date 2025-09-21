@@ -344,6 +344,16 @@ add_action('wp_enqueue_scripts', function () {
     );
     wp_set_script_translations('help-modal', 'chassesautresor-com');
 
+    if (is_front_page()) {
+        wp_enqueue_script(
+            'home-hero',
+            $script_dir . 'home-hero.js',
+            [],
+            filemtime($theme_path . '/assets/js/home-hero.js'),
+            true
+        );
+    }
+
     if (is_account_page() && is_user_logged_in()) {
         wp_enqueue_script(
             'myaccount',

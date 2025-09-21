@@ -96,12 +96,100 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
             esc_html__( 'chasses au trésor', 'chassesautresor-com' )
         );
 
-        get_header_fallback([
-            'titre'      => $titre,
-            'sous_titre' => '',
-            'image_fond' => $image_url,
-            'logo_id'    => 475,
-        ]);
+        ob_start();
+        get_header_fallback(
+            [
+                'titre'      => $titre,
+                'sous_titre' => '',
+                'image_fond' => $image_url,
+                'logo_id'    => 475,
+            ]
+        );
+        $fallback_markup = ob_get_clean();
+
+        if ( $fallback_markup ) {
+            $fallback_markup = preg_replace(
+                '/<section(\s+)class="([^\"]*\bbandeau-hero\b[^\"]*)"/',
+                '<section$1class="$2" data-home-hero="initial"',
+                $fallback_markup,
+                1
+            );
+        }
+
+        $latest_hero_markup = '';
+
+        $latest_chasse_query = new WP_Query(
+            [
+                'post_type'      => 'chasse',
+                'post_status'    => 'publish',
+                'posts_per_page' => 1,
+                'orderby'        => 'date',
+                'order'          => 'DESC',
+                'meta_query'     => [
+                    [
+                        'key'   => 'chasse_cache_statut_validation',
+                        'value' => 'valide',
+                    ],
+                ],
+                'fields'         => 'ids',
+            ]
+        );
+
+        if ( $latest_chasse_query->have_posts() && function_exists( 'generer_cta_chasse' ) ) {
+            $latest_chasse_id = (int) $latest_chasse_query->posts[0];
+            $raw_description  = get_field( 'chasse_principale_description', $latest_chasse_id );
+
+            if ( ! $raw_description ) {
+                $raw_description = get_the_excerpt( $latest_chasse_id );
+            }
+
+            $description = $raw_description
+                ? wp_trim_words( wp_strip_all_tags( (string) $raw_description ), 75, '…' )
+                : '';
+
+            $image_fond = get_the_post_thumbnail_url( $latest_chasse_id, 'chasse-fiche' );
+
+            if ( ! $image_fond ) {
+                $image_fond = get_the_post_thumbnail_url( $latest_chasse_id, 'full' );
+            }
+
+            $cta_data = generer_cta_chasse( $latest_chasse_id, get_current_user_id() );
+
+            ob_start();
+            get_template_part(
+                'template-parts/headers/front-page-latest-hero',
+                null,
+                [
+                    'chasse_id'   => $latest_chasse_id,
+                    'titre'       => get_the_title( $latest_chasse_id ),
+                    'image_fond'  => $image_fond,
+                    'description' => $description,
+                    'cta_html'    => $cta_data['cta_html'] ?? '',
+                    'cta_message' => $cta_data['cta_message'] ?? '',
+                ]
+            );
+            $latest_hero_markup = ob_get_clean();
+        }
+
+        wp_reset_postdata();
+
+        if ( $fallback_markup || $latest_hero_markup ) {
+            echo '<div class="homepage-hero-wrapper" data-home-hero-wrapper>';
+
+            if ( $fallback_markup ) {
+                echo '<div class="homepage-hero homepage-hero--initial" data-home-hero-initial>';
+                echo $fallback_markup; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                echo '</div>';
+            }
+
+            if ( $latest_hero_markup ) {
+                echo '<div class="homepage-hero homepage-hero--latest" data-home-hero-latest>';
+                echo $latest_hero_markup; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                echo '</div>';
+            }
+
+            echo '</div>';
+        }
     } elseif ( is_page() && ! is_user_account_area() ) {
         $image_id  = get_post_thumbnail_id();
         $image_url = $image_id ? imagify_get_webp_url( wp_get_attachment_image_url( $image_id, 'full' ) ) : '';
