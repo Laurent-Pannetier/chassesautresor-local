@@ -445,19 +445,18 @@
     }
 
     .woocommerce-Address-action--add {
-        width: 3.25rem;
-        height: 3.25rem;
         padding: 0;
-        border-radius: 50%;
+        min-width: 2.5rem;
+        min-height: 2.5rem;
+        border-radius: 999px;
         background-color: var(--color-titre-enigme);
         color: var(--color-background);
-        font-size: 2rem;
+        font-size: 1.5rem;
         font-weight: 700;
         line-height: 1;
 
         &:hover,
         &:focus-visible {
-            transform: scale(1.05);
             box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1);
         }
     }
@@ -470,9 +469,9 @@
 @media (--bp-tablet) {
     .woocommerce-account {
         .woocommerce-Address-action--add {
-            width: 3.5rem;
-            height: 3.5rem;
-            font-size: 2.25rem;
+            min-width: 2.75rem;
+            min-height: 2.75rem;
+            font-size: 1.75rem;
         }
     }
 }
