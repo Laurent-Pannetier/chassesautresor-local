@@ -3028,3 +3028,7 @@ msgstr ""
 #: inc/search/form.php:52
 msgid "Réinitialiser"
 msgstr ""
+
+#: inc/user-functions.php:1444
+msgid "Unable to load attempts. Please try again."
+msgstr ""

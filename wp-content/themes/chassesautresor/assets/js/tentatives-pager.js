@@ -7,6 +7,14 @@
     (config && typeof config.action === 'string' && config.action) ||
     'ca_fetch_tentatives';
   var PAGE_PARAM = 'tentatives-page';
+  var ERROR_MESSAGE =
+    (config && typeof config.errorMessage === 'string' && config.errorMessage) ||
+    'Unable to load attempts. Please try again.';
+  var SUBMIT_STATE_KEY = 'tentativesSubmitSource';
+  var RESET_STATE_KEY = 'tentativesResetSource';
+  var LOADING_STATE_KEY = 'tentativesLoading';
+  var BOUND_STATE_KEY = 'tentativesBound';
+  var activeController = null;
 
   function getAjaxUrl() {
     if (config && typeof config.ajaxUrl === 'string' && config.ajaxUrl) {
@@ -85,6 +93,39 @@
     } else {
       button.hidden = true;
       button.disabled = true;
+    }
+  }
+
+  function setState(form, key, value) {
+    if (!form || !form.dataset) {
+      return;
+    }
+
+    if (value === '' || value === null || typeof value === 'undefined') {
+      delete form.dataset[key];
+      return;
+    }
+
+    form.dataset[key] = value;
+  }
+
+  function getState(form, key) {
+    if (!form || !form.dataset) {
+      return '';
+    }
+
+    return form.dataset[key] || '';
+  }
+
+  function setFormLoading(form, loading) {
+    if (!form || !form.dataset) {
+      return;
+    }
+
+    if (loading) {
+      form.dataset[LOADING_STATE_KEY] = '1';
+    } else {
+      delete form.dataset[LOADING_STATE_KEY];
     }
   }
 
@@ -247,6 +288,44 @@
     }
   }
 
+  function showError(wrapper, message) {
+    if (!wrapper) {
+      return;
+    }
+
+    var tbody = wrapper.querySelector('tbody');
+    if (!tbody) {
+      return;
+    }
+
+    var columns = 0;
+    var headerRow = wrapper.querySelector('thead tr');
+    if (headerRow && headerRow.children) {
+      columns = headerRow.children.length;
+    }
+
+    if (!columns) {
+      var firstRow = tbody.querySelector('tr');
+      if (firstRow && firstRow.children) {
+        columns = firstRow.children.length;
+      }
+    }
+
+    if (!columns) {
+      columns = 1;
+    }
+
+    var row = document.createElement('tr');
+    row.className = 'tentatives-error';
+    var cell = document.createElement('td');
+    cell.colSpan = columns;
+    cell.textContent = message;
+    row.appendChild(cell);
+
+    tbody.innerHTML = '';
+    tbody.appendChild(row);
+  }
+
   function updateHistory(form, wrapper, page, term) {
     if (!window.history || typeof window.history.replaceState !== 'function') {
       return;
@@ -264,6 +343,18 @@
       return Promise.resolve();
     }
 
+    if (activeController && typeof activeController.abort === 'function') {
+      activeController.abort();
+    }
+
+    var controller = null;
+    if (typeof window.AbortController === 'function') {
+      controller = new AbortController();
+      activeController = controller;
+    } else {
+      activeController = null;
+    }
+
     var page = options && typeof options.page === 'number' ? options.page : 1;
     if (page < 1) {
       page = 1;
@@ -276,19 +367,25 @@
       term = getSearchValue(form);
     }
 
-    var stateUrl = buildStateUrl(form, term, page);
     var requestBody = buildRequestBody(form, wrapper, page, term);
 
     setLoading(wrapper, true);
+    setFormLoading(form, true);
 
-    return fetch(ajaxUrl, {
+    var fetchOptions = {
       method: 'POST',
       credentials: 'same-origin',
       headers: {
         'X-Requested-With': 'XMLHttpRequest'
       },
       body: requestBody
-    })
+    };
+
+    if (controller) {
+      fetchOptions.signal = controller.signal;
+    }
+
+    return fetch(ajaxUrl, fetchOptions)
       .then(function (response) {
         if (!response.ok) {
           throw new Error('Network response was not ok');
@@ -318,11 +415,20 @@
         updateHistory(form, wrapper, data.page || 1, term);
       })
       .catch(function (error) {
+        if (controller && error && error.name === 'AbortError') {
+          return;
+        }
+
         console.error('Tentatives table update failed', error);
-        window.location.href = stateUrl.toString();
+        showError(wrapper, ERROR_MESSAGE);
       })
       .finally(function () {
         setLoading(wrapper, false);
+        setFormLoading(form, false);
+
+        if (controller && activeController === controller) {
+          activeController = null;
+        }
       });
   }
 
@@ -349,7 +455,18 @@
     }
 
     event.preventDefault();
-    loadTentatives(form, { page: 1, term: detail.term || '' });
+
+    if (getState(form, SUBMIT_STATE_KEY) === 'native') {
+      return;
+    }
+
+    setState(form, SUBMIT_STATE_KEY, 'custom');
+
+    loadTentatives(form, { page: 1, term: detail.term || '' }).finally(function () {
+      if (getState(form, SUBMIT_STATE_KEY) === 'custom') {
+        setState(form, SUBMIT_STATE_KEY, '');
+      }
+    });
   }
 
   function handleSearchReset(event) {
@@ -365,13 +482,23 @@
 
     event.preventDefault();
 
+    if (getState(form, RESET_STATE_KEY) === 'native') {
+      return;
+    }
+
+    setState(form, RESET_STATE_KEY, 'custom');
+
     var field = getSearchField(form);
     if (field) {
       field.value = '';
     }
 
     toggleReset(form, false);
-    loadTentatives(form, { page: 1, term: '' });
+    loadTentatives(form, { page: 1, term: '' }).finally(function () {
+      if (getState(form, RESET_STATE_KEY) === 'custom') {
+        setState(form, RESET_STATE_KEY, '');
+      }
+    });
   }
 
   function handlePagerChange(event) {
@@ -401,7 +528,14 @@
     }
 
     event.preventDefault();
-    loadTentatives(form, { page: 1 });
+
+    setState(form, SUBMIT_STATE_KEY, 'native');
+
+    loadTentatives(form, { page: 1 }).finally(function () {
+      if (getState(form, SUBMIT_STATE_KEY) === 'native') {
+        setState(form, SUBMIT_STATE_KEY, '');
+      }
+    });
   }
 
   function handleNativeReset(event) {
@@ -425,26 +559,45 @@
 
     event.preventDefault();
 
+    setState(form, RESET_STATE_KEY, 'native');
+
     var field = getSearchField(form);
     if (field) {
       field.value = '';
     }
 
     toggleReset(form, false);
-    loadTentatives(form, { page: 1, term: '' });
+    loadTentatives(form, { page: 1, term: '' }).finally(function () {
+      if (getState(form, RESET_STATE_KEY) === 'native') {
+        setState(form, RESET_STATE_KEY, '');
+      }
+    });
+  }
+
+  function bindNativeEvents(form) {
+    if (!form || !form.dataset) {
+      return;
+    }
+
+    if (form.dataset[BOUND_STATE_KEY] === '1') {
+      return;
+    }
+
+    form.addEventListener('submit', handleNativeSubmit);
+    form.addEventListener('click', handleNativeReset);
+    form.dataset[BOUND_STATE_KEY] = '1';
   }
 
   function initialise() {
     var form = getSearchForm();
     if (form) {
       toggleReset(form, getSearchValue(form) !== '');
+      bindNativeEvents(form);
     }
   }
 
   document.addEventListener('tablesearch:submit', handleSearchSubmit);
   document.addEventListener('tablesearch:reset', handleSearchReset);
   document.addEventListener('pager:change', handlePagerChange);
-  document.addEventListener('submit', handleNativeSubmit);
-  document.addEventListener('click', handleNativeReset);
   document.addEventListener('DOMContentLoaded', initialise);
 })();

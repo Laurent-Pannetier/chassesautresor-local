@@ -1423,6 +1423,10 @@ function ca_render_dashboard_tentatives(): void
         [
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'action'  => 'ca_fetch_tentatives',
+            'errorMessage' => esc_html__(
+                'Unable to load attempts. Please try again.',
+                'chassesautresor-com'
+            ),
         ]
     );
 
