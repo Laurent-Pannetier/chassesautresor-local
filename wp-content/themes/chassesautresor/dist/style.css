@@ -8481,6 +8481,97 @@ header.site-header {
     padding-top: 475px;
   }
 }
+.homepage-hero-wrapper {
+  position: relative;
+}
+
+.homepage-hero-wrapper [data-home-hero] {
+  transition: opacity 0.6s ease;
+}
+
+.homepage-hero-wrapper [data-home-hero=initial] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.homepage-hero-wrapper [data-home-hero=initial].is-home-hero-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.homepage-hero-wrapper [data-home-hero=latest] {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: 9;
+}
+
+.homepage-hero-wrapper [data-home-hero=latest].is-home-hero-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  z-index: 11;
+}
+
+.hero-eyebrow {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-xs);
+}
+
+.hero-description {
+  font-size: 1rem;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-md);
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  max-width: 680px;
+}
+
+.hero-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.hero-cta form {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.hero-cta__message {
+  color: var(--color-text-primary);
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+@media (min-width: 480px) {
+  .hero-eyebrow {
+    font-size: 0.85rem;
+    letter-spacing: 0.16em;
+  }
+  .hero-description {
+    font-size: 1.1rem;
+    max-width: 760px;
+  }
+}
+@media (min-width: 768px) {
+  .hero-description {
+    font-size: 1.2rem;
+    max-width: 840px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .homepage-hero-wrapper [data-home-hero] {
+    transition: none;
+  }
+}
 /* ==================================================
    📄 CONTENU
    ================================================== */

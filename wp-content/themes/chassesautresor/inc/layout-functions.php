@@ -115,10 +115,68 @@ add_filter('admin_body_class', 'ajouter_classes_roles_admin');
  * 🖼️ Convertit une URL d'image vers son équivalent WebP.
  *
  * @param string|null $image_url URL de l'image source.
- * @return string URL en .webp ou vide si URL invalide.
+ * @return string URL en .webp (si disponible) ou URL originale.
  */
 function imagify_get_webp_url($image_url) {
-    return $image_url ? preg_replace('/\.(jpg|jpeg|png)$/i', '.webp', $image_url) : '';
+    if (empty($image_url)) {
+        return '';
+    }
+
+    $parsed_path = parse_url($image_url, PHP_URL_PATH);
+
+    if (!is_string($parsed_path)) {
+        return $image_url;
+    }
+
+    $extension = strtolower(pathinfo($parsed_path, PATHINFO_EXTENSION));
+    $supported_extensions = ['jpg', 'jpeg', 'png'];
+
+    if (!in_array($extension, $supported_extensions, true)) {
+        return $image_url;
+    }
+
+    $webp_url = preg_replace('/\.(jpg|jpeg|png)$/i', '.webp', $image_url);
+
+    if (!$webp_url || $webp_url === $image_url) {
+        return $image_url;
+    }
+
+    if (!function_exists('wp_get_upload_dir')) {
+        return $image_url;
+    }
+
+    $upload_dir = wp_get_upload_dir();
+    $baseurl = $upload_dir['baseurl'] ?? '';
+    $basedir = $upload_dir['basedir'] ?? '';
+
+    if (!$baseurl || !$basedir) {
+        return $image_url;
+    }
+
+    $base_variants = [$baseurl];
+
+    if (strpos($baseurl, 'https://') === 0) {
+        $base_variants[] = 'http://' . substr($baseurl, 8);
+    } elseif (strpos($baseurl, 'http://') === 0) {
+        $base_variants[] = 'https://' . substr($baseurl, 7);
+    }
+
+    foreach ($base_variants as $base_variant) {
+        if (0 !== strpos($webp_url, $base_variant)) {
+            continue;
+        }
+
+        $relative_path = ltrim(substr($webp_url, strlen($base_variant)), '/');
+        $file_path = rtrim($basedir, '/\\') . '/' . str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $relative_path);
+
+        if (file_exists($file_path)) {
+            return $webp_url;
+        }
+
+        break;
+    }
+
+    return $image_url;
 }
 
 
