@@ -809,6 +809,7 @@ body.woocommerce h2 {
     align-items: center;
     gap: var(--space-xs);
     margin-bottom: var(--space-sm);
+    width: 100%;
 }
 
 .myaccount-tentatives .table-header__stats {
@@ -829,6 +830,7 @@ body.woocommerce h2 {
 .myaccount-tentatives .table-header .table-search {
     flex: 1 1 100%;
     min-width: 0;
+    margin-left: auto;
 }
 
 .myaccount-tentatives .table-search__field {
@@ -879,7 +881,9 @@ body.woocommerce h2 {
     }
 
     .myaccount-tentatives .table-header .table-search {
-        flex: 0 1 auto;
+        flex: 0 1 24rem;
+        width: 100%;
+        max-width: 24rem;
         margin-left: auto;
     }
 }
