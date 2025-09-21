@@ -10,13 +10,36 @@
 
 defined('ABSPATH') || exit;
 
-$content_template = $GLOBALS['myaccount_content_template'] ?? null;
-$current_user     = wp_get_current_user();
-$display_name     = $current_user->ID ? $current_user->display_name : get_bloginfo('name');
-$show_nav         = is_user_logged_in();
-$current_path     = '';
+$content_template      = $GLOBALS['myaccount_content_template'] ?? null;
+$current_user          = wp_get_current_user();
+$display_name          = $current_user->ID ? $current_user->display_name : get_bloginfo('name');
+$show_nav              = is_user_logged_in();
+$current_path          = '';
+$last_active_formatted = '';
 if (!empty($_SERVER['REQUEST_URI'])) {
     $current_path = trim(parse_url(wp_unslash($_SERVER['REQUEST_URI']), PHP_URL_PATH), '/');
+}
+
+if ($current_user->ID) {
+    $last_active_raw = get_user_meta($current_user->ID, 'wc_last_active', true);
+    if ($last_active_raw) {
+        if (is_numeric($last_active_raw)) {
+            $last_active_timestamp = absint($last_active_raw);
+        } else {
+            $last_active_timestamp = strtotime($last_active_raw);
+        }
+
+        if (!empty($last_active_timestamp)) {
+            $locale = function_exists('determine_locale') ? determine_locale() : get_locale();
+            $date_format = strpos($locale, 'fr_') === 0 ? 'd/m/Y' : 'n/j/Y';
+
+            if (function_exists('wp_date')) {
+                $last_active_formatted = wp_date($date_format, $last_active_timestamp);
+            } else {
+                $last_active_formatted = date_i18n($date_format, $last_active_timestamp);
+            }
+        }
+    }
 }
 
 get_header();
@@ -190,7 +213,12 @@ get_header();
                 <?php
             endif;
             ?>
-            <!-- TODO: header content -->
+            <?php if ($last_active_formatted) : ?>
+                <p class="myaccount-last-active">
+                    <span class="meta-label"><?php esc_html_e('Dernière connexion :', 'chassesautresor-com'); ?></span>
+                    <span class="meta-value"><?php echo esc_html($last_active_formatted); ?></span>
+                </p>
+            <?php endif; ?>
         </header>
         <main class="myaccount-content">
             <?php
