@@ -2258,7 +2258,7 @@ a.ajout-link:focus-visible {
   border: 0;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .badge-statut--responsive {
     width: auto;
     height: auto;
