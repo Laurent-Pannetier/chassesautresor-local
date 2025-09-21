@@ -1334,7 +1334,7 @@ function ca_render_dashboard_tentatives(): void
     ob_start();
     ?>
     <section class="myaccount-tentatives">
-        <h3><?php esc_html_e('Tentatives', 'chassesautresor-com'); ?></h3>
+        <h2><?php esc_html_e('Tentatives', 'chassesautresor-com'); ?></h2>
         <div class="table-header">
             <?php if ($pending > 0) : ?>
             <span class="stat-badge"><?php printf(esc_html(_n('%d tentative en attente', '%d tentatives en attente', $pending, 'chassesautresor-com')), $pending); ?></span>
