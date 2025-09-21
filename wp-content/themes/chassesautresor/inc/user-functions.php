@@ -1345,7 +1345,12 @@ function ca_render_dashboard_tentatives(): void
                 <?php printf(esc_html(_n('%d bonne réponse', '%d bonnes rponses', $success, 'chassesautresor-com')), $success); ?>
             </span>
             <?php endif; ?>
-            <?php echo cta_render_search_form('tentatives'); ?>
+            <?php
+            echo cta_render_search_form('tentatives', [
+                'class'             => 'table-search--inline table-search--compact',
+                'show_reset_button' => true,
+            ]);
+            ?>
         </div>
         <div class="stats-table-wrapper" data-per-page="<?php echo esc_attr($per_page); ?>">
             <table class="stats-table tentatives-table">

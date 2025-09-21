@@ -343,5 +343,6 @@ class MyAccountTentativesTest extends TestCase
         $this->assertStringContainsString('Chasse aux bonbons', $output);
         $this->assertStringNotContainsString('Chasse aux pirates', $output);
         $this->assertStringContainsString('table-search', $output);
+        $this->assertStringContainsString('table-search__reset', $output);
     }
 }

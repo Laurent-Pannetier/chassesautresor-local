@@ -3024,3 +3024,7 @@ msgstr ""
 #: template-parts/enigme/partials/enigme-partial-solution.php:32
 msgid "Voir la solution de la chasse"
 msgstr ""
+
+#: inc/search/form.php:52
+msgid "Réinitialiser"
+msgstr ""

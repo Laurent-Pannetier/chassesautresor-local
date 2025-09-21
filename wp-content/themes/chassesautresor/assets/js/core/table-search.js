@@ -104,9 +104,112 @@
     });
   }
 
+  function getSearchField(form) {
+    if (!(form instanceof HTMLFormElement)) {
+      return null;
+    }
+
+    return form.querySelector('input[type="search"]');
+  }
+
+  function getSearchFieldName(form) {
+    var field = getSearchField(form);
+
+    if (!field || !field.name) {
+      return '';
+    }
+
+    return field.name;
+  }
+
+  function buildResetUrl(form) {
+    var url = buildActionUrl(form, '');
+    var searchParam = getSearchFieldName(form);
+
+    if (searchParam) {
+      url.searchParams.delete(searchParam);
+    }
+
+    url.searchParams.delete('search[context]');
+
+    var hiddenFields = form.querySelectorAll('input[type="hidden"][name]');
+
+    Array.prototype.forEach.call(hiddenFields, function (field) {
+      var name = field.getAttribute('name');
+
+      if (!name || name === 'search[context]' || name === searchParam) {
+        return;
+      }
+
+      var value = field.value;
+
+      if (value === undefined) {
+        return;
+      }
+
+      if (value === '') {
+        url.searchParams.delete(name);
+        return;
+      }
+
+      url.searchParams.set(name, value);
+    });
+
+    return url;
+  }
+
   function getSearchTerm(form) {
     var field = form.querySelector('input[type="search"]');
     return field ? field.value.trim() : '';
+  }
+
+  function handleReset(event) {
+    if (!event.target || typeof event.target.closest !== 'function') {
+      return;
+    }
+
+    var trigger = event.target.closest('[data-table-search-reset]');
+
+    if (!trigger) {
+      return;
+    }
+
+    var form = trigger.closest('form.table-search');
+
+    if (!(form instanceof HTMLFormElement)) {
+      return;
+    }
+
+    event.preventDefault();
+
+    var field = getSearchField(form);
+
+    if (field) {
+      field.value = '';
+    }
+
+    resetPaginationFields(form);
+
+    var url = buildResetUrl(form);
+    var detail = {
+      form: form,
+      searchKey: form.dataset.searchKey || '',
+      term: '',
+      actionUrl: url,
+      resetParams: getResetParams(form)
+    };
+
+    var customEvent = new CustomEvent('tablesearch:reset', {
+      bubbles: true,
+      cancelable: true,
+      detail: detail
+    });
+
+    if (!form.dispatchEvent(customEvent)) {
+      return;
+    }
+
+    window.location.href = url.toString();
   }
 
   function handleSubmit(event) {
@@ -149,6 +252,10 @@
 
   document.addEventListener('submit', function (event) {
     handleSubmit(event);
+  });
+
+  document.addEventListener('click', function (event) {
+    handleReset(event);
   });
 
   document.addEventListener('DOMContentLoaded', function () {

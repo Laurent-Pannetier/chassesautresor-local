@@ -27,6 +27,9 @@ Enregistre un contexte de recherche avec :
 - `hidden_fields` : champs cachés ajoutés systématiquement au formulaire.
 - `pagination_params` : liste de paramètres à purger lors d'une nouvelle
   recherche (`tentatives-page`, `page`, etc.).
+- `ui.show_reset_button` : afficher un bouton de réinitialisation lorsque
+  l'utilisateur a déjà saisi une recherche.
+- `ui.reset_label` : personnalise l'intitulé du bouton de réinitialisation.
 
 ### `ca_resolve_search_context(string $key): array`
 
@@ -53,7 +56,7 @@ Génère le formulaire `<form class="table-search">` associé à un contexte :
 - ajoute automatiquement `search[context]`, préserve le paramètre `section` et
   fusionne les `hidden_fields` déclarés.
 - accepte des surcharges (`method`, `action`, `hidden_fields`, `submit_label`,
-  etc.) et insère un nonce si demandé.
+  `show_reset_button`, `reset_label`, etc.) et insère un nonce si demandé.
 - renseigne `data-reset-pagination` pour que le script JS supprime les anciens
   paramètres de pagination.
 

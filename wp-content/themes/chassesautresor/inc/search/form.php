@@ -39,18 +39,20 @@ function cta_render_search_form(string $key, array $overrides = []): string
     $form_id   = $overrides['id'] ?? sprintf('table-search-%s', $parameter);
 
     $defaults = [
-        'class'             => 'table-search',
-        'method'            => 'get',
-        'action'            => '',
-        'label'             => $ui['label'] ?? '',
-        'placeholder'       => $ui['placeholder'] ?? '',
-        'value'             => null,
-        'hidden_fields'     => [],
-        'nonce_action'      => $ui['nonce_action'] ?? '',
-        'nonce_name'        => $ui['nonce_name'] ?? 'nonce',
-        'submit_label'      => $ui['submit_label'] ?? esc_html__('Rechercher', 'chassesautresor-com'),
-        'pagination_params' => $context['pagination_params'] ?? [],
-        'description'       => $ui['description'] ?? '',
+        'class'              => 'table-search',
+        'method'             => 'get',
+        'action'             => '',
+        'label'              => $ui['label'] ?? '',
+        'placeholder'        => $ui['placeholder'] ?? '',
+        'value'              => null,
+        'hidden_fields'      => [],
+        'nonce_action'       => $ui['nonce_action'] ?? '',
+        'nonce_name'         => $ui['nonce_name'] ?? 'nonce',
+        'submit_label'       => $ui['submit_label'] ?? esc_html__('Rechercher', 'chassesautresor-com'),
+        'reset_label'        => $ui['reset_label'] ?? esc_html__('Réinitialiser', 'chassesautresor-com'),
+        'show_reset_button'  => $ui['show_reset_button'] ?? false,
+        'pagination_params'  => $context['pagination_params'] ?? [],
+        'description'        => $ui['description'] ?? '',
     ];
 
     $config = array_merge($defaults, $overrides);
@@ -104,6 +106,8 @@ function cta_render_search_form(string $key, array $overrides = []): string
     $label       = (string) $config['label'];
     $desc        = (string) $config['description'];
     $submit      = (string) $config['submit_label'];
+    $reset_label = (string) $config['reset_label'];
+    $show_reset  = (bool) $config['show_reset_button'];
 
     $form_attrs = sprintf(' method="%s"', esc_attr($method));
 
@@ -114,6 +118,11 @@ function cta_render_search_form(string $key, array $overrides = []): string
     $form_attrs .= sprintf(' class="%s"', esc_attr($form_classes));
     $form_attrs .= sprintf(' id="%s"', esc_attr($form_id));
     $form_attrs .= sprintf(' data-search-key="%s"', esc_attr($context['key'] ?? $key));
+    $form_attrs .= sprintf(' data-search-parameter="%s"', esc_attr($input_name));
+
+    if ($show_reset) {
+        $form_attrs .= ' data-has-reset="1"';
+    }
 
     if (!empty($pagination_params)) {
         $form_attrs .= sprintf(' data-reset-pagination="%s"', esc_attr(implode(',', $pagination_params)));
@@ -170,6 +179,11 @@ function cta_render_search_form(string $key, array $overrides = []): string
             <button type="submit" class="table-search__submit">
                 <span class="table-search__submit-text"><?php echo esc_html($submit); ?></span>
             </button>
+            <?php if ($show_reset && '' !== $search_value) : ?>
+            <button type="button" class="table-search__reset" data-table-search-reset>
+                <span class="table-search__reset-text"><?php echo esc_html($reset_label); ?></span>
+            </button>
+            <?php endif; ?>
         </div>
 
         <?php
