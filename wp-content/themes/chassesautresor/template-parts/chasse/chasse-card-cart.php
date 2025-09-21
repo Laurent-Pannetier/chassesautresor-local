@@ -24,7 +24,7 @@ if (empty($infos)) {
     <a href="<?php echo esc_url($infos['permalink']); ?>" class="carte-cart__lien">
         <div class="carte-cart__image-wrapper">
             <span class="badge-statut <?php echo esc_attr($infos['badge_class']); ?>" data-post-id="<?php echo esc_attr($chasse_id); ?>">
-                <?php echo esc_html($infos['statut_label']); ?>
+                <?php echo $infos['badge_content']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- contenu préparé et sécurisé en amont. ?>
             </span>
             <img src="<?php echo esc_url($infos['image']); ?>" alt="<?php echo esc_attr($infos['titre']); ?>" class="carte-cart__image">
         </div>

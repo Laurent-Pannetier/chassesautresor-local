@@ -1357,12 +1357,27 @@ function rafraichirStatutChasse(postId) {
           if (data.success && data.data?.statut) {
             const statut = data.data.statut;
             const label = data.data.statut_label;
+            const icon = data.data.statut_icon || '';
             const badge = document.querySelector(`.badge-statut[data-post-id="${postId}"]`);
             DEBUG && console.log('🔎 Badge trouvé :', badge);
 
             if (badge) {
-              badge.textContent = label;
-              badge.className = `badge-statut statut-${statut}`;
+              const hadIconFormat = badge.classList.contains('badge-statut--format-icon');
+              let extraClasses = Array.from(badge.classList).filter(
+                cls => cls !== 'badge-statut' && !cls.startsWith('statut-')
+              );
+
+              if (hadIconFormat && !icon.trim()) {
+                extraClasses = extraClasses.filter(cls => cls !== 'badge-statut--format-icon');
+              }
+
+              badge.className = ['badge-statut', `statut-${statut}`, ...extraClasses].join(' ');
+
+              if (hadIconFormat && icon.trim()) {
+                badge.innerHTML = `<span class="badge-statut__icon" aria-hidden="true">${icon}</span><span class="screen-reader-text">${label}</span>`;
+              } else {
+                badge.textContent = label;
+              }
             } else {
               console.warn('❓ Aucun badge-statut trouvé pour postId', postId);
             }

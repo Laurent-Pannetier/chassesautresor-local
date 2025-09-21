@@ -31,7 +31,7 @@ if (empty($infos)) {
     <div class="carte-wide__image">
         <span class="badge-statut <?php echo esc_attr($infos['badge_class']); ?>"
             data-post-id="<?php echo esc_attr($chasse_id); ?>">
-            <?php echo esc_html($infos['statut_label']); ?>
+            <?php echo $infos['badge_content']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- contenu préparé et sécurisé en amont. ?>
         </span>
         <?php if ((int) $infos['cout_points'] > 0) : ?>
         <span
