@@ -1448,13 +1448,17 @@ function ca_render_dashboard_tentatives(): void
         <div class="table-header">
             <div class="table-header__stats">
                 <?php if ($view['pending'] > 0) : ?>
-                <span class="stat-badge"><?php printf(esc_html(_n('%d tentative en attente', '%d tentatives en attente', $view['pending'], 'chassesautresor-com')), $view['pending']); ?></span>
+                <div class="meta-etiquette">
+                    <span><?php printf(esc_html(_n('%d tentative en attente', '%d tentatives en attente', $view['pending'], 'chassesautresor-com')), $view['pending']); ?></span>
+                </div>
                 <?php endif; ?>
-                <span class="stat-badge"><?php printf(esc_html(_n('%d tentative', '%d tentatives', $view['total'], 'chassesautresor-com')), $view['total']); ?></span>
+                <div class="meta-etiquette">
+                    <span><?php printf(esc_html(_n('%d tentative', '%d tentatives', $view['total'], 'chassesautresor-com')), $view['total']); ?></span>
+                </div>
                 <?php if ($view['success'] > 0) : ?>
-                <span class="stat-badge" style="color:var(--color-success);">
-                    <?php printf(esc_html(_n('%d bonne réponse', '%d bonnes rponses', $view['success'], 'chassesautresor-com')), $view['success']); ?>
-                </span>
+                <div class="meta-etiquette meta-etiquette--success">
+                    <span><?php printf(esc_html(_n('%d bonne réponse', '%d bonnes rponses', $view['success'], 'chassesautresor-com')), $view['success']); ?></span>
+                </div>
                 <?php endif; ?>
             </div>
             <?php

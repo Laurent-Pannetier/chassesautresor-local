@@ -908,11 +908,15 @@ body.woocommerce h2 {
     min-width: 0;
 }
 
-.myaccount-tentatives .table-header__stats .stat-badge {
+.myaccount-tentatives .table-header__stats .meta-etiquette {
     display: inline-flex;
     align-items: center;
     white-space: nowrap;
     line-height: 1.15;
+}
+
+.myaccount-tentatives .table-header__stats .meta-etiquette--success {
+    color: var(--color-success);
 }
 
 .myaccount-tentatives .table-header .table-search {
