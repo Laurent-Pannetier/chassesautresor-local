@@ -1,3 +1,16 @@
+const fs = require('fs');
+const path = require('path');
+
+const automaticIconSvg = fs.readFileSync(
+  path.resolve(__dirname, '../../wp-content/themes/chassesautresor/assets/svg/automatic.svg'),
+  'utf8',
+).trim();
+
+const manualIconSvg = fs.readFileSync(
+  path.resolve(__dirname, '../../wp-content/themes/chassesautresor/assets/svg/hand.svg'),
+  'utf8',
+).trim();
+
 const flush = () => new Promise(resolve =>  setTimeout(resolve, 0));
 const html = `
   <div id="chasse-tab-param">
@@ -309,8 +322,16 @@ describe('chasse-edit UI', () => {
     container.className = 'header-chasse__image';
     container.dataset.modeAutoLabel = 'mode de fin de chasse : automatique';
     container.dataset.modeManuelLabel = 'mode de fin de chasse : manuelle';
-    container.dataset.modeAutoIcon = '<i class="fa-solid fa-bolt"></i>';
-    container.dataset.modeManuelIcon = '<i class="hand"></i>';
+    const automaticWrapper = document.createElement('div');
+    automaticWrapper.innerHTML = automaticIconSvg;
+    const normalizedAutomaticIcon = automaticWrapper.innerHTML.trim();
+
+    const manualWrapper = document.createElement('div');
+    manualWrapper.innerHTML = manualIconSvg;
+    const normalizedManualIcon = manualWrapper.innerHTML.trim();
+
+    container.dataset.modeAutoIcon = automaticIconSvg;
+    container.dataset.modeManuelIcon = manualIconSvg;
     const icone = document.createElement('span');
     icone.className = 'mode-fin-icone';
     container.appendChild(icone);
@@ -319,12 +340,12 @@ describe('chasse-edit UI', () => {
     const toggle = document.getElementById('chasse_mode_fin');
     toggle.checked = true;
     toggle.dispatchEvent(new Event('change', { bubbles: true }));
-    expect(icone.innerHTML).toBe('<i class="hand"></i>');
+    expect(icone.innerHTML.trim()).toBe(normalizedManualIcon);
     expect(icone.getAttribute('title')).toBe('mode de fin de chasse : manuelle');
 
     toggle.checked = false;
     toggle.dispatchEvent(new Event('change', { bubbles: true }));
-    expect(icone.innerHTML).toBe('<i class="fa-solid fa-bolt"></i>');
+    expect(icone.innerHTML.trim()).toBe(normalizedAutomaticIcon);
     expect(icone.getAttribute('title')).toBe('mode de fin de chasse : automatique');
   });
 });

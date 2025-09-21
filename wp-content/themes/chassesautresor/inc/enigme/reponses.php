@@ -62,11 +62,12 @@ function enigme_get_bonnes_reponses(int $enigme_id): array
         $mode_validation = get_field('enigme_mode_validation', $enigme_id);
         $badge_html      = '';
         if ($mode_validation !== 'aucune') {
-            $icon = $mode_validation === 'automatique' ? 'fa-bolt' : 'fa-envelope';
             if ($mode_validation === 'automatique') {
-                $message = __("Mode de validation de l'énigme automatique. Vous connaîtrez le résultat de votre tentative immédiatement après l'avoir soumise.", 'chassesautresor-com');
+                $icon_html = trim(get_svg_icon('automatic'));
+                $message   = __("Mode de validation de l'énigme automatique. Vous connaîtrez le résultat de votre tentative immédiatement après l'avoir soumise.", 'chassesautresor-com');
             } else {
-                $chasse_id        = function_exists('recuperer_id_chasse_associee') ? (int) recuperer_id_chasse_associee($enigme_id) : 0;
+                $icon_html         = '<i class="fa-solid fa-envelope" aria-hidden="true"></i>';
+                $chasse_id         = function_exists('recuperer_id_chasse_associee') ? (int) recuperer_id_chasse_associee($enigme_id) : 0;
                 $organisateur_id   = $chasse_id ? get_organisateur_from_chasse($chasse_id) : 0;
                 $organisateur_nom  = $organisateur_id ? get_the_title($organisateur_id) : '';
                 $organisateur_lien = $organisateur_id ? get_permalink($organisateur_id) : '#';
@@ -77,9 +78,7 @@ function enigme_get_bonnes_reponses(int $enigme_id): array
             }
             $badge_html = '<button type="button" class="badge-validation" data-tooltip="'
                 . esc_attr($message)
-                . '"><i class="fa-solid '
-                . esc_attr($icon)
-                . '"></i></button>';
+                . '">' . $icon_html . '</button>';
         }
 
         $data  = calculer_contexte_points($user_id, $enigme_id);

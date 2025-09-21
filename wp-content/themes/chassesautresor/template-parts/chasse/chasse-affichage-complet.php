@@ -51,6 +51,8 @@ $mode_fin            = $champs['mode_fin'] ?? 'automatique';
 $title_mode          = $mode_fin === 'automatique'
     ? __('mode de fin de chasse : automatique', 'chassesautresor-com')
     : __('mode de fin de chasse : manuelle', 'chassesautresor-com');
+$mode_auto_icon      = trim(get_svg_icon('automatic'));
+$mode_manual_icon    = trim(get_svg_icon('hand'));
 
 // Dates
 $date_debut_formatee        = formater_date($date_debut);
@@ -161,8 +163,8 @@ if ($edition_active && !$est_complet) {
               data-pts-label="<?= esc_attr__('pts', 'chassesautresor-com'); ?>"
               data-mode-auto-label="<?= esc_attr__('mode de fin de chasse : automatique', 'chassesautresor-com'); ?>"
               data-mode-manuel-label="<?= esc_attr__('mode de fin de chasse : manuelle', 'chassesautresor-com'); ?>"
-              data-mode-auto-icon="<?= esc_attr('<i class="fa-solid fa-bolt"></i>'); ?>"
-              data-mode-manuel-icon="<?= esc_attr(get_svg_icon('hand')); ?>"
+              data-mode-auto-icon="<?= esc_attr($mode_auto_icon); ?>"
+              data-mode-manuel-icon="<?= esc_attr($mode_manual_icon); ?>"
           >
               <span class="badge-statut statut-<?= esc_attr($statut_for_class); ?>"
                 data-post-id="<?= esc_attr($chasse_id); ?>">
@@ -184,9 +186,9 @@ if ($edition_active && !$est_complet) {
               <?php endif; ?>
               <span class="mode-fin-icone" title="<?= esc_attr($title_mode); ?>" aria-label="<?= esc_attr($title_mode); ?>">
                 <?php if ($mode_fin === 'automatique') : ?>
-                  <i class="fa-solid fa-bolt"></i>
+                  <?= $mode_auto_icon; ?>
                 <?php else : ?>
-                  <?= get_svg_icon('hand'); ?>
+                  <?= $mode_manual_icon; ?>
                 <?php endif; ?>
               </span>
               <?php if ($image_id) : ?>

@@ -76,9 +76,9 @@ if ($badge_has_interaction && $badge_tooltip !== '') {
 
         <span class="mode-fin-icone" title="<?php echo esc_attr($title_mode); ?>" aria-label="<?php echo esc_attr($title_mode); ?>">
             <?php if ($mode_fin === 'automatique') : ?>
-                <i class="fa-solid fa-bolt"></i>
+                <?= trim(get_svg_icon('automatic')); ?>
             <?php else : ?>
-                <?php echo get_svg_icon('hand'); ?>
+                <?= trim(get_svg_icon('hand')); ?>
             <?php endif; ?>
         </span>
         <?php
