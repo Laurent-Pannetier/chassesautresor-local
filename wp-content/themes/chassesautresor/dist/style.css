@@ -9268,6 +9268,69 @@ footer .site-footer-primary-section-3 {
   }
 }
 /* ==========================================================
+📌 Adresses
+========================================================== */
+.woocommerce-account .woocommerce-Address-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+.woocommerce-account .woocommerce-Address-title h2 {
+  margin: 0;
+}
+.woocommerce-account .woocommerce-Address-action {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 999px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+.woocommerce-account .woocommerce-Address-action:focus-visible {
+  outline: 2px solid var(--color-titre-enigme);
+  outline-offset: 2px;
+}
+.woocommerce-account .addresses .title .woocommerce-Address-action {
+  float: none;
+  padding: 0.5rem 0.75rem;
+}
+.woocommerce-account .addresses .title .woocommerce-Address-action.woocommerce-Address-action--add {
+  padding: 0;
+}
+.woocommerce-account .woocommerce-Address-action--edit {
+  color: var(--color-titre-enigme);
+}
+.woocommerce-account .woocommerce-Address-action--add {
+  padding: 0;
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  border-radius: 999px;
+  background-color: var(--color-titre-enigme);
+  color: var(--color-background);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.woocommerce-account .woocommerce-Address-action--add:hover, .woocommerce-account .woocommerce-Address-action--add:focus-visible {
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1);
+}
+.woocommerce-account .woocommerce-Address-actionIcon {
+  line-height: 1;
+}
+
+@media (min-width: 768px) {
+  .woocommerce-account .woocommerce-Address-action--add {
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    font-size: 1.75rem;
+  }
+}
+/* ==========================================================
 📌 Contenu Principal
 ========================================================== */
 .dashboard-content {
