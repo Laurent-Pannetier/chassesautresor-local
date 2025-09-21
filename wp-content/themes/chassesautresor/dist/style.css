@@ -8902,7 +8902,12 @@ footer .site-footer-primary-section-3 {
 }
 
 .dashboard-nav-link.logout {
-  font-size: 0.75rem;
+  display: inline-flex;
+  align-self: flex-start;
+  gap: 0;
+  padding: 8px;
+  font-size: 0.875rem;
+  width: auto;
 }
 
 .dashboard-nav-heading {

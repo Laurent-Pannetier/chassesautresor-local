@@ -98,9 +98,13 @@ get_header();
                 echo '</a>';
             }
             ?>
-            <a href="<?php echo esc_url(wc_logout_url()); ?>" class="dashboard-nav-link logout">
-                <i class="fas fa-sign-out-alt"></i>
-                <span><?php esc_html_e('Déconnexion', 'chassesautresor-com'); ?></span>
+            <a
+                href="<?php echo esc_url(wc_logout_url()); ?>"
+                class="dashboard-nav-link logout"
+                aria-label="<?php esc_attr_e('Déconnexion', 'chassesautresor-com'); ?>"
+                title="<?php esc_attr_e('Déconnexion', 'chassesautresor-com'); ?>"
+            >
+                <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
             </a>
         </nav>
         <?php if (current_user_can('administrator')) : ?>
