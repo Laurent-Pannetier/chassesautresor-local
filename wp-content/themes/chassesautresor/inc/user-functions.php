@@ -1446,18 +1446,21 @@ function ca_render_dashboard_tentatives(): void
     <section class="myaccount-tentatives">
         <h2><?php esc_html_e('Tentatives', 'chassesautresor-com'); ?></h2>
         <div class="table-header">
-            <?php if ($view['pending'] > 0) : ?>
-            <span class="stat-badge"><?php printf(esc_html(_n('%d tentative en attente', '%d tentatives en attente', $view['pending'], 'chassesautresor-com')), $view['pending']); ?></span>
-            <?php endif; ?>
-            <span class="stat-badge"><?php printf(esc_html(_n('%d tentative', '%d tentatives', $view['total'], 'chassesautresor-com')), $view['total']); ?></span>
-            <?php if ($view['success'] > 0) : ?>
-            <span class="stat-badge" style="color:var(--color-success);">
-                <?php printf(esc_html(_n('%d bonne réponse', '%d bonnes rponses', $view['success'], 'chassesautresor-com')), $view['success']); ?>
-            </span>
-            <?php endif; ?>
+            <div class="table-header__stats">
+                <?php if ($view['pending'] > 0) : ?>
+                <span class="stat-badge"><?php printf(esc_html(_n('%d tentative en attente', '%d tentatives en attente', $view['pending'], 'chassesautresor-com')), $view['pending']); ?></span>
+                <?php endif; ?>
+                <span class="stat-badge"><?php printf(esc_html(_n('%d tentative', '%d tentatives', $view['total'], 'chassesautresor-com')), $view['total']); ?></span>
+                <?php if ($view['success'] > 0) : ?>
+                <span class="stat-badge" style="color:var(--color-success);">
+                    <?php printf(esc_html(_n('%d bonne réponse', '%d bonnes rponses', $view['success'], 'chassesautresor-com')), $view['success']); ?>
+                </span>
+                <?php endif; ?>
+            </div>
             <?php
             echo cta_render_search_form('tentatives', [
                 'class'             => 'table-search--inline table-search--compact',
+                'label'             => '',
                 'show_reset_button' => true,
                 'data_attributes'   => [
                     'ajax-action' => 'ca_fetch_tentatives',
