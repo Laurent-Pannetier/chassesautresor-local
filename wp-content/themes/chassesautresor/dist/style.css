@@ -9636,9 +9636,46 @@ body.woocommerce h2 {
   min-width: 0;
 }
 
+.myaccount-tentatives .table-header__stats .stat-badge {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  line-height: 1.15;
+}
+
 .myaccount-tentatives .table-header .table-search {
   flex: 1 1 100%;
   min-width: 0;
+}
+
+.myaccount-tentatives .table-search__field {
+  background-color: rgba(255, 255, 255, 0.95);
+  color: var(--color-text-fond-clair);
+  border-color: rgba(11, 19, 43, 0.25);
+}
+
+.myaccount-tentatives .table-search__field::-moz-placeholder {
+  color: rgba(28, 28, 28, 0.55);
+}
+
+.myaccount-tentatives .table-search__field::placeholder {
+  color: rgba(28, 28, 28, 0.55);
+}
+
+.myaccount-tentatives .table-search__field:focus {
+  border-color: rgba(225, 169, 95, 0.75);
+  box-shadow: 0 0 0 2px rgba(225, 169, 95, 0.35);
+}
+
+.myaccount-tentatives .table-search__submit {
+  background-color: var(--color-secondary);
+  color: var(--color-background-dark);
+}
+
+.myaccount-tentatives .table-search__submit:hover,
+.myaccount-tentatives .table-search__submit:focus {
+  background-color: var(--color-primary-dark);
+  color: var(--color-background-dark);
 }
 
 .myaccount-tentatives .stats-table-wrapper {
@@ -9667,27 +9704,30 @@ body.woocommerce h2 {
 }
 .myaccount-tentatives .table-search__reset {
   position: relative;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2rem;
+  height: 2rem;
   padding: 0;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  background-color: rgba(255, 255, 255, 0.08);
+  border: none;
+  background-color: transparent;
   color: var(--color-text-primary);
   flex-shrink: 0;
 }
 
 .myaccount-tentatives .table-search__reset::before {
-  content: "↻";
-  font-size: 1.25rem;
+  content: "×";
+  font-size: 1.125rem;
   line-height: 1;
 }
 
 .myaccount-tentatives .table-search__reset:hover,
 .myaccount-tentatives .table-search__reset:focus {
-  background-color: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.5);
   color: var(--color-white);
+}
+
+.myaccount-tentatives .table-search__reset:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(225, 169, 95, 0.65);
+  border-radius: 999px;
 }
 
 .myaccount-tentatives .table-search__reset-text {
