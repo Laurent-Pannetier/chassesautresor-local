@@ -189,7 +189,8 @@ get_header();
     <div class="myaccount-main">
         <header class="myaccount-header">
             <?php
-            $page_title = '';
+            $page_title   = '';
+            $page_greeting = '';
             if (is_wc_endpoint_url('edit-account')) {
                 $page_title = __('Votre profil', 'chassesautresor-com');
             } elseif (is_wc_endpoint_url('orders')) {
@@ -205,11 +206,17 @@ get_header();
                     $page_title = __('Mon organisation', 'chassesautresor-com');
                 }
             } elseif (is_account_page() && empty($_GET['section'])) {
-                $page_title = sprintf(__('Bienvenue %s', 'chassesautresor-com'), $display_name);
+                $page_greeting = __('Bienvenue', 'chassesautresor-com');
+                $page_title    = $display_name;
             }
             if ($page_title) :
                 ?>
-                <h1 class="myaccount-title"><?php echo esc_html($page_title); ?></h1>
+                <h1 class="myaccount-title">
+                    <?php if ($page_greeting) : ?>
+                        <span class="myaccount-title-greeting"><?php echo esc_html($page_greeting); ?></span>
+                    <?php endif; ?>
+                    <span class="myaccount-title-text"><?php echo esc_html($page_title); ?></span>
+                </h1>
                 <?php
             endif;
             ?>
