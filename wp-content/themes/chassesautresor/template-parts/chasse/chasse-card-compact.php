@@ -29,6 +29,15 @@ if ($badge_has_interaction && $badge_tooltip !== '') {
     $badge_attributes .= ' data-tooltip="' . $tooltip_attr . '"';
     $badge_attributes .= ' role="img" tabindex="0"';
 }
+
+$progression = $infos['progression'] ?? null;
+$resolvables = is_array($progression) ? (int) ($progression['resolvables'] ?? 0) : 0;
+$resolues_validables = isset($infos['resolues_validables']) ? (int) $infos['resolues_validables'] : 0;
+$progression_percent = 0;
+if ($resolvables > 0) {
+    $progression_percent = min(100, max(0, ($resolues_validables / $resolvables) * 100));
+    $progression_percent = round($progression_percent, 2);
+}
 ?>
 <div class="carte carte-chasse carte-compact <?php echo esc_attr($infos['classe_statut']); ?>">
     <a href="<?php echo esc_url($infos['permalink']); ?>" class="carte-compact__lien">
@@ -55,4 +64,29 @@ if ($badge_has_interaction && $badge_tooltip !== '') {
             ?>
         </div>
     </a>
+    <?php if ($resolvables > 0) : ?>
+        <div class="carte-compact__progression-wrapper">
+            <div class="carte-compact__progression">
+                <div class="meta-etiquette carte-compact__progression-label">
+                    <?php
+                    $label = sprintf(
+                        __('Résolues %1$s/%2$s', 'chassesautresor-com'),
+                        number_format_i18n($resolues_validables),
+                        number_format_i18n($resolvables)
+                    );
+                    echo esc_html($label);
+                    ?>
+                </div>
+                <div
+                    class="carte-compact__progression-bar"
+                    role="progressbar"
+                    aria-valuemin="0"
+                    aria-valuenow="<?php echo esc_attr($resolues_validables); ?>"
+                    aria-valuemax="<?php echo esc_attr($resolvables); ?>"
+                >
+                    <span class="carte-compact__progression-bar-fill" style="width: <?php echo esc_attr($progression_percent); ?>%;"></span>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
 </div>

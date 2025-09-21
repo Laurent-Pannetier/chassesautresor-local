@@ -1489,6 +1489,7 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
     $total_enigmes     = count($enigmes_associees);
 
     $user_id = get_current_user_id();
+    $progression = chasse_calculer_progression_utilisateur($chasse_id, $user_id);
     $cta_data = generer_cta_chasse($chasse_id, $user_id);
 
     $liens = get_field('chasse_principale_liens', $chasse_id);
@@ -1522,10 +1523,14 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
 
     $mode_validation = '';
     $modes          = [];
+    $enigmes_validables = [];
     foreach ($enigmes_associees as $eid) {
         $mode = get_field('enigme_mode_validation', $eid);
         if ($mode) {
             $modes[$mode] = true;
+            if ($mode !== 'aucune') {
+                $enigmes_validables[] = (int) $eid;
+            }
         }
     }
     if (isset($modes['manuelle'])) {
@@ -1534,6 +1539,16 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
     } elseif (isset($modes['automatique'])) {
         $footer_icones[] = 'reply-auto';
         $mode_validation = 'automatique';
+    }
+
+    $resolues_validables = 0;
+    if (!empty($enigmes_validables) && !empty($progression['resolvables']) && $progression['resolvables'] > 0 && $user_id) {
+        global $wpdb;
+        $table        = $wpdb->prefix . 'enigme_statuts_utilisateur';
+        $placeholders = implode(',', array_fill(0, count($enigmes_validables), '%d'));
+        $sql          = "SELECT COUNT(DISTINCT enigme_id) FROM {$table} WHERE user_id = %d AND statut IN ('resolue','terminee','terminée') AND enigme_id IN ($placeholders)";
+        $params       = array_merge([$user_id], $enigmes_validables);
+        $resolues_validables = (int) $wpdb->get_var($wpdb->prepare($sql, $params));
     }
 
     $lot_html = '';
@@ -1582,7 +1597,7 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
     }
 
 
-    return [
+    $infos = [
         'titre'             => $titre,
         'permalink'         => $permalink,
         'image_id'          => $image_id,
@@ -1613,6 +1628,13 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
         'cta_type'         => $cta_data['type'] ?? '',
         'footer_html'       => $footer_html,
     ];
+
+    if (!empty($progression['resolvables'])) {
+        $infos['progression'] = $progression;
+        $infos['resolues_validables'] = $resolues_validables;
+    }
+
+    return $infos;
 }
 
 /**
