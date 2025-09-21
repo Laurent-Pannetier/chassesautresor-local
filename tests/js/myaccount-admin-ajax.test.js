@@ -12,7 +12,7 @@ const html = `
     </nav>
   </aside>
   <div class="myaccount-main">
-    <header class="myaccount-header"><h1 class="myaccount-title">Init</h1></header>
+    <header class="myaccount-header"><h1 class="myaccount-title"><span class="myaccount-title-text">Init</span></h1></header>
     <section class="msg-important"></section>
     <main class="myaccount-content">init</main>
   </div>
