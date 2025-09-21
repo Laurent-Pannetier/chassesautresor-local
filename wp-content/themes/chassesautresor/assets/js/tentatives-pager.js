@@ -7,6 +7,9 @@
     (config && typeof config.action === 'string' && config.action) ||
     'ca_fetch_tentatives';
   var PAGE_PARAM = 'tentatives-page';
+  var SEARCH_KEY =
+    (config && typeof config.searchKey === 'string' && config.searchKey) ||
+    'tentatives';
   var ERROR_MESSAGE =
     (config && typeof config.errorMessage === 'string' && config.errorMessage) ||
     'Unable to load attempts. Please try again.';
@@ -28,8 +31,95 @@
     return '';
   }
 
+  function matchesTentativesForm(form) {
+    if (
+      !form ||
+      typeof form !== 'object' ||
+      typeof form.classList === 'undefined' ||
+      !form.classList.contains('table-search')
+    ) {
+      return false;
+    }
+
+    var dataset = form.dataset || {};
+
+    if (dataset.ajaxAction === SEARCH_ACTION) {
+      return true;
+    }
+
+    if (dataset.searchKey === SEARCH_KEY) {
+      return true;
+    }
+
+    var searchParam = dataset.searchParameter || '';
+    if (searchParam && searchParam.indexOf('[' + SEARCH_KEY + ']') !== -1) {
+      return true;
+    }
+
+    var contextField = form.querySelector('input[name="search[context]"]');
+    if (contextField && contextField.value === SEARCH_KEY) {
+      return true;
+    }
+
+    return false;
+  }
+
   function getSearchForm() {
-    return document.querySelector('form.table-search[data-ajax-action="' + SEARCH_ACTION + '"]');
+    var selectors = [
+      'form.table-search[data-ajax-action="' + SEARCH_ACTION + '"]',
+      'form.table-search[data-search-key="' + SEARCH_KEY + '"]',
+      'form.table-search[data-search-parameter="search[' + SEARCH_KEY + ']"]'
+    ];
+
+    for (var index = 0; index < selectors.length; index += 1) {
+      var node = document.querySelector(selectors[index]);
+      if (matchesTentativesForm(node)) {
+        return node;
+      }
+    }
+
+    var forms = document.querySelectorAll('form.table-search');
+    for (var i = 0; i < forms.length; i += 1) {
+      if (matchesTentativesForm(forms[i])) {
+        return forms[i];
+      }
+    }
+
+    return null;
+  }
+
+  function getSearchParameter(form) {
+    if (!form) {
+      return '';
+    }
+
+    if (form.dataset && form.dataset.searchParameter) {
+      return form.dataset.searchParameter;
+    }
+
+    var field = getSearchField(form);
+    if (field && field.name) {
+      return field.name;
+    }
+
+    return '';
+  }
+
+  function getSearchKey(form) {
+    if (!form) {
+      return SEARCH_KEY;
+    }
+
+    if (form.dataset && form.dataset.searchKey) {
+      return form.dataset.searchKey;
+    }
+
+    var contextField = form.querySelector('input[name="search[context]"]');
+    if (contextField && contextField.value) {
+      return contextField.value;
+    }
+
+    return SEARCH_KEY;
   }
 
   function getWrapper(form) {
@@ -153,7 +243,7 @@
 
   function buildStateUrl(form, term, page) {
     var url = new URL(window.location.href);
-    var searchParam = form ? form.dataset.searchParameter : '';
+    var searchParam = getSearchParameter(form);
     var contextParam = 'search[context]';
     var hiddenFields = getHiddenFields(form);
     var contextValue = '';
@@ -170,6 +260,8 @@
         url.searchParams.set(contextParam, contextValue);
       } else if (form && form.dataset.searchKey) {
         url.searchParams.set(contextParam, form.dataset.searchKey);
+      } else {
+        url.searchParams.set(contextParam, getSearchKey(form));
       }
     } else {
       if (searchParam) {
@@ -220,14 +312,14 @@
         return;
       }
 
-      if (name === 'search[context]' || (form && name === form.dataset.searchParameter)) {
+      if (name === 'search[context]' || (form && name === getSearchParameter(form))) {
         return;
       }
 
       data.append(name, field.value);
     });
 
-    var searchParam = form ? form.dataset.searchParameter : '';
+    var searchParam = getSearchParameter(form);
     if (searchParam) {
       data.set(searchParam, term);
     }
@@ -237,8 +329,8 @@
       var contextInput = form.querySelector('input[name="search[context]"]');
       if (contextInput && contextInput.value) {
         data.set(contextParam, contextInput.value);
-      } else if (form.dataset.searchKey) {
-        data.set(contextParam, form.dataset.searchKey);
+      } else {
+        data.set(contextParam, getSearchKey(form));
       }
     }
 
@@ -432,15 +524,16 @@
       });
   }
 
-  function isTentativesForm(form) {
-    return (
-      form &&
-      typeof form === 'object' &&
-      typeof form.classList !== 'undefined' &&
-      form.classList.contains('table-search') &&
-      form.dataset &&
-      form.dataset.ajaxAction === SEARCH_ACTION
-    );
+  function isTentativesForm(form, detail) {
+    if (matchesTentativesForm(form)) {
+      return true;
+    }
+
+    if (detail && detail.searchKey && detail.searchKey === SEARCH_KEY) {
+      return true;
+    }
+
+    return false;
   }
 
   function handleSearchSubmit(event) {
@@ -450,7 +543,7 @@
     }
 
     var form = detail.form;
-    if (!isTentativesForm(form)) {
+    if (!isTentativesForm(form, detail)) {
       return;
     }
 
@@ -476,7 +569,7 @@
     }
 
     var form = detail.form;
-    if (!isTentativesForm(form)) {
+    if (!isTentativesForm(form, detail)) {
       return;
     }
 
@@ -599,5 +692,9 @@
   document.addEventListener('tablesearch:submit', handleSearchSubmit);
   document.addEventListener('tablesearch:reset', handleSearchReset);
   document.addEventListener('pager:change', handlePagerChange);
-  document.addEventListener('DOMContentLoaded', initialise);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initialise);
+  } else {
+    initialise();
+  }
 })();
