@@ -215,16 +215,6 @@ tbody tr:nth-child(even) {
 }
 
 /* ====== Stat tables ====== */
-.stat-badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border: 1px solid var(--color-grey-medium);
-  border-radius: 4px;
-  background-color: rgba(255, 255, 255, 0.05);
-  color: var(--color-text-fond-clair);
-  font-size: 0.85rem;
-}
-
 .stats-table thead {
   background-color: rgba(255, 255, 255, 0.06);
   color: var(--color-text-primary);

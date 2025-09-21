@@ -5319,7 +5319,8 @@ body.panneau-ouvert::before {
 .chasse-stats-summary {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  align-items: center;
+  gap: var(--space-xs);
 }
 
 #chasse-tab-stats > div.edition-panel-body > table > thead > tr:nth-child(2) > th:nth-child(1),
@@ -7559,16 +7560,6 @@ tbody tr:nth-child(even) {
 }
 
 /* ====== Stat tables ====== */
-.stat-badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border: 1px solid var(--color-grey-medium);
-  border-radius: 4px;
-  background-color: rgba(255, 255, 255, 0.05);
-  color: var(--color-text-fond-clair);
-  font-size: 0.85rem;
-}
-
 .stats-table thead {
   background-color: rgba(255, 255, 255, 0.06);
   color: var(--color-text-primary);
@@ -9780,11 +9771,15 @@ body.woocommerce h2 {
   min-width: 0;
 }
 
-.myaccount-tentatives .table-header__stats .stat-badge {
+.myaccount-tentatives .table-header__stats .meta-etiquette {
   display: inline-flex;
   align-items: center;
   white-space: nowrap;
   line-height: 1.15;
+}
+
+.myaccount-tentatives .table-header__stats .meta-etiquette--success {
+  color: var(--color-success);
 }
 
 .myaccount-tentatives .table-header .table-search {
