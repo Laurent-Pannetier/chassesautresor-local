@@ -915,6 +915,139 @@ function myaccount_get_important_messages(): string
 // 🎯 CHASSES ENGAGÉES & 📊 TENTATIVES UTILISATEUR
 // ==================================================
 /**
+ * Get the query parameter used to paginate engaged hunts.
+ *
+ * @return string
+ */
+function ca_get_engaged_hunts_page_param(): string
+{
+    return 'engaged-page';
+}
+
+/**
+ * Retrieve all hunt IDs engaged by the given user.
+ *
+ * @param int $user_id User identifier.
+ *
+ * @return int[]
+ */
+function ca_get_user_engaged_hunt_ids(int $user_id): array
+{
+    global $wpdb;
+
+    $table = $wpdb->prefix . 'engagements';
+    $query = $wpdb->prepare(
+        "SELECT chasse_id FROM {$table} WHERE user_id = %d AND chasse_id IS NOT NULL ORDER BY date_engagement DESC",
+        $user_id
+    );
+
+    $raw_ids = $wpdb->get_col($query);
+    if (empty($raw_ids)) {
+        return [];
+    }
+
+    $chasse_ids = [];
+
+    foreach ($raw_ids as $chasse_id) {
+        $chasse_id = (int) $chasse_id;
+
+        if ($chasse_id <= 0) {
+            continue;
+        }
+
+        if (
+            function_exists('chasse_est_visible_pour_utilisateur')
+            && !chasse_est_visible_pour_utilisateur($chasse_id, $user_id)
+        ) {
+            continue;
+        }
+
+        $chasse_ids[] = $chasse_id;
+    }
+
+    return array_values(array_unique($chasse_ids));
+}
+
+/**
+ * Prepare pagination data for engaged hunts.
+ *
+ * @param int[] $chasse_ids List of hunt identifiers.
+ * @param int   $page       Requested page (1-indexed).
+ * @param int   $per_page   Number of hunts per page.
+ *
+ * @return array{ids:int[],page:int,total_pages:int,total_items:int}
+ */
+function ca_prepare_engaged_hunts_pagination(array $chasse_ids, int $page, int $per_page): array
+{
+    $per_page = max(1, $per_page);
+    $total_items = count($chasse_ids);
+    $total_pages = max(1, (int) ceil($total_items / $per_page));
+
+    $page = max(1, min($page, $total_pages));
+    $offset = ($page - 1) * $per_page;
+
+    return [
+        'ids'         => array_slice($chasse_ids, $offset, $per_page),
+        'page'        => $page,
+        'total_pages' => $total_pages,
+        'total_items' => $total_items,
+    ];
+}
+
+/**
+ * Build the HTML markup for engaged hunts and the related pager.
+ *
+ * @param int[]  $chasse_ids  Hunt identifiers to render.
+ * @param int    $page        Current page.
+ * @param int    $total_pages Total amount of pages.
+ * @param string $grid_class  Additional grid classes for the template part.
+ * @param string $mode        Display mode for the template part.
+ * @param string $page_param  Query parameter used for pagination.
+ *
+ * @return string
+ */
+function ca_get_engaged_hunts_content_html(
+    array $chasse_ids,
+    int $page,
+    int $total_pages,
+    string $grid_class,
+    string $mode,
+    string $page_param
+): string {
+    ob_start();
+
+    if (!empty($chasse_ids)) {
+        get_template_part(
+            'template-parts/chasse/boucle-chasses',
+            null,
+            [
+                'show_header' => false,
+                'mode'        => $mode,
+                'grid_class'  => $grid_class,
+                'chasse_ids'  => $chasse_ids,
+            ]
+        );
+
+        if ($total_pages > 1) {
+            echo cta_render_pager(
+                $page,
+                $total_pages,
+                'engaged-hunts-pager',
+                [
+                    'data-param' => $page_param,
+                ]
+            );
+        }
+    } else {
+        ?>
+        <p class="myaccount-placeholder"><?php esc_html_e('Vous ne participez à aucune chasse pour le moment.', 'chassesautresor-com'); ?></p>
+        <?php
+    }
+
+    return ob_get_clean();
+}
+
+/**
  * Display engaged hunts on the My Account dashboard for player roles.
  *
  * @return void
@@ -932,77 +1065,147 @@ function ca_render_dashboard_engaged_hunts(): void
         return;
     }
 
-    $roles         = (array) $current_user->roles;
-    $player_roles  = ['subscriber', 'customer'];
-    $is_player     = !empty(array_intersect($player_roles, $roles));
-    $is_admin      = current_user_can('administrator');
-    $is_organizer  = function_exists('est_organisateur') && est_organisateur($user_id);
+    $roles        = (array) $current_user->roles;
+    $player_roles = ['subscriber', 'customer'];
+    $is_player    = !empty(array_intersect($player_roles, $roles));
+    $is_admin     = current_user_can('administrator');
+    $is_organizer = function_exists('est_organisateur') && est_organisateur($user_id);
 
     if (!$is_player || $is_admin || $is_organizer) {
         return;
     }
 
-    global $wpdb;
+    $page_param = ca_get_engaged_hunts_page_param();
+    $requested_page = isset($_GET[$page_param]) ? absint($_GET[$page_param]) : 1;
+    if ($requested_page <= 0) {
+        $requested_page = 1;
+    }
 
-    $table = $wpdb->prefix . 'engagements';
-    $query = $wpdb->prepare(
-        "SELECT chasse_id FROM {$table} WHERE user_id = %d AND chasse_id IS NOT NULL ORDER BY date_engagement DESC",
-        $user_id
+    $per_page = (int) apply_filters('ca_engaged_hunts_per_page', 6);
+    if ($per_page <= 0) {
+        $per_page = 6;
+    }
+
+    $chasse_ids = ca_get_user_engaged_hunt_ids($user_id);
+    $pagination = ca_prepare_engaged_hunts_pagination($chasse_ids, $requested_page, $per_page);
+
+    $dir = get_stylesheet_directory();
+    $uri = get_stylesheet_directory_uri();
+
+    wp_enqueue_script(
+        'pager',
+        $uri . '/assets/js/core/pager.js',
+        [],
+        filemtime($dir . '/assets/js/core/pager.js'),
+        true
     );
 
-    $raw_ids = $wpdb->get_col($query);
-    if (empty($raw_ids)) {
-        $raw_ids = [];
-    }
-
-    $chasse_ids = [];
-    foreach ($raw_ids as $chasse_id) {
-        $chasse_id = (int) $chasse_id;
-        if ($chasse_id <= 0) {
-            continue;
-        }
-
-        if (
-            function_exists('chasse_est_visible_pour_utilisateur')
-            && !chasse_est_visible_pour_utilisateur($chasse_id, $user_id)
-        ) {
-            continue;
-        }
-
-        $chasse_ids[] = $chasse_id;
-    }
-
-    $chasse_ids = array_values(array_unique($chasse_ids));
+    wp_enqueue_script(
+        'engaged-hunts-pager',
+        $uri . '/assets/js/engaged-hunts-pager.js',
+        ['pager'],
+        filemtime($dir . '/assets/js/engaged-hunts-pager.js'),
+        true
+    );
 
     $section_title = esc_html__('Vos chasses en cours', 'chassesautresor-com');
+    $error_message = __('Une erreur est survenue lors du chargement des chasses. Veuillez réessayer.', 'chassesautresor-com');
+    $content_html  = ca_get_engaged_hunts_content_html(
+        $pagination['ids'],
+        $pagination['page'],
+        $pagination['total_pages'],
+        'cards-grid myaccount-chasses-engagees-grid',
+        'carte',
+        $page_param
+    );
+
+    $ajax_url = admin_url('admin-ajax.php');
+    $nonce    = wp_create_nonce('ca-engaged-hunts');
 
     ob_start();
     ?>
-    <section class="myaccount-chasses-engagees">
+    <section
+        class="myaccount-chasses-engagees"
+        data-engaged-hunts
+        data-endpoint="<?php echo esc_url($ajax_url); ?>"
+        data-action="ca_get_engaged_hunts"
+        data-nonce="<?php echo esc_attr($nonce); ?>"
+        data-param="<?php echo esc_attr($page_param); ?>"
+        data-error="<?php echo esc_attr($error_message); ?>"
+        data-total-count="<?php echo esc_attr($pagination['total_items']); ?>"
+        data-total-pages="<?php echo esc_attr($pagination['total_pages']); ?>"
+        data-current-page="<?php echo esc_attr($pagination['page']); ?>"
+    >
         <div class="myaccount-section-header">
             <h2 class="myaccount-section-title"><?php echo $section_title; ?></h2>
         </div>
-        <?php if (!empty($chasse_ids)) : ?>
-            <?php
-            get_template_part(
-                'template-parts/chasse/boucle-chasses',
-                null,
-                [
-                    'show_header' => false,
-                    'mode'        => 'carte',
-                    'grid_class'  => 'cards-grid myaccount-chasses-engagees-grid',
-                    'chasse_ids'  => $chasse_ids,
-                ]
-            );
-            ?>
-        <?php else : ?>
-            <p class="myaccount-placeholder"><?php esc_html_e('Vous ne participez à aucune chasse pour le moment.', 'chassesautresor-com'); ?></p>
-        <?php endif; ?>
+        <div
+            class="myaccount-chasses-engagees-content"
+            data-engaged-hunts-content
+            aria-live="polite"
+            aria-busy="false"
+        >
+            <?php echo $content_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+        </div>
     </section>
     <?php
     echo ob_get_clean();
 }
 add_action('woocommerce_account_dashboard', 'ca_render_dashboard_engaged_hunts', 10);
+
+/**
+ * AJAX handler for engaged hunts pagination.
+ *
+ * @return void
+ */
+function ca_ajax_get_engaged_hunts(): void
+{
+    if (!is_user_logged_in()) {
+        wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor-com')], 403);
+    }
+
+    $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
+    if (!wp_verify_nonce($nonce, 'ca-engaged-hunts')) {
+        wp_send_json_error(['message' => __('Security check failed.', 'chassesautresor-com')], 400);
+    }
+
+    $user_id = (int) get_current_user_id();
+    if ($user_id <= 0) {
+        wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor-com')], 403);
+    }
+
+    $page_param = ca_get_engaged_hunts_page_param();
+    $per_page   = (int) apply_filters('ca_engaged_hunts_per_page', 6);
+    if ($per_page <= 0) {
+        $per_page = 6;
+    }
+
+    $requested_page = isset($_POST['page']) ? absint(wp_unslash($_POST['page'])) : 1;
+    if ($requested_page <= 0) {
+        $requested_page = 1;
+    }
+
+    $chasse_ids = ca_get_user_engaged_hunt_ids($user_id);
+    $pagination = ca_prepare_engaged_hunts_pagination($chasse_ids, $requested_page, $per_page);
+
+    $content_html = ca_get_engaged_hunts_content_html(
+        $pagination['ids'],
+        $pagination['page'],
+        $pagination['total_pages'],
+        'cards-grid myaccount-chasses-engagees-grid',
+        'carte',
+        $page_param
+    );
+
+    wp_send_json_success([
+        'html'         => $content_html,
+        'page'         => $pagination['page'],
+        'total_pages'  => $pagination['total_pages'],
+        'total_items'  => $pagination['total_items'],
+        'nonce'        => wp_create_nonce('ca-engaged-hunts'),
+    ]);
+}
+add_action('wp_ajax_ca_get_engaged_hunts', 'ca_ajax_get_engaged_hunts');
 
 /**
  * Display the Tentatives table on the My Account dashboard.

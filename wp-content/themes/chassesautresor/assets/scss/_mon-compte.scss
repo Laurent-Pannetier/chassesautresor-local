@@ -392,6 +392,28 @@
     gap: var(--space-lg);
 }
 
+.myaccount-chasses-engagees {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+.myaccount-chasses-engagees-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    transition: opacity 0.2s ease;
+}
+
+.myaccount-chasses-engagees.engaged-hunts-loading .myaccount-chasses-engagees-content {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.myaccount-chasses-engagees-grid {
+    gap: var(--space-3xl);
+}
+
 .myaccount-section-header {
     display: flex;
     flex-wrap: wrap;
