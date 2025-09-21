@@ -53,10 +53,18 @@
 }
 
 /* ========== 🃏 Carte compacte ========== */
-.carte-compact {
+.carte-compact-card {
   width: 100%;
   max-width: 300px;
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-xs);
+}
+
+.carte-compact {
+  width: 100%;
   padding: 0;
   overflow: hidden;
 }
@@ -95,6 +103,28 @@
 .carte-compact .carte-compact__meta {
   font-size: 0.875rem;
   margin-top: auto;
+}
+
+.carte-compact__progression-wrapper {
+  width: 100%;
+}
+
+.carte-compact__progression {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 50%;
+}
+.carte-compact__progression .meta-etiquette {
+  font-size: 0.75rem;
+}
+
+.carte-compact__progression-label {
+  letter-spacing: 0.02em;
+  padding: 0;
+  background-color: transparent;
+  color: var(--color-grey-medium);
 }
 
 /* ========== 🆕 Carte format CART ========== */
