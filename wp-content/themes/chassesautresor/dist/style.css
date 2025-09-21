@@ -8845,14 +8845,20 @@ footer .site-footer-primary-section-3 {
   line-height: 1.2;
   font-weight: 600;
   display: flex;
-  flex-direction: column;
-  gap: 0.125rem;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+  -moz-column-gap: 0.5rem;
+       column-gap: 0.5rem;
+  row-gap: 0.125rem;
+  text-transform: none;
 }
 
 .myaccount-title-greeting {
-  font-size: 0.75em;
+  font-size: 0.65em;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.7);
+  text-transform: none;
 }
 
 .myaccount-title-text {
