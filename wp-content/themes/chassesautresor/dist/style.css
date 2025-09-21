@@ -8762,6 +8762,17 @@ footer .site-footer-primary-section-3 {
   color: var(--color-text-primary);
 }
 
+.myaccount-last-active {
+  margin-left: auto;
+  margin-bottom: 0;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: right;
+}
+.myaccount-last-active .meta-label {
+  font-weight: 600;
+}
+
 .myaccount-content {
   flex: 1;
   overflow-y: auto;
