@@ -1480,12 +1480,12 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
         $image_ratio = $image_width . ' / ' . $image_height;
 
         $ratio_value = $image_width / $image_height;
-        $min_ratio   = 3 / 4;
+        $min_ratio   = 4 / 3;
         $max_ratio   = 16 / 9;
         $compact_ratio_value = $ratio_value;
 
         if ($ratio_value < $min_ratio) {
-            $image_compact_ratio = '3 / 4';
+            $image_compact_ratio = '4 / 3';
             $compact_ratio_value = $min_ratio;
         } elseif ($ratio_value > $max_ratio) {
             $image_compact_ratio = '16 / 9';
