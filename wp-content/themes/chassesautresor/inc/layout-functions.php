@@ -202,6 +202,13 @@ function charger_scripts_personnalises() {
       true
     );
     wp_enqueue_script(
+      'table-search',
+      $theme_dir . 'core/table-search.js',
+      [],
+      filemtime(get_stylesheet_directory() . '/assets/js/core/table-search.js'),
+      true
+    );
+    wp_enqueue_script(
       'list-skeleton',
       $theme_dir . 'core/skeleton.js',
       ['pager'],

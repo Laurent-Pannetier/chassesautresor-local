@@ -1352,6 +1352,83 @@ body.edition-active-chasse .chasse-enigmes-header .liens-placeholder {
   margin-left: 1px;
 }
 
+.table-search {
+  display: grid;
+  gap: var(--space-xs);
+  width: 100%;
+  margin: 0;
+}
+.table-search__label {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+.table-search__description {
+  margin: 0;
+  font-size: 0.875rem;
+  color: rgba(245, 245, 220, 0.7);
+}
+.table-search__controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  width: 100%;
+}
+.table-search__field {
+  width: 100%;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+.table-search__field::-moz-placeholder {
+  color: rgba(245, 245, 220, 0.6);
+}
+.table-search__field::placeholder {
+  color: rgba(245, 245, 220, 0.6);
+}
+.table-search__field:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(184, 134, 11, 0.35);
+}
+.table-search__submit {
+  align-self: flex-start;
+  padding: var(--space-xs) var(--space-lg);
+  border: none;
+  border-radius: 0.5rem;
+  background-color: var(--color-background-button);
+  color: var(--color-white);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+.table-search__submit:hover, .table-search__submit:focus {
+  background-color: var(--color-background-button-hover);
+  transform: translateY(-1px);
+  outline: none;
+}
+
+@media (min-width: 600px) {
+  .table-search {
+    grid-template-columns: 1fr;
+  }
+  .table-search__controls {
+    flex-direction: row;
+    align-items: stretch;
+  }
+  .table-search__field {
+    flex: 1 1 auto;
+  }
+  .table-search__submit {
+    align-self: stretch;
+    padding: var(--space-xs) var(--space-xl);
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation: none !important;
