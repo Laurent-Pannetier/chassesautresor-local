@@ -1,0 +1,38 @@
+0000.001 (0) Opened log file at time: Sun, 21 Sep 2025 03:44:30 +0000 on http://chassesautresor.local
+0000.008 (0) UpdraftPlus WordPress backup plugin (https://updraftplus.com): 1.25.7 WP: 6.8.2 PHP: 8.2.27 (cgi-fcgi, Windows NT LAURENTPC 10.0 build 26100 (Windows 11) AMD64) MySQL: 8.0.35 (max packet size=1073741824) WPLANG: fr_FR Server: nginx/1.26.1 safe_mode: 0 max_execution_time: 900 memory_limit: 256M (used: 16.1M | 20M) multisite: N openssl: OpenSSL 3.0.15 3 Sep 2024 mcrypt: N LANG:  WP Proxy: disabled ZipArchive::addFile: Y
+0000.013 (0) Free space on disk containing Updraft's temporary directory: 695590.8 MB
+0000.079 (0) Deleting old log file: log.c2bf9e5ad0fc.txt
+0000.084 (0) Tasks: Backup files: 1 (schedule: daily) Backup DB:  (schedule: daily)
+0000.088 (0) Processed schedules. Combining jobs from identical schedules. Tasks now: Backup files: 1 Backup DB: 1
+0000.113 (0) Requesting semaphore lock (fd) (apparently via scheduler: last_scheduled_action_called_at=1756700128, seconds_ago=1726142)
+0000.126 (0) Set semaphore last lock (fd) time to 2025-09-21 03:44:30
+0000.129 (0) Semaphore lock (fd) complete
+0000.138 (0) Backup run: resumption=0, nonce=22d42f87b87c, file_nonce=22d42f87b87c begun at=1758426270 (0s ago), job type=backup
+0000.144 (0) Scheduling a resumption (1) after 300 seconds (1758426570) in case this run gets aborted
+0000.211 (0) PHP event: code E_DEPRECATED: rtrim(): Passing null to parameter #1 ($string) of type string is deprecated (line 2829, C:\Users\laure\Local Sites\chassesautresor\app\public\wp-includes\formatting.php)
+0000.215 (0) Checking if we have a zip executable available
+0000.222 (0) Creation of backups of directories: beginning
+0000.232 (0) Beginning creation of dump of plugins (split every: 25 MB)
+0002.809 (0) Total entities for the zip file: 2188 directories, 14484 files (0 skipped as non-modified), 154.7 MB
+0002.883 (0) Zip: backup_2025-09-21-0544_chassesautresorlocal_22d42f87b87c-plugins.zip.tmp: 100 files added (on-disk size: 0 KB)
+0002.911 (0) Zip: backup_2025-09-21-0544_chassesautresorlocal_22d42f87b87c-plugins.zip.tmp: 200 files added (on-disk size: 0 KB)
+0002.936 (0) Zip: backup_2025-09-21-0544_chassesautresorlocal_22d42f87b87c-plugins.zip.tmp: 300 files added (on-disk size: 0 KB)
+0002.959 (0) Zip: backup_2025-09-21-0544_chassesautresorlocal_22d42f87b87c-plugins.zip.tmp: 400 files added (on-disk size: 0 KB)
+0002.980 (0) Zip: backup_2025-09-21-0544_chassesautresorlocal_22d42f87b87c-plugins.zip.tmp: 500 files added (on-disk size: 0 KB)
+0003.004 (0) Zip: backup_2025-09-21-0544_chassesautresorlocal_22d42f87b87c-plugins.zip.tmp: 600 files added (on-disk size: 0 KB)
+0003.028 (0) Zip: backup_2025-09-21-0544_chassesautresorlocal_22d42f87b87c-plugins.zip.tmp: 700 files added (on-disk size: 0 KB)
+0003.054 (0) Zip: backup_2025-09-21-0544_chassesautresorlocal_22d42f87b87c-plugins.zip.tmp: 800 files added (on-disk size: 0 KB)
+0003.076 (0) Zip: backup_2025-09-21-0544_chassesautresorlocal_22d42f87b87c-plugins.zip.tmp: 900 files added (on-disk size: 0 KB)
+0003.098 (0) Zip: backup_2025-09-21-0544_chassesautresorlocal_22d42f87b87c-plugins.zip.tmp: 1000 files added (on-disk size: 0 KB)
+0003.102 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 1000 files added on this batch (24.4 MB, 14484 files batched, 1001 (1001) added so far); re-opening (prior size: 0 KB)
+0056.365 (0) Zip: backup_2025-09-21-0544_chassesautresorlocal_22d42f87b87c-plugins.zip.tmp: 1100 files added (on-disk size: 7657.3 KB)
+0056.387 (0) Zip: backup_2025-09-21-0544_chassesautresorlocal_22d42f87b87c-plugins.zip.tmp: 1200 files added (on-disk size: 7657.3 KB)
+0056.410 (0) Zip: backup_2025-09-21-0544_chassesautresorlocal_22d42f87b87c-plugins.zip.tmp: 1300 files added (on-disk size: 7657.3 KB)
+0056.431 (0) Zip: backup_2025-09-21-0544_chassesautresorlocal_22d42f87b87c-plugins.zip.tmp: 1400 files added (on-disk size: 7657.3 KB)
+0056.451 (0) Zip: backup_2025-09-21-0544_chassesautresorlocal_22d42f87b87c-plugins.zip.tmp: 1500 files added (on-disk size: 7657.3 KB)
+0056.472 (0) Zip: backup_2025-09-21-0544_chassesautresorlocal_22d42f87b87c-plugins.zip.tmp: 1600 files added (on-disk size: 7657.3 KB)
+0056.494 (0) Zip: backup_2025-09-21-0544_chassesautresorlocal_22d42f87b87c-plugins.zip.tmp: 1700 files added (on-disk size: 7657.3 KB)
+0056.520 (0) Zip: backup_2025-09-21-0544_chassesautresorlocal_22d42f87b87c-plugins.zip.tmp: 1800 files added (on-disk size: 7657.3 KB)
+0056.546 (0) Zip: backup_2025-09-21-0544_chassesautresorlocal_22d42f87b87c-plugins.zip.tmp: 1900 files added (on-disk size: 7657.3 KB)
+0056.569 (0) Zip: backup_2025-09-21-0544_chassesautresorlocal_22d42f87b87c-plugins.zip.tmp: 2000 files added (on-disk size: 7657.3 KB)
+0056.573 (0) Adding batch to zip file (UpdraftPlus_ZipArchive): over 1000 files added on this batch (7.7 MB, 14484 files batched, 1001 (2002) added so far); re-opening (prior size: 7657.3 KB)
