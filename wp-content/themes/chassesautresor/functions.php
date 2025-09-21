@@ -253,6 +253,62 @@ function cta_account_icon_by_state( $default ) {
 add_filter( 'astra_get_option_header-account-icon-type', 'cta_account_icon_by_state' );
 
 /**
+ * Removes the "Continue Shopping" button from Astra's flyout cart when empty.
+ *
+ * @return void
+ */
+add_action(
+    'wp',
+    static function (): void {
+        if ( ! class_exists( 'Astra_Woocommerce' ) || ! function_exists( 'WC' ) ) {
+            return;
+        }
+
+        remove_action(
+            'woocommerce_after_mini_cart',
+            [ Astra_Woocommerce::get_instance(), 'astra_update_flyout_cart_layout' ]
+        );
+
+        add_action(
+            'woocommerce_after_mini_cart',
+            static function (): void {
+                if ( ! function_exists( 'WC' ) ) {
+                    return;
+                }
+
+                $cart = WC()->cart;
+
+                if ( ! $cart || ! $cart->is_empty() ) {
+                    return;
+                }
+
+                /**
+                 * Preserve Astra's extensibility hooks around the empty mini-cart.
+                 */
+                do_action( 'astra_empty_cart_before' );
+
+                $message = apply_filters(
+                    'astra_mini_cart_empty_msg',
+                    __( 'No products in the cart.', 'chassesautresor-com' )
+                );
+                ?>
+                <div class="ast-mini-cart-empty">
+                    <div class="ast-mini-cart-message">
+                        <p class="woocommerce-mini-cart__empty-message">
+                            <?php echo esc_html( $message ); ?>
+                        </p>
+                    </div>
+                    <?php do_action( 'astra_empty_cart_content' ); ?>
+                </div>
+                <?php
+                do_action( 'astra_empty_cart_after' );
+            }
+        );
+    },
+    5
+);
+
+/**
  * Chargement des styles du thème parent et enfant avec prise en charge d'Astra.
  */
 add_action('wp_enqueue_scripts', function () {

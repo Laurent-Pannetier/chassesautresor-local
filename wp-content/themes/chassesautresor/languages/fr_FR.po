@@ -47,6 +47,10 @@ msgstr "Anglais"
 msgid "Change language"
 msgstr "Changer de langue"
 
+#: functions.php:292
+msgid "No products in the cart."
+msgstr "Aucun article dans le panier."
+
 #: inc/admin-functions.php:40
 msgid "⛔ Accès refusé."
 msgstr "⛔ Accès refusé."
