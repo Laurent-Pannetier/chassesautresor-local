@@ -23,12 +23,20 @@ if (!empty($_SERVER['REQUEST_URI'])) {
 if ($current_user->ID) {
     $last_active_raw = get_user_meta($current_user->ID, 'wc_last_active', true);
     if ($last_active_raw) {
-        $last_active_timestamp = strtotime($last_active_raw);
-        if ($last_active_timestamp) {
+        if (is_numeric($last_active_raw)) {
+            $last_active_timestamp = absint($last_active_raw);
+        } else {
+            $last_active_timestamp = strtotime($last_active_raw);
+        }
+
+        if (!empty($last_active_timestamp)) {
+            $locale = function_exists('determine_locale') ? determine_locale() : get_locale();
+            $date_format = strpos($locale, 'fr_') === 0 ? 'd/m/Y' : 'n/j/Y';
+
             if (function_exists('wp_date')) {
-                $last_active_formatted = wp_date(get_option('date_format'), $last_active_timestamp);
+                $last_active_formatted = wp_date($date_format, $last_active_timestamp);
             } else {
-                $last_active_formatted = date_i18n(get_option('date_format'), $last_active_timestamp);
+                $last_active_formatted = date_i18n($date_format, $last_active_timestamp);
             }
         }
     }
