@@ -178,7 +178,11 @@ if (!function_exists('current_user_can')) {
 if (!function_exists('cta_render_search_form')) {
     function cta_render_search_form($key, $overrides = [])
     {
-        return '<form class="table-search" data-search-key="' . esc_attr($key) . '"></form>';
+        return '<form class="table-search" data-search-key="' . esc_attr($key) . '" data-ajax-action="ca_fetch_tentatives" data-ajax-target="#tentatives-table-wrapper">'
+            . '<div class="table-search__controls">'
+            . '<button type="button" class="table-search__reset" data-table-search-reset hidden></button>'
+            . '</div>'
+            . '</form>';
     }
 }
 
@@ -344,5 +348,7 @@ class MyAccountTentativesTest extends TestCase
         $this->assertStringNotContainsString('Chasse aux pirates', $output);
         $this->assertStringContainsString('table-search', $output);
         $this->assertStringContainsString('table-search__reset', $output);
+        $this->assertStringContainsString('data-ajax-action="ca_fetch_tentatives"', $output);
+        $this->assertStringContainsString('id="tentatives-table-wrapper"', $output);
     }
 }

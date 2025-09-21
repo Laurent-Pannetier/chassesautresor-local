@@ -9559,6 +9559,16 @@ body.woocommerce h2 {
   flex: 1 1 100%;
 }
 
+.myaccount-tentatives .stats-table-wrapper {
+  position: relative;
+  transition: opacity 0.2s ease;
+}
+
+.myaccount-tentatives .stats-table-wrapper.is-loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
 @media (min-width: 600px) {
   .myaccount-tentatives .table-header {
     gap: var(--space-sm);

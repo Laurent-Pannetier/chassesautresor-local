@@ -53,6 +53,7 @@ function cta_render_search_form(string $key, array $overrides = []): string
         'show_reset_button'  => $ui['show_reset_button'] ?? false,
         'pagination_params'  => $context['pagination_params'] ?? [],
         'description'        => $ui['description'] ?? '',
+        'data_attributes'    => [],
     ];
 
     $config = array_merge($defaults, $overrides);
@@ -120,12 +121,41 @@ function cta_render_search_form(string $key, array $overrides = []): string
     $form_attrs .= sprintf(' data-search-key="%s"', esc_attr($context['key'] ?? $key));
     $form_attrs .= sprintf(' data-search-parameter="%s"', esc_attr($input_name));
 
+    $data_attributes = [];
+    $used_data_keys  = [
+        'search-key',
+        'search-parameter',
+    ];
+
     if ($show_reset) {
-        $form_attrs .= ' data-has-reset="1"';
+        $form_attrs     .= ' data-has-reset="1"';
+        $used_data_keys[] = 'has-reset';
     }
 
     if (!empty($pagination_params)) {
-        $form_attrs .= sprintf(' data-reset-pagination="%s"', esc_attr(implode(',', $pagination_params)));
+        $form_attrs     .= sprintf(' data-reset-pagination="%s"', esc_attr(implode(',', $pagination_params)));
+        $used_data_keys[] = 'reset-pagination';
+    }
+
+    if (is_array($config['data_attributes'])) {
+        foreach ($config['data_attributes'] as $data_key => $data_value) {
+            $sanitized = strtolower((string) $data_key);
+            $sanitized = preg_replace('/[^a-z0-9_-]+/', '', $sanitized);
+
+            if ('' === $sanitized) {
+                continue;
+            }
+
+            if (in_array($sanitized, $used_data_keys, true)) {
+                continue;
+            }
+
+            $data_attributes[$sanitized] = (string) $data_value;
+        }
+    }
+
+    foreach ($data_attributes as $data_key => $data_value) {
+        $form_attrs .= sprintf(' data-%s="%s"', esc_attr($data_key), esc_attr($data_value));
     }
 
     $form_attrs .= ' role="search"';
@@ -179,8 +209,8 @@ function cta_render_search_form(string $key, array $overrides = []): string
             <button type="submit" class="table-search__submit">
                 <span class="table-search__submit-text"><?php echo esc_html($submit); ?></span>
             </button>
-            <?php if ($show_reset && '' !== $search_value) : ?>
-            <button type="button" class="table-search__reset" data-table-search-reset>
+            <?php if ($show_reset) : ?>
+            <button type="button" class="table-search__reset" data-table-search-reset<?php echo '' === $search_value ? ' hidden' : ''; ?>>
                 <span class="table-search__reset-text"><?php echo esc_html($reset_label); ?></span>
             </button>
             <?php endif; ?>

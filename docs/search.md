@@ -56,7 +56,7 @@ Génère le formulaire `<form class="table-search">` associé à un contexte :
 - ajoute automatiquement `search[context]`, préserve le paramètre `section` et
   fusionne les `hidden_fields` déclarés.
 - accepte des surcharges (`method`, `action`, `hidden_fields`, `submit_label`,
-  `show_reset_button`, `reset_label`, etc.) et insère un nonce si demandé.
+  `show_reset_button`, `reset_label`, `data_attributes`, etc.) et insère un nonce si demandé.
 - renseigne `data-reset-pagination` pour que le script JS supprime les anciens
   paramètres de pagination.
 
@@ -71,6 +71,15 @@ navigateur :
 - déclenche l'événement `tablesearch:submit` (bubbling, annulable) contenant
   `{ form, searchKey, term, actionUrl, resetParams }`. Annuler l'événement
   empêche l'envoi natif du formulaire (intégrations AJAX).
+
+### Intégration AJAX
+
+- Ajouter des attributs `data-ajax-action` et `data-ajax-target` sur le
+  formulaire pour brancher un traitement dynamique.
+- Intercepter `tablesearch:submit` et `tablesearch:reset` pour envoyer la
+  requête avec `fetch()` puis rafraîchir le tableau sans rechargement.
+- Mettre à jour l'URL via `history.replaceState` afin de conserver les
+  paramètres de recherche et de pagination dans l'historique.
 
 ## Exemple minimal
 
