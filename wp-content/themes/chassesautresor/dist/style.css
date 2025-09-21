@@ -9245,6 +9245,13 @@ footer .site-footer-primary-section-3 {
   outline: 2px solid var(--color-titre-enigme);
   outline-offset: 2px;
 }
+.woocommerce-account .addresses .title .woocommerce-Address-action {
+  float: none;
+  padding: 0.5rem 0.75rem;
+}
+.woocommerce-account .addresses .title .woocommerce-Address-action.woocommerce-Address-action--add {
+  padding: 0;
+}
 .woocommerce-account .woocommerce-Address-action--edit {
   color: var(--color-titre-enigme);
 }

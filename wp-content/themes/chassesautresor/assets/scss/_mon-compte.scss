@@ -440,6 +440,19 @@
         }
     }
 
+    .addresses {
+        .title {
+            .woocommerce-Address-action {
+                float: none;
+                padding: 0.5rem 0.75rem;
+            }
+
+            .woocommerce-Address-action.woocommerce-Address-action--add {
+                padding: 0;
+            }
+        }
+    }
+
     .woocommerce-Address-action--edit {
         color: var(--color-titre-enigme);
     }
