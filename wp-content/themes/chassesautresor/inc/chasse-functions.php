@@ -1472,8 +1472,22 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
     }
 
     $image_ratio = '';
+    $image_compact_ratio = '';
+
     if ($image_width > 0 && $image_height > 0) {
         $image_ratio = $image_width . ' / ' . $image_height;
+
+        $ratio_value = $image_width / $image_height;
+        $min_ratio   = 3 / 4;
+        $max_ratio   = 16 / 9;
+
+        if ($ratio_value < $min_ratio) {
+            $image_compact_ratio = '3 / 4';
+        } elseif ($ratio_value > $max_ratio) {
+            $image_compact_ratio = '16 / 9';
+        } else {
+            $image_compact_ratio = $image_ratio;
+        }
     }
 
     $champs = chasse_get_champs($chasse_id);
@@ -1642,6 +1656,7 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
         'image_id'          => $image_id,
         'image'             => $image,
         'image_ratio'       => $image_ratio,
+        'image_compact_ratio' => $image_compact_ratio,
         'image_size'        => $image_size,
         'total_enigmes'     => $total_enigmes,
         'nb_joueurs'        => $nb_joueurs,

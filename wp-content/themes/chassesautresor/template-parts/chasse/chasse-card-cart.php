@@ -27,15 +27,23 @@ $has_badge_icon = $badge_icon_html !== '';
 $badge_classes = $infos['badge_class'] ?? '';
 $image_size = $infos['image_size'] ?? 'medium_large';
 $image_ratio = $infos['image_ratio'] ?? '';
+$image_compact_ratio = $infos['image_compact_ratio'] ?? '';
 $image_style = '';
 
-if ($image_ratio !== '') {
-    $style_parts = [
-        '--carte-cart-aspect-ratio:' . $image_ratio,
-        'aspect-ratio:' . $image_ratio,
-    ];
+if ($image_ratio !== '' || $image_compact_ratio !== '') {
+    $style_parts = [];
 
-    $image_style = implode(';', $style_parts) . ';';
+    if ($image_ratio !== '') {
+        $style_parts[] = '--carte-cart-aspect-ratio:' . $image_ratio;
+    }
+
+    if ($image_compact_ratio !== '') {
+        $style_parts[] = '--carte-cart-compact-aspect-ratio:' . $image_compact_ratio;
+    }
+
+    if (!empty($style_parts)) {
+        $image_style = implode(';', $style_parts) . ';';
+    }
 }
 $image_html = '';
 
