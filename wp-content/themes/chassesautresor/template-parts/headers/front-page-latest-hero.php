@@ -19,7 +19,7 @@ $cta_message = $args['cta_message'] ?? '';
 <section class="bandeau-hero bandeau-hero--latest-chasse" data-home-hero="latest" aria-hidden="true">
   <div class="hero-overlay"<?php if ($image_fond) : ?> style="background-image: url('<?php echo esc_url($image_fond); ?>');"<?php endif; ?>>
     <div class="contenu-hero">
-      <p class="hero-eyebrow"><?php esc_html_e('Dernière chasse validée', 'chassesautresor-com'); ?></p>
+      <p class="hero-eyebrow"><?php esc_html_e('à la une', 'chassesautresor-com'); ?></p>
       <h2 class="hero-title"><?php echo esc_html($titre); ?></h2>
       <?php if ($description) : ?>
         <p class="hero-description"><?php echo esc_html($description); ?></p>
