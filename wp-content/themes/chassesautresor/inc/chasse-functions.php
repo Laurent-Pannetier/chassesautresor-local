@@ -1472,41 +1472,17 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
     }
 
     $image_ratio = '';
-    $image_compact_ratio = '';
     $image_ratio_padding = '';
-    $image_compact_ratio_padding = '';
 
     if ($image_width > 0 && $image_height > 0) {
         $image_ratio = $image_width . ' / ' . $image_height;
 
         $ratio_value = $image_width / $image_height;
-        $min_ratio   = 4 / 3;
-        $max_ratio   = 16 / 9;
-        $compact_ratio_value = $ratio_value;
-
-        if ($ratio_value < $min_ratio) {
-            $image_compact_ratio = '4 / 3';
-            $compact_ratio_value = $min_ratio;
-        } elseif ($ratio_value > $max_ratio) {
-            $image_compact_ratio = '16 / 9';
-            $compact_ratio_value = $max_ratio;
-        } else {
-            $image_compact_ratio = $image_ratio;
-        }
-
         if ($ratio_value > 0) {
             $ratio_padding_value = 100 / $ratio_value;
             $image_ratio_padding = rtrim(rtrim(sprintf('%.6F', $ratio_padding_value), '0'), '.');
             if ($image_ratio_padding !== '') {
                 $image_ratio_padding .= '%';
-            }
-        }
-
-        if ($compact_ratio_value > 0) {
-            $compact_padding_value = 100 / $compact_ratio_value;
-            $image_compact_ratio_padding = rtrim(rtrim(sprintf('%.6F', $compact_padding_value), '0'), '.');
-            if ($image_compact_ratio_padding !== '') {
-                $image_compact_ratio_padding .= '%';
             }
         }
     }
@@ -1677,9 +1653,7 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
         'image_id'          => $image_id,
         'image'             => $image,
         'image_ratio'       => $image_ratio,
-        'image_compact_ratio' => $image_compact_ratio,
         'image_ratio_padding' => $image_ratio_padding,
-        'image_compact_ratio_padding' => $image_compact_ratio_padding,
         'image_size'        => $image_size,
         'total_enigmes'     => $total_enigmes,
         'nb_joueurs'        => $nb_joueurs,
