@@ -25,6 +25,38 @@ $badge_icon_html = $infos['statut_icon'] ?? '';
 $badge_label = $infos['statut_label'] ?? ($infos['badge_content'] ?? '');
 $has_badge_icon = $badge_icon_html !== '';
 $badge_classes = $infos['badge_class'] ?? '';
+$image_ratio = $infos['image_ratio'] ?? '';
+$image_style = $image_ratio !== '' ? '--carte-cart-aspect-ratio:' . $image_ratio . ';' : '';
+$image_html = '';
+
+if (!empty($infos['image_id'])) {
+    $image_attributes = [
+        'class'   => 'carte-cart__image',
+        'alt'     => $infos['titre'],
+        'loading' => 'lazy',
+    ];
+
+    if ($image_style !== '') {
+        $image_attributes['style'] = $image_style;
+    }
+
+    $image_html = wp_get_attachment_image(
+        (int) $infos['image_id'],
+        'medium',
+        false,
+        $image_attributes
+    );
+}
+
+if ($image_html === '') {
+    $style_attribute = $image_style !== '' ? ' style="' . esc_attr($image_style) . '"' : '';
+    $image_html = sprintf(
+        '<img src="%1$s" alt="%2$s" class="carte-cart__image" loading="lazy"%3$s>',
+        esc_url($infos['image']),
+        esc_attr($infos['titre']),
+        $style_attribute
+    );
+}
 
 if ($has_badge_icon) {
     $badge_classes = trim($badge_classes . ' badge-statut--responsive');
@@ -52,7 +84,7 @@ if ($badge_has_interaction && $badge_tooltip !== '') {
                     </span>
                 <?php endif; ?>
             </span>
-            <img src="<?php echo esc_url($infos['image']); ?>" alt="<?php echo esc_attr($infos['titre']); ?>" class="carte-cart__image">
+            <?php echo $image_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- contenu préparé ci-dessus. ?>
         </div>
         <div class="carte-cart__contenu">
             <h3 class="carte-cart__titre"><?php echo esc_html($infos['titre']); ?></h3>

@@ -1425,16 +1425,41 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
     $image_data = get_field('chasse_principale_image', $chasse_id);
     $image_id = 0;
     $image = '';
+    $image_width = 0;
+    $image_height = 0;
+
     if (is_array($image_data) && !empty($image_data['sizes']['medium'])) {
         $image_id = $image_data['ID'] ?? 0;
         $image = $image_data['sizes']['medium'];
+
+        if (!empty($image_data['sizes']['medium-width']) && !empty($image_data['sizes']['medium-height'])) {
+            $image_width  = (int) $image_data['sizes']['medium-width'];
+            $image_height = (int) $image_data['sizes']['medium-height'];
+        } elseif (!empty($image_data['width']) && !empty($image_data['height'])) {
+            $image_width  = (int) $image_data['width'];
+            $image_height = (int) $image_data['height'];
+        }
     } elseif ($image_data) {
         $image_id = is_array($image_data) ? ($image_data['ID'] ?? 0) : (int) $image_data;
         $image = $image_id ? wp_get_attachment_image_url($image_id, 'medium') : '';
     }
+
     if (!$image) {
         $image_id = get_post_thumbnail_id($chasse_id);
         $image = $image_id ? wp_get_attachment_image_url($image_id, 'medium') : '';
+    }
+
+    if ((!$image_width || !$image_height) && $image_id) {
+        $image_src = wp_get_attachment_image_src($image_id, 'medium');
+        if (is_array($image_src)) {
+            $image_width  = (int) $image_src[1];
+            $image_height = (int) $image_src[2];
+        }
+    }
+
+    $image_ratio = '';
+    if ($image_width > 0 && $image_height > 0) {
+        $image_ratio = $image_width . ' / ' . $image_height;
     }
 
     $champs = chasse_get_champs($chasse_id);
@@ -1602,6 +1627,7 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
         'permalink'         => $permalink,
         'image_id'          => $image_id,
         'image'             => $image,
+        'image_ratio'       => $image_ratio,
         'total_enigmes'     => $total_enigmes,
         'nb_joueurs'        => $nb_joueurs,
         'nb_joueurs_label'  => $nb_joueurs_label,
