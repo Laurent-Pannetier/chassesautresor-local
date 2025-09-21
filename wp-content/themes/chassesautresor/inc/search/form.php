@@ -39,18 +39,21 @@ function cta_render_search_form(string $key, array $overrides = []): string
     $form_id   = $overrides['id'] ?? sprintf('table-search-%s', $parameter);
 
     $defaults = [
-        'class'             => 'table-search',
-        'method'            => 'get',
-        'action'            => '',
-        'label'             => $ui['label'] ?? '',
-        'placeholder'       => $ui['placeholder'] ?? '',
-        'value'             => null,
-        'hidden_fields'     => [],
-        'nonce_action'      => $ui['nonce_action'] ?? '',
-        'nonce_name'        => $ui['nonce_name'] ?? 'nonce',
-        'submit_label'      => $ui['submit_label'] ?? esc_html__('Rechercher', 'chassesautresor-com'),
-        'pagination_params' => $context['pagination_params'] ?? [],
-        'description'       => $ui['description'] ?? '',
+        'class'              => 'table-search',
+        'method'             => 'get',
+        'action'             => '',
+        'label'              => $ui['label'] ?? '',
+        'placeholder'        => $ui['placeholder'] ?? '',
+        'value'              => null,
+        'hidden_fields'      => [],
+        'nonce_action'       => $ui['nonce_action'] ?? '',
+        'nonce_name'         => $ui['nonce_name'] ?? 'nonce',
+        'submit_label'       => $ui['submit_label'] ?? esc_html__('Rechercher', 'chassesautresor-com'),
+        'reset_label'        => $ui['reset_label'] ?? esc_html__('Réinitialiser', 'chassesautresor-com'),
+        'show_reset_button'  => $ui['show_reset_button'] ?? false,
+        'pagination_params'  => $context['pagination_params'] ?? [],
+        'description'        => $ui['description'] ?? '',
+        'data_attributes'    => [],
     ];
 
     $config = array_merge($defaults, $overrides);
@@ -61,11 +64,19 @@ function cta_render_search_form(string $key, array $overrides = []): string
     }
 
     $form_classes = trim((string) $config['class']);
-    if ('' === $form_classes) {
-        $form_classes = 'table-search';
-    } elseif (false === strpos($form_classes, 'table-search')) {
-        $form_classes = trim('table-search ' . $form_classes);
+    $class_tokens = preg_split('/\s+/', $form_classes);
+    $class_tokens = array_filter(
+        is_array($class_tokens) ? $class_tokens : [],
+        static function ($class_name): bool {
+            return is_string($class_name) && '' !== $class_name;
+        }
+    );
+
+    if (!in_array('table-search', $class_tokens, true)) {
+        array_unshift($class_tokens, 'table-search');
     }
+
+    $form_classes = implode(' ', array_unique($class_tokens));
 
     $search_value = $config['value'];
     if (null === $search_value) {
@@ -104,6 +115,8 @@ function cta_render_search_form(string $key, array $overrides = []): string
     $label       = (string) $config['label'];
     $desc        = (string) $config['description'];
     $submit      = (string) $config['submit_label'];
+    $reset_label = (string) $config['reset_label'];
+    $show_reset  = (bool) $config['show_reset_button'];
 
     $form_attrs = sprintf(' method="%s"', esc_attr($method));
 
@@ -114,9 +127,43 @@ function cta_render_search_form(string $key, array $overrides = []): string
     $form_attrs .= sprintf(' class="%s"', esc_attr($form_classes));
     $form_attrs .= sprintf(' id="%s"', esc_attr($form_id));
     $form_attrs .= sprintf(' data-search-key="%s"', esc_attr($context['key'] ?? $key));
+    $form_attrs .= sprintf(' data-search-parameter="%s"', esc_attr($input_name));
+
+    $data_attributes = [];
+    $used_data_keys  = [
+        'search-key',
+        'search-parameter',
+    ];
+
+    if ($show_reset) {
+        $form_attrs     .= ' data-has-reset="1"';
+        $used_data_keys[] = 'has-reset';
+    }
 
     if (!empty($pagination_params)) {
-        $form_attrs .= sprintf(' data-reset-pagination="%s"', esc_attr(implode(',', $pagination_params)));
+        $form_attrs     .= sprintf(' data-reset-pagination="%s"', esc_attr(implode(',', $pagination_params)));
+        $used_data_keys[] = 'reset-pagination';
+    }
+
+    if (is_array($config['data_attributes'])) {
+        foreach ($config['data_attributes'] as $data_key => $data_value) {
+            $sanitized = strtolower((string) $data_key);
+            $sanitized = preg_replace('/[^a-z0-9_-]+/', '', $sanitized);
+
+            if ('' === $sanitized) {
+                continue;
+            }
+
+            if (in_array($sanitized, $used_data_keys, true)) {
+                continue;
+            }
+
+            $data_attributes[$sanitized] = (string) $data_value;
+        }
+    }
+
+    foreach ($data_attributes as $data_key => $data_value) {
+        $form_attrs .= sprintf(' data-%s="%s"', esc_attr($data_key), esc_attr($data_value));
     }
 
     $form_attrs .= ' role="search"';
@@ -170,6 +217,11 @@ function cta_render_search_form(string $key, array $overrides = []): string
             <button type="submit" class="table-search__submit">
                 <span class="table-search__submit-text"><?php echo esc_html($submit); ?></span>
             </button>
+            <?php if ($show_reset) : ?>
+            <button type="button" class="table-search__reset" data-table-search-reset<?php echo '' === $search_value ? ' hidden' : ''; ?>>
+                <span class="table-search__reset-text"><?php echo esc_html($reset_label); ?></span>
+            </button>
+            <?php endif; ?>
         </div>
 
         <?php

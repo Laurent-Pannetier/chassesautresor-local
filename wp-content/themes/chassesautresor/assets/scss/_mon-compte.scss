@@ -803,6 +803,39 @@ body.woocommerce h2 {
 }
 
 /* Tentatives table alignment */
+.myaccount-tentatives .table-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-sm);
+}
+
+.myaccount-tentatives .table-header .table-search {
+    flex: 1 1 100%;
+}
+
+.myaccount-tentatives .stats-table-wrapper {
+    position: relative;
+    transition: opacity 0.2s ease;
+}
+
+.myaccount-tentatives .stats-table-wrapper.is-loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+@media (--bp-mobile) {
+    .myaccount-tentatives .table-header {
+        gap: var(--space-sm);
+    }
+
+    .myaccount-tentatives .table-header .table-search {
+        flex: 0 1 auto;
+        margin-left: auto;
+    }
+}
+
 .tentatives-table th:nth-child(2),
 .tentatives-table td:nth-child(2),
 .tentatives-table th:nth-child(3),

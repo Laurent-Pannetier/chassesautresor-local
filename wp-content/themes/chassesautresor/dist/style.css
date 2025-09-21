@@ -1412,6 +1412,31 @@ body.edition-active-chasse .chasse-enigmes-header .liens-placeholder {
   transform: translateY(-1px);
   outline: none;
 }
+.table-search__reset {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xxs);
+  padding: var(--space-xs) var(--space-md);
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background-color: transparent;
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
+}
+.table-search__reset:hover, .table-search__reset:focus {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: var(--color-white);
+  outline: none;
+}
+.table-search__reset:focus-visible {
+  box-shadow: 0 0 0 2px rgba(184, 134, 11, 0.35);
+}
 
 @media (min-width: 600px) {
   .table-search {
@@ -1428,7 +1453,38 @@ body.edition-active-chasse .chasse-enigmes-header .liens-placeholder {
     align-self: stretch;
     padding: var(--space-xs) var(--space-xl);
   }
+  .table-search__reset {
+    align-self: stretch;
+  }
 }
+.table-search--inline .table-search__description {
+  grid-column: 1/-1;
+}
+@media (min-width: 600px) {
+  .table-search--inline {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+  }
+  .table-search--inline .table-search__label {
+    margin-bottom: 0;
+  }
+  .table-search--inline .table-search__controls {
+    justify-content: flex-start;
+    align-items: center;
+    gap: var(--space-xs);
+  }
+}
+
+.table-search--compact .table-search__field {
+  max-width: 100%;
+}
+@media (min-width: 600px) {
+  .table-search--compact .table-search__field {
+    flex: 0 1 20rem;
+    max-width: 20rem;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation: none !important;
@@ -9513,6 +9569,37 @@ body.woocommerce h2 {
 }
 
 /* Tentatives table alignment */
+.myaccount-tentatives .table-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-sm);
+}
+
+.myaccount-tentatives .table-header .table-search {
+  flex: 1 1 100%;
+}
+
+.myaccount-tentatives .stats-table-wrapper {
+  position: relative;
+  transition: opacity 0.2s ease;
+}
+
+.myaccount-tentatives .stats-table-wrapper.is-loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+@media (min-width: 600px) {
+  .myaccount-tentatives .table-header {
+    gap: var(--space-sm);
+  }
+  .myaccount-tentatives .table-header .table-search {
+    flex: 0 1 auto;
+    margin-left: auto;
+  }
+}
 .tentatives-table th:nth-child(2),
 .tentatives-table td:nth-child(2),
 .tentatives-table th:nth-child(3),

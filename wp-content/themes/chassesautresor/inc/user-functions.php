@@ -1208,6 +1208,181 @@ function ca_ajax_get_engaged_hunts(): void
 add_action('wp_ajax_ca_get_engaged_hunts', 'ca_ajax_get_engaged_hunts');
 
 /**
+ * Register the search context used for the tentatives table.
+ *
+ * @return void
+ */
+function ca_register_tentatives_search_context(): void
+{
+    ca_register_search_context('tentatives', [
+        'fields' => [
+            'sql' => [
+                'p.post_title',
+                't.reponse_saisie',
+                'chasses.post_title',
+            ],
+        ],
+        'ui' => [
+            'label'       => __('Rechercher une tentative', 'chassesautresor-com'),
+            'placeholder' => __('Chasse, énigme ou réponse...', 'chassesautresor-com'),
+        ],
+        'pagination_params' => ['tentatives-page'],
+    ]);
+}
+
+/**
+ * Builds the dataset required to render the tentatives table for a user.
+ *
+ * @param int $user_id  Target user identifier.
+ * @param int $page     Requested page number.
+ * @param int $per_page Number of rows per page.
+ *
+ * @return array<string, mixed>
+ */
+function ca_get_tentatives_view_model(int $user_id, int $page = 1, int $per_page = 10): array
+{
+    global $wpdb;
+
+    $table     = $wpdb->prefix . 'enigme_tentatives';
+    $per_page  = max(1, $per_page);
+    $page      = max(1, $page);
+    $search    = ca_get_search_term('tentatives');
+    $pending   = (int) $wpdb->get_var($wpdb->prepare(
+        "SELECT COUNT(*) FROM {$table} WHERE user_id = %d AND resultat = 'attente' AND traitee = 0",
+        $user_id
+    ));
+    $total     = (int) $wpdb->get_var($wpdb->prepare(
+        "SELECT COUNT(*) FROM {$table} WHERE user_id = %d",
+        $user_id
+    ));
+    $success   = (int) $wpdb->get_var($wpdb->prepare(
+        "SELECT COUNT(*) FROM {$table} WHERE user_id = %d AND resultat = 'bon'",
+        $user_id
+    ));
+
+    $base_from = sprintf(
+        " FROM %s t
+        INNER JOIN %s p ON t.enigme_id = p.ID
+        LEFT JOIN (
+            SELECT pm.post_id,
+                   MAX(
+                       CAST(
+                           SUBSTRING_INDEX(
+                               SUBSTRING_INDEX(pm.meta_value, ';', 2),
+                               ':',
+                               -1
+                           ) AS UNSIGNED
+                       )
+                   ) AS chasse_id
+            FROM %s pm
+            WHERE pm.meta_key IN ('chasse_associee', 'enigme_chasse_associee')
+            GROUP BY pm.post_id
+        ) AS chasse_meta ON chasse_meta.post_id = t.enigme_id
+        LEFT JOIN %s chasses ON chasses.ID = chasse_meta.chasse_id",
+        $table,
+        $wpdb->posts,
+        $wpdb->postmeta,
+        $wpdb->posts
+    );
+
+    $where_clause   = ' WHERE t.user_id = %d';
+    $count_sql      = "SELECT COUNT(*){$base_from}{$where_clause}";
+    $count_sql      = ca_apply_search_filters('tentatives', $count_sql, $search);
+    $filtered_total = (int) $wpdb->get_var($wpdb->prepare($count_sql, $user_id));
+
+    $pages = $filtered_total > 0 ? (int) ceil($filtered_total / $per_page) : 0;
+    if ($pages > 0 && $page > $pages) {
+        $page = $pages;
+    } elseif (0 === $pages) {
+        $page = 1;
+    }
+
+    $offset     = ($page - 1) * $per_page;
+    $select_sql = "SELECT t.*, p.post_title AS enigme_title, COALESCE(chasse_meta.chasse_id, 0) AS chasse_id, chasses.post_title AS chasse_title{$base_from}{$where_clause}";
+    $select_sql = ca_apply_search_filters('tentatives', $select_sql, $search);
+    $select_sql .= ' ORDER BY t.date_tentative DESC LIMIT %d OFFSET %d';
+    $results     = $wpdb->get_results($wpdb->prepare($select_sql, $user_id, $per_page, $offset));
+
+    $message = $search !== ''
+        ? __('Aucune tentative ne correspond à votre recherche.', 'chassesautresor-com')
+        : __('Vous n\'avez pas encore enregistré de tentative.', 'chassesautresor-com');
+
+    return [
+        'pending'            => $pending,
+        'total'              => $total,
+        'success'            => $success,
+        'search_term'        => $search,
+        'page'               => $page,
+        'pages'              => $pages,
+        'per_page'           => $per_page,
+        'filtered_total'     => $filtered_total,
+        'tentatives'         => is_array($results) ? $results : [],
+        'no_results_message' => $message,
+    ];
+}
+
+/**
+ * Renders the table rows for the tentatives table.
+ *
+ * @param array  $tentatives        Tentative rows.
+ * @param int    $filtered_total    Number of filtered rows.
+ * @param string $no_results_message Message displayed when there are no rows.
+ *
+ * @return string
+ */
+function ca_render_tentatives_rows(array $tentatives, int $filtered_total, string $no_results_message): string
+{
+    ob_start();
+
+    if ($filtered_total <= 0 || empty($tentatives)) {
+        ?>
+        <tr class="tentatives-empty">
+            <td colspan="5"><?php echo esc_html($no_results_message); ?></td>
+        </tr>
+        <?php
+    } else {
+        foreach ($tentatives as $tent) {
+            $chasse_id    = isset($tent->chasse_id) ? (int) $tent->chasse_id : 0;
+            $chasse_title = isset($tent->chasse_title) ? (string) $tent->chasse_title : '';
+            ?>
+            <tr>
+                <td><?php echo esc_html(mysql2date('d/m/Y H:i', $tent->date_tentative)); ?></td>
+                <td>
+                    <?php if ($chasse_id > 0 && $chasse_title !== '') : ?>
+                    <a href="<?php echo esc_url(get_permalink($chasse_id)); ?>">
+                        <?php echo esc_html($chasse_title); ?>
+                    </a>
+                    <?php elseif ($chasse_title !== '') : ?>
+                    <?php echo esc_html($chasse_title); ?>
+                    <?php else : ?>
+                    &mdash;
+                    <?php endif; ?>
+                </td>
+                <td><?php echo esc_html($tent->enigme_title ?? ''); ?></td>
+                <?php echo cta_render_proposition_cell($tent->reponse_saisie ?? ''); ?>
+                <?php
+                $result = $tent->resultat;
+                $class  = 'etiquette-error';
+                if ($result === 'bon') {
+                    $class = 'etiquette-success';
+                } elseif ($result === 'attente') {
+                    $class = 'etiquette-pending';
+                }
+                ?>
+                <td>
+                    <span class="etiquette <?php echo esc_attr($class); ?>">
+                        <?php echo esc_html__($result, 'chassesautresor-com'); ?>
+                    </span>
+                </td>
+            </tr>
+            <?php
+        }
+    }
+
+    return trim((string) ob_get_clean());
+}
+
+/**
  * Display the Tentatives table on the My Account dashboard.
  *
  * @return void
@@ -1242,112 +1417,61 @@ function ca_render_dashboard_tentatives(): void
         true
     );
 
+    wp_localize_script(
+        'tentatives-pager',
+        'caTentativesPager',
+        [
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'action'  => 'ca_fetch_tentatives',
+            'errorMessage' => esc_html__(
+                'Unable to load attempts. Please try again.',
+                'chassesautresor-com'
+            ),
+        ]
+    );
+
     if (function_exists('wp_enqueue_script')) {
         wp_enqueue_script('table-search');
     }
 
-    global $wpdb;
-
-    $table   = $wpdb->prefix . 'enigme_tentatives';
-    $pending = (int) $wpdb->get_var($wpdb->prepare(
-        "SELECT COUNT(*) FROM {$table} WHERE user_id = %d AND resultat = 'attente' AND traitee = 0",
-        $user_id
-    ));
-    $total   = (int) $wpdb->get_var($wpdb->prepare(
-        "SELECT COUNT(*) FROM {$table} WHERE user_id = %d",
-        $user_id
-    ));
-    $success = (int) $wpdb->get_var($wpdb->prepare(
-        "SELECT COUNT(*) FROM {$table} WHERE user_id = %d AND resultat = 'bon'",
-        $user_id
-    ));
-
-    ca_register_search_context('tentatives', [
-        'fields' => [
-            'sql' => [
-                'p.post_title',
-                't.reponse_saisie',
-                'chasses.post_title',
-            ],
-        ],
-        'ui' => [
-            'label'       => __('Rechercher une tentative', 'chassesautresor-com'),
-            'placeholder' => __('Chasse, énigme ou réponse...', 'chassesautresor-com'),
-        ],
-        'pagination_params' => ['tentatives-page'],
-    ]);
-
-    $search_term = ca_get_search_term('tentatives');
+    ca_register_tentatives_search_context();
 
     $per_page = 10;
     $page     = max(1, (int) ($_GET['tentatives-page'] ?? 1));
 
-    $base_from = sprintf(
-        " FROM %s t
-        INNER JOIN %s p ON t.enigme_id = p.ID
-        LEFT JOIN (
-            SELECT pm.post_id,
-                   MAX(
-                       CAST(
-                           SUBSTRING_INDEX(
-                               SUBSTRING_INDEX(pm.meta_value, ';', 2),
-                               ':',
-                               -1
-                           ) AS UNSIGNED
-                       )
-                   ) AS chasse_id
-            FROM %s pm
-            WHERE pm.meta_key IN ('chasse_associee', 'enigme_chasse_associee')
-            GROUP BY pm.post_id
-        ) AS chasse_meta ON chasse_meta.post_id = t.enigme_id
-        LEFT JOIN %s chasses ON chasses.ID = chasse_meta.chasse_id",
-        $table,
-        $wpdb->posts,
-        $wpdb->postmeta,
-        $wpdb->posts
-    );
-
-    $where_clause = ' WHERE t.user_id = %d';
-
-    $count_sql = "SELECT COUNT(*){$base_from}{$where_clause}";
-    $count_sql = ca_apply_search_filters('tentatives', $count_sql, $search_term);
-    $filtered_total = (int) $wpdb->get_var($wpdb->prepare($count_sql, $user_id));
-
-    $pages = $filtered_total > 0 ? (int) ceil($filtered_total / $per_page) : 0;
-    if ($pages > 0 && $page > $pages) {
-        $page = $pages;
-    } elseif ($pages === 0) {
-        $page = 1;
-    }
-
-    $offset = ($page - 1) * $per_page;
-
-    $select_sql = "SELECT t.*, p.post_title AS enigme_title, COALESCE(chasse_meta.chasse_id, 0) AS chasse_id, chasses.post_title AS chasse_title{$base_from}{$where_clause}";
-    $select_sql = ca_apply_search_filters('tentatives', $select_sql, $search_term);
-    $select_sql .= ' ORDER BY t.date_tentative DESC LIMIT %d OFFSET %d';
-    $tentatives = $wpdb->get_results($wpdb->prepare($select_sql, $user_id, $per_page, $offset));
-
-    $no_results_message = $search_term !== ''
-        ? __('Aucune tentative ne correspond à votre recherche.', 'chassesautresor-com')
-        : __('Vous n\'avez pas encore enregistré de tentative.', 'chassesautresor-com');
+    $view = ca_get_tentatives_view_model($user_id, $page, $per_page);
 
     ob_start();
     ?>
     <section class="myaccount-tentatives">
         <h2><?php esc_html_e('Tentatives', 'chassesautresor-com'); ?></h2>
         <div class="table-header">
-            <?php if ($pending > 0) : ?>
-            <span class="stat-badge"><?php printf(esc_html(_n('%d tentative en attente', '%d tentatives en attente', $pending, 'chassesautresor-com')), $pending); ?></span>
+            <?php if ($view['pending'] > 0) : ?>
+            <span class="stat-badge"><?php printf(esc_html(_n('%d tentative en attente', '%d tentatives en attente', $view['pending'], 'chassesautresor-com')), $view['pending']); ?></span>
             <?php endif; ?>
-            <span class="stat-badge"><?php printf(esc_html(_n('%d tentative', '%d tentatives', $total, 'chassesautresor-com')), $total); ?></span>
-            <?php if ($success > 0) : ?>
+            <span class="stat-badge"><?php printf(esc_html(_n('%d tentative', '%d tentatives', $view['total'], 'chassesautresor-com')), $view['total']); ?></span>
+            <?php if ($view['success'] > 0) : ?>
             <span class="stat-badge" style="color:var(--color-success);">
-                <?php printf(esc_html(_n('%d bonne réponse', '%d bonnes rponses', $success, 'chassesautresor-com')), $success); ?>
+                <?php printf(esc_html(_n('%d bonne réponse', '%d bonnes rponses', $view['success'], 'chassesautresor-com')), $view['success']); ?>
             </span>
             <?php endif; ?>
-            <?php echo cta_render_search_form('tentatives'); ?>
+            <?php
+            echo cta_render_search_form('tentatives', [
+                'class'             => 'table-search--inline table-search--compact',
+                'show_reset_button' => true,
+                'data_attributes'   => [
+                    'ajax-action' => 'ca_fetch_tentatives',
+                    'ajax-target' => '#tentatives-table-wrapper',
+                ],
+            ]);
+            ?>
         </div>
-        <div class="stats-table-wrapper" data-per-page="<?php echo esc_attr($per_page); ?>">
+        <div
+            id="tentatives-table-wrapper"
+            class="stats-table-wrapper"
+            data-per-page="<?php echo esc_attr($view['per_page']); ?>"
+            data-page="<?php echo esc_attr($view['page']); ?>"
+        >
             <table class="stats-table tentatives-table">
                 <thead>
                     <tr>
@@ -1359,51 +1483,10 @@ function ca_render_dashboard_tentatives(): void
                     </tr>
                 </thead>
                 <tbody>
-                    <?php if ($filtered_total <= 0 || empty($tentatives)) : ?>
-                    <tr class="tentatives-empty">
-                        <td colspan="5"><?php echo esc_html($no_results_message); ?></td>
-                    </tr>
-                    <?php else : ?>
-                        <?php foreach ($tentatives as $tent) : ?>
-                        <?php
-                        $chasse_id    = isset($tent->chasse_id) ? (int) $tent->chasse_id : 0;
-                        $chasse_title = isset($tent->chasse_title) ? (string) $tent->chasse_title : '';
-                        ?>
-                        <tr>
-                            <td><?php echo esc_html(mysql2date('d/m/Y H:i', $tent->date_tentative)); ?></td>
-                            <td>
-                                <?php if ($chasse_id > 0 && $chasse_title !== '') : ?>
-                                <a href="<?php echo esc_url(get_permalink($chasse_id)); ?>">
-                                    <?php echo esc_html($chasse_title); ?>
-                                </a>
-                                <?php elseif ($chasse_title !== '') : ?>
-                                <?php echo esc_html($chasse_title); ?>
-                                <?php else : ?>
-                                &mdash;
-                                <?php endif; ?>
-                            </td>
-                            <td><?php echo esc_html($tent->enigme_title ?? ''); ?></td>
-                            <?php echo cta_render_proposition_cell($tent->reponse_saisie ?? ''); ?>
-                            <?php
-                            $result = $tent->resultat;
-                            $class  = 'etiquette-error';
-                            if ($result === 'bon') {
-                                $class = 'etiquette-success';
-                            } elseif ($result === 'attente') {
-                                $class = 'etiquette-pending';
-                            }
-                            ?>
-                            <td>
-                                <span class="etiquette <?php echo esc_attr($class); ?>">
-                                    <?php echo esc_html__($result, 'chassesautresor-com'); ?>
-                                </span>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
+                    <?php echo ca_render_tentatives_rows($view['tentatives'], $view['filtered_total'], $view['no_results_message']); ?>
                 </tbody>
             </table>
-            <?php echo cta_render_pager($page, $pages, 'tentatives-pager', ['data-param' => 'tentatives-page', 'data-section' => '', 'data-search-key' => 'tentatives']); ?>
+            <?php echo cta_render_pager($view['page'], $view['pages'], 'tentatives-pager', ['data-param' => 'tentatives-page', 'data-section' => '', 'data-search-key' => 'tentatives']); ?>
         </div>
     </section>
     <?php
@@ -1411,8 +1494,53 @@ function ca_render_dashboard_tentatives(): void
 }
 add_action('woocommerce_account_dashboard', 'ca_render_dashboard_tentatives', 20);
 
-// ==================================================
-// 📡 AJAX ADMIN SECTIONS
+/**
+ * Handle AJAX refreshes for the tentatives table.
+ *
+ * @return void
+ */
+function ca_ajax_fetch_tentatives(): void
+{
+    if (!is_user_logged_in()) {
+        wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor-com')], 403);
+    }
+
+    $user_id = (int) get_current_user_id();
+    if ($user_id <= 0) {
+        wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor-com')], 403);
+    }
+
+    ca_register_tentatives_search_context();
+
+    $page     = isset($_POST['page']) ? (int) $_POST['page'] : 1;
+    $per_page = isset($_POST['per_page']) ? (int) $_POST['per_page'] : 10;
+
+    $page     = max(1, $page);
+    $per_page = max(1, $per_page);
+
+    $view = ca_get_tentatives_view_model($user_id, $page, $per_page);
+
+    $rows  = ca_render_tentatives_rows($view['tentatives'], $view['filtered_total'], $view['no_results_message']);
+    $pager = cta_render_pager(
+        $view['page'],
+        $view['pages'],
+        'tentatives-pager',
+        ['data-param' => 'tentatives-page', 'data-section' => '', 'data-search-key' => 'tentatives']
+    );
+
+    wp_send_json_success([
+        'rows'             => $rows,
+        'pager'            => $pager,
+        'page'             => $view['page'],
+        'pages'            => $view['pages'],
+        'per_page'         => $view['per_page'],
+        'search_term'      => $view['search_term'],
+        'filtered_total'   => $view['filtered_total'],
+        'no_results_text'  => $view['no_results_message'],
+    ]);
+}
+add_action('wp_ajax_ca_fetch_tentatives', 'ca_ajax_fetch_tentatives');
+add_action('wp_ajax_nopriv_ca_fetch_tentatives', 'ca_ajax_fetch_tentatives');
 // ==================================================
 /**
  * Load My Account sections via AJAX.

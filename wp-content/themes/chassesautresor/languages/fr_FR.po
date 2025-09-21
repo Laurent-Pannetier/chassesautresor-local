@@ -3263,3 +3263,11 @@ msgstr "Voir les solutions"
 #: template-parts/enigme/partials/enigme-partial-solution.php:32
 msgid "Voir la solution de la chasse"
 msgstr "Voir la solution de la chasse"
+
+#: inc/search/form.php:52
+msgid "Réinitialiser"
+msgstr "Réinitialiser"
+
+#: inc/user-functions.php:1444
+msgid "Unable to load attempts. Please try again."
+msgstr "Impossible de charger les tentatives. Veuillez réessayer."

@@ -147,6 +147,22 @@ if (!function_exists('wp_enqueue_script')) {
     function wp_enqueue_script(...$args): void {}
 }
 
+if (!function_exists('wp_localize_script')) {
+    function wp_localize_script($handle, $object_name, $l10n)
+    {
+        return true;
+    }
+}
+
+if (!function_exists('admin_url')) {
+    function admin_url($path = '', $scheme = 'admin')
+    {
+        $base = 'https://example.com/wp-admin/';
+
+        return $base . ltrim((string) $path, '/');
+    }
+}
+
 if (!function_exists('wp_unslash')) {
     function wp_unslash($value)
     {
@@ -178,7 +194,11 @@ if (!function_exists('current_user_can')) {
 if (!function_exists('cta_render_search_form')) {
     function cta_render_search_form($key, $overrides = [])
     {
-        return '<form class="table-search" data-search-key="' . esc_attr($key) . '"></form>';
+        return '<form class="table-search" data-search-key="' . esc_attr($key) . '" data-ajax-action="ca_fetch_tentatives" data-ajax-target="#tentatives-table-wrapper">'
+            . '<div class="table-search__controls">'
+            . '<button type="button" class="table-search__reset" data-table-search-reset hidden></button>'
+            . '</div>'
+            . '</form>';
     }
 }
 
@@ -342,6 +362,9 @@ class MyAccountTentativesTest extends TestCase
 
         $this->assertStringContainsString('Chasse aux bonbons', $output);
         $this->assertStringNotContainsString('Chasse aux pirates', $output);
-        $this->assertStringContainsString('table-search', $output);
+        $this->assertStringContainsString('class="table-search table-search--inline table-search--compact"', $output);
+        $this->assertStringContainsString('table-search__reset', $output);
+        $this->assertStringContainsString('data-ajax-action="ca_fetch_tentatives"', $output);
+        $this->assertStringContainsString('id="tentatives-table-wrapper"', $output);
     }
 }

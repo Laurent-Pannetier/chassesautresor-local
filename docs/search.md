@@ -27,6 +27,9 @@ Enregistre un contexte de recherche avec :
 - `hidden_fields` : champs cachés ajoutés systématiquement au formulaire.
 - `pagination_params` : liste de paramètres à purger lors d'une nouvelle
   recherche (`tentatives-page`, `page`, etc.).
+- `ui.show_reset_button` : afficher un bouton de réinitialisation lorsque
+  l'utilisateur a déjà saisi une recherche.
+- `ui.reset_label` : personnalise l'intitulé du bouton de réinitialisation.
 
 ### `ca_resolve_search_context(string $key): array`
 
@@ -53,7 +56,9 @@ Génère le formulaire `<form class="table-search">` associé à un contexte :
 - ajoute automatiquement `search[context]`, préserve le paramètre `section` et
   fusionne les `hidden_fields` déclarés.
 - accepte des surcharges (`method`, `action`, `hidden_fields`, `submit_label`,
-  etc.) et insère un nonce si demandé.
+  `show_reset_button`, `reset_label`, `data_attributes`, etc.) et insère un nonce si demandé.
+- garantit la présence de la classe de base `table-search` même lorsque des
+  modificateurs (`table-search--inline`, `table-search--compact`, ...) sont fournis.
 - renseigne `data-reset-pagination` pour que le script JS supprime les anciens
   paramètres de pagination.
 
@@ -68,6 +73,15 @@ navigateur :
 - déclenche l'événement `tablesearch:submit` (bubbling, annulable) contenant
   `{ form, searchKey, term, actionUrl, resetParams }`. Annuler l'événement
   empêche l'envoi natif du formulaire (intégrations AJAX).
+
+### Intégration AJAX
+
+- Ajouter des attributs `data-ajax-action` et `data-ajax-target` sur le
+  formulaire pour brancher un traitement dynamique.
+- Intercepter `tablesearch:submit` et `tablesearch:reset` pour envoyer la
+  requête avec `fetch()` puis rafraîchir le tableau sans rechargement.
+- Mettre à jour l'URL via `history.replaceState` afin de conserver les
+  paramètres de recherche et de pagination dans l'historique.
 
 ## Exemple minimal
 
