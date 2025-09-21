@@ -116,9 +116,11 @@
   width: 100%;
   max-width: 50%;
 }
+.carte-compact__progression .meta-etiquette {
+  font-size: 0.75rem;
+}
 
 .carte-compact__progression-label {
-  font-size: 0.6875rem;
   letter-spacing: 0.02em;
   padding: 0;
   background-color: transparent;
