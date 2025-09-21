@@ -147,6 +147,22 @@ if (!function_exists('wp_enqueue_script')) {
     function wp_enqueue_script(...$args): void {}
 }
 
+if (!function_exists('wp_localize_script')) {
+    function wp_localize_script($handle, $object_name, $l10n)
+    {
+        return true;
+    }
+}
+
+if (!function_exists('admin_url')) {
+    function admin_url($path = '', $scheme = 'admin')
+    {
+        $base = 'https://example.com/wp-admin/';
+
+        return $base . ltrim((string) $path, '/');
+    }
+}
+
 if (!function_exists('wp_unslash')) {
     function wp_unslash($value)
     {

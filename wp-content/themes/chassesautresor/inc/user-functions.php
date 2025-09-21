@@ -1417,6 +1417,15 @@ function ca_render_dashboard_tentatives(): void
         true
     );
 
+    wp_localize_script(
+        'tentatives-pager',
+        'caTentativesPager',
+        [
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'action'  => 'ca_fetch_tentatives',
+        ]
+    );
+
     if (function_exists('wp_enqueue_script')) {
         wp_enqueue_script('table-search');
     }

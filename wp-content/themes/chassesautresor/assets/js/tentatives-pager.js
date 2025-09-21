@@ -2,8 +2,23 @@
  * Handle AJAX interactions for the Tentatives table search and pager.
  */
 (function () {
-  var SEARCH_ACTION = 'ca_fetch_tentatives';
+  var config = window.caTentativesPager || {};
+  var SEARCH_ACTION =
+    (config && typeof config.action === 'string' && config.action) ||
+    'ca_fetch_tentatives';
   var PAGE_PARAM = 'tentatives-page';
+
+  function getAjaxUrl() {
+    if (config && typeof config.ajaxUrl === 'string' && config.ajaxUrl) {
+      return config.ajaxUrl;
+    }
+
+    if (typeof window.ajaxurl === 'string' && window.ajaxurl) {
+      return window.ajaxurl;
+    }
+
+    return '';
+  }
 
   function getSearchForm() {
     return document.querySelector('form.table-search[data-ajax-action="' + SEARCH_ACTION + '"]');
@@ -243,7 +258,9 @@
 
   function loadTentatives(form, options) {
     var wrapper = getWrapper(form);
-    if (!form || !wrapper || !window.ajaxurl) {
+    var ajaxUrl = getAjaxUrl();
+
+    if (!form || !wrapper || !ajaxUrl) {
       return Promise.resolve();
     }
 
@@ -264,7 +281,7 @@
 
     setLoading(wrapper, true);
 
-    return fetch(window.ajaxurl, {
+    return fetch(ajaxUrl, {
       method: 'POST',
       credentials: 'same-origin',
       headers: {
