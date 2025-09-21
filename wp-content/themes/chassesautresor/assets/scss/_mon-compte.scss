@@ -153,6 +153,13 @@
     color: var(--color-text-primary);
 }
 
+.myaccount-title {
+    margin: 0;
+    font-size: clamp(1.125rem, 0.75rem + 0.5vw, 1.5rem);
+    line-height: 1.2;
+    font-weight: 600;
+}
+
 .myaccount-last-active {
     margin-left: auto;
     margin-bottom: 0;
