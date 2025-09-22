@@ -633,15 +633,22 @@
 }
 
 .carte-wide__content {
-  flex: 1;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
+  flex: 1;
+}
+
+.carte-wide__header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-sm);
 }
 
 .carte-wide__metas {
-  margin: var(--space-xs) 0 0;
-  gap: var(--space-sm);
+  margin-top: auto;
+  padding-top: var(--space-sm);
 }
 
 .carte-wide__metas .meta-regular {
@@ -654,22 +661,69 @@
   font-weight: 600;
 }
 
-.carte-wide__content .chasse-intro-extrait {
-  margin-top: auto;
-  margin-bottom: auto;
+.carte-wide__organisateur {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xxs);
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  color: var(--color-gris-3);
+}
+
+.carte-wide__organisateur-label {
+  font-style: italic;
+}
+
+.carte-wide__organisateur-logo-link {
+  display: inline-flex;
+  align-items: center;
+}
+
+.carte-wide__organisateur-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  filter: grayscale(1);
+  transition: filter 0.3s;
+}
+
+.carte-wide__organisateur-logo-link:hover .carte-wide__organisateur-logo {
+  filter: none;
+}
+
+.carte-wide__organisateur-nom {
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.carte-wide__organisateur-nom:hover {
+  text-decoration: underline;
+}
+
+.carte-wide__reward {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-weight: 700;
+  margin-bottom: var(--space-sm);
+}
+
+.carte-wide__reward .fa-trophy {
+  color: var(--color-gris-3);
+}
+
+.carte-wide__description {
+  margin-bottom: var(--space-sm);
+}
+
+.carte-wide__description .chasse-intro-extrait {
+  margin: 0;
 }
 
 .carte-wide__titre {
-  margin-top: 0;
-  margin-bottom: var(--space-xs);
-}
-
-.carte-wide__footer .cta-div {
-  justify-content: center;
-}
-
-.carte-wide__footer {
-  margin-top: auto;
+  margin: 0;
 }
 
 @media (min-width: 1024px) {
@@ -683,19 +737,30 @@
     width: 300px;
     height: 300px;
   }
+  .carte-wide__header {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-lg);
+  }
+  .carte-wide__organisateur {
+    justify-content: flex-end;
+    text-align: right;
+  }
   .carte-wide__metas {
     flex-wrap: nowrap;
-    margin-top: 0;
+    margin-top: auto;
+    padding-top: 0;
     max-height: 0;
     opacity: 0;
     visibility: hidden;
     overflow: hidden;
     pointer-events: none;
-    transition: opacity var(--transition-medium), max-height var(--transition-medium), margin-top var(--transition-medium);
+    transition: opacity var(--transition-medium), max-height var(--transition-medium), padding-top var(--transition-medium);
   }
   .carte-wide:hover .carte-wide__metas,
   .carte-wide:focus-within .carte-wide__metas {
-    margin-top: var(--space-xs);
+    padding-top: var(--space-sm);
     max-height: 200px;
     opacity: 1;
     visibility: visible;
