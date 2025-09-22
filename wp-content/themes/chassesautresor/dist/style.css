@@ -1664,8 +1664,8 @@ body.edition-active-chasse .chasse-enigmes-header .liens-placeholder {
 }
 @media (min-width: 600px) {
   .table-search--compact .table-search__field {
-    flex: 0 1 20rem;
-    max-width: 20rem;
+    flex: 1 1 auto;
+    max-width: none;
   }
 }
 
