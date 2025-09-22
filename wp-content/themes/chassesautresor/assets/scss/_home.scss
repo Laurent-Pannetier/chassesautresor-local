@@ -42,11 +42,13 @@ body.accueil-fullscreen {
 .home-hunts__toolbar-toggles {
     display: none;
     align-items: center;
+    justify-content: center;
     gap: var(--space-sm);
+    width: 100%;
 }
 
 .home-hunts__toolbar--enhanced .home-hunts__toolbar-toggles {
-    display: inline-flex;
+    display: flex;
 }
 
 .home-hunts__toolbar-toggle {
