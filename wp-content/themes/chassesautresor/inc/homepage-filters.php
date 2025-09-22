@@ -16,7 +16,15 @@ defined('ABSPATH') || exit();
  *
  * @param array{statut?:string, cout?:string|string[]}|array $args Raw filters coming from the frontend.
  *
- * @return array{ids:int[], total:int, filters_normalises:array{statut:string, cout:string[]}}
+ * @return array{
+ *     ids:int[],
+ *     total:int,
+ *     filters_normalises:array{statut:string, cout:string[]},
+ *     available_filters:array{
+ *         statut:array<string,int>,
+ *         cout:array<string,int>
+ *     }
+ * }
  */
 function ca_home_filter_chasse_ids(array $args): array
 {
@@ -84,7 +92,7 @@ function ca_home_filter_chasse_ids(array $args): array
         'termine'  => ['termine'],
     ];
 
-    $filtered_ids = [];
+    $hunts_data = [];
 
     foreach ($chasse_ids as $chasse_id) {
         $infos_chasse = function_exists('preparer_infos_affichage_chasse')
@@ -92,34 +100,95 @@ function ca_home_filter_chasse_ids(array $args): array
             : [];
 
         $statut_metier = $infos_chasse['statut'] ?? get_field('chasse_cache_statut', $chasse_id);
-
-        if (
-            'tous' !== $normalized_status
-            && !in_array($statut_metier, $status_map[$normalized_status] ?? [], true)
-        ) {
-            continue;
-        }
-
-        $cout_points        = (int) ($infos_chasse['champs']['cout_points'] ?? get_field('chasse_infos_cout_points', $chasse_id));
+        $cout_points = (int) ($infos_chasse['champs']['cout_points'] ?? get_field('chasse_infos_cout_points', $chasse_id));
         $nb_enigmes_payantes = (int) ($infos_chasse['nb_enigmes_payantes'] ?? 0);
 
         $is_free = ($cout_points <= 0) && ($nb_enigmes_payantes <= 0);
+        $cost_key = $is_free ? 'gratuit' : 'points';
+
+        $hunts_data[] = [
+            'id'     => (int) $chasse_id,
+            'status' => is_string($statut_metier) ? $statut_metier : '',
+            'cost'   => $cost_key,
+        ];
+    }
+
+    $filtered_ids = [];
+
+    foreach ($hunts_data as $hunt) {
+        if ('tous' !== $normalized_status) {
+            $allowed_statuses = $status_map[$normalized_status] ?? [];
+
+            if (empty($allowed_statuses) || !in_array($hunt['status'], $allowed_statuses, true)) {
+                continue;
+            }
+        }
 
         if ($cost_filter_provided) {
             if (empty($normalized_cost)) {
                 continue;
             }
 
-            if ($is_free && !in_array('gratuit', $normalized_cost, true)) {
+            if ('gratuit' === $hunt['cost'] && !in_array('gratuit', $normalized_cost, true)) {
                 continue;
             }
 
-            if (!$is_free && !in_array('points', $normalized_cost, true)) {
+            if ('points' === $hunt['cost'] && !in_array('points', $normalized_cost, true)) {
                 continue;
             }
         }
 
-        $filtered_ids[] = $chasse_id;
+        $filtered_ids[] = $hunt['id'];
+    }
+
+    $allowed_costs_for_status = $cost_filter_provided ? $normalized_cost : $cost_whitelist;
+
+    if ($cost_filter_provided && empty($normalized_cost)) {
+        $allowed_costs_for_status = [];
+    }
+
+    $status_counts = [
+        'tous'     => 0,
+        'en_cours' => 0,
+        'a_venir'  => 0,
+        'termine'  => 0,
+    ];
+
+    foreach ($hunts_data as $hunt) {
+        if (!in_array($hunt['cost'], $allowed_costs_for_status, true)) {
+            continue;
+        }
+
+        $status_counts['tous']++;
+
+        foreach ($status_map as $status_filter => $expected_statuses) {
+            if (in_array($hunt['status'], $expected_statuses, true)) {
+                $status_counts[$status_filter]++;
+            }
+        }
+    }
+
+    $cost_counts = [
+        'gratuit' => 0,
+        'points'  => 0,
+    ];
+
+    $allowed_statuses_for_cost = null;
+
+    if ('tous' !== $normalized_status) {
+        $allowed_statuses_for_cost = $status_map[$normalized_status] ?? [];
+    }
+
+    foreach ($hunts_data as $hunt) {
+        if (is_array($allowed_statuses_for_cost)) {
+            if (empty($allowed_statuses_for_cost) || !in_array($hunt['status'], $allowed_statuses_for_cost, true)) {
+                continue;
+            }
+        }
+
+        if (array_key_exists($hunt['cost'], $cost_counts)) {
+            $cost_counts[$hunt['cost']]++;
+        }
     }
 
     return [
@@ -128,6 +197,10 @@ function ca_home_filter_chasse_ids(array $args): array
         'filters_normalises' => [
             'statut' => $normalized_status,
             'cout'   => $normalized_cost,
+        ],
+        'available_filters'  => [
+            'statut' => $status_counts,
+            'cout'   => $cost_counts,
         ],
     ];
 }
@@ -187,10 +260,24 @@ function ca_ajax_filter_chasses(): void
     ]);
     $html = (string) ob_get_clean();
 
+    $available_filters = [];
+    if (isset($filter_results['available_filters']) && is_array($filter_results['available_filters'])) {
+        $available_filters = $filter_results['available_filters'];
+    }
+
+    $normalized_filters = [];
+    if (isset($filter_results['filters_normalises']) && is_array($filter_results['filters_normalises'])) {
+        $normalized_filters = $filter_results['filters_normalises'];
+    }
+
     wp_send_json_success([
-        'html'  => $html,
-        'total' => (int) ($filter_results['total'] ?? count($chasse_ids)),
-        'nonce' => wp_create_nonce('ca-filter-chasses'),
+        'html'     => $html,
+        'total'    => (int) ($filter_results['total'] ?? count($chasse_ids)),
+        'nonce'    => wp_create_nonce('ca-filter-chasses'),
+        'filters'  => [
+            'available'  => $available_filters,
+            'normalized' => $normalized_filters,
+        ],
     ]);
 }
 
