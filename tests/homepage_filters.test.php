@@ -14,6 +14,9 @@ use PHPUnit\\Framework\\TestCase;
  * - chasse_est_visible_pour_utilisateur() always returns true during tests.
  * - preparer_infos_affichage_chasse() returns fixtures stored in $mocked_chasse_infos.
  * - get_field() proxies selected ACF fields when helpers fall back to it.
+ * - get_the_title() returns values stored in $mocked_post_titles.
+ * - get_post_field() exposes excerpts defined in $mocked_post_fields.
+ * - wp_get_post_terms() retrieves taxonomy fixtures from $mocked_taxonomy_terms.
  */
 if (!class_exists('WP_Query')) {
     class WP_Query
@@ -106,7 +109,9 @@ class HomepageFiltersTest extends TestCase
             define('ABSPATH', __DIR__ . '/');
         }
 
-        global $mocked_wp_query_posts, $mocked_chasse_infos;
+        $this->ensureHomepageFilterStubs();
+
+        global $mocked_wp_query_posts, $mocked_chasse_infos, $mocked_post_titles, $mocked_post_fields, $mocked_taxonomy_terms;
 
         $mocked_wp_query_posts = [101, 102, 103, 104];
         $mocked_chasse_infos = [
@@ -139,6 +144,10 @@ class HomepageFiltersTest extends TestCase
                 'nb_enigmes_payantes' => 1,
             ],
         ];
+
+        $mocked_post_titles      = [];
+        $mocked_post_fields      = [];
+        $mocked_taxonomy_terms   = [];
 
         require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/homepage-filters.php';
 
@@ -216,5 +225,146 @@ class HomepageFiltersTest extends TestCase
             ],
             $pointsResults['available_filters']['cout']
         );
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_search_matches_taxonomy_terms(): void
+    {
+        if (!defined('ABSPATH')) {
+            define('ABSPATH', __DIR__ . '/');
+        }
+
+        $this->ensureHomepageFilterStubs();
+
+        global $mocked_wp_query_posts, $mocked_chasse_infos, $mocked_taxonomy_terms, $mocked_post_titles, $mocked_post_fields;
+
+        $mocked_wp_query_posts = [201, 202, 203];
+        $mocked_chasse_infos = [
+            201 => [
+                'statut' => 'en_cours',
+                'champs' => [
+                    'cout_points' => 0,
+                ],
+                'nb_enigmes_payantes' => 0,
+            ],
+            202 => [
+                'statut' => 'en_cours',
+                'champs' => [
+                    'cout_points' => 0,
+                ],
+                'nb_enigmes_payantes' => 0,
+            ],
+            203 => [
+                'statut' => 'en_cours',
+                'champs' => [
+                    'cout_points' => 0,
+                ],
+                'nb_enigmes_payantes' => 0,
+            ],
+        ];
+
+        $mocked_taxonomy_terms = [
+            201 => [
+                'chasse_region' => [
+                    ['nom' => 'PACA'],
+                ],
+                'theme_chasse' => [
+                    ['nom' => 'Aventure'],
+                ],
+            ],
+            202 => [
+                'chasse_region' => [
+                    ['nom' => 'Bretagne'],
+                ],
+                'theme_chasse' => [
+                    ['nom' => 'Patrimoine'],
+                ],
+            ],
+            203 => [
+                'chasse_region' => [
+                    ['nom' => 'Île-de-France'],
+                ],
+                'theme_chasse' => [
+                    ['nom' => 'Gastronomie'],
+                ],
+            ],
+        ];
+
+        $mocked_post_titles = [
+            201 => 'Chasse Provence',
+            202 => 'Chasse Bretagne',
+            203 => 'Chasse Paris',
+        ];
+
+        $mocked_post_fields = [
+            201 => ['post_excerpt' => ''],
+            202 => ['post_excerpt' => ''],
+            203 => ['post_excerpt' => ''],
+        ];
+
+        require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/homepage-filters.php';
+
+        $regionResults = ca_home_filter_chasse_ids([
+            'search' => 'bretagne',
+        ]);
+
+        $this->assertSame([202], $regionResults['ids']);
+        $this->assertSame(1, $regionResults['total']);
+
+        $themeResults = ca_home_filter_chasse_ids([
+            'search' => 'aventure',
+        ]);
+
+        $this->assertSame([201], $themeResults['ids']);
+        $this->assertSame(1, $themeResults['total']);
+    }
+
+    private function ensureHomepageFilterStubs(): void
+    {
+        if (!function_exists('get_the_title')) {
+            function get_the_title($post = 0)
+            {
+                global $mocked_post_titles;
+
+                $post_id = 0;
+
+                if (is_object($post) && isset($post->ID)) {
+                    $post_id = (int) $post->ID;
+                } elseif (is_numeric($post)) {
+                    $post_id = (int) $post;
+                }
+
+                return $mocked_post_titles[$post_id] ?? 'Post ' . $post_id;
+            }
+        }
+
+        if (!function_exists('get_post_field')) {
+            function get_post_field($field, $post_id, $context = 'display')
+            {
+                global $mocked_post_fields;
+
+                if ('post_excerpt' === $field) {
+                    return $mocked_post_fields[$post_id]['post_excerpt'] ?? '';
+                }
+
+                return $mocked_post_fields[$post_id][$field] ?? '';
+            }
+        }
+
+        if (!function_exists('wp_get_post_terms')) {
+            function wp_get_post_terms($post_id, $taxonomy, $args = [])
+            {
+                global $mocked_taxonomy_terms;
+
+                if (!isset($mocked_taxonomy_terms[$post_id][$taxonomy])) {
+                    return [];
+                }
+
+                return $mocked_taxonomy_terms[$post_id][$taxonomy];
+            }
+        }
     }
 }
