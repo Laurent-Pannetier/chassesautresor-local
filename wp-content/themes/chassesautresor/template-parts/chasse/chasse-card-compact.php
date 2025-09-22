@@ -33,6 +33,13 @@ if ($badge_has_interaction && $badge_tooltip !== '') {
 $progression = $infos['progression'] ?? null;
 $resolvables = is_array($progression) ? (int) ($progression['resolvables'] ?? 0) : 0;
 $resolues_validables = isset($infos['resolues_validables']) ? (int) $infos['resolues_validables'] : 0;
+$region_principale = is_array($infos['region_principale'] ?? null) ? $infos['region_principale'] : null;
+$themes = array_values(array_filter(
+    is_array($infos['themes'] ?? null) ? $infos['themes'] : [],
+    static function ($theme) {
+        return is_array($theme) && !empty($theme['nom']);
+    }
+));
 ?>
 <div class="carte-compact-card">
     <div class="carte carte-chasse carte-compact <?php echo esc_attr($infos['classe_statut']); ?>">
@@ -45,6 +52,28 @@ $resolues_validables = isset($infos['resolues_validables']) ? (int) $infos['reso
             </div>
             <div class="carte-compact__contenu">
                 <h3 class="carte-compact__titre"><?php echo esc_html($infos['titre']); ?></h3>
+                <?php if (!empty($region_principale) || !empty($themes)) : ?>
+                    <div class="chasse-card-badges chasse-badges">
+                        <?php if (!empty($region_principale['nom'])) : ?>
+                            <?php if (!empty($region_principale['lien'])) : ?>
+                                <a class="chasse-badge chasse-badge--region" href="<?php echo esc_url($region_principale['lien']); ?>">
+                                    <?php echo esc_html($region_principale['nom']); ?>
+                                </a>
+                            <?php else : ?>
+                                <span class="chasse-badge chasse-badge--region"><?php echo esc_html($region_principale['nom']); ?></span>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                        <?php foreach ($themes as $theme) : ?>
+                            <?php if (!empty($theme['lien'])) : ?>
+                                <a class="chasse-badge chasse-badge--theme" href="<?php echo esc_url($theme['lien']); ?>">
+                                    <?php echo esc_html($theme['nom']); ?>
+                                </a>
+                            <?php else : ?>
+                                <span class="chasse-badge chasse-badge--theme"><?php echo esc_html($theme['nom']); ?></span>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
                 <?php echo $infos['lot_html']; ?>
                 <?php
                 get_template_part(
