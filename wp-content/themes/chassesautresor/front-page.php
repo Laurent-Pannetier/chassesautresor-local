@@ -12,36 +12,17 @@ if (is_user_logged_in() && function_exists('render_points_history_table')) {
 
 get_header();
 
-$query = new WP_Query([
-    'post_type'      => 'chasse',
-    'post_status'    => 'publish',
-    'meta_query'     => [
-        [
-            'key'   => 'chasse_cache_statut_validation',
-            'value' => 'valide',
-        ],
-    ],
-    'fields'         => 'ids',
-    'posts_per_page' => -1,
-]);
+$home_filters = ca_home_filter_chasse_ids([]);
 
-$chasse_ids = $query->posts;
-
-$user_id = get_current_user_id();
-$filtered_chasse_ids = $chasse_ids;
-
-if (function_exists('chasse_est_visible_pour_utilisateur')) {
-    $filtered_chasse_ids = array_values(array_filter(
-        $filtered_chasse_ids,
-        static function ($chasse_id) use ($user_id) {
-            return chasse_est_visible_pour_utilisateur((int) $chasse_id, $user_id);
-        }
-    ));
-}
-
-$default_status_filter = 'tous';
-$default_cost_filters  = ['gratuit', 'points'];
-$initial_results_count = count($filtered_chasse_ids);
+$chasse_ids             = $home_filters['ids'];
+$normalized_filters     = $home_filters['filters_normalises'] ?? [];
+$default_status_filter  = is_string($normalized_filters['statut'] ?? null)
+    ? $normalized_filters['statut']
+    : 'tous';
+$default_cost_filters   = is_array($normalized_filters['cout'] ?? null)
+    ? $normalized_filters['cout']
+    : ['gratuit', 'points'];
+$initial_results_count  = (int) ($home_filters['total'] ?? count($chasse_ids));
 
 $status_options = [
     'tous'     => __('Tous les statuts', 'chassesautresor-com'),
@@ -107,8 +88,6 @@ ob_start();
 $before_items_markup = ob_get_clean();
 
 $after_items_markup = '<div class="home-hunts__feedback" data-home-hunts-feedback aria-live="polite"></div>';
-
-$chasse_ids = $filtered_chasse_ids;
 ?>
 
 <div id="primary" class="content-area">
