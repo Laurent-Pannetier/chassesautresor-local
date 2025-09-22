@@ -234,12 +234,13 @@ $after_items_markup = sprintf(
                     data-home-hunts="true"
                     data-nonce="<?php echo esc_attr($filters_nonce); ?>"
                 >
+                    <?php echo $before_items_markup; ?>
                     <?php
                     get_template_part('template-parts/organisateur/organisateur-partial-boucle-chasses', null, [
                         'chasse_ids' => $chasse_ids,
                         'show_header' => false,
                         'grid_class' => 'organisateur-chasses-grid',
-                        'before_items' => $before_items_markup,
+                        'before_items' => '',
                         'after_items' => $after_items_markup,
                     ]);
                     ?>

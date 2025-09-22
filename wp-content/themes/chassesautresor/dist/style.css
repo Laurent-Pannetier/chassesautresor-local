@@ -8469,6 +8469,7 @@ body.accueil-fullscreen {
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
 }
 
 .home-hunts-filters,
@@ -8650,6 +8651,7 @@ body.accueil-fullscreen {
   .home-hunts__toolbar {
     flex-direction: row;
     align-items: stretch;
+    margin-bottom: var(--space-2xl);
   }
   .home-hunts__filters {
     flex: 1 1 60%;

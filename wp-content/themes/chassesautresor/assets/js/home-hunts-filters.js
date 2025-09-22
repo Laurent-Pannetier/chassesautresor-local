@@ -11,7 +11,7 @@
     return;
   }
 
-  const form = grid.querySelector('[data-home-hunts-filters]');
+  const form = root.querySelector('[data-home-hunts-filters]');
 
   if (!form) {
     return;
@@ -285,8 +285,8 @@
   }
 
   function clearHunts() {
-    const toolbar = grid.querySelector('.home-hunts__toolbar');
-    const startNode = toolbar ? toolbar.nextSibling : grid.firstChild;
+    const toolbar = root.querySelector('.home-hunts__toolbar');
+    const startNode = toolbar && grid.contains(toolbar) ? toolbar.nextSibling : grid.firstChild;
     let node = startNode;
 
     while (node) {
