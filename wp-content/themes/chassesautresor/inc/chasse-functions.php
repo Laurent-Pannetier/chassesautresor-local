@@ -1507,6 +1507,9 @@ function chasse_normalize_term_for_display($term, string $taxonomy): ?array
             $term['nom'] ?? null,
             $term['name'] ?? null,
             $term['label'] ?? null,
+            $term['title'] ?? null,
+            $term['post_title'] ?? null,
+            $term['display_name'] ?? null,
             $term['value'] ?? null,
         ];
 
@@ -1518,6 +1521,19 @@ function chasse_normalize_term_for_display($term, string $taxonomy): ?array
             $candidate_value = trim((string) $candidate);
 
             if ($candidate_value === '') {
+                continue;
+            }
+
+            if (ctype_digit($candidate_value)) {
+                continue;
+            }
+
+            $taxonomy_pattern = '/^' . preg_quote($taxonomy, '/') . '[_:-]?\d+$/i';
+            if (preg_match('/^term[_:-]?\d+$/i', $candidate_value)
+                || preg_match('/^term\s+\d+$/i', $candidate_value)
+                || preg_match('/^term\s*id\s*[:=]?\s*\d+$/i', $candidate_value)
+                || preg_match($taxonomy_pattern, $candidate_value)
+            ) {
                 continue;
             }
 
@@ -1572,6 +1588,56 @@ function chasse_normalize_term_for_display($term, string $taxonomy): ?array
 }
 
 /**
+ * Extract a numeric term identifier from raw data returned by ACF or caches.
+ *
+ * @param mixed  $value    Raw candidate value.
+ * @param string $taxonomy Related taxonomy slug.
+ *
+ * @return int|null
+ */
+function chasse_extract_term_id_from_value($value, string $taxonomy): ?int
+{
+    if (is_int($value)) {
+        return $value;
+    }
+
+    if (is_float($value) || (is_numeric($value) && !is_string($value))) {
+        return (int) $value;
+    }
+
+    if (!is_string($value)) {
+        return null;
+    }
+
+    $trimmed = trim($value);
+
+    if ($trimmed === '') {
+        return null;
+    }
+
+    if (ctype_digit($trimmed)) {
+        return (int) $trimmed;
+    }
+
+    $taxonomy_pattern = '/^' . preg_quote($taxonomy, '/') . '[_:-]?\d+$/i';
+    $patterns = [
+        '/^term[_:-]?(\d+)$/i',
+        '/^term\s+(\d+)$/i',
+        '/^term\s*id\s*[:=]?\s*(\d+)$/i',
+        $taxonomy_pattern,
+        '/^id[_:-]?(\d+)$/i',
+    ];
+
+    foreach ($patterns as $pattern) {
+        if (preg_match($pattern, $trimmed, $matches)) {
+            return (int) $matches[1];
+        }
+    }
+
+    return null;
+}
+
+/**
  * Tente de transformer une valeur brute en objet \WP_Term.
  *
  * @param mixed  $candidate Valeur récupérée via ACF ou le cache.
@@ -1581,6 +1647,30 @@ function chasse_normalize_term_for_display($term, string $taxonomy): ?array
  */
 function chasse_resolve_term_candidate($candidate, string $taxonomy): ?\WP_Term
 {
+    $load_term_from_value = static function ($value) use ($taxonomy): ?\WP_Term {
+        if (!function_exists('get_term')) {
+            return null;
+        }
+
+        $term_id = chasse_extract_term_id_from_value($value, $taxonomy);
+
+        if ($term_id === null) {
+            return null;
+        }
+
+        $term = get_term($term_id, $taxonomy);
+
+        if ($term instanceof \WP_Term) {
+            return $term;
+        }
+
+        if (function_exists('is_wp_error') && is_wp_error($term)) {
+            return null;
+        }
+
+        return null;
+    };
+
     if ($candidate instanceof \WP_Term) {
         return $candidate;
     }
@@ -1593,12 +1683,9 @@ function chasse_resolve_term_candidate($candidate, string $taxonomy): ?\WP_Term
         }
     }
 
-    if (is_numeric($candidate) && function_exists('get_term')) {
-        $term = get_term((int) $candidate, $taxonomy);
-
-        if ($term instanceof \WP_Term && !is_wp_error($term)) {
-            return $term;
-        }
+    $term_from_root_candidate = $load_term_from_value($candidate);
+    if ($term_from_root_candidate instanceof \WP_Term) {
+        return $term_from_root_candidate;
     }
 
     if (is_array($candidate)) {
@@ -1609,13 +1696,9 @@ function chasse_resolve_term_candidate($candidate, string $taxonomy): ?\WP_Term
                 continue;
             }
 
-            if (!function_exists('get_term')) {
-                break;
-            }
+            $term = $load_term_from_value($candidate[$key]);
 
-            $term = get_term((int) $candidate[$key], $taxonomy);
-
-            if ($term instanceof \WP_Term && !is_wp_error($term)) {
+            if ($term instanceof \WP_Term) {
                 return $term;
             }
         }
@@ -1623,36 +1706,54 @@ function chasse_resolve_term_candidate($candidate, string $taxonomy): ?\WP_Term
         $slug_keys = ['slug', 'value'];
 
         foreach ($slug_keys as $key) {
-            if (!isset($candidate[$key]) || !is_string($candidate[$key])) {
+            if (!isset($candidate[$key]) || (!is_string($candidate[$key]) && !is_numeric($candidate[$key]))) {
                 continue;
             }
 
-            if (!function_exists('get_term_by')) {
-                break;
-            }
-
-            $term = get_term_by('slug', trim($candidate[$key]), $taxonomy);
+            $term = $load_term_from_value($candidate[$key]);
 
             if ($term instanceof \WP_Term) {
                 return $term;
+            }
+
+            if (function_exists('get_term_by')) {
+                $slug = trim((string) $candidate[$key]);
+
+                if ($slug !== '') {
+                    $term = get_term_by('slug', $slug, $taxonomy);
+
+                    if ($term instanceof \WP_Term) {
+                        return $term;
+                    }
+                }
             }
         }
 
-        $name_keys = ['nom', 'name', 'label', 'value'];
+        $name_keys = ['nom', 'name', 'label', 'value', 'title', 'post_title', 'display_name'];
 
         foreach ($name_keys as $key) {
-            if (!isset($candidate[$key]) || !is_string($candidate[$key])) {
+            if (!isset($candidate[$key]) || (!is_string($candidate[$key]) && !is_numeric($candidate[$key]))) {
                 continue;
             }
 
-            if (!function_exists('get_term_by')) {
-                break;
-            }
-
-            $term = get_term_by('name', trim($candidate[$key]), $taxonomy);
+            $term = $load_term_from_value($candidate[$key]);
 
             if ($term instanceof \WP_Term) {
                 return $term;
+            }
+
+            if (function_exists('get_term_by')) {
+                $name_candidate = trim((string) $candidate[$key]);
+
+                if ($name_candidate === '') {
+                    continue;
+                }
+
+                $term = get_term_by('name', $name_candidate, $taxonomy);
+
+                if ($term instanceof \WP_Term) {
+                    return $term;
+                }
             }
         }
     }
@@ -1661,6 +1762,12 @@ function chasse_resolve_term_candidate($candidate, string $taxonomy): ?\WP_Term
         $candidate = trim($candidate);
 
         if ($candidate !== '') {
+            $term = $load_term_from_value($candidate);
+
+            if ($term instanceof \WP_Term) {
+                return $term;
+            }
+
             $term = get_term_by('slug', $candidate, $taxonomy);
 
             if ($term instanceof \WP_Term) {
