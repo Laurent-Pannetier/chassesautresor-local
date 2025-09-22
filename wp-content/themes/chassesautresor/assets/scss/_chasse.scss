@@ -353,59 +353,6 @@
     margin-top: 0.3rem;
 }
 
-.chasse-regions {
-  margin: var(--space-3xl) 0;
-  padding: var(--space-2xl) var(--space-lg);
-  background: rgba(var(--aside-bg-rgb), 0.15);
-  border-radius: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
-
-  &__header {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-xxs);
-  }
-
-  &__subtitle {
-    margin: 0;
-    color: var(--color-gris-3);
-    font-size: 0.95rem;
-  }
-
-  &__list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-sm);
-  }
-
-  &__item {
-    margin: 0;
-  }
-
-  &__link,
-  &__label {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-xxs);
-    padding: 0.35rem 0.9rem;
-    border-radius: 999px;
-    background: rgba(var(--aside-bg-rgb), 0.35);
-    color: var(--color-text-fond-clair);
-    font-weight: 600;
-    text-decoration: none;
-  }
-
-  &__link:hover,
-  &__link:focus-visible {
-    text-decoration: underline;
-  }
-}
-
 .chasse-description {
   margin-top: var(--space-xl);
   line-height: 1.6;
