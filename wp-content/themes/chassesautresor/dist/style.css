@@ -8577,7 +8577,7 @@ body.accueil-fullscreen {
     flex: 1 1 220px;
   }
   .home-hunts__filters-group--cost {
-    flex: 1 1 260px;
+    flex: 0 1 auto;
   }
   .home-hunts__filters-actions {
     flex: 0 0 auto;
