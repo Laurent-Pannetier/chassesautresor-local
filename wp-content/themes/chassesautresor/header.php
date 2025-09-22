@@ -180,6 +180,16 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
 
             $cta_data = generer_cta_chasse( $latest_chasse_id, get_current_user_id() );
 
+            if ( ( $cta_data['type'] ?? '' ) === 'engage' ) {
+                $cta_data['cta_html'] = sprintf(
+                    '<a href="%s" class="bouton-secondaire">%s</a>',
+                    esc_url( get_permalink( $latest_chasse_id ) . '#chasse-enigmes-wrapper' ),
+                    esc_html__( 'Voir mes énigmes', 'chassesautresor-com' )
+                );
+            }
+
+            $cta_data['cta_message'] = '';
+
             ob_start();
             get_template_part(
                 'template-parts/headers/front-page-latest-hero',
