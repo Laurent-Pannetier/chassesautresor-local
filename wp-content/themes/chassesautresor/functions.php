@@ -104,6 +104,7 @@ function ca_register_home_hunts_search_context(): void {
             'label'             => __('Rechercher une chasse', 'chassesautresor-com'),
             'placeholder'       => __('Rechercher une chasse', 'chassesautresor-com'),
             'submit_icon'       => 'search',
+            'submit_icon_only'  => true,
             'show_reset_button' => true,
             'no_results_message' => __('Aucune chasse trouvée', 'chassesautresor-com'),
         ],

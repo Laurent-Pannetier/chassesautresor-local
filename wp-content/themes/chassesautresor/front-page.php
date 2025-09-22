@@ -162,6 +162,7 @@ ob_start();
             'label'             => '',
             'placeholder'       => __('Rechercher une chasse', 'chassesautresor-com'),
             'submit_icon'       => 'search',
+            'submit_icon_only'  => true,
             'show_reset_button' => true,
             'data_attributes'   => [
                 'home-hunts-search' => '1',

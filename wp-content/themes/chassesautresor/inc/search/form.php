@@ -69,6 +69,7 @@ function cta_render_search_form(string $key, array $overrides = []): string
         'nonce_name'         => $ui['nonce_name'] ?? 'nonce',
         'submit_label'       => $ui['submit_label'] ?? esc_html__('Rechercher', 'chassesautresor-com'),
         'submit_icon'        => $ui['submit_icon'] ?? '',
+        // Garder `submit_icon_only` à true garantit un bouton visuellement réduit à l'icône.
         'submit_icon_only'   => $ui['submit_icon_only'] ?? false,
         'reset_label'        => $ui['reset_label'] ?? esc_html__('Réinitialiser', 'chassesautresor-com'),
         'show_reset_button'  => $ui['show_reset_button'] ?? false,
