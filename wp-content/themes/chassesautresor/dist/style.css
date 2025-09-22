@@ -737,6 +737,12 @@
     width: 300px;
     height: 300px;
   }
+  .carte-wide__contenu {
+    justify-content: center;
+  }
+  .carte-wide__content {
+    flex: 0 1 auto;
+  }
   .carte-wide__header {
     flex-direction: row;
     align-items: flex-start;
