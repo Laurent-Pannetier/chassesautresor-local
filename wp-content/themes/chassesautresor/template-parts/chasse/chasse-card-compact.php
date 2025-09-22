@@ -40,6 +40,22 @@ $themes = array_values(array_filter(
         return is_array($theme) && !empty($theme['nom']);
     }
 ));
+
+if (empty($region_principale) && function_exists('chasse_preparer_termes_affichage')) {
+    $regions = chasse_preparer_termes_affichage($chasse_id, 'chasse_region');
+    if (!empty($regions) && is_array($regions[0])) {
+        $region_principale = $regions[0];
+    }
+}
+
+if (empty($themes) && function_exists('chasse_preparer_termes_affichage')) {
+    $themes = array_values(array_filter(
+        chasse_preparer_termes_affichage($chasse_id, 'theme_chasse'),
+        static function ($theme) {
+            return is_array($theme) && !empty($theme['nom']);
+        }
+    ));
+}
 ?>
 <div class="carte-compact-card">
     <div class="carte carte-chasse carte-compact <?php echo esc_attr($infos['classe_statut']); ?>">
@@ -56,20 +72,20 @@ $themes = array_values(array_filter(
                     <div class="chasse-card-badges chasse-badges">
                         <?php if (!empty($region_principale['nom'])) : ?>
                             <?php if (!empty($region_principale['lien'])) : ?>
-                                <a class="meta-etiquette" href="<?php echo esc_url($region_principale['lien']); ?>">
+                                <a class="meta-etiquette chasse-badge chasse-badge--region" href="<?php echo esc_url($region_principale['lien']); ?>">
                                     <?php echo esc_html($region_principale['nom']); ?>
                                 </a>
                             <?php else : ?>
-                                <span class="meta-etiquette"><?php echo esc_html($region_principale['nom']); ?></span>
+                                <span class="meta-etiquette chasse-badge chasse-badge--region"><?php echo esc_html($region_principale['nom']); ?></span>
                             <?php endif; ?>
                         <?php endif; ?>
                         <?php foreach ($themes as $theme) : ?>
                             <?php if (!empty($theme['lien'])) : ?>
-                                <a class="meta-etiquette" href="<?php echo esc_url($theme['lien']); ?>">
+                                <a class="meta-etiquette chasse-badge chasse-badge--theme" href="<?php echo esc_url($theme['lien']); ?>">
                                     <?php echo esc_html($theme['nom']); ?>
                                 </a>
                             <?php else : ?>
-                                <span class="meta-etiquette"><?php echo esc_html($theme['nom']); ?></span>
+                                <span class="meta-etiquette chasse-badge chasse-badge--theme"><?php echo esc_html($theme['nom']); ?></span>
                             <?php endif; ?>
                         <?php endforeach; ?>
                     </div>
