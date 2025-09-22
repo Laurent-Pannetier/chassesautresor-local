@@ -34,7 +34,8 @@
   const feedbackElement = root.querySelector('[data-home-hunts-feedback]');
   const resetButton = form.querySelector('[data-home-hunts-reset]');
   const filtersWrapper = form.closest('.home-hunts__filters') || form;
-  const searchForm = filtersWrapper ? filtersWrapper.querySelector('form[data-home-hunts-search]') : null;
+  const searchForm = root.querySelector('form[data-home-hunts-search]')
+    || (filtersWrapper ? filtersWrapper.querySelector('form[data-home-hunts-search]') : null);
   const searchInput = searchForm ? searchForm.querySelector('input[type="search"]') : null;
   const searchResetButton = searchForm ? searchForm.querySelector('[data-table-search-reset]') : null;
 

@@ -922,6 +922,63 @@
   gap: var(--space-md);
 }
 
+/* 🏷️ Badges région & thèmes */
+.chasse-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xxs);
+}
+
+.chasse-card-badges {
+  margin-top: var(--space-xs);
+}
+
+.chasse-meta-badges {
+  margin: var(--space-sm) 0;
+}
+
+.chasse-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  line-height: 1.3;
+  font-weight: 600;
+  text-decoration: none;
+  background: rgba(var(--color-text-fond-clair-rgb), 0.08);
+  color: var(--color-text-fond-clair);
+  border: 1px solid rgba(var(--color-text-fond-clair-rgb), 0.1);
+  transition: background-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.chasse-badge--region {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text-fond-clair);
+}
+
+.chasse-badge--theme {
+  background: rgba(255, 215, 0, 0.18);
+  border-color: rgba(255, 215, 0, 0.35);
+  color: var(--color-text-fond-clair);
+}
+
+a.chasse-badge {
+  cursor: pointer;
+}
+
+a.chasse-badge:hover,
+a.chasse-badge:focus-visible {
+  text-decoration: none;
+  box-shadow: 0 0 0 2px rgba(var(--color-text-fond-clair-rgb), 0.15);
+}
+
+a.chasse-badge.chasse-badge--region:hover,
+a.chasse-badge.chasse-badge--region:focus-visible {
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.18);
+}
+
 /* ========== 🖼️ COLONNE IMAGE DE LA CHASSE ========== */
 .champ-chasse.champ-img {
   flex: 0 0 auto;
@@ -1166,10 +1223,24 @@
   display: flex;
   gap: var(--space-md);
   align-items: center;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
+  row-gap: var(--space-xs);
   justify-content: flex-start;
   font-size: 93%;
   color: var(--color-gris-3);
+}
+
+.caracteristique-region__link,
+.caracteristique-region__text {
+  color: inherit;
+  font-weight: 600;
+}
+
+.caracteristique-region__link {
+  text-decoration: none;
+}
+.caracteristique-region__link:hover, .caracteristique-region__link:focus-visible {
+  text-decoration: underline;
 }
 
 .meta-regular .meta-indic {
@@ -1511,25 +1582,38 @@ body.edition-active-chasse .chasse-enigmes-header .liens-placeholder {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-xxs);
-  padding: var(--space-xs) var(--space-md);
-  border-radius: 0.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.25);
-  background-color: transparent;
+  background-color: rgba(255, 255, 255, 0.08);
   color: var(--color-text-primary);
-  font-size: 0.875rem;
-  font-weight: 600;
   cursor: pointer;
-  transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
 }
 .table-search__reset:hover, .table-search__reset:focus {
-  background-color: rgba(255, 255, 255, 0.08);
+  background-color: rgba(255, 255, 255, 0.16);
   border-color: rgba(255, 255, 255, 0.4);
   color: var(--color-white);
+  transform: translateY(-1px);
   outline: none;
 }
 .table-search__reset:focus-visible {
   box-shadow: 0 0 0 2px rgba(184, 134, 11, 0.35);
+}
+.table-search__reset-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+.table-search__reset-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
 }
 
 @media (min-width: 600px) {
@@ -1551,7 +1635,7 @@ body.edition-active-chasse .chasse-enigmes-header .liens-placeholder {
     padding: var(--space-xs);
   }
   .table-search__reset {
-    align-self: stretch;
+    align-self: center;
   }
 }
 .table-search--inline .table-search__description {
@@ -2154,12 +2238,27 @@ a.ajout-link:focus-visible {
   font-size: 85%;
 }
 
+.meta-etiquette a {
+  color: inherit;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.meta-etiquette a:hover,
+.meta-etiquette a:focus-visible {
+  text-decoration: underline;
+}
+
 .meta-etiquette svg {
   margin-bottom: -5px;
 }
 
 .meta-etiquette span {
   font-weight: 600;
+}
+
+.meta-etiquette__value {
+  font-weight: 400;
 }
 
 .meta-etiquette strong {
@@ -8246,8 +8345,16 @@ body.accueil-fullscreen {
   padding-top: 500px;
 }
 
+.home-hunts__toolbar {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
 .home-hunts-filters,
-.home-hunts__filters {
+.home-hunts__filters,
+.home-hunts__search {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -8263,7 +8370,8 @@ body.accueil-fullscreen {
 }
 
 .home-hunts-filters:focus-within,
-.home-hunts__filters:focus-within {
+.home-hunts__filters:focus-within,
+.home-hunts__search:focus-within {
   box-shadow: 0 22px 40px rgba(var(--color-black-rgb), 0.45);
   transform: translateY(-2px);
 }
@@ -8275,18 +8383,20 @@ body.accueil-fullscreen {
   width: 100%;
 }
 
-.home-hunts__filters-search {
-  width: 100%;
+.home-hunts__search {
+  align-self: stretch;
 }
 
-.home-hunts__filters-search .table-search {
+.home-hunts__search .table-search {
   width: 100%;
 }
 
 .home-hunts-filters label,
 .home-hunts__filters label,
+.home-hunts__search label,
 .home-hunts-filters legend,
-.home-hunts__filters legend {
+.home-hunts__filters legend,
+.home-hunts__search legend {
   display: block;
   font-size: 0.875rem;
   font-weight: 600;
@@ -8354,15 +8464,13 @@ body.accueil-fullscreen {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-xxs);
-  padding: 0.6rem 1.25rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.25);
   background: rgba(255, 255, 255, 0.08);
   color: var(--color-white);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
   transition: background-color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
 }
 
@@ -8372,6 +8480,21 @@ body.accueil-fullscreen {
   border-color: rgba(255, 255, 255, 0.35);
   transform: translateY(-1px);
   outline: none;
+}
+
+.home-hunts__filters-reset-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.home-hunts__filters-reset-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
 }
 
 .home-hunts__filters-reset:disabled,
@@ -8402,31 +8525,27 @@ body.accueil-fullscreen {
     align-items: center;
     justify-content: flex-end;
   }
-  .home-hunts__filters-reset {
-    width: auto;
-  }
 }
 @media (min-width: 1024px) {
-  .home-hunts-filters,
-  .home-hunts__filters {
+  .home-hunts__toolbar {
     flex-direction: row;
-    flex-wrap: wrap;
-    align-items: flex-end;
+    align-items: stretch;
+  }
+  .home-hunts__filters {
+    flex: 1 1 auto;
+  }
+  .home-hunts__search {
+    flex: 0 1 360px;
+  }
+  .home-hunts__search .table-search {
+    max-width: 360px;
+    margin-left: auto;
   }
   .home-hunts__filters-form {
     flex-direction: row;
     flex-wrap: wrap;
     align-items: flex-end;
-    flex: 1 1 600px;
-  }
-  .home-hunts__filters-search {
-    flex: 0 0 auto;
-    display: flex;
-    justify-content: flex-end;
-    margin-left: auto;
-  }
-  .home-hunts__filters-search .table-search {
-    max-width: 360px;
+    flex: 1 1 auto;
   }
   .home-hunts__filters-group {
     flex: 1 1 220px;
@@ -8454,6 +8573,7 @@ body.accueil-fullscreen {
 }
 
 .home-hunts--loading .home-hunts__filters,
+.home-hunts--loading .home-hunts__search,
 .home-hunts--loading .organisateur-chasse,
 .home-hunts--loading .home-hunts__feedback {
   opacity: 0.65;
@@ -8463,7 +8583,11 @@ body.accueil-fullscreen {
 .home-hunts--loading .home-hunts__filters,
 .home-hunts--loading .home-hunts__filters select,
 .home-hunts--loading .home-hunts__filters input,
-.home-hunts--loading .home-hunts__filters button {
+.home-hunts--loading .home-hunts__filters button,
+.home-hunts--loading .home-hunts__search,
+.home-hunts--loading .home-hunts__search select,
+.home-hunts--loading .home-hunts__search input,
+.home-hunts--loading .home-hunts__search button {
   cursor: progress;
 }
 
@@ -10261,6 +10385,10 @@ body.woocommerce h2 {
   line-height: 1;
 }
 
+.myaccount-tentatives .table-search__reset-icon {
+  display: none;
+}
+
 .myaccount-tentatives .table-search__reset:hover,
 .myaccount-tentatives .table-search__reset:focus {
   color: var(--color-white);
@@ -10270,18 +10398,6 @@ body.woocommerce h2 {
   outline: none;
   box-shadow: 0 0 0 2px rgba(225, 169, 95, 0.65);
   border-radius: 999px;
-}
-
-.myaccount-tentatives .table-search__reset-text {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
 }
 
 .tentatives-table th:nth-child(2),

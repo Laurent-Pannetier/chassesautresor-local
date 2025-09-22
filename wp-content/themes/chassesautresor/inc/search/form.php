@@ -26,6 +26,18 @@ function cta_get_table_search_submit_icon_markup(string $icon): string
     }
 }
 
+if (!function_exists('cta_get_reset_icon_markup')) {
+    /**
+     * Returns the SVG markup for reset buttons.
+     */
+    function cta_get_reset_icon_markup(): string
+    {
+        return '<svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">'
+            . '<path fill="currentColor" d="M12 5V2L8 6l4 4V7c3.309 0 6 2.691 6 6s-2.691 6-6 6-6-2.691-6-6H4c0 4.418 3.582 8 8s8-3.582 8-8-3.582-8-8-8z" />'
+            . '</svg>';
+    }
+}
+
 /**
  * Renders the HTML markup for a table search form.
  *
@@ -272,8 +284,22 @@ function cta_render_search_form(string $key, array $overrides = []): string
                 <?php endif; ?>
             </button>
             <?php if ($show_reset) : ?>
-            <button type="button" class="table-search__reset" data-table-search-reset<?php echo '' === $search_value ? ' hidden' : ''; ?>>
-                <span class="table-search__reset-text"><?php echo esc_html($reset_label); ?></span>
+            <?php
+            $reset_icon_markup = function_exists('cta_get_reset_icon_markup')
+                ? cta_get_reset_icon_markup()
+                : '';
+            ?>
+            <button
+                type="button"
+                class="table-search__reset"
+                data-table-search-reset<?php echo '' === $search_value ? ' hidden' : ''; ?>
+                aria-label="<?php echo esc_attr($reset_label); ?>"
+            >
+                <?php if ('' !== $reset_icon_markup) : ?>
+                <span class="table-search__reset-icon" aria-hidden="true">
+                    <?php echo $reset_icon_markup; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                </span>
+                <?php endif; ?>
             </button>
             <?php endif; ?>
         </div>
