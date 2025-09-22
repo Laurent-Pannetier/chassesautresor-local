@@ -45,11 +45,34 @@ if ($current_user->ID) {
 get_header();
 ?>
 <div class="myaccount-layout">
-    <aside class="myaccount-sidebar">
+    <button
+        type="button"
+        class="myaccount-sidebar-toggle"
+        aria-controls="myaccount-sidebar"
+        aria-expanded="false"
+    >
+        <span class="myaccount-sidebar-toggle-icon" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+        <span class="myaccount-sidebar-toggle-text">
+            <?php esc_html_e('Menu', 'chassesautresor-com'); ?>
+        </span>
+    </button>
+    <div class="myaccount-sidebar-backdrop" aria-hidden="true"></div>
+    <aside id="myaccount-sidebar" class="myaccount-sidebar">
         <div class="myaccount-brand">
             <a href="<?php echo esc_url(home_url('/')); ?>">
                 <?php echo esc_html($display_name); ?>
             </a>
+            <button
+                type="button"
+                class="myaccount-sidebar-close"
+                aria-label="<?php esc_attr_e('Fermer le menu', 'chassesautresor-com'); ?>"
+            >
+                <span aria-hidden="true">&times;</span>
+            </button>
         </div>
         <?php if ($show_nav) : ?>
         <nav class="dashboard-nav">
