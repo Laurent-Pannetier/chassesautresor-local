@@ -1528,10 +1528,10 @@ body.edition-active-chasse .chasse-enigmes-header .liens-placeholder {
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 .table-search__field::-moz-placeholder {
-  color: rgba(245, 245, 220, 0.6);
+  color: var(--table-search-placeholder-color, var(--input-placeholder-color));
 }
 .table-search__field::placeholder {
-  color: rgba(245, 245, 220, 0.6);
+  color: var(--table-search-placeholder-color, var(--input-placeholder-color));
 }
 .table-search__field:focus {
   outline: none;
@@ -7656,6 +7656,26 @@ label {
   color: var(--color-text-primary);
 }
 
+input::-moz-placeholder, textarea::-moz-placeholder {
+  color: var(--input-placeholder-color);
+  opacity: 1;
+}
+
+input::-moz-placeholder, input::placeholder,
+textarea::-moz-placeholder,
+textarea::placeholder {
+  color: var(--input-placeholder-color);
+  opacity: 1;
+}
+input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder {
+  color: var(--input-placeholder-color);
+}
+input:-ms-input-placeholder,
+textarea:-ms-input-placeholder {
+  color: var(--input-placeholder-color);
+}
+
 .edition-panel label,
 .edit-account label,
 .edit-account legend,
@@ -10323,12 +10343,8 @@ body.woocommerce h2 {
   border-color: rgba(11, 19, 43, 0.25);
 }
 
-.myaccount-tentatives .table-search__field::-moz-placeholder {
-  color: rgba(28, 28, 28, 0.55);
-}
-
-.myaccount-tentatives .table-search__field::placeholder {
-  color: rgba(28, 28, 28, 0.55);
+.myaccount-tentatives .table-search {
+  --table-search-placeholder-color: rgba(28, 28, 28, 0.55);
 }
 
 .myaccount-tentatives .table-search__field:focus {
@@ -11081,6 +11097,7 @@ a.bouton-edition-attention {
   --color-grey-light: #EEEEEE; /* 🌫️ Gris clair */
   --color-grey-medium: #CCCCCC; /* 🌫️ Gris moyen */
   --color-grey-dark: #333333; /* 🌫️ Gris foncé */
+  --input-placeholder-color: #8A8876; /* ✏️ Texte de placeholder lisible sur fonds clairs ou foncés */
   --color-primary-dark: #B8860B; /* 🟡 Or sombre (dégradé) */
   --color-background-dark: #060A1F; /* 🎭 Fond sombre profond */
   --color-gris-3: #adadad; /* ⚪ Gris neutre n°3 */

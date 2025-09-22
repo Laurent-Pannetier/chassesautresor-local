@@ -34,7 +34,7 @@
     transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 
     &::placeholder {
-      color: rgba(245, 245, 220, 0.6);
+      color: var(--table-search-placeholder-color, var(--input-placeholder-color));
     }
 
     &:focus {
