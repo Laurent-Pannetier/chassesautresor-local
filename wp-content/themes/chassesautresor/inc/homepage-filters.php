@@ -131,3 +131,68 @@ function ca_home_filter_chasse_ids(array $args): array
         ],
     ];
 }
+
+/**
+ * AJAX endpoint returning filtered hunts list markup.
+ */
+function ca_ajax_filter_chasses(): void
+{
+    check_ajax_referer('ca-filter-chasses', 'nonce');
+
+    $status_whitelist = ['tous', 'en_cours', 'a_venir', 'termine'];
+    $cost_whitelist   = ['gratuit', 'points'];
+
+    $raw_request = wp_unslash($_POST);
+
+    $filters = [];
+
+    if (isset($raw_request['status']) && is_string($raw_request['status'])) {
+        $status = sanitize_text_field($raw_request['status']);
+        if (in_array($status, $status_whitelist, true)) {
+            $filters['statut'] = $status;
+        }
+    }
+
+    if (array_key_exists('cost', $raw_request)) {
+        $raw_cost = $raw_request['cost'];
+
+        if (is_string($raw_cost)) {
+            $raw_cost = [$raw_cost];
+        }
+
+        if (is_array($raw_cost)) {
+            $raw_cost = array_map('strval', $raw_cost);
+            $filtered_cost = array_values(array_intersect($cost_whitelist, $raw_cost));
+            $filters['cout'] = $filtered_cost;
+        }
+    }
+
+    $filter_results = ca_home_filter_chasse_ids($filters);
+
+    if (!is_array($filter_results) || !isset($filter_results['ids'])) {
+        wp_send_json_error([
+            'message' => __('Impossible de charger les chasses.', 'chassesautresor-com'),
+        ]);
+    }
+
+    $chasse_ids = is_array($filter_results['ids']) ? array_map('intval', $filter_results['ids']) : [];
+
+    ob_start();
+    get_template_part('template-parts/organisateur/organisateur-partial-boucle-chasses', null, [
+        'chasse_ids'  => $chasse_ids,
+        'show_header' => false,
+        'grid_class'  => 'organisateur-chasses-grid',
+        'before_items' => '',
+        'after_items'  => '',
+    ]);
+    $html = (string) ob_get_clean();
+
+    wp_send_json_success([
+        'html'  => $html,
+        'total' => (int) ($filter_results['total'] ?? count($chasse_ids)),
+        'nonce' => wp_create_nonce('ca-filter-chasses'),
+    ]);
+}
+
+add_action('wp_ajax_ca_filter_chasses', 'ca_ajax_filter_chasses');
+add_action('wp_ajax_nopriv_ca_filter_chasses', 'ca_ajax_filter_chasses');

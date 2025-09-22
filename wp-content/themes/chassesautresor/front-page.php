@@ -13,6 +13,7 @@ if (is_user_logged_in() && function_exists('render_points_history_table')) {
 get_header();
 
 $home_filters = ca_home_filter_chasse_ids([]);
+$filters_nonce = wp_create_nonce('ca-filter-chasses');
 
 $chasse_ids             = $home_filters['ids'];
 $normalized_filters     = $home_filters['filters_normalises'] ?? [];
@@ -94,7 +95,11 @@ $after_items_markup = '<div class="home-hunts__feedback" data-home-hunts-feedbac
     <main id="home-page">
         <section class="chasses">
             <div class="conteneur">
-                <div class="liste-chasses" data-home-hunts="true">
+                <div
+                    class="liste-chasses"
+                    data-home-hunts="true"
+                    data-nonce="<?php echo esc_attr($filters_nonce); ?>"
+                >
                     <?php
                     get_template_part('template-parts/organisateur/organisateur-partial-boucle-chasses', null, [
                         'chasse_ids' => $chasse_ids,
