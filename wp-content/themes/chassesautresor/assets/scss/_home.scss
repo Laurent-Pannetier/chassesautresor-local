@@ -208,7 +208,8 @@ body.accueil-fullscreen {
     .home-hunts__filters-actions {
         flex-direction: row;
         align-items: center;
-        justify-content: flex-end;
+        justify-content: flex-start;
+        align-self: flex-start;
     }
 }
 
@@ -254,8 +255,8 @@ body.accueil-fullscreen {
     .home-hunts__filters-actions {
         flex: 0 0 auto;
         align-items: center;
-        justify-content: flex-end;
-        margin-left: auto;
+        justify-content: flex-start;
+        margin-left: 0;
     }
 }
 
