@@ -230,18 +230,22 @@
     return `${formatNumber(countValue)} ${countValue > 1 ? pluralWord : singularWord}`;
   }
 
-  function updateCount(total) {
+  function updateCount(total, allowFallback = true) {
     if (!countElement) {
       return;
     }
 
     let value = normalizeCount(total);
 
-    if (null === value) {
+    if (null === value && allowFallback) {
       value = Number.isFinite(defaultCountValue) ? Math.max(0, Math.trunc(defaultCountValue)) : null;
     }
 
     if (null === value) {
+      countElement.textContent = '';
+      if (countElement.dataset) {
+        delete countElement.dataset.count;
+      }
       return;
     }
 
@@ -623,7 +627,7 @@
   function onResetClick(event) {
     event.preventDefault();
     restoreDefaults();
-    updateCount(defaultCountValue);
+    updateCount(null, false);
     clearFeedback();
     submitFilters();
   }
@@ -673,8 +677,8 @@
     });
   }
 
-  if (countElement && defaultCountValue !== null) {
-    updateCount(defaultCountValue);
+  if (countElement) {
+    updateCount(null, false);
   }
 
   toggleSearchReset(getSearchTerm() !== '');
