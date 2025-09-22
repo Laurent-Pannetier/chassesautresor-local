@@ -148,6 +148,23 @@ label {
     color: var(--color-text-primary);
 }
 
+input,
+textarea {
+  &::-moz-placeholder,
+  &::placeholder {
+    color: var(--input-placeholder-color);
+    opacity: 1;
+  }
+
+  &::-webkit-input-placeholder {
+    color: var(--input-placeholder-color);
+  }
+
+  &:-ms-input-placeholder {
+    color: var(--input-placeholder-color);
+  }
+}
+
 .edition-panel label,
 .edit-account label,
 .edit-account legend,

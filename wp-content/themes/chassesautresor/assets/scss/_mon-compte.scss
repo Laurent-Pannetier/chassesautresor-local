@@ -931,8 +931,8 @@ body.woocommerce h2 {
     border-color: rgba(11, 19, 43, 0.25);
 }
 
-.myaccount-tentatives .table-search__field::placeholder {
-    color: rgba(28, 28, 28, 0.55);
+.myaccount-tentatives .table-search {
+    --table-search-placeholder-color: rgba(28, 28, 28, 0.55);
 }
 
 .myaccount-tentatives .table-search__field:focus {
