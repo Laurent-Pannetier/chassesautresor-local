@@ -1408,13 +1408,40 @@ function chasse_preparer_termes_affichage(int $chasse_id, string $taxonomy): arr
     }
 
     $terms = wp_get_post_terms($chasse_id, $taxonomy, ['orderby' => 'term_order']);
-    if (is_wp_error($terms) || empty($terms)) {
+    if (is_wp_error($terms)) {
+        $terms = [];
+    }
+
+    if (empty($terms) && function_exists('get_field')) {
+        $acf_fields = [
+            'chasse_region' => 'chasse_region',
+            'theme_chasse'  => 'chasse_theme',
+        ];
+
+        if (isset($acf_fields[$taxonomy])) {
+            $raw_terms = get_field($acf_fields[$taxonomy], $chasse_id);
+            if ($raw_terms instanceof \WP_Term) {
+                $terms = [$raw_terms];
+            } elseif (is_array($raw_terms)) {
+                $terms = array_values(array_filter(
+                    $raw_terms,
+                    static fn($term) => $term instanceof \WP_Term
+                ));
+            }
+        }
+    }
+
+    if (empty($terms)) {
         return [];
     }
 
     $items = [];
 
     foreach ($terms as $term) {
+        if (!$term instanceof \WP_Term) {
+            continue;
+        }
+
         $link = '';
         if (function_exists('get_term_link')) {
             $link = get_term_link($term);
