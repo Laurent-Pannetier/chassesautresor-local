@@ -114,52 +114,52 @@ $themes_links = chasse_format_meta_terms($infos['themes'] ?? null);
             <h3 class="carte-wide__titre">
                 <a href="<?php echo esc_url($infos['permalink']); ?>"><?php echo esc_html($infos['titre']); ?></a>
             </h3>
-            <?php if (!empty($regions_links) || !empty($themes_links)) : ?>
-                <div class="bloc-metas-inline bloc-metas-inline--compact">
-                    <?php if (!empty($regions_links)) : ?>
-                        <?php
-                        $regions_label = _n('Région :', 'Régions :', count($regions_links), 'chassesautresor-com');
-                        ?>
-                        <div class="meta-etiquette meta-etiquette--regions">
-                            <span><?php echo esc_html($regions_label); ?></span>
-                            <?php echo wp_kses_post(implode(', ', $regions_links)); ?>
-                        </div>
-                    <?php endif; ?>
-
-                    <?php if (!empty($themes_links)) : ?>
-                        <?php
-                        $themes_label = _n('Thème :', 'Thèmes :', count($themes_links), 'chassesautresor-com');
-                        ?>
-                        <div class="meta-etiquette meta-etiquette--themes">
-                            <span><?php echo esc_html($themes_label); ?></span>
-                            <?php echo wp_kses_post(implode(', ', $themes_links)); ?>
-                        </div>
-                    <?php endif; ?>
-                </div>
-            <?php endif; ?>
         </div>
 
         <div class="carte-wide__content">
-            <div class="meta-row svg-xsmall">
-                <div class="meta-regular">
+            <div class="carte-wide__metas meta-row svg-xsmall">
+                <div class="meta-regular meta-regular--enigmes">
                     <?php echo get_svg_icon('enigme'); ?>
-                    <?php
-                    echo esc_html(
-                        sprintf(
-                            _n('%d énigme', '%d énigmes', $infos['total_enigmes'], 'chassesautresor-com'),
-                            $infos['total_enigmes']
-                        )
-                    );
-                    ?> —
-                    <?php echo get_svg_icon('participants'); ?><?php echo esc_html($infos['nb_joueurs_label']); ?>
+                    <span class="meta-label">
+                        <?php
+                        echo esc_html(
+                            sprintf(
+                                _n('%d énigme', '%d énigmes', $infos['total_enigmes'], 'chassesautresor-com'),
+                                $infos['total_enigmes']
+                            )
+                        );
+                        ?>
+                    </span>
                 </div>
-                <div class="meta-etiquette">
+                <div class="meta-regular meta-regular--participants">
+                    <?php echo get_svg_icon('participants'); ?>
+                    <span class="meta-label"><?php echo esc_html($infos['nb_joueurs_label']); ?></span>
+                </div>
+                <div class="meta-etiquette meta-etiquette--dates">
                     <?php echo get_svg_icon('calendar'); ?>
                     <span class="chasse-date-plage">
                         <span class="date-debut"><?php echo esc_html($infos['date_debut']); ?></span> –
                         <span class="date-fin"><?php echo esc_html($infos['date_fin']); ?></span>
                     </span>
                 </div>
+                <?php if (!empty($regions_links)) : ?>
+                    <?php
+                    $regions_label = _n('Région :', 'Régions :', count($regions_links), 'chassesautresor-com');
+                    ?>
+                    <div class="meta-etiquette meta-etiquette--regions">
+                        <span><?php echo esc_html($regions_label); ?></span>
+                        <?php echo wp_kses_post(implode(', ', $regions_links)); ?>
+                    </div>
+                <?php endif; ?>
+                <?php if (!empty($themes_links)) : ?>
+                    <?php
+                    $themes_label = _n('Thème :', 'Thèmes :', count($themes_links), 'chassesautresor-com');
+                    ?>
+                    <div class="meta-etiquette meta-etiquette--themes">
+                        <span><?php echo esc_html($themes_label); ?></span>
+                        <?php echo wp_kses_post(implode(', ', $themes_links)); ?>
+                    </div>
+                <?php endif; ?>
             </div>
 
             <?php echo $infos['extrait_html']; ?>
