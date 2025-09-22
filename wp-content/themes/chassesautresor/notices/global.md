@@ -373,6 +373,7 @@ Groupe : paramètre de la chasse
 * chasse_cache_statut (select)
 * chasse_cache_complet (true_false)
 * chasse_region (taxonomy) — référence la taxonomie des régions de chasse
+* chasse_theme (taxonomy) — référence la taxonomie des thèmes de chasse
 
 CPT : enigme
 Groupe : Paramètres de l’énigme
