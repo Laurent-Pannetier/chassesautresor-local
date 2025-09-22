@@ -34,6 +34,14 @@ $peut_voir_aside    = $est_engage_chasse
 // Récupération centralisée des infos
 $infos_chasse = preparer_infos_affichage_chasse($chasse_id, $user_id);
 
+$region_principale = is_array($infos_chasse['region_principale'] ?? null) ? $infos_chasse['region_principale'] : null;
+$themes_badges = array_values(array_filter(
+    is_array($infos_chasse['themes'] ?? null) ? $infos_chasse['themes'] : [],
+    static function ($theme) {
+        return is_array($theme) && !empty($theme['nom']);
+    }
+));
+
 // Champs principaux
 $champs = $infos_chasse['champs'];
 $lot = $champs['lot'];
@@ -258,6 +266,29 @@ if ($peut_voir_aside) {
                 <?= esc_html($error_message); ?>
             </div>
         <?php endif; ?>
+    <?php endif; ?>
+
+    <?php if (!empty($region_principale) || !empty($themes_badges)) : ?>
+        <div class="chasse-meta-badges chasse-badges">
+            <?php if (!empty($region_principale['nom'])) : ?>
+                <?php if (!empty($region_principale['lien'])) : ?>
+                    <a class="chasse-badge chasse-badge--region" href="<?php echo esc_url($region_principale['lien']); ?>">
+                        <?php echo esc_html($region_principale['nom']); ?>
+                    </a>
+                <?php else : ?>
+                    <span class="chasse-badge chasse-badge--region"><?php echo esc_html($region_principale['nom']); ?></span>
+                <?php endif; ?>
+            <?php endif; ?>
+            <?php foreach ($themes_badges as $theme_badge) : ?>
+                <?php if (!empty($theme_badge['lien'])) : ?>
+                    <a class="chasse-badge chasse-badge--theme" href="<?php echo esc_url($theme_badge['lien']); ?>">
+                        <?php echo esc_html($theme_badge['nom']); ?>
+                    </a>
+                <?php else : ?>
+                    <span class="chasse-badge chasse-badge--theme"><?php echo esc_html($theme_badge['nom']); ?></span>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </div>
     <?php endif; ?>
 
     <!-- 📦 Fiche complète (images + méta + actions) -->

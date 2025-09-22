@@ -1394,6 +1394,46 @@ function render_chasse_solutions(int $chasse_id, int $user_id): void
 }
 
 /**
+ * Prépare les données d'affichage des termes associés à une chasse.
+ *
+ * @param int    $chasse_id ID de la chasse.
+ * @param string $taxonomy  Taxonomie ciblée.
+ *
+ * @return array[]
+ */
+function chasse_preparer_termes_affichage(int $chasse_id, string $taxonomy): array
+{
+    if (!function_exists('wp_get_post_terms')) {
+        return [];
+    }
+
+    $terms = wp_get_post_terms($chasse_id, $taxonomy, ['orderby' => 'term_order']);
+    if (is_wp_error($terms) || empty($terms)) {
+        return [];
+    }
+
+    $items = [];
+
+    foreach ($terms as $term) {
+        $link = '';
+        if (function_exists('get_term_link')) {
+            $link = get_term_link($term);
+            if (is_wp_error($link)) {
+                $link = '';
+            }
+        }
+
+        $items[] = [
+            'nom'  => $term->name,
+            'slug' => $term->slug,
+            'lien' => $link,
+        ];
+    }
+
+    return $items;
+}
+
+/**
  * Prépare les informations d'affichage pour une carte de chasse.
  *
  * @param int $chasse_id  ID de la chasse.
@@ -1488,6 +1528,10 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
     }
 
     $champs = chasse_get_champs($chasse_id);
+
+    $regions = chasse_preparer_termes_affichage($chasse_id, 'chasse_region');
+    $themes  = chasse_preparer_termes_affichage($chasse_id, 'theme_chasse');
+    $region_principale = !empty($regions) ? $regions[0] : null;
     $titre_recompense  = $champs['titre_recompense'];
     $valeur_recompense = $champs['valeur_recompense'];
     $cout_points       = (int) $champs['cout_points'];
@@ -1680,6 +1724,9 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
         'cta_message'       => $cta_message,
         'cta_type'         => $cta_data['type'] ?? '',
         'footer_html'       => $footer_html,
+        'regions'           => $regions,
+        'themes'            => $themes,
+        'region_principale' => $region_principale,
     ];
 
     if (!empty($progression['resolvables'])) {
@@ -1728,6 +1775,10 @@ function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): 
     }
 
     $champs = chasse_get_champs($chasse_id);
+
+    $regions = chasse_preparer_termes_affichage($chasse_id, 'chasse_region');
+    $themes  = chasse_preparer_termes_affichage($chasse_id, 'theme_chasse');
+    $region_principale = !empty($regions) ? $regions[0] : null;
 
     $description   = get_field('chasse_principale_description', $chasse_id);
     $texte_complet = wp_strip_all_tags($description);
@@ -1793,6 +1844,9 @@ function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): 
         ],
         'statut'            => get_field('chasse_cache_statut', $chasse_id) ?: 'revision',
         'statut_validation' => get_field('chasse_cache_statut_validation', $chasse_id),
+        'regions'           => $regions,
+        'themes'            => $themes,
+        'region_principale' => $region_principale,
     ];
 
     $cache[$user_id] = $memo[$memo_key];
@@ -1813,6 +1867,19 @@ function chasse_clear_infos_affichage_cache(int $chasse_id): void
     $key = chasse_infos_affichage_cache_key($chasse_id);
     wp_cache_delete($key, 'chasse_affichage');
     delete_transient($key);
+}
+
+function chasse_invalidate_infos_affichage_terms(int $object_id, $terms, $tt_ids, string $taxonomy, $append, $old_tt_ids): void
+{
+    if (!in_array($taxonomy, ['chasse_region', 'theme_chasse'], true)) {
+        return;
+    }
+
+    if (get_post_type($object_id) !== 'chasse') {
+        return;
+    }
+
+    chasse_clear_infos_affichage_cache((int) $object_id);
 }
 
 function chasse_invalidate_infos_affichage_cache(int $post_id, \WP_Post $post, bool $update): void
@@ -1845,3 +1912,4 @@ function chasse_acf_clear_infos_affichage_cache($post_id): void
 add_action('acf/save_post', 'chasse_acf_clear_infos_affichage_cache', 20);
 add_action('save_post', 'chasse_invalidate_infos_affichage_cache', 10, 3);
 add_action('chasse_engagement_created', 'chasse_clear_infos_affichage_cache');
+add_action('set_object_terms', 'chasse_invalidate_infos_affichage_terms', 10, 6);

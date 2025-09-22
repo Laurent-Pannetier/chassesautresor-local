@@ -33,6 +33,63 @@
   gap: var(--space-md);
 }
 
+/* 🏷️ Badges région & thèmes */
+.chasse-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xxs);
+}
+
+.chasse-card-badges {
+  margin-top: var(--space-xs);
+}
+
+.chasse-meta-badges {
+  margin: var(--space-sm) 0;
+}
+
+.chasse-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  line-height: 1.3;
+  font-weight: 600;
+  text-decoration: none;
+  background: rgba(var(--color-text-fond-clair-rgb), 0.08);
+  color: var(--color-text-fond-clair);
+  border: 1px solid rgba(var(--color-text-fond-clair-rgb), 0.1);
+  transition: background-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.chasse-badge--region {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text-fond-clair);
+}
+
+.chasse-badge--theme {
+  background: rgba(255, 215, 0, 0.18);
+  border-color: rgba(255, 215, 0, 0.35);
+  color: var(--color-text-fond-clair);
+}
+
+a.chasse-badge {
+  cursor: pointer;
+}
+
+a.chasse-badge:hover,
+a.chasse-badge:focus-visible {
+  text-decoration: none;
+  box-shadow: 0 0 0 2px rgba(var(--color-text-fond-clair-rgb), 0.15);
+}
+
+a.chasse-badge.chasse-badge--region:hover,
+a.chasse-badge.chasse-badge--region:focus-visible {
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.18);
+}
+
 
 /* ========== 🖼️ COLONNE IMAGE DE LA CHASSE ========== */
 .champ-chasse.champ-img {
