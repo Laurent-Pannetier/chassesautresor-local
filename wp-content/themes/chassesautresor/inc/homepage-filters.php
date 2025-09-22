@@ -14,16 +14,17 @@ defined('ABSPATH') || exit();
  * - cout: array of "gratuit" and/or "points". Omit to keep both values by default.
  *   A hunt is considered "gratuit" when both "chasse_infos_cout_points" and "nb_enigmes_payantes" are equal to 0.
  *
- * @param array{statut?:string, cout?:string|string[]}|array $args Raw filters coming from the frontend.
+ * @param array{statut?:string, cout?:string|string[], search?:string}|array $args Raw filters coming from the frontend.
  *
  * @return array{
  *     ids:int[],
  *     total:int,
- *     filters_normalises:array{statut:string, cout:string[]},
+ *     filters_normalises:array{statut:string, cout:string[], search:string},
  *     available_filters:array{
  *         statut:array<string,int>,
  *         cout:array<string,int>
- *     }
+ *     },
+ *     message?:string
  * }
  */
 function ca_home_filter_chasse_ids(array $args): array
@@ -35,6 +36,40 @@ function ca_home_filter_chasse_ids(array $args): array
         'statut' => 'tous',
         'cout'   => $cost_whitelist,
     ];
+
+    $raw_search = '';
+    if (array_key_exists('search', $args)) {
+        $raw_search = $args['search'];
+        if (is_array($raw_search)) {
+            $raw_search = reset($raw_search);
+        }
+    }
+
+    $raw_search = is_scalar($raw_search) ? (string) $raw_search : '';
+    $search_term = trim($raw_search);
+    $sanitized_search_term = sanitize_text_field($search_term);
+
+    $to_lowercase = static function (string $value): string {
+        return function_exists('mb_strtolower') ? mb_strtolower($value) : strtolower($value);
+    };
+
+    $normalize_text = static function ($value) use ($to_lowercase): string {
+        if (!is_string($value) || '' === $value) {
+            return '';
+        }
+
+        $sanitized = wp_strip_all_tags($value);
+
+        if (function_exists('remove_accents')) {
+            $sanitized = remove_accents($sanitized);
+        }
+
+        $sanitized = $to_lowercase($sanitized);
+
+        return trim($sanitized);
+    };
+
+    $normalized_search_term = $normalize_text($search_term);
 
     $normalized_status = $default_filters['statut'];
     if (isset($args['statut']) && is_string($args['statut']) && in_array($args['statut'], $status_whitelist, true)) {
@@ -106,16 +141,74 @@ function ca_home_filter_chasse_ids(array $args): array
         $is_free = ($cout_points <= 0) && ($nb_enigmes_payantes <= 0);
         $cost_key = $is_free ? 'gratuit' : 'points';
 
+        $title = get_the_title($chasse_id);
+        $post_excerpt = get_post_field('post_excerpt', $chasse_id);
+        $description_field = get_field('chasse_principale_description', $chasse_id);
+        $description_segments = [];
+
+        if (is_string($post_excerpt) && '' !== trim($post_excerpt)) {
+            $description_segments[] = $post_excerpt;
+        }
+
+        if (is_string($description_field) && '' !== trim($description_field)) {
+            $description_segments[] = $description_field;
+        }
+
+        $description_text = trim(implode(' ', $description_segments));
+
+        $organizer_name = '';
+        if (function_exists('get_organisateur_from_chasse')) {
+            $organizer_id = get_organisateur_from_chasse($chasse_id);
+            if ($organizer_id) {
+                $organizer_title = get_the_title($organizer_id);
+                if (is_string($organizer_title)) {
+                    $organizer_name = $organizer_title;
+                }
+            }
+        }
+
         $hunts_data[] = [
             'id'     => (int) $chasse_id,
             'status' => is_string($statut_metier) ? $statut_metier : '',
             'cost'   => $cost_key,
+            'title'  => is_string($title) ? $title : '',
+            'description' => $description_text,
+            'organizer'   => $organizer_name,
         ];
+    }
+
+    $search_filtered_hunts = $hunts_data;
+
+    if ('' !== $normalized_search_term) {
+        $search_filtered_hunts = array_values(array_filter(
+            $hunts_data,
+            static function (array $hunt) use ($normalize_text, $normalized_search_term): bool {
+                $haystacks = [
+                    $hunt['title'] ?? '',
+                    $hunt['description'] ?? '',
+                    $hunt['organizer'] ?? '',
+                ];
+
+                foreach ($haystacks as $haystack) {
+                    $normalized_value = $normalize_text((string) $haystack);
+
+                    if ('' === $normalized_value) {
+                        continue;
+                    }
+
+                    if (false !== strpos($normalized_value, $normalized_search_term)) {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        ));
     }
 
     $filtered_ids = [];
 
-    foreach ($hunts_data as $hunt) {
+    foreach ($search_filtered_hunts as $hunt) {
         if ('tous' !== $normalized_status) {
             $allowed_statuses = $status_map[$normalized_status] ?? [];
 
@@ -154,7 +247,7 @@ function ca_home_filter_chasse_ids(array $args): array
         'termine'  => 0,
     ];
 
-    foreach ($hunts_data as $hunt) {
+    foreach ($search_filtered_hunts as $hunt) {
         if (!in_array($hunt['cost'], $allowed_costs_for_status, true)) {
             continue;
         }
@@ -179,7 +272,7 @@ function ca_home_filter_chasse_ids(array $args): array
         $allowed_statuses_for_cost = $status_map[$normalized_status] ?? [];
     }
 
-    foreach ($hunts_data as $hunt) {
+    foreach ($search_filtered_hunts as $hunt) {
         if (is_array($allowed_statuses_for_cost)) {
             if (empty($allowed_statuses_for_cost) || !in_array($hunt['status'], $allowed_statuses_for_cost, true)) {
                 continue;
@@ -191,17 +284,24 @@ function ca_home_filter_chasse_ids(array $args): array
         }
     }
 
+    $results_message = '';
+    if (count($filtered_ids) <= 0) {
+        $results_message = __('Aucune chasse trouvée', 'chassesautresor-com');
+    }
+
     return [
         'ids'                => $filtered_ids,
         'total'              => count($filtered_ids),
         'filters_normalises' => [
             'statut' => $normalized_status,
             'cout'   => $normalized_cost,
+            'search' => $sanitized_search_term,
         ],
         'available_filters'  => [
             'statut' => $status_counts,
             'cout'   => $cost_counts,
         ],
+        'message'            => $results_message,
     ];
 }
 
@@ -240,6 +340,10 @@ function ca_ajax_filter_chasses(): void
         }
     }
 
+    if (array_key_exists('search', $raw_request)) {
+        $filters['search'] = sanitize_text_field((string) $raw_request['search']);
+    }
+
     $filter_results = ca_home_filter_chasse_ids($filters);
 
     if (!is_array($filter_results) || !isset($filter_results['ids'])) {
@@ -270,6 +374,11 @@ function ca_ajax_filter_chasses(): void
         $normalized_filters = $filter_results['filters_normalises'];
     }
 
+    $response_message = '';
+    if (!empty($filter_results['message']) && is_string($filter_results['message'])) {
+        $response_message = $filter_results['message'];
+    }
+
     wp_send_json_success([
         'html'     => $html,
         'total'    => (int) ($filter_results['total'] ?? count($chasse_ids)),
@@ -278,6 +387,7 @@ function ca_ajax_filter_chasses(): void
             'available'  => $available_filters,
             'normalized' => $normalized_filters,
         ],
+        'message'  => $response_message,
     ]);
 }
 

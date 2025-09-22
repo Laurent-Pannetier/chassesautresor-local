@@ -3268,6 +3268,14 @@ msgstr "Voir la solution de la chasse"
 msgid "Réinitialiser"
 msgstr "Réinitialiser"
 
+#: wp-content/themes/chassesautresor/front-page.php
+msgid "Rechercher une chasse"
+msgstr "Rechercher une chasse"
+
+#: wp-content/themes/chassesautresor/inc/homepage-filters.php
+msgid "Aucune chasse trouvée"
+msgstr "Aucune chasse trouvée"
+
 #: inc/user-functions.php:1444
 msgid "Unable to load attempts. Please try again."
 msgstr "Impossible de charger les tentatives. Veuillez réessayer."

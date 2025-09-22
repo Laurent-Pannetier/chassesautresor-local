@@ -23,13 +23,18 @@ Enregistre un contexte de recherche avec :
   ou tableau de configuration).
 - `count_callback` : callable optionnel pour calculer le nombre de résultats.
 - `ui` : métadonnées d'interface (`label`, `placeholder`, `submit_label`,
-  `capability`, `nonce_action`, `nonce_name`, `hidden_fields`, `description`).
+  `submit_icon`, `submit_icon_only`, `capability`, `nonce_action`,
+  `nonce_name`, `hidden_fields`, `description`).
 - `hidden_fields` : champs cachés ajoutés systématiquement au formulaire.
 - `pagination_params` : liste de paramètres à purger lors d'une nouvelle
   recherche (`tentatives-page`, `page`, etc.).
 - `ui.show_reset_button` : afficher un bouton de réinitialisation lorsque
   l'utilisateur a déjà saisi une recherche.
 - `ui.reset_label` : personnalise l'intitulé du bouton de réinitialisation.
+
+> ℹ️ **Interface standard** : pour reproduire l'affichage utilisé sur les
+> listes front-office (loupe seule dans le bouton), associer toujours
+> `submit_icon` à `search` et activer `submit_icon_only`.
 
 ### `ca_resolve_search_context(string $key): array`
 
@@ -93,6 +98,8 @@ ca_register_search_context('tentatives', [
     'ui' => [
         'label'       => __('Rechercher une tentative', 'chassesautresor-com'),
         'placeholder' => __('Texte, joueur, ...', 'chassesautresor-com'),
+        'submit_icon' => 'search',
+        'submit_icon_only' => true,
     ],
     'pagination_params' => ['tentatives-page'],
 ]);

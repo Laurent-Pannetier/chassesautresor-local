@@ -22,6 +22,7 @@
   const labels = localized.labels && typeof localized.labels === 'object' ? localized.labels : {};
   const errorLabel = typeof labels.error === 'string' ? labels.error : '';
   const resetLabel = typeof labels.reset === 'string' ? labels.reset : '';
+  const emptyLabel = typeof labels.empty === 'string' ? labels.empty : '';
 
   if (!endpoint) {
     return;
@@ -32,6 +33,10 @@
   const countElement = form.querySelector('[data-home-hunts-count]') || root.querySelector('[data-home-hunts-count]');
   const feedbackElement = root.querySelector('[data-home-hunts-feedback]');
   const resetButton = form.querySelector('[data-home-hunts-reset]');
+  const filtersWrapper = form.closest('.home-hunts__filters') || form;
+  const searchForm = filtersWrapper ? filtersWrapper.querySelector('form[data-home-hunts-search]') : null;
+  const searchInput = searchForm ? searchForm.querySelector('input[type="search"]') : null;
+  const searchResetButton = searchForm ? searchForm.querySelector('[data-table-search-reset]') : null;
 
   if (countElement && !countElement.dataset.template) {
     countElement.dataset.template = countElement.textContent || '';
@@ -121,6 +126,61 @@
     feedbackElement.classList.add('home-hunts__feedback--error');
   }
 
+  function toggleSearchReset(visible) {
+    if (!searchResetButton) {
+      return;
+    }
+
+    if (visible) {
+      searchResetButton.hidden = false;
+      searchResetButton.disabled = false;
+    } else {
+      searchResetButton.hidden = true;
+      searchResetButton.disabled = true;
+    }
+  }
+
+  function getSearchTerm() {
+    if (!searchInput) {
+      return '';
+    }
+
+    return searchInput.value.trim();
+  }
+
+  function setSearchTerm(value) {
+    if (!searchInput) {
+      return;
+    }
+
+    const normalized = typeof value === 'string' ? value.trim() : '';
+
+    if (searchInput.value !== normalized) {
+      searchInput.value = normalized;
+    }
+
+    toggleSearchReset(normalized.length > 0);
+  }
+
+  function resetSearchTerm() {
+    setSearchTerm('');
+  }
+
+  function showEmptyMessage(message) {
+    if (!feedbackElement) {
+      return;
+    }
+
+    const finalMessage = typeof message === 'string' && message.length > 0 ? message : emptyLabel;
+
+    if (!finalMessage) {
+      return;
+    }
+
+    feedbackElement.textContent = finalMessage;
+    feedbackElement.classList.remove('home-hunts__feedback--error');
+  }
+
   function formatCountLabel(countValue) {
     const template = defaultTemplate;
 
@@ -154,11 +214,14 @@
   }
 
   function clearHunts() {
-    let node = form.nextSibling;
+    const startNode = filtersWrapper ? filtersWrapper.nextSibling : form.nextSibling;
+    let node = startNode;
 
     while (node && node !== feedbackElement) {
       const next = node.nextSibling;
-      node.parentNode.removeChild(node);
+      if (node.parentNode) {
+        node.parentNode.removeChild(node);
+      }
       node = next;
     }
   }
@@ -350,6 +413,8 @@
       data.append('cost[]', '');
     }
 
+    data.append('search', getSearchTerm());
+
     return data;
   }
 
@@ -360,6 +425,14 @@
 
     if (payload.filters && typeof payload.filters === 'object') {
       updateAvailableFilters(payload.filters);
+
+      if (payload.filters.normalized && typeof payload.filters.normalized === 'object') {
+        const normalizedSearch = payload.filters.normalized.search;
+
+        if (typeof normalizedSearch === 'string') {
+          setSearchTerm(normalizedSearch);
+        }
+      }
     }
 
     if (typeof payload.html === 'string') {
@@ -368,8 +441,14 @@
       replaceHunts('');
     }
 
-    if (typeof payload.total === 'number') {
-      updateCount(payload.total);
+    const totalValue = typeof payload.total === 'number' ? payload.total : null;
+
+    if (totalValue !== null) {
+      updateCount(totalValue);
+
+      if (totalValue === 0) {
+        showEmptyMessage(payload.message);
+      }
     } else {
       updateCount(null);
     }
@@ -494,6 +573,8 @@
         checkbox.checked = checkbox.dataset.defaultChecked === 'true';
       }
     });
+
+    resetSearchTerm();
   }
 
   function onResetClick(event) {
@@ -504,10 +585,50 @@
     submitFilters();
   }
 
+  function onSearchSubmit(event) {
+    if (!searchForm || event.target !== searchForm) {
+      return;
+    }
+
+    if (event && typeof event.preventDefault === 'function') {
+      event.preventDefault();
+    }
+
+    const term = event.detail && typeof event.detail.term === 'string' ? event.detail.term : getSearchTerm();
+    setSearchTerm(term);
+    submitFilters();
+  }
+
+  function onSearchReset(event) {
+    if (!searchForm || event.target !== searchForm) {
+      return;
+    }
+
+    if (event && typeof event.preventDefault === 'function') {
+      event.preventDefault();
+    }
+
+    resetSearchTerm();
+    submitFilters();
+  }
+
   form.addEventListener('change', onFiltersChange);
   form.addEventListener('input', onFiltersChange);
 
   if (resetButton) {
     resetButton.addEventListener('click', onResetClick);
   }
+
+  if (searchForm) {
+    searchForm.addEventListener('tablesearch:submit', onSearchSubmit);
+    searchForm.addEventListener('tablesearch:reset', onSearchReset);
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      toggleSearchReset(getSearchTerm() !== '');
+    });
+  }
+
+  toggleSearchReset(getSearchTerm() !== '');
 })();
