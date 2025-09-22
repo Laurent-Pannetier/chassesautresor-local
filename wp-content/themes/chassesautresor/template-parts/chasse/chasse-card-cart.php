@@ -128,7 +128,7 @@ if ($badge_has_interaction && $badge_tooltip !== '') {
             $region_link = $region_principale['link'] ?? '';
             ?>
             <div class="meta-etiquette meta-etiquette--region">
-                <span class="meta-etiquette__label"><?php esc_html_e('Région principale :', 'chassesautresor-com'); ?></span>
+                <span class="meta-etiquette__label"><?php esc_html_e('Région :', 'chassesautresor-com'); ?></span>
                 <?php if ($region_link !== '') : ?>
                     <a class="meta-etiquette__link" href="<?php echo esc_url($region_link); ?>">
                         <?php echo esc_html($region_name); ?>

@@ -284,7 +284,7 @@ if ($peut_voir_aside) {
                     <p class="chasse-regions__subtitle">
                         <?php
                         printf(
-                            esc_html__('Région principale : %s', 'chassesautresor-com'),
+                            esc_html__('Région : %s', 'chassesautresor-com'),
                             esc_html($region_main_name)
                         );
                         ?>
