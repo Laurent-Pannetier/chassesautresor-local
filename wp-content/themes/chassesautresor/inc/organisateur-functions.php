@@ -667,6 +667,68 @@ function generer_liste_chasses_hierarchique($organisateur_id) {
 // 🎯 CTA PAGE "DEVENIR ORGANISATEUR"
 // ==================================================
 /**
+ * Remove any pending organiser request metadata for the given user.
+ *
+ * @param int $user_id Target user identifier.
+ *
+ * @return void
+ */
+function cat_clear_organisateur_request(int $user_id): void
+{
+    delete_user_meta($user_id, 'organisateur_demande_token');
+    delete_user_meta($user_id, 'organisateur_demande_date');
+}
+
+/**
+ * Retrieve the status of the organiser creation request for a user.
+ *
+ * @param int $user_id Target user identifier.
+ *
+ * @return array{token:?string,expired:bool,expires_at?:int} Request status payload.
+ */
+function cat_get_organisateur_request_status(int $user_id): array
+{
+    $token = (string) get_user_meta($user_id, 'organisateur_demande_token', true);
+
+    if ($token === '') {
+        return [
+            'token'   => null,
+            'expired' => false,
+        ];
+    }
+
+    $date = get_user_meta($user_id, 'organisateur_demande_date', true);
+    $timestamp = $date ? strtotime((string) $date) : false;
+
+    if (!$timestamp) {
+        cat_clear_organisateur_request($user_id);
+
+        return [
+            'token'   => null,
+            'expired' => false,
+        ];
+    }
+
+    $expires_at = $timestamp + 2 * DAY_IN_SECONDS;
+    $now        = (int) current_time('timestamp');
+
+    if ($now > $expires_at) {
+        cat_clear_organisateur_request($user_id);
+
+        return [
+            'token'   => null,
+            'expired' => true,
+        ];
+    }
+
+    return [
+        'token'      => $token,
+        'expired'    => false,
+        'expires_at' => $expires_at,
+    ];
+}
+
+/**
  * Retourne le libellé et l'URL du bouton d'appel à l'action
  * présent sur la page "Devenir organisateur".
  *
@@ -696,6 +758,26 @@ function get_cta_devenir_organisateur(?int $user_id = null): array
 
     $roles = (array) $user->roles;
 
+    $profile_state = cat_is_user_profile_complete($user_id);
+    if (!$profile_state['complete']) {
+        $profile_url = function_exists('wc_get_account_endpoint_url')
+            ? wc_get_account_endpoint_url('edit-account')
+            : home_url('/mon-compte/edit-account/');
+
+        $message = cat_get_missing_profile_fields_message($profile_state['missing']);
+
+        add_site_message('error', $message, false, 'profil_incomplet_' . $user_id);
+
+        return [
+            'label'    => __('Compléter mon profil', 'chassesautresor-com'),
+            'url'      => $profile_url,
+            'disabled' => false,
+        ];
+    }
+
+    remove_site_message('profil_incomplet_' . $user_id);
+    myaccount_remove_persistent_message($user_id, 'profil_incomplet');
+
     if (in_array('administrator', $roles, true)) {
         return [
             'label' => 'Salut Patron',
@@ -704,8 +786,19 @@ function get_cta_devenir_organisateur(?int $user_id = null): array
         ];
     }
 
+    $request_status = cat_get_organisateur_request_status($user_id);
+
+    if ($request_status['expired']) {
+        add_site_message(
+            'info',
+            __('Votre précédente demande de création de profil a expiré. Vous pouvez en envoyer une nouvelle.', 'chassesautresor-com'),
+            false,
+            'profil_expire_' . $user_id
+        );
+    }
+
     // Demande d'inscription non confirmée
-    if (get_user_meta($user_id, 'organisateur_demande_token', true)) {
+    if (!empty($request_status['token'])) {
         return [
             'label' => "Renvoyer l'email de confirmation",
             'url'   => home_url('/creer-mon-profil/?resend=1'),
