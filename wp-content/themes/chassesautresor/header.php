@@ -144,7 +144,7 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
             }
 
             $description = $raw_description
-                ? wp_trim_words( wp_strip_all_tags( (string) $raw_description ), 75, '…' )
+                ? wp_trim_words( wp_strip_all_tags( (string) $raw_description ), 30, '…' )
                 : '';
 
             $image_fond = '';
