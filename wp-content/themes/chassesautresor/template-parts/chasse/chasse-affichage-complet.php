@@ -557,41 +557,8 @@ if ($edition_active && !$est_complet) {
         <?php endif; ?>
 
         <?php
-        $format_meta_terms = static function (?array $terms): array {
-            if (!is_array($terms)) {
-                return [];
-            }
-
-            $build_term_output = static function ($term): string {
-                if (!is_array($term)) {
-                    return '';
-                }
-
-                $raw_name = $term['nom'] ?? $term['name'] ?? '';
-                $name = trim((string) $raw_name);
-                if ($name === '') {
-                    return '';
-                }
-
-                $raw_link = $term['lien'] ?? $term['link'] ?? '';
-                $link = trim((string) $raw_link);
-                if ($link !== '') {
-                    $escaped_link = esc_url($link);
-                    if ($escaped_link !== '') {
-                        return '<a class="meta-etiquette__value" href="' . $escaped_link . '">' . esc_html($name) . '</a>';
-                    }
-                }
-
-                return '<span class="meta-etiquette__value">' . esc_html($name) . '</span>';
-            };
-
-            $html_terms = array_map($build_term_output, $terms);
-
-            return array_values(array_filter($html_terms));
-        };
-
-        $regions_links = $format_meta_terms($infos_chasse['regions'] ?? null);
-        $themes_links = $format_meta_terms($infos_chasse['themes'] ?? null);
+        $regions_links = chasse_format_meta_terms($infos_chasse['regions'] ?? null);
+        $themes_links = chasse_format_meta_terms($infos_chasse['themes'] ?? null);
         ?>
         <?php if (!empty($regions_links) || !empty($themes_links)) : ?>
             <div class="chasse-fiche-metas bloc-metas-inline">

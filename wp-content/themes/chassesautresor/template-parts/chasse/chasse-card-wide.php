@@ -48,13 +48,8 @@ if ($badge_has_interaction && $badge_tooltip !== '') {
     $badge_attributes .= ' role="img" tabindex="0"';
 }
 
-$region_principale = is_array($infos['region_principale'] ?? null) ? $infos['region_principale'] : null;
-$themes = array_values(array_filter(
-    is_array($infos['themes'] ?? null) ? $infos['themes'] : [],
-    static function ($theme) {
-        return is_array($theme) && !empty($theme['nom']);
-    }
-));
+$regions_links = chasse_format_meta_terms($infos['regions'] ?? null);
+$themes_links = chasse_format_meta_terms($infos['themes'] ?? null);
 ?>
 <div class="carte carte-chasse carte-wide <?php echo esc_attr(trim($infos['classe_statut'] . ' ' . $completion_class)); ?>">
     <div class="carte-wide__image">
@@ -119,26 +114,27 @@ $themes = array_values(array_filter(
             <h3 class="carte-wide__titre">
                 <a href="<?php echo esc_url($infos['permalink']); ?>"><?php echo esc_html($infos['titre']); ?></a>
             </h3>
-            <?php if (!empty($region_principale) || !empty($themes)) : ?>
-                <div class="chasse-card-badges chasse-badges">
-                    <?php if (!empty($region_principale['nom'])) : ?>
-                        <?php if (!empty($region_principale['lien'])) : ?>
-                            <a class="chasse-badge chasse-badge--region" href="<?php echo esc_url($region_principale['lien']); ?>">
-                                <?php echo esc_html($region_principale['nom']); ?>
-                            </a>
-                        <?php else : ?>
-                            <span class="chasse-badge chasse-badge--region"><?php echo esc_html($region_principale['nom']); ?></span>
-                        <?php endif; ?>
+            <?php if (!empty($regions_links) || !empty($themes_links)) : ?>
+                <div class="bloc-metas-inline bloc-metas-inline--compact">
+                    <?php if (!empty($regions_links)) : ?>
+                        <?php
+                        $regions_label = _n('Région :', 'Régions :', count($regions_links), 'chassesautresor-com');
+                        ?>
+                        <div class="meta-etiquette meta-etiquette--regions">
+                            <span><?php echo esc_html($regions_label); ?></span>
+                            <?php echo wp_kses_post(implode(', ', $regions_links)); ?>
+                        </div>
                     <?php endif; ?>
-                    <?php foreach ($themes as $theme) : ?>
-                        <?php if (!empty($theme['lien'])) : ?>
-                            <a class="chasse-badge chasse-badge--theme" href="<?php echo esc_url($theme['lien']); ?>">
-                                <?php echo esc_html($theme['nom']); ?>
-                            </a>
-                        <?php else : ?>
-                            <span class="chasse-badge chasse-badge--theme"><?php echo esc_html($theme['nom']); ?></span>
-                        <?php endif; ?>
-                    <?php endforeach; ?>
+
+                    <?php if (!empty($themes_links)) : ?>
+                        <?php
+                        $themes_label = _n('Thème :', 'Thèmes :', count($themes_links), 'chassesautresor-com');
+                        ?>
+                        <div class="meta-etiquette meta-etiquette--themes">
+                            <span><?php echo esc_html($themes_label); ?></span>
+                            <?php echo wp_kses_post(implode(', ', $themes_links)); ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
             <?php endif; ?>
         </div>

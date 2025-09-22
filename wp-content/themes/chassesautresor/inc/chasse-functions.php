@@ -1449,6 +1449,75 @@ function chasse_preparer_termes_affichage(int $chasse_id, string $taxonomy): arr
 }
 
 /**
+ * Format raw term items into HTML snippets for the meta-etiquette blocks.
+ *
+ * @param array<int, array<string, mixed>>|null $terms Raw terms as returned by chasse_preparer_termes_affichage.
+ *
+ * @return string[]
+ */
+function chasse_format_meta_terms($terms): array
+{
+    if (!is_array($terms) || $terms === []) {
+        return [];
+    }
+
+    $escape_html = static function (string $value): string {
+        if (function_exists('esc_html')) {
+            return esc_html($value);
+        }
+
+        return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+    };
+
+    $format_url = static function (string $url): string {
+        if (function_exists('esc_url')) {
+            return esc_url($url);
+        }
+
+        $sanitized = filter_var($url, FILTER_SANITIZE_URL);
+
+        return is_string($sanitized) ? $sanitized : '';
+    };
+
+    $formatted = [];
+
+    foreach ($terms as $term) {
+        if (!is_array($term)) {
+            continue;
+        }
+
+        $raw_name = $term['nom'] ?? ($term['name'] ?? '');
+        $name     = trim((string) $raw_name);
+
+        if ($name === '') {
+            continue;
+        }
+
+        $raw_link = $term['lien'] ?? ($term['link'] ?? '');
+        $link     = is_string($raw_link) ? trim($raw_link) : '';
+
+        $escaped_name = $escape_html($name);
+
+        if ($link !== '') {
+            $escaped_link = $format_url($link);
+
+            if ($escaped_link !== '') {
+                $formatted[] = sprintf(
+                    '<a class="meta-etiquette__value" href="%s">%s</a>',
+                    $escaped_link,
+                    $escaped_name
+                );
+                continue;
+            }
+        }
+
+        $formatted[] = sprintf('<span class="meta-etiquette__value">%s</span>', $escaped_name);
+    }
+
+    return $formatted;
+}
+
+/**
  * Normalise une valeur de terme afin de la rendre exploitable pour l'affichage.
  *
  * @param mixed  $term     Valeur brute issue de WordPress ou d'ACF.
