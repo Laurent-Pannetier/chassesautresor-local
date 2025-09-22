@@ -1716,25 +1716,47 @@ function chasse_extract_term_id_from_value($value, string $taxonomy): ?int
  */
 function chasse_resolve_term_candidate($candidate, string $taxonomy): ?\WP_Term
 {
-    $load_term_from_value = static function ($value) use ($taxonomy): ?\WP_Term {
+    $taxonomy_candidates = chasse_resolve_taxonomy_aliases($taxonomy);
+
+    $load_term_from_value = static function ($value) use ($taxonomy_candidates): ?\WP_Term {
         if (!function_exists('get_term')) {
             return null;
         }
 
-        $term_id = chasse_extract_term_id_from_value($value, $taxonomy);
+        $term_id = null;
+
+        foreach ($taxonomy_candidates as $taxonomy_candidate) {
+            $term_id = chasse_extract_term_id_from_value($value, $taxonomy_candidate);
+
+            if ($term_id !== null) {
+                break;
+            }
+        }
 
         if ($term_id === null) {
             return null;
         }
 
-        $term = get_term($term_id, $taxonomy);
+        foreach ($taxonomy_candidates as $taxonomy_candidate) {
+            $term = get_term($term_id, $taxonomy_candidate);
 
-        if ($term instanceof \WP_Term) {
-            return $term;
+            if ($term instanceof \WP_Term) {
+                return $term;
+            }
+
+            if (function_exists('is_wp_error') && is_wp_error($term)) {
+                continue;
+            }
         }
 
-        if (function_exists('is_wp_error') && is_wp_error($term)) {
-            return null;
+        $term = get_term($term_id);
+
+        if ($term instanceof \WP_Term) {
+            $term_taxonomy = property_exists($term, 'taxonomy') ? (string) $term->taxonomy : '';
+
+            if ($term_taxonomy === '' || in_array($term_taxonomy, $taxonomy_candidates, true)) {
+                return $term;
+            }
         }
 
         return null;
@@ -1789,10 +1811,12 @@ function chasse_resolve_term_candidate($candidate, string $taxonomy): ?\WP_Term
                 $slug = trim((string) $candidate[$key]);
 
                 if ($slug !== '') {
-                    $term = get_term_by('slug', $slug, $taxonomy);
+                    foreach ($taxonomy_candidates as $taxonomy_candidate) {
+                        $term = get_term_by('slug', $slug, $taxonomy_candidate);
 
-                    if ($term instanceof \WP_Term) {
-                        return $term;
+                        if ($term instanceof \WP_Term) {
+                            return $term;
+                        }
                     }
                 }
             }
@@ -1818,10 +1842,12 @@ function chasse_resolve_term_candidate($candidate, string $taxonomy): ?\WP_Term
                     continue;
                 }
 
-                $term = get_term_by('name', $name_candidate, $taxonomy);
+                foreach ($taxonomy_candidates as $taxonomy_candidate) {
+                    $term = get_term_by('name', $name_candidate, $taxonomy_candidate);
 
-                if ($term instanceof \WP_Term) {
-                    return $term;
+                    if ($term instanceof \WP_Term) {
+                        return $term;
+                    }
                 }
             }
         }
@@ -1837,21 +1863,46 @@ function chasse_resolve_term_candidate($candidate, string $taxonomy): ?\WP_Term
                 return $term;
             }
 
-            $term = get_term_by('slug', $candidate, $taxonomy);
+            foreach ($taxonomy_candidates as $taxonomy_candidate) {
+                $term = get_term_by('slug', $candidate, $taxonomy_candidate);
 
-            if ($term instanceof \WP_Term) {
-                return $term;
-            }
+                if ($term instanceof \WP_Term) {
+                    return $term;
+                }
 
-            $term = get_term_by('name', $candidate, $taxonomy);
+                $term = get_term_by('name', $candidate, $taxonomy_candidate);
 
-            if ($term instanceof \WP_Term) {
-                return $term;
+                if ($term instanceof \WP_Term) {
+                    return $term;
+                }
             }
         }
     }
 
     return null;
+}
+
+/**
+ * Build a list of taxonomy aliases that may be used in the database.
+ */
+function chasse_resolve_taxonomy_aliases(string $taxonomy): array
+{
+    $candidates = [$taxonomy];
+
+    $aliases = [
+        'chasse_region' => ['chasse_regions', 'region', 'regions'],
+        'theme_chasse'  => ['chasse_theme', 'theme_chasses', 'themes_chasse'],
+    ];
+
+    if (isset($aliases[$taxonomy])) {
+        foreach ($aliases[$taxonomy] as $alias) {
+            if (!in_array($alias, $candidates, true)) {
+                $candidates[] = $alias;
+            }
+        }
+    }
+
+    return $candidates;
 }
 
 /**
