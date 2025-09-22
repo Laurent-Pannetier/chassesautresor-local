@@ -107,12 +107,12 @@ ob_start();
             aria-label="<?php echo esc_attr(__('Filtrer les chasses', 'chassesautresor-com')); ?>"
         >
             <div class="home-hunts__filters-group home-hunts__filters-group--status">
-                <label for="home-hunts-status"><?php echo esc_html(__('Statut', 'chassesautresor-com')); ?></label>
                 <select
                     id="home-hunts-status"
                     name="home-hunts-status"
                     data-home-hunts-select="statut"
                     data-default-value="<?php echo esc_attr($default_status_filter); ?>"
+                    aria-label="<?php echo esc_attr(__('Statut', 'chassesautresor-com')); ?>"
                 >
                     <?php foreach ($status_options as $status_value => $status_label) : ?>
                         <?php
@@ -130,8 +130,11 @@ ob_start();
                     <?php endforeach; ?>
                 </select>
             </div>
-            <fieldset class="home-hunts__filters-group home-hunts__filters-group--cost" data-home-hunts-cost-group>
-                <legend><?php echo esc_html(__('Coût', 'chassesautresor-com')); ?></legend>
+            <fieldset
+                class="home-hunts__filters-group home-hunts__filters-group--cost"
+                data-home-hunts-cost-group
+                aria-label="<?php echo esc_attr(__('Coût', 'chassesautresor-com')); ?>"
+            >
                 <?php foreach ($cost_options as $cost_value => $cost_option) : ?>
                     <?php
                     $is_cost_available = in_array($cost_value, $available_cost_values, true);
