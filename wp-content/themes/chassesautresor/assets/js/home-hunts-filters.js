@@ -43,10 +43,45 @@
     countElement.dataset.template = countElement.textContent || '';
   }
 
-  const defaultCountValue = countElement
-    ? parseInt(countElement.dataset.defaultCount || '', 10)
-    : null;
+  function normalizeCount(value) {
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      return Math.max(0, Math.trunc(value));
+    }
+
+    if (typeof value === 'string') {
+      const trimmed = value.trim();
+
+      if (trimmed.length === 0) {
+        return null;
+      }
+
+      const cleaned = trimmed.replace(/[^0-9]/gu, '');
+
+      if (cleaned.length === 0) {
+        return null;
+      }
+
+      const parsed = parseInt(cleaned, 10);
+
+      if (Number.isFinite(parsed)) {
+        return Math.max(0, parsed);
+      }
+    }
+
+    return null;
+  }
+
+  let defaultCountValue = countElement ? normalizeCount(countElement.dataset.defaultCount || '') : null;
   const defaultTemplate = countElement ? countElement.dataset.template || '' : '';
+
+  if (countElement && defaultCountValue === null) {
+    const existingCount = normalizeCount(countElement.dataset.count || countElement.textContent || '');
+
+    if (existingCount !== null) {
+      defaultCountValue = existingCount;
+      countElement.dataset.defaultCount = String(defaultCountValue);
+    }
+  }
 
   if (resetButton && resetLabel) {
     resetButton.setAttribute('aria-label', resetLabel);
@@ -195,23 +230,57 @@
     return `${formatNumber(countValue)} ${countValue > 1 ? pluralWord : singularWord}`;
   }
 
-  function updateCount(total) {
+  function setCountVisibility(isVisible) {
     if (!countElement) {
       return;
     }
 
-    let value = typeof total === 'number' && Number.isFinite(total) ? Math.max(0, Math.trunc(total)) : null;
+    if (isVisible) {
+      countElement.hidden = false;
+      countElement.removeAttribute('aria-hidden');
 
-    if (null === value) {
+      if (countElement.style) {
+        if (typeof countElement.style.removeProperty === 'function') {
+          countElement.style.removeProperty('display');
+        } else {
+          countElement.style.display = '';
+        }
+      }
+
+      return;
+    }
+
+    countElement.hidden = true;
+    countElement.setAttribute('aria-hidden', 'true');
+
+    if (countElement.style) {
+      countElement.style.display = 'none';
+    }
+  }
+
+  function updateCount(total, allowFallback = true) {
+    if (!countElement) {
+      return;
+    }
+
+    let value = normalizeCount(total);
+
+    if (null === value && allowFallback) {
       value = Number.isFinite(defaultCountValue) ? Math.max(0, Math.trunc(defaultCountValue)) : null;
     }
 
     if (null === value) {
+      countElement.textContent = '';
+      if (countElement.dataset) {
+        delete countElement.dataset.count;
+      }
+      setCountVisibility(false);
       return;
     }
 
     countElement.textContent = formatCountLabel(value);
     countElement.dataset.count = String(value);
+    setCountVisibility(true);
   }
 
   function clearHunts() {
@@ -449,7 +518,7 @@
       replaceHunts('');
     }
 
-    const totalValue = typeof payload.total === 'number' ? payload.total : null;
+    const totalValue = normalizeCount(payload.total);
 
     if (totalValue !== null) {
       updateCount(totalValue);
@@ -588,7 +657,7 @@
   function onResetClick(event) {
     event.preventDefault();
     restoreDefaults();
-    updateCount(defaultCountValue);
+    updateCount(null, false);
     clearFeedback();
     submitFilters();
   }
@@ -636,6 +705,10 @@
     searchInput.addEventListener('input', () => {
       toggleSearchReset(getSearchTerm() !== '');
     });
+  }
+
+  if (countElement) {
+    updateCount(null, false);
   }
 
   toggleSearchReset(getSearchTerm() !== '');
