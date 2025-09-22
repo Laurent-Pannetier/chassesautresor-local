@@ -29,3 +29,200 @@ body.accueil-fullscreen {
 .home.has-hero #content {
     padding-top: 500px;
 }
+
+.home-hunts-filters,
+.home-hunts__filters {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    padding: var(--space-lg);
+    background-color: rgba(var(--color-black-rgb), 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 18px;
+    box-shadow: 0 18px 36px rgba(var(--color-black-rgb), 0.35);
+    color: var(--color-white);
+    grid-column: 1 / -1;
+    transition: box-shadow var(--transition-medium), transform var(--transition-medium);
+}
+
+.home-hunts-filters:focus-within,
+.home-hunts__filters:focus-within {
+    box-shadow: 0 22px 40px rgba(var(--color-black-rgb), 0.45);
+    transform: translateY(-2px);
+}
+
+.home-hunts-filters label,
+.home-hunts__filters label,
+.home-hunts-filters legend,
+.home-hunts__filters legend {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-white);
+}
+
+.home-hunts__filters-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    min-width: 0;
+}
+
+.home-hunts__filters-group--cost {
+    border: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.home-hunts__filters-group--cost legend {
+    margin-bottom: var(--space-xs);
+}
+
+.home-hunts__filters select {
+    width: 100%;
+    min-height: 48px;
+    padding: 0.65rem 0.85rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background-color: rgba(var(--color-black-rgb), 0.65);
+    color: var(--color-white);
+    font-size: 1rem;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.home-hunts__filters select:focus,
+.home-hunts__filters select:focus-visible {
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 0 2px rgba(225, 169, 95, 0.45);
+    outline: none;
+}
+
+.home-hunts__filters-checkbox {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.home-hunts__filters-checkbox input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--color-secondary);
+}
+
+.home-hunts__filters-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-sm);
+}
+
+.home-hunts__filters-reset {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xxs);
+    padding: 0.6rem 1.25rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--color-white);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    transition: background-color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.home-hunts__filters-reset:hover,
+.home-hunts__filters-reset:focus-visible {
+    background: rgba(255, 255, 255, 0.16);
+    border-color: rgba(255, 255, 255, 0.35);
+    transform: translateY(-1px);
+    outline: none;
+}
+
+.home-hunts__filters-reset:disabled,
+.home-hunts__filters-reset[aria-disabled="true"] {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.home-hunts__filters-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 0.35rem 1rem;
+    border-radius: 999px;
+    background: rgba(var(--color-black-rgb), 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--color-white);
+    white-space: nowrap;
+}
+
+@media (--bp-mobile) {
+    .home-hunts__filters-actions {
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-end;
+    }
+
+    .home-hunts__filters-reset {
+        width: auto;
+    }
+}
+
+@media (--bp-desktop) {
+    .home-hunts-filters,
+    .home-hunts__filters {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: flex-end;
+    }
+
+    .home-hunts__filters-group {
+        flex: 1 1 220px;
+    }
+
+    .home-hunts__filters-group--cost {
+        flex: 1 1 260px;
+    }
+
+    .home-hunts__filters-actions {
+        flex: 0 0 auto;
+        align-items: flex-end;
+        justify-content: flex-end;
+        margin-left: auto;
+    }
+}
+
+.home-hunts__feedback {
+    margin-top: var(--space-lg);
+    min-height: 1.5rem;
+    font-size: 0.95rem;
+    color: var(--color-white);
+}
+
+.home-hunts__feedback--error {
+    color: var(--color-error);
+    font-weight: 600;
+}
+
+.home-hunts--loading .home-hunts__filters,
+.home-hunts--loading .organisateur-chasse,
+.home-hunts--loading .home-hunts__feedback {
+    opacity: 0.65;
+    transition: opacity var(--transition-fast);
+}
+
+.home-hunts--loading .home-hunts__filters,
+.home-hunts--loading .home-hunts__filters select,
+.home-hunts--loading .home-hunts__filters input,
+.home-hunts--loading .home-hunts__filters button {
+    cursor: progress;
+}
