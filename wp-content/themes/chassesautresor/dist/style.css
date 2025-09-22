@@ -8456,8 +8456,8 @@ body.accueil-fullscreen {
 
 .home-hunts__filters select:focus,
 .home-hunts__filters select:focus-visible {
-  border-color: var(--color-secondary);
-  box-shadow: 0 0 0 2px rgba(225, 169, 95, 0.45);
+  border-color: var(--color-filter-accent);
+  box-shadow: 0 0 0 2px var(--color-filter-accent-glow);
   outline: none;
 }
 
@@ -8470,7 +8470,7 @@ body.accueil-fullscreen {
 .home-hunts__filters-checkbox input[type=checkbox] {
   width: 20px;
   height: 20px;
-  accent-color: var(--color-secondary);
+  accent-color: var(--color-filter-accent);
 }
 
 .home-hunts__filters-actions {
@@ -11091,6 +11091,8 @@ a.bouton-edition-attention {
   --color-background-button-hover: #a00000; /* 🔘 Survol des boutons : rouge foncé */
   --color-background-button-inactive: #A9A9A9; /* 🔘 Boutons inactifs : gris */
   --color-success: #228B22; /* ✅ Barre de progression */
+  --color-filter-accent: #1F3E63; /* 🔵 Mise en avant discrète des filtres */
+  --color-filter-accent-glow: rgba(31, 62, 99, 0.45); /* 🔵 Halo léger pour les interactions des filtres */
   --color-error: #D93025; /* ⚠️ Messages d'erreur */
   --color-white: #FFFFFF; /* ⚪ Blanc */
   --color-black: #000000; /* ⚫ Noir */

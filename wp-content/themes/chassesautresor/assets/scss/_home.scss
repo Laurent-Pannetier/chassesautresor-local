@@ -121,8 +121,8 @@ body.accueil-fullscreen {
 
 .home-hunts__filters select:focus,
 .home-hunts__filters select:focus-visible {
-    border-color: var(--color-secondary);
-    box-shadow: 0 0 0 2px rgba(225, 169, 95, 0.45);
+    border-color: var(--color-filter-accent);
+    box-shadow: 0 0 0 2px var(--color-filter-accent-glow);
     outline: none;
 }
 
@@ -135,7 +135,7 @@ body.accueil-fullscreen {
 .home-hunts__filters-checkbox input[type="checkbox"] {
     width: 20px;
     height: 20px;
-    accent-color: var(--color-secondary);
+    accent-color: var(--color-filter-accent);
 }
 
 .home-hunts__filters-actions {
