@@ -8416,10 +8416,10 @@ body.accueil-fullscreen {
   border: 0;
   margin: 0;
   padding: 0;
-}
-
-.home-hunts__filters-group--cost legend {
-  margin-bottom: var(--space-xs);
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-md);
 }
 
 .home-hunts__filters select {
