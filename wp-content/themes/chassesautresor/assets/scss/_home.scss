@@ -121,6 +121,24 @@ body.accueil-fullscreen {
     max-width: 34rem;
     min-width: 0;
     margin-left: 0;
+    
+    .table-search__controls {
+        flex-direction: row;
+        align-items: stretch;
+        gap: var(--space-sm);
+    }
+
+    .table-search__field {
+        flex: 1 1 auto;
+    }
+
+    .table-search__submit {
+        align-self: stretch;
+    }
+
+    .table-search__reset {
+        align-self: center;
+    }
 }
 
 .home-hunts-filters:focus-within,
