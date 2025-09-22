@@ -33,8 +33,6 @@ $peut_voir_aside    = $est_engage_chasse
 
 // Récupération centralisée des infos
 $infos_chasse = preparer_infos_affichage_chasse($chasse_id, $user_id);
-$regions = $infos_chasse['regions'] ?? [];
-$region_principale = $infos_chasse['region_principale'] ?? null;
 
 // Champs principaux
 $champs = $infos_chasse['champs'];
@@ -269,50 +267,6 @@ if ($peut_voir_aside) {
       'infos_chasse'=> $infos_chasse,
     ]);
     ?>
-
-    <?php if (!empty($regions)) : ?>
-        <?php
-        $region_main_name = '';
-        if (!empty($region_principale) && !empty($region_principale['name'])) {
-            $region_main_name = (string) $region_principale['name'];
-        }
-        ?>
-        <section class="chasse-regions" aria-labelledby="chasse-regions-title">
-            <div class="chasse-regions__header">
-                <h2 id="chasse-regions-title"><?php esc_html_e('Régions de la chasse', 'chassesautresor-com'); ?></h2>
-                <?php if ($region_main_name !== '') : ?>
-                    <p class="chasse-regions__subtitle">
-                        <?php
-                        printf(
-                            esc_html__('Région : %s', 'chassesautresor-com'),
-                            esc_html($region_main_name)
-                        );
-                        ?>
-                    </p>
-                <?php endif; ?>
-            </div>
-            <ul class="chasse-regions__list">
-                <?php foreach ($regions as $region) : ?>
-                    <?php
-                    $region_name = isset($region['name']) ? (string) $region['name'] : '';
-                    if ($region_name === '') {
-                        continue;
-                    }
-                    $region_link = isset($region['link']) ? (string) $region['link'] : '';
-                    ?>
-                    <li class="chasse-regions__item">
-                        <?php if ($region_link !== '') : ?>
-                            <a class="chasse-regions__link" href="<?php echo esc_url($region_link); ?>">
-                                <?php echo esc_html($region_name); ?>
-                            </a>
-                        <?php else : ?>
-                            <span class="chasse-regions__label"><?php echo esc_html($region_name); ?></span>
-                        <?php endif; ?>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-        </section>
-    <?php endif; ?>
 
     <!-- 🧩 Liste des énigmes -->
     <section class="chasse-enigmes-wrapper" id="chasse-enigmes-wrapper">
