@@ -60,11 +60,19 @@ get_header();
             <?php esc_html_e('Menu', 'chassesautresor-com'); ?>
         </span>
     </button>
+    <div class="myaccount-sidebar-backdrop" aria-hidden="true"></div>
     <aside id="myaccount-sidebar" class="myaccount-sidebar">
         <div class="myaccount-brand">
             <a href="<?php echo esc_url(home_url('/')); ?>">
                 <?php echo esc_html($display_name); ?>
             </a>
+            <button
+                type="button"
+                class="myaccount-sidebar-close"
+                aria-label="<?php esc_attr_e('Fermer le menu', 'chassesautresor-com'); ?>"
+            >
+                <span aria-hidden="true">&times;</span>
+            </button>
         </div>
         <?php if ($show_nav) : ?>
         <nav class="dashboard-nav">
