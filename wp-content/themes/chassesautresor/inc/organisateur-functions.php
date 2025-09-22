@@ -696,6 +696,25 @@ function get_cta_devenir_organisateur(?int $user_id = null): array
 
     $roles = (array) $user->roles;
 
+    $profile_state = cat_is_user_profile_complete($user_id);
+    if (!$profile_state['complete']) {
+        $profile_url = function_exists('wc_get_account_endpoint_url')
+            ? wc_get_account_endpoint_url('edit-account')
+            : home_url('/mon-compte/edit-account/');
+
+        $message = cat_get_missing_profile_fields_message($profile_state['missing']);
+
+        add_site_message('error', $message, false, 'profil_incomplet_' . $user_id);
+
+        return [
+            'label'    => __('Compléter mon profil', 'chassesautresor-com'),
+            'url'      => $profile_url,
+            'disabled' => false,
+        ];
+    }
+
+    myaccount_remove_persistent_message($user_id, 'profil_incomplet');
+
     if (in_array('administrator', $roles, true)) {
         return [
             'label' => 'Salut Patron',

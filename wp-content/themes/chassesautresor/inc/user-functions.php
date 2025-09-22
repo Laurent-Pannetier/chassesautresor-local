@@ -329,6 +329,115 @@ function ca_profile_endpoint_title($title)
 add_filter('woocommerce_endpoint_edit-account_title', 'ca_profile_endpoint_title');
 
 // ==================================================
+// 👤 USER PROFILE UTILITIES
+// ==================================================
+/**
+ * Check whether the mandatory WooCommerce account fields are filled in.
+ *
+ * @param int $user_id Target user identifier.
+ *
+ * @return array{complete:bool,missing:array<int,string>} Tuple containing the completion status and the list of missing field labels.
+ */
+function cat_is_user_profile_complete(int $user_id): array
+{
+    $user = get_userdata($user_id);
+
+    if (!$user) {
+        return [
+            'complete' => false,
+            'missing'  => [__('Profil utilisateur introuvable', 'chassesautresor-com')],
+        ];
+    }
+
+    $default_fields = [
+        'first_name'   => [
+            'label'  => __('Prénom', 'chassesautresor-com'),
+            'source' => 'meta',
+        ],
+        'last_name'    => [
+            'label'  => __('Nom', 'chassesautresor-com'),
+            'source' => 'meta',
+        ],
+        'display_name' => [
+            'label'  => __('Nom d’affichage', 'chassesautresor-com'),
+            'source' => 'property',
+        ],
+        'user_email'   => [
+            'label'  => __('Adresse e-mail', 'chassesautresor-com'),
+            'source' => 'property',
+        ],
+    ];
+
+    /** @var array<string, array{label:string,source?:string,callback?:callable}|string> $required_fields */
+    $required_fields = apply_filters('cat_required_user_profile_fields', $default_fields, $user_id, $user);
+
+    $missing = [];
+
+    foreach ($required_fields as $field_key => $config) {
+        if (is_string($config)) {
+            $config = [
+                'label'  => $config,
+                'source' => 'meta',
+            ];
+        }
+
+        if (empty($config['label'])) {
+            continue;
+        }
+
+        $label = (string) $config['label'];
+
+        $value = null;
+        if (!empty($config['callback']) && is_callable($config['callback'])) {
+            $value = call_user_func($config['callback'], $user_id, $user, $field_key, $config);
+        } elseif (($config['source'] ?? 'meta') === 'property') {
+            $value = $user->{$field_key} ?? '';
+        } else {
+            $value = get_user_meta($user_id, $field_key, true);
+        }
+
+        if (is_scalar($value) || $value === null) {
+            $value = trim((string) $value);
+        } elseif (is_array($value)) {
+            $value = implode('', array_map('trim', array_map('strval', $value)));
+        } else {
+            $value = '';
+        }
+
+        if ($value === '') {
+            $missing[] = $label;
+        }
+    }
+
+    return [
+        'complete' => $missing === [],
+        'missing'  => $missing,
+    ];
+}
+
+/**
+ * Build a translated message listing missing profile fields.
+ *
+ * @param array<int, string> $missing_fields Missing field labels.
+ *
+ * @return string
+ */
+function cat_get_missing_profile_fields_message(array $missing_fields): string
+{
+    if ($missing_fields === []) {
+        return __('Veuillez compléter votre profil utilisateur.', 'chassesautresor-com');
+    }
+
+    $fields_list = wp_sprintf_l('%l', $missing_fields);
+
+    return sprintf(
+        /* translators: %s: comma-separated list of missing profile fields */
+        __('Veuillez compléter votre profil utilisateur : %s.', 'chassesautresor-com'),
+        $fields_list
+    );
+}
+
+// ==================================================
 // 📣 IMPORTANT MESSAGES
 // ==================================================
 /**

@@ -13,6 +13,32 @@ if (!is_user_logged_in()) {
 }
 
 $current_user_id = get_current_user_id();
+$profile_state = cat_is_user_profile_complete($current_user_id);
+
+if (!$profile_state['complete']) {
+    $message = cat_get_missing_profile_fields_message($profile_state['missing']);
+
+    myaccount_add_persistent_message(
+        $current_user_id,
+        'profil_incomplet',
+        $message,
+        'error',
+        false,
+        0,
+        false,
+        null,
+        get_user_locale($current_user_id)
+    );
+
+    $redirect_url = function_exists('wc_get_account_endpoint_url')
+        ? wc_get_account_endpoint_url('edit-account')
+        : home_url('/mon-compte/edit-account/');
+
+    wp_safe_redirect($redirect_url);
+    exit;
+}
+
+myaccount_remove_persistent_message($current_user_id, 'profil_incomplet');
 $verification_message = __(
     'Un email de confirmation vous a été envoyé. '
     . "Cliquez sur le lien qu'il contient pour valider la création de votre profil organisateur.",
