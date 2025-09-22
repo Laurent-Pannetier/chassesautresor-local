@@ -215,14 +215,21 @@
   }
 
   function clearHunts() {
-    const startNode = filtersWrapper ? filtersWrapper.nextSibling : form.nextSibling;
+    const toolbar = grid.querySelector('.home-hunts__toolbar');
+    const startNode = toolbar ? toolbar.nextSibling : grid.firstChild;
     let node = startNode;
 
-    while (node && node !== feedbackElement) {
+    while (node) {
+      if (node === feedbackElement) {
+        break;
+      }
+
       const next = node.nextSibling;
+
       if (node.parentNode) {
         node.parentNode.removeChild(node);
       }
+
       node = next;
     }
   }
