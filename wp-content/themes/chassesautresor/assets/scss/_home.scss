@@ -52,6 +52,21 @@ body.accueil-fullscreen {
     transform: translateY(-2px);
 }
 
+.home-hunts__filters-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    width: 100%;
+}
+
+.home-hunts__filters-search {
+    width: 100%;
+}
+
+.home-hunts__filters-search .table-search {
+    width: 100%;
+}
+
 .home-hunts-filters label,
 .home-hunts__filters label,
 .home-hunts-filters legend,
@@ -183,6 +198,24 @@ body.accueil-fullscreen {
         flex-direction: row;
         flex-wrap: wrap;
         align-items: flex-end;
+    }
+
+    .home-hunts__filters-form {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        flex: 1 1 600px;
+    }
+
+    .home-hunts__filters-search {
+        flex: 0 0 auto;
+        display: flex;
+        justify-content: flex-end;
+        margin-left: auto;
+    }
+
+    .home-hunts__filters-search .table-search {
+        max-width: 360px;
     }
 
     .home-hunts__filters-group {

@@ -87,6 +87,31 @@ function cta_handle_language() {
 add_action( 'init', 'cta_handle_language' );
 
 /**
+ * Registers the search context used on the homepage hunts listing.
+ *
+ * @return void
+ */
+function ca_register_home_hunts_search_context(): void {
+    ca_register_search_context('home-hunts', [
+        'fields' => [
+            'sql' => [
+                'p.post_title',
+                'pm_short_description.meta_value',
+                'organisateur.post_title',
+            ],
+        ],
+        'ui' => [
+            'label'             => __('Rechercher une chasse', 'chassesautresor-com'),
+            'placeholder'       => __('Rechercher une chasse', 'chassesautresor-com'),
+            'submit_icon'       => 'search',
+            'show_reset_button' => true,
+            'no_results_message' => __('Aucune chasse trouvée', 'chassesautresor-com'),
+        ],
+    ]);
+}
+add_action('init', 'ca_register_home_hunts_search_context');
+
+/**
  * Redirects non-logged-in users requesting `/mon-compte` to the login page.
  *
  * @return void
@@ -361,6 +386,12 @@ add_action('wp_enqueue_scripts', function () {
             true
         );
 
+        $home_hunts_context = ca_resolve_search_context('home-hunts');
+        $home_hunts_ui      = is_array($home_hunts_context['ui'] ?? null) ? $home_hunts_context['ui'] : [];
+        $no_results_label   = isset($home_hunts_ui['no_results_message']) && $home_hunts_ui['no_results_message'] !== ''
+            ? (string) $home_hunts_ui['no_results_message']
+            : __('Aucune chasse trouvée', 'chassesautresor-com');
+
         wp_localize_script(
             'home-hunts-filters',
             'homeHuntsFilters',
@@ -370,6 +401,7 @@ add_action('wp_enqueue_scripts', function () {
                 'labels'  => [
                     'error' => __('Impossible de charger les chasses.', 'chassesautresor-com'),
                     'reset' => __('Réinitialiser', 'chassesautresor-com'),
+                    'empty' => $no_results_label,
                 ],
             ]
         );

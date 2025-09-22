@@ -3306,6 +3306,14 @@ msgstr "View hunt solution"
 msgid "Réinitialiser"
 msgstr "Reset"
 
+#: wp-content/themes/chassesautresor/front-page.php
+msgid "Rechercher une chasse"
+msgstr "Search for a hunt"
+
+#: wp-content/themes/chassesautresor/inc/homepage-filters.php
+msgid "Aucune chasse trouvée"
+msgstr "No hunts found"
+
 #: inc/user-functions.php:1444
 msgid "Unable to load attempts. Please try again."
 msgstr "Unable to load attempts. Please try again."
