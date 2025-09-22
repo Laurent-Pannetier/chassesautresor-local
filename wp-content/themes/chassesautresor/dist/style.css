@@ -632,6 +632,12 @@
   height: 100%;
 }
 
+.carte-wide__content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
 .carte-wide__header {
   display: flex;
   flex-direction: column;
@@ -643,7 +649,6 @@
 .carte-wide__metas {
   margin-top: auto;
   padding-top: var(--space-sm);
-  gap: var(--space-sm);
 }
 
 .carte-wide__metas .meta-regular {
