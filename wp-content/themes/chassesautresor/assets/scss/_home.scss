@@ -33,7 +33,8 @@ body.accueil-fullscreen {
 .home-hunts__toolbar {
     width: 100%;
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: stretch;
     gap: var(--space-lg);
     margin-bottom: var(--space-xl);
 }
@@ -55,6 +56,19 @@ body.accueil-fullscreen {
     transition: box-shadow var(--transition-medium), transform var(--transition-medium);
 }
 
+.home-hunts__filters {
+    flex: 1 1 420px;
+    max-width: 52rem;
+    min-width: 0;
+}
+
+.home-hunts__search {
+    flex: 1 1 320px;
+    max-width: 34rem;
+    min-width: 0;
+    margin-left: auto;
+}
+
 .home-hunts-filters:focus-within,
 .home-hunts__filters:focus-within,
 .home-hunts__search:focus-within {
@@ -64,7 +78,8 @@ body.accueil-fullscreen {
 
 .home-hunts__filters-form {
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: center;
     gap: var(--space-lg);
     width: 100%;
 }
@@ -96,6 +111,7 @@ body.accueil-fullscreen {
     flex-direction: column;
     gap: var(--space-sm);
     min-width: 0;
+    flex: 1 1 220px;
 }
 
 .home-hunts__filters-group--cost {
@@ -141,8 +157,8 @@ body.accueil-fullscreen {
 
 .home-hunts__filters-actions {
     display: flex;
-    flex-direction: column;
-    align-items: stretch;
+    flex-wrap: wrap;
+    align-items: center;
     gap: var(--space-sm);
 }
 
@@ -205,60 +221,13 @@ body.accueil-fullscreen {
     white-space: nowrap;
 }
 
-@media (--bp-mobile) {
-    .home-hunts__filters-actions {
-        flex-direction: row;
-        align-items: center;
-        justify-content: flex-start;
-        align-self: flex-start;
-    }
-}
-
 @media (--bp-desktop) {
     .home-hunts__toolbar {
-        flex-direction: row;
-        align-items: stretch;
         margin-bottom: var(--space-2xl);
-    }
-
-    .home-hunts__filters {
-        flex: 1 1 60%;
-        max-width: 52rem;
-        min-width: 0;
-    }
-
-    .home-hunts__search {
-        flex: 1 1 40%;
-        max-width: 34rem;
-        min-width: 0;
-        margin-left: auto;
-    }
-
-    .home-hunts__search .table-search {
-        max-width: none;
-        margin-left: 0;
-    }
-
-    .home-hunts__filters-form {
-        flex-direction: row;
-        flex-wrap: wrap;
-        align-items: center;
-        flex: 1 1 auto;
-    }
-
-    .home-hunts__filters-group {
-        flex: 1 1 220px;
     }
 
     .home-hunts__filters-group--cost {
         flex: 0 1 auto;
-    }
-
-    .home-hunts__filters-actions {
-        flex: 0 0 auto;
-        align-items: center;
-        justify-content: flex-start;
-        margin-left: 0;
     }
 }
 
