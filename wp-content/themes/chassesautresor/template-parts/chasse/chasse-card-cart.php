@@ -108,18 +108,6 @@ if ($badge_has_interaction && $badge_tooltip !== '') {
         </div>
         <div class="carte-cart__contenu">
             <h3 class="carte-cart__titre"><?php echo esc_html($infos['titre']); ?></h3>
-            <?php if (!empty($region_principale) && !empty($region_principale['name'])) : ?>
-                <?php
-                $region_name = (string) $region_principale['name'];
-                $region_label = sprintf(__('Région principale : %s', 'chassesautresor-com'), $region_name);
-                ?>
-                <span class="badge-region badge-region--inline" aria-label="<?php echo esc_attr($region_label); ?>">
-                    <span class="badge-region__icon" aria-hidden="true">
-                        <?php echo get_svg_icon('compass-rose'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-                    </span>
-                    <span class="badge-region__label" aria-hidden="true"><?php echo esc_html($region_name); ?></span>
-                </span>
-            <?php endif; ?>
             <?php echo $infos['lot_html']; ?>
         </div>
     </a>
@@ -134,6 +122,22 @@ if ($badge_has_interaction && $badge_tooltip !== '') {
                 <span class="meta-indic__count"><?php echo esc_html(number_format_i18n($infos['nb_joueurs'])); ?></span>
             </button>
         </div>
+        <?php if (!empty($region_principale) && !empty($region_principale['name'])) : ?>
+            <?php
+            $region_name = (string) $region_principale['name'];
+            $region_link = $region_principale['link'] ?? '';
+            ?>
+            <div class="meta-etiquette meta-etiquette--region">
+                <span class="meta-etiquette__label"><?php esc_html_e('Région principale :', 'chassesautresor-com'); ?></span>
+                <?php if ($region_link !== '') : ?>
+                    <a class="meta-etiquette__link" href="<?php echo esc_url($region_link); ?>">
+                        <?php echo esc_html($region_name); ?>
+                    </a>
+                <?php else : ?>
+                    <span class="meta-etiquette__value"><?php echo esc_html($region_name); ?></span>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
         <div class="meta-etiquette">
             <?php echo get_svg_icon('calendar'); ?>
             <span class="chasse-date-plage">
