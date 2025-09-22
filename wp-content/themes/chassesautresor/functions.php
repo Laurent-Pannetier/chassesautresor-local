@@ -352,6 +352,27 @@ add_action('wp_enqueue_scripts', function () {
             filemtime($theme_path . '/assets/js/home-hero.js'),
             true
         );
+
+        wp_enqueue_script(
+            'home-hunts-filters',
+            $script_dir . 'home-hunts-filters.js',
+            [],
+            filemtime($theme_path . '/assets/js/home-hunts-filters.js'),
+            true
+        );
+
+        wp_localize_script(
+            'home-hunts-filters',
+            'homeHuntsFilters',
+            [
+                'ajaxUrl' => admin_url('admin-ajax.php'),
+                'nonce'   => wp_create_nonce('ca-filter-chasses'),
+                'labels'  => [
+                    'error' => __('Impossible de charger les chasses.', 'chassesautresor-com'),
+                    'reset' => __('Réinitialiser', 'chassesautresor-com'),
+                ],
+            ]
+        );
     }
 
     if (is_account_page() && is_user_logged_in()) {
