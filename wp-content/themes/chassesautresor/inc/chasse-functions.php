@@ -1403,13 +1403,13 @@ function render_chasse_solutions(int $chasse_id, int $user_id): void
  */
 function chasse_preparer_termes_affichage(int $chasse_id, string $taxonomy): array
 {
-    if (!function_exists('wp_get_post_terms')) {
-        return [];
-    }
+    $terms = [];
 
-    $terms = wp_get_post_terms($chasse_id, $taxonomy, ['orderby' => 'term_order']);
-    if (is_wp_error($terms)) {
-        $terms = [];
+    if (function_exists('wp_get_post_terms')) {
+        $terms = wp_get_post_terms($chasse_id, $taxonomy, ['orderby' => 'term_order']);
+        if (is_wp_error($terms)) {
+            $terms = [];
+        }
     }
 
     if (empty($terms) && function_exists('get_field')) {
@@ -1420,13 +1420,13 @@ function chasse_preparer_termes_affichage(int $chasse_id, string $taxonomy): arr
 
         if (isset($acf_fields[$taxonomy])) {
             $raw_terms = get_field($acf_fields[$taxonomy], $chasse_id);
+
             if ($raw_terms instanceof \WP_Term) {
                 $terms = [$raw_terms];
             } elseif (is_array($raw_terms)) {
-                $terms = array_values(array_filter(
-                    $raw_terms,
-                    static fn($term) => $term instanceof \WP_Term
-                ));
+                $terms = chasse_is_list($raw_terms) ? $raw_terms : [$raw_terms];
+            } elseif ($raw_terms !== null && $raw_terms !== '') {
+                $terms = [$raw_terms];
             }
         }
     }
@@ -1438,26 +1438,260 @@ function chasse_preparer_termes_affichage(int $chasse_id, string $taxonomy): arr
     $items = [];
 
     foreach ($terms as $term) {
-        if (!$term instanceof \WP_Term) {
-            continue;
-        }
+        $item = chasse_normalize_term_for_display($term, $taxonomy);
 
+        if ($item !== null) {
+            $items[] = $item;
+        }
+    }
+
+    return $items;
+}
+
+/**
+ * Normalise une valeur de terme afin de la rendre exploitable pour l'affichage.
+ *
+ * @param mixed  $term     Valeur brute issue de WordPress ou d'ACF.
+ * @param string $taxonomy Taxonomie ciblée.
+ *
+ * @return array{nom: string, slug: string, lien: string}|null
+ */
+function chasse_normalize_term_for_display($term, string $taxonomy): ?array
+{
+    $wp_term = chasse_resolve_term_candidate($term, $taxonomy);
+
+    if ($wp_term instanceof \WP_Term) {
         $link = '';
+
         if (function_exists('get_term_link')) {
-            $link = get_term_link($term);
+            $link = get_term_link($wp_term);
             if (is_wp_error($link)) {
                 $link = '';
             }
         }
 
-        $items[] = [
-            'nom'  => $term->name,
-            'slug' => $term->slug,
-            'lien' => $link,
+        return [
+            'nom'  => $wp_term->name,
+            'slug' => $wp_term->slug,
+            'lien' => is_string($link) ? $link : '',
         ];
     }
 
-    return $items;
+    $name = '';
+    $link = '';
+    $slug_candidates = [];
+
+    if (is_array($term)) {
+        $link_candidates = [
+            $term['lien'] ?? null,
+            $term['link'] ?? null,
+            $term['url'] ?? null,
+        ];
+
+        foreach ($link_candidates as $link_candidate) {
+            if (!is_string($link_candidate)) {
+                continue;
+            }
+
+            $trimmed = trim($link_candidate);
+
+            if ($trimmed === '') {
+                continue;
+            }
+
+            $link = $trimmed;
+            break;
+        }
+
+        $name_candidates = [
+            $term['nom'] ?? null,
+            $term['name'] ?? null,
+            $term['label'] ?? null,
+            $term['value'] ?? null,
+        ];
+
+        foreach ($name_candidates as $candidate) {
+            if (!is_string($candidate) && !is_numeric($candidate)) {
+                continue;
+            }
+
+            $candidate_value = trim((string) $candidate);
+
+            if ($candidate_value === '') {
+                continue;
+            }
+
+            $name = $candidate_value;
+            break;
+        }
+
+        $slug_candidates[] = $term['slug'] ?? null;
+        if (isset($term['value']) && is_string($term['value'])) {
+            $slug_candidates[] = $term['value'];
+        }
+    } elseif (is_string($term) || is_numeric($term)) {
+        $name = trim((string) $term);
+    }
+
+    if ($name === '') {
+        return null;
+    }
+
+    $slug_candidates[] = $name;
+
+    $slug = '';
+
+    foreach ($slug_candidates as $candidate) {
+        if (!is_string($candidate) && !is_numeric($candidate)) {
+            continue;
+        }
+
+        $candidate_value = trim((string) $candidate);
+
+        if ($candidate_value === '') {
+            continue;
+        }
+
+        if (function_exists('sanitize_title')) {
+            $slug = sanitize_title($candidate_value);
+        } else {
+            $slug = strtolower((string) preg_replace('/[^A-Za-z0-9]+/', '-', $candidate_value));
+            $slug = trim($slug, '-');
+        }
+
+        if ($slug !== '') {
+            break;
+        }
+    }
+
+    return [
+        'nom'  => $name,
+        'slug' => $slug,
+        'lien' => $link,
+    ];
+}
+
+/**
+ * Tente de transformer une valeur brute en objet \WP_Term.
+ *
+ * @param mixed  $candidate Valeur récupérée via ACF ou le cache.
+ * @param string $taxonomy  Taxonomie ciblée.
+ *
+ * @return \WP_Term|null
+ */
+function chasse_resolve_term_candidate($candidate, string $taxonomy): ?\WP_Term
+{
+    if ($candidate instanceof \WP_Term) {
+        return $candidate;
+    }
+
+    if (is_array($candidate) && isset($candidate['term'])) {
+        $resolved = chasse_resolve_term_candidate($candidate['term'], $taxonomy);
+
+        if ($resolved instanceof \WP_Term) {
+            return $resolved;
+        }
+    }
+
+    if (is_numeric($candidate) && function_exists('get_term')) {
+        $term = get_term((int) $candidate, $taxonomy);
+
+        if ($term instanceof \WP_Term && !is_wp_error($term)) {
+            return $term;
+        }
+    }
+
+    if (is_array($candidate)) {
+        $id_keys = ['term_id', 'termId', 'ID', 'id', 'value'];
+
+        foreach ($id_keys as $key) {
+            if (!isset($candidate[$key]) || !is_numeric($candidate[$key])) {
+                continue;
+            }
+
+            if (!function_exists('get_term')) {
+                break;
+            }
+
+            $term = get_term((int) $candidate[$key], $taxonomy);
+
+            if ($term instanceof \WP_Term && !is_wp_error($term)) {
+                return $term;
+            }
+        }
+
+        $slug_keys = ['slug', 'value'];
+
+        foreach ($slug_keys as $key) {
+            if (!isset($candidate[$key]) || !is_string($candidate[$key])) {
+                continue;
+            }
+
+            if (!function_exists('get_term_by')) {
+                break;
+            }
+
+            $term = get_term_by('slug', trim($candidate[$key]), $taxonomy);
+
+            if ($term instanceof \WP_Term) {
+                return $term;
+            }
+        }
+
+        $name_keys = ['nom', 'name', 'label', 'value'];
+
+        foreach ($name_keys as $key) {
+            if (!isset($candidate[$key]) || !is_string($candidate[$key])) {
+                continue;
+            }
+
+            if (!function_exists('get_term_by')) {
+                break;
+            }
+
+            $term = get_term_by('name', trim($candidate[$key]), $taxonomy);
+
+            if ($term instanceof \WP_Term) {
+                return $term;
+            }
+        }
+    }
+
+    if (is_string($candidate) && function_exists('get_term_by')) {
+        $candidate = trim($candidate);
+
+        if ($candidate !== '') {
+            $term = get_term_by('slug', $candidate, $taxonomy);
+
+            if ($term instanceof \WP_Term) {
+                return $term;
+            }
+
+            $term = get_term_by('name', $candidate, $taxonomy);
+
+            if ($term instanceof \WP_Term) {
+                return $term;
+            }
+        }
+    }
+
+    return null;
+}
+
+/**
+ * Vérifie si un tableau est indexé numériquement en séquence.
+ */
+function chasse_is_list(array $array): bool
+{
+    if (function_exists('array_is_list')) {
+        return array_is_list($array);
+    }
+
+    if ($array === []) {
+        return true;
+    }
+
+    return array_keys($array) === range(0, count($array) - 1);
 }
 
 function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit = 300, array $options = []): array
