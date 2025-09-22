@@ -557,81 +557,62 @@ if ($edition_active && !$est_complet) {
         <?php endif; ?>
 
         <?php
-        $regions_terms = array_values(array_filter(
-            is_array($infos_chasse['regions'] ?? null) ? $infos_chasse['regions'] : [],
-            static function ($region) {
-                return is_array($region) && !empty($region['nom']);
+        $format_meta_terms = static function (?array $terms): array {
+            if (!is_array($terms)) {
+                return [];
             }
-        ));
-        $themes_terms = array_values(array_filter(
-            is_array($infos_chasse['themes'] ?? null) ? $infos_chasse['themes'] : [],
-            static function ($theme) {
-                return is_array($theme) && !empty($theme['nom']);
-            }
-        ));
+
+            $build_term_output = static function ($term): string {
+                if (!is_array($term)) {
+                    return '';
+                }
+
+                $raw_name = $term['nom'] ?? $term['name'] ?? '';
+                $name = trim((string) $raw_name);
+                if ($name === '') {
+                    return '';
+                }
+
+                $raw_link = $term['lien'] ?? $term['link'] ?? '';
+                $link = trim((string) $raw_link);
+                if ($link !== '') {
+                    $escaped_link = esc_url($link);
+                    if ($escaped_link !== '') {
+                        return '<a class="meta-etiquette__value" href="' . $escaped_link . '">' . esc_html($name) . '</a>';
+                    }
+                }
+
+                return '<span class="meta-etiquette__value">' . esc_html($name) . '</span>';
+            };
+
+            $html_terms = array_map($build_term_output, $terms);
+
+            return array_values(array_filter($html_terms));
+        };
+
+        $regions_links = $format_meta_terms($infos_chasse['regions'] ?? null);
+        $themes_links = $format_meta_terms($infos_chasse['themes'] ?? null);
         ?>
-        <?php if (!empty($regions_terms) || !empty($themes_terms)) : ?>
+        <?php if (!empty($regions_links) || !empty($themes_links)) : ?>
             <div class="chasse-fiche-metas bloc-metas-inline">
-                <?php if (!empty($regions_terms)) : ?>
+                <?php if (!empty($regions_links)) : ?>
                     <?php
-                    $regions_label = _n('Région :', 'Régions :', count($regions_terms), 'chassesautresor-com');
-                    $regions_links = array_filter(
-                        array_map(
-                            static function ($region) {
-                                $name = esc_html((string) ($region['nom'] ?? ''));
-                                if ($name === '') {
-                                    return '';
-                                }
-
-                                $link = !empty($region['lien']) ? esc_url($region['lien']) : '';
-
-                                if ($link !== '') {
-                                    return '<a class="meta-etiquette__value" href="' . $link . '">' . $name . '</a>';
-                                }
-
-                                return '<span class="meta-etiquette__value">' . $name . '</span>';
-                            },
-                            $regions_terms
-                        )
-                    );
+                    $regions_label = _n('Région :', 'Régions :', count($regions_links), 'chassesautresor-com');
                     ?>
-                    <?php if (!empty($regions_links)) : ?>
-                        <div class="meta-etiquette meta-etiquette--regions">
-                            <span><?php echo esc_html($regions_label); ?></span>
-                            <?php echo wp_kses_post(implode(', ', $regions_links)); ?>
-                        </div>
-                    <?php endif; ?>
+                    <div class="meta-etiquette meta-etiquette--regions">
+                        <span><?php echo esc_html($regions_label); ?></span>
+                        <?php echo wp_kses_post(implode(', ', $regions_links)); ?>
+                    </div>
                 <?php endif; ?>
 
-                <?php if (!empty($themes_terms)) : ?>
+                <?php if (!empty($themes_links)) : ?>
                     <?php
-                    $themes_label = _n('Thème :', 'Thèmes :', count($themes_terms), 'chassesautresor-com');
-                    $themes_links = array_filter(
-                        array_map(
-                            static function ($theme) {
-                                $name = esc_html((string) ($theme['nom'] ?? ''));
-                                if ($name === '') {
-                                    return '';
-                                }
-
-                                $link = !empty($theme['lien']) ? esc_url($theme['lien']) : '';
-
-                                if ($link !== '') {
-                                    return '<a class="meta-etiquette__value" href="' . $link . '">' . $name . '</a>';
-                                }
-
-                                return '<span class="meta-etiquette__value">' . $name . '</span>';
-                            },
-                            $themes_terms
-                        )
-                    );
+                    $themes_label = _n('Thème :', 'Thèmes :', count($themes_links), 'chassesautresor-com');
                     ?>
-                    <?php if (!empty($themes_links)) : ?>
-                        <div class="meta-etiquette meta-etiquette--themes">
-                            <span><?php echo esc_html($themes_label); ?></span>
-                            <?php echo wp_kses_post(implode(', ', $themes_links)); ?>
-                        </div>
-                    <?php endif; ?>
+                    <div class="meta-etiquette meta-etiquette--themes">
+                        <span><?php echo esc_html($themes_label); ?></span>
+                        <?php echo wp_kses_post(implode(', ', $themes_links)); ?>
+                    </div>
                 <?php endif; ?>
             </div>
         <?php endif; ?>
