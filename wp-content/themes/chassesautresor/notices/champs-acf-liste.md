@@ -1,7 +1,7 @@
 🔹 Groupe : paramètre de la chasse
 🆔 ID : 27
 🔑 Key : group_67b58c51b9a49
-📦 Champs trouvés : 22
+📦 Champs trouvés : 23
 
 — chasse_principale_image —
 Type : image
@@ -171,6 +171,18 @@ Instructions : (vide)
 Requis : non
 Taxonomie : chasse_region
 Mode de sélection : select (simple)
+Retour : objet (WP_Term)
+Load Terms : oui
+Save Terms : oui
+----------------------------------------
+
+— chasse_theme —
+Type : taxonomy
+Label : chasse_theme
+Instructions : (vide)
+Requis : non
+Taxonomie : theme_chasse
+Mode de sélection : select (multiple)
 Retour : objet (WP_Term)
 Load Terms : oui
 Save Terms : oui
