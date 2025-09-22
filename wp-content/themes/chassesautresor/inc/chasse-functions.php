@@ -1394,69 +1394,43 @@ function render_chasse_solutions(int $chasse_id, int $user_id): void
 }
 
 /**
- * Prépare les informations d'affichage pour une carte de chasse.
+ * Prépare les données d'affichage des termes associés à une chasse.
  *
- * @param int $chasse_id  ID de la chasse.
- * @param int $word_limit Nombre maximum de mots pour le descriptif.
+ * @param int    $chasse_id ID de la chasse.
+ * @param string $taxonomy  Taxonomie ciblée.
  *
- * @return array Tableau associatif prêt pour le template.
-*/
-function chasse_recuperer_regions_infos(int $chasse_id): array
+ * @return array[]
+ */
+function chasse_preparer_termes_affichage(int $chasse_id, string $taxonomy): array
 {
     if (!function_exists('wp_get_post_terms')) {
-        return [
-            'regions' => [],
-            'region_principale' => null,
-        ];
+        return [];
     }
 
-    $taxonomy = 'chasse_region';
-
-    if (function_exists('get_field_object')) {
-        $field_object = get_field_object('chasse_region', $chasse_id);
-        if (is_array($field_object) && !empty($field_object['taxonomy'])) {
-            $taxonomy = (string) $field_object['taxonomy'];
-        }
+    $terms = wp_get_post_terms($chasse_id, $taxonomy, ['orderby' => 'term_order']);
+    if (is_wp_error($terms) || empty($terms)) {
+        return [];
     }
 
-    if ($taxonomy === '') {
-        return [
-            'regions' => [],
-            'region_principale' => null,
-        ];
-    }
-
-    $terms = wp_get_post_terms(
-        $chasse_id,
-        $taxonomy,
-        [
-            'orderby' => 'term_order',
-            'order'   => 'ASC',
-        ]
-    );
-
-    if (is_wp_error($terms)) {
-        $terms = [];
-    }
-
-    $regions = [];
+    $items = [];
 
     foreach ($terms as $term) {
-        $term_link = function_exists('get_term_link') ? get_term_link($term) : '';
+        $link = '';
+        if (function_exists('get_term_link')) {
+            $link = get_term_link($term);
+            if (is_wp_error($link)) {
+                $link = '';
+            }
+        }
 
-        $link_is_error = function_exists('is_wp_error') && is_wp_error($term_link);
-
-        $regions[] = [
-            'name' => (string) $term->name,
-            'slug' => (string) $term->slug,
-            'link' => !$link_is_error ? (string) $term_link : '',
+        $items[] = [
+            'nom'  => $term->name,
+            'slug' => $term->slug,
+            'lien' => $link,
         ];
     }
 
-    return [
-        'regions' => $regions,
-        'region_principale' => $regions[0] ?? null,
-    ];
+    return $items;
 }
 
 function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit = 300, array $options = []): array
@@ -1546,6 +1520,9 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
     }
 
     $champs = chasse_get_champs($chasse_id);
+    $regions = chasse_preparer_termes_affichage($chasse_id, 'chasse_region');
+    $themes = chasse_preparer_termes_affichage($chasse_id, 'theme_chasse');
+    $region_principale = !empty($regions) ? $regions[0] : null;
     $titre_recompense  = $champs['titre_recompense'];
     $valeur_recompense = $champs['valeur_recompense'];
     $cout_points       = (int) $champs['cout_points'];
@@ -1592,8 +1569,6 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
         ? '<span class="badge-statut__icon" aria-hidden="true">' . $badge_infos['icon_html'] . '</span>'
             . '<span class="screen-reader-text">' . esc_html($badge_infos['label']) . '</span>'
         : esc_html($badge_infos['label']);
-
-    $regions_infos = chasse_recuperer_regions_infos($chasse_id);
 
     $enigmes_associees = recuperer_enigmes_associees($chasse_id);
     $total_enigmes     = count($enigmes_associees);
@@ -1740,8 +1715,9 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
         'cta_message'       => $cta_message,
         'cta_type'         => $cta_data['type'] ?? '',
         'footer_html'       => $footer_html,
-        'regions'           => $regions_infos['regions'],
-        'region_principale' => $regions_infos['region_principale'],
+        'regions'           => $regions,
+        'themes'            => $themes,
+        'region_principale' => $region_principale,
     ];
 
     if (!empty($progression['resolvables'])) {
@@ -1790,7 +1766,9 @@ function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): 
     }
 
     $champs = chasse_get_champs($chasse_id);
-    $regions_infos = chasse_recuperer_regions_infos($chasse_id);
+    $regions = chasse_preparer_termes_affichage($chasse_id, 'chasse_region');
+    $themes = chasse_preparer_termes_affichage($chasse_id, 'theme_chasse');
+    $region_principale = !empty($regions) ? $regions[0] : null;
 
     $description   = get_field('chasse_principale_description', $chasse_id);
     $texte_complet = wp_strip_all_tags($description);
@@ -1856,8 +1834,9 @@ function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): 
         ],
         'statut'            => get_field('chasse_cache_statut', $chasse_id) ?: 'revision',
         'statut_validation' => get_field('chasse_cache_statut_validation', $chasse_id),
-        'regions'           => $regions_infos['regions'],
-        'region_principale' => $regions_infos['region_principale'],
+        'regions'           => $regions,
+        'themes'            => $themes,
+        'region_principale' => $region_principale,
     ];
 
     $cache[$user_id] = $memo[$memo_key];
@@ -1878,6 +1857,25 @@ function chasse_clear_infos_affichage_cache(int $chasse_id): void
     $key = chasse_infos_affichage_cache_key($chasse_id);
     wp_cache_delete($key, 'chasse_affichage');
     delete_transient($key);
+}
+
+function chasse_invalidate_infos_affichage_terms(
+    int $object_id,
+    $terms,
+    $tt_ids,
+    string $taxonomy,
+    $append,
+    $old_tt_ids
+): void {
+    if (!in_array($taxonomy, ['chasse_region', 'theme_chasse'], true)) {
+        return;
+    }
+
+    if (get_post_type($object_id) !== 'chasse') {
+        return;
+    }
+
+    chasse_clear_infos_affichage_cache((int) $object_id);
 }
 
 function chasse_invalidate_infos_affichage_cache(int $post_id, \WP_Post $post, bool $update): void
@@ -1910,23 +1908,4 @@ function chasse_acf_clear_infos_affichage_cache($post_id): void
 add_action('acf/save_post', 'chasse_acf_clear_infos_affichage_cache', 20);
 add_action('save_post', 'chasse_invalidate_infos_affichage_cache', 10, 3);
 add_action('chasse_engagement_created', 'chasse_clear_infos_affichage_cache');
-add_action('set_object_terms', 'chasse_clear_infos_affichage_cache_on_region_terms', 10, 6);
-
-function chasse_clear_infos_affichage_cache_on_region_terms(
-    int $object_id,
-    $terms,
-    $tt_ids,
-    string $taxonomy,
-    bool $append,
-    $old_tt_ids
-): void {
-    if ($taxonomy !== 'chasse_region') {
-        return;
-    }
-
-    if (get_post_type($object_id) !== 'chasse') {
-        return;
-    }
-
-    chasse_clear_infos_affichage_cache($object_id);
-}
+add_action('set_object_terms', 'chasse_invalidate_infos_affichage_terms', 10, 6);
