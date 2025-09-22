@@ -453,7 +453,7 @@ if ($edition_active && !$est_complet) {
               $region_main_link = $region_main['link'] ?? '';
               ?>
               <div class="caracteristique caracteristique-region">
-                <span class="caracteristique-icone" aria-hidden="true">🧭</span>
+                <span class="caracteristique-icone" aria-hidden="true">📍</span>
                 <span class="caracteristique-label"><?= esc_html__('Région', 'chassesautresor-com'); ?></span>
                 <span class="caracteristique-valeur">
                   <?php if ($region_main_link !== '') : ?>
