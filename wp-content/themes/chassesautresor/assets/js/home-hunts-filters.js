@@ -204,6 +204,124 @@
     return Array.from(form.querySelectorAll('[data-home-hunts-checkbox]'));
   }
 
+  function updateStatusOptions(availableStatuses, normalizedStatus) {
+    const select = getStatusControl();
+
+    if (!select) {
+      return;
+    }
+
+    const options = Array.from(select.options || []);
+    const hasAvailableData = availableStatuses && typeof availableStatuses === 'object';
+    const availableValues = new Set();
+
+    if (hasAvailableData) {
+      Object.keys(availableStatuses).forEach((value) => {
+        const count = Number(availableStatuses[value]);
+        if (Number.isFinite(count) && count > 0) {
+          availableValues.add(String(value));
+        }
+      });
+    }
+
+    if (hasAvailableData) {
+      options.forEach((option) => {
+        const value = option.value;
+
+        if (value === 'tous') {
+          option.hidden = false;
+          option.disabled = false;
+          return;
+        }
+
+        const isAvailable = availableValues.has(value);
+        option.hidden = !isAvailable;
+        option.disabled = !isAvailable;
+      });
+    }
+
+    let desiredValue = typeof normalizedStatus === 'string' ? normalizedStatus : select.value;
+    const optionExists = options.some((option) => option.value === desiredValue);
+
+    if (!optionExists) {
+      desiredValue = 'tous';
+    }
+
+    if (hasAvailableData && desiredValue !== 'tous' && !availableValues.has(desiredValue)) {
+      const fallbackOption = options.find((option) => option.value !== 'tous' && !option.hidden);
+      desiredValue = fallbackOption ? fallbackOption.value : 'tous';
+    }
+
+    if (select.value !== desiredValue) {
+      select.value = desiredValue;
+    }
+  }
+
+  function updateCostOptions(availableCosts, normalizedCosts) {
+    const checkboxes = getCostControls();
+
+    if (checkboxes.length === 0) {
+      return;
+    }
+
+    const hasAvailableData = availableCosts && typeof availableCosts === 'object';
+    const normalizedValues = Array.isArray(normalizedCosts)
+      ? new Set(normalizedCosts.map((value) => String(value)))
+      : null;
+
+    checkboxes.forEach((checkbox) => {
+      const value = checkbox.value;
+      const wrapper = checkbox.closest('.home-hunts__filters-checkbox');
+
+      if (hasAvailableData) {
+        const count = Number(availableCosts[value]);
+        const isAvailable = Number.isFinite(count) && count > 0;
+
+        if (wrapper) {
+          wrapper.hidden = !isAvailable;
+          if (isAvailable) {
+            wrapper.removeAttribute('aria-hidden');
+          } else {
+            wrapper.setAttribute('aria-hidden', 'true');
+          }
+        } else if (!isAvailable) {
+          checkbox.hidden = true;
+        } else {
+          checkbox.hidden = false;
+        }
+
+        checkbox.disabled = !isAvailable;
+
+        if (!isAvailable) {
+          checkbox.checked = false;
+          return;
+        }
+
+        checkbox.hidden = false;
+      }
+
+      if (normalizedValues) {
+        checkbox.checked = normalizedValues.has(value);
+      }
+    });
+  }
+
+  function updateAvailableFilters(filtersPayload) {
+    if (!filtersPayload || typeof filtersPayload !== 'object') {
+      return;
+    }
+
+    const availableFilters = filtersPayload.available && typeof filtersPayload.available === 'object'
+      ? filtersPayload.available
+      : {};
+    const normalizedFilters = filtersPayload.normalized && typeof filtersPayload.normalized === 'object'
+      ? filtersPayload.normalized
+      : {};
+
+    updateStatusOptions(availableFilters.statut || null, normalizedFilters.statut);
+    updateCostOptions(availableFilters.cout || null, normalizedFilters.cout || null);
+  }
+
   function buildFormData() {
     const data = new FormData();
 
@@ -238,6 +356,10 @@
   function handleSuccess(payload) {
     if (!payload || typeof payload !== 'object') {
       throw new Error('Invalid response');
+    }
+
+    if (payload.filters && typeof payload.filters === 'object') {
+      updateAvailableFilters(payload.filters);
     }
 
     if (typeof payload.html === 'string') {
