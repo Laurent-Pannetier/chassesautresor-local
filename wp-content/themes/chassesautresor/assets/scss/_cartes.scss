@@ -672,6 +672,21 @@
   flex-direction: column;
 }
 
+.carte-wide__metas {
+  margin: var(--space-xs) 0 0;
+  gap: var(--space-sm);
+}
+
+.carte-wide__metas .meta-regular {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xxs);
+}
+
+.carte-wide__metas .meta-label {
+  font-weight: 600;
+}
+
 .carte-wide__content .chasse-intro-extrait {
   margin-top: auto;
   margin-bottom: auto;
@@ -679,6 +694,7 @@
 
 .carte-wide__titre {
   margin-top: 0;
+  margin-bottom: var(--space-xs);
 }
 
 .carte-wide__footer .cta-div {
@@ -700,6 +716,29 @@
     flex: 0 0 300px;
     width: 300px;
     height: 300px;
+  }
+
+  .carte-wide__metas {
+    flex-wrap: nowrap;
+    margin-top: 0;
+    max-height: 0;
+    opacity: 0;
+    visibility: hidden;
+    overflow: hidden;
+    pointer-events: none;
+    transition:
+      opacity var(--transition-medium),
+      max-height var(--transition-medium),
+      margin-top var(--transition-medium);
+  }
+
+  .carte-wide:hover .carte-wide__metas,
+  .carte-wide:focus-within .carte-wide__metas {
+    margin-top: var(--space-xs);
+    max-height: 200px;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
   }
 }
 
