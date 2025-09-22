@@ -150,6 +150,22 @@ class HomepageFiltersTest extends TestCase
         $this->assertSame(3, $statusResults['total']);
         $this->assertSame('en_cours', $statusResults['filters_normalises']['statut']);
         $this->assertSame(['gratuit', 'points'], $statusResults['filters_normalises']['cout']);
+        $this->assertSame(
+            [
+                'tous'     => 4,
+                'en_cours' => 3,
+                'a_venir'  => 0,
+                'termine'  => 1,
+            ],
+            $statusResults['available_filters']['statut']
+        );
+        $this->assertSame(
+            [
+                'gratuit' => 2,
+                'points'  => 2,
+            ],
+            $statusResults['available_filters']['cout']
+        );
 
         $freeResults = ca_home_filter_chasse_ids([
             'cout' => 'gratuit',
@@ -159,6 +175,22 @@ class HomepageFiltersTest extends TestCase
         $this->assertSame(2, $freeResults['total']);
         $this->assertSame('tous', $freeResults['filters_normalises']['statut']);
         $this->assertSame(['gratuit'], $freeResults['filters_normalises']['cout']);
+        $this->assertSame(
+            [
+                'tous'     => 4,
+                'en_cours' => 3,
+                'a_venir'  => 0,
+                'termine'  => 1,
+            ],
+            $freeResults['available_filters']['statut']
+        );
+        $this->assertSame(
+            [
+                'gratuit' => 2,
+                'points'  => 2,
+            ],
+            $freeResults['available_filters']['cout']
+        );
 
         $pointsResults = ca_home_filter_chasse_ids([
             'cout' => ['points'],
@@ -168,5 +200,21 @@ class HomepageFiltersTest extends TestCase
         $this->assertSame(2, $pointsResults['total']);
         $this->assertSame('tous', $pointsResults['filters_normalises']['statut']);
         $this->assertSame(['points'], $pointsResults['filters_normalises']['cout']);
+        $this->assertSame(
+            [
+                'tous'     => 4,
+                'en_cours' => 3,
+                'a_venir'  => 0,
+                'termine'  => 1,
+            ],
+            $pointsResults['available_filters']['statut']
+        );
+        $this->assertSame(
+            [
+                'gratuit' => 2,
+                'points'  => 2,
+            ],
+            $pointsResults['available_filters']['cout']
+        );
     }
 }

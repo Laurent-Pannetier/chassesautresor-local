@@ -234,12 +234,6 @@ function ca_home_filter_chasse_ids(array $args): array
         $filtered_ids[] = $hunt['id'];
     }
 
-    $allowed_costs_for_status = $cost_filter_provided ? $normalized_cost : $cost_whitelist;
-
-    if ($cost_filter_provided && empty($normalized_cost)) {
-        $allowed_costs_for_status = [];
-    }
-
     $status_counts = [
         'tous'     => 0,
         'en_cours' => 0,
@@ -248,10 +242,6 @@ function ca_home_filter_chasse_ids(array $args): array
     ];
 
     foreach ($search_filtered_hunts as $hunt) {
-        if (!in_array($hunt['cost'], $allowed_costs_for_status, true)) {
-            continue;
-        }
-
         $status_counts['tous']++;
 
         foreach ($status_map as $status_filter => $expected_statuses) {
@@ -266,19 +256,7 @@ function ca_home_filter_chasse_ids(array $args): array
         'points'  => 0,
     ];
 
-    $allowed_statuses_for_cost = null;
-
-    if ('tous' !== $normalized_status) {
-        $allowed_statuses_for_cost = $status_map[$normalized_status] ?? [];
-    }
-
     foreach ($search_filtered_hunts as $hunt) {
-        if (is_array($allowed_statuses_for_cost)) {
-            if (empty($allowed_statuses_for_cost) || !in_array($hunt['status'], $allowed_statuses_for_cost, true)) {
-                continue;
-            }
-        }
-
         if (array_key_exists($hunt['cost'], $cost_counts)) {
             $cost_counts[$hunt['cost']]++;
         }
