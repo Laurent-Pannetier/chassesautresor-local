@@ -556,6 +556,86 @@ if ($edition_active && !$est_complet) {
             </div>
         <?php endif; ?>
 
+        <?php
+        $regions_terms = array_values(array_filter(
+            is_array($infos_chasse['regions'] ?? null) ? $infos_chasse['regions'] : [],
+            static function ($region) {
+                return is_array($region) && !empty($region['nom']);
+            }
+        ));
+        $themes_terms = array_values(array_filter(
+            is_array($infos_chasse['themes'] ?? null) ? $infos_chasse['themes'] : [],
+            static function ($theme) {
+                return is_array($theme) && !empty($theme['nom']);
+            }
+        ));
+        ?>
+        <?php if (!empty($regions_terms) || !empty($themes_terms)) : ?>
+            <div class="chasse-fiche-metas bloc-metas-inline">
+                <?php if (!empty($regions_terms)) : ?>
+                    <?php
+                    $regions_label = _n('Région :', 'Régions :', count($regions_terms), 'chassesautresor-com');
+                    $regions_links = array_filter(
+                        array_map(
+                            static function ($region) {
+                                $name = esc_html((string) ($region['nom'] ?? ''));
+                                if ($name === '') {
+                                    return '';
+                                }
+
+                                $link = !empty($region['lien']) ? esc_url($region['lien']) : '';
+
+                                if ($link !== '') {
+                                    return '<a class="meta-etiquette__value" href="' . $link . '">' . $name . '</a>';
+                                }
+
+                                return '<span class="meta-etiquette__value">' . $name . '</span>';
+                            },
+                            $regions_terms
+                        )
+                    );
+                    ?>
+                    <?php if (!empty($regions_links)) : ?>
+                        <div class="meta-etiquette meta-etiquette--regions">
+                            <span><?php echo esc_html($regions_label); ?></span>
+                            <?php echo wp_kses_post(implode(', ', $regions_links)); ?>
+                        </div>
+                    <?php endif; ?>
+                <?php endif; ?>
+
+                <?php if (!empty($themes_terms)) : ?>
+                    <?php
+                    $themes_label = _n('Thème :', 'Thèmes :', count($themes_terms), 'chassesautresor-com');
+                    $themes_links = array_filter(
+                        array_map(
+                            static function ($theme) {
+                                $name = esc_html((string) ($theme['nom'] ?? ''));
+                                if ($name === '') {
+                                    return '';
+                                }
+
+                                $link = !empty($theme['lien']) ? esc_url($theme['lien']) : '';
+
+                                if ($link !== '') {
+                                    return '<a class="meta-etiquette__value" href="' . $link . '">' . $name . '</a>';
+                                }
+
+                                return '<span class="meta-etiquette__value">' . $name . '</span>';
+                            },
+                            $themes_terms
+                        )
+                    );
+                    ?>
+                    <?php if (!empty($themes_links)) : ?>
+                        <div class="meta-etiquette meta-etiquette--themes">
+                            <span><?php echo esc_html($themes_label); ?></span>
+                            <?php echo wp_kses_post(implode(', ', $themes_links)); ?>
+                        </div>
+                    <?php endif; ?>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
+
       </div>
   </div>
 </section>
