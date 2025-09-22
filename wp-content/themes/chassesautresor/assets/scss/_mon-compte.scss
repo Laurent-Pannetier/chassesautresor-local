@@ -7,8 +7,11 @@
     padding-right: 0;
 }
 
+
 .myaccount-layout {
+    position: relative;
     display: flex;
+    flex-direction: column;
     min-height: 100vh;
     width: 100%;
     background-color: var(--color-background);
@@ -25,13 +28,117 @@
     text-transform: none;
 }
 
-.myaccount-sidebar {
-    width: 280px;
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
+.myaccount-sidebar-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 16px;
+    padding: 0.75rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
     background: rgba(6, 10, 31, 0.85);
+    color: var(--color-text-primary);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.myaccount-sidebar-toggle:hover,
+.myaccount-sidebar-toggle:focus-visible {
+    background-color: rgba(6, 10, 31, 1);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.myaccount-sidebar-toggle:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+.myaccount-sidebar-toggle-icon {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.myaccount-sidebar-toggle-icon span {
+    width: 20px;
+    height: 2px;
+    border-radius: 999px;
+    background: currentColor;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.myaccount-sidebar-toggle[aria-expanded='true'] .myaccount-sidebar-toggle-icon span:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+}
+
+.myaccount-sidebar-toggle[aria-expanded='true'] .myaccount-sidebar-toggle-icon span:nth-child(2) {
+    opacity: 0;
+}
+
+.myaccount-sidebar-toggle[aria-expanded='true'] .myaccount-sidebar-toggle-icon span:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+}
+
+.myaccount-sidebar-toggle-text {
+    text-transform: none;
+}
+
+.myaccount-sidebar {
+    position: fixed;
+    top: 0;
+    right: auto;
+    bottom: 0;
+    left: 0;
+    width: min(85vw, 320px);
+    max-width: 320px;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(6, 10, 31, 0.9);
     display: flex;
     flex-direction: column;
     color: var(--color-text-primary);
+    overflow-y: auto;
+    max-height: 100vh;
+    transform: translateX(-100%);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 200;
+    box-shadow: 8px 0 30px rgba(5, 10, 30, 0.45);
+}
+
+.myaccount-sidebar.is-open {
+    transform: translateX(0);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+@media (--bp-mobile) {
+    .myaccount-layout {
+        flex-direction: row;
+    }
+
+    .myaccount-sidebar-toggle {
+        display: none;
+    }
+
+    .myaccount-sidebar {
+        position: sticky;
+        top: 0;
+        bottom: auto;
+        width: 280px;
+        max-width: none;
+        transform: none;
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        box-shadow: none;
+    }
 }
 
 .myaccount-brand {
@@ -151,6 +258,8 @@
     flex: 1;
     display: flex;
     flex-direction: column;
+    position: relative;
+    width: 100%;
 }
 
 .myaccount-header {
