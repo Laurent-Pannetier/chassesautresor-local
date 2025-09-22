@@ -8549,7 +8549,7 @@ body.accueil-fullscreen {
   .home-hunts__filters-form {
     flex-direction: row;
     flex-wrap: wrap;
-    align-items: flex-end;
+    align-items: center;
     flex: 1 1 auto;
   }
   .home-hunts__filters-group {
@@ -8560,7 +8560,7 @@ body.accueil-fullscreen {
   }
   .home-hunts__filters-actions {
     flex: 0 0 auto;
-    align-items: flex-end;
+    align-items: center;
     justify-content: flex-end;
     margin-left: auto;
   }
