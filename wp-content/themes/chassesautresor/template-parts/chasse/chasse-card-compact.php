@@ -56,20 +56,20 @@ $themes = array_values(array_filter(
                     <div class="chasse-card-badges chasse-badges">
                         <?php if (!empty($region_principale['nom'])) : ?>
                             <?php if (!empty($region_principale['lien'])) : ?>
-                                <a class="chasse-badge chasse-badge--region" href="<?php echo esc_url($region_principale['lien']); ?>">
+                                <a class="meta-etiquette" href="<?php echo esc_url($region_principale['lien']); ?>">
                                     <?php echo esc_html($region_principale['nom']); ?>
                                 </a>
                             <?php else : ?>
-                                <span class="chasse-badge chasse-badge--region"><?php echo esc_html($region_principale['nom']); ?></span>
+                                <span class="meta-etiquette"><?php echo esc_html($region_principale['nom']); ?></span>
                             <?php endif; ?>
                         <?php endif; ?>
                         <?php foreach ($themes as $theme) : ?>
                             <?php if (!empty($theme['lien'])) : ?>
-                                <a class="chasse-badge chasse-badge--theme" href="<?php echo esc_url($theme['lien']); ?>">
+                                <a class="meta-etiquette" href="<?php echo esc_url($theme['lien']); ?>">
                                     <?php echo esc_html($theme['nom']); ?>
                                 </a>
                             <?php else : ?>
-                                <span class="chasse-badge chasse-badge--theme"><?php echo esc_html($theme['nom']); ?></span>
+                                <span class="meta-etiquette"><?php echo esc_html($theme['nom']); ?></span>
                             <?php endif; ?>
                         <?php endforeach; ?>
                     </div>
