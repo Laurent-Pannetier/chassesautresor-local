@@ -127,6 +127,82 @@ function ca_home_filter_chasse_ids(array $args): array
         'termine'  => ['termine'],
     ];
 
+    $extract_taxonomy_names = static function ($terms): array {
+        if (!is_array($terms)) {
+            return [];
+        }
+
+        $names = [];
+
+        foreach ($terms as $term) {
+            $name = '';
+
+            if (is_array($term)) {
+                $candidates = [
+                    $term['nom'] ?? null,
+                    $term['name'] ?? null,
+                    $term['label'] ?? null,
+                    $term['title'] ?? null,
+                ];
+
+                foreach ($candidates as $candidate) {
+                    if (!is_string($candidate) && !is_numeric($candidate)) {
+                        continue;
+                    }
+
+                    $candidate_value = trim((string) $candidate);
+
+                    if ('' === $candidate_value) {
+                        continue;
+                    }
+
+                    $name = $candidate_value;
+                    break;
+                }
+            } elseif ($term instanceof \WP_Term) {
+                $name = trim((string) $term->name);
+            } elseif (is_string($term) || is_numeric($term)) {
+                $name = trim((string) $term);
+            }
+
+            if ('' === $name) {
+                continue;
+            }
+
+            $names[] = $name;
+        }
+
+        if (empty($names)) {
+            return [];
+        }
+
+        return array_values(array_unique($names));
+    };
+
+    $resolve_taxonomy_terms = static function (int $hunt_id, string $taxonomy) use ($extract_taxonomy_names): array {
+        $terms = [];
+
+        if (function_exists('chasse_preparer_termes_affichage')) {
+            $terms = chasse_preparer_termes_affichage($hunt_id, $taxonomy);
+        } elseif (function_exists('wp_get_post_terms')) {
+            $terms = wp_get_post_terms($hunt_id, $taxonomy, ['orderby' => 'term_order']);
+
+            if (function_exists('is_wp_error') && is_wp_error($terms)) {
+                $terms = [];
+            }
+        }
+
+        if (empty($terms)) {
+            return [];
+        }
+
+        if (!is_array($terms)) {
+            $terms = [$terms];
+        }
+
+        return $extract_taxonomy_names($terms);
+    };
+
     $hunts_data = [];
 
     foreach ($chasse_ids as $chasse_id) {
@@ -167,6 +243,15 @@ function ca_home_filter_chasse_ids(array $args): array
             }
         }
 
+        $region_terms = $resolve_taxonomy_terms($chasse_id, 'chasse_region');
+        $theme_terms  = $resolve_taxonomy_terms($chasse_id, 'theme_chasse');
+
+        $taxonomy_terms = array_merge($region_terms, $theme_terms);
+
+        if (!empty($taxonomy_terms)) {
+            $taxonomy_terms = array_values(array_unique($taxonomy_terms));
+        }
+
         $hunts_data[] = [
             'id'     => (int) $chasse_id,
             'status' => is_string($statut_metier) ? $statut_metier : '',
@@ -174,6 +259,7 @@ function ca_home_filter_chasse_ids(array $args): array
             'title'  => is_string($title) ? $title : '',
             'description' => $description_text,
             'organizer'   => $organizer_name,
+            'taxonomy_terms' => $taxonomy_terms,
         ];
     }
 
@@ -188,6 +274,12 @@ function ca_home_filter_chasse_ids(array $args): array
                     $hunt['description'] ?? '',
                     $hunt['organizer'] ?? '',
                 ];
+
+                if (!empty($hunt['taxonomy_terms']) && is_array($hunt['taxonomy_terms'])) {
+                    foreach ($hunt['taxonomy_terms'] as $term_name) {
+                        $haystacks[] = (string) $term_name;
+                    }
+                }
 
                 foreach ($haystacks as $haystack) {
                     $normalized_value = $normalize_text((string) $haystack);
