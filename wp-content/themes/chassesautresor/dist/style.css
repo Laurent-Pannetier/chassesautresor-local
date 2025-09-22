@@ -8473,14 +8473,70 @@ body.accueil-fullscreen {
 .home-hunts__toolbar {
   width: 100%;
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: stretch;
   gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.home-hunts__toolbar-toggles {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  width: 100%;
+}
+
+.home-hunts__toolbar--enhanced .home-hunts__toolbar-toggles {
+  display: flex;
+}
+
+.home-hunts__toolbar-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-white);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.home-hunts__toolbar-toggle:hover,
+.home-hunts__toolbar-toggle:focus-visible {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.home-hunts__toolbar-toggle[aria-expanded=true] {
+  background: rgba(255, 255, 255, 0.24);
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
+.home-hunts__toolbar-toggle-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.home-hunts__toolbar-toggle-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
 }
 
 .home-hunts-filters,
 .home-hunts__filters,
 .home-hunts__search {
-  width: 100%;
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);
@@ -8492,6 +8548,35 @@ body.accueil-fullscreen {
   color: var(--color-white);
   grid-column: 1/-1;
   transition: box-shadow var(--transition-medium), transform var(--transition-medium);
+  flex: 1 1 280px;
+  min-width: 0;
+}
+
+.home-hunts__filters {
+  flex: 1 1 420px;
+  max-width: 52rem;
+  min-width: 0;
+}
+
+.home-hunts__search {
+  flex: 1 1 320px;
+  max-width: 34rem;
+  min-width: 0;
+  margin-left: 0;
+}
+.home-hunts__search .table-search__controls {
+  flex-direction: row;
+  align-items: stretch;
+  gap: var(--space-sm);
+}
+.home-hunts__search .table-search__field {
+  flex: 1 1 auto;
+}
+.home-hunts__search .table-search__submit {
+  align-self: stretch;
+}
+.home-hunts__search .table-search__reset {
+  align-self: center;
 }
 
 .home-hunts-filters:focus-within,
@@ -8503,7 +8588,8 @@ body.accueil-fullscreen {
 
 .home-hunts__filters-form {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
   gap: var(--space-lg);
   width: 100%;
 }
@@ -8535,6 +8621,7 @@ body.accueil-fullscreen {
   flex-direction: column;
   gap: var(--space-sm);
   min-width: 0;
+  flex: 1 1 220px;
 }
 
 .home-hunts__filters-group--cost {
@@ -8580,8 +8667,8 @@ body.accueil-fullscreen {
 
 .home-hunts__filters-actions {
   display: flex;
-  flex-direction: column;
-  align-items: stretch;
+  flex-wrap: wrap;
+  align-items: center;
   gap: var(--space-sm);
 }
 
@@ -8644,51 +8731,29 @@ body.accueil-fullscreen {
   white-space: nowrap;
 }
 
-@media (min-width: 600px) {
-  .home-hunts__filters-actions {
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-    align-self: flex-start;
-  }
+.home-hunts__toolbar--enhanced [data-home-hunts-panel][data-collapsed=true] {
+  display: none;
 }
+
+.home-hunts__toolbar--enhanced [data-home-hunts-panel][data-collapsed=false] {
+  display: flex;
+}
+
 @media (min-width: 1024px) {
   .home-hunts__toolbar {
-    flex-direction: row;
-    align-items: stretch;
+    margin-bottom: var(--space-2xl);
   }
-  .home-hunts__filters {
-    flex: 1 1 60%;
-    max-width: 52rem;
-    min-width: 0;
+  .home-hunts__toolbar--enhanced .home-hunts__toolbar-toggles {
+    display: none;
+  }
+  .home-hunts__toolbar--enhanced [data-home-hunts-panel] {
+    display: flex;
   }
   .home-hunts__search {
-    flex: 1 1 40%;
-    max-width: 34rem;
-    min-width: 0;
     margin-left: auto;
-  }
-  .home-hunts__search .table-search {
-    max-width: none;
-    margin-left: 0;
-  }
-  .home-hunts__filters-form {
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    flex: 1 1 auto;
-  }
-  .home-hunts__filters-group {
-    flex: 1 1 220px;
   }
   .home-hunts__filters-group--cost {
     flex: 0 1 auto;
-  }
-  .home-hunts__filters-actions {
-    flex: 0 0 auto;
-    align-items: center;
-    justify-content: flex-start;
-    margin-left: 0;
   }
 }
 .home-hunts__feedback {
