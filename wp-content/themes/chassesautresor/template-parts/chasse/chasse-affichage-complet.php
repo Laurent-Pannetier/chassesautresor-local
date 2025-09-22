@@ -556,6 +556,44 @@ if ($edition_active && !$est_complet) {
             </div>
         <?php endif; ?>
 
+        <?php
+        $regions_terms = $infos_chasse['regions'] ?? null;
+        if (empty($regions_terms)) {
+            $regions_terms = chasse_preparer_termes_affichage($chasse_id, 'chasse_region');
+        }
+
+        $themes_terms = $infos_chasse['themes'] ?? null;
+        if (empty($themes_terms)) {
+            $themes_terms = chasse_preparer_termes_affichage($chasse_id, 'theme_chasse');
+        }
+
+        $regions_links = chasse_format_meta_terms($regions_terms);
+        $themes_links = chasse_format_meta_terms($themes_terms);
+        ?>
+        <?php if (!empty($regions_links) || !empty($themes_links)) : ?>
+            <div class="chasse-fiche-metas bloc-metas-inline">
+                <?php if (!empty($regions_links)) : ?>
+                    <?php
+                    $regions_label = _n('Région :', 'Régions :', count($regions_links), 'chassesautresor-com');
+                    ?>
+                    <div class="meta-etiquette meta-etiquette--regions">
+                        <span><?php echo esc_html($regions_label); ?></span>
+                        <?php echo wp_kses_post(implode(', ', $regions_links)); ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php if (!empty($themes_links)) : ?>
+                    <?php
+                    $themes_label = _n('Thème :', 'Thèmes :', count($themes_links), 'chassesautresor-com');
+                    ?>
+                    <div class="meta-etiquette meta-etiquette--themes">
+                        <span><?php echo esc_html($themes_label); ?></span>
+                        <?php echo wp_kses_post(implode(', ', $themes_links)); ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
+
       </div>
   </div>
 </section>
