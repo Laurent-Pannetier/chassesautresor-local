@@ -172,7 +172,13 @@ ob_start();
                         </span>
                     <?php endif; ?>
                 </button>
-                <span class="home-hunts__filters-count" data-home-hunts-count data-default-count="<?php echo esc_attr($initial_results_count); ?>"><?php echo esc_html($results_label); ?></span>
+                <span
+                    class="home-hunts__filters-count"
+                    data-home-hunts-count
+                    data-default-count="<?php echo esc_attr($initial_results_count); ?>"
+                    hidden
+                    aria-hidden="true"
+                ><?php echo esc_html($results_label); ?></span>
             </div>
         </form>
     </div>

@@ -238,11 +238,24 @@
     if (isVisible) {
       countElement.hidden = false;
       countElement.removeAttribute('aria-hidden');
+
+      if (countElement.style) {
+        if (typeof countElement.style.removeProperty === 'function') {
+          countElement.style.removeProperty('display');
+        } else {
+          countElement.style.display = '';
+        }
+      }
+
       return;
     }
 
     countElement.hidden = true;
     countElement.setAttribute('aria-hidden', 'true');
+
+    if (countElement.style) {
+      countElement.style.display = 'none';
+    }
   }
 
   function updateCount(total, allowFallback = true) {
