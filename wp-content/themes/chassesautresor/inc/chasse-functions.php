@@ -1401,6 +1401,64 @@ function render_chasse_solutions(int $chasse_id, int $user_id): void
  *
  * @return array Tableau associatif prêt pour le template.
 */
+function chasse_recuperer_regions_infos(int $chasse_id): array
+{
+    if (!function_exists('wp_get_post_terms')) {
+        return [
+            'regions' => [],
+            'region_principale' => null,
+        ];
+    }
+
+    $taxonomy = 'chasse_region';
+
+    if (function_exists('get_field_object')) {
+        $field_object = get_field_object('chasse_region', $chasse_id);
+        if (is_array($field_object) && !empty($field_object['taxonomy'])) {
+            $taxonomy = (string) $field_object['taxonomy'];
+        }
+    }
+
+    if ($taxonomy === '') {
+        return [
+            'regions' => [],
+            'region_principale' => null,
+        ];
+    }
+
+    $terms = wp_get_post_terms(
+        $chasse_id,
+        $taxonomy,
+        [
+            'orderby' => 'term_order',
+            'order'   => 'ASC',
+        ]
+    );
+
+    if (is_wp_error($terms)) {
+        $terms = [];
+    }
+
+    $regions = [];
+
+    foreach ($terms as $term) {
+        $term_link = function_exists('get_term_link') ? get_term_link($term) : '';
+
+        $link_is_error = function_exists('is_wp_error') && is_wp_error($term_link);
+
+        $regions[] = [
+            'name' => (string) $term->name,
+            'slug' => (string) $term->slug,
+            'link' => !$link_is_error ? (string) $term_link : '',
+        ];
+    }
+
+    return [
+        'regions' => $regions,
+        'region_principale' => $regions[0] ?? null,
+    ];
+}
+
 function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit = 300, array $options = []): array
 {
     if (get_post_type($chasse_id) !== 'chasse') {
@@ -1534,6 +1592,8 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
         ? '<span class="badge-statut__icon" aria-hidden="true">' . $badge_infos['icon_html'] . '</span>'
             . '<span class="screen-reader-text">' . esc_html($badge_infos['label']) . '</span>'
         : esc_html($badge_infos['label']);
+
+    $regions_infos = chasse_recuperer_regions_infos($chasse_id);
 
     $enigmes_associees = recuperer_enigmes_associees($chasse_id);
     $total_enigmes     = count($enigmes_associees);
@@ -1680,6 +1740,8 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
         'cta_message'       => $cta_message,
         'cta_type'         => $cta_data['type'] ?? '',
         'footer_html'       => $footer_html,
+        'regions'           => $regions_infos['regions'],
+        'region_principale' => $regions_infos['region_principale'],
     ];
 
     if (!empty($progression['resolvables'])) {
@@ -1728,6 +1790,7 @@ function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): 
     }
 
     $champs = chasse_get_champs($chasse_id);
+    $regions_infos = chasse_recuperer_regions_infos($chasse_id);
 
     $description   = get_field('chasse_principale_description', $chasse_id);
     $texte_complet = wp_strip_all_tags($description);
@@ -1793,6 +1856,8 @@ function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): 
         ],
         'statut'            => get_field('chasse_cache_statut', $chasse_id) ?: 'revision',
         'statut_validation' => get_field('chasse_cache_statut_validation', $chasse_id),
+        'regions'           => $regions_infos['regions'],
+        'region_principale' => $regions_infos['region_principale'],
     ];
 
     $cache[$user_id] = $memo[$memo_key];
@@ -1845,3 +1910,23 @@ function chasse_acf_clear_infos_affichage_cache($post_id): void
 add_action('acf/save_post', 'chasse_acf_clear_infos_affichage_cache', 20);
 add_action('save_post', 'chasse_invalidate_infos_affichage_cache', 10, 3);
 add_action('chasse_engagement_created', 'chasse_clear_infos_affichage_cache');
+add_action('set_object_terms', 'chasse_clear_infos_affichage_cache_on_region_terms', 10, 6);
+
+function chasse_clear_infos_affichage_cache_on_region_terms(
+    int $object_id,
+    $terms,
+    $tt_ids,
+    string $taxonomy,
+    bool $append,
+    $old_tt_ids
+): void {
+    if ($taxonomy !== 'chasse_region') {
+        return;
+    }
+
+    if (get_post_type($object_id) !== 'chasse') {
+        return;
+    }
+
+    chasse_clear_infos_affichage_cache($object_id);
+}

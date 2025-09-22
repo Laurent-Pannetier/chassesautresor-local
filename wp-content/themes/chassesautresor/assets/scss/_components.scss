@@ -611,11 +611,23 @@ a.ajout-link:focus-visible {
   white-space: nowrap;
   font-size: 85%;
 }
+.meta-etiquette a {
+  color: inherit;
+  text-decoration: none;
+  font-weight: 600;
+}
+.meta-etiquette a:hover,
+.meta-etiquette a:focus-visible {
+  text-decoration: underline;
+}
 .meta-etiquette svg {
   margin-bottom: -5px;
 }
 .meta-etiquette span {
   font-weight: 600;
+}
+.meta-etiquette__value {
+  font-weight: 400;
 }
 .meta-etiquette strong {
   font-weight: 600;

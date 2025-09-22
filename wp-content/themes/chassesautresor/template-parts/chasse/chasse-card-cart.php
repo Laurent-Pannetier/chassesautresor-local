@@ -15,6 +15,7 @@ if (!isset($args['chasse_id']) || empty($args['chasse_id'])) {
 $chasse_id       = (int) $args['chasse_id'];
 $completion_class = $args['completion_class'] ?? '';
 $infos           = preparer_infos_affichage_carte_chasse($chasse_id);
+$region_principale = $infos['region_principale'] ?? null;
 
 if (empty($infos)) {
     return;
@@ -121,6 +122,22 @@ if ($badge_has_interaction && $badge_tooltip !== '') {
                 <span class="meta-indic__count"><?php echo esc_html(number_format_i18n($infos['nb_joueurs'])); ?></span>
             </button>
         </div>
+        <?php if (!empty($region_principale) && !empty($region_principale['name'])) : ?>
+            <?php
+            $region_name = (string) $region_principale['name'];
+            $region_link = $region_principale['link'] ?? '';
+            ?>
+            <div class="meta-etiquette meta-etiquette--region">
+                <span class="meta-etiquette__label"><?php esc_html_e('Région :', 'chassesautresor-com'); ?></span>
+                <?php if ($region_link !== '') : ?>
+                    <a class="meta-etiquette__link" href="<?php echo esc_url($region_link); ?>">
+                        <?php echo esc_html($region_name); ?>
+                    </a>
+                <?php else : ?>
+                    <span class="meta-etiquette__value"><?php echo esc_html($region_name); ?></span>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
         <div class="meta-etiquette">
             <?php echo get_svg_icon('calendar'); ?>
             <span class="chasse-date-plage">

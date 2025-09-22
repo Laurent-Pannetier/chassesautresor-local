@@ -10,6 +10,7 @@ $completion_class = $args['completion_class'] ?? '';
 $word_limit      = isset($args['word_limit']) ? (int) $args['word_limit'] : 300;
 $infos           = preparer_infos_affichage_carte_chasse($chasse_id, $word_limit);
 $mode_fin        = $infos['mode_fin'] ?? 'automatique';
+$region_principale = $infos['region_principale'] ?? null;
 $title_mode      = $mode_fin === 'automatique'
     ? esc_html__('mode de fin de chasse : automatique', 'chassesautresor-com')
     : esc_html__('mode de fin de chasse : manuelle', 'chassesautresor-com');
@@ -127,6 +128,22 @@ if ($badge_has_interaction && $badge_tooltip !== '') {
                     ?> —
                     <?php echo get_svg_icon('participants'); ?><?php echo esc_html($infos['nb_joueurs_label']); ?>
                 </div>
+                <?php if (!empty($region_principale) && !empty($region_principale['name'])) : ?>
+                    <?php
+                    $region_name = (string) $region_principale['name'];
+                    $region_link = $region_principale['link'] ?? '';
+                    ?>
+                    <div class="meta-etiquette meta-etiquette--region">
+                        <span class="meta-etiquette__label"><?php esc_html_e('Région :', 'chassesautresor-com'); ?></span>
+                        <?php if ($region_link !== '') : ?>
+                            <a class="meta-etiquette__link" href="<?php echo esc_url($region_link); ?>">
+                                <?php echo esc_html($region_name); ?>
+                            </a>
+                        <?php else : ?>
+                            <span class="meta-etiquette__value"><?php echo esc_html($region_name); ?></span>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
                 <div class="meta-etiquette">
                     <?php echo get_svg_icon('calendar'); ?>
                     <span class="chasse-date-plage">
