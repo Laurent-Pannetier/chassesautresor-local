@@ -92,73 +92,91 @@ $results_label = sprintf(
     $initial_results_count
 );
 
+$filters_reset_label = __('Réinitialiser les filtres', 'chassesautresor-com');
+$reset_icon_markup   = function_exists('cta_get_reset_icon_markup')
+    ? cta_get_reset_icon_markup()
+    : '';
+
 ob_start();
 ?>
-<div class="home-hunts__filters">
-    <form
-        class="home-hunts__filters-form"
-        data-home-hunts-filters
-        aria-label="<?php echo esc_attr(__('Filtrer les chasses', 'chassesautresor-com')); ?>"
-    >
-        <div class="home-hunts__filters-group home-hunts__filters-group--status">
-            <label for="home-hunts-status"><?php echo esc_html(__('Statut', 'chassesautresor-com')); ?></label>
-            <select
-                id="home-hunts-status"
-                name="home-hunts-status"
-                data-home-hunts-select="statut"
-                data-default-value="<?php echo esc_attr($default_status_filter); ?>"
-            >
-                <?php foreach ($status_options as $status_value => $status_label) : ?>
-                    <?php
-                    $status_count = $available_status_counts[$status_value] ?? 0;
-                    $status_is_available = ('tous' === $status_value) || ($status_count > 0);
-                    ?>
-                    <option
-                        value="<?php echo esc_attr($status_value); ?>"
-                        data-home-hunts-status-option="<?php echo esc_attr($status_value); ?>"
-                        <?php echo selected($default_status_filter, $status_value, false); ?>
-                        <?php if (!$status_is_available) : ?>hidden disabled<?php endif; ?>
-                    >
-                        <?php echo esc_html($status_label); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-        <fieldset class="home-hunts__filters-group home-hunts__filters-group--cost" data-home-hunts-cost-group>
-            <legend><?php echo esc_html(__('Coût', 'chassesautresor-com')); ?></legend>
-            <?php foreach ($cost_options as $cost_value => $cost_option) : ?>
-                <?php
-                $is_cost_available = in_array($cost_value, $available_cost_values, true);
-                $is_cost_checked  = in_array($cost_value, $default_cost_filters, true);
-                $cost_input_id    = $cost_option['id'] ?? ('home-hunts-cost-' . $cost_value);
-                ?>
-                <div
-                    class="home-hunts__filters-checkbox"
-                    data-home-hunts-cost-option="<?php echo esc_attr($cost_value); ?>"<?php echo $is_cost_available ? '' : ' hidden'; ?>
+<div class="home-hunts__toolbar">
+    <div class="home-hunts__filters">
+        <form
+            class="home-hunts__filters-form"
+            data-home-hunts-filters
+            aria-label="<?php echo esc_attr(__('Filtrer les chasses', 'chassesautresor-com')); ?>"
+        >
+            <div class="home-hunts__filters-group home-hunts__filters-group--status">
+                <label for="home-hunts-status"><?php echo esc_html(__('Statut', 'chassesautresor-com')); ?></label>
+                <select
+                    id="home-hunts-status"
+                    name="home-hunts-status"
+                    data-home-hunts-select="statut"
+                    data-default-value="<?php echo esc_attr($default_status_filter); ?>"
                 >
-                    <input
-                        type="checkbox"
-                        id="<?php echo esc_attr($cost_input_id); ?>"
-                        name="home-hunts-cost[]"
-                        value="<?php echo esc_attr($cost_value); ?>"
-                        data-home-hunts-checkbox="<?php echo esc_attr($cost_value); ?>"
-                        data-default-checked="<?php echo $is_cost_checked ? 'true' : 'false'; ?>"
-                        <?php echo checked($is_cost_checked, true, false); ?>
-                        <?php echo disabled($is_cost_available, false, false); ?>
-                    />
-                    <label for="<?php echo esc_attr($cost_input_id); ?>"><?php echo esc_html($cost_option['label'] ?? ''); ?></label>
-                </div>
-            <?php endforeach; ?>
-        </fieldset>
-        <div class="home-hunts__filters-actions">
-            <button type="reset" class="home-hunts__filters-reset" data-home-hunts-reset><?php echo esc_html(__('Réinitialiser', 'chassesautresor-com')); ?></button>
-            <span class="home-hunts__filters-count" data-home-hunts-count data-default-count="<?php echo esc_attr($initial_results_count); ?>"><?php echo esc_html($results_label); ?></span>
-        </div>
-    </form>
-    <div class="home-hunts__filters-search">
+                    <?php foreach ($status_options as $status_value => $status_label) : ?>
+                        <?php
+                        $status_count        = $available_status_counts[$status_value] ?? 0;
+                        $status_is_available = ('tous' === $status_value) || ($status_count > 0);
+                        ?>
+                        <option
+                            value="<?php echo esc_attr($status_value); ?>"
+                            data-home-hunts-status-option="<?php echo esc_attr($status_value); ?>"
+                            <?php echo selected($default_status_filter, $status_value, false); ?>
+                            <?php if (!$status_is_available) : ?>hidden disabled<?php endif; ?>
+                        >
+                            <?php echo esc_html($status_label); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <fieldset class="home-hunts__filters-group home-hunts__filters-group--cost" data-home-hunts-cost-group>
+                <legend><?php echo esc_html(__('Coût', 'chassesautresor-com')); ?></legend>
+                <?php foreach ($cost_options as $cost_value => $cost_option) : ?>
+                    <?php
+                    $is_cost_available = in_array($cost_value, $available_cost_values, true);
+                    $is_cost_checked  = in_array($cost_value, $default_cost_filters, true);
+                    $cost_input_id    = $cost_option['id'] ?? ('home-hunts-cost-' . $cost_value);
+                    ?>
+                    <div
+                        class="home-hunts__filters-checkbox"
+                        data-home-hunts-cost-option="<?php echo esc_attr($cost_value); ?>"<?php echo $is_cost_available ? '' : ' hidden'; ?>
+                    >
+                        <input
+                            type="checkbox"
+                            id="<?php echo esc_attr($cost_input_id); ?>"
+                            name="home-hunts-cost[]"
+                            value="<?php echo esc_attr($cost_value); ?>"
+                            data-home-hunts-checkbox="<?php echo esc_attr($cost_value); ?>"
+                            data-default-checked="<?php echo $is_cost_checked ? 'true' : 'false'; ?>"
+                            <?php echo checked($is_cost_checked, true, false); ?>
+                            <?php echo disabled($is_cost_available, false, false); ?>
+                        />
+                        <label for="<?php echo esc_attr($cost_input_id); ?>"><?php echo esc_html($cost_option['label'] ?? ''); ?></label>
+                    </div>
+                <?php endforeach; ?>
+            </fieldset>
+            <div class="home-hunts__filters-actions">
+                <button
+                    type="reset"
+                    class="home-hunts__filters-reset"
+                    data-home-hunts-reset
+                    aria-label="<?php echo esc_attr($filters_reset_label); ?>"
+                >
+                    <?php if ($reset_icon_markup) : ?>
+                        <span class="home-hunts__filters-reset-icon" aria-hidden="true">
+                            <?php echo $reset_icon_markup; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                        </span>
+                    <?php endif; ?>
+                </button>
+                <span class="home-hunts__filters-count" data-home-hunts-count data-default-count="<?php echo esc_attr($initial_results_count); ?>"><?php echo esc_html($results_label); ?></span>
+            </div>
+        </form>
+    </div>
+    <div class="home-hunts__search">
         <?php
         echo cta_render_search_form('home-hunts', [
-            'class'             => 'table-search--inline table-search--compact',
+            'class'             => 'home-hunts__search-form table-search--inline table-search--compact',
             'label'             => '',
             'placeholder'       => __('Rechercher une chasse', 'chassesautresor-com'),
             'submit_icon'       => 'search',

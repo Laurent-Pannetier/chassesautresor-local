@@ -997,6 +997,10 @@ body.woocommerce h2 {
     line-height: 1;
 }
 
+.myaccount-tentatives .table-search__reset-icon {
+    display: none;
+}
+
 .myaccount-tentatives .table-search__reset:hover,
 .myaccount-tentatives .table-search__reset:focus {
     color: var(--color-white);
@@ -1008,17 +1012,7 @@ body.woocommerce h2 {
     border-radius: 999px;
 }
 
-.myaccount-tentatives .table-search__reset-text {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-}
+
 
 .tentatives-table th:nth-child(2),
 .tentatives-table td:nth-child(2),
