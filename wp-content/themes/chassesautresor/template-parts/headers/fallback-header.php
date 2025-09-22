@@ -17,14 +17,22 @@ if ( ! isset( $args ) || ! is_array( $args ) ) {
     return;
 }
 
-$titre       = isset( $args['titre'] ) ? wp_kses_post( $args['titre'] ) : '';
-$sous_titre  = isset( $args['sous_titre'] ) ? esc_html( $args['sous_titre'] ) : '';
-$image_url   = isset( $args['image_fond'] ) ? esc_url( $args['image_fond'] ) : '';
-$logo_id     = isset( $args['logo_id'] ) ? absint( $args['logo_id'] ) : 0;
+$titre           = isset( $args['titre'] ) ? wp_kses_post( $args['titre'] ) : '';
+$sous_titre      = isset( $args['sous_titre'] ) ? esc_html( $args['sous_titre'] ) : '';
+$image_url       = isset( $args['image_fond'] ) ? esc_url( $args['image_fond'] ) : '';
+$logo_id         = isset( $args['logo_id'] ) ? absint( $args['logo_id'] ) : 0;
+$overlay_classes = [ 'hero-overlay' ];
+$inline_style    = '';
+
+if ( $image_url ) {
+    $inline_style = sprintf( ' style="background-image: url(\'%s\');"', $image_url );
+} else {
+    $overlay_classes[] = 'hero-overlay--default';
+}
 ?>
 
 <section class="bandeau-hero fallback-header">
-  <div class="hero-overlay" <?php if ( $image_url ) : ?>style="background-image: url('<?php echo $image_url; ?>');"<?php endif; ?>>
+  <div class="<?php echo esc_attr( implode( ' ', $overlay_classes ) ); ?>"<?php echo $inline_style; ?>>
     <div class="contenu-hero">
       <?php if ( $logo_id ) : ?>
         <?php echo wp_get_attachment_image( $logo_id, 'full', false, [ 'class' => 'hero-logo' ] ); ?>

@@ -226,14 +226,35 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
             echo '</div>';
         }
     } elseif ( is_page() && ! is_user_account_area() ) {
-        $image_id  = get_post_thumbnail_id();
-        $image_url = $image_id ? imagify_get_webp_url( wp_get_attachment_image_url( $image_id, 'full' ) ) : '';
+        $image_id     = get_post_thumbnail_id();
+        $fallback_url = function_exists( 'get_theme_file_uri' )
+            ? get_theme_file_uri( 'assets/images/carte-surchargee.jpg' )
+            : '';
+        $image_url    = '';
 
-        get_header_fallback([
-            'titre'       => get_the_title(),
-            'sous_titre'  => '',
-            'image_fond'  => $image_url,
-        ]);
+        if ( $image_id ) {
+            $image_url = wp_get_attachment_image_url( $image_id, 'full' );
+
+            if ( $image_url && function_exists( 'imagify_get_webp_url' ) ) {
+                $webp_url = imagify_get_webp_url( $image_url );
+
+                if ( $webp_url ) {
+                    $image_url = $webp_url;
+                }
+            }
+        }
+
+        if ( ! $image_url ) {
+            $image_url = $fallback_url;
+        }
+
+        get_header_fallback(
+            [
+                'titre'      => get_the_title(),
+                'sous_titre' => '',
+                'image_fond' => $image_url,
+            ]
+        );
     }
     
     astra_content_before();
