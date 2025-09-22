@@ -43,10 +43,45 @@
     countElement.dataset.template = countElement.textContent || '';
   }
 
-  const defaultCountValue = countElement
-    ? parseInt(countElement.dataset.defaultCount || '', 10)
-    : null;
+  function normalizeCount(value) {
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      return Math.max(0, Math.trunc(value));
+    }
+
+    if (typeof value === 'string') {
+      const trimmed = value.trim();
+
+      if (trimmed.length === 0) {
+        return null;
+      }
+
+      const cleaned = trimmed.replace(/[^0-9]/gu, '');
+
+      if (cleaned.length === 0) {
+        return null;
+      }
+
+      const parsed = parseInt(cleaned, 10);
+
+      if (Number.isFinite(parsed)) {
+        return Math.max(0, parsed);
+      }
+    }
+
+    return null;
+  }
+
+  let defaultCountValue = countElement ? normalizeCount(countElement.dataset.defaultCount || '') : null;
   const defaultTemplate = countElement ? countElement.dataset.template || '' : '';
+
+  if (countElement && defaultCountValue === null) {
+    const existingCount = normalizeCount(countElement.dataset.count || countElement.textContent || '');
+
+    if (existingCount !== null) {
+      defaultCountValue = existingCount;
+      countElement.dataset.defaultCount = String(defaultCountValue);
+    }
+  }
 
   if (resetButton && resetLabel) {
     resetButton.setAttribute('aria-label', resetLabel);
@@ -200,7 +235,7 @@
       return;
     }
 
-    let value = typeof total === 'number' && Number.isFinite(total) ? Math.max(0, Math.trunc(total)) : null;
+    let value = normalizeCount(total);
 
     if (null === value) {
       value = Number.isFinite(defaultCountValue) ? Math.max(0, Math.trunc(defaultCountValue)) : null;
@@ -449,7 +484,7 @@
       replaceHunts('');
     }
 
-    const totalValue = typeof payload.total === 'number' ? payload.total : null;
+    const totalValue = normalizeCount(payload.total);
 
     if (totalValue !== null) {
       updateCount(totalValue);
@@ -636,6 +671,10 @@
     searchInput.addEventListener('input', () => {
       toggleSearchReset(getSearchTerm() !== '');
     });
+  }
+
+  if (countElement && defaultCountValue !== null) {
+    updateCount(defaultCountValue);
   }
 
   toggleSearchReset(getSearchTerm() !== '');
