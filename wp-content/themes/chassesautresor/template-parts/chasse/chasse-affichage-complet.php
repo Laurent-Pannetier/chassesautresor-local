@@ -446,11 +446,11 @@ if ($edition_active && !$est_complet) {
               </span>
             </div>
 
-            <?php if (!empty($infos_chasse['region_principale']) && !empty($infos_chasse['region_principale']['name'])) : ?>
+            <?php if (!empty($infos_chasse['region_principale']) && !empty($infos_chasse['region_principale']['nom'])) : ?>
               <?php
               $region_main = $infos_chasse['region_principale'];
-              $region_main_name = (string) $region_main['name'];
-              $region_main_link = $region_main['link'] ?? '';
+              $region_main_name = (string) $region_main['nom'];
+              $region_main_link = $region_main['lien'] ?? '';
               ?>
               <div class="caracteristique caracteristique-region">
                 <span class="caracteristique-icone" aria-hidden="true">📍</span>
