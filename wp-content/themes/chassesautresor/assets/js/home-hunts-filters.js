@@ -230,6 +230,21 @@
     return `${formatNumber(countValue)} ${countValue > 1 ? pluralWord : singularWord}`;
   }
 
+  function setCountVisibility(isVisible) {
+    if (!countElement) {
+      return;
+    }
+
+    if (isVisible) {
+      countElement.hidden = false;
+      countElement.removeAttribute('aria-hidden');
+      return;
+    }
+
+    countElement.hidden = true;
+    countElement.setAttribute('aria-hidden', 'true');
+  }
+
   function updateCount(total, allowFallback = true) {
     if (!countElement) {
       return;
@@ -246,11 +261,13 @@
       if (countElement.dataset) {
         delete countElement.dataset.count;
       }
+      setCountVisibility(false);
       return;
     }
 
     countElement.textContent = formatCountLabel(value);
     countElement.dataset.count = String(value);
+    setCountVisibility(true);
   }
 
   function clearHunts() {
