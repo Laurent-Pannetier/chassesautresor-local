@@ -228,7 +228,7 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
     } elseif ( is_page() && ! is_user_account_area() ) {
         $image_id     = get_post_thumbnail_id();
         $fallback_url = function_exists( 'get_theme_file_uri' )
-            ? get_theme_file_uri( 'assets/images/carte-surchargee.jpg' )
+            ? get_theme_file_uri( 'assets/images/institutionnels.webp' )
             : '';
         $image_url    = '';
 
