@@ -61,6 +61,7 @@
   const isEnglishLocale = locale.startsWith('en');
 
   let currentController = null;
+  let userModifiedCostFilters = false;
 
   function getLatestNonce() {
     if (root.dataset && typeof root.dataset.nonce === 'string' && root.dataset.nonce.length > 0) {
@@ -275,6 +276,31 @@
     return Array.from(form.querySelectorAll('[data-home-hunts-checkbox]'));
   }
 
+  const defaultCostSelectionValues = new Set(
+    getCostControls()
+      .filter((checkbox) =>
+        checkbox
+        && checkbox.dataset
+        && checkbox.dataset.defaultChecked === 'true')
+      .map((checkbox) => checkbox.value)
+  );
+
+  const defaultCostSelectionCoversAll = (() => {
+    const availableValues = getCostControls()
+      .filter((checkbox) => checkbox && checkbox.disabled !== true)
+      .map((checkbox) => checkbox.value);
+
+    if (availableValues.length === 0) {
+      return true;
+    }
+
+    return availableValues.every((value) => defaultCostSelectionValues.has(value));
+  })();
+
+  if (!defaultCostSelectionCoversAll) {
+    userModifiedCostFilters = true;
+  }
+
   function updateStatusOptions(availableStatuses, normalizedStatus) {
     const select = getStatusControl();
 
@@ -411,14 +437,18 @@
     }
 
     const costControls = getCostControls();
-    const selectedCosts = costControls.filter((checkbox) => checkbox.checked).map((checkbox) => checkbox.value);
+    if (userModifiedCostFilters) {
+      const selectedCosts = costControls
+        .filter((checkbox) => checkbox.checked)
+        .map((checkbox) => checkbox.value);
 
-    if (selectedCosts.length > 0) {
-      selectedCosts.forEach((value) => {
-        data.append('cost[]', value);
-      });
-    } else {
-      data.append('cost[]', '');
+      if (selectedCosts.length > 0) {
+        selectedCosts.forEach((value) => {
+          data.append('cost[]', value);
+        });
+      } else {
+        data.append('cost[]', '');
+      }
     }
 
     data.append('search', getSearchTerm());
@@ -562,6 +592,10 @@
       return;
     }
 
+    if (control.hasAttribute('data-home-hunts-checkbox')) {
+      userModifiedCostFilters = true;
+    }
+
     submitFilters();
   }
 
@@ -581,6 +615,8 @@
         checkbox.checked = checkbox.dataset.defaultChecked === 'true';
       }
     });
+
+    userModifiedCostFilters = !defaultCostSelectionCoversAll;
 
     resetSearchTerm();
   }
