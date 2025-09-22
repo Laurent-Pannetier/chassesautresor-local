@@ -17,6 +17,98 @@
     return;
   }
 
+  const toolbar = root.querySelector('[data-home-hunts-toolbar]');
+  const toolbarToggles = toolbar ? Array.from(toolbar.querySelectorAll('[data-home-hunts-toggle]')) : [];
+  const toolbarPanels = {
+    filters: toolbar ? toolbar.querySelector('[data-home-hunts-panel="filters"]') : null,
+    search: toolbar ? toolbar.querySelector('[data-home-hunts-panel="search"]') : null,
+  };
+  const desktopQuery = typeof window.matchMedia === 'function'
+    ? window.matchMedia('(min-width: 1024px)')
+    : null;
+
+  function isDesktopViewport() {
+    return desktopQuery ? desktopQuery.matches : true;
+  }
+
+  let currentMobilePanel = null;
+
+  function updateToolbarPanels(nextPanel) {
+    if (!toolbar || toolbarToggles.length === 0) {
+      return;
+    }
+
+    const normalized = nextPanel === 'filters' || nextPanel === 'search' ? nextPanel : null;
+    const isDesktop = isDesktopViewport();
+
+    toolbarToggles.forEach((button) => {
+      const toggleName = button.dataset ? button.dataset.homeHuntsToggle : '';
+      const shouldExpand = !isDesktop && toggleName === normalized;
+      button.setAttribute('aria-expanded', shouldExpand ? 'true' : 'false');
+    });
+
+    Object.keys(toolbarPanels).forEach((panelName) => {
+      const panel = toolbarPanels[panelName];
+
+      if (!panel) {
+        return;
+      }
+
+      if (isDesktop) {
+        panel.dataset.collapsed = 'false';
+        panel.removeAttribute('aria-hidden');
+        return;
+      }
+
+      const isActive = panelName === normalized;
+      panel.dataset.collapsed = isActive ? 'false' : 'true';
+
+      if (isActive) {
+        panel.removeAttribute('aria-hidden');
+      } else {
+        panel.setAttribute('aria-hidden', 'true');
+      }
+    });
+
+    if (!isDesktop) {
+      currentMobilePanel = normalized;
+    }
+  }
+
+  if (toolbar && toolbarToggles.length > 0) {
+    toolbar.classList.add('home-hunts__toolbar--enhanced');
+    updateToolbarPanels(currentMobilePanel);
+
+    const handleViewportChange = () => {
+      updateToolbarPanels(currentMobilePanel);
+    };
+
+    if (desktopQuery) {
+      if (typeof desktopQuery.addEventListener === 'function') {
+        desktopQuery.addEventListener('change', handleViewportChange);
+      } else if (typeof desktopQuery.addListener === 'function') {
+        desktopQuery.addListener(handleViewportChange);
+      }
+    }
+
+    toolbarToggles.forEach((button) => {
+      button.addEventListener('click', () => {
+        if (isDesktopViewport()) {
+          return;
+        }
+
+        const targetPanel = button.dataset ? button.dataset.homeHuntsToggle : '';
+
+        if (!targetPanel) {
+          return;
+        }
+
+        const isExpanded = button.getAttribute('aria-expanded') === 'true';
+        updateToolbarPanels(isExpanded ? null : targetPanel);
+      });
+    });
+  }
+
   const localized = window.homeHuntsFilters || {};
   const endpoint = typeof localized.ajaxUrl === 'string' ? localized.ajaxUrl : '';
   const labels = localized.labels && typeof localized.labels === 'object' ? localized.labels : {};

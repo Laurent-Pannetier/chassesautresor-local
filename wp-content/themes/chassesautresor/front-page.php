@@ -92,15 +92,54 @@ $results_label = sprintf(
     $initial_results_count
 );
 
-$filters_reset_label = __('Réinitialiser les filtres', 'chassesautresor-com');
-$reset_icon_markup   = function_exists('cta_get_reset_icon_markup')
+$filters_reset_label       = __('Réinitialiser les filtres', 'chassesautresor-com');
+$reset_icon_markup         = function_exists('cta_get_reset_icon_markup')
     ? cta_get_reset_icon_markup()
+    : '';
+$filters_toggle_label      = __('Afficher les filtres', 'chassesautresor-com');
+$search_toggle_label       = __('Afficher la recherche', 'chassesautresor-com');
+$filter_toggle_icon_markup = '<svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">'
+    . '<path fill="currentColor" d="M4 5a1 1 0 0 1 1-1h14a1 1 0 0 1 .78 1.63l-5.58 6.7a1 1 0 0 0-.22.63v4.54a1 1 0 0 1-.55.9l-3 1.5A1 1 0 0 1 9 19.5v-5.54a1 1 0 0 0-.22-.63L3.2 6.63A1 1 0 0 1 4 5Z" />'
+    . '</svg>';
+$search_toggle_icon_markup = function_exists('cta_get_table_search_submit_icon_markup')
+    ? cta_get_table_search_submit_icon_markup('search')
     : '';
 
 ob_start();
 ?>
-<div class="home-hunts__toolbar">
-    <div class="home-hunts__filters">
+<div class="home-hunts__toolbar" data-home-hunts-toolbar>
+    <div class="home-hunts__toolbar-toggles">
+        <button
+            type="button"
+            class="home-hunts__toolbar-toggle"
+            data-home-hunts-toggle="filters"
+            aria-controls="home-hunts-filters-panel"
+            aria-expanded="false"
+        >
+            <span class="home-hunts__toolbar-toggle-icon" aria-hidden="true">
+                <?php echo $filter_toggle_icon_markup; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+            </span>
+            <span class="screen-reader-text"><?php echo esc_html($filters_toggle_label); ?></span>
+        </button>
+        <button
+            type="button"
+            class="home-hunts__toolbar-toggle"
+            data-home-hunts-toggle="search"
+            aria-controls="home-hunts-search-panel"
+            aria-expanded="false"
+        >
+            <span class="home-hunts__toolbar-toggle-icon" aria-hidden="true">
+                <?php echo $search_toggle_icon_markup; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+            </span>
+            <span class="screen-reader-text"><?php echo esc_html($search_toggle_label); ?></span>
+        </button>
+    </div>
+    <div
+        class="home-hunts__panel home-hunts__filters"
+        data-home-hunts-panel="filters"
+        id="home-hunts-filters-panel"
+        data-collapsed="false"
+    >
         <form
             class="home-hunts__filters-form"
             data-home-hunts-filters
@@ -182,7 +221,12 @@ ob_start();
             </div>
         </form>
     </div>
-    <div class="home-hunts__search">
+    <div
+        class="home-hunts__panel home-hunts__search"
+        data-home-hunts-panel="search"
+        id="home-hunts-search-panel"
+        data-collapsed="false"
+    >
         <?php
         echo cta_render_search_form('home-hunts', [
             'class'             => 'home-hunts__search-form table-search--inline table-search--compact',
