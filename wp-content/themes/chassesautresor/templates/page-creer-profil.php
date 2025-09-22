@@ -39,11 +39,20 @@ if (!$profile_state['complete']) {
 }
 
 myaccount_remove_persistent_message($current_user_id, 'profil_incomplet');
+$request_status = cat_get_organisateur_request_status($current_user_id);
 $verification_message = __(
     'Un email de confirmation vous a été envoyé. '
     . "Cliquez sur le lien qu'il contient pour valider la création de votre profil organisateur.",
     'chassesautresor-com'
 );
+
+if ($request_status['expired']) {
+    $verification_message = sprintf(
+        '%s %s',
+        __('Votre précédente demande avait expiré.', 'chassesautresor-com'),
+        $verification_message
+    );
+}
 
 // 2. Si un profil existe déjà, on n'effectue plus de redirection automatique
 // vers l'espace organisateur. Le bouton principal se charge de guider
@@ -69,8 +78,7 @@ if (isset($_GET['resend'])) {
     exit;
 }
 
-$token = get_user_meta($current_user_id, 'organisateur_demande_token', true);
-if ($token) {
+if (!empty($request_status['token'])) {
     myaccount_add_persistent_message(
         $current_user_id,
         'profil_verification',

@@ -17,5 +17,13 @@
 3. Vérifiez que le message d’alerte a disparu et que le CTA indique « Créer mon profil » avec le lien d’origine.
 4. Accédez à `/creer-mon-profil/` et confirmez que la demande est envoyée (mail de confirmation, redirection vers « Devenir organisateur »…).
 
+## Cas 3 : demande de création expirée
+1. Après avoir généré une demande (Cas 2), forcez son expiration en positionnant la métadonnée `organisateur_demande_date` à une valeur antérieure de plus de 48 heures :
+   ```bash
+   wp user meta update <USER_ID> organisateur_demande_date "2023-01-01 00:00:00"
+   ```
+2. Rechargez « Devenir organisateur » et vérifiez qu’un message informe de l’expiration et que le CTA redevient « Créer mon profil ».
+3. Retournez sur `/creer-mon-profil/` et confirmez qu’un nouvel email est envoyé automatiquement et que le message persistant précise que l’ancienne demande avait expiré.
+
 ## Nettoyage
 - Supprimez le message persistant via la mise à jour du profil si nécessaire.
