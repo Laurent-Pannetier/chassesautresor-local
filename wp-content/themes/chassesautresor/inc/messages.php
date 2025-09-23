@@ -92,6 +92,14 @@ function add_site_message(
     }
 
     if (session_status() !== PHP_SESSION_ACTIVE) {
+        if (headers_sent($file, $line)) {
+            $fileInfo = is_string($file) && $file !== '' ? $file : 'unknown';
+            $lineInfo = is_numeric($line) ? (string) $line : 'unknown';
+            error_log(sprintf('[add_site_message] headers already sent (%s:%s), skipping session storage.', $fileInfo, $lineInfo));
+
+            return;
+        }
+
         session_start();
     }
 
