@@ -387,6 +387,43 @@ a.chasse-badge.chasse-badge--region:focus-visible {
 .meta-regular .meta-indic__count {
     font-weight: 600;
 }
+
+.chasse-fiche-container > .meta-row {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    width: 100%;
+}
+
+.chasse-fiche-container > .meta-row .meta-regular {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    flex-shrink: 0;
+}
+
+.chasse-fiche-container > .meta-row .meta-etiquette {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xxs);
+    flex-shrink: 0;
+}
+
+.chasse-fiche-container > .meta-row .meta-indic {
+    gap: var(--space-xxs);
+    white-space: nowrap;
+}
+
+.chasse-fiche-container > .meta-row .meta-indic__count {
+    font-variant-numeric: tabular-nums;
+}
+
+.chasse-fiche-container > .meta-row .chasse-date-plage {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xxs);
+    white-space: nowrap;
+}
 .chasse-details-wrapper .bloc-metas-inline {
     margin: var(--space-xl) 0;
     color: white;

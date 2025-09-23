@@ -1921,6 +1921,66 @@ function chasse_is_list(array $array): bool
     return array_keys($array) === range(0, count($array) - 1);
 }
 
+/**
+ * Prépare les représentations courtes des dates d'une chasse.
+ *
+ * @param string|null $start_date Date de début brute.
+ * @param string|null $end_date   Date de fin brute.
+ * @param bool        $is_unlimited Indique si la chasse est illimitée.
+ *
+ * @return array{date_debut_court: string, date_fin_court: string}
+ */
+function chasse_preparer_dates_courtes(?string $start_date, ?string $end_date, bool $is_unlimited): array
+{
+    $start_value = $start_date !== null ? (string) $start_date : null;
+    $end_value   = $end_date !== null ? (string) $end_date : null;
+
+    $start_timestamp = false;
+    if ($start_value !== null && $start_value !== '') {
+        if (function_exists('convertir_en_timestamp')) {
+            $start_timestamp = convertir_en_timestamp($start_value);
+        } else {
+            $start_timestamp = strtotime(str_replace('/', '-', $start_value));
+        }
+    }
+
+    $end_timestamp = false;
+    if (!$is_unlimited && $end_value !== null && $end_value !== '') {
+        if (function_exists('convertir_en_timestamp')) {
+            $end_timestamp = convertir_en_timestamp($end_value);
+        } else {
+            $end_timestamp = strtotime(str_replace('/', '-', $end_value));
+        }
+    }
+
+    if (function_exists('_x')) {
+        /* translators: Short date format for hunt metadata (day/month/year). */
+        $short_date_format = _x('d/m/y', 'short date format for hunts', 'chassesautresor-com');
+    } else {
+        $short_date_format = 'd/m/y';
+    }
+
+    $non_specifiee_label = function_exists('__')
+        ? __('Non spécifiée', 'chassesautresor-com')
+        : 'Non spécifiée';
+    $illimitee_label = function_exists('__')
+        ? __('Illimitée', 'chassesautresor-com')
+        : 'Illimitée';
+
+    $start_short = $start_timestamp
+        ? wp_date($short_date_format, $start_timestamp)
+        : $non_specifiee_label;
+
+    $end_short = $is_unlimited
+        ? $illimitee_label
+        : ($end_timestamp ? wp_date($short_date_format, $end_timestamp) : $non_specifiee_label);
+
+    return [
+        'date_debut_court' => $start_short,
+        'date_fin_court'   => $end_short,
+    ];
+}
+
 function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit = 300, array $options = []): array
 {
     if (get_post_type($chasse_id) !== 'chasse') {
@@ -2034,14 +2094,9 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
         ? __('Illimitée', 'chassesautresor-com')
         : ($date_fin ? formater_date($date_fin) : __('Non spécifiée', 'chassesautresor-com'));
 
-    $timestamp_debut = convertir_en_timestamp($date_debut);
-    $timestamp_fin   = (!$illimitee && $date_fin) ? convertir_en_timestamp($date_fin) : false;
-    $date_debut_court = $timestamp_debut
-        ? wp_date('d/m/y', $timestamp_debut)
-        : __('Non spécifiée', 'chassesautresor-com');
-    $date_fin_court   = $illimitee
-        ? __('Illimitée', 'chassesautresor-com')
-        : ($timestamp_fin ? wp_date('d/m/y', $timestamp_fin) : __('Non spécifiée', 'chassesautresor-com'));
+    $dates_courtes    = chasse_preparer_dates_courtes($date_debut, $date_fin, (bool) $illimitee);
+    $date_debut_court = $dates_courtes['date_debut_court'];
+    $date_fin_court   = $dates_courtes['date_fin_court'];
 
     $nb_joueurs       = compter_joueurs_engages_chasse($chasse_id);
     $nb_joueurs_label = formater_nombre_joueurs($nb_joueurs);
@@ -2261,6 +2316,33 @@ function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): 
     $themes = chasse_preparer_termes_affichage($chasse_id, 'theme_chasse');
     $region_principale = !empty($regions) ? $regions[0] : null;
 
+    $raw_start_date   = $champs['date_debut'] ?? null;
+    $raw_end_date     = $champs['date_fin'] ?? null;
+    $raw_discovery    = $champs['date_decouverte'] ?? null;
+    $is_unlimited     = !empty($champs['illimitee']);
+    $status_value     = get_field('chasse_cache_statut', $chasse_id) ?: 'revision';
+    $status_validation = get_field('chasse_cache_statut_validation', $chasse_id);
+
+    if ($status_value === 'termine' && !empty($raw_discovery)) {
+        $raw_end_date = $raw_discovery;
+    }
+
+    $start_date_value = null;
+    if (is_string($raw_start_date) && $raw_start_date !== '') {
+        $start_date_value = $raw_start_date;
+    } elseif (is_numeric($raw_start_date)) {
+        $start_date_value = (string) $raw_start_date;
+    }
+
+    $end_date_value = null;
+    if (is_string($raw_end_date) && $raw_end_date !== '') {
+        $end_date_value = $raw_end_date;
+    } elseif (is_numeric($raw_end_date)) {
+        $end_date_value = (string) $raw_end_date;
+    }
+
+    $dates_courtes = chasse_preparer_dates_courtes($start_date_value, $end_date_value, (bool) $is_unlimited);
+
     $description   = get_field('chasse_principale_description', $chasse_id);
     $texte_complet = wp_strip_all_tags($description);
     $extrait       = wp_trim_words($texte_complet, 60, '...');
@@ -2323,11 +2405,13 @@ function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): 
             'nb'      => $top_nb,
             'enigmes' => $top_enigmes,
         ],
-        'statut'            => get_field('chasse_cache_statut', $chasse_id) ?: 'revision',
-        'statut_validation' => get_field('chasse_cache_statut_validation', $chasse_id),
+        'statut'            => $status_value,
+        'statut_validation' => $status_validation,
         'regions'           => $regions,
         'themes'            => $themes,
         'region_principale' => $region_principale,
+        'date_debut_court'  => $dates_courtes['date_debut_court'],
+        'date_fin_court'    => $dates_courtes['date_fin_court'],
     ];
 
     $cache[$user_id] = $memo[$memo_key];
