@@ -92,16 +92,6 @@ if ($badge_has_interaction && $badge_tooltip !== '') {
     $badge_attributes .= ' role="img" tabindex="0"';
 }
 
-$organisateur_logo_url = $infos['organisateur_logo_url'] ?? '';
-$organisateur_nom = $infos['organisateur_nom'] ?? '';
-$organisateur_logo_alt = __('Logo de l\'organisateur', 'chassesautresor-com');
-
-if ($organisateur_nom !== '') {
-    $organisateur_logo_alt = sprintf(
-        __('Logo de %s', 'chassesautresor-com'),
-        sanitize_text_field($organisateur_nom)
-    );
-}
 ?>
 <div class="carte carte-chasse carte-cart <?php echo esc_attr(trim($infos['classe_statut'] . ' ' . $completion_class)); ?>">
     <a href="<?php echo esc_url($infos['permalink']); ?>" class="carte-cart__lien">
@@ -121,25 +111,4 @@ if ($organisateur_nom !== '') {
             <?php echo $infos['lot_html']; ?>
         </div>
     </a>
-    <div class="carte-cart__footer svg-xsmall">
-        <?php if ($organisateur_logo_url !== '') : ?>
-            <div class="carte-cart__footer-organisateur">
-                <img
-                    class="carte-cart__organisateur-logo"
-                    src="<?php echo esc_url($organisateur_logo_url); ?>"
-                    alt="<?php echo esc_attr($organisateur_logo_alt); ?>"
-                    loading="lazy"
-                    width="48"
-                    height="48"
-                />
-            </div>
-        <?php endif; ?>
-        <div class="carte-cart__footer-dates meta-etiquette">
-            <?php echo get_svg_icon('calendar'); ?>
-            <span class="chasse-date-plage">
-                <span class="date-debut"><?php echo esc_html($infos['date_debut_court']); ?></span> –
-                <span class="date-fin"><?php echo esc_html($infos['date_fin_court']); ?></span>
-            </span>
-        </div>
-    </div>
 </div>

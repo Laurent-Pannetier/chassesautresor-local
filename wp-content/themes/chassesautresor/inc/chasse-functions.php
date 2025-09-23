@@ -1995,9 +1995,6 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
     $image_ratio_padding = '';
 
     $organisateur_id = get_organisateur_from_chasse($chasse_id);
-    $organisateur_logo_id = 0;
-    $organisateur_logo_url = '';
-    $organisateur_nom = '';
 
     if ($image_width > 0 && $image_height > 0) {
         $image_ratio = $image_width . ' / ' . $image_height;
@@ -2008,34 +2005,6 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
             $image_ratio_padding = rtrim(rtrim(sprintf('%.6F', $ratio_padding_value), '0'), '.');
             if ($image_ratio_padding !== '') {
                 $image_ratio_padding .= '%';
-            }
-        }
-    }
-
-    if ($organisateur_id) {
-        $organisateur_nom = get_the_title($organisateur_id);
-
-        $logo_field = get_field('logo_organisateur', $organisateur_id, false);
-
-        if (!empty($logo_field)) {
-            if (is_array($logo_field)) {
-                $organisateur_logo_id = (int) reset($logo_field);
-            } else {
-                $organisateur_logo_id = (int) $logo_field;
-            }
-        }
-
-        if ($organisateur_logo_id > 0) {
-            $logo_data = wp_get_attachment_image_src($organisateur_logo_id, 'thumbnail');
-            if (is_array($logo_data) && !empty($logo_data[0])) {
-                $organisateur_logo_url = (string) $logo_data[0];
-            }
-        }
-
-        if ($organisateur_logo_url === '') {
-            $fallback_logo = wp_get_attachment_image_src(3927, 'thumbnail');
-            if (is_array($fallback_logo) && !empty($fallback_logo[0])) {
-                $organisateur_logo_url = (string) $fallback_logo[0];
             }
         }
     }
@@ -2240,9 +2209,6 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
         'themes'            => $themes,
         'region_principale' => $region_principale,
         'organisateur_id'   => $organisateur_id,
-        'organisateur_logo_id' => $organisateur_logo_id,
-        'organisateur_logo_url' => $organisateur_logo_url,
-        'organisateur_nom'  => $organisateur_nom,
     ];
 
     if (!empty($progression['resolvables'])) {
