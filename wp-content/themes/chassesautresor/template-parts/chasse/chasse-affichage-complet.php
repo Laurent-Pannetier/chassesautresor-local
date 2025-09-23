@@ -331,20 +331,69 @@ if ($edition_active && !$est_complet) {
         </div>
       <?php endif; ?>
 
-      <div class="meta-row svg-xsmall">
+      <?php
+      $total_enigmes_formatted     = number_format_i18n((int) $total_enigmes);
+      $total_enigmes_for_plural    = $total_enigmes === 1 ? 1 : (int) $total_enigmes;
+      $label_total_enigmes         = sprintf(
+          _n('%s énigme', '%s énigmes', $total_enigmes_for_plural, 'chassesautresor-com'),
+          $total_enigmes_formatted
+      );
+      $nb_joueurs_formatted        = number_format_i18n((int) $nb_joueurs);
+      $nb_joueurs_for_plural       = $nb_joueurs === 1 ? 1 : (int) $nb_joueurs;
+      $label_nb_joueurs            = sprintf(
+          _n('%s joueur', '%s joueurs', $nb_joueurs_for_plural, 'chassesautresor-com'),
+          $nb_joueurs_formatted
+      );
+      $date_debut_courte           = (string) ($infos_chasse['date_debut_court'] ?? '');
+      $date_fin_courte             = (string) ($infos_chasse['date_fin_court'] ?? '');
+
+      if ($date_debut_courte === '') {
+          $date_debut_courte = __('Non spécifiée', 'chassesautresor-com');
+      }
+
+      if ($date_fin_courte === '') {
+          $date_fin_courte = __('Non spécifiée', 'chassesautresor-com');
+      }
+
+      if ($illimitee) {
+          $date_plage_title = __('Durée illimitée', 'chassesautresor-com');
+      } elseif (!empty($date_debut) && !empty($date_fin)) {
+          /* translators: %1$s: start date, %2$s: end date. */
+          $date_plage_title = sprintf(__('Du %1$s au %2$s', 'chassesautresor-com'), $date_debut_formatee, $date_fin_formatee);
+      } elseif (!empty($date_debut)) {
+          /* translators: %s: start date. */
+          $date_plage_title = sprintf(__('À partir du %s', 'chassesautresor-com'), $date_debut_formatee);
+      } elseif (!empty($date_fin)) {
+          /* translators: %s: end date. */
+          $date_plage_title = sprintf(__('Jusqu\'au %s', 'chassesautresor-com'), $date_fin_formatee);
+      } else {
+          $date_plage_title = __('Dates non spécifiées', 'chassesautresor-com');
+      }
+      ?>
+      <div class="meta-row svg-xsmall meta-row--headline">
         <div class="meta-regular">
-          <?php echo get_svg_icon('enigme'); ?>
-          <?= esc_html(sprintf(_n('%d énigme', '%d énigmes', $total_enigmes, 'chassesautresor-com'), $total_enigmes)); ?> —
-          <?php echo get_svg_icon('participants'); ?>
-          <?= esc_html(sprintf(_n('%d joueur', '%d joueurs', $nb_joueurs, 'chassesautresor-com'), $nb_joueurs)); ?>
+          <span class="meta-indic meta-indic--static">
+            <?php echo get_svg_icon('enigme'); ?>
+            <span class="meta-indic__count" aria-hidden="true"><?= esc_html($total_enigmes_formatted); ?></span>
+            <span class="screen-reader-text"><?= esc_html($label_total_enigmes); ?></span>
+          </span>
+          <span class="meta-indic meta-indic--static">
+            <?php echo get_svg_icon('participants'); ?>
+            <span class="meta-indic__count" aria-hidden="true"><?= esc_html($nb_joueurs_formatted); ?></span>
+            <span class="screen-reader-text"><?= esc_html($label_nb_joueurs); ?></span>
+          </span>
         </div>
         <div class="meta-etiquette">
           <?php echo get_svg_icon('calendar'); ?>
-          <span class="chasse-date-plage">
-            <span class="date-debut"><?= esc_html($date_debut_formatee); ?></span> –
-            <span class="date-fin"><?= esc_html($date_fin_formatee); ?></span>
+          <span
+            class="chasse-date-plage"
+            title="<?= esc_attr($date_plage_title); ?>"
+            aria-label="<?= esc_attr($date_plage_title); ?>"
+          >
+            <span class="date-debut"><?= esc_html($date_debut_courte); ?></span>
+            <span class="date-separator" aria-hidden="true">–</span>
+            <span class="date-fin"><?= esc_html($date_fin_courte); ?></span>
           </span>
-
         </div>
       </div>
 

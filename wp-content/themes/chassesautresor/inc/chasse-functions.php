@@ -2034,12 +2034,16 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
 
     $timestamp_debut = convertir_en_timestamp($date_debut);
     $timestamp_fin   = (!$illimitee && $date_fin) ? convertir_en_timestamp($date_fin) : false;
+
+    /* translators: Short date format for hunt metadata (day/month/year). */
+    $short_date_format = _x('d/m/y', 'short date format for hunts', 'chassesautresor-com');
+
     $date_debut_court = $timestamp_debut
-        ? wp_date('d/m/y', $timestamp_debut)
+        ? wp_date($short_date_format, $timestamp_debut)
         : __('Non spécifiée', 'chassesautresor-com');
     $date_fin_court   = $illimitee
         ? __('Illimitée', 'chassesautresor-com')
-        : ($timestamp_fin ? wp_date('d/m/y', $timestamp_fin) : __('Non spécifiée', 'chassesautresor-com'));
+        : ($timestamp_fin ? wp_date($short_date_format, $timestamp_fin) : __('Non spécifiée', 'chassesautresor-com'));
 
     $nb_joueurs       = compter_joueurs_engages_chasse($chasse_id);
     $nb_joueurs_label = formater_nombre_joueurs($nb_joueurs);
