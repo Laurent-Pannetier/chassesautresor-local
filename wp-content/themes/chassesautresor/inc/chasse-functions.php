@@ -1994,6 +1994,8 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
     $image_ratio = '';
     $image_ratio_padding = '';
 
+    $organisateur_id = get_organisateur_from_chasse($chasse_id);
+
     if ($image_width > 0 && $image_height > 0) {
         $image_ratio = $image_width . ' / ' . $image_height;
 
@@ -2206,6 +2208,7 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
         'regions'           => $regions,
         'themes'            => $themes,
         'region_principale' => $region_principale,
+        'organisateur_id'   => $organisateur_id,
     ];
 
     if (!empty($progression['resolvables'])) {

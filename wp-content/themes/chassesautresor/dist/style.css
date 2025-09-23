@@ -205,15 +205,6 @@
 .carte-cart .carte-cart__titre {
   margin: 0 0 var(--space-xs);
 }
-.carte-cart .carte-cart__footer {
-  padding: 0 var(--space-md) var(--space-md);
-  font-size: 0.875rem;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: var(--space-sm);
-  flex-wrap: nowrap;
-}
 
 /* ========== 🎁 Récompense dans les cartes compactes ========== */
 .carte-compact .chasse-lot,
