@@ -344,8 +344,24 @@ if ($edition_active && !$est_complet) {
           _n('%s joueur', '%s joueurs', $nb_joueurs_for_plural, 'chassesautresor-com'),
           $nb_joueurs_formatted
       );
-      $date_debut_courte           = (string) ($infos_chasse['date_debut_court'] ?? '');
-      $date_fin_courte             = (string) ($infos_chasse['date_fin_court'] ?? '');
+      $date_debut_courte = (string) ($infos_chasse['date_debut_court'] ?? '');
+      $date_fin_courte   = (string) ($infos_chasse['date_fin_court'] ?? '');
+
+      if ($date_debut_courte === '' || $date_fin_courte === '') {
+          $dates_courtes_fallback = chasse_preparer_dates_courtes(
+              is_string($date_debut) && $date_debut !== '' ? $date_debut : (is_numeric($date_debut) ? (string) $date_debut : null),
+              is_string($date_fin) && $date_fin !== '' ? $date_fin : (is_numeric($date_fin) ? (string) $date_fin : null),
+              !empty($illimitee)
+          );
+
+          if ($date_debut_courte === '') {
+              $date_debut_courte = $dates_courtes_fallback['date_debut_court'];
+          }
+
+          if ($date_fin_courte === '') {
+              $date_fin_courte = $dates_courtes_fallback['date_fin_court'];
+          }
+      }
 
       if ($date_debut_courte === '') {
           $date_debut_courte = __('Non spécifiée', 'chassesautresor-com');
