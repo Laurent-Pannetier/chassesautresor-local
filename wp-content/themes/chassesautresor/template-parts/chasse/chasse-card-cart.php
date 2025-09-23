@@ -92,8 +92,16 @@ if ($badge_has_interaction && $badge_tooltip !== '') {
     $badge_attributes .= ' role="img" tabindex="0"';
 }
 
-$regions_links = chasse_format_meta_terms($infos['regions'] ?? null);
-$themes_links = chasse_format_meta_terms($infos['themes'] ?? null);
+$organisateur_logo_url = $infos['organisateur_logo_url'] ?? '';
+$organisateur_nom = $infos['organisateur_nom'] ?? '';
+$organisateur_logo_alt = __('Logo de l\'organisateur', 'chassesautresor-com');
+
+if ($organisateur_nom !== '') {
+    $organisateur_logo_alt = sprintf(
+        __('Logo de %s', 'chassesautresor-com'),
+        sanitize_text_field($organisateur_nom)
+    );
+}
 ?>
 <div class="carte carte-chasse carte-cart <?php echo esc_attr(trim($infos['classe_statut'] . ' ' . $completion_class)); ?>">
     <a href="<?php echo esc_url($infos['permalink']); ?>" class="carte-cart__lien">
@@ -110,44 +118,23 @@ $themes_links = chasse_format_meta_terms($infos['themes'] ?? null);
         </div>
         <div class="carte-cart__contenu">
             <h3 class="carte-cart__titre"><?php echo esc_html($infos['titre']); ?></h3>
-            <?php if (!empty($regions_links) || !empty($themes_links)) : ?>
-                <div class="bloc-metas-inline bloc-metas-inline--compact">
-                    <?php if (!empty($regions_links)) : ?>
-                        <?php
-                        $regions_label = _n('Région :', 'Régions :', count($regions_links), 'chassesautresor-com');
-                        ?>
-                        <div class="meta-etiquette meta-etiquette--regions">
-                            <span><?php echo esc_html($regions_label); ?></span>
-                            <?php echo wp_kses_post(implode(', ', $regions_links)); ?>
-                        </div>
-                    <?php endif; ?>
-
-                    <?php if (!empty($themes_links)) : ?>
-                        <?php
-                        $themes_label = _n('Thème :', 'Thèmes :', count($themes_links), 'chassesautresor-com');
-                        ?>
-                        <div class="meta-etiquette meta-etiquette--themes">
-                            <span><?php echo esc_html($themes_label); ?></span>
-                            <?php echo wp_kses_post(implode(', ', $themes_links)); ?>
-                        </div>
-                    <?php endif; ?>
-                </div>
-            <?php endif; ?>
             <?php echo $infos['lot_html']; ?>
         </div>
     </a>
-    <div class="carte-cart__footer meta-row svg-xsmall">
-        <div class="meta-regular">
-            <button type="button" class="meta-indic" data-tap="<?= esc_attr__('nombre d\'énigmes', 'chassesautresor-com'); ?>">
-                <?php echo get_svg_icon('enigme'); ?>
-                <span class="meta-indic__count"><?php echo esc_html(number_format_i18n($infos['total_enigmes'])); ?></span>
-            </button>
-            <button type="button" class="meta-indic" data-tap="<?= esc_attr__('nombre de joueurs', 'chassesautresor-com'); ?>">
-                <?php echo get_svg_icon('participants'); ?>
-                <span class="meta-indic__count"><?php echo esc_html(number_format_i18n($infos['nb_joueurs'])); ?></span>
-            </button>
-        </div>
-        <div class="meta-etiquette">
+    <div class="carte-cart__footer svg-xsmall">
+        <?php if ($organisateur_logo_url !== '') : ?>
+            <div class="carte-cart__footer-organisateur">
+                <img
+                    class="carte-cart__organisateur-logo"
+                    src="<?php echo esc_url($organisateur_logo_url); ?>"
+                    alt="<?php echo esc_attr($organisateur_logo_alt); ?>"
+                    loading="lazy"
+                    width="48"
+                    height="48"
+                />
+            </div>
+        <?php endif; ?>
+        <div class="carte-cart__footer-dates meta-etiquette">
             <?php echo get_svg_icon('calendar'); ?>
             <span class="chasse-date-plage">
                 <span class="date-debut"><?php echo esc_html($infos['date_debut_court']); ?></span> –
