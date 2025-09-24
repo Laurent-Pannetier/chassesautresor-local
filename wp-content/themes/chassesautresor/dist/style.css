@@ -1326,19 +1326,6 @@ a.chasse-badge.chasse-badge--region:focus-visible {
   color: var(--color-gris-3);
 }
 
-.caracteristique-region__link,
-.caracteristique-region__text {
-  color: inherit;
-  font-weight: 600;
-}
-
-.caracteristique-region__link {
-  text-decoration: none;
-}
-.caracteristique-region__link:hover, .caracteristique-region__link:focus-visible {
-  text-decoration: underline;
-}
-
 .meta-regular .meta-indic {
   background: none;
   border: none;
