@@ -429,12 +429,22 @@ function get_header_fallback($args = []) {
  * @param array $classes Classes actuelles du body.
  * @return array
  */
-function ajouter_class_has_hero_si_header_fallback( $classes ) {
-    if ( is_front_page() || ( is_page() && ! is_user_account_area() ) ) {
+function ajouter_class_has_hero_si_header_fallback(array $classes): array
+{
+    $is_account_area = function_exists('is_user_account_area') ? is_user_account_area() : false;
+    $is_organisation_page = function_exists('myaccount_is_organisation_page') ? myaccount_is_organisation_page() : false;
+
+    if ($is_account_area || $is_organisation_page) {
+        $classes = array_diff($classes, ['has-hero']);
+
+        return array_values(array_unique($classes));
+    }
+
+    if (is_front_page() || is_page()) {
         $classes[] = 'has-hero';
     }
 
-    return $classes;
+    return array_values(array_unique($classes));
 }
 add_filter( 'body_class', 'ajouter_class_has_hero_si_header_fallback' );
 
