@@ -19,6 +19,9 @@ $peut_editer_cout  = champ_est_editable('caracteristiques.chasse_infos_cout_poin
 
 $infos_chasse = $args['infos_chasse'] ?? preparer_infos_affichage_chasse($chasse_id);
 
+$enigme_ids = recuperer_ids_enigmes_pour_chasse($chasse_id);
+$nombre_enigmes = count($enigme_ids);
+
 $image_id   = $infos_chasse['image_id'] ?? null;
 $image_url  = $image_id ? wp_get_attachment_image_src($image_id, 'thumbnail')[0] : null;
 $description = $infos_chasse['description'];
@@ -45,6 +48,29 @@ $illimitee  = $infos_chasse['champs']['illimitee'];
 $nb_max     = $infos_chasse['champs']['nb_max'] ?? 1;
 $mode_fin   = $infos_chasse['champs']['mode_fin'] ?? 'automatique';
 $statut_metier = $infos_chasse['statut'] ?? 'revision';
+
+$statut_wp     = get_post_status($chasse_id);
+$statut_cache  = get_post_meta($chasse_id, 'chasse_cache_statut', true);
+$current_user  = wp_get_current_user();
+$current_roles = (array) $current_user->roles;
+$roles_autorises = [];
+if (defined('ROLE_ORGANISATEUR')) {
+    $roles_autorises[] = ROLE_ORGANISATEUR;
+} else {
+    $roles_autorises[] = 'organisateur';
+}
+if (defined('ROLE_ORGANISATEUR_CREATION')) {
+    $roles_autorises[] = ROLE_ORGANISATEUR_CREATION;
+} else {
+    $roles_autorises[] = 'organisateur_creation';
+}
+
+$utilisateur_associe = utilisateur_est_organisateur_associe_a_chasse(get_current_user_id(), $chasse_id);
+$peut_supprimer_chasse = $utilisateur_associe
+    && !empty(array_intersect($current_roles, $roles_autorises))
+    && $statut_metier === 'revision'
+    && $statut_cache === 'revision'
+    && $statut_wp === 'pending';
 
 $champTitreParDefaut = 'nouvelle chasse'; // À adapter si besoin
 $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut);
@@ -885,6 +911,17 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
     ?>
 
       <div class="edition-panel-footer">
+        <?php if ($peut_supprimer_chasse) : ?>
+          <button
+            type="button"
+            id="bouton-supprimer-chasse"
+            class="bouton-secondaire"
+            data-chasse-id="<?= esc_attr($chasse_id); ?>"
+            data-enigmes-count="<?= esc_attr($nombre_enigmes); ?>"
+          >
+            <?= esc_html__('Supprimer la chasse', 'chassesautresor-com'); ?>
+          </button>
+        <?php endif; ?>
         <?php if (current_user_can('administrator')) : ?>
           <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="admin-validation-actions form-traitement-validation-chasse">
             <?php wp_nonce_field('validation_admin_' . $chasse_id, 'validation_admin_nonce'); ?>

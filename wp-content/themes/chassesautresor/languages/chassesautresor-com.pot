@@ -3032,3 +3032,23 @@ msgstr ""
 #: inc/user-functions.php:1444
 msgid "Unable to load attempts. Please try again."
 msgstr ""
+
+#: template-parts/chasse/chasse-edition-main.php:922
+msgid "Supprimer la chasse"
+msgstr ""
+
+#: assets/js/chasse-edit.js:207
+msgid "Voulez-vous vraiment supprimer cette chasse et toutes ses énigmes ?"
+msgstr ""
+
+#: assets/js/chasse-edit.js:208
+msgid "Voulez-vous vraiment supprimer cette chasse ?"
+msgstr ""
+
+#: assets/js/chasse-edit.js:242
+msgid "Une erreur est survenue lors de la suppression de la chasse."
+msgstr ""
+
+#: inc/edition/edition-chasse.php:784
+msgid "Votre chasse a été supprimée. Vous pouvez en créer une nouvelle quand vous le souhaitez."
+msgstr ""

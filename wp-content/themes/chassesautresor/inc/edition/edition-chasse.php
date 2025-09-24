@@ -725,3 +725,69 @@ function definir_date_fin_par_defaut($post_id, $post)
   }
 }
 add_action('save_post_chasse', 'definir_date_fin_par_defaut', 10, 2);
+
+add_action('wp_ajax_supprimer_chasse', 'supprimer_chasse_ajax');
+
+/**
+ * Supprime une chasse en attente ainsi que ses énigmes associées.
+ */
+function supprimer_chasse_ajax(): void
+{
+    if (!is_user_logged_in()) {
+        wp_send_json_error('non_connecte');
+    }
+
+    $chasse_id = isset($_POST['chasse_id']) ? (int) $_POST['chasse_id'] : 0;
+    if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
+        wp_send_json_error('id_invalide');
+    }
+
+    if (get_post_status($chasse_id) !== 'pending') {
+        wp_send_json_error('chasse_ineligible');
+    }
+
+    if (get_post_meta($chasse_id, 'chasse_cache_statut', true) !== 'revision') {
+        wp_send_json_error('chasse_ineligible');
+    }
+
+    $user_id = get_current_user_id();
+    if (!$user_id || !utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
+        wp_send_json_error('acces_refuse');
+    }
+
+    $enigme_ids = array_map('intval', recuperer_ids_enigmes_pour_chasse($chasse_id));
+
+    foreach ($enigme_ids as $enigme_id) {
+        if ($enigme_id <= 0) {
+            continue;
+        }
+
+        wp_trash_post($enigme_id);
+
+        if (function_exists('supprimer_dossier_enigme')) {
+            supprimer_dossier_enigme($enigme_id);
+        }
+    }
+
+    if (function_exists('synchroniser_cache_enigmes_chasse')) {
+        synchroniser_cache_enigmes_chasse($chasse_id, true, true);
+    }
+
+    $trashed = wp_trash_post($chasse_id);
+    if (!$trashed) {
+        wp_send_json_error('erreur_suppression');
+    }
+
+    if (function_exists('myaccount_add_flash_message')) {
+        myaccount_add_flash_message(
+            $user_id,
+            __('Votre chasse a été supprimée. Vous pouvez en créer une nouvelle quand vous le souhaitez.', 'chassesautresor-com'),
+            'success',
+            true
+        );
+    }
+
+    wp_send_json_success([
+        'redirect' => home_url('/mon-compte/organisateurs/'),
+    ]);
+}
