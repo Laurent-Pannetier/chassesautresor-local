@@ -35,6 +35,13 @@ $resolvables = is_array($progression) ? (int) ($progression['resolvables'] ?? 0)
 $resolues_validables = isset($infos['resolues_validables']) ? (int) $infos['resolues_validables'] : 0;
 $lot_html = $infos['lot_html'] ?? '';
 $has_reward = $lot_html !== '';
+$lot_wrapper_classes = 'carte-compact__lot';
+
+if ($has_reward) {
+    $lot_wrapper_classes .= ' carte-compact__lot--filled';
+} else {
+    $lot_wrapper_classes .= ' carte-compact__lot--empty';
+}
 ?>
 <div class="carte-compact-card">
     <div class="carte carte-chasse carte-compact <?php echo esc_attr($infos['classe_statut']); ?>">
@@ -47,11 +54,11 @@ $has_reward = $lot_html !== '';
             </div>
             <div class="carte-compact__contenu">
                 <h3 class="carte-compact__titre"><?php echo esc_html($infos['titre']); ?></h3>
-                <?php if ($has_reward) : ?>
-                    <?php echo $lot_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- contenu préparé et sécurisé en amont. ?>
-                <?php else : ?>
-                    <div class="carte-compact__lot-placeholder" aria-hidden="true"></div>
-                <?php endif; ?>
+                <div class="<?php echo esc_attr($lot_wrapper_classes); ?>"<?php if (!$has_reward) : ?> aria-hidden="true"<?php endif; ?>>
+                    <?php if ($has_reward) : ?>
+                        <?php echo $lot_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- contenu préparé et sécurisé en amont. ?>
+                    <?php endif; ?>
+                </div>
                 <?php
                 get_template_part(
                     'template-parts/chasse/partials/chasse-meta-row',

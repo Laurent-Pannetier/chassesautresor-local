@@ -64,6 +64,7 @@
 }
 
 .carte-compact {
+  --carte-compact-lot-height: 2.5rem;
   width: 100%;
   padding: 0;
   overflow: hidden;
@@ -96,6 +97,16 @@
   flex-grow: 1;
   gap: var(--space-sm);
   padding: var(--space-md);
+}
+.carte-compact .carte-compact__lot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--carte-compact-lot-height);
+}
+.carte-compact .carte-compact__lot--empty {
+  visibility: hidden;
+  pointer-events: none;
 }
 .carte-compact .carte-compact__titre {
   margin: 0;
@@ -235,10 +246,6 @@
   width: 20px;
   height: 20px;
   color: var(--color-grey-light);
-}
-
-.carte-compact__lot-placeholder {
-  min-height: 1.75rem;
 }
 
 /* ========== 🌟 Carte mise en avant ========== */
