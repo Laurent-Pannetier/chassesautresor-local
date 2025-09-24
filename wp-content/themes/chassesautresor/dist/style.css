@@ -237,6 +237,10 @@
   color: var(--color-grey-light);
 }
 
+.carte-compact__lot-placeholder {
+  min-height: 1.75rem;
+}
+
 /* ========== 🌟 Carte mise en avant ========== */
 .carte-featured {
   position: relative;
