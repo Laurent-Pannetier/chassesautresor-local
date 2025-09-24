@@ -39,6 +39,26 @@ msgstr "Accueil Plein Ecran"
 msgid "Français"
 msgstr "Français"
 
+#: template-parts/chasse/chasse-edition-main.php:922
+msgid "Supprimer la chasse"
+msgstr "Supprimer la chasse"
+
+#: assets/js/chasse-edit.js:207
+msgid "Voulez-vous vraiment supprimer cette chasse et toutes ses énigmes ?"
+msgstr "Voulez-vous vraiment supprimer cette chasse et toutes ses énigmes ?"
+
+#: assets/js/chasse-edit.js:208
+msgid "Voulez-vous vraiment supprimer cette chasse ?"
+msgstr "Voulez-vous vraiment supprimer cette chasse ?"
+
+#: assets/js/chasse-edit.js:242
+msgid "Une erreur est survenue lors de la suppression de la chasse."
+msgstr "Une erreur est survenue lors de la suppression de la chasse."
+
+#: inc/edition/edition-chasse.php:784
+msgid "Votre chasse a été supprimée. Vous pouvez en créer une nouvelle quand vous le souhaitez."
+msgstr "Votre chasse a été supprimée. Vous pouvez en créer une nouvelle quand vous le souhaitez."
+
 #: functions.php:119
 msgid "English"
 msgstr "Anglais"

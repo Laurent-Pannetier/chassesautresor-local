@@ -77,6 +77,14 @@ function mettreAJourMessageDate() {
 window.calculerMessageDate = calculerMessageDate;
 window.mettreAJourMessageDate = mettreAJourMessageDate;
 
+const translateChasseEdit = (msg) => {
+  const i18n = window.wp && window.wp.i18n;
+  if (i18n && typeof i18n.__ === 'function') {
+    return i18n.__(msg, 'chassesautresor-com');
+  }
+  return msg;
+};
+
 function rafraichirCarteIndices() {
   const card = document.querySelector('.dashboard-card.champ-indices');
   if (!card || !window.ChasseIndices) return;
@@ -181,6 +189,66 @@ window.rafraichirCarteSolutions = rafraichirCarteSolutions;
   inputDateFin?.addEventListener('change', mettreAJourCaracteristiqueDate);
   toggleDateDebut?.addEventListener('change', mettreAJourCaracteristiqueDate);
   toggleDateFin?.addEventListener('change', mettreAJourCaracteristiqueDate);
+
+  const panelEdition = document.querySelector('.edition-panel-chasse');
+  const boutonSupprimer = panelEdition?.querySelector('#bouton-supprimer-chasse');
+
+  if (boutonSupprimer) {
+    boutonSupprimer.addEventListener('click', () => {
+      const chasseId = boutonSupprimer.dataset.chasseId;
+      if (!chasseId) {
+        return;
+      }
+
+      const enigmesCount = parseInt(boutonSupprimer.dataset.enigmesCount || '0', 10);
+      const hasEnigmes = !Number.isNaN(enigmesCount) && enigmesCount > 0;
+
+      const confirmationMessage = hasEnigmes
+        ? translateChasseEdit('Voulez-vous vraiment supprimer cette chasse et toutes ses énigmes ?')
+        : translateChasseEdit('Voulez-vous vraiment supprimer cette chasse ?');
+
+      if (!window.confirm(confirmationMessage)) {
+        return;
+      }
+
+      const ajaxUrl = window.ajaxurl || (window.ChasseIndices && window.ChasseIndices.ajaxUrl) || '';
+      if (!ajaxUrl) {
+        return;
+      }
+
+      const zoneErreur = panelEdition?.querySelector('#erreur-global');
+      if (zoneErreur) {
+        zoneErreur.style.display = 'none';
+        zoneErreur.textContent = '';
+      }
+
+      const fd = new FormData();
+      fd.append('action', 'supprimer_chasse');
+      fd.append('chasse_id', chasseId);
+
+      fetch(ajaxUrl, {
+        method: 'POST',
+        credentials: 'same-origin',
+        body: fd,
+      })
+        .then((response) => response.json())
+        .then((resultat) => {
+          if (!resultat?.success || !resultat.data?.redirect) {
+            throw new Error('invalid');
+          }
+          window.location.href = resultat.data.redirect;
+        })
+        .catch(() => {
+          const messageErreur = translateChasseEdit('Une erreur est survenue lors de la suppression de la chasse.');
+          if (zoneErreur) {
+            zoneErreur.textContent = messageErreur;
+            zoneErreur.style.display = 'block';
+          } else {
+            window.alert(messageErreur);
+          }
+        });
+    });
+  }
 
   // ==============================
   // 🟢 Initialisation des champs
