@@ -78,9 +78,13 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
     // ==================================================
     // 🧩 HEADER VISUEL (selon contexte)
     // ==================================================
+    $is_account_area      = function_exists( 'is_user_account_area' ) ? is_user_account_area() : false;
+    $is_organisation_page = function_exists( 'myaccount_is_organisation_page' ) ? myaccount_is_organisation_page() : false;
+    $should_hide_hero     = $is_account_area || $is_organisation_page;
+
     if ( is_cart() ) {
         get_template_part('template-parts/header-panier');
-    } elseif ( is_front_page() ) {
+    } elseif ( is_front_page() && ! $should_hide_hero ) {
         $image_url = imagify_get_webp_url( wp_get_attachment_image_url( 8810, 'full' ) );
 
         $line1 = sprintf(
@@ -225,7 +229,7 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
 
             echo '</div>';
         }
-    } elseif ( is_page() && ! is_user_account_area() ) {
+    } elseif ( is_page() && ! $should_hide_hero ) {
         $image_id     = get_post_thumbnail_id();
         $fallback_url = function_exists( 'get_theme_file_uri' )
             ? get_theme_file_uri( 'assets/images/institutionnels.webp' )
