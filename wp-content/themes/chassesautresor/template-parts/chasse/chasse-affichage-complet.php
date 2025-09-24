@@ -511,25 +511,6 @@ if ($edition_active && !$est_complet) {
               </span>
             </div>
 
-            <?php if (!empty($infos_chasse['region_principale']) && !empty($infos_chasse['region_principale']['nom'])) : ?>
-              <?php
-              $region_main = $infos_chasse['region_principale'];
-              $region_main_name = (string) $region_main['nom'];
-              $region_main_link = $region_main['lien'] ?? '';
-              ?>
-              <div class="caracteristique caracteristique-region">
-                <span class="caracteristique-icone" aria-hidden="true">📍</span>
-                <span class="caracteristique-label"><?= esc_html__('Région', 'chassesautresor-com'); ?></span>
-                <span class="caracteristique-valeur">
-                  <?php if ($region_main_link !== '') : ?>
-                    <a class="caracteristique-region__link" href="<?= esc_url($region_main_link); ?>"><?= esc_html($region_main_name); ?></a>
-                  <?php else : ?>
-                    <span class="caracteristique-region__text"><?= esc_html($region_main_name); ?></span>
-                  <?php endif; ?>
-                </span>
-              </div>
-            <?php endif; ?>
-
             <?php if ($top_avances['nb'] > 0 && $top_avances['enigmes'] > 0) : ?>
               <?php
               $txt_top = sprintf(
