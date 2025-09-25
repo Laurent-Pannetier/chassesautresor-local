@@ -707,6 +707,33 @@
     transition: opacity 0.2s ease;
 }
 
+.myaccount-recommended-hunts {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    padding: var(--space-lg);
+    border-radius: 12px;
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+}
+
+.myaccount-recommended-hunts .myaccount-placeholder,
+.myaccount-recommended-hunts-intro {
+    margin: 0;
+    text-align: center;
+    color: hsl(var(--muted-foreground));
+}
+
+.myaccount-chasses-recommandees-grid {
+    gap: var(--space-lg);
+}
+
+.myaccount-recommended-hunts-cta {
+    align-self: stretch;
+    text-align: center;
+    justify-content: center;
+}
+
 .myaccount-chasses-engagees.engaged-hunts-loading .myaccount-chasses-engagees-content {
     opacity: 0.6;
     pointer-events: none;
@@ -714,6 +741,21 @@
 
 .myaccount-chasses-engagees-grid {
     gap: var(--space-3xl);
+}
+
+@media (--bp-tablet) {
+    .myaccount-recommended-hunts {
+        padding: var(--space-xl);
+    }
+
+    .myaccount-chasses-recommandees-grid {
+        gap: var(--space-2xl);
+    }
+
+    .myaccount-recommended-hunts-cta {
+        align-self: center;
+        min-width: 260px;
+    }
 }
 
 .myaccount-section-header {
