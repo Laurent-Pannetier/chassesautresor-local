@@ -117,6 +117,7 @@ $can_create_hunt = function_exists('utilisateur_peut_ajouter_chasse')
                 'mode'        => 'carte',
                 'grid_class'  => 'cards-grid myaccount-organisation-hunts-grid',
                 'chasse_ids'  => $chasse_ids,
+                'show_progression' => false,
             )
         );
         ?>
