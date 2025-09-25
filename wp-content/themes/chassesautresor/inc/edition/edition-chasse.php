@@ -729,6 +729,41 @@ add_action('save_post_chasse', 'definir_date_fin_par_defaut', 10, 2);
 add_action('wp_ajax_supprimer_chasse', 'supprimer_chasse_ajax');
 
 /**
+ * Envoie une chasse et ses contenus liés à la corbeille WordPress.
+ */
+function chasse_trash_with_children(int $chasse_id): bool
+{
+    $enigme_ids = array_map('intval', recuperer_ids_enigmes_pour_chasse($chasse_id));
+
+    foreach ($enigme_ids as $enigme_id) {
+        if ($enigme_id <= 0) {
+            continue;
+        }
+
+        wp_trash_post($enigme_id);
+
+        if (function_exists('supprimer_dossier_enigme')) {
+            supprimer_dossier_enigme($enigme_id);
+        }
+    }
+
+    if (function_exists('synchroniser_cache_enigmes_chasse')) {
+        synchroniser_cache_enigmes_chasse($chasse_id, true, true);
+    }
+
+    if (function_exists('get_attached_media')) {
+        $attachments = get_attached_media('image', $chasse_id);
+        foreach ($attachments as $attachment) {
+            if (is_object($attachment) && isset($attachment->ID)) {
+                wp_trash_post((int) $attachment->ID);
+            }
+        }
+    }
+
+    return (bool) wp_trash_post($chasse_id);
+}
+
+/**
  * Supprime une chasse en attente ainsi que ses énigmes associées.
  */
 function supprimer_chasse_ajax(): void
@@ -755,26 +790,7 @@ function supprimer_chasse_ajax(): void
         wp_send_json_error('acces_refuse');
     }
 
-    $enigme_ids = array_map('intval', recuperer_ids_enigmes_pour_chasse($chasse_id));
-
-    foreach ($enigme_ids as $enigme_id) {
-        if ($enigme_id <= 0) {
-            continue;
-        }
-
-        wp_trash_post($enigme_id);
-
-        if (function_exists('supprimer_dossier_enigme')) {
-            supprimer_dossier_enigme($enigme_id);
-        }
-    }
-
-    if (function_exists('synchroniser_cache_enigmes_chasse')) {
-        synchroniser_cache_enigmes_chasse($chasse_id, true, true);
-    }
-
-    $trashed = wp_trash_post($chasse_id);
-    if (!$trashed) {
+    if (!chasse_trash_with_children($chasse_id)) {
         wp_send_json_error('erreur_suppression');
     }
 

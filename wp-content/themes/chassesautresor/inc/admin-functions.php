@@ -2061,16 +2061,9 @@ function traiter_validation_chasse_admin() {
         }
 
     } elseif ($action === 'supprimer') {
-        foreach ($enigmes as $eid) {
-            wp_delete_post($eid, true);
+        if (!chasse_trash_with_children($chasse_id)) {
+            wp_die(__('Impossible de supprimer la chasse.', 'chassesautresor-com'));
         }
-
-        $images = get_attached_media('image', $chasse_id);
-        foreach ($images as $attachment) {
-            wp_delete_attachment($attachment->ID, true);
-        }
-
-        wp_trash_post($chasse_id);
 
         envoyer_mail_chasse_supprimee($organisateur_id, $chasse_id);
 
