@@ -1181,7 +1181,11 @@ function ca_render_recommended_hunts_empty_state(): string
 
     $recommended_query = new WP_Query($query_args);
 
-    $catalog_url = apply_filters('ca_recommended_hunts_catalog_url', home_url('/chasses/'));
+    $catalog_url = apply_filters(
+        'ca_recommended_hunts_catalog_url',
+        home_url('/'),
+        '/'
+    );
 
     ob_start();
     ?>
