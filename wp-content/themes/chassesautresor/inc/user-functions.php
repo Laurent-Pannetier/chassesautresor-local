@@ -1249,7 +1249,7 @@ function ca_render_dashboard_engaged_hunts(): void
     $is_admin     = current_user_can('administrator');
     $is_organizer = function_exists('est_organisateur') && est_organisateur($user_id);
 
-    if (!$is_player || $is_admin || $is_organizer) {
+    if (!$is_player || $is_admin) {
         return;
     }
 
