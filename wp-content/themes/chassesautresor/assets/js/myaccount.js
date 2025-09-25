@@ -15,6 +15,14 @@ document.addEventListener('DOMContentLoaded', () => {
   let outsideClickHandler = null;
   let keydownHandler = null;
 
+  const initRecommendedSlider = (root = document) => {
+    if (window.caRecommendedSlider && typeof window.caRecommendedSlider.init === 'function') {
+      window.caRecommendedSlider.init(root);
+    }
+  };
+
+  initRecommendedSlider(document);
+
   const setSidebarExpanded = (isOpen) => {
     if (!sidebarToggle) {
       return;
@@ -178,6 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
         siteMessages.innerHTML = messages;
       }
       content.innerHTML = data.data.html;
+      initRecommendedSlider(content);
       decorateMessages();
       fadeFlash();
       document

@@ -10303,6 +10303,102 @@ footer .site-footer-primary-section-3 {
   transition: opacity 0.2s ease;
 }
 
+.myaccount-recommended-hunts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  padding: var(--space-lg);
+  border-radius: 12px;
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+}
+
+.myaccount-recommended-hunts .myaccount-placeholder,
+.myaccount-recommended-hunts-intro {
+  margin: 0;
+  text-align: center;
+  color: hsl(var(--muted-foreground));
+}
+
+.myaccount-recommended-slider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.recommended-slider__viewport {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  border-radius: 10px;
+  scroll-snap-type: x mandatory;
+}
+
+.recommended-slider__track {
+  display: flex;
+  width: 100%;
+  min-height: 100%;
+  transition: transform 0.4s ease;
+  will-change: transform;
+}
+
+.recommended-slider__slide {
+  flex: 0 0 100%;
+  scroll-snap-align: center;
+}
+
+.recommended-slider__slide-inner {
+  display: flex;
+  width: 100%;
+  padding: 0 var(--space-xs);
+}
+
+.recommended-slider__slide-inner > * {
+  width: 100%;
+}
+
+.recommended-slider__control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-size: 1.25rem;
+  line-height: 1;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.recommended-slider__control span {
+  pointer-events: none;
+}
+
+.recommended-slider__control:hover,
+.recommended-slider__control:focus-visible {
+  background: hsl(var(--card));
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary));
+}
+
+.recommended-slider__control:focus-visible {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+}
+
+.recommended-slider__control:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.myaccount-recommended-hunts-cta {
+  align-self: stretch;
+  text-align: center;
+  justify-content: center;
+}
+
 .myaccount-chasses-engagees.engaged-hunts-loading .myaccount-chasses-engagees-content {
   opacity: 0.6;
   pointer-events: none;
@@ -10312,6 +10408,23 @@ footer .site-footer-primary-section-3 {
   gap: var(--space-3xl);
 }
 
+@media (min-width: 768px) {
+  .myaccount-recommended-hunts {
+    padding: var(--space-xl);
+  }
+  .myaccount-recommended-slider {
+    gap: var(--space-md);
+  }
+  .recommended-slider__control {
+    width: 48px;
+    height: 48px;
+    font-size: 1.5rem;
+  }
+  .myaccount-recommended-hunts-cta {
+    align-self: center;
+    min-width: 260px;
+  }
+}
 .myaccount-section-header {
   display: flex;
   flex-wrap: wrap;

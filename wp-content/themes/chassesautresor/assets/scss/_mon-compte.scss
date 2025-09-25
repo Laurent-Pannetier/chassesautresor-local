@@ -724,8 +724,77 @@
     color: hsl(var(--muted-foreground));
 }
 
-.myaccount-chasses-recommandees-grid {
-    gap: var(--space-lg);
+.myaccount-recommended-slider {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.recommended-slider__viewport {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+    border-radius: 10px;
+    scroll-snap-type: x mandatory;
+}
+
+.recommended-slider__track {
+    display: flex;
+    width: 100%;
+    min-height: 100%;
+    transition: transform 0.4s ease;
+    will-change: transform;
+}
+
+.recommended-slider__slide {
+    flex: 0 0 100%;
+    scroll-snap-align: center;
+}
+
+.recommended-slider__slide-inner {
+    display: flex;
+    width: 100%;
+    padding: 0 var(--space-xs);
+}
+
+.recommended-slider__slide-inner > * {
+    width: 100%;
+}
+
+.recommended-slider__control {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-size: 1.25rem;
+    line-height: 1;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.recommended-slider__control span {
+    pointer-events: none;
+}
+
+.recommended-slider__control:hover,
+.recommended-slider__control:focus-visible {
+    background: hsl(var(--card));
+    border-color: hsl(var(--primary));
+    color: hsl(var(--primary));
+}
+
+.recommended-slider__control:focus-visible {
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 2px;
+}
+
+.recommended-slider__control:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
 }
 
 .myaccount-recommended-hunts-cta {
@@ -748,8 +817,14 @@
         padding: var(--space-xl);
     }
 
-    .myaccount-chasses-recommandees-grid {
-        gap: var(--space-2xl);
+    .myaccount-recommended-slider {
+        gap: var(--space-md);
+    }
+
+    .recommended-slider__control {
+        width: 48px;
+        height: 48px;
+        font-size: 1.5rem;
     }
 
     .myaccount-recommended-hunts-cta {

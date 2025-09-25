@@ -95,6 +95,9 @@
 
         if (typeof data.html === 'string') {
           container.innerHTML = data.html;
+          if (window.caRecommendedSlider && typeof window.caRecommendedSlider.init === 'function') {
+            window.caRecommendedSlider.init(container);
+          }
         }
 
         const newPage = typeof data.page === 'number' && data.page > 0 ? data.page : page;

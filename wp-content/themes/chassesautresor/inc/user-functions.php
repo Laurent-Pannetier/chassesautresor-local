@@ -1164,28 +1164,103 @@ function ca_get_engaged_hunts_content_html(
  */
 function ca_render_recommended_hunts_empty_state(): string
 {
-    $query_args = [
-        'post_type'      => 'chasse',
-        'post_status'    => 'publish',
-        'posts_per_page' => 3,
-        'meta_key'       => 'ca_total_engagements',
-        'orderby'        => 'meta_value_num',
-        'order'          => 'DESC',
-        'no_found_rows'  => true,
+    $valid_statuses = ['a_venir', 'en_cours', 'payante'];
+    $base_meta_query = [
+        'relation' => 'AND',
+        [
+            'key'     => 'chasse_cache_statut',
+            'value'   => $valid_statuses,
+            'compare' => 'IN',
+        ],
+        [
+            'key'   => 'chasse_cache_statut_validation',
+            'value' => 'valide',
+        ],
     ];
 
-    /**
-     * Allow third-parties to tweak the recommended hunts query.
-     */
-    $query_args = apply_filters('ca_recommended_hunts_empty_state_query_args', $query_args);
+    $recent_query_args = apply_filters(
+        'ca_recommended_hunts_recent_query_args',
+        [
+            'post_type'      => 'chasse',
+            'post_status'    => 'publish',
+            'posts_per_page' => 2,
+            'orderby'        => 'date',
+            'order'          => 'DESC',
+            'no_found_rows'  => true,
+            'fields'         => 'ids',
+            'suppress_filters' => false,
+            'meta_query'     => $base_meta_query,
+        ]
+    );
 
-    $recommended_query = new WP_Query($query_args);
+    $recent_ids = array_map('intval', get_posts($recent_query_args));
+
+    $active_meta_query = $base_meta_query;
+    $active_meta_query[0]['value'] = ['en_cours', 'payante'];
+
+    $popular_query_args = apply_filters(
+        'ca_recommended_hunts_popular_query_args',
+        [
+            'post_type'      => 'chasse',
+            'post_status'    => 'publish',
+            'posts_per_page' => 1,
+            'meta_key'       => 'ca_total_engagements',
+            'orderby'        => 'meta_value_num',
+            'order'          => 'DESC',
+            'no_found_rows'  => true,
+            'fields'         => 'ids',
+            'suppress_filters' => false,
+            'meta_query'     => $active_meta_query,
+        ]
+    );
+
+    $popular_ids = array_map('intval', get_posts($popular_query_args));
+
+    $recommended_ids = array_values(array_unique(array_merge($recent_ids, $popular_ids)));
+
+    if (count($recommended_ids) < 3) {
+        $fallback_query_args = apply_filters(
+            'ca_recommended_hunts_fallback_query_args',
+            [
+                'post_type'      => 'chasse',
+                'post_status'    => 'publish',
+                'posts_per_page' => 3 - count($recommended_ids),
+                'orderby'        => 'date',
+                'order'          => 'DESC',
+                'no_found_rows'  => true,
+                'fields'         => 'ids',
+                'suppress_filters' => false,
+                'meta_query'     => $base_meta_query,
+                'post__not_in'   => $recommended_ids,
+            ]
+        );
+
+        $additional_ids = array_map('intval', get_posts($fallback_query_args));
+        if (!empty($additional_ids)) {
+            $recommended_ids = array_values(array_unique(array_merge($recommended_ids, $additional_ids)));
+        }
+    }
+
+    $recommended_ids = array_slice($recommended_ids, 0, 3);
+
+    /**
+     * Allow third-parties to tweak the final recommended hunts selection.
+     *
+     * @param int[] $recommended_ids Selected hunt identifiers.
+     */
+    $recommended_ids = apply_filters('ca_recommended_hunts_empty_state_ids', $recommended_ids);
+    $recommended_ids = array_values(array_unique(array_filter(array_map('intval', (array) $recommended_ids))));
 
     $catalog_url = apply_filters(
         'ca_recommended_hunts_catalog_url',
         home_url('/'),
         '/'
     );
+
+    $slider_label = __('Chasses recommandées', 'chassesautresor-com');
+    $show_controls = count($recommended_ids) > 1;
+    $slider_id = wp_unique_id('recommended-slider-');
+    $track_id  = $slider_id . '-track';
 
     ob_start();
     ?>
@@ -1194,20 +1269,67 @@ function ca_render_recommended_hunts_empty_state(): string
             <?php esc_html_e('Vous ne participez à aucune chasse pour le moment. Voici quelques idées pour démarrer votre prochaine aventure.', 'chassesautresor-com'); ?>
         </p>
 
-        <?php if ($recommended_query->have_posts()) : ?>
-            <?php
-            get_template_part(
-                'template-parts/chasse/boucle-chasses',
-                null,
-                [
-                    'show_header' => false,
-                    'mode'        => 'carte',
-                    'grid_class'  => 'cards-grid myaccount-chasses-recommandees-grid',
-                    'query'       => $recommended_query,
-                    'show_progression' => false,
-                ]
-            );
-            ?>
+        <?php if (!empty($recommended_ids)) : ?>
+            <div
+                id="<?php echo esc_attr($slider_id); ?>"
+                class="myaccount-recommended-slider"
+                data-recommended-slider
+                data-slider-label="<?php echo esc_attr($slider_label); ?>"
+            >
+                <?php if ($show_controls) : ?>
+                    <button
+                        type="button"
+                        class="recommended-slider__control recommended-slider__control--prev"
+                        data-recommended-slider-prev
+                        aria-controls="<?php echo esc_attr($track_id); ?>"
+                        aria-label="<?php esc_attr_e('Afficher la chasse précédente', 'chassesautresor-com'); ?>"
+                        disabled
+                    >
+                        <span aria-hidden="true">&#10094;</span>
+                    </button>
+                <?php endif; ?>
+
+                <div class="recommended-slider__viewport" data-recommended-slider-viewport>
+                    <div
+                        id="<?php echo esc_attr($track_id); ?>"
+                        class="recommended-slider__track"
+                        data-recommended-slider-track
+                    >
+                        <?php foreach ($recommended_ids as $index => $chasse_id) : ?>
+                            <div
+                                class="recommended-slider__slide"
+                                data-recommended-slide
+                                data-slide-index="<?php echo esc_attr((string) $index); ?>"
+                            >
+                                <div class="recommended-slider__slide-inner">
+                                    <?php
+                                    get_template_part(
+                                        'template-parts/chasse/chasse-card-compact',
+                                        null,
+                                        [
+                                            'chasse_id'        => $chasse_id,
+                                            'show_progression' => false,
+                                        ]
+                                    );
+                                    ?>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
+                <?php if ($show_controls) : ?>
+                    <button
+                        type="button"
+                        class="recommended-slider__control recommended-slider__control--next"
+                        data-recommended-slider-next
+                        aria-controls="<?php echo esc_attr($track_id); ?>"
+                        aria-label="<?php esc_attr_e('Afficher la chasse suivante', 'chassesautresor-com'); ?>"
+                    >
+                        <span aria-hidden="true">&#10095;</span>
+                    </button>
+                <?php endif; ?>
+            </div>
         <?php else : ?>
             <p class="myaccount-recommended-hunts-intro">
                 <?php esc_html_e('Aucune recommandation disponible pour le moment, mais notre catalogue vous attend.', 'chassesautresor-com'); ?>
@@ -1219,8 +1341,6 @@ function ca_render_recommended_hunts_empty_state(): string
         </a>
     </div>
     <?php
-
-    wp_reset_postdata();
 
     return ob_get_clean();
 }

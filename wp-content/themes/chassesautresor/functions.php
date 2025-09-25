@@ -410,9 +410,17 @@ add_action('wp_enqueue_scripts', function () {
 
     if (is_account_page() && is_user_logged_in()) {
         wp_enqueue_script(
+            'recommended-hunts-slider',
+            $script_dir . 'recommended-hunts-slider.js',
+            [],
+            filemtime($theme_path . '/assets/js/recommended-hunts-slider.js'),
+            true
+        );
+
+        wp_enqueue_script(
             'myaccount',
             $script_dir . 'myaccount.js',
-            [],
+            ['recommended-hunts-slider'],
             filemtime($theme_path . '/assets/js/myaccount.js'),
             true
         );
