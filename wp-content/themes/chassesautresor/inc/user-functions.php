@@ -1148,10 +1148,75 @@ function ca_get_engaged_hunts_content_html(
             );
         }
     } else {
-        ?>
-        <p class="myaccount-placeholder"><?php esc_html_e('Vous ne participez à aucune chasse pour le moment.', 'chassesautresor-com'); ?></p>
-        <?php
+        echo ca_render_recommended_hunts_empty_state();
     }
+
+    return ob_get_clean();
+}
+
+/**
+ * Render the empty state for engaged hunts with recommended public hunts.
+ *
+ * The helper displays a short message, a curated selection of public hunts using the
+ * standard "carte" grid, and a call-to-action pointing to the full catalogue.
+ *
+ * @return string
+ */
+function ca_render_recommended_hunts_empty_state(): string
+{
+    $query_args = [
+        'post_type'      => 'chasse',
+        'post_status'    => 'publish',
+        'posts_per_page' => 3,
+        'meta_key'       => 'ca_total_engagements',
+        'orderby'        => 'meta_value_num',
+        'order'          => 'DESC',
+        'no_found_rows'  => true,
+    ];
+
+    /**
+     * Allow third-parties to tweak the recommended hunts query.
+     */
+    $query_args = apply_filters('ca_recommended_hunts_empty_state_query_args', $query_args);
+
+    $recommended_query = new WP_Query($query_args);
+
+    $catalog_url = apply_filters('ca_recommended_hunts_catalog_url', home_url('/chasses/'));
+
+    ob_start();
+    ?>
+    <div class="myaccount-recommended-hunts">
+        <p class="myaccount-placeholder">
+            <?php esc_html_e('Vous ne participez à aucune chasse pour le moment. Voici quelques idées pour démarrer votre prochaine aventure.', 'chassesautresor-com'); ?>
+        </p>
+
+        <?php if ($recommended_query->have_posts()) : ?>
+            <?php
+            get_template_part(
+                'template-parts/chasse/boucle-chasses',
+                null,
+                [
+                    'show_header' => false,
+                    'mode'        => 'carte',
+                    'grid_class'  => 'cards-grid myaccount-chasses-recommandees-grid',
+                    'query'       => $recommended_query,
+                    'show_progression' => false,
+                ]
+            );
+            ?>
+        <?php else : ?>
+            <p class="myaccount-recommended-hunts-intro">
+                <?php esc_html_e('Aucune recommandation disponible pour le moment, mais notre catalogue vous attend.', 'chassesautresor-com'); ?>
+            </p>
+        <?php endif; ?>
+
+        <a class="bouton-cta myaccount-recommended-hunts-cta" href="<?php echo esc_url($catalog_url); ?>">
+            <?php esc_html_e('Explorer toutes nos chasses', 'chassesautresor-com'); ?>
+        </a>
+    </div>
+    <?php
+
+    wp_reset_postdata();
 
     return ob_get_clean();
 }
