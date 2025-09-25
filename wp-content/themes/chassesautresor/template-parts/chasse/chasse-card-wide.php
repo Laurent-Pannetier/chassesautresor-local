@@ -15,13 +15,6 @@ $title_mode      = $mode_fin === 'automatique'
     : esc_html__('mode de fin de chasse : manuelle', 'chassesautresor-com');
 
 $orga_id = get_organisateur_from_chasse($chasse_id);
-$orga_logo_url = '';
-
-if ($orga_id) {
-    $orga_logo_id  = get_field('logo_organisateur', $orga_id, false);
-    $orga_logo     = wp_get_attachment_image_src($orga_logo_id, 'thumbnail');
-    $orga_logo_url = $orga_logo ? $orga_logo[0] : wp_get_attachment_image_src(3927, 'thumbnail')[0];
-}
 
 if (empty($infos)) {
     return;
@@ -119,16 +112,6 @@ $has_reward = !empty($reward_title) && (float) $reward_value > 0;
             </h3>
             <?php if ($orga_id) : ?>
                 <div class="carte-wide__organisateur">
-                    <span class="carte-wide__organisateur-label"><?php echo esc_html__('Proposé par', 'chassesautresor-com'); ?></span>
-                    <a class="carte-wide__organisateur-logo-link" href="<?php echo esc_url(get_permalink($orga_id)); ?>">
-                        <img
-                            class="chasse-organisateur__logo carte-wide__organisateur-logo visuel-cpt"
-                            src="<?php echo esc_url($orga_logo_url); ?>"
-                            alt="<?php echo esc_attr__('Logo de l\'organisateur', 'chassesautresor-com'); ?>"
-                            data-cpt="organisateur"
-                            data-post-id="<?php echo esc_attr($orga_id); ?>"
-                        />
-                    </a>
                     <a class="carte-wide__organisateur-nom" href="<?php echo esc_url(get_permalink($orga_id)); ?>">
                         <?php echo esc_html(get_the_title($orga_id)); ?>
                     </a>
