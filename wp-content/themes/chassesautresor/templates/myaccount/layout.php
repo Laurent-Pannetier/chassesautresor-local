@@ -63,7 +63,7 @@ get_header();
     <div class="myaccount-sidebar-backdrop" aria-hidden="true"></div>
     <aside id="myaccount-sidebar" class="myaccount-sidebar">
         <div class="myaccount-brand">
-            <a href="<?php echo esc_url(home_url('/')); ?>">
+            <a href="<?php echo esc_url(home_url('/mon-compte/')); ?>">
                 <?php echo esc_html($display_name); ?>
             </a>
             <button
