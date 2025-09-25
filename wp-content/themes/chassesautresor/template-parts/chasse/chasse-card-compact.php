@@ -6,6 +6,7 @@ if (!isset($args['chasse_id']) || empty($args['chasse_id'])) {
 }
 
 $chasse_id = (int) $args['chasse_id'];
+$show_progression = $args['show_progression'] ?? true;
 $infos     = preparer_infos_affichage_carte_chasse(
     $chasse_id,
     300,
@@ -74,7 +75,7 @@ if ($has_reward) {
             </div>
         </a>
     </div>
-    <?php if ($resolvables > 0) : ?>
+    <?php if ($show_progression && $resolvables > 0) : ?>
         <div class="carte-compact__progression-wrapper">
             <div class="carte-compact__progression">
                 <div class="meta-etiquette carte-compact__progression-label">
