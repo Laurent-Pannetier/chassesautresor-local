@@ -91,6 +91,14 @@ if (!function_exists('synchroniser_cache_enigmes_chasse')) {
     }
 }
 
+if (!function_exists('get_attached_media')) {
+    function get_attached_media($type, $post_id)
+    {
+        global $test_attachments;
+        return $test_attachments[$post_id] ?? [];
+    }
+}
+
 if (!function_exists('home_url')) {
     function home_url($path = ''): string
     {
@@ -142,7 +150,7 @@ final class SupprimerChasseAjaxTest extends TestCase
         global $test_is_logged_in, $test_post_types, $test_post_statuses, $test_post_meta;
         global $test_associations, $test_current_user_id, $test_enigmes, $trashed_posts;
         global $wp_trash_return_values, $deleted_folders, $synced_chasses, $json_success;
-        global $flash_messages;
+        global $flash_messages, $test_attachments;
 
         $_POST = [];
 
@@ -159,6 +167,7 @@ final class SupprimerChasseAjaxTest extends TestCase
         $synced_chasses = [];
         $json_success = null;
         $flash_messages = [];
+        $test_attachments = [];
     }
 
     /**
@@ -235,5 +244,26 @@ final class SupprimerChasseAjaxTest extends TestCase
             ],
             $flash_messages[0]
         );
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_trashes_attachments(): void
+    {
+        global $trashed_posts, $test_attachments;
+
+        $_POST['chasse_id'] = 123;
+        $test_attachments = [
+            123 => [
+                (object) ['ID' => 90],
+                (object) ['ID' => 91],
+            ],
+        ];
+
+        supprimer_chasse_ajax();
+
+        $this->assertSame([10, 11, 90, 91, 123], $trashed_posts);
     }
 }
