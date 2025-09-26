@@ -29,6 +29,9 @@
     const next = slider.querySelector(NEXT_SELECTOR);
     const totalSlides = slides.length;
     let currentIndex = 0;
+    let slideOffsets = [];
+    let resizeObserver = null;
+    let resizeHandler = null;
 
     const label = slider.getAttribute('data-slider-label');
     if (label) {
@@ -48,9 +51,18 @@
       slide.setAttribute('aria-label', `${index + 1} / ${totalSlides}`);
     });
 
+    function refreshOffsets() {
+      const firstOffset = slides.length > 0 ? slides[0].offsetLeft : 0;
+      slideOffsets = slides.map((slide) => slide.offsetLeft - firstOffset);
+    }
+
+    function applyTransform() {
+      const offset = slideOffsets[currentIndex] || 0;
+      track.style.transform = `translate3d(-${offset}px, 0, 0)`;
+    }
+
     function update() {
-      const offsetPercent = totalSlides > 0 ? (currentIndex / totalSlides) * 100 : 0;
-      track.style.transform = `translate3d(-${offsetPercent}%, 0, 0)`;
+      applyTransform();
       slides.forEach((slide, index) => {
         const isActive = index === currentIndex;
         slide.classList.toggle('is-active', isActive);
@@ -105,20 +117,41 @@
       }
     });
 
-    let observer = null;
+    const handleResize = () => {
+      refreshOffsets();
+      applyTransform();
+    };
+
     const cleanup = () => {
       slider.removeEventListener('recommended-slider:destroy', cleanup);
-      if (observer) {
-        observer.disconnect();
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+        resizeObserver = null;
+      }
+      if (resizeHandler) {
+        window.removeEventListener('resize', resizeHandler);
+        resizeHandler = null;
       }
     };
 
     slider.addEventListener('recommended-slider:destroy', cleanup);
 
+    refreshOffsets();
+    update();
+
+    if (typeof ResizeObserver === 'function') {
+      resizeObserver = new ResizeObserver(handleResize);
+      resizeObserver.observe(viewport);
+    } else {
+      resizeHandler = handleResize;
+      window.addEventListener('resize', resizeHandler);
+    }
+
     if (typeof MutationObserver === 'function') {
-      observer = new MutationObserver(() => {
+      const observer = new MutationObserver(() => {
         if (!document.body.contains(slider)) {
           cleanup();
+          observer.disconnect();
         }
       });
 
@@ -126,7 +159,6 @@
     }
 
     slider.dataset.sliderReady = '1';
-    update();
   }
 
   function init(root) {

@@ -10324,11 +10324,13 @@ footer .site-footer-primary-section-3 {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
+  width: 100%;
 }
 
 .recommended-slider__viewport {
   position: relative;
-  flex: 1;
+  flex: 1 1 auto;
+  min-width: 0;
   overflow: hidden;
   border-radius: 10px;
   scroll-snap-type: x mandatory;
@@ -10356,6 +10358,15 @@ footer .site-footer-primary-section-3 {
 
 .recommended-slider__slide-inner > * {
   width: 100%;
+}
+
+.myaccount-recommended-slider[data-slides-count="1"] .recommended-slider__viewport {
+  max-width: min(100%, 360px);
+  margin: 0 auto;
+}
+
+.myaccount-recommended-slider[data-slides-count="1"] .recommended-slider__track {
+  justify-content: center;
 }
 
 .recommended-slider__control {
