@@ -10339,7 +10339,6 @@ footer .site-footer-primary-section-3 {
 .recommended-slider__track {
   --recommended-slider-count: 1;
   display: flex;
-  width: calc(100% * var(--recommended-slider-count));
   min-height: 100%;
   transition: transform 0.4s ease;
   will-change: transform;
@@ -10347,13 +10346,16 @@ footer .site-footer-primary-section-3 {
 
 .recommended-slider__slide {
   flex: 0 0 100%;
+  display: flex;
+  justify-content: center;
+  padding: 0 var(--space-xs);
+  box-sizing: border-box;
   scroll-snap-align: center;
 }
 
 .recommended-slider__slide-inner {
-  display: flex;
   width: 100%;
-  padding: 0 var(--space-xs);
+  max-width: 320px;
 }
 
 .recommended-slider__slide-inner > * {
