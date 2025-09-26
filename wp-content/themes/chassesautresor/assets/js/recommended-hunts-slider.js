@@ -18,9 +18,10 @@
     }
 
     const track = slider.querySelector(TRACK_SELECTOR);
+    const viewport = slider.querySelector('[data-recommended-slider-viewport]');
     const slides = track ? Array.from(track.querySelectorAll(SLIDE_SELECTOR)) : [];
 
-    if (!track || !slides.length) {
+    if (!track || !slides.length || !viewport) {
       return;
     }
 
@@ -45,17 +46,18 @@
       slide.setAttribute('aria-label', `${index + 1} / ${totalSlides}`);
     });
 
-    function getOffset() {
-      const activeSlide = slides[currentIndex];
-      if (!activeSlide) {
+    function getViewportWidth() {
+      if (!viewport) {
         return 0;
       }
 
-      return activeSlide.offsetLeft || 0;
+      const { clientWidth } = viewport;
+      return clientWidth || 0;
     }
 
     function update() {
-      const offset = getOffset();
+      const viewportWidth = getViewportWidth();
+      const offset = viewportWidth * currentIndex;
       track.style.transform = `translate3d(-${offset}px, 0, 0)`;
       slides.forEach((slide, index) => {
         const isActive = index === currentIndex;
