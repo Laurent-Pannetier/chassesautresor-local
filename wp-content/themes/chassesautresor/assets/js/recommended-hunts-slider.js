@@ -47,19 +47,16 @@
     });
 
     function getOffset() {
-      if (!slides.length) {
+      if (!viewport) {
         return 0;
       }
 
-      const activeSlide = slides[currentIndex];
-      if (!activeSlide) {
+      const viewportRect = viewport.getBoundingClientRect();
+      if (!viewportRect || viewportRect.width <= 0) {
         return 0;
       }
 
-      const firstSlide = slides[0];
-      const baseOffset = firstSlide ? firstSlide.offsetLeft : 0;
-      const targetOffset = activeSlide.offsetLeft;
-      return Math.max(0, targetOffset - baseOffset);
+      return Math.max(0, viewportRect.width * currentIndex);
     }
 
     function update() {
