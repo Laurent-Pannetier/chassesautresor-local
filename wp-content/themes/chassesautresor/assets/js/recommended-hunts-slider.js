@@ -29,7 +29,6 @@
     const next = slider.querySelector(NEXT_SELECTOR);
     const totalSlides = slides.length;
     let currentIndex = 0;
-    let slideOffsets = [];
 
     const label = slider.getAttribute('data-slider-label');
     if (label) {
@@ -40,6 +39,8 @@
     slider.setAttribute('aria-roledescription', 'carousel');
     slider.setAttribute('tabindex', '0');
     slider.setAttribute('data-slides-count', String(totalSlides));
+    slider.style.setProperty('--recommended-slider-count', String(totalSlides));
+    track.style.setProperty('--recommended-slider-count', String(totalSlides));
 
     slides.forEach((slide, index) => {
       slide.setAttribute('role', 'group');
@@ -47,30 +48,9 @@
       slide.setAttribute('aria-label', `${index + 1} / ${totalSlides}`);
     });
 
-    function measureOffsets() {
-      const previousTransform = track.style.transform;
-      track.style.transform = 'translate3d(0, 0, 0)';
-
-      const baseOffset = slides[0] ? slides[0].offsetLeft : 0;
-      slideOffsets = slides.map((slide) => {
-        const offset = slide.offsetLeft - baseOffset;
-        return Number.isFinite(offset) && offset >= 0 ? offset : 0;
-      });
-
-      track.style.transform = previousTransform;
-    }
-
-    function getOffset() {
-      if (!slideOffsets.length) {
-        measureOffsets();
-      }
-
-      return slideOffsets[currentIndex] || 0;
-    }
-
     function update() {
-      const offset = getOffset();
-      track.style.transform = `translate3d(-${offset}px, 0, 0)`;
+      const offsetPercent = totalSlides > 0 ? (currentIndex / totalSlides) * 100 : 0;
+      track.style.transform = `translate3d(-${offsetPercent}%, 0, 0)`;
       slides.forEach((slide, index) => {
         const isActive = index === currentIndex;
         slide.classList.toggle('is-active', isActive);
@@ -125,28 +105,8 @@
       }
     });
 
-    const handleResize = () => {
-      window.requestAnimationFrame(() => {
-        measureOffsets();
-        update();
-      });
-    };
-
-    let resizeObserver = null;
-    if (typeof ResizeObserver === 'function' && viewport) {
-      resizeObserver = new ResizeObserver(handleResize);
-      resizeObserver.observe(viewport);
-    } else {
-      window.addEventListener('resize', handleResize);
-    }
-
     let observer = null;
     const cleanup = () => {
-      if (resizeObserver) {
-        resizeObserver.disconnect();
-      } else {
-        window.removeEventListener('resize', handleResize);
-      }
       slider.removeEventListener('recommended-slider:destroy', cleanup);
       if (observer) {
         observer.disconnect();
@@ -165,7 +125,6 @@
       observer.observe(document.body, { childList: true, subtree: true });
     }
 
-    measureOffsets();
     slider.dataset.sliderReady = '1';
     update();
   }
