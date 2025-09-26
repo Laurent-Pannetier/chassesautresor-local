@@ -21,22 +21,83 @@ if (!function_exists('ca_demo_is_demo_hunt')) {
         if (isset($overrides[$chasse_id])) {
             return (bool) $overrides[$chasse_id];
         }
-    
-        if (isset($cache[$chasse_id])) {
-            return $cache[$chasse_id];
+
+        $current_user_id = function_exists('get_current_user_id')
+            ? (int) get_current_user_id()
+            : 0;
+
+        $default_context = [
+            'user_id' => $current_user_id,
+        ];
+
+        $cache_context = $default_context;
+
+        if (function_exists('apply_filters')) {
+            $cache_context = apply_filters('ca_demo_cache_context', $default_context, $chasse_id);
+        }
+
+        if (!is_array($cache_context)) {
+            $cache_context = [];
+        }
+
+        if ($cache_context === []) {
+            $cache_context = $default_context;
+        }
+
+        $normalized_context = [];
+
+        foreach ($cache_context as $key => $value) {
+            if (is_scalar($value) || $value === null) {
+                $normalized_context[$key] = $value;
+
+                continue;
+            }
+
+            if (is_object($value) && method_exists($value, '__toString')) {
+                $normalized_context[$key] = (string) $value;
+
+                continue;
+            }
+
+            $normalized_context[$key] = serialize($value);
+        }
+
+        $is_assoc_context = array_keys($normalized_context) !== range(0, count($normalized_context) - 1);
+
+        if ($is_assoc_context) {
+            ksort($normalized_context);
+        }
+
+        $cache_key_payload = [
+            'chasse_id' => $chasse_id,
+            'context'   => $normalized_context,
+        ];
+
+        $encoded_payload = function_exists('wp_json_encode')
+            ? wp_json_encode($cache_key_payload)
+            : json_encode($cache_key_payload);
+
+        if (!is_string($encoded_payload) || $encoded_payload === '') {
+            $encoded_payload = serialize($cache_key_payload);
+        }
+
+        $cache_key = 'ca_demo_' . md5($encoded_payload);
+
+        if (isset($cache[$cache_key])) {
+            return $cache[$cache_key];
         }
     
         if (!function_exists('get_organisateur_from_chasse')) {
-            $cache[$chasse_id] = false;
-    
-            return $cache[$chasse_id];
+            $cache[$cache_key] = false;
+
+            return $cache[$cache_key];
         }
-    
+
         $organisateur_id = get_organisateur_from_chasse($chasse_id);
         if (!$organisateur_id) {
-            $cache[$chasse_id] = false;
-    
-            return $cache[$chasse_id];
+            $cache[$cache_key] = false;
+
+            return $cache[$cache_key];
         }
     
         $configured_logins = CA_DEMO_ORGANISATEUR_LOGINS;
@@ -63,7 +124,7 @@ if (!function_exists('ca_demo_is_demo_hunt')) {
         ));
     
         if (empty($allowed_logins)) {
-            $cache[$chasse_id] = (bool) apply_filters(
+            $cache[$cache_key] = (bool) apply_filters(
                 'ca_demo_is_demo_hunt',
                 false,
                 $chasse_id,
@@ -72,15 +133,15 @@ if (!function_exists('ca_demo_is_demo_hunt')) {
                     'allowed_logins'  => [],
                 ]
             );
-    
-            return $cache[$chasse_id];
+
+            return $cache[$cache_key];
         }
-    
+
         $associated_users = function_exists('get_field')
             ? get_field('utilisateurs_associes', $organisateur_id)
             : [];
         if (!is_array($associated_users) || empty($associated_users)) {
-            $cache[$chasse_id] = (bool) apply_filters(
+            $cache[$cache_key] = (bool) apply_filters(
                 'ca_demo_is_demo_hunt',
                 false,
                 $chasse_id,
@@ -89,8 +150,8 @@ if (!function_exists('ca_demo_is_demo_hunt')) {
                     'allowed_logins'  => $allowed_logins,
                 ]
             );
-    
-            return $cache[$chasse_id];
+
+            return $cache[$cache_key];
         }
     
         $is_demo = false;
@@ -127,9 +188,9 @@ if (!function_exists('ca_demo_is_demo_hunt')) {
             ]
         );
     
-        $cache[$chasse_id] = $filtered;
-    
-        return $cache[$chasse_id];
+        $cache[$cache_key] = $filtered;
+
+        return $cache[$cache_key];
     }
 }
 
