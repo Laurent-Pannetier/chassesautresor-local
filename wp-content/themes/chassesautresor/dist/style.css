@@ -10309,8 +10309,8 @@ footer .site-footer-primary-section-3 {
   gap: var(--space-lg);
   padding: var(--space-lg);
   border-radius: 12px;
-  background: hsl(var(--card));
-  border: 1px solid hsl(var(--border));
+  background: transparent;
+  border: 0;
 }
 
 .myaccount-recommended-hunts .myaccount-placeholder,
@@ -10335,7 +10335,9 @@ footer .site-footer-primary-section-3 {
 }
 
 .recommended-slider__track {
-  display: flex;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 100%;
   width: 100%;
   min-height: 100%;
   transition: transform 0.4s ease;
@@ -10343,7 +10345,6 @@ footer .site-footer-primary-section-3 {
 }
 
 .recommended-slider__slide {
-  flex: 0 0 100%;
   scroll-snap-align: center;
 }
 
