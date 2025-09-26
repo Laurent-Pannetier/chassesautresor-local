@@ -15,6 +15,61 @@ class CaDemoResetUserProgressTest extends TestCase
         $codeBlocks = [
             <<<'PHP'
 namespace {
+    if (!class_exists('WP_Error')) {
+        class WP_Error
+        {
+            private string $code;
+            private string $message;
+
+            public function __construct(string $code = '', string $message = '', $data = null)
+            {
+                $this->code    = $code;
+                $this->message = $message;
+            }
+
+            public function get_error_code(): string
+            {
+                return $this->code;
+            }
+
+            public function get_error_message($code = ''): string
+            {
+                return $this->message;
+            }
+        }
+    }
+
+    if (!function_exists('is_wp_error')) {
+        function is_wp_error($thing): bool
+        {
+            return $thing instanceof WP_Error;
+        }
+    }
+
+    if (!function_exists('cat_debug')) {
+        function cat_debug($message): void
+        {
+            global $cat_debug_logs;
+
+            if (!is_array($cat_debug_logs ?? null)) {
+                $cat_debug_logs = [];
+            }
+
+            $cat_debug_logs[] = $message;
+        }
+    }
+
+    if (!function_exists('__')) {
+        function __($text, $domain = null)
+        {
+            return (string) $text;
+        }
+    }
+}
+PHP
+            ,
+            <<<'PHP'
+namespace {
     if (!class_exists('wpdb')) {
         class wpdb
         {
@@ -413,17 +468,44 @@ PHP
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      */
-    public function test_returns_false_when_not_demo(): void
+    public function test_returns_error_when_not_demo(): void
     {
         $this->bootstrapHelpers();
 
-        global $wpdb, $force_demo_overrides;
+        global $wpdb, $force_demo_overrides, $cat_debug_logs;
 
         $wpdb = new \wpdb();
         $force_demo_overrides = [42 => false];
+        $cat_debug_logs = [];
 
         require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/chasse/demo.php';
 
-        $this->assertFalse(\ca_demo_reset_user_progress(42, 23));
+        $result = \ca_demo_reset_user_progress(42, 23);
+
+        $this->assertInstanceOf(\WP_Error::class, $result);
+        $this->assertSame('not_demo', $result->get_error_code());
+        $this->assertNotEmpty($cat_debug_logs);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_returns_error_when_wpdb_missing(): void
+    {
+        $this->bootstrapHelpers();
+
+        global $force_demo_overrides, $cat_debug_logs;
+
+        $force_demo_overrides = [77 => true];
+        $cat_debug_logs = [];
+
+        require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/chasse/demo.php';
+
+        $result = \ca_demo_reset_user_progress(77, 23);
+
+        $this->assertInstanceOf(\WP_Error::class, $result);
+        $this->assertSame('wpdb_missing', $result->get_error_code());
+        $this->assertNotEmpty($cat_debug_logs);
     }
 }

@@ -195,20 +195,46 @@ if (!function_exists('ca_demo_is_demo_hunt')) {
 }
 
 if (!function_exists('ca_demo_reset_user_progress')) {
-    function ca_demo_reset_user_progress(int $chasse_id, int $user_id): bool
+    /**
+     * @return bool|WP_Error
+     */
+    function ca_demo_reset_user_progress(int $chasse_id, int $user_id)
     {
+        $log_error = static function (string $message): void {
+            if (function_exists('cat_debug')) {
+                cat_debug($message);
+            } else {
+                error_log($message);
+            }
+        };
+
         if ($chasse_id <= 0 || $user_id <= 0) {
-            return false;
+            $log_error(sprintf('❌ [DEMO] Invalid identifiers provided for reset (hunt %d, user %d).', $chasse_id, $user_id));
+
+            return new WP_Error(
+                'invalid_ids',
+                __('Identifiants de chasse ou d’utilisateur invalides.', 'chassesautresor-com')
+            );
         }
-    
+
         if (!ca_demo_is_demo_hunt($chasse_id)) {
-            return false;
+            $log_error(sprintf('⚠️ [DEMO] Hunt %d is not marked as demo. Reset aborted for user %d.', $chasse_id, $user_id));
+
+            return new WP_Error(
+                'not_demo',
+                __('Cette chasse ne peut pas être réinitialisée.', 'chassesautresor-com')
+            );
         }
-    
+
         global $wpdb;
-    
+
         if (!isset($wpdb)) {
-            return false;
+            $log_error(sprintf('❌ [DEMO] $wpdb is unavailable. Unable to reset hunt %d for user %d.', $chasse_id, $user_id));
+
+            return new WP_Error(
+                'wpdb_missing',
+                __('Le service de base de données est indisponible.', 'chassesautresor-com')
+            );
         }
     
         $chasse_id = (int) $chasse_id;
@@ -419,7 +445,12 @@ if (!function_exists('ca_demo_schedule_reset')) {
             cat_debug(sprintf('🗓️ [DEMO] Reset scheduled for hunt %d (user %d) in %d seconds.', $chasse_id, $user_id, $delay));
         } else {
             cat_debug(sprintf('⚠️ [DEMO] Reset scheduling failed for hunt %d (user %d), running immediately.', $chasse_id, $user_id));
-            ca_demo_reset_user_progress($chasse_id, $user_id);
+            $result = ca_demo_reset_user_progress($chasse_id, $user_id);
+
+            if (function_exists('is_wp_error') && is_wp_error($result)) {
+                $message = $result->get_error_message();
+                cat_debug(sprintf('❌ [DEMO] Immediate reset failed for hunt %d (user %d): %s', $chasse_id, $user_id, $message));
+            }
         }
 
         if (function_exists('chasse_clear_infos_affichage_cache')) {
@@ -446,7 +477,12 @@ if (!function_exists('ca_demo_execute_scheduled_reset')) {
 
         cat_debug(sprintf('▶️ [DEMO] Running scheduled reset for hunt %d (user %d).', $chasse_id, $user_id));
 
-        ca_demo_reset_user_progress($chasse_id, $user_id);
+        $result = ca_demo_reset_user_progress($chasse_id, $user_id);
+
+        if (function_exists('is_wp_error') && is_wp_error($result)) {
+            $message = $result->get_error_message();
+            cat_debug(sprintf('❌ [DEMO] Scheduled reset failed for hunt %d (user %d): %s', $chasse_id, $user_id, $message));
+        }
 
         if (function_exists('chasse_clear_infos_affichage_cache')) {
             chasse_clear_infos_affichage_cache($chasse_id);
@@ -499,7 +535,18 @@ function ca_demo_reset_chasse_ajax(): void
 
     $result = ca_demo_reset_user_progress($chasse_id, $user_id);
 
-    if (!$result) {
+    if (function_exists('is_wp_error') && is_wp_error($result)) {
+        $message = $result->get_error_message();
+        if ($message === '') {
+            $message = __('Impossible de réinitialiser votre progression pour le moment.', 'chassesautresor-com');
+        }
+
+        wp_send_json_error([
+            'message' => $message,
+        ]);
+    }
+
+    if ($result !== true) {
         wp_send_json_error([
             'message' => __('Impossible de réinitialiser votre progression pour le moment.', 'chassesautresor-com'),
         ]);
