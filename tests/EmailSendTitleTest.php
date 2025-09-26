@@ -37,7 +37,16 @@ if (!function_exists('home_url')) {
     }
 }
 if (!function_exists('apply_filters')) {
-    function apply_filters($tag, $value) {
+    function apply_filters($tag, $value, ...$args) {
+        global $wp_filter;
+
+        if (isset($wp_filter[$tag]) && is_object($wp_filter[$tag]) && method_exists($wp_filter[$tag], 'apply_filters')) {
+            $arguments = $args;
+            array_unshift($arguments, $value);
+
+            return $wp_filter[$tag]->apply_filters($value, $arguments);
+        }
+
         return $value;
     }
 }

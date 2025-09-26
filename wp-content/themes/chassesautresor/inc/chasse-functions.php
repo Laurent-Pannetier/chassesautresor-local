@@ -210,6 +210,13 @@ function utilisateur_est_engage_dans_chasse(int $user_id, int $chasse_id): bool
     global $wpdb;
     if (!$user_id || !$chasse_id) return false;
 
+    if (
+        function_exists('ca_demo_is_demo_hunt')
+        && ca_demo_is_demo_hunt($chasse_id)
+    ) {
+        return $user_id > 0;
+    }
+
     $table = $wpdb->prefix . 'engagements';
 
     return (bool) $wpdb->get_var($wpdb->prepare(
@@ -603,6 +610,9 @@ function chasse_calculer_progression_utilisateur(int $chasse_id, int $user_id): 
 {
     $enigmes = recuperer_enigmes_associees($chasse_id);
     $total   = count($enigmes);
+    $is_demo = function_exists('ca_demo_is_demo_hunt')
+        ? ca_demo_is_demo_hunt($chasse_id)
+        : false;
 
     $resolvables = 0;
     if ($total > 0) {
@@ -615,15 +625,32 @@ function chasse_calculer_progression_utilisateur(int $chasse_id, int $user_id): 
     }
 
     $engagees = 0;
+    $resolues = 0;
+
     if ($user_id && $total > 0) {
         global $wpdb;
         $placeholders = implode(',', array_fill(0, $total, '%d'));
-        $sql = "SELECT COUNT(DISTINCT enigme_id) FROM {$wpdb->prefix}engagements WHERE user_id = %d AND enigme_id IN ($placeholders)";
-        $engagees = (int) $wpdb->get_var($wpdb->prepare($sql, array_merge([$user_id], $enigmes)));
+
+        if ($is_demo) {
+            $table_statuts = $wpdb->prefix . 'enigme_statuts_utilisateur';
+            $params        = array_merge([$user_id], $enigmes);
+
+            $sql_engagees = "SELECT COUNT(DISTINCT enigme_id) FROM {$table_statuts}"
+                . " WHERE user_id = %d AND enigme_id IN ($placeholders)"
+                . " AND statut NOT IN ('non_commencee','non_souscrite')";
+            $engagees = (int) $wpdb->get_var($wpdb->prepare($sql_engagees, $params));
+
+            $sql_resolues = "SELECT COUNT(DISTINCT enigme_id) FROM {$table_statuts}"
+                . " WHERE user_id = %d AND enigme_id IN ($placeholders)"
+                . " AND statut IN ('resolue','terminee','terminée')";
+            $resolues = (int) $wpdb->get_var($wpdb->prepare($sql_resolues, $params));
+        } else {
+            $sql = "SELECT COUNT(DISTINCT enigme_id) FROM {$wpdb->prefix}engagements WHERE user_id = %d AND enigme_id IN ($placeholders)";
+            $engagees = (int) $wpdb->get_var($wpdb->prepare($sql, array_merge([$user_id], $enigmes)));
+        }
     }
 
-    $resolues = 0;
-    if ($user_id && function_exists('compter_enigmes_resolues')) {
+    if (!$is_demo && $user_id && function_exists('compter_enigmes_resolues')) {
         $resolues = compter_enigmes_resolues($chasse_id, $user_id);
     }
 
@@ -651,12 +678,20 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
     $validation = get_field('chasse_cache_statut_validation', $chasse_id);
     $date_debut = get_field('chasse_infos_date_debut', $chasse_id);
     $date_fin   = get_field('chasse_infos_date_fin', $chasse_id);
+    $is_demo    = function_exists('ca_demo_is_demo_hunt')
+        ? ca_demo_is_demo_hunt($chasse_id)
+        : false;
+    $response   = static function (array $data) use ($is_demo): array {
+        $data['is_demo'] = $is_demo;
+
+        return $data;
+    };
 
     // 🧑‍💻 Utilisateur non connecté
     if (! $user_id) {
         $login_url = wp_login_url($permalink);
 
-        return [
+        return $response([
             'cta_html'    => sprintf(
                 '<a href="%s" class="bouton-cta bouton-cta--color">%s</a>',
                 esc_url($login_url),
@@ -664,15 +699,15 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
             ),
             'cta_message' => '',
             'type'        => 'connexion',
-        ];
+        ]);
     }
 
     if (peut_valider_chasse($chasse_id, $user_id)) {
-        return [
+        return $response([
             'cta_html'    => render_form_validation_chasse($chasse_id),
             'cta_message' => '',
             'type'        => 'validation',
-        ];
+        ]);
     }
 
     // 🔐 Admin or organiser info
@@ -683,19 +718,19 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
 
     if ($validation === 'en_attente') {
         if ($is_orga) {
-            return [
+            return $response([
                 'cta_html'    => render_form_annulation_validation_chasse($chasse_id),
                 'cta_message' => '',
                 'type'        => 'annuler_validation',
-            ];
+            ]);
         }
-        return [
+        return $response([
             'cta_html'    => '<span class="bouton-cta bouton-cta--pending" aria-disabled="true">'
                 . esc_html__( 'Demande de validation en cours', 'chassesautresor-com' )
                 . '</span>',
             'cta_message' => '',
             'type'        => 'en_attente',
-        ];
+        ]);
     }
 
     // 🔐 Admin or organiser: front-end edition
@@ -704,7 +739,7 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
             ? add_query_arg(['edition' => 'open', 'tab' => 'param'], $permalink)
             : $permalink . '?edition=open&tab=param';
 
-        return [
+        return $response([
             'cta_html'    => sprintf(
                 '<a href="%s" class="bouton-secondaire">%s</a>',
                 esc_url($edition_url),
@@ -712,7 +747,7 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
             ),
             'cta_message' => '',
             'type'        => 'edition',
-        ];
+        ]);
     }
 
     if (
@@ -724,7 +759,7 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
             ? add_query_arg(['edition' => 'open', 'tab' => 'stats'], $permalink)
             : $permalink . '?edition=open&tab=stats';
 
-        return [
+        return $response([
             'cta_html'    => sprintf(
                 '<a href="%s" class="bouton-secondaire">%s</a>',
                 esc_url($stats_url),
@@ -732,34 +767,34 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
             ),
             'cta_message' => '',
             'type'        => 'statistiques',
-        ];
+        ]);
     }
 
     if ($is_admin || $is_orga) {
-        return [
+        return $response([
             'cta_html'    => sprintf(
                 '<button class="bouton-cta" disabled>%s</button>',
                 esc_html__( 'Participer', 'chassesautresor-com' )
             ),
             'cta_message' => '',
             'type'        => 'indisponible',
-        ];
+        ]);
     }
 
     // ✅ Déjà engagé
     $engage_override = $GLOBALS['force_engage_override'] ?? null;
     $est_engage = $engage_override !== null ? (bool) $engage_override : utilisateur_est_engage_dans_chasse($user_id, $chasse_id);
     if ($est_engage) {
-        return [
+        return $response([
             'cta_html'    => '<a href="#chasse-enigmes-wrapper" class="bouton-secondaire">' . esc_html__('Voir mes énigmes', 'chassesautresor-com') . '</a>',
             'cta_message' => '<p>✅ ' . esc_html__('Vous participez à cette chasse', 'chassesautresor-com') . '</p>',
             'type'        => 'engage',
-        ];
+        ]);
     }
 
     // ❌ Chasse non validée
     if ($validation !== 'valide') {
-        return ['cta_html' => '', 'cta_message' => '', 'type' => ''];
+        return $response(['cta_html' => '', 'cta_message' => '', 'type' => '']);
     }
 
     $html    = '';
@@ -831,11 +866,11 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
             : __('Cette chasse est terminée', 'chassesautresor-com');
     }
 
-    return [
-        'cta_html'    => $html,
-        'cta_message' => $message,
-        'type'        => $type,
-    ];
+        return $response([
+            'cta_html'    => $html,
+            'cta_message' => $message,
+            'type'        => $type,
+        ]);
 }
 
 /**
@@ -847,6 +882,13 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
 function compter_joueurs_engages_chasse(int $chasse_id): int
 {
     if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
+        return 0;
+    }
+
+    if (
+        function_exists('ca_demo_is_demo_hunt')
+        && ca_demo_is_demo_hunt($chasse_id)
+    ) {
         return 0;
     }
 
@@ -881,6 +923,15 @@ function enregistrer_engagement_chasse(int $user_id, int $chasse_id): bool
 
     if (current_user_can('administrator') || utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
         return false;
+    }
+
+    if (
+        function_exists('ca_demo_is_demo_hunt')
+        && ca_demo_is_demo_hunt($chasse_id)
+    ) {
+        chasse_clear_infos_affichage_cache($chasse_id);
+
+        return true;
     }
 
     $table = $wpdb->prefix . 'engagements';
@@ -2142,7 +2193,7 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
 
     $user_id = get_current_user_id();
     $progression = chasse_calculer_progression_utilisateur($chasse_id, $user_id);
-    $cta_data = generer_cta_chasse($chasse_id, $user_id);
+    $cta_data    = generer_cta_chasse($chasse_id, $user_id);
 
     $liens = get_field('chasse_principale_liens', $chasse_id);
     $liens = is_array($liens) ? $liens : [];
@@ -2281,6 +2332,7 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
         'cta_html'          => $cta_html,
         'cta_message'       => $cta_message,
         'cta_type'         => $cta_data['type'] ?? '',
+        'cta_is_demo'      => !empty($cta_data['is_demo']),
         'footer_html'       => $footer_html,
         'regions'           => $regions,
         'themes'            => $themes,
@@ -2430,6 +2482,7 @@ function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): 
     }
 
     $progression = chasse_calculer_progression_utilisateur($chasse_id, $user_id);
+    $cta_data    = generer_cta_chasse($chasse_id, $user_id);
 
     $nb_joueurs = compter_joueurs_engages_chasse($chasse_id);
     $top_nb      = 0;
@@ -2461,7 +2514,9 @@ function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): 
         'enigmes_associees'   => $enigmes,
         'total_enigmes'       => count($enigmes),
         'progression'         => $progression,
-        'cta_data'            => generer_cta_chasse($chasse_id, $user_id),
+        'cta_data'            => $cta_data,
+        'cta_type'            => $cta_data['type'] ?? '',
+        'cta_is_demo'         => !empty($cta_data['is_demo']),
         'nb_joueurs'          => $nb_joueurs,
         'nb_enigmes_payantes' => $nb_enigmes_payantes,
         'top_avances'         => [
@@ -2490,6 +2545,36 @@ function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): 
 function chasse_infos_affichage_cache_key(int $chasse_id): string
 {
     return "chasse_infos_affichage_{$chasse_id}";
+}
+
+function chasse_clear_infos_affichage_cache_for_organisateur(int $organisateur_id): void
+{
+    if ($organisateur_id <= 0) {
+        return;
+    }
+
+    if (!function_exists('get_chasses_de_organisateur')) {
+        return;
+    }
+
+    $query = get_chasses_de_organisateur($organisateur_id);
+    $raw_ids = [];
+
+    if (is_object($query) && isset($query->posts) && is_array($query->posts)) {
+        $raw_ids = $query->posts;
+    } elseif (is_array($query)) {
+        $raw_ids = $query;
+    }
+
+    foreach ($raw_ids as $maybe_id) {
+        $chasse_id = is_object($maybe_id)
+            ? (int) ($maybe_id->ID ?? 0)
+            : (int) $maybe_id;
+
+        if ($chasse_id > 0) {
+            chasse_clear_infos_affichage_cache($chasse_id);
+        }
+    }
 }
 
 function chasse_clear_infos_affichage_cache(int $chasse_id): void
@@ -2531,6 +2616,8 @@ function chasse_invalidate_infos_affichage_cache(int $post_id, \WP_Post $post, b
         if ($chasse_id) {
             chasse_clear_infos_affichage_cache((int) $chasse_id);
         }
+    } elseif ($post->post_type === 'organisateur') {
+        chasse_clear_infos_affichage_cache_for_organisateur($post_id);
     }
 }
 
@@ -2541,11 +2628,25 @@ function chasse_acf_clear_infos_affichage_cache($post_id): void
     }
 
     $post_id = (int) $post_id;
-    if (get_post_type($post_id) === 'chasse') {
+    $type = get_post_type($post_id);
+
+    if ($type === 'chasse') {
         chasse_clear_infos_affichage_cache($post_id);
+    } elseif ($type === 'organisateur') {
+        chasse_clear_infos_affichage_cache_for_organisateur($post_id);
     }
 }
 add_action('acf/save_post', 'chasse_acf_clear_infos_affichage_cache', 20);
 add_action('save_post', 'chasse_invalidate_infos_affichage_cache', 10, 3);
 add_action('chasse_engagement_created', 'chasse_clear_infos_affichage_cache');
 add_action('set_object_terms', 'chasse_invalidate_infos_affichage_terms', 10, 6);
+
+function chasse_acf_handle_utilisateurs_associes($value, $post_id)
+{
+    if (is_numeric($post_id) && get_post_type((int) $post_id) === 'organisateur') {
+        chasse_clear_infos_affichage_cache_for_organisateur((int) $post_id);
+    }
+
+    return $value;
+}
+add_filter('acf/update_value/name=utilisateurs_associes', 'chasse_acf_handle_utilisateurs_associes', 20, 2);
