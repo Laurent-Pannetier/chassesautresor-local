@@ -785,6 +785,29 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
     $engage_override = $GLOBALS['force_engage_override'] ?? null;
     $est_engage = $engage_override !== null ? (bool) $engage_override : utilisateur_est_engage_dans_chasse($user_id, $chasse_id);
     if ($est_engage) {
+        if ($is_demo) {
+            $nonce_action = 'ca_demo_reset_chasse_' . $chasse_id . '_' . $user_id;
+            $nonce = function_exists('wp_create_nonce')
+                ? wp_create_nonce($nonce_action)
+                : $nonce_action;
+
+            $button_html = sprintf(
+                '<button type="button" class="bouton-cta bouton-cta--color" data-ca-demo-reset="1" data-chasse-id="%1$d" data-nonce="%2$s">%3$s</button>',
+                (int) $chasse_id,
+                esc_attr($nonce),
+                esc_html__('Réinitialiser ma progression', 'chassesautresor-com')
+            );
+
+            return $response([
+                'cta_html'    => $button_html,
+                'cta_message' => '<p class="cta-reset-demo__message">' . esc_html__(
+                    'Vous participez à cette chasse de démonstration.',
+                    'chassesautresor-com'
+                ) . '</p>',
+                'type'        => 'reset_demo',
+            ]);
+        }
+
         return $response([
             'cta_html'    => '<a href="#chasse-enigmes-wrapper" class="bouton-secondaire">' . esc_html__('Voir mes énigmes', 'chassesautresor-com') . '</a>',
             'cta_message' => '<p>✅ ' . esc_html__('Vous participez à cette chasse', 'chassesautresor-com') . '</p>',

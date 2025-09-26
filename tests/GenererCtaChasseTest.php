@@ -384,10 +384,10 @@ class GenererCtaChasseTest extends TestCase
         $cta = generer_cta_chasse(123, 21);
 
         $this->assertTrue(ca_demo_is_demo_hunt(123));
-        $this->assertSame('engage', $cta['type']);
+        $this->assertSame('reset_demo', $cta['type']);
         $this->assertTrue($cta['is_demo']);
-        $this->assertStringContainsString('Voir mes énigmes', $cta['cta_html']);
-        $this->assertStringNotContainsString('<form', $cta['cta_html']);
+        $this->assertStringContainsString('Réinitialiser ma progression', $cta['cta_html']);
+        $this->assertStringContainsString('data-ca-demo-reset', $cta['cta_html']);
     }
 
     public function test_finished_hunt_requires_engagement_cta(): void
