@@ -8,10 +8,81 @@ if (!function_exists('current_user_can')) {
     }
 }
 
+if (!class_exists('WP_User')) {
+    class WP_User
+    {
+        public int $ID = 0;
+
+        public string $user_login = '';
+
+        public array $roles = [];
+
+        /**
+         * @param mixed $data
+         */
+        public function __construct($data = 0)
+        {
+            if (is_object($data)) {
+                $this->ID         = isset($data->ID) ? (int) $data->ID : 0;
+                $this->user_login = isset($data->user_login) ? (string) $data->user_login : '';
+            } elseif (is_array($data)) {
+                $this->ID         = isset($data['ID']) ? (int) $data['ID'] : 0;
+                $this->user_login = isset($data['user_login']) ? (string) $data['user_login'] : '';
+            } elseif (is_int($data)) {
+                $this->ID         = $data;
+                $this->user_login = 'user' . $data;
+            } else {
+                $this->user_login = (string) $data;
+            }
+        }
+
+        public function add_role($role): void
+        {
+            if (!in_array($role, $this->roles, true)) {
+                $this->roles[] = $role;
+            }
+        }
+
+        public function remove_role($role): void
+        {
+            $this->roles = array_values(array_filter(
+                $this->roles,
+                static function ($registered_role) use ($role) {
+                    return $registered_role !== $role;
+                }
+            ));
+        }
+
+        public function set_role($role): void
+        {
+            $this->roles = [$role];
+        }
+    }
+}
+
 if (!function_exists('utilisateur_est_organisateur_associe_a_chasse')) {
     function utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)
     {
         return false;
+    }
+}
+
+if (!function_exists('get_organisateur_from_chasse')) {
+    function get_organisateur_from_chasse($chasse_id)
+    {
+        return 5;
+    }
+}
+
+if (!function_exists('get_user_by')) {
+    function get_user_by($field, $value)
+    {
+        $login = ((int) $value === 42) ? 'demo' : 'regular';
+
+        return new WP_User([
+            'ID'         => (int) $value,
+            'user_login' => $login,
+        ]);
     }
 }
 
@@ -103,6 +174,39 @@ if (!function_exists('date_i18n')) {
     }
 }
 
+if (!function_exists('get_user_points')) {
+    function get_user_points($user_id)
+    {
+        return 100;
+    }
+}
+
+if (!function_exists('apply_filters')) {
+    function apply_filters($hook, ...$args)
+    {
+        $value = $args[0] ?? null;
+
+        if ($hook === 'ca_demo_organisateur_logins') {
+            return ['demo'];
+        }
+
+        if ($hook === 'ca_demo_is_demo_hunt') {
+            $chasse_id  = $args[1] ?? null;
+            $overrides = $GLOBALS['force_demo_overrides'] ?? [];
+
+            if ($chasse_id !== null && isset($overrides[$chasse_id])) {
+                return (bool) $overrides[$chasse_id];
+            }
+        }
+
+        return $value;
+    }
+}
+
+if (!defined('CA_DEMO_ORGANISATEUR_LOGINS')) {
+    define('CA_DEMO_ORGANISATEUR_LOGINS', []);
+}
+
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/chasse-functions.php';
 
 /**
@@ -116,7 +220,9 @@ class GenererCtaChasseTest extends TestCase
         $GLOBALS['force_admin_override']        = true;
         $GLOBALS['force_engage_override']       = false;
         $GLOBALS['force_organisateur_override'] = false;
-        $GLOBALS['get_field_values']            = [];
+        $GLOBALS['get_field_values']            = [
+            'utilisateurs_associes' => [],
+        ];
         $cta                                    = generer_cta_chasse(123, 5);
 
         $this->assertSame(
@@ -124,6 +230,7 @@ class GenererCtaChasseTest extends TestCase
                 'cta_html'    => '<button class="bouton-cta" disabled>Participer</button>',
                 'cta_message' => '',
                 'type'        => 'indisponible',
+                'is_demo'     => false,
             ],
             $cta
         );
@@ -134,7 +241,9 @@ class GenererCtaChasseTest extends TestCase
         $GLOBALS['force_admin_override']        = false;
         $GLOBALS['force_engage_override']       = false;
         $GLOBALS['force_organisateur_override'] = false;
-        $GLOBALS['get_field_values']            = [];
+        $GLOBALS['get_field_values']            = [
+            'utilisateurs_associes' => [],
+        ];
         $cta                                    = generer_cta_chasse(123, 0);
 
         $this->assertSame(
@@ -142,6 +251,7 @@ class GenererCtaChasseTest extends TestCase
                 'cta_html'    => '<a href="https://example.com/wp-login.php?redirect_to=https%3A%2F%2Fexample.com%2Fchasse%2F123" class="bouton-cta bouton-cta--color">S\'identifier</a>',
                 'cta_message' => '',
                 'type'        => 'connexion',
+                'is_demo'     => false,
             ],
             $cta
         );
@@ -152,7 +262,9 @@ class GenererCtaChasseTest extends TestCase
         $GLOBALS['force_admin_override']        = false;
         $GLOBALS['force_engage_override']       = true;
         $GLOBALS['force_organisateur_override'] = false;
-        $GLOBALS['get_field_values']            = [];
+        $GLOBALS['get_field_values']            = [
+            'utilisateurs_associes' => [],
+        ];
         $cta                                    = generer_cta_chasse(123, 1);
 
         $this->assertSame(
@@ -160,6 +272,7 @@ class GenererCtaChasseTest extends TestCase
                 'cta_html'    => '<a href="#chasse-enigmes-wrapper" class="bouton-secondaire">Voir mes énigmes</a>',
                 'cta_message' => '<p>✅ Vous participez à cette chasse</p>',
                 'type'        => 'engage',
+                'is_demo'     => false,
             ],
             $cta
         );
@@ -173,6 +286,7 @@ class GenererCtaChasseTest extends TestCase
         $GLOBALS['get_field_values']            = [
             'chasse_cache_statut'            => 'en_cours',
             'chasse_cache_statut_validation' => 'valide',
+            'utilisateurs_associes'          => [],
         ];
 
         $cta          = generer_cta_chasse(123, 5);
@@ -183,6 +297,7 @@ class GenererCtaChasseTest extends TestCase
                 'cta_html'    => '<a href="' . $expected_url . '" class="bouton-secondaire">Statistiques</a>',
                 'cta_message' => '',
                 'type'        => 'statistiques',
+                'is_demo'     => false,
             ],
             $cta
         );
@@ -196,6 +311,7 @@ class GenererCtaChasseTest extends TestCase
         $GLOBALS['get_field_values']            = [
             'chasse_cache_statut'            => 'en_cours',
             'chasse_cache_statut_validation' => 'active',
+            'utilisateurs_associes'          => [],
         ];
 
         $cta          = generer_cta_chasse(456, 7);
@@ -206,6 +322,7 @@ class GenererCtaChasseTest extends TestCase
                 'cta_html'    => '<a href="' . $expected_url . '" class="bouton-secondaire">Statistiques</a>',
                 'cta_message' => '',
                 'type'        => 'statistiques',
+                'is_demo'     => false,
             ],
             $cta
         );
@@ -219,6 +336,7 @@ class GenererCtaChasseTest extends TestCase
         $GLOBALS['get_field_values']            = [
             'chasse_cache_statut'            => 'payante',
             'chasse_cache_statut_validation' => 'valide',
+            'utilisateurs_associes'          => [],
         ];
 
         $cta          = generer_cta_chasse(789, 11);
@@ -229,10 +347,49 @@ class GenererCtaChasseTest extends TestCase
                 'cta_html'    => '<a href="' . $expected_url . '" class="bouton-secondaire">Statistiques</a>',
                 'cta_message' => '',
                 'type'        => 'statistiques',
+                'is_demo'     => false,
             ],
             $cta
         );
     }
+
+    public function test_demo_hunt_returns_virtual_engagement_cta(): void
+    {
+        $GLOBALS['force_admin_override']        = false;
+        unset($GLOBALS['force_engage_override']);
+        $GLOBALS['force_organisateur_override'] = false;
+        $GLOBALS['force_demo_overrides']        = [123 => true];
+        $GLOBALS['get_field_values']            = [
+            'chasse_cache_statut'            => 'en_cours',
+            'chasse_cache_statut_validation' => 'valide',
+            'utilisateurs_associes'          => [
+                ['ID' => 42],
+            ],
+        ];
+        $GLOBALS['wpdb'] = new class
+        {
+            public string $prefix = 'wp_';
+
+            public function prepare(string $query, ...$args): string
+            {
+                return $query;
+            }
+
+            public function get_var(string $query)
+            {
+                return null;
+            }
+        };
+
+        $cta = generer_cta_chasse(123, 21);
+
+        $this->assertTrue(ca_demo_is_demo_hunt(123));
+        $this->assertSame('engage', $cta['type']);
+        $this->assertTrue($cta['is_demo']);
+        $this->assertStringContainsString('Voir mes énigmes', $cta['cta_html']);
+        $this->assertStringNotContainsString('<form', $cta['cta_html']);
+    }
+
     public function test_finished_hunt_requires_engagement_cta(): void
     {
         $GLOBALS['force_admin_override']        = false;
@@ -241,6 +398,7 @@ class GenererCtaChasseTest extends TestCase
         $GLOBALS['get_field_values']            = [
             'chasse_cache_statut'            => 'termine',
             'chasse_cache_statut_validation' => 'valide',
+            'utilisateurs_associes'          => [],
         ];
 
         $cta = generer_cta_chasse(123, 5);
@@ -250,6 +408,7 @@ class GenererCtaChasseTest extends TestCase
                 'cta_html'    => '<form method="post" action="/traitement-engagement" class="cta-chasse-form"><input type="hidden" name="chasse_id" value="123"><button type="submit" class="bouton-cta bouton-cta--color">Redécouvrir</button></form>',
                 'cta_message' => 'Cette chasse est terminée',
                 'type'        => 'engager',
+                'is_demo'     => false,
             ],
             $cta,
         );

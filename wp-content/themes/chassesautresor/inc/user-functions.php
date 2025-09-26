@@ -788,24 +788,26 @@ function myaccount_get_persistent_messages(int $user_id): array
  *
  * @return void
  */
-function myaccount_add_flash_message(
-    int $user_id,
-    string $message,
-    string $type = 'info',
-    bool $dismissible = false
-): void {
-    global $wpdb;
+if (!function_exists('myaccount_add_flash_message')) {
+    function myaccount_add_flash_message(
+        int $user_id,
+        string $message,
+        string $type = 'info',
+        bool $dismissible = false
+    ): void {
+        global $wpdb;
 
-    $repo = new UserMessageRepository($wpdb);
-    $repo->insert(
-        $user_id,
-        wp_json_encode([
-            'text'        => $message,
-            'type'        => $type,
-            'dismissible' => $dismissible,
-        ]),
-        'flash'
-    );
+        $repo = new UserMessageRepository($wpdb);
+        $repo->insert(
+            $user_id,
+            wp_json_encode([
+                'text'        => $message,
+                'type'        => $type,
+                'dismissible' => $dismissible,
+            ]),
+            'flash'
+        );
+    }
 }
 
 /**
@@ -815,27 +817,29 @@ function myaccount_add_flash_message(
  *
  * @return array<int, array{text:string,type:string,dismissible:bool}>
  */
-function myaccount_get_flash_messages(int $user_id): array
-{
-    global $wpdb;
+if (!function_exists('myaccount_get_flash_messages')) {
+    function myaccount_get_flash_messages(int $user_id): array
+    {
+        global $wpdb;
 
-    $repo = new UserMessageRepository($wpdb);
-    $rows = $repo->get($user_id, 'flash', false);
-    $messages = [];
+        $repo = new UserMessageRepository($wpdb);
+        $rows = $repo->get($user_id, 'flash', false);
+        $messages = [];
 
-    foreach ($rows as $row) {
-        $data = json_decode($row['message'], true);
-        if (is_array($data) && isset($data['text'])) {
-            $messages[] = [
-                'text'        => (string) $data['text'],
-                'type'        => isset($data['type']) ? (string) $data['type'] : 'info',
-                'dismissible' => !empty($data['dismissible']),
-            ];
+        foreach ($rows as $row) {
+            $data = json_decode($row['message'], true);
+            if (is_array($data) && isset($data['text'])) {
+                $messages[] = [
+                    'text'        => (string) $data['text'],
+                    'type'        => isset($data['type']) ? (string) $data['type'] : 'info',
+                    'dismissible' => !empty($data['dismissible']),
+                ];
+            }
+            $repo->delete((int) $row['id']);
         }
-        $repo->delete((int) $row['id']);
-    }
 
-    return $messages;
+        return $messages;
+    }
 }
 
 /**
@@ -1071,6 +1075,13 @@ function ca_get_user_engaged_hunt_ids(int $user_id): array
             continue;
         }
 
+        if (
+            function_exists('ca_demo_is_demo_hunt')
+            && ca_demo_is_demo_hunt($chasse_id)
+        ) {
+            continue;
+        }
+
         $chasse_ids[] = $chasse_id;
     }
 
@@ -1180,6 +1191,33 @@ function ca_render_recommended_hunts_empty_state(): string
     $query_args = apply_filters('ca_recommended_hunts_empty_state_query_args', $query_args);
 
     $recommended_query = new WP_Query($query_args);
+
+    if (
+        is_object($recommended_query)
+        && isset($recommended_query->posts)
+        && is_array($recommended_query->posts)
+    ) {
+        $recommended_query->posts = array_values(array_filter(
+            $recommended_query->posts,
+            static function ($post) {
+                $chasse_id = is_object($post) ? ($post->ID ?? 0) : (int) $post;
+
+                if ($chasse_id <= 0) {
+                    return false;
+                }
+
+                return !function_exists('ca_demo_is_demo_hunt')
+                    || !ca_demo_is_demo_hunt((int) $chasse_id);
+            }
+        ));
+        $recommended_query->post_count = count($recommended_query->posts);
+        if (property_exists($recommended_query, 'found_posts')) {
+            $recommended_query->found_posts = $recommended_query->post_count;
+        }
+        if (method_exists($recommended_query, 'rewind_posts')) {
+            $recommended_query->rewind_posts();
+        }
+    }
 
     $catalog_url = apply_filters(
         'ca_recommended_hunts_catalog_url',
