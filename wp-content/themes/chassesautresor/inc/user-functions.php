@@ -1241,6 +1241,38 @@ function ca_render_recommended_hunts_empty_state(): string
         }
     }
 
+    if (count($recommended_ids) < 3) {
+        $completed_query_args = apply_filters(
+            'ca_recommended_hunts_completed_query_args',
+            [
+                'post_type'      => 'chasse',
+                'post_status'    => 'publish',
+                'posts_per_page' => 3 - count($recommended_ids),
+                'orderby'        => 'date',
+                'order'          => 'DESC',
+                'no_found_rows'  => true,
+                'fields'         => 'ids',
+                'suppress_filters' => false,
+                'meta_query'     => [
+                    [
+                        'key'   => 'chasse_cache_statut',
+                        'value' => 'termine',
+                    ],
+                    [
+                        'key'   => 'chasse_cache_statut_validation',
+                        'value' => 'valide',
+                    ],
+                ],
+                'post__not_in'   => $recommended_ids,
+            ]
+        );
+
+        $completed_ids = array_map('intval', get_posts($completed_query_args));
+        if (!empty($completed_ids)) {
+            $recommended_ids = array_values(array_unique(array_merge($recommended_ids, $completed_ids)));
+        }
+    }
+
     $recommended_ids = array_slice($recommended_ids, 0, 3);
 
     /**
