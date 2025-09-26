@@ -14,7 +14,9 @@ if (!defined('CA_DEMO_ORGANISATEUR_LOGINS')) {
      *
      * Utilisez le filtre `ca_demo_organisateur_logins` pour enrichir cette liste dynamiquement.
      */
-    define('CA_DEMO_ORGANISATEUR_LOGINS', []);
+    define('CA_DEMO_ORGANISATEUR_LOGINS', [
+        'organisateur1',
+    ]);
 }
 
 // --------------------------------------------------

@@ -6,6 +6,7 @@ Le thème permet de marquer automatiquement certaines chasses comme « Démo�
 
 - **Constante** : `CA_DEMO_ORGANISATEUR_LOGINS`
   - Définit la liste par défaut des logins organisateur pour lesquels toutes les chasses liées doivent être considérées comme des chasses de démonstration.
+  - Par défaut, le login `organisateur1` est configuré comme organisateur de démonstration.
   - La constante peut être définie dans `wp-config.php` ou dans un mu-plugin avant le chargement du thème.
 - **Filtre** : `ca_demo_organisateur_logins`
   - Permet d’ajouter/supprimer dynamiquement des logins à la liste finale utilisée par le cœur du thème.
