@@ -46,18 +46,24 @@
       slide.setAttribute('aria-label', `${index + 1} / ${totalSlides}`);
     });
 
-    function getViewportWidth() {
-      if (!viewport) {
+    function getOffset() {
+      if (!slides.length) {
         return 0;
       }
 
-      const { clientWidth } = viewport;
-      return clientWidth || 0;
+      const activeSlide = slides[currentIndex];
+      if (!activeSlide) {
+        return 0;
+      }
+
+      const firstSlide = slides[0];
+      const baseOffset = firstSlide ? firstSlide.offsetLeft : 0;
+      const targetOffset = activeSlide.offsetLeft;
+      return Math.max(0, targetOffset - baseOffset);
     }
 
     function update() {
-      const viewportWidth = getViewportWidth();
-      const offset = viewportWidth * currentIndex;
+      const offset = getOffset();
       track.style.transform = `translate3d(-${offset}px, 0, 0)`;
       slides.forEach((slide, index) => {
         const isActive = index === currentIndex;
@@ -111,11 +117,21 @@
       window.requestAnimationFrame(update);
     };
 
-    window.addEventListener('resize', handleResize);
+    let resizeObserver = null;
+    if (typeof ResizeObserver === 'function' && viewport) {
+      resizeObserver = new ResizeObserver(handleResize);
+      resizeObserver.observe(viewport);
+    } else {
+      window.addEventListener('resize', handleResize);
+    }
 
     let observer = null;
     const cleanup = () => {
-      window.removeEventListener('resize', handleResize);
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      } else {
+        window.removeEventListener('resize', handleResize);
+      }
       slider.removeEventListener('recommended-slider:destroy', cleanup);
       if (observer) {
         observer.disconnect();
