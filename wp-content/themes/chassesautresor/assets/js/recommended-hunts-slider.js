@@ -32,6 +32,7 @@
     let slideOffsets = [];
     let resizeObserver = null;
     let resizeHandler = null;
+    let autoplayId = null;
 
     const label = slider.getAttribute('data-slider-label');
     if (label) {
@@ -77,29 +78,73 @@
       }
     }
 
-    function goTo(index) {
-      if (index === currentIndex) {
-        return;
+    function goTo(index, options = {}) {
+      const settings = Object.assign({ wrap: false }, options);
+
+      if (totalSlides <= 1) {
+        return false;
       }
 
-      const clampedIndex = Math.max(0, Math.min(index, totalSlides - 1));
-      if (clampedIndex === currentIndex) {
-        return;
+      const maxIndex = totalSlides - 1;
+      let targetIndex = index;
+
+      if (settings.wrap) {
+        targetIndex = ((index % totalSlides) + totalSlides) % totalSlides;
+      } else {
+        targetIndex = Math.max(0, Math.min(index, maxIndex));
       }
 
-      currentIndex = clampedIndex;
+      if (targetIndex === currentIndex) {
+        return false;
+      }
+
+      currentIndex = targetIndex;
       update();
+      return true;
+    }
+
+    function stopAutoplay() {
+      if (autoplayId) {
+        window.clearInterval(autoplayId);
+        autoplayId = null;
+      }
+    }
+
+    function startAutoplay() {
+      if (autoplayId || totalSlides <= 1) {
+        return;
+      }
+
+      const delay = Number(slider.getAttribute('data-slider-autoplay-delay')) || 6000;
+      autoplayId = window.setInterval(() => {
+        const changed = goTo(currentIndex + 1, { wrap: true });
+        if (!changed && totalSlides > 1) {
+          currentIndex = 0;
+          update();
+        }
+      }, Math.max(delay, 1000));
+    }
+
+    function restartAutoplay() {
+      stopAutoplay();
+      startAutoplay();
     }
 
     if (prev) {
       prev.addEventListener('click', () => {
-        goTo(currentIndex - 1);
+        const moved = goTo(currentIndex - 1);
+        if (moved) {
+          restartAutoplay();
+        }
       });
     }
 
     if (next) {
       next.addEventListener('click', () => {
-        goTo(currentIndex + 1);
+        const moved = goTo(currentIndex + 1);
+        if (moved) {
+          restartAutoplay();
+        }
       });
     }
 
@@ -110,10 +155,25 @@
 
       if (event.key === 'ArrowLeft') {
         event.preventDefault();
-        goTo(currentIndex - 1);
+        const moved = goTo(currentIndex - 1);
+        if (moved) {
+          restartAutoplay();
+        }
       } else if (event.key === 'ArrowRight') {
         event.preventDefault();
-        goTo(currentIndex + 1);
+        const moved = goTo(currentIndex + 1);
+        if (moved) {
+          restartAutoplay();
+        }
+      }
+    });
+
+    slider.addEventListener('mouseenter', stopAutoplay);
+    slider.addEventListener('mouseleave', startAutoplay);
+    slider.addEventListener('focusin', stopAutoplay);
+    slider.addEventListener('focusout', (event) => {
+      if (!slider.contains(event.relatedTarget)) {
+        startAutoplay();
       }
     });
 
@@ -132,12 +192,14 @@
         window.removeEventListener('resize', resizeHandler);
         resizeHandler = null;
       }
+      stopAutoplay();
     };
 
     slider.addEventListener('recommended-slider:destroy', cleanup);
 
     refreshOffsets();
     update();
+    startAutoplay();
 
     if (typeof ResizeObserver === 'function') {
       resizeObserver = new ResizeObserver(handleResize);
