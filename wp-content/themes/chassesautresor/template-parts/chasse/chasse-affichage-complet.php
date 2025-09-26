@@ -538,7 +538,20 @@ if ($edition_active && !$est_complet) {
           ?>
           <div class="cta-chasse-row"<?php echo $cta_id ? ' id="' . esc_attr($cta_id) . '"' : ''; ?>>
             <div class="cta-message" aria-live="polite"><?= $cta_data['cta_message']; ?></div>
-            <div class="cta-action"><?= $cta_data['cta_html']; ?></div>
+            <div class="cta-action">
+              <?= $cta_data['cta_html']; ?>
+              <?php if ($cta_type === 'reset_demo') : ?>
+                <p class="cta-reset-demo__confirm">
+                  <?php esc_html_e('Confirmez la réinitialisation dans la fenêtre qui s’ouvrira.', 'chassesautresor-com'); ?>
+                </p>
+                <a
+                  class="cta-reset-demo__fallback bouton-secondaire"
+                  href="<?= esc_url(get_permalink($chasse_id) . '#chasse-enigmes-wrapper'); ?>"
+                >
+                  <?php esc_html_e('Voir mes énigmes', 'chassesautresor-com'); ?>
+                </a>
+              <?php endif; ?>
+            </div>
           </div>
           </div>
 
