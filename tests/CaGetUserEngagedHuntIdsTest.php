@@ -61,85 +61,27 @@ class CaGetUserEngagedHuntIdsTest extends TestCase
 {
     public function test_demo_hunts_are_filtered_out(): void
     {
-        if (!defined('ABSPATH')) {
-            define('ABSPATH', __DIR__ . '/fixtures/');
-        }
+        $this->bootstrapDemoTestEnvironment();
 
-        if (!function_exists('apply_filters')) {
-            function apply_filters($hook, $value, ...$args)
-            {
-                global $wp_filter;
+        require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/constants.php';
 
-                if (
-                    isset($wp_filter[$hook])
-                    && is_object($wp_filter[$hook])
-                    && method_exists($wp_filter[$hook], 'apply_filters')
-                ) {
-                    $arguments = $args;
-                    array_unshift($arguments, $value);
+        $GLOBALS['test_chasse_organisateur_map'] = [
+            60 => 5,
+            70 => 10,
+            80 => 10,
+            90 => 5,
+        ];
 
-                    return $wp_filter[$hook]->apply_filters($value, $arguments);
-                }
-
-                return $value;
-            }
-        }
-
-        if (!function_exists('get_post_status')) {
-            function get_post_status($post_id)
-            {
-                return 'publish';
-            }
-        }
-
-        if (!function_exists('get_field')) {
-            function get_field($field, $post_id = null)
-            {
-                global $fields, $post_fields;
-
-                return $fields[$post_id][$field] ?? $post_fields[$post_id][$field] ?? null;
-            }
-        }
-
-        if (!function_exists('user_can')) {
-            function user_can($user_id, $cap)
-            {
-                return false;
-            }
-        }
-
-        if (!function_exists('utilisateur_est_organisateur_associe_a_chasse')) {
-            function utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)
-            {
-                return false;
-            }
-        }
-
-        if (!function_exists('chasse_est_visible_pour_utilisateur')) {
-            function chasse_est_visible_pour_utilisateur($chasse_id, $user_id)
-            {
-                return true;
-            }
-        }
-
-        if (!function_exists('get_organisateur_from_chasse')) {
-            function get_organisateur_from_chasse($chasse_id)
-            {
-                return $chasse_id === 60 ? 5 : 10;
-            }
-        }
-
-        if (!function_exists('get_user_by')) {
-            function get_user_by($field, $value)
-            {
-                $login = ((int) $value === 42) ? 'demo' : 'regular';
-
-                return new WP_User([
-                    'ID'         => (int) $value,
-                    'user_login' => $login,
-                ]);
-            }
-        }
+        $GLOBALS['test_users_by_id'] = [
+            42 => [
+                'ID'         => 42,
+                'user_login' => 'demo',
+            ],
+            84 => [
+                'ID'         => 84,
+                'user_login' => 'regular',
+            ],
+        ];
 
         global $fields, $post_fields;
 
@@ -229,6 +171,121 @@ class CaGetUserEngagedHuntIdsTest extends TestCase
             $GLOBALS['wp_filter']['ca_demo_organisateur_logins'],
             $GLOBALS['wp_filter']['ca_demo_is_demo_hunt']
         );
+
+        unset(
+            $GLOBALS['test_chasse_organisateur_map'],
+            $GLOBALS['test_users_by_id']
+        );
+
         unset($GLOBALS['wpdb']);
+    }
+
+    public function test_default_demo_login_flags_hunt(): void
+    {
+        $script  = __DIR__ . '/scripts/verify_default_demo_login.php';
+        $command = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($script) . ' 2>&1';
+
+        exec($command, $output, $exitCode);
+
+        $this->assertSame(0, $exitCode, implode(PHP_EOL, $output));
+    }
+
+    private function bootstrapDemoTestEnvironment(): void
+    {
+        if (!defined('ABSPATH')) {
+            define('ABSPATH', __DIR__ . '/fixtures/');
+        }
+
+        if (!function_exists('apply_filters')) {
+            function apply_filters($hook, $value, ...$args)
+            {
+                global $wp_filter;
+
+                if (
+                    isset($wp_filter[$hook])
+                    && is_object($wp_filter[$hook])
+                    && method_exists($wp_filter[$hook], 'apply_filters')
+                ) {
+                    $arguments = $args;
+                    array_unshift($arguments, $value);
+
+                    return $wp_filter[$hook]->apply_filters($value, $arguments);
+                }
+
+                return $value;
+            }
+        }
+
+        if (!function_exists('get_post_status')) {
+            function get_post_status($post_id)
+            {
+                return 'publish';
+            }
+        }
+
+        if (!function_exists('get_field')) {
+            function get_field($field, $post_id = null)
+            {
+                global $fields, $post_fields;
+
+                return $fields[$post_id][$field] ?? $post_fields[$post_id][$field] ?? null;
+            }
+        }
+
+        if (!function_exists('user_can')) {
+            function user_can($user_id, $cap)
+            {
+                return false;
+            }
+        }
+
+        if (!function_exists('utilisateur_est_organisateur_associe_a_chasse')) {
+            function utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)
+            {
+                return false;
+            }
+        }
+
+        if (!function_exists('chasse_est_visible_pour_utilisateur')) {
+            function chasse_est_visible_pour_utilisateur($chasse_id, $user_id)
+            {
+                return true;
+            }
+        }
+
+        if (!function_exists('get_organisateur_from_chasse')) {
+            function get_organisateur_from_chasse($chasse_id)
+            {
+                $map = $GLOBALS['test_chasse_organisateur_map'] ?? [];
+
+                return $map[$chasse_id] ?? 0;
+            }
+        }
+
+        if (!function_exists('get_user_by')) {
+            function get_user_by($field, $value)
+            {
+                $users = $GLOBALS['test_users_by_id'] ?? [];
+
+                $user_id = (int) $value;
+
+                if ($field === 'id' && isset($users[$user_id])) {
+                    return new WP_User($users[$user_id]);
+                }
+
+                if ($field === 'login') {
+                    foreach ($users as $user) {
+                        if (isset($user['user_login']) && $user['user_login'] === $value) {
+                            return new WP_User($user);
+                        }
+                    }
+                }
+
+                return new WP_User([
+                    'ID'         => $user_id,
+                    'user_login' => $users[$user_id]['user_login'] ?? ('user' . $user_id),
+                ]);
+            }
+        }
     }
 }
