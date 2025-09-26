@@ -29,6 +29,7 @@
     const next = slider.querySelector(NEXT_SELECTOR);
     const totalSlides = slides.length;
     let currentIndex = 0;
+    let slideOffsets = [];
 
     const label = slider.getAttribute('data-slider-label');
     if (label) {
@@ -46,17 +47,25 @@
       slide.setAttribute('aria-label', `${index + 1} / ${totalSlides}`);
     });
 
+    function measureOffsets() {
+      const previousTransform = track.style.transform;
+      track.style.transform = 'translate3d(0, 0, 0)';
+
+      const baseOffset = slides[0] ? slides[0].offsetLeft : 0;
+      slideOffsets = slides.map((slide) => {
+        const offset = slide.offsetLeft - baseOffset;
+        return Number.isFinite(offset) && offset >= 0 ? offset : 0;
+      });
+
+      track.style.transform = previousTransform;
+    }
+
     function getOffset() {
-      if (!viewport) {
-        return 0;
+      if (!slideOffsets.length) {
+        measureOffsets();
       }
 
-      const viewportRect = viewport.getBoundingClientRect();
-      if (!viewportRect || viewportRect.width <= 0) {
-        return 0;
-      }
-
-      return Math.max(0, viewportRect.width * currentIndex);
+      return slideOffsets[currentIndex] || 0;
     }
 
     function update() {
@@ -77,10 +86,16 @@
     }
 
     function goTo(index) {
-      if (index < 0 || index >= totalSlides || index === currentIndex) {
+      if (index === currentIndex) {
         return;
       }
-      currentIndex = index;
+
+      const clampedIndex = Math.max(0, Math.min(index, totalSlides - 1));
+      if (clampedIndex === currentIndex) {
+        return;
+      }
+
+      currentIndex = clampedIndex;
       update();
     }
 
@@ -111,7 +126,10 @@
     });
 
     const handleResize = () => {
-      window.requestAnimationFrame(update);
+      window.requestAnimationFrame(() => {
+        measureOffsets();
+        update();
+      });
     };
 
     let resizeObserver = null;
@@ -147,6 +165,7 @@
       observer.observe(document.body, { childList: true, subtree: true });
     }
 
+    measureOffsets();
     slider.dataset.sliderReady = '1';
     update();
   }
