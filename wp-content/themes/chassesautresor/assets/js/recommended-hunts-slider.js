@@ -45,8 +45,18 @@
       slide.setAttribute('aria-label', `${index + 1} / ${totalSlides}`);
     });
 
+    function getOffset() {
+      const activeSlide = slides[currentIndex];
+      if (!activeSlide) {
+        return 0;
+      }
+
+      return activeSlide.offsetLeft || 0;
+    }
+
     function update() {
-      track.style.transform = `translateX(-${currentIndex * 100}%)`;
+      const offset = getOffset();
+      track.style.transform = `translate3d(-${offset}px, 0, 0)`;
       slides.forEach((slide, index) => {
         const isActive = index === currentIndex;
         slide.classList.toggle('is-active', isActive);
@@ -94,6 +104,33 @@
         goTo(currentIndex + 1);
       }
     });
+
+    const handleResize = () => {
+      window.requestAnimationFrame(update);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    let observer = null;
+    const cleanup = () => {
+      window.removeEventListener('resize', handleResize);
+      slider.removeEventListener('recommended-slider:destroy', cleanup);
+      if (observer) {
+        observer.disconnect();
+      }
+    };
+
+    slider.addEventListener('recommended-slider:destroy', cleanup);
+
+    if (typeof MutationObserver === 'function') {
+      observer = new MutationObserver(() => {
+        if (!document.body.contains(slider)) {
+          cleanup();
+        }
+      });
+
+      observer.observe(document.body, { childList: true, subtree: true });
+    }
 
     slider.dataset.sliderReady = '1';
     update();

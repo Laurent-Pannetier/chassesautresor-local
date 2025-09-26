@@ -738,10 +738,9 @@
     scroll-snap-type: x mandatory;
 }
 
+
 .recommended-slider__track {
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: 100%;
+    display: flex;
     width: 100%;
     min-height: 100%;
     transition: transform 0.4s ease;
@@ -749,6 +748,7 @@
 }
 
 .recommended-slider__slide {
+    flex: 0 0 100%;
     scroll-snap-align: center;
 }
 
