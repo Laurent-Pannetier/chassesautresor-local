@@ -8,312 +8,395 @@ defined('ABSPATH') || exit();
  *
  * @return bool
  */
-function ca_demo_is_demo_hunt(int $chasse_id): bool
-{
-    static $cache = [];
-
-    if ($chasse_id <= 0) {
-        return false;
-    }
-
-    $overrides = $GLOBALS['force_demo_overrides'] ?? [];
-    if (isset($overrides[$chasse_id])) {
-        return (bool) $overrides[$chasse_id];
-    }
-
-    if (isset($cache[$chasse_id])) {
-        return $cache[$chasse_id];
-    }
-
-    if (!function_exists('get_organisateur_from_chasse')) {
-        $cache[$chasse_id] = false;
-
-        return $cache[$chasse_id];
-    }
-
-    $organisateur_id = get_organisateur_from_chasse($chasse_id);
-    if (!$organisateur_id) {
-        $cache[$chasse_id] = false;
-
-        return $cache[$chasse_id];
-    }
-
-    $configured_logins = CA_DEMO_ORGANISATEUR_LOGINS;
-    if (!is_array($configured_logins)) {
-        $configured_logins = [];
-    }
-
-    $configured_logins = array_filter(array_map(
-        static function ($login) {
-            $login = is_string($login) ? trim($login) : '';
-
-            return $login !== '' ? strtolower($login) : null;
-        },
-        $configured_logins
-    ));
-
-    /** @var string[] $allowed_logins */
-    $allowed_logins = apply_filters('ca_demo_organisateur_logins', array_values($configured_logins));
-    $allowed_logins = array_filter(array_map(
-        static function ($login) {
-            return is_string($login) ? strtolower(trim($login)) : null;
-        },
-        $allowed_logins
-    ));
-
-    if (empty($allowed_logins)) {
-        $cache[$chasse_id] = (bool) apply_filters(
+if (!function_exists('ca_demo_is_demo_hunt')) {
+    function ca_demo_is_demo_hunt(int $chasse_id): bool
+    {
+        static $cache = [];
+    
+        if ($chasse_id <= 0) {
+            return false;
+        }
+    
+        $overrides = $GLOBALS['force_demo_overrides'] ?? [];
+        if (isset($overrides[$chasse_id])) {
+            return (bool) $overrides[$chasse_id];
+        }
+    
+        if (isset($cache[$chasse_id])) {
+            return $cache[$chasse_id];
+        }
+    
+        if (!function_exists('get_organisateur_from_chasse')) {
+            $cache[$chasse_id] = false;
+    
+            return $cache[$chasse_id];
+        }
+    
+        $organisateur_id = get_organisateur_from_chasse($chasse_id);
+        if (!$organisateur_id) {
+            $cache[$chasse_id] = false;
+    
+            return $cache[$chasse_id];
+        }
+    
+        $configured_logins = CA_DEMO_ORGANISATEUR_LOGINS;
+        if (!is_array($configured_logins)) {
+            $configured_logins = [];
+        }
+    
+        $configured_logins = array_filter(array_map(
+            static function ($login) {
+                $login = is_string($login) ? trim($login) : '';
+    
+                return $login !== '' ? strtolower($login) : null;
+            },
+            $configured_logins
+        ));
+    
+        /** @var string[] $allowed_logins */
+        $allowed_logins = apply_filters('ca_demo_organisateur_logins', array_values($configured_logins));
+        $allowed_logins = array_filter(array_map(
+            static function ($login) {
+                return is_string($login) ? strtolower(trim($login)) : null;
+            },
+            $allowed_logins
+        ));
+    
+        if (empty($allowed_logins)) {
+            $cache[$chasse_id] = (bool) apply_filters(
+                'ca_demo_is_demo_hunt',
+                false,
+                $chasse_id,
+                [
+                    'organisateur_id' => $organisateur_id,
+                    'allowed_logins'  => [],
+                ]
+            );
+    
+            return $cache[$chasse_id];
+        }
+    
+        $associated_users = function_exists('get_field')
+            ? get_field('utilisateurs_associes', $organisateur_id)
+            : [];
+        if (!is_array($associated_users) || empty($associated_users)) {
+            $cache[$chasse_id] = (bool) apply_filters(
+                'ca_demo_is_demo_hunt',
+                false,
+                $chasse_id,
+                [
+                    'organisateur_id' => $organisateur_id,
+                    'allowed_logins'  => $allowed_logins,
+                ]
+            );
+    
+            return $cache[$chasse_id];
+        }
+    
+        $is_demo = false;
+    
+        foreach ($associated_users as $user_entry) {
+            if ($user_entry instanceof WP_User) {
+                $user = $user_entry;
+            } elseif (is_array($user_entry) && isset($user_entry['ID'])) {
+                $user = get_user_by('id', (int) $user_entry['ID']);
+            } elseif (is_numeric($user_entry)) {
+                $user = get_user_by('id', (int) $user_entry);
+            } else {
+                $user = null;
+            }
+    
+            if (!$user instanceof WP_User) {
+                continue;
+            }
+    
+            $login = strtolower($user->user_login);
+            if (in_array($login, $allowed_logins, true)) {
+                $is_demo = true;
+                break;
+            }
+        }
+    
+        $filtered = (bool) apply_filters(
             'ca_demo_is_demo_hunt',
-            false,
-            $chasse_id,
-            [
-                'organisateur_id' => $organisateur_id,
-                'allowed_logins'  => [],
-            ]
-        );
-
-        return $cache[$chasse_id];
-    }
-
-    $associated_users = function_exists('get_field')
-        ? get_field('utilisateurs_associes', $organisateur_id)
-        : [];
-    if (!is_array($associated_users) || empty($associated_users)) {
-        $cache[$chasse_id] = (bool) apply_filters(
-            'ca_demo_is_demo_hunt',
-            false,
+            $is_demo,
             $chasse_id,
             [
                 'organisateur_id' => $organisateur_id,
                 'allowed_logins'  => $allowed_logins,
             ]
         );
-
+    
+        $cache[$chasse_id] = $filtered;
+    
         return $cache[$chasse_id];
     }
-
-    $is_demo = false;
-
-    foreach ($associated_users as $user_entry) {
-        if ($user_entry instanceof WP_User) {
-            $user = $user_entry;
-        } elseif (is_array($user_entry) && isset($user_entry['ID'])) {
-            $user = get_user_by('id', (int) $user_entry['ID']);
-        } elseif (is_numeric($user_entry)) {
-            $user = get_user_by('id', (int) $user_entry);
-        } else {
-            $user = null;
-        }
-
-        if (!$user instanceof WP_User) {
-            continue;
-        }
-
-        $login = strtolower($user->user_login);
-        if (in_array($login, $allowed_logins, true)) {
-            $is_demo = true;
-            break;
-        }
-    }
-
-    $filtered = (bool) apply_filters(
-        'ca_demo_is_demo_hunt',
-        $is_demo,
-        $chasse_id,
-        [
-            'organisateur_id' => $organisateur_id,
-            'allowed_logins'  => $allowed_logins,
-        ]
-    );
-
-    $cache[$chasse_id] = $filtered;
-
-    return $cache[$chasse_id];
 }
 
-function ca_demo_reset_user_progress(int $chasse_id, int $user_id): bool
-{
-    if ($chasse_id <= 0 || $user_id <= 0) {
-        return false;
-    }
-
-    if (!ca_demo_is_demo_hunt($chasse_id)) {
-        return false;
-    }
-
-    global $wpdb;
-
-    if (!isset($wpdb)) {
-        return false;
-    }
-
-    $chasse_id = (int) $chasse_id;
-    $user_id   = (int) $user_id;
-
-    $engagements_table = $wpdb->prefix . 'engagements';
-    $statuts_table     = $wpdb->prefix . 'enigme_statuts_utilisateur';
-    $tentatives_table  = $wpdb->prefix . 'enigme_tentatives';
-    $indices_table     = $wpdb->prefix . 'indices_deblocages';
-    $winners_table     = $wpdb->prefix . 'chasse_winners';
-
-    $enigme_ids = [];
-    if (function_exists('recuperer_enigmes_associees')) {
-        $enigme_ids = array_map('intval', recuperer_enigmes_associees($chasse_id));
-    }
-
-    $db_enigmes = $wpdb->get_col(
-        $wpdb->prepare(
-            "SELECT DISTINCT enigme_id FROM {$engagements_table} WHERE user_id = %d AND chasse_id = %d AND enigme_id IS NOT NULL",
-            $user_id,
-            $chasse_id
-        )
-    );
-
-    if (!empty($db_enigmes)) {
-        $enigme_ids = array_merge($enigme_ids, array_map('intval', $db_enigmes));
-    }
-
-    $enigme_ids = array_values(array_filter(array_unique($enigme_ids)));
-
-    $indice_ids = $wpdb->get_col(
-        $wpdb->prepare(
-            "SELECT DISTINCT indice_id FROM {$indices_table} WHERE user_id = %d AND chasse_id = %d",
-            $user_id,
-            $chasse_id
-        )
-    );
-
-    if (!empty($enigme_ids)) {
-        $placeholders = implode(',', array_fill(0, count($enigme_ids), '%d'));
-        $indices_from_enigmes = $wpdb->get_col(
+if (!function_exists('ca_demo_reset_user_progress')) {
+    function ca_demo_reset_user_progress(int $chasse_id, int $user_id): bool
+    {
+        if ($chasse_id <= 0 || $user_id <= 0) {
+            return false;
+        }
+    
+        if (!ca_demo_is_demo_hunt($chasse_id)) {
+            return false;
+        }
+    
+        global $wpdb;
+    
+        if (!isset($wpdb)) {
+            return false;
+        }
+    
+        $chasse_id = (int) $chasse_id;
+        $user_id   = (int) $user_id;
+    
+        $engagements_table = $wpdb->prefix . 'engagements';
+        $statuts_table     = $wpdb->prefix . 'enigme_statuts_utilisateur';
+        $tentatives_table  = $wpdb->prefix . 'enigme_tentatives';
+        $indices_table     = $wpdb->prefix . 'indices_deblocages';
+        $winners_table     = $wpdb->prefix . 'chasse_winners';
+    
+        $enigme_ids = [];
+        if (function_exists('recuperer_enigmes_associees')) {
+            $enigme_ids = array_map('intval', recuperer_enigmes_associees($chasse_id));
+        }
+    
+        $db_enigmes = $wpdb->get_col(
             $wpdb->prepare(
-                "SELECT DISTINCT indice_id FROM {$indices_table} WHERE user_id = %d AND enigme_id IN ({$placeholders})",
-                array_merge([$user_id], $enigme_ids)
+                "SELECT DISTINCT enigme_id FROM {$engagements_table} WHERE user_id = %d AND chasse_id = %d AND enigme_id IS NOT NULL",
+                $user_id,
+                $chasse_id
             )
         );
-
-        if (!empty($indices_from_enigmes)) {
-            $indice_ids = array_merge($indice_ids, array_map('intval', $indices_from_enigmes));
+    
+        if (!empty($db_enigmes)) {
+            $enigme_ids = array_merge($enigme_ids, array_map('intval', $db_enigmes));
         }
-    }
-
-    $indice_ids = array_values(array_filter(array_unique(array_map('intval', $indice_ids))));
-
-    $wpdb->delete($winners_table, ['user_id' => $user_id, 'chasse_id' => $chasse_id], ['%d', '%d']);
-
-    $remaining_winners = $wpdb->get_results(
-        $wpdb->prepare(
-            "SELECT user_id, date_win FROM {$winners_table} WHERE chasse_id = %d ORDER BY date_win ASC",
-            $chasse_id
-        )
-    );
-
-    $winner_names = [];
-    $win_date     = null;
-
-    foreach ($remaining_winners as $row) {
-        $winner_id = isset($row->user_id) ? (int) $row->user_id : 0;
-        $user      = $winner_id > 0 ? get_userdata($winner_id) : null;
-
-        if ($user) {
-            $display_name = $user->display_name ?: $user->user_login;
-            if ($display_name !== '') {
-                $winner_names[] = $display_name;
+    
+        $enigme_ids = array_values(array_filter(array_unique($enigme_ids)));
+    
+        $indice_ids = $wpdb->get_col(
+            $wpdb->prepare(
+                "SELECT DISTINCT indice_id FROM {$indices_table} WHERE user_id = %d AND chasse_id = %d",
+                $user_id,
+                $chasse_id
+            )
+        );
+    
+        if (!empty($enigme_ids)) {
+            $placeholders = implode(',', array_fill(0, count($enigme_ids), '%d'));
+            $indices_from_enigmes = $wpdb->get_col(
+                $wpdb->prepare(
+                    "SELECT DISTINCT indice_id FROM {$indices_table} WHERE user_id = %d AND enigme_id IN ({$placeholders})",
+                    array_merge([$user_id], $enigme_ids)
+                )
+            );
+    
+            if (!empty($indices_from_enigmes)) {
+                $indice_ids = array_merge($indice_ids, array_map('intval', $indices_from_enigmes));
             }
         }
-
-        if ($win_date === null && !empty($row->date_win)) {
-            $win_date = (string) $row->date_win;
+    
+        $indice_ids = array_values(array_filter(array_unique(array_map('intval', $indice_ids))));
+    
+        $wpdb->delete($winners_table, ['user_id' => $user_id, 'chasse_id' => $chasse_id], ['%d', '%d']);
+    
+        $remaining_winners = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT user_id, date_win FROM {$winners_table} WHERE chasse_id = %d ORDER BY date_win ASC",
+                $chasse_id
+            )
+        );
+    
+        $winner_names = [];
+        $win_date     = null;
+    
+        foreach ($remaining_winners as $row) {
+            $winner_id = isset($row->user_id) ? (int) $row->user_id : 0;
+            $user      = $winner_id > 0 ? get_userdata($winner_id) : null;
+    
+            if ($user) {
+                $display_name = $user->display_name ?: $user->user_login;
+                if ($display_name !== '') {
+                    $winner_names[] = $display_name;
+                }
+            }
+    
+            if ($win_date === null && !empty($row->date_win)) {
+                $win_date = (string) $row->date_win;
+            }
         }
+    
+        if (function_exists('update_field')) {
+            $list = implode(', ', $winner_names);
+            update_field('chasse_cache_gagnants', $list, $chasse_id);
+    
+            if ($win_date) {
+                update_field('chasse_cache_date_decouverte', $win_date, $chasse_id);
+            } elseif (function_exists('delete_field')) {
+                delete_field('chasse_cache_date_decouverte', $chasse_id);
+            } else {
+                update_field('chasse_cache_date_decouverte', '', $chasse_id);
+            }
+    
+            update_field('chasse_cache_complet', empty($winner_names) ? 0 : 1, $chasse_id);
+        }
+    
+        $wpdb->delete($engagements_table, ['user_id' => $user_id, 'chasse_id' => $chasse_id], ['%d', '%d']);
+    
+        if (!empty($enigme_ids)) {
+            $placeholders = implode(',', array_fill(0, count($enigme_ids), '%d'));
+    
+            $wpdb->query(
+                $wpdb->prepare(
+                    "DELETE FROM {$engagements_table} WHERE user_id = %d AND enigme_id IN ({$placeholders})",
+                    array_merge([$user_id], $enigme_ids)
+                )
+            );
+    
+            $wpdb->query(
+                $wpdb->prepare(
+                    "DELETE FROM {$statuts_table} WHERE user_id = %d AND enigme_id IN ({$placeholders})",
+                    array_merge([$user_id], $enigme_ids)
+                )
+            );
+    
+            $wpdb->query(
+                $wpdb->prepare(
+                    "DELETE FROM {$tentatives_table} WHERE user_id = %d AND enigme_id IN ({$placeholders})",
+                    array_merge([$user_id], $enigme_ids)
+                )
+            );
+    
+            $wpdb->query(
+                $wpdb->prepare(
+                    "DELETE FROM {$indices_table} WHERE user_id = %d AND enigme_id IN ({$placeholders})",
+                    array_merge([$user_id], $enigme_ids)
+                )
+            );
+        }
+    
+        $wpdb->query(
+            $wpdb->prepare(
+                "DELETE FROM {$indices_table} WHERE user_id = %d AND chasse_id = %d",
+                $user_id,
+                $chasse_id
+            )
+        );
+    
+        if (function_exists('delete_user_meta')) {
+            delete_user_meta($user_id, "souscription_chasse_{$chasse_id}");
+    
+            foreach ($enigme_ids as $enigme_id) {
+                delete_user_meta($user_id, "statut_enigme_{$enigme_id}");
+                delete_user_meta($user_id, "enigme_{$enigme_id}_resolution_date");
+            }
+    
+            foreach ($indice_ids as $indice_id) {
+                delete_user_meta($user_id, "indice_debloque_{$indice_id}");
+            }
+        }
+    
+        if (function_exists('clean_user_cache')) {
+            clean_user_cache($user_id);
+        }
+    
+        if (function_exists('mettre_a_jour_statuts_chasse')) {
+            mettre_a_jour_statuts_chasse($chasse_id);
+        }
+    
+        if (function_exists('chasse_clear_infos_affichage_cache')) {
+            chasse_clear_infos_affichage_cache($chasse_id);
+        }
+    
+        if (function_exists('enigme_clear_sidebar_cache')) {
+            enigme_clear_sidebar_cache($chasse_id, $user_id);
+        }
+    
+        return true;
     }
+}
 
-    if (function_exists('update_field')) {
-        $list = implode(', ', $winner_names);
-        update_field('chasse_cache_gagnants', $list, $chasse_id);
+if (!function_exists('ca_demo_schedule_reset')) {
+    function ca_demo_schedule_reset(int $chasse_id, int $user_id): void
+    {
+        $chasse_id = (int) $chasse_id;
+        $user_id   = (int) $user_id;
 
-        if ($win_date) {
-            update_field('chasse_cache_date_decouverte', $win_date, $chasse_id);
-        } elseif (function_exists('delete_field')) {
-            delete_field('chasse_cache_date_decouverte', $chasse_id);
+        if ($chasse_id <= 0 || $user_id <= 0) {
+            return;
+        }
+
+        if (function_exists('ca_demo_is_demo_hunt') && !ca_demo_is_demo_hunt($chasse_id)) {
+            return;
+        }
+
+        $delay = (int) apply_filters('ca_demo_reset_delay', 5, $chasse_id, $user_id);
+        if ($delay < 0) {
+            $delay = 0;
+        }
+
+        $hook      = 'ca_demo_run_reset_event';
+        $scheduled = false;
+
+        if (function_exists('wp_schedule_single_event')) {
+            if (function_exists('wp_next_scheduled')) {
+                $existing = wp_next_scheduled($hook, [$chasse_id, $user_id]);
+                if ($existing && function_exists('wp_unschedule_event')) {
+                    wp_unschedule_event($existing, $hook, [$chasse_id, $user_id]);
+                }
+            }
+
+            $timestamp = time() + $delay;
+            $scheduled = wp_schedule_single_event($timestamp, $hook, [$chasse_id, $user_id]);
+        }
+
+        if ($scheduled) {
+            cat_debug(sprintf('🗓️ [DEMO] Reset scheduled for hunt %d (user %d) in %d seconds.', $chasse_id, $user_id, $delay));
         } else {
-            update_field('chasse_cache_date_decouverte', '', $chasse_id);
+            cat_debug(sprintf('⚠️ [DEMO] Reset scheduling failed for hunt %d (user %d), running immediately.', $chasse_id, $user_id));
+            ca_demo_reset_user_progress($chasse_id, $user_id);
         }
 
-        update_field('chasse_cache_complet', empty($winner_names) ? 0 : 1, $chasse_id);
-    }
-
-    $wpdb->delete($engagements_table, ['user_id' => $user_id, 'chasse_id' => $chasse_id], ['%d', '%d']);
-
-    if (!empty($enigme_ids)) {
-        $placeholders = implode(',', array_fill(0, count($enigme_ids), '%d'));
-
-        $wpdb->query(
-            $wpdb->prepare(
-                "DELETE FROM {$engagements_table} WHERE user_id = %d AND enigme_id IN ({$placeholders})",
-                array_merge([$user_id], $enigme_ids)
-            )
-        );
-
-        $wpdb->query(
-            $wpdb->prepare(
-                "DELETE FROM {$statuts_table} WHERE user_id = %d AND enigme_id IN ({$placeholders})",
-                array_merge([$user_id], $enigme_ids)
-            )
-        );
-
-        $wpdb->query(
-            $wpdb->prepare(
-                "DELETE FROM {$tentatives_table} WHERE user_id = %d AND enigme_id IN ({$placeholders})",
-                array_merge([$user_id], $enigme_ids)
-            )
-        );
-
-        $wpdb->query(
-            $wpdb->prepare(
-                "DELETE FROM {$indices_table} WHERE user_id = %d AND enigme_id IN ({$placeholders})",
-                array_merge([$user_id], $enigme_ids)
-            )
-        );
-    }
-
-    $wpdb->query(
-        $wpdb->prepare(
-            "DELETE FROM {$indices_table} WHERE user_id = %d AND chasse_id = %d",
-            $user_id,
-            $chasse_id
-        )
-    );
-
-    if (function_exists('delete_user_meta')) {
-        delete_user_meta($user_id, "souscription_chasse_{$chasse_id}");
-
-        foreach ($enigme_ids as $enigme_id) {
-            delete_user_meta($user_id, "statut_enigme_{$enigme_id}");
-            delete_user_meta($user_id, "enigme_{$enigme_id}_resolution_date");
+        if (function_exists('chasse_clear_infos_affichage_cache')) {
+            chasse_clear_infos_affichage_cache($chasse_id);
         }
 
-        foreach ($indice_ids as $indice_id) {
-            delete_user_meta($user_id, "indice_debloque_{$indice_id}");
+        if (function_exists('enigme_clear_sidebar_cache')) {
+            enigme_clear_sidebar_cache($chasse_id, $user_id);
         }
     }
 
-    if (function_exists('clean_user_cache')) {
-        clean_user_cache($user_id);
+    add_action('ca_demo_schedule_reset', 'ca_demo_schedule_reset', 10, 2);
+}
+
+if (!function_exists('ca_demo_execute_scheduled_reset')) {
+    function ca_demo_execute_scheduled_reset(int $chasse_id, int $user_id): void
+    {
+        $chasse_id = (int) $chasse_id;
+        $user_id   = (int) $user_id;
+
+        if ($chasse_id <= 0 || $user_id <= 0) {
+            return;
+        }
+
+        cat_debug(sprintf('▶️ [DEMO] Running scheduled reset for hunt %d (user %d).', $chasse_id, $user_id));
+
+        ca_demo_reset_user_progress($chasse_id, $user_id);
+
+        if (function_exists('chasse_clear_infos_affichage_cache')) {
+            chasse_clear_infos_affichage_cache($chasse_id);
+        }
+
+        if (function_exists('enigme_clear_sidebar_cache')) {
+            enigme_clear_sidebar_cache($chasse_id, $user_id);
+        }
     }
 
-    if (function_exists('mettre_a_jour_statuts_chasse')) {
-        mettre_a_jour_statuts_chasse($chasse_id);
-    }
-
-    if (function_exists('chasse_clear_infos_affichage_cache')) {
-        chasse_clear_infos_affichage_cache($chasse_id);
-    }
-
-    if (function_exists('enigme_clear_sidebar_cache')) {
-        enigme_clear_sidebar_cache($chasse_id, $user_id);
-    }
-
-    return true;
+    add_action('ca_demo_run_reset_event', 'ca_demo_execute_scheduled_reset', 10, 2);
 }
 
 function ca_demo_reset_chasse_ajax(): void
