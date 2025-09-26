@@ -86,8 +86,7 @@
      object-fit: cover;
   display: block;
 }
-.carte-compact .badge-statut {
-  position: absolute;
+.carte-compact .carte-badges-stack {
   top: var(--space-xs);
   left: var(--space-xs);
 }
@@ -204,8 +203,7 @@
   position: absolute;
   inset: 0;
 }
-.carte-cart .badge-statut {
-  position: absolute;
+.carte-cart .carte-badges-stack {
   top: var(--space-xs);
   left: var(--space-xs);
 }
@@ -2476,6 +2474,21 @@ a.ajout-link:focus-visible {
   font-size: 12px;
 }
 
+/* ========== 🏷️ BADGES ========== */
+.carte-badges-stack {
+  position: absolute;
+  top: var(--space-xs);
+  left: var(--space-xs);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs);
+  z-index: 2;
+}
+.carte-badges-stack .badge-statut,
+.carte-badges-stack .badge-demo {
+  position: static;
+}
+
 /* ========== 🏷️ BADGES DE STATUT ========== */
 .badge-statut {
   position: absolute;
@@ -2492,6 +2505,45 @@ a.ajout-link:focus-visible {
   z-index: 1;
 }
 
+.badge-demo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xxs);
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+  border-radius: 999px;
+  background: rgba(225, 169, 95, 0.85);
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  box-shadow: 0 6px 16px rgba(var(--color-black-rgb), 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.badge-demo__icon {
+  display: inline-flex;
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.badge-demo__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.badge-demo__label {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+@media (min-width: 1024px) {
+  .badge-demo {
+    font-size: 0.8rem;
+  }
+}
 .badge-statut[data-tooltip] {
   cursor: help;
 }
@@ -10303,6 +10355,33 @@ footer .site-footer-primary-section-3 {
   transition: opacity 0.2s ease;
 }
 
+.myaccount-recommended-hunts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  padding: var(--space-lg);
+  border-radius: 12px;
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+}
+
+.myaccount-recommended-hunts .myaccount-placeholder,
+.myaccount-recommended-hunts-intro {
+  margin: 0;
+  text-align: center;
+  color: hsl(var(--muted-foreground));
+}
+
+.myaccount-chasses-recommandees-grid {
+  gap: var(--space-lg);
+}
+
+.myaccount-recommended-hunts-cta {
+  align-self: stretch;
+  text-align: center;
+  justify-content: center;
+}
+
 .myaccount-chasses-engagees.engaged-hunts-loading .myaccount-chasses-engagees-content {
   opacity: 0.6;
   pointer-events: none;
@@ -10312,6 +10391,18 @@ footer .site-footer-primary-section-3 {
   gap: var(--space-3xl);
 }
 
+@media (min-width: 768px) {
+  .myaccount-recommended-hunts {
+    padding: var(--space-xl);
+  }
+  .myaccount-chasses-recommandees-grid {
+    gap: var(--space-2xl);
+  }
+  .myaccount-recommended-hunts-cta {
+    align-self: center;
+    min-width: 260px;
+  }
+}
 .myaccount-section-header {
   display: flex;
   flex-wrap: wrap;
