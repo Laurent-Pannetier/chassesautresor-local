@@ -89,8 +89,7 @@
     display: block;
   }
 
-  .badge-statut {
-    position: absolute;
+  .carte-badges-stack {
     top: var(--space-xs);
     left: var(--space-xs);
   }
@@ -216,8 +215,7 @@
     inset: 0;
   }
 
-  .badge-statut {
-    position: absolute;
+  .carte-badges-stack {
     top: var(--space-xs);
     left: var(--space-xs);
   }

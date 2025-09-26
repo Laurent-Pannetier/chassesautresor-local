@@ -2,6 +2,7 @@
 defined('ABSPATH') || exit;
 
 require_once __DIR__ . '/badge-functions.php';
+require_once __DIR__ . '/chasse/demo.php';
 
 
 //
@@ -120,6 +121,7 @@ function chasse_get_champs($chasse_id)
         'titre_recompense' => get_field('chasse_infos_recompense_titre', $chasse_id) ?? '',
         'valeur_recompense' => get_field('chasse_infos_recompense_valeur', $chasse_id) ?? '',
         'cout_points' => get_field('chasse_infos_cout_points', $chasse_id) ?? 0,
+        'is_demo' => ca_demo_is_demo_hunt((int) $chasse_id),
         // Lecture directe des dates pour éviter un éventuel cache ACF
         'date_debut' => (function () use ($chasse_id) {
             $val = get_field('chasse_infos_date_debut', $chasse_id);
@@ -2070,6 +2072,26 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
     }
 
     $champs = chasse_get_champs($chasse_id);
+    $is_demo = !empty($champs['is_demo']);
+    $demo_label = function_exists('__') ? __('Démo', 'chassesautresor-com') : 'Démo';
+    $demo_aria_label = function_exists('__')
+        ? __('Chasse de démonstration', 'chassesautresor-com')
+        : 'Chasse de démonstration';
+    $demo_title = function_exists('__')
+        ? __('Cette chasse est proposée en mode démonstration.', 'chassesautresor-com')
+        : 'Cette chasse est proposée en mode démonstration.';
+    $demo_screen = function_exists('__')
+        ? __('Chasse en mode démonstration', 'chassesautresor-com')
+        : 'Chasse en mode démonstration';
+    $demo_icon = function_exists('get_svg_icon') ? get_svg_icon('idea') : '';
+    $demo_badge = [
+        'label'       => $demo_label,
+        'aria_label'  => $demo_aria_label,
+        'icon_html'   => $demo_icon,
+        'icon_name'   => 'idea',
+        'title'       => $demo_title,
+        'screen_text' => $demo_screen,
+    ];
     $regions = chasse_preparer_termes_affichage($chasse_id, 'chasse_region');
     $themes = chasse_preparer_termes_affichage($chasse_id, 'theme_chasse');
     $region_principale = !empty($regions) ? $regions[0] : null;
@@ -2264,6 +2286,8 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
         'themes'            => $themes,
         'region_principale' => $region_principale,
         'organisateur_id'   => $organisateur_id,
+        'is_demo'           => $is_demo,
+        'demo_badge'        => $is_demo ? $demo_badge : null,
     ];
 
     if (!empty($progression['resolvables'])) {
@@ -2291,12 +2315,22 @@ function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): 
     $user_id  = $user_id ?? get_current_user_id();
     $memo_key = $chasse_id . '-' . $user_id;
 
-    if (isset($memo[$memo_key])) {
-        return $memo[$memo_key];
-    }
-
     if (get_post_type($chasse_id) !== 'chasse') {
         return [];
+    }
+
+    $current_demo_flag = ca_demo_is_demo_hunt($chasse_id);
+
+    if (isset($memo[$memo_key])) {
+        $memo_demo_flag = isset($memo[$memo_key]['is_demo'])
+            ? (bool) $memo[$memo_key]['is_demo']
+            : (bool) ($memo[$memo_key]['champs']['is_demo'] ?? false);
+
+        if ($memo_demo_flag === $current_demo_flag) {
+            return $memo[$memo_key];
+        }
+
+        unset($memo[$memo_key]);
     }
 
     $cache_key = chasse_infos_affichage_cache_key($chasse_id);
@@ -2307,11 +2341,40 @@ function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): 
     }
 
     if (isset($cache[$user_id])) {
-        $memo[$memo_key] = $cache[$user_id];
-        return $memo[$memo_key];
+        $cache_demo_flag = isset($cache[$user_id]['is_demo'])
+            ? (bool) $cache[$user_id]['is_demo']
+            : (bool) ($cache[$user_id]['champs']['is_demo'] ?? false);
+
+        if ($cache_demo_flag === $current_demo_flag) {
+            $memo[$memo_key] = $cache[$user_id];
+            return $memo[$memo_key];
+        }
+
+        chasse_clear_infos_affichage_cache($chasse_id);
+        $cache = [];
     }
 
     $champs = chasse_get_champs($chasse_id);
+    $is_demo = !empty($champs['is_demo']);
+    $demo_label = function_exists('__') ? __('Démo', 'chassesautresor-com') : 'Démo';
+    $demo_aria_label = function_exists('__')
+        ? __('Chasse de démonstration', 'chassesautresor-com')
+        : 'Chasse de démonstration';
+    $demo_title = function_exists('__')
+        ? __('Cette chasse est proposée en mode démonstration.', 'chassesautresor-com')
+        : 'Cette chasse est proposée en mode démonstration.';
+    $demo_screen = function_exists('__')
+        ? __('Chasse en mode démonstration', 'chassesautresor-com')
+        : 'Chasse en mode démonstration';
+    $demo_icon = function_exists('get_svg_icon') ? get_svg_icon('idea') : '';
+    $demo_badge = [
+        'label'       => $demo_label,
+        'aria_label'  => $demo_aria_label,
+        'icon_html'   => $demo_icon,
+        'icon_name'   => 'idea',
+        'title'       => $demo_title,
+        'screen_text' => $demo_screen,
+    ];
     $regions = chasse_preparer_termes_affichage($chasse_id, 'chasse_region');
     $themes = chasse_preparer_termes_affichage($chasse_id, 'theme_chasse');
     $region_principale = !empty($regions) ? $regions[0] : null;
@@ -2412,6 +2475,8 @@ function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): 
         'region_principale' => $region_principale,
         'date_debut_court'  => $dates_courtes['date_debut_court'],
         'date_fin_court'    => $dates_courtes['date_fin_court'],
+        'is_demo'           => $is_demo,
+        'demo_badge'        => $is_demo ? $demo_badge : null,
     ];
 
     $cache[$user_id] = $memo[$memo_key];
