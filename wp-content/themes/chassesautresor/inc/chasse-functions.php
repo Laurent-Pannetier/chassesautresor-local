@@ -812,7 +812,7 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
             return $response([
                 'cta_html'    => $button_html,
                 'cta_message' => '<p class="cta-reset-demo__message">' . esc_html__(
-                    'Vous participez à cette chasse de démonstration.',
+                    'Ceci est une chasse de démonstration',
                     'chassesautresor-com'
                 ) . '</p>',
                 'type'        => 'reset_demo',
