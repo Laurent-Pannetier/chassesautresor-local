@@ -171,7 +171,7 @@ if ($edition_active && !$est_complet) {
           >
               <?php if ($is_demo && $demo_badge) : ?>
                 <span
-                    class="badge-demo"
+                    class="badge-statut badge-demo"
                     role="img"
                     aria-label="<?= esc_attr($demo_badge['aria_label'] ?? $demo_badge['screen_text'] ?? ''); ?>"
                     <?php if ($demo_badge_description_id) : ?>aria-describedby="<?= esc_attr($demo_badge_description_id); ?>"<?php endif; ?>
