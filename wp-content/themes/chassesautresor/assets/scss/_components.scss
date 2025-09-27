@@ -200,6 +200,28 @@ body .wp-block-file .wp-block-file__button:focus,
     text-align: center;
      width: fit-content;
 }
+
+.cta-reset-demo__button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs, 0.5rem);
+}
+
+.cta-reset-demo__icon {
+    display: inline-flex;
+    flex-shrink: 0;
+
+    svg {
+        width: 1.25rem;
+        height: 1.25rem;
+        display: block;
+    }
+}
+
+.cta-reset-demo__label {
+    display: inline-flex;
+    align-items: center;
+}
 .bouton-cta:hover {
     background-color: var(--color-gris-carte);
     text-decoration: none;
