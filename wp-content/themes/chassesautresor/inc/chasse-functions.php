@@ -791,10 +791,21 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
                 ? wp_create_nonce($nonce_action)
                 : $nonce_action;
 
+            $icon_markup = '';
+            if (function_exists('get_svg_icon')) {
+                $icon_markup = trim(get_svg_icon('reset'));
+            }
+
+            if ($icon_markup !== '') {
+                $icon_markup = '<span class="cta-reset-demo__icon" aria-hidden="true">' . $icon_markup . '</span>';
+            }
+
             $button_html = sprintf(
-                '<button type="button" class="bouton-cta bouton-cta--color" data-ca-demo-reset="1" data-chasse-id="%1$d" data-nonce="%2$s">%3$s</button>',
+                '<button type="button" class="bouton-cta bouton-cta--color cta-reset-demo__button" data-ca-demo-reset="1"'
+                . ' data-chasse-id="%1$d" data-nonce="%2$s">%3$s<span class="cta-reset-demo__label">%4$s</span></button>',
                 (int) $chasse_id,
                 esc_attr($nonce),
+                $icon_markup,
                 esc_html__('Réinitialiser ma progression', 'chassesautresor-com')
             );
 
