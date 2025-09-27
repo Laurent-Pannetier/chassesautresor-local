@@ -540,11 +540,6 @@ if ($edition_active && !$est_complet) {
             <div class="cta-message" aria-live="polite"><?= $cta_data['cta_message']; ?></div>
             <div class="cta-action">
               <?= $cta_data['cta_html']; ?>
-              <?php if ($cta_type === 'reset_demo') : ?>
-                <p class="cta-reset-demo__confirm">
-                  <?php esc_html_e('Confirmez la réinitialisation dans la fenêtre qui s’ouvrira.', 'chassesautresor-com'); ?>
-                </p>
-              <?php endif; ?>
             </div>
           </div>
           </div>
