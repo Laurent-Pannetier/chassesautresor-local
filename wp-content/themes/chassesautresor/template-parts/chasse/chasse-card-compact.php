@@ -53,9 +53,6 @@ if ($has_reward) {
         <a href="<?php echo esc_url($infos['permalink']); ?>" class="carte-compact__lien">
             <div class="carte-compact__image-wrapper">
                 <div class="carte-badges-stack">
-                    <span class="badge-statut <?php echo esc_attr($infos['badge_class']); ?>" data-post-id="<?php echo esc_attr($chasse_id); ?>"<?= $badge_attributes; ?>>
-                        <?php echo $infos['badge_content']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- contenu préparé et sécurisé en amont. ?>
-                    </span>
                     <?php if ($is_demo && $demo_badge) : ?>
                         <span
                             class="badge-demo"
@@ -73,6 +70,10 @@ if ($has_reward) {
                             <?php if ($demo_badge_description_id) : ?>
                                 <span id="<?php echo esc_attr($demo_badge_description_id); ?>" class="screen-reader-text"><?php echo esc_html($demo_badge['screen_text'] ?? ''); ?></span>
                             <?php endif; ?>
+                        </span>
+                    <?php else : ?>
+                        <span class="badge-statut <?php echo esc_attr($infos['badge_class']); ?>" data-post-id="<?php echo esc_attr($chasse_id); ?>"<?= $badge_attributes; ?>>
+                            <?php echo $infos['badge_content']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- contenu préparé et sécurisé en amont. ?>
                         </span>
                     <?php endif; ?>
                 </div>

@@ -41,14 +41,6 @@ if ($badge_has_interaction && $badge_tooltip !== '') {
 <div class="carte carte-ligne carte-chasse <?php echo esc_attr(trim($infos['classe_statut'] . ' ' . $completion_class)); ?>">
     <div class="carte-ligne__image">
         <div class="carte-badges-stack">
-            <span class="badge-statut <?php echo esc_attr($badge_classes); ?>" data-post-id="<?php echo esc_attr($chasse_id); ?>"<?= $badge_attributes; ?>>
-                <span class="badge-statut__label"><?php echo esc_html($badge_label); ?></span>
-                <?php if ($has_badge_icon) : ?>
-                    <span class="badge-statut__icon" aria-hidden="true">
-                        <?php echo $badge_icon_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- contenu préparé et sécurisé en amont. ?>
-                    </span>
-                <?php endif; ?>
-            </span>
             <?php if ($is_demo && $demo_badge) : ?>
                 <span
                     class="badge-demo"
@@ -65,6 +57,15 @@ if ($badge_has_interaction && $badge_tooltip !== '') {
                     <span class="badge-demo__label"><?php echo esc_html($demo_badge['label'] ?? ''); ?></span>
                     <?php if ($demo_badge_description_id) : ?>
                         <span id="<?php echo esc_attr($demo_badge_description_id); ?>" class="screen-reader-text"><?php echo esc_html($demo_badge['screen_text'] ?? ''); ?></span>
+                    <?php endif; ?>
+                </span>
+            <?php else : ?>
+                <span class="badge-statut <?php echo esc_attr($badge_classes); ?>" data-post-id="<?php echo esc_attr($chasse_id); ?>"<?= $badge_attributes; ?>>
+                    <span class="badge-statut__label"><?php echo esc_html($badge_label); ?></span>
+                    <?php if ($has_badge_icon) : ?>
+                        <span class="badge-statut__icon" aria-hidden="true">
+                            <?php echo $badge_icon_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- contenu préparé et sécurisé en amont. ?>
+                        </span>
                     <?php endif; ?>
                 </span>
             <?php endif; ?>
