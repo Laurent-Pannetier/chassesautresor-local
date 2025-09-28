@@ -587,10 +587,71 @@ add_action('wp_ajax_load_conversion_history', 'ajax_load_conversion_history');
 // 📩 FORMULAIRE DE CONTACT ORGANISATEUR (WPForms)
 // ==================================================
 /**
+ * 🔹 get_organisateur_id_by_contact_email → retrouve l’ID organisateur à partir de l’email de contact.
  * 🔹 filtrer_destinataire_contact_organisateur → modifie le destinataire du mail via WPForms (email ACF ou auteur, BCC admin)
  * 🔹 ajouter_endpoint_contact_organisateur → ajoute l’endpoint `/contact` sur les URLs des organisateurs (détection côté template)
  */
 
+/**
+ * Récupère l'ID d'un organisateur à partir de son email de contact public.
+ *
+ * Cette fonction recherche d'abord un CPT "organisateur" dont le champ ACF
+ * `profil_public_email_contact` correspond à l'email fourni. Si rien n'est trouvé,
+ * on tente une correspondance avec l'email de l'auteur du CPT.
+ *
+ * @param string|null $email Email de contact fourni dans l'URL.
+ *
+ * @return int|null ID du CPT organisateur correspondant ou null si introuvable.
+ */
+function get_organisateur_id_by_contact_email(?string $email): ?int
+{
+    $sanitized = sanitize_email((string) $email);
+
+    if ($sanitized === '') {
+        return null;
+    }
+
+    static $cache = [];
+    $cache_key = strtolower($sanitized);
+
+    if (array_key_exists($cache_key, $cache)) {
+        return $cache[$cache_key];
+    }
+
+    $query = get_posts([
+        'post_type'      => 'organisateur',
+        'post_status'    => ['publish', 'pending', 'draft'],
+        'meta_key'       => 'profil_public_email_contact',
+        'meta_value'     => $sanitized,
+        'meta_compare'   => '=',
+        'posts_per_page' => 1,
+        'fields'         => 'ids',
+        'suppress_filters' => false,
+    ]);
+
+    if (!empty($query)) {
+        $organisateur_id = (int) $query[0];
+        $cache[$cache_key] = $organisateur_id;
+
+        return $organisateur_id;
+    }
+
+    $user = get_user_by('email', $sanitized);
+
+    if ($user) {
+        $organisateur_id = get_organisateur_from_user((int) $user->ID);
+
+        if ($organisateur_id) {
+            $cache[$cache_key] = (int) $organisateur_id;
+
+            return (int) $organisateur_id;
+        }
+    }
+
+    $cache[$cache_key] = null;
+
+    return null;
+}
 
 /**
  * Ajoute l'endpoint `contact` aux permaliens des organisateurs.

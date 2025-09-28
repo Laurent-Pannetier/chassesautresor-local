@@ -234,35 +234,61 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
             echo '</div>';
         }
     } elseif ( is_page() && ! $should_hide_hero ) {
-        $image_id     = get_post_thumbnail_id();
-        $fallback_url = function_exists( 'get_theme_file_uri' )
-            ? get_theme_file_uri( 'assets/images/institutionnels.webp' )
-            : '';
-        $image_url    = '';
+        $has_custom_header = false;
 
-        if ( $image_id ) {
-            $image_url = wp_get_attachment_image_url( $image_id, 'full' );
+        if ( is_page( 'contact' ) && isset( $_GET['email_organisateur'] ) ) {
+            $email_organisateur = sanitize_email( wp_unslash( $_GET['email_organisateur'] ) );
 
-            if ( $image_url && function_exists( 'imagify_get_webp_url' ) ) {
-                $webp_url = imagify_get_webp_url( $image_url );
+            if ( $email_organisateur ) {
+                $organisateur_id = function_exists( 'get_organisateur_id_by_contact_email' )
+                    ? get_organisateur_id_by_contact_email( $email_organisateur )
+                    : null;
 
-                if ( $webp_url ) {
-                    $image_url = $webp_url;
+                if ( $organisateur_id ) {
+                    get_template_part(
+                        'template-parts/organisateur/organisateur-header',
+                        null,
+                        [
+                            'organisateur_id' => $organisateur_id,
+                            'onglet_actif'    => 'contact',
+                        ]
+                    );
+                    $has_custom_header = true;
                 }
             }
         }
 
-        if ( ! $image_url ) {
-            $image_url = $fallback_url;
-        }
+        if ( ! $has_custom_header ) {
+            $image_id     = get_post_thumbnail_id();
+            $fallback_url = function_exists( 'get_theme_file_uri' )
+                ? get_theme_file_uri( 'assets/images/institutionnels.webp' )
+                : '';
+            $image_url    = '';
 
-        get_header_fallback(
-            [
-                'titre'      => get_the_title(),
-                'sous_titre' => '',
-                'image_fond' => $image_url,
-            ]
-        );
+            if ( $image_id ) {
+                $image_url = wp_get_attachment_image_url( $image_id, 'full' );
+
+                if ( $image_url && function_exists( 'imagify_get_webp_url' ) ) {
+                    $webp_url = imagify_get_webp_url( $image_url );
+
+                    if ( $webp_url ) {
+                        $image_url = $webp_url;
+                    }
+                }
+            }
+
+            if ( ! $image_url ) {
+                $image_url = $fallback_url;
+            }
+
+            get_header_fallback(
+                [
+                    'titre'      => get_the_title(),
+                    'sous_titre' => '',
+                    'image_fond' => $image_url,
+                ]
+            );
+        }
     }
     
     astra_content_before();
