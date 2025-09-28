@@ -434,12 +434,23 @@ function initLiensPublics(bloc, { panneauId, formId, action, reload = false }) {
     const donneesNormalisees = normaliserLiens(saisies, { trier: true });
     const signatureSoumise = JSON.stringify(donneesNormalisees);
 
+    let signatureCourante = signatureInitiale;
+    if (champDonnees?.dataset.valeurs) {
+      try {
+        const valeursCourantes = JSON.parse(champDonnees.dataset.valeurs);
+        signatureCourante = JSON.stringify(normaliserLiens(valeursCourantes, { trier: true }));
+      } catch (err) {
+        signatureCourante = '[]';
+      }
+    }
+
     if (feedback) {
       feedback.textContent = '';
       feedback.className = 'champ-feedback';
     }
 
-    if (signatureSoumise === signatureInitiale) {
+    if (signatureSoumise === signatureCourante) {
+      signatureInitiale = signatureCourante;
       if (feedback) {
         feedback.textContent = '';
         feedback.className = 'champ-feedback';
