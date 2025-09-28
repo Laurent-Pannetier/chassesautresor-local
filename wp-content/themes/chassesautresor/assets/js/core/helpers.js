@@ -132,23 +132,6 @@ function normaliserLiens(donnees, { trier = false } = {}) {
   return resultat;
 }
 
-function sontLiensEquivalents(a, b) {
-  const mapA = creerLiensMap(a);
-  const mapB = creerLiensMap(b);
-
-  if (mapA.size !== mapB.size) {
-    return false;
-  }
-
-  for (const [type, url] of mapA.entries()) {
-    if (mapB.get(type) !== url) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
 function mettreAJourHeaderOrganisateurLiens(donnees) {
   const row = document.querySelector('.header-organisateur__liens-row');
   if (!row) return;
@@ -433,28 +416,30 @@ function initLiensPublics(bloc, { panneauId, formId, action, reload = false }) {
   formulaire.replaceWith(clone);
   formulaire = clone;
 
+  let valeursInitiales = [];
+  if (champDonnees?.dataset.valeurs) {
+    try {
+      valeursInitiales = JSON.parse(champDonnees.dataset.valeurs);
+    } catch (_) {
+      valeursInitiales = [];
+    }
+  }
+  let signatureInitiale = JSON.stringify(normaliserLiens(valeursInitiales, { trier: true }));
+
   formulaire.addEventListener('submit', async (e) => {
     e.preventDefault();
     e.stopPropagation();
 
     const saisies = serializeLiensForm(formulaire);
     const donneesNormalisees = normaliserLiens(saisies, { trier: true });
+    const signatureSoumise = JSON.stringify(donneesNormalisees);
 
     if (feedback) {
       feedback.textContent = '';
       feedback.className = 'champ-feedback';
     }
 
-    let initial = [];
-    if (champDonnees?.dataset.valeurs) {
-      try {
-        initial = JSON.parse(champDonnees.dataset.valeurs);
-      } catch (_) {
-        initial = [];
-      }
-    }
-
-    if (sontLiensEquivalents(initial, donneesNormalisees)) {
+    if (signatureSoumise === signatureInitiale) {
       if (feedback) {
         feedback.textContent = '';
         feedback.className = 'champ-feedback';
@@ -479,6 +464,7 @@ function initLiensPublics(bloc, { panneauId, formId, action, reload = false }) {
       if (!res.success) throw new Error(res.data || 'Erreur AJAX');
 
       updateTargetBlocks(bloc, champ, postId, donneesNormalisees);
+      signatureInitiale = signatureSoumise;
       closeLocalPanel(panneau, panneauId);
 
       if (typeof window.mettreAJourResumeInfos === 'function') {
