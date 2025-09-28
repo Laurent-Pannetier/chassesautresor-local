@@ -11163,6 +11163,9 @@ a.bouton-edition-attention {
 }
 
 .header-organisateur__col--logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: auto;
   max-width: 90vw;
   max-height: 300px;
