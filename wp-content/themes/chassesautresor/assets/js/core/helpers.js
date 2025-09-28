@@ -132,6 +132,23 @@ function normaliserLiens(donnees, { trier = false } = {}) {
   return resultat;
 }
 
+function sontLiensEquivalents(a, b) {
+  const mapA = creerLiensMap(a);
+  const mapB = creerLiensMap(b);
+
+  if (mapA.size !== mapB.size) {
+    return false;
+  }
+
+  for (const [type, url] of mapA.entries()) {
+    if (mapB.get(type) !== url) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 function mettreAJourHeaderOrganisateurLiens(donnees) {
   const row = document.querySelector('.header-organisateur__liens-row');
   if (!row) return;
@@ -437,9 +454,7 @@ function initLiensPublics(bloc, { panneauId, formId, action, reload = false }) {
       }
     }
 
-    const initialNormalise = normaliserLiens(initial, { trier: true });
-
-    if (JSON.stringify(initialNormalise) === JSON.stringify(donneesNormalisees)) {
+    if (sontLiensEquivalents(initial, donneesNormalisees)) {
       if (feedback) {
         feedback.textContent = '';
         feedback.className = 'champ-feedback';
