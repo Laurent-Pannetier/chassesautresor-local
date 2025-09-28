@@ -94,7 +94,7 @@ function renderLiensPublics(liens = []) {
 window.renderLiensPublicsJS = renderLiensPublics;
 
 
-function normaliserLiens(donnees, { trier = false } = {}) {
+function creerLiensMap(donnees) {
   const map = new Map();
 
   (Array.isArray(donnees) ? donnees : []).forEach((item) => {
@@ -106,6 +106,12 @@ function normaliserLiens(donnees, { trier = false } = {}) {
     if (!typeNettoye || !url) return;
     map.set(typeNettoye, url);
   });
+
+  return map;
+}
+
+function normaliserLiens(donnees, { trier = false } = {}) {
+  const map = creerLiensMap(donnees);
 
   let resultat = Array.from(map.entries()).map(([type, url]) => ({
     type_de_lien: type,
@@ -124,6 +130,23 @@ function normaliserLiens(donnees, { trier = false } = {}) {
   }
 
   return resultat;
+}
+
+function liensIdentiques(anciens, nouveaux) {
+  const anciensMap = creerLiensMap(anciens);
+  const nouveauxMap = creerLiensMap(nouveaux);
+
+  if (anciensMap.size !== nouveauxMap.size) {
+    return false;
+  }
+
+  for (const [type, url] of anciensMap.entries()) {
+    if (nouveauxMap.get(type) !== url) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 function mettreAJourHeaderOrganisateurLiens(donnees) {
@@ -431,10 +454,7 @@ function initLiensPublics(bloc, { panneauId, formId, action, reload = false }) {
       }
     }
 
-    const initialTries = normaliserLiens(initial, { trier: true });
-    const nouveauxTries = normaliserLiens(donneesNormalisees, { trier: true });
-
-    if (JSON.stringify(initialTries) === JSON.stringify(nouveauxTries)) {
+    if (liensIdentiques(initial, donneesNormalisees)) {
       if (feedback) {
         feedback.textContent = '';
         feedback.className = 'champ-feedback';
