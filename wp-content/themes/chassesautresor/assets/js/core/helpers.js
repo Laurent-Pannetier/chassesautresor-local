@@ -4,22 +4,52 @@
  * @param {Array} liens - Tableau d’objets : [{ type_de_lien: 'facebook', url_lien: 'https://...' }]
  * @returns {HTMLElement} Elément racine contenant les liens
  */
-function renderLiensPublics(liens = []) {
-  const icones = {
-    site_web: 'fa-solid fa-globe',
-    discord: 'fa-brands fa-discord',
-    facebook: 'fa-brands fa-facebook-f',
-    twitter: 'fa-brands fa-x-twitter',
-    instagram: 'fa-brands fa-instagram'
-  };
+const LIENS_PUBLICS_META = {
+  site_web: {
+    icone: 'fa-solid fa-globe',
+    label: 'Site Web'
+  },
+  discord: {
+    icone: 'fa-brands fa-discord',
+    label: 'Discord'
+  },
+  facebook: {
+    icone: 'fa-brands fa-facebook-f',
+    label: 'Facebook'
+  },
+  twitter: {
+    icone: 'fa-brands fa-x-twitter',
+    label: 'Twitter/X'
+  },
+  instagram: {
+    icone: 'fa-brands fa-instagram',
+    label: 'Instagram'
+  }
+};
 
-  const labels = {
-    site_web: 'Site Web',
-    discord: 'Discord',
-    facebook: 'Facebook',
-    twitter: 'Twitter/X',
-    instagram: 'Instagram'
-  };
+function normaliserUrlLien(url) {
+  if (typeof url !== 'string') {
+    return '';
+  }
+
+  const valeur = url.trim();
+  if (valeur === '') {
+    return '';
+  }
+
+  try {
+    const objetUrl = new URL(valeur);
+    const pathname = objetUrl.pathname === '/' ? '' : objetUrl.pathname;
+    const recherche = objetUrl.search || '';
+    const fragment = objetUrl.hash || '';
+
+    return `${objetUrl.protocol}//${objetUrl.host}${pathname}${recherche}${fragment}`;
+  } catch (_) {
+    return valeur;
+  }
+}
+
+function renderLiensPublics(liens = []) {
 
   if (!Array.isArray(liens) || liens.length === 0) {
     const placeholder = document.createElement('div');
@@ -30,10 +60,10 @@ function renderLiensPublics(liens = []) {
     message.textContent = 'Aucun lien ajouté pour le moment.';
     placeholder.appendChild(message);
 
-    Object.entries(icones).forEach(([type, icone]) => {
+    Object.entries(LIENS_PUBLICS_META).forEach(([type, meta]) => {
       const i = document.createElement('i');
-      i.className = `fa ${icone} icone-grisee`;
-      i.title = labels[type];
+      i.className = `fa ${meta.icone} icone-grisee`;
+      i.title = meta.label;
       placeholder.appendChild(i);
     });
 
@@ -51,8 +81,10 @@ function renderLiensPublics(liens = []) {
 
   liens.forEach(({ type_de_lien, url_lien }) => {
     const type = Array.isArray(type_de_lien) ? type_de_lien[0] : type_de_lien;
-    const icone = icones[type] || 'fa-link';
-    const label = labels[type] || type;
+    const { icone, label } = LIENS_PUBLICS_META[type] || {
+      icone: 'fa-link',
+      label: type
+    };
     const url = url_lien || '#';
 
     const li = document.createElement('li');
@@ -82,6 +114,90 @@ function renderLiensPublics(liens = []) {
   return liste;
 }
 window.renderLiensPublicsJS = renderLiensPublics;
+
+
+function creerLiensMap(donnees) {
+  const map = new Map();
+
+  (Array.isArray(donnees) ? donnees : []).forEach((item) => {
+    const typeBrut = item?.type_de_lien;
+    const type = Array.isArray(typeBrut) ? typeBrut[0] : typeBrut;
+    const typeNettoye = typeof type === 'string' ? type.trim() : '';
+    const url = normaliserUrlLien(item?.url_lien);
+
+    if (!typeNettoye || !url) return;
+    map.set(typeNettoye, url);
+  });
+
+  return map;
+}
+
+function normaliserLiens(donnees, { trier = false } = {}) {
+  const map = creerLiensMap(donnees);
+
+  let resultat = Array.from(map.entries()).map(([type, url]) => ({
+    type_de_lien: type,
+    url_lien: url
+  }));
+
+  if (trier) {
+    resultat = resultat
+      .slice()
+      .sort((a, b) => {
+        if (a.type_de_lien === b.type_de_lien) {
+          return a.url_lien.localeCompare(b.url_lien);
+        }
+        return a.type_de_lien.localeCompare(b.type_de_lien);
+      });
+  }
+
+  return resultat;
+}
+
+function mettreAJourHeaderOrganisateurLiens(donnees) {
+  const row = document.querySelector('.header-organisateur__liens-row');
+  if (!row) return;
+
+  const contact = row.querySelector('.lien-contact');
+  if (!contact) return;
+
+  const liens = normaliserLiens(donnees);
+  let liste = row.querySelector('.header-organisateur__liens');
+
+  if (liens.length === 0) {
+    liste?.remove();
+    return;
+  }
+
+  if (!liste) {
+    liste = document.createElement('ul');
+    liste.className = 'header-organisateur__liens';
+    row.insertBefore(liste, contact);
+  } else {
+    liste.innerHTML = '';
+  }
+
+  liens.forEach(({ type_de_lien, url_lien }) => {
+    const meta = LIENS_PUBLICS_META[type_de_lien] || {};
+    const li = document.createElement('li');
+    li.className = 'item-lien-public';
+
+    const lien = document.createElement('a');
+    lien.href = url_lien;
+    lien.target = '_blank';
+    lien.rel = 'noopener';
+    lien.className = `lien-public lien-${type_de_lien}`;
+    lien.setAttribute('aria-label', meta.label || type_de_lien);
+
+    const icon = document.createElement('i');
+    icon.className = `fa ${meta.icone || 'fa-link'}`;
+    icon.setAttribute('aria-hidden', 'true');
+
+    lien.appendChild(icon);
+    li.appendChild(lien);
+    liste.appendChild(li);
+  });
+}
 
 
 /**
@@ -221,6 +337,7 @@ function setupPanelHandlers(bouton, panneau, panneauId) {
 function serializeLiensForm(formulaire) {
   const donnees = [];
   formulaire.querySelectorAll('.champ-url-lien').forEach((input) => {
+    input.classList.remove('champ-erreur');
     const ligne = input.closest('[data-type]');
     const type = ligne?.dataset.type;
     const url = input.value.trim();
@@ -228,7 +345,7 @@ function serializeLiensForm(formulaire) {
     if (type && url !== '') {
       try {
         new URL(url);
-        donnees.push({ type_de_lien: type, url_lien: url });
+        donnees.push({ type_de_lien: type, url_lien: normaliserUrlLien(url) });
       } catch (_) {
         input.classList.add('champ-erreur');
       }
@@ -296,6 +413,10 @@ function updateTargetBlocks(bloc, champ, postId, donnees) {
       blocCible.classList.toggle('champ-rempli', donnees.length > 0);
     });
 
+  if (champ === 'liens_publics') {
+    mettreAJourHeaderOrganisateurLiens(donnees);
+  }
+
   window.dispatchEvent(new Event('liens-publics-updated'));
 }
 
@@ -317,22 +438,45 @@ function initLiensPublics(bloc, { panneauId, formId, action, reload = false }) {
   formulaire.replaceWith(clone);
   formulaire = clone;
 
+  let valeursInitiales = [];
+  if (champDonnees?.dataset.valeurs) {
+    try {
+      valeursInitiales = JSON.parse(champDonnees.dataset.valeurs);
+    } catch (_) {
+      valeursInitiales = [];
+    }
+  }
+  let signatureInitiale = JSON.stringify(normaliserLiens(valeursInitiales, { trier: true }));
+
   formulaire.addEventListener('submit', async (e) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const donnees = serializeLiensForm(formulaire);
+    const saisies = serializeLiensForm(formulaire);
+    const donneesNormalisees = normaliserLiens(saisies, { trier: true });
+    const signatureSoumise = JSON.stringify(donneesNormalisees);
 
-    let initial = [];
+    let signatureCourante = signatureInitiale;
     if (champDonnees?.dataset.valeurs) {
       try {
-        initial = JSON.parse(champDonnees.dataset.valeurs);
-      } catch (_) {
-        initial = [];
+        const valeursCourantes = JSON.parse(champDonnees.dataset.valeurs);
+        signatureCourante = JSON.stringify(normaliserLiens(valeursCourantes, { trier: true }));
+      } catch (err) {
+        signatureCourante = '[]';
       }
     }
 
-    if (JSON.stringify(initial) === JSON.stringify(donnees)) {
+    if (feedback) {
+      feedback.textContent = '';
+      feedback.className = 'champ-feedback';
+    }
+
+    if (signatureSoumise === signatureCourante) {
+      signatureInitiale = signatureCourante;
+      if (feedback) {
+        feedback.textContent = '';
+        feedback.className = 'champ-feedback';
+      }
       closeLocalPanel(panneau, panneauId);
       return;
     }
@@ -345,14 +489,15 @@ function initLiensPublics(bloc, { panneauId, formId, action, reload = false }) {
           action,
           champ,
           post_id: postId,
-          valeur: JSON.stringify(donnees)
+          valeur: JSON.stringify(donneesNormalisees)
         })
       });
 
       const res = await response.json();
       if (!res.success) throw new Error(res.data || 'Erreur AJAX');
 
-      updateTargetBlocks(bloc, champ, postId, donnees);
+      updateTargetBlocks(bloc, champ, postId, donneesNormalisees);
+      signatureInitiale = signatureSoumise;
       closeLocalPanel(panneau, panneauId);
 
       if (typeof window.mettreAJourResumeInfos === 'function') {
