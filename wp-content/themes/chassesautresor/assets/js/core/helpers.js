@@ -132,23 +132,6 @@ function normaliserLiens(donnees, { trier = false } = {}) {
   return resultat;
 }
 
-function liensIdentiques(anciens, nouveaux) {
-  const anciensMap = creerLiensMap(anciens);
-  const nouveauxMap = creerLiensMap(nouveaux);
-
-  if (anciensMap.size !== nouveauxMap.size) {
-    return false;
-  }
-
-  for (const [type, url] of anciensMap.entries()) {
-    if (nouveauxMap.get(type) !== url) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
 function mettreAJourHeaderOrganisateurLiens(donnees) {
   const row = document.querySelector('.header-organisateur__liens-row');
   if (!row) return;
@@ -438,7 +421,7 @@ function initLiensPublics(bloc, { panneauId, formId, action, reload = false }) {
     e.stopPropagation();
 
     const saisies = serializeLiensForm(formulaire);
-    const donneesNormalisees = normaliserLiens(saisies);
+    const donneesNormalisees = normaliserLiens(saisies, { trier: true });
 
     if (feedback) {
       feedback.textContent = '';
@@ -454,7 +437,9 @@ function initLiensPublics(bloc, { panneauId, formId, action, reload = false }) {
       }
     }
 
-    if (liensIdentiques(initial, donneesNormalisees)) {
+    const initialNormalise = normaliserLiens(initial, { trier: true });
+
+    if (JSON.stringify(initialNormalise) === JSON.stringify(donneesNormalisees)) {
       if (feedback) {
         feedback.textContent = '';
         feedback.className = 'champ-feedback';
