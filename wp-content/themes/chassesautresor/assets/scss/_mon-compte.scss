@@ -231,6 +231,67 @@
     font-weight: 500;
 }
 
+.organizer-organisation-nav {
+    display: block;
+    padding: 16px 0;
+    gap: 0;
+}
+
+.organizer-organisation-nav .organizer-nav-tree,
+.organizer-organisation-nav .organizer-nav-children {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.organizer-organisation-nav .organizer-nav-tree {
+    padding: 0 16px 16px;
+}
+
+.organizer-organisation-nav .organizer-nav-item {
+    position: relative;
+}
+
+.organizer-organisation-nav .organizer-nav-link {
+    width: 100%;
+}
+
+.organizer-organisation-nav .organizer-nav-children {
+    position: relative;
+    margin-top: 12px;
+    padding-left: 24px;
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.organizer-organisation-nav .organizer-nav-children::after {
+    content: '';
+    position: absolute;
+    left: -1px;
+    bottom: 0;
+    width: 1px;
+    height: 16px;
+    background: rgba(6, 10, 31, 0.9);
+}
+
+.organizer-organisation-nav .organizer-nav-children .organizer-nav-item {
+    margin-bottom: 8px;
+    padding-left: 0;
+}
+
+.organizer-organisation-nav .organizer-nav-children .organizer-nav-item::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -24px;
+    width: 24px;
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.organizer-organisation-nav .organizer-nav-children .organizer-nav-item:last-child {
+    margin-bottom: 0;
+}
+
 .dashboard-nav-link {
     display: flex;
     align-items: center;
@@ -688,12 +749,6 @@
     margin-top: 20px;
 }
 
-.myaccount-organisation-hunts {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-lg);
-}
-
 .myaccount-chasses-engagees {
     display: flex;
     flex-direction: column;
@@ -863,10 +918,6 @@
 
 .myaccount-section-action {
     margin-left: auto;
-}
-
-.myaccount-organisation-hunts-grid {
-    gap: var(--space-3xl);
 }
 
 .stats-cards {
