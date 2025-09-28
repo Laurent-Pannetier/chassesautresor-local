@@ -2831,13 +2831,23 @@ a.ajout-link:focus-visible {
   padding-left: var(--space-md);
   padding-right: var(--space-md);
 }
+.formulaire-contact-wrapper .wpforms-field-label,
+.formulaire-contact-wrapper .wpforms-field-label-inline,
+.formulaire-contact-wrapper label {
+  color: var(--color-text-primary);
+}
+.formulaire-contact-wrapper .wpforms-field-sublabel,
+.formulaire-contact-wrapper .wpforms-required-label,
+.formulaire-contact-wrapper .wpforms-field-description {
+  color: var(--color-text-primary);
+}
+.formulaire-contact-wrapper .wpforms-required-label {
+  font-weight: 600;
+  color: var(--color-primary);
+}
 
 .titre-contact {
   margin-bottom: 0.8rem;
-}
-
-body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
-  color: var(--color-text-primary);
 }
 
 @media (min-width: 480px) {
