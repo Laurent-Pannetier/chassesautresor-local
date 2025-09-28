@@ -27,6 +27,28 @@ const LIENS_PUBLICS_META = {
   }
 };
 
+function normaliserUrlLien(url) {
+  if (typeof url !== 'string') {
+    return '';
+  }
+
+  const valeur = url.trim();
+  if (valeur === '') {
+    return '';
+  }
+
+  try {
+    const objetUrl = new URL(valeur);
+    const pathname = objetUrl.pathname === '/' ? '' : objetUrl.pathname;
+    const recherche = objetUrl.search || '';
+    const fragment = objetUrl.hash || '';
+
+    return `${objetUrl.protocol}//${objetUrl.host}${pathname}${recherche}${fragment}`;
+  } catch (_) {
+    return valeur;
+  }
+}
+
 function renderLiensPublics(liens = []) {
 
   if (!Array.isArray(liens) || liens.length === 0) {
@@ -101,7 +123,7 @@ function creerLiensMap(donnees) {
     const typeBrut = item?.type_de_lien;
     const type = Array.isArray(typeBrut) ? typeBrut[0] : typeBrut;
     const typeNettoye = typeof type === 'string' ? type.trim() : '';
-    const url = typeof item?.url_lien === 'string' ? item.url_lien.trim() : '';
+    const url = normaliserUrlLien(item?.url_lien);
 
     if (!typeNettoye || !url) return;
     map.set(typeNettoye, url);
@@ -323,7 +345,7 @@ function serializeLiensForm(formulaire) {
     if (type && url !== '') {
       try {
         new URL(url);
-        donnees.push({ type_de_lien: type, url_lien: url });
+        donnees.push({ type_de_lien: type, url_lien: normaliserUrlLien(url) });
       } catch (_) {
         input.classList.add('champ-erreur');
       }
