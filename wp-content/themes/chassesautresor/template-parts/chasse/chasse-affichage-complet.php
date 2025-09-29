@@ -394,6 +394,13 @@ if ($edition_active && !$est_complet) {
           $date_fin_courte = __('Non spécifiée', 'chassesautresor-com');
       }
 
+      $date_debut_longue = $date_debut_formatee !== ''
+          ? $date_debut_formatee
+          : $date_debut_courte;
+      $date_fin_longue = $date_fin_formatee !== ''
+          ? $date_fin_formatee
+          : $date_fin_courte;
+
       if ($illimitee) {
           $date_plage_title = __('Durée illimitée', 'chassesautresor-com');
       } elseif (!empty($date_debut) && !empty($date_fin)) {
@@ -429,9 +436,23 @@ if ($edition_active && !$est_complet) {
             title="<?= esc_attr($date_plage_title); ?>"
             aria-label="<?= esc_attr($date_plage_title); ?>"
           >
-            <span class="date-debut"><?= esc_html($date_debut_courte); ?></span>
+            <span
+                class="date-debut"
+                data-date-long="<?= esc_attr($date_debut_longue); ?>"
+                data-date-short="<?= esc_attr($date_debut_courte); ?>"
+            >
+                <span class="date-short"><?= esc_html($date_debut_courte); ?></span>
+                <span class="date-long"><?= esc_html($date_debut_longue); ?></span>
+            </span>
             <span class="date-separator" aria-hidden="true">–</span>
-            <span class="date-fin"><?= esc_html($date_fin_courte); ?></span>
+            <span
+                class="date-fin"
+                data-date-long="<?= esc_attr($date_fin_longue); ?>"
+                data-date-short="<?= esc_attr($date_fin_courte); ?>"
+            >
+                <span class="date-short"><?= esc_html($date_fin_courte); ?></span>
+                <span class="date-long"><?= esc_html($date_fin_longue); ?></span>
+            </span>
           </span>
         </div>
       </div>

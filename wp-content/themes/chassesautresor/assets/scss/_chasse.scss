@@ -409,6 +409,20 @@ a.chasse-badge.chasse-badge--region:focus-visible {
     gap: var(--space-xxs);
     white-space: nowrap;
 }
+
+.chasse-fiche-container > .meta-row .chasse-date-plage .date-long {
+    display: none;
+}
+
+@media (--bp-desktop) {
+    .chasse-fiche-container > .meta-row .chasse-date-plage .date-short {
+        display: none;
+    }
+
+    .chasse-fiche-container > .meta-row .chasse-date-plage .date-long {
+        display: inline;
+    }
+}
 .chasse-details-wrapper .bloc-metas-inline {
     margin: var(--space-xl) 0;
     color: white;

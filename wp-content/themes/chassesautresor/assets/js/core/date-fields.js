@@ -27,6 +27,107 @@ function formatDateFr(dateStr) {
   });
 }
 
+function getPreferredLocale() {
+  const wpLocale = (window.catI18n && window.catI18n.locale) ? String(window.catI18n.locale) : '';
+  const docLang = (document.documentElement && document.documentElement.lang) ? document.documentElement.lang : '';
+  const navLang = (navigator && (navigator.language || (navigator.languages && navigator.languages[0])));
+  return wpLocale || docLang || navLang || 'fr-FR';
+}
+
+function formatHuntDateShort(dateStr) {
+  if (!dateStr) return '';
+  const parsed = new Date(String(dateStr).replace(' ', 'T'));
+  if (Number.isNaN(parsed.getTime())) return dateStr;
+
+  const locale = getPreferredLocale();
+  try {
+    return parsed.toLocaleDateString(locale, {
+      day: '2-digit',
+      month: '2-digit',
+      year: '2-digit'
+    });
+  } catch (error) {
+    return parsed.toLocaleDateString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: '2-digit'
+    });
+  }
+}
+
+function normalizeDateText(value, fallback) {
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (trimmed !== '') {
+      return trimmed;
+    }
+  }
+
+  if (typeof fallback === 'string') {
+    const fallbackTrimmed = fallback.trim();
+    if (fallbackTrimmed !== '') {
+      return fallbackTrimmed;
+    }
+  }
+
+  return '';
+}
+
+function updateHuntDateDisplay(element, options = {}) {
+  if (!element) return;
+
+  const currentLong = element.dataset?.dateLong || '';
+  const currentShort = element.dataset?.dateShort || currentLong;
+  const longText = normalizeDateText(options.longText, currentLong);
+  const shortText = normalizeDateText(options.shortText, currentShort || longText);
+
+  element.dataset.dateLong = longText;
+  element.dataset.dateShort = shortText;
+
+  const shortNode = element.querySelector('.date-short');
+  const longNode = element.querySelector('.date-long');
+
+  if (shortNode) {
+    shortNode.textContent = shortText;
+  }
+
+  if (longNode) {
+    longNode.textContent = longText;
+  }
+
+  if (!shortNode && !longNode) {
+    element.textContent = longText;
+  }
+}
+
+function getUnlimitedLabel() {
+  return (window.catI18n && window.catI18n.texts && window.catI18n.texts.unlimited)
+    ? window.catI18n.texts.unlimited
+    : 'Illimitée';
+}
+
+function isChasseUnlimited() {
+  const toggleLimitee = document.getElementById('date-fin-limitee');
+  const checkboxIllimitee = document.getElementById('duree-illimitee');
+
+  if (toggleLimitee && checkboxIllimitee) {
+    return !toggleLimitee.checked || checkboxIllimitee.checked;
+  }
+
+  if (toggleLimitee) {
+    return !toggleLimitee.checked;
+  }
+
+  if (checkboxIllimitee) {
+    return checkboxIllimitee.checked;
+  }
+
+  return false;
+}
+
+window.formatHuntDateShort = formatHuntDateShort;
+window.catUpdateHuntDateDisplay = updateHuntDateDisplay;
+
 
 
 // ==============================
@@ -36,15 +137,36 @@ function mettreAJourAffichageDateFin() {
   console.log('[mettreAJourAffichageDateFin]');
   const spanDateFin = document.querySelector('.chasse-date-plage .date-fin');
   const inputDateFin = document.getElementById('chasse-date-fin');
-  const toggleLimitee = document.getElementById('date-fin-limitee');
+  if (!spanDateFin) return;
 
-  if (!spanDateFin || !inputDateFin || !toggleLimitee) return;
-
-  if (!toggleLimitee.checked) {
-    spanDateFin.textContent = 'Illimitée';
-  } else {
-    spanDateFin.textContent = formatDateFr(inputDateFin.value);
+  if (isChasseUnlimited()) {
+    const unlimitedLabel = getUnlimitedLabel();
+    updateHuntDateDisplay(spanDateFin, {
+      longText: unlimitedLabel,
+      shortText: unlimitedLabel
+    });
+    return;
   }
+
+  if (!inputDateFin || !inputDateFin.value) {
+    updateHuntDateDisplay(spanDateFin, {
+      longText: '',
+      shortText: ''
+    });
+    return;
+  }
+
+  const formattedLong = (typeof window.formatDateLocalized === 'function')
+    ? window.formatDateLocalized(inputDateFin.value)
+    : formatDateFr(inputDateFin.value);
+  const formattedShort = window.formatHuntDateShort
+    ? window.formatHuntDateShort(inputDateFin.value)
+    : formatHuntDateShort(inputDateFin.value);
+
+  updateHuntDateDisplay(spanDateFin, {
+    longText: formattedLong,
+    shortText: formattedShort || formattedLong
+  });
 }
 // ==============================
 // 📅 initChampDate
@@ -204,3 +326,36 @@ function initChampDate(input) {
   };
   window.mettreAJourAffichageDateFin = override;
 })();
+
+const previousOnDateFieldUpdated = window.onDateFieldUpdated;
+window.onDateFieldUpdated = function(input, valeur) {
+  if (typeof previousOnDateFieldUpdated === 'function') {
+    previousOnDateFieldUpdated(input, valeur);
+  }
+
+  const champ = input?.closest('[data-champ]')?.dataset?.champ;
+  if (!champ) return;
+
+  if (champ === 'chasse_infos_date_debut') {
+    const spanDateDebut = document.querySelector('.chasse-date-plage .date-debut');
+    if (!spanDateDebut) return;
+
+    const formattedLong = valeur
+      ? ((typeof window.formatDateLocalized === 'function')
+        ? window.formatDateLocalized(valeur)
+        : formatDateFr(valeur))
+      : '';
+    const formattedShort = valeur
+      ? (window.formatHuntDateShort
+        ? window.formatHuntDateShort(valeur)
+        : formatHuntDateShort(valeur))
+      : '';
+
+    updateHuntDateDisplay(spanDateDebut, {
+      longText: formattedLong,
+      shortText: formattedShort || formattedLong
+    });
+  } else if (champ === 'chasse_infos_date_fin') {
+    mettreAJourAffichageDateFin();
+  }
+};
