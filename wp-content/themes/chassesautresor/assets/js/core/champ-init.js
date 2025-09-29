@@ -501,6 +501,17 @@ function initZoneClicEdition(bouton) {
   const zone = bouton.closest('li') || bouton.closest('[data-champ]');
   if (!zone) return;
 
+  const estZoneDesactive =
+    zone.classList.contains('champ-desactive') ||
+    zone.dataset.noEdit === '1' ||
+    zone.dataset.noEdit === 'true' ||
+    bouton.disabled ||
+    bouton.getAttribute('aria-disabled') === 'true';
+
+  if (estZoneDesactive) {
+    zone.style.cursor = 'default';
+    return;
+  }
 
   zone.style.cursor = 'pointer';
 

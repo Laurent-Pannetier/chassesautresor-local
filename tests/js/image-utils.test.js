@@ -4,6 +4,7 @@ describe('initChampImage', () => {
   beforeEach(() => {
     document.body.innerHTML = `
       <div class="champ-organisateur champ-img" data-champ="logo_organisateur" data-cpt="organisateur" data-post-id="123">
+        <button class="champ-modifier" data-champ="logo_organisateur" data-cpt="organisateur" data-post-id="123"></button>
         <img src="" />
         <input class="champ-input" type="hidden" />
         <div class="champ-feedback"></div>
@@ -60,5 +61,20 @@ describe('initChampImage', () => {
     await flush();
     const params = fetch.mock.calls[0][1].body;
     expect(params.get('action')).toBe('modifier_champ_organisateur');
+  });
+
+  it('ignore les blocs désactivés', () => {
+    const bloc = document.querySelector('.champ-organisateur');
+    bloc.classList.add('champ-desactive');
+    const bouton = bloc.querySelector('.champ-modifier');
+    bouton.setAttribute('aria-disabled', 'true');
+    const spy = jest.spyOn(bouton, 'addEventListener');
+
+    initChampImage(bloc);
+
+    expect(spy).not.toHaveBeenCalled();
+    expect(bloc.__ouvrirMedia).toBeUndefined();
+
+    spy.mockRestore();
   });
 });

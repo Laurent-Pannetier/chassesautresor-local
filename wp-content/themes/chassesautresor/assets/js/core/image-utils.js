@@ -7,11 +7,27 @@ function initChampImage(bloc) {
   const postId = bloc.dataset.postId;
 
   const feedback = bloc.querySelector('.champ-feedback');
+  const bouton = bloc.querySelector('.champ-modifier');
 
   if (!champ || !cpt || !postId) return;
 
+  const estBlocVerrouille = () =>
+    bloc.classList.contains('champ-desactive') ||
+    bloc.dataset.noEdit === '1' ||
+    bloc.dataset.noEdit === 'true' ||
+    bouton?.disabled ||
+    bouton?.getAttribute('aria-disabled') === 'true';
+
+  if (!bouton || estBlocVerrouille()) {
+    delete bloc.__ouvrirMedia;
+    return;
+  }
+
   // ✅ Création du frame à la volée quand appelé
   const ouvrirMedia = () => {
+    if (estBlocVerrouille()) {
+      return;
+    }
     // ✅ Empêcher double ouverture : reuse si déjà initialisé
     if (bloc.__mediaFrame) {
       bloc.__mediaFrame.open();
@@ -111,7 +127,6 @@ function initChampImage(bloc) {
     frame.open();
   };
 
-  const bouton = bloc.querySelector('.champ-modifier');
   if (bouton && !bouton.classList.contains('ouvrir-panneau-images')) {
     bouton.addEventListener('click', ouvrirMedia);
   }

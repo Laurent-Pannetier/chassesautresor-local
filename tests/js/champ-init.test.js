@@ -1,17 +1,15 @@
 const fs = require('fs');
 const path = require('path');
 
-describe('initChampDeclencheur', () => {
-  let script;
+const script = fs.readFileSync(
+  path.resolve(__dirname, '../../wp-content/themes/chassesautresor/assets/js/core/champ-init.js'),
+  'utf8'
+);
+eval(script);
+global.initChampDeclencheur = initChampDeclencheur;
+global.initZoneClicEdition = initZoneClicEdition;
 
-  beforeAll(() => {
-    script = fs.readFileSync(
-      path.resolve(__dirname, '../../wp-content/themes/chassesautresor/assets/js/core/champ-init.js'),
-      'utf8'
-    );
-    eval(script);
-    global.initChampDeclencheur = initChampDeclencheur;
-  });
+describe('initChampDeclencheur', () => {
 
   beforeEach(() => {
     global.initChampImage = jest.fn();
@@ -71,5 +69,51 @@ describe('initChampDeclencheur', () => {
     trigger.click();
 
     expect(bloc.__ouvrirMedia).not.toHaveBeenCalled();
+  });
+});
+
+describe('initZoneClicEdition', () => {
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
+
+  it('n’active pas la zone lorsque le champ est désactivé', () => {
+    document.body.innerHTML = `
+      <ul>
+        <li class="champ-chasse champ-desactive" data-champ="chasse_principale_image">
+          <button class="champ-modifier" aria-disabled="true"></button>
+        </li>
+      </ul>`;
+
+    const zone = document.querySelector('.champ-chasse');
+    const bouton = zone.querySelector('.champ-modifier');
+    const zoneSpy = jest.spyOn(zone, 'addEventListener');
+
+    initZoneClicEdition(bouton);
+
+    expect(zone.style.cursor).toBe('default');
+    expect(zoneSpy).not.toHaveBeenCalled();
+
+    zoneSpy.mockRestore();
+  });
+
+  it('ajoute un gestionnaire lorsque le champ est actif', () => {
+    document.body.innerHTML = `
+      <ul>
+        <li class="champ-chasse" data-champ="chasse_principale_image">
+          <button class="champ-modifier"></button>
+        </li>
+      </ul>`;
+
+    const zone = document.querySelector('.champ-chasse');
+    const bouton = zone.querySelector('.champ-modifier');
+    const zoneSpy = jest.spyOn(zone, 'addEventListener');
+
+    initZoneClicEdition(bouton);
+
+    expect(zone.style.cursor).toBe('pointer');
+    expect(zoneSpy).toHaveBeenCalledTimes(1);
+
+    zoneSpy.mockRestore();
   });
 });
