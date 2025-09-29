@@ -408,6 +408,33 @@ a.chasse-badge.chasse-badge--region:focus-visible {
     align-items: center;
     gap: var(--space-xxs);
     white-space: nowrap;
+
+    .date-debut,
+    .date-fin {
+        display: inline-flex;
+        gap: var(--space-3xs);
+    }
+
+    .date-long {
+        display: none;
+    }
+
+    .date-short[hidden],
+    .date-long[hidden] {
+        display: none !important;
+    }
+}
+
+@media (--bp-desktop) {
+    .chasse-fiche-container > .meta-row .chasse-date-plage {
+        .date-short {
+            display: none;
+        }
+
+        .date-long {
+            display: inline;
+        }
+    }
 }
 .chasse-details-wrapper .bloc-metas-inline {
     margin: var(--space-xl) 0;

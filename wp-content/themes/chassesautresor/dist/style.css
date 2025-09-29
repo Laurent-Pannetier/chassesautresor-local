@@ -1391,7 +1391,27 @@ a.chasse-badge.chasse-badge--region:focus-visible {
   gap: var(--space-xxs);
   white-space: nowrap;
 }
+.chasse-fiche-container > .meta-row .chasse-date-plage .date-debut,
+.chasse-fiche-container > .meta-row .chasse-date-plage .date-fin {
+  display: inline-flex;
+  gap: var(--space-3xs);
+}
+.chasse-fiche-container > .meta-row .chasse-date-plage .date-long {
+  display: none;
+}
+.chasse-fiche-container > .meta-row .chasse-date-plage .date-short[hidden],
+.chasse-fiche-container > .meta-row .chasse-date-plage .date-long[hidden] {
+  display: none !important;
+}
 
+@media (min-width: 1024px) {
+  .chasse-fiche-container > .meta-row .chasse-date-plage .date-short {
+    display: none;
+  }
+  .chasse-fiche-container > .meta-row .chasse-date-plage .date-long {
+    display: inline;
+  }
+}
 .chasse-details-wrapper .bloc-metas-inline {
   margin: var(--space-xl) 0;
   color: white;
@@ -4025,6 +4045,12 @@ body.edition-active .resume-infos li,
 body.edition-active-chasse .resume-infos li,
 body.edition-active-enigme .resume-infos li {
   cursor: pointer;
+}
+
+body.edition-active .champ-desactive,
+body.edition-active-chasse .champ-desactive,
+body.edition-active-enigme .champ-desactive {
+  cursor: default;
 }
 
 /* ========== 📂 Toggle panneau édition ========== */
