@@ -39,6 +39,22 @@ class OrganisateurAccessTest extends TestCase
         ];
         $this->assertTrue(utilisateur_peut_voir_enigme($enigme_id));
     }
+
+    public function test_organisateur_engage_peut_voir_enigme_pending(): void
+    {
+        global $fields, $enigme_chasse, $post_status, $engagements;
+        $enigme_id   = 5;
+        $chasse_id   = 6;
+        $enigme_chasse = [$enigme_id => $chasse_id];
+        $post_status   = [$enigme_id => 'pending'];
+        $fields        = [
+            $enigme_id => ['enigme_cache_etat_systeme' => 'accessible'],
+            $chasse_id => ['chasse_cache_statut_validation' => 'creation'],
+        ];
+        $engagements = ['1:6' => true];
+
+        $this->assertTrue(utilisateur_peut_voir_enigme($enigme_id));
+    }
 }
 
 if (!function_exists('get_post_type')) {
@@ -77,7 +93,10 @@ if (!function_exists('recuperer_id_chasse_associee')) {
 if (!function_exists('utilisateur_est_engage_dans_chasse')) {
     function utilisateur_est_engage_dans_chasse($user_id, $chasse_id)
     {
-        return false;
+        global $engagements;
+        $key = $user_id . ':' . $chasse_id;
+
+        return $engagements[$key] ?? false;
     }
 }
 if (!function_exists('is_user_logged_in')) {
