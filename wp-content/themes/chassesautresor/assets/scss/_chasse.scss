@@ -418,6 +418,11 @@ a.chasse-badge.chasse-badge--region:focus-visible {
     .date-long {
         display: none;
     }
+
+    .date-short[hidden],
+    .date-long[hidden] {
+        display: none !important;
+    }
 }
 
 @media (--bp-desktop) {

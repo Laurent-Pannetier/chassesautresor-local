@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // date, datetime-local...). L'important est qu'ils possèdent la classe
   // `.champ-date-edit`.
   document.querySelectorAll('input.champ-date-edit').forEach(initChampDate);
+  initResponsiveDateVisibility();
 });
 
 
@@ -98,6 +99,96 @@ function updateHuntDateDisplay(element, options = {}) {
   if (!shortNode && !longNode) {
     element.textContent = longText;
   }
+
+  applyResponsiveDateVisibility(element);
+}
+
+const DATE_FORMAT_MEDIA_QUERY = '(min-width: 1024px)';
+let dateFormatMediaMatcher = null;
+
+function handleDateFormatMediaChange() {
+  applyResponsiveDateVisibility();
+}
+
+function ensureDateFormatMediaMatcher() {
+  if (dateFormatMediaMatcher || typeof window.matchMedia !== 'function') {
+    return dateFormatMediaMatcher;
+  }
+
+  dateFormatMediaMatcher = window.matchMedia(DATE_FORMAT_MEDIA_QUERY);
+
+  if (typeof dateFormatMediaMatcher.addEventListener === 'function') {
+    dateFormatMediaMatcher.addEventListener('change', handleDateFormatMediaChange);
+  } else if (typeof dateFormatMediaMatcher.addListener === 'function') {
+    dateFormatMediaMatcher.addListener(handleDateFormatMediaChange);
+  }
+
+  return dateFormatMediaMatcher;
+}
+
+function isDesktopForDateFormatting() {
+  const matcher = ensureDateFormatMediaMatcher();
+  return matcher ? matcher.matches : false;
+}
+
+function toggleDateFormatNodes(element, isDesktop) {
+  if (!(element instanceof Element)) {
+    return;
+  }
+
+  const shortNode = element.querySelector('.date-short');
+  const longNode = element.querySelector('.date-long');
+
+  if (shortNode) {
+    if (isDesktop) {
+      shortNode.hidden = true;
+      shortNode.setAttribute('aria-hidden', 'true');
+    } else {
+      shortNode.hidden = false;
+      shortNode.setAttribute('aria-hidden', 'false');
+    }
+  }
+
+  if (longNode) {
+    if (isDesktop) {
+      longNode.hidden = false;
+      longNode.setAttribute('aria-hidden', 'false');
+    } else {
+      longNode.hidden = true;
+      longNode.setAttribute('aria-hidden', 'true');
+    }
+  }
+
+  if (!shortNode && !longNode && element.dataset) {
+    const dataset = element.dataset;
+    const fallbackText = isDesktop
+      ? normalizeDateText(dataset.dateLong, dataset.dateShort)
+      : normalizeDateText(dataset.dateShort, dataset.dateLong);
+
+    if (fallbackText !== '') {
+      element.textContent = fallbackText;
+    }
+  }
+}
+
+function applyResponsiveDateVisibility(context) {
+  const isDesktop = isDesktopForDateFormatting();
+
+  if (context instanceof Element) {
+    toggleDateFormatNodes(context, isDesktop);
+    return;
+  }
+
+  document
+    .querySelectorAll('.chasse-date-plage .date-debut, .chasse-date-plage .date-fin')
+    .forEach((element) => {
+      toggleDateFormatNodes(element, isDesktop);
+    });
+}
+
+function initResponsiveDateVisibility() {
+  ensureDateFormatMediaMatcher();
+  applyResponsiveDateVisibility();
 }
 
 function getUnlimitedLabel() {

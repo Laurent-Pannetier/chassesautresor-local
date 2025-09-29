@@ -1399,6 +1399,10 @@ a.chasse-badge.chasse-badge--region:focus-visible {
 .chasse-fiche-container > .meta-row .chasse-date-plage .date-long {
   display: none;
 }
+.chasse-fiche-container > .meta-row .chasse-date-plage .date-short[hidden],
+.chasse-fiche-container > .meta-row .chasse-date-plage .date-long[hidden] {
+  display: none !important;
+}
 
 @media (min-width: 1024px) {
   .chasse-fiche-container > .meta-row .chasse-date-plage .date-short {
