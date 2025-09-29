@@ -335,6 +335,12 @@ body.edition-active-enigme .resume-infos li {
   cursor: pointer;
 }
 
+body.edition-active .champ-desactive,
+body.edition-active-chasse .champ-desactive,
+body.edition-active-enigme .champ-desactive {
+  cursor: default;
+}
+
 
 /* ========== 📂 Toggle panneau édition ========== */
 section.enigme-wrapper {
