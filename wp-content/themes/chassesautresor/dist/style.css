@@ -6948,6 +6948,7 @@ li.active .enigme-menu__edit {
   font-size: clamp(1rem, 1.2vw + 0.9rem, 1.25rem);
   line-height: 1.6;
   overflow-wrap: anywhere;
+  text-align: left;
 }
 .enigme-texte ul {
   list-style: disc;
