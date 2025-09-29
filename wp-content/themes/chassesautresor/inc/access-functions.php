@@ -501,6 +501,9 @@ function utilisateur_peut_voir_enigme(int $enigme_id, ?int $user_id = null): boo
         return false;
     }
 
+    $statut_validation = get_field('chasse_cache_statut_validation', $chasse_id) ?? '';
+    $est_organisateur  = utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
+
     // 🏁 Chasse terminée : visuels accessibles à tous
     $chasse_terminee = get_field('chasse_cache_statut', $chasse_id) === 'termine';
     if ($chasse_terminee && $post_status === 'publish') {
@@ -510,6 +513,12 @@ function utilisateur_peut_voir_enigme(int $enigme_id, ?int $user_id = null): boo
 
     // ✅ Abonné engagé dans la chasse → peut voir l’image si énigme accessible
     if (utilisateur_est_engage_dans_chasse($user_id, $chasse_id)) {
+        if ($est_organisateur && in_array($statut_validation, ['creation', 'correction', 'en_attente'], true)) {
+            $autorise = in_array($post_status, ['publish', 'pending'], true);
+            cat_debug("🟢 [voir énigme] organisateur engagé → chasse = $statut_validation → accès " . ($autorise ? 'OK' : 'REFUSÉ'));
+            return $autorise;
+        }
+
         $autorise = ($post_status === 'publish') && ($etat_systeme === 'accessible');
         cat_debug("✅ [voir énigme] joueur engagé dans chasse #$chasse_id → accès " . ($autorise ? 'OK' : 'REFUSÉ'));
         return $autorise;
@@ -529,13 +538,12 @@ function utilisateur_peut_voir_enigme(int $enigme_id, ?int $user_id = null): boo
     }
 
     // 🔐 L’utilisateur doit être lié à l’organisateur de la chasse
-    if (!utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
+    if (!$est_organisateur) {
         cat_debug("❌ [voir énigme] user #$user_id n'est pas lié à la chasse #$chasse_id");
         return false;
     }
 
     // ✅ Exception organisateur (chasse non publiée)
-    $statut_validation = get_field('chasse_cache_statut_validation', $chasse_id);
     cat_debug("🧪 [voir énigme] chasse #$chasse_id → statut_validation = $statut_validation");
 
     if (in_array($statut_validation, ['creation', 'correction', 'en_attente'], true)) {
@@ -546,7 +554,7 @@ function utilisateur_peut_voir_enigme(int $enigme_id, ?int $user_id = null): boo
 
     // ✅ Cas organisateur associé à une chasse publiée mais à venir
     if (
-        utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id) &&
+        $est_organisateur &&
         $post_status === 'publish' &&
         $etat_systeme === 'bloquee_chasse'
     ) {

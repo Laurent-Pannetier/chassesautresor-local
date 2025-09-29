@@ -58,6 +58,12 @@ class UtilisateurPeutVoirEnigmeChasseTermineeTest extends TestCase
                 return null;
             }
         }
+        if (!function_exists('utilisateur_est_organisateur_associe_a_chasse')) {
+            function utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)
+            {
+                return false;
+            }
+        }
         if (!function_exists('cat_debug')) {
             function cat_debug($message)
             {
