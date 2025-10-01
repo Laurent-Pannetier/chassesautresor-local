@@ -40,7 +40,7 @@ function ca_site_password_protection(): void
     }
 
     $field         = 'ca_site_password';
-    $password      = getenv('CA_SITE_PASSWORD') ?: (string) get_option('ca_site_password', 'rosebud');
+    $password      = getenv('CA_SITE_PASSWORD') ?: (string) get_option('ca_site_password', 'citizen');
     $attempt_field = 'ca_site_password_attempts';
     $max_attempts  = 10;
     $attempts      = isset($_COOKIE[$attempt_field]) ? (int) $_COOKIE[$attempt_field] : 0;
