@@ -442,7 +442,7 @@ if ($edition_active && !$est_complet) {
                 data-date-short="<?= esc_attr($date_debut_courte); ?>"
             >
               <span class="date-short" aria-hidden="false"><?= esc_html($date_debut_courte); ?></span>
-              <span class="date-long" aria-hidden="true"><?= esc_html($date_debut_longue); ?></span>
+              <span class="date-long" aria-hidden="true" hidden><?= esc_html($date_debut_longue); ?></span>
             </span>
             <span class="date-separator" aria-hidden="true">–</span>
             <span
@@ -451,7 +451,7 @@ if ($edition_active && !$est_complet) {
                 data-date-short="<?= esc_attr($date_fin_courte); ?>"
             >
               <span class="date-short" aria-hidden="false"><?= esc_html($date_fin_courte); ?></span>
-              <span class="date-long" aria-hidden="true"><?= esc_html($date_fin_longue); ?></span>
+              <span class="date-long" aria-hidden="true" hidden><?= esc_html($date_fin_longue); ?></span>
             </span>
           </span>
         </div>
