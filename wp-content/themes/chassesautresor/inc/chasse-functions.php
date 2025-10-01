@@ -892,12 +892,7 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
         );
         $html .= '</form>';
         $type = 'engager';
-        $message = $date_fin
-            ? sprintf(
-                __('Cette chasse est terminée depuis le %s', 'chassesautresor-com'),
-                date_i18n('d/m/Y', strtotime($date_fin))
-            )
-            : __('Cette chasse est terminée', 'chassesautresor-com');
+        $message = '';
     }
 
         return $response([
