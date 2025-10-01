@@ -1385,30 +1385,30 @@ a.chasse-badge.chasse-badge--region:focus-visible {
   font-variant-numeric: tabular-nums;
 }
 
-.chasse-fiche-container > .meta-row .chasse-date-plage {
+.chasse-date-plage {
   display: inline-flex;
   align-items: center;
   gap: var(--space-xxs);
   white-space: nowrap;
 }
-.chasse-fiche-container > .meta-row .chasse-date-plage .date-debut,
-.chasse-fiche-container > .meta-row .chasse-date-plage .date-fin {
+.chasse-date-plage .date-debut,
+.chasse-date-plage .date-fin {
   display: inline-flex;
   gap: var(--space-3xs);
 }
-.chasse-fiche-container > .meta-row .chasse-date-plage .date-long {
+.chasse-date-plage .date-long {
   display: none;
 }
-.chasse-fiche-container > .meta-row .chasse-date-plage .date-short[hidden],
-.chasse-fiche-container > .meta-row .chasse-date-plage .date-long[hidden] {
+.chasse-date-plage .date-short[hidden],
+.chasse-date-plage .date-long[hidden] {
   display: none !important;
 }
 
 @media (min-width: 1024px) {
-  .chasse-fiche-container > .meta-row .chasse-date-plage .date-short {
+  .chasse-date-plage .date-short {
     display: none;
   }
-  .chasse-fiche-container > .meta-row .chasse-date-plage .date-long {
+  .chasse-date-plage .date-long {
     display: inline;
   }
 }

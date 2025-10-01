@@ -403,7 +403,7 @@ a.chasse-badge.chasse-badge--region:focus-visible {
     font-variant-numeric: tabular-nums;
 }
 
-.chasse-fiche-container > .meta-row .chasse-date-plage {
+.chasse-date-plage {
     display: inline-flex;
     align-items: center;
     gap: var(--space-xxs);
@@ -426,7 +426,7 @@ a.chasse-badge.chasse-badge--region:focus-visible {
 }
 
 @media (--bp-desktop) {
-    .chasse-fiche-container > .meta-row .chasse-date-plage {
+    .chasse-date-plage {
         .date-short {
             display: none;
         }
