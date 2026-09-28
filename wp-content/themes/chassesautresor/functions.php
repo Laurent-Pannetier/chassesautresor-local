@@ -27,7 +27,6 @@ function cta_load_textdomain() {
 }
 add_action( 'after_setup_theme', 'cta_load_textdomain' );
 
-
 /**
  * Adds custom image sizes.
  *
@@ -38,7 +37,6 @@ function cta_register_image_sizes() {
     add_image_size( 'chasse-fiche', 1024, 800, false );
 }
 add_action( 'after_setup_theme', 'cta_register_image_sizes' );
-
 
 /**
  * Retrieves the locale from the cookie.
@@ -486,28 +484,6 @@ add_action('wp_enqueue_scripts', function () {
             true
         );
 
-        $current_chasse_id = get_queried_object_id();
-        if (
-            $current_chasse_id
-            && function_exists('ca_demo_is_demo_hunt')
-            && ca_demo_is_demo_hunt((int) $current_chasse_id)
-        ) {
-            wp_enqueue_script(
-                'chasse-demo-reset',
-                $script_dir . 'chasse-demo-reset.js',
-                [],
-                filemtime($theme_path . '/assets/js/chasse-demo-reset.js'),
-                true
-            );
-
-            wp_localize_script('chasse-demo-reset', 'caDemoReset', [
-                'ajaxUrl'    => admin_url('admin-ajax.php'),
-                'confirm'    => __('Voulez-vous vraiment réinitialiser votre progression de démonstration ?', 'chassesautresor-com'),
-                'success'    => __('Votre progression a été réinitialisée.', 'chassesautresor-com'),
-                'error'      => __('Impossible de réinitialiser votre progression pour le moment.', 'chassesautresor-com'),
-                'nonceError' => __('Votre session a expiré. Merci de recharger la page.', 'chassesautresor-com'),
-            ]);
-        }
     }
 });
 
@@ -659,7 +635,6 @@ require_once $inc_path . 'relations-functions.php';
 require_once $inc_path . 'layout-functions.php';
 require_once $inc_path . 'sidebar.php';
 require_once $inc_path . 'utils/liens.php';
-require_once $inc_path . 'chasse/demo.php';
 require_once $inc_path . 'chasse/stats.php';
 require_once $inc_path . 'organisateur/stats.php';
 require_once $inc_path . 'pager.php';
@@ -676,8 +651,6 @@ require_once $inc_path . 'edition/edition-enigme.php';
 require_once $inc_path . 'edition/edition-indice.php';
 require_once $inc_path . 'edition/edition-solution.php';
 require_once $inc_path . 'edition/edition-securite.php';
-
-
 
 /**
  * Injecte automatiquement `acf_form_head()` pour les fiches chasse.
@@ -709,7 +682,6 @@ function forcer_acf_form_head_chasse()
     acf_form_head();
 }
 
-
 /**
  * 🔁 TÂCHES QUOTIDIENNES INTERNES – SYNCHRONISATION DU CACHE DES ÉNIGMES
  *
@@ -739,4 +711,3 @@ function tache_cron_synchroniser_cache_enigmes(): void {
         verifier_et_synchroniser_cache_enigmes_si_autorise($chasse_id);
     }
 }
-

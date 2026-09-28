@@ -987,13 +987,6 @@ function ca_get_user_engaged_hunt_ids(int $user_id): array
             continue;
         }
 
-        if (
-            function_exists('ca_demo_is_demo_hunt')
-            && ca_demo_is_demo_hunt($chasse_id)
-        ) {
-            continue;
-        }
-
         $chasse_ids[] = $chasse_id;
     }
 
@@ -2125,4 +2118,3 @@ function ajouter_role_organisateur_creation($post_id, $post, $update) {
     }
 }
 add_action('save_post', 'ajouter_role_organisateur_creation', 10, 3);
-
