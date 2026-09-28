@@ -1,6 +1,22 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
+if (!class_exists(ChassesAuTresor\Core\Points\PointsService::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Points/PointsService.php';
+}
+
+/**
+ * Create the service responsible for points operations.
+ */
+function cat_get_points_service(): ChassesAuTresor\Core\Points\PointsService
+{
+    global $wpdb;
+
+    return new ChassesAuTresor\Core\Points\PointsService(
+        new PointsRepository($wpdb)
+    );
+}
 
 // ==================================================
 // 📚 SOMMAIRE DU FICHIER : gamify-functions.php
@@ -44,10 +60,7 @@ function get_user_points($user_id = null): int {
         return 0;
     }
 
-    global $wpdb;
-    $repo = new PointsRepository($wpdb);
-
-    return $repo->getBalance((int) $user_id);
+    return cat_get_points_service()->getBalance((int) $user_id);
 }
 
 /**
@@ -73,9 +86,7 @@ function update_user_points(
         return;
     }
 
-    global $wpdb;
-    $repo = new PointsRepository($wpdb);
-    $repo->addPoints($user_id, $points_change, $reason, $origin_type, $origin_id);
+    cat_get_points_service()->changeBalance($user_id, $points_change, $reason, $origin_type, $origin_id);
 
     // 🔄 Rafraîchit la session utilisateur si connecté
     if (is_user_logged_in()) {
@@ -211,10 +222,7 @@ add_action('wp_enqueue_scripts', 'charger_script_modal_points');
  * @return bool True si le solde est suffisant.
  */
 function utilisateur_a_assez_de_points(int $user_id, int $montant): bool {
-    if (!$user_id || $montant < 0) return false;
-
-    $points_disponibles = get_user_points($user_id);
-    return $points_disponibles >= $montant;
+    return cat_get_points_service()->hasEnough($user_id, $montant);
 }
 
 /**
@@ -234,9 +242,7 @@ function deduire_points_utilisateur(
     string $origin_type = 'admin',
     ?int $origin_id = null
 ): void {
-    if ($user_id && $montant > 0) {
-        update_user_points($user_id, -$montant, $reason, $origin_type, $origin_id);
-    }
+    cat_get_points_service()->deduct($user_id, $montant, $reason, $origin_type, $origin_id);
 }
 
 /**
@@ -256,9 +262,7 @@ function ajouter_points_utilisateur(
     string $origin_type = 'admin',
     ?int $origin_id = null
 ): void {
-    if ($user_id && $montant > 0) {
-        update_user_points($user_id, $montant, $reason, $origin_type, $origin_id);
-    }
+    cat_get_points_service()->add($user_id, $montant, $reason, $origin_type, $origin_id);
 }
 
 
@@ -449,11 +453,7 @@ function get_user_points_history(int $user_id = null, int $page = 1, int $per_pa
         return [];
     }
 
-    global $wpdb;
-    $repo   = new PointsRepository($wpdb);
-    $offset = ($page - 1) * $per_page;
-
-    return $repo->getHistory((int) $user_id, $per_page, $offset);
+    return cat_get_points_service()->getHistory((int) $user_id, $page, $per_page);
 }
 
 /**
@@ -466,10 +466,7 @@ function count_user_points_history(int $user_id = null): int
         return 0;
     }
 
-    global $wpdb;
-    $repo = new PointsRepository($wpdb);
-
-    return $repo->countHistory((int) $user_id);
+    return cat_get_points_service()->countHistory((int) $user_id);
 }
 
 /**
@@ -626,5 +623,4 @@ function ajax_load_points_history(): void
     wp_send_json_success(['rows' => $rows]);
 }
 add_action('wp_ajax_load_points_history', 'ajax_load_points_history');
-
 
