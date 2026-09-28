@@ -11,7 +11,12 @@ declare(strict_types=1);
 defined('ABSPATH') || exit;
 
 require_once __DIR__ . '/src/Points/PointsRepository.php';
+require_once __DIR__ . '/src/Messages/UserMessageRepository.php';
 
 if (!class_exists('PointsRepository', false)) {
     class_alias(ChassesAuTresor\Core\Points\PointsRepository::class, 'PointsRepository');
+}
+
+if (!class_exists('UserMessageRepository', false)) {
+    class_alias(ChassesAuTresor\Core\Messages\UserMessageRepository::class, 'UserMessageRepository');
 }
