@@ -9,26 +9,12 @@ defined('ABSPATH') || exit;
  */
 function cat_install_user_messages_table(): void
 {
-    global $wpdb;
+    if (!class_exists(ChassesAuTresor\Core\Messages\UserMessagesTable::class, false)) {
+        require_once dirname(__DIR__, 3)
+            . '/plugins/chassesautresor-core/src/Messages/UserMessagesTable.php';
+    }
 
-    $table          = $wpdb->prefix . 'user_messages';
-    $charsetCollate = $wpdb->get_charset_collate();
-
-    $sql = "CREATE TABLE {$table} (
-        id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-        user_id BIGINT UNSIGNED NOT NULL,
-        message LONGTEXT NOT NULL,
-        status VARCHAR(20) NOT NULL,
-        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        expires_at DATETIME NULL,
-        locale VARCHAR(10) NULL,
-        KEY user_id (user_id),
-        KEY status (status),
-        KEY expires_at (expires_at)
-    ) {$charsetCollate};";
-
-    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-    dbDelta($sql);
+    ChassesAuTresor\Core\Messages\UserMessagesTable::install();
 }
 add_action('after_switch_theme', 'cat_install_user_messages_table');
 
@@ -278,4 +264,3 @@ function cat_remove_legacy_test_messages(): void
     update_option('cat_removed_test_messages', 1);
 }
 add_action('init', 'cat_remove_legacy_test_messages');
-
