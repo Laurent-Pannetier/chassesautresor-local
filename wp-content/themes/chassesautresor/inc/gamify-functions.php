@@ -6,6 +6,11 @@ if (!class_exists(ChassesAuTresor\Core\Points\PointsService::class, false)) {
         . '/plugins/chassesautresor-core/src/Points/PointsService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Points\PurchasePointsService::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Points/PurchasePointsService.php';
+}
+
 /**
  * Create the service responsible for points operations.
  */
@@ -16,6 +21,14 @@ function cat_get_points_service(): ChassesAuTresor\Core\Points\PointsService
     return new ChassesAuTresor\Core\Points\PointsService(
         new PointsRepository($wpdb)
     );
+}
+
+/**
+ * Create the service responsible for purchased point packs.
+ */
+function cat_get_purchase_points_service(): ChassesAuTresor\Core\Points\PurchasePointsService
+{
+    return new ChassesAuTresor\Core\Points\PurchasePointsService(cat_get_points_service());
 }
 
 // ==================================================
@@ -101,37 +114,8 @@ function update_user_points(
  */
 function attribuer_points_apres_achat($order_id) {
     $order = wc_get_order($order_id);
-    if (!$order || $order->get_meta('_points_deja_attribues')) return; // 🔒 Évite les doublons
 
-    $user_id = $order->get_user_id();
-    if (!$user_id) return;
-
-    $packs_points = [
-        'pack-100-points'  => 100,
-        'pack-500-points'  => 500,
-        'pack-1000-points' => 1000,
-    ];
-
-    $points_ajoutes = 0;
-
-    foreach ($order->get_items() as $item) {
-        $product = $item->get_product();
-        if (!$product) continue;
-
-        $slug = $product->get_slug();
-        if (isset($packs_points[$slug])) {
-            $points_to_add = $packs_points[$slug] * $item->get_quantity();
-            $reason = sprintf('Achat de %d points (commande #%d)', $points_to_add, $order_id);
-            update_user_points($user_id, $points_to_add, $reason, 'achat', $order_id);
-            $points_ajoutes += $points_to_add;
-            $order->add_order_note("✅ {$points_to_add} points ajoutés.");
-        }
-    }
-
-    if ($points_ajoutes > 0) {
-        $order->update_meta_data('_points_deja_attribues', true); // ✅ Marque la commande comme traitée
-        $order->save();
-    }
+    cat_get_purchase_points_service()->awardOrder($order);
 }
 
 /**
@@ -623,4 +607,3 @@ function ajax_load_points_history(): void
     wp_send_json_success(['rows' => $rows]);
 }
 add_action('wp_ajax_load_points_history', 'ajax_load_points_history');
-

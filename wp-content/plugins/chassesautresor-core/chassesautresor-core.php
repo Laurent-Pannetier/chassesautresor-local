@@ -12,6 +12,7 @@ defined('ABSPATH') || exit;
 
 require_once __DIR__ . '/src/Points/PointsRepository.php';
 require_once __DIR__ . '/src/Points/PointsService.php';
+require_once __DIR__ . '/src/Points/PurchasePointsService.php';
 require_once __DIR__ . '/src/Messages/UserMessageRepository.php';
 require_once __DIR__ . '/src/Messages/SiteMessageService.php';
 require_once __DIR__ . '/src/Messages/AccountMessageService.php';
