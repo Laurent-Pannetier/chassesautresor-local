@@ -14,6 +14,7 @@ require_once __DIR__ . '/src/Points/PointsRepository.php';
 require_once __DIR__ . '/src/Points/PointsService.php';
 require_once __DIR__ . '/src/Points/PurchasePointsService.php';
 require_once __DIR__ . '/src/Points/ConversionService.php';
+require_once __DIR__ . '/src/Points/PointsTable.php';
 require_once __DIR__ . '/src/Messages/UserMessageRepository.php';
 require_once __DIR__ . '/src/Messages/SiteMessageService.php';
 require_once __DIR__ . '/src/Messages/AccountMessageService.php';
@@ -35,6 +36,11 @@ register_activation_hook(
 
 register_activation_hook(
     __FILE__,
+    [ChassesAuTresor\Core\Points\PointsTable::class, 'install']
+);
+
+register_activation_hook(
+    __FILE__,
     [ChassesAuTresor\Core\Messages\UserMessagesCleanup::class, 'schedule']
 );
 
@@ -46,6 +52,11 @@ register_deactivation_hook(
 add_action(
     'plugins_loaded',
     [ChassesAuTresor\Core\Messages\UserMessagesTable::class, 'maybeUpgrade']
+);
+
+add_action(
+    'plugins_loaded',
+    [ChassesAuTresor\Core\Points\PointsTable::class, 'maybeUpgrade']
 );
 
 add_action(
