@@ -53,3 +53,13 @@ add_action(
     ChassesAuTresor\Core\Messages\UserMessagesCleanup::HOOK,
     [ChassesAuTresor\Core\Messages\UserMessagesCleanup::class, 'run']
 );
+
+if (defined('WP_CLI') && WP_CLI) {
+    require_once __DIR__ . '/src/Cli/CatCliCommand.php';
+
+    if (!class_exists('Cat_CLI_Command', false)) {
+        class_alias(ChassesAuTresor\Core\Cli\CatCliCommand::class, 'Cat_CLI_Command');
+    }
+
+    WP_CLI::add_command('cat', ChassesAuTresor\Core\Cli\CatCliCommand::class);
+}
