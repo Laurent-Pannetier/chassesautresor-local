@@ -669,48 +669,16 @@ function ajax_update_request_status(): void
         wp_send_json_error();
     }
 
-    global $wpdb;
-    $repo = new PointsRepository($wpdb);
-
-    $map = [
-        'regle'  => 'paid',
-        'annule' => 'cancelled',
-        'refuse' => 'refused',
-    ];
-
-    $repoStatus = $map[$statut];
-    $dates      = [];
-    if ($repoStatus === 'paid') {
-        $dates['settlement_date'] = current_time('mysql');
-    } else {
-        $dates['cancelled_date'] = current_time('mysql');
-    }
-
-    $repo->updateRequestStatus($paiement_id, $repoStatus, $dates);
+    $result = cat_get_conversion_service()->updateStatus(
+        $paiement_id,
+        $statut,
+        current_time('mysql')
+    );
+    $repoStatus = $result['status'];
     cat_debug("✅ Statut mis à jour pour l'entrée {$paiement_id} : {$repoStatus}");
 
-    if (in_array($repoStatus, ['cancelled', 'refused'], true)) {
-        $request = $repo->getRequestById($paiement_id);
-        if ($request) {
-            $points = abs((int) $request['points']);
-            $reason = sprintf(
-                'Restauration de %d points après annulation/refus',
-                $points
-            );
-            update_user_points(
-                (int) $request['user_id'],
-                $points,
-                $reason,
-                'admin',
-                $paiement_id
-            );
-        }
-    } elseif ($repoStatus === 'paid') {
-        $request = $repo->getRequestById($paiement_id);
-        if ($request) {
-            $montant_paye = floatval($request['amount_eur']);
-            mettre_a_jour_paiements_organisateurs($montant_paye);
-        }
+    if ($result['paid_amount'] > 0) {
+        mettre_a_jour_paiements_organisateurs($result['paid_amount']);
     }
 
     wp_send_json_success(['status' => $repoStatus]);
@@ -2315,4 +2283,3 @@ function envoyer_mail_chasse_validee(int $organisateur_id, int $chasse_id)
     cta_send_email($emails, $subject_raw, $body, $headers);
     remove_filter('wp_mail_from_name', $from_filter, 10);
 }
-

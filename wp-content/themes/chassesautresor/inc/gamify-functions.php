@@ -43,7 +43,12 @@ function cat_get_conversion_service(): ChassesAuTresor\Core\Points\ConversionSer
 {
     global $wpdb;
 
-    return new ChassesAuTresor\Core\Points\ConversionService(new PointsRepository($wpdb));
+    $repository = new PointsRepository($wpdb);
+
+    return new ChassesAuTresor\Core\Points\ConversionService(
+        $repository,
+        new ChassesAuTresor\Core\Points\PointsService($repository)
+    );
 }
 
 // ==================================================

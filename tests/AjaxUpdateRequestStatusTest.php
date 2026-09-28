@@ -67,6 +67,36 @@ class PointsRepository
     }
 }
 
+class AjaxConversionService
+{
+    public function updateStatus(int $id, string $action, ?string $date = null): array
+    {
+        global $request_fixture, $user_points, $last_origin_type;
+
+        $status = ['annule' => 'cancelled', 'refuse' => 'refused', 'regle' => 'paid'][$action];
+        $refunded = 0;
+        $paidAmount = 0.0;
+
+        if (in_array($status, ['cancelled', 'refused'], true)) {
+            $refunded = abs((int) $request_fixture['points']);
+            $userId = (int) $request_fixture['user_id'];
+            $user_points[$userId] = ($user_points[$userId] ?? 0) + $refunded;
+            $last_origin_type = 'admin';
+        } elseif ($status === 'paid') {
+            $paidAmount = (float) $request_fixture['amount_eur'];
+        }
+
+        return ['status' => $status, 'refunded_points' => $refunded, 'paid_amount' => $paidAmount];
+    }
+}
+
+if (!function_exists('cat_get_conversion_service')) {
+    function cat_get_conversion_service(): AjaxConversionService
+    {
+        return new AjaxConversionService();
+    }
+}
+
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/admin-functions.php';
 
 class AjaxUpdateRequestStatusTest extends TestCase
