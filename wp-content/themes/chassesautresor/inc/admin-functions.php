@@ -613,9 +613,7 @@ function traiter_demande_paiement() {
     // ✅ Calcul du montant en euros
     $montant_euros = round(($points_a_convertir / 1000) * $taux_conversion, 2);
 
-    global $wpdb;
-    $repo   = new PointsRepository($wpdb);
-    $log_id = $repo->logConversionRequest($user_id, -$points_a_convertir, $montant_euros);
+    $log_id = cat_get_conversion_service()->createRequest($user_id, $points_a_convertir, $taux_conversion);
     cat_debug("✅ Demande enregistrée : log_id {$log_id}");
 
     // 📧 Notification admin
@@ -2317,5 +2315,4 @@ function envoyer_mail_chasse_validee(int $organisateur_id, int $chasse_id)
     cta_send_email($emails, $subject_raw, $body, $headers);
     remove_filter('wp_mail_from_name', $from_filter, 10);
 }
-
 

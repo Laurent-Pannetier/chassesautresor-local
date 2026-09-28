@@ -11,6 +11,11 @@ if (!class_exists(ChassesAuTresor\Core\Points\PurchasePointsService::class, fals
         . '/plugins/chassesautresor-core/src/Points/PurchasePointsService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Points\ConversionService::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Points/ConversionService.php';
+}
+
 /**
  * Create the service responsible for points operations.
  */
@@ -29,6 +34,16 @@ function cat_get_points_service(): ChassesAuTresor\Core\Points\PointsService
 function cat_get_purchase_points_service(): ChassesAuTresor\Core\Points\PurchasePointsService
 {
     return new ChassesAuTresor\Core\Points\PurchasePointsService(cat_get_points_service());
+}
+
+/**
+ * Create the service responsible for point conversion requests.
+ */
+function cat_get_conversion_service(): ChassesAuTresor\Core\Points\ConversionService
+{
+    global $wpdb;
+
+    return new ChassesAuTresor\Core\Points\ConversionService(new PointsRepository($wpdb));
 }
 
 // ==================================================
