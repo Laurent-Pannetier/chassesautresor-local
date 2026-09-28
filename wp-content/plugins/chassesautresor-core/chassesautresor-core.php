@@ -13,6 +13,7 @@ defined('ABSPATH') || exit;
 require_once __DIR__ . '/src/Points/PointsRepository.php';
 require_once __DIR__ . '/src/Messages/UserMessageRepository.php';
 require_once __DIR__ . '/src/Messages/UserMessagesTable.php';
+require_once __DIR__ . '/src/Messages/UserMessagesCleanup.php';
 
 if (!class_exists('PointsRepository', false)) {
     class_alias(ChassesAuTresor\Core\Points\PointsRepository::class, 'PointsRepository');
@@ -27,7 +28,27 @@ register_activation_hook(
     [ChassesAuTresor\Core\Messages\UserMessagesTable::class, 'install']
 );
 
+register_activation_hook(
+    __FILE__,
+    [ChassesAuTresor\Core\Messages\UserMessagesCleanup::class, 'schedule']
+);
+
+register_deactivation_hook(
+    __FILE__,
+    [ChassesAuTresor\Core\Messages\UserMessagesCleanup::class, 'unschedule']
+);
+
 add_action(
     'plugins_loaded',
     [ChassesAuTresor\Core\Messages\UserMessagesTable::class, 'maybeUpgrade']
+);
+
+add_action(
+    'plugins_loaded',
+    [ChassesAuTresor\Core\Messages\UserMessagesCleanup::class, 'schedule']
+);
+
+add_action(
+    ChassesAuTresor\Core\Messages\UserMessagesCleanup::HOOK,
+    [ChassesAuTresor\Core\Messages\UserMessagesCleanup::class, 'run']
 );

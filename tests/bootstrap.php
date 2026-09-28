@@ -17,3 +17,7 @@ if (!function_exists('add_filter')) {
 if (!function_exists('register_activation_hook')) {
     function register_activation_hook(...$args): void {}
 }
+
+if (!function_exists('register_deactivation_hook')) {
+    function register_deactivation_hook(...$args): void {}
+}
