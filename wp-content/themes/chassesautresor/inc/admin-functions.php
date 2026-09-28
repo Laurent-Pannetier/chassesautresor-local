@@ -498,9 +498,7 @@ function afficher_tableau_paiements_admin(): void
         return;
     }
 
-    global $wpdb;
-    $repo     = new PointsRepository($wpdb);
-    $requests = $repo->getConversionRequests();
+    $requests = cat_get_conversion_service()->getRequests();
 
     if (empty($requests)) {
         echo '<p>Aucune demande de paiement en attente.</p>';
@@ -512,14 +510,11 @@ function afficher_tableau_paiements_admin(): void
 
 function recuperer_historique_paiements_admin(int $page = 1): array
 {
-    global $wpdb;
     $per_page = HISTORIQUE_PAIEMENTS_ADMIN_PER_PAGE;
-    $repo     = new PointsRepository($wpdb);
     $offset   = ($page - 1) * $per_page;
-    $requests = $repo->getConversionRequests(null, null, $per_page, $offset);
-
-    $table = $wpdb->prefix . 'user_points';
-    $total = (int) $wpdb->get_var("SELECT COUNT(*) FROM {$table} WHERE origin_type = 'conversion'");
+    $service  = cat_get_conversion_service();
+    $requests = $service->getRequests(null, null, $per_page, $offset);
+    $total = $service->countRequests();
     $pages = max(1, (int) ceil($total / $per_page));
 
     if (empty($requests)) {

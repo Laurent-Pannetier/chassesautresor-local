@@ -19,6 +19,7 @@ class ConversionServiceRepository extends PointsRepository
     /** @var array<int, mixed> */
     public array $request = [];
     public string $status = '';
+    public int $count = 3;
 
     public function __construct()
     {
@@ -51,6 +52,11 @@ class ConversionServiceRepository extends PointsRepository
     public function getRequestById(int $id): ?array
     {
         return ['user_id' => 7, 'points' => -500, 'amount_eur' => 12.5];
+    }
+
+    public function countConversionRequests(?int $userId = null, ?string $status = null): int
+    {
+        return $this->count;
     }
 }
 
@@ -91,6 +97,7 @@ class ConversionServiceTest extends TestCase
         $service = new ConversionService(new ConversionServiceRepository());
 
         $this->assertSame(['points' => 1500, 'amount' => 37.5], $service->getPaidTotals(7));
+        $this->assertSame(3, $service->countRequests(7));
     }
 
     public function testCancelledRequestRestoresPoints(): void
