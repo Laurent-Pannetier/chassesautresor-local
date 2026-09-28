@@ -1,6 +1,6 @@
 <?php
 
-if (!defined('UPDRAFTCENTRAL_CLIENT_DIR')) die('No access.');
+if (!defined('ABSPATH')) die('No direct access allowed');
 
 /**
  * - A container for RPC commands (core UpdraftCentral commands). Commands map exactly onto method names (and hence this class should not implement anything else, beyond the constructor, and private methods)
@@ -68,8 +68,24 @@ class UpdraftCentral_Core_Commands extends UpdraftCentral_Commands {
 		if (!empty($site_icon_url)) {
 			$content = file_get_contents($site_icon_url);
 
+			$headers = array();
+
+			if (function_exists('http_get_last_response_headers')) {
+				// Preferred approach in PHP 8.4+ where $http_response_header is deprecated.
+				$headers = http_get_last_response_headers();
+			} else {
+				// Legacy fallback for older PHP versions.
+				// Used get_defined_vars() to avoid directly referencing
+				// $http_response_header, which is injected into local scope by PHP.
+				$defined_vars = get_defined_vars();
+
+				if (isset($defined_vars['http_response_header'])) {
+					$headers = $defined_vars['http_response_header'];
+				}
+			}
+
 			$mime_type = '';
-			foreach ($http_response_header as $value) {
+			foreach ($headers as $value) {
 				if (false !== stripos($value, 'content-type:')) {
 					list(, $mime_type) = explode(':', preg_replace('/\s+/', '', $value));
 					break;
@@ -93,7 +109,7 @@ class UpdraftCentral_Core_Commands extends UpdraftCentral_Commands {
 	 */
 	public function handle_site_icon_upload($query) {
 		if (!current_user_can('upload_files')) {
-			return $this->_generic_error_response('insufficient_permission', array('error_message' => __('You do not have the necessary permissions to upload files.', 'updraftcentral')));
+			return $this->_generic_error_response('insufficient_permission', array('error_message' => __('You do not have the necessary permissions to upload files.', 'updraftplus')));
 		}
 
 		$data_uri = sanitize_text_field($query['data_uri']);
@@ -117,7 +133,7 @@ class UpdraftCentral_Core_Commands extends UpdraftCentral_Commands {
 			if (false !== $mime_type && !empty($matches[1]) && strtolower($mime_type) === strtolower($matches[1]) && !empty($file_ext) && in_array(strtolower($file_ext), $allowed_ext)) {
 				$upload = wp_upload_bits($filename, null, $decoded_data);
 			} else {
-				$upload = array('error' => __("Couldn't verify the actual MIME type of the given site icon image data.", 'updraftcentral'));
+				$upload = array('error' => __("Couldn't verify the actual MIME type of the given site icon image data.", 'updraftplus'));
 			}
 
 			if (!$upload['error']) {
@@ -163,14 +179,60 @@ class UpdraftCentral_Core_Commands extends UpdraftCentral_Commands {
 						return $this->get_site_icon();
 					}
 				} else {
-					return $this->_generic_error_response('upload_error', array('error_message' => __('Unable to set uploaded file as site icon.', 'updraftcentral')));
+					return $this->_generic_error_response('upload_error', array('error_message' => __('Unable to set uploaded file as site icon.', 'updraftplus')));
 				}
 			} else {
 				return $this->_generic_error_response('upload_error', array('error_message' => $upload['error']));
 			}
 		} else {
-			return $this->_generic_error_response('data_uri_field_empty_or_invalid', array('error_message' => __('Required data URI is either missing or invalid.', 'updraftcentral')));
+			return $this->_generic_error_response('data_uri_field_empty_or_invalid', array('error_message' => __('Required data URI is either missing or invalid.', 'updraftplus')));
 		}
+	}
+
+	/**
+	 * Pulls blog sites available
+	 * for the current WP instance.
+	 * If the site is a multisite, then sites under the network
+	 * will be pulled, otherwise, it will return an empty array.
+	 *
+	 * @return Array - an array of sites
+	 */
+	public function get_blog_sites() {
+
+		if (!is_multisite()) {
+			return $this->_generic_error_response('not_multisite');
+		}
+
+		$sites = array();
+		$network_sites = array();
+
+		// Use `get_sites` for WP version >= 4.6 else use old `wp_get_sites`.
+		if (function_exists('get_sites') && class_exists('WP_Site_Query')) {
+			$network_sites = get_sites();
+		} else {
+			if (function_exists('wp_get_sites')) {
+				$network_sites = wp_get_sites();// phpcs:ignore WordPress.WP.DeprecatedFunctions.wp_get_sitesFound -- This function was only intended for backward compatibility with versions below 4.6.
+			}
+		}
+
+		if (!empty($network_sites)) {
+			foreach ($network_sites as $site) {
+
+				// Check if the site type is an array,
+				// because `wp_get_sites` returns site data as associative array while,
+				// `get_sites` returns the data as WP_Site object.
+				$blog_id = is_array($site) ? $site['blog_id'] : $site->blog_id;
+
+				$sites[] = array(
+					'site_id' => $blog_id,
+					'name' => get_blog_details($blog_id)->blogname,
+				);
+			}
+		}
+
+		return $this->_response(array(
+			'sites' => $sites,
+		));
 	}
 
 	/**
@@ -213,7 +275,7 @@ class UpdraftCentral_Core_Commands extends UpdraftCentral_Commands {
 					if (class_exists($command_php_class)) {
 						$instance = new $command_php_class($this->rc);
 
-						if (method_exists($instance, $action)) {
+						if (method_exists($instance, $action) || is_a($instance, 'UpdraftCentral_UpdraftPlus_Commands') || is_a($instance, 'UpdraftCentral_WP_Optimize_Commands')) {
 							$params = empty($params) ? array() : $params;
 							$call_result = call_user_func(array($instance, $action), $params);
 
@@ -496,9 +558,9 @@ class UpdraftCentral_Core_Commands extends UpdraftCentral_Commands {
 	 * @return Array
 	 */
 	public function _get_autologin_key($user_id) {
-		$secure_auth_key = defined('SECURE_AUTH_KEY') ? SECURE_AUTH_KEY : hash('sha256', DB_PASSWORD).'_'.rand(0, 999999999);
+		$secure_auth_key = defined('SECURE_AUTH_KEY') ? SECURE_AUTH_KEY : hash('sha256', DB_PASSWORD).'_'.wp_rand(0, 999999999);
 		if (!defined('SECURE_AUTH_KEY')) return false;
-		$hash_it = $user_id.'_'.microtime(true).'_'.rand(0, 999999999).'_'.$secure_auth_key;
+		$hash_it = $user_id.'_'.microtime(true).'_'.wp_rand(0, 999999999).'_'.$secure_auth_key;
 		$hash = hash('sha256', $hash_it);
 		return $hash;
 	}
@@ -571,7 +633,7 @@ class UpdraftCentral_Core_Commands extends UpdraftCentral_Commands {
 	private function _get_phpinfo_array() {
 		if (!function_exists('phpinfo')) return null;
 		ob_start();
-		phpinfo(INFO_GENERAL|INFO_CREDITS|INFO_MODULES);
+		phpinfo(INFO_GENERAL|INFO_CREDITS|INFO_MODULES); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.prevent_path_disclosure_phpinfo -- we call the phpinfo() function to display PHP information in the advanced tools.
 		$phpinfo = array('phpinfo' => array());
 
 		if (preg_match_all('#(?:<h2>(?:<a name=".*?">)?(.*?)(?:</a>)?</h2>)|(?:<tr(?: class=".*?")?><t[hd](?: class=".*?")?>(.*?)\s*</t[hd]>(?:<t[hd](?: class=".*?")?>(.*?)\s*</t[hd]>(?:<t[hd](?: class=".*?")?>(.*?)\s*</t[hd]>)?)?</tr>)#s', ob_get_clean(), $matches, PREG_SET_ORDER)) {

@@ -9,6 +9,9 @@
  * @link       https://members-plugin.com/
  * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  */
+if (!defined('ABSPATH')) {
+    die('You are not allowed to call this page directly.');
+}
 
 # Register capabilities.
 add_action( 'init',                  'members_register_caps',         95 );
@@ -420,7 +423,7 @@ function members_get_hidden_caps() {
 		$caps[] = 'update_core';
 	}
 
-	return array_unique( $caps );
+	return array_values( array_unique( $caps ) );
 }
 
 /**

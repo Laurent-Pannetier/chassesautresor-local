@@ -335,6 +335,12 @@ body.edition-active-enigme .resume-infos li {
   cursor: pointer;
 }
 
+body.edition-active .champ-desactive,
+body.edition-active-chasse .champ-desactive,
+body.edition-active-enigme .champ-desactive {
+  cursor: default;
+}
+
 
 /* ========== 📂 Toggle panneau édition ========== */
 section.enigme-wrapper {
@@ -2084,7 +2090,8 @@ body.panneau-ouvert::before {
 .chasse-stats-summary {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  align-items: center;
+  gap: var(--space-xs);
 }
 
 #chasse-tab-stats > div.edition-panel-body > table > thead > tr:nth-child(2) > th:nth-child(1),
@@ -2503,8 +2510,8 @@ body.panneau-ouvert::before {
     z-index: 20000;
 }
 
-.indice-modal,
-.solution-modal {
+.indice-modal-overlay .indice-modal,
+.solution-modal-overlay .solution-modal {
     background: var(--color-editor-background);
     color: var(--color-editor-text);
     padding: var(--space-lg);

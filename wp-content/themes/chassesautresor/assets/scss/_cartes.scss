@@ -35,12 +35,16 @@
   }
 }
 
-// Grille responsive pour cartes
+// Grille responsive pour cartes (compactes ou énigmes)
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: var(--space-4xl);
+  grid-template-columns: minmax(0, 1fr);
+  gap: calc(var(--space-4xl) + var(--space-md));
   justify-content: center;
+
+  @media (--bp-tablet) {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 300px));
+  }
 
   .carte-enigme {
     width: 100%;
@@ -50,7 +54,19 @@
 }
 
 /* ========== 🃏 Carte compacte ========== */
+.carte-compact-card {
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-xs);
+}
+
 .carte-compact {
+  --carte-compact-lot-height: 2.5rem;
+  width: 100%;
   padding: 0;
   overflow: hidden;
 
@@ -59,6 +75,7 @@
     flex-direction: column;
     color: inherit;
     text-decoration: none;
+    height: 100%;
   }
 
   .carte-compact__image-wrapper {
@@ -72,23 +89,177 @@
     display: block;
   }
 
-  .badge-statut {
-    position: absolute;
+  .carte-badges-stack {
     top: var(--space-xs);
     left: var(--space-xs);
   }
 
   .carte-compact__contenu {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: var(--space-sm);
     padding: var(--space-md);
   }
 
+  .carte-compact__lot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: var(--carte-compact-lot-height);
+  }
+
+  .carte-compact__lot--empty {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
   .carte-compact__titre {
-    margin: 0 0 var(--space-xs);
+    margin: 0;
   }
 
   .carte-compact__meta {
     font-size: 0.875rem;
+    margin-top: auto;
   }
+}
+
+.carte-compact__progression-wrapper {
+  width: 100%;
+}
+
+.carte-compact__progression {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 50%;
+
+  .meta-etiquette {
+    font-size: 0.75rem;
+  }
+}
+
+.carte-compact__progression-label {
+  letter-spacing: 0.02em;
+  padding: 0;
+  background-color: transparent;
+  color: var(--color-grey-medium);
+}
+
+/* ========== 🆕 Carte format CART ========== */
+.carte-cart {
+  width: 100%;
+  max-width: 300px;
+  padding: 0;
+  overflow: hidden;
+  margin: 0 auto;
+
+  .carte-cart__lien {
+    display: flex;
+    flex-direction: column;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .carte-cart__image-wrapper {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    --carte-cart-compact-aspect-ratio: 4 / 3;
+    --carte-cart-compact-padding: 75%;
+    --carte-cart-effective-aspect: var(
+      --carte-cart-compact-aspect-ratio,
+      var(--carte-cart-aspect-ratio, 4 / 3)
+    );
+    --carte-cart-effective-padding: var(
+      --carte-cart-compact-padding,
+      var(--carte-cart-padding, 75%)
+    );
+    aspect-ratio: var(--carte-cart-effective-aspect, 4 / 3);
+
+    &::before {
+      content: "";
+      display: block;
+      width: 100%;
+      padding-top: var(--carte-cart-effective-padding, 75%);
+    }
+
+    @media (--bp-desktop) {
+      --carte-cart-effective-aspect: var(
+        --carte-cart-aspect-ratio,
+        4 / 3
+      );
+      --carte-cart-effective-padding: var(
+        --carte-cart-padding,
+        75%
+      );
+    }
+  }
+
+  @supports (aspect-ratio: 1 / 1) {
+    .carte-cart__image-wrapper::before {
+      display: none;
+      content: none;
+      padding-top: 0;
+    }
+  }
+
+  .carte-cart__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    object-position: center;
+    position: absolute;
+    inset: 0;
+  }
+
+  .carte-badges-stack {
+    top: var(--space-xs);
+    left: var(--space-xs);
+  }
+
+  .carte-cart__contenu {
+    padding: var(--space-md);
+    text-align: center;
+  }
+
+  .carte-cart__titre {
+    margin: 0 0 var(--space-xs);
+  }
+
+}
+
+/* ========== 🎁 Récompense dans les cartes compactes ========== */
+.carte-compact .chasse-lot,
+.carte-cart .chasse-lot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xxs);
+  font-size: 0.875rem;
+  color: var(--color-text-primary);
+}
+
+.carte-compact .chasse-lot .badge-recompense,
+.carte-cart .chasse-lot .badge-recompense {
+  margin-left: 0;
+  color: var(--color-text-primary);
+}
+
+.carte-compact .chasse-lot__title,
+.carte-cart .chasse-lot__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.carte-compact .chasse-lot__icon svg,
+.carte-cart .chasse-lot__icon svg {
+  width: 20px;
+  height: 20px;
+  color: var(--color-grey-light);
 }
 
 /* ========== 🌟 Carte mise en avant ========== */
@@ -497,28 +668,100 @@
 }
 
 .carte-wide__content {
-  flex: 1;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
+  flex: 1;
 }
 
-.carte-wide__content .chasse-intro-extrait {
-  margin-top: auto;
-  margin-bottom: auto;
+.carte-wide__header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-sm);
 }
+
+
+.carte-wide__metas {
+  margin-top: auto;
+  padding-top: var(--space-sm);
+}
+
+.carte-wide__metas .meta-regular {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xxs);
+}
+
+.carte-wide__metas .meta-label {
+  font-weight: 600;
+}
+
+.carte-wide__organisateur {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xxs);
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  color: var(--color-gris-3);
+}
+
+.carte-wide__organisateur-label {
+  font-style: italic;
+}
+
+.carte-wide__organisateur-logo-link {
+  display: inline-flex;
+  align-items: center;
+}
+
+.carte-wide__organisateur-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  filter: grayscale(1);
+  transition: filter 0.3s;
+}
+
+.carte-wide__organisateur-logo-link:hover .carte-wide__organisateur-logo {
+  filter: none;
+}
+
+.carte-wide__organisateur-nom {
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.carte-wide__organisateur-nom:hover {
+  text-decoration: underline;
+}
+
+.carte-wide__reward {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-weight: 700;
+  margin-bottom: var(--space-sm);
+}
+
+.carte-wide__reward .fa-trophy {
+  color: var(--color-gris-3);
+}
+
+.carte-wide__description {
+  margin-bottom: var(--space-sm);
+}
+
+.carte-wide__description .chasse-intro-extrait {
+  margin: 0;
+}
+
 
 .carte-wide__titre {
-  margin-top: 0;
+  margin: 0;
 }
 
-.carte-wide__footer .cta-div {
-  justify-content: center;
-}
-
-.carte-wide__footer {
-  margin-top: auto;
-}
 
 @media (--bp-desktop) {
   .carte-wide {
@@ -531,6 +774,50 @@
     flex: 0 0 300px;
     width: 300px;
     height: 300px;
+  }
+
+  .carte-wide__contenu {
+    justify-content: center;
+  }
+
+  .carte-wide__content {
+    flex: 0 1 auto;
+  }
+
+  .carte-wide__header {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-lg);
+  }
+
+  .carte-wide__organisateur {
+    justify-content: flex-end;
+    text-align: right;
+  }
+
+  .carte-wide__metas {
+    flex-wrap: nowrap;
+    margin-top: auto;
+    padding-top: 0;
+    max-height: 0;
+    opacity: 0;
+    visibility: hidden;
+    overflow: hidden;
+    pointer-events: none;
+    transition:
+      opacity var(--transition-medium),
+      max-height var(--transition-medium),
+      padding-top var(--transition-medium);
+  }
+
+  .carte-wide:hover .carte-wide__metas,
+  .carte-wide:focus-within .carte-wide__metas {
+    padding-top: var(--space-sm);
+    max-height: 200px;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
   }
 }
 
@@ -550,7 +837,8 @@
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
-.carte-ajout-enigme {
+.carte-ajout-enigme,
+.carte-ajout-chasse {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -564,7 +852,8 @@
   height: 100%;
 }
 
-.carte-ajout-enigme:hover {
+.carte-ajout-enigme:hover,
+.carte-ajout-chasse:hover {
   background: var(--color-text-primary);
   color: var(--color-background);
   border-style: solid;
@@ -573,17 +862,21 @@
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
-.carte-ajout-enigme:focus-visible {
+.carte-ajout-enigme:focus-visible,
+.carte-ajout-chasse:focus-visible {
   outline: 3px solid var(--color-primary);
   outline-offset: 2px;
 }
 
 .carte-ajout-enigme.disabled,
-.carte-ajout-enigme[disabled] {
+.carte-ajout-chasse.disabled,
+.carte-ajout-enigme[disabled],
+.carte-ajout-chasse[disabled] {
   cursor: not-allowed;
 }
 
-.carte-ajout-enigme .carte-core {
+.carte-ajout-enigme .carte-core,
+.carte-ajout-chasse .carte-core {
   border: none;
   display: flex;
   flex-direction: column;
@@ -595,22 +888,26 @@
   z-index: 1;
 }
 
-.carte-ajout-enigme .carte-core i {
+.carte-ajout-enigme .carte-core i,
+.carte-ajout-chasse .carte-core i {
   color: var(--color-gris-3);
   font-size: 28px;
 }
 
 @media (min-width: 768px) {
-  .carte-ajout-enigme .carte-core i {
+  .carte-ajout-enigme .carte-core i,
+  .carte-ajout-chasse .carte-core i {
     font-size: 32px;
   }
 }
 
-.carte-ajout-enigme .carte-ajout-libelle {
+.carte-ajout-enigme .carte-ajout-libelle,
+.carte-ajout-chasse .carte-ajout-libelle {
   font-weight: 600;
 }
 
-.carte-ajout-enigme::after {
+.carte-ajout-enigme::after,
+.carte-ajout-chasse::after {
   content: '';
   position: absolute;
   bottom: var(--space-sm);
@@ -624,34 +921,16 @@
   pointer-events: none;
 }
 
-.carte-ajout-chasse .carte-ligne__image,
-.carte-ajout-chasse .carte-ligne__contenu {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-xs);
-}
-
-.carte-ajout-chasse .icone-ajout i {
-  color: var(--color-secondary);
-}
-
-.carte-ajout-chasse .overlay-message {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-text-primary);
+.carte-ajout-chasse .carte-ajout-message {
+  color: var(--color-gris-4);
+  font-size: 0.875rem;
+  line-height: 1.3;
   text-align: center;
-  gap: var(--space-xs);
-  padding: 0 var(--space-md);
+  margin-top: var(--space-xxs);
+}
+
+.carte-ajout-chasse .carte-ajout-message:empty {
+  display: none;
 }
 
 

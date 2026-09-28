@@ -1,4 +1,6 @@
 
+@import "components/table-search";
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation: none !important;
@@ -35,6 +37,35 @@
 
 
 /* ✨ ICÔNES SVG  */
+
+
+/* ========== 👤 Icônes du compte ========== */
+.ast-header-account-wrap .ast-header-account-type-icon {
+  color: #fff;
+}
+
+.ast-header-account-wrap .ast-header-account-type-icon .ahfb-svg-iconset svg {
+  height: 26px;
+  width: auto;
+}
+
+body:not(.logged-in) .ast-header-account-wrap .ast-header-account-type-icon {
+  color: #fff;
+}
+
+body:not(.logged-in) .ast-header-account-wrap .ast-header-account-type-icon .ahfb-svg-iconset svg {
+  fill: #fff;
+  stroke: #fff;
+}
+
+body.logged-in .ast-header-account-wrap .ast-header-account-type-icon {
+  color: #fff;
+}
+
+body.logged-in .ast-header-account-wrap .ast-header-account-type-icon .ahfb-svg-iconset svg {
+  fill: #fff;
+  stroke: #fff;
+}
 
 
 /* 🏷Séparateurs */
@@ -169,6 +200,28 @@ body .wp-block-file .wp-block-file__button:focus,
     text-align: center;
      width: fit-content;
 }
+
+.cta-reset-demo__button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs, 0.5rem);
+}
+
+.cta-reset-demo__icon {
+    display: inline-flex;
+    flex-shrink: 0;
+
+    svg {
+        width: 1.25rem;
+        height: 1.25rem;
+        display: block;
+    }
+}
+
+.cta-reset-demo__label {
+    display: inline-flex;
+    align-items: center;
+}
 .bouton-cta:hover {
     background-color: var(--color-gris-carte);
     text-decoration: none;
@@ -201,6 +254,15 @@ body .wp-block-file .wp-block-file__button:focus,
 /* ========== 🎯 BLOCS RÉPONSE ========== */
 .bloc-reponse {
     position: relative;
+}
+
+.bloc-reponse h3 {
+    color: var(--color-primary);
+    font-weight: normal;
+}
+
+.bloc-reponse h3 .badge-validation {
+    margin-right: var(--space-xs);
 }
 
 .badge-cout {
@@ -571,11 +633,23 @@ a.ajout-link:focus-visible {
   white-space: nowrap;
   font-size: 85%;
 }
+.meta-etiquette a {
+  color: inherit;
+  text-decoration: none;
+  font-weight: 600;
+}
+.meta-etiquette a:hover,
+.meta-etiquette a:focus-visible {
+  text-decoration: underline;
+}
 .meta-etiquette svg {
   margin-bottom: -5px;
 }
 .meta-etiquette span {
   font-weight: 600;
+}
+.meta-etiquette__value {
+  font-weight: 400;
 }
 .meta-etiquette strong {
   font-weight: 600;
@@ -613,14 +687,47 @@ a.ajout-link:focus-visible {
 .badge-validation {
     width: 24px;
     height: 24px;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    border: none;
+    padding: 0;
     border-radius: 50%;
     background: var(--color-grey-light);
     color: var(--color-text-fond-clair);
     font-size: 0.75rem;
     box-shadow: 0 0 0 1px var(--color-grey-dark), 0 2px 4px rgba(var(--color-text-fond-clair-rgb), 0.15);
+    cursor: pointer;
+    position: relative;
+    vertical-align: middle;
+
+    &:hover,
+    &:focus {
+        background: var(--color-grey-light);
+        color: var(--color-text-fond-clair);
+    }
+}
+
+.badge-validation__tooltip {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-grey-light);
+    color: var(--color-text-fond-clair);
+    padding: var(--space-xs);
+    font-size: 0.75rem;
+    line-height: 1.4;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(var(--color-text-fond-clair-rgb), 0.2);
+    width: max-content;
+    max-width: 220px;
+    z-index: 10;
+}
+
+.badge-validation.show-tooltip .badge-validation__tooltip {
+    display: block;
 }
 
 /* ========== 🟢 BADGE ROND ========== */
@@ -634,6 +741,23 @@ a.ajout-link:focus-visible {
     font-size: 12px;
 }
 
+
+/* ========== 🏷️ BADGES ========== */
+
+.carte-badges-stack {
+  position: absolute;
+  top: var(--space-xs);
+  left: var(--space-xs);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs);
+  z-index: 2;
+
+  .badge-statut,
+  .badge-demo {
+    position: static;
+  }
+}
 
 /* ========== 🏷️ BADGES DE STATUT ========== */
 
@@ -650,6 +774,168 @@ a.ajout-link:focus-visible {
   letter-spacing: 0.03em;
   line-height: 1;
   z-index: 1;
+}
+
+.badge-demo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xxs);
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+  border-radius: 999px;
+  background: rgba(225, 169, 95, 0.85);
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  box-shadow: 0 6px 16px rgba(var(--color-black-rgb), 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.badge-demo__icon {
+  display: inline-flex;
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.badge-demo__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.badge-demo__label {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+@media (--bp-desktop) {
+  .badge-demo {
+    font-size: 0.8rem;
+  }
+}
+
+.badge-statut[data-tooltip] {
+  cursor: help;
+}
+
+.badge-statut[data-tooltip]::before,
+.badge-statut[data-tooltip]::after {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.badge-statut[data-tooltip]::after {
+  content: attr(data-tooltip);
+  top: calc(100% + var(--space-xs));
+  left: 50%;
+  transform: translate(-50%, -8px);
+  background: rgba(var(--color-text-fond-clair-rgb), 0.95);
+  color: var(--color-text-primary);
+  padding: var(--space-xxs) var(--space-xs);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  line-height: 1.3;
+  white-space: normal;
+  text-align: center;
+  max-width: 220px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+  z-index: 5;
+}
+
+.badge-statut[data-tooltip]::before {
+  content: '';
+  top: calc(100% + 4px);
+  left: 50%;
+  transform: translate(-50%, -6px);
+  border: 6px solid transparent;
+  border-bottom-width: 0;
+  border-top-color: rgba(var(--color-text-fond-clair-rgb), 0.95);
+  z-index: 5;
+}
+
+.badge-statut[data-tooltip]:hover::before,
+.badge-statut[data-tooltip]:hover::after,
+.badge-statut[data-tooltip]:focus-visible::before,
+.badge-statut[data-tooltip]:focus-visible::after,
+.badge-statut[data-tooltip][data-tooltip-visible="true"]::before,
+.badge-statut[data-tooltip][data-tooltip-visible="true"]::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.badge-statut--format-icon {
+  padding: var(--space-xxs);
+  width: 2.5rem;
+  height: 2.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: none;
+}
+
+.badge-statut__icon {
+  display: inline-flex;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.badge-statut__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.badge-statut--responsive {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xxs);
+  width: 2.5rem;
+  height: 2.5rem;
+
+  .badge-statut__icon {
+    display: inline-flex;
+  }
+
+  .badge-statut__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+@media (--bp-desktop) {
+  .badge-statut--responsive {
+    width: auto;
+    height: auto;
+    padding: 4px 8px;
+  }
+
+  .badge-statut--responsive .badge-statut__icon {
+    display: none;
+  }
+
+  .badge-statut--responsive .badge-statut__label {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+    border: 0;
+  }
 }
 
 /* Couleurs par statut (alignées sur le nuancier) */
@@ -686,6 +972,8 @@ a.ajout-link:focus-visible {
   border-radius: 0.4rem;
   background-color: rgba(255, 255, 255, 0.05);
   color: var(--color-text-primary);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .badge-recompense__label,
@@ -811,12 +1099,26 @@ a.ajout-link:focus-visible {
   max-width: 600px;
   padding-left: var(--space-md);
   padding-right: var(--space-md);
+
+  .wpforms-field-label,
+  .wpforms-field-label-inline,
+  label {
+    color: var(--color-text-primary);
+  }
+
+  .wpforms-field-sublabel,
+  .wpforms-required-label,
+  .wpforms-field-description {
+    color: var(--color-text-primary);
+  }
+
+  .wpforms-required-label {
+    font-weight: 600;
+    color: var(--color-primary);
+  }
 }
 .titre-contact {
   margin-bottom: 0.8rem;
-}
-body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
-    color: var(--color-text-primary);
 }
 @media (--bp-small) {
   .formulaire-contact-wrapper {
@@ -916,8 +1218,6 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
 .ligne-morse {
   position: relative;
   height: 2px;
-  background-color: var(--color-editor-border);
-  opacity: 0.2;
   overflow: hidden;
 }
 
@@ -931,20 +1231,17 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
   padding: 0 0.6rem; /* ✅ un peu plus de marge latérale */
   height: 2px;
   align-items: center;
-  background-color: var(--color-editor-background);
-  z-index: 1;
-  box-shadow: 0 0 0 1px var(--color-editor-background); /* ✅ masque 1px de plus autour */
   white-space: nowrap;
   overflow: hidden;
   max-width: 90%;
+  opacity: 0.5;
 }
-
 
 .morse-wrapper .point,
 .morse-wrapper .tiret {
   display: inline-block;
   height: 2px;
-  background-color: var(--color-editor-heading);
+  background-color: var(--color-grey-medium);
 }
 
 .morse-wrapper .point {
@@ -954,7 +1251,6 @@ body.single-organisateur .formulaire-contact-wrapper .wpforms-field-label {
 .morse-wrapper .tiret {
   width: 16px;
 }
-
 
 /* ========== 🧩 ACCORDÉON GÉNÉRIQUE – OUVERTURE / FERMETURE DYNAMIQUE ========== */
 
@@ -1144,6 +1440,7 @@ a.addtoany_share span {
   display: flex;
   flex-wrap: wrap;
   list-style: none;
+  margin: 0;
   padding: 0;
   font-size: 0.875rem;
 }

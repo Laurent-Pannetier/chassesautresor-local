@@ -171,6 +171,15 @@ function get_imagify_admin_url( $action = 'settings', $arg = [] ) {
 			 */
 			return apply_filters( 'imagify_optimization_errors_url', '', $arg );
 
+		case 'missing-nextgen':
+			return add_query_arg(
+				[
+					'mode'           => 'list',
+					'imagify-status' => 'missing-nextgen',
+				],
+				admin_url( 'upload.php' )
+			);
+
 		case 'dismiss-notice':
 			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_dismiss_notice&notice=' . $arg ), Notices::DISMISS_NONCE_ACTION );
 
@@ -202,10 +211,10 @@ function get_imagify_max_intermediate_image_size() {
 		}
 	}
 
-	return array(
+	return [
 		'width'  => $width,
 		'height' => $height,
-	);
+	];
 }
 
 /**
@@ -219,26 +228,26 @@ function get_imagify_max_intermediate_image_size() {
  * @param  array  $query An array of query arguments (utm_*).
  * @return string The URL.
  */
-function imagify_get_wp_rocket_url( $path = false, $query = array() ) {
-	$wprocket_url = 'https://wp-rocket.me/';
+function imagify_get_wp_rocket_url( $path = false, $query = [] ) {
+	$wprocket_url = 'https://wp-rocket.me/wp-rocket-for-imagify-users/';
 
 	// Current lang.
-	$lang = imagify_get_current_lang_in( array( 'de', 'es', 'fr', 'it' ) );
+	$lang = imagify_get_current_lang_in( [ 'de', 'es', 'fr', 'it' ] );
 
 	if ( 'en' !== $lang ) {
 		$wprocket_url .= $lang . '/';
 	}
 
 	// URI.
-	$paths = array(
-		'pricing' => array(
+	$paths = [
+		'pricing' => [
 			'de' => 'preise',
 			'en' => 'pricing',
 			'es' => 'precios',
 			'fr' => 'offres',
 			'it' => 'offerte',
-		),
-	);
+		],
+	];
 
 	if ( $path ) {
 		$path = trim( $path, '/' );
@@ -253,9 +262,9 @@ function imagify_get_wp_rocket_url( $path = false, $query = array() ) {
 	// Query args.
 	$query = array_merge(
 		[
-			'utm_source'   => 'imagify-coupon',
-			'utm_medium'   => 'plugin',
-			'utm_campaign' => 'imagify',
+			'utm_source'   => 'imagify',
+			'utm_medium'   => 'partners',
+			'utm_campaign' => 'imagify-benefits',
 		],
 		$query
 	);
@@ -331,7 +340,7 @@ function imagify_die( $message = null ) {
 	}
 
 	/* translators: %s is the plugin name. */
-	wp_die( $message, sprintf( __( '%s Failure Notice', 'imagify' ), 'Imagify' ), 403 );
+	wp_die( $message, sprintf( esc_html__( '%s Failure Notice', 'imagify' ), 'Imagify' ), 403 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 }
 
 /**
@@ -342,7 +351,7 @@ function imagify_die( $message = null ) {
  * @param string       $message     A message to display in an admin notice once redirected.
  * @param array|string $args_or_url An array of query args to add to the redirection URL. If a string, the complete URL.
  */
-function imagify_maybe_redirect( $message = false, $args_or_url = array() ) {
+function imagify_maybe_redirect( $message = false, $args_or_url = [] ) {
 	if ( wp_doing_ajax() ) {
 		return;
 	}

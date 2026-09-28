@@ -7,6 +7,7 @@ let inputDateFin;
 let erreurDebut;
 let erreurFin;
 let toggleDateFin;
+let toggleDateDebut;
 
 function parseDateDMY(value) {
   if (!value) return new Date(NaN);
@@ -75,6 +76,14 @@ function mettreAJourMessageDate() {
 
 window.calculerMessageDate = calculerMessageDate;
 window.mettreAJourMessageDate = mettreAJourMessageDate;
+
+const translateChasseEdit = (msg) => {
+  const i18n = window.wp && window.wp.i18n;
+  if (i18n && typeof i18n.__ === 'function') {
+    return i18n.__(msg, 'chassesautresor-com');
+  }
+  return msg;
+};
 
 function rafraichirCarteIndices() {
   const card = document.querySelector('.dashboard-card.champ-indices');
@@ -173,11 +182,73 @@ window.rafraichirCarteSolutions = rafraichirCarteSolutions;
   inputDateFin = document.getElementById('chasse-date-fin');
   erreurDebut = document.getElementById('erreur-date-debut');
   erreurFin = document.getElementById('erreur-date-fin');
+  toggleDateDebut = document.getElementById('date-debut-differee');
   toggleDateFin = document.getElementById('date-fin-limitee');
   mettreAJourCaracteristiqueDate();
   inputDateDebut?.addEventListener('change', mettreAJourCaracteristiqueDate);
   inputDateFin?.addEventListener('change', mettreAJourCaracteristiqueDate);
+  toggleDateDebut?.addEventListener('change', mettreAJourCaracteristiqueDate);
   toggleDateFin?.addEventListener('change', mettreAJourCaracteristiqueDate);
+
+  const panelEdition = document.querySelector('.edition-panel-chasse');
+  const boutonSupprimer = panelEdition?.querySelector('#bouton-supprimer-chasse');
+
+  if (boutonSupprimer) {
+    boutonSupprimer.addEventListener('click', () => {
+      const chasseId = boutonSupprimer.dataset.chasseId;
+      if (!chasseId) {
+        return;
+      }
+
+      const enigmesCount = parseInt(boutonSupprimer.dataset.enigmesCount || '0', 10);
+      const hasEnigmes = !Number.isNaN(enigmesCount) && enigmesCount > 0;
+
+      const confirmationMessage = hasEnigmes
+        ? translateChasseEdit('Voulez-vous vraiment supprimer cette chasse et toutes ses énigmes ?')
+        : translateChasseEdit('Voulez-vous vraiment supprimer cette chasse ?');
+
+      if (!window.confirm(confirmationMessage)) {
+        return;
+      }
+
+      const ajaxUrl = window.ajaxurl || (window.ChasseIndices && window.ChasseIndices.ajaxUrl) || '';
+      if (!ajaxUrl) {
+        return;
+      }
+
+      const zoneErreur = panelEdition?.querySelector('#erreur-global');
+      if (zoneErreur) {
+        zoneErreur.style.display = 'none';
+        zoneErreur.textContent = '';
+      }
+
+      const fd = new FormData();
+      fd.append('action', 'supprimer_chasse');
+      fd.append('chasse_id', chasseId);
+
+      fetch(ajaxUrl, {
+        method: 'POST',
+        credentials: 'same-origin',
+        body: fd,
+      })
+        .then((response) => response.json())
+        .then((resultat) => {
+          if (!resultat?.success || !resultat.data?.redirect) {
+            throw new Error('invalid');
+          }
+          window.location.href = resultat.data.redirect;
+        })
+        .catch(() => {
+          const messageErreur = translateChasseEdit('Une erreur est survenue lors de la suppression de la chasse.');
+          if (zoneErreur) {
+            zoneErreur.textContent = messageErreur;
+            zoneErreur.style.display = 'block';
+          } else {
+            window.alert(messageErreur);
+          }
+        });
+    });
+  }
 
   // ==============================
   // 🟢 Initialisation des champs
@@ -614,10 +685,12 @@ window.rafraichirCarteSolutions = rafraichirCarteSolutions;
       }
       valider.disabled = true;
       const now = new Date();
-      const dateValue = now.toISOString().split('T')[0];
+      const dateValue = now.toISOString().slice(0, 19).replace('T', ' ');
       const dateDisplay = `${String(now.getDate()).padStart(2, '0')}/${String(
         now.getMonth() + 1
-      ).padStart(2, '0')}/${now.getFullYear()}`;
+      ).padStart(2, '0')}/${now.getFullYear()} à ${String(
+        now.getHours()
+      ).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
       const gagnantsEsc = gagnants.replace(/[&<>\"']/g, (c) => ({
         '&': '&amp;',
         '<': '&lt;',
@@ -1056,7 +1129,7 @@ function initChampNbGagnants() {
 }
 
 // ================================
-// 🕒 Gestion du champ Date de début (Maintenant / Plus tard)
+// 🕒 Gestion du champ Date de début (Maintenant / Autre date)
 // ================================
 function initChampDateDebut() {
   const input = document.getElementById('chasse-date-debut');
@@ -1176,6 +1249,8 @@ function initModeFinChasse() {
   const templateNb = document.getElementById('template-nb-gagnants');
   const modeFinLi = document.querySelector('.champ-mode-fin');
   const finCard = document.querySelector('.carte-arret-chasse');
+  const caracLimite = document.querySelector('.caracteristique-limite');
+  const caracFinVal = document.querySelector('.caracteristique-fin .caracteristique-valeur');
 
   if (!toggle || !templateNb || !modeFinLi || !finCard) return;
 
@@ -1209,12 +1284,16 @@ function initModeFinChasse() {
       if (inputNb) {
         mettreAJourAffichageNbGagnants(postId, inputNb.value.trim());
       }
+      if (caracLimite) caracLimite.style.display = '';
+      if (caracFinVal) caracFinVal.textContent = ChasseModeFinI18n.auto;
     } else {
       if (existingNb) existingNb.remove();
 
       if (finCard) finCard.style.display = '';
 
       mettreAJourAffichageNbGagnants(postId, 0);
+      if (caracLimite) caracLimite.style.display = 'none';
+      if (caracFinVal) caracFinVal.textContent = ChasseModeFinI18n.manual;
     }
 
     mettreAJourBadgeModeFinChasse(selected);
@@ -1346,12 +1425,54 @@ function rafraichirStatutChasse(postId) {
           if (data.success && data.data?.statut) {
             const statut = data.data.statut;
             const label = data.data.statut_label;
+            const icon = data.data.statut_icon || '';
+            const tooltip = data.data.statut_tooltip || label || '';
+            const wantsIconFormat = icon.trim().length > 0;
             const badge = document.querySelector(`.badge-statut[data-post-id="${postId}"]`);
             DEBUG && console.log('🔎 Badge trouvé :', badge);
 
             if (badge) {
-              badge.textContent = label;
-              badge.className = `badge-statut statut-${statut}`;
+              let extraClasses = Array.from(badge.classList).filter(
+                cls => cls !== 'badge-statut' && !cls.startsWith('statut-')
+              );
+
+              if (wantsIconFormat && !extraClasses.includes('badge-statut--format-icon')) {
+                extraClasses.push('badge-statut--format-icon');
+              }
+
+              if (!wantsIconFormat) {
+                extraClasses = extraClasses.filter(cls => cls !== 'badge-statut--format-icon');
+              }
+
+              badge.className = ['badge-statut', `statut-${statut}`, ...extraClasses].join(' ');
+
+              if (wantsIconFormat) {
+                badge.innerHTML = `<span class="badge-statut__icon" aria-hidden="true">${icon}</span><span class="screen-reader-text">${label}</span>`;
+                if (tooltip) {
+                  badge.dataset.tooltip = tooltip;
+                  badge.setAttribute('title', tooltip);
+                  badge.setAttribute('aria-label', tooltip);
+                } else {
+                  badge.removeAttribute('data-tooltip');
+                  badge.removeAttribute('title');
+                  badge.removeAttribute('aria-label');
+                }
+                badge.setAttribute('role', 'img');
+                badge.setAttribute('tabindex', '0');
+              } else {
+                badge.textContent = label;
+                if (tooltip) {
+                  badge.setAttribute('aria-label', tooltip);
+                  badge.setAttribute('title', tooltip);
+                } else {
+                  badge.removeAttribute('aria-label');
+                  badge.removeAttribute('title');
+                }
+                badge.removeAttribute('role');
+                badge.removeAttribute('data-tooltip');
+                badge.removeAttribute('data-tooltip-visible');
+                badge.removeAttribute('tabindex');
+              }
             } else {
               console.warn('❓ Aucun badge-statut trouvé pour postId', postId);
             }
@@ -1384,7 +1505,8 @@ function enregistrerDatesChasse() {
     date_debut: inputDateDebut.value.trim(),
     // On conserve toujours la date en base, même si l'affichage est "Illimitée"
     date_fin: inputDateFin.value.trim(),
-    illimitee: toggleDateFin?.checked ? 0 : 1
+    illimitee: toggleDateFin?.checked ? 0 : 1,
+    debut_differee: toggleDateDebut?.checked ? 1 : 0
   });
   console.log('[enregistrerDatesChasse] params=', params.toString());
 

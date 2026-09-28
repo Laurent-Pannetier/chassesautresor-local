@@ -127,6 +127,20 @@ body {
   color: var(--color-text-primary);
   background-color: var(--color-background); /* Bleu nuit (fond global) */
 }
+
+/* 🟦 Fond global avec motif typographique */
+body,
+body.ast-plain-container,
+body.ast-page-builder-template,
+body.ast-separate-container,
+body.ast-theme-transparent-header,
+body.custom-background {
+  background-color: var(--color-background);
+  background-image: url('../assets/svg/pattern-typographique.svg');
+  background-position: center;
+  background-repeat: repeat;
+  background-size: 600px 600px;
+}
 p {
     margin-bottom: var(--space-0);
 }
@@ -134,8 +148,26 @@ label {
     color: var(--color-text-primary);
 }
 
+input,
+textarea {
+  &::-moz-placeholder,
+  &::placeholder {
+    color: var(--input-placeholder-color);
+    opacity: 1;
+  }
+
+  &::-webkit-input-placeholder {
+    color: var(--input-placeholder-color);
+  }
+
+  &:-ms-input-placeholder {
+    color: var(--input-placeholder-color);
+  }
+}
+
 .edition-panel label,
 .edit-account label,
+.edit-account legend,
 .stats-filtres label {
     color: var(--color-editor-text-muted);
 }
@@ -148,6 +180,11 @@ ul {
 }
 ul li {
     margin-bottom: 0.3rem;
+}
+
+.liste-liens-publics > li,
+.header-organisateur__liens > li {
+    margin-bottom: 0;
 }
 figcaption, .figcaption {
   font-size: 0.85rem;
@@ -195,14 +232,9 @@ tbody tr:nth-child(even) {
 }
 
 /* ====== Stat tables ====== */
-.stat-badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border: 1px solid var(--color-grey-medium);
-  border-radius: 4px;
-  background-color: var(--color-grey-light);
-  color: var(--color-text-fond-clair);
-  font-size: 0.85rem;
+.stats-table thead {
+  background-color: rgba(255, 255, 255, 0.06);
+  color: var(--color-text-primary);
 }
 
 .stats-table th,
@@ -213,11 +245,15 @@ tbody tr:nth-child(even) {
 }
 
 .stats-table th {
-  background-color: rgba(0, 0, 0, 0.08);
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
 .stats-table tbody tr:nth-child(odd) {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.stats-table tbody tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.02);
 }
 
 .stats-table-wrapper {
@@ -614,6 +650,34 @@ span.champ-obligatoire {
   display: flex;
   align-items: center;
   gap: var(--space-md);
+  margin-bottom: var(--space-4xl);
+}
+
+.titre-chasses-wrapper .titre-chasses {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: var(--space-md);
+}
+
+.titre-chasses-wrapper .titre-chasses h2 {
+  flex: 0 0 auto;
+  margin: 0;
+  text-align: center;
+}
+
+.titre-chasses-wrapper .titre-chasses .decor {
+  flex: 1;
+  height: 4px;
+  color: var(--color-titre-enigme);
+  display: flex;
+  align-items: center;
+}
+
+.titre-chasses-wrapper .titre-chasses .decor svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .titre-enigmes-wrapper {

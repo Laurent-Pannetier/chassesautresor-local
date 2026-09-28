@@ -26,9 +26,20 @@ function handle_single_enigme_access(): void
     $user_id        = get_current_user_id();
     $edition_active = utilisateur_peut_modifier_post($enigme_id);
     $chasse_id      = recuperer_id_chasse_associee($enigme_id);
+    $est_engage_chasse = false;
 
     if ($chasse_id) {
         verifier_et_synchroniser_cache_enigmes_si_autorise($chasse_id);
+        if ($user_id) {
+            $est_engage_chasse = utilisateur_est_engage_dans_chasse($user_id, $chasse_id);
+            if (
+                !$est_engage_chasse
+                && function_exists('ca_demo_is_demo_hunt')
+                && ca_demo_is_demo_hunt($chasse_id)
+            ) {
+                $est_engage_chasse = true;
+            }
+        }
     }
 
     if (!is_user_logged_in()) {
@@ -38,7 +49,7 @@ function handle_single_enigme_access(): void
     }
 
     if (
-        utilisateur_est_engage_dans_chasse($user_id, $chasse_id) &&
+        $est_engage_chasse &&
         !utilisateur_est_engage_dans_enigme($user_id, $enigme_id) &&
         utilisateur_peut_engager_enigme($enigme_id, $user_id)
     ) {
@@ -57,6 +68,7 @@ function handle_single_enigme_access(): void
 
     $etat_systeme    = get_field('enigme_cache_etat_systeme', $enigme_id) ?? 'accessible';
     $condition_acces = get_field('enigme_acces_condition', $enigme_id) ?? 'immediat';
+    $chasse_terminee = ($chasse_id && get_field('chasse_cache_statut', $chasse_id) === 'termine');
 
     if (
         $condition_acces === 'pre_requis' &&
@@ -72,6 +84,7 @@ function handle_single_enigme_access(): void
     if (
         $etat_systeme !== 'accessible' &&
         $etat_systeme !== 'bloquee_pre_requis' &&
+        !($chasse_terminee && $etat_systeme === 'bloquee_date') &&
         !utilisateur_peut_modifier_enigme($enigme_id)
     ) {
         $url = $chasse_id ? get_permalink($chasse_id) : home_url('/');

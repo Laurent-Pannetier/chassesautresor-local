@@ -26,7 +26,7 @@ final class StreamWrapper
      *
      * @throws \InvalidArgumentException if stream is not readable or writable
      */
-    public static function getResource(\WPMailSMTP\Vendor\Psr\Http\Message\StreamInterface $stream)
+    public static function getResource(StreamInterface $stream)
     {
         self::register();
         if ($stream->isReadable()) {
@@ -36,14 +36,18 @@ final class StreamWrapper
         } else {
             throw new \InvalidArgumentException('The stream must be readable, ' . 'writable, or both.');
         }
-        return \fopen('guzzle://stream', $mode, \false, self::createStreamContext($stream));
+        $resource = @\fopen('guzzle://stream', $mode, \false, self::createStreamContext($stream));
+        if ($resource === \false) {
+            throw new \RuntimeException('Unable to create stream resource');
+        }
+        return $resource;
     }
     /**
      * Creates a stream context that can be used to open a stream as a php stream resource.
      *
      * @return resource
      */
-    public static function createStreamContext(\WPMailSMTP\Vendor\Psr\Http\Message\StreamInterface $stream)
+    public static function createStreamContext(StreamInterface $stream)
     {
         return \stream_context_create(['guzzle' => ['stream' => $stream]]);
     }

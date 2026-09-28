@@ -81,21 +81,21 @@ get_header();
         <section class="chasses">
             <div class="conteneur">
                 <div class="titre-chasses-wrapper">
-                    <h2><?php esc_html_e('Chasses au Trésor', 'chassesautresor-com'); ?></h2>
-                    <?php if ($peut_ajouter && $statut_organisateur === 'publish') :
-                        get_template_part('template-parts/chasse/chasse-partial-ajout-chasse', null, [
-                            'has_chasses'     => $has_chasses,
-                            'organisateur_id' => $organisateur_id,
-                            'highlight_pulse' => $highlight_pulse,
-                            'use_button'      => true,
-                        ]);
-                    endif; ?>
+                    <div class="titre-chasses">
+                        <span class="decor decor-gauche">
+                            <?php echo file_get_contents(get_theme_file_path('assets/svg/star-line-right.svg')); ?>
+                        </span>
+                        <h2><?php esc_html_e('Chasses au trésor', 'chassesautresor-com'); ?></h2>
+                        <span class="decor decor-droite">
+                            <?php echo file_get_contents(get_theme_file_path('assets/svg/star-line-left.svg')); ?>
+                        </span>
+                    </div>
                 </div>
                 <div class="ligne-chasses"></div>
                 <div class="liste-chasses">
                     <?php
                     ob_start();
-                    if ($peut_ajouter && $statut_organisateur !== 'publish') {
+                    if ($peut_ajouter) {
                         get_template_part('template-parts/chasse/chasse-partial-ajout-chasse', null, [
                             'has_chasses'     => $has_chasses,
                             'organisateur_id' => $organisateur_id,
@@ -107,7 +107,7 @@ get_header();
                     get_template_part('template-parts/organisateur/organisateur-partial-boucle-chasses', null, [
                         'organisateur_id' => $organisateur_id,
                         'show_header'     => false,
-                        'grid_class'      => 'grille-liste',
+                        'grid_class'      => 'organisateur-chasses-grid',
                         'after_items'     => $after_items,
                     ]);
                     ?>

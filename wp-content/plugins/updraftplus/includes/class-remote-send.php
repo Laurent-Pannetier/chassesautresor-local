@@ -1,6 +1,8 @@
 <?php
-
-if (!defined('UPDRAFTPLUS_DIR')) die('No direct access allowed.');
+// phpcs:disable WordPress.WP.AlternativeFunctions.rename_rename -- rename() usage is intentional and safe within this context
+// phpcs:disable WordPress.WP.AlternativeFunctions.file_system_operations_fclose, WordPress.WP.AlternativeFunctions.file_system_operations_fopen, WordPress.WP.AlternativeFunctions.file_system_operations_fwrite, WordPress.WP.AlternativeFunctions.file_system_operations_fgets, WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents, WordPress.WP.AlternativeFunctions.file_system_operations_mkdir, WordPress.WP.AlternativeFunctions.file_system_operations_fread, WordPress.WP.AlternativeFunctions.file_system_operations_chmod, WordPress.WP.AlternativeFunctions.file_system_operations_fputs, WordPress.WP.AlternativeFunctions.file_system_operations_is_writeable, WordPress.WP.AlternativeFunctions.file_system_operations_chown, WordPress.WP.AlternativeFunctions.file_system_operations_chgrp, WordPress.WP.AlternativeFunctions.file_system_operations_touch, WordPress.WP.AlternativeFunctions.file_system_operations_rmdir, WordPress.WP.AlternativeFunctions.file_system_operations_readfile -- Native PHP fileystem function is used for direct control and performance because it can bypass additional layers of abstraction so that no overhead from the WordPress filesystem API's internal handling
+// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_set_error_handler -- we use the set_error_handler() function to provide a flexible way of handling PHP errors according to our needs; we centralises error handling in one place and customises certain errors based on their severity and context.
+if (!defined('ABSPATH')) die('No direct access allowed');
 
 abstract class UpdraftPlus_RemoteSend {
 
@@ -37,7 +39,7 @@ abstract class UpdraftPlus_RemoteSend {
 
 		// Create a receiver for each key
 		if (!class_exists('UpdraftPlus_Options')) {
-			error_log("UpdraftPlus_Options class not found: is UpdraftPlus properly installed?");
+			UpdraftPlus_Manipulation_Functions::error_log("UpdraftPlus_Options class not found: is UpdraftPlus properly installed?");
 			return;
 		}
 		$our_keys = UpdraftPlus_Options::get_updraft_option('updraft_migrator_localkeys');
@@ -416,7 +418,9 @@ abstract class UpdraftPlus_RemoteSend {
 				}
 			} elseif (!is_array($response) || empty($response['response']) || 'pong' != $response['response']) {
 
-				$err_msg = __('Error:', 'updraftplus').' '.sprintf(__('You should check that the remote site is online, not firewalled, bot verification setting is disabled, does not have security modules that may be blocking access, has UpdraftPlus version %s or later active and that the keys have been entered correctly.', 'updraftplus'), '2.10.3');
+				$err_msg = __('Error:', 'updraftplus').' '.
+					/* translators: %s: Required UpdraftPlus version. */
+					sprintf(__('You should check that the remote site is online, not firewalled, bot verification setting is disabled, does not have security modules that may be blocking access, has UpdraftPlus version %s or later active and that the keys have been entered correctly.', 'updraftplus'), '2.10.3');
 				$err_data = $response;
 				$err_code = 'no_pong';
 
@@ -430,11 +434,16 @@ abstract class UpdraftPlus_RemoteSend {
 				$res = array('e' => 1, 'r' => $err_msg);
 
 				if ($this->url_looks_internal($url)) {
-					$res['moreinfo'] = '<p>'.sprintf(__('The site URL you are sending to (%s) looks like a local development website.', 'updraftplus'), htmlspecialchars($url)).' '.__('If you are sending from an external network, it is likely that a firewall will be blocking this.', 'updraftplus').'</p>';
+					$res['moreinfo'] = '<p>'.sprintf(
+						/* translators: %s: The URL of the site that appears to be a local development website. */
+						__('The site URL you are sending to (%s) looks like a local development website.', 'updraftplus'),
+						htmlspecialchars($url)
+					).' '.
+					__('If you are sending from an external network, it is likely that a firewall will be blocking this.', 'updraftplus').'</p>';
 				}
 
 				// We got several support requests from people who didn't seem to be aware of other methods
-				$msg_try_other_method = '<p>'.__('If sending directly from site to site does not work for you, then there are three other methods - please try one of these instead.', 'updraftplus').' <a href="https://updraftplus.com/faqs/how-do-i-migrate-to-a-new-site-location/#importing" target="_blank">'.__('For longer help, including screenshots, follow this link.', 'updraftplus').'</a></p>';
+				$msg_try_other_method = '<p>'.__('If sending directly from site to site does not work for you, then there are three other methods - please try one of these instead.', 'updraftplus').' <a href="https://teamupdraft.com/documentation/updraftplus/topics/migration/faqs/how-to-migrate-a-wordpress-site-with-updraftplus/" target="_blank">'.__('For longer help, including screenshots, follow this link.', 'updraftplus').'</a></p>';
 
 				$res['moreinfo'] = isset($res['moreinfo']) ? $res['moreinfo'].$msg_try_other_method : $msg_try_other_method;
 
@@ -570,7 +579,18 @@ abstract class UpdraftPlus_RemoteSend {
 		if (extension_loaded('mbstring')) {
 			// phpcs:ignore  PHPCompatibility.IniDirectives.RemovedIniDirectives.mbstring_func_overloadDeprecated -- Commented out as this flags as not compatible with PHP 5.2
 			if (ini_get('mbstring.func_overload') & 2) {
-				echo json_encode(array('e' => 1, 'r' => __('Error:', 'updraftplus').' '.sprintf(__('The setting %s is turned on in your PHP settings.', 'updraftplus'), 'mbstring.func_overload').' '.__('It is deprecated, causes encryption to malfunction, and should be turned off.', 'updraftplus')));
+				echo json_encode(
+					array(
+						'e' => 1,
+						'r' => __('Error:', 'updraftplus').' '.
+							sprintf(
+								/* translators: %s: PHP setting causing an issue. */
+								__('The setting %s is turned on in your PHP settings.', 'updraftplus'),
+								'mbstring.func_overload'
+							).' '.
+							__('It is deprecated, causes encryption to malfunction, and should be turned off.', 'updraftplus')
+					)
+				);
 				die;
 			}
 		}
@@ -585,6 +605,7 @@ abstract class UpdraftPlus_RemoteSend {
 		$ret = array();
 
 		if (empty($data['key'])) {
+			/* translators: %s: Key. */
 			$ret['e'] = sprintf(__("Failure: No %s was given.", 'updraftplus'), __('key', 'updraftplus'));
 		} else {
 		
@@ -694,7 +715,7 @@ abstract class UpdraftPlus_RemoteSend {
 		<div class="text-link-menu">
 			<a href="#" class="updraft_migrate_add_site--trigger"><span class="dashicons dashicons-plus"></span><?php esc_html_e('Add a site', 'updraftplus');?></a>
 			<a href="#" class="updraft_migrate_clear_sites" <?php empty($remotesites) ? 'style="display: none"' : '';?>
-				onclick="event.preventDefault();updraft_migrate_delete_existingsites('<?php echo esc_js(__('You are about to permanently delete the list of existing sites.', 'updraftplus').' '.__('This action cannot be undone.', 'updraftplus').' '.__('\'Cancel\' to stop, \'OK\' to delete.'));?>');">
+				onclick="event.preventDefault();updraft_migrate_delete_existingsites('<?php echo esc_js(__('You are about to permanently delete the list of existing sites.', 'updraftplus').' '.__('This action cannot be undone.', 'updraftplus').' '.__('\'Cancel\' to stop, \'OK\' to delete.', 'updraftplus'));?>');">
 				<span class="dashicons dashicons-trash"></span>
 				<?php esc_html_e('Clear list of existing sites', 'updraftplus');?>
 			</a>

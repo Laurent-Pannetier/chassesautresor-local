@@ -51,6 +51,9 @@
   --color-background-button-inactive: #A9A9A9; /* 🔘 Boutons inactifs : gris */
   --color-success: #228B22;                  /* ✅ Barre de progression */
 
+  --color-filter-accent: #1F3E63;            /* 🔵 Mise en avant discrète des filtres */
+  --color-filter-accent-glow: rgba(31, 62, 99, 0.45); /* 🔵 Halo léger pour les interactions des filtres */
+
   --color-error: #D93025;                    /* ⚠️ Messages d'erreur */
 
   --color-white: #FFFFFF;                    /* ⚪ Blanc */
@@ -59,6 +62,7 @@
   --color-grey-light: #EEEEEE;               /* 🌫️ Gris clair */
   --color-grey-medium: #CCCCCC;              /* 🌫️ Gris moyen */
   --color-grey-dark: #333333;                /* 🌫️ Gris foncé */
+  --input-placeholder-color: #8A8876;        /* ✏️ Texte de placeholder lisible sur fonds clairs ou foncés */
 
   --color-primary-dark: #B8860B;             /* 🟡 Or sombre (dégradé) */
   --color-background-dark: #060A1F;          /* 🎭 Fond sombre profond */
@@ -67,6 +71,7 @@
   --color-text-fond-clair: #1c1c1c;         /* noir clair */
   --color-text-fond-clair-rgb: 28, 28, 28;  /* noir clair en RGB */
   --color-gris-carte: #c2c2c2;              /* 🧩 Fond de carte énigme : gris bleuté doux */
+  --color-blue-grey-light: #C9D1E0;       /* 💠 Bleu-gris clair */
 
   /* Groupe d'état : etat-enigme-menu */
   --etat-enigme-menu-en-cours: currentColor;             /* état par défaut */

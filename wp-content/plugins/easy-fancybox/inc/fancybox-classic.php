@@ -258,7 +258,7 @@ jQuery(\'' . $value['options']['tag']['default'] . '\')';
 	if ( ! empty( get_option('fancybox_enablePDF') ) && ! empty( get_option( 'fancybox_PDFonStart', '{{object}}' ) ) ) {
 		$replaces = array(
 			'{{object}}'       => 'function(a,i,o){o.type=\'pdf\';}',
-			'{{embed}}'        => 'function(a,i,o){o.type=\'html\';o.content=\'<embed src="\'+a[i].href+\'" type="application/pdf" height="100%" width="100%" />\'}',
+			'{{embed}}'        => 'function(a,i,o){o.type=\'html\';var href=(a[i]&&a[i].href)||"";var e=jQuery("<embed/>",{type:"application/pdf",height:"100%",width:"100%"});e.attr("src",href);o.content=jQuery("<div/>").append(e).html();}',
 			'{{googleviewer}}' => 'function(a,i,o){o.href=\'https://docs.google.com/viewer?embedded=true&url=\'+a[i].href;}'
 		);
 		foreach ($replaces as $short => $replace) {

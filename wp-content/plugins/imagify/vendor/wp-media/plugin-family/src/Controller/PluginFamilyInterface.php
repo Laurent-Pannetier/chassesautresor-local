@@ -1,6 +1,6 @@
 <?php
 
-namespace WPMedia\PluginFamily\Controller;
+namespace Imagify\Dependencies\WPMedia\PluginFamily\Controller;
 
 interface PluginFamilyInterface {
 	/**

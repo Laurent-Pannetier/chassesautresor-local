@@ -98,12 +98,12 @@ abstract class UpdraftCentral_Host {
 	public function updraft_central_ajax_handler() {
 		global $updraftcentral_main;
 
-		$nonce = empty($_REQUEST['nonce']) ? '' : $_REQUEST['nonce'];
+		$nonce = empty($_REQUEST['nonce']) ? '' : $_REQUEST['nonce']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended -- Unslash late, sanitization can be safely skipped as it's a non-interactive data storage, nonce verification is done late
 		if (empty($nonce) || !wp_verify_nonce($nonce, 'updraftcentral-request-nonce') || !$this->current_user_can_ajax() || empty($_REQUEST['subaction'])) die('Security check');
 
 		if (is_a($updraftcentral_main, 'UpdraftCentral_Main')) {
 
-			$subaction = $_REQUEST['subaction'];
+			$subaction = $_REQUEST['subaction']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Unslash late, sanitization can be safely skipped as it's a non-interactive data storage
 			if ($this->is_action_whitelisted($subaction) && is_callable(array($updraftcentral_main, $subaction))) {
 
 				// Undo WP's slashing of POST data
@@ -116,16 +116,15 @@ abstract class UpdraftCentral_Host {
 					$results = call_user_func(array($updraftcentral_main, $subaction), $data);
 				} catch (Exception $e) {
 					$log_message = 'PHP Fatal Exception error ('.get_class($e).') has occurred during '.$subaction.' subaction. Error Message: '.$e->getMessage().' (Code: '.$e->getCode().', line '.$e->getLine().' in '.$e->getFile().')';
-					error_log($log_message);
+					error_log($log_message); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- error_log() is intentionally used to log the error.
 					echo json_encode(array(
 						'fatal_error' => true,
 						'fatal_error_message' => $log_message
 					));
 					die;
-				// @codingStandardsIgnoreLine
-				} catch (Error $e) {
+				} catch (Error $e) { // phpcs:ignore PHPCompatibility.Classes.NewClasses.errorFound -- The Error class does not exist in PHP below 5.6.
 					$log_message = 'PHP Fatal error ('.get_class($e).') has occurred during '.$subaction.' subaction. Error Message: '.$e->getMessage().' (Code: '.$e->getCode().', line '.$e->getLine().' in '.$e->getFile().')';
-					error_log($log_message);
+					error_log($log_message); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- error_log() is intentionally used to log the error.
 					echo json_encode(array(
 						'fatal_error' => true,
 						'fatal_error_message' => $log_message
@@ -303,7 +302,7 @@ abstract class UpdraftCentral_Host {
 	 * @return bool
 	 */
 	public function php_error($errno, $errstr, $errfile, $errline) {
-		if (0 == error_reporting()) return true;
+		if (0 == error_reporting()) return true; // phpcs:ignore WordPress.PHP.DevelopmentFunctions.prevent_path_disclosure_error_reporting -- The error_reporting() function is used to get the current PHP error level.
 		$logline = $this->php_error_to_logline($errno, $errstr, $errfile, $errline);
 		if (false !== $logline) $this->log($logline, 'notice', 'php_event');
 		// Pass it up the chain

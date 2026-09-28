@@ -3,9 +3,9 @@
  * Plugin Name: Imagify
  * Plugin URI: https://wordpress.org/plugins/imagify/
  * Description: Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth using Imagify, the new most advanced image optimization tool.
- * Version: 2.2.6
+ * Version: 2.3.4
  * Requires at least: 5.3
- * Requires PHP: 7.3
+ * Requires PHP: 7.4
  * Author: Imagify Image Optimizer – Optimize Images & Convert WebP & Avif
  * Author URI: https://imagify.io
  * Licence: GPLv2
@@ -19,7 +19,7 @@
 defined( 'ABSPATH' ) || exit;
 
 // Imagify defines.
-define( 'IMAGIFY_VERSION', '2.2.6' );
+define( 'IMAGIFY_VERSION', '2.3.4' );
 define( 'IMAGIFY_SLUG', 'imagify' );
 define( 'IMAGIFY_FILE', __FILE__ );
 define( 'IMAGIFY_PATH', realpath( plugin_dir_path( IMAGIFY_FILE ) ) . '/' );
@@ -87,29 +87,19 @@ function imagify_pass_requirements() {
 	require_once IMAGIFY_PATH . 'inc/classes/class-imagify-requirements-check.php';
 
 	$requirement_checks = new Imagify_Requirements_Check(
-		array(
+		[
 			'plugin_name'    => 'Imagify',
 			'plugin_file'    => IMAGIFY_FILE,
 			'plugin_version' => IMAGIFY_VERSION,
 			'wp_version'     => '5.3',
-			'php_version'    => '7.0',
-		)
+			'php_version'    => '7.4',
+		]
 	);
 
 	$check = $requirement_checks->check();
 
 	return $check;
 }
-
-/**
- * Load plugin translations.
- *
- * @since 1.9
- */
-function imagify_load_translations() {
-	load_plugin_textdomain( 'imagify', false, dirname( plugin_basename( IMAGIFY_FILE ) ) . '/languages/' );
-}
-add_action( 'init', 'imagify_load_translations' );
 
 /**
  * Set a transient on plugin activation, it will be used later to trigger activation hooks after the plugin is loaded.
@@ -142,6 +132,10 @@ function imagify_deactivation() {
 	if ( ! imagify_pass_requirements() ) {
 		return;
 	}
+
+	// Clean up site transients.
+	delete_site_transient( 'imagify_check_api_version' );
+	delete_site_transient( 'imagify_check_licence_1' );
 
 	/**
 	 * Imagify deactivation.

@@ -19,6 +19,9 @@ $peut_editer_cout  = champ_est_editable('caracteristiques.chasse_infos_cout_poin
 
 $infos_chasse = $args['infos_chasse'] ?? preparer_infos_affichage_chasse($chasse_id);
 
+$enigme_ids = recuperer_ids_enigmes_pour_chasse($chasse_id);
+$nombre_enigmes = count($enigme_ids);
+
 $image_id   = $infos_chasse['image_id'] ?? null;
 $image_url  = $image_id ? wp_get_attachment_image_src($image_id, 'thumbnail')[0] : null;
 $description = $infos_chasse['description'];
@@ -31,7 +34,7 @@ $cout       = $infos_chasse['champs']['cout_points'];
 $date_debut = $infos_chasse['champs']['date_debut'];
 $date_fin   = $infos_chasse['champs']['date_fin'];
 $date_decouverte = $infos_chasse['champs']['date_decouverte'];
-$date_decouverte_formatee = $date_decouverte ? formater_date($date_decouverte) : '';
+$date_decouverte_formatee = $date_decouverte ? formater_date_heure($date_decouverte) : '';
 $gagnants = $infos_chasse['champs']['gagnants'];
 
 // 🎯 Conversion des dates pour les champs <input>
@@ -40,12 +43,34 @@ $date_debut_iso = $date_debut_obj ? $date_debut_obj->format('Y-m-d\TH:i') : '';
 
 $date_fin_obj = convertir_en_datetime($date_fin);
 $date_fin_iso = $date_fin_obj ? $date_fin_obj->format('Y-m-d') : '';
-$maintenant    = current_datetime();
-$debut_differe = $date_debut_obj && $date_debut_obj > $maintenant;
+$debut_differe = (bool) get_post_meta($chasse_id, 'chasse_infos_date_debut_differee', true);
 $illimitee  = $infos_chasse['champs']['illimitee'];
 $nb_max     = $infos_chasse['champs']['nb_max'] ?? 1;
 $mode_fin   = $infos_chasse['champs']['mode_fin'] ?? 'automatique';
 $statut_metier = $infos_chasse['statut'] ?? 'revision';
+
+$statut_wp     = get_post_status($chasse_id);
+$statut_cache  = get_post_meta($chasse_id, 'chasse_cache_statut', true);
+$current_user  = wp_get_current_user();
+$current_roles = (array) $current_user->roles;
+$roles_autorises = [];
+if (defined('ROLE_ORGANISATEUR')) {
+    $roles_autorises[] = ROLE_ORGANISATEUR;
+} else {
+    $roles_autorises[] = 'organisateur';
+}
+if (defined('ROLE_ORGANISATEUR_CREATION')) {
+    $roles_autorises[] = ROLE_ORGANISATEUR_CREATION;
+} else {
+    $roles_autorises[] = 'organisateur_creation';
+}
+
+$utilisateur_associe = utilisateur_est_organisateur_associe_a_chasse(get_current_user_id(), $chasse_id);
+$peut_supprimer_chasse = $utilisateur_associe
+    && !empty(array_intersect($current_roles, $roles_autorises))
+    && $statut_metier === 'revision'
+    && $statut_cache === 'revision'
+    && $statut_wp === 'pending';
 
 $champTitreParDefaut = 'nouvelle chasse'; // À adapter si besoin
 $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut);
@@ -146,20 +171,33 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                             ?>
                             <div class="champ-affichage">
                                 <?php if ($peut_editer) : ?>
-                                    <button type="button"
-                                        class="champ-modifier"
-                                        data-champ="chasse_principale_image"
-                                        data-cpt="chasse"
-                                        data-post-id="<?= esc_attr($chasse_id); ?>"
-                                        aria-label="<?= esc_attr__('Modifier l’image', 'chassesautresor-com'); ?>">
+                                    <?php if ($image_url) : ?>
                                         <img
-                                            src="<?= esc_url($image_url ?: $transparent); ?>"
+                                            src="<?= esc_url($image_url); ?>"
                                             alt="<?= esc_attr__('Image de la chasse', 'chassesautresor-com'); ?>"
                                         />
-                                        <span class="champ-ajout-image">
-                                            <?= esc_html__('ajouter une image', 'chassesautresor-com'); ?>
-                                        </span>
-                                    </button>
+                                        <button type="button"
+                                            class="champ-modifier"
+                                            data-cpt="chasse"
+                                            data-post-id="<?= esc_attr($chasse_id); ?>"
+                                            aria-label="<?= esc_attr__('Modifier l’image', 'chassesautresor-com'); ?>">
+                                            <?= esc_html__('modifier', 'chassesautresor-com'); ?>
+                                        </button>
+                                    <?php else : ?>
+                                        <button type="button"
+                                            class="champ-modifier"
+                                            data-cpt="chasse"
+                                            data-post-id="<?= esc_attr($chasse_id); ?>"
+                                            aria-label="<?= esc_attr__('Ajouter une image', 'chassesautresor-com'); ?>">
+                                            <img
+                                                src="<?= esc_url($transparent); ?>"
+                                                alt="<?= esc_attr__('Image de la chasse', 'chassesautresor-com'); ?>"
+                                            />
+                                            <span class="champ-ajout-image">
+                                                <?= esc_html__('ajouter une image', 'chassesautresor-com'); ?>
+                                            </span>
+                                        </button>
+                                    <?php endif; ?>
                                 <?php else : ?>
                                     <?php if ($image_url) : ?>
                                         <img
@@ -519,7 +557,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                                     >
                                     <span class="switch-slider"></span>
                                 </label>
-                                <span class="toggle-option"><?= esc_html__('Later', 'chassesautresor-com'); ?></span>
+                                <span class="toggle-option"><?= esc_html__('Other date', 'chassesautresor-com'); ?></span>
                                 <div class="date-debut-actions" style="<?= $debut_differe ? '' : 'display:none;'; ?>">
                                     <input type="datetime-local"
                                         id="chasse-date-debut"
@@ -873,6 +911,17 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
     ?>
 
       <div class="edition-panel-footer">
+        <?php if ($peut_supprimer_chasse) : ?>
+          <button
+            type="button"
+            id="bouton-supprimer-chasse"
+            class="bouton-secondaire"
+            data-chasse-id="<?= esc_attr($chasse_id); ?>"
+            data-enigmes-count="<?= esc_attr($nombre_enigmes); ?>"
+          >
+            <?= esc_html__('Supprimer la chasse', 'chassesautresor-com'); ?>
+          </button>
+        <?php endif; ?>
         <?php if (current_user_can('administrator')) : ?>
           <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="admin-validation-actions form-traitement-validation-chasse">
             <?php wp_nonce_field('validation_admin_' . $chasse_id, 'validation_admin_nonce'); ?>
@@ -883,6 +932,9 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
             </button>
             <button type="submit" name="validation_admin_action" value="bannir" class="bouton-secondaire" onclick="return confirm('Bannir cette chasse&nbsp;?');">
               <i class="fa-solid fa-triangle-exclamation"></i> Bannir
+            </button>
+            <button type="submit" name="validation_admin_action" value="supprimer" class="bouton-secondaire btn-danger" onclick="return confirm('<?php echo esc_js(__('Supprimer cette chasse&nbsp;?', 'chassesautresor-com')); ?>');">
+              <i class="fa-solid fa-trash"></i> <?php echo esc_html__('Supprimer', 'chassesautresor-com'); ?>
             </button>
           </form>
         <?php endif; ?>

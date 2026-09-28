@@ -26,7 +26,23 @@ function imagify_get_mime_types( $type = null ) {
 		$mimes['pdf'] = 'application/pdf';
 	}
 
-	return $mimes;
+	/**
+	 * Filter the mime types which could be optimized by Imagify.
+	 *
+	 * @since 2.3.1
+	 *
+	 * @param array $mimes The mime types, as extension => mime type pairs.
+	 */
+	$mimes = wpm_apply_filters_typed( 'array', 'imagify_get_mime_types', $mimes );
+
+	// Keep only well-formed extension => mime type pairs.
+	return array_filter(
+		$mimes,
+		function ( $mime, $ext ) {
+			return is_string( $ext ) && '' !== $ext && is_string( $mime ) && preg_match( '@^[a-z-]+/[a-z0-9.+-]+$@', $mime );
+		},
+		ARRAY_FILTER_USE_BOTH
+	);
 }
 
 /**
@@ -40,7 +56,7 @@ function imagify_get_mime_types( $type = null ) {
  * @return bool
  */
 function imagify_is_attachment_mime_type_supported( $attachment_id ) {
-	static $is = array( false );
+	static $is = [ false ];
 
 	$attachment_id = absint( $attachment_id );
 
@@ -72,12 +88,12 @@ function imagify_get_post_statuses() {
 		return $statuses;
 	}
 
-	$statuses = array(
+	$statuses = [
 		'inherit' => 'inherit',
 		'private' => 'private',
-	);
+	];
 
-	$custom_statuses = get_post_stati( array( 'public' => true ) );
+	$custom_statuses = get_post_stati( [ 'public' => true ] );
 	unset( $custom_statuses['publish'] );
 
 	if ( $custom_statuses ) {
@@ -292,12 +308,12 @@ function get_imagify_thumbnail_sizes() {
 
 	// Create the full array with sizes and crop info.
 	foreach ( $intermediate_image_sizes as $size_name => $s ) {
-		$intermediate_image_sizes[ $size_name ] = array(
+		$intermediate_image_sizes[ $size_name ] = [
 			'width'  => '',
 			'height' => '',
 			'crop'   => false,
 			'name'   => $size_name,
-		);
+		];
 
 		if ( isset( $additional_image_sizes[ $size_name ]['width'] ) ) {
 			// For theme-added sizes.

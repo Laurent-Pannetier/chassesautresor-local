@@ -2,11 +2,12 @@
 
 namespace Hostinger;
 
-use Hostinger\Admin\Ajax as AdminAjax;
+
 use Hostinger\Admin\PluginSettings;
 use Hostinger\Admin\Jobs\JobInitializer;
 use Hostinger\Admin\Proxy;
 use Hostinger\LlmsTxtGenerator\LlmsTxtFileHelper;
+use Hostinger\LlmsTxtGenerator\LlmsTxtHeadLink;
 use Hostinger\LlmsTxtGenerator\LlmsTxtParser;
 use Hostinger\Rest\Routes;
 use Hostinger\Rest\SettingsRoutes;
@@ -69,7 +70,6 @@ class Bootstrap {
         new AdminMenu();
         new AdminRedirects();
         new AdminRedirects();
-        new AdminAjax();
     }
 
     private function load_public_dependencies(): void {
@@ -85,9 +85,13 @@ class Bootstrap {
         new JobInitializer( new Proxy( $client, $this->utils ) );
         new Hooks();
 
-        $plugin_settings = new PluginSettings();
+        $plugin_settings      = new PluginSettings();
+        $llms_txt_file_helper = new LlmsTxtFileHelper();
 
-        new LlmsTxtGenerator( $plugin_settings, new LlmsTxtFileHelper(), new LlmsTxtParser() );
+        new LlmsTxtGenerator( $plugin_settings, $llms_txt_file_helper, new LlmsTxtParser() );
+
+        $llms_txt_head_link = new LlmsTxtHeadLink( $plugin_settings, $llms_txt_file_helper );
+        $this->loader->add_action( 'wp_head', $llms_txt_head_link, 'render' );
 
         $settings_routes = new SettingsRoutes( $plugin_settings );
         $routes          = new Routes( $settings_routes );

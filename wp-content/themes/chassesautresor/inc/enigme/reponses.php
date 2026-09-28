@@ -59,7 +59,29 @@ function enigme_get_bonnes_reponses(int $enigme_id): array
             return '<p>Vous ne pouvez plus répondre à cette énigme.</p>';
         }
 
-        $data = calculer_contexte_points($user_id, $enigme_id);
+        $mode_validation = get_field('enigme_mode_validation', $enigme_id);
+        $badge_html      = '';
+        if ($mode_validation !== 'aucune') {
+            if ($mode_validation === 'automatique') {
+                $icon_html = trim(get_svg_icon('automatic'));
+                $message   = __("Mode de validation de l'énigme automatique. Vous connaîtrez le résultat de votre tentative immédiatement après l'avoir soumise.", 'chassesautresor-com');
+            } else {
+                $icon_html         = '<i class="fa-solid fa-envelope" aria-hidden="true"></i>';
+                $chasse_id         = function_exists('recuperer_id_chasse_associee') ? (int) recuperer_id_chasse_associee($enigme_id) : 0;
+                $organisateur_id   = $chasse_id ? get_organisateur_from_chasse($chasse_id) : 0;
+                $organisateur_nom  = $organisateur_id ? get_the_title($organisateur_id) : '';
+                $organisateur_lien = $organisateur_id ? get_permalink($organisateur_id) : '#';
+                $message           = sprintf(
+                    __("Mode de validation de l'énigme manuelle. Vous connaîtrez le résultat de votre tentative après son traitement par %s.", 'chassesautresor-com'),
+                    '<a href="' . esc_url($organisateur_lien) . '">' . esc_html($organisateur_nom) . '</a>'
+                );
+            }
+            $badge_html = '<button type="button" class="badge-validation" data-tooltip="'
+                . esc_attr($message)
+                . '">' . $icon_html . '</button>';
+        }
+
+        $data  = calculer_contexte_points($user_id, $enigme_id);
         $nonce = wp_create_nonce('reponse_manuelle_nonce');
         ob_start();
     ?>
@@ -71,7 +93,7 @@ function enigme_get_bonnes_reponses(int $enigme_id): array
         data-solde-apres="<?php echo esc_attr($data['solde_apres']); ?>"
         data-seuil="<?php echo esc_attr($data['seuil']); ?>"
     >
-        <h3><?php echo esc_html__('Votre réponse', 'chassesautresor-com'); ?></h3>
+        <h3><?php echo $badge_html . esc_html__('Votre réponse', 'chassesautresor-com'); ?></h3>
         <?php if ($data['points_manquants'] > 0) : ?>
             <p class="message-limite" data-points="manquants">
                 <?php echo esc_html(sprintf(__('Il vous manque %d points pour soumettre votre réponse.', 'chassesautresor-com'), $data['points_manquants'])); ?>
@@ -609,7 +631,7 @@ function charger_script_reponse_manuelle() {
                 'et sur votre <a href="%4$s">espace personnel</a>.',
                 'chassesautresor-com'
             ),
-            'accountUrl' => esc_url(home_url('/mon-compte/?section=chasses')),
+            'accountUrl' => esc_url(home_url('/mon-compte/')),
         ]);
     }
 }

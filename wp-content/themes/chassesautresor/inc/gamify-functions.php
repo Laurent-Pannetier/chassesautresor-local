@@ -433,6 +433,10 @@ function verifier_fin_de_chasse($user_id, $enigme_id)
 
     if ($nb_resolues === count($validables) && $engagements_ok) {
         gerer_chasse_terminee($chasse_id);
+
+        if (function_exists('ca_demo_is_demo_hunt') && ca_demo_is_demo_hunt((int) $chasse_id)) {
+            do_action('ca_demo_schedule_reset', (int) $chasse_id, (int) $user_id);
+        }
     }
 }
 add_action('enigme_resolue', function($user_id, $enigme_id) {

@@ -338,7 +338,7 @@ CPT : organisateur
 Groupe : Paramètres organisateur
 
 * email_contact (email)
-* logo_organisateur (image) — anciennement `profil_public_logo_organisateur`
+* logo_organisateur (image)
 * liens_publics (repeater)
   * type_de_lien (select)
   * url_lien (url)
@@ -366,12 +366,14 @@ Groupe : paramètre de la chasse
 * chasse_mode_fin (radio)
 * chasse_infos_nb_max_gagants (number)
 * chasse_cache_gagnants (text)
-* chasse_cache_date_decouverte (date_picker)
+* chasse_cache_date_decouverte (date_time_picker)
 * chasse_cache_enigmes (relationship)
 * chasse_cache_organisateur (relationship)
 * chasse_cache_statut_validation (select)
 * chasse_cache_statut (select)
 * chasse_cache_complet (true_false)
+* chasse_region (taxonomy) — référence la taxonomie des régions de chasse
+* chasse_theme (taxonomy) — référence la taxonomie des thèmes de chasse
 
 CPT : enigme
 Groupe : Paramètres de l’énigme

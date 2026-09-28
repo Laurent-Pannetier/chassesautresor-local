@@ -44,7 +44,7 @@ class Assets {
         }
         if ( is_admin() ) {
             add_action( 'admin_enqueue_scripts', array( $this, 'global_styles' ) );
-            add_action( 'admin_enqueue_scripts', array( $this, 'global_scripts' ) );
+
         }
     }
 
@@ -55,9 +55,9 @@ class Assets {
         // Vue frontend styles.
         wp_enqueue_style(
             'hostinger_tools_styles',
-            HOSTINGER_VUE_ASSETS_URL . '/main.min.css',
+            HOSTINGER_VUE_ASSETS_URL . '/main.css',
             array(),
-            HOSTINGER_VERSION
+            HOSTINGER_WORDPRESS_PLUGIN_VERSION
         );
 
         // Plugin rating styles.
@@ -65,7 +65,7 @@ class Assets {
             'hostinger_rating_styles',
             HOSTINGER_ASSETS_URL . '/css/plugin-rating.min.css',
             array(),
-            HOSTINGER_VERSION
+            HOSTINGER_WORDPRESS_PLUGIN_VERSION
         );
     }
 
@@ -74,21 +74,11 @@ class Assets {
             'hostinger_tools_global_styles',
             HOSTINGER_ASSETS_URL . 'css/hostinger-global.min.css',
             array(),
-            HOSTINGER_VERSION
+            HOSTINGER_WORDPRESS_PLUGIN_VERSION
         );
     }
 
-    public function global_scripts(): void {
-        wp_enqueue_script(
-            'hostinger_tools_global_scripts',
-            HOSTINGER_ASSETS_URL . 'js/hostinger-global-scripts.min.js',
-            array(),
-            HOSTINGER_VERSION,
-            array(
-                'in_footer' => true,
-            )
-        );
-    }
+
 
     /**
      * Enqueues scripts for the Hostinger admin pages.
@@ -98,12 +88,12 @@ class Assets {
 
         wp_enqueue_script(
             'hostinger_tools_main_scripts',
-            HOSTINGER_VUE_ASSETS_URL . '/main.min.js',
+            HOSTINGER_VUE_ASSETS_URL . '/main.js',
             array(
                 'jquery',
                 'wp-i18n',
             ),
-            HOSTINGER_VERSION,
+            HOSTINGER_WORDPRESS_PLUGIN_VERSION,
             false
         );
 
@@ -111,17 +101,15 @@ class Assets {
             'hostinger_tools_main_scripts',
             'hostinger_tools_data',
             array(
-                'home_url'                     => home_url(),
-                'site_url'                     => get_site_url(),
-                'plugin_url'                   => $this->helper->get_hostinger_plugin_url(),
-                'asset_url'                    => HOSTINGER_PLUGIN_URL,
-                'hplatform'                    => ! empty( $_SERVER['H_PLATFORM'] ) ? 1 : 0,
-                'plugin_split_notice'          => $this->helper->should_plugin_split_notice_shown() ? 1 : 0,
-                'hts_close_plugin_split_nonce' => wp_create_nonce( 'hts_close_plugin_split' ),
-                'edit_site_url'                => $this->helper->get_edit_site_url(),
-                'llmstxt_file_url'             => $this->llms_txt_file_helper->get_llmstxt_file_url(),
-                'llmstxt_file_user_generated'  => $this->llms_txt_file_helper->is_user_generated_file(),
-                'translations'                 => array(
+                'home_url'                    => home_url(),
+                'site_url'                    => get_site_url(),
+                'plugin_url'                  => $this->helper->get_hostinger_plugin_url(),
+                'asset_url'                   => HOSTINGER_PLUGIN_URL,
+                'hplatform'                   => ! empty( $_SERVER['H_PLATFORM'] ) ? 1 : 0,
+                'edit_site_url'               => $this->helper->get_edit_site_url(),
+                'llmstxt_file_url'            => $this->llms_txt_file_helper->get_llmstxt_file_url(),
+                'llmstxt_file_user_generated' => $this->llms_txt_file_helper->is_user_generated_file(),
+                'translations'                => array(
                     'routes_tools'                                            => __( 'Tools', 'hostinger' ),
                     'hostinger_tools_open_guide'                              => __( 'Open guide', 'hostinger' ),
                     'hostinger_tools_preview_site'                            => __( 'Preview site', 'hostinger' ),
@@ -155,7 +143,7 @@ class Assets {
                     'hostinger_tools_llms'                                    => __( 'LLM Optimization', 'hostinger' ),
                     'hostinger_tools_enable_llms_txt'                         => __( 'Create LLMs.txt file', 'hostinger' ),
                     'hostinger_tools_llms_txt_description'                    => __( 'Let AI explore, understand, and interact with your WordPress site.', 'hostinger' ),
-                    'hostinger_tools_optin_mcp'                               => __( 'Web 2 Agent', 'hostinger' ),
+                    'hostinger_tools_optin_mcp'                               => __( 'Web2Agent', 'hostinger' ),
                     'hostinger_tools_optin_mcp_description'                   => __( 'Make your website easier for AI tools to understand. Website content updates will be tracked to keep the AI discovery service up to date.', 'hostinger' ),
                     'hostinger_tools_llms_txt_learn_more'                     => __( 'Learn more', 'hostinger' ),
                     'hostinger_tools_llms_txt_check_validity'                 => __( 'Check validity', 'hostinger' ),
@@ -167,9 +155,6 @@ class Assets {
                     'hostinger_tools_llms_txt_modal_create_file'              => __( 'Create file', 'hostinger' ),
                     'hostinger_tools_maintenance_mode'                        => __( 'Maintenance mode', 'hostinger' ),
                     'hostinger_tools_bypass_link'                             => __( 'Bypass link', 'hostinger' ),
-                    'hostinger_tools_split_title'                             => __( 'We’re splitting Hostinger plugin into two: Hostinger Tools and Hostinger Easy Onboarding', 'hostinger' ),
-                    'hostinger_tools_split_body'                              => __( 'Hostinger Tools will offer new tools to simplify your site management. And Hostinger Easy Onboarding will guide you through the steps of building a website.', 'hostinger' ),
-                    'hostinger_tools_split_got_it'                            => __( 'Got it', 'hostinger' ),
                     'xml_security_modal_description'                          => __( ' Turning on XML-RPC might make your site less secure. Do you want to proceed?', 'hostinger' ),
                     'xml_security_modal_title'                                => __( 'Disclaimer', 'hostinger' ),
                     'xml_security_modal_cancel'                               => __( 'Cancel', 'hostinger' ),
@@ -181,40 +166,19 @@ class Assets {
                     'bypass_link_reset_success'                               => __( 'Link has been reset', 'hostinger' ),
                     'hostinger_tools_settings_updated'                        => __( 'Your settings have been updated', 'hostinger' ),
                     'hostinger_tools_settings_error'                          => __( 'It was an error updating your settings', 'hostinger' ),
-                    'hostinger_tools_mcp_choice'                              => __( 'Allow Kodee to manage your site', 'hostinger' ),
-                    'hostinger_tools_mcp_description'                         => __( 'Let Kodee manage your site on your behalf. This allows Kodee to perform actions like creating pages or updating settings. We will install and pre-configure the WordPress MCP plugin for you.', 'hostinger' ),
+                    'hostinger_tools_mcp_description'                         => __( 'Let Hostinger Agent manage your site on your behalf. This allows Hostinger Agent to perform actions like creating pages or updating settings. We will install and pre-configure the WordPress MCP plugin for you.', 'hostinger' ),
+                    'hostinger_tools_copied_successfully'                     => __( 'Copied successfully', 'hostinger' ),
+                    'hostinger_tools_text_copied_successfully'                => __( 'Text has been copied successfully', 'hostinger' ),
+                    'hostinger_tools_free_domain_llm_unavailable'             => __( 'LLM optimization features are not available for temporary subdomains. Connect a domain to unlock these features.', 'hostinger' ),
+                    'hostinger_tools_connect_domain_cta'                      => __( 'Connect domain', 'hostinger' ),
+                    'hostinger_tools_copy_agent_url'                          => __( 'Copy agent url', 'hostinger' ),
                 ),
-                'rest_base_url'                => esc_url_raw( rest_url() ),
-                'nonce'                        => wp_create_nonce( 'wp_rest' ),
-                'wp_version'                   => $wp_version,
-                'php_version'                  => phpversion(),
-                'recommended_php_version'      => $this->helper->get_recommended_php_version(),
-                'mcp_choice'                   => get_option( 'hostinger_mcp_choice', 0 ),
-                'ai_plugin_compatibility'      => $this->check_ai_mcp_compatibility(),
+                'rest_base_url'               => esc_url_raw( rest_url() ),
+                'nonce'                       => wp_create_nonce( 'wp_rest' ),
+                'wp_version'                  => $wp_version,
+                'php_version'                 => phpversion(),
+                'recommended_php_version'     => $this->helper->get_recommended_php_version(),
             )
         );
-    }
-
-    public function check_ai_mcp_compatibility(): bool {
-        if ( ! function_exists( 'is_plugin_active' ) ) {
-            require_once ABSPATH . 'wp-admin/includes/plugin.php';
-        }
-
-        $plugin_path      = 'hostinger-ai-assistant/hostinger-ai-assistant.php';
-        $required_version = '3.0.0';
-
-        if ( is_plugin_active( $plugin_path ) ) {
-            $plugin_file = WP_PLUGIN_DIR . '/' . $plugin_path;
-            if ( file_exists( $plugin_file ) ) {
-                $plugin_data    = get_plugin_data( $plugin_file, false, false );
-                $active_version = isset( $plugin_data['Version'] ) ? $plugin_data['Version'] : '';
-
-                if ( $active_version && version_compare( $active_version, $required_version, '>=' ) ) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 }

@@ -17,6 +17,44 @@ $taux_conversion = get_taux_conversion_actuel();
 <section>
     <h1 class="mb-4 text-xl font-semibold"><?php esc_html_e('Outils', 'chassesautresor-com'); ?></h1>
     <div class="dashboard-grid">
+        <div class="dashboard-card">
+            <div class="dashboard-card-header">
+                <i class="fas fa-coins"></i>
+                <h3><?php esc_html_e('Gestion Points', 'chassesautresor-com'); ?></h3>
+            </div>
+            <div class="stats-content">
+                <form method="POST" class="form-gestion-points">
+                    <?php wp_nonce_field('gestion_points_action', 'gestion_points_nonce'); ?>
+                    <div class="gestion-points-ligne">
+                        <label for="utilisateur-points"></label>
+                        <input
+                            type="text"
+                            id="utilisateur-points"
+                            placeholder="<?php esc_attr_e('Rechercher un utilisateur...', 'chassesautresor-com'); ?>"
+                            required
+                        >
+                        <input type="hidden" id="utilisateur-id" name="utilisateur">
+                        <label for="type-modification"></label>
+                        <select id="type-modification" name="type_modification" required>
+                            <option value="ajouter">➕</option>
+                            <option value="retirer">➖</option>
+                        </select>
+                    </div>
+                    <div class="gestion-points-ligne">
+                        <label for="nombre-points"></label>
+                        <input
+                            type="number"
+                            id="nombre-points"
+                            name="nombre_points"
+                            placeholder="<?php esc_attr_e('Nombre de points', 'chassesautresor-com'); ?>"
+                            min="1"
+                            required
+                        >
+                        <button type="submit" name="modifier_points" class="btn-icon bouton-tertiaire">✅</button>
+                    </div>
+                </form>
+            </div>
+        </div>
         <?php $protection_active = get_option('ca_site_password_enabled', '1') === '1'; ?>
         <div class="dashboard-card">
             <div class="dashboard-card-header">

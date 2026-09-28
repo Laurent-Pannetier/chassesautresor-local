@@ -28,6 +28,12 @@ class NGG extends AbstractBulk {
 	 * @return array                   A list of unoptimized media IDs.
 	 */
 	public function get_unoptimized_media_ids( $optimization_level ) {
+		// @codeCoverageIgnoreStart — requires live NGG POPE classes and DB; not available in unit tests.
+		if ( ! imagify_ngg_has_pope_storage() || ! DB::get_instance()->can_operate() ) {
+			return [];
+		}
+		// @codeCoverageIgnoreEnd
+
 		global $wpdb;
 
 		$this->set_no_time_limit();
@@ -103,6 +109,17 @@ class NGG extends AbstractBulk {
 	}
 
 	/**
+	 * Get all optimized media ids that can be restored.
+	 *
+	 * @since 2.3
+	 *
+	 * @return array A list of optimized media IDs with backup files available.
+	 */
+	public function get_optimized_media_ids(): array {
+		return [];
+	}
+
+	/**
 	 * Get ids of all optimized media without next-gen versions.
 	 *
 	 * @since 2.2
@@ -118,6 +135,18 @@ class NGG extends AbstractBulk {
 	 * }
 	 */
 	public function get_optimized_media_ids_without_format( $format ) {
+		// @codeCoverageIgnoreStart — requires live NGG POPE classes and DB; not available in unit tests.
+		if ( ! imagify_ngg_has_pope_storage() || ! DB::get_instance()->can_operate() ) {
+			return [
+				'ids'    => [],
+				'errors' => [
+					'no_file_path' => [],
+					'no_backup'    => [],
+				],
+			];
+		}
+		// @codeCoverageIgnoreEnd
+
 		global $wpdb;
 
 		$this->set_no_time_limit();
@@ -141,8 +170,18 @@ class NGG extends AbstractBulk {
 				WHERE
 					( data.status = 'success' OR data.status = 'already_optimized' )
 					AND data.data NOT LIKE %s
+					AND data.data NOT LIKE %s
 				ORDER BY ngg.pid DESC",
-				'%' . $wpdb->esc_like( $suffix . '";a:4:{s:7:"success";b:1;' ) . '%'
+				'%' . $wpdb->esc_like( $suffix . '";a:4:{s:7:"success";b:1;' ) . '%',
+				/**
+				 * Second predicate: skip images the API permanently refused to convert (the next-gen file
+				 * would be heavier than the original, or the file is already compressed). Those are stored
+				 * as `<size><suffix>";a:3:{s:15:"permanent_error";b:1;s:7:"success";b:0;s:5:"error";…`.
+				 * Transient failures serialize as a 2-element array without the `permanent_error` key, so
+				 * they keep being retried. Matching serialized data with LIKE is fragile: the key order
+				 * written in Imagify\NGG\Optimization\Data\NGG must not change.
+				 */
+				'%' . $wpdb->esc_like( $suffix . '";a:3:{s:15:"permanent_error";b:1;' ) . '%'
 			)
 		);
 
@@ -193,6 +232,12 @@ class NGG extends AbstractBulk {
 	 * @return int The number of media.
 	 */
 	public function has_optimized_media_without_nextgen() {
+		// @codeCoverageIgnoreStart — requires live NGG DB table; not available in unit tests.
+		if ( ! DB::get_instance()->can_operate() ) {
+			return 0;
+		}
+		// @codeCoverageIgnoreEnd
+
 		global $wpdb;
 
 		$ngg_table  = $wpdb->prefix . 'ngg_pictures';

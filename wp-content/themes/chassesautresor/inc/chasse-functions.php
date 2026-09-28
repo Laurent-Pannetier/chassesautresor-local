@@ -1,6 +1,9 @@
 <?php
 defined('ABSPATH') || exit;
 
+require_once __DIR__ . '/badge-functions.php';
+require_once __DIR__ . '/chasse/demo.php';
+
 
 //
 // 1. 📦 FONCTIONS LIÉES À UNE CHASSE
@@ -118,6 +121,7 @@ function chasse_get_champs($chasse_id)
         'titre_recompense' => get_field('chasse_infos_recompense_titre', $chasse_id) ?? '',
         'valeur_recompense' => get_field('chasse_infos_recompense_valeur', $chasse_id) ?? '',
         'cout_points' => get_field('chasse_infos_cout_points', $chasse_id) ?? 0,
+        'is_demo' => ca_demo_is_demo_hunt((int) $chasse_id),
         // Lecture directe des dates pour éviter un éventuel cache ACF
         'date_debut' => (function () use ($chasse_id) {
             $val = get_field('chasse_infos_date_debut', $chasse_id);
@@ -205,6 +209,13 @@ function utilisateur_est_engage_dans_chasse(int $user_id, int $chasse_id): bool
 {
     global $wpdb;
     if (!$user_id || !$chasse_id) return false;
+
+    if (
+        function_exists('ca_demo_is_demo_hunt')
+        && ca_demo_is_demo_hunt($chasse_id)
+    ) {
+        return $user_id > 0;
+    }
 
     $table = $wpdb->prefix . 'engagements';
 
@@ -370,9 +381,9 @@ function gerer_chasse_terminee($chasse_id)
 
     $should_close = ($max_winners === 0 || $winner_total >= $max_winners);
     if ($should_close) {
-        $date = current_time('Y-m-d');
-        $date_obj = DateTime::createFromFormat('Y-m-d', $date);
-        if ($date_obj && $date_obj->format('Y-m-d') === $date) {
+        $date = current_time('Y-m-d H:i:s');
+        $date_obj = DateTime::createFromFormat('Y-m-d H:i:s', $date);
+        if ($date_obj && $date_obj->format('Y-m-d H:i:s') === $date) {
             update_field('chasse_cache_date_decouverte', $date, $chasse_id);
         }
 
@@ -599,6 +610,9 @@ function chasse_calculer_progression_utilisateur(int $chasse_id, int $user_id): 
 {
     $enigmes = recuperer_enigmes_associees($chasse_id);
     $total   = count($enigmes);
+    $is_demo = function_exists('ca_demo_is_demo_hunt')
+        ? ca_demo_is_demo_hunt($chasse_id)
+        : false;
 
     $resolvables = 0;
     if ($total > 0) {
@@ -611,15 +625,32 @@ function chasse_calculer_progression_utilisateur(int $chasse_id, int $user_id): 
     }
 
     $engagees = 0;
+    $resolues = 0;
+
     if ($user_id && $total > 0) {
         global $wpdb;
         $placeholders = implode(',', array_fill(0, $total, '%d'));
-        $sql = "SELECT COUNT(DISTINCT enigme_id) FROM {$wpdb->prefix}engagements WHERE user_id = %d AND enigme_id IN ($placeholders)";
-        $engagees = (int) $wpdb->get_var($wpdb->prepare($sql, array_merge([$user_id], $enigmes)));
+
+        if ($is_demo) {
+            $table_statuts = $wpdb->prefix . 'enigme_statuts_utilisateur';
+            $params        = array_merge([$user_id], $enigmes);
+
+            $sql_engagees = "SELECT COUNT(DISTINCT enigme_id) FROM {$table_statuts}"
+                . " WHERE user_id = %d AND enigme_id IN ($placeholders)"
+                . " AND statut NOT IN ('non_commencee','non_souscrite')";
+            $engagees = (int) $wpdb->get_var($wpdb->prepare($sql_engagees, $params));
+
+            $sql_resolues = "SELECT COUNT(DISTINCT enigme_id) FROM {$table_statuts}"
+                . " WHERE user_id = %d AND enigme_id IN ($placeholders)"
+                . " AND statut IN ('resolue','terminee','terminée')";
+            $resolues = (int) $wpdb->get_var($wpdb->prepare($sql_resolues, $params));
+        } else {
+            $sql = "SELECT COUNT(DISTINCT enigme_id) FROM {$wpdb->prefix}engagements WHERE user_id = %d AND enigme_id IN ($placeholders)";
+            $engagees = (int) $wpdb->get_var($wpdb->prepare($sql, array_merge([$user_id], $enigmes)));
+        }
     }
 
-    $resolues = 0;
-    if ($user_id && function_exists('compter_enigmes_resolues')) {
+    if (!$is_demo && $user_id && function_exists('compter_enigmes_resolues')) {
         $resolues = compter_enigmes_resolues($chasse_id, $user_id);
     }
 
@@ -647,12 +678,20 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
     $validation = get_field('chasse_cache_statut_validation', $chasse_id);
     $date_debut = get_field('chasse_infos_date_debut', $chasse_id);
     $date_fin   = get_field('chasse_infos_date_fin', $chasse_id);
+    $is_demo    = function_exists('ca_demo_is_demo_hunt')
+        ? ca_demo_is_demo_hunt($chasse_id)
+        : false;
+    $response   = static function (array $data) use ($is_demo): array {
+        $data['is_demo'] = $is_demo;
+
+        return $data;
+    };
 
     // 🧑‍💻 Utilisateur non connecté
     if (! $user_id) {
         $login_url = wp_login_url($permalink);
 
-        return [
+        return $response([
             'cta_html'    => sprintf(
                 '<a href="%s" class="bouton-cta bouton-cta--color">%s</a>',
                 esc_url($login_url),
@@ -660,15 +699,15 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
             ),
             'cta_message' => '',
             'type'        => 'connexion',
-        ];
+        ]);
     }
 
     if (peut_valider_chasse($chasse_id, $user_id)) {
-        return [
+        return $response([
             'cta_html'    => render_form_validation_chasse($chasse_id),
             'cta_message' => '',
             'type'        => 'validation',
-        ];
+        ]);
     }
 
     // 🔐 Admin or organiser info
@@ -679,19 +718,19 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
 
     if ($validation === 'en_attente') {
         if ($is_orga) {
-            return [
+            return $response([
                 'cta_html'    => render_form_annulation_validation_chasse($chasse_id),
                 'cta_message' => '',
                 'type'        => 'annuler_validation',
-            ];
+            ]);
         }
-        return [
+        return $response([
             'cta_html'    => '<span class="bouton-cta bouton-cta--pending" aria-disabled="true">'
                 . esc_html__( 'Demande de validation en cours', 'chassesautresor-com' )
                 . '</span>',
             'cta_message' => '',
             'type'        => 'en_attente',
-        ];
+        ]);
     }
 
     // 🔐 Admin or organiser: front-end edition
@@ -700,7 +739,7 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
             ? add_query_arg(['edition' => 'open', 'tab' => 'param'], $permalink)
             : $permalink . '?edition=open&tab=param';
 
-        return [
+        return $response([
             'cta_html'    => sprintf(
                 '<a href="%s" class="bouton-secondaire">%s</a>',
                 esc_url($edition_url),
@@ -708,7 +747,7 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
             ),
             'cta_message' => '',
             'type'        => 'edition',
-        ];
+        ]);
     }
 
     if (
@@ -720,7 +759,7 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
             ? add_query_arg(['edition' => 'open', 'tab' => 'stats'], $permalink)
             : $permalink . '?edition=open&tab=stats';
 
-        return [
+        return $response([
             'cta_html'    => sprintf(
                 '<a href="%s" class="bouton-secondaire">%s</a>',
                 esc_url($stats_url),
@@ -728,34 +767,68 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
             ),
             'cta_message' => '',
             'type'        => 'statistiques',
-        ];
+        ]);
     }
 
     if ($is_admin || $is_orga) {
-        return [
+        return $response([
             'cta_html'    => sprintf(
                 '<button class="bouton-cta" disabled>%s</button>',
                 esc_html__( 'Participer', 'chassesautresor-com' )
             ),
             'cta_message' => '',
             'type'        => 'indisponible',
-        ];
+        ]);
     }
 
     // ✅ Déjà engagé
     $engage_override = $GLOBALS['force_engage_override'] ?? null;
     $est_engage = $engage_override !== null ? (bool) $engage_override : utilisateur_est_engage_dans_chasse($user_id, $chasse_id);
     if ($est_engage) {
-        return [
+        if ($is_demo) {
+            $nonce_action = 'ca_demo_reset_chasse_' . $chasse_id . '_' . $user_id;
+            $nonce = function_exists('wp_create_nonce')
+                ? wp_create_nonce($nonce_action)
+                : $nonce_action;
+
+            $icon_markup = '';
+            if (function_exists('get_svg_icon')) {
+                $icon_markup = trim(get_svg_icon('reset'));
+            }
+
+            if ($icon_markup !== '') {
+                $icon_markup = '<span class="cta-reset-demo__icon" aria-hidden="true">' . $icon_markup . '</span>';
+            }
+
+            $button_html = sprintf(
+                '<button type="button" class="bouton-cta bouton-cta--color cta-reset-demo__button" data-ca-demo-reset="1"'
+                . ' data-chasse-id="%1$d" data-nonce="%2$s">%3$s<span class="cta-reset-demo__label">%4$s</span></button>',
+                (int) $chasse_id,
+                esc_attr($nonce),
+                $icon_markup,
+                esc_html__('Réinitialiser ma progression', 'chassesautresor-com')
+            );
+
+            return $response([
+                'cta_html'    => $button_html,
+                'cta_message' => '<p class="cta-reset-demo__message">' . esc_html__(
+                    'Ceci est une chasse de démonstration',
+                    'chassesautresor-com'
+                ) . '</p>',
+                'type'        => 'reset_demo',
+            ]);
+        }
+
+        return $response([
             'cta_html'    => '<a href="#chasse-enigmes-wrapper" class="bouton-secondaire">' . esc_html__('Voir mes énigmes', 'chassesautresor-com') . '</a>',
             'cta_message' => '<p>✅ ' . esc_html__('Vous participez à cette chasse', 'chassesautresor-com') . '</p>',
             'type'        => 'engage',
-        ];
+        ]);
     }
 
     // ❌ Chasse non validée
     if ($validation !== 'valide') {
-        return ['cta_html' => '', 'cta_message' => '', 'type' => ''];
+        return $response(['cta_html' => '', 'cta_message' => '', 'type' => '']);
     }
 
     $html    = '';
@@ -809,29 +882,24 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
             $type    = 'engager';
         }
     } elseif ($statut === 'termine') {
-        // ✅ Chasse terminée : engagement gratuit et automatique
+        // ✅ Chasse terminée : engagement requis pour accéder aux énigmes
         $html  = '<form method="post" action="' . esc_url(site_url('/traitement-engagement')) . '" class="cta-chasse-form">';
         $html .= '<input type="hidden" name="chasse_id" value="' . esc_attr($chasse_id) . '">';
         $html .= wp_nonce_field('engager_chasse_' . $chasse_id, 'engager_chasse_nonce', true, false);
         $html .= sprintf(
-            '<button type="submit" class="bouton-cta">%s</button>',
-            esc_html__('Voir', 'chassesautresor-com')
+            '<button type="submit" class="bouton-cta bouton-cta--color">%s</button>',
+            esc_html__('Redécouvrir', 'chassesautresor-com')
         );
         $html .= '</form>';
-        $type = 'voir';
-        $message = $date_fin
-            ? sprintf(
-                __('Cette chasse est terminée depuis le %s', 'chassesautresor-com'),
-                date_i18n('d/m/Y', strtotime($date_fin))
-            )
-            : __('Cette chasse est terminée', 'chassesautresor-com');
+        $type = 'engager';
+        $message = '';
     }
 
-    return [
-        'cta_html'    => $html,
-        'cta_message' => $message,
-        'type'        => $type,
-    ];
+        return $response([
+            'cta_html'    => $html,
+            'cta_message' => $message,
+            'type'        => $type,
+        ]);
 }
 
 /**
@@ -843,6 +911,13 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
 function compter_joueurs_engages_chasse(int $chasse_id): int
 {
     if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
+        return 0;
+    }
+
+    if (
+        function_exists('ca_demo_is_demo_hunt')
+        && ca_demo_is_demo_hunt($chasse_id)
+    ) {
         return 0;
     }
 
@@ -877,6 +952,15 @@ function enregistrer_engagement_chasse(int $user_id, int $chasse_id): bool
 
     if (current_user_can('administrator') || utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
         return false;
+    }
+
+    if (
+        function_exists('ca_demo_is_demo_hunt')
+        && ca_demo_is_demo_hunt($chasse_id)
+    ) {
+        chasse_clear_infos_affichage_cache($chasse_id);
+
+        return true;
     }
 
     $table = $wpdb->prefix . 'engagements';
@@ -1121,33 +1205,42 @@ function solution_recuperer_par_objet(int $id, string $type)
         return null;
     }
 
-    $meta_key = $type === 'enigme' ? 'solution_enigme_linked' : 'solution_chasse_linked';
-
-    $solutions = get_posts([
-        'post_type'      => 'solution',
-        'post_status'    => ['publish', 'pending', 'draft'],
-        'posts_per_page' => 1,
-        'meta_query'     => [
+    $meta_key   = $type === 'enigme' ? 'solution_enigme_linked' : 'solution_chasse_linked';
+    $meta_query = [
+        'relation' => 'AND',
+        [
+            'key'   => 'solution_cible_type',
+            'value' => $type,
+        ],
+        [
+            'key'     => 'solution_cache_etat_systeme',
+            'value'   => [
+                SOLUTION_STATE_EN_COURS,
+                SOLUTION_STATE_A_VENIR,
+                SOLUTION_STATE_FIN_CHASSE,
+                SOLUTION_STATE_FIN_CHASSE_DIFFERE,
+            ],
+            'compare' => 'IN',
+        ],
+        [
+            'relation' => 'OR',
             [
-                'key'   => 'solution_cible_type',
-                'value' => $type,
+                'key'   => $meta_key,
+                'value' => $id,
             ],
             [
                 'key'     => $meta_key,
                 'value'   => '"' . $id . '"',
                 'compare' => 'LIKE',
             ],
-            [
-                'key'     => 'solution_cache_etat_systeme',
-                'value'   => [
-                    SOLUTION_STATE_EN_COURS,
-                    SOLUTION_STATE_A_VENIR,
-                    SOLUTION_STATE_FIN_CHASSE,
-                    SOLUTION_STATE_FIN_CHASSE_DIFFERE,
-                ],
-                'compare' => 'IN',
-            ],
         ],
+    ];
+
+    $solutions = get_posts([
+        'post_type'      => 'solution',
+        'post_status'    => ['publish', 'pending', 'draft'],
+        'posts_per_page' => 1,
+        'meta_query'     => $meta_query,
     ]);
 
     return $solutions[0] ?? null;
@@ -1170,7 +1263,26 @@ function solution_existe_pour_objet(int $id, string $type): bool
         return false;
     }
 
-    $meta_key = $type === 'enigme' ? 'solution_enigme_linked' : 'solution_chasse_linked';
+    $meta_key   = $type === 'enigme' ? 'solution_enigme_linked' : 'solution_chasse_linked';
+    $meta_query = [
+        'relation' => 'AND',
+        [
+            'key'   => 'solution_cible_type',
+            'value' => $type,
+        ],
+        [
+            'relation' => 'OR',
+            [
+                'key'   => $meta_key,
+                'value' => $id,
+            ],
+            [
+                'key'     => $meta_key,
+                'value'   => '"' . $id . '"',
+                'compare' => 'LIKE',
+            ],
+        ],
+    ];
 
     $solutions = get_posts([
         'post_type'      => 'solution',
@@ -1178,10 +1290,7 @@ function solution_existe_pour_objet(int $id, string $type): bool
         'fields'         => 'ids',
         'no_found_rows'  => true,
         'posts_per_page' => 1,
-        'meta_query'     => [
-            ['key' => 'solution_cible_type', 'value' => $type],
-            ['key' => $meta_key, 'value' => $id],
-        ],
+        'meta_query'     => $meta_query,
     ]);
 
     return !empty($solutions);
@@ -1212,9 +1321,8 @@ function solution_peut_etre_affichee(int $enigme_id): bool
         return false;
     }
 
-    $statut   = get_field('statut_chasse', $chasse_id);
-    $terminee = is_string($statut) && in_array(strtolower($statut), ['terminée', 'termine', 'terminé'], true);
-    if (!$terminee) {
+    $statut   = get_field('chasse_cache_statut', $chasse_id);
+    if ($statut !== 'termine') {
         return false;
     }
 
@@ -1239,18 +1347,734 @@ function solution_peut_etre_affichee(int $enigme_id): bool
 }
 
 /**
- * Prépare les informations d'affichage pour une carte de chasse.
+ * Vérifie si la solution d'une chasse peut être affichée.
  *
- * @param int $chasse_id  ID de la chasse.
- * @param int $word_limit Nombre maximum de mots pour le descriptif.
+ * La solution n'est visible que si la chasse est terminée et que
+ * l'éventuel délai configuré est écoulé.
  *
- * @return array Tableau associatif prêt pour le template.
-*/
-function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit = 300): array
+ * @param int $chasse_id ID de la chasse.
+ * @return bool
+ */
+function solution_chasse_peut_etre_affichee(int $chasse_id): bool
+{
+    if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
+        return false;
+    }
+
+    $solution = solution_recuperer_par_objet($chasse_id, 'chasse');
+    if (!$solution) {
+        return false;
+    }
+
+    $statut   = get_field('chasse_cache_statut', $chasse_id);
+    if ($statut !== 'termine') {
+        return false;
+    }
+
+    $dispo    = get_field('solution_disponibilite', $solution->ID) ?: 'fin_chasse';
+    $decalage = (int) get_field('solution_decalage_jours', $solution->ID);
+    $heure    = get_field('solution_heure_publication', $solution->ID) ?: '00:00';
+    $now      = current_time('timestamp');
+
+    if ($dispo === 'differee') {
+        $base = get_field('date_de_decouverte', $chasse_id);
+        if (!$base) {
+            $base = get_field('chasse_infos_date_fin', $chasse_id);
+        }
+        $timestamp_base = $base ? strtotime($base) : $now;
+        $cible          = strtotime("+$decalage days $heure", $timestamp_base);
+        if ($cible && $now < $cible) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/**
+ * Retourne le HTML d'une solution (PDF ou texte).
+ *
+ * @param WP_Post $solution Solution post object.
+ * @return string
+ */
+function solution_contenu_html(WP_Post $solution): string
+{
+    $fichier = get_field('solution_fichier', $solution->ID);
+    $texte   = get_field('solution_explication', $solution->ID);
+    $content = '';
+
+    if ($texte) {
+        $content .= '<div class="solution-text"><p>'
+            . wp_kses_post($texte)
+            . '</p></div>';
+    }
+
+    if ($fichier) {
+        if (is_array($fichier)) {
+            $fichier_url = $fichier['url'] ?? '';
+        } else {
+            $fichier_url = wp_get_attachment_url($fichier);
+        }
+
+        if (!empty($fichier_url)) {
+            $content .= '<object data="' . esc_url($fichier_url)
+                . '" type="application/pdf" width="100%" height="800">'
+                . '<p>'
+                . esc_html__(
+                    'Votre navigateur ne peut pas afficher le PDF.',
+                    'chassesautresor-com'
+                )
+                . ' <a href="' . esc_url($fichier_url)
+                . '" class="lien-solution-pdf" target="_blank" rel="noopener">'
+                . esc_html__('Télécharger', 'chassesautresor-com')
+                . '</a></p></object>';
+        }
+    }
+
+    return $content;
+}
+
+/**
+ * Affiche la section des solutions pour une chasse.
+ *
+ * @param int $chasse_id ID de la chasse.
+ * @param int $user_id   ID de l'utilisateur courant.
+ */
+function render_chasse_solutions(int $chasse_id, int $user_id): void
+{
+    if (get_post_type($chasse_id) !== 'chasse') {
+        return;
+    }
+
+    $sections = '';
+
+    if (solution_chasse_peut_etre_affichee($chasse_id)
+        && utilisateur_peut_voir_solution_chasse($chasse_id, $user_id)) {
+        $solution = solution_recuperer_par_objet($chasse_id, 'chasse');
+        if ($solution) {
+            $content = solution_contenu_html($solution);
+            if ($content !== '') {
+                $sections .= '<section class="solution">';
+                $sections .= '<details><summary>'
+                    . esc_html__('Solution de la chasse', 'chassesautresor-com')
+                    . '</summary>';
+                $sections .= '<div class="solution-content">'
+                    . $content
+                    . '</div></details></section>';
+            }
+        }
+    }
+
+    if ($sections === '') {
+        return;
+    }
+
+    echo '<section id="chasse-solutions" class="chasse-solutions">';
+    echo '<h2>' . esc_html__('Solutions', 'chassesautresor-com') . '</h2>';
+    echo $sections;
+    echo '</section>';
+}
+
+/**
+ * Prépare les données d'affichage des termes associés à une chasse.
+ *
+ * @param int    $chasse_id ID de la chasse.
+ * @param string $taxonomy  Taxonomie ciblée.
+ *
+ * @return array[]
+ */
+function chasse_preparer_termes_affichage(int $chasse_id, string $taxonomy): array
+{
+    $terms = [];
+
+    if (function_exists('wp_get_post_terms')) {
+        $terms = wp_get_post_terms($chasse_id, $taxonomy, ['orderby' => 'term_order']);
+        if (is_wp_error($terms)) {
+            $terms = [];
+        }
+    }
+
+    if (empty($terms) && function_exists('get_field')) {
+        $acf_fields = [
+            'chasse_region' => 'chasse_region',
+            'theme_chasse'  => 'chasse_theme',
+        ];
+
+        if (isset($acf_fields[$taxonomy])) {
+            $raw_terms = get_field($acf_fields[$taxonomy], $chasse_id);
+
+            if ($raw_terms instanceof \WP_Term) {
+                $terms = [$raw_terms];
+            } elseif (is_array($raw_terms)) {
+                $terms = chasse_is_list($raw_terms) ? $raw_terms : [$raw_terms];
+            } elseif ($raw_terms !== null && $raw_terms !== '') {
+                $terms = [$raw_terms];
+            }
+        }
+    }
+
+    if (empty($terms)) {
+        return [];
+    }
+
+    $items = [];
+
+    foreach ($terms as $term) {
+        $item = chasse_normalize_term_for_display($term, $taxonomy);
+
+        if ($item !== null) {
+            $items[] = $item;
+        }
+    }
+
+    return $items;
+}
+
+/**
+ * Format raw term items into HTML snippets for the meta-etiquette blocks.
+ *
+ * @param array<int, array<string, mixed>>|null $terms Raw terms as returned by chasse_preparer_termes_affichage.
+ *
+ * @return string[]
+ */
+function chasse_format_meta_terms($terms): array
+{
+    if (!is_array($terms) || $terms === []) {
+        return [];
+    }
+
+    $escape_html = static function (string $value): string {
+        if (function_exists('esc_html')) {
+            return esc_html($value);
+        }
+
+        return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+    };
+
+    $format_url = static function (string $url): string {
+        if (function_exists('esc_url')) {
+            return esc_url($url);
+        }
+
+        $sanitized = filter_var($url, FILTER_SANITIZE_URL);
+
+        return is_string($sanitized) ? $sanitized : '';
+    };
+
+    $formatted = [];
+
+    foreach ($terms as $term) {
+        if (!is_array($term)) {
+            continue;
+        }
+
+        $raw_name = $term['nom'] ?? ($term['name'] ?? '');
+        $name     = trim((string) $raw_name);
+
+        if ($name === '') {
+            continue;
+        }
+
+        $raw_link = $term['lien'] ?? ($term['link'] ?? '');
+        $link     = is_string($raw_link) ? trim($raw_link) : '';
+
+        $escaped_name = $escape_html($name);
+
+        if ($link !== '') {
+            $escaped_link = $format_url($link);
+
+            if ($escaped_link !== '') {
+                $formatted[] = sprintf(
+                    '<a class="meta-etiquette__value" href="%s">%s</a>',
+                    $escaped_link,
+                    $escaped_name
+                );
+                continue;
+            }
+        }
+
+        $formatted[] = sprintf('<span class="meta-etiquette__value">%s</span>', $escaped_name);
+    }
+
+    return $formatted;
+}
+
+/**
+ * Normalise une valeur de terme afin de la rendre exploitable pour l'affichage.
+ *
+ * @param mixed  $term     Valeur brute issue de WordPress ou d'ACF.
+ * @param string $taxonomy Taxonomie ciblée.
+ *
+ * @return array{nom: string, slug: string, lien: string}|null
+ */
+function chasse_normalize_term_for_display($term, string $taxonomy): ?array
+{
+    $wp_term = chasse_resolve_term_candidate($term, $taxonomy);
+
+    if ($wp_term instanceof \WP_Term) {
+        $link = '';
+
+        if (function_exists('get_term_link')) {
+            $link = get_term_link($wp_term);
+            if (is_wp_error($link)) {
+                $link = '';
+            }
+        }
+
+        return [
+            'nom'  => $wp_term->name,
+            'slug' => $wp_term->slug,
+            'lien' => is_string($link) ? $link : '',
+        ];
+    }
+
+    $name = '';
+    $link = '';
+    $slug_candidates = [];
+
+    if (is_array($term)) {
+        $link_candidates = [
+            $term['lien'] ?? null,
+            $term['link'] ?? null,
+            $term['url'] ?? null,
+        ];
+
+        foreach ($link_candidates as $link_candidate) {
+            if (!is_string($link_candidate)) {
+                continue;
+            }
+
+            $trimmed = trim($link_candidate);
+
+            if ($trimmed === '') {
+                continue;
+            }
+
+            $link = $trimmed;
+            break;
+        }
+
+        $name_candidates = [
+            $term['nom'] ?? null,
+            $term['name'] ?? null,
+            $term['label'] ?? null,
+            $term['title'] ?? null,
+            $term['post_title'] ?? null,
+            $term['display_name'] ?? null,
+            $term['value'] ?? null,
+        ];
+
+        foreach ($name_candidates as $candidate) {
+            if (!is_string($candidate) && !is_numeric($candidate)) {
+                continue;
+            }
+
+            $candidate_value = trim((string) $candidate);
+
+            if ($candidate_value === '') {
+                continue;
+            }
+
+            if (ctype_digit($candidate_value)) {
+                continue;
+            }
+
+            $taxonomy_pattern = '/^' . preg_quote($taxonomy, '/') . '[_:-]?\d+$/i';
+            if (preg_match('/^term[_:-]?\d+$/i', $candidate_value)
+                || preg_match('/^term\s+\d+$/i', $candidate_value)
+                || preg_match('/^term\s*id\s*[:=]?\s*\d+$/i', $candidate_value)
+                || preg_match($taxonomy_pattern, $candidate_value)
+            ) {
+                continue;
+            }
+
+            $name = $candidate_value;
+            break;
+        }
+
+        $slug_candidates[] = $term['slug'] ?? null;
+        if (isset($term['value']) && is_string($term['value'])) {
+            $slug_candidates[] = $term['value'];
+        }
+    } elseif (is_string($term) || is_numeric($term)) {
+        $name = trim((string) $term);
+    }
+
+    if ($name === '') {
+        return null;
+    }
+
+    $slug_candidates[] = $name;
+
+    $slug = '';
+
+    foreach ($slug_candidates as $candidate) {
+        if (!is_string($candidate) && !is_numeric($candidate)) {
+            continue;
+        }
+
+        $candidate_value = trim((string) $candidate);
+
+        if ($candidate_value === '') {
+            continue;
+        }
+
+        if (function_exists('sanitize_title')) {
+            $slug = sanitize_title($candidate_value);
+        } else {
+            $slug = strtolower((string) preg_replace('/[^A-Za-z0-9]+/', '-', $candidate_value));
+            $slug = trim($slug, '-');
+        }
+
+        if ($slug !== '') {
+            break;
+        }
+    }
+
+    return [
+        'nom'  => $name,
+        'slug' => $slug,
+        'lien' => $link,
+    ];
+}
+
+/**
+ * Extract a numeric term identifier from raw data returned by ACF or caches.
+ *
+ * @param mixed  $value    Raw candidate value.
+ * @param string $taxonomy Related taxonomy slug.
+ *
+ * @return int|null
+ */
+function chasse_extract_term_id_from_value($value, string $taxonomy): ?int
+{
+    if (is_int($value)) {
+        return $value;
+    }
+
+    if (is_float($value) || (is_numeric($value) && !is_string($value))) {
+        return (int) $value;
+    }
+
+    if (!is_string($value)) {
+        return null;
+    }
+
+    $trimmed = trim($value);
+
+    if ($trimmed === '') {
+        return null;
+    }
+
+    if (ctype_digit($trimmed)) {
+        return (int) $trimmed;
+    }
+
+    $taxonomy_pattern = '/^' . preg_quote($taxonomy, '/') . '[_:-]?\d+$/i';
+    $patterns = [
+        '/^term[_:-]?(\d+)$/i',
+        '/^term\s+(\d+)$/i',
+        '/^term\s*id\s*[:=]?\s*(\d+)$/i',
+        $taxonomy_pattern,
+        '/^id[_:-]?(\d+)$/i',
+    ];
+
+    foreach ($patterns as $pattern) {
+        if (preg_match($pattern, $trimmed, $matches)) {
+            return (int) $matches[1];
+        }
+    }
+
+    return null;
+}
+
+/**
+ * Tente de transformer une valeur brute en objet \WP_Term.
+ *
+ * @param mixed  $candidate Valeur récupérée via ACF ou le cache.
+ * @param string $taxonomy  Taxonomie ciblée.
+ *
+ * @return \WP_Term|null
+ */
+function chasse_resolve_term_candidate($candidate, string $taxonomy): ?\WP_Term
+{
+    $taxonomy_candidates = chasse_resolve_taxonomy_aliases($taxonomy);
+
+    $load_term_from_value = static function ($value) use ($taxonomy_candidates): ?\WP_Term {
+        if (!function_exists('get_term')) {
+            return null;
+        }
+
+        $term_id = null;
+
+        foreach ($taxonomy_candidates as $taxonomy_candidate) {
+            $term_id = chasse_extract_term_id_from_value($value, $taxonomy_candidate);
+
+            if ($term_id !== null) {
+                break;
+            }
+        }
+
+        if ($term_id === null) {
+            return null;
+        }
+
+        foreach ($taxonomy_candidates as $taxonomy_candidate) {
+            $term = get_term($term_id, $taxonomy_candidate);
+
+            if ($term instanceof \WP_Term) {
+                return $term;
+            }
+
+            if (function_exists('is_wp_error') && is_wp_error($term)) {
+                continue;
+            }
+        }
+
+        $term = get_term($term_id);
+
+        if ($term instanceof \WP_Term) {
+            $term_taxonomy = property_exists($term, 'taxonomy') ? (string) $term->taxonomy : '';
+
+            if ($term_taxonomy === '' || in_array($term_taxonomy, $taxonomy_candidates, true)) {
+                return $term;
+            }
+        }
+
+        return null;
+    };
+
+    if ($candidate instanceof \WP_Term) {
+        return $candidate;
+    }
+
+    if (is_array($candidate) && isset($candidate['term'])) {
+        $resolved = chasse_resolve_term_candidate($candidate['term'], $taxonomy);
+
+        if ($resolved instanceof \WP_Term) {
+            return $resolved;
+        }
+    }
+
+    $term_from_root_candidate = $load_term_from_value($candidate);
+    if ($term_from_root_candidate instanceof \WP_Term) {
+        return $term_from_root_candidate;
+    }
+
+    if (is_array($candidate)) {
+        $id_keys = ['term_id', 'termId', 'ID', 'id', 'value'];
+
+        foreach ($id_keys as $key) {
+            if (!isset($candidate[$key]) || !is_numeric($candidate[$key])) {
+                continue;
+            }
+
+            $term = $load_term_from_value($candidate[$key]);
+
+            if ($term instanceof \WP_Term) {
+                return $term;
+            }
+        }
+
+        $slug_keys = ['slug', 'value'];
+
+        foreach ($slug_keys as $key) {
+            if (!isset($candidate[$key]) || (!is_string($candidate[$key]) && !is_numeric($candidate[$key]))) {
+                continue;
+            }
+
+            $term = $load_term_from_value($candidate[$key]);
+
+            if ($term instanceof \WP_Term) {
+                return $term;
+            }
+
+            if (function_exists('get_term_by')) {
+                $slug = trim((string) $candidate[$key]);
+
+                if ($slug !== '') {
+                    foreach ($taxonomy_candidates as $taxonomy_candidate) {
+                        $term = get_term_by('slug', $slug, $taxonomy_candidate);
+
+                        if ($term instanceof \WP_Term) {
+                            return $term;
+                        }
+                    }
+                }
+            }
+        }
+
+        $name_keys = ['nom', 'name', 'label', 'value', 'title', 'post_title', 'display_name'];
+
+        foreach ($name_keys as $key) {
+            if (!isset($candidate[$key]) || (!is_string($candidate[$key]) && !is_numeric($candidate[$key]))) {
+                continue;
+            }
+
+            $term = $load_term_from_value($candidate[$key]);
+
+            if ($term instanceof \WP_Term) {
+                return $term;
+            }
+
+            if (function_exists('get_term_by')) {
+                $name_candidate = trim((string) $candidate[$key]);
+
+                if ($name_candidate === '') {
+                    continue;
+                }
+
+                foreach ($taxonomy_candidates as $taxonomy_candidate) {
+                    $term = get_term_by('name', $name_candidate, $taxonomy_candidate);
+
+                    if ($term instanceof \WP_Term) {
+                        return $term;
+                    }
+                }
+            }
+        }
+    }
+
+    if (is_string($candidate) && function_exists('get_term_by')) {
+        $candidate = trim($candidate);
+
+        if ($candidate !== '') {
+            $term = $load_term_from_value($candidate);
+
+            if ($term instanceof \WP_Term) {
+                return $term;
+            }
+
+            foreach ($taxonomy_candidates as $taxonomy_candidate) {
+                $term = get_term_by('slug', $candidate, $taxonomy_candidate);
+
+                if ($term instanceof \WP_Term) {
+                    return $term;
+                }
+
+                $term = get_term_by('name', $candidate, $taxonomy_candidate);
+
+                if ($term instanceof \WP_Term) {
+                    return $term;
+                }
+            }
+        }
+    }
+
+    return null;
+}
+
+/**
+ * Build a list of taxonomy aliases that may be used in the database.
+ */
+function chasse_resolve_taxonomy_aliases(string $taxonomy): array
+{
+    $candidates = [$taxonomy];
+
+    $aliases = [
+        'chasse_region' => ['chasse_regions', 'region', 'regions'],
+        'theme_chasse'  => ['chasse_theme', 'theme_chasses', 'themes_chasse'],
+    ];
+
+    if (isset($aliases[$taxonomy])) {
+        foreach ($aliases[$taxonomy] as $alias) {
+            if (!in_array($alias, $candidates, true)) {
+                $candidates[] = $alias;
+            }
+        }
+    }
+
+    return $candidates;
+}
+
+/**
+ * Vérifie si un tableau est indexé numériquement en séquence.
+ */
+function chasse_is_list(array $array): bool
+{
+    if (function_exists('array_is_list')) {
+        return array_is_list($array);
+    }
+
+    if ($array === []) {
+        return true;
+    }
+
+    return array_keys($array) === range(0, count($array) - 1);
+}
+
+/**
+ * Prépare les représentations courtes des dates d'une chasse.
+ *
+ * @param string|null $start_date Date de début brute.
+ * @param string|null $end_date   Date de fin brute.
+ * @param bool        $is_unlimited Indique si la chasse est illimitée.
+ *
+ * @return array{date_debut_court: string, date_fin_court: string}
+ */
+function chasse_preparer_dates_courtes(?string $start_date, ?string $end_date, bool $is_unlimited): array
+{
+    $start_value = $start_date !== null ? (string) $start_date : null;
+    $end_value   = $end_date !== null ? (string) $end_date : null;
+
+    $start_timestamp = false;
+    if ($start_value !== null && $start_value !== '') {
+        if (function_exists('convertir_en_timestamp')) {
+            $start_timestamp = convertir_en_timestamp($start_value);
+        } else {
+            $start_timestamp = strtotime(str_replace('/', '-', $start_value));
+        }
+    }
+
+    $end_timestamp = false;
+    if (!$is_unlimited && $end_value !== null && $end_value !== '') {
+        if (function_exists('convertir_en_timestamp')) {
+            $end_timestamp = convertir_en_timestamp($end_value);
+        } else {
+            $end_timestamp = strtotime(str_replace('/', '-', $end_value));
+        }
+    }
+
+    if (function_exists('_x')) {
+        /* translators: Short date format for hunt metadata (day/month/year). */
+        $short_date_format = _x('d/m/y', 'short date format for hunts', 'chassesautresor-com');
+    } else {
+        $short_date_format = 'd/m/y';
+    }
+
+    $non_specifiee_label = function_exists('__')
+        ? __('Non spécifiée', 'chassesautresor-com')
+        : 'Non spécifiée';
+    $illimitee_label = function_exists('__')
+        ? __('Illimitée', 'chassesautresor-com')
+        : 'Illimitée';
+
+    $start_short = $start_timestamp
+        ? wp_date($short_date_format, $start_timestamp)
+        : $non_specifiee_label;
+
+    $end_short = $is_unlimited
+        ? $illimitee_label
+        : ($end_timestamp ? wp_date($short_date_format, $end_timestamp) : $non_specifiee_label);
+
+    return [
+        'date_debut_court' => $start_short,
+        'date_fin_court'   => $end_short,
+    ];
+}
+
+function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit = 300, array $options = []): array
 {
     if (get_post_type($chasse_id) !== 'chasse') {
         return [];
     }
+
+    $options = wp_parse_args(
+        $options,
+        [
+            'badge_format' => 'text',
+        ]
+    );
 
     $titre     = get_the_title($chasse_id);
     $permalink = get_permalink($chasse_id);
@@ -1263,66 +2087,142 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
     $image_data = get_field('chasse_principale_image', $chasse_id);
     $image_id = 0;
     $image = '';
-    if (is_array($image_data) && !empty($image_data['sizes']['medium'])) {
-        $image_id = $image_data['ID'] ?? 0;
-        $image = $image_data['sizes']['medium'];
-    } elseif ($image_data) {
-        $image_id = is_array($image_data) ? ($image_data['ID'] ?? 0) : (int) $image_data;
-        $image = $image_id ? wp_get_attachment_image_url($image_id, 'medium') : '';
+    $image_width = 0;
+    $image_height = 0;
+    $image_size = 'medium_large';
+
+    if (is_array($image_data)) {
+        if (!empty($image_data['ID'])) {
+            $image_id = (int) $image_data['ID'];
+        } elseif (!empty($image_data['id'])) {
+            $image_id = (int) $image_data['id'];
+        }
+    } elseif (!empty($image_data)) {
+        $image_id = (int) $image_data;
     }
-    if (!$image) {
+
+    if (!$image_id) {
         $image_id = get_post_thumbnail_id($chasse_id);
-        $image = $image_id ? wp_get_attachment_image_url($image_id, 'medium') : '';
+    }
+
+    if ($image_id) {
+        $preferred_sizes = ['medium_large', 'large', 'medium', 'full'];
+
+        foreach ($preferred_sizes as $size_candidate) {
+            $image_src = wp_get_attachment_image_src($image_id, $size_candidate);
+
+            if (!is_array($image_src) || empty($image_src[0])) {
+                continue;
+            }
+
+            $image = $image_src[0];
+            $image_width = (int) $image_src[1];
+            $image_height = (int) $image_src[2];
+            $image_size = $size_candidate;
+
+            break;
+        }
+
+        if ($image === '') {
+            $image = wp_get_attachment_url($image_id) ?: '';
+            $image_size = 'full';
+        }
+    } elseif (is_array($image_data) && !empty($image_data['url'])) {
+        $image = (string) $image_data['url'];
+    } elseif (is_string($image_data) && $image_data !== '') {
+        $image = $image_data;
+    }
+
+    $image_ratio = '';
+    $image_ratio_padding = '';
+
+    $organisateur_id = get_organisateur_from_chasse($chasse_id);
+
+    if ($image_width > 0 && $image_height > 0) {
+        $image_ratio = $image_width . ' / ' . $image_height;
+
+        $ratio_value = $image_width / $image_height;
+        if ($ratio_value > 0) {
+            $ratio_padding_value = 100 / $ratio_value;
+            $image_ratio_padding = rtrim(rtrim(sprintf('%.6F', $ratio_padding_value), '0'), '.');
+            if ($image_ratio_padding !== '') {
+                $image_ratio_padding .= '%';
+            }
+        }
     }
 
     $champs = chasse_get_champs($chasse_id);
+    $is_demo = !empty($champs['is_demo']);
+    $demo_label = function_exists('__') ? __('Démo', 'chassesautresor-com') : 'Démo';
+    $demo_aria_label = function_exists('__')
+        ? __('Chasse de démonstration', 'chassesautresor-com')
+        : 'Chasse de démonstration';
+    $demo_title = function_exists('__')
+        ? __('Cette chasse est proposée en mode démonstration.', 'chassesautresor-com')
+        : 'Cette chasse est proposée en mode démonstration.';
+    $demo_screen = function_exists('__')
+        ? __('Chasse en mode démonstration', 'chassesautresor-com')
+        : 'Chasse en mode démonstration';
+    $demo_icon = function_exists('get_svg_icon') ? get_svg_icon('idea') : '';
+    $demo_badge = [
+        'label'       => $demo_label,
+        'aria_label'  => $demo_aria_label,
+        'icon_html'   => $demo_icon,
+        'icon_name'   => 'idea',
+        'title'       => $demo_title,
+        'screen_text' => $demo_screen,
+    ];
+    $regions = chasse_preparer_termes_affichage($chasse_id, 'chasse_region');
+    $themes = chasse_preparer_termes_affichage($chasse_id, 'theme_chasse');
+    $region_principale = !empty($regions) ? $regions[0] : null;
     $titre_recompense  = $champs['titre_recompense'];
     $valeur_recompense = $champs['valeur_recompense'];
     $cout_points       = (int) $champs['cout_points'];
     $date_debut        = $champs['date_debut'];
     $date_fin          = $champs['date_fin'];
     $illimitee         = $champs['illimitee'];
+    $date_decouverte   = $champs['date_decouverte'];
+
+    verifier_ou_recalculer_statut_chasse($chasse_id);
+    $statut            = get_field('chasse_cache_statut', $chasse_id) ?: 'revision';
+    $statut_validation = get_field('chasse_cache_statut_validation', $chasse_id);
+
+    if ($statut === 'termine' && $date_decouverte) {
+        $date_fin = $date_decouverte;
+    }
 
     $date_debut_affichage = formater_date($date_debut);
     $date_fin_affichage   = $illimitee
         ? __('Illimitée', 'chassesautresor-com')
         : ($date_fin ? formater_date($date_fin) : __('Non spécifiée', 'chassesautresor-com'));
 
+    $dates_courtes    = chasse_preparer_dates_courtes($date_debut, $date_fin, (bool) $illimitee);
+    $date_debut_court = $dates_courtes['date_debut_court'];
+    $date_fin_court   = $dates_courtes['date_fin_court'];
+
     $nb_joueurs       = compter_joueurs_engages_chasse($chasse_id);
     $nb_joueurs_label = formater_nombre_joueurs($nb_joueurs);
+    $badge_infos = chasse_preparer_badge_statut($statut, $statut_validation);
+    $badge_format = ($options['badge_format'] === 'icon' && $badge_infos['icon_html']) ? 'icon' : 'text';
+    $badge_class = $badge_infos['base_class'];
+    $badge_tooltip = $badge_infos['label'];
+    $badge_requires_interaction = ($badge_format === 'icon' && $badge_tooltip !== '');
 
-    verifier_ou_recalculer_statut_chasse($chasse_id);
-    $statut            = get_field('chasse_cache_statut', $chasse_id) ?: 'revision';
-    $statut_validation = get_field('chasse_cache_statut_validation', $chasse_id);
-    $badge_class       = 'statut-' . $statut;
-    $statut_label      = '';
-
-    if ($statut === 'revision') {
-        if ($statut_validation === 'creation') {
-            $statut_label = __('création', 'chassesautresor-com');
-        } elseif ($statut_validation === 'correction') {
-            $statut_label = __('correction', 'chassesautresor-com');
-        } elseif ($statut_validation === 'en_attente') {
-            $statut_label = __('en attente', 'chassesautresor-com');
-        } else {
-            $statut_label = __('révision', 'chassesautresor-com');
-        }
-    } elseif ($statut === 'payante' || $statut === 'en_cours') {
-        $statut_label = __('en cours', 'chassesautresor-com');
-        $badge_class   = 'statut-en_cours';
-    } elseif ($statut === 'a_venir') {
-        $statut_label = __('à venir', 'chassesautresor-com');
-    } elseif ($statut === 'termine') {
-        $statut_label = __('terminée', 'chassesautresor-com');
-    } else {
-        $statut_label = __($statut, 'chassesautresor-com');
+    if ($badge_format === 'icon') {
+        $badge_class .= ' badge-statut--format-icon';
     }
+
+    $badge_content = $badge_format === 'icon'
+        ? '<span class="badge-statut__icon" aria-hidden="true">' . $badge_infos['icon_html'] . '</span>'
+            . '<span class="screen-reader-text">' . esc_html($badge_infos['label']) . '</span>'
+        : esc_html($badge_infos['label']);
 
     $enigmes_associees = recuperer_enigmes_associees($chasse_id);
     $total_enigmes     = count($enigmes_associees);
 
     $user_id = get_current_user_id();
-    $cta_data = generer_cta_chasse($chasse_id, $user_id);
+    $progression = chasse_calculer_progression_utilisateur($chasse_id, $user_id);
+    $cta_data    = generer_cta_chasse($chasse_id, $user_id);
 
     $liens = get_field('chasse_principale_liens', $chasse_id);
     $liens = is_array($liens) ? $liens : [];
@@ -1355,10 +2255,14 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
 
     $mode_validation = '';
     $modes          = [];
+    $enigmes_validables = [];
     foreach ($enigmes_associees as $eid) {
         $mode = get_field('enigme_mode_validation', $eid);
         if ($mode) {
             $modes[$mode] = true;
+            if ($mode !== 'aucune') {
+                $enigmes_validables[] = (int) $eid;
+            }
         }
     }
     if (isset($modes['manuelle'])) {
@@ -1369,12 +2273,27 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
         $mode_validation = 'automatique';
     }
 
+    $resolues_validables = 0;
+    if (!empty($enigmes_validables) && !empty($progression['resolvables']) && $progression['resolvables'] > 0 && $user_id) {
+        global $wpdb;
+        $table        = $wpdb->prefix . 'enigme_statuts_utilisateur';
+        $placeholders = implode(',', array_fill(0, count($enigmes_validables), '%d'));
+        $sql          = "SELECT COUNT(DISTINCT enigme_id) FROM {$table} WHERE user_id = %d AND statut IN ('resolue','terminee','terminée') AND enigme_id IN ($placeholders)";
+        $params       = array_merge([$user_id], $enigmes_validables);
+        $resolues_validables = (int) $wpdb->get_var($wpdb->prepare($sql, $params));
+    }
+
     $lot_html = '';
     if (!empty($titre_recompense) && (float) $valeur_recompense > 0) {
         $footer_icones[] = 'trophy';
-        $lot_html = '<div class="chasse-lot" aria-live="polite">'
-            . '<strong>Récompense :</strong> '
-            . esc_html($titre_recompense) . ' — ' . esc_html($valeur_recompense) . ' €'
+        $lot_html       = '<div class="chasse-lot" aria-live="polite">'
+            . '<span class="chasse-lot__icon">' . get_svg_icon('trophy') . '</span>'
+            . '<span class="screen-reader-text">' . esc_html__('Récompense :', 'chassesautresor-com') . '</span>'
+            . '<span class="badge-recompense avec-recompense">'
+            . esc_html(number_format_i18n(round((float) $valeur_recompense), 0))
+            . '<span class="badge-recompense__devise prix-devise">€</span>'
+            . '</span>'
+            . '<span class="chasse-lot__title">' . esc_html($titre_recompense) . '</span>'
             . '</div>';
     }
 
@@ -1410,28 +2329,55 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
     }
 
 
-    return [
+    $infos = [
         'titre'             => $titre,
         'permalink'         => $permalink,
         'image_id'          => $image_id,
         'image'             => $image,
+        'image_ratio'       => $image_ratio,
+        'image_ratio_padding' => $image_ratio_padding,
+        'image_size'        => $image_size,
         'total_enigmes'     => $total_enigmes,
+        'nb_joueurs'        => $nb_joueurs,
         'nb_joueurs_label'  => $nb_joueurs_label,
         'cout_points'       => $cout_points,
         'mode_validation'   => $mode_validation,
         'mode_fin'          => $champs['mode_fin'],
         'date_debut'        => $date_debut_affichage,
         'date_fin'          => $date_fin_affichage,
-        'badge_class'       => $badge_class,
-        'statut_label'      => $statut_label,
-        'classe_statut'     => $badge_class,
+        'date_debut_court'  => $date_debut_court,
+        'date_fin_court'    => $date_fin_court,
+        'badge_class'       => trim($badge_class),
+        'statut_label'      => $badge_infos['label'],
+        'statut_icon'       => $badge_infos['icon_html'],
+        'statut_icon_name'  => $badge_infos['icon_name'],
+        'badge_format'      => $badge_format,
+        'badge_content'     => $badge_content,
+        'badge_tooltip'     => $badge_tooltip,
+        'badge_requires_interaction' => $badge_requires_interaction,
+        'classe_statut'     => $badge_infos['base_class'],
         'extrait_html'      => $extrait_html,
         'lot_html'          => $lot_html,
         'cta_html'          => $cta_html,
         'cta_message'       => $cta_message,
         'cta_type'         => $cta_data['type'] ?? '',
+        'cta_is_demo'      => !empty($cta_data['is_demo']),
         'footer_html'       => $footer_html,
+        'regions'           => $regions,
+        'themes'            => $themes,
+        'region_principale' => $region_principale,
+        'organisateur_id'   => $organisateur_id,
+        'is_demo'           => $is_demo,
+        'demo_badge'        => $is_demo ? $demo_badge : null,
     ];
+
+    if (!empty($progression['resolvables'])) {
+        $resolvables_count = (int) $progression['resolvables'];
+        $infos['progression'] = $progression;
+        $infos['resolues_validables'] = min($resolues_validables, $resolvables_count);
+    }
+
+    return $infos;
 }
 
 /**
@@ -1450,12 +2396,22 @@ function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): 
     $user_id  = $user_id ?? get_current_user_id();
     $memo_key = $chasse_id . '-' . $user_id;
 
-    if (isset($memo[$memo_key])) {
-        return $memo[$memo_key];
-    }
-
     if (get_post_type($chasse_id) !== 'chasse') {
         return [];
+    }
+
+    $current_demo_flag = ca_demo_is_demo_hunt($chasse_id);
+
+    if (isset($memo[$memo_key])) {
+        $memo_demo_flag = isset($memo[$memo_key]['is_demo'])
+            ? (bool) $memo[$memo_key]['is_demo']
+            : (bool) ($memo[$memo_key]['champs']['is_demo'] ?? false);
+
+        if ($memo_demo_flag === $current_demo_flag) {
+            return $memo[$memo_key];
+        }
+
+        unset($memo[$memo_key]);
     }
 
     $cache_key = chasse_infos_affichage_cache_key($chasse_id);
@@ -1466,11 +2422,70 @@ function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): 
     }
 
     if (isset($cache[$user_id])) {
-        $memo[$memo_key] = $cache[$user_id];
-        return $memo[$memo_key];
+        $cache_demo_flag = isset($cache[$user_id]['is_demo'])
+            ? (bool) $cache[$user_id]['is_demo']
+            : (bool) ($cache[$user_id]['champs']['is_demo'] ?? false);
+
+        if ($cache_demo_flag === $current_demo_flag) {
+            $memo[$memo_key] = $cache[$user_id];
+            return $memo[$memo_key];
+        }
+
+        chasse_clear_infos_affichage_cache($chasse_id);
+        $cache = [];
     }
 
     $champs = chasse_get_champs($chasse_id);
+    $is_demo = !empty($champs['is_demo']);
+    $demo_label = function_exists('__') ? __('Démo', 'chassesautresor-com') : 'Démo';
+    $demo_aria_label = function_exists('__')
+        ? __('Chasse de démonstration', 'chassesautresor-com')
+        : 'Chasse de démonstration';
+    $demo_title = function_exists('__')
+        ? __('Cette chasse est proposée en mode démonstration.', 'chassesautresor-com')
+        : 'Cette chasse est proposée en mode démonstration.';
+    $demo_screen = function_exists('__')
+        ? __('Chasse en mode démonstration', 'chassesautresor-com')
+        : 'Chasse en mode démonstration';
+    $demo_icon = function_exists('get_svg_icon') ? get_svg_icon('idea') : '';
+    $demo_badge = [
+        'label'       => $demo_label,
+        'aria_label'  => $demo_aria_label,
+        'icon_html'   => $demo_icon,
+        'icon_name'   => 'idea',
+        'title'       => $demo_title,
+        'screen_text' => $demo_screen,
+    ];
+    $regions = chasse_preparer_termes_affichage($chasse_id, 'chasse_region');
+    $themes = chasse_preparer_termes_affichage($chasse_id, 'theme_chasse');
+    $region_principale = !empty($regions) ? $regions[0] : null;
+
+    $raw_start_date   = $champs['date_debut'] ?? null;
+    $raw_end_date     = $champs['date_fin'] ?? null;
+    $raw_discovery    = $champs['date_decouverte'] ?? null;
+    $is_unlimited     = !empty($champs['illimitee']);
+    $status_value     = get_field('chasse_cache_statut', $chasse_id) ?: 'revision';
+    $status_validation = get_field('chasse_cache_statut_validation', $chasse_id);
+
+    if ($status_value === 'termine' && !empty($raw_discovery)) {
+        $raw_end_date = $raw_discovery;
+    }
+
+    $start_date_value = null;
+    if (is_string($raw_start_date) && $raw_start_date !== '') {
+        $start_date_value = $raw_start_date;
+    } elseif (is_numeric($raw_start_date)) {
+        $start_date_value = (string) $raw_start_date;
+    }
+
+    $end_date_value = null;
+    if (is_string($raw_end_date) && $raw_end_date !== '') {
+        $end_date_value = $raw_end_date;
+    } elseif (is_numeric($raw_end_date)) {
+        $end_date_value = (string) $raw_end_date;
+    }
+
+    $dates_courtes = chasse_preparer_dates_courtes($start_date_value, $end_date_value, (bool) $is_unlimited);
 
     $description   = get_field('chasse_principale_description', $chasse_id);
     $texte_complet = wp_strip_all_tags($description);
@@ -1496,6 +2511,7 @@ function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): 
     }
 
     $progression = chasse_calculer_progression_utilisateur($chasse_id, $user_id);
+    $cta_data    = generer_cta_chasse($chasse_id, $user_id);
 
     $nb_joueurs = compter_joueurs_engages_chasse($chasse_id);
     $top_nb      = 0;
@@ -1527,15 +2543,24 @@ function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): 
         'enigmes_associees'   => $enigmes,
         'total_enigmes'       => count($enigmes),
         'progression'         => $progression,
-        'cta_data'            => generer_cta_chasse($chasse_id, $user_id),
+        'cta_data'            => $cta_data,
+        'cta_type'            => $cta_data['type'] ?? '',
+        'cta_is_demo'         => !empty($cta_data['is_demo']),
         'nb_joueurs'          => $nb_joueurs,
         'nb_enigmes_payantes' => $nb_enigmes_payantes,
         'top_avances'         => [
             'nb'      => $top_nb,
             'enigmes' => $top_enigmes,
         ],
-        'statut'            => get_field('chasse_cache_statut', $chasse_id) ?: 'revision',
-        'statut_validation' => get_field('chasse_cache_statut_validation', $chasse_id),
+        'statut'            => $status_value,
+        'statut_validation' => $status_validation,
+        'regions'           => $regions,
+        'themes'            => $themes,
+        'region_principale' => $region_principale,
+        'date_debut_court'  => $dates_courtes['date_debut_court'],
+        'date_fin_court'    => $dates_courtes['date_fin_court'],
+        'is_demo'           => $is_demo,
+        'demo_badge'        => $is_demo ? $demo_badge : null,
     ];
 
     $cache[$user_id] = $memo[$memo_key];
@@ -1551,11 +2576,60 @@ function chasse_infos_affichage_cache_key(int $chasse_id): string
     return "chasse_infos_affichage_{$chasse_id}";
 }
 
+function chasse_clear_infos_affichage_cache_for_organisateur(int $organisateur_id): void
+{
+    if ($organisateur_id <= 0) {
+        return;
+    }
+
+    if (!function_exists('get_chasses_de_organisateur')) {
+        return;
+    }
+
+    $query = get_chasses_de_organisateur($organisateur_id);
+    $raw_ids = [];
+
+    if (is_object($query) && isset($query->posts) && is_array($query->posts)) {
+        $raw_ids = $query->posts;
+    } elseif (is_array($query)) {
+        $raw_ids = $query;
+    }
+
+    foreach ($raw_ids as $maybe_id) {
+        $chasse_id = is_object($maybe_id)
+            ? (int) ($maybe_id->ID ?? 0)
+            : (int) $maybe_id;
+
+        if ($chasse_id > 0) {
+            chasse_clear_infos_affichage_cache($chasse_id);
+        }
+    }
+}
+
 function chasse_clear_infos_affichage_cache(int $chasse_id): void
 {
     $key = chasse_infos_affichage_cache_key($chasse_id);
     wp_cache_delete($key, 'chasse_affichage');
     delete_transient($key);
+}
+
+function chasse_invalidate_infos_affichage_terms(
+    int $object_id,
+    $terms,
+    $tt_ids,
+    string $taxonomy,
+    $append,
+    $old_tt_ids
+): void {
+    if (!in_array($taxonomy, ['chasse_region', 'theme_chasse'], true)) {
+        return;
+    }
+
+    if (get_post_type($object_id) !== 'chasse') {
+        return;
+    }
+
+    chasse_clear_infos_affichage_cache((int) $object_id);
 }
 
 function chasse_invalidate_infos_affichage_cache(int $post_id, \WP_Post $post, bool $update): void
@@ -1571,6 +2645,8 @@ function chasse_invalidate_infos_affichage_cache(int $post_id, \WP_Post $post, b
         if ($chasse_id) {
             chasse_clear_infos_affichage_cache((int) $chasse_id);
         }
+    } elseif ($post->post_type === 'organisateur') {
+        chasse_clear_infos_affichage_cache_for_organisateur($post_id);
     }
 }
 
@@ -1581,10 +2657,25 @@ function chasse_acf_clear_infos_affichage_cache($post_id): void
     }
 
     $post_id = (int) $post_id;
-    if (get_post_type($post_id) === 'chasse') {
+    $type = get_post_type($post_id);
+
+    if ($type === 'chasse') {
         chasse_clear_infos_affichage_cache($post_id);
+    } elseif ($type === 'organisateur') {
+        chasse_clear_infos_affichage_cache_for_organisateur($post_id);
     }
 }
 add_action('acf/save_post', 'chasse_acf_clear_infos_affichage_cache', 20);
 add_action('save_post', 'chasse_invalidate_infos_affichage_cache', 10, 3);
 add_action('chasse_engagement_created', 'chasse_clear_infos_affichage_cache');
+add_action('set_object_terms', 'chasse_invalidate_infos_affichage_terms', 10, 6);
+
+function chasse_acf_handle_utilisateurs_associes($value, $post_id)
+{
+    if (is_numeric($post_id) && get_post_type((int) $post_id) === 'organisateur') {
+        chasse_clear_infos_affichage_cache_for_organisateur((int) $post_id);
+    }
+
+    return $value;
+}
+add_filter('acf/update_value/name=utilisateurs_associes', 'chasse_acf_handle_utilisateurs_associes', 20, 2);

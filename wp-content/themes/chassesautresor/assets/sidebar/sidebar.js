@@ -5,7 +5,8 @@
     const bp = getComputedStyle(document.documentElement)
       .getPropertyValue('--breakpoint-desktop')
       .trim() || '1280px';
-    if (!window.matchMedia(`(min-width: ${bp})`).matches) return;
+    const mq = window.matchMedia(`(min-width: ${bp})`);
+    if (!mq.matches) return;
     const __ = window.wp?.i18n?.__ || (s => s);
     const opener = document.createElement('button');
     opener.className = 'menu-lateral__reveal';
@@ -13,6 +14,18 @@
     opener.innerHTML = '<i class="fa-solid fa-chevron-right" aria-hidden="true"></i>' +
       '<span class="screen-reader-text">' + __('Afficher le panneau', 'chassesautresor-com') + '</span>';
     document.body.appendChild(opener);
+
+    function handleViewportChange(e) {
+      if (!e.matches) {
+        opener.remove();
+        aside.classList.remove('is-hidden');
+      }
+    }
+    if (mq.addEventListener) {
+      mq.addEventListener('change', handleViewportChange);
+    } else if (mq.addListener) {
+      mq.addListener(handleViewportChange);
+    }
     const closer = aside.querySelector('.menu-lateral__close');
     let timer = null;
     const HIDE_DELAY = 3500;

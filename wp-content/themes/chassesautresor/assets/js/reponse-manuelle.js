@@ -14,7 +14,7 @@ function initFormulaireManuel() {
   const sprintf = window.wp?.i18n?.sprintf;
   const txtSuccess = i18n.success || 'Tentative bien reçue.';
   const txtProcessing = i18n.processing;
-  const accountUrl = i18n.accountUrl || '/mon-compte/?section=chasses';
+  const accountUrl = i18n.accountUrl || '/mon-compte/';
 
   form.addEventListener('submit', e => {
     e.preventDefault();

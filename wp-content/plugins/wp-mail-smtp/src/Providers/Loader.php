@@ -2,8 +2,8 @@
 
 namespace WPMailSMTP\Providers;
 
+use WPMailSMTP\Admin\DebugEvents\DebugEvents;
 use WPMailSMTP\ConnectionInterface;
-use WPMailSMTP\Debug;
 use WPMailSMTP\MailCatcherInterface;
 use WPMailSMTP\Options;
 
@@ -43,6 +43,7 @@ class Loader {
 		'outlook'      => 'WPMailSMTP\Providers\Outlook\\',
 		'pepipostapi'  => 'WPMailSMTP\Providers\PepipostAPI\\',
 		'postmark'     => 'WPMailSMTP\Providers\Postmark\\',
+		'resend'       => 'WPMailSMTP\Providers\Resend\\',
 		'sendgrid'     => 'WPMailSMTP\Providers\Sendgrid\\',
 		'smtp2go'      => 'WPMailSMTP\Providers\SMTP2GO\\',
 		'sparkpost'    => 'WPMailSMTP\Providers\SparkPost\\',
@@ -203,7 +204,7 @@ class Loader {
 				$entity = new $class( ...$args );
 			}
 		} catch ( \Exception $e ) {
-			Debug::set( "There was a problem while retrieving {$request} for {$provider}: {$e->getMessage()}" );
+			DebugEvents::add( "There was a problem while retrieving {$request} for {$provider}: {$e->getMessage()}" );
 			$entity = null;
 		}
 

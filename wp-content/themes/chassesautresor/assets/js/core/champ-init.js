@@ -277,10 +277,17 @@ function initChampDeclencheur(bouton) {
     if (bloc.classList.contains('champ-img') && typeof initChampImage === 'function') {
       initChampImage(bloc);
     }
-    // ✅ Cas particulier : clic sur le stylo image → déclencher manuellement l’ouverture
-    if (bloc.classList.contains('champ-img') && typeof bloc.__ouvrirMedia === 'function') {
-      bloc.__ouvrirMedia();
-      return; // rien d’autre à faire
+    // ✅ Cas particulier : clic sur le stylo image
+    if (
+      bloc.classList.contains('champ-img') &&
+      typeof bloc.__ouvrirMedia === 'function' &&
+      !bouton.classList.contains('ouvrir-panneau-images')
+    ) {
+      const estVide = bloc.classList.contains('champ-vide');
+      if (estVide) {
+        bloc.__ouvrirMedia();
+        return; // rien d’autre à faire si aucune illustration
+      }
     }
 
 
@@ -494,6 +501,17 @@ function initZoneClicEdition(bouton) {
   const zone = bouton.closest('li') || bouton.closest('[data-champ]');
   if (!zone) return;
 
+  const estZoneDesactive =
+    zone.classList.contains('champ-desactive') ||
+    zone.dataset.noEdit === '1' ||
+    zone.dataset.noEdit === 'true' ||
+    bouton.disabled ||
+    bouton.getAttribute('aria-disabled') === 'true';
+
+  if (estZoneDesactive) {
+    zone.style.cursor = 'default';
+    return;
+  }
 
   zone.style.cursor = 'pointer';
 

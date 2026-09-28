@@ -374,10 +374,14 @@ class MyAccountMessagesTest extends TestCase
         $this->assertStringContainsString('demande de conversion', $output);
     }
 
-    public function test_admin_conversion_request_link_points_to_points_tab(): void
+    public function test_admin_conversion_request_message_has_no_points_link(): void
     {
         $output = myaccount_get_important_messages();
         $this->assertStringContainsString(
+            'Des demandes de conversion sont en attente de traitement.',
+            $output
+        );
+        $this->assertStringNotContainsString(
             'https://example.com/mon-compte/?section=points',
             $output
         );

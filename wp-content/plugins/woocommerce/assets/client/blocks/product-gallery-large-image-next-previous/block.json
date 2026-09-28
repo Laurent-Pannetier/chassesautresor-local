@@ -6,7 +6,7 @@
 	"description": "Display next and previous buttons.",
 	"category": "woocommerce",
 	"keywords": [ "WooCommerce" ],
-	"usesContext": [ "postId" ],
+	"usesContext": [ "iapi/provider" ],
 	"textdomain": "woocommerce",
 	"supports": {
 		"interactivity": true,
@@ -34,12 +34,15 @@
 		"__experimentalBorder": {
 			"radius": true,
 			"__experimentalSkipSerialization": true
-		},
-		"__experimentalSelector": ".wc-block-product-gallery-large-image-next-previous__button"
+		}
+	},
+	"selectors": {
+		"root": ".wp-block-woocommerce-product-gallery-large-image-next-previous .wc-block-next-previous-buttons__button"
 	},
 	"ancestor": [
 		"woocommerce/product-gallery-large-image",
 		"woocommerce/product-collection"
 	],
+	"style": "file:../woocommerce/product-gallery-large-image-next-previous-style.css",
 	"editorStyle": "file:../woocommerce/product-gallery-large-image-next-previous-editor.css"
 }

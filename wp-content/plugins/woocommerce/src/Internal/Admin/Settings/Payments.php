@@ -3,6 +3,7 @@ declare( strict_types=1 );
 
 namespace Automattic\WooCommerce\Internal\Admin\Settings;
 
+use Automattic\WooCommerce\Internal\Admin\Settings\PaymentsProviders\WooPayments\WooPaymentsService;
 use Automattic\WooCommerce\Internal\Admin\Suggestions\PaymentsExtensionSuggestions as ExtensionSuggestions;
 use Automattic\WooCommerce\Internal\Logging\SafeGlobalFunctionProxy;
 use Exception;
@@ -27,6 +28,9 @@ class Payments {
 	const FROM_PAYMENTS_TASK            = 'WCADMIN_PAYMENT_TASK';
 	const FROM_ADDITIONAL_PAYMENTS_TASK = 'WCADMIN_ADDITIONAL_PAYMENT_TASK';
 	const FROM_PROVIDER_ONBOARDING      = 'PROVIDER_ONBOARDING';
+
+	private const PROVIDERS_REQUEST_CACHE_GROUP = PaymentsProviders::PROVIDER_LISTS_REQUEST_CACHE_GROUP;
+	private const PROVIDERS_REQUEST_CACHE_KEY   = PaymentsProviders::PROVIDER_LISTS_REQUEST_CACHE_KEY;
 
 	/**
 	 * The payment providers service.
@@ -53,6 +57,8 @@ class Payments {
 	final public function init( PaymentsProviders $payment_providers, ExtensionSuggestions $payment_extension_suggestions ): void {
 		$this->providers             = $payment_providers;
 		$this->extension_suggestions = $payment_extension_suggestions;
+
+		wp_cache_add_non_persistent_groups( array( self::PROVIDERS_REQUEST_CACHE_GROUP ) );
 	}
 
 	/**
@@ -60,27 +66,40 @@ class Payments {
 	 *
 	 * @param string $location    The location for which the providers are being determined.
 	 *                            This is an ISO 3166-1 alpha-2 country code.
-	 * @param bool   $for_display Whether the payment providers list is intended for display purposes or
+	 * @param bool   $for_display Optional. Whether the payment providers list is intended for display purposes or
 	 *                            it is meant to be used for internal business logic.
 	 *                            Primarily, this means that when it is not for display, we will use the raw
 	 *                            payment gateways list (all the registered gateways), not just the ones that
 	 *                            should be shown to the user on the Payments Settings page.
 	 *                            This complication is for backward compatibility as it relates to legacy settings hooks
 	 *                            being fired or not.
+	 * @param bool   $remove_shells Optional. Whether to remove the payment providers shells from the list.
+	 *                              If the $for_display is true, this will be ignored since the display logic will
+	 *                              handle the shells itself.
 	 *
 	 * @return array The payment providers details list.
 	 * @throws Exception If there are malformed or invalid suggestions.
 	 */
-	public function get_payment_providers( string $location, bool $for_display = true ): array {
-		$payment_gateways = $this->providers->get_payment_gateways( $for_display, $location );
-		$suggestions      = array();
+	public function get_payment_providers( string $location, bool $for_display = true, bool $remove_shells = false ): array {
+		$can_install_plugins   = current_user_can( 'install_plugins' );
+		$cache_key             = get_current_user_id() . '__' . ( $can_install_plugins ? '1' : '0' ) . '__' . strtoupper( $location ) . '__' . ( $for_display ? '1' : '0' ) . ( $remove_shells ? '1' : '0' );
+		$cached_provider_lists = wp_cache_get( self::PROVIDERS_REQUEST_CACHE_KEY, self::PROVIDERS_REQUEST_CACHE_GROUP );
+		if ( is_array( $cached_provider_lists ) && isset( $cached_provider_lists[ $cache_key ] ) && is_array( $cached_provider_lists[ $cache_key ] ) ) {
+			return $cached_provider_lists[ $cache_key ];
+		}
+
+		$payment_gateways = $this->providers->get_payment_gateways( $for_display );
+		if ( ! $for_display && $remove_shells ) {
+			$payment_gateways = $this->providers->remove_shell_payment_gateways( $payment_gateways, $location );
+		}
 
 		$providers_order_map = $this->providers->get_order_map();
 
 		$payment_providers = array();
 
 		// Only include suggestions if the requesting user can install plugins.
-		if ( current_user_can( 'install_plugins' ) ) {
+		$suggestions = array();
+		if ( $can_install_plugins ) {
 			$suggestions = $this->providers->get_extension_suggestions( $location, self::SUGGESTIONS_CONTEXT );
 		}
 		// If we have preferred suggestions, add them to the providers list.
@@ -92,7 +111,15 @@ class Payments {
 					return $a['_priority'] <=> $b['_priority'];
 				}
 			);
+
+			// By default, we will add the preferred suggestions at the top of the list.
 			$last_preferred_order = -1;
+			// If WooPayments is already present, we add the preferred suggestions after it.
+			// This way we ensure default installed WooPayments is at the same place as its suggestion would be.
+			if ( isset( $providers_order_map[ WooPaymentsService::GATEWAY_ID ] ) ) {
+				$last_preferred_order = $providers_order_map[ WooPaymentsService::GATEWAY_ID ];
+			}
+
 			foreach ( $suggestions['preferred'] as $suggestion ) {
 				$suggestion_order_map_id = $this->providers->get_suggestion_order_map_id( $suggestion['id'] );
 				// Determine the suggestion's order value.
@@ -100,13 +127,11 @@ class Payments {
 				// PSP first, APM after PSP, offline PSP after PSP and APM.
 				if ( ! isset( $providers_order_map[ $suggestion_order_map_id ] ) ) {
 					$providers_order_map = Utils::order_map_add_at_order( $providers_order_map, $suggestion_order_map_id, $last_preferred_order + 1 );
-					if ( $last_preferred_order < $providers_order_map[ $suggestion_order_map_id ] ) {
-						// If the last preferred order is less than the current one, we need to update it.
-						$last_preferred_order = $providers_order_map[ $suggestion_order_map_id ];
-					}
-				} elseif ( $last_preferred_order < $providers_order_map[ $suggestion_order_map_id ] ) {
-					// Save the preferred provider's order to know where we should be inserting next.
-					// But only if the last preferred order is less than the current one.
+				}
+
+				// Save the preferred provider's order to know where we should be inserting next.
+				// But only if the last preferred order is less than the current one.
+				if ( $last_preferred_order < $providers_order_map[ $suggestion_order_map_id ] ) {
 					$last_preferred_order = $providers_order_map[ $suggestion_order_map_id ];
 				}
 
@@ -123,9 +148,10 @@ class Payments {
 
 		foreach ( $payment_gateways as $payment_gateway ) {
 			// Determine the gateway's order value.
-			// If we don't have an order for it, add it to the end.
+			// If we don't have an order for it, place it above offline PMs if the offline group
+			// is still at the bottom (default ordering). Otherwise, add to the end.
 			if ( ! isset( $providers_order_map[ $payment_gateway->id ] ) ) {
-				$providers_order_map = Utils::order_map_add_at_order( $providers_order_map, $payment_gateway->id, count( $payment_providers ) );
+				$providers_order_map = $this->providers->order_map_add_gateway( $providers_order_map, $payment_gateway->id );
 			}
 
 			$payment_providers[] = $this->providers->get_payment_gateway_details(
@@ -189,6 +215,12 @@ class Payments {
 		if ( $for_display ) {
 			$this->process_payment_provider_states( $payment_providers );
 		}
+
+		if ( ! is_array( $cached_provider_lists ) ) {
+			$cached_provider_lists = array();
+		}
+		$cached_provider_lists[ $cache_key ] = $payment_providers;
+		wp_cache_set( self::PROVIDERS_REQUEST_CACHE_KEY, $cached_provider_lists, self::PROVIDERS_REQUEST_CACHE_GROUP );
 
 		return $payment_providers;
 	}
@@ -273,6 +305,9 @@ class Payments {
 		$result = $this->providers->update_payment_providers_order_map( $order_map );
 
 		if ( $result ) {
+			// The order map influences the providers list, so clear the cached data.
+			$this->clear_cache();
+
 			// Record an event that the payment providers order map was updated.
 			$this->record_event(
 				'payment_providers_order_map_updated',
@@ -299,6 +334,9 @@ class Payments {
 		$result = $this->providers->attach_extension_suggestion( $id );
 
 		if ( $result ) {
+			// The attachment influences the providers list, so clear the cached data.
+			$this->clear_cache();
+
 			// Record an event that the suggestion was attached.
 			$this->record_event(
 				'extension_suggestion_attached',
@@ -323,6 +361,9 @@ class Payments {
 		$result = $this->providers->hide_extension_suggestion( $id );
 
 		if ( $result ) {
+			// Hidden suggestions are excluded from the providers list, so clear the cached data.
+			$this->clear_cache();
+
 			// Record an event that the suggestion was hidden.
 			$this->record_event(
 				'extension_suggestion_hidden',
@@ -351,6 +392,11 @@ class Payments {
 	public function dismiss_extension_suggestion_incentive( string $suggestion_id, string $incentive_id, string $context = 'all', bool $do_not_track = false ): bool {
 		$result = $this->extension_suggestions->dismiss_incentive( $incentive_id, $suggestion_id, $context );
 
+		if ( $result ) {
+			// Incentives are embedded in the providers list details, so clear the cached data.
+			$this->clear_cache();
+		}
+
 		if ( ! $do_not_track && $result ) {
 			// Record an event that the incentive was dismissed.
 			$this->record_event(
@@ -364,6 +410,22 @@ class Payments {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Clear cached payment provider data.
+	 *
+	 * Call after changing provider ordering, suggestions, incentives, gateway registration,
+	 * settings, or account state during a request. Also useful for testing purposes.
+	 *
+	 * @since 11.1.0
+	 *
+	 * @internal
+	 * @return void
+	 */
+	public function clear_cache(): void {
+		wp_cache_delete( self::PROVIDERS_REQUEST_CACHE_KEY, self::PROVIDERS_REQUEST_CACHE_GROUP );
+		$this->providers->clear_cache();
 	}
 
 	/**

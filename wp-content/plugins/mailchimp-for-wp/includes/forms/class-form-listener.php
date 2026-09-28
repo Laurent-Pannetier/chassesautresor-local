@@ -1,5 +1,8 @@
 <?php
 
+defined('ABSPATH') || exit;
+
+
 /**
  * Class MC4WP_Form_Listener
  *
@@ -15,31 +18,27 @@ class MC4WP_Form_Listener
 
     public function add_hooks()
     {
-        add_action('init', [ $this, 'listen' ]);
+        add_action('init', [$this, 'action_init'], 10, 0);
     }
 
-    /**
-     * Listen for submitted forms
-     * @return bool
-     */
-    public function listen()
+    public function action_init()
     {
-        if (empty($_POST['_mc4wp_form_id'])) {
-            return false;
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- forms are for logged-out visitors, explicitly not using a nonce here
+        $form_data = $_POST;
+        if (empty($form_data['_mc4wp_form_id'])) {
+            return;
         }
 
         // get form instance
         try {
-            $form_id = (int) $_POST['_mc4wp_form_id'];
+            $form_id = (int) $form_data['_mc4wp_form_id'];
             $form    = mc4wp_get_form($form_id);
         } catch (Exception $e) {
-            return false;
+            return;
         }
 
         // sanitize request data
-        $request_data = $_POST;
-        $request_data = mc4wp_sanitize_deep($request_data);
-        $request_data = stripslashes_deep($request_data);
+        $request_data = mc4wp_sanitize_deep($form_data);
 
         // bind request to form & validate
         $form->handle_request($request_data);
@@ -68,7 +67,6 @@ class MC4WP_Form_Listener
         }
 
         $this->respond($form);
-        return true;
     }
 
     /**
@@ -76,7 +74,7 @@ class MC4WP_Form_Listener
      *
      * @param MC4WP_Form $form
      */
-    public function process_subscribe_form(MC4WP_Form $form)
+    public function process_subscribe_form(MC4WP_Form $form): void
     {
         $result     = false;
         $mailchimp  = new MC4WP_MailChimp();
@@ -84,7 +82,7 @@ class MC4WP_Form_Listener
         $data       = $form->get_data();
         $ip_address = mc4wp_get_request_ip_address();
 
-        /** @var MC4WP_MailChimp_Subscriber $subscriber */
+        /** @var null|MC4WP_MailChimp_Subscriber $subscriber */
         $subscriber = null;
 
         // create a map of all lists with list-specific data
@@ -204,40 +202,18 @@ class MC4WP_Form_Listener
     /**
      * @param MC4WP_Form $form
      */
-    public function process_unsubscribe_form(MC4WP_Form $form)
+    public function process_unsubscribe_form(MC4WP_Form $form): void
     {
-        $mailchimp = new MC4WP_MailChimp();
-        $log       = $this->get_log();
-        $result    = null;
-        $data      = $form->get_data();
+        $form->add_error('unauthorized');
+        $this->get_log()->warning(
+            sprintf('Form %d > Unsubscribe forms used but this feature is no longer supported because of security implications', $form->ID)
+        );
+        _deprecated_function('MC4WP_Form_Listener::process_unsubscribe_form', '4.11.2', 'Unsubscribe forms are no longer supported');
 
-        // unsubscribe from each list
-        foreach ($form->get_lists() as $list_id) {
-            $result = $mailchimp->list_unsubscribe($list_id, $data['EMAIL']);
-        }
-
-        if (! $result) {
-            $form->add_notice($form->messages['error'], 'error');
-            $log->error(sprintf('Form %d > Mailchimp API error: %s', $form->ID, $mailchimp->get_error_message()));
-
-            // bail
-            return;
-        }
-
-        // Success! Unsubscribed.
-        $form->last_event = 'unsubscribed';
-        $form->add_notice($form->messages['unsubscribed'], 'notice');
-        $log->info(sprintf('Form %d > Successfully unsubscribed %s', $form->ID, $data['EMAIL']));
-
-        /**
-         * Fires right after a form was used to unsubscribe.
-         *
-         * @since 3.0
-         *
-         * @param MC4WP_Form $form Instance of the submitted form.
-         * @param string $email
-         */
-        do_action('mc4wp_form_unsubscribed', $form, $data['EMAIL']);
+        // This feature was removed in version 4.11.2 and unsubscribe forms are now no longer functional
+        // We log the message here to give site admins a chance to remove the forms from their site
+        // and we don't want to silently turn them into subscribe forms
+        // TODO (Mar 2027): Remove this method entirely in a future major release, along with the "unsubscribe" action and related code in the MC4WP_Form class.
     }
 
     /**
@@ -314,7 +290,7 @@ class MC4WP_Form_Listener
 
     private function request_wants_json()
     {
-        if (isset($_SERVER['HTTP_ACCEPT']) && false !== strpos($_SERVER['HTTP_ACCEPT'], 'application/json')) {
+        if (isset($_SERVER['HTTP_ACCEPT']) && false !== strpos(wp_unslash($_SERVER['HTTP_ACCEPT']), 'application/json')) {
             return true;
         }
 
@@ -326,7 +302,7 @@ class MC4WP_Form_Listener
      */
     protected function get_api()
     {
-        return mc4wp('api');
+        return mc4wp_get_service('api');
     }
 
     /**
@@ -334,6 +310,6 @@ class MC4WP_Form_Listener
      */
     protected function get_log()
     {
-        return mc4wp('log');
+        return mc4wp_get_service('log');
     }
 }

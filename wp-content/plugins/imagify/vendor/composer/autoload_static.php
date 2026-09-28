@@ -4,21 +4,24 @@
 
 namespace Composer\Autoload;
 
-use Composer\AutoloadWPMediaImagifyWordPressPlugin\ClassLoader as ClassLoaderWPMediaImagifyWordPressPlugin;
-
-
-class ComposerStaticInit0904377d4ce7befc7e9814f085804f15
+class ComposerStaticInit4af24f075f04070cee0c219e76a46574
 {
     public static $files = array (
         '6c592737b91137905268e9a0eb968869' => __DIR__ . '/..' . '/wp-media/apply-filters-typed/functions.php',
     );
 
     public static $prefixLengthsPsr4 = array (
-        'W' => 
+        'c' =>
         array (
-            'WPMedia\\PluginFamily\\' => 21,
+            'cweagans\\Composer\\' => 18,
         ),
-        'I' => 
+        'W' =>
+        array (
+            'WP\\McpSchema\\' => 13,
+            'WP\\MCP\\' => 7,
+            'WPMedia\\MCP\\OAuth\\' => 18,
+        ),
+        'I' =>
         array (
             'Imagify\\ThirdParty\\WPRocket\\' => 28,
             'Imagify\\ThirdParty\\RegenerateThumbnails\\' => 40,
@@ -27,60 +30,84 @@ class ComposerStaticInit0904377d4ce7befc7e9814f085804f15
             'Imagify\\ThirdParty\\EnableMediaReplace\\' => 38,
             'Imagify\\ThirdParty\\AS3CF\\' => 25,
             'Imagify\\Deprecated\\Traits\\' => 26,
+            'Imagify\\Dependencies\\WPMedia\\PluginFamily\\' => 42,
+            'Imagify\\Dependencies\\WPMedia\\Mixpanel\\' => 38,
+            'Imagify\\Dependencies\\Psr\\Container\\' => 35,
+            'Imagify\\Dependencies\\League\\Container\\' => 38,
             'Imagify\\' => 8,
         ),
-        'D' => 
-        array (
-            'Dangoodman\\ComposerForWordpress\\' => 32,
-        ),
-        'C' => 
+        'C' =>
         array (
             'Composer\\Installers\\' => 20,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'WPMedia\\PluginFamily\\' => 
+        'cweagans\\Composer\\' =>
         array (
-            0 => __DIR__ . '/..' . '/wp-media/plugin-family/src',
+            0 => __DIR__ . '/..' . '/cweagans/composer-patches/src',
         ),
-        'Imagify\\ThirdParty\\WPRocket\\' => 
+        'WP\\McpSchema\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/wordpress/php-mcp-schema/src',
+        ),
+        'WP\\MCP\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/wordpress/mcp-adapter/includes',
+        ),
+        'WPMedia\\MCP\\OAuth\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/wp-media/mcp-oauth/inc',
+        ),
+        'Imagify\\ThirdParty\\WPRocket\\' =>
         array (
             0 => __DIR__ . '/../..' . '/inc/3rd-party/wp-rocket/classes',
         ),
-        'Imagify\\ThirdParty\\RegenerateThumbnails\\' => 
+        'Imagify\\ThirdParty\\RegenerateThumbnails\\' =>
         array (
             0 => __DIR__ . '/../..' . '/inc/3rd-party/regenerate-thumbnails/classes',
         ),
-        'Imagify\\ThirdParty\\NGG\\' => 
+        'Imagify\\ThirdParty\\NGG\\' =>
         array (
             0 => __DIR__ . '/../..' . '/inc/3rd-party/nextgen-gallery/classes',
         ),
-        'Imagify\\ThirdParty\\FormidablePro\\' => 
+        'Imagify\\ThirdParty\\FormidablePro\\' =>
         array (
             0 => __DIR__ . '/../..' . '/inc/3rd-party/formidable-pro/classes',
         ),
-        'Imagify\\ThirdParty\\EnableMediaReplace\\' => 
+        'Imagify\\ThirdParty\\EnableMediaReplace\\' =>
         array (
             0 => __DIR__ . '/../..' . '/inc/3rd-party/enable-media-replace/classes',
         ),
-        'Imagify\\ThirdParty\\AS3CF\\' => 
+        'Imagify\\ThirdParty\\AS3CF\\' =>
         array (
             0 => __DIR__ . '/../..' . '/inc/3rd-party/amazon-s3-and-cloudfront/classes',
         ),
-        'Imagify\\Deprecated\\Traits\\' => 
+        'Imagify\\Deprecated\\Traits\\' =>
         array (
             0 => __DIR__ . '/../..' . '/inc/deprecated/Traits',
         ),
-        'Imagify\\' => 
+        'Imagify\\Dependencies\\WPMedia\\PluginFamily\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/wp-media/plugin-family/src',
+        ),
+        'Imagify\\Dependencies\\WPMedia\\Mixpanel\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/wp-media/wp-mixpanel/src',
+        ),
+        'Imagify\\Dependencies\\Psr\\Container\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/psr/container/src',
+        ),
+        'Imagify\\Dependencies\\League\\Container\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/league/container/src',
+        ),
+        'Imagify\\' =>
         array (
             0 => __DIR__ . '/../..' . '/classes',
         ),
-        'Dangoodman\\ComposerForWordpress\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/dangoodman/composer-for-wordpress',
-        ),
-        'Composer\\Installers\\' => 
+        'Composer\\Installers\\' =>
         array (
             0 => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers',
         ),
@@ -132,17 +159,27 @@ class ComposerStaticInit0904377d4ce7befc7e9814f085804f15
         'Imagify_Settings' => __DIR__ . '/../..' . '/inc/classes/class-imagify-settings.php',
         'Imagify_User' => __DIR__ . '/../..' . '/inc/deprecated/classes/class-imagify-user.php',
         'Imagify_Views' => __DIR__ . '/../..' . '/inc/classes/class-imagify-views.php',
-        'Imagify_WP_Async_Request' => __DIR__ . '/../..' . '/inc/classes/Dependencies/deliciousbrains/wp-background-processing/classes/wp-async-request.php',
-        'Imagify_WP_Background_Process' => __DIR__ . '/../..' . '/inc/classes/Dependencies/deliciousbrains/wp-background-processing/classes/wp-background-process.php',
+        'Imagify_WPMedia_Base_MixpanelBase' => __DIR__ . '/..' . '/wp-media/wp-mixpanel/src/Classes/Base/MixpanelBase.php',
+        'Imagify_WPMedia_ConsumerStrategies_AbstractConsumer' => __DIR__ . '/..' . '/wp-media/wp-mixpanel/src/Classes/ConsumerStrategies/AbstractConsumer.php',
+        'Imagify_WPMedia_ConsumerStrategies_CurlConsumer' => __DIR__ . '/..' . '/wp-media/wp-mixpanel/src/Classes/ConsumerStrategies/CurlConsumer.php',
+        'Imagify_WPMedia_ConsumerStrategies_FileConsumer' => __DIR__ . '/..' . '/wp-media/wp-mixpanel/src/Classes/ConsumerStrategies/FileConsumer.php',
+        'Imagify_WPMedia_ConsumerStrategies_SocketConsumer' => __DIR__ . '/..' . '/wp-media/wp-mixpanel/src/Classes/ConsumerStrategies/SocketConsumer.php',
+        'Imagify_WPMedia_Mixpanel' => __DIR__ . '/..' . '/wp-media/wp-mixpanel/src/Classes/Mixpanel.php',
+        'Imagify_WPMedia_Producers_MixpanelBaseProducer' => __DIR__ . '/..' . '/wp-media/wp-mixpanel/src/Classes/Producers/MixpanelBaseProducer.php',
+        'Imagify_WPMedia_Producers_MixpanelEvents' => __DIR__ . '/..' . '/wp-media/wp-mixpanel/src/Classes/Producers/MixpanelEvents.php',
+        'Imagify_WPMedia_Producers_MixpanelGroups' => __DIR__ . '/..' . '/wp-media/wp-mixpanel/src/Classes/Producers/MixpanelGroups.php',
+        'Imagify_WPMedia_Producers_MixpanelPeople' => __DIR__ . '/..' . '/wp-media/wp-mixpanel/src/Classes/Producers/MixpanelPeople.php',
+        'Imagify_WP_Async_Request' => __DIR__ . '/..' . '/deliciousbrains/wp-background-processing/classes/wp-async-request.php',
+        'Imagify_WP_Background_Process' => __DIR__ . '/..' . '/deliciousbrains/wp-background-processing/classes/wp-background-process.php',
     );
 
-    public static function getInitializer(ClassLoaderWPMediaImagifyWordPressPlugin $loader)
+    public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit0904377d4ce7befc7e9814f085804f15::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit0904377d4ce7befc7e9814f085804f15::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit0904377d4ce7befc7e9814f085804f15::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit4af24f075f04070cee0c219e76a46574::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit4af24f075f04070cee0c219e76a46574::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit4af24f075f04070cee0c219e76a46574::$classMap;
 
-        }, null, ClassLoaderWPMediaImagifyWordPressPlugin::class);
+        }, null, ClassLoader::class);
     }
 }

@@ -33,6 +33,63 @@
   gap: var(--space-md);
 }
 
+/* 🏷️ Badges région & thèmes */
+.chasse-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xxs);
+}
+
+.chasse-card-badges {
+  margin-top: var(--space-xs);
+}
+
+.chasse-meta-badges {
+  margin: var(--space-sm) 0;
+}
+
+.chasse-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  line-height: 1.3;
+  font-weight: 600;
+  text-decoration: none;
+  background: rgba(var(--color-text-fond-clair-rgb), 0.08);
+  color: var(--color-text-fond-clair);
+  border: 1px solid rgba(var(--color-text-fond-clair-rgb), 0.1);
+  transition: background-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.chasse-badge--region {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text-fond-clair);
+}
+
+.chasse-badge--theme {
+  background: rgba(255, 215, 0, 0.18);
+  border-color: rgba(255, 215, 0, 0.35);
+  color: var(--color-text-fond-clair);
+}
+
+a.chasse-badge {
+  cursor: pointer;
+}
+
+a.chasse-badge:hover,
+a.chasse-badge:focus-visible {
+  text-decoration: none;
+  box-shadow: 0 0 0 2px rgba(var(--color-text-fond-clair-rgb), 0.15);
+}
+
+a.chasse-badge.chasse-badge--region:hover,
+a.chasse-badge.chasse-badge--region:focus-visible {
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.18);
+}
+
 
 /* ========== 🖼️ COLONNE IMAGE DE LA CHASSE ========== */
 .champ-chasse.champ-img {
@@ -233,15 +290,43 @@
 .chasse-footer {
     margin-top: var(--space-md);
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-xs);
+
+    @media (--bp-desktop) {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
 
     &__reward {
         font-weight: 700;
+
+        .fa-trophy {
+            margin-right: 0.3em;
+            color: var(--color-gris-3);
+        }
     }
 
     &__texte {
         color: var(--color-gris-3);
+        display: flex;
+        align-items: center;
+        gap: var(--space-xs);
+    }
+
+    &__logo {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        filter: grayscale(1);
+        transition: filter 0.3s;
+    }
+
+    &__logo-link:hover &__logo {
+        filter: none;
     }
 
     &__nom {
@@ -259,12 +344,97 @@
 .carte-wide__content .meta-row,
 .carte-compact__meta {
     display: flex;
-    gap: var(--space-xl);
+    gap: var(--space-md);
     align-items: center;
     flex-wrap: wrap;
-    justify-content: space-between;
+    row-gap: var(--space-xs);
+    justify-content: flex-start;
     font-size: 93%;
     color: var(--color-gris-3);
+}
+
+.meta-regular .meta-indic {
+    background: none;
+    border: none;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+}
+
+.meta-regular .meta-indic--static {
+    cursor: default;
+}
+
+.meta-regular .meta-indic__count {
+    font-weight: 600;
+}
+
+.chasse-fiche-container > .meta-row {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    width: 100%;
+}
+
+.chasse-fiche-container > .meta-row .meta-regular {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    flex-shrink: 0;
+}
+
+.chasse-fiche-container > .meta-row .meta-etiquette {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xxs);
+    flex-shrink: 0;
+}
+
+.chasse-fiche-container > .meta-row .meta-indic {
+    gap: var(--space-xxs);
+    white-space: nowrap;
+}
+
+.chasse-fiche-container > .meta-row .meta-indic__count {
+    font-variant-numeric: tabular-nums;
+}
+
+.chasse-date-plage {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xxs);
+    white-space: nowrap;
+
+    .date-debut,
+    .date-fin {
+        display: inline-flex;
+        gap: var(--space-3xs);
+    }
+
+    .date-long {
+        display: none;
+    }
+
+    .date-short[hidden],
+    .date-long[hidden] {
+        display: none !important;
+    }
+}
+
+@media (--bp-desktop) {
+    .chasse-date-plage {
+        .date-short {
+            display: none;
+        }
+
+        .date-long {
+            display: inline;
+        }
+    }
 }
 .chasse-details-wrapper .bloc-metas-inline {
     margin: var(--space-xl) 0;
@@ -295,6 +465,15 @@
   font-size: 1.05rem;
   padding-left: var(--space-md);
   padding-right: var(--space-md);
+
+  ul {
+    list-style: disc;
+    padding-left: var(--space-lg);
+
+    li::marker {
+      color: currentColor;
+    }
+  }
 
   p {
     margin-bottom: var(--space-md);
@@ -404,14 +583,23 @@
   margin-right: 0.3em;
 }
 
-.chasse-lot-complet .lot-titre,
-.chasse-lot-complet .lot-valeur {
-  margin: 0 0 var(--space-xs);
+.chasse-lot-complet .champ-lot-titre,
+.chasse-lot-complet .champ-lot-valeur {
+  display: inline-block;
 }
 
 .chasse-lot-complet .lot-titre {
+  margin: 0 var(--space-xs) 0 0;
   font-size: 1.25rem;
   font-weight: 600;
+}
+
+.chasse-lot-complet .lot-valeur {
+  margin: 0;
+}
+
+.chasse-lot-complet .champ-lot-description {
+  margin-top: var(--space-sm);
 }
 
 .chasse-lot-complet .lot-description {

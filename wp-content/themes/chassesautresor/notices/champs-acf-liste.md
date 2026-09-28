@@ -1,7 +1,7 @@
 🔹 Groupe : paramètre de la chasse
 🆔 ID : 27
 🔑 Key : group_67b58c51b9a49
-📦 Champs trouvés : 21
+📦 Champs trouvés : 23
 
 — chasse_principale_image —
 Type : image
@@ -104,7 +104,7 @@ Instructions : (vide)
 Requis : non
 ----------------------------------------
 — chasse_cache_date_decouverte —
-Type : date_picker
+Type : date_time_picker
 Label : Date de découverte
 Instructions : Permet de terminer manuellement la chasse.
 Requis : non
@@ -162,6 +162,30 @@ Type : true_false
 Label : chasse_cache_has_indices
 Instructions : (vide)
 Requis : non
+----------------------------------------
+
+— chasse_region —
+Type : taxonomy
+Label : chasse_region
+Instructions : (vide)
+Requis : non
+Taxonomie : chasse_region
+Mode de sélection : select (simple)
+Retour : objet (WP_Term)
+Load Terms : oui
+Save Terms : oui
+----------------------------------------
+
+— chasse_theme —
+Type : taxonomy
+Label : chasse_theme
+Instructions : (vide)
+Requis : non
+Taxonomie : theme_chasse
+Mode de sélection : select (multiple)
+Retour : objet (WP_Term)
+Load Terms : oui
+Save Terms : oui
 ----------------------------------------
 
 🔹 Groupe : Paramètres de l’énigme
@@ -398,7 +422,6 @@ Requis : non
 — logo_organisateur —
 Type : image
 Label : Votre Logo
-Ancien nom : profil_public_logo_organisateur
 Instructions : (vide)
 Requis : non
 ----------------------------------------
@@ -600,7 +623,7 @@ Label : état système
 Instructions : (vide)
 Requis : non
 Choices :
-  - INVALIDE : INVALIDE
+  - INVALIDE : invalide
   - FIN_CHASSE : fin de chasse
   - FIN_CHASSE_DIFFERE : différé
   - A_VENIR : à venir

@@ -115,10 +115,68 @@ add_filter('admin_body_class', 'ajouter_classes_roles_admin');
  * 🖼️ Convertit une URL d'image vers son équivalent WebP.
  *
  * @param string|null $image_url URL de l'image source.
- * @return string URL en .webp ou vide si URL invalide.
+ * @return string URL en .webp (si disponible) ou URL originale.
  */
 function imagify_get_webp_url($image_url) {
-    return $image_url ? preg_replace('/\.(jpg|jpeg|png)$/i', '.webp', $image_url) : '';
+    if (empty($image_url)) {
+        return '';
+    }
+
+    $parsed_path = parse_url($image_url, PHP_URL_PATH);
+
+    if (!is_string($parsed_path)) {
+        return $image_url;
+    }
+
+    $extension = strtolower(pathinfo($parsed_path, PATHINFO_EXTENSION));
+    $supported_extensions = ['jpg', 'jpeg', 'png'];
+
+    if (!in_array($extension, $supported_extensions, true)) {
+        return $image_url;
+    }
+
+    $webp_url = preg_replace('/\.(jpg|jpeg|png)$/i', '.webp', $image_url);
+
+    if (!$webp_url || $webp_url === $image_url) {
+        return $image_url;
+    }
+
+    if (!function_exists('wp_get_upload_dir')) {
+        return $image_url;
+    }
+
+    $upload_dir = wp_get_upload_dir();
+    $baseurl = $upload_dir['baseurl'] ?? '';
+    $basedir = $upload_dir['basedir'] ?? '';
+
+    if (!$baseurl || !$basedir) {
+        return $image_url;
+    }
+
+    $base_variants = [$baseurl];
+
+    if (strpos($baseurl, 'https://') === 0) {
+        $base_variants[] = 'http://' . substr($baseurl, 8);
+    } elseif (strpos($baseurl, 'http://') === 0) {
+        $base_variants[] = 'https://' . substr($baseurl, 7);
+    }
+
+    foreach ($base_variants as $base_variant) {
+        if (0 !== strpos($webp_url, $base_variant)) {
+            continue;
+        }
+
+        $relative_path = ltrim(substr($webp_url, strlen($base_variant)), '/');
+        $file_path = rtrim($basedir, '/\\') . '/' . str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $relative_path);
+
+        if (file_exists($file_path)) {
+            return $webp_url;
+        }
+
+        break;
+    }
+
+    return $image_url;
 }
 
 
@@ -131,6 +189,27 @@ function charger_scripts_personnalises() {
     // 📌 Chargement des scripts JS personnalisés
     wp_enqueue_script('toggle-text', $theme_dir . 'toggle-text.js', ['jquery'], null, true);
     wp_enqueue_script('toggle-tooltip', $theme_dir . 'toggle-tooltip.js', [], null, true);
+    wp_enqueue_script(
+        'badge-validation-tooltip',
+        $theme_dir . 'badge-validation-tooltip.js',
+        [],
+        filemtime(get_stylesheet_directory() . '/assets/js/badge-validation-tooltip.js'),
+        true
+    );
+    wp_enqueue_script(
+        'badge-statut-tooltips',
+        $theme_dir . 'badge-statut-tooltips.js',
+        [],
+        filemtime(get_stylesheet_directory() . '/assets/js/badge-statut-tooltips.js'),
+        true
+    );
+    wp_enqueue_script(
+        'meta-tap-info',
+        $theme_dir . 'meta-tap-info.js',
+        [],
+        filemtime(get_stylesheet_directory() . '/assets/js/meta-tap-info.js'),
+        true
+    );
     wp_enqueue_script(
         'chasse-description-toggle',
         $theme_dir . 'chasse-description-toggle.js',
@@ -185,6 +264,13 @@ function charger_scripts_personnalises() {
       $theme_dir . 'core/pager.js',
       [],
       filemtime(get_stylesheet_directory() . '/assets/js/core/pager.js'),
+      true
+    );
+    wp_enqueue_script(
+      'table-search',
+      $theme_dir . 'core/table-search.js',
+      [],
+      filemtime(get_stylesheet_directory() . '/assets/js/core/table-search.js'),
       true
     );
     wp_enqueue_script(
@@ -317,6 +403,7 @@ function is_user_account_area(): bool
  *     @type string $titre       Le titre principal (H1).
  *     @type string $sous_titre  Le sous-titre affiché sous le titre.
  *     @type int|string $image_fond  ID de média WordPress ou URL d'image directe.
+ *     @type int $logo_id        ID de l'image du logo affichée au-dessus du titre.
  * }
  */
 function get_header_fallback($args = []) {
@@ -324,6 +411,7 @@ function get_header_fallback($args = []) {
         'titre'      => '',
         'sous_titre' => '',
         'image_fond' => '', // URL déjà optimisée
+        'logo_id'    => 0,
     ];
     $args = wp_parse_args($args, $defaults);
 
@@ -331,6 +419,7 @@ function get_header_fallback($args = []) {
         'titre'      => $args['titre'],
         'sous_titre' => $args['sous_titre'],
         'image_fond' => esc_url( $args['image_fond'] ),
+        'logo_id'    => absint( $args['logo_id'] ),
     ]);
 }
 
@@ -340,12 +429,22 @@ function get_header_fallback($args = []) {
  * @param array $classes Classes actuelles du body.
  * @return array
  */
-function ajouter_class_has_hero_si_header_fallback( $classes ) {
-    if ( is_page() && ! is_user_account_area() ) {
+function ajouter_class_has_hero_si_header_fallback(array $classes): array
+{
+    $is_account_area = function_exists('is_user_account_area') ? is_user_account_area() : false;
+    $is_organisation_page = function_exists('myaccount_is_organisation_page') ? myaccount_is_organisation_page() : false;
+
+    if ($is_account_area || $is_organisation_page) {
+        $classes = array_diff($classes, ['has-hero']);
+
+        return array_values(array_unique($classes));
+    }
+
+    if (is_front_page() || is_page()) {
         $classes[] = 'has-hero';
     }
 
-    return $classes;
+    return array_values(array_unique($classes));
 }
 add_filter( 'body_class', 'ajouter_class_has_hero_si_header_fallback' );
 

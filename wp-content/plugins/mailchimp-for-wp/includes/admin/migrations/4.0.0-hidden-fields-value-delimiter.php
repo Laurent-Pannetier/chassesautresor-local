@@ -1,6 +1,6 @@
 <?php
 
-defined('ABSPATH') or exit;
+defined('ABSPATH') || exit;
 
 /** @ignore */
 function _mc4wp_400_replace_comma_with_pipe($matches)
@@ -26,6 +26,6 @@ foreach ($posts as $post) {
     // update post if we replaced something
     if ($new != $old) {
         $post->post_content = $new;
-        wp_update_post($post);
+        wp_update_post(get_object_vars($post));
     }
 }

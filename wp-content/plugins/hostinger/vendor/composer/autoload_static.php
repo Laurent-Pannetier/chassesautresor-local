@@ -4,40 +4,40 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit5eb612593a2ef67b85ad25c07c19e821
+class ComposerStaticInitc6e32507cac27439d984d12c0c975466
 {
     public static $prefixLengthsPsr4 = array (
-        'H' => 
+        'H' =>
         array (
             'Hostinger\\WpMenuManager\\' => 24,
             'Hostinger\\WpHelper\\' => 19,
             'Hostinger\\Tests\\' => 16,
             'Hostinger\\' => 10,
         ),
-        'A' => 
+        'A' =>
         array (
             'Automattic\\Jetpack\\Autoloader\\' => 30,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'Hostinger\\WpMenuManager\\' => 
+        'Hostinger\\WpMenuManager\\' =>
         array (
             0 => __DIR__ . '/..' . '/hostinger/hostinger-wp-menu-manager/src',
         ),
-        'Hostinger\\WpHelper\\' => 
+        'Hostinger\\WpHelper\\' =>
         array (
             0 => __DIR__ . '/..' . '/hostinger/hostinger-wp-helper/src',
         ),
-        'Hostinger\\Tests\\' => 
+        'Hostinger\\Tests\\' =>
         array (
             0 => __DIR__ . '/..' . '/hostinger/hostinger-wp-helper/tests/phpunit',
         ),
-        'Hostinger\\' => 
+        'Hostinger\\' =>
         array (
             0 => __DIR__ . '/../..' . '/includes',
         ),
-        'Automattic\\Jetpack\\Autoloader\\' => 
+        'Automattic\\Jetpack\\Autoloader\\' =>
         array (
             0 => __DIR__ . '/..' . '/automattic/jetpack-autoloader/src',
         ),
@@ -51,9 +51,9 @@ class ComposerStaticInit5eb612593a2ef67b85ad25c07c19e821
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit5eb612593a2ef67b85ad25c07c19e821::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit5eb612593a2ef67b85ad25c07c19e821::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit5eb612593a2ef67b85ad25c07c19e821::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitc6e32507cac27439d984d12c0c975466::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitc6e32507cac27439d984d12c0c975466::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitc6e32507cac27439d984d12c0c975466::$classMap;
 
         }, null, ClassLoader::class);
     }

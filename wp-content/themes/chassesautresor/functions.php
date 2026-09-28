@@ -87,6 +87,32 @@ function cta_handle_language() {
 add_action( 'init', 'cta_handle_language' );
 
 /**
+ * Registers the search context used on the homepage hunts listing.
+ *
+ * @return void
+ */
+function ca_register_home_hunts_search_context(): void {
+    ca_register_search_context('home-hunts', [
+        'fields' => [
+            'sql' => [
+                'p.post_title',
+                'pm_short_description.meta_value',
+                'organisateur.post_title',
+            ],
+        ],
+        'ui' => [
+            'label'             => __('Rechercher une chasse', 'chassesautresor-com'),
+            'placeholder'       => __('Rechercher une chasse', 'chassesautresor-com'),
+            'submit_icon'       => 'search',
+            'submit_icon_only'  => true,
+            'show_reset_button' => true,
+            'no_results_message' => __('Aucune chasse trouvée', 'chassesautresor-com'),
+        ],
+    ]);
+}
+add_action('init', 'ca_register_home_hunts_search_context');
+
+/**
  * Redirects non-logged-in users requesting `/mon-compte` to the login page.
  *
  * @return void
@@ -181,6 +207,134 @@ function cta_render_lang_switcher( $row, $column ) {
 add_action( 'astra_render_header_column', 'cta_render_lang_switcher', 999, 2 );
 
 /**
+ * Loads custom account state SVG icons for Astra.
+ *
+ * @return array<string, string>
+ */
+function cta_get_account_state_icons() {
+    static $icons = null;
+
+    if ( null !== $icons ) {
+        return $icons;
+    }
+
+    $icons     = [];
+    $base_path = trailingslashit( get_stylesheet_directory() ) . 'assets/svg/';
+    $files     = [
+        'cta-account-guest' => 'user-anonyme.svg',
+        'cta-account-user'  => 'user-connecte.svg',
+    ];
+
+    foreach ( $files as $key => $file ) {
+        $path = $base_path . $file;
+
+        if ( ! file_exists( $path ) || ! is_readable( $path ) ) {
+            continue;
+        }
+
+        $content = file_get_contents( $path );
+
+        if ( false !== $content ) {
+            $icons[ $key ] = $content;
+        }
+    }
+
+    return $icons;
+}
+
+/**
+ * Registers custom account icons with Astra.
+ *
+ * @param array<string, string> $icons Default Astra icons.
+ *
+ * @return array<string, string>
+ */
+function cta_register_account_state_icons( $icons ) {
+    $custom_icons = cta_get_account_state_icons();
+
+    if ( empty( $custom_icons ) ) {
+        return $icons;
+    }
+
+    return array_merge( $icons, $custom_icons );
+}
+add_filter( 'astra_svg_icons', 'cta_register_account_state_icons' );
+
+/**
+ * Determines the account icon key to use depending on the user state.
+ *
+ * @param string $default Default Astra icon key.
+ *
+ * @return string
+ */
+function cta_account_icon_by_state( $default ) {
+    $icons = cta_get_account_state_icons();
+
+    if ( is_user_logged_in() ) {
+        return isset( $icons['cta-account-user'] ) ? 'cta-account-user' : $default;
+    }
+
+    return isset( $icons['cta-account-guest'] ) ? 'cta-account-guest' : $default;
+}
+add_filter( 'astra_get_option_header-account-icon-type', 'cta_account_icon_by_state' );
+
+/**
+ * Removes the "Continue Shopping" button from Astra's flyout cart when empty.
+ *
+ * @return void
+ */
+add_action(
+    'wp',
+    static function (): void {
+        if ( ! class_exists( 'Astra_Woocommerce' ) || ! function_exists( 'WC' ) ) {
+            return;
+        }
+
+        remove_action(
+            'woocommerce_after_mini_cart',
+            [ Astra_Woocommerce::get_instance(), 'astra_update_flyout_cart_layout' ]
+        );
+
+        add_action(
+            'woocommerce_after_mini_cart',
+            static function (): void {
+                if ( ! function_exists( 'WC' ) ) {
+                    return;
+                }
+
+                $cart = WC()->cart;
+
+                if ( ! $cart || ! $cart->is_empty() ) {
+                    return;
+                }
+
+                /**
+                 * Preserve Astra's extensibility hooks around the empty mini-cart.
+                 */
+                do_action( 'astra_empty_cart_before' );
+
+                $message = apply_filters(
+                    'astra_mini_cart_empty_msg',
+                    __( 'No products in the cart.', 'chassesautresor-com' )
+                );
+                ?>
+                <div class="ast-mini-cart-empty">
+                    <div class="ast-mini-cart-message">
+                        <p class="woocommerce-mini-cart__empty-message">
+                            <?php echo esc_html( $message ); ?>
+                        </p>
+                    </div>
+                    <?php do_action( 'astra_empty_cart_content' ); ?>
+                </div>
+                <?php
+                do_action( 'astra_empty_cart_after' );
+            }
+        );
+    },
+    5
+);
+
+/**
  * Chargement des styles du thème parent et enfant avec prise en charge d'Astra.
  */
 add_action('wp_enqueue_scripts', function () {
@@ -216,11 +370,57 @@ add_action('wp_enqueue_scripts', function () {
     );
     wp_set_script_translations('help-modal', 'chassesautresor-com');
 
+    if (is_front_page()) {
+        wp_enqueue_script(
+            'home-hero',
+            $script_dir . 'home-hero.js',
+            [],
+            filemtime($theme_path . '/assets/js/home-hero.js'),
+            true
+        );
+
+        wp_enqueue_script(
+            'home-hunts-filters',
+            $script_dir . 'home-hunts-filters.js',
+            [],
+            filemtime($theme_path . '/assets/js/home-hunts-filters.js'),
+            true
+        );
+
+        $home_hunts_context = ca_resolve_search_context('home-hunts');
+        $home_hunts_ui      = is_array($home_hunts_context['ui'] ?? null) ? $home_hunts_context['ui'] : [];
+        $no_results_label   = isset($home_hunts_ui['no_results_message']) && $home_hunts_ui['no_results_message'] !== ''
+            ? (string) $home_hunts_ui['no_results_message']
+            : __('Aucune chasse trouvée', 'chassesautresor-com');
+
+        wp_localize_script(
+            'home-hunts-filters',
+            'homeHuntsFilters',
+            [
+                'ajaxUrl' => admin_url('admin-ajax.php'),
+                'nonce'   => wp_create_nonce('ca-filter-chasses'),
+                'labels'  => [
+                    'error' => __('Impossible de charger les chasses.', 'chassesautresor-com'),
+                    'reset' => __('Réinitialiser', 'chassesautresor-com'),
+                    'empty' => $no_results_label,
+                ],
+            ]
+        );
+    }
+
     if (is_account_page() && is_user_logged_in()) {
+        wp_enqueue_script(
+            'recommended-hunts-slider',
+            $script_dir . 'recommended-hunts-slider.js',
+            [],
+            filemtime($theme_path . '/assets/js/recommended-hunts-slider.js'),
+            true
+        );
+
         wp_enqueue_script(
             'myaccount',
             $script_dir . 'myaccount.js',
-            [],
+            ['recommended-hunts-slider'],
             filemtime($theme_path . '/assets/js/myaccount.js'),
             true
         );
@@ -285,6 +485,29 @@ add_action('wp_enqueue_scripts', function () {
             filemtime($theme_path . '/assets/js/chasse-engagement.js'),
             true
         );
+
+        $current_chasse_id = get_queried_object_id();
+        if (
+            $current_chasse_id
+            && function_exists('ca_demo_is_demo_hunt')
+            && ca_demo_is_demo_hunt((int) $current_chasse_id)
+        ) {
+            wp_enqueue_script(
+                'chasse-demo-reset',
+                $script_dir . 'chasse-demo-reset.js',
+                [],
+                filemtime($theme_path . '/assets/js/chasse-demo-reset.js'),
+                true
+            );
+
+            wp_localize_script('chasse-demo-reset', 'caDemoReset', [
+                'ajaxUrl'    => admin_url('admin-ajax.php'),
+                'confirm'    => __('Voulez-vous vraiment réinitialiser votre progression de démonstration ?', 'chassesautresor-com'),
+                'success'    => __('Votre progression a été réinitialisée.', 'chassesautresor-com'),
+                'error'      => __('Impossible de réinitialiser votre progression pour le moment.', 'chassesautresor-com'),
+                'nonceError' => __('Votre session a expiré. Merci de recharger la page.', 'chassesautresor-com'),
+            ]);
+        }
     }
 });
 
@@ -435,12 +658,16 @@ require_once $inc_path . 'access-functions.php';
 require_once $inc_path . 'relations-functions.php';
 require_once $inc_path . 'layout-functions.php';
 require_once $inc_path . 'sidebar.php';
-require_once $inc_path . 'myaccount-functions.php';
 require_once $inc_path . 'utils/liens.php';
+require_once $inc_path . 'chasse/demo.php';
 require_once $inc_path . 'chasse/stats.php';
 require_once $inc_path . 'organisateur/stats.php';
 require_once $inc_path . 'pager.php';
 require_once $inc_path . 'table.php';
+require_once $inc_path . 'search/registry.php';
+require_once $inc_path . 'search/helpers.php';
+require_once $inc_path . 'search/form.php';
+require_once $inc_path . 'homepage-filters.php';
 
 require_once $inc_path . 'edition/edition-core.php';
 require_once $inc_path . 'edition/edition-organisateur.php';

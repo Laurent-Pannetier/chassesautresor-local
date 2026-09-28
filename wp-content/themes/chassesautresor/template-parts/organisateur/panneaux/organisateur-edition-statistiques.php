@@ -54,9 +54,15 @@ $points          = organisateur_compter_points_collectes($organisateur_id);
           <div class="chasse-stats-header">
             <h3><?php echo esc_html(get_the_title($chasse_id)); ?></h3>
             <div class="chasse-stats-summary">
-              <span class="stat-badge"><?php echo esc_html($participants . ' participants'); ?></span>
-              <span class="stat-badge"><?php echo esc_html($total_tentatives . ' tentatives'); ?></span>
-              <span class="stat-badge"><?php echo esc_html($total_resolutions . ' bonnes réponses'); ?></span>
+              <div class="meta-etiquette">
+                <span><?php echo esc_html($participants . ' participants'); ?></span>
+              </div>
+              <div class="meta-etiquette">
+                <span><?php echo esc_html($total_tentatives . ' tentatives'); ?></span>
+              </div>
+              <div class="meta-etiquette">
+                <span><?php echo esc_html($total_resolutions . ' bonnes réponses'); ?></span>
+              </div>
             </div>
           </div>
           <?php

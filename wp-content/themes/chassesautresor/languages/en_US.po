@@ -39,6 +39,26 @@ msgstr "Full Screen Home"
 msgid "Français"
 msgstr "French"
 
+#: template-parts/chasse/chasse-edition-main.php:922
+msgid "Supprimer la chasse"
+msgstr "Delete the hunt"
+
+#: assets/js/chasse-edit.js:207
+msgid "Voulez-vous vraiment supprimer cette chasse et toutes ses énigmes ?"
+msgstr "Are you sure you want to delete this hunt and all of its puzzles?"
+
+#: assets/js/chasse-edit.js:208
+msgid "Voulez-vous vraiment supprimer cette chasse ?"
+msgstr "Are you sure you want to delete this hunt?"
+
+#: assets/js/chasse-edit.js:242
+msgid "Une erreur est survenue lors de la suppression de la chasse."
+msgstr "An error occurred while deleting the hunt."
+
+#: inc/edition/edition-chasse.php:784
+msgid "Votre chasse a été supprimée. Vous pouvez en créer une nouvelle quand vous le souhaitez."
+msgstr "Your hunt has been deleted. You can create a new one whenever you want."
+
 #: functions.php:119
 msgid "English"
 msgstr "English"
@@ -46,6 +66,10 @@ msgstr "English"
 #: functions.php:128
 msgid "Change language"
 msgstr "Change language"
+
+#: functions.php:292
+msgid "No products in the cart."
+msgstr "No products in the cart."
 
 #: inc/admin-functions.php:40
 msgid "⛔ Accès refusé."
@@ -376,7 +400,7 @@ msgid "Erreur lors de la création de la chasse."
 msgstr "Error creating hunt."
 
 #: inc/edition/edition-core.php:147 inc/edition/edition-core.php:179
-#: assets/js/help-modal.js:19
+#: assets/js/help-modal.js:19 inc/enigme/affichage.php:637
 #, fuzzy
 msgid "Fermer"
 msgstr "Close"
@@ -420,10 +444,10 @@ msgid "Sélectionner une image"
 msgstr "Select a riddle"
 
 #: inc/edition/edition-core.php:156 inc/edition/edition-indice.php:164
-#: inc/edition/edition-indice.php:262
+#: inc/edition/edition-indice.php:262 inc/enigme/affichage.php:625
 #, php-format
 msgid "Indice #%d"
-msgstr "Clue #%d"
+msgstr "Hint #%d"
 
 #: inc/edition/edition-core.php:157 inc/edition/edition-core.php:196
 msgid "liée à"
@@ -1249,7 +1273,7 @@ msgid "Vous n’avez pas assez de points pour engager cette énigme."
 msgstr "❌ You don't have enough points to complete this conversion."
 
 #: single-organisateur.php:84
-msgid "Chasses au Trésor"
+msgid "Chasses au trésor"
 msgstr "Treasure hunts"
 
 #: single-organisateur.php:132
@@ -1562,7 +1586,7 @@ msgstr "F j, Y"
 
 #: inc/edition/edition-core.php:665
 msgctxt "formatting for datetime"
-msgid "j F Y \\à H:i"
+msgid "j F Y à H:i"
 msgstr "F j, Y \\a\\t g:i a"
 
 #: template-parts/chasse/chasse-edition-main.php:606
@@ -2355,6 +2379,12 @@ msgstr "number of participants for this puzzle"
 #: template-parts/enigme/chasse-partial-boucle-enigmes.php:182
 msgid "nombre de joueurs ayant trouvé la bonne réponse"
 msgstr "number of players who found the correct answer"
+
+msgid "nombre d'énigmes"
+msgstr "number of puzzles"
+
+msgid "nombre de joueurs"
+msgstr "number of players"
 
 #: template-parts/enigme/chasse-partial-boucle-enigmes.php:189
 msgid "tentatives quotidiennes utilisées"
@@ -3256,3 +3286,54 @@ msgstr "I certify that my hunt and all its riddles are finalized."
 #: assets/js/validation-chasse.js:61
 msgid "Envoyer la demande de validation"
 msgstr "Send the validation request"
+
+#: inc/enigme/affichage.php:619 inc/enigme/indices.php:51 inc/enigme/indices.php:100
+msgid "Indice débloqué"
+msgstr "Hint unlocked"
+
+
+#: inc/enigme/affichage.php:630
+#, php-format
+msgid "Indice #%1$d - %2$d pts"
+msgstr "Hint #%1$d - %2$d pts"
+
+
+#: inc/enigme/indices.php:120
+msgid "Débloquer l'indice"
+msgstr "Unlock hint"
+
+#: inc/enigme/affichage.php:725
+msgid "Indices énigme"
+msgstr "Riddle hints"
+
+#: inc/enigme/affichage.php:728
+msgid "Indices chasse"
+msgstr "Hunt hints"
+
+#: inc/chasse-functions.php:818
+msgid "Redécouvrir"
+msgstr "Rediscover"
+
+#: template-parts/chasse/chasse-affichage-complet.php:313
+msgid "Voir les solutions"
+msgstr "View solutions"
+
+#: template-parts/enigme/partials/enigme-partial-solution.php:32
+msgid "Voir la solution de la chasse"
+msgstr "View hunt solution"
+
+#: inc/search/form.php:52
+msgid "Réinitialiser"
+msgstr "Reset"
+
+#: wp-content/themes/chassesautresor/front-page.php
+msgid "Rechercher une chasse"
+msgstr "Search for a hunt"
+
+#: wp-content/themes/chassesautresor/inc/homepage-filters.php
+msgid "Aucune chasse trouvée"
+msgstr "No hunts found"
+
+#: inc/user-functions.php:1444
+msgid "Unable to load attempts. Please try again."
+msgstr "Unable to load attempts. Please try again."

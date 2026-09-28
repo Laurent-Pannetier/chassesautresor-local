@@ -6,7 +6,7 @@ Plugin Name: UpdraftPlus - Backup/Restore
 Plugin URI: https://updraftplus.com
 Description: Backup and restore: take backups locally, or backup to Amazon S3, Dropbox, Google Drive, Rackspace, (S)FTP, WebDAV & email, on automatic schedules.
 Author: TeamUpdraft, DavidAnderson
-Version: 1.25.7
+Version: 1.26.8
 Donate link: https://david.dw-perspective.org.uk/donate
 License: GPLv3 or later
 Text Domain: updraftplus
@@ -16,7 +16,7 @@ Author URI: https://updraftplus.com
 // @codingStandardsIgnoreEnd
 
 /*
-Portions copyright 2011-25 David Anderson
+Portions copyright 2011-26 David Anderson
 Portions copyright 2010 Paul Kehrer
 Other portions copyright as indicated by authors in the relevant files
 
@@ -44,6 +44,8 @@ define('UPDRAFTPLUS_URL', plugins_url('', __FILE__));
 define('UPDRAFTPLUS_PLUGIN_SLUG', plugin_basename(__FILE__));
 define('UPDRAFT_DEFAULT_OTHERS_EXCLUDE', 'upgrade,cache,updraft,backup*,*backups,mysql.sql,debug.log');
 define('UPDRAFT_DEFAULT_UPLOADS_EXCLUDE', 'backup*,*backups,backwpup*,wp-clone,snapshots,wp-staging');
+// The minimum PHP version that phpseclib requires for the encryption-related features. Deliberately not overridable: it reflects a library requirement, not a user preference.
+define('UPDRAFTPLUS_PHPSECLIB_MIN_PHP_VERSION', '5.6.1');
 
 // The following can go in your wp-config.php
 // Tables whose data can be skipped without significant loss, if (and only if) the attempt to back them up fails (e.g. bwps_log, from WordPress Better Security, is log data; but individual entries can be huge and cause out-of-memory fatal errors on low-resource environments). Comma-separate the table names (without the WordPress table prefix).
@@ -130,12 +132,21 @@ if (is_file(UPDRAFTPLUS_DIR.'/autoload.php')) updraft_try_include_file('autoload
  * @return Boolean The list of our own schedules
  */
 function updraftplus_list_cron_schedules() {
-	/* translators: %s: Number of Hours. */
-	$every_particular_hour_label = __('Every %s hours', 'updraftplus');
+	global $wp_current_filter;
+	// To prevent "_load_textdomain_just_in_time was called incorrectly" warning
+	if (((function_exists('doing_action') && !doing_action('after_setup_theme')) || !in_array('after_setup_theme', $wp_current_filter, true)) && !did_action('after_setup_theme')) {
+		$every_particular_hour_label = 'Every %s hours';
+		$every_hour = 'Every hour';
+	} else {
+		/* translators: %s: Number of Hours. */
+		$every_particular_hour_label = __('Every %s hours', 'updraftplus');
+		$every_hour = __('Every hour', 'updraftplus');
+	}
+
 	return array(
 		'everyhour' => array(
 			'interval' => 3600,
-			'display' => apply_filters('updraftplus_cron_schedule_description', __('Every hour', 'updraftplus'), 'everyhour'),
+			'display' => apply_filters('updraftplus_cron_schedule_description', $every_hour, 'everyhour'),
 		),
 		'every2hours' => array(
 			'interval' => 7200,
@@ -153,6 +164,7 @@ function updraftplus_list_cron_schedules() {
 			'interval' => 43200,
 			'display'  => apply_filters('updraftplus_cron_schedule_description', sprintf($every_particular_hour_label, '12'), 'twicedaily'),
 		),
+		// phpcs:disable WordPress.WP.I18n.MissingArgDomain -- The string exists within the WordPress core.
 		'daily' => array(
 			'interval' => 86400,
 			'display'  => apply_filters('updraftplus_cron_schedule_description', __('Daily'), 'daily'),
@@ -166,9 +178,10 @@ function updraftplus_list_cron_schedules() {
 			'display' => apply_filters('updraftplus_cron_schedule_description', __('Fortnightly'), 'fortnightly'),
 		),
 		'monthly' => array(
-			'interval' => 2592000,
+			'interval' => date('t')*86400, // Calculate the monthly interval based on the total days of the current month.
 			'display' => apply_filters('updraftplus_cron_schedule_description', __('Monthly'), 'monthly'),
 		),
+		// phpcs:enable
 	);
 }
 
@@ -294,6 +307,8 @@ function updraftplus_build_mysqldump_list() {
 		return "/usr/bin/mysqldump,/bin/mysqldump,/usr/local/bin/mysqldump,/usr/sfw/bin/mysqldump,/usr/xdg4/bin/mysqldump,/opt/bin/mysqldump";
 	}
 }
+
+register_activation_hook(__FILE__, array($updraftplus, 'maybe_set_onboarding_flag'));
 
 // Do this even if the missing files detection above fired, as the "missing files" detection above has a greater chance of showing the user useful info
 if (!class_exists('UpdraftPlus_Options')) updraft_try_include_file('options.php', 'require_once');

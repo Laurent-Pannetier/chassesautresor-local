@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') || exit;
+
 return [
     'css'                => 0,
     'double_optin'       => 1,
@@ -10,4 +12,6 @@ return [
     'required_fields'    => '',
     'update_existing'    => 0,
     'subscriber_tags'    => '',
+    'remove_subscriber_tags' => '',
+    'email_typo_check'   => 0,
 ];

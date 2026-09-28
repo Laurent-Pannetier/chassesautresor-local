@@ -1,10 +1,30 @@
 <?php
 
-if (!defined('UPDRAFTPLUS_DIR')) die('No direct access allowed.');
+if (!defined('ABSPATH')) die('No direct access allowed');
 
 updraft_try_include_file('methods/s3.php', 'require_once');
 
 class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 {
+
+	/**
+	 * Identifier for the 5 GB storage package.
+	 */
+	const PACKAGE_5GB = '5GB';
+
+	/**
+	 * Identifier for the 15 GB storage package.
+	 */
+	const PACKAGE_15GB = '15GB';
+
+	/**
+	 * Identifier for the 50 GB storage package.
+	 */
+	const PACKAGE_50GB = '50GB';
+
+	/**
+	 * Identifier for the 250 GB storage package.
+	 */
+	const PACKAGE_250GB = '250GB';
 
 	private $vault_mothership = 'https://vault.updraftplus.com/plugin-info/';
 
@@ -22,6 +42,38 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 	protected $provider_can_use_aws_sdk = true;
 	
 	protected $provider_has_regions = true;
+	
+	/**
+	 * Input and option field mappings with default values and supported contexts.
+	 *
+	 * @var array
+	 */
+	protected $input_option_field_mappings = array(
+		'email' => array(
+			'default_value' => '',
+			'contexts' => array('option', 'input'),
+		),
+		'password' => array(
+			'default_value' => '',
+			'contexts' => array('input'),
+		),
+		'connected_status' => array(
+			'default_value' => '',
+			'contexts' => array('input'),
+		),
+		'disconnected_status' => array(
+			'default_value' => '',
+			'contexts' => array('input'),
+		),
+		'token' => array(
+			'default_value' => '',
+			'contexts' => array('option'),
+		),
+		'quota' => array(
+			'default_value' => -1,
+			'contexts' => array('option'),
+		),
+	);
 
 	/**
 	 * Register backup-related hooks (filters and actions) that get called in the parent method for uploading backup archives
@@ -68,10 +120,10 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 	 * @return String
 	 */
 	private function get_url($which_page = false) {
-		$base = defined('UPDRAFTPLUS_VAULT_SHOP_BASE') ? UPDRAFTPLUS_VAULT_SHOP_BASE : 'https://updraftplus.com/shop/';
+		$base = defined('UPDRAFTPLUS_VAULT_SHOP_BASE') ? UPDRAFTPLUS_VAULT_SHOP_BASE : 'https://teamupdraft.com/updraftplus/add-ons/';
 		switch ($which_page) {
 			case 'get_more_quota':
-				return apply_filters('updraftplus_com_link', $base.'product-category/updraftplus-vault/');
+				return apply_filters('updraftplus_com_link', 'https://teamupdraft.com/updraftplus/updraftvault/#pricing-block');
 				break;
 			case 'more_vault_info_faqs':
 				return apply_filters('updraftplus_com_link', 'https://teamupdraft.com/documentation/updraftplus/topics/updraftvault/faqs?utm_source=udp-plugin&utm_medium=referral&utm_campaign=paac&utm_content=updraftvault&utm_creative_format=text');
@@ -80,7 +132,7 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 				return apply_filters('updraftplus_com_link', 'https://teamupdraft.com/updraftplus/updraftvault?utm_source=udp-plugin&utm_medium=referral&utm_campaign=paac&utm_content=updraftvault&utm_creative_format=text');
 				break;
 			case 'vault_forgotten_credentials_links':
-				return apply_filters('updraftplus_com_link', 'https://updraftplus.com/my-account/lost-password/');
+				return apply_filters('updraftplus_com_link', 'https://teamupdraft.com/my-account/lost-password/');
 				break;
 			default:
 				return apply_filters('updraftplus_com_link', $base);
@@ -98,19 +150,6 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 		return array('multi_options', 'config_templates', 'conditional_logic');
 	}
 	
-	/**
-	 * Retrieve default options for this remote storage module.
-	 *
-	 * @return Array - an array of options
-	 */
-	public function get_default_options() {
-		return array(
-			'token' => '',
-			'email' => '',
-			'quota' => -1
-		);
-	}
-
 	/**
 	 * Retrieve specific options for this remote storage module
 	 *
@@ -491,57 +530,97 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 		global $updraftplus, $updraftplus_admin, $updraftplus_checkout_embed;
 		// Used to decide whether we can afford HTTP calls or not, or would prefer to rely on cached data
 		$this->vault_in_config_print = true;
+
+		$simplexmlelement_existence_label = '';
+		if (!apply_filters('updraftplus_vault_simplexmlelement_exists', class_exists('SimpleXMLElement'))) {
+			$simplexmlelement_existence_label = wp_kses(
+				$updraftplus_admin->show_double_warning(
+					'<strong>'.__('Warning', 'updraftplus').':</strong> '.
+					/* translators: 1: Remote storage name, 2: Required module name */
+					sprintf(__('Your web server\'s PHP installation does not include a <strong>required</strong> (for %1$s) module %2$s.', 'updraftplus'), 'UpdraftVault', 'SimpleXMLElement').' '.
+					__("Please contact your web hosting provider's support and ask for them to enable it.", 'updraftplus'),
+					$this->get_id(),
+					false
+				),
+				$this->allowed_html_for_content_sanitisation()
+			);
+		}
+
 		$properties = array(
-			'simplexmlelement_existence_label' => !apply_filters('updraftplus_vault_simplexmlelement_exists', class_exists('SimpleXMLElement')) ? wp_kses($updraftplus_admin->show_double_warning('<strong>'.__('Warning', 'updraftplus').':</strong> '.sprintf(__("Your web server's PHP installation does not include a <strong>required</strong> (for %s) module (%s).", 'updraftplus'), 'UpdraftVault', 'SimpleXMLElement').' '.__("Please contact your web hosting provider's support and ask for them to enable it.", 'updraftplus'), $this->get_id(), false), $this->allowed_html_for_content_sanitisation()) : '',
+			'simplexmlelement_existence_label' => $simplexmlelement_existence_label,
 			'curl_existence_label' => wp_kses($updraftplus_admin->curl_check($updraftplus->backup_methods[$this->get_id()], false, $this->get_id().' hidden-in-updraftcentral', false), $this->allowed_html_for_content_sanitisation()),
-			/* translators: %1$s: anchor opening tag <a>, %2$s: UpdraftVault product name, %3$s: anchor closing tag </a>*/
-			'storage_long_description' => wp_kses(sprintf(__('%1$s %2$s %3$s gives you encrypted storage integrated into UpdraftPlus so you don’t need to set up third party storage systems.', 'updraftplus'), '<a href="https://teamupdraft.com/updraftplus/updraftvault/?utm_source=udp-plugin&utm_medium=referral&utm_campaign=paac&utm_content=updrafvault&utm_creative_format=text" target="_blank">', 'UpdraftVault', '</a>'), $this->allowed_html_for_content_sanitisation()),
+			/* translators: 1: Anchor opening tag <a>, 2: UpdraftVault product name, 3: Anchor closing tag </a>*/
+			'storage_long_description' => wp_kses(sprintf(__('%1$s %2$s %3$s gives you encrypted storage integrated into UpdraftPlus so you don’t need to set up third party storage systems.', 'updraftplus'), '<a href="https://teamupdraft.com/updraftplus/updraftvault/?utm_source=udp-plugin&utm_medium=referral&utm_campaign=paac&utm_content=updraftvault&utm_creative_format=text" target="_blank">', 'UpdraftVault', '</a>'), $this->allowed_html_for_content_sanitisation()),
 			'storage_package_options_label1' => __('Need to get space?', 'updraftplus'),
 			'storage_package_options_label2' => __('Show the options', 'updraftplus'),
 			'storage_already_registered_label1' => __('Already got space?', 'updraftplus'),
+			/* translators: %s: Storage provider name */
 			'storage_already_registered_label2' => sprintf(__('Connect to your %s account', 'updraftplus'), $updraftplus->backup_methods[$this->get_id()]),
 			'storage_already_registered_label3' => __('Connect', 'updraftplus'),
 			'storage_long_description2' => __("UpdraftVault is built on top of Amazon's world-leading data-centres, with redundant data storage to achieve 99.999999999% reliability.", 'updraftplus'),
+			/* translators: %s: Storage provider name */
 			'storage_readmore_label' => sprintf(__('Read more about %s here.', 'updraftplus'), $updraftplus->backup_methods[$this->get_id()]),
+			/* translators: %s: Storage provider name */
 			'storage_read_faq_label' => sprintf(__('Read %s documentation here.', 'updraftplus'), 'UpdraftVault'),
 			'more_vault_info_landing_url' => $this->get_url('more_vault_info_landing'),
 			'more_vault_info_faqs_url' => $this->get_url('more_vault_info_faqs'),
-			/* translators: %1$s: anchor opening tag <a>, %2$s: UpdraftVault product name, %3$s: anchor closing tag </a>*/
-			'storage_package_options_label3' => wp_kses(sprintf(__('%1$s %2$s %3$s gives you encrypted storage integrated into UpdraftPlus so you don\'t need to set up third party storage systems.', 'updraftplus'), '<a href="https://teamupdraft.com/updraftplus/updraftvault/?utm_source=udp-plugin&utm_medium=referral&utm_campaign=paac&utm_content=updrafvault&utm_creative_format=text" target="_blank">', 'UpdraftVault', '</a>'), $this->allowed_html_for_content_sanitisation()),
+			/* translators: 1: Anchor opening tag <a>, 2: UpdraftVault product name, 3: Anchor closing tag </a>*/
+			'storage_package_options_label3' => wp_kses(sprintf(__('%1$s %2$s %3$s gives you encrypted storage integrated into UpdraftPlus so you don\'t need to set up third party storage systems.', 'updraftplus'), '<a href="https://teamupdraft.com/updraftplus/updraftvault/?utm_source=udp-plugin&utm_medium=referral&utm_campaign=paac&utm_content=updraftvault&utm_creative_format=text" target="_blank">', 'UpdraftVault', '</a>'), $this->allowed_html_for_content_sanitisation()),
 			'start_subscription_button_label' => __('Start Subscription', 'updraftplus'),
-			'start_15gb_subscription_button_title' => sprintf(__('Start %s Subscription', 'updraftplus'), '15GB'),
-			'start_50gb_subscription_button_title' => sprintf(__('Start %s Subscription', 'updraftplus'), '50GB'),
-			'start_250gb_subscription_button_title' => sprintf(__('Start %s Subscription', 'updraftplus'), '250GB'),
+			/* translators: %s: Subscription size */
+			'start_15gb_subscription_button_title' => sprintf(__('Start %s Subscription', 'updraftplus'), self::PACKAGE_15GB),
+			/* translators: %s: Subscription size */
+			'start_50gb_subscription_button_title' => sprintf(__('Start %s Subscription', 'updraftplus'), self::PACKAGE_50GB),
+			/* translators: %s: Subscription size */
+			'start_250gb_subscription_button_title' => sprintf(__('Start %s Subscription', 'updraftplus'), self::PACKAGE_250GB),
 			'start_trial_button_label' => __('Start Trial', 'updraftplus'),
-			'start_trial_button_title' => sprintf(__('Start %s Trial', 'updraftplus'), '5GB'),
+			/* translators: %s: Trial size */
+			'start_trial_button_title' => sprintf(__('Start %s Trial', 'updraftplus'), self::PACKAGE_5GB),
 			'discount_period_label' => __('or (annual discount)', 'updraftplus'),
 			'start_trial_option_label' => __('with the option of', 'updraftplus'),
+			/* translators: %s: Price */
 			'price_5gb_package_label' => sprintf(__('%s per year', 'updraftplus'), '$35'),
+			/* translators: %s: Price */
 			'price_15gb_package_label' => sprintf(__('%s per quarter', 'updraftplus'), '$20'),
+			/* translators: %s: Price */
 			'price_50gb_package_label' => sprintf(__('%s per quarter', 'updraftplus'), '$50'),
+			/* translators: %s: Price */
 			'price_250gb_package_label' => sprintf(__('%s per quarter', 'updraftplus'), '$125'),
-			'discounted_price_5gb_package_label' => sprintf(__('%s month %s trial', 'updraftplus'), '1', '$1'),
+			/* translators: 1: Trial duration, 2: Price */
+			'discounted_price_5gb_package_label' => sprintf(__('%1$s month %2$s trial', 'updraftplus'), '1', '$1'),
+			/* translators: %s: Price */
 			'discounted_price_15gb_package_label' => sprintf(__('%s per year', 'updraftplus'), '$70'),
+			/* translators: %s: Price */
 			'discounted_price_50gb_package_label' => sprintf(__('%s per year', 'updraftplus'), '$175'),
+			/* translators: %s: Price */
 			'discounted_price_250gb_package_label' => sprintf(__('%s per year', 'updraftplus'), '$450'),
-			'start_5gb_package_subscription_title' => sprintf(__('Start a %s UpdraftVault Subscription', 'updraftplus'), '5GB'),
-			'start_15gb_package_subscription_title' => sprintf(__('Start a %s UpdraftVault Subscription', 'updraftplus'), '15GB'),
-			'start_50gb_package_subscription_title' => sprintf(__('Start a %s UpdraftVault Subscription', 'updraftplus'), '50GB'),
-			'start_250gb_package_subscription_title' => sprintf(__('Start a %s UpdraftVault Subscription', 'updraftplus'), '250GB'),
+			/* translators: %s: Subscription size */
+			'start_5gb_package_subscription_title' => sprintf(__('Start a %s UpdraftVault Subscription', 'updraftplus'), self::PACKAGE_5GB),
+			/* translators: %s: Subscription size */
+			'start_15gb_package_subscription_title' => sprintf(__('Start a %s UpdraftVault Subscription', 'updraftplus'), self::PACKAGE_15GB),
+			/* translators: %s: Subscription size */
+			'start_50gb_package_subscription_title' => sprintf(__('Start a %s UpdraftVault Subscription', 'updraftplus'), self::PACKAGE_50GB),
+			/* translators: %s: Subscription size */
+			'start_250gb_package_subscription_title' => sprintf(__('Start a %s UpdraftVault Subscription', 'updraftplus'), self::PACKAGE_250GB),
 			'start_5gb_package_subscription_link' => apply_filters('updraftplus_com_link', $updraftplus->get_url('shop_vault_5')),
 			'start_15gb_package_subscription_link' => apply_filters('updraftplus_com_link', $updraftplus->get_url('shop_vault_15')),
 			'start_50gb_package_subscription_link' => apply_filters('updraftplus_com_link', $updraftplus->get_url('shop_vault_50')),
 			'start_250gb_package_subscription_link' => apply_filters('updraftplus_com_link', $updraftplus->get_url('shop_vault_250')),
 			'go_back_link_text' => __('Back...', 'updraftplus'),
-			'go_back_link_label' => sprintf(__('Back to other %s options'), 'Vault'),
+			/* translators: %s: Storage provider name */
+			'go_back_link_label' => sprintf(__('Back to other %s options', 'updraftplus'), 'Vault'),
 			'current_clean_url' => UpdraftPlus::get_current_clean_url(),
-			'subscription_payment_details_label' => wp_kses(__("<strong>About the '1 month $1 trial':</strong> Pay just $1 for the first month of an annual subscription.", 'updraftplus').' '.__('Cancel at any time.', 'updraftplus').' '.__('After 1 month, your subscription will renew at a cost of $35 and every 12 months thereafter until you cancel.', 'updraftplus').' <a href="https://teamupdraft.com/updraftplus/updraftvault/?utm_source=udp-plugin&utm_medium=referral&utm_campaign=paac&utm_content=about-updrafvault&utm_creative_format=text" target="_blank">'.__('More about UpdraftVault', 'updraftplus').'</a>', $this->allowed_html_for_content_sanitisation()),
-			'connect_to_updraftplus_label' => __('Enter your UpdraftPlus.Com email / password here to connect:', 'updraftplus'),
-			'input_email_title' => sprintf(__('Please enter your %s email address', 'updraftplus'), 'UpdraftPlus.com'),
+			'subscription_payment_details_label' => wp_kses(__("<strong>About the '1 month $1 trial':</strong> Pay just $1 for the first month of an annual subscription.", 'updraftplus').' '.__('Cancel at any time.', 'updraftplus').' '.__('After 1 month, your subscription will renew at a cost of $35 and every 12 months thereafter until you cancel.', 'updraftplus').' <a href="https://teamupdraft.com/updraftplus/updraftvault/?utm_source=udp-plugin&utm_medium=referral&utm_campaign=paac&utm_content=about-updraftvault&utm_creative_format=text" target="_blank">'.__('More about UpdraftVault', 'updraftplus').'</a>', $this->allowed_html_for_content_sanitisation()),
+			'connect_to_updraftplus_label' => __('Enter your Teamupdraft.com email / password here to connect:', 'updraftplus'),
+			/* translators: %s: Website name */
+			'input_email_title' => sprintf(__('Please enter your %s email address', 'updraftplus'), 'TeamUpdraft.com'),
 			'input_email_placeholder' => __('Email', 'updraftplus'),
-			'input_password_title' => sprintf(__('Please enter your %s password', 'updraftplus'), 'UpdraftPlus.com'),
+			/* translators: %s: Website name */
+			'input_password_title' => sprintf(__('Please enter your %s password', 'updraftplus'), 'TeamUpdraft.com'),
 			'input_password_placeholder' => __('Password', 'updraftplus'),
-			'button_connect_title' => sprintf(__('Connect to your %s'), 'Vault'),
+			'input_password_type' => 'password',
+			/* translators: %s: Storage provider name */
+			'button_connect_title' => sprintf(__('Connect to your %s', 'updraftplus'), 'Vault'),
 			'button_connect_label' => __('Connect', 'updraftplus'),
 			'forgotten_password_label' => __("Don't know your email address, or forgotten your password?", 'updraftplus'),
 			'forgotten_password_link_label' => __("Don't know your email address, or forgotten your password?", 'updraftplus').__('Follow this link for help', 'updraftplus'),
@@ -553,6 +632,31 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 			'button_disconnect_label' => __('Disconnect', 'updraftplus'),
 			'vault_is_not_connected_label' => wp_kses(__('You are <strong>not connected</strong> to UpdraftVault.', 'updraftplus'), $this->allowed_html_for_content_sanitisation()),
 			'is_premium' => defined('UDADDONS2_DIR'),
+			'manage_label' => __('Manage', 'updraftplus'),
+			'get_more_quota_label' => __('Get more quota', 'updraftplus'),
+			'refresh_label' => __('Refresh', 'updraftplus'),
+			'start_label' => __('Start', 'updraftplus'),
+			/* translators: %s: Price */
+			'try_first_month_label' => sprintf(__('Try %s first month', 'updraftplus'), '$1'),
+			/* translators: %s: Subscription size */
+			'storage_5gb_label' => sprintf(__('%s storage', 'updraftplus'), self::PACKAGE_5GB),
+			/* translators: %s: Subscription size */
+			'storage_15gb_label' => sprintf(__('%s storage', 'updraftplus'), self::PACKAGE_15GB),
+			/* translators: %s: Subscription size */
+			'storage_50gb_label' => sprintf(__('%s storage', 'updraftplus'), self::PACKAGE_50GB),
+			/* translators: %s: Subscription size */
+			'storage_250gb_label' => sprintf(__('%s storage', 'updraftplus'), self::PACKAGE_250GB),
+			'price_5gb_quarter_label' => '$10',
+			'price_15gb_quarter_label' => '$20',
+			'price_50gb_quarter_label' => '$50',
+			'price_250gb_quarter_label' => '$125',
+			'description_5gb_label' => __('Small sites or blogs; light usage.', 'updraftplus'),
+			'description_15gb_label' => __('Small business or portfolio sites; moderate usage.', 'updraftplus'),
+			'description_50gb_label' => __('Growing sites, e-commerce, or media-rich content.', 'updraftplus'),
+			'description_250gb_label' => __('High-volume sites or heavy media needs.', 'updraftplus'),
+			/* translators: %d: Number of months */
+			'period_quarter_label' => ' / '.sprintf(__('%d months', 'updraftplus'), 3),
+			'need_storage_label' => __('Need storage?', 'updraftplus'),
 		);
 		if ($updraftplus_checkout_embed) {
 			if ($updraftplus_checkout_embed->get_product('updraftplus-vault-storage-5-gb')) $properties['checkout_embed_5gb_attribute'] = 'data-embed-checkout="'.esc_url(apply_filters('updraftplus_com_link', $updraftplus_checkout_embed->get_product('updraftplus-vault-storage-5-gb', UpdraftPlus_Options::admin_page_url().'?page=updraftplus&tab=settings'))).'"';
@@ -639,6 +743,31 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 	}
 
 	/**
+	 * Get the numeric UpdraftVault quota for the current site.
+	 *
+	 * Returns the numeric quota value when the site is connected to UpdraftVault
+	 * and valid quota information is available. If the site is not connected or
+	 * the quota cannot be determined, null is returned.
+	 *
+	 * This method returns raw data only and does not generate any user-facing
+	 * output or HTML.
+	 *
+	 * @param array|false $vault_settings Optional Vault settings array. If false or invalid,
+	 *                                   options will be loaded from storage.
+	 *
+	 * @return string|null Quota usage with available quota information, or null if unavailable.
+	 */
+	private function connected_data($vault_settings = false) {
+		if (!is_array($vault_settings)) $vault_settings = $this->get_options();
+
+		if (!is_array($vault_settings) || empty($vault_settings['token']) || empty($vault_settings['email'])) return __('You are <strong>not connected</strong> to UpdraftVault.', 'updraftplus');
+
+		if (isset($vault_settings['quota']) || is_numeric($vault_settings['quota'])) return $this->s3_get_quota_info('text', $vault_settings['quota'], false);
+
+		return null;
+	}
+
+	/**
 	 * This function will output to the backup log when s3 is out of quota, it will then also clear the vault quota transient so a recount will happen at some point.
 	 *
 	 * @param Integer $total  - the total amount of quota
@@ -650,7 +779,16 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 	protected function s3_out_of_quota($total, $used, $needed) {
 		$quota_transient_used = $this->quota_transient_used ? '(via transient)' : '';
 		$this->log("Error: Quota exhausted (used=$used, total=$total, needed=$needed) $quota_transient_used");
-		$this->log(sprintf(__('Error: you have insufficient storage quota available (%s) to upload this archive (%s) (%s).', 'updraftplus'), round(($total-$used)/1048576, 2).' MB', round($needed/1048576, 2).' MB', $quota_transient_used).' '.__('You can get more quota here', 'updraftplus').': '.$this->get_url('get_more_quota'), 'error');
+		$this->log(
+			sprintf(
+				/* translators: 1: Available storage, 2: Required storage, 3: Quota usage */
+				__('Error: you have insufficient storage quota available (%1$s) to upload this archive (%2$s) (%3$s).', 'updraftplus'),
+				round(($total-$used)/1048576, 2).' MB',
+				round($needed/1048576, 2).' MB',
+				$quota_transient_used
+			).' '.__('You can get more quota here', 'updraftplus').': '.$this->get_url('get_more_quota'),
+			'error'
+		);
 		// The transient wasn't intended for 100% precision when that matters (e.g. out-of-quota), so we delete it - a fresh calculation will take place on the next operation
 		delete_transient('updraftvault_quota_numeric');
 	}
@@ -695,11 +833,13 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 	/**
 	 * This function will return the S3 quota Information
 	 *
-	 * @param  String|integer $format n numeric, returns an integer or false for an error (never returns an error)
-	 * @param  integer        $quota  S3 quota information
-	 * @return String|integer
+	 * @param  string $format                Either 'text' or 'numeric', returns an integer or false for an error (never returns an error)
+	 * @param  int    $quota                 S3 quota information
+	 * @param  bool   $include_recount_links Whether to include the recount links in the text output
+	 *
+	 * @return string|integer
 	 */
-	protected function s3_get_quota_info($format = 'numeric', $quota = 0) {
+	protected function s3_get_quota_info($format = 'numeric', $quota = 0, $include_recount_links = true) {
 		$ret = '';
 		$counted = 0;
 
@@ -760,7 +900,7 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 			$ret .= '0';
 		}
 		
-		$ret .= $this->get_quota_recount_links();
+		if ($include_recount_links) $ret .= $this->get_quota_recount_links();
 		
 		if ('text' == $format) set_transient('updraftvault_quota_text', $ret, 86400*3);
 
@@ -776,21 +916,45 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 		return ' - <a href="'.esc_attr($this->get_url('get_more_quota')).'">'.__('Get more quota', 'updraftplus').'</a> - <a href="'.esc_url(UpdraftPlus::get_current_clean_url()).'" id="updraftvault_recountquota">'.__('Refresh current status', 'updraftplus').'</a>';
 	}
 
-	public function ajax_vault_recountquota($echo_results = true) {
+	/**
+	 * AJAX handler to recount and return the current Vault quota status.
+	 *
+	 * This method refreshes the configuration, validates authentication state,
+	 * and returns quota information or error details depending on the connection
+	 * status. The response can either be echoed directly as JSON (default AJAX
+	 * behavior) or returned as an array for internal usage.
+	 *
+	 * @param bool $echo_results     Whether to echo the JSON-encoded results directly.
+	 *                               Defaults to true.
+	 * @param bool $return_data_only Whether to return structured quota data only instead
+	 *                               of rendered HTML. Defaults to false.
+	 *
+	 * @return array|null Returns an associative array of results when $echo_results is false;
+	 *                    otherwise, outputs JSON and returns null.
+	 */
+	public function ajax_vault_recountquota($echo_results = true, $return_data_only = false) {
 		// Force the opts to be refreshed
 		$config = $this->get_config();
 
 		if (empty($config['accesskey']) && !empty($config['error_message'])) {
 			if (!empty($config['error']) && is_array($config['error']) && 'fetch_credentials_error' == $config['error']['message']) {
 				$opts = array('token' => 'unknown', 'email' => $config['email'], 'quota' => -1);
-				$results = array('html' => $this->connected_html($opts, $config['error_message']), 'connected' => 1);
+				if ($return_data_only) {
+					$results = array('connected' => true, 'quota' => $this->connected_data($opts));
+				} else {
+					$results = array('connected' => true, 'html' => $this->connected_html($opts, $config['error_message']));
+				}
 			} else {
 				$results = array('html' => htmlspecialchars($config['error_message']), 'connected' => 0);
 			}
 		} else {
 			// Now read the opts
 			$opts = $this->get_options();
-			$results = array('html' => $this->connected_html($opts), 'connected' => 1);
+			if ($return_data_only) {
+				$results = array('connected' => true, 'quota' => $this->connected_data($opts));
+			} else {
+				$results = array('connected' => true, 'html' => $this->connected_html($opts));
+			}
 		}
 		if ($echo_results) {
 			echo json_encode($results);
@@ -825,7 +989,8 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 		}
 
 		// If $_POST['reset_hash'] is set, then we were alerted by updraftplus.com - no need to notify back
-		if (is_array($vault_settings) && isset($vault_settings['email']) && empty($_POST['reset_hash'])) {
+		$reset_hash = UpdraftPlus_Manipulation_Functions::fetch_superglobal('post', 'reset_hash');
+		if (is_array($vault_settings) && isset($vault_settings['email']) && empty($reset_hash)) {
 		
 			$post_body = array(
 				'e' => (string) $vault_settings['email'],
@@ -849,17 +1014,24 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 	/**
 	 * This is called from the UD admin object
 	 *
-	 * @param  Boolean       $echo_results    A Flag to see if results need to be echoed or returned
-	 * @param  Boolean|array $use_credentials Check if Vault needs to use credentials
-	 * @return Array
+	 * @param  bool       $echo_results     A Flag to see if results need to be echoed or returned
+	 * @param  bool|array $use_credentials  Check if Vault needs to use credentials
+	 * @param  bool       $return_data_only Whether to return only raw data for the connected HTML.
+	 *
+	 * @return array
 	 */
-	public function ajax_vault_connect($echo_results = true, $use_credentials = false) {
+	public function ajax_vault_connect($echo_results = true, $use_credentials = false, $return_data_only = false) {
 	
-		if (empty($use_credentials)) $use_credentials = $_REQUEST;
+		if (empty($use_credentials)) $use_credentials = UpdraftPlus_Manipulation_Functions::fetch_superglobal_array(array('request', 'email'), array('request', 'pass'));
 	
 		$connect = $this->vault_connect($use_credentials['email'], $use_credentials['pass']);
 		if (true === $connect) {
-			$response = array('connected' => true, 'html' => $this->connected_html(false));
+			$this->set_connection_status(true);
+			if ($return_data_only) {
+				$response = array('connected' => true, 'quota' => $this->connected_data(false));
+			} else {
+				$response = array('connected' => true, 'html' => $this->connected_html(false, false));
+			}
 		} else {
 			$response = array(
 				'e' => __('An unknown error occurred when trying to connect to UpdraftPlus.Com', 'updraftplus')
@@ -913,8 +1085,10 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 		if (!is_array($response) || !isset($response['mothership']) || !isset($response['loggedin'])) {
 
 			if (preg_match('/has banned your IP address \(([\.:0-9a-f]+)\)/', $result['body'], $matches)) {
-				return new WP_Error('banned_ip', sprintf(__("UpdraftPlus.com has responded with 'Access Denied'.", 'updraftplus').'<br>'.__("It appears that your web server's IP Address (%s) is blocked.", 'updraftplus').' '.__('This most likely means that you share a webserver with a hacked website that has been used in previous attacks.', 'updraftplus').'<br> <a href="'.apply_filters("updraftplus_com_link", "https://updraftplus.com/unblock-ip-address/").'" target="_blank">'.__('To remove the block, please go here.', 'updraftplus').'</a> ', $matches[1]));
+				/* translators: %s: Blocked IP address */
+				return new WP_Error('banned_ip', sprintf(__("UpdraftPlus.com has responded with 'Access Denied'.", 'updraftplus').'<br>'.__("It appears that your web server's IP Address (%s) is blocked.", 'updraftplus').' '.__('This most likely means that you share a webserver with a hacked website that has been used in previous attacks.', 'updraftplus').'<br> <a href="'.apply_filters("updraftplus_com_link", "https://teamupdraft.com/documentation/updraftplus/topics/general/troubleshooting/updraftplus-ip-unblock-how-to-regain-access-if-your-ip-is-blocked/").'" target="_blank">'.__('To remove the block, please go here.', 'updraftplus').'</a> ', $matches[1]));
 			} else {
+				/* translators: %s: API response data */
 				return new WP_Error('unknown_response', sprintf(__('UpdraftPlus.Com returned a response which we could not understand (data: %s)', 'updraftplus'), wp_remote_retrieve_body($result)));
 			}
 		}
@@ -959,9 +1133,13 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 			case 'iamfailed':
 				if (!empty($response['authproblem'])) {
 					if ('gettempcreds_exception2' == $response['authproblem'] || 'gettempcreds_exception2' == $response['authproblem']) {
-						$authfail_error = new WP_Error('authfailed', __('An error occurred while fetching your Vault credentials.', 'updraftplus').' '.__('Please try again after a few minutes.'));
+						$authfail_error = new WP_Error('authfailed', __('An error occurred while fetching your Vault credentials.', 'updraftplus').' '.__('Please try again after a few minutes.', 'updraftplus'));
 					} else {
-						$authfail_error = new WP_Error('authfailed', __('An unknown error occurred while connecting to Vault.', 'updraftplus').' '.__('Please try again.'));
+						$authfail_error = new WP_Error(
+							'authfailed',
+							__('An unknown error occurred while connecting to Vault.', 'updraftplus').' '.
+							__('Please try again.')// phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- The string exists within the WordPress core.
+						);
 					}
 					return $authfail_error;
 				}
@@ -990,7 +1168,7 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 			if ('recursion' !== $opts->get_error_code()) {
 				$msg = "(".$opts->get_error_code()."): ".$opts->get_error_message();
 				$this->log($msg);
-				error_log("UpdraftPlus: $msg");
+				UpdraftPlus_Manipulation_Functions::error_log("UpdraftPlus: $msg");
 			}
 			// The saved options had a problem; so, return the new ones
 			return $updraftvault;
@@ -1081,5 +1259,153 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 		} else {
 			return parent::getS3($key, $secret, $useservercerts, $disableverify, $nossl, $endpoint, $sse, $session_token);
 		}
+	}
+
+	/**
+	 * Customize generated field data using legacy mapping values.
+	 *
+	 * Used by transform_template_properties_to_fields_structure()
+	 * to allow child classes to adjust the generated field structure
+	 * based on legacy data and field mapping requirements.
+	 *
+	 * @param array  $field               Field data.
+	 * @param array  $template_properties Template properties.
+	 * @param string $field_name          Field name.
+	 * @param array  $option              Field mapping option.
+	 *
+	 * @return array
+	 */
+	public function configure_field_from_legacy($field, $template_properties, $field_name, $option) {
+		$prefix = 'input_'.$option['template_property_input_mapping'].'_';
+
+		// Switch placeholder and label
+		if (empty($field['tooltip']) && isset($template_properties[$prefix.'title'])) {
+			$field['placeholder'] = $template_properties[$prefix.'title'];
+			$field['label'] = $template_properties[$prefix.'placeholder'];
+		}
+		
+		if (in_array($field_name, array('email', 'password'))) $field['visible_if'] = array('field' => 'updraftvault_completed', 'equals' => false);
+		if ('connected_status' == $field_name) $field = $this->get_connected_status_schema();
+		if ('disconnected_status' == $field_name) $field = $this->get_disconnected_status_schema();
+
+		return $field;
+	}
+
+	/**
+	 * Build and return the status schema configuration used when UpdraftVault
+	 * is already connected.
+	 *
+	 * @return array The status schema configuration for the connected UpdraftVault view.
+	 */
+	private function get_connected_status_schema() {
+		$template_properties = $this->get_template_properties();
+
+		return array(
+			'id' => 'updraftvault_status',
+			'type' => 'status',
+			'label' => '',
+			'container_class' => 'max-w-sm bg-gray-100 rounded-2xl p-6 text-gray-800',
+			'title_class' => 'text-lg font-semibold mb-1',
+			'content_class' => 'text-base mb-2',
+			'actions_class' => 'flex items-center gap-4 !text-[#C4511C] font-semibold',
+			'actions_title' => $template_properties['manage_label'],
+			'alert_group_id' => 'updraftvault_connected',
+			'visible_if' => array(
+				'field' => 'updraftvault_completed',
+				'equals' => true,
+			),
+			'sections' => array(
+				array(
+					'title' => $template_properties['vault_owner_label'],
+					'content' => '[[updraftvault_email_display]]',
+				),
+				array(
+					'title' => $template_properties['vault_quota_label'],
+					'content' => '[[updraftvault_quota_display]]',
+				),
+			),
+			'actions' => array(
+				array(
+					'type' => 'button',
+					'label' => $template_properties['refresh_label'],
+					'onClick' => 'recountQuotaUpdraftVault',
+					'groupId' => 'updraftvault',
+				),
+				array(
+					'type' => 'link',
+					'label' => $template_properties['get_more_quota_label'].' ↗',
+					'href' => 'https://teamupdraft.com/updraftplus/updraftvault/#pricing-block',
+					'target' => '_blank',
+					'rel' => 'noopener noreferrer',
+				),
+				array(
+					'type' => 'button',
+					'label' => $template_properties['button_disconnect_label'],
+					'onClick' => 'disconnectUpdraftVault',
+					'groupId' => 'updraftvault',
+				),
+			),
+		);
+	}
+
+	/**
+	 * Build and return the pricing schema configuration used when UpdraftVault
+	 * is not yet connected.
+	 *
+	 * @return array The pricing schema configuration for the not connected UpdraftVault view.
+	 */
+	private function get_disconnected_status_schema() {
+		$template_properties = $this->get_template_properties();
+
+		$default_card_class = 'bg-gray-100 border-gray-300';
+		$default_button_class = 'rounded-xl bg-white text-gray-900 border border-gray-300 hover:bg-gray-100';
+		$default_icon = 'link-arrow';
+		$default_icon_size = 10;
+
+		$url = 'https://teamupdraft.com/updraftplus/updraftvault/#pricing-block';
+
+		$plans = array();
+
+		foreach (array(self::PACKAGE_5GB, self::PACKAGE_15GB, self::PACKAGE_50GB, self::PACKAGE_250GB) as $slug) {
+			$slug = strtolower($slug);
+			$plan = array(
+				'storage' => $template_properties['storage_'.$slug.'_label'],
+				'description' => $template_properties['description_'.$slug.'_label'],
+				'price' => $template_properties['price_'.$slug.'_quarter_label'],
+				'period' => $template_properties['period_quarter_label'],
+				'button' => $template_properties['start_label'],
+			);
+
+			if (self::PACKAGE_5GB === $slug) {
+				$plan['button'] = $template_properties['try_first_month_label'];
+				$plan['card_class'] = 'bg-orange-lightest border-orange';
+				$plan['button_class'] = 'rounded-xl transition-all duration-200 bg-[var(--teamupdraft-orange-dark)] border border-[var(--teamupdraft-orange-dark)] text-white hover:[box-shadow:0_0_0_3px_#C4511C99] focus:[box-shadow:0_0_0_3px_#C4511C99] py-1.5 text-base font-medium w-full';
+				$plan['icon'] = 'magic-wand';
+				$plan['icon_size'] = 20;
+				$plan['icon_color'] = 'white';
+			}
+
+			$plans[] = $plan;
+		}
+
+		return array(
+			'id' => 'updraftvault_pricing',
+			'type' => 'pricing',
+			'label' => '',
+			'title' => $template_properties['need_storage_label'],
+			'title_class' => 'text-[17px] mb-[14px] text-gray-900 mt-0',
+			'grid_class' => 'grid grid-cols-2 gap-[10px]',
+			'url' => $url,
+			'default_card_class' => $default_card_class,
+			'default_button_class' => $default_button_class,
+			'default_icon' => $default_icon,
+			'default_icon_size' => $default_icon_size,
+			'default_icon_color' => 'black',
+			'visible_if' => array(
+				'field' => 'updraftvault_completed',
+				'equals' => false,
+			),
+			'plans' => $plans,
+		);
 	}
 }

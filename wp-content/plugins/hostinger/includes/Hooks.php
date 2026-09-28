@@ -2,6 +2,7 @@
 
 namespace Hostinger;
 
+use Hostinger\Admin\Menu;
 use Hostinger\Admin\PluginSettings;
 use Hostinger\Admin\Jobs\NotifyMcpJob;
 use Hostinger\Mcp\EventHandlerFactory;
@@ -13,11 +14,11 @@ class Hooks {
     public function __construct() {
         add_filter( 'xmlrpc_enabled', array( $this, 'check_xmlrpc_enabled' ) );
         add_filter( 'wp_is_application_passwords_available', array( $this, 'check_authentication_password_enabled' ) );
+        add_filter( 'wp_die_handler', array( $this, 'maybe_customize_application_password_die_handler' ) );
         add_filter( 'wp_headers', array( $this, 'check_pingback' ) );
-        add_filter( 'plugins_loaded', array( $this, 'plugins_loaded' ) );
+        add_action( 'init', array( $this, 'plugins_loaded' ) );
         add_action( 'update_option_woocommerce_coming_soon', array( $this, 'litespeed_flush_cache' ) );
         add_action( 'update_option_woocommerce_store_pages_only', array( $this, 'litespeed_flush_cache' ) );
-        add_action( 'upgrader_process_complete', array( $this, 'disable_auth_passwords_on_update' ), 10, 2 );
         add_action( 'transition_post_status', array( $this, 'handle_transition_post_status' ), 10, 3 );
         add_action( 'updated_option', array( $this, 'handle_updated_option' ), 10, 3 );
     }
@@ -54,25 +55,6 @@ class Hooks {
                 );
             }
         }
-    }
-
-    public function disable_auth_passwords_on_update( \WP_Upgrader $upgrader_object, array $options ): void {
-        if ( $options['action'] !== 'update' || $options['type'] !== 'plugin' || empty( $options['plugins'] ) ) {
-            return;
-        }
-
-        if ( ! in_array( 'hostinger/hostinger.php', $options['plugins'], true ) ) {
-            return;
-        }
-
-        $settings = get_option( HOSTINGER_PLUGIN_SETTINGS_OPTION, array() );
-
-        if ( ! empty( $settings['disable_authentication_password'] ) ) {
-            return;
-        }
-
-        $options = new DefaultOptions();
-        $options->configure_authentication_password();
     }
 
     /**
@@ -136,9 +118,11 @@ class Hooks {
     }
 
     /**
+     * @param bool $enabled
+     *
      * @return bool
      */
-    public function check_xmlrpc_enabled(): bool {
+    public function check_xmlrpc_enabled( bool $enabled ): bool {
         $plugin_settings = new PluginSettings();
         $settings        = $plugin_settings->get_plugin_settings();
 
@@ -146,7 +130,7 @@ class Hooks {
             return false;
         }
 
-        return true;
+        return $enabled;
     }
 
     /**
@@ -161,6 +145,33 @@ class Hooks {
         }
 
         return true;
+    }
+
+    public function maybe_customize_application_password_die_handler( $handler ) {
+        $plugin_settings = new PluginSettings();
+        $settings        = $plugin_settings->get_plugin_settings();
+
+        if ( ! $settings->get_disable_authentication_password() ) {
+            return $handler;
+        }
+
+        return function ( $message, $title = '', $args = array() ) use ( $handler ) {
+            if ( is_string( $message ) && $message === __( 'Application passwords are not available.' ) ) {
+                $message = $this->get_application_password_disabled_message();
+            }
+
+            call_user_func( $handler, $message, $title, $args );
+        };
+    }
+
+    private function get_application_password_disabled_message(): string {
+        $settings_url = admin_url( 'admin.php?page=' . Menu::MENU_SLUG );
+
+        return sprintf(
+            /* translators: %s: URL to the Hostinger Tools settings page. */
+            __( 'Application passwords have been disabled by Hostinger for security reasons. You can turn them back on from <a href="%s">Hostinger Tools → Security settings</a>.', 'hostinger' ),
+            esc_url( $settings_url )
+        );
     }
 
     public function litespeed_flush_cache(): void {

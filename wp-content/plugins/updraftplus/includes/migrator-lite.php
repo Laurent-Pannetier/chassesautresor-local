@@ -1,5 +1,8 @@
 <?php
-if (!defined('UPDRAFTPLUS_DIR')) die('No direct access allowed');
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery -- Direct $wpdb query is required for this operation.
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.NoCaching -- some query operations need to always receive the most up-to-date or actual data directly from the database, reducing the risk of serving stale information.
+// phpcs:disable Squiz.PHP.DiscouragedFunctions.Discouraged -- some functions, like set_time_limit() and ini_set(), are used to temporarily change PHP configuration values based on the script's needs (e.g., processing large datasets or performing long operations).
+if (!defined('ABSPATH')) die('No direct access allowed');
 
 
 // Search/replace code adapted in according with the licence from https://github.com/interconnectit/Search-Replace-DB
@@ -208,6 +211,7 @@ class UpdraftPlus_Migrator_Lite {
 				unset($active_plugins[$slug]);
 				
 				$updraftplus->log("Disabled this plugin: %s: re-activate it manually when you are ready.", $desc);
+				/* translators: %s: Plugin name or description */
 				$updraftplus->log(sprintf(__("Disabled this plugin: %s: re-activate it manually when you are ready.", 'updraftplus'), $desc), 'notice-restore');
 
 			}
@@ -231,7 +235,11 @@ class UpdraftPlus_Migrator_Lite {
 		global $updraftplus_restorer;
 
 		if (version_compare(PHP_VERSION, '5.3', '<')) {
-			echo esc_html(sprintf(__("The search and replace feature isn't suitable for PHP %s users.", 'updraftplus'), PHP_VERSION).' '.__('To take advantage of this feature, please upgrade your PHP version to at least 5.3.', 'updraftplus'))."<br>";
+			echo esc_html(
+				/* translators: %s: PHP version */
+				sprintf(__("The search and replace feature isn't suitable for PHP %s users.", 'updraftplus'), PHP_VERSION).' '.
+				__('To take advantage of this feature, please upgrade your PHP version to at least 5.3.', 'updraftplus')
+			)."<br>";
 			echo '<a href="'.esc_url(UpdraftPlus_Options::admin_page_url().'?page=updraftplus').'">'.esc_html__('Return to UpdraftPlus configuration', 'updraftplus').'</a>';
 			return;
 		}
@@ -240,15 +248,23 @@ class UpdraftPlus_Migrator_Lite {
 			'show_return_link' => true,
 			'show_heading' => true,
 		));
+
+		$keyword_to_search = UpdraftPlus_Manipulation_Functions::fetch_superglobal('post', 'search', '');
+		$keyword_replacement_text = UpdraftPlus_Manipulation_Functions::fetch_superglobal('post', 'replace', '');
 	
 		if (!empty($options['show_heading'])) echo '<h2>'.esc_html__('Search / replace database', 'updraftplus').'</h2>';
-		echo '<strong>'.esc_html__('Search for', 'updraftplus').':</strong> '.esc_html(stripslashes($_POST['search']))."<br>";
-		echo '<strong>'.esc_html__('Replace with', 'updraftplus').':</strong> '.esc_html(stripslashes($_POST['replace']))."<br>";
-		$this->page_size = (empty($_POST['pagesize']) || !is_numeric($_POST['pagesize'])) ? 5000 : (int) $_POST['pagesize'];
-		$this->which_tables = empty($_POST['whichtables']) ? '' : explode(',', (stripslashes($_POST['whichtables'])));
-		if (empty($_POST['search'])) {
-			// trnaslators: "search term"
-			echo sprintf(esc_html__("Failure: No %s was given.", 'updraftplus'), esc_html__('search term', 'updraftplus'))."<br>";
+		echo '<strong>'.esc_html__('Search for', 'updraftplus').':</strong> '.esc_html(stripslashes($keyword_to_search))."<br>";
+		echo '<strong>'.esc_html__('Replace with', 'updraftplus').':</strong> '.esc_html(stripslashes($keyword_replacement_text))."<br>";
+		$pagesize = UpdraftPlus_Manipulation_Functions::fetch_superglobal('post', 'pagesize');
+		$this->page_size = (empty($pagesize) || !is_numeric($pagesize)) ? 5000 : (int) $pagesize;
+		$post_which_tables = UpdraftPlus_Manipulation_Functions::fetch_superglobal('post', 'whichtables', '');
+		$this->which_tables = empty($post_which_tables) ? '' : explode(',', (stripslashes($post_which_tables)));
+		if (empty($keyword_to_search)) {
+			echo sprintf(
+				/* translators: %s: Missing parameter name */
+				esc_html__("Failure: No %s was given.", 'updraftplus'),
+				esc_html__('search term', 'updraftplus')
+			)."<br>";
 			
 			if (!empty($options['show_return_link'])) {
 				echo '<a href="'.esc_url(UpdraftPlus_Options::admin_page_url()).'?page=updraftplus">'.esc_html__('Return to UpdraftPlus configuration', 'updraftplus').'</a>';
@@ -266,7 +282,7 @@ class UpdraftPlus_Migrator_Lite {
 		}
 		$this->updraftplus_restore_db_pre();
 		$this->tables_replaced = array();
-		$this->updraftplus_restored_db_dosearchreplace(stripslashes($_POST['search']), stripslashes($_POST['replace']), $this->base_prefix, false);
+		$this->updraftplus_restored_db_dosearchreplace(stripslashes($keyword_to_search), stripslashes($keyword_replacement_text), $this->base_prefix, false);
 		if (!empty($options['show_return_link'])) echo '<a href="'.esc_url(UpdraftPlus_Options::admin_page_url()).'?page=updraftplus">'.esc_html__('Return to UpdraftPlus Configuration', 'updraftplus').'</a>';
 	}
 
@@ -290,7 +306,15 @@ class UpdraftPlus_Migrator_Lite {
 		<div class="advanced_tools search_replace">
 			<h3><?php esc_html_e('Search / replace database', 'updraftplus'); ?></h3>
 			<?php if (version_compare(PHP_VERSION, '5.3', '<')) { ?>
-				<p><em><?php echo esc_html(sprintf(__("This feature isn't suitable for PHP %s users.", 'updraftplus'), PHP_VERSION).' '.__('To take advantage of this feature, please upgrade your PHP version to at least 5.3.', 'updraftplus'));?></em></p>
+				<p><em>
+					<?php
+					echo esc_html(
+						/* translators: %s: PHP version */
+						sprintf(__('This feature isn\'t suitable for PHP %s users.', 'updraftplus'), PHP_VERSION).' '.
+						__('To take advantage of this feature, please upgrade your PHP version to at least 5.3.', 'updraftplus')
+					);
+					?>
+				</em></p>
 			<?php } else { ?>
 				<p><em><?php esc_html_e('This can easily destroy your site; so, use it with care!', 'updraftplus');?></em></p>
 				<form id="search_replace_form" method="post" onsubmit="return(confirm('<?php echo esc_js(__('A search/replace cannot be undone - are you sure you want to do this?', 'updraftplus'));?>'))">
@@ -322,8 +346,10 @@ class UpdraftPlus_Migrator_Lite {
 	 * @return String - filtered
 	 */
 	public function dbscan_urlchange($output, $old_siteurl, $restore_options) {// phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable -- Filter use
+		/* translators: %s: Old site URL */
 		$msg = sprintf(__('This looks like a migration (the backup is from a site with a different address/URL, %s).', 'updraftplus'), htmlspecialchars($old_siteurl));
 		if (version_compare(PHP_VERSION, '5.3', '<')) {
+			/* translators: %s: PHP version */
 			$msg .= ' '.sprintf(__('However, the search and replace feature is not suitable for the PHP version (%s) your server is running on.', 'updraftplus'), PHP_VERSION);
 			$msg .= ' '.__('This restoration can search and replace your database if you upgrade your PHP version to at least 5.3.', 'updraftplus');
 		}
@@ -373,7 +399,9 @@ class UpdraftPlus_Migrator_Lite {
 	 */
 	public function dbscan_urlchange_www_append_warning($output) {// phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable -- Filter use
 		if (version_compare(PHP_VERSION, '5.3', '<')) {
-			return sprintf(__("This restoration can't use the search and replace feature as it's not suitable for the PHP version (%s) your server is running on.", 'updraftplus'), PHP_VERSION).' '.__('To take advantage of the feature, please upgrade your PHP version to at least 5.3.', 'updraftplus');
+			/* translators: %s: PHP version */
+			return sprintf(__("This restoration can't use the search and replace feature as it's not suitable for the PHP version (%s) your server is running on.", 'updraftplus'), PHP_VERSION).' '.
+			__('To take advantage of the feature, please upgrade your PHP version to at least 5.3.', 'updraftplus');
 		} else {
 			return __('you will want to use below search and replace site location in the database (migrate) to search/replace the site address.', 'updraftplus');
 		}
@@ -403,7 +431,10 @@ class UpdraftPlus_Migrator_Lite {
 			if (empty($info['addui'])) $info['addui'] = '';
 			$info['addui'] .= '<div id="updraft_restorer_dboptions" class="udp-notice before-h2 updraft-restore-option updraft-hidden">';
 			$info['addui'] .= '<h4>' . __('Database restoration options:', 'updraftplus') . '</h4>';
-			$info['addui'] .= '<input name="updraft_restorer_replacesiteurl" id="updraft_restorer_replacesiteurl" type="checkbox" value="1" checked><label for="updraft_restorer_replacesiteurl" title="'.sprintf(__('All references to the site location in the database will be replaced with your current site URL, which is: %s', 'updraftplus'), htmlspecialchars(untrailingslashit(site_url()))).'"> '.__('Search and replace site location in the database (migrate)', 'updraftplus').'</label>';
+			$info['addui'] .= '<input name="updraft_restorer_replacesiteurl" id="updraft_restorer_replacesiteurl" type="checkbox" value="1" checked><label for="updraft_restorer_replacesiteurl" title="'.
+			/* translators: %s: Current site URL */
+			sprintf(__('All references to the site location in the database will be replaced with your current site URL, which is: %s', 'updraftplus'), htmlspecialchars(untrailingslashit(site_url()))).'"> '.
+			__('Search and replace site location in the database (migrate)', 'updraftplus').'</label>';
 			$info['addui'] .= '</div>';
 		}
 	}
@@ -477,7 +508,8 @@ class UpdraftPlus_Migrator_Lite {
 		if (true == $this->use_wpdb) $updraftplus->log_e('Database access: Direct MySQL access is not available, so we are falling back to wpdb (this will be considerably slower)');
 
 		if (is_multisite()) {
-			$sites = $wpdb->get_results('SELECT id, domain, path FROM '.UpdraftPlus_Manipulation_Functions::backquote($this->base_prefix.'site'), ARRAY_N);
+			$escaped_table_name = UpdraftPlus_Database_Utility::escape_table_name($this->base_prefix.'site');
+			$sites = $wpdb->get_results('SELECT id, domain, path FROM '.$escaped_table_name, ARRAY_N); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- Table name is safely escaped via escape_table_name(); $wpdb->prepare() not recommended for SQL identifiers.
 			if (is_array($sites)) {
 				$nsites = array();
 				foreach ($sites as $site) $nsites[$site[0]] = array($site[1], $site[2]);
@@ -499,11 +531,12 @@ class UpdraftPlus_Migrator_Lite {
 	public function updraftplus_restored_db_table($table, $import_table_prefix, $engine = '') {
 
 		global $updraftplus, $wpdb, $updraftplus_restorer;
+		$escaped_table_name = UpdraftPlus_Database_Utility::escape_table_name($table);
 
 		if (!empty($this->new_blogid) && !empty($this->restore_options['updraft_restore_content_to_user'])) {
 			if ($table == $import_table_prefix.'posts') {
 				$updraftplus->log("Setting all content (posts/post_author) to be owned by ID: ".$this->restore_options['updraft_restore_content_to_user']);
-				$posts_updated = $wpdb->query("UPDATE ".UpdraftPlus_Manipulation_Functions::backquote($table)." SET post_author=".(int) $this->restore_options['updraft_restore_content_to_user']);
+				$posts_updated = $wpdb->query($wpdb->prepare("UPDATE ".$escaped_table_name." SET post_author = %d", (int) $this->restore_options['updraft_restore_content_to_user'])); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- Table name is safely escaped via escape_table_name(), table name is a dynamic identifier placeholders cannot be used.
 				if (is_numeric($posts_updated)) {
 					$updraftplus->log("Number of rows updated: ".$posts_updated);
 				} else {
@@ -511,7 +544,7 @@ class UpdraftPlus_Migrator_Lite {
 				}
 			} elseif ($table == $import_table_prefix.'postmeta') {
 				// Set WooCommerce orders to belong to guest
-				$keys_deleted = $wpdb->query("DELETE FROM ".UpdraftPlus_Manipulation_Functions::backquote($table)." WHERE meta_key='_customer_user'");
+				$keys_deleted = $wpdb->query($wpdb->prepare("DELETE FROM ".$escaped_table_name." WHERE meta_key = %s", '_customer_user')); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- Table name is safely escaped via escape_table_name(), table name is a dynamic identifier placeholders cannot be used.
 				if (is_numeric($keys_deleted)) {
 					$updraftplus->log("Number of WooCommerce orders re-assigned to Guest: ".$keys_deleted);
 				}
@@ -593,7 +626,7 @@ class UpdraftPlus_Migrator_Lite {
 		// If we just replaced either the blogs or site table, then populate our records of what is *now* (i.e. post-restore) in them
 		if (!empty($try_site_blog_replace)) {
 			if ($table == $this->base_prefix.'blogs') {
-				$blogs = $wpdb->get_results('SELECT blog_id, domain, path, site_id FROM '.UpdraftPlus_Manipulation_Functions::backquote($this->base_prefix.'blogs'), ARRAY_N);
+				$blogs = $wpdb->get_results("SELECT blog_id, domain, path, site_id FROM ".$escaped_table_name, ARRAY_N); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- Table name is safely escaped via escape_table_name(), $wpdb->prepare() not recommended for SQL identifiers.
 				if (is_array($blogs)) {
 					$nblogs = array();
 					foreach ($blogs as $blog) {
@@ -602,7 +635,7 @@ class UpdraftPlus_Migrator_Lite {
 					$this->restored_blogs = $nblogs;
 				}
 			} elseif ($table == $this->base_prefix.'site') {
-				$sites = $wpdb->get_results('SELECT id, domain, path FROM '.UpdraftPlus_Manipulation_Functions::backquote($this->base_prefix.'site').' ORDER BY id ASC', ARRAY_N);
+				$sites = $wpdb->get_results("SELECT id, domain, path FROM ".$escaped_table_name." ORDER BY id ASC", ARRAY_N); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- Table name is safely escaped via escape_table_name(), $wpdb->prepare() not recommended for SQL identifiers.
 				if (is_array($sites)) {
 					$nsites = array();
 					foreach ($sites as $site) {
@@ -634,10 +667,12 @@ class UpdraftPlus_Migrator_Lite {
 				if ($any_site_changes) {
 					$updraftplus->log_e('Adjusting multisite paths');
 					foreach ($this->restored_sites as $site_id => $osite) {
-						$wpdb->query($wpdb->prepare("UPDATE ".UpdraftPlus_Manipulation_Functions::backquote($this->base_prefix.'site')." SET path='%s' WHERE id=%d", array($osite[1], (int) $site_id)));
+						$escaped_table_name = UpdraftPlus_Database_Utility::escape_table_name($this->base_prefix.'site');
+						$wpdb->query($wpdb->prepare("UPDATE ".$escaped_table_name." SET path=%s WHERE id=%d", array($osite[1], (int) $site_id))); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- Table name is safely escaped via escape_table_name(), table name is a dynamic identifier placeholders cannot be used.
 					}
 					foreach ($this->restored_blogs as $blog_id => $blog) {
-						$wpdb->query($wpdb->prepare("UPDATE ".UpdraftPlus_Manipulation_Functions::backquote($this->base_prefix.'blogs')." SET path='%s' WHERE blog_id=%d", array($blog['path'], (int) $blog_id)));
+						$escaped_table_name = UpdraftPlus_Database_Utility::escape_table_name($this->base_prefix.'blogs');
+						$wpdb->query($wpdb->prepare("UPDATE ".$escaped_table_name." SET path=%s WHERE blog_id=%d", array($blog['path'], (int) $blog_id))); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- Table name is safely escaped via escape_table_name(), table name is a dynamic identifier placeholders cannot be used.
 					}
 				}
 			}
@@ -658,9 +693,17 @@ class UpdraftPlus_Migrator_Lite {
 		}
 
 		if (false == $report) {
-			$updraftplus->log(sprintf(__('Failed: the %s operation was not able to start.', 'updraftplus'), __('search and replace', 'updraftplus')), 'warning-restore');
+			$updraftplus->log(sprintf(
+				/* translators: %s: Operation name */
+				__('Failed: the %s operation was not able to start.', 'updraftplus'),
+				__('search and replace', 'updraftplus')
+			), 'warning-restore');
 		} elseif (!is_array($report)) {
-			$updraftplus->log(sprintf(__('Failed: we did not understand the result returned by the %s operation.', 'updraftplus'), __('search and replace', 'updraftplus')), 'warning-restore');
+			$updraftplus->log(sprintf(
+				/* translators: %s: Operation name */
+				__('Failed: we did not understand the result returned by the %s operation.', 'updraftplus'),
+				__('search and replace', 'updraftplus')
+			), 'warning-restore');
 		} else {
 
 			$this->tables_replaced[$table] = true;
@@ -678,6 +721,9 @@ class UpdraftPlus_Migrator_Lite {
 	 * Displays admin notice if .htaccess have any old migrated site reference.
 	 */
 	public function migration_admin_notices() {
+		
+		if (!UpdraftPlus_Options::user_can_manage()) return;
+		
 		$updraftplus_migrated_site_domain = get_site_option('updraftplus_migrated_site_domain', false);
 		if ($updraftplus_migrated_site_domain) {
 			$htaccess_file_path = ABSPATH.'.htaccess';
@@ -697,9 +743,12 @@ class UpdraftPlus_Migrator_Lite {
 			$count_old_site_references = count($htaccess_file_reference_line_num_arr);
 			if ($count_old_site_references > 0) {
 				?>
-				<div class="notice error updraftplus-migration-notice is-dismissible" >					<p>
+				<div class="notice error updraftplus-migration-notice is-dismissible"><p>
 						<?php
-						printf('<strong>'.esc_html__('Warning', 'updraftplus').':</strong> '.esc_html(_n('Your .htaccess has an old site reference on line number %s. You should remove it manually.', 'Your .htaccess has an old site references on line numbers %s. You should remove them manually.', $count_old_site_references, 'updraftplus')), esc_html(implode(', ', $htaccess_file_reference_line_num_arr)));
+						printf('<strong>'.esc_html__('Warning', 'updraftplus').':</strong> '.esc_html(
+							/* translators: %s: Line number(s) in .htaccess file */
+							_n('Your .htaccess has an old site reference on line number %s. You should remove it manually.', 'Your .htaccess has an old site references on line numbers %s. You should remove them manually.', $count_old_site_references, 'updraftplus')
+						), esc_html(implode(', ', $htaccess_file_reference_line_num_arr)));
 						?>
 					</p>
 				</div>
@@ -832,10 +881,11 @@ class UpdraftPlus_Migrator_Lite {
 
 		// Until 1.12.25, we just used the main options table, which resulted in wrong results when importing a single site into a multisite
 		$options_table = empty($this->new_blogid) ? 'options' : $this->new_blogid.'_options';
+		$escaped_table_name = UpdraftPlus_Database_Utility::escape_table_name($this->base_prefix.$options_table);
 		
-		$db_siteurl_thissite = $wpdb->get_row("SELECT option_value FROM ".UpdraftPlus_Manipulation_Functions::backquote($this->base_prefix.$options_table)." WHERE option_name='siteurl'")->option_value;
+		$db_siteurl_thissite = $wpdb->get_row("SELECT option_value FROM ".$escaped_table_name." WHERE option_name='siteurl'")->option_value; // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- Table name is safely escaped via escape_table_name(), table name is a dynamic identifier placeholders cannot be used.
 		
-		$db_home_thissite = $wpdb->get_row("SELECT option_value FROM ".UpdraftPlus_Manipulation_Functions::backquote($this->base_prefix.$options_table)." WHERE option_name='home'")->option_value;
+		$db_home_thissite = $wpdb->get_row("SELECT option_value FROM ".$escaped_table_name." WHERE option_name='home'")->option_value; // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- Table name is safely escaped via escape_table_name(), table name is a dynamic identifier placeholders cannot be used.
 
 		if (!$replace_this_siteurl) {
 			$replace_this_siteurl = $db_siteurl_thissite;
@@ -857,29 +907,35 @@ class UpdraftPlus_Migrator_Lite {
 
 		// Sanity checks
 		if (empty($replace_this_siteurl)) {
-			$updraftplus->log(sprintf(__('Error: unexpected empty parameter (%s, %s)', 'updraftplus'), 'backup_siteurl', $this->siteurl), 'warning-restore');
+			/* translators: 1: Parameter name, 2: Value */
+			$updraftplus->log(sprintf(__('Error: unexpected empty parameter (%1$s, %2$s)', 'updraftplus'), 'backup_siteurl', $this->siteurl), 'warning-restore');
 			return;
 		}
 		if (empty($replace_this_home)) {
-			$updraftplus->log(sprintf(__('Error: unexpected empty parameter (%s, %s)', 'updraftplus'), 'backup_home', $this->home), 'warning-restore');
+			/* translators: 1: Parameter name, 2: Value */
+			$updraftplus->log(sprintf(__('Error: unexpected empty parameter (%1$s, %2$s)', 'updraftplus'), 'backup_home', $this->home), 'warning-restore');
 			return;
 		}
 		if (empty($replace_this_content)) {
-			$updraftplus->log(sprintf(__('Error: unexpected empty parameter (%s, %s)', 'updraftplus'), 'backup_content_url', $this->content), 'warning-restore');
+			/* translators: 1: Parameter name, 2: Value */
+			$updraftplus->log(sprintf(__('Error: unexpected empty parameter (%1$s, %2$s)', 'updraftplus'), 'backup_content_url', $this->content), 'warning-restore');
 			return;
 		}
 
 		if (empty($this->siteurl)) {
-			$updraftplus->log(sprintf(__('Error: unexpected empty parameter (%s, %s)', 'updraftplus'), 'new_siteurl', $replace_this_siteurl), 'warning-restore');
+			/* translators: 1: Parameter name, 2: Value */
+			$updraftplus->log(sprintf(__('Error: unexpected empty parameter (%1$s, %2$s)', 'updraftplus'), 'new_siteurl', $replace_this_siteurl), 'warning-restore');
 			return;
 		}
 		if (empty($this->home)) {
-			$updraftplus->log(sprintf(__('Error: unexpected empty parameter (%s, %s)', 'updraftplus'), 'new_home', $replace_this_home), 'warning-restore');
+			/* translators: 1: Parameter name, 2: Value */
+			$updraftplus->log(sprintf(__('Error: unexpected empty parameter (%1$s, %2$s)', 'updraftplus'), 'new_home', $replace_this_home), 'warning-restore');
 			return;
 		}
 		// Only complain about the empty content parameter if it's not the case where we use the uploads parameter instead
 		if (empty($this->content) && empty($this->uploads)) {
-			$updraftplus->log(sprintf(__('Error: unexpected empty parameter (%s, %s)', 'updraftplus'), 'new_contenturl', $replace_this_content), 'warning-restore');
+			/* translators: 1: Parameter name, 2: Value */
+			$updraftplus->log(sprintf(__('Error: unexpected empty parameter (%1$s, %2$s)', 'updraftplus'), 'new_contenturl', $replace_this_content), 'warning-restore');
 			return;
 		}
 		
@@ -894,6 +950,7 @@ class UpdraftPlus_Migrator_Lite {
 
 		if ($replace_this_siteurl == $this->siteurl && $replace_this_home == $this->home && $replace_this_content == $this->content) {
 			$this->is_migration = false;
+			/* translators: %s: Site URL */
 			$updraftplus->log(sprintf(__('Nothing to do: the site URL is already: %s', 'updraftplus'), $this->siteurl), 'notice-restore');
 			return;
 		}
@@ -905,17 +962,19 @@ class UpdraftPlus_Migrator_Lite {
 		// Detect situation where the database's siteurl in the header differs from that actual row data in the options table. This can occur if the options table was being over-ridden by a constant. In that case, the search/replace will have failed to set the option table's siteurl; and the result will be that that siteurl is hence wrong, leading to site breakage. The solution is to re-set it.
 		// $info['expected_oldsiteurl'] is from the db.gz file header
 		if (isset($info['expected_oldsiteurl']) && $info['expected_oldsiteurl'] != $db_siteurl_thissite && $db_siteurl_thissite != $this->siteurl) {
-				 $updraftplus->log_e(sprintf(__("Warning: the database's site URL (%s) is different to what we expected (%s)", 'updraftplus'), $db_siteurl_thissite, $info['expected_oldsiteurl']));
+			/* translators: 1: Actual database site URL, 2: Expected site URL */
+			$updraftplus->log_e(sprintf(__('Warning: the database\'s site URL (%1$s) is different to what we expected (%2$s)', 'updraftplus'), $db_siteurl_thissite, $info['expected_oldsiteurl']));
 			// Here, we change only the site URL entry; we don't run a full search/replace based on it. In theory, if someone developed using two different URLs, then this might be needed.
 			if (!empty($this->base_prefix) && !empty($this->siteurl)) {
-				$wpdb->query($wpdb->prepare("UPDATE ".UpdraftPlus_Manipulation_Functions::backquote($this->base_prefix.$options_table)." SET option_value='%s' WHERE option_name='siteurl'", array($this->siteurl)));
+				$wpdb->query($wpdb->prepare("UPDATE ".$escaped_table_name." SET option_value=%s WHERE option_name='siteurl'", array($this->siteurl))); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- Table name is safely escaped via escape_table_name(), table name is a dynamic identifier placeholders cannot be used.
 			}
 		}
 		
 		if (isset($info['expected_oldhome']) && $info['expected_oldhome'] != $db_home_thissite && $db_home_thissite != $this->home) {
-			$updraftplus->log_e(sprintf(__("Warning: the database's home URL (%s) is different to what we expected (%s)", 'updraftplus'), $db_home_thissite, $info['expected_oldhome']));
+			/* translators: 1: Actual database home URL, 2: Expected home URL */
+			$updraftplus->log_e(sprintf(__('Warning: the database\'s home URL (%1$s) is different to what we expected (%2$s)', 'updraftplus'), $db_home_thissite, $info['expected_oldhome']));
 			if (!empty($this->base_prefix) && !empty($this->home)) {
-				$wpdb->query($wpdb->prepare("UPDATE ".UpdraftPlus_Manipulation_Functions::backquote($this->base_prefix.$options_table)." SET option_value='%s' WHERE option_name='home'", array($this->home)));
+				$wpdb->query($wpdb->prepare("UPDATE ".$escaped_table_name." SET option_value=%s WHERE option_name='home'", array($this->home))); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- Table name is safely escaped via escape_table_name(), table name is a dynamic identifier placeholders cannot be used.
 			}
 		}
 
@@ -945,14 +1004,14 @@ class UpdraftPlus_Migrator_Lite {
 
 		$is_multisite = is_multisite();
 		if ($examine_siteurls && $is_multisite && empty($this->new_blogid)) {
-		
-			$sites = $wpdb->get_results('SELECT id, domain, path FROM '.UpdraftPlus_Manipulation_Functions::backquote($import_table_prefix.'site').' ORDER BY id ASC', ARRAY_N);
+			$escaped_table_name_sites = UpdraftPlus_Database_Utility::escape_table_name($import_table_prefix.'site');
+			$sites = $wpdb->get_results("SELECT id, domain, path FROM ".$escaped_table_name_sites." ORDER BY id ASC", ARRAY_N); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- Table name is safely escaped via escape_table_name(), table name is a dynamic identifier placeholders cannot be used.
 			$nsites = array();
 			foreach ($sites as $site) {
 				$nsites[$site[0]] = array('dom' => $site[1], 'path' => $site[2]);
 			}
-		
-			$blogs = $wpdb->get_results('SELECT blog_id, domain, path, site_id FROM '.UpdraftPlus_Manipulation_Functions::backquote($import_table_prefix.'blogs').' ORDER BY blog_id ASC', ARRAY_N);
+			$escaped_table_name_blogs = UpdraftPlus_Database_Utility::escape_table_name($import_table_prefix.'blogs');
+			$blogs = $wpdb->get_results("SELECT blog_id, domain, path, site_id FROM ".$escaped_table_name_blogs." ORDER BY blog_id ASC", ARRAY_N); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- Table name is safely escaped via escape_table_name(), table name is a dynamic identifier placeholders cannot be used.
 			$nblogs = array();
 			foreach ($blogs as $blog) {
 				$nblogs[$blog[0]] = array('dom' => $blog[1], 'path' => $blog[2], 'site_id' => $blog[3]);
@@ -996,7 +1055,8 @@ class UpdraftPlus_Migrator_Lite {
 						$blog_id = $tmatches[1];
 						if (empty($multisite_processed_sites[$blog_id])) {
 							$multisite_processed_sites[$blog_id] = true;
-							$site_url_current = $wpdb->get_var("SELECT option_value FROM ".UpdraftPlus_Manipulation_Functions::backquote($import_table_prefix.$blog_id)."_options WHERE option_name='siteurl'");
+							$escaped_table_name = UpdraftPlus_Database_Utility::escape_table_name($import_table_prefix.$blog_id.'_options');
+							$site_url_current = $wpdb->get_var("SELECT option_value FROM ".$escaped_table_name." WHERE option_name='siteurl'"); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared -- Table name is safely escaped via escape_table_name(), table name is a dynamic identifier placeholders cannot be used.
 							if (is_string($site_url_current)) {
 								$bpath = $this->restored_blogs[$blog_id]['path'];
 								// Jan 2016: This line is old, and removes the main site's path, if present, from the front of this site's path - but why? I suspect it was so that images could be referenced directly without help from .htaccess - perhaps from when media used to be differently organised?
@@ -1052,8 +1112,10 @@ class UpdraftPlus_Migrator_Lite {
 			}
 
 			if (false == $report) {
+				/* translators: %s: Operation name */
 				$updraftplus->log(sprintf(__('Failed: the %s operation was not able to start.', 'updraftplus'), 'search and replace'), 'warning-notice');
 			} elseif (!is_array($report)) {
+				/* translators: %s: Operation name */
 				$updraftplus->log(sprintf(__('Failed: we did not understand the result returned by the %s operation.', 'updraftplus'), 'search and replace'), 'warning-notice');
 			}
 
@@ -1086,7 +1148,8 @@ class UpdraftPlus_Migrator_Lite {
 	 */
 	public function dismiss_notice_for_old_site_references() {
 		global $pagenow;
-		if (UpdraftPlus_Options::admin_page() != $pagenow || empty($_REQUEST['page']) || 'updraftplus' != $_REQUEST['page']) {// phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable -- $pagenow is undefined
+		$page = UpdraftPlus_Manipulation_Functions::fetch_superglobal('get', 'page');
+		if (UpdraftPlus_Options::admin_page() != $pagenow || 'updraftplus' != $page) {// phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable -- $pagenow is a WP global variable and has been early defined
 			$GLOBALS['updraftplus_admin']->admin_enqueue_scripts();
 			?>
 			<script>

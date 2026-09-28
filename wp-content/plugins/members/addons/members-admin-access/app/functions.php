@@ -8,9 +8,9 @@
  * @link      https://members-plugin.com/-admin-access
  * @license   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  */
-
 namespace Members\AddOns\AdminAccess;
 
+defined('ABSPATH') || exit;
 # Filter whether to show the toolbar.
 add_filter( 'show_admin_bar', __NAMESPACE__ . '\show_admin_bar', 95 );
 
@@ -173,6 +173,10 @@ function role_has_access( $role ) {
  */
 function current_user_has_access() {
 
+	if ( is_multisite() && is_super_admin() ) {
+		return true;
+	}
+
 	return user_has_access( get_current_user_id() );
 }
 
@@ -185,6 +189,11 @@ function current_user_has_access() {
  * @return bool
  */
 function user_has_access( $user_id = 0 ) {
+
+	$user_id = $user_id ? $user_id : get_current_user_id();
+	if ( is_multisite() && $user_id && user_can( $user_id, 'manage_network' ) ) {
+		return true;
+	}
 
 	return apply_filters(
 		app()->namespace . '/user_has_access',

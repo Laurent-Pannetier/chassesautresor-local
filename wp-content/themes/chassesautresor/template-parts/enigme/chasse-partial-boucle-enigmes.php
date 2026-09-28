@@ -24,8 +24,7 @@ $statut_metier   = $infos_chasse['statut'] ?? 'revision';
 $autorise_boucle = (
     user_can($utilisateur_id, 'manage_options') ||
     $est_orga_associe ||
-    utilisateur_est_engage_dans_chasse($utilisateur_id, $chasse_id) ||
-    $statut_metier === 'termine'
+    utilisateur_est_engage_dans_chasse($utilisateur_id, $chasse_id)
 );
 if (!$autorise_boucle) {
     return;
@@ -228,13 +227,15 @@ if (!function_exists('compter_tentatives_du_jour') || !function_exists('compter_
                     </span>
                   <?php endif; ?>
                   <?php if (in_array($mode_validation, ['automatique', 'manuelle'], true)) :
-                    $icon = $mode_validation === 'automatique' ? 'fa-bolt' : 'fa-envelope';
+                    $icon_html = $mode_validation === 'automatique'
+                      ? trim(get_svg_icon('automatic'))
+                      : '<i class="fa-solid fa-envelope" aria-hidden="true"></i>';
                     $label = $mode_validation === 'automatique'
                       ? esc_html__('Mode de validation : automatique', 'chassesautresor-com')
                       : esc_html__('Mode de validation : manuel', 'chassesautresor-com');
                   ?>
                     <span class="footer-item" title="<?= esc_attr($label); ?>" aria-label="<?= esc_attr($label); ?>">
-                      <i class="fa-solid <?= esc_attr($icon); ?>" aria-hidden="true"></i>
+                      <?= $icon_html; ?>
                     </span>
                   <?php endif; ?>
                 </div>

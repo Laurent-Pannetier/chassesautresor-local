@@ -2,6 +2,8 @@
 declare(strict_types=1);
 namespace Automattic\WooCommerce\Blocks\BlockTypes;
 
+use Automattic\WooCommerce\Enums\ProductType;
+
 /**
  * ProductSpecifications class.
  */
@@ -51,16 +53,24 @@ class ProductSpecifications extends AbstractBlock {
 
 		if ( $show_weight && $product->has_weight() ) {
 			$product_data['weight'] = array(
-				'label' => __( 'Weight', 'woocommerce' ),
-				'value' => wc_format_weight( $product->get_weight() ),
+				'label'     => __( 'Weight', 'woocommerce' ),
+				'value'     => wc_format_weight( $product->get_weight() ),
+				'api_field' => 'formatted_weight',
 			);
 		}
 
 		if ( $show_dimensions && $product->has_dimensions() ) {
 			$product_data['dimensions'] = array(
-				'label' => __( 'Dimensions', 'woocommerce' ),
-				'value' => wc_format_dimensions( $product->get_dimensions( false ) ),
+				'label'     => __( 'Dimensions', 'woocommerce' ),
+				'value'     => wc_format_dimensions( $product->get_dimensions( false ) ),
+				'api_field' => 'formatted_dimensions',
 			);
+		}
+
+		$is_interactive = $product->is_type( ProductType::VARIABLE );
+
+		if ( $is_interactive ) {
+			wp_enqueue_script_module( 'woocommerce/product-elements' );
 		}
 
 		if ( $show_attributes ) {
@@ -119,9 +129,15 @@ class ProductSpecifications extends AbstractBlock {
 							<th scope="row" class="wp-block-product-specifications-item__label">
 								<?php echo wp_kses_post( $product_attribute['label'] ); ?>
 							</th>
-							<td class="wp-block-product-specifications-item__value">
-								<?php echo wp_kses_post( $product_attribute['value'] ); ?>
-							</td>
+							<?php if ( $is_interactive && isset( $product_attribute['api_field'] ) ) : ?>
+								<td class="wp-block-product-specifications-item__value" data-wp-interactive="woocommerce/products" data-wp-text="state.productInContext.<?php echo esc_attr( $product_attribute['api_field'] ); ?>">
+									<?php echo wp_kses_post( $product_attribute['value'] ); ?>
+								</td>
+							<?php else : ?>	
+								<td class="wp-block-product-specifications-item__value">
+									<?php echo wp_kses_post( $product_attribute['value'] ); ?>
+								</td>
+							<?php endif; ?>
 						</tr>
 					<?php endforeach; ?>
 				</tbody>

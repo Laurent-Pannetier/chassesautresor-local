@@ -11,6 +11,29 @@ defined('ABSPATH') || exit;
 // 🔹 modifier_champ_indice() → Mise à jour AJAX (champ ACF ou natif)
 
 /**
+ * Generate a placeholder title for an indice based on its chasse.
+ *
+ * @param int $chasse_id Related hunt ID.
+ * @return string
+ */
+function build_indice_placeholder_title(int $chasse_id): string
+{
+    $prefix = defined('INDICE_DEFAULT_PREFIX') ? INDICE_DEFAULT_PREFIX : 'clue-';
+    $slug   = get_post_field('post_name', $chasse_id);
+
+    if ($slug === '') {
+        $chasse_name = get_post_field('post_title', $chasse_id);
+        $slug        = $chasse_name !== ''
+            ? (function_exists('sanitize_title')
+                ? sanitize_title($chasse_name)
+                : strtolower(trim(preg_replace('/[^A-Za-z0-9]+/', '-', $chasse_name), '-')))
+            : '';
+    }
+
+    return $prefix . $slug;
+}
+
+/**
  * Redirige l’affichage d’un indice vers sa chasse ou son énigme liée.
  *
  * @return void
@@ -161,11 +184,36 @@ function reordonner_indices(int $objet_id, string $objet_type): void
 
     $i = 1;
     foreach ($indices as $indice_id) {
-        $title = sprintf(__('Indice #%d', 'chassesautresor-com'), $i);
-        wp_update_post([
-            'ID'         => $indice_id,
-            'post_title' => $title,
-        ]);
+        $current_title = get_post_field('post_title', $indice_id);
+        $prefix        = defined('INDICE_DEFAULT_PREFIX') ? INDICE_DEFAULT_PREFIX : '';
+        $should_update = (
+            $current_title === ''
+            || (defined('TITRE_DEFAUT_INDICE') && $current_title === TITRE_DEFAUT_INDICE)
+            || preg_match('/^Indice #\d+$/', $current_title)
+            || ($prefix !== '' && strpos($current_title, $prefix) === 0)
+        );
+
+        if ($should_update) {
+            $chasse_linked = get_field('indice_chasse_linked', $indice_id);
+            if (is_array($chasse_linked)) {
+                $first     = $chasse_linked[0] ?? null;
+                $chasse_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
+            } else {
+                $chasse_id = (int) $chasse_linked;
+            }
+
+            if (!$chasse_id && $objet_type === 'chasse') {
+                $chasse_id = $objet_id;
+            }
+
+            $placeholder = build_indice_placeholder_title($chasse_id);
+            wp_update_post([
+                'ID'         => $indice_id,
+                'post_title' => $placeholder,
+            ]);
+        }
+
+        update_post_meta($indice_id, 'indice_rank', $i);
         $i++;
     }
 
@@ -180,17 +228,48 @@ function reordonner_indices(int $objet_id, string $objet_type): void
  */
 function reordonner_indices_pour_indice(int $indice_id): void
 {
-    $linked = get_field('indice_chasse_linked', $indice_id);
+    $cible_type = get_field('indice_cible_type', $indice_id) === 'enigme' ? 'enigme' : 'chasse';
 
-    if (is_array($linked)) {
-        $first     = $linked[0] ?? null;
-        $chasse_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
+    if ($cible_type === 'enigme') {
+        $linked = get_field('indice_enigme_linked', $indice_id);
+        if (is_array($linked)) {
+            $first     = $linked[0] ?? null;
+            $objet_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
+        } else {
+            $objet_id = (int) $linked;
+        }
+
+        if ($objet_id) {
+            reordonner_indices($objet_id, 'enigme');
+        }
+
+        $chasse_linked = get_field('indice_chasse_linked', $indice_id);
+        if (is_array($chasse_linked)) {
+            $first     = $chasse_linked[0] ?? null;
+            $chasse_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
+        } else {
+            $chasse_id = (int) $chasse_linked;
+        }
+
+        if (!$chasse_id && isset($objet_id)) {
+            $chasse_id = (int) recuperer_id_chasse_associee($objet_id);
+        }
+
+        if ($chasse_id) {
+            reordonner_indices($chasse_id, 'chasse');
+        }
     } else {
-        $chasse_id = (int) $linked;
-    }
+        $linked = get_field('indice_chasse_linked', $indice_id);
+        if (is_array($linked)) {
+            $first     = $linked[0] ?? null;
+            $chasse_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
+        } else {
+            $chasse_id = (int) $linked;
+        }
 
-    if ($chasse_id) {
-        reordonner_indices($chasse_id, 'chasse');
+        if ($chasse_id) {
+            reordonner_indices($chasse_id, 'chasse');
+        }
     }
 }
 
@@ -245,13 +324,14 @@ function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_i
         return new WP_Error('permission_refusee', __('Droits insuffisants.', 'chassesautresor-com'));
     }
 
-    $user_id    = $user_id ?? get_current_user_id();
-    $indice_rank = prochain_rang_indice($chasse_id, 'chasse');
+    $user_id     = $user_id ?? get_current_user_id();
+    $indice_rank   = prochain_rang_indice($chasse_id, 'chasse');
+    $default_title = build_indice_placeholder_title($chasse_id);
 
     $indice_id = wp_insert_post([
         'post_type'   => 'indice',
         'post_status' => 'pending',
-        'post_title'  => TITRE_DEFAUT_INDICE,
+        'post_title'  => $default_title,
         'post_author' => $user_id,
     ]);
 
@@ -259,11 +339,7 @@ function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_i
         return $indice_id;
     }
 
-    $nouveau_titre = sprintf(__('Indice #%d', 'chassesautresor-com'), $indice_rank);
-    wp_update_post([
-        'ID'         => $indice_id,
-        'post_title' => $nouveau_titre,
-    ]);
+    update_post_meta($indice_id, 'indice_rank', $indice_rank);
 
     update_field('indice_cible_type', $objet_type, $indice_id);
     update_field('indice_chasse_linked', $chasse_id, $indice_id);
@@ -1105,9 +1181,47 @@ function memoriser_cible_indice_avant_suppression(int $post_id): void
         return;
     }
 
-    $chasse_id = (int) get_field('indice_chasse_linked', $post_id);
-    if ($chasse_id) {
-        $indice_delete_context = ['id' => $chasse_id, 'type' => 'chasse'];
+    $type = get_field('indice_cible_type', $post_id) === 'enigme' ? 'enigme' : 'chasse';
+    $objet_id = 0;
+    $chasse_id = 0;
+
+    if ($type === 'enigme') {
+        $linked = get_field('indice_enigme_linked', $post_id);
+        if (is_array($linked)) {
+            $first    = $linked[0] ?? null;
+            $objet_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
+        } else {
+            $objet_id = (int) $linked;
+        }
+
+        $chasse_linked = get_field('indice_chasse_linked', $post_id);
+        if (is_array($chasse_linked)) {
+            $first     = $chasse_linked[0] ?? null;
+            $chasse_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
+        } else {
+            $chasse_id = (int) $chasse_linked;
+        }
+
+        if (!$chasse_id && $objet_id) {
+            $chasse_id = (int) recuperer_id_chasse_associee($objet_id);
+        }
+    } else {
+        $linked = get_field('indice_chasse_linked', $post_id);
+        if (is_array($linked)) {
+            $first     = $linked[0] ?? null;
+            $objet_id  = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
+        } else {
+            $objet_id = (int) $linked;
+        }
+        $chasse_id = $objet_id;
+    }
+
+    if ($objet_id) {
+        $indice_delete_context = [
+            'objet_id'   => $objet_id,
+            'objet_type' => $type,
+            'chasse_id'  => $chasse_id,
+        ];
     }
 }
 add_action('before_delete_post', 'memoriser_cible_indice_avant_suppression');
@@ -1121,10 +1235,20 @@ add_action('before_delete_post', 'memoriser_cible_indice_avant_suppression');
 function reordonner_indices_apres_suppression(int $post_id): void
 {
     global $indice_delete_context;
-    if ($indice_delete_context) {
-        reordonner_indices($indice_delete_context['id'], $indice_delete_context['type']);
-        $indice_delete_context = null;
+    if (!$indice_delete_context) {
+        return;
     }
+
+    $objet_id   = (int) $indice_delete_context['objet_id'];
+    $objet_type = $indice_delete_context['objet_type'];
+    $chasse_id  = (int) ($indice_delete_context['chasse_id'] ?? 0);
+
+    reordonner_indices($objet_id, $objet_type);
+    if ($chasse_id && $chasse_id !== $objet_id) {
+        reordonner_indices($chasse_id, 'chasse');
+    }
+
+    $indice_delete_context = null;
 }
 add_action('deleted_post', 'reordonner_indices_apres_suppression');
 add_action('trashed_post', 'reordonner_indices_pour_indice');

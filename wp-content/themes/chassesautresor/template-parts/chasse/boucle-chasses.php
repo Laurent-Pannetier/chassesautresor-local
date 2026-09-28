@@ -10,6 +10,7 @@ $after_items    = $args['after_items'] ?? '';
 $query          = $args['query'] ?? null;
 $chasse_ids     = $args['chasse_ids'] ?? null;
 $highlight_label = $args['highlight_label'] ?? '';
+$show_progression = $args['show_progression'] ?? true;
 
 if ($query instanceof WP_Query) {
     $chasse_ids = array_map(
@@ -43,6 +44,7 @@ $chasse_ids = array_values(array_filter($chasse_ids, function ($chasse_id) use (
     if ('carte' === $mode) {
         get_template_part('template-parts/chasse/chasse-card-compact', null, [
             'chasse_id' => $chasse_id,
+            'show_progression' => $show_progression,
         ]);
         continue;
     }

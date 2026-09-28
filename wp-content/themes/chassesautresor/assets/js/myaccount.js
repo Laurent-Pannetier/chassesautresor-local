@@ -8,10 +8,130 @@ document.addEventListener('DOMContentLoaded', () => {
   const content = document.querySelector('.myaccount-content');
   const header = document.querySelector('.myaccount-title');
   const siteMessages = document.querySelector('.msg-important');
+  const sidebar = document.querySelector('.myaccount-sidebar');
+  const sidebarToggle = document.querySelector('.myaccount-sidebar-toggle');
+  const sidebarClose = document.querySelector('.myaccount-sidebar-close');
+  const sidebarBackdrop = document.querySelector('.myaccount-sidebar-backdrop');
+  let outsideClickHandler = null;
+  let keydownHandler = null;
+
+  const initRecommendedSlider = (root = document) => {
+    if (window.caRecommendedSlider && typeof window.caRecommendedSlider.init === 'function') {
+      window.caRecommendedSlider.init(root);
+    }
+  };
+
+  initRecommendedSlider(document);
+
+  const setSidebarExpanded = (isOpen) => {
+    if (!sidebarToggle) {
+      return;
+    }
+    sidebarToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  };
+
+  const removeDocumentListeners = () => {
+    if (outsideClickHandler) {
+      document.removeEventListener('pointerdown', outsideClickHandler);
+      outsideClickHandler = null;
+    }
+    if (keydownHandler) {
+      document.removeEventListener('keydown', keydownHandler);
+      keydownHandler = null;
+    }
+  };
+
+  const closeSidebar = () => {
+    if (sidebar) {
+      sidebar.classList.remove('is-open');
+    }
+    if (sidebarBackdrop) {
+      sidebarBackdrop.classList.remove('is-visible');
+    }
+    setSidebarExpanded(false);
+    removeDocumentListeners();
+  };
+
+  const openSidebar = () => {
+    if (!sidebar) {
+      return;
+    }
+    sidebar.classList.add('is-open');
+    if (sidebarBackdrop) {
+      sidebarBackdrop.classList.add('is-visible');
+    }
+    setSidebarExpanded(true);
+
+    if (!outsideClickHandler) {
+      outsideClickHandler = (event) => {
+        const target = event.target;
+        const clickedToggle = sidebarToggle && sidebarToggle.contains(target);
+        if (!sidebar.contains(target) && !clickedToggle) {
+          closeSidebar();
+        }
+      };
+      document.addEventListener('pointerdown', outsideClickHandler);
+    }
+
+    if (!keydownHandler) {
+      keydownHandler = (event) => {
+        if (event.key === 'Escape') {
+          closeSidebar();
+        }
+      };
+      document.addEventListener('keydown', keydownHandler);
+    }
+  };
+
+  if (sidebar && sidebarToggle) {
+    sidebarToggle.addEventListener('click', () => {
+      if (sidebar.classList.contains('is-open')) {
+        closeSidebar();
+      } else {
+        openSidebar();
+      }
+    });
+
+    if (sidebarClose) {
+      sidebarClose.addEventListener('click', () => {
+        closeSidebar();
+      });
+    }
+
+    if (sidebarBackdrop) {
+      sidebarBackdrop.addEventListener('click', () => {
+        closeSidebar();
+      });
+    }
+
+    sidebar.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => {
+        closeSidebar();
+      });
+    });
+
+    const mobileMedia = window.matchMedia('(min-width: 600px)');
+    const handleMediaChange = (event) => {
+      if (event.matches) {
+        closeSidebar();
+      }
+    };
+
+    handleMediaChange(mobileMedia);
+    if (typeof mobileMedia.addEventListener === 'function') {
+      mobileMedia.addEventListener('change', handleMediaChange);
+    } else if (typeof mobileMedia.addListener === 'function') {
+      mobileMedia.addListener(handleMediaChange);
+    }
+  }
 
   if (!navs.length || !content || !siteMessages || typeof ctaMyAccount === 'undefined') {
     return;
   }
+
+  const accountPath = window.location.pathname && window.location.pathname !== '/'
+    ? window.location.pathname
+    : '/mon-compte/';
 
   const fadeFlash = () => {
     const flash = siteMessages ? siteMessages.querySelector('.flash') : null;
@@ -47,10 +167,10 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const params = new URLSearchParams(window.location.search);
-    params.set('action', 'cta_load_admin_section');
-    params.set('section', section);
-    const url = `${ctaMyAccount.ajaxUrl}?${params.toString()}`;
+    const searchParams = new URLSearchParams(window.location.search);
+    searchParams.set('action', 'cta_load_admin_section');
+    searchParams.set('section', section);
+    const url = `${ctaMyAccount.ajaxUrl}?${searchParams.toString()}`;
 
     try {
       const response = await fetch(url, { credentials: 'same-origin' });
@@ -66,6 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
         siteMessages.innerHTML = messages;
       }
       content.innerHTML = data.data.html;
+      initRecommendedSlider(content);
       decorateMessages();
       fadeFlash();
       document
@@ -84,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (push) {
         window.history.pushState(null, '', link.href);
       } else {
-        window.history.replaceState(null, '', '/mon-compte/');
+        window.history.replaceState(null, '', accountPath);
       }
     } catch (err) {
       if (siteMessages) {
@@ -113,6 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       e.preventDefault();
       loadSection(link);
+      closeSidebar();
     });
   });
 
@@ -122,6 +244,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const initialLink = document.querySelector(`.dashboard-nav-link[data-section="${initialSection}"]`);
     if (initialLink) {
       loadSection(initialLink, false);
+    } else {
+      params.delete('section');
+      const newQuery = params.toString();
+      const targetUrl = newQuery ? `${accountPath}?${newQuery}` : accountPath;
+      window.history.replaceState(null, '', targetUrl);
     }
   }
 

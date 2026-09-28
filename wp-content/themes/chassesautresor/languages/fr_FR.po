@@ -39,6 +39,26 @@ msgstr "Accueil Plein Ecran"
 msgid "Français"
 msgstr "Français"
 
+#: template-parts/chasse/chasse-edition-main.php:922
+msgid "Supprimer la chasse"
+msgstr "Supprimer la chasse"
+
+#: assets/js/chasse-edit.js:207
+msgid "Voulez-vous vraiment supprimer cette chasse et toutes ses énigmes ?"
+msgstr "Voulez-vous vraiment supprimer cette chasse et toutes ses énigmes ?"
+
+#: assets/js/chasse-edit.js:208
+msgid "Voulez-vous vraiment supprimer cette chasse ?"
+msgstr "Voulez-vous vraiment supprimer cette chasse ?"
+
+#: assets/js/chasse-edit.js:242
+msgid "Une erreur est survenue lors de la suppression de la chasse."
+msgstr "Une erreur est survenue lors de la suppression de la chasse."
+
+#: inc/edition/edition-chasse.php:784
+msgid "Votre chasse a été supprimée. Vous pouvez en créer une nouvelle quand vous le souhaitez."
+msgstr "Votre chasse a été supprimée. Vous pouvez en créer une nouvelle quand vous le souhaitez."
+
 #: functions.php:119
 msgid "English"
 msgstr "Anglais"
@@ -46,6 +66,10 @@ msgstr "Anglais"
 #: functions.php:128
 msgid "Change language"
 msgstr "Changer de langue"
+
+#: functions.php:292
+msgid "No products in the cart."
+msgstr "Aucun article dans le panier."
 
 #: inc/admin-functions.php:40
 msgid "⛔ Accès refusé."
@@ -380,7 +404,7 @@ msgid "Erreur lors de la création de la chasse."
 msgstr "Erreur lors de la création de la chasse."
 
 #: inc/edition/edition-core.php:147 inc/edition/edition-core.php:179
-#: assets/js/help-modal.js:19
+#: assets/js/help-modal.js:19 inc/enigme/affichage.php:637
 msgid "Fermer"
 msgstr "Fermer"
 
@@ -422,7 +446,7 @@ msgid "Sélectionner une image"
 msgstr "Sélectionner une image"
 
 #: inc/edition/edition-core.php:156 inc/edition/edition-indice.php:164
-#: inc/edition/edition-indice.php:262
+#: inc/edition/edition-indice.php:262 inc/enigme/affichage.php:625
 #, php-format
 msgid "Indice #%d"
 msgstr "Indice #%d"
@@ -1253,8 +1277,8 @@ msgid "Vous n’avez pas assez de points pour engager cette énigme."
 msgstr "❌ Vous n'avez pas assez de points pour effectuer cette conversion."
 
 #: single-organisateur.php:84
-msgid "Chasses au Trésor"
-msgstr "Chasses au Trésor"
+msgid "Chasses au trésor"
+msgstr "Chasses au trésor"
 
 #: single-organisateur.php:132
 msgid "C'est parti !"
@@ -1545,8 +1569,8 @@ msgid "Now"
 msgstr "Maintenant"
 
 #: template-parts/chasse/chasse-edition-main.php:518
-msgid "Later"
-msgstr "Plus tard"
+msgid "Other date"
+msgstr "Autre date"
 
 #: template-parts/chasse/chasse-edition-main.php:549
 msgid "Date de fin"
@@ -1580,8 +1604,8 @@ msgstr "j F Y"
 
 #: inc/edition/edition-core.php:665
 msgctxt "formatting for datetime"
-msgid "j F Y \\à H:i"
-msgstr "j F Y \\à H:i"
+msgid "j F Y à H:i"
+msgstr "j F Y à H:i"
 
 #: template-parts/chasse/chasse-edition-main.php:606
 msgid "Coût d’accès à une chasse"
@@ -2384,6 +2408,12 @@ msgstr "nombre de participants à cette énigme"
 #: template-parts/enigme/chasse-partial-boucle-enigmes.php:182
 msgid "nombre de joueurs ayant trouvé la bonne réponse"
 msgstr "nombre de joueurs ayant trouvé la bonne réponse"
+
+msgid "nombre d'énigmes"
+msgstr "nombre d'énigmes"
+
+msgid "nombre de joueurs"
+msgstr "nombre de joueurs"
 
 #: template-parts/enigme/chasse-partial-boucle-enigmes.php:189
 msgid "tentatives quotidiennes utilisées"
@@ -3218,3 +3248,54 @@ msgstr "Je certifie que ma chasse et toutes ses énigmes sont finalisées."
 #: assets/js/validation-chasse.js:61
 msgid "Envoyer la demande de validation"
 msgstr "Envoyer la demande de validation"
+
+#: inc/enigme/affichage.php:619 inc/enigme/indices.php:51 inc/enigme/indices.php:100
+msgid "Indice débloqué"
+msgstr "Indice débloqué"
+
+
+#: inc/enigme/affichage.php:630
+#, php-format
+msgid "Indice #%1$d - %2$d pts"
+msgstr "Indice #%1$d - %2$d pts"
+
+
+#: inc/enigme/indices.php:120
+msgid "Débloquer l'indice"
+msgstr "Débloquer l'indice"
+
+#: inc/enigme/affichage.php:725
+msgid "Indices énigme"
+msgstr "Indices énigme"
+
+#: inc/enigme/affichage.php:728
+msgid "Indices chasse"
+msgstr "Indices chasse"
+
+#: inc/chasse-functions.php:818
+msgid "Redécouvrir"
+msgstr "Redécouvrir"
+
+#: template-parts/chasse/chasse-affichage-complet.php:313
+msgid "Voir les solutions"
+msgstr "Voir les solutions"
+
+#: template-parts/enigme/partials/enigme-partial-solution.php:32
+msgid "Voir la solution de la chasse"
+msgstr "Voir la solution de la chasse"
+
+#: inc/search/form.php:52
+msgid "Réinitialiser"
+msgstr "Réinitialiser"
+
+#: wp-content/themes/chassesautresor/front-page.php
+msgid "Rechercher une chasse"
+msgstr "Rechercher une chasse"
+
+#: wp-content/themes/chassesautresor/inc/homepage-filters.php
+msgid "Aucune chasse trouvée"
+msgstr "Aucune chasse trouvée"
+
+#: inc/user-functions.php:1444
+msgid "Unable to load attempts. Please try again."
+msgstr "Impossible de charger les tentatives. Veuillez réessayer."

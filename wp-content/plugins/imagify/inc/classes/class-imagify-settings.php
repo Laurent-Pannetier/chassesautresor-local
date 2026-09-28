@@ -1,5 +1,6 @@
 <?php
 use Imagify\Notices\Notices;
+use Imagify\Traits\InstanceGetterTrait;
 
 /**
  * Class that handles the plugin settings.
@@ -7,6 +8,7 @@ use Imagify\Notices\Notices;
  * @since 1.7
  */
 class Imagify_Settings {
+	use InstanceGetterTrait;
 
 	/**
 	 * Class version.
@@ -41,14 +43,6 @@ class Imagify_Settings {
 	protected $options;
 
 	/**
-	 * The single instance of the class.
-	 *
-	 * @since 1.7
-	 * @var object
-	 */
-	protected static $_instance;
-
-	/**
 	 * The constructor.
 	 *
 	 * @since 1.7
@@ -57,20 +51,6 @@ class Imagify_Settings {
 		$this->options        = Imagify_Options::get_instance();
 		$this->option_name    = $this->options->get_option_name();
 		$this->settings_group = IMAGIFY_SLUG;
-	}
-
-	/**
-	 * Get the main Instance.
-	 *
-	 * @since 1.7
-	 * @return object Main instance.
-	 */
-	public static function get_instance() {
-		if ( ! isset( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
 	}
 
 	/**
@@ -129,7 +109,7 @@ class Imagify_Settings {
 			return false;
 		}
 
-		return htmlspecialchars( wp_unslash( $_POST['option_page'] ) ) === $this->settings_group && htmlspecialchars( wp_unslash( $_POST['action'] ) ) === 'update'; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		return sanitize_text_field( wp_unslash( $_POST['option_page'] ) ) === $this->settings_group && sanitize_text_field( wp_unslash( $_POST['action'] ) ) === 'update'; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 	}
 
 	/** ----------------------------------------------------------------------------------------- */
@@ -419,7 +399,7 @@ class Imagify_Settings {
 				$value  = null;
 
 				if ( isset( $_POST[ $option ] ) ) {
-					$value = wp_unslash( $_POST[ $option ] );
+					$value = wp_unslash( $_POST[ $option ] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 					if ( ! is_array( $value ) ) {
 						$value = trim( $value );
 					}
@@ -429,6 +409,20 @@ class Imagify_Settings {
 				update_site_option( $option, $value );
 			}
 		}
+
+		/**
+		 * `options.php` is what registers the "Settings saved." notice and stores it in the
+		 * `settings_errors` transient. We bypass it on network installations, so do it here.
+		 *
+		 * The guard mirrors core: a success notice is only queued when nothing else has
+		 * reported a problem during this request, so a real error from another plugin is
+		 * never contradicted by a "Settings saved." underneath it.
+		 */
+		if ( ! count( get_settings_errors() ) ) {
+			add_settings_error( 'general', 'settings_updated', __( 'Settings saved.' ), 'success' );
+		}
+
+		set_transient( 'settings_errors', get_settings_errors(), 30 );
 
 		/**
 		 * Redirect back to the settings page that was submitted.
@@ -491,19 +485,19 @@ class Imagify_Settings {
 		$attributes         = array_merge( $attributes, $args['attributes'] );
 		$args['attributes'] = self::build_attributes( $attributes );
 		?>
-		<input type="checkbox" value="1" <?php checked( $current_value, 1 ); ?> <?php echo $args['attributes']; ?> />
+		<input type="checkbox" value="1" <?php checked( $current_value, 1 ); ?> <?php echo $args['attributes']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> />
 		<!-- Empty onclick attribute to make clickable labels on iTruc & Mac -->
-		<label for="<?php echo $attributes['id']; ?>" onclick="">
-		<?php echo $args['label']; ?>
+		<label for="<?php echo esc_attr( $attributes['id'] ); ?>" onclick="">
+		<?php self::print_text( $args['label'] ); ?>
 		</label>
 		<?php
 		if ( ! $args['info'] ) {
 			return;
 		}
 		?>
-		<span id="<?php echo $attributes['aria-describedby']; ?>" class="imagify-info">
+		<span id="<?php echo esc_attr( $attributes['aria-describedby'] ); ?>" class="imagify-info">
 			<span class="dashicons dashicons-info"></span>
-			<?php echo $args['info']; ?>
+			<?php self::print_text( $args['info'] ); ?>
 		</span>
 		<?php
 	}
@@ -573,7 +567,7 @@ class Imagify_Settings {
 			if ( $args['legend'] ) {
 				?>
 				<legend class="screen-reader-text">
-				<?php echo $args['legend']; ?>
+				<?php self::print_text( $args['legend'] ); ?>
 				</legend>
 				<?php
 			}
@@ -591,13 +585,13 @@ class Imagify_Settings {
 				$nb_of_checked = $checked ? $nb_of_checked + 1 : $nb_of_checked;
 
 				if ( $args['reverse_check'] ) {
-					echo '<input type="hidden" name="' . $this->option_name . '[' . $args['option_name'] . '-reversed][]" value="' . esc_attr( $value ) . '" />';
+					echo '<input type="hidden" name="' . esc_attr( $this->option_name . '[' . $args['option_name'] ) . '-reversed][]" value="' . esc_attr( $value ) . '" />';
 				}
 				?>
 				<p>
-					<input type="checkbox" value="<?php echo esc_attr( $value ); ?>" id="<?php echo $input_id; ?>" <?php echo $args['attributes']; ?> <?php checked( $checked ); ?> <?php disabled( $disabled ); ?> />
-					<label for="<?php echo $input_id; ?>" onclick="">
-					<?php echo $label; ?>
+					<input type="checkbox" value="<?php echo esc_attr( $value ); ?>" id="<?php echo esc_attr( $input_id ); ?>" <?php echo $args['attributes']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> <?php checked( $checked ); ?> <?php disabled( $disabled ); ?> />
+					<label for="<?php echo esc_attr( $input_id ); ?>" onclick="">
+					<?php self::print_text( $label ); ?>
 					</label>
 				</p>
 				<?php
@@ -615,7 +609,7 @@ class Imagify_Settings {
 			<p class="hide-if-no-js imagify-select-all-buttons">
 				<button type="button" class="imagify-link-like imagify-select-all <?php echo $all_checked ? ' imagify-is-inactive" aria-disabled="true' : ''; ?>" data-action="select">
 				<?php
-					_e( 'Select All', 'imagify' );
+					esc_html_e( 'Select All', 'imagify' );
 				?>
 				</button>
 
@@ -623,7 +617,7 @@ class Imagify_Settings {
 
 				<button type="button" class="imagify-link-like imagify-select-all <?php echo $nb_of_checked ? '' : ' imagify-is-inactive" aria-disabled="true'; ?>  " data-action="unselect">
 				<?php
-					_e( 'Unselect All', 'imagify' );
+					esc_html_e( 'Unselect All', 'imagify' );
 				?>
 				</button>
 			</p>
@@ -693,7 +687,7 @@ class Imagify_Settings {
 				?>
 				<legend class="screen-reader-text">
 				<?php
-					echo $args['legend'];
+					self::print_text( $args['legend'] );
 				?>
 				</legend>
 				<?php
@@ -702,9 +696,9 @@ class Imagify_Settings {
 			foreach ( $args['values'] as $value => $label ) {
 				$input_id = sprintf( $id_attribute, sanitize_html_class( $value ) );
 				?>
-				<input type="radio" value="<?php echo esc_attr( $value ); ?>" id="<?php echo $input_id; ?>" <?php echo $args['attributes']; ?> <?php checked( $current_value, $value ); ?> />
-				<label for="<?php echo $input_id; ?>" onclick="">
-				<?php echo $label; ?>
+				<input type="radio" value="<?php echo esc_attr( $value ); ?>" id="<?php echo esc_attr( $input_id ); ?>" <?php echo $args['attributes']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> <?php checked( $current_value, $value ); ?> />
+				<label for="<?php echo esc_attr( $input_id ); ?>" onclick="">
+				<?php self::print_text( $label ); ?>
 				</label>
 				<br/>
 				<?php
@@ -716,9 +710,9 @@ class Imagify_Settings {
 			return;
 		}
 		?>
-		<span id="<?php echo $attributes['aria-describedby']; ?>" class="imagify-info">
+		<span id="<?php echo esc_attr( $attributes['aria-describedby'] ); ?>" class="imagify-info">
 			<span class="dashicons dashicons-info"></span>
-			<?php echo $args['info']; ?>
+			<?php self::print_text( $args['info'] ); ?>
 		</span>
 		<?php
 	}
@@ -776,15 +770,15 @@ class Imagify_Settings {
 			foreach ( $args['values'] as $value => $label ) {
 				$input_id = sprintf( $id_attribute, sanitize_html_class( $value ) );
 				?>
-			<input type="radio" value="<?php echo esc_attr( $value ); ?>" id="<?php echo $input_id; ?>"<?php echo $args['attributes']; ?> <?php checked( $current_value, $value ); ?> />
-			<label for="<?php echo $input_id; ?>" onclick=""><?php echo $label; ?></label>
+			<input type="radio" value="<?php echo esc_attr( $value ); ?>" id="<?php echo esc_attr( $input_id ); ?>"<?php echo $args['attributes']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> <?php checked( $current_value, $value ); ?> />
+			<label for="<?php echo esc_attr( $input_id ); ?>" onclick=""><?php self::print_text( $label ); ?></label>
 				<?php
 			}
 			?>
 			</p>
-			<span id="<?php echo $attributes['aria-describedby']; ?>" class="imagify-<?php echo esc_attr( $args['info_class'] ); ?>">
+			<span id="<?php echo esc_attr( $attributes['aria-describedby'] ); ?>" class="imagify-<?php echo esc_attr( $args['info_class'] ); ?>">
 				<span class="dashicons dashicons-info"></span>
-				<?php echo $args['info']; ?>
+				<?php self::print_text( $args['info'] ); ?>
 			</span>
 		</div>
 		<?php
@@ -841,18 +835,18 @@ class Imagify_Settings {
 		$args['attributes'] = self::build_attributes( $attributes );
 		?>
 		<!-- Empty onclick attribute to make clickable labels on iTruc & Mac -->
-		<label for="<?php echo $attributes['id']; ?>" onclick="">
-		<?php echo $args['label']; ?>
+		<label for="<?php echo esc_attr( $attributes['id'] ); ?>" onclick="">
+		<?php self::print_text( $args['label'] ); ?>
 		</label>
-		<input type="text" value="<?php echo esc_attr( $current_value ); ?>" <?php echo $args['attributes']; ?> />
+		<input type="text" value="<?php echo esc_attr( $current_value ); ?>" <?php echo $args['attributes']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> />
 		<?php
 		if ( ! $args['info'] ) {
 			return;
 		}
 		?>
-		<span id="<?php echo $attributes['aria-describedby']; ?>" class="imagify-info">
+		<span id="<?php echo esc_attr( $attributes['aria-describedby'] ); ?>" class="imagify-info">
 			<span class="dashicons dashicons-info"></span>
-			<?php echo $args['info']; ?>
+			<?php self::print_text( $args['info'] ); ?>
 		</span>
 		<?php
 	}
@@ -899,7 +893,7 @@ class Imagify_Settings {
 		$attributes         = array_merge( $attributes, $args['attributes'] );
 		$args['attributes'] = self::build_attributes( $attributes );
 		?>
-		<input type="hidden" value="<?php echo esc_attr( $current_value ); ?>" <?php echo $args['attributes']; ?> />
+		<input type="hidden" value="<?php echo esc_attr( $current_value ); ?>" <?php echo $args['attributes']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> />
 		<?php
 	}
 
@@ -956,5 +950,45 @@ class Imagify_Settings {
 		}
 
 		return $out;
+	}
+
+	/**
+	 * Print a human-readable field string, keeping the inline formatting it carries.
+	 *
+	 * The labels, legends and info messages of the field renderers are written as
+	 * markup by their callers: a `<br>` separating two sentences, a `<code>`
+	 * naming a filter, an `<em>` marking the recommended choice, a link to the
+	 * documentation. Passing them through `esc_html()` printed those tags to the
+	 * user instead of applying them, so they go through a narrow allow-list of
+	 * inline tags.
+	 *
+	 * Entities survive the allow-list, so a label built with `&times;` or
+	 * `&lt;picture&gt;` renders the character it stands for instead of being
+	 * escaped a second time.
+	 *
+	 * The string is already translated by the time it arrives, which is exactly
+	 * why the filtering happens here: whatever a translation introduces is held
+	 * to the same allow-list as the original string.
+	 *
+	 * @since 2.3.3
+	 *
+	 * @param string $text The string to print.
+	 * @return void
+	 */
+	public static function print_text( $text ) {
+		echo wp_kses(
+			$text,
+			[
+				'a'      => [
+					'href'   => true,
+					'rel'    => true,
+					'target' => true,
+				],
+				'br'     => [],
+				'code'   => [],
+				'em'     => [],
+				'strong' => [],
+			]
+		);
 	}
 }

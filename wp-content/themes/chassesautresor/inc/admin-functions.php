@@ -130,9 +130,10 @@ function traiter_gestion_points() {
     // ✅ Redirection après soumission
     $redirect_url = add_query_arg(
         [
+            'section'         => 'outils',
             'points_modifies' => '1',
         ],
-        home_url('/mon-compte/?section=points')
+        home_url('/mon-compte/')
     );
 
     wp_redirect($redirect_url);
@@ -633,7 +634,7 @@ function traiter_demande_paiement() {
     cat_debug("📧 Notification envoyée à l'administrateur.");
 
     // ✅ Redirection après soumission
-    wp_safe_redirect(home_url('/mon-compte/?section=points'));
+    wp_safe_redirect(add_query_arg('paiement_envoye', '1', home_url('/mon-compte/')));
     exit;
 }
 add_action('init', 'traiter_demande_paiement');
@@ -1433,7 +1434,7 @@ function cta_reset_stats() {
         clean_user_cache((int) $user_id);
     }
 
-    $chasses = get_posts([
+    $chasses_terminees = get_posts([
         'post_type'   => 'chasse',
         'post_status' => 'any',
         'meta_query'  => [
@@ -1446,10 +1447,20 @@ function cta_reset_stats() {
         'nopaging' => true,
     ]);
 
-    foreach ($chasses as $chasse_id) {
+    foreach ($chasses_terminees as $chasse_id) {
         update_field('chasse_cache_statut', 'en_cours', $chasse_id);
         delete_field('chasse_cache_gagnants', $chasse_id);
         delete_field('chasse_cache_date_decouverte', $chasse_id);
+    }
+
+    $all_chasses = get_posts([
+        'post_type'   => 'chasse',
+        'post_status' => 'any',
+        'fields'      => 'ids',
+        'nopaging'    => true,
+    ]);
+
+    foreach ($all_chasses as $chasse_id) {
         chasse_clear_infos_affichage_cache((int) $chasse_id);
     }
 
@@ -2050,16 +2061,9 @@ function traiter_validation_chasse_admin() {
         }
 
     } elseif ($action === 'supprimer') {
-        foreach ($enigmes as $eid) {
-            wp_delete_post($eid, true);
+        if (!chasse_trash_with_children($chasse_id)) {
+            wp_die(__('Impossible de supprimer la chasse.', 'chassesautresor-com'));
         }
-
-        $images = get_attached_media('image', $chasse_id);
-        foreach ($images as $attachment) {
-            wp_delete_attachment($attachment->ID, true);
-        }
-
-        wp_trash_post($chasse_id);
 
         envoyer_mail_chasse_supprimee($organisateur_id, $chasse_id);
 

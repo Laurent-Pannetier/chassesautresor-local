@@ -1,4 +1,5 @@
 <?php
+if (!defined('ABSPATH')) die('No direct access allowed');
 if (!empty($button_meta)) {
 	if ('updraftcentral' == $button_meta) {
 		esc_html_e('Get UpdraftCentral', 'updraftplus');

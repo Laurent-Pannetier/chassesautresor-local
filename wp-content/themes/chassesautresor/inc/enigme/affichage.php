@@ -2,6 +2,7 @@
 defined('ABSPATH') || exit;
 require_once __DIR__ . '/../sidebar.php';
 require_once __DIR__ . '/utils.php';
+require_once __DIR__ . '/indices.php';
 
     // ==================================================
     // 🎨 AFFICHAGE STYLISÉ DES ÉNIGMES
@@ -56,6 +57,37 @@ require_once __DIR__ . '/utils.php';
     add_action('added_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
     add_action('updated_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
     add_action('deleted_user_meta', 'enigme_bump_permissions_cache_version', 10, 4);
+
+    /**
+     * Clear solution caches when a solution is saved.
+     *
+     * @param int $solution_id Solution identifier.
+     */
+    function enigme_clear_render_cache_on_solution_save(int $solution_id): void
+    {
+        $target = get_field('solution_cible_type', $solution_id);
+
+        if ($target === 'enigme') {
+            $enigme_id = (int) get_field('solution_enigme_linked', $solution_id);
+            if ($enigme_id) {
+                enigme_clear_render_cache($enigme_id);
+            }
+
+            return;
+        }
+
+        if ($target === 'chasse') {
+            $chasse_id = (int) get_field('solution_chasse_linked', $solution_id);
+            if ($chasse_id) {
+                $enigmes = recuperer_enigmes_pour_chasse($chasse_id);
+                foreach ($enigmes as $enigme) {
+                    enigme_clear_render_cache((int) $enigme->ID);
+                }
+            }
+        }
+    }
+
+    add_action('save_post_solution', 'enigme_clear_render_cache_on_solution_save', 20, 1);
     /**
      * Clear sidebar caches for a given hunt and user.
      *
@@ -569,10 +601,12 @@ require_once __DIR__ . '/utils.php';
 
         $content = '';
 
-        $indices = function_exists('get_posts')
+        $chasse_id = recuperer_id_chasse_associee($enigme_id);
+
+        $indices_enigme = function_exists('get_posts')
             ? get_posts([
                 'post_type'      => 'indice',
-                'post_status'    => 'publish',
+                'post_status'    => ['publish', 'draft', 'future', 'pending'],
                 'meta_query'     => [
                     [
                         'key'     => 'indice_cible_type',
@@ -586,8 +620,8 @@ require_once __DIR__ . '/utils.php';
                     ],
                     [
                         'key'     => 'indice_cache_etat_systeme',
-                        'value'   => 'accessible',
-                        'compare' => '=',
+                        'value'   => ['accessible', 'programme'],
+                        'compare' => 'IN',
                     ],
                 ],
                 'orderby'        => 'date',
@@ -598,21 +632,139 @@ require_once __DIR__ . '/utils.php';
             ])
             : [];
 
-        if (!empty($indices)) {
-            $content .= '<div class="zone-indices"><h3>'
-                . esc_html__('Indices', 'chassesautresor-com')
-                . '</h3><ul>';
-            foreach ($indices as $indice_id) {
-                $title = function_exists('get_the_title')
-                    ? get_the_title($indice_id)
-                    : '';
-                $content .= '<li>' . esc_html($title) . '</li>';
-            }
-            $content .= '</ul></div>';
+        $indices_chasse = [];
+        if ($chasse_id && function_exists('get_posts')) {
+            $indices_chasse = get_posts([
+                'post_type'      => 'indice',
+                'post_status'    => ['publish', 'draft', 'future', 'pending'],
+                'meta_query'     => [
+                    [
+                        'key'     => 'indice_cible_type',
+                        'value'   => 'chasse',
+                        'compare' => '=',
+                    ],
+                    [
+                        'key'     => 'indice_chasse_linked',
+                        'value'   => $chasse_id,
+                        'compare' => '=',
+                    ],
+                    [
+                        'key'     => 'indice_cache_etat_systeme',
+                        'value'   => ['accessible', 'programme'],
+                        'compare' => 'IN',
+                    ],
+                ],
+                'orderby'        => 'date',
+                'order'          => 'ASC',
+                'fields'         => 'ids',
+                'no_found_rows'  => true,
+                'posts_per_page' => -1,
+            ]);
         }
 
         if ($bloc_reponse !== '') {
             $content .= '<div class="zone-reponse">' . $bloc_reponse . '</div>';
+        }
+
+        if (!empty($indices_enigme) || !empty($indices_chasse)) {
+            $content .= '<hr class="reponse-indices-separator" />';
+            $build_line = function (array $indices, string $title) use ($user_id) {
+                $html = '<div class="zone-indices-line"><span class="zone-indices-line__label">'
+                    . esc_html($title)
+                    . '</span><div class="indice-list">';
+                foreach ($indices as $i => $indice_id) {
+                    $cout_indice  = (int) get_field('indice_cout_points', $indice_id);
+                    $etat_systeme = get_field('indice_cache_etat_systeme', $indice_id) ?: '';
+                    $est_debloque = indice_est_debloque($user_id, $indice_id);
+
+                    if ($etat_systeme === 'programme') {
+                        $date_raw  = get_field('indice_date_disponibilite', $indice_id);
+                        $timestamp = false;
+                        if ($date_raw) {
+                            $formats = [
+                                'Y-m-d H:i:s',
+                                'd/m/Y H:i',
+                                'Y-m-d\\TH:i:s',
+                                'd/m/Y g:i a',
+                                'd/m/Y g:i A',
+                                'Y-m-d g:i a',
+                            ];
+                            foreach ($formats as $format) {
+                                $date = date_create_from_format($format, $date_raw, wp_timezone());
+                                if ($date !== false) {
+                                    $timestamp = $date->getTimestamp();
+                                    break;
+                                }
+                            }
+                            if ($timestamp === false) {
+                                $date = date_create_from_format('d/m/Y g:i a', $date_raw, wp_timezone());
+                                if ($date !== false) {
+                                    $timestamp = $date->getTimestamp();
+                                }
+                            }
+                        }
+
+                        $now = current_time('timestamp');
+                        if ($timestamp === false || $timestamp > $now) {
+                            $date_txt = '';
+                            if ($timestamp !== false) {
+                                if (wp_date('Y-m-d', $timestamp) === wp_date('Y-m-d', $now)) {
+                                    $date_txt = sprintf(
+                                        esc_html__("Aujourd’hui à %s", 'chassesautresor-com'),
+                                        wp_date('H:i', $timestamp)
+                                    );
+                                } elseif ($timestamp <= $now + WEEK_IN_SECONDS) {
+                                    $date_txt = wp_date('d/m/y \\à H:i', $timestamp);
+                                } else {
+                                    $date_txt = wp_date('d/m/y', $timestamp);
+                                }
+                            }
+                            if ($date_txt === '') {
+                                $date_txt = esc_html__('Bientôt disponible', 'chassesautresor-com');
+                            }
+
+                            $html .= '<span class="indice-label indice-link--upcoming etiquette">'
+                                . '<i class="fa-solid fa-hourglass" aria-hidden="true"></i> '
+                                . esc_html($date_txt)
+                                . '</span>';
+                            continue;
+                        }
+                    }
+                    if ($est_debloque) {
+                        $classes   = 'indice-link indice-link--unlocked etiquette';
+                        $etat_icon = 'fa-eye';
+                    } else {
+                        $classes   = 'indice-link indice-link--locked etiquette';
+                        $etat_icon = 'fa-lightbulb';
+                    }
+
+                    $title_ind = get_indice_title($indice_id);
+                    $label     = esc_html($title_ind);
+
+                    $cout_html = $cout_indice > 0
+                        ? ' - ' . $cout_indice . ' <sup>'
+                            . esc_html__('pts', 'chassesautresor-com') . '</sup>'
+                        : '';
+
+                    $html .= '<a href="#" class="' . esc_attr($classes) . '"'
+                        . ' data-indice-id="' . esc_attr($indice_id) . '"'
+                        . ' data-cout="' . esc_attr($cout_indice) . '"'
+                        . ' data-unlocked="' . ($est_debloque ? '1' : '0') . '">'
+                        . '<i class="fa-solid ' . esc_attr($etat_icon) . '" aria-hidden="true"></i> '
+                        . $label . $cout_html . '</a>';
+                }
+                $html .= '</div></div>';
+                return $html;
+            };
+
+            $content .= '<div class="zone-indices">';
+            if (!empty($indices_enigme)) {
+                $content .= $build_line($indices_enigme, esc_html__('Indices énigme', 'chassesautresor-com'));
+            }
+            if (!empty($indices_chasse)) {
+                $content .= $build_line($indices_chasse, esc_html__('Indices chasse', 'chassesautresor-com'));
+            }
+            $content .= '<div class="indice-display"></div></div>';
         }
 
         $mode_validation = get_field('enigme_mode_validation', $enigme_id);
@@ -625,28 +777,6 @@ require_once __DIR__ . '/utils.php';
         $solde_actuel = ($cout > 0 && function_exists('get_user_points'))
             ? get_user_points($user_id)
             : 0;
-
-        $badge_html = '';
-        if ($mode_validation !== 'aucune') {
-            $chasse_id = recuperer_id_chasse_associee($enigme_id);
-            if (!current_user_can('manage_options')
-                && !utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)
-            ) {
-                $icon       = $mode_validation === 'automatique' ? 'fa-bolt' : 'fa-envelope';
-                $mode_label = $mode_validation === 'automatique'
-                    ? esc_html__('automatique', 'chassesautresor-com')
-                    : esc_html__('manuelle', 'chassesautresor-com');
-                $title = sprintf(
-                    esc_html__("Mode de validation de l'énigme : %s", 'chassesautresor-com'),
-                    $mode_label
-                );
-                $badge_html = '<span class="badge-validation" title="'
-                    . esc_attr($title)
-                    . '"><i class="fa-solid '
-                    . esc_attr($icon)
-                    . '"></i></span>';
-            }
-        }
 
         $afficher_tentatives = $mode_validation === 'automatique' && !$deja_resolue;
         $afficher_infos      = $mode_validation !== 'aucune'
@@ -702,7 +832,7 @@ require_once __DIR__ . '/utils.php';
         }
 
         $header = '<div class="participation-header">'
-            . ($badge_html !== '' ? $badge_html : '<span></span>')
+            . '<span></span>'
             . $cout_badge
             . '</div>';
 
@@ -738,7 +868,9 @@ require_once __DIR__ . '/utils.php';
             if ($content !== '') {
                 echo '<section class="solution">';
                 echo '<details><summary>' . esc_html__('Voir la solution', 'chassesautresor-com') . '</summary>';
-                echo '<div class="solution-content">' . $content . '</div>';
+                echo '<div class="solution-content">'
+                    . $content
+                    . '</div>';
                 echo '</details>';
                 echo '</section>';
             }

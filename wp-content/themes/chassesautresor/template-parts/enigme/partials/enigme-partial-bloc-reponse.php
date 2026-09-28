@@ -72,7 +72,7 @@ if ($mode_validation === 'manuelle') {
                 $timestamp   = strtotime($tentative->date_tentative);
                 $date        = wp_date('d/m/Y', $timestamp);
                 $time        = wp_date('H:i', $timestamp);
-                $account_url = home_url('/mon-compte/?section=chasses');
+                $account_url = home_url('/mon-compte/');
                 $message     = sprintf(
                     __(
                         '⏳ Votre tentative %1$s a été soumise le %2$s à %3$s.<br>' .
@@ -152,6 +152,26 @@ if ($points_manquants <= 0 && !$message_tentatives && $cout > 0) {
     );
 }
 
+$badge_html = '';
+if ($mode_validation !== 'aucune') {
+    if ($mode_validation === 'automatique') {
+        $icon_html = trim(get_svg_icon('automatic'));
+        $message   = __("Mode de validation de l'énigme automatique. Vous connaîtrez le résultat de votre tentative immédiatement après l'avoir soumise.", 'chassesautresor-com');
+    } else {
+        $icon_html         = '<i class="fa-solid fa-envelope" aria-hidden="true"></i>';
+        $organisateur_id   = get_organisateur_from_chasse($chasse_id);
+        $organisateur_nom  = $organisateur_id ? get_the_title($organisateur_id) : '';
+        $organisateur_lien = $organisateur_id ? get_permalink($organisateur_id) : '#';
+        $message           = sprintf(
+            __("Mode de validation de l'énigme manuelle. Vous connaîtrez le résultat de votre tentative après son traitement par %s.", 'chassesautresor-com'),
+            '<a href="' . esc_url($organisateur_lien) . '">' . esc_html($organisateur_nom) . '</a>'
+        );
+    }
+    $badge_html = '<button type="button" class="badge-validation" data-tooltip="'
+        . esc_attr($message)
+        . '">' . $icon_html . '</button>';
+}
+
 $nonce = wp_create_nonce('reponse_auto_nonce');
 ?>
 
@@ -162,7 +182,7 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
     data-solde-apres="<?= esc_attr($solde_apres); ?>"
     data-seuil="<?= esc_attr($seuil_cout_eleve); ?>"
 >
-    <h3><?= esc_html__('Votre réponse', 'chassesautresor-com'); ?></h3>
+    <h3><?= $badge_html . esc_html__('Votre réponse', 'chassesautresor-com'); ?></h3>
 
     <div class="reponse-feedback" style="display:none"></div>
   <?php if ($message_tentatives) : ?>

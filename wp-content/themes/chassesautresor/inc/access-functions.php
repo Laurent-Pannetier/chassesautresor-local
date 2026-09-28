@@ -45,6 +45,7 @@ function restreindre_media_library_tous_non_admins($query)
     return $query;
 }
 add_filter('ajax_query_attachments_args', 'restreindre_media_library_tous_non_admins');
+add_filter('rest_attachment_query', 'restreindre_media_library_tous_non_admins');
 
 /**
  * Filtre les fichiers visibles dans la médiathèque selon le post en cours.
@@ -500,6 +501,9 @@ function utilisateur_peut_voir_enigme(int $enigme_id, ?int $user_id = null): boo
         return false;
     }
 
+    $statut_validation = get_field('chasse_cache_statut_validation', $chasse_id) ?? '';
+    $est_organisateur  = utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
+
     // 🏁 Chasse terminée : visuels accessibles à tous
     $chasse_terminee = get_field('chasse_cache_statut', $chasse_id) === 'termine';
     if ($chasse_terminee && $post_status === 'publish') {
@@ -509,6 +513,12 @@ function utilisateur_peut_voir_enigme(int $enigme_id, ?int $user_id = null): boo
 
     // ✅ Abonné engagé dans la chasse → peut voir l’image si énigme accessible
     if (utilisateur_est_engage_dans_chasse($user_id, $chasse_id)) {
+        if ($est_organisateur && in_array($statut_validation, ['creation', 'correction', 'en_attente'], true)) {
+            $autorise = in_array($post_status, ['publish', 'pending'], true);
+            cat_debug("🟢 [voir énigme] organisateur engagé → chasse = $statut_validation → accès " . ($autorise ? 'OK' : 'REFUSÉ'));
+            return $autorise;
+        }
+
         $autorise = ($post_status === 'publish') && ($etat_systeme === 'accessible');
         cat_debug("✅ [voir énigme] joueur engagé dans chasse #$chasse_id → accès " . ($autorise ? 'OK' : 'REFUSÉ'));
         return $autorise;
@@ -528,13 +538,12 @@ function utilisateur_peut_voir_enigme(int $enigme_id, ?int $user_id = null): boo
     }
 
     // 🔐 L’utilisateur doit être lié à l’organisateur de la chasse
-    if (!utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
+    if (!$est_organisateur) {
         cat_debug("❌ [voir énigme] user #$user_id n'est pas lié à la chasse #$chasse_id");
         return false;
     }
 
     // ✅ Exception organisateur (chasse non publiée)
-    $statut_validation = get_field('chasse_cache_statut_validation', $chasse_id);
     cat_debug("🧪 [voir énigme] chasse #$chasse_id → statut_validation = $statut_validation");
 
     if (in_array($statut_validation, ['creation', 'correction', 'en_attente'], true)) {
@@ -545,7 +554,7 @@ function utilisateur_peut_voir_enigme(int $enigme_id, ?int $user_id = null): boo
 
     // ✅ Cas organisateur associé à une chasse publiée mais à venir
     if (
-        utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id) &&
+        $est_organisateur &&
         $post_status === 'publish' &&
         $etat_systeme === 'bloquee_chasse'
     ) {
@@ -1169,6 +1178,14 @@ function utilisateur_peut_voir_solution_enigme(int $post_id, int $user_id): bool
         return false;
     }
 
+    if (
+        get_field('chasse_cache_statut', $chasse_id) === 'termine'
+        && function_exists('utilisateur_est_engage_dans_enigme')
+        && utilisateur_est_engage_dans_enigme($user_id, $post_id)
+    ) {
+        return true;
+    }
+
     if (utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
         return true;
     }
@@ -1190,7 +1207,7 @@ function utilisateur_peut_voir_solution_enigme(int $post_id, int $user_id): bool
  */
 function utilisateur_peut_voir_solution_chasse(int $chasse_id, int $user_id): bool
 {
-    if (!$chasse_id || !$user_id) {
+    if (!$chasse_id) {
         return false;
     }
 
@@ -1199,16 +1216,18 @@ function utilisateur_peut_voir_solution_chasse(int $chasse_id, int $user_id): bo
         return false;
     }
 
-    if (user_can($user_id, 'manage_options')) {
-        return true;
-    }
+    if ($user_id) {
+        if (user_can($user_id, 'manage_options')) {
+            return true;
+        }
 
-    if (utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
-        return true;
-    }
+        if (utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
+            return true;
+        }
 
-    if (utilisateur_est_engage_dans_chasse($user_id, $chasse_id)) {
-        return true;
+        if (utilisateur_est_engage_dans_chasse($user_id, $chasse_id)) {
+            return true;
+        }
     }
 
     return false;

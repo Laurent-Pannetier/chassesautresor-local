@@ -41,9 +41,7 @@ class Astra_Gutenberg {
 
 			$current_post = get_post( absint( $post_id ) );
 
-			/** @psalm-suppress TooManyArguments */ // phpcs:ignore Generic.Commenting.DocComment.MissingShort
 			$enable_block_editor_attr = apply_filters( 'astra_disable_block_content_attr', true, $post_id );
-			/** @psalm-suppress TooManyArguments */ // phpcs:ignore Generic.Commenting.DocComment.MissingShort
 
 			/** @psalm-suppress PossiblyInvalidArgument */ // phpcs:ignore Generic.Commenting.DocComment.MissingShort
 			if ( has_blocks( $current_post ) && $enable_block_editor_attr ) {
@@ -115,6 +113,7 @@ class Astra_Gutenberg {
 		if (
 			isset( $block['blockName'] ) && isset( $block['attrs']['layout']['inherit'] ) && $block['attrs']['layout']['inherit']
 		) {
+			// phpcs:ignore Generic.PHP.ForbiddenFunctions.FoundWithAlternative -- Safe usage: no /e modifier, simple string replacement with quoted pattern
 			$block_content = preg_replace(
 				'/' . preg_quote( 'class="', '/' ) . '/',
 				'class="inherit-container-width ',

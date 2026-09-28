@@ -1,4 +1,6 @@
-<?php if (!defined('UPDRAFTPLUS_DIR')) die('No direct access allowed'); ?>
+<?php
+if (!defined('ABSPATH')) die('No direct access allowed');
+?>
 
 <div class="updraft_advert_bottom">
 	<div class="updraft_advert_content_right">

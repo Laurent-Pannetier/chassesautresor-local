@@ -1,6 +1,10 @@
 <?php
-
-if (!defined('UPDRAFTPLUS_DIR')) die('No access.');
+//phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery -- we try to reduce overhead by bypassing WP APIs and other extra layers; Some custom complex queries tailored specifically to our needs, giving us full control over the SQL commands and data manipulation
+// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_print_r -- print_r is intentionally used to convert an array into a readable string or for controlled logging purposes.
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.NoCaching -- some query operations need to always receive the most up-to-date or actual data directly from the database, reducing the risk of serving stale information.
+// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_set_error_handler -- we use the set_error_handler() function to provide a flexible way of handling PHP errors according to our needs; we centralises error handling in one place and customises certain errors based on their severity and context.
+// phpcs:disable Squiz.PHP.DiscouragedFunctions.Discouraged -- some functions, like set_time_limit() and ini_set(), are used to temporarily change PHP configuration values based on the script's needs (e.g., processing large datasets or performing long operations).
+if (!defined('ABSPATH')) die('No direct access allowed');
 
 /*
 	See class-commands.php for explanation about how these classes work.
@@ -128,7 +132,9 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 			$max_execution_time = (int) @ini_get('max_execution_time');// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged -- Silenced to suppress errors that may arise because of the function.
 
 			if ($max_execution_time>0 && $max_execution_time<61) {
-				$warn[] = sprintf(__('The PHP setup on this webserver allows only %s seconds for PHP to run, and does not allow this limit to be raised.', 'updraftplus'), $max_execution_time).' '.__('If you have a lot of data to import, and if the restore operation times out, then you will need to ask your web hosting company for ways to raise this limit (or attempt the restoration piece-by-piece).', 'updraftplus');
+				/* translators: %s: Maximum execution time in seconds */
+				$warn[] = sprintf(__('The PHP setup on this webserver allows only %s seconds for PHP to run, and does not allow this limit to be raised.', 'updraftplus'), $max_execution_time).' '.
+				__('If you have a lot of data to import, and if the restore operation times out, then you will need to ask your web hosting company for ways to raise this limit (or attempt the restoration piece-by-piece).', 'updraftplus');
 			}
 
 			if (isset($backups[$timestamp]['native']) && false == $backups[$timestamp]['native']) {
@@ -157,6 +163,7 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 			if (!empty($backups[$timestamp]['meta_foreign'])) {
 				$foreign_known = apply_filters('updraftplus_accept_archivename', array());
 				if (!is_array($foreign_known) || empty($foreign_known[$backups[$timestamp]['meta_foreign']])) {
+					/* translators: %s: Backup source information */
 					$err[] = sprintf(__('Backup created by unknown source (%s) - cannot be restored.', 'updraftplus'), $backups[$timestamp]['meta_foreign']);
 				} else {
 					// For some reason, on PHP 5.5 passing by reference in a single array stopped working with apply_filters_ref_array (though not with do_action_ref_array).
@@ -181,14 +188,17 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 						$expected_index++;
 					}
 					if (!file_exists($updraft_dir.'/'.$file)) {
+						/* translators: %s: File path */
 						$err[] = sprintf(__('File not found (you need to upload it): %s', 'updraftplus'), $updraft_dir.'/'.$file);
 					} elseif (filesize($updraft_dir.'/'.$file) == 0) {
+						/* translators: %s: File name */
 						$err[] = sprintf(__('File was found, but is zero-sized (you need to re-upload it): %s', 'updraftplus'), $file);
 					} else {
 						$itext = (0 == $index) ? '' : $index;
 						if (!empty($backups[$timestamp][$type.$itext.'-size']) && filesize($updraft_dir.'/'.$file) != $backups[$timestamp][$type.$itext.'-size']) {
 							if (empty($warn['doublecompressfixed'])) {
-								$warn[] = sprintf(__('File (%s) was found, but has a different size (%s) from what was expected (%s) - it may be corrupt.', 'updraftplus'), $file, filesize($updraft_dir.'/'.$file), $backups[$timestamp][$type.$itext.'-size']);
+								/* translators: 1: File name, 2: Actual file size, 3: Expected file size */
+								$warn[] = sprintf(__('File (%1$s) was found, but has a different size (%2$s) from what was expected (%3$s) - it may be corrupt.', 'updraftplus'), $file, filesize($updraft_dir.'/'.$file), $backups[$timestamp][$type.$itext.'-size']);
 							}
 						}
 						do_action_ref_array("updraftplus_checkzip_$type", array($updraft_dir.'/'.$file, &$mess, &$warn, &$err));
@@ -203,6 +213,7 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 					}
 				}
 				if ('' != $missing) {
+					/* translators: %s: List of missing archives with description */
 					$warn[] = sprintf(__("This multi-archive backup set appears to have the following archives missing: %s", 'updraftplus'), $missing.' ('.$entity_info['description'].')');
 				}
 			}
@@ -344,12 +355,13 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 	}
 
 	/**
-	 * Update and set dismiss_phpseclib_notice option name to true
+	 * Update and set dismiss_phpseclib_notice option name to the minimum recommended PHP version
 	 *
 	 * @return array - an associative array containing a key named 'success' with 1 value which indicates the successful of updating the option
 	 */
 	public function dismiss_phpseclib_notice() {
-		UpdraftPlus_Options::update_updraft_option('updraft_dismiss_phpseclib_notice', true);
+		// Store the minimum recommended PHP version dismissed for (previously was boolean `true`), so a later version bump re-shows the notice.
+		UpdraftPlus_Options::update_updraft_option('updraft_dismiss_phpseclib_notice', UPDRAFTPLUS_PHPSECLIB_MIN_PHP_VERSION);
 		return array('success' => 1);
 	}
 
@@ -378,6 +390,19 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 		UpdraftPlus_Options::update_updraft_option('updraftplus_dismisseddashnotice', time() + 366*86400);
 		return array();
 	}
+
+	/**
+	 * Dismiss the Azure Legacy Storage notice.
+	 *
+	 * This function updates the option to indicate that the user has dismissed
+	 * the Azure legacy storage notice, preventing it from being shown again.
+	 *
+	 * @return array Associative array with a 'success' key indicating the operation status.
+	 */
+	public function dismiss_azure_legacy_storage_notice() {
+		UpdraftPlus_Options::update_updraft_option('updraftplus_dismiss_azure_legacy_storage_notice', 1);
+		return array('success' => 1);
+	}
 	
 	public function rawbackuphistory() {
 		// This is used for iframe source; hence, returns a string
@@ -395,7 +420,7 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 	
 		ob_start();
 	
-		if (function_exists('phpinfo')) phpinfo(INFO_ALL ^ (INFO_CREDITS | INFO_LICENSE));
+		if (function_exists('phpinfo')) phpinfo(INFO_ALL ^ (INFO_CREDITS | INFO_LICENSE)); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.prevent_path_disclosure_phpinfo -- we call the phpinfo() function to display PHP information in the advanced tools.
 
 		echo '<h3 id="ud-debuginfo-constants">'.esc_html__('Constants', 'updraftplus').'</h3>';
 		$opts = @get_defined_constants();// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged -- Silenced to suppress errors that may arise because of the function.
@@ -584,7 +609,9 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 				}
 			}
 		} else {
-			$node_array['error'] = sprintf(__('Failed to open directory: %s.', 'updraftplus'), $path).' '.__('This is normally caused by file permissions.', 'updraftplus');
+			/* translators: %s: Directory path */
+			$node_array['error'] = sprintf(__('Failed to open directory: %s.', 'updraftplus'), $path).' '.
+			__('This is normally caused by file permissions.', 'updraftplus');
 		}
 
 		return $node_array;
@@ -826,14 +853,15 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 	/**
 	 * Return the database information
 	 *
-	 * @return array
+	 * @param bool $raw_data_only If true, returns array of data; if false, returns HTML
+	 * @return array If $raw_data_only is true, returns array with 'tables' and 'size'. If false, returns array with 'size' and 'html'
 	 */
-	public function db_size() {
+	public function db_size($raw_data_only = false) {
 		global $wpdb;
 		
 		$db_table_res = $wpdb->get_results('SHOW TABLE STATUS', ARRAY_A);
 		$db_table_size = 0;
-		$db_table_html = '';
+		$db_size_info = array();
 
 		if ($wpdb->num_rows > 0) {
 			$key_field_name = UpdraftPlus_Manipulation_Functions::backquote('Key');
@@ -844,31 +872,58 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 				if (false === $rows_count) {
 					// If not found, try search primary key first
 					$table_name = UpdraftPlus_Manipulation_Functions::backquote($row['Name']);
-					$primary_key = $wpdb->get_row("SHOW COLUMNS FROM $table_name WHERE $key_field_name = 'PRI'", ARRAY_A);
-
+					// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $table_name and $key_field_name are SQL identifiers; identifiers cannot be parameterized with $wpdb->prepare(), $table_name and $key_field_name are safe.
+					$primary_key = $wpdb->get_row($wpdb->prepare("SHOW COLUMNS FROM $table_name WHERE $key_field_name = %s", 'PRI'), ARRAY_A);
 					if ($primary_key) {
 						// Count rows by primary key
 						$primary_key_field = UpdraftPlus_Manipulation_Functions::backquote($primary_key['Field']);
+						// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $table_name and $primary_key_field are SQL identifiers; identifiers cannot be parameterized with $wpdb->prepare(), $table_name and $primary_key_field are safe.
 						$rows_count = $wpdb->get_var("SELECT COUNT($primary_key_field) FROM ".$table_name);
 					}
 
+					// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $table_name is SQL identifiers; identifiers cannot be parameterized with $wpdb->prepare(), $table_name is are safe.
 					if (is_null($rows_count) || false === $rows_count) $rows_count = $wpdb->get_var("SELECT COUNT(*) FROM ".$table_name);
 				}
 
-				$db_table_html .= '<tr>';
-				$db_table_html .= sprintf('<td>%s</td>', esc_html($row['Name']));
-				$db_table_html .= sprintf('<td>%s</td>', esc_html($rows_count));
-				$db_table_html .= sprintf('<td>%s</td>', esc_html(size_format($row['Data_length'], 2)));
-				$db_table_html .= sprintf('<td>%s</td>', esc_html(size_format($row['Index_length'], 2)));
-				$db_table_html .= sprintf('<td>%s</td>', esc_html($row['Engine']));
-				$db_table_html .= '</tr>';
+				$data_length = isset($row['Data_length']) ? (int) $row['Data_length'] : 0;
+				$index_length = isset($row['Index_length']) ? (int) $row['Index_length'] : 0;
 
-				$db_table_size += $row['Data_length'] + $row['Index_length'];
+				$db_size_info[] = array(
+					'name' => $row['Name'],
+					'records' => $rows_count,
+					'data_length' => $data_length,
+					'index_length' => $index_length,
+					'type' => $row['Engine']
+				);
+
+				$db_table_size += $data_length + $index_length;
 			}
 		}
 
+		$total_size_formatted = size_format((int) $db_table_size, 2);
+
+		// Return raw data if requested
+		if ($raw_data_only) {
+			return array(
+				'tables' => $db_size_info,
+				'size' => $total_size_formatted
+			);
+		}
+
+		// Otherwise, construct HTML from the collected data
+		$db_table_html = '';
+		foreach ($db_size_info as $table_info) {
+			$db_table_html .= '<tr>';
+			$db_table_html .= sprintf('<td>%s</td>', esc_html($table_info['name']));
+			$db_table_html .= sprintf('<td>%s</td>', esc_html($table_info['records']));
+			$db_table_html .= sprintf('<td>%s</td>', esc_html($table_info['data_size']));
+			$db_table_html .= sprintf('<td>%s</td>', esc_html($table_info['index_size']));
+			$db_table_html .= sprintf('<td>%s</td>', esc_html($table_info['type']));
+			$db_table_html .= '</tr>';
+		}
+
 		return array(
-			'size' => size_format((int) $db_table_size, 2),
+			'size' => $total_size_formatted,
 			'html' => $db_table_html
 		);
 	}
@@ -904,8 +959,8 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 				sort($events);
 
 				$schedule_name = $schedules[$events[0]['schedule']];
-
-				$formatted_date = wp_date($date_format. ' ' .$time_format, $timestamp);
+				// wp_date() is available on WP 5.3+, it performs locale translation.
+				$formatted_date = function_exists('wp_date') ? wp_date($date_format. ' ' .$time_format, $timestamp) : get_date_from_gmt(gmdate('Y-m-d H:i:s', $timestamp), $date_format. ' ' .$time_format);
 
 				$difference = $timestamp - current_time('timestamp', true);
 				$difference_in_seconds = abs($difference);
@@ -915,10 +970,10 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 				$minutes = floor(($difference_in_seconds % 3600) / 60);
 
 				if ($overdue) {
-					// translators: 1: Number of hours, 2: Number of minutes
+					/* translators: 1: Number of hours, 2: Number of minutes */
 					$interval = sprintf(__('%1$d hours and %2$d minutes ago', 'updraftplus'), $hours, $minutes);
 				} else {
-					// translators: 1: Number of hours, 2: Number of minutes
+					/* translators: 1: Number of hours, 2: Number of minutes */
 					$interval = sprintf(__('%1$d hours and %2$d minutes', 'updraftplus'), $hours, $minutes);
 				}
 

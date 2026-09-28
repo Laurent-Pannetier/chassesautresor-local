@@ -587,10 +587,71 @@ add_action('wp_ajax_load_conversion_history', 'ajax_load_conversion_history');
 // 📩 FORMULAIRE DE CONTACT ORGANISATEUR (WPForms)
 // ==================================================
 /**
+ * 🔹 get_organisateur_id_by_contact_email → retrouve l’ID organisateur à partir de l’email de contact.
  * 🔹 filtrer_destinataire_contact_organisateur → modifie le destinataire du mail via WPForms (email ACF ou auteur, BCC admin)
  * 🔹 ajouter_endpoint_contact_organisateur → ajoute l’endpoint `/contact` sur les URLs des organisateurs (détection côté template)
  */
 
+/**
+ * Récupère l'ID d'un organisateur à partir de son email de contact public.
+ *
+ * Cette fonction recherche d'abord un CPT "organisateur" dont le champ ACF
+ * `profil_public_email_contact` correspond à l'email fourni. Si rien n'est trouvé,
+ * on tente une correspondance avec l'email de l'auteur du CPT.
+ *
+ * @param string|null $email Email de contact fourni dans l'URL.
+ *
+ * @return int|null ID du CPT organisateur correspondant ou null si introuvable.
+ */
+function get_organisateur_id_by_contact_email(?string $email): ?int
+{
+    $sanitized = sanitize_email((string) $email);
+
+    if ($sanitized === '') {
+        return null;
+    }
+
+    static $cache = [];
+    $cache_key = strtolower($sanitized);
+
+    if (array_key_exists($cache_key, $cache)) {
+        return $cache[$cache_key];
+    }
+
+    $query = get_posts([
+        'post_type'      => 'organisateur',
+        'post_status'    => ['publish', 'pending', 'draft'],
+        'meta_key'       => 'profil_public_email_contact',
+        'meta_value'     => $sanitized,
+        'meta_compare'   => '=',
+        'posts_per_page' => 1,
+        'fields'         => 'ids',
+        'suppress_filters' => false,
+    ]);
+
+    if (!empty($query)) {
+        $organisateur_id = (int) $query[0];
+        $cache[$cache_key] = $organisateur_id;
+
+        return $organisateur_id;
+    }
+
+    $user = get_user_by('email', $sanitized);
+
+    if ($user) {
+        $organisateur_id = get_organisateur_from_user((int) $user->ID);
+
+        if ($organisateur_id) {
+            $cache[$cache_key] = (int) $organisateur_id;
+
+            return (int) $organisateur_id;
+        }
+    }
+
+    $cache[$cache_key] = null;
+
+    return null;
+}
 
 /**
  * Ajoute l'endpoint `contact` aux permaliens des organisateurs.
@@ -667,6 +728,68 @@ function generer_liste_chasses_hierarchique($organisateur_id) {
 // 🎯 CTA PAGE "DEVENIR ORGANISATEUR"
 // ==================================================
 /**
+ * Remove any pending organiser request metadata for the given user.
+ *
+ * @param int $user_id Target user identifier.
+ *
+ * @return void
+ */
+function cat_clear_organisateur_request(int $user_id): void
+{
+    delete_user_meta($user_id, 'organisateur_demande_token');
+    delete_user_meta($user_id, 'organisateur_demande_date');
+}
+
+/**
+ * Retrieve the status of the organiser creation request for a user.
+ *
+ * @param int $user_id Target user identifier.
+ *
+ * @return array{token:?string,expired:bool,expires_at?:int} Request status payload.
+ */
+function cat_get_organisateur_request_status(int $user_id): array
+{
+    $token = (string) get_user_meta($user_id, 'organisateur_demande_token', true);
+
+    if ($token === '') {
+        return [
+            'token'   => null,
+            'expired' => false,
+        ];
+    }
+
+    $date = get_user_meta($user_id, 'organisateur_demande_date', true);
+    $timestamp = $date ? strtotime((string) $date) : false;
+
+    if (!$timestamp) {
+        cat_clear_organisateur_request($user_id);
+
+        return [
+            'token'   => null,
+            'expired' => false,
+        ];
+    }
+
+    $expires_at = $timestamp + 2 * DAY_IN_SECONDS;
+    $now        = (int) current_time('timestamp');
+
+    if ($now > $expires_at) {
+        cat_clear_organisateur_request($user_id);
+
+        return [
+            'token'   => null,
+            'expired' => true,
+        ];
+    }
+
+    return [
+        'token'      => $token,
+        'expired'    => false,
+        'expires_at' => $expires_at,
+    ];
+}
+
+/**
  * Retourne le libellé et l'URL du bouton d'appel à l'action
  * présent sur la page "Devenir organisateur".
  *
@@ -696,6 +819,26 @@ function get_cta_devenir_organisateur(?int $user_id = null): array
 
     $roles = (array) $user->roles;
 
+    $profile_state = cat_is_user_profile_complete($user_id);
+    if (!$profile_state['complete']) {
+        $profile_url = function_exists('wc_get_account_endpoint_url')
+            ? wc_get_account_endpoint_url('edit-account')
+            : home_url('/mon-compte/edit-account/');
+
+        $message = cat_get_missing_profile_fields_message($profile_state['missing']);
+
+        add_site_message('error', $message, false, 'profil_incomplet_' . $user_id);
+
+        return [
+            'label'    => __('Compléter mon profil', 'chassesautresor-com'),
+            'url'      => $profile_url,
+            'disabled' => false,
+        ];
+    }
+
+    remove_site_message('profil_incomplet_' . $user_id);
+    myaccount_remove_persistent_message($user_id, 'profil_incomplet');
+
     if (in_array('administrator', $roles, true)) {
         return [
             'label' => 'Salut Patron',
@@ -704,8 +847,19 @@ function get_cta_devenir_organisateur(?int $user_id = null): array
         ];
     }
 
+    $request_status = cat_get_organisateur_request_status($user_id);
+
+    if ($request_status['expired']) {
+        add_site_message(
+            'info',
+            __('Votre précédente demande de création de profil a expiré. Vous pouvez en envoyer une nouvelle.', 'chassesautresor-com'),
+            false,
+            'profil_expire_' . $user_id
+        );
+    }
+
     // Demande d'inscription non confirmée
-    if (get_user_meta($user_id, 'organisateur_demande_token', true)) {
+    if (!empty($request_status['token'])) {
         return [
             'label' => "Renvoyer l'email de confirmation",
             'url'   => home_url('/creer-mon-profil/?resend=1'),

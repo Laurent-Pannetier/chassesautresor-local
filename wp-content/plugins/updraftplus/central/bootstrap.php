@@ -1,5 +1,6 @@
 <?php
-
+// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_print_r -- print_r is intentionally used to convert an array into a readable string or for controlled logging purposes..
+// phpcs:disable Squiz.PHP.DiscouragedFunctions.Discouraged -- some functions, like set_time_limit() and ini_set(), are used to temporarily change PHP configuration values based on the script's needs (e.g., processing large datasets or performing long operations).
 if (!defined('ABSPATH')) die('No direct access.');
 
 global $updraftcentral_host_plugin;
@@ -46,7 +47,9 @@ class UpdraftCentral_Main {
 			'posts' => 'UpdraftCentral_Posts_Commands',
 			'media' => 'UpdraftCentral_Media_Commands',
 			'pages' => 'UpdraftCentral_Pages_Commands',
-			'backups' => 'UpdraftCentral_Backups_Commands'
+			'backups' => 'UpdraftCentral_Backups_Commands',
+			'rest' => 'UpdraftCentral_REST_API_Access_Commands',
+			'reporting' => 'UpdraftCentral_Reporting_Commands'
 		));
 	
 		// N.B. This "updraftplus_remotecontrol_command_classes" filter has been marked as deprecated and will be remove after May 2021.
@@ -54,6 +57,7 @@ class UpdraftCentral_Main {
 		$command_classes = apply_filters('updraftplus_remotecontrol_command_classes', $command_classes);
 	
 		// If nothing was sent, then there is no incoming message, so no need to set up a listener (or CORS request, etc.). This avoids a DB SELECT query on the option below in the case where it didn't get autoloaded, which is the case when there are no keys.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only reads superglobals to check if there is an incoming message, no nonce needed since nothing is processed here yet.
 		if (!empty($_SERVER['REQUEST_METHOD']) && ('GET' == $_SERVER['REQUEST_METHOD'] || 'POST' == $_SERVER['REQUEST_METHOD']) && (empty($_REQUEST['action']) || 'updraft_central' !== $_REQUEST['action']) && empty($_REQUEST['udcentral_action']) && empty($_REQUEST['udrpc_message'])) return;
 		
 		// Remote control keys
@@ -113,16 +117,16 @@ class UpdraftCentral_Main {
 		if (defined('UPDRAFTCENTRAL_COMMAND') && UPDRAFTCENTRAL_COMMAND || defined('WP_CLI') && WP_CLI) return '';
 		
 		if (defined('DOING_AJAX') && DOING_AJAX && !empty($_SERVER['HTTP_REFERER'])) {
-			$current_url = $_SERVER['HTTP_REFERER'];
+			$current_url = $_SERVER['HTTP_REFERER']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Unslash late, sanitization can be safely skipped as it's a non-interactive data storage
 		} else {
 			$url_prefix = is_ssl() ? 'https' : 'http';
-			$host = empty($_SERVER['HTTP_HOST']) ? parse_url(network_site_url(),  PHP_URL_HOST) : $_SERVER['HTTP_HOST'];
-			$current_url = $url_prefix."://".$host.wp_unslash($_SERVER['REQUEST_URI']);
+			$host = empty($_SERVER['HTTP_HOST']) ? parse_url(network_site_url(),  PHP_URL_HOST) : $_SERVER['HTTP_HOST']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Unslash late, sanitization can be safely skipped as it's a non-interactive data storage
+			$request_uri = empty($_SERVER['REQUEST_URI']) ? '' : $_SERVER['REQUEST_URI']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Unslash late, sanitization can be safely skipped as it's a non-interactive data storage
+			$current_url = $url_prefix."://".$host.$request_uri;
 		}
 		$remove_query_args = array('state', 'action', 'oauth_verifier', 'nonce', 'updraftplus_instance', 'access_token', 'user_id', 'updraftplus_googledriveauth');
 
-		$query_string = remove_query_arg($remove_query_args, $current_url);
-		return function_exists('wp_unslash') ? wp_unslash($query_string) : stripslashes_deep($query_string);
+		return wp_unslash(remove_query_arg($remove_query_args, $current_url));
 	}
 	
 	/**
@@ -174,7 +178,7 @@ class UpdraftCentral_Main {
 	public function wp_ajax_updraftcentral_receivepublickey() {
 		global $updraftcentral_host_plugin;
 	
-		// The actual nonce check is done in the method below
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- The actual nonce check is done in the method below
 		if (empty($_GET['_wpnonce']) || empty($_GET['public_key']) || !isset($_GET['updraft_key_index'])) die;
 		
 		$result = $this->receive_public_key();
@@ -242,9 +246,10 @@ class UpdraftCentral_Main {
 			return array('responsetype' => 'error', 'code' => 'not_logged_in');
 		}
 
-		if (!wp_verify_nonce($_GET['_wpnonce'], 'updraftcentral_receivepublickey')) return array('responsetype' => 'error', 'code' => 'nonce_failure');
+		$nonce = !empty($_GET['_wpnonce']) ? $_GET['_wpnonce'] : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended -- Unslash late, sanitization can be safely skipped as it's a non-interactive data storage, nonce verification is done late
+		if (!wp_verify_nonce($nonce, 'updraftcentral_receivepublickey')) return array('responsetype' => 'error', 'code' => 'nonce_failure');
 		
-		$updraft_key_index = $_GET['updraft_key_index'];
+		$updraft_key_index = !empty($_GET['updraft_key_index']) ? $_GET['updraft_key_index'] : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Unslash late, sanitization can be safely skipped as it's a non-interactive data storage
 		$our_keys = $this->get_central_localkeys();
 
 		if (!is_array($our_keys)) $our_keys = array();
@@ -257,7 +262,8 @@ class UpdraftCentral_Main {
 			return array('responsetype' => 'error', 'code' => 'already_have');
 		}
 		
-		$our_keys[$updraft_key_index]['publickey_remote'] = base64_decode(stripslashes($_GET['public_key']));
+		$public_key = !empty($_GET['public_key']) ? $_GET['public_key'] : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Unslash late, sanitization can be safely skipped as it's a non-interactive data storage
+		$our_keys[$updraft_key_index]['publickey_remote'] = base64_decode(stripslashes($public_key));
 		$this->update_central_localkeys($our_keys, true, 'no');
 		
 		return array('responsetype' => 'ok', 'code' => 'ok');
@@ -281,15 +287,15 @@ class UpdraftCentral_Main {
 			'message' => $message,
 			'key_name_indicator' => $key_name_indicator
 		);
-		
+
 		if (!empty($_SERVER['REMOTE_ADDR'])) {
-			$new_item['remote_ip'] = $_SERVER['REMOTE_ADDR'];
+			$new_item['remote_ip'] = $_SERVER['REMOTE_ADDR']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Unslash late, sanitization can be safely skipped as it's a non-interactive data storage
 		}
 		if (!empty($_SERVER['HTTP_USER_AGENT'])) {
-			$new_item['http_user_agent'] = $_SERVER['HTTP_USER_AGENT'];
+			$new_item['http_user_agent'] = $_SERVER['HTTP_USER_AGENT']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Unslash late, sanitization can be safely skipped as it's a non-interactive data storage
 		}
 		if (!empty($_SERVER['HTTP_X_SECONDARY_USER_AGENT'])) {
-			$new_item['http_secondary_user_agent'] = $_SERVER['HTTP_X_SECONDARY_USER_AGENT'];
+			$new_item['http_secondary_user_agent'] = $_SERVER['HTTP_X_SECONDARY_USER_AGENT']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Unslash late, sanitization can be safely skipped as it's a non-interactive data storage
 		}
 		
 		$udrpc_log[] = $new_item;
@@ -383,7 +389,7 @@ class UpdraftCentral_Main {
 
 		// ENT_HTML5 exists only on PHP 5.4+
 		// @codingStandardsIgnoreLine
-		$flags = defined('ENT_HTML5') ? ENT_QUOTES | ENT_HTML5 : ENT_QUOTES;
+		$flags = defined('ENT_HTML5') ? ENT_QUOTES | ENT_HTML5 : ENT_QUOTES;// phpcs:ignore PHPCompatibility.Constants.NewConstants.ent_html5Found -- ENT_HTML5 is used intentionally with proper check.
 		
 		$extra_info = array(
 			'user_id' => $user->ID,
@@ -415,9 +421,9 @@ class UpdraftCentral_Main {
 			$created['keys_guide'] = '<h2 class="updraftcentral_wizard_success">'. $updraftcentral_host_plugin->retrieve_show_message('updraftcentral_key_created') .'</h2>';
 
 			if ('__updraftpluscom' != $where_send) {
-				$created['keys_guide'] .= '<div class="updraftcentral_wizard_success"><p>'.sprintf($updraftcentral_host_plugin->retrieve_show_message('need_to_copy_key'), '<a href="'.$where_send.'" target="_blank">UpdraftCentral dashboard</a>').'</p><p>'.$updraftcentral_host_plugin->retrieve_show_message('press_add_site_button').'</p><p>'.sprintf($updraftcentral_host_plugin->retrieve_show_message('detailed_instructions'), '<a target="_blank" href="https://updraftplus.com/updraftcentral-how-to-add-a-site/">UpdraftPlus.com</a>').'</p></div>';
+				$created['keys_guide'] .= '<div class="updraftcentral_wizard_success"><p>'.sprintf($updraftcentral_host_plugin->retrieve_show_message('need_to_copy_key'), '<a href="'.$where_send.'" target="_blank">UpdraftCentral dashboard</a>').'</p><p>'.$updraftcentral_host_plugin->retrieve_show_message('press_add_site_button').'</p><p>'.sprintf($updraftcentral_host_plugin->retrieve_show_message('detailed_instructions'), '<a target="_blank" href="https://teamupdraft.com/documentation/updraftcentral/getting-started/how-to-add-a-site-to-updraftcentral/">teamupdraft.com</a>').'</p></div>';
 			} else {
-				$created['keys_guide'] .= '<div class="updraftcentral_wizard_success"><p>'. sprintf($updraftcentral_host_plugin->retrieve_show_message('control_this_site'), '<a target="_blank" href="https://updraftplus.com/my-account/updraftcentral-remote-control/">UpdraftPlus.com</a>').'</p></div>';
+				$created['keys_guide'] .= '<div class="updraftcentral_wizard_success"><p>'. sprintf($updraftcentral_host_plugin->retrieve_show_message('control_this_site'), '<a target="_blank" href="https://teamupdraft.com/my-account/updraftcentral/">teamupdraft.com</a>').'</p></div>';
 			}
 		}
 		
@@ -596,6 +602,56 @@ class UpdraftCentral_Main {
 	}
 	
 	/**
+	 * Retrieves and processes UpdraftCentral connection keys data for display
+	 *
+	 * @return array Formatted connection keys data with user info and metadata
+	 */
+	public function get_connection_keys_data() {
+		if (!current_user_can('manage_options')) {
+			return array();
+		}
+
+		$our_keys = $this->get_central_localkeys();
+		if (!is_array($our_keys)) $our_keys = array();
+		
+		$keys_data = array();
+		
+		foreach ($our_keys as $key_id => $key_data) {
+			if (empty($key_data['extra_info'])) continue;
+			
+			$user_id = isset($key_data['extra_info']['user_id']) ? $key_data['extra_info']['user_id'] : 0;
+			$user = get_user_by('id', $user_id);
+
+			$reconstructed_url = '';
+			if (!empty($key_data['extra_info']['mothership'])) {
+				$mothership_url = $key_data['extra_info']['mothership'];
+				if ('__updraftpluscom' == $mothership_url) {
+					$reconstructed_url = 'https://updraftplus.com';
+				} else {
+					$purl = parse_url($mothership_url);
+					$path = empty($purl['path']) ? '' : $purl['path'];
+					$reconstructed_url = $purl['scheme'].'://'.$purl['host'].
+						(!empty($purl['port']) ? ':'.$purl['port'] : '').$path;
+				}
+			}
+			
+			$keys_data[$key_id] = array(
+				'name' => isset($key_data['name']) ? $key_data['name'] : '',
+				'user_login' => $user ? $user->user_login : '',
+				'user_email' => $user ? $user->user_email : '',
+				'user_display' => $user ? $user->user_login.' ('.$user->user_email.')' : 'Unknown',
+				'created' => isset($key_data['created']) ? $key_data['created'] : '',
+				'created_formatted' => isset($key_data['created']) ? date_i18n(get_option('date_format').' '.get_option('time_format'), $key_data['created']) : '',
+				'reconstructed_url' => $reconstructed_url,
+				'key_size' => isset($key_data['extra_info']['key_size']) ? $key_data['extra_info']['key_size'] : '',
+				'key_id' => $key_id
+			);
+		}
+		
+		return $keys_data;
+	}
+
+	/**
 	 * Get the HTML for the keys table
 	 *
 	 * @param Boolean $echo_instead_of_return Whether the result should be echoed or returned
@@ -609,20 +665,19 @@ class UpdraftCentral_Main {
 		global $updraftcentral_host_plugin;
 
 		if (!$echo_instead_of_return) ob_start();
-			
-		$our_keys = $this->get_central_localkeys();
-		if (!is_array($our_keys)) $our_keys = array();
+		
+		$keys_data = $this->get_connection_keys_data();
 
-		if (empty($our_keys)) {
+		if (empty($keys_data)) {
 			?>
-			<tr><td colspan="2"><em><?php $updraftcentral_host_plugin->retrieve_show_message('no_updraftcentral_dashboards', true); ?></em></td></tr>
+			<em><?php $updraftcentral_host_plugin->retrieve_show_message('no_updraftcentral_dashboards', true); ?></em>
 			<?php
 		}
 		
 		?>
 		<div id="updraftcentral_keys_content" style="margin: 10px 0;">
-			<?php if (!empty($our_keys)) { ?>
-				<a href="<?php echo esc_url($this->get_current_clean_url()); ?>" class="updraftcentral_keys_show hidden-in-updraftcentral"><?php echo wp_kses_post(sprintf($updraftcentral_host_plugin->retrieve_show_message('manage_keys'), count($our_keys))); ?></a>
+			<?php if (!empty($keys_data)) { ?>
+				<a href="<?php echo esc_url($this->get_current_clean_url()); ?>" class="updraftcentral_keys_show hidden-in-updraftcentral"><?php echo wp_kses_post(sprintf($updraftcentral_host_plugin->retrieve_show_message('manage_keys'), count($keys_data))); ?></a>
 			<?php } ?>
 			<table id="updraftcentral_keys_table">
 				<thead>
@@ -633,49 +688,25 @@ class UpdraftCentral_Main {
 				</thead>
 				<tbody>
 					<?php
-					
-					foreach ($our_keys as $i => $key) {
-		
-						if (empty($key['extra_info'])) continue;
-						
-						$user_id = $key['extra_info']['user_id'];
-						
-						if (!empty($key['extra_info']['mothership'])) {
-						
-							$mothership_url = $key['extra_info']['mothership'];
-							
-							if ('__updraftpluscom' == $mothership_url) {
-								$reconstructed_url = 'https://updraftplus.com';
-							} else {
-								$purl = parse_url($mothership_url);
-								$path = empty($purl['path']) ? '' : $purl['path'];
-								
-								$reconstructed_url = $purl['scheme'].'://'.$purl['host'].(!empty($purl['port']) ? ':'.$purl['port'] : '').$path;
-							}
-							
-						} else {
-							$reconstructed_url = $updraftcentral_host_plugin->retrieve_show_message('unknown');
-						}
-					
-						$name = $key['name'];
-						
-						$user = get_user_by('id', $user_id);
-						
-						$user_display = is_a($user, 'WP_User') ? $user->user_login.' ('.$user->user_email.')' : $updraftcentral_host_plugin->retrieve_show_message('unknown');
+					foreach ($keys_data as $key_id => $key) {
+						$user_display = 'Unknown' !== $key['user_display'] ? $key['user_display'] : $updraftcentral_host_plugin->retrieve_show_message('unknown');
+						$reconstructed_url = !empty($key['reconstructed_url']) ? $key['reconstructed_url'] : $updraftcentral_host_plugin->retrieve_show_message('unknown');
+						$reconstructed_url_display = 'https://updraftplus.com' == $reconstructed_url ? 'https://teamupdraft.com' : $reconstructed_url;
+						$key_name_display = 'updraftplus.com' == $key['name'] ? 'teamupdraft.com' : $key['name'];
 						?>
-						<tr class="updraft_debugrow"><td style="vertical-align:top;"><?php echo esc_html($name.' ('.$i.')'); ?></td><td><?php $updraftcentral_host_plugin->retrieve_show_message('access_as_user', true); ?> <?php echo esc_html($user_display); ?> <br> <?php $updraftcentral_host_plugin->retrieve_show_message('public_key_sent', true); ?> <?php echo esc_html($reconstructed_url); ?><br>
+						<tr class="updraft_debugrow"><td style="vertical-align:top;"><?php echo esc_html($key_name_display.' ('.$key_id.')'); ?></td><td><?php $updraftcentral_host_plugin->retrieve_show_message('access_as_user', true); ?> <?php echo esc_html($user_display); ?> <br> <?php $updraftcentral_host_plugin->retrieve_show_message('public_key_sent', true); ?> <?php echo esc_html($reconstructed_url_display); ?><br>
 						<?php
 						if (!empty($key['created'])) {
-							echo esc_html($updraftcentral_host_plugin->retrieve_show_message('created').' '.date_i18n(get_option('date_format').' '.get_option('time_format'), $key['created'])).'.';
-							if (!empty($key['extra_info']['key_size'])) {
-								echo ' '.esc_html(sprintf($updraftcentral_host_plugin->retrieve_show_message('key_size'), $key['extra_info']['key_size'])).'.';
+							echo esc_html($updraftcentral_host_plugin->retrieve_show_message('created').' '.$key['created_formatted']).'.';
+							if (!empty($key['key_size'])) {
+								echo ' '.esc_html(sprintf($updraftcentral_host_plugin->retrieve_show_message('key_size'), $key['key_size'])).'.';
 							}
 							?>
 							<br>
 							<?php
 						}
 						?>
-						<a href="<?php echo esc_url($this->get_current_clean_url()); ?>" data-key_id="<?php echo esc_attr($i); ?>" class="updraftcentral_key_delete"><?php $updraftcentral_host_plugin->retrieve_show_message('delete', true); ?></a></td></tr>
+						<a href="<?php echo esc_url($this->get_current_clean_url()); ?>" data-key_id="<?php echo esc_attr($key_id); ?>" class="updraftcentral_key_delete"><?php $updraftcentral_host_plugin->retrieve_show_message('delete', true); ?></a></td></tr>
 						<?php
 					}
 					?>

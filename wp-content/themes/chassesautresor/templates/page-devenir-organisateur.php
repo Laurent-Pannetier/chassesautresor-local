@@ -38,6 +38,29 @@ if (has_post_thumbnail()) {
   $image_url = get_the_post_thumbnail_url(null, 'full'); // ou 'large' si besoin
 }
 
+$separator_icon_markup = get_svg_icon('separateur-avec-icone');
+
+$inject_separator_icon = static function (string $content) use ($separator_icon_markup): string {
+    if ($separator_icon_markup === '') {
+        return $content;
+    }
+
+    $pattern = '#(<div[^>]*class="[^"]*\\bseparateur-avec-icone\\b[^"]*"[^>]*>.*?<span[^>]*class="[^"]*\\bicone-svg\\b[^"]*"[^>]*>)(.*?)(</span>)#si';
+    $updated = preg_replace_callback(
+        $pattern,
+        static function (array $matches) use ($separator_icon_markup): string {
+            return $matches[1] . $separator_icon_markup . $matches[3];
+        },
+        $content
+    );
+
+    if (is_string($updated)) {
+        return $updated;
+    }
+
+    return $content;
+};
+
 get_header(); ?>
 <section class="bandeau-hero">
   <div class="hero-overlay" style="background-image: url('<?php echo esc_url($image_url); ?>');">
@@ -62,19 +85,22 @@ get_header(); ?>
     <?php
       while ( have_posts() ) :
         the_post();
-        the_content();
+        $content = apply_filters('the_content', get_the_content());
+        echo $inject_separator_icon($content); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
       endwhile;
 
       // Ajout de la section "comment-ca-fonctionne"
       $fonctionnement_post = get_page_by_path('comment-ca-fonctionne', OBJECT, 'section_editoriale');
       if ($fonctionnement_post) {
-        echo apply_filters('the_content', $fonctionnement_post->post_content);
+        $content = apply_filters('the_content', $fonctionnement_post->post_content);
+        echo $inject_separator_icon($content); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
       }
 
       // Ajout de la section "temoignages-organisateurs"
       $temoignages_post = get_page_by_path('temoignages-organisateurs', OBJECT, 'section_editoriale');
       if ($temoignages_post) {
-         echo apply_filters('the_content', $temoignages_post->post_content);
+         $content = apply_filters('the_content', $temoignages_post->post_content);
+         echo $inject_separator_icon($content); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
       }
       // Ajout de la section "cta-final"
       $cta_final_post = get_page_by_path('cta-final-devenir-organisateur', OBJECT, 'section_editoriale');
@@ -86,7 +112,7 @@ get_header(); ?>
          if (!$cta['disabled']) {
              $content = str_replace('bouton-cta"', 'bouton-cta bouton-cta--color"', $content);
          }
-         echo $content;
+         echo $inject_separator_icon($content); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
       }
     ?>
 </main>

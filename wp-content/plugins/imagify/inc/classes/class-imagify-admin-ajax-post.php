@@ -102,21 +102,21 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		foreach ( $this->ajax_post_actions as $action ) {
 			$action_callback = "{$action}_callback";
 			if ( $doing_ajax ) {
-				add_action( 'wp_ajax_' . $action, array( $this, $action_callback ) );
+				add_action( 'wp_ajax_' . $action, [ $this, $action_callback ] );
 			}
-			add_action( 'admin_post_' . $action, array( $this, $action_callback ) );
+			add_action( 'admin_post_' . $action, [ $this, $action_callback ] );
 		}
 
 		// Actions triggered only on admin ajax.
 		if ( $doing_ajax ) {
 			foreach ( $this->ajax_only_actions as $action ) {
-				add_action( 'wp_ajax_' . $action, array( $this, $action . '_callback' ) );
+				add_action( 'wp_ajax_' . $action, [ $this, $action . '_callback' ] );
 			}
 		}
 
 		// Actions triggered on admin post.
 		foreach ( $this->post_only_actions as $action ) {
-			add_action( 'admin_post_' . $action, array( $this, $action . '_callback' ) );
+			add_action( 'admin_post_' . $action, [ $this, $action . '_callback' ] );
 		}
 	}
 
@@ -135,7 +135,9 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @return bool|WP_Error    True if successfully launched. A \WP_Error instance on failure.
 	 */
 	protected function optimize_media( $media_id, $context ) {
-		return imagify_get_optimization_process( $media_id, $context )->optimize();
+		// A manual click is an explicit, single-image user action: flag it as priority so it
+		// jumps ahead of any bulk optimization queue.
+		return imagify_get_optimization_process( $media_id, $context )->optimize( null, [ 'priority' => true ] );
 	}
 
 	/**
@@ -149,7 +151,9 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @return bool|WP_Error    True if successfully launched. A \WP_Error instance on failure.
 	 */
 	protected function reoptimize_media( $media_id, $context, $level ) {
-		return imagify_get_optimization_process( $media_id, $context )->reoptimize( $level );
+		// A manual click is an explicit, single-image user action: flag it as priority so it
+		// jumps ahead of any bulk optimization queue.
+		return imagify_get_optimization_process( $media_id, $context )->reoptimize( $level, [ 'priority' => true ] );
 	}
 
 	/**
@@ -636,9 +640,9 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 
 			$folder['folder_path'] = Imagify_Files_Scan::remove_placeholder( $folder['path'] );
 
-			$folders = array(
+			$folders = [
 				$folder[ $folders_key ] => $folder,
-			);
+			];
 
 			Imagify_Custom_Folders::get_files_from_folders(
 				$folders,
@@ -652,9 +656,9 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 
 		// All selected custom folders.
 		$folders = Imagify_Custom_Folders::get_folders(
-			array(
+			[
 				'active' => true,
-			)
+			]
 		);
 		Imagify_Custom_Folders::get_files_from_folders( $folders );
 
@@ -702,8 +706,8 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			imagify_die( __( 'Invalid request', 'imagify' ) );
 		}
 
-		$folder = wp_unslash( $_POST['folder'] );
-		$folder = trailingslashit( sanitize_text_field( $folder ) );
+		$folder = sanitize_text_field( wp_unslash( $_POST['folder'] ) );
+		$folder = trailingslashit( $folder );
 		$folder = realpath( $this->filesystem->get_site_root() . ltrim( $folder, '/' ) );
 
 		if ( ! $folder ) {
@@ -721,7 +725,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		}
 
 		// Finally we made all our validations.
-		$selected = ! empty( $_POST['selected'] ) && is_array( $_POST['selected'] ) ? array_flip( wp_unslash( $_POST['selected'] ) ) : array();
+		$selected = ! empty( $_POST['selected'] ) && is_array( $_POST['selected'] ) ? array_flip( array_map( 'sanitize_text_field', wp_unslash( $_POST['selected'] ) ) ) : [];
 		$views    = Imagify_Views::get_instance();
 		$output   = '';
 
@@ -800,17 +804,17 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			imagify_die( __( 'Empty email address.', 'imagify' ) );
 		}
 
-		$email = wp_unslash( $_GET['email'] );
+		$email = sanitize_email( wp_unslash( $_GET['email'] ) );
 
 		if ( ! is_email( $email ) ) {
 			imagify_die( __( 'Not a valid email address.', 'imagify' ) );
 		}
 
-		$data = array(
+		$data = [
 			'email'    => $email,
 			'password' => wp_generate_password( 12, false ),
 			'lang'     => imagify_get_locale(),
-		);
+		];
 
 		$response = add_imagify_user( $data );
 
@@ -825,6 +829,10 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * Check the API key validity.
 	 *
 	 * @since 1.6.11
+	 * @since 2.3.1 Ignore user abort while saving the key, so the option and its
+	 *              related validity cache/notice are never left in a partial state
+	 *              when the browser cancels the request (e.g. the user clicks away
+	 *              or navigates while the check is still running).
 	 */
 	public function imagify_check_api_key_validity_callback() {
 		imagify_check_nonce( 'imagify-check-api-key', 'imagifycheckapikeynonce' );
@@ -837,16 +845,30 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			imagify_die( __( 'Empty API key.', 'imagify' ) );
 		}
 
-		$api_key  = wp_unslash( $_GET['api_key'] );
+		$api_key  = sanitize_key( wp_unslash( $_GET['api_key'] ) );
 		$response = get_imagify_status( $api_key );
 
 		if ( is_wp_error( $response ) ) {
 			imagify_die( $response );
 		}
 
+		/*
+		 * From this point, the key is known to be valid. Saving the option triggers
+		 * `after_save_options()`, which performs its own request to the Imagify API
+		 * to (re)set the "valid key" cache and dismiss/renew the "wrong-api-key" notice.
+		 * If the client disconnects (e.g. the user clicks elsewhere or navigates away
+		 * while the spinner is still showing), PHP would otherwise abort mid-way,
+		 * leaving the key saved but the validity cache/notice stale or missing.
+		 * Ignoring user abort for this short, bounded sequence guarantees the option
+		 * and its validity state are always saved consistently together.
+		 */
+		$ignore_user_abort = ignore_user_abort( true );
+
 		update_imagify_option( 'api_key', $api_key );
 
 		delete_transient( 'imagify_user_cache' );
+
+		ignore_user_abort( $ignore_user_abort );
 
 		wp_send_json_success();
 	}
@@ -874,9 +896,9 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		}
 
 		wp_send_json_success(
-			array(
+			[
 				'monthlies' => $prices_all->Plans,
-			)
+			]
 		);
 	}
 
@@ -894,14 +916,14 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 
 		if ( empty( $_POST['coupon'] ) ) {
 			wp_send_json_success(
-				array(
+				[
 					'success' => false,
 					'detail'  => __( 'Coupon is empty.', 'imagify' ),
-				)
+				]
 			);
 		}
 
-		$coupon = wp_unslash( $_POST['coupon'] );
+		$coupon = sanitize_text_field( wp_unslash( $_POST['coupon'] ) );
 		$coupon = check_imagify_coupon_code( $coupon );
 
 		if ( is_wp_error( $coupon ) ) {
@@ -942,23 +964,23 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		$raw_average_per_month     = imagify_calculate_average_size_images_per_month() + Imagify_Files_Stats::calculate_average_size_per_month();
 
 		Imagify_Data::get_instance()->set(
-			array(
+			[
 				'total_size_images_library'     => $raw_total_size_in_library,
 				'average_size_images_per_month' => $raw_average_per_month,
-			)
+			]
 		);
 
 		wp_send_json_success(
-			array(
-				'total_library_size' => array(
+			[
+				'total_library_size' => [
 					'raw'   => $raw_total_size_in_library,
 					'human' => imagify_size_format( $raw_total_size_in_library ),
-				),
-				'average_month_size' => array(
+				],
+				'average_month_size' => [
 					'raw'   => $raw_average_per_month,
 					'human' => imagify_size_format( $raw_average_per_month ),
-				),
-			)
+				],
+			]
 		);
 	}
 
@@ -978,10 +1000,10 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		$raw_average_per_month     = imagify_calculate_average_size_images_per_month() + Imagify_Files_Stats::calculate_average_size_per_month();
 
 		Imagify_Data::get_instance()->set(
-			array(
+			[
 				'total_size_images_library'     => $raw_total_size_in_library,
 				'average_size_images_per_month' => $raw_average_per_month,
-			)
+			]
 		);
 
 		die( 1 );
@@ -1053,7 +1075,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			imagify_die( __( 'Invalid request', 'imagify' ) );
 		}
 
-		$action = wp_unslash( $_POST['imagify_rpc_action'] ); // WPCS: CSRF ok.
+		$action = sanitize_text_field( wp_unslash( $_POST['imagify_rpc_action'] ) );
 
 		if ( 32 !== strlen( $action ) ) {
 			imagify_die( __( 'Invalid request', 'imagify' ) );
@@ -1103,7 +1125,12 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			imagify_die();
 		}
 
-		$notice = htmlspecialchars( wp_unslash( $_GET['ad'] ) );
+		if ( empty( $_GET['ad'] ) ) {
+			imagify_maybe_redirect();
+			wp_send_json_error();
+		}
+
+		$notice = sanitize_text_field( wp_unslash( $_GET['ad'] ) );
 
 		if ( ! $notice ) {
 			imagify_maybe_redirect();
@@ -1112,7 +1139,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 
 		$user_id = get_current_user_id();
 		$notices = get_user_meta( $user_id, '_imagify_ignore_ads', true );
-		$notices = $notices && is_array( $notices ) ? array_flip( $notices ) : array();
+		$notices = $notices && is_array( $notices ) ? array_flip( $notices ) : [];
 
 		if ( isset( $notices[ $notice ] ) ) {
 			imagify_maybe_redirect();
@@ -1170,8 +1197,12 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @return string
 	 */
 	public function get_context( $method = 'GET', $parameter = 'context' ) {
-		$context = 'POST' === $method ? wp_unslash( $_POST[ $parameter ] ) : wp_unslash( $_GET[ $parameter ] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-		$context = htmlspecialchars( $context );
+		if ( empty( $_POST[ $parameter ] ) && empty( $_GET[ $parameter ] ) ) {
+			// No context.
+			return 'noop';
+		}
+
+		$context = 'POST' === $method ? sanitize_text_field( wp_unslash( $_POST[ $parameter ] ) ) : sanitize_text_field( wp_unslash( $_GET[ $parameter ] ) ); //phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 
 		return imagify_sanitize_context( $context );
 	}
@@ -1207,9 +1238,14 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @return string
 	 */
 	public function get_folder_type( $method = 'GET', $parameter = 'folder_type' ) {
-		$folder_type = 'POST' === $method ? wp_unslash( $_POST[ $parameter ] ) : wp_unslash( $_GET[ $parameter ] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+		if ( empty( $_POST[ $parameter ] ) && empty( $_GET[ $parameter ] ) ) {
+			// No folder type.
+			return 'noop';
+		}
 
-		return htmlspecialchars( $folder_type );
+		$folder_type = 'POST' === $method ? sanitize_text_field( wp_unslash( $_POST[ $parameter ] ) ) : sanitize_text_field( wp_unslash( $_GET[ $parameter ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+
+		return $folder_type;
 	}
 
 	/**
@@ -1223,8 +1259,12 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @return string
 	 */
 	public function get_imagify_action( $method = 'GET', $parameter = 'imagify_action' ) {
-		$action = 'POST' === $method ? wp_unslash( $_POST[ $parameter ] ) : wp_unslash( $_GET[ $parameter ] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-		$action = htmlspecialchars( $action );
+		if ( empty( $_POST[ $parameter ] ) && empty( $_GET[ $parameter ] ) ) {
+			// No action.
+			return 'optimize';
+		}
+
+		$action = 'POST' === $method ? sanitize_text_field( wp_unslash( $_POST[ $parameter ] ) ) : sanitize_text_field( wp_unslash( $_GET[ $parameter ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 
 		return $action ? $action : 'optimize';
 	}
@@ -1285,7 +1325,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	public function check_can_optimize() {
 		if ( ! Imagify_Requirements::is_api_key_valid() ) {
 			if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-				wp_send_json_error( array( 'message' => 'invalid-api-key' ) );
+				wp_send_json_error( [ 'message' => 'invalid-api-key' ] );
 			}
 
 			imagify_die( __( 'Your API key is not valid!', 'imagify' ) );
@@ -1293,7 +1333,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 
 		if ( Imagify_Requirements::is_over_quota() ) {
 			if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-				wp_send_json_error( array( 'message' => 'over-quota' ) );
+				wp_send_json_error( [ 'message' => 'over-quota' ] );
 			}
 
 			imagify_die( __( 'You have used all your credits!', 'imagify' ) );

@@ -1,7 +1,5 @@
 <?php
-if (!defined('UPDRAFTPLUS_DIR')) {
-	die('No direct access allowed');
-}
+if (!defined('ABSPATH')) die('No direct access allowed');
 
 ?>
 <div class="advanced_tools cron_events">

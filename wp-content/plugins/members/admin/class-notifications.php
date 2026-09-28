@@ -379,18 +379,26 @@ class Notifications {
       return;
     }
 
+    $min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
+
+    $notifications_style_file = members_plugin()->dir . "css/admin-notifications{$min}.css";
+    $notifications_style_ver  = file_exists( $notifications_style_file ) ? filemtime( $notifications_style_file ) : false;
+
     wp_enqueue_style(
       'members-admin-notifications',
-      members_plugin()->uri . "css/admin-notifications.css",
+      members_plugin()->uri . "css/admin-notifications{$min}.css",
       [],
-      ''
+      $notifications_style_ver
     );
+
+    $notifications_script_file = members_plugin()->dir . "js/admin-notifications{$min}.js";
+    $notifications_script_ver  = file_exists( $notifications_script_file ) ? filemtime( $notifications_script_file ) : false;
 
     wp_enqueue_script(
       'members-admin-notifications',
-      members_plugin()->uri . "js/admin-notifications.js",
+      members_plugin()->uri . "js/admin-notifications{$min}.js",
       [ 'jquery' ],
-      '',
+      $notifications_script_ver,
       true
     );
 
@@ -408,6 +416,10 @@ class Notifications {
    * Admin script for adding notification count to the MemberPress admin menu list item.
    */
   public function admin_menu_append_count() {
+
+    if ( ! self::has_access() ) {
+        return;
+    }
 
     $option = get_option( 'members_notifications' );
     $notifications = ! empty( $option['feed'] ) ? $option['feed'] : array();
@@ -440,7 +452,7 @@ class Notifications {
 
       <button id="membersAdminHeaderNotifications" class="members-notifications-button button-secondary">
         <svg width="22" height="14" viewBox="0 0 22 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21.6944 6.5625C21.8981 6.85417 22 7.18229 22 7.54687V12.25C22 12.7361 21.8218 13.1493 21.4653 13.4896C21.1088 13.8299 20.6759 14 20.1667 14H1.83333C1.32407 14 0.891204 13.8299 0.534722 13.4896C0.178241 13.1493 0 12.7361 0 12.25V7.54687C0 7.18229 0.101852 6.85417 0.305556 6.5625L4.35417 0.765625C4.45602 0.644097 4.58333 0.522569 4.73611 0.401042C4.91435 0.279514 5.10532 0.182292 5.30903 0.109375C5.51273 0.0364583 5.7037 0 5.88194 0H16.1181C16.3981 0 16.6782 0.0850694 16.9583 0.255208C17.2639 0.401042 17.4931 0.571181 17.6458 0.765625L21.6944 6.5625ZM6.1875 2.33333L2.94097 7H7.63889L8.86111 9.33333H13.1389L14.3611 7H19.059L15.8125 2.33333H6.1875Z" fill="#2679C1"></path></svg>
-        <?php if ( self::has_access() && ! empty( $notifications ) && count( $notifications ) > 0 ) : ?>
+        <?php if ( ! empty( $notifications ) && count( $notifications ) > 0 ) : ?>
           <span id="membersAdminHeaderNotificationsCount" class="members-notifications-count"><?php echo count( $notifications ); ?></span>
         <?php endif; ?>
       </button>
@@ -449,7 +461,14 @@ class Notifications {
 
       <script>
         jQuery(document).ready(function($) {
-          $('#wpbody-content .wrap > h1').append(`<?php echo $messages_toggle_output; ?>`);
+          var $header = $('#members-admin-header');
+          var $button = $(`<?php echo $messages_toggle_output; ?>`);
+          if ($header.length) {
+            $header.append($button);
+          } else {
+            // Fallback: original behavior for non-branded pages.
+            $('#wpbody-content .wrap > h1').append($button);
+          }
         });
       </script>
       <?php
@@ -467,10 +486,6 @@ class Notifications {
     }
 
     $notifications = $this->get();
-
-    if ( empty( $notifications['active'] ) && empty( $notifications['dismissed'] ) ) {
-      return;
-    }
 
     $notifications_html = '<div class="active-messages">';
       if ( ! empty( $notifications['active'] ) ) {

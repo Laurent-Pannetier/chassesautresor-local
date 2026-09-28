@@ -1,22 +1,6 @@
 <?php
 
-if (!defined('UPDRAFTPLUS_DIR')) die('No direct access allowed');
-
-// $options is passed in
-$default_options = array(
-	'include_uploader' => true,
-	'include_opera_warning' => false,
-	'will_immediately_calculate_disk_space' => true,
-	'include_whitespace_warning' => true,
-	'include_header' => false,
-);
-
-foreach ($default_options as $k => $v) {
-	if (!isset($options[$k])) $options[$k] = $v;
-}
-
-// $backup_history is passed in
-if (false === $backup_history) $backup_history = UpdraftPlus_Backup_History::get_history();
+if (!defined('ABSPATH')) die('No direct access allowed');
 
 if (!empty($options['include_header'])) echo '<h2>'.esc_html(__('Existing backups', 'updraftplus').' ('.count($backup_history).')').'</h2>';
 
@@ -27,12 +11,12 @@ if (!empty($options['include_header'])) echo '<h2>'.esc_html(__('Existing backup
 			<?php echo '<strong>'.esc_html__('Warning', 'updraftplus').':</strong> '.esc_html(__('Your WordPress installation has a problem with outputting extra whitespace.', 'updraftplus').' '.__('This can corrupt backups that you download from here.', 'updraftplus')).' <a href="'.esc_url(apply_filters('updraftplus_com_link', "https://teamupdraft.com/documentation/updraftplus/topics/general/troubleshooting/problems-with-extra-white-space/?utm_source=udp-plugin&utm_medium=referral&utm_campaign=paac&utm_content=unknown&utm_creative_format=unknown")).'" target="_blank">'.esc_html__('Follow this link for more information', 'updraftplus').'</a>';?>
 		</p>
 	<?php }
-	$bom_warning = $updraftplus_admin->get_bom_warning_text();
-	if (!empty($bom_warning)) {
+	$updraftplus_tab_backups['bom_warning'] = $updraftplus_admin->get_bom_warning_text();
+	if (!empty($updraftplus_tab_backups['bom_warning'])) {
 	?>
 	<p class="ud-bom-warning">
 	<?php
-	echo wp_kses_post($bom_warning);
+	echo wp_kses_post($updraftplus_tab_backups['bom_warning']);
 	?>
 	</p>
 	<?php
@@ -85,8 +69,8 @@ if (!empty($options['include_header'])) echo '<h2>'.esc_html(__('Existing backup
 				<div id="drag-drop-area">
 					<div class="drag-drop-inside">
 					<p class="drag-drop-info"><?php esc_html_e('Drop your backup files', 'updraftplus'); ?></p>
-					<p><?php echo esc_html_x('or', 'Uploader: Drop your backup files - or - Select Files'); ?></p>
-					<p class="drag-drop-buttons"><input id="plupload-browse-button" type="button" value="<?php esc_attr_e('Select Files'); ?>" class="button" /></p>
+					<p><?php echo esc_html_x('or', 'Uploader: Drop your backup files - or - Select Files'); // phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- The string exists within the WordPress core. ?></p>
+					<p class="drag-drop-buttons"><input id="plupload-browse-button" type="button" value="<?php esc_attr_e('Select Files'); // phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- The string exists within the WordPress core. ?>" class="button" /></p>
 					</div>
 				</div>
 				<div id="filelist">

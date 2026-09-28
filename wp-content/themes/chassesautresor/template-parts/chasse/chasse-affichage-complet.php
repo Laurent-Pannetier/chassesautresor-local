@@ -12,6 +12,10 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
 
 // Récupération centralisée des informations
 $infos_chasse = $args['infos_chasse'] ?? preparer_infos_affichage_chasse($chasse_id);
+$statut = $infos_chasse['statut'];
+$is_demo = !empty($infos_chasse['is_demo']);
+$demo_badge = is_array($infos_chasse['demo_badge'] ?? null) ? $infos_chasse['demo_badge'] : null;
+$demo_badge_description_id = $is_demo && $demo_badge ? wp_unique_id('badge-demo-desc-') : '';
 
 
 // Champs principaux (avec fallback direct en meta)
@@ -30,6 +34,10 @@ $date_decouverte      = $champs['date_decouverte'];
 $gagnants             = $champs['gagnants'];
 $current_stored_statut = $champs['current_stored_statut'];
 
+if ($statut === 'termine' && !empty($date_decouverte)) {
+    $date_fin = $date_decouverte;
+}
+
 
 $image_raw = $infos_chasse['image_raw'];
 $image_id  = $infos_chasse['image_id'];
@@ -46,13 +54,15 @@ $mode_fin            = $champs['mode_fin'] ?? 'automatique';
 $title_mode          = $mode_fin === 'automatique'
     ? __('mode de fin de chasse : automatique', 'chassesautresor-com')
     : __('mode de fin de chasse : manuelle', 'chassesautresor-com');
+$mode_auto_icon      = trim(get_svg_icon('automatic'));
+$mode_manual_icon    = trim(get_svg_icon('hand'));
 
 // Dates
 $date_debut_formatee        = formater_date($date_debut);
 $date_fin_formatee          = $illimitee
     ? __('Illimitée', 'chassesautresor-com')
     : ($date_fin ? formater_date($date_fin) : __('Non spécifiée', 'chassesautresor-com'));
-$date_decouverte_formatee   = $date_decouverte ? formater_date($date_decouverte) : '';
+$date_decouverte_formatee   = $date_decouverte ? formater_date_heure($date_decouverte) : '';
 
 $now        = current_time('timestamp');
 $date_label = '';
@@ -117,7 +127,6 @@ if ($edition_active && !$est_complet) {
 
   <div class="chasse-fiche-container">
     <?php
-    $statut = $infos_chasse['statut'];
     $statut_validation = $infos_chasse['statut_validation'];
     $statut_label = '';
     $statut_for_class = $statut;
@@ -157,13 +166,33 @@ if ($edition_active && !$est_complet) {
               data-pts-label="<?= esc_attr__('pts', 'chassesautresor-com'); ?>"
               data-mode-auto-label="<?= esc_attr__('mode de fin de chasse : automatique', 'chassesautresor-com'); ?>"
               data-mode-manuel-label="<?= esc_attr__('mode de fin de chasse : manuelle', 'chassesautresor-com'); ?>"
-              data-mode-auto-icon="<?= esc_attr('<i class="fa-solid fa-bolt"></i>'); ?>"
-              data-mode-manuel-icon="<?= esc_attr(get_svg_icon('hand')); ?>"
+              data-mode-auto-icon="<?= esc_attr($mode_auto_icon); ?>"
+              data-mode-manuel-icon="<?= esc_attr($mode_manual_icon); ?>"
           >
-              <span class="badge-statut statut-<?= esc_attr($statut_for_class); ?>"
-                data-post-id="<?= esc_attr($chasse_id); ?>">
-                <?= esc_html($statut_label); ?>
-              </span>
+              <?php if ($is_demo && $demo_badge) : ?>
+                <span
+                    class="badge-statut badge-demo"
+                    role="img"
+                    aria-label="<?= esc_attr($demo_badge['aria_label'] ?? $demo_badge['screen_text'] ?? ''); ?>"
+                    <?php if ($demo_badge_description_id) : ?>aria-describedby="<?= esc_attr($demo_badge_description_id); ?>"<?php endif; ?>
+                    title="<?= esc_attr($demo_badge['title'] ?? ''); ?>"
+                >
+                  <?php if (!empty($demo_badge['icon_html'])) : ?>
+                    <span class="badge-demo__icon" aria-hidden="true">
+                      <?= $demo_badge['icon_html']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- icône SVG préparée. ?>
+                    </span>
+                  <?php endif; ?>
+                  <span class="badge-demo__label"><?= esc_html($demo_badge['label'] ?? ''); ?></span>
+                  <?php if ($demo_badge_description_id) : ?>
+                    <span id="<?= esc_attr($demo_badge_description_id); ?>" class="screen-reader-text"><?= esc_html($demo_badge['screen_text'] ?? ''); ?></span>
+                  <?php endif; ?>
+                </span>
+              <?php else : ?>
+                <span class="badge-statut statut-<?= esc_attr($statut_for_class); ?>"
+                  data-post-id="<?= esc_attr($chasse_id); ?>">
+                  <?= esc_html($statut_label); ?>
+                </span>
+              <?php endif; ?>
               <?php if ($cout_points > 0) : ?>
                 <span
                     class="badge-cout"
@@ -180,9 +209,9 @@ if ($edition_active && !$est_complet) {
               <?php endif; ?>
               <span class="mode-fin-icone" title="<?= esc_attr($title_mode); ?>" aria-label="<?= esc_attr($title_mode); ?>">
                 <?php if ($mode_fin === 'automatique') : ?>
-                  <i class="fa-solid fa-bolt"></i>
+                  <?= $mode_auto_icon; ?>
                 <?php else : ?>
-                  <?= get_svg_icon('hand'); ?>
+                  <?= $mode_manual_icon; ?>
                 <?php endif; ?>
               </span>
               <?php if ($image_id) : ?>
@@ -268,25 +297,30 @@ if ($edition_active && !$est_complet) {
         <?php endif; ?>
       </div>
 
-      <?php if ($organisateur_id) :
-          $logo_id = get_field('logo_organisateur', $organisateur_id, false);
-          $logo    = wp_get_attachment_image_src($logo_id, 'thumbnail');
-          $logo_url = $logo ? $logo[0] : wp_get_attachment_image_src(3927, 'thumbnail')[0];
-      ?>
-        <div class="chasse-organisateur">
-          <img
-            class="chasse-organisateur__logo visuel-cpt"
-            src="<?= esc_url($logo_url); ?>"
-            alt="<?= esc_attr__('Logo de l\u2019organisateur', 'chassesautresor-com'); ?>"
-            data-cpt="organisateur"
-            data-post-id="<?= esc_attr($organisateur_id); ?>"
-          />
-          <span class="chasse-organisateur__texte">
-            <a class="chasse-organisateur__nom" href="<?= esc_url(get_permalink($organisateur_id)); ?>"><?= esc_html($organisateur_nom); ?></a>
-            <span class="chasse-organisateur__presente"><?php esc_html_e('présente', 'chassesautresor-com'); ?></span>
-          </span>
-        </div>
-      <?php endif; ?>
+        <?php if ($organisateur_id) :
+            $logo_id = get_field('logo_organisateur', $organisateur_id, false);
+            $logo    = wp_get_attachment_image_src($logo_id, 'thumbnail');
+            $logo_url = $logo ? $logo[0] : wp_get_attachment_image_src(3927, 'thumbnail')[0];
+        ?>
+          <div class="chasse-organisateur">
+            <a
+              href="<?= esc_url(get_permalink($organisateur_id)); ?>"
+              aria-label="<?= esc_attr__('Voir la page de l\u2019organisateur', 'chassesautresor-com'); ?>"
+            >
+              <img
+                class="chasse-organisateur__logo visuel-cpt"
+                src="<?= esc_url($logo_url); ?>"
+                alt="<?= esc_attr__('Logo de l\u2019organisateur', 'chassesautresor-com'); ?>"
+                data-cpt="organisateur"
+                data-post-id="<?= esc_attr($organisateur_id); ?>"
+              />
+            </a>
+            <span class="chasse-organisateur__texte">
+              <a class="chasse-organisateur__nom" href="<?= esc_url(get_permalink($organisateur_id)); ?>"><?= esc_html($organisateur_nom); ?></a>
+              <span class="chasse-organisateur__presente"><?php esc_html_e('présente', 'chassesautresor-com'); ?></span>
+            </span>
+          </div>
+        <?php endif; ?>
 
       <!-- Titre dynamique -->
       <h1 class="titre-objet header-chasse"
@@ -296,25 +330,130 @@ if ($edition_active && !$est_complet) {
       </h1>
 
       <?php if ($statut === 'termine' && !empty($date_decouverte) && !empty($gagnants)) : ?>
+        <?php
+        $solutions_link = '';
+        $user_id_solutions = function_exists('get_current_user_id') ? get_current_user_id() : 0;
+        if (
+            function_exists('solution_chasse_peut_etre_affichee')
+            && function_exists('utilisateur_peut_voir_solution_chasse')
+            && function_exists('solution_recuperer_par_objet')
+            && function_exists('solution_contenu_html')
+            && solution_chasse_peut_etre_affichee($chasse_id)
+            && utilisateur_peut_voir_solution_chasse($chasse_id, $user_id_solutions)
+        ) {
+            $sol_post = solution_recuperer_par_objet($chasse_id, 'chasse');
+            if ($sol_post && solution_contenu_html($sol_post) !== '') {
+                $solutions_link = ' — <a href="#chasse-solutions">'
+                    . esc_html__('Voir les solutions', 'chassesautresor-com')
+                    . '</a>';
+            }
+        }
+        ?>
         <div class="chasse-gagnant-info">
-          <?= sprintf(__('Chasse gagnée le %1$s par %2$s', 'chassesautresor-com'), esc_html($date_decouverte_formatee), esc_html($gagnants)); ?>
+          <?= sprintf(__('Chasse gagnée le %1$s par %2$s', 'chassesautresor-com'), esc_html($date_decouverte_formatee), esc_html($gagnants)); ?><?= $solutions_link; ?>
         </div>
       <?php endif; ?>
 
-      <div class="meta-row svg-xsmall">
+      <?php
+      $total_enigmes_formatted     = number_format_i18n((int) $total_enigmes);
+      $total_enigmes_for_plural    = $total_enigmes === 1 ? 1 : (int) $total_enigmes;
+      $label_total_enigmes         = sprintf(
+          _n('%s énigme', '%s énigmes', $total_enigmes_for_plural, 'chassesautresor-com'),
+          $total_enigmes_formatted
+      );
+      $nb_joueurs_formatted        = number_format_i18n((int) $nb_joueurs);
+      $nb_joueurs_for_plural       = $nb_joueurs === 1 ? 1 : (int) $nb_joueurs;
+      $label_nb_joueurs            = sprintf(
+          _n('%s joueur', '%s joueurs', $nb_joueurs_for_plural, 'chassesautresor-com'),
+          $nb_joueurs_formatted
+      );
+      $date_debut_courte = (string) ($infos_chasse['date_debut_court'] ?? '');
+      $date_fin_courte   = (string) ($infos_chasse['date_fin_court'] ?? '');
+
+      if ($date_debut_courte === '' || $date_fin_courte === '') {
+          $dates_courtes_fallback = chasse_preparer_dates_courtes(
+              is_string($date_debut) && $date_debut !== '' ? $date_debut : (is_numeric($date_debut) ? (string) $date_debut : null),
+              is_string($date_fin) && $date_fin !== '' ? $date_fin : (is_numeric($date_fin) ? (string) $date_fin : null),
+              !empty($illimitee)
+          );
+
+          if ($date_debut_courte === '') {
+              $date_debut_courte = $dates_courtes_fallback['date_debut_court'];
+          }
+
+          if ($date_fin_courte === '') {
+              $date_fin_courte = $dates_courtes_fallback['date_fin_court'];
+          }
+      }
+
+      if ($date_debut_courte === '') {
+          $date_debut_courte = __('Non spécifiée', 'chassesautresor-com');
+      }
+
+      if ($date_fin_courte === '') {
+          $date_fin_courte = __('Non spécifiée', 'chassesautresor-com');
+      }
+
+      $date_debut_longue = $date_debut_formatee !== ''
+          ? $date_debut_formatee
+          : $date_debut_courte;
+      $date_fin_longue = $date_fin_formatee !== ''
+          ? $date_fin_formatee
+          : $date_fin_courte;
+
+      if ($illimitee) {
+          $date_plage_title = __('Durée illimitée', 'chassesautresor-com');
+      } elseif (!empty($date_debut) && !empty($date_fin)) {
+          /* translators: %1$s: start date, %2$s: end date. */
+          $date_plage_title = sprintf(__('Du %1$s au %2$s', 'chassesautresor-com'), $date_debut_formatee, $date_fin_formatee);
+      } elseif (!empty($date_debut)) {
+          /* translators: %s: start date. */
+          $date_plage_title = sprintf(__('À partir du %s', 'chassesautresor-com'), $date_debut_formatee);
+      } elseif (!empty($date_fin)) {
+          /* translators: %s: end date. */
+          $date_plage_title = sprintf(__('Jusqu\'au %s', 'chassesautresor-com'), $date_fin_formatee);
+      } else {
+          $date_plage_title = __('Dates non spécifiées', 'chassesautresor-com');
+      }
+      ?>
+      <div class="meta-row svg-xsmall meta-row--headline">
         <div class="meta-regular">
-          <?php echo get_svg_icon('enigme'); ?>
-          <?= esc_html(sprintf(_n('%d énigme', '%d énigmes', $total_enigmes, 'chassesautresor-com'), $total_enigmes)); ?> —
-          <?php echo get_svg_icon('participants'); ?>
-          <?= esc_html(sprintf(_n('%d joueur', '%d joueurs', $nb_joueurs, 'chassesautresor-com'), $nb_joueurs)); ?>
+          <span class="meta-indic meta-indic--static">
+            <?php echo get_svg_icon('enigme'); ?>
+            <span class="meta-indic__count" aria-hidden="true"><?= esc_html($total_enigmes_formatted); ?></span>
+            <span class="screen-reader-text"><?= esc_html($label_total_enigmes); ?></span>
+          </span>
+          <span class="meta-indic meta-indic--static">
+            <?php echo get_svg_icon('participants'); ?>
+            <span class="meta-indic__count" aria-hidden="true"><?= esc_html($nb_joueurs_formatted); ?></span>
+            <span class="screen-reader-text"><?= esc_html($label_nb_joueurs); ?></span>
+          </span>
         </div>
         <div class="meta-etiquette">
           <?php echo get_svg_icon('calendar'); ?>
-          <span class="chasse-date-plage">
-            <span class="date-debut"><?= esc_html($date_debut_formatee); ?></span> –
-            <span class="date-fin"><?= esc_html($date_fin_formatee); ?></span>
+          <span
+            class="chasse-date-plage"
+            title="<?= esc_attr($date_plage_title); ?>"
+            aria-label="<?= esc_attr($date_plage_title); ?>"
+          >
+            <span
+                class="date-debut"
+                data-date-long="<?= esc_attr($date_debut_longue); ?>"
+                data-date-short="<?= esc_attr($date_debut_courte); ?>"
+            >
+              <span class="date-short" aria-hidden="false"><?= esc_html($date_debut_courte); ?></span>
+              <span class="date-long" aria-hidden="true"><?= esc_html($date_debut_longue); ?></span>
+            </span>
+            <span class="date-separator" aria-hidden="true">–</span>
+            <span
+                class="date-fin"
+                data-date-long="<?= esc_attr($date_fin_longue); ?>"
+                data-date-short="<?= esc_attr($date_fin_courte); ?>"
+            >
+              <span class="date-short" aria-hidden="false"><?= esc_html($date_fin_courte); ?></span>
+              <span class="date-long" aria-hidden="true"><?= esc_html($date_fin_longue); ?></span>
+            </span>
           </span>
-
         </div>
       </div>
 
@@ -335,22 +474,34 @@ if ($edition_active && !$est_complet) {
                 <span class="caracteristique-valeur"><?= esc_html($date_value); ?></span>
               </div>
             <?php endif; ?>
-            <?php if ($mode_fin === 'automatique') : ?>
-              <div class="caracteristique caracteristique-limite">
-                <span class="caracteristique-icone" aria-hidden="true">👥</span>
-                <?php if ((int) $nb_max === 0) : ?>
-                  <span class="caracteristique-label"><?= esc_html__('Gagnants', 'chassesautresor-com'); ?></span>
-                  <span class="caracteristique-valeur nb-gagnants-affichage" data-post-id="<?= esc_attr($chasse_id); ?>">
-                    <?= esc_html__('illimitée', 'chassesautresor-com'); ?>
-                  </span>
-                <?php else : ?>
-                  <span class="caracteristique-label"><?= esc_html__('Limite', 'chassesautresor-com'); ?></span>
-                  <span class="caracteristique-valeur nb-gagnants-affichage" data-post-id="<?= esc_attr($chasse_id); ?>">
-                    <?= esc_html(sprintf(_n('%d gagnant', '%d gagnants', $nb_max, 'chassesautresor-com'), $nb_max)); ?>
-                  </span>
-                <?php endif; ?>
-              </div>
-            <?php endif; ?>
+            <div
+              class="caracteristique caracteristique-limite"
+              style="<?= $mode_fin === 'automatique' ? '' : 'display:none;'; ?>"
+            >
+              <span class="caracteristique-icone" aria-hidden="true">👥</span>
+              <?php if ((int) $nb_max === 0) : ?>
+                <span class="caracteristique-label"><?= esc_html__('Gagnants', 'chassesautresor-com'); ?></span>
+                <span
+                  class="caracteristique-valeur nb-gagnants-affichage"
+                  data-post-id="<?= esc_attr($chasse_id); ?>"
+                >
+                  <?= esc_html__('illimitée', 'chassesautresor-com'); ?>
+                </span>
+              <?php else : ?>
+                <span class="caracteristique-label"><?= esc_html__('Limite', 'chassesautresor-com'); ?></span>
+                <span
+                  class="caracteristique-valeur nb-gagnants-affichage"
+                  data-post-id="<?= esc_attr($chasse_id); ?>"
+                >
+                  <?= esc_html(
+                      sprintf(
+                          _n('%d gagnant', '%d gagnants', $nb_max, 'chassesautresor-com'),
+                          $nb_max
+                      )
+                  ); ?>
+                </span>
+              <?php endif; ?>
+            </div>
 
             <div class="caracteristique caracteristique-fin">
               <span class="caracteristique-icone" aria-hidden="true">⏱️</span>
@@ -431,7 +582,9 @@ if ($edition_active && !$est_complet) {
           ?>
           <div class="cta-chasse-row"<?php echo $cta_id ? ' id="' . esc_attr($cta_id) . '"' : ''; ?>>
             <div class="cta-message" aria-live="polite"><?= $cta_data['cta_message']; ?></div>
-            <div class="cta-action"><?= $cta_data['cta_html']; ?></div>
+            <div class="cta-action">
+              <?= $cta_data['cta_html']; ?>
+            </div>
           </div>
           </div>
 
@@ -472,8 +625,8 @@ if ($edition_active && !$est_complet) {
                                     <span class="badge-recompense__label">
                                         <?= esc_html__('Valeur estimée', 'chassesautresor-com'); ?>
                                     </span>
-                                    <?= esc_html($valeur_recompense); ?>
-                                    <span class="badge-recompense__devise">€</span>
+                                    <?= esc_html(number_format_i18n(round((float) $valeur_recompense), 0)); ?>
+                                    <span class="badge-recompense__devise prix-devise">€</span>
                                 </span>
                             </p>
                         <?php endif; ?>
@@ -492,6 +645,44 @@ if ($edition_active && !$est_complet) {
                     </div>
                     <div class="champ-feedback"></div>
                 </div>
+            </div>
+        <?php endif; ?>
+
+        <?php
+        $regions_terms = $infos_chasse['regions'] ?? null;
+        if (empty($regions_terms)) {
+            $regions_terms = chasse_preparer_termes_affichage($chasse_id, 'chasse_region');
+        }
+
+        $themes_terms = $infos_chasse['themes'] ?? null;
+        if (empty($themes_terms)) {
+            $themes_terms = chasse_preparer_termes_affichage($chasse_id, 'theme_chasse');
+        }
+
+        $regions_links = chasse_format_meta_terms($regions_terms);
+        $themes_links = chasse_format_meta_terms($themes_terms);
+        ?>
+        <?php if (!empty($regions_links) || !empty($themes_links)) : ?>
+            <div class="chasse-fiche-metas bloc-metas-inline">
+                <?php if (!empty($regions_links)) : ?>
+                    <?php
+                    $regions_label = _n('Région :', 'Régions :', count($regions_links), 'chassesautresor-com');
+                    ?>
+                    <div class="meta-etiquette meta-etiquette--regions">
+                        <span><?php echo esc_html($regions_label); ?></span>
+                        <?php echo wp_kses_post(implode(', ', $regions_links)); ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php if (!empty($themes_links)) : ?>
+                    <?php
+                    $themes_label = _n('Thème :', 'Thèmes :', count($themes_links), 'chassesautresor-com');
+                    ?>
+                    <div class="meta-etiquette meta-etiquette--themes">
+                        <span><?php echo esc_html($themes_label); ?></span>
+                        <?php echo wp_kses_post(implode(', ', $themes_links)); ?>
+                    </div>
+                <?php endif; ?>
             </div>
         <?php endif; ?>
 

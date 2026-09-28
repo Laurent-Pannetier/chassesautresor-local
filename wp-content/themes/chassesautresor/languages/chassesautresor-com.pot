@@ -67,6 +67,10 @@ msgstr ""
 msgid "Change language"
 msgstr ""
 
+#: functions.php:292
+msgid "No products in the cart."
+msgstr ""
+
 #: inc/admin-functions.php:40
 msgid "⛔ Accès refusé."
 msgstr ""
@@ -1261,7 +1265,7 @@ msgid "Validation en ligne nécessaire"
 msgstr ""
 
 #: single-organisateur.php:84
-msgid "Chasses au Trésor"
+msgid "Chasses au trésor"
 msgstr ""
 
 #: single-organisateur.php:132
@@ -2813,6 +2817,12 @@ msgstr ""
 msgid "nombre de joueurs ayant trouvé la bonne réponse"
 msgstr ""
 
+msgid "nombre d'énigmes"
+msgstr ""
+
+msgid "nombre de joueurs"
+msgstr ""
+
 #: wp-content/themes/chassesautresor/template-parts/enigme/chasse-partial-boucle-enigmes.php:189
 msgid "tentatives quotidiennes utilisées"
 msgstr ""
@@ -2971,4 +2981,74 @@ msgstr ""
 
 #: assets/js/validation-chasse.js:61
 msgid "Envoyer la demande de validation"
+msgstr ""
+
+#: inc/enigme/affichage.php:619 inc/enigme/indices.php:51 inc/enigme/indices.php:100
+msgid "Indice débloqué"
+msgstr ""
+
+#: inc/enigme/affichage.php:625
+#, php-format
+msgid "Indice #%d"
+msgstr ""
+
+#: inc/enigme/affichage.php:630
+#, php-format
+msgid "Indice #%1$d - %2$d pts"
+msgstr ""
+
+#: inc/enigme/affichage.php:637
+msgid "Fermer"
+msgstr ""
+
+#: inc/enigme/indices.php:120
+msgid "Débloquer l'indice"
+msgstr ""
+
+#: inc/enigme/affichage.php:725
+msgid "Indices énigme"
+msgstr ""
+
+#: inc/enigme/affichage.php:728
+msgid "Indices chasse"
+msgstr ""
+
+#: inc/chasse-functions.php:818
+msgid "Redécouvrir"
+msgstr ""
+
+#: template-parts/chasse/chasse-affichage-complet.php:313
+msgid "Voir les solutions"
+msgstr ""
+
+#: template-parts/enigme/partials/enigme-partial-solution.php:32
+msgid "Voir la solution de la chasse"
+msgstr ""
+
+#: inc/search/form.php:52
+msgid "Réinitialiser"
+msgstr ""
+
+#: inc/user-functions.php:1444
+msgid "Unable to load attempts. Please try again."
+msgstr ""
+
+#: template-parts/chasse/chasse-edition-main.php:922
+msgid "Supprimer la chasse"
+msgstr ""
+
+#: assets/js/chasse-edit.js:207
+msgid "Voulez-vous vraiment supprimer cette chasse et toutes ses énigmes ?"
+msgstr ""
+
+#: assets/js/chasse-edit.js:208
+msgid "Voulez-vous vraiment supprimer cette chasse ?"
+msgstr ""
+
+#: assets/js/chasse-edit.js:242
+msgid "Une erreur est survenue lors de la suppression de la chasse."
+msgstr ""
+
+#: inc/edition/edition-chasse.php:784
+msgid "Votre chasse a été supprimée. Vous pouvez en créer une nouvelle quand vous le souhaitez."
 msgstr ""

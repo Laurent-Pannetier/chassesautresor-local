@@ -21,6 +21,180 @@
   height: auto;
 }
 
+
+.reponse-indices-separator {
+  margin-top: var(--space-xl);
+  margin-bottom: var(--space-lg);
+  border: 0;
+  border-top: 1px solid var(--color-gris-3);
+  opacity: 0.5;
+}
+
+.zone-indices {
+  margin-top: 0;
+  font-size: 0.9rem;
+  opacity: 0.85;
+
+  .indice-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    justify-content: flex-start;
+    flex: 1 1 auto;
+  }
+
+  .indice-link,
+  .indice-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: calc(var(--space-xs) / 2) var(--space-sm);
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    border: 2px solid transparent;
+  }
+
+  .indice-link {
+    text-decoration: none;
+
+    &--locked,
+    &--unlocked,
+    &--upcoming {
+      background-color: var(--color-gris-3);
+      color: var(--color-white);
+    }
+
+    &--active {
+      background-color: var(--color-secondary);
+      border-color: var(--color-secondary);
+      color: var(--color-white);
+    }
+  }
+
+  .indice-label.indice-link--upcoming {
+    background-color: var(--color-gris-3);
+    color: var(--color-white);
+  }
+
+  .btn-debloquer-indice {
+    display: inline-block;
+    padding: var(--space-sm) var(--space-md);
+    background-color: var(--color-primary);
+    color: var(--color-text-fond-clair);
+    border: 0;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .indice-display {
+    display: none;
+
+    &:not(:empty) {
+      display: block;
+      margin-top: var(--space-md);
+      position: relative;
+      padding: var(--space-sm);
+      border: 1px solid var(--color-gris-3);
+      border-radius: 4px;
+      text-align: left;
+    }
+
+    .indice-close {
+      position: absolute;
+      top: var(--space-xs);
+      right: var(--space-xs);
+      background: none;
+      border: 0;
+      cursor: pointer;
+    }
+  }
+
+  .zone-indices-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-sm);
+    justify-content: flex-start;
+
+    &:not(:first-of-type) {
+      margin-top: var(--space-sm);
+    }
+
+    &__label {
+      font-weight: 600;
+      flex: 0 0 140px;
+      line-height: 1.2;
+      font-size: 0.875rem;
+    }
+  }
+
+  .indice-contenu {
+    display: flex;
+    gap: var(--space-md);
+    align-items: flex-start;
+
+    &__image {
+      flex: 0 0 auto;
+      position: relative;
+
+      .eyebox-trigger {
+        display: inline-block;
+        position: relative;
+      }
+
+      .eyebox-icon {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 2rem;
+        color: var(--color-white);
+        opacity: 0;
+        transition: opacity 0.2s;
+        pointer-events: none;
+      }
+
+      .eyebox-trigger:hover .eyebox-icon,
+      .eyebox-trigger:focus .eyebox-icon {
+        opacity: 1;
+      }
+
+      img {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        display: block;
+      }
+    }
+
+    &__texte {
+      flex: 1 1 auto;
+    }
+  }
+}
+
+.eyebox-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+
+  img {
+    max-width: 90%;
+    max-height: 90%;
+  }
+}
+
 .menu-lateral .stats-bar-chart .bar-value,
 .menu-lateral .stats-bar-chart .bar-value--outside {
   font-size: 1rem;
@@ -466,11 +640,39 @@ li.active .enigme-menu__edit {
   background: var(--bg-solution, var(--ca-color-bg, #f5f5f5));
   padding: var(--space-md);
   border-radius: 6px;
+  color: var(--color-text-fond-clair);
+  text-align: left;
 }
 
 .solution summary {
   cursor: pointer;
   font-weight: 600;
+  color: var(--color-text-fond-clair);
+}
+
+.solution > details > summary {
+  text-align: center;
+}
+
+.solution-content {
+  .solution-text {
+    max-width: 1024px;
+    margin-inline: auto;
+    padding: var(--space-lg);
+    margin-bottom: var(--space-xl);
+  }
+
+  .solution-enigme {
+    margin-bottom: var(--space-xl);
+
+    p {
+      padding-inline: var(--space-xl);
+
+      @media (--bp-tablet) {
+        padding-inline: var(--space-3xl);
+      }
+    }
+  }
 }
 
 /* 📝 Mise en forme du texte d'énigme */
@@ -481,6 +683,16 @@ li.active .enigme-menu__edit {
   font-size: clamp(1rem, 1.2vw + 0.9rem, 1.25rem);
   line-height: 1.6;
   overflow-wrap: anywhere;
+  text-align: left;
+
+  ul {
+    list-style: disc;
+    padding-left: var(--space-lg);
+
+    li::marker {
+      color: currentColor;
+    }
+  }
 }
 
 .enigme-texte > * + * {
@@ -539,14 +751,11 @@ li.active .enigme-menu__edit {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    position: fixed;
-    top: calc(var(--space-4xl) + env(safe-area-inset-top));
-    left: auto;
-    right: calc(var(--space-md) + env(safe-area-inset-right));
+    gap: var(--space-md);
     padding-top: calc(var(--space-sm) + env(safe-area-inset-top));
-    padding-bottom: var(--space-sm);
+    padding-right: calc(var(--space-md) + env(safe-area-inset-right));
+    padding-bottom: 0;
     background-color: transparent;
-    z-index: 10;
   }
 
   .enigme-mobile-actions {
@@ -685,7 +894,7 @@ li.active .enigme-menu__edit {
   }
 
   .page-enigme {
-    margin-top: calc(var(--space-3xl) + var(--space-lg) + env(safe-area-inset-top));
+    margin-top: 0;
   }
 }
 
