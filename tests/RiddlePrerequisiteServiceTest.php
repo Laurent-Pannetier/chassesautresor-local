@@ -50,4 +50,44 @@ class RiddlePrerequisiteServiceTest extends TestCase
     {
         $this->assertSame([], $this->service->getEligibleIds(10, []));
     }
+
+    public function testValidConditionUpdateHasNoError(): void
+    {
+        $this->assertNull($this->service->getConditionUpdateError(true, true, true, [12]));
+    }
+
+    /**
+     * @dataProvider conditionUpdateErrorProvider
+     */
+    public function testInvalidConditionUpdateReturnsErrorCode(array $context, string $expectedError): void
+    {
+        $this->assertSame($expectedError, $this->service->getConditionUpdateError(...$context));
+    }
+
+    /** @return array<string, array{array{bool, bool, bool, array<int, int>}, string}> */
+    public function conditionUpdateErrorProvider(): array
+    {
+        return [
+            'guest' => [
+                [false, true, true, [12]],
+                RiddlePrerequisiteService::ERROR_UNAUTHENTICATED,
+            ],
+            'invalid riddle' => [
+                [true, false, true, [12]],
+                RiddlePrerequisiteService::ERROR_INVALID_RIDDLE,
+            ],
+            'unrelated author' => [
+                [true, true, false, [12]],
+                RiddlePrerequisiteService::ERROR_FORBIDDEN,
+            ],
+            'empty prerequisites' => [
+                [true, true, true, []],
+                RiddlePrerequisiteService::ERROR_MISSING_PREREQUISITES,
+            ],
+            'empty prerequisite values' => [
+                [true, true, true, [0]],
+                RiddlePrerequisiteService::ERROR_MISSING_PREREQUISITES,
+            ],
+        ];
+    }
 }
