@@ -728,61 +728,36 @@ function utilisateur_peut_voir_panneau(int $post_id): bool
  */
 function utilisateur_peut_editer_champs(int $post_id): bool
 {
-    if (!utilisateur_peut_voir_panneau($post_id)) {
-        return false;
+    $can_view_panel = utilisateur_peut_voir_panneau($post_id);
+    $is_administrator = $can_view_panel && current_user_can('manage_options');
+    $content_type = $can_view_panel && !$is_administrator ? (string) get_post_type($post_id) : '';
+    $hunt_id = $content_type === 'enigme' ? (int) recuperer_id_chasse_associee($post_id) : 0;
+    $has_hunt = $hunt_id > 0;
+    $status_source_id = $content_type === 'enigme' ? $hunt_id : $post_id;
+    $has_hunt_status = $content_type === 'chasse' || ($content_type === 'enigme' && $has_hunt);
+    $can_modify_content = $content_type === 'organisateur'
+        && !$is_administrator
+        && utilisateur_peut_modifier_post($post_id);
+    $system_status = '';
+    if ($content_type === 'enigme') {
+        $system_status = (string) get_field('enigme_cache_etat_systeme', $post_id);
+    } elseif ($content_type === 'indice') {
+        $system_status = (string) get_field('indice_cache_etat_systeme', $post_id);
     }
+    $service = new ChassesAuTresor\Core\Content\ContentFieldAccessService();
 
-    // ✅ Les administrateurs peuvent toujours éditer les champs
-    if (current_user_can('manage_options')) {
-        return true;
-    }
-
-    $type   = get_post_type($post_id);
-    $status = get_post_status($post_id);
-
-    $user  = wp_get_current_user();
-    $roles = (array) $user->roles;
-
-    switch ($type) {
-        case 'organisateur':
-            // Les organisateurs confirmés peuvent éditer les champs de leur CPT
-            // (sauf restrictions spécifiques gérées ailleurs).
-            return utilisateur_peut_modifier_post($post_id);
-
-        case 'chasse':
-            $val  = get_field('chasse_cache_statut_validation', $post_id) ?? '';
-            $stat = get_field('chasse_cache_statut', $post_id) ?? '';
-
-            // L’édition n'est autorisée que pour les chasses en attente de validation
-            // et dont le statut est « revision » (phase de création ou de correction).
-            return $status === 'pending'
-                && $stat === 'revision'
-                && in_array($val, ['creation', 'correction'], true);
-
-        case 'enigme':
-            $chasse_id = recuperer_id_chasse_associee($post_id);
-            if (!$chasse_id) {
-                return false;
-            }
-
-            $chasse_status = get_post_status($chasse_id);
-            $val           = get_field('chasse_cache_statut_validation', $chasse_id) ?? '';
-            $stat          = get_field('chasse_cache_statut', $chasse_id) ?? '';
-            $etat          = get_field('enigme_cache_etat_systeme', $post_id);
-
-            return $chasse_status === 'pending'
-                && $stat === 'revision'
-                && in_array($val, ['creation', 'correction'], true)
-                && $etat === 'bloquee_chasse';
-
-        case 'indice':
-            $etat = get_field('indice_cache_etat_systeme', $post_id) ?: '';
-
-            return $status === 'pending'
-                && in_array($etat, ['desactive', ''], true);
-    }
-
-    return false;
+    return $service->canEdit(
+        $can_view_panel,
+        $is_administrator,
+        $can_modify_content,
+        $content_type,
+        $can_view_panel ? (string) get_post_status($post_id) : '',
+        $has_hunt_status ? (string) get_field('chasse_cache_statut_validation', $status_source_id) : '',
+        $has_hunt_status ? (string) get_field('chasse_cache_statut', $status_source_id) : '',
+        $system_status,
+        $has_hunt,
+        $has_hunt ? (string) get_post_status($hunt_id) : ''
+    );
 }
 
 
