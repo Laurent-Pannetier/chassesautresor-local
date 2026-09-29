@@ -1195,19 +1195,20 @@ add_action('pre_get_posts', function ($query) {
         return;
     }
 
-    if ($query->is_singular('enigme') && is_user_logged_in()) {
-        if (current_user_can('manage_options')) {
-            $query->set('post_status', ['publish', 'pending', 'draft']);
-        } elseif (est_organisateur()) {
-            $query->set('post_status', ['publish', 'pending']);
-        }
+    if (!$query->is_singular('enigme') && !$query->is_singular('chasse')) {
+        return;
     }
 
-    if ($query->is_singular('chasse') && is_user_logged_in()) {
-        if (current_user_can('manage_options')) {
-            $query->set('post_status', ['publish', 'pending', 'draft']);
-        } elseif (est_organisateur()) {
-            $query->set('post_status', ['publish', 'pending']);
-        }
+    $is_authenticated = is_user_logged_in();
+    $is_administrator = $is_authenticated && current_user_can('manage_options');
+    $service = new ChassesAuTresor\Core\Content\ContentQueryAccessService();
+    $statuses = $service->getVisibleStatuses(
+        $is_authenticated,
+        $is_administrator,
+        $is_authenticated && !$is_administrator && est_organisateur()
+    );
+
+    if ($statuses !== []) {
+        $query->set('post_status', $statuses);
     }
 });
