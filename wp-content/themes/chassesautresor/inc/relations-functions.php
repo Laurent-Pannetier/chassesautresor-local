@@ -18,6 +18,11 @@ if (!class_exists(ChassesAuTresor\Core\Relationships\HuntRiddleQueryService::cla
         . '/plugins/chassesautresor-core/src/Relationships/HuntRiddleQueryService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Relationships\OrganizerHuntQueryService::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Relationships/OrganizerHuntQueryService.php';
+}
+
 function cat_get_organizer_service(): ChassesAuTresor\Core\Relationships\OrganizerService
 {
     global $wpdb;
@@ -35,6 +40,11 @@ function cat_get_relationship_service(): ChassesAuTresor\Core\Relationships\Rela
 function cat_get_hunt_riddle_query_service(): ChassesAuTresor\Core\Relationships\HuntRiddleQueryService
 {
     return new ChassesAuTresor\Core\Relationships\HuntRiddleQueryService();
+}
+
+function cat_get_organizer_hunt_query_service(): ChassesAuTresor\Core\Relationships\OrganizerHuntQueryService
+{
+    return new ChassesAuTresor\Core\Relationships\OrganizerHuntQueryService();
 }
 
 // 📚 SOMMAIRE DU FICHIER : relations-functions.php
@@ -217,26 +227,16 @@ function recuperer_id_chasse_associee($post_id = null)
  */
 function organisateur_a_des_chasses($organisateur_id)
 {
-  $query = new WP_Query([
-    'post_type'      => 'chasse',
-    'posts_per_page' => 1,
-    'post_status'    => ['publish', 'pending'],
-    'meta_query'     => [
-      'relation' => 'AND',
-      [
-        'key'     => 'chasse_cache_organisateur',
-        'value'   => '"' . $organisateur_id . '"',
-        'compare' => 'LIKE'
-      ],
-      [
-        'key'     => 'chasse_cache_statut_validation',
-        'value'   => 'banni',
-        'compare' => '!='
-      ]
-    ]
-  ]);
+    $organisateur_id = (int) $organisateur_id;
+    if ($organisateur_id <= 0) {
+        return false;
+    }
 
-  return $query->have_posts();
+    $query = new WP_Query(
+        cat_get_organizer_hunt_query_service()->getExistingHuntQueryArgs($organisateur_id)
+    );
+
+    return $query->have_posts();
 }
 
 /**
@@ -247,26 +247,15 @@ function organisateur_a_des_chasses($organisateur_id)
  */
 function organisateur_a_chasse_pending(int $organisateur_id): bool
 {
-  $query = new WP_Query([
-    'post_type'      => 'chasse',
-    'posts_per_page' => 1,
-    'post_status'    => 'pending',
-    'meta_query'     => [
-      'relation' => 'AND',
-      [
-        'key'     => 'chasse_cache_organisateur',
-        'value'   => '"' . $organisateur_id . '"',
-        'compare' => 'LIKE'
-      ],
-      [
-        'key'     => 'chasse_cache_statut_validation',
-        'value'   => 'banni',
-        'compare' => '!='
-      ]
-    ]
-  ]);
+    if ($organisateur_id <= 0) {
+        return false;
+    }
 
-  return $query->have_posts();
+    $query = new WP_Query(
+        cat_get_organizer_hunt_query_service()->getExistingHuntQueryArgs($organisateur_id, true)
+    );
+
+    return $query->have_posts();
 }
 
 /**
@@ -288,22 +277,9 @@ function get_chasses_de_organisateur($organisateur_id)
         return $cache[$organisateur_id];
     }
 
-    $query = new WP_Query([
-        'post_type'              => 'chasse',
-        'posts_per_page'         => -1,
-        'post_status'            => ['publish', 'pending'], // Inclure les chasses en attente
-        'fields'                 => 'ids',
-        'no_found_rows'          => true,
-        'update_post_meta_cache' => false,
-        'update_post_term_cache' => false,
-        'meta_query'             => [
-            [
-                'key'     => 'chasse_cache_organisateur', // Champ correct
-                'value'   => '"' . strval($organisateur_id) . '"', // Recherche dans le tableau sérialisé
-                'compare' => 'LIKE',
-            ],
-        ],
-    ]);
+    $query = new WP_Query(
+        cat_get_organizer_hunt_query_service()->getHuntIdsQueryArgs($organisateur_id)
+    );
 
     $cache[$organisateur_id] = $query;
 
@@ -320,37 +296,24 @@ function get_chasses_de_organisateur($organisateur_id)
  */
 function organisateur_get_nb_chasses_publiees(int $organisateur_id): int
 {
-  static $cache = [];
+    static $cache = [];
 
-  if (isset($cache[$organisateur_id])) {
-    return $cache[$organisateur_id];
-  }
+    if (isset($cache[$organisateur_id])) {
+        return $cache[$organisateur_id];
+    }
 
-  if ($organisateur_id <= 0) {
-    return $cache[$organisateur_id] = 0;
-  }
+    if ($organisateur_id <= 0) {
+        return $cache[$organisateur_id] = 0;
+    }
 
-  $query = new WP_Query([
-    'post_type'              => 'chasse',
-    'posts_per_page'         => 1,
-    'post_status'            => 'publish',
-    'fields'                 => 'ids',
-    'no_found_rows'          => false,
-    'update_post_meta_cache' => false,
-    'update_post_term_cache' => false,
-    'meta_query'             => [
-      [
-        'key'     => 'chasse_cache_organisateur',
-        'value'   => '"' . $organisateur_id . '"',
-        'compare' => 'LIKE',
-      ],
-    ],
-  ]);
+    $query = new WP_Query(
+        cat_get_organizer_hunt_query_service()->getPublishedHuntCountQueryArgs($organisateur_id)
+    );
 
-  $count = (int) $query->found_posts;
-  $cache[$organisateur_id] = $count;
+    $count = (int) $query->found_posts;
+    $cache[$organisateur_id] = $count;
 
-  return $count;
+    return $count;
 }
 
 /**
