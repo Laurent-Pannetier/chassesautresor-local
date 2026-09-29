@@ -251,75 +251,48 @@ function est_organisateur($user_id = null)
  */
 function utilisateur_peut_creer_post($post_type, $chasse_id = null)
 {
-    if (!is_user_logged_in()) {
-        return false;
+    $is_authenticated = is_user_logged_in();
+    $is_administrator = $is_authenticated && current_user_can('manage_options');
+    $user_id = $is_authenticated && !$is_administrator ? get_current_user_id() : 0;
+    $roles = $user_id > 0 ? (array) wp_get_current_user()->roles : [];
+    $organizer_id = $user_id > 0 && in_array($post_type, ['organisateur', 'chasse', 'enigme'], true)
+        ? (int) get_organisateur_from_user($user_id)
+        : 0;
+    $has_organizer_role = $user_id > 0 && in_array(ROLE_ORGANISATEUR, $roles, true);
+    $has_existing_hunt = false;
+
+    if ($post_type === 'chasse' && $organizer_id > 0 && !$has_organizer_role) {
+        $user_hunts = get_posts([
+            'post_type' => 'chasse',
+            'post_status' => 'any',
+            'author' => $user_id,
+            'fields' => 'ids',
+        ]);
+        $has_existing_hunt = !empty($user_hunts);
     }
 
-    if (current_user_can('manage_options')) {
-        return true;
+    if ($user_id > 0 && $post_type === 'enigme' && !$chasse_id) {
+        $chasse_id = filter_input(INPUT_GET, 'chasse_associee', FILTER_VALIDATE_INT);
     }
 
-    $user_id = get_current_user_id();
-    $user_roles = wp_get_current_user()->roles;
+    $has_valid_hunt = $user_id > 0
+        && $post_type === 'enigme'
+        && (int) $chasse_id > 0
+        && get_post_type($chasse_id) === 'chasse';
+    $hunt_organizer_id = $has_valid_hunt ? (int) get_organisateur_from_chasse($chasse_id) : 0;
+    $service = new ChassesAuTresor\Core\Content\ContentCreationService();
 
-    switch ($post_type) {
-        case 'organisateur':
-            // 🔍 Vérifie si l'utilisateur a déjà un CPT "organisateur"
-            $organisateur_id = get_organisateur_from_user($user_id);
-            if ($organisateur_id) {
-                return false; // ❌ Refus si un organisateur existe déjà
-            }
-
-            // ✅ Un abonné sans organisateur peut en créer un
-            return true;
-
-        case 'chasse':
-            // 🔍 Vérifie si l'utilisateur est rattaché à un CPT "organisateur"
-            if (!get_organisateur_from_user($user_id)) {
-                return false; // ❌ Refus si l'utilisateur n'a pas de CPT "organisateur"
-            }
-
-            if (in_array(ROLE_ORGANISATEUR, $user_roles, true)) {
-                return true; // ✅ Un organisateur peut créer plusieurs chasses
-            }
-
-            // 🔍 Vérifier si l'abonné a déjà une chasse en cours
-            $user_chasses = get_posts([
-                'post_type'   => 'chasse',
-                'post_status' => 'any',
-                'author'      => $user_id,
-                'fields'      => 'ids',
-            ]);
-
-            return empty($user_chasses); // ❌ Refus si l'utilisateur a déjà une chasse
-
-        case 'enigme':
-            // 🔍 Déterminer l'ID de la chasse :
-            // - Priorité à `$chasse_id` s'il est passé en argument
-            // - Sinon, récupération depuis l'URL via $_GET
-            if (!$chasse_id) {
-                $chasse_id = filter_input(INPUT_GET, 'chasse_associee', FILTER_VALIDATE_INT);
-            }
-
-            // 🔍 Vérifier que l'ID est valide et que c'est bien un CPT "chasse"
-            if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
-                return false;
-            }
-
-            // 🔍 Vérifier que l'utilisateur est bien rattaché à cette chasse
-            $organisateur_chasse = get_organisateur_from_chasse($chasse_id);
-            $organisateur_user = get_organisateur_from_user($user_id);
-
-            if (!$organisateur_chasse || !$organisateur_user || $organisateur_chasse !== $organisateur_user) {
-                return false;
-            }
-
-            // ✅ Vérifier que la chasse est en "création"
-            $validation = get_field('chasse_cache_statut_validation', $chasse_id);
-            return trim($validation ?? '') === 'creation';
-    }
-
-    return false;
+    return $service->canCreate(
+        $is_authenticated,
+        $is_administrator,
+        (string) $post_type,
+        $organizer_id > 0,
+        $has_organizer_role,
+        $has_existing_hunt,
+        $has_valid_hunt,
+        $hunt_organizer_id > 0 && $hunt_organizer_id === $organizer_id,
+        $has_valid_hunt ? (string) get_field('chasse_cache_statut_validation', $chasse_id) : ''
+    );
 }
 
 

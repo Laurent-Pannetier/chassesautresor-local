@@ -55,6 +55,7 @@ require_once __DIR__ . '/src/Content/ContentFieldAccessService.php';
 require_once __DIR__ . '/src/Content/ContentFieldPolicyService.php';
 require_once __DIR__ . '/src/Content/ContentModificationService.php';
 require_once __DIR__ . '/src/Content/RelatedContentActionService.php';
+require_once __DIR__ . '/src/Content/ContentCreationService.php';
 require_once __DIR__ . '/src/Messages/UserMessageRepository.php';
 require_once __DIR__ . '/src/Messages/SiteMessageService.php';
 require_once __DIR__ . '/src/Messages/AccountMessageService.php';
