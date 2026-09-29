@@ -82,11 +82,7 @@ function chasse_compter_points_collectes(int $chasse_id, string $periode = 'tota
  */
 function chasse_compter_engagements(int $chasse_id): int
 {
-
-    global $wpdb;
-    $table = $wpdb->prefix . 'engagements';
-    $sql = $wpdb->prepare("SELECT COUNT(*) FROM $table WHERE chasse_id = %d", $chasse_id);
-    return (int) $wpdb->get_var($sql);
+    return cat_get_hunt_statistics_service()->countEngagements($chasse_id);
 }
 
 /**

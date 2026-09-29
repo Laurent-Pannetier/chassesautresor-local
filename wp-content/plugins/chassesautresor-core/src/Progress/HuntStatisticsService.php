@@ -27,4 +27,9 @@ class HuntStatisticsService
     {
         return $riddleIds === [] ? 0 : $this->repository->sumCollectedPoints($riddleIds, $startAt, $endAt);
     }
+
+    public function countEngagements(int $huntId): int
+    {
+        return $huntId > 0 ? $this->repository->countEngagements($huntId) : 0;
+    }
 }

@@ -28,6 +28,15 @@ class HuntStatisticsRepository
         return $this->aggregateAttempts('SUM(points_utilises)', $riddleIds, $startAt, $endAt);
     }
 
+    public function countEngagements(int $huntId): int
+    {
+        $table = $this->wpdb->prefix . 'engagements';
+
+        return (int) $this->wpdb->get_var(
+            $this->wpdb->prepare("SELECT COUNT(*) FROM {$table} WHERE chasse_id = %d", $huntId)
+        );
+    }
+
     /** @param int[] $riddleIds */
     private function aggregateAttempts(
         string $expression,
