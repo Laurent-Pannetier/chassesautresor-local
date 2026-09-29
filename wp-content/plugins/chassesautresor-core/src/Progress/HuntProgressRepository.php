@@ -50,4 +50,70 @@ class HuntProgressRepository
             $this->wpdb->prepare($sql, array_merge([$userId], $riddleIds))
         );
     }
+
+    /**
+     * Return users who completed all required riddles, ordered by first completion.
+     *
+     * @param int[] $validatable
+     * @param int[] $engagementOnly
+     * @return object[] Objects exposing user_id and first_finish.
+     */
+    public function findCompletedUsers(array $validatable, array $engagementOnly): array
+    {
+        if ($validatable !== []) {
+            $results = $this->findUsersWhoSolvedAll($validatable);
+
+            if ($engagementOnly === []) {
+                return $results;
+            }
+
+            return array_values(
+                array_filter(
+                    $results,
+                    fn ($row): bool => $this->countEngaged((int) $row->user_id, $engagementOnly)
+                        === count($engagementOnly)
+                )
+            );
+        }
+
+        if ($engagementOnly !== []) {
+            return $this->findUsersWhoEngagedAll($engagementOnly);
+        }
+
+        return [];
+    }
+
+    /**
+     * @param int[] $riddleIds
+     * @return object[]
+     */
+    private function findUsersWhoSolvedAll(array $riddleIds): array
+    {
+        $table = $this->wpdb->prefix . 'enigme_statuts_utilisateur';
+        $placeholders = implode(',', array_fill(0, count($riddleIds), '%d'));
+        $sql = "SELECT user_id, MIN(date_mise_a_jour) AS first_finish FROM {$table} "
+            . "WHERE statut IN ('resolue','terminee','terminée') AND enigme_id IN ({$placeholders}) "
+            . 'GROUP BY user_id HAVING COUNT(DISTINCT enigme_id) = %d ORDER BY first_finish ASC';
+
+        return $this->wpdb->get_results(
+            $this->wpdb->prepare($sql, array_merge($riddleIds, [count($riddleIds)]))
+        );
+    }
+
+    /**
+     * @param int[] $riddleIds
+     * @return object[]
+     */
+    private function findUsersWhoEngagedAll(array $riddleIds): array
+    {
+        $table = $this->wpdb->prefix . 'engagements';
+        $placeholders = implode(',', array_fill(0, count($riddleIds), '%d'));
+        $sql = "SELECT user_id, MIN(date_engagement) AS first_finish FROM {$table} "
+            . "WHERE enigme_id IN ({$placeholders}) GROUP BY user_id "
+            . 'HAVING COUNT(DISTINCT enigme_id) = %d ORDER BY first_finish ASC';
+
+        return $this->wpdb->get_results(
+            $this->wpdb->prepare($sql, array_merge($riddleIds, [count($riddleIds)]))
+        );
+    }
 }

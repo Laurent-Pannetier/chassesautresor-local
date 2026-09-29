@@ -26,6 +26,11 @@ class HuntProgressRepositoryStub extends HuntProgressRepository
     {
         return 1;
     }
+
+    public function findCompletedUsers(array $validatable, array $engagementOnly): array
+    {
+        return [(object) ['user_id' => 7, 'first_finish' => '2026-09-29 10:00:00']];
+    }
 }
 
 class HuntProgressServiceTest extends TestCase
@@ -48,5 +53,14 @@ class HuntProgressServiceTest extends TestCase
             ['completed' => 0, 'total' => 0, 'is_complete' => false],
             $service->calculate(0, [10], [])
         );
+    }
+
+    public function testCompletedUsersComeFromProgressRepository(): void
+    {
+        $service = new HuntProgressService(new HuntProgressRepositoryStub());
+        $users = $service->getCompletedUsers([10, 11], [12]);
+
+        $this->assertSame(7, $users[0]->user_id);
+        $this->assertSame('2026-09-29 10:00:00', $users[0]->first_finish);
     }
 }

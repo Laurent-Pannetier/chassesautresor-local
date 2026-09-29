@@ -38,4 +38,14 @@ class HuntProgressService
             'is_complete' => $total > 0 && $completed === $total,
         ];
     }
+
+    /**
+     * @param int[] $validatable
+     * @param int[] $engagementOnly
+     * @return object[]
+     */
+    public function getCompletedUsers(array $validatable, array $engagementOnly): array
+    {
+        return $this->repository->findCompletedUsers($validatable, $engagementOnly);
+    }
 }
