@@ -23,6 +23,11 @@ if (!class_exists(ChassesAuTresor\Core\Progress\HuntProgressService::class, fals
         . '/plugins/chassesautresor-core/src/Progress/HuntProgressService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Progress\HuntRiddleClassifier::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Progress/HuntRiddleClassifier.php';
+}
+
 /**
  * Create the service responsible for points operations.
  */
@@ -65,6 +70,11 @@ function cat_get_hunt_progress_service(): ChassesAuTresor\Core\Progress\HuntProg
     return new ChassesAuTresor\Core\Progress\HuntProgressService(
         new ChassesAuTresor\Core\Progress\HuntProgressRepository($wpdb)
     );
+}
+
+function cat_classify_hunt_riddles(array $riddleIds): array
+{
+    return (new ChassesAuTresor\Core\Progress\HuntRiddleClassifier())->classify($riddleIds);
 }
 
 // ==================================================
@@ -310,15 +320,9 @@ function enigme_get_chasse_progression(int $chasse_id, int $user_id): array
         return ['resolues' => 0, 'total' => 0];
     }
 
-    $validables      = [];
-    $non_validables  = [];
-    foreach ($enigmes as $id) {
-        if (get_field('enigme_mode_validation', $id) === 'aucune') {
-            $non_validables[] = $id;
-        } else {
-            $validables[] = $id;
-        }
-    }
+    $classified = cat_classify_hunt_riddles($enigmes);
+    $validables = $classified['validatable'];
+    $non_validables = $classified['engagement_only'];
 
     $progress = cat_get_hunt_progress_service()->calculate($user_id, $validables, $non_validables);
 
@@ -346,15 +350,9 @@ function compter_enigmes_resolues($chasse_id, $user_id): int
         return 0;
     }
 
-    $validables     = [];
-    $non_validables = [];
-    foreach ($enigmes as $eid) {
-        if (get_field('enigme_mode_validation', $eid) === 'aucune') {
-            $non_validables[] = $eid;
-        } else {
-            $validables[] = $eid;
-        }
-    }
+    $classified = cat_classify_hunt_riddles($enigmes);
+    $validables = $classified['validatable'];
+    $non_validables = $classified['engagement_only'];
 
     $progress = cat_get_hunt_progress_service()->calculate((int) $user_id, $validables, $non_validables);
 
@@ -396,15 +394,9 @@ function verifier_fin_de_chasse($user_id, $enigme_id)
         return;
     }
 
-    $validables      = [];
-    $non_validables  = [];
-    foreach ($enigmes_associees as $eid) {
-        if (get_field('enigme_mode_validation', $eid) === 'aucune') {
-            $non_validables[] = $eid;
-        } else {
-            $validables[] = $eid;
-        }
-    }
+    $classified = cat_classify_hunt_riddles($enigmes_associees);
+    $validables = $classified['validatable'];
+    $non_validables = $classified['engagement_only'];
 
     $progress = cat_get_hunt_progress_service()->calculate((int) $user_id, $validables, $non_validables);
 
