@@ -28,20 +28,25 @@ class HuntStatisticsRepository
         return $this->aggregateAttempts('SUM(points_utilises)', $riddleIds, $startAt, $endAt);
     }
 
-    public function countEngagements(int $huntId): int
+    public function countEngagements(int $huntId, array $excludedUserIds = []): int
     {
         $table = $this->wpdb->prefix . 'engagements';
 
-        return (int) $this->wpdb->get_var(
-            $this->wpdb->prepare("SELECT COUNT(*) FROM {$table} WHERE chasse_id = %d", $huntId)
-        );
+        $where = 'chasse_id = %d';
+        $params = [$huntId];
+        if ($excludedUserIds !== []) {
+            $where .= ' AND user_id NOT IN (' . implode(',', array_fill(0, count($excludedUserIds), '%d')) . ')';
+            $params = array_merge($params, $excludedUserIds);
+        }
+        return (int) $this->wpdb->get_var($this->wpdb->prepare("SELECT COUNT(*) FROM {$table} WHERE {$where}", ...$params));
     }
 
     /** @param int[] $riddleIds */
     public function sumEngagedPlayersByRiddle(
         array $riddleIds,
         ?string $startAt = null,
-        ?string $endAt = null
+        ?string $endAt = null,
+        array $excludedUserIds = []
     ): int {
         $table = $this->wpdb->prefix . 'engagements';
         $placeholders = implode(',', array_fill(0, count($riddleIds), '%d'));
@@ -52,6 +57,10 @@ class HuntStatisticsRepository
             $where .= ' AND date_engagement BETWEEN %s AND %s';
             $params[] = $startAt;
             $params[] = $endAt;
+        }
+        if ($excludedUserIds !== []) {
+            $where .= ' AND user_id NOT IN (' . implode(',', array_fill(0, count($excludedUserIds), '%d')) . ')';
+            $params = array_merge($params, $excludedUserIds);
         }
 
         $sql = "SELECT SUM(cnt) FROM (SELECT COUNT(DISTINCT user_id) AS cnt FROM {$table} "

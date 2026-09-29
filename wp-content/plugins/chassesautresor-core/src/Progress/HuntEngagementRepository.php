@@ -38,7 +38,12 @@ class HuntEngagementRepository
         );
     }
 
-    public function countParticipants(int $huntId, ?string $startAt = null, ?string $endAt = null): int
+    public function countParticipants(
+        int $huntId,
+        ?string $startAt = null,
+        ?string $endAt = null,
+        array $excludedUserIds = []
+    ): int
     {
         $table = $this->wpdb->prefix . 'engagements';
         $where = 'chasse_id = %d AND enigme_id IS NULL';
@@ -48,6 +53,11 @@ class HuntEngagementRepository
             $where .= ' AND date_engagement BETWEEN %s AND %s';
             $params[] = $startAt;
             $params[] = $endAt;
+        }
+
+        if ($excludedUserIds !== []) {
+            $where .= ' AND user_id NOT IN (' . implode(',', array_fill(0, count($excludedUserIds), '%d')) . ')';
+            $params = array_merge($params, $excludedUserIds);
         }
 
         return (int) $this->wpdb->get_var(

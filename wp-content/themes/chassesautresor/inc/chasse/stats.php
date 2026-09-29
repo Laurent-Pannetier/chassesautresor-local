@@ -41,6 +41,16 @@ function cat_get_hunt_statistics_service(): ChassesAuTresor\Core\Progress\HuntSt
     );
 }
 
+function chasse_stats_excluded_user_ids(int $chasse_id): array
+{
+    $excluded = function_exists('get_users') ? get_users(['role' => 'administrator', 'fields' => 'ids']) : [];
+    if (function_exists('get_organisateur_from_chasse') && function_exists('get_field')) {
+        $organizerId = get_organisateur_from_chasse($chasse_id);
+        $excluded = array_merge($excluded, $organizerId ? (array) get_field('utilisateurs_associes', $organizerId) : []);
+    }
+    return array_values(array_unique(array_filter(array_map('intval', $excluded))));
+}
+
 /**
  * Count distinct participants engaged in a hunt.
  */
@@ -52,7 +62,12 @@ function chasse_compter_participants(int $chasse_id, string $periode = 'total'):
         [$debut, $fin] = enigme_stats_date_range($periode);
     }
 
-    return cat_get_hunt_engagement_service()->countParticipants($chasse_id, $debut, $fin);
+    return cat_get_hunt_engagement_service()->countParticipants(
+        $chasse_id,
+        $debut,
+        $fin,
+        chasse_stats_excluded_user_ids($chasse_id)
+    );
 }
 
 /**
@@ -82,7 +97,7 @@ function chasse_compter_points_collectes(int $chasse_id, string $periode = 'tota
  */
 function chasse_compter_engagements(int $chasse_id): int
 {
-    return cat_get_hunt_statistics_service()->countEngagements($chasse_id);
+    return cat_get_hunt_statistics_service()->countEngagements($chasse_id, chasse_stats_excluded_user_ids($chasse_id));
 }
 
 /**
@@ -98,7 +113,8 @@ function chasse_calculer_taux_engagement(int $chasse_id, string $periode = 'tota
         $participants,
         $enigme_ids,
         $debut,
-        $fin
+        $fin,
+        chasse_stats_excluded_user_ids($chasse_id)
     );
 }
 

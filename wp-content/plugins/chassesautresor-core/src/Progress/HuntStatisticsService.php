@@ -28,9 +28,9 @@ class HuntStatisticsService
         return $riddleIds === [] ? 0 : $this->repository->sumCollectedPoints($riddleIds, $startAt, $endAt);
     }
 
-    public function countEngagements(int $huntId): int
+    public function countEngagements(int $huntId, array $excludedUserIds = []): int
     {
-        return $huntId > 0 ? $this->repository->countEngagements($huntId) : 0;
+        return $huntId > 0 ? $this->repository->countEngagements($huntId, $excludedUserIds) : 0;
     }
 
     /** @param int[] $riddleIds */
@@ -38,13 +38,19 @@ class HuntStatisticsService
         int $participants,
         array $riddleIds,
         ?string $startAt = null,
-        ?string $endAt = null
+        ?string $endAt = null,
+        array $excludedUserIds = []
     ): float {
         if ($participants <= 0 || $riddleIds === []) {
             return 0.0;
         }
 
-        $engagements = $this->repository->sumEngagedPlayersByRiddle($riddleIds, $startAt, $endAt);
+        $engagements = $this->repository->sumEngagedPlayersByRiddle(
+            $riddleIds,
+            $startAt,
+            $endAt,
+            $excludedUserIds
+        );
 
         return (100 * $engagements) / ($participants * count($riddleIds));
     }

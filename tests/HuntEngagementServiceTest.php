@@ -31,9 +31,14 @@ class HuntEngagementRepositoryStub extends HuntEngagementRepository
         return 4;
     }
 
-    public function countParticipants(int $huntId, ?string $startAt = null, ?string $endAt = null): int
+    public function countParticipants(
+        int $huntId,
+        ?string $startAt = null,
+        ?string $endAt = null,
+        array $excludedUserIds = []
+    ): int
     {
-        $this->participantRange = [$huntId, $startAt, $endAt];
+        $this->participantRange = [$huntId, $startAt, $endAt, $excludedUserIds];
 
         return 3;
     }
@@ -84,10 +89,10 @@ class HuntEngagementServiceTest extends TestCase
 
         $this->assertSame(
             3,
-            $service->countParticipants(12, '2026-09-01 00:00:00', '2026-09-30 23:59:59')
+            $service->countParticipants(12, '2026-09-01 00:00:00', '2026-09-30 23:59:59', [1, 2])
         );
         $this->assertSame(
-            [12, '2026-09-01 00:00:00', '2026-09-30 23:59:59'],
+            [12, '2026-09-01 00:00:00', '2026-09-30 23:59:59', [1, 2]],
             $repository->participantRange
         );
         $this->assertSame(0, $service->countParticipants(0));

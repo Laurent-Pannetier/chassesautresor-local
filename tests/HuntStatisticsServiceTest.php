@@ -33,9 +33,9 @@ class HuntStatisticsRepositoryStub extends HuntStatisticsRepository
         return 21;
     }
 
-    public function countEngagements(int $huntId): int
+    public function countEngagements(int $huntId, array $excludedUserIds = []): int
     {
-        $this->arguments = [$huntId];
+        $this->arguments = [$huntId, $excludedUserIds];
 
         return 13;
     }
@@ -43,9 +43,10 @@ class HuntStatisticsRepositoryStub extends HuntStatisticsRepository
     public function sumEngagedPlayersByRiddle(
         array $riddleIds,
         ?string $startAt = null,
-        ?string $endAt = null
+        ?string $endAt = null,
+        array $excludedUserIds = []
     ): int {
-        $this->arguments = [$riddleIds, $startAt, $endAt];
+        $this->arguments = [$riddleIds, $startAt, $endAt, $excludedUserIds];
 
         return 6;
     }
@@ -78,8 +79,8 @@ class HuntStatisticsServiceTest extends TestCase
         $repository = new HuntStatisticsRepositoryStub();
         $service = new HuntStatisticsService($repository);
 
-        $this->assertSame(13, $service->countEngagements(12));
-        $this->assertSame([12], $repository->arguments);
+        $this->assertSame(13, $service->countEngagements(12, [1, 2]));
+        $this->assertSame([12, [1, 2]], $repository->arguments);
         $this->assertSame(0, $service->countEngagements(0));
     }
 
@@ -89,7 +90,7 @@ class HuntStatisticsServiceTest extends TestCase
         $service = new HuntStatisticsService($repository);
 
         $this->assertSame(150.0, $service->calculateEngagementRate(2, [10, 11]));
-        $this->assertSame([[10, 11], null, null], $repository->arguments);
+        $this->assertSame([[10, 11], null, null, []], $repository->arguments);
         $this->assertSame(0.0, $service->calculateEngagementRate(0, [10, 11]));
         $this->assertSame(0.0, $service->calculateEngagementRate(2, []));
     }

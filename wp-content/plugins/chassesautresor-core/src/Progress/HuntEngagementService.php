@@ -30,13 +30,18 @@ class HuntEngagementService
         return $huntId > 0 ? $this->repository->countByHunt($huntId) : 0;
     }
 
-    public function countParticipants(int $huntId, ?string $startAt = null, ?string $endAt = null): int
+    public function countParticipants(
+        int $huntId,
+        ?string $startAt = null,
+        ?string $endAt = null,
+        array $excludedUserIds = []
+    ): int
     {
         if ($huntId <= 0) {
             return 0;
         }
 
-        return $this->repository->countParticipants($huntId, $startAt, $endAt);
+        return $this->repository->countParticipants($huntId, $startAt, $endAt, $excludedUserIds);
     }
 
     public function engage(int $userId, int $huntId, string $engagedAt): bool
