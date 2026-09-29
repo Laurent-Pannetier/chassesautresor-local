@@ -228,6 +228,46 @@ class HuntProgressServiceTest extends TestCase
         $this->assertFalse($submitted['afficher_formulaire']);
     }
 
+    public function testRiddleSystemStatePrioritizesHuntAndAccessRules(): void
+    {
+        $service = new HuntProgressService(new HuntProgressRepositoryStub());
+
+        $this->assertSame(
+            'bloquee_chasse',
+            $service->calculateRiddleSystemState(false, '', 'immediat', null, 'manuelle', false, 1000)
+        );
+        $this->assertSame(
+            'bloquee_chasse',
+            $service->calculateRiddleSystemState(true, 'a_venir', 'immediat', null, 'manuelle', false, 1000)
+        );
+        $this->assertSame(
+            'bloquee_date',
+            $service->calculateRiddleSystemState(true, 'en_cours', 'date_programmee', 2000, 'manuelle', false, 1000)
+        );
+        $this->assertSame(
+            'bloquee_pre_requis',
+            $service->calculateRiddleSystemState(true, 'payante', 'pre_requis', null, 'manuelle', false, 1000)
+        );
+    }
+
+    public function testRiddleSystemStateValidatesAutomaticAnswers(): void
+    {
+        $service = new HuntProgressService(new HuntProgressRepositoryStub());
+
+        $this->assertSame(
+            'invalide',
+            $service->calculateRiddleSystemState(true, 'termine', 'immediat', null, 'automatique', false, 1000)
+        );
+        $this->assertSame(
+            'accessible',
+            $service->calculateRiddleSystemState(true, 'termine', 'immediat', null, 'automatique', true, 1000)
+        );
+        $this->assertSame(
+            'accessible',
+            $service->calculateRiddleSystemState(true, 'en_cours', 'date_programmee', 500, 'manuelle', false, 1000)
+        );
+    }
+
     public function testRiddleStatusDeletionIsValidatedAndDelegated(): void
     {
         $repository = new HuntProgressRepositoryStub();

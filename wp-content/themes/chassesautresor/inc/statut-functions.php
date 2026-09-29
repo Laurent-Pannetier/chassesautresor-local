@@ -362,46 +362,26 @@ function enigme_mettre_a_jour_etat_systeme(int $enigme_id, bool $mettre_a_jour =
         cat_debug("❌ [STATUT] Post #$enigme_id n'est pas une énigme");
         return 'cache_invalide';
     }
-    $etat = 'accessible';
-
-    // 🔎 Vérifie la chasse liée
     $chasse_id = recuperer_id_chasse_associee($enigme_id);
-    if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
-        $etat = 'bloquee_chasse';
-        cat_debug("🧩 #$enigme_id → bloquee_chasse (aucune chasse valide liée)");
-    } else {
-        $statut_chasse = $statut_chasse_forcé ?? get_field('chasse_cache_statut', $chasse_id);
-        cat_debug("🧩 #$enigme_id → chasse #$chasse_id statut = $statut_chasse");
-
-        if (!in_array($statut_chasse, ['en_cours', 'payante', 'termine'], true)) {
-            $etat = 'bloquee_chasse';
-        }
-    }
-
-    // 🔐 Accès programmé / prérequis
+    $hasValidHunt = $chasse_id > 0 && get_post_type($chasse_id) === 'chasse';
+    $statut_chasse = $hasValidHunt
+        ? (string) ($statut_chasse_forcé ?? get_field('chasse_cache_statut', $chasse_id))
+        : '';
     $condition = get_field('enigme_acces_condition', $enigme_id) ?? 'immediat';
-
-    if ($etat === 'accessible') {
-        if ($condition === 'date_programmee') {
-            $date = get_field('enigme_acces_date', $enigme_id);
-            $date_obj = convertir_en_datetime($date);
-            if (!$date_obj || $date_obj->getTimestamp() > time()) {
-                $etat = 'bloquee_date';
-                cat_debug("🧩 #$enigme_id → bloquee_date (accès programmé futur ou vide)");
-            }
-        } elseif ($condition === 'pre_requis') {
-            $etat = 'bloquee_pre_requis';
-            cat_debug("🧩 #$enigme_id → bloquee_pre_requis (pré-requis exigés)");
-        }
-    }
-
-    // ❓ Vérifie si la réponse attendue est bien définie si validation = automatique
+    $scheduledDate = $condition === 'date_programmee'
+        ? convertir_en_datetime(get_field('enigme_acces_date', $enigme_id))
+        : null;
     $mode = get_field('enigme_mode_validation', $enigme_id);
     $reponses = enigme_get_bonnes_reponses($enigme_id);
-    if ($etat === 'accessible' && $mode === 'automatique' && empty($reponses)) {
-        $etat = 'invalide';
-        cat_debug("🧩 #$enigme_id → invalide (automatique sans réponse)");
-    }
+
+    $etat = cat_get_hunt_progress_service()->calculateRiddleSystemState(
+        $hasValidHunt,
+        $statut_chasse,
+        (string) $condition,
+        $scheduledDate ? $scheduledDate->getTimestamp() : null,
+        (string) $mode,
+        !empty($reponses)
+    );
 
     // ✅ Mise à jour ACF si demandé
     if ($mettre_a_jour) {

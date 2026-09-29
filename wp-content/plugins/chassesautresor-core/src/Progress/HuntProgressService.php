@@ -180,6 +180,35 @@ class HuntProgressService
         ];
     }
 
+    public function calculateRiddleSystemState(
+        bool $hasValidHunt,
+        string $huntStatus,
+        string $accessCondition,
+        ?int $scheduledTimestamp,
+        string $validationMode,
+        bool $hasAnswers,
+        ?int $currentTimestamp = null
+    ): string {
+        if (!$hasValidHunt || !in_array($huntStatus, ['en_cours', 'payante', 'termine'], true)) {
+            return 'bloquee_chasse';
+        }
+
+        if ($accessCondition === 'date_programmee') {
+            $currentTimestamp = $currentTimestamp ?? time();
+            if ($scheduledTimestamp === null || $scheduledTimestamp > $currentTimestamp) {
+                return 'bloquee_date';
+            }
+        } elseif ($accessCondition === 'pre_requis') {
+            return 'bloquee_pre_requis';
+        }
+
+        if ($validationMode === 'automatique' && !$hasAnswers) {
+            return 'invalide';
+        }
+
+        return 'accessible';
+    }
+
     public function deleteRiddleStatuses(int $riddleId): int
     {
         return $riddleId > 0 ? $this->repository->deleteStatusesForRiddle($riddleId) : 0;
