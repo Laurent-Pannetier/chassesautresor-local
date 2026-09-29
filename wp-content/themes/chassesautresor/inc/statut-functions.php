@@ -929,11 +929,9 @@ function forcer_statut_apres_acf($post_id, $nouvelle_validation = null)
 
     if (!$validation) return;
 
-    $statut_voulu = match ($validation) {
-        'valide'     => 'publish',
-        'banni'      => 'draft',
-        default      => 'pending',
-    };
+    $statut_voulu = (new ChassesAuTresor\Core\Content\HuntPublicationStatusService())->resolve(
+        (string) $validation
+    );
 
     if (get_post_status($post_id) !== $statut_voulu) {
         wp_update_post([
@@ -995,11 +993,9 @@ function forcer_statut_selon_validation_chasse($post_id, $post, $update)
     if (!$validation) return;
     $statut_wp = get_post_status($post_id);
 
-    $statut_attendu = match ($validation) {
-        'valide'   => 'publish',
-        'banni'    => 'draft',
-        default    => 'pending',
-    };
+    $statut_attendu = (new ChassesAuTresor\Core\Content\HuntPublicationStatusService())->resolve(
+        (string) $validation
+    );
 
     if ($statut_wp !== $statut_attendu) {
         cat_debug("⚠️ Décalage statut WP vs ACF pour chasse $post_id → WP = $statut_wp / ACF = $validation");
