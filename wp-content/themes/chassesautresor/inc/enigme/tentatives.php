@@ -389,22 +389,19 @@ function recuperer_enigmes_tentatives_en_attente(int $organisateur_id): array
         return [];
     }
 
-    $result = [];
+    $riddle_modes = [];
 
     foreach ($query->posts as $chasse_id) {
         $enigmes = recuperer_enigmes_associees((int) $chasse_id);
         foreach ($enigmes as $enigme_id) {
-            $mode = enigme_normaliser_mode_validation(
+            $enigme_id = (int) $enigme_id;
+            $riddle_modes[$enigme_id] = enigme_normaliser_mode_validation(
                 get_field('enigme_mode_validation', $enigme_id)
             );
-
-            if ($mode === 'manuelle' && compter_tentatives_en_attente($enigme_id) > 0) {
-                $result[] = $enigme_id;
-            }
         }
     }
 
-    return array_values(array_unique($result));
+    return cat_get_riddle_attempt_service()->findPendingManualRiddleIds($riddle_modes);
 }
 
 /**

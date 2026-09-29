@@ -22,6 +22,8 @@ class RiddleAttemptRepositoryStub extends RiddleAttemptRepository
     public array $processArguments = [];
     public bool $processResult = true;
     public bool $hasSuccessfulAttempt = false;
+    public array $pendingCounts = [];
+    public array $pendingRiddleIds = [];
 
     public function __construct()
     {
@@ -77,7 +79,8 @@ class RiddleAttemptRepositoryStub extends RiddleAttemptRepository
     public function countPendingForRiddle(int $riddleId): int
     {
         $this->countArguments = ['pending' => $riddleId];
-        return 3;
+        $this->pendingRiddleIds[] = $riddleId;
+        return $this->pendingCounts[$riddleId] ?? 3;
     }
 
     public function countForUserAndRiddleBetween(
@@ -330,6 +333,25 @@ class RiddleAttemptServiceTest extends TestCase
         $this->assertSame(['pending' => 10], $repository->countArguments);
         $this->assertSame(0, $service->countForRiddle(0));
         $this->assertSame(0, $service->countPendingForRiddle(-1));
+    }
+
+    public function testPendingManualRiddlesAreFilteredInInputOrder(): void
+    {
+        $repository = new RiddleAttemptRepositoryStub();
+        $repository->pendingCounts = [10 => 2, 12 => 0, 13 => 1];
+        $service = new RiddleAttemptService($repository);
+
+        $this->assertSame(
+            [10, 13],
+            $service->findPendingManualRiddleIds([
+                10 => 'manuelle',
+                11 => 'automatique',
+                12 => 'manuelle',
+                0 => 'manuelle',
+                13 => 'manuelle',
+            ])
+        );
+        $this->assertSame([10, 12, 13], $repository->pendingRiddleIds);
     }
 
     public function testDailyCounterUsesParisCalendarDay(): void

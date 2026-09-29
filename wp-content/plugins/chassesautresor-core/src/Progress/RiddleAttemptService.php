@@ -200,6 +200,24 @@ class RiddleAttemptService
         return $riddleId > 0 ? $this->repository->countPendingForRiddle($riddleId) : 0;
     }
 
+    public function findPendingManualRiddleIds(array $riddleModes): array
+    {
+        $pendingRiddleIds = [];
+
+        foreach ($riddleModes as $riddleId => $mode) {
+            $riddleId = (int) $riddleId;
+            if ($riddleId <= 0 || $mode !== 'manuelle') {
+                continue;
+            }
+
+            if ($this->repository->countPendingForRiddle($riddleId) > 0) {
+                $pendingRiddleIds[] = $riddleId;
+            }
+        }
+
+        return $pendingRiddleIds;
+    }
+
     public function countTodayForUser(int $userId, int $riddleId, ?DateTimeInterface $now = null): int
     {
         if ($userId <= 0 || $riddleId <= 0) {
