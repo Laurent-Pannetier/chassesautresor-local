@@ -1,6 +1,24 @@
 <?php
 defined('ABSPATH') || exit;
 
+if (!class_exists(ChassesAuTresor\Core\Progress\RiddleEngagementService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Progress/RiddleEngagementRepository.php';
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Progress/RiddleEngagementService.php';
+}
+
+if (!function_exists('cat_get_riddle_engagement_service')) {
+    function cat_get_riddle_engagement_service(): ChassesAuTresor\Core\Progress\RiddleEngagementService
+    {
+        global $wpdb;
+
+        return new ChassesAuTresor\Core\Progress\RiddleEngagementService(
+            new ChassesAuTresor\Core\Progress\RiddleEngagementRepository($wpdb)
+        );
+    }
+}
+
     // ==================================================
     // 🧾 ENREGISTREMENT DES ENGAGEMENTS
     // ==================================================
@@ -63,16 +81,5 @@ defined('ABSPATH') || exit;
      */
     function utilisateur_est_engage_dans_enigme(int $user_id, int $enigme_id): bool
     {
-        global $wpdb;
-        if (!$user_id || !$enigme_id) {
-            return false;
-        }
-
-        $table = $wpdb->prefix . 'engagements';
-
-        return (bool) $wpdb->get_var($wpdb->prepare(
-            "SELECT 1 FROM $table WHERE user_id = %d AND enigme_id = %d LIMIT 1",
-            $user_id,
-            $enigme_id
-        ));
+        return cat_get_riddle_engagement_service()->isEngaged($user_id, $enigme_id);
     }
