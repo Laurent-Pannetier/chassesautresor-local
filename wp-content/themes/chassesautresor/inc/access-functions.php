@@ -1081,21 +1081,24 @@ add_filter('acf/load_field/name=enigme_acces_condition', function ($field) {
 function recuperer_enigmes_possibles_pre_requis($enigme_id)
 {
     $chasse_id = recuperer_id_chasse_associee($enigme_id);
-    if (!$chasse_id) return [];
-
-    $associees = recuperer_enigmes_associees($chasse_id);
-    $filtrees = [];
-
-    foreach ($associees as $id) {
-        if ((int) $id === (int) $enigme_id) continue;
-
-        $mode = get_field('enigme_mode_validation', $id);
-        if (in_array($mode, ['manuelle', 'automatique'])) {
-            $filtrees[] = $id;
-        }
+    if (!$chasse_id) {
+        return [];
     }
 
-    return $filtrees;
+    $associees = recuperer_enigmes_associees($chasse_id);
+    $validation_modes = [];
+
+    foreach ($associees as $id) {
+        if ((int) $id === (int) $enigme_id) {
+            continue;
+        }
+
+        $validation_modes[(int) $id] = (string) get_field('enigme_mode_validation', $id);
+    }
+
+    $service = new ChassesAuTresor\Core\Content\RiddlePrerequisiteService();
+
+    return $service->getEligibleIds((int) $enigme_id, $validation_modes);
 }
 
 
