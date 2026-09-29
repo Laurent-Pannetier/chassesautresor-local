@@ -679,11 +679,13 @@ function ajax_creer_indice_modal(): void
         wp_send_json_error('post_invalide');
     }
 
-    if ($objet_type === 'enigme') {
-        $linked = isset($_POST['indice_enigme_linked']) ? (int) $_POST['indice_enigme_linked'] : 0;
-        if (!$linked || $linked !== $objet_id) {
-            wp_send_json_error('post_invalide');
-        }
+    $linkedRiddleId = isset($_POST['indice_enigme_linked']) ? (int) $_POST['indice_enigme_linked'] : 0;
+    if (!cat_get_hint_creation_service()->hasConsistentRiddleTarget(
+        $objet_type,
+        $objet_id,
+        $linkedRiddleId
+    )) {
+        wp_send_json_error('post_invalide');
     }
 
     if (!indice_action_autorisee('create', $objet_type, $objet_id)) {
@@ -872,38 +874,21 @@ function supprimer_indice_ajax(): void
     }
 
     $cible_type = get_field('indice_cible_type', $indice_id) === 'enigme' ? 'enigme' : 'chasse';
-    $chasse_id  = 0;
+    $relationshipService = new ChassesAuTresor\Core\Relationships\RelationshipService();
+    $chasse_id = null;
+
     if ($cible_type === 'enigme') {
-        $linked = get_field('indice_enigme_linked', $indice_id);
-        if (is_array($linked)) {
-            $first    = $linked[0] ?? null;
-            $objet_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
-        } else {
-            $objet_id = (int) $linked;
-        }
+        $objet_id = $relationshipService->normalizeId(get_field('indice_enigme_linked', $indice_id));
+        $chasse_id = $relationshipService->normalizeId(get_field('indice_chasse_linked', $indice_id));
 
-        $chasse_linked = get_field('indice_chasse_linked', $indice_id);
-        if (is_array($chasse_linked)) {
-            $first     = $chasse_linked[0] ?? null;
-            $chasse_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
-        } else {
-            $chasse_id = (int) $chasse_linked;
-        }
-
-        if (!$chasse_id && $objet_id) {
-            $chasse_id = (int) recuperer_id_chasse_associee($objet_id);
+        if ($chasse_id === null && $objet_id !== null) {
+            $chasse_id = $relationshipService->normalizeId(recuperer_id_chasse_associee($objet_id));
         }
     } else {
-        $linked = get_field('indice_chasse_linked', $indice_id);
-        if (is_array($linked)) {
-            $first    = $linked[0] ?? null;
-            $objet_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
-        } else {
-            $objet_id = (int) $linked;
-        }
+        $objet_id = $relationshipService->normalizeId(get_field('indice_chasse_linked', $indice_id));
     }
 
-    if (!$objet_id || !indice_action_autorisee('delete', $cible_type, $objet_id)) {
+    if ($objet_id === null || !indice_action_autorisee('delete', $cible_type, $objet_id)) {
         wp_send_json_error('acces_refuse');
     }
 
@@ -913,7 +898,7 @@ function supprimer_indice_ajax(): void
     }
 
     reordonner_indices($objet_id, $cible_type);
-    if ($cible_type === 'enigme' && $chasse_id) {
+    if ($cible_type === 'enigme' && $chasse_id !== null) {
         reordonner_indices($chasse_id, 'chasse');
     }
 

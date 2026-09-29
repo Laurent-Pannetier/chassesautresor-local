@@ -14,6 +14,15 @@ class HintCreationService
         return in_array($targetType, ['chasse', 'enigme'], true);
     }
 
+    public function hasConsistentRiddleTarget(string $targetType, int $targetId, int $linkedRiddleId): bool
+    {
+        if ($targetType !== 'enigme') {
+            return true;
+        }
+
+        return $targetId > 0 && $linkedRiddleId === $targetId;
+    }
+
     public function getCreationError(
         bool $supportedTargetType,
         bool $targetMatchesType,

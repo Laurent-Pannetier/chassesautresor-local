@@ -25,6 +25,14 @@ class HintCreationServiceTest extends TestCase
         $this->assertFalse($this->service->isSupportedTargetType(''));
     }
 
+    public function testRiddleTargetMustMatchSubmittedRelationship(): void
+    {
+        $this->assertTrue($this->service->hasConsistentRiddleTarget('enigme', 12, 12));
+        $this->assertFalse($this->service->hasConsistentRiddleTarget('enigme', 12, 24));
+        $this->assertFalse($this->service->hasConsistentRiddleTarget('enigme', 12, 0));
+        $this->assertTrue($this->service->hasConsistentRiddleTarget('chasse', 12, 0));
+    }
+
     public function testNewHintStartsPendingImmediateAndDisabled(): void
     {
         $this->assertSame(
