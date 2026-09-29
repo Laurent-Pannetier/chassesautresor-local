@@ -255,6 +255,31 @@ class RiddleAttemptServiceTest extends TestCase
         $this->assertSame(0, $service->getChargeAmount(5, false));
     }
 
+    public function testProcessingPlanCombinesCreationChargeAndOutcomePolicies(): void
+    {
+        $repository = new RiddleAttemptRepositoryStub();
+        $service = new RiddleAttemptService($repository);
+
+        $repository->hasSuccessfulAttempt = true;
+        $this->assertNull($service->buildProcessingPlan(7, 10, 'bon', 5, true, false));
+
+        $repository->hasSuccessfulAttempt = false;
+        $this->assertSame(
+            [
+                'charge' => 5,
+                'outcome' => ['user_status' => 'resolue', 'resolved' => true, 'notify' => true],
+            ],
+            $service->buildProcessingPlan(7, 10, 'bon', 5, true, false)
+        );
+        $this->assertSame(
+            [
+                'charge' => 0,
+                'outcome' => ['user_status' => 'echouee', 'resolved' => false, 'notify' => true],
+            ],
+            $service->buildProcessingPlan(7, 10, 'faux', 5, false, true)
+        );
+    }
+
     /**
      * @dataProvider attemptOutcomeProvider
      */

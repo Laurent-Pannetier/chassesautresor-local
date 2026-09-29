@@ -434,14 +434,20 @@ function traiter_tentative(
     bool $envoyer_mail = true
 ): string
 {
-    if ($inserer && !cat_get_riddle_attempt_service()->canCreateAttempt($user_id, $enigme_id, $resultat)) {
+    $attempt_service = cat_get_riddle_attempt_service();
+    $plan = $attempt_service->buildProcessingPlan(
+        $user_id,
+        $enigme_id,
+        $resultat,
+        (int) get_field('enigme_tentative_cout_points', $enigme_id),
+        $inserer,
+        $email_echec
+    );
+    if ($plan === null) {
         return '';
     }
 
-    $cout = cat_get_riddle_attempt_service()->getChargeAmount(
-        (int) get_field('enigme_tentative_cout_points', $enigme_id),
-        $inserer
-    );
+    $cout = $plan['charge'];
     if ($cout > 0) {
         $reason = sprintf(
             __("Tentative de réponse pour l'énigme #%d", 'chassesautresor-com'),
@@ -455,7 +461,7 @@ function traiter_tentative(
         $uid = inserer_tentative($user_id, $enigme_id, $reponse, $resultat, $cout);
     }
 
-    $outcome = cat_get_riddle_attempt_service()->getOutcome($resultat, $email_echec);
+    $outcome = $plan['outcome'];
     enigme_mettre_a_jour_statut_utilisateur($enigme_id, $user_id, $outcome['user_status']);
 
     if ($outcome['resolved']) {

@@ -147,6 +147,24 @@ class RiddleAttemptService
         return $createAttempt ? max(0, $configuredCost) : 0;
     }
 
+    public function buildProcessingPlan(
+        int $userId,
+        int $riddleId,
+        string $result,
+        int $configuredCost,
+        bool $createAttempt,
+        bool $notifyFailure
+    ): ?array {
+        if ($createAttempt && !$this->canCreateAttempt($userId, $riddleId, $result)) {
+            return null;
+        }
+
+        return [
+            'charge' => $this->getChargeAmount($configuredCost, $createAttempt),
+            'outcome' => $this->getOutcome($result, $notifyFailure),
+        ];
+    }
+
     public function getOutcome(string $result, bool $notifyFailure = false): array
     {
         if ($result === 'bon') {
