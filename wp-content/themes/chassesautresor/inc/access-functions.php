@@ -6,15 +6,17 @@ defined('ABSPATH') || exit;
  */
 function utilisateur_peut_voir_statistiques_chasse(int $chasse_id): bool
 {
-    if ($chasse_id <= 0) {
-        return false;
-    }
+    $has_valid_hunt = $chasse_id > 0;
+    $is_administrator = $has_valid_hunt && current_user_can('manage_options');
+    $service = new ChassesAuTresor\Core\Content\HuntAccessService();
 
-    if (current_user_can('manage_options')) {
-        return true;
-    }
-
-    return utilisateur_est_organisateur_associe_a_chasse(get_current_user_id(), $chasse_id);
+    return $service->canViewStatistics(
+        $has_valid_hunt,
+        $is_administrator,
+        $has_valid_hunt
+            && !$is_administrator
+            && utilisateur_est_organisateur_associe_a_chasse(get_current_user_id(), $chasse_id)
+    );
 }
 
 // ==================================================
@@ -1155,29 +1157,19 @@ add_action('wp_ajax_verifier_et_enregistrer_condition_pre_requis', 'verifier_et_
  */
 function chasse_est_visible_pour_utilisateur(int $chasse_id, int $user_id): bool
 {
-    $status = get_post_status($chasse_id);
-    $validation = get_field('chasse_cache_statut_validation', $chasse_id) ?? '';
+    $publication_status = (string) get_post_status($chasse_id);
+    $is_pending = $publication_status === 'pending';
+    $is_administrator = $is_pending && user_can($user_id, 'manage_options');
+    $service = new ChassesAuTresor\Core\Content\HuntAccessService();
 
-    // ✅ Cas 1 : chasse publiée et valide → visible par tous
-    if ($status === 'publish' && $validation === 'valide') {
-        return true;
-    }
-
-    // ✅ Cas 2 : chasse en attente → visible pour admin ou organisateur associé
-    if ($status === 'pending') {
-        if (user_can($user_id, 'manage_options')) {
-            return true;
-        }
-
-        if (utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    // ❌ Tous les autres cas : non visible
-    return false;
+    return $service->canView(
+        $publication_status,
+        (string) get_field('chasse_cache_statut_validation', $chasse_id),
+        $is_administrator,
+        $is_pending
+            && !$is_administrator
+            && utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)
+    );
 }
 
 
