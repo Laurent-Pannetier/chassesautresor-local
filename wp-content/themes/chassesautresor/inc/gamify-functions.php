@@ -16,6 +16,13 @@ if (!class_exists(ChassesAuTresor\Core\Points\ConversionService::class, false)) 
         . '/plugins/chassesautresor-core/src/Points/ConversionService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Progress\HuntProgressService::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Progress/HuntProgressRepository.php';
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Progress/HuntProgressService.php';
+}
+
 /**
  * Create the service responsible for points operations.
  */
@@ -48,6 +55,15 @@ function cat_get_conversion_service(): ChassesAuTresor\Core\Points\ConversionSer
     return new ChassesAuTresor\Core\Points\ConversionService(
         $repository,
         new ChassesAuTresor\Core\Points\PointsService($repository)
+    );
+}
+
+function cat_get_hunt_progress_service(): ChassesAuTresor\Core\Progress\HuntProgressService
+{
+    global $wpdb;
+
+    return new ChassesAuTresor\Core\Progress\HuntProgressService(
+        new ChassesAuTresor\Core\Progress\HuntProgressRepository($wpdb)
     );
 }
 
@@ -304,26 +320,11 @@ function enigme_get_chasse_progression(int $chasse_id, int $user_id): array
         }
     }
 
-    global $wpdb;
-    $resolues = 0;
-
-    if ($validables) {
-        $table        = $wpdb->prefix . 'enigme_statuts_utilisateur';
-        $placeholders = implode(',', array_fill(0, count($validables), '%d'));
-        $sql = "SELECT COUNT(DISTINCT enigme_id) FROM {$table} WHERE user_id = %d AND statut IN ('resolue','terminee','terminée') AND enigme_id IN ($placeholders)";
-        $resolues = (int) $wpdb->get_var($wpdb->prepare($sql, array_merge([$user_id], $validables)));
-    }
-
-    if ($non_validables) {
-        $table_eng    = $wpdb->prefix . 'engagements';
-        $placeholders = implode(',', array_fill(0, count($non_validables), '%d'));
-        $sql = "SELECT COUNT(DISTINCT enigme_id) FROM {$table_eng} WHERE user_id = %d AND enigme_id IN ($placeholders)";
-        $resolues += (int) $wpdb->get_var($wpdb->prepare($sql, array_merge([$user_id], $non_validables)));
-    }
+    $progress = cat_get_hunt_progress_service()->calculate($user_id, $validables, $non_validables);
 
     return [
-        'resolues' => $resolues,
-        'total'    => count($validables) + count($non_validables),
+        'resolues' => $progress['completed'],
+        'total'    => $progress['total'],
     ];
 }
 
@@ -355,24 +356,9 @@ function compter_enigmes_resolues($chasse_id, $user_id): int
         }
     }
 
-    global $wpdb;
-    $resolues = 0;
+    $progress = cat_get_hunt_progress_service()->calculate((int) $user_id, $validables, $non_validables);
 
-    if ($validables) {
-        $table        = $wpdb->prefix . 'enigme_statuts_utilisateur';
-        $placeholders = implode(',', array_fill(0, count($validables), '%d'));
-        $sql = "SELECT COUNT(DISTINCT enigme_id) FROM {$table} WHERE user_id = %d AND statut IN ('resolue','terminee','terminée') AND enigme_id IN ($placeholders)";
-        $resolues = (int) $wpdb->get_var($wpdb->prepare($sql, array_merge([$user_id], $validables)));
-    }
-
-    if ($non_validables) {
-        $table_eng    = $wpdb->prefix . 'engagements';
-        $placeholders = implode(',', array_fill(0, count($non_validables), '%d'));
-        $sql = "SELECT COUNT(DISTINCT enigme_id) FROM {$table_eng} WHERE user_id = %d AND enigme_id IN ($placeholders)";
-        $resolues += (int) $wpdb->get_var($wpdb->prepare($sql, array_merge([$user_id], $non_validables)));
-    }
-
-    return $resolues;
+    return $progress['completed'];
 }
 
 /**
@@ -420,26 +406,9 @@ function verifier_fin_de_chasse($user_id, $enigme_id)
         }
     }
 
-    global $wpdb;
-    $nb_resolues = 0;
+    $progress = cat_get_hunt_progress_service()->calculate((int) $user_id, $validables, $non_validables);
 
-    if ($validables) {
-        $table        = $wpdb->prefix . 'enigme_statuts_utilisateur';
-        $placeholders = implode(',', array_fill(0, count($validables), '%d'));
-        $sql = "SELECT COUNT(DISTINCT enigme_id) FROM {$table} WHERE user_id = %d AND statut IN ('resolue','terminee','terminée') AND enigme_id IN ($placeholders)";
-        $nb_resolues  = (int) $wpdb->get_var($wpdb->prepare($sql, array_merge([$user_id], $validables)));
-    }
-
-    $engagements_ok = true;
-    if ($non_validables) {
-        $table_eng    = $wpdb->prefix . 'engagements';
-        $placeholders = implode(',', array_fill(0, count($non_validables), '%d'));
-        $sql = "SELECT COUNT(DISTINCT enigme_id) FROM {$table_eng} WHERE user_id = %d AND enigme_id IN ($placeholders)";
-        $nb_engagees  = (int) $wpdb->get_var($wpdb->prepare($sql, array_merge([$user_id], $non_validables)));
-        $engagements_ok = ($nb_engagees === count($non_validables));
-    }
-
-    if ($nb_resolues === count($validables) && $engagements_ok) {
+    if ($progress['is_complete']) {
         gerer_chasse_terminee($chasse_id);
     }
 }
