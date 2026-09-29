@@ -246,6 +246,15 @@ class RiddleAttemptServiceTest extends TestCase
         $this->assertTrue($service->canCreateAttempt(7, 10, 'bon'));
     }
 
+    public function testAttemptChargeIsNormalizedAndOnlyAppliedOnCreation(): void
+    {
+        $service = new RiddleAttemptService(new RiddleAttemptRepositoryStub());
+
+        $this->assertSame(5, $service->getChargeAmount(5, true));
+        $this->assertSame(0, $service->getChargeAmount(-5, true));
+        $this->assertSame(0, $service->getChargeAmount(5, false));
+    }
+
     /**
      * @dataProvider attemptOutcomeProvider
      */

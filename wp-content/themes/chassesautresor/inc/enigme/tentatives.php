@@ -438,9 +438,15 @@ function traiter_tentative(
         return '';
     }
 
-    $cout = (int) get_field('enigme_tentative_cout_points', $enigme_id);
-    if ($cout > 0 && $inserer) {
-        $reason = sprintf("Tentative de réponse pour l'énigme #%d", $enigme_id);
+    $cout = cat_get_riddle_attempt_service()->getChargeAmount(
+        (int) get_field('enigme_tentative_cout_points', $enigme_id),
+        $inserer
+    );
+    if ($cout > 0) {
+        $reason = sprintf(
+            __("Tentative de réponse pour l'énigme #%d", 'chassesautresor-com'),
+            $enigme_id
+        );
         deduire_points_utilisateur($user_id, $cout, $reason, 'tentative', $enigme_id);
     }
 

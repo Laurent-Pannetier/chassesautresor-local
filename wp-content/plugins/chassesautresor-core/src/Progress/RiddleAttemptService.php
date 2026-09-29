@@ -142,6 +142,11 @@ class RiddleAttemptService
         return !$this->hasSuccessfulAttempt($userId, $riddleId);
     }
 
+    public function getChargeAmount(int $configuredCost, bool $createAttempt): int
+    {
+        return $createAttempt ? max(0, $configuredCost) : 0;
+    }
+
     public function getOutcome(string $result, bool $notifyFailure = false): array
     {
         if ($result === 'bon') {
