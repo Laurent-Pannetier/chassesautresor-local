@@ -59,6 +59,31 @@ class HuntStatusServiceTest extends TestCase
         $this->assertSame('a_venir', $this->calculate('valide', null, null, null, 0, false, 'a_venir'));
     }
 
+    public function testInvalidStatusFallsBackToRevisionWhenHuntHasNoStartDate(): void
+    {
+        $this->assertSame('revision', $this->calculate('valide', null, null, null, 0, false, 'inconnu'));
+    }
+
+    public function testInvalidPersistedStatusIsStale(): void
+    {
+        $this->assertTrue($this->isStale('inconnu', 'valide', null));
+    }
+
+    public function testUpcomingStatusBecomesStaleWhenHuntStarts(): void
+    {
+        $this->assertTrue($this->isStale('a_venir', 'valide', self::NOW));
+    }
+
+    public function testUnlimitedHuntDoesNotBecomeStaleAtItsEndDate(): void
+    {
+        $this->assertFalse($this->isStale('en_cours', 'valide', 1_000, 1_500, null, 0, true));
+    }
+
+    public function testMatchingPersistedStatusIsCurrent(): void
+    {
+        $this->assertFalse($this->isStale('payante', 'valide', 1_000, null, null, 10));
+    }
+
     private function calculate(
         string $validationStatus,
         ?int $startTimestamp,
@@ -77,6 +102,27 @@ class HuntStatusServiceTest extends TestCase
             $isUnlimited,
             self::NOW,
             $currentStatus
+        );
+    }
+
+    private function isStale(
+        string $currentStatus,
+        string $validationStatus,
+        ?int $startTimestamp,
+        ?int $endTimestamp = null,
+        ?int $discoveryTimestamp = null,
+        int $pointCost = 0,
+        bool $isUnlimited = false
+    ): bool {
+        return $this->service->isStale(
+            $currentStatus,
+            $validationStatus,
+            $startTimestamp,
+            $endTimestamp,
+            $discoveryTimestamp,
+            $pointCost,
+            $isUnlimited,
+            self::NOW
         );
     }
 }

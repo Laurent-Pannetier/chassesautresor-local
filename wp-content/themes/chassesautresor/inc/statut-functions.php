@@ -704,41 +704,34 @@ function verifier_ou_mettre_a_jour_cache_complet(int $post_id): void
  */
 function verifier_ou_recalculer_statut_chasse($chasse_id): void
 {
-    if (get_post_type($chasse_id) !== 'chasse') return;
+    if (get_post_type($chasse_id) !== 'chasse') {
+        return;
+    }
 
     static $chasses_traitees = [];
 
-    if (in_array($chasse_id, $chasses_traitees, true)) return;
+    if (in_array($chasse_id, $chasses_traitees, true)) {
+        return;
+    }
     $chasses_traitees[] = $chasse_id;
 
+    $statut           = (string) get_field('chasse_cache_statut', $chasse_id);
+    $validation       = (string) get_field('chasse_cache_statut_validation', $chasse_id);
+    $date_debut_obj   = convertir_en_datetime(get_field('chasse_infos_date_debut', $chasse_id) ?: null);
+    $date_fin_obj     = convertir_en_datetime(get_field('chasse_infos_date_fin', $chasse_id) ?: null);
+    $decouverte_obj   = convertir_en_datetime(get_field('chasse_cache_date_decouverte', $chasse_id) ?: null);
+    $service          = new ChassesAuTresor\Core\Progress\HuntStatusService();
 
-    $statut     = get_field('chasse_cache_statut', $chasse_id);
-    $validation = get_field('chasse_cache_statut_validation', $chasse_id);
-
-    // ⚠️ Validation non valide mais statut différent de "revision"
-    if ($validation !== 'valide' && $statut !== 'revision') {
-        mettre_a_jour_statuts_chasse($chasse_id);
-        chasse_clear_infos_affichage_cache($chasse_id);
-        return;
-    }
-
-    // Si le statut est manquant ou invalide, on le recalcule
-    $statuts_valides = ['revision', 'a_venir', 'en_cours', 'payante', 'termine'];
-    if (!in_array($statut, $statuts_valides, true)) {
-        mettre_a_jour_statuts_chasse($chasse_id);
-        chasse_clear_infos_affichage_cache($chasse_id);
-        return;
-    }
-
-    // On pourrait aller plus loin : vérifier si la date est dépassée
-    $date_fin = get_field('chasse_infos_date_fin', $chasse_id);
-    $illimitee = get_field('chasse_infos_duree_illimitee', $chasse_id);
-    $now = current_time('timestamp');
-    $date_fin = $date_fin ? strtotime($date_fin) : null;
-
-    if (!empty($illimitee)) return;
-
-    if ($statut !== 'termine' && $date_fin && $date_fin < $now) {
+    if ($service->isStale(
+        $statut,
+        $validation,
+        $date_debut_obj ? $date_debut_obj->getTimestamp() : null,
+        $date_fin_obj ? $date_fin_obj->getTimestamp() : null,
+        $decouverte_obj ? $decouverte_obj->getTimestamp() : null,
+        (int) get_field('chasse_infos_cout_points', $chasse_id),
+        !empty(get_field('chasse_infos_duree_illimitee', $chasse_id)),
+        (int) current_time('timestamp')
+    )) {
         mettre_a_jour_statuts_chasse($chasse_id);
         chasse_clear_infos_affichage_cache($chasse_id);
     }
