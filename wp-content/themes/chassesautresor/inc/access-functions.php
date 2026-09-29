@@ -697,46 +697,24 @@ function utilisateur_peut_ajouter_chasse(int $organisateur_id): bool
  */
 function utilisateur_peut_voir_panneau(int $post_id): bool
 {
-    if (!is_user_logged_in()) {
-        return false;
-    }
+    $is_authenticated = is_user_logged_in();
+    $is_administrator = $is_authenticated && current_user_can('manage_options');
+    $user = $is_authenticated ? wp_get_current_user() : null;
+    $is_organizer = $user !== null && !$is_administrator && est_organisateur($user->ID);
+    $can_modify_content = $is_administrator || ($is_organizer && utilisateur_peut_modifier_post($post_id));
+    $content_type = $is_authenticated ? (string) get_post_type($post_id) : '';
+    $service = new ChassesAuTresor\Core\Content\ContentPanelAccessService();
 
-    // ✅ Les administrateurs ont toujours accès aux panneaux
-    if (current_user_can('manage_options')) {
-        return true;
-    }
-
-    $user  = wp_get_current_user();
-
-    if (!est_organisateur($user->ID)) {
-        return false;
-    }
-
-    if (!utilisateur_peut_modifier_post($post_id)) {
-        return false; // Vérifie la liaison utilisateur ↔ CPT
-    }
-
-    $type   = get_post_type($post_id);
-    $status = get_post_status($post_id);
-
-    switch ($type) {
-        case 'organisateur':
-            return in_array($status, ['publish', 'pending'], true);
-
-        case 'chasse':
-            $val = get_field('chasse_cache_statut_validation', $post_id) ?? '';
-
-            return in_array($status, ['publish', 'pending'], true) && $val !== 'banni';
-
-        case 'enigme':
-            $etat = get_field('enigme_cache_etat_systeme', $post_id);
-            return in_array($status, ['publish', 'pending'], true) && $etat !== 'cache_invalide';
-
-        case 'indice':
-            return in_array($status, ['publish', 'pending'], true);
-    }
-
-    return false;
+    return $service->canView(
+        $is_authenticated,
+        $is_administrator,
+        $is_organizer,
+        $can_modify_content,
+        $content_type,
+        $is_authenticated ? (string) get_post_status($post_id) : '',
+        $content_type === 'chasse' ? (string) get_field('chasse_cache_statut_validation', $post_id) : '',
+        $content_type === 'enigme' ? (string) get_field('enigme_cache_etat_systeme', $post_id) : ''
+    );
 }
 
 /**
