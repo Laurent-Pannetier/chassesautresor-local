@@ -61,4 +61,16 @@ class RiddleAttemptRepositoryTest extends TestCase
         $wpdb->updateResult = 0;
         $this->assertFalse($repository->markPendingAsProcessed('attempt-1', 'faux'));
     }
+
+    public function testSuccessfulAttemptLookupUsesUserAndRiddleIdentifiers(): void
+    {
+        $wpdb = new RiddleAttemptWpdbStub();
+        $repository = new RiddleAttemptRepository($wpdb);
+
+        $this->assertFalse($repository->hasSuccessfulAttempt(7, 10));
+        $this->assertSame([7, 10], $wpdb->preparedArguments);
+
+        $wpdb->status = '1';
+        $this->assertTrue($repository->hasSuccessfulAttempt(7, 10));
+    }
 }

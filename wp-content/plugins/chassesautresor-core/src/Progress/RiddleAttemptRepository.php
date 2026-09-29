@@ -74,6 +74,21 @@ class RiddleAttemptRepository
         return $updated === 1;
     }
 
+    public function hasSuccessfulAttempt(int $userId, int $riddleId): bool
+    {
+        $table = $this->wpdb->prefix . 'enigme_tentatives';
+        $attemptId = $this->wpdb->get_var(
+            $this->wpdb->prepare(
+                "SELECT 1 FROM {$table} "
+                    . "WHERE user_id = %d AND enigme_id = %d AND resultat = 'bon' LIMIT 1",
+                $userId,
+                $riddleId
+            )
+        );
+
+        return $attemptId !== null;
+    }
+
     public function countForRiddle(int $riddleId): int
     {
         $table = $this->wpdb->prefix . 'enigme_tentatives';

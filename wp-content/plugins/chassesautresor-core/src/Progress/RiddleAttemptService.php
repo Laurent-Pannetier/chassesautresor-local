@@ -97,6 +97,15 @@ class RiddleAttemptService
         return $this->repository->markPendingAsProcessed($uid, $result);
     }
 
+    public function hasSuccessfulAttempt(int $userId, int $riddleId): bool
+    {
+        if ($userId <= 0 || $riddleId <= 0) {
+            return false;
+        }
+
+        return $this->repository->hasSuccessfulAttempt($userId, $riddleId);
+    }
+
     public function countForRiddle(int $riddleId): int
     {
         return $riddleId > 0 ? $this->repository->countForRiddle($riddleId) : 0;

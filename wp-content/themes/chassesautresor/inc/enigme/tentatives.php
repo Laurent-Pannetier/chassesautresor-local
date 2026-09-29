@@ -441,21 +441,12 @@ function traiter_tentative(
     bool $envoyer_mail = true
 ): string
 {
-    global $wpdb;
-    $table = $wpdb->prefix . 'enigme_tentatives';
-
-    if ($resultat === 'bon' && $inserer) {
-        $existe = (int) $wpdb->get_var(
-            $wpdb->prepare(
-                "SELECT COUNT(*) FROM {$table} WHERE user_id = %d AND enigme_id = %d AND resultat = 'bon'",
-                $user_id,
-                $enigme_id
-            )
-        );
-
-        if ($existe > 0) {
-            return '';
-        }
+    if (
+        $resultat === 'bon'
+        && $inserer
+        && cat_get_riddle_attempt_service()->hasSuccessfulAttempt($user_id, $enigme_id)
+    ) {
+        return '';
     }
 
     $cout = (int) get_field('enigme_tentative_cout_points', $enigme_id);

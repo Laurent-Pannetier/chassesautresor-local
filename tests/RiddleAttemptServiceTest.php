@@ -21,6 +21,7 @@ class RiddleAttemptRepositoryStub extends RiddleAttemptRepository
     public ?string $userRiddleStatus = null;
     public array $processArguments = [];
     public bool $processResult = true;
+    public bool $hasSuccessfulAttempt = false;
 
     public function __construct()
     {
@@ -65,6 +66,12 @@ class RiddleAttemptRepositoryStub extends RiddleAttemptRepository
     {
         $this->processArguments = [$uid, $result];
         return $this->processResult;
+    }
+
+    public function hasSuccessfulAttempt(int $userId, int $riddleId): bool
+    {
+        $this->countArguments = [$userId, $riddleId];
+        return $this->hasSuccessfulAttempt;
     }
 
     public function countPendingForRiddle(int $riddleId): int
@@ -171,6 +178,18 @@ class RiddleAttemptServiceTest extends TestCase
 
         $repository->processResult = false;
         $this->assertFalse($service->processPending('attempt-1', 'faux'));
+    }
+
+    public function testSuccessfulAttemptLookupIsValidatedAndDelegated(): void
+    {
+        $repository = new RiddleAttemptRepositoryStub();
+        $repository->hasSuccessfulAttempt = true;
+        $service = new RiddleAttemptService($repository);
+
+        $this->assertTrue($service->hasSuccessfulAttempt(7, 10));
+        $this->assertSame([7, 10], $repository->countArguments);
+        $this->assertFalse($service->hasSuccessfulAttempt(0, 10));
+        $this->assertFalse($service->hasSuccessfulAttempt(7, 0));
     }
 
     public function testRiddleCountersAreValidatedAndDelegated(): void
