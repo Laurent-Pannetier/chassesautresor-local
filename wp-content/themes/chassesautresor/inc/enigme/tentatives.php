@@ -303,19 +303,10 @@ if (!function_exists('cat_get_riddle_attempt_service')) {
      * @param string $uid
      * @return string 'attente' | 'validee' | 'refusee' | 'invalide' | 'inexistante'
      */
-function get_etat_tentative(string $uid): string
+    function get_etat_tentative(string $uid): string
     {
-        global $wpdb;
-        $table = $wpdb->prefix . 'enigme_tentatives';
-        $resultat = $wpdb->get_var($wpdb->prepare("SELECT resultat FROM $table WHERE tentative_uid = %s", $uid));
-
-        if ($resultat === null) return 'inexistante';
-        if ($resultat === 'attente') return 'attente';
-        if ($resultat === 'bon') return 'validee';
-        if ($resultat === 'faux') return 'refusee';
-
-        return 'invalide';
-}
+        return cat_get_riddle_attempt_service()->getStateByUid($uid);
+    }
 
 /**
  * Récupère les tentatives enregistrées pour une énigme.

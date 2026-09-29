@@ -14,6 +14,8 @@ class RiddleAttemptRepositoryStub extends RiddleAttemptRepository
     public array $attempt = [];
     public string $uid = '';
     public array $countArguments = [];
+    public ?object $foundAttempt = null;
+    public bool $returnConfiguredAttempt = false;
 
     public function __construct()
     {
@@ -28,6 +30,11 @@ class RiddleAttemptRepositoryStub extends RiddleAttemptRepository
     public function findByUid(string $uid): ?object
     {
         $this->uid = $uid;
+
+        if ($this->returnConfiguredAttempt) {
+            return $this->foundAttempt;
+        }
+
         return (object) ['tentative_uid' => $uid];
     }
 
@@ -75,6 +82,31 @@ class RiddleAttemptServiceTest extends TestCase
         $this->assertSame('uid-1', $service->findByUid(' uid-1 ')->tentative_uid);
         $this->assertSame('uid-1', $repository->uid);
         $this->assertNull($service->findByUid('  '));
+    }
+
+    /**
+     * @dataProvider attemptStateProvider
+     */
+    public function testAttemptStateIsDerivedFromStoredResult(?string $result, string $expectedState): void
+    {
+        $repository = new RiddleAttemptRepositoryStub();
+        $repository->returnConfiguredAttempt = true;
+        $repository->foundAttempt = $result === null ? null : (object) ['resultat' => $result];
+        $service = new RiddleAttemptService($repository);
+
+        $this->assertSame($expectedState, $service->getStateByUid(' attempt-1 '));
+        $this->assertSame('attempt-1', $repository->uid);
+    }
+
+    public function attemptStateProvider(): array
+    {
+        return [
+            'missing attempt' => [null, 'inexistante'],
+            'pending attempt' => ['attente', 'attente'],
+            'successful attempt' => ['bon', 'validee'],
+            'failed attempt' => ['faux', 'refusee'],
+            'unknown result' => ['autre', 'invalide'],
+        ];
     }
 
     public function testRiddleCountersAreValidatedAndDelegated(): void

@@ -53,6 +53,22 @@ class RiddleAttemptService
         return $uid !== '' ? $this->repository->findByUid($uid) : null;
     }
 
+    public function getStateByUid(string $uid): string
+    {
+        $attempt = $this->findByUid($uid);
+        if ($attempt === null || !isset($attempt->resultat)) {
+            return 'inexistante';
+        }
+
+        $states = [
+            'attente' => 'attente',
+            'bon' => 'validee',
+            'faux' => 'refusee',
+        ];
+
+        return $states[$attempt->resultat] ?? 'invalide';
+    }
+
     public function countForRiddle(int $riddleId): int
     {
         return $riddleId > 0 ? $this->repository->countForRiddle($riddleId) : 0;
