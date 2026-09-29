@@ -19,6 +19,8 @@ require_once __DIR__ . '/src/Progress/HuntProgressRepository.php';
 require_once __DIR__ . '/src/Progress/HuntProgressService.php';
 require_once __DIR__ . '/src/Progress/HuntRiddleClassifier.php';
 require_once __DIR__ . '/src/Progress/HuntCompletionService.php';
+require_once __DIR__ . '/src/Progress/HuntWinnerRepository.php';
+require_once __DIR__ . '/src/Progress/HuntWinnersTable.php';
 require_once __DIR__ . '/src/Messages/UserMessageRepository.php';
 require_once __DIR__ . '/src/Messages/SiteMessageService.php';
 require_once __DIR__ . '/src/Messages/AccountMessageService.php';
@@ -45,6 +47,11 @@ register_activation_hook(
 
 register_activation_hook(
     __FILE__,
+    [ChassesAuTresor\Core\Progress\HuntWinnersTable::class, 'install']
+);
+
+register_activation_hook(
+    __FILE__,
     [ChassesAuTresor\Core\Messages\UserMessagesCleanup::class, 'schedule']
 );
 
@@ -61,6 +68,11 @@ add_action(
 add_action(
     'plugins_loaded',
     [ChassesAuTresor\Core\Points\PointsTable::class, 'maybeUpgrade']
+);
+
+add_action(
+    'plugins_loaded',
+    [ChassesAuTresor\Core\Progress\HuntWinnersTable::class, 'maybeUpgrade']
 );
 
 add_action(

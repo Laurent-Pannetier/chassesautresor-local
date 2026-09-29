@@ -3,6 +3,16 @@ defined('ABSPATH') || exit;
 
 require_once __DIR__ . '/badge-functions.php';
 
+if (!class_exists(ChassesAuTresor\Core\Progress\HuntWinnerRepository::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Progress/HuntWinnerRepository.php';
+}
+
+if (!class_exists(ChassesAuTresor\Core\Progress\HuntWinnersTable::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Progress/HuntWinnersTable.php';
+}
+
 //
 // 1. 📦 FONCTIONS LIÉES À UNE CHASSE
 // 2. 📦 AFFICHAGE
@@ -45,23 +55,18 @@ function recuperer_infos_chasse($chasse_id)
  */
 function chasse_install_winners_table(): void
 {
-    global $wpdb;
-    $table = $wpdb->prefix . 'chasse_winners';
-    $charset_collate = $wpdb->get_charset_collate();
-
-    $sql = "CREATE TABLE {$table} (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        user_id BIGINT NOT NULL,
-        chasse_id BIGINT NOT NULL,
-        date_win DATETIME NOT NULL,
-        UNIQUE KEY user_chasse (user_id, chasse_id),
-        KEY chasse_id (chasse_id)
-    ) {$charset_collate};";
-
-    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-    dbDelta($sql);
+    ChassesAuTresor\Core\Progress\HuntWinnersTable::install();
 }
-add_action('after_switch_theme', 'chasse_install_winners_table');
+
+/**
+ * Create the repository responsible for hunt winners.
+ */
+function cat_get_hunt_winner_repository(): ChassesAuTresor\Core\Progress\HuntWinnerRepository
+{
+    global $wpdb;
+
+    return new ChassesAuTresor\Core\Progress\HuntWinnerRepository($wpdb);
+}
 
 /**
  * Insert or update a hunt winner.
@@ -73,18 +78,7 @@ add_action('after_switch_theme', 'chasse_install_winners_table');
  */
 function enregistrer_gagnant_chasse(int $user_id, int $chasse_id, string $date_win): void
 {
-    global $wpdb;
-    $table = $wpdb->prefix . 'chasse_winners';
-
-    $wpdb->replace(
-        $table,
-        [
-            'user_id'  => $user_id,
-            'chasse_id' => $chasse_id,
-            'date_win' => $date_win,
-        ],
-        ['%d', '%d', '%s']
-    );
+    cat_get_hunt_winner_repository()->save($user_id, $chasse_id, $date_win);
 }
 
 /**
@@ -95,12 +89,7 @@ function enregistrer_gagnant_chasse(int $user_id, int $chasse_id, string $date_w
  */
 function compter_chasses_gagnees(int $user_id): int
 {
-    global $wpdb;
-    $table = $wpdb->prefix . 'chasse_winners';
-
-    return (int) $wpdb->get_var(
-        $wpdb->prepare("SELECT COUNT(*) FROM {$table} WHERE user_id = %d", $user_id)
-    );
+    return cat_get_hunt_winner_repository()->countByUser($user_id);
 }
 
 /**
