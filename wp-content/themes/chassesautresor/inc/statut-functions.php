@@ -180,70 +180,26 @@ function enigme_pre_requis_remplis(int $enigme_id, int $user_id): bool
  */
 function enigme_verifier_verrouillage(int $enigme_id, int $user_id): array
 {
-    $resultat = [
-        'est_verrouillee'   => false,
-        'motif'             => 'aucun',
-        'date_deblocage'    => null,
-        'timestamp_restant' => null,
-        'cout_points'       => null,
-        'message_variante'  => null,
-    ];
+    $statut = $user_id > 0 ? enigme_get_statut_utilisateur($enigme_id, $user_id) : '';
 
-    if ($user_id === 0) {
-        return array_merge($resultat, [
-            'est_verrouillee' => true,
-            'motif'           => 'utilisateur_non_connecte',
-        ]);
+    $unlockTimestamp = null;
+    $formattedUnlockDate = null;
+    if ($statut === 'bloquee_date') {
+        $access = get_field('enigme_acces', $enigme_id);
+        $dateString = is_array($access) ? ($access['enigme_acces_date'] ?? null) : null;
+        $date = $dateString ? convertir_en_datetime($dateString) : null;
+        if ($date) {
+            $unlockTimestamp = $date->getTimestamp();
+            $formattedUnlockDate = $date->format('d/m/Y à H\hi');
+        }
     }
 
-    $statut = enigme_get_statut_utilisateur($enigme_id, $user_id);
-
-    switch ($statut) {
-        case 'bloquee_date':
-            $date_str = get_field('enigme_acces')['enigme_acces_date'] ?? null;
-            if ($date_str) {
-                $date_obj = convertir_en_datetime($date_str);
-                if ($date_obj && $date_obj->getTimestamp() > time()) {
-                    return array_merge($resultat, [
-                        'est_verrouillee'   => true,
-                        'motif'             => 'date_future',
-                        'date_deblocage'    => $date_obj->format('d/m/Y à H\hi'),
-                        'timestamp_restant' => $date_obj->getTimestamp() - time(),
-                    ]);
-                }
-            }
-            return array_merge($resultat, [
-                'est_verrouillee' => true,
-                'motif'           => 'date_non_definie',
-            ]);
-
-        case 'bloquee_pre_requis':
-            return array_merge($resultat, [
-                'est_verrouillee' => true,
-                'motif'           => 'pre_requis',
-            ]);
-
-        case 'bloquee_chasse':
-            return array_merge($resultat, [
-                'est_verrouillee' => true,
-                'motif'           => 'chasse_indisponible',
-            ]);
-
-        case 'non_souscrite':
-            return array_merge($resultat, [
-                'est_verrouillee' => true,
-                'motif'           => 'non_souscrit',
-            ]);
-
-        case 'invalide':
-            return array_merge($resultat, [
-                'est_verrouillee' => true,
-                'motif'           => 'erreur_configuration',
-            ]);
-
-        default:
-            return $resultat;
-    }
+    return cat_get_hunt_progress_service()->getRiddleLockState(
+        $user_id,
+        $statut,
+        $unlockTimestamp,
+        $formattedUnlockDate
+    );
 }
 
 

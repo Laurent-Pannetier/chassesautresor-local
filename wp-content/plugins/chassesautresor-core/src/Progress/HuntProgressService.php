@@ -88,6 +88,68 @@ class HuntProgressService
         return true;
     }
 
+    /**
+     * @return array{
+     *     est_verrouillee:bool,
+     *     motif:string,
+     *     date_deblocage:?string,
+     *     timestamp_restant:?int,
+     *     cout_points:?int,
+     *     message_variante:?string
+     * }
+     */
+    public function getRiddleLockState(
+        int $userId,
+        string $status,
+        ?int $unlockTimestamp = null,
+        ?string $formattedUnlockDate = null,
+        ?int $currentTimestamp = null
+    ): array {
+        $result = [
+            'est_verrouillee' => false,
+            'motif' => 'aucun',
+            'date_deblocage' => null,
+            'timestamp_restant' => null,
+            'cout_points' => null,
+            'message_variante' => null,
+        ];
+
+        if ($userId <= 0) {
+            $result['est_verrouillee'] = true;
+            $result['motif'] = 'utilisateur_non_connecte';
+            return $result;
+        }
+
+        $status = $this->normalizeStatus($status);
+        $reasons = [
+            'bloquee_pre_requis' => 'pre_requis',
+            'bloquee_chasse' => 'chasse_indisponible',
+            'non_souscrite' => 'non_souscrit',
+            'invalide' => 'erreur_configuration',
+        ];
+
+        if ($status === 'bloquee_date') {
+            $currentTimestamp = $currentTimestamp ?? time();
+            $result['est_verrouillee'] = true;
+            if ($unlockTimestamp !== null && $unlockTimestamp > $currentTimestamp) {
+                $result['motif'] = 'date_future';
+                $result['date_deblocage'] = $formattedUnlockDate;
+                $result['timestamp_restant'] = $unlockTimestamp - $currentTimestamp;
+                return $result;
+            }
+
+            $result['motif'] = 'date_non_definie';
+            return $result;
+        }
+
+        if (isset($reasons[$status])) {
+            $result['est_verrouillee'] = true;
+            $result['motif'] = $reasons[$status];
+        }
+
+        return $result;
+    }
+
     public function deleteRiddleStatuses(int $riddleId): int
     {
         return $riddleId > 0 ? $this->repository->deleteStatusesForRiddle($riddleId) : 0;

@@ -180,6 +180,33 @@ class HuntProgressServiceTest extends TestCase
         $this->assertFalse($service->areRiddlePrerequisitesMet(7, [0, -1], 'pre_requis'));
     }
 
+    public function testRiddleLockStateMapsBusinessStatuses(): void
+    {
+        $service = new HuntProgressService(new HuntProgressRepositoryStub());
+
+        $this->assertSame('utilisateur_non_connecte', $service->getRiddleLockState(0, 'en_cours')['motif']);
+        $this->assertSame('pre_requis', $service->getRiddleLockState(7, 'bloquee_pre_requis')['motif']);
+        $this->assertSame('chasse_indisponible', $service->getRiddleLockState(7, 'bloquee_chasse')['motif']);
+        $this->assertSame('non_souscrit', $service->getRiddleLockState(7, 'non_souscrite')['motif']);
+        $this->assertSame('erreur_configuration', $service->getRiddleLockState(7, 'invalide')['motif']);
+        $this->assertFalse($service->getRiddleLockState(7, 'en_cours')['est_verrouillee']);
+    }
+
+    public function testRiddleDateLockIncludesRemainingTime(): void
+    {
+        $service = new HuntProgressService(new HuntProgressRepositoryStub());
+        $state = $service->getRiddleLockState(7, 'bloquee_date', 2000, 'date', 1500);
+
+        $this->assertTrue($state['est_verrouillee']);
+        $this->assertSame('date_future', $state['motif']);
+        $this->assertSame('date', $state['date_deblocage']);
+        $this->assertSame(500, $state['timestamp_restant']);
+        $this->assertSame(
+            'date_non_definie',
+            $service->getRiddleLockState(7, 'bloquee_date', 1000, 'date', 1500)['motif']
+        );
+    }
+
     public function testRiddleStatusDeletionIsValidatedAndDelegated(): void
     {
         $repository = new HuntProgressRepositoryStub();
