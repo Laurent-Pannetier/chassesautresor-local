@@ -14,6 +14,21 @@ function cat_get_riddle_statistics_service(): ChassesAuTresor\Core\Progress\Ridd
     );
 }
 
+function enigme_stats_excluded_user_ids(int $enigme_id): array
+{
+    $excluded = function_exists('get_users') ? get_users(['role' => 'administrator', 'fields' => 'ids']) : [];
+    if (
+        function_exists('recuperer_id_chasse_associee')
+        && function_exists('get_organisateur_from_chasse')
+        && function_exists('get_field')
+    ) {
+        $huntId = (int) recuperer_id_chasse_associee($enigme_id);
+        $organizerId = $huntId ? get_organisateur_from_chasse($huntId) : 0;
+        $excluded = array_merge($excluded, $organizerId ? (array) get_field('utilisateurs_associes', $organizerId) : []);
+    }
+    return array_values(array_unique(array_filter(array_map('intval', $excluded))));
+}
+
 function enigme_stats_date_range(string $periode): array {
     $tz = new DateTimeZone('Europe/Paris');
     $now = new DateTime('now', $tz);
@@ -34,19 +49,13 @@ function enigme_stats_date_range(string $periode): array {
 }
 
 function enigme_compter_joueurs_engages(int $enigme_id, string $periode = 'total'): int {
-    global $wpdb;
-    $table = $wpdb->prefix . 'engagements';
-    $where = 'enigme_id = %d';
-    $params = [$enigme_id];
-    if ($periode !== 'total') {
-        list($debut, $fin) = enigme_stats_date_range($periode);
-        if ($debut && $fin) {
-            $where .= ' AND date_engagement BETWEEN %s AND %s';
-            array_push($params, $debut, $fin);
-        }
-    }
-    $sql = $wpdb->prepare("SELECT COUNT(DISTINCT user_id) FROM $table WHERE $where", ...$params);
-    return (int) $wpdb->get_var($sql);
+    [$debut, $fin] = $periode === 'total' ? [null, null] : enigme_stats_date_range($periode);
+    return cat_get_riddle_statistics_service()->countEngagedPlayers(
+        $enigme_id,
+        $debut,
+        $fin,
+        enigme_stats_excluded_user_ids($enigme_id)
+    );
 }
 
 function enigme_compter_tentatives(int $enigme_id, string $mode = 'automatique', string $periode = 'total'): int {

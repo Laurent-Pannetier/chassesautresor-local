@@ -27,4 +27,15 @@ class RiddleStatisticsService
     {
         return $id > 0 ? $this->repository->aggregateAttempts($id, 'COUNT(*)', 'bon', $start, $end) : 0;
     }
+
+    public function countEngagedPlayers(
+        int $id,
+        ?string $start = null,
+        ?string $end = null,
+        array $excludedUserIds = []
+    ): int {
+        return $id > 0
+            ? $this->repository->countEngagedPlayers($id, $start, $end, $excludedUserIds)
+            : 0;
+    }
 }

@@ -17,6 +17,15 @@ class RiddleStatisticsRepositoryStub extends RiddleStatisticsRepository
         $this->arguments = [$id, $expression, $result, $start, $end];
         return 5;
     }
+    public function countEngagedPlayers(
+        int $id,
+        ?string $start = null,
+        ?string $end = null,
+        array $excludedUserIds = []
+    ): int {
+        $this->arguments = [$id, $start, $end, $excludedUserIds];
+        return 3;
+    }
 }
 
 class RiddleStatisticsServiceTest extends TestCase
@@ -30,5 +39,14 @@ class RiddleStatisticsServiceTest extends TestCase
         $this->assertSame(5, $service->sumSpentPoints(10));
         $this->assertSame(5, $service->countCorrectSolutions(10));
         $this->assertSame(0, $service->countAttempts(0));
+    }
+
+    public function testEngagedPlayersExcludeInternalAccounts(): void
+    {
+        $repository = new RiddleStatisticsRepositoryStub();
+        $service = new RiddleStatisticsService($repository);
+        $this->assertSame(3, $service->countEngagedPlayers(10, null, null, [1, 2]));
+        $this->assertSame([10, null, null, [1, 2]], $repository->arguments);
+        $this->assertSame(0, $service->countEngagedPlayers(0));
     }
 }
