@@ -348,9 +348,7 @@ function recuperer_tentatives_enigme(int $enigme_id, int $limit = 5, int $offset
  */
 function compter_tentatives_enigme(int $enigme_id): int
 {
-    global $wpdb;
-    $table = $wpdb->prefix . 'enigme_tentatives';
-    return (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table WHERE enigme_id = %d", $enigme_id));
+    return cat_get_riddle_attempt_service()->countForRiddle($enigme_id);
 }
 
 /**
@@ -409,13 +407,7 @@ function ajax_lister_tentatives_enigme()
  */
 function compter_tentatives_en_attente(int $enigme_id): int
 {
-    global $wpdb;
-    $table = $wpdb->prefix . 'enigme_tentatives';
-    $query = $wpdb->prepare(
-        "SELECT COUNT(*) FROM $table WHERE enigme_id = %d AND resultat = 'attente' AND traitee = 0",
-        $enigme_id
-    );
-    return (int) $wpdb->get_var($query);
+    return cat_get_riddle_attempt_service()->countPendingForRiddle($enigme_id);
 }
 
 /**
@@ -459,22 +451,7 @@ function recuperer_enigmes_tentatives_en_attente(int $organisateur_id): array
  */
 function compter_tentatives_du_jour(int $user_id, int $enigme_id): int
 {
-    global $wpdb;
-    $table = $wpdb->prefix . 'enigme_tentatives';
-
-    $tz = new DateTimeZone('Europe/Paris');
-    $debut = (new DateTime('now', $tz))->setTime(0, 0)->format('Y-m-d H:i:s');
-    $fin   = (new DateTime('now', $tz))->setTime(23, 59, 59)->format('Y-m-d H:i:s');
-
-    $query = $wpdb->prepare(
-        "SELECT COUNT(*) FROM $table WHERE user_id = %d AND enigme_id = %d AND date_tentative BETWEEN %s AND %s",
-        $user_id,
-        $enigme_id,
-        $debut,
-        $fin
-    );
-
-    return (int) $wpdb->get_var($query);
+    return cat_get_riddle_attempt_service()->countTodayForUser($user_id, $enigme_id);
 }
 
 /**

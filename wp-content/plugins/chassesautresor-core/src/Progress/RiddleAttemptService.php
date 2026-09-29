@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Progress;
 
+use DateTimeImmutable;
+use DateTimeInterface;
+use DateTimeZone;
+
 /**
  * Manage individual riddle attempts.
  */
@@ -47,5 +51,34 @@ class RiddleAttemptService
         $uid = trim($uid);
 
         return $uid !== '' ? $this->repository->findByUid($uid) : null;
+    }
+
+    public function countForRiddle(int $riddleId): int
+    {
+        return $riddleId > 0 ? $this->repository->countForRiddle($riddleId) : 0;
+    }
+
+    public function countPendingForRiddle(int $riddleId): int
+    {
+        return $riddleId > 0 ? $this->repository->countPendingForRiddle($riddleId) : 0;
+    }
+
+    public function countTodayForUser(int $userId, int $riddleId, ?DateTimeInterface $now = null): int
+    {
+        if ($userId <= 0 || $riddleId <= 0) {
+            return 0;
+        }
+
+        $timezone = new DateTimeZone('Europe/Paris');
+        $current = $now === null
+            ? new DateTimeImmutable('now', $timezone)
+            : DateTimeImmutable::createFromInterface($now)->setTimezone($timezone);
+
+        return $this->repository->countForUserAndRiddleBetween(
+            $userId,
+            $riddleId,
+            $current->setTime(0, 0)->format('Y-m-d H:i:s'),
+            $current->setTime(23, 59, 59)->format('Y-m-d H:i:s')
+        );
     }
 }
