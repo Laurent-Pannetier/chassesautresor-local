@@ -651,23 +651,24 @@ function utilisateur_peut_modifier_enigme(int $enigme_id, ?int $user_id = null):
  *
  * @param int      $enigme_id ID de l'énigme à supprimer.
  * @param int|null $user_id   ID utilisateur (optionnel, courant par défaut).
-    $service = new ChassesAuTresor\Core\Content\HuntManagementService();
-        return $service->canCreate(false, false, false, false, false, false, false, false);
-        return $service->canCreate(true, true, false, false, false, false, false, false);
-        return $service->canCreate(true, false, false, false, false, false, false, false);
-    $has_organizer_role = in_array(ROLE_ORGANISATEUR, $roles, true);
-    $has_creation_role = in_array(ROLE_ORGANISATEUR_CREATION, $roles, true);
-    $is_organizer_published = $has_organizer_role && get_post_status($organisateur_id) === 'publish';
-    return $service->canCreate(
-        true,
-        false,
-        true,
-        $has_organizer_role,
-        $has_creation_role,
-        $is_organizer_published,
-        $is_organizer_published && organisateur_a_chasse_pending($organisateur_id),
-        !$has_organizer_role && $has_creation_role && organisateur_a_des_chasses($organisateur_id)
-    );
+ * @return bool True si la suppression est autorisée.
+ */
+function utilisateur_peut_supprimer_enigme(int $enigme_id, ?int $user_id = null): bool
+{
+    if (get_post_type($enigme_id) !== 'enigme') {
+        return false;
+    }
+
+    $user_id = $user_id ?? get_current_user_id();
+    if (!$user_id) {
+        return false;
+    }
+
+    if (!est_organisateur($user_id)) {
+        return false;
+    }
+
+    $chasse_id = recuperer_id_chasse_associee($enigme_id);
     if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
         return false;
     }
@@ -695,8 +696,10 @@ function utilisateur_peut_modifier_enigme(int $enigme_id, ?int $user_id = null):
  */
 function utilisateur_peut_ajouter_chasse(int $organisateur_id): bool
 {
+    $service = new ChassesAuTresor\Core\Content\HuntManagementService();
+
     if (!is_user_logged_in()) {
-        return false;
+        return $service->canCreate(false, false, false, false, false, false, false, false);
     }
 
     $user       = wp_get_current_user();
@@ -705,28 +708,28 @@ function utilisateur_peut_ajouter_chasse(int $organisateur_id): bool
 
     // Administrateur → pas d'ajout via l'interface publique
     if (user_can($user_id, 'manage_options')) {
-        return false;
+        return $service->canCreate(true, true, false, false, false, false, false, false);
     }
 
     // L'utilisateur doit être lié à l'organisateur
     if (!utilisateur_peut_modifier_post($organisateur_id)) {
-        return false;
+        return $service->canCreate(true, false, false, false, false, false, false, false);
     }
 
-    // Organisateur : une seule chasse en attente à la fois une fois publié
-    if (in_array(ROLE_ORGANISATEUR, $roles, true)) {
-        if (get_post_status($organisateur_id) === 'publish' && organisateur_a_chasse_pending($organisateur_id)) {
-            return false;
-        }
-        return true;
-    }
+    $has_organizer_role = in_array(ROLE_ORGANISATEUR, $roles, true);
+    $has_creation_role = in_array(ROLE_ORGANISATEUR_CREATION, $roles, true);
+    $is_organizer_published = $has_organizer_role && get_post_status($organisateur_id) === 'publish';
 
-    // Organisateur en cours de création : uniquement si aucune chasse existante
-    if (in_array(ROLE_ORGANISATEUR_CREATION, $roles, true)) {
-        return !organisateur_a_des_chasses($organisateur_id);
-    }
-
-    return false;
+    return $service->canCreate(
+        true,
+        false,
+        true,
+        $has_organizer_role,
+        $has_creation_role,
+        $is_organizer_published,
+        $is_organizer_published && organisateur_a_chasse_pending($organisateur_id),
+        !$has_organizer_role && $has_creation_role && organisateur_a_des_chasses($organisateur_id)
+    );
 }
 
 /**
