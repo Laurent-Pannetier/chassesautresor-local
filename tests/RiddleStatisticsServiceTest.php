@@ -26,6 +26,16 @@ class RiddleStatisticsRepositoryStub extends RiddleStatisticsRepository
         $this->arguments = [$id, $start, $end, $excludedUserIds];
         return 3;
     }
+    public function listSolvers(int $id, array $excludedUserIds = []): array
+    {
+        $this->arguments = [$id, $excludedUserIds];
+        return [[
+            'user_id' => '7',
+            'username' => 'alice',
+            'resolution_date' => '2026-09-29 10:00:00',
+            'tentatives' => '2',
+        ]];
+    }
 }
 
 class RiddleStatisticsServiceTest extends TestCase
@@ -48,5 +58,19 @@ class RiddleStatisticsServiceTest extends TestCase
         $this->assertSame(3, $service->countEngagedPlayers(10, null, null, [1, 2]));
         $this->assertSame([10, null, null, [1, 2]], $repository->arguments);
         $this->assertSame(0, $service->countEngagedPlayers(0));
+    }
+
+    public function testSolversAreNormalizedAndInternalAccountsExcluded(): void
+    {
+        $repository = new RiddleStatisticsRepositoryStub();
+        $service = new RiddleStatisticsService($repository);
+        $this->assertSame([[
+            'user_id' => 7,
+            'username' => 'alice',
+            'date' => '2026-09-29 10:00:00',
+            'tentatives' => 2,
+        ]], $service->listSolvers(10, [1, 2]));
+        $this->assertSame([10, [1, 2]], $repository->arguments);
+        $this->assertSame([], $service->listSolvers(0));
     }
 }

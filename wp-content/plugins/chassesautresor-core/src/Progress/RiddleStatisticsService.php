@@ -38,4 +38,20 @@ class RiddleStatisticsService
             ? $this->repository->countEngagedPlayers($id, $start, $end, $excludedUserIds)
             : 0;
     }
+
+    public function listSolvers(int $id, array $excludedUserIds = []): array
+    {
+        if ($id <= 0) {
+            return [];
+        }
+        return array_map(
+            static fn (array $row): array => [
+                'user_id' => (int) $row['user_id'],
+                'username' => $row['username'],
+                'date' => $row['resolution_date'],
+                'tentatives' => (int) $row['tentatives'],
+            ],
+            $this->repository->listSolvers($id, $excludedUserIds)
+        );
+    }
 }

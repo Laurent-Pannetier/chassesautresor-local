@@ -75,38 +75,10 @@ function enigme_compter_bonnes_solutions(int $enigme_id, string $mode = 'automat
 
 function enigme_lister_resolveurs(int $enigme_id): array
 {
-    global $wpdb;
-    $table = $wpdb->prefix . 'enigme_tentatives';
-
-    $sql = $wpdb->prepare(
-        "SELECT r.user_id, u.user_login AS username, r.resolution_date, COUNT(*) AS tentatives
-         FROM (
-             SELECT user_id, MIN(date_tentative) AS resolution_date
-             FROM {$table}
-             WHERE enigme_id = %d AND resultat = 'bon'
-             GROUP BY user_id
-         ) r
-         JOIN {$table} t ON t.enigme_id = %d AND t.user_id = r.user_id AND t.date_tentative <= r.resolution_date
-         JOIN {$wpdb->users} u ON u.ID = r.user_id
-         GROUP BY r.user_id, u.user_login, r.resolution_date
-         ORDER BY r.resolution_date ASC",
+    return cat_get_riddle_statistics_service()->listSolvers(
         $enigme_id,
-        $enigme_id
+        enigme_stats_excluded_user_ids($enigme_id)
     );
-
-    $results = $wpdb->get_results($sql, ARRAY_A);
-
-    $solvers = [];
-    foreach ($results as $row) {
-        $solvers[] = [
-            'user_id'    => (int) $row['user_id'],
-            'username'   => $row['username'],
-            'date'       => $row['resolution_date'],
-            'tentatives' => (int) $row['tentatives'],
-        ];
-    }
-
-    return $solvers;
 }
 
 function enigme_lister_participants(
