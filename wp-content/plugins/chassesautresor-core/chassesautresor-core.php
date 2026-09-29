@@ -48,6 +48,7 @@ require_once __DIR__ . '/src/Media/RiddleImageService.php';
 require_once __DIR__ . '/src/Content/RiddleCompletionService.php';
 require_once __DIR__ . '/src/Content/OrganizerCompletionService.php';
 require_once __DIR__ . '/src/Content/HuntCompletionService.php';
+require_once __DIR__ . '/src/Content/HuntFeatureService.php';
 require_once __DIR__ . '/src/Content/HuntPublicationStatusService.php';
 require_once __DIR__ . '/src/Content/HuntValidationService.php';
 require_once __DIR__ . '/src/Content/SolutionAvailabilityService.php';

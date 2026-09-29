@@ -33,6 +33,11 @@ if (!class_exists(ChassesAuTresor\Core\Relationships\HuntRiddleCacheService::cla
         . '/plugins/chassesautresor-core/src/Relationships/HuntRiddleCacheService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HuntFeatureService::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Content/HuntFeatureService.php';
+}
+
 function cat_get_organizer_service(): ChassesAuTresor\Core\Relationships\OrganizerService
 {
     global $wpdb;
@@ -65,6 +70,11 @@ function cat_get_hunt_management_service(): ChassesAuTresor\Core\Content\HuntMan
 function cat_get_hunt_riddle_cache_service(): ChassesAuTresor\Core\Relationships\HuntRiddleCacheService
 {
     return new ChassesAuTresor\Core\Relationships\HuntRiddleCacheService();
+}
+
+function cat_get_hunt_feature_service(): ChassesAuTresor\Core\Content\HuntFeatureService
+{
+    return new ChassesAuTresor\Core\Content\HuntFeatureService();
 }
 
 // 📚 SOMMAIRE DU FICHIER : relations-functions.php
@@ -478,34 +488,26 @@ add_action('save_post_enigme', 'clear_enigmes_chasse_cache', 20, 1);
 
 function recalculate_chasse_cached_flags(int $chasse_id): void
 {
-    $has_solutions = function_exists('solution_existe_pour_objet')
+    $huntHasSolution = function_exists('solution_existe_pour_objet')
         && solution_existe_pour_objet($chasse_id, 'chasse');
-    $has_indices = function_exists('prochain_rang_indice')
+    $huntHasHints = function_exists('prochain_rang_indice')
         && prochain_rang_indice($chasse_id, 'chasse') > 1;
+    $features = cat_get_hunt_feature_service()->summarize(
+        $huntHasSolution,
+        $huntHasHints,
+        recuperer_enigmes_associees($chasse_id),
+        static function (int $riddleId): bool {
+            return function_exists('solution_existe_pour_objet')
+                && solution_existe_pour_objet($riddleId, 'enigme');
+        },
+        static function (int $riddleId): bool {
+            return function_exists('prochain_rang_indice')
+                && prochain_rang_indice($riddleId, 'enigme') > 1;
+        }
+    );
 
-    $enigmes = recuperer_enigmes_associees($chasse_id);
-    foreach ($enigmes as $eid) {
-        if (
-            !$has_solutions
-            && function_exists('solution_existe_pour_objet')
-            && solution_existe_pour_objet($eid, 'enigme')
-        ) {
-            $has_solutions = true;
-        }
-        if (
-            !$has_indices
-            && function_exists('prochain_rang_indice')
-            && prochain_rang_indice($eid, 'enigme') > 1
-        ) {
-            $has_indices = true;
-        }
-        if ($has_solutions && $has_indices) {
-            break;
-        }
-    }
-
-    update_field('chasse_cache_has_solutions', $has_solutions ? 1 : 0, $chasse_id);
-    update_field('chasse_cache_has_indices', $has_indices ? 1 : 0, $chasse_id);
+    update_field('chasse_cache_has_solutions', $features['has_solutions'] ? 1 : 0, $chasse_id);
+    update_field('chasse_cache_has_indices', $features['has_indices'] ? 1 : 0, $chasse_id);
 }
 
 /**
