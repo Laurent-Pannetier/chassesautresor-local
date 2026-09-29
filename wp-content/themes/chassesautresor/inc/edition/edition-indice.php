@@ -26,6 +26,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\HintTitleService::class, false)) 
         . '/plugins/chassesautresor-core/src/Content/HintTitleService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HintCreationService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HintCreationService.php';
+}
+
 function cat_get_hint_query_service(): ChassesAuTresor\Core\Content\HintQueryService
 {
     return new ChassesAuTresor\Core\Content\HintQueryService();
@@ -39,6 +44,11 @@ function cat_get_hint_status_service(): ChassesAuTresor\Core\Content\HintStatusS
 function cat_get_hint_title_service(): ChassesAuTresor\Core\Content\HintTitleService
 {
     return new ChassesAuTresor\Core\Content\HintTitleService();
+}
+
+function cat_get_hint_creation_service(): ChassesAuTresor\Core\Content\HintCreationService
+{
+    return new ChassesAuTresor\Core\Content\HintCreationService();
 }
 
 // ==================================================
@@ -242,7 +252,8 @@ add_action('save_post_indice', 'reordonner_indices_apres_enregistrement', 20, 1)
  */
 function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_id = null)
 {
-    if (!in_array($objet_type, ['chasse', 'enigme'], true)) {
+    $creationService = cat_get_hint_creation_service();
+    if (!$creationService->isSupportedTargetType($objet_type)) {
         return new WP_Error('type_invalide', __('Type de cible invalide.', 'chassesautresor-com'));
     }
 
@@ -269,10 +280,14 @@ function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_i
     $user_id     = $user_id ?? get_current_user_id();
     $indice_rank   = prochain_rang_indice($chasse_id, 'chasse');
     $default_title = build_indice_placeholder_title($chasse_id);
+    $initialState = $creationService->getInitialState(
+        (int) current_time('timestamp'),
+        DAY_IN_SECONDS
+    );
 
     $indice_id = wp_insert_post([
         'post_type'   => 'indice',
-        'post_status' => 'pending',
+        'post_status' => $initialState['post_status'],
         'post_title'  => $default_title,
         'post_author' => $user_id,
     ]);
@@ -288,14 +303,14 @@ function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_i
     if ($objet_type === 'enigme') {
         update_field('indice_enigme_linked', $objet_id, $indice_id);
     }
-    update_field('indice_disponibilite', 'immediate', $indice_id);
+    update_field('indice_disponibilite', $initialState['availability'], $indice_id);
 
-    $date_disponibilite = wp_date('Y-m-d H:i:s', (int) current_time('timestamp') + DAY_IN_SECONDS);
+    $date_disponibilite = wp_date('Y-m-d H:i:s', $initialState['availability_timestamp']);
     update_field('indice_date_disponibilite', $date_disponibilite, $indice_id);
 
-    update_field('indice_cout_points', 0, $indice_id);
-    update_field('indice_cache_complet', false, $indice_id);
-    update_field('indice_cache_etat_systeme', 'desactive', $indice_id);
+    update_field('indice_cout_points', $initialState['points_cost'], $indice_id);
+    update_field('indice_cache_complet', $initialState['complete'], $indice_id);
+    update_field('indice_cache_etat_systeme', $initialState['system_state'], $indice_id);
 
     reordonner_indices($objet_id, $objet_type);
 
