@@ -592,22 +592,19 @@ function utilisateur_peut_ajouter_enigme(int $chasse_id, ?int $user_id = null): 
  */
 function utilisateur_peut_modifier_enigme(int $enigme_id, ?int $user_id = null): bool
 {
-    if (get_post_type($enigme_id) !== 'enigme') return false;
     $user_id = $user_id ?? get_current_user_id();
+    $is_riddle = get_post_type($enigme_id) === 'enigme';
+    $is_administrator = user_can($user_id, 'administrator');
+    $hunt_id = $is_riddle && !$is_administrator ? (int) recuperer_id_chasse_associee($enigme_id) : 0;
+    $has_hunt = $hunt_id > 0 && get_post_type($hunt_id) === 'chasse';
+    $service = new ChassesAuTresor\Core\Content\RiddleManagementService();
 
-    // Admin → accès total
-    if (user_can($user_id, 'administrator')) return true;
-
-    // Récupérer la chasse associée
-    $chasse_id = recuperer_id_chasse_associee($enigme_id);
-    if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') return false;
-
-    // Récupérer l'état de validation de la chasse
-    $statut_validation = get_field('chasse_cache_statut_validation', $chasse_id);
-
-
-    // L'utilisateur doit être associé à l'organisateur de la chasse
-    return utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
+    return $service->canEdit(
+        $is_riddle,
+        $is_administrator,
+        $has_hunt,
+        $has_hunt && utilisateur_est_organisateur_associe_a_chasse($user_id, $hunt_id)
+    );
 }
 
 /**

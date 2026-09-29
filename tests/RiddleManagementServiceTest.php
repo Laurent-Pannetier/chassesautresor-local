@@ -55,6 +55,34 @@ class RiddleManagementServiceTest extends TestCase
         $this->assertTrue($this->canDelete(validationStatus: 'correction'));
     }
 
+    public function testAdministratorCanEditRiddleWithoutHunt(): void
+    {
+        $this->assertTrue($this->service->canEdit(true, true, false, false));
+    }
+
+    public function testAssociatedOrganizerCanEditRiddle(): void
+    {
+        $this->assertTrue($this->service->canEdit(true, false, true, true));
+    }
+
+    /**
+     * @dataProvider deniedEditionProvider
+     */
+    public function testInvalidContextPreventsRiddleEdition(array $context): void
+    {
+        $this->assertFalse($this->service->canEdit(...$context));
+    }
+
+    /** @return array<string, array{array{bool, bool, bool, bool}}> */
+    public function deniedEditionProvider(): array
+    {
+        return [
+            'invalid riddle for administrator' => [[false, true, true, true]],
+            'missing hunt' => [[true, false, false, true]],
+            'unrelated organizer' => [[true, false, true, false]],
+        ];
+    }
+
     /**
      * @dataProvider deniedDeletionProvider
      */

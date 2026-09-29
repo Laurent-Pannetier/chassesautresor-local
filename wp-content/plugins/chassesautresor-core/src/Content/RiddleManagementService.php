@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ChassesAuTresor\Core\Content;
 
 /**
- * Evaluate whether an organizer can add or remove riddles from a hunt.
+ * Evaluate whether a user can add, edit, or remove riddles from a hunt.
  */
 class RiddleManagementService
 {
@@ -47,5 +47,18 @@ class RiddleManagementService
             && $huntStatus === 'revision'
             && in_array($validationStatus, ['creation', 'correction'], true)
             && $isAssociatedOrganizer;
+    }
+
+    public function canEdit(
+        bool $isRiddle,
+        bool $isAdministrator,
+        bool $hasHunt,
+        bool $isAssociatedOrganizer
+    ): bool {
+        if (!$isRiddle) {
+            return false;
+        }
+
+        return $isAdministrator || ($hasHunt && $isAssociatedOrganizer);
     }
 }
