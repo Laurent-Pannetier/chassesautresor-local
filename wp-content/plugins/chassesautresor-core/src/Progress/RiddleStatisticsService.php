@@ -54,4 +54,17 @@ class RiddleStatisticsService
             $this->repository->listSolvers($id, $excludedUserIds)
         );
     }
+
+    public function listParticipants(
+        int $id,
+        array $excludedUserIds,
+        int $limit,
+        int $offset,
+        string $orderBy,
+        string $order
+    ): array {
+        return $id > 0
+            ? $this->repository->listParticipants($id, $excludedUserIds, $limit, $offset, $orderBy, $order)
+            : [];
+    }
 }

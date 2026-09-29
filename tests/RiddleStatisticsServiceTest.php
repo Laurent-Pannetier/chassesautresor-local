@@ -36,6 +36,11 @@ class RiddleStatisticsRepositoryStub extends RiddleStatisticsRepository
             'tentatives' => '2',
         ]];
     }
+    public function listParticipants(int $id, array $excluded, int $limit, int $offset, string $orderBy, string $order): array
+    {
+        $this->arguments = [$id, $excluded, $limit, $offset, $orderBy, $order];
+        return [['user_id' => 7]];
+    }
 }
 
 class RiddleStatisticsServiceTest extends TestCase
@@ -72,5 +77,14 @@ class RiddleStatisticsServiceTest extends TestCase
         ]], $service->listSolvers(10, [1, 2]));
         $this->assertSame([10, [1, 2]], $repository->arguments);
         $this->assertSame([], $service->listSolvers(0));
+    }
+
+    public function testParticipantListIsDelegatedWithSafeParameters(): void
+    {
+        $repository = new RiddleStatisticsRepositoryStub();
+        $service = new RiddleStatisticsService($repository);
+        $this->assertSame([['user_id' => 7]], $service->listParticipants(10, [1, 2], 25, 0, 'date', 'ASC'));
+        $this->assertSame([10, [1, 2], 25, 0, 'date', 'ASC'], $repository->arguments);
+        $this->assertSame([], $service->listParticipants(0, [], 25, 0, 'date', 'ASC'));
     }
 }

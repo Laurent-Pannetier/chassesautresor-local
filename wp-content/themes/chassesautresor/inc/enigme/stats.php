@@ -89,46 +89,14 @@ function enigme_lister_participants(
     string $orderby = 'date',
     string $order = 'ASC'
 ): array {
-    global $wpdb;
-
-    $order = strtoupper($order) === 'DESC' ? 'DESC' : 'ASC';
-    $order_by_sql = $orderby === 'tentatives' ? 'nb_tentatives' : 'date_engagement';
-
-    $table_eng = $wpdb->prefix . 'engagements';
-    $table_tent = $wpdb->prefix . 'enigme_tentatives';
-    $table_stat = $wpdb->prefix . 'enigme_statuts_utilisateur';
-
-    $sql = $wpdb->prepare(
-        "SELECT e.user_id, u.user_login AS username, e.date_engagement,
-                COALESCE(t.nb_tentatives, 0) AS nb_tentatives,
-                r.date_resolution,
-                IF(s.statut IN ('resolue','terminee'), 1, 0) AS trouve
-         FROM {$table_eng} e
-         JOIN {$wpdb->users} u ON e.user_id = u.ID
-         LEFT JOIN (
-             SELECT user_id, COUNT(*) AS nb_tentatives
-             FROM {$table_tent}
-             WHERE enigme_id = %d
-             GROUP BY user_id
-         ) t ON t.user_id = e.user_id
-         LEFT JOIN (
-             SELECT user_id, MIN(date_tentative) AS date_resolution
-             FROM {$table_tent}
-             WHERE enigme_id = %d AND resultat = 'bon'
-             GROUP BY user_id
-         ) r ON r.user_id = e.user_id
-         LEFT JOIN {$table_stat} s ON s.user_id = e.user_id AND s.enigme_id = e.enigme_id
-         WHERE e.enigme_id = %d
-         ORDER BY {$order_by_sql} {$order}
-         LIMIT %d OFFSET %d",
+    return cat_get_riddle_statistics_service()->listParticipants(
         $enigme_id,
-        $enigme_id,
-        $enigme_id,
+        enigme_stats_excluded_user_ids($enigme_id),
         $limit,
-        $offset
+        $offset,
+        $orderby,
+        $order
     );
-
-    return $wpdb->get_results($sql, ARRAY_A);
 }
 
 /**
