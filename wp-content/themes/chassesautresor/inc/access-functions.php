@@ -771,81 +771,39 @@ function utilisateur_peut_editer_champs(int $post_id): bool
  */
 function champ_est_editable($champ, $post_id, $user_id = null)
 {
-    if (!$post_id || !is_user_logged_in()) return false;
+    $has_valid_context = (bool) $post_id && is_user_logged_in();
+    $is_administrator = $has_valid_context && current_user_can('manage_options');
+    $post_type = $has_valid_context && !$is_administrator ? (string) get_post_type($post_id) : '';
+    $is_organizer_title = $post_type === 'organisateur' && $champ === 'post_title';
+    $roles = $has_valid_context && !$is_administrator ? (array) wp_get_current_user()->roles : [];
+    $requires_advanced_access = $post_type === 'indice'
+        || ($post_type === 'enigme' && $champ === 'post_title')
+        || ($post_type === 'chasse'
+            && in_array($champ, ['post_title', 'caracteristiques.chasse_infos_cout_points'], true));
+    $can_edit_advanced_fields = $requires_advanced_access && utilisateur_peut_editer_champs($post_id);
+    $hunt_count = 0;
+    $creation_hunt_count = 0;
 
-    // ✅ Les administrateurs peuvent éditer tous les champs
-    if (current_user_can('manage_options')) {
-        return true;
+    if ($is_organizer_title && in_array(ROLE_ORGANISATEUR_CREATION, $roles, true)) {
+        $hunts_query = get_chasses_de_organisateur($post_id);
+        $hunt_count = is_a($hunts_query, 'WP_Query') ? (int) $hunts_query->post_count : 0;
+        $creation_hunt_count = $hunt_count === 1 ? count(get_chasses_en_creation($post_id)) : 0;
     }
 
-    if (!$user_id) {
-        $user_id = get_current_user_id();
-    }
+    $service = new ChassesAuTresor\Core\Content\ContentFieldPolicyService();
 
-    $post_type = get_post_type($post_id);
-    $status = get_post_status($post_id);
-    $roles = wp_get_current_user()->roles;
-
-    // 🔐 L'utilisateur doit être autorisé à modifier le post
-    if (!utilisateur_peut_modifier_post($post_id)) {
-        return false;
-    }
-
-    // 💡 Chasse : certains champs ne sont éditables que durant la phase
-    //     de création/correction. On se base sur la même logique que
-    //     `utilisateur_peut_editer_champs()`.
-    if ($post_type === 'chasse') {
-        if (in_array($champ, ['post_title', 'caracteristiques.chasse_infos_cout_points'], true)) {
-            return utilisateur_peut_editer_champs($post_id);
-        }
-    }
-
-    if ($post_type === 'indice') {
-        return utilisateur_peut_editer_champs($post_id);
-    }
-
-    // 🔒 Le nom d'organisateur est verrouillé sauf pour certaines étapes de création
-    if ($post_type === 'organisateur' && $champ === 'post_title') {
-        // Administrateurs : accès illimité
-        if (current_user_can('manage_options')) {
-            return true;
-        }
-
-        // Rôle organisateur_creation : titre éditable si l'organisateur est en cours de création
-        if (in_array(ROLE_ORGANISATEUR_CREATION, $roles, true) && $status === 'pending') {
-            $chasses_query = get_chasses_de_organisateur($post_id);
-            $nb_chasses    = is_a($chasses_query, 'WP_Query') ? $chasses_query->post_count : 0;
-
-            // Aucune chasse ou une seule chasse en cours de création
-            if ($nb_chasses === 0) {
-                return true;
-            }
-
-            if ($nb_chasses === 1) {
-                $en_creation = get_chasses_en_creation($post_id);
-                if (count($en_creation) === 1) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    // 🔓 Le titre d'une énigme n'est éditable que si l'énigme est encore
-    // en phase de création ou de correction. On applique les mêmes
-    // conditions que pour l'édition générale des champs.
-    if ($post_type === 'enigme' && $champ === 'post_title') {
-        return utilisateur_peut_editer_champs($post_id);
-    }
-
-    // ⚠️ Autres règles spécifiques à définir manuellement ensuite
-    // Exemple :
-    // if ($champ === 'caracteristiques.chasse_infos_date_debut') {
-    //     return in_array($status, ['draft', 'pending']);
-    // }
-
-    return true; // Par défaut : champ éditable
+    return $service->canEdit(
+        $has_valid_context,
+        $is_administrator,
+        $has_valid_context && ($is_administrator || utilisateur_peut_modifier_post($post_id)),
+        $post_type,
+        (string) $champ,
+        $can_edit_advanced_fields,
+        $has_valid_context && !$is_administrator ? (string) get_post_status($post_id) : '',
+        in_array(ROLE_ORGANISATEUR_CREATION, $roles, true),
+        $hunt_count,
+        $creation_hunt_count
+    );
 }
 
 

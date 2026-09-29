@@ -52,6 +52,7 @@ require_once __DIR__ . '/src/Content/RiddleManagementService.php';
 require_once __DIR__ . '/src/Content/HuntManagementService.php';
 require_once __DIR__ . '/src/Content/ContentPanelAccessService.php';
 require_once __DIR__ . '/src/Content/ContentFieldAccessService.php';
+require_once __DIR__ . '/src/Content/ContentFieldPolicyService.php';
 require_once __DIR__ . '/src/Messages/UserMessageRepository.php';
 require_once __DIR__ . '/src/Messages/SiteMessageService.php';
 require_once __DIR__ . '/src/Messages/AccountMessageService.php';
