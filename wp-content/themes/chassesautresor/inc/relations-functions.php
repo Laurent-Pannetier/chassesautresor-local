@@ -28,6 +28,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\HuntManagementService::class, fal
         . '/plugins/chassesautresor-core/src/Content/HuntManagementService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Relationships\HuntRiddleCacheService::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Relationships/HuntRiddleCacheService.php';
+}
+
 function cat_get_organizer_service(): ChassesAuTresor\Core\Relationships\OrganizerService
 {
     global $wpdb;
@@ -55,6 +60,11 @@ function cat_get_organizer_hunt_query_service(): ChassesAuTresor\Core\Relationsh
 function cat_get_hunt_management_service(): ChassesAuTresor\Core\Content\HuntManagementService
 {
     return new ChassesAuTresor\Core\Content\HuntManagementService();
+}
+
+function cat_get_hunt_riddle_cache_service(): ChassesAuTresor\Core\Relationships\HuntRiddleCacheService
+{
+    return new ChassesAuTresor\Core\Relationships\HuntRiddleCacheService();
 }
 
 // 📚 SOMMAIRE DU FICHIER : relations-functions.php
@@ -695,60 +705,51 @@ function synchroniser_cache_enigmes_chasse($chasse_id, $forcer_recalcul = false,
  */
 function verifier_chasse_cache_enigmes($chasse_id, $mettre_a_jour = false)
 {
-  if (get_post_type($chasse_id) !== 'chasse') {
+    if (get_post_type($chasse_id) !== 'chasse') {
+        return [
+            'valide' => false,
+            'erreur' => 'ID de chasse invalide.',
+            'attendu' => [],
+            'cache' => [],
+        ];
+    }
+
+    $posts = get_posts([
+        'post_type' => 'enigme',
+        'post_status' => ['draft', 'pending', 'publish'],
+        'posts_per_page' => -1,
+        'fields' => 'ids',
+    ]);
+    $expectedIds = [];
+
+    foreach ($posts as $post_id) {
+        $association = get_field('enigme_chasse_associee', $post_id, false);
+        $associatedIds = cat_get_relationship_service()->normalizeIds(
+            is_array($association) ? $association : [$association]
+        );
+        if (in_array((int) $chasse_id, $associatedIds, true)) {
+            $expectedIds[] = (int) $post_id;
+        }
+    }
+
+    $cache = get_field('chasse_cache_enigmes', $chasse_id);
+    $result = cat_get_hunt_riddle_cache_service()->compare(
+        $expectedIds,
+        is_array($cache) ? array_map('intval', $cache) : [],
+        (bool) $mettre_a_jour
+    );
+
+    if ($result['correction']) {
+        update_field('chasse_cache_enigmes', $result['expected'], $chasse_id);
+    }
+
     return [
-      'valide' => false,
-      'erreur' => 'ID de chasse invalide.',
-      'attendu' => [],
-      'cache' => [],
+        'valide' => true,
+        'synchro' => $result['synced'],
+        'attendu' => $result['expected'],
+        'cache' => $result['cached'],
+        'correction' => $result['correction'],
     ];
-  }
-
-  // 🔍 Récupérer toutes les énigmes
-  $posts = get_posts([
-    'post_type'      => 'enigme',
-    'post_status'    => ['draft', 'pending', 'publish'],
-    'posts_per_page' => -1,
-    'fields'         => 'ids',
-  ]);
-
-  $attendu_ids = [];
-
-  foreach ($posts as $post_id) {
-    $associee = get_field('enigme_chasse_associee', $post_id, false);
-
-    // Peut être un entier ou un tableau
-    if (is_array($associee)) {
-      $associee_ids = array_map('intval', $associee);
-    } else {
-      $associee_ids = [(int)$associee];
-    }
-
-    if (in_array((int)$chasse_id, $associee_ids, true)) {
-      $attendu_ids[] = (int)$post_id;
-    }
-  }
-
-  // 📦 Cache actuel
-  $cache = get_field('chasse_cache_enigmes', $chasse_id);
-  $cache_ids = is_array($cache) ? array_map('intval', $cache) : [];
-
-  // 🎯 Comparaison brute
-  $diff1 = array_diff($attendu_ids, $cache_ids);
-  $diff2 = array_diff($cache_ids, $attendu_ids);
-  $synchronise = empty($diff1) && empty($diff2);
-
-  if ($mettre_a_jour && !$synchronise) {
-    update_field('chasse_cache_enigmes', $attendu_ids, $chasse_id);
-  }
-
-  return [
-    'valide'     => true,
-    'synchro'    => $synchronise,
-    'attendu'    => $attendu_ids,
-    'cache'      => $cache_ids,
-    'correction' => $mettre_a_jour && !$synchronise,
-  ];
 }
 
 
@@ -764,50 +765,48 @@ function verifier_chasse_cache_enigmes($chasse_id, $mettre_a_jour = false)
  */
 function verifier_cache_chasse_enigmes_valides($chasse_id, $retirer_si_invalide = false)
 {
-  if (get_post_type($chasse_id) !== 'chasse') {
+    if (get_post_type($chasse_id) !== 'chasse') {
+        return [
+            'valide' => false,
+            'erreur' => 'ID de chasse invalide.',
+            'liste_cache' => [],
+            'invalides' => [],
+        ];
+    }
+
+    $cache = get_field('chasse_cache_enigmes', $chasse_id);
+    $cacheIds = is_array($cache) ? array_map('intval', $cache) : [];
+    $relatedHuntIds = [];
+
+    foreach ($cacheIds as $riddleId) {
+        if (get_post_type($riddleId) !== 'enigme') {
+            $relatedHuntIds[$riddleId] = null;
+            continue;
+        }
+
+        $relatedHuntIds[$riddleId] = cat_get_relationship_service()->normalizeId(
+            get_field('enigme_chasse_associee', $riddleId)
+        );
+    }
+
+    $result = cat_get_hunt_riddle_cache_service()->validate(
+        (int) $chasse_id,
+        $cacheIds,
+        $relatedHuntIds,
+        (bool) $retirer_si_invalide
+    );
+
+    if ($result['correction']) {
+        update_field('chasse_cache_enigmes', $result['corrected'], $chasse_id);
+    }
+
     return [
-      'valide' => false,
-      'erreur' => 'ID de chasse invalide.',
-      'liste_cache' => [],
-      'invalides' => [],
+        'valide' => true,
+        'synchro' => $result['synced'],
+        'liste_cache' => $result['cached'],
+        'invalides' => $result['invalid'],
+        'correction' => $result['correction'],
     ];
-  }
-
-  // 📦 Liste brute depuis le cache
-  $cache = get_field('chasse_cache_enigmes', $chasse_id);
-  $cache_ids = is_array($cache) ? array_map('intval', $cache) : [];
-
-  $invalides = [];
-
-  foreach ($cache_ids as $enigme_id) {
-    if (get_post_type($enigme_id) !== 'enigme') {
-      $invalides[] = $enigme_id;
-      continue;
-    }
-
-    $chasse_associee = get_field('enigme_chasse_associee', $enigme_id);
-    $chasse_associee_id = is_object($chasse_associee) ? $chasse_associee->ID : (int) $chasse_associee;
-
-    if ((int)$chasse_associee_id !== (int)$chasse_id) {
-      $invalides[] = $enigme_id;
-    }
-  }
-
-  $est_synchro = empty($invalides);
-
-  // 🔄 Correction : on retire les énigmes invalides du cache
-  if ($retirer_si_invalide && !$est_synchro) {
-    $nouvelle_liste = array_diff($cache_ids, $invalides);
-    update_field('chasse_cache_enigmes', array_values($nouvelle_liste), $chasse_id);
-  }
-
-  return [
-    'valide'     => true,
-    'synchro'    => $est_synchro,
-    'liste_cache' => $cache_ids,
-    'invalides'  => $invalides,
-    'correction' => $retirer_si_invalide && !$est_synchro,
-  ];
 }
 
 
