@@ -28,6 +28,8 @@ class RelationshipServiceTest extends TestCase
             'object' => [(object) ['ID' => 42], 42],
             'array of IDs' => [[42], 42],
             'array of objects' => [[(object) ['ID' => 42]], 42],
+            'nested ACF array' => [[['ID' => 42]], 42],
+            'associative ACF value' => [['ID' => 42], 42],
             'empty array' => [[], null],
             'zero' => [0, null],
             'invalid object' => [(object) ['post_id' => 42], null],

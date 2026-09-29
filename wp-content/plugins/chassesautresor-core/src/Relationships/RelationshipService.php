@@ -15,7 +15,9 @@ class RelationshipService
     public function normalizeId($value): ?int
     {
         if (is_array($value)) {
-            $value = reset($value);
+            $value = array_key_exists('ID', $value) ? $value['ID'] : reset($value);
+
+            return $this->normalizeId($value);
         }
 
         if (is_object($value) && isset($value->ID)) {

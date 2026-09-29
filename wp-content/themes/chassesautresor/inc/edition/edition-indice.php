@@ -16,6 +16,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\HintScheduler::class, false)) {
         . '/plugins/chassesautresor-core/src/Content/HintScheduler.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Relationships\RelationshipService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Relationships/RelationshipService.php';
+}
+
 function cat_get_hint_query_service(): ChassesAuTresor\Core\Content\HintQueryService
 {
     return new ChassesAuTresor\Core\Content\HintQueryService();
@@ -173,45 +178,28 @@ function reordonner_indices(int $objet_id, string $objet_type): void
 function reordonner_indices_pour_indice(int $indice_id): void
 {
     $cible_type = get_field('indice_cible_type', $indice_id) === 'enigme' ? 'enigme' : 'chasse';
+    $relationshipService = new ChassesAuTresor\Core\Relationships\RelationshipService();
 
     if ($cible_type === 'enigme') {
-        $linked = get_field('indice_enigme_linked', $indice_id);
-        if (is_array($linked)) {
-            $first     = $linked[0] ?? null;
-            $objet_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
-        } else {
-            $objet_id = (int) $linked;
-        }
+        $objet_id = $relationshipService->normalizeId(get_field('indice_enigme_linked', $indice_id));
 
-        if ($objet_id) {
+        if ($objet_id !== null) {
             reordonner_indices($objet_id, 'enigme');
         }
 
-        $chasse_linked = get_field('indice_chasse_linked', $indice_id);
-        if (is_array($chasse_linked)) {
-            $first     = $chasse_linked[0] ?? null;
-            $chasse_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
-        } else {
-            $chasse_id = (int) $chasse_linked;
+        $chasse_id = $relationshipService->normalizeId(get_field('indice_chasse_linked', $indice_id));
+
+        if ($chasse_id === null && $objet_id !== null) {
+            $chasse_id = $relationshipService->normalizeId(recuperer_id_chasse_associee($objet_id));
         }
 
-        if (!$chasse_id && isset($objet_id)) {
-            $chasse_id = (int) recuperer_id_chasse_associee($objet_id);
-        }
-
-        if ($chasse_id) {
+        if ($chasse_id !== null) {
             reordonner_indices($chasse_id, 'chasse');
         }
     } else {
-        $linked = get_field('indice_chasse_linked', $indice_id);
-        if (is_array($linked)) {
-            $first     = $linked[0] ?? null;
-            $chasse_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
-        } else {
-            $chasse_id = (int) $linked;
-        }
+        $chasse_id = $relationshipService->normalizeId(get_field('indice_chasse_linked', $indice_id));
 
-        if ($chasse_id) {
+        if ($chasse_id !== null) {
             reordonner_indices($chasse_id, 'chasse');
         }
     }
@@ -1088,41 +1076,23 @@ function memoriser_cible_indice_avant_suppression(int $post_id): void
     }
 
     $type = get_field('indice_cible_type', $post_id) === 'enigme' ? 'enigme' : 'chasse';
-    $objet_id = 0;
-    $chasse_id = 0;
+    $relationshipService = new ChassesAuTresor\Core\Relationships\RelationshipService();
+    $objet_id = null;
+    $chasse_id = null;
 
     if ($type === 'enigme') {
-        $linked = get_field('indice_enigme_linked', $post_id);
-        if (is_array($linked)) {
-            $first    = $linked[0] ?? null;
-            $objet_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
-        } else {
-            $objet_id = (int) $linked;
-        }
+        $objet_id = $relationshipService->normalizeId(get_field('indice_enigme_linked', $post_id));
+        $chasse_id = $relationshipService->normalizeId(get_field('indice_chasse_linked', $post_id));
 
-        $chasse_linked = get_field('indice_chasse_linked', $post_id);
-        if (is_array($chasse_linked)) {
-            $first     = $chasse_linked[0] ?? null;
-            $chasse_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
-        } else {
-            $chasse_id = (int) $chasse_linked;
-        }
-
-        if (!$chasse_id && $objet_id) {
-            $chasse_id = (int) recuperer_id_chasse_associee($objet_id);
+        if ($chasse_id === null && $objet_id !== null) {
+            $chasse_id = $relationshipService->normalizeId(recuperer_id_chasse_associee($objet_id));
         }
     } else {
-        $linked = get_field('indice_chasse_linked', $post_id);
-        if (is_array($linked)) {
-            $first     = $linked[0] ?? null;
-            $objet_id  = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
-        } else {
-            $objet_id = (int) $linked;
-        }
+        $objet_id = $relationshipService->normalizeId(get_field('indice_chasse_linked', $post_id));
         $chasse_id = $objet_id;
     }
 
-    if ($objet_id) {
+    if ($objet_id !== null) {
         $indice_delete_context = [
             'objet_id'   => $objet_id,
             'objet_type' => $type,
