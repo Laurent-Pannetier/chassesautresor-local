@@ -1185,33 +1185,31 @@ function utilisateur_peut_voir_solution_enigme(int $post_id, int $user_id): bool
         return false;
     }
 
+    $service = new ChassesAuTresor\Core\Content\SolutionAccessService();
     if (user_can($user_id, 'manage_options')) {
-        return true;
+        return $service->canViewRiddleSolution(true, false, false, false, false, '');
     }
 
     $chasse_id = recuperer_id_chasse_associee($post_id);
-    if (!$chasse_id) {
-        return false;
-    }
-
-    if (
-        get_field('chasse_cache_statut', $chasse_id) === 'termine'
+    $is_hunt_finished = $chasse_id && get_field('chasse_cache_statut', $chasse_id) === 'termine';
+    $is_engaged = $is_hunt_finished
         && function_exists('utilisateur_est_engage_dans_enigme')
-        && utilisateur_est_engage_dans_enigme($user_id, $post_id)
-    ) {
-        return true;
-    }
+        && utilisateur_est_engage_dans_enigme($user_id, $post_id);
+    $is_organizer = !$is_engaged
+        && $chasse_id
+        && utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
+    $riddle_status = !$chasse_id || $is_engaged || $is_organizer
+        ? ''
+        : (string) get_statut_utilisateur_enigme($user_id, $post_id);
 
-    if (utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
-        return true;
-    }
-
-    $statut = get_statut_utilisateur_enigme($user_id, $post_id);
-    if ($statut) {
-        return in_array($statut, ['resolue', 'terminee'], true);
-    }
-
-    return false;
+    return $service->canViewRiddleSolution(
+        false,
+        (bool) $chasse_id,
+        $is_hunt_finished,
+        $is_engaged,
+        $is_organizer,
+        $riddle_status
+    );
 }
 
 /**
@@ -1232,21 +1230,20 @@ function utilisateur_peut_voir_solution_chasse(int $chasse_id, int $user_id): bo
         return false;
     }
 
-    if ($user_id) {
-        if (user_can($user_id, 'manage_options')) {
-            return true;
-        }
-
-        if (utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
-            return true;
-        }
-
-        if (utilisateur_est_engage_dans_chasse($user_id, $chasse_id)) {
-            return true;
-        }
+    $service = new ChassesAuTresor\Core\Content\SolutionAccessService();
+    if ($user_id > 0 && user_can($user_id, 'manage_options')) {
+        return $service->canViewHuntSolution(true, true, false, false);
     }
 
-    return false;
+    $is_organizer = $user_id > 0
+        && utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
+
+    return $service->canViewHuntSolution(
+        $user_id > 0,
+        false,
+        $is_organizer,
+        $user_id > 0 && !$is_organizer && utilisateur_est_engage_dans_chasse($user_id, $chasse_id)
+    );
 }
 
 
