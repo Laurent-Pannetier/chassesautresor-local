@@ -25,6 +25,29 @@ class HintStatusServiceTest extends TestCase
         );
     }
 
+    public function testAvailabilityIsNormalized(): void
+    {
+        $this->assertSame('differe', $this->service->normalizeAvailability('differe'));
+        $this->assertSame('immediate', $this->service->normalizeAvailability('immediate'));
+        $this->assertSame('immediate', $this->service->normalizeAvailability('inconnu'));
+    }
+
+    public function testAvailabilityDateUsesSubmittedThenExistingThenFallbackValue(): void
+    {
+        $this->assertSame(
+            'submitted',
+            $this->service->resolveAvailabilityDate('submitted', 'existing', 'fallback')
+        );
+        $this->assertSame(
+            'existing',
+            $this->service->resolveAvailabilityDate('', 'existing', 'fallback')
+        );
+        $this->assertSame(
+            'fallback',
+            $this->service->resolveAvailabilityDate('', '', 'fallback')
+        );
+    }
+
     public function testImmediateHintWithContentIsAccessible(): void
     {
         $this->assertSame(

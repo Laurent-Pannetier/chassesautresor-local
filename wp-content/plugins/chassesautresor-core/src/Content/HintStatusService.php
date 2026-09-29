@@ -9,6 +9,20 @@ namespace ChassesAuTresor\Core\Content;
  */
 class HintStatusService
 {
+    public function normalizeAvailability(string $availability): string
+    {
+        return $availability === 'differe' ? 'differe' : 'immediate';
+    }
+
+    public function resolveAvailabilityDate(string $submittedDate, string $existingDate, string $fallbackDate): string
+    {
+        if ($submittedDate !== '') {
+            return $submittedDate;
+        }
+
+        return $existingDate !== '' ? $existingDate : $fallbackDate;
+    }
+
     /**
      * @return array{complete:bool,state:string}
      */
@@ -23,7 +37,7 @@ class HintStatusService
             return ['complete' => false, 'state' => 'desactive'];
         }
 
-        if ($availability !== 'differe') {
+        if ($this->normalizeAvailability($availability) !== 'differe') {
             return ['complete' => true, 'state' => 'accessible'];
         }
 

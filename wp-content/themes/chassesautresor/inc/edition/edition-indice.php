@@ -709,13 +709,14 @@ function ajax_creer_indice_modal(): void
         update_field('indice_contenu', $contenu, $indice_id);
     }
 
-    $dispo = $dispo === 'differe' ? 'differe' : 'immediate';
+    $dispo = cat_get_hint_status_service()->normalizeAvailability($dispo);
     update_field('indice_disponibilite', $dispo, $indice_id);
 
-    $date_to_save = $date ?: get_field('indice_date_disponibilite', $indice_id);
-    if (!$date_to_save) {
-        $date_to_save = wp_date('Y-m-d H:i:s', (int) current_time('timestamp'));
-    }
+    $date_to_save = cat_get_hint_status_service()->resolveAvailabilityDate(
+        $date,
+        (string) get_field('indice_date_disponibilite', $indice_id),
+        wp_date('Y-m-d H:i:s', (int) current_time('timestamp'))
+    );
     update_field('indice_date_disponibilite', $date_to_save, $indice_id);
 
     mettre_a_jour_cache_indice($indice_id);
@@ -761,13 +762,14 @@ function ajax_modifier_indice_modal(): void
     }
     update_field('indice_contenu', $contenu, $indice_id);
 
-    $dispo = $dispo === 'differe' ? 'differe' : 'immediate';
+    $dispo = cat_get_hint_status_service()->normalizeAvailability($dispo);
     update_field('indice_disponibilite', $dispo, $indice_id);
 
-    $date_to_save = $date ?: get_field('indice_date_disponibilite', $indice_id);
-    if (!$date_to_save) {
-        $date_to_save = wp_date('Y-m-d H:i:s', (int) current_time('timestamp'));
-    }
+    $date_to_save = cat_get_hint_status_service()->resolveAvailabilityDate(
+        $date,
+        (string) get_field('indice_date_disponibilite', $indice_id),
+        wp_date('Y-m-d H:i:s', (int) current_time('timestamp'))
+    );
     update_field('indice_date_disponibilite', $date_to_save, $indice_id);
 
     mettre_a_jour_cache_indice($indice_id);
@@ -827,7 +829,7 @@ function modifier_champ_indice(): void
             $champ_valide = update_field('indice_enigme_linked', $ids, $post_id) !== false;
             break;
         case 'indice_disponibilite':
-            $val = $valeur === 'differe' ? 'differe' : 'immediate';
+            $val = cat_get_hint_status_service()->normalizeAvailability((string) $valeur);
             $champ_valide = update_field('indice_disponibilite', $val, $post_id) !== false;
             break;
         case 'indice_date_disponibilite':
