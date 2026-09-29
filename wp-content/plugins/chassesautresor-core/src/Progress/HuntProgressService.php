@@ -57,6 +57,11 @@ class HuntProgressService
         return $this->repository->findResolutionDate($userId, $riddleId);
     }
 
+    public function deleteRiddleStatuses(int $riddleId): int
+    {
+        return $riddleId > 0 ? $this->repository->deleteStatusesForRiddle($riddleId) : 0;
+    }
+
     public function advanceRiddleStatus(
         int $userId,
         int $riddleId,
