@@ -396,67 +396,36 @@ function utilisateur_peut_modifier_post($post_id)
  */
 function indice_action_autorisee(string $action, string $object_type, int $object_id): bool
 {
-    if (!is_user_logged_in()) {
-        return false;
+    $is_authenticated = is_user_logged_in();
+    $is_valid_object = $is_authenticated && get_post_type($object_id) === $object_type;
+    $hunt_id = 0;
+    if ($is_valid_object && $object_type === 'enigme') {
+        $hunt_id = (int) recuperer_id_chasse_associee($object_id);
+    } elseif ($is_valid_object && $object_type === 'chasse') {
+        $hunt_id = $object_id;
     }
+    $has_hunt = $hunt_id > 0;
+    $needs_hunt_permission = $object_type === 'enigme' && in_array($action, ['create', 'edit'], true);
+    $service = new ChassesAuTresor\Core\Content\RelatedContentActionService();
 
-    $is_admin = current_user_can('manage_options');
-
-    if ($object_type === 'chasse') {
-        if (get_post_type($object_id) !== 'chasse') {
-            return false;
-        }
-
-        $status     = get_post_status($object_id);
-        $validation = get_field('chasse_cache_statut_validation', $object_id) ?: '';
-        $is_org     = utilisateur_est_organisateur_associe_a_chasse(get_current_user_id(), $object_id);
-
-        switch ($action) {
-            case 'create':
-                return ($is_admin || $is_org)
-                    && in_array($status, ['publish', 'pending'], true)
-                    && in_array($validation, ['valide', 'correction', 'creation'], true);
-            case 'edit':
-                return ($is_admin || $is_org)
-                    && in_array($status, ['publish', 'pending'], true);
-            case 'delete':
-                return $is_admin || $is_org;
-        }
-
-        return false;
-    }
-
-    if ($object_type === 'enigme') {
-        if (get_post_type($object_id) !== 'enigme') {
-            return false;
-        }
-
-        $chasse_id = recuperer_id_chasse_associee($object_id);
-        if (!$chasse_id) {
-            return false;
-        }
-
-        $is_org         = utilisateur_est_organisateur_associe_a_chasse(get_current_user_id(), $chasse_id);
-        $status_enigme  = get_post_status($object_id);
-        $status_allowed = in_array($status_enigme, ['publish', 'pending'], true);
-
-        switch ($action) {
-            case 'create':
-                return ($is_admin || $is_org)
-                    && $status_allowed
-                    && indice_action_autorisee('create', 'chasse', $chasse_id);
-            case 'edit':
-                return ($is_admin || $is_org)
-                    && $status_allowed
-                    && indice_action_autorisee('edit', 'chasse', $chasse_id);
-            case 'delete':
-                return $is_admin || $is_org;
-        }
-
-        return false;
-    }
-
-    return false;
+    return $service->canPerform(
+        $is_authenticated,
+        $action,
+        $object_type,
+        $is_valid_object,
+        $is_authenticated && current_user_can('manage_options'),
+        $is_valid_object
+            && $has_hunt
+            && utilisateur_est_organisateur_associe_a_chasse(get_current_user_id(), $hunt_id),
+        $is_valid_object ? (string) get_post_status($object_id) : '',
+        $object_type === 'chasse' && $is_valid_object
+            ? (string) get_field('chasse_cache_statut_validation', $object_id)
+            : '',
+        $object_type === 'enigme' && $has_hunt,
+        $needs_hunt_permission && $has_hunt
+            ? indice_action_autorisee($action, 'chasse', $hunt_id)
+            : false
+    );
 }
 
 /**
