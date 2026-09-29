@@ -531,20 +531,21 @@ add_action('save_post_enigme', 'update_chasse_cached_flags_on_enigme_save', 20, 
  */
 function update_chasse_cached_flags_on_indice_save(int $post_id): void
 {
-    $cible = get_field('indice_cible_type', $post_id);
-    $chasse_id = 0;
+    $targetType = (string) get_field('indice_cible_type', $post_id);
+    $riddleId = $targetType === 'enigme'
+        ? (int) get_field('indice_enigme_linked', $post_id)
+        : 0;
+    $directHunt = $targetType === 'chasse'
+        ? get_field('indice_chasse_linked', $post_id)
+        : null;
+    $riddleHunt = $riddleId > 0 ? recuperer_chasse_associee($riddleId) : null;
+    $chasse_id = cat_get_relationship_service()->resolveTargetHuntId(
+        $targetType,
+        $directHunt,
+        $riddleHunt
+    );
 
-    if ($cible === 'chasse') {
-        $chasse_id = (int) get_field('indice_chasse_linked', $post_id);
-    } elseif ($cible === 'enigme') {
-        $enigme_id = (int) get_field('indice_enigme_linked', $post_id);
-        if ($enigme_id) {
-            $chasse = recuperer_chasse_associee($enigme_id);
-            $chasse_id = $chasse ? (int) $chasse->ID : 0;
-        }
-    }
-
-    if ($chasse_id) {
+    if ($chasse_id !== null) {
         recalculate_chasse_cached_flags($chasse_id);
     }
 }
@@ -558,20 +559,21 @@ add_action('save_post_indice', 'update_chasse_cached_flags_on_indice_save', 20, 
  */
 function update_chasse_cached_flags_on_solution_save(int $post_id): void
 {
-    $cible = get_field('solution_cible_type', $post_id);
-    $chasse_id = 0;
+    $targetType = (string) get_field('solution_cible_type', $post_id);
+    $riddleId = $targetType === 'enigme'
+        ? (int) get_field('solution_enigme_linked', $post_id)
+        : 0;
+    $directHunt = $targetType === 'chasse'
+        ? get_field('solution_chasse_linked', $post_id)
+        : null;
+    $riddleHunt = $riddleId > 0 ? recuperer_chasse_associee($riddleId) : null;
+    $chasse_id = cat_get_relationship_service()->resolveTargetHuntId(
+        $targetType,
+        $directHunt,
+        $riddleHunt
+    );
 
-    if ($cible === 'chasse') {
-        $chasse_id = (int) get_field('solution_chasse_linked', $post_id);
-    } elseif ($cible === 'enigme') {
-        $enigme_id = (int) get_field('solution_enigme_linked', $post_id);
-        if ($enigme_id) {
-            $chasse = recuperer_chasse_associee($enigme_id);
-            $chasse_id = $chasse ? (int) $chasse->ID : 0;
-        }
-    }
-
-    if ($chasse_id) {
+    if ($chasse_id !== null) {
         recalculate_chasse_cached_flags($chasse_id);
     }
 }

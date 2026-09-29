@@ -43,4 +43,30 @@ class RelationshipServiceTest extends TestCase
             $service->normalizeIds([12, (object) ['ID' => 24], 'invalid', '12', 0])
         );
     }
+
+    public function testTargetHuntUsesDirectRelationshipForHuntContent(): void
+    {
+        $service = new RelationshipService();
+
+        $this->assertSame(12, $service->resolveTargetHuntId('chasse', '12', 24));
+    }
+
+    public function testTargetHuntUsesRiddleRelationshipForRiddleContent(): void
+    {
+        $service = new RelationshipService();
+
+        $this->assertSame(
+            24,
+            $service->resolveTargetHuntId('enigme', 12, (object) ['ID' => 24])
+        );
+    }
+
+    public function testTargetHuntRejectsUnknownOrInvalidRelationships(): void
+    {
+        $service = new RelationshipService();
+
+        $this->assertNull($service->resolveTargetHuntId('solution', 12, 24));
+        $this->assertNull($service->resolveTargetHuntId('chasse', 0, 24));
+        $this->assertNull($service->resolveTargetHuntId('enigme', 12, null));
+    }
 }

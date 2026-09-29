@@ -48,4 +48,23 @@ class RelationshipService
 
         return $ids;
     }
+
+    /**
+     * Resolve the hunt affected by content targeting either a hunt or a riddle.
+     *
+     * @param mixed $directHunt
+     * @param mixed $riddleHunt
+     */
+    public function resolveTargetHuntId(string $targetType, $directHunt, $riddleHunt): ?int
+    {
+        if ($targetType === 'chasse') {
+            return $this->normalizeId($directHunt);
+        }
+
+        if ($targetType === 'enigme') {
+            return $this->normalizeId($riddleHunt);
+        }
+
+        return null;
+    }
 }
