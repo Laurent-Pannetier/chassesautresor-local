@@ -561,57 +561,25 @@ function utilisateur_peut_voir_enigme(int $enigme_id, ?int $user_id = null): boo
  */
 function utilisateur_peut_ajouter_enigme(int $chasse_id, ?int $user_id = null): bool
 {
-    if (get_post_type($chasse_id) !== 'chasse') {
-        cat_debug("❌ [ajout énigme] ID $chasse_id n'est pas une chasse.");
-        return false;
-    }
-
     $user_id = $user_id ?? get_current_user_id();
-    if (!$user_id || !is_user_logged_in()) {
-        cat_debug("❌ [ajout énigme] utilisateur non connecté.");
-        return false;
-    }
+    $is_hunt = get_post_type($chasse_id) === 'chasse';
+    $is_authenticated = $user_id > 0 && is_user_logged_in();
+    $is_organizer = $is_authenticated && est_organisateur($user_id);
+    $is_associated = $is_organizer && $is_hunt
+        && utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
+    $riddle_count = $is_associated ? count(recuperer_ids_enigmes_pour_chasse($chasse_id)) : 0;
+    $service = new ChassesAuTresor\Core\Content\RiddleManagementService();
 
-    if (!est_organisateur($user_id)) {
-        cat_debug("❌ [ajout énigme] rôle utilisateur #$user_id invalide");
-        return false;
-    }
-
-    $statut_validation = get_field('chasse_cache_statut_validation', $chasse_id);
-    $statut_metier     = get_field('chasse_cache_statut', $chasse_id);
-
-    $wp_status = get_post_status($chasse_id);
-    if ($wp_status === 'publish') {
-        cat_debug("❌ [ajout énigme] chasse #$chasse_id post status : $wp_status");
-        return false;
-    }
-
-    if ($statut_metier !== 'revision') {
-        cat_debug("❌ [ajout énigme] chasse #$chasse_id statut metier : $statut_metier");
-        return false;
-    }
-
-    if (!in_array($statut_validation, ['creation', 'correction'], true)) {
-        cat_debug("❌ [ajout énigme] chasse #$chasse_id statut validation : $statut_validation");
-        return false;
-    }
-
-    $est_associe = utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
-    if (!$est_associe) {
-        cat_debug("❌ [ajout énigme] utilisateur #$user_id non associé à la chasse #$chasse_id");
-        return false;
-    }
-
-    $ids = recuperer_ids_enigmes_pour_chasse($chasse_id);
-    $nb = count($ids);
-
-    if ($nb >= 40) {
-        cat_debug("❌ [ajout énigme] chasse #$chasse_id a déjà $nb énigmes (limite 40)");
-        return false;
-    }
-
-    cat_debug("✅ [ajout énigme] autorisé pour user #$user_id sur chasse #$chasse_id ($nb / 40)");
-    return true;
+    return $service->canAdd(
+        $is_hunt,
+        $is_authenticated,
+        $is_organizer,
+        $is_hunt ? (string) get_post_status($chasse_id) : '',
+        $is_hunt ? (string) get_field('chasse_cache_statut', $chasse_id) : '',
+        $is_hunt ? (string) get_field('chasse_cache_statut_validation', $chasse_id) : '',
+        $is_associated,
+        $riddle_count
+    );
 }
 
 
@@ -655,36 +623,25 @@ function utilisateur_peut_modifier_enigme(int $enigme_id, ?int $user_id = null):
  */
 function utilisateur_peut_supprimer_enigme(int $enigme_id, ?int $user_id = null): bool
 {
-    if (get_post_type($enigme_id) !== 'enigme') {
-        return false;
-    }
-
     $user_id = $user_id ?? get_current_user_id();
-    if (!$user_id) {
-        return false;
-    }
+    $is_riddle = get_post_type($enigme_id) === 'enigme';
+    $hunt_id = $is_riddle ? (int) recuperer_id_chasse_associee($enigme_id) : 0;
+    $has_hunt = $hunt_id > 0 && get_post_type($hunt_id) === 'chasse';
+    $is_authenticated = $user_id > 0;
+    $is_organizer = $is_authenticated && est_organisateur($user_id);
+    $is_associated = $is_organizer && $has_hunt
+        && utilisateur_est_organisateur_associe_a_chasse($user_id, $hunt_id);
+    $service = new ChassesAuTresor\Core\Content\RiddleManagementService();
 
-    if (!est_organisateur($user_id)) {
-        return false;
-    }
-
-    $chasse_id = recuperer_id_chasse_associee($enigme_id);
-    if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
-        return false;
-    }
-
-    $statut_validation = get_field('chasse_cache_statut_validation', $chasse_id);
-    $statut_metier     = get_field('chasse_cache_statut', $chasse_id);
-
-    if ($statut_metier !== 'revision') {
-        return false;
-    }
-
-    if (!in_array($statut_validation, ['creation', 'correction'], true)) {
-        return false;
-    }
-
-    return utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
+    return $service->canDelete(
+        $is_riddle,
+        $is_authenticated,
+        $is_organizer,
+        $has_hunt,
+        $has_hunt ? (string) get_field('chasse_cache_statut', $hunt_id) : '',
+        $has_hunt ? (string) get_field('chasse_cache_statut_validation', $hunt_id) : '',
+        $is_associated
+    );
 }
 
 
