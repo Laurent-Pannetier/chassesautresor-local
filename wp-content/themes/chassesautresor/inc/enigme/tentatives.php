@@ -147,48 +147,26 @@ if (!function_exists('cat_get_riddle_attempt_service')) {
     {
         cat_debug("👣 Tentative traitement UID=$uid par IP=" . ($_SERVER['REMOTE_ADDR'] ?? 'inconnue'));
 
-        $tentative = get_tentative_by_uid($uid);
-        if (!$tentative) {
-            cat_debug("❌ Tentative introuvable");
+        $attempt_service = cat_get_riddle_attempt_service();
+        $tentative = $attempt_service->processManualAttempt(
+            $uid,
+            $resultat,
+            (int) get_current_user_id(),
+            current_user_can('manage_options'),
+            static function (int $enigme_id): array {
+                $chasse_id = recuperer_id_chasse_associee($enigme_id);
+                $organisateur_id = get_organisateur_from_chasse($chasse_id);
+
+                return (array) get_field('utilisateurs_associes', $organisateur_id);
+            }
+        );
+        if ($tentative === null) {
+            cat_debug("⛔ Tentative manuelle non traitée pour UID=$uid");
             return false;
         }
-
-        if ($tentative->resultat !== 'attente') {
-            cat_debug("⛔ Tentative déjà traitée → statut actuel = " . $tentative->resultat);
-            return false;
-        }
-
 
         $user_id = (int) $tentative->user_id;
         $enigme_id = (int) $tentative->enigme_id;
-
-        // 🔐 Sécurité : si déjà "resolue", on refuse toute tentative de traitement
-        $attempt_service = cat_get_riddle_attempt_service();
-        if ($attempt_service->isRiddleSolvedForUser($user_id, $enigme_id)) {
-            cat_debug("⛔ Statut utilisateur déjà 'resolue' → refus de traitement UID=$uid");
-            return false;
-        }
-
-        // 🔐 Vérification organisateur ou admin
-        $current_user_id = get_current_user_id();
-        $chasse_id = recuperer_id_chasse_associee($enigme_id);
-        $organisateur_id = get_organisateur_from_chasse($chasse_id);
-        $organisateur_user_ids = (array) get_field('utilisateurs_associes', $organisateur_id);
-
-        if (!$attempt_service->canProcessManualAttempt(
-            $current_user_id,
-            current_user_can('manage_options'),
-            $organisateur_user_ids
-        )) {
-            cat_debug("⛔ Accès interdit au traitement pour UID=$uid");
-            return false;
-        }
-
-        if (!$attempt_service->processPending($uid, $resultat)) {
-            cat_debug("⛔ Tentative déjà traitée ou résultat invalide pour UID=$uid");
-            return false;
-        }
-
         traiter_tentative($user_id, $enigme_id, (string) $tentative->reponse_saisie, $resultat, false, true, true);
 
         $titre_enigme = get_the_title($enigme_id);

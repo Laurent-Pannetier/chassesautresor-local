@@ -116,6 +116,32 @@ class RiddleAttemptService
         return in_array($currentUserId, array_map('intval', $organizerUserIds), true);
     }
 
+    public function processManualAttempt(
+        string $uid,
+        string $result,
+        int $currentUserId,
+        bool $isAdministrator,
+        callable $getOrganizerUserIds
+    ): ?object {
+        $attempt = $this->findByUid($uid);
+        if ($attempt === null || ($attempt->resultat ?? '') !== 'attente') {
+            return null;
+        }
+
+        $userId = (int) ($attempt->user_id ?? 0);
+        $riddleId = (int) ($attempt->enigme_id ?? 0);
+        if ($userId <= 0 || $riddleId <= 0 || $this->isRiddleSolvedForUser($userId, $riddleId)) {
+            return null;
+        }
+
+        $organizerUserIds = $isAdministrator ? [] : (array) $getOrganizerUserIds($riddleId);
+        if (!$this->canProcessManualAttempt($currentUserId, $isAdministrator, $organizerUserIds)) {
+            return null;
+        }
+
+        return $this->processPending($uid, $result) ? $attempt : null;
+    }
+
     private function getStateFromAttempt(?object $attempt): string
     {
         if ($attempt === null || !isset($attempt->resultat)) {

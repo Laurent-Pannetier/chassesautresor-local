@@ -226,6 +226,34 @@ class RiddleAttemptServiceTest extends TestCase
         $this->assertFalse($service->canProcessManualAttempt(8, false, $organizerUserIds));
     }
 
+    public function testManualAttemptWorkflowValidatesAndAtomicallyProcessesAttempt(): void
+    {
+        $repository = new RiddleAttemptRepositoryStub();
+        $repository->returnConfiguredAttempt = true;
+        $repository->foundAttempt = (object) [
+            'user_id' => 7,
+            'enigme_id' => 10,
+            'resultat' => 'attente',
+        ];
+        $service = new RiddleAttemptService($repository);
+
+        $organizerUsers = static fn (int $riddleId): array => [9];
+        $attempt = $service->processManualAttempt(' attempt-1 ', 'bon', 9, false, $organizerUsers);
+
+        $this->assertSame($repository->foundAttempt, $attempt);
+        $this->assertSame(['attempt-1', 'bon'], $repository->processArguments);
+
+        $repository->foundAttempt->resultat = 'faux';
+        $this->assertNull($service->processManualAttempt('attempt-1', 'bon', 9, false, $organizerUsers));
+
+        $repository->foundAttempt->resultat = 'attente';
+        $repository->userRiddleStatus = 'resolue';
+        $this->assertNull($service->processManualAttempt('attempt-1', 'bon', 9, false, $organizerUsers));
+
+        $repository->userRiddleStatus = null;
+        $this->assertNull($service->processManualAttempt('attempt-1', 'bon', 8, false, $organizerUsers));
+    }
+
     public function testRiddleAttemptListIsValidatedAndDelegated(): void
     {
         $repository = new RiddleAttemptRepositoryStub();
