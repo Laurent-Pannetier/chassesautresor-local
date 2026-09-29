@@ -1,6 +1,24 @@
 <?php
 defined('ABSPATH') || exit;
 
+if (!class_exists(ChassesAuTresor\Core\Progress\HintUnlockService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Progress/HintUnlockRepository.php';
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Progress/HintUnlockService.php';
+}
+
+if (!function_exists('cat_get_hint_unlock_service')) {
+    function cat_get_hint_unlock_service(): ChassesAuTresor\Core\Progress\HintUnlockService
+    {
+        global $wpdb;
+
+        return new ChassesAuTresor\Core\Progress\HintUnlockService(
+            new ChassesAuTresor\Core\Progress\HintUnlockRepository($wpdb)
+        );
+    }
+}
+
 /**
  * Retrieve the display title for an indice.
  *
@@ -39,13 +57,7 @@ function get_indice_title($post): string
  */
 function indice_est_debloque(int $user_id, int $indice_id): bool
 {
-    global $wpdb;
-    $table = $wpdb->prefix . 'indices_deblocages';
-    return (bool) $wpdb->get_var($wpdb->prepare(
-        "SELECT 1 FROM {$table} WHERE user_id = %d AND indice_id = %d LIMIT 1",
-        $user_id,
-        $indice_id
-    ));
+    return cat_get_hint_unlock_service()->isUnlocked($user_id, $indice_id);
 }
 
 /**

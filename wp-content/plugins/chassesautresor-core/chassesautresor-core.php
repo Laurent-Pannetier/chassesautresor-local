@@ -29,6 +29,8 @@ require_once __DIR__ . '/src/Progress/RiddleStatisticsRepository.php';
 require_once __DIR__ . '/src/Progress/RiddleStatisticsService.php';
 require_once __DIR__ . '/src/Progress/RiddleEngagementRepository.php';
 require_once __DIR__ . '/src/Progress/RiddleEngagementService.php';
+require_once __DIR__ . '/src/Progress/HintUnlockRepository.php';
+require_once __DIR__ . '/src/Progress/HintUnlockService.php';
 require_once __DIR__ . '/src/Progress/RiddleAttemptRepository.php';
 require_once __DIR__ . '/src/Progress/RiddleAttemptService.php';
 require_once __DIR__ . '/src/Progress/UserAttemptStatisticsRepository.php';
