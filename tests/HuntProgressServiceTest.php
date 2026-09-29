@@ -17,6 +17,7 @@ class HuntProgressRepositoryStub extends HuntProgressRepository
     public array $statusArguments = [];
     public array $persistedStatus = [];
     public ?string $status = 'resolue';
+    public array $statuses = [];
     public int $deletedStatuses = 0;
 
     public function __construct()
@@ -32,7 +33,7 @@ class HuntProgressRepositoryStub extends HuntProgressRepository
     {
         $this->statusArguments = [$userId, $riddleId];
 
-        return $this->status;
+        return $this->statuses[$riddleId] ?? $this->status;
     }
 
     public function persistStatus(
@@ -154,6 +155,27 @@ class HuntProgressServiceTest extends TestCase
         $this->assertSame('2026-09-29 12:00:00', $service->getRiddleResolutionDate(7, 10));
         $this->assertSame([7, 10], $repository->statusArguments);
         $this->assertNull($service->getRiddleResolutionDate(0, 10));
+    }
+
+    public function testRiddlePrerequisitesRequireEveryRiddleToBeCompleted(): void
+    {
+        $repository = new HuntProgressRepositoryStub();
+        $repository->statuses = [10 => 'resolue', 11 => 'terminee'];
+        $service = new HuntProgressService($repository);
+
+        $this->assertTrue($service->areRiddlePrerequisitesMet(7, [10, 11]));
+
+        $repository->statuses[11] = 'en_cours';
+        $this->assertFalse($service->areRiddlePrerequisitesMet(7, [10, 11]));
+        $this->assertFalse($service->areRiddlePrerequisitesMet(0, [10]));
+    }
+
+    public function testRiddlePrerequisitesIgnoreInvalidReferences(): void
+    {
+        $service = new HuntProgressService(new HuntProgressRepositoryStub());
+
+        $this->assertTrue($service->areRiddlePrerequisitesMet(7, []));
+        $this->assertTrue($service->areRiddlePrerequisitesMet(7, [0, -1]));
     }
 
     public function testRiddleStatusDeletionIsValidatedAndDelegated(): void

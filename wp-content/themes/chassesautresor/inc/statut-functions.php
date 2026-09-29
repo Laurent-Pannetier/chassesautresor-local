@@ -153,19 +153,16 @@ function enigme_pre_requis_remplis(int $enigme_id, int $user_id): bool
         return $condition !== 'pre_requis'; // ❌ Pré-requis exigés mais liste vide
     }
 
-    foreach ($pre_requis as $enigme_requise) {
-        $enigme_id_requise = is_object($enigme_requise) ? $enigme_requise->ID : (is_numeric($enigme_requise) ? (int) $enigme_requise : null);
-
-        if ($enigme_id_requise) {
-            $statut = enigme_get_statut_utilisateur($enigme_id_requise, $user_id);
-
-            if (!in_array($statut, ['resolue', 'terminee'], true)) {
-                return false; // ❌ Prérequis non rempli
-            }
+    $prerequisiteIds = [];
+    foreach ($pre_requis as $requiredRiddle) {
+        if (is_object($requiredRiddle) && isset($requiredRiddle->ID)) {
+            $prerequisiteIds[] = (int) $requiredRiddle->ID;
+        } elseif (is_numeric($requiredRiddle)) {
+            $prerequisiteIds[] = (int) $requiredRiddle;
         }
     }
 
-    return true; // ✅ Tous les prérequis sont remplis
+    return cat_get_hunt_progress_service()->areRiddlePrerequisitesMet($user_id, $prerequisiteIds);
 }
 
 /**

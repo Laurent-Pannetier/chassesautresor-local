@@ -57,6 +57,28 @@ class HuntProgressService
         return $this->repository->findResolutionDate($userId, $riddleId);
     }
 
+    /** @param int[] $prerequisiteIds */
+    public function areRiddlePrerequisitesMet(int $userId, array $prerequisiteIds): bool
+    {
+        if ($userId <= 0) {
+            return false;
+        }
+
+        foreach ($prerequisiteIds as $riddleId) {
+            $riddleId = (int) $riddleId;
+            if ($riddleId <= 0) {
+                continue;
+            }
+
+            $status = $this->repository->findStatus($userId, $riddleId);
+            if ($status === null || !in_array($this->normalizeStatus($status), ['resolue', 'terminee'], true)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public function deleteRiddleStatuses(int $riddleId): int
     {
         return $riddleId > 0 ? $this->repository->deleteStatusesForRiddle($riddleId) : 0;
