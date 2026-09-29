@@ -13,6 +13,8 @@ require_once __DIR__
 
 class HuntProgressRepositoryStub extends HuntProgressRepository
 {
+    public array $completedRiddles = [];
+
     public function __construct()
     {
     }
@@ -31,10 +33,49 @@ class HuntProgressRepositoryStub extends HuntProgressRepository
     {
         return [(object) ['user_id' => 7, 'first_finish' => '2026-09-29 10:00:00']];
     }
+
+    public function completeRiddles(array $riddleIds, string $completedAt): array
+    {
+        $this->completedRiddles = [$riddleIds, $completedAt];
+
+        return [10 => [7, 8]];
+    }
 }
 
 class HuntProgressServiceTest extends TestCase
 {
+    public function testRepositoryCompletesRiddlesAndReturnsAffectedUsers(): void
+    {
+        $wpdb = new class {
+            public string $prefix = 'wp_';
+            public array $updates = [];
+
+            public function update($table, $data, $where, $format, $whereFormat): void
+            {
+                $this->updates[] = compact('table', 'data', 'where', 'format', 'whereFormat');
+            }
+
+            public function prepare($query, ...$args): string
+            {
+                return $query . ':' . implode(',', $args);
+            }
+
+            public function get_col($query): array
+            {
+                return ['7', '8'];
+            }
+        };
+        $repository = new HuntProgressRepository($wpdb);
+
+        $this->assertSame(
+            [10 => [7, 8]],
+            $repository->completeRiddles([10], '2026-09-29 11:00:00')
+        );
+        $this->assertSame('wp_enigme_statuts_utilisateur', $wpdb->updates[0]['table']);
+        $this->assertSame(['enigme_id' => 10], $wpdb->updates[0]['where']);
+        $this->assertSame('terminee', $wpdb->updates[0]['data']['statut']);
+    }
+
     public function testCalculateCombinesSolvedAndEngagedRiddles(): void
     {
         $service = new HuntProgressService(new HuntProgressRepositoryStub());
@@ -62,5 +103,15 @@ class HuntProgressServiceTest extends TestCase
 
         $this->assertSame(7, $users[0]->user_id);
         $this->assertSame('2026-09-29 10:00:00', $users[0]->first_finish);
+    }
+
+    public function testCompleteRiddlesDelegatesStorageToRepository(): void
+    {
+        $repository = new HuntProgressRepositoryStub();
+        $service = new HuntProgressService($repository);
+        $usersByRiddle = $service->completeRiddles([10], '2026-09-29 11:00:00');
+
+        $this->assertSame([10 => [7, 8]], $usersByRiddle);
+        $this->assertSame([[10], '2026-09-29 11:00:00'], $repository->completedRiddles);
     }
 }

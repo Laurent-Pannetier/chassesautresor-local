@@ -268,8 +268,6 @@ function gerer_chasse_terminee($chasse_id)
     $validables = $classified['validatable'];
     $non_validables = $classified['engagement_only'];
 
-    global $wpdb;
-    $table = $wpdb->prefix . 'enigme_statuts_utilisateur';
     $now   = current_time('mysql');
 
     $results = cat_get_hunt_progress_service()->getCompletedUsers($validables, $non_validables);
@@ -312,27 +310,8 @@ function gerer_chasse_terminee($chasse_id)
         update_field('chasse_cache_statut', 'termine', $chasse_id);
     }
 
-    foreach ($toutes_enigmes as $enigme_id) {
-        // 🗃️ Mise à jour des statuts en base
-        $wpdb->update(
-            $table,
-            [
-                'statut'           => 'terminee',
-                'date_mise_a_jour' => $now,
-            ],
-            [
-                'enigme_id' => $enigme_id,
-            ],
-            ['%s', '%s'],
-            ['%d']
-        );
-
-        // 🔄 Synchronisation des metas utilisateur
-        $user_ids = $wpdb->get_col($wpdb->prepare(
-            "SELECT DISTINCT user_id FROM {$table} WHERE enigme_id = %d",
-            $enigme_id
-        ));
-
+    $users_by_riddle = cat_get_hunt_progress_service()->completeRiddles($toutes_enigmes, $now);
+    foreach ($users_by_riddle as $enigme_id => $user_ids) {
         foreach ($user_ids as $uid) {
             update_user_meta((int) $uid, "statut_enigme_{$enigme_id}", 'terminee');
         }

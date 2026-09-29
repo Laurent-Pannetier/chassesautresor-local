@@ -84,6 +84,44 @@ class HuntProgressRepository
     }
 
     /**
+     * Mark every stored user status for the supplied riddles as completed.
+     *
+     * @param int[] $riddleIds
+     * @return array<int, int[]> User IDs indexed by riddle ID.
+     */
+    public function completeRiddles(array $riddleIds, string $completedAt): array
+    {
+        $table = $this->wpdb->prefix . 'enigme_statuts_utilisateur';
+        $usersByRiddle = [];
+
+        foreach ($riddleIds as $riddleId) {
+            $riddleId = (int) $riddleId;
+            $this->wpdb->update(
+                $table,
+                [
+                    'statut' => 'terminee',
+                    'date_mise_a_jour' => $completedAt,
+                ],
+                ['enigme_id' => $riddleId],
+                ['%s', '%s'],
+                ['%d']
+            );
+
+            $usersByRiddle[$riddleId] = array_map(
+                'intval',
+                $this->wpdb->get_col(
+                    $this->wpdb->prepare(
+                        "SELECT DISTINCT user_id FROM {$table} WHERE enigme_id = %d",
+                        $riddleId
+                    )
+                )
+            );
+        }
+
+        return $usersByRiddle;
+    }
+
+    /**
      * @param int[] $riddleIds
      * @return object[]
      */
