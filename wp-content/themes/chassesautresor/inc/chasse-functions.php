@@ -13,6 +13,13 @@ if (!class_exists(ChassesAuTresor\Core\Progress\HuntWinnersTable::class, false))
         . '/plugins/chassesautresor-core/src/Progress/HuntWinnersTable.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Progress\HuntEngagementService::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Progress/HuntEngagementRepository.php';
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Progress/HuntEngagementService.php';
+}
+
 //
 // 1. 📦 FONCTIONS LIÉES À UNE CHASSE
 // 2. 📦 AFFICHAGE
@@ -66,6 +73,18 @@ function cat_get_hunt_winner_repository(): ChassesAuTresor\Core\Progress\HuntWin
     global $wpdb;
 
     return new ChassesAuTresor\Core\Progress\HuntWinnerRepository($wpdb);
+}
+
+/**
+ * Create the service responsible for hunt-level engagements.
+ */
+function cat_get_hunt_engagement_service(): ChassesAuTresor\Core\Progress\HuntEngagementService
+{
+    global $wpdb;
+
+    return new ChassesAuTresor\Core\Progress\HuntEngagementService(
+        new ChassesAuTresor\Core\Progress\HuntEngagementRepository($wpdb)
+    );
 }
 
 /**
@@ -188,16 +207,7 @@ function verifier_souscription_chasse($user_id, $enigme_id)
  */
 function utilisateur_est_engage_dans_chasse(int $user_id, int $chasse_id): bool
 {
-    global $wpdb;
-    if (!$user_id || !$chasse_id) return false;
-
-    $table = $wpdb->prefix . 'engagements';
-
-    return (bool) $wpdb->get_var($wpdb->prepare(
-        "SELECT 1 FROM $table WHERE user_id = %d AND chasse_id = %d AND enigme_id IS NULL LIMIT 1",
-        $user_id,
-        $chasse_id
-    ));
+    return cat_get_hunt_engagement_service()->isEngaged($user_id, $chasse_id);
 }
 
 /**
@@ -748,17 +758,7 @@ function compter_joueurs_engages_chasse(int $chasse_id): int
         return 0;
     }
 
-    global $wpdb;
-    $table = $wpdb->prefix . 'engagements';
-
-    $query = $wpdb->prepare(
-        "SELECT COUNT(DISTINCT user_id)
-         FROM $table
-         WHERE chasse_id = %d",
-        $chasse_id
-    );
-
-    return (int) $wpdb->get_var($query);
+    return cat_get_hunt_engagement_service()->countPlayers($chasse_id);
 }
 
 /**
@@ -770,8 +770,6 @@ function compter_joueurs_engages_chasse(int $chasse_id): int
  */
 function enregistrer_engagement_chasse(int $user_id, int $chasse_id): bool
 {
-    global $wpdb;
-
     if (!$user_id || !$chasse_id) {
         return false;
     }
@@ -780,31 +778,11 @@ function enregistrer_engagement_chasse(int $user_id, int $chasse_id): bool
         return false;
     }
 
-    $table = $wpdb->prefix . 'engagements';
-
-    $exists = $wpdb->get_var($wpdb->prepare(
-        "SELECT 1 FROM $table WHERE user_id = %d AND chasse_id = %d AND enigme_id IS NULL LIMIT 1",
+    $inserted = cat_get_hunt_engagement_service()->engage(
         $user_id,
-        $chasse_id
-    ));
-
-    if ($exists) {
-        return false;
-    }
-
-    $inserted = $wpdb->insert(
-        $table,
-        [
-            'user_id'         => $user_id,
-            'chasse_id'       => $chasse_id,
-            'date_engagement' => current_time('mysql', 1),
-        ],
-        ['%d', '%d', '%s']
+        $chasse_id,
+        current_time('mysql', 1)
     );
-
-    if (!empty($wpdb->last_error)) {
-        return false;
-    }
 
     if ($inserted) {
         do_action('chasse_engagement_created', $chasse_id);
