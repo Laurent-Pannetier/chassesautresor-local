@@ -232,6 +232,20 @@ class RiddleAttemptServiceTest extends TestCase
         $this->assertFalse($service->hasSuccessfulAttempt(7, 0));
     }
 
+    public function testAttemptCreationPolicyOnlyRejectsDuplicateSuccess(): void
+    {
+        $repository = new RiddleAttemptRepositoryStub();
+        $service = new RiddleAttemptService($repository);
+
+        $repository->hasSuccessfulAttempt = true;
+        $this->assertFalse($service->canCreateAttempt(7, 10, 'bon'));
+        $this->assertTrue($service->canCreateAttempt(7, 10, 'faux'));
+        $this->assertTrue($service->canCreateAttempt(7, 10, 'attente'));
+
+        $repository->hasSuccessfulAttempt = false;
+        $this->assertTrue($service->canCreateAttempt(7, 10, 'bon'));
+    }
+
     /**
      * @dataProvider attemptOutcomeProvider
      */

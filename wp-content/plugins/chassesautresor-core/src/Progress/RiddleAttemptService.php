@@ -133,6 +133,15 @@ class RiddleAttemptService
         return $this->repository->hasSuccessfulAttempt($userId, $riddleId);
     }
 
+    public function canCreateAttempt(int $userId, int $riddleId, string $result): bool
+    {
+        if ($result !== 'bon') {
+            return true;
+        }
+
+        return !$this->hasSuccessfulAttempt($userId, $riddleId);
+    }
+
     public function getOutcome(string $result, bool $notifyFailure = false): array
     {
         if ($result === 'bon') {

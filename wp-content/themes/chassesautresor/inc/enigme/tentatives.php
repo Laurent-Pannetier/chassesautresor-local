@@ -434,11 +434,7 @@ function traiter_tentative(
     bool $envoyer_mail = true
 ): string
 {
-    if (
-        $resultat === 'bon'
-        && $inserer
-        && cat_get_riddle_attempt_service()->hasSuccessfulAttempt($user_id, $enigme_id)
-    ) {
+    if ($inserer && !cat_get_riddle_attempt_service()->canCreateAttempt($user_id, $enigme_id, $resultat)) {
         return '';
     }
 
