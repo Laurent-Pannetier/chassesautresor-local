@@ -48,6 +48,59 @@ class HuntProgressService
         return $this->repository->findStatus($userId, $riddleId);
     }
 
+    public function advanceRiddleStatus(
+        int $userId,
+        int $riddleId,
+        string $newStatus,
+        string $updatedAt,
+        bool $force = false
+    ): bool {
+        $newStatus = $this->normalizeStatus($newStatus);
+        $priorities = [
+            'non_commencee' => 0,
+            'soumis' => 1,
+            'en_cours' => 2,
+            'abandonnee' => 3,
+            'echouee' => 4,
+            'resolue' => 5,
+            'terminee' => 6,
+        ];
+        if ($userId <= 0 || $riddleId <= 0 || !isset($priorities[$newStatus])) {
+            return false;
+        }
+
+        $storedStatus = $this->repository->findStatus($userId, $riddleId);
+        $currentStatus = $storedStatus !== null ? $this->normalizeStatus($storedStatus) : null;
+        if (!$force && in_array($currentStatus, ['resolue', 'terminee'], true)) {
+            return false;
+        }
+        if (!$force && $priorities[$newStatus] <= ($priorities[$currentStatus] ?? 0)) {
+            return false;
+        }
+
+        $this->repository->persistStatus($userId, $riddleId, $newStatus, $updatedAt, $storedStatus !== null);
+        return true;
+    }
+
+    private function normalizeStatus(string $status): string
+    {
+        return strtolower(strtr(trim($status), [
+            'à' => 'a',
+            'â' => 'a',
+            'é' => 'e',
+            'è' => 'e',
+            'ê' => 'e',
+            'ë' => 'e',
+            'î' => 'i',
+            'ï' => 'i',
+            'ô' => 'o',
+            'ù' => 'u',
+            'û' => 'u',
+            'ü' => 'u',
+            'ç' => 'c',
+        ]));
+    }
+
     /**
      * @param int[] $validatable
      * @param int[] $engagementOnly

@@ -48,6 +48,25 @@ class HuntProgressRepository
         return is_string($status) && $status !== '' ? $status : null;
     }
 
+    public function persistStatus(
+        int $userId,
+        int $riddleId,
+        string $status,
+        string $updatedAt,
+        bool $statusExists
+    ): void {
+        $table = $this->wpdb->prefix . 'enigme_statuts_utilisateur';
+        $data = ['statut' => $status, 'date_mise_a_jour' => $updatedAt];
+        $where = ['user_id' => $userId, 'enigme_id' => $riddleId];
+
+        if ($statusExists) {
+            $this->wpdb->update($table, $data, $where, ['%s', '%s'], ['%d', '%d']);
+            return;
+        }
+
+        $this->wpdb->insert($table, array_merge($where, $data), ['%d', '%d', '%s', '%s']);
+    }
+
     /** @param int[] $riddleIds */
     public function countEngaged(int $userId, array $riddleIds): int
     {

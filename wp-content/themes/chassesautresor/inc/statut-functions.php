@@ -125,64 +125,13 @@ function enigme_mettre_a_jour_statut_utilisateur(int $enigme_id, int $user_id, s
 
     $nouveau_statut = strtolower(remove_accents($nouveau_statut));
 
-    global $wpdb;
-    $table = $wpdb->prefix . 'enigme_statuts_utilisateur';
-
-    $priorites = [
-        'non_commencee' => 0,
-        'soumis'        => 1,
-        'en_cours'      => 2,
-        'abandonnee'    => 3,
-        'echouee'       => 4,
-        'resolue'       => 5,
-        'terminee'      => 6,
-    ];
-
-    if (!isset($priorites[$nouveau_statut])) {
-        cat_debug("❌ Statut utilisateur invalide : $nouveau_statut");
-        return false;
-    }
-
-    $statut_actuel = $wpdb->get_var($wpdb->prepare(
-        "SELECT statut FROM $table WHERE user_id = %d AND enigme_id = %d",
+    return cat_get_hunt_progress_service()->advanceRiddleStatus(
         $user_id,
-        $enigme_id
-    ));
-
-    if ($statut_actuel) {
-        $statut_actuel = strtolower(remove_accents($statut_actuel));
-    }
-
-    // Protection : interdiction de rétrograder un joueur ayant déjà résolu l’énigme
-    if (!$forcer && in_array($statut_actuel, ['resolue', 'terminee'], true)) {
-        cat_debug("🔒 Statut non modifié : $statut_actuel → tentative de mise à jour vers $nouveau_statut bloquée (UID: $user_id / Enigme: $enigme_id)");
-        return false;
-    }
-
-    $niveau_actuel  = $priorites[$statut_actuel] ?? 0;
-    $niveau_nouveau = $priorites[$nouveau_statut];
-
-    if (!$forcer && $niveau_nouveau <= $niveau_actuel) {
-        return false;
-    }
-
-    $data = [
-        'statut'           => $nouveau_statut,
-        'date_mise_a_jour' => current_time('mysql'),
-    ];
-
-    $where = [
-        'user_id'   => $user_id,
-        'enigme_id' => $enigme_id,
-    ];
-
-    if ($statut_actuel !== null) {
-        $wpdb->update($table, $data, $where, ['%s', '%s'], ['%d', '%d']);
-    } else {
-        $wpdb->insert($table, array_merge($where, $data), ['%d', '%d', '%s', '%s']);
-    }
-
-    return true;
+        $enigme_id,
+        $nouveau_statut,
+        current_time('mysql'),
+        $forcer
+    );
 }
 
 

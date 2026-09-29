@@ -15,6 +15,8 @@ class HuntProgressRepositoryStub extends HuntProgressRepository
 {
     public array $completedRiddles = [];
     public array $statusArguments = [];
+    public array $persistedStatus = [];
+    public ?string $status = 'resolue';
 
     public function __construct()
     {
@@ -29,7 +31,17 @@ class HuntProgressRepositoryStub extends HuntProgressRepository
     {
         $this->statusArguments = [$userId, $riddleId];
 
-        return 'resolue';
+        return $this->status;
+    }
+
+    public function persistStatus(
+        int $userId,
+        int $riddleId,
+        string $status,
+        string $updatedAt,
+        bool $statusExists
+    ): void {
+        $this->persistedStatus = [$userId, $riddleId, $status, $updatedAt, $statusExists];
     }
 
     public function countEngaged(int $userId, array $riddleIds): int
@@ -118,6 +130,30 @@ class HuntProgressServiceTest extends TestCase
         $this->assertSame([7, 10], $repository->statusArguments);
         $this->assertNull($service->getRiddleStatus(0, 10));
         $this->assertNull($service->getRiddleStatus(7, 0));
+    }
+
+    public function testRiddleStatusCanOnlyAdvanceUnlessForced(): void
+    {
+        $repository = new HuntProgressRepositoryStub();
+        $repository->status = 'en_cours';
+        $service = new HuntProgressService($repository);
+
+        $this->assertTrue($service->advanceRiddleStatus(7, 10, 'resolue', '2026-09-29 12:00:00'));
+        $this->assertSame([7, 10, 'resolue', '2026-09-29 12:00:00', true], $repository->persistedStatus);
+        $this->assertFalse($service->advanceRiddleStatus(7, 10, 'soumis', '2026-09-29 12:00:00'));
+        $this->assertTrue($service->advanceRiddleStatus(7, 10, 'soumis', '2026-09-29 12:00:00', true));
+    }
+
+    public function testNewRiddleStatusIsInsertedAndInvalidInputIsRejected(): void
+    {
+        $repository = new HuntProgressRepositoryStub();
+        $repository->status = null;
+        $service = new HuntProgressService($repository);
+
+        $this->assertTrue($service->advanceRiddleStatus(7, 10, 'en_cours', '2026-09-29 12:00:00'));
+        $this->assertSame([7, 10, 'en_cours', '2026-09-29 12:00:00', false], $repository->persistedStatus);
+        $this->assertFalse($service->advanceRiddleStatus(0, 10, 'en_cours', '2026-09-29 12:00:00'));
+        $this->assertFalse($service->advanceRiddleStatus(7, 10, 'inconnu', '2026-09-29 12:00:00'));
     }
 
     public function testCompletedUsersComeFromProgressRepository(): void
