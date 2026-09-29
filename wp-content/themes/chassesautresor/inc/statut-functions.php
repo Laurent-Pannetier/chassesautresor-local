@@ -14,6 +14,11 @@ if (!class_exists(ChassesAuTresor\Core\Progress\HuntProgressService::class, fals
         . '/plugins/chassesautresor-core/src/Progress/HuntProgressService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\RiddleCompletionService::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Content/RiddleCompletionService.php';
+}
+
 if (!function_exists('cat_get_hunt_progress_service')) {
     function cat_get_hunt_progress_service(): ChassesAuTresor\Core\Progress\HuntProgressService
     {
@@ -559,19 +564,20 @@ function enigme_est_complet(int $enigme_id): bool
     $images = get_field('enigme_visuel_image', $enigme_id);
     $placeholder = defined('ID_IMAGE_PLACEHOLDER_ENIGME') ? ID_IMAGE_PLACEHOLDER_ENIGME : 3925;
     $first_id = (is_array($images) && !empty($images[0]['ID'])) ? (int) $images[0]['ID'] : 0;
-    $image_ok = $first_id && $first_id !== $placeholder;
-
-    // 🔄 [NOVELTY] Require an expected answer if validation is automatic
     $mode = get_field('enigme_mode_validation', $enigme_id);
     $reponses = enigme_get_bonnes_reponses($enigme_id);
-    $reponse_ok = $mode !== 'automatique' || !empty($reponses);
-
-    // ✅ Ensure prerequisite list is filled when required
     $condition_acces = get_field('enigme_acces_condition', $enigme_id) ?? 'immediat';
     $pre_requis = get_field('enigme_acces_pre_requis', $enigme_id);
-    $pre_requis_ok = $condition_acces !== 'pre_requis' || (is_array($pre_requis) && !empty($pre_requis));
 
-    return $titre_ok && $image_ok && $reponse_ok && $pre_requis_ok;
+    return (new ChassesAuTresor\Core\Content\RiddleCompletionService())->isComplete(
+        $titre_ok,
+        $first_id,
+        $placeholder,
+        (string) $mode,
+        !empty($reponses),
+        (string) $condition_acces,
+        is_array($pre_requis) && !empty($pre_requis)
+    );
 }
 
 function enigme_mettre_a_jour_complet(int $enigme_id): bool
