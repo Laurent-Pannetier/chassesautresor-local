@@ -221,9 +221,13 @@ function est_organisateur($user_id = null)
     }
 
     $roles = (array) $user->roles;
+    $service = new ChassesAuTresor\Core\Content\OrganizerRoleService();
 
-    return in_array(ROLE_ORGANISATEUR, $roles, true)
-        || in_array(ROLE_ORGANISATEUR_CREATION, $roles, true);
+    return $service->isOrganizer(
+        $roles,
+        ROLE_ORGANISATEUR,
+        ROLE_ORGANISATEUR_CREATION
+    );
 }
 
 
