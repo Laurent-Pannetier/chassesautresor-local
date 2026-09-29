@@ -82,4 +82,20 @@ class HuntEngagementRepository
 
         return (bool) $inserted && empty($this->wpdb->last_error);
     }
+
+    public function countUniquePlayersForHunts(array $huntIds, array $excludedUserIds = []): int
+    {
+        $table = $this->wpdb->prefix . 'engagements';
+        $where = 'enigme_id IS NULL AND chasse_id IN ('
+            . implode(',', array_fill(0, count($huntIds), '%d')) . ')';
+        $params = $huntIds;
+        if ($excludedUserIds !== []) {
+            $where .= ' AND user_id NOT IN (' . implode(',', array_fill(0, count($excludedUserIds), '%d')) . ')';
+            $params = array_merge($params, $excludedUserIds);
+        }
+        return count($this->wpdb->get_col($this->wpdb->prepare(
+            "SELECT DISTINCT user_id FROM {$table} WHERE {$where}",
+            $params
+        )));
+    }
 }

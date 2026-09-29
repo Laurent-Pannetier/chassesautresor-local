@@ -49,6 +49,12 @@ class HuntEngagementRepositoryStub extends HuntEngagementRepository
 
         return true;
     }
+
+    public function countUniquePlayersForHunts(array $huntIds, array $excludedUserIds = []): int
+    {
+        $this->participantRange = [$huntIds, $excludedUserIds];
+        return 2;
+    }
 }
 
 class HuntEngagementServiceTest extends TestCase
@@ -96,5 +102,14 @@ class HuntEngagementServiceTest extends TestCase
             $repository->participantRange
         );
         $this->assertSame(0, $service->countParticipants(0));
+    }
+
+    public function testUniqueOrganizerPlayersExcludeInternalAccounts(): void
+    {
+        $repository = new HuntEngagementRepositoryStub();
+        $service = new HuntEngagementService($repository);
+        $this->assertSame(2, $service->countUniquePlayersForHunts([10, 11], [1, 2]));
+        $this->assertSame([[10, 11], [1, 2]], $repository->participantRange);
+        $this->assertSame(0, $service->countUniquePlayersForHunts([]));
     }
 }
