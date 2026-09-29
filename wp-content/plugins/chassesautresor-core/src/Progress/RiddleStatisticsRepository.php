@@ -1,0 +1,129 @@
+<?php
+
+declare(strict_types=1);
+
+namespace ChassesAuTresor\Core\Progress;
+
+class RiddleStatisticsRepository
+{
+    private $wpdb;
+
+    public function __construct($wpdb)
+    {
+        $this->wpdb = $wpdb;
+    }
+
+    public function aggregateAttempts(
+        int $riddleId,
+        string $expression,
+        ?string $result = null,
+        ?string $startAt = null,
+        ?string $endAt = null
+    ): int {
+        $table = $this->wpdb->prefix . 'enigme_tentatives';
+        $where = 'enigme_id = %d';
+        $params = [$riddleId];
+        if ($result !== null) {
+            $where .= ' AND resultat = %s';
+            $params[] = $result;
+        }
+        if ($startAt !== null && $endAt !== null) {
+            $where .= ' AND date_tentative BETWEEN %s AND %s';
+            $params[] = $startAt;
+            $params[] = $endAt;
+        }
+        return (int) $this->wpdb->get_var(
+            $this->wpdb->prepare("SELECT {$expression} FROM {$table} WHERE {$where}", ...$params)
+        );
+    }
+
+    public function countEngagedPlayers(
+        int $riddleId,
+        ?string $startAt = null,
+        ?string $endAt = null,
+        array $excludedUserIds = []
+    ): int {
+        $table = $this->wpdb->prefix . 'engagements';
+        $where = 'enigme_id = %d';
+        $params = [$riddleId];
+        if ($startAt !== null && $endAt !== null) {
+            $where .= ' AND date_engagement BETWEEN %s AND %s';
+            $params[] = $startAt;
+            $params[] = $endAt;
+        }
+        if ($excludedUserIds !== []) {
+            $where .= ' AND user_id NOT IN (' . implode(',', array_fill(0, count($excludedUserIds), '%d')) . ')';
+            $params = array_merge($params, $excludedUserIds);
+        }
+        return (int) $this->wpdb->get_var(
+            $this->wpdb->prepare("SELECT COUNT(DISTINCT user_id) FROM {$table} WHERE {$where}", ...$params)
+        );
+    }
+
+    public function countSolvedPlayers(int $riddleId): int
+    {
+        $table = $this->wpdb->prefix . 'enigme_statuts_utilisateur';
+
+        return (int) $this->wpdb->get_var(
+            $this->wpdb->prepare(
+                "SELECT COUNT(DISTINCT user_id) FROM {$table} "
+                . "WHERE enigme_id = %d AND statut IN ('resolue','terminee','terminée')",
+                $riddleId
+            )
+        );
+    }
+
+    public function listSolvers(int $riddleId, array $excludedUserIds = []): array
+    {
+        $table = $this->wpdb->prefix . 'enigme_tentatives';
+        $exclude = '';
+        $params = [$riddleId];
+        if ($excludedUserIds !== []) {
+            $exclude = ' AND user_id NOT IN ('
+                . implode(',', array_fill(0, count($excludedUserIds), '%d')) . ')';
+            $params = array_merge($params, $excludedUserIds);
+        }
+        $params[] = $riddleId;
+        $sql = "SELECT r.user_id, u.user_login AS username, r.resolution_date, COUNT(*) AS tentatives "
+            . "FROM (SELECT user_id, MIN(date_tentative) AS resolution_date FROM {$table} "
+            . "WHERE enigme_id = %d AND resultat = 'bon'{$exclude} GROUP BY user_id) r "
+            . "JOIN {$table} t ON t.enigme_id = %d AND t.user_id = r.user_id "
+            . "AND t.date_tentative <= r.resolution_date JOIN {$this->wpdb->users} u ON u.ID = r.user_id "
+            . 'GROUP BY r.user_id, u.user_login, r.resolution_date ORDER BY r.resolution_date ASC';
+        return (array) $this->wpdb->get_results($this->wpdb->prepare($sql, $params), ARRAY_A);
+    }
+
+    public function listParticipants(
+        int $riddleId,
+        array $excludedUserIds,
+        int $limit,
+        int $offset,
+        string $orderBy,
+        string $order
+    ): array {
+        $engagements = $this->wpdb->prefix . 'engagements';
+        $attempts = $this->wpdb->prefix . 'enigme_tentatives';
+        $statuses = $this->wpdb->prefix . 'enigme_statuts_utilisateur';
+        $orderBy = $orderBy === 'tentatives' ? 'nb_tentatives' : 'date_engagement';
+        $order = strtoupper($order) === 'DESC' ? 'DESC' : 'ASC';
+        $exclude = '';
+        $params = [$riddleId, $riddleId, $riddleId];
+        if ($excludedUserIds !== []) {
+            $exclude = ' AND e.user_id NOT IN ('
+                . implode(',', array_fill(0, count($excludedUserIds), '%d')) . ')';
+            $params = array_merge($params, $excludedUserIds);
+        }
+        $params[] = $limit;
+        $params[] = $offset;
+        $sql = "SELECT e.user_id, u.user_login AS username, e.date_engagement, "
+            . "COALESCE(t.nb_tentatives, 0) AS nb_tentatives, r.date_resolution, "
+            . "IF(s.statut IN ('resolue','terminee'), 1, 0) AS trouve FROM {$engagements} e "
+            . "JOIN {$this->wpdb->users} u ON e.user_id = u.ID LEFT JOIN (SELECT user_id, COUNT(*) AS nb_tentatives "
+            . "FROM {$attempts} WHERE enigme_id = %d GROUP BY user_id) t ON t.user_id = e.user_id "
+            . "LEFT JOIN (SELECT user_id, MIN(date_tentative) AS date_resolution FROM {$attempts} "
+            . "WHERE enigme_id = %d AND resultat = 'bon' GROUP BY user_id) r ON r.user_id = e.user_id "
+            . "LEFT JOIN {$statuses} s ON s.user_id = e.user_id AND s.enigme_id = e.enigme_id "
+            . "WHERE e.enigme_id = %d{$exclude} ORDER BY {$orderBy} {$order} LIMIT %d OFFSET %d";
+        return (array) $this->wpdb->get_results($this->wpdb->prepare($sql, $params), ARRAY_A);
+    }
+}

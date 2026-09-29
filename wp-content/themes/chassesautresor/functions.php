@@ -614,12 +614,6 @@ if (defined('WP_CLI') && WP_CLI) {
     require_once $inc_path . 'cli/class-cat-cli-command.php';
 }
 
-add_action('shutdown', function (): void {
-    global $wpdb;
-
-    (new UserMessageRepository($wpdb))->purgeExpired();
-});
-
 require_once $inc_path . 'shortcodes-init.php';
 require_once $inc_path . 'enigme-functions.php';
 require_once $inc_path . 'user-functions.php';

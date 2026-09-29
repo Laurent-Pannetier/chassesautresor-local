@@ -102,6 +102,13 @@ class MessageMigrationCommandTest extends TestCase
         $cmd = new Cat_CLI_Command();
         $cmd->migrate_messages();
 
+        $reflection = new ReflectionClass($cmd);
+        $this->assertSame('ChassesAuTresor\\Core\\Cli\\CatCliCommand', $reflection->getName());
+        $this->assertStringContainsString(
+            '/plugins/chassesautresor-core/src/Cli/CatCliCommand.php',
+            str_replace('\\', '/', (string) $reflection->getFileName())
+        );
+
         global $cat_test_user_meta;
 
         $repo = new UserMessageRepository($this->wpdb);
