@@ -9,6 +9,16 @@ namespace ChassesAuTresor\Core\Content;
  */
 class HuntManagementService
 {
+    public function isInCreation(
+        string $publicationStatus,
+        string $validationStatus,
+        string $businessStatus
+    ): bool {
+        return $publicationStatus === 'pending'
+            && $validationStatus === 'creation'
+            && $businessStatus === 'revision';
+    }
+
     public function canCreate(
         bool $isAuthenticated,
         bool $isAdministrator,

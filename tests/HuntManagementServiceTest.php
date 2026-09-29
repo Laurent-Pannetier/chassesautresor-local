@@ -17,6 +17,14 @@ class HuntManagementServiceTest extends TestCase
         $this->service = new HuntManagementService();
     }
 
+    public function testHuntInCreationRequiresAllCreationStatuses(): void
+    {
+        $this->assertTrue($this->service->isInCreation('pending', 'creation', 'revision'));
+        $this->assertFalse($this->service->isInCreation('publish', 'creation', 'revision'));
+        $this->assertFalse($this->service->isInCreation('pending', 'valide', 'revision'));
+        $this->assertFalse($this->service->isInCreation('pending', 'creation', 'en_cours'));
+    }
+
     public function testPublishedOrganizerCanCreateHuntWithoutPendingHunt(): void
     {
         $this->assertTrue($this->canCreate());

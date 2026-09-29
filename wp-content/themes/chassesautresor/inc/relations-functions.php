@@ -23,6 +23,11 @@ if (!class_exists(ChassesAuTresor\Core\Relationships\OrganizerHuntQueryService::
         . '/plugins/chassesautresor-core/src/Relationships/OrganizerHuntQueryService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HuntManagementService::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Content/HuntManagementService.php';
+}
+
 function cat_get_organizer_service(): ChassesAuTresor\Core\Relationships\OrganizerService
 {
     global $wpdb;
@@ -45,6 +50,11 @@ function cat_get_hunt_riddle_query_service(): ChassesAuTresor\Core\Relationships
 function cat_get_organizer_hunt_query_service(): ChassesAuTresor\Core\Relationships\OrganizerHuntQueryService
 {
     return new ChassesAuTresor\Core\Relationships\OrganizerHuntQueryService();
+}
+
+function cat_get_hunt_management_service(): ChassesAuTresor\Core\Content\HuntManagementService
+{
+    return new ChassesAuTresor\Core\Content\HuntManagementService();
 }
 
 // 📚 SOMMAIRE DU FICHIER : relations-functions.php
@@ -324,35 +334,36 @@ function organisateur_get_nb_chasses_publiees(int $organisateur_id): int
  */
 function get_chasses_en_creation($organisateur_id)
 {
-  if (!is_numeric($organisateur_id)) {
-    cat_debug("⛔ get_chasses_en_creation : ID non numérique : " . print_r($organisateur_id, true));
-    return [];
-  }
+    if (!is_numeric($organisateur_id)) {
+        cat_debug("⛔ get_chasses_en_creation : ID non numérique : " . print_r($organisateur_id, true));
+        return [];
+    }
 
-  $chasses_query = get_chasses_de_organisateur($organisateur_id);
-  $chasse_ids    = is_a($chasses_query, 'WP_Query') ? $chasses_query->posts : (array) $chasses_query;
+    $chasses_query = get_chasses_de_organisateur($organisateur_id);
+    $chasse_ids = is_a($chasses_query, 'WP_Query') ? $chasses_query->posts : (array) $chasses_query;
 
-  if (empty($chasse_ids)) {
-    cat_debug("🔍 Aucune chasse liée à l’organisateur $organisateur_id");
-    return [];
-  }
+    if (empty($chasse_ids)) {
+        cat_debug("🔍 Aucune chasse liée à l’organisateur $organisateur_id");
+        return [];
+    }
 
-  $filtrees = array_filter($chasse_ids, function ($id) {
-    $id               = (int) $id;
-    $statut_wp        = get_post_status($id);
-    $statut_validation = get_field('chasse_cache_statut_validation', $id);
-    $statut_metier    = get_field('chasse_cache_statut', $id);
+    $service = cat_get_hunt_management_service();
+    $filtered = array_filter($chasse_ids, function ($id) use ($service): bool {
+        $id = (int) $id;
+        $publicationStatus = (string) get_post_status($id);
+        $validationStatus = (string) get_field('chasse_cache_statut_validation', $id);
+        $businessStatus = (string) get_field('chasse_cache_statut', $id);
 
-    cat_debug("🧪 #$id | statut=$statut_wp | validation=$statut_validation | metier=$statut_metier");
+        cat_debug(
+            "🧪 #$id | statut=$publicationStatus | validation=$validationStatus | metier=$businessStatus"
+        );
 
-    return $statut_wp === 'pending'
-      && $statut_validation === 'creation'
-      && $statut_metier === 'revision';
-  });
+        return $service->isInCreation($publicationStatus, $validationStatus, $businessStatus);
+    });
 
-  cat_debug("📦 Chasses en création retrouvées : " . count($filtrees));
+    cat_debug("📦 Chasses en création retrouvées : " . count($filtered));
 
-  return array_values($filtrees);
+    return array_values($filtered);
 }
 
 
