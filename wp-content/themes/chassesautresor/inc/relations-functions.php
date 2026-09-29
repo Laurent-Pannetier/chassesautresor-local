@@ -13,6 +13,11 @@ if (!class_exists(ChassesAuTresor\Core\Relationships\RelationshipService::class,
         . '/plugins/chassesautresor-core/src/Relationships/RelationshipService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Relationships\HuntRiddleQueryService::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Relationships/HuntRiddleQueryService.php';
+}
+
 function cat_get_organizer_service(): ChassesAuTresor\Core\Relationships\OrganizerService
 {
     global $wpdb;
@@ -25,6 +30,11 @@ function cat_get_organizer_service(): ChassesAuTresor\Core\Relationships\Organiz
 function cat_get_relationship_service(): ChassesAuTresor\Core\Relationships\RelationshipService
 {
     return new ChassesAuTresor\Core\Relationships\RelationshipService();
+}
+
+function cat_get_hunt_riddle_query_service(): ChassesAuTresor\Core\Relationships\HuntRiddleQueryService
+{
+    return new ChassesAuTresor\Core\Relationships\HuntRiddleQueryService();
 }
 
 // 📚 SOMMAIRE DU FICHIER : relations-functions.php
@@ -432,38 +442,15 @@ function recuperer_enigmes_associees(int $chasse_id): array
  */
 function recuperer_enigmes_pour_chasse(int $chasse_id): array
 {
-  if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
-    return [];
-  }
+    if ($chasse_id <= 0 || get_post_type($chasse_id) !== 'chasse') {
+        return [];
+    }
 
-  $query = new WP_Query([
-    'post_type'      => 'enigme',
-    'posts_per_page' => -1,
-    'post_status'    => ['publish', 'pending'],
-    'orderby'        => 'menu_order',
-    'order'          => 'ASC',
-    'meta_query'     => [
-      [
-        'key'     => 'enigme_chasse_associee',
-        'value'   => $chasse_id,
-        'compare' => '=',
-      ],
-      [
-        'relation' => 'OR',
-        [
-          'key'     => 'enigme_cache_statut_validation',
-          'compare' => 'NOT EXISTS',
-        ],
-        [
-          'key'     => 'enigme_cache_statut_validation',
-          'value'   => 'banni',
-          'compare' => '!=',
-        ],
-      ],
-    ],
-  ]);
+    $query = new WP_Query(
+        cat_get_hunt_riddle_query_service()->getVisibleRiddlesQueryArgs($chasse_id)
+    );
 
-  return $query->have_posts() ? $query->posts : [];
+    return $query->have_posts() ? $query->posts : [];
 }
 
 
@@ -473,25 +460,15 @@ function recuperer_enigmes_pour_chasse(int $chasse_id): array
  */
 function recuperer_ids_enigmes_pour_chasse(int $chasse_id): array
 {
-  if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
-    return [];
-  }
+    if ($chasse_id <= 0 || get_post_type($chasse_id) !== 'chasse') {
+        return [];
+    }
 
-  $query = new WP_Query([
-    'post_type'      => 'enigme',
-    'fields'         => 'ids', // ⚠️ retourne un tableau d'IDs
-    'posts_per_page' => -1,
-    'post_status'    => ['publish', 'pending', 'draft'],
-    'meta_query'     => [
-      [
-        'key'     => 'enigme_chasse_associee',
-        'value'   => $chasse_id,
-        'compare' => '=',
-      ],
-    ],
-  ]);
+    $query = new WP_Query(
+        cat_get_hunt_riddle_query_service()->getRiddleIdsQueryArgs($chasse_id)
+    );
 
-  return $query->posts;
+    return $query->posts;
 }
 
 
