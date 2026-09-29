@@ -1060,25 +1060,14 @@ add_action('acf/save_post', 'mettre_a_jour_cache_indice', 30);
  */
 function basculer_indices_programmes(): void
 {
-    $indices = get_posts([
-        'post_type'      => 'indice',
-        'post_status'    => ['publish', 'pending', 'draft', 'private', 'future'],
-        'meta_query'     => [
-            [
-                'key'   => 'indice_cache_etat_systeme',
-                'value' => 'programme',
-            ],
-            [
-                'key'     => 'indice_date_disponibilite',
-                'value'   => current_time('mysql'),
-                'compare' => '<=',
-                'type'    => 'DATETIME',
-            ],
-        ],
-        'fields'         => 'ids',
-        'no_found_rows'  => true,
-        'posts_per_page' => -1,
-    ]);
+    $queryArgs = cat_get_hint_query_service()->getDueProgrammedHintIdsQueryArgs(
+        (string) current_time('mysql')
+    );
+    if ($queryArgs === []) {
+        return;
+    }
+
+    $indices = get_posts($queryArgs);
 
     foreach ($indices as $indice_id) {
         mettre_a_jour_cache_indice($indice_id);

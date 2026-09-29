@@ -54,4 +54,22 @@ class HintQueryServiceTest extends TestCase
         $this->assertSame('date', $args['orderby']);
         $this->assertSame('ASC', $args['order']);
     }
+
+    public function testDueProgrammedHintsUseCurrentDate(): void
+    {
+        $args = $this->service->getDueProgrammedHintIdsQueryArgs('2026-09-29 12:00:00');
+
+        $this->assertSame('programme', $args['meta_query'][0]['value']);
+        $this->assertSame('indice_date_disponibilite', $args['meta_query'][1]['key']);
+        $this->assertSame('2026-09-29 12:00:00', $args['meta_query'][1]['value']);
+        $this->assertSame('<=', $args['meta_query'][1]['compare']);
+        $this->assertSame('DATETIME', $args['meta_query'][1]['type']);
+        $this->assertSame('ids', $args['fields']);
+        $this->assertTrue($args['no_found_rows']);
+    }
+
+    public function testDueProgrammedHintsRejectEmptyDate(): void
+    {
+        $this->assertSame([], $this->service->getDueProgrammedHintIdsQueryArgs(''));
+    }
 }

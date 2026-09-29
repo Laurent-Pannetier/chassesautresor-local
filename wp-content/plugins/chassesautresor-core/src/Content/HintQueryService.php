@@ -54,4 +54,36 @@ class HintQueryService
 
         return $args;
     }
+
+    /**
+     * Build the query for programmed hints whose availability date has elapsed.
+     *
+     * @return array<string, mixed>
+     */
+    public function getDueProgrammedHintIdsQueryArgs(string $currentDate): array
+    {
+        if ($currentDate === '') {
+            return [];
+        }
+
+        return [
+            'post_type' => 'indice',
+            'post_status' => ['publish', 'pending', 'draft', 'private', 'future'],
+            'meta_query' => [
+                [
+                    'key' => 'indice_cache_etat_systeme',
+                    'value' => 'programme',
+                ],
+                [
+                    'key' => 'indice_date_disponibilite',
+                    'value' => $currentDate,
+                    'compare' => '<=',
+                    'type' => 'DATETIME',
+                ],
+            ],
+            'fields' => 'ids',
+            'no_found_rows' => true,
+            'posts_per_page' => -1,
+        ];
+    }
 }
