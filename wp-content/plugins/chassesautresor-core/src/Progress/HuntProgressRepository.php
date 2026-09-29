@@ -51,6 +51,26 @@ class HuntProgressRepository
         );
     }
 
+    /** @param int[] $riddleIds */
+    public function countValidatable(array $riddleIds): int
+    {
+        if ($riddleIds === []) {
+            return 0;
+        }
+
+        $table = $this->wpdb->prefix . 'postmeta';
+        $placeholders = implode(',', array_fill(0, count($riddleIds), '%d'));
+        $sql = "SELECT COUNT(DISTINCT post_id) FROM {$table} WHERE meta_key = %s "
+            . "AND meta_value <> %s AND post_id IN ({$placeholders})";
+
+        return (int) $this->wpdb->get_var(
+            $this->wpdb->prepare(
+                $sql,
+                array_merge(['enigme_mode_validation', 'aucune'], $riddleIds)
+            )
+        );
+    }
+
     /**
      * Return users who completed all required riddles, ordered by first completion.
      *

@@ -537,12 +537,7 @@ function chasse_calculer_progression_utilisateur(int $chasse_id, int $user_id): 
     $total   = count($enigmes);
     $resolvables = 0;
     if ($total > 0) {
-        global $wpdb;
-        $placeholders = implode(',', array_fill(0, $total, '%d'));
-        $sql = "SELECT COUNT(DISTINCT post_id) FROM {$wpdb->prefix}postmeta WHERE meta_key = %s "
-            . "AND meta_value <> %s AND post_id IN ($placeholders)";
-        $params = array_merge(['enigme_mode_validation', 'aucune'], $enigmes);
-        $resolvables = (int) $wpdb->get_var($wpdb->prepare($sql, $params));
+        $resolvables = cat_get_hunt_progress_service()->countValidatableRiddles($enigmes);
     }
 
     $engagees = 0;

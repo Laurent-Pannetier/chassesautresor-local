@@ -69,6 +69,12 @@ class HuntProgressService
         return $this->repository->countEngaged($userId, $riddleIds);
     }
 
+    /** @param int[] $riddleIds */
+    public function countValidatableRiddles(array $riddleIds): int
+    {
+        return $this->repository->countValidatable($riddleIds);
+    }
+
     /**
      * @param int[] $riddleIds
      * @return array<int, int[]> User IDs indexed by riddle ID.

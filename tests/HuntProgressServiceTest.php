@@ -29,6 +29,11 @@ class HuntProgressRepositoryStub extends HuntProgressRepository
         return 1;
     }
 
+    public function countValidatable(array $riddleIds): int
+    {
+        return 2;
+    }
+
     public function findCompletedUsers(array $validatable, array $engagementOnly): array
     {
         return [(object) ['user_id' => 7, 'first_finish' => '2026-09-29 10:00:00']];
@@ -119,6 +124,13 @@ class HuntProgressServiceTest extends TestCase
 
         $this->assertSame(1, $service->countEngagedRiddles(7, [10, 11]));
         $this->assertSame(0, $service->countEngagedRiddles(0, [10, 11]));
+    }
+
+    public function testValidatableRiddleCountComesFromProgressRepository(): void
+    {
+        $service = new HuntProgressService(new HuntProgressRepositoryStub());
+
+        $this->assertSame(2, $service->countValidatableRiddles([10, 11, 12]));
     }
 
     public function testCompleteRiddlesDelegatesStorageToRepository(): void
