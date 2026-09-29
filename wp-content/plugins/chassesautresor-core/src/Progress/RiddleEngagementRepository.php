@@ -28,4 +28,17 @@ class RiddleEngagementRepository
             )
         );
     }
+
+    public function insert(int $userId, int $riddleId, string $engagedAt): bool
+    {
+        return $this->wpdb->insert(
+            $this->wpdb->prefix . 'engagements',
+            [
+                'user_id' => $userId,
+                'enigme_id' => $riddleId,
+                'date_engagement' => $engagedAt,
+            ],
+            ['%d', '%d', '%s']
+        ) !== false;
+    }
 }

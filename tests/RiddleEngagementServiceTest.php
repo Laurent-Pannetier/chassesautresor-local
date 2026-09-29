@@ -13,6 +13,8 @@ class RiddleEngagementRepositoryStub extends RiddleEngagementRepository
 {
     public array $arguments = [];
     public bool $engaged = true;
+    public bool $inserted = true;
+    public array $insertArguments = [];
 
     public function __construct()
     {
@@ -22,6 +24,12 @@ class RiddleEngagementRepositoryStub extends RiddleEngagementRepository
     {
         $this->arguments = [$userId, $riddleId];
         return $this->engaged;
+    }
+
+    public function insert(int $userId, int $riddleId, string $engagedAt): bool
+    {
+        $this->insertArguments = [$userId, $riddleId, $engagedAt];
+        return $this->inserted;
     }
 }
 
@@ -47,6 +55,8 @@ class RiddleEngagementServiceTest extends TestCase
             public string $prefix = 'wp_';
             public array $arguments = [];
             public $result = '1';
+            public $insertResult = 1;
+            public array $insertArguments = [];
 
             public function prepare(string $query, ...$arguments): string
             {
@@ -58,6 +68,12 @@ class RiddleEngagementServiceTest extends TestCase
             {
                 return $this->result;
             }
+
+            public function insert(string $table, array $data, array $format)
+            {
+                $this->insertArguments = [$table, $data, $format];
+                return $this->insertResult;
+            }
         };
         $repository = new RiddleEngagementRepository($wpdb);
 
@@ -66,5 +82,47 @@ class RiddleEngagementServiceTest extends TestCase
 
         $wpdb->result = null;
         $this->assertFalse($repository->exists(7, 10));
+
+        $this->assertTrue($repository->insert(7, 10, '2026-09-29 12:00:00'));
+        $this->assertSame(
+            [
+                'wp_engagements',
+                ['user_id' => 7, 'enigme_id' => 10, 'date_engagement' => '2026-09-29 12:00:00'],
+                ['%d', '%d', '%s'],
+            ],
+            $wpdb->insertArguments
+        );
+
+        $wpdb->insertResult = false;
+        $this->assertFalse($repository->insert(7, 10, '2026-09-29 12:00:00'));
+    }
+
+    public function testEnsureEngagedPreservesExistingAndReportsCreation(): void
+    {
+        $repository = new RiddleEngagementRepositoryStub();
+        $service = new RiddleEngagementService($repository);
+
+        $this->assertSame(
+            ['success' => true, 'created' => false],
+            $service->ensureEngaged(7, 10, '2026-09-29 12:00:00')
+        );
+        $this->assertSame([], $repository->insertArguments);
+
+        $repository->engaged = false;
+        $this->assertSame(
+            ['success' => true, 'created' => true],
+            $service->ensureEngaged(7, 10, '2026-09-29 12:00:00')
+        );
+        $this->assertSame([7, 10, '2026-09-29 12:00:00'], $repository->insertArguments);
+
+        $repository->inserted = false;
+        $this->assertSame(
+            ['success' => false, 'created' => false],
+            $service->ensureEngaged(7, 10, '2026-09-29 12:00:00')
+        );
+        $this->assertSame(
+            ['success' => false, 'created' => false],
+            $service->ensureEngaged(0, 10, '2026-09-29 12:00:00')
+        );
     }
 }

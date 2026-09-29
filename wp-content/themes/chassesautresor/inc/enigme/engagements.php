@@ -36,27 +36,16 @@ if (!function_exists('cat_get_riddle_engagement_service')) {
      */
     function enregistrer_engagement_enigme(int $user_id, int $enigme_id): bool
     {
-        global $wpdb;
-        $table = $wpdb->prefix . 'engagements';
-
-        $existe = $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM $table WHERE user_id = %d AND enigme_id = %d",
+        $engagement = cat_get_riddle_engagement_service()->ensureEngaged(
             $user_id,
-            $enigme_id
-        ));
-
-        if ($existe) return true;
-
-        $result = $wpdb->insert($table, [
-            'user_id'         => $user_id,
-            'enigme_id'       => $enigme_id,
-            'date_engagement' => current_time('mysql'),
-        ], ['%d', '%d', '%s']);
-        if ($result !== false) {
+            $enigme_id,
+            current_time('mysql')
+        );
+        if ($engagement['created']) {
             do_action('enigme_engagement_created', $enigme_id);
         }
 
-        return $result !== false;
+        return $engagement['success'];
     }
 
 
