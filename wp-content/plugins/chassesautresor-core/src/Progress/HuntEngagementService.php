@@ -57,4 +57,10 @@ class HuntEngagementService
     {
         return $huntIds === [] ? 0 : $this->repository->countUniquePlayersForHunts($huntIds, $excludedUserIds);
     }
+
+    /** @return int[] */
+    public function findHuntIdsForUser(int $userId): array
+    {
+        return $userId > 0 ? $this->repository->findHuntIdsForUser($userId) : [];
+    }
 }

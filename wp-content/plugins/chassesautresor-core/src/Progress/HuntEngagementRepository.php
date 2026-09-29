@@ -98,4 +98,20 @@ class HuntEngagementRepository
             $params
         )));
     }
+
+    /** @return int[] */
+    public function findHuntIdsForUser(int $userId): array
+    {
+        $table = $this->wpdb->prefix . 'engagements';
+        $huntIds = $this->wpdb->get_col(
+            $this->wpdb->prepare(
+                "SELECT chasse_id FROM {$table} "
+                . 'WHERE user_id = %d AND chasse_id IS NOT NULL '
+                . 'GROUP BY chasse_id ORDER BY MAX(date_engagement) DESC',
+                $userId
+            )
+        );
+
+        return array_values(array_filter(array_map('intval', $huntIds)));
+    }
 }

@@ -55,6 +55,13 @@ class HuntEngagementRepositoryStub extends HuntEngagementRepository
         $this->participantRange = [$huntIds, $excludedUserIds];
         return 2;
     }
+
+    public function findHuntIdsForUser(int $userId): array
+    {
+        $this->participantRange = [$userId];
+
+        return [12, 14];
+    }
 }
 
 class HuntEngagementServiceTest extends TestCase
@@ -111,5 +118,15 @@ class HuntEngagementServiceTest extends TestCase
         $this->assertSame(2, $service->countUniquePlayersForHunts([10, 11], [1, 2]));
         $this->assertSame([[10, 11], [1, 2]], $repository->participantRange);
         $this->assertSame(0, $service->countUniquePlayersForHunts([]));
+    }
+
+    public function testEngagedHuntIdsAreDelegatedForAValidUser(): void
+    {
+        $repository = new HuntEngagementRepositoryStub();
+        $service = new HuntEngagementService($repository);
+
+        $this->assertSame([12, 14], $service->findHuntIdsForUser(7));
+        $this->assertSame([7], $repository->participantRange);
+        $this->assertSame([], $service->findHuntIdsForUser(0));
     }
 }

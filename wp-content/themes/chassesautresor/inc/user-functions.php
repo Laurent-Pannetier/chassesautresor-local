@@ -912,28 +912,14 @@ function ca_get_engaged_hunts_page_param(): string
  */
 function ca_get_user_engaged_hunt_ids(int $user_id): array
 {
-    global $wpdb;
-
-    $table = $wpdb->prefix . 'engagements';
-    $query = $wpdb->prepare(
-        "SELECT chasse_id FROM {$table} WHERE user_id = %d AND chasse_id IS NOT NULL ORDER BY date_engagement DESC",
-        $user_id
-    );
-
-    $raw_ids = $wpdb->get_col($query);
-    if (empty($raw_ids)) {
+    $engaged_hunt_ids = cat_get_hunt_engagement_service()->findHuntIdsForUser($user_id);
+    if ($engaged_hunt_ids === []) {
         return [];
     }
 
     $chasse_ids = [];
 
-    foreach ($raw_ids as $chasse_id) {
-        $chasse_id = (int) $chasse_id;
-
-        if ($chasse_id <= 0) {
-            continue;
-        }
-
+    foreach ($engaged_hunt_ids as $chasse_id) {
         if (
             function_exists('chasse_est_visible_pour_utilisateur')
             && !chasse_est_visible_pour_utilisateur($chasse_id, $user_id)
@@ -944,7 +930,7 @@ function ca_get_user_engaged_hunt_ids(int $user_id): array
         $chasse_ids[] = $chasse_id;
     }
 
-    return array_values(array_unique($chasse_ids));
+    return $chasse_ids;
 }
 
 /**
