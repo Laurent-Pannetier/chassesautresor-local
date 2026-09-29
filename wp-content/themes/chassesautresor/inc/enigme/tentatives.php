@@ -1,6 +1,24 @@
 <?php
 defined('ABSPATH') || exit;
 
+if (!class_exists(ChassesAuTresor\Core\Progress\RiddleAttemptService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Progress/RiddleAttemptRepository.php';
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Progress/RiddleAttemptService.php';
+}
+
+if (!function_exists('cat_get_riddle_attempt_service')) {
+    function cat_get_riddle_attempt_service(): ChassesAuTresor\Core\Progress\RiddleAttemptService
+    {
+        global $wpdb;
+
+        return new ChassesAuTresor\Core\Progress\RiddleAttemptService(
+            new ChassesAuTresor\Core\Progress\RiddleAttemptRepository($wpdb)
+        );
+    }
+}
+
 
     // ==================================================
     // 📊 GESTION DES TENTATIVES UTILISATEUR
@@ -23,21 +41,19 @@ defined('ABSPATH') || exit;
      */
     function inserer_tentative($user_id, $enigme_id, $reponse, $resultat = 'attente', $points_utilises = 0): string
     {
-        global $wpdb;
-        $table = $wpdb->prefix . 'enigme_tentatives';
         $uid = function_exists('wp_generate_uuid4') ? wp_generate_uuid4() : uniqid('tent_', true);
 
-        $inserted = $wpdb->insert($table, [
-            'tentative_uid'   => $uid,
-            'user_id'         => $user_id,
-            'enigme_id'       => $enigme_id,
-            'reponse_saisie'  => $reponse,
-            'resultat'        => $resultat,
-            'points_utilises' => $points_utilises,
-            'ip'              => $_SERVER['REMOTE_ADDR'] ?? null,
-            'user_agent'      => $_SERVER['HTTP_USER_AGENT'] ?? null,
-        ]);
-        if ($inserted !== false) {
+        $inserted = cat_get_riddle_attempt_service()->create(
+            $uid,
+            (int) $user_id,
+            (int) $enigme_id,
+            (string) $reponse,
+            (string) $resultat,
+            (int) $points_utilises,
+            $_SERVER['REMOTE_ADDR'] ?? null,
+            $_SERVER['HTTP_USER_AGENT'] ?? null
+        );
+        if ($inserted) {
             do_action('enigme_tentative_created', $enigme_id);
         }
 
@@ -49,9 +65,7 @@ defined('ABSPATH') || exit;
      */
     function get_tentative_by_uid(string $uid): ?object
     {
-        global $wpdb;
-        $table = $wpdb->prefix . 'enigme_tentatives';
-        return $wpdb->get_row($wpdb->prepare("SELECT * FROM $table WHERE tentative_uid = %s", $uid));
+        return cat_get_riddle_attempt_service()->findByUid($uid);
     }
 
     /**

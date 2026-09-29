@@ -1,6 +1,39 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
+if (!class_exists(ChassesAuTresor\Core\Messages\AccountMessageService::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Messages/AccountMessageService.php';
+}
+
+if (!class_exists(ChassesAuTresor\Core\Progress\UserAttemptStatisticsService::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Progress/UserAttemptStatisticsRepository.php';
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Progress/UserAttemptStatisticsService.php';
+}
+
+/**
+ * Create the service responsible for account messages.
+ */
+function cat_get_account_message_service(): ChassesAuTresor\Core\Messages\AccountMessageService
+{
+    global $wpdb;
+
+    return new ChassesAuTresor\Core\Messages\AccountMessageService(
+        new UserMessageRepository($wpdb)
+    );
+}
+
+function cat_get_user_attempt_statistics_service(): ChassesAuTresor\Core\Progress\UserAttemptStatisticsService
+{
+    global $wpdb;
+
+    return new ChassesAuTresor\Core\Progress\UserAttemptStatisticsService(
+        new ChassesAuTresor\Core\Progress\UserAttemptStatisticsRepository($wpdb)
+    );
+}
+
 // ==================================================
 // 📚 SOMMAIRE DU FICHIER
 // ==================================================
@@ -382,9 +415,7 @@ function myaccount_add_persistent_message(
 ): int {
     global $wpdb;
 
-    $repo   = new UserMessageRepository($wpdb);
     $payload = [
-        'key'         => $key,
         'text'        => $message,
         'type'        => $type,
         'dismissible' => $dismissible,
@@ -403,31 +434,12 @@ function myaccount_add_persistent_message(
         $payload['include_enigmes'] = $include_enigmes;
     }
 
-    // Remove existing message with the same key if present.
-    $existing = $repo->get($user_id, 'persistent', null);
-    foreach ($existing as $row) {
-        $data = json_decode($row['message'], true);
-        if (is_array($data) && ($data['key'] ?? '') === $key) {
-            $repo->delete((int) $row['id']);
-        }
-    }
-
-    $expiresAt = null;
-    if ($expires !== null) {
-        $now = (int) current_time('timestamp');
-        if ($expires > $now) {
-            $expiresAt = gmdate('c', $expires);
-        } else {
-            $expiresAt = gmdate('c', $now + $expires);
-        }
-    }
-
-    $message_id = $repo->insert(
+    $message_id = cat_get_account_message_service()->addPersistent(
         $user_id,
-        wp_json_encode($payload),
-        'persistent',
-        $expiresAt,
-        $locale
+        $key,
+        $payload,
+        $locale,
+        $expires
     );
 
     if (0 === $message_id) {
@@ -454,17 +466,7 @@ function myaccount_add_persistent_message(
  */
 function myaccount_remove_persistent_message(int $user_id, string $key): void
 {
-    global $wpdb;
-
-    $repo     = new UserMessageRepository($wpdb);
-    $messages = $repo->get($user_id, 'persistent', null);
-
-    foreach ($messages as $row) {
-        $data = json_decode($row['message'], true);
-        if (is_array($data) && ($data['key'] ?? '') === $key) {
-            $repo->delete((int) $row['id']);
-        }
-    }
+    cat_get_account_message_service()->removePersistent($user_id, $key);
 }
 
 /**
@@ -540,16 +542,12 @@ function myaccount_maybe_add_validation_message(): void
 
     $key = 'correction_info_chasse_' . $chasse_id;
 
-    global $wpdb;
-    $repo     = new UserMessageRepository($wpdb);
-    $existing = $repo->get($user_id, 'persistent', null);
-    foreach ($existing as $row) {
-        $data = json_decode($row['message'], true);
-        if (is_array($data) && ($data['key'] ?? '') === $key) {
-            if (!isset($data['chasse_scope']) || !array_key_exists('include_enigmes', $data)) {
-                $repo->delete((int) $row['id']);
-                break;
-            }
+    $service = cat_get_account_message_service();
+    $existing = $service->findPersistent($user_id, $key);
+    if ($existing !== null) {
+        if (!isset($existing['chasse_scope']) || !array_key_exists('include_enigmes', $existing)) {
+            $service->removePersistent($user_id, $key);
+        } else {
             return;
         }
     }
@@ -582,21 +580,7 @@ add_action('template_redirect', 'myaccount_maybe_add_validation_message');
 */
 function myaccount_get_persistent_messages(int $user_id): array
 {
-    global $wpdb;
-
-    $repo   = new UserMessageRepository($wpdb);
-    $rows   = $repo->get($user_id, 'persistent', false);
-    $messages = [];
-    foreach ($rows as $row) {
-        $data = json_decode($row['message'], true);
-        if (is_array($data)) {
-            if (!empty($row['locale'])) {
-                $data['locale'] = $row['locale'];
-            }
-            $key = isset($data['key']) ? (string) $data['key'] : (string) $row['id'];
-            $messages[$key] = $data;
-        }
-    }
+    $messages = cat_get_account_message_service()->getPersistent($user_id);
 
     $current_id   = get_queried_object_id();
     $current_type = get_post_type($current_id);
@@ -707,17 +691,13 @@ if (!function_exists('myaccount_add_flash_message')) {
         string $type = 'info',
         bool $dismissible = false
     ): void {
-        global $wpdb;
-
-        $repo = new UserMessageRepository($wpdb);
-        $repo->insert(
+        cat_get_account_message_service()->addFlash(
             $user_id,
-            wp_json_encode([
+            [
                 'text'        => $message,
                 'type'        => $type,
                 'dismissible' => $dismissible,
-            ]),
-            'flash'
+            ]
         );
     }
 }
@@ -732,22 +712,16 @@ if (!function_exists('myaccount_add_flash_message')) {
 if (!function_exists('myaccount_get_flash_messages')) {
     function myaccount_get_flash_messages(int $user_id): array
     {
-        global $wpdb;
-
-        $repo = new UserMessageRepository($wpdb);
-        $rows = $repo->get($user_id, 'flash', false);
         $messages = [];
 
-        foreach ($rows as $row) {
-            $data = json_decode($row['message'], true);
-            if (is_array($data) && isset($data['text'])) {
+        foreach (cat_get_account_message_service()->pullFlash($user_id) as $data) {
+            if (isset($data['text'])) {
                 $messages[] = [
                     'text'        => (string) $data['text'],
                     'type'        => isset($data['type']) ? (string) $data['type'] : 'info',
                     'dismissible' => !empty($data['dismissible']),
                 ];
             }
-            $repo->delete((int) $row['id']);
         }
 
         return $messages;
@@ -802,9 +776,7 @@ function myaccount_get_important_messages(): string
             }
         }
 
-        global $wpdb;
-        $repo            = new PointsRepository($wpdb);
-        $pendingRequests = $repo->getConversionRequests(null, 'pending');
+        $pendingRequests = cat_get_conversion_service()->getRequests(null, 'pending');
 
         if (!empty($pendingRequests)) {
             $messages[] = [
@@ -818,9 +790,7 @@ function myaccount_get_important_messages(): string
         $current_user_id   = get_current_user_id();
         $organisateur_id   = get_organisateur_from_user($current_user_id);
 
-        global $wpdb;
-        $repo       = new PointsRepository($wpdb);
-        $pendingOwn = $repo->getConversionRequests($current_user_id, 'pending');
+        $pendingOwn = cat_get_conversion_service()->getRequests($current_user_id, 'pending');
         if (!empty($pendingOwn)) {
             $conversion_url = $organisateur_id
                 ? esc_url(
@@ -958,28 +928,14 @@ function ca_get_engaged_hunts_page_param(): string
  */
 function ca_get_user_engaged_hunt_ids(int $user_id): array
 {
-    global $wpdb;
-
-    $table = $wpdb->prefix . 'engagements';
-    $query = $wpdb->prepare(
-        "SELECT chasse_id FROM {$table} WHERE user_id = %d AND chasse_id IS NOT NULL ORDER BY date_engagement DESC",
-        $user_id
-    );
-
-    $raw_ids = $wpdb->get_col($query);
-    if (empty($raw_ids)) {
+    $engaged_hunt_ids = cat_get_hunt_engagement_service()->findHuntIdsForUser($user_id);
+    if ($engaged_hunt_ids === []) {
         return [];
     }
 
     $chasse_ids = [];
 
-    foreach ($raw_ids as $chasse_id) {
-        $chasse_id = (int) $chasse_id;
-
-        if ($chasse_id <= 0) {
-            continue;
-        }
-
+    foreach ($engaged_hunt_ids as $chasse_id) {
         if (
             function_exists('chasse_est_visible_pour_utilisateur')
             && !chasse_est_visible_pour_utilisateur($chasse_id, $user_id)
@@ -990,7 +946,7 @@ function ca_get_user_engaged_hunt_ids(int $user_id): array
         $chasse_ids[] = $chasse_id;
     }
 
-    return array_values(array_unique($chasse_ids));
+    return $chasse_ids;
 }
 
 /**
@@ -1489,82 +1445,27 @@ function ca_register_tentatives_search_context(): void
  */
 function ca_get_tentatives_view_model(int $user_id, int $page = 1, int $per_page = 10): array
 {
-    global $wpdb;
-
-    $table     = $wpdb->prefix . 'enigme_tentatives';
     $per_page  = max(1, $per_page);
     $page      = max(1, $page);
     $search    = ca_get_search_term('tentatives');
-    $pending   = (int) $wpdb->get_var($wpdb->prepare(
-        "SELECT COUNT(*) FROM {$table} WHERE user_id = %d AND resultat = 'attente' AND traitee = 0",
-        $user_id
-    ));
-    $total     = (int) $wpdb->get_var($wpdb->prepare(
-        "SELECT COUNT(*) FROM {$table} WHERE user_id = %d",
-        $user_id
-    ));
-    $success   = (int) $wpdb->get_var($wpdb->prepare(
-        "SELECT COUNT(*) FROM {$table} WHERE user_id = %d AND resultat = 'bon'",
-        $user_id
-    ));
-
-    $base_from = sprintf(
-        " FROM %s t
-        INNER JOIN %s p ON t.enigme_id = p.ID
-        LEFT JOIN (
-            SELECT pm.post_id,
-                   MAX(
-                       CAST(
-                           SUBSTRING_INDEX(
-                               SUBSTRING_INDEX(pm.meta_value, ';', 2),
-                               ':',
-                               -1
-                           ) AS UNSIGNED
-                       )
-                   ) AS chasse_id
-            FROM %s pm
-            WHERE pm.meta_key IN ('chasse_associee', 'enigme_chasse_associee')
-            GROUP BY pm.post_id
-        ) AS chasse_meta ON chasse_meta.post_id = t.enigme_id
-        LEFT JOIN %s chasses ON chasses.ID = chasse_meta.chasse_id",
-        $table,
-        $wpdb->posts,
-        $wpdb->postmeta,
-        $wpdb->posts
-    );
-
-    $where_clause   = ' WHERE t.user_id = %d';
-    $count_sql      = "SELECT COUNT(*){$base_from}{$where_clause}";
-    $count_sql      = ca_apply_search_filters('tentatives', $count_sql, $search);
-    $filtered_total = (int) $wpdb->get_var($wpdb->prepare($count_sql, $user_id));
-
-    $pages = $filtered_total > 0 ? (int) ceil($filtered_total / $per_page) : 0;
-    if ($pages > 0 && $page > $pages) {
-        $page = $pages;
-    } elseif (0 === $pages) {
-        $page = 1;
-    }
-
-    $offset     = ($page - 1) * $per_page;
-    $select_sql = "SELECT t.*, p.post_title AS enigme_title, COALESCE(chasse_meta.chasse_id, 0) AS chasse_id, chasses.post_title AS chasse_title{$base_from}{$where_clause}";
-    $select_sql = ca_apply_search_filters('tentatives', $select_sql, $search);
-    $select_sql .= ' ORDER BY t.date_tentative DESC LIMIT %d OFFSET %d';
-    $results     = $wpdb->get_results($wpdb->prepare($select_sql, $user_id, $per_page, $offset));
+    $service    = cat_get_user_attempt_statistics_service();
+    $summary    = $service->summarize($user_id);
+    $pagination = $service->paginate($user_id, $page, $per_page, $search);
 
     $message = $search !== ''
         ? __('Aucune tentative ne correspond à votre recherche.', 'chassesautresor-com')
         : __('Vous n\'avez pas encore enregistré de tentative.', 'chassesautresor-com');
 
     return [
-        'pending'            => $pending,
-        'total'              => $total,
-        'success'            => $success,
+        'pending'            => $summary['pending'],
+        'total'              => $summary['total'],
+        'success'            => $summary['success'],
         'search_term'        => $search,
-        'page'               => $page,
-        'pages'              => $pages,
+        'page'               => $pagination['page'],
+        'pages'              => $pagination['pages'],
         'per_page'           => $per_page,
-        'filtered_total'     => $filtered_total,
-        'tentatives'         => is_array($results) ? $results : [],
+        'filtered_total'     => $pagination['total'],
+        'tentatives'         => $pagination['items'],
         'no_results_message' => $message,
     ];
 }

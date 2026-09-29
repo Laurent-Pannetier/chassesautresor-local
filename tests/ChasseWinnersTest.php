@@ -18,6 +18,7 @@ class ChasseWinnersTest extends TestCase
         $dbDeltaSql = '';
         chasse_install_winners_table();
         $this->assertStringContainsString('CREATE TABLE wp_chasse_winners', $dbDeltaSql);
+        $this->assertSame(1, ChassesAuTresor\Core\Progress\HuntWinnersTable::SCHEMA_VERSION);
         $this->assertStringContainsString('UNIQUE KEY user_chasse (user_id, chasse_id)', $dbDeltaSql);
         $this->assertStringContainsString('KEY chasse_id (chasse_id)', $dbDeltaSql);
     }
