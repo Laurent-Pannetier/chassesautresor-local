@@ -830,45 +830,29 @@ function synchroniser_relations_cache_enigmes(int $chasse_id): bool
         return false;
     }
 
-    // 🧩 Énigmes réellement liées à la chasse, triées par menu_order
-    $ids_detectes = get_posts([
-        'post_type'      => 'enigme',
-        'post_status'    => ['draft', 'pending', 'publish'],
-        'posts_per_page' => -1,
-        'fields'         => 'ids',
-        'orderby'        => 'menu_order',
-        'order'          => 'ASC',
-        'meta_query'     => [
-            [
-                'key'     => 'enigme_chasse_associee',
-                'value'   => $chasse_id,
-                'compare' => 'LIKE',
-            ],
-        ],
-    ]);
+    $detectedIds = get_posts(
+        cat_get_hunt_riddle_query_service()->getSynchronizedRiddleIdsQueryArgs($chasse_id)
+    );
+    $currentCache = get_field('chasse_cache_enigmes', $chasse_id, false);
+    $cachedIds = cat_get_relationship_service()->normalizeIds(
+        is_array($currentCache) ? $currentCache : []
+    );
+    $comparison = cat_get_hunt_riddle_cache_service()->compare(
+        array_map('intval', $detectedIds),
+        $cachedIds,
+        false
+    );
 
-    // 🧮 Cache actuel
-    $cache_actuel = get_field('chasse_cache_enigmes', $chasse_id, false);
-    $cache_ids    = [];
-
-    foreach ((array) $cache_actuel as $item) {
-        $cache_ids[] = is_object($item) ? (int) $item->ID : (int) $item;
-    }
-
-    // 🧪 Comparaison stricte
-    $diff_detectes = array_diff($ids_detectes, $cache_ids);
-    $diff_cache    = array_diff($cache_ids, $ids_detectes);
-
-    if (empty($diff_detectes) && empty($diff_cache)) {
+    if ($comparison['synced']) {
         cat_debug("✅ [SYNC] Aucune mise à jour nécessaire pour chasse #$chasse_id");
         return true;
     }
 
     cat_debug("🔧 [SYNC] Cache obsolète → écrasement nécessaire pour chasse #$chasse_id");
-    cat_debug("🗑️ Ancien cache : " . implode(', ', $cache_ids));
-    cat_debug("🆕 Nouvel ensemble : " . implode(', ', $ids_detectes));
+    cat_debug("🗑️ Ancien cache : " . implode(', ', $comparison['cached']));
+    cat_debug("🆕 Nouvel ensemble : " . implode(', ', $comparison['expected']));
 
-    $success = update_field('chasse_cache_enigmes', $ids_detectes, $chasse_id);
+    $success = update_field('chasse_cache_enigmes', $comparison['expected'], $chasse_id);
 
     if ($success) {
         cat_debug("✅ [SYNC] Mise à jour réussie de chasse_cache_enigmes pour chasse #$chasse_id");
