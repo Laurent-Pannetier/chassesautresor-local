@@ -150,6 +150,36 @@ class HuntProgressService
         return $result;
     }
 
+    /**
+     * @return array{
+     *     etat:string,
+     *     rediriger:bool,
+     *     afficher_formulaire:bool,
+     *     afficher_message:bool,
+     *     message_html:string
+     * }
+     */
+    public function getRiddleParticipationState(string $status): array
+    {
+        $status = $this->normalizeStatus($status);
+        $redirectStatuses = [
+            'abandonnee',
+            'bloquee_date',
+            'bloquee_chasse',
+            'bloquee_pre_requis',
+            'invalide',
+            'cache_invalide',
+        ];
+
+        return [
+            'etat' => $status,
+            'rediriger' => in_array($status, $redirectStatuses, true),
+            'afficher_formulaire' => in_array($status, ['en_cours', 'non_souscrite', 'echouee'], true),
+            'afficher_message' => false,
+            'message_html' => '',
+        ];
+    }
+
     public function deleteRiddleStatuses(int $riddleId): int
     {
         return $riddleId > 0 ? $this->repository->deleteStatusesForRiddle($riddleId) : 0;

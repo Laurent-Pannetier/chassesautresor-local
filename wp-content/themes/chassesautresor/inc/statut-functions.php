@@ -295,73 +295,15 @@ function traiter_statut_enigme(int $enigme_id, ?int $user_id = null): array
 
     $condition_acces = get_field('enigme_acces_condition', $enigme_id) ?? 'immediat';
     if ($condition_acces === 'pre_requis' && !enigme_pre_requis_remplis($enigme_id, $user_id)) {
-        return [
-            'etat' => 'bloquee_pre_requis',
-            'rediriger' => true,
-            'url' => $chasse_id ? get_permalink($chasse_id) : home_url('/'),
-            'afficher_formulaire' => false,
-            'afficher_message' => false,
-            'message_html' => '',
-        ];
+        $statut = 'bloquee_pre_requis';
     }
 
-    // 🔁 Cas interdits : accès refusé
-    if ($statut === 'abandonnee') {
-        return [
-            'etat' => $statut,
-            'rediriger' => true,
-            'url' => $chasse_id ? get_permalink($chasse_id) : home_url('/'),
-            'afficher_formulaire' => false,
-            'afficher_message' => false,
-            'message_html' => '',
-        ];
-    }
+    $state = cat_get_hunt_progress_service()->getRiddleParticipationState($statut);
+    $state['url'] = $state['rediriger']
+        ? ($chasse_id ? get_permalink($chasse_id) : home_url('/'))
+        : null;
 
-    if ($statut === 'echouee') {
-        return [
-            'etat' => $statut,
-            'rediriger' => false,
-            'url' => null,
-            'afficher_formulaire' => true,
-            'afficher_message' => false,
-            'message_html' => '',
-        ];
-    }
-
-    // 🔁 Cas bloqués structurellement (pré-requis, date, etc.)
-    if (in_array($statut, ['bloquee_date', 'bloquee_chasse', 'bloquee_pre_requis', 'invalide', 'cache_invalide'], true)) {
-        return [
-            'etat' => $statut,
-            'rediriger' => true,
-            'url' => $chasse_id ? get_permalink($chasse_id) : home_url('/'),
-            'afficher_formulaire' => false,
-            'afficher_message' => false,
-            'message_html' => '',
-        ];
-    }
-
-    // 🎯 Cas d'accès légitime (en cours, non_souscrite, resolue, soumis)
-    if ($statut === 'soumis') {
-        return [
-            'etat' => 'soumis',
-            'rediriger' => false,
-            'url' => null,
-            'afficher_formulaire' => false,
-            'afficher_message' => false,
-            'message_html' => '',
-        ];
-    }
-
-    $formulaire = in_array($statut, ['en_cours', 'non_souscrite'], true);
-
-    return [
-        'etat' => $statut,
-        'rediriger' => false,
-        'url' => null,
-        'afficher_formulaire' => $formulaire,
-        'afficher_message' => false,
-        'message_html' => '',
-    ];
+    return $state;
 }
 
 

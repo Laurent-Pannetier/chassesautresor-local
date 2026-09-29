@@ -207,6 +207,27 @@ class HuntProgressServiceTest extends TestCase
         );
     }
 
+    public function testRiddleParticipationStateMapsRedirectsAndForms(): void
+    {
+        $service = new HuntProgressService(new HuntProgressRepositoryStub());
+
+        foreach (['abandonnee', 'bloquee_date', 'bloquee_chasse', 'bloquee_pre_requis', 'invalide'] as $status) {
+            $state = $service->getRiddleParticipationState($status);
+            $this->assertTrue($state['rediriger']);
+            $this->assertFalse($state['afficher_formulaire']);
+        }
+
+        foreach (['en_cours', 'non_souscrite', 'echouee'] as $status) {
+            $state = $service->getRiddleParticipationState($status);
+            $this->assertFalse($state['rediriger']);
+            $this->assertTrue($state['afficher_formulaire']);
+        }
+
+        $submitted = $service->getRiddleParticipationState('soumis');
+        $this->assertFalse($submitted['rediriger']);
+        $this->assertFalse($submitted['afficher_formulaire']);
+    }
+
     public function testRiddleStatusDeletionIsValidatedAndDelegated(): void
     {
         $repository = new HuntProgressRepositoryStub();
