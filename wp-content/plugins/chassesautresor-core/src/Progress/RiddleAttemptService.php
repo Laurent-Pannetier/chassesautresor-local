@@ -181,6 +181,15 @@ class RiddleAttemptService
         return $this->repository->findForRiddle($riddleId, $limit, $offset);
     }
 
+    public function findLatestPendingForUserAndRiddle(int $userId, int $riddleId): ?object
+    {
+        if ($userId <= 0 || $riddleId <= 0) {
+            return null;
+        }
+
+        return $this->repository->findLatestPendingForUserAndRiddle($userId, $riddleId);
+    }
+
     public function isRiddleSolvedForUser(int $userId, int $riddleId): bool
     {
         if ($userId <= 0 || $riddleId <= 0) {

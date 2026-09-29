@@ -59,14 +59,9 @@ if ($mode_validation === 'manuelle') {
     if (!utilisateur_peut_repondre_manuelle($user_id, $post_id)) {
         $statut = enigme_get_statut_utilisateur($post_id, $user_id);
         if ($statut === 'soumis') {
-            global $wpdb;
-            $table     = $wpdb->prefix . 'enigme_tentatives';
-            $tentative = $wpdb->get_row(
-                $wpdb->prepare(
-                    "SELECT id, date_tentative FROM $table WHERE user_id = %d AND enigme_id = %d AND traitee = 0 ORDER BY date_tentative DESC LIMIT 1",
-                    $user_id,
-                    $post_id
-                )
+            $tentative = cat_get_riddle_attempt_service()->findLatestPendingForUserAndRiddle(
+                (int) $user_id,
+                (int) $post_id
             );
             if ($tentative) {
                 $timestamp   = strtotime($tentative->date_tentative);
@@ -223,4 +218,3 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
     </p>
   <?php endif; ?>
 </form>
-

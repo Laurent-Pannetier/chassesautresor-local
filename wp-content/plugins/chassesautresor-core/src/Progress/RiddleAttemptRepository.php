@@ -47,6 +47,22 @@ class RiddleAttemptRepository
         return is_array($attempts) ? $attempts : [];
     }
 
+    public function findLatestPendingForUserAndRiddle(int $userId, int $riddleId): ?object
+    {
+        $table = $this->wpdb->prefix . 'enigme_tentatives';
+        $attempt = $this->wpdb->get_row(
+            $this->wpdb->prepare(
+                "SELECT id, date_tentative FROM {$table} "
+                    . 'WHERE user_id = %d AND enigme_id = %d AND traitee = 0 '
+                    . 'ORDER BY date_tentative DESC LIMIT 1',
+                $userId,
+                $riddleId
+            )
+        );
+
+        return is_object($attempt) ? $attempt : null;
+    }
+
     public function findUserRiddleStatus(int $userId, int $riddleId): ?string
     {
         $table = $this->wpdb->prefix . 'enigme_statuts_utilisateur';

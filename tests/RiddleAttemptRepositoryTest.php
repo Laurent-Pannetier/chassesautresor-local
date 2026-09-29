@@ -14,6 +14,7 @@ class RiddleAttemptWpdbStub
     public int $updateResult = 1;
     public array $preparedArguments = [];
     public array $updateArguments = [];
+    public ?object $row = null;
 
     public function prepare(string $query, ...$arguments): string
     {
@@ -24,6 +25,11 @@ class RiddleAttemptWpdbStub
     public function get_var(string $query): ?string
     {
         return $this->status;
+    }
+
+    public function get_row(string $query): ?object
+    {
+        return $this->row;
     }
 
     public function update(string $table, array $data, array $where, array $format, array $whereFormat): int
@@ -72,5 +78,18 @@ class RiddleAttemptRepositoryTest extends TestCase
 
         $wpdb->status = '1';
         $this->assertTrue($repository->hasSuccessfulAttempt(7, 10));
+    }
+
+    public function testLatestPendingAttemptLookupUsesUserAndRiddleIdentifiers(): void
+    {
+        $wpdb = new RiddleAttemptWpdbStub();
+        $wpdb->row = (object) ['id' => 42, 'date_tentative' => '2026-09-29 12:00:00'];
+        $repository = new RiddleAttemptRepository($wpdb);
+
+        $this->assertSame($wpdb->row, $repository->findLatestPendingForUserAndRiddle(7, 10));
+        $this->assertSame([7, 10], $wpdb->preparedArguments);
+
+        $wpdb->row = null;
+        $this->assertNull($repository->findLatestPendingForUserAndRiddle(7, 10));
     }
 }

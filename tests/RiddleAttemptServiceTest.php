@@ -18,6 +18,7 @@ class RiddleAttemptRepositoryStub extends RiddleAttemptRepository
     public bool $returnConfiguredAttempt = false;
     public array $listArguments = [];
     public array $attempts = [];
+    public ?object $latestPendingAttempt = null;
     public ?string $userRiddleStatus = null;
     public array $processArguments = [];
     public bool $processResult = true;
@@ -56,6 +57,12 @@ class RiddleAttemptRepositoryStub extends RiddleAttemptRepository
     {
         $this->listArguments = [$riddleId, $limit, $offset];
         return $this->attempts;
+    }
+
+    public function findLatestPendingForUserAndRiddle(int $userId, int $riddleId): ?object
+    {
+        $this->listArguments = [$userId, $riddleId];
+        return $this->latestPendingAttempt;
     }
 
     public function findUserRiddleStatus(int $userId, int $riddleId): ?string
@@ -287,6 +294,21 @@ class RiddleAttemptServiceTest extends TestCase
         $this->assertSame([], $service->findForRiddle(0, 20, 0));
         $this->assertSame([], $service->findForRiddle(10, 0, 0));
         $this->assertSame([], $service->findForRiddle(10, 20, -1));
+    }
+
+    public function testLatestPendingAttemptLookupIsValidatedAndDelegated(): void
+    {
+        $repository = new RiddleAttemptRepositoryStub();
+        $repository->latestPendingAttempt = (object) ['id' => 42];
+        $service = new RiddleAttemptService($repository);
+
+        $this->assertSame(
+            $repository->latestPendingAttempt,
+            $service->findLatestPendingForUserAndRiddle(7, 10)
+        );
+        $this->assertSame([7, 10], $repository->listArguments);
+        $this->assertNull($service->findLatestPendingForUserAndRiddle(0, 10));
+        $this->assertNull($service->findLatestPendingForUserAndRiddle(7, 0));
     }
 
     public function testSolvedStateIsReadThroughRepository(): void
