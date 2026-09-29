@@ -21,6 +21,11 @@ if (!class_exists(ChassesAuTresor\Core\Relationships\RelationshipService::class,
         . '/plugins/chassesautresor-core/src/Relationships/RelationshipService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HintTitleService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HintTitleService.php';
+}
+
 function cat_get_hint_query_service(): ChassesAuTresor\Core\Content\HintQueryService
 {
     return new ChassesAuTresor\Core\Content\HintQueryService();
@@ -29,6 +34,11 @@ function cat_get_hint_query_service(): ChassesAuTresor\Core\Content\HintQuerySer
 function cat_get_hint_status_service(): ChassesAuTresor\Core\Content\HintStatusService
 {
     return new ChassesAuTresor\Core\Content\HintStatusService();
+}
+
+function cat_get_hint_title_service(): ChassesAuTresor\Core\Content\HintTitleService
+{
+    return new ChassesAuTresor\Core\Content\HintTitleService();
 }
 
 // ==================================================
@@ -49,18 +59,19 @@ function cat_get_hint_status_service(): ChassesAuTresor\Core\Content\HintStatusS
 function build_indice_placeholder_title(int $chasse_id): string
 {
     $prefix = defined('INDICE_DEFAULT_PREFIX') ? INDICE_DEFAULT_PREFIX : 'clue-';
-    $slug   = get_post_field('post_name', $chasse_id);
+    $slug = (string) get_post_field('post_name', $chasse_id);
+    $generatedSlug = '';
 
     if ($slug === '') {
-        $chasse_name = get_post_field('post_title', $chasse_id);
-        $slug        = $chasse_name !== ''
+        $chasseName = (string) get_post_field('post_title', $chasse_id);
+        $generatedSlug = $chasseName !== ''
             ? (function_exists('sanitize_title')
-                ? sanitize_title($chasse_name)
-                : strtolower(trim(preg_replace('/[^A-Za-z0-9]+/', '-', $chasse_name), '-')))
+                ? sanitize_title($chasseName)
+                : strtolower(trim(preg_replace('/[^A-Za-z0-9]+/', '-', $chasseName), '-')))
             : '';
     }
 
-    return $prefix . $slug;
+    return cat_get_hint_title_service()->buildPlaceholder($prefix, $slug, $generatedSlug);
 }
 
 /**
@@ -135,11 +146,10 @@ function reordonner_indices(int $objet_id, string $objet_type): void
     foreach ($indices as $indice_id) {
         $current_title = get_post_field('post_title', $indice_id);
         $prefix        = defined('INDICE_DEFAULT_PREFIX') ? INDICE_DEFAULT_PREFIX : '';
-        $should_update = (
-            $current_title === ''
-            || (defined('TITRE_DEFAUT_INDICE') && $current_title === TITRE_DEFAUT_INDICE)
-            || preg_match('/^Indice #\d+$/', $current_title)
-            || ($prefix !== '' && strpos($current_title, $prefix) === 0)
+        $should_update = cat_get_hint_title_service()->shouldRegenerate(
+            (string) $current_title,
+            defined('TITRE_DEFAUT_INDICE') ? TITRE_DEFAUT_INDICE : '',
+            $prefix
         );
 
         if ($should_update) {
