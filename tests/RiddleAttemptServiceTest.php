@@ -139,6 +139,46 @@ class RiddleAttemptServiceTest extends TestCase
         ];
     }
 
+    public function testAttemptDescriptionCombinesPersistedAndDerivedState(): void
+    {
+        $repository = new RiddleAttemptRepositoryStub();
+        $repository->returnConfiguredAttempt = true;
+        $repository->foundAttempt = (object) [
+            'tentative_uid' => 'attempt-1',
+            'resultat' => 'bon',
+            'traitee' => '1',
+        ];
+        $service = new RiddleAttemptService($repository);
+
+        $details = $service->describeByUid(' attempt-1 ');
+
+        $this->assertSame($repository->foundAttempt, $details['attempt']);
+        $this->assertSame('validee', $details['state']);
+        $this->assertSame('bon', $details['result']);
+        $this->assertTrue($details['processed']);
+        $this->assertTrue($details['already_processed']);
+        $this->assertTrue($details['just_processed']);
+        $this->assertSame('attempt-1', $repository->uid);
+    }
+
+    public function testAttemptDescriptionHandlesPendingAndMissingAttempts(): void
+    {
+        $repository = new RiddleAttemptRepositoryStub();
+        $repository->returnConfiguredAttempt = true;
+        $repository->foundAttempt = (object) ['resultat' => 'attente', 'traitee' => 0];
+        $service = new RiddleAttemptService($repository);
+
+        $details = $service->describeByUid('attempt-1');
+
+        $this->assertSame('attente', $details['state']);
+        $this->assertFalse($details['processed']);
+        $this->assertFalse($details['already_processed']);
+        $this->assertFalse($details['just_processed']);
+
+        $repository->foundAttempt = null;
+        $this->assertNull($service->describeByUid('attempt-2'));
+    }
+
     public function testRiddleAttemptListIsValidatedAndDelegated(): void
     {
         $repository = new RiddleAttemptRepositoryStub();

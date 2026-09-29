@@ -239,12 +239,6 @@ if (!function_exists('cat_get_riddle_attempt_service')) {
 
 
     /**
-     * Renvoie toutes les données d'affichage pour une tentative (état, utilisateur, statut, etc.)
-     *
-     * @param string $uid Identifiant unique de la tentative.
-     * @return array
-     */
-    /**
      * Récupère toutes les informations nécessaires à l'affichage d'une tentative.
      *
      * @param string $uid UID unique de la tentative.
@@ -252,26 +246,25 @@ if (!function_exists('cat_get_riddle_attempt_service')) {
      */
     function recuperer_infos_tentative(string $uid): array
     {
-        $tentative = get_tentative_by_uid($uid);
-        if (!$tentative) {
+        $details = cat_get_riddle_attempt_service()->describeByUid($uid);
+        if ($details === null) {
             return ['etat_tentative' => 'inexistante'];
         }
 
-        $etat_tentative = get_etat_tentative($uid); // logique métier (attente/validee/refusee)
-        $resultat = $tentative->resultat ?? '';
-        $traitee = (int) ($tentative->traitee ?? 0) === 1;
-
+        $tentative = $details['attempt'];
         $user = get_userdata($tentative->user_id);
-        $nom_user = ($user && isset($user->display_name)) ? $user->display_name : 'Utilisateur inconnu';
+        $nom_user = ($user && isset($user->display_name))
+            ? $user->display_name
+            : __('Utilisateur inconnu', 'chassesautresor-com');
 
         return [
-            'etat_tentative'        => $etat_tentative,
-            'statut_initial'        => $resultat ?: 'invalide',
-            'statut_final'          => $resultat,
-            'resultat'              => $resultat,
-            'deja_traitee'          => ($etat_tentative !== 'attente'),
-            'traitee'               => $traitee,
-            'vient_d_etre_traitee'  => $traitee && $etat_tentative !== 'attente',
+            'etat_tentative'        => $details['state'],
+            'statut_initial'        => $details['result'] ?: 'invalide',
+            'statut_final'          => $details['result'],
+            'resultat'              => $details['result'],
+            'deja_traitee'          => $details['already_processed'],
+            'traitee'               => $details['processed'],
+            'vient_d_etre_traitee'  => $details['just_processed'],
             'tentative'             => $tentative,
             'nom_user'              => $nom_user,
             'permalink'             => get_permalink($tentative->enigme_id),

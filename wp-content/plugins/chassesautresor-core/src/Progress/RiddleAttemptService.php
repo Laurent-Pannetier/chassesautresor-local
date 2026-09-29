@@ -56,6 +56,33 @@ class RiddleAttemptService
     public function getStateByUid(string $uid): string
     {
         $attempt = $this->findByUid($uid);
+
+        return $this->getStateFromAttempt($attempt);
+    }
+
+    public function describeByUid(string $uid): ?array
+    {
+        $attempt = $this->findByUid($uid);
+        if ($attempt === null) {
+            return null;
+        }
+
+        $state = $this->getStateFromAttempt($attempt);
+        $result = isset($attempt->resultat) ? (string) $attempt->resultat : '';
+        $processed = (int) ($attempt->traitee ?? 0) === 1;
+
+        return [
+            'attempt' => $attempt,
+            'state' => $state,
+            'result' => $result,
+            'processed' => $processed,
+            'already_processed' => $state !== 'attente',
+            'just_processed' => $processed && $state !== 'attente',
+        ];
+    }
+
+    private function getStateFromAttempt(?object $attempt): string
+    {
         if ($attempt === null || !isset($attempt->resultat)) {
             return 'inexistante';
         }
