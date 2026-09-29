@@ -170,12 +170,14 @@ class HuntProgressServiceTest extends TestCase
         $this->assertFalse($service->areRiddlePrerequisitesMet(0, [10]));
     }
 
-    public function testRiddlePrerequisitesIgnoreInvalidReferences(): void
+    public function testRiddlePrerequisitesApplyEmptyConfigurationRule(): void
     {
         $service = new HuntProgressService(new HuntProgressRepositoryStub());
 
         $this->assertTrue($service->areRiddlePrerequisitesMet(7, []));
         $this->assertTrue($service->areRiddlePrerequisitesMet(7, [0, -1]));
+        $this->assertFalse($service->areRiddlePrerequisitesMet(7, [], 'pre_requis'));
+        $this->assertFalse($service->areRiddlePrerequisitesMet(7, [0, -1], 'pre_requis'));
     }
 
     public function testRiddleStatusDeletionIsValidatedAndDelegated(): void

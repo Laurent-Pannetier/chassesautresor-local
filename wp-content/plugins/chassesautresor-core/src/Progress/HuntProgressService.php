@@ -58,18 +58,27 @@ class HuntProgressService
     }
 
     /** @param int[] $prerequisiteIds */
-    public function areRiddlePrerequisitesMet(int $userId, array $prerequisiteIds): bool
+    public function areRiddlePrerequisitesMet(
+        int $userId,
+        array $prerequisiteIds,
+        string $accessCondition = 'immediat'
+    ): bool
     {
         if ($userId <= 0) {
             return false;
         }
 
-        foreach ($prerequisiteIds as $riddleId) {
-            $riddleId = (int) $riddleId;
-            if ($riddleId <= 0) {
-                continue;
+        $prerequisiteIds = array_values(array_filter(
+            array_map('intval', $prerequisiteIds),
+            static function (int $riddleId): bool {
+                return $riddleId > 0;
             }
+        ));
+        if ($prerequisiteIds === []) {
+            return $accessCondition !== 'pre_requis';
+        }
 
+        foreach ($prerequisiteIds as $riddleId) {
             $status = $this->repository->findStatus($userId, $riddleId);
             if ($status === null || !in_array($this->normalizeStatus($status), ['resolue', 'terminee'], true)) {
                 return false;

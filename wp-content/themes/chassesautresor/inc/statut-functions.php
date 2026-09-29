@@ -149,12 +149,8 @@ function enigme_pre_requis_remplis(int $enigme_id, int $user_id): bool
 
     $condition = get_field('enigme_acces_condition', $enigme_id) ?? 'immediat';
 
-    if (empty($pre_requis) || !is_array($pre_requis)) {
-        return $condition !== 'pre_requis'; // ❌ Pré-requis exigés mais liste vide
-    }
-
     $prerequisiteIds = [];
-    foreach ($pre_requis as $requiredRiddle) {
+    foreach (is_array($pre_requis) ? $pre_requis : [] as $requiredRiddle) {
         if (is_object($requiredRiddle) && isset($requiredRiddle->ID)) {
             $prerequisiteIds[] = (int) $requiredRiddle->ID;
         } elseif (is_numeric($requiredRiddle)) {
@@ -162,7 +158,11 @@ function enigme_pre_requis_remplis(int $enigme_id, int $user_id): bool
         }
     }
 
-    return cat_get_hunt_progress_service()->areRiddlePrerequisitesMet($user_id, $prerequisiteIds);
+    return cat_get_hunt_progress_service()->areRiddlePrerequisitesMet(
+        $user_id,
+        $prerequisiteIds,
+        (string) $condition
+    );
 }
 
 /**
