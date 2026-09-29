@@ -11,6 +11,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\HintStatusService::class, false))
         . '/plugins/chassesautresor-core/src/Content/HintStatusService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HintScheduler::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HintScheduler.php';
+}
+
 function cat_get_hint_query_service(): ChassesAuTresor\Core\Content\HintQueryService
 {
     return new ChassesAuTresor\Core\Content\HintQueryService();
@@ -1060,33 +1065,13 @@ add_action('acf/save_post', 'mettre_a_jour_cache_indice', 30);
  */
 function basculer_indices_programmes(): void
 {
-    $queryArgs = cat_get_hint_query_service()->getDueProgrammedHintIdsQueryArgs(
-        (string) current_time('mysql')
-    );
-    if ($queryArgs === []) {
-        return;
-    }
-
-    $indices = get_posts($queryArgs);
-
-    foreach ($indices as $indice_id) {
-        mettre_a_jour_cache_indice($indice_id);
-    }
+    ChassesAuTresor\Core\Content\HintScheduler::run();
 }
-add_action('basculer_indices_programmes', 'basculer_indices_programmes');
 
-/**
- * Planifie l'exécution régulière de la tâche de basculement des indices.
- *
- * @return void
- */
-function planifier_tache_basculer_indices_programmes(): void
-{
-    if (!wp_next_scheduled('basculer_indices_programmes')) {
-        wp_schedule_event(time(), 'hourly', 'basculer_indices_programmes');
-    }
-}
-add_action('after_switch_theme', 'planifier_tache_basculer_indices_programmes');
+add_action(
+    ChassesAuTresor\Core\Content\HintScheduler::PROCESS_HOOK,
+    'mettre_a_jour_cache_indice'
+);
 
 /**
  * Enregistre la cible d'un indice avant suppression définitive.

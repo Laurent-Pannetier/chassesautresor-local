@@ -51,6 +51,7 @@ require_once __DIR__ . '/src/Content/HuntCompletionService.php';
 require_once __DIR__ . '/src/Content/HuntFeatureService.php';
 require_once __DIR__ . '/src/Content/HintQueryService.php';
 require_once __DIR__ . '/src/Content/HintStatusService.php';
+require_once __DIR__ . '/src/Content/HintScheduler.php';
 require_once __DIR__ . '/src/Content/HuntPublicationStatusService.php';
 require_once __DIR__ . '/src/Content/HuntValidationService.php';
 require_once __DIR__ . '/src/Content/SolutionAvailabilityService.php';
@@ -89,6 +90,11 @@ register_activation_hook(
 
 register_activation_hook(
     __FILE__,
+    [ChassesAuTresor\Core\Content\HintScheduler::class, 'schedule']
+);
+
+register_activation_hook(
+    __FILE__,
     [ChassesAuTresor\Core\Points\PointsTable::class, 'install']
 );
 
@@ -107,9 +113,24 @@ register_deactivation_hook(
     [ChassesAuTresor\Core\Messages\UserMessagesCleanup::class, 'unschedule']
 );
 
+register_deactivation_hook(
+    __FILE__,
+    [ChassesAuTresor\Core\Content\HintScheduler::class, 'unschedule']
+);
+
 add_action(
     'plugins_loaded',
     [ChassesAuTresor\Core\Messages\UserMessagesTable::class, 'maybeUpgrade']
+);
+
+add_action(
+    'plugins_loaded',
+    [ChassesAuTresor\Core\Content\HintScheduler::class, 'schedule']
+);
+
+add_action(
+    ChassesAuTresor\Core\Content\HintScheduler::HOOK,
+    [ChassesAuTresor\Core\Content\HintScheduler::class, 'run']
 );
 
 add_action(
