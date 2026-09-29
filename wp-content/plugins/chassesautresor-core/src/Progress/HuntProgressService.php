@@ -49,6 +49,16 @@ class HuntProgressService
         return $this->repository->findCompletedUsers($validatable, $engagementOnly);
     }
 
+    /** @param int[] $riddleIds */
+    public function countSolvedRiddles(int $userId, array $riddleIds): int
+    {
+        if ($userId <= 0) {
+            return 0;
+        }
+
+        return $this->repository->countSolved($userId, $riddleIds);
+    }
+
     /**
      * @param int[] $riddleIds
      * @return array<int, int[]> User IDs indexed by riddle ID.

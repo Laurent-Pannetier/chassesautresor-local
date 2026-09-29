@@ -105,6 +105,14 @@ class HuntProgressServiceTest extends TestCase
         $this->assertSame('2026-09-29 10:00:00', $users[0]->first_finish);
     }
 
+    public function testSolvedRiddleCountComesFromProgressRepository(): void
+    {
+        $service = new HuntProgressService(new HuntProgressRepositoryStub());
+
+        $this->assertSame(2, $service->countSolvedRiddles(7, [10, 11]));
+        $this->assertSame(0, $service->countSolvedRiddles(0, [10, 11]));
+    }
+
     public function testCompleteRiddlesDelegatesStorageToRepository(): void
     {
         $repository = new HuntProgressRepositoryStub();

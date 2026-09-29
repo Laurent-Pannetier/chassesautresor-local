@@ -2049,12 +2049,10 @@ function preparer_infos_affichage_carte_chasse(int $chasse_id, int $word_limit =
 
     $resolues_validables = 0;
     if (!empty($enigmes_validables) && !empty($progression['resolvables']) && $progression['resolvables'] > 0 && $user_id) {
-        global $wpdb;
-        $table        = $wpdb->prefix . 'enigme_statuts_utilisateur';
-        $placeholders = implode(',', array_fill(0, count($enigmes_validables), '%d'));
-        $sql          = "SELECT COUNT(DISTINCT enigme_id) FROM {$table} WHERE user_id = %d AND statut IN ('resolue','terminee','terminée') AND enigme_id IN ($placeholders)";
-        $params       = array_merge([$user_id], $enigmes_validables);
-        $resolues_validables = (int) $wpdb->get_var($wpdb->prepare($sql, $params));
+        $resolues_validables = cat_get_hunt_progress_service()->countSolvedRiddles(
+            (int) $user_id,
+            $enigmes_validables
+        );
     }
 
     $lot_html = '';
