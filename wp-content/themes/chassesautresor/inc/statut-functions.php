@@ -517,15 +517,15 @@ function organisateur_mettre_a_jour_complet(int $organisateur_id): bool
 function chasse_has_validatable_enigme(int $chasse_id): bool
 {
     $enigme_ids = recuperer_ids_enigmes_pour_chasse($chasse_id);
+    $validationModes = [];
 
     foreach ($enigme_ids as $eid) {
-        $mode = get_field('enigme_mode_validation', $eid);
-        if ($mode !== 'aucune') {
-            return true;
-        }
+        $validationModes[] = (string) get_field('enigme_mode_validation', $eid);
     }
 
-    return false;
+    return (new ChassesAuTresor\Core\Content\HuntCompletionService())->hasValidatableRiddle(
+        $validationModes
+    );
 }
 
 function chasse_est_complet(int $chasse_id): bool

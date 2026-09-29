@@ -10,6 +10,16 @@ require_once __DIR__
 
 class HuntContentCompletionServiceTest extends TestCase
 {
+    public function testValidatableRiddleModesExcludeOnlyNoValidation(): void
+    {
+        $service = new HuntCompletionService();
+
+        $this->assertFalse($service->hasValidatableRiddle([]));
+        $this->assertFalse($service->hasValidatableRiddle(['aucune', 'aucune']));
+        $this->assertTrue($service->hasValidatableRiddle(['aucune', 'manuelle']));
+        $this->assertTrue($service->hasValidatableRiddle(['automatique']));
+    }
+
     public function testCompleteHuntRequiresTitleDescriptionAndImage(): void
     {
         $service = new HuntCompletionService();

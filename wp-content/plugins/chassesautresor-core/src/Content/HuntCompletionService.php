@@ -9,6 +9,18 @@ namespace ChassesAuTresor\Core\Content;
  */
 class HuntCompletionService
 {
+    /** @param string[] $validationModes */
+    public function hasValidatableRiddle(array $validationModes): bool
+    {
+        foreach ($validationModes as $validationMode) {
+            if ((string) $validationMode !== 'aucune') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function isComplete(
         bool $hasValidTitle,
         string $description,
