@@ -209,6 +209,22 @@ class HuntProgressService
         return 'accessible';
     }
 
+    public function canEngageRiddle(
+        string $systemState,
+        string $userStatus,
+        bool $prerequisitesMet = false
+    ): bool {
+        $systemState = $this->normalizeStatus($systemState);
+        $userStatus = $this->normalizeStatus($userStatus);
+
+        if ($systemState === 'bloquee_pre_requis' && $prerequisitesMet) {
+            $systemState = 'accessible';
+        }
+
+        return $systemState === 'accessible'
+            && in_array($userStatus, ['non_commencee', 'abandonnee', 'echouee'], true);
+    }
+
     public function deleteRiddleStatuses(int $riddleId): int
     {
         return $riddleId > 0 ? $this->repository->deleteStatusesForRiddle($riddleId) : 0;

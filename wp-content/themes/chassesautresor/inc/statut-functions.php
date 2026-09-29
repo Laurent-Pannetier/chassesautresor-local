@@ -461,19 +461,16 @@ function utilisateur_peut_engager_enigme(int $enigme_id, ?int $user_id = null): 
     $user_id = $user_id ?? get_current_user_id();
 
     $etat_systeme = enigme_get_etat_systeme($enigme_id);
-    if (
-        $etat_systeme === 'bloquee_pre_requis'
+    $prerequisitesMet = $etat_systeme === 'bloquee_pre_requis'
         && function_exists('enigme_pre_requis_remplis')
-        && enigme_pre_requis_remplis($enigme_id, $user_id)
-    ) {
-        $etat_systeme = 'accessible';
-    }
-
+        && enigme_pre_requis_remplis($enigme_id, $user_id);
     $statut = enigme_get_statut_utilisateur($enigme_id, $user_id);
 
-    $statuts_autorises = ['non_commencee', 'abandonnee', 'echouee'];
-
-    return $etat_systeme === 'accessible' && in_array($statut, $statuts_autorises, true);
+    return cat_get_hunt_progress_service()->canEngageRiddle(
+        $etat_systeme,
+        $statut,
+        $prerequisitesMet
+    );
 }
 
 // ==================================================

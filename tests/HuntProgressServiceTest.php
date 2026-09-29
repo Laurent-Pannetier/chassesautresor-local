@@ -268,6 +268,29 @@ class HuntProgressServiceTest extends TestCase
         );
     }
 
+    public function testRiddleEngagementRequiresAccessibleStateAndEligibleUserStatus(): void
+    {
+        $service = new HuntProgressService(new HuntProgressRepositoryStub());
+
+        foreach (['non_commencee', 'abandonnee', 'echouee'] as $status) {
+            $this->assertTrue($service->canEngageRiddle('accessible', $status));
+        }
+
+        foreach (['en_cours', 'soumis', 'resolue', 'terminee'] as $status) {
+            $this->assertFalse($service->canEngageRiddle('accessible', $status));
+        }
+
+        $this->assertFalse($service->canEngageRiddle('bloquee_chasse', 'non_commencee'));
+    }
+
+    public function testRiddleEngagementAllowsSatisfiedPrerequisites(): void
+    {
+        $service = new HuntProgressService(new HuntProgressRepositoryStub());
+
+        $this->assertFalse($service->canEngageRiddle('bloquee_pre_requis', 'non_commencee'));
+        $this->assertTrue($service->canEngageRiddle('bloquee_pre_requis', 'non_commencee', true));
+    }
+
     public function testRiddleStatusDeletionIsValidatedAndDelegated(): void
     {
         $repository = new HuntProgressRepositoryStub();
