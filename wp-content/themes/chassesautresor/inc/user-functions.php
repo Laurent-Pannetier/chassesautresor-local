@@ -1445,56 +1445,12 @@ function ca_register_tentatives_search_context(): void
  */
 function ca_get_tentatives_view_model(int $user_id, int $page = 1, int $per_page = 10): array
 {
-    global $wpdb;
-
-    $table     = $wpdb->prefix . 'enigme_tentatives';
     $per_page  = max(1, $per_page);
     $page      = max(1, $page);
     $search    = ca_get_search_term('tentatives');
-    $summary   = cat_get_user_attempt_statistics_service()->summarize($user_id);
-
-    $base_from = sprintf(
-        " FROM %s t
-        INNER JOIN %s p ON t.enigme_id = p.ID
-        LEFT JOIN (
-            SELECT pm.post_id,
-                   MAX(
-                       CAST(
-                           SUBSTRING_INDEX(
-                               SUBSTRING_INDEX(pm.meta_value, ';', 2),
-                               ':',
-                               -1
-                           ) AS UNSIGNED
-                       )
-                   ) AS chasse_id
-            FROM %s pm
-            WHERE pm.meta_key IN ('chasse_associee', 'enigme_chasse_associee')
-            GROUP BY pm.post_id
-        ) AS chasse_meta ON chasse_meta.post_id = t.enigme_id
-        LEFT JOIN %s chasses ON chasses.ID = chasse_meta.chasse_id",
-        $table,
-        $wpdb->posts,
-        $wpdb->postmeta,
-        $wpdb->posts
-    );
-
-    $where_clause   = ' WHERE t.user_id = %d';
-    $count_sql      = "SELECT COUNT(*){$base_from}{$where_clause}";
-    $count_sql      = ca_apply_search_filters('tentatives', $count_sql, $search);
-    $filtered_total = (int) $wpdb->get_var($wpdb->prepare($count_sql, $user_id));
-
-    $pages = $filtered_total > 0 ? (int) ceil($filtered_total / $per_page) : 0;
-    if ($pages > 0 && $page > $pages) {
-        $page = $pages;
-    } elseif (0 === $pages) {
-        $page = 1;
-    }
-
-    $offset     = ($page - 1) * $per_page;
-    $select_sql = "SELECT t.*, p.post_title AS enigme_title, COALESCE(chasse_meta.chasse_id, 0) AS chasse_id, chasses.post_title AS chasse_title{$base_from}{$where_clause}";
-    $select_sql = ca_apply_search_filters('tentatives', $select_sql, $search);
-    $select_sql .= ' ORDER BY t.date_tentative DESC LIMIT %d OFFSET %d';
-    $results     = $wpdb->get_results($wpdb->prepare($select_sql, $user_id, $per_page, $offset));
+    $service    = cat_get_user_attempt_statistics_service();
+    $summary    = $service->summarize($user_id);
+    $pagination = $service->paginate($user_id, $page, $per_page, $search);
 
     $message = $search !== ''
         ? __('Aucune tentative ne correspond à votre recherche.', 'chassesautresor-com')
@@ -1505,11 +1461,11 @@ function ca_get_tentatives_view_model(int $user_id, int $page = 1, int $per_page
         'total'              => $summary['total'],
         'success'            => $summary['success'],
         'search_term'        => $search,
-        'page'               => $page,
-        'pages'              => $pages,
+        'page'               => $pagination['page'],
+        'pages'              => $pagination['pages'],
         'per_page'           => $per_page,
-        'filtered_total'     => $filtered_total,
-        'tentatives'         => is_array($results) ? $results : [],
+        'filtered_total'     => $pagination['total'],
+        'tentatives'         => $pagination['items'],
         'no_results_message' => $message,
     ];
 }
