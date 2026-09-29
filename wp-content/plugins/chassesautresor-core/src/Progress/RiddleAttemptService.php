@@ -100,6 +100,22 @@ class RiddleAttemptService
         return $riddleId > 0 && (bool) $isOrganizerForRiddle($currentUserId, $riddleId);
     }
 
+    public function canProcessManualAttempt(
+        int $currentUserId,
+        bool $isAdministrator,
+        array $organizerUserIds
+    ): bool {
+        if ($currentUserId <= 0) {
+            return false;
+        }
+
+        if ($isAdministrator) {
+            return true;
+        }
+
+        return in_array($currentUserId, array_map('intval', $organizerUserIds), true);
+    }
+
     private function getStateFromAttempt(?object $attempt): string
     {
         if ($attempt === null || !isset($attempt->resultat)) {

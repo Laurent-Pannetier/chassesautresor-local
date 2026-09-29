@@ -175,10 +175,11 @@ if (!function_exists('cat_get_riddle_attempt_service')) {
         $organisateur_id = get_organisateur_from_chasse($chasse_id);
         $organisateur_user_ids = (array) get_field('utilisateurs_associes', $organisateur_id);
 
-        if (
-            !current_user_can('manage_options') &&
-            !in_array($current_user_id, array_map('intval', $organisateur_user_ids), true)
-        ) {
+        if (!$attempt_service->canProcessManualAttempt(
+            $current_user_id,
+            current_user_can('manage_options'),
+            $organisateur_user_ids
+        )) {
             cat_debug("⛔ Accès interdit au traitement pour UID=$uid");
             return false;
         }

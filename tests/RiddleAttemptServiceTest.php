@@ -214,6 +214,18 @@ class RiddleAttemptServiceTest extends TestCase
         );
     }
 
+    public function testManualAttemptProcessingIsLimitedToAdministratorsAndAssociatedOrganizers(): void
+    {
+        $service = new RiddleAttemptService(new RiddleAttemptRepositoryStub());
+        $organizerUserIds = ['7', 9];
+
+        $this->assertFalse($service->canProcessManualAttempt(0, true, $organizerUserIds));
+        $this->assertTrue($service->canProcessManualAttempt(5, true, []));
+        $this->assertTrue($service->canProcessManualAttempt(7, false, $organizerUserIds));
+        $this->assertTrue($service->canProcessManualAttempt(9, false, $organizerUserIds));
+        $this->assertFalse($service->canProcessManualAttempt(8, false, $organizerUserIds));
+    }
+
     public function testRiddleAttemptListIsValidatedAndDelegated(): void
     {
         $repository = new RiddleAttemptRepositoryStub();
