@@ -1,6 +1,16 @@
 <?php
 defined('ABSPATH') || exit;
 
+if (!class_exists(ChassesAuTresor\Core\Content\HintQueryService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HintQueryService.php';
+}
+
+function cat_get_hint_query_service(): ChassesAuTresor\Core\Content\HintQueryService
+{
+    return new ChassesAuTresor\Core\Content\HintQueryService();
+}
+
 // ==================================================
 // 💡 GESTION DES INDICES
 // ==================================================
@@ -71,52 +81,13 @@ add_action('template_redirect', 'rediriger_si_affichage_indice');
  */
 function prochain_rang_indice(int $objet_id, string $objet_type): int
 {
-    if (!in_array($objet_type, ['chasse', 'enigme'], true)) {
+    $queryArgs = cat_get_hint_query_service()->getRankedHintIdsQueryArgs($objet_id, $objet_type);
+    if ($queryArgs === []) {
         return 1;
     }
 
-    if ($objet_type === 'chasse') {
-        $meta_query = [
-            [
-                'key'     => 'indice_chasse_linked',
-                'value'   => $objet_id,
-                'compare' => '=',
-            ],
-            [
-                'key'     => 'indice_cache_etat_systeme',
-                'value'   => ['programme', 'accessible', 'desactive'],
-                'compare' => 'IN',
-            ],
-        ];
-    } else {
-        $meta_query = [
-            [
-                'key'     => 'indice_cible_type',
-                'value'   => 'enigme',
-                'compare' => '=',
-            ],
-            [
-                'key'     => 'indice_enigme_linked',
-                'value'   => $objet_id,
-                'compare' => '=',
-            ],
-            [
-                'key'     => 'indice_cache_etat_systeme',
-                'value'   => ['programme', 'accessible', 'desactive'],
-                'compare' => 'IN',
-            ],
-        ];
-    }
-
     $existing_indices = function_exists('get_posts')
-        ? get_posts([
-            'post_type'      => 'indice',
-            'post_status'    => ['publish', 'pending', 'draft', 'private', 'future'],
-            'meta_query'     => $meta_query,
-            'fields'         => 'ids',
-            'no_found_rows'  => true,
-            'posts_per_page' => -1,
-        ])
+        ? get_posts($queryArgs)
         : [];
 
     return count($existing_indices) + 1;
@@ -132,55 +103,13 @@ function prochain_rang_indice(int $objet_id, string $objet_type): int
 function reordonner_indices(int $objet_id, string $objet_type): void
 {
     static $processing = false;
-    if (!in_array($objet_type, ['chasse', 'enigme'], true) || $processing) {
+    $queryArgs = cat_get_hint_query_service()->getRankedHintIdsQueryArgs($objet_id, $objet_type, true);
+    if ($queryArgs === [] || $processing) {
         return;
     }
 
     $processing = true;
-
-    if ($objet_type === 'chasse') {
-        $meta_query = [
-            [
-                'key'     => 'indice_chasse_linked',
-                'value'   => $objet_id,
-                'compare' => '=',
-            ],
-            [
-                'key'     => 'indice_cache_etat_systeme',
-                'value'   => ['programme', 'accessible', 'desactive'],
-                'compare' => 'IN',
-            ],
-        ];
-    } else {
-        $meta_query = [
-            [
-                'key'     => 'indice_cible_type',
-                'value'   => 'enigme',
-                'compare' => '=',
-            ],
-            [
-                'key'     => 'indice_enigme_linked',
-                'value'   => $objet_id,
-                'compare' => '=',
-            ],
-            [
-                'key'     => 'indice_cache_etat_systeme',
-                'value'   => ['programme', 'accessible', 'desactive'],
-                'compare' => 'IN',
-            ],
-        ];
-    }
-
-    $indices = get_posts([
-        'post_type'      => 'indice',
-        'post_status'    => ['publish', 'pending', 'draft', 'private', 'future'],
-        'meta_query'     => $meta_query,
-        'orderby'        => 'date',
-        'order'          => 'ASC',
-        'fields'         => 'ids',
-        'no_found_rows'  => true,
-        'posts_per_page' => -1,
-    ]);
+    $indices = get_posts($queryArgs);
 
     $i = 1;
     foreach ($indices as $indice_id) {
