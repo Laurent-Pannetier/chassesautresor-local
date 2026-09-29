@@ -142,6 +142,21 @@ class RiddleAttemptService
         return $this->processPending($uid, $result) ? $attempt : null;
     }
 
+    public function buildManualNotificationPlan(int $playerId, array $organizerUserIds, string $result): array
+    {
+        $recipientIds = array_map('intval', array_merge([$playerId], $organizerUserIds));
+        $recipientIds = array_values(array_unique(array_filter(
+            $recipientIds,
+            static fn (int $userId): bool => $userId > 0
+        )));
+
+        return [
+            'approved' => $result === 'bon',
+            'flash_type' => $result === 'bon' ? 'success' : 'error',
+            'persistent_recipient_ids' => $recipientIds,
+        ];
+    }
+
     private function getStateFromAttempt(?object $attempt): string
     {
         if ($attempt === null || !isset($attempt->resultat)) {

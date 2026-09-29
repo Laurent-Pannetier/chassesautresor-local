@@ -254,6 +254,28 @@ class RiddleAttemptServiceTest extends TestCase
         $this->assertNull($service->processManualAttempt('attempt-1', 'bon', 8, false, $organizerUsers));
     }
 
+    public function testManualNotificationPlanDeduplicatesRecipientsAndDefinesPresentation(): void
+    {
+        $service = new RiddleAttemptService(new RiddleAttemptRepositoryStub());
+
+        $this->assertSame(
+            [
+                'approved' => true,
+                'flash_type' => 'success',
+                'persistent_recipient_ids' => [7, 9],
+            ],
+            $service->buildManualNotificationPlan(7, ['9', 7, 0], 'bon')
+        );
+        $this->assertSame(
+            [
+                'approved' => false,
+                'flash_type' => 'error',
+                'persistent_recipient_ids' => [7, 9],
+            ],
+            $service->buildManualNotificationPlan(7, [9], 'faux')
+        );
+    }
+
     public function testRiddleAttemptListIsValidatedAndDelegated(): void
     {
         $repository = new RiddleAttemptRepositoryStub();
