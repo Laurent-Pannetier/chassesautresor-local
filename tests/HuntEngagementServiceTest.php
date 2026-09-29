@@ -15,6 +15,7 @@ class HuntEngagementRepositoryStub extends HuntEngagementRepository
 {
     public bool $exists = false;
     public array $inserted = [];
+    public array $participantRange = [];
 
     public function __construct()
     {
@@ -28,6 +29,13 @@ class HuntEngagementRepositoryStub extends HuntEngagementRepository
     public function countByHunt(int $huntId): int
     {
         return 4;
+    }
+
+    public function countParticipants(int $huntId, ?string $startAt = null, ?string $endAt = null): int
+    {
+        $this->participantRange = [$huntId, $startAt, $endAt];
+
+        return 3;
     }
 
     public function insert(int $userId, int $huntId, string $engagedAt): bool
@@ -67,5 +75,21 @@ class HuntEngagementServiceTest extends TestCase
         $this->assertFalse($service->isEngaged(0, 12));
         $this->assertFalse($service->engage(7, 0, '2026-09-29 12:00:00'));
         $this->assertSame(0, $service->countPlayers(0));
+    }
+
+    public function testParticipantCountSupportsAnOptionalDateRange(): void
+    {
+        $repository = new HuntEngagementRepositoryStub();
+        $service = new HuntEngagementService($repository);
+
+        $this->assertSame(
+            3,
+            $service->countParticipants(12, '2026-09-01 00:00:00', '2026-09-30 23:59:59')
+        );
+        $this->assertSame(
+            [12, '2026-09-01 00:00:00', '2026-09-30 23:59:59'],
+            $repository->participantRange
+        );
+        $this->assertSame(0, $service->countParticipants(0));
     }
 }

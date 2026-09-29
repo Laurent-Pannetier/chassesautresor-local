@@ -85,13 +85,15 @@ function cat_get_hunt_winner_repository(): ChassesAuTresor\Core\Progress\HuntWin
 /**
  * Create the service responsible for hunt-level engagements.
  */
-function cat_get_hunt_engagement_service(): ChassesAuTresor\Core\Progress\HuntEngagementService
-{
-    global $wpdb;
+if (!function_exists('cat_get_hunt_engagement_service')) {
+    function cat_get_hunt_engagement_service(): ChassesAuTresor\Core\Progress\HuntEngagementService
+    {
+        global $wpdb;
 
-    return new ChassesAuTresor\Core\Progress\HuntEngagementService(
-        new ChassesAuTresor\Core\Progress\HuntEngagementRepository($wpdb)
-    );
+        return new ChassesAuTresor\Core\Progress\HuntEngagementService(
+            new ChassesAuTresor\Core\Progress\HuntEngagementRepository($wpdb)
+        );
+    }
 }
 
 if (!function_exists('cat_get_hunt_progress_service')) {

@@ -38,6 +38,26 @@ class HuntEngagementRepository
         );
     }
 
+    public function countParticipants(int $huntId, ?string $startAt = null, ?string $endAt = null): int
+    {
+        $table = $this->wpdb->prefix . 'engagements';
+        $where = 'chasse_id = %d AND enigme_id IS NULL';
+        $params = [$huntId];
+
+        if ($startAt !== null && $endAt !== null) {
+            $where .= ' AND date_engagement BETWEEN %s AND %s';
+            $params[] = $startAt;
+            $params[] = $endAt;
+        }
+
+        return (int) $this->wpdb->get_var(
+            $this->wpdb->prepare(
+                "SELECT COUNT(DISTINCT user_id) FROM {$table} WHERE {$where}",
+                ...$params
+            )
+        );
+    }
+
     public function insert(int $userId, int $huntId, string $engagedAt): bool
     {
         $inserted = $this->wpdb->insert(
