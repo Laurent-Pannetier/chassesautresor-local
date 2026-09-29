@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Content/RiddleAccessService.php';
+
 if (!defined('ABSPATH')) {
     define('ABSPATH', __DIR__ . '/');
 }

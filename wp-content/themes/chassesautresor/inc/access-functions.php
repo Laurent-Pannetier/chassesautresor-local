@@ -505,94 +505,42 @@ function utilisateur_peut_voir_enigme(int $enigme_id, ?int $user_id = null): boo
 
     cat_debug("🔎 [voir énigme] #$enigme_id | statut = $post_status | etat = $etat_systeme | user_id = $user_id");
 
-    // 🔓 Administrateur → accès total
-    if (current_user_can('administrator')) {
+    $service = new ChassesAuTresor\Core\Content\RiddleAccessService();
+    $is_administrator = current_user_can('administrator');
+    if ($is_administrator) {
         cat_debug("✅ [voir énigme] accès admin");
-        return true;
+        return $service->canView(true, false, false, '', '', '', false, false, false);
     }
 
-    // 🎯 Pas de chasse liée = refus
     if (!$chasse_id) {
         cat_debug("❌ [voir énigme] pas de chasse associée");
-        return false;
+        return $service->canView(false, false, false, '', '', '', false, false, false);
     }
 
     $statut_validation = get_field('chasse_cache_statut_validation', $chasse_id) ?? '';
-    $est_organisateur  = utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
-
-    // 🏁 Chasse terminée : visuels accessibles à tous
     $chasse_terminee = get_field('chasse_cache_statut', $chasse_id) === 'termine';
     if ($chasse_terminee && $post_status === 'publish') {
-        cat_debug("🟢 [voir énigme] chasse #$chasse_id terminée → accès public");
-        return true;
+        return $service->canView(false, true, true, 'publish', '', '', false, false, false);
     }
 
-    // ✅ Abonné engagé dans la chasse → peut voir l’image si énigme accessible
-    if (utilisateur_est_engage_dans_chasse($user_id, $chasse_id)) {
-        if ($est_organisateur && in_array($statut_validation, ['creation', 'correction', 'en_attente'], true)) {
-            $autorise = in_array($post_status, ['publish', 'pending'], true);
-            cat_debug("🟢 [voir énigme] organisateur engagé → chasse = $statut_validation → accès " . ($autorise ? 'OK' : 'REFUSÉ'));
-            return $autorise;
-        }
+    $est_engage = utilisateur_est_engage_dans_chasse($user_id, $chasse_id);
+    $est_abonne = is_user_logged_in() && in_array('abonne', wp_get_current_user()->roles, true);
+    $est_organisateur = (!$est_abonne || $est_engage)
+        ? utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)
+        : false;
+    $autorise = $service->canView(
+        false,
+        true,
+        $chasse_terminee,
+        (string) $post_status,
+        (string) $etat_systeme,
+        (string) $statut_validation,
+        $est_organisateur,
+        $est_engage,
+        $est_abonne
+    );
 
-        $autorise = ($post_status === 'publish') && ($etat_systeme === 'accessible');
-        cat_debug("✅ [voir énigme] joueur engagé dans chasse #$chasse_id → accès " . ($autorise ? 'OK' : 'REFUSÉ'));
-        return $autorise;
-    }
-
-    // 👤 Visiteur/abonné non engagé → accès uniquement si énigme publique + accessible
-    if (is_user_logged_in() && in_array('abonne', wp_get_current_user()->roles, true)) {
-        $autorise = ($post_status === 'publish') && ($etat_systeme === 'accessible');
-        cat_debug("👤 [voir énigme] abonné non engagé → accès " . ($autorise ? 'OK' : 'REFUSÉ'));
-        return $autorise;
-    }
-
-    // ❌ Brouillon interdit
-    if ($post_status === 'draft') {
-        cat_debug("❌ [voir énigme] brouillon interdit pour utilisateur #$user_id");
-        return false;
-    }
-
-    // 🔐 L’utilisateur doit être lié à l’organisateur de la chasse
-    if (!$est_organisateur) {
-        cat_debug("❌ [voir énigme] user #$user_id n'est pas lié à la chasse #$chasse_id");
-        return false;
-    }
-
-    // ✅ Exception organisateur (chasse non publiée)
-    cat_debug("🧪 [voir énigme] chasse #$chasse_id → statut_validation = $statut_validation");
-
-    if (in_array($statut_validation, ['creation', 'correction', 'en_attente'], true)) {
-        $autorise = in_array($post_status, ['publish', 'pending'], true);
-        cat_debug("🟡 [voir énigme] organisateur → chasse = $statut_validation → accès " . ($autorise ? 'OK' : 'REFUSÉ'));
-        return $autorise;
-    }
-
-    // ✅ Cas organisateur associé à une chasse publiée mais à venir
-    if (
-        $est_organisateur &&
-        $post_status === 'publish' &&
-        $etat_systeme === 'bloquee_chasse'
-    ) {
-        cat_debug("🟢 [voir énigme] organisateur associé à une chasse publiée mais à venir → accès OK");
-        return true;
-    }
-
-    // ✅ Cas organisateur avec énigme bloquée par pré-requis
-    if ($post_status === 'publish' && $etat_systeme === 'bloquee_pre_requis') {
-        cat_debug("🟢 [voir énigme] organisateur → pré-requis ignorés");
-        return true;
-    }
-
-    // ✅ Cas organisateur avec énigme bloquée par date programmée
-    if ($post_status === 'publish' && $etat_systeme === 'bloquee_date') {
-        cat_debug("🟢 [voir énigme] organisateur → date programmée ignorée");
-        return true;
-    }
-
-    // ✅ Cas standard : publish + accessible
-    $autorise = ($post_status === 'publish') && ($etat_systeme === 'accessible');
-    cat_debug("🟠 [voir énigme] cas standard → accès " . ($autorise ? 'OK' : 'REFUSÉ'));
+    cat_debug("🔎 [voir énigme] décision métier → accès " . ($autorise ? 'OK' : 'REFUSÉ'));
     return $autorise;
 }
 
