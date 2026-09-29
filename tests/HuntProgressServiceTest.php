@@ -113,6 +113,14 @@ class HuntProgressServiceTest extends TestCase
         $this->assertSame(0, $service->countSolvedRiddles(0, [10, 11]));
     }
 
+    public function testEngagedRiddleCountComesFromProgressRepository(): void
+    {
+        $service = new HuntProgressService(new HuntProgressRepositoryStub());
+
+        $this->assertSame(1, $service->countEngagedRiddles(7, [10, 11]));
+        $this->assertSame(0, $service->countEngagedRiddles(0, [10, 11]));
+    }
+
     public function testCompleteRiddlesDelegatesStorageToRepository(): void
     {
         $repository = new HuntProgressRepositoryStub();

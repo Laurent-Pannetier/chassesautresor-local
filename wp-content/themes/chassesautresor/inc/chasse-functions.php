@@ -20,6 +20,13 @@ if (!class_exists(ChassesAuTresor\Core\Progress\HuntEngagementService::class, fa
         . '/plugins/chassesautresor-core/src/Progress/HuntEngagementService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Progress\HuntProgressService::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Progress/HuntProgressRepository.php';
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Progress/HuntProgressService.php';
+}
+
 //
 // 1. 📦 FONCTIONS LIÉES À UNE CHASSE
 // 2. 📦 AFFICHAGE
@@ -85,6 +92,20 @@ function cat_get_hunt_engagement_service(): ChassesAuTresor\Core\Progress\HuntEn
     return new ChassesAuTresor\Core\Progress\HuntEngagementService(
         new ChassesAuTresor\Core\Progress\HuntEngagementRepository($wpdb)
     );
+}
+
+if (!function_exists('cat_get_hunt_progress_service')) {
+    /**
+     * Create the service responsible for hunt progress.
+     */
+    function cat_get_hunt_progress_service(): ChassesAuTresor\Core\Progress\HuntProgressService
+    {
+        global $wpdb;
+
+        return new ChassesAuTresor\Core\Progress\HuntProgressService(
+            new ChassesAuTresor\Core\Progress\HuntProgressRepository($wpdb)
+        );
+    }
 }
 
 /**
@@ -528,12 +549,7 @@ function chasse_calculer_progression_utilisateur(int $chasse_id, int $user_id): 
     $resolues = 0;
 
     if ($user_id && $total > 0) {
-        global $wpdb;
-        $placeholders = implode(',', array_fill(0, $total, '%d'));
-
-        $sql = "SELECT COUNT(DISTINCT enigme_id) FROM {$wpdb->prefix}engagements "
-            . "WHERE user_id = %d AND enigme_id IN ($placeholders)";
-        $engagees = (int) $wpdb->get_var($wpdb->prepare($sql, array_merge([$user_id], $enigmes)));
+        $engagees = cat_get_hunt_progress_service()->countEngagedRiddles($user_id, $enigmes);
     }
 
     if ($user_id && function_exists('compter_enigmes_resolues')) {
