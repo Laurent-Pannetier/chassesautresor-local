@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 use ChassesAuTresor\Core\Progress\HintUnlockRepository;
 use ChassesAuTresor\Core\Progress\HintUnlockService;
+use ChassesAuTresor\Core\Points\PointsService;
 use PHPUnit\Framework\TestCase;
 
+require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Points/PointsRepository.php';
+require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Points/PointsService.php';
 require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/HintUnlockRepository.php';
 require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/HintUnlockService.php';
 
@@ -55,12 +58,31 @@ class HintUnlockRepositoryStub extends HintUnlockRepository
     }
 }
 
+class HintUnlockPointsServiceStub extends PointsService
+{
+    public array $deductArguments = [];
+
+    public function __construct()
+    {
+    }
+
+    public function deduct(
+        int $userId,
+        int $amount,
+        string $reason = '',
+        string $originType = 'admin',
+        ?int $originId = null
+    ): void {
+        $this->deductArguments = [$userId, $amount, $reason, $originType, $originId];
+    }
+}
+
 class HintUnlockServiceTest extends TestCase
 {
     public function testUnlockLookupIsValidatedAndDelegated(): void
     {
         $repository = new HintUnlockRepositoryStub();
-        $service = new HintUnlockService($repository);
+        $service = new HintUnlockService($repository, new HintUnlockPointsServiceStub());
 
         $this->assertTrue($service->isUnlocked(7, 10));
         $this->assertSame([7, 10], $repository->arguments);
@@ -102,7 +124,7 @@ class HintUnlockServiceTest extends TestCase
     public function testRecordUnlockValidatesAndPersistsBothRecords(): void
     {
         $repository = new HintUnlockRepositoryStub();
-        $service = new HintUnlockService($repository);
+        $service = new HintUnlockService($repository, new HintUnlockPointsServiceStub());
 
         $this->assertTrue($service->recordUnlock(7, 10, 20, 30, 5, '2026-09-29 12:00:00'));
         $this->assertSame([7, 10, 20, 30, 5, '2026-09-29 12:00:00'], $repository->unlockArguments);
@@ -116,6 +138,22 @@ class HintUnlockServiceTest extends TestCase
         $this->assertFalse($service->recordUnlock(7, 10, 0, 0, 5, '2026-09-29 12:00:00'));
         $this->assertSame([7, 10, null, null, 5, '2026-09-29 12:00:00'], $repository->unlockArguments);
         $this->assertSame([], $repository->engagementArguments);
+    }
+
+    public function testRecordUnlockDelegatesHintPointDeduction(): void
+    {
+        $repository = new HintUnlockRepositoryStub();
+        $pointsService = new HintUnlockPointsServiceStub();
+        $service = new HintUnlockService($repository, $pointsService);
+
+        $this->assertTrue(
+            $service->recordUnlock(7, 10, 20, 30, 5, '2026-09-29 12:00:00', 'Hint unlock')
+        );
+        $this->assertSame([7, 5, 'Hint unlock', 'indice', 10], $pointsService->deductArguments);
+
+        $pointsService->deductArguments = [];
+        $this->assertTrue($service->recordUnlock(7, 10, 20, 30, 0, '2026-09-29 12:00:00'));
+        $this->assertSame([], $pointsService->deductArguments);
     }
 
     public function testRepositoryInsertsUnlockAndEngagement(): void

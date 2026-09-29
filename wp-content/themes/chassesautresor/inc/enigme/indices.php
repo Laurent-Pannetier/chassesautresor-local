@@ -2,6 +2,8 @@
 defined('ABSPATH') || exit;
 
 if (!class_exists(ChassesAuTresor\Core\Progress\HintUnlockService::class, false)) {
+    require_once dirname(__DIR__, 4) . '/plugins/chassesautresor-core/src/Points/PointsRepository.php';
+    require_once dirname(__DIR__, 4) . '/plugins/chassesautresor-core/src/Points/PointsService.php';
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Progress/HintUnlockRepository.php';
     require_once dirname(__DIR__, 4)
@@ -14,7 +16,10 @@ if (!function_exists('cat_get_hint_unlock_service')) {
         global $wpdb;
 
         return new ChassesAuTresor\Core\Progress\HintUnlockService(
-            new ChassesAuTresor\Core\Progress\HintUnlockRepository($wpdb)
+            new ChassesAuTresor\Core\Progress\HintUnlockRepository($wpdb),
+            new ChassesAuTresor\Core\Points\PointsService(
+                new ChassesAuTresor\Core\Points\PointsRepository($wpdb)
+            )
         );
     }
 }
@@ -117,23 +122,14 @@ function debloquer_indice(): void
     }
     $enigme_id = (int) get_field('indice_enigme_linked', $indice_id);
 
-    if ($cout > 0) {
-        deduire_points_utilisateur(
-            $user_id,
-            $cout,
-            __('Déblocage indice', 'chassesautresor-com'),
-            'indice',
-            $indice_id
-        );
-    }
-
     cat_get_hint_unlock_service()->recordUnlock(
         $user_id,
         $indice_id,
         $chasse_id ?: null,
         $enigme_id ?: null,
         $cout,
-        current_time('mysql', 1)
+        current_time('mysql', 1),
+        __('Déblocage indice', 'chassesautresor-com')
     );
 
     $points_restants = function_exists('get_user_points') ? get_user_points($user_id) : 0;
