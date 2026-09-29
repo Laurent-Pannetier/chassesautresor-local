@@ -6,9 +6,19 @@ if (!class_exists(ChassesAuTresor\Core\Content\HintQueryService::class, false)) 
         . '/plugins/chassesautresor-core/src/Content/HintQueryService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HintStatusService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HintStatusService.php';
+}
+
 function cat_get_hint_query_service(): ChassesAuTresor\Core\Content\HintQueryService
 {
     return new ChassesAuTresor\Core\Content\HintQueryService();
+}
+
+function cat_get_hint_status_service(): ChassesAuTresor\Core\Content\HintStatusService
+{
+    return new ChassesAuTresor\Core\Content\HintStatusService();
 }
 
 // ==================================================
@@ -996,28 +1006,25 @@ function mettre_a_jour_cache_indice($post_id, ?int $chasse_id = null): void
         }
     }
 
-    $content  = trim((string) get_field('indice_contenu', $post_id));
-    $image_id = get_field('indice_image', $post_id);
+    $content = trim((string) get_field('indice_contenu', $post_id));
+    $imageId = get_field('indice_image', $post_id);
+    $availability = (string) get_field('indice_disponibilite', $post_id);
+    $availabilityDate = null;
 
-    $complete = $content !== '' || !empty($image_id);
-    $state    = 'desactive';
-
-    if ($complete) {
-        $state        = 'accessible';
-        $availability = get_field('indice_disponibilite', $post_id);
-
-        if ($availability === 'differe') {
-            $date_raw = get_field('indice_date_disponibilite', $post_id);
-            $date     = $date_raw ? convertir_en_datetime($date_raw) : null;
-
-            if (!$date) {
-                $complete = false;
-                $state    = 'desactive';
-            } elseif ($date->getTimestamp() > time()) {
-                $state = 'programme';
-            }
-        }
+    if ($availability === 'differe') {
+        $dateRaw = get_field('indice_date_disponibilite', $post_id);
+        $availabilityDate = $dateRaw ? convertir_en_datetime($dateRaw) : null;
     }
+
+    $hintStatus = cat_get_hint_status_service()->resolve(
+        $content !== '',
+        !empty($imageId),
+        $availability,
+        $availabilityDate ? $availabilityDate->getTimestamp() : null,
+        time()
+    );
+    $complete = $hintStatus['complete'];
+    $state = $hintStatus['state'];
 
     update_field('indice_cache_complet', $complete ? 1 : 0, $post_id);
     update_field('indice_cache_etat_systeme', $state, $post_id);
@@ -1025,20 +1032,16 @@ function mettre_a_jour_cache_indice($post_id, ?int $chasse_id = null): void
     $status = get_post_status($post_id);
     $post   = get_post($post_id);
 
-    if ($complete && $state === 'accessible') {
-        if ($status !== 'publish') {
-            wp_update_post([
-                'ID'            => $post_id,
-                'post_status'   => 'publish',
-                'post_date'     => $post->post_date,
-                'post_date_gmt' => $post->post_date_gmt,
-                'edit_date'     => true,
-            ]);
-        }
-    } elseif ($status === 'publish') {
+    $publicationStatus = cat_get_hint_status_service()->resolvePublicationStatus(
+        $complete,
+        $state,
+        (string) $status
+    );
+
+    if ($publicationStatus !== null) {
         wp_update_post([
             'ID'            => $post_id,
-            'post_status'   => 'pending',
+            'post_status'   => $publicationStatus,
             'post_date'     => $post->post_date,
             'post_date_gmt' => $post->post_date_gmt,
             'edit_date'     => true,
