@@ -28,4 +28,46 @@ class HintUnlockRepository
             )
         );
     }
+
+    public function insertUnlock(
+        int $userId,
+        int $hintId,
+        ?int $huntId,
+        ?int $riddleId,
+        int $pointsSpent,
+        string $unlockedAt
+    ): bool {
+        return $this->wpdb->insert(
+            $this->wpdb->prefix . 'indices_deblocages',
+            [
+                'user_id' => $userId,
+                'indice_id' => $hintId,
+                'chasse_id' => $huntId,
+                'enigme_id' => $riddleId,
+                'points_depenses' => $pointsSpent,
+                'date_deblocage' => $unlockedAt,
+            ],
+            ['%d', '%d', '%d', '%d', '%d', '%s']
+        ) !== false;
+    }
+
+    public function insertEngagement(
+        int $userId,
+        int $hintId,
+        ?int $huntId,
+        ?int $riddleId,
+        string $engagedAt
+    ): bool {
+        return $this->wpdb->insert(
+            $this->wpdb->prefix . 'engagements',
+            [
+                'user_id' => $userId,
+                'enigme_id' => $riddleId,
+                'chasse_id' => $huntId,
+                'indice_id' => $hintId,
+                'date_engagement' => $engagedAt,
+            ],
+            ['%d', '%d', '%d', '%d', '%s']
+        ) !== false;
+    }
 }

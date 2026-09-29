@@ -127,24 +127,14 @@ function debloquer_indice(): void
         );
     }
 
-    global $wpdb;
-    $table = $wpdb->prefix . 'indices_deblocages';
-    $wpdb->insert($table, [
-        'user_id'        => $user_id,
-        'indice_id'      => $indice_id,
-        'chasse_id'      => $chasse_id ?: null,
-        'enigme_id'      => $enigme_id ?: null,
-        'points_depenses'=> $cout,
-        'date_deblocage' => current_time('mysql', 1),
-    ], ['%d', '%d', '%d', '%d', '%d', '%s']);
-
-    $wpdb->insert($wpdb->prefix . 'engagements', [
-        'user_id'        => $user_id,
-        'enigme_id'      => $enigme_id ?: null,
-        'chasse_id'      => $chasse_id ?: null,
-        'indice_id'      => $indice_id,
-        'date_engagement'=> current_time('mysql', 1),
-    ], ['%d', '%d', '%d', '%d', '%s']);
+    cat_get_hint_unlock_service()->recordUnlock(
+        $user_id,
+        $indice_id,
+        $chasse_id ?: null,
+        $enigme_id ?: null,
+        $cout,
+        current_time('mysql', 1)
+    );
 
     $points_restants = function_exists('get_user_points') ? get_user_points($user_id) : 0;
     $contenu         = get_field('indice_contenu', $indice_id) ?: '';
