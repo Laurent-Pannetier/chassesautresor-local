@@ -232,6 +232,45 @@ class RiddleAttemptServiceTest extends TestCase
         $this->assertFalse($service->hasSuccessfulAttempt(7, 0));
     }
 
+    /**
+     * @dataProvider attemptOutcomeProvider
+     */
+    public function testAttemptOutcomeDefinesStatusAndNotification(
+        string $result,
+        bool $notifyFailure,
+        array $expected
+    ): void {
+        $service = new RiddleAttemptService(new RiddleAttemptRepositoryStub());
+
+        $this->assertSame($expected, $service->getOutcome($result, $notifyFailure));
+    }
+
+    public function attemptOutcomeProvider(): array
+    {
+        return [
+            'success' => [
+                'bon',
+                false,
+                ['user_status' => 'resolue', 'resolved' => true, 'notify' => true],
+            ],
+            'failure without notification' => [
+                'faux',
+                false,
+                ['user_status' => 'echouee', 'resolved' => false, 'notify' => false],
+            ],
+            'failure with notification' => [
+                'faux',
+                true,
+                ['user_status' => 'echouee', 'resolved' => false, 'notify' => true],
+            ],
+            'pending result' => [
+                'attente',
+                true,
+                ['user_status' => 'en_cours', 'resolved' => false, 'notify' => false],
+            ],
+        ];
+    }
+
     public function testRiddleCountersAreValidatedAndDelegated(): void
     {
         $repository = new RiddleAttemptRepositoryStub();

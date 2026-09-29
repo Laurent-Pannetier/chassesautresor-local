@@ -133,6 +133,31 @@ class RiddleAttemptService
         return $this->repository->hasSuccessfulAttempt($userId, $riddleId);
     }
 
+    public function getOutcome(string $result, bool $notifyFailure = false): array
+    {
+        if ($result === 'bon') {
+            return [
+                'user_status' => 'resolue',
+                'resolved' => true,
+                'notify' => true,
+            ];
+        }
+
+        if ($result === 'faux') {
+            return [
+                'user_status' => 'echouee',
+                'resolved' => false,
+                'notify' => $notifyFailure,
+            ];
+        }
+
+        return [
+            'user_status' => 'en_cours',
+            'resolved' => false,
+            'notify' => false,
+        ];
+    }
+
     public function countForRiddle(int $riddleId): int
     {
         return $riddleId > 0 ? $this->repository->countForRiddle($riddleId) : 0;

@@ -453,16 +453,14 @@ function traiter_tentative(
         $uid = inserer_tentative($user_id, $enigme_id, $reponse, $resultat, $cout);
     }
 
-    if ($resultat === 'bon') {
-        enigme_mettre_a_jour_statut_utilisateur($enigme_id, $user_id, 'resolue');
+    $outcome = cat_get_riddle_attempt_service()->getOutcome($resultat, $email_echec);
+    enigme_mettre_a_jour_statut_utilisateur($enigme_id, $user_id, $outcome['user_status']);
+
+    if ($outcome['resolved']) {
         do_action('enigme_resolue', $user_id, $enigme_id);
-    } elseif ($resultat === 'faux') {
-        enigme_mettre_a_jour_statut_utilisateur($enigme_id, $user_id, 'echouee');
-    } else {
-        enigme_mettre_a_jour_statut_utilisateur($enigme_id, $user_id, 'en_cours');
     }
 
-    if ($envoyer_mail && ($resultat === 'bon' || ($email_echec && $resultat === 'faux'))) {
+    if ($envoyer_mail && $outcome['notify']) {
         envoyer_mail_resultat_joueur($user_id, $enigme_id, $resultat);
     }
 
