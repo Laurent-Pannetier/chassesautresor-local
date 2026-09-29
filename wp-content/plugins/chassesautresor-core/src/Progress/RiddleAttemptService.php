@@ -81,6 +81,25 @@ class RiddleAttemptService
         ];
     }
 
+    public function canViewAttempt(
+        object $attempt,
+        int $currentUserId,
+        bool $isAdministrator,
+        callable $isOrganizerForRiddle
+    ): bool {
+        if ($currentUserId <= 0) {
+            return false;
+        }
+
+        if ((int) ($attempt->user_id ?? 0) === $currentUserId || $isAdministrator) {
+            return true;
+        }
+
+        $riddleId = (int) ($attempt->enigme_id ?? 0);
+
+        return $riddleId > 0 && (bool) $isOrganizerForRiddle($currentUserId, $riddleId);
+    }
+
     private function getStateFromAttempt(?object $attempt): string
     {
         if ($attempt === null || !isset($attempt->resultat)) {

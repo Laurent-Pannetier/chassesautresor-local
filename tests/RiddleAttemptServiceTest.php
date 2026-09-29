@@ -182,6 +182,38 @@ class RiddleAttemptServiceTest extends TestCase
         $this->assertNull($service->describeByUid('attempt-2'));
     }
 
+    public function testAttemptVisibilitySupportsOwnerAdministratorAndOrganizer(): void
+    {
+        $service = new RiddleAttemptService(new RiddleAttemptRepositoryStub());
+        $attempt = (object) ['user_id' => 7, 'enigme_id' => 10];
+        $organizerChecks = [];
+        $organizerCheck = static function (int $userId, int $riddleId) use (&$organizerChecks): bool {
+            $organizerChecks[] = [$userId, $riddleId];
+            return $userId === 9;
+        };
+
+        $this->assertFalse($service->canViewAttempt($attempt, 0, true, $organizerCheck));
+        $this->assertTrue($service->canViewAttempt($attempt, 7, false, $organizerCheck));
+        $this->assertTrue($service->canViewAttempt($attempt, 8, true, $organizerCheck));
+        $this->assertTrue($service->canViewAttempt($attempt, 9, false, $organizerCheck));
+        $this->assertFalse($service->canViewAttempt($attempt, 10, false, $organizerCheck));
+        $this->assertSame([[9, 10], [10, 10]], $organizerChecks);
+    }
+
+    public function testAttemptVisibilityRejectsMissingRiddleForUnrelatedUser(): void
+    {
+        $service = new RiddleAttemptService(new RiddleAttemptRepositoryStub());
+
+        $this->assertFalse(
+            $service->canViewAttempt(
+                (object) ['user_id' => 7],
+                8,
+                false,
+                static fn (int $userId, int $riddleId): bool => true
+            )
+        );
+    }
+
     public function testRiddleAttemptListIsValidatedAndDelegated(): void
     {
         $repository = new RiddleAttemptRepositoryStub();

@@ -74,36 +74,23 @@ if (!function_exists('cat_get_riddle_attempt_service')) {
     function ca_user_can_view_tentative_proposition(object $tentative): bool
     {
         $current_user_id = (int) get_current_user_id();
-        if ($current_user_id <= 0) {
-            return false;
-        }
 
-        if ((int) ($tentative->user_id ?? 0) === $current_user_id) {
-            return true;
-        }
+        return cat_get_riddle_attempt_service()->canViewAttempt(
+            $tentative,
+            $current_user_id,
+            current_user_can('manage_options'),
+            static function (int $user_id, int $enigme_id): bool {
+                if (!function_exists('recuperer_id_chasse_associee')) {
+                    return false;
+                }
 
-        if (current_user_can('manage_options')) {
-            return true;
-        }
+                $chasse_id = (int) recuperer_id_chasse_associee($enigme_id);
 
-        $enigme_id = isset($tentative->enigme_id) ? (int) $tentative->enigme_id : 0;
-        if ($enigme_id <= 0) {
-            return false;
-        }
-
-        $chasse_id = function_exists('recuperer_id_chasse_associee') ? (int) recuperer_id_chasse_associee($enigme_id) : 0;
-        if ($chasse_id <= 0) {
-            return false;
-        }
-
-        if (
-            function_exists('utilisateur_est_organisateur_associe_a_chasse')
-            && utilisateur_est_organisateur_associe_a_chasse($current_user_id, $chasse_id)
-        ) {
-            return true;
-        }
-
-        return false;
+                return $chasse_id > 0
+                    && function_exists('utilisateur_est_organisateur_associe_a_chasse')
+                    && utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
+            }
+        );
     }
 
     /**
