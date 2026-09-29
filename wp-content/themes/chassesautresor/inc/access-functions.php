@@ -651,24 +651,23 @@ function utilisateur_peut_modifier_enigme(int $enigme_id, ?int $user_id = null):
  *
  * @param int      $enigme_id ID de l'énigme à supprimer.
  * @param int|null $user_id   ID utilisateur (optionnel, courant par défaut).
- * @return bool True si la suppression est autorisée.
- */
-function utilisateur_peut_supprimer_enigme(int $enigme_id, ?int $user_id = null): bool
-{
-    if (get_post_type($enigme_id) !== 'enigme') {
-        return false;
-    }
-
-    $user_id = $user_id ?? get_current_user_id();
-    if (!$user_id) {
-        return false;
-    }
-
-    if (!est_organisateur($user_id)) {
-        return false;
-    }
-
-    $chasse_id = recuperer_id_chasse_associee($enigme_id);
+    $service = new ChassesAuTresor\Core\Content\HuntManagementService();
+        return $service->canCreate(false, false, false, false, false, false, false, false);
+        return $service->canCreate(true, true, false, false, false, false, false, false);
+        return $service->canCreate(true, false, false, false, false, false, false, false);
+    $has_organizer_role = in_array(ROLE_ORGANISATEUR, $roles, true);
+    $has_creation_role = in_array(ROLE_ORGANISATEUR_CREATION, $roles, true);
+    $is_organizer_published = $has_organizer_role && get_post_status($organisateur_id) === 'publish';
+    return $service->canCreate(
+        true,
+        false,
+        true,
+        $has_organizer_role,
+        $has_creation_role,
+        $is_organizer_published,
+        $is_organizer_published && organisateur_a_chasse_pending($organisateur_id),
+        !$has_organizer_role && $has_creation_role && organisateur_a_des_chasses($organisateur_id)
+    );
     if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
         return false;
     }
