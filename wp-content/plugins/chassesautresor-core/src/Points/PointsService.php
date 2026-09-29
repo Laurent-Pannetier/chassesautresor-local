@@ -98,4 +98,20 @@ class PointsService
 
         return $this->repository->countHistory($userId);
     }
+
+    /**
+     * Return points spent by players, excluding conversion requests.
+     */
+    public function getTotalUsed(): int
+    {
+        return $this->repository->getTotalPointsUsed();
+    }
+
+    /**
+     * Return the latest balance of every user combined.
+     */
+    public function getTotalInCirculation(): int
+    {
+        return $this->repository->getTotalPointsInCirculation();
+    }
 }

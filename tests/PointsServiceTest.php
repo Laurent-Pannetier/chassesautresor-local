@@ -39,6 +39,16 @@ class PointsServiceRepository extends PointsRepository
 
         return $this->balance;
     }
+
+    public function getTotalPointsUsed(): int
+    {
+        return 250;
+    }
+
+    public function getTotalPointsInCirculation(): int
+    {
+        return 750;
+    }
 }
 
 class PointsServiceTest extends TestCase
@@ -70,5 +80,13 @@ class PointsServiceTest extends TestCase
 
         $this->assertSame([], $repository->lastOperation);
         $this->assertSame(0, $service->getBalance(0));
+    }
+
+    public function testServiceExposesGlobalPointTotals(): void
+    {
+        $service = new PointsService(new PointsServiceRepository());
+
+        $this->assertSame(250, $service->getTotalUsed());
+        $this->assertSame(750, $service->getTotalInCirculation());
     }
 }

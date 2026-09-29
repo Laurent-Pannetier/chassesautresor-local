@@ -760,9 +760,7 @@ function myaccount_get_important_messages(): string
             }
         }
 
-        global $wpdb;
-        $repo            = new PointsRepository($wpdb);
-        $pendingRequests = $repo->getConversionRequests(null, 'pending');
+        $pendingRequests = cat_get_conversion_service()->getRequests(null, 'pending');
 
         if (!empty($pendingRequests)) {
             $messages[] = [
@@ -776,9 +774,7 @@ function myaccount_get_important_messages(): string
         $current_user_id   = get_current_user_id();
         $organisateur_id   = get_organisateur_from_user($current_user_id);
 
-        global $wpdb;
-        $repo       = new PointsRepository($wpdb);
-        $pendingOwn = $repo->getConversionRequests($current_user_id, 'pending');
+        $pendingOwn = cat_get_conversion_service()->getRequests($current_user_id, 'pending');
         if (!empty($pendingOwn)) {
             $conversion_url = $organisateur_id
                 ? esc_url(
