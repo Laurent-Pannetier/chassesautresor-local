@@ -60,6 +60,19 @@ class RiddleStatisticsRepository
         );
     }
 
+    public function countSolvedPlayers(int $riddleId): int
+    {
+        $table = $this->wpdb->prefix . 'enigme_statuts_utilisateur';
+
+        return (int) $this->wpdb->get_var(
+            $this->wpdb->prepare(
+                "SELECT COUNT(DISTINCT user_id) FROM {$table} "
+                . "WHERE enigme_id = %d AND statut IN ('resolue','terminee','terminée')",
+                $riddleId
+            )
+        );
+    }
+
     public function listSolvers(int $riddleId, array $excludedUserIds = []): array
     {
         $table = $this->wpdb->prefix . 'enigme_tentatives';

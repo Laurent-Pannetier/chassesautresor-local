@@ -39,6 +39,20 @@ class RiddleStatisticsService
             : 0;
     }
 
+    public function calculateResolutionRate(int $id): float
+    {
+        if ($id <= 0) {
+            return 0.0;
+        }
+
+        $engaged = $this->repository->countEngagedPlayers($id);
+        if ($engaged === 0) {
+            return 0.0;
+        }
+
+        return (100 * $this->repository->countSolvedPlayers($id)) / $engaged;
+    }
+
     public function listSolvers(int $id, array $excludedUserIds = []): array
     {
         if ($id <= 0) {

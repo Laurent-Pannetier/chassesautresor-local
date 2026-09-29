@@ -26,6 +26,11 @@ class RiddleStatisticsRepositoryStub extends RiddleStatisticsRepository
         $this->arguments = [$id, $start, $end, $excludedUserIds];
         return 3;
     }
+    public function countSolvedPlayers(int $id): int
+    {
+        $this->arguments = [$id];
+        return 2;
+    }
     public function listSolvers(int $id, array $excludedUserIds = []): array
     {
         $this->arguments = [$id, $excludedUserIds];
@@ -63,6 +68,14 @@ class RiddleStatisticsServiceTest extends TestCase
         $this->assertSame(3, $service->countEngagedPlayers(10, null, null, [1, 2]));
         $this->assertSame([10, null, null, [1, 2]], $repository->arguments);
         $this->assertSame(0, $service->countEngagedPlayers(0));
+    }
+
+    public function testResolutionRateUsesEngagedAndSolvedPlayers(): void
+    {
+        $service = new RiddleStatisticsService(new RiddleStatisticsRepositoryStub());
+
+        $this->assertEqualsWithDelta(66.67, $service->calculateResolutionRate(10), 0.01);
+        $this->assertSame(0.0, $service->calculateResolutionRate(0));
     }
 
     public function testSolversAreNormalizedAndInternalAccountsExcluded(): void

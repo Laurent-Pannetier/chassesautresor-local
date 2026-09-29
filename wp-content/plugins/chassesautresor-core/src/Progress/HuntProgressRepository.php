@@ -48,6 +48,20 @@ class HuntProgressRepository
         return is_string($status) && $status !== '' ? $status : null;
     }
 
+    public function findResolutionDate(int $userId, int $riddleId): ?string
+    {
+        $table = $this->wpdb->prefix . 'enigme_statuts_utilisateur';
+        $date = $this->wpdb->get_var(
+            $this->wpdb->prepare(
+                "SELECT date_mise_a_jour FROM {$table} WHERE user_id = %d AND enigme_id = %d",
+                $userId,
+                $riddleId
+            )
+        );
+
+        return is_string($date) && $date !== '' ? $date : null;
+    }
+
     public function persistStatus(
         int $userId,
         int $riddleId,

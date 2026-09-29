@@ -44,6 +44,13 @@ class HuntProgressRepositoryStub extends HuntProgressRepository
         $this->persistedStatus = [$userId, $riddleId, $status, $updatedAt, $statusExists];
     }
 
+    public function findResolutionDate(int $userId, int $riddleId): ?string
+    {
+        $this->statusArguments = [$userId, $riddleId];
+
+        return '2026-09-29 12:00:00';
+    }
+
     public function countEngaged(int $userId, array $riddleIds): int
     {
         return 1;
@@ -130,6 +137,16 @@ class HuntProgressServiceTest extends TestCase
         $this->assertSame([7, 10], $repository->statusArguments);
         $this->assertNull($service->getRiddleStatus(0, 10));
         $this->assertNull($service->getRiddleStatus(7, 0));
+    }
+
+    public function testRiddleResolutionDateIsDelegatedForValidIdentifiers(): void
+    {
+        $repository = new HuntProgressRepositoryStub();
+        $service = new HuntProgressService($repository);
+
+        $this->assertSame('2026-09-29 12:00:00', $service->getRiddleResolutionDate(7, 10));
+        $this->assertSame([7, 10], $repository->statusArguments);
+        $this->assertNull($service->getRiddleResolutionDate(0, 10));
     }
 
     public function testRiddleStatusCanOnlyAdvanceUnlessForced(): void

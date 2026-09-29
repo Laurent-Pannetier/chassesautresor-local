@@ -48,6 +48,15 @@ class HuntProgressService
         return $this->repository->findStatus($userId, $riddleId);
     }
 
+    public function getRiddleResolutionDate(int $userId, int $riddleId): ?string
+    {
+        if ($userId <= 0 || $riddleId <= 0) {
+            return null;
+        }
+
+        return $this->repository->findResolutionDate($userId, $riddleId);
+    }
+
     public function advanceRiddleStatus(
         int $userId,
         int $riddleId,

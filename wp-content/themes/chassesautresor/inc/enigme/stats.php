@@ -6,12 +6,14 @@ if (!class_exists(ChassesAuTresor\Core\Progress\RiddleStatisticsService::class, 
     require_once dirname(__DIR__, 4) . '/plugins/chassesautresor-core/src/Progress/RiddleStatisticsService.php';
 }
 
-function cat_get_riddle_statistics_service(): ChassesAuTresor\Core\Progress\RiddleStatisticsService
-{
-    global $wpdb;
-    return new ChassesAuTresor\Core\Progress\RiddleStatisticsService(
-        new ChassesAuTresor\Core\Progress\RiddleStatisticsRepository($wpdb)
-    );
+if (!function_exists('cat_get_riddle_statistics_service')) {
+    function cat_get_riddle_statistics_service(): ChassesAuTresor\Core\Progress\RiddleStatisticsService
+    {
+        global $wpdb;
+        return new ChassesAuTresor\Core\Progress\RiddleStatisticsService(
+            new ChassesAuTresor\Core\Progress\RiddleStatisticsRepository($wpdb)
+        );
+    }
 }
 
 function enigme_stats_excluded_user_ids(int $enigme_id): array
