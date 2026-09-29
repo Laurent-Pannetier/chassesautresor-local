@@ -34,6 +34,20 @@ class HuntProgressRepository
         );
     }
 
+    public function findStatus(int $userId, int $riddleId): ?string
+    {
+        $table = $this->wpdb->prefix . 'enigme_statuts_utilisateur';
+        $status = $this->wpdb->get_var(
+            $this->wpdb->prepare(
+                "SELECT statut FROM {$table} WHERE user_id = %d AND enigme_id = %d",
+                $userId,
+                $riddleId
+            )
+        );
+
+        return is_string($status) && $status !== '' ? $status : null;
+    }
+
     /** @param int[] $riddleIds */
     public function countEngaged(int $userId, array $riddleIds): int
     {

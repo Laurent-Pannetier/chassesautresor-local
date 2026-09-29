@@ -14,6 +14,7 @@ require_once __DIR__
 class HuntProgressRepositoryStub extends HuntProgressRepository
 {
     public array $completedRiddles = [];
+    public array $statusArguments = [];
 
     public function __construct()
     {
@@ -22,6 +23,13 @@ class HuntProgressRepositoryStub extends HuntProgressRepository
     public function countSolved(int $userId, array $riddleIds): int
     {
         return 2;
+    }
+
+    public function findStatus(int $userId, int $riddleId): ?string
+    {
+        $this->statusArguments = [$userId, $riddleId];
+
+        return 'resolue';
     }
 
     public function countEngaged(int $userId, array $riddleIds): int
@@ -99,6 +107,17 @@ class HuntProgressServiceTest extends TestCase
             ['completed' => 0, 'total' => 0, 'is_complete' => false],
             $service->calculate(0, [10], [])
         );
+    }
+
+    public function testRiddleStatusIsDelegatedForValidIdentifiers(): void
+    {
+        $repository = new HuntProgressRepositoryStub();
+        $service = new HuntProgressService($repository);
+
+        $this->assertSame('resolue', $service->getRiddleStatus(7, 10));
+        $this->assertSame([7, 10], $repository->statusArguments);
+        $this->assertNull($service->getRiddleStatus(0, 10));
+        $this->assertNull($service->getRiddleStatus(7, 0));
     }
 
     public function testCompletedUsersComeFromProgressRepository(): void

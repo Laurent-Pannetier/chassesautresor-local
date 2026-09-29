@@ -7,6 +7,24 @@ if (!defined('ABSPATH')) {
 
 require_once __DIR__ . '/badge-functions.php';
 
+if (!class_exists(ChassesAuTresor\Core\Progress\HuntProgressService::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Progress/HuntProgressRepository.php';
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Progress/HuntProgressService.php';
+}
+
+if (!function_exists('cat_get_hunt_progress_service')) {
+    function cat_get_hunt_progress_service(): ChassesAuTresor\Core\Progress\HuntProgressService
+    {
+        global $wpdb;
+
+        return new ChassesAuTresor\Core\Progress\HuntProgressService(
+            new ChassesAuTresor\Core\Progress\HuntProgressRepository($wpdb)
+        );
+    }
+}
+
 if (!function_exists('enigme_get_bonnes_reponses')) {
     function enigme_get_bonnes_reponses(int $enigme_id): array
     {
@@ -80,14 +98,7 @@ function enigme_get_statut_utilisateur(int $enigme_id, int $user_id): string
         return 'non_commencee';
     }
 
-    global $wpdb;
-    $table = $wpdb->prefix . 'enigme_statuts_utilisateur';
-
-    $statut = $wpdb->get_var($wpdb->prepare(
-        "SELECT statut FROM $table WHERE user_id = %d AND enigme_id = %d",
-        $user_id,
-        $enigme_id
-    ));
+    $statut = cat_get_hunt_progress_service()->getRiddleStatus($user_id, $enigme_id);
 
     if ($statut) {
         $statut = strtolower(remove_accents($statut));
@@ -1250,14 +1261,7 @@ function get_statut_utilisateur_enigme($user_id, $enigme_id)
         return $cache[$key];
     }
 
-    global $wpdb;
-    $table = $wpdb->prefix . 'enigme_statuts_utilisateur';
-
-    $statut = $wpdb->get_var($wpdb->prepare(
-        "SELECT statut FROM $table WHERE user_id = %d AND enigme_id = %d",
-        $user_id,
-        $enigme_id
-    ));
+    $statut = cat_get_hunt_progress_service()->getRiddleStatus((int) $user_id, (int) $enigme_id);
 
     if ($statut) {
         $statut = strtolower(remove_accents($statut));

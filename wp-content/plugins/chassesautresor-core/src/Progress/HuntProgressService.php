@@ -39,6 +39,15 @@ class HuntProgressService
         ];
     }
 
+    public function getRiddleStatus(int $userId, int $riddleId): ?string
+    {
+        if ($userId <= 0 || $riddleId <= 0) {
+            return null;
+        }
+
+        return $this->repository->findStatus($userId, $riddleId);
+    }
+
     /**
      * @param int[] $validatable
      * @param int[] $engagementOnly
