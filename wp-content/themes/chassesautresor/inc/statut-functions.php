@@ -19,6 +19,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\RiddleCompletionService::class, f
         . '/plugins/chassesautresor-core/src/Content/RiddleCompletionService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\OrganizerCompletionService::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Content/OrganizerCompletionService.php';
+}
+
 if (!function_exists('cat_get_hunt_progress_service')) {
     function cat_get_hunt_progress_service(): ChassesAuTresor\Core\Progress\HuntProgressService
     {
@@ -488,16 +493,13 @@ function organisateur_est_complet(int $organisateur_id): bool
         return false;
     }
 
-    $titre_ok = titre_est_valide($organisateur_id);
-
     $logo = get_field('logo_organisateur', $organisateur_id);
-    $logo_ok = !empty($logo);
 
-    $description_field = get_field('description_longue', $organisateur_id);
-    $description = trim((string) $description_field);
-    $desc_ok = $description !== '';
-
-    return $titre_ok && $logo_ok && $desc_ok;
+    return (new ChassesAuTresor\Core\Content\OrganizerCompletionService())->isComplete(
+        titre_est_valide($organisateur_id),
+        !empty($logo),
+        (string) get_field('description_longue', $organisateur_id)
+    );
 }
 
 function organisateur_mettre_a_jour_complet(int $organisateur_id): bool
