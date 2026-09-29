@@ -6,6 +6,13 @@ if (!class_exists(ChassesAuTresor\Core\Messages\AccountMessageService::class, fa
         . '/plugins/chassesautresor-core/src/Messages/AccountMessageService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Progress\UserAttemptStatisticsService::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Progress/UserAttemptStatisticsRepository.php';
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Progress/UserAttemptStatisticsService.php';
+}
+
 /**
  * Create the service responsible for account messages.
  */
@@ -15,6 +22,15 @@ function cat_get_account_message_service(): ChassesAuTresor\Core\Messages\Accoun
 
     return new ChassesAuTresor\Core\Messages\AccountMessageService(
         new UserMessageRepository($wpdb)
+    );
+}
+
+function cat_get_user_attempt_statistics_service(): ChassesAuTresor\Core\Progress\UserAttemptStatisticsService
+{
+    global $wpdb;
+
+    return new ChassesAuTresor\Core\Progress\UserAttemptStatisticsService(
+        new ChassesAuTresor\Core\Progress\UserAttemptStatisticsRepository($wpdb)
     );
 }
 
@@ -1435,18 +1451,7 @@ function ca_get_tentatives_view_model(int $user_id, int $page = 1, int $per_page
     $per_page  = max(1, $per_page);
     $page      = max(1, $page);
     $search    = ca_get_search_term('tentatives');
-    $pending   = (int) $wpdb->get_var($wpdb->prepare(
-        "SELECT COUNT(*) FROM {$table} WHERE user_id = %d AND resultat = 'attente' AND traitee = 0",
-        $user_id
-    ));
-    $total     = (int) $wpdb->get_var($wpdb->prepare(
-        "SELECT COUNT(*) FROM {$table} WHERE user_id = %d",
-        $user_id
-    ));
-    $success   = (int) $wpdb->get_var($wpdb->prepare(
-        "SELECT COUNT(*) FROM {$table} WHERE user_id = %d AND resultat = 'bon'",
-        $user_id
-    ));
+    $summary   = cat_get_user_attempt_statistics_service()->summarize($user_id);
 
     $base_from = sprintf(
         " FROM %s t
@@ -1496,9 +1501,9 @@ function ca_get_tentatives_view_model(int $user_id, int $page = 1, int $per_page
         : __('Vous n\'avez pas encore enregistré de tentative.', 'chassesautresor-com');
 
     return [
-        'pending'            => $pending,
-        'total'              => $total,
-        'success'            => $success,
+        'pending'            => $summary['pending'],
+        'total'              => $summary['total'],
+        'success'            => $summary['success'],
         'search_term'        => $search,
         'page'               => $page,
         'pages'              => $pages,
