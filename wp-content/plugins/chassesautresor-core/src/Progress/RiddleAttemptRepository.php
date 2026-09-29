@@ -21,6 +21,11 @@ class RiddleAttemptRepository
         return $this->wpdb->insert($this->wpdb->prefix . 'enigme_tentatives', $attempt) !== false;
     }
 
+    public function getLastInsertId(): int
+    {
+        return max(0, (int) $this->wpdb->insert_id);
+    }
+
     public function findByUid(string $uid): ?object
     {
         $table = $this->wpdb->prefix . 'enigme_tentatives';

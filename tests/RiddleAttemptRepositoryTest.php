@@ -10,6 +10,7 @@ require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress
 class RiddleAttemptWpdbStub
 {
     public string $prefix = 'wp_';
+    public int $insert_id = 0;
     public ?string $status = null;
     public int $updateResult = 1;
     public array $preparedArguments = [];
@@ -115,5 +116,17 @@ class RiddleAttemptRepositoryTest extends TestCase
 
         $wpdb->deleteResult = false;
         $this->assertSame(0, $repository->deleteForRiddle(10));
+    }
+
+    public function testLastInsertIdIsNormalized(): void
+    {
+        $wpdb = new RiddleAttemptWpdbStub();
+        $wpdb->insert_id = 42;
+        $repository = new RiddleAttemptRepository($wpdb);
+
+        $this->assertSame(42, $repository->getLastInsertId());
+
+        $wpdb->insert_id = -1;
+        $this->assertSame(0, $repository->getLastInsertId());
     }
 }

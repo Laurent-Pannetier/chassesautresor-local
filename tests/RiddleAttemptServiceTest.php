@@ -20,6 +20,7 @@ class RiddleAttemptRepositoryStub extends RiddleAttemptRepository
     public array $attempts = [];
     public ?object $latestPendingAttempt = null;
     public int $deletedAttempts = 0;
+    public int $lastInsertId = 0;
     public ?string $userRiddleStatus = null;
     public array $processArguments = [];
     public bool $processResult = true;
@@ -35,6 +36,11 @@ class RiddleAttemptRepositoryStub extends RiddleAttemptRepository
     {
         $this->attempt = $attempt;
         return true;
+    }
+
+    public function getLastInsertId(): int
+    {
+        return $this->lastInsertId;
     }
 
     public function findByUid(string $uid): ?object
@@ -119,6 +125,15 @@ class RiddleAttemptServiceTest extends TestCase
         $this->assertSame(0, $repository->attempt['points_utilises']);
         $this->assertSame('réponse', $repository->attempt['reponse_saisie']);
         $this->assertFalse($service->create('', 7, 10, 'réponse', 'bon', 0, null, null));
+    }
+
+    public function testLastCreatedIdIsDelegated(): void
+    {
+        $repository = new RiddleAttemptRepositoryStub();
+        $repository->lastInsertId = 42;
+        $service = new RiddleAttemptService($repository);
+
+        $this->assertSame(42, $service->getLastCreatedId());
     }
 
     public function testAttemptLookupTrimsUidAndRejectsEmptyValues(): void

@@ -46,6 +46,11 @@ class RiddleAttemptService
         ]);
     }
 
+    public function getLastCreatedId(): int
+    {
+        return $this->repository->getLastInsertId();
+    }
+
     public function findByUid(string $uid): ?object
     {
         $uid = trim($uid);

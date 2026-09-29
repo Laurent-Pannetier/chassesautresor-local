@@ -68,6 +68,11 @@ if (!function_exists('cat_get_riddle_attempt_service')) {
         return cat_get_riddle_attempt_service()->findByUid($uid);
     }
 
+    function get_last_tentative_insert_id(): int
+    {
+        return cat_get_riddle_attempt_service()->getLastCreatedId();
+    }
+
     /**
      * Check if the current user can view the proposition linked to a tentative.
      */
