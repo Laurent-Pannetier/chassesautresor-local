@@ -8,6 +8,11 @@ if (!class_exists(ChassesAuTresor\Core\Relationships\OrganizerService::class, fa
         . '/plugins/chassesautresor-core/src/Relationships/OrganizerService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Relationships\RelationshipService::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Relationships/RelationshipService.php';
+}
+
 function cat_get_organizer_service(): ChassesAuTresor\Core\Relationships\OrganizerService
 {
     global $wpdb;
@@ -15,6 +20,11 @@ function cat_get_organizer_service(): ChassesAuTresor\Core\Relationships\Organiz
     return new ChassesAuTresor\Core\Relationships\OrganizerService(
         new ChassesAuTresor\Core\Relationships\OrganizerRepository($wpdb)
     );
+}
+
+function cat_get_relationship_service(): ChassesAuTresor\Core\Relationships\RelationshipService
+{
+    return new ChassesAuTresor\Core\Relationships\RelationshipService();
 }
 
 // 📚 SOMMAIRE DU FICHIER : relations-functions.php
@@ -52,7 +62,7 @@ function get_organisateur_from_user($user_id)
 
 function get_organisateur_chasse($chasse_id)
 {
-    return cat_get_organizer_service()->normalizeId(get_field('organisateur_id', $chasse_id));
+    return cat_get_relationship_service()->normalizeId(get_field('organisateur_id', $chasse_id));
 }
 
 /**
@@ -63,7 +73,7 @@ function get_organisateur_chasse($chasse_id)
  */
 function get_organisateur_from_chasse($chasse_id)
 {
-    return cat_get_organizer_service()->normalizeId(
+    return cat_get_relationship_service()->normalizeId(
         get_field('chasse_cache_organisateur', $chasse_id)
     );
 }
@@ -393,31 +403,24 @@ function get_chasses_en_creation($organisateur_id)
  */
 function recuperer_enigmes_associees(int $chasse_id): array
 {
-  if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
-    cat_debug("❌ [recuperer_enigmes_associees] Appel invalide pour ID $chasse_id");
-    return [];
-  }
+    if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
+        cat_debug("❌ [recuperer_enigmes_associees] Appel invalide pour ID $chasse_id");
+        return [];
+    }
 
-  $liste_brute = get_field('chasse_cache_enigmes', $chasse_id) ?? [];
+    $rawRelationships = get_field('chasse_cache_enigmes', $chasse_id);
+    $ids = cat_get_relationship_service()->normalizeIds(
+        is_array($rawRelationships) ? $rawRelationships : []
+    );
+    $uniqueIds = array_values(array_unique($ids));
 
-  // Extraction des IDs (objet ou int)
-  $ids = [];
+    if (count($ids) !== count($uniqueIds)) {
+        cat_debug("⚠️ [recuperer_enigmes_associees] Doublons détectés pour la chasse #$chasse_id");
+    }
 
-  foreach ($liste_brute as $item) {
-    $ids[] = is_object($item) && isset($item->ID) ? (int)$item->ID : (int)$item;
-  }
-
-  // Détection et log des doublons
-  $doublons = array_diff_key($ids, array_unique($ids));
-  if (!empty($doublons)) {
-    cat_debug("⚠️ [recuperer_enigmes_associees] Doublons détectés pour la chasse #$chasse_id : " . implode(', ', $doublons));
-  }
-
-  $ids_valides = array_filter(array_unique($ids), function ($id) {
-    return get_post_type($id) === 'enigme';
-  });
-
-  return array_values($ids_valides);
+    return array_values(array_filter($uniqueIds, function (int $id): bool {
+        return get_post_type($id) === 'enigme';
+    }));
 }
 
 

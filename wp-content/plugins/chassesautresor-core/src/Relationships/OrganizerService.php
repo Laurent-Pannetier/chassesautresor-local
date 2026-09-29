@@ -22,30 +22,6 @@ class OrganizerService
     }
 
     /**
-     * Normalize the different return formats supported by ACF relationship fields.
-     *
-     * @param mixed $value
-     */
-    public function normalizeId($value): ?int
-    {
-        if (is_array($value)) {
-            $value = reset($value);
-        }
-
-        if (is_object($value) && isset($value->ID)) {
-            $value = $value->ID;
-        }
-
-        if (!is_numeric($value)) {
-            return null;
-        }
-
-        $organizerId = (int) $value;
-
-        return $organizerId > 0 ? $organizerId : null;
-    }
-
-    /**
      * Determine whether a user belongs to an organizer's associated-user list.
      *
      * @param mixed[] $users

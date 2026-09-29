@@ -1,0 +1,51 @@
+<?php
+
+declare(strict_types=1);
+
+namespace ChassesAuTresor\Core\Relationships;
+
+/**
+ * Normalize relationship values independently from their WordPress storage format.
+ */
+class RelationshipService
+{
+    /**
+     * @param mixed $value
+     */
+    public function normalizeId($value): ?int
+    {
+        if (is_array($value)) {
+            $value = reset($value);
+        }
+
+        if (is_object($value) && isset($value->ID)) {
+            $value = $value->ID;
+        }
+
+        if (!is_numeric($value)) {
+            return null;
+        }
+
+        $relationshipId = (int) $value;
+
+        return $relationshipId > 0 ? $relationshipId : null;
+    }
+
+    /**
+     * @param mixed[] $values
+     * @return int[]
+     */
+    public function normalizeIds(array $values): array
+    {
+        $ids = [];
+
+        foreach ($values as $value) {
+            $relationshipId = $this->normalizeId($value);
+            if ($relationshipId !== null) {
+                $ids[] = $relationshipId;
+            }
+        }
+
+        return $ids;
+    }
+}
