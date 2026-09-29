@@ -332,66 +332,57 @@ function utilisateur_peut_creer_post($post_type, $chasse_id = null)
  */
 function utilisateur_peut_modifier_post($post_id)
 {
-    if (!is_user_logged_in() || !$post_id) {
+    $has_valid_context = is_user_logged_in() && (bool) $post_id;
+    if (!$has_valid_context) {
         cat_debug('❌ utilisateur_peut_modifier_post: utilisateur non connecté ou post_id invalide');
-        return false;
     }
 
-    // ✅ Les administrateurs peuvent toujours modifier
-    if (current_user_can('manage_options')) {
-        return true;
+    $is_administrator = $has_valid_context && current_user_can('manage_options');
+    $user_id = $has_valid_context && !$is_administrator ? get_current_user_id() : 0;
+    $post_type = $has_valid_context && !$is_administrator ? (string) get_post_type($post_id) : '';
+    $is_associated_user = false;
+    $is_author = false;
+    $owner_id = 0;
+
+    if ($post_type === 'organisateur') {
+        $associated_users = get_field('utilisateurs_associes', $post_id);
+        $associated_users = is_array($associated_users) ? array_map('strval', $associated_users) : [];
+        $is_associated_user = in_array((string) $user_id, $associated_users, true);
+        $is_author = (int) get_post_field('post_author', $post_id) === $user_id;
+    } elseif ($post_type === 'chasse') {
+        $owner_id = (int) get_organisateur_from_chasse($post_id);
+    } elseif ($post_type === 'enigme') {
+        $hunt_id = (int) recuperer_id_chasse_associee($post_id);
+        $owner_id = $hunt_id > 0 ? (int) get_organisateur_from_chasse($hunt_id) : 0;
+    } elseif ($post_type === 'indice') {
+        $hunt_id = get_field('indice_chasse_linked', $post_id);
+        if (is_array($hunt_id)) {
+            $hunt_id = $hunt_id['ID'] ?? $hunt_id[0] ?? null;
+        }
+
+        if (!$hunt_id) {
+            $target = get_field('indice_enigme_linked', $post_id);
+            $first_target = is_array($target) ? ($target[0] ?? null) : $target;
+            $target_id = is_array($first_target) ? ($first_target['ID'] ?? null) : $first_target;
+            $hunt_id = $target_id ? recuperer_id_chasse_associee($target_id) : 0;
+        }
+
+        $owner_id = (int) $hunt_id;
+    } elseif ($post_type !== '') {
+        cat_debug("❌ utilisateur_peut_modifier_post: post_type inconnu ($post_type)");
     }
 
-    $user_id = get_current_user_id();
-    $post_type = get_post_type($post_id);
+    $service = new ChassesAuTresor\Core\Content\ContentModificationService();
 
-    switch ($post_type) {
-        case 'organisateur':
-            $associes = get_field('utilisateurs_associes', $post_id);
-            $associes = is_array($associes) ? array_map('strval', $associes) : [];
-
-            $match = in_array((string) $user_id, $associes, true);
-
-            // Autoriser également l'auteur du post à modifier
-            $auteur = (int) get_post_field('post_author', $post_id);
-
-            return $match || $auteur === $user_id;
-
-        case 'chasse':
-            $organisateur_id = get_organisateur_from_chasse($post_id);
-            return $organisateur_id ? utilisateur_peut_modifier_post($organisateur_id) : false;
-
-        case 'enigme':
-            $chasse_id = recuperer_id_chasse_associee($post_id);
-            $organisateur_id = $chasse_id ? get_organisateur_from_chasse($chasse_id) : null;
-            return $organisateur_id ? utilisateur_peut_modifier_post($organisateur_id) : false;
-
-        case 'indice':
-            $chasse_id = get_field('indice_chasse_linked', $post_id);
-            if (is_array($chasse_id)) {
-                $chasse_id = $chasse_id['ID'] ?? $chasse_id[0] ?? null;
-            }
-
-            if (!$chasse_id) {
-                $cible = get_field('indice_enigme_linked', $post_id);
-                if (is_array($cible)) {
-                    $first    = $cible[0] ?? null;
-                    $cible_id = is_array($first) ? ($first['ID'] ?? null) : $first;
-                } else {
-                    $cible_id = $cible;
-                }
-
-                if ($cible_id) {
-                    $chasse_id = recuperer_id_chasse_associee($cible_id);
-                }
-            }
-
-            return $chasse_id ? utilisateur_peut_modifier_post($chasse_id) : false;
-
-        default:
-            cat_debug("❌ utilisateur_peut_modifier_post: post_type inconnu ($post_type)");
-            return false;
-    }
+    return $service->canModify(
+        $has_valid_context,
+        $is_administrator,
+        $post_type,
+        $is_associated_user,
+        $is_author,
+        $owner_id > 0,
+        $owner_id > 0 && utilisateur_peut_modifier_post($owner_id)
+    );
 }
 
 /**
