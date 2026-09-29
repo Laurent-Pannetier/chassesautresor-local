@@ -38,6 +38,29 @@ class HuntStatisticsRepository
     }
 
     /** @param int[] $riddleIds */
+    public function sumEngagedPlayersByRiddle(
+        array $riddleIds,
+        ?string $startAt = null,
+        ?string $endAt = null
+    ): int {
+        $table = $this->wpdb->prefix . 'engagements';
+        $placeholders = implode(',', array_fill(0, count($riddleIds), '%d'));
+        $where = "enigme_id IN ({$placeholders})";
+        $params = $riddleIds;
+
+        if ($startAt !== null && $endAt !== null) {
+            $where .= ' AND date_engagement BETWEEN %s AND %s';
+            $params[] = $startAt;
+            $params[] = $endAt;
+        }
+
+        $sql = "SELECT SUM(cnt) FROM (SELECT COUNT(DISTINCT user_id) AS cnt FROM {$table} "
+            . "WHERE {$where} GROUP BY enigme_id) aggregated_engagements";
+
+        return (int) $this->wpdb->get_var($this->wpdb->prepare($sql, ...$params));
+    }
+
+    /** @param int[] $riddleIds */
     private function aggregateAttempts(
         string $expression,
         array $riddleIds,

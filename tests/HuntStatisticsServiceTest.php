@@ -39,6 +39,16 @@ class HuntStatisticsRepositoryStub extends HuntStatisticsRepository
 
         return 13;
     }
+
+    public function sumEngagedPlayersByRiddle(
+        array $riddleIds,
+        ?string $startAt = null,
+        ?string $endAt = null
+    ): int {
+        $this->arguments = [$riddleIds, $startAt, $endAt];
+
+        return 6;
+    }
 }
 
 class HuntStatisticsServiceTest extends TestCase
@@ -71,5 +81,16 @@ class HuntStatisticsServiceTest extends TestCase
         $this->assertSame(13, $service->countEngagements(12));
         $this->assertSame([12], $repository->arguments);
         $this->assertSame(0, $service->countEngagements(0));
+    }
+
+    public function testEngagementRateUsesParticipantsAndRiddles(): void
+    {
+        $repository = new HuntStatisticsRepositoryStub();
+        $service = new HuntStatisticsService($repository);
+
+        $this->assertSame(150.0, $service->calculateEngagementRate(2, [10, 11]));
+        $this->assertSame([[10, 11], null, null], $repository->arguments);
+        $this->assertSame(0.0, $service->calculateEngagementRate(0, [10, 11]));
+        $this->assertSame(0.0, $service->calculateEngagementRate(2, []));
     }
 }

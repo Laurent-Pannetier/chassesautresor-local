@@ -32,4 +32,20 @@ class HuntStatisticsService
     {
         return $huntId > 0 ? $this->repository->countEngagements($huntId) : 0;
     }
+
+    /** @param int[] $riddleIds */
+    public function calculateEngagementRate(
+        int $participants,
+        array $riddleIds,
+        ?string $startAt = null,
+        ?string $endAt = null
+    ): float {
+        if ($participants <= 0 || $riddleIds === []) {
+            return 0.0;
+        }
+
+        $engagements = $this->repository->sumEngagedPlayersByRiddle($riddleIds, $startAt, $endAt);
+
+        return (100 * $engagements) / ($participants * count($riddleIds));
+    }
 }

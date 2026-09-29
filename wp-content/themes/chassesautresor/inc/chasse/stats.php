@@ -90,36 +90,16 @@ function chasse_compter_engagements(int $chasse_id): int
  */
 function chasse_calculer_taux_engagement(int $chasse_id, string $periode = 'total'): float
 {
-
     $participants  = chasse_compter_participants($chasse_id, $periode);
     $enigme_ids    = recuperer_ids_enigmes_pour_chasse($chasse_id);
-    $total_enigmes = count($enigme_ids);
-    if ($participants === 0 || $total_enigmes === 0) {
-        return 0.0;
-    }
+    [$debut, $fin] = $periode === 'total' ? [null, null] : enigme_stats_date_range($periode);
 
-    global $wpdb;
-    $table        = $wpdb->prefix . 'engagements';
-    $placeholders = implode(',', array_fill(0, count($enigme_ids), '%d'));
-    $where        = "enigme_id IN ({$placeholders})";
-    $params       = $enigme_ids;
-
-    if ($periode !== 'total') {
-        [$debut, $fin] = enigme_stats_date_range($periode);
-        if ($debut && $fin) {
-            $where   .= ' AND date_engagement BETWEEN %s AND %s';
-            $params[] = $debut;
-            $params[] = $fin;
-        }
-    }
-
-    $sql = $wpdb->prepare(
-        "SELECT SUM(cnt) FROM (SELECT COUNT(DISTINCT user_id) AS cnt FROM {$table} WHERE {$where} GROUP BY enigme_id) t",
-        ...$params
+    return cat_get_hunt_statistics_service()->calculateEngagementRate(
+        $participants,
+        $enigme_ids,
+        $debut,
+        $fin
     );
-    $total = (int) $wpdb->get_var($sql);
-
-    return (100 * $total) / ($participants * $total_enigmes);
 }
 
 /**
