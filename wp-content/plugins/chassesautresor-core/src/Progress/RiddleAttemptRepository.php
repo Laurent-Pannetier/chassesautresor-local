@@ -31,6 +31,22 @@ class RiddleAttemptRepository
         return is_object($attempt) ? $attempt : null;
     }
 
+    public function findForRiddle(int $riddleId, int $limit, int $offset): array
+    {
+        $table = $this->wpdb->prefix . 'enigme_tentatives';
+        $attempts = $this->wpdb->get_results(
+            $this->wpdb->prepare(
+                "SELECT * FROM {$table} WHERE enigme_id = %d "
+                    . "ORDER BY (resultat = 'attente') DESC, date_tentative DESC LIMIT %d OFFSET %d",
+                $riddleId,
+                $limit,
+                $offset
+            )
+        );
+
+        return is_array($attempts) ? $attempts : [];
+    }
+
     public function countForRiddle(int $riddleId): int
     {
         $table = $this->wpdb->prefix . 'enigme_tentatives';

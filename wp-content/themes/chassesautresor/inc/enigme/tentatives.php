@@ -319,16 +319,7 @@ if (!function_exists('cat_get_riddle_attempt_service')) {
  */
 function recuperer_tentatives_enigme(int $enigme_id, int $limit = 5, int $offset = 0): array
 {
-    global $wpdb;
-    $table = $wpdb->prefix . 'enigme_tentatives';
-    $query = $wpdb->prepare(
-        "SELECT * FROM $table WHERE enigme_id = %d ORDER BY (resultat = 'attente') DESC, date_tentative DESC LIMIT %d OFFSET %d",
-        $enigme_id,
-        $limit,
-        $offset
-    );
-    $res = $wpdb->get_results($query);
-    return $res ?: [];
+    return cat_get_riddle_attempt_service()->findForRiddle($enigme_id, $limit, $offset);
 }
 
 /**

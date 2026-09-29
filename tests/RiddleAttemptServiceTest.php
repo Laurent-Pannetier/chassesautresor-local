@@ -16,6 +16,8 @@ class RiddleAttemptRepositoryStub extends RiddleAttemptRepository
     public array $countArguments = [];
     public ?object $foundAttempt = null;
     public bool $returnConfiguredAttempt = false;
+    public array $listArguments = [];
+    public array $attempts = [];
 
     public function __construct()
     {
@@ -42,6 +44,12 @@ class RiddleAttemptRepositoryStub extends RiddleAttemptRepository
     {
         $this->countArguments = ['riddle' => $riddleId];
         return 12;
+    }
+
+    public function findForRiddle(int $riddleId, int $limit, int $offset): array
+    {
+        $this->listArguments = [$riddleId, $limit, $offset];
+        return $this->attempts;
     }
 
     public function countPendingForRiddle(int $riddleId): int
@@ -107,6 +115,19 @@ class RiddleAttemptServiceTest extends TestCase
             'failed attempt' => ['faux', 'refusee'],
             'unknown result' => ['autre', 'invalide'],
         ];
+    }
+
+    public function testRiddleAttemptListIsValidatedAndDelegated(): void
+    {
+        $repository = new RiddleAttemptRepositoryStub();
+        $repository->attempts = [(object) ['tentative_uid' => 'attempt-1']];
+        $service = new RiddleAttemptService($repository);
+
+        $this->assertSame($repository->attempts, $service->findForRiddle(10, 20, 40));
+        $this->assertSame([10, 20, 40], $repository->listArguments);
+        $this->assertSame([], $service->findForRiddle(0, 20, 0));
+        $this->assertSame([], $service->findForRiddle(10, 0, 0));
+        $this->assertSame([], $service->findForRiddle(10, 20, -1));
     }
 
     public function testRiddleCountersAreValidatedAndDelegated(): void

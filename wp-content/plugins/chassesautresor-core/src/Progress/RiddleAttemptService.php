@@ -69,6 +69,15 @@ class RiddleAttemptService
         return $states[$attempt->resultat] ?? 'invalide';
     }
 
+    public function findForRiddle(int $riddleId, int $limit = 5, int $offset = 0): array
+    {
+        if ($riddleId <= 0 || $limit <= 0 || $offset < 0) {
+            return [];
+        }
+
+        return $this->repository->findForRiddle($riddleId, $limit, $offset);
+    }
+
     public function countForRiddle(int $riddleId): int
     {
         return $riddleId > 0 ? $this->repository->countForRiddle($riddleId) : 0;
