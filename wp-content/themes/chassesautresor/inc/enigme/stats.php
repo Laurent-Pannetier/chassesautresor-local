@@ -1,6 +1,19 @@
 <?php
 defined('ABSPATH') || exit;
 
+if (!class_exists(ChassesAuTresor\Core\Progress\RiddleStatisticsService::class, false)) {
+    require_once dirname(__DIR__, 4) . '/plugins/chassesautresor-core/src/Progress/RiddleStatisticsRepository.php';
+    require_once dirname(__DIR__, 4) . '/plugins/chassesautresor-core/src/Progress/RiddleStatisticsService.php';
+}
+
+function cat_get_riddle_statistics_service(): ChassesAuTresor\Core\Progress\RiddleStatisticsService
+{
+    global $wpdb;
+    return new ChassesAuTresor\Core\Progress\RiddleStatisticsService(
+        new ChassesAuTresor\Core\Progress\RiddleStatisticsRepository($wpdb)
+    );
+}
+
 function enigme_stats_date_range(string $periode): array {
     $tz = new DateTimeZone('Europe/Paris');
     $now = new DateTime('now', $tz);
@@ -37,52 +50,18 @@ function enigme_compter_joueurs_engages(int $enigme_id, string $periode = 'total
 }
 
 function enigme_compter_tentatives(int $enigme_id, string $mode = 'automatique', string $periode = 'total'): int {
-    global $wpdb;
-    $table = $wpdb->prefix . 'enigme_tentatives';
-    $where = 'enigme_id = %d';
-    $params = [$enigme_id];
-    if ($periode !== 'total') {
-        list($debut, $fin) = enigme_stats_date_range($periode);
-        if ($debut && $fin) {
-            $where .= ' AND date_tentative BETWEEN %s AND %s';
-            array_push($params, $debut, $fin);
-        }
-    }
-    $sql = $wpdb->prepare("SELECT COUNT(*) FROM $table WHERE $where", ...$params);
-    return (int) $wpdb->get_var($sql);
+    [$debut, $fin] = $periode === 'total' ? [null, null] : enigme_stats_date_range($periode);
+    return cat_get_riddle_statistics_service()->countAttempts($enigme_id, $debut, $fin);
 }
 
 function enigme_compter_points_depenses(int $enigme_id, string $mode = 'automatique', string $periode = 'total'): int {
-    global $wpdb;
-    $table = $wpdb->prefix . 'enigme_tentatives';
-    $where = 'enigme_id = %d';
-    $params = [$enigme_id];
-    if ($periode !== 'total') {
-        list($debut, $fin) = enigme_stats_date_range($periode);
-        if ($debut && $fin) {
-            $where .= ' AND date_tentative BETWEEN %s AND %s';
-            array_push($params, $debut, $fin);
-        }
-    }
-    $sql = $wpdb->prepare("SELECT SUM(points_utilises) FROM $table WHERE $where", ...$params);
-    $res = $wpdb->get_var($sql);
-    return $res ? (int) $res : 0;
+    [$debut, $fin] = $periode === 'total' ? [null, null] : enigme_stats_date_range($periode);
+    return cat_get_riddle_statistics_service()->sumSpentPoints($enigme_id, $debut, $fin);
 }
 
 function enigme_compter_bonnes_solutions(int $enigme_id, string $mode = 'automatique', string $periode = 'total'): int {
-    global $wpdb;
-    $table = $wpdb->prefix . 'enigme_tentatives';
-    $where = "enigme_id = %d AND resultat = 'bon'";
-    $params = [$enigme_id];
-    if ($periode !== 'total') {
-        list($debut, $fin) = enigme_stats_date_range($periode);
-        if ($debut && $fin) {
-            $where .= ' AND date_tentative BETWEEN %s AND %s';
-            array_push($params, $debut, $fin);
-        }
-    }
-    $sql = $wpdb->prepare("SELECT COUNT(*) FROM $table WHERE $where", ...$params);
-    return (int) $wpdb->get_var($sql);
+    [$debut, $fin] = $periode === 'total' ? [null, null] : enigme_stats_date_range($periode);
+    return cat_get_riddle_statistics_service()->countCorrectSolutions($enigme_id, $debut, $fin);
 }
 
 function enigme_lister_resolveurs(int $enigme_id): array
@@ -299,4 +278,3 @@ function ajax_enigme_lister_participants() {
     ]);
 }
 add_action('wp_ajax_enigme_lister_participants', 'ajax_enigme_lister_participants');
-

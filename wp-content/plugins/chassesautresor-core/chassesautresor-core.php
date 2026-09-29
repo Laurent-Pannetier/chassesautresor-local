@@ -25,6 +25,8 @@ require_once __DIR__ . '/src/Progress/HuntEngagementRepository.php';
 require_once __DIR__ . '/src/Progress/HuntEngagementService.php';
 require_once __DIR__ . '/src/Progress/HuntStatisticsRepository.php';
 require_once __DIR__ . '/src/Progress/HuntStatisticsService.php';
+require_once __DIR__ . '/src/Progress/RiddleStatisticsRepository.php';
+require_once __DIR__ . '/src/Progress/RiddleStatisticsService.php';
 require_once __DIR__ . '/src/Messages/UserMessageRepository.php';
 require_once __DIR__ . '/src/Messages/SiteMessageService.php';
 require_once __DIR__ . '/src/Messages/AccountMessageService.php';
