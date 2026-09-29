@@ -1,6 +1,9 @@
 <?php
 use PHPUnit\Framework\TestCase;
 
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Content/RiddleManagementService.php';
+
 if (!defined('ROLE_ORGANISATEUR')) {
     define('ROLE_ORGANISATEUR', 'organisateur');
 }
