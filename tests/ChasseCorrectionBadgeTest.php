@@ -2,6 +2,9 @@
 
 use PHPUnit\Framework\TestCase;
 
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Progress/HuntStatusService.php';
+
 class ChasseCorrectionBadgeTest extends TestCase
 {
     /**

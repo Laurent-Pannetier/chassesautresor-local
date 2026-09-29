@@ -775,8 +775,6 @@ function mettre_a_jour_statuts_chasse($chasse_id)
         return;
     }
 
-    $maintenant = current_time('timestamp');
-
     $statut_validation = $cache['validation'] ?? 'creation';
     $date_debut_obj    = convertir_en_datetime($carac['date_debut'] ?? null);
     $date_debut        = $date_debut_obj ? $date_debut_obj->getTimestamp() : null;
@@ -785,25 +783,16 @@ function mettre_a_jour_statuts_chasse($chasse_id)
     $date_obj          = convertir_en_datetime($cache['date'] ?? null);
     $date_decouverte   = $date_obj ? $date_obj->getTimestamp() : null;
     $cout_points       = intval($carac['cout_points'] ?? 0);
-    $mode_continue     = empty($carac['duree_illimitee']);
-
-    $statut = 'revision';
-
-    if ($statut_validation === 'valide') {
-        if ($date_decouverte) {
-            $statut = 'termine';
-        } elseif ($mode_continue && $date_fin && $date_fin < $maintenant) {
-            $statut = 'termine';
-        } elseif ($date_debut && $date_debut <= $maintenant) {
-            $statut = ($cout_points > 0) ? 'payante' : 'en_cours';
-        } elseif ($date_debut && $date_debut > $maintenant) {
-            $statut = 'a_venir';
-        } else {
-            $statut = $cache['statut'] ?? 'revision';
-        }
-    }
-
-    $ancien = $cache['statut'] ?? '(inconnu)';
+    $statut            = (new ChassesAuTresor\Core\Progress\HuntStatusService())->calculate(
+        (string) $statut_validation,
+        $date_debut,
+        $date_fin,
+        $date_decouverte,
+        $cout_points,
+        !empty($carac['duree_illimitee']),
+        (int) current_time('timestamp'),
+        (string) ($cache['statut'] ?? 'revision')
+    );
 
     // ✅ Si terminée, déclenche les planifications PDF
     if ($statut === 'termine') {

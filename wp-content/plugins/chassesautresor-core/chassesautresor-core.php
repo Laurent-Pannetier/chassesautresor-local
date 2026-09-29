@@ -17,6 +17,7 @@ require_once __DIR__ . '/src/Points/ConversionService.php';
 require_once __DIR__ . '/src/Points/PointsTable.php';
 require_once __DIR__ . '/src/Progress/HuntProgressRepository.php';
 require_once __DIR__ . '/src/Progress/HuntProgressService.php';
+require_once __DIR__ . '/src/Progress/HuntStatusService.php';
 require_once __DIR__ . '/src/Progress/HuntRiddleClassifier.php';
 require_once __DIR__ . '/src/Progress/HuntCompletionService.php';
 require_once __DIR__ . '/src/Progress/HuntWinnerRepository.php';
