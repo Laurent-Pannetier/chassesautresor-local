@@ -52,8 +52,7 @@ function get_organisateur_from_user($user_id)
 
 function get_organisateur_chasse($chasse_id)
 {
-  $organisateur_id = get_field('organisateur_id', $chasse_id);
-  return is_numeric($organisateur_id) ? intval($organisateur_id) : null;
+    return cat_get_organizer_service()->normalizeId(get_field('organisateur_id', $chasse_id));
 }
 
 /**
@@ -64,24 +63,9 @@ function get_organisateur_chasse($chasse_id)
  */
 function get_organisateur_from_chasse($chasse_id)
 {
-  // ✅ Lecture directe
-  $relation = get_field('chasse_cache_organisateur', $chasse_id);
-
-  if (!empty($relation)) {
-
-    // Gère tableau ou objet
-    if (is_array($relation)) {
-      $id = (int) reset($relation);
-    } elseif (is_numeric($relation)) {
-      $id = (int) $relation;
-    } elseif ($relation instanceof WP_Post) {
-      $id = (int) $relation->ID;
-    } else {
-      $id = null;
-    }
-    return $id;
-  }
-  return null;
+    return cat_get_organizer_service()->normalizeId(
+        get_field('chasse_cache_organisateur', $chasse_id)
+    );
 }
 
 
@@ -114,20 +98,19 @@ function get_organisateur_id_from_context(array $args = []): ?int
  */
 function utilisateur_est_organisateur_associe_a_chasse(int $user_id, int $chasse_id): bool
 {
-  if (!$user_id || !$chasse_id) return false;
+    if ($user_id <= 0 || $chasse_id <= 0) {
+        return false;
+    }
 
-  $organisateur_id = get_organisateur_from_chasse($chasse_id);
-  if (!$organisateur_id) return false;
+    $organisateur_id = get_organisateur_from_chasse($chasse_id);
+    if ($organisateur_id === null) {
+        return false;
+    }
 
-  $utilisateurs = get_field('utilisateurs_associes', $organisateur_id);
-  if (!is_array($utilisateurs)) return false;
+    $utilisateurs = get_field('utilisateurs_associes', $organisateur_id);
 
-  foreach ($utilisateurs as $user) {
-    $id = is_object($user) ? $user->ID : (int) $user;
-    if ($id === $user_id) return true;
-  }
-
-  return false;
+    return is_array($utilisateurs)
+        && cat_get_organizer_service()->isUserAssociated($user_id, $utilisateurs);
 }
 
 

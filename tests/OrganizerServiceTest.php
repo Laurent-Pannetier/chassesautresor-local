@@ -46,4 +46,41 @@ class OrganizerServiceTest extends TestCase
         $this->assertNull($service->findIdForUser(0));
         $this->assertSame(0, $repository->userId);
     }
+
+    /**
+     * @dataProvider organizerIdProvider
+     *
+     * @param mixed $value
+     */
+    public function testOrganizerIdIsNormalized($value, ?int $expected): void
+    {
+        $service = new OrganizerService(new OrganizerRepositoryStub());
+
+        $this->assertSame($expected, $service->normalizeId($value));
+    }
+
+    public function organizerIdProvider(): array
+    {
+        return [
+            'integer' => [42, 42],
+            'numeric string' => ['42', 42],
+            'object' => [(object) ['ID' => 42], 42],
+            'array of IDs' => [[42], 42],
+            'array of objects' => [[(object) ['ID' => 42]], 42],
+            'empty array' => [[], null],
+            'zero' => [0, null],
+            'invalid object' => [(object) ['post_id' => 42], null],
+        ];
+    }
+
+    public function testAssociatedUserAcceptsIdsAndObjects(): void
+    {
+        $service = new OrganizerService(new OrganizerRepositoryStub());
+        $users = [12, (object) ['ID' => 24], (object) ['post_id' => 36], 'invalid'];
+
+        $this->assertTrue($service->isUserAssociated(12, $users));
+        $this->assertTrue($service->isUserAssociated(24, $users));
+        $this->assertFalse($service->isUserAssociated(36, $users));
+        $this->assertFalse($service->isUserAssociated(0, $users));
+    }
 }
