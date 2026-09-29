@@ -68,42 +68,34 @@ if (!function_exists('cat_get_riddle_attempt_service')) {
         return cat_get_riddle_attempt_service()->findByUid($uid);
     }
 
+    function get_last_tentative_insert_id(): int
+    {
+        return cat_get_riddle_attempt_service()->getLastCreatedId();
+    }
+
     /**
      * Check if the current user can view the proposition linked to a tentative.
      */
     function ca_user_can_view_tentative_proposition(object $tentative): bool
     {
         $current_user_id = (int) get_current_user_id();
-        if ($current_user_id <= 0) {
-            return false;
-        }
 
-        if ((int) ($tentative->user_id ?? 0) === $current_user_id) {
-            return true;
-        }
+        return cat_get_riddle_attempt_service()->canViewAttempt(
+            $tentative,
+            $current_user_id,
+            current_user_can('manage_options'),
+            static function (int $user_id, int $enigme_id): bool {
+                if (!function_exists('recuperer_id_chasse_associee')) {
+                    return false;
+                }
 
-        if (current_user_can('manage_options')) {
-            return true;
-        }
+                $chasse_id = (int) recuperer_id_chasse_associee($enigme_id);
 
-        $enigme_id = isset($tentative->enigme_id) ? (int) $tentative->enigme_id : 0;
-        if ($enigme_id <= 0) {
-            return false;
-        }
-
-        $chasse_id = function_exists('recuperer_id_chasse_associee') ? (int) recuperer_id_chasse_associee($enigme_id) : 0;
-        if ($chasse_id <= 0) {
-            return false;
-        }
-
-        if (
-            function_exists('utilisateur_est_organisateur_associe_a_chasse')
-            && utilisateur_est_organisateur_associe_a_chasse($current_user_id, $chasse_id)
-        ) {
-            return true;
-        }
-
-        return false;
+                return $chasse_id > 0
+                    && function_exists('utilisateur_est_organisateur_associe_a_chasse')
+                    && utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
+            }
+        );
     }
 
     /**
@@ -158,67 +150,37 @@ if (!function_exists('cat_get_riddle_attempt_service')) {
     function traiter_tentative_manuelle(string $uid, string $resultat): bool
 
     {
-        global $wpdb;
-        $table = $wpdb->prefix . 'enigme_tentatives';
-
-
         cat_debug("👣 Tentative traitement UID=$uid par IP=" . ($_SERVER['REMOTE_ADDR'] ?? 'inconnue'));
 
-        $tentative = get_tentative_by_uid($uid);
-        if (!$tentative) {
-            cat_debug("❌ Tentative introuvable");
+        $attempt_service = cat_get_riddle_attempt_service();
+        $tentative = $attempt_service->processManualAttempt(
+            $uid,
+            $resultat,
+            (int) get_current_user_id(),
+            current_user_can('manage_options'),
+            static function (int $enigme_id): array {
+                $chasse_id = recuperer_id_chasse_associee($enigme_id);
+                $organisateur_id = get_organisateur_from_chasse($chasse_id);
+
+                return (array) get_field('utilisateurs_associes', $organisateur_id);
+            }
+        );
+        if ($tentative === null) {
+            cat_debug("⛔ Tentative manuelle non traitée pour UID=$uid");
             return false;
         }
-
-        if ($tentative->resultat !== 'attente') {
-            cat_debug("⛔ Tentative déjà traitée → statut actuel = " . $tentative->resultat);
-            return false;
-        }
-
 
         $user_id = (int) $tentative->user_id;
         $enigme_id = (int) $tentative->enigme_id;
-
-        // 🔐 Sécurité : si déjà "resolue", on refuse toute tentative de traitement
-        $statut_user = $wpdb->get_var($wpdb->prepare(
-            "SELECT statut FROM {$wpdb->prefix}enigme_statuts_utilisateur WHERE user_id = %d AND enigme_id = %d",
-            $user_id,
-            $enigme_id
-        ));
-
-        if ($statut_user === 'resolue') {
-            cat_debug("⛔ Statut utilisateur déjà 'resolue' → refus de traitement UID=$uid");
-            return false;
-        }
-
-        // 🔐 Vérification organisateur ou admin
-        $current_user_id = get_current_user_id();
-        $chasse_id = recuperer_id_chasse_associee($enigme_id);
-        $organisateur_id = get_organisateur_from_chasse($chasse_id);
-        $organisateur_user_ids = (array) get_field('utilisateurs_associes', $organisateur_id);
-
-        if (
-            !current_user_can('manage_options') &&
-            !in_array($current_user_id, array_map('intval', $organisateur_user_ids), true)
-        ) {
-            cat_debug("⛔ Accès interdit au traitement pour UID=$uid");
-            return false;
-        }
-
-        // ✅ Mise à jour
-        $wpdb->update(
-            $table,
-            ['resultat' => $resultat, 'traitee' => 1],
-            ['tentative_uid' => $uid],
-            ['%s', '%d'],
-            ['%s']
-        );
-
         traiter_tentative($user_id, $enigme_id, (string) $tentative->reponse_saisie, $resultat, false, true, true);
 
+        $chasse_id       = recuperer_id_chasse_associee($enigme_id);
+        $organisateur_id = get_organisateur_from_chasse($chasse_id);
+        $orga_users      = (array) get_field('utilisateurs_associes', $organisateur_id);
+        $notification_plan = $attempt_service->buildManualNotificationPlan($user_id, $orga_users, $resultat);
         $titre_enigme = get_the_title($enigme_id);
         $message      = sprintf(
-            $resultat === 'bon'
+            $notification_plan['approved']
                 ? __(
                     'Votre demande de résolution de l\'énigme %1$s%2$s%3$s a été validée. Félicitations !',
                     'chassesautresor-com'
@@ -231,19 +193,14 @@ if (!function_exists('cat_get_riddle_attempt_service')) {
             esc_html($titre_enigme),
             '</a>'
         );
-        myaccount_remove_persistent_message($user_id, 'tentative_' . $uid);
-
-        $chasse_id       = recuperer_id_chasse_associee($enigme_id);
-        $organisateur_id = get_organisateur_from_chasse($chasse_id);
-        $orga_users      = (array) get_field('utilisateurs_associes', $organisateur_id);
-        foreach ($orga_users as $orga_user_id) {
-            myaccount_remove_persistent_message((int) $orga_user_id, 'tentative_' . $uid);
+        foreach ($notification_plan['persistent_recipient_ids'] as $recipient_id) {
+            myaccount_remove_persistent_message($recipient_id, 'tentative_' . $uid);
         }
 
         myaccount_add_flash_message(
             $user_id,
             $message,
-            $resultat === 'bon' ? 'success' : 'error'
+            $notification_plan['flash_type']
         );
 
         cat_debug("✅ Tentative UID=$uid traitée comme $resultat");
@@ -252,12 +209,6 @@ if (!function_exists('cat_get_riddle_attempt_service')) {
 
 
     /**
-     * Renvoie toutes les données d'affichage pour une tentative (état, utilisateur, statut, etc.)
-     *
-     * @param string $uid Identifiant unique de la tentative.
-     * @return array
-     */
-    /**
      * Récupère toutes les informations nécessaires à l'affichage d'une tentative.
      *
      * @param string $uid UID unique de la tentative.
@@ -265,26 +216,25 @@ if (!function_exists('cat_get_riddle_attempt_service')) {
      */
     function recuperer_infos_tentative(string $uid): array
     {
-        $tentative = get_tentative_by_uid($uid);
-        if (!$tentative) {
+        $details = cat_get_riddle_attempt_service()->describeByUid($uid);
+        if ($details === null) {
             return ['etat_tentative' => 'inexistante'];
         }
 
-        $etat_tentative = get_etat_tentative($uid); // logique métier (attente/validee/refusee)
-        $resultat = $tentative->resultat ?? '';
-        $traitee = (int) ($tentative->traitee ?? 0) === 1;
-
+        $tentative = $details['attempt'];
         $user = get_userdata($tentative->user_id);
-        $nom_user = ($user && isset($user->display_name)) ? $user->display_name : 'Utilisateur inconnu';
+        $nom_user = ($user && isset($user->display_name))
+            ? $user->display_name
+            : __('Utilisateur inconnu', 'chassesautresor-com');
 
         return [
-            'etat_tentative'        => $etat_tentative,
-            'statut_initial'        => $resultat ?: 'invalide',
-            'statut_final'          => $resultat,
-            'resultat'              => $resultat,
-            'deja_traitee'          => ($etat_tentative !== 'attente'),
-            'traitee'               => $traitee,
-            'vient_d_etre_traitee'  => $traitee && $etat_tentative !== 'attente',
+            'etat_tentative'        => $details['state'],
+            'statut_initial'        => $details['result'] ?: 'invalide',
+            'statut_final'          => $details['result'],
+            'resultat'              => $details['result'],
+            'deja_traitee'          => $details['already_processed'],
+            'traitee'               => $details['processed'],
+            'vient_d_etre_traitee'  => $details['just_processed'],
             'tentative'             => $tentative,
             'nom_user'              => $nom_user,
             'permalink'             => get_permalink($tentative->enigme_id),
@@ -303,19 +253,10 @@ if (!function_exists('cat_get_riddle_attempt_service')) {
      * @param string $uid
      * @return string 'attente' | 'validee' | 'refusee' | 'invalide' | 'inexistante'
      */
-function get_etat_tentative(string $uid): string
+    function get_etat_tentative(string $uid): string
     {
-        global $wpdb;
-        $table = $wpdb->prefix . 'enigme_tentatives';
-        $resultat = $wpdb->get_var($wpdb->prepare("SELECT resultat FROM $table WHERE tentative_uid = %s", $uid));
-
-        if ($resultat === null) return 'inexistante';
-        if ($resultat === 'attente') return 'attente';
-        if ($resultat === 'bon') return 'validee';
-        if ($resultat === 'faux') return 'refusee';
-
-        return 'invalide';
-}
+        return cat_get_riddle_attempt_service()->getStateByUid($uid);
+    }
 
 /**
  * Récupère les tentatives enregistrées pour une énigme.
@@ -328,16 +269,7 @@ function get_etat_tentative(string $uid): string
  */
 function recuperer_tentatives_enigme(int $enigme_id, int $limit = 5, int $offset = 0): array
 {
-    global $wpdb;
-    $table = $wpdb->prefix . 'enigme_tentatives';
-    $query = $wpdb->prepare(
-        "SELECT * FROM $table WHERE enigme_id = %d ORDER BY (resultat = 'attente') DESC, date_tentative DESC LIMIT %d OFFSET %d",
-        $enigme_id,
-        $limit,
-        $offset
-    );
-    $res = $wpdb->get_results($query);
-    return $res ?: [];
+    return cat_get_riddle_attempt_service()->findForRiddle($enigme_id, $limit, $offset);
 }
 
 /**
@@ -348,9 +280,7 @@ function recuperer_tentatives_enigme(int $enigme_id, int $limit = 5, int $offset
  */
 function compter_tentatives_enigme(int $enigme_id): int
 {
-    global $wpdb;
-    $table = $wpdb->prefix . 'enigme_tentatives';
-    return (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table WHERE enigme_id = %d", $enigme_id));
+    return cat_get_riddle_attempt_service()->countForRiddle($enigme_id);
 }
 
 /**
@@ -409,13 +339,7 @@ function ajax_lister_tentatives_enigme()
  */
 function compter_tentatives_en_attente(int $enigme_id): int
 {
-    global $wpdb;
-    $table = $wpdb->prefix . 'enigme_tentatives';
-    $query = $wpdb->prepare(
-        "SELECT COUNT(*) FROM $table WHERE enigme_id = %d AND resultat = 'attente' AND traitee = 0",
-        $enigme_id
-    );
-    return (int) $wpdb->get_var($query);
+    return cat_get_riddle_attempt_service()->countPendingForRiddle($enigme_id);
 }
 
 /**
@@ -435,22 +359,19 @@ function recuperer_enigmes_tentatives_en_attente(int $organisateur_id): array
         return [];
     }
 
-    $result = [];
+    $riddle_modes = [];
 
     foreach ($query->posts as $chasse_id) {
         $enigmes = recuperer_enigmes_associees((int) $chasse_id);
         foreach ($enigmes as $enigme_id) {
-            $mode = enigme_normaliser_mode_validation(
+            $enigme_id = (int) $enigme_id;
+            $riddle_modes[$enigme_id] = enigme_normaliser_mode_validation(
                 get_field('enigme_mode_validation', $enigme_id)
             );
-
-            if ($mode === 'manuelle' && compter_tentatives_en_attente($enigme_id) > 0) {
-                $result[] = $enigme_id;
-            }
         }
     }
 
-    return array_values(array_unique($result));
+    return cat_get_riddle_attempt_service()->findPendingManualRiddleIds($riddle_modes);
 }
 
 /**
@@ -459,22 +380,7 @@ function recuperer_enigmes_tentatives_en_attente(int $organisateur_id): array
  */
 function compter_tentatives_du_jour(int $user_id, int $enigme_id): int
 {
-    global $wpdb;
-    $table = $wpdb->prefix . 'enigme_tentatives';
-
-    $tz = new DateTimeZone('Europe/Paris');
-    $debut = (new DateTime('now', $tz))->setTime(0, 0)->format('Y-m-d H:i:s');
-    $fin   = (new DateTime('now', $tz))->setTime(23, 59, 59)->format('Y-m-d H:i:s');
-
-    $query = $wpdb->prepare(
-        "SELECT COUNT(*) FROM $table WHERE user_id = %d AND enigme_id = %d AND date_tentative BETWEEN %s AND %s",
-        $user_id,
-        $enigme_id,
-        $debut,
-        $fin
-    );
-
-    return (int) $wpdb->get_var($query);
+    return cat_get_riddle_attempt_service()->countTodayForUser($user_id, $enigme_id);
 }
 
 /**
@@ -495,26 +401,25 @@ function traiter_tentative(
     bool $envoyer_mail = true
 ): string
 {
-    global $wpdb;
-    $table = $wpdb->prefix . 'enigme_tentatives';
-
-    if ($resultat === 'bon' && $inserer) {
-        $existe = (int) $wpdb->get_var(
-            $wpdb->prepare(
-                "SELECT COUNT(*) FROM {$table} WHERE user_id = %d AND enigme_id = %d AND resultat = 'bon'",
-                $user_id,
-                $enigme_id
-            )
-        );
-
-        if ($existe > 0) {
-            return '';
-        }
+    $attempt_service = cat_get_riddle_attempt_service();
+    $plan = $attempt_service->buildProcessingPlan(
+        $user_id,
+        $enigme_id,
+        $resultat,
+        (int) get_field('enigme_tentative_cout_points', $enigme_id),
+        $inserer,
+        $email_echec
+    );
+    if ($plan === null) {
+        return '';
     }
 
-    $cout = (int) get_field('enigme_tentative_cout_points', $enigme_id);
-    if ($cout > 0 && $inserer) {
-        $reason = sprintf("Tentative de réponse pour l'énigme #%d", $enigme_id);
+    $cout = $plan['charge'];
+    if ($cout > 0) {
+        $reason = sprintf(
+            __("Tentative de réponse pour l'énigme #%d", 'chassesautresor-com'),
+            $enigme_id
+        );
         deduire_points_utilisateur($user_id, $cout, $reason, 'tentative', $enigme_id);
     }
 
@@ -523,16 +428,14 @@ function traiter_tentative(
         $uid = inserer_tentative($user_id, $enigme_id, $reponse, $resultat, $cout);
     }
 
-    if ($resultat === 'bon') {
-        enigme_mettre_a_jour_statut_utilisateur($enigme_id, $user_id, 'resolue');
+    $outcome = $plan['outcome'];
+    enigme_mettre_a_jour_statut_utilisateur($enigme_id, $user_id, $outcome['user_status']);
+
+    if ($outcome['resolved']) {
         do_action('enigme_resolue', $user_id, $enigme_id);
-    } elseif ($resultat === 'faux') {
-        enigme_mettre_a_jour_statut_utilisateur($enigme_id, $user_id, 'echouee');
-    } else {
-        enigme_mettre_a_jour_statut_utilisateur($enigme_id, $user_id, 'en_cours');
     }
 
-    if ($envoyer_mail && ($resultat === 'bon' || ($email_echec && $resultat === 'faux'))) {
+    if ($envoyer_mail && $outcome['notify']) {
         envoyer_mail_resultat_joueur($user_id, $enigme_id, $resultat);
     }
 

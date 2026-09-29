@@ -62,6 +62,17 @@ class HuntProgressRepository
         return is_string($date) && $date !== '' ? $date : null;
     }
 
+    public function deleteStatusesForRiddle(int $riddleId): int
+    {
+        $deleted = $this->wpdb->delete(
+            $this->wpdb->prefix . 'enigme_statuts_utilisateur',
+            ['enigme_id' => $riddleId],
+            ['%d']
+        );
+
+        return is_int($deleted) ? $deleted : 0;
+    }
+
     public function persistStatus(
         int $userId,
         int $riddleId,

@@ -1,6 +1,24 @@
 <?php
 defined('ABSPATH') || exit;
 
+if (!class_exists(ChassesAuTresor\Core\Hints\HintUnlockService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Hints/HintUnlockRepository.php';
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Hints/HintUnlockService.php';
+}
+
+if (!function_exists('cat_get_hint_unlock_service')) {
+    function cat_get_hint_unlock_service(): ChassesAuTresor\Core\Hints\HintUnlockService
+    {
+        global $wpdb;
+
+        return new ChassesAuTresor\Core\Hints\HintUnlockService(
+            new ChassesAuTresor\Core\Hints\HintUnlockRepository($wpdb)
+        );
+    }
+}
+
 /**
  * Retrieve the display title for an indice.
  *
@@ -39,13 +57,7 @@ function get_indice_title($post): string
  */
 function indice_est_debloque(int $user_id, int $indice_id): bool
 {
-    global $wpdb;
-    $table = $wpdb->prefix . 'indices_deblocages';
-    return (bool) $wpdb->get_var($wpdb->prepare(
-        "SELECT 1 FROM {$table} WHERE user_id = %d AND indice_id = %d LIMIT 1",
-        $user_id,
-        $indice_id
-    ));
+    return cat_get_hint_unlock_service()->isUnlocked($user_id, $indice_id);
 }
 
 /**
@@ -115,24 +127,14 @@ function debloquer_indice(): void
         );
     }
 
-    global $wpdb;
-    $table = $wpdb->prefix . 'indices_deblocages';
-    $wpdb->insert($table, [
-        'user_id'        => $user_id,
-        'indice_id'      => $indice_id,
-        'chasse_id'      => $chasse_id ?: null,
-        'enigme_id'      => $enigme_id ?: null,
-        'points_depenses'=> $cout,
-        'date_deblocage' => current_time('mysql', 1),
-    ], ['%d', '%d', '%d', '%d', '%d', '%s']);
-
-    $wpdb->insert($wpdb->prefix . 'engagements', [
-        'user_id'        => $user_id,
-        'enigme_id'      => $enigme_id ?: null,
-        'chasse_id'      => $chasse_id ?: null,
-        'indice_id'      => $indice_id,
-        'date_engagement'=> current_time('mysql', 1),
-    ], ['%d', '%d', '%d', '%d', '%s']);
+    cat_get_hint_unlock_service()->recordUnlock(
+        $user_id,
+        $indice_id,
+        $chasse_id,
+        $enigme_id,
+        $cout,
+        current_time('mysql', 1)
+    );
 
     $points_restants = function_exists('get_user_points') ? get_user_points($user_id) : 0;
     $contenu         = get_field('indice_contenu', $indice_id) ?: '';

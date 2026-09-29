@@ -17,6 +17,7 @@ class HuntProgressRepositoryStub extends HuntProgressRepository
     public array $statusArguments = [];
     public array $persistedStatus = [];
     public ?string $status = 'resolue';
+    public int $deletedStatuses = 0;
 
     public function __construct()
     {
@@ -49,6 +50,12 @@ class HuntProgressRepositoryStub extends HuntProgressRepository
         $this->statusArguments = [$userId, $riddleId];
 
         return '2026-09-29 12:00:00';
+    }
+
+    public function deleteStatusesForRiddle(int $riddleId): int
+    {
+        $this->statusArguments = [$riddleId];
+        return $this->deletedStatuses;
     }
 
     public function countEngaged(int $userId, array $riddleIds): int
@@ -147,6 +154,42 @@ class HuntProgressServiceTest extends TestCase
         $this->assertSame('2026-09-29 12:00:00', $service->getRiddleResolutionDate(7, 10));
         $this->assertSame([7, 10], $repository->statusArguments);
         $this->assertNull($service->getRiddleResolutionDate(0, 10));
+    }
+
+    public function testRiddleStatusDeletionIsValidatedAndDelegated(): void
+    {
+        $repository = new HuntProgressRepositoryStub();
+        $repository->deletedStatuses = 4;
+        $service = new HuntProgressService($repository);
+
+        $this->assertSame(4, $service->deleteRiddleStatuses(10));
+        $this->assertSame([10], $repository->statusArguments);
+        $this->assertSame(0, $service->deleteRiddleStatuses(0));
+    }
+
+    public function testRepositoryDeletesStatusesForRiddle(): void
+    {
+        $wpdb = new class {
+            public string $prefix = 'wp_';
+            public $deleteResult = 3;
+            public array $deleteArguments = [];
+
+            public function delete(string $table, array $where, array $whereFormat)
+            {
+                $this->deleteArguments = [$table, $where, $whereFormat];
+                return $this->deleteResult;
+            }
+        };
+        $repository = new HuntProgressRepository($wpdb);
+
+        $this->assertSame(3, $repository->deleteStatusesForRiddle(10));
+        $this->assertSame(
+            ['wp_enigme_statuts_utilisateur', ['enigme_id' => 10], ['%d']],
+            $wpdb->deleteArguments
+        );
+
+        $wpdb->deleteResult = false;
+        $this->assertSame(0, $repository->deleteStatusesForRiddle(10));
     }
 
     public function testRiddleStatusCanOnlyAdvanceUnlessForced(): void
