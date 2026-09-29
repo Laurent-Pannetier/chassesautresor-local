@@ -18,6 +18,9 @@ class RiddleAttemptRepositoryStub extends RiddleAttemptRepository
     public bool $returnConfiguredAttempt = false;
     public array $listArguments = [];
     public array $attempts = [];
+    public ?string $userRiddleStatus = null;
+    public array $processArguments = [];
+    public bool $processResult = true;
 
     public function __construct()
     {
@@ -50,6 +53,18 @@ class RiddleAttemptRepositoryStub extends RiddleAttemptRepository
     {
         $this->listArguments = [$riddleId, $limit, $offset];
         return $this->attempts;
+    }
+
+    public function findUserRiddleStatus(int $userId, int $riddleId): ?string
+    {
+        $this->countArguments = [$userId, $riddleId];
+        return $this->userRiddleStatus;
+    }
+
+    public function markPendingAsProcessed(string $uid, string $result): bool
+    {
+        $this->processArguments = [$uid, $result];
+        return $this->processResult;
     }
 
     public function countPendingForRiddle(int $riddleId): int
@@ -128,6 +143,34 @@ class RiddleAttemptServiceTest extends TestCase
         $this->assertSame([], $service->findForRiddle(0, 20, 0));
         $this->assertSame([], $service->findForRiddle(10, 0, 0));
         $this->assertSame([], $service->findForRiddle(10, 20, -1));
+    }
+
+    public function testSolvedStateIsReadThroughRepository(): void
+    {
+        $repository = new RiddleAttemptRepositoryStub();
+        $service = new RiddleAttemptService($repository);
+
+        $repository->userRiddleStatus = 'resolue';
+        $this->assertTrue($service->isRiddleSolvedForUser(7, 10));
+        $this->assertSame([7, 10], $repository->countArguments);
+
+        $repository->userRiddleStatus = 'en_cours';
+        $this->assertFalse($service->isRiddleSolvedForUser(7, 10));
+        $this->assertFalse($service->isRiddleSolvedForUser(0, 10));
+    }
+
+    public function testPendingAttemptProcessingIsValidatedAndDelegated(): void
+    {
+        $repository = new RiddleAttemptRepositoryStub();
+        $service = new RiddleAttemptService($repository);
+
+        $this->assertTrue($service->processPending(' attempt-1 ', 'bon'));
+        $this->assertSame(['attempt-1', 'bon'], $repository->processArguments);
+        $this->assertFalse($service->processPending('', 'bon'));
+        $this->assertFalse($service->processPending('attempt-1', 'attente'));
+
+        $repository->processResult = false;
+        $this->assertFalse($service->processPending('attempt-1', 'faux'));
     }
 
     public function testRiddleCountersAreValidatedAndDelegated(): void

@@ -158,10 +158,6 @@ if (!function_exists('cat_get_riddle_attempt_service')) {
     function traiter_tentative_manuelle(string $uid, string $resultat): bool
 
     {
-        global $wpdb;
-        $table = $wpdb->prefix . 'enigme_tentatives';
-
-
         cat_debug("👣 Tentative traitement UID=$uid par IP=" . ($_SERVER['REMOTE_ADDR'] ?? 'inconnue'));
 
         $tentative = get_tentative_by_uid($uid);
@@ -180,13 +176,8 @@ if (!function_exists('cat_get_riddle_attempt_service')) {
         $enigme_id = (int) $tentative->enigme_id;
 
         // 🔐 Sécurité : si déjà "resolue", on refuse toute tentative de traitement
-        $statut_user = $wpdb->get_var($wpdb->prepare(
-            "SELECT statut FROM {$wpdb->prefix}enigme_statuts_utilisateur WHERE user_id = %d AND enigme_id = %d",
-            $user_id,
-            $enigme_id
-        ));
-
-        if ($statut_user === 'resolue') {
+        $attempt_service = cat_get_riddle_attempt_service();
+        if ($attempt_service->isRiddleSolvedForUser($user_id, $enigme_id)) {
             cat_debug("⛔ Statut utilisateur déjà 'resolue' → refus de traitement UID=$uid");
             return false;
         }
@@ -205,14 +196,10 @@ if (!function_exists('cat_get_riddle_attempt_service')) {
             return false;
         }
 
-        // ✅ Mise à jour
-        $wpdb->update(
-            $table,
-            ['resultat' => $resultat, 'traitee' => 1],
-            ['tentative_uid' => $uid],
-            ['%s', '%d'],
-            ['%s']
-        );
+        if (!$attempt_service->processPending($uid, $resultat)) {
+            cat_debug("⛔ Tentative déjà traitée ou résultat invalide pour UID=$uid");
+            return false;
+        }
 
         traiter_tentative($user_id, $enigme_id, (string) $tentative->reponse_saisie, $resultat, false, true, true);
 

@@ -78,6 +78,25 @@ class RiddleAttemptService
         return $this->repository->findForRiddle($riddleId, $limit, $offset);
     }
 
+    public function isRiddleSolvedForUser(int $userId, int $riddleId): bool
+    {
+        if ($userId <= 0 || $riddleId <= 0) {
+            return false;
+        }
+
+        return $this->repository->findUserRiddleStatus($userId, $riddleId) === 'resolue';
+    }
+
+    public function processPending(string $uid, string $result): bool
+    {
+        $uid = trim($uid);
+        if ($uid === '' || !in_array($result, ['bon', 'faux'], true)) {
+            return false;
+        }
+
+        return $this->repository->markPendingAsProcessed($uid, $result);
+    }
+
     public function countForRiddle(int $riddleId): int
     {
         return $riddleId > 0 ? $this->repository->countForRiddle($riddleId) : 0;

@@ -47,6 +47,33 @@ class RiddleAttemptRepository
         return is_array($attempts) ? $attempts : [];
     }
 
+    public function findUserRiddleStatus(int $userId, int $riddleId): ?string
+    {
+        $table = $this->wpdb->prefix . 'enigme_statuts_utilisateur';
+        $status = $this->wpdb->get_var(
+            $this->wpdb->prepare(
+                "SELECT statut FROM {$table} WHERE user_id = %d AND enigme_id = %d",
+                $userId,
+                $riddleId
+            )
+        );
+
+        return is_string($status) ? $status : null;
+    }
+
+    public function markPendingAsProcessed(string $uid, string $result): bool
+    {
+        $updated = $this->wpdb->update(
+            $this->wpdb->prefix . 'enigme_tentatives',
+            ['resultat' => $result, 'traitee' => 1],
+            ['tentative_uid' => $uid, 'resultat' => 'attente', 'traitee' => 0],
+            ['%s', '%d'],
+            ['%s', '%s', '%d']
+        );
+
+        return $updated === 1;
+    }
+
     public function countForRiddle(int $riddleId): int
     {
         $table = $this->wpdb->prefix . 'enigme_tentatives';
