@@ -31,6 +31,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\HintCreationService::class, false
         . '/plugins/chassesautresor-core/src/Content/HintCreationService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HintRouteRegistrar::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HintRouteRegistrar.php';
+}
+
 function cat_get_hint_query_service(): ChassesAuTresor\Core\Content\HintQueryService
 {
     return new ChassesAuTresor\Core\Content\HintQueryService();
@@ -339,10 +344,8 @@ function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_i
  */
 function register_endpoint_creer_indice(): void
 {
-    add_rewrite_rule('^creer-indice/?$', 'index.php?creer_indice=1', 'top');
-    add_rewrite_tag('%creer_indice%', '1');
+    ChassesAuTresor\Core\Content\HintRouteRegistrar::register();
 }
-add_action('init', 'register_endpoint_creer_indice');
 
 /**
  * S'assure que les règles de réécriture prennent en compte /creer-indice/.
@@ -354,18 +357,8 @@ add_action('init', 'register_endpoint_creer_indice');
  */
 function flush_rewrite_rules_creer_indice(): void
 {
-    register_endpoint_creer_indice();
-    flush_rewrite_rules();
-    update_option('creer_indice_rewrite_flushed', 1);
+    ChassesAuTresor\Core\Content\HintRouteRegistrar::flush();
 }
-
-add_action('after_switch_theme', 'flush_rewrite_rules_creer_indice');
-
-add_action('init', function (): void {
-    if (!get_option('creer_indice_rewrite_flushed')) {
-        flush_rewrite_rules_creer_indice();
-    }
-}, 20);
 
 /**
  * Détecte l’appel à /creer-indice/ et redirige vers l’indice créé.

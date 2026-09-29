@@ -54,6 +54,7 @@ require_once __DIR__ . '/src/Content/HintStatusService.php';
 require_once __DIR__ . '/src/Content/HintScheduler.php';
 require_once __DIR__ . '/src/Content/HintTitleService.php';
 require_once __DIR__ . '/src/Content/HintCreationService.php';
+require_once __DIR__ . '/src/Content/HintRouteRegistrar.php';
 require_once __DIR__ . '/src/Content/HuntPublicationStatusService.php';
 require_once __DIR__ . '/src/Content/HuntValidationService.php';
 require_once __DIR__ . '/src/Content/SolutionAvailabilityService.php';
@@ -97,6 +98,11 @@ register_activation_hook(
 
 register_activation_hook(
     __FILE__,
+    [ChassesAuTresor\Core\Content\HintRouteRegistrar::class, 'flush']
+);
+
+register_activation_hook(
+    __FILE__,
     [ChassesAuTresor\Core\Points\PointsTable::class, 'install']
 );
 
@@ -133,6 +139,17 @@ add_action(
 add_action(
     ChassesAuTresor\Core\Content\HintScheduler::HOOK,
     [ChassesAuTresor\Core\Content\HintScheduler::class, 'run']
+);
+
+add_action(
+    'init',
+    [ChassesAuTresor\Core\Content\HintRouteRegistrar::class, 'register']
+);
+
+add_action(
+    'init',
+    [ChassesAuTresor\Core\Content\HintRouteRegistrar::class, 'maybeFlush'],
+    20
 );
 
 add_action(
