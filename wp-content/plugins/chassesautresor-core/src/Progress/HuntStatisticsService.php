@@ -82,4 +82,29 @@ class HuntStatisticsService
         );
         return (100 * $solved) / $engaged;
     }
+
+    public function listParticipants(
+        int $huntId,
+        array $riddleIds,
+        array $excludedUserIds,
+        int $limit,
+        int $offset,
+        string $orderBy,
+        string $order
+    ): array {
+        return $this->repository->listParticipants(
+            $huntId,
+            $riddleIds,
+            $excludedUserIds,
+            $limit,
+            $offset,
+            $orderBy,
+            $order
+        );
+    }
+
+    public function findEngagedRiddleIds(int $userId, array $riddleIds): array
+    {
+        return $this->repository->findEngagedRiddleIds($userId, $riddleIds);
+    }
 }

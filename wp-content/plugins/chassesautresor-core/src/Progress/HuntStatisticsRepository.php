@@ -94,6 +94,61 @@ class HuntStatisticsRepository
         return (int) $this->wpdb->get_var($this->wpdb->prepare($sql, ...$params));
     }
 
+    public function listParticipants(
+        int $huntId,
+        array $riddleIds,
+        array $excludedUserIds,
+        int $limit,
+        int $offset,
+        string $orderBy,
+        string $order
+    ): array {
+        $engagements = $this->wpdb->prefix . 'engagements';
+        $statuses = $this->wpdb->prefix . 'enigme_statuts_utilisateur';
+        $joinFilter = ' AND 1=0';
+        $params = [];
+        if ($riddleIds !== []) {
+            $joinFilter = ' AND e2.enigme_id IN (' . implode(',', array_fill(0, count($riddleIds), '%d')) . ')';
+            $params = $riddleIds;
+        }
+        $allowedOrderBy = [
+            'username' => 'username',
+            'participation' => 'nb_engagees',
+            'resolution' => 'nb_resolues',
+            'inscription' => 'date_inscription',
+        ];
+        $orderBy = $allowedOrderBy[$orderBy] ?? 'date_inscription';
+        $order = strtoupper($order) === 'DESC' ? 'DESC' : 'ASC';
+        $exclude = '';
+        if ($excludedUserIds !== []) {
+            $exclude = ' AND e.user_id NOT IN ('
+                . implode(',', array_fill(0, count($excludedUserIds), '%d')) . ')';
+        }
+        $query = "SELECT e.user_id, u.user_login AS username, MIN(e.date_engagement) AS date_inscription,"
+            . " COUNT(DISTINCT e2.enigme_id) AS nb_engagees,"
+            . " COUNT(DISTINCT CASE WHEN s.statut IN ('resolue','terminee') THEN s.enigme_id END) AS nb_resolues"
+            . " FROM {$engagements} e JOIN {$this->wpdb->users} u ON u.ID = e.user_id"
+            . " LEFT JOIN {$engagements} e2 ON e2.user_id = e.user_id{$joinFilter}"
+            . " LEFT JOIN {$statuses} s ON s.user_id = e.user_id AND s.enigme_id = e2.enigme_id"
+            . " WHERE e.chasse_id = %d AND e.enigme_id IS NULL{$exclude} GROUP BY e.user_id"
+            . " ORDER BY {$orderBy} {$order} LIMIT %d OFFSET %d";
+        $params = array_merge($params, [$huntId], $excludedUserIds, [$limit, $offset]);
+        return (array) $this->wpdb->get_results($this->wpdb->prepare($query, $params), ARRAY_A);
+    }
+
+    public function findEngagedRiddleIds(int $userId, array $riddleIds): array
+    {
+        if ($riddleIds === []) {
+            return [];
+        }
+        $table = $this->wpdb->prefix . 'engagements';
+        $placeholders = implode(',', array_fill(0, count($riddleIds), '%d'));
+        return array_map('intval', $this->wpdb->get_col($this->wpdb->prepare(
+            "SELECT DISTINCT enigme_id FROM {$table} WHERE user_id = %d AND enigme_id IN ({$placeholders})",
+            array_merge([$userId], $riddleIds)
+        )));
+    }
+
     /** @param int[] $riddleIds */
     private function aggregateAttempts(
         string $expression,
