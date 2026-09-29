@@ -19,6 +19,7 @@ class RiddleAttemptRepositoryStub extends RiddleAttemptRepository
     public array $listArguments = [];
     public array $attempts = [];
     public ?object $latestPendingAttempt = null;
+    public int $deletedAttempts = 0;
     public ?string $userRiddleStatus = null;
     public array $processArguments = [];
     public bool $processResult = true;
@@ -63,6 +64,12 @@ class RiddleAttemptRepositoryStub extends RiddleAttemptRepository
     {
         $this->listArguments = [$userId, $riddleId];
         return $this->latestPendingAttempt;
+    }
+
+    public function deleteForRiddle(int $riddleId): int
+    {
+        $this->listArguments = [$riddleId];
+        return $this->deletedAttempts;
     }
 
     public function findUserRiddleStatus(int $userId, int $riddleId): ?string
@@ -309,6 +316,17 @@ class RiddleAttemptServiceTest extends TestCase
         $this->assertSame([7, 10], $repository->listArguments);
         $this->assertNull($service->findLatestPendingForUserAndRiddle(0, 10));
         $this->assertNull($service->findLatestPendingForUserAndRiddle(7, 0));
+    }
+
+    public function testRiddleAttemptDeletionIsValidatedAndDelegated(): void
+    {
+        $repository = new RiddleAttemptRepositoryStub();
+        $repository->deletedAttempts = 3;
+        $service = new RiddleAttemptService($repository);
+
+        $this->assertSame(3, $service->deleteForRiddle(10));
+        $this->assertSame([10], $repository->listArguments);
+        $this->assertSame(0, $service->deleteForRiddle(0));
     }
 
     public function testSolvedStateIsReadThroughRepository(): void

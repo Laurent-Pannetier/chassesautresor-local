@@ -190,6 +190,11 @@ class RiddleAttemptService
         return $this->repository->findLatestPendingForUserAndRiddle($userId, $riddleId);
     }
 
+    public function deleteForRiddle(int $riddleId): int
+    {
+        return $riddleId > 0 ? $this->repository->deleteForRiddle($riddleId) : 0;
+    }
+
     public function isRiddleSolvedForUser(int $userId, int $riddleId): bool
     {
         if ($userId <= 0 || $riddleId <= 0) {

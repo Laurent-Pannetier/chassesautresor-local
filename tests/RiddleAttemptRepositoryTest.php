@@ -15,6 +15,8 @@ class RiddleAttemptWpdbStub
     public array $preparedArguments = [];
     public array $updateArguments = [];
     public ?object $row = null;
+    public $deleteResult = 0;
+    public array $deleteArguments = [];
 
     public function prepare(string $query, ...$arguments): string
     {
@@ -36,6 +38,12 @@ class RiddleAttemptWpdbStub
     {
         $this->updateArguments = [$table, $data, $where, $format, $whereFormat];
         return $this->updateResult;
+    }
+
+    public function delete(string $table, array $where, array $whereFormat)
+    {
+        $this->deleteArguments = [$table, $where, $whereFormat];
+        return $this->deleteResult;
     }
 }
 
@@ -91,5 +99,21 @@ class RiddleAttemptRepositoryTest extends TestCase
 
         $wpdb->row = null;
         $this->assertNull($repository->findLatestPendingForUserAndRiddle(7, 10));
+    }
+
+    public function testRiddleAttemptDeletionReturnsAffectedRows(): void
+    {
+        $wpdb = new RiddleAttemptWpdbStub();
+        $wpdb->deleteResult = 3;
+        $repository = new RiddleAttemptRepository($wpdb);
+
+        $this->assertSame(3, $repository->deleteForRiddle(10));
+        $this->assertSame(
+            ['wp_enigme_tentatives', ['enigme_id' => 10], ['%d']],
+            $wpdb->deleteArguments
+        );
+
+        $wpdb->deleteResult = false;
+        $this->assertSame(0, $repository->deleteForRiddle(10));
     }
 }
