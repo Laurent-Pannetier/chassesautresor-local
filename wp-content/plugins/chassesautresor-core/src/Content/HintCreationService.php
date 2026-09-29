@@ -14,6 +14,33 @@ class HintCreationService
         return in_array($targetType, ['chasse', 'enigme'], true);
     }
 
+    public function getCreationError(
+        bool $supportedTargetType,
+        bool $targetMatchesType,
+        bool $isAuthenticated,
+        bool $canModifyTarget,
+        bool $hasHunt,
+        bool $canModifyHunt
+    ): ?string {
+        if (!$supportedTargetType) {
+            return 'type_invalide';
+        }
+
+        if (!$targetMatchesType) {
+            return 'cible_invalide';
+        }
+
+        if (!$isAuthenticated) {
+            return 'non_connecte';
+        }
+
+        if (!$canModifyTarget || !$hasHunt || !$canModifyHunt) {
+            return 'permission_refusee';
+        }
+
+        return null;
+    }
+
     /**
      * @return array{
      *     post_status:string,

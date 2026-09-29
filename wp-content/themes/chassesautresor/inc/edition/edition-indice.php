@@ -253,29 +253,44 @@ add_action('save_post_indice', 'reordonner_indices_apres_enregistrement', 20, 1)
 function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_id = null)
 {
     $creationService = cat_get_hint_creation_service();
-    if (!$creationService->isSupportedTargetType($objet_type)) {
-        return new WP_Error('type_invalide', __('Type de cible invalide.', 'chassesautresor-com'));
+    $supportedTargetType = $creationService->isSupportedTargetType($objet_type);
+    $targetMatchesType = $supportedTargetType && get_post_type($objet_id) === $objet_type;
+    $isAuthenticated = is_user_logged_in();
+    $canModifyTarget = $targetMatchesType
+        && $isAuthenticated
+        && utilisateur_peut_modifier_post($objet_id);
+    $chasse_id = null;
+
+    if ($canModifyTarget) {
+        $chasse_id = $objet_type === 'chasse'
+            ? $objet_id
+            : recuperer_id_chasse_associee($objet_id);
     }
 
-    if (get_post_type($objet_id) !== $objet_type) {
-        return new WP_Error('cible_invalide', __('ID cible invalide.', 'chassesautresor-com'));
+    $canModifyHunt = $chasse_id !== null
+        && (int) $chasse_id > 0
+        && utilisateur_peut_modifier_post((int) $chasse_id);
+    $creationError = $creationService->getCreationError(
+        $supportedTargetType,
+        $targetMatchesType,
+        $isAuthenticated,
+        $canModifyTarget,
+        $chasse_id !== null && (int) $chasse_id > 0,
+        $canModifyHunt
+    );
+
+    if ($creationError !== null) {
+        $errorMessages = [
+            'type_invalide' => __('Type de cible invalide.', 'chassesautresor-com'),
+            'cible_invalide' => __('ID cible invalide.', 'chassesautresor-com'),
+            'non_connecte' => __('Utilisateur non connecté.', 'chassesautresor-com'),
+            'permission_refusee' => __('Droits insuffisants.', 'chassesautresor-com'),
+        ];
+
+        return new WP_Error($creationError, $errorMessages[$creationError]);
     }
 
-    if (!is_user_logged_in()) {
-        return new WP_Error('non_connecte', __('Utilisateur non connecté.', 'chassesautresor-com'));
-    }
-
-    if (!utilisateur_peut_modifier_post($objet_id)) {
-        return new WP_Error('permission_refusee', __('Droits insuffisants.', 'chassesautresor-com'));
-    }
-
-    $chasse_id = $objet_type === 'chasse'
-        ? $objet_id
-        : recuperer_id_chasse_associee($objet_id);
-
-    if (!$chasse_id || !utilisateur_peut_modifier_post($chasse_id)) {
-        return new WP_Error('permission_refusee', __('Droits insuffisants.', 'chassesautresor-com'));
-    }
+    $chasse_id = (int) $chasse_id;
 
     $user_id     = $user_id ?? get_current_user_id();
     $indice_rank   = prochain_rang_indice($chasse_id, 'chasse');

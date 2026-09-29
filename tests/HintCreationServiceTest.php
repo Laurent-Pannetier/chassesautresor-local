@@ -40,6 +40,27 @@ class HintCreationServiceTest extends TestCase
         );
     }
 
+    /**
+     * @dataProvider creationErrorProvider
+     */
+    public function testCreationErrorsFollowValidationOrder(array $context, ?string $expected): void
+    {
+        $this->assertSame($expected, $this->service->getCreationError(...$context));
+    }
+
+    public function creationErrorProvider(): array
+    {
+        return [
+            'unsupported type' => [[false, false, false, false, false, false], 'type_invalide'],
+            'invalid target' => [[true, false, false, false, false, false], 'cible_invalide'],
+            'guest' => [[true, true, false, false, false, false], 'non_connecte'],
+            'target forbidden' => [[true, true, true, false, true, true], 'permission_refusee'],
+            'missing hunt' => [[true, true, true, true, false, false], 'permission_refusee'],
+            'hunt forbidden' => [[true, true, true, true, true, false], 'permission_refusee'],
+            'allowed' => [[true, true, true, true, true, true], null],
+        ];
+    }
+
     public function testNegativeAvailabilityDelayIsClampedToZero(): void
     {
         $state = $this->service->getInitialState(100, -10);
