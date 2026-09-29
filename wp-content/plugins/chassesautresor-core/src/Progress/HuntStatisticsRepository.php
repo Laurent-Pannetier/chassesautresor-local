@@ -70,6 +70,31 @@ class HuntStatisticsRepository
     }
 
     /** @param int[] $riddleIds */
+    public function sumSolvedPlayersByRiddle(
+        array $riddleIds,
+        ?string $startAt = null,
+        ?string $endAt = null,
+        array $excludedUserIds = []
+    ): int {
+        $table = $this->wpdb->prefix . 'enigme_statuts_utilisateur';
+        $placeholders = implode(',', array_fill(0, count($riddleIds), '%d'));
+        $where = "enigme_id IN ({$placeholders}) AND statut IN ('resolue','terminee','terminée')";
+        $params = $riddleIds;
+        if ($startAt !== null && $endAt !== null) {
+            $where .= ' AND date_mise_a_jour BETWEEN %s AND %s';
+            $params[] = $startAt;
+            $params[] = $endAt;
+        }
+        if ($excludedUserIds !== []) {
+            $where .= ' AND user_id NOT IN (' . implode(',', array_fill(0, count($excludedUserIds), '%d')) . ')';
+            $params = array_merge($params, $excludedUserIds);
+        }
+        $sql = "SELECT SUM(cnt) FROM (SELECT COUNT(DISTINCT user_id) AS cnt FROM {$table} "
+            . "WHERE {$where} GROUP BY enigme_id) aggregated_resolutions";
+        return (int) $this->wpdb->get_var($this->wpdb->prepare($sql, ...$params));
+    }
+
+    /** @param int[] $riddleIds */
     private function aggregateAttempts(
         string $expression,
         array $riddleIds,

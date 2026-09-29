@@ -54,4 +54,32 @@ class HuntStatisticsService
 
         return (100 * $engagements) / ($participants * count($riddleIds));
     }
+
+    /** @param int[] $riddleIds */
+    public function calculateResolutionRate(
+        array $riddleIds,
+        ?string $startAt = null,
+        ?string $endAt = null,
+        array $excludedUserIds = []
+    ): float {
+        if ($riddleIds === []) {
+            return 0.0;
+        }
+        $engaged = $this->repository->sumEngagedPlayersByRiddle(
+            $riddleIds,
+            $startAt,
+            $endAt,
+            $excludedUserIds
+        );
+        if ($engaged === 0) {
+            return 0.0;
+        }
+        $solved = $this->repository->sumSolvedPlayersByRiddle(
+            $riddleIds,
+            $startAt,
+            $endAt,
+            $excludedUserIds
+        );
+        return (100 * $solved) / $engaged;
+    }
 }

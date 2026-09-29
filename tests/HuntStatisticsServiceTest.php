@@ -50,6 +50,15 @@ class HuntStatisticsRepositoryStub extends HuntStatisticsRepository
 
         return 6;
     }
+
+    public function sumSolvedPlayersByRiddle(
+        array $riddleIds,
+        ?string $startAt = null,
+        ?string $endAt = null,
+        array $excludedUserIds = []
+    ): int {
+        return 3;
+    }
 }
 
 class HuntStatisticsServiceTest extends TestCase
@@ -93,5 +102,12 @@ class HuntStatisticsServiceTest extends TestCase
         $this->assertSame([[10, 11], null, null, []], $repository->arguments);
         $this->assertSame(0.0, $service->calculateEngagementRate(0, [10, 11]));
         $this->assertSame(0.0, $service->calculateEngagementRate(2, []));
+    }
+
+    public function testResolutionRateExcludesInternalUsers(): void
+    {
+        $service = new HuntStatisticsService(new HuntStatisticsRepositoryStub());
+        $this->assertSame(50.0, $service->calculateResolutionRate([10, 11], null, null, [1, 2]));
+        $this->assertSame(0.0, $service->calculateResolutionRate([]));
     }
 }
