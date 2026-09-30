@@ -21,6 +21,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\HuntFieldMutationService::class, 
         . '/plugins/chassesautresor-core/src/Content/HuntFieldMutationService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HuntClosureService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HuntClosureService.php';
+}
+
 
 // ==================================================
 // 🗺️ CRÉATION & ÉDITION D’UNE CHASSE
@@ -410,33 +415,22 @@ function modifier_champ_chasse()
 
 
   // 🔹 Déclenchement de la publication différée des solutions
-  if ($champ === 'champs_caches.chasse_cache_statut' && $valeur === 'termine') {
-    $ok = update_field('chasse_cache_statut', 'termine', $post_id);
-    if ($ok !== false) {
-      // ✅ Marque la chasse comme complète sans déclencher de recalcul automatique
-      update_field('chasse_cache_complet', 1, $post_id);
-      $champ_valide = true;
-
-      $liste_enigmes = recuperer_enigmes_associees($post_id);
-      if (!empty($liste_enigmes)) {
-        foreach ($liste_enigmes as $enigme_id) {
-          cat_debug("🧩 Planification/déplacement : énigme #$enigme_id");
-          planifier_ou_deplacer_pdf_solution_immediatement($enigme_id);
-          $sol = solution_recuperer_par_objet((int) $enigme_id, 'enigme');
-          if ($sol) {
-            solution_planifier_publication($sol->ID);
-          }
-        }
-      }
-
-      $sol_chasse = solution_recuperer_par_objet((int) $post_id, 'chasse');
-      if ($sol_chasse) {
-        solution_planifier_publication($sol_chasse->ID);
-      }
-
-      // 🏁 Mise à jour des statuts joueurs
-      gerer_chasse_terminee($post_id);
-    }
+  $completion = (new ChassesAuTresor\Core\Content\HuntClosureService())->apply(
+    $post_id,
+    $champ,
+    $valeur,
+    'update_field',
+    'recuperer_enigmes_associees',
+    'planifier_ou_deplacer_pdf_solution_immediatement',
+    'solution_recuperer_par_objet',
+    'solution_planifier_publication',
+    'gerer_chasse_terminee'
+  );
+  if ($completion['error'] !== null) {
+    wp_send_json_error(__('⚠️ echec_mise_a_jour', 'chassesautresor-com'));
+  }
+  if ($completion['handled']) {
+    $champ_valide = true;
   }
 
 
