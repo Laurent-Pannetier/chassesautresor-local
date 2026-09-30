@@ -1,6 +1,11 @@
 <?php
 defined('ABSPATH') || exit;
 
+if (!class_exists(ChassesAuTresor\Core\Content\RiddleSolutionFilePolicyService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/RiddleSolutionFilePolicyService.php';
+}
+
 
 // ==================================================
 // 🧩 CRÉATION & ÉDITION D’UNE ÉNIGME
@@ -429,15 +434,19 @@ function enregistrer_fichier_solution_enigme()
 
   $fichier = $_FILES['fichier_pdf'];
 
-  // 🔒 Contrôle taille max : 5 Mo
-  if ($fichier['size'] > 5 * 1024 * 1024) {
-    wp_send_json_error("Fichier trop volumineux (5 Mo maximum).");
-  }
-
-  // 🔒 Vérification réelle du type MIME
   $filetype = wp_check_filetype($fichier['name']);
-  if ($filetype['ext'] !== 'pdf' || $filetype['type'] !== 'application/pdf') {
-    wp_send_json_error("Seuls les fichiers PDF sont autorisés.");
+  $filePolicy = new ChassesAuTresor\Core\Content\RiddleSolutionFilePolicyService();
+  $uploadError = $filePolicy->getUploadError(
+      (int) $fichier['size'],
+      (string) ($filetype['ext'] ?? ''),
+      (string) ($filetype['type'] ?? '')
+  );
+  if ($uploadError !== null) {
+    $messages = [
+      'file_too_large' => __('Fichier trop volumineux (5 Mo maximum).', 'chassesautresor-com'),
+      'invalid_file_type' => __('Seuls les fichiers PDF sont autorisés.', 'chassesautresor-com'),
+    ];
+    wp_send_json_error($messages[$uploadError]);
   }
 
   require_once ABSPATH . 'wp-admin/includes/file.php';
@@ -606,21 +615,16 @@ function planifier_ou_deplacer_pdf_solution_immediatement($enigme_id)
   if (!$enigme_id || get_post_type($enigme_id) !== 'enigme') return;
 
   $mode = get_field('enigme_solution_mode', $enigme_id);
-  if (!in_array($mode, ['fin_de_chasse', 'delai_fin_chasse', 'date_fin_chasse'])) return;
-
   $delai = get_field('enigme_solution_delai', $enigme_id);
   $heure = get_field('enigme_solution_heure', $enigme_id);
-
-  if ($delai === null || $heure === null) return;
-
-  // 👉 Remettre "days" en prod
-  $timestamp = strtotime("+$delai days $heure");
-
-  if (!$timestamp) return;
-
-  if ($timestamp <= time()) {
-    $timestamp = time() + 5;
-  }
+  $timestamp = (new ChassesAuTresor\Core\Content\RiddleSolutionFilePolicyService())
+    ->getPublicationTimestamp(
+      (string) $mode,
+      $delai === null ? null : (int) $delai,
+      $heure === null ? null : (string) $heure,
+      time()
+    );
+  if ($timestamp === null) return;
 
   wp_schedule_single_event($timestamp, 'publier_solution_enigme', [$enigme_id]);
 }
