@@ -41,6 +41,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\HintOrderingService::class, false
         . '/plugins/chassesautresor-core/src/Content/HintOrderingService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HintOrderingUpdater::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HintOrderingUpdater.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Content\HintCreationService::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Content/HintCreationService.php';
@@ -109,6 +114,14 @@ function cat_get_hint_title_service(): ChassesAuTresor\Core\Content\HintTitleSer
 function cat_get_hint_ordering_service(): ChassesAuTresor\Core\Content\HintOrderingService
 {
     return new ChassesAuTresor\Core\Content\HintOrderingService(cat_get_hint_title_service());
+}
+
+function cat_get_hint_ordering_updater(): ChassesAuTresor\Core\Content\HintOrderingUpdater
+{
+    return new ChassesAuTresor\Core\Content\HintOrderingUpdater(
+        cat_get_hint_ordering_service(),
+        new ChassesAuTresor\Core\Relationships\RelationshipService()
+    );
 }
 
 function cat_get_hint_creation_service(): ChassesAuTresor\Core\Content\HintCreationService
@@ -249,39 +262,22 @@ function reordonner_indices(int $objet_id, string $objet_type): void
     }
 
     $processing = true;
-    $indices = get_posts($queryArgs);
-
-    $relationshipService = new ChassesAuTresor\Core\Relationships\RelationshipService();
-    $hints = [];
-    foreach ($indices as $indice_id) {
-        $hints[] = [
-            'id' => (int) $indice_id,
-            'title' => (string) get_post_field('post_title', $indice_id),
-            'hunt_id' => $relationshipService->normalizeId(get_field('indice_chasse_linked', $indice_id)),
-        ];
+    try {
+        cat_get_hint_ordering_updater()->apply(
+            get_posts($queryArgs),
+            $objet_type,
+            $objet_id,
+            defined('TITRE_DEFAUT_INDICE') ? TITRE_DEFAUT_INDICE : '',
+            defined('INDICE_DEFAULT_PREFIX') ? INDICE_DEFAULT_PREFIX : '',
+            static fn (int $hintId): string => (string) get_post_field('post_title', $hintId),
+            static fn (int $hintId) => get_field('indice_chasse_linked', $hintId),
+            static fn (int $huntId): string => build_indice_placeholder_title($huntId),
+            static fn (array $postData) => wp_update_post($postData),
+            static fn (int $hintId, string $key, int $rank) => update_post_meta($hintId, $key, $rank)
+        );
+    } finally {
+        $processing = false;
     }
-
-    $updates = cat_get_hint_ordering_service()->buildUpdatePlan(
-        $hints,
-        $objet_type,
-        $objet_id,
-        defined('TITRE_DEFAUT_INDICE') ? TITRE_DEFAUT_INDICE : '',
-        defined('INDICE_DEFAULT_PREFIX') ? INDICE_DEFAULT_PREFIX : ''
-    );
-
-    foreach ($updates as $update) {
-        if ($update['regenerate_title']) {
-            $placeholder = build_indice_placeholder_title($update['hunt_id'] ?? 0);
-            wp_update_post([
-                'ID'         => $update['id'],
-                'post_title' => $placeholder,
-            ]);
-        }
-
-        update_post_meta($update['id'], 'indice_rank', $update['rank']);
-    }
-
-    $processing = false;
 }
 
 /**
