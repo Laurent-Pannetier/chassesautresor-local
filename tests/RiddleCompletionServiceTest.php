@@ -10,6 +10,20 @@ require_once __DIR__
 
 class RiddleCompletionServiceTest extends TestCase
 {
+    public function testManagementStatusReportsIncompleteRiddlesAndAdditionAccess(): void
+    {
+        $service = new RiddleCompletionService();
+
+        $this->assertSame(
+            ['has_incomplete' => true, 'can_add' => true],
+            $service->getManagementStatus([true, false, true], true)
+        );
+        $this->assertSame(
+            ['has_incomplete' => false, 'can_add' => false],
+            $service->getManagementStatus([true, true], false)
+        );
+    }
+
     public function testCompleteRiddleRequiresTitleAndNonPlaceholderImage(): void
     {
         $service = new RiddleCompletionService();

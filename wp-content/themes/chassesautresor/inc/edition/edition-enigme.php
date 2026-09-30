@@ -45,6 +45,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\RiddleDeletionService::class, fal
         . '/plugins/chassesautresor-core/src/Content/RiddleDeletionService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\RiddleCompletionService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/RiddleCompletionService.php';
+}
+
 
 // ==================================================
 // 🧩 CRÉATION & ÉDITION D’UNE ÉNIGME
@@ -653,12 +658,13 @@ function verifier_enigmes_completes_ajax()
         wp_send_json_error('id_invalide');
     }
 
-    $ids            = recuperer_enigmes_associees($chasse_id);
-    $has_incomplete = false;
+    $ids = recuperer_enigmes_associees($chasse_id);
+    $completionFlags = [];
     foreach ($ids as $eid) {
         verifier_ou_mettre_a_jour_cache_complet($eid);
-        if (!get_field('enigme_cache_complet', $eid)) {
-            $has_incomplete = true;
+        $isComplete = (bool) get_field('enigme_cache_complet', $eid);
+        $completionFlags[] = $isComplete;
+        if (!$isComplete) {
             break;
         }
     }
@@ -667,10 +673,12 @@ function verifier_enigmes_completes_ajax()
         ? utilisateur_peut_ajouter_enigme($chasse_id)
         : false;
 
-    wp_send_json_success([
-        'has_incomplete' => $has_incomplete,
-        'can_add'       => $can_add,
-    ]);
+    wp_send_json_success(
+        (new ChassesAuTresor\Core\Content\RiddleCompletionService())->getManagementStatus(
+            $completionFlags,
+            $can_add
+        )
+    );
 }
 add_action('wp_ajax_verifier_enigmes_completes', 'verifier_enigmes_completes_ajax');
 

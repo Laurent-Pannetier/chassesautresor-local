@@ -9,6 +9,18 @@ namespace ChassesAuTresor\Core\Content;
  */
 class RiddleCompletionService
 {
+    /**
+     * @param bool[] $completionFlags
+     * @return array{has_incomplete:bool,can_add:bool}
+     */
+    public function getManagementStatus(array $completionFlags, bool $canAdd): array
+    {
+        return [
+            'has_incomplete' => in_array(false, $completionFlags, true),
+            'can_add' => $canAdd,
+        ];
+    }
+
     public function isComplete(
         bool $hasValidTitle,
         int $imageId,
