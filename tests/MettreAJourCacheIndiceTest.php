@@ -1,5 +1,11 @@
 <?php
 namespace {
+    if (!function_exists('do_action')) {
+        function do_action($hook, ...$args): void
+        {
+        }
+    }
+
     if (!function_exists('get_post_type')) {
         function get_post_type($id)
         {
@@ -139,4 +145,3 @@ namespace MettreAJourCacheIndiceTest {
         }
     }
 }
-

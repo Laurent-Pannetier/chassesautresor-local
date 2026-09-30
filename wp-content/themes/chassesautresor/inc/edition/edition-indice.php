@@ -46,6 +46,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\HintOrderingUpdater::class, false
         . '/plugins/chassesautresor-core/src/Content/HintOrderingUpdater.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HintOrderingLifecycleHookHandler::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HintOrderingLifecycleHookHandler.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Content\HintCreationService::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Content/HintCreationService.php';
@@ -300,42 +305,6 @@ function reordonner_indices(int $objet_id, string $objet_type): void
         $processing = false;
     }
 }
-
-/**
- * Renomme les indices liés à l'indice donné.
- *
- * @param int $indice_id ID de l'indice.
- * @return void
- */
-function reordonner_indices_pour_indice(int $indice_id): void
-{
-    $targets = cat_get_hint_ordering_updater()->resolveAffectedTargets(
-        (string) get_field('indice_cible_type', $indice_id),
-        get_field('indice_chasse_linked', $indice_id),
-        get_field('indice_enigme_linked', $indice_id),
-        static fn (int $riddleId) => recuperer_id_chasse_associee($riddleId)
-    );
-    foreach ($targets as $target) {
-        reordonner_indices($target['id'], $target['type']);
-    }
-}
-
-/**
- * Réordonne les indices après sauvegarde d'un indice.
- *
- * @param int $post_id ID de l'indice.
- * @return void
- */
-function reordonner_indices_apres_enregistrement(int $post_id): void
-{
-    if (wp_is_post_revision($post_id) || wp_is_post_autosave($post_id)) {
-        return;
-    }
-
-    reordonner_indices_pour_indice($post_id);
-}
-
-add_action('save_post_indice', 'reordonner_indices_apres_enregistrement', 20, 1);
 
 /**
  * Crée un indice lié à une chasse ou une énigme.
@@ -718,7 +687,7 @@ function mettre_a_jour_cache_indice($post_id, ?int $chasse_id = null): void
         'wp_update_post'
     );
 
-    reordonner_indices_pour_indice((int) $post_id);
+    ChassesAuTresor\Core\Content\HintOrderingLifecycleHookHandler::requestForHint((int) $post_id);
 }
 
 add_action('acf/save_post', 'mettre_a_jour_cache_indice', 30);
@@ -775,4 +744,3 @@ function reordonner_indices_apres_suppression(int $post_id): void
     $indice_delete_context = null;
 }
 add_action('deleted_post', 'reordonner_indices_apres_suppression');
-add_action('trashed_post', 'reordonner_indices_pour_indice');
