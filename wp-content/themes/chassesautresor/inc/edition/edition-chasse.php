@@ -26,6 +26,16 @@ if (!class_exists(ChassesAuTresor\Core\Content\HuntClosureService::class, false)
         . '/plugins/chassesautresor-core/src/Content/HuntClosureService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HuntCreationRequestService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HuntCreationRequestService.php';
+}
+
+if (!class_exists(ChassesAuTresor\Core\Content\HuntPostFactory::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HuntPostFactory.php';
+}
+
 // ==================================================
 // 🗺️ CRÉATION & ÉDITION D’UNE CHASSE
 // ==================================================
@@ -173,41 +183,37 @@ function creer_chasse_et_rediriger_si_appel()
 
   cat_debug("👤 Utilisateur connecté : {$user_id}");
 
-  // 📎 Récupération de l'organisateur lié
+  // 📎 Récupération de l'organisateur lié et validation de la demande
   $organisateur_id = get_organisateur_from_user($user_id);
-  if (!$organisateur_id) {
-    cat_debug("🛑 Aucun organisateur trouvé pour l'utilisateur {$user_id}");
-    wp_die( __( 'Aucun organisateur associé.', 'chassesautresor-com' ) );
-  }
-  cat_debug("✅ Organisateur trouvé : {$organisateur_id}");
-
-  // 🔒 Vérification des droits de création
-  if (!current_user_can('administrator') && !current_user_can(ROLE_ORGANISATEUR)) {
-    if (in_array(ROLE_ORGANISATEUR_CREATION, $roles, true)) {
-      if (organisateur_a_des_chasses($organisateur_id)) {
-        wp_die( __( 'Limite atteinte', 'chassesautresor-com' ) );
-      }
-    } else {
-      wp_die( __( 'Accès refusé', 'chassesautresor-com' ) );
-    }
-  }
-
-  // 🔒 Organisateur publié : une seule chasse en attente à la fois
-  if (
-    !current_user_can('manage_options') &&
-    get_post_status($organisateur_id) === 'publish' &&
-    organisateur_a_chasse_pending($organisateur_id)
-  ) {
-    wp_die( __( 'Une chasse est déjà en attente de validation.', 'chassesautresor-com' ) );
+  $requestError = (new ChassesAuTresor\Core\Content\HuntCreationRequestService())->getError(
+    (int) $organisateur_id,
+    current_user_can('administrator'),
+    current_user_can(ROLE_ORGANISATEUR),
+    in_array(ROLE_ORGANISATEUR_CREATION, $roles, true),
+    $organisateur_id ? organisateur_a_des_chasses($organisateur_id) : false,
+    current_user_can('manage_options'),
+    $organisateur_id && get_post_status($organisateur_id) === 'publish',
+    $organisateur_id ? organisateur_a_chasse_pending($organisateur_id) : false
+  );
+  if ($requestError !== null) {
+    $messages = [
+      'missing_organizer' => __('Aucun organisateur associé.', 'chassesautresor-com'),
+      'hunt_limit_reached' => __('Limite atteinte', 'chassesautresor-com'),
+      'access_denied' => __('Accès refusé', 'chassesautresor-com'),
+      'pending_hunt_exists' => __('Une chasse est déjà en attente de validation.', 'chassesautresor-com'),
+    ];
+    wp_die($messages[$requestError]);
   }
 
   // 📝 Création du post "chasse"
-  $post_id = wp_insert_post([
-    'post_type'   => 'chasse',
-    'post_status' => 'pending',
-    'post_title'  => TITRE_DEFAUT_CHASSE,
-    'post_author' => $user_id,
-  ]);
+  $post_id = (new ChassesAuTresor\Core\Content\HuntPostFactory())->create(
+    $user_id,
+    (int) $organisateur_id,
+    TITRE_DEFAUT_CHASSE,
+    3902,
+    current_time('Y-m-d H:i:s'),
+    date('Y-m-d', strtotime('+2 years'))
+  );
 
   if (is_wp_error($post_id)) {
     cat_debug("🛑 Erreur création post : " . $post_id->get_error_message());
@@ -215,25 +221,6 @@ function creer_chasse_et_rediriger_si_appel()
   }
 
   cat_debug("✅ Chasse créée avec l’ID : {$post_id}");
-
-  update_field('chasse_principale_image', 3902, $post_id);
-
-
-  // 📅 Préparation des valeurs
-  $today = current_time('Y-m-d H:i:s');
-  $in_two_years = date('Y-m-d', strtotime('+2 years'));
-
-  // ✅ Initialisation des champs ACF
-  update_field('chasse_infos_date_debut', $today, $post_id);
-  update_field('chasse_infos_date_fin', $in_two_years, $post_id);
-  update_field('chasse_infos_duree_illimitee', false, $post_id);
-  update_post_meta($post_id, 'chasse_infos_date_debut_differee', 0);
-  // Coût par défaut à 0 (mode gratuit)
-  update_field('chasse_infos_cout_points', 0, $post_id);
-
-  update_field('chasse_cache_statut', 'revision', $post_id);
-  update_field('chasse_cache_statut_validation', 'creation', $post_id);
-  update_field('chasse_cache_organisateur', [$organisateur_id], $post_id);
 
   // 🚀 Redirection vers la prévisualisation frontale
   $preview_url = get_preview_post_link($post_id);
