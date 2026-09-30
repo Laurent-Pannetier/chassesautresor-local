@@ -11,6 +11,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\HintStatusService::class, false))
         . '/plugins/chassesautresor-core/src/Content/HintStatusService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HintCacheService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HintCacheService.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Content\HintScheduler::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Content/HintScheduler.php';
@@ -54,6 +59,11 @@ function cat_get_hint_query_service(): ChassesAuTresor\Core\Content\HintQuerySer
 function cat_get_hint_status_service(): ChassesAuTresor\Core\Content\HintStatusService
 {
     return new ChassesAuTresor\Core\Content\HintStatusService();
+}
+
+function cat_get_hint_cache_service(): ChassesAuTresor\Core\Content\HintCacheService
+{
+    return new ChassesAuTresor\Core\Content\HintCacheService(cat_get_hint_status_service());
 }
 
 function cat_get_hint_title_service(): ChassesAuTresor\Core\Content\HintTitleService
@@ -1006,32 +1016,22 @@ function mettre_a_jour_cache_indice($post_id, ?int $chasse_id = null): void
         $availabilityDate = $dateRaw ? convertir_en_datetime($dateRaw) : null;
     }
 
-    $hintStatus = cat_get_hint_status_service()->resolve(
+    $cacheUpdate = cat_get_hint_cache_service()->buildUpdate(
         $content !== '',
         !empty($imageId),
         $availability,
         $availabilityDate ? $availabilityDate->getTimestamp() : null,
-        time()
+        time(),
+        (string) get_post_status($post_id)
     );
-    $complete = $hintStatus['complete'];
-    $state = $hintStatus['state'];
+    update_field('indice_cache_complet', $cacheUpdate['complete'], $post_id);
+    update_field('indice_cache_etat_systeme', $cacheUpdate['state'], $post_id);
 
-    update_field('indice_cache_complet', $complete ? 1 : 0, $post_id);
-    update_field('indice_cache_etat_systeme', $state, $post_id);
-
-    $status = get_post_status($post_id);
-    $post   = get_post($post_id);
-
-    $publicationStatus = cat_get_hint_status_service()->resolvePublicationStatus(
-        $complete,
-        $state,
-        (string) $status
-    );
-
-    if ($publicationStatus !== null) {
+    if ($cacheUpdate['publication_status'] !== null) {
+        $post = get_post($post_id);
         wp_update_post([
             'ID'            => $post_id,
-            'post_status'   => $publicationStatus,
+            'post_status'   => $cacheUpdate['publication_status'],
             'post_date'     => $post->post_date,
             'post_date_gmt' => $post->post_date_gmt,
             'edit_date'     => true,
