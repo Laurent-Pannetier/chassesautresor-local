@@ -24,6 +24,33 @@ final class HuntFieldMutationServiceTest extends TestCase {
         $this->assertSame(['chasse_infos_date_debut', '2026-10-01 12:30:00', 42], $this->updates[0]);
     }
 
+    /** @dataProvider presentationFieldProvider */
+    public function testPersistsPresentationFields(string $field, $value, $storedValue): void {
+        $result = $this->apply($field, $value);
+
+        $this->assertTrue($result['handled']);
+        $this->assertNull($result['error']);
+        $this->assertTrue($result['recalculate_status']);
+        $this->assertSame([$field, $storedValue, 42], $this->updates[0]);
+    }
+
+    public function presentationFieldProvider(): array {
+        return [
+            'image' => ['chasse_principale_image', '123', 123],
+            'description' => ['chasse_principale_description', '<p>Description</p>', '<p>Description</p>'],
+            'automatic end mode' => ['chasse_mode_fin', 'automatique', 'automatique'],
+            'manual end mode' => ['chasse_mode_fin', 'manuelle', 'manuelle'],
+        ];
+    }
+
+    public function testRejectsAnUnknownEndMode(): void {
+        $result = $this->apply('chasse_mode_fin', 'inconnu');
+
+        $this->assertTrue($result['handled']);
+        $this->assertSame('valeur_invalide', $result['error']);
+        $this->assertSame([], $this->updates);
+    }
+
     /** @dataProvider unprefixedFieldProvider */
     public function testHandlesUnprefixedFieldsSentByTheEditor(
         string $field,
@@ -107,7 +134,7 @@ final class HuntFieldMutationServiceTest extends TestCase {
     }
 
     public function testUnknownFieldIsNotHandled(): void {
-        $result = $this->apply('chasse_principale_description', 'Description');
+        $result = $this->apply('champ_inconnu', 'Description');
 
         $this->assertFalse($result['handled']);
         $this->assertNull($result['error']);

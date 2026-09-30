@@ -80,7 +80,6 @@ require_once __DIR__ . '/src/Content/HuntLinkMutationService.php';
 require_once __DIR__ . '/src/Content/HuntRewardMutationService.php';
 require_once __DIR__ . '/src/Content/HuntFieldMutationService.php';
 require_once __DIR__ . '/src/Content/HuntClosureService.php';
-require_once __DIR__ . '/src/Content/HuntGenericFieldMutationService.php';
 require_once __DIR__ . '/src/Content/SolutionAvailabilityService.php';
 require_once __DIR__ . '/src/Content/SolutionCacheService.php';
 require_once __DIR__ . '/src/Content/SolutionCacheUpdater.php';

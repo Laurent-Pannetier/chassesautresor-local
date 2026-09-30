@@ -30,6 +30,22 @@ class HuntFieldMutationService {
         $recalculateStatus = false;
 
         switch ($field) {
+            case 'chasse_principale_image':
+                $storedField = 'chasse_principale_image';
+                $normalizedValue = (int) $value;
+                $recalculateStatus = true;
+                break;
+            case 'chasse_principale_description':
+                $storedField = 'chasse_principale_description';
+                $recalculateStatus = true;
+                break;
+            case 'chasse_mode_fin':
+                if (!in_array($value, ['automatique', 'manuelle'], true)) {
+                    return $this->error('valeur_invalide');
+                }
+                $storedField = 'chasse_mode_fin';
+                $recalculateStatus = true;
+                break;
             case 'caracteristiques.chasse_infos_date_debut':
             case 'chasse_infos_date_debut':
                 $date = $parseDate((string) $value, ['Y-m-d\TH:i', 'Y-m-d H:i:s', 'Y-m-d H:i']);

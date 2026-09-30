@@ -26,12 +26,6 @@ if (!class_exists(ChassesAuTresor\Core\Content\HuntClosureService::class, false)
         . '/plugins/chassesautresor-core/src/Content/HuntClosureService.php';
 }
 
-if (!class_exists(ChassesAuTresor\Core\Content\HuntGenericFieldMutationService::class, false)) {
-    require_once dirname(__DIR__, 4)
-        . '/plugins/chassesautresor-core/src/Content/HuntGenericFieldMutationService.php';
-}
-
-
 // ==================================================
 // 🗺️ CRÉATION & ÉDITION D’UNE CHASSE
 // ==================================================
@@ -408,9 +402,13 @@ function modifier_champ_chasse()
     'update_field'
   );
   if ($fieldMutation['error'] !== null) {
-    $message = $fieldMutation['error'] === 'format_date_invalide'
-      ? __('⚠️ format_date_invalide', 'chassesautresor-com')
-      : __('⚠️ echec_mise_a_jour', 'chassesautresor-com');
+    if ($fieldMutation['error'] === 'format_date_invalide') {
+      $message = __('⚠️ format_date_invalide', 'chassesautresor-com');
+    } elseif ($fieldMutation['error'] === 'valeur_invalide') {
+      $message = __('⚠️ valeur_invalide', 'chassesautresor-com');
+    } else {
+      $message = __('⚠️ echec_mise_a_jour', 'chassesautresor-com');
+    }
     wp_send_json_error($message);
   }
   if ($fieldMutation['handled']) {
@@ -440,23 +438,9 @@ function modifier_champ_chasse()
 
 
 
-  // 🔹 Champs simples explicitement autorisés
+  // 🔹 Refus des champs qui ne sont gérés par aucun service métier
   if (!$champ_valide) {
-    $genericMutation = (new ChassesAuTresor\Core\Content\HuntGenericFieldMutationService())->apply(
-      $post_id,
-      $champ,
-      $valeur,
-      'update_field',
-      'get_post_meta',
-      'stripslashes_deep'
-    );
-    if ($genericMutation['error'] !== null) {
-      $message = $genericMutation['error'] === 'champ_non_autorise'
-        ? __('⚠️ champ_non_autorise', 'chassesautresor-com')
-        : __('⚠️ echec_mise_a_jour_final', 'chassesautresor-com');
-      wp_send_json_error($message);
-    }
-    $champ_valide = $genericMutation['handled'];
+    wp_send_json_error(__('⚠️ champ_non_autorise', 'chassesautresor-com'));
   }
 
   // 🔁 Recalcul du statut si le champ fait partie des déclencheurs
