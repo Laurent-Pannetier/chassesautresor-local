@@ -422,7 +422,7 @@ function modifier_champ_chasse()
     $valeur,
     'update_field',
     'recuperer_enigmes_associees',
-    'planifier_ou_deplacer_pdf_solution_immediatement',
+    [ChassesAuTresor\Core\Content\RiddleSolutionFileScheduler::class, 'schedule'],
     'solution_recuperer_par_objet',
     'solution_planifier_publication',
     'gerer_chasse_terminee'
@@ -527,9 +527,11 @@ function chasse_trash_with_children(int $chasse_id): bool
         $attachments,
         'wp_trash_post',
         static function (int $enigmeId): void {
-            if (function_exists('supprimer_dossier_enigme')) {
-                supprimer_dossier_enigme($enigmeId);
-            }
+            $uploads = wp_upload_dir();
+            (new ChassesAuTresor\Core\Media\RiddleUploadDirectoryService())->delete(
+                $enigmeId,
+                (string) ($uploads['basedir'] ?? '')
+            );
         },
         static function (int $chasseId): void {
             if (function_exists('synchroniser_cache_enigmes_chasse')) {
