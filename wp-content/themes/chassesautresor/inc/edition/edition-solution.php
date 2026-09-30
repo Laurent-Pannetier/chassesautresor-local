@@ -27,6 +27,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\SolutionFieldPolicyService::class
         . '/plugins/chassesautresor-core/src/Content/SolutionFieldPolicyService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\SolutionManagementService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/SolutionManagementService.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Content\SolutionQueryService::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Content/SolutionQueryService.php';
@@ -245,13 +250,12 @@ function rediriger_si_affichage_solution(): void
 
     $solution_id = get_the_ID();
     $cible_type  = get_field('solution_cible_type', $solution_id);
-    $redirect_id = 0;
-
-    if ($cible_type === 'chasse') {
-        $redirect_id = (int) get_field('solution_chasse_linked', $solution_id);
-    } elseif ($cible_type === 'enigme') {
-        $redirect_id = (int) get_field('solution_enigme_linked', $solution_id);
-    }
+    $relationshipService = new ChassesAuTresor\Core\Relationships\RelationshipService();
+    $redirect_id = $relationshipService->resolveTargetId(
+        (string) $cible_type,
+        get_field('solution_chasse_linked', $solution_id),
+        get_field('solution_enigme_linked', $solution_id)
+    );
 
     if ($redirect_id) {
         wp_safe_redirect(get_permalink($redirect_id));
@@ -415,6 +419,8 @@ add_action('template_redirect', 'creer_solution_et_rediriger_si_appel');
  */
 function ajax_solutions_lister_table(): void
 {
+    $managementService = new ChassesAuTresor\Core\Content\SolutionManagementService();
+
     if (!is_user_logged_in()) {
         wp_send_json_error('non_connecte');
     }
@@ -436,7 +442,7 @@ function ajax_solutions_lister_table(): void
     $per_page = 5;
     $enigme_ids = $objet_type === 'chasse' ? recuperer_ids_enigmes_pour_chasse($objet_id) : [];
     $queryService = new ChassesAuTresor\Core\Content\SolutionQueryService();
-    $page       = max(1, $page);
+    $page       = $managementService->normalizePage($page, 0);
     $query_args = $queryService->getManagementQueryArgs(
         $objet_id,
         $objet_type,
@@ -446,8 +452,9 @@ function ajax_solutions_lister_table(): void
     );
     $query      = new WP_Query($query_args);
     $total_pages = (int) $query->max_num_pages;
-    if ($page > $total_pages && $total_pages > 0) {
-        $page                  = $total_pages;
+    $normalizedPage = $managementService->normalizePage($page, $total_pages);
+    if ($normalizedPage !== $page) {
+        $page                  = $normalizedPage;
         $query_args['paged']   = $page;
         $query                 = new WP_Query($query_args);
         $total_pages           = (int) $query->max_num_pages;
@@ -478,6 +485,8 @@ add_action('wp_ajax_solutions_lister_table', 'ajax_solutions_lister_table');
  */
 function ajax_chasse_solution_status(): void
 {
+    $managementService = new ChassesAuTresor\Core\Content\SolutionManagementService();
+
     if (!is_user_logged_in()) {
         wp_send_json_error('non_connecte');
     }
@@ -504,10 +513,6 @@ function ajax_chasse_solution_status(): void
         $toutes_enigmes,
         static fn($e) => !solution_existe_pour_objet($e->ID, 'enigme')
     );
-    $has_enigmes         = !empty($enigmes);
-    $has_enigme_solution = count($toutes_enigmes) > count($enigmes);
-    $has_solutions       = $has_solution_chasse || $has_enigme_solution;
-
     $total_solutions = 0;
     if (function_exists('get_posts')) {
         $enigme_ids = array_map(static fn($e) => (int) $e->ID, $toutes_enigmes);
@@ -523,13 +528,13 @@ function ajax_chasse_solution_status(): void
         $total_solutions = is_array($count_posts) ? count($count_posts) : 0;
     }
 
-    wp_send_json_success([
-        'has_solution_chasse' => $has_solution_chasse ? 1 : 0,
-        'has_solution_enigme' => $has_solution_enigme ? 1 : 0,
-        'has_enigmes'        => $has_enigmes ? 1 : 0,
-        'has_solutions'      => $has_solutions ? 1 : 0,
-        'total_solutions'    => $total_solutions,
-    ]);
+    wp_send_json_success($managementService->buildHuntStatus(
+        $has_solution_chasse,
+        $has_solution_enigme,
+        count($toutes_enigmes),
+        count($enigmes),
+        $total_solutions
+    ));
 }
 add_action('wp_ajax_chasse_solution_status', 'ajax_chasse_solution_status');
 
