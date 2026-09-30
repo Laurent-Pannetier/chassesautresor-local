@@ -1,6 +1,11 @@
 <?php
 defined('ABSPATH') || exit;
 
+if (!class_exists(ChassesAuTresor\Core\Content\HuntDateMutationService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HuntDateMutationService.php';
+}
+
 
 // ==================================================
 // 🗺️ CRÉATION & ÉDITION D’UNE CHASSE
@@ -233,119 +238,37 @@ add_action('wp_ajax_modifier_dates_chasse', 'modifier_dates_chasse');
 
 function modifier_dates_chasse()
 {
-  if (!is_user_logged_in()) {
-    wp_send_json_error('non_connecte');
-  }
-
-  $post_id         = isset($_POST['post_id']) ? (int) $_POST['post_id'] : 0;
-  $date_debut      = sanitize_text_field($_POST['date_debut'] ?? '');
-  $date_fin        = sanitize_text_field($_POST['date_fin'] ?? '');
-  $illimitee       = isset($_POST['illimitee']) ? (int) $_POST['illimitee'] : 0;
-  $debut_differee  = isset($_POST['debut_differee']) ? (int) $_POST['debut_differee'] : 0;
-
-  cat_debug("[modifier_dates_chasse] post_id={$post_id} date_debut={$date_debut} date_fin={$date_fin} illimitee={$illimitee} differee={$debut_differee}");
-
-  // 📦 Valeurs existantes avant mise à jour (pour debug)
-  $old_debut    = get_post_meta($post_id, 'chasse_infos_date_debut', true);
-  $old_fin      = get_post_meta($post_id, 'chasse_infos_date_fin', true);
-  $old_illim    = get_post_meta($post_id, 'chasse_infos_duree_illimitee', true);
-  $old_differee = get_post_meta($post_id, 'chasse_infos_date_debut_differee', true);
-  cat_debug("[modifier_dates_chasse] metas_avant: debut={$old_debut} fin={$old_fin} illim={$old_illim} differee={$old_differee}");
-
-  if (!$post_id || get_post_type($post_id) !== 'chasse') {
-    wp_send_json_error('post_invalide');
-  }
-
-  if (!utilisateur_peut_modifier_post($post_id)) {
-    wp_send_json_error('acces_refuse');
-  }
-
-  if (!utilisateur_peut_editer_champs($post_id)) {
-    wp_send_json_error('acces_refuse');
-  }
-
-  $dt_debut = convertir_en_datetime($date_debut, [
-    'Y-m-d\TH:i',
-    'Y-m-d H:i:s',
-    'Y-m-d H:i',
-    'Y-m-d'
-  ]);
-  if (!$dt_debut) {
-    wp_send_json_error('format_debut_invalide');
-  }
-  cat_debug('[modifier_dates_chasse] dt_debut=' . $dt_debut->format('c'));
-
-  $dt_fin = null;
-  if (!$illimitee) {
-    $dt_fin = convertir_en_datetime($date_fin, [
-      'Y-m-d',
-      'Y-m-d H:i:s',
-      'Y-m-d\TH:i'
-    ]);
-    if (!$dt_fin) {
-      wp_send_json_error('format_fin_invalide');
+    if (!is_user_logged_in()) {
+        wp_send_json_error('non_connecte');
     }
-    // Uniformise l'heure pour faciliter la comparaison
-    $dt_fin->setTime(0, 0, 0);
-    if ($dt_fin->getTimestamp() <= $dt_debut->getTimestamp()) {
-      wp_send_json_error('date_fin_avant_debut');
+
+    $post_id = isset($_POST['post_id']) ? (int) $_POST['post_id'] : 0;
+    if (!$post_id || get_post_type($post_id) !== 'chasse') {
+        wp_send_json_error('post_invalide');
     }
-    cat_debug('[modifier_dates_chasse] dt_fin=' . $dt_fin->format('c'));
-  }
 
-  $ok1 = update_field('chasse_infos_date_debut', $dt_debut->format('Y-m-d H:i:s'), $post_id);
-  cat_debug('[modifier_dates_chasse] update chasse_infos_date_debut=' . var_export($ok1, true));
+    if (!utilisateur_peut_modifier_post($post_id) || !utilisateur_peut_editer_champs($post_id)) {
+        wp_send_json_error('acces_refuse');
+    }
 
-  $ok2 = update_field('chasse_infos_duree_illimitee', $illimitee ? 1 : 0, $post_id);
-  cat_debug('[modifier_dates_chasse] update chasse_infos_duree_illimitee=' . var_export($ok2, true));
+    $mutation = (new ChassesAuTresor\Core\Content\HuntDateMutationService())->apply(
+        $post_id,
+        sanitize_text_field($_POST['date_debut'] ?? ''),
+        sanitize_text_field($_POST['date_fin'] ?? ''),
+        !empty($_POST['illimitee']),
+        !empty($_POST['debut_differee']),
+        static fn (string $date, array $formats) => convertir_en_datetime($date, $formats),
+        'update_field',
+        'update_post_meta',
+        'get_post_meta'
+    );
 
-  if ($illimitee) {
-    // Ne pas modifier la date de fin en base
-    $ok3 = true;
-  } else {
-    $ok3 = update_field('chasse_infos_date_fin', $dt_fin->format('Y-m-d'), $post_id);
-  }
-  cat_debug('[modifier_dates_chasse] update chasse_infos_date_fin=' . var_export($ok3, true));
-  update_post_meta($post_id, 'chasse_infos_date_debut_differee', $debut_differee ? 1 : 0);
+    if ($mutation['error'] !== null) {
+        wp_send_json_error($mutation['error']);
+    }
 
-  // 🔎 Métas après mise à jour
-  $new_debut    = get_post_meta($post_id, 'chasse_infos_date_debut', true);
-  $new_fin      = get_post_meta($post_id, 'chasse_infos_date_fin', true);
-  $new_illim    = get_post_meta($post_id, 'chasse_infos_duree_illimitee', true);
-  $new_differee = get_post_meta($post_id, 'chasse_infos_date_debut_differee', true);
-  cat_debug("[modifier_dates_chasse] metas_apres: debut={$new_debut} fin={$new_fin} illim={$new_illim} differee={$new_differee}");
-
-  // Lecture directe pour éviter un cache ACF éventuel
-  $saved_debut_raw = get_post_meta($post_id, 'chasse_infos_date_debut', true);
-  $saved_fin_raw   = get_post_meta($post_id, 'chasse_infos_date_fin', true);
-  $saved_illim     = get_post_meta($post_id, 'chasse_infos_duree_illimitee', true);
-
-  $saved_debut_dt = convertir_en_datetime($saved_debut_raw, ['Y-m-d H:i:s', 'Y-m-d\TH:i', 'Y-m-d', 'YmdHis', 'Ymd']);
-  $saved_fin_dt   = convertir_en_datetime($saved_fin_raw, ['Y-m-d', 'Ymd', 'Y-m-d H:i:s', 'Y-m-d\TH:i']);
-  if ($saved_fin_dt) {
-    $saved_fin_dt->setTime(0, 0, 0);
-  }
-
-  $debut_ok     = $saved_debut_dt && $saved_debut_dt->format('Y-m-d H:i:s') === $dt_debut->format('Y-m-d H:i:s');
-  $fin_ok       = $illimitee ? true : ($saved_fin_dt && $saved_fin_dt->format('Y-m-d H:i:s') === $dt_fin->format('Y-m-d H:i:s'));
-  $illim_ok     = (int) $saved_illim === ($illimitee ? 1 : 0);
-  $differee_ok  = (int) $new_differee === ($debut_differee ? 1 : 0);
-
-  cat_debug("[modifier_dates_chasse] verifs: debut_ok=" . var_export($debut_ok, true) . ' fin_ok=' . var_export($fin_ok, true) . ' illim_ok=' . var_export($illim_ok, true) . ' differee_ok=' . var_export($differee_ok, true));
-
-  if (($ok1 || $debut_ok) && ($ok2 || $illim_ok) && ($ok3 || $fin_ok)) {
     mettre_a_jour_statuts_chasse($post_id);
-    cat_debug('[modifier_dates_chasse] mise a jour reussie');
-    wp_send_json_success([
-      'date_debut' => $dt_debut->format('Y-m-d H:i:s'),
-      'date_fin'   => $illimitee ? '' : $dt_fin->format('Y-m-d'),
-      'illimitee'  => $illimitee ? 1 : 0,
-    ]);
-  }
-
-  cat_debug('[modifier_dates_chasse] conditions: ok1=' . var_export($ok1, true) . ' ok2=' . var_export($ok2, true) . ' ok3=' . var_export($ok3, true));
-  cat_debug('[modifier_dates_chasse] echec mise a jour');
-  wp_send_json_error('echec_mise_a_jour');
+    wp_send_json_success($mutation['data']);
 }
 
 /**
@@ -388,7 +311,11 @@ function modifier_champ_chasse()
   }
 
     $demande_terminer = ($champ === 'champs_caches.chasse_cache_statut' && $valeur === 'termine');
-    $champ_fin = in_array($champ, ['champs_caches.chasse_cache_gagnants', 'champs_caches.chasse_cache_date_decouverte'], true);
+    $champ_fin = in_array(
+        $champ,
+        ['champs_caches.chasse_cache_gagnants', 'champs_caches.chasse_cache_date_decouverte'],
+        true
+    );
     $champ_libre = ($champ === 'chasse_principale_liens');
 
     if (!$demande_terminer && !$champ_fin && !$champ_libre && !utilisateur_peut_editer_champs($post_id)) {
@@ -582,7 +509,8 @@ function modifier_champ_chasse()
             wp_send_json_error('⚠️ format_date_invalide');
         }
 
-        $date_obj = DateTime::createFromFormat('Y-m-d H:i:s', $valeur) ?: DateTime::createFromFormat('Y-m-d H:i', $valeur);
+        $date_obj = DateTime::createFromFormat('Y-m-d H:i:s', $valeur)
+            ?: DateTime::createFromFormat('Y-m-d H:i', $valeur);
         if (!$date_obj) {
             wp_send_json_error('⚠️ format_date_invalide');
         }
@@ -797,7 +725,10 @@ function supprimer_chasse_ajax(): void
     if (function_exists('myaccount_add_flash_message')) {
         myaccount_add_flash_message(
             $user_id,
-            __('Votre chasse a été supprimée. Vous pouvez en créer une nouvelle quand vous le souhaitez.', 'chassesautresor-com'),
+            __(
+                'Votre chasse a été supprimée. Vous pouvez en créer une nouvelle quand vous le souhaitez.',
+                'chassesautresor-com'
+            ),
             'success',
             true
         );
