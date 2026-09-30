@@ -24,6 +24,37 @@ class RiddleCompletionServiceTest extends TestCase
         );
     }
 
+    public function testManagementEvaluationRefreshesUntilFirstIncompleteRiddle(): void
+    {
+        $refreshed = [];
+        $completion = [10 => true, 20 => false, 30 => true];
+
+        $status = (new RiddleCompletionService())->evaluateManagementStatus(
+            [0, 10, 20, 30],
+            true,
+            static function (int $riddleId) use (&$refreshed): void {
+                $refreshed[] = $riddleId;
+            },
+            static fn (int $riddleId): bool => $completion[$riddleId]
+        );
+
+        $this->assertSame(['has_incomplete' => true, 'can_add' => true], $status);
+        $this->assertSame([10, 20], $refreshed);
+    }
+
+    public function testEmptyRiddleListIsCompleteForManagement(): void
+    {
+        $status = (new RiddleCompletionService())->evaluateManagementStatus(
+            [],
+            false,
+            static function (): void {
+            },
+            static fn (): bool => false
+        );
+
+        $this->assertSame(['has_incomplete' => false, 'can_add' => false], $status);
+    }
+
     public function testCompleteRiddleRequiresTitleAndNonPlaceholderImage(): void
     {
         $service = new RiddleCompletionService();

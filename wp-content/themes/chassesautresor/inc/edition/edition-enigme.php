@@ -701,25 +701,18 @@ function verifier_enigmes_completes_ajax()
         wp_send_json_error('id_invalide');
     }
 
-    $ids = recuperer_enigmes_associees($chasse_id);
-    $completionFlags = [];
-    foreach ($ids as $eid) {
-        verifier_ou_mettre_a_jour_cache_complet($eid);
-        $isComplete = (bool) get_field('enigme_cache_complet', $eid);
-        $completionFlags[] = $isComplete;
-        if (!$isComplete) {
-            break;
-        }
-    }
-
     $can_add = function_exists('utilisateur_peut_ajouter_enigme')
         ? utilisateur_peut_ajouter_enigme($chasse_id)
         : false;
 
     wp_send_json_success(
-        (new ChassesAuTresor\Core\Content\RiddleCompletionService())->getManagementStatus(
-            $completionFlags,
-            $can_add
+        (new ChassesAuTresor\Core\Content\RiddleCompletionService())->evaluateManagementStatus(
+            recuperer_enigmes_associees($chasse_id),
+            $can_add,
+            static function (int $enigme_id): void {
+                verifier_ou_mettre_a_jour_cache_complet($enigme_id);
+            },
+            static fn (int $enigme_id): bool => (bool) get_field('enigme_cache_complet', $enigme_id)
         )
     );
 }

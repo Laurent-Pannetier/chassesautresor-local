@@ -10,6 +10,35 @@ namespace ChassesAuTresor\Core\Content;
 class RiddleCompletionService
 {
     /**
+     * @param int[] $riddleIds
+     * @return array{has_incomplete:bool,can_add:bool}
+     */
+    public function evaluateManagementStatus(
+        array $riddleIds,
+        bool $canAdd,
+        callable $refresh,
+        callable $isComplete
+    ): array {
+        $completionFlags = [];
+
+        foreach ($riddleIds as $riddleId) {
+            $riddleId = (int) $riddleId;
+            if ($riddleId <= 0) {
+                continue;
+            }
+
+            $refresh($riddleId);
+            $complete = (bool) $isComplete($riddleId);
+            $completionFlags[] = $complete;
+            if (!$complete) {
+                break;
+            }
+        }
+
+        return $this->getManagementStatus($completionFlags, $canAdd);
+    }
+
+    /**
      * @param bool[] $completionFlags
      * @return array{has_incomplete:bool,can_add:bool}
      */
