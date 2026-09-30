@@ -26,6 +26,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\HuntClosureService::class, false)
         . '/plugins/chassesautresor-core/src/Content/HuntClosureService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HuntGenericFieldMutationService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HuntGenericFieldMutationService.php';
+}
+
 
 // ==================================================
 // 🗺️ CRÉATION & ÉDITION D’UNE CHASSE
@@ -435,16 +440,23 @@ function modifier_champ_chasse()
 
 
 
-  // 🔹 Cas générique (fallback)
+  // 🔹 Champs simples explicitement autorisés
   if (!$champ_valide) {
-    $ok = update_field($champ, is_numeric($valeur) ? (int) $valeur : $valeur, $post_id);
-    $valeur_meta = get_post_meta($post_id, $champ, true);
-    $valeur_comparee = stripslashes_deep($valeur);
-    if ($ok || trim((string) $valeur_meta) === trim((string) $valeur_comparee)) {
-      $champ_valide = true;
-    } else {
-      wp_send_json_error('⚠️ echec_mise_a_jour_final');
+    $genericMutation = (new ChassesAuTresor\Core\Content\HuntGenericFieldMutationService())->apply(
+      $post_id,
+      $champ,
+      $valeur,
+      'update_field',
+      'get_post_meta',
+      'stripslashes_deep'
+    );
+    if ($genericMutation['error'] !== null) {
+      $message = $genericMutation['error'] === 'champ_non_autorise'
+        ? __('⚠️ champ_non_autorise', 'chassesautresor-com')
+        : __('⚠️ echec_mise_a_jour_final', 'chassesautresor-com');
+      wp_send_json_error($message);
     }
+    $champ_valide = $genericMutation['handled'];
   }
 
   // 🔁 Recalcul du statut si le champ fait partie des déclencheurs
