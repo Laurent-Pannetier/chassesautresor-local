@@ -67,6 +67,7 @@ require_once __DIR__ . '/src/Content/SolutionFieldPolicyService.php';
 require_once __DIR__ . '/src/Content/SolutionManagementService.php';
 require_once __DIR__ . '/src/Content/SolutionQueryService.php';
 require_once __DIR__ . '/src/Content/SolutionRouteRegistrar.php';
+require_once __DIR__ . '/src/Content/SolutionScheduler.php';
 require_once __DIR__ . '/src/Content/SolutionAccessService.php';
 require_once __DIR__ . '/src/Content/RiddleAccessService.php';
 require_once __DIR__ . '/src/Content/RiddleManagementService.php';
@@ -118,6 +119,11 @@ register_activation_hook(
 
 register_activation_hook(
     __FILE__,
+    [ChassesAuTresor\Core\Content\SolutionScheduler::class, 'schedule']
+);
+
+register_activation_hook(
+    __FILE__,
     [ChassesAuTresor\Core\Points\PointsTable::class, 'install']
 );
 
@@ -141,6 +147,11 @@ register_deactivation_hook(
     [ChassesAuTresor\Core\Content\HintScheduler::class, 'unschedule']
 );
 
+register_deactivation_hook(
+    __FILE__,
+    [ChassesAuTresor\Core\Content\SolutionScheduler::class, 'unschedule']
+);
+
 add_action(
     'plugins_loaded',
     [ChassesAuTresor\Core\Messages\UserMessagesTable::class, 'maybeUpgrade']
@@ -154,6 +165,16 @@ add_action(
 add_action(
     ChassesAuTresor\Core\Content\HintScheduler::HOOK,
     [ChassesAuTresor\Core\Content\HintScheduler::class, 'run']
+);
+
+add_action(
+    'plugins_loaded',
+    [ChassesAuTresor\Core\Content\SolutionScheduler::class, 'schedule']
+);
+
+add_action(
+    ChassesAuTresor\Core\Content\SolutionScheduler::HOOK,
+    [ChassesAuTresor\Core\Content\SolutionScheduler::class, 'run']
 );
 
 add_action(

@@ -42,6 +42,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\SolutionRouteRegistrar::class, fa
         . '/plugins/chassesautresor-core/src/Content/SolutionRouteRegistrar.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\SolutionScheduler::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/SolutionScheduler.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Relationships\RelationshipService::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Relationships/RelationshipService.php';
@@ -138,6 +143,10 @@ function solution_rendre_accessible(int $solution_id): void
     }
 }
 add_action('publier_solution_programmee', 'solution_rendre_accessible');
+add_action(
+    ChassesAuTresor\Core\Content\SolutionScheduler::PROCESS_HOOK,
+    'solution_rendre_accessible'
+);
 
 /**
  * Basculer les solutions programmées dont la date est atteinte.
@@ -146,14 +155,8 @@ add_action('publier_solution_programmee', 'solution_rendre_accessible');
  */
 function basculer_solutions_programme(): void
 {
-    $service = new ChassesAuTresor\Core\Content\SolutionAvailabilityService();
-    $solutions = get_posts($service->getDueSolutionIdsQueryArgs((string) current_time('mysql')));
-
-    foreach ($solutions as $sid) {
-        solution_rendre_accessible($sid);
-    }
+    ChassesAuTresor\Core\Content\SolutionScheduler::run();
 }
-add_action('basculer_solutions_programme', 'basculer_solutions_programme');
 
 /**
  * Planifie la tâche récurrente de basculement des solutions.
@@ -162,11 +165,8 @@ add_action('basculer_solutions_programme', 'basculer_solutions_programme');
  */
 function planifier_tache_basculer_solutions_programme(): void
 {
-    if (!wp_next_scheduled('basculer_solutions_programme')) {
-        wp_schedule_event(time(), 'hourly', 'basculer_solutions_programme');
-    }
+    ChassesAuTresor\Core\Content\SolutionScheduler::schedule();
 }
-add_action('after_switch_theme', 'planifier_tache_basculer_solutions_programme');
 
 /**
  * Met à jour le cache et l'état système d'une solution.

@@ -5,21 +5,21 @@ declare(strict_types=1);
 namespace ChassesAuTresor\Core\Content {
     function wp_next_scheduled(string $hook)
     {
-        global $hintScheduledTimestamp;
+        global $schedulerScheduledTimestamp;
 
-        return $hintScheduledTimestamp;
+        return $schedulerScheduledTimestamp;
     }
 
     function wp_schedule_event(int $timestamp, string $recurrence, string $hook): void
     {
-        global $hintScheduleCall;
-        $hintScheduleCall = compact('timestamp', 'recurrence', 'hook');
+        global $schedulerScheduleCall;
+        $schedulerScheduleCall = compact('timestamp', 'recurrence', 'hook');
     }
 
     function wp_unschedule_event(int $timestamp, string $hook): void
     {
-        global $hintUnscheduleCall;
-        $hintUnscheduleCall = compact('timestamp', 'hook');
+        global $schedulerUnscheduleCall;
+        $schedulerUnscheduleCall = compact('timestamp', 'hook');
     }
 
     function time(): int
@@ -34,16 +34,16 @@ namespace ChassesAuTresor\Core\Content {
 
     function get_posts(array $args): array
     {
-        global $hintQueryArgs;
-        $hintQueryArgs = $args;
+        global $schedulerQueryArgs;
+        $schedulerQueryArgs = $args;
 
         return [12, 24];
     }
 
     function do_action(string $hook, int $hintId): void
     {
-        global $hintProcessCalls;
-        $hintProcessCalls[] = [$hook, $hintId];
+        global $schedulerProcessCalls;
+        $schedulerProcessCalls[] = [$hook, $hintId];
     }
 }
 
@@ -60,72 +60,72 @@ namespace {
     {
         protected function setUp(): void
         {
-            global $hintScheduledTimestamp, $hintScheduleCall, $hintUnscheduleCall;
-            global $hintQueryArgs, $hintProcessCalls;
-            $hintScheduledTimestamp = false;
-            $hintScheduleCall = null;
-            $hintUnscheduleCall = null;
-            $hintQueryArgs = null;
-            $hintProcessCalls = [];
+            global $schedulerScheduledTimestamp, $schedulerScheduleCall, $schedulerUnscheduleCall;
+            global $schedulerQueryArgs, $schedulerProcessCalls;
+            $schedulerScheduledTimestamp = false;
+            $schedulerScheduleCall = null;
+            $schedulerUnscheduleCall = null;
+            $schedulerQueryArgs = null;
+            $schedulerProcessCalls = [];
         }
 
         public function testScheduleRegistersHourlyTaskWhenMissing(): void
         {
-            global $hintScheduleCall;
+            global $schedulerScheduleCall;
 
             HintScheduler::schedule();
 
             $this->assertSame(
                 ['timestamp' => 100, 'recurrence' => 'hourly', 'hook' => HintScheduler::HOOK],
-                $hintScheduleCall
+                $schedulerScheduleCall
             );
         }
 
         public function testScheduleKeepsExistingTask(): void
         {
-            global $hintScheduledTimestamp, $hintScheduleCall;
-            $hintScheduledTimestamp = 50;
+            global $schedulerScheduledTimestamp, $schedulerScheduleCall;
+            $schedulerScheduledTimestamp = 50;
 
             HintScheduler::schedule();
 
-            $this->assertNull($hintScheduleCall);
+            $this->assertNull($schedulerScheduleCall);
         }
 
         public function testUnscheduleRemovesExistingTask(): void
         {
-            global $hintScheduledTimestamp, $hintUnscheduleCall;
-            $hintScheduledTimestamp = 50;
+            global $schedulerScheduledTimestamp, $schedulerUnscheduleCall;
+            $schedulerScheduledTimestamp = 50;
 
             HintScheduler::unschedule();
 
             $this->assertSame(
                 ['timestamp' => 50, 'hook' => HintScheduler::HOOK],
-                $hintUnscheduleCall
+                $schedulerUnscheduleCall
             );
         }
 
         public function testUnscheduleIgnoresMissingTask(): void
         {
-            global $hintUnscheduleCall;
+            global $schedulerUnscheduleCall;
 
             HintScheduler::unschedule();
 
-            $this->assertNull($hintUnscheduleCall);
+            $this->assertNull($schedulerUnscheduleCall);
         }
 
         public function testRunProcessesEveryDueHint(): void
         {
-            global $hintQueryArgs, $hintProcessCalls;
+            global $schedulerQueryArgs, $schedulerProcessCalls;
 
             HintScheduler::run();
 
-            $this->assertSame('programme', $hintQueryArgs['meta_query'][0]['value']);
+            $this->assertSame('programme', $schedulerQueryArgs['meta_query'][0]['value']);
             $this->assertSame(
                 [
                     [HintScheduler::PROCESS_HOOK, 12],
                     [HintScheduler::PROCESS_HOOK, 24],
                 ],
-                $hintProcessCalls
+                $schedulerProcessCalls
             );
         }
     }
