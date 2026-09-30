@@ -483,42 +483,6 @@ function creer_indice_et_rediriger_si_appel(): void
 add_action('template_redirect', 'creer_indice_et_rediriger_si_appel');
 
 /**
- * AJAX handler returning indices card HTML for a hunt.
- *
- * @return void
- */
-function ajax_chasse_lister_indices(): void
-{
-    if (!is_user_logged_in()) {
-        wp_send_json_error('non_connecte');
-    }
-
-    $chasse_id = isset($_POST['chasse_id']) ? (int) $_POST['chasse_id'] : 0;
-
-    if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
-        wp_send_json_error('post_invalide');
-    }
-
-    if (!indice_action_autorisee('edit', 'chasse', $chasse_id)) {
-        wp_send_json_error('acces_refuse');
-    }
-
-    ob_start();
-    get_template_part(
-        'template-parts/chasse/partials/chasse-partial-indices',
-        null,
-        [
-            'objet_id'   => $chasse_id,
-            'objet_type' => 'chasse',
-        ]
-    );
-    $html = ob_get_clean();
-
-    wp_send_json_success(['html' => $html]);
-}
-add_action('wp_ajax_chasse_lister_indices', 'ajax_chasse_lister_indices');
-
-/**
  * AJAX handler returning indices table HTML.
  *
  * @return void
@@ -664,6 +628,19 @@ function autoriser_gestion_indice(
     return indice_action_autorisee($action, $targetType, $targetId);
 }
 add_filter('chassesautresor_can_manage_hint', 'autoriser_gestion_indice', 10, 4);
+
+function rendre_carte_indices(string $html, int $huntId): string
+{
+    ob_start();
+    get_template_part(
+        'template-parts/chasse/partials/chasse-partial-indices',
+        null,
+        ['objet_id' => $huntId, 'objet_type' => 'chasse']
+    );
+
+    return (string) ob_get_clean();
+}
+add_filter('chassesautresor_render_hint_card', 'rendre_carte_indices', 10, 2);
 
 /** @return array<int, object> */
 function fournir_enigmes_cibles_indice(array $riddles, int $huntId): array
