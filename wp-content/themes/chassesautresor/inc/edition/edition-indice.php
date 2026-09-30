@@ -61,6 +61,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\HintFieldMutationService::class, 
         . '/plugins/chassesautresor-core/src/Content/HintFieldMutationService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HintDeletionService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HintDeletionService.php';
+}
+
 function cat_get_hint_query_service(): ChassesAuTresor\Core\Content\HintQueryService
 {
     return new ChassesAuTresor\Core\Content\HintQueryService();
@@ -106,6 +111,13 @@ function cat_get_hint_field_mutation_service(): ChassesAuTresor\Core\Content\Hin
     return new ChassesAuTresor\Core\Content\HintFieldMutationService(
         cat_get_hint_field_policy_service(),
         cat_get_hint_status_service()
+    );
+}
+
+function cat_get_hint_deletion_service(): ChassesAuTresor\Core\Content\HintDeletionService
+{
+    return new ChassesAuTresor\Core\Content\HintDeletionService(
+        new ChassesAuTresor\Core\Relationships\RelationshipService()
     );
 }
 
@@ -828,29 +840,31 @@ function supprimer_indice_ajax(): void
         wp_send_json_error('id_invalide');
     }
 
-    $cible_type = get_field('indice_cible_type', $indice_id) === 'enigme' ? 'enigme' : 'chasse';
-    $relationshipService = new ChassesAuTresor\Core\Relationships\RelationshipService();
+    $deletionService = cat_get_hint_deletion_service();
+    $cible_type = (string) get_field('indice_cible_type', $indice_id);
     $linked_hunt = get_field('indice_chasse_linked', $indice_id);
     $linked_riddle = get_field('indice_enigme_linked', $indice_id);
-    $objet_id = $relationshipService->resolveHintTargetId($cible_type, $linked_hunt, $linked_riddle);
-    $riddle_hunt_id = $relationshipService->normalizeId($linked_hunt);
-    if ($cible_type === 'enigme' && $riddle_hunt_id === null && $objet_id !== null) {
-        $riddle_hunt_id = recuperer_id_chasse_associee($objet_id);
-    }
-    $chasse_id = $relationshipService->resolveTargetHuntId($cible_type, $linked_hunt, $riddle_hunt_id);
+    $context = $deletionService->resolveContext(
+        $cible_type,
+        $linked_hunt,
+        $linked_riddle,
+        static fn (int $riddleId): int => (int) recuperer_id_chasse_associee($riddleId)
+    );
 
-    if ($objet_id === null || !indice_action_autorisee('delete', $cible_type, $objet_id)) {
+    if ($context === null || !indice_action_autorisee(
+        'delete',
+        $context['target_type'],
+        $context['target_id']
+    )) {
         wp_send_json_error('acces_refuse');
     }
 
-    $deleted = wp_delete_post($indice_id, true);
-    if (!$deleted) {
+    if (!$deletionService->delete($indice_id)) {
         wp_send_json_error('echec_suppression');
     }
 
-    reordonner_indices($objet_id, $cible_type);
-    if ($cible_type === 'enigme' && $chasse_id !== null) {
-        reordonner_indices($chasse_id, 'chasse');
+    foreach ($context['reorder_targets'] as $target) {
+        reordonner_indices($target['id'], $target['type']);
     }
 
     wp_send_json_success();
