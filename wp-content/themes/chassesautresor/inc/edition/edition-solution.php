@@ -17,6 +17,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\SolutionCacheService::class, fals
         . '/plugins/chassesautresor-core/src/Content/SolutionCacheService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\SolutionCreationService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/SolutionCreationService.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Content\SolutionQueryService::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Content/SolutionQueryService.php';
@@ -260,41 +265,48 @@ add_action('template_redirect', 'rediriger_si_affichage_solution');
  */
 function creer_solution_pour_objet(int $objet_id, string $objet_type, ?int $user_id = null)
 {
-    if (!in_array($objet_type, ['chasse', 'enigme'], true)) {
-        return new WP_Error('type_invalide', __('Type de cible invalide.', 'chassesautresor-com'));
+    $creationService = new ChassesAuTresor\Core\Content\SolutionCreationService();
+    $supportedTarget = $creationService->isSupportedTargetType($objet_type);
+    $targetMatches = $supportedTarget && get_post_type($objet_id) === $objet_type;
+    $authenticated = is_user_logged_in();
+    $canCreate = $authenticated && $targetMatches
+        && solution_action_autorisee('create', $objet_type, $objet_id);
+    $chasse_id = 0;
+    if ($targetMatches) {
+        $chasse_id = $objet_type === 'chasse'
+            ? $objet_id
+            : recuperer_id_chasse_associee($objet_id);
     }
+    $queryService = new ChassesAuTresor\Core\Content\SolutionQueryService();
+    $existing = $canCreate && $chasse_id
+        ? get_posts($queryService->getExistingSolutionIdsQueryArgs($objet_id, $objet_type))
+        : [];
+    $errorCode = $creationService->getCreationError(
+        $supportedTarget,
+        $targetMatches,
+        $authenticated,
+        $canCreate,
+        (bool) $chasse_id,
+        !empty($existing)
+    );
+    if ($errorCode !== null) {
+        $messages = [
+            'type_invalide' => __('Type de cible invalide.', 'chassesautresor-com'),
+            'cible_invalide' => __('ID cible invalide.', 'chassesautresor-com'),
+            'non_connecte' => __('Utilisateur non connecté.', 'chassesautresor-com'),
+            'permission_refusee' => __('Droits insuffisants.', 'chassesautresor-com'),
+            'existe_deja' => __('Une solution existe déjà pour cet objet.', 'chassesautresor-com'),
+        ];
 
-    if (get_post_type($objet_id) !== $objet_type) {
-        return new WP_Error('cible_invalide', __('ID cible invalide.', 'chassesautresor-com'));
-    }
-
-    if (!is_user_logged_in()) {
-        return new WP_Error('non_connecte', __('Utilisateur non connecté.', 'chassesautresor-com'));
-    }
-
-    if (!solution_action_autorisee('create', $objet_type, $objet_id)) {
-        return new WP_Error('permission_refusee', __('Droits insuffisants.', 'chassesautresor-com'));
-    }
-
-    $chasse_id = $objet_type === 'chasse'
-        ? $objet_id
-        : recuperer_id_chasse_associee($objet_id);
-
-    if (!$chasse_id) {
-        return new WP_Error('permission_refusee', __('Droits insuffisants.', 'chassesautresor-com'));
+        return new WP_Error($errorCode, $messages[$errorCode]);
     }
 
     $user_id = $user_id ?? get_current_user_id();
-
-    $queryService = new ChassesAuTresor\Core\Content\SolutionQueryService();
-    $existing = get_posts($queryService->getExistingSolutionIdsQueryArgs($objet_id, $objet_type));
-    if (!empty($existing)) {
-        return new WP_Error('existe_deja', __('Une solution existe déjà pour cet objet.', 'chassesautresor-com'));
-    }
+    $initialState = $creationService->getInitialState(SOLUTION_STATE_DESACTIVE);
 
     $solution_id = wp_insert_post([
         'post_type'   => 'solution',
-        'post_status' => 'pending',
+        'post_status' => $initialState['post_status'],
         'post_title'  => TITRE_DEFAUT_SOLUTION,
         'post_author' => $user_id,
     ]);
@@ -303,8 +315,10 @@ function creer_solution_pour_objet(int $objet_id, string $objet_type, ?int $user
         return $solution_id;
     }
 
-    $objet_titre   = get_the_title($objet_id);
-    $nouveau_titre = sprintf(__('Solution | %s', 'chassesautresor-com'), $objet_titre);
+    $nouveau_titre = $creationService->getGeneratedTitle(
+        __('Solution | %s', 'chassesautresor-com'),
+        (string) get_the_title($objet_id)
+    );
     wp_update_post([
         'ID'         => $solution_id,
         'post_title' => $nouveau_titre,
@@ -315,10 +329,10 @@ function creer_solution_pour_objet(int $objet_id, string $objet_type, ?int $user
     if ($objet_type === 'enigme') {
         update_field('solution_enigme_linked', $objet_id, $solution_id);
     }
-    update_field('solution_disponibilite', 'fin_chasse', $solution_id);
-    update_field('solution_decalage_jours', 0, $solution_id);
-    update_field('solution_heure_publication', '00:00', $solution_id);
-    update_field('solution_cache_etat_systeme', SOLUTION_STATE_DESACTIVE, $solution_id);
+    update_field('solution_disponibilite', $initialState['availability'], $solution_id);
+    update_field('solution_decalage_jours', $initialState['delay_days'], $solution_id);
+    update_field('solution_heure_publication', $initialState['publication_time'], $solution_id);
+    update_field('solution_cache_etat_systeme', $initialState['system_state'], $solution_id);
 
     return $solution_id;
 }
