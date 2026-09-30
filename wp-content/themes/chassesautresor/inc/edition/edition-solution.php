@@ -17,6 +17,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\SolutionCacheService::class, fals
         . '/plugins/chassesautresor-core/src/Content/SolutionCacheService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\SolutionQueryService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/SolutionQueryService.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Relationships\RelationshipService::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Relationships/RelationshipService.php';
@@ -276,18 +281,8 @@ function creer_solution_pour_objet(int $objet_id, string $objet_type, ?int $user
 
     $user_id = $user_id ?? get_current_user_id();
 
-    $meta_key = $objet_type === 'chasse' ? 'solution_chasse_linked' : 'solution_enigme_linked';
-    $existing = get_posts([
-        'post_type'      => 'solution',
-        'post_status'    => ['publish', 'pending', 'draft', 'private', 'future'],
-        'meta_query'     => [
-            ['key' => 'solution_cible_type', 'value' => $objet_type],
-            ['key' => $meta_key, 'value' => $objet_id],
-        ],
-        'fields'         => 'ids',
-        'no_found_rows'  => true,
-        'posts_per_page' => 1,
-    ]);
+    $queryService = new ChassesAuTresor\Core\Content\SolutionQueryService();
+    $existing = get_posts($queryService->getExistingSolutionIdsQueryArgs($objet_id, $objet_type));
     if (!empty($existing)) {
         return new WP_Error('existe_deja', __('Une solution existe déjà pour cet objet.', 'chassesautresor-com'));
     }
@@ -427,59 +422,16 @@ function ajax_solutions_lister_table(): void
     }
 
     $per_page = 5;
-    if ($objet_type === 'chasse') {
-        $enigme_ids = recuperer_ids_enigmes_pour_chasse($objet_id);
-        $meta       = [
-            'relation' => 'OR',
-            [
-                'relation' => 'AND',
-                [
-                    'key'   => 'solution_cible_type',
-                    'value' => 'chasse',
-                ],
-                [
-                    'key'   => 'solution_chasse_linked',
-                    'value' => $objet_id,
-                ],
-            ],
-        ];
-        if (!empty($enigme_ids)) {
-            $meta[] = [
-                'relation' => 'AND',
-                [
-                    'key'   => 'solution_cible_type',
-                    'value' => 'enigme',
-                ],
-                [
-                    'key'     => 'solution_enigme_linked',
-                    'value'   => $enigme_ids,
-                    'compare' => 'IN',
-                ],
-            ];
-        }
-    } else {
-        $meta = [
-            [
-                'key'   => 'solution_cible_type',
-                'value' => 'enigme',
-            ],
-            [
-                'key'   => 'solution_enigme_linked',
-                'value' => $objet_id,
-            ],
-        ];
-    }
-
+    $enigme_ids = $objet_type === 'chasse' ? recuperer_ids_enigmes_pour_chasse($objet_id) : [];
+    $queryService = new ChassesAuTresor\Core\Content\SolutionQueryService();
     $page       = max(1, $page);
-    $query_args = [
-        'post_type'      => 'solution',
-        'post_status'    => ['publish', 'pending', 'draft'],
-        'orderby'        => 'date',
-        'order'          => 'DESC',
-        'posts_per_page' => $per_page,
-        'paged'          => $page,
-        'meta_query'     => $meta,
-    ];
+    $query_args = $queryService->getManagementQueryArgs(
+        $objet_id,
+        $objet_type,
+        $enigme_ids,
+        $page,
+        $per_page
+    );
     $query      = new WP_Query($query_args);
     $total_pages = (int) $query->max_num_pages;
     if ($page > $total_pages && $total_pages > 0) {
@@ -544,46 +496,18 @@ function ajax_chasse_solution_status(): void
     $has_enigme_solution = count($toutes_enigmes) > count($enigmes);
     $has_solutions       = $has_solution_chasse || $has_enigme_solution;
 
-    $meta_total = [
-        'relation' => 'OR',
-        [
-            'relation' => 'AND',
-            [
-                'key'   => 'solution_cible_type',
-                'value' => 'chasse',
-            ],
-            [
-                'key'   => 'solution_chasse_linked',
-                'value' => $chasse_id,
-            ],
-        ],
-    ];
-
-    if (!empty($toutes_enigmes)) {
-        $enigme_ids = array_map(static fn($e) => $e->ID, $toutes_enigmes);
-        $meta_total[] = [
-            'relation' => 'AND',
-            [
-                'key'   => 'solution_cible_type',
-                'value' => 'enigme',
-            ],
-            [
-                'key'     => 'solution_enigme_linked',
-                'value'   => $enigme_ids,
-                'compare' => 'IN',
-            ],
-        ];
-    }
-
     $total_solutions = 0;
     if (function_exists('get_posts')) {
-        $count_posts = get_posts([
-            'post_type'   => 'solution',
-            'post_status' => ['publish', 'pending', 'draft'],
-            'fields'      => 'ids',
-            'nopaging'    => true,
-            'meta_query'  => $meta_total,
-        ]);
+        $enigme_ids = array_map(static fn($e) => (int) $e->ID, $toutes_enigmes);
+        $queryService = new ChassesAuTresor\Core\Content\SolutionQueryService();
+        $count_posts = get_posts($queryService->getManagementQueryArgs(
+            $chasse_id,
+            'chasse',
+            $enigme_ids,
+            1,
+            1,
+            true
+        ));
         $total_solutions = is_array($count_posts) ? count($count_posts) : 0;
     }
 
