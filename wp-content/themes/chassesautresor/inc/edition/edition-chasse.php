@@ -148,47 +148,15 @@ add_action('wp_enqueue_scripts', 'enqueue_script_chasse_edit');
  */
 add_action('wp_ajax_modifier_champ_chasse', 'modifier_champ_chasse');
 
-/**
- * 🔹 modifier_dates_chasse() → Mise à jour groupée des dates et du mode illimité.
- */
-add_action('wp_ajax_modifier_dates_chasse', 'modifier_dates_chasse');
-
-function modifier_dates_chasse()
-{
-    check_ajax_referer('hunt_field_management', 'nonce');
-
-    if (!is_user_logged_in()) {
-        wp_send_json_error('non_connecte');
-    }
-
-    $post_id = isset($_POST['post_id']) ? (int) $_POST['post_id'] : 0;
-    if (!$post_id || get_post_type($post_id) !== 'chasse') {
-        wp_send_json_error('post_invalide');
-    }
-
-    if (!utilisateur_peut_modifier_post($post_id) || !utilisateur_peut_editer_champs($post_id)) {
-        wp_send_json_error('acces_refuse');
-    }
-
-    $mutation = (new ChassesAuTresor\Core\Content\HuntDateMutationService())->apply(
-        $post_id,
-        sanitize_text_field($_POST['date_debut'] ?? ''),
-        sanitize_text_field($_POST['date_fin'] ?? ''),
-        !empty($_POST['illimitee']),
-        !empty($_POST['debut_differee']),
-        static fn (string $date, array $formats) => convertir_en_datetime($date, $formats),
-        'update_field',
-        'update_post_meta',
-        'get_post_meta'
-    );
-
-    if ($mutation['error'] !== null) {
-        wp_send_json_error($mutation['error']);
-    }
-
-    mettre_a_jour_statuts_chasse($post_id);
-    wp_send_json_success($mutation['data']);
+function autoriser_modification_dates_chasse(bool $allowed, int $huntId): bool {
+    return utilisateur_peut_modifier_post($huntId) && utilisateur_peut_editer_champs($huntId);
 }
+add_filter('chassesautresor_can_edit_hunt_dates', 'autoriser_modification_dates_chasse', 10, 2);
+
+function actualiser_statuts_apres_modification_dates(int $huntId): void {
+    mettre_a_jour_statuts_chasse($huntId);
+}
+add_action('chassesautresor_hunt_dates_updated', 'actualiser_statuts_apres_modification_dates');
 
 /**
  * 🔸 Enregistrement AJAX d’un champ ACF ou natif du CPT chasse.
