@@ -4,6 +4,16 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
+if (!function_exists('check_ajax_referer')) {
+    function check_ajax_referer($action, $queryArg = false): bool
+    {
+        global $checkedAjaxNonce;
+        $checkedAjaxNonce = [$action, $queryArg];
+
+        return true;
+    }
+}
+
 class ChasseSolutionStatusAjaxTest extends TestCase
 {
     /**
@@ -59,6 +69,8 @@ class ChasseSolutionStatusAjaxTest extends TestCase
 
         ajax_chasse_solution_status();
 
+        global $checkedAjaxNonce;
+        $this->assertSame(['solution_management', 'nonce'], $checkedAjaxNonce);
         global $json_success_data;
         $this->assertSame(1, $json_success_data['has_solution_chasse']);
         $this->assertSame(1, $json_success_data['has_solution_enigme']);

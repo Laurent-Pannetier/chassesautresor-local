@@ -4,6 +4,16 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
+if (!function_exists('check_ajax_referer')) {
+    function check_ajax_referer($action, $queryArg = false): bool
+    {
+        global $checkedAjaxNonce;
+        $checkedAjaxNonce = [$action, $queryArg];
+
+        return true;
+    }
+}
+
 if (!function_exists('is_user_logged_in')) {
     function is_user_logged_in(): bool
     {
@@ -107,6 +117,7 @@ final class SupprimerSolutionAjaxTest extends TestCase
         parent::setUp();
         $_POST = [];
         global $fields, $permission_args, $deleted_id, $deleted_force, $json_success, $updated_posts, $posts;
+        global $checkedAjaxNonce;
         $fields = [
             'solution_cible_type'   => 'enigme',
             'solution_enigme_linked' => 55,
@@ -116,6 +127,7 @@ final class SupprimerSolutionAjaxTest extends TestCase
         $deleted_force   = null;
         $json_success    = null;
         $updated_posts   = [];
+        $checkedAjaxNonce = null;
         $posts           = [
             11 => (object) [
                 'post_date'     => '2023-01-01 10:00:00',
@@ -134,11 +146,12 @@ final class SupprimerSolutionAjaxTest extends TestCase
      */
     public function test_deletes_solution_after_permission_check(): void
     {
-        global $permission_args, $deleted_id, $deleted_force, $json_success;
+        global $permission_args, $deleted_id, $deleted_force, $json_success, $checkedAjaxNonce;
         $_POST['solution_id'] = 123;
 
         supprimer_solution_ajax();
 
+        $this->assertSame(['solution_management', 'nonce'], $checkedAjaxNonce);
         $this->assertSame(['delete', 'enigme', 55], $permission_args);
         $this->assertSame(123, $deleted_id);
         $this->assertTrue($deleted_force);

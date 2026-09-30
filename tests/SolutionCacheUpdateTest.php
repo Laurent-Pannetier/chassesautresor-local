@@ -4,6 +4,16 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
+if (!function_exists('check_ajax_referer')) {
+    function check_ajax_referer($action, $queryArg = false): bool
+    {
+        global $checkedAjaxNonce;
+        $checkedAjaxNonce = [$action, $queryArg];
+
+        return true;
+    }
+}
+
 if (!class_exists('WP_Error')) {
     class WP_Error
     {
