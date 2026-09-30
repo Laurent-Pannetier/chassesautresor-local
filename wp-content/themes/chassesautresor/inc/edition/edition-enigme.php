@@ -1,6 +1,13 @@
 <?php
 defined('ABSPATH') || exit;
 
+if (!class_exists(ChassesAuTresor\Core\Content\RiddleSolutionAttachmentService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Relationships/RelationshipService.php';
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/RiddleSolutionAttachmentService.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Content\RiddleSolutionFilePolicyService::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Content/RiddleSolutionFilePolicyService.php';
@@ -433,20 +440,20 @@ add_action('wp_ajax_enregistrer_fichier_solution_enigme', 'enregistrer_fichier_s
 function enregistrer_fichier_solution_enigme()
 {
   if (!is_user_logged_in()) {
-    wp_send_json_error("Non autorisé.");
+    wp_send_json_error(__('Non autorisé.', 'chassesautresor-com'));
   }
 
   $post_id = intval($_POST['post_id'] ?? 0);
   if (!$post_id || get_post_type($post_id) !== 'enigme') {
-    wp_send_json_error("ID de post invalide.");
+    wp_send_json_error(__('ID de post invalide.', 'chassesautresor-com'));
   }
 
   if (!utilisateur_peut_modifier_post($post_id)) {
-    wp_send_json_error("Non autorisé.");
+    wp_send_json_error(__('Non autorisé.', 'chassesautresor-com'));
   }
 
   if (empty($_FILES['fichier_pdf']) || $_FILES['fichier_pdf']['error'] !== 0) {
-    wp_send_json_error("Fichier manquant ou erreur de transfert.");
+    wp_send_json_error(__('Fichier manquant ou erreur de transfert.', 'chassesautresor-com'));
   }
 
   $fichier = $_FILES['fichier_pdf'];
@@ -481,22 +488,15 @@ function enregistrer_fichier_solution_enigme()
     );
   }
 
-  // 📝 Création de la pièce jointe
-  $attachment = [
-    'post_mime_type' => $filetype['type'],
-    'post_title'     => sanitize_file_name($fichier['name']),
-    'post_content'   => '',
-    'post_status'    => 'inherit'
-  ];
-
-  $attach_id = wp_insert_attachment($attachment, $uploaded['file'], $post_id);
-  if (strpos($filetype['type'], 'image/') === 0) {
-    require_once ABSPATH . 'wp-admin/includes/image.php';
-    wp_generate_attachment_metadata($attach_id, $uploaded['file']);
+  $attach_id = (new ChassesAuTresor\Core\Content\RiddleSolutionAttachmentService())->attach(
+    $post_id,
+    $uploaded['file'],
+    $fichier['name'],
+    $filetype['type']
+  );
+  if (is_wp_error($attach_id)) {
+    wp_send_json_error($attach_id->get_error_message());
   }
-
-  // 💾 Enregistrement dans le champ ACF
-  update_field('enigme_solution_fichier', $attach_id, $post_id);
 
   wp_send_json_success([
     'fichier' => $uploaded['url']
@@ -512,24 +512,19 @@ add_action('wp_ajax_supprimer_fichier_solution_enigme', 'supprimer_fichier_solut
 function supprimer_fichier_solution_enigme()
 {
   if (!is_user_logged_in()) {
-    wp_send_json_error("Non autorisé.");
+    wp_send_json_error(__('Non autorisé.', 'chassesautresor-com'));
   }
 
   $post_id = intval($_POST['post_id'] ?? 0);
   if (!$post_id || get_post_type($post_id) !== 'enigme') {
-    wp_send_json_error("ID de post invalide.");
+    wp_send_json_error(__('ID de post invalide.', 'chassesautresor-com'));
   }
 
   if (!utilisateur_peut_modifier_post($post_id)) {
-    wp_send_json_error("Non autorisé.");
+    wp_send_json_error(__('Non autorisé.', 'chassesautresor-com'));
   }
 
-  $fichier_id = get_field('enigme_solution_fichier', $post_id, false);
-  if ($fichier_id) {
-    wp_delete_attachment($fichier_id, true);
-  }
-
-  update_field('enigme_solution_fichier', null, $post_id);
+  (new ChassesAuTresor\Core\Content\RiddleSolutionAttachmentService())->remove($post_id);
 
   wp_send_json_success();
 }
