@@ -85,6 +85,7 @@ require_once __DIR__ . '/src/Content/RiddleManagementService.php';
 require_once __DIR__ . '/src/Content/RiddlePostFactory.php';
 require_once __DIR__ . '/src/Content/RiddleRelationshipService.php';
 require_once __DIR__ . '/src/Content/RiddleRelationshipCleanupService.php';
+require_once __DIR__ . '/src/Content/RiddleRelationshipLifecycleService.php';
 require_once __DIR__ . '/src/Content/HuntManagementService.php';
 require_once __DIR__ . '/src/Content/ContentPanelAccessService.php';
 require_once __DIR__ . '/src/Content/ContentFieldAccessService.php';

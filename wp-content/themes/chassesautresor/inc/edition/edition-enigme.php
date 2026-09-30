@@ -70,6 +70,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\RiddleRelationshipCleanupService:
         . '/plugins/chassesautresor-core/src/Content/RiddleRelationshipCleanupService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\RiddleRelationshipLifecycleService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/RiddleRelationshipLifecycleService.php';
+}
+
 
 // ==================================================
 // 🧩 CRÉATION & ÉDITION D’UNE ÉNIGME
@@ -804,28 +809,28 @@ add_action('acf/save_post', function ($post_id) {
   if (!is_numeric($post_id) || get_post_type($post_id) !== 'enigme') return;
   if (wp_is_post_revision($post_id) || wp_is_post_autosave($post_id)) return;
 
-  // 🔎 Récupère la chasse associée à l’énigme
-  $chasse = get_field('enigme_chasse_associee', $post_id);
+  (new ChassesAuTresor\Core\Content\RiddleRelationshipLifecycleService())->attach(
+    (int) $post_id,
+    get_field('enigme_chasse_associee', $post_id),
+    static fn (int $chasse_id): bool => get_post_type($chasse_id) === 'chasse',
+    static function (int $chasse_id, int $enigme_id): bool {
+      $success = modifier_relation_acf(
+        $chasse_id,
+        'chasse_cache_enigmes',
+        $enigme_id,
+        'field_67b740025aae0',
+        'add'
+      );
 
-  $chasse_id = (new ChassesAuTresor\Core\Content\RiddleRelationshipService())
-    ->resolveHuntId($chasse);
+      cat_debug(
+        $success
+          ? "✅ Énigme $enigme_id ajoutée à la chasse $chasse_id"
+          : "❌ Échec ajout énigme $enigme_id à la chasse $chasse_id"
+      );
 
-  if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') return;
-
-  // ✅ Ajoute l’ID de l’énigme à la relation "chasse_cache_enigmes"
-  $success = modifier_relation_acf(
-    $chasse_id,
-    'chasse_cache_enigmes',
-    $post_id,
-    'field_67b740025aae0',
-    'add'
+      return $success;
+    }
   );
-
-  if ($success) {
-    cat_debug("✅ Énigme $post_id ajoutée à la chasse $chasse_id");
-  } else {
-    cat_debug("❌ Échec ajout énigme $post_id à la chasse $chasse_id");
-  }
 }, 20);
 
 
@@ -893,16 +898,18 @@ add_action('before_delete_post', function ($post_id) {
     return;
   }
 
-  // 🔹 Récupérer la chasse associée
-  $chasse_id = get_field('chasse_associee', $post_id);
-  if (!$chasse_id) {
-    return;
-  }
-
-  // 🔹 Supprimer proprement la relation avec l’énigme supprimée
-  $acf_key = 'field_67b740025aae0'; // Clé exacte du champ `chasse_cache_enigmes`
-  modifier_relation_acf($chasse_id, 'chasse_cache_enigmes', $post_id, $acf_key, 'remove');
-
-  // 🔹 Nettoyer les relations orphelines (toutes les chasses)
-  nettoyer_relations_orphelines();
+  (new ChassesAuTresor\Core\Content\RiddleRelationshipLifecycleService())->detach(
+    (int) $post_id,
+    get_field('chasse_associee', $post_id),
+    static function (int $chasse_id, int $enigme_id): bool {
+      return modifier_relation_acf(
+        $chasse_id,
+        'chasse_cache_enigmes',
+        $enigme_id,
+        'field_67b740025aae0',
+        'remove'
+      );
+    },
+    'nettoyer_relations_orphelines'
+  );
 });
