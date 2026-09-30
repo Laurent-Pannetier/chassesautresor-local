@@ -55,6 +55,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\RiddleCreationService::class, fal
         . '/plugins/chassesautresor-core/src/Content/RiddleCreationService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\RiddleCreationRequestService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/RiddleCreationRequestService.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Content\RiddleFieldPolicyService::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Content/RiddleFieldPolicyService.php';
@@ -251,20 +256,33 @@ function creer_enigme_et_rediriger_si_appel()
     do_action('litespeed_control_set_nocache'); // Spécifique à LiteSpeed
     nocache_headers();
 
-    // Vérification de l’utilisateur
-    if (!is_user_logged_in()) {
+    $chasse_id = isset($_GET['chasse_id']) ? absint($_GET['chasse_id']) : 0;
+    $has_valid_nonce = (bool) wp_verify_nonce(
+        sanitize_text_field(wp_unslash($_GET['nonce'] ?? '')),
+        'creer_enigme'
+    );
+    $is_logged_in = $has_valid_nonce && is_user_logged_in();
+    $has_valid_hunt = $is_logged_in && $chasse_id > 0 && get_post_type($chasse_id) === 'chasse';
+    $request_error = (new ChassesAuTresor\Core\Content\RiddleCreationRequestService())->getRequestError(
+        $has_valid_nonce,
+        $is_logged_in,
+        $has_valid_hunt
+    );
+
+    if ($request_error === 'invalid_nonce') {
+        wp_die(__('Action non autorisée.', 'chassesautresor-com'), 'Erreur', ['response' => 403]);
+    }
+
+    if ($request_error === 'authentication_required') {
         wp_redirect(wp_login_url());
         exit;
     }
 
-    $user_id = get_current_user_id();
-    $chasse_id = isset($_GET['chasse_id']) ? absint($_GET['chasse_id']) : 0;
-
-    if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
+    if ($request_error === 'invalid_hunt') {
         wp_die( __( 'Chasse non spécifiée ou invalide.', 'chassesautresor-com' ), 'Erreur', ['response' => 400] );
     }
 
-    $enigme_id = creer_enigme_pour_chasse($chasse_id, $user_id);
+    $enigme_id = creer_enigme_pour_chasse($chasse_id, get_current_user_id());
 
     if (is_wp_error($enigme_id)) {
         wp_die($enigme_id->get_error_message(), 'Erreur', ['response' => 500]);
