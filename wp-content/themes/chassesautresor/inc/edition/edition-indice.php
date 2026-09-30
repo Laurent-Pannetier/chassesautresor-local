@@ -101,6 +101,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\HintManagementService::class, fal
         . '/plugins/chassesautresor-core/src/Content/HintManagementService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HintRedirectHandler::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HintRedirectHandler.php';
+}
+
 function cat_get_hint_query_service(): ChassesAuTresor\Core\Content\HintQueryService
 {
     return new ChassesAuTresor\Core\Content\HintQueryService();
@@ -226,21 +231,7 @@ function build_indice_placeholder_title(int $chasse_id): string
  */
 function rediriger_si_affichage_indice(): void
 {
-    if (!is_singular('indice')) {
-        return;
-    }
-
-    $indice_id = get_the_ID();
-    $redirect_id = (new ChassesAuTresor\Core\Relationships\RelationshipService())->resolveHintTargetId(
-        (string) get_field('indice_cible_type', $indice_id),
-        get_field('indice_chasse_linked', $indice_id),
-        get_field('indice_enigme_linked', $indice_id)
-    );
-
-    if ($redirect_id !== null) {
-        wp_safe_redirect(get_permalink($redirect_id));
-        exit;
-    }
+    ChassesAuTresor\Core\Content\HintRedirectHandler::redirectIfViewingHint();
 }
 add_action('template_redirect', 'rediriger_si_affichage_indice');
 

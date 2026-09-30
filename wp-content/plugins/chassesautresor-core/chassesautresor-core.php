@@ -72,6 +72,7 @@ require_once __DIR__ . '/src/Content/HintFieldMutationService.php';
 require_once __DIR__ . '/src/Content/HintMutationService.php';
 require_once __DIR__ . '/src/Content/HintManagementService.php';
 require_once __DIR__ . '/src/Content/HintRelationshipService.php';
+require_once __DIR__ . '/src/Content/HintRedirectHandler.php';
 require_once __DIR__ . '/src/Content/HuntPublicationStatusService.php';
 require_once __DIR__ . '/src/Content/HuntValidationService.php';
 require_once __DIR__ . '/src/Content/SolutionAvailabilityService.php';
