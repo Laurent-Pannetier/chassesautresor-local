@@ -64,6 +64,7 @@ require_once __DIR__ . '/src/Content/SolutionAvailabilityService.php';
 require_once __DIR__ . '/src/Content/SolutionCacheService.php';
 require_once __DIR__ . '/src/Content/SolutionCacheUpdater.php';
 require_once __DIR__ . '/src/Content/SolutionCreationService.php';
+require_once __DIR__ . '/src/Content/SolutionDeletionService.php';
 require_once __DIR__ . '/src/Content/SolutionFieldPolicyService.php';
 require_once __DIR__ . '/src/Content/SolutionManagementService.php';
 require_once __DIR__ . '/src/Content/SolutionMutationService.php';

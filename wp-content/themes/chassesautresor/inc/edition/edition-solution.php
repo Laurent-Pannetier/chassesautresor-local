@@ -27,6 +27,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\SolutionCreationService::class, f
         . '/plugins/chassesautresor-core/src/Content/SolutionCreationService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\SolutionDeletionService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/SolutionDeletionService.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Content\SolutionFieldPolicyService::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Content/SolutionFieldPolicyService.php';
@@ -595,19 +600,18 @@ function supprimer_solution_ajax(): void
         wp_send_json_error('id_invalide');
     }
 
-    $cible_type = get_field('solution_cible_type', $solution_id) === 'enigme' ? 'enigme' : 'chasse';
-    $relationshipService = new ChassesAuTresor\Core\Relationships\RelationshipService();
-    $objet_id = $relationshipService->resolveTargetId(
-        $cible_type,
+    $deletionService = new ChassesAuTresor\Core\Content\SolutionDeletionService();
+    $target = $deletionService->resolveTarget(
+        (string) get_field('solution_cible_type', $solution_id),
         get_field('solution_chasse_linked', $solution_id),
         get_field('solution_enigme_linked', $solution_id)
     );
 
-    if ($objet_id === null || !solution_action_autorisee('delete', $cible_type, $objet_id)) {
+    if ($target === null || !solution_action_autorisee('delete', $target['type'], $target['id'])) {
         wp_send_json_error('acces_refuse');
     }
 
-    if (wp_delete_post($solution_id, true) === false) {
+    if (!$deletionService->delete($solution_id)) {
         wp_send_json_error('echec_suppression');
     }
 
