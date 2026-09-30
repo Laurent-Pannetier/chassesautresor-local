@@ -27,6 +27,11 @@ if (!class_exists(ChassesAuTresor\Core\Progress\HuntProgressService::class, fals
         . '/plugins/chassesautresor-core/src/Progress/HuntProgressService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\SolutionQueryService::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Content/SolutionQueryService.php';
+}
+
 //
 // 1. 📦 FONCTIONS LIÉES À UNE CHASSE
 // 2. 📦 AFFICHAGE
@@ -990,47 +995,12 @@ function actualiser_cta_validation_chasse(): void
  */
 function solution_recuperer_par_objet(int $id, string $type)
 {
-    if (!$id || !in_array($type, ['enigme', 'chasse'], true)) {
+    $queryService = new ChassesAuTresor\Core\Content\SolutionQueryService();
+    $queryArgs = $queryService->getActiveSolutionQueryArgs($id, $type);
+    if ($queryArgs === []) {
         return null;
     }
-
-    $meta_key   = $type === 'enigme' ? 'solution_enigme_linked' : 'solution_chasse_linked';
-    $meta_query = [
-        'relation' => 'AND',
-        [
-            'key'   => 'solution_cible_type',
-            'value' => $type,
-        ],
-        [
-            'key'     => 'solution_cache_etat_systeme',
-            'value'   => [
-                SOLUTION_STATE_EN_COURS,
-                SOLUTION_STATE_A_VENIR,
-                SOLUTION_STATE_FIN_CHASSE,
-                SOLUTION_STATE_FIN_CHASSE_DIFFERE,
-            ],
-            'compare' => 'IN',
-        ],
-        [
-            'relation' => 'OR',
-            [
-                'key'   => $meta_key,
-                'value' => $id,
-            ],
-            [
-                'key'     => $meta_key,
-                'value'   => '"' . $id . '"',
-                'compare' => 'LIKE',
-            ],
-        ],
-    ];
-
-    $solutions = get_posts([
-        'post_type'      => 'solution',
-        'post_status'    => ['publish', 'pending', 'draft'],
-        'posts_per_page' => 1,
-        'meta_query'     => $meta_query,
-    ]);
+    $solutions = get_posts($queryArgs);
 
     return $solutions[0] ?? null;
 }
@@ -1048,39 +1018,12 @@ function solution_recuperer_par_objet(int $id, string $type)
  */
 function solution_existe_pour_objet(int $id, string $type): bool
 {
-    if (!$id || !in_array($type, ['enigme', 'chasse'], true)) {
+    $queryService = new ChassesAuTresor\Core\Content\SolutionQueryService();
+    $queryArgs = $queryService->getExistingSolutionIdsQueryArgs($id, $type);
+    if ($queryArgs === []) {
         return false;
     }
-
-    $meta_key   = $type === 'enigme' ? 'solution_enigme_linked' : 'solution_chasse_linked';
-    $meta_query = [
-        'relation' => 'AND',
-        [
-            'key'   => 'solution_cible_type',
-            'value' => $type,
-        ],
-        [
-            'relation' => 'OR',
-            [
-                'key'   => $meta_key,
-                'value' => $id,
-            ],
-            [
-                'key'     => $meta_key,
-                'value'   => '"' . $id . '"',
-                'compare' => 'LIKE',
-            ],
-        ],
-    ];
-
-    $solutions = get_posts([
-        'post_type'      => 'solution',
-        'post_status'    => ['publish', 'pending', 'draft', 'private', 'future'],
-        'fields'         => 'ids',
-        'no_found_rows'  => true,
-        'posts_per_page' => 1,
-        'meta_query'     => $meta_query,
-    ]);
+    $solutions = get_posts($queryArgs);
 
     return !empty($solutions);
 }
