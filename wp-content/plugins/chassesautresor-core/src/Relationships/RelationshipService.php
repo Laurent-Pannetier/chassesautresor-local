@@ -78,6 +78,17 @@ class RelationshipService
      */
     public function resolveHintTargetId(string $targetType, $hunt, $riddle): ?int
     {
+        return $this->resolveTargetId($targetType, $hunt, $riddle);
+    }
+
+    /**
+     * Resolve content directly targeting either a hunt or a riddle.
+     *
+     * @param mixed $hunt
+     * @param mixed $riddle
+     */
+    public function resolveTargetId(string $targetType, $hunt, $riddle): ?int
+    {
         if ($targetType === 'chasse') {
             return $this->normalizeId($hunt);
         }

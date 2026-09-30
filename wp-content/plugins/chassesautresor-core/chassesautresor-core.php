@@ -61,6 +61,7 @@ require_once __DIR__ . '/src/Content/HintFieldPolicyService.php';
 require_once __DIR__ . '/src/Content/HuntPublicationStatusService.php';
 require_once __DIR__ . '/src/Content/HuntValidationService.php';
 require_once __DIR__ . '/src/Content/SolutionAvailabilityService.php';
+require_once __DIR__ . '/src/Content/SolutionCacheService.php';
 require_once __DIR__ . '/src/Content/SolutionAccessService.php';
 require_once __DIR__ . '/src/Content/RiddleAccessService.php';
 require_once __DIR__ . '/src/Content/RiddleManagementService.php';

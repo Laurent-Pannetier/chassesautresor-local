@@ -80,4 +80,13 @@ class RelationshipServiceTest extends TestCase
         $this->assertSame(24, $service->resolveHintTargetId('enigme', 12, 24));
         $this->assertNull($service->resolveHintTargetId('solution', 12, 24));
     }
+
+    public function testGenericTargetUsesRelationshipMatchingTargetType(): void
+    {
+        $service = new RelationshipService();
+
+        $this->assertSame(12, $service->resolveTargetId('chasse', ['ID' => 12], 24));
+        $this->assertSame(24, $service->resolveTargetId('enigme', 12, (object) ['ID' => 24]));
+        $this->assertNull($service->resolveTargetId('solution', 12, 24));
+    }
 }

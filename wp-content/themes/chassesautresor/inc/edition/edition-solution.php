@@ -12,6 +12,16 @@ if (!class_exists(ChassesAuTresor\Core\Content\SolutionAvailabilityService::clas
         . '/plugins/chassesautresor-core/src/Content/SolutionAvailabilityService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\SolutionCacheService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/SolutionCacheService.php';
+}
+
+if (!class_exists(ChassesAuTresor\Core\Relationships\RelationshipService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Relationships/RelationshipService.php';
+}
+
 /**
  * Planifie la publication d'une solution.
  *
@@ -149,46 +159,31 @@ function mettre_a_jour_cache_solution(int $post_id): void
         return;
     }
 
-    $cible_type = get_field('solution_cible_type', $post_id);
-    $target_id  = 0;
-    if ($cible_type === 'chasse') {
-        $target_id = (int) get_field('solution_chasse_linked', $post_id);
-    } elseif ($cible_type === 'enigme') {
-        $target_id = (int) get_field('solution_enigme_linked', $post_id);
-    }
+    $cible_type = (string) get_field('solution_cible_type', $post_id);
+    $relationshipService = new ChassesAuTresor\Core\Relationships\RelationshipService();
+    $target_id = $relationshipService->resolveTargetId(
+        $cible_type,
+        get_field('solution_chasse_linked', $post_id),
+        get_field('solution_enigme_linked', $post_id)
+    );
 
     $explic  = trim((string) get_field('solution_explication', $post_id));
     $fichier = get_field('solution_fichier', $post_id);
     $content = $explic !== '' || !empty($fichier);
 
-    $complete = $content && $target_id > 0;
-    $state    = $complete ? SOLUTION_STATE_EN_COURS : SOLUTION_STATE_DESACTIVE;
+    $cacheUpdate = (new ChassesAuTresor\Core\Content\SolutionCacheService())->buildUpdate(
+        $content,
+        $target_id,
+        (string) get_post_status($post_id)
+    );
+    update_field('solution_cache_complet', $cacheUpdate['complete'], $post_id);
+    update_field('solution_cache_etat_systeme', $cacheUpdate['state'], $post_id);
 
-    if ($target_id === 0) {
-        $state    = SOLUTION_STATE_INVALIDE;
-        $complete = false;
-    }
-
-    update_field('solution_cache_complet', $complete ? 1 : 0, $post_id);
-    update_field('solution_cache_etat_systeme', $state, $post_id);
-
-    $status = get_post_status($post_id);
-    $post   = get_post($post_id);
-
-    if ($complete && $state === SOLUTION_STATE_EN_COURS) {
-        if ($status !== 'publish') {
-            wp_update_post([
-                'ID'            => $post_id,
-                'post_status'   => 'publish',
-                'post_date'     => $post->post_date,
-                'post_date_gmt' => $post->post_date_gmt,
-                'edit_date'     => true,
-            ]);
-        }
-    } elseif ($status === 'publish') {
+    if ($cacheUpdate['publication_status'] !== null) {
+        $post = get_post($post_id);
         wp_update_post([
             'ID'            => $post_id,
-            'post_status'   => 'pending',
+            'post_status'   => $cacheUpdate['publication_status'],
             'post_date'     => $post->post_date,
             'post_date_gmt' => $post->post_date_gmt,
             'edit_date'     => true,
