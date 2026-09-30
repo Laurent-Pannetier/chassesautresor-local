@@ -66,6 +66,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\HintDeletionService::class, false
         . '/plugins/chassesautresor-core/src/Content/HintDeletionService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HintRelationshipService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HintRelationshipService.php';
+}
+
 function cat_get_hint_query_service(): ChassesAuTresor\Core\Content\HintQueryService
 {
     return new ChassesAuTresor\Core\Content\HintQueryService();
@@ -117,6 +122,13 @@ function cat_get_hint_field_mutation_service(): ChassesAuTresor\Core\Content\Hin
 function cat_get_hint_deletion_service(): ChassesAuTresor\Core\Content\HintDeletionService
 {
     return new ChassesAuTresor\Core\Content\HintDeletionService(
+        new ChassesAuTresor\Core\Relationships\RelationshipService()
+    );
+}
+
+function cat_get_hint_relationship_service(): ChassesAuTresor\Core\Content\HintRelationshipService
+{
+    return new ChassesAuTresor\Core\Content\HintRelationshipService(
         new ChassesAuTresor\Core\Relationships\RelationshipService()
     );
 }
@@ -890,21 +902,11 @@ function pre_remplir_indice_chasse_linked(array $field): array
         return $field;
     }
 
-    $cible_type = (string) get_field('indice_cible_type', $post->ID);
-    $relationshipService = new ChassesAuTresor\Core\Relationships\RelationshipService();
-    $enigme_id = $relationshipService->resolveHintTargetId(
-        'enigme',
-        null,
-        get_field('indice_enigme_linked', $post->ID)
-    );
-    $riddleHuntId = $cible_type === 'enigme' && $enigme_id !== null
-        ? recuperer_id_chasse_associee($enigme_id)
-        : null;
-    $requestedHuntId = isset($_GET['chasse_id']) ? (int) $_GET['chasse_id'] : null;
-    $chasse_id = cat_get_hint_creation_service()->resolveLinkedHuntId(
-        $cible_type,
-        $riddleHuntId,
-        $requestedHuntId
+    $chasse_id = cat_get_hint_relationship_service()->resolveLinkedHuntId(
+        (string) get_field('indice_cible_type', $post->ID),
+        get_field('indice_enigme_linked', $post->ID),
+        isset($_GET['chasse_id']) ? (int) $_GET['chasse_id'] : null,
+        static fn (int $riddleId) => recuperer_id_chasse_associee($riddleId)
     );
 
     if ($chasse_id) {
@@ -938,26 +940,14 @@ function sauvegarder_indice_chasse_si_manquant($post_id): void
         return;
     }
 
-    $cible_type = (string) get_field('indice_cible_type', $post_id);
-    $relationshipService = new ChassesAuTresor\Core\Relationships\RelationshipService();
-    $enigme_id = $relationshipService->resolveHintTargetId(
-        'enigme',
-        null,
-        get_field('indice_enigme_linked', $post_id)
+    $relationshipService = cat_get_hint_relationship_service();
+    $chasse_id = $relationshipService->resolveLinkedHuntId(
+        (string) get_field('indice_cible_type', $post_id),
+        get_field('indice_enigme_linked', $post_id),
+        isset($_GET['chasse_id']) ? (int) $_GET['chasse_id'] : null,
+        static fn (int $riddleId) => recuperer_id_chasse_associee($riddleId)
     );
-    $riddleHuntId = $cible_type === 'enigme' && $enigme_id !== null
-        ? recuperer_id_chasse_associee($enigme_id)
-        : null;
-    $requestedHuntId = isset($_GET['chasse_id']) ? (int) $_GET['chasse_id'] : null;
-    $chasse_id = cat_get_hint_creation_service()->resolveLinkedHuntId(
-        $cible_type,
-        $riddleHuntId,
-        $requestedHuntId
-    );
-
-    if ($chasse_id) {
-        update_field('indice_chasse_linked', $chasse_id, $post_id);
-    }
+    $relationshipService->persistLinkedHunt($post_id, $chasse_id, 'update_field');
 }
 add_action('acf/save_post', 'sauvegarder_indice_chasse_si_manquant', 20);
 
@@ -978,27 +968,16 @@ function mettre_a_jour_cache_indice($post_id, ?int $chasse_id = null): void
         return;
     }
 
-    $relationshipService = new ChassesAuTresor\Core\Relationships\RelationshipService();
-    $chasse_linked = $relationshipService->normalizeId(get_field('indice_chasse_linked', $post_id));
+    $relationshipService = cat_get_hint_relationship_service();
+    $chasse_linked = $relationshipService->normalizeHuntId(get_field('indice_chasse_linked', $post_id));
     if ($chasse_linked === null) {
-        $cible_type = (string) get_field('indice_cible_type', $post_id);
-        $enigme_id = $relationshipService->resolveHintTargetId(
-            'enigme',
-            null,
-            get_field('indice_enigme_linked', $post_id)
-        );
-        $riddle_hunt_id = $cible_type === 'enigme' && $enigme_id !== null
-            ? recuperer_id_chasse_associee($enigme_id)
-            : null;
-        $chasse_linked = $relationshipService->resolveTargetHuntId(
-            $cible_type,
+        $chasse_linked = $relationshipService->resolveLinkedHuntId(
+            (string) get_field('indice_cible_type', $post_id),
+            get_field('indice_enigme_linked', $post_id),
             $chasse_id,
-            $riddle_hunt_id
+            static fn (int $riddleId) => recuperer_id_chasse_associee($riddleId)
         );
-
-        if ($chasse_linked !== null) {
-            update_field('indice_chasse_linked', $chasse_linked, $post_id);
-        }
+        $relationshipService->persistLinkedHunt($post_id, $chasse_linked, 'update_field');
     }
 
     $content = trim((string) get_field('indice_contenu', $post_id));
