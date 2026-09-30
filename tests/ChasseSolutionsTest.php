@@ -587,7 +587,7 @@ class ChasseSolutionsTest extends TestCase
                 'solution_heure_publication' => '00:00',
             ],
             $chasse_id   => [
-                'statut_chasse' => 'terminée',
+                'chasse_cache_statut' => 'termine',
             ],
         ];
 

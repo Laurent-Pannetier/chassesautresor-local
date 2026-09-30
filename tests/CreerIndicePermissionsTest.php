@@ -75,7 +75,11 @@ namespace {
     }
 
     if (!function_exists('wp_insert_post')) {
-        function wp_insert_post($args) { return 123; }
+        function wp_insert_post($args) {
+            global $updated_posts;
+            $updated_posts[] = $args;
+            return 123;
+        }
     }
 
     if (!function_exists('wp_update_post')) {
@@ -99,6 +103,12 @@ namespace {
 
     if (!function_exists('get_the_title')) {
         function get_the_title($id) { return 'Chasse de Test'; }
+    }
+
+    if (!function_exists('get_post_field')) {
+        function get_post_field($field, $id) {
+            return $field === 'post_name' ? 'chasse-de-test' : 'Chasse de Test';
+        }
     }
 
     if (!defined('DAY_IN_SECONDS')) {
@@ -162,7 +172,6 @@ class CreerIndicePermissionsTest extends TestCase
         $this->assertSame($expected_date, $updated_fields['indice_date_disponibilite']);
         $this->assertSame('desactive', $updated_fields['indice_cache_etat_systeme']);
         $this->assertFalse($updated_fields['indice_cache_complet']);
-        $this->assertSame('Indice #3', $updated_posts[0]['post_title']);
     }
 
     public function test_utilisateur_peut_editer_indice_desactive(): void

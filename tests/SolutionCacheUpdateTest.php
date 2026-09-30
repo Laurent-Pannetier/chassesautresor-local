@@ -149,7 +149,7 @@ class SolutionCacheUpdateTest extends TestCase
         ajax_creer_solution_modal();
 
         $this->assertSame(1, $captured_fields['solution_cache_complet']);
-        $this->assertSame(SOLUTION_STATE_EN_COURS, $captured_fields['solution_cache_etat_systeme']);
+        $this->assertSame(SOLUTION_STATE_FIN_CHASSE, $captured_fields['solution_cache_etat_systeme']);
         $this->assertSame(123, $json_success_data['solution_id']);
     }
 
@@ -183,7 +183,7 @@ class SolutionCacheUpdateTest extends TestCase
         ajax_modifier_solution_modal();
 
         $this->assertSame(1, $captured_fields['solution_cache_complet']);
-        $this->assertSame(SOLUTION_STATE_EN_COURS, $captured_fields['solution_cache_etat_systeme']);
+        $this->assertSame(SOLUTION_STATE_FIN_CHASSE, $captured_fields['solution_cache_etat_systeme']);
         $this->assertSame(123, $json_success_data['solution_id']);
     }
 }

@@ -118,6 +118,20 @@ if (!function_exists('get_the_title')) {
     }
 }
 
+if (!function_exists('get_post')) {
+    function get_post($post_id)
+    {
+        return (object) ['ID' => $post_id, 'post_title' => get_the_title($post_id)];
+    }
+}
+
+if (!function_exists('get_post_meta')) {
+    function get_post_meta($post_id, $key, $single = false)
+    {
+        return $key === 'indice_rank' ? 1 : '';
+    }
+}
+
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/enigme/affichage.php';
 
 class EnigmeParticipationInfosTest extends TestCase

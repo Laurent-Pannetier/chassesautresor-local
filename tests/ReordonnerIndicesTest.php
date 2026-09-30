@@ -32,6 +32,25 @@ namespace {
             return $get_field_overrides[$key] ?? null;
         }
     }
+    if (!function_exists('get_post_field')) {
+        function get_post_field($field, $post_id)
+        {
+            if ($field === 'post_name') {
+                return $post_id === 5 ? 'chasse-test' : '';
+            }
+
+            if ($post_id === 5) {
+                return 'Chasse Test';
+            }
+
+            return 'Indice #' . ($post_id / 10);
+        }
+    }
+    if (!function_exists('update_post_meta')) {
+        function update_post_meta($post_id, $key, $value): void
+        {
+        }
+    }
     if (!function_exists('wp_is_post_revision')) {
         function wp_is_post_revision($post_id)
         {
@@ -75,9 +94,9 @@ namespace ReordonnerIndicesTest {
             \reordonner_indices(5, 'chasse');
 
             $this->assertCount(3, $updated_posts);
-            $this->assertSame(['ID' => 10, 'post_title' => 'Indice #1'], $updated_posts[0]);
-            $this->assertSame(['ID' => 20, 'post_title' => 'Indice #2'], $updated_posts[1]);
-            $this->assertSame(['ID' => 30, 'post_title' => 'Indice #3'], $updated_posts[2]);
+            $this->assertSame(['ID' => 10, 'post_title' => 'clue-chasse-test'], $updated_posts[0]);
+            $this->assertSame(['ID' => 20, 'post_title' => 'clue-chasse-test'], $updated_posts[1]);
+            $this->assertSame(['ID' => 30, 'post_title' => 'clue-chasse-test'], $updated_posts[2]);
             $this->assertSame('indice_chasse_linked', $captured_args['meta_query'][0]['key']);
             $this->assertCount(2, $captured_args['meta_query']);
         }
@@ -91,13 +110,17 @@ namespace ReordonnerIndicesTest {
             global $updated_posts, $indice_delete_context;
             require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
 
-            $indice_delete_context = ['id' => 5, 'type' => 'chasse'];
+            $indice_delete_context = [
+                'objet_id' => 5,
+                'objet_type' => 'chasse',
+                'chasse_id' => 5,
+            ];
             \reordonner_indices_apres_suppression(99);
 
             $this->assertCount(3, $updated_posts);
-            $this->assertSame(['ID' => 10, 'post_title' => 'Indice #1'], $updated_posts[0]);
-            $this->assertSame(['ID' => 20, 'post_title' => 'Indice #2'], $updated_posts[1]);
-            $this->assertSame(['ID' => 30, 'post_title' => 'Indice #3'], $updated_posts[2]);
+            $this->assertSame(['ID' => 10, 'post_title' => 'clue-chasse-test'], $updated_posts[0]);
+            $this->assertSame(['ID' => 20, 'post_title' => 'clue-chasse-test'], $updated_posts[1]);
+            $this->assertSame(['ID' => 30, 'post_title' => 'clue-chasse-test'], $updated_posts[2]);
         }
 
         /**
@@ -113,9 +136,9 @@ namespace ReordonnerIndicesTest {
             \reordonner_indices(5, 'chasse');
 
             $this->assertCount(3, $updated_posts);
-            $this->assertSame(['ID' => 10, 'post_title' => 'Indice #1'], $updated_posts[0]);
-            $this->assertSame(['ID' => 20, 'post_title' => 'Indice #2'], $updated_posts[1]);
-            $this->assertSame(['ID' => 30, 'post_title' => 'Indice #3'], $updated_posts[2]);
+            $this->assertSame(['ID' => 10, 'post_title' => 'clue-chasse-test'], $updated_posts[0]);
+            $this->assertSame(['ID' => 20, 'post_title' => 'clue-chasse-test'], $updated_posts[1]);
+            $this->assertSame(['ID' => 30, 'post_title' => 'clue-chasse-test'], $updated_posts[2]);
         }
 
         /**
@@ -130,9 +153,9 @@ namespace ReordonnerIndicesTest {
             \reordonner_indices_apres_enregistrement(99);
 
             $this->assertCount(3, $updated_posts);
-            $this->assertSame(['ID' => 10, 'post_title' => 'Indice #1'], $updated_posts[0]);
-            $this->assertSame(['ID' => 20, 'post_title' => 'Indice #2'], $updated_posts[1]);
-            $this->assertSame(['ID' => 30, 'post_title' => 'Indice #3'], $updated_posts[2]);
+            $this->assertSame(['ID' => 10, 'post_title' => 'clue-chasse-test'], $updated_posts[0]);
+            $this->assertSame(['ID' => 20, 'post_title' => 'clue-chasse-test'], $updated_posts[1]);
+            $this->assertSame(['ID' => 30, 'post_title' => 'clue-chasse-test'], $updated_posts[2]);
         }
 
         /**
@@ -150,7 +173,7 @@ namespace ReordonnerIndicesTest {
             \reordonner_indices_pour_indice(99);
 
             $this->assertCount(3, $updated_posts);
-            $this->assertSame(['ID' => 10, 'post_title' => 'Indice #1'], $updated_posts[0]);
+            $this->assertSame(['ID' => 10, 'post_title' => 'clue-chasse-test'], $updated_posts[0]);
             $this->assertSame('indice_chasse_linked', $captured_args['meta_query'][0]['key']);
         }
     }

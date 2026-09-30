@@ -27,6 +27,14 @@ namespace {
     if (!function_exists('get_the_title')) {
         function get_the_title($id) { return 'Titre'; }
     }
+    if (!function_exists('get_post_meta')) {
+        function get_post_meta($id, $key, $single = false) {
+            return $key === 'indice_rank' ? 1 : '';
+        }
+    }
+    if (!function_exists('get_indice_title')) {
+        function get_indice_title($post) { return 'Indice #1'; }
+    }
     if (!function_exists('get_permalink')) {
         function get_permalink($id) {
             if (is_object($id) && isset($id->ID)) {

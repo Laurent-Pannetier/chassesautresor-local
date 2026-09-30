@@ -80,8 +80,18 @@ if (!function_exists('wp_update_post')) {
     function wp_update_post($args) { return true; }
 }
 
+if (!function_exists('get_post_field')) {
+    function get_post_field($field, $id) {
+        return $field === 'post_name' ? 'chasse-de-test' : 'Chasse de Test';
+    }
+}
+
 if (!function_exists('get_posts')) {
     function get_posts($args) { return []; }
+}
+
+if (!function_exists('update_post_meta')) {
+    function update_post_meta($post_id, $key, $value): void {}
 }
 
 if (!function_exists('wp_is_post_revision')) {
