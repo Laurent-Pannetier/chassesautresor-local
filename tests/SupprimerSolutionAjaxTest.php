@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
+use ChassesAuTresor\Core\Content\SolutionDeletionAjaxHandler;
 
 if (!function_exists('check_ajax_referer')) {
     function check_ajax_referer($action, $queryArg = false): bool
@@ -42,6 +43,15 @@ if (!function_exists('solution_action_autorisee')) {
         global $permission_args;
         $permission_args = [$action, $type, $id];
         return true;
+    }
+}
+
+if (!function_exists('apply_filters')) {
+    function apply_filters($hook, $value, ...$args)
+    {
+        return $hook === 'chassesautresor_can_manage_solution'
+            ? solution_action_autorisee($args[0], $args[1], $args[2])
+            : $value;
     }
 }
 
@@ -108,7 +118,12 @@ if (!function_exists('__')) {
     }
 }
 
-require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-solution.php';
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Relationships/RelationshipService.php';
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Content/SolutionDeletionService.php';
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Content/SolutionDeletionAjaxHandler.php';
 
 final class SupprimerSolutionAjaxTest extends TestCase
 {
@@ -149,7 +164,7 @@ final class SupprimerSolutionAjaxTest extends TestCase
         global $permission_args, $deleted_id, $deleted_force, $json_success, $checkedAjaxNonce;
         $_POST['solution_id'] = 123;
 
-        supprimer_solution_ajax();
+        SolutionDeletionAjaxHandler::handle();
 
         $this->assertSame(['solution_management', 'nonce'], $checkedAjaxNonce);
         $this->assertSame(['delete', 'enigme', 55], $permission_args);
@@ -158,4 +173,3 @@ final class SupprimerSolutionAjaxTest extends TestCase
         $this->assertNull($json_success);
     }
 }
-

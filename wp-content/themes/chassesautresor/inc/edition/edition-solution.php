@@ -27,11 +27,6 @@ if (!class_exists(ChassesAuTresor\Core\Content\SolutionCreationService::class, f
         . '/plugins/chassesautresor-core/src/Content/SolutionCreationService.php';
 }
 
-if (!class_exists(ChassesAuTresor\Core\Content\SolutionDeletionService::class, false)) {
-    require_once dirname(__DIR__, 4)
-        . '/plugins/chassesautresor-core/src/Content/SolutionDeletionService.php';
-}
-
 if (!class_exists(ChassesAuTresor\Core\Content\SolutionFieldPolicyService::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Content/SolutionFieldPolicyService.php';
@@ -576,38 +571,10 @@ function ajax_modifier_solution_modal(): void
 add_action('wp_ajax_modifier_solution_modal', 'ajax_modifier_solution_modal');
 
 /**
- * Supprime une solution via requête AJAX.
- *
- * @hook wp_ajax_supprimer_solution
- * @return void
+ * Connects the core solution controllers to the theme permission policy.
  */
-function supprimer_solution_ajax(): void
+function autoriser_gestion_solution(bool $allowed, string $action, string $targetType, int $targetId): bool
 {
-    check_ajax_referer('solution_management', 'nonce');
-    if (!is_user_logged_in()) {
-        wp_send_json_error('non_connecte');
-    }
-
-    $solution_id = isset($_POST['solution_id']) ? (int) $_POST['solution_id'] : 0;
-    if (!$solution_id || get_post_type($solution_id) !== 'solution') {
-        wp_send_json_error('id_invalide');
-    }
-
-    $deletionService = new ChassesAuTresor\Core\Content\SolutionDeletionService();
-    $target = $deletionService->resolveTarget(
-        (string) get_field('solution_cible_type', $solution_id),
-        get_field('solution_chasse_linked', $solution_id),
-        get_field('solution_enigme_linked', $solution_id)
-    );
-
-    if ($target === null || !solution_action_autorisee('delete', $target['type'], $target['id'])) {
-        wp_send_json_error('acces_refuse');
-    }
-
-    if (!$deletionService->delete($solution_id)) {
-        wp_send_json_error('echec_suppression');
-    }
-
-    wp_send_json_success();
+    return solution_action_autorisee($action, $targetType, $targetId);
 }
-add_action('wp_ajax_supprimer_solution', 'supprimer_solution_ajax');
+add_filter('chassesautresor_can_manage_solution', 'autoriser_gestion_solution', 10, 4);
