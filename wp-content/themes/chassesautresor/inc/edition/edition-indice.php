@@ -555,40 +555,6 @@ function pre_remplir_indice_chasse_linked(array $field): array
 add_filter('acf/load_field/name=indice_chasse_linked', 'pre_remplir_indice_chasse_linked');
 
 /**
- * Sauvegarde la chasse liée si le champ est vide lors de l'enregistrement.
- *
- * @hook acf/save_post
- *
- * @param int|string $post_id ID du post ACF.
- * @return void
- */
-function sauvegarder_indice_chasse_si_manquant($post_id): void
-{
-    if (!is_numeric($post_id) || get_post_type((int) $post_id) !== 'indice') {
-        return;
-    }
-
-    if (wp_is_post_revision($post_id) || wp_is_post_autosave($post_id)) {
-        return;
-    }
-
-    $chasse = get_field('indice_chasse_linked', $post_id);
-    if ($chasse) {
-        return;
-    }
-
-    $relationshipService = cat_get_hint_relationship_service();
-    $chasse_id = $relationshipService->resolveLinkedHuntId(
-        (string) get_field('indice_cible_type', $post_id),
-        get_field('indice_enigme_linked', $post_id),
-        isset($_GET['chasse_id']) ? (int) $_GET['chasse_id'] : null,
-        static fn (int $riddleId) => recuperer_id_chasse_associee($riddleId)
-    );
-    $relationshipService->persistLinkedHunt($post_id, $chasse_id, 'update_field');
-}
-add_action('acf/save_post', 'sauvegarder_indice_chasse_si_manquant', 20);
-
-/**
  * Met à jour les champs de cache d'un indice.
  *
  * @param int|string $post_id  ID du post ACF.

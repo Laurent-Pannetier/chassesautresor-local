@@ -1,5 +1,7 @@
 <?php
 namespace {
+    require_once __DIR__
+        . '/../wp-content/plugins/chassesautresor-core/src/Content/HintRelationshipSaveHookHandler.php';
     if (!function_exists('get_post_type')) {
         function get_post_type($id) {
             global $post_type; return $post_type; }
@@ -12,7 +14,9 @@ namespace {
     }
     if (!function_exists('get_field')) {
         function get_field($field, $post_id) {
-            global $fields; return $fields[$field] ?? null; }
+            global $fields;
+            if ($field === 'enigme_chasse_associee' && $post_id === 42) { return 99; }
+            return $fields[$field] ?? null; }
     }
     if (!function_exists('update_field')) {
         function update_field($field, $value, $post_id) {
@@ -49,7 +53,7 @@ namespace IndiceChasse {
                 'indice_cible_type' => 'enigme',
                 'indice_enigme_linked' => 42,
             ];
-            \sauvegarder_indice_chasse_si_manquant(123);
+            \ChassesAuTresor\Core\Content\HintRelationshipSaveHookHandler::handle(123);
             $this->assertSame(99, $updated_fields['indice_chasse_linked']);
         }
     }
