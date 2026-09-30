@@ -689,20 +689,14 @@ function supprimer_solution_ajax(): void
     }
 
     $cible_type = get_field('solution_cible_type', $solution_id) === 'enigme' ? 'enigme' : 'chasse';
-    if ($cible_type === 'chasse') {
-        $linked = get_field('solution_chasse_linked', $solution_id);
-    } else {
-        $linked = get_field('solution_enigme_linked', $solution_id);
-    }
+    $relationshipService = new ChassesAuTresor\Core\Relationships\RelationshipService();
+    $objet_id = $relationshipService->resolveTargetId(
+        $cible_type,
+        get_field('solution_chasse_linked', $solution_id),
+        get_field('solution_enigme_linked', $solution_id)
+    );
 
-    if (is_array($linked)) {
-        $first    = $linked[0] ?? null;
-        $objet_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
-    } else {
-        $objet_id = (int) $linked;
-    }
-
-    if (!$objet_id || !solution_action_autorisee('delete', $cible_type, $objet_id)) {
+    if ($objet_id === null || !solution_action_autorisee('delete', $cible_type, $objet_id)) {
         wp_send_json_error('acces_refuse');
     }
 
