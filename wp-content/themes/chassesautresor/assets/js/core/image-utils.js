@@ -90,7 +90,8 @@ function initChampImage(bloc) {
                 'modifier_champ_organisateur',
           champ,
           valeur: id,
-          post_id: postId
+          post_id: postId,
+          nonce: cpt === 'organisateur' ? (window.organisateurData?.nonce || '') : ''
         })
       })
         .then(r => r.json())

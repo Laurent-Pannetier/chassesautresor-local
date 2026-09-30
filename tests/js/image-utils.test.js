@@ -6,10 +6,12 @@ describe('initChampImage', () => {
       <div class="champ-organisateur champ-img" data-champ="logo_organisateur" data-cpt="organisateur" data-post-id="123">
         <img src="" />
         <input class="champ-input" type="hidden" />
+        <button class="champ-modifier" type="button">Modifier</button>
         <div class="champ-feedback"></div>
       </div>`;
 
     global.ajaxurl = '/ajax';
+    global.organisateurData = { nonce: 'organizer-nonce' };
     global.fetch = jest.fn(() => Promise.resolve({ json: () => Promise.resolve({ success: true }) }));
     global.mettreAJourResumeInfos = jest.fn();
     global.mettreAJourVisuelCPT = jest.fn();
@@ -60,5 +62,6 @@ describe('initChampImage', () => {
     await flush();
     const params = fetch.mock.calls[0][1].body;
     expect(params.get('action')).toBe('modifier_champ_organisateur');
+    expect(params.get('nonce')).toBe('organizer-nonce');
   });
 });

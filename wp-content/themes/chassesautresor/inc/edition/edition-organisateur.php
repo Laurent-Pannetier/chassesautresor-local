@@ -19,7 +19,6 @@ if (!class_exists(ChassesAuTresor\Core\Content\OrganizerMutationService::class, 
 // 🔹 enqueue_script_organisateur_edit() → Charge JS si modif organisateur possible
 // 🔹 modifier_champ_organisateur() (AJAX) → Enregistre champs organisateur
 // 🔹 rediriger_selon_etat_organisateur() → Redirection auto selon statut
-// 🔹 modifier_titre_organisateur() (AJAX) → Modifie post_title via AJAX
 // 🔹 organisateur_get_liste_liens_publics() → Liste des types de lien publics
 // 🔹 organisateur_get_lien_public_infos() → Détails pour un type de lien
 // 🔹 pre_remplir_utilisateur_associe() → Préremplit le champ utilisateurs_associes avec l’auteur si vide
@@ -137,7 +136,8 @@ function enqueue_script_organisateur_edit()
     $default_email = get_the_author_meta('user_email', $author_id);
 
     wp_localize_script('organisateur-edit', 'organisateurData', [
-      'defaultEmail' => esc_js($default_email)
+      'defaultEmail' => esc_js($default_email),
+      'nonce' => wp_create_nonce('organizer_management'),
     ]);
 
     wp_enqueue_media();
@@ -152,6 +152,8 @@ add_action('wp_enqueue_scripts', 'enqueue_script_organisateur_edit');
 add_action('wp_ajax_modifier_champ_organisateur', 'ajax_modifier_champ_organisateur');
 function ajax_modifier_champ_organisateur()
 {
+  check_ajax_referer('organizer_management', 'nonce');
+
   // 🛡️ Sécurité minimale : utilisateur connecté
   if (!is_user_logged_in()) {
     wp_send_json_error('non_connecte');
@@ -278,75 +280,6 @@ function rediriger_selon_etat_organisateur()
   }
 }
 
-
-add_action('wp_ajax_modifier_titre_organisateur', 'modifier_titre_organisateur');
-/**
- * 🔹 modifier_titre_organisateur (AJAX)
- *
- * Met à jour dynamiquement le post_title du CPT organisateur de l’utilisateur connecté.
- *
- * - Ne fonctionne que si l’utilisateur est bien l’auteur du CPT
- * - Refuse les titres vides ou les accès croisés
- * - Retourne une réponse JSON avec la nouvelle valeur ou un message d’erreur
- *
- * @hook wp_ajax_modifier_titre_organisateur
- */
-function modifier_titre_organisateur()
-{
-  cat_debug('== FICHIER AJAX ORGANISATEUR CHARGÉ ==');
-  cat_debug('== ENTREE AJAX modifier_titre_organisateur ==');
-
-  if (!is_user_logged_in()) {
-    wp_send_json_error('non_connecte');
-  }
-
-  $user_id = get_current_user_id();
-  $titre = sanitize_text_field($_POST['valeur'] ?? '');
-
-  if ($titre === '') {
-    wp_send_json_error('titre_vide');
-  }
-
-  $organisateur_id = get_organisateur_from_user($user_id);
-  if (!$organisateur_id) {
-    wp_send_json_error('organisateur_introuvable');
-  }
-
-  $auteur = (int) get_post_field('post_author', $organisateur_id);
-  if ($auteur !== $user_id) {
-    wp_send_json_error('acces_refuse');
-  }
-
-  if (!utilisateur_peut_editer_champs($organisateur_id)) {
-    wp_send_json_error('acces_refuse');
-  }
-
-  $result = wp_update_post([
-    'ID'         => $organisateur_id,
-    'post_title' => $titre,
-  ], true);
-
-  cat_debug("=== DEBUG TITRE ===");
-  cat_debug("Résultat : " . print_r($result, true));
-  $post = get_post($organisateur_id);
-  cat_debug("Titre réel en base : " . $post->post_title);
-
-
-  cat_debug("=== MODIF ORGANISATEUR ===");
-  cat_debug("User ID: " . $user_id);
-  cat_debug("Post ID: " . $organisateur_id);
-  cat_debug("Titre envoyé : " . $titre);
-
-
-
-  if (is_wp_error($result)) {
-    wp_send_json_error('echec_mise_a_jour');
-  }
-
-  wp_send_json_success([
-    'valeur' => $titre,
-  ]);
-}
 
 /**
  * Retourne la liste complète des types de lien public supportés.
