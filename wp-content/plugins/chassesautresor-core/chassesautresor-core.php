@@ -130,6 +130,7 @@ require_once __DIR__ . '/src/Content/RelatedContentActionService.php';
 require_once __DIR__ . '/src/Content/ContentCreationService.php';
 require_once __DIR__ . '/src/Content/HuntAccessService.php';
 require_once __DIR__ . '/src/Content/RiddleDeletionService.php';
+require_once __DIR__ . '/src/Content/RiddleDeletionAjaxHandler.php';
 require_once __DIR__ . '/src/Content/RiddlePrerequisiteService.php';
 require_once __DIR__ . '/src/Content/RiddleSolutionAttachmentService.php';
 require_once __DIR__ . '/src/Content/RiddleSolutionFilePolicyService.php';
@@ -157,6 +158,7 @@ if (!class_exists('UserMessageRepository', false)) {
 ChassesAuTresor\Core\Content\RiddleRelationshipHookHandler::register('add_action');
 ChassesAuTresor\Core\Content\RiddleRelationshipFilterHandler::register('add_filter');
 ChassesAuTresor\Core\Content\RiddleOrderingAjaxHandler::register('add_action');
+ChassesAuTresor\Core\Content\RiddleDeletionAjaxHandler::register('add_action');
 
 register_activation_hook(
     __FILE__,
