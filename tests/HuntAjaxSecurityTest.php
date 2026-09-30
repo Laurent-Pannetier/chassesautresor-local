@@ -13,18 +13,26 @@ final class HuntAjaxSecurityTest extends TestCase {
             __DIR__
                 . '/../wp-content/plugins/chassesautresor-core/src/Content/HuntDateMutationAjaxHandler.php'
         );
+        $fieldHandlerSource = (string) file_get_contents(
+            __DIR__
+                . '/../wp-content/plugins/chassesautresor-core/src/Content/HuntFieldMutationAjaxHandler.php'
+        );
 
         $this->assertStringContainsString(
             "wp_create_nonce('hunt_field_management')",
             $source
         );
         $this->assertSame(
-            1,
+            0,
             substr_count($source, "check_ajax_referer('hunt_field_management', 'nonce');")
         );
         $this->assertStringContainsString(
             "check_ajax_referer('hunt_field_management', 'nonce');",
             $dateHandlerSource
+        );
+        $this->assertStringContainsString(
+            "check_ajax_referer('hunt_field_management', 'nonce');",
+            $fieldHandlerSource
         );
     }
 }

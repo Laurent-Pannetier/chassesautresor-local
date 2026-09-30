@@ -84,6 +84,7 @@ require_once __DIR__ . '/src/Content/HuntDateMutationAjaxHandler.php';
 require_once __DIR__ . '/src/Content/HuntLinkMutationService.php';
 require_once __DIR__ . '/src/Content/HuntRewardMutationService.php';
 require_once __DIR__ . '/src/Content/HuntFieldMutationService.php';
+require_once __DIR__ . '/src/Content/HuntFieldMutationAjaxHandler.php';
 require_once __DIR__ . '/src/Content/HuntClosureService.php';
 require_once __DIR__ . '/src/Content/HuntCreationRequestService.php';
 require_once __DIR__ . '/src/Content/HuntPostFactory.php';
@@ -169,6 +170,7 @@ ChassesAuTresor\Core\Content\HuntDeletionAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\HuntCreationRouteHandler::register('add_action');
 ChassesAuTresor\Core\Content\RiddleCreationRouteHandler::register('add_action');
 ChassesAuTresor\Core\Content\HuntDateMutationAjaxHandler::register('add_action');
+ChassesAuTresor\Core\Content\HuntFieldMutationAjaxHandler::register('add_action');
 
 register_activation_hook(
     __FILE__,

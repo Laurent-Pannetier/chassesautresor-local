@@ -142,12 +142,6 @@ function enqueue_script_chasse_edit()
 }
 add_action('wp_enqueue_scripts', 'enqueue_script_chasse_edit');
 
-
-/**
- * 🔹 modifier_champ_chasse() → Gère l’enregistrement AJAX des champs ACF ou natifs du CPT chasse (post_title inclus).
- */
-add_action('wp_ajax_modifier_champ_chasse', 'modifier_champ_chasse');
-
 function autoriser_modification_dates_chasse(bool $allowed, int $huntId): bool {
     return utilisateur_peut_modifier_post($huntId) && utilisateur_peut_editer_champs($huntId);
 }
@@ -158,179 +152,40 @@ function actualiser_statuts_apres_modification_dates(int $huntId): void {
 }
 add_action('chassesautresor_hunt_dates_updated', 'actualiser_statuts_apres_modification_dates');
 
-/**
- * 🔸 Enregistrement AJAX d’un champ ACF ou natif du CPT chasse.
- *
- * Autorise :
- * - Le champ natif `post_title`
- * - Les champs ACF simples (text, number, true_false, etc.)
- * - Le répéteur `chasse_principale_liens`
- *
- * Vérifie que :
- * - L'utilisateur est connecté
- * - Il est l'auteur du post
- *
- * Les données sont sécurisées et vérifiées, même si `update_field()` retourne false.
- *
- * @hook wp_ajax_modifier_champ_chasse
- */
-function modifier_champ_chasse()
-{
-  check_ajax_referer('hunt_field_management', 'nonce');
 
-  if (!is_user_logged_in()) {
-    wp_send_json_error('non_connecte');
-  }
-
-  $user_id = get_current_user_id();
-  $champ   = sanitize_text_field($_POST['champ'] ?? '');
-  $valeur  = wp_kses_post($_POST['valeur'] ?? '');
-  $post_id = isset($_POST['post_id']) ? (int) $_POST['post_id'] : 0;
-
-  if (!$champ || !isset($_POST['valeur'])) {
-    wp_send_json_error('⚠️ donnees_invalides');
-  }
-
-  if (!$post_id || get_post_type($post_id) !== 'chasse') {
-    wp_send_json_error('⚠️ post_invalide');
-  }
-
-  if (!utilisateur_peut_modifier_post($post_id)) {
-    wp_send_json_error('⚠️ acces_refuse');
-  }
-
-    $demande_terminer = ($champ === 'champs_caches.chasse_cache_statut' && $valeur === 'termine');
-    $champ_fin = in_array(
-        $champ,
-        ['champs_caches.chasse_cache_gagnants', 'champs_caches.chasse_cache_date_decouverte'],
-        true
-    );
-    $champ_libre = ($champ === 'chasse_principale_liens');
-
-    if (!$demande_terminer && !$champ_fin && !$champ_libre && !utilisateur_peut_editer_champs($post_id)) {
-        wp_send_json_error('⚠️ acces_refuse');
-    }
-
-    $doit_recalculer_statut = false;
-    $champ_valide = false;
-    $reponse = ['champ' => $champ, 'valeur' => $valeur];
-  // 🛡️ Initialisation sécurisée (champ simple)
-
-
-  // 🔹 post_title
-  if ($champ === 'post_title') {
-    $ok = wp_update_post(['ID' => $post_id, 'post_title' => $valeur], true);
-    if (is_wp_error($ok)) {
-      wp_send_json_error('⚠️ echec_update_post_title');
-    }
-    wp_send_json_success($reponse);
-  }
-
-  // 🔹 chasse_principale_liens (répéteur JSON)
-  if ($champ === 'chasse_principale_liens') {
-    $mutation = (new ChassesAuTresor\Core\Content\HuntLinkMutationService())->apply(
-      $post_id,
-      (string) $valeur,
-      'sanitize_text_field',
-      'esc_url_raw',
-      'get_field',
-      'update_field'
-    );
-    if ($mutation['error'] !== null) {
-      $message = $mutation['error'] === 'format_invalide'
-        ? __('⚠️ format_invalide', 'chassesautresor-com')
-        : __('⚠️ echec_mise_a_jour_liens', 'chassesautresor-com');
-      wp_send_json_error($message);
-    }
-
-    wp_send_json_success(['champ' => $champ, 'valeur' => $mutation['value']]);
-  }
-
-
-  // 🔹 Champs récompense
-  $rewardMutation = (new ChassesAuTresor\Core\Content\HuntRewardMutationService())->apply(
-    $post_id,
-    $champ,
-    $valeur,
-    'update_field'
-  );
-  if ($rewardMutation['error'] !== null) {
-    wp_send_json_error($rewardMutation['error']);
-  }
-  if ($rewardMutation['handled']) {
-    $champ_valide = true;
-    $doit_recalculer_statut = $rewardMutation['recalculate_status'];
-  }
-
-  // 🔹 Champs standards
-  $fieldMutation = (new ChassesAuTresor\Core\Content\HuntFieldMutationService())->apply(
-    $post_id,
-    $champ,
-    $valeur,
-    static fn (string $date, array $formats) => convertir_en_datetime($date, $formats),
-    'sanitize_text_field',
-    'update_field'
-  );
-  if ($fieldMutation['error'] !== null) {
-    if ($fieldMutation['error'] === 'format_date_invalide') {
-      $message = __('⚠️ format_date_invalide', 'chassesautresor-com');
-    } elseif ($fieldMutation['error'] === 'valeur_invalide') {
-      $message = __('⚠️ valeur_invalide', 'chassesautresor-com');
-    } else {
-      $message = __('⚠️ echec_mise_a_jour', 'chassesautresor-com');
-    }
-    wp_send_json_error($message);
-  }
-  if ($fieldMutation['handled']) {
-    $champ_valide = true;
-    $doit_recalculer_statut = $fieldMutation['recalculate_status'];
-  }
-
-
-  // 🔹 Déclenchement de la publication différée des solutions
-  $completion = (new ChassesAuTresor\Core\Content\HuntClosureService())->apply(
-    $post_id,
-    $champ,
-    $valeur,
-    'update_field',
-    'recuperer_enigmes_associees',
-    [ChassesAuTresor\Core\Content\RiddleSolutionFileScheduler::class, 'schedule'],
-    'solution_recuperer_par_objet',
-    'solution_planifier_publication',
-    'gerer_chasse_terminee'
-  );
-  if ($completion['error'] !== null) {
-    wp_send_json_error(__('⚠️ echec_mise_a_jour', 'chassesautresor-com'));
-  }
-  if ($completion['handled']) {
-    $champ_valide = true;
-  }
-
-
-
-  // 🔹 Refus des champs qui ne sont gérés par aucun service métier
-  if (!$champ_valide) {
-    wp_send_json_error(__('⚠️ champ_non_autorise', 'chassesautresor-com'));
-  }
-
-  // 🔁 Recalcul du statut si le champ fait partie des déclencheurs
-  $champs_declencheurs_statut = [
-    'caracteristiques.chasse_infos_date_debut',
-    'caracteristiques.chasse_infos_date_fin',
-    'caracteristiques.chasse_infos_cout_points',
-    'caracteristiques.chasse_infos_duree_illimitee',
-    'champs_caches.chasse_cache_statut_validation',
-    'chasse_cache_statut_validation',
-    'champs_caches.chasse_cache_date_decouverte',
-    'chasse_cache_date_decouverte',
-  ];
-
-  if ($doit_recalculer_statut || in_array($champ, $champs_declencheurs_statut, true)) {
-    wp_cache_delete($post_id, 'post');
-    sleep(1); // donne une chance au cache + update ACF de se stabiliser
-    $caracteristiques = get_field('chasse_infos_date_debut', $post_id);
-    cat_debug("[🔁 RELOAD] Relecture avant recalcul : " . json_encode($caracteristiques));
-    mettre_a_jour_statuts_chasse($post_id);
-  }
-  wp_send_json_success($reponse);
+function autoriser_modification_chasse(bool $allowed, int $huntId): bool {
+    return utilisateur_peut_modifier_post($huntId);
 }
+add_filter('chassesautresor_can_modify_hunt', 'autoriser_modification_chasse', 10, 2);
+
+function autoriser_modification_champs_chasse(bool $allowed, int $huntId): bool {
+    return utilisateur_peut_editer_champs($huntId);
+}
+add_filter('chassesautresor_can_edit_hunt_fields', 'autoriser_modification_champs_chasse', 10, 2);
+
+/**
+ * Adapte les dépendances historiques de clôture au service métier du cœur.
+ *
+ * @param mixed $result
+ * @param mixed $value
+ * @return array{handled:bool,error:?string}
+ */
+function appliquer_cloture_chasse($result, int $huntId, string $field, $value): array {
+    return (new ChassesAuTresor\Core\Content\HuntClosureService())->apply(
+        $huntId,
+        $field,
+        $value,
+        'update_field',
+        'recuperer_enigmes_associees',
+        [ChassesAuTresor\Core\Content\RiddleSolutionFileScheduler::class, 'schedule'],
+        'solution_recuperer_par_objet',
+        'solution_planifier_publication',
+        'gerer_chasse_terminee'
+    );
+}
+add_filter('chassesautresor_apply_hunt_closure', 'appliquer_cloture_chasse', 10, 4);
+
+function actualiser_statuts_apres_modification_champs(int $huntId): void {
+    mettre_a_jour_statuts_chasse($huntId);
+}
+add_action('chassesautresor_hunt_fields_updated', 'actualiser_statuts_apres_modification_champs');
