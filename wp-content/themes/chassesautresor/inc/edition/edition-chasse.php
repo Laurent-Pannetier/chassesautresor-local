@@ -41,6 +41,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\HuntDeletionService::class, false
         . '/plugins/chassesautresor-core/src/Content/HuntDeletionService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HuntInitializationService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HuntInitializationService.php';
+}
+
 // ==================================================
 // 🗺️ CRÉATION & ÉDITION D’UNE CHASSE
 // ==================================================
@@ -467,73 +472,44 @@ function modifier_champ_chasse()
  * @param int     $post_id ID du post en cours de sauvegarde.
  * @param WP_Post $post    Objet du post.
  */
-function assigner_organisateur_a_chasse($post_id, $post)
+function initialiser_chasse_apres_enregistrement($post_id, $post)
 {
-  // Vérifier que c'est bien un CPT "chasse"
-  if ($post->post_type !== 'chasse') {
-    return;
-  }
+    $result = (new ChassesAuTresor\Core\Content\HuntInitializationService())->initialize(
+        (int) $post_id,
+        (string) ($post->post_type ?? ''),
+        defined('DOING_AUTOSAVE') && DOING_AUTOSAVE,
+        (int) current_time('timestamp'),
+        'get_organisateur_from_chasse',
+        static function (int $huntId, int $organizerId): bool {
+            return mettre_a_jour_relation_acf(
+                $huntId,
+                'chasse_cache_organisateur',
+                $organizerId,
+                'field_67cfcba8c3bec'
+            );
+        },
+        static fn (int $huntId) => get_post_meta($huntId, 'chasse_infos_date_fin', true),
+        static function (int $huntId, string $endDate): bool {
+            $updated = update_field('chasse_infos_date_fin', $endDate, $huntId);
+            if ($updated === false) {
+                return update_post_meta($huntId, 'chasse_infos_date_fin', $endDate) !== false;
+            }
 
-  // Éviter les sauvegardes automatiques
-  if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
-    return;
-  }
-
-  // Récupérer l'ID du CPT organisateur associé
-  $organisateur_id = get_organisateur_from_chasse($post_id);
-
-  // Vérifier si l'organisateur existe et mettre à jour le champ via la fonction générique
-  if (!empty($organisateur_id)) {
-    $resultat = mettre_a_jour_relation_acf(
-      $post_id,                       // ID du post (chasse)
-      'chasse_cache_organisateur',    // Nom du champ relation
-      $organisateur_id,               // ID du post cible (organisateur)
-      'field_67cfcba8c3bec'
+            return true;
+        }
     );
 
-    // Vérification après mise à jour
-    if (!$resultat) {
-      cat_debug("🛑 Échec de la mise à jour de organisateur_chasse pour la chasse $post_id");
+    if (!$result['handled']) {
+        return;
     }
-  } else {
-    cat_debug("🛑 Aucun organisateur trouvé pour la chasse $post_id (aucune mise à jour)");
-  }
+
+    if ($result['organizer_id'] === 0) {
+        cat_debug("🛑 Aucun organisateur trouvé pour la chasse $post_id (aucune mise à jour)");
+    } elseif (!$result['organizer_persisted']) {
+        cat_debug("🛑 Échec de la mise à jour de organisateur_chasse pour la chasse $post_id");
+    }
 }
-add_action('save_post_chasse', 'assigner_organisateur_a_chasse', 20, 2);
-
-/**
- * Définit automatiquement une date de fin par défaut lors de la création d'une chasse.
- *
- * Si aucune date n'est encore renseignée, on initialise le champ avec la
- * date du jour + 2 ans, en suivant la même logique que le JavaScript frontal.
- *
- * @param int     $post_id ID de la chasse.
- * @param WP_Post $post    Objet du post courant.
- */
-function definir_date_fin_par_defaut($post_id, $post)
-{
-  if ($post->post_type !== 'chasse') {
-    return;
-  }
-
-  if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
-    return;
-  }
-
-  $date_fin = get_post_meta($post_id, 'chasse_infos_date_fin', true);
-  if ($date_fin) {
-    return;
-  }
-
-  $timestamp   = current_time('timestamp');
-  $in_two_years = date('Y-m-d', strtotime('+2 years', $timestamp));
-
-  $ok = update_field('chasse_infos_date_fin', $in_two_years, $post_id);
-  if ($ok === false) {
-    update_post_meta($post_id, 'chasse_infos_date_fin', $in_two_years);
-  }
-}
-add_action('save_post_chasse', 'definir_date_fin_par_defaut', 10, 2);
+add_action('save_post_chasse', 'initialiser_chasse_apres_enregistrement', 20, 2);
 
 add_action('wp_ajax_supprimer_chasse', 'supprimer_chasse_ajax');
 

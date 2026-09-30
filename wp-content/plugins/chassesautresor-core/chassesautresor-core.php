@@ -83,6 +83,7 @@ require_once __DIR__ . '/src/Content/HuntClosureService.php';
 require_once __DIR__ . '/src/Content/HuntCreationRequestService.php';
 require_once __DIR__ . '/src/Content/HuntPostFactory.php';
 require_once __DIR__ . '/src/Content/HuntDeletionService.php';
+require_once __DIR__ . '/src/Content/HuntInitializationService.php';
 require_once __DIR__ . '/src/Content/SolutionAvailabilityService.php';
 require_once __DIR__ . '/src/Content/SolutionCacheService.php';
 require_once __DIR__ . '/src/Content/SolutionCacheUpdater.php';
