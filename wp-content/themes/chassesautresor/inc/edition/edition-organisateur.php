@@ -1,6 +1,10 @@
 <?php
 defined('ABSPATH') || exit;
 
+if (!class_exists(ChassesAuTresor\Core\Content\OrganizerCreationService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/OrganizerCreationService.php';
+}
 
 // ==================================================
 // 👤 CRÉATION & ÉDITION D’UN ORGANISATEUR
@@ -55,45 +59,40 @@ function organisateur_get_liens_actifs(int $organisateur_id): array
  */
 function creer_organisateur_pour_utilisateur($user_id)
 {
-  if (!is_int($user_id) || $user_id <= 0) {
-    cat_debug("❌ ID utilisateur invalide : $user_id");
-    return null;
-  }
+    $user_id = is_int($user_id) ? $user_id : 0;
+    $existing_id = $user_id > 0 ? (int) get_organisateur_from_user($user_id) : 0;
+    $user_data = $user_id > 0 ? get_userdata($user_id) : false;
+    $result = (new ChassesAuTresor\Core\Content\OrganizerCreationService())->create(
+        $user_id,
+        $existing_id,
+        TITRE_DEFAUT_ORGANISATEUR,
+        $user_data ? (string) $user_data->user_email : '',
+        'wp_insert_post',
+        'update_field',
+        'is_wp_error'
+    );
 
-  // Vérifie si un organisateur est déjà lié à cet utilisateur
-  $existant = get_organisateur_from_user($user_id);
-  if ($existant) {
-    cat_debug("ℹ️ Un organisateur existe déjà pour l'utilisateur $user_id (ID : $existant)");
-    // Renvoie simplement l'ID existant pour éviter un échec de confirmation
-    return (int) $existant;
-  }
+    if ($result['error'] === 'invalid_user') {
+        cat_debug("❌ ID utilisateur invalide : $user_id");
+        return null;
+    }
 
-  // Crée le post "organisateur" avec statut pending
-  $post_id = wp_insert_post([
-    'post_type'   => 'organisateur',
-    'post_status' => 'pending',
-    'post_title'  => TITRE_DEFAUT_ORGANISATEUR,
-    'post_author' => $user_id,
-  ]);
+    if (!$result['created'] && $result['organizer_id']) {
+        cat_debug(
+            "ℹ️ Un organisateur existe déjà pour l'utilisateur $user_id (ID : {$result['organizer_id']})"
+        );
+        return $result['organizer_id'];
+    }
 
-  if (is_wp_error($post_id)) {
-    cat_debug("❌ Erreur création organisateur : " . $post_id->get_error_message());
-    return null;
-  }
+    if ($result['error'] !== null) {
+        cat_debug("❌ Erreur création organisateur pour l'utilisateur $user_id");
+        return null;
+    }
 
-  // Liaison utilisateur (champ relation)
-  update_field('utilisateurs_associes', [strval($user_id)], $post_id);
+    $organizer_id = (int) $result['organizer_id'];
+    cat_debug("✅ Organisateur créé (pending) pour user $user_id : post ID $organizer_id");
 
-  // Préremplissage logo + email
-  $user_data = get_userdata($user_id);
-  $email = $user_data ? $user_data->user_email : '';
-
-  update_field('logo_organisateur', 3927, $post_id);
-  update_field('profil_public_email_contact', $email, $post_id);
-
-  cat_debug("✅ Organisateur créé (pending) pour user $user_id : post ID $post_id");
-
-  return $post_id;
+    return $organizer_id;
 }
 
 
@@ -494,24 +493,13 @@ function organisateur_get_lien_public_infos($type_de_lien)
  */
 function pre_remplir_utilisateur_associe($post_id)
 {
-  if (get_post_type($post_id) !== 'organisateur') {
-    return;
-  }
-
-  if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
-    return;
-  }
-
-  $auteur_id = get_post_field('post_author', $post_id);
-  if (!$auteur_id) {
-    return;
-  }
-
-  $utilisateurs_associes = get_post_meta($post_id, 'utilisateurs_associes', true);
-
-  if (empty($utilisateurs_associes) || !is_array($utilisateurs_associes)) {
-    // Stocker uniquement l’auteur sous forme de tableau non sérialisé
-    update_field('utilisateurs_associes', [strval($auteur_id)], $post_id);
-  }
+    (new ChassesAuTresor\Core\Content\OrganizerCreationService())->ensureAuthorRelationship(
+        (int) $post_id,
+        (string) get_post_type($post_id),
+        defined('DOING_AUTOSAVE') && DOING_AUTOSAVE,
+        (int) get_post_field('post_author', $post_id),
+        get_post_meta($post_id, 'utilisateurs_associes', true),
+        'update_field'
+    );
 }
 add_action('acf/save_post', 'pre_remplir_utilisateur_associe', 20);
