@@ -338,10 +338,9 @@ function modifier_champ_enigme()
     wp_send_json_error('⚠️ acces_refuse');
   }
 
-  $champ_valide    = false;
-  $reponse         = ['champ' => $champ, 'valeur' => $valeur];
-  $ancien_complet  = (bool) get_field('enigme_cache_complet', $post_id);
-  $field_policy    = new ChassesAuTresor\Core\Content\RiddleFieldPolicyService();
+  $champ_valide   = false;
+  $ancien_complet = (bool) get_field('enigme_cache_complet', $post_id);
+  $field_policy   = new ChassesAuTresor\Core\Content\RiddleFieldPolicyService();
 
   if (!$field_policy->isEditableField($champ)) {
     wp_send_json_error('⚠️ champ_interdit');
@@ -358,7 +357,7 @@ function modifier_champ_enigme()
     if (is_wp_error($ok)) {
       wp_send_json_error('⚠️ echec_update_post_title');
     }
-    wp_send_json_success($reponse);
+    wp_send_json_success(['champ' => $champ, 'valeur' => $valeur]);
   }
 
   // 🔹 Mode de validation
@@ -472,14 +471,20 @@ function modifier_champ_enigme()
   if (function_exists('verifier_ou_mettre_a_jour_cache_complet')) {
     verifier_ou_mettre_a_jour_cache_complet($post_id);
   }
-  $nouveau_complet              = (bool) get_field('enigme_cache_complet', $post_id);
-  $reponse['complet']           = $nouveau_complet;
-  $reponse['complet_changed']   = $ancien_complet !== $nouveau_complet;
-  $reponse['chasse_id']         = function_exists('recuperer_id_chasse_associee')
+  $nouveau_complet = (bool) get_field('enigme_cache_complet', $post_id);
+  $chasse_id = function_exists('recuperer_id_chasse_associee')
     ? (int) recuperer_id_chasse_associee($post_id)
     : 0;
 
-  wp_send_json_success($reponse);
+  wp_send_json_success(
+    (new ChassesAuTresor\Core\Content\RiddleManagementService())->getFieldUpdateResponse(
+      $champ,
+      $valeur,
+      $ancien_complet,
+      $nouveau_complet,
+      $chasse_id
+    )
+  );
 }
 
 

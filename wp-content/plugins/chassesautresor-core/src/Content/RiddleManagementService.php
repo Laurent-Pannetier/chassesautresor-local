@@ -12,6 +12,25 @@ class RiddleManagementService
     public const MAX_RIDDLES_PER_HUNT = 40;
 
     /**
+     * @return array{champ:string,valeur:mixed,complet:bool,complet_changed:bool,chasse_id:int}
+     */
+    public function getFieldUpdateResponse(
+        string $field,
+        $value,
+        bool $wasComplete,
+        bool $isComplete,
+        int $huntId
+    ): array {
+        return [
+            'champ' => $field,
+            'valeur' => $value,
+            'complet' => $isComplete,
+            'complet_changed' => $wasComplete !== $isComplete,
+            'chasse_id' => max(0, $huntId),
+        ];
+    }
+
+    /**
      * @param int[] $submittedIds
      * @param int[] $huntRiddleIds
      * @return array<int, int> Riddle IDs indexed by their new menu order.

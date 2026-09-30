@@ -40,6 +40,34 @@ class RiddleManagementServiceTest extends TestCase
         $this->assertSame([], $this->service->getReorderUpdates([99], [12, 24]));
     }
 
+    public function testFieldUpdateResponseReportsCompletionTransition(): void
+    {
+        $this->assertSame(
+            [
+                'champ' => 'enigme_reponse_bonne',
+                'valeur' => '["trésor"]',
+                'complet' => true,
+                'complet_changed' => true,
+                'chasse_id' => 12,
+            ],
+            $this->service->getFieldUpdateResponse(
+                'enigme_reponse_bonne',
+                '["trésor"]',
+                false,
+                true,
+                12
+            )
+        );
+    }
+
+    public function testFieldUpdateResponseNormalizesMissingHunt(): void
+    {
+        $response = $this->service->getFieldUpdateResponse('enigme_reponse_casse', 1, true, true, -1);
+
+        $this->assertFalse($response['complet_changed']);
+        $this->assertSame(0, $response['chasse_id']);
+    }
+
     /**
      * @dataProvider deniedAdditionProvider
      */
