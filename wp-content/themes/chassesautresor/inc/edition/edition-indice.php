@@ -110,17 +110,14 @@ function rediriger_si_affichage_indice(): void
         return;
     }
 
-    $indice_id   = get_the_ID();
-    $cible_type  = get_field('indice_cible_type', $indice_id);
-    $redirect_id = 0;
+    $indice_id = get_the_ID();
+    $redirect_id = (new ChassesAuTresor\Core\Relationships\RelationshipService())->resolveHintTargetId(
+        (string) get_field('indice_cible_type', $indice_id),
+        get_field('indice_chasse_linked', $indice_id),
+        get_field('indice_enigme_linked', $indice_id)
+    );
 
-    if ($cible_type === 'chasse') {
-        $redirect_id = (int) get_field('indice_chasse_linked', $indice_id);
-    } elseif ($cible_type === 'enigme') {
-        $redirect_id = (int) get_field('indice_enigme_linked', $indice_id);
-    }
-
-    if ($redirect_id) {
+    if ($redirect_id !== null) {
         wp_safe_redirect(get_permalink($redirect_id));
         exit;
     }
@@ -940,15 +937,17 @@ function pre_remplir_indice_chasse_linked(array $field): array
         return $field;
     }
 
-    $chasse_id = null;
-    $cible_type = get_field('indice_cible_type', $post->ID);
-    $enigme_id  = get_field('indice_enigme_linked', $post->ID);
-
-    if ($cible_type === 'enigme' && $enigme_id) {
-        $chasse_id = recuperer_id_chasse_associee((int) $enigme_id);
-    } elseif (isset($_GET['chasse_id'])) {
-        $chasse_id = (int) $_GET['chasse_id'];
-    }
+    $cible_type = (string) get_field('indice_cible_type', $post->ID);
+    $enigme_id = (int) get_field('indice_enigme_linked', $post->ID);
+    $riddleHuntId = $cible_type === 'enigme' && $enigme_id > 0
+        ? (int) recuperer_id_chasse_associee($enigme_id)
+        : null;
+    $requestedHuntId = isset($_GET['chasse_id']) ? (int) $_GET['chasse_id'] : null;
+    $chasse_id = cat_get_hint_creation_service()->resolveLinkedHuntId(
+        $cible_type,
+        $riddleHuntId,
+        $requestedHuntId
+    );
 
     if ($chasse_id) {
         $field['value'] = $chasse_id;
@@ -981,17 +980,17 @@ function sauvegarder_indice_chasse_si_manquant($post_id): void
         return;
     }
 
-    $chasse_id  = null;
-    $cible_type = get_field('indice_cible_type', $post_id);
-    $enigme_id  = get_field('indice_enigme_linked', $post_id);
-
-    if ($cible_type === 'enigme' && $enigme_id) {
-        $chasse_id = recuperer_id_chasse_associee((int) $enigme_id);
-    } elseif ($cible_type === 'chasse' && isset($_GET['chasse_id'])) {
-        $chasse_id = (int) $_GET['chasse_id'];
-    } elseif (isset($_GET['chasse_id'])) {
-        $chasse_id = (int) $_GET['chasse_id'];
-    }
+    $cible_type = (string) get_field('indice_cible_type', $post_id);
+    $enigme_id = (int) get_field('indice_enigme_linked', $post_id);
+    $riddleHuntId = $cible_type === 'enigme' && $enigme_id > 0
+        ? (int) recuperer_id_chasse_associee($enigme_id)
+        : null;
+    $requestedHuntId = isset($_GET['chasse_id']) ? (int) $_GET['chasse_id'] : null;
+    $chasse_id = cat_get_hint_creation_service()->resolveLinkedHuntId(
+        $cible_type,
+        $riddleHuntId,
+        $requestedHuntId
+    );
 
     if ($chasse_id) {
         update_field('indice_chasse_linked', $chasse_id, $post_id);

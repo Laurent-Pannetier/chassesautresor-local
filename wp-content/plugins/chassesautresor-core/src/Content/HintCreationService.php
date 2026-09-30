@@ -23,6 +23,16 @@ class HintCreationService
         return $targetId > 0 && $linkedRiddleId === $targetId;
     }
 
+    public function resolveLinkedHuntId(
+        string $targetType,
+        ?int $riddleHuntId,
+        ?int $requestedHuntId
+    ): ?int {
+        $huntId = $targetType === 'enigme' ? $riddleHuntId : $requestedHuntId;
+
+        return $huntId !== null && $huntId > 0 ? $huntId : null;
+    }
+
     public function getCreationError(
         bool $supportedTargetType,
         bool $targetMatchesType,

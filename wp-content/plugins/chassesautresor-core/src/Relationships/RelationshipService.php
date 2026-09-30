@@ -69,4 +69,23 @@ class RelationshipService
 
         return null;
     }
+
+    /**
+     * Resolve the content directly targeted by a hint.
+     *
+     * @param mixed $hunt
+     * @param mixed $riddle
+     */
+    public function resolveHintTargetId(string $targetType, $hunt, $riddle): ?int
+    {
+        if ($targetType === 'chasse') {
+            return $this->normalizeId($hunt);
+        }
+
+        if ($targetType === 'enigme') {
+            return $this->normalizeId($riddle);
+        }
+
+        return null;
+    }
 }

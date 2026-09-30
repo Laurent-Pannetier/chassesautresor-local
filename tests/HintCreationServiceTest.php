@@ -33,6 +33,14 @@ class HintCreationServiceTest extends TestCase
         $this->assertTrue($this->service->hasConsistentRiddleTarget('chasse', 12, 0));
     }
 
+    public function testLinkedHuntComesFromRiddleOrRequestContext(): void
+    {
+        $this->assertSame(24, $this->service->resolveLinkedHuntId('enigme', 24, 12));
+        $this->assertSame(12, $this->service->resolveLinkedHuntId('chasse', 24, 12));
+        $this->assertNull($this->service->resolveLinkedHuntId('enigme', null, 12));
+        $this->assertNull($this->service->resolveLinkedHuntId('chasse', 24, 0));
+    }
+
     public function testNewHintStartsPendingImmediateAndDisabled(): void
     {
         $this->assertSame(
