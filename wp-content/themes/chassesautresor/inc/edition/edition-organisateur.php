@@ -6,6 +6,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\OrganizerCreationService::class, 
         . '/plugins/chassesautresor-core/src/Content/OrganizerCreationService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\OrganizerMutationService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/OrganizerMutationService.php';
+}
+
 // ==================================================
 // 👤 CRÉATION & ÉDITION D’UN ORGANISATEUR
 // ==================================================
@@ -179,123 +184,39 @@ function ajax_modifier_champ_organisateur()
     wp_send_json_error('⚠️ acces_refuse');
   }
 
-  // 🗺️ Table de correspondance si champ dans un groupe ACF
-  $champ_correspondances = [
-    'email_contact'                     => 'profil_public_email_contact',
-    'parlez_de_vous_presentation'       => 'description_longue',
-    'logo_organisateur'                 => 'logo_organisateur',
-  ];
+    $mutation = (new ChassesAuTresor\Core\Content\OrganizerMutationService())->apply(
+        (int) $post_id,
+        $champ,
+        $valeur,
+        'sanitize_text_field',
+        'esc_url_raw',
+        'wp_strip_all_tags',
+        static fn (array $postData) => wp_update_post($postData, true),
+        'is_wp_error',
+        'update_field',
+        'get_field',
+        static fn (int $postId, string $field) => get_post_meta($postId, $field, true)
+    );
 
-  // 🔁 Corrige le nom du champ si groupé
-  $champ_cible = $champ_correspondances[$champ] ?? $champ;
-
-  if ($champ_cible === 'logo_organisateur') {
-    $valeur = absint($valeur);
-  }
-
-  // 🛑 Validation métier : texte de présentation minimal
-  if ($champ_cible === 'description_longue') {
-    $texte = wp_strip_all_tags($valeur);
-    if (mb_strlen(trim($texte)) < 50) {
-      wp_send_json_error('votre texte doit comporter au moins 50 caractères');
-    }
-  }
-
-  // ✏️ Titre natif WordPress
-  if ($champ === 'post_title') {
-    $ok = wp_update_post([
-      'ID'         => $post_id,
-      'post_title' => $valeur
-    ], true);
-
-    if (is_wp_error($ok)) {
-      wp_send_json_error('⚠️ echec_update_post_title');
-    }
-
-    wp_send_json_success([
-      'champ'  => $champ,
-      'valeur' => $valeur
-    ]);
-  }
-
-  // 🔗 Liens publics (répéteur)
-  if ($champ === 'liens_publics') {
-    $tableau = json_decode(stripslashes($valeur), true);
-
-    if (!is_array($tableau)) {
-      wp_send_json_error('⚠️ format_invalide');
-    }
-
-    $repetitions = [];
-    foreach ($tableau as $ligne) {
-      $type = sanitize_text_field($ligne['type_de_lien'] ?? '');
-      $url  = esc_url_raw($ligne['url_lien'] ?? '');
-
-      if ($type && $url) {
-        $repetitions[] = [
-          'type_de_lien' => $type,
-          'url_lien'     => $url
+    if ($mutation['error'] !== null) {
+        $messages = [
+            'description_too_short' => __(
+                'Votre texte doit comporter au moins 50 caractères.',
+                'chassesautresor-com'
+            ),
+            'title_update_failed' => '⚠️ echec_update_post_title',
+            'invalid_format' => '⚠️ format_invalide',
+            'links_update_failed' => '⚠️ echec_mise_a_jour_liens',
+            'bank_details_update_failed' => '⚠️ echec_mise_a_jour_coordonnees',
+            'field_update_failed' => '⚠️ echec_mise_a_jour_final',
         ];
-      }
+        wp_send_json_error($messages[$mutation['error']]);
     }
 
-    $ok = update_field('liens_publics', $repetitions, $post_id);
-
-    // ✅ ASTUCE MAJEURE : ACF retourne false si même valeur que l’existant → comparer aussi
-    $enregistre = get_field('liens_publics', $post_id);
-    $enregistre = is_array($enregistre) ? array_values($enregistre) : [];
-    $equivalent = json_encode($enregistre) === json_encode($repetitions);
-
-    if ($ok || $equivalent) {
-      wp_send_json_success([
-        'champ'  => $champ,
-        'valeur' => $repetitions
-      ]);
-    }
-
-    wp_send_json_error('⚠️ echec_mise_a_jour_liens');
-  }
-
-  // 🏦 Coordonnées bancaires
-  if ($champ === 'coordonnees_bancaires') {
-    $donnees = json_decode(stripslashes($valeur), true);
-    $iban = sanitize_text_field($donnees['iban'] ?? '');
-    $bic  = sanitize_text_field($donnees['bic'] ?? '');
-    $ok1 = update_field('iban', $iban, $post_id);
-    $ok2 = update_field('bic', $bic, $post_id);
-    // 🎯 Compatibilité avec anciens champs
-    update_field('gagnez_de_largent_iban', $iban, $post_id);
-    update_field('gagnez_de_largent_bic', $bic, $post_id);
-
-    $enregistre_iban = get_field('iban', $post_id);
-    $enregistre_bic  = get_field('bic', $post_id);
-    $sameIban = $enregistre_iban === $iban;
-    $sameBic  = $enregistre_bic === $bic;
-    if (($ok1 !== false && $ok2 !== false) || ($sameIban && $sameBic)) {
-      wp_send_json_success([
-        'champ'  => $champ,
-        'valeur' => ['iban' => $iban, 'bic' => $bic]
-      ]);
-    }
-
-    wp_send_json_error('⚠️ echec_mise_a_jour_coordonnees');
-  }
-
-  // ✅ Autres champs ACF simples
-  $ok = update_field($champ_cible, is_numeric($valeur) ? (int) $valeur : $valeur, $post_id);
-
-  // 🔍 Vérifie via get_post_meta en fallback
-  $valeur_meta = get_post_meta($post_id, $champ_cible, true);
-  $valeur_comparee = stripslashes_deep($valeur);
-
-  if ($ok || trim((string) $valeur_meta) === trim((string) $valeur_comparee)) {
     wp_send_json_success([
-      'champ'  => $champ,
-      'valeur' => $valeur
+        'champ' => $mutation['field'],
+        'valeur' => $mutation['value'],
     ]);
-  }
-
-  wp_send_json_error('⚠️ echec_mise_a_jour_final');
 }
 
 
