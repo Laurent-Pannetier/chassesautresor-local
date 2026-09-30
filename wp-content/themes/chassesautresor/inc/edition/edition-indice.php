@@ -288,21 +288,12 @@ function reordonner_indices(int $objet_id, string $objet_type): void
  */
 function reordonner_indices_pour_indice(int $indice_id): void
 {
-    $cible_type = get_field('indice_cible_type', $indice_id) === 'enigme' ? 'enigme' : 'chasse';
-    $relationshipService = new ChassesAuTresor\Core\Relationships\RelationshipService();
-
-    $objet_id = $relationshipService->resolveHintTargetId(
-        $cible_type,
+    $targets = cat_get_hint_ordering_updater()->resolveAffectedTargets(
+        (string) get_field('indice_cible_type', $indice_id),
         get_field('indice_chasse_linked', $indice_id),
-        get_field('indice_enigme_linked', $indice_id)
+        get_field('indice_enigme_linked', $indice_id),
+        static fn (int $riddleId) => recuperer_id_chasse_associee($riddleId)
     );
-    $chasse_id = $relationshipService->normalizeId(get_field('indice_chasse_linked', $indice_id));
-
-    if ($cible_type === 'enigme' && $chasse_id === null && $objet_id !== null) {
-        $chasse_id = $relationshipService->normalizeId(recuperer_id_chasse_associee($objet_id));
-    }
-
-    $targets = cat_get_hint_ordering_service()->getAffectedTargets($cible_type, $objet_id, $chasse_id);
     foreach ($targets as $target) {
         reordonner_indices($target['id'], $target['type']);
     }

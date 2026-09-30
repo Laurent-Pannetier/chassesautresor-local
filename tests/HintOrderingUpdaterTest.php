@@ -102,4 +102,48 @@ final class HintOrderingUpdaterTest extends TestCase {
         $this->assertSame(1, $count);
         $this->assertSame([[20, 'indice_rank', 1]], $ranks);
     }
+
+    public function testResolvesRiddleAndParentHuntAsAffectedTargets(): void {
+        $resolvedRiddleId = null;
+
+        $targets = $this->updater->resolveAffectedTargets(
+            'enigme',
+            null,
+            [(object) ['ID' => 55]],
+            static function (int $riddleId) use (&$resolvedRiddleId): array {
+                $resolvedRiddleId = $riddleId;
+
+                return ['ID' => 77];
+            }
+        );
+
+        $this->assertSame(55, $resolvedRiddleId);
+        $this->assertSame([
+            ['type' => 'enigme', 'id' => 55],
+            ['type' => 'chasse', 'id' => 77],
+        ], $targets);
+    }
+
+    public function testAffectedTargetsPreferStoredHuntAndHandleHuntTarget(): void {
+        $resolverCalled = false;
+        $resolver = static function () use (&$resolverCalled): int {
+            $resolverCalled = true;
+
+            return 99;
+        };
+
+        $this->assertSame(
+            [
+                ['type' => 'enigme', 'id' => 55],
+                ['type' => 'chasse', 'id' => 88],
+            ],
+            $this->updater->resolveAffectedTargets('enigme', 88, 55, $resolver)
+        );
+        $this->assertFalse($resolverCalled);
+        $this->assertSame(
+            [['type' => 'chasse', 'id' => 44]],
+            $this->updater->resolveAffectedTargets('chasse', 44, null, $resolver)
+        );
+        $this->assertFalse($resolverCalled);
+    }
 }

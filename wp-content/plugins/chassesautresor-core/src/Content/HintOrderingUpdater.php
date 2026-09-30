@@ -71,4 +71,31 @@ class HintOrderingUpdater {
 
         return count($updates);
     }
+
+    /**
+     * @param mixed $linkedHunt
+     * @param mixed $linkedRiddle
+     * @param callable(int): mixed $resolveRiddleHunt
+     * @return array<int, array{type:string,id:int}>
+     */
+    public function resolveAffectedTargets(
+        string $storedTargetType,
+        $linkedHunt,
+        $linkedRiddle,
+        callable $resolveRiddleHunt
+    ): array {
+        $targetType = $storedTargetType === 'enigme' ? 'enigme' : 'chasse';
+        $targetId = $this->relationshipService->resolveHintTargetId(
+            $targetType,
+            $linkedHunt,
+            $linkedRiddle
+        );
+        $huntId = $this->relationshipService->normalizeId($linkedHunt);
+
+        if ($targetType === 'enigme' && $huntId === null && $targetId !== null) {
+            $huntId = $this->relationshipService->normalizeId($resolveRiddleHunt($targetId));
+        }
+
+        return $this->orderingService->getAffectedTargets($targetType, $targetId, $huntId);
+    }
 }
