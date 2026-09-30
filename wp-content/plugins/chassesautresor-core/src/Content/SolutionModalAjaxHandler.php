@@ -43,7 +43,7 @@ class SolutionModalAjaxHandler {
             wp_send_json_error($requestError);
         }
 
-        $solutionId = apply_filters('chassesautresor_create_solution', 0, $targetId, $targetType);
+        $solutionId = SolutionCreationRouteHandler::create($targetId, $targetType);
         if (is_wp_error($solutionId)) {
             wp_send_json_error($solutionId->get_error_message());
         }

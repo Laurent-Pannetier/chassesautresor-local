@@ -8,6 +8,26 @@ namespace ChassesAuTresor\Core\Media;
  * Manage temporary .htaccess suspension for protected riddle images.
  */
 class RiddleImageProtectionService {
+    public function protect(int $riddleId, bool $force = false): bool {
+        if ($riddleId <= 0 || get_post_type($riddleId) !== 'enigme') {
+            return false;
+        }
+
+        [$protected, $temporary] = $this->paths($riddleId);
+        $directory = dirname($protected);
+        if (!is_dir($directory) && !wp_mkdir_p($directory)) {
+            return false;
+        }
+        if (!$force && file_exists($protected)) {
+            return true;
+        }
+        if (file_exists($temporary) && !@unlink($temporary)) {
+            return false;
+        }
+
+        return file_put_contents($protected, $this->rules($riddleId), LOCK_EX) !== false;
+    }
+
     /** @return array{success:bool,message:string} */
     public function disable(int $riddleId): array {
         [$protected, $temporary] = $this->paths($riddleId);
@@ -32,7 +52,7 @@ class RiddleImageProtectionService {
         } elseif (file_exists($temporary)) {
             @unlink($temporary);
         } elseif ($reinject) {
-            do_action('chassesautresor_reinject_riddle_image_protection', $riddleId);
+            $this->protect($riddleId, true);
         }
         delete_transient($this->transientKey($riddleId));
     }
@@ -77,5 +97,16 @@ class RiddleImageProtectionService {
 
     private function transientKey(int $riddleId): string {
         return 'htaccess_timeout_enigme_' . $riddleId;
+    }
+
+    private function rules(int $riddleId): string {
+        return "# Protection des images de l'énigme {$riddleId}\n"
+            . "<IfModule mod_rewrite.c>\nRewriteEngine On\n\n"
+            . "# Autorise uniquement l’accès depuis l’administration WordPress\n"
+            . "RewriteCond %{REQUEST_URI} ^/wp-admin/ [OR]\n"
+            . "RewriteCond %{HTTP_REFERER} ^(/wp-admin/|https?://[^/]+/wp-admin/) [NC]\n"
+            . "RewriteRule . - [L]\n\n# Blocage par défaut\n"
+            . "<FilesMatch \"\\.(jpg|jpeg|png|gif|webp)$\">\n"
+            . "  Require all denied\n</FilesMatch>\n</IfModule>";
     }
 }

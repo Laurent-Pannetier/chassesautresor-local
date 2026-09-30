@@ -30,7 +30,7 @@ class HintModalAjaxHandler {
             wp_send_json_error('acces_refuse');
         }
 
-        $hintId = apply_filters('chassesautresor_create_hint', 0, $targetId, $targetType);
+        $hintId = HintCreationRouteHandler::create($targetId, $targetType);
         if (is_wp_error($hintId)) {
             wp_send_json_error($hintId->get_error_message());
         }

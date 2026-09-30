@@ -211,6 +211,8 @@ class IndiceEnigmeCreationTest extends TestCase
      */
     public function test_creates_index_for_riddle(): void
     {
+        global $existing_fields;
+        $existing_fields['enigme_chasse_associee'] = 1;
         $_POST = [
             'objet_id'             => 7,
             'objet_type'           => 'enigme',
