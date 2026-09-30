@@ -106,11 +106,6 @@ if (!class_exists(ChassesAuTresor\Core\Content\HintDeletionAjaxHandler::class, f
         . '/plugins/chassesautresor-core/src/Content/HintDeletionAjaxHandler.php';
 }
 
-if (!class_exists(ChassesAuTresor\Core\Content\HintDeletionLifecycleService::class, false)) {
-    require_once dirname(__DIR__, 4)
-        . '/plugins/chassesautresor-core/src/Content/HintDeletionLifecycleService.php';
-}
-
 if (!class_exists(ChassesAuTresor\Core\Content\HintRelationshipService::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Content/HintRelationshipService.php';
@@ -179,11 +174,6 @@ function cat_get_hint_deletion_service(): ChassesAuTresor\Core\Content\HintDelet
     return new ChassesAuTresor\Core\Content\HintDeletionService(
         new ChassesAuTresor\Core\Relationships\RelationshipService()
     );
-}
-
-function cat_get_hint_deletion_lifecycle_service(): ChassesAuTresor\Core\Content\HintDeletionLifecycleService
-{
-    return new ChassesAuTresor\Core\Content\HintDeletionLifecycleService(cat_get_hint_deletion_service());
 }
 
 function cat_get_hint_relationship_service(): ChassesAuTresor\Core\Content\HintRelationshipService
@@ -657,44 +647,3 @@ add_action(
     ChassesAuTresor\Core\Content\HintScheduler::PROCESS_HOOK,
     'mettre_a_jour_cache_indice'
 );
-
-/**
- * Enregistre la cible d'un indice avant suppression définitive.
- *
- * @param int $post_id ID du post.
- * @return void
- */
-function memoriser_cible_indice_avant_suppression(int $post_id): void
-{
-    global $indice_delete_context;
-
-    $indice_delete_context = cat_get_hint_deletion_lifecycle_service()->capture(
-        (string) get_post_type($post_id),
-        (string) get_field('indice_cible_type', $post_id),
-        get_field('indice_chasse_linked', $post_id),
-        get_field('indice_enigme_linked', $post_id),
-        static fn (int $riddleId): int => (int) recuperer_id_chasse_associee($riddleId)
-    );
-}
-add_action('before_delete_post', 'memoriser_cible_indice_avant_suppression');
-
-/**
- * Réordonne les indices après suppression définitive.
- *
- * @param int $post_id ID du post.
- * @return void
- */
-function reordonner_indices_apres_suppression(int $post_id): void
-{
-    global $indice_delete_context;
-    $targets = cat_get_hint_deletion_lifecycle_service()->restoreTargets($indice_delete_context);
-    foreach ($targets as $target) {
-        (new ChassesAuTresor\Core\Content\HintOrderingApplicationService())->applyTarget(
-            $target['id'],
-            $target['type']
-        );
-    }
-
-    $indice_delete_context = null;
-}
-add_action('deleted_post', 'reordonner_indices_apres_suppression');
