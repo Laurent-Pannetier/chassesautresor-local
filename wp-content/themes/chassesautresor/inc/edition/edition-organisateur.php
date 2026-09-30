@@ -139,81 +139,20 @@ function enqueue_script_organisateur_edit()
 add_action('wp_enqueue_scripts', 'enqueue_script_organisateur_edit');
 
 
-/**
- * 🔹 Enregistrement AJAX d’un champ ACF de l’organisateur connecté.
- */
-add_action('wp_ajax_modifier_champ_organisateur', 'ajax_modifier_champ_organisateur');
-function ajax_modifier_champ_organisateur()
-{
-  check_ajax_referer('organizer_management', 'nonce');
-
-  // 🛡️ Sécurité minimale : utilisateur connecté
-  if (!is_user_logged_in()) {
-    wp_send_json_error('non_connecte');
-  }
-
-  $user_id = get_current_user_id();
-  $champ   = sanitize_text_field($_POST['champ'] ?? '');
-  $valeur  = wp_kses_post($_POST['valeur'] ?? '');
-  $post_id = isset($_POST['post_id']) ? (int) $_POST['post_id'] : 0;
-
-  // 🧭 Si appel depuis une chasse, on remonte à l’organisateur
-  if ($post_id && get_post_type($post_id) === 'chasse') {
-    $post_id = get_organisateur_from_chasse($post_id);
-  }
-
-  if (!$champ || !isset($_POST['valeur'])) {
-    wp_send_json_error('⚠️ donnees_invalides');
-  }
-
-  if (!$post_id) {
-    wp_send_json_error('⚠️ organisateur_introuvable');
-  }
-
-  // 🔒 Vérifie que l’utilisateur est autorisé à modifier ce post
-  if (!utilisateur_peut_modifier_post($post_id)) {
-    wp_send_json_error('⚠️ acces_refuse');
-  }
-
-  if (!utilisateur_peut_editer_champs($post_id)) {
-    wp_send_json_error('⚠️ acces_refuse');
-  }
-
-    $mutation = (new ChassesAuTresor\Core\Content\OrganizerMutationService())->apply(
-        (int) $post_id,
-        $champ,
-        $valeur,
-        'sanitize_text_field',
-        'esc_url_raw',
-        'wp_strip_all_tags',
-        static fn (array $postData) => wp_update_post($postData, true),
-        'is_wp_error',
-        'update_field',
-        'get_field',
-        static fn (int $postId, string $field) => get_post_meta($postId, $field, true)
-    );
-
-    if ($mutation['error'] !== null) {
-        $messages = [
-            'description_too_short' => __(
-                'Votre texte doit comporter au moins 50 caractères.',
-                'chassesautresor-com'
-            ),
-            'title_update_failed' => '⚠️ echec_update_post_title',
-            'invalid_format' => '⚠️ format_invalide',
-            'links_update_failed' => '⚠️ echec_mise_a_jour_liens',
-            'bank_details_update_failed' => '⚠️ echec_mise_a_jour_coordonnees',
-            'field_update_failed' => '⚠️ echec_mise_a_jour_final',
-            'field_not_allowed' => '⚠️ champ_non_autorise',
-        ];
-        wp_send_json_error($messages[$mutation['error']]);
-    }
-
-    wp_send_json_success([
-        'champ' => $mutation['field'],
-        'valeur' => $mutation['value'],
-    ]);
+function autoriser_modification_organisateur(bool $allowed, int $organizerId): bool {
+    return utilisateur_peut_modifier_post($organizerId);
 }
+add_filter('chassesautresor_can_modify_organizer', 'autoriser_modification_organisateur', 10, 2);
+
+function autoriser_modification_champs_organisateur(bool $allowed, int $organizerId): bool {
+    return utilisateur_peut_editer_champs($organizerId);
+}
+add_filter(
+    'chassesautresor_can_edit_organizer_fields',
+    'autoriser_modification_champs_organisateur',
+    10,
+    2
+);
 
 
 /**
