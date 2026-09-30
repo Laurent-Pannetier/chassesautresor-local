@@ -11,6 +11,26 @@ class RiddleFieldPolicyService {
     private const MAX_ANSWERS = 5;
     private const MAX_ANSWER_LENGTH = 75;
 
+    public function isEditableField(string $field): bool {
+        return in_array($field, [
+            'post_title',
+            'enigme_visuel_image',
+            'enigme_visuel_legende',
+            'enigme_visuel_texte',
+            'enigme_mode_validation',
+            'enigme_reponse_bonne',
+            'enigme_reponse_casse',
+            'enigme_tentative_cout_points',
+            'enigme_tentative.enigme_tentative_cout_points',
+            'enigme_tentative_max',
+            'enigme_tentative.enigme_tentative_max',
+            'enigme_acces_condition',
+            'enigme_acces_date',
+            'enigme_acces_pre_requis',
+            'enigme_style_affichage',
+        ], true);
+    }
+
     public function isForbiddenAccessCondition(string $condition): bool {
         return $condition === 'pre_requis';
     }

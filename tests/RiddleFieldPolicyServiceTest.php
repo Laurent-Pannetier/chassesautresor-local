@@ -22,6 +22,14 @@ class RiddleFieldPolicyServiceTest extends TestCase {
         $this->assertFalse($this->service->isAllowedManualAccessCondition('pre_requis'));
     }
 
+    public function testOnlyKnownEditorFieldsAreEditable(): void {
+        $this->assertTrue($this->service->isEditableField('post_title'));
+        $this->assertTrue($this->service->isEditableField('enigme_visuel_image'));
+        $this->assertTrue($this->service->isEditableField('enigme_acces_pre_requis'));
+        $this->assertFalse($this->service->isEditableField('enigme_chasse_associee'));
+        $this->assertFalse($this->service->isEditableField('arbitrary_meta_key'));
+    }
+
     public function testAttemptFieldsAreMappedToTheirStoredAcfFields(): void {
         $this->assertSame(
             'enigme_tentative_cout_points',

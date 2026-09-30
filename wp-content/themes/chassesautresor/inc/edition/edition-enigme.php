@@ -334,6 +334,10 @@ function modifier_champ_enigme()
   $ancien_complet  = (bool) get_field('enigme_cache_complet', $post_id);
   $field_policy    = new ChassesAuTresor\Core\Content\RiddleFieldPolicyService();
 
+  if (!$field_policy->isEditableField($champ)) {
+    wp_send_json_error('⚠️ champ_interdit');
+  }
+
   // 🔹 Bloc interdit (pre_requis manuel)
   if ($champ === 'enigme_acces_condition' && $field_policy->isForbiddenAccessCondition((string) $valeur)) {
     wp_send_json_error('⚠️ Interdit : cette valeur est gérée automatiquement.');
