@@ -32,6 +32,13 @@ if (!class_exists(ChassesAuTresor\Core\Content\SolutionQueryService::class, fals
         . '/plugins/chassesautresor-core/src/Content/SolutionQueryService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\SolutionDisplayService::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Content/SolutionAvailabilityService.php';
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Content/SolutionDisplayService.php';
+}
+
 //
 // 1. 📦 FONCTIONS LIÉES À UNE CHASSE
 // 2. 📦 AFFICHAGE
@@ -1039,34 +1046,16 @@ function solution_existe_pour_objet(int $id, string $type): bool
  */
 function solution_peut_etre_affichee(int $enigme_id): bool
 {
-    if (!$enigme_id || get_post_type($enigme_id) !== 'enigme') {
-        return false;
-    }
-
-    $solution = solution_recuperer_par_objet($enigme_id, 'enigme');
-    if (!$solution) {
+    if ($enigme_id <= 0 || get_post_type($enigme_id) !== 'enigme') {
         return false;
     }
 
     $chasse_id = recuperer_id_chasse_associee($enigme_id);
-    if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
-        return false;
-    }
 
-    $dispo    = get_field('solution_disponibilite', $solution->ID) ?: 'fin_chasse';
-    $decalage = (int) get_field('solution_decalage_jours', $solution->ID);
-    $heure    = get_field('solution_heure_publication', $solution->ID) ?: '00:00';
-    $now      = current_time('timestamp');
-    $base     = get_field('date_de_decouverte', $chasse_id)
-        ?: get_field('chasse_infos_date_fin', $chasse_id);
-
-    return (new ChassesAuTresor\Core\Content\SolutionAvailabilityService())->isAvailable(
-        (string) get_field('chasse_cache_statut', $chasse_id),
-        (string) $dispo,
-        $base ? strtotime((string) $base) : null,
-        $decalage,
-        (string) $heure,
-        (int) $now
+    return (new ChassesAuTresor\Core\Content\SolutionDisplayService())->canDisplay(
+        $enigme_id,
+        'enigme',
+        (int) $chasse_id
     );
 }
 
@@ -1081,29 +1070,10 @@ function solution_peut_etre_affichee(int $enigme_id): bool
  */
 function solution_chasse_peut_etre_affichee(int $chasse_id): bool
 {
-    if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
-        return false;
-    }
-
-    $solution = solution_recuperer_par_objet($chasse_id, 'chasse');
-    if (!$solution) {
-        return false;
-    }
-
-    $dispo    = get_field('solution_disponibilite', $solution->ID) ?: 'fin_chasse';
-    $decalage = (int) get_field('solution_decalage_jours', $solution->ID);
-    $heure    = get_field('solution_heure_publication', $solution->ID) ?: '00:00';
-    $now      = current_time('timestamp');
-    $base     = get_field('date_de_decouverte', $chasse_id)
-        ?: get_field('chasse_infos_date_fin', $chasse_id);
-
-    return (new ChassesAuTresor\Core\Content\SolutionAvailabilityService())->isAvailable(
-        (string) get_field('chasse_cache_statut', $chasse_id),
-        (string) $dispo,
-        $base ? strtotime((string) $base) : null,
-        $decalage,
-        (string) $heure,
-        (int) $now
+    return (new ChassesAuTresor\Core\Content\SolutionDisplayService())->canDisplay(
+        $chasse_id,
+        'chasse',
+        $chasse_id
     );
 }
 
