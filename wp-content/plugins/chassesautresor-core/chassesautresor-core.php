@@ -107,6 +107,7 @@ require_once __DIR__ . '/src/Content/RiddleSolutionFilePolicyService.php';
 require_once __DIR__ . '/src/Content/RiddleSolutionFilePublicationService.php';
 require_once __DIR__ . '/src/Content/RiddleSolutionFileScheduler.php';
 require_once __DIR__ . '/src/Content/RiddleSolutionFileStorageService.php';
+require_once __DIR__ . '/src/Content/RiddleSolutionUploadService.php';
 require_once __DIR__ . '/src/Content/ContentQueryAccessService.php';
 require_once __DIR__ . '/src/Content/OrganizerRoleService.php';
 require_once __DIR__ . '/src/Content/OrganizerNavigationService.php';

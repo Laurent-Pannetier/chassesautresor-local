@@ -30,6 +30,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\RiddleSolutionFileStorageService:
         . '/plugins/chassesautresor-core/src/Content/RiddleSolutionFileStorageService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\RiddleSolutionUploadService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/RiddleSolutionUploadService.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Media\RiddleUploadDirectoryService::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Media/RiddleUploadDirectoryService.php';
@@ -441,55 +446,42 @@ function enregistrer_fichier_solution_enigme()
     wp_send_json_error(__('ID de post invalide.', 'chassesautresor-com'));
   }
 
-  if (empty($_FILES['fichier_pdf']) || $_FILES['fichier_pdf']['error'] !== 0) {
-    wp_send_json_error(__('Fichier manquant ou erreur de transfert.', 'chassesautresor-com'));
-  }
+  $result = (new ChassesAuTresor\Core\Content\RiddleSolutionUploadService())->process(
+    $post_id,
+    isset($_FILES['fichier_pdf']) ? (array) $_FILES['fichier_pdf'] : [],
+    'wp_check_filetype',
+    static function (array $file): array {
+      require_once ABSPATH . 'wp-admin/includes/file.php';
+      add_filter('upload_dir', 'rediriger_upload_fichier_solution');
+      $uploaded = wp_handle_upload($file, ['test_form' => false]);
+      remove_filter('upload_dir', 'rediriger_upload_fichier_solution');
 
-  $fichier = $_FILES['fichier_pdf'];
-
-  $filetype = wp_check_filetype($fichier['name']);
-  $filePolicy = new ChassesAuTresor\Core\Content\RiddleSolutionFilePolicyService();
-  $uploadError = $filePolicy->getUploadError(
-      (int) $fichier['size'],
-      (string) ($filetype['ext'] ?? ''),
-      (string) ($filetype['type'] ?? '')
+      return $uploaded;
+    },
+    static function (int $enigme_id, string $path, string $name, string $mime_type) {
+      return (new ChassesAuTresor\Core\Content\RiddleSolutionAttachmentService())->attach(
+        $enigme_id,
+        $path,
+        $name,
+        $mime_type
+      );
+    },
+    'is_wp_error',
+    static fn ($error): string => $error->get_error_message()
   );
-  if ($uploadError !== null) {
+
+  if ($result['error'] !== null) {
     $messages = [
+      'missing_file' => __('Fichier manquant ou erreur de transfert.', 'chassesautresor-com'),
       'file_too_large' => __('Fichier trop volumineux (5 Mo maximum).', 'chassesautresor-com'),
       'invalid_file_type' => __('Seuls les fichiers PDF sont autorisés.', 'chassesautresor-com'),
+      'upload_failed' => __('Échec de l’upload.', 'chassesautresor-com'),
+      'attachment_failed' => __('Échec de la création de la pièce jointe.', 'chassesautresor-com'),
     ];
-    wp_send_json_error($messages[$uploadError]);
+    wp_send_json_error($result['message'] ?: $messages[$result['error']]);
   }
 
-  require_once ABSPATH . 'wp-admin/includes/file.php';
-
-  $overrides = ['test_form' => false];
-
-  add_filter('upload_dir', 'rediriger_upload_fichier_solution');
-  $uploaded = wp_handle_upload($fichier, $overrides);
-  remove_filter('upload_dir', 'rediriger_upload_fichier_solution');
-
-
-  if (!isset($uploaded['url']) || !isset($uploaded['file'])) {
-    wp_send_json_error(
-      $uploaded['error'] ?? __('Échec de l’upload.', 'chassesautresor-com')
-    );
-  }
-
-  $attach_id = (new ChassesAuTresor\Core\Content\RiddleSolutionAttachmentService())->attach(
-    $post_id,
-    $uploaded['file'],
-    $fichier['name'],
-    $filetype['type']
-  );
-  if (is_wp_error($attach_id)) {
-    wp_send_json_error($attach_id->get_error_message());
-  }
-
-  wp_send_json_success([
-    'fichier' => $uploaded['url']
-  ]);
+  wp_send_json_success(['fichier' => $result['url']]);
 }
 
 /**
