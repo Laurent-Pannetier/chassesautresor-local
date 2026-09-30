@@ -4,6 +4,31 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Content/SolutionFieldPolicyService.php';
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Content/SolutionFileInputService.php';
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Content/SolutionModalPolicyService.php';
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Content/SolutionMutationService.php';
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Content/SolutionModalAjaxHandler.php';
+
+if (!function_exists('apply_filters')) {
+    function apply_filters($hook, $value, ...$args)
+    {
+        if ($hook === 'chassesautresor_can_manage_solution') {
+            return solution_action_autorisee($args[0], $args[1], $args[2]);
+        }
+        if ($hook === 'chassesautresor_create_solution') {
+            return creer_solution_pour_objet($args[0], $args[1]);
+        }
+
+        return $value;
+    }
+}
+
 if (!function_exists('check_ajax_referer')) {
     function check_ajax_referer($action, $queryArg = false): bool
     {
@@ -172,7 +197,7 @@ class ChasseSolutionsTest extends TestCase
             'solution_explication' => 'texte',
         ];
 
-        ajax_creer_solution_modal();
+        \ChassesAuTresor\Core\Content\SolutionModalAjaxHandler::create();
 
         global $captured_fields, $json_success_data;
         $this->assertSame(123, $json_success_data['solution_id']);
@@ -422,7 +447,7 @@ class ChasseSolutionsTest extends TestCase
             ],
         ];
 
-        ajax_creer_solution_modal();
+        \ChassesAuTresor\Core\Content\SolutionModalAjaxHandler::create();
 
         global $captured_fields, $uploaded_args, $json_success_data;
         $this->assertSame(['solution_fichier', 456], $uploaded_args);
@@ -472,7 +497,7 @@ class ChasseSolutionsTest extends TestCase
 
         $this->expectExceptionMessage('contenu_manquant');
 
-        ajax_creer_solution_modal();
+        \ChassesAuTresor\Core\Content\SolutionModalAjaxHandler::create();
     }
 
     /**
