@@ -6,6 +6,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\HuntDateMutationService::class, f
         . '/plugins/chassesautresor-core/src/Content/HuntDateMutationService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HuntLinkMutationService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HuntLinkMutationService.php';
+}
+
 
 // ==================================================
 // 🗺️ CRÉATION & ÉDITION D’UNE CHASSE
@@ -339,56 +344,22 @@ function modifier_champ_chasse()
 
   // 🔹 chasse_principale_liens (répéteur JSON)
   if ($champ === 'chasse_principale_liens') {
-    $tableau = json_decode(stripslashes($valeur), true);
-    if (!is_array($tableau)) {
-      wp_send_json_error(__('⚠️ format_invalide', 'chassesautresor-com'));
-    }
-    $repetitions = [];
-    foreach ($tableau as $ligne) {
-      $type = sanitize_text_field($ligne['type_de_lien'] ?? '');
-      $url  = esc_url_raw($ligne['url_lien'] ?? '');
-      if ($type && $url) {
-        $repetitions[] = [
-          'chasse_principale_liens_type' => $type,
-          'chasse_principale_liens_url'  => $url,
-        ];
-      }
-    }
-
-    $reponse = ['champ' => $champ, 'valeur' => $repetitions];
-
-    $normaliser = static function (array $items): array {
-      $out = [];
-      foreach ($items as $row) {
-        $type = sanitize_text_field($row['chasse_principale_liens_type'] ?? '');
-        $url  = esc_url_raw($row['chasse_principale_liens_url'] ?? '');
-        if ($type && $url) {
-          $out[] = [
-            'chasse_principale_liens_type' => $type,
-            'chasse_principale_liens_url'  => $url,
-          ];
-        }
-      }
-      return $out;
-    };
-
-    $actuels = get_field('chasse_principale_liens', $post_id);
-    $actuels = is_array($actuels) ? array_values($actuels) : [];
-    if (wp_json_encode($normaliser($actuels)) === wp_json_encode($repetitions)) {
-      wp_send_json_success($reponse);
+    $mutation = (new ChassesAuTresor\Core\Content\HuntLinkMutationService())->apply(
+      $post_id,
+      (string) $valeur,
+      'sanitize_text_field',
+      'esc_url_raw',
+      'get_field',
+      'update_field'
+    );
+    if ($mutation['error'] !== null) {
+      $message = $mutation['error'] === 'format_invalide'
+        ? __('⚠️ format_invalide', 'chassesautresor-com')
+        : __('⚠️ echec_mise_a_jour_liens', 'chassesautresor-com');
+      wp_send_json_error($message);
     }
 
-    $ok = update_field('chasse_principale_liens', $repetitions, $post_id);
-
-    $enregistre = get_field('chasse_principale_liens', $post_id);
-    $enregistre = is_array($enregistre) ? array_values($enregistre) : [];
-    $equivalent = wp_json_encode($normaliser($enregistre)) === wp_json_encode($repetitions);
-
-    if ($ok !== false || $equivalent) {
-      wp_send_json_success($reponse);
-    }
-
-    wp_send_json_error(__('⚠️ echec_mise_a_jour_liens', 'chassesautresor-com'));
+    wp_send_json_success(['champ' => $champ, 'valeur' => $mutation['value']]);
   }
 
   // 🔹 Dates (début / fin)
