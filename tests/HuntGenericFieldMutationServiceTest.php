@@ -24,7 +24,6 @@ final class HuntGenericFieldMutationServiceTest extends TestCase {
             'image' => ['chasse_principale_image', '123', 123],
             'description' => ['chasse_principale_description', '<p>Texte</p>', '<p>Texte</p>'],
             'end mode' => ['chasse_mode_fin', 'manuelle', 'manuelle'],
-            'unprefixed hunt field' => ['chasse_infos_cout_points', '5', 5],
         ];
     }
 

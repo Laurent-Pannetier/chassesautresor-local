@@ -24,6 +24,62 @@ final class HuntFieldMutationServiceTest extends TestCase {
         $this->assertSame(['chasse_infos_date_debut', '2026-10-01 12:30:00', 42], $this->updates[0]);
     }
 
+    /** @dataProvider unprefixedFieldProvider */
+    public function testHandlesUnprefixedFieldsSentByTheEditor(
+        string $field,
+        $value,
+        string $storedField,
+        $storedValue,
+        bool $recalculateStatus
+    ): void {
+        $result = $this->apply($field, $value);
+
+        $this->assertTrue($result['handled']);
+        $this->assertNull($result['error']);
+        $this->assertSame($recalculateStatus, $result['recalculate_status']);
+        $this->assertSame([$storedField, $storedValue, 42], $this->updates[0]);
+    }
+
+    public function unprefixedFieldProvider(): array {
+        return [
+            'start date' => [
+                'chasse_infos_date_debut',
+                '2026-10-01T12:30',
+                'chasse_infos_date_debut',
+                '2026-10-01 12:30:00',
+                true,
+            ],
+            'end date' => [
+                'chasse_infos_date_fin',
+                '2027-10-01',
+                'chasse_infos_date_fin',
+                '2027-10-01',
+                true,
+            ],
+            'unlimited duration' => [
+                'chasse_infos_duree_illimitee',
+                '1',
+                'chasse_infos_duree_illimitee',
+                1,
+                true,
+            ],
+            'points cost' => [
+                'chasse_infos_cout_points',
+                '25',
+                'chasse_infos_cout_points',
+                25,
+                true,
+            ],
+            'winner limit' => [
+                'chasse_infos_nb_max_gagants',
+                '3',
+                'chasse_infos_nb_max_gagants',
+                3,
+                false,
+            ],
+        ];
+    }
+
     public function testRejectsInvalidDatesWithoutWriting(): void {
         $start = $this->apply('caracteristiques.chasse_infos_date_debut', 'invalid');
         $end = $this->apply('caracteristiques.chasse_infos_date_fin', '01/10/2026');

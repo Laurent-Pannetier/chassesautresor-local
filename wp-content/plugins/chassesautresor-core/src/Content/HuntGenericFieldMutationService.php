@@ -12,11 +12,6 @@ class HuntGenericFieldMutationService {
         'chasse_principale_image',
         'chasse_principale_description',
         'chasse_mode_fin',
-        'chasse_infos_nb_max_gagants',
-        'chasse_infos_date_debut',
-        'chasse_infos_date_fin',
-        'chasse_infos_duree_illimitee',
-        'chasse_infos_cout_points',
     ];
 
     /**

@@ -31,6 +31,7 @@ class HuntFieldMutationService {
 
         switch ($field) {
             case 'caracteristiques.chasse_infos_date_debut':
+            case 'chasse_infos_date_debut':
                 $date = $parseDate((string) $value, ['Y-m-d\TH:i', 'Y-m-d H:i:s', 'Y-m-d H:i']);
                 if (!$date instanceof DateTimeInterface) {
                     return $this->error('format_date_invalide');
@@ -40,6 +41,7 @@ class HuntFieldMutationService {
                 $recalculateStatus = true;
                 break;
             case 'caracteristiques.chasse_infos_date_fin':
+            case 'chasse_infos_date_fin':
                 if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) $value)) {
                     return $this->error('format_date_invalide');
                 }
@@ -47,16 +49,19 @@ class HuntFieldMutationService {
                 $recalculateStatus = true;
                 break;
             case 'caracteristiques.chasse_infos_duree_illimitee':
+            case 'chasse_infos_duree_illimitee':
                 $storedField = 'chasse_infos_duree_illimitee';
                 $normalizedValue = (int) $value;
                 $recalculateStatus = true;
                 break;
             case 'caracteristiques.chasse_infos_cout_points':
+            case 'chasse_infos_cout_points':
                 $storedField = 'chasse_infos_cout_points';
                 $normalizedValue = (int) $value;
                 $recalculateStatus = true;
                 break;
             case 'caracteristiques.chasse_infos_nb_max_gagants':
+            case 'chasse_infos_nb_max_gagants':
                 $storedField = 'chasse_infos_nb_max_gagants';
                 $normalizedValue = (int) $value;
                 break;
