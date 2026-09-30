@@ -76,6 +76,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\HintMutationService::class, false
         . '/plugins/chassesautresor-core/src/Content/HintMutationService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HintModalAjaxHandler::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HintModalAjaxHandler.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Content\HintFieldMutationService::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Content/HintFieldMutationService.php';
@@ -679,112 +684,26 @@ function ajax_indices_lister_table(): void
 }
 add_action('wp_ajax_indices_lister_table', 'ajax_indices_lister_table');
 
-/**
- * Crée un indice via une requête AJAX depuis une modale.
- *
- * @return void
- */
-function ajax_creer_indice_modal(): void
-{
-    if (!is_user_logged_in()) {
-        wp_send_json_error('non_connecte');
-    }
 
-    $objet_id   = isset($_POST['objet_id']) ? (int) $_POST['objet_id'] : 0;
-    $objet_type = sanitize_key($_POST['objet_type'] ?? '');
-
-    if (!$objet_id || !in_array($objet_type, ['chasse', 'enigme'], true) || get_post_type($objet_id) !== $objet_type) {
-        wp_send_json_error('post_invalide');
-    }
-
-    $linkedRiddleId = isset($_POST['indice_enigme_linked']) ? (int) $_POST['indice_enigme_linked'] : 0;
-    if (!cat_get_hint_creation_service()->hasConsistentRiddleTarget(
-        $objet_type,
-        $objet_id,
-        $linkedRiddleId
-    )) {
-        wp_send_json_error('post_invalide');
-    }
-
-    if (!indice_action_autorisee('create', $objet_type, $objet_id)) {
-        wp_send_json_error('acces_refuse');
-    }
-
-    $indice_id = creer_indice_pour_objet($objet_id, $objet_type);
-    if (is_wp_error($indice_id)) {
-        wp_send_json_error($indice_id->get_error_message());
-    }
-
-    $image   = isset($_POST['indice_image']) ? (int) $_POST['indice_image'] : 0;
-    $contenu = wp_kses_post($_POST['indice_contenu'] ?? '');
-    $dispo   = sanitize_key($_POST['indice_disponibilite'] ?? 'immediate');
-    $date    = sanitize_text_field($_POST['indice_date_disponibilite'] ?? '');
-
-    cat_get_hint_mutation_service()->applyModal(
-        $indice_id,
-        $image,
-        $contenu,
-        $dispo,
-        $date,
-        (string) get_field('indice_date_disponibilite', $indice_id),
-        wp_date('Y-m-d H:i:s', (int) current_time('timestamp')),
-        false,
-        static fn (string $field, $value, int $postId) => update_field($field, $value, $postId),
-        static fn (string $field, int $postId) => delete_field($field, $postId),
-        static fn (int $postId) => mettre_a_jour_cache_indice($postId)
-    );
-
-    wp_send_json_success(['indice_id' => $indice_id]);
+function autoriser_gestion_indice(
+    bool $allowed,
+    string $action,
+    string $targetType,
+    int $targetId
+): bool {
+    return indice_action_autorisee($action, $targetType, $targetId);
 }
-add_action('wp_ajax_creer_indice_modal', 'ajax_creer_indice_modal');
+add_filter('chassesautresor_can_manage_hint', 'autoriser_gestion_indice', 10, 4);
 
 /**
- * Met à jour un indice existant via le modal d'édition.
- *
- * @return void
+ * @param mixed $hintId
+ * @return int|WP_Error
  */
-function ajax_modifier_indice_modal(): void
+function creer_indice_depuis_modal($hintId, int $targetId, string $targetType)
 {
-    if (!is_user_logged_in()) {
-        wp_send_json_error('non_connecte');
-    }
-
-    $indice_id  = isset($_POST['indice_id']) ? (int) $_POST['indice_id'] : 0;
-    $objet_id   = isset($_POST['objet_id']) ? (int) $_POST['objet_id'] : 0;
-    $objet_type = sanitize_key($_POST['objet_type'] ?? '');
-
-    if (!$indice_id || get_post_type($indice_id) !== 'indice') {
-        wp_send_json_error('indice_invalide');
-    }
-    if (!$objet_id || !in_array($objet_type, ['chasse', 'enigme'], true) || get_post_type($objet_id) !== $objet_type) {
-        wp_send_json_error('post_invalide');
-    }
-    if (!indice_action_autorisee('edit', $objet_type, $objet_id)) {
-        wp_send_json_error('acces_refuse');
-    }
-
-    $image   = isset($_POST['indice_image']) ? (int) $_POST['indice_image'] : 0;
-    $contenu = wp_kses_post($_POST['indice_contenu'] ?? '');
-    $dispo   = sanitize_key($_POST['indice_disponibilite'] ?? 'immediate');
-    $date    = sanitize_text_field($_POST['indice_date_disponibilite'] ?? '');
-
-    cat_get_hint_mutation_service()->applyModal(
-        $indice_id,
-        $image,
-        $contenu,
-        $dispo,
-        $date,
-        (string) get_field('indice_date_disponibilite', $indice_id),
-        wp_date('Y-m-d H:i:s', (int) current_time('timestamp')),
-        true,
-        static fn (string $field, $value, int $postId) => update_field($field, $value, $postId),
-        static fn (string $field, int $postId) => delete_field($field, $postId),
-        static fn (int $postId) => mettre_a_jour_cache_indice($postId)
-    );
-
-    wp_send_json_success(['indice_id' => $indice_id]);
+    return creer_indice_pour_objet($targetId, $targetType);
 }
-add_action('wp_ajax_modifier_indice_modal', 'ajax_modifier_indice_modal');
+add_filter('chassesautresor_create_hint', 'creer_indice_depuis_modal', 10, 3);
 
 
 function autoriser_modification_indice(bool $allowed, int $hintId): bool

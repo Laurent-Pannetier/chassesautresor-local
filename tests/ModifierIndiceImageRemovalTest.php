@@ -3,6 +3,23 @@ namespace {
     if (!function_exists('is_user_logged_in')) {
         function is_user_logged_in() { return true; }
     }
+    if (!function_exists('check_ajax_referer')) {
+        function check_ajax_referer($action, $queryArg) { return true; }
+    }
+    if (!function_exists('apply_filters')) {
+        function apply_filters($hook, $value, ...$args) {
+            return $hook === 'chassesautresor_can_manage_hint'
+                ? indice_action_autorisee($args[0], $args[1], $args[2])
+                : $value;
+        }
+    }
+    if (!function_exists('do_action')) {
+        function do_action($hook, $postId) {
+            if ($hook === 'chassesautresor_hint_cache_refresh_requested') {
+                mettre_a_jour_cache_indice($postId);
+            }
+        }
+    }
     if (!function_exists('wp_send_json_error')) {
         function wp_send_json_error($msg) { throw new \Exception($msg); }
     }
@@ -89,7 +106,7 @@ namespace ModifierIndiceImageRemovalTest {
                 'indice_disponibilite' => 'immediate',
             ];
 
-            \ajax_modifier_indice_modal();
+            \ChassesAuTresor\Core\Content\HintModalAjaxHandler::update();
 
             $this->assertArrayHasKey('indice_contenu', $updated_fields);
             $this->assertArrayNotHasKey('indice_image', $updated_fields);
