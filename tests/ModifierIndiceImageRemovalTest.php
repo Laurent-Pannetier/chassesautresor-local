@@ -1,5 +1,9 @@
 <?php
 namespace {
+    require_once __DIR__
+        . '/../wp-content/plugins/chassesautresor-core/src/Content/HintRelationshipSaveHookHandler.php';
+    require_once __DIR__
+        . '/../wp-content/plugins/chassesautresor-core/src/Content/HintCacheSaveHookHandler.php';
     if (!function_exists('is_user_logged_in')) {
         function is_user_logged_in() { return true; }
     }
@@ -16,7 +20,7 @@ namespace {
     if (!function_exists('do_action')) {
         function do_action($hook, $postId) {
             if ($hook === 'chassesautresor_hint_cache_refresh_requested') {
-                mettre_a_jour_cache_indice($postId);
+                \ChassesAuTresor\Core\Content\HintCacheSaveHookHandler::handle($postId);
             }
         }
     }

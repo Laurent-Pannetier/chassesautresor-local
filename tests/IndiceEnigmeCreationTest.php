@@ -2,6 +2,11 @@
 
 declare(strict_types=1);
 
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Content/HintRelationshipSaveHookHandler.php';
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Content/HintCacheSaveHookHandler.php';
+
 use PHPUnit\Framework\TestCase;
 
 if (!function_exists('add_action')) {
@@ -35,7 +40,7 @@ if (!function_exists('apply_filters')) {
 if (!function_exists('do_action')) {
     function do_action($hook, $postId) {
         if ($hook === 'chassesautresor_hint_cache_refresh_requested') {
-            mettre_a_jour_cache_indice($postId);
+            \ChassesAuTresor\Core\Content\HintCacheSaveHookHandler::handle($postId);
         }
     }
 }

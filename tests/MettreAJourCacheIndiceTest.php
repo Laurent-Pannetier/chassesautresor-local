@@ -1,5 +1,9 @@
 <?php
 namespace {
+    require_once __DIR__
+        . '/../wp-content/plugins/chassesautresor-core/src/Content/HintRelationshipSaveHookHandler.php';
+    require_once __DIR__
+        . '/../wp-content/plugins/chassesautresor-core/src/Content/HintCacheSaveHookHandler.php';
     if (!function_exists('do_action')) {
         function do_action($hook, ...$args): void
         {
@@ -114,7 +118,7 @@ namespace MettreAJourCacheIndiceTest {
 
             require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
 
-            \mettre_a_jour_cache_indice($post_id);
+            \ChassesAuTresor\Core\Content\HintCacheSaveHookHandler::handle($post_id);
 
             $this->assertSame(0, $updated_fields['indice_cache_complet']);
             $this->assertSame('desactive', $updated_fields['indice_cache_etat_systeme']);
@@ -135,11 +139,14 @@ namespace MettreAJourCacheIndiceTest {
                     'indice_contenu'       => '',
                     'indice_image'         => null,
                 ],
+                789 => [
+                    'enigme_chasse_associee' => 42,
+                ],
             ];
 
             require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
 
-            \mettre_a_jour_cache_indice($post_id);
+            \ChassesAuTresor\Core\Content\HintCacheSaveHookHandler::handle($post_id);
 
             $this->assertSame(42, $updated_fields['indice_chasse_linked']);
         }

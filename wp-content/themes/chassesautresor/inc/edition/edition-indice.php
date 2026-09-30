@@ -512,14 +512,6 @@ function autoriser_modification_champs_indice(bool $allowed, int $hintId): bool
 }
 add_filter('chassesautresor_can_edit_hint_fields', 'autoriser_modification_champs_indice', 10, 2);
 
-function actualiser_cache_indice_demande(int $hintId): void
-{
-    mettre_a_jour_cache_indice($hintId);
-}
-add_action('chassesautresor_hint_cache_refresh_requested', 'actualiser_cache_indice_demande');
-
-
-
 /**
  * Pré-remplit automatiquement la chasse liée d'un indice lors de sa création.
  *
@@ -553,63 +545,3 @@ function pre_remplir_indice_chasse_linked(array $field): array
     return $field;
 }
 add_filter('acf/load_field/name=indice_chasse_linked', 'pre_remplir_indice_chasse_linked');
-
-/**
- * Met à jour les champs de cache d'un indice.
- *
- * @param int|string $post_id  ID du post ACF.
- * @param int|null   $chasse_id ID de la chasse si connu.
- * @return void
- */
-function mettre_a_jour_cache_indice($post_id, ?int $chasse_id = null): void
-{
-    if (!is_numeric($post_id) || get_post_type((int) $post_id) !== 'indice') {
-        return;
-    }
-
-    if (wp_is_post_revision($post_id) || wp_is_post_autosave($post_id)) {
-        return;
-    }
-
-    $relationshipService = cat_get_hint_relationship_service();
-    $chasse_linked = $relationshipService->normalizeHuntId(get_field('indice_chasse_linked', $post_id));
-    if ($chasse_linked === null) {
-        $chasse_linked = $relationshipService->resolveLinkedHuntId(
-            (string) get_field('indice_cible_type', $post_id),
-            get_field('indice_enigme_linked', $post_id),
-            $chasse_id,
-            static fn (int $riddleId) => recuperer_id_chasse_associee($riddleId)
-        );
-        $relationshipService->persistLinkedHunt($post_id, $chasse_linked, 'update_field');
-    }
-
-    cat_get_hint_cache_updater()->update(
-        (int) $post_id,
-        time(),
-        'get_field',
-        static fn (string $date) => $date !== '' ? convertir_en_datetime($date) : null,
-        'get_post_status',
-        'get_post',
-        'update_field',
-        'wp_update_post'
-    );
-
-    ChassesAuTresor\Core\Content\HintOrderingLifecycleHookHandler::requestForHint((int) $post_id);
-}
-
-add_action('acf/save_post', 'mettre_a_jour_cache_indice', 30);
-
-/**
- * Met à jour les indices programmés dont la date est passée.
- *
- * @return void
- */
-function basculer_indices_programmes(): void
-{
-    ChassesAuTresor\Core\Content\HintScheduler::run();
-}
-
-add_action(
-    ChassesAuTresor\Core\Content\HintScheduler::PROCESS_HOOK,
-    'mettre_a_jour_cache_indice'
-);
