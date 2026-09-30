@@ -60,6 +60,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\RiddlePostFactory::class, false))
         . '/plugins/chassesautresor-core/src/Content/RiddlePostFactory.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\RiddleRelationshipService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/RiddleRelationshipService.php';
+}
+
 
 // ==================================================
 // 🧩 CRÉATION & ÉDITION D’UNE ÉNIGME
@@ -774,14 +779,8 @@ add_filter('acf/fields/relationship/query', function ($args, $field, $post_id) {
     return $args;
   }
 
-  $enigmes_associees = recuperer_enigmes_associees($chasse_id);
-
-  if ($post_id && ($key = array_search($post_id, $enigmes_associees)) !== false) {
-    unset($enigmes_associees[$key]); // Exclure l'énigme en cours
-  }
-
-  // 📌 Correction : Si aucune énigme ne doit être affichée, forcer un tableau vide pour empêcher ACF d'afficher tout
-  $args['post__in'] = !empty($enigmes_associees) ? array_map('intval', $enigmes_associees) : [0];
+  $args['post__in'] = (new ChassesAuTresor\Core\Content\RiddleRelationshipService())
+    ->getSelectableRiddleIds(recuperer_enigmes_associees($chasse_id), (int) $post_id);
 
   return $args;
 }, 10, 3);
@@ -803,13 +802,8 @@ add_action('acf/save_post', function ($post_id) {
   // 🔎 Récupère la chasse associée à l’énigme
   $chasse = get_field('enigme_chasse_associee', $post_id);
 
-  if (is_array($chasse)) {
-    $chasse_id = is_object($chasse[0]) ? (int)$chasse[0]->ID : (int)$chasse[0];
-  } elseif (is_object($chasse)) {
-    $chasse_id = (int)$chasse->ID;
-  } else {
-    $chasse_id = (int)$chasse;
-  }
+  $chasse_id = (new ChassesAuTresor\Core\Content\RiddleRelationshipService())
+    ->resolveHuntId($chasse);
 
   if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') return;
 
@@ -865,9 +859,12 @@ function nettoyer_relations_orphelines()
     }
 
     // 📌 Vérifier si les IDs existent toujours
-    $relations_nettoyees = array_filter($relations, function ($enigme_id) use ($wpdb) {
-      return $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->posts} WHERE ID = %d", $enigme_id));
-    });
+    $relations_nettoyees = (new ChassesAuTresor\Core\Content\RiddleRelationshipService())
+      ->filterExistingRiddleIds($relations, function (int $enigme_id) use ($wpdb): bool {
+        return (bool) $wpdb->get_var(
+          $wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->posts} WHERE ID = %d", $enigme_id)
+        );
+      });
 
     // 🔥 Si on a supprimé des IDs, mettre à jour la base
     if (count($relations_nettoyees) !== count($relations)) {
