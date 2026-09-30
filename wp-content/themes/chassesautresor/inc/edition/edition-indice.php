@@ -51,6 +51,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\HintCreationService::class, false
         . '/plugins/chassesautresor-core/src/Content/HintCreationService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HintCreationRequestService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HintCreationRequestService.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Content\HintPostFactory::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Content/HintPostFactory.php';
@@ -424,28 +429,35 @@ function creer_indice_et_rediriger_si_appel(): void
         return;
     }
 
-    $nonce = $_GET['nonce'] ?? '';
-    if (!wp_verify_nonce($nonce, 'creer_indice')) {
+    $requestService = new ChassesAuTresor\Core\Content\HintCreationRequestService();
+    $hasValidNonce = (bool) wp_verify_nonce(
+        sanitize_text_field(wp_unslash($_GET['nonce'] ?? '')),
+        'creer_indice'
+    );
+    $isLoggedIn = $hasValidNonce && is_user_logged_in();
+    $target = $isLoggedIn
+        ? $requestService->resolveTarget(
+            isset($_GET['chasse_id']) ? absint($_GET['chasse_id']) : 0,
+            isset($_GET['enigme_id']) ? absint($_GET['enigme_id']) : 0
+        )
+        : null;
+    $requestError = $requestService->getRequestError($hasValidNonce, $isLoggedIn, $target);
+
+    if ($requestError === 'invalid_nonce') {
         wp_die(__('Action non autorisée.', 'chassesautresor-com'), 'Erreur', ['response' => 403]);
     }
 
-    if (!is_user_logged_in()) {
+    if ($requestError === 'authentication_required') {
         wp_redirect(wp_login_url());
         exit;
     }
 
-    $cible_id = isset($_GET['chasse_id']) ? absint($_GET['chasse_id']) : 0;
-    $cible_type = 'chasse';
-    if (!$cible_id) {
-        $cible_id = isset($_GET['enigme_id']) ? absint($_GET['enigme_id']) : 0;
-        $cible_type = 'enigme';
-    }
-
-    if (!$cible_id) {
+    if ($requestError === 'missing_target') {
         wp_die(__('ID cible manquant.', 'chassesautresor-com'), 'Erreur', ['response' => 400]);
     }
 
-    $indice_id = creer_indice_pour_objet($cible_id, $cible_type);
+    $cible_id = $target['id'];
+    $indice_id = creer_indice_pour_objet($cible_id, $target['type']);
     if (is_wp_error($indice_id)) {
         $error_message = sanitize_text_field($indice_id->get_error_message());
         $referer       = wp_get_referer() ?: get_permalink($cible_id);
