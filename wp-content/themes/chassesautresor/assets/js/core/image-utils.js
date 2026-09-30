@@ -91,7 +91,11 @@ function initChampImage(bloc) {
           champ,
           valeur: id,
           post_id: postId,
-          nonce: cpt === 'organisateur' ? (window.organisateurData?.nonce || '') : ''
+          nonce: cpt === 'organisateur'
+            ? (window.organisateurData?.nonce || '')
+            : cpt === 'chasse'
+              ? (window.CHP_CHASSE_DEFAUT?.nonce || '')
+              : ''
         })
       })
         .then(r => r.json())

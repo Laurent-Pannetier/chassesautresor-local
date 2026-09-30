@@ -492,7 +492,9 @@ function initLiensPublics(bloc, { panneauId, formId, action, reload = false }) {
           valeur: JSON.stringify(donneesNormalisees),
           nonce: action === 'modifier_champ_organisateur'
             ? (window.organisateurData?.nonce || '')
-            : ''
+            : action === 'modifier_champ_chasse'
+              ? (window.CHP_CHASSE_DEFAUT?.nonce || '')
+              : ''
         })
       });
 

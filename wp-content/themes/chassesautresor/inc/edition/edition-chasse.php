@@ -134,6 +134,7 @@ function enqueue_script_chasse_edit()
     wp_localize_script('champ-init', 'CHP_CHASSE_DEFAUT', [
         'titre' => strtolower(TITRE_DEFAUT_CHASSE),
         'image_slug' => 'defaut-chasse-2',
+        'nonce' => wp_create_nonce('hunt_field_management'),
     ]);
 
     // Charge les médias pour les champs image
@@ -154,6 +155,8 @@ add_action('wp_ajax_modifier_dates_chasse', 'modifier_dates_chasse');
 
 function modifier_dates_chasse()
 {
+    check_ajax_referer('hunt_field_management', 'nonce');
+
     if (!is_user_logged_in()) {
         wp_send_json_error('non_connecte');
     }
@@ -205,6 +208,8 @@ function modifier_dates_chasse()
  */
 function modifier_champ_chasse()
 {
+  check_ajax_referer('hunt_field_management', 'nonce');
+
   if (!is_user_logged_in()) {
     wp_send_json_error('non_connecte');
   }
