@@ -483,41 +483,6 @@ function creer_indice_et_rediriger_si_appel(): void
 add_action('template_redirect', 'creer_indice_et_rediriger_si_appel');
 
 /**
- * AJAX handler listing enigmas available for a hunt.
- *
- * @return void
- */
-function ajax_chasse_lister_enigmes(): void
-{
-    if (!is_user_logged_in()) {
-        wp_send_json_error('non_connecte');
-    }
-
-    $chasse_id = isset($_POST['chasse_id']) ? (int) $_POST['chasse_id'] : 0;
-
-    if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
-        wp_send_json_error('post_invalide');
-    }
-
-    if (!indice_action_autorisee('create', 'chasse', $chasse_id)) {
-        wp_send_json_error('acces_refuse');
-    }
-
-    $posts = recuperer_enigmes_pour_chasse($chasse_id);
-    $excludeSolutions = !empty($_POST['sans_solution']);
-    $enigmes = cat_get_hint_management_service()->buildRiddleOptions(
-        $posts,
-        prochain_rang_indice($chasse_id, 'chasse'),
-        static fn ($riddle): bool => $excludeSolutions
-            && solution_existe_pour_objet((int) $riddle->ID, 'enigme'),
-        static fn ($riddle): string => (string) get_the_title($riddle)
-    );
-
-    wp_send_json_success(['enigmes' => $enigmes]);
-}
-add_action('wp_ajax_chasse_lister_enigmes', 'ajax_chasse_lister_enigmes');
-
-/**
  * AJAX handler returning indices card HTML for a hunt.
  *
  * @return void
@@ -699,6 +664,28 @@ function autoriser_gestion_indice(
     return indice_action_autorisee($action, $targetType, $targetId);
 }
 add_filter('chassesautresor_can_manage_hint', 'autoriser_gestion_indice', 10, 4);
+
+/** @return array<int, object> */
+function fournir_enigmes_cibles_indice(array $riddles, int $huntId): array
+{
+    return recuperer_enigmes_pour_chasse($huntId);
+}
+add_filter('chassesautresor_hint_target_riddles', 'fournir_enigmes_cibles_indice', 10, 2);
+
+function fournir_prochain_rang_indice(
+    int $rank,
+    int $targetId,
+    string $targetType
+): int {
+    return prochain_rang_indice($targetId, $targetType);
+}
+add_filter('chassesautresor_next_hint_rank', 'fournir_prochain_rang_indice', 10, 3);
+
+function indiquer_solution_cible_indice(bool $exists, int $targetId, string $targetType): bool
+{
+    return solution_existe_pour_objet($targetId, $targetType);
+}
+add_filter('chassesautresor_hint_target_has_solution', 'indiquer_solution_cible_indice', 10, 3);
 
 /**
  * @param mixed $hintId

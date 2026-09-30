@@ -4,6 +4,40 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Content/HintManagementService.php';
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Content/HintRiddleOptionsAjaxHandler.php';
+
+if (!function_exists('check_ajax_referer')) {
+    function check_ajax_referer($action, $queryArg = false): bool
+    {
+        global $checkedAjaxNonce;
+        $checkedAjaxNonce = [$action, $queryArg];
+        return true;
+    }
+}
+
+if (!function_exists('apply_filters')) {
+    function apply_filters($hook, $value, ...$args)
+    {
+        if ($hook === 'chassesautresor_can_manage_hint') {
+            return indice_action_autorisee($args[0], $args[1], $args[2]);
+        }
+        if ($hook === 'chassesautresor_hint_target_riddles') {
+            return fournir_enigmes_cibles_indice($value, $args[0]);
+        }
+        if ($hook === 'chassesautresor_next_hint_rank') {
+            return fournir_prochain_rang_indice($value, $args[0], $args[1]);
+        }
+        if ($hook === 'chassesautresor_hint_target_has_solution') {
+            return indiquer_solution_cible_indice($value, $args[0], $args[1]);
+        }
+
+        return $value;
+    }
+}
+
 class ChasseListerEnigmesAjaxTest extends TestCase
 {
     /**
@@ -58,9 +92,10 @@ class ChasseListerEnigmesAjaxTest extends TestCase
             'sans_solution' => 1,
         ];
 
-        ajax_chasse_lister_enigmes();
+        \ChassesAuTresor\Core\Content\HintRiddleOptionsAjaxHandler::handle();
 
-        global $json_success_data;
+        global $checkedAjaxNonce, $json_success_data;
+        $this->assertSame(['hint_management', 'nonce'], $checkedAjaxNonce);
         $ids = array_column($json_success_data['enigmes'], 'id');
         $this->assertSame([2], $ids);
     }
@@ -111,7 +146,7 @@ class ChasseListerEnigmesAjaxTest extends TestCase
             'chasse_id' => 10,
         ];
 
-        ajax_chasse_lister_enigmes();
+        \ChassesAuTresor\Core\Content\HintRiddleOptionsAjaxHandler::handle();
 
         global $json_success_data;
         $this->assertSame('Sans – titre', $json_success_data['enigmes'][0]['title']);

@@ -79,6 +79,7 @@ require_once __DIR__ . '/src/Content/HintFieldMutationAjaxHandler.php';
 require_once __DIR__ . '/src/Content/HintMutationService.php';
 require_once __DIR__ . '/src/Content/HintModalAjaxHandler.php';
 require_once __DIR__ . '/src/Content/HintManagementService.php';
+require_once __DIR__ . '/src/Content/HintRiddleOptionsAjaxHandler.php';
 require_once __DIR__ . '/src/Content/HintRelationshipService.php';
 require_once __DIR__ . '/src/Content/HintRedirectHandler.php';
 require_once __DIR__ . '/src/Content/HuntPublicationStatusService.php';
@@ -184,6 +185,7 @@ ChassesAuTresor\Core\Content\OrganizerFieldMutationAjaxHandler::register('add_ac
 ChassesAuTresor\Core\Content\HintFieldMutationAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\HintModalAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\HintDeletionAjaxHandler::register('add_action');
+ChassesAuTresor\Core\Content\HintRiddleOptionsAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\SolutionDeletionAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\SolutionModalAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\SolutionManagementAjaxHandler::register('add_action');
