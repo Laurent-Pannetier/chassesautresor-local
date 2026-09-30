@@ -116,6 +116,7 @@ require_once __DIR__ . '/src/Content/RiddlePostFactory.php';
 require_once __DIR__ . '/src/Content/RiddleRelationshipService.php';
 require_once __DIR__ . '/src/Content/RiddleCacheMutationService.php';
 require_once __DIR__ . '/src/Content/RiddleRelationshipHookHandler.php';
+require_once __DIR__ . '/src/Content/RiddleRelationshipFilterHandler.php';
 require_once __DIR__ . '/src/Content/RiddleRelationshipCleanupService.php';
 require_once __DIR__ . '/src/Content/RiddleRelationshipLifecycleService.php';
 require_once __DIR__ . '/src/Content/RiddleRouteRegistrar.php';
@@ -153,6 +154,7 @@ if (!class_exists('UserMessageRepository', false)) {
 }
 
 ChassesAuTresor\Core\Content\RiddleRelationshipHookHandler::register('add_action');
+ChassesAuTresor\Core\Content\RiddleRelationshipFilterHandler::register('add_filter');
 
 register_activation_hook(
     __FILE__,
