@@ -47,6 +47,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\SolutionMutationService::class, f
         . '/plugins/chassesautresor-core/src/Content/SolutionMutationService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\SolutionPostFactory::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/SolutionPostFactory.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Content\SolutionPublicationService::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Content/SolutionPublicationService.php';
@@ -214,40 +219,15 @@ function creer_solution_pour_objet(int $objet_id, string $objet_type, ?int $user
         return new WP_Error($errorCode, $messages[$errorCode]);
     }
 
-    $user_id = $user_id ?? get_current_user_id();
-    $initialState = $creationService->getInitialState(SOLUTION_STATE_DESACTIVE);
-
-    $solution_id = wp_insert_post([
-        'post_type'   => 'solution',
-        'post_status' => $initialState['post_status'],
-        'post_title'  => TITRE_DEFAUT_SOLUTION,
-        'post_author' => $user_id,
-    ]);
-
-    if (is_wp_error($solution_id)) {
-        return $solution_id;
-    }
-
-    $nouveau_titre = $creationService->getGeneratedTitle(
+    return (new ChassesAuTresor\Core\Content\SolutionPostFactory())->create(
+        $objet_id,
+        $objet_type,
+        $chasse_id,
+        $user_id ?? get_current_user_id(),
+        TITRE_DEFAUT_SOLUTION,
         __('Solution | %s', 'chassesautresor-com'),
-        (string) get_the_title($objet_id)
+        SOLUTION_STATE_DESACTIVE
     );
-    wp_update_post([
-        'ID'         => $solution_id,
-        'post_title' => $nouveau_titre,
-    ]);
-
-    update_field('solution_cible_type', $objet_type, $solution_id);
-    update_field('solution_chasse_linked', $chasse_id, $solution_id);
-    if ($objet_type === 'enigme') {
-        update_field('solution_enigme_linked', $objet_id, $solution_id);
-    }
-    update_field('solution_disponibilite', $initialState['availability'], $solution_id);
-    update_field('solution_decalage_jours', $initialState['delay_days'], $solution_id);
-    update_field('solution_heure_publication', $initialState['publication_time'], $solution_id);
-    update_field('solution_cache_etat_systeme', $initialState['system_state'], $solution_id);
-
-    return $solution_id;
 }
 
 /**
