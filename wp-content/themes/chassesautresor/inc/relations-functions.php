@@ -38,6 +38,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\HuntFeatureService::class, false)
         . '/plugins/chassesautresor-core/src/Content/HuntFeatureService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\AcfRelationshipMutationService::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Content/AcfRelationshipMutationService.php';
+}
+
 function cat_get_organizer_service(): ChassesAuTresor\Core\Relationships\OrganizerService
 {
     global $wpdb;
@@ -816,7 +821,7 @@ function verifier_cache_chasse_enigmes_valides($chasse_id, $retirer_si_invalide 
 
 /**
  * 🔁 Synchronise proprement le champ ACF "chasse_cache_enigmes" d'une chasse,
- * en utilisant la fonction centralisée mettre_a_jour_relation_acf() pour garantir le format.
+ * en utilisant le service centralisé de mutation des relations ACF.
  *
  * @param int $chasse_id ID du post "chasse"
  * @return bool True si au moins une relation a été enregistrée, False sinon.
@@ -870,7 +875,7 @@ function synchroniser_relations_cache_enigmes(int $chasse_id): bool
  *
  * Cette vérification utilise un transient pour éviter toute surcharge répétée.
  * Si la relation est absente dans le champ ACF (champs_caches.chasse_cache_enigmes),
- * elle est ajoutée automatiquement via modifier_relation_acf().
+ * elle est ajoutée automatiquement via le service de mutation ACF du core.
  *
  * @param int $enigme_id ID du post de type "énigme"
  * @return void
@@ -894,12 +899,14 @@ function forcer_relation_enigme_dans_chasse_si_absente(int $enigme_id): void
   $liste = is_array(get_field('chasse_cache_enigmes', $chasse_id) ?? null) ? array_map('intval', get_field('chasse_cache_enigmes', $chasse_id)) : [];
 
   if (!in_array($enigme_id, $liste, true)) {
-    $ok = modifier_relation_acf(
-      $chasse_id,
-      'chasse_cache_enigmes',
-      $enigme_id,
-      'field_67b740025aae0',
-      'add'
+    $ok = (new ChassesAuTresor\Core\Content\AcfRelationshipMutationService())->mutate(
+        $chasse_id,
+        'chasse_cache_enigmes',
+        $enigme_id,
+        'field_67b740025aae0',
+        'add',
+        'get_post_meta',
+        'update_post_meta'
     );
 
     if ($ok) {
