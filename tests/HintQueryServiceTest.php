@@ -58,6 +58,7 @@ class HintQueryServiceTest extends TestCase
     {
         $args = $this->service->getManagementTableQueryArgs(12, 'chasse', [], 3, 5, true);
 
+        $this->assertSame(['publish', 'pending', 'draft'], $args['post_status']);
         $this->assertSame('ids', $args['fields']);
         $this->assertTrue($args['nopaging']);
         $this->assertArrayNotHasKey('paged', $args);

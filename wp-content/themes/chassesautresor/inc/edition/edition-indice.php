@@ -576,22 +576,17 @@ function ajax_indices_lister_table(): void
 
     $has_enigme_indices = false;
     if ($enigme_id) {
-        $has_enigme_indices = function_exists('get_posts') ? count(get_posts([
-            'post_type'   => 'indice',
-            'post_status' => ['publish', 'pending', 'draft'],
-            'fields'      => 'ids',
-            'nopaging'    => true,
-            'meta_query'  => [
-                [
-                    'key'   => 'indice_cible_type',
-                    'value' => 'enigme',
-                ],
-                [
-                    'key'   => 'indice_enigme_linked',
-                    'value' => $enigme_id,
-                ],
-            ],
-        ])) > 0 : false;
+        $riddle_hint_query = $query_service->getManagementTableQueryArgs(
+            $enigme_id,
+            'enigme',
+            [],
+            1,
+            1,
+            true
+        );
+        $has_enigme_indices = function_exists('get_posts')
+            ? count(get_posts($riddle_hint_query)) > 0
+            : false;
     }
 
     $toggle_args = null;
