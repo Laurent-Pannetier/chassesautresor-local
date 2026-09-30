@@ -71,6 +71,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\HintDeletionService::class, false
         . '/plugins/chassesautresor-core/src/Content/HintDeletionService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HintDeletionLifecycleService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HintDeletionLifecycleService.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Content\HintRelationshipService::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Content/HintRelationshipService.php';
@@ -134,6 +139,11 @@ function cat_get_hint_deletion_service(): ChassesAuTresor\Core\Content\HintDelet
     return new ChassesAuTresor\Core\Content\HintDeletionService(
         new ChassesAuTresor\Core\Relationships\RelationshipService()
     );
+}
+
+function cat_get_hint_deletion_lifecycle_service(): ChassesAuTresor\Core\Content\HintDeletionLifecycleService
+{
+    return new ChassesAuTresor\Core\Content\HintDeletionLifecycleService(cat_get_hint_deletion_service());
 }
 
 function cat_get_hint_relationship_service(): ChassesAuTresor\Core\Content\HintRelationshipService
@@ -1031,28 +1041,13 @@ function memoriser_cible_indice_avant_suppression(int $post_id): void
 {
     global $indice_delete_context;
 
-    if (get_post_type($post_id) !== 'indice') {
-        return;
-    }
-
-    $type = get_field('indice_cible_type', $post_id) === 'enigme' ? 'enigme' : 'chasse';
-    $relationshipService = new ChassesAuTresor\Core\Relationships\RelationshipService();
-    $linked_hunt = get_field('indice_chasse_linked', $post_id);
-    $linked_riddle = get_field('indice_enigme_linked', $post_id);
-    $objet_id = $relationshipService->resolveHintTargetId($type, $linked_hunt, $linked_riddle);
-    $riddle_hunt_id = $relationshipService->normalizeId($linked_hunt);
-    if ($type === 'enigme' && $riddle_hunt_id === null && $objet_id !== null) {
-        $riddle_hunt_id = recuperer_id_chasse_associee($objet_id);
-    }
-    $chasse_id = $relationshipService->resolveTargetHuntId($type, $linked_hunt, $riddle_hunt_id);
-
-    if ($objet_id !== null) {
-        $indice_delete_context = [
-            'objet_id'   => $objet_id,
-            'objet_type' => $type,
-            'chasse_id'  => $chasse_id,
-        ];
-    }
+    $indice_delete_context = cat_get_hint_deletion_lifecycle_service()->capture(
+        (string) get_post_type($post_id),
+        (string) get_field('indice_cible_type', $post_id),
+        get_field('indice_chasse_linked', $post_id),
+        get_field('indice_enigme_linked', $post_id),
+        static fn (int $riddleId): int => (int) recuperer_id_chasse_associee($riddleId)
+    );
 }
 add_action('before_delete_post', 'memoriser_cible_indice_avant_suppression');
 
@@ -1065,17 +1060,9 @@ add_action('before_delete_post', 'memoriser_cible_indice_avant_suppression');
 function reordonner_indices_apres_suppression(int $post_id): void
 {
     global $indice_delete_context;
-    if (!$indice_delete_context) {
-        return;
-    }
-
-    $objet_id   = (int) $indice_delete_context['objet_id'];
-    $objet_type = $indice_delete_context['objet_type'];
-    $chasse_id  = (int) ($indice_delete_context['chasse_id'] ?? 0);
-
-    reordonner_indices($objet_id, $objet_type);
-    if ($chasse_id && $chasse_id !== $objet_id) {
-        reordonner_indices($chasse_id, 'chasse');
+    $targets = cat_get_hint_deletion_lifecycle_service()->restoreTargets($indice_delete_context);
+    foreach ($targets as $target) {
+        reordonner_indices($target['id'], $target['type']);
     }
 
     $indice_delete_context = null;

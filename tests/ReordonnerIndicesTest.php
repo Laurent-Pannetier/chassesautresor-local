@@ -111,9 +111,9 @@ namespace ReordonnerIndicesTest {
             require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
 
             $indice_delete_context = [
-                'objet_id' => 5,
-                'objet_type' => 'chasse',
-                'chasse_id' => 5,
+                'reorder_targets' => [
+                    ['id' => 5, 'type' => 'chasse'],
+                ],
             ];
             \reordonner_indices_apres_suppression(99);
 
