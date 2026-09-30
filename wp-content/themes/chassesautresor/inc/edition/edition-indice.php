@@ -16,6 +16,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\HintCacheService::class, false)) 
         . '/plugins/chassesautresor-core/src/Content/HintCacheService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HintCacheUpdater::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HintCacheUpdater.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Content\HintScheduler::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Content/HintScheduler.php';
@@ -84,6 +89,11 @@ function cat_get_hint_status_service(): ChassesAuTresor\Core\Content\HintStatusS
 function cat_get_hint_cache_service(): ChassesAuTresor\Core\Content\HintCacheService
 {
     return new ChassesAuTresor\Core\Content\HintCacheService(cat_get_hint_status_service());
+}
+
+function cat_get_hint_cache_updater(): ChassesAuTresor\Core\Content\HintCacheUpdater
+{
+    return new ChassesAuTresor\Core\Content\HintCacheUpdater(cat_get_hint_cache_service());
 }
 
 function cat_get_hint_title_service(): ChassesAuTresor\Core\Content\HintTitleService
@@ -980,37 +990,16 @@ function mettre_a_jour_cache_indice($post_id, ?int $chasse_id = null): void
         $relationshipService->persistLinkedHunt($post_id, $chasse_linked, 'update_field');
     }
 
-    $content = trim((string) get_field('indice_contenu', $post_id));
-    $imageId = get_field('indice_image', $post_id);
-    $availability = (string) get_field('indice_disponibilite', $post_id);
-    $availabilityDate = null;
-
-    if ($availability === 'differe') {
-        $dateRaw = get_field('indice_date_disponibilite', $post_id);
-        $availabilityDate = $dateRaw ? convertir_en_datetime($dateRaw) : null;
-    }
-
-    $cacheUpdate = cat_get_hint_cache_service()->buildUpdate(
-        $content !== '',
-        !empty($imageId),
-        $availability,
-        $availabilityDate ? $availabilityDate->getTimestamp() : null,
+    cat_get_hint_cache_updater()->update(
+        (int) $post_id,
         time(),
-        (string) get_post_status($post_id)
+        'get_field',
+        static fn (string $date) => $date !== '' ? convertir_en_datetime($date) : null,
+        'get_post_status',
+        'get_post',
+        'update_field',
+        'wp_update_post'
     );
-    update_field('indice_cache_complet', $cacheUpdate['complete'], $post_id);
-    update_field('indice_cache_etat_systeme', $cacheUpdate['state'], $post_id);
-
-    if ($cacheUpdate['publication_status'] !== null) {
-        $post = get_post($post_id);
-        wp_update_post([
-            'ID'            => $post_id,
-            'post_status'   => $cacheUpdate['publication_status'],
-            'post_date'     => $post->post_date,
-            'post_date_gmt' => $post->post_date_gmt,
-            'edit_date'     => true,
-        ]);
-    }
 
     reordonner_indices_pour_indice((int) $post_id);
 }
