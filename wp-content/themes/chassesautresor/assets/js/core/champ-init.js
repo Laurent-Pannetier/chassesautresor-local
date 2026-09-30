@@ -25,6 +25,8 @@ function modifierChampSimple(champ, valeur, postId, cpt = 'enigme') {
       post_id: postId,
       nonce: cpt === 'organisateur'
         ? (window.organisateurData?.nonce || '')
+        : cpt === 'indice'
+          ? (window.indicesCreate?.nonce || '')
         : cpt === 'chasse'
           ? (window.CHP_CHASSE_DEFAUT?.nonce || '')
           : (window.CHP_ENIGME_DEFAUT?.nonce || '')

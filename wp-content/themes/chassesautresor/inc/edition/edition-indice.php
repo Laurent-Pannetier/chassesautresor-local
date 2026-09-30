@@ -786,56 +786,25 @@ function ajax_modifier_indice_modal(): void
 }
 add_action('wp_ajax_modifier_indice_modal', 'ajax_modifier_indice_modal');
 
-/**
- * Gère l’enregistrement AJAX des champs ACF ou natifs du CPT indice.
- *
- * @hook wp_ajax_modifier_champ_indice
- * @return void
- */
-function modifier_champ_indice(): void
+
+function autoriser_modification_indice(bool $allowed, int $hintId): bool
 {
-    if (!is_user_logged_in()) {
-        wp_send_json_error('non_connecte');
-    }
-
-    $champ   = sanitize_text_field($_POST['champ'] ?? '');
-    $valeur  = $_POST['valeur'] ?? '';
-    $post_id = isset($_POST['post_id']) ? (int) $_POST['post_id'] : 0;
-
-    if (!$champ || !$post_id || get_post_type($post_id) !== 'indice') {
-        wp_send_json_error('⚠️ donnees_invalides');
-    }
-
-    if (!utilisateur_peut_modifier_post($post_id) || !utilisateur_peut_editer_champs($post_id)) {
-        wp_send_json_error('⚠️ acces_refuse');
-    }
-
-    $reponse      = ['champ' => $champ, 'valeur' => $valeur];
-    $mutation = cat_get_hint_field_mutation_service()->apply(
-        $post_id,
-        $champ,
-        $valeur,
-        'sanitize_text_field',
-        'wp_kses_post',
-        static function (string $date) {
-            return convertir_en_datetime($date, ['Y-m-d\TH:i', 'Y-m-d H:i:s', 'Y-m-d H:i']);
-        },
-        static fn (array $postData) => wp_update_post($postData, true),
-        'update_field',
-        'is_wp_error'
-    );
-
-    if ($mutation['error'] !== null) {
-        wp_send_json_error('⚠️ ' . $mutation['error']);
-    }
-
-    if ($mutation['refresh_cache']) {
-        mettre_a_jour_cache_indice($post_id);
-    }
-
-    wp_send_json_success($reponse);
+    return utilisateur_peut_modifier_post($hintId);
 }
-add_action('wp_ajax_modifier_champ_indice', 'modifier_champ_indice');
+add_filter('chassesautresor_can_modify_hint', 'autoriser_modification_indice', 10, 2);
+
+function autoriser_modification_champs_indice(bool $allowed, int $hintId): bool
+{
+    return utilisateur_peut_editer_champs($hintId);
+}
+add_filter('chassesautresor_can_edit_hint_fields', 'autoriser_modification_champs_indice', 10, 2);
+
+function actualiser_cache_indice_demande(int $hintId): void
+{
+    mettre_a_jour_cache_indice($hintId);
+}
+add_action('chassesautresor_hint_cache_refresh_requested', 'actualiser_cache_indice_demande');
+
 
 /**
  * Supprime un indice via requête AJAX.

@@ -93,6 +93,8 @@ function initChampImage(bloc) {
           post_id: postId,
           nonce: cpt === 'organisateur'
             ? (window.organisateurData?.nonce || '')
+            : cpt === 'indice'
+              ? (window.indicesCreate?.nonce || '')
             : cpt === 'chasse'
               ? (window.CHP_CHASSE_DEFAUT?.nonce || '')
               : ''
