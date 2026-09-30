@@ -13,6 +13,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\RiddleSolutionFilePublicationServ
         . '/plugins/chassesautresor-core/src/Content/RiddleSolutionFilePublicationService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\RiddleSolutionFileScheduler::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/RiddleSolutionFileScheduler.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Content\RiddleSolutionFileStorageService::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Content/RiddleSolutionFileStorageService.php';
@@ -565,21 +570,7 @@ function deplacer_pdf_solution($enigme_id)
  */
 function planifier_ou_deplacer_pdf_solution_immediatement($enigme_id)
 {
-  if (!$enigme_id || get_post_type($enigme_id) !== 'enigme') return;
-
-  $mode = get_field('enigme_solution_mode', $enigme_id);
-  $delai = get_field('enigme_solution_delai', $enigme_id);
-  $heure = get_field('enigme_solution_heure', $enigme_id);
-  $timestamp = (new ChassesAuTresor\Core\Content\RiddleSolutionFilePolicyService())
-    ->getPublicationTimestamp(
-      (string) $mode,
-      $delai === null ? null : (int) $delai,
-      $heure === null ? null : (string) $heure,
-      time()
-    );
-  if ($timestamp === null) return;
-
-  wp_schedule_single_event($timestamp, 'publier_solution_enigme', [$enigme_id]);
+  ChassesAuTresor\Core\Content\RiddleSolutionFileScheduler::schedule((int) $enigme_id);
 }
 
 /**
