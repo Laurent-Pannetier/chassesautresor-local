@@ -51,6 +51,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\HintFieldPolicyService::class, fa
         . '/plugins/chassesautresor-core/src/Content/HintFieldPolicyService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HintMutationService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HintMutationService.php';
+}
+
 function cat_get_hint_query_service(): ChassesAuTresor\Core\Content\HintQueryService
 {
     return new ChassesAuTresor\Core\Content\HintQueryService();
@@ -84,6 +89,11 @@ function cat_get_hint_creation_service(): ChassesAuTresor\Core\Content\HintCreat
 function cat_get_hint_field_policy_service(): ChassesAuTresor\Core\Content\HintFieldPolicyService
 {
     return new ChassesAuTresor\Core\Content\HintFieldPolicyService();
+}
+
+function cat_get_hint_mutation_service(): ChassesAuTresor\Core\Content\HintMutationService
+{
+    return new ChassesAuTresor\Core\Content\HintMutationService(cat_get_hint_status_service());
 }
 
 // ==================================================
@@ -671,24 +681,19 @@ function ajax_creer_indice_modal(): void
     $dispo   = sanitize_key($_POST['indice_disponibilite'] ?? 'immediate');
     $date    = sanitize_text_field($_POST['indice_date_disponibilite'] ?? '');
 
-    if ($image) {
-        update_field('indice_image', $image, $indice_id);
-    }
-    if ($contenu !== '') {
-        update_field('indice_contenu', $contenu, $indice_id);
-    }
-
-    $dispo = cat_get_hint_status_service()->normalizeAvailability($dispo);
-    update_field('indice_disponibilite', $dispo, $indice_id);
-
-    $date_to_save = cat_get_hint_status_service()->resolveAvailabilityDate(
+    cat_get_hint_mutation_service()->applyModal(
+        $indice_id,
+        $image,
+        $contenu,
+        $dispo,
         $date,
         (string) get_field('indice_date_disponibilite', $indice_id),
-        wp_date('Y-m-d H:i:s', (int) current_time('timestamp'))
+        wp_date('Y-m-d H:i:s', (int) current_time('timestamp')),
+        false,
+        static fn (string $field, $value, int $postId) => update_field($field, $value, $postId),
+        static fn (string $field, int $postId) => delete_field($field, $postId),
+        static fn (int $postId) => mettre_a_jour_cache_indice($postId)
     );
-    update_field('indice_date_disponibilite', $date_to_save, $indice_id);
-
-    mettre_a_jour_cache_indice($indice_id);
 
     wp_send_json_success(['indice_id' => $indice_id]);
 }
@@ -724,24 +729,19 @@ function ajax_modifier_indice_modal(): void
     $dispo   = sanitize_key($_POST['indice_disponibilite'] ?? 'immediate');
     $date    = sanitize_text_field($_POST['indice_date_disponibilite'] ?? '');
 
-    if ($image) {
-        update_field('indice_image', $image, $indice_id);
-    } else {
-        delete_field('indice_image', $indice_id);
-    }
-    update_field('indice_contenu', $contenu, $indice_id);
-
-    $dispo = cat_get_hint_status_service()->normalizeAvailability($dispo);
-    update_field('indice_disponibilite', $dispo, $indice_id);
-
-    $date_to_save = cat_get_hint_status_service()->resolveAvailabilityDate(
+    cat_get_hint_mutation_service()->applyModal(
+        $indice_id,
+        $image,
+        $contenu,
+        $dispo,
         $date,
         (string) get_field('indice_date_disponibilite', $indice_id),
-        wp_date('Y-m-d H:i:s', (int) current_time('timestamp'))
+        wp_date('Y-m-d H:i:s', (int) current_time('timestamp')),
+        true,
+        static fn (string $field, $value, int $postId) => update_field($field, $value, $postId),
+        static fn (string $field, int $postId) => delete_field($field, $postId),
+        static fn (int $postId) => mettre_a_jour_cache_indice($postId)
     );
-    update_field('indice_date_disponibilite', $date_to_save, $indice_id);
-
-    mettre_a_jour_cache_indice($indice_id);
 
     wp_send_json_success(['indice_id' => $indice_id]);
 }
