@@ -29,4 +29,8 @@ final class OrganizerAjaxSecurityTest extends TestCase {
         $this->assertStringNotContainsString('wp_ajax_modifier_titre_organisateur', $this->source);
         $this->assertStringNotContainsString('function modifier_titre_organisateur()', $this->source);
     }
+
+    public function testUnusedOrganizerRedirectFunctionIsRemoved(): void {
+        $this->assertStringNotContainsString('function rediriger_selon_etat_organisateur()', $this->source);
+    }
 }

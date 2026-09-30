@@ -18,7 +18,6 @@ if (!class_exists(ChassesAuTresor\Core\Content\OrganizerMutationService::class, 
 // 🔹 creer_organisateur_pour_utilisateur() → Crée un CPT organisateur lié à un user
 // 🔹 enqueue_script_organisateur_edit() → Charge JS si modif organisateur possible
 // 🔹 modifier_champ_organisateur() (AJAX) → Enregistre champs organisateur
-// 🔹 rediriger_selon_etat_organisateur() → Redirection auto selon statut
 // 🔹 organisateur_get_liste_liens_publics() → Liste des types de lien publics
 // 🔹 organisateur_get_lien_public_infos() → Détails pour un type de lien
 // 🔹 pre_remplir_utilisateur_associe() → Préremplit le champ utilisateurs_associes avec l’auteur si vide
@@ -211,6 +210,7 @@ function ajax_modifier_champ_organisateur()
             'links_update_failed' => '⚠️ echec_mise_a_jour_liens',
             'bank_details_update_failed' => '⚠️ echec_mise_a_jour_coordonnees',
             'field_update_failed' => '⚠️ echec_mise_a_jour_final',
+            'field_not_allowed' => '⚠️ champ_non_autorise',
         ];
         wp_send_json_error($messages[$mutation['error']]);
     }
@@ -219,65 +219,6 @@ function ajax_modifier_champ_organisateur()
         'champ' => $mutation['field'],
         'valeur' => $mutation['value'],
     ]);
-}
-
-
-/**
- * Redirige l’utilisateur connecté selon l’état de son CPT "organisateur".
- *
- * - Si aucun organisateur : ne fait rien
- * - Si statut "draft" ou "pending" : redirige vers la prévisualisation
- * - Si statut "publish" : redirige vers la page publique
- *
- * @return void
- */
-function rediriger_selon_etat_organisateur()
-{
-  if (!is_user_logged_in()) {
-    return;
-  }
-
-  $user_id = get_current_user_id();
-  $organisateur_id = get_organisateur_from_user($user_id);
-
-  if (!$organisateur_id) {
-    return; // Aucun organisateur : accès au canevas autorisé
-  }
-
-  $user  = wp_get_current_user();
-  $roles = (array) $user->roles;
-
-  $has_chasse_non_attente = false;
-  $query = get_chasses_de_organisateur($organisateur_id);
-  if ($query && $query->have_posts()) {
-    foreach ($query->posts as $chasse_id) {
-      $statut_validation = get_field('chasse_cache_statut_validation', (int) $chasse_id);
-      if ($statut_validation !== 'en_attente') {
-        $has_chasse_non_attente = true;
-        break;
-      }
-    }
-  }
-
-  if ((in_array(ROLE_ORGANISATEUR_CREATION, $roles, true) || in_array(ROLE_ORGANISATEUR, $roles, true)) && $has_chasse_non_attente) {
-    return; // Laisser accès à la page, pas de redirection
-  }
-
-  $post = get_post($organisateur_id);
-
-  switch ($post->post_status) {
-    case 'pending':
-      $preview_url = add_query_arg([
-        'preview' => 'true',
-        'preview_id' => $post->ID
-      ], get_permalink($post));
-      wp_safe_redirect($preview_url);
-      exit;
-
-    case 'publish':
-      wp_safe_redirect(get_permalink($post));
-      exit;
-  }
 }
 
 

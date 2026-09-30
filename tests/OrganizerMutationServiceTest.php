@@ -27,6 +27,18 @@ final class OrganizerMutationServiceTest extends TestCase {
         $this->assertSame([], $this->updates);
     }
 
+    public function testRejectsFieldsOutsideOrganizerEditorAllowlist(): void {
+        $result = $this->service->apply(
+            12,
+            'utilisateurs_associes',
+            '[99]',
+            ...$this->callbacks()
+        );
+
+        $this->assertSame('field_not_allowed', $result['error']);
+        $this->assertSame([], $this->updates);
+    }
+
     public function testMapsAndPersistsSimpleFields(): void {
         $callbacks = $this->callbacks();
         $result = $this->service->apply(12, 'email_contact', 'test@example.com', ...$callbacks);

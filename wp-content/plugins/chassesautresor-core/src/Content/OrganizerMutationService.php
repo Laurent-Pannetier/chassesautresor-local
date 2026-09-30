@@ -14,6 +14,17 @@ class OrganizerMutationService {
         'logo_organisateur' => 'logo_organisateur',
     ];
 
+    private const EDITABLE_FIELDS = [
+        'post_title',
+        'email_contact',
+        'profil_public_email_contact',
+        'parlez_de_vous_presentation',
+        'description_longue',
+        'logo_organisateur',
+        'liens_publics',
+        'coordonnees_bancaires',
+    ];
+
     /**
      * @param mixed $value
      * @param callable(string): string $sanitizeText
@@ -39,6 +50,10 @@ class OrganizerMutationService {
         callable $getField,
         callable $getMeta
     ): array {
+        if (!in_array($field, self::EDITABLE_FIELDS, true)) {
+            return $this->result($field, $value, 'field_not_allowed');
+        }
+
         $targetField = self::FIELD_ALIASES[$field] ?? $field;
         if ($targetField === 'logo_organisateur') {
             $value = abs((int) $value);
