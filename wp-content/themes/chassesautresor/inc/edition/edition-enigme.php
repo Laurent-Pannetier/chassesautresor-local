@@ -210,93 +210,24 @@ function initialiser_etat_enigme_creee(int $riddleId): void {
 add_action('chassesautresor_riddle_created', 'initialiser_etat_enigme_creee');
 
 
-/**
- * 🔹 modifier_champ_enigme() → Gère l’enregistrement AJAX des champs ACF ou natifs du CPT énigme (post_title inclus).
- */
-add_action('wp_ajax_modifier_champ_enigme', 'modifier_champ_enigme');
-
-
-/**
- * @hook wp_ajax_modifier_champ_enigme
- */
-function modifier_champ_enigme()
-{
-  check_ajax_referer('modifier_champ_enigme', 'nonce');
-
-  if (!is_user_logged_in()) {
-    wp_send_json_error('non_connecte');
-  }
-
-  $user_id = get_current_user_id();
-  $champ = sanitize_text_field($_POST['champ'] ?? '');
-  $valeur = $_POST['valeur'] ?? '';
-  $post_id = isset($_POST['post_id']) ? (int) $_POST['post_id'] : 0;
-
-  if (!$champ || !$post_id || get_post_type($post_id) !== 'enigme') {
-    wp_send_json_error('⚠️ donnees_invalides');
-  }
-
-  if (!utilisateur_peut_modifier_post($post_id)) {
-    wp_send_json_error('⚠️ acces_refuse');
-  }
-
-  if (!utilisateur_peut_editer_champs($post_id)) {
-    wp_send_json_error('⚠️ acces_refuse');
-  }
-
-  $ancien_complet = (bool) get_field('enigme_cache_complet', $post_id);
-  $field_policy   = new ChassesAuTresor\Core\Content\RiddleFieldPolicyService();
-
-  if (!$field_policy->isEditableField($champ)) {
-    wp_send_json_error('⚠️ champ_interdit');
-  }
-
-  // 🔹 Bloc interdit (pre_requis manuel)
-  if ($champ === 'enigme_acces_condition' && $field_policy->isForbiddenAccessCondition((string) $valeur)) {
-    wp_send_json_error('⚠️ Interdit : cette valeur est gérée automatiquement.');
-  }
-
-  $mutation = (new ChassesAuTresor\Core\Content\RiddleMutationService())->apply(
-    $post_id,
-    $champ,
-    $valeur,
-    static function (string $date) {
-      return convertir_en_datetime($date, [
-        'Y-m-d\TH:i',
-        'Y-m-d H:i:s',
-        'Y-m-d H:i',
-      ]);
-    },
-    strtotime(date('Y-m-d'))
-  );
-
-  if ($mutation['error'] !== null) {
-    wp_send_json_error('⚠️ ' . $mutation['error']);
-  }
-
-  if ($mutation['refresh_state']) {
-    enigme_mettre_a_jour_etat_systeme($post_id);
-  }
-
-  if ($mutation['terminal']) {
-    wp_send_json_success(['champ' => $champ, 'valeur' => $valeur]);
-  }
-
-  if (function_exists('verifier_ou_mettre_a_jour_cache_complet')) {
-    verifier_ou_mettre_a_jour_cache_complet($post_id);
-  }
-  $nouveau_complet = (bool) get_field('enigme_cache_complet', $post_id);
-  $chasse_id = function_exists('recuperer_id_chasse_associee')
-    ? (int) recuperer_id_chasse_associee($post_id)
-    : 0;
-
-  wp_send_json_success(
-    (new ChassesAuTresor\Core\Content\RiddleManagementService())->getFieldUpdateResponse(
-      $champ,
-      $valeur,
-      $ancien_complet,
-      $nouveau_complet,
-      $chasse_id
-    )
-  );
+function autoriser_modification_enigme(bool $allowed, int $riddleId): bool {
+    return utilisateur_peut_modifier_post($riddleId);
 }
+add_filter('chassesautresor_can_modify_riddle', 'autoriser_modification_enigme', 10, 2);
+
+function autoriser_modification_champs_enigme(bool $allowed, int $riddleId): bool {
+    return utilisateur_peut_editer_champs($riddleId);
+}
+add_filter('chassesautresor_can_edit_riddle_fields', 'autoriser_modification_champs_enigme', 10, 2);
+
+function actualiser_etat_enigme(int $riddleId): void {
+    enigme_mettre_a_jour_etat_systeme($riddleId);
+}
+add_action('chassesautresor_riddle_state_refresh_requested', 'actualiser_etat_enigme');
+
+function actualiser_completude_enigme(int $riddleId): void {
+    if (function_exists('verifier_ou_mettre_a_jour_cache_complet')) {
+        verifier_ou_mettre_a_jour_cache_complet($riddleId);
+    }
+}
+add_action('chassesautresor_riddle_completeness_refresh_requested', 'actualiser_completude_enigme');

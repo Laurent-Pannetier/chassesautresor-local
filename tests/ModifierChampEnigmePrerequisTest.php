@@ -52,7 +52,22 @@ namespace {
     if (!function_exists('sanitize_text_field')) {
         function sanitize_text_field($text) { return $text; }
     }
+    if (!function_exists('apply_filters')) {
+        function apply_filters($hook, $value) { return true; }
+    }
+    if (!function_exists('do_action')) {
+        function do_action($hook, $post_id) {
+            if ($hook === 'chassesautresor_riddle_state_refresh_requested') {
+                enigme_mettre_a_jour_etat_systeme($post_id);
+            }
+            if ($hook === 'chassesautresor_riddle_completeness_refresh_requested') {
+                verifier_ou_mettre_a_jour_cache_complet($post_id);
+            }
+        }
+    }
     require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-enigme.php';
+    require_once __DIR__
+        . '/../wp-content/plugins/chassesautresor-core/src/Content/RiddleFieldMutationAjaxHandler.php';
 }
 
 namespace ModifierChampEnigmePrerequisTest {
@@ -76,7 +91,7 @@ namespace ModifierChampEnigmePrerequisTest {
                 'post_id' => 99,
             ];
 
-            \modifier_champ_enigme();
+            \ChassesAuTresor\Core\Content\RiddleFieldMutationAjaxHandler::handle();
 
             $this->assertSame([1, 2], $fields[99]['enigme_acces_pre_requis']);
             $this->assertSame('pre_requis', $fields[99]['enigme_acces_condition']);

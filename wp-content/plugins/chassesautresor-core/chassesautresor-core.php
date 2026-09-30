@@ -117,6 +117,7 @@ require_once __DIR__ . '/src/Content/RiddleAccessService.php';
 require_once __DIR__ . '/src/Content/RiddleFieldPolicyService.php';
 require_once __DIR__ . '/src/Content/RiddleManagementService.php';
 require_once __DIR__ . '/src/Content/RiddleMutationService.php';
+require_once __DIR__ . '/src/Content/RiddleFieldMutationAjaxHandler.php';
 require_once __DIR__ . '/src/Content/RiddleOrderingService.php';
 require_once __DIR__ . '/src/Content/RiddleOrderingAjaxHandler.php';
 require_once __DIR__ . '/src/Content/RiddlePostFactory.php';
@@ -171,6 +172,7 @@ ChassesAuTresor\Core\Content\HuntCreationRouteHandler::register('add_action');
 ChassesAuTresor\Core\Content\RiddleCreationRouteHandler::register('add_action');
 ChassesAuTresor\Core\Content\HuntDateMutationAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\HuntFieldMutationAjaxHandler::register('add_action');
+ChassesAuTresor\Core\Content\RiddleFieldMutationAjaxHandler::register('add_action');
 
 register_activation_hook(
     __FILE__,
