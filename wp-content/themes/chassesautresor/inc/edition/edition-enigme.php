@@ -105,6 +105,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\RiddleRelationshipLifecycleServic
         . '/plugins/chassesautresor-core/src/Content/RiddleRelationshipLifecycleService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\RiddleCacheMutationService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/RiddleCacheMutationService.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Content\RiddleRouteRegistrar::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Content/RiddleRouteRegistrar.php';
@@ -794,12 +799,12 @@ add_action('acf/save_post', function ($post_id) {
     get_field('enigme_chasse_associee', $post_id),
     static fn (int $chasse_id): bool => get_post_type($chasse_id) === 'chasse',
     static function (int $chasse_id, int $enigme_id): bool {
-      $success = modifier_relation_acf(
+      $success = (new ChassesAuTresor\Core\Content\RiddleCacheMutationService())->mutate(
         $chasse_id,
-        'chasse_cache_enigmes',
         $enigme_id,
-        'field_67b740025aae0',
-        'add'
+        'add',
+        static fn (int $postId, string $key) => get_post_meta($postId, $key, true),
+        'update_post_meta'
       );
 
       cat_debug(
@@ -890,12 +895,12 @@ add_action('before_delete_post', function ($post_id) {
     (int) $post_id,
     get_field('enigme_chasse_associee', $post_id) ?: get_field('chasse_associee', $post_id),
     static function (int $chasse_id, int $enigme_id): bool {
-      return modifier_relation_acf(
+      return (new ChassesAuTresor\Core\Content\RiddleCacheMutationService())->mutate(
         $chasse_id,
-        'chasse_cache_enigmes',
         $enigme_id,
-        'field_67b740025aae0',
-        'remove'
+        'remove',
+        static fn (int $postId, string $key) => get_post_meta($postId, $key, true),
+        'update_post_meta'
       );
     },
     'nettoyer_relations_orphelines'
