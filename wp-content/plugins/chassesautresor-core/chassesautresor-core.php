@@ -55,6 +55,7 @@ require_once __DIR__ . '/src/Content/HintScheduler.php';
 require_once __DIR__ . '/src/Content/HintTitleService.php';
 require_once __DIR__ . '/src/Content/HintCreationService.php';
 require_once __DIR__ . '/src/Content/HintRouteRegistrar.php';
+require_once __DIR__ . '/src/Content/HintFieldPolicyService.php';
 require_once __DIR__ . '/src/Content/HuntPublicationStatusService.php';
 require_once __DIR__ . '/src/Content/HuntValidationService.php';
 require_once __DIR__ . '/src/Content/SolutionAvailabilityService.php';

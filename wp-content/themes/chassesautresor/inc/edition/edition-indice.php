@@ -36,6 +36,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\HintRouteRegistrar::class, false)
         . '/plugins/chassesautresor-core/src/Content/HintRouteRegistrar.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HintFieldPolicyService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HintFieldPolicyService.php';
+}
+
 function cat_get_hint_query_service(): ChassesAuTresor\Core\Content\HintQueryService
 {
     return new ChassesAuTresor\Core\Content\HintQueryService();
@@ -54,6 +59,11 @@ function cat_get_hint_title_service(): ChassesAuTresor\Core\Content\HintTitleSer
 function cat_get_hint_creation_service(): ChassesAuTresor\Core\Content\HintCreationService
 {
     return new ChassesAuTresor\Core\Content\HintCreationService();
+}
+
+function cat_get_hint_field_policy_service(): ChassesAuTresor\Core\Content\HintFieldPolicyService
+{
+    return new ChassesAuTresor\Core\Content\HintFieldPolicyService();
 }
 
 // ==================================================
@@ -813,6 +823,11 @@ function modifier_champ_indice(): void
         wp_send_json_success($reponse);
     }
 
+    $fieldPolicy = cat_get_hint_field_policy_service();
+    if (!$fieldPolicy->isEditable($champ)) {
+        wp_send_json_error('⚠️ champ_inconnu');
+    }
+
     switch ($champ) {
         case 'indice_image':
             $champ_valide = update_field('indice_image', (int) $valeur, $post_id) !== false;
@@ -821,11 +836,11 @@ function modifier_champ_indice(): void
             $champ_valide = update_field('indice_contenu', wp_kses_post($valeur), $post_id) !== false;
             break;
         case 'indice_cible_type':
-            $val = $valeur === 'enigme' ? 'enigme' : 'chasse';
+            $val = $fieldPolicy->normalizeTargetType((string) $valeur);
             $champ_valide = update_field('indice_cible_type', $val, $post_id) !== false;
             break;
         case 'indice_enigme_linked':
-            $ids = array_filter(array_map('intval', explode(',', (string) $valeur)));
+            $ids = $fieldPolicy->normalizeRiddleIds((string) $valeur);
             $champ_valide = update_field('indice_enigme_linked', $ids, $post_id) !== false;
             break;
         case 'indice_disponibilite':
@@ -842,12 +857,10 @@ function modifier_champ_indice(): void
         case 'indice_cout_points':
             $champ_valide = update_field('indice_cout_points', (int) $valeur, $post_id) !== false;
             break;
-        default:
-            wp_send_json_error('⚠️ champ_inconnu');
     }
 
     if ($champ_valide) {
-        if (in_array($champ, ['indice_image', 'indice_contenu', 'indice_disponibilite', 'indice_date_disponibilite'], true)) {
+        if ($fieldPolicy->requiresCacheRefresh($champ)) {
             mettre_a_jour_cache_indice($post_id);
         }
 
