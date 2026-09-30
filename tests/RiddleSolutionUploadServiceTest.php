@@ -16,7 +16,10 @@ class RiddleSolutionUploadServiceTest extends TestCase {
         $result = (new RiddleSolutionUploadService())->process(
             42,
             ['name' => 'solution.pdf', 'size' => 1000, 'error' => 0],
-            static fn (): array => ['ext' => 'pdf', 'type' => 'application/pdf'],
+            static function (array $file): array {
+                self::assertSame('solution.pdf', $file['name']);
+                return ['ext' => 'pdf', 'type' => 'application/pdf'];
+            },
             static fn (): array => ['url' => '/solution.pdf', 'file' => '/tmp/solution.pdf'],
             static function (...$arguments) use (&$attached): int {
                 $attached = $arguments;

@@ -25,7 +25,7 @@ class RiddleSolutionUploadService {
             return $this->error('missing_file');
         }
 
-        $fileType = $detectType((string) ($file['name'] ?? ''));
+        $fileType = $detectType($file);
         $extension = (string) ($fileType['ext'] ?? '');
         $mimeType = (string) ($fileType['type'] ?? '');
         $policyError = (new RiddleSolutionFilePolicyService())->getUploadError(

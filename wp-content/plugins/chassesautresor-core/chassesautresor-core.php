@@ -71,6 +71,7 @@ require_once __DIR__ . '/src/Content/SolutionCreationService.php';
 require_once __DIR__ . '/src/Content/SolutionDeletionService.php';
 require_once __DIR__ . '/src/Content/SolutionDisplayService.php';
 require_once __DIR__ . '/src/Content/SolutionFieldPolicyService.php';
+require_once __DIR__ . '/src/Content/SolutionFileInputService.php';
 require_once __DIR__ . '/src/Content/SolutionManagementService.php';
 require_once __DIR__ . '/src/Content/SolutionMutationService.php';
 require_once __DIR__ . '/src/Content/SolutionPostFactory.php';

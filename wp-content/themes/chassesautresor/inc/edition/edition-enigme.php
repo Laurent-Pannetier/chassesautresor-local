@@ -449,7 +449,12 @@ function enregistrer_fichier_solution_enigme()
   $result = (new ChassesAuTresor\Core\Content\RiddleSolutionUploadService())->process(
     $post_id,
     isset($_FILES['fichier_pdf']) ? (array) $_FILES['fichier_pdf'] : [],
-    'wp_check_filetype',
+    static function (array $file): array {
+      return wp_check_filetype_and_ext(
+        (string) ($file['tmp_name'] ?? ''),
+        (string) ($file['name'] ?? '')
+      );
+    },
     static function (array $file): array {
       require_once ABSPATH . 'wp-admin/includes/file.php';
       add_filter('upload_dir', 'rediriger_upload_fichier_solution');
