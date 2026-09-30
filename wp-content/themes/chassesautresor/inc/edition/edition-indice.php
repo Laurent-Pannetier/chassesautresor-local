@@ -26,6 +26,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\HintTitleService::class, false)) 
         . '/plugins/chassesautresor-core/src/Content/HintTitleService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HintOrderingService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HintOrderingService.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Content\HintCreationService::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Content/HintCreationService.php';
@@ -54,6 +59,11 @@ function cat_get_hint_status_service(): ChassesAuTresor\Core\Content\HintStatusS
 function cat_get_hint_title_service(): ChassesAuTresor\Core\Content\HintTitleService
 {
     return new ChassesAuTresor\Core\Content\HintTitleService();
+}
+
+function cat_get_hint_ordering_service(): ChassesAuTresor\Core\Content\HintOrderingService
+{
+    return new ChassesAuTresor\Core\Content\HintOrderingService(cat_get_hint_title_service());
 }
 
 function cat_get_hint_creation_service(): ChassesAuTresor\Core\Content\HintCreationService
@@ -164,35 +174,34 @@ function reordonner_indices(int $objet_id, string $objet_type): void
     $processing = true;
     $indices = get_posts($queryArgs);
 
-    $i = 1;
+    $relationshipService = new ChassesAuTresor\Core\Relationships\RelationshipService();
+    $hints = [];
     foreach ($indices as $indice_id) {
-        $current_title = get_post_field('post_title', $indice_id);
-        $prefix        = defined('INDICE_DEFAULT_PREFIX') ? INDICE_DEFAULT_PREFIX : '';
-        $should_update = cat_get_hint_title_service()->shouldRegenerate(
-            (string) $current_title,
-            defined('TITRE_DEFAUT_INDICE') ? TITRE_DEFAUT_INDICE : '',
-            $prefix
-        );
+        $hints[] = [
+            'id' => (int) $indice_id,
+            'title' => (string) get_post_field('post_title', $indice_id),
+            'hunt_id' => $relationshipService->normalizeId(get_field('indice_chasse_linked', $indice_id)),
+        ];
+    }
 
-        if ($should_update) {
-            $relationshipService = new ChassesAuTresor\Core\Relationships\RelationshipService();
-            $chasse_id = $relationshipService->normalizeId(
-                get_field('indice_chasse_linked', $indice_id)
-            );
+    $updates = cat_get_hint_ordering_service()->buildUpdatePlan(
+        $hints,
+        $objet_type,
+        $objet_id,
+        defined('TITRE_DEFAUT_INDICE') ? TITRE_DEFAUT_INDICE : '',
+        defined('INDICE_DEFAULT_PREFIX') ? INDICE_DEFAULT_PREFIX : ''
+    );
 
-            if ($chasse_id === null && $objet_type === 'chasse') {
-                $chasse_id = $objet_id;
-            }
-
-            $placeholder = build_indice_placeholder_title($chasse_id ?? 0);
+    foreach ($updates as $update) {
+        if ($update['regenerate_title']) {
+            $placeholder = build_indice_placeholder_title($update['hunt_id'] ?? 0);
             wp_update_post([
-                'ID'         => $indice_id,
+                'ID'         => $update['id'],
                 'post_title' => $placeholder,
             ]);
         }
 
-        update_post_meta($indice_id, 'indice_rank', $i);
-        $i++;
+        update_post_meta($update['id'], 'indice_rank', $update['rank']);
     }
 
     $processing = false;
@@ -209,28 +218,20 @@ function reordonner_indices_pour_indice(int $indice_id): void
     $cible_type = get_field('indice_cible_type', $indice_id) === 'enigme' ? 'enigme' : 'chasse';
     $relationshipService = new ChassesAuTresor\Core\Relationships\RelationshipService();
 
-    if ($cible_type === 'enigme') {
-        $objet_id = $relationshipService->normalizeId(get_field('indice_enigme_linked', $indice_id));
+    $objet_id = $relationshipService->resolveHintTargetId(
+        $cible_type,
+        get_field('indice_chasse_linked', $indice_id),
+        get_field('indice_enigme_linked', $indice_id)
+    );
+    $chasse_id = $relationshipService->normalizeId(get_field('indice_chasse_linked', $indice_id));
 
-        if ($objet_id !== null) {
-            reordonner_indices($objet_id, 'enigme');
-        }
+    if ($cible_type === 'enigme' && $chasse_id === null && $objet_id !== null) {
+        $chasse_id = $relationshipService->normalizeId(recuperer_id_chasse_associee($objet_id));
+    }
 
-        $chasse_id = $relationshipService->normalizeId(get_field('indice_chasse_linked', $indice_id));
-
-        if ($chasse_id === null && $objet_id !== null) {
-            $chasse_id = $relationshipService->normalizeId(recuperer_id_chasse_associee($objet_id));
-        }
-
-        if ($chasse_id !== null) {
-            reordonner_indices($chasse_id, 'chasse');
-        }
-    } else {
-        $chasse_id = $relationshipService->normalizeId(get_field('indice_chasse_linked', $indice_id));
-
-        if ($chasse_id !== null) {
-            reordonner_indices($chasse_id, 'chasse');
-        }
+    $targets = cat_get_hint_ordering_service()->getAffectedTargets($cible_type, $objet_id, $chasse_id);
+    foreach ($targets as $target) {
+        reordonner_indices($target['id'], $target['type']);
     }
 }
 
