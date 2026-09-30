@@ -11,6 +11,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\HuntLinkMutationService::class, f
         . '/plugins/chassesautresor-core/src/Content/HuntLinkMutationService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HuntRewardMutationService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HuntRewardMutationService.php';
+}
+
 
 // ==================================================
 // 🗺️ CRÉATION & ÉDITION D’UNE CHASSE
@@ -404,24 +409,19 @@ function modifier_champ_chasse()
     }
   }
 
-  // 🔹 Champs récompense (texte / valeur)
-  $champs_recompense = [
-    'caracteristiques.chasse_infos_recompense_valeur',
-    'caracteristiques.chasse_infos_recompense_texte'
-  ];
-  if (in_array($champ, $champs_recompense, true)) {
-    $sous_champ = str_replace('caracteristiques.', '', $champ);
-
-    // Validation spécifique pour la valeur monétaire
-    if ($sous_champ === 'chasse_infos_recompense_valeur') {
-      if (!is_numeric($valeur) || $valeur <= 0 || $valeur > 5000000) {
-        wp_send_json_error('valeur_invalide');
-      }
-    }
-
-    $ok = update_field($sous_champ, $valeur, $post_id);
-    if ($ok !== false) $champ_valide = true;
-    $doit_recalculer_statut = true;
+  // 🔹 Champs récompense
+  $rewardMutation = (new ChassesAuTresor\Core\Content\HuntRewardMutationService())->apply(
+    $post_id,
+    $champ,
+    $valeur,
+    'update_field'
+  );
+  if ($rewardMutation['error'] !== null) {
+    wp_send_json_error($rewardMutation['error']);
+  }
+  if ($rewardMutation['handled']) {
+    $champ_valide = true;
+    $doit_recalculer_statut = $rewardMutation['recalculate_status'];
   }
 
   if ($champ === 'caracteristiques.chasse_infos_cout_points') {
@@ -498,13 +498,6 @@ function modifier_champ_chasse()
   if ($champ === 'caracteristiques.chasse_infos_nb_max_gagants') {
     $sous_champ = 'chasse_infos_nb_max_gagants';
     $ok = update_field($sous_champ, (int) $valeur, $post_id);
-    if ($ok !== false) $champ_valide = true;
-  }
-
-  // 🔹 Titre récompense
-  if ($champ === 'caracteristiques.chasse_infos_recompense_titre') {
-    $sous_champ = 'chasse_infos_recompense_titre';
-    $ok = update_field($sous_champ, $valeur, $post_id);
     if ($ok !== false) $champ_valide = true;
   }
 
