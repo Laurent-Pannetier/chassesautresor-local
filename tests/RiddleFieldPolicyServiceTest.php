@@ -22,6 +22,26 @@ class RiddleFieldPolicyServiceTest extends TestCase {
         $this->assertFalse($this->service->isAllowedManualAccessCondition('pre_requis'));
     }
 
+    public function testAttemptFieldsAreMappedToTheirStoredAcfFields(): void {
+        $this->assertSame(
+            'enigme_tentative_cout_points',
+            $this->service->getAttemptStorageField('enigme_tentative.enigme_tentative_cout_points')
+        );
+        $this->assertSame(
+            'enigme_tentative_max',
+            $this->service->getAttemptStorageField('enigme_tentative.enigme_tentative_max')
+        );
+        $this->assertNull($this->service->getAttemptStorageField('enigme_tentative.inconnu'));
+    }
+
+    public function testPastScheduledAccessMustBecomeImmediate(): void {
+        $today = 1_800_000_000;
+
+        $this->assertTrue($this->service->shouldResetScheduledAccess($today - 1, $today, 'date_programmee'));
+        $this->assertFalse($this->service->shouldResetScheduledAccess($today, $today, 'date_programmee'));
+        $this->assertFalse($this->service->shouldResetScheduledAccess($today - 1, $today, 'immediat'));
+    }
+
     public function testAnswersAreSanitizedAndEmptyValuesRemoved(): void {
         $answers = $this->service->normalizeAnswers(
             [' Trésor ', '', '<b>Carte</b>'],

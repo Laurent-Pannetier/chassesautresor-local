@@ -19,6 +19,19 @@ class RiddleFieldPolicyService {
         return in_array($condition, ['immediat', 'date_programmee'], true);
     }
 
+    public function getAttemptStorageField(string $submittedField): ?string {
+        $fields = [
+            'enigme_tentative.enigme_tentative_cout_points' => 'enigme_tentative_cout_points',
+            'enigme_tentative.enigme_tentative_max' => 'enigme_tentative_max',
+        ];
+
+        return $fields[$submittedField] ?? null;
+    }
+
+    public function shouldResetScheduledAccess(int $timestamp, int $startOfToday, string $condition): bool {
+        return $condition === 'date_programmee' && $timestamp < $startOfToday;
+    }
+
     /**
      * @param mixed[] $answers
      * @return string[]

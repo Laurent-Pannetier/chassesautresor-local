@@ -347,12 +347,9 @@ function modifier_champ_enigme()
 
 
   // 🔹 Tentatives (coût et max)
-  if ($champ === 'enigme_tentative.enigme_tentative_cout_points') {
-    $champ_valide = update_field('enigme_tentative_cout_points', (int) $valeur, $post_id) !== false;
-  }
-
-  if ($champ === 'enigme_tentative.enigme_tentative_max') {
-    $champ_valide = update_field('enigme_tentative_max', (int) $valeur, $post_id) !== false;
+  $attempt_field = $field_policy->getAttemptStorageField($champ);
+  if ($attempt_field !== null) {
+    $champ_valide = update_field($attempt_field, (int) $valeur, $post_id) !== false;
   }
 
   // 🔹 Accès : condition (immédiat, date_programmee uniquement)
@@ -380,7 +377,7 @@ function modifier_champ_enigme()
     $today = strtotime(date('Y-m-d'));
     $mode = get_field('enigme_acces_condition', $post_id);
 
-    if ($timestamp && $timestamp < $today && $mode === 'date_programmee') {
+    if ($field_policy->shouldResetScheduledAccess($timestamp, $today, (string) $mode)) {
       update_field('enigme_acces_condition', 'immediat', $post_id);
     }
 
