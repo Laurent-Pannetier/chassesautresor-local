@@ -22,6 +22,17 @@ class OrganizerHuntQueryServiceTest extends TestCase
         $this->assertSame([], $this->service->getExistingHuntQueryArgs(0));
         $this->assertSame([], $this->service->getHuntIdsQueryArgs(-1));
         $this->assertSame([], $this->service->getPublishedHuntCountQueryArgs(0));
+        $this->assertSame([], $this->service->getNavigationHuntsQueryArgs(0));
+    }
+
+    public function testNavigationQueryReturnsAllNonBannedOrganizerHunts(): void
+    {
+        $args = $this->service->getNavigationHuntsQueryArgs(42);
+
+        $this->assertSame(-1, $args['numberposts']);
+        $this->assertSame(['publish', 'pending'], $args['post_status']);
+        $this->assertSame('"42"', $args['meta_query'][0]['value']);
+        $this->assertSame('banni', $args['meta_query'][1]['value']);
     }
 
     public function testExistingHuntsExcludeBannedContent(): void

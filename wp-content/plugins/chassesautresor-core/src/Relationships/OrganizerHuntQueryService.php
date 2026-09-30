@@ -77,6 +77,31 @@ class OrganizerHuntQueryService
     }
 
     /**
+     * @return array<string, mixed>
+     */
+    public function getNavigationHuntsQueryArgs(int $organizerId): array
+    {
+        if ($organizerId <= 0) {
+            return [];
+        }
+
+        return [
+            'post_type' => 'chasse',
+            'post_status' => ['publish', 'pending'],
+            'numberposts' => -1,
+            'meta_query' => [
+                'relation' => 'AND',
+                $this->getOrganizerMetaQuery($organizerId),
+                [
+                    'key' => 'chasse_cache_statut_validation',
+                    'value' => 'banni',
+                    'compare' => '!=',
+                ],
+            ],
+        ];
+    }
+
+    /**
      * @return array{key:string,value:string,compare:string}
      */
     private function getOrganizerMetaQuery(int $organizerId): array

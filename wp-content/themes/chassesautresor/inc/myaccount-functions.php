@@ -7,6 +7,16 @@
 
 defined('ABSPATH') || exit;
 
+if (!class_exists(ChassesAuTresor\Core\Content\OrganizerNavigationService::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Content/OrganizerNavigationService.php';
+}
+
+if (!class_exists(ChassesAuTresor\Core\Relationships\OrganizerHuntQueryService::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Relationships/OrganizerHuntQueryService.php';
+}
+
 /**
  * Retrieve organizer navigation data for the sidebar.
  *
@@ -22,34 +32,13 @@ function myaccount_get_organizer_nav(int $user_id): ?array
 
     $organizer_post_status = get_post_status($organizer_id);
     $organizer_complete    = (bool) get_field('organisateur_cache_complet', $organizer_id);
-    $organizer_classes     = 'dashboard-nav-link';
-
-    if (!$organizer_complete) {
-        $organizer_classes .= ' status-important';
-    } elseif ($organizer_post_status === 'pending') {
-        $organizer_classes .= ' status-pending';
-    } else {
-        $organizer_classes .= ' status-published';
-    }
-
-    $chasses = get_posts([
-        'post_type'   => 'chasse',
-        'post_status' => ['publish', 'pending'],
-        'numberposts' => -1,
-        'meta_query'  => [
-            'relation' => 'AND',
-            [
-                'key'     => 'chasse_cache_organisateur',
-                'value'   => '"' . $organizer_id . '"',
-                'compare' => 'LIKE',
-            ],
-            [
-                'key'     => 'chasse_cache_statut_validation',
-                'value'   => 'banni',
-                'compare' => '!=',
-            ],
-        ],
-    ]);
+    $navigationService = new ChassesAuTresor\Core\Content\OrganizerNavigationService();
+    $queryService = new ChassesAuTresor\Core\Relationships\OrganizerHuntQueryService();
+    $organizer_classes = $navigationService->getOrganizerClasses(
+        $organizer_complete,
+        (string) $organizer_post_status
+    );
+    $chasses = get_posts($queryService->getNavigationHuntsQueryArgs((int) $organizer_id));
 
     $pending_enigmes = recuperer_enigmes_tentatives_en_attente($organizer_id);
 
@@ -66,75 +55,39 @@ function myaccount_get_organizer_nav(int $user_id): ?array
         $status_validation = get_field('chasse_cache_statut_validation', $chasse->ID);
         $complet           = get_field('chasse_cache_complet', $chasse->ID);
         $post_status       = get_post_status($chasse->ID);
-        $classes           = 'dashboard-nav-sublink';
-        $pending_icon      = false;
-
-        if (!$complet) {
-            $classes .= ' status-important';
-        } else {
-            if ($post_status === 'pending') {
-                if ($status_validation === 'banni') {
-                    continue;
-                } elseif ($status_validation === 'en_attente') {
-                    $classes     .= ' status-pending';
-                    $pending_icon = true;
-                } else {
-                    $classes .= ' status-pending';
-                }
-            } elseif ($post_status === 'publish') {
-                if ($status_validation === 'valide') {
-                    $classes .= ' status-published';
-                } else {
-                    $classes .= ' status-pending';
-                }
-            } else {
-                $classes .= ' status-pending';
-            }
-        }
-
-        if (function_exists('peut_valider_chasse') && peut_valider_chasse($chasse->ID, $user_id)) {
-            $classes .= ' status-eligible';
+        $presentation = $navigationService->getHuntPresentation(
+            (bool) $complet,
+            (string) $post_status,
+            (string) $status_validation,
+            function_exists('peut_valider_chasse') && peut_valider_chasse($chasse->ID, $user_id)
+        );
+        if ($presentation === null) {
+            continue;
         }
 
         $chasse_item = [
             'title'        => get_the_title($chasse->ID),
             'url'          => get_permalink($chasse->ID),
-            'classes'      => $classes,
-            'pending_icon' => $pending_icon,
+            'classes'      => $presentation['classes'],
+            'pending_icon' => $presentation['pending_icon'],
             'enigmes'      => [],
         ];
 
         $enigme_ids = recuperer_ids_enigmes_pour_chasse($chasse->ID);
         foreach ($enigme_ids as $enigme_id) {
-            $sub_classes      = 'dashboard-nav-subitem';
             $url              = get_permalink($enigme_id);
             $enigme_complete  = get_field('enigme_cache_complet', $enigme_id);
             $post_status      = get_post_status($enigme_id);
             $etat_enigme      = get_field('enigme_cache_etat_systeme', $enigme_id);
 
-            if (!$enigme_complete) {
-                $sub_classes .= ' status-important';
-            } else {
-                if ($post_status === 'pending') {
-                    if (in_array($etat_enigme, ['invalide', 'cache_invalide'], true)) {
-                        continue;
-                    }
-                    $sub_classes .= ' status-pending';
-                } elseif ($post_status === 'publish') {
-                    if ($etat_enigme === 'accessible') {
-                        $sub_classes .= ' status-published';
-                    } elseif (in_array($etat_enigme, ['bloquee_date', 'bloquee_chasse', 'bloquee_pre_requis'], true)) {
-                        $sub_classes .= ' status-pending';
-                    } else {
-                        $sub_classes .= ' status-pending';
-                    }
-                } else {
-                    $sub_classes .= ' status-pending';
-                }
-            }
-
-            if (in_array($enigme_id, $pending_enigmes, true)) {
-                $sub_classes .= ' status-important';
+            $sub_classes = $navigationService->getRiddleClasses(
+                (bool) $enigme_complete,
+                (string) $post_status,
+                (string) $etat_enigme,
+                in_array($enigme_id, $pending_enigmes, true)
+            );
+            if ($sub_classes === null) {
+                continue;
             }
 
             $chasse_item['enigmes'][] = [
