@@ -50,6 +50,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\RiddleCompletionService::class, f
         . '/plugins/chassesautresor-core/src/Content/RiddleCompletionService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\RiddleFieldPolicyService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/RiddleFieldPolicyService.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Content\RiddlePostFactory::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Content/RiddlePostFactory.php';
@@ -291,9 +296,10 @@ function modifier_champ_enigme()
   $champ_valide    = false;
   $reponse         = ['champ' => $champ, 'valeur' => $valeur];
   $ancien_complet  = (bool) get_field('enigme_cache_complet', $post_id);
+  $field_policy    = new ChassesAuTresor\Core\Content\RiddleFieldPolicyService();
 
   // 🔹 Bloc interdit (pre_requis manuel)
-  if ($champ === 'enigme_acces_condition' && $valeur === 'pre_requis') {
+  if ($champ === 'enigme_acces_condition' && $field_policy->isForbiddenAccessCondition((string) $valeur)) {
     wp_send_json_error('⚠️ Interdit : cette valeur est gérée automatiquement.');
   }
 
@@ -320,19 +326,10 @@ function modifier_champ_enigme()
       wp_send_json_error('⚠️ format_invalide');
     }
 
-    $liste = array_values(array_filter(array_map(function ($r) {
-      $clean = sanitize_text_field($r);
-      return $clean !== '' ? $clean : null;
-    }, $liste)));
-
-    if (count($liste) > 5) {
-      wp_send_json_error('⚠️ trop_de_reponses');
-    }
-
-    foreach ($liste as $r) {
-      if (mb_strlen($r) > 75) {
-        wp_send_json_error('⚠️ longueur_max');
-      }
+    $liste = $field_policy->normalizeAnswers($liste, 'sanitize_text_field');
+    $answer_error = $field_policy->getAnswersError($liste);
+    if ($answer_error !== null) {
+      wp_send_json_error('⚠️ ' . $answer_error);
     }
 
     $ok = update_field($champ, wp_json_encode($liste), $post_id);
@@ -359,7 +356,10 @@ function modifier_champ_enigme()
   }
 
   // 🔹 Accès : condition (immédiat, date_programmee uniquement)
-  if ($champ === 'enigme_acces_condition' && in_array(sanitize_text_field($valeur), ['immediat', 'date_programmee'])) {
+  if (
+    $champ === 'enigme_acces_condition'
+    && $field_policy->isAllowedManualAccessCondition(sanitize_text_field($valeur))
+  ) {
     $ok = update_field($champ, sanitize_text_field($valeur), $post_id);
     if ($ok) $champ_valide = true;
   }
@@ -394,14 +394,12 @@ function modifier_champ_enigme()
 
     // 🔹 Accès : pré-requis (liste d'IDs)
     if ($champ === 'enigme_acces_pre_requis') {
-        $ids = is_array($valeur)
-            ? array_filter(array_map('intval', $valeur))
-            : array_filter(array_map('intval', explode(',', (string) $valeur)));
+        $ids = $field_policy->normalizePrerequisiteIds($valeur);
 
         $ok = update_field($champ, $ids, $post_id);
         if ($ok) {
             $champ_valide = true;
-            $condition = !empty($ids) ? 'pre_requis' : 'immediat';
+            $condition = $field_policy->getAccessConditionForPrerequisites($ids);
             update_field('enigme_acces_condition', $condition, $post_id);
             enigme_mettre_a_jour_etat_systeme($post_id);
         }

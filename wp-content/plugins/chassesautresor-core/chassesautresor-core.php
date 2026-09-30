@@ -80,6 +80,7 @@ require_once __DIR__ . '/src/Content/SolutionScheduler.php';
 require_once __DIR__ . '/src/Content/SolutionSaveHandler.php';
 require_once __DIR__ . '/src/Content/SolutionAccessService.php';
 require_once __DIR__ . '/src/Content/RiddleAccessService.php';
+require_once __DIR__ . '/src/Content/RiddleFieldPolicyService.php';
 require_once __DIR__ . '/src/Content/RiddleManagementService.php';
 require_once __DIR__ . '/src/Content/RiddlePostFactory.php';
 require_once __DIR__ . '/src/Content/HuntManagementService.php';
