@@ -47,6 +47,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\SolutionManagementService::class,
         . '/plugins/chassesautresor-core/src/Content/SolutionManagementService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\SolutionModalPolicyService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/SolutionModalPolicyService.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Content\SolutionMutationService::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Content/SolutionMutationService.php';
@@ -460,31 +465,27 @@ function solution_resoudre_fichier_modal(int $solution_id): array
 function ajax_creer_solution_modal(): void
 {
     $fieldPolicy = new ChassesAuTresor\Core\Content\SolutionFieldPolicyService();
-
-    if (!is_user_logged_in()) {
-        wp_send_json_error('non_connecte');
-    }
-
-    $objet_id   = isset($_POST['objet_id']) ? (int) $_POST['objet_id'] : 0;
-    $objet_type = sanitize_key($_POST['objet_type'] ?? '');
-
-    if (!$objet_id || !in_array($objet_type, ['chasse', 'enigme'], true) || get_post_type($objet_id) !== $objet_type) {
-        wp_send_json_error('post_invalide');
-    }
-
+    $isAuthenticated = is_user_logged_in();
+    $objet_id   = $isAuthenticated && isset($_POST['objet_id']) ? (int) $_POST['objet_id'] : 0;
+    $objet_type = $isAuthenticated ? sanitize_key($_POST['objet_type'] ?? '') : '';
+    $hasValidTarget = $objet_id > 0
+        && in_array($objet_type, ['chasse', 'enigme'], true)
+        && get_post_type($objet_id) === $objet_type;
     $linked = isset($_POST['solution_enigme_linked']) ? (int) $_POST['solution_enigme_linked'] : 0;
-    if (!$fieldPolicy->hasConsistentRiddleTarget($objet_type, $objet_id, $linked)) {
-        wp_send_json_error('post_invalide');
-    }
-
-    if (!solution_action_autorisee('create', $objet_type, $objet_id)) {
-        wp_send_json_error('acces_refuse');
-    }
-
+    $hasConsistentTarget = $hasValidTarget
+        && $fieldPolicy->hasConsistentRiddleTarget($objet_type, $objet_id, $linked);
+    $isAuthorized = $hasConsistentTarget && solution_action_autorisee('create', $objet_type, $objet_id);
     $has_file   = !empty($_FILES['solution_fichier']['tmp_name']) || !empty($_POST['solution_fichier']);
     $rawExplanation = (string) ($_POST['solution_explication'] ?? '');
-    if (!$fieldPolicy->hasRequiredContent($has_file, $rawExplanation)) {
-        wp_send_json_error('contenu_manquant');
+    $requestError = (new ChassesAuTresor\Core\Content\SolutionModalPolicyService())->getCreationError(
+        $isAuthenticated,
+        $hasValidTarget,
+        $hasConsistentTarget,
+        $isAuthorized,
+        $fieldPolicy->hasRequiredContent($has_file, $rawExplanation)
+    );
+    if ($requestError !== null) {
+        wp_send_json_error($requestError);
     }
 
     $solution_id = creer_solution_pour_objet($objet_id, $objet_type);
@@ -524,29 +525,26 @@ add_action('wp_ajax_creer_solution_modal', 'ajax_creer_solution_modal');
 function ajax_modifier_solution_modal(): void
 {
     $fieldPolicy = new ChassesAuTresor\Core\Content\SolutionFieldPolicyService();
-
-    if (!is_user_logged_in()) {
-        wp_send_json_error('non_connecte');
-    }
-
-    $solution_id = isset($_POST['solution_id']) ? (int) $_POST['solution_id'] : 0;
-    $objet_id    = isset($_POST['objet_id']) ? (int) $_POST['objet_id'] : 0;
-    $objet_type  = sanitize_key($_POST['objet_type'] ?? '');
-
-    if (!$solution_id || get_post_type($solution_id) !== 'solution') {
-        wp_send_json_error('solution_invalide');
-    }
-    if (!$objet_id || !in_array($objet_type, ['chasse', 'enigme'], true) || get_post_type($objet_id) !== $objet_type) {
-        wp_send_json_error('post_invalide');
-    }
-    if (!solution_action_autorisee('edit', $objet_type, $objet_id)) {
-        wp_send_json_error('acces_refuse');
-    }
-
+    $isAuthenticated = is_user_logged_in();
+    $solution_id = $isAuthenticated && isset($_POST['solution_id']) ? (int) $_POST['solution_id'] : 0;
+    $hasValidSolution = $solution_id > 0 && get_post_type($solution_id) === 'solution';
+    $objet_id = $hasValidSolution && isset($_POST['objet_id']) ? (int) $_POST['objet_id'] : 0;
+    $objet_type = $hasValidSolution ? sanitize_key($_POST['objet_type'] ?? '') : '';
+    $hasValidTarget = $objet_id > 0
+        && in_array($objet_type, ['chasse', 'enigme'], true)
+        && get_post_type($objet_id) === $objet_type;
+    $isAuthorized = $hasValidTarget && solution_action_autorisee('edit', $objet_type, $objet_id);
     $has_file   = !empty($_FILES['solution_fichier']['tmp_name']) || !empty($_POST['solution_fichier']);
     $rawExplanation = (string) ($_POST['solution_explication'] ?? '');
-    if (!$fieldPolicy->hasRequiredContent($has_file, $rawExplanation)) {
-        wp_send_json_error('contenu_manquant');
+    $requestError = (new ChassesAuTresor\Core\Content\SolutionModalPolicyService())->getEditionError(
+        $isAuthenticated,
+        $hasValidSolution,
+        $hasValidTarget,
+        $isAuthorized,
+        $fieldPolicy->hasRequiredContent($has_file, $rawExplanation)
+    );
+    if ($requestError !== null) {
+        wp_send_json_error($requestError);
     }
 
     $fileInput = solution_resoudre_fichier_modal($solution_id);
