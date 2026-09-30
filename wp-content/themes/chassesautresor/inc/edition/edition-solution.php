@@ -17,6 +17,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\SolutionCacheService::class, fals
         . '/plugins/chassesautresor-core/src/Content/SolutionCacheService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\SolutionCacheUpdater::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/SolutionCacheUpdater.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Content\SolutionCreationService::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Content/SolutionCreationService.php';
@@ -161,44 +166,7 @@ function planifier_tache_basculer_solutions_programme(): void
  */
 function mettre_a_jour_cache_solution(int $post_id): void
 {
-    if (get_post_type($post_id) !== 'solution') {
-        return;
-    }
-
-    if (wp_is_post_revision($post_id) || wp_is_post_autosave($post_id)) {
-        return;
-    }
-
-    $cible_type = (string) get_field('solution_cible_type', $post_id);
-    $relationshipService = new ChassesAuTresor\Core\Relationships\RelationshipService();
-    $target_id = $relationshipService->resolveTargetId(
-        $cible_type,
-        get_field('solution_chasse_linked', $post_id),
-        get_field('solution_enigme_linked', $post_id)
-    );
-
-    $explic  = trim((string) get_field('solution_explication', $post_id));
-    $fichier = get_field('solution_fichier', $post_id);
-    $content = $explic !== '' || !empty($fichier);
-
-    $cacheUpdate = (new ChassesAuTresor\Core\Content\SolutionCacheService())->buildUpdate(
-        $content,
-        $target_id,
-        (string) get_post_status($post_id)
-    );
-    update_field('solution_cache_complet', $cacheUpdate['complete'], $post_id);
-    update_field('solution_cache_etat_systeme', $cacheUpdate['state'], $post_id);
-
-    if ($cacheUpdate['publication_status'] !== null) {
-        $post = get_post($post_id);
-        wp_update_post([
-            'ID'            => $post_id,
-            'post_status'   => $cacheUpdate['publication_status'],
-            'post_date'     => $post->post_date,
-            'post_date_gmt' => $post->post_date_gmt,
-            'edit_date'     => true,
-        ]);
-    }
+    ChassesAuTresor\Core\Content\SolutionCacheUpdater::update($post_id);
 }
 
 /**
