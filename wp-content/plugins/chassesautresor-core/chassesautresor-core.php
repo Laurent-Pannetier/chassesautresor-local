@@ -47,6 +47,7 @@ require_once __DIR__ . '/src/Media/RiddleImageRepository.php';
 require_once __DIR__ . '/src/Media/RiddleImageService.php';
 require_once __DIR__ . '/src/Media/RiddleUploadDirectoryService.php';
 require_once __DIR__ . '/src/Content/RiddleCompletionService.php';
+require_once __DIR__ . '/src/Content/RiddleCreationService.php';
 require_once __DIR__ . '/src/Content/OrganizerCompletionService.php';
 require_once __DIR__ . '/src/Content/HuntCompletionService.php';
 require_once __DIR__ . '/src/Content/HuntFeatureService.php';

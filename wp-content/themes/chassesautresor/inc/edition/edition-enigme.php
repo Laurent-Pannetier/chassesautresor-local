@@ -50,6 +50,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\RiddleCompletionService::class, f
         . '/plugins/chassesautresor-core/src/Content/RiddleCompletionService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\RiddleCreationService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/RiddleCreationService.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Content\RiddleFieldPolicyService::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Content/RiddleFieldPolicyService.php';
@@ -160,30 +165,29 @@ add_action('wp_enqueue_scripts', 'enqueue_script_enigme_edit');
  */
 function creer_enigme_pour_chasse($chasse_id, $user_id = null)
 {
-  if (get_post_type($chasse_id) !== 'chasse') {
-    return new WP_Error(
-      'chasse_invalide',
-      __('ID de chasse invalide.', 'chassesautresor-com')
-    );
-  }
-
   if (is_null($user_id)) {
     $user_id = get_current_user_id();
   }
 
-  if (!$user_id || !get_userdata($user_id)) {
-    return new WP_Error(
-      'utilisateur_invalide',
-      __('Utilisateur non connecté.', 'chassesautresor-com')
-    );
-  }
+  $has_valid_hunt = get_post_type($chasse_id) === 'chasse';
+  $has_valid_user = $has_valid_hunt && $user_id && get_userdata($user_id);
+  $organisateur_id = $has_valid_user ? get_organisateur_from_chasse($chasse_id) : 0;
+  $creation_error = (new ChassesAuTresor\Core\Content\RiddleCreationService())->getCreationError(
+    $has_valid_hunt,
+    (bool) $has_valid_user,
+    (bool) $organisateur_id
+  );
+  if ($creation_error !== null) {
+    $errors = [
+      'invalid_hunt' => ['chasse_invalide', __('ID de chasse invalide.', 'chassesautresor-com')],
+      'invalid_user' => ['utilisateur_invalide', __('Utilisateur non connecté.', 'chassesautresor-com')],
+      'missing_organizer' => [
+        'organisateur_introuvable',
+        __('Organisateur non lié à cette chasse.', 'chassesautresor-com'),
+      ],
+    ];
 
-  $organisateur_id = get_organisateur_from_chasse($chasse_id);
-  if (!$organisateur_id) {
-    return new WP_Error(
-      'organisateur_introuvable',
-      __('Organisateur non lié à cette chasse.', 'chassesautresor-com')
-    );
+    return new WP_Error($errors[$creation_error][0], $errors[$creation_error][1]);
   }
 
   $factory = new ChassesAuTresor\Core\Content\RiddlePostFactory();
@@ -900,7 +904,7 @@ add_action('before_delete_post', function ($post_id) {
 
   (new ChassesAuTresor\Core\Content\RiddleRelationshipLifecycleService())->detach(
     (int) $post_id,
-    get_field('chasse_associee', $post_id),
+    get_field('enigme_chasse_associee', $post_id) ?: get_field('chasse_associee', $post_id),
     static function (int $chasse_id, int $enigme_id): bool {
       return modifier_relation_acf(
         $chasse_id,
