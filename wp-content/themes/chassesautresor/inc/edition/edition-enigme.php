@@ -622,37 +622,3 @@ function supprimer_enigme_ajax()
   wp_send_json_success(['redirect' => $redirect]);
 }
 add_action('wp_ajax_supprimer_enigme', 'supprimer_enigme_ajax');
-
-/**
- * Vérifie s'il reste des énigmes incomplètes pour une chasse.
- *
- * @hook wp_ajax_verifier_enigmes_completes
- * @return void
- */
-function verifier_enigmes_completes_ajax()
-{
-    if (!is_user_logged_in()) {
-        wp_send_json_error('non_connecte');
-    }
-
-    $chasse_id = isset($_POST['chasse_id']) ? (int) $_POST['chasse_id'] : 0;
-    if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
-        wp_send_json_error('id_invalide');
-    }
-
-    $can_add = function_exists('utilisateur_peut_ajouter_enigme')
-        ? utilisateur_peut_ajouter_enigme($chasse_id)
-        : false;
-
-    wp_send_json_success(
-        (new ChassesAuTresor\Core\Content\RiddleCompletionService())->evaluateManagementStatus(
-            recuperer_enigmes_associees($chasse_id),
-            $can_add,
-            static function (int $enigme_id): void {
-                verifier_ou_mettre_a_jour_cache_complet($enigme_id);
-            },
-            static fn (int $enigme_id): bool => (bool) get_field('enigme_cache_complet', $enigme_id)
-        )
-    );
-}
-add_action('wp_ajax_verifier_enigmes_completes', 'verifier_enigmes_completes_ajax');
