@@ -36,6 +36,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\HuntPostFactory::class, false)) {
         . '/plugins/chassesautresor-core/src/Content/HuntPostFactory.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HuntDeletionService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HuntDeletionService.php';
+}
+
 // ==================================================
 // 🗺️ CRÉATION & ÉDITION D’UNE CHASSE
 // ==================================================
@@ -89,6 +94,7 @@ function enqueue_script_chasse_edit()
         [
             'ajaxUrl'   => admin_url('admin-ajax.php'),
             'chasseId'  => $chasse_id,
+            'nonce'     => wp_create_nonce('hunt_management'),
             'errorText' => __('Erreur lors du chargement des indices.', 'chassesautresor-com'),
         ]
     );
@@ -537,33 +543,24 @@ add_action('wp_ajax_supprimer_chasse', 'supprimer_chasse_ajax');
 function chasse_trash_with_children(int $chasse_id): bool
 {
     $enigme_ids = array_map('intval', recuperer_ids_enigmes_pour_chasse($chasse_id));
+    $attachments = function_exists('get_attached_media') ? get_attached_media('image', $chasse_id) : [];
 
-    foreach ($enigme_ids as $enigme_id) {
-        if ($enigme_id <= 0) {
-            continue;
-        }
-
-        wp_trash_post($enigme_id);
-
-        if (function_exists('supprimer_dossier_enigme')) {
-            supprimer_dossier_enigme($enigme_id);
-        }
-    }
-
-    if (function_exists('synchroniser_cache_enigmes_chasse')) {
-        synchroniser_cache_enigmes_chasse($chasse_id, true, true);
-    }
-
-    if (function_exists('get_attached_media')) {
-        $attachments = get_attached_media('image', $chasse_id);
-        foreach ($attachments as $attachment) {
-            if (is_object($attachment) && isset($attachment->ID)) {
-                wp_trash_post((int) $attachment->ID);
+    return (new ChassesAuTresor\Core\Content\HuntDeletionService())->trash(
+        $chasse_id,
+        $enigme_ids,
+        $attachments,
+        'wp_trash_post',
+        static function (int $enigmeId): void {
+            if (function_exists('supprimer_dossier_enigme')) {
+                supprimer_dossier_enigme($enigmeId);
+            }
+        },
+        static function (int $chasseId): void {
+            if (function_exists('synchroniser_cache_enigmes_chasse')) {
+                synchroniser_cache_enigmes_chasse($chasseId, true, true);
             }
         }
-    }
-
-    return (bool) wp_trash_post($chasse_id);
+    );
 }
 
 /**
@@ -571,26 +568,23 @@ function chasse_trash_with_children(int $chasse_id): bool
  */
 function supprimer_chasse_ajax(): void
 {
+    check_ajax_referer('hunt_management', 'nonce');
+
     if (!is_user_logged_in()) {
         wp_send_json_error('non_connecte');
     }
 
     $chasse_id = isset($_POST['chasse_id']) ? (int) $_POST['chasse_id'] : 0;
-    if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
-        wp_send_json_error('id_invalide');
-    }
-
-    if (get_post_status($chasse_id) !== 'pending') {
-        wp_send_json_error('chasse_ineligible');
-    }
-
-    if (get_post_meta($chasse_id, 'chasse_cache_statut', true) !== 'revision') {
-        wp_send_json_error('chasse_ineligible');
-    }
-
     $user_id = get_current_user_id();
-    if (!$user_id || !utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
-        wp_send_json_error('acces_refuse');
+    $requestError = (new ChassesAuTresor\Core\Content\HuntDeletionService())->getRequestError(
+        $chasse_id,
+        (string) get_post_type($chasse_id),
+        (string) get_post_status($chasse_id),
+        (string) get_post_meta($chasse_id, 'chasse_cache_statut', true),
+        $user_id > 0 && utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)
+    );
+    if ($requestError !== null) {
+        wp_send_json_error($requestError);
     }
 
     if (!chasse_trash_with_children($chasse_id)) {

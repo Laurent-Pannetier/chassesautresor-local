@@ -226,6 +226,7 @@ window.rafraichirCarteSolutions = rafraichirCarteSolutions;
       const fd = new FormData();
       fd.append('action', 'supprimer_chasse');
       fd.append('chasse_id', chasseId);
+      fd.append('nonce', ChasseIndices.nonce || '');
 
       fetch(ajaxUrl, {
         method: 'POST',
@@ -1563,4 +1564,3 @@ qrDownloadBtn?.addEventListener('click', (e) => {
       window.location.href = url;
     });
 });
-
