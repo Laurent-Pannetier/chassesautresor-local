@@ -843,9 +843,17 @@ function nettoyer_relations_orphelines()
   (new ChassesAuTresor\Core\Content\RiddleRelationshipCleanupService())->clean(
     $chasses,
     'maybe_unserialize',
-    function (int $enigme_id) use ($wpdb): bool {
-      return (bool) $wpdb->get_var(
-        $wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->posts} WHERE ID = %d", $enigme_id)
+    static function (array $enigme_ids) use ($wpdb): array {
+      if ($enigme_ids === []) {
+        return [];
+      }
+
+      $placeholders = implode(', ', array_fill(0, count($enigme_ids), '%d'));
+      $query = "SELECT ID FROM {$wpdb->posts} WHERE ID IN ({$placeholders})";
+
+      return array_map(
+        'intval',
+        $wpdb->get_col($wpdb->prepare($query, ...$enigme_ids))
       );
     },
     static function (int $post_id, array $relations): void {
