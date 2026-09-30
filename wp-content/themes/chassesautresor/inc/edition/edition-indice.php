@@ -91,6 +91,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\HintDeletionService::class, false
         . '/plugins/chassesautresor-core/src/Content/HintDeletionService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HintDeletionAjaxHandler::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HintDeletionAjaxHandler.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Content\HintDeletionLifecycleService::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Content/HintDeletionLifecycleService.php';
@@ -725,53 +730,13 @@ function actualiser_cache_indice_demande(int $hintId): void
 add_action('chassesautresor_hint_cache_refresh_requested', 'actualiser_cache_indice_demande');
 
 
-/**
- * Supprime un indice via requête AJAX.
- *
- * @hook wp_ajax_supprimer_indice
- * @return void
- */
-function supprimer_indice_ajax(): void
+
+function reordonner_indices_demande(int $targetId, string $targetType): void
 {
-    if (!is_user_logged_in()) {
-        wp_send_json_error('non_connecte');
-    }
-
-    $indice_id = isset($_POST['indice_id']) ? (int) $_POST['indice_id'] : 0;
-    if (!$indice_id || get_post_type($indice_id) !== 'indice') {
-        wp_send_json_error('id_invalide');
-    }
-
-    $deletionService = cat_get_hint_deletion_service();
-    $cible_type = (string) get_field('indice_cible_type', $indice_id);
-    $linked_hunt = get_field('indice_chasse_linked', $indice_id);
-    $linked_riddle = get_field('indice_enigme_linked', $indice_id);
-    $context = $deletionService->resolveContext(
-        $cible_type,
-        $linked_hunt,
-        $linked_riddle,
-        static fn (int $riddleId): int => (int) recuperer_id_chasse_associee($riddleId)
-    );
-
-    if ($context === null || !indice_action_autorisee(
-        'delete',
-        $context['target_type'],
-        $context['target_id']
-    )) {
-        wp_send_json_error('acces_refuse');
-    }
-
-    if (!$deletionService->delete($indice_id)) {
-        wp_send_json_error('echec_suppression');
-    }
-
-    foreach ($context['reorder_targets'] as $target) {
-        reordonner_indices($target['id'], $target['type']);
-    }
-
-    wp_send_json_success();
+    reordonner_indices($targetId, $targetType);
 }
-add_action('wp_ajax_supprimer_indice', 'supprimer_indice_ajax');
+add_action('chassesautresor_hint_reorder_requested', 'reordonner_indices_demande', 10, 2);
+
 
 /**
  * Pré-remplit automatiquement la chasse liée d'un indice lors de sa création.

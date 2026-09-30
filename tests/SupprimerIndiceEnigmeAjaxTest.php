@@ -11,6 +11,27 @@ if (!function_exists('is_user_logged_in')) {
     }
 }
 
+
+if (!function_exists('check_ajax_referer')) {
+    function check_ajax_referer($action, $queryArg) { return true; }
+}
+
+if (!function_exists('apply_filters')) {
+    function apply_filters($hook, $value, ...$args) {
+        return $hook === 'chassesautresor_can_manage_hint'
+            ? indice_action_autorisee($args[0], $args[1], $args[2])
+            : $value;
+    }
+}
+
+if (!function_exists('do_action')) {
+    function do_action($hook, ...$args) {
+        if ($hook === 'chassesautresor_hint_reorder_requested') {
+            reordonner_indices($args[0], $args[1]);
+        }
+    }
+}
+
 if (!function_exists('get_post_type')) {
     function get_post_type($id)
     {
@@ -113,7 +134,7 @@ final class SupprimerIndiceEnigmeAjaxTest extends TestCase
         global $captured_meta_queries;
         $_POST['indice_id'] = 42;
 
-        supprimer_indice_ajax();
+        ChassesAuTresor\Core\Content\HintDeletionAjaxHandler::handle();
 
         $this->assertCount(2, $captured_meta_queries);
         $foundChasse = $foundEnigme = false;

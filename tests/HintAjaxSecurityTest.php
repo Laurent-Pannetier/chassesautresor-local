@@ -19,6 +19,9 @@ final class HintAjaxSecurityTest extends TestCase {
         $modalScriptSource = (string) file_get_contents(
             __DIR__ . '/../wp-content/themes/chassesautresor/assets/js/indices-create.js'
         );
+        $pagerScriptSource = (string) file_get_contents(
+            __DIR__ . '/../wp-content/themes/chassesautresor/assets/js/indices-pager.js'
+        );
 
         $this->assertStringContainsString("wp_create_nonce('hint_management')", $themeSource);
         $this->assertStringContainsString(
@@ -29,6 +32,10 @@ final class HintAjaxSecurityTest extends TestCase {
         $this->assertStringContainsString(
             "data.append('nonce', indicesCreate.nonce || '');",
             $modalScriptSource
+        );
+        $this->assertStringContainsString(
+            "formData.append('nonce', window.indicesCreate?.nonce || '');",
+            $pagerScriptSource
         );
     }
 
