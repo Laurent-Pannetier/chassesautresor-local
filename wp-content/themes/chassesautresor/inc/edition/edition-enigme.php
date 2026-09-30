@@ -40,6 +40,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\RiddleManagementService::class, f
         . '/plugins/chassesautresor-core/src/Content/RiddleManagementService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\RiddleOrderingService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/RiddleOrderingService.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Content\RiddleDeletionService::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Content/RiddleDeletionService.php';
@@ -740,16 +745,16 @@ function reordonner_enigmes_ajax()
         wp_send_json_error('non_autorise');
     }
 
-    $allowedOrder = (new ChassesAuTresor\Core\Content\RiddleManagementService())->getReorderUpdates(
+    (new ChassesAuTresor\Core\Content\RiddleOrderingService())->apply(
         $ordre,
-        recuperer_enigmes_associees($chasse_id)
+        recuperer_enigmes_associees($chasse_id),
+        static function (int $enigme_id, int $menu_order): void {
+            wp_update_post([
+                'ID' => $enigme_id,
+                'menu_order' => $menu_order,
+            ]);
+        }
     );
-    foreach ($allowedOrder as $index => $enigme_id) {
-        wp_update_post([
-            'ID'         => $enigme_id,
-            'menu_order' => $index,
-        ]);
-    }
 
     if (function_exists('synchroniser_cache_enigmes_chasse')) {
         synchroniser_cache_enigmes_chasse($chasse_id, true, true);
