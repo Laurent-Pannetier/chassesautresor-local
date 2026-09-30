@@ -6,6 +6,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\RiddleSolutionFilePolicyService::
         . '/plugins/chassesautresor-core/src/Content/RiddleSolutionFilePolicyService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\RiddleSolutionFileStorageService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/RiddleSolutionFileStorageService.php';
+}
+
 
 // ==================================================
 // 🧩 CRÉATION & ÉDITION D’UNE ÉNIGME
@@ -459,7 +464,9 @@ function enregistrer_fichier_solution_enigme()
 
 
   if (!isset($uploaded['url']) || !isset($uploaded['file'])) {
-    wp_send_json_error("Échec de l’upload.");
+    wp_send_json_error(
+      $uploaded['error'] ?? __('Échec de l’upload.', 'chassesautresor-com')
+    );
   }
 
   // 📝 Création de la pièce jointe
@@ -526,37 +533,8 @@ function supprimer_fichier_solution_enigme()
  */
 function rediriger_upload_fichier_solution($dirs)
 {
-    $custom = WP_CONTENT_DIR . '/protected/solutions';
-
-    if (!file_exists($custom)) {
-        wp_mkdir_p($custom);
-    }
-
-    $htaccess = $custom . '/.htaccess';
-
-    if (!file_exists($htaccess)) {
-        $htaccess_content = <<<HTACCESS
-<IfModule !authz_core_module>
-Order deny,allow
-Deny from all
-</IfModule>
-<IfModule authz_core_module>
-Require all denied
-</IfModule>
-
-HTACCESS;
-        file_put_contents($htaccess, $htaccess_content);
-    }
-
-    $dirs['path']    = $custom;
-    $dirs['basedir'] = $custom;
-    $dirs['subdir']  = '';
-
-    // 🔐 Empêche WordPress de construire une URL publique
-    $dirs['url']     = '';
-    $dirs['baseurl'] = '';
-
-    return $dirs;
+    return (new ChassesAuTresor\Core\Content\RiddleSolutionFileStorageService())
+        ->prepareUploadDirectory($dirs, WP_CONTENT_DIR);
 }
 
 

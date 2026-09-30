@@ -90,6 +90,7 @@ require_once __DIR__ . '/src/Content/ContentCreationService.php';
 require_once __DIR__ . '/src/Content/HuntAccessService.php';
 require_once __DIR__ . '/src/Content/RiddlePrerequisiteService.php';
 require_once __DIR__ . '/src/Content/RiddleSolutionFilePolicyService.php';
+require_once __DIR__ . '/src/Content/RiddleSolutionFileStorageService.php';
 require_once __DIR__ . '/src/Content/ContentQueryAccessService.php';
 require_once __DIR__ . '/src/Content/OrganizerRoleService.php';
 require_once __DIR__ . '/src/Content/OrganizerNavigationService.php';
