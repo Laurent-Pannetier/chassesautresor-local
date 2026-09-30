@@ -281,16 +281,15 @@ function creer_solution_et_rediriger_si_appel(): void
         exit;
     }
 
-    $cible_id   = isset($_GET['chasse_id']) ? absint($_GET['chasse_id']) : 0;
-    $cible_type = 'chasse';
-    if (!$cible_id) {
-        $cible_id   = isset($_GET['enigme_id']) ? absint($_GET['enigme_id']) : 0;
-        $cible_type = 'enigme';
-    }
-
-    if (!$cible_id) {
+    $target = (new ChassesAuTresor\Core\Content\SolutionCreationService())->resolveRequestedTarget(
+        isset($_GET['chasse_id']) ? absint($_GET['chasse_id']) : 0,
+        isset($_GET['enigme_id']) ? absint($_GET['enigme_id']) : 0
+    );
+    if ($target === null) {
         wp_die(__('ID cible manquant.', 'chassesautresor-com'), 'Erreur', ['response' => 400]);
     }
+    $cible_id = $target['id'];
+    $cible_type = $target['type'];
 
     $solution_id = creer_solution_pour_objet($cible_id, $cible_type);
     if (is_wp_error($solution_id)) {

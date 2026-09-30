@@ -22,6 +22,25 @@ class SolutionCreationServiceTest extends TestCase {
         $this->assertFalse($this->service->isSupportedTargetType(''));
     }
 
+    public function testRequestedHuntTakesPrecedenceOverRiddle(): void {
+        $this->assertSame(
+            ['id' => 12, 'type' => 'chasse'],
+            $this->service->resolveRequestedTarget(12, 24)
+        );
+    }
+
+    public function testRequestedRiddleIsUsedWhenHuntIsMissing(): void {
+        $this->assertSame(
+            ['id' => 24, 'type' => 'enigme'],
+            $this->service->resolveRequestedTarget(0, 24)
+        );
+    }
+
+    public function testMissingRequestedTargetIsRejected(): void {
+        $this->assertNull($this->service->resolveRequestedTarget(0, 0));
+        $this->assertNull($this->service->resolveRequestedTarget(-12, -24));
+    }
+
     /**
      * @dataProvider creationErrorProvider
      */

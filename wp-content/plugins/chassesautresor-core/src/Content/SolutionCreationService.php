@@ -8,6 +8,21 @@ namespace ChassesAuTresor\Core\Content;
  * Define validation and defaults for newly created solutions.
  */
 class SolutionCreationService {
+    /**
+     * @return array{id:int,type:string}|null
+     */
+    public function resolveRequestedTarget(int $huntId, int $riddleId): ?array {
+        if ($huntId > 0) {
+            return ['id' => $huntId, 'type' => 'chasse'];
+        }
+
+        if ($riddleId > 0) {
+            return ['id' => $riddleId, 'type' => 'enigme'];
+        }
+
+        return null;
+    }
+
     public function isSupportedTargetType(string $targetType): bool {
         return in_array($targetType, ['chasse', 'enigme'], true);
     }
