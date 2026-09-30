@@ -65,6 +65,41 @@ class SolutionAvailabilityServiceTest extends TestCase
         ));
     }
 
+    public function testPublicationPlanWaitsForHuntCompletion(): void
+    {
+        $this->assertSame(
+            ['state' => 'FIN_CHASSE_DIFFERE', 'target_timestamp' => null],
+            $this->service->getPublicationPlan('en_cours', 'differee', 1, '12:00', self::NOW)
+        );
+    }
+
+    public function testPublicationPlanSchedulesFutureSolution(): void
+    {
+        $plan = $this->service->getPublicationPlan('termine', 'differee', 1, '12:00', self::NOW);
+
+        $this->assertSame('A_VENIR', $plan['state']);
+        $this->assertGreaterThan(self::NOW, $plan['target_timestamp']);
+    }
+
+    public function testPublicationPlanMakesImmediateSolutionAccessible(): void
+    {
+        $this->assertSame(
+            ['state' => 'EN_COURS', 'target_timestamp' => null],
+            $this->service->getPublicationPlan('termine', 'fin_chasse', 0, '00:00', self::NOW)
+        );
+    }
+
+    public function testDueSolutionQueryUsesCanonicalStateAndDate(): void
+    {
+        $args = $this->service->getDueSolutionIdsQueryArgs('2026-10-01 12:00:00');
+
+        $this->assertSame('A_VENIR', $args['meta_query'][0]['value']);
+        $this->assertSame('2026-10-01 12:00:00', $args['meta_query'][1]['value']);
+        $this->assertSame('DATETIME', $args['meta_query'][1]['type']);
+        $this->assertSame('ids', $args['fields']);
+        $this->assertSame([], $this->service->getDueSolutionIdsQueryArgs(''));
+    }
+
     private function isAvailable(
         string $huntStatus = 'termine',
         string $availabilityMode = 'fin_chasse',
