@@ -4,6 +4,30 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Content/SolutionManagementService.php';
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Content/SolutionQueryService.php';
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Content/SolutionManagementAjaxHandler.php';
+
+if (!function_exists('apply_filters')) {
+    function apply_filters($hook, $value, ...$args)
+    {
+        if ($hook === 'chassesautresor_can_manage_solution') {
+            return solution_action_autorisee($args[0], $args[1], $args[2]);
+        }
+        if ($hook === 'chassesautresor_hunt_riddles') {
+            return recuperer_enigmes_pour_chasse($args[0]);
+        }
+        if ($hook === 'chassesautresor_solution_exists') {
+            return solution_existe_pour_objet($args[0], $args[1]);
+        }
+
+        return $value;
+    }
+}
+
 if (!function_exists('check_ajax_referer')) {
     function check_ajax_referer($action, $queryArg = false): bool
     {
@@ -45,6 +69,9 @@ class ChasseSolutionStatusAjaxTest extends TestCase
                 return $type === 'chasse' ? true : ($id === 2 ? false : true);
             }
         }
+        if (!function_exists('get_posts')) {
+            function get_posts($args) { return []; }
+        }
         if (!function_exists('wp_send_json_success')) {
             function wp_send_json_success($data = null)
             {
@@ -67,7 +94,7 @@ class ChasseSolutionStatusAjaxTest extends TestCase
             'enigme_id' => 1,
         ];
 
-        ajax_chasse_solution_status();
+        \ChassesAuTresor\Core\Content\SolutionManagementAjaxHandler::getHuntStatus();
 
         global $checkedAjaxNonce;
         $this->assertSame(['solution_management', 'nonce'], $checkedAjaxNonce);

@@ -286,134 +286,6 @@ function creer_solution_et_rediriger_si_appel(): void
 add_action('template_redirect', 'creer_solution_et_rediriger_si_appel');
 
 /**
- * Liste les solutions via AJAX pour un objet donné.
- *
- * @return void
- */
-function ajax_solutions_lister_table(): void
-{
-    check_ajax_referer('solution_management', 'nonce');
-    $managementService = new ChassesAuTresor\Core\Content\SolutionManagementService();
-
-    if (!is_user_logged_in()) {
-        wp_send_json_error('non_connecte');
-    }
-
-    $objet_id   = isset($_POST['objet_id']) ? (int) $_POST['objet_id'] : 0;
-    $objet_type = sanitize_key($_POST['objet_type'] ?? '');
-    $page       = isset($_POST['page']) ? (int) $_POST['page'] : 1;
-
-    if (!$objet_id || !in_array($objet_type, ['chasse', 'enigme'], true)
-        || get_post_type($objet_id) !== $objet_type
-    ) {
-        wp_send_json_error('post_invalide');
-    }
-
-    if (!solution_action_autorisee('edit', $objet_type, $objet_id)) {
-        wp_send_json_error('acces_refuse');
-    }
-
-    $per_page = 5;
-    $enigme_ids = $objet_type === 'chasse' ? recuperer_ids_enigmes_pour_chasse($objet_id) : [];
-    $queryService = new ChassesAuTresor\Core\Content\SolutionQueryService();
-    $page       = $managementService->normalizePage($page, 0);
-    $query_args = $queryService->getManagementQueryArgs(
-        $objet_id,
-        $objet_type,
-        $enigme_ids,
-        $page,
-        $per_page
-    );
-    $query      = new WP_Query($query_args);
-    $total_pages = (int) $query->max_num_pages;
-    $normalizedPage = $managementService->normalizePage($page, $total_pages);
-    if ($normalizedPage !== $page) {
-        $page                  = $normalizedPage;
-        $query_args['paged']   = $page;
-        $query                 = new WP_Query($query_args);
-        $total_pages           = (int) $query->max_num_pages;
-    }
-
-    ob_start();
-    get_template_part('template-parts/common/solutions-table', null, [
-        'solutions'  => $query->posts,
-        'page'       => $page,
-        'pages'      => $total_pages,
-        'objet_type' => $objet_type,
-        'objet_id'   => $objet_id,
-    ]);
-    $html = ob_get_clean();
-
-    wp_send_json_success([
-        'html'  => $html,
-        'page'  => $page,
-        'pages' => $total_pages,
-    ]);
-}
-add_action('wp_ajax_solutions_lister_table', 'ajax_solutions_lister_table');
-
-/**
- * Retourne l'état des boutons d'ajout de solutions pour une chasse.
- *
- * @return void
- */
-function ajax_chasse_solution_status(): void
-{
-    check_ajax_referer('solution_management', 'nonce');
-    $managementService = new ChassesAuTresor\Core\Content\SolutionManagementService();
-
-    if (!is_user_logged_in()) {
-        wp_send_json_error('non_connecte');
-    }
-
-    $chasse_id = isset($_POST['chasse_id']) ? (int) $_POST['chasse_id'] : 0;
-    $enigme_id = isset($_POST['enigme_id']) ? (int) $_POST['enigme_id'] : 0;
-
-    if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
-        wp_send_json_error('post_invalide');
-    }
-    if ($enigme_id && get_post_type($enigme_id) !== 'enigme') {
-        $enigme_id = 0;
-    }
-
-    if (!solution_action_autorisee('create', 'chasse', $chasse_id)) {
-        wp_send_json_error('acces_refuse');
-    }
-
-    $has_solution_chasse = solution_existe_pour_objet($chasse_id, 'chasse');
-    $has_solution_enigme = $enigme_id ? solution_existe_pour_objet($enigme_id, 'enigme') : false;
-
-    $toutes_enigmes = recuperer_enigmes_pour_chasse($chasse_id);
-    $enigmes        = array_filter(
-        $toutes_enigmes,
-        static fn($e) => !solution_existe_pour_objet($e->ID, 'enigme')
-    );
-    $total_solutions = 0;
-    if (function_exists('get_posts')) {
-        $enigme_ids = array_map(static fn($e) => (int) $e->ID, $toutes_enigmes);
-        $queryService = new ChassesAuTresor\Core\Content\SolutionQueryService();
-        $count_posts = get_posts($queryService->getManagementQueryArgs(
-            $chasse_id,
-            'chasse',
-            $enigme_ids,
-            1,
-            1,
-            true
-        ));
-        $total_solutions = is_array($count_posts) ? count($count_posts) : 0;
-    }
-
-    wp_send_json_success($managementService->buildHuntStatus(
-        $has_solution_chasse,
-        $has_solution_enigme,
-        count($toutes_enigmes),
-        count($enigmes),
-        $total_solutions
-    ));
-}
-add_action('wp_ajax_chasse_solution_status', 'ajax_chasse_solution_status');
-
-/**
  * Connects the core solution controllers to the theme permission policy.
  */
 function autoriser_gestion_solution(bool $allowed, string $action, string $targetType, int $targetId): bool
@@ -433,3 +305,57 @@ function creer_solution_depuis_core($solutionId, int $targetId, string $targetTy
     return creer_solution_pour_objet($targetId, $targetType);
 }
 add_filter('chassesautresor_create_solution', 'creer_solution_depuis_core', 10, 3);
+
+/**
+ * Provides riddle IDs to the core solution management controllers.
+ *
+ * @return int[]
+ */
+function fournir_ids_enigmes_solution(array $riddleIds, int $huntId): array
+{
+    return recuperer_ids_enigmes_pour_chasse($huntId);
+}
+add_filter('chassesautresor_hunt_riddle_ids', 'fournir_ids_enigmes_solution', 10, 2);
+
+/**
+ * Provides hunt riddles to the core solution status controller.
+ *
+ * @return array<int, object>
+ */
+function fournir_enigmes_solution(array $riddles, int $huntId): array
+{
+    return recuperer_enigmes_pour_chasse($huntId);
+}
+add_filter('chassesautresor_hunt_riddles', 'fournir_enigmes_solution', 10, 2);
+
+function indiquer_existence_solution(bool $exists, int $targetId, string $targetType): bool
+{
+    return solution_existe_pour_objet($targetId, $targetType);
+}
+add_filter('chassesautresor_solution_exists', 'indiquer_existence_solution', 10, 3);
+
+/**
+ * Renders solution rows requested by the core controller.
+ *
+ * @param object[] $solutions
+ */
+function rendre_table_solutions(
+    string $html,
+    array $solutions,
+    int $page,
+    int $pages,
+    string $targetType,
+    int $targetId
+): string {
+    ob_start();
+    get_template_part('template-parts/common/solutions-table', null, [
+        'solutions' => $solutions,
+        'page' => $page,
+        'pages' => $pages,
+        'objet_type' => $targetType,
+        'objet_id' => $targetId,
+    ]);
+
+    return (string) ob_get_clean();
+}
+add_filter('chassesautresor_render_solutions_table', 'rendre_table_solutions', 10, 7);

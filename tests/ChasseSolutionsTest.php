@@ -14,6 +14,12 @@ require_once __DIR__
     . '/../wp-content/plugins/chassesautresor-core/src/Content/SolutionMutationService.php';
 require_once __DIR__
     . '/../wp-content/plugins/chassesautresor-core/src/Content/SolutionModalAjaxHandler.php';
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Content/SolutionManagementService.php';
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Content/SolutionQueryService.php';
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Content/SolutionManagementAjaxHandler.php';
 
 if (!function_exists('apply_filters')) {
     function apply_filters($hook, $value, ...$args)
@@ -23,6 +29,12 @@ if (!function_exists('apply_filters')) {
         }
         if ($hook === 'chassesautresor_create_solution') {
             return creer_solution_pour_objet($args[0], $args[1]);
+        }
+        if ($hook === 'chassesautresor_hunt_riddle_ids') {
+            return fournir_ids_enigmes_solution($value, $args[0]);
+        }
+        if ($hook === 'chassesautresor_render_solutions_table') {
+            return rendre_table_solutions($value, ...$args);
         }
 
         return $value;
@@ -263,7 +275,7 @@ class ChasseSolutionsTest extends TestCase
             'page'       => 1,
         ];
 
-        ajax_solutions_lister_table();
+        \ChassesAuTresor\Core\Content\SolutionManagementAjaxHandler::listTable();
 
         global $captured_query_args, $json_success_data;
         $meta = $captured_query_args['meta_query'];
@@ -332,7 +344,7 @@ class ChasseSolutionsTest extends TestCase
 
         global $captured_query_args_list, $json_success_data;
 
-        ajax_solutions_lister_table();
+        \ChassesAuTresor\Core\Content\SolutionManagementAjaxHandler::listTable();
 
         $this->assertCount(2, $captured_query_args_list);
         $this->assertSame(2, $captured_query_args_list[0]['paged']);

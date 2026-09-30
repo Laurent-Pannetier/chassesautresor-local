@@ -107,6 +107,7 @@ require_once __DIR__ . '/src/Content/SolutionDisplayService.php';
 require_once __DIR__ . '/src/Content/SolutionFieldPolicyService.php';
 require_once __DIR__ . '/src/Content/SolutionFileInputService.php';
 require_once __DIR__ . '/src/Content/SolutionManagementService.php';
+require_once __DIR__ . '/src/Content/SolutionManagementAjaxHandler.php';
 require_once __DIR__ . '/src/Content/SolutionModalPolicyService.php';
 require_once __DIR__ . '/src/Content/SolutionModalAjaxHandler.php';
 require_once __DIR__ . '/src/Content/SolutionMutationService.php';
@@ -185,6 +186,7 @@ ChassesAuTresor\Core\Content\HintModalAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\HintDeletionAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\SolutionDeletionAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\SolutionModalAjaxHandler::register('add_action');
+ChassesAuTresor\Core\Content\SolutionManagementAjaxHandler::register('add_action');
 
 register_activation_hook(
     __FILE__,
