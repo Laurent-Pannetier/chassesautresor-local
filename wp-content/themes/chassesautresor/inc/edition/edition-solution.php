@@ -22,6 +22,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\SolutionCreationService::class, f
         . '/plugins/chassesautresor-core/src/Content/SolutionCreationService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\SolutionFieldPolicyService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/SolutionFieldPolicyService.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Content\SolutionQueryService::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Content/SolutionQueryService.php';
@@ -535,6 +540,8 @@ add_action('wp_ajax_chasse_solution_status', 'ajax_chasse_solution_status');
  */
 function ajax_creer_solution_modal(): void
 {
+    $fieldPolicy = new ChassesAuTresor\Core\Content\SolutionFieldPolicyService();
+
     if (!is_user_logged_in()) {
         wp_send_json_error('non_connecte');
     }
@@ -546,11 +553,9 @@ function ajax_creer_solution_modal(): void
         wp_send_json_error('post_invalide');
     }
 
-    if ($objet_type === 'enigme') {
-        $linked = isset($_POST['solution_enigme_linked']) ? (int) $_POST['solution_enigme_linked'] : 0;
-        if (!$linked || $linked !== $objet_id) {
-            wp_send_json_error('post_invalide');
-        }
+    $linked = isset($_POST['solution_enigme_linked']) ? (int) $_POST['solution_enigme_linked'] : 0;
+    if (!$fieldPolicy->hasConsistentRiddleTarget($objet_type, $objet_id, $linked)) {
+        wp_send_json_error('post_invalide');
     }
 
     if (!solution_action_autorisee('create', $objet_type, $objet_id)) {
@@ -558,8 +563,8 @@ function ajax_creer_solution_modal(): void
     }
 
     $has_file   = !empty($_FILES['solution_fichier']['tmp_name']) || !empty($_POST['solution_fichier']);
-    $has_explic = isset($_POST['solution_explication']) && trim((string) $_POST['solution_explication']) !== '';
-    if (!$has_file && !$has_explic) {
+    $rawExplanation = (string) ($_POST['solution_explication'] ?? '');
+    if (!$fieldPolicy->hasRequiredContent($has_file, $rawExplanation)) {
         wp_send_json_error('contenu_manquant');
     }
 
@@ -583,7 +588,7 @@ function ajax_creer_solution_modal(): void
         $fichier = (int) $_POST['solution_fichier'];
     }
 
-    $explic = wp_kses_post($_POST['solution_explication'] ?? '');
+    $explic = wp_kses_post($rawExplanation);
     $dispo  = sanitize_key($_POST['solution_disponibilite'] ?? 'fin_chasse');
     $delai  = isset($_POST['solution_decalage_jours']) ? (int) $_POST['solution_decalage_jours'] : 0;
     $heure  = sanitize_text_field($_POST['solution_heure_publication'] ?? '');
@@ -595,10 +600,10 @@ function ajax_creer_solution_modal(): void
         update_field('solution_explication', $explic, $solution_id);
     }
 
-    $dispo = $dispo === 'differee' ? 'differee' : 'fin_chasse';
-    update_field('solution_disponibilite', $dispo, $solution_id);
-    update_field('solution_decalage_jours', $delai, $solution_id);
-    update_field('solution_heure_publication', $heure ?: '00:00', $solution_id);
+    $schedule = $fieldPolicy->normalizeSchedule($dispo, $delai, $heure);
+    update_field('solution_disponibilite', $schedule['availability'], $solution_id);
+    update_field('solution_decalage_jours', $schedule['delay_days'], $solution_id);
+    update_field('solution_heure_publication', $schedule['publication_time'], $solution_id);
 
     mettre_a_jour_cache_solution($solution_id);
     solution_planifier_publication($solution_id);
@@ -614,6 +619,8 @@ add_action('wp_ajax_creer_solution_modal', 'ajax_creer_solution_modal');
  */
 function ajax_modifier_solution_modal(): void
 {
+    $fieldPolicy = new ChassesAuTresor\Core\Content\SolutionFieldPolicyService();
+
     if (!is_user_logged_in()) {
         wp_send_json_error('non_connecte');
     }
@@ -633,8 +640,8 @@ function ajax_modifier_solution_modal(): void
     }
 
     $has_file   = !empty($_FILES['solution_fichier']['tmp_name']) || !empty($_POST['solution_fichier']);
-    $has_explic = isset($_POST['solution_explication']) && trim((string) $_POST['solution_explication']) !== '';
-    if (!$has_file && !$has_explic) {
+    $rawExplanation = (string) ($_POST['solution_explication'] ?? '');
+    if (!$fieldPolicy->hasRequiredContent($has_file, $rawExplanation)) {
         wp_send_json_error('contenu_manquant');
     }
 
@@ -654,7 +661,7 @@ function ajax_modifier_solution_modal(): void
         $fichier = (int) $_POST['solution_fichier'];
     }
 
-    $explic = wp_kses_post($_POST['solution_explication'] ?? '');
+    $explic = wp_kses_post($rawExplanation);
     $dispo  = sanitize_key($_POST['solution_disponibilite'] ?? 'fin_chasse');
     $delai  = isset($_POST['solution_decalage_jours']) ? (int) $_POST['solution_decalage_jours'] : 0;
     $heure  = sanitize_text_field($_POST['solution_heure_publication'] ?? '');
@@ -666,10 +673,10 @@ function ajax_modifier_solution_modal(): void
     }
     update_field('solution_explication', $explic, $solution_id);
 
-    $dispo = $dispo === 'differee' ? 'differee' : 'fin_chasse';
-    update_field('solution_disponibilite', $dispo, $solution_id);
-    update_field('solution_decalage_jours', $delai, $solution_id);
-    update_field('solution_heure_publication', $heure ?: '00:00', $solution_id);
+    $schedule = $fieldPolicy->normalizeSchedule($dispo, $delai, $heure);
+    update_field('solution_disponibilite', $schedule['availability'], $solution_id);
+    update_field('solution_decalage_jours', $schedule['delay_days'], $solution_id);
+    update_field('solution_heure_publication', $schedule['publication_time'], $solution_id);
 
     mettre_a_jour_cache_solution($solution_id);
     solution_planifier_publication($solution_id);
