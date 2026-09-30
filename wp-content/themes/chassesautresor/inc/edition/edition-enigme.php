@@ -50,6 +50,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\RiddleCompletionService::class, f
         . '/plugins/chassesautresor-core/src/Content/RiddleCompletionService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\RiddlePostFactory::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/RiddlePostFactory.php';
+}
+
 
 // ==================================================
 // 🧩 CRÉATION & ÉDITION D’UNE ÉNIGME
@@ -136,7 +141,10 @@ add_action('wp_enqueue_scripts', 'enqueue_script_enigme_edit');
 function creer_enigme_pour_chasse($chasse_id, $user_id = null)
 {
   if (get_post_type($chasse_id) !== 'chasse') {
-    return new WP_Error('chasse_invalide', 'ID de chasse invalide.');
+    return new WP_Error(
+      'chasse_invalide',
+      __('ID de chasse invalide.', 'chassesautresor-com')
+    );
   }
 
   if (is_null($user_id)) {
@@ -144,43 +152,32 @@ function creer_enigme_pour_chasse($chasse_id, $user_id = null)
   }
 
   if (!$user_id || !get_userdata($user_id)) {
-    return new WP_Error('utilisateur_invalide', 'Utilisateur non connecté.');
+    return new WP_Error(
+      'utilisateur_invalide',
+      __('Utilisateur non connecté.', 'chassesautresor-com')
+    );
   }
 
   $organisateur_id = get_organisateur_from_chasse($chasse_id);
   if (!$organisateur_id) {
-    return new WP_Error('organisateur_introuvable', 'Organisateur non lié à cette chasse.');
+    return new WP_Error(
+      'organisateur_introuvable',
+      __('Organisateur non lié à cette chasse.', 'chassesautresor-com')
+    );
   }
 
-  $enigme_id = wp_insert_post([
-    'post_type'   => 'enigme',
-    'post_status' => 'pending',
-    'post_title'  => TITRE_DEFAUT_ENIGME,
-    'post_author' => $user_id,
-  ]);
+  $factory = new ChassesAuTresor\Core\Content\RiddlePostFactory();
+  $enigme_id = $factory->create(
+    (int) $chasse_id,
+    (int) $organisateur_id,
+    (int) $user_id,
+    TITRE_DEFAUT_ENIGME,
+    (new DateTime('+1 month'))->format('Y-m-d H:i:s')
+  );
 
   if (is_wp_error($enigme_id)) {
     return $enigme_id;
   }
-
-  if (get_option('chasse_associee_temp')) {
-    delete_option('chasse_associee_temp');
-  }
-
-  // 🧩 Champs ACF de base
-  update_field('enigme_chasse_associee', $chasse_id, $enigme_id);
-  update_field('enigme_organisateur_associe', $organisateur_id, $enigme_id);
-
-  update_field('enigme_tentative_cout_points', 0, $enigme_id);
-  update_field('enigme_tentative_max', 5, $enigme_id);
-
-  update_field('enigme_reponse_casse', true, $enigme_id);
-  update_field('enigme_acces_condition', 'immediat', $enigme_id);
-  update_field('enigme_acces_pre_requis', [], $enigme_id);
-  update_field('enigme_mode_validation', 'automatique', $enigme_id);
-
-  $date_deblocage = (new DateTime('+1 month'))->format('Y-m-d H:i:s');
-  update_field('enigme_acces_date', $date_deblocage, $enigme_id);
 
   // Calcule l\'état système initial pour permettre l\'édition complète
   enigme_mettre_a_jour_etat_systeme($enigme_id);
