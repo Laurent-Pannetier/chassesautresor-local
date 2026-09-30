@@ -90,6 +90,7 @@ require_once __DIR__ . '/src/Content/ContentCreationService.php';
 require_once __DIR__ . '/src/Content/HuntAccessService.php';
 require_once __DIR__ . '/src/Content/RiddlePrerequisiteService.php';
 require_once __DIR__ . '/src/Content/RiddleSolutionFilePolicyService.php';
+require_once __DIR__ . '/src/Content/RiddleSolutionFilePublicationService.php';
 require_once __DIR__ . '/src/Content/RiddleSolutionFileStorageService.php';
 require_once __DIR__ . '/src/Content/ContentQueryAccessService.php';
 require_once __DIR__ . '/src/Content/OrganizerRoleService.php';
@@ -196,6 +197,11 @@ add_action(
 add_action(
     'publier_solution_programmee',
     [ChassesAuTresor\Core\Content\SolutionPublicationService::class, 'makeAccessible']
+);
+
+add_action(
+    'publier_solution_enigme',
+    [ChassesAuTresor\Core\Content\RiddleSolutionFilePublicationService::class, 'publish']
 );
 
 add_action(

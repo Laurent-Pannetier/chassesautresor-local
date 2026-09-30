@@ -6,6 +6,13 @@ if (!class_exists(ChassesAuTresor\Core\Content\RiddleSolutionFilePolicyService::
         . '/plugins/chassesautresor-core/src/Content/RiddleSolutionFilePolicyService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\RiddleSolutionFilePublicationService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Relationships/RelationshipService.php';
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/RiddleSolutionFilePublicationService.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Content\RiddleSolutionFileStorageService::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Content/RiddleSolutionFileStorageService.php';
@@ -546,40 +553,8 @@ function rediriger_upload_fichier_solution($dirs)
  */
 function deplacer_pdf_solution($enigme_id)
 {
-  if (!$enigme_id || get_post_type($enigme_id) !== 'enigme') return;
-
-  $fichier_id = get_field('enigme_solution_fichier', $enigme_id, false);
-  if (!$fichier_id || !is_numeric($fichier_id)) return;
-
-  $chemin_source = get_attached_file($fichier_id);
-  if (!$chemin_source || !file_exists($chemin_source)) return;
-
-  $chasse_id = recuperer_id_chasse_associee($enigme_id);
-  if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') return;
-
-  $cache = get_field('champs_caches', $chasse_id);
-  $statut = $cache['chasse_cache_statut'] ?? '';
-  if (trim(strtolower($statut)) !== 'termine') return;
-
-  $dossier_public = WP_CONTENT_DIR . '/uploads/solutions-publiques';
-  if (!file_exists($dossier_public)) {
-    if (!wp_mkdir_p($dossier_public)) return;
-  }
-
-  $nom_fichier = basename($chemin_source);
-  $chemin_cible = $dossier_public . '/' . $nom_fichier;
-
-  if (file_exists($chemin_cible)) return;
-
-  $deplacement = @rename($chemin_source, $chemin_cible);
-  if (!$deplacement) {
-    $copie = @copy($chemin_source, $chemin_cible);
-    if (!$copie || !@unlink($chemin_source)) return;
-  }
-
-  update_attached_file($fichier_id, $chemin_cible);
+  ChassesAuTresor\Core\Content\RiddleSolutionFilePublicationService::publish((int) $enigme_id);
 }
-add_action('publier_solution_enigme', 'deplacer_pdf_solution');
 
 
 /**
