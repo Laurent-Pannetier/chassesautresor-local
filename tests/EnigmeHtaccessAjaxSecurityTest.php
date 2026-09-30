@@ -5,19 +5,17 @@ declare(strict_types=1);
 use PHPUnit\Framework\TestCase;
 
 final class EnigmeHtaccessAjaxSecurityTest extends TestCase {
-    public function testAllHtaccessAjaxControllersVerifyTheEditionNonce(): void {
-        $source = file_get_contents(
-            __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-securite.php'
+    public function testCoreControllerUsesNonceAndPermissionAdapter(): void {
+        $source = (string) file_get_contents(
+            __DIR__
+                . '/../wp-content/plugins/chassesautresor-core/src/Media/RiddleImageProtectionAjaxHandler.php'
         );
 
-        $this->assertIsString($source);
-        $this->assertSame(4, substr_count(
-            $source,
-            "check_ajax_referer('modifier_champ_enigme', 'nonce')"
-        ));
-        $this->assertSame(1, substr_count(
-            $source,
-            "add_action('wp_ajax_get_expiration_htaccess_enigme'"
-        ));
+        $this->assertStringContainsString(
+            "check_ajax_referer('modifier_champ_enigme', 'nonce')",
+            $source
+        );
+        $this->assertStringContainsString('chassesautresor_can_manage_riddle_images', $source);
+        $this->assertStringContainsString("current_user_can('edit_posts')", $source);
     }
 }

@@ -46,6 +46,9 @@ require_once __DIR__ . '/src/Relationships/HuntRiddleCacheService.php';
 require_once __DIR__ . '/src/Media/RiddleImageRepository.php';
 require_once __DIR__ . '/src/Media/RiddleImageService.php';
 require_once __DIR__ . '/src/Media/RiddleUploadDirectoryService.php';
+require_once __DIR__ . '/src/Media/RiddleImageProtectionService.php';
+require_once __DIR__ . '/src/Media/RiddleImageProtectionAjaxHandler.php';
+require_once __DIR__ . '/src/Media/RiddleImageProtectionLifecycle.php';
 require_once __DIR__ . '/src/Content/RiddleCompletionService.php';
 require_once __DIR__ . '/src/Content/RiddleActionPolicyService.php';
 require_once __DIR__ . '/src/Content/RiddleCreationService.php';
@@ -202,6 +205,8 @@ ChassesAuTresor\Core\Content\HintCacheSaveHookHandler::register('add_action');
 ChassesAuTresor\Core\Content\SolutionDeletionAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\SolutionModalAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\SolutionManagementAjaxHandler::register('add_action');
+ChassesAuTresor\Core\Media\RiddleImageProtectionAjaxHandler::register('add_action');
+ChassesAuTresor\Core\Media\RiddleImageProtectionLifecycle::register('add_action', 'add_filter');
 
 register_activation_hook(
     __FILE__,
