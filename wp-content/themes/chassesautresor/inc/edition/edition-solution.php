@@ -22,6 +22,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\SolutionQueryService::class, fals
         . '/plugins/chassesautresor-core/src/Content/SolutionQueryService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\SolutionRouteRegistrar::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/SolutionRouteRegistrar.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Relationships\RelationshipService::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Relationships/RelationshipService.php';
@@ -325,10 +330,8 @@ function creer_solution_pour_objet(int $objet_id, string $objet_type, ?int $user
  */
 function register_endpoint_creer_solution(): void
 {
-    add_rewrite_rule('^creer-solution/?$', 'index.php?creer_solution=1', 'top');
-    add_rewrite_tag('%creer_solution%', '1');
+    ChassesAuTresor\Core\Content\SolutionRouteRegistrar::register();
 }
-add_action('init', 'register_endpoint_creer_solution');
 
 /**
  * S'assure que les règles de réécriture prennent en compte /creer-solution/.
@@ -337,18 +340,8 @@ add_action('init', 'register_endpoint_creer_solution');
  */
 function flush_rewrite_rules_creer_solution(): void
 {
-    register_endpoint_creer_solution();
-    flush_rewrite_rules();
-    update_option('creer_solution_rewrite_flushed', 1);
+    ChassesAuTresor\Core\Content\SolutionRouteRegistrar::flush();
 }
-
-add_action('after_switch_theme', 'flush_rewrite_rules_creer_solution');
-
-add_action('init', function (): void {
-    if (!get_option('creer_solution_rewrite_flushed')) {
-        flush_rewrite_rules_creer_solution();
-    }
-}, 20);
 
 /**
  * Détecte l’appel à /creer-solution/ et redirige vers la page cible.
