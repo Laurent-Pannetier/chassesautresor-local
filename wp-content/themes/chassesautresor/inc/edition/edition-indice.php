@@ -56,6 +56,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\HintMutationService::class, false
         . '/plugins/chassesautresor-core/src/Content/HintMutationService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HintFieldMutationService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HintFieldMutationService.php';
+}
+
 function cat_get_hint_query_service(): ChassesAuTresor\Core\Content\HintQueryService
 {
     return new ChassesAuTresor\Core\Content\HintQueryService();
@@ -94,6 +99,14 @@ function cat_get_hint_field_policy_service(): ChassesAuTresor\Core\Content\HintF
 function cat_get_hint_mutation_service(): ChassesAuTresor\Core\Content\HintMutationService
 {
     return new ChassesAuTresor\Core\Content\HintMutationService(cat_get_hint_status_service());
+}
+
+function cat_get_hint_field_mutation_service(): ChassesAuTresor\Core\Content\HintFieldMutationService
+{
+    return new ChassesAuTresor\Core\Content\HintFieldMutationService(
+        cat_get_hint_field_policy_service(),
+        cat_get_hint_status_service()
+    );
 }
 
 // ==================================================
@@ -771,62 +784,30 @@ function modifier_champ_indice(): void
         wp_send_json_error('⚠️ acces_refuse');
     }
 
-    $champ_valide = false;
     $reponse      = ['champ' => $champ, 'valeur' => $valeur];
+    $mutation = cat_get_hint_field_mutation_service()->apply(
+        $post_id,
+        $champ,
+        $valeur,
+        'sanitize_text_field',
+        'wp_kses_post',
+        static function (string $date) {
+            return convertir_en_datetime($date, ['Y-m-d\TH:i', 'Y-m-d H:i:s', 'Y-m-d H:i']);
+        },
+        static fn (array $postData) => wp_update_post($postData, true),
+        'update_field',
+        'is_wp_error'
+    );
 
-    if ($champ === 'post_title') {
-        $ok = wp_update_post(['ID' => $post_id, 'post_title' => sanitize_text_field($valeur)], true);
-        if (is_wp_error($ok)) {
-            wp_send_json_error('⚠️ echec_update_post_title');
-        }
-        wp_send_json_success($reponse);
+    if ($mutation['error'] !== null) {
+        wp_send_json_error('⚠️ ' . $mutation['error']);
     }
 
-    $fieldPolicy = cat_get_hint_field_policy_service();
-    if (!$fieldPolicy->isEditable($champ)) {
-        wp_send_json_error('⚠️ champ_inconnu');
+    if ($mutation['refresh_cache']) {
+        mettre_a_jour_cache_indice($post_id);
     }
 
-    switch ($champ) {
-        case 'indice_image':
-            $champ_valide = update_field('indice_image', (int) $valeur, $post_id) !== false;
-            break;
-        case 'indice_contenu':
-            $champ_valide = update_field('indice_contenu', wp_kses_post($valeur), $post_id) !== false;
-            break;
-        case 'indice_cible_type':
-            $val = $fieldPolicy->normalizeTargetType((string) $valeur);
-            $champ_valide = update_field('indice_cible_type', $val, $post_id) !== false;
-            break;
-        case 'indice_enigme_linked':
-            $ids = $fieldPolicy->normalizeRiddleIds((string) $valeur);
-            $champ_valide = update_field('indice_enigme_linked', $ids, $post_id) !== false;
-            break;
-        case 'indice_disponibilite':
-            $val = cat_get_hint_status_service()->normalizeAvailability((string) $valeur);
-            $champ_valide = update_field('indice_disponibilite', $val, $post_id) !== false;
-            break;
-        case 'indice_date_disponibilite':
-            $dt = convertir_en_datetime(sanitize_text_field($valeur), ['Y-m-d\TH:i', 'Y-m-d H:i:s', 'Y-m-d H:i']);
-            if (!$dt) {
-                wp_send_json_error('⚠️ format_date_invalide');
-            }
-            $champ_valide = update_field('indice_date_disponibilite', $dt->format('Y-m-d H:i:s'), $post_id) !== false;
-            break;
-        case 'indice_cout_points':
-            $champ_valide = update_field('indice_cout_points', (int) $valeur, $post_id) !== false;
-            break;
-    }
-
-    if ($champ_valide) {
-        if ($fieldPolicy->requiresCacheRefresh($champ)) {
-            mettre_a_jour_cache_indice($post_id);
-        }
-
-        wp_send_json_success($reponse);
-    }
-
-    wp_send_json_error('⚠️ echec_mise_a_jour');
+    wp_send_json_success($reponse);
 }
 add_action('wp_ajax_modifier_champ_indice', 'modifier_champ_indice');
 
