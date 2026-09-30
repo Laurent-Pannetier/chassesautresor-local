@@ -1,21 +1,5 @@
 <?php
 namespace {
-    if (!function_exists('apply_filters')) {
-        function apply_filters($hook, $value, ...$args)
-        {
-            return $hook === 'chassesautresor_hint_related_hunt_id'
-                ? recuperer_id_chasse_associee($args[0])
-                : $value;
-        }
-    }
-    if (!function_exists('do_action')) {
-        function do_action($hook, ...$args): void
-        {
-            if ($hook === 'chassesautresor_hint_reorder_requested') {
-                reordonner_indices($args[0], $args[1]);
-            }
-        }
-    }
     if (!function_exists('get_posts')) {
         function get_posts($args)
         {
@@ -30,7 +14,7 @@ namespace {
             global $updated_posts, $simulate_recursion;
             $updated_posts[] = $args;
             if (!empty($simulate_recursion)) {
-                \reordonner_indices(5, 'chasse');
+                (new \ChassesAuTresor\Core\Content\HintOrderingApplicationService())->applyTarget(5, 'chasse');
             }
             return true;
         }
@@ -107,7 +91,7 @@ namespace ReordonnerIndicesTest {
             global $updated_posts, $captured_args;
             require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
 
-            \reordonner_indices(5, 'chasse');
+            (new \ChassesAuTresor\Core\Content\HintOrderingApplicationService())->applyTarget(5, 'chasse');
 
             $this->assertCount(3, $updated_posts);
             $this->assertSame(['ID' => 10, 'post_title' => 'clue-chasse-test'], $updated_posts[0]);
@@ -149,7 +133,7 @@ namespace ReordonnerIndicesTest {
             $simulate_recursion = 1;
             require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
 
-            \reordonner_indices(5, 'chasse');
+            (new \ChassesAuTresor\Core\Content\HintOrderingApplicationService())->applyTarget(5, 'chasse');
 
             $this->assertCount(3, $updated_posts);
             $this->assertSame(['ID' => 10, 'post_title' => 'clue-chasse-test'], $updated_posts[0]);

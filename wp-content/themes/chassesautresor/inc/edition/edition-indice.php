@@ -46,6 +46,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\HintOrderingUpdater::class, false
         . '/plugins/chassesautresor-core/src/Content/HintOrderingUpdater.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HintOrderingApplicationService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HintOrderingApplicationService.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Content\HintOrderingLifecycleHookHandler::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Content/HintOrderingLifecycleHookHandler.php';
@@ -144,19 +149,6 @@ function cat_get_hint_cache_updater(): ChassesAuTresor\Core\Content\HintCacheUpd
 function cat_get_hint_title_service(): ChassesAuTresor\Core\Content\HintTitleService
 {
     return new ChassesAuTresor\Core\Content\HintTitleService();
-}
-
-function cat_get_hint_ordering_service(): ChassesAuTresor\Core\Content\HintOrderingService
-{
-    return new ChassesAuTresor\Core\Content\HintOrderingService(cat_get_hint_title_service());
-}
-
-function cat_get_hint_ordering_updater(): ChassesAuTresor\Core\Content\HintOrderingUpdater
-{
-    return new ChassesAuTresor\Core\Content\HintOrderingUpdater(
-        cat_get_hint_ordering_service(),
-        new ChassesAuTresor\Core\Relationships\RelationshipService()
-    );
 }
 
 function cat_get_hint_creation_service(): ChassesAuTresor\Core\Content\HintCreationService
@@ -273,40 +265,6 @@ function prochain_rang_indice(int $objet_id, string $objet_type): int
 }
 
 /**
- * Renomme les indices d'une chasse ou d'une énigme en séquence.
- *
- * @param int    $objet_id   ID de la chasse ou de l'énigme.
- * @param string $objet_type Type de cible ('chasse' ou 'enigme').
- * @return void
- */
-function reordonner_indices(int $objet_id, string $objet_type): void
-{
-    static $processing = false;
-    $queryArgs = cat_get_hint_query_service()->getRankedHintIdsQueryArgs($objet_id, $objet_type, true);
-    if ($queryArgs === [] || $processing) {
-        return;
-    }
-
-    $processing = true;
-    try {
-        cat_get_hint_ordering_updater()->apply(
-            get_posts($queryArgs),
-            $objet_type,
-            $objet_id,
-            defined('TITRE_DEFAUT_INDICE') ? TITRE_DEFAUT_INDICE : '',
-            defined('INDICE_DEFAULT_PREFIX') ? INDICE_DEFAULT_PREFIX : '',
-            static fn (int $hintId): string => (string) get_post_field('post_title', $hintId),
-            static fn (int $hintId) => get_field('indice_chasse_linked', $hintId),
-            static fn (int $huntId): string => build_indice_placeholder_title($huntId),
-            static fn (array $postData) => wp_update_post($postData),
-            static fn (int $hintId, string $key, int $rank) => update_post_meta($hintId, $key, $rank)
-        );
-    } finally {
-        $processing = false;
-    }
-}
-
-/**
  * Crée un indice lié à une chasse ou une énigme.
  *
  * @param int      $objet_id   ID de la chasse ou de l’énigme.
@@ -370,7 +328,7 @@ function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_i
         return $indice_id;
     }
 
-    reordonner_indices($objet_id, $objet_type);
+    (new ChassesAuTresor\Core\Content\HintOrderingApplicationService())->applyTarget($objet_id, $objet_type);
 
     return $indice_id;
 }
@@ -572,13 +530,6 @@ add_action('chassesautresor_hint_cache_refresh_requested', 'actualiser_cache_ind
 
 
 
-function reordonner_indices_demande(int $targetId, string $targetType): void
-{
-    reordonner_indices($targetId, $targetType);
-}
-add_action('chassesautresor_hint_reorder_requested', 'reordonner_indices_demande', 10, 2);
-
-
 /**
  * Pré-remplit automatiquement la chasse liée d'un indice lors de sa création.
  *
@@ -738,7 +689,10 @@ function reordonner_indices_apres_suppression(int $post_id): void
     global $indice_delete_context;
     $targets = cat_get_hint_deletion_lifecycle_service()->restoreTargets($indice_delete_context);
     foreach ($targets as $target) {
-        reordonner_indices($target['id'], $target['type']);
+        (new ChassesAuTresor\Core\Content\HintOrderingApplicationService())->applyTarget(
+            $target['id'],
+            $target['type']
+        );
     }
 
     $indice_delete_context = null;

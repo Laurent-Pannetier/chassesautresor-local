@@ -66,6 +66,7 @@ require_once __DIR__ . '/src/Content/HintScheduler.php';
 require_once __DIR__ . '/src/Content/HintTitleService.php';
 require_once __DIR__ . '/src/Content/HintOrderingService.php';
 require_once __DIR__ . '/src/Content/HintOrderingUpdater.php';
+require_once __DIR__ . '/src/Content/HintOrderingApplicationService.php';
 require_once __DIR__ . '/src/Content/HintOrderingLifecycleHookHandler.php';
 require_once __DIR__ . '/src/Content/HintCreationService.php';
 require_once __DIR__ . '/src/Content/HintCreationRequestService.php';

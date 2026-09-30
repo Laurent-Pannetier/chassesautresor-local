@@ -52,7 +52,7 @@ class HintDeletionAjaxHandler {
         }
 
         foreach ($context['reorder_targets'] as $target) {
-            do_action('chassesautresor_hint_reorder_requested', $target['id'], $target['type']);
+            (new HintOrderingApplicationService())->applyTarget($target['id'], $target['type']);
         }
         wp_send_json_success();
     }
