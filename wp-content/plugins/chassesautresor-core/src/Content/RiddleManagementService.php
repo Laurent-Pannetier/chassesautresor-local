@@ -11,6 +11,33 @@ class RiddleManagementService
 {
     public const MAX_RIDDLES_PER_HUNT = 40;
 
+    /**
+     * @param int[] $submittedIds
+     * @param int[] $huntRiddleIds
+     * @return array<int, int> Riddle IDs indexed by their new menu order.
+     */
+    public function getReorderUpdates(array $submittedIds, array $huntRiddleIds): array
+    {
+        $allowedIds = array_fill_keys(
+            array_filter(array_map('intval', $huntRiddleIds), static fn(int $id): bool => $id > 0),
+            true
+        );
+        $updates = [];
+        $seen = [];
+
+        foreach ($submittedIds as $submittedId) {
+            $riddleId = (int) $submittedId;
+            if ($riddleId <= 0 || !isset($allowedIds[$riddleId]) || isset($seen[$riddleId])) {
+                continue;
+            }
+
+            $updates[] = $riddleId;
+            $seen[$riddleId] = true;
+        }
+
+        return $updates;
+    }
+
     public function canAdd(
         bool $isHunt,
         bool $isAuthenticated,

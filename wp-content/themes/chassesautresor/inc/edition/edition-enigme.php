@@ -35,6 +35,11 @@ if (!class_exists(ChassesAuTresor\Core\Media\RiddleUploadDirectoryService::class
         . '/plugins/chassesautresor-core/src/Media/RiddleUploadDirectoryService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\RiddleManagementService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/RiddleManagementService.php';
+}
+
 
 // ==================================================
 // 🧩 CRÉATION & ÉDITION D’UNE ÉNIGME
@@ -685,7 +690,11 @@ function reordonner_enigmes_ajax()
         wp_send_json_error('non_autorise');
     }
 
-    foreach ($ordre as $index => $enigme_id) {
+    $allowedOrder = (new ChassesAuTresor\Core\Content\RiddleManagementService())->getReorderUpdates(
+        $ordre,
+        recuperer_enigmes_associees($chasse_id)
+    );
+    foreach ($allowedOrder as $index => $enigme_id) {
         wp_update_post([
             'ID'         => $enigme_id,
             'menu_order' => $index,

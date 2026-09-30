@@ -26,6 +26,20 @@ class RiddleManagementServiceTest extends TestCase
         ));
     }
 
+    public function testReorderKeepsOnlyUniqueRiddlesFromHunt(): void
+    {
+        $this->assertSame(
+            [24, 12],
+            $this->service->getReorderUpdates([24, 99, 24, 0, 12], [12, 24, 36])
+        );
+    }
+
+    public function testReorderRejectsEmptyOrUnrelatedSubmission(): void
+    {
+        $this->assertSame([], $this->service->getReorderUpdates([], [12, 24]));
+        $this->assertSame([], $this->service->getReorderUpdates([99], [12, 24]));
+    }
+
     /**
      * @dataProvider deniedAdditionProvider
      */
