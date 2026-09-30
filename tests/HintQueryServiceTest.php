@@ -23,6 +23,47 @@ class HintQueryServiceTest extends TestCase
         $this->assertSame([], $this->service->getRankedHintIdsQueryArgs(12, 'solution'));
     }
 
+    public function testManagementTableRejectsInvalidTarget(): void
+    {
+        $this->assertSame([], $this->service->getManagementTableQueryArgs(0, 'chasse'));
+        $this->assertSame([], $this->service->getManagementTableQueryArgs(12, 'solution'));
+    }
+
+    public function testHuntManagementTableIncludesDirectAndRiddleHints(): void
+    {
+        $args = $this->service->getManagementTableQueryArgs(12, 'chasse', [24, '25', 24, 0], 2, 5);
+
+        $this->assertSame('OR', $args['meta_query']['relation']);
+        $this->assertSame('indice_chasse_linked', $args['meta_query'][0][1]['key']);
+        $this->assertSame(12, $args['meta_query'][0][1]['value']);
+        $this->assertSame([24, 25], $args['meta_query'][1][1]['value']);
+        $this->assertSame('IN', $args['meta_query'][1][1]['compare']);
+        $this->assertSame(2, $args['paged']);
+        $this->assertSame(5, $args['posts_per_page']);
+    }
+
+    public function testRiddleManagementTableOnlyIncludesItsHints(): void
+    {
+        $args = $this->service->getManagementTableQueryArgs(24, 'enigme', [99], 0, 0);
+
+        $this->assertSame('indice_cible_type', $args['meta_query'][0]['key']);
+        $this->assertSame('enigme', $args['meta_query'][0]['value']);
+        $this->assertSame('indice_enigme_linked', $args['meta_query'][1]['key']);
+        $this->assertSame(24, $args['meta_query'][1]['value']);
+        $this->assertSame(1, $args['paged']);
+        $this->assertSame(1, $args['posts_per_page']);
+    }
+
+    public function testManagementTableIdsQueryIsUnpaginated(): void
+    {
+        $args = $this->service->getManagementTableQueryArgs(12, 'chasse', [], 3, 5, true);
+
+        $this->assertSame('ids', $args['fields']);
+        $this->assertTrue($args['nopaging']);
+        $this->assertArrayNotHasKey('paged', $args);
+        $this->assertArrayNotHasKey('posts_per_page', $args);
+    }
+
     public function testHuntQueryIncludesAllRankedStates(): void
     {
         $args = $this->service->getRankedHintIdsQueryArgs(12, 'chasse');

@@ -528,60 +528,21 @@ function ajax_indices_lister_table(): void
     }
 
     $per_page = $objet_type === 'chasse' ? 5 : 8;
-    if ($objet_type === 'chasse') {
-        $enigme_ids = recuperer_ids_enigmes_pour_chasse($objet_id);
-        $meta       = [
-            'relation' => 'OR',
-            [
-                'relation' => 'AND',
-                [
-                    'key'   => 'indice_cible_type',
-                    'value' => 'chasse',
-                ],
-                [
-                    'key'   => 'indice_chasse_linked',
-                    'value' => $objet_id,
-                ],
-            ],
-        ];
-        if (!empty($enigme_ids)) {
-            $meta[] = [
-                'relation' => 'AND',
-                [
-                    'key'   => 'indice_cible_type',
-                    'value' => 'enigme',
-                ],
-                [
-                    'key'     => 'indice_enigme_linked',
-                    'value'   => $enigme_ids,
-                    'compare' => 'IN',
-                ],
-            ];
-        }
-    } else {
-        $meta = [
-            [
-                'key'   => 'indice_cible_type',
-                'value' => 'enigme',
-            ],
-            [
-                'key'   => 'indice_enigme_linked',
-                'value' => $objet_id,
-            ],
-        ];
-    }
+    $enigme_ids = $objet_type === 'chasse' ? recuperer_ids_enigmes_pour_chasse($objet_id) : [];
+    $query_service = cat_get_hint_query_service();
 
     $page = max(1, $page);
 
     $ids = [];
     if (function_exists('get_posts')) {
-        $ids = get_posts([
-            'post_type'   => 'indice',
-            'post_status' => ['publish', 'pending', 'draft'],
-            'fields'      => 'ids',
-            'nopaging'    => true,
-            'meta_query'  => $meta,
-        ]);
+        $ids = get_posts($query_service->getManagementTableQueryArgs(
+            $objet_id,
+            $objet_type,
+            $enigme_ids,
+            $page,
+            $per_page,
+            true
+        ));
     }
 
     $count_total = is_countable($ids) ? count($ids) : 0;
@@ -590,15 +551,13 @@ function ajax_indices_lister_table(): void
         $page = $total_pages;
     }
 
-    $query_args = [
-        'post_type'      => 'indice',
-        'post_status'    => ['publish', 'pending', 'draft'],
-        'orderby'        => 'date',
-        'order'          => 'DESC',
-        'posts_per_page' => $per_page,
-        'paged'          => $page,
-        'meta_query'     => $meta,
-    ];
+    $query_args = $query_service->getManagementTableQueryArgs(
+        $objet_id,
+        $objet_type,
+        $enigme_ids,
+        $page,
+        $per_page
+    );
     $query      = new WP_Query($query_args);
 
     $count_chasse = 0;
