@@ -78,6 +78,7 @@ require_once __DIR__ . '/src/Content/HuntValidationService.php';
 require_once __DIR__ . '/src/Content/HuntDateMutationService.php';
 require_once __DIR__ . '/src/Content/HuntLinkMutationService.php';
 require_once __DIR__ . '/src/Content/HuntRewardMutationService.php';
+require_once __DIR__ . '/src/Content/HuntFieldMutationService.php';
 require_once __DIR__ . '/src/Content/SolutionAvailabilityService.php';
 require_once __DIR__ . '/src/Content/SolutionCacheService.php';
 require_once __DIR__ . '/src/Content/SolutionCacheUpdater.php';

@@ -16,6 +16,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\HuntRewardMutationService::class,
         . '/plugins/chassesautresor-core/src/Content/HuntRewardMutationService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HuntFieldMutationService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HuntFieldMutationService.php';
+}
+
 
 // ==================================================
 // 🗺️ CRÉATION & ÉDITION D’UNE CHASSE
@@ -367,47 +372,6 @@ function modifier_champ_chasse()
     wp_send_json_success(['champ' => $champ, 'valeur' => $mutation['value']]);
   }
 
-  // 🔹 Dates (début / fin)
-  if ($champ === 'caracteristiques.chasse_infos_date_debut') {
-    $dt = convertir_en_datetime($valeur, [
-      'Y-m-d\TH:i',
-      'Y-m-d H:i:s',
-      'Y-m-d H:i'
-    ]);
-    if (!$dt) {
-      wp_send_json_error('⚠️ format_date_invalide');
-    }
-    $valeur = $dt->format('Y-m-d H:i:s');
-    $ok = update_field('chasse_infos_date_debut', $valeur, $post_id);
-    if ($ok !== false) {
-      $champ_valide = true;
-      $doit_recalculer_statut = true;
-    }
-  }
-
-  if ($champ === 'caracteristiques.chasse_infos_date_fin') {
-    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $valeur)) {
-      wp_send_json_error('⚠️ format_date_invalide');
-    }
-    $ok = update_field('chasse_infos_date_fin', $valeur, $post_id);
-    if ($ok !== false) {
-      $champ_valide = true;
-      $doit_recalculer_statut = true;
-    }
-  }
-
-  // 🔹 Durée illimitée (true_false)
-  if ($champ === 'caracteristiques.chasse_infos_duree_illimitee') {
-    $ok = update_field('chasse_infos_duree_illimitee', (int) $valeur, $post_id);
-    $mode_continue = empty(get_field('chasse_infos_duree_illimitee', $post_id));
-    cat_debug("🧪 Illimitée (après MAJ) = " . var_export(!$mode_continue, true));
-
-
-    if ($ok !== false) {
-      $champ_valide = true;
-      $doit_recalculer_statut = true;
-    }
-  }
 
   // 🔹 Champs récompense
   $rewardMutation = (new ChassesAuTresor\Core\Content\HuntRewardMutationService())->apply(
@@ -424,17 +388,26 @@ function modifier_champ_chasse()
     $doit_recalculer_statut = $rewardMutation['recalculate_status'];
   }
 
-  if ($champ === 'caracteristiques.chasse_infos_cout_points') {
-    cat_debug("🧪 Correction tentative : MAJ cout_points → valeur = {$valeur}");
-    $ok = update_field('chasse_infos_cout_points', (int) $valeur, $post_id);
-    if ($ok !== false) {
-      cat_debug("✅ MAJ réussie pour chasse_infos_cout_points");
-      $champ_valide = true;
-      $doit_recalculer_statut = true;
-    } else {
-      cat_debug("❌ MAJ échouée malgré nom exact");
-    }
+  // 🔹 Champs standards
+  $fieldMutation = (new ChassesAuTresor\Core\Content\HuntFieldMutationService())->apply(
+    $post_id,
+    $champ,
+    $valeur,
+    static fn (string $date, array $formats) => convertir_en_datetime($date, $formats),
+    'sanitize_text_field',
+    'update_field'
+  );
+  if ($fieldMutation['error'] !== null) {
+    $message = $fieldMutation['error'] === 'format_date_invalide'
+      ? __('⚠️ format_date_invalide', 'chassesautresor-com')
+      : __('⚠️ echec_mise_a_jour', 'chassesautresor-com');
+    wp_send_json_error($message);
   }
+  if ($fieldMutation['handled']) {
+    $champ_valide = true;
+    $doit_recalculer_statut = $fieldMutation['recalculate_status'];
+  }
+
 
   // 🔹 Déclenchement de la publication différée des solutions
   if ($champ === 'champs_caches.chasse_cache_statut' && $valeur === 'termine') {
@@ -466,46 +439,7 @@ function modifier_champ_chasse()
     }
   }
 
-    // 🔹 Gagnants (texte libre)
-    if ($champ === 'champs_caches.chasse_cache_gagnants') {
-        $ok = update_field('chasse_cache_gagnants', $valeur, $post_id);
-        if ($ok !== false) {
-            $champ_valide = true;
-        }
-    }
 
-    // 🔹 Date de découverte
-    if ($champ === 'champs_caches.chasse_cache_date_decouverte') {
-        if (!preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}(:\d{2})?$/', $valeur)) {
-            wp_send_json_error('⚠️ format_date_invalide');
-        }
-
-        $date_obj = DateTime::createFromFormat('Y-m-d H:i:s', $valeur)
-            ?: DateTime::createFromFormat('Y-m-d H:i', $valeur);
-        if (!$date_obj) {
-            wp_send_json_error('⚠️ format_date_invalide');
-        }
-
-        $valeur = $date_obj->format('Y-m-d H:i:s');
-        $ok = update_field('chasse_cache_date_decouverte', $valeur, $post_id);
-        if ($ok !== false) {
-            $champ_valide = true;
-            $doit_recalculer_statut = true;
-        }
-    }
-
-  // 🔹 Nb gagnants
-  if ($champ === 'caracteristiques.chasse_infos_nb_max_gagants') {
-    $sous_champ = 'chasse_infos_nb_max_gagants';
-    $ok = update_field($sous_champ, (int) $valeur, $post_id);
-    if ($ok !== false) $champ_valide = true;
-  }
-
-  // 🔹 Validation manuelle (par admin)
-  if ($champ === 'champs_caches.chasse_cache_statut_validation' || $champ === 'chasse_cache_statut_validation') {
-    $ok = update_field('chasse_cache_statut_validation', sanitize_text_field($valeur), $post_id);
-    if ($ok !== false) $champ_valide = true;
-  }
 
   // 🔹 Cas générique (fallback)
   if (!$champ_valide) {
