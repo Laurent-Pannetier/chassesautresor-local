@@ -213,6 +213,7 @@ add_filter('acf/format_value/type=gallery', 'filtrer_visuels_enigme_front', 20, 
  */
 function desactiver_htaccess_temporairement_enigme()
 {
+  check_ajax_referer('modifier_champ_enigme', 'nonce');
   if (!current_user_can('edit_posts')) {
     wp_send_json_error('Non autorisé');
   }
@@ -359,6 +360,11 @@ function restaurer_htaccess_si_temporairement_desactive($post_id)
 
 function reactiver_htaccess_immediat_enigme()
 {
+  check_ajax_referer('modifier_champ_enigme', 'nonce');
+  if (!current_user_can('edit_posts')) {
+    wp_send_json_error('Non autorisé');
+  }
+
   $post_id = intval($_POST['post_id'] ?? 0);
   if (!$post_id || get_post_type($post_id) !== 'enigme') {
     wp_send_json_error('ID invalide');
@@ -385,13 +391,12 @@ add_action('wp_ajax_reactiver_htaccess_immediat_enigme', 'reactiver_htaccess_imm
 
 
 
-add_action('wp_ajax_get_expiration_htaccess_enigme', 'get_expiration_htaccess_enigme');
-
 /**
  * @hook wp_ajax_get_expiration_htaccess_enigme
  */
 function get_expiration_htaccess_enigme()
 {
+  check_ajax_referer('modifier_champ_enigme', 'nonce');
   if (!current_user_can('edit_posts')) {
     wp_send_json_error('Non autorisé');
   }
@@ -441,9 +446,18 @@ add_action('wp_ajax_get_expiration_htaccess_enigme', 'get_expiration_htaccess_en
  * Déclenché automatiquement par JS à la fin du compte à rebours
  */
 add_action('wp_ajax_verrouillage_termine_enigme', function () {
+  check_ajax_referer('modifier_champ_enigme', 'nonce');
+  if (!current_user_can('edit_posts')) {
+    wp_send_json_error('Non autorisé');
+  }
+
   $post_id = intval($_POST['post_id'] ?? 0);
   if (!$post_id || get_post_type($post_id) !== 'enigme') {
     wp_send_json_error('ID invalide');
+  }
+
+  if (!utilisateur_peut_modifier_post($post_id)) {
+    wp_send_json_error('Droits insuffisants');
   }
 
   $upload_dir = wp_upload_dir();
