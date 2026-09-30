@@ -4,6 +4,32 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Content/HintManagementService.php';
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Content/HintQueryService.php';
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Content/HintTableAjaxHandler.php';
+
+if (!function_exists('check_ajax_referer')) {
+    function check_ajax_referer($action, $queryArg = false): bool { return true; }
+}
+if (!function_exists('apply_filters')) {
+    function apply_filters($hook, $value, ...$args)
+    {
+        if ($hook === 'chassesautresor_can_manage_hint') {
+            return indice_action_autorisee($args[0], $args[1], $args[2]);
+        }
+        if ($hook === 'chassesautresor_hint_hunt_riddle_ids') {
+            return recuperer_ids_enigmes_pour_chasse($args[0]);
+        }
+        if ($hook === 'chassesautresor_render_hint_table') {
+            return rendre_table_indices($value, ...$args);
+        }
+
+        return $value;
+    }
+}
 if (!function_exists('is_user_logged_in')) {
     function is_user_logged_in() { return true; }
 }
@@ -45,6 +71,9 @@ if (!class_exists('WP_Query')) {
         }
     }
 }
+if (!function_exists('get_post_meta')) {
+    function get_post_meta($postId, $key, $single = false) { return 'chasse'; }
+}
 if (!function_exists('get_template_part')) {
     function get_template_part($slug, $name = null, $args = []) { echo 'table'; }
 }
@@ -74,7 +103,7 @@ class IndicesListerTableChasseTest extends TestCase {
             'page'       => 1,
         ];
 
-        ajax_indices_lister_table();
+        \ChassesAuTresor\Core\Content\HintTableAjaxHandler::handle();
 
         $meta = $captured_query_args['meta_query'];
         $this->assertSame(5, $captured_query_args['posts_per_page']);
@@ -102,7 +131,7 @@ class IndicesListerTableChasseTest extends TestCase {
             'page'       => 2,
         ];
 
-        ajax_indices_lister_table();
+        \ChassesAuTresor\Core\Content\HintTableAjaxHandler::handle();
 
         $this->assertCount(1, $captured_query_args_list);
         $this->assertSame(1, $captured_query_args_list[0]['paged']);

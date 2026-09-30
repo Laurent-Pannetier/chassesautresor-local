@@ -33,6 +33,15 @@ if (!function_exists('apply_filters')) {
         if ($hook === 'chassesautresor_hint_target_has_solution') {
             return indiquer_solution_cible_indice($value, $args[0], $args[1]);
         }
+        if ($hook === 'chassesautresor_hint_hunt_riddle_ids') {
+            return fournir_ids_enigmes_table_indice($value, $args[0]);
+        }
+        if ($hook === 'chassesautresor_hint_related_hunt_id') {
+            return fournir_chasse_liee_table_indice($value, $args[0]);
+        }
+        if ($hook === 'chassesautresor_render_hint_table') {
+            return rendre_table_indices($value, ...$args);
+        }
 
         return $value;
     }

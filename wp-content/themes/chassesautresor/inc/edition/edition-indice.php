@@ -482,143 +482,6 @@ function creer_indice_et_rediriger_si_appel(): void
 }
 add_action('template_redirect', 'creer_indice_et_rediriger_si_appel');
 
-/**
- * AJAX handler returning indices table HTML.
- *
- * @return void
- */
-function ajax_indices_lister_table(): void
-{
-    if (!is_user_logged_in()) {
-        wp_send_json_error('non_connecte');
-    }
-
-    $objet_id   = isset($_POST['objet_id']) ? (int) $_POST['objet_id'] : 0;
-    $objet_type = sanitize_key($_POST['objet_type'] ?? '');
-    $page       = isset($_POST['page']) ? (int) $_POST['page'] : 1;
-    $chasse_id  = isset($_POST['chasse_id']) ? (int) $_POST['chasse_id'] : 0;
-    $enigme_id  = isset($_POST['enigme_id']) ? (int) $_POST['enigme_id'] : 0;
-
-    if (!$objet_id || !in_array($objet_type, ['chasse', 'enigme'], true)
-        || get_post_type($objet_id) !== $objet_type
-    ) {
-        wp_send_json_error('post_invalide');
-    }
-
-    if (!indice_action_autorisee('edit', $objet_type, $objet_id)) {
-        wp_send_json_error('acces_refuse');
-    }
-
-    if ($objet_type === 'enigme') {
-        $enigme_id = $objet_id;
-        if (!$chasse_id) {
-            $chasse_id = (int) recuperer_id_chasse_associee($enigme_id);
-        }
-    } elseif ($objet_type === 'chasse') {
-        $chasse_id = $objet_id;
-    }
-
-    $per_page = $objet_type === 'chasse' ? 5 : 8;
-    $enigme_ids = $objet_type === 'chasse' ? recuperer_ids_enigmes_pour_chasse($objet_id) : [];
-    $query_service = cat_get_hint_query_service();
-
-    $ids = [];
-    if (function_exists('get_posts')) {
-        $ids = get_posts($query_service->getManagementTableQueryArgs(
-            $objet_id,
-            $objet_type,
-            $enigme_ids,
-            $page,
-            $per_page,
-            true
-        ));
-    }
-
-    $pagination = cat_get_hint_management_service()->paginate(
-        $page,
-        is_countable($ids) ? count($ids) : 0,
-        $per_page
-    );
-    $page = $pagination['page'];
-    $total_pages = $pagination['pages'];
-
-    $query_args = $query_service->getManagementTableQueryArgs(
-        $objet_id,
-        $objet_type,
-        $enigme_ids,
-        $page,
-        $per_page
-    );
-    $query      = new WP_Query($query_args);
-
-    $counts = [
-        'total' => is_countable($ids) ? count($ids) : 0,
-        'hunt' => 0,
-        'riddle' => 0,
-    ];
-    if (function_exists('get_post_meta')) {
-        $counts = cat_get_hint_management_service()->countByTargetType(
-            $ids,
-            static fn (int $hintId): string => (string) get_post_meta(
-                $hintId,
-                'indice_cible_type',
-                true
-            )
-        );
-    }
-    $count_total = $counts['total'];
-    $count_chasse = $counts['hunt'];
-    $count_enigme = $counts['riddle'];
-
-    $has_enigme_indices = false;
-    if ($enigme_id) {
-        $riddle_hint_query = $query_service->getManagementTableQueryArgs(
-            $enigme_id,
-            'enigme',
-            [],
-            1,
-            1,
-            true
-        );
-        $has_enigme_indices = function_exists('get_posts')
-            ? count(get_posts($riddle_hint_query)) > 0
-            : false;
-    }
-
-    $toggle_args = null;
-    if ($has_enigme_indices && $chasse_id && $enigme_id) {
-        $toggle_args = [
-            'chasse_id' => $chasse_id,
-            'enigme_id' => $enigme_id,
-            'label'     => $objet_type === 'enigme'
-                ? __('Voir tous les indices de la chasse', 'chassesautresor-com')
-                : __('Voir les indices de cette énigme', 'chassesautresor-com'),
-        ];
-    }
-
-    ob_start();
-    get_template_part('template-parts/common/indices-table', null, [
-        'indices'      => $query->posts,
-        'page'         => $page,
-        'pages'        => $total_pages,
-        'objet_type'   => $objet_type,
-        'objet_id'     => $objet_id,
-        'count_total'  => $count_total,
-        'count_chasse' => $count_chasse,
-        'count_enigme' => $count_enigme,
-        'toggle'       => $toggle_args,
-    ]);
-    $html = ob_get_clean();
-
-    wp_send_json_success([
-        'html'  => $html,
-        'page'  => $page,
-        'pages' => $total_pages,
-    ]);
-}
-add_action('wp_ajax_indices_lister_table', 'ajax_indices_lister_table');
-
-
 function autoriser_gestion_indice(
     bool $allowed,
     string $action,
@@ -641,6 +504,51 @@ function rendre_carte_indices(string $html, int $huntId): string
     return (string) ob_get_clean();
 }
 add_filter('chassesautresor_render_hint_card', 'rendre_carte_indices', 10, 2);
+
+/** @return int[] */
+function fournir_ids_enigmes_table_indice(array $riddleIds, int $huntId): array
+{
+    return recuperer_ids_enigmes_pour_chasse($huntId);
+}
+add_filter('chassesautresor_hint_hunt_riddle_ids', 'fournir_ids_enigmes_table_indice', 10, 2);
+
+function fournir_chasse_liee_table_indice(int $huntId, int $riddleId): int
+{
+    return (int) recuperer_id_chasse_associee($riddleId);
+}
+add_filter('chassesautresor_hint_related_hunt_id', 'fournir_chasse_liee_table_indice', 10, 2);
+
+/**
+ * @param object[] $hints
+ * @param array{total:int,hunt:int,riddle:int} $counts
+ * @param array<string, mixed>|null $toggle
+ */
+function rendre_table_indices(
+    string $html,
+    array $hints,
+    int $page,
+    int $pages,
+    string $targetType,
+    int $targetId,
+    array $counts,
+    ?array $toggle
+): string {
+    ob_start();
+    get_template_part('template-parts/common/indices-table', null, [
+        'indices' => $hints,
+        'page' => $page,
+        'pages' => $pages,
+        'objet_type' => $targetType,
+        'objet_id' => $targetId,
+        'count_total' => $counts['total'],
+        'count_chasse' => $counts['hunt'],
+        'count_enigme' => $counts['riddle'],
+        'toggle' => $toggle,
+    ]);
+
+    return (string) ob_get_clean();
+}
+add_filter('chassesautresor_render_hint_table', 'rendre_table_indices', 10, 9);
 
 /** @return array<int, object> */
 function fournir_enigmes_cibles_indice(array $riddles, int $huntId): array
