@@ -6,6 +6,8 @@ use ChassesAuTresor\Core\Content\RiddleRelationshipService;
 use PHPUnit\Framework\TestCase;
 
 require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Relationships/RelationshipService.php';
+require_once __DIR__
     . '/../wp-content/plugins/chassesautresor-core/src/Content/RiddleRelationshipService.php';
 
 class RiddleRelationshipServiceTest extends TestCase {
@@ -17,13 +19,17 @@ class RiddleRelationshipServiceTest extends TestCase {
 
     public function testHuntIdIsResolvedFromAcfValueShapes(): void {
         $this->assertSame(12, $this->service->resolveHuntId(12));
+        $this->assertSame(12, $this->service->resolveHuntId(['ID' => 12]));
         $this->assertSame(12, $this->service->resolveHuntId([(object) ['ID' => 12]]));
         $this->assertSame(12, $this->service->resolveHuntId((object) ['ID' => 12]));
         $this->assertSame(0, $this->service->resolveHuntId([]));
     }
 
     public function testCurrentRiddleIsExcludedFromSelectablePrerequisites(): void {
-        $this->assertSame([10, 30], $this->service->getSelectableRiddleIds([10, 20, 30, 20], 20));
+        $this->assertSame(
+            [10, 30],
+            $this->service->getSelectableRiddleIds([10, 20, (object) ['ID' => 30], 20], 20)
+        );
         $this->assertSame([0], $this->service->getSelectableRiddleIds([20], 20));
     }
 

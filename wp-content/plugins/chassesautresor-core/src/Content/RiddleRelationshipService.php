@@ -4,20 +4,14 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Content;
 
+use ChassesAuTresor\Core\Relationships\RelationshipService;
+
 /**
  * Normalize and maintain relationships between riddles and hunts.
  */
 class RiddleRelationshipService {
     public function resolveHuntId($value): int {
-        if (is_array($value)) {
-            $value = reset($value);
-        }
-
-        if (is_object($value)) {
-            return isset($value->ID) ? (int) $value->ID : 0;
-        }
-
-        return (int) $value;
+        return (new RelationshipService())->normalizeId($value) ?? 0;
     }
 
     /**
@@ -25,7 +19,7 @@ class RiddleRelationshipService {
      * @return int[]
      */
     public function getSelectableRiddleIds(array $riddleIds, int $currentRiddleId): array {
-        $ids = array_values(array_unique(array_filter(array_map('intval', $riddleIds))));
+        $ids = $this->normalizeUniqueIds($riddleIds);
         $ids = array_values(array_filter(
             $ids,
             static fn (int $riddleId): bool => $riddleId !== $currentRiddleId
@@ -39,11 +33,21 @@ class RiddleRelationshipService {
      * @return int[]
      */
     public function filterExistingRiddleIds(array $riddleIds, callable $exists): array {
-        $ids = array_values(array_unique(array_filter(array_map('intval', $riddleIds))));
+        $ids = $this->normalizeUniqueIds($riddleIds);
 
         return array_values(array_filter(
             $ids,
             static fn (int $riddleId): bool => (bool) $exists($riddleId)
         ));
+    }
+
+    /**
+     * @param mixed[] $values
+     * @return int[]
+     */
+    private function normalizeUniqueIds(array $values): array {
+        $ids = (new RelationshipService())->normalizeIds($values);
+
+        return array_values(array_unique($ids));
     }
 }
