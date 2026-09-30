@@ -70,6 +70,7 @@ require_once __DIR__ . '/src/Content/HintRouteRegistrar.php';
 require_once __DIR__ . '/src/Content/HintFieldPolicyService.php';
 require_once __DIR__ . '/src/Content/HintFieldMutationService.php';
 require_once __DIR__ . '/src/Content/HintMutationService.php';
+require_once __DIR__ . '/src/Content/HintManagementService.php';
 require_once __DIR__ . '/src/Content/HintRelationshipService.php';
 require_once __DIR__ . '/src/Content/HuntPublicationStatusService.php';
 require_once __DIR__ . '/src/Content/HuntValidationService.php';

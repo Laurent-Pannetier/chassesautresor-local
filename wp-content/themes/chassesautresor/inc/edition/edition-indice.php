@@ -96,6 +96,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\HintRelationshipService::class, f
         . '/plugins/chassesautresor-core/src/Content/HintRelationshipService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HintManagementService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/HintManagementService.php';
+}
+
 function cat_get_hint_query_service(): ChassesAuTresor\Core\Content\HintQueryService
 {
     return new ChassesAuTresor\Core\Content\HintQueryService();
@@ -174,6 +179,11 @@ function cat_get_hint_relationship_service(): ChassesAuTresor\Core\Content\HintR
     return new ChassesAuTresor\Core\Content\HintRelationshipService(
         new ChassesAuTresor\Core\Relationships\RelationshipService()
     );
+}
+
+function cat_get_hint_management_service(): ChassesAuTresor\Core\Content\HintManagementService
+{
+    return new ChassesAuTresor\Core\Content\HintManagementService();
 }
 
 // ==================================================
@@ -493,20 +503,13 @@ function ajax_chasse_lister_enigmes(): void
     }
 
     $posts = recuperer_enigmes_pour_chasse($chasse_id);
-    if (!empty($_POST['sans_solution'])) {
-        $posts = array_filter(
-            $posts,
-            static fn($p) => !solution_existe_pour_objet($p->ID, 'enigme')
-        );
-    }
-
-    $enigmes = array_map(
-        static fn($p) => [
-            'id'          => $p->ID,
-            'title'       => html_entity_decode(get_the_title($p), ENT_QUOTES, 'UTF-8'),
-            'indice_rang' => prochain_rang_indice($chasse_id, 'chasse'),
-        ],
-        $posts
+    $excludeSolutions = !empty($_POST['sans_solution']);
+    $enigmes = cat_get_hint_management_service()->buildRiddleOptions(
+        $posts,
+        prochain_rang_indice($chasse_id, 'chasse'),
+        static fn ($riddle): bool => $excludeSolutions
+            && solution_existe_pour_objet((int) $riddle->ID, 'enigme'),
+        static fn ($riddle): string => (string) get_the_title($riddle)
     );
 
     wp_send_json_success(['enigmes' => $enigmes]);
@@ -589,8 +592,6 @@ function ajax_indices_lister_table(): void
     $enigme_ids = $objet_type === 'chasse' ? recuperer_ids_enigmes_pour_chasse($objet_id) : [];
     $query_service = cat_get_hint_query_service();
 
-    $page = max(1, $page);
-
     $ids = [];
     if (function_exists('get_posts')) {
         $ids = get_posts($query_service->getManagementTableQueryArgs(
@@ -603,11 +604,13 @@ function ajax_indices_lister_table(): void
         ));
     }
 
-    $count_total = is_countable($ids) ? count($ids) : 0;
-    $total_pages = (int) ceil($count_total / $per_page);
-    if ($total_pages > 0 && $page > $total_pages) {
-        $page = $total_pages;
-    }
+    $pagination = cat_get_hint_management_service()->paginate(
+        $page,
+        is_countable($ids) ? count($ids) : 0,
+        $per_page
+    );
+    $page = $pagination['page'];
+    $total_pages = $pagination['pages'];
 
     $query_args = $query_service->getManagementTableQueryArgs(
         $objet_id,
@@ -618,19 +621,24 @@ function ajax_indices_lister_table(): void
     );
     $query      = new WP_Query($query_args);
 
-    $count_chasse = 0;
-    $count_enigme = 0;
+    $counts = [
+        'total' => is_countable($ids) ? count($ids) : 0,
+        'hunt' => 0,
+        'riddle' => 0,
+    ];
     if (function_exists('get_post_meta')) {
-        foreach ($ids as $indice_id) {
-            $type = get_post_meta($indice_id, 'indice_cible_type', true);
-            if ($type === 'chasse') {
-                ++$count_chasse;
-            } elseif ($type === 'enigme') {
-                ++$count_enigme;
-            }
-        }
-        $count_total = $count_chasse + $count_enigme;
+        $counts = cat_get_hint_management_service()->countByTargetType(
+            $ids,
+            static fn (int $hintId): string => (string) get_post_meta(
+                $hintId,
+                'indice_cible_type',
+                true
+            )
+        );
     }
+    $count_total = $counts['total'];
+    $count_chasse = $counts['hunt'];
+    $count_enigme = $counts['riddle'];
 
     $has_enigme_indices = false;
     if ($enigme_id) {
