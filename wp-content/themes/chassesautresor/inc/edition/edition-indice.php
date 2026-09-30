@@ -175,19 +175,16 @@ function reordonner_indices(int $objet_id, string $objet_type): void
         );
 
         if ($should_update) {
-            $chasse_linked = get_field('indice_chasse_linked', $indice_id);
-            if (is_array($chasse_linked)) {
-                $first     = $chasse_linked[0] ?? null;
-                $chasse_id = is_array($first) ? (int) ($first['ID'] ?? 0) : (int) $first;
-            } else {
-                $chasse_id = (int) $chasse_linked;
-            }
+            $relationshipService = new ChassesAuTresor\Core\Relationships\RelationshipService();
+            $chasse_id = $relationshipService->normalizeId(
+                get_field('indice_chasse_linked', $indice_id)
+            );
 
-            if (!$chasse_id && $objet_type === 'chasse') {
+            if ($chasse_id === null && $objet_type === 'chasse') {
                 $chasse_id = $objet_id;
             }
 
-            $placeholder = build_indice_placeholder_title($chasse_id);
+            $placeholder = build_indice_placeholder_title($chasse_id ?? 0);
             wp_update_post([
                 'ID'         => $indice_id,
                 'post_title' => $placeholder,
@@ -841,18 +838,14 @@ function supprimer_indice_ajax(): void
 
     $cible_type = get_field('indice_cible_type', $indice_id) === 'enigme' ? 'enigme' : 'chasse';
     $relationshipService = new ChassesAuTresor\Core\Relationships\RelationshipService();
-    $chasse_id = null;
-
-    if ($cible_type === 'enigme') {
-        $objet_id = $relationshipService->normalizeId(get_field('indice_enigme_linked', $indice_id));
-        $chasse_id = $relationshipService->normalizeId(get_field('indice_chasse_linked', $indice_id));
-
-        if ($chasse_id === null && $objet_id !== null) {
-            $chasse_id = $relationshipService->normalizeId(recuperer_id_chasse_associee($objet_id));
-        }
-    } else {
-        $objet_id = $relationshipService->normalizeId(get_field('indice_chasse_linked', $indice_id));
+    $linked_hunt = get_field('indice_chasse_linked', $indice_id);
+    $linked_riddle = get_field('indice_enigme_linked', $indice_id);
+    $objet_id = $relationshipService->resolveHintTargetId($cible_type, $linked_hunt, $linked_riddle);
+    $riddle_hunt_id = $relationshipService->normalizeId($linked_hunt);
+    if ($cible_type === 'enigme' && $riddle_hunt_id === null && $objet_id !== null) {
+        $riddle_hunt_id = recuperer_id_chasse_associee($objet_id);
     }
+    $chasse_id = $relationshipService->resolveTargetHuntId($cible_type, $linked_hunt, $riddle_hunt_id);
 
     if ($objet_id === null || !indice_action_autorisee('delete', $cible_type, $objet_id)) {
         wp_send_json_error('acces_refuse');
@@ -1063,20 +1056,14 @@ function memoriser_cible_indice_avant_suppression(int $post_id): void
 
     $type = get_field('indice_cible_type', $post_id) === 'enigme' ? 'enigme' : 'chasse';
     $relationshipService = new ChassesAuTresor\Core\Relationships\RelationshipService();
-    $objet_id = null;
-    $chasse_id = null;
-
-    if ($type === 'enigme') {
-        $objet_id = $relationshipService->normalizeId(get_field('indice_enigme_linked', $post_id));
-        $chasse_id = $relationshipService->normalizeId(get_field('indice_chasse_linked', $post_id));
-
-        if ($chasse_id === null && $objet_id !== null) {
-            $chasse_id = $relationshipService->normalizeId(recuperer_id_chasse_associee($objet_id));
-        }
-    } else {
-        $objet_id = $relationshipService->normalizeId(get_field('indice_chasse_linked', $post_id));
-        $chasse_id = $objet_id;
+    $linked_hunt = get_field('indice_chasse_linked', $post_id);
+    $linked_riddle = get_field('indice_enigme_linked', $post_id);
+    $objet_id = $relationshipService->resolveHintTargetId($type, $linked_hunt, $linked_riddle);
+    $riddle_hunt_id = $relationshipService->normalizeId($linked_hunt);
+    if ($type === 'enigme' && $riddle_hunt_id === null && $objet_id !== null) {
+        $riddle_hunt_id = recuperer_id_chasse_associee($objet_id);
     }
+    $chasse_id = $relationshipService->resolveTargetHuntId($type, $linked_hunt, $riddle_hunt_id);
 
     if ($objet_id !== null) {
         $indice_delete_context = [
