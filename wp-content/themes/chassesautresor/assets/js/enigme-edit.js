@@ -1199,7 +1199,8 @@ function initPanneauVariantes() {
           action: 'modifier_champ_enigme',
           champ,
           valeur,
-          post_id: postId
+          post_id: postId,
+          nonce: window.CHP_ENIGME_DEFAUT?.nonce || ''
         })
       }).then(r => r.json());
     });
@@ -1547,4 +1548,3 @@ function initPagerTentatives() {
       });
   }
 }
-

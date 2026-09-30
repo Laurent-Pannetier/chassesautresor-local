@@ -159,6 +159,7 @@ function enqueue_script_enigme_edit()
   wp_localize_script('champ-init', 'CHP_ENIGME_DEFAUT', [
     'titre' => strtolower(TITRE_DEFAUT_ENIGME),
     'image_slug' => 'defaut-enigme',
+    'nonce' => wp_create_nonce('modifier_champ_enigme'),
   ]);
 
   wp_enqueue_media();
@@ -308,6 +309,8 @@ add_action('wp_ajax_modifier_champ_enigme', 'modifier_champ_enigme');
  */
 function modifier_champ_enigme()
 {
+  check_ajax_referer('modifier_champ_enigme', 'nonce');
+
   if (!is_user_logged_in()) {
     wp_send_json_error('non_connecte');
   }

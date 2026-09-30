@@ -3,6 +3,9 @@ namespace {
     if (!function_exists('is_user_logged_in')) {
         function is_user_logged_in() { return true; }
     }
+    if (!function_exists('check_ajax_referer')) {
+        function check_ajax_referer($action, $query_arg) { return true; }
+    }
     if (!function_exists('wp_send_json_error')) {
         function wp_send_json_error($msg) { throw new \Exception($msg); }
     }
