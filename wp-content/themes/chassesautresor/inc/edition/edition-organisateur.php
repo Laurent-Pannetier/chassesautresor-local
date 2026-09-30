@@ -11,6 +11,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\OrganizerMutationService::class, 
         . '/plugins/chassesautresor-core/src/Content/OrganizerMutationService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\PublicLinkService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/PublicLinkService.php';
+}
+
 // ==================================================
 // 👤 CRÉATION & ÉDITION D’UN ORGANISATEUR
 // ==================================================
@@ -30,23 +35,12 @@ if (!class_exists(ChassesAuTresor\Core\Content\OrganizerMutationService::class, 
  */
 function organisateur_get_liens_actifs(int $organisateur_id): array
 {
-  $liens_publics = get_field('liens_publics', $organisateur_id);
-  $liens_actifs = [];
+    $rows = get_field('liens_publics', $organisateur_id);
+    $links = (new ChassesAuTresor\Core\Content\PublicLinkService())->activeLinks(
+        is_array($rows) ? $rows : []
+    );
 
-  if (!empty($liens_publics) && is_array($liens_publics)) {
-    foreach ($liens_publics as $entree) {
-      $type_raw = $entree['type_de_lien'] ?? null;
-      $url      = $entree['url_lien'] ?? null;
-
-      $type = is_array($type_raw) ? ($type_raw[0] ?? '') : $type_raw;
-
-      if (is_string($type) && trim($type) !== '' && is_string($url) && trim($url) !== '') {
-        $liens_actifs[$type] = esc_url($url);
-      }
-    }
-  }
-
-  return $liens_actifs;
+    return array_map('esc_url', $links);
 }
 
 
@@ -233,28 +227,7 @@ function ajax_modifier_champ_organisateur()
  */
 function organisateur_get_liste_liens_publics()
 {
-  return [
-    'site_web' => [
-      'label' => 'Site Web',
-      'icone' => 'fa-solid fa-globe'
-    ],
-    'discord' => [
-      'label' => 'Discord',
-      'icone' => 'fa-brands fa-discord'
-    ],
-    'facebook' => [
-      'label' => 'Facebook',
-      'icone' => 'fa-brands fa-facebook-f'
-    ],
-    'twitter' => [
-      'label' => 'Twitter/X',
-      'icone' => 'fa-brands fa-x-twitter'
-    ],
-    'instagram' => [
-      'label' => 'Instagram',
-      'icone' => 'fa-brands fa-instagram'
-    ],
-  ];
+    return get_types_liens_publics();
 }
 
 /**
@@ -269,13 +242,13 @@ function organisateur_get_liste_liens_publics()
  */
 function organisateur_get_lien_public_infos($type_de_lien)
 {
-  $liens = organisateur_get_liste_liens_publics();
-  $type = strtolower(trim($type_de_lien));
+    $links = get_types_liens_publics();
+    $type = strtolower(trim($type_de_lien));
 
-  return $liens[$type] ?? [
-    'label' => ucfirst($type),
-    'icone' => 'fa-solid fa-link'
-  ];
+    return $links[$type] ?? [
+        'label' => ucfirst($type),
+        'icone' => 'fa-solid fa-link',
+    ];
 }
 
 

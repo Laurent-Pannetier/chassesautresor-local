@@ -53,6 +53,7 @@ require_once __DIR__ . '/src/Content/RiddleCreationRequestService.php';
 require_once __DIR__ . '/src/Content/OrganizerCompletionService.php';
 require_once __DIR__ . '/src/Content/OrganizerCreationService.php';
 require_once __DIR__ . '/src/Content/OrganizerMutationService.php';
+require_once __DIR__ . '/src/Content/PublicLinkService.php';
 require_once __DIR__ . '/src/Content/HuntCompletionService.php';
 require_once __DIR__ . '/src/Content/HuntFeatureService.php';
 require_once __DIR__ . '/src/Content/HintQueryService.php';
