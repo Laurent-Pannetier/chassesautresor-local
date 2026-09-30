@@ -37,6 +37,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\SolutionManagementService::class,
         . '/plugins/chassesautresor-core/src/Content/SolutionManagementService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\SolutionMutationService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/SolutionMutationService.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Content\SolutionPublicationService::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Content/SolutionPublicationService.php';
@@ -491,20 +496,15 @@ function ajax_creer_solution_modal(): void
     $delai  = isset($_POST['solution_decalage_jours']) ? (int) $_POST['solution_decalage_jours'] : 0;
     $heure  = sanitize_text_field($_POST['solution_heure_publication'] ?? '');
 
-    if ($fichier) {
-        update_field('solution_fichier', $fichier, $solution_id);
-    }
-    if ($explic !== '') {
-        update_field('solution_explication', $explic, $solution_id);
-    }
-
     $schedule = $fieldPolicy->normalizeSchedule($dispo, $delai, $heure);
-    update_field('solution_disponibilite', $schedule['availability'], $solution_id);
-    update_field('solution_decalage_jours', $schedule['delay_days'], $solution_id);
-    update_field('solution_heure_publication', $schedule['publication_time'], $solution_id);
-
-    mettre_a_jour_cache_solution($solution_id);
-    solution_planifier_publication($solution_id);
+    ChassesAuTresor\Core\Content\SolutionMutationService::apply(
+        $solution_id,
+        $fichier,
+        false,
+        $explic,
+        $schedule,
+        false
+    );
 
     wp_send_json_success(['solution_id' => $solution_id]);
 }
@@ -564,20 +564,15 @@ function ajax_modifier_solution_modal(): void
     $delai  = isset($_POST['solution_decalage_jours']) ? (int) $_POST['solution_decalage_jours'] : 0;
     $heure  = sanitize_text_field($_POST['solution_heure_publication'] ?? '');
 
-    if ($fichier) {
-        update_field('solution_fichier', $fichier, $solution_id);
-    } elseif ($has_file_input) {
-        delete_field('solution_fichier', $solution_id);
-    }
-    update_field('solution_explication', $explic, $solution_id);
-
     $schedule = $fieldPolicy->normalizeSchedule($dispo, $delai, $heure);
-    update_field('solution_disponibilite', $schedule['availability'], $solution_id);
-    update_field('solution_decalage_jours', $schedule['delay_days'], $solution_id);
-    update_field('solution_heure_publication', $schedule['publication_time'], $solution_id);
-
-    mettre_a_jour_cache_solution($solution_id);
-    solution_planifier_publication($solution_id);
+    ChassesAuTresor\Core\Content\SolutionMutationService::apply(
+        $solution_id,
+        $fichier,
+        $has_file_input,
+        $explic,
+        $schedule,
+        true
+    );
 
     wp_send_json_success(['solution_id' => $solution_id]);
 }
