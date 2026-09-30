@@ -87,6 +87,7 @@ require_once __DIR__ . '/src/Content/RiddlePostFactory.php';
 require_once __DIR__ . '/src/Content/RiddleRelationshipService.php';
 require_once __DIR__ . '/src/Content/RiddleRelationshipCleanupService.php';
 require_once __DIR__ . '/src/Content/RiddleRelationshipLifecycleService.php';
+require_once __DIR__ . '/src/Content/RiddleRouteRegistrar.php';
 require_once __DIR__ . '/src/Content/HuntManagementService.php';
 require_once __DIR__ . '/src/Content/ContentPanelAccessService.php';
 require_once __DIR__ . '/src/Content/ContentFieldAccessService.php';
@@ -137,6 +138,11 @@ register_activation_hook(
 register_activation_hook(
     __FILE__,
     [ChassesAuTresor\Core\Content\SolutionRouteRegistrar::class, 'flush']
+);
+
+register_activation_hook(
+    __FILE__,
+    [ChassesAuTresor\Core\Content\RiddleRouteRegistrar::class, 'flush']
 );
 
 register_activation_hook(
@@ -244,6 +250,17 @@ add_action(
 add_action(
     'init',
     [ChassesAuTresor\Core\Content\SolutionRouteRegistrar::class, 'maybeFlush'],
+    20
+);
+
+add_action(
+    'init',
+    [ChassesAuTresor\Core\Content\RiddleRouteRegistrar::class, 'register']
+);
+
+add_action(
+    'init',
+    [ChassesAuTresor\Core\Content\RiddleRouteRegistrar::class, 'maybeFlush'],
     20
 );
 

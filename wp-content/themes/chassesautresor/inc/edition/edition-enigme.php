@@ -80,6 +80,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\RiddleRelationshipLifecycleServic
         . '/plugins/chassesautresor-core/src/Content/RiddleRelationshipLifecycleService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\RiddleRouteRegistrar::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/RiddleRouteRegistrar.php';
+}
+
 
 // ==================================================
 // 🧩 CRÉATION & ÉDITION D’UNE ÉNIGME
@@ -220,14 +225,8 @@ function creer_enigme_pour_chasse($chasse_id, $user_id = null)
  */
 function register_endpoint_creer_enigme()
 {
-  add_rewrite_rule(
-    '^creer-enigme/?',
-    'index.php?creer_enigme=1',
-    'top'
-  );
-  add_rewrite_tag('%creer_enigme%', '1');
+  ChassesAuTresor\Core\Content\RiddleRouteRegistrar::register();
 }
-add_action('init', 'register_endpoint_creer_enigme');
 
 
 /**
