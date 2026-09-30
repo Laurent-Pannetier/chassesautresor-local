@@ -35,6 +35,13 @@ if (!function_exists('get_organisateur_from_chasse')) {
     }
 }
 
+if (!function_exists('get_field')) {
+    function get_field($field, $post_id)
+    {
+        return $field === 'chasse_cache_organisateur' ? 10 : null;
+    }
+}
+
 if (!function_exists('wp_insert_post')) {
     function wp_insert_post($args)
     {
@@ -88,7 +95,6 @@ class CreerEnigmeTest extends TestCase
     {
         global $updated_fields;
         $updated_fields = [];
-
         $enigme_id = creer_enigme_pour_chasse(55, 1);
 
         $this->assertSame('automatique', $updated_fields['enigme_mode_validation']);

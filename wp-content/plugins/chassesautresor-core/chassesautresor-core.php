@@ -50,6 +50,7 @@ require_once __DIR__ . '/src/Content/RiddleCompletionService.php';
 require_once __DIR__ . '/src/Content/RiddleActionPolicyService.php';
 require_once __DIR__ . '/src/Content/RiddleCreationService.php';
 require_once __DIR__ . '/src/Content/RiddleCreationRequestService.php';
+require_once __DIR__ . '/src/Content/RiddleCreationRouteHandler.php';
 require_once __DIR__ . '/src/Content/OrganizerCompletionService.php';
 require_once __DIR__ . '/src/Content/OrganizerCreationService.php';
 require_once __DIR__ . '/src/Content/OrganizerMutationService.php';
@@ -165,6 +166,7 @@ ChassesAuTresor\Core\Content\RiddleDeletionAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\HuntInitializationHookHandler::register('add_action');
 ChassesAuTresor\Core\Content\HuntDeletionAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\HuntCreationRouteHandler::register('add_action');
+ChassesAuTresor\Core\Content\RiddleCreationRouteHandler::register('add_action');
 
 register_activation_hook(
     __FILE__,

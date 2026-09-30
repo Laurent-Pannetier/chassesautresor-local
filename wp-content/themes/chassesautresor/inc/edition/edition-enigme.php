@@ -197,126 +197,17 @@ add_action('wp_enqueue_scripts', 'enqueue_script_enigme_edit');
  */
 function creer_enigme_pour_chasse($chasse_id, $user_id = null)
 {
-  if (is_null($user_id)) {
-    $user_id = get_current_user_id();
-  }
-
-  $has_valid_hunt = get_post_type($chasse_id) === 'chasse';
-  $has_valid_user = $has_valid_hunt && $user_id && get_userdata($user_id);
-  $organisateur_id = $has_valid_user ? get_organisateur_from_chasse($chasse_id) : 0;
-  $creation_error = (new ChassesAuTresor\Core\Content\RiddleCreationService())->getCreationError(
-    $has_valid_hunt,
-    (bool) $has_valid_user,
-    (bool) $organisateur_id
-  );
-  if ($creation_error !== null) {
-    $errors = [
-      'invalid_hunt' => ['chasse_invalide', __('ID de chasse invalide.', 'chassesautresor-com')],
-      'invalid_user' => ['utilisateur_invalide', __('Utilisateur non connecté.', 'chassesautresor-com')],
-      'missing_organizer' => [
-        'organisateur_introuvable',
-        __('Organisateur non lié à cette chasse.', 'chassesautresor-com'),
-      ],
-    ];
-
-    return new WP_Error($errors[$creation_error][0], $errors[$creation_error][1]);
-  }
-
-  $factory = new ChassesAuTresor\Core\Content\RiddlePostFactory();
-  $enigme_id = $factory->create(
-    (int) $chasse_id,
-    (int) $organisateur_id,
-    (int) $user_id,
-    TITRE_DEFAUT_ENIGME,
-    (new DateTime('+1 month'))->format('Y-m-d H:i:s')
-  );
-
-  if (is_wp_error($enigme_id)) {
-    return $enigme_id;
-  }
-
-  // Calcule l\'état système initial pour permettre l\'édition complète
-  enigme_mettre_a_jour_etat_systeme($enigme_id);
-
-  return $enigme_id;
-}
-
-
-/**
- * Enregistre l’URL personnalisée /creer-enigme/
- *
- * Permet de détecter les visites à /creer-enigme/?chasse_id=XXX
- * et de déclencher la création automatique d’une énigme.
- *
- * @return void
- */
-function register_endpoint_creer_enigme()
-{
-  ChassesAuTresor\Core\Content\RiddleRouteRegistrar::register();
-}
-
-
-/**
- * Détecte l’appel à l’endpoint /creer-enigme/?chasse_id=XXX
- * Crée une énigme liée à la chasse spécifiée, puis redirige vers sa page.
- *
- * Conditions :
- * - L’utilisateur doit être connecté
- * - L’ID de chasse doit être valide et exister
- *
- * @return void
- */
-function creer_enigme_et_rediriger_si_appel()
-{
-    if (get_query_var('creer_enigme') !== '1') {
-        return;
-    }
-
-    if (!defined('DONOTCACHEPAGE')) {
-        define('DONOTCACHEPAGE', true); // Indique aux plugins cache de ne pas mettre en cache
-    }
-    do_action('litespeed_control_set_nocache'); // Spécifique à LiteSpeed
-    nocache_headers();
-
-    $chasse_id = isset($_GET['chasse_id']) ? absint($_GET['chasse_id']) : 0;
-    $has_valid_nonce = (bool) wp_verify_nonce(
-        sanitize_text_field(wp_unslash($_GET['nonce'] ?? '')),
-        'creer_enigme'
+    return ChassesAuTresor\Core\Content\RiddleCreationRouteHandler::create(
+        (int) $chasse_id,
+        $user_id === null ? null : (int) $user_id,
+        static fn (int $huntId): ?int => get_organisateur_from_chasse($huntId)
     );
-    $is_logged_in = $has_valid_nonce && is_user_logged_in();
-    $has_valid_hunt = $is_logged_in && $chasse_id > 0 && get_post_type($chasse_id) === 'chasse';
-    $request_error = (new ChassesAuTresor\Core\Content\RiddleCreationRequestService())->getRequestError(
-        $has_valid_nonce,
-        $is_logged_in,
-        $has_valid_hunt
-    );
-
-    if ($request_error === 'invalid_nonce') {
-        wp_die(__('Action non autorisée.', 'chassesautresor-com'), 'Erreur', ['response' => 403]);
-    }
-
-    if ($request_error === 'authentication_required') {
-        wp_redirect(wp_login_url());
-        exit;
-    }
-
-    if ($request_error === 'invalid_hunt') {
-        wp_die( __( 'Chasse non spécifiée ou invalide.', 'chassesautresor-com' ), 'Erreur', ['response' => 400] );
-    }
-
-    $enigme_id = creer_enigme_pour_chasse($chasse_id, get_current_user_id());
-
-    if (is_wp_error($enigme_id)) {
-        wp_die($enigme_id->get_error_message(), 'Erreur', ['response' => 500]);
-    }
-
-    // Redirige vers l’énigme en création
-    $preview_url = add_query_arg('edition', 'open', get_preview_post_link($enigme_id));
-    wp_redirect($preview_url);
-
-    exit;
 }
-add_action('template_redirect', 'creer_enigme_et_rediriger_si_appel');
+
+function initialiser_etat_enigme_creee(int $riddleId): void {
+    enigme_mettre_a_jour_etat_systeme($riddleId);
+}
+add_action('chassesautresor_riddle_created', 'initialiser_etat_enigme_creee');
 
 
 /**
