@@ -62,6 +62,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\SolutionScheduler::class, false))
         . '/plugins/chassesautresor-core/src/Content/SolutionScheduler.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\SolutionSaveHandler::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/SolutionSaveHandler.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Relationships\RelationshipService::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Relationships/RelationshipService.php';
@@ -131,14 +136,8 @@ function mettre_a_jour_cache_solution(int $post_id): void
  */
 function solution_acf_save_post(int $post_id): void
 {
-    if (get_post_type($post_id) !== 'solution') {
-        return;
-    }
-
-    mettre_a_jour_cache_solution($post_id);
-    solution_planifier_publication($post_id);
+    ChassesAuTresor\Core\Content\SolutionSaveHandler::handle($post_id);
 }
-add_action('acf/save_post', 'solution_acf_save_post', 40);
 
 // ==================================================
 // 💡 GESTION DES SOLUTIONS (création, redirection, AJAX)

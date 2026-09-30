@@ -71,6 +71,7 @@ require_once __DIR__ . '/src/Content/SolutionPublicationPlanner.php';
 require_once __DIR__ . '/src/Content/SolutionQueryService.php';
 require_once __DIR__ . '/src/Content/SolutionRouteRegistrar.php';
 require_once __DIR__ . '/src/Content/SolutionScheduler.php';
+require_once __DIR__ . '/src/Content/SolutionSaveHandler.php';
 require_once __DIR__ . '/src/Content/SolutionAccessService.php';
 require_once __DIR__ . '/src/Content/RiddleAccessService.php';
 require_once __DIR__ . '/src/Content/RiddleManagementService.php';
@@ -188,6 +189,12 @@ add_action(
 add_action(
     'publier_solution_programmee',
     [ChassesAuTresor\Core\Content\SolutionPublicationService::class, 'makeAccessible']
+);
+
+add_action(
+    'acf/save_post',
+    [ChassesAuTresor\Core\Content\SolutionSaveHandler::class, 'handle'],
+    40
 );
 
 add_action(
