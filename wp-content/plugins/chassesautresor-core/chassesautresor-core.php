@@ -69,6 +69,7 @@ require_once __DIR__ . '/src/Content/SolutionManagementService.php';
 require_once __DIR__ . '/src/Content/SolutionPublicationService.php';
 require_once __DIR__ . '/src/Content/SolutionPublicationPlanner.php';
 require_once __DIR__ . '/src/Content/SolutionQueryService.php';
+require_once __DIR__ . '/src/Content/SolutionRedirectHandler.php';
 require_once __DIR__ . '/src/Content/SolutionRouteRegistrar.php';
 require_once __DIR__ . '/src/Content/SolutionScheduler.php';
 require_once __DIR__ . '/src/Content/SolutionSaveHandler.php';
@@ -195,6 +196,11 @@ add_action(
     'acf/save_post',
     [ChassesAuTresor\Core\Content\SolutionSaveHandler::class, 'handle'],
     40
+);
+
+add_action(
+    'template_redirect',
+    [ChassesAuTresor\Core\Content\SolutionRedirectHandler::class, 'redirectIfViewingSolution']
 );
 
 add_action(

@@ -52,6 +52,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\SolutionQueryService::class, fals
         . '/plugins/chassesautresor-core/src/Content/SolutionQueryService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\SolutionRedirectHandler::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/SolutionRedirectHandler.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Content\SolutionRouteRegistrar::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Content/SolutionRouteRegistrar.php';
@@ -150,25 +155,8 @@ function solution_acf_save_post(int $post_id): void
  */
 function rediriger_si_affichage_solution(): void
 {
-    if (!is_singular('solution')) {
-        return;
-    }
-
-    $solution_id = get_the_ID();
-    $cible_type  = get_field('solution_cible_type', $solution_id);
-    $relationshipService = new ChassesAuTresor\Core\Relationships\RelationshipService();
-    $redirect_id = $relationshipService->resolveTargetId(
-        (string) $cible_type,
-        get_field('solution_chasse_linked', $solution_id),
-        get_field('solution_enigme_linked', $solution_id)
-    );
-
-    if ($redirect_id) {
-        wp_safe_redirect(get_permalink($redirect_id));
-        exit;
-    }
+    ChassesAuTresor\Core\Content\SolutionRedirectHandler::redirectIfViewingSolution();
 }
-add_action('template_redirect', 'rediriger_si_affichage_solution');
 
 /**
  * Crée une solution liée à une chasse ou une énigme.
