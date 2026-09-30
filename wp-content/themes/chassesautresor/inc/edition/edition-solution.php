@@ -42,6 +42,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\SolutionPublicationService::class
         . '/plugins/chassesautresor-core/src/Content/SolutionPublicationService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\SolutionPublicationPlanner::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/SolutionPublicationPlanner.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Content\SolutionQueryService::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Content/SolutionQueryService.php';
@@ -73,58 +78,7 @@ if (!class_exists(ChassesAuTresor\Core\Relationships\RelationshipService::class,
  */
 function solution_planifier_publication(int $solution_id): void
 {
-    if (get_post_type($solution_id) !== 'solution') {
-        return;
-    }
-
-    $cible     = get_field('solution_cible_type', $solution_id);
-    $chasse_id = 0;
-    if ($cible === 'chasse') {
-        $chasse    = get_field('solution_chasse_linked', $solution_id);
-        $chasse_id = is_array($chasse) ? (int) ($chasse[0] ?? 0) : (int) $chasse;
-    } elseif ($cible === 'enigme') {
-        $enigme    = get_field('solution_enigme_linked', $solution_id);
-        $enigme_id = is_array($enigme) ? (int) ($enigme[0] ?? 0) : (int) $enigme;
-        $chasse_id = $enigme_id ? recuperer_id_chasse_associee($enigme_id) : 0;
-    }
-
-    if (!$chasse_id) {
-        update_field('solution_cache_etat_systeme', SOLUTION_STATE_INVALIDE, $solution_id);
-        return;
-    }
-
-    $statut   = (string) get_field('chasse_cache_statut', $chasse_id);
-    $dispo    = get_field('solution_disponibilite', $solution_id) ?: 'fin_chasse';
-    $decalage = (int) get_field('solution_decalage_jours', $solution_id);
-    $heure    = get_field('solution_heure_publication', $solution_id) ?: '00:00';
-
-    wp_clear_scheduled_hook('publier_solution_programmee', [$solution_id]);
-    $service = new ChassesAuTresor\Core\Content\SolutionAvailabilityService();
-    $plan = $service->getPublicationPlan(
-        $statut,
-        (string) $dispo,
-        $decalage,
-        (string) $heure,
-        (int) current_time('timestamp')
-    );
-
-    if ($plan['state'] === SOLUTION_STATE_EN_COURS) {
-        solution_rendre_accessible($solution_id);
-        return;
-    }
-
-    update_field('solution_cache_etat_systeme', $plan['state'], $solution_id);
-    if ($plan['target_timestamp'] === null) {
-        delete_post_meta($solution_id, 'solution_date_disponibilite');
-        return;
-    }
-
-    update_post_meta(
-        $solution_id,
-        'solution_date_disponibilite',
-        gmdate('Y-m-d H:i:s', $plan['target_timestamp'])
-    );
-    wp_schedule_single_event($plan['target_timestamp'], 'publier_solution_programmee', [$solution_id]);
+    ChassesAuTresor\Core\Content\SolutionPublicationPlanner::plan($solution_id);
 }
 
 /**
