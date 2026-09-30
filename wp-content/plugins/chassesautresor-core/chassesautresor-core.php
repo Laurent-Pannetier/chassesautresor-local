@@ -65,6 +65,7 @@ require_once __DIR__ . '/src/Content/SolutionCacheService.php';
 require_once __DIR__ . '/src/Content/SolutionCreationService.php';
 require_once __DIR__ . '/src/Content/SolutionFieldPolicyService.php';
 require_once __DIR__ . '/src/Content/SolutionManagementService.php';
+require_once __DIR__ . '/src/Content/SolutionPublicationService.php';
 require_once __DIR__ . '/src/Content/SolutionQueryService.php';
 require_once __DIR__ . '/src/Content/SolutionRouteRegistrar.php';
 require_once __DIR__ . '/src/Content/SolutionScheduler.php';
@@ -175,6 +176,16 @@ add_action(
 add_action(
     ChassesAuTresor\Core\Content\SolutionScheduler::HOOK,
     [ChassesAuTresor\Core\Content\SolutionScheduler::class, 'run']
+);
+
+add_action(
+    ChassesAuTresor\Core\Content\SolutionScheduler::PROCESS_HOOK,
+    [ChassesAuTresor\Core\Content\SolutionPublicationService::class, 'makeAccessible']
+);
+
+add_action(
+    'publier_solution_programmee',
+    [ChassesAuTresor\Core\Content\SolutionPublicationService::class, 'makeAccessible']
 );
 
 add_action(

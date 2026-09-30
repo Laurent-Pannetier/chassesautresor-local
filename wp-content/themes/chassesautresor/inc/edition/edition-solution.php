@@ -32,6 +32,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\SolutionManagementService::class,
         . '/plugins/chassesautresor-core/src/Content/SolutionManagementService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\SolutionPublicationService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/SolutionPublicationService.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Content\SolutionQueryService::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Content/SolutionQueryService.php';
@@ -125,28 +130,8 @@ function solution_planifier_publication(int $solution_id): void
  */
 function solution_rendre_accessible(int $solution_id): void
 {
-    if (get_post_type($solution_id) !== 'solution') {
-        return;
-    }
-
-    update_field('solution_cache_etat_systeme', SOLUTION_STATE_EN_COURS, $solution_id);
-    delete_post_meta($solution_id, 'solution_date_disponibilite');
-    if (get_post_status($solution_id) !== 'publish') {
-        $post = get_post($solution_id);
-        wp_update_post([
-            'ID'            => $solution_id,
-            'post_status'   => 'publish',
-            'post_date'     => $post->post_date,
-            'post_date_gmt' => $post->post_date_gmt,
-            'edit_date'     => true,
-        ]);
-    }
+    ChassesAuTresor\Core\Content\SolutionPublicationService::makeAccessible($solution_id);
 }
-add_action('publier_solution_programmee', 'solution_rendre_accessible');
-add_action(
-    ChassesAuTresor\Core\Content\SolutionScheduler::PROCESS_HOOK,
-    'solution_rendre_accessible'
-);
 
 /**
  * Basculer les solutions programmées dont la date est atteinte.
