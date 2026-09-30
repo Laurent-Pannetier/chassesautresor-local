@@ -65,6 +65,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\RiddleRelationshipService::class,
         . '/plugins/chassesautresor-core/src/Content/RiddleRelationshipService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\RiddleRelationshipCleanupService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/RiddleRelationshipCleanupService.php';
+}
+
 
 // ==================================================
 // 🧩 CRÉATION & ÉDITION D’UNE ÉNIGME
@@ -850,28 +855,19 @@ function nettoyer_relations_orphelines()
         WHERE meta_key = 'chasse_cache_enigmes'
     ");
 
-  foreach ($chasses as $chasse) {
-    $post_id = $chasse->post_id;
-    $relations = maybe_unserialize($chasse->meta_value);
-
-    if (!is_array($relations)) {
-      continue;
+  (new ChassesAuTresor\Core\Content\RiddleRelationshipCleanupService())->clean(
+    $chasses,
+    'maybe_unserialize',
+    function (int $enigme_id) use ($wpdb): bool {
+      return (bool) $wpdb->get_var(
+        $wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->posts} WHERE ID = %d", $enigme_id)
+      );
+    },
+    static function (int $post_id, array $relations): void {
+      update_post_meta($post_id, 'chasse_cache_enigmes', $relations);
+      cat_debug("✅ Relations nettoyées pour la chasse ID {$post_id} : " . print_r($relations, true));
     }
-
-    // 📌 Vérifier si les IDs existent toujours
-    $relations_nettoyees = (new ChassesAuTresor\Core\Content\RiddleRelationshipService())
-      ->filterExistingRiddleIds($relations, function (int $enigme_id) use ($wpdb): bool {
-        return (bool) $wpdb->get_var(
-          $wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->posts} WHERE ID = %d", $enigme_id)
-        );
-      });
-
-    // 🔥 Si on a supprimé des IDs, mettre à jour la base
-    if (count($relations_nettoyees) !== count($relations)) {
-      update_post_meta($post_id, 'chasse_cache_enigmes', $relations_nettoyees);
-      cat_debug("✅ Relations nettoyées pour la chasse ID {$post_id} : " . print_r($relations_nettoyees, true));
-    }
-  }
+  );
 }
 
 /**
