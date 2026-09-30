@@ -87,6 +87,7 @@ require_once __DIR__ . '/src/Content/HuntCreationRequestService.php';
 require_once __DIR__ . '/src/Content/HuntPostFactory.php';
 require_once __DIR__ . '/src/Content/HuntDeletionService.php';
 require_once __DIR__ . '/src/Content/HuntInitializationService.php';
+require_once __DIR__ . '/src/Content/HuntInitializationHookHandler.php';
 require_once __DIR__ . '/src/Content/SolutionAvailabilityService.php';
 require_once __DIR__ . '/src/Content/SolutionCacheService.php';
 require_once __DIR__ . '/src/Content/SolutionCacheUpdater.php';
@@ -159,6 +160,7 @@ ChassesAuTresor\Core\Content\RiddleRelationshipHookHandler::register('add_action
 ChassesAuTresor\Core\Content\RiddleRelationshipFilterHandler::register('add_filter');
 ChassesAuTresor\Core\Content\RiddleOrderingAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\RiddleDeletionAjaxHandler::register('add_action');
+ChassesAuTresor\Core\Content\HuntInitializationHookHandler::register('add_action');
 
 register_activation_hook(
     __FILE__,

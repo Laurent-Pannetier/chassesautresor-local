@@ -41,11 +41,6 @@ if (!class_exists(ChassesAuTresor\Core\Content\HuntDeletionService::class, false
         . '/plugins/chassesautresor-core/src/Content/HuntDeletionService.php';
 }
 
-if (!class_exists(ChassesAuTresor\Core\Content\HuntInitializationService::class, false)) {
-    require_once dirname(__DIR__, 4)
-        . '/plugins/chassesautresor-core/src/Content/HuntInitializationService.php';
-}
-
 // ==================================================
 // 🗺️ CRÉATION & ÉDITION D’UNE CHASSE
 // ==================================================
@@ -465,51 +460,6 @@ function modifier_champ_chasse()
 
 
 
-
-/**
- * Assigne automatiquement le CPT "organisateur" à une chasse en mettant à jour le champ relation ACF.
- *
- * @param int     $post_id ID du post en cours de sauvegarde.
- * @param WP_Post $post    Objet du post.
- */
-function initialiser_chasse_apres_enregistrement($post_id, $post)
-{
-    $result = (new ChassesAuTresor\Core\Content\HuntInitializationService())->initialize(
-        (int) $post_id,
-        (string) ($post->post_type ?? ''),
-        defined('DOING_AUTOSAVE') && DOING_AUTOSAVE,
-        (int) current_time('timestamp'),
-        'get_organisateur_from_chasse',
-        static function (int $huntId, int $organizerId): bool {
-            return mettre_a_jour_relation_acf(
-                $huntId,
-                'chasse_cache_organisateur',
-                $organizerId,
-                'field_67cfcba8c3bec'
-            );
-        },
-        static fn (int $huntId) => get_post_meta($huntId, 'chasse_infos_date_fin', true),
-        static function (int $huntId, string $endDate): bool {
-            $updated = update_field('chasse_infos_date_fin', $endDate, $huntId);
-            if ($updated === false) {
-                return update_post_meta($huntId, 'chasse_infos_date_fin', $endDate) !== false;
-            }
-
-            return true;
-        }
-    );
-
-    if (!$result['handled']) {
-        return;
-    }
-
-    if ($result['organizer_id'] === 0) {
-        cat_debug("🛑 Aucun organisateur trouvé pour la chasse $post_id (aucune mise à jour)");
-    } elseif (!$result['organizer_persisted']) {
-        cat_debug("🛑 Échec de la mise à jour de organisateur_chasse pour la chasse $post_id");
-    }
-}
-add_action('save_post_chasse', 'initialiser_chasse_apres_enregistrement', 20, 2);
 
 add_action('wp_ajax_supprimer_chasse', 'supprimer_chasse_ajax');
 
