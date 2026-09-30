@@ -501,7 +501,8 @@ function initEnigmeEdit() {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({
           action: 'supprimer_enigme',
-          post_id: postId
+          post_id: postId,
+          nonce: window.CHP_ENIGME_DEFAUT?.deleteNonce || ''
         })
       })
         .then(r => r.json())

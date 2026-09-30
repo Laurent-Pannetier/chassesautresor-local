@@ -165,6 +165,7 @@ function enqueue_script_enigme_edit()
     'titre' => strtolower(TITRE_DEFAUT_ENIGME),
     'image_slug' => 'defaut-enigme',
     'nonce' => wp_create_nonce('modifier_champ_enigme'),
+    'deleteNonce' => wp_create_nonce('supprimer_enigme'),
   ]);
 
   wp_enqueue_media();
@@ -651,6 +652,8 @@ function supprimer_dossier_enigme($post_id)
  */
 function supprimer_enigme_ajax()
 {
+  check_ajax_referer('supprimer_enigme', 'nonce');
+
   if (!is_user_logged_in()) {
     wp_send_json_error('non_connecte');
   }
@@ -730,6 +733,8 @@ add_action('wp_ajax_verifier_enigmes_completes', 'verifier_enigmes_completes_aja
  */
 function reordonner_enigmes_ajax()
 {
+    check_ajax_referer('reordonner_enigmes', 'nonce');
+
     if (!is_user_logged_in()) {
         wp_send_json_error('non_connecte');
     }
