@@ -30,6 +30,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\RiddleSolutionFileStorageService:
         . '/plugins/chassesautresor-core/src/Content/RiddleSolutionFileStorageService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Media\RiddleUploadDirectoryService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Media/RiddleUploadDirectoryService.php';
+}
+
 
 // ==================================================
 // 🧩 CRÉATION & ÉDITION D’UNE ÉNIGME
@@ -577,26 +582,10 @@ function planifier_ou_deplacer_pdf_solution_immediatement($enigme_id)
 function supprimer_dossier_enigme($post_id)
 {
   $upload_dir = wp_upload_dir();
-  $dir = $upload_dir['basedir'] . '/_enigmes/enigme-' . $post_id;
-
-  if (!is_dir($dir)) {
-    return;
-  }
-
-  $iterator = new RecursiveIteratorIterator(
-    new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS),
-    RecursiveIteratorIterator::CHILD_FIRST
+  (new ChassesAuTresor\Core\Media\RiddleUploadDirectoryService())->delete(
+    (int) $post_id,
+    (string) ($upload_dir['basedir'] ?? '')
   );
-
-  foreach ($iterator as $file) {
-    if ($file->isDir()) {
-      @rmdir($file->getPathname());
-    } else {
-      @unlink($file->getPathname());
-    }
-  }
-
-  @rmdir($dir);
 }
 
 /**
