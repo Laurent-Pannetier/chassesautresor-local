@@ -40,6 +40,11 @@ if (!class_exists(ChassesAuTresor\Core\Content\RiddleManagementService::class, f
         . '/plugins/chassesautresor-core/src/Content/RiddleManagementService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\RiddleMutationService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Content/RiddleMutationService.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Content\RiddleOrderingService::class, false)) {
     require_once dirname(__DIR__, 4)
         . '/plugins/chassesautresor-core/src/Content/RiddleOrderingService.php';
@@ -343,7 +348,6 @@ function modifier_champ_enigme()
     wp_send_json_error('⚠️ acces_refuse');
   }
 
-  $champ_valide   = false;
   $ancien_complet = (bool) get_field('enigme_cache_complet', $post_id);
   $field_policy   = new ChassesAuTresor\Core\Content\RiddleFieldPolicyService();
 
@@ -356,121 +360,30 @@ function modifier_champ_enigme()
     wp_send_json_error('⚠️ Interdit : cette valeur est gérée automatiquement.');
   }
 
-  // 🔹 Titre natif
-  if ($champ === 'post_title') {
-    $ok = wp_update_post(['ID' => $post_id, 'post_title' => sanitize_text_field($valeur)], true);
-    if (is_wp_error($ok)) {
-      wp_send_json_error('⚠️ echec_update_post_title');
-    }
+  $mutation = (new ChassesAuTresor\Core\Content\RiddleMutationService())->apply(
+    $post_id,
+    $champ,
+    $valeur,
+    static function (string $date) {
+      return convertir_en_datetime($date, [
+        'Y-m-d\TH:i',
+        'Y-m-d H:i:s',
+        'Y-m-d H:i',
+      ]);
+    },
+    strtotime(date('Y-m-d'))
+  );
+
+  if ($mutation['error'] !== null) {
+    wp_send_json_error('⚠️ ' . $mutation['error']);
+  }
+
+  if ($mutation['refresh_state']) {
+    enigme_mettre_a_jour_etat_systeme($post_id);
+  }
+
+  if ($mutation['terminal']) {
     wp_send_json_success(['champ' => $champ, 'valeur' => $valeur]);
-  }
-
-  // 🔹 Mode de validation
-  if ($champ === 'enigme_mode_validation') {
-    $ok = update_field($champ, sanitize_text_field($valeur), $post_id);
-    if ($ok) $champ_valide = true;
-    enigme_mettre_a_jour_etat_systeme($post_id);
-  }
-
-  // 🔹 Réponse attendue (liste JSON)
-  if ($champ === 'enigme_reponse_bonne') {
-    $liste = json_decode(wp_unslash($valeur), true);
-    if (!is_array($liste)) {
-      wp_send_json_error('⚠️ format_invalide');
-    }
-
-    $liste = $field_policy->normalizeAnswers($liste, 'sanitize_text_field');
-    $answer_error = $field_policy->getAnswersError($liste);
-    if ($answer_error !== null) {
-      wp_send_json_error('⚠️ ' . $answer_error);
-    }
-
-    $ok = update_field($champ, wp_json_encode($liste), $post_id);
-    if ($ok) {
-      $champ_valide = true;
-    }
-    enigme_mettre_a_jour_etat_systeme($post_id);
-  }
-
-  // 🔹 Casse
-  if ($champ === 'enigme_reponse_casse') {
-    $ok = update_field($champ, (int) $valeur, $post_id);
-    if ($ok) $champ_valide = true;
-  }
-
-
-  // 🔹 Tentatives (coût et max)
-  $attempt_field = $field_policy->getAttemptStorageField($champ);
-  if ($attempt_field !== null) {
-    $champ_valide = update_field($attempt_field, (int) $valeur, $post_id) !== false;
-  }
-
-  // 🔹 Accès : condition (immédiat, date_programmee uniquement)
-  if (
-    $champ === 'enigme_acces_condition'
-    && $field_policy->isAllowedManualAccessCondition(sanitize_text_field($valeur))
-  ) {
-    $ok = update_field($champ, sanitize_text_field($valeur), $post_id);
-    if ($ok) $champ_valide = true;
-  }
-
-  // 🔹 Accès : date
-  if ($champ === 'enigme_acces_date') {
-    $dt = convertir_en_datetime(sanitize_text_field($valeur), [
-      'Y-m-d\TH:i',
-      'Y-m-d H:i:s',
-      'Y-m-d H:i'
-    ]);
-    if (!$dt) {
-      wp_send_json_error('⚠️ format_date_invalide');
-    }
-
-    $timestamp = $dt->getTimestamp();
-    $valeur_mysql = $dt->format('Y-m-d H:i:s');
-    $today = strtotime(date('Y-m-d'));
-    $mode = get_field('enigme_acces_condition', $post_id);
-
-    if ($field_policy->shouldResetScheduledAccess($timestamp, $today, (string) $mode)) {
-      update_field('enigme_acces_condition', 'immediat', $post_id);
-    }
-
-    $ok = update_field($champ, $valeur_mysql, $post_id);
-    if ($ok) {
-      $champ_valide = true;
-    }
-
-    enigme_mettre_a_jour_etat_systeme($post_id);
-  }
-
-    // 🔹 Accès : pré-requis (liste d'IDs)
-    if ($champ === 'enigme_acces_pre_requis') {
-        $ids = $field_policy->normalizePrerequisiteIds($valeur);
-
-        $ok = update_field($champ, $ids, $post_id);
-        if ($ok) {
-            $champ_valide = true;
-            $condition = $field_policy->getAccessConditionForPrerequisites($ids);
-            update_field('enigme_acces_condition', $condition, $post_id);
-            enigme_mettre_a_jour_etat_systeme($post_id);
-        }
-    }
-
-  // 🔹 Style visuel
-  if ($champ === 'enigme_style_affichage') {
-    $ok = update_field($champ, sanitize_text_field($valeur), $post_id);
-    if ($ok) $champ_valide = true;
-  }
-
-  // 🔹 Fallback
-  if (!$champ_valide) {
-    $valeur_saine = is_numeric($valeur) ? (int) $valeur : sanitize_text_field($valeur);
-    $ok = update_field($champ, $valeur_saine, $post_id);
-    $valeur_meta = get_post_meta($post_id, $champ, true);
-    if ($ok || trim((string) $valeur_meta) === trim((string) $valeur_saine)) {
-      $champ_valide = true;
-    } else {
-      wp_send_json_error('⚠️ echec_mise_a_jour_final');
-    }
   }
 
   if (function_exists('verifier_ou_mettre_a_jour_cache_complet')) {
