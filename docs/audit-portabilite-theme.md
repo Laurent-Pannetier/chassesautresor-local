@@ -401,6 +401,8 @@ Le quatre-vingt-huitième lot autonomise le rendu AJAX des chasses engagées. Le
 de secours construites uniquement avec les API WordPress, un état vide et la pagination core, sans template part,
 asset ou fonction du thème. Le contrôleur conserve un override explicite pour les intégrations tierces, mais utilise
 ce renderer par défaut. Le thème ne configure plus ce parcours et les configurations résiduelles passent à deux.
+La sélection historique des recommandations de l'état vide est également portée par un service core distinct du
+renderer : chasses récentes, chasse active populaire, repli public puis chasses terminées.
 
 ### Indicateur de progression à jour
 

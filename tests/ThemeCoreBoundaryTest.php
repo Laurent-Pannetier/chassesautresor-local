@@ -1060,6 +1060,9 @@ final class ThemeCoreBoundaryTest extends TestCase
         $renderer = (string) file_get_contents(
             __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/EngagedHuntsRenderer.php'
         );
+        $recommendations = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/EngagedHuntsRecommendationService.php'
+        );
         $core = (string) file_get_contents(
             __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/engaged-hunt-functions.php'
         );
@@ -1069,6 +1072,9 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('function ca_ajax_get_engaged_hunts', $source);
         self::assertStringContainsString("[new EngagedHuntsRenderer(), 'render']", $handler);
         self::assertStringContainsString('class EngagedHuntsRenderer', $renderer);
+        self::assertStringNotContainsString('get_template_part', $renderer);
+        self::assertStringNotContainsString('get_stylesheet_directory', $renderer);
+        self::assertStringContainsString('class EngagedHuntsRecommendationService', $recommendations);
         foreach ([
             'ca_get_engaged_hunts_page_param',
             'ca_get_user_engaged_hunt_ids',

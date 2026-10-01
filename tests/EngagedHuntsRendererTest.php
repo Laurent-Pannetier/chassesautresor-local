@@ -38,6 +38,9 @@ final class EngagedHuntsRendererTest extends TestCase {
         function get_the_post_thumbnail(): string {
             return '<img src="hunt.jpg" alt="">';
         }
+        function wp_kses_post(string $value): string {
+            return $value;
+        }
         function ca_get_engaged_hunts_page_param(): string {
             return 'engaged-page';
         }
@@ -75,6 +78,18 @@ final class EngagedHuntsRendererTest extends TestCase {
         function esc_html__($value): string {
             return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
         }
+        function esc_url($value): string {
+            return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+        }
+        function apply_filters(string $filter, $value) {
+            return $value;
+        }
+        function get_posts(): array {
+            return [];
+        }
+        function home_url(): string {
+            return 'https://example.test/';
+        }
 
         require_once __DIR__
             . '/../wp-content/plugins/chassesautresor-core/src/Progress/EngagedHuntsRenderer.php';
@@ -87,5 +102,7 @@ final class EngagedHuntsRendererTest extends TestCase {
         ]);
 
         self::assertStringContainsString('Vous ne participez à aucune chasse', $html);
+        self::assertStringContainsString('Aucune recommandation disponible', $html);
+        self::assertStringContainsString('Explorer toutes nos chasses', $html);
     }
 }

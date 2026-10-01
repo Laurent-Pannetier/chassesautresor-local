@@ -6,13 +6,17 @@ namespace ChassesAuTresor\Core\Progress;
 
 /** Render an autonomous fallback for the current user's engaged hunts. */
 final class EngagedHuntsRenderer {
+    private EngagedHuntsRecommendationService $recommendations;
+
+    public function __construct(?EngagedHuntsRecommendationService $recommendations = null) {
+        $this->recommendations = $recommendations ?? new EngagedHuntsRecommendationService();
+    }
+
     /** @param array{ids: int[], page: int, total_pages: int, total_items: int} $pagination */
     public function render(array $pagination): string {
         $huntIds = array_values(array_filter(array_map('intval', $pagination['ids'] ?? [])));
         if ($huntIds === []) {
-            return '<p class="myaccount-placeholder">'
-                . esc_html__('Vous ne participez à aucune chasse pour le moment.', 'chassesautresor-com')
-                . '</p>';
+            return $this->emptyState();
         }
 
         ob_start();
@@ -35,6 +39,39 @@ final class EngagedHuntsRenderer {
         return trim((string) ob_get_clean());
     }
 
+    private function emptyState(): string {
+        $recommendedIds = $this->recommendations->find();
+        $catalogUrl = apply_filters('ca_recommended_hunts_catalog_url', home_url('/'), '/');
+        ob_start();
+        ?>
+        <div class="myaccount-recommended-hunts">
+            <p class="myaccount-placeholder">
+                <?= esc_html__(
+                    'Vous ne participez à aucune chasse pour le moment. Voici quelques idées pour démarrer.',
+                    'chassesautresor-com'
+                ); ?>
+            </p>
+            <?php if ($recommendedIds !== []) : ?>
+                <h3><?= esc_html__('Chasses recommandées', 'chassesautresor-com'); ?></h3>
+                <div class="cards-grid myaccount-recommended-hunts-grid">
+                    <?php foreach ($recommendedIds as $huntId) : ?>
+                        <?= $this->card($huntId); ?>
+                    <?php endforeach; ?>
+                </div>
+            <?php else : ?>
+                <p><?= esc_html__(
+                    'Aucune recommandation disponible pour le moment, mais notre catalogue vous attend.',
+                    'chassesautresor-com'
+                ); ?></p>
+            <?php endif; ?>
+            <a class="bouton-cta myaccount-recommended-hunts-cta" href="<?= esc_url($catalogUrl); ?>">
+                <?= esc_html__('Explorer toutes nos chasses', 'chassesautresor-com'); ?>
+            </a>
+        </div>
+        <?php
+        return trim((string) ob_get_clean());
+    }
+
     private function card(int $huntId): string {
         $title = get_the_title($huntId);
         $permalink = get_permalink($huntId);
@@ -53,7 +90,9 @@ final class EngagedHuntsRenderer {
         ?>
         <article class="carte carte-chasse engaged-hunt-card">
             <?php if ($image !== '') : ?>
-                <a href="<?= esc_url($permalink); ?>" aria-hidden="true" tabindex="-1"><?= $image; ?></a>
+                <a href="<?= esc_url($permalink); ?>" aria-hidden="true" tabindex="-1">
+                    <?= wp_kses_post($image); ?>
+                </a>
             <?php endif; ?>
             <div class="engaged-hunt-card__content">
                 <h3><a href="<?= esc_url($permalink); ?>"><?= esc_html($title); ?></a></h3>
