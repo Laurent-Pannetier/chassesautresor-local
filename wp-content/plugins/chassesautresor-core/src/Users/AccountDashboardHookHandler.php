@@ -6,8 +6,6 @@ namespace ChassesAuTresor\Core\Users;
 
 use ChassesAuTresor\Core\Progress\EngagedHuntsRenderer;
 use ChassesAuTresor\Core\Progress\UserAttemptsRenderer;
-use ChassesAuTresor\Core\Progress\UserAttemptsViewService;
-use ChassesAuTresor\Core\Support\CoreServiceFactory;
 
 /** Own account dashboard hooks and provide portable fallbacks for third-party themes. */
 final class AccountDashboardHookHandler {
@@ -25,18 +23,14 @@ final class AccountDashboardHookHandler {
             return;
         }
 
+        global $wpdb;
         $user = wp_get_current_user();
-        $roles = (array) $user->roles;
-        if ((int) $user->ID <= 0 || empty(array_intersect(['subscriber', 'customer'], $roles))) {
-            return;
-        }
-        if (current_user_can('administrator')) {
-            return;
-        }
-
         $page = max(1, (int) ($_GET[ca_get_engaged_hunts_page_param()] ?? 1));
-        $ids = ca_get_user_engaged_hunt_ids((int) $user->ID);
-        $pagination = ca_prepare_engaged_hunts_pagination($ids, $page, 6);
+        $context = (new AccountDashboardDataService($wpdb))->engagedHunts($user, $page, 6);
+        if (!$context['allowed']) {
+            return;
+        }
+        $pagination = $context['pagination'];
         echo '<section class="chassesautresor-account-hunts"><h2>'
             . esc_html__('Vos chasses en cours', 'chassesautresor-com') . '</h2>'
             . (new EngagedHuntsRenderer())->render($pagination) . '</section>';
@@ -53,8 +47,7 @@ final class AccountDashboardHookHandler {
         }
 
         global $wpdb;
-        $statistics = CoreServiceFactory::userAttemptStatistics($wpdb);
-        $view = (new UserAttemptsViewService($statistics))->build($userId);
+        $view = (new AccountDashboardDataService($wpdb))->attempts($userId);
         $renderer = new UserAttemptsRenderer();
         echo '<section class="chassesautresor-account-attempts"><h2>'
             . esc_html__('Tentatives', 'chassesautresor-com') . '</h2><table><thead><tr><th>'

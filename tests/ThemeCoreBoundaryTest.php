@@ -1116,7 +1116,8 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringContainsString("[new UserAttemptsRenderer(), 'rows']", $handler);
         self::assertStringContainsString("[new UserAttemptsRenderer(), 'pager']", $handler);
         self::assertStringContainsString('class UserAttemptsRenderer', $renderer);
-        self::assertStringContainsString('UserAttemptsViewService', $source);
+        self::assertStringNotContainsString('UserAttemptsViewService', $source);
+        self::assertStringContainsString('AccountDashboardDataService', $source);
         self::assertStringContainsString('UserAttemptsViewService', $handler);
         self::assertStringNotContainsString('->summarize(', $source);
         self::assertStringNotContainsString('->paginate(', $source);
@@ -1136,6 +1137,8 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringContainsString('new UserAttemptsRenderer()', $handler);
         self::assertStringNotContainsString('function ca_ajax_fetch_tentatives(', $theme);
         self::assertStringNotContainsString('function ca_dismiss_message(', $theme);
+        self::assertStringContainsString('AccountDashboardDataService', $theme);
+        self::assertStringNotContainsString("['subscriber', 'customer']", $theme);
     }
 
     public function testAccountNavigationHooksBelongToCore(): void

@@ -20,6 +20,7 @@ require_once __DIR__ . '/src/Users/AccountOrdersRenderer.php';
 require_once __DIR__ . '/src/Users/account-order-functions.php';
 require_once __DIR__ . '/src/Users/AccountPresentationHookHandler.php';
 require_once __DIR__ . '/src/Users/AccountDashboardHookHandler.php';
+require_once __DIR__ . '/src/Users/AccountDashboardDataService.php';
 require_once __DIR__ . '/src/Users/account-functions.php';
 require_once __DIR__ . '/src/Security/site-password.php';
 require_once __DIR__ . '/src/Email/template.php';

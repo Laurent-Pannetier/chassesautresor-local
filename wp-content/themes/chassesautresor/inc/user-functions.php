@@ -206,22 +206,9 @@ function ca_render_dashboard_engaged_hunts(): void
         return;
     }
 
+    global $wpdb;
     $current_user = wp_get_current_user();
-    $user_id      = (int) $current_user->ID;
-
-    if ($user_id <= 0) {
-        return;
-    }
-
-    $roles        = (array) $current_user->roles;
-    $player_roles = ['subscriber', 'customer'];
-    $is_player    = !empty(array_intersect($player_roles, $roles));
-    $is_admin     = current_user_can('administrator');
-    $is_organizer = function_exists('est_organisateur') && est_organisateur($user_id);
-
-    if (!$is_player || $is_admin) {
-        return;
-    }
+    $user_id = (int) $current_user->ID;
 
     $page_param = ca_get_engaged_hunts_page_param();
     $requested_page = isset($_GET[$page_param]) ? absint($_GET[$page_param]) : 1;
@@ -234,8 +221,15 @@ function ca_render_dashboard_engaged_hunts(): void
         $per_page = 6;
     }
 
-    $chasse_ids = ca_get_user_engaged_hunt_ids($user_id);
-    $pagination = ca_prepare_engaged_hunts_pagination($chasse_ids, $requested_page, $per_page);
+    $context = (new ChassesAuTresor\Core\Users\AccountDashboardDataService($wpdb))->engagedHunts(
+        $current_user,
+        $requested_page,
+        $per_page
+    );
+    if (!$context['allowed']) {
+        return;
+    }
+    $pagination = $context['pagination'];
 
     $dir = get_stylesheet_directory();
     $uri = get_stylesheet_directory_uri();
@@ -339,9 +333,7 @@ function ca_get_tentatives_view_model(int $user_id, int $page = 1, int $per_page
     global $wpdb;
 
     $search = ca_get_search_term('tentatives');
-    $statistics = ChassesAuTresor\Core\Support\CoreServiceFactory::userAttemptStatistics($wpdb);
-
-    return (new ChassesAuTresor\Core\Progress\UserAttemptsViewService($statistics))->build(
+    return (new ChassesAuTresor\Core\Users\AccountDashboardDataService($wpdb))->attempts(
         $user_id,
         $page,
         $per_page,
