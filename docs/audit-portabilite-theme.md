@@ -515,6 +515,12 @@ portable du core, au lieu de reconstruire quatre requêtes dans le thème. La sy
 des tentatives sont réunies dans `UserAttemptsViewService`, partagé par le rendu initial du thème et le contrôleur
 AJAX du plugin. Le thème conserve l'habillage spécifique de ces sections ; l'indicateur reste donc inchangé.
 
+Le cent-huitième lot transfère la politique de complétude du profil utilisateur dans `UserProfileCompletionService`.
+La liste extensible des champs obligatoires, leur lecture depuis les propriétés ou métadonnées, les callbacks tiers et
+la construction du message des champs manquants sont maintenant disponibles tant que le plugin est actif. Les deux
+fonctions globales historiques sont fournies par le core pour préserver les templates existants ; le thème ne possède
+plus cette règle préalable au parcours organisateur. Son grand assembleur de compte reste toutefois à découper.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |

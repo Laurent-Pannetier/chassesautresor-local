@@ -1123,6 +1123,23 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('function cat_get_user_attempt_statistics_service', $source);
     }
 
+    public function testUserProfileCompletionBelongsToCore(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/user-functions.php');
+        $functions = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Users/profile-functions.php'
+        );
+        $service = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Users/UserProfileCompletionService.php'
+        );
+
+        foreach (['cat_is_user_profile_complete', 'cat_get_missing_profile_fields_message'] as $functionName) {
+            self::assertStringNotContainsString("function {$functionName}(", $source);
+            self::assertStringContainsString("function {$functionName}(", $functions);
+        }
+        self::assertStringContainsString('cat_required_user_profile_fields', $service);
+    }
+
     public function testConversionAccessIsNotInjectedByTheme(): void
     {
         $handler = (string) file_get_contents(
