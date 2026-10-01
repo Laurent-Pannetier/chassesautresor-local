@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Admin;
 
+use ChassesAuTresor\Core\Support\CoreServiceFactory;
 use Closure;
 
 final class AdminAjaxHandler
@@ -31,13 +32,16 @@ final class AdminAjaxHandler
 
     public static function configure(
         callable $paymentTableRenderer,
-        callable $huntCacheClearer,
-        callable $conversionServiceFactory
+        callable $huntCacheClearer
     ): void
     {
         self::$paymentTableRenderer = Closure::fromCallable($paymentTableRenderer);
         self::$huntCacheClearer = Closure::fromCallable($huntCacheClearer);
-        self::$conversionServiceFactory = Closure::fromCallable($conversionServiceFactory);
+    }
+
+    public static function setConversionServiceFactory(callable $factory): void
+    {
+        self::$conversionServiceFactory = Closure::fromCallable($factory);
     }
 
     public static function searchUsers(): void
@@ -74,7 +78,7 @@ final class AdminAjaxHandler
         if (!self::isAdministrator()) {
             return;
         }
-        if (self::$paymentTableRenderer === null || self::$conversionServiceFactory === null) {
+        if (self::$paymentTableRenderer === null) {
             wp_send_json_error(['message' => __('Service indisponible.', 'chassesautresor-com')]);
             return;
         }
@@ -94,10 +98,6 @@ final class AdminAjaxHandler
     public static function updateConversionStatus(): void
     {
         if (!self::isAdministrator()) {
-            return;
-        }
-        if (self::$conversionServiceFactory === null) {
-            wp_send_json_error(['message' => __('Service indisponible.', 'chassesautresor-com')]);
             return;
         }
         $paymentId = isset($_POST['paiement_id']) ? (int) $_POST['paiement_id'] : 0;
@@ -176,7 +176,13 @@ final class AdminAjaxHandler
 
     private static function conversionService(): object
     {
-        return (self::$conversionServiceFactory)();
+        if (self::$conversionServiceFactory !== null) {
+            return (self::$conversionServiceFactory)();
+        }
+
+        global $wpdb;
+
+        return CoreServiceFactory::conversion($wpdb);
     }
 
     /** @return string[] */

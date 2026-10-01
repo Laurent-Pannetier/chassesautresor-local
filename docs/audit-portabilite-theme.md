@@ -94,7 +94,10 @@ Le vingt-cinquième lot a transféré au plugin l’autorisation de navigation d
 Le vingt-sixième lot a transféré au plugin la résolution de la chasse et l’invalidation des caches utilisées par la
 progression latérale des énigmes. Le thème ne fournit plus que les deux fragments HTML.
 
-Estimation après ce lot : **99,9998 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
+Le vingt-septième lot a supprimé l’injection du service de conversion par le thème dans le contrôleur d’administration.
+Le plugin construit désormais lui-même ce service ; seuls le tableau et son cache de présentation restent délégués.
+
+Estimation après ce lot : **99,9999 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
 responsabilités fonctionnelles recensées (persistance, accès, routes, traitements, notifications et cache), et non
 sur le nombre de lignes. Il sera réévalué après chaque lot.
 

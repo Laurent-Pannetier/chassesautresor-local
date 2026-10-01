@@ -419,6 +419,16 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('wp_cache_delete', $configuration);
     }
 
+    public function testAdminConversionServiceIsNotInjectedByTheme(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/admin-functions.php');
+        preg_match('/AdminAjaxHandler::configure\([\s\S]*?^\);/m', $source, $matches);
+        $configuration = $matches[0] ?? null;
+
+        self::assertIsString($configuration);
+        self::assertStringNotContainsString('cat_get_conversion_service', $configuration);
+    }
+
     public function testThemeDoesNotOwnHuntModerationEmails(): void
     {
         $violations = $this->findPhpMatches(

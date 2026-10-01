@@ -101,6 +101,10 @@ require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Admin/Ad
 require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Admin/AdminAjaxHandler.php';
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/admin-functions.php';
 
+\ChassesAuTresor\Core\Admin\AdminAjaxHandler::setConversionServiceFactory(
+    static fn (): AjaxConversionService => new AjaxConversionService()
+);
+
 class AjaxUpdateRequestStatusTest extends TestCase
 {
     /**
