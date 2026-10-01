@@ -12,14 +12,14 @@ contrôleurs AJAX, mais le thème conserve encore des orchestrations et des muta
 laisserait le plugin actif, mais ferait notamment disparaître les workflows de validation d'une chasse, de demande
 organisateur, d'administration des paiements et une partie des traitements d'engagement et de progression.
 
-Le thème compte 146 fichiers PHP hors tests (30 367 lignes). Vingt-huit fichiers référencent directement les
-classes du plugin, pour 203 occurrences. Cette dépendance est acceptable dans une couche de présentation, mais elle
+Le thème compte 146 fichiers PHP hors tests (29 933 lignes). Vingt-huit fichiers référencent directement les
+classes du plugin, pour 205 occurrences. Cette dépendance est acceptable dans une couche de présentation, mais elle
 signale ici une couche d'intégration encore volumineuse. Les façades qui ne font que déléguer au plugin ne sont pas
 considérées comme de la logique métier résiduelle ; elles restent toutefois une dette de couplage.
 
 ## Avancement au 1er octobre 2026
 
-**Estimation : 80 % de la migration métier est terminée.** Cette valeur est une estimation architecturale, pas un
+**Estimation : 82 % de la migration métier est terminée.** Cette valeur est une estimation architecturale, pas un
 ratio de lignes : elle pondère la couverture des domaines Core, l'indépendance des points d'entrée WordPress, la
 propriété de la persistance, l'absence d'effets de bord dans les vues et la couverture de tests.
 
@@ -27,12 +27,16 @@ Le lot de migration associé à cet audit a sorti du thème :
 
 - l'installation et la mise à niveau de la table des messages, ainsi que le nettoyage ponctuel des anciens messages ;
 - le hook WooCommerce qui attribue les points achetés et vide le panier ;
-- le hook qui assigne automatiquement l'organisateur auteur d'une chasse.
+- le hook qui assigne automatiquement l'organisateur auteur d'une chasse ;
+- l'ancien workflow de reset des statistiques et ses mutations SQL, devenu redondant avec
+  `AdminStatisticsResetService` et le handler AJAX de Core ;
+- l'initialisation et le traitement du formulaire du taux de conversion ; les deux fonctions globales restantes ne
+  sont plus que des façades de lecture et d'écriture vers `ConversionSettingsService`.
 
 ### Prochain lot recommandé (taille maximale raisonnable)
 
-Migrer en un seul lot le **back-office transactionnel** encore présent dans `inc/admin-functions.php` : reset des
-statistiques, gestion des taux de conversion et demandes de paiement, puis workflow complet de validation,
+Migrer en un seul lot le **back-office transactionnel** encore présent dans `inc/admin-functions.php` : gestion des
+demandes de paiement, puis workflow complet de validation,
 correction et bannissement des chasses. Ce lot est la plus grande tranche cohérente qui puisse être revue et testée
 rapidement : il centralise les mutations administrateur dans Core sans mélanger la demande organisateur ou les
 politiques d'accès. Cible après ce lot : **88 %**.
@@ -55,14 +59,11 @@ requête, permissions, transitions d'état, planification, calculs de points/sta
 
 ### P0 — persistance et cycle de vie encore pilotés par le thème
 
-1. **Réinitialisation des statistiques.** `inc/admin-functions.php` supprime directement des lignes de
-   `usermeta`/`postmeta` et plusieurs métadonnées de progression. Le plugin possède
-   `AdminStatisticsResetService`, mais le thème conserve l'ancien workflow et des mutations SQL.
-2. **Transitions de validation des chasses.** `inc/admin-functions.php` publie, dépublie et modifie les caches des
+1. **Transitions de validation des chasses.** `inc/admin-functions.php` publie, dépublie et modifie les caches des
    chasses et énigmes. `templates/page-traitement-validation-chasse.php` modifie encore
    `chasse_cache_statut`. Ces transitions doivent être atomiques dans le plugin ; un template ne doit jamais
    persister un état.
-3. **Progression et gagnants.** `inc/chasse-functions.php` écrit encore les souscriptions, gagnants, dates de
+2. **Progression et gagnants.** `inc/chasse-functions.php` écrit encore les souscriptions, gagnants, dates de
    découverte et statuts d'énigmes. Cela duplique les responsabilités des services `Progress` du plugin.
 
 ### P1 — workflows métier et contrôleurs encore dans le thème

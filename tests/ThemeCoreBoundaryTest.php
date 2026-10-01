@@ -51,6 +51,23 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertSame([], $violations, $this->formatViolations($violations));
     }
 
+    public function testLegacyStatisticsResetWorkflowStaysOutOfTheme(): void
+    {
+        $violations = $this->findPhpMatches(
+            '/admin_post_(?:reset_stats_action|toggle_reinit_stats_action)|'
+            . 'traiter_reinitialisation_stats|supprimer_metas_(?:utilisateur|organisateur|globales|post)/'
+        );
+
+        self::assertSame([], $violations, $this->formatViolations($violations));
+    }
+
+    public function testThemeDoesNotOwnConversionSettingsEntryPoints(): void
+    {
+        $violations = $this->findPhpMatches('/init_taux_conversion|traiter_mise_a_jour_taux_conversion/');
+
+        self::assertSame([], $violations, $this->formatViolations($violations));
+    }
+
     public function testRemovedCompatibilityLoadersStayRemoved(): void
     {
         $loaders = [

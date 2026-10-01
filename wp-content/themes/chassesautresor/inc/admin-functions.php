@@ -211,11 +211,9 @@ function gerer_organisateur() {
 // ==================================================
 /**
  * 🔹 acf_add_local_field_group (conditionnelle) → Ajouter dynamiquement le champ ACF pour le taux de conversion.
- * 🔹 init_taux_conversion → Initialiser le taux de conversion par défaut s’il n’existe pas.
  * 🔹 get_taux_conversion_actuel → Récupérer le taux de conversion actuel.
  * 🔹 update_taux_conversion → Mettre à jour le taux de conversion et enregistrer l’historique.
  * 🔹 charger_script_taux_conversion → Charger le script `taux-conversion.js` uniquement pour les administrateurs sur "Mon Compte".
- * 🔹 traiter_mise_a_jour_taux_conversion → Mettre à jour le taux de conversion depuis l’administration.
  * 🔹 afficher_tableau_paiements_admin → Afficher les demandes de paiement (en attente ou réglées) pour les administrateurs.
  * 🔹 regler_paiement_admin → Traiter le règlement d’une demande de paiement depuis l’admin.
  * 🔹 traiter_demande_paiement → Traiter la demande de conversion de points en euros pour un organisateur.
@@ -262,22 +260,12 @@ add_action('acf/init', function () {
 
 
 /**
- * 📌 Initialise le taux de conversion par défaut s'il n'existe pas.
- */
-function init_taux_conversion() {
-    if (get_option('taux_conversion') === false) {
-        update_option('taux_conversion', 85);
-    }
-}
-add_action('init', 'init_taux_conversion');
-
-/**
  * 📌 Récupère le taux de conversion actuel.
  *
  * @return float Le dernier taux enregistré, 85 par défaut.
  */
 function get_taux_conversion_actuel() {
-    return floatval(get_option('taux_conversion', 85));
+    return (new ChassesAuTresor\Core\Points\ConversionSettingsService())->getRate();
 }
 
 /**
@@ -286,22 +274,9 @@ function get_taux_conversion_actuel() {
  * @param float $nouveau_taux Nouvelle valeur du taux de conversion.
  */
 function update_taux_conversion($nouveau_taux) {
-    $historique = get_option('historique_taux_conversion', []);
-
-    // Ajouter la nouvelle entrée dans l'historique
-    $historique[] = [
-        'date_taux_conversion' => current_time('mysql'),
-        'valeur_taux_conversion' => floatval($nouveau_taux)
-    ];
-
-    // Limiter l'historique à 10 entrées pour éviter une surcharge inutile
-    if (count($historique) > 10) {
-        array_shift($historique);
-    }
-
-    update_option('taux_conversion', floatval($nouveau_taux));
-    update_option('historique_taux_conversion', $historique);
+    (new ChassesAuTresor\Core\Points\ConversionSettingsService())->updateRate((float) $nouveau_taux);
 }
+
 /**
  * 📌 Charge le script `taux-conversion.js` uniquement pour les administrateurs sur "Mon Compte" et ses sous-pages (y compris les templates redirigés).
  *
@@ -350,51 +325,6 @@ function charger_script_paiements_admin(): void
     );
 }
 add_action('wp_enqueue_scripts', 'charger_script_paiements_admin');
-
-/**
- * 📌 Met à jour le taux de conversion depuis l'administration.
- */
-function traiter_mise_a_jour_taux_conversion() {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['enregistrer_taux'])) {
-        
-        // Vérifier le nonce pour la sécurité
-        if (!isset($_POST['modifier_taux_conversion_nonce']) || !wp_verify_nonce($_POST['modifier_taux_conversion_nonce'], 'modifier_taux_conversion_action')) {
-            wp_die( __( '❌ Vérification du nonce échouée.', 'chassesautresor-com' ) );
-        }
-
-        // Vérifier que l'utilisateur est bien un administrateur
-        if (!current_user_can('administrator')) {
-            wp_die( __( '❌ Accès refusé.', 'chassesautresor-com' ) );
-        }
-
-        // Vérifier et assainir la valeur entrée
-        $nouveau_taux = isset($_POST['nouveau_taux']) ? floatval($_POST['nouveau_taux']) : null;
-        if ($nouveau_taux === null || $nouveau_taux <= 0) {
-            wp_die( __( '❌ Veuillez entrer un taux de conversion valide.', 'chassesautresor-com' ) );
-        }
-
-        // Mettre à jour le taux dans les options WordPress
-        update_option('taux_conversion', $nouveau_taux);
-
-        // Ajouter l'ancien taux à l'historique
-        $historique = get_option('historique_taux_conversion', []);
-        $historique[] = [
-            'date_taux_conversion' => current_time('mysql'),
-            'valeur_taux_conversion' => $nouveau_taux
-        ];
-        
-        // Limiter l'historique à 10 entrées pour éviter une surcharge
-        if (count($historique) > 10) {
-            array_shift($historique);
-        }
-
-        update_option('historique_taux_conversion', $historique);
-
-        // Rediriger avec un message de confirmation
-        wp_redirect(add_query_arg('taux_mis_a_jour', '1', wp_get_referer()));
-        exit;
-    }
-}
 
 /**
  * 📌 Affiche les demandes de paiement en attente et réglées pour les administrateurs.
@@ -593,371 +523,8 @@ function ajax_update_request_status(): void
 
 
 // ==================================================
-// 📦 RÉINITIALISATION
+// 📦 RÉINITIALISATION D’UNE ÉNIGME
 // ==================================================
-/**
- * 🔹 traiter_reinitialisation_stats → Réinitialiser les statistiques globales du site.
- * 🔹 ajouter_bouton_reinitialisation_stats → Ajouter une option pour activer ou désactiver la réinitialisation.
- * 🔹 gerer_activation_reinitialisation_stats → Gérer l’activation ou la désactivation de la réinitialisation des stats.
- * 🔹 supprimer_metas_organisateur → Supprimer les métadonnées liées aux organisateurs.
- * 🔹 supprimer_metas_utilisateur → Supprimer les métadonnées des utilisateurs (optimisé).
- * 🔹 supprimer_metas_globales → Supprimer les métadonnées globales stockées dans `option_meta`.
- * 🔹 supprimer_metas_post → Supprimer les métadonnées des énigmes et chasses (optimisé).
- * 🔹 supprimer_souscriptions_utilisateur → Supprimer les souscriptions des joueurs aux énigmes.
- * 🔹 reinitialiser_enigme → Réinitialiser l’état d’une énigme pour un utilisateur donné.
- * 🔹 bouton_reinitialiser_enigme_callback → Afficher le bouton de réinitialisation si l’utilisateur a résolu l’énigme.
- */
-
-
-/**
- * 🔄 Réinitialiser les statistiques globales du site (administrateur uniquement).
- *
- * Cette fonction est déclenchée par le hook `admin_post_reset_stats_action`
- * lorsqu’un formulaire POST est soumis avec le champ `reset_stats`
- * et le nonce `reset_stats_nonce`. Elle permet de :
- *
- * 1. 🧹 Supprimer toutes les métadonnées utilisateurs liées aux statistiques :
- *    - total de chasses terminées, énigmes jouées, points dépensés/gagnés, etc.
- *
- * 2. 🧹 Supprimer toutes les métadonnées des posts (CPT `enigme` et `chasse`) liées
- *    aux tentatives, indices, progression et joueurs associés.
- *
- * 3. 🗑 Supprimer le taux de conversion (ACF) enregistré dans le post `Paiements`.
- *
- * 4. 🧹 Supprimer les métadonnées globales du site et des organisateurs (via fonctions dédiées).
- *
- * 5. 🔧 Supprimer l’option `activer_reinitialisation_stats` pour éviter un double déclenchement.
- *
- * 6. 🚀 Rediriger vers la page d’administration dédiée une fois la suppression terminée.
- *
- * 🔐 La fonction ne s’exécute que :
- * - en contexte admin,
- * - si l’utilisateur est administrateur,
- * - si le nonce est valide,
- * - et si l’option `activer_reinitialisation_stats` est activée.
- *
- * @return void
- *
- * @hook admin_post_reset_stats_action
- */
-function traiter_reinitialisation_stats() {
-    if (!is_admin() || !current_user_can('administrator')) return;
-    if (!isset($_POST['reset_stats']) || !check_admin_referer('reset_stats_action', 'reset_stats_nonce')) return;
-    if (!get_option('activer_reinitialisation_stats', false)) return; // Vérification activée
-
-    cat_debug("🛠 Début de la suppression des statistiques...");
-
-    supprimer_metas_utilisateur([
-        'total_enigmes_jouees', 'total_chasses_terminees', 'total_indices_debloques',
-        'total_points_depenses', 'total_points_gagnes', 'total_enigmes_trouvees'
-    ]);
-    supprimer_souscriptions_utilisateur();
-
-    supprimer_metas_post('enigme', [
-        'total_tentatives_enigme', 'total_indices_debloques_enigme',
-        'total_points_depenses_enigme', 'total_joueurs_ayant_resolu_enigme',
-        'total_joueurs_souscription_enigme', 'progression_joueurs'
-    ]);
-
-    supprimer_metas_post('chasse', [
-        'total_tentatives_chasse', 'total_indices_debloques_chasse',
-        'total_points_depenses_chasse', 'total_joueurs_souscription_chasse',
-        'progression_joueurs'
-    ]);
-
-    // 🚀 SUPPRESSION DES TAUX DE CONVERSION ACF
-    $paiements_post = get_posts([
-        'post_type'      => 'administration',
-        'posts_per_page' => 1,
-        'title'          => 'Paiements',
-        'post_status'    => 'private'
-    ]);
-
-    if (!empty($paiements_post)) {
-        $post_id = $paiements_post[0]->ID;
-        delete_field('taux_conversion', $post_id);
-        cat_debug("✅ Taux de conversion réinitialisé pour le post ID : {$post_id}");
-    } else {
-        cat_debug("⚠️ Aucun post 'Paiements' trouvé, impossible de réinitialiser les taux.");
-    }
-    supprimer_metas_globales();
-    supprimer_metas_organisateur();
-
-
-    // 🔄 Désactiver l'option après suppression
-    delete_option('activer_reinitialisation_stats');
-
-    cat_debug("✅ Statistiques réinitialisées avec succès.");
-
-    // ✅ Vérification du problème d'écran blanc
-    cat_debug("✅ Fin du script, lancement de la redirection...");
-    
-    // Vérifier si les headers sont déjà envoyés
-    if (!headers_sent()) {
-        wp_redirect(home_url('/administration/outils/?updated=true'));
-        exit;
-    } else {
-        cat_debug("⛔ Problème de redirection : headers déjà envoyés.");
-        die("⛔ Problème de redirection. Recharge manuelle nécessaire.");
-    }
-}
-add_action('admin_post_reset_stats_action', 'traiter_reinitialisation_stats');
-
-
-/**
- * ⚙️ Affiche l'interface d'administration pour activer et déclencher la réinitialisation des statistiques.
- *
- * Cette fonction génère un bloc HTML dans une page d'administration personnalisée,
- * visible uniquement pour les administrateurs.
- *
- * Elle propose deux actions :
- *
- * 1. ✅ Un **checkbox** pour activer ou désactiver la réinitialisation des stats, 
- *    enregistrée dans l'option `activer_reinitialisation_stats`.
- *
- * 2. ⚠️ Un **bouton de réinitialisation** (affiché uniquement si activé), qui soumet une requête POST
- *    vers `admin_post_reset_stats_action` (gérée par la fonction `traiter_reinitialisation_stats()`).
- *
- * 🔐 La fonction est protégée :
- * - par une vérification de rôle (`administrator`)
- * - par un nonce de sécurité (`reset_stats_action`)
- *
- * 📝 L'action est irréversible : elle supprime toutes les métadonnées statistiques
- * liées aux utilisateurs, énigmes, chasses, et réglages globaux.
- *
- * @return void
- */
-function ajouter_bouton_reinitialisation_stats() {
-    if (!current_user_can('administrator')) return;
-
-    $reinit_active = get_option('activer_reinitialisation_stats', false);
-
-    ?>
-    <div class="wrap">
-        <h2>Réinitialisation des Statistiques</h2>
-        <p>⚠️ <strong>Attention :</strong> Cette action est irréversible. Toutes les statistiques des joueurs, énigmes et chasses seront supprimées.</p>
-
-        <form method="post" action="<?php echo admin_url('admin-post.php'); ?>">
-            <?php wp_nonce_field('toggle_reinit_stats_action', 'toggle_reinit_stats_nonce'); ?>
-            <input type="hidden" name="action" value="toggle_reinit_stats_action">
-
-            <label>
-                <input type="checkbox" name="activer_reinit" value="1" <?php checked($reinit_active, true); ?>>
-                Activer la réinitialisation des statistiques
-            </label>
-
-            <br><br>
-            <input type="submit" name="enregistrer_reinit" class="button button-primary" value="Enregistrer">
-        </form>
-
-        <?php if ($reinit_active): ?>
-            <br>
-            <form method="post">
-                <?php wp_nonce_field('reset_stats_action', 'reset_stats_nonce'); ?>
-                <input type="submit" name="reset_stats" class="button button-danger" value="⚠️ Réinitialiser toutes les statistiques" 
-                       onclick="return confirm('⚠️ ATTENTION : Cette action est irréversible. Confirmez-vous la réinitialisation ?');">
-            </form>
-        <?php endif; ?>
-    </div>
-    <?php
-}
-
-/**
- * 📌 Gestion de l'activation/désactivation de la réinitialisation des stats
- */
-function gerer_activation_reinitialisation_stats() {
-    cat_debug("🛠 Début du traitement de l'activation/désactivation");
-
-    // ✅ Vérification des permissions administrateur
-    if (!current_user_can('manage_options')) {
-        cat_debug("⛔ Problème de permission : utilisateur non autorisé.");
-        wp_die( __( '⛔ Accès refusé. Vous n’avez pas la permission d’effectuer cette action.', 'chassesautresor-com' ) );
-    }
-    cat_debug("🔎 Permission OK");
-
-    // ✅ Vérification de la requête POST et de la sécurité
-    if (!isset($_POST['enregistrer_reinit']) || !check_admin_referer('toggle_reinit_stats_action', 'toggle_reinit_stats_nonce')) {
-        cat_debug("⛔ Problème de nonce ou bouton non soumis.");
-        wp_die( __( '⛔ Erreur de sécurité. Veuillez réessayer.', 'chassesautresor-com' ) );
-    }
-    cat_debug("🔎 Nonce OK");
-
-    // ✅ Mise à jour de l'option d'activation
-    $activer = isset($_POST['activer_reinit']) ? 1 : 0;
-    update_option('activer_reinitialisation_stats', $activer);
-    cat_debug("✅ Option mise à jour : " . ($activer ? 'Activée' : 'Désactivée'));
-
-    // ✅ Ajout d’un message d’alerte WordPress
-    add_action('admin_notices', function() use ($activer) {
-        echo '<div class="updated"><p>✅ Réinitialisation des stats ' . ($activer ? 'activée' : 'désactivée') . '.</p></div>';
-    });
-
-    // ✅ Vérification de la redirection
-    $page_outils = get_page_by_path('administration/outils');
-    if ($page_outils) {
-        $redirect_url = get_permalink($page_outils) . '?updated=true';
-    } else {
-        $redirect_url = home_url('/administration/outils/?updated=true');
-    }
-
-    cat_debug("🔄 Redirection vers : " . $redirect_url);
-    if (!headers_sent()) {
-        wp_redirect($redirect_url);
-        exit;
-    } else {
-        cat_debug("⛔ Problème de redirection : headers déjà envoyés.");
-    }
-
-    exit;
-}
-add_action('admin_post_toggle_reinit_stats_action', 'gerer_activation_reinitialisation_stats');
-
-/**
- * 📌 Supprime les méta liées aux organisateurs
- * - Points perçus par les organisateurs
- * - Historique des paiements aux organisateurs
- */
-function supprimer_metas_organisateur() {
-    global $wpdb;
-
-    $meta_keys = [
-        'total_points_percus_organisateur',
-        'demande_paiement' // Suppression de l'historique des paiements
-    ];
-
-    // Récupération des utilisateurs ayant un rôle d'organisateur
-    $organisateurs = get_users([
-        'role' => ROLE_ORGANISATEUR,
-        'fields' => 'ID'
-    ]);
-
-    if (empty($organisateurs)) {
-        cat_debug("ℹ️ Aucun organisateur trouvé. Rien à supprimer.");
-        return;
-    }
-
-    foreach ($organisateurs as $user_id) {
-        foreach ($meta_keys as $meta_key) {
-            // Vérifie si la méta existe avant suppression
-            $meta_existante = get_user_meta($user_id, $meta_key, true);
-            if (!empty($meta_existante)) {
-                if ($meta_key === 'demande_paiement') {
-                    // Suppression forcée via SQL pour l'historique des paiements
-                    $wpdb->delete($wpdb->usermeta, ['user_id' => $user_id, 'meta_key' => $meta_key]);
-                    cat_debug("✅ Suppression forcée via SQL pour : {$meta_key} (user_id {$user_id})");
-                } else {
-                    // Suppression normale pour les autres méta
-                    delete_user_meta($user_id, $meta_key);
-                    cat_debug("✅ Suppression réussie de : {$meta_key} pour user_id {$user_id}");
-                }
-
-                // Vérification post-suppression
-                $meta_post_suppression = get_user_meta($user_id, $meta_key, true);
-                if (!empty($meta_post_suppression)) {
-                    cat_debug("⚠️ Problème : {$meta_key} n'a pas été supprimé pour user_id {$user_id}.");
-                } else {
-                    cat_debug("✅ Vérification OK : {$meta_key} a bien été supprimé pour user_id {$user_id}.");
-                }
-            } else {
-                cat_debug("ℹ️ Aucune méta trouvée pour : {$meta_key} de user_id {$user_id}.");
-            }
-        }
-    }
-}
-
-
-/**
- * 📌 Suppression optimisée des métas utilisateurs
- */
-function supprimer_metas_utilisateur($meta_keys) {
-    global $wpdb;
-    $placeholders = implode(',', array_fill(0, count($meta_keys), '%s'));
-
-    $wpdb->query($wpdb->prepare(
-        "DELETE FROM {$wpdb->usermeta} WHERE meta_key IN ($placeholders)",
-        ...$meta_keys
-    ));
-
-    // Vérification d'erreur SQL
-    if (!empty($wpdb->last_error)) {
-        cat_debug("⚠️ Erreur SQL lors de la suppression des metas utilisateur : " . $wpdb->last_error);
-    }
-    $wpdb->query("DELETE FROM {$wpdb->usermeta} WHERE meta_key LIKE 'enigme_%_resolue'");
-
-}
-
-/**
- * 📌 Supprime les méta globales stockées en `option_meta`
- */
-function supprimer_metas_globales() {
-    $metas_globales = [
-        'total_points_depenses_mois_' . date('Y_m'),
-        'total_points_vendus_mensuel_' . date('Y_m'),
-        'revenu_total_site',
-        'revenu_total_site_mensuel_' . date('Y_m'),
-        'total_paiements_effectues_mensuel_' . date('Y_m'),
-        'total_points_en_circulation'
-    ];
-
-    foreach ($metas_globales as $meta) {
-        delete_option($meta);
-        cat_debug("✅ Suppression réussie de l'option : $meta");
-    }
-}
-
-/**
- * 📌 Suppression optimisée des métas des énigmes et chasses
- */
-function supprimer_metas_post($post_type, $meta_keys) {
-    global $wpdb;
-
-    $post_ids = get_posts([
-        'post_type'      => $post_type,
-        'posts_per_page' => -1,
-        'fields'         => 'ids'
-    ]);
-
-    if (empty($post_ids)) {
-        cat_debug("ℹ️ Aucun post trouvé pour le type : {$post_type}. Rien à supprimer.");
-        return;
-    }
-
-    foreach ($meta_keys as $meta_key) {
-        // 🔍 Vérifier si la méta existe avant suppression
-        $existe = $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key LIKE %s",
-            $meta_key . '%'
-        ));
-
-        if ($existe > 0) {
-            // 🚀 Suppression optimisée de toutes les variations de la méta
-            $wpdb->query($wpdb->prepare(
-                "DELETE FROM {$wpdb->postmeta} WHERE meta_key LIKE %s",
-                $meta_key . '%'
-            ));
-            cat_debug("✅ Suppression réussie pour : {$meta_key}%");
-        } else {
-            cat_debug("ℹ️ Aucune méta trouvée pour : {$meta_key}%");
-        }
-    }
-}
-
-/**
- * 📌 Suppression des souscriptions des joueurs aux énigmes
- */
-function supprimer_souscriptions_utilisateur() {
-    global $wpdb;
-
-    // 🚀 Suppression de toutes les souscriptions utilisateur pour toutes les énigmes
-    $wpdb->query("DELETE FROM {$wpdb->usermeta} WHERE meta_key LIKE 'enigme_%_souscrit'");
-
-    if (!empty($wpdb->last_error)) {
-        cat_debug("⚠️ Erreur SQL lors de la suppression des souscriptions utilisateur : " . $wpdb->last_error);
-    } else {
-        cat_debug("✅ Suppression réussie des souscriptions aux énigmes.");
-    }
-}
-
 /**
  * 🔄 Réinitialise l’état d’une énigme pour un utilisateur donné :
  * - Supprime le statut et la date de résolution.
