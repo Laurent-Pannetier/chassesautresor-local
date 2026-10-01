@@ -26,6 +26,13 @@ final class PublicViewModelFactory {
         } elseif ($postType === 'enigme') {
             $model['hunt_id'] = (int) recuperer_id_chasse_associee($postId);
             $model['visible'] = enigme_est_visible_pour(get_current_user_id(), $postId);
+            $model['participation'] = '';
+            if ($model['visible'] && is_user_logged_in()) {
+                $userId = (int) get_current_user_id();
+                $answer = (new PortableRiddleAnswerRenderer())->render($postId, $userId);
+                $model['participation'] = (new \ChassesAuTresor\Core\Progress\RiddlePlayerPanelRenderer())
+                    ->render($postId, $userId, $answer);
+            }
         } elseif ($postType === 'organisateur') {
             $query = get_chasses_de_organisateur($postId);
             $model['hunts'] = $this->relatedPosts(is_object($query) && isset($query->posts) ? $query->posts : $query);

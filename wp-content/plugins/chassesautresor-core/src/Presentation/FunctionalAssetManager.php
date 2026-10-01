@@ -11,7 +11,8 @@ final class FunctionalAssetManager {
     }
 
     public static function enqueue(): void {
-        if (!is_singular(['chasse', 'enigme', 'organisateur'])) {
+        $postTypes = ['chasse', 'enigme', 'organisateur'];
+        if (!is_singular($postTypes) && !is_post_type_archive($postTypes)) {
             return;
         }
         if (get_stylesheet() === 'chassesautresor') {
@@ -37,6 +38,9 @@ final class FunctionalAssetManager {
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'errorMessage' => __('Une erreur est survenue. Veuillez réessayer.', 'chassesautresor-com'),
             'successMessage' => __('Votre réponse a bien été enregistrée.', 'chassesautresor-com'),
+            'hintNonce' => wp_create_nonce('unlock_hint'),
+            'unlockHint' => __('Débloquer cet indice', 'chassesautresor-com'),
+            'close' => __('Fermer', 'chassesautresor-com'),
         ]);
     }
 }

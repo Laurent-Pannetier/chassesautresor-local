@@ -13,6 +13,19 @@ final class PublicTemplateController {
     }
 
     public static function filter(string $template): string {
+        if (get_stylesheet() === 'chassesautresor') {
+            return $template;
+        }
+
+        if (is_post_type_archive(self::POST_TYPES)) {
+            $queryPostType = get_query_var('post_type');
+            $postType = is_array($queryPostType) ? (string) reset($queryPostType) : (string) $queryPostType;
+            if (in_array($postType, self::POST_TYPES, true)
+                && basename($template) !== 'archive-' . $postType . '.php') {
+                return self::resolver()->resolve('public/archive.php');
+            }
+        }
+
         if (!is_singular(self::POST_TYPES)) {
             return $template;
         }

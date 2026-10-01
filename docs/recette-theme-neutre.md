@@ -16,12 +16,15 @@ sont exposées sous `organizer_id`, `riddles`, `hunt_id`, `visible` ou `hunts`.
 ## Procédure reproductible
 
 1. Activer un thème WordPress standard qui ne fournit aucun template `chasse`, `enigme` ou `organisateur`.
-2. Ouvrir une chasse publiée et vérifier son titre, son contenu, son organisateur et ses liens vers les énigmes.
-3. Ouvrir une énigme avec un joueur autorisé, envoyer une réponse et vérifier le retour accessible du contrôleur AJAX.
-4. Ouvrir la même énigme déconnecté et vérifier la proposition de connexion.
-5. Ouvrir un organisateur et vérifier son contenu ainsi que la liste de ses chasses.
-6. Vérifier avec un compte organisateur que les liens d’édition sont présents uniquement sur ses contenus.
-7. Rejouer `vendor/bin/phpunit -c tests/phpunit.xml` : les tests de résolution, surcharge, fallback, assets et frontière
+2. Ouvrir les archives des chasses, énigmes et organisateurs, puis vérifier cartes, liens et pagination.
+3. Ouvrir une chasse publiée et vérifier son titre, son contenu, son organisateur et ses liens vers les énigmes.
+4. Ouvrir une énigme automatique puis une énigme manuelle avec un joueur autorisé, envoyer une réponse et vérifier le
+   retour accessible de chaque contrôleur AJAX.
+5. Débloquer un indice gratuit puis un indice payant, vérifier son contenu, le débit de points et le nouveau solde.
+6. Ouvrir la même énigme déconnecté et vérifier la proposition de connexion.
+7. Ouvrir un organisateur et vérifier son contenu ainsi que la liste de ses chasses.
+8. Vérifier avec un compte organisateur que les liens d’édition sont présents uniquement sur ses contenus.
+9. Rejouer `vendor/bin/phpunit -c tests/phpunit.xml` : les tests de résolution, surcharge, fallback, assets et frontière
    plugin/thème constituent la preuve automatisée de ce socle.
 
 Les écrans de compte avancés, les formulaires frontaux complets d’édition et la recette WooCommerce restent hors du

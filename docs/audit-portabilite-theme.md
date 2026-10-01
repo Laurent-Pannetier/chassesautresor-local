@@ -577,6 +577,13 @@ tests couvrent résolution, surcharge, repli, enregistrement des assets et absen
 recette neutre minimale de ces trois pages est décrite dans `docs/recette-theme-neutre.md` ; elle ne vaut pas encore
 recette complète des comptes, de l'édition et de WooCommerce.
 
+Le cent-dix-neuvième lot complète ce premier parcours public au lieu d'ajouter un nouveau fallback superficiel. Les
+archives des trois types publics disposent maintenant d'une liste paginée alimentée par un view-model Core. La page
+d'énigme choisit le formulaire adapté aux validations automatique, manuelle ou sans réponse, applique le contexte de
+coût et réutilise le panneau Core pour les indices d'énigme et de chasse. Son script autonome couvre les deux endpoints
+de réponse ainsi que la consultation et le déblocage payant des indices. La recette ciblée vérifie désormais ces
+variantes ; elle demeure distincte de la recette globale encore requise pour les comptes et WooCommerce.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |

@@ -23,7 +23,11 @@ get_header();
             <?php else : ?>
                 <ul class="cat-core-cards">
                     <?php foreach ($viewModel['hunts'] as $hunt) : ?>
-                        <li><a href="<?php echo esc_url($hunt['url']); ?>"><?php echo esc_html($hunt['title']); ?></a></li>
+                        <li>
+                            <a href="<?php echo esc_url($hunt['url']); ?>">
+                                <?php echo esc_html($hunt['title']); ?>
+                            </a>
+                        </li>
                     <?php endforeach; ?>
                 </ul>
             <?php endif; ?>

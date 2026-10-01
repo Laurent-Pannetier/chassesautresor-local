@@ -31,7 +31,11 @@ get_header();
             <?php else : ?>
                 <ul class="cat-core-cards">
                     <?php foreach ($viewModel['riddles'] as $riddle) : ?>
-                        <li><a href="<?php echo esc_url($riddle['url']); ?>"><?php echo esc_html($riddle['title']); ?></a></li>
+                        <li>
+                            <a href="<?php echo esc_url($riddle['url']); ?>">
+                                <?php echo esc_html($riddle['title']); ?>
+                            </a>
+                        </li>
                     <?php endforeach; ?>
                 </ul>
             <?php endif; ?>

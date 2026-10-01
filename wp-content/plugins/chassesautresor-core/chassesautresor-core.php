@@ -16,6 +16,8 @@ require_once __DIR__ . '/src/Support/table-functions.php';
 require_once __DIR__ . '/src/Support/pager-functions.php';
 require_once __DIR__ . '/src/Presentation/TemplateResolver.php';
 require_once __DIR__ . '/src/Presentation/PublicViewModelFactory.php';
+require_once __DIR__ . '/src/Presentation/PublicArchiveViewModelFactory.php';
+require_once __DIR__ . '/src/Presentation/PortableRiddleAnswerRenderer.php';
 require_once __DIR__ . '/src/Presentation/PublicTemplateController.php';
 require_once __DIR__ . '/src/Presentation/FunctionalAssetManager.php';
 require_once __DIR__ . '/src/Users/UserProfileCompletionService.php';
