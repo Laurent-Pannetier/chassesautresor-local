@@ -697,6 +697,15 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('wp_cache_set(', $source);
     }
 
+    public function testThemeDoesNotBuildRiddleSidebarStatisticsCaches(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/affichage.php');
+
+        self::assertStringNotContainsString("wp_cache_set(\$cache_key, \$data", $source);
+        self::assertStringNotContainsString("wp_cache_set(\$cache_key, \$rate", $source);
+        self::assertStringNotContainsString('chasse_calculer_taux_engagement(', $source);
+    }
+
     public function testRiddleStatisticsAccessIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/stats.php');

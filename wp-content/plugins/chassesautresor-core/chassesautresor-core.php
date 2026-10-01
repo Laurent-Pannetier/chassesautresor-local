@@ -55,6 +55,7 @@ require_once __DIR__ . '/src/Progress/RiddleSystemStateUpdater.php';
 require_once __DIR__ . '/src/Progress/RiddleSystemStateSaveHookHandler.php';
 require_once __DIR__ . '/src/Progress/RiddleParticipationPolicyService.php';
 require_once __DIR__ . '/src/Progress/RiddleSidebarRequestPolicy.php';
+require_once __DIR__ . '/src/Progress/RiddleSidebarStatisticsService.php';
 require_once __DIR__ . '/src/Progress/RiddleSidebarAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/StatisticsPeriodService.php';
 require_once __DIR__ . '/src/Progress/StatisticsCacheService.php';

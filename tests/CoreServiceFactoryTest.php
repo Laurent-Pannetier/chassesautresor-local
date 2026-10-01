@@ -9,6 +9,7 @@ use ChassesAuTresor\Core\Points\PointsService;
 use ChassesAuTresor\Core\Progress\HintUnlockService;
 use ChassesAuTresor\Core\Progress\HuntProgressService;
 use ChassesAuTresor\Core\Progress\RiddleAttemptService;
+use ChassesAuTresor\Core\Progress\RiddleSidebarStatisticsService;
 use ChassesAuTresor\Core\Relationships\OrganizerService;
 use ChassesAuTresor\Core\Support\CoreServiceFactory;
 use PHPUnit\Framework\TestCase;
@@ -29,5 +30,9 @@ final class CoreServiceFactoryTest extends TestCase
         self::assertInstanceOf(OrganizerService::class, CoreServiceFactory::organizer($database));
         self::assertInstanceOf(AccountMessageService::class, CoreServiceFactory::accountMessages($database));
         self::assertInstanceOf(RiddleImageService::class, CoreServiceFactory::riddleImages($database));
+        self::assertInstanceOf(
+            RiddleSidebarStatisticsService::class,
+            CoreServiceFactory::riddleSidebarStatistics($database)
+        );
     }
 }
