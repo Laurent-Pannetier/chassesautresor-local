@@ -558,26 +558,14 @@ function enqueue_points_history_script(): void
 /**
  * AJAX handler for loading paginated points history.
  */
-function ajax_load_points_history(): void
+function cat_render_points_history_rows(array $operations): string
 {
-    if (!is_user_logged_in()) {
-        wp_send_json_error();
-    }
-
-    check_ajax_referer('points-history-nonce', 'nonce');
-
-    $page = isset($_POST['page']) ? (int) $_POST['page'] : 1;
-    $page = max(1, $page);
-    $per_page = 20;
-    $user_id = get_current_user_id();
-    $operations = get_user_points_history($user_id, $page, $per_page);
-
     ob_start();
     foreach ($operations as $op) {
-        $variation       = (int) $op['points'];
+        $variation = (int) $op['points'];
         $variation_label = $variation > 0 ? '+' . $variation : (string) $variation;
-        $date            = !empty($op['request_date']) ? mysql2date('d/m/Y', $op['request_date']) : '';
-        $reason          = format_points_history_reason($op);
+        $date = !empty($op['request_date']) ? mysql2date('d/m/Y', $op['request_date']) : '';
+        $reason = format_points_history_reason($op);
         ?>
         <tr>
             <td><?php echo esc_html($op['id']); ?></td>
@@ -589,8 +577,22 @@ function ajax_load_points_history(): void
         </tr>
         <?php
     }
-    $rows = ob_get_clean();
 
-    wp_send_json_success(['rows' => $rows]);
+    return (string) ob_get_clean();
 }
-add_action('wp_ajax_load_points_history', 'ajax_load_points_history');
+
+function ajax_load_points_history(): void
+{
+    ChassesAuTresor\Core\Points\PointsHistoryAjaxHandler::handle();
+}
+
+if (class_exists(ChassesAuTresor\Core\Points\PointsHistoryAjaxHandler::class)) {
+    ChassesAuTresor\Core\Points\PointsHistoryAjaxHandler::configure(
+        static function (int $user_id, int $page, int $per_page): array {
+            return get_user_points_history($user_id, $page, $per_page);
+        },
+        static function (array $operations): string {
+            return cat_render_points_history_rows($operations);
+        }
+    );
+}

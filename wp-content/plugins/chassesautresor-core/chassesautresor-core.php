@@ -15,6 +15,10 @@ require_once __DIR__ . '/src/Points/PointsService.php';
 require_once __DIR__ . '/src/Points/PurchasePointsService.php';
 require_once __DIR__ . '/src/Points/ConversionService.php';
 require_once __DIR__ . '/src/Points/PointsTable.php';
+require_once __DIR__ . '/src/Points/HistoryPaginationRequestService.php';
+require_once __DIR__ . '/src/Points/PointsHistoryAjaxHandler.php';
+require_once __DIR__ . '/src/Points/ConversionHistoryAjaxHandler.php';
+require_once __DIR__ . '/src/Points/ConversionModalAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/HuntProgressRepository.php';
 require_once __DIR__ . '/src/Progress/HuntProgressService.php';
 require_once __DIR__ . '/src/Progress/HuntStatusService.php';
@@ -257,6 +261,9 @@ ChassesAuTresor\Core\Media\RiddleImageProtectionAjaxHandler::register('add_actio
 ChassesAuTresor\Core\Media\RiddleImageProtectionLifecycle::register('add_action', 'add_filter');
 ChassesAuTresor\Core\Messages\AccountMessageDismissalAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Messages\AccountSectionAjaxHandler::register('add_action');
+ChassesAuTresor\Core\Points\PointsHistoryAjaxHandler::register('add_action');
+ChassesAuTresor\Core\Points\ConversionHistoryAjaxHandler::register('add_action');
+ChassesAuTresor\Core\Points\ConversionModalAjaxHandler::register('add_action');
 
 register_activation_hook(
     __FILE__,

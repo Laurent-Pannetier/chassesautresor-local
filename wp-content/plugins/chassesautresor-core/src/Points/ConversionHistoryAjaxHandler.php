@@ -1,0 +1,49 @@
+<?php
+
+declare(strict_types=1);
+
+namespace ChassesAuTresor\Core\Points;
+
+/** AJAX orchestration for organizer and administrator conversion history. */
+class ConversionHistoryAjaxHandler {
+    /** @var callable|null */
+    private static $loader;
+
+    /** @var callable|null */
+    private static $renderer;
+
+    public static function register(callable $addAction): void {
+        $addAction('wp_ajax_load_conversion_history', [self::class, 'handle']);
+    }
+
+    public static function configure(callable $loader, callable $renderer): void {
+        self::$loader = $loader;
+        self::$renderer = $renderer;
+    }
+
+    public static function handle(): void {
+        $request = (new HistoryPaginationRequestService())->prepare(
+            is_user_logged_in(),
+            isset($_POST['page']) ? (int) $_POST['page'] : 1,
+            10
+        );
+        if (!$request['allowed']) {
+            wp_send_json_error();
+        }
+        check_ajax_referer('conversion-history-nonce', 'nonce');
+        if (!is_callable(self::$loader) || !is_callable(self::$renderer)) {
+            wp_send_json_error();
+        }
+
+        $userId = current_user_can('administrator') ? null : (int) get_current_user_id();
+        $requests = (array) call_user_func(
+            self::$loader,
+            $userId,
+            $request['per_page'],
+            $request['offset']
+        );
+        wp_send_json_success([
+            'rows' => (string) call_user_func(self::$renderer, $requests, $userId === null),
+        ]);
+    }
+}
