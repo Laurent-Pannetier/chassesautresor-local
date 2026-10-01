@@ -680,6 +680,14 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('recuperer_enigmes_possibles_pre_requis', $source);
     }
 
+    public function testThemeDoesNotOwnScheduledHuntStatusRefresh(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/statut-functions.php');
+
+        self::assertStringNotContainsString('cat_check_stale_hunt_status', $source);
+        self::assertStringNotContainsString('chassesautresor_hunt_status_stale_check_requested', $source);
+    }
+
     public function testRiddleStatisticsAccessIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/stats.php');

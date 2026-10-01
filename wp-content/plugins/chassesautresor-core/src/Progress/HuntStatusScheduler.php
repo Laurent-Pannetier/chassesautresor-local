@@ -34,8 +34,7 @@ class HuntStatusScheduler {
     ): int {
         $batchSize = max(1, $batchSize);
         $getPosts = $getPosts ?? 'get_posts';
-        $dispatch = $dispatch ?? static fn (int $huntId) =>
-            do_action('chassesautresor_hunt_status_stale_check_requested', $huntId);
+        $dispatch = $dispatch ?? [self::class, 'refresh'];
         $processed = 0;
         $offset = 0;
         do {
@@ -59,5 +58,9 @@ class HuntStatusScheduler {
         } while (count($huntIds) === $batchSize);
 
         return $processed;
+    }
+
+    public static function refresh(int $huntId): void {
+        (new HuntStatusUpdater())->refreshIfStale($huntId);
     }
 }

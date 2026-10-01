@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Content;
 
+use ChassesAuTresor\Core\Relationships\RelationshipService;
+
 /**
  * WordPress/ACF filter adapter for riddle relationship fields.
  */
@@ -60,9 +62,9 @@ class RiddleRelationshipFilterHandler {
         }
 
         $cachedRiddles = get_field(RiddleCacheMutationService::FIELD_NAME, $huntId);
-        $cachedRiddles = is_array($cachedRiddles) ? $cachedRiddles : [];
+        $relationships = new RelationshipService();
         $riddleIds = array_values(array_filter(
-            array_map('intval', $cachedRiddles),
+            $relationships->normalizeIds(is_array($cachedRiddles) ? $cachedRiddles : []),
             static fn (int $riddleId): bool => get_post_type($riddleId) === 'enigme'
         ));
         $args['post__in'] = (new RiddleRelationshipService())->getSelectableRiddleIds(
@@ -94,10 +96,10 @@ class RiddleRelationshipFilterHandler {
     private static function eligiblePrerequisiteIds(int $riddleId, int $huntId): array {
         $cachedRiddles = get_field(RiddleCacheMutationService::FIELD_NAME, $huntId);
         $validationModes = [];
+        $relationships = new RelationshipService();
 
-        foreach (is_array($cachedRiddles) ? $cachedRiddles : [] as $candidate) {
-            $candidateId = (int) $candidate;
-            if ($candidateId > 0 && get_post_type($candidateId) === 'enigme') {
+        foreach ($relationships->normalizeIds(is_array($cachedRiddles) ? $cachedRiddles : []) as $candidateId) {
+            if (get_post_type($candidateId) === 'enigme') {
                 $validationModes[$candidateId] = (string) get_field('enigme_mode_validation', $candidateId);
             }
         }

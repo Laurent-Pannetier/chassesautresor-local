@@ -422,12 +422,6 @@ function forcer_recalcul_statut_chasse(): void
     ChassesAuTresor\Core\Progress\HuntStatusAjaxHandler::recalculate();
 }
 
-function cat_check_stale_hunt_status(int $huntId): void
-{
-    verifier_ou_recalculer_statut_chasse($huntId);
-}
-add_action('chassesautresor_hunt_status_stale_check_requested', 'cat_check_stale_hunt_status');
-
 function recuperer_statut_chasse(): void
 {
     ChassesAuTresor\Core\Progress\HuntStatusAjaxHandler::getStatus();
