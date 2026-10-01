@@ -11,6 +11,7 @@ declare(strict_types=1);
 defined('ABSPATH') || exit;
 
 require_once __DIR__ . '/src/Support/CoreServiceFactory.php';
+require_once __DIR__ . '/src/Security/site-password.php';
 require_once __DIR__ . '/src/Email/template.php';
 require_once __DIR__ . '/src/Email/user-registration.php';
 require_once __DIR__ . '/src/Email/forgot-password.php';

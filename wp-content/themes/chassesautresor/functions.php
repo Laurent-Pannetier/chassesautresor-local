@@ -600,7 +600,6 @@ add_filter( 'login_message', 'cta_login_branding' );
 
 $inc_path = get_stylesheet_directory() . '/inc/';
 
-require_once get_stylesheet_directory() . '/inc/site-password.php';
 require_once $inc_path . 'constants.php';
 require_once $inc_path . 'utils.php';
 require_once $inc_path . 'messages.php';

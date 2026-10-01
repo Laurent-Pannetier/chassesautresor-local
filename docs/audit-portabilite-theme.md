@@ -43,7 +43,10 @@ images protégées des énigmes. Les contrôleurs échouent de façon fermée si
 Le neuvième lot a transféré au plugin les anciennes routes de l’espace compte, leurs variables de requête et leurs
 redirections vers le tableau de bord canonique.
 
-Estimation après ce lot : **93 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
+Le dixième lot a transféré au plugin la protection globale du site par mot de passe. Le thème ne conserve qu’un
+chargeur de compatibilité pour les appels historiques directs.
+
+Estimation après ce lot : **95 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
 responsabilités fonctionnelles recensées (persistance, accès, routes, traitements, notifications et cache), et non
 sur le nombre de lignes. Il sera réévalué après chaque lot.
 
@@ -57,7 +60,6 @@ Le thème enregistre toujours notamment :
   `inc/organisateur-functions.php` ;
 - le contrôle d'accès aux énigmes dans `inc/enigme/access.php` ;
 - des politiques d'édition et des callbacks métier échangés avec le plugin dans les fichiers `inc/edition/*.php` ;
-- la protection du site par mot de passe dans `inc/site-password.php` ;
 
 Une partie de ces éléments produit de l'interface, mais leur absence change aussi les droits, les parcours ou le
 comportement du site.

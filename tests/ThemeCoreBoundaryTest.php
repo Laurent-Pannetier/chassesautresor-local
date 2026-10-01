@@ -130,6 +130,17 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertSame([], $violations, $this->formatViolations($violations));
     }
 
+    public function testThemeDoesNotOwnSitePasswordProtection(): void {
+        $violations = $this->findPhpMatches('/function\s+ca_site_password_protection|ca_site_password_protection\s*\(/');
+
+        self::assertSame([], $violations, $this->formatViolations($violations));
+
+        $coreProtection = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Security/site-password.php'
+        );
+        self::assertStringContainsString("add_action('init', 'ca_site_password_protection')", $coreProtection);
+    }
+
     public function testLegacyStatisticsResetWorkflowStaysOutOfTheme(): void
     {
         $violations = $this->findPhpMatches(
