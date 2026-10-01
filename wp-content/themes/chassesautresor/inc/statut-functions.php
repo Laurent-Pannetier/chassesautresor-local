@@ -44,6 +44,21 @@ if (!class_exists(ChassesAuTresor\Core\Content\HuntCompletionService::class, fal
         . '/plugins/chassesautresor-core/src/Content/HuntCompletionService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Relationships\RelationshipService::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Relationships/RelationshipService.php';
+}
+
+if (!class_exists(ChassesAuTresor\Core\Relationships\HuntRiddleQueryService::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Relationships/HuntRiddleQueryService.php';
+}
+
+if (!class_exists(ChassesAuTresor\Core\Content\CompletionCacheManager::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Content/CompletionCacheManager.php';
+}
+
 if (!function_exists('cat_get_hunt_progress_service')) {
     function cat_get_hunt_progress_service(): ChassesAuTresor\Core\Progress\HuntProgressService
     {
@@ -494,190 +509,79 @@ function utilisateur_peut_engager_enigme(int $enigme_id, ?int $user_id = null): 
 // ✅ GESTION DE LA COMPLÉTION DES CPT
 // ==================================================
 
+function cat_get_completion_cache_manager(): ChassesAuTresor\Core\Content\CompletionCacheManager
+{
+    return new ChassesAuTresor\Core\Content\CompletionCacheManager();
+}
+
 function organisateur_est_complet(int $organisateur_id): bool
 {
-    if (get_post_type($organisateur_id) !== 'organisateur') {
-        return false;
-    }
-
-    $logo = get_field('logo_organisateur', $organisateur_id);
-
-    return (new ChassesAuTresor\Core\Content\OrganizerCompletionService())->isComplete(
-        titre_est_valide($organisateur_id),
-        !empty($logo),
-        (string) get_field('description_longue', $organisateur_id)
-    );
+    return cat_get_completion_cache_manager()->isOrganizerComplete($organisateur_id, 'titre_est_valide');
 }
 
 function organisateur_mettre_a_jour_complet(int $organisateur_id): bool
 {
-    $complet = organisateur_est_complet($organisateur_id);
-    update_field('organisateur_cache_complet', $complet ? 1 : 0, $organisateur_id);
-    return $complet;
+    return cat_get_completion_cache_manager()->refresh($organisateur_id);
 }
 
 function chasse_has_validatable_enigme(int $chasse_id): bool
 {
-    $enigme_ids = recuperer_ids_enigmes_pour_chasse($chasse_id);
-    $validationModes = [];
-
-    foreach ($enigme_ids as $eid) {
-        $validationModes[] = (string) get_field('enigme_mode_validation', $eid);
-    }
-
-    return (new ChassesAuTresor\Core\Content\HuntCompletionService())->hasValidatableRiddle(
-        $validationModes
-    );
+    $riddleIds = recuperer_ids_enigmes_pour_chasse($chasse_id);
+    $modes = array_map(static fn ($riddleId): string => (string) get_field(
+        'enigme_mode_validation',
+        (int) $riddleId
+    ), $riddleIds);
+    return (new ChassesAuTresor\Core\Content\HuntCompletionService())->hasValidatableRiddle($modes);
 }
 
 function chasse_est_complet(int $chasse_id): bool
 {
-    if (get_post_type($chasse_id) !== 'chasse') {
-        return false;
-    }
-
-    $mode_fin = get_field('chasse_mode_fin', $chasse_id) ?: 'automatique';
-
-    $image    = get_field('chasse_principale_image', $chasse_id);
-    $image_id = is_array($image) ? ($image['ID'] ?? 0) : (int) $image;
-
-    return (new ChassesAuTresor\Core\Content\HuntCompletionService())->isComplete(
-        titre_est_valide($chasse_id),
-        (string) get_field('chasse_principale_description', $chasse_id),
-        (int) $image_id,
-        3902,
-        (string) $mode_fin,
-        chasse_has_validatable_enigme($chasse_id)
+    return cat_get_completion_cache_manager()->isHuntComplete(
+        $chasse_id,
+        chasse_has_validatable_enigme($chasse_id),
+        'titre_est_valide'
     );
 }
 
 function chasse_mettre_a_jour_complet(int $chasse_id): bool
 {
-    $complet = chasse_est_complet($chasse_id);
-    update_field('chasse_cache_complet', $complet ? 1 : 0, $chasse_id);
-    return $complet;
+    return cat_get_completion_cache_manager()->refresh($chasse_id);
 }
 
 function enigme_est_complet(int $enigme_id): bool
 {
-    if (get_post_type($enigme_id) !== 'enigme') {
-        return false;
-    }
-
-    $titre_ok = titre_est_valide($enigme_id);
-
-    $images = get_field('enigme_visuel_image', $enigme_id);
-    $placeholder = defined('ID_IMAGE_PLACEHOLDER_ENIGME') ? ID_IMAGE_PLACEHOLDER_ENIGME : 3925;
-    $first_id = (is_array($images) && !empty($images[0]['ID'])) ? (int) $images[0]['ID'] : 0;
-    $mode = get_field('enigme_mode_validation', $enigme_id);
-    $reponses = enigme_get_bonnes_reponses($enigme_id);
-    $condition_acces = get_field('enigme_acces_condition', $enigme_id) ?? 'immediat';
-    $pre_requis = get_field('enigme_acces_pre_requis', $enigme_id);
-
-    return (new ChassesAuTresor\Core\Content\RiddleCompletionService())->isComplete(
-        $titre_ok,
-        $first_id,
-        $placeholder,
-        (string) $mode,
-        !empty($reponses),
-        (string) $condition_acces,
-        is_array($pre_requis) && !empty($pre_requis)
+    return cat_get_completion_cache_manager()->isRiddleComplete(
+        $enigme_id,
+        'titre_est_valide',
+        static fn (int $riddleId): bool => enigme_get_bonnes_reponses($riddleId) !== []
     );
 }
 
 function enigme_mettre_a_jour_complet(int $enigme_id): bool
 {
-    $complet = enigme_est_complet($enigme_id);
-    update_field('enigme_cache_complet', $complet ? 1 : 0, $enigme_id);
-    return $complet;
+    return cat_get_completion_cache_manager()->refresh($enigme_id);
 }
 
 function mettre_a_jour_cache_complet_automatiquement($post_id): void
 {
-    if (!is_numeric($post_id)) {
-        return;
-    }
-
-    $type = get_post_type($post_id);
-    if ($type === 'organisateur') {
-        organisateur_mettre_a_jour_complet((int) $post_id);
-    } elseif ($type === 'chasse') {
-        chasse_mettre_a_jour_complet((int) $post_id);
-    } elseif ($type === 'enigme') {
-        enigme_mettre_a_jour_complet((int) $post_id);
-
-        // ⚡ Synchronise la chasse parente pour que la complétion soit
-        // immédiatement prise en compte sur la fiche énigme.
-        $chasse_id = recuperer_id_chasse_associee((int) $post_id);
-        if ($chasse_id) {
-            chasse_mettre_a_jour_complet((int) $chasse_id);
-        }
+    if (is_numeric($post_id)) {
+        cat_get_completion_cache_manager()->refresh((int) $post_id);
     }
 }
-add_action('acf/save_post', 'mettre_a_jour_cache_complet_automatiquement', 20);
 
-/**
- * Vérifie la valeur du champ `_cache_complet` d'un post et la
- * synchronise si elle ne correspond pas à la réalité.
- *
- * Cette vérification est légère et peut être appelée à chaque
- * affichage d'un post (ex : pages single) pour s'assurer que les
- * panneaux d'édition ne s'ouvrent pas inutilement.
- *
- * @param int $post_id ID du post à contrôler.
- * @return void
- */
 function verifier_ou_mettre_a_jour_cache_complet(int $post_id): void
 {
-    if (!is_numeric($post_id)) {
-        return;
-    }
-
-    static $deja = [];
-    if (in_array($post_id, $deja, true)) {
-        return;
-    }
-    $deja[] = $post_id;
-
-    $type = get_post_type($post_id);
-
-    switch ($type) {
-        case 'organisateur':
-            $cache = (bool) get_field('organisateur_cache_complet', $post_id);
-            $reel  = organisateur_est_complet($post_id);
-            if ($cache !== $reel) {
-                update_field('organisateur_cache_complet', $reel ? 1 : 0, $post_id);
-            }
-            break;
-
-        case 'chasse':
-            $cache = (bool) get_field('chasse_cache_complet', $post_id);
-            $reel  = chasse_est_complet($post_id);
-            if ($cache !== $reel) {
-                update_field('chasse_cache_complet', $reel ? 1 : 0, $post_id);
-                chasse_clear_infos_affichage_cache($post_id);
-            }
-            break;
-
-        case 'enigme':
-            $cache = (bool) get_field('enigme_cache_complet', $post_id);
-            $reel  = enigme_est_complet($post_id);
-            if ($cache !== $reel) {
-                update_field('enigme_cache_complet', $reel ? 1 : 0, $post_id);
-                if (function_exists('recuperer_id_chasse_associee')) {
-                    $chasse_id = recuperer_id_chasse_associee($post_id);
-                    if ($chasse_id) {
-                        chasse_clear_infos_affichage_cache((int) $chasse_id);
-                    }
-                }
-            }
-            break;
-    }
+    cat_get_completion_cache_manager()->ensureFresh($post_id);
 }
 
-
-
-
+function cat_clear_hunt_display_cache_after_completion(int $huntId): void
+{
+    chasse_clear_infos_affichage_cache($huntId);
+}
+add_action(
+    'chassesautresor_hunt_display_cache_clear_requested',
+    'cat_clear_hunt_display_cache_after_completion'
+);
 
 
 
