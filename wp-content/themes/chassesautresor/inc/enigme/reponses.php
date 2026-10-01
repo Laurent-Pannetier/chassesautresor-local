@@ -1,6 +1,11 @@
 <?php
 defined('ABSPATH') || exit;
 
+if (!class_exists(ChassesAuTresor\Core\Progress\RiddleAnswerService::class, false)) {
+    require_once dirname(__DIR__, 4)
+        . '/plugins/chassesautresor-core/src/Progress/RiddleAnswerService.php';
+}
+
 /**
  * Retrieve the expected answers for an enigma, migrating old formats.
  *
@@ -9,25 +14,7 @@ defined('ABSPATH') || exit;
  */
 function enigme_get_bonnes_reponses(int $enigme_id): array
 {
-    $raw = get_field('enigme_reponse_bonne', $enigme_id);
-
-    if (is_string($raw) && $raw !== '') {
-        $decoded = json_decode($raw, true);
-        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-            return array_values(array_filter(array_map('strval', $decoded)));
-        }
-
-        if (function_exists('update_field')) {
-            update_field('enigme_reponse_bonne', wp_json_encode([$raw]), $enigme_id);
-        }
-        return [$raw];
-    }
-
-    if (is_array($raw)) {
-        return array_values(array_filter(array_map('strval', $raw)));
-    }
-
-    return [];
+    return (new ChassesAuTresor\Core\Progress\RiddleAnswerService())->get($enigme_id);
 }
 
 

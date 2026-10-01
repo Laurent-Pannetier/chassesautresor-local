@@ -27,6 +27,15 @@ if (!class_exists(ChassesAuTresor\Core\Progress\RiddleStatusAjaxHandler::class, 
         . '/plugins/chassesautresor-core/src/Progress/RiddleStatusAjaxHandler.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Progress\RiddleSystemStateUpdater::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Progress/RiddleAnswerService.php';
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Progress/RiddleSystemStateService.php';
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Progress/RiddleSystemStateUpdater.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Progress\HuntProgressService::class, false)) {
     require_once dirname(__DIR__, 3)
         . '/plugins/chassesautresor-core/src/Progress/HuntProgressRepository.php';
@@ -87,26 +96,7 @@ if (!function_exists('cat_get_hunt_progress_service')) {
 if (!function_exists('enigme_get_bonnes_reponses')) {
     function enigme_get_bonnes_reponses(int $enigme_id): array
     {
-        $raw = function_exists('get_field') ? get_field('enigme_reponse_bonne', $enigme_id) : '';
-
-        if (is_string($raw) && $raw !== '') {
-            $decoded = json_decode($raw, true);
-            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                return array_values(array_filter(array_map('strval', $decoded)));
-            }
-
-            if (function_exists('update_field')) {
-                update_field('enigme_reponse_bonne', wp_json_encode([$raw]), $enigme_id);
-            }
-
-            return [$raw];
-        }
-
-        if (is_array($raw)) {
-            return array_values(array_filter(array_map('strval', $raw)));
-        }
-
-        return [];
+        return (new ChassesAuTresor\Core\Progress\RiddleAnswerService())->get($enigme_id);
     }
 }
 
@@ -389,87 +379,31 @@ function enigme_est_visible_pour(int $user_id, int $enigme_id): bool
  * @param int $chasse_id ID de la chasse.
  * @return void
  */
-function mettre_a_jour_statuts_enigmes_de_la_chasse(int $chasse_id): void
+function mettre_a_jour_statuts_enigmes_de_la_chasse(int $chasse_id, ?string $huntStatus = null): void
 {
-
-    if (get_post_type($chasse_id) !== 'chasse') return;
-    $ids_enigmes = recuperer_enigmes_associees($chasse_id);
-    foreach ($ids_enigmes as $enigme_id) {
-        if (get_post_type($enigme_id) === 'enigme') {
-            $resultat = enigme_mettre_a_jour_etat_systeme((int)$enigme_id);
-        }
-    }
-}
-
-
-
-
-/**
- * 🔁 Calcule ou met à jour le champ `enigme_cache_etat_systeme` d'une énigme.
- *
- * Ce champ reflète l'état global de l'énigme (accessible, bloquée, invalide...),
- * en tenant compte du statut de la chasse, de la condition d'accès et des réglages internes.
- *
- * @param int $enigme_id ID de l'énigme à traiter.
- * @param bool $mettre_a_jour Si true, met à jour ACF. Sinon, retourne uniquement.
- * @param string|null $statut_chasse_forcé Permet de passer un statut de chasse sans relecture ACF.
- * @return string Statut calculé.
- */
-function enigme_mettre_a_jour_etat_systeme(int $enigme_id, bool $mettre_a_jour = true, ?string $statut_chasse_forcé = null): string
-{
-    if (get_post_type($enigme_id) !== 'enigme') {
-        cat_debug("❌ [STATUT] Post #$enigme_id n'est pas une énigme");
-        return 'cache_invalide';
-    }
-    $chasse_id = recuperer_id_chasse_associee($enigme_id);
-    $hasValidHunt = $chasse_id > 0 && get_post_type($chasse_id) === 'chasse';
-    $statut_chasse = $hasValidHunt
-        ? (string) ($statut_chasse_forcé ?? get_field('chasse_cache_statut', $chasse_id))
-        : '';
-    $condition = get_field('enigme_acces_condition', $enigme_id) ?? 'immediat';
-    $scheduledDate = $condition === 'date_programmee'
-        ? convertir_en_datetime(get_field('enigme_acces_date', $enigme_id))
-        : null;
-    $mode = get_field('enigme_mode_validation', $enigme_id);
-    $reponses = enigme_get_bonnes_reponses($enigme_id);
-
-    $etat = cat_get_hunt_progress_service()->calculateRiddleSystemState(
-        $hasValidHunt,
-        $statut_chasse,
-        (string) $condition,
-        $scheduledDate ? $scheduledDate->getTimestamp() : null,
-        (string) $mode,
-        !empty($reponses)
+    (new ChassesAuTresor\Core\Progress\RiddleSystemStateUpdater())->refreshHunt(
+        $chasse_id,
+        $huntStatus
     );
-
-    // ✅ Mise à jour ACF si demandé
-    if ($mettre_a_jour) {
-        $actuel = get_field('enigme_cache_etat_systeme', $enigme_id);
-        if ($actuel !== $etat) {
-            update_field('enigme_cache_etat_systeme', $etat, $enigme_id);
-        } else {
-            cat_debug("⏸️ [STATUT] Pas de changement pour #$enigme_id (déjà $etat)");
-        }
-    }
-
-    return $etat;
 }
 
+function enigme_mettre_a_jour_etat_systeme(
+    int $enigme_id,
+    bool $mettre_a_jour = true,
+    ?string $statut_chasse_forcé = null
+): string {
+    return (new ChassesAuTresor\Core\Progress\RiddleSystemStateUpdater())->refresh(
+        $enigme_id,
+        $mettre_a_jour,
+        $statut_chasse_forcé
+    );
+}
 
-
-
-/**
- * Hook automatique ACF : met à jour l’état système d’une énigme après enregistrement.
- *
- * @param int|string $post_id ID de l’énigme ou identifiant ACF (ex : 'options')
- * @return void
- */
 function enigme_mettre_a_jour_etat_systeme_automatiquement($post_id): void
 {
-    if (!is_numeric($post_id) || get_post_type($post_id) !== 'enigme') return;
-    if ($post_id === 'options' || wp_is_post_revision($post_id)) return;
-
-    enigme_mettre_a_jour_etat_systeme((int) $post_id); // appelle la version unifiée
+    if (is_numeric($post_id)) {
+        (new ChassesAuTresor\Core\Progress\RiddleSystemStateUpdater())->refresh((int) $post_id);
+    }
 }
 
 

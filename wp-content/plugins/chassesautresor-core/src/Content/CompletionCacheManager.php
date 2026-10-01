@@ -6,6 +6,7 @@ namespace ChassesAuTresor\Core\Content;
 
 use ChassesAuTresor\Core\Relationships\HuntRiddleQueryService;
 use ChassesAuTresor\Core\Relationships\RelationshipService;
+use ChassesAuTresor\Core\Progress\RiddleAnswerService;
 
 /**
  * Calculate and persist completion caches for editable content.
@@ -144,18 +145,6 @@ class CompletionCacheManager {
     }
 
     private function hasAnswers(int $riddleId): bool {
-        $raw = get_field('enigme_reponse_bonne', $riddleId);
-        if (is_array($raw)) {
-            return array_filter(array_map('strval', $raw)) !== [];
-        }
-        if (!is_string($raw) || $raw === '') {
-            return false;
-        }
-        $decoded = json_decode($raw, true);
-        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-            return array_filter(array_map('strval', $decoded)) !== [];
-        }
-        update_field('enigme_reponse_bonne', wp_json_encode([$raw]), $riddleId);
-        return true;
+        return (new RiddleAnswerService())->get($riddleId) !== [];
     }
 }

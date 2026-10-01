@@ -56,9 +56,7 @@ class HuntStatusUpdater {
         }
         update_field('chasse_cache_statut', $status, $huntId);
         (new HuntRiddleCacheSynchronizer())->synchronize($huntId, true, true);
-        foreach ($riddleIds as $riddleId) {
-            do_action('chassesautresor_riddle_state_refresh_requested', (int) $riddleId, $status);
-        }
+        (new RiddleSystemStateUpdater())->refreshHunt($huntId, $status);
         do_action('chassesautresor_hunt_display_cache_clear_requested', $huntId);
 
         return $status;
