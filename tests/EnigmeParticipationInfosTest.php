@@ -26,6 +26,13 @@ if (!function_exists('esc_html__')) {
     }
 }
 
+if (!function_exists('__')) {
+    function __($text, $domain = null)
+    {
+        return $text;
+    }
+}
+
 if (!function_exists('get_field')) {
     function get_field($key, $id)
     {
@@ -132,6 +139,18 @@ if (!function_exists('get_post_meta')) {
     }
 }
 
+if (!function_exists('_prime_post_caches')) {
+    function _prime_post_caches($postIds, $updateTermCache = true, $updateMetaCache = true)
+    {
+    }
+}
+
+if (!function_exists('update_meta_cache')) {
+    function update_meta_cache($metaType, $objectIds)
+    {
+    }
+}
+
 require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Points/PointsRepository.php';
 require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Points/PointsService.php';
 require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/HintUnlockRepository.php';
@@ -166,6 +185,10 @@ class EnigmeParticipationInfosTest extends TestCase
             {
                 global $resolved;
                 return $resolved ? 'resolue' : null;
+            }
+            public function get_col($query)
+            {
+                return [];
             }
         };
     }

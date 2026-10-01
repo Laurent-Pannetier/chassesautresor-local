@@ -6,6 +6,12 @@ namespace ChassesAuTresor\Core\Progress;
 
 /** Load the hints displayed in a player's riddle participation panel. */
 final class RiddleParticipationService {
+    private ?HintUnlockService $hintUnlockService;
+
+    public function __construct(?HintUnlockService $hintUnlockService = null) {
+        $this->hintUnlockService = $hintUnlockService;
+    }
+
     /** @return array{riddle:int[],hunt:int[]} */
     public function hintIds(int $riddleId): array {
         $huntId = recuperer_id_chasse_associee($riddleId);
@@ -19,23 +25,40 @@ final class RiddleParticipationService {
     /** @return array{riddle:array<int,array<string,mixed>>,hunt:array<int,array<string,mixed>>} */
     public function hints(int $riddleId, int $userId): array {
         $groups = $this->hintIds($riddleId);
+        $hintIds = array_values(array_unique(array_merge($groups['riddle'], $groups['hunt'])));
+
+        if ($hintIds !== []) {
+            _prime_post_caches($hintIds, false, false);
+            update_meta_cache('post', $hintIds);
+        }
+
+        $unlockedIds = array_fill_keys($this->hintUnlockService()->unlockedHintIds($userId, $hintIds), true);
 
         return [
-            'riddle' => array_map(fn (int $hintId): array => $this->hint($hintId, $userId), $groups['riddle']),
-            'hunt' => array_map(fn (int $hintId): array => $this->hint($hintId, $userId), $groups['hunt']),
+            'riddle' => array_map(fn (int $hintId): array => $this->hint($hintId, $unlockedIds), $groups['riddle']),
+            'hunt' => array_map(fn (int $hintId): array => $this->hint($hintId, $unlockedIds), $groups['hunt']),
         ];
     }
 
     /** @return array{id:int,cost:int,state:string,unlocked:bool,title:string,available_at:int|false} */
-    private function hint(int $hintId, int $userId): array {
+    private function hint(int $hintId, array $unlockedIds): array {
         return [
             'id' => $hintId,
             'cost' => (int) get_field('indice_cout_points', $hintId),
             'state' => (string) (get_field('indice_cache_etat_systeme', $hintId) ?: ''),
-            'unlocked' => indice_est_debloque($userId, $hintId),
+            'unlocked' => isset($unlockedIds[$hintId]),
             'title' => get_indice_title($hintId),
             'available_at' => $this->timestamp(get_field('indice_date_disponibilite', $hintId)),
         ];
+    }
+
+    private function hintUnlockService(): HintUnlockService {
+        if ($this->hintUnlockService === null) {
+            global $wpdb;
+            $this->hintUnlockService = \ChassesAuTresor\Core\Support\CoreServiceFactory::hintUnlock($wpdb);
+        }
+
+        return $this->hintUnlockService;
     }
 
     /** @return int|false */
