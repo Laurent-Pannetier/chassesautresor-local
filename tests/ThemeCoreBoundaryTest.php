@@ -1050,6 +1050,22 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('get_template_part', $renderer);
     }
 
+    public function testHintUnlockRenderingIsNotInjectedByTheme(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/indices.php');
+        $handler = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/HintUnlockAjaxHandler.php'
+        );
+        $renderer = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/HintUnlockRenderer.php'
+        );
+
+        self::assertStringNotContainsString('HintUnlockAjaxHandler::configure', $source);
+        self::assertStringNotContainsString('function cat_render_unlocked_hint', $source);
+        self::assertStringContainsString("[new HintUnlockRenderer(), 'render']", $handler);
+        self::assertStringContainsString('class HintUnlockRenderer', $renderer);
+    }
+
     public function testAdminConversionServiceIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/admin-functions.php');

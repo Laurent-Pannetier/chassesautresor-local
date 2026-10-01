@@ -40,10 +40,6 @@ class HintUnlockAjaxHandler {
             $status = in_array($error, ['non_connecte', 'invalid_nonce', 'points_insuffisants'], true) ? 403 : 400;
             wp_send_json_error($error, $status);
         }
-        if (!is_callable(self::$renderer)) {
-            wp_send_json_error('erreur_interne', 500);
-        }
-
         $lockKey = "hint_unlock_{$hintId}_{$userId}";
         if (!wp_cache_add($lockKey, 1, 'indices', 15)) {
             wp_send_json_error('doublon', 409);
@@ -67,8 +63,9 @@ class HintUnlockAjaxHandler {
         }
         wp_cache_delete($lockKey, 'indices');
 
+        $renderer = self::$renderer ?? [new HintUnlockRenderer(), 'render'];
         wp_send_json_success([
-            'html' => (string) call_user_func(self::$renderer, $hintId),
+            'html' => (string) call_user_func($renderer, $hintId),
             'points' => $points->getBalance($userId),
             'message' => esc_html__('Indice débloqué', 'chassesautresor-com'),
         ]);

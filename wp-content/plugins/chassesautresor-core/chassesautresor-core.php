@@ -96,6 +96,7 @@ require_once __DIR__ . '/src/Progress/RiddleEngagementApplicationService.php';
 require_once __DIR__ . '/src/Progress/HintUnlockRepository.php';
 require_once __DIR__ . '/src/Progress/HintUnlockService.php';
 require_once __DIR__ . '/src/Progress/HintUnlockPolicy.php';
+require_once __DIR__ . '/src/Progress/HintUnlockRenderer.php';
 require_once __DIR__ . '/src/Progress/HintUnlockAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/RiddleAttemptRepository.php';
 require_once __DIR__ . '/src/Progress/RiddleAttemptService.php';
