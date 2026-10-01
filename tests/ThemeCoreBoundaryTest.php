@@ -108,6 +108,14 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertSame([], $violations, $this->formatViolations($violations));
     }
 
+    public function testThemeDoesNotOwnNativeContentScreenRoutes(): void {
+        $violations = $this->findPhpMatches(
+            '/redirection_si_acces_refuse|add_action\s*\(\s*[\'\"]load-post(?:-new)?\.php[\'\"]/'
+        );
+
+        self::assertSame([], $violations, $this->formatViolations($violations));
+    }
+
     public function testLegacyStatisticsResetWorkflowStaysOutOfTheme(): void
     {
         $violations = $this->findPhpMatches(

@@ -81,9 +81,7 @@ function est_organisateur($user_id = null)
  * 🔹 utilisateur_peut_modifier_enigme → Vérifie si un utilisateur peut modifier une énigme.
  * 🔹 utilisateur_peut_ajouter_chasse → Vérifie si l’utilisateur peut ajouter une chasse à un organisateur donné.
  * 🔹 champ_est_editable → Vérifie si un champ est éditable pour un utilisateur donné.
- * 🔹 redirection_si_acces_refuse → Redirige si l’accès est refusé.
  * 🔹 blocage_acces_admin_non_admins (admin_init) → Empêche certains rôles d’accéder à wp-admin.
- * 🔹 Hooks load-post.php / load-post-new.php / admin_init
  */
 
 
@@ -583,85 +581,6 @@ function champ_est_editable($champ, $post_id, $user_id = null)
         $creation_hunt_count
     );
 }
-
-
-/**
- * Vérifie si un utilisateur peut créer ou modifier un post et redirige si l'accès est refusé.
- *
- * - Vérifie les permissions de création via `utilisateur_peut_creer_post()`.
- * - Vérifie les permissions de modification via `utilisateur_peut_modifier_post()`.
- * - Applique la redirection si l'accès est refusé.
- *
- * @param int|null $post_id ID du post (null si création d'un nouveau post).
- * @param string   $post_type Type de post concerné.
- * @param string   $redirect_url URL de redirection en cas d'accès refusé.
- */
-function redirection_si_acces_refuse($post_id, $post_type, $redirect_url)
-{
-    if (!$post_type) {
-        return;
-    }
-
-    $post_type = sanitize_text_field($post_type);
-    $redirect_url = esc_url_raw($redirect_url);
-
-    if (current_user_can('manage_options')) {
-        return;
-    }
-
-    if (
-        !is_user_logged_in() || ($post_id === null && !utilisateur_peut_creer_post($post_type)) ||
-        ($post_id !== null && !utilisateur_peut_modifier_post($post_id))
-    ) {
-
-        wp_redirect(home_url($redirect_url));
-        exit;
-    }
-}
-
-
-/**
- * Empêche les utilisateurs non autorisés de créer ou modifier un CPT.
- *
- * - Vérifie l'accès avec `redirection_si_acces_refuse()`.
- * - Gère les actions `load-post.php` (modification) et `load-post-new.php` (création).
- *
- * @action load-post.php, load-post-new.php
- */
-add_action('load-post-new.php', function () {
-    if (!is_admin() || !isset($_GET['post_type'])) {
-        return;
-    }
-
-    $post_type = sanitize_text_field($_GET['post_type']);
-    if (!$post_type) {
-        return;
-    }
-
-    redirection_si_acces_refuse(null, $post_type, '/mon-compte/');
-});
-
-/**
- * Empêche les utilisateurs non autorisés d'accéder à l'écran de modification d'un post via l'admin (`post.php`).
- *
- * - Récupère l'ID du post via `$_GET['post']`
- * - Vérifie le type du post
- * - Utilise la fonction `redirection_si_acces_refuse()` pour appliquer les règles d'accès
- * - Redirige vers `/mon-compte/` si l'accès est refusé
- *
- * @hook load-post.php
- */
-add_action('load-post.php', function () {
-    if (!is_admin() || !isset($_GET['post'])) {
-        return;
-    }
-
-    $post_id = (int) $_GET['post'];
-    $post_type = get_post_type($post_id);
-
-    redirection_si_acces_refuse($post_id, $post_type, '/mon-compte/');
-});
-
 
 
 // ==================================================

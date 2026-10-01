@@ -34,7 +34,10 @@ oublié et de WooCommerce. Les fichiers historiques du thème ne sont plus que d
 Le sixième lot a terminé le transfert du cycle de vie du cache de rendu des énigmes : sauvegarde d’une solution,
 résolution d’une énigme et invalidation de la progression latérale.
 
-Estimation après ce lot : **89 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
+Le septième lot a transféré au plugin les contrôleurs des écrans WordPress natifs de création et de modification,
+avec maintien des politiques historiques lorsqu’elles sont disponibles et repli sécurisé sur les capacités WordPress.
+
+Estimation après ce lot : **90 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
 responsabilités fonctionnelles recensées (persistance, accès, routes, traitements, notifications et cache), et non
 sur le nombre de lignes. Il sera réévalué après chaque lot.
 
@@ -44,7 +47,6 @@ sur le nombre de lignes. Il sera réévalué après chaque lot.
 
 Le thème enregistre toujours notamment :
 
-- des restrictions d'accès aux écrans de création et de modification dans `inc/access-functions.php` ;
 - des endpoints, variables de requête et sélections de templates dans `inc/user-functions.php` et
   `inc/organisateur-functions.php` ;
 - le contrôle d'accès aux énigmes dans `inc/enigme/access.php` ;

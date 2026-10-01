@@ -7,6 +7,7 @@ use ChassesAuTresor\Core\Content\OrganizerRoleAssignmentHookHandler;
 use ChassesAuTresor\Core\Content\WordPressAccessPolicyHookHandler;
 use ChassesAuTresor\Core\Content\BackOfficeAccessHookHandler;
 use ChassesAuTresor\Core\Content\RiddleRenderCacheHookHandler;
+use ChassesAuTresor\Core\Content\ContentScreenAccessHookHandler;
 use ChassesAuTresor\Core\Content\HuntWelcomeModalViewHookHandler;
 use ChassesAuTresor\Core\Content\HuntViewMaintenanceHookHandler;
 use ChassesAuTresor\Core\Content\HuntModerationRequestHandler;
@@ -20,6 +21,24 @@ use PHPUnit\Framework\TestCase;
 
 final class BusinessHookOwnershipTest extends TestCase
 {
+    public function testContentScreenAccessHooksAreRegisteredByCore(): void {
+        $hooks = [];
+
+        ContentScreenAccessHookHandler::register(
+            static function (...$arguments) use (&$hooks): void {
+                $hooks[] = $arguments;
+            }
+        );
+
+        self::assertSame(
+            [
+                ['load-post-new.php', [ContentScreenAccessHookHandler::class, 'handleCreateScreen']],
+                ['load-post.php', [ContentScreenAccessHookHandler::class, 'handleEditScreen']],
+            ],
+            $hooks
+        );
+    }
+
     public function testRiddleRenderCacheHooksAreRegisteredByCore(): void {
         $hooks = [];
 
