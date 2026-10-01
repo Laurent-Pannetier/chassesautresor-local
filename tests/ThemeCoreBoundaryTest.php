@@ -703,6 +703,9 @@ final class ThemeCoreBoundaryTest extends TestCase
         );
         self::assertStringNotContainsString("'mettre_a_jour_statuts_chasse'", $moderation);
         self::assertStringNotContainsString("'enigme_mettre_a_jour_etat_systeme'", $moderation);
+        self::assertStringNotContainsString('recuperer_enigmes_associees', $moderation);
+        self::assertStringNotContainsString('get_organisateur_from_chasse', $moderation);
+        self::assertStringNotContainsString('chasse_trash_with_children', $moderation);
     }
 
     public function testThemeDoesNotResolveProtectedImagePaths(): void

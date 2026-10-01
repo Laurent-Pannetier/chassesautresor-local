@@ -39,9 +39,20 @@ class HuntDeletionAjaxHandler {
             wp_send_json_error($error);
         }
 
+        $deleted = self::trashHunt($huntId, $service);
+        if (!$deleted) {
+            wp_send_json_error('erreur_suppression');
+        }
+
+        self::addDeletedMessage($userId);
+        wp_send_json_success(['redirect' => home_url('/mon-compte/organisateurs/')]);
+    }
+
+    public static function trashHunt(int $huntId, ?HuntDeletionService $service = null): bool {
         $riddleIds = get_posts((new HuntRiddleQueryService())->getRiddleIdsQueryArgs($huntId));
         $attachments = get_attached_media('image', $huntId);
-        $deleted = $service->trash(
+
+        return ($service ?? new HuntDeletionService())->trash(
             $huntId,
             is_array($riddleIds) ? $riddleIds : [],
             is_array($attachments) ? $attachments : [],
@@ -57,12 +68,6 @@ class HuntDeletionAjaxHandler {
                 update_post_meta($huntId, RiddleCacheMutationService::FIELD_NAME, []);
             }
         );
-        if (!$deleted) {
-            wp_send_json_error('erreur_suppression');
-        }
-
-        self::addDeletedMessage($userId);
-        wp_send_json_success(['redirect' => home_url('/mon-compte/organisateurs/')]);
     }
 
     private static function isAssociated(int $userId, int $huntId): bool {

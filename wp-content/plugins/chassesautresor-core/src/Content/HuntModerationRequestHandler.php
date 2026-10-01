@@ -7,6 +7,8 @@ namespace ChassesAuTresor\Core\Content;
 use ChassesAuTresor\Core\Support\CoreServiceFactory;
 use ChassesAuTresor\Core\Progress\HuntStatusUpdater;
 use ChassesAuTresor\Core\Progress\RiddleSystemStateUpdater;
+use ChassesAuTresor\Core\Relationships\HuntRiddleQueryService;
+use ChassesAuTresor\Core\Relationships\RelationshipService;
 use WP_User;
 
 final class HuntModerationRequestHandler
@@ -46,8 +48,11 @@ final class HuntModerationRequestHandler
             wp_die(__('Nonce invalide.', 'chassesautresor-com'));
         }
 
-        $riddleIds = array_map('intval', (array) recuperer_enigmes_associees($huntId));
-        $organizerId = (int) get_organisateur_from_chasse($huntId);
+        $riddleQuery = (new HuntRiddleQueryService())->getRiddleIdsQueryArgs($huntId);
+        $riddleIds = array_map('intval', (array) get_posts($riddleQuery));
+        $organizerId = (new RelationshipService())->normalizeId(
+            get_field('chasse_cache_organisateur', $huntId)
+        ) ?? 0;
         $users = $organizerId > 0 ? (array) get_field('utilisateurs_associes', $organizerId) : [];
         $userIds = array_values(array_filter(array_map([self::class, 'normalizeUserId'], $users)));
         $plan = $moderation->plan($action);
@@ -67,7 +72,7 @@ final class HuntModerationRequestHandler
 
         if ($action === 'valider') {
             self::promoteOrganizer($organizerId, $userIds);
-        } elseif ($action === 'supprimer' && !chasse_trash_with_children($huntId)) {
+        } elseif ($action === 'supprimer' && !HuntDeletionAjaxHandler::trashHunt($huntId)) {
             wp_die(__('Impossible de supprimer la chasse.', 'chassesautresor-com'));
         }
 
