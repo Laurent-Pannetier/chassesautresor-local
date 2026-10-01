@@ -114,6 +114,7 @@ final class ThemeCoreBoundaryTest extends TestCase
 
         self::assertStringNotContainsString('function soumettre_reponse_manuelle', $answers);
         self::assertStringNotContainsString('function soumettre_reponse_automatique', $answers);
+        self::assertStringNotContainsString('function envoyer_mail_reponse_manuelle', $answers);
     }
 
     public function testThemeDoesNotRegisterOrganizerConfirmationRoutes(): void

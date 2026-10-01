@@ -62,7 +62,7 @@ class RiddleAnswerSubmissionAjaxHandler {
                 'tentative_' . $uid,
                 ['text' => $link, 'type' => 'info', 'dismissible' => false]
             );
-            envoyer_mail_reponse_manuelle($userId, $riddleId, $answer, $uid);
+            (new ManualAnswerNotificationService())->notify($userId, $riddleId, $answer, $uid);
             $timestamp = current_time('timestamp');
         } catch (Throwable $exception) {
             self::releaseLock($lockKey);

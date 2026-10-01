@@ -19,7 +19,7 @@ considérées comme de la logique métier résiduelle ; elles restent toutefois 
 
 ## Avancement au 1er octobre 2026
 
-**Estimation : 98,5 % de la migration métier est terminée.** Cette valeur est une estimation architecturale, pas un
+**Estimation : 99 % de la migration métier est terminée.** Cette valeur est une estimation architecturale, pas un
 ratio de lignes : elle pondère la couverture des domaines Core, l'indépendance des points d'entrée WordPress, la
 propriété de la persistance, l'absence d'effets de bord dans les vues et la couverture de tests.
 
@@ -52,12 +52,14 @@ Le lot de migration associé à cet audit a sorti du thème :
 - l'enregistrement des gagnants et la clôture effective d'une chasse, désormais exécutés par le handler Core.
 - le débit, l'enregistrement et la transition de statut des soumissions de réponses, sans contrôleur exposé par le
   thème.
+- la notification de nouvelle réponse manuelle à l'organisateur, désormais construite et envoyée par Core.
 
 ### Prochain lot recommandé (taille maximale raisonnable)
 
-Migrer en un gros lot les **dernières notifications et façades de réponse** : déplacer les courriels de soumission
-et de résultat dans Core, puis supprimer les fonctions globales de tentative que seuls les adaptateurs historiques
-utilisent encore. Cible après ce lot : **99 %**.
+Migrer en un dernier gros lot les **notifications de résultat et façades de tentative** : déplacer les courriels de
+validation ou de refus dans Core, puis supprimer les fonctions globales que seuls les adaptateurs historiques
+utilisent encore. Ce lot pourra aussi remplacer les derniers effets de bord présents dans les vues. Cible après ce
+lot : **100 %**.
 
 ## Critères utilisés
 

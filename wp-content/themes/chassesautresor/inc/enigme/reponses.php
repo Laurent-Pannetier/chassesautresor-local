@@ -183,65 +183,6 @@ function calculer_contexte_points(int $user_id, int $enigme_id): array
      * @param string $reponse
      * @param string $uid
      */
-    function envoyer_mail_reponse_manuelle($user_id, $enigme_id, $reponse, $uid)
-    {
-        // 🔍 Email organisateur
-        $chasse  = get_field('enigme_chasse_associee', $enigme_id, false);
-        if (is_array($chasse)) {
-            $chasse_id = is_object($chasse[0]) ? (int) $chasse[0]->ID : (int) $chasse[0];
-        } elseif (is_object($chasse)) {
-            $chasse_id = (int) $chasse->ID;
-        } else {
-            $chasse_id = (int) $chasse;
-        }
-
-        $organisateur_id = $chasse_id ? get_organisateur_from_chasse($chasse_id) : null;
-        $email_organisateur = $organisateur_id ? get_field('email_organisateur', $organisateur_id) : '';
-        if (!$email_organisateur) {
-            $email_organisateur = get_option('admin_email');
-        }
-
-        $titre_enigme = html_entity_decode(get_the_title($enigme_id), ENT_QUOTES, 'UTF-8');
-        $user = get_userdata($user_id);
-        $subject_raw = '[Réponse Énigme] ' . $titre_enigme;
-
-        $date        = date_i18n('j F Y à H:i', current_time('timestamp'));
-        $url_enigme  = get_permalink($enigme_id);
-        $profil_url  = get_author_posts_url($user_id);
-        $traitement_url = esc_url(add_query_arg([
-            'uid' => $uid,
-        ], home_url('/traitement-tentative')));
-
-        // 📧 Message HTML
-        $message  = '<div style="font-family:Arial,sans-serif; font-size:14px;">';
-        $message .= '<p>Une nouvelle réponse manuelle a été soumise par <strong><a href="' . esc_url($profil_url) . '" target="_blank">' . esc_html($user->user_login) . '</a></strong>.</p>';
-        $message .= '<p><strong>🧩 Énigme :</strong> <em>' . esc_html($titre_enigme) . '</em></p>';
-        $message .= '<p><strong>📝 Réponse :</strong><br><blockquote>' . nl2br(esc_html($reponse)) . '</blockquote></p>';
-        $message .= '<p><strong>📅 Soumise le :</strong> ' . esc_html($date) . '</p>';
-        $message .= '<p><strong>🔐 Identifiant :</strong> ' . esc_html($uid) . '</p>';
-        $message .= '<hr>';
-        $message .= '<p style="text-align:center;">';
-        $message .= '<a href="' . $traitement_url . '" style="background:#0073aa;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold;display:inline-block;">🛠️ Traiter cette tentative</a>';
-        $message .= '</p>';
-        $message .= '<p><strong>✉️ Contacter le joueur :</strong><br>';
-        $message .= '<a href="mailto:' . esc_attr($user->user_email) . '">' . esc_html($user->display_name) . ' (' . esc_html($user->user_email) . ')</a></p>';
-        $message .= '<p><a href="' . esc_url($url_enigme) . '" target="_blank" style="font-size:0.9em;">🔗 Voir l’énigme en ligne</a></p>';
-        $message .= '</div>';
-
-        $headers = [
-            'Reply-To: ' . $user->display_name . ' <' . $user->user_email . '>',
-        ];
-
-        $from_filter = static function ($name) use ($user) {
-            return $user->display_name;
-        };
-        add_filter('wp_mail_from_name', $from_filter, 10, 1);
-
-        cta_send_email($email_organisateur, $subject_raw, $message, $headers);
-        remove_filter('wp_mail_from_name', $from_filter, 10);
-    }
-
-
     /**
      * Envoie un email de notification au joueur concernant le résultat de sa
      * réponse à une énigme.
