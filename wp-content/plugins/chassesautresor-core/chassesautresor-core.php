@@ -123,6 +123,7 @@ require_once __DIR__ . '/src/Media/RiddleImageProtectionAjaxHandler.php';
 require_once __DIR__ . '/src/Media/RiddleImageProtectionLifecycle.php';
 require_once __DIR__ . '/src/Media/UserAvatarUploadAjaxHandler.php';
 require_once __DIR__ . '/src/Media/ProtectedAssetRouteHandler.php';
+require_once __DIR__ . '/src/Media/ProtectedRiddleAssetService.php';
 require_once __DIR__ . '/src/Content/RiddleCompletionService.php';
 require_once __DIR__ . '/src/Content/HuntFilterRequestService.php';
 require_once __DIR__ . '/src/Content/HuntFilterAjaxHandler.php';

@@ -138,6 +138,13 @@ final class ThemeCoreBoundaryTest extends TestCase
         $violations = $this->findPhpMatches('/voir_fichier|voir_image_enigme/');
 
         self::assertSame([], $violations, $this->formatViolations($violations));
+
+        $imageController = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Media/protected-riddle-image.php'
+        );
+        self::assertStringNotContainsString('trouver_chemin_image', $imageController);
+        self::assertStringNotContainsString('utilisateur_peut_voir_enigme', $imageController);
+        self::assertStringContainsString('ProtectedRiddleAssetService', $imageController);
     }
 
     public function testThemeDoesNotOwnLegacyAccountRoutes(): void {

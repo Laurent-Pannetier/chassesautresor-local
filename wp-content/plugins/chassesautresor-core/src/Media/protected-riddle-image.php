@@ -18,14 +18,10 @@ if (!in_array($taille, $sizes, true)) {
     exit(__('Taille d\'image invalide', 'chassesautresor-com'));
 }
 
-// Legacy adapters are migrated separately; fail closed when they are unavailable.
-if (!function_exists('trouver_chemin_image') || !function_exists('utilisateur_peut_voir_enigme')) {
-    status_header(503);
-    exit(__('Service temporairement indisponible', 'chassesautresor-com'));
-}
 // 🧩 Récupération de l'énigme associée à cette image
 global $wpdb;
 $image_service = ChassesAuTresor\Core\Support\CoreServiceFactory::riddleImages($wpdb);
+$asset_service = new ChassesAuTresor\Core\Media\ProtectedRiddleAssetService();
 $enigme_id = $image_service->findRiddleId($image_id);
 
 if (!$enigme_id) {
@@ -34,19 +30,19 @@ if (!$enigme_id) {
 }
 
 // 🔐 Vérification d'accès
-if (!utilisateur_peut_voir_enigme($enigme_id)) {
+if (!$asset_service->canViewRiddle($enigme_id, get_current_user_id())) {
     http_response_code(403);
     exit(__('Accès refusé', 'chassesautresor-com'));
 }
 
 // 📦 Récupération du chemin de l'image
-$info = trouver_chemin_image($image_id, $taille);
+$info = $asset_service->findImage($image_id, $taille);
 $path = $info['path'] ?? null;
 $mime = $info['mime'] ?? 'application/octet-stream';
 
 // 🔁 Fallback automatique vers full si fichier manquant
 if (!$path && $taille !== 'full') {
-    $info = trouver_chemin_image($image_id, 'full');
+    $info = $asset_service->findImage($image_id);
     $path = $info['path'] ?? null;
     $mime = $info['mime'] ?? 'application/octet-stream';
 }
