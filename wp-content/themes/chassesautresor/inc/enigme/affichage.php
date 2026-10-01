@@ -4,14 +4,6 @@ require_once __DIR__ . '/../sidebar.php';
 require_once __DIR__ . '/utils.php';
 require_once __DIR__ . '/indices.php';
 
-if (!function_exists('cat_get_riddle_statistics_service')) {
-    function cat_get_riddle_statistics_service(): ChassesAuTresor\Core\Progress\RiddleStatisticsService
-    {
-        global $wpdb;
-        return ChassesAuTresor\Core\Support\CoreServiceFactory::riddleStatistics($wpdb);
-    }
-}
-
     // ==================================================
     // 🎨 AFFICHAGE STYLISÉ DES ÉNIGMES
     // ==================================================
@@ -19,40 +11,6 @@ if (!function_exists('cat_get_riddle_statistics_service')) {
      * 🔹 afficher_enigme_stylisee() → Affiche l’énigme avec son style d’affichage (structure unique + blocs surchargeables)
      * 🔸 enigme_get_partial() → Charge un partiel adapté au style (ex: pirate/images.php), avec fallback global.
      */
-
-    /**
-     * Determine if the enigma menu should be displayed for a user.
-     *
-     * @param int    $user_id     User identifier.
-     * @param int    $chasse_id   Associated hunt ID.
-     * @param string $chasse_stat Current hunt status.
-     *
-     * @return bool
-     */
-    function enigme_user_can_see_menu(int $user_id, int $chasse_id, string $chasse_stat): bool
-    {
-        if (!$chasse_id) {
-            return false;
-        }
-
-        $validation_status = get_field('chasse_cache_statut_validation', $chasse_id) ?? '';
-        $is_admin          = current_user_can('administrator');
-        $is_associated     = utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
-        $is_organizer      = est_organisateur($user_id);
-
-        if (($is_admin || ($is_organizer && $is_associated)) && $validation_status !== 'banni') {
-            return true;
-        }
-
-        if (
-            !function_exists('utilisateur_est_engage_dans_chasse')
-            || !utilisateur_est_engage_dans_chasse($user_id, $chasse_id)
-        ) {
-            return false;
-        }
-
-        return !in_array($chasse_stat, ['revision', 'a_venir'], true);
-    }
 
     /**
      * Render a bar chart section used for stats.

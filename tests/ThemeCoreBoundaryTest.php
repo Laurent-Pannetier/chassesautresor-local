@@ -1323,6 +1323,21 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringContainsString('class AccountOrganizersRenderer', $renderer);
     }
 
+    public function testRiddleDisplayPoliciesBelongToCore(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/affichage.php');
+        $stats = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/stats.php');
+        $core = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/riddle-display-functions.php'
+        );
+
+        foreach (['cat_get_riddle_statistics_service', 'enigme_user_can_see_menu'] as $functionName) {
+            self::assertStringNotContainsString("function {$functionName}(", $source);
+            self::assertStringContainsString("function {$functionName}(", $core);
+        }
+        self::assertStringNotContainsString('function cat_get_riddle_statistics_service(', $stats);
+    }
+
     public function testThemeDoesNotOwnHuntModerationEmails(): void
     {
         $violations = $this->findPhpMatches(

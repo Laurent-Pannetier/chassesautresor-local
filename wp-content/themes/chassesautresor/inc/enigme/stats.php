@@ -1,14 +1,6 @@
 <?php
 defined('ABSPATH') || exit;
 
-if (!function_exists('cat_get_riddle_statistics_service')) {
-    function cat_get_riddle_statistics_service(): ChassesAuTresor\Core\Progress\RiddleStatisticsService
-    {
-        global $wpdb;
-        return ChassesAuTresor\Core\Support\CoreServiceFactory::riddleStatistics($wpdb);
-    }
-}
-
 function enigme_stats_excluded_user_ids(int $enigme_id): array
 {
     $excluded = function_exists('get_users') ? get_users(['role' => 'administrator', 'fields' => 'ids']) : [];

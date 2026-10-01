@@ -443,6 +443,11 @@ et le tableau de modération des organisateurs, ainsi que le renderer de section
 templates. Les quatorze callbacks de rendu initialement recensés sont maintenant autonomes et aucune configuration
 `*Handler::configure()` ne demeure dans le thème.
 
+Le quatre-vingt-seizième lot ouvre le découpage d'`inc/enigme/affichage.php` en transférant la fabrique du service de
+statistiques et la politique de visibilité du menu d'énigme. Les vues historiques conservent les mêmes points d'entrée,
+mais leur résolution de service et leur décision d'accès appartiennent désormais au plugin. Le fichier reste un grand
+assembleur mixte et les deux indicateurs globaux restent donc inchangés.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |
