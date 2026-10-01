@@ -1054,12 +1054,23 @@ final class ThemeCoreBoundaryTest extends TestCase
     public function testEngagedHuntsBusinessCallbacksAreNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/user-functions.php');
+        $core = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/engaged-hunt-functions.php'
+        );
         preg_match('/EngagedHuntsAjaxHandler::configure\([\s\S]*?^    \);/m', $source, $matches);
         $configuration = $matches[0] ?? null;
 
         self::assertIsString($configuration);
         self::assertStringNotContainsString('ca_get_user_engaged_hunt_ids', $configuration);
         self::assertStringNotContainsString('ca_prepare_engaged_hunts_pagination', $configuration);
+        foreach ([
+            'ca_get_engaged_hunts_page_param',
+            'ca_get_user_engaged_hunt_ids',
+            'ca_prepare_engaged_hunts_pagination',
+        ] as $functionName) {
+            self::assertStringNotContainsString("function {$functionName}(", $source);
+            self::assertStringContainsString("function {$functionName}(", $core);
+        }
     }
 
     public function testUserAttemptsRenderingIsNotInjectedByTheme(): void

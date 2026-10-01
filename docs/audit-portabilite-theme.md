@@ -392,6 +392,11 @@ Le quatre-vingt-sixième lot autonomise le tableau administratif des demandes de
 organisateurs et coordonnées bancaires, traduit les statuts et construit les actions de traitement sans callback du
 thème. Le tableau initial réutilise un wrapper core et les configurations résiduelles passent à trois.
 
+Le quatre-vingt-septième lot poursuit le découpage d'`inc/user-functions.php` en déplaçant ses trois helpers de données
+des chasses engagées : paramètre de page, lecture filtrée des engagements et pagination. Le thème conserve encore le
+rendu des cartes et son callback AJAX ; les indicateurs pondérés et les trois configurations résiduelles restent donc
+inchangés jusqu'à la fourniture d'un parcours de rendu réellement autonome.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |
