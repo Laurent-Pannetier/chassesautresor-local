@@ -65,7 +65,9 @@ if (!function_exists('recuperer_ids_enigmes_pour_chasse')) {
     function recuperer_ids_enigmes_pour_chasse($id) { return [5,6]; }
 }
 if (!function_exists('get_posts')) {
-    function get_posts($args) { return [1, 2, 3, 4, 5]; }
+    function get_posts($args) {
+        return ($args['post_type'] ?? '') === 'enigme' ? [5, 6] : [1, 2, 3, 4, 5];
+    }
 }
 if (!class_exists('WP_Query')) {
     class WP_Query {

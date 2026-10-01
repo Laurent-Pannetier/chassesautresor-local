@@ -155,7 +155,12 @@ résolveur core qui applique les règles de création, modification et suppressi
 le résolveur commun d'accès aux champs. Les cinq filtres d'autorisation correspondants ont été retirés des fichiers
 d'édition du thème ; leurs filtres de rendu restent volontairement dans la présentation.
 
-Estimation prudente après ce lot : **environ 95 % de l'autonomie métier vérifiée**. Il ne s'agit plus d'un calcul au
+Le trente-neuvième lot a retiré les cinq injections de lecture encore utilisées par les tableaux et options d'indices.
+Le plugin résout maintenant lui-même la chasse d'une énigme, les énigmes d'une chasse, le prochain rang d'indice et
+l'existence d'une solution. Les seuls filtres conservés dans ce parcours sont les deux moteurs de rendu de carte et de
+tableau, qui restent légitimement dans la couche de présentation.
+
+Estimation prudente après ce lot : **environ 97 % de l'autonomie métier vérifiée**. Il ne s'agit plus d'un calcul au
 centième fondé sur les lots déjà traités : cette valeur applique une décote aux dépendances runtime encore observées,
 aux politiques d'édition encore enregistrées par le thème, aux adaptateurs d'accès encore utilisés ailleurs et à
 l'absence de recette sous thème neutre. Le pourcentage ne remontera qu'après suppression vérifiée de ces catégories.

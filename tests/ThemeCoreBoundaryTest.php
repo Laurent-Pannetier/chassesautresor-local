@@ -439,6 +439,29 @@ final class ThemeCoreBoundaryTest extends TestCase
         }
     }
 
+    public function testHintQueriesAreNotInjectedByTheme(): void
+    {
+        $edition = (string) file_get_contents(self::THEME_PATH . '/inc/edition/edition-indice.php');
+        foreach ([
+            'chassesautresor_hint_hunt_riddle_ids',
+            'chassesautresor_hint_related_hunt_id',
+            'chassesautresor_hint_target_riddles',
+            'chassesautresor_next_hint_rank',
+            'chassesautresor_hint_target_has_solution',
+        ] as $businessHook) {
+            self::assertStringNotContainsString($businessHook, $edition);
+        }
+
+        $table = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Content/HintTableAjaxHandler.php'
+        );
+        $options = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Content/HintRiddleOptionsAjaxHandler.php'
+        );
+        self::assertStringNotContainsString('chassesautresor_hint_', $table);
+        self::assertStringNotContainsString('chassesautresor_hint_', $options);
+    }
+
     public function testRiddleStatisticsAccessIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/stats.php');

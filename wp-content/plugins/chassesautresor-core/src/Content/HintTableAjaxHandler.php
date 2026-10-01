@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Content;
 
+use ChassesAuTresor\Core\Relationships\HuntRiddleQueryService;
+use ChassesAuTresor\Core\Relationships\RelationshipService;
+
 /**
  * WordPress AJAX adapter for the paginated hint management table.
  */
@@ -35,7 +38,9 @@ class HintTableAjaxHandler {
         if ($targetType === 'enigme') {
             $riddleId = $targetId;
             if ($huntId <= 0) {
-                $huntId = (int) apply_filters('chassesautresor_hint_related_hunt_id', 0, $riddleId);
+                $huntId = (int) (new RelationshipService())->normalizeId(
+                    get_field('enigme_chasse_associee', $riddleId)
+                );
             }
         } else {
             $huntId = $targetId;
@@ -43,7 +48,7 @@ class HintTableAjaxHandler {
 
         $perPage = $targetType === 'chasse' ? 5 : 8;
         $riddleIds = $targetType === 'chasse'
-            ? (array) apply_filters('chassesautresor_hint_hunt_riddle_ids', [], $targetId)
+            ? array_map('intval', get_posts((new HuntRiddleQueryService())->getRiddleIdsQueryArgs($targetId)))
             : [];
         $queryService = new HintQueryService();
         $ids = get_posts($queryService->getManagementTableQueryArgs(

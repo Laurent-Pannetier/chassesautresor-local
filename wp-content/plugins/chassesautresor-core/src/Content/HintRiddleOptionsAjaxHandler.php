@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Content;
 
+use ChassesAuTresor\Core\Relationships\HuntRiddleQueryService;
+
 /**
  * WordPress AJAX adapter for riddles selectable as hint targets.
  */
@@ -26,18 +28,23 @@ class HintRiddleOptionsAjaxHandler {
             wp_send_json_error('acces_refuse');
         }
 
-        $riddles = (array) apply_filters('chassesautresor_hint_target_riddles', [], $huntId);
-        $nextRank = (int) apply_filters('chassesautresor_next_hint_rank', 1, $huntId, 'chasse');
+        $riddles = (new \WP_Query(
+            (new HuntRiddleQueryService())->getVisibleRiddlesQueryArgs($huntId)
+        ))->posts;
+        $rankQuery = (new HintQueryService())->getRankedHintIdsQueryArgs($huntId, 'chasse');
+        $nextRank = count($rankQuery === [] ? [] : get_posts($rankQuery)) + 1;
         $excludeSolutions = !empty($_POST['sans_solution']);
+        $solutionQueries = new SolutionQueryService();
         $options = (new HintManagementService())->buildRiddleOptions(
             $riddles,
             $nextRank,
-            static fn ($riddle): bool => $excludeSolutions && (bool) apply_filters(
-                'chassesautresor_hint_target_has_solution',
-                false,
-                (int) $riddle->ID,
-                'enigme'
-            ),
+            static function ($riddle) use ($excludeSolutions, $solutionQueries): bool {
+                if (!$excludeSolutions) {
+                    return false;
+                }
+                $query = $solutionQueries->getExistingSolutionIdsQueryArgs((int) $riddle->ID, 'enigme');
+                return $query !== [] && (new \WP_Query($query))->posts !== [];
+            },
             static fn ($riddle): string => (string) get_the_title($riddle)
         );
 

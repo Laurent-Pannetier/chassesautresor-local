@@ -168,19 +168,6 @@ function rendre_carte_indices(string $html, int $huntId): string
 }
 add_filter('chassesautresor_render_hint_card', 'rendre_carte_indices', 10, 2);
 
-/** @return int[] */
-function fournir_ids_enigmes_table_indice(array $riddleIds, int $huntId): array
-{
-    return recuperer_ids_enigmes_pour_chasse($huntId);
-}
-add_filter('chassesautresor_hint_hunt_riddle_ids', 'fournir_ids_enigmes_table_indice', 10, 2);
-
-function fournir_chasse_liee_table_indice(int $huntId, int $riddleId): int
-{
-    return (int) recuperer_id_chasse_associee($riddleId);
-}
-add_filter('chassesautresor_hint_related_hunt_id', 'fournir_chasse_liee_table_indice', 10, 2);
-
 /**
  * @param object[] $hints
  * @param array{total:int,hunt:int,riddle:int} $counts
@@ -212,31 +199,6 @@ function rendre_table_indices(
     return (string) ob_get_clean();
 }
 add_filter('chassesautresor_render_hint_table', 'rendre_table_indices', 10, 9);
-
-/** @return array<int, object> */
-function fournir_enigmes_cibles_indice(array $riddles, int $huntId): array
-{
-    return recuperer_enigmes_pour_chasse($huntId);
-}
-add_filter('chassesautresor_hint_target_riddles', 'fournir_enigmes_cibles_indice', 10, 2);
-
-function fournir_prochain_rang_indice(
-    int $rank,
-    int $targetId,
-    string $targetType
-): int {
-    return prochain_rang_indice($targetId, $targetType);
-}
-add_filter('chassesautresor_next_hint_rank', 'fournir_prochain_rang_indice', 10, 3);
-
-function indiquer_solution_cible_indice(bool $exists, int $targetId, string $targetType): bool
-{
-    return solution_existe_pour_objet($targetId, $targetType);
-}
-add_filter('chassesautresor_hint_target_has_solution', 'indiquer_solution_cible_indice', 10, 3);
-
-
-
 
 /**
  * Pré-remplit automatiquement la chasse liée d'un indice lors de sa création.

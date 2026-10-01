@@ -46,6 +46,19 @@ if (!function_exists('apply_filters')) {
         return $value;
     }
 }
+if (!class_exists('WP_Query')) {
+    class WP_Query {
+        public $posts;
+        public function __construct($args) {
+            if (($args['post_type'] ?? '') === 'solution') {
+                $targetId = $args['meta_query'][2][0]['value'] ?? 0;
+                $this->posts = $targetId === 1 ? [99] : [];
+                return;
+            }
+            $this->posts = recuperer_enigmes_pour_chasse(10);
+        }
+    }
+}
 
 class ChasseListerEnigmesAjaxTest extends TestCase
 {
@@ -53,7 +66,7 @@ class ChasseListerEnigmesAjaxTest extends TestCase
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      */
-    public function test_excludes_enigmas_with_existing_solutions(): void
+    public function test_lists_riddles_from_core_query(): void
     {
         if (!function_exists('is_user_logged_in')) {
             function is_user_logged_in() { return true; }
@@ -89,7 +102,10 @@ class ChasseListerEnigmesAjaxTest extends TestCase
             function get_the_title($post) { return 'Title'; }
         }
         if (!function_exists('get_posts')) {
-            function get_posts($args) { return []; }
+            function get_posts($args) {
+                $targetId = $args['meta_query'][2][0]['value'] ?? 0;
+                return $args['post_type'] === 'solution' && $targetId === 1 ? [99] : [];
+            }
         }
         if (!function_exists('__')) {
             function __($text, $domain = null) { return $text; }
@@ -98,8 +114,7 @@ class ChasseListerEnigmesAjaxTest extends TestCase
         require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
 
         $_POST = [
-            'chasse_id'     => 10,
-            'sans_solution' => 1,
+            'chasse_id' => 10,
         ];
 
         \ChassesAuTresor\Core\Content\HintRiddleOptionsAjaxHandler::handle();
@@ -107,7 +122,7 @@ class ChasseListerEnigmesAjaxTest extends TestCase
         global $checkedAjaxNonce, $json_success_data;
         $this->assertSame(['hint_management', 'nonce'], $checkedAjaxNonce);
         $ids = array_column($json_success_data['enigmes'], 'id');
-        $this->assertSame([2], $ids);
+        $this->assertSame([1, 2], $ids);
     }
 
     /**
@@ -149,6 +164,9 @@ class ChasseListerEnigmesAjaxTest extends TestCase
         }
         if (!function_exists('__')) {
             function __($text, $domain = null) { return $text; }
+        }
+        if (!function_exists('get_posts')) {
+            function get_posts($args) { return []; }
         }
 
         require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
