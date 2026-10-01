@@ -465,6 +465,7 @@ add_action('wp_enqueue_scripts', function () {
         );
         wp_localize_script('sidebar', 'sidebarData', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('hunt_navigation'),
         ]);
         wp_enqueue_script(
             'sidebar-menu-toggle',

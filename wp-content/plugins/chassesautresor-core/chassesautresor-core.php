@@ -22,6 +22,9 @@ require_once __DIR__ . '/src/Points/ConversionModalAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/HuntProgressRepository.php';
 require_once __DIR__ . '/src/Progress/HuntProgressService.php';
 require_once __DIR__ . '/src/Progress/HuntStatusService.php';
+require_once __DIR__ . '/src/Progress/HuntNavigationAjaxHandler.php';
+require_once __DIR__ . '/src/Progress/HuntNavigationAccessService.php';
+require_once __DIR__ . '/src/Progress/HuntValidationAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/HuntStatusAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/HuntStatusScheduler.php';
 require_once __DIR__ . '/src/Progress/HuntStatusUpdater.php';
@@ -248,6 +251,8 @@ ChassesAuTresor\Core\Content\OrganizerRelationshipSaveHookHandler::register('add
 ChassesAuTresor\Core\Content\CompletionCacheSaveHookHandler::register('add_action');
 ChassesAuTresor\Core\Content\HuntFeatureCacheSaveHookHandler::register('add_action');
 ChassesAuTresor\Core\Progress\HuntStatusAjaxHandler::register('add_action');
+ChassesAuTresor\Core\Progress\HuntNavigationAjaxHandler::register('add_action');
+ChassesAuTresor\Core\Progress\HuntValidationAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Progress\HuntStatusScheduler::register('add_action');
 ChassesAuTresor\Core\Progress\HuntStatusSaveHookHandler::register('add_action');
 ChassesAuTresor\Core\Progress\RiddleStatusAjaxHandler::register('add_action');
