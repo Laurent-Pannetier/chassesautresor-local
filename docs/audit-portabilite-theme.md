@@ -568,12 +568,21 @@ crédit de points vivent avec `point-service-functions.php`. Les collecteurs d'o
 de production depuis l'autonomisation de la section compte, sont supprimés plutôt que déplacés. Les fichiers du thème
 ne conservent que leurs scripts, outils de diagnostic et rendus encore utilisés.
 
+Le cent-dix-huitième lot ouvre la migration de la présentation avec un résolveur de templates Core. Un thème peut
+surcharger les vues sous `chassesautresor-core/`, tandis que le plugin fournit les replis des pages individuelles de
+chasse, énigme et organisateur à partir d'un view-model documenté. Le filtre respecte tout template dédié déjà choisi
+par WordPress, ce qui préserve le thème historique. Une feuille de style mobile-first et un script de soumission de
+réponse appartiennent au plugin et ne sont chargés qu'avec un thème tiers, afin d'éviter leur double chargement. Les
+tests couvrent résolution, surcharge, repli, enregistrement des assets et absence de chemin plugin vers le thème. La
+recette neutre minimale de ces trois pages est décrite dans `docs/recette-theme-neutre.md` ; elle ne vaut pas encore
+recette complète des comptes, de l'édition et de WooCommerce.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |
 |---|---:|---|
 | Extraction du métier PHP inventorié | **100 %** | Aucun grand view-model métier mixte ne reste dans le thème |
-| Remplaçabilité effective du thème | **55 %** | Les rendus AJAX et deux sections de compte ont un fallback Core |
+| Remplaçabilité effective du thème | **58 %** | Trois pages publiques, leurs assets minimaux et leur recette ciblée ont un fallback Core |
 
 Ces indicateurs sont recalculés avec la grille détaillée plus bas, et non à partir du nombre de fonctions déplacées.
 Ils seront modifiés uniquement lorsqu'un axe pondéré de cette grille progresse effectivement.
@@ -606,8 +615,11 @@ Résultats obtenus après ce lot :
   compatibilité sont fournis par le plugin ;
 - la revue ciblée ne relève plus de grand assembleur de view-model métier mixte. `inc/user-functions.php` et
   `inc/enigme/affichage.php` conservent des compositions HTML propres au thème, alimentées par les services Core ;
-- **83 templates/parcours PHP** et **93 assets JavaScript/CSS/SCSS** restent fournis exclusivement par le thème. Le
-  dépôt ne contient toujours aucune preuve de recette complète avec un thème neutre.
+- **80 des 83 templates/parcours PHP inventoriés** restent fournis exclusivement par le thème : les trois pages
+  individuelles `chasse`, `enigme` et `organisateur` disposent maintenant d'un fallback Core. Les **93 assets du
+  thème** restent présents, mais les deux assets fonctionnels nécessaires à ces fallbacks sont désormais fournis
+  indépendamment par le plugin. Le dépôt contient une recette ciblée reproductible, mais toujours aucune preuve de
+  recette complète des comptes, de l'édition et de WooCommerce avec un thème neutre.
 
 ### Estimations recalculées
 
@@ -619,9 +631,9 @@ globales du thème et séparation des view-models. Les preuves ci-dessus donnent
 Pour la remplaçabilité, la grille pondère l'extraction PHP à 40 %, la présence de parcours de secours à 25 %, les
 assets indépendants à 15 %, l'absence de callbacks de rendu fournis par le thème à 10 % et une recette neutre réussie
 à 10 %. L'extraction apporte 40 points, les quatorze rendus asynchrones sont autonomes et les deux sections joueur
-du tableau de bord disposent maintenant d'un fallback Core. Cette première couverture de parcours apporte 5 points,
-soit **environ 55 % de remplaçabilité effective du thème**. Aucun point n'est encore accordé aux assets indépendants
-ou à la recette complète sous thème neutre.
+du tableau de bord disposent maintenant d'un fallback Core. Les trois pages publiques ajoutent une couverture réelle,
+deux assets fonctionnels indépendants et une recette neutre ciblée. Ils ajoutent trois points prudents à la grille,
+soit **environ 58 % de remplaçabilité effective du thème**. Aucun point de recette complète n'est encore accordé.
 
 Ces deux valeurs sont des estimations prudentes et reproductibles à partir de la grille déclarée. Elles ne reprennent
 ni automatiquement les ordres de grandeur de 90 % et 70 %. Les compteurs mesurent une

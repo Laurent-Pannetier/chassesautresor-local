@@ -1,0 +1,56 @@
+.cat-core-view {
+    box-sizing: border-box;
+    margin-inline: auto;
+    max-width: 72rem;
+    padding: 1rem;
+}
+
+.cat-core-view img {
+    height: auto;
+    max-width: 100%;
+}
+
+.cat-core-header,
+.cat-core-content,
+.cat-core-view section {
+    margin-block-end: 1.5rem;
+}
+
+.cat-core-cards {
+    display: grid;
+    gap: 0.75rem;
+    list-style: none;
+    padding: 0;
+}
+
+.cat-core-cards li,
+.cat-core-answer {
+    border: 1px solid currentcolor;
+    border-radius: 0.25rem;
+    padding: 1rem;
+}
+
+.cat-core-answer textarea {
+    box-sizing: border-box;
+    display: block;
+    margin-block-end: 0.75rem;
+    min-height: 8rem;
+    width: 100%;
+}
+
+.cat-core-button,
+.cat-core-answer button {
+    cursor: pointer;
+    display: inline-block;
+    padding: 0.65rem 1rem;
+}
+
+@media (min-width: 48rem) {
+    .cat-core-view {
+        padding: 2rem;
+    }
+
+    .cat-core-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
