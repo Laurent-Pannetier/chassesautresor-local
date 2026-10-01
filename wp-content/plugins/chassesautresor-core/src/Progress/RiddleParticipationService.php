@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Progress;
 
+use ChassesAuTresor\Core\Content\RiddleRelationshipService;
+
 /** Load the hints displayed in a player's riddle participation panel. */
 final class RiddleParticipationService {
     private ?HintUnlockService $hintUnlockService;
@@ -14,7 +16,9 @@ final class RiddleParticipationService {
 
     /** @return array{riddle:int[],hunt:int[]} */
     public function hintIds(int $riddleId): array {
-        $huntId = recuperer_id_chasse_associee($riddleId);
+        $huntId = (new RiddleRelationshipService())->resolveHuntId(
+            get_field('enigme_chasse_associee', $riddleId)
+        );
 
         return [
             'riddle' => $this->query('enigme', 'indice_enigme_linked', $riddleId),
@@ -42,9 +46,31 @@ final class RiddleParticipationService {
             'cost' => (int) get_field('indice_cout_points', $hintId),
             'state' => (string) (get_field('indice_cache_etat_systeme', $hintId) ?: ''),
             'unlocked' => isset($unlockedIds[$hintId]),
-            'title' => get_indice_title($hintId),
+            'title' => $this->title($hintId),
             'available_at' => $this->timestamp(get_field('indice_date_disponibilite', $hintId)),
         ];
+    }
+
+    private function title(int $hintId): string {
+        $post = get_post($hintId);
+        if (!$post) {
+            return '';
+        }
+
+        $title = (string) $post->post_title;
+        $default = defined('TITRE_DEFAUT_INDICE') ? TITRE_DEFAUT_INDICE : '';
+        $prefix = defined('INDICE_DEFAULT_PREFIX') ? INDICE_DEFAULT_PREFIX : '';
+        $isGenerated = $title === ''
+            || $title === $default
+            || ($prefix !== '' && strpos($title, $prefix) === 0);
+        if (!$isGenerated) {
+            return $title;
+        }
+
+        return sprintf(
+            __('Indice #%d', 'chassesautresor-com'),
+            (int) get_post_meta($hintId, 'indice_rank', true)
+        );
     }
 
     private function hintUnlockService(): HintUnlockService {

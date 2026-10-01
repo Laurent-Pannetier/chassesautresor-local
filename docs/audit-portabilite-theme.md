@@ -482,6 +482,13 @@ de manière déterministe sur le cache de la requête HTTP. Le test avec trois i
 déblocage au lieu de trois requêtes unitaires et vérifie les options de préchargement. Aucun cache persistant
 d'invalidation n'est ajouté. Cette seule optimisation ne modifie pas les indicateurs de 97 % et 49 %.
 
+Le cent-quatrième lot retire les deux dépendances globales du thème qui subsistaient dans ce service. La chasse est
+désormais résolue par `RiddleRelationshipService` à partir du champ relationnel, sans utiliser le cache statique de
+`recuperer_id_chasse_associee()`. Le titre d'affichage est construit dans le core à partir de l'objet et du rang déjà
+préchargés, en conservant le titre personnalisé ou le format historique « Indice #N ». Une garde de frontière interdit
+le retour de ces deux appels dans `RiddleParticipationService`. Cette autonomie ciblée ne suffit pas à retirer
+`inc/enigme/affichage.php` de la liste des grands assembleurs mixtes et ne change donc pas les indicateurs.
+
 Le cent-et-unième lot transfère les deux lectures encore appelées par les informations de participation : solde de
 points de l'utilisateur et nombre de tentatives du jour. Leurs façades historiques délèguent maintenant aux services
 core de points et de tentatives. Le panneau reste toutefois assemblé dans le thème ; les indicateurs ne changent pas.

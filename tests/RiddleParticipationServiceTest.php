@@ -7,6 +7,7 @@ use ChassesAuTresor\Core\Progress\HintUnlockService;
 use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/HintUnlockService.php';
+require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Content/RiddleRelationshipService.php';
 
 final class ParticipationHintUnlockServiceStub extends HintUnlockService {
     public array $calls = [];
@@ -29,9 +30,6 @@ final class RiddleParticipationServiceTest extends TestCase {
     public function testLoadsRiddleAndHuntHintsWithPortableQueries(): void {
         $GLOBALS['hint_queries'] = [];
         $GLOBALS['hint_field_calls'] = [];
-        function recuperer_id_chasse_associee(int $riddleId): int {
-            return $riddleId === 12 ? 34 : 0;
-        }
         function get_posts(array $args): array {
             $GLOBALS['hint_queries'][] = $args;
 
@@ -41,6 +39,9 @@ final class RiddleParticipationServiceTest extends TestCase {
         }
         function get_field(string $field, int $hintId) {
             $GLOBALS['hint_field_calls'][] = [$field, $hintId];
+            if ($field === 'enigme_chasse_associee') {
+                return $hintId === 12 ? (object) ['ID' => 34] : null;
+            }
             $values = [
                 'indice_cout_points' => 5,
                 'indice_cache_etat_systeme' => 'accessible',
@@ -49,8 +50,17 @@ final class RiddleParticipationServiceTest extends TestCase {
 
             return $values[$field] ?? null;
         }
-        function get_indice_title(int $hintId): string {
-            return 'Indice ' . $hintId;
+        function get_post(int $hintId): object {
+            return (object) [
+                'ID' => $hintId,
+                'post_title' => $hintId === 5 ? '' : 'Indice ' . $hintId,
+            ];
+        }
+        function get_post_meta(int $hintId, string $key, bool $single): int {
+            return $hintId;
+        }
+        function __($text, $domain): string {
+            return $text;
         }
         function wp_timezone(): DateTimeZone {
             return new DateTimeZone('UTC');
@@ -70,12 +80,14 @@ final class RiddleParticipationServiceTest extends TestCase {
         self::assertArrayNotHasKey('fields', $GLOBALS['hint_queries'][0]);
 
         $GLOBALS['hint_queries'] = [];
+        $GLOBALS['hint_field_calls'] = [];
         $unlockService = new ParticipationHintUnlockServiceStub();
         $hints = (new RiddleParticipationService($unlockService))->hints(12, 9);
         self::assertSame(5, $hints['riddle'][0]['cost']);
         self::assertTrue($hints['riddle'][0]['unlocked']);
+        self::assertSame('Indice #5', $hints['riddle'][0]['title']);
         self::assertSame('Indice 7', $hints['hunt'][0]['title']);
         self::assertSame([[9, [5, 6, 7]]], $unlockService->calls);
-        self::assertCount(9, $GLOBALS['hint_field_calls']);
+        self::assertCount(10, $GLOBALS['hint_field_calls']);
     }
 }

@@ -1403,6 +1403,8 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString("get_field('indice_cout_points'", $source);
         self::assertStringNotContainsString('indice_est_debloque(', $source);
         self::assertStringNotContainsString('date_create_from_format(', $source);
+        self::assertStringNotContainsString('get_indice_title(', $service);
+        self::assertStringNotContainsString('recuperer_id_chasse_associee(', $service);
     }
 
     public function testRiddleParticipationBalancesAndAttemptCountsBelongToCore(): void
