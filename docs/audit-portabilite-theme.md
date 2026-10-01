@@ -475,11 +475,11 @@ des classes et libellés visuels. Les autres données du panneau restent mixtes,
 Le cent-troisième lot optimise ce chargement sans déplacer de nouvelle responsabilité de portabilité. Pour `N`
 indices, la vérification des déblocages effectuait auparavant `N` appels à `indice_est_debloque()`, donc `N` requêtes
 `SELECT` sur `wp_indices_deblocages`. Le repository charge maintenant tous les identifiants débloqués en une requête
-bornée par les identifiants du panneau. Les objets et métadonnées des indices sont également préchargés explicitement
-avant les trois lectures ACF et la résolution des titres : ces lectures restent au nombre de `3N`, afin de conserver
-le formatage ACF et les formats historiques des dates, mais s'appuient de manière déterministe sur le cache de la
-requête HTTP. Le test avec trois indices mesure ainsi une requête groupée de déblocage au lieu de trois requêtes
-unitaires, un préchargement d'objets et un préchargement de métadonnées. Aucun cache persistant ni mécanisme
+bornée par les identifiants du panneau. Les requêtes qui sélectionnent les indices hydratent désormais leurs objets
+et préchargent explicitement leurs métadonnées, sans charger les termes inutilisés. Les trois lectures ACF par indice
+sont conservées afin de préserver leur formatage et les formats historiques des dates, mais elles s'appuient ainsi
+de manière déterministe sur le cache de la requête HTTP. Le test avec trois indices mesure une requête groupée de
+déblocage au lieu de trois requêtes unitaires et vérifie les options de préchargement. Aucun cache persistant
 d'invalidation n'est ajouté. Cette seule optimisation ne modifie pas les indicateurs de 97 % et 49 %.
 
 Le cent-et-unième lot transfère les deux lectures encore appelées par les informations de participation : solde de

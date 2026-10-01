@@ -139,18 +139,6 @@ if (!function_exists('get_post_meta')) {
     }
 }
 
-if (!function_exists('_prime_post_caches')) {
-    function _prime_post_caches($postIds, $updateTermCache = true, $updateMetaCache = true)
-    {
-    }
-}
-
-if (!function_exists('update_meta_cache')) {
-    function update_meta_cache($metaType, $objectIds)
-    {
-    }
-}
-
 require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Points/PointsRepository.php';
 require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Points/PointsService.php';
 require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/HintUnlockRepository.php';

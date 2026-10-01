@@ -27,11 +27,6 @@ final class RiddleParticipationService {
         $groups = $this->hintIds($riddleId);
         $hintIds = array_values(array_unique(array_merge($groups['riddle'], $groups['hunt'])));
 
-        if ($hintIds !== []) {
-            _prime_post_caches($hintIds, false, false);
-            update_meta_cache('post', $hintIds);
-        }
-
         $unlockedIds = array_fill_keys($this->hintUnlockService()->unlockedHintIds($userId, $hintIds), true);
 
         return [
@@ -84,7 +79,7 @@ final class RiddleParticipationService {
             return [];
         }
 
-        $ids = get_posts([
+        $posts = get_posts([
             'post_type' => 'indice',
             'post_status' => ['publish', 'draft', 'future', 'pending'],
             'meta_query' => [
@@ -106,11 +101,15 @@ final class RiddleParticipationService {
             ],
             'orderby' => 'date',
             'order' => 'ASC',
-            'fields' => 'ids',
             'no_found_rows' => true,
             'posts_per_page' => -1,
+            'update_post_meta_cache' => true,
+            'update_post_term_cache' => false,
         ]);
 
-        return array_values(array_filter(array_map('intval', (array) $ids)));
+        return array_values(array_filter(array_map(
+            static fn ($post): int => is_object($post) ? (int) $post->ID : (int) $post,
+            (array) $posts
+        )));
     }
 }
