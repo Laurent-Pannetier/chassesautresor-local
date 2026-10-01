@@ -27,12 +27,13 @@ class AccountSectionAjaxHandler {
         if ($decision['error'] === 'not_found') {
             wp_send_json_error(['message' => __('Section not found', 'chassesautresor-com')], 404);
         }
-        if ($decision['error'] !== null || !is_callable(self::$renderer)) {
+        if ($decision['error'] !== null) {
             wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor-com')], 403);
         }
 
+        $renderer = self::$renderer ?? [new AccountSectionRenderer(), 'render'];
         wp_send_json_success([
-            'html' => (string) call_user_func(self::$renderer, $decision['template']),
+            'html' => (string) call_user_func($renderer, $decision['template']),
             'messages' => \myaccount_get_important_messages(),
         ]);
     }

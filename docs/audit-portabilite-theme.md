@@ -437,12 +437,18 @@ tentatives, le compteur des tentatives manuelles en attente et la normalisation 
 données de modération des organisateurs ne dépend donc plus de ces trois fonctions déclarées dans les vues d'énigme.
 La configuration résiduelle et les indicateurs restent inchangés jusqu'au déplacement du collecteur et du tableau.
 
+Le quatre-vingt-quinzième lot termine l'autonomie du contrôleur des sections administratives du compte. Le collecteur
+et le tableau de modération des organisateurs, ainsi que le renderer de section, vivent désormais dans le plugin.
+`AccountSectionAjaxHandler` utilise son dispatcher core par défaut et le thème ne lui injecte plus de chargeur de
+templates. Les quatorze callbacks de rendu initialement recensés sont maintenant autonomes et aucune configuration
+`*Handler::configure()` ne demeure dans le thème.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |
 |---|---:|---|
 | Extraction du métier PHP inventorié | **97 %** | Deux grands view-models mixtes restent dans le thème |
-| Remplaçabilité effective du thème | **48 %** | Navigation latérale et treize rendus AJAX sont autonomes |
+| Remplaçabilité effective du thème | **49 %** | Les quatorze rendus AJAX recensés sont autonomes |
 
 Ces indicateurs sont recalculés avec la grille détaillée plus bas, et non à partir du nombre de fonctions déplacées.
 Ils seront modifiés uniquement lorsqu'un axe pondéré de cette grille progresse effectivement.
@@ -470,8 +476,7 @@ Résultats obtenus après ce lot :
 - **5 filtres ACF** demeurent après retrait du filtre métier de condition d'accès. Ils préparent ou formatent des
   champs de présentation ; aucune autre politique d'accès ACF enregistrée par le thème n'a été trouvée ;
 - le contrôleur de modération ne contient désormais **aucun appel direct** aux fonctions globales du thème qui avaient
-  été inventoriées. Le plugin conserve **1 configuration de contrôleur par le thème**, destinée aux templates de
-  l'espace « Mon compte » ;
+  été inventoriées. Le plugin ne conserve **aucune configuration de contrôleur par le thème** ;
 - `inc/access-functions.php` ne déclare plus aucune fonction : ses douze dernières politiques et son wrapper de
   compatibilité sont fournis par le plugin ;
 - la revue ciblée relève **2 grands assembleurs de view-models mixtes** :
@@ -489,8 +494,8 @@ globales du thème et séparation des view-models. Les preuves ci-dessus donnent
 
 Pour la remplaçabilité, la grille pondère l'extraction PHP à 40 %, la présence de parcours de secours à 25 %, les
 assets indépendants à 15 %, l'absence de callbacks de rendu fournis par le thème à 10 % et une recette neutre réussie
-à 10 %. L'extraction apporte environ 39 points et treize des quatorze parcours de rendu injectés recensés au début de
-ce bloc sont maintenant autonomes, soit **environ 48 % de remplaçabilité effective du thème** après arrondi. Aucun point
+à 10 %. L'extraction apporte environ 39 points et les quatorze parcours de rendu injectés recensés au début de ce bloc
+sont maintenant autonomes, soit **environ 49 % de remplaçabilité effective du thème** après arrondi. Aucun point
 n'est encore accordé aux parcours complets, aux assets indépendants ou à la recette sous thème neutre.
 
 Ces deux valeurs sont des estimations prudentes et reproductibles à partir de la grille déclarée. Elles ne reprennent

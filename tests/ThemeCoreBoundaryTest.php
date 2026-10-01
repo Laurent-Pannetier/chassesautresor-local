@@ -1212,11 +1212,13 @@ final class ThemeCoreBoundaryTest extends TestCase
     public function testAccountImportantMessagesAreNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/user-functions.php');
-        preg_match('/AccountSectionAjaxHandler::configure\([\s\S]*?^    \);/m', $source, $matches);
-        $configuration = $matches[0] ?? null;
+        $handler = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Messages/AccountSectionAjaxHandler.php'
+        );
 
-        self::assertIsString($configuration);
-        self::assertStringNotContainsString('myaccount_get_important_messages', $configuration);
+        self::assertStringNotContainsString('AccountSectionAjaxHandler::configure', $source);
+        self::assertStringNotContainsString('function ca_render_admin_section', $source);
+        self::assertStringContainsString('new AccountSectionRenderer()', $handler);
         self::assertStringNotContainsString('function myaccount_get_important_messages', $source);
         self::assertStringNotContainsString('function myaccount_get_persistent_messages', $source);
         self::assertStringNotContainsString('function myaccount_get_flash_messages', $source);
@@ -1303,6 +1305,22 @@ final class ThemeCoreBoundaryTest extends TestCase
         }
         self::assertStringNotContainsString('function enigme_normaliser_mode_validation(', $cta);
         self::assertStringContainsString('function enigme_normaliser_mode_validation(', $core);
+    }
+
+    public function testOrganizerModerationRenderingBelongsToCore(): void
+    {
+        $admin = (string) file_get_contents(self::THEME_PATH . '/inc/admin-functions.php');
+        $template = (string) file_get_contents(
+            self::THEME_PATH . '/templates/myaccount/content-organisateurs.php'
+        );
+        $renderer = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Messages/AccountOrganizersRenderer.php'
+        );
+
+        self::assertStringNotContainsString('function recuperer_organisateurs_pending(', $admin);
+        self::assertStringNotContainsString('function afficher_tableau_organisateurs_pending(', $admin);
+        self::assertStringContainsString('new ChassesAuTresor\\Core\\Messages\\AccountOrganizersRenderer', $template);
+        self::assertStringContainsString('class AccountOrganizersRenderer', $renderer);
     }
 
     public function testThemeDoesNotOwnHuntModerationEmails(): void

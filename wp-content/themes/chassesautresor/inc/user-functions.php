@@ -809,35 +809,6 @@ function ca_ajax_fetch_tentatives(): void
 
 // ==================================================
 /**
- * Load My Account sections via AJAX.
- *
- * @return void
- */
-function ca_render_admin_section(string $template_name): string
-{
-    ob_start();
-    $template = get_stylesheet_directory() . '/templates/myaccount/' . basename($template_name);
-    if (file_exists($template)) {
-        include $template;
-    }
-
-    return (string) ob_get_clean();
-}
-
-function ca_load_admin_section(): void
-{
-    ChassesAuTresor\Core\Messages\AccountSectionAjaxHandler::handle();
-}
-
-if (class_exists(ChassesAuTresor\Core\Messages\AccountSectionAjaxHandler::class)) {
-    ChassesAuTresor\Core\Messages\AccountSectionAjaxHandler::configure(
-        static function (string $template_name): string {
-            return ca_render_admin_section($template_name);
-        }
-    );
-}
-
-/**
  * Dismiss a persistent message via AJAX.
  *
  * @return void
