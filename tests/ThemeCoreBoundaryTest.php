@@ -123,6 +123,15 @@ final class ThemeCoreBoundaryTest extends TestCase
         );
 
         self::assertSame([], $violations, $this->formatViolations($violations));
+
+        $access = (string) file_get_contents(self::THEME_PATH . '/inc/access-functions.php');
+        self::assertStringNotContainsString('function utilisateur_peut_creer_post', $access);
+        self::assertStringNotContainsString('function utilisateur_peut_modifier_post', $access);
+
+        $handler = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Content/ContentScreenAccessHookHandler.php'
+        );
+        self::assertStringNotContainsString("function_exists('utilisateur_peut_", $handler);
     }
 
     public function testThemeDoesNotOwnProtectedAssetRoutes(): void {

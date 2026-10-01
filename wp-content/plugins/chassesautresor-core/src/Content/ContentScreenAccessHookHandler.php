@@ -23,10 +23,7 @@ final class ContentScreenAccessHookHandler {
             return;
         }
 
-        $canCreate = function_exists('utilisateur_peut_creer_post')
-            ? utilisateur_peut_creer_post($postType)
-            : current_user_can('edit_posts');
-        self::redirectWhenDenied((bool) $canCreate);
+        self::redirectWhenDenied(utilisateur_peut_creer_post($postType));
     }
 
     public static function handleEditScreen(): void {
@@ -39,10 +36,7 @@ final class ContentScreenAccessHookHandler {
             return;
         }
 
-        $canModify = function_exists('utilisateur_peut_modifier_post')
-            ? utilisateur_peut_modifier_post($postId)
-            : current_user_can('edit_post', $postId);
-        self::redirectWhenDenied((bool) $canModify);
+        self::redirectWhenDenied(utilisateur_peut_modifier_post($postId));
     }
 
     private static function redirectWhenDenied(bool $isAllowed): void {

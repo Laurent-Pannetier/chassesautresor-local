@@ -244,6 +244,7 @@ require_once __DIR__ . '/src/Content/ContentPanelAccessService.php';
 require_once __DIR__ . '/src/Content/ContentFieldAccessService.php';
 require_once __DIR__ . '/src/Content/ContentFieldPolicyService.php';
 require_once __DIR__ . '/src/Content/ContentModificationService.php';
+require_once __DIR__ . '/src/Content/content-access.php';
 require_once __DIR__ . '/src/Content/RelatedContentActionService.php';
 require_once __DIR__ . '/src/Content/ContentCreationService.php';
 require_once __DIR__ . '/src/Content/HuntAccessService.php';

@@ -113,9 +113,15 @@ persistants et éphémères, résout leur contexte chasse/énigme, interroge les
 et recherche les chasses à modérer. Il ne dépend plus des helpers globaux du thème pour ces opérations. Les deux
 lecteurs de messages ont été retirés du thème et la frontière interdit le retour de ces dépendances implicites.
 
-Estimation prudente après ce lot : **environ 95 % de la migration métier inventoriée**. Cette estimation remplace le
-pourcentage excessivement précis du lot précédent : les routes, politiques et callbacks résiduels ci-dessous doivent
-encore être qualifiés et migrés, puis un audit avec un thème neutre doit confirmer l'autonomie réelle du plugin.
+Le trente-deuxième lot a transféré au plugin les politiques générales de création et de modification des contenus.
+Le contrôleur des écrans WordPress natifs ne cherche plus les fonctions du thème et ne possède plus de repli permissif
+sur les capacités génériques `edit_posts` et `edit_post`. Les fonctions globales de compatibilité sont désormais
+définies par le plugin et construisent elles-mêmes les relations organisateur, chasse, énigme et indice.
+
+Estimation prudente après ce lot : **environ 80 % de l'autonomie métier vérifiée**. Il ne s'agit plus d'un calcul au
+centième fondé sur les lots déjà traités : cette valeur applique une décote aux dépendances runtime encore observées,
+aux politiques d'édition encore enregistrées par le thème, aux routes de médias qui appellent des helpers du thème et
+à l'absence de recette sous thème neutre. Le pourcentage ne remontera qu'après suppression vérifiée de ces catégories.
 
 ## Éléments bloquants observés
 
@@ -127,10 +133,12 @@ Le thème enregistre toujours notamment :
   `inc/organisateur-functions.php` ;
 - les adaptateurs de politique appelés par le contrôle d’accès aux énigmes dans plusieurs fichiers `inc/` ;
 - des politiques d'édition et des callbacks métier échangés avec le plugin dans les fichiers `inc/edition/*.php` ;
+- les contrôleurs de médias protégés appellent encore des fonctions d'accès, de résolution de fichiers et de solutions
+  définies par le thème ;
 
-L'audit ciblé des messages importants ne relève plus de dépendance vers les helpers globaux du thème. Il reste en
-revanche à auditer de bout en bout les configurations `*Handler::configure()` et les adaptateurs d'accès aux énigmes ;
-leur présence dans la couche de présentation ne permet pas encore de conclure qu'ils sont tous purement visuels.
+L'audit ciblé des messages importants et des écrans WordPress natifs ne relève plus de dépendance vers les helpers
+globaux du thème. Les configurations `*Handler::configure()` inventoriées ne transmettent actuellement que des
+fonctions de rendu. Les adaptateurs d'accès aux énigmes, solutions et médias restent en revanche à migrer complètement.
 
 Une partie de ces éléments produit de l'interface, mais leur absence change aussi les droits, les parcours ou le
 comportement du site.
