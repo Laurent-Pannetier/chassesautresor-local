@@ -16,7 +16,6 @@ require_once __DIR__ . '/badge-functions.php';
  * 🔹 chasse_get_champs → Récupérer les champs principaux et cachés structurés d'une chasse
  * 🔹 chasse_install_winners_table → Créer la table des gagnants lors de l’activation du thème.
  * 🔹 enregistrer_gagnant_chasse → Enregistrer ou mettre à jour un gagnant de chasse.
- * 🔹 acf/validate_value/name=date_de_fin (function) → Valider les incohérences de dates dans les chasses.
  * 🔹 gerer_chasse_terminee → Déclencher toutes les actions nécessaires lorsqu’une chasse est terminée.
  * 🔹 compter_chasses_gagnees → Compter les chasses gagnées par un utilisateur.
  */
@@ -152,44 +151,6 @@ function utilisateur_est_engage_dans_chasse(int $user_id, int $chasse_id): bool
 {
     return cat_get_hunt_engagement_service()->isEngaged($user_id, $chasse_id);
 }
-
-/**
- * 📌 Validation des incohérences de dates dans les chasses.
- */
-add_filter('acf/validate_value/name=date_de_fin', function ($valid, $value, $field, $input) {
-    if (!$valid) {
-        return $valid; // 🚫 Ne pas écraser d'autres erreurs
-    }
-
-    if (get_post_type($_POST['post_ID'] ?? 0) !== 'chasse') {
-        return $valid;
-    }
-
-    // 🔄 Reformater `date_de_fin` si nécessaire
-    if (preg_match('/^\d{8}$/', $value)) {
-        $value = substr($value, 0, 4) . '-' . substr($value, 4, 2) . '-' . substr($value, 6, 2);
-    }
-
-    // 🔍 Récupération de la date de début à partir des données du formulaire
-    $caracteristiques_key = 'field_67ca7fd7f5117'; // ID du groupe "caracteristiques"
-    $date_debut_key = 'field_67b58c6fd98ec'; // ID du champ "date_de_debut"
-    $date_debut = $_POST['acf'][$caracteristiques_key][$date_debut_key] ?? null;
-
-    // ✅ Vérification : La date de fin ne peut pas être avant la date de début
-    if (!empty($date_debut) && !empty($value) && strtotime($value) < strtotime($date_debut)) {
-        return __('⚠️ Erreur : La date de fin ne peut pas être antérieure à la date de début.', 'chassesautresor-com');
-    }
-
-    // ✅ Vérification : Si "maintenant" est sélectionné, date_de_fin ne peut pas être antérieure à aujourd'hui
-    if (
-        $_POST['acf'][$caracteristiques_key]['field_67ca858935c21'] === 'maintenant' &&
-        !empty($value) && strtotime($value) < strtotime(date('Y-m-d'))
-    ) {
-        return __('⚠️ Erreur : La date de fin ne peut pas être antérieure à la date du jour si la chasse commence maintenant.', 'chassesautresor-com');
-    }
-
-    return $valid;
-}, 10, 4);
 
 // ==================================================
 // 📦 AFFICHAGE

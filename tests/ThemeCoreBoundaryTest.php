@@ -528,6 +528,16 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringContainsString('charger_script_avatar_upload', $source);
     }
 
+    public function testThemeDoesNotOwnHuntDateValidationOrHintRedirect(): void
+    {
+        $hunt = (string) file_get_contents(self::THEME_PATH . '/inc/chasse-functions.php');
+        $hint = (string) file_get_contents(self::THEME_PATH . '/inc/edition/edition-indice.php');
+
+        self::assertStringNotContainsString('acf/validate_value/name=date_de_fin', $hunt);
+        self::assertStringNotContainsString('rediriger_si_affichage_indice', $hint);
+        self::assertStringNotContainsString("add_action('template_redirect'", $hint);
+    }
+
     public function testRiddleStatisticsAccessIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/stats.php');

@@ -10,6 +10,10 @@ use ChassesAuTresor\Core\Relationships\RelationshipService;
  * Redirect direct hint views to their linked hunt or riddle.
  */
 class HintRedirectHandler {
+    public static function register(callable $addAction): void {
+        $addAction('template_redirect', [self::class, 'redirectIfViewingHint']);
+    }
+
     /**
      * @param mixed $linkedHunt
      * @param mixed $linkedRiddle

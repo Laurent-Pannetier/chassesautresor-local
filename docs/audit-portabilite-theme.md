@@ -181,6 +181,11 @@ d'upload et possède maintenant aussi la liste des formats autorisés, la résol
 de l'avatar WordPress à partir de la métadonnée persistée. Le thème ne conserve que le chargement du script de
 présentation sur l'espace personnel.
 
+Le quarante-quatrième lot a retiré deux derniers hooks métier isolés du thème. La validation des dates de fin des
+chasses soumises via ACF est maintenant une politique du plugin, y compris les règles liées à la date de début et au
+démarrage immédiat. La redirection des pages individuelles d'indice vers leur chasse ou leur énigme est désormais
+enregistrée directement par le contrôleur core, sans adaptateur dans `edition-indice.php`.
+
 Estimation prudente après ce lot : **environ 98 % de l'autonomie métier vérifiée**. Il ne s'agit plus d'un calcul au
 centième fondé sur les lots déjà traités : cette valeur applique une décote aux dépendances runtime encore observées,
 aux politiques d'édition encore enregistrées par le thème, aux adaptateurs d'accès encore utilisés ailleurs et à

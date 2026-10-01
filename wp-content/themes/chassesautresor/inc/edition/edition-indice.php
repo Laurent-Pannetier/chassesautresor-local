@@ -51,7 +51,6 @@ function cat_get_hint_relationship_service(): ChassesAuTresor\Core\Content\HintR
 // 🔹 register_endpoint_creer_indice() → Enregistre /creer-indice
 // 🔹 creer_indice_pour_objet() → Crée un indice lié à une chasse ou une énigme
 // 🔹 creer_indice_et_rediriger_si_appel() → Crée un indice et redirige
-// 🔹 rediriger_si_affichage_indice() → Redirige toute page indice vers sa cible
 // 🔹 modifier_champ_indice() → Mise à jour AJAX (champ ACF ou natif)
 
 /**
@@ -77,18 +76,6 @@ function build_indice_placeholder_title(int $chasse_id): string
 
     return cat_get_hint_title_service()->buildPlaceholder($prefix, $slug, $generatedSlug);
 }
-
-/**
- * Redirige l’affichage d’un indice vers sa chasse ou son énigme liée.
- *
- * @return void
- */
-function rediriger_si_affichage_indice(): void
-{
-    ChassesAuTresor\Core\Content\HintRedirectHandler::redirectIfViewingHint();
-}
-add_action('template_redirect', 'rediriger_si_affichage_indice');
-
 
 /**
  * Calcule le rang du prochain indice pour une chasse ou une énigme.

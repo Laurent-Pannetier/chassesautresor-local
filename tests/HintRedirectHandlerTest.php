@@ -11,6 +11,18 @@ require_once __DIR__
     . '/../wp-content/plugins/chassesautresor-core/src/Content/HintRedirectHandler.php';
 
 final class HintRedirectHandlerTest extends TestCase {
+    public function testRegistersTemplateRedirect(): void {
+        $actions = [];
+        HintRedirectHandler::register(
+            static function (...$arguments) use (&$actions): void {
+                $actions[] = $arguments;
+            }
+        );
+
+        $this->assertSame('template_redirect', $actions[0][0]);
+        $this->assertSame([HintRedirectHandler::class, 'redirectIfViewingHint'], $actions[0][1]);
+    }
+
     public function testHuntHintRedirectsToLinkedHunt(): void {
         $this->assertSame(
             12,
