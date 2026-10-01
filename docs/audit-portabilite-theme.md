@@ -54,7 +54,11 @@ Le douzième lot a transféré au plugin l’endpoint de contact des organisateu
 Le treizième lot a retiré la dernière écriture métier directe détectée dans le thème : l’annulation d’une validation
 de chasse est désormais intégralement persistée par le contrôleur du plugin.
 
-Estimation après ce lot : **99 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
+Le quatorzième lot a rendu la route de confirmation d’un organisateur autonome : validation du jeton, création du
+profil, attribution du rôle et suppression des messages sont désormais orchestrées par le plugin, sans callbacks
+fournis par le thème.
+
+Estimation après ce lot : **99,5 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
 responsabilités fonctionnelles recensées (persistance, accès, routes, traitements, notifications et cache), et non
 sur le nombre de lignes. Il sera réévalué après chaque lot.
 

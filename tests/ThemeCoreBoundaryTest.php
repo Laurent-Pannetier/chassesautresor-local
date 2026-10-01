@@ -291,7 +291,8 @@ final class ThemeCoreBoundaryTest extends TestCase
     public function testThemeDoesNotRegisterOrganizerConfirmationRoutes(): void
     {
         $violations = $this->findPhpMatches(
-            '/register_endpoint_confirmation_organisateur|traiter_confirmation_organisateur/'
+            '/register_endpoint_confirmation_organisateur|traiter_confirmation_organisateur'
+            . '|OrganizerConfirmationRouteHandler::configure/'
         );
 
         self::assertSame([], $violations, $this->formatViolations($violations));
