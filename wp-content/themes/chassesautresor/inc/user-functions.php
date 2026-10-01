@@ -299,7 +299,6 @@ function ca_render_dashboard_engaged_hunts(): void
     <?php
     echo ob_get_clean();
 }
-add_action('woocommerce_account_dashboard', 'ca_render_dashboard_engaged_hunts', 10);
 
 /**
  * Register the search context used for the tentatives table.
@@ -466,28 +465,6 @@ function ca_render_dashboard_tentatives(): void
     </section>
     <?php
     echo ob_get_clean();
-}
-add_action('woocommerce_account_dashboard', 'ca_render_dashboard_tentatives', 20);
-
-/**
- * Handle AJAX refreshes for the tentatives table.
- *
- * @return void
- */
-function ca_ajax_fetch_tentatives(): void
-{
-    ChassesAuTresor\Core\Progress\UserAttemptsAjaxHandler::handle();
-}
-
-// ==================================================
-/**
- * Dismiss a persistent message via AJAX.
- *
- * @return void
- */
-function ca_dismiss_message(): void
-{
-    ChassesAuTresor\Core\Messages\AccountMessageDismissalAjaxHandler::handle();
 }
 
 // ==================================================

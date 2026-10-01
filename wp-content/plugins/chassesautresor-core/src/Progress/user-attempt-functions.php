@@ -11,3 +11,10 @@ function ca_render_tentatives_rows(array $attempts, int $total, string $message)
         'no_results_message' => $message,
     ]);
 }
+
+
+if (!function_exists('ca_ajax_fetch_tentatives')) {
+    function ca_ajax_fetch_tentatives(): void {
+        ChassesAuTresor\Core\Progress\UserAttemptsAjaxHandler::handle();
+    }
+}

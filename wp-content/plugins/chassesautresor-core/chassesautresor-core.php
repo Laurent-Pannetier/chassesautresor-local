@@ -19,6 +19,7 @@ require_once __DIR__ . '/src/Users/profile-functions.php';
 require_once __DIR__ . '/src/Users/AccountOrdersRenderer.php';
 require_once __DIR__ . '/src/Users/account-order-functions.php';
 require_once __DIR__ . '/src/Users/AccountPresentationHookHandler.php';
+require_once __DIR__ . '/src/Users/AccountDashboardHookHandler.php';
 require_once __DIR__ . '/src/Users/account-functions.php';
 require_once __DIR__ . '/src/Security/site-password.php';
 require_once __DIR__ . '/src/Email/template.php';
@@ -447,6 +448,7 @@ ChassesAuTresor\Core\Content\RiddlePrerequisiteAjaxHandler::register('add_action
 ChassesAuTresor\Core\Media\UserAvatarUploadAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Media\UserAvatarHookHandler::register('add_filter');
 ChassesAuTresor\Core\Users\AccountPresentationHookHandler::register('add_filter');
+ChassesAuTresor\Core\Users\AccountDashboardHookHandler::register('add_action');
 ChassesAuTresor\Core\Media\ProtectedAssetRouteHandler::register('add_action', 'add_filter');
 ChassesAuTresor\Core\Progress\HuntStatisticsAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Progress\RiddleStatisticsAjaxHandler::register('add_action');

@@ -547,6 +547,11 @@ Le cent-treizième lot transfère les filtres de titres de l'espace compte et la
 libellé « Profil ». La détection normalise maintenant le chemin de l'URL sans être perturbée par sa query string.
 Changer de thème ne supprime donc plus ces libellés ni ce contrat de navigation.
 
+Le cent-quatorzième lot transfère au plugin les deux hooks du tableau de bord WooCommerce. Le thème conserve ses
+renderers enrichis lorsqu'il est actif, mais `AccountDashboardHookHandler` fournit des sections portables pour les
+chasses engagées et les tentatives lorsqu'un autre thème est sélectionné. Les anciens wrappers AJAX résiduels vivent
+également dans Core. Le changement de thème ne retire donc plus ces deux fonctionnalités du tableau de bord.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |

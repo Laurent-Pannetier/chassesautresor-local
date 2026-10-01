@@ -80,3 +80,10 @@ function myaccount_add_flash_message(
         'dismissible' => $dismissible,
     ]);
 }
+
+
+if (!function_exists('ca_dismiss_message')) {
+    function ca_dismiss_message(): void {
+        ChassesAuTresor\Core\Messages\AccountMessageDismissalAjaxHandler::handle();
+    }
+}
