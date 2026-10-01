@@ -356,6 +356,8 @@ if (!function_exists('cat_debug')) {
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/layout-functions.php';
 require_once __DIR__
     . '/../wp-content/plugins/chassesautresor-core/src/Content/completion-functions.php';
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Progress/riddle-progress-functions.php';
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/statut-functions.php';
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/enigme/affichage.php';
 

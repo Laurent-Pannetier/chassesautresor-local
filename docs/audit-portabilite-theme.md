@@ -276,6 +276,10 @@ Le soixante-deuxième lot, volontairement plus large, a transféré les dix fonc
 organisateurs, chasses et énigmes. Le plugin résout lui-même les énigmes d'une chasse, les modes de validation, les
 bonnes réponses et le cycle du cache de complétude. Le thème ne conserve plus ces wrappers métier.
 
+Le soixante-troisième lot conserve cette taille accrue et transfère ensemble les sept fonctions publiques de progression
+des énigmes : construction du service, bonnes réponses, lecture et avancement du statut joueur, prérequis et résolution.
+Le plugin normalise directement les relations ACF ; `statut-functions.php` est ramené à six fonctions mixtes ou visuelles.
+
 ### Inventaire reproductible au 1er octobre 2026
 
 Les recherches ci-dessous portent sur les fichiers de production du thème (les fixtures sous `tests/` sont exclues).
@@ -301,8 +305,8 @@ Résultats obtenus après ce lot :
 - le contrôleur de modération ne contient désormais **aucun appel direct** aux fonctions globales du thème qui avaient
   été inventoriées. Le plugin conserve **15 configurations de contrôleurs par le thème**, toutes destinées à des
   moteurs de rendu ;
-- la revue ciblée relève **5 grands assembleurs de view-models mixtes** : `inc/chasse-functions.php`,
-  `inc/enigme/affichage.php`, `inc/sidebar.php`, `inc/user-functions.php` et `inc/statut-functions.php`. Ils combinent
+- la revue ciblée relève **4 grands assembleurs de view-models mixtes** : `inc/chasse-functions.php`,
+  `inc/enigme/affichage.php`, `inc/sidebar.php` et `inc/user-functions.php`. Ils combinent
   encore données WordPress, progression ou accès avec CTA et HTML ;
 - **83 templates/parcours PHP** et **93 assets JavaScript/CSS/SCSS** restent fournis exclusivement par le thème. Le
   dépôt ne contient toujours aucune preuve de recette complète avec un thème neutre.
@@ -312,7 +316,7 @@ Résultats obtenus après ce lot :
 Une grille fixe, plutôt qu'un décompte des lots, est utilisée. Pour l'extraction PHP, les cinq axes ont le même poids :
 propriété des hooks métier, absence de mutations dans le rendu, politiques d'accès, autonomie vis-à-vis des fonctions
 globales du thème et séparation des view-models. Les preuves ci-dessus donnent respectivement 100 %, 100 %, 100 %,
-100 % et 45 %, soit **environ 89 % pour l'extraction du métier PHP inventorié**.
+100 % et 55 %, soit **environ 91 % pour l'extraction du métier PHP inventorié**.
 
 Pour la remplaçabilité, la grille pondère l'extraction PHP à 40 %, la présence de parcours de secours à 25 %, les
 assets indépendants à 15 %, l'absence de callbacks de rendu fournis par le thème à 10 % et une recette neutre réussie

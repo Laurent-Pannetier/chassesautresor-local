@@ -7,20 +7,9 @@ if (!defined('ABSPATH')) {
 
 require_once __DIR__ . '/badge-functions.php';
 
-if (!function_exists('cat_get_hunt_progress_service')) {
-    function cat_get_hunt_progress_service(): ChassesAuTresor\Core\Progress\HuntProgressService
-    {
-        global $wpdb;
-        return ChassesAuTresor\Core\Support\CoreServiceFactory::huntProgress($wpdb);
-    }
-}
 
-if (!function_exists('enigme_get_bonnes_reponses')) {
-    function enigme_get_bonnes_reponses(int $enigme_id): array
-    {
-        return (new ChassesAuTresor\Core\Progress\RiddleAnswerService())->get($enigme_id);
-    }
-}
+
+
 
 //
 // 🧩 GESTION DES STATUTS ET DE L’ACCESSIBILITÉ DES ÉNIGMES
@@ -63,20 +52,7 @@ if (!function_exists('enigme_get_bonnes_reponses')) {
  * @param int $user_id   ID de l’utilisateur.
  * @return string Statut actuel (par défaut : 'non_souscrite').
  */
-function enigme_get_statut_utilisateur(int $enigme_id, int $user_id): string
-{
-    if (!$enigme_id || !$user_id) {
-        return 'non_commencee';
-    }
 
-    $statut = cat_get_hunt_progress_service()->getRiddleStatus($user_id, $enigme_id);
-
-    if ($statut) {
-        $statut = strtolower(remove_accents($statut));
-    }
-
-    return $statut ?: 'non_commencee';
-}
 
 
 /**
@@ -88,22 +64,7 @@ function enigme_get_statut_utilisateur(int $enigme_id, int $user_id): string
  * @param string $nouveau_statut Nouveau statut ('non_commencee', 'en_cours', 'abandonnee', 'echouee', 'resolue', 'terminee').
  * @return bool True si la mise à jour est faite, false sinon.
  */
-function enigme_mettre_a_jour_statut_utilisateur(int $enigme_id, int $user_id, string $nouveau_statut, bool $forcer = false): bool
-{
-    if (!$enigme_id || !$user_id || !$nouveau_statut) {
-        return false;
-    }
 
-    $nouveau_statut = strtolower(remove_accents($nouveau_statut));
-
-    return cat_get_hunt_progress_service()->advanceRiddleStatus(
-        $user_id,
-        $enigme_id,
-        $nouveau_statut,
-        current_time('mysql'),
-        $forcer
-    );
-}
 
 
 
@@ -114,27 +75,7 @@ function enigme_mettre_a_jour_statut_utilisateur(int $enigme_id, int $user_id, s
  * @param int $user_id   ID de l'utilisateur.
  * @return bool True si tous les prérequis sont remplis ou inexistants, false sinon.
  */
-function enigme_pre_requis_remplis(int $enigme_id, int $user_id): bool
-{
-    $pre_requis = get_field('enigme_acces_pre_requis', $enigme_id);
 
-    $condition = get_field('enigme_acces_condition', $enigme_id) ?? 'immediat';
-
-    $prerequisiteIds = [];
-    foreach (is_array($pre_requis) ? $pre_requis : [] as $requiredRiddle) {
-        if (is_object($requiredRiddle) && isset($requiredRiddle->ID)) {
-            $prerequisiteIds[] = (int) $requiredRiddle->ID;
-        } elseif (is_numeric($requiredRiddle)) {
-            $prerequisiteIds[] = (int) $requiredRiddle;
-        }
-    }
-
-    return cat_get_hunt_progress_service()->areRiddlePrerequisitesMet(
-        $user_id,
-        $prerequisiteIds,
-        (string) $condition
-    );
-}
 
 /**
  * ✅ Vérifie si l’énigme est verrouillée et retourne le motif.
@@ -307,24 +248,7 @@ function is_canevas_creation()
  * @param int $enigme_id
  * @return string|null Le statut ('non_commencee', 'resolue', etc.) ou null si absent
  */
-function get_statut_utilisateur_enigme($user_id, $enigme_id)
-{
-    static $cache = [];
-    $key = $user_id . '-' . $enigme_id;
 
-    if (isset($cache[$key])) {
-        return $cache[$key];
-    }
-
-    $statut = cat_get_hunt_progress_service()->getRiddleStatus((int) $user_id, (int) $enigme_id);
-
-    if ($statut) {
-        $statut = strtolower(remove_accents($statut));
-    }
-
-    $cache[$key] = $statut ?: null;
-    return $cache[$key];
-}
 
 /**
  * Vérifie si l'utilisateur a résolu une énigme.
@@ -333,9 +257,3 @@ function get_statut_utilisateur_enigme($user_id, $enigme_id)
  * @param int $enigme_id
  * @return bool
  */
-function est_enigme_resolue_par_utilisateur($user_id, $enigme_id)
-{
-    $statut = get_statut_utilisateur_enigme($user_id, $enigme_id);
-
-    return in_array($statut, ['resolue', 'terminee'], true);
-}

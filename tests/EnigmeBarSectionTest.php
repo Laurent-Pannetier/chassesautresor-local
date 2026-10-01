@@ -18,6 +18,8 @@ if (!function_exists('esc_html__')) {
     function esc_html__($text, $domain = null) { return $text; }
 }
 
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Progress/riddle-progress-functions.php';
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/enigme/affichage.php';
 
 class EnigmeBarSectionTest extends TestCase

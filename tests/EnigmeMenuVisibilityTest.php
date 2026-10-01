@@ -33,6 +33,8 @@ if (!function_exists('est_organisateur')) {
     }
 }
 
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Progress/riddle-progress-functions.php';
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/enigme/affichage.php';
 
 /**
