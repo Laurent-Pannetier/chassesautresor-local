@@ -1707,41 +1707,28 @@ add_action('wp_ajax_nopriv_ca_fetch_tentatives', 'ca_ajax_fetch_tentatives');
  *
  * @return void
  */
-function ca_load_admin_section()
+function ca_render_admin_section(string $template_name): string
 {
-    if (!is_user_logged_in()) {
-        wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor-com')], 403);
-    }
-
-    $section = sanitize_key($_GET['section'] ?? '');
-    $allowed = [
-        'organisateurs' => ['template' => 'content-organisateurs.php', 'cap' => 'administrator'],
-        'statistiques'  => ['template' => 'content-statistiques.php', 'cap' => 'administrator'],
-        'outils'        => ['template' => 'content-outils.php', 'cap' => 'administrator'],
-    ];
-
-    if (!isset($allowed[$section])) {
-        wp_send_json_error(['message' => __('Section not found', 'chassesautresor-com')], 404);
-    }
-
-    $cap = $allowed[$section]['cap'];
-    if ($cap !== 'read' && !current_user_can($cap)) {
-        wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor-com')], 403);
-    }
-
     ob_start();
-    $template = get_stylesheet_directory() . '/templates/myaccount/' . $allowed[$section]['template'];
+    $template = get_stylesheet_directory() . '/templates/myaccount/' . basename($template_name);
     if (file_exists($template)) {
         include $template;
     }
-    $html = ob_get_clean();
 
-    wp_send_json_success([
-        'html'     => $html,
-        'messages' => myaccount_get_important_messages(),
-    ]);
+    return (string) ob_get_clean();
 }
-add_action('wp_ajax_cta_load_admin_section', 'ca_load_admin_section');
+
+function ca_load_admin_section(): void
+{
+    ChassesAuTresor\Core\Messages\AccountSectionAjaxHandler::handle();
+}
+
+if (class_exists(ChassesAuTresor\Core\Messages\AccountSectionAjaxHandler::class)) {
+    ChassesAuTresor\Core\Messages\AccountSectionAjaxHandler::configure(
+        'ca_render_admin_section',
+        'myaccount_get_important_messages'
+    );
+}
 
 /**
  * Dismiss a persistent message via AJAX.
@@ -1750,21 +1737,8 @@ add_action('wp_ajax_cta_load_admin_section', 'ca_load_admin_section');
  */
 function ca_dismiss_message(): void
 {
-    if (!is_user_logged_in()) {
-        wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor-com')], 403);
-    }
-
-    $key = sanitize_key($_POST['key'] ?? '');
-    if ($key === '') {
-        wp_send_json_error(['message' => __('Clé de message invalide.', 'chassesautresor-com')], 400);
-    }
-
-    myaccount_remove_persistent_message(get_current_user_id(), $key);
-    remove_site_message($key);
-
-    wp_send_json_success();
+    ChassesAuTresor\Core\Messages\AccountMessageDismissalAjaxHandler::handle();
 }
-add_action('wp_ajax_cta_dismiss_message', 'ca_dismiss_message');
 
 // ==================================================
 // 📦 MODIFICATION AVATAR EN FRONT

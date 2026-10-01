@@ -200,6 +200,9 @@ require_once __DIR__ . '/src/Content/OrganizerNavigationService.php';
 require_once __DIR__ . '/src/Messages/UserMessageRepository.php';
 require_once __DIR__ . '/src/Messages/SiteMessageService.php';
 require_once __DIR__ . '/src/Messages/AccountMessageService.php';
+require_once __DIR__ . '/src/Messages/AccountMessageDismissalAjaxHandler.php';
+require_once __DIR__ . '/src/Messages/AccountSectionAccessService.php';
+require_once __DIR__ . '/src/Messages/AccountSectionAjaxHandler.php';
 require_once __DIR__ . '/src/Messages/UserMessagesTable.php';
 require_once __DIR__ . '/src/Messages/UserMessagesCleanup.php';
 
@@ -252,6 +255,8 @@ ChassesAuTresor\Core\Content\SolutionModalAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\SolutionManagementAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Media\RiddleImageProtectionAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Media\RiddleImageProtectionLifecycle::register('add_action', 'add_filter');
+ChassesAuTresor\Core\Messages\AccountMessageDismissalAjaxHandler::register('add_action');
+ChassesAuTresor\Core\Messages\AccountSectionAjaxHandler::register('add_action');
 
 register_activation_hook(
     __FILE__,
