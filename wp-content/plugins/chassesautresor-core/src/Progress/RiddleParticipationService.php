@@ -5,13 +5,42 @@ declare(strict_types=1);
 namespace ChassesAuTresor\Core\Progress;
 
 use ChassesAuTresor\Core\Content\RiddleRelationshipService;
+use ChassesAuTresor\Core\Points\PointsService;
 
 /** Load the hints displayed in a player's riddle participation panel. */
 final class RiddleParticipationService {
     private ?HintUnlockService $hintUnlockService;
+    private ?PointsService $pointsService;
+    private ?RiddleAttemptService $attemptService;
 
-    public function __construct(?HintUnlockService $hintUnlockService = null) {
+    public function __construct(
+        ?HintUnlockService $hintUnlockService = null,
+        ?PointsService $pointsService = null,
+        ?RiddleAttemptService $attemptService = null
+    ) {
         $this->hintUnlockService = $hintUnlockService;
+        $this->pointsService = $pointsService;
+        $this->attemptService = $attemptService;
+    }
+
+    /** @return array<string,int|string|bool> */
+    public function participationInfo(int $riddleId, int $userId, bool $solved): array {
+        $mode = $this->validationMode(get_field('enigme_mode_validation', $riddleId));
+        $cost = $mode === 'aucune' ? 0 : (int) get_field('enigme_tentative_cout_points', $riddleId);
+        $showAttempts = $mode === 'automatique' && !$solved;
+        $showInfo = $mode !== 'aucune' && !$solved && ($cost > 0 || $showAttempts);
+
+        return [
+            'validation_mode' => $mode,
+            'cost' => $cost,
+            'balance' => $cost > 0 ? $this->pointsService()->getBalance($userId) : 0,
+            'show_attempts' => $showAttempts,
+            'show_info' => $showInfo,
+            'attempts_used' => $showAttempts
+                ? $this->attemptService()->countTodayForUser($userId, $riddleId)
+                : 0,
+            'attempts_max' => $showAttempts ? (int) get_field('enigme_tentative_max', $riddleId) : 0,
+        ];
     }
 
     /** @return array{riddle:int[],hunt:int[]} */
@@ -80,6 +109,34 @@ final class RiddleParticipationService {
         }
 
         return $this->hintUnlockService;
+    }
+
+    private function pointsService(): PointsService {
+        if ($this->pointsService === null) {
+            global $wpdb;
+            $this->pointsService = \ChassesAuTresor\Core\Support\CoreServiceFactory::points($wpdb);
+        }
+
+        return $this->pointsService;
+    }
+
+    private function attemptService(): RiddleAttemptService {
+        if ($this->attemptService === null) {
+            global $wpdb;
+            $this->attemptService = \ChassesAuTresor\Core\Support\CoreServiceFactory::riddleAttempts($wpdb);
+        }
+
+        return $this->attemptService;
+    }
+
+    private function validationMode($value): string {
+        if (is_array($value)) {
+            $value = $value['value'] ?? '';
+        }
+
+        $mode = strtolower(trim((string) $value));
+
+        return $mode === '' || strpos($mode, 'aucune') === 0 || $mode === 'none' ? 'aucune' : $mode;
     }
 
     /** @return int|false */
