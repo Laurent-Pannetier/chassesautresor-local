@@ -19,7 +19,7 @@ considérées comme de la logique métier résiduelle ; elles restent toutefois 
 
 ## Avancement au 1er octobre 2026
 
-**Estimation : 97,5 % de la migration métier est terminée.** Cette valeur est une estimation architecturale, pas un
+**Estimation : 98 % de la migration métier est terminée.** Cette valeur est une estimation architecturale, pas un
 ratio de lignes : elle pondère la couverture des domaines Core, l'indépendance des points d'entrée WordPress, la
 propriété de la persistance, l'absence d'effets de bord dans les vues et la couverture de tests.
 
@@ -49,13 +49,13 @@ Le lot de migration associé à cet audit a sorti du thème :
 - le contrôleur historique de demande de validation, dont le template délègue désormais à une route Core.
 - le hook de fin de chasse et l'évaluation automatique de la complétion, qui ne dépendent plus des helpers de
   relation du thème.
+- l'enregistrement des gagnants et la clôture effective d'une chasse, désormais exécutés par le handler Core.
 
 ### Prochain lot recommandé (taille maximale raisonnable)
 
-Migrer en un gros lot les **dernières mutations de réponse et de clôture** : rendre autonome la soumission manuelle
-des réponses, puis déplacer l'enregistrement des gagnants et la clôture effective d'une chasse encore exposés sous
-forme de fonctions globales. Ce lot supprimera les dernières dépendances du workflow de progression envers le
-thème. Cible après ce lot : **99 %**.
+Migrer en un gros lot les **dernières mutations de réponse** : rendre autonome la soumission manuelle des réponses,
+son débit de points, l'enregistrement de tentative et ses notifications. Le lot supprimera ensuite les façades de
+progression devenues inutiles dans `inc/enigme/reponses.php`. Cible après ce lot : **99 %**.
 
 ## Critères utilisés
 

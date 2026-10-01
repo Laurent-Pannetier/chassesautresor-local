@@ -103,6 +103,9 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString("add_action('enigme_resolue'", $contents);
         self::assertStringNotContainsString('function verifier_fin_de_chasse', $contents);
         self::assertStringNotContainsString('cat_get_hunt_completion_service', $contents);
+
+        $huntFunctions = (string) file_get_contents(self::THEME_PATH . '/inc/chasse-functions.php');
+        self::assertStringNotContainsString('function gerer_chasse_terminee', $huntFunctions);
     }
 
     public function testThemeDoesNotRegisterOrganizerConfirmationRoutes(): void
