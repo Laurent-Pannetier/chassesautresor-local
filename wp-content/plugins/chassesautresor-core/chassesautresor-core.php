@@ -32,6 +32,7 @@ require_once __DIR__ . '/src/Points/PurchasePointsHookHandler.php';
 require_once __DIR__ . '/src/Points/ConversionService.php';
 require_once __DIR__ . '/src/Points/point-service-functions.php';
 require_once __DIR__ . '/src/Points/ConversionSettingsService.php';
+require_once __DIR__ . '/src/Points/ConversionSettingsFieldRegistrar.php';
 require_once __DIR__ . '/src/Points/conversion-settings-functions.php';
 require_once __DIR__ . '/src/Points/ConversionSettingsRequestHandler.php';
 require_once __DIR__ . '/src/Points/ConversionRequestService.php';
@@ -396,6 +397,7 @@ ChassesAuTresor\Core\Relationships\OrganizerConfirmationRouteHandler::register('
 ChassesAuTresor\Core\Relationships\OrganizerContactRouteHandler::register('add_action', 'add_filter');
 ChassesAuTresor\Core\Points\PurchasePointsHookHandler::register('add_action');
 ChassesAuTresor\Core\Points\ConversionSettingsRequestHandler::register('add_action');
+ChassesAuTresor\Core\Points\ConversionSettingsFieldRegistrar::register('add_action');
 ChassesAuTresor\Core\Points\ConversionRequestHandler::register('add_action');
 ChassesAuTresor\Core\Points\ManualPointsAdjustmentHandler::register('add_action');
 ChassesAuTresor\Core\Content\CompletionCacheSaveHookHandler::register('add_action');

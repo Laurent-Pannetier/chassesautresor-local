@@ -532,6 +532,11 @@ solution et le drapeau de diagnostic sont désormais définis par `Support/const
 services Core. Le fichier `inc/constants.php` du thème devient une façade vide. Un thème tiers peut donc activer les
 politiques d'accès et les cycles de solution sans provoquer d'erreur liée à une constante absente.
 
+Le cent-onzième lot transfère la dernière configuration fonctionnelle ACF de `admin-functions.php`. Le champ du taux
+de conversion est enregistré et traduit par `ConversionSettingsFieldRegistrar`, avec une garde lorsque ACF n'est pas
+actif. Le minimum de points requis rejoint l'API de réglages de conversion du core. Le thème ne conserve que le
+chargement des scripts et les outils visuels de son espace d'administration.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |

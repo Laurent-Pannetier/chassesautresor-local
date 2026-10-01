@@ -77,45 +77,6 @@ add_action('wp_enqueue_scripts', 'charger_script_autocomplete_utilisateurs');
  */
 
 /**
- * 📌 Valeur minimale de points requise pour demander une conversion.
- */
-function get_points_conversion_min(): int {
-    return (int) apply_filters('points_conversion_min', 500);
-}
-
-/**
- * 📌 Ajout du champ d'administration pour le taux de conversion
- */
-add_action('acf/init', function () {
-    acf_add_local_field_group([
-        'key' => 'group_taux_conversion',
-        'title' => 'Paramètres de Conversion',
-        'fields' => array(
-            array(
-                'key' => 'field_taux_conversion',
-                'label' => 'Taux de conversion actuel',
-                'name' => 'taux_conversion',
-                'type' => 'number',
-                'instructions' => 'Indiquez le taux de conversion des points en euros (ex : 0.05 pour 1 point = 0.05€).',
-                'default_value' => 0.05,
-                'step' => 0.001,
-                'required' => true,
-            ),
-        ),
-        'location' => array(
-            array(
-                array(
-                    'param' => 'options_page',
-                    'operator' => '==',
-                    'value' => 'options_taux_conversion',
-                ),
-            ),
-        ),
-    ]);
-});
-
-
-/**
  * 📌 Charge le script `taux-conversion.js` uniquement pour les administrateurs sur "Mon Compte" et ses sous-pages (y compris les templates redirigés).
  *
  * - Vérifie si l'URL commence par "/mon-compte/" pour inclure toutes les pages et templates associés.

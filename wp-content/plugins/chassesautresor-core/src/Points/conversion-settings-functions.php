@@ -13,3 +13,8 @@ function get_taux_conversion_actuel(): float {
 function update_taux_conversion($nouveau_taux): void {
     (new ConversionSettingsService())->updateRate((float) $nouveau_taux);
 }
+
+/** Return the minimum balance required to request a points conversion. */
+function get_points_conversion_min(): int {
+    return (int) apply_filters('points_conversion_min', 500);
+}

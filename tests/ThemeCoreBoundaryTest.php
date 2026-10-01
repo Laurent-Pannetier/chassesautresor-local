@@ -1123,6 +1123,22 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('function cat_get_user_attempt_statistics_service', $source);
     }
 
+    public function testConversionSettingsPolicyBelongsToCore(): void
+    {
+        $theme = (string) file_get_contents(self::THEME_PATH . '/inc/admin-functions.php');
+        $functions = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Points/conversion-settings-functions.php'
+        );
+        $registrar = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Points/ConversionSettingsFieldRegistrar.php'
+        );
+
+        self::assertStringNotContainsString('function get_points_conversion_min(', $theme);
+        self::assertStringContainsString('function get_points_conversion_min(', $functions);
+        self::assertStringNotContainsString('acf_add_local_field_group([', $theme);
+        self::assertStringContainsString('acf_add_local_field_group(self::fieldGroup())', $registrar);
+    }
+
     public function testBusinessConstantsBelongToCore(): void
     {
         $theme = (string) file_get_contents(self::THEME_PATH . '/inc/constants.php');
