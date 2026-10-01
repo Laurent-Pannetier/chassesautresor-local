@@ -3,6 +3,9 @@
 declare(strict_types=1);
 
 use ChassesAuTresor\Core\Content\HuntOrganizerAssignmentHookHandler;
+use ChassesAuTresor\Core\Content\OrganizerRoleAssignmentHookHandler;
+use ChassesAuTresor\Core\Content\WordPressAccessPolicyHookHandler;
+use ChassesAuTresor\Core\Content\BackOfficeAccessHookHandler;
 use ChassesAuTresor\Core\Content\HuntWelcomeModalViewHookHandler;
 use ChassesAuTresor\Core\Content\HuntViewMaintenanceHookHandler;
 use ChassesAuTresor\Core\Content\HuntModerationRequestHandler;
@@ -16,6 +19,62 @@ use PHPUnit\Framework\TestCase;
 
 final class BusinessHookOwnershipTest extends TestCase
 {
+    public function testBackOfficeAccessPolicyIsRegisteredByCore(): void {
+        $hooks = [];
+
+        BackOfficeAccessHookHandler::register(
+            static function (...$arguments) use (&$hooks): void {
+                $hooks[] = $arguments;
+            }
+        );
+
+        self::assertSame([['admin_init', [BackOfficeAccessHookHandler::class, 'handle']]], $hooks);
+    }
+
+    public function testWordPressAccessPoliciesAreRegisteredByCore(): void {
+        $actions = [];
+        $filters = [];
+
+        WordPressAccessPolicyHookHandler::register(
+            static function (...$arguments) use (&$actions): void {
+                $actions[] = $arguments;
+            },
+            static function (...$arguments) use (&$filters): void {
+                $filters[] = $arguments;
+            }
+        );
+
+        self::assertSame(
+            [['pre_get_posts', [WordPressAccessPolicyHookHandler::class, 'extendVisiblePostStatuses']]],
+            $actions
+        );
+        self::assertSame(
+            [
+                ['ajax_query_attachments_args', [WordPressAccessPolicyHookHandler::class, 'restrictMediaToAuthor']],
+                ['rest_attachment_query', [WordPressAccessPolicyHookHandler::class, 'restrictMediaToAuthor']],
+                ['ajax_query_attachments_args', [WordPressAccessPolicyHookHandler::class, 'filterRiddleMedia'], 15],
+                ['use_block_editor_for_post', [WordPressAccessPolicyHookHandler::class, 'filterBlockEditor'], 10, 2],
+                ['user_has_cap', [WordPressAccessPolicyHookHandler::class, 'filterCapabilities'], 10, 4],
+            ],
+            $filters
+        );
+    }
+
+    public function testOrganizerRoleAssignmentHookIsRegisteredByCore(): void {
+        $hooks = [];
+
+        OrganizerRoleAssignmentHookHandler::register(
+            static function (...$arguments) use (&$hooks): void {
+                $hooks[] = $arguments;
+            }
+        );
+
+        self::assertSame(
+            ['save_post', [OrganizerRoleAssignmentHookHandler::class, 'handle'], 10, 3],
+            $hooks[0]
+        );
+    }
+
     public function testPurchasePointsHookIsRegisteredByCore(): void
     {
         $hooks = [];

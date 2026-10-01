@@ -51,6 +51,45 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertSame([], $violations, $this->formatViolations($violations));
     }
 
+    public function testOrganizerRoleAssignmentStaysOutOfTheme(): void {
+        $violations = $this->findPhpMatches('/ajouter_role_organisateur_creation/');
+
+        self::assertSame([], $violations, $this->formatViolations($violations));
+    }
+
+    public function testRemovedLegacyMutationWorkflowsStayOutOfTheme(): void {
+        $violations = $this->findPhpMatches(
+            '/gerer_organisateur|mettre_a_jour_paiements_organisateurs|reinitialiser_enigme|'
+            . 'verifier_souscription_chasse/'
+        );
+
+        self::assertSame([], $violations, $this->formatViolations($violations));
+    }
+
+    public function testThemeDoesNotWriteBusinessRecords(): void {
+        $violations = $this->findPhpMatches(
+            '/\bwp_(?:insert|update|delete)_post\s*\(|\b(?:update|delete|add)_(?:post|user)_meta\s*\(|'
+            . '\b(?:update|delete|add)_field\s*\(|\bdelete_option\s*\(|->(?:add|set|remove)_role\s*\(/'
+        );
+
+        self::assertSame([], $violations, $this->formatViolations($violations));
+    }
+
+    public function testThemeDoesNotOwnGlobalWordPressAccessPolicies(): void {
+        $violations = $this->findPhpMatches(
+            '/add_(?:action|filter)\s*\(\s*[\'\"](?:ajax_query_attachments_args|rest_attachment_query|'
+            . 'use_block_editor_for_post|user_has_cap|pre_get_posts)[\'\"]/'
+        );
+
+        self::assertSame([], $violations, $this->formatViolations($violations));
+    }
+
+    public function testThemeDoesNotOwnBackOfficeAccessPolicy(): void {
+        $violations = $this->findPhpMatches('/roles_bloques\s*=\s*\[ROLE_ORGANISATEUR/');
+
+        self::assertSame([], $violations, $this->formatViolations($violations));
+    }
+
     public function testLegacyStatisticsResetWorkflowStaysOutOfTheme(): void
     {
         $violations = $this->findPhpMatches(

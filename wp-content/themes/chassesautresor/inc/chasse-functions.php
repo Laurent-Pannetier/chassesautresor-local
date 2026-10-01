@@ -14,7 +14,6 @@ require_once __DIR__ . '/badge-functions.php';
 /**
  * 🔹 recuperer_infos_chasse → Récupérer les informations essentielles d’une chasse.
  * 🔹 chasse_get_champs → Récupérer les champs principaux et cachés structurés d'une chasse
- * 🔹 verifier_souscription_chasse → Vérifier si un utilisateur souscrit à une chasse pour la première fois en souscrivant à une énigme.
  * 🔹 chasse_install_winners_table → Créer la table des gagnants lors de l’activation du thème.
  * 🔹 enregistrer_gagnant_chasse → Enregistrer ou mettre à jour un gagnant de chasse.
  * 🔹 acf/validate_value/name=date_de_fin (function) → Valider les incohérences de dates dans les chasses.
@@ -142,54 +141,6 @@ function chasse_get_champs($chasse_id)
     ];
 }
 
-/**
- * Vérifie si un utilisateur souscrit à une chasse pour la première fois en souscrivant à une énigme.
- *
- * @param int $user_id ID de l'utilisateur
- * @param int $enigme_id ID de l'énigme souscrite
- */
-function verifier_souscription_chasse($user_id, $enigme_id)
-{
-
-    if (!$user_id || !$enigme_id) {
-        cat_debug("🚨 ERREUR : ID utilisateur ou énigme manquant.");
-        return;
-    }
-
-    // 🏴‍☠️ Récupération de la chasse associée à l’énigme
-    $chasse_id = get_field('chasse_associee', $enigme_id);
-    if (!$chasse_id) {
-        cat_debug("⚠️ Aucune chasse associée à l'énigme ID {$enigme_id}");
-        return;
-    }
-
-    // 🔍 Vérification si l'utilisateur a déjà joué une énigme de cette chasse
-    $enigmes_associees = get_field('enigmes_associees', $chasse_id);
-    if (!$enigmes_associees || !is_array($enigmes_associees)) {
-        cat_debug("⚠️ Pas d'énigmes associées à la chasse ID {$chasse_id}");
-        return;
-    }
-
-    foreach ($enigmes_associees as $eid) {
-        $statut = get_user_meta($user_id, "statut_enigme_{$eid}", true);
-
-        // 🚫 Si une énigme a déjà été souscrite, tentée ou trouvée, la chasse est déjà souscrite
-        if ($statut && $statut !== 'non_souscrit') {
-            cat_debug("🔄 L'utilisateur ID {$user_id} a déjà interagi avec l'énigme ID {$eid}. Chasse ID {$chasse_id} déjà souscrite.");
-            return;
-        }
-    }
-
-    cat_debug("🔍 Vérification avant mise à jour souscription chasse ID {$chasse_id} : Utilisateur ID {$user_id}");
-
-    // ✅ Première souscription à une énigme de cette chasse => Marquer la chasse comme souscrite
-    update_user_meta($user_id, "souscription_chasse_{$chasse_id}", true);
-
-    // 🔄 Mise à jour du compteur global de souscriptions à la chasse
-    $meta_key = "total_joueurs_souscription_chasse_{$chasse_id}";
-    $total_souscriptions = get_post_meta($chasse_id, $meta_key, true) ?: 0;
-    update_post_meta($chasse_id, $meta_key, $total_souscriptions + 1);
-}
 /**
  * Vérifie si un utilisateur est engagé dans une chasse.
  *
