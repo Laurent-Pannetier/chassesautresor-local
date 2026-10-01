@@ -129,6 +129,16 @@ final class ThemeCoreBoundaryTest extends TestCase
         );
     }
 
+    public function testHuntTemplateDoesNotRefreshBusinessCaches(): void
+    {
+        $template = (string) file_get_contents(self::THEME_PATH . '/single-chasse.php');
+
+        self::assertStringNotContainsString('verifier_ou_recalculer_statut_chasse(', $template);
+        self::assertStringNotContainsString('verifier_et_synchroniser_cache_enigmes_si_autorise(', $template);
+        self::assertStringNotContainsString('verifier_ou_mettre_a_jour_cache_complet(', $template);
+        self::assertStringNotContainsString('chasse_clear_infos_affichage_cache(', $template);
+    }
+
     public function testThemeDoesNotRegisterOrganizerConfirmationRoutes(): void
     {
         $violations = $this->findPhpMatches(

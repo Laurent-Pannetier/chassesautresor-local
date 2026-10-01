@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use ChassesAuTresor\Core\Content\HuntOrganizerAssignmentHookHandler;
 use ChassesAuTresor\Core\Content\HuntWelcomeModalViewHookHandler;
+use ChassesAuTresor\Core\Content\HuntViewMaintenanceHookHandler;
 use ChassesAuTresor\Core\Content\HuntModerationRequestHandler;
 use ChassesAuTresor\Core\Points\ConversionSettingsRequestHandler;
 use ChassesAuTresor\Core\Points\ConversionRequestHandler;
@@ -59,6 +60,22 @@ final class BusinessHookOwnershipTest extends TestCase
 
         self::assertSame(
             ['wp_footer', [HuntWelcomeModalViewHookHandler::class, 'handle'], 99],
+            $hooks[0]
+        );
+    }
+
+    public function testHuntViewMaintenanceHookIsRegisteredByCore(): void
+    {
+        $hooks = [];
+
+        HuntViewMaintenanceHookHandler::register(
+            static function (...$arguments) use (&$hooks): void {
+                $hooks[] = $arguments;
+            }
+        );
+
+        self::assertSame(
+            ['template_redirect', [HuntViewMaintenanceHookHandler::class, 'handle']],
             $hooks[0]
         );
     }

@@ -177,6 +177,7 @@ require_once __DIR__ . '/src/Content/HuntFieldMutationAjaxHandler.php';
 require_once __DIR__ . '/src/Content/HuntClosureService.php';
 require_once __DIR__ . '/src/Content/HuntValidationRequestRouteHandler.php';
 require_once __DIR__ . '/src/Content/HuntWelcomeModalViewHookHandler.php';
+require_once __DIR__ . '/src/Content/HuntViewMaintenanceHookHandler.php';
 require_once __DIR__ . '/src/Content/HuntCreationRequestService.php';
 require_once __DIR__ . '/src/Content/HuntPostFactory.php';
 require_once __DIR__ . '/src/Content/HuntCreationRouteHandler.php';
@@ -283,6 +284,7 @@ ChassesAuTresor\Core\Content\OrganizerFieldMutationAjaxHandler::register('add_ac
 ChassesAuTresor\Core\Content\OrganizerRelationshipSaveHookHandler::register('add_action');
 ChassesAuTresor\Core\Content\HuntOrganizerAssignmentHookHandler::register('add_action');
 ChassesAuTresor\Core\Content\HuntWelcomeModalViewHookHandler::register('add_action');
+ChassesAuTresor\Core\Content\HuntViewMaintenanceHookHandler::register('add_action');
 ChassesAuTresor\Core\Content\HuntModerationRequestHandler::register('add_action');
 ChassesAuTresor\Core\Relationships\OrganizerConfirmationRouteHandler::register('add_action');
 ChassesAuTresor\Core\Points\PurchasePointsHookHandler::register('add_action');
