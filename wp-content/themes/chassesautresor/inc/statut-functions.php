@@ -7,6 +7,21 @@ if (!defined('ABSPATH')) {
 
 require_once __DIR__ . '/badge-functions.php';
 
+if (!class_exists(ChassesAuTresor\Core\Progress\HuntStatusAjaxHandler::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Progress/HuntStatusAjaxHandler.php';
+}
+
+if (!class_exists(ChassesAuTresor\Core\Progress\HuntStatusScheduler::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Progress/HuntStatusScheduler.php';
+}
+
+if (!class_exists(ChassesAuTresor\Core\Progress\RiddleStatusAjaxHandler::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Progress/RiddleStatusAjaxHandler.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Progress\HuntProgressService::class, false)) {
     require_once dirname(__DIR__, 3)
         . '/plugins/chassesautresor-core/src/Progress/HuntProgressRepository.php';
@@ -432,25 +447,12 @@ function enigme_mettre_a_jour_etat_systeme_automatiquement($post_id): void
 /**
  * 🔁 Recalcule le statut système d’une énigme via appel AJAX sécurisé.
  *
- * @hook wp_ajax_forcer_recalcul_statut_enigme
+ * Wrapper de compatibilité ; l’endpoint est enregistré par chassesautresor-core.
  * @return void
  */
-add_action('wp_ajax_forcer_recalcul_statut_enigme', 'forcer_recalcul_statut_enigme');
-
-function forcer_recalcul_statut_enigme()
+function forcer_recalcul_statut_enigme(): void
 {
-    if (!is_user_logged_in()) {
-        wp_send_json_error('non_connecte');
-    }
-
-    $post_id = isset($_POST['post_id']) ? (int) $_POST['post_id'] : 0;
-
-    if (!$post_id || get_post_type($post_id) !== 'enigme') {
-        wp_send_json_error('post_invalide');
-    }
-
-    enigme_mettre_a_jour_etat_systeme($post_id);
-    wp_send_json_success('statut_enigme_recalcule');
+    ChassesAuTresor\Core\Progress\RiddleStatusAjaxHandler::handle();
 }
 
 /**
@@ -808,36 +810,22 @@ function mettre_a_jour_statuts_chasse($chasse_id)
 
 
 
-/**
- * 🔁 Forcer le recalcul du statut d'une chasse via AJAX.
- *
- * Utilisé pour recalculer le statut après une mise à jour front-end
- * sans attendre la sauvegarde naturelle de WordPress/ACF.
- *
- * @hook wp_ajax_forcer_recalcul_statut_chasse
- * @return void
- */
-add_action('wp_ajax_forcer_recalcul_statut_chasse', 'forcer_recalcul_statut_chasse');
-
-/**
- * Forcer le recalcul du statut d'une chasse (via appel AJAX séparé, après modification d’un champ).
- */
-function forcer_recalcul_statut_chasse()
+function forcer_recalcul_statut_chasse(): void
 {
-    if (!is_user_logged_in()) {
-        wp_send_json_error('non_connecte');
-    }
-
-    $post_id = isset($_POST['post_id']) ? (int) $_POST['post_id'] : 0;
-
-    if (!$post_id || get_post_type($post_id) !== 'chasse') {
-        wp_send_json_error('post_invalide');
-    }
-
-    mettre_a_jour_statuts_chasse($post_id);
-    wp_send_json_success('statut_recalcule');
+    ChassesAuTresor\Core\Progress\HuntStatusAjaxHandler::recalculate();
 }
 
+function cat_refresh_hunt_status(int $huntId): void
+{
+    mettre_a_jour_statuts_chasse($huntId);
+}
+add_action('chassesautresor_hunt_status_refresh_requested', 'cat_refresh_hunt_status');
+
+function cat_check_stale_hunt_status(int $huntId): void
+{
+    verifier_ou_recalculer_statut_chasse($huntId);
+}
+add_action('chassesautresor_hunt_status_stale_check_requested', 'cat_check_stale_hunt_status');
 
 /**
  * 🔄 Mettre à jour le statut d'une chasse après enregistrement ACF en admin.
@@ -864,46 +852,16 @@ function mettre_a_jour_statut_si_chasse($post_id)
 }
 
 
-/**
- * 🔎 Récupère le statut public actuel d'une chasse (via AJAX).
- *
- * Utilisé pour mettre à jour dynamiquement le badge de statut en front,
- * après une modification qui déclenche un recalcul.
- *
- * @hook wp_ajax_recuperer_statut_chasse
- * @return void
- */
-add_action('wp_ajax_recuperer_statut_chasse', 'recuperer_statut_chasse');
-
-function recuperer_statut_chasse()
+function recuperer_statut_chasse(): void
 {
-    if (!is_user_logged_in()) {
-        wp_send_json_error('non_connecte');
-    }
-
-    $post_id = isset($_POST['post_id']) ? (int) $_POST['post_id'] : 0;
-
-    if (!$post_id || get_post_type($post_id) !== 'chasse') {
-        wp_send_json_error('post_invalide');
-    }
-
-    $statut = get_field('chasse_cache_statut', $post_id);
-    if (!$statut) {
-        wp_send_json_error('statut_indisponible');
-    }
-
-    $statut_str = is_string($statut) ? $statut : '';
-    $validation = get_field('chasse_cache_statut_validation', $post_id);
-    $badge_infos = chasse_preparer_badge_statut($statut_str, is_string($validation) ? $validation : null);
-
-    wp_send_json_success([
-        'statut'       => $badge_infos['statut'],
-        'statut_label' => $badge_infos['label'],
-        'statut_icon'  => $badge_infos['icon_html'],
-        'statut_tooltip' => $badge_infos['label'],
-    ]);
+    ChassesAuTresor\Core\Progress\HuntStatusAjaxHandler::getStatus();
 }
 
+function cat_render_hunt_status_badge(array $badge, string $status, ?string $validation): array
+{
+    return chasse_preparer_badge_statut($status, $validation);
+}
+add_filter('chassesautresor_render_hunt_status_badge', 'cat_render_hunt_status_badge', 10, 3);
 
 /**
  * 🔁 Met à jour le champ de validation et force le statut du post en cohérence.
@@ -1011,38 +969,15 @@ function forcer_statut_selon_validation_chasse($post_id, $post, $update)
     }
 }
 
-/**
- * Planifie une tâche récurrente pour vérifier le statut des chasses.
- *
- * @return void
- */
 function schedule_cat_recalculate_chasse_statuses(): void
 {
-    if (!wp_next_scheduled('cat_recalculate_chasse_statuses')) {
-        wp_schedule_event(time(), 'hourly', 'cat_recalculate_chasse_statuses');
-    }
+    ChassesAuTresor\Core\Progress\HuntStatusScheduler::schedule();
 }
-add_action('after_switch_theme', 'schedule_cat_recalculate_chasse_statuses');
 
-/**
- * Vérifie périodiquement les statuts des chasses afin de les maintenir à jour.
- *
- * @return void
- */
 function cat_recalculate_chasse_statuses(): void
 {
-    $chasses = get_posts([
-        'post_type'      => 'chasse',
-        'post_status'    => 'any',
-        'fields'         => 'ids',
-        'posts_per_page' => -1,
-    ]);
-
-    foreach ($chasses as $chasse_id) {
-        verifier_ou_recalculer_statut_chasse((int) $chasse_id);
-    }
+    ChassesAuTresor\Core\Progress\HuntStatusScheduler::process();
 }
-add_action('cat_recalculate_chasse_statuses', 'cat_recalculate_chasse_statuses');
 
 
 // ==================================================

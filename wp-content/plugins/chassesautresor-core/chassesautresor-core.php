@@ -18,6 +18,9 @@ require_once __DIR__ . '/src/Points/PointsTable.php';
 require_once __DIR__ . '/src/Progress/HuntProgressRepository.php';
 require_once __DIR__ . '/src/Progress/HuntProgressService.php';
 require_once __DIR__ . '/src/Progress/HuntStatusService.php';
+require_once __DIR__ . '/src/Progress/HuntStatusAjaxHandler.php';
+require_once __DIR__ . '/src/Progress/HuntStatusScheduler.php';
+require_once __DIR__ . '/src/Progress/RiddleStatusAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/HuntRiddleClassifier.php';
 require_once __DIR__ . '/src/Progress/HuntCompletionService.php';
 require_once __DIR__ . '/src/Progress/HuntWinnerRepository.php';
@@ -200,6 +203,9 @@ ChassesAuTresor\Core\Content\HuntFieldMutationAjaxHandler::register('add_action'
 ChassesAuTresor\Core\Content\RiddleFieldMutationAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\OrganizerFieldMutationAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\OrganizerRelationshipSaveHookHandler::register('add_action');
+ChassesAuTresor\Core\Progress\HuntStatusAjaxHandler::register('add_action');
+ChassesAuTresor\Core\Progress\HuntStatusScheduler::register('add_action');
+ChassesAuTresor\Core\Progress\RiddleStatusAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\HintFieldMutationAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\HintModalAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\HintDeletionAjaxHandler::register('add_action');
@@ -248,6 +254,11 @@ register_activation_hook(
 
 register_activation_hook(
     __FILE__,
+    [ChassesAuTresor\Core\Progress\HuntStatusScheduler::class, 'schedule']
+);
+
+register_activation_hook(
+    __FILE__,
     [ChassesAuTresor\Core\Points\PointsTable::class, 'install']
 );
 
@@ -264,6 +275,11 @@ register_activation_hook(
 register_deactivation_hook(
     __FILE__,
     [ChassesAuTresor\Core\Messages\UserMessagesCleanup::class, 'unschedule']
+);
+
+register_deactivation_hook(
+    __FILE__,
+    [ChassesAuTresor\Core\Progress\HuntStatusScheduler::class, 'unschedule']
 );
 
 register_deactivation_hook(
