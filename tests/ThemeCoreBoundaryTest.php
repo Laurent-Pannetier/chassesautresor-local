@@ -1123,6 +1123,22 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('function cat_get_user_attempt_statistics_service', $source);
     }
 
+    public function testAccountOrderRenderingBelongsToCore(): void
+    {
+        $theme = (string) file_get_contents(self::THEME_PATH . '/inc/user-functions.php');
+        $functions = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Users/account-order-functions.php'
+        );
+        $renderer = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Users/AccountOrdersRenderer.php'
+        );
+
+        self::assertStringNotContainsString('function afficher_commandes_utilisateur(', $theme);
+        self::assertStringContainsString('function afficher_commandes_utilisateur(', $functions);
+        self::assertStringContainsString('wc_get_orders', $renderer);
+        self::assertStringContainsString("__('Produit inconnu', 'chassesautresor-com')", $renderer);
+    }
+
     public function testConversionSettingsPolicyBelongsToCore(): void
     {
         $theme = (string) file_get_contents(self::THEME_PATH . '/inc/admin-functions.php');

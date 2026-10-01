@@ -537,6 +537,11 @@ de conversion est enregistré et traduit par `ConversionSettingsFieldRegistrar`,
 actif. Le minimum de points requis rejoint l'API de réglages de conversion du core. Le thème ne conserve que le
 chargement des scripts et les outils visuels de son espace d'administration.
 
+Le cent-douzième lot déplace la requête et le tableau compact des commandes WooCommerce dans
+`AccountOrdersRenderer`. La fonction historique reste exposée par le plugin aux templates de compte, mais
+`user-functions.php` ne connaît plus l'API de commande. Le libellé de produit de repli est désormais traduit et le
+renderer échoue proprement lorsque WooCommerce n'est pas disponible.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |

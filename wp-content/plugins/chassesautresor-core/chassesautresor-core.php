@@ -16,6 +16,8 @@ require_once __DIR__ . '/src/Support/table-functions.php';
 require_once __DIR__ . '/src/Support/pager-functions.php';
 require_once __DIR__ . '/src/Users/UserProfileCompletionService.php';
 require_once __DIR__ . '/src/Users/profile-functions.php';
+require_once __DIR__ . '/src/Users/AccountOrdersRenderer.php';
+require_once __DIR__ . '/src/Users/account-order-functions.php';
 require_once __DIR__ . '/src/Security/site-password.php';
 require_once __DIR__ . '/src/Email/template.php';
 require_once __DIR__ . '/src/Email/user-registration.php';
