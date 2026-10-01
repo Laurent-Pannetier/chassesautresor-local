@@ -584,7 +584,6 @@ if (class_exists(ChassesAuTresor\Core\Points\ConversionHistoryAjaxHandler::class
 /**
  * 🔹 get_organisateur_id_by_contact_email → retrouve l’ID organisateur à partir de l’email de contact.
  * 🔹 filtrer_destinataire_contact_organisateur → modifie le destinataire du mail via WPForms (email ACF ou auteur, BCC admin)
- * 🔹 ajouter_endpoint_contact_organisateur → ajoute l’endpoint `/contact` sur les URLs des organisateurs (détection côté template)
  */
 
 /**
@@ -647,33 +646,6 @@ function get_organisateur_id_by_contact_email(?string $email): ?int
 
     return null;
 }
-
-/**
- * Ajoute l'endpoint `contact` aux permaliens des organisateurs.
- *
- * Permet de détecter /contact après un CPT organisateur dans le template.
- *
- * @return void
- */
-function ajouter_endpoint_contact_organisateur() {
-    add_rewrite_endpoint('contact', EP_PERMALINK);
-}
-add_action('init', 'ajouter_endpoint_contact_organisateur');
-
-/**
- * Enregistre `contact` comme variable de requête valide.
- *
- * Permet d'utiliser get_query_var('contact') de manière fiable.
- *
- * @param array $vars
- * @return array
- */
-function ajouter_query_var_contact($vars) {
-    $vars[] = 'contact';
-    return $vars;
-}
-
-add_filter('query_vars', 'ajouter_query_var_contact');
 
 /**
  * Génére une liste hiérarchique des chasses d'un organisateur.

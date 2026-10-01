@@ -103,6 +103,7 @@ require_once __DIR__ . '/src/Relationships/OrganizerRequestService.php';
 require_once __DIR__ . '/src/Relationships/OrganizerRequestLifecycleService.php';
 require_once __DIR__ . '/src/Relationships/OrganizerConfirmationRouteHandler.php';
 require_once __DIR__ . '/src/Relationships/OrganizerConfirmationEmailService.php';
+require_once __DIR__ . '/src/Relationships/OrganizerContactRouteHandler.php';
 require_once __DIR__ . '/src/Relationships/OrganizerCtaDecisionService.php';
 require_once __DIR__ . '/src/Relationships/RelationshipService.php';
 require_once __DIR__ . '/src/Relationships/HuntRiddleQueryService.php';
@@ -308,6 +309,7 @@ ChassesAuTresor\Core\Content\HuntWelcomeModalViewHookHandler::register('add_acti
 ChassesAuTresor\Core\Content\HuntViewMaintenanceHookHandler::register('add_action');
 ChassesAuTresor\Core\Content\HuntModerationRequestHandler::register('add_action');
 ChassesAuTresor\Core\Relationships\OrganizerConfirmationRouteHandler::register('add_action');
+ChassesAuTresor\Core\Relationships\OrganizerContactRouteHandler::register('add_action', 'add_filter');
 ChassesAuTresor\Core\Points\PurchasePointsHookHandler::register('add_action');
 ChassesAuTresor\Core\Points\ConversionSettingsRequestHandler::register('add_action');
 ChassesAuTresor\Core\Points\ConversionRequestHandler::register('add_action');

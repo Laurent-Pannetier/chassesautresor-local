@@ -147,6 +147,14 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertSame([], $violations, $this->formatViolations($violations));
     }
 
+    public function testThemeDoesNotOwnOrganizerContactRoute(): void {
+        $violations = $this->findPhpMatches(
+            '/function\s+(?:ajouter_endpoint_contact_organisateur|ajouter_query_var_contact)\s*\(/'
+        );
+
+        self::assertSame([], $violations, $this->formatViolations($violations));
+    }
+
     public function testLegacyStatisticsResetWorkflowStaysOutOfTheme(): void
     {
         $violations = $this->findPhpMatches(

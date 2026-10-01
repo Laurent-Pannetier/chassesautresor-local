@@ -49,7 +49,9 @@ chargeur de compatibilité pour les appels historiques directs.
 Le onzième lot a transféré au plugin le contrôleur d’accès aux pages d’énigmes, y compris l’engagement automatique,
 les prérequis et les redirections vers les panneaux d’édition ou de soumission.
 
-Estimation après ce lot : **97 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
+Le douzième lot a transféré au plugin l’endpoint de contact des organisateurs et sa variable de requête.
+
+Estimation après ce lot : **98 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
 responsabilités fonctionnelles recensées (persistance, accès, routes, traitements, notifications et cache), et non
 sur le nombre de lignes. Il sera réévalué après chaque lot.
 

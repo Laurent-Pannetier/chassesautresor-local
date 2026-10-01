@@ -17,6 +17,7 @@ use ChassesAuTresor\Core\Points\ManualPointsAdjustmentHandler;
 use ChassesAuTresor\Core\Points\PurchasePointsHookHandler;
 use ChassesAuTresor\Core\Progress\HuntCompletionHookHandler;
 use ChassesAuTresor\Core\Relationships\OrganizerConfirmationRouteHandler;
+use ChassesAuTresor\Core\Relationships\OrganizerContactRouteHandler;
 use ChassesAuTresor\Core\Media\ProtectedAssetRouteHandler;
 use ChassesAuTresor\Core\Messages\AccountLegacyRouteHandler;
 use ChassesAuTresor\Core\Content\RiddleAccessRedirectHandler;
@@ -24,6 +25,23 @@ use PHPUnit\Framework\TestCase;
 
 final class BusinessHookOwnershipTest extends TestCase
 {
+    public function testOrganizerContactRouteIsRegisteredByCore(): void {
+        $actions = [];
+        $filters = [];
+
+        OrganizerContactRouteHandler::register(
+            static function (...$arguments) use (&$actions): void {
+                $actions[] = $arguments;
+            },
+            static function (...$arguments) use (&$filters): void {
+                $filters[] = $arguments;
+            }
+        );
+
+        self::assertSame([['init', [OrganizerContactRouteHandler::class, 'registerEndpoint']]], $actions);
+        self::assertSame([['query_vars', [OrganizerContactRouteHandler::class, 'addQueryVariable']]], $filters);
+    }
+
     public function testRiddleAccessRedirectIsRegisteredByCore(): void {
         $hooks = [];
 
