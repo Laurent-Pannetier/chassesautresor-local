@@ -1,35 +1,6 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
-/**
- * Create the service responsible for points operations.
- */
-function cat_get_points_service(): ChassesAuTresor\Core\Points\PointsService
-{
-    global $wpdb;
-    return ChassesAuTresor\Core\Support\CoreServiceFactory::points($wpdb);
-}
-
-/**
- * Create the service responsible for purchased point packs.
- */
-function cat_get_purchase_points_service(): ChassesAuTresor\Core\Points\PurchasePointsService
-{
-    global $wpdb;
-    return ChassesAuTresor\Core\Support\CoreServiceFactory::purchasePoints($wpdb);
-}
-
-/**
- * Create the service responsible for point conversion requests.
- */
-function cat_get_conversion_service(): ChassesAuTresor\Core\Points\ConversionService
-{
-    global $wpdb;
-    return ChassesAuTresor\Core\Support\CoreServiceFactory::conversion($wpdb);
-}
-
-
-
 function cat_classify_hunt_riddles(array $riddleIds): array
 {
     return (new ChassesAuTresor\Core\Progress\HuntRiddleClassifier())->classify($riddleIds);

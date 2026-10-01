@@ -416,6 +416,11 @@ d'entrée historiques de lecture et de mise à jour du taux de conversion sont d
 réutilisent `ConversionSettingsService`. La configuration « Mon compte » reste en place et les indicateurs ne changent
 pas tant que les trois sections ne disposent pas d'un rendu core complet.
 
+Le quatre-vingt-onzième lot transfère les trois fabriques globales de services de points, achats de points et
+conversions. Les vues historiques conservent leurs appels, mais la résolution de ces services depuis `$wpdb` est
+maintenant fournie par le plugin. La section de statistiques du compte ne dépend donc plus de `gamify-functions.php`
+pour obtenir son service de points. Les indicateurs restent inchangés tant que son rendu appartient au thème.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |

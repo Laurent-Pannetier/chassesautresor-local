@@ -1244,6 +1244,23 @@ final class ThemeCoreBoundaryTest extends TestCase
         }
     }
 
+    public function testPointServiceFactoriesBelongToCore(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/gamify-functions.php');
+        $core = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Points/point-service-functions.php'
+        );
+
+        foreach ([
+            'cat_get_points_service',
+            'cat_get_purchase_points_service',
+            'cat_get_conversion_service',
+        ] as $functionName) {
+            self::assertStringNotContainsString("function {$functionName}(", $source);
+            self::assertStringContainsString("function {$functionName}(", $core);
+        }
+    }
+
     public function testThemeDoesNotOwnHuntModerationEmails(): void
     {
         $violations = $this->findPhpMatches(
