@@ -19,7 +19,7 @@ considérées comme de la logique métier résiduelle ; elles restent toutefois 
 
 ## Avancement au 1er octobre 2026
 
-**Estimation : 88 % de la migration métier est terminée.** Cette valeur est une estimation architecturale, pas un
+**Estimation : 89 % de la migration métier est terminée.** Cette valeur est une estimation architecturale, pas un
 ratio de lignes : elle pondère la couverture des domaines Core, l'indépendance des points d'entrée WordPress, la
 propriété de la persistance, l'absence d'effets de bord dans les vues et la couverture de tests.
 
@@ -37,14 +37,14 @@ Le lot de migration associé à cet audit a sorti du thème :
 - la politique de modération des chasses, avec les transitions autorisées et leurs statuts cibles.
 - l'application des mutations de statut sur les chasses, leurs caches et les énigmes associées.
 - l'enregistrement du point d'entrée `admin_post_*` de modération, désormais possédé par Core.
+- la publication de l'organisateur validé et la sélection de l'utilisateur dont les rôles doivent être promus.
 
 ### Prochain lot recommandé (taille maximale raisonnable)
 
-Extraire en un seul lot le reste du **contrôleur de modération** encore présent dans `inc/admin-functions.php` :
-promotion de l'organisateur, messages de compte et courriels de validation, correction, bannissement et suppression.
-La politique, les mutations et le hook sont désormais dans Core ; ce prochain lot supprimera la dernière callback de
-compatibilité configurée par le thème.
-Cible après ce lot : **89 %**.
+Migrer en un gros lot les **notifications de modération et le workflow de demande organisateur** : messages de
+compte, courriels de validation/correction/bannissement/suppression, création et confirmation par jeton du profil
+organisateur. Ce lot supprimera la dernière callback de modération configurée par le thème ainsi que les endpoints
+de confirmation encore enregistrés par celui-ci. Cible après ce lot : **93 %**.
 
 ## Critères utilisés
 
