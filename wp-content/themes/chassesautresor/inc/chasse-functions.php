@@ -762,12 +762,6 @@ if (class_exists(ChassesAuTresor\Core\Progress\HuntValidationAjaxHandler::class)
             return utilisateur_est_organisateur_associe_a_chasse($user_id, $hunt_id);
         },
         static fn (int $riddle_id): int => (int) recuperer_id_chasse_associee($riddle_id),
-        static function (int $hunt_id): void {
-            require_once get_theme_file_path('inc/statut-functions.php');
-            forcer_statut_apres_acf($hunt_id, 'a_venir');
-            update_field('chasse_cache_statut', 'a_venir', $hunt_id);
-            update_field('chasse_cache_statut_validation', 'correction', $hunt_id);
-        },
         static function (int $hunt_id, int $riddle_id): string {
             return cat_build_hunt_validation_cta($hunt_id, $riddle_id);
         }

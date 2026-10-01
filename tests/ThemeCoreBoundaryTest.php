@@ -75,6 +75,15 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertSame([], $violations, $this->formatViolations($violations));
     }
 
+    public function testCoreOwnsHuntValidationCancellationWrites(): void {
+        $handler = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/HuntValidationAjaxHandler.php'
+        );
+
+        self::assertStringContainsString("update_field('chasse_cache_statut', 'a_venir'", $handler);
+        self::assertStringContainsString("update_field('chasse_cache_statut_validation', 'correction'", $handler);
+    }
+
     public function testThemeDoesNotOwnGlobalWordPressAccessPolicies(): void {
         $violations = $this->findPhpMatches(
             '/add_(?:action|filter)\s*\(\s*[\'\"](?:ajax_query_attachments_args|rest_attachment_query|'

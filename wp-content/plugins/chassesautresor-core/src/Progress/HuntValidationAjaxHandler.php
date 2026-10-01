@@ -8,7 +8,6 @@ namespace ChassesAuTresor\Core\Progress;
 class HuntValidationAjaxHandler {
     private static $organizerChecker;
     private static $huntResolver;
-    private static $cancellation;
     private static $ctaBuilder;
 
     public static function register(callable $addAction): void {
@@ -20,12 +19,10 @@ class HuntValidationAjaxHandler {
     public static function configure(
         callable $organizerChecker,
         callable $huntResolver,
-        callable $cancellation,
         callable $ctaBuilder
     ): void {
         self::$organizerChecker = $organizerChecker;
         self::$huntResolver = $huntResolver;
-        self::$cancellation = $cancellation;
         self::$ctaBuilder = $ctaBuilder;
     }
 
@@ -49,14 +46,20 @@ class HuntValidationAjaxHandler {
         if (!$allowed) {
             wp_die(__('Conditions non remplies.', 'chassesautresor-com'));
         }
-        if (empty($_POST['annuler_validation_chasse']) || !is_callable(self::$cancellation)) {
+        if (empty($_POST['annuler_validation_chasse'])) {
             wp_redirect(home_url());
             exit;
         }
 
-        call_user_func(self::$cancellation, $huntId);
+        self::cancelValidation($huntId);
         wp_redirect(add_query_arg('validation_annulee', '1', get_permalink($huntId)));
         exit;
+    }
+
+    public static function cancelValidation(int $huntId): void {
+        (new HuntStatusUpdater())->synchronizePublication($huntId, 'a_venir');
+        update_field('chasse_cache_statut', 'a_venir', $huntId);
+        update_field('chasse_cache_statut_validation', 'correction', $huntId);
     }
 
     public static function refreshCta(): void {

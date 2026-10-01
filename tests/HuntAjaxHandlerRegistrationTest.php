@@ -32,7 +32,6 @@ final class HuntAjaxHandlerRegistrationTest extends TestCase {
         HuntValidationAjaxHandler::configure(
             static fn (): bool => false,
             static fn (): int => 0,
-            static function (): void {},
             static fn (): string => ''
         );
         $this->addToAssertionCount(1);
