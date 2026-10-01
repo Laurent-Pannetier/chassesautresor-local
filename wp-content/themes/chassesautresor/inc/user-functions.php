@@ -775,71 +775,6 @@ function ca_get_tentatives_view_model(int $user_id, int $page = 1, int $per_page
 }
 
 /**
- * Renders the table rows for the tentatives table.
- *
- * @param array  $tentatives        Tentative rows.
- * @param int    $filtered_total    Number of filtered rows.
- * @param string $no_results_message Message displayed when there are no rows.
- *
- * @return string
- */
-function ca_render_tentatives_rows(array $tentatives, int $filtered_total, string $no_results_message): string
-{
-    ob_start();
-
-    if ($filtered_total <= 0 || empty($tentatives)) {
-        ?>
-        <tr class="tentatives-empty">
-            <td colspan="5"><?php echo esc_html($no_results_message); ?></td>
-        </tr>
-        <?php
-    } else {
-        foreach ($tentatives as $tent) {
-            $chasse_id    = isset($tent->chasse_id) ? (int) $tent->chasse_id : 0;
-            $chasse_title = isset($tent->chasse_title) ? (string) $tent->chasse_title : '';
-            ?>
-            <tr>
-                <td><?php echo esc_html(mysql2date('d/m/Y H:i', $tent->date_tentative)); ?></td>
-                <td>
-                    <?php if ($chasse_id > 0 && $chasse_title !== '') : ?>
-                    <a href="<?php echo esc_url(get_permalink($chasse_id)); ?>">
-                        <?php echo esc_html($chasse_title); ?>
-                    </a>
-                    <?php elseif ($chasse_title !== '') : ?>
-                    <?php echo esc_html($chasse_title); ?>
-                    <?php else : ?>
-                    &mdash;
-                    <?php endif; ?>
-                </td>
-                <td><?php echo esc_html($tent->enigme_title ?? ''); ?></td>
-                <?php
-                $uid     = isset($tent->tentative_uid) ? (string) $tent->tentative_uid : '';
-                $options = $uid !== '' ? cta_prepare_masked_proposition_options($uid) : [];
-                echo cta_render_proposition_cell($uid !== '' ? '' : ($tent->reponse_saisie ?? ''), false, 39, $options);
-                ?>
-                <?php
-                $result = $tent->resultat;
-                $class  = 'etiquette-error';
-                if ($result === 'bon') {
-                    $class = 'etiquette-success';
-                } elseif ($result === 'attente') {
-                    $class = 'etiquette-pending';
-                }
-                ?>
-                <td>
-                    <span class="etiquette <?php echo esc_attr($class); ?>">
-                        <?php echo esc_html__($result, 'chassesautresor-com'); ?>
-                    </span>
-                </td>
-            </tr>
-            <?php
-        }
-    }
-
-    return trim((string) ob_get_clean());
-}
-
-/**
  * Display the Tentatives table on the My Account dashboard.
  *
  * @return void
@@ -968,35 +903,6 @@ function ca_ajax_fetch_tentatives(): void
     ChassesAuTresor\Core\Progress\UserAttemptsAjaxHandler::handle();
 }
 
-function ca_render_tentatives_ajax_rows(array $view): string
-{
-    return ca_render_tentatives_rows(
-        $view['tentatives'],
-        $view['filtered_total'],
-        $view['no_results_message']
-    );
-}
-
-function ca_render_tentatives_ajax_pager(array $view): string
-{
-    return cta_render_pager(
-        $view['page'],
-        $view['pages'],
-        'tentatives-pager',
-        ['data-param' => 'tentatives-page', 'data-section' => '', 'data-search-key' => 'tentatives']
-    );
-}
-
-if (class_exists(ChassesAuTresor\Core\Progress\UserAttemptsAjaxHandler::class)) {
-    ChassesAuTresor\Core\Progress\UserAttemptsAjaxHandler::configure(
-        static function (array $view): string {
-            return ca_render_tentatives_ajax_rows($view);
-        },
-        static function (array $view): string {
-            return ca_render_tentatives_ajax_pager($view);
-        }
-    );
-}
 // ==================================================
 /**
  * Load My Account sections via AJAX.

@@ -119,6 +119,8 @@ require_once __DIR__ . '/src/Progress/RiddleAttemptViewAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/UserAttemptStatisticsRepository.php';
 require_once __DIR__ . '/src/Progress/UserAttemptStatisticsService.php';
 require_once __DIR__ . '/src/Progress/UserProgressPaginationService.php';
+require_once __DIR__ . '/src/Progress/UserAttemptsRenderer.php';
+require_once __DIR__ . '/src/Progress/user-attempt-functions.php';
 require_once __DIR__ . '/src/Progress/EngagedHuntsAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/EngagedHuntsApplicationService.php';
 require_once __DIR__ . '/src/Progress/UserAttemptsAjaxHandler.php';

@@ -35,9 +35,7 @@ class UserAttemptsAjaxHandler {
             isset($_POST['page']) ? (int) $_POST['page'] : 1,
             isset($_POST['per_page']) ? (int) $_POST['per_page'] : 10
         );
-        $ready = is_callable(self::$rowRenderer)
-            && is_callable(self::$pagerRenderer);
-        if (!$request['allowed'] || !$ready) {
+        if (!$request['allowed']) {
             wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor-com')], 403);
         }
 
@@ -65,9 +63,11 @@ class UserAttemptsAjaxHandler {
                 ? __('Aucune tentative ne correspond à votre recherche.', 'chassesautresor-com')
                 : __('Vous n\'avez pas encore enregistré de tentative.', 'chassesautresor-com'),
         ];
+        $rowRenderer = self::$rowRenderer ?? [new UserAttemptsRenderer(), 'rows'];
+        $pagerRenderer = self::$pagerRenderer ?? [new UserAttemptsRenderer(), 'pager'];
         wp_send_json_success([
-            'rows' => (string) call_user_func(self::$rowRenderer, $view),
-            'pager' => (string) call_user_func(self::$pagerRenderer, $view),
+            'rows' => (string) call_user_func($rowRenderer, $view),
+            'pager' => (string) call_user_func($pagerRenderer, $view),
             'page' => $view['page'],
             'pages' => $view['pages'],
             'per_page' => $view['per_page'],

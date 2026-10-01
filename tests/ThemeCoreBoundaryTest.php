@@ -1062,15 +1062,21 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('ca_prepare_engaged_hunts_pagination', $configuration);
     }
 
-    public function testUserAttemptsQueryIsNotInjectedByTheme(): void
+    public function testUserAttemptsRenderingIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/user-functions.php');
-        preg_match('/UserAttemptsAjaxHandler::configure\([\s\S]*?^    \);/m', $source, $matches);
-        $configuration = $matches[0] ?? null;
+        $handler = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/UserAttemptsAjaxHandler.php'
+        );
+        $renderer = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/UserAttemptsRenderer.php'
+        );
 
-        self::assertIsString($configuration);
-        self::assertStringNotContainsString('ca_register_tentatives_search_context', $configuration);
-        self::assertStringNotContainsString('ca_get_tentatives_view_model', $configuration);
+        self::assertStringNotContainsString('UserAttemptsAjaxHandler::configure', $source);
+        self::assertStringNotContainsString('function ca_render_tentatives_rows', $source);
+        self::assertStringContainsString("[new UserAttemptsRenderer(), 'rows']", $handler);
+        self::assertStringContainsString("[new UserAttemptsRenderer(), 'pager']", $handler);
+        self::assertStringContainsString('class UserAttemptsRenderer', $renderer);
     }
 
     public function testConversionAccessIsNotInjectedByTheme(): void
