@@ -315,6 +315,10 @@ Le soixante-dixième lot complète cette API avec le calcul de progression d'un 
 l'enregistrement d'un engagement. Ces trois décisions utilisent désormais directement les services du plugin ; leur
 absence dans le thème et leur présence dans le core sont couvertes par le test de frontière transversal.
 
+Le soixante-et-onzième lot transfère les quatre fonctions de requête et de visibilité des solutions. Elles complètent
+le fichier de compatibilité déjà possédé par le plugin, sans créer une seconde API ni modifier le rendu HTML conservé
+dans le thème. La frontière interdit désormais leur redéclaration dans `inc/chasse-functions.php`.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |
