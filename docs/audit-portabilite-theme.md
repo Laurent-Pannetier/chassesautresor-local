@@ -458,6 +458,11 @@ interroge directement `RiddleSidebarStatisticsService` puis réutilise `RiddleBa
 ni composition de ces deux fragments ne demeure dans `inc/enigme/affichage.php`. Les autres blocs mixtes justifient le
 maintien des indicateurs.
 
+Le quatre-vingt-dix-neuvième lot termine les fragments statistiques latéraux en transférant les métadonnées et les
+gagnants vers `RiddleSidebarRenderer`. Le rendu initial et les endpoints AJAX partagent désormais le même renderer
+core, sans chargement du partial thématique des gagnants. Les blocs principaux d'énigme maintiennent encore le fichier
+dans la liste des assembleurs mixtes et les indicateurs restent inchangés.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |

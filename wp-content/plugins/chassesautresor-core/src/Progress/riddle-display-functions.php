@@ -111,3 +111,20 @@ function enigme_sidebar_resolution_html(int $enigme_id): string {
         __('Définition du taux de résolution', 'chassesautresor-com')
     );
 }
+
+function enigme_sidebar_metas_html(int $enigme_id): string {
+    return ca_riddle_sidebar_renderer()->metas($enigme_id);
+}
+
+function enigme_sidebar_gagnants_html(int $enigme_id, int $user_id, int $page = 1): string {
+    return ca_riddle_sidebar_renderer()->winners($enigme_id, $user_id, $page);
+}
+
+function ca_riddle_sidebar_renderer(): ChassesAuTresor\Core\Progress\RiddleSidebarRenderer {
+    global $wpdb;
+
+    return new ChassesAuTresor\Core\Progress\RiddleSidebarRenderer(
+        CoreServiceFactory::riddleStatistics($wpdb),
+        CoreServiceFactory::riddleSidebarStatistics($wpdb)
+    );
+}

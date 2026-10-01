@@ -65,23 +65,8 @@ final class RiddleSidebarRenderer
     {
         $progression = $this->sidebarStatistics->progression($huntId, $userId);
         $resolution = $this->sidebarStatistics->resolution($riddleId);
-        $participants = $this->statistics->countEngagedPlayers(
-            $riddleId,
-            null,
-            null,
-            $this->excludedUserIds($riddleId)
-        );
-        $attempts = get_field('enigme_mode_validation', $riddleId) === 'aucune'
-            ? null
-            : $this->statistics->countAttempts($riddleId);
-
         $html = '<h3>' . esc_html__('Statistiques', 'chassesautresor-com') . '</h3>';
-        $html .= '<div class="bloc-metas-inline bloc-metas-inline--compact">';
-        $html .= $this->meta(esc_html__('Nb joueurs :', 'chassesautresor-com'), $participants);
-        if ($attempts !== null) {
-            $html .= $this->meta(esc_html__('Nb tentatives :', 'chassesautresor-com'), $attempts);
-        }
-        $html .= '</div>';
+        $html .= $this->metas($riddleId);
         $html .= $this->comparison(
             esc_html__('Progression', 'chassesautresor-com'),
             $progression['user'],
@@ -93,6 +78,26 @@ final class RiddleSidebarRenderer
             $resolution,
             'enigme-resolution'
         );
+    }
+
+    public function metas(int $riddleId): string
+    {
+        $participants = $this->statistics->countEngagedPlayers(
+            $riddleId,
+            null,
+            null,
+            $this->excludedUserIds($riddleId)
+        );
+        $attempts = get_field('enigme_mode_validation', $riddleId) === 'aucune'
+            ? null
+            : $this->statistics->countAttempts($riddleId);
+
+        $html = '<div class="bloc-metas-inline bloc-metas-inline--compact">';
+        $html .= $this->meta(esc_html__('Nb joueurs :', 'chassesautresor-com'), $participants);
+        if ($attempts !== null) {
+            $html .= $this->meta(esc_html__('Nb tentatives :', 'chassesautresor-com'), $attempts);
+        }
+        return $html . '</div>';
     }
 
     /** @return int[] */

@@ -4,6 +4,9 @@ use PHPUnit\Framework\TestCase;
 if (!defined('ABSPATH')) {
     define('ABSPATH', __DIR__ . '/');
 }
+if (!defined('ARRAY_A')) {
+    define('ARRAY_A', 'ARRAY_A');
+}
 
 if (!defined('HOUR_IN_SECONDS')) {
     define('HOUR_IN_SECONDS', 3600);
@@ -409,6 +412,7 @@ class EnigmeMenuRenderingTest extends TestCase
         global $wpdb;
         $wpdb = new class {
             public string $prefix = 'wp_';
+            public string $users = 'wp_users';
 
             public function prepare($query, ...$args)
             {
@@ -430,6 +434,11 @@ class EnigmeMenuRenderingTest extends TestCase
                     return !empty($GLOBALS['engage_chasse']) ? 1 : 0;
                 }
                 return 0;
+            }
+
+            public function get_results($sql, $format = null): array
+            {
+                return [];
             }
         };
     }
