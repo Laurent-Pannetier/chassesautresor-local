@@ -63,6 +63,8 @@ require_once __DIR__ . '/src/Media/RiddleImageProtectionLifecycle.php';
 require_once __DIR__ . '/src/Content/RiddleCompletionService.php';
 require_once __DIR__ . '/src/Content/CompletionCacheManager.php';
 require_once __DIR__ . '/src/Content/CompletionCacheSaveHookHandler.php';
+require_once __DIR__ . '/src/Content/HuntFeatureCacheManager.php';
+require_once __DIR__ . '/src/Content/HuntFeatureCacheSaveHookHandler.php';
 require_once __DIR__ . '/src/Content/RiddleActionPolicyService.php';
 require_once __DIR__ . '/src/Content/RiddleCreationService.php';
 require_once __DIR__ . '/src/Content/RiddleCreationRequestService.php';
@@ -213,6 +215,7 @@ ChassesAuTresor\Core\Content\RiddleFieldMutationAjaxHandler::register('add_actio
 ChassesAuTresor\Core\Content\OrganizerFieldMutationAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\OrganizerRelationshipSaveHookHandler::register('add_action');
 ChassesAuTresor\Core\Content\CompletionCacheSaveHookHandler::register('add_action');
+ChassesAuTresor\Core\Content\HuntFeatureCacheSaveHookHandler::register('add_action');
 ChassesAuTresor\Core\Progress\HuntStatusAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Progress\HuntStatusScheduler::register('add_action');
 ChassesAuTresor\Core\Progress\HuntStatusSaveHookHandler::register('add_action');

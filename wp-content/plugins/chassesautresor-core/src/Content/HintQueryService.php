@@ -98,6 +98,17 @@ class HintQueryService
         return $args;
     }
 
+    /** @return array<string, mixed> */
+    public function getExistingHintIdsQueryArgs(int $targetId, string $targetType): array
+    {
+        $args = $this->getRankedHintIdsQueryArgs($targetId, $targetType);
+        if ($args !== []) {
+            $args['posts_per_page'] = 1;
+        }
+
+        return $args;
+    }
+
     /**
      * Build the query for programmed hints whose availability date has elapsed.
      *

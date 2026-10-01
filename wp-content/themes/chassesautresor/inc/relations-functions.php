@@ -38,6 +38,15 @@ if (!class_exists(ChassesAuTresor\Core\Content\HuntFeatureService::class, false)
         . '/plugins/chassesautresor-core/src/Content/HuntFeatureService.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Content\HuntFeatureCacheManager::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Content/SolutionQueryService.php';
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Content/HintQueryService.php';
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Content/HuntFeatureCacheManager.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Content\AcfRelationshipMutationService::class, false)) {
     require_once dirname(__DIR__, 3)
         . '/plugins/chassesautresor-core/src/Content/AcfRelationshipMutationService.php';
@@ -477,119 +486,12 @@ function recuperer_ids_enigmes_pour_chasse(int $chasse_id): array
 
 
 /**
- * Clear the cached enigme list for a chasse when an enigme is saved.
- *
- * @param int $post_id Post ID of the enigme being saved.
+ * Compatibility wrapper for callers that explicitly refresh hunt feature flags.
  */
-function clear_enigmes_chasse_cache(int $post_id): void
-{
-    if (get_post_type($post_id) !== 'enigme') {
-        return;
-    }
-
-    $chasse_id = (int) get_field('enigme_chasse_associee', $post_id);
-    if (!$chasse_id) {
-        return;
-    }
-
-    wp_cache_delete('enigmes_chasse_' . $chasse_id, 'chassesautresor');
-}
-add_action('save_post_enigme', 'clear_enigmes_chasse_cache', 20, 1);
-
 function recalculate_chasse_cached_flags(int $chasse_id): void
 {
-    $huntHasSolution = function_exists('solution_existe_pour_objet')
-        && solution_existe_pour_objet($chasse_id, 'chasse');
-    $huntHasHints = function_exists('prochain_rang_indice')
-        && prochain_rang_indice($chasse_id, 'chasse') > 1;
-    $features = cat_get_hunt_feature_service()->summarize(
-        $huntHasSolution,
-        $huntHasHints,
-        recuperer_enigmes_associees($chasse_id),
-        static function (int $riddleId): bool {
-            return function_exists('solution_existe_pour_objet')
-                && solution_existe_pour_objet($riddleId, 'enigme');
-        },
-        static function (int $riddleId): bool {
-            return function_exists('prochain_rang_indice')
-                && prochain_rang_indice($riddleId, 'enigme') > 1;
-        }
-    );
-
-    update_field('chasse_cache_has_solutions', $features['has_solutions'] ? 1 : 0, $chasse_id);
-    update_field('chasse_cache_has_indices', $features['has_indices'] ? 1 : 0, $chasse_id);
+    (new ChassesAuTresor\Core\Content\HuntFeatureCacheManager())->recalculate($chasse_id);
 }
-
-/**
- * Met à jour les indicateurs mis en cache lors de la sauvegarde d'une énigme.
- *
- * @param int $post_id ID de l'énigme.
- * @return void
- */
-function update_chasse_cached_flags_on_enigme_save(int $post_id): void
-{
-    $chasse_id = (int) get_field('enigme_chasse_associee', $post_id);
-    if ($chasse_id) {
-        recalculate_chasse_cached_flags($chasse_id);
-    }
-}
-add_action('save_post_enigme', 'update_chasse_cached_flags_on_enigme_save', 20, 1);
-
-/**
- * Met à jour les indicateurs mis en cache lors de la sauvegarde d'un indice.
- *
- * @param int $post_id ID de l'indice.
- * @return void
- */
-function update_chasse_cached_flags_on_indice_save(int $post_id): void
-{
-    $targetType = (string) get_field('indice_cible_type', $post_id);
-    $riddleId = $targetType === 'enigme'
-        ? (int) get_field('indice_enigme_linked', $post_id)
-        : 0;
-    $directHunt = $targetType === 'chasse'
-        ? get_field('indice_chasse_linked', $post_id)
-        : null;
-    $riddleHunt = $riddleId > 0 ? recuperer_chasse_associee($riddleId) : null;
-    $chasse_id = cat_get_relationship_service()->resolveTargetHuntId(
-        $targetType,
-        $directHunt,
-        $riddleHunt
-    );
-
-    if ($chasse_id !== null) {
-        recalculate_chasse_cached_flags($chasse_id);
-    }
-}
-add_action('save_post_indice', 'update_chasse_cached_flags_on_indice_save', 20, 1);
-
-/**
- * Met à jour les indicateurs mis en cache lors de la sauvegarde d'une solution.
- *
- * @param int $post_id ID de la solution.
- * @return void
- */
-function update_chasse_cached_flags_on_solution_save(int $post_id): void
-{
-    $targetType = (string) get_field('solution_cible_type', $post_id);
-    $riddleId = $targetType === 'enigme'
-        ? (int) get_field('solution_enigme_linked', $post_id)
-        : 0;
-    $directHunt = $targetType === 'chasse'
-        ? get_field('solution_chasse_linked', $post_id)
-        : null;
-    $riddleHunt = $riddleId > 0 ? recuperer_chasse_associee($riddleId) : null;
-    $chasse_id = cat_get_relationship_service()->resolveTargetHuntId(
-        $targetType,
-        $directHunt,
-        $riddleHunt
-    );
-
-    if ($chasse_id !== null) {
-        recalculate_chasse_cached_flags($chasse_id);
-    }
-}
-add_action('save_post_solution', 'update_chasse_cached_flags_on_solution_save', 20, 1);
 
 
 // ==================================================
