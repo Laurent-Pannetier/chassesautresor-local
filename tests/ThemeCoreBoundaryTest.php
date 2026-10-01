@@ -1427,7 +1427,7 @@ final class ThemeCoreBoundaryTest extends TestCase
     public function testRiddleParticipationInformationViewModelBelongsToCore(): void {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/affichage.php');
         $service = (string) file_get_contents(
-            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/RiddleParticipationService.php'
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/RiddleParticipationInfoService.php'
         );
         preg_match(
             '/function render_enigme_participation\(.*?(?=\n    \/\*\*\n     \* Render the solution)/s',
@@ -1436,8 +1436,8 @@ final class ThemeCoreBoundaryTest extends TestCase
         );
         $participationSource = $matches[0] ?? '';
 
-        self::assertStringContainsString('->participationInfo(', $participationSource);
-        self::assertStringContainsString('function participationInfo(', $service);
+        self::assertStringContainsString('RiddleParticipationInfoService', $participationSource);
+        self::assertStringContainsString('function build(', $service);
         self::assertStringNotContainsString("get_field('enigme_mode_validation'", $participationSource);
         self::assertStringNotContainsString("get_field('enigme_tentative_cout_points'", $participationSource);
         self::assertStringNotContainsString("get_field('enigme_tentative_max'", $participationSource);

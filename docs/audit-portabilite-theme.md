@@ -492,12 +492,12 @@ Les valeurs historiques « Nouvel indice » et `clue-` sont aussi disponibles co
 thème ne sont pas chargées. Le test couvre en outre deux énigmes liées à des chasses différentes pendant la même
 requête afin d'empêcher la réintroduction d'un cache de relation partagé entre plusieurs énigmes.
 
-Le cent-cinquième lot complète le view-model du panneau avec le mode de validation, le coût, le solde, la visibilité
-des informations, le compteur quotidien et sa limite. Le service évite les lectures de solde et de tentatives quand
-elles ne sont pas affichées. Le thème réutilise la même instance du service pour les indices et ces informations, puis
-ne conserve que leur composition HTML et leurs libellés. La garde de frontière interdit désormais les trois lectures
-ACF et les deux façades de compteurs correspondantes dans `inc/enigme/affichage.php`. Le panneau de participation reste
-un bloc de rendu du grand assembleur mixte ; les indicateurs demeurent donc inchangés.
+Le cent-cinquième lot ajoute `RiddleParticipationInfoService`, un service dédié au view-model du mode de validation,
+du coût, du solde, de la visibilité, du compteur quotidien et de sa limite. Il évite les lectures de solde et de
+tentatives quand elles ne sont pas affichées, tandis que `RiddleParticipationService` reste centré sur les indices.
+Le thème ne conserve que la composition HTML et les libellés. La garde de frontière interdit désormais les trois
+lectures ACF et les deux façades de compteurs correspondantes dans `inc/enigme/affichage.php`. Le panneau de
+participation reste un bloc de rendu du grand assembleur mixte ; les indicateurs demeurent donc inchangés.
 
 Le cent-et-unième lot transfère les deux lectures encore appelées par les informations de participation : solde de
 points de l'utilisateur et nombre de tentatives du jour. Leurs façades historiques délèguent maintenant aux services

@@ -203,7 +203,8 @@ require_once __DIR__ . '/indices.php';
             $content .= '<div class="indice-display"></div></div>';
         }
 
-        $participation_info = $participation_service->participationInfo($enigme_id, $user_id, $deja_resolue);
+        $participation_info = (new ChassesAuTresor\Core\Progress\RiddleParticipationInfoService())
+            ->build($enigme_id, $user_id, $deja_resolue);
         $mode_validation = $participation_info['validation_mode'];
         $cout = $participation_info['cost'];
         $solde_actuel = $participation_info['balance'];

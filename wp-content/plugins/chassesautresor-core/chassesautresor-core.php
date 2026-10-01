@@ -99,6 +99,7 @@ require_once __DIR__ . '/src/Progress/RiddleStatisticsRepository.php';
 require_once __DIR__ . '/src/Progress/RiddleStatisticsService.php';
 require_once __DIR__ . '/src/Progress/RiddleBarRenderer.php';
 require_once __DIR__ . '/src/Progress/RiddleParticipationService.php';
+require_once __DIR__ . '/src/Progress/RiddleParticipationInfoService.php';
 require_once __DIR__ . '/src/Progress/riddle-display-functions.php';
 require_once __DIR__ . '/src/Progress/StatisticsParticipantRequestService.php';
 require_once __DIR__ . '/src/Progress/HuntStatisticsParticipantRenderer.php';

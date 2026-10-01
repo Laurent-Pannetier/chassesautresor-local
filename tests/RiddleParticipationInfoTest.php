@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 use ChassesAuTresor\Core\Points\PointsService;
 use ChassesAuTresor\Core\Progress\RiddleAttemptService;
-use ChassesAuTresor\Core\Progress\RiddleParticipationService;
+use ChassesAuTresor\Core\Progress\RiddleParticipationInfoService;
 use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Points/PointsService.php';
 require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/RiddleAttemptService.php';
-require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/RiddleParticipationService.php';
+require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/RiddleParticipationInfoService.php';
 
 final class ParticipationPointsServiceStub extends PointsService {
     public int $calls = 0;
@@ -54,7 +54,7 @@ final class RiddleParticipationInfoTest extends TestCase {
 
         $points = new ParticipationPointsServiceStub();
         $attempts = new ParticipationAttemptServiceStub();
-        $service = new RiddleParticipationService(null, $points, $attempts);
+        $service = new RiddleParticipationInfoService($points, $attempts);
 
         self::assertSame([
             'validation_mode' => 'automatique',
@@ -64,7 +64,7 @@ final class RiddleParticipationInfoTest extends TestCase {
             'show_info' => true,
             'attempts_used' => 3,
             'attempts_max' => 10,
-        ], $service->participationInfo(12, 9, false));
+        ], $service->build(12, 9, false));
         self::assertSame(1, $points->calls);
         self::assertSame(1, $attempts->calls);
 
@@ -77,7 +77,7 @@ final class RiddleParticipationInfoTest extends TestCase {
             'show_info' => false,
             'attempts_used' => 0,
             'attempts_max' => 0,
-        ], $service->participationInfo(12, 9, false));
+        ], $service->build(12, 9, false));
         self::assertSame(1, $points->calls);
         self::assertSame(1, $attempts->calls);
     }
