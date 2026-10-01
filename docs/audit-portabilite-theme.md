@@ -165,6 +165,11 @@ la détection des solutions existantes sont maintenant résolues directement par
 spécifique aux indices est devenu un résolveur générique des contenus liés. Les quatre filtres métier ont été retirés
 de `edition-solution.php`, qui conserve uniquement le rendu du tableau et ses adaptateurs de templates.
 
+Le quarante-et-unième lot a transféré le reste du cycle de vie des images protégées : répertoire d'upload dédié,
+protection après sauvegarde et autorisation des contrôleurs temporaires. `edition-securite.php` ne conserve que le
+formatage visuel des galeries vers la route protégée. Le contrôleur vérifie maintenant directement la politique de
+modification du plugin, sans filtre d'autorisation fourni par le thème.
+
 Estimation prudente après ce lot : **environ 98 % de l'autonomie métier vérifiée**. Il ne s'agit plus d'un calcul au
 centième fondé sur les lots déjà traités : cette valeur applique une décote aux dépendances runtime encore observées,
 aux politiques d'édition encore enregistrées par le thème, aux adaptateurs d'accès encore utilisés ailleurs et à

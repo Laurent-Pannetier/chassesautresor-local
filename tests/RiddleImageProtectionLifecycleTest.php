@@ -21,9 +21,13 @@ final class RiddleImageProtectionLifecycleTest extends TestCase {
             }
         );
 
-        $this->assertCount(3, $actions);
+        $this->assertCount(4, $actions);
         $this->assertSame('acf/save_post', $actions[0][0]);
-        $this->assertSame(RiddleImageProtectionLifecycle::CRON_HOOK, $actions[2][0]);
-        $this->assertSame('cron_schedules', $filters[0][0]);
+        $this->assertSame(20, $actions[0][2]);
+        $this->assertSame(RiddleImageProtectionLifecycle::CRON_HOOK, $actions[3][0]);
+        $this->assertCount(3, $filters);
+        $this->assertSame('acf/upload_prefilter/name=enigme_visuel_image', $filters[0][0]);
+        $this->assertSame('acf/upload_file/name=enigme_visuel_image', $filters[1][0]);
+        $this->assertSame('cron_schedules', $filters[2][0]);
     }
 }

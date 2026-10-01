@@ -55,7 +55,7 @@ class RiddleImageProtectionAjaxHandler {
         if ($riddleId <= 0 || get_post_type($riddleId) !== 'enigme') {
             wp_send_json_error('ID invalide');
         }
-        if (!apply_filters('chassesautresor_can_manage_riddle_images', false, $riddleId)) {
+        if (!\utilisateur_peut_modifier_post($riddleId)) {
             wp_send_json_error('Droits insuffisants');
         }
 

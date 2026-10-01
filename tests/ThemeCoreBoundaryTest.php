@@ -483,6 +483,20 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('chassesautresor_solution_exists', $management);
     }
 
+    public function testThemeDoesNotOwnRiddleImageProtectionLifecycle(): void
+    {
+        $edition = (string) file_get_contents(self::THEME_PATH . '/inc/edition/edition-securite.php');
+        foreach ([
+            'acf/upload_prefilter/name=enigme_visuel_image',
+            'acf/upload_file/name=enigme_visuel_image',
+            'verrouiller_visuels_enigme_si_nouveau_upload',
+            'chassesautresor_can_manage_riddle_images',
+        ] as $businessHook) {
+            self::assertStringNotContainsString($businessHook, $edition);
+        }
+        self::assertStringContainsString('acf/format_value/type=gallery', $edition);
+    }
+
     public function testRiddleStatisticsAccessIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/stats.php');
