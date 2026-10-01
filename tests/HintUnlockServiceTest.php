@@ -21,6 +21,7 @@ class HintUnlockRepositoryStub extends HintUnlockRepository
     public array $unlockArguments = [];
     public array $engagementArguments = [];
     public array $transactionEvents = [];
+    public array $unlockedHintIds = [];
 
     public function __construct()
     {
@@ -46,6 +47,12 @@ class HintUnlockRepositoryStub extends HintUnlockRepository
         $this->arguments = [$userId, $hintId];
 
         return $this->unlocked;
+    }
+
+    public function findUnlockedHintIds(int $userId, array $hintIds): array {
+        $this->arguments = [$userId, $hintIds];
+
+        return $this->unlockedHintIds;
     }
 
     public function insertUnlock(
@@ -135,6 +142,45 @@ class HintUnlockServiceTest extends TestCase
 
         $wpdb->result = null;
         $this->assertFalse($repository->exists(7, 10));
+    }
+
+    public function testUnlocksAreLoadedInOneBatch(): void {
+        $repository = new HintUnlockRepositoryStub();
+        $repository->unlockedHintIds = [10, 12];
+        $service = new HintUnlockService($repository, new HintUnlockPointsServiceStub());
+
+        $this->assertSame([10, 12], $service->unlockedHintIds(7, [10, 11, 12]));
+        $this->assertSame([7, [10, 11, 12]], $repository->arguments);
+    }
+
+    public function testRepositoryQueriesUnlocksInOneBatch(): void {
+        $wpdb = new class {
+            public string $prefix = 'wp_';
+            public array $arguments = [];
+            public int $queryCount = 0;
+
+            public function prepare(string $query, ...$arguments): string
+            {
+                $this->arguments = $arguments;
+
+                return $query;
+            }
+
+            public function get_col(string $query): array
+            {
+                $this->queryCount++;
+
+                return ['10', '12'];
+            }
+        };
+        $repository = new HintUnlockRepository($wpdb);
+
+        $this->assertSame([10, 12], $repository->findUnlockedHintIds(7, [10, 11, 12, 12, 0, -4]));
+        $this->assertSame([7, 10, 11, 12], $wpdb->arguments);
+        $this->assertSame(1, $wpdb->queryCount);
+        $this->assertSame([], $repository->findUnlockedHintIds(0, [10]));
+        $this->assertSame([], $repository->findUnlockedHintIds(7, []));
+        $this->assertSame(1, $wpdb->queryCount);
     }
 
     public function testRecordUnlockValidatesAndPersistsBothRecords(): void

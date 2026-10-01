@@ -44,6 +44,27 @@ class HintUnlockRepository
         );
     }
 
+    /**
+     * @param int[] $hintIds
+     * @return int[]
+     */
+    public function findUnlockedHintIds(int $userId, array $hintIds): array {
+        $hintIds = array_values(array_unique(array_filter(
+            array_map('intval', $hintIds),
+            static fn (int $hintId): bool => $hintId > 0
+        )));
+        if ($userId <= 0 || $hintIds === []) {
+            return [];
+        }
+
+        $table = $this->wpdb->prefix . 'indices_deblocages';
+        $placeholders = implode(', ', array_fill(0, count($hintIds), '%d'));
+        $query = "SELECT indice_id FROM {$table} WHERE user_id = %d AND indice_id IN ({$placeholders})";
+        $rows = $this->wpdb->get_col($this->wpdb->prepare($query, $userId, ...$hintIds));
+
+        return array_values(array_unique(array_map('intval', (array) $rows)));
+    }
+
     public function insertUnlock(
         int $userId,
         int $hintId,

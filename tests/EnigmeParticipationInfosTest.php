@@ -26,6 +26,13 @@ if (!function_exists('esc_html__')) {
     }
 }
 
+if (!function_exists('__')) {
+    function __($text, $domain = null)
+    {
+        return $text;
+    }
+}
+
 if (!function_exists('get_field')) {
     function get_field($key, $id)
     {
@@ -166,6 +173,10 @@ class EnigmeParticipationInfosTest extends TestCase
             {
                 global $resolved;
                 return $resolved ? 'resolue' : null;
+            }
+            public function get_col($query)
+            {
+                return [];
             }
         };
     }

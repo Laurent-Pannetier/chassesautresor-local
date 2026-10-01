@@ -4,11 +4,21 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Progress;
 
+use ChassesAuTresor\Core\Content\RiddleRelationshipService;
+
 /** Load the hints displayed in a player's riddle participation panel. */
 final class RiddleParticipationService {
+    private ?HintUnlockService $hintUnlockService;
+
+    public function __construct(?HintUnlockService $hintUnlockService = null) {
+        $this->hintUnlockService = $hintUnlockService;
+    }
+
     /** @return array{riddle:int[],hunt:int[]} */
     public function hintIds(int $riddleId): array {
-        $huntId = recuperer_id_chasse_associee($riddleId);
+        $huntId = (new RiddleRelationshipService())->resolveHuntId(
+            get_field('enigme_chasse_associee', $riddleId)
+        );
 
         return [
             'riddle' => $this->query('enigme', 'indice_enigme_linked', $riddleId),
@@ -19,23 +29,57 @@ final class RiddleParticipationService {
     /** @return array{riddle:array<int,array<string,mixed>>,hunt:array<int,array<string,mixed>>} */
     public function hints(int $riddleId, int $userId): array {
         $groups = $this->hintIds($riddleId);
+        $hintIds = array_values(array_unique(array_merge($groups['riddle'], $groups['hunt'])));
+
+        $unlockedIds = array_fill_keys($this->hintUnlockService()->unlockedHintIds($userId, $hintIds), true);
 
         return [
-            'riddle' => array_map(fn (int $hintId): array => $this->hint($hintId, $userId), $groups['riddle']),
-            'hunt' => array_map(fn (int $hintId): array => $this->hint($hintId, $userId), $groups['hunt']),
+            'riddle' => array_map(fn (int $hintId): array => $this->hint($hintId, $unlockedIds), $groups['riddle']),
+            'hunt' => array_map(fn (int $hintId): array => $this->hint($hintId, $unlockedIds), $groups['hunt']),
         ];
     }
 
     /** @return array{id:int,cost:int,state:string,unlocked:bool,title:string,available_at:int|false} */
-    private function hint(int $hintId, int $userId): array {
+    private function hint(int $hintId, array $unlockedIds): array {
         return [
             'id' => $hintId,
             'cost' => (int) get_field('indice_cout_points', $hintId),
             'state' => (string) (get_field('indice_cache_etat_systeme', $hintId) ?: ''),
-            'unlocked' => indice_est_debloque($userId, $hintId),
-            'title' => get_indice_title($hintId),
+            'unlocked' => isset($unlockedIds[$hintId]),
+            'title' => $this->title($hintId),
             'available_at' => $this->timestamp(get_field('indice_date_disponibilite', $hintId)),
         ];
+    }
+
+    private function title(int $hintId): string {
+        $post = get_post($hintId);
+        if (!$post) {
+            return '';
+        }
+
+        $title = (string) $post->post_title;
+        $default = defined('TITRE_DEFAUT_INDICE') ? TITRE_DEFAUT_INDICE : 'Nouvel indice';
+        $prefix = defined('INDICE_DEFAULT_PREFIX') ? INDICE_DEFAULT_PREFIX : 'clue-';
+        $isGenerated = $title === ''
+            || $title === $default
+            || ($prefix !== '' && strpos($title, $prefix) === 0);
+        if (!$isGenerated) {
+            return $title;
+        }
+
+        return sprintf(
+            __('Indice #%d', 'chassesautresor-com'),
+            (int) get_post_meta($hintId, 'indice_rank', true)
+        );
+    }
+
+    private function hintUnlockService(): HintUnlockService {
+        if ($this->hintUnlockService === null) {
+            global $wpdb;
+            $this->hintUnlockService = \ChassesAuTresor\Core\Support\CoreServiceFactory::hintUnlock($wpdb);
+        }
+
+        return $this->hintUnlockService;
     }
 
     /** @return int|false */
@@ -61,7 +105,7 @@ final class RiddleParticipationService {
             return [];
         }
 
-        $ids = get_posts([
+        $posts = get_posts([
             'post_type' => 'indice',
             'post_status' => ['publish', 'draft', 'future', 'pending'],
             'meta_query' => [
@@ -83,11 +127,15 @@ final class RiddleParticipationService {
             ],
             'orderby' => 'date',
             'order' => 'ASC',
-            'fields' => 'ids',
             'no_found_rows' => true,
             'posts_per_page' => -1,
+            'update_post_meta_cache' => true,
+            'update_post_term_cache' => false,
         ]);
 
-        return array_values(array_filter(array_map('intval', (array) $ids)));
+        return array_values(array_filter(array_map(
+            static fn ($post): int => is_object($post) ? (int) $post->ID : (int) $post,
+            (array) $posts
+        )));
     }
 }

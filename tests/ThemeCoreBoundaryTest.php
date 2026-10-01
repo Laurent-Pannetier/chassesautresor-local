@@ -1403,6 +1403,8 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString("get_field('indice_cout_points'", $source);
         self::assertStringNotContainsString('indice_est_debloque(', $source);
         self::assertStringNotContainsString('date_create_from_format(', $source);
+        self::assertStringNotContainsString('get_indice_title(', $service);
+        self::assertStringNotContainsString('recuperer_id_chasse_associee(', $service);
     }
 
     public function testRiddleParticipationBalancesAndAttemptCountsBelongToCore(): void
@@ -1420,6 +1422,27 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringContainsString('function get_user_points(', $pointsCore);
         self::assertStringNotContainsString('function compter_tentatives_du_jour(', $attempts);
         self::assertStringContainsString('function compter_tentatives_du_jour(', $attemptsCore);
+    }
+
+    public function testRiddleParticipationInformationViewModelBelongsToCore(): void {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/affichage.php');
+        $service = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/RiddleParticipationInfoService.php'
+        );
+        preg_match(
+            '/function render_enigme_participation\(.*?(?=\n    \/\*\*\n     \* Render the solution)/s',
+            $source,
+            $matches
+        );
+        $participationSource = $matches[0] ?? '';
+
+        self::assertStringContainsString('RiddleParticipationInfoService', $participationSource);
+        self::assertStringContainsString('function build(', $service);
+        self::assertStringNotContainsString("get_field('enigme_mode_validation'", $participationSource);
+        self::assertStringNotContainsString("get_field('enigme_tentative_cout_points'", $participationSource);
+        self::assertStringNotContainsString("get_field('enigme_tentative_max'", $participationSource);
+        self::assertStringNotContainsString('get_user_points(', $participationSource);
+        self::assertStringNotContainsString('compter_tentatives_du_jour(', $participationSource);
     }
 
     public function testThemeDoesNotOwnHuntModerationEmails(): void

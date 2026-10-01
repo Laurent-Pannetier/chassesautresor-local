@@ -472,6 +472,33 @@ Le cent-deuxième lot complète ce service avec le view-model des indices : coû
 normalisation de la date de disponibilité. La vue ne relit plus les champs ACF de chaque indice et se limite au choix
 des classes et libellés visuels. Les autres données du panneau restent mixtes, sans évolution des indicateurs.
 
+Le cent-troisième lot optimise ce chargement sans déplacer de nouvelle responsabilité de portabilité. Pour `N`
+indices, la vérification des déblocages effectuait auparavant `N` appels à `indice_est_debloque()`, donc `N` requêtes
+`SELECT` sur `wp_indices_deblocages`. Le repository charge maintenant tous les identifiants débloqués en une requête
+bornée par les identifiants du panneau. Les requêtes qui sélectionnent les indices hydratent désormais leurs objets
+et préchargent explicitement leurs métadonnées, sans charger les termes inutilisés. Les trois lectures ACF par indice
+sont conservées afin de préserver leur formatage et les formats historiques des dates, mais elles s'appuient ainsi
+de manière déterministe sur le cache de la requête HTTP. Le test avec trois indices mesure une requête groupée de
+déblocage au lieu de trois requêtes unitaires et vérifie les options de préchargement. Aucun cache persistant
+d'invalidation n'est ajouté. Cette seule optimisation ne modifie pas les indicateurs de 97 % et 49 %.
+
+Le cent-quatrième lot retire les deux dépendances globales du thème qui subsistaient dans ce service. La chasse est
+désormais résolue par `RiddleRelationshipService` à partir du champ relationnel, sans utiliser le cache statique de
+`recuperer_id_chasse_associee()`. Le titre d'affichage est construit dans le core à partir de l'objet et du rang déjà
+préchargés, en conservant le titre personnalisé ou le format historique « Indice #N ». Une garde de frontière interdit
+le retour de ces deux appels dans `RiddleParticipationService`. Cette autonomie ciblée ne suffit pas à retirer
+`inc/enigme/affichage.php` de la liste des grands assembleurs mixtes et ne change donc pas les indicateurs.
+Les valeurs historiques « Nouvel indice » et `clue-` sont aussi disponibles comme replis lorsque les constantes du
+thème ne sont pas chargées. Le test couvre en outre deux énigmes liées à des chasses différentes pendant la même
+requête afin d'empêcher la réintroduction d'un cache de relation partagé entre plusieurs énigmes.
+
+Le cent-cinquième lot ajoute `RiddleParticipationInfoService`, un service dédié au view-model du mode de validation,
+du coût, du solde, de la visibilité, du compteur quotidien et de sa limite. Il évite les lectures de solde et de
+tentatives quand elles ne sont pas affichées, tandis que `RiddleParticipationService` reste centré sur les indices.
+Le thème ne conserve que la composition HTML et les libellés. La garde de frontière interdit désormais les trois
+lectures ACF et les deux façades de compteurs correspondantes dans `inc/enigme/affichage.php`. Le panneau de
+participation reste un bloc de rendu du grand assembleur mixte ; les indicateurs demeurent donc inchangés.
+
 Le cent-et-unième lot transfère les deux lectures encore appelées par les informations de participation : solde de
 points de l'utilisateur et nombre de tentatives du jour. Leurs façades historiques délèguent maintenant aux services
 core de points et de tentatives. Le panneau reste toutefois assemblé dans le thème ; les indicateurs ne changent pas.
@@ -586,6 +613,26 @@ liste limitée de responsabilités déjà migrées et autorise encore les écrit
    et non dans les seuls templates.
 5. Activer un thème WordPress neutre sur un environnement de recette et valider au minimum les parcours joueur,
    organisateur et administrateur, les courriels, les tâches planifiées et les écrans WooCommerce.
+
+## Estimation des lots restant à réaliser
+
+À périmètre fonctionnel constant et avec des lots de taille comparable aux derniers travaux, l'estimation prudente
+est la suivante :
+
+- **2 à 4 lots** pour terminer l'extraction métier PHP : séparer les décisions et données encore mêlées au rendu dans
+  `inc/enigme/affichage.php` et `inc/user-functions.php`, puis étendre la garde de frontière à tout le thème ;
+- **7 à 10 lots supplémentaires** pour fournir depuis le plugin des parcours de secours cohérents : chasses, énigmes,
+  indices, organisateurs, espace compte, écrans d'édition et intégrations WooCommerce. Ces lots doivent définir des
+  templates surchargeables ou une autre API de présentation stable, et non simplement déplacer le HTML du thème ;
+- **2 à 3 lots supplémentaires** pour rendre les assets indispensables indépendants du thème, supprimer les derniers
+  adaptateurs de présentation obligatoires et documenter le contrat d'intégration d'un thème tiers ;
+- **1 à 2 lots de recette et de stabilisation** sous thème neutre, couvrant les rôles joueur, organisateur et
+  administrateur, les parcours asynchrones, les courriels, les tâches planifiées et WooCommerce.
+
+La **migration métier stricte** est donc estimée à **2 à 4 lots restants**. La possibilité de remplacer le thème sans
+perte fonctionnelle demande plutôt **12 à 19 lots au total**, recette comprise. Cette fourchette est une prévision,
+pas un indicateur d'avancement : elle devra être révisée après l'inventaire des dépendances des 83 parcours PHP et
+des 93 assets, et ne permet pas à elle seule de modifier les taux de 97 % et 49 %.
 
 ## Conclusion opérationnelle
 

@@ -29,6 +29,14 @@ class HintUnlockService
         return $this->repository->exists($userId, $hintId);
     }
 
+    /**
+     * @param int[] $hintIds
+     * @return int[]
+     */
+    public function unlockedHintIds(int $userId, array $hintIds): array {
+        return $this->repository->findUnlockedHintIds($userId, $hintIds);
+    }
+
     public function recordUnlock(
         int $userId,
         int $hintId,

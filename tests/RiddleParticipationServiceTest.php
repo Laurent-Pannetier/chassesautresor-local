@@ -3,7 +3,24 @@
 declare(strict_types=1);
 
 use ChassesAuTresor\Core\Progress\RiddleParticipationService;
+use ChassesAuTresor\Core\Progress\HintUnlockService;
 use PHPUnit\Framework\TestCase;
+
+require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/HintUnlockService.php';
+require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Content/RiddleRelationshipService.php';
+
+final class ParticipationHintUnlockServiceStub extends HintUnlockService {
+    public array $calls = [];
+
+    public function __construct() {
+    }
+
+    public function unlockedHintIds(int $userId, array $hintIds): array {
+        $this->calls[] = [$userId, $hintIds];
+
+        return [5];
+    }
+}
 
 final class RiddleParticipationServiceTest extends TestCase {
     /**
@@ -11,16 +28,24 @@ final class RiddleParticipationServiceTest extends TestCase {
      * @preserveGlobalState disabled
      */
     public function testLoadsRiddleAndHuntHintsWithPortableQueries(): void {
+        define('TITRE_DEFAUT_INDICE', 'Nouvel indice');
+        define('INDICE_DEFAULT_PREFIX', 'clue-');
         $GLOBALS['hint_queries'] = [];
-        function recuperer_id_chasse_associee(int $riddleId): int {
-            return $riddleId === 12 ? 34 : 0;
-        }
+        $GLOBALS['hint_field_calls'] = [];
         function get_posts(array $args): array {
             $GLOBALS['hint_queries'][] = $args;
 
-            return count($GLOBALS['hint_queries']) === 1 ? [5, '6'] : [7];
+            return count($GLOBALS['hint_queries']) === 1
+                ? [(object) ['ID' => 5], (object) ['ID' => 6]]
+                : [(object) ['ID' => 7]];
         }
         function get_field(string $field, int $hintId) {
+            $GLOBALS['hint_field_calls'][] = [$field, $hintId];
+            if ($field === 'enigme_chasse_associee') {
+                $huntIds = [12 => 34, 13 => 35];
+
+                return isset($huntIds[$hintId]) ? (object) ['ID' => $huntIds[$hintId]] : null;
+            }
             $values = [
                 'indice_cout_points' => 5,
                 'indice_cache_etat_systeme' => 'accessible',
@@ -29,11 +54,23 @@ final class RiddleParticipationServiceTest extends TestCase {
 
             return $values[$field] ?? null;
         }
-        function indice_est_debloque(int $userId, int $hintId): bool {
-            return $userId === 9 && $hintId === 5;
+        function get_post(int $hintId): object {
+            $titles = [
+                5 => '',
+                6 => 'Titre personnalisé',
+                7 => 'clue-generated-title',
+            ];
+
+            return (object) [
+                'ID' => $hintId,
+                'post_title' => $titles[$hintId] ?? 'Indice ' . $hintId,
+            ];
         }
-        function get_indice_title(int $hintId): string {
-            return 'Indice ' . $hintId;
+        function get_post_meta(int $hintId, string $key, bool $single): int {
+            return $hintId;
+        }
+        function __($text, $domain): string {
+            return $text;
         }
         function wp_timezone(): DateTimeZone {
             return new DateTimeZone('UTC');
@@ -48,11 +85,23 @@ final class RiddleParticipationServiceTest extends TestCase {
         self::assertSame('enigme', $GLOBALS['hint_queries'][0]['meta_query'][0]['value']);
         self::assertSame('indice_chasse_linked', $GLOBALS['hint_queries'][1]['meta_query'][1]['key']);
         self::assertSame(['accessible', 'programme'], $GLOBALS['hint_queries'][1]['meta_query'][2]['value']);
+        self::assertTrue($GLOBALS['hint_queries'][0]['update_post_meta_cache']);
+        self::assertFalse($GLOBALS['hint_queries'][0]['update_post_term_cache']);
+        self::assertArrayNotHasKey('fields', $GLOBALS['hint_queries'][0]);
+
+        (new RiddleParticipationService())->hintIds(13);
+        self::assertSame(35, $GLOBALS['hint_queries'][3]['meta_query'][1]['value']);
 
         $GLOBALS['hint_queries'] = [];
-        $hints = (new RiddleParticipationService())->hints(12, 9);
+        $GLOBALS['hint_field_calls'] = [];
+        $unlockService = new ParticipationHintUnlockServiceStub();
+        $hints = (new RiddleParticipationService($unlockService))->hints(12, 9);
         self::assertSame(5, $hints['riddle'][0]['cost']);
         self::assertTrue($hints['riddle'][0]['unlocked']);
-        self::assertSame('Indice 7', $hints['hunt'][0]['title']);
+        self::assertSame('Indice #5', $hints['riddle'][0]['title']);
+        self::assertSame('Titre personnalisé', $hints['riddle'][1]['title']);
+        self::assertSame('Indice #7', $hints['hunt'][0]['title']);
+        self::assertSame([[9, [5, 6, 7]]], $unlockService->calls);
+        self::assertCount(10, $GLOBALS['hint_field_calls']);
     }
 }
