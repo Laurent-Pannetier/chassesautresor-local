@@ -735,6 +735,13 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringContainsString('HuntDisplayViewCacheService', $source);
     }
 
+    public function testThemeDoesNotWriteCaches(): void
+    {
+        $violations = $this->findPhpMatches('/\b(?:wp_cache_set|set_transient)\s*\(/');
+
+        self::assertSame([], $violations, $this->formatViolations($violations));
+    }
+
     public function testRiddleStatisticsAccessIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/stats.php');
