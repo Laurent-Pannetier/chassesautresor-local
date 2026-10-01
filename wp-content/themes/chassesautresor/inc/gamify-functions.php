@@ -71,7 +71,6 @@ function cat_get_hunt_completion_service(): ChassesAuTresor\Core\Progress\HuntCo
  * 🔹 get_user_points → Récupérer le solde de points d’un utilisateur.
  * 🔹 update_user_points → Mettre à jour le solde de points de l’utilisateur.
  * 🔹 attribuer_points_apres_achat → Attribuer les points après l’achat d’un pack de points.
- * 🔹 woocommerce_thankyou (function) → Attribuer les points et vider le panier après la commande.
  * 🔹 afficher_points_utilisateur_callback → Afficher les points de l’utilisateur selon le statut de l’énigme.
  * 🔹 ajouter_modal_points → Charger le script du modal des points en ajoutant un paramètre de version dynamique.
  * 🔹 utilisateur_a_assez_de_points → Vérifie si l'utilisateur a suffisamment de points pour une opération donnée.
@@ -135,17 +134,6 @@ function attribuer_points_apres_achat($order_id) {
 
     cat_get_purchase_points_service()->awardOrder($order);
 }
-
-/**
- * 🛒 Attribue les points et vide le panier après la commande.
- */
-add_action('woocommerce_thankyou', function($order_id) {
-    attribuer_points_apres_achat($order_id); // 🎁 Attribution des points
-
-    if (!is_admin() && WC()->cart) {
-        WC()->cart->empty_cart(); // 🧹 Vide le panier
-    }
-});
 
 /**
  * 💎 Affiche les points de l'utilisateur selon le statut de l'énigme.

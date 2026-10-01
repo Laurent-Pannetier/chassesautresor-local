@@ -1,7 +1,7 @@
 <?php
 use PHPUnit\Framework\TestCase;
 
-require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/messages.php';
+require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Messages/UserMessagesTable.php';
 
 if (!function_exists('get_option')) {
     function get_option(string $name, $default = false)
@@ -38,7 +38,7 @@ class UserMessagesTableTest extends TestCase
         global $wpdb, $dbDeltaSql;
         $wpdb       = new UserMessagesTableWpdb();
         $dbDeltaSql = '';
-        cat_install_user_messages_table();
+        ChassesAuTresor\Core\Messages\UserMessagesTable::install();
         $this->assertStringContainsString('CREATE TABLE wp_user_messages', $dbDeltaSql);
         $this->assertStringContainsString('locale VARCHAR(10)', $dbDeltaSql);
         $this->assertStringContainsString('KEY user_id (user_id)', $dbDeltaSql);

@@ -12,10 +12,30 @@ contrôleurs AJAX, mais le thème conserve encore des orchestrations et des muta
 laisserait le plugin actif, mais ferait notamment disparaître les workflows de validation d'une chasse, de demande
 organisateur, d'administration des paiements et une partie des traitements d'engagement et de progression.
 
-Le thème compte 146 fichiers PHP hors tests (30 441 lignes). Vingt-huit fichiers référencent directement les
-classes du plugin, pour 204 occurrences. Cette dépendance est acceptable dans une couche de présentation, mais elle
+Le thème compte 146 fichiers PHP hors tests (30 367 lignes). Vingt-huit fichiers référencent directement les
+classes du plugin, pour 203 occurrences. Cette dépendance est acceptable dans une couche de présentation, mais elle
 signale ici une couche d'intégration encore volumineuse. Les façades qui ne font que déléguer au plugin ne sont pas
 considérées comme de la logique métier résiduelle ; elles restent toutefois une dette de couplage.
+
+## Avancement au 1er octobre 2026
+
+**Estimation : 80 % de la migration métier est terminée.** Cette valeur est une estimation architecturale, pas un
+ratio de lignes : elle pondère la couverture des domaines Core, l'indépendance des points d'entrée WordPress, la
+propriété de la persistance, l'absence d'effets de bord dans les vues et la couverture de tests.
+
+Le lot de migration associé à cet audit a sorti du thème :
+
+- l'installation et la mise à niveau de la table des messages, ainsi que le nettoyage ponctuel des anciens messages ;
+- le hook WooCommerce qui attribue les points achetés et vide le panier ;
+- le hook qui assigne automatiquement l'organisateur auteur d'une chasse.
+
+### Prochain lot recommandé (taille maximale raisonnable)
+
+Migrer en un seul lot le **back-office transactionnel** encore présent dans `inc/admin-functions.php` : reset des
+statistiques, gestion des taux de conversion et demandes de paiement, puis workflow complet de validation,
+correction et bannissement des chasses. Ce lot est la plus grande tranche cohérente qui puisse être revue et testée
+rapidement : il centralise les mutations administrateur dans Core sans mélanger la demande organisateur ou les
+politiques d'accès. Cible après ce lot : **88 %**.
 
 ## Critères utilisés
 
@@ -35,17 +55,14 @@ requête, permissions, transitions d'état, planification, calculs de points/sta
 
 ### P0 — persistance et cycle de vie encore pilotés par le thème
 
-1. **Installation et maintenance des messages.** `inc/messages.php` installe une table au hook
-   `after_switch_theme` et lance un nettoyage au hook `init`. Le schéma et sa migration doivent être attachés à
-   l'activation ou à la version du plugin, jamais au changement de thème.
-2. **Réinitialisation des statistiques.** `inc/admin-functions.php` supprime directement des lignes de
+1. **Réinitialisation des statistiques.** `inc/admin-functions.php` supprime directement des lignes de
    `usermeta`/`postmeta` et plusieurs métadonnées de progression. Le plugin possède
    `AdminStatisticsResetService`, mais le thème conserve l'ancien workflow et des mutations SQL.
-3. **Transitions de validation des chasses.** `inc/admin-functions.php` publie, dépublie et modifie les caches des
+2. **Transitions de validation des chasses.** `inc/admin-functions.php` publie, dépublie et modifie les caches des
    chasses et énigmes. `templates/page-traitement-validation-chasse.php` modifie encore
    `chasse_cache_statut`. Ces transitions doivent être atomiques dans le plugin ; un template ne doit jamais
    persister un état.
-4. **Progression et gagnants.** `inc/chasse-functions.php` écrit encore les souscriptions, gagnants, dates de
+3. **Progression et gagnants.** `inc/chasse-functions.php` écrit encore les souscriptions, gagnants, dates de
    découverte et statuts d'énigmes. Cela duplique les responsabilités des services `Progress` du plugin.
 
 ### P1 — workflows métier et contrôleurs encore dans le thème
@@ -65,11 +82,8 @@ requête, permissions, transitions d'état, planification, calculs de points/sta
 5. **Réponses, tentatives et notifications.** `inc/enigme/reponses.php` orchestre la soumission et les courriels ;
    `inc/enigme/tentatives.php` conserve le traitement d'une tentative. Le plugin fournit déjà les services et
    handlers correspondants : le thème devrait uniquement afficher leurs résultats.
-6. **Achat et attribution de points.** `inc/gamify-functions.php` branche l'attribution au hook
-   `woocommerce_thankyou` et la fin de chasse au hook `enigme_resolue`. Même si les calculs délèguent aux services
-   Core, ces hooks garantissent des invariants métier et doivent rester actifs indépendamment du thème.
-7. **Relations de contenus.** `inc/relations-functions.php` assigne automatiquement un organisateur au
-   `save_post`. Ce hook de cohérence des données doit être enregistré par le plugin.
+6. **Fin de chasse.** `inc/gamify-functions.php` branche encore la fin de chasse au hook `enigme_resolue`. Ce hook
+   garantit un invariant métier et doit rester actif indépendamment du thème.
 
 ### P2 — façades de compatibilité et logique de requête à clarifier
 

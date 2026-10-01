@@ -35,6 +35,22 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertSame([], $violations, $this->formatViolations($violations));
     }
 
+    public function testThemeDoesNotOwnPluginLifecycleOrBusinessMutationHooks(): void
+    {
+        $violations = $this->findPhpMatches(
+            '/add_action\s*\(\s*[\'\"](?:after_switch_theme|woocommerce_thankyou)[\'\"]/'
+        );
+
+        self::assertSame([], $violations, $this->formatViolations($violations));
+    }
+
+    public function testLegacyHuntOrganizerAssignmentStaysOutOfTheme(): void
+    {
+        $violations = $this->findPhpMatches('/assigner_organisateur_automatiquement/');
+
+        self::assertSame([], $violations, $this->formatViolations($violations));
+    }
+
     public function testRemovedCompatibilityLoadersStayRemoved(): void
     {
         $loaders = [

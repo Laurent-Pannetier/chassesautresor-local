@@ -16,6 +16,7 @@ require_once __DIR__ . '/src/Admin/AdminStatisticsResetService.php';
 require_once __DIR__ . '/src/Admin/AdminAjaxHandler.php';
 require_once __DIR__ . '/src/Points/PointsService.php';
 require_once __DIR__ . '/src/Points/PurchasePointsService.php';
+require_once __DIR__ . '/src/Points/PurchasePointsHookHandler.php';
 require_once __DIR__ . '/src/Points/ConversionService.php';
 require_once __DIR__ . '/src/Points/PointsTable.php';
 require_once __DIR__ . '/src/Points/HistoryPaginationRequestService.php';
@@ -220,6 +221,7 @@ require_once __DIR__ . '/src/Content/RiddleSolutionFileStorageService.php';
 require_once __DIR__ . '/src/Content/RiddleSolutionUploadService.php';
 require_once __DIR__ . '/src/Content/ContentQueryAccessService.php';
 require_once __DIR__ . '/src/Content/OrganizerRoleService.php';
+require_once __DIR__ . '/src/Content/HuntOrganizerAssignmentHookHandler.php';
 require_once __DIR__ . '/src/Content/OrganizerNavigationService.php';
 require_once __DIR__ . '/src/Messages/UserMessageRepository.php';
 require_once __DIR__ . '/src/Messages/SiteMessageService.php';
@@ -229,6 +231,7 @@ require_once __DIR__ . '/src/Messages/AccountSectionAccessService.php';
 require_once __DIR__ . '/src/Messages/AccountSectionAjaxHandler.php';
 require_once __DIR__ . '/src/Messages/UserMessagesTable.php';
 require_once __DIR__ . '/src/Messages/UserMessagesCleanup.php';
+require_once __DIR__ . '/src/Messages/LegacySiteMessageCleanup.php';
 
 if (!class_exists('PointsRepository', false)) {
     class_alias(ChassesAuTresor\Core\Points\PointsRepository::class, 'PointsRepository');
@@ -256,6 +259,8 @@ ChassesAuTresor\Core\Content\HuntFieldMutationAjaxHandler::register('add_action'
 ChassesAuTresor\Core\Content\RiddleFieldMutationAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\OrganizerFieldMutationAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\OrganizerRelationshipSaveHookHandler::register('add_action');
+ChassesAuTresor\Core\Content\HuntOrganizerAssignmentHookHandler::register('add_action');
+ChassesAuTresor\Core\Points\PurchasePointsHookHandler::register('add_action');
 ChassesAuTresor\Core\Content\CompletionCacheSaveHookHandler::register('add_action');
 ChassesAuTresor\Core\Content\HuntFeatureCacheSaveHookHandler::register('add_action');
 ChassesAuTresor\Core\Progress\HuntStatusAjaxHandler::register('add_action');
@@ -371,6 +376,11 @@ register_deactivation_hook(
 add_action(
     'plugins_loaded',
     [ChassesAuTresor\Core\Messages\UserMessagesTable::class, 'maybeUpgrade']
+);
+
+add_action(
+    'init',
+    [ChassesAuTresor\Core\Messages\LegacySiteMessageCleanup::class, 'run']
 );
 
 add_action(
