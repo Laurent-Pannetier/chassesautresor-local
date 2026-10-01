@@ -19,7 +19,11 @@ de comptabilisation des paiements, de réinitialisation des énigmes et de sousc
 rôle temporaire `organisateur_creation`, encore active, appartient désormais au plugin et son hook est couvert par
 un test de propriété. Une garde automatisée interdit désormais le retour d’écritures métier directes dans le thème.
 
-Estimation après ce lot : **78 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
+Le deuxième lot a transféré au plugin les politiques WordPress globales : visibilité de la médiathèque, isolement
+des médias protégés des énigmes, désactivation conditionnelle de Gutenberg, filtrage des capacités sensibles et
+visibilité des statuts privés dans la requête principale.
+
+Estimation après ce lot : **81 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
 responsabilités fonctionnelles recensées (persistance, accès, routes, traitements, notifications et cache), et non
 sur le nombre de lignes. Il sera réévalué après chaque lot.
 
@@ -35,7 +39,7 @@ Cette opération a un effet persistant et ne sera plus chargée après l’activ
 
 Le thème enregistre toujours notamment :
 
-- des règles d'accès aux médias, à l'administration et aux contenus dans `inc/access-functions.php` ;
+- des restrictions d'accès au back-office et aux écrans de création dans `inc/access-functions.php` ;
 - des endpoints, variables de requête et sélections de templates dans `inc/user-functions.php` et
   `inc/organisateur-functions.php` ;
 - le contrôle d'accès aux énigmes dans `inc/enigme/access.php` ;

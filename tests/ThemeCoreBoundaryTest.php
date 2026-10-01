@@ -75,6 +75,15 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertSame([], $violations, $this->formatViolations($violations));
     }
 
+    public function testThemeDoesNotOwnGlobalWordPressAccessPolicies(): void {
+        $violations = $this->findPhpMatches(
+            '/add_(?:action|filter)\s*\(\s*[\'\"](?:ajax_query_attachments_args|rest_attachment_query|'
+            . 'use_block_editor_for_post|user_has_cap|pre_get_posts)[\'\"]/'
+        );
+
+        self::assertSame([], $violations, $this->formatViolations($violations));
+    }
+
     public function testLegacyStatisticsResetWorkflowStaysOutOfTheme(): void
     {
         $violations = $this->findPhpMatches(

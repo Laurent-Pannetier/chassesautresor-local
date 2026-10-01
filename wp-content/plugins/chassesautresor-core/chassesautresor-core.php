@@ -247,6 +247,7 @@ require_once __DIR__ . '/src/Content/RiddleSolutionUploadService.php';
 require_once __DIR__ . '/src/Content/ContentQueryAccessService.php';
 require_once __DIR__ . '/src/Content/OrganizerRoleService.php';
 require_once __DIR__ . '/src/Content/OrganizerRoleAssignmentHookHandler.php';
+require_once __DIR__ . '/src/Content/WordPressAccessPolicyHookHandler.php';
 require_once __DIR__ . '/src/Content/HuntOrganizerAssignmentHookHandler.php';
 require_once __DIR__ . '/src/Content/OrganizerNavigationService.php';
 require_once __DIR__ . '/src/Messages/UserMessageRepository.php';
@@ -286,6 +287,7 @@ ChassesAuTresor\Core\Content\RiddleFieldMutationAjaxHandler::register('add_actio
 ChassesAuTresor\Core\Content\OrganizerFieldMutationAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\OrganizerRelationshipSaveHookHandler::register('add_action');
 ChassesAuTresor\Core\Content\OrganizerRoleAssignmentHookHandler::register('add_action');
+ChassesAuTresor\Core\Content\WordPressAccessPolicyHookHandler::register('add_action', 'add_filter');
 ChassesAuTresor\Core\Content\HuntOrganizerAssignmentHookHandler::register('add_action');
 ChassesAuTresor\Core\Content\HuntWelcomeModalViewHookHandler::register('add_action');
 ChassesAuTresor\Core\Content\HuntViewMaintenanceHookHandler::register('add_action');
