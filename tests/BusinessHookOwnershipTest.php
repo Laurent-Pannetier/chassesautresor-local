@@ -6,6 +6,7 @@ use ChassesAuTresor\Core\Content\HuntOrganizerAssignmentHookHandler;
 use ChassesAuTresor\Core\Content\OrganizerRoleAssignmentHookHandler;
 use ChassesAuTresor\Core\Content\WordPressAccessPolicyHookHandler;
 use ChassesAuTresor\Core\Content\BackOfficeAccessHookHandler;
+use ChassesAuTresor\Core\Content\RiddleRenderCacheHookHandler;
 use ChassesAuTresor\Core\Content\HuntWelcomeModalViewHookHandler;
 use ChassesAuTresor\Core\Content\HuntViewMaintenanceHookHandler;
 use ChassesAuTresor\Core\Content\HuntModerationRequestHandler;
@@ -19,6 +20,23 @@ use PHPUnit\Framework\TestCase;
 
 final class BusinessHookOwnershipTest extends TestCase
 {
+    public function testRiddleRenderCacheHooksAreRegisteredByCore(): void {
+        $hooks = [];
+
+        RiddleRenderCacheHookHandler::register(
+            static function (...$arguments) use (&$hooks): void {
+                $hooks[] = $arguments;
+            }
+        );
+
+        self::assertCount(8, $hooks);
+        self::assertSame(['save_post_enigme', [RiddleRenderCacheHookHandler::class, 'clear'], 10, 1], $hooks[0]);
+        self::assertSame(
+            ['updated_user_meta', [RiddleRenderCacheHookHandler::class, 'bumpPermissionsVersion'], 10, 4],
+            $hooks[6]
+        );
+    }
+
     public function testBackOfficeAccessPolicyIsRegisteredByCore(): void {
         $hooks = [];
 

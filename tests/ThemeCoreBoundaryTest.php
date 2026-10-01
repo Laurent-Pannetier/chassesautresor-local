@@ -90,6 +90,12 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertSame([], $violations, $this->formatViolations($violations));
     }
 
+    public function testThemeDoesNotOwnRiddlePermissionCacheInvalidation(): void {
+        $violations = $this->findPhpMatches('/enigme_bump_permissions_cache_version|save_post_enigme/');
+
+        self::assertSame([], $violations, $this->formatViolations($violations));
+    }
+
     public function testLegacyStatisticsResetWorkflowStaysOutOfTheme(): void
     {
         $violations = $this->findPhpMatches(

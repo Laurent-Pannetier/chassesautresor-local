@@ -25,17 +25,14 @@ visibilité des statuts privés dans la requête principale.
 
 Le troisième lot a transféré au plugin la restriction du back-office pour les organisateurs.
 
-Estimation après ce lot : **82 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
+Le quatrième lot a transféré au plugin la version du cache de permissions des énigmes et ses huit hooks
+d’invalidation liés aux contenus, rôles et métadonnées utilisateur.
+
+Estimation après ce lot : **84 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
 responsabilités fonctionnelles recensées (persistance, accès, routes, traitements, notifications et cache), et non
 sur le nombre de lignes. Il sera réévalué après chaque lot.
 
 ## Éléments bloquants observés
-
-### Écritures métier encore exécutées par le thème
-
-- `inc/enigme/affichage.php` persiste une version de cache de permissions depuis plusieurs hooks liés aux utilisateurs.
-
-Cette opération a un effet persistant et ne sera plus chargée après l’activation d’un autre thème.
 
 ### Contrôleurs, politiques et routes encore attachés au thème
 
