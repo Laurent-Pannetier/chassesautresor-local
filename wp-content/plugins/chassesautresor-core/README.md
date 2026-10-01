@@ -19,3 +19,6 @@ Les templates, styles, scripts d'interface et adaptations visuelles d'Astra rest
 Le code est extrait du thème par petits domaines. Pendant la transition, des fichiers de compatibilité peuvent
 rester dans le thème afin de préserver les noms de classes et fonctions existants. Ces façades ne doivent contenir
 aucune nouvelle logique métier.
+
+L'état de cette migration et les reliquats identifiés sont documentés dans
+[`docs/audits/theme-business-boundary.md`](../../../docs/audits/theme-business-boundary.md).
