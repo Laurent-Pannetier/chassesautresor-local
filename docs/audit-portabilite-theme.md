@@ -509,6 +509,12 @@ le badge de coût. Le thème ne fournit plus que le fragment de formulaire propr
 plus le view-model et n'interroge plus directement les services de participation. `inc/enigme/affichage.php` reste un
 assembleur visuel important pour la page complète, mais ne fait plus partie des grands view-models métier mixtes.
 
+Le cent-septième lot retire deux duplications de données de `inc/user-functions.php`. La sélection des chasses
+recommandées de l'état vide réutilise maintenant `EngagedHuntsRecommendationService`, déjà employé par le renderer
+portable du core, au lieu de reconstruire quatre requêtes dans le thème. La synthèse, la recherche et la pagination
+des tentatives sont réunies dans `UserAttemptsViewService`, partagé par le rendu initial du thème et le contrôleur
+AJAX du plugin. Le thème conserve l'habillage spécifique de ces sections ; l'indicateur reste donc inchangé.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |

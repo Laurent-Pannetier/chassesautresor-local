@@ -7,8 +7,7 @@ namespace ChassesAuTresor\Core\Progress;
 use ChassesAuTresor\Core\Support\CoreServiceFactory;
 
 /** Render the portable data-driven part of a riddle participation panel. */
-final class RiddlePlayerPanelRenderer
-{
+final class RiddlePlayerPanelRenderer {
     private RiddleParticipationService $participation;
     private RiddleParticipationInfoService $information;
     private ?HuntProgressService $progress;

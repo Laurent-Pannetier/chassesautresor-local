@@ -1089,6 +1089,8 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('get_template_part', $renderer);
         self::assertStringNotContainsString('get_stylesheet_directory', $renderer);
         self::assertStringContainsString('class EngagedHuntsRecommendationService', $recommendations);
+        self::assertStringContainsString('EngagedHuntsRecommendationService())->find(3)', $source);
+        self::assertStringNotContainsString("'post_type'        => 'chasse'", $source);
         foreach ([
             'ca_get_engaged_hunts_page_param',
             'ca_get_user_engaged_hunt_ids',
@@ -1114,6 +1116,11 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringContainsString("[new UserAttemptsRenderer(), 'rows']", $handler);
         self::assertStringContainsString("[new UserAttemptsRenderer(), 'pager']", $handler);
         self::assertStringContainsString('class UserAttemptsRenderer', $renderer);
+        self::assertStringContainsString('UserAttemptsViewService', $source);
+        self::assertStringContainsString('UserAttemptsViewService', $handler);
+        self::assertStringNotContainsString('->summarize(', $source);
+        self::assertStringNotContainsString('->paginate(', $source);
+        self::assertStringNotContainsString('function cat_get_user_attempt_statistics_service', $source);
     }
 
     public function testConversionAccessIsNotInjectedByTheme(): void

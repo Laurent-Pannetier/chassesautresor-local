@@ -47,22 +47,12 @@ class UserAttemptsAjaxHandler {
             : '';
         global $wpdb;
         $service = CoreServiceFactory::userAttemptStatistics($wpdb);
-        $summary = $service->summarize($userId);
-        $pagination = $service->paginate($userId, $request['page'], $request['per_page'], $search);
-        $view = [
-            'pending' => $summary['pending'],
-            'total' => $summary['total'],
-            'success' => $summary['success'],
-            'search_term' => $search,
-            'page' => $pagination['page'],
-            'pages' => $pagination['pages'],
-            'per_page' => $request['per_page'],
-            'filtered_total' => $pagination['total'],
-            'tentatives' => $pagination['items'],
-            'no_results_message' => $search !== ''
-                ? __('Aucune tentative ne correspond à votre recherche.', 'chassesautresor-com')
-                : __('Vous n\'avez pas encore enregistré de tentative.', 'chassesautresor-com'),
-        ];
+        $view = (new UserAttemptsViewService($service))->build(
+            $userId,
+            $request['page'],
+            $request['per_page'],
+            $search
+        );
         $rowRenderer = self::$rowRenderer ?? [new UserAttemptsRenderer(), 'rows'];
         $pagerRenderer = self::$pagerRenderer ?? [new UserAttemptsRenderer(), 'pager'];
         wp_send_json_success([

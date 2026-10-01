@@ -1,12 +1,6 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
-function cat_get_user_attempt_statistics_service(): ChassesAuTresor\Core\Progress\UserAttemptStatisticsService
-{
-    global $wpdb;
-    return ChassesAuTresor\Core\Support\CoreServiceFactory::userAttemptStatistics($wpdb);
-}
-
 // ==================================================
 // 📚 SOMMAIRE DU FICHIER
 // ==================================================
@@ -298,124 +292,7 @@ function ca_get_engaged_hunts_content_html(
  */
 function ca_render_recommended_hunts_empty_state(): string
 {
-    $valid_statuses = ['a_venir', 'en_cours', 'payante'];
-    $base_meta_query = [
-        'relation' => 'AND',
-        [
-            'key'     => 'chasse_cache_statut',
-            'value'   => $valid_statuses,
-            'compare' => 'IN',
-        ],
-        [
-            'key'   => 'chasse_cache_statut_validation',
-            'value' => 'valide',
-        ],
-    ];
-
-    $recent_query_args = apply_filters(
-        'ca_recommended_hunts_recent_query_args',
-        [
-            'post_type'        => 'chasse',
-            'post_status'      => 'publish',
-            'posts_per_page'   => 2,
-            'orderby'          => 'date',
-            'order'            => 'DESC',
-            'no_found_rows'    => true,
-            'fields'           => 'ids',
-            'suppress_filters' => false,
-            'meta_query'       => $base_meta_query,
-        ]
-    );
-
-    $recent_ids = array_map('intval', get_posts($recent_query_args));
-
-    $active_meta_query = $base_meta_query;
-    $active_meta_query[0]['value'] = ['en_cours', 'payante'];
-
-    $popular_query_args = apply_filters(
-        'ca_recommended_hunts_popular_query_args',
-        [
-            'post_type'        => 'chasse',
-            'post_status'      => 'publish',
-            'posts_per_page'   => 1,
-            'meta_key'         => 'ca_total_engagements',
-            'orderby'          => 'meta_value_num',
-            'order'            => 'DESC',
-            'no_found_rows'    => true,
-            'fields'           => 'ids',
-            'suppress_filters' => false,
-            'meta_query'       => $active_meta_query,
-        ]
-    );
-
-    $popular_ids = array_map('intval', get_posts($popular_query_args));
-
-    $recommended_ids = array_values(array_unique(array_merge($recent_ids, $popular_ids)));
-
-    if (count($recommended_ids) < 3) {
-        $fallback_query_args = apply_filters(
-            'ca_recommended_hunts_fallback_query_args',
-            [
-                'post_type'        => 'chasse',
-                'post_status'      => 'publish',
-                'posts_per_page'   => 3 - count($recommended_ids),
-                'orderby'          => 'date',
-                'order'            => 'DESC',
-                'no_found_rows'    => true,
-                'fields'           => 'ids',
-                'suppress_filters' => false,
-                'meta_query'       => $base_meta_query,
-                'post__not_in'     => $recommended_ids,
-            ]
-        );
-
-        $additional_ids = array_map('intval', get_posts($fallback_query_args));
-        if (!empty($additional_ids)) {
-            $recommended_ids = array_values(array_unique(array_merge($recommended_ids, $additional_ids)));
-        }
-    }
-
-    if (count($recommended_ids) < 3) {
-        $completed_query_args = apply_filters(
-            'ca_recommended_hunts_completed_query_args',
-            [
-                'post_type'        => 'chasse',
-                'post_status'      => 'publish',
-                'posts_per_page'   => 3 - count($recommended_ids),
-                'orderby'          => 'date',
-                'order'            => 'DESC',
-                'no_found_rows'    => true,
-                'fields'           => 'ids',
-                'suppress_filters' => false,
-                'meta_query'       => [
-                    [
-                        'key'   => 'chasse_cache_statut',
-                        'value' => 'termine',
-                    ],
-                    [
-                        'key'   => 'chasse_cache_statut_validation',
-                        'value' => 'valide',
-                    ],
-                ],
-                'post__not_in'     => $recommended_ids,
-            ]
-        );
-
-        $completed_ids = array_map('intval', get_posts($completed_query_args));
-        if (!empty($completed_ids)) {
-            $recommended_ids = array_values(array_unique(array_merge($recommended_ids, $completed_ids)));
-        }
-    }
-
-    $recommended_ids = array_slice($recommended_ids, 0, 3);
-
-    /**
-     * Allow third-parties to tweak the final recommended hunts selection.
-     *
-     * @param int[] $recommended_ids Selected hunt identifiers.
-     */
-    $recommended_ids = apply_filters('ca_recommended_hunts_empty_state_ids', $recommended_ids);
-    $recommended_ids = array_values(array_unique(array_filter(array_map('intval', (array) $recommended_ids))));
+    $recommended_ids = (new ChassesAuTresor\Core\Progress\EngagedHuntsRecommendationService())->find(3);
 
     $catalog_url = apply_filters(
         'ca_recommended_hunts_catalog_url',
@@ -653,29 +530,17 @@ function ca_register_tentatives_search_context(): void
  */
 function ca_get_tentatives_view_model(int $user_id, int $page = 1, int $per_page = 10): array
 {
-    $per_page  = max(1, $per_page);
-    $page      = max(1, $page);
-    $search    = ca_get_search_term('tentatives');
-    $service    = cat_get_user_attempt_statistics_service();
-    $summary    = $service->summarize($user_id);
-    $pagination = $service->paginate($user_id, $page, $per_page, $search);
+    global $wpdb;
 
-    $message = $search !== ''
-        ? __('Aucune tentative ne correspond à votre recherche.', 'chassesautresor-com')
-        : __('Vous n\'avez pas encore enregistré de tentative.', 'chassesautresor-com');
+    $search = ca_get_search_term('tentatives');
+    $statistics = ChassesAuTresor\Core\Support\CoreServiceFactory::userAttemptStatistics($wpdb);
 
-    return [
-        'pending'            => $summary['pending'],
-        'total'              => $summary['total'],
-        'success'            => $summary['success'],
-        'search_term'        => $search,
-        'page'               => $pagination['page'],
-        'pages'              => $pagination['pages'],
-        'per_page'           => $per_page,
-        'filtered_total'     => $pagination['total'],
-        'tentatives'         => $pagination['items'],
-        'no_results_message' => $message,
-    ];
+    return (new ChassesAuTresor\Core\Progress\UserAttemptsViewService($statistics))->build(
+        $user_id,
+        $page,
+        $per_page,
+        $search
+    );
 }
 
 /**
