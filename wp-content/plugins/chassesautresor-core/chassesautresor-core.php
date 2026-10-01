@@ -49,6 +49,9 @@ require_once __DIR__ . '/src/Progress/HuntStatisticsRepository.php';
 require_once __DIR__ . '/src/Progress/HuntStatisticsService.php';
 require_once __DIR__ . '/src/Progress/RiddleStatisticsRepository.php';
 require_once __DIR__ . '/src/Progress/RiddleStatisticsService.php';
+require_once __DIR__ . '/src/Progress/StatisticsParticipantRequestService.php';
+require_once __DIR__ . '/src/Progress/HuntStatisticsAjaxHandler.php';
+require_once __DIR__ . '/src/Progress/RiddleStatisticsAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/RiddleEngagementRepository.php';
 require_once __DIR__ . '/src/Progress/RiddleEngagementService.php';
 require_once __DIR__ . '/src/Progress/RiddleEngagementApplicationService.php';
@@ -273,6 +276,8 @@ ChassesAuTresor\Core\Progress\EngagedHuntsAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Progress\UserAttemptsAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\RiddlePrerequisiteAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Media\UserAvatarUploadAjaxHandler::register('add_action');
+ChassesAuTresor\Core\Progress\HuntStatisticsAjaxHandler::register('add_action');
+ChassesAuTresor\Core\Progress\RiddleStatisticsAjaxHandler::register('add_action');
 
 register_activation_hook(
     __FILE__,
