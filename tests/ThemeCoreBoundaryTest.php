@@ -780,6 +780,22 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertSame([], array_values(array_intersect($themeFunctions, $coreFunctions)));
     }
 
+    public function testThemeDoesNotOwnOrganizerRelationshipCompatibilityApi(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/relations-functions.php');
+        foreach ([
+            'cat_get_organizer_service',
+            'cat_get_relationship_service',
+            'get_organisateur_from_user',
+            'get_organisateur_chasse',
+            'get_organisateur_from_chasse',
+            'get_organisateur_id_from_context',
+            'utilisateur_est_organisateur_associe_a_chasse',
+        ] as $legacyFunction) {
+            self::assertStringNotContainsString('function ' . $legacyFunction, $source);
+        }
+    }
+
     public function testThemeDoesNotResolveProtectedImagePaths(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/visuels.php');

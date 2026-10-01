@@ -294,6 +294,11 @@ statut appartient maintenant à `HuntStatusBadgeService` et le contrôleur AJAX 
 thème. Le helper de contexte `is_canevas_creation()`, sans appel de production, a été supprimé. Ces deux fichiers du
 thème ne déclarent désormais plus aucune fonction.
 
+Le soixante-septième lot ouvre un bloc plus large sur les relations en transférant sept fonctions publiques : fabrique
+des services organisateur/relation, résolution organisateur depuis utilisateur, chasse ou contexte, et vérification de
+l'association d'un utilisateur. Le plugin ne dépend d'aucun helper du thème pour ces fonctions et la garde anti-collision
+couvre automatiquement cette nouvelle API. Les estimations restent inchangées tant que les autres relations demeurent.
+
 ### Inventaire reproductible au 1er octobre 2026
 
 Les recherches ci-dessous portent sur les fichiers de production du thème (les fixtures sous `tests/` sont exclues).

@@ -118,6 +118,7 @@ require_once __DIR__ . '/src/Relationships/organizer-request-functions.php';
 require_once __DIR__ . '/src/Relationships/OrganizerContactRouteHandler.php';
 require_once __DIR__ . '/src/Relationships/OrganizerCtaDecisionService.php';
 require_once __DIR__ . '/src/Relationships/RelationshipService.php';
+require_once __DIR__ . '/src/Relationships/relationship-functions.php';
 require_once __DIR__ . '/src/Relationships/HuntRiddleQueryService.php';
 require_once __DIR__ . '/src/Relationships/OrganizerHuntQueryService.php';
 require_once __DIR__ . '/src/Relationships/HuntRiddleCacheService.php';

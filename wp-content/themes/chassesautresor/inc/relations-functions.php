@@ -1,16 +1,9 @@
 <?php
 defined('ABSPATH') || exit;
 
-function cat_get_organizer_service(): ChassesAuTresor\Core\Relationships\OrganizerService
-{
-    global $wpdb;
-    return ChassesAuTresor\Core\Support\CoreServiceFactory::organizer($wpdb);
-}
 
-function cat_get_relationship_service(): ChassesAuTresor\Core\Relationships\RelationshipService
-{
-    return new ChassesAuTresor\Core\Relationships\RelationshipService();
-}
+
+
 
 function cat_get_hunt_riddle_query_service(): ChassesAuTresor\Core\Relationships\HuntRiddleQueryService
 {
@@ -50,88 +43,15 @@ function cat_get_hunt_feature_service(): ChassesAuTresor\Core\Content\HuntFeatur
 // ==================================================
 // 📦 RÉCUPÉRATION CPT ORGANISATEUR
 // ==================================================
-/**
- * 🔹 get_organisateur_from_user → Récupérer l’ID du CPT "organisateur" associé à un utilisateur.
- * 🔹 get_organisateur_chasse → Récupérer directement le champ ACF `organisateur_id` d’une chasse.
- * 🔹 get_organisateur_from_chasse → Récupérer l’ID du CPT "organisateur" associé à une chasse (fallback intelligent).
- * 🔹 get_organisateur_id_from_context → Déterminer l’ID organisateur à partir du contexte d’un template.
- * 🔹 utilisateur_est_organisateur_associe_a_chasse → Vérifie si un utilisateur est lié à l’organisateur d’une chasse.
- */
 
 
-/**
- * Récupère l'ID du CPT "organisateur" associé à un utilisateur.
- *
- * @param int $user_id ID de l'utilisateur recherché.
- * @return int|null ID du post organisateur ou null si aucun trouvé.
- */
-function get_organisateur_from_user($user_id)
-{
-    return cat_get_organizer_service()->findIdForUser((int) $user_id);
-}
-
-function get_organisateur_chasse($chasse_id)
-{
-    return cat_get_relationship_service()->normalizeId(get_field('organisateur_id', $chasse_id));
-}
-
-/**
- * 📌 Récupère l'ID du CPT "organisateur" associé à une chasse.
- *
- * @param int $chasse_id ID du CPT "chasse".
- * @return int|null ID du post organisateur ou null si non trouvé.
- */
-function get_organisateur_from_chasse($chasse_id)
-{
-    return cat_get_relationship_service()->normalizeId(
-        get_field('chasse_cache_organisateur', $chasse_id)
-    );
-}
 
 
-/**
- * Récupère l’ID d’un organisateur à partir du contexte actuel.
- *
- * Cette fonction unifie les différents cas de figure :
- * – Si un ID est fourni dans $args['organisateur_id'], il est utilisé en priorité.
- * – Si on est sur une page de type "organisateur", l’ID du post est utilisé.
- * – Sinon, on récupère l’organisateur lié à l’utilisateur connecté.
- *
- * @param array $args Arguments optionnels passés au template.
- * @return int|null L’ID du CPT organisateur ou null si introuvable.
- */
-function get_organisateur_id_from_context(array $args = []): ?int
-{
-  if (isset($args['organisateur_id'])) return (int) $args['organisateur_id'];
-  global $post;
-  if ($post && get_post_type($post) === 'organisateur') return (int) $post->ID;
-  return get_organisateur_from_user(get_current_user_id());
-}
 
 
-/**
- * Vérifie si un utilisateur est associé à l’organisateur lié à une chasse donnée.
- *
- * @param int $user_id ID de l'utilisateur à tester.
- * @param int $chasse_id ID de la chasse concernée.
- * @return bool True si l’utilisateur est lié à l’organisateur de la chasse.
- */
-function utilisateur_est_organisateur_associe_a_chasse(int $user_id, int $chasse_id): bool
-{
-    if ($user_id <= 0 || $chasse_id <= 0) {
-        return false;
-    }
 
-    $organisateur_id = get_organisateur_from_chasse($chasse_id);
-    if ($organisateur_id === null) {
-        return false;
-    }
 
-    $utilisateurs = get_field('utilisateurs_associes', $organisateur_id);
 
-    return is_array($utilisateurs)
-        && cat_get_organizer_service()->isUserAssociated($user_id, $utilisateurs);
-}
 
 
 
