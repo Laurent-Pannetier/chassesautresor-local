@@ -969,17 +969,21 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertSame([], $violations, $this->formatViolations($violations));
     }
 
-    public function testRiddleStatisticsAccessIsNotInjectedByTheme(): void
+    public function testRiddleStatisticsRenderingIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/stats.php');
-        preg_match('/RiddleStatisticsAjaxHandler::configure\([\s\S]*?^    \);/m', $source, $matches);
-        $configuration = $matches[0] ?? null;
+        $handler = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/RiddleStatisticsAjaxHandler.php'
+        );
+        $renderer = (string) file_get_contents(
+            __DIR__
+                . '/../wp-content/plugins/chassesautresor-core/src/Progress/RiddleStatisticsParticipantRenderer.php'
+        );
 
-        self::assertIsString($configuration);
-        self::assertStringNotContainsString('utilisateur_peut_voir_panneau', $configuration);
-        self::assertStringNotContainsString('utilisateur_peut_modifier_post', $configuration);
-        self::assertStringNotContainsString('enigme_compter_', $configuration);
-        self::assertStringNotContainsString('enigme_lister_participants', $configuration);
+        self::assertStringNotContainsString('RiddleStatisticsAjaxHandler::configure', $source);
+        self::assertStringNotContainsString('function cat_render_riddle_statistics_participants', $source);
+        self::assertStringContainsString("[new RiddleStatisticsParticipantRenderer(), 'render']", $handler);
+        self::assertStringContainsString('class RiddleStatisticsParticipantRenderer', $renderer);
     }
 
     public function testHuntStatisticsBusinessCallbacksAreNotInjectedByTheme(): void

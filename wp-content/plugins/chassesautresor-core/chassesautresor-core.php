@@ -91,6 +91,7 @@ require_once __DIR__ . '/src/Progress/HuntStatisticsService.php';
 require_once __DIR__ . '/src/Progress/RiddleStatisticsRepository.php';
 require_once __DIR__ . '/src/Progress/RiddleStatisticsService.php';
 require_once __DIR__ . '/src/Progress/StatisticsParticipantRequestService.php';
+require_once __DIR__ . '/src/Progress/RiddleStatisticsParticipantRenderer.php';
 require_once __DIR__ . '/src/Progress/HuntStatisticsAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/HuntStatisticsApplicationService.php';
 require_once __DIR__ . '/src/Progress/RiddleStatisticsAjaxHandler.php';

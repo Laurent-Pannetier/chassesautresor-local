@@ -59,9 +59,6 @@ class RiddleStatisticsAjaxHandler {
             sanitize_text_field($_POST['order'] ?? 'ASC')
         );
         $orderBy = sanitize_text_field($_POST['orderby'] ?? 'date');
-        if (!is_callable(self::$participantRenderer)) {
-            wp_send_json_error('acces_refuse');
-        }
         $application = self::application();
         $rows = $application->participants(
             $riddleId,
@@ -72,8 +69,9 @@ class RiddleStatisticsAjaxHandler {
         );
         $total = $application->participantCount($riddleId);
         $pages = (int) ceil($total / $request['limit']);
+        $renderer = self::$participantRenderer ?? [new RiddleStatisticsParticipantRenderer(), 'render'];
         $html = (string) call_user_func(
-            self::$participantRenderer,
+            $renderer,
             $riddleId,
             $rows,
             $request,
