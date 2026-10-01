@@ -48,9 +48,11 @@ class HintUnlockRepository
      * @param int[] $hintIds
      * @return int[]
      */
-    public function findUnlockedHintIds(int $userId, array $hintIds): array
-    {
-        $hintIds = array_values(array_unique(array_filter(array_map('intval', $hintIds))));
+    public function findUnlockedHintIds(int $userId, array $hintIds): array {
+        $hintIds = array_values(array_unique(array_filter(
+            array_map('intval', $hintIds),
+            static fn (int $hintId): bool => $hintId > 0
+        )));
         if ($userId <= 0 || $hintIds === []) {
             return [];
         }

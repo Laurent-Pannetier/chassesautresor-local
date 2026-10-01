@@ -49,8 +49,7 @@ class HintUnlockRepositoryStub extends HintUnlockRepository
         return $this->unlocked;
     }
 
-    public function findUnlockedHintIds(int $userId, array $hintIds): array
-    {
+    public function findUnlockedHintIds(int $userId, array $hintIds): array {
         $this->arguments = [$userId, $hintIds];
 
         return $this->unlockedHintIds;
@@ -145,8 +144,7 @@ class HintUnlockServiceTest extends TestCase
         $this->assertFalse($repository->exists(7, 10));
     }
 
-    public function testUnlocksAreLoadedInOneBatch(): void
-    {
+    public function testUnlocksAreLoadedInOneBatch(): void {
         $repository = new HintUnlockRepositoryStub();
         $repository->unlockedHintIds = [10, 12];
         $service = new HintUnlockService($repository, new HintUnlockPointsServiceStub());
@@ -155,8 +153,7 @@ class HintUnlockServiceTest extends TestCase
         $this->assertSame([7, [10, 11, 12]], $repository->arguments);
     }
 
-    public function testRepositoryQueriesUnlocksInOneBatch(): void
-    {
+    public function testRepositoryQueriesUnlocksInOneBatch(): void {
         $wpdb = new class {
             public string $prefix = 'wp_';
             public array $arguments = [];
@@ -178,7 +175,7 @@ class HintUnlockServiceTest extends TestCase
         };
         $repository = new HintUnlockRepository($wpdb);
 
-        $this->assertSame([10, 12], $repository->findUnlockedHintIds(7, [10, 11, 12, 12]));
+        $this->assertSame([10, 12], $repository->findUnlockedHintIds(7, [10, 11, 12, 12, 0, -4]));
         $this->assertSame([7, 10, 11, 12], $wpdb->arguments);
         $this->assertSame(1, $wpdb->queryCount);
         $this->assertSame([], $repository->findUnlockedHintIds(0, [10]));

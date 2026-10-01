@@ -33,8 +33,7 @@ class HintUnlockService
      * @param int[] $hintIds
      * @return int[]
      */
-    public function unlockedHintIds(int $userId, array $hintIds): array
-    {
+    public function unlockedHintIds(int $userId, array $hintIds): array {
         return $this->repository->findUnlockedHintIds($userId, $hintIds);
     }
 
