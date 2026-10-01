@@ -28,7 +28,10 @@ Le troisième lot a transféré au plugin la restriction du back-office pour les
 Le quatrième lot a transféré au plugin la version du cache de permissions des énigmes et ses huit hooks
 d’invalidation liés aux contenus, rôles et métadonnées utilisateur.
 
-Estimation après ce lot : **84 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
+Le cinquième lot a transféré au plugin le template et les comportements des courriels d’inscription, de mot de passe
+oublié et de WooCommerce. Les fichiers historiques du thème ne sont plus que des chargeurs de compatibilité.
+
+Estimation après ce lot : **88 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
 responsabilités fonctionnelles recensées (persistance, accès, routes, traitements, notifications et cache), et non
 sur le nombre de lignes. Il sera réévalué après chaque lot.
 
@@ -44,7 +47,6 @@ Le thème enregistre toujours notamment :
 - le contrôle d'accès aux énigmes dans `inc/enigme/access.php` ;
 - des politiques d'édition et des callbacks métier échangés avec le plugin dans les fichiers `inc/edition/*.php` ;
 - la protection du site par mot de passe dans `inc/site-password.php` ;
-- la personnalisation des courriels d'inscription, de mot de passe oublié et de WooCommerce dans `inc/emails/*.php`.
 
 Une partie de ces éléments produit de l'interface, mais leur absence change aussi les droits, les parcours ou le
 comportement du site.

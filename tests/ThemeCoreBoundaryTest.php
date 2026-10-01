@@ -96,6 +96,15 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertSame([], $violations, $this->formatViolations($violations));
     }
 
+    public function testThemeDoesNotOwnEmailBehavior(): void {
+        $violations = $this->findPhpMatches(
+            '/wp_new_user_notification_email|retrieve_password_notification_email|woocommerce_mail_content|'
+            . 'woocommerce_email_(?:header|footer)/'
+        );
+
+        self::assertSame([], $violations, $this->formatViolations($violations));
+    }
+
     public function testLegacyStatisticsResetWorkflowStaysOutOfTheme(): void
     {
         $violations = $this->findPhpMatches(

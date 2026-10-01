@@ -59,7 +59,7 @@ if (!function_exists('wp_mail')) {
 }
 
 require_once __DIR__ . '/bootstrap.php';
-require_once dirname(__DIR__) . '/wp-content/themes/chassesautresor/inc/emails/template.php';
+require_once dirname(__DIR__) . '/wp-content/plugins/chassesautresor-core/src/Email/template.php';
 
 class EmailSendTitleTest extends TestCase
 {

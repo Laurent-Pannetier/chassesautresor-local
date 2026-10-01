@@ -57,8 +57,8 @@ if (!function_exists('home_url')) {
     }
 }
 
-require_once dirname(__DIR__) . '/wp-content/themes/chassesautresor/inc/emails/template.php';
-require_once dirname(__DIR__) . '/wp-content/themes/chassesautresor/inc/emails/forgot-password.php';
+require_once dirname(__DIR__) . '/wp-content/plugins/chassesautresor-core/src/Email/template.php';
+require_once dirname(__DIR__) . '/wp-content/plugins/chassesautresor-core/src/Email/forgot-password.php';
 
 class EmailForgotPasswordTest extends TestCase
 {
