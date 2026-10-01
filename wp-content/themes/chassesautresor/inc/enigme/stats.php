@@ -1,16 +1,6 @@
 <?php
 defined('ABSPATH') || exit;
 
-if (!class_exists(ChassesAuTresor\Core\Progress\RiddleStatisticsService::class, false)) {
-    require_once dirname(__DIR__, 4) . '/plugins/chassesautresor-core/src/Progress/RiddleStatisticsRepository.php';
-    require_once dirname(__DIR__, 4) . '/plugins/chassesautresor-core/src/Progress/RiddleStatisticsService.php';
-}
-
-if (!class_exists(ChassesAuTresor\Core\Progress\StatisticsCacheService::class, false)) {
-    require_once dirname(__DIR__, 4) . '/plugins/chassesautresor-core/src/Progress/StatisticsPeriodService.php';
-    require_once dirname(__DIR__, 4) . '/plugins/chassesautresor-core/src/Progress/StatisticsCacheService.php';
-}
-
 if (!function_exists('cat_get_riddle_statistics_service')) {
     function cat_get_riddle_statistics_service(): ChassesAuTresor\Core\Progress\RiddleStatisticsService
     {

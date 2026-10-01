@@ -69,7 +69,6 @@ function rechercher_utilisateur_ajax() {
 
     wp_send_json_success($results);
 }
-add_action('wp_ajax_rechercher_utilisateur', 'rechercher_utilisateur_ajax');
 
 /**
  * 📌 Gère l'ajout ou le retrait de points à un utilisateur.
@@ -547,7 +546,6 @@ function ajax_lister_historique_paiements_admin(): void
     $data = recuperer_historique_paiements_admin(max(1, $page));
     wp_send_json_success($data);
 }
-add_action('wp_ajax_lister_historique_paiements', 'ajax_lister_historique_paiements_admin');
 
 /**
  * 💶 Traiter la demande de conversion de points en euros pour un organisateur.
@@ -678,7 +676,6 @@ function ajax_update_request_status(): void
 
     wp_send_json_success(['status' => $repoStatus]);
 }
-add_action('wp_ajax_update_conversion_status', 'ajax_update_request_status');
 
 
 
@@ -1331,7 +1328,6 @@ function recuperer_details_acf() {
     $output = wp_strip_all_tags($output);
     wp_send_json_success($output);
 }
-add_action('wp_ajax_recuperer_details_acf', 'recuperer_details_acf');
 
 function cta_reset_stats() {
     if (!current_user_can('administrator')) {
@@ -1427,7 +1423,6 @@ function cta_reset_stats() {
 
     wp_send_json_success(['deleted' => $total_deleted]);
 }
-add_action('wp_ajax_cta_reset_stats', 'cta_reset_stats');
 
 function cta_toggle_site_protection() {
     if (!current_user_can('administrator')) {
@@ -1441,7 +1436,15 @@ function cta_toggle_site_protection() {
 
     wp_send_json_success(['enabled' => $enabled]);
 }
-add_action('wp_ajax_cta_toggle_site_protection', 'cta_toggle_site_protection');
+
+\ChassesAuTresor\Core\Admin\AdminAjaxHandler::configure([
+    'search_users' => 'rechercher_utilisateur_ajax',
+    'list_payments' => 'ajax_lister_historique_paiements_admin',
+    'update_conversion_status' => 'ajax_update_request_status',
+    'inspect_acf' => 'recuperer_details_acf',
+    'reset_statistics' => 'cta_reset_stats',
+    'toggle_site_protection' => 'cta_toggle_site_protection',
+]);
 
 
 /**

@@ -1,15 +1,6 @@
 <?php
 defined('ABSPATH') || exit;
 
-if (!class_exists(ChassesAuTresor\Core\Progress\HintUnlockService::class, false)) {
-    require_once dirname(__DIR__, 4) . '/plugins/chassesautresor-core/src/Points/PointsRepository.php';
-    require_once dirname(__DIR__, 4) . '/plugins/chassesautresor-core/src/Points/PointsService.php';
-    require_once dirname(__DIR__, 4)
-        . '/plugins/chassesautresor-core/src/Progress/HintUnlockRepository.php';
-    require_once dirname(__DIR__, 4)
-        . '/plugins/chassesautresor-core/src/Progress/HintUnlockService.php';
-}
-
 if (!function_exists('cat_get_hint_unlock_service')) {
     function cat_get_hint_unlock_service(): ChassesAuTresor\Core\Progress\HintUnlockService
     {

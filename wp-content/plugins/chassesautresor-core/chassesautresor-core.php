@@ -11,6 +11,7 @@ declare(strict_types=1);
 defined('ABSPATH') || exit;
 
 require_once __DIR__ . '/src/Points/PointsRepository.php';
+require_once __DIR__ . '/src/Admin/AdminAjaxHandler.php';
 require_once __DIR__ . '/src/Points/PointsService.php';
 require_once __DIR__ . '/src/Points/PurchasePointsService.php';
 require_once __DIR__ . '/src/Points/ConversionService.php';
@@ -91,6 +92,8 @@ require_once __DIR__ . '/src/Media/RiddleImageProtectionAjaxHandler.php';
 require_once __DIR__ . '/src/Media/RiddleImageProtectionLifecycle.php';
 require_once __DIR__ . '/src/Media/UserAvatarUploadAjaxHandler.php';
 require_once __DIR__ . '/src/Content/RiddleCompletionService.php';
+require_once __DIR__ . '/src/Content/HuntFilterRequestService.php';
+require_once __DIR__ . '/src/Content/HuntFilterAjaxHandler.php';
 require_once __DIR__ . '/src/Content/CompletionCacheManager.php';
 require_once __DIR__ . '/src/Content/CompletionCacheSaveHookHandler.php';
 require_once __DIR__ . '/src/Content/HuntFeatureCacheManager.php';
@@ -229,11 +232,14 @@ if (!class_exists('PointsRepository', false)) {
     class_alias(ChassesAuTresor\Core\Points\PointsRepository::class, 'PointsRepository');
 }
 
+ChassesAuTresor\Core\Admin\AdminAjaxHandler::register('add_action');
+
 if (!class_exists('UserMessageRepository', false)) {
     class_alias(ChassesAuTresor\Core\Messages\UserMessageRepository::class, 'UserMessageRepository');
 }
 
 ChassesAuTresor\Core\Content\RiddleRelationshipHookHandler::register('add_action');
+ChassesAuTresor\Core\Content\HuntFilterAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\RiddleRelationshipFilterHandler::register('add_filter');
 ChassesAuTresor\Core\Content\RiddleOrderingAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\RiddleDeletionAjaxHandler::register('add_action');

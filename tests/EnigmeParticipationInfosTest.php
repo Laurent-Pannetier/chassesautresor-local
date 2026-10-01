@@ -132,6 +132,10 @@ if (!function_exists('get_post_meta')) {
     }
 }
 
+require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Points/PointsRepository.php';
+require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Points/PointsService.php';
+require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/HintUnlockRepository.php';
+require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/HintUnlockService.php';
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/enigme/affichage.php';
 
 class EnigmeParticipationInfosTest extends TestCase
