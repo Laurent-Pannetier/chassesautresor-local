@@ -8,6 +8,7 @@ use ChassesAuTresor\Core\Points\ConversionSettingsRequestHandler;
 use ChassesAuTresor\Core\Points\ConversionRequestHandler;
 use ChassesAuTresor\Core\Points\ManualPointsAdjustmentHandler;
 use ChassesAuTresor\Core\Points\PurchasePointsHookHandler;
+use ChassesAuTresor\Core\Relationships\OrganizerConfirmationRouteHandler;
 use PHPUnit\Framework\TestCase;
 
 final class BusinessHookOwnershipTest extends TestCase
@@ -102,6 +103,25 @@ final class BusinessHookOwnershipTest extends TestCase
         self::assertSame(
             ['admin_post_traiter_validation_chasse', [HuntModerationRequestHandler::class, 'handle']],
             $hooks[0]
+        );
+    }
+
+    public function testOrganizerConfirmationRoutesAreRegisteredByCore(): void
+    {
+        $hooks = [];
+
+        OrganizerConfirmationRouteHandler::register(
+            static function (...$arguments) use (&$hooks): void {
+                $hooks[] = $arguments;
+            }
+        );
+
+        self::assertSame(
+            [
+                ['init', [OrganizerConfirmationRouteHandler::class, 'registerRoute']],
+                ['template_redirect', [OrganizerConfirmationRouteHandler::class, 'handle']],
+            ],
+            $hooks
         );
     }
 }

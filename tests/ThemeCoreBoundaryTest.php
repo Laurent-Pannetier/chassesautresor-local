@@ -83,6 +83,15 @@ final class ThemeCoreBoundaryTest extends TestCase
         );
     }
 
+    public function testThemeDoesNotRegisterOrganizerConfirmationRoutes(): void
+    {
+        $violations = $this->findPhpMatches(
+            '/register_endpoint_confirmation_organisateur|traiter_confirmation_organisateur/'
+        );
+
+        self::assertSame([], $violations, $this->formatViolations($violations));
+    }
+
     public function testRemovedCompatibilityLoadersStayRemoved(): void
     {
         $loaders = [

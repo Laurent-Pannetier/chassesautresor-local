@@ -59,6 +59,10 @@ if (!class_exists('WP_User')) {
 
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/organisateur-functions.php';
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 class OrganisateurConfirmationTest extends TestCase
 {
     protected function setUp(): void
@@ -91,4 +95,3 @@ class OrganisateurConfirmationTest extends TestCase
         $this->assertSame(123, confirmer_demande_organisateur($user_id, 'def'));
     }
 }
-

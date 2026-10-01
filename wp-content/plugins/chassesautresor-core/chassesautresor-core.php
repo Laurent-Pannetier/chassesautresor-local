@@ -88,6 +88,8 @@ require_once __DIR__ . '/src/Progress/UserAttemptsAjaxHandler.php';
 require_once __DIR__ . '/src/Relationships/OrganizerRepository.php';
 require_once __DIR__ . '/src/Relationships/OrganizerService.php';
 require_once __DIR__ . '/src/Relationships/OrganizerRequestService.php';
+require_once __DIR__ . '/src/Relationships/OrganizerRequestLifecycleService.php';
+require_once __DIR__ . '/src/Relationships/OrganizerConfirmationRouteHandler.php';
 require_once __DIR__ . '/src/Relationships/RelationshipService.php';
 require_once __DIR__ . '/src/Relationships/HuntRiddleQueryService.php';
 require_once __DIR__ . '/src/Relationships/OrganizerHuntQueryService.php';
@@ -271,6 +273,7 @@ ChassesAuTresor\Core\Content\OrganizerFieldMutationAjaxHandler::register('add_ac
 ChassesAuTresor\Core\Content\OrganizerRelationshipSaveHookHandler::register('add_action');
 ChassesAuTresor\Core\Content\HuntOrganizerAssignmentHookHandler::register('add_action');
 ChassesAuTresor\Core\Content\HuntModerationRequestHandler::register('add_action');
+ChassesAuTresor\Core\Relationships\OrganizerConfirmationRouteHandler::register('add_action');
 ChassesAuTresor\Core\Points\PurchasePointsHookHandler::register('add_action');
 ChassesAuTresor\Core\Points\ConversionSettingsRequestHandler::register('add_action');
 ChassesAuTresor\Core\Points\ConversionRequestHandler::register('add_action');

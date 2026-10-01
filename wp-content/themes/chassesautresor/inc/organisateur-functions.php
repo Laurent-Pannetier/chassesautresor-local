@@ -731,8 +731,7 @@ function generer_liste_chasses_hierarchique($organisateur_id) {
  */
 function cat_clear_organisateur_request(int $user_id): void
 {
-    delete_user_meta($user_id, 'organisateur_demande_token');
-    delete_user_meta($user_id, 'organisateur_demande_date');
+    (new ChassesAuTresor\Core\Relationships\OrganizerRequestLifecycleService())->clear($user_id);
 }
 
 /**
@@ -744,24 +743,7 @@ function cat_clear_organisateur_request(int $user_id): void
  */
 function cat_get_organisateur_request_status(int $user_id): array
 {
-    $token = (string) get_user_meta($user_id, 'organisateur_demande_token', true);
-    $service = new ChassesAuTresor\Core\Relationships\OrganizerRequestService();
-    $date = $token !== '' ? get_user_meta($user_id, 'organisateur_demande_date', true) : null;
-    $timestamp = $date ? strtotime((string) $date) : false;
-    $status = $service->getStatus(
-        $token,
-        $timestamp !== false ? $timestamp : null,
-        $token !== '' ? (int) current_time('timestamp') : 0,
-        2 * DAY_IN_SECONDS
-    );
-
-    if ($status['clear']) {
-        cat_clear_organisateur_request($user_id);
-    }
-
-    unset($status['clear']);
-
-    return $status;
+    return (new ChassesAuTresor\Core\Relationships\OrganizerRequestLifecycleService())->getStatus($user_id);
 }
 
 /**
@@ -949,102 +931,43 @@ function envoyer_email_confirmation_organisateur(int $user_id, string $token): b
     return true;
 }
 
-function lancer_demande_organisateur(int $user_id): bool {
-    if ($user_id <= 0) return false;
-    $token = wp_generate_password(20, false);
-    update_user_meta($user_id, 'organisateur_demande_token', $token);
-    update_user_meta($user_id, 'organisateur_demande_date', current_time('mysql'));
-    return envoyer_email_confirmation_organisateur($user_id, $token);
+function lancer_demande_organisateur(int $user_id): bool
+{
+    return (new ChassesAuTresor\Core\Relationships\OrganizerRequestLifecycleService())->start(
+        $user_id,
+        'envoyer_email_confirmation_organisateur'
+    );
 }
 
-function renvoyer_email_confirmation_organisateur(int $user_id): bool {
-    if ($user_id <= 0) return false;
-    $token = get_user_meta($user_id, 'organisateur_demande_token', true);
-    $date  = get_user_meta($user_id, 'organisateur_demande_date', true);
-    if (!$token || !$date) {
-        return lancer_demande_organisateur($user_id);
-    }
-    $timestamp = strtotime((string) $date);
-    $now = strtotime((string) current_time('mysql'));
-    if (!$timestamp || ($now - $timestamp) > 2 * DAY_IN_SECONDS) {
-        return lancer_demande_organisateur($user_id);
-    }
-    return envoyer_email_confirmation_organisateur($user_id, (string) $token);
+function renvoyer_email_confirmation_organisateur(int $user_id): bool
+{
+    return (new ChassesAuTresor\Core\Relationships\OrganizerRequestLifecycleService())->resend(
+        $user_id,
+        'envoyer_email_confirmation_organisateur'
+    );
 }
 
-function confirmer_demande_organisateur(int $user_id, string $token): ?int {
-    $saved = get_user_meta($user_id, 'organisateur_demande_token', true);
-    if (!$saved || $token !== $saved) {
-        return null;
-    }
-
-    $date      = get_user_meta($user_id, 'organisateur_demande_date', true);
-    $timestamp = $date ? strtotime((string) $date) : false;
-    $now = strtotime((string) current_time('mysql'));
-    if (!$timestamp || ($now - $timestamp) > 2 * DAY_IN_SECONDS) {
-        return null;
-    }
-
-    delete_user_meta($user_id, 'organisateur_demande_token');
-    delete_user_meta($user_id, 'organisateur_demande_date');
-
-    $organisateur_id = creer_organisateur_pour_utilisateur($user_id);
-    if ($organisateur_id) {
-        $user = new WP_User($user_id);
-        $user->add_role(ROLE_ORGANISATEUR_CREATION);
-    }
-    return $organisateur_id;
+function confirmer_demande_organisateur(int $user_id, string $token): ?int
+{
+    return (new ChassesAuTresor\Core\Relationships\OrganizerRequestLifecycleService())->confirm(
+        $user_id,
+        $token,
+        'creer_organisateur_pour_utilisateur',
+        static function (int $confirmed_user_id): void {
+            (new WP_User($confirmed_user_id))->add_role(ROLE_ORGANISATEUR_CREATION);
+        }
+    );
 }
 
 // ==================================================
 // 🌐 ENDPOINT CONFIRMATION ORGANISATEUR
 // ==================================================
-/**
- * Enregistre l'endpoint /confirmation-organisateur
- *
- * Permet d'accéder à l'URL https://exemple.com/confirmation-organisateur/
- * même si aucune page WordPress n'existe.
- */
-function register_endpoint_confirmation_organisateur() {
-    add_rewrite_rule('^confirmation-organisateur/?$', 'index.php?confirmation_organisateur=1', 'top');
-    add_rewrite_tag('%confirmation_organisateur%', '1');
-}
-add_action('init', 'register_endpoint_confirmation_organisateur');
-
-/**
- * Traite la confirmation d'inscription organisateur et redirige.
- *
- * Vérifie le token, crée le CPT "organisateur" si nécessaire, connecte
- * l'utilisateur puis redirige vers son espace organisateur.
- */
-function traiter_confirmation_organisateur() {
-    $is_endpoint = get_query_var('confirmation_organisateur') === '1';
-    $is_page     = is_page('confirmation-organisateur');
-    if (!$is_endpoint && !$is_page) {
-        return;
+ChassesAuTresor\Core\Relationships\OrganizerConfirmationRouteHandler::configure(
+    'confirmer_demande_organisateur',
+    static function (int $user_id): void {
+        remove_site_message('profil_verification');
+        if (function_exists('myaccount_remove_persistent_message')) {
+            myaccount_remove_persistent_message($user_id, 'profil_verification');
+        }
     }
-
-    $user_id = isset($_GET['user']) ? intval($_GET['user']) : 0;
-    $token   = isset($_GET['token']) ? sanitize_text_field($_GET['token']) : '';
-
-    $organisateur_id = 0;
-    if ($user_id && $token) {
-        $organisateur_id = confirmer_demande_organisateur($user_id, $token);
-    }
-
-    remove_site_message('profil_verification');
-    if (function_exists('myaccount_remove_persistent_message')) {
-        myaccount_remove_persistent_message($user_id, 'profil_verification');
-    }
-
-    if ($organisateur_id) {
-        wp_set_current_user($user_id);
-        wp_set_auth_cookie($user_id);
-        $redirect = add_query_arg('confirmation', '1', get_permalink($organisateur_id));
-        wp_safe_redirect($redirect);
-    } else {
-        wp_safe_redirect(home_url('/devenir-organisateur'));
-    }
-    exit;
-}
-add_action('template_redirect', 'traiter_confirmation_organisateur');
+);

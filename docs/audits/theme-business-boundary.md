@@ -12,14 +12,14 @@ contrôleurs AJAX, mais le thème conserve encore des orchestrations et des muta
 laisserait le plugin actif, mais ferait notamment disparaître les workflows de validation d'une chasse, de demande
 organisateur, d'administration des paiements et une partie des traitements d'engagement et de progression.
 
-Le thème compte 146 fichiers PHP hors tests (29 784 lignes). Vingt-huit fichiers référencent directement les
-classes du plugin, pour 206 occurrences. Cette dépendance est acceptable dans une couche de présentation, mais elle
+Le thème compte 146 fichiers PHP hors tests (29 668 lignes). Vingt-huit fichiers référencent directement les
+classes du plugin, pour 214 occurrences. Cette dépendance est acceptable dans une couche de présentation, mais elle
 signale ici une couche d'intégration encore volumineuse. Les façades qui ne font que déléguer au plugin ne sont pas
 considérées comme de la logique métier résiduelle ; elles restent toutefois une dette de couplage.
 
 ## Avancement au 1er octobre 2026
 
-**Estimation : 89 % de la migration métier est terminée.** Cette valeur est une estimation architecturale, pas un
+**Estimation : 91 % de la migration métier est terminée.** Cette valeur est une estimation architecturale, pas un
 ratio de lignes : elle pondère la couverture des domaines Core, l'indépendance des points d'entrée WordPress, la
 propriété de la persistance, l'absence d'effets de bord dans les vues et la couverture de tests.
 
@@ -33,18 +33,20 @@ Le lot de migration associé à cet audit a sorti du thème :
 - l'initialisation et le traitement du formulaire du taux de conversion ; les deux fonctions globales restantes ne
   sont plus que des façades de lecture et d'écriture vers `ConversionSettingsService` ;
 - la validation, le débit, l'enregistrement et la notification des demandes de conversion en euros ;
-- l'ajustement manuel des points par un administrateur, y compris les contrôles de solde et de permission.
-- la politique de modération des chasses, avec les transitions autorisées et leurs statuts cibles.
-- l'application des mutations de statut sur les chasses, leurs caches et les énigmes associées.
-- l'enregistrement du point d'entrée `admin_post_*` de modération, désormais possédé par Core.
-- la publication de l'organisateur validé et la sélection de l'utilisateur dont les rôles doivent être promus.
+- l'ajustement manuel des points par un administrateur, y compris les contrôles de solde et de permission ;
+- la politique de modération des chasses, avec les transitions autorisées et leurs statuts cibles ;
+- l'application des mutations de statut sur les chasses, leurs caches et les énigmes associées ;
+- l'enregistrement du point d'entrée `admin_post_*` de modération, désormais possédé par Core ;
+- la publication de l'organisateur validé et la sélection de l'utilisateur dont les rôles doivent être promus ;
+- le cycle de vie de la demande organisateur : jeton, expiration, renvoi, confirmation et nettoyage ;
+- les routes et le contrôleur de confirmation du profil organisateur.
 
 ### Prochain lot recommandé (taille maximale raisonnable)
 
-Migrer en un gros lot les **notifications de modération et le workflow de demande organisateur** : messages de
-compte, courriels de validation/correction/bannissement/suppression, création et confirmation par jeton du profil
-organisateur. Ce lot supprimera la dernière callback de modération configurée par le thème ainsi que les endpoints
-de confirmation encore enregistrés par celui-ci. Cible après ce lot : **93 %**.
+Migrer en un gros lot les **notifications métier et l'interface applicative organisateur** : messages de compte,
+courriels de validation/correction/bannissement/suppression, courriel de confirmation organisateur et décision du CTA
+de candidature. Ce lot supprimera les dernières callbacks de compatibilité configurées par le thème et laissera les
+templates avec de simples view models. Cible après ce lot : **94 %**.
 
 ## Critères utilisés
 
@@ -76,9 +78,8 @@ requête, permissions, transitions d'état, planification, calculs de points/sta
 1. **Modération.** `inc/admin-functions.php` traite encore la validation des chasses via un hook `admin_post_*`.
    Les widgets de rendu peuvent rester dans le thème, mais validation, autorisation, calcul et mutation doivent
    migrer.
-2. **Demande organisateur.** `inc/organisateur-functions.php` gère le token, sa date, les relances par courriel, la
-   confirmation et la création de l'organisateur. Le endpoint et l'orchestration doivent appartenir au plugin ; le
-   thème ne devrait rendre que le formulaire et le résultat.
+2. **Interface organisateur.** `inc/organisateur-functions.php` conserve le courriel de confirmation et la décision
+   du CTA de candidature. Le thème ne devrait rendre que le view model et le formulaire.
 3. **Engagement et maintenance de progression.** `templates/page-traitement-engagement.php` instancie directement
    `HuntEngagementApplicationService`. `templates/page-traitement-tentative.php` efface les tentatives et statuts.
    Ce sont des contrôleurs applicatifs placés dans des templates.
