@@ -328,6 +328,11 @@ Le soixante-treizième lot termine le flux de validation associé : recherche de
 reconstruction du CTA et configuration de `HuntValidationAjaxHandler`. Le contrôleur ne reçoit donc plus son callback
 depuis le thème, ce qui ramène les configurations de contrôleurs encore effectuées par le thème de 15 à 14.
 
+Le soixante-quatorzième lot ouvre le dernier bloc de politiques d'accès en transférant quatre points d'entrée généraux :
+accès aux statistiques, détection du rôle organisateur et autorisations d'action sur indices et solutions. Les tests
+qui chargeaient isolément le thème utilisent désormais explicitement l'API du plugin, et la frontière interdit les
+doubles déclarations.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |

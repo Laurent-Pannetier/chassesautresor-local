@@ -68,7 +68,8 @@ class UtilisateurPeutVoirEnigmeChasseTermineeTest extends TestCase
             }
         }
 
-        require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/access-functions.php';
+        require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Content/access-functions.php';
+require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/access-functions.php';
 
         $this->assertTrue(utilisateur_peut_voir_enigme(42, null));
     }

@@ -311,6 +311,24 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringContainsString('HuntValidationAjaxHandler::configure', $core);
     }
 
+    public function testThemeDoesNotOwnGeneralAccessCompatibilityFunctions(): void
+    {
+        $theme = (string) file_get_contents(self::THEME_PATH . '/inc/access-functions.php');
+        $core = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Content/access-functions.php'
+        );
+
+        foreach ([
+            'utilisateur_peut_voir_statistiques_chasse',
+            'est_organisateur',
+            'indice_action_autorisee',
+            'solution_action_autorisee',
+        ] as $functionName) {
+            self::assertStringNotContainsString("function {$functionName}(", $theme);
+            self::assertStringContainsString("function {$functionName}(", $core);
+        }
+    }
+
     public function testLegacyStatisticsResetWorkflowStaysOutOfTheme(): void
     {
         $violations = $this->findPhpMatches(

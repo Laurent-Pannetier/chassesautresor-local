@@ -130,7 +130,8 @@ namespace {
     require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
         require_once __DIR__
             . '/../wp-content/plugins/chassesautresor-core/src/Content/hint-functions.php';
-    require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/access-functions.php';
+    require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Content/access-functions.php';
+require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/access-functions.php';
 }
 
 namespace CreerIndice {

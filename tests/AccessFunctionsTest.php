@@ -67,6 +67,7 @@ if (!function_exists('cat_debug')) {
     function cat_debug(...$args): void {}
 }
 
+require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Content/access-functions.php';
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/access-functions.php';
 
 class AccessFunctionsTest extends TestCase {
