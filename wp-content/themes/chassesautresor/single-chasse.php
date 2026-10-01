@@ -305,7 +305,6 @@ $modal_deja_vue = get_post_meta($chasse_id, 'chasse_modal_bienvenue_vue', true);
 if (!$modal_deja_vue) :
   $post_bienvenue = get_post(9004);
   if ($post_bienvenue && $post_bienvenue->post_status === 'publish') :
-    update_post_meta($chasse_id, 'chasse_modal_bienvenue_vue', '1');
     $contenu = apply_filters('the_content', $post_bienvenue->post_content);
     $dom = new DOMDocument();
     libxml_use_internal_errors(true);

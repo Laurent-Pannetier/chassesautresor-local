@@ -119,6 +119,16 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('function envoyer_mail_accuse_reception_joueur', $answers);
     }
 
+    public function testHuntTemplateDoesNotPersistWelcomeModalState(): void
+    {
+        $template = (string) file_get_contents(self::THEME_PATH . '/single-chasse.php');
+
+        self::assertStringNotContainsString(
+            "update_post_meta(\$chasse_id, 'chasse_modal_bienvenue_vue'",
+            $template
+        );
+    }
+
     public function testThemeDoesNotRegisterOrganizerConfirmationRoutes(): void
     {
         $violations = $this->findPhpMatches(
