@@ -411,6 +411,11 @@ Cette dernière configuration a été réexaminée mais n'est pas supprimée dan
 encore la modération des organisateurs, les statistiques globales et les formulaires d'administration. Un fallback
 minimal dégraderait ces parcours et ne constituerait pas une autonomie réelle.
 
+Le quatre-vingt-dixième lot commence ce découpage sans simuler l'autonomie de la section complète : les deux points
+d'entrée historiques de lecture et de mise à jour du taux de conversion sont désormais fournis par le plugin et
+réutilisent `ConversionSettingsService`. La configuration « Mon compte » reste en place et les indicateurs ne changent
+pas tant que les trois sections ne disposent pas d'un rendu core complet.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |

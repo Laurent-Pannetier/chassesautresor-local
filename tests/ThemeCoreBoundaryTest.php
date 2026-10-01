@@ -1231,6 +1231,19 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('recuperer_id_chasse_associee', $core);
     }
 
+    public function testAccountConversionSettingsFunctionsBelongToCore(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/admin-functions.php');
+        $core = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Points/conversion-settings-functions.php'
+        );
+
+        foreach (['get_taux_conversion_actuel', 'update_taux_conversion'] as $functionName) {
+            self::assertStringNotContainsString("function {$functionName}(", $source);
+            self::assertStringContainsString("function {$functionName}(", $core);
+        }
+    }
+
     public function testThemeDoesNotOwnHuntModerationEmails(): void
     {
         $violations = $this->findPhpMatches(

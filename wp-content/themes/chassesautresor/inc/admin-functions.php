@@ -71,8 +71,6 @@ add_action('wp_enqueue_scripts', 'charger_script_autocomplete_utilisateurs');
 // ==================================================
 /**
  * 🔹 acf_add_local_field_group (conditionnelle) → Ajouter dynamiquement le champ ACF pour le taux de conversion.
- * 🔹 get_taux_conversion_actuel → Récupérer le taux de conversion actuel.
- * 🔹 update_taux_conversion → Mettre à jour le taux de conversion et enregistrer l’historique.
  * 🔹 charger_script_taux_conversion → Charger le script `taux-conversion.js` uniquement pour les administrateurs sur "Mon Compte".
  * 🔹 afficher_tableau_paiements_admin → Afficher les demandes de paiement (en attente ou réglées) pour les administrateurs.
  * 🔹 regler_paiement_admin → Traiter le règlement d’une demande de paiement depuis l’admin.
@@ -117,24 +115,6 @@ add_action('acf/init', function () {
     ]);
 });
 
-
-/**
- * 📌 Récupère le taux de conversion actuel.
- *
- * @return float Le dernier taux enregistré, 85 par défaut.
- */
-function get_taux_conversion_actuel() {
-    return (new ChassesAuTresor\Core\Points\ConversionSettingsService())->getRate();
-}
-
-/**
- * 📌 Met à jour le taux de conversion et enregistre l'historique.
- *
- * @param float $nouveau_taux Nouvelle valeur du taux de conversion.
- */
-function update_taux_conversion($nouveau_taux) {
-    (new ChassesAuTresor\Core\Points\ConversionSettingsService())->updateRate((float) $nouveau_taux);
-}
 
 /**
  * 📌 Charge le script `taux-conversion.js` uniquement pour les administrateurs sur "Mon Compte" et ses sous-pages (y compris les templates redirigés).

@@ -28,6 +28,7 @@ require_once __DIR__ . '/src/Points/PurchasePointsService.php';
 require_once __DIR__ . '/src/Points/PurchasePointsHookHandler.php';
 require_once __DIR__ . '/src/Points/ConversionService.php';
 require_once __DIR__ . '/src/Points/ConversionSettingsService.php';
+require_once __DIR__ . '/src/Points/conversion-settings-functions.php';
 require_once __DIR__ . '/src/Points/ConversionSettingsRequestHandler.php';
 require_once __DIR__ . '/src/Points/ConversionRequestService.php';
 require_once __DIR__ . '/src/Points/ConversionRequestHandler.php';
