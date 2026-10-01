@@ -209,6 +209,12 @@ historiques peuvent conserver leurs appels à cette API globale sans que sa pers
 adaptateur de création d'un organisateur, devenu inutilisé depuis l'autonomisation de la route de confirmation, a aussi
 été supprimé d'`edition-organisateur.php`, avec ses injections de `wp_insert_post` et `update_field`.
 
+Le quarante-neuvième lot a supprimé les politiques d'accès au back-office encore enregistrées par `edition-core.php`.
+La redirection hors de l'administration est déjà détenue par `BackOfficeAccessHookHandler` et les anciens callbacks du
+thème, concurrents et plus permissifs, ont été retirés. La limitation du champ ACF des utilisateurs associés à l'auteur
+de l'organisateur est maintenant enregistrée par `WordPressAccessPolicyHookHandler`. Les classes et styles purement
+visuels des écrans d'édition restent dans le thème.
+
 Estimation prudente après ce lot : **environ 98 % de l'autonomie métier vérifiée**. Il ne s'agit plus d'un calcul au
 centième fondé sur les lots déjà traités : cette valeur applique une décote aux dépendances runtime encore observées,
 aux politiques d'édition encore enregistrées par le thème, aux adaptateurs d'accès encore utilisés ailleurs et à

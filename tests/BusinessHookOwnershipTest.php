@@ -186,6 +186,10 @@ final class BusinessHookOwnershipTest extends TestCase
                 ['ajax_query_attachments_args', [WordPressAccessPolicyHookHandler::class, 'filterRiddleMedia'], 15],
                 ['use_block_editor_for_post', [WordPressAccessPolicyHookHandler::class, 'filterBlockEditor'], 10, 2],
                 ['user_has_cap', [WordPressAccessPolicyHookHandler::class, 'filterCapabilities'], 10, 4],
+                [
+                    'acf/load_field/name=utilisateurs_associes',
+                    [WordPressAccessPolicyHookHandler::class, 'restrictOrganizerUsersField'],
+                ],
             ],
             $filters
         );

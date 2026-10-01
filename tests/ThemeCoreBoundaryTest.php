@@ -608,6 +608,21 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString("'update_field'", $organizer);
     }
 
+    public function testThemeDoesNotOwnBackOfficeAccessOrOrganizerUserPolicy(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/edition/edition-core.php');
+
+        foreach ([
+            'acf_restreindre_utilisateurs_associes',
+            'restreindre_admin_menu_pour_roles_non_admins',
+            'masquer_admin_interface_pour_non_admins',
+            "add_filter('show_admin_bar'",
+            "add_action('admin_init'",
+        ] as $businessPolicy) {
+            self::assertStringNotContainsString($businessPolicy, $source);
+        }
+    }
+
     public function testRiddleStatisticsAccessIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/stats.php');

@@ -17,6 +17,10 @@ final class WordPressAccessPolicyHookHandler {
         $addFilter('ajax_query_attachments_args', [self::class, 'filterRiddleMedia'], 15);
         $addFilter('use_block_editor_for_post', [self::class, 'filterBlockEditor'], 10, 2);
         $addFilter('user_has_cap', [self::class, 'filterCapabilities'], 10, 4);
+        $addFilter(
+            'acf/load_field/name=utilisateurs_associes',
+            [self::class, 'restrictOrganizerUsersField']
+        );
         $addAction('pre_get_posts', [self::class, 'extendVisiblePostStatuses']);
     }
 
@@ -94,6 +98,25 @@ final class WordPressAccessPolicyHookHandler {
         }
 
         return $allCaps;
+    }
+
+    public static function restrictOrganizerUsersField(array $field): array {
+        global $post;
+
+        if (!$post || get_post_type($post->ID) !== 'organisateur') {
+            return $field;
+        }
+
+        $authorId = (int) get_post_field('post_author', $post->ID);
+        if ($authorId <= 0) {
+            return $field;
+        }
+
+        $field['choices'] = [
+            (string) $authorId => get_the_author_meta('display_name', $authorId),
+        ];
+
+        return $field;
     }
 
     public static function extendVisiblePostStatuses($query): void {
