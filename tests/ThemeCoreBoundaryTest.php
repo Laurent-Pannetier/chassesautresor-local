@@ -108,6 +108,14 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('function gerer_chasse_terminee', $huntFunctions);
     }
 
+    public function testThemeDoesNotExposeAnswerSubmissionControllers(): void
+    {
+        $answers = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/reponses.php');
+
+        self::assertStringNotContainsString('function soumettre_reponse_manuelle', $answers);
+        self::assertStringNotContainsString('function soumettre_reponse_automatique', $answers);
+    }
+
     public function testThemeDoesNotRegisterOrganizerConfirmationRoutes(): void
     {
         $violations = $this->findPhpMatches(

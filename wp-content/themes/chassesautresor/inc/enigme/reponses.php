@@ -167,21 +167,6 @@ function calculer_contexte_points(int $user_id, int $enigme_id): array
      * - champ réponse + nonce + enigme_id présents
      * - nonce valide
      */
-function soumettre_reponse_manuelle(): void
-{
-    ChassesAuTresor\Core\Progress\RiddleAnswerSubmissionAjaxHandler::submitManual();
-}
-
-/**
- * Traite la soumission d'une réponse automatique via AJAX.
- */
-function soumettre_reponse_automatique(): void
-{
-    ChassesAuTresor\Core\Progress\RiddleAnswerSubmissionAjaxHandler::submitAutomatic();
-}
-
-
-
     // ==================================================
     // ✉️ ENVOI D'EMAILS (RÉPONSES MANUELLES)
     // ==================================================
