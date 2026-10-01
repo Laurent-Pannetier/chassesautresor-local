@@ -76,7 +76,10 @@ comptage des participants au plugin. Le thème ne fournit plus que le rendu HTML
 Le vingtième lot applique la même séparation aux statistiques de chasse : autorisation, agrégats, participants et
 relations avec les énigmes appartiennent désormais au plugin, tandis que le thème conserve le rendu du tableau.
 
-Estimation après ce lot : **99,995 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
+Le vingt-et-unième lot a transféré au plugin les lectures paginées des historiques de points et de conversion. Le
+thème ne fournit plus que le rendu HTML des lignes correspondantes.
+
+Estimation après ce lot : **99,997 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
 responsabilités fonctionnelles recensées (persistance, accès, routes, traitements, notifications et cache), et non
 sur le nombre de lignes. Il sera réévalué après chaque lot.
 

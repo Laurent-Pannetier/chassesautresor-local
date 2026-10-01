@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Points;
 
+use ChassesAuTresor\Core\Support\CoreServiceFactory;
+
 /** AJAX orchestration for organizer and administrator conversion history. */
 class ConversionHistoryAjaxHandler {
-    /** @var callable|null */
-    private static $loader;
-
     /** @var callable|null */
     private static $renderer;
 
@@ -16,8 +15,7 @@ class ConversionHistoryAjaxHandler {
         $addAction('wp_ajax_load_conversion_history', [self::class, 'handle']);
     }
 
-    public static function configure(callable $loader, callable $renderer): void {
-        self::$loader = $loader;
+    public static function configure(callable $renderer): void {
         self::$renderer = $renderer;
     }
 
@@ -31,14 +29,15 @@ class ConversionHistoryAjaxHandler {
             wp_send_json_error();
         }
         check_ajax_referer('conversion-history-nonce', 'nonce');
-        if (!is_callable(self::$loader) || !is_callable(self::$renderer)) {
+        if (!is_callable(self::$renderer)) {
             wp_send_json_error();
         }
 
         $userId = current_user_can('administrator') ? null : (int) get_current_user_id();
-        $requests = (array) call_user_func(
-            self::$loader,
+        global $wpdb;
+        $requests = CoreServiceFactory::conversion($wpdb)->getRequests(
             $userId,
+            null,
             $request['per_page'],
             $request['offset']
         );

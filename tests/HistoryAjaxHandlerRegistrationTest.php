@@ -29,8 +29,8 @@ final class HistoryAjaxHandlerRegistrationTest extends TestCase {
     }
 
     public function testAcceptsDeferredThemeRenderers(): void {
-        PointsHistoryAjaxHandler::configure(static fn (): array => [], static fn (): string => '');
-        ConversionHistoryAjaxHandler::configure(static fn (): array => [], static fn (): string => '');
+        PointsHistoryAjaxHandler::configure(static fn (): string => '');
+        ConversionHistoryAjaxHandler::configure(static fn (): string => '');
         ConversionModalAjaxHandler::configure(static fn (): bool => false, static fn (): string => '');
         $this->addToAssertionCount(1);
     }

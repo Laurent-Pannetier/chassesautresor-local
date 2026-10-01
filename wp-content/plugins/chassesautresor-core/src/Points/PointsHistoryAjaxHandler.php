@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Points;
 
+use ChassesAuTresor\Core\Support\CoreServiceFactory;
+
 /** AJAX orchestration for the current user's points history. */
 class PointsHistoryAjaxHandler {
-    /** @var callable|null */
-    private static $loader;
-
     /** @var callable|null */
     private static $renderer;
 
@@ -16,8 +15,7 @@ class PointsHistoryAjaxHandler {
         $addAction('wp_ajax_load_points_history', [self::class, 'handle']);
     }
 
-    public static function configure(callable $loader, callable $renderer): void {
-        self::$loader = $loader;
+    public static function configure(callable $renderer): void {
         self::$renderer = $renderer;
     }
 
@@ -31,12 +29,12 @@ class PointsHistoryAjaxHandler {
             wp_send_json_error();
         }
         check_ajax_referer('points-history-nonce', 'nonce');
-        if (!is_callable(self::$loader) || !is_callable(self::$renderer)) {
+        if (!is_callable(self::$renderer)) {
             wp_send_json_error();
         }
 
-        $operations = (array) call_user_func(
-            self::$loader,
+        global $wpdb;
+        $operations = CoreServiceFactory::points($wpdb)->getHistory(
             (int) get_current_user_id(),
             $request['page'],
             $request['per_page']

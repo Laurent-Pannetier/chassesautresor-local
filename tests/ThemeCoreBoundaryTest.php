@@ -355,6 +355,15 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('chasse_lister_participants', $configuration);
     }
 
+    public function testPointsHistoryQueriesAreNotInjectedByTheme(): void
+    {
+        $points = (string) file_get_contents(self::THEME_PATH . '/inc/gamify-functions.php');
+        $conversions = (string) file_get_contents(self::THEME_PATH . '/inc/organisateur-functions.php');
+
+        self::assertStringNotContainsString('return get_user_points_history(', $points);
+        self::assertStringNotContainsString('return cat_get_conversion_service()->getRequests(', $conversions);
+    }
+
     public function testThemeDoesNotOwnHuntModerationEmails(): void
     {
         $violations = $this->findPhpMatches(

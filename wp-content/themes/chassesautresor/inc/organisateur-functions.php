@@ -568,9 +568,6 @@ function ajax_load_conversion_history(): void
 
 if (class_exists(ChassesAuTresor\Core\Points\ConversionHistoryAjaxHandler::class)) {
     ChassesAuTresor\Core\Points\ConversionHistoryAjaxHandler::configure(
-        static function (?int $user_id, int $limit, int $offset): array {
-            return cat_get_conversion_service()->getRequests($user_id, null, $limit, $offset);
-        },
         static function (array $requests, bool $is_admin): string {
             return cat_render_conversion_history_rows($requests, $is_admin);
         }
