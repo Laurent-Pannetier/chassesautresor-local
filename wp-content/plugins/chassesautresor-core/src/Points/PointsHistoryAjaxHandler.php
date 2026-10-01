@@ -29,16 +29,13 @@ class PointsHistoryAjaxHandler {
             wp_send_json_error();
         }
         check_ajax_referer('points-history-nonce', 'nonce');
-        if (!is_callable(self::$renderer)) {
-            wp_send_json_error();
-        }
-
         global $wpdb;
         $operations = CoreServiceFactory::points($wpdb)->getHistory(
             (int) get_current_user_id(),
             $request['page'],
             $request['per_page']
         );
-        wp_send_json_success(['rows' => (string) call_user_func(self::$renderer, $operations)]);
+        $renderer = self::$renderer ?? [new PointsHistoryRenderer(), 'rows'];
+        wp_send_json_success(['rows' => (string) call_user_func($renderer, $operations)]);
     }
 }

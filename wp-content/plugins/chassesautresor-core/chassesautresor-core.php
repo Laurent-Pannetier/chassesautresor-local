@@ -31,6 +31,8 @@ require_once __DIR__ . '/src/Points/ManualPointsAdjustmentService.php';
 require_once __DIR__ . '/src/Points/ManualPointsAdjustmentHandler.php';
 require_once __DIR__ . '/src/Points/PointsTable.php';
 require_once __DIR__ . '/src/Points/HistoryPaginationRequestService.php';
+require_once __DIR__ . '/src/Points/PointsHistoryRenderer.php';
+require_once __DIR__ . '/src/Points/points-history-functions.php';
 require_once __DIR__ . '/src/Points/PointsHistoryAjaxHandler.php';
 require_once __DIR__ . '/src/Points/ConversionHistoryAjaxHandler.php';
 require_once __DIR__ . '/src/Points/ConversionModalRenderer.php';

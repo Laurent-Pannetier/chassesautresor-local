@@ -990,6 +990,23 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('return cat_get_conversion_service()->getRequests(', $conversions);
     }
 
+    public function testPointsHistoryRenderingIsNotInjectedByTheme(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/gamify-functions.php');
+        $handler = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Points/PointsHistoryAjaxHandler.php'
+        );
+        $renderer = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Points/PointsHistoryRenderer.php'
+        );
+
+        self::assertStringNotContainsString('PointsHistoryAjaxHandler::configure', $source);
+        self::assertStringNotContainsString('function cat_render_points_history_rows', $source);
+        self::assertStringNotContainsString('function format_points_history_reason', $source);
+        self::assertStringContainsString("[new PointsHistoryRenderer(), 'rows']", $handler);
+        self::assertStringContainsString('class PointsHistoryRenderer', $renderer);
+    }
+
     public function testEngagedHuntsBusinessCallbacksAreNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/user-functions.php');
