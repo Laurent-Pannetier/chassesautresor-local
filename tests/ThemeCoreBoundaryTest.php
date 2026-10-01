@@ -688,6 +688,15 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('chassesautresor_hunt_status_stale_check_requested', $source);
     }
 
+    public function testThemeDoesNotResolveProtectedImagePaths(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/visuels.php');
+
+        self::assertStringNotContainsString('function trouver_chemin_image', $source);
+        self::assertStringNotContainsString("'trouver_chemin_image'", $source);
+        self::assertStringNotContainsString('wp_cache_set(', $source);
+    }
+
     public function testRiddleStatisticsAccessIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/stats.php');

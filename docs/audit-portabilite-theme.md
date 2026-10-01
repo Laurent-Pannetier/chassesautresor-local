@@ -243,6 +243,11 @@ maintenant directement `HuntStatusUpdater` dans le plugin au lieu d'émettre un 
 dans `statut-functions.php`. La normalisation des valeurs ACF du lot précédent accepte aussi explicitement les ID,
 tableaux et objets WordPress renvoyés selon le format du champ.
 
+Le cinquante-cinquième lot a transféré au plugin la résolution locale des images protégées. La sélection de la taille,
+la préférence WebP, le repli vers l'original, la détection MIME et le cache objet appartiennent maintenant à
+`ProtectedImagePathService`. La fonction globale historique reste disponible depuis le core pour les vues existantes,
+mais `inc/enigme/visuels.php` ne contient plus cette lecture de fichiers ni ses six écritures de cache.
+
 ### Inventaire reproductible au 1er octobre 2026
 
 Les recherches ci-dessous portent sur les fichiers de production du thème (les fixtures sous `tests/` sont exclues).
@@ -261,7 +266,7 @@ Résultats obtenus après ce lot :
 
 - **69 enregistrements de hooks** demeurent dans le thème. Leur revue ligne par ligne ne trouve **plus aucun hook métier**. Les 69 hooks concernent le rendu,
   l'intégration Astra/WooCommerce/ACF, les shortcodes ou le chargement d'assets ;
-- **10 écritures** demeurent : toutes sont des constructions de cache pendant le rendu (**9 `wp_cache_set` et un
+- **5 écritures** demeurent : toutes sont des constructions de cache pendant le rendu (**4 `wp_cache_set` et un
   `set_transient`**). Il ne reste aucune écriture SQL ou de contenu détectée et aucune planification de tâche dans le
   thème ;
 - **5 filtres ACF** demeurent après retrait du filtre métier de condition d'accès. Ils préparent ou formatent des
@@ -279,12 +284,12 @@ Résultats obtenus après ce lot :
 
 Une grille fixe, plutôt qu'un décompte des lots, est utilisée. Pour l'extraction PHP, les cinq axes ont le même poids :
 propriété des hooks métier, absence de mutations dans le rendu, politiques d'accès, autonomie vis-à-vis des fonctions
-globales du thème et séparation des view-models. Les preuves ci-dessus donnent respectivement 100 %, 55 %, 100 %,
-100 % et 35 %, soit **environ 78 % pour l'extraction du métier PHP inventorié**.
+globales du thème et séparation des view-models. Les preuves ci-dessus donnent respectivement 100 %, 75 %, 100 %,
+100 % et 35 %, soit **environ 82 % pour l'extraction du métier PHP inventorié**.
 
 Pour la remplaçabilité, la grille pondère l'extraction PHP à 40 %, la présence de parcours de secours à 25 %, les
 assets indépendants à 15 %, l'absence de callbacks de rendu fournis par le thème à 10 % et une recette neutre réussie
-à 10 %. Seul le premier axe est partiellement satisfait : **environ 31 % de remplaçabilité effective du thème**.
+à 10 %. Seul le premier axe est partiellement satisfait : **environ 33 % de remplaçabilité effective du thème**.
 
 Ces deux valeurs sont des estimations prudentes et reproductibles à partir de la grille déclarée. Elles ne reprennent
 ni l'ancienne valeur de 98 %, ni automatiquement les ordres de grandeur de 90 % et 70 %. Les compteurs mesurent une

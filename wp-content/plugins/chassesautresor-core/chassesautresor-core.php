@@ -118,6 +118,8 @@ require_once __DIR__ . '/src/Relationships/HuntRiddleCacheService.php';
 require_once __DIR__ . '/src/Relationships/HuntRiddleCacheSynchronizer.php';
 require_once __DIR__ . '/src/Media/RiddleImageRepository.php';
 require_once __DIR__ . '/src/Media/RiddleImageService.php';
+require_once __DIR__ . '/src/Media/ProtectedImagePathService.php';
+require_once __DIR__ . '/src/Media/protected-image-functions.php';
 require_once __DIR__ . '/src/Media/RiddleUploadDirectoryService.php';
 require_once __DIR__ . '/src/Media/RiddleImageProtectionService.php';
 require_once __DIR__ . '/src/Media/RiddleImageProtectionAjaxHandler.php';

@@ -26,6 +26,7 @@ class TrouverCheminImageFullTest extends TestCase
         file_put_contents($filePath, 'test');
 
         $capturedSize = null;
+        $GLOBALS['protected_image_cache'] = [];
 
         ini_set('error_log', sys_get_temp_dir() . '/phpunit-error.log');
 
@@ -49,7 +50,27 @@ class TrouverCheminImageFullTest extends TestCase
             }
         }
 
-        require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/enigme/visuels.php';
+        if (!function_exists('wp_cache_get')) {
+            function wp_cache_get($key, $group, $force = false, &$found = null)
+            {
+                $cacheKey = $group . ':' . $key;
+                $found = array_key_exists($cacheKey, $GLOBALS['protected_image_cache']);
+                return $found ? $GLOBALS['protected_image_cache'][$cacheKey] : false;
+            }
+        }
+
+        if (!function_exists('wp_cache_set')) {
+            function wp_cache_set($key, $value, $group): bool
+            {
+                $GLOBALS['protected_image_cache'][$group . ':' . $key] = $value;
+                return true;
+            }
+        }
+
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Media/ProtectedImagePathService.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Media/protected-image-functions.php';
 
         $result = trouver_chemin_image(1, 'full');
 
