@@ -12,20 +12,24 @@ Changer de thème en laissant uniquement le plugin actif altérerait des fonctio
 pas être effectué en production avant la migration des responsabilités résiduelles décrites ci-dessous et un test
 de recette avec un thème neutre.
 
+## Avancement de la migration
+
+Le premier lot issu de cet audit a supprimé les anciens workflows métier inutilisés de gestion des organisateurs,
+de comptabilisation des paiements, de réinitialisation des énigmes et de souscription aux chasses. L’attribution du
+rôle temporaire `organisateur_creation`, encore active, appartient désormais au plugin et son hook est couvert par
+un test de propriété. Une garde automatisée interdit désormais le retour d’écritures métier directes dans le thème.
+
+Estimation après ce lot : **78 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
+responsabilités fonctionnelles recensées (persistance, accès, routes, traitements, notifications et cache), et non
+sur le nombre de lignes. Il sera réévalué après chaque lot.
+
 ## Éléments bloquants observés
 
 ### Écritures métier encore exécutées par le thème
 
-- `inc/admin-functions.php` accepte ou refuse une demande d'organisateur, publie ou supprime le contenu, modifie
-  les rôles et envoie les courriels associés (`gerer_organisateur()`).
-- Le même fichier maintient le total mensuel des paiements et contient le workflow de réinitialisation d'une énigme,
-  avec suppression de métadonnées utilisateur et modification du statut d'une chasse.
-- `inc/chasse-functions.php` enregistre encore directement la souscription d'un joueur et incrémente son compteur
-  (`verifier_souscription_chasse()`).
-- `inc/user-functions.php` attribue encore le rôle `organisateur_creation` depuis un hook `save_post`.
 - `inc/enigme/affichage.php` persiste une version de cache de permissions depuis plusieurs hooks liés aux utilisateurs.
 
-Ces opérations ont un effet fonctionnel ou persistant et ne seront plus chargées après l'activation d'un autre thème.
+Cette opération a un effet persistant et ne sera plus chargée après l’activation d’un autre thème.
 
 ### Contrôleurs, politiques et routes encore attachés au thème
 
