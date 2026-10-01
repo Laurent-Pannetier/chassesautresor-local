@@ -1197,6 +1197,29 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringContainsString("__('Produit inconnu', 'chassesautresor-com')", $renderer);
     }
 
+    public function testAdminAndPointsCompatibilityControllersBelongToCore(): void
+    {
+        $adminTheme = (string) file_get_contents(self::THEME_PATH . '/inc/admin-functions.php');
+        $pointsTheme = (string) file_get_contents(self::THEME_PATH . '/inc/gamify-functions.php');
+        $adminCore = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Admin/admin-ajax-functions.php'
+        );
+        $pointsCore = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Points/point-service-functions.php'
+        );
+
+        foreach (['rechercher_utilisateur_ajax', 'ajax_update_request_status', 'cta_reset_stats'] as $functionName) {
+            self::assertStringNotContainsString("function {$functionName}(", $adminTheme);
+            self::assertStringContainsString("function {$functionName}(", $adminCore);
+        }
+        foreach (['attribuer_points_apres_achat', 'utilisateur_a_assez_de_points',
+            'deduire_points_utilisateur', 'ajouter_points_utilisateur'] as $functionName) {
+            self::assertStringNotContainsString("function {$functionName}(", $pointsTheme);
+            self::assertStringContainsString("function {$functionName}(", $pointsCore);
+        }
+        self::assertStringNotContainsString('function recuperer_organisateurs_en_creation(', $adminTheme);
+    }
+
     public function testConversionSettingsPolicyBelongsToCore(): void
     {
         $theme = (string) file_get_contents(self::THEME_PATH . '/inc/admin-functions.php');

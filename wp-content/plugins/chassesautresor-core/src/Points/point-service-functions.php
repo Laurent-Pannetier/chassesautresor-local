@@ -36,3 +36,40 @@ if (!function_exists('get_user_points')) {
         return $userId > 0 ? cat_get_points_service()->getBalance($userId) : 0;
     }
 }
+
+if (!function_exists('attribuer_points_apres_achat')) {
+    function attribuer_points_apres_achat($orderId): void {
+        $order = wc_get_order($orderId);
+        cat_get_purchase_points_service()->awardOrder($order);
+    }
+}
+
+if (!function_exists('utilisateur_a_assez_de_points')) {
+    function utilisateur_a_assez_de_points(int $userId, int $amount): bool {
+        return cat_get_points_service()->hasEnough($userId, $amount);
+    }
+}
+
+if (!function_exists('deduire_points_utilisateur')) {
+    function deduire_points_utilisateur(
+        int $userId,
+        int $amount,
+        string $reason = '',
+        string $originType = 'admin',
+        ?int $originId = null
+    ): void {
+        cat_get_points_service()->deduct($userId, $amount, $reason, $originType, $originId);
+    }
+}
+
+if (!function_exists('ajouter_points_utilisateur')) {
+    function ajouter_points_utilisateur(
+        int $userId,
+        int $amount,
+        string $reason = '',
+        string $originType = 'admin',
+        ?int $originId = null
+    ): void {
+        cat_get_points_service()->add($userId, $amount, $reason, $originType, $originId);
+    }
+}

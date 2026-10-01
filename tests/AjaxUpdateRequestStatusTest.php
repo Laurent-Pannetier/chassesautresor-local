@@ -100,6 +100,7 @@ if (!function_exists('cat_get_conversion_service')) {
 require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Admin/AdminStatisticsResetService.php';
 require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Admin/AdminAjaxHandler.php';
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/admin-functions.php';
+require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Admin/admin-ajax-functions.php';
 
 \ChassesAuTresor\Core\Admin\AdminAjaxHandler::setConversionServiceFactory(
     static fn (): AjaxConversionService => new AjaxConversionService()

@@ -32,6 +32,7 @@ require_once __DIR__ . '/src/Points/PointsRepository.php';
 require_once __DIR__ . '/src/Admin/AdminStatisticsResetService.php';
 require_once __DIR__ . '/src/Admin/AdminPaymentRenderer.php';
 require_once __DIR__ . '/src/Admin/admin-payment-functions.php';
+require_once __DIR__ . '/src/Admin/admin-ajax-functions.php';
 require_once __DIR__ . '/src/Admin/AdminAjaxHandler.php';
 require_once __DIR__ . '/src/Points/PointsService.php';
 require_once __DIR__ . '/src/Points/PurchasePointsService.php';

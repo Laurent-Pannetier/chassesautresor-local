@@ -562,6 +562,12 @@ le formulaire de réponse manuelle sont maintenant enregistrés par `CoreShortco
 portables. La politique de statut et le contexte de coût/solde du formulaire rejoignent
 `RiddleAnswerContextService`; le thème conserve uniquement son formulaire enrichi et ses assets lorsqu'il est actif.
 
+Le cent-dix-septième lot regroupe le nettoyage des façades administratives et de points. Six contrôleurs historiques
+AJAX délèguent désormais depuis `Admin/admin-ajax-functions.php`, et les quatre façades d'achat, contrôle, débit et
+crédit de points vivent avec `point-service-functions.php`. Les collecteurs d'organisateurs en création, sans appelant
+de production depuis l'autonomisation de la section compte, sont supprimés plutôt que déplacés. Les fichiers du thème
+ne conservent que leurs scripts, outils de diagnostic et rendus encore utilisés.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |
