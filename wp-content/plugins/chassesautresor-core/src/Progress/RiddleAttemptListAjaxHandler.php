@@ -4,18 +4,14 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Progress;
 
+use ChassesAuTresor\Core\Support\CoreServiceFactory;
+
 /**
  * Validate and paginate attempt lists while delegating HTML rendering to the theme.
  */
 class RiddleAttemptListAjaxHandler {
     /** @var callable|null */
     private static $canModify;
-
-    /** @var callable|null */
-    private static $attemptLoader;
-
-    /** @var callable|null */
-    private static $attemptCounter;
 
     /** @var callable|null */
     private static $renderer;
@@ -26,21 +22,15 @@ class RiddleAttemptListAjaxHandler {
 
     public static function configure(
         callable $canModify,
-        callable $attemptLoader,
-        callable $attemptCounter,
         callable $renderer
     ): void {
         self::$canModify = $canModify;
-        self::$attemptLoader = $attemptLoader;
-        self::$attemptCounter = $attemptCounter;
         self::$renderer = $renderer;
     }
 
     public static function handle(): void {
         $riddleId = isset($_POST['enigme_id']) ? (int) $_POST['enigme_id'] : 0;
         $dependenciesReady = is_callable(self::$canModify)
-            && is_callable(self::$attemptLoader)
-            && is_callable(self::$attemptCounter)
             && is_callable(self::$renderer);
         $canModify = $dependenciesReady && is_user_logged_in() && $riddleId > 0
             ? (bool) call_user_func(self::$canModify, $riddleId)
@@ -59,13 +49,10 @@ class RiddleAttemptListAjaxHandler {
             wp_send_json_error('acces_refuse');
         }
 
-        $attempts = (array) call_user_func(
-            self::$attemptLoader,
-            $riddleId,
-            $request['per_page'],
-            $request['offset']
-        );
-        $total = (int) call_user_func(self::$attemptCounter, $riddleId);
+        global $wpdb;
+        $attemptService = CoreServiceFactory::riddleAttempts($wpdb);
+        $attempts = $attemptService->findForRiddle($riddleId, $request['per_page'], $request['offset']);
+        $total = $attemptService->countForRiddle($riddleId);
         $pages = (int) ceil($total / $request['per_page']);
         $html = (string) call_user_func(self::$renderer, [
             'tentatives' => $attempts,

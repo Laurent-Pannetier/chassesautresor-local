@@ -201,12 +201,6 @@ if (class_exists(ChassesAuTresor\Core\Progress\RiddleAttemptListAjaxHandler::cla
             return function_exists('utilisateur_peut_modifier_post')
                 && utilisateur_peut_modifier_post($riddle_id);
         },
-        static function (int $riddle_id, int $limit, int $offset): array {
-            return recuperer_tentatives_enigme($riddle_id, $limit, $offset);
-        },
-        static function (int $riddle_id): int {
-            return compter_tentatives_enigme($riddle_id);
-        },
         static function (array $arguments): string {
             return cat_render_riddle_attempt_list($arguments);
         }

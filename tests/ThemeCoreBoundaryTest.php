@@ -313,6 +313,21 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('recuperer_id_chasse_associee', $configuration);
     }
 
+    public function testRiddleAttemptPersistenceIsNotInjectedByTheme(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/tentatives.php');
+        preg_match(
+            '/RiddleAttemptListAjaxHandler::configure\([\s\S]*?^    \);/m',
+            $source,
+            $matches
+        );
+        $configuration = $matches[0] ?? null;
+
+        self::assertIsString($configuration);
+        self::assertStringNotContainsString('recuperer_tentatives_enigme', $configuration);
+        self::assertStringNotContainsString('compter_tentatives_enigme', $configuration);
+    }
+
     public function testThemeDoesNotOwnHuntModerationEmails(): void
     {
         $violations = $this->findPhpMatches(

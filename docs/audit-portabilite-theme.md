@@ -61,7 +61,10 @@ fournis par le thème.
 Le quinzième lot a retiré du thème les politiques d’autorisation et de résolution de relation utilisées par
 l’annulation et le rafraîchissement de la validation d’une chasse. Le thème ne fournit plus que le rendu HTML du CTA.
 
-Estimation après ce lot : **99,8 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
+Le seizième lot a supprimé les callbacks de lecture et de comptage des tentatives injectés par le thème. Le contrôleur
+du plugin interroge désormais directement son service métier et ne délègue au thème que l’autorisation et le rendu.
+
+Estimation après ce lot : **99,9 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
 responsabilités fonctionnelles recensées (persistance, accès, routes, traitements, notifications et cache), et non
 sur le nombre de lignes. Il sera réévalué après chaque lot.
 
