@@ -1,15 +1,6 @@
 <?php
 defined('ABSPATH') || exit;
 
-if (!function_exists('cat_get_riddle_attempt_service')) {
-    function cat_get_riddle_attempt_service(): ChassesAuTresor\Core\Progress\RiddleAttemptService
-    {
-        global $wpdb;
-        return ChassesAuTresor\Core\Support\CoreServiceFactory::riddleAttempts($wpdb);
-    }
-}
-
-
     // ==================================================
     // 📊 GESTION DES TENTATIVES UTILISATEUR
     // ==================================================
@@ -180,11 +171,6 @@ function ajax_lister_tentatives_enigme(): void
  * @param int $enigme_id ID de l'énigme.
  * @return int Nombre de tentatives non traitées.
  */
-function compter_tentatives_en_attente(int $enigme_id): int
-{
-    return cat_get_riddle_attempt_service()->countPendingForRiddle($enigme_id);
-}
-
 /**
  * Récupère les énigmes ayant des tentatives manuelles en attente pour un organisateur.
  *

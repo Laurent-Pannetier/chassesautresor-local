@@ -1289,6 +1289,22 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringContainsString('class AccountToolsRenderer', $renderer);
     }
 
+    public function testOrganizerModerationAttemptHelpersBelongToCore(): void
+    {
+        $attempts = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/tentatives.php');
+        $cta = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/cta.php');
+        $core = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/riddle-attempt-functions.php'
+        );
+
+        foreach (['cat_get_riddle_attempt_service', 'compter_tentatives_en_attente'] as $functionName) {
+            self::assertStringNotContainsString("function {$functionName}(", $attempts);
+            self::assertStringContainsString("function {$functionName}(", $core);
+        }
+        self::assertStringNotContainsString('function enigme_normaliser_mode_validation(', $cta);
+        self::assertStringContainsString('function enigme_normaliser_mode_validation(', $core);
+    }
+
     public function testThemeDoesNotOwnHuntModerationEmails(): void
     {
         $violations = $this->findPhpMatches(

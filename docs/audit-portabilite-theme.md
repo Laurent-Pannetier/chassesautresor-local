@@ -432,6 +432,11 @@ Le quatre-vingt-treizième lot déplace à son tour la section administrative «
 Seule la section « Organisateurs » empêche encore l'autonomie du contrôleur AJAX commun ; les indicateurs restent
 inchangés jusqu'à son extraction effective.
 
+Le quatre-vingt-quatorzième lot prépare cette dernière extraction en transférant au plugin la fabrique du service de
+tentatives, le compteur des tentatives manuelles en attente et la normalisation du mode de validation. La collecte des
+données de modération des organisateurs ne dépend donc plus de ces trois fonctions déclarées dans les vues d'énigme.
+La configuration résiduelle et les indicateurs restent inchangés jusqu'au déplacement du collecteur et du tableau.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |
