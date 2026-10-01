@@ -19,7 +19,7 @@ considérées comme de la logique métier résiduelle ; elles restent toutefois 
 
 ## Avancement au 1er octobre 2026
 
-**Estimation : 96 % de la migration métier est terminée.** Cette valeur est une estimation architecturale, pas un
+**Estimation : 97 % de la migration métier est terminée.** Cette valeur est une estimation architecturale, pas un
 ratio de lignes : elle pondère la couverture des domaines Core, l'indépendance des points d'entrée WordPress, la
 propriété de la persistance, l'absence d'effets de bord dans les vues et la couverture de tests.
 
@@ -45,13 +45,15 @@ Le lot de migration associé à cet audit a sorti du thème :
 - le contrôleur du template d'engagement d'une chasse ;
 - les mutations de maintenance des tentatives et statuts d'énigme ;
 - la décision métier du CTA de candidature organisateur.
+- l'exécution complète de la modération administrative, qui n'est plus configurée ni exécutée par le thème ;
+- le contrôleur historique de demande de validation, dont le template délègue désormais à une route Core.
 
 ### Prochain lot recommandé (taille maximale raisonnable)
 
-Migrer en un gros lot les **dernières mutations de progression et réponse** : supprimer l'exécuteur de modération
-configuré par le thème, déplacer le traitement de validation historique, la soumission manuelle des réponses et le
-hook de fin de chasse. Ce lot fermera les derniers contrôleurs applicatifs prioritaires encore chargés par le thème.
-Cible après ce lot : **98 %**.
+Migrer en un gros lot les **dernières mutations de progression et réponse** : rendre autonomes la soumission
+manuelle des réponses, le hook de fin de chasse et leurs dépendances de persistance encore exposées sous forme de
+fonctions globales. Le même lot supprimera les derniers appels Core vers les helpers de relation du thème. Cible
+après ce lot : **98 %**.
 
 ## Critères utilisés
 

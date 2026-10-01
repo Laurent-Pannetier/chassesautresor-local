@@ -172,6 +172,7 @@ require_once __DIR__ . '/src/Content/HuntRewardMutationService.php';
 require_once __DIR__ . '/src/Content/HuntFieldMutationService.php';
 require_once __DIR__ . '/src/Content/HuntFieldMutationAjaxHandler.php';
 require_once __DIR__ . '/src/Content/HuntClosureService.php';
+require_once __DIR__ . '/src/Content/HuntValidationRequestRouteHandler.php';
 require_once __DIR__ . '/src/Content/HuntCreationRequestService.php';
 require_once __DIR__ . '/src/Content/HuntPostFactory.php';
 require_once __DIR__ . '/src/Content/HuntCreationRouteHandler.php';

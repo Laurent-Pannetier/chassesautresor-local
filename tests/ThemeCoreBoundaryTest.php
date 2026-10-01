@@ -76,11 +76,23 @@ final class ThemeCoreBoundaryTest extends TestCase
         $path = self::THEME_PATH . '/inc/admin-functions.php';
         $contents = (string) file_get_contents($path);
 
-        self::assertStringContainsString('HuntModerationService', $contents);
+        self::assertStringNotContainsString('HuntModerationService', $contents);
         self::assertStringNotContainsString(
             "add_action('admin_post_traiter_validation_chasse'",
             $contents
         );
+        self::assertStringNotContainsString('traiter_validation_chasse_admin', $contents);
+        self::assertStringNotContainsString('HuntModerationRequestHandler::configure', $contents);
+    }
+
+    public function testHuntValidationTemplateDelegatesToCore(): void
+    {
+        $path = self::THEME_PATH . '/templates/page-traitement-validation-chasse.php';
+        $contents = (string) file_get_contents($path);
+
+        self::assertStringContainsString('HuntValidationRequestRouteHandler::handle()', $contents);
+        self::assertStringNotContainsString('update_field(', $contents);
+        self::assertStringNotContainsString('wp_verify_nonce(', $contents);
     }
 
     public function testThemeDoesNotRegisterOrganizerConfirmationRoutes(): void
