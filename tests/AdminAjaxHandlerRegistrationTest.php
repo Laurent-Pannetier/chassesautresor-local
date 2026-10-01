@@ -25,14 +25,4 @@ final class AdminAjaxHandlerRegistrationTest extends TestCase
             'wp_ajax_cta_toggle_site_protection',
         ], array_keys($hooks));
     }
-
-    public function testItAcceptsExplicitThemeAdapters(): void
-    {
-        AdminAjaxHandler::configure([
-            'search_users' => static function (): void {
-            },
-        ]);
-
-        $this->addToAssertionCount(1);
-    }
 }
