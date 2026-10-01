@@ -23,10 +23,8 @@ final class RiddleSidebarAjaxHandlerTest extends TestCase {
 
     public function testAcceptsDeferredThemeCallbacks(): void {
         RiddleSidebarAjaxHandler::configure(
-            static fn (): int => 0,
             static fn (): string => '',
-            static fn (): string => '',
-            static function (): void {}
+            static fn (): string => ''
         );
         $this->addToAssertionCount(1);
     }

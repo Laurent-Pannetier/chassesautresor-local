@@ -91,7 +91,10 @@ en cours, délai depuis le dernier règlement, solde minimal et coordonnées ban
 Le vingt-cinquième lot a transféré au plugin l’autorisation de navigation dans une chasse selon le rôle, l’association
 à l’organisateur et l’engagement du joueur. Le thème ne fournit plus que la construction visuelle du menu.
 
-Estimation après ce lot : **99,9997 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
+Le vingt-sixième lot a transféré au plugin la résolution de la chasse et l’invalidation des caches utilisées par la
+progression latérale des énigmes. Le thème ne fournit plus que les deux fragments HTML.
+
+Estimation après ce lot : **99,9998 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
 responsabilités fonctionnelles recensées (persistance, accès, routes, traitements, notifications et cache), et non
 sur le nombre de lignes. Il sera réévalué après chaque lot.
 

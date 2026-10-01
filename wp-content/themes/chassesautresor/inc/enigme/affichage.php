@@ -946,7 +946,6 @@ if (!function_exists('cat_get_riddle_statistics_service')) {
 
     if (class_exists(ChassesAuTresor\Core\Progress\RiddleSidebarAjaxHandler::class)) {
         ChassesAuTresor\Core\Progress\RiddleSidebarAjaxHandler::configure(
-            static fn (int $riddle_id): int => (int) recuperer_id_chasse_associee($riddle_id),
             static function (int $riddle_id, int $user_id, int $page): string {
                 return enigme_sidebar_gagnants_html($riddle_id, $user_id, $page);
             },
@@ -955,10 +954,6 @@ if (!function_exists('cat_get_riddle_statistics_service')) {
                 $html .= enigme_sidebar_metas_html($riddle_id);
                 $html .= enigme_sidebar_progression_html($hunt_id, $user_id);
                 return $html . enigme_sidebar_resolution_html($riddle_id);
-            },
-            static function (int $hunt_id, int $riddle_id, int $user_id): void {
-                ChassesAuTresor\Core\Content\RiddleRenderCacheHookHandler::clearSidebar($hunt_id, $user_id);
-                wp_cache_delete('enigme_sidebar_resolution_' . $riddle_id, 'chassesautresor');
             }
         );
     }

@@ -407,6 +407,18 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('utilisateur_est_engage_dans_chasse', $configuration);
     }
 
+    public function testRiddleSidebarBusinessCallbacksAreNotInjectedByTheme(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/affichage.php');
+        preg_match('/RiddleSidebarAjaxHandler::configure\([\s\S]*?^        \);/m', $source, $matches);
+        $configuration = $matches[0] ?? null;
+
+        self::assertIsString($configuration);
+        self::assertStringNotContainsString('recuperer_id_chasse_associee', $configuration);
+        self::assertStringNotContainsString('RiddleRenderCacheHookHandler', $configuration);
+        self::assertStringNotContainsString('wp_cache_delete', $configuration);
+    }
+
     public function testThemeDoesNotOwnHuntModerationEmails(): void
     {
         $violations = $this->findPhpMatches(

@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Progress;
 
+use ChassesAuTresor\Core\Content\RiddleRenderCacheHookHandler;
+use ChassesAuTresor\Core\Relationships\RelationshipService;
+
 /** AJAX transport for winners and player progression sidebar fragments. */
 class RiddleSidebarAjaxHandler {
-    private static $huntResolver;
     private static $winnersRenderer;
     private static $progressionRenderer;
-    private static $cacheClearer;
 
     public static function register(callable $addAction): void {
         $addAction('wp_ajax_enigme_recuperer_gagnants', [self::class, 'winners']);
@@ -19,15 +20,11 @@ class RiddleSidebarAjaxHandler {
     }
 
     public static function configure(
-        callable $huntResolver,
         callable $winnersRenderer,
-        callable $progressionRenderer,
-        callable $cacheClearer
+        callable $progressionRenderer
     ): void {
-        self::$huntResolver = $huntResolver;
         self::$winnersRenderer = $winnersRenderer;
         self::$progressionRenderer = $progressionRenderer;
-        self::$cacheClearer = $cacheClearer;
     }
 
     public static function winners(): void {
@@ -59,9 +56,9 @@ class RiddleSidebarAjaxHandler {
     public static function progression(): void {
         $huntId = isset($_POST['chasse_id']) ? (int) $_POST['chasse_id'] : 0;
         $riddleId = isset($_POST['enigme_id']) ? (int) $_POST['enigme_id'] : 0;
-        $relatedHuntId = is_callable(self::$huntResolver)
-            ? (int) call_user_func(self::$huntResolver, $riddleId)
-            : 0;
+        $relatedHuntId = (int) ((new RelationshipService())->normalizeId(
+            get_field('enigme_chasse_associee', $riddleId)
+        ) ?? 0);
         $error = (new RiddleSidebarRequestPolicy())->progression(
             is_user_logged_in(),
             self::nonceValid(),
@@ -74,12 +71,13 @@ class RiddleSidebarAjaxHandler {
         if ($error !== null) {
             wp_send_json_error($error, $error === 'non_connecte' || $error === 'invalid_nonce' ? 403 : 400);
         }
-        if (!is_callable(self::$progressionRenderer) || !is_callable(self::$cacheClearer)) {
+        if (!is_callable(self::$progressionRenderer)) {
             wp_send_json_error('missing_chasse', 400);
         }
 
         $userId = (int) get_current_user_id();
-        call_user_func(self::$cacheClearer, $huntId, $riddleId, $userId);
+        RiddleRenderCacheHookHandler::clearSidebar($huntId, $userId);
+        wp_cache_delete('enigme_sidebar_resolution_' . $riddleId, 'chassesautresor');
         wp_send_json_success([
             'html' => (string) call_user_func(self::$progressionRenderer, $huntId, $riddleId, $userId),
         ]);
