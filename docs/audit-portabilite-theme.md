@@ -260,6 +260,10 @@ Le cinquante-huitième lot a supprimé les trois dépendances globales restantes
 et l'organisateur sont maintenant résolus par les services de relation du plugin, et la suppression réutilise le
 workflow autonome de `HuntDeletionAjaxHandler`. Le chemin de modération ne dépend donc plus du thème.
 
+Le cinquante-neuvième lot a déplacé dans le plugin la persistance du view-model d'affichage d'une chasse. Le thème
+continue provisoirement à assembler ce modèle, mais sa lecture et ses écritures dans le cache objet et le transient
+passent désormais par `HuntDisplayViewCacheService`. Une seule écriture de cache, strictement HTML, reste dans le thème.
+
 ### Inventaire reproductible au 1er octobre 2026
 
 Les recherches ci-dessous portent sur les fichiers de production du thème (les fixtures sous `tests/` sont exclues).
@@ -278,8 +282,7 @@ Résultats obtenus après ce lot :
 
 - **69 enregistrements de hooks** demeurent dans le thème. Leur revue ligne par ligne ne trouve **plus aucun hook métier**. Les 69 hooks concernent le rendu,
   l'intégration Astra/WooCommerce/ACF, les shortcodes ou le chargement d'assets ;
-- **3 écritures** demeurent : toutes sont des constructions de cache pendant le rendu (**2 `wp_cache_set` et un
-  `set_transient`**). Il ne reste aucune écriture SQL ou de contenu détectée et aucune planification de tâche dans le
+- **1 écriture** demeure : le `wp_cache_set` restant mémorise un fragment HTML de solution pendant le rendu. Il ne reste aucune écriture SQL ou de contenu détectée et aucune planification de tâche dans le
   thème ;
 - **5 filtres ACF** demeurent après retrait du filtre métier de condition d'accès. Ils préparent ou formatent des
   champs de présentation ; aucune autre politique d'accès ACF enregistrée par le thème n'a été trouvée ;
@@ -296,8 +299,8 @@ Résultats obtenus après ce lot :
 
 Une grille fixe, plutôt qu'un décompte des lots, est utilisée. Pour l'extraction PHP, les cinq axes ont le même poids :
 propriété des hooks métier, absence de mutations dans le rendu, politiques d'accès, autonomie vis-à-vis des fonctions
-globales du thème et séparation des view-models. Les preuves ci-dessus donnent respectivement 100 %, 88 %, 100 %,
-100 % et 35 %, soit **environ 85 % pour l'extraction du métier PHP inventorié**.
+globales du thème et séparation des view-models. Les preuves ci-dessus donnent respectivement 100 %, 96 %, 100 %,
+100 % et 35 %, soit **environ 86 % pour l'extraction du métier PHP inventorié**.
 
 Pour la remplaçabilité, la grille pondère l'extraction PHP à 40 %, la présence de parcours de secours à 25 %, les
 assets indépendants à 15 %, l'absence de callbacks de rendu fournis par le thème à 10 % et une recette neutre réussie

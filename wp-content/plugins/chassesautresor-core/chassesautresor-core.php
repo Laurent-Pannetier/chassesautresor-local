@@ -211,6 +211,7 @@ require_once __DIR__ . '/src/Content/HuntValidationRequestRouteHandler.php';
 require_once __DIR__ . '/src/Content/HuntWelcomeModalViewHookHandler.php';
 require_once __DIR__ . '/src/Content/HuntViewMaintenanceHookHandler.php';
 require_once __DIR__ . '/src/Content/HuntDisplayCacheInvalidationHookHandler.php';
+require_once __DIR__ . '/src/Content/HuntDisplayViewCacheService.php';
 require_once __DIR__ . '/src/Content/HuntCreationRequestService.php';
 require_once __DIR__ . '/src/Content/HuntPostFactory.php';
 require_once __DIR__ . '/src/Content/HuntCreationRouteHandler.php';

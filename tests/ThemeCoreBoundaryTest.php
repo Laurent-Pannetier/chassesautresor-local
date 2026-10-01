@@ -726,6 +726,15 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('chasse_calculer_taux_engagement(', $source);
     }
 
+    public function testThemeDoesNotPersistHuntDisplayViewModels(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/chasse-functions.php');
+
+        self::assertStringNotContainsString("wp_cache_set(\$cache_key", $source);
+        self::assertStringNotContainsString("set_transient(\$cache_key", $source);
+        self::assertStringContainsString('HuntDisplayViewCacheService', $source);
+    }
+
     public function testRiddleStatisticsAccessIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/stats.php');

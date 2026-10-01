@@ -1756,15 +1756,10 @@ function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): 
         return $memo[$memo_key];
     }
 
-    $cache_key = 'chasse_infos_affichage_v2_' . $chasse_id;
-    $cache     = wp_cache_get($cache_key, 'chasse_affichage');
-    if (!is_array($cache)) {
-        $cache = get_transient($cache_key);
-        $cache = is_array($cache) ? $cache : [];
-    }
-
-    if (isset($cache[$user_id])) {
-        $memo[$memo_key] = $cache[$user_id];
+    $cache = new ChassesAuTresor\Core\Content\HuntDisplayViewCacheService();
+    $cachedData = $cache->get($chasse_id, $user_id);
+    if ($cachedData !== null) {
+        $memo[$memo_key] = $cachedData;
         return $memo[$memo_key];
     }
 
@@ -1873,10 +1868,7 @@ function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): 
         'date_fin_court'    => $dates_courtes['date_fin_court'],
     ];
 
-    $cache[$user_id] = $memo[$memo_key];
-    $ttl             = HOUR_IN_SECONDS;
-    wp_cache_set($cache_key, $cache, 'chasse_affichage', $ttl);
-    set_transient($cache_key, $cache, $ttl);
+    $cache->put($chasse_id, $user_id, $memo[$memo_key]);
 
     return $memo[$memo_key];
 }
