@@ -21,64 +21,6 @@ if (!function_exists('cat_get_riddle_statistics_service')) {
      */
 
     /**
-     * Clear solution caches when a solution is saved.
-     *
-     * @param int $solution_id Solution identifier.
-     */
-    function enigme_clear_render_cache_on_solution_save(int $solution_id): void
-    {
-        $target = get_field('solution_cible_type', $solution_id);
-
-        if ($target === 'enigme') {
-            $enigme_id = (int) get_field('solution_enigme_linked', $solution_id);
-            if ($enigme_id) {
-                ChassesAuTresor\Core\Content\RiddleRenderCacheHookHandler::clear($enigme_id);
-            }
-
-            return;
-        }
-
-        if ($target === 'chasse') {
-            $chasse_id = (int) get_field('solution_chasse_linked', $solution_id);
-            if ($chasse_id) {
-                $enigmes = recuperer_enigmes_pour_chasse($chasse_id);
-                foreach ($enigmes as $enigme) {
-                    ChassesAuTresor\Core\Content\RiddleRenderCacheHookHandler::clear((int) $enigme->ID);
-                }
-            }
-        }
-    }
-
-    add_action('save_post_solution', 'enigme_clear_render_cache_on_solution_save', 20, 1);
-    /**
-     * Clear sidebar caches for a given hunt and user.
-     *
-     * @param int $chasse_id Hunt identifier.
-     * @param int $user_id   User identifier.
-     */
-    function enigme_clear_sidebar_cache(int $chasse_id, int $user_id): void
-    {
-        wp_cache_delete('enigme_sidebar_progression_' . $chasse_id . '_' . $user_id, 'chassesautresor');
-    }
-
-    /**
-     * Clear sidebar caches when an enigma is solved.
-     *
-     * @param int $user_id   User identifier.
-     * @param int $enigme_id Enigma identifier.
-     */
-    function enigme_clear_sidebar_cache_on_solve(int $user_id, int $enigme_id): void
-    {
-        $chasse_id = recuperer_id_chasse_associee($enigme_id);
-        if ($chasse_id) {
-            enigme_clear_sidebar_cache($chasse_id, $user_id);
-        }
-        wp_cache_delete('enigme_sidebar_resolution_' . $enigme_id, 'chassesautresor');
-    }
-
-    add_action('enigme_resolue', 'enigme_clear_sidebar_cache_on_solve', 10, 2);
-
-    /**
      * Determine if the enigma menu should be displayed for a user.
      *
      * @param int    $user_id     User identifier.
@@ -1015,7 +957,7 @@ if (!function_exists('cat_get_riddle_statistics_service')) {
                 return $html . enigme_sidebar_resolution_html($riddle_id);
             },
             static function (int $hunt_id, int $riddle_id, int $user_id): void {
-                enigme_clear_sidebar_cache($hunt_id, $user_id);
+                ChassesAuTresor\Core\Content\RiddleRenderCacheHookHandler::clearSidebar($hunt_id, $user_id);
                 wp_cache_delete('enigme_sidebar_resolution_' . $riddle_id, 'chassesautresor');
             }
         );

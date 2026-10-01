@@ -31,7 +31,10 @@ d’invalidation liés aux contenus, rôles et métadonnées utilisateur.
 Le cinquième lot a transféré au plugin le template et les comportements des courriels d’inscription, de mot de passe
 oublié et de WooCommerce. Les fichiers historiques du thème ne sont plus que des chargeurs de compatibilité.
 
-Estimation après ce lot : **88 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
+Le sixième lot a terminé le transfert du cycle de vie du cache de rendu des énigmes : sauvegarde d’une solution,
+résolution d’une énigme et invalidation de la progression latérale.
+
+Estimation après ce lot : **89 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
 responsabilités fonctionnelles recensées (persistance, accès, routes, traitements, notifications et cache), et non
 sur le nombre de lignes. Il sera réévalué après chaque lot.
 

@@ -29,11 +29,19 @@ final class BusinessHookOwnershipTest extends TestCase
             }
         );
 
-        self::assertCount(8, $hooks);
+        self::assertCount(10, $hooks);
         self::assertSame(['save_post_enigme', [RiddleRenderCacheHookHandler::class, 'clear'], 10, 1], $hooks[0]);
         self::assertSame(
+            ['save_post_solution', [RiddleRenderCacheHookHandler::class, 'clearAfterSolutionSave'], 20, 1],
+            $hooks[1]
+        );
+        self::assertSame(
+            ['enigme_resolue', [RiddleRenderCacheHookHandler::class, 'clearAfterSolve'], 10, 2],
+            $hooks[2]
+        );
+        self::assertSame(
             ['updated_user_meta', [RiddleRenderCacheHookHandler::class, 'bumpPermissionsVersion'], 10, 4],
-            $hooks[6]
+            $hooks[8]
         );
     }
 

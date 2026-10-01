@@ -91,7 +91,10 @@ final class ThemeCoreBoundaryTest extends TestCase
     }
 
     public function testThemeDoesNotOwnRiddlePermissionCacheInvalidation(): void {
-        $violations = $this->findPhpMatches('/enigme_bump_permissions_cache_version|save_post_enigme/');
+        $violations = $this->findPhpMatches(
+            '/enigme_bump_permissions_cache_version|enigme_clear_render_cache_on_solution_save|'
+            . 'enigme_clear_sidebar_cache_on_solve|save_post_enigme/'
+        );
 
         self::assertSame([], $violations, $this->formatViolations($violations));
     }
