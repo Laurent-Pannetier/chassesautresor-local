@@ -672,6 +672,14 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('chassesautresor_can_manage_hint', $deletion);
     }
 
+    public function testThemeDoesNotOwnRiddleAccessConditionFieldPolicy(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/access-functions.php');
+
+        self::assertStringNotContainsString('acf/load_field/name=enigme_acces_condition', $source);
+        self::assertStringNotContainsString('recuperer_enigmes_possibles_pre_requis', $source);
+    }
+
     public function testRiddleStatisticsAccessIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/stats.php');

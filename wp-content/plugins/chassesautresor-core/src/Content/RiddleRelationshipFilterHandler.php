@@ -21,6 +21,12 @@ class RiddleRelationshipFilterHandler {
             10,
             3
         );
+        $addFilter(
+            'acf/load_field/name=enigme_acces_condition',
+            [self::class, 'limitAccessConditionChoices'],
+            10,
+            1
+        );
     }
 
     public static function prefillHuntField(array $field): array {
@@ -65,6 +71,38 @@ class RiddleRelationshipFilterHandler {
         );
 
         return $args;
+    }
+
+    public static function limitAccessConditionChoices(array $field): array {
+        global $post;
+
+        if (!$post || get_post_type($post->ID) !== 'enigme') {
+            return $field;
+        }
+
+        $huntId = self::huntIdForRiddle((int) $post->ID);
+        if ($huntId === 0 || self::eligiblePrerequisiteIds((int) $post->ID, $huntId) === []) {
+            unset($field['choices']['pre_requis']);
+        }
+
+        return $field;
+    }
+
+    /**
+     * @return int[]
+     */
+    private static function eligiblePrerequisiteIds(int $riddleId, int $huntId): array {
+        $cachedRiddles = get_field(RiddleCacheMutationService::FIELD_NAME, $huntId);
+        $validationModes = [];
+
+        foreach (is_array($cachedRiddles) ? $cachedRiddles : [] as $candidate) {
+            $candidateId = (int) $candidate;
+            if ($candidateId > 0 && get_post_type($candidateId) === 'enigme') {
+                $validationModes[$candidateId] = (string) get_field('enigme_mode_validation', $candidateId);
+            }
+        }
+
+        return (new RiddlePrerequisiteService())->getEligibleIds($riddleId, $validationModes);
     }
 
     private static function huntIdForRiddle(int $riddleId): int {

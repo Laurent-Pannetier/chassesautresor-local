@@ -13,6 +13,7 @@ use ChassesAuTresor\Core\Content\HuntViewMaintenanceHookHandler;
 use ChassesAuTresor\Core\Content\HuntDisplayCacheInvalidationHookHandler;
 use ChassesAuTresor\Core\Content\HuntModerationRequestHandler;
 use ChassesAuTresor\Core\Content\HintRelationshipFieldHookHandler;
+use ChassesAuTresor\Core\Content\RiddleRelationshipFilterHandler;
 use ChassesAuTresor\Core\Points\ConversionSettingsRequestHandler;
 use ChassesAuTresor\Core\Points\ConversionRequestHandler;
 use ChassesAuTresor\Core\Points\ManualPointsAdjustmentHandler;
@@ -27,6 +28,25 @@ use PHPUnit\Framework\TestCase;
 
 final class BusinessHookOwnershipTest extends TestCase
 {
+    public function testRiddleAccessConditionFieldPolicyIsRegisteredByCore(): void
+    {
+        $filters = [];
+        RiddleRelationshipFilterHandler::register(
+            static function (...$arguments) use (&$filters): void {
+                $filters[] = $arguments;
+            }
+        );
+
+        self::assertSame(
+            'acf/load_field/name=enigme_acces_condition',
+            $filters[2][0]
+        );
+        self::assertSame(
+            [RiddleRelationshipFilterHandler::class, 'limitAccessConditionChoices'],
+            $filters[2][1]
+        );
+    }
+
     public function testHintRelationshipFieldPolicyIsRegisteredByCore(): void
     {
         $filters = [];

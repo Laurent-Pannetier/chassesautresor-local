@@ -36,6 +36,12 @@ final class RiddleRelationshipFilterHandlerTest extends TestCase {
                 10,
                 3,
             ],
+            [
+                'acf/load_field/name=enigme_acces_condition',
+                [RiddleRelationshipFilterHandler::class, 'limitAccessConditionChoices'],
+                10,
+                1,
+            ],
         ], $filters);
     }
 }
