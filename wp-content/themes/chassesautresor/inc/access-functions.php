@@ -594,45 +594,6 @@ function champ_est_editable($champ, $post_id, $user_id = null)
 
 
 /**
- * Déclare un endpoint personnalisé `/voir-fichier/?id=1234`
- * 
- * Cet endpoint permet de sécuriser la consultation de fichiers PDF protégés
- * via un script PHP situé dans le thème (`inc/handlers/voir-fichier.php`).
- * 
- * Le fichier est servi uniquement si l’utilisateur est autorisé (admin, organisateur lié ou joueur ayant résolu).
- * 
- * 🔒 Le fichier réel n’est jamais exposé en URL publique. L’accès passe exclusivement par ce point.
- */
-add_action('init', function () {
-    add_rewrite_rule('^voir-fichier/?$', 'index.php?voir_fichier=1', 'top');
-}, 1);
-
-add_filter('query_vars', function ($vars) {
-    $vars[] = 'voir_fichier';
-    return $vars;
-});
-
-add_action('template_redirect', function () {
-    if (get_query_var('voir_fichier') !== '1') return;
-
-    $handler = get_stylesheet_directory() . '/inc/handlers/voir-fichier.php';
-    if (file_exists($handler)) {
-        require_once $handler;
-        exit;
-    }
-
-    status_header(404);
-    exit('Fichier de traitement non trouvé.');
-});
-
-add_action('init', function () {
-    if (isset($_GET['voir_fichier'])) {
-        cat_debug('[🔍 DEBUG] $_GET[voir_fichier] = ' . $_GET['voir_fichier']);
-    }
-});
-
-
-/**
  * Vérifie si un utilisateur a le droit de consulter la solution (PDF ou texte) d'une énigme
  *
  * @param int $post_id ID du post (énigme ou chasse)
@@ -719,43 +680,6 @@ function utilisateur_peut_voir_solution_chasse(int $chasse_id, int $user_id): bo
         $user_id > 0 && !$is_organizer && utilisateur_est_engage_dans_chasse($user_id, $chasse_id)
     );
 }
-
-
-/**
- * 🔹 voir-image-enigme → Déclare un endpoint `/voir-image-enigme?id=123` pour servir une image protégée d’énigme.
- *
- * Cette règle permet de contourner la protection .htaccess sur les visuels
- * en servant l’image via un proxy PHP (`inc/handlers/voir-image-enigme.php`)
- * uniquement si l’utilisateur y a droit (via `utilisateur_peut_voir_enigme()`).
- */
-add_action('init', function () {
-    add_rewrite_rule('^voir-image-enigme/?$', 'index.php?voir_image_enigme=1', 'top');
-    add_filter('query_vars', function ($vars) {
-        $vars[] = 'voir_image_enigme';
-        return $vars;
-    });
-});
-/**
- * 🔁 Redirige les appels vers /voir-image-enigme?id=xxx vers le handler PHP sécurisé
- *
- * Le handler effectue les vérifications d’accès, puis sert le fichier s’il est autorisé.
- */
-add_action('template_redirect', function () {
-    if ((int) get_query_var('voir_image_enigme') !== 1) {
-        return;
-    }
-
-    $handler = get_stylesheet_directory() . '/inc/handlers/voir-image-enigme.php';
-
-    if (file_exists($handler)) {
-        require_once $handler;
-        exit;
-    }
-
-    status_header(404);
-    exit('Image non trouvée.');
-});
-
 
 
 // ==================================================

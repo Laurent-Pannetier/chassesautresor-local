@@ -17,10 +17,37 @@ use ChassesAuTresor\Core\Points\ManualPointsAdjustmentHandler;
 use ChassesAuTresor\Core\Points\PurchasePointsHookHandler;
 use ChassesAuTresor\Core\Progress\HuntCompletionHookHandler;
 use ChassesAuTresor\Core\Relationships\OrganizerConfirmationRouteHandler;
+use ChassesAuTresor\Core\Media\ProtectedAssetRouteHandler;
 use PHPUnit\Framework\TestCase;
 
 final class BusinessHookOwnershipTest extends TestCase
 {
+    public function testProtectedAssetRoutesAreRegisteredByCore(): void {
+        $actions = [];
+        $filters = [];
+
+        ProtectedAssetRouteHandler::register(
+            static function (...$arguments) use (&$actions): void {
+                $actions[] = $arguments;
+            },
+            static function (...$arguments) use (&$filters): void {
+                $filters[] = $arguments;
+            }
+        );
+
+        self::assertSame(
+            [
+                ['init', [ProtectedAssetRouteHandler::class, 'registerRoutes'], 1],
+                ['template_redirect', [ProtectedAssetRouteHandler::class, 'dispatch']],
+            ],
+            $actions
+        );
+        self::assertSame(
+            [['query_vars', [ProtectedAssetRouteHandler::class, 'addQueryVariables']]],
+            $filters
+        );
+    }
+
     public function testContentScreenAccessHooksAreRegisteredByCore(): void {
         $hooks = [];
 

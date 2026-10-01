@@ -1,5 +1,14 @@
 <?php
 
+if (
+    !function_exists('solution_recuperer_par_objet')
+    || !function_exists('utilisateur_peut_voir_solution_enigme')
+) {
+    status_header(503);
+    exit(__('Service temporairement indisponible', 'chassesautresor-com'));
+}
+
+
 $log_prefix = '[voir-fichier.php]';
 
 function logf($message) {

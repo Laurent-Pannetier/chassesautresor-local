@@ -37,7 +37,10 @@ résolution d’une énigme et invalidation de la progression latérale.
 Le septième lot a transféré au plugin les contrôleurs des écrans WordPress natifs de création et de modification,
 avec maintien des politiques historiques lorsqu’elles sont disponibles et repli sécurisé sur les capacités WordPress.
 
-Estimation après ce lot : **90 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
+Le huitième lot a transféré au plugin les routes et les contrôleurs HTTP servant les fichiers de solution et les
+images protégées des énigmes. Les contrôleurs échouent de façon fermée si un adaptateur d’accès manque.
+
+Estimation après ce lot : **92 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
 responsabilités fonctionnelles recensées (persistance, accès, routes, traitements, notifications et cache), et non
 sur le nombre de lignes. Il sera réévalué après chaque lot.
 

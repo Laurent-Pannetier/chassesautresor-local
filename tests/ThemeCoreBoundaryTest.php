@@ -116,6 +116,12 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertSame([], $violations, $this->formatViolations($violations));
     }
 
+    public function testThemeDoesNotOwnProtectedAssetRoutes(): void {
+        $violations = $this->findPhpMatches('/voir_fichier|voir_image_enigme/');
+
+        self::assertSame([], $violations, $this->formatViolations($violations));
+    }
+
     public function testLegacyStatisticsResetWorkflowStaysOutOfTheme(): void
     {
         $violations = $this->findPhpMatches(
