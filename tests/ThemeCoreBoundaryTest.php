@@ -488,21 +488,34 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringContainsString('HuntValidationAjaxHandler::configure', $core);
     }
 
-    public function testRiddleAttemptPersistenceIsNotInjectedByTheme(): void
+    public function testRiddleAttemptRenderingIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/tentatives.php');
-        preg_match(
-            '/RiddleAttemptListAjaxHandler::configure\([\s\S]*?^    \);/m',
-            $source,
-            $matches
+        $handler = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/RiddleAttemptListAjaxHandler.php'
         );
-        $configuration = $matches[0] ?? null;
+        $renderer = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/RiddleAttemptListRenderer.php'
+        );
 
-        self::assertIsString($configuration);
-        self::assertStringNotContainsString('recuperer_tentatives_enigme', $configuration);
-        self::assertStringNotContainsString('compter_tentatives_enigme', $configuration);
-        self::assertStringNotContainsString('utilisateur_peut_modifier_post', $configuration);
+        self::assertStringNotContainsString('RiddleAttemptListAjaxHandler::configure', $source);
+        self::assertStringNotContainsString('function cat_render_riddle_attempt_list', $source);
+        self::assertStringContainsString("[new RiddleAttemptListRenderer(), 'render']", $handler);
+        self::assertStringContainsString('class RiddleAttemptListRenderer', $renderer);
         self::assertStringNotContainsString('RiddleAttemptViewAjaxHandler::configure', $source);
+    }
+
+    public function testThemeDoesNotOwnSharedTableHelpers(): void
+    {
+        $theme = (string) file_get_contents(self::THEME_PATH . '/inc/table.php');
+        $core = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Support/table-functions.php'
+        );
+
+        foreach (['cta_prepare_masked_proposition_options', 'cta_render_proposition_cell'] as $functionName) {
+            self::assertStringNotContainsString("function {$functionName}(", $theme);
+            self::assertStringContainsString("function {$functionName}(", $core);
+        }
     }
 
     public function testThemeDoesNotOwnRiddleMutationPoliciesOrLifecycle(): void

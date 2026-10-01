@@ -168,27 +168,10 @@ function compter_tentatives_enigme(int $enigme_id): int
     return cat_get_riddle_attempt_service()->countForRiddle($enigme_id);
 }
 
-/** Retourne le rendu HTML thématique d'une page de tentatives. */
-function cat_render_riddle_attempt_list(array $arguments): string
-{
-    ob_start();
-    get_template_part('template-parts/enigme/partials/enigme-partial-tentatives', null, $arguments);
-
-    return (string) ob_get_clean();
-}
-
 /** Compatibility facade for the historical callback. */
 function ajax_lister_tentatives_enigme(): void
 {
     ChassesAuTresor\Core\Progress\RiddleAttemptListAjaxHandler::handle();
-}
-
-if (class_exists(ChassesAuTresor\Core\Progress\RiddleAttemptListAjaxHandler::class)) {
-    ChassesAuTresor\Core\Progress\RiddleAttemptListAjaxHandler::configure(
-        static function (array $arguments): string {
-            return cat_render_riddle_attempt_list($arguments);
-        }
-    );
 }
 
 /**

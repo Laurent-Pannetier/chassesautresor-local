@@ -25,7 +25,6 @@ class RiddleAttemptListAjaxHandler {
 
     public static function handle(): void {
         $riddleId = isset($_POST['enigme_id']) ? (int) $_POST['enigme_id'] : 0;
-        $dependenciesReady = is_callable(self::$renderer);
         $canModify = is_user_logged_in()
             && (new RiddleAttemptAccessService())->canModifyRiddle((int) get_current_user_id(), $riddleId);
         $request = (new RiddleAttemptListRequestService())->prepare(
@@ -38,16 +37,13 @@ class RiddleAttemptListAjaxHandler {
         if ($request['error'] !== null) {
             wp_send_json_error($request['error']);
         }
-        if (!$dependenciesReady) {
-            wp_send_json_error('acces_refuse');
-        }
-
         global $wpdb;
         $attemptService = CoreServiceFactory::riddleAttempts($wpdb);
         $attempts = $attemptService->findForRiddle($riddleId, $request['per_page'], $request['offset']);
         $total = $attemptService->countForRiddle($riddleId);
         $pages = (int) ceil($total / $request['per_page']);
-        $html = (string) call_user_func(self::$renderer, [
+        $renderer = self::$renderer ?? [new RiddleAttemptListRenderer(), 'render'];
+        $html = (string) call_user_func($renderer, [
             'tentatives' => $attempts,
             'page' => $request['page'],
             'par_page' => $request['per_page'],

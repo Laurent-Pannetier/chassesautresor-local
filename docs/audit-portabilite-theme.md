@@ -364,12 +364,17 @@ Le quatre-vingtième lot applique la même séparation à l'historique des conve
 points et statuts localisés sont maintenant rendus par `ConversionHistoryRenderer`. Le contrôleur conserve un override
 optionnel pour compatibilité, mais fonctionne sans configuration du thème, dont le compteur résiduel passe à neuf.
 
+Le quatre-vingt-et-unième lot autonomise la liste paginée des tentatives d'une énigme. Le plugin rend désormais le
+tableau, les propositions masquées, les statuts, les actions de validation et le pager. Les deux helpers génériques de
+cellules de proposition ont également quitté `inc/table.php` pour le core afin de ne pas recréer une dépendance vers le
+thème. Les configurations résiduelles passent à huit.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |
 |---|---:|---|
 | Extraction du métier PHP inventorié | **95 %** | Inchangée : trois grands view-models mixtes restent dans le thème |
-| Remplaçabilité effective du thème | **42 %** | Cinq rendus AJAX ne dépendent plus du thème |
+| Remplaçabilité effective du thème | **42 %** | Six rendus AJAX ne dépendent plus du thème |
 
 Ces indicateurs sont recalculés avec la grille détaillée plus bas, et non à partir du nombre de fonctions déplacées.
 Ils seront modifiés uniquement lorsqu'un axe pondéré de cette grille progresse effectivement.
@@ -397,7 +402,7 @@ Résultats obtenus après ce lot :
 - **5 filtres ACF** demeurent après retrait du filtre métier de condition d'accès. Ils préparent ou formatent des
   champs de présentation ; aucune autre politique d'accès ACF enregistrée par le thème n'a été trouvée ;
 - le contrôleur de modération ne contient désormais **aucun appel direct** aux fonctions globales du thème qui avaient
-  été inventoriées. Le plugin conserve **9 configurations de contrôleurs par le thème**, toutes destinées à des
+  été inventoriées. Le plugin conserve **8 configurations de contrôleurs par le thème**, toutes destinées à des
   moteurs de rendu ;
 - `inc/access-functions.php` ne déclare plus aucune fonction : ses douze dernières politiques et son wrapper de
   compatibilité sont fournis par le plugin ;
@@ -416,7 +421,7 @@ globales du thème et séparation des view-models. Les preuves ci-dessus donnent
 
 Pour la remplaçabilité, la grille pondère l'extraction PHP à 40 %, la présence de parcours de secours à 25 %, les
 assets indépendants à 15 %, l'absence de callbacks de rendu fournis par le thème à 10 % et une recette neutre réussie
-à 10 %. L'extraction apporte 38 points et cinq des quatorze parcours de rendu injectés recensés au début de ce bloc
+à 10 %. L'extraction apporte 38 points et six des quatorze parcours de rendu injectés recensés au début de ce bloc
 sont maintenant autonomes, soit **environ 42 % de remplaçabilité effective du thème** après arrondi. Aucun point
 n'est encore accordé aux parcours complets, aux assets indépendants ou à la recette sous thème neutre.
 
