@@ -17,6 +17,11 @@ if (!class_exists(ChassesAuTresor\Core\Progress\HuntStatusScheduler::class, fals
         . '/plugins/chassesautresor-core/src/Progress/HuntStatusScheduler.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Progress\HuntStatusUpdater::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Progress/HuntStatusUpdater.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Progress\RiddleStatusAjaxHandler::class, false)) {
     require_once dirname(__DIR__, 3)
         . '/plugins/chassesautresor-core/src/Progress/RiddleStatusAjaxHandler.php';
@@ -52,6 +57,15 @@ if (!class_exists(ChassesAuTresor\Core\Relationships\RelationshipService::class,
 if (!class_exists(ChassesAuTresor\Core\Relationships\HuntRiddleQueryService::class, false)) {
     require_once dirname(__DIR__, 3)
         . '/plugins/chassesautresor-core/src/Relationships/HuntRiddleQueryService.php';
+}
+
+if (!class_exists(ChassesAuTresor\Core\Relationships\HuntRiddleCacheSynchronizer::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Relationships/HuntRiddleCacheService.php';
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Content/AcfRelationshipMutationService.php';
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Relationships/HuntRiddleCacheSynchronizer.php';
 }
 
 if (!class_exists(ChassesAuTresor\Core\Content\CompletionCacheManager::class, false)) {
@@ -589,12 +603,11 @@ add_action(
 // 🧠 GESTION DES STATUTS DES CHASSES
 // ==================================================
 /**
- * 🔹 verifier_ou_recalculer_statut_chasse() → Vérifie et met à jour le statut ACF d'une chasse à l'affichage si nécessaire.
+ * 🔹 verifier_ou_recalculer_statut_chasse() → Vérifie le statut ACF à l'affichage.
  * 🔹 mettre_a_jour_statuts_chasse() → Met à jour les statuts de validation et de visibilité d'une chasse.
  * 🔹 forcer_recalcul_statut_chasse() → Forcer un recalcul du statut via une requête AJAX.
- * 🔹 mettre_a_jour_statut_si_chasse() → Déclenche la mise à jour automatique du statut après sauvegarde ACF en admin.
  * 🔹 recuperer_statut_chasse() → Retourne dynamiquement le statut pour mise à jour du badge via JS.
- * 🔹 forcer_statut_selon_validation_chasse() → Applique le statut WordPress selon la validation lors de la sauvegarde admin.
+ * 🔹 forcer_statut_selon_validation_chasse() → Contrôle la cohérence du statut WordPress.
  * 🔹 forcer_statut_apres_acf() → Corrige le post_status après sauvegarde ACF pour éviter les incohérences.
  */
 
@@ -610,109 +623,13 @@ add_action(
  */
 function verifier_ou_recalculer_statut_chasse($chasse_id): void
 {
-    if (get_post_type($chasse_id) !== 'chasse') {
-        return;
-    }
-
-    static $chasses_traitees = [];
-
-    if (in_array($chasse_id, $chasses_traitees, true)) {
-        return;
-    }
-    $chasses_traitees[] = $chasse_id;
-
-    $statut           = (string) get_field('chasse_cache_statut', $chasse_id);
-    $validation       = (string) get_field('chasse_cache_statut_validation', $chasse_id);
-    $date_debut_obj   = convertir_en_datetime(get_field('chasse_infos_date_debut', $chasse_id) ?: null);
-    $date_fin_obj     = convertir_en_datetime(get_field('chasse_infos_date_fin', $chasse_id) ?: null);
-    $decouverte_obj   = convertir_en_datetime(get_field('chasse_cache_date_decouverte', $chasse_id) ?: null);
-    $service          = new ChassesAuTresor\Core\Progress\HuntStatusService();
-
-    if ($service->isStale(
-        $statut,
-        $validation,
-        $date_debut_obj ? $date_debut_obj->getTimestamp() : null,
-        $date_fin_obj ? $date_fin_obj->getTimestamp() : null,
-        $decouverte_obj ? $decouverte_obj->getTimestamp() : null,
-        (int) get_field('chasse_infos_cout_points', $chasse_id),
-        !empty(get_field('chasse_infos_duree_illimitee', $chasse_id)),
-        (int) current_time('timestamp')
-    )) {
-        mettre_a_jour_statuts_chasse($chasse_id);
-        chasse_clear_infos_affichage_cache($chasse_id);
-    }
+    (new ChassesAuTresor\Core\Progress\HuntStatusUpdater())->refreshIfStale((int) $chasse_id);
 }
 
-
-/**
- * Met à jour le statut fonctionnel d'une chasse (champ ACF `chasse_cache_statut`).
- *
- * Appelée lors de toute modification importante.
- * Si la chasse devient "termine", planifie (ou déclenche) les déplacements de PDF.
- *
- * @param int $chasse_id ID du post de type "chasse".
- */
 function mettre_a_jour_statuts_chasse($chasse_id)
 {
-    if (get_post_type($chasse_id) !== 'chasse') return;
-
-    $cache = [
-        'validation' => get_field('chasse_cache_statut_validation', $chasse_id),
-        'statut'     => get_field('chasse_cache_statut', $chasse_id),
-        'date'       => get_field('chasse_cache_date_decouverte', $chasse_id),
-    ];
-
-    $carac = [
-        'date_debut'      => get_field('chasse_infos_date_debut', $chasse_id),
-        'date_fin'        => get_field('chasse_infos_date_fin', $chasse_id),
-        'cout_points'     => get_field('chasse_infos_cout_points', $chasse_id),
-        'duree_illimitee' => get_field('chasse_infos_duree_illimitee', $chasse_id),
-    ];
-
-    if (!$cache['validation']) {
-        cat_debug("⚠️ Données manquantes pour chasse #$chasse_id : champs_caches");
-        return;
-    }
-
-    $statut_validation = $cache['validation'] ?? 'creation';
-    $date_debut_obj    = convertir_en_datetime($carac['date_debut'] ?? null);
-    $date_debut        = $date_debut_obj ? $date_debut_obj->getTimestamp() : null;
-    $date_fin_obj      = convertir_en_datetime($carac['date_fin'] ?? null);
-    $date_fin          = $date_fin_obj ? $date_fin_obj->getTimestamp() : null;
-    $date_obj          = convertir_en_datetime($cache['date'] ?? null);
-    $date_decouverte   = $date_obj ? $date_obj->getTimestamp() : null;
-    $cout_points       = intval($carac['cout_points'] ?? 0);
-    $statut            = (new ChassesAuTresor\Core\Progress\HuntStatusService())->calculate(
-        (string) $statut_validation,
-        $date_debut,
-        $date_fin,
-        $date_decouverte,
-        $cout_points,
-        !empty($carac['duree_illimitee']),
-        (int) current_time('timestamp'),
-        (string) ($cache['statut'] ?? 'revision')
-    );
-
-    // ✅ Si terminée, déclenche les planifications PDF
-    if ($statut === 'termine') {
-        $liste_enigmes = recuperer_enigmes_associees($chasse_id);
-
-        foreach ($liste_enigmes as $enigme_id) {
-            ChassesAuTresor\Core\Content\RiddleSolutionFileScheduler::schedule((int) $enigme_id);
-        }
-    }
-
-    update_field('chasse_cache_statut', $statut, $chasse_id);
-
-    if (function_exists('synchroniser_cache_enigmes_chasse')) {
-        synchroniser_cache_enigmes_chasse($chasse_id, true, true);
-    }
-
-    mettre_a_jour_statuts_enigmes_de_la_chasse($chasse_id, $statut);
-    chasse_clear_infos_affichage_cache($chasse_id);
+    return (new ChassesAuTresor\Core\Progress\HuntStatusUpdater())->refresh((int) $chasse_id);
 }
-
-
 
 function forcer_recalcul_statut_chasse(): void
 {
@@ -730,31 +647,6 @@ function cat_check_stale_hunt_status(int $huntId): void
     verifier_ou_recalculer_statut_chasse($huntId);
 }
 add_action('chassesautresor_hunt_status_stale_check_requested', 'cat_check_stale_hunt_status');
-
-/**
- * 🔄 Mettre à jour le statut d'une chasse après enregistrement ACF en admin.
- *
- * Accroché au hook `acf/save_post` pour recalculer automatiquement
- * le statut fonctionnel dès qu'un organisateur modifie ses champs en back-office.
- *
- * @param int $post_id ID du post enregistré par ACF.
- * @return void
- */
-add_action('acf/save_post', 'mettre_a_jour_statut_si_chasse', 20);
-
-function mettre_a_jour_statut_si_chasse($post_id)
-{
-    if (!is_numeric($post_id)) return;
-
-    if (get_post_type($post_id) === 'chasse') {
-        // 🔁 Supprimer le champ pour forcer une relecture propre (évite valeurs en cache)
-        delete_transient("acf_field_{$post_id}_champs_caches");
-
-        cat_debug("🔁 Recalcul du statut via acf/save_post pour la chasse $post_id");
-        mettre_a_jour_statuts_chasse($post_id);
-    }
-}
-
 
 function recuperer_statut_chasse(): void
 {
@@ -779,30 +671,11 @@ add_filter('chassesautresor_render_hunt_status_badge', 'cat_render_hunt_status_b
  */
 function forcer_statut_apres_acf($post_id, $nouvelle_validation = null)
 {
-    if (!is_numeric($post_id) || get_post_type($post_id) !== 'chasse') return;
-
-    // Lecture et mise à jour facultative
-    $validation = get_field('chasse_cache_statut_validation', $post_id);
-
-    if ($nouvelle_validation !== null) {
-        update_field('chasse_cache_statut_validation', sanitize_text_field($nouvelle_validation), $post_id);
-        $validation = sanitize_text_field($nouvelle_validation);
-    }
-
-    if (!$validation) return;
-
-    $statut_voulu = (new ChassesAuTresor\Core\Content\HuntPublicationStatusService())->resolve(
-        (string) $validation
+    (new ChassesAuTresor\Core\Progress\HuntStatusUpdater())->synchronizePublication(
+        (int) $post_id,
+        is_string($nouvelle_validation) ? $nouvelle_validation : null
     );
-
-    if (get_post_status($post_id) !== $statut_voulu) {
-        wp_update_post([
-            'ID'          => $post_id,
-            'post_status' => $statut_voulu,
-        ]);
-    }
 }
-add_action('acf/save_post', 'forcer_statut_apres_acf', 99);
 
 
 
@@ -828,50 +701,6 @@ function is_canevas_creation()
     return !get_organisateur_from_user(get_current_user_id());
 }
 
-
-/**
- * 🔐 Vérifie la cohérence entre post_status natif et statut de validation ACF.
- *
- * Si une incohérence est détectée, elle est loguée.
- * Le changement automatique de statut est désactivé en phase de développement.
- *
- * @hook save_post_chasse
- * @param int     $post_id ID du post.
- * @param WP_Post $post    Objet post complet.
- * @param bool    $update  True si c’est une mise à jour (false si création).
- */
-add_action('save_post_chasse', 'forcer_statut_selon_validation_chasse', 20, 3);
-
-function forcer_statut_selon_validation_chasse($post_id, $post, $update)
-{
-    // Éviter boucle infinie
-    remove_action('save_post_chasse', 'forcer_statut_selon_validation_chasse', 20);
-
-    // Ne pas agir sur autosave ou révisions
-    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
-    if (wp_is_post_revision($post_id)) return;
-
-    $validation = get_field('chasse_cache_statut_validation', $post_id);
-    if (!$validation) return;
-    $statut_wp = get_post_status($post_id);
-
-    $statut_attendu = (new ChassesAuTresor\Core\Content\HuntPublicationStatusService())->resolve(
-        (string) $validation
-    );
-
-    if ($statut_wp !== $statut_attendu) {
-        cat_debug("⚠️ Décalage statut WP vs ACF pour chasse $post_id → WP = $statut_wp / ACF = $validation");
-
-        // ⛔ EN DÉVELOPPEMENT : synchronisation désactivée
-        // ✅ À ACTIVER EN PROD :
-        /*
-    wp_update_post([
-      'ID'          => $post_id,
-      'post_status' => $statut_attendu,
-    ]);
-    */
-    }
-}
 
 function schedule_cat_recalculate_chasse_statuses(): void
 {

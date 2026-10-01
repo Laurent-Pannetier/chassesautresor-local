@@ -33,6 +33,12 @@ class ChasseCorrectionBadgeTest extends TestCase
         eval('function current_time($type){return 1000;}');
         eval('function convertir_en_datetime($d){return $d ? new DateTime($d) : null;}');
         eval('function recuperer_enigmes_associees($cid){return [];}');
+        eval('function get_posts($args){return [];}');
+        eval('function do_action($hook, ...$args){'
+            . 'if ($hook === "chassesautresor_hunt_display_cache_clear_requested") {'
+            . 'global $cache_cleared; $cache_cleared = true;'
+            . '}'
+            . '}');
         eval('function planifier_ou_deplacer_pdf_solution_immediatement($id){}');
         eval('function synchroniser_cache_enigmes_chasse($cid, $a = true, $b = true){}');
         eval('function chasse_clear_infos_affichage_cache($cid){global $cache_cleared; $cache_cleared = true;}');
@@ -46,7 +52,11 @@ class ChasseCorrectionBadgeTest extends TestCase
             . 'return $value;'
             . '}');
         if (!function_exists('wp_send_json_success')) {
-            function wp_send_json_success($data = null) { global $json_success_data; $json_success_data = $data; return $data; }
+            function wp_send_json_success($data = null) {
+                global $json_success_data;
+                $json_success_data = $data;
+                return $data;
+            }
         }
         if (!function_exists('wp_send_json_error')) {
             function wp_send_json_error($data = null) { return $data; }

@@ -20,6 +20,8 @@ require_once __DIR__ . '/src/Progress/HuntProgressService.php';
 require_once __DIR__ . '/src/Progress/HuntStatusService.php';
 require_once __DIR__ . '/src/Progress/HuntStatusAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/HuntStatusScheduler.php';
+require_once __DIR__ . '/src/Progress/HuntStatusUpdater.php';
+require_once __DIR__ . '/src/Progress/HuntStatusSaveHookHandler.php';
 require_once __DIR__ . '/src/Progress/RiddleStatusAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/HuntRiddleClassifier.php';
 require_once __DIR__ . '/src/Progress/HuntCompletionService.php';
@@ -208,6 +210,7 @@ ChassesAuTresor\Core\Content\OrganizerRelationshipSaveHookHandler::register('add
 ChassesAuTresor\Core\Content\CompletionCacheSaveHookHandler::register('add_action');
 ChassesAuTresor\Core\Progress\HuntStatusAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Progress\HuntStatusScheduler::register('add_action');
+ChassesAuTresor\Core\Progress\HuntStatusSaveHookHandler::register('add_action');
 ChassesAuTresor\Core\Progress\RiddleStatusAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\HintFieldMutationAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\HintModalAjaxHandler::register('add_action');
