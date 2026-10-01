@@ -326,6 +326,8 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertIsString($configuration);
         self::assertStringNotContainsString('recuperer_tentatives_enigme', $configuration);
         self::assertStringNotContainsString('compter_tentatives_enigme', $configuration);
+        self::assertStringNotContainsString('utilisateur_peut_modifier_post', $configuration);
+        self::assertStringNotContainsString('RiddleAttemptViewAjaxHandler::configure', $source);
     }
 
     public function testThemeDoesNotOwnHuntModerationEmails(): void

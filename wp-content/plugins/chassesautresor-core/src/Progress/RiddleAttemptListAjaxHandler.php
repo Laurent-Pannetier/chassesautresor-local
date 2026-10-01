@@ -11,9 +11,6 @@ use ChassesAuTresor\Core\Support\CoreServiceFactory;
  */
 class RiddleAttemptListAjaxHandler {
     /** @var callable|null */
-    private static $canModify;
-
-    /** @var callable|null */
     private static $renderer;
 
     public static function register(callable $addAction): void {
@@ -21,20 +18,16 @@ class RiddleAttemptListAjaxHandler {
     }
 
     public static function configure(
-        callable $canModify,
         callable $renderer
     ): void {
-        self::$canModify = $canModify;
         self::$renderer = $renderer;
     }
 
     public static function handle(): void {
         $riddleId = isset($_POST['enigme_id']) ? (int) $_POST['enigme_id'] : 0;
-        $dependenciesReady = is_callable(self::$canModify)
-            && is_callable(self::$renderer);
-        $canModify = $dependenciesReady && is_user_logged_in() && $riddleId > 0
-            ? (bool) call_user_func(self::$canModify, $riddleId)
-            : false;
+        $dependenciesReady = is_callable(self::$renderer);
+        $canModify = is_user_logged_in()
+            && (new RiddleAttemptAccessService())->canModifyRiddle((int) get_current_user_id(), $riddleId);
         $request = (new RiddleAttemptListRequestService())->prepare(
             is_user_logged_in(),
             $riddleId,

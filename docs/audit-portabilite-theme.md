@@ -64,7 +64,10 @@ l’annulation et le rafraîchissement de la validation d’une chasse. Le thèm
 Le seizième lot a supprimé les callbacks de lecture et de comptage des tentatives injectés par le thème. Le contrôleur
 du plugin interroge désormais directement son service métier et ne délègue au thème que l’autorisation et le rendu.
 
-Estimation après ce lot : **99,9 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
+Le dix-septième lot a transféré au plugin les dernières autorisations des contrôleurs de tentatives : consultation
+d’une proposition et accès à la liste d’une énigme. Le thème ne fournit désormais que le rendu HTML de la liste.
+
+Estimation après ce lot : **99,95 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
 responsabilités fonctionnelles recensées (persistance, accès, routes, traitements, notifications et cache), et non
 sur le nombre de lignes. Il sera réévalué après chaque lot.
 

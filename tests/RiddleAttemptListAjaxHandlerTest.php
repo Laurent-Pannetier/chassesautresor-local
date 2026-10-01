@@ -10,7 +10,6 @@ require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress
 final class RiddleAttemptListAjaxHandlerTest extends TestCase {
     public function testAcceptsLazyCallbacksBeforeTheirDependenciesAreNeeded(): void {
         RiddleAttemptListAjaxHandler::configure(
-            static fn (int $id): bool => $id > 0,
             static fn (): string => ''
         );
         $this->addToAssertionCount(1);

@@ -89,6 +89,7 @@ require_once __DIR__ . '/src/Progress/RiddleAttemptRepository.php';
 require_once __DIR__ . '/src/Progress/RiddleAttemptService.php';
 require_once __DIR__ . '/src/Progress/RiddleAttemptMaintenanceService.php';
 require_once __DIR__ . '/src/Progress/RiddleAttemptAccessPolicy.php';
+require_once __DIR__ . '/src/Progress/RiddleAttemptAccessService.php';
 require_once __DIR__ . '/src/Progress/RiddleAttemptListRequestService.php';
 require_once __DIR__ . '/src/Progress/RiddleAttemptListAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/RiddleAttemptViewAjaxHandler.php';

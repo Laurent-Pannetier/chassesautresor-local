@@ -8,14 +8,6 @@ use PHPUnit\Framework\TestCase;
 require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/RiddleAttemptViewAjaxHandler.php';
 
 final class RiddleAttemptViewAjaxHandlerTest extends TestCase {
-    public function testAcceptsLazyCallbacks(): void {
-        RiddleAttemptViewAjaxHandler::configure(
-            static fn (): ?object => null,
-            static fn (): bool => false
-        );
-        $this->addToAssertionCount(1);
-    }
-
     public function testRegistersAuthenticatedAndAnonymousEndpoints(): void {
         $hooks = [];
         RiddleAttemptViewAjaxHandler::register(static function ($hook, $callback) use (&$hooks): void {
