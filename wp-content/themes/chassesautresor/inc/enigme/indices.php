@@ -5,13 +5,7 @@ if (!function_exists('cat_get_hint_unlock_service')) {
     function cat_get_hint_unlock_service(): ChassesAuTresor\Core\Progress\HintUnlockService
     {
         global $wpdb;
-
-        return new ChassesAuTresor\Core\Progress\HintUnlockService(
-            new ChassesAuTresor\Core\Progress\HintUnlockRepository($wpdb),
-            new ChassesAuTresor\Core\Points\PointsService(
-                new ChassesAuTresor\Core\Points\PointsRepository($wpdb)
-            )
-        );
+        return ChassesAuTresor\Core\Support\CoreServiceFactory::hintUnlock($wpdb);
     }
 }
 

@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 defined('ABSPATH') || exit;
 
+require_once __DIR__ . '/src/Support/CoreServiceFactory.php';
 require_once __DIR__ . '/src/Points/PointsRepository.php';
 require_once __DIR__ . '/src/Admin/AdminStatisticsResetService.php';
 require_once __DIR__ . '/src/Admin/AdminAjaxHandler.php';

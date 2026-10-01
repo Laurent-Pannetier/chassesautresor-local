@@ -8,10 +8,7 @@ defined('ABSPATH') || exit;
 function cat_get_site_message_service(): ChassesAuTresor\Core\Messages\SiteMessageService
 {
     global $wpdb;
-
-    return new ChassesAuTresor\Core\Messages\SiteMessageService(
-        new UserMessageRepository($wpdb)
-    );
+    return ChassesAuTresor\Core\Support\CoreServiceFactory::siteMessages($wpdb);
 }
 
 /**

@@ -27,9 +27,7 @@ if (!function_exists('utilisateur_peut_voir_enigme')) {
 }
 // 🧩 Récupération de l'énigme associée à cette image
 global $wpdb;
-$image_service = new ChassesAuTresor\Core\Media\RiddleImageService(
-    new ChassesAuTresor\Core\Media\RiddleImageRepository($wpdb)
-);
+$image_service = ChassesAuTresor\Core\Support\CoreServiceFactory::riddleImages($wpdb);
 $enigme_id = $image_service->findRiddleId($image_id);
 
 if (!$enigme_id) {

@@ -5,10 +5,7 @@ if (!function_exists('cat_get_riddle_engagement_service')) {
     function cat_get_riddle_engagement_service(): ChassesAuTresor\Core\Progress\RiddleEngagementService
     {
         global $wpdb;
-
-        return new ChassesAuTresor\Core\Progress\RiddleEngagementService(
-            new ChassesAuTresor\Core\Progress\RiddleEngagementRepository($wpdb)
-        );
+        return ChassesAuTresor\Core\Support\CoreServiceFactory::riddleEngagement($wpdb);
     }
 }
 

@@ -11,20 +11,14 @@ if (!function_exists('cat_get_hunt_engagement_service')) {
     function cat_get_hunt_engagement_service(): ChassesAuTresor\Core\Progress\HuntEngagementService
     {
         global $wpdb;
-
-        return new ChassesAuTresor\Core\Progress\HuntEngagementService(
-            new ChassesAuTresor\Core\Progress\HuntEngagementRepository($wpdb)
-        );
+        return ChassesAuTresor\Core\Support\CoreServiceFactory::huntEngagement($wpdb);
     }
 }
 
 function cat_get_hunt_statistics_service(): ChassesAuTresor\Core\Progress\HuntStatisticsService
 {
     global $wpdb;
-
-    return new ChassesAuTresor\Core\Progress\HuntStatisticsService(
-        new ChassesAuTresor\Core\Progress\HuntStatisticsRepository($wpdb)
-    );
+    return ChassesAuTresor\Core\Support\CoreServiceFactory::huntStatistics($wpdb);
 }
 
 function chasse_stats_excluded_user_ids(int $chasse_id): array

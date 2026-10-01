@@ -11,10 +11,7 @@ if (!function_exists('cat_get_hunt_progress_service')) {
     function cat_get_hunt_progress_service(): ChassesAuTresor\Core\Progress\HuntProgressService
     {
         global $wpdb;
-
-        return new ChassesAuTresor\Core\Progress\HuntProgressService(
-            new ChassesAuTresor\Core\Progress\HuntProgressRepository($wpdb)
-        );
+        return ChassesAuTresor\Core\Support\CoreServiceFactory::huntProgress($wpdb);
     }
 }
 

@@ -4,10 +4,7 @@ defined('ABSPATH') || exit;
 function cat_get_organizer_service(): ChassesAuTresor\Core\Relationships\OrganizerService
 {
     global $wpdb;
-
-    return new ChassesAuTresor\Core\Relationships\OrganizerService(
-        new ChassesAuTresor\Core\Relationships\OrganizerRepository($wpdb)
-    );
+    return ChassesAuTresor\Core\Support\CoreServiceFactory::organizer($wpdb);
 }
 
 function cat_get_relationship_service(): ChassesAuTresor\Core\Relationships\RelationshipService

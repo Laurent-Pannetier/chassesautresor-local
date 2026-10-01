@@ -5,9 +5,7 @@ if (!function_exists('cat_get_riddle_statistics_service')) {
     function cat_get_riddle_statistics_service(): ChassesAuTresor\Core\Progress\RiddleStatisticsService
     {
         global $wpdb;
-        return new ChassesAuTresor\Core\Progress\RiddleStatisticsService(
-            new ChassesAuTresor\Core\Progress\RiddleStatisticsRepository($wpdb)
-        );
+        return ChassesAuTresor\Core\Support\CoreServiceFactory::riddleStatistics($wpdb);
     }
 }
 

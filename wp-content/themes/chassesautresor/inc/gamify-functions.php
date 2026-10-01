@@ -7,10 +7,7 @@ defined( 'ABSPATH' ) || exit;
 function cat_get_points_service(): ChassesAuTresor\Core\Points\PointsService
 {
     global $wpdb;
-
-    return new ChassesAuTresor\Core\Points\PointsService(
-        new PointsRepository($wpdb)
-    );
+    return ChassesAuTresor\Core\Support\CoreServiceFactory::points($wpdb);
 }
 
 /**
@@ -18,7 +15,8 @@ function cat_get_points_service(): ChassesAuTresor\Core\Points\PointsService
  */
 function cat_get_purchase_points_service(): ChassesAuTresor\Core\Points\PurchasePointsService
 {
-    return new ChassesAuTresor\Core\Points\PurchasePointsService(cat_get_points_service());
+    global $wpdb;
+    return ChassesAuTresor\Core\Support\CoreServiceFactory::purchasePoints($wpdb);
 }
 
 /**
@@ -27,23 +25,14 @@ function cat_get_purchase_points_service(): ChassesAuTresor\Core\Points\Purchase
 function cat_get_conversion_service(): ChassesAuTresor\Core\Points\ConversionService
 {
     global $wpdb;
-
-    $repository = new PointsRepository($wpdb);
-
-    return new ChassesAuTresor\Core\Points\ConversionService(
-        $repository,
-        new ChassesAuTresor\Core\Points\PointsService($repository)
-    );
+    return ChassesAuTresor\Core\Support\CoreServiceFactory::conversion($wpdb);
 }
 
 if (!function_exists('cat_get_hunt_progress_service')) {
     function cat_get_hunt_progress_service(): ChassesAuTresor\Core\Progress\HuntProgressService
     {
         global $wpdb;
-
-        return new ChassesAuTresor\Core\Progress\HuntProgressService(
-            new ChassesAuTresor\Core\Progress\HuntProgressRepository($wpdb)
-        );
+        return ChassesAuTresor\Core\Support\CoreServiceFactory::huntProgress($wpdb);
     }
 }
 

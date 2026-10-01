@@ -7,19 +7,13 @@ defined( 'ABSPATH' ) || exit;
 function cat_get_account_message_service(): ChassesAuTresor\Core\Messages\AccountMessageService
 {
     global $wpdb;
-
-    return new ChassesAuTresor\Core\Messages\AccountMessageService(
-        new UserMessageRepository($wpdb)
-    );
+    return ChassesAuTresor\Core\Support\CoreServiceFactory::accountMessages($wpdb);
 }
 
 function cat_get_user_attempt_statistics_service(): ChassesAuTresor\Core\Progress\UserAttemptStatisticsService
 {
     global $wpdb;
-
-    return new ChassesAuTresor\Core\Progress\UserAttemptStatisticsService(
-        new ChassesAuTresor\Core\Progress\UserAttemptStatisticsRepository($wpdb)
-    );
+    return ChassesAuTresor\Core\Support\CoreServiceFactory::userAttemptStatistics($wpdb);
 }
 
 // ==================================================

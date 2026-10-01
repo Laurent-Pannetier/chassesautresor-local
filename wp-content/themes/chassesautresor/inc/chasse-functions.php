@@ -54,8 +54,7 @@ function chasse_install_winners_table(): void
 function cat_get_hunt_winner_repository(): ChassesAuTresor\Core\Progress\HuntWinnerRepository
 {
     global $wpdb;
-
-    return new ChassesAuTresor\Core\Progress\HuntWinnerRepository($wpdb);
+    return ChassesAuTresor\Core\Support\CoreServiceFactory::huntWinners($wpdb);
 }
 
 /**
@@ -65,10 +64,7 @@ if (!function_exists('cat_get_hunt_engagement_service')) {
     function cat_get_hunt_engagement_service(): ChassesAuTresor\Core\Progress\HuntEngagementService
     {
         global $wpdb;
-
-        return new ChassesAuTresor\Core\Progress\HuntEngagementService(
-            new ChassesAuTresor\Core\Progress\HuntEngagementRepository($wpdb)
-        );
+        return ChassesAuTresor\Core\Support\CoreServiceFactory::huntEngagement($wpdb);
     }
 }
 
@@ -79,10 +75,7 @@ if (!function_exists('cat_get_hunt_progress_service')) {
     function cat_get_hunt_progress_service(): ChassesAuTresor\Core\Progress\HuntProgressService
     {
         global $wpdb;
-
-        return new ChassesAuTresor\Core\Progress\HuntProgressService(
-            new ChassesAuTresor\Core\Progress\HuntProgressRepository($wpdb)
-        );
+        return ChassesAuTresor\Core\Support\CoreServiceFactory::huntProgress($wpdb);
     }
 }
 
