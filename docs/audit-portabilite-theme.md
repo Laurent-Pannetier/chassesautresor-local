@@ -176,6 +176,11 @@ associés invalident désormais ce cache depuis un gestionnaire de hooks du plug
 view-model mis en cache, mais ne possède plus ses mutations, sa recherche des chasses affectées ni le callback déclenché
 par le recalcul de complétude.
 
+Le quarante-troisième lot a transféré la politique des avatars personnalisés. Le plugin détenait déjà le contrôleur
+d'upload et possède maintenant aussi la liste des formats autorisés, la résolution de l'utilisateur et le remplacement
+de l'avatar WordPress à partir de la métadonnée persistée. Le thème ne conserve que le chargement du script de
+présentation sur l'espace personnel.
+
 Estimation prudente après ce lot : **environ 98 % de l'autonomie métier vérifiée**. Il ne s'agit plus d'un calcul au
 centième fondé sur les lots déjà traités : cette valeur applique une décote aux dépendances runtime encore observées,
 aux politiques d'édition encore enregistrées par le thème, aux adaptateurs d'accès encore utilisés ailleurs et à

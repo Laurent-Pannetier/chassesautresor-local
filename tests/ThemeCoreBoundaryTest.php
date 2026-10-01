@@ -516,6 +516,18 @@ final class ThemeCoreBoundaryTest extends TestCase
         );
     }
 
+    public function testThemeDoesNotOwnAvatarPersistenceOrPolicyHooks(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/user-functions.php');
+
+        self::assertStringNotContainsString('function upload_user_avatar', $source);
+        self::assertStringNotContainsString('function autoriser_avatars_upload', $source);
+        self::assertStringNotContainsString('function remplacer_avatar_utilisateur', $source);
+        self::assertStringNotContainsString("add_filter('upload_mimes'", $source);
+        self::assertStringNotContainsString("add_filter('get_avatar'", $source);
+        self::assertStringContainsString('charger_script_avatar_upload', $source);
+    }
+
     public function testRiddleStatisticsAccessIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/stats.php');

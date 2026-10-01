@@ -1267,94 +1267,9 @@ function ca_dismiss_message(): void
 // 📦 MODIFICATION AVATAR EN FRONT
 // ==================================================
 /**
- * 🔹 upload_user_avatar → Traiter l’upload d’un avatar utilisateur via AJAX.
- * 🔹 autoriser_avatars_upload → Autoriser les formats d’image pour l’upload d’avatars personnalisés.
- * 🔹 remplacer_avatar_utilisateur → Remplacer l’avatar par défaut par celui défini par l’utilisateur.
  * 🔹 charger_script_avatar_upload → Charger le script JS d’upload uniquement sur les pages commençant par "/mon-compte/".
  */
 
-
-/**
- * 🖼️ Traiter l'upload d'un avatar utilisateur via AJAX.
- *
- * Cette fonction est appelée via l'action AJAX `wp_ajax_upload_user_avatar` côté authentifié.
- * Elle permet à un utilisateur connecté de téléverser une image personnalisée en tant qu'avatar.
- *
- * Étapes :
- * - Vérifie que l’utilisateur est connecté.
- * - Valide la présence, le format (JPG, PNG, GIF, WEBP) et la taille du fichier (2 Mo max).
- * - Gère le téléversement du fichier via `wp_handle_upload()`.
- * - Enregistre l’URL dans la meta `user_avatar`.
- * - Retourne une réponse JSON avec l’URL du nouvel avatar.
- *
- * 🔐 Sécurité :
- * - Seuls les utilisateurs connectés peuvent utiliser ce point d’entrée.
- * - La validation du type MIME et de la taille empêche les uploads malveillants.
- *
- * 💡 Remarque :
- * - Cette fonction n'utilise pas `media_handle_upload()` mais `wp_handle_upload()` directement,
- *   ce qui est plus léger mais ne crée pas de pièce jointe dans la médiathèque.
- *
- * @return void Réponse JSON (succès ou erreur) via `wp_send_json_*`.
- *
- * @hook wp_ajax_upload_user_avatar
- */
-function upload_user_avatar() {
-    ChassesAuTresor\Core\Media\UserAvatarUploadAjaxHandler::handle();
-}
-
-
-/**
- * 📌 Autorise les formats d'image pour l'upload des avatars.
- *
- * @param array $mimes Liste des types MIME autorisés.
- * @return array Liste mise à jour avec les formats acceptés.
- */
-function autoriser_avatars_upload($mimes) {
-    $mimes['jpg'] = 'image/jpeg';
-    $mimes['jpeg'] = 'image/jpeg';
-    $mimes['png'] = 'image/png';
-    $mimes['gif'] = 'image/gif';
-    $mimes['webp'] = 'image/webp'; // ✅ Ajout du format WebP
-    return $mimes;
-}
-add_filter('upload_mimes', 'autoriser_avatars_upload');
-
-/**
- * 📌 Remplace l'avatar par défaut par l'avatar personnalisé de l'utilisateur.
- *
- * @param string $avatar Code HTML de l'avatar par défaut.
- * @param mixed $id_or_email Identifiant ou email de l'utilisateur.
- * @param int $size Taille de l'avatar.
- * @param string $default Avatar par défaut si aucun avatar personnalisé n'est trouvé.
- * @param string $alt Texte alternatif de l'avatar.
- * @return string HTML de l'avatar personnalisé ou avatar par défaut.
- */
-function remplacer_avatar_utilisateur($avatar, $id_or_email, $size, $default, $alt) {
-    $user_id = 0;
-
-    // 🔹 Vérifie si l'entrée est un ID, un objet ou un email
-    if (is_numeric($id_or_email)) {
-        $user_id = $id_or_email;
-    } elseif (is_object($id_or_email) && isset($id_or_email->user_id)) {
-        $user_id = $id_or_email->user_id;
-    } elseif (is_string($id_or_email)) {
-        $user = get_user_by('email', $id_or_email);
-        if ($user) {
-            $user_id = $user->ID;
-        }
-    }
-
-    // 📌 Vérifie si l'utilisateur a un avatar enregistré en base
-    $avatar_url = get_user_meta($user_id, 'user_avatar', true);
-
-    if (!empty($avatar_url)) {
-        return "<img src='" . esc_url($avatar_url) . "' alt='" . esc_attr($alt) . "' width='{$size}' height='{$size}' class='avatar avatar-{$size} photo' />";
-    }
-
-    return $avatar;
-}
-add_filter('get_avatar', 'remplacer_avatar_utilisateur', 10, 5);
 
 /**
  * 📌 Charge le fichier JavaScript uniquement sur les pages commençant par "/mon-compte/"
