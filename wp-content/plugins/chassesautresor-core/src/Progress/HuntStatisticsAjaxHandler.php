@@ -62,9 +62,6 @@ class HuntStatisticsAjaxHandler {
         $allowedOrderBy = ['inscription', 'username', 'participation', 'resolution'];
         $orderBy = sanitize_text_field($_POST['orderby'] ?? 'inscription');
         $orderBy = in_array($orderBy, $allowedOrderBy, true) ? $orderBy : 'inscription';
-        if (!is_callable(self::$participantRenderer)) {
-            wp_send_json_error('acces_refuse');
-        }
         $application = self::application();
         $rows = $application->participants(
             $huntId,
@@ -75,8 +72,9 @@ class HuntStatisticsAjaxHandler {
         );
         $total = $application->participantCount($huntId);
         $pages = (int) ceil($total / $request['limit']);
+        $renderer = self::$participantRenderer ?? [new HuntStatisticsParticipantRenderer(), 'render'];
         $html = (string) call_user_func(
-            self::$participantRenderer,
+            $renderer,
             $huntId,
             $rows,
             $request,

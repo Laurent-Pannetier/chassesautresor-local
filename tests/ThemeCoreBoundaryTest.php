@@ -516,6 +516,13 @@ final class ThemeCoreBoundaryTest extends TestCase
             self::assertStringNotContainsString("function {$functionName}(", $theme);
             self::assertStringContainsString("function {$functionName}(", $core);
         }
+
+        $themePager = (string) file_get_contents(self::THEME_PATH . '/inc/pager.php');
+        $corePager = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Support/pager-functions.php'
+        );
+        self::assertStringNotContainsString('function cta_render_pager(', $themePager);
+        self::assertStringContainsString('function cta_render_pager(', $corePager);
     }
 
     public function testThemeDoesNotOwnRiddleMutationPoliciesOrLifecycle(): void
@@ -986,16 +993,20 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringContainsString('class RiddleStatisticsParticipantRenderer', $renderer);
     }
 
-    public function testHuntStatisticsBusinessCallbacksAreNotInjectedByTheme(): void
+    public function testHuntStatisticsRenderingIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/chasse/stats.php');
-        preg_match('/HuntStatisticsAjaxHandler::configure\([\s\S]*?^    \);/m', $source, $matches);
-        $configuration = $matches[0] ?? null;
+        $handler = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/HuntStatisticsAjaxHandler.php'
+        );
+        $renderer = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/HuntStatisticsParticipantRenderer.php'
+        );
 
-        self::assertIsString($configuration);
-        self::assertStringNotContainsString('utilisateur_est_organisateur_associe_a_chasse', $configuration);
-        self::assertStringNotContainsString('chasse_compter_', $configuration);
-        self::assertStringNotContainsString('chasse_lister_participants', $configuration);
+        self::assertStringNotContainsString('HuntStatisticsAjaxHandler::configure', $source);
+        self::assertStringNotContainsString('function cat_render_hunt_statistics_participants', $source);
+        self::assertStringContainsString("[new HuntStatisticsParticipantRenderer(), 'render']", $handler);
+        self::assertStringContainsString('class HuntStatisticsParticipantRenderer', $renderer);
     }
 
     public function testPointsHistoryQueriesAreNotInjectedByTheme(): void

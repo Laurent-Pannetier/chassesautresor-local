@@ -12,6 +12,7 @@ defined('ABSPATH') || exit;
 
 require_once __DIR__ . '/src/Support/CoreServiceFactory.php';
 require_once __DIR__ . '/src/Support/table-functions.php';
+require_once __DIR__ . '/src/Support/pager-functions.php';
 require_once __DIR__ . '/src/Security/site-password.php';
 require_once __DIR__ . '/src/Email/template.php';
 require_once __DIR__ . '/src/Email/user-registration.php';
@@ -91,6 +92,7 @@ require_once __DIR__ . '/src/Progress/HuntStatisticsService.php';
 require_once __DIR__ . '/src/Progress/RiddleStatisticsRepository.php';
 require_once __DIR__ . '/src/Progress/RiddleStatisticsService.php';
 require_once __DIR__ . '/src/Progress/StatisticsParticipantRequestService.php';
+require_once __DIR__ . '/src/Progress/HuntStatisticsParticipantRenderer.php';
 require_once __DIR__ . '/src/Progress/RiddleStatisticsParticipantRenderer.php';
 require_once __DIR__ . '/src/Progress/HuntStatisticsAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/HuntStatisticsApplicationService.php';
