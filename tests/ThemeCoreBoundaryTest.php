@@ -1196,11 +1196,17 @@ final class ThemeCoreBoundaryTest extends TestCase
     public function testHomepageHuntFilterIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/homepage-filters.php');
-        preg_match('/HuntFilterAjaxHandler::configure\([\s\S]*?^\);/m', $source, $matches);
-        $configuration = $matches[0] ?? null;
+        $handler = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Content/HuntFilterAjaxHandler.php'
+        );
+        $renderer = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Content/HuntCardRenderer.php'
+        );
 
-        self::assertIsString($configuration);
-        self::assertStringNotContainsString('ca_home_filter_chasse_ids', $configuration);
+        self::assertStringNotContainsString('HuntFilterAjaxHandler::configure', $source);
+        self::assertStringNotContainsString('function ca_render_filtered_hunts', $source);
+        self::assertStringContainsString('new HuntCardRenderer()', $handler);
+        self::assertStringNotContainsString('get_template_part', $renderer);
     }
 
     public function testAccountImportantMessagesAreNotInjectedByTheme(): void

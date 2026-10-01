@@ -14,6 +14,9 @@ final class EngagedHuntsRendererTest extends TestCase {
         function esc_html($value): string {
             return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
         }
+        function esc_attr($value): string {
+            return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+        }
         function esc_html__($value): string {
             return esc_html($value);
         }
@@ -64,7 +67,7 @@ final class EngagedHuntsRendererTest extends TestCase {
             'total_items' => 3,
         ]);
 
-        self::assertStringContainsString('engaged-hunt-card', $html);
+        self::assertStringContainsString('hunt-card', $html);
         self::assertStringContainsString('La chasse &amp; le trésor', $html);
         self::assertStringContainsString('Une aventure', $html);
         self::assertStringContainsString('data-param="engaged-page"', $html);

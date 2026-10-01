@@ -25,13 +25,6 @@ final class HuntFilterAjaxHandler
     {
         check_ajax_referer('ca-filter-chasses', 'nonce');
 
-        if (self::$renderer === null) {
-            wp_send_json_error([
-                'message' => __('Impossible de charger les chasses.', 'chassesautresor-com'),
-            ]);
-            return;
-        }
-
         $request = is_array($_POST) ? wp_unslash($_POST) : [];
         $results = (new HuntFilterApplicationService())->filter(HuntFilterRequestService::normalize($request));
 
@@ -43,7 +36,9 @@ final class HuntFilterAjaxHandler
         }
 
         $huntIds = array_map('intval', $results['ids']);
-        $html = (string) (self::$renderer)($huntIds);
+        $html = self::$renderer !== null
+            ? (string) (self::$renderer)($huntIds)
+            : (new HuntCardRenderer())->grid($huntIds, 'organisateur-chasses-grid');
 
         wp_send_json_success([
             'html' => $html,

@@ -4,12 +4,19 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Progress;
 
+use ChassesAuTresor\Core\Content\HuntCardRenderer;
+
 /** Render an autonomous fallback for the current user's engaged hunts. */
 final class EngagedHuntsRenderer {
     private EngagedHuntsRecommendationService $recommendations;
+    private HuntCardRenderer $cards;
 
-    public function __construct(?EngagedHuntsRecommendationService $recommendations = null) {
+    public function __construct(
+        ?EngagedHuntsRecommendationService $recommendations = null,
+        ?HuntCardRenderer $cards = null
+    ) {
         $this->recommendations = $recommendations ?? new EngagedHuntsRecommendationService();
+        $this->cards = $cards ?? new HuntCardRenderer();
     }
 
     /** @param array{ids: int[], page: int, total_pages: int, total_items: int} $pagination */
@@ -19,16 +26,9 @@ final class EngagedHuntsRenderer {
             return $this->emptyState();
         }
 
-        ob_start();
-        ?>
-        <div class="cards-grid myaccount-chasses-engagees-grid">
-            <?php foreach ($huntIds as $huntId) : ?>
-                <?= $this->card($huntId); ?>
-            <?php endforeach; ?>
-        </div>
-        <?php
+        $html = $this->cards->grid($huntIds, 'cards-grid myaccount-chasses-engagees-grid');
         if ($pagination['total_pages'] > 1) {
-            echo \cta_render_pager(
+            $html .= \cta_render_pager(
                 $pagination['page'],
                 $pagination['total_pages'],
                 'engaged-hunts-pager',
@@ -36,7 +36,7 @@ final class EngagedHuntsRenderer {
             );
         }
 
-        return trim((string) ob_get_clean());
+        return $html;
     }
 
     private function emptyState(): string {
@@ -53,11 +53,7 @@ final class EngagedHuntsRenderer {
             </p>
             <?php if ($recommendedIds !== []) : ?>
                 <h3><?= esc_html__('Chasses recommandées', 'chassesautresor-com'); ?></h3>
-                <div class="cards-grid myaccount-recommended-hunts-grid">
-                    <?php foreach ($recommendedIds as $huntId) : ?>
-                        <?= $this->card($huntId); ?>
-                    <?php endforeach; ?>
-                </div>
+                <?= $this->cards->grid($recommendedIds, 'cards-grid myaccount-recommended-hunts-grid'); ?>
             <?php else : ?>
                 <p><?= esc_html__(
                     'Aucune recommandation disponible pour le moment, mais notre catalogue vous attend.',
@@ -72,39 +68,4 @@ final class EngagedHuntsRenderer {
         return trim((string) ob_get_clean());
     }
 
-    private function card(int $huntId): string {
-        $title = get_the_title($huntId);
-        $permalink = get_permalink($huntId);
-        $excerpt = (string) get_post_field('post_excerpt', $huntId);
-        if ($excerpt === '') {
-            $excerpt = get_post_field('post_content', $huntId);
-        }
-        $excerpt = wp_trim_words(wp_strip_all_tags((string) $excerpt), 30, '…');
-        $image = get_the_post_thumbnail(
-            $huntId,
-            'medium_large',
-            ['class' => 'engaged-hunt-card__image', 'loading' => 'lazy']
-        );
-
-        ob_start();
-        ?>
-        <article class="carte carte-chasse engaged-hunt-card">
-            <?php if ($image !== '') : ?>
-                <a href="<?= esc_url($permalink); ?>" aria-hidden="true" tabindex="-1">
-                    <?= wp_kses_post($image); ?>
-                </a>
-            <?php endif; ?>
-            <div class="engaged-hunt-card__content">
-                <h3><a href="<?= esc_url($permalink); ?>"><?= esc_html($title); ?></a></h3>
-                <?php if ($excerpt !== '') : ?>
-                    <p><?= esc_html($excerpt); ?></p>
-                <?php endif; ?>
-                <a class="bouton-secondaire" href="<?= esc_url($permalink); ?>">
-                    <?= esc_html__('En savoir plus', 'chassesautresor-com'); ?>
-                </a>
-            </div>
-        </article>
-        <?php
-        return trim((string) ob_get_clean());
-    }
 }

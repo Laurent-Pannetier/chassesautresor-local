@@ -159,6 +159,7 @@ require_once __DIR__ . '/src/Media/ProtectedRiddleAssetService.php';
 require_once __DIR__ . '/src/Media/ProtectedSolutionAssetService.php';
 require_once __DIR__ . '/src/Content/RiddleCompletionService.php';
 require_once __DIR__ . '/src/Content/HuntFilterRequestService.php';
+require_once __DIR__ . '/src/Content/HuntCardRenderer.php';
 require_once __DIR__ . '/src/Content/HuntFilterAjaxHandler.php';
 require_once __DIR__ . '/src/Content/HuntFilterApplicationService.php';
 require_once __DIR__ . '/src/Content/CompletionCacheManager.php';
