@@ -70,7 +70,10 @@ d’une proposition et accès à la liste d’une énigme. Le thème ne fournit 
 Le dix-huitième lot a transféré les autorisations des statistiques d’énigme au plugin, pour le panneau de synthèse
 comme pour la liste détaillée des participants.
 
-Estimation après ce lot : **99,98 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
+Le dix-neuvième lot a transféré la construction des statistiques, l’exclusion des comptes internes, la lecture et le
+comptage des participants au plugin. Le thème ne fournit plus que le rendu HTML du tableau.
+
+Estimation après ce lot : **99,99 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
 responsabilités fonctionnelles recensées (persistance, accès, routes, traitements, notifications et cache), et non
 sur le nombre de lignes. Il sera réévalué après chaque lot.
 

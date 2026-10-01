@@ -35,9 +35,6 @@ final class StatisticsAjaxHandlerRegistrationTest extends TestCase {
             static fn (): string => ''
         );
         RiddleStatisticsAjaxHandler::configure(
-            static fn (): array => [],
-            static fn (): array => [],
-            static fn (): int => 0,
             static fn (): string => ''
         );
         $this->addToAssertionCount(1);

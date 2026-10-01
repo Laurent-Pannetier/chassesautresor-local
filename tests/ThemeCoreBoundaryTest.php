@@ -339,6 +339,8 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertIsString($configuration);
         self::assertStringNotContainsString('utilisateur_peut_voir_panneau', $configuration);
         self::assertStringNotContainsString('utilisateur_peut_modifier_post', $configuration);
+        self::assertStringNotContainsString('enigme_compter_', $configuration);
+        self::assertStringNotContainsString('enigme_lister_participants', $configuration);
     }
 
     public function testThemeDoesNotOwnHuntModerationEmails(): void
