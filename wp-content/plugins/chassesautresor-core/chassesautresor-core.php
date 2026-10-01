@@ -53,6 +53,7 @@ require_once __DIR__ . '/src/Progress/RiddleAnswerSubmissionPolicy.php';
 require_once __DIR__ . '/src/Progress/RiddleAnswerSubmissionAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/RiddleSystemStateService.php';
 require_once __DIR__ . '/src/Progress/RiddleSystemStateUpdater.php';
+require_once __DIR__ . '/src/Progress/riddle-status-functions.php';
 require_once __DIR__ . '/src/Progress/RiddleSystemStateSaveHookHandler.php';
 require_once __DIR__ . '/src/Progress/RiddleParticipationPolicyService.php';
 require_once __DIR__ . '/src/Progress/RiddleSidebarRequestPolicy.php';

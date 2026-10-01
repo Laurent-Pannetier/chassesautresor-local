@@ -708,6 +708,20 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('chasse_trash_with_children', $moderation);
     }
 
+    public function testThemeDoesNotOwnRiddleSystemStateCompatibilityApi(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/statut-functions.php');
+        foreach ([
+            'mettre_a_jour_statuts_enigmes_de_la_chasse',
+            'enigme_mettre_a_jour_etat_systeme',
+            'enigme_mettre_a_jour_etat_systeme_automatiquement',
+            'forcer_recalcul_statut_enigme',
+            'enigme_get_etat_systeme',
+        ] as $legacyFunction) {
+            self::assertStringNotContainsString('function ' . $legacyFunction, $source);
+        }
+    }
+
     public function testThemeDoesNotResolveProtectedImagePaths(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/visuels.php');

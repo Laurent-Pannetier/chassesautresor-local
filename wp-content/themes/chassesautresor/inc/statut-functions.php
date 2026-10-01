@@ -237,62 +237,6 @@ function enigme_est_visible_pour(int $user_id, int $enigme_id): bool
 
 
 /**
- * 🔁 Recalcule le statut système de toutes les énigmes liées à une chasse.
- *
- * @param int $chasse_id ID de la chasse.
- * @return void
- */
-function mettre_a_jour_statuts_enigmes_de_la_chasse(int $chasse_id, ?string $huntStatus = null): void
-{
-    (new ChassesAuTresor\Core\Progress\RiddleSystemStateUpdater())->refreshHunt(
-        $chasse_id,
-        $huntStatus
-    );
-}
-
-function enigme_mettre_a_jour_etat_systeme(
-    int $enigme_id,
-    bool $mettre_a_jour = true,
-    ?string $statut_chasse_forcé = null
-): string {
-    return (new ChassesAuTresor\Core\Progress\RiddleSystemStateUpdater())->refresh(
-        $enigme_id,
-        $mettre_a_jour,
-        $statut_chasse_forcé
-    );
-}
-
-function enigme_mettre_a_jour_etat_systeme_automatiquement($post_id): void
-{
-    if (is_numeric($post_id)) {
-        (new ChassesAuTresor\Core\Progress\RiddleSystemStateUpdater())->refresh((int) $post_id);
-    }
-}
-
-
-/**
- * 🔁 Recalcule le statut système d’une énigme via appel AJAX sécurisé.
- *
- * Wrapper de compatibilité ; l’endpoint est enregistré par chassesautresor-core.
- * @return void
- */
-function forcer_recalcul_statut_enigme(): void
-{
-    ChassesAuTresor\Core\Progress\RiddleStatusAjaxHandler::handle();
-}
-
-/**
- * 🔍 Retourne l'état système de l'énigme (champ ACF cache).
- *
- * @param int $enigme_id ID de l’énigme
- * @return string Valeur du champ (accessible, bloquee_date, etc.)
- */
-function enigme_get_etat_systeme(int $enigme_id): string
-{
-    return get_field('enigme_cache_etat_systeme', $enigme_id) ?: 'invalide';
-}
-
-/**
  * ✅ Vérifie si un joueur peut engager une énigme (accès + pas déjà engagé).
  *
  * @param int $enigme_id ID de l’énigme

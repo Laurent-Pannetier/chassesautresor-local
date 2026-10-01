@@ -268,6 +268,10 @@ Le soixantième lot a déplacé cette dernière écriture dans `RiddleRenderCach
 fragment HTML de solution, mais le core possède maintenant sa lecture, sa durée de vie, son écriture et son invalidation.
 La garde de frontière interdit désormais toute écriture de cache ou de transient dans le thème.
 
+Le soixante-et-unième lot a déplacé dans le plugin les cinq fonctions de compatibilité du statut système des énigmes :
+rafraîchissement individuel ou par chasse, callback historique de sauvegarde, endpoint de recalcul et lecture de l'état.
+`statut-functions.php` conserve les décisions de participation encore utilisées par les vues, mais plus ce cycle de vie.
+
 ### Inventaire reproductible au 1er octobre 2026
 
 Les recherches ci-dessous portent sur les fichiers de production du thème (les fixtures sous `tests/` sont exclues).
@@ -304,7 +308,7 @@ Résultats obtenus après ce lot :
 Une grille fixe, plutôt qu'un décompte des lots, est utilisée. Pour l'extraction PHP, les cinq axes ont le même poids :
 propriété des hooks métier, absence de mutations dans le rendu, politiques d'accès, autonomie vis-à-vis des fonctions
 globales du thème et séparation des view-models. Les preuves ci-dessus donnent respectivement 100 %, 100 %, 100 %,
-100 % et 35 %, soit **environ 87 % pour l'extraction du métier PHP inventorié**.
+100 % et 40 %, soit **environ 88 % pour l'extraction du métier PHP inventorié**.
 
 Pour la remplaçabilité, la grille pondère l'extraction PHP à 40 %, la présence de parcours de secours à 25 %, les
 assets indépendants à 15 %, l'absence de callbacks de rendu fournis par le thème à 10 % et une recette neutre réussie
