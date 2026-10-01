@@ -66,8 +66,12 @@ if (!function_exists('delete_user_meta')) {
 }
 
 
-require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/messages/class-user-message-repository.php';
-require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/cli/class-cat-cli-command.php';
+if (!class_exists('UserMessageRepository', false)) {
+    class_alias(ChassesAuTresor\Core\Messages\UserMessageRepository::class, 'UserMessageRepository');
+}
+if (!class_exists('Cat_CLI_Command', false)) {
+    class_alias(ChassesAuTresor\Core\Cli\CatCliCommand::class, 'Cat_CLI_Command');
+}
 
 /**
  * @covers Cat_CLI_Command

@@ -40,7 +40,9 @@ class MyAccountMessagesTest extends TestCase
         eval('function wp_json_encode($data,$options=0,$depth=512){return json_encode($data,$options);}');
         eval('function current_time($type){return $type=="mysql"?"2023-01-01 00:00:00":0;}');
 
-        require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/messages/class-user-message-repository.php';
+        if (!class_exists('UserMessageRepository', false)) {
+    class_alias(ChassesAuTresor\Core\Messages\UserMessageRepository::class, 'UserMessageRepository');
+}
         require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/user-functions.php';
 
         global $wpdb;

@@ -18,16 +18,11 @@ class UserMessageRepositoryPluginCompatibilityTest extends TestCase
         $this->assertCoreRepositoryIsLoaded();
     }
 
-    /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
-     */
-    public function testThemeCompatibilityLoaderUsesCorePluginRepository(): void
+    public function testThemeNoLongerShipsARepositoryLoader(): void
     {
-        require_once __DIR__
-            . '/../wp-content/themes/chassesautresor/inc/messages/class-user-message-repository.php';
-
-        $this->assertCoreRepositoryIsLoaded();
+        self::assertFileDoesNotExist(
+            __DIR__ . '/../wp-content/themes/chassesautresor/inc/messages/class-user-message-repository.php'
+        );
     }
 
     private function assertCoreRepositoryIsLoaded(): void

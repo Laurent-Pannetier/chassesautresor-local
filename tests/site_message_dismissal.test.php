@@ -83,7 +83,9 @@ if (!function_exists('wp_send_json_success')) {
     }
 }
 
-require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/messages/class-user-message-repository.php';
+if (!class_exists('UserMessageRepository', false)) {
+    class_alias(ChassesAuTresor\Core\Messages\UserMessageRepository::class, 'UserMessageRepository');
+}
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/messages.php';
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/user-functions.php';
 
