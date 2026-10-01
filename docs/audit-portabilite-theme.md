@@ -192,6 +192,12 @@ thème. La confirmation effective reste traitée par la route autonome du core, 
 L'ancien template de confirmation ne lit plus le jeton, ne crée plus de CPT et ne modifie plus les rôles ; il ne conserve
 qu'un message de présentation de secours.
 
+Le quarante-sixième lot a autonomisé la politique de demande de validation d'une chasse et le nettoyage de ses messages
+de correction. Le plugin résout maintenant le rôle, l'organisateur associé, ses utilisateurs, la complétude de la chasse
+et de ses énigmes ainsi que leurs statuts, sans helpers du thème. La route de validation appelle directement ce résolveur
+et le service de messages du core. Les fonctions globales restent disponibles pour les vues historiques, mais leurs
+implémentations résident désormais dans le plugin.
+
 Estimation prudente après ce lot : **environ 98 % de l'autonomie métier vérifiée**. Il ne s'agit plus d'un calcul au
 centième fondé sur les lots déjà traités : cette valeur applique une décote aux dépendances runtime encore observées,
 aux politiques d'édition encore enregistrées par le thème, aux adaptateurs d'accès encore utilisés ailleurs et à

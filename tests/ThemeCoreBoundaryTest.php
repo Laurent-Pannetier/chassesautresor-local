@@ -559,6 +559,23 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('WP_User', $source);
     }
 
+    public function testThemeDoesNotOwnHuntValidationPolicyOrCorrectionCleanup(): void
+    {
+        $hunt = (string) file_get_contents(self::THEME_PATH . '/inc/chasse-functions.php');
+        $account = (string) file_get_contents(self::THEME_PATH . '/inc/user-functions.php');
+        $route = (string) file_get_contents(
+            __DIR__
+                . '/../wp-content/plugins/chassesautresor-core/src/Content/HuntValidationRequestRouteHandler.php'
+        );
+
+        self::assertStringNotContainsString('function peut_valider_chasse', $hunt);
+        self::assertStringNotContainsString('function myaccount_clear_correction_message', $account);
+        self::assertStringContainsString('HuntValidationAccessResolver', $route);
+        self::assertStringContainsString('HuntCorrectionMessageService', $route);
+        self::assertStringNotContainsString('peut_valider_chasse(', $route);
+        self::assertStringNotContainsString('myaccount_clear_correction_message(', $route);
+    }
+
     public function testRiddleStatisticsAccessIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/stats.php');

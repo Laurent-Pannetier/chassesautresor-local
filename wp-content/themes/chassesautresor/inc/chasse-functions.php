@@ -253,48 +253,6 @@ function afficher_chasse_associee_callback()
  * @param int $user_id   ID de l'utilisateur.
  * @return bool
  */
-function peut_valider_chasse(int $chasse_id, int $user_id): bool
-{
-    if (!$chasse_id || !$user_id) {
-        return false;
-    }
-
-    if (get_post_type($chasse_id) !== 'chasse') {
-        return false;
-    }
-
-    if (!est_organisateur($user_id)) {
-        return false;
-    }
-
-    if (!utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
-        return false;
-    }
-
-    $organisateur_id = get_organisateur_from_chasse($chasse_id);
-
-    // Utilise la requête directe pour lister toutes les énigmes rattachées
-    // afin d'éviter toute incohérence liée au cache "chasse_cache_enigmes".
-    $riddles = [];
-    foreach (recuperer_ids_enigmes_pour_chasse($chasse_id) as $enigme_id) {
-        $riddles[] = [
-            'system_status' => (string) get_field('enigme_cache_etat_systeme', $enigme_id),
-            'is_complete'    => (bool) get_field('enigme_cache_complet', $enigme_id),
-        ];
-    }
-
-    return (new ChassesAuTresor\Core\Content\HuntValidationService())->canRequestValidation(
-        true,
-        true,
-        $organisateur_id > 0 && (bool) get_field('organisateur_cache_complet', $organisateur_id),
-        (bool) get_field('chasse_cache_complet', $chasse_id),
-        (string) get_post_status($chasse_id),
-        (string) get_field('chasse_cache_statut_validation', $chasse_id),
-        (string) get_field('chasse_cache_statut', $chasse_id),
-        $riddles
-    );
-}
-
 /**
  * Calcule la progression d'un joueur dans une chasse.
  *
@@ -367,7 +325,7 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
         ];
     }
 
-    if (peut_valider_chasse($chasse_id, $user_id)) {
+    if (function_exists('peut_valider_chasse') && peut_valider_chasse($chasse_id, $user_id)) {
         return [
             'cta_html'    => render_form_validation_chasse($chasse_id),
             'cta_message' => '',
@@ -612,7 +570,7 @@ function trouver_chasse_a_valider(int $user_id): ?int
 
     foreach ($chasses as $chasse_id) {
         $chasse_id = (int) $chasse_id;
-        if (peut_valider_chasse($chasse_id, $user_id)) {
+        if (function_exists('peut_valider_chasse') && peut_valider_chasse($chasse_id, $user_id)) {
             return $chasse_id;
         }
     }
@@ -706,7 +664,10 @@ function cat_build_hunt_validation_cta(int $chasse_id, int $enigme_id): string
     }
 
     ob_start();
-    if (peut_valider_chasse($chasse_id, get_current_user_id())) {
+    if (
+        function_exists('peut_valider_chasse')
+        && peut_valider_chasse($chasse_id, get_current_user_id())
+    ) {
         echo '<div id="cta-validation-chasse" class="cta-chasse-row">';
         echo '<div class="cta-action">' . render_form_validation_chasse($chasse_id) . '</div>';
         echo '<div class="cta-message" aria-live="polite"></div>';

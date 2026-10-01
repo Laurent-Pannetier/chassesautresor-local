@@ -337,36 +337,6 @@ function myaccount_remove_persistent_message(int $user_id, string $key): void
  *
  * @return void
  */
-function myaccount_clear_correction_message(int $chasse_id): void
-{
-    $current          = get_current_user_id();
-    $organisateur_id  = get_organisateur_from_chasse($chasse_id);
-    $users            = $organisateur_id ? (array) get_field('utilisateurs_associes', $organisateur_id) : [];
-
-    $user_ids = array_map(
-        static function ($uid) {
-            return is_object($uid) ? (int) $uid->ID : (int) $uid;
-        },
-        $users
-    );
-
-    $user_ids[] = $current;
-
-    if ($organisateur_id) {
-        $author_id = (int) get_post_field('post_author', $organisateur_id);
-        if ($author_id) {
-            $user_ids[] = $author_id;
-        }
-    }
-
-    $user_ids = array_unique($user_ids);
-
-    foreach ($user_ids as $uid) {
-        myaccount_remove_persistent_message($uid, 'correction_chasse_' . $chasse_id);
-        myaccount_remove_persistent_message($uid, 'correction_info_chasse_' . $chasse_id);
-    }
-}
-
 /**
  * Ensure the validation info message is stored for eligible hunts.
  *

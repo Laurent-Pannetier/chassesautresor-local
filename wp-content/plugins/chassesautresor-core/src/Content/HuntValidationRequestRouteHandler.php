@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Content;
 
+use ChassesAuTresor\Core\Messages\HuntCorrectionMessageService;
 use ChassesAuTresor\Core\Progress\HuntStatusUpdater;
 
 /**
@@ -33,13 +34,13 @@ final class HuntValidationRequestRouteHandler
             wp_die(__('Vérification de sécurité échouée.', 'chassesautresor-com'));
         }
 
-        if (!peut_valider_chasse($huntId, $userId)) {
+        if (!(new HuntValidationAccessResolver())->canRequest($huntId, $userId)) {
             wp_die(__('Conditions non remplies.', 'chassesautresor-com'));
         }
 
         (new HuntStatusUpdater())->synchronizePublication($huntId, 'en_attente');
         update_field('chasse_cache_statut', 'en_attente', $huntId);
-        myaccount_clear_correction_message($huntId);
+        (new HuntCorrectionMessageService())->clear($huntId);
 
         wp_redirect(add_query_arg('validation_demandee', '1', get_permalink($huntId)));
         exit;
