@@ -917,6 +917,20 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('wp_cache_set(', $source);
     }
 
+    public function testProtectedImageCompatibilityFunctionLoadsAfterTheme(): void
+    {
+        $source = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/chassesautresor-core.php'
+        );
+
+        self::assertStringContainsString("add_action('after_setup_theme'", $source);
+        self::assertStringContainsString("require_once __DIR__ . '/src/Media/protected-image-functions.php';", $source);
+        self::assertStringNotContainsString(
+            "\nrequire_once __DIR__ . '/src/Media/protected-image-functions.php';",
+            $source
+        );
+    }
+
     public function testThemeDoesNotBuildRiddleSidebarStatisticsCaches(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/affichage.php');
