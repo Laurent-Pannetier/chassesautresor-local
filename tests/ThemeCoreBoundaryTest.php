@@ -1276,6 +1276,19 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringContainsString('class AccountStatisticsRenderer', $renderer);
     }
 
+    public function testAccountToolsRenderingBelongsToCore(): void
+    {
+        $template = (string) file_get_contents(self::THEME_PATH . '/templates/myaccount/content-outils.php');
+        $renderer = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Messages/AccountToolsRenderer.php'
+        );
+
+        self::assertStringNotContainsString('get_taux_conversion_actuel()', $template);
+        self::assertStringNotContainsString('get_option(', $template);
+        self::assertStringContainsString('new ChassesAuTresor\\Core\\Messages\\AccountToolsRenderer', $template);
+        self::assertStringContainsString('class AccountToolsRenderer', $renderer);
+    }
+
     public function testThemeDoesNotOwnHuntModerationEmails(): void
     {
         $violations = $this->findPhpMatches(

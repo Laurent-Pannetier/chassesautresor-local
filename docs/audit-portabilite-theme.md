@@ -426,6 +426,12 @@ Le quatre-vingt-douzième lot déplace la composition et le rendu de la section 
 traduction incorrect de ses deux libellés est corrigé. La configuration AJAX commune reste néanmoins nécessaire aux
 sections « Organisateurs » et « Outils » ; les indicateurs globaux restent donc inchangés.
 
+Le quatre-vingt-treizième lot déplace à son tour la section administrative « Outils » dans
+`AccountToolsRenderer` : réglage manuel des points, protection globale, taux de conversion, inspection ACF et remise
+à zéro des statistiques. Le template historique ne conserve que la garde administrateur et l'appel au renderer core.
+Seule la section « Organisateurs » empêche encore l'autonomie du contrôleur AJAX commun ; les indicateurs restent
+inchangés jusqu'à son extraction effective.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |
