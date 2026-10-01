@@ -1400,6 +1400,9 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringContainsString("'post_type' => 'indice'", $service);
         self::assertStringContainsString("'indice_enigme_linked'", $service);
         self::assertStringContainsString("'indice_chasse_linked'", $service);
+        self::assertStringNotContainsString("get_field('indice_cout_points'", $source);
+        self::assertStringNotContainsString('indice_est_debloque(', $source);
+        self::assertStringNotContainsString('date_create_from_format(', $source);
     }
 
     public function testRiddleParticipationBalancesAndAttemptCountsBelongToCore(): void

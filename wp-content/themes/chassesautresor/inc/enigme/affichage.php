@@ -117,9 +117,9 @@ require_once __DIR__ . '/indices.php';
 
         $content = '';
 
-        $hintIds = (new ChassesAuTresor\Core\Progress\RiddleParticipationService())->hintIds($enigme_id);
-        $indices_enigme = $hintIds['riddle'];
-        $indices_chasse = $hintIds['hunt'];
+        $hints = (new ChassesAuTresor\Core\Progress\RiddleParticipationService())->hints($enigme_id, $user_id);
+        $indices_enigme = $hints['riddle'];
+        $indices_chasse = $hints['hunt'];
 
         if ($bloc_reponse !== '') {
             $content .= '<div class="zone-reponse">' . $bloc_reponse . '</div>';
@@ -127,41 +127,18 @@ require_once __DIR__ . '/indices.php';
 
         if (!empty($indices_enigme) || !empty($indices_chasse)) {
             $content .= '<hr class="reponse-indices-separator" />';
-            $build_line = function (array $indices, string $title) use ($user_id) {
+            $build_line = function (array $indices, string $title) {
                 $html = '<div class="zone-indices-line"><span class="zone-indices-line__label">'
                     . esc_html($title)
                     . '</span><div class="indice-list">';
-                foreach ($indices as $i => $indice_id) {
-                    $cout_indice  = (int) get_field('indice_cout_points', $indice_id);
-                    $etat_systeme = get_field('indice_cache_etat_systeme', $indice_id) ?: '';
-                    $est_debloque = indice_est_debloque($user_id, $indice_id);
+                foreach ($indices as $hint) {
+                    $indice_id = $hint['id'];
+                    $cout_indice = $hint['cost'];
+                    $etat_systeme = $hint['state'];
+                    $est_debloque = $hint['unlocked'];
 
                     if ($etat_systeme === 'programme') {
-                        $date_raw  = get_field('indice_date_disponibilite', $indice_id);
-                        $timestamp = false;
-                        if ($date_raw) {
-                            $formats = [
-                                'Y-m-d H:i:s',
-                                'd/m/Y H:i',
-                                'Y-m-d\\TH:i:s',
-                                'd/m/Y g:i a',
-                                'd/m/Y g:i A',
-                                'Y-m-d g:i a',
-                            ];
-                            foreach ($formats as $format) {
-                                $date = date_create_from_format($format, $date_raw, wp_timezone());
-                                if ($date !== false) {
-                                    $timestamp = $date->getTimestamp();
-                                    break;
-                                }
-                            }
-                            if ($timestamp === false) {
-                                $date = date_create_from_format('d/m/Y g:i a', $date_raw, wp_timezone());
-                                if ($date !== false) {
-                                    $timestamp = $date->getTimestamp();
-                                }
-                            }
-                        }
+                        $timestamp = $hint['available_at'];
 
                         $now = current_time('timestamp');
                         if ($timestamp === false || $timestamp > $now) {
@@ -197,8 +174,7 @@ require_once __DIR__ . '/indices.php';
                         $etat_icon = 'fa-lightbulb';
                     }
 
-                    $title_ind = get_indice_title($indice_id);
-                    $label     = esc_html($title_ind);
+                    $label = esc_html($hint['title']);
 
                     $cout_html = $cout_indice > 0
                         ? ' - ' . $cout_indice . ' <sup>'

@@ -16,6 +16,45 @@ final class RiddleParticipationService {
         ];
     }
 
+    /** @return array{riddle:array<int,array<string,mixed>>,hunt:array<int,array<string,mixed>>} */
+    public function hints(int $riddleId, int $userId): array {
+        $groups = $this->hintIds($riddleId);
+
+        return [
+            'riddle' => array_map(fn (int $hintId): array => $this->hint($hintId, $userId), $groups['riddle']),
+            'hunt' => array_map(fn (int $hintId): array => $this->hint($hintId, $userId), $groups['hunt']),
+        ];
+    }
+
+    /** @return array{id:int,cost:int,state:string,unlocked:bool,title:string,available_at:int|false} */
+    private function hint(int $hintId, int $userId): array {
+        return [
+            'id' => $hintId,
+            'cost' => (int) get_field('indice_cout_points', $hintId),
+            'state' => (string) (get_field('indice_cache_etat_systeme', $hintId) ?: ''),
+            'unlocked' => indice_est_debloque($userId, $hintId),
+            'title' => get_indice_title($hintId),
+            'available_at' => $this->timestamp(get_field('indice_date_disponibilite', $hintId)),
+        ];
+    }
+
+    /** @return int|false */
+    private function timestamp($value) {
+        if (!$value) {
+            return false;
+        }
+
+        $formats = ['Y-m-d H:i:s', 'd/m/Y H:i', 'Y-m-d\TH:i:s', 'd/m/Y g:i a', 'd/m/Y g:i A', 'Y-m-d g:i a'];
+        foreach ($formats as $format) {
+            $date = date_create_from_format($format, (string) $value, wp_timezone());
+            if ($date !== false) {
+                return $date->getTimestamp();
+            }
+        }
+
+        return false;
+    }
+
     /** @return int[] */
     private function query(string $targetType, string $relationKey, int $targetId): array {
         if ($targetId <= 0) {
