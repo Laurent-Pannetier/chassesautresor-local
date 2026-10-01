@@ -185,70 +185,6 @@ function charger_script_paiements_admin(): void
 }
 add_action('wp_enqueue_scripts', 'charger_script_paiements_admin');
 
-/**
- * 📌 Affiche les demandes de paiement en attente et réglées pour les administrateurs.
- */
-function render_tableau_paiements_admin(array $requests): string
-{
-    ob_start();
-    echo '<table class="widefat fixed">';
-    echo '<thead><tr><th>Organisateur</th><th>Montant / Points</th><th>Date demande</th><th>IBAN / BIC</th><th>Statut</th><th>Action</th></tr></thead>';
-    echo '<tbody>';
-
-    foreach ($requests as $request) {
-        $user = get_userdata((int) $request['user_id']);
-
-        $organisateur_id = get_organisateur_from_user($request['user_id']);
-        $iban            = $organisateur_id ? get_field('iban', $organisateur_id) : '';
-        $bic             = $organisateur_id ? get_field('bic', $organisateur_id) : '';
-        if ($organisateur_id && (empty($iban) || empty($bic))) {
-            $iban = get_field('gagnez_de_largent_iban', $organisateur_id);
-            $bic  = get_field('gagnez_de_largent_bic', $organisateur_id);
-        }
-        $iban = $iban ?: 'Non renseigné';
-
-        switch ($request['request_status']) {
-            case 'paid':
-                $statut = '✅ Réglé';
-                break;
-            case 'cancelled':
-                $statut = '❌ Annulé';
-                break;
-            case 'refused':
-                $statut = '🚫 Refusé';
-                break;
-            default:
-                $statut = '🟡 En attente';
-        }
-
-        $action = '-';
-        if ($request['request_status'] === 'pending') {
-            $action  = '<form class="js-update-request" data-id="' . esc_attr($request['id']) . '">';
-            $action .= '<select name="statut">';
-            $action .= '<option value="regle" selected>' . esc_html__('Régler', 'chassesautresor-com') . '</option>';
-            $action .= '<option value="annule">' . esc_html__('Annuler', 'chassesautresor-com') . '</option>';
-            $action .= '<option value="refuse">' . esc_html__('Refuser', 'chassesautresor-com') . '</option>';
-            $action .= '</select>';
-            $action .= '<button type="submit" class="button">OK</button>';
-            $action .= '</form>';
-        }
-
-        $points_utilises = esc_html(abs((int) $request['points']));
-
-        echo '<tr>';
-        echo '<td>' . esc_html($user->display_name ?? '') . '</td>';
-        echo '<td>' . esc_html($request['amount_eur']) . ' €<br><small>(' . $points_utilises . ' points)</small></td>';
-        echo '<td>' . esc_html(date('Y-m-d H:i', strtotime($request['request_date']))) . '</td>';
-        echo '<td><strong>' . esc_html($iban) . '</strong><br><small>' . esc_html($bic) . '</small></td>';
-        echo '<td class="col-status">' . esc_html($statut) . '</td>';
-        echo '<td>' . $action . '</td>';
-        echo '</tr>';
-    }
-
-    echo '</tbody></table>';
-    return ob_get_clean();
-}
-
 function afficher_tableau_paiements_admin(): void
 {
     if (!current_user_can('administrator')) {
@@ -454,9 +390,7 @@ function cta_toggle_site_protection(): void
     \ChassesAuTresor\Core\Admin\AdminAjaxHandler::toggleSiteProtection();
 }
 
-\ChassesAuTresor\Core\Admin\AdminAjaxHandler::configure(
-    static fn(array $requests): string => render_tableau_paiements_admin($requests)
-);
+
 
 
 /**

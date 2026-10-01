@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ChassesAuTresor\Core\Admin;
 
 use ChassesAuTresor\Core\Support\CoreServiceFactory;
+use ChassesAuTresor\Core\Relationships\OrganizerRepository;
 use Closure;
 
 final class AdminAjaxHandler
@@ -73,17 +74,16 @@ final class AdminAjaxHandler
         if (!self::isAdministrator()) {
             return;
         }
-        if (self::$paymentTableRenderer === null) {
-            wp_send_json_error(['message' => __('Service indisponible.', 'chassesautresor-com')]);
-            return;
-        }
         $page = max(1, isset($_POST['page']) ? (int) $_POST['page'] : 1);
         $service = self::conversionService();
         $requests = $service->getRequests(null, null, self::PAYMENTS_PER_PAGE, ($page - 1) * self::PAYMENTS_PER_PAGE);
         $pages = max(1, (int) ceil($service->countRequests() / self::PAYMENTS_PER_PAGE));
+        global $wpdb;
+        $renderer = self::$paymentTableRenderer
+            ?? [new AdminPaymentRenderer(new OrganizerRepository($wpdb)), 'table'];
         $html = empty($requests)
             ? '<p>' . esc_html__('Aucune demande de paiement.', 'chassesautresor-com') . '</p>'
-            : (string) (self::$paymentTableRenderer)($requests);
+            : (string) call_user_func($renderer, $requests);
         if (!empty($requests)) {
             $html .= self::pagination($page, $pages);
         }

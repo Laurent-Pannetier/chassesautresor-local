@@ -1154,24 +1154,20 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringContainsString('class ConversionModalRenderer', $renderer);
     }
 
-    public function testAdminConversionServiceIsNotInjectedByTheme(): void
+    public function testAdminPaymentRenderingIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/admin-functions.php');
-        preg_match('/AdminAjaxHandler::configure\([\s\S]*?^\);/m', $source, $matches);
-        $configuration = $matches[0] ?? null;
+        $handler = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Admin/AdminAjaxHandler.php'
+        );
+        $renderer = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Admin/AdminPaymentRenderer.php'
+        );
 
-        self::assertIsString($configuration);
-        self::assertStringNotContainsString('cat_get_conversion_service', $configuration);
-    }
-
-    public function testAdminHuntCacheInvalidationIsNotInjectedByTheme(): void
-    {
-        $source = (string) file_get_contents(self::THEME_PATH . '/inc/admin-functions.php');
-        preg_match('/AdminAjaxHandler::configure\([\s\S]*?^\);/m', $source, $matches);
-        $configuration = $matches[0] ?? null;
-
-        self::assertIsString($configuration);
-        self::assertStringNotContainsString('chasse_clear_infos_affichage_cache', $configuration);
+        self::assertStringNotContainsString('AdminAjaxHandler::configure', $source);
+        self::assertStringNotContainsString('function render_tableau_paiements_admin', $source);
+        self::assertStringContainsString('new AdminPaymentRenderer', $handler);
+        self::assertStringContainsString('class AdminPaymentRenderer', $renderer);
     }
 
     public function testHomepageHuntFilterIsNotInjectedByTheme(): void
